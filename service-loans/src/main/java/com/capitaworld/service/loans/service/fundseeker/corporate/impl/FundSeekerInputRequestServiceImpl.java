@@ -17,6 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.capitaworld.connect.api.ConnectResponse;
 import com.capitaworld.connect.client.ConnectClient;
+import com.capitaworld.service.fraudanalytics.client.FraudAnalyticsClient;
+import com.capitaworld.service.fraudanalytics.model.AnalyticsRequest;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.DirectorBackgroundDetail;
@@ -26,6 +28,7 @@ import com.capitaworld.service.loans.model.Address;
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
+import com.capitaworld.service.loans.model.common.HunterRequestDataResponse;
 import com.capitaworld.service.loans.model.corporate.FundSeekerInputRequestResponse;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.DirectorBackgroundDetailsRepository;
@@ -34,6 +37,7 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplica
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FundSeekerInputRequestService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 
 @Service
@@ -66,6 +70,12 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 
     @Autowired
     private LoanApplicationRepository loanApplicationRepository;
+    
+    @Autowired
+    private LoanApplicationService loanApplicationService;
+    
+    @Autowired
+    private FraudAnalyticsClient fraudAnalyticsClient;
 
     @Override
     public boolean saveOrUpdate(FundSeekerInputRequestResponse fundSeekerInputRequest) throws Exception {
@@ -75,14 +85,14 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
             if(CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail)) {
                 logger.info("corporateApplicantDetail is null created new object");
                 corporateApplicantDetail=new CorporateApplicantDetail();
-                BeanUtils.copyProperties(fundSeekerInputRequest,corporateApplicantDetail,"aadhar","secondAddress","sameAs","creditRatingId",
+                BeanUtils.copyProperties(fundSeekerInputRequest,corporateApplicantDetail,"secondAddress","sameAs","creditRatingId",
         				"contLiabilityFyAmt","contLiabilitySyAmt" ,"contLiabilityTyAmt" ," contLiabilityYear","notApplicable","aboutUs","id","isActive");
                 corporateApplicantDetail.setApplicationId(new LoanApplicationMaster(fundSeekerInputRequest.getApplicationId()));
                 corporateApplicantDetail.setCreatedBy(fundSeekerInputRequest.getUserId());
                 corporateApplicantDetail.setCreatedDate(new Date());
                 corporateApplicantDetail.setIsActive(true);
             } else {
-            	BeanUtils.copyProperties(fundSeekerInputRequest,corporateApplicantDetail,"aadhar","secondAddress","sameAs","creditRatingId",
+            	BeanUtils.copyProperties(fundSeekerInputRequest,corporateApplicantDetail,"secondAddress","sameAs","creditRatingId",
         				"contLiabilityFyAmt","contLiabilitySyAmt" ,"contLiabilityTyAmt" ," contLiabilityYear","notApplicable","aboutUs","id");
             	corporateApplicantDetail.setModifiedBy(fundSeekerInputRequest.getUserId());
                 corporateApplicantDetail.setModifiedDate(new Date());
@@ -154,6 +164,8 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
     public ResponseEntity<LoansResponse> saveOrUpdateDirectorDetail(FundSeekerInputRequestResponse fundSeekerInputRequest) {
         try {
             //==== Applicant Address
+        	
+        	logger.info("Enter in save directors details ---------------------------------------->" + fundSeekerInputRequest.getApplicationId());
             CorporateApplicantDetail corporateApplicantDetail=corporateApplicantDetailRepository.findOneByApplicationIdId(fundSeekerInputRequest.getApplicationId());
             if(CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail)) {
                 logger.info("corporateApplicantDetail is null created new object");
@@ -165,12 +177,24 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
                 corporateApplicantDetail.setCreatedDate(new Date());
                 corporateApplicantDetail.setIsActive(true);
             } else {
+            	logger.info("constitution id  ------------------------------------------>" + corporateApplicantDetail.getConstitutionId());
+            	CorporateApplicantDetail copyObj = corporateApplicantDetail;
                 BeanUtils.copyProperties(fundSeekerInputRequest,corporateApplicantDetail,"aadhar","secondAddress","sameAs","creditRatingId",
-                        "contLiabilityFyAmt","contLiabilitySyAmt" ,"contLiabilityTyAmt" ," contLiabilityYear","notApplicable","aboutUs","id");
+                        "contLiabilityFyAmt","contLiabilitySyAmt" ,"contLiabilityTyAmt" ," contLiabilityYear","notApplicable","aboutUs","id","constitutionId");
+                logger.info("Before save constitution id ---------------> " + fundSeekerInputRequest.getKeyVericalFunding() + "---------------in DB------------->" + copyObj.getConstitutionId());
+                corporateApplicantDetail.setKeyVericalFunding(!CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequest.getKeyVericalFunding()) ? fundSeekerInputRequest.getKeyVericalFunding() : copyObj.getKeyVericalFunding());
+                corporateApplicantDetail.setKeyVerticalSector(!CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequest.getKeyVerticalSector()) ? fundSeekerInputRequest.getKeyVerticalSector() : copyObj.getKeyVerticalSector());
+                corporateApplicantDetail.setKeyVerticalSubsector(!CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequest.getKeyVerticalSubsector()) ? fundSeekerInputRequest.getKeyVerticalSubsector() : copyObj.getKeyVerticalSubsector());
+                corporateApplicantDetail.setOrganisationName(!CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequest.getOrganisationName()) ? fundSeekerInputRequest.getOrganisationName() : copyObj.getOrganisationName());
+                corporateApplicantDetail.setAadhar(!CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequest.getAadhar()) ? fundSeekerInputRequest.getAadhar() : copyObj.getAadhar());
+                corporateApplicantDetail.setMsmeRegistrationNumber(!CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequest.getMsmeRegistrationNumber()) ? fundSeekerInputRequest.getMsmeRegistrationNumber() : copyObj.getMsmeRegistrationNumber());
+                corporateApplicantDetail.setConstitutionId(!CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequest.getConstitutionId()) ? fundSeekerInputRequest.getConstitutionId() : copyObj.getConstitutionId());
+                
                 corporateApplicantDetail.setModifiedBy(fundSeekerInputRequest.getUserId());
                 corporateApplicantDetail.setModifiedDate(new Date());
             }
             copyAddressFromRequestToDomain(fundSeekerInputRequest, corporateApplicantDetail);
+            logger.info("Just Before Save ------------------------------------->" + corporateApplicantDetail.getConstitutionId());
             corporateApplicantDetailRepository.save(corporateApplicantDetail);
             //==== Director details
             List<DirectorBackgroundDetailRequest> directorBackgroundDetailRequestList=fundSeekerInputRequest.getDirectorBackgroundDetailRequestsList();
@@ -180,20 +204,22 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
                     DirectorBackgroundDetail saveDirObj = null;
                     if(!CommonUtils.isObjectNullOrEmpty(reqObj.getId())) {
                         saveDirObj = directorBackgroundDetailsRepository.findByIdAndIsActive(reqObj.getId(), true);
-                    }
-                    if(CommonUtils.isObjectNullOrEmpty(saveDirObj)){
-                        saveDirObj = new DirectorBackgroundDetail();
-                        BeanUtils.copyProperties(reqObj, saveDirObj,"id","createdBy","createdDate","modifiedBy","modifiedDate","isActive");
-
-                        saveDirObj.setApplicationId(new LoanApplicationMaster(fundSeekerInputRequest.getApplicationId()));
-                        saveDirObj.setCreatedBy(fundSeekerInputRequest.getUserId());
-                        saveDirObj.setCreatedDate(new Date());
-                        saveDirObj.setIsActive(true);
-                    } else {
+                        logger.info("Old Object Retrived For Director saveDirObj.getId()==========================>{}",saveDirObj.getId());
                         BeanUtils.copyProperties(reqObj, saveDirObj,"id","createdBy","createdDate","modifiedBy","modifiedDate");
                         saveDirObj.setModifiedBy(fundSeekerInputRequest.getUserId());
                         saveDirObj.setModifiedDate(new Date());
                     }
+                    else
+                    {
+                        logger.info("New Object Created for Director");
+                        saveDirObj = new DirectorBackgroundDetail();
+                        BeanUtils.copyProperties(reqObj, saveDirObj,"id","createdBy","createdDate","modifiedBy","modifiedDate","isActive");
+                        saveDirObj.setApplicationId(new LoanApplicationMaster(fundSeekerInputRequest.getApplicationId()));
+                        saveDirObj.setCreatedBy(fundSeekerInputRequest.getUserId());
+                        saveDirObj.setCreatedDate(new Date());
+                        saveDirObj.setIsActive(true);
+                    }
+
                     directorBackgroundDetailsRepository.save(saveDirObj);
                 }
             }catch (Exception e){
@@ -389,4 +415,29 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 
         // Setting Administrative Address
     }
+
+
+
+	/* (non-Javadoc)
+	 * @see com.capitaworld.service.loans.service.fundseeker.corporate.FundSeekerInputRequestService#invokeFraudAnalytics(com.capitaworld.service.loans.model.corporate.FundSeekerInputRequestResponse)
+	 */
+	@Override
+	public void invokeFraudAnalytics(FundSeekerInputRequestResponse fundSeekerInputRequestResponse) throws Exception {
+		
+		try {
+		HunterRequestDataResponse hunterRequestDataResponse = loanApplicationService.getDataForHunter(fundSeekerInputRequestResponse.getApplicationId());
+		AnalyticsRequest request = new AnalyticsRequest();
+		request.setApplicationId(fundSeekerInputRequestResponse.getApplicationId());
+		request.setUserId(fundSeekerInputRequestResponse.getUserId());
+		request.setData(hunterRequestDataResponse);
+		
+		fraudAnalyticsClient.callHunterIIAPI(request);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+
+
 }

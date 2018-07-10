@@ -17,6 +17,7 @@ import com.capitaworld.client.workflow.WorkflowClient;
 import com.capitaworld.connect.client.ConnectClient;
 import com.capitaworld.service.analyzer.client.AnalyzerClient;
 import com.capitaworld.service.dms.client.DMSClient;
+import com.capitaworld.service.fraudanalytics.client.FraudAnalyticsClient;
 import com.capitaworld.service.gateway.client.GatewayClient;
 import com.capitaworld.service.gst.client.GstClient;
 import com.capitaworld.service.matchengine.MatchEngineClient;
@@ -104,6 +105,9 @@ public class LoansMain {
 	
 	@Value("${capitaworld.service.eligibility.url}")
 	private String eligibilityUrl;
+	
+	@Value("${capitaworld.service.fraudanalytics.url}")
+	private String fraudAnalyticsUrl;
 	
 
 	public static void main(String[] args) throws Exception {
@@ -242,4 +246,12 @@ public class LoansMain {
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(eligibilityClient);
 		return eligibilityClient;
 	}
+	
+	@Bean
+	public FraudAnalyticsClient fraudAnalyticsClient() {
+		FraudAnalyticsClient fraudAnalyticsClient = new FraudAnalyticsClient(fraudAnalyticsUrl);
+		applicationContext.getAutowireCapableBeanFactory().autowireBean(fraudAnalyticsClient);
+		return fraudAnalyticsClient;
+	}
+	
 }

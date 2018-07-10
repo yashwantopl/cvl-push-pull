@@ -35,6 +35,10 @@ public class FinancialArrangementsDetail implements Serializable {
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "loan_date")
 	private Date loanDate;
+	
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "reported_date")
+	private Date reportedDate;
 
 	@Column(name = "loan_type")
 	private String loanType;
@@ -222,4 +226,21 @@ public class FinancialArrangementsDetail implements Serializable {
 	public void setDirectorBackgroundDetail(DirectorBackgroundDetail directorBackgroundDetail) {
 		this.directorBackgroundDetail = directorBackgroundDetail;
 	}
+
+	public Date getReportedDate() {
+		return reportedDate;
+	}
+
+	public void setReportedDate(Date reportedDate) {
+		this.reportedDate = reportedDate;
+	}
+
+	public Integer getRelationshipSince() {
+		return relationshipSince;
+	}
+
+	public void setRelationshipSince(Integer relationshipSince) {
+		this.relationshipSince = relationshipSince;
+	}
+	
 }

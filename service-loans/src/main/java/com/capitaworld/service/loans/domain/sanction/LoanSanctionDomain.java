@@ -73,6 +73,9 @@ public class LoanSanctionDomain implements Serializable {
 	@Column(name = "is_active")
 	private Boolean isActive;
 
+	@Column(name = "processing_fee")
+	private Double processingFee;
+
 	public Long getId() {
 		return id;
 	}
@@ -209,14 +212,35 @@ public class LoanSanctionDomain implements Serializable {
 		this.isActive = isActive;
 	}
 
-	@Override
-	public String toString() {
-		return "LoanSanctionDomain [id=" + id + ", accountNo=" + accountNo + ", sanctionAmount=" + sanctionAmount
-				+ ", roi=" + roi + ", transactionNo=" + transactionNo + ", sanctionDate=" + sanctionDate + ", branch="
-				+ branch + ", applicationId=" + applicationId + ", referenceNo=" + referenceNo + ", tenure=" + tenure
-				+ ", sanctionAuthority=" + sanctionAuthority + ", remark=" + remark + ", createdBy=" + createdBy
-				+ ", createdDate=" + createdDate + ", modifiedBy=" + modifiedBy + ", modifiedDate=" + modifiedDate
-				+ ", isActive=" + isActive + "]";
+	public Double getProcessingFee() {
+		return processingFee;
 	}
 
+	public void setProcessingFee(Double processingFee) {
+		this.processingFee = processingFee;
+	}
+
+	@Override
+	public String toString() {
+		return "LoanSanctionDomain{" +
+				"id=" + id +
+				", accountNo='" + accountNo + '\'' +
+				", sanctionAmount=" + sanctionAmount +
+				", roi=" + roi +
+				", transactionNo='" + transactionNo + '\'' +
+				", sanctionDate=" + sanctionDate +
+				", branch=" + branch +
+				", applicationId=" + applicationId +
+				", referenceNo=" + referenceNo +
+				", tenure=" + tenure +
+				", sanctionAuthority='" + sanctionAuthority + '\'' +
+				", remark='" + remark + '\'' +
+				", createdBy='" + createdBy + '\'' +
+				", createdDate=" + createdDate +
+				", modifiedBy='" + modifiedBy + '\'' +
+				", modifiedDate=" + modifiedDate +
+				", isActive=" + isActive +
+				", processingFee=" + processingFee +
+				'}';
+	}
 }

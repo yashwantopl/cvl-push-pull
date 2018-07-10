@@ -1,9 +1,12 @@
 package com.capitaworld.service.loans.service.teaser.primaryview.impl;
 
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -14,6 +17,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.capitaworld.api.eligibility.model.CLEligibilityRequest;
+import com.capitaworld.api.eligibility.model.EligibililityRequest;
+import com.capitaworld.api.eligibility.model.EligibilityResponse;
+import com.capitaworld.client.eligibility.EligibilityClient;
+import com.capitaworld.service.analyzer.client.AnalyzerClient;
+import com.capitaworld.service.analyzer.model.common.AnalyzerResponse;
+import com.capitaworld.service.analyzer.model.common.Data;
+import com.capitaworld.service.analyzer.model.common.ReportRequest;
 import com.capitaworld.service.dms.client.DMSClient;
 import com.capitaworld.service.dms.exception.DocumentException;
 import com.capitaworld.service.dms.model.DocumentRequest;
@@ -58,6 +69,15 @@ import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
 import com.capitaworld.service.oneform.model.SectorIndustryModel;
 import com.capitaworld.service.rating.model.FinancialInputRequest;
+import com.capitaworld.service.scoring.ScoringClient;
+import com.capitaworld.service.scoring.exception.ScoringException;
+import com.capitaworld.service.scoring.model.ProposalScoreResponse;
+import com.capitaworld.service.scoring.model.ScoringRequest;
+import com.capitaworld.service.scoring.model.ScoringResponse;
+import com.capitaworld.service.thirdparty.model.CGTMSEDataResponse;
+import com.capitaworld.service.thirdparty.model.CGTMSEResponse;
+import com.capitaworld.service.thirdparty.model.ThirdPartyRequest;
+import com.capitaworld.service.thirdpaty.client.ThirdPartyClient;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.UserResponse;
 import com.capitaworld.service.users.model.UsersRequest;
@@ -98,6 +118,19 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
     @Autowired
     private IrrService irrService;
 
+    @Autowired
+	private ScoringClient scoringClient;
+	
+	@Autowired
+	private AnalyzerClient analyzerClient;
+	
+	@Autowired
+	private EligibilityClient eligibilityClient;
+	
+	@Autowired
+	private ThirdPartyClient thirdPartyClient;
+
+	
     public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
     DecimalFormat decim = new DecimalFormat("#,###.00");
     @Override
@@ -494,9 +527,9 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 	    		financialInputRequest.setProfitBeforeTaxFy(CommonUtils.addNumbers(financialInputRequest.getProfitBeforeTaxationFy(), financialInputRequest.getExceptionalIncomeFy()));
 	    		financialInputRequest.setProfitBeforeTaxSy(CommonUtils.addNumbers(financialInputRequest.getProfitBeforeTaxationSy(), financialInputRequest.getExceptionalIncomeSy()));
 	    		financialInputRequest.setProfitBeforeTaxTy(CommonUtils.addNumbers(financialInputRequest.getProfitBeforeTaxationTy(), financialInputRequest.getExceptionalIncomeTy()));
-	    		financialInputRequest.setProfitAfterTaxFy(CommonUtils.substractNumbers(financialInputRequest.getProfitBeforeTaxFy(), financialInputRequest.getProvisionForTaxFy()));
-	    		financialInputRequest.setProfitAfterTaxSy(CommonUtils.substractNumbers(financialInputRequest.getProfitBeforeTaxSy(), financialInputRequest.getProvisionForTaxSy()));
-	    		financialInputRequest.setProfitAfterTaxTy(CommonUtils.substractNumbers(financialInputRequest.getProfitBeforeTaxTy(), financialInputRequest.getProvisionForTaxTy()));
+	    		financialInputRequest.setProfitAfterTaxFy(CommonUtils.substractNumbers(financialInputRequest.getProfitBeforeTaxFy(), financialInputRequest.getProvisionForTaxFy())+ financialInputRequest.getOtherIncomeNeedTocCheckOpFy());
+	    		financialInputRequest.setProfitAfterTaxSy(CommonUtils.substractNumbers(financialInputRequest.getProfitBeforeTaxSy(), financialInputRequest.getProvisionForTaxSy())+ financialInputRequest.getOtherIncomeNeedTocCheckOpSy());
+	    		financialInputRequest.setProfitAfterTaxTy(CommonUtils.substractNumbers(financialInputRequest.getProfitBeforeTaxTy(), financialInputRequest.getProvisionForTaxTy())+ financialInputRequest.getOtherIncomeNeedTocCheckOpTy());
 	    		if(financialInputRequest.getDividendPayOutFy() == 0)
 	    			financialInputRequest.setEquityDividendFy(0.0);
 	    		else
@@ -526,9 +559,9 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 	    		financialInputRequest.setTotalCurruntLiablitiesFy(CommonUtils.addNumbers(financialInputRequest.getTradePayablesFy(), financialInputRequest.getOtherCurruntLiablitiesFy(), financialInputRequest.getShortTermProvisionFy()));
 	    		financialInputRequest.setTotalCurruntLiablitiesSy(CommonUtils.addNumbers(financialInputRequest.getTradePayablesSy(), financialInputRequest.getOtherCurruntLiablitiesSy(), financialInputRequest.getShortTermProvisionSy()));
 	    		financialInputRequest.setTotalCurruntLiablitiesTy(CommonUtils.addNumbers(financialInputRequest.getTradePayablesTy(), financialInputRequest.getOtherCurruntLiablitiesTy(), financialInputRequest.getShortTermProvisionTy()));
-	    		financialInputRequest.setTotalLiablitiesFy(CommonUtils.addNumbers(financialInputRequest.getShareHolderFundsFy(), financialInputRequest.getTotalNonCurruntLiablitiesFy(), financialInputRequest.getTotalCurruntLiablitiesFy()));
-	    		financialInputRequest.setTotalLiablitiesSy(CommonUtils.addNumbers(financialInputRequest.getShareHolderFundsSy(), financialInputRequest.getTotalNonCurruntLiablitiesSy(), financialInputRequest.getTotalCurruntLiablitiesSy()));
-	    		financialInputRequest.setTotalLiablitiesTy(CommonUtils.addNumbers(financialInputRequest.getShareHolderFundsTy(), financialInputRequest.getTotalNonCurruntLiablitiesTy(), financialInputRequest.getTotalCurruntLiablitiesTy()));
+	    		financialInputRequest.setTotalLiablitiesFy(CommonUtils.addNumbers(financialInputRequest.getShareHolderFundsFy(), financialInputRequest.getTotalNonCurruntLiablitiesFy(), financialInputRequest.getTotalCurruntLiablitiesFy(), financialInputRequest.getOtherIncomeNeedTocCheckLiaFy()));
+	    		financialInputRequest.setTotalLiablitiesSy(CommonUtils.addNumbers(financialInputRequest.getShareHolderFundsSy(), financialInputRequest.getTotalNonCurruntLiablitiesSy(), financialInputRequest.getTotalCurruntLiablitiesSy(), financialInputRequest.getOtherIncomeNeedTocCheckLiaSy()));
+	    		financialInputRequest.setTotalLiablitiesTy(CommonUtils.addNumbers(financialInputRequest.getShareHolderFundsTy(), financialInputRequest.getTotalNonCurruntLiablitiesTy(), financialInputRequest.getTotalCurruntLiablitiesTy(), financialInputRequest.getOtherIncomeNeedTocCheckLiaTy()));
 	    		
 	    		//Balance Sheet -ASSETS
 	    		financialInputRequest.setNetBlockFy(CommonUtils.substractThreeNumbers(financialInputRequest.getGrossBlockFy(), financialInputRequest.getLessAccumulatedDepreFy(),financialInputRequest.getImpairmentofAssetFy()));
@@ -540,9 +573,9 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 	    		financialInputRequest.setTotalCurruntAssetFy(CommonUtils.addNumbers(financialInputRequest.getInventoriesFy(), financialInputRequest.getSundryDebtorsFy(), financialInputRequest.getCashAndBankFy(), financialInputRequest.getOtherCurruntAssetFy(), financialInputRequest.getShortTermLoansAdvancesFy()));
 	    		financialInputRequest.setTotalCurruntAssetSy(CommonUtils.addNumbers(financialInputRequest.getInventoriesSy(), financialInputRequest.getSundryDebtorsSy(), financialInputRequest.getCashAndBankSy(), financialInputRequest.getOtherCurruntAssetSy(), financialInputRequest.getShortTermLoansAdvancesSy()));
 	    		financialInputRequest.setTotalCurruntAssetTy(CommonUtils.addNumbers(financialInputRequest.getInventoriesTy(), financialInputRequest.getSundryDebtorsTy(), financialInputRequest.getCashAndBankTy(), financialInputRequest.getOtherCurruntAssetTy(), financialInputRequest.getShortTermLoansAdvancesTy()));
-	    		financialInputRequest.setTotalAssetFy(CommonUtils.addNumbers(financialInputRequest.getNetBlockFy(), financialInputRequest.getTotalCurruntAssetFy(), financialInputRequest.getTotalNonCurruntAssetFy()));
-	    		financialInputRequest.setTotalAssetSy(CommonUtils.addNumbers(financialInputRequest.getNetBlockSy(), financialInputRequest.getTotalCurruntAssetSy(), financialInputRequest.getTotalNonCurruntAssetSy()));
-	    		financialInputRequest.setTotalAssetTy(CommonUtils.addNumbers(financialInputRequest.getNetBlockTy(), financialInputRequest.getTotalCurruntAssetTy(), financialInputRequest.getTotalNonCurruntAssetTy()));
+	    		financialInputRequest.setTotalAssetFy(CommonUtils.addNumbers(financialInputRequest.getNetBlockFy(), financialInputRequest.getTotalCurruntAssetFy(), financialInputRequest.getTotalNonCurruntAssetFy(), financialInputRequest.getOtherIncomeNeedTocCheckAssetFy()));
+	    		financialInputRequest.setTotalAssetSy(CommonUtils.addNumbers(financialInputRequest.getNetBlockSy(), financialInputRequest.getTotalCurruntAssetSy(), financialInputRequest.getTotalNonCurruntAssetSy(), financialInputRequest.getOtherIncomeNeedTocCheckAssetSy()));
+	    		financialInputRequest.setTotalAssetTy(CommonUtils.addNumbers(financialInputRequest.getNetBlockTy(), financialInputRequest.getTotalCurruntAssetTy(), financialInputRequest.getTotalNonCurruntAssetTy(), financialInputRequest.getOtherIncomeNeedTocCheckAssetTy()));
 	    		financialInputRequest.setBookValueFy(financialInputRequest.getShareHolderFundsFy()/(financialInputRequest.getShareCapitalFy()/financialInputRequest.getShareFaceValue()));
 	    		financialInputRequest.setBookValueSy(financialInputRequest.getShareHolderFundsSy()/(financialInputRequest.getShareCapitalSy()/financialInputRequest.getShareFaceValue()));
 	    		financialInputRequest.setBookValueTy(financialInputRequest.getShareHolderFundsTy()/(financialInputRequest.getShareCapitalTy()/financialInputRequest.getShareFaceValue()));
@@ -552,6 +585,88 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			
+			//bank statement data
+			ReportRequest reportRequest = new ReportRequest();
+			reportRequest.setApplicationId(toApplicationId);
+			reportRequest.setUserId(userId);
+			List<Data> datas=new ArrayList<>();
+			try {
+				AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReportForCam(reportRequest);
+				List<HashMap<String, Object>> hashMaps=(List<HashMap<String, Object>>) analyzerResponse.getData();
+				if(!CommonUtils.isListNullOrEmpty(hashMaps))
+				{
+				for(HashMap<String,Object> hashMap:hashMaps)
+				{
+					Data data = MultipleJSONObjectHelper.getObjectFromMap(hashMap, Data.class);
+					datas.add(data);
+				}
+				}
+				corporatePrimaryViewResponse.setBankData(datas);
+//				Data data = MultipleJSONObjectHelper.getObjectFromMap((HashMap<String, Object>) analyzerResponse.getData(), Data.class);
+//				corporatePrimaryViewResponse.setMonthlyDetailList(data.getMonthlyDetailList());
+//				corporatePrimaryViewResponse.setTop5FundReceivedList(data.getTop5FundReceivedList());
+//				corporatePrimaryViewResponse.setTop5FundTransferedList(data.getTop5FundTransferedList());
+			}catch (Exception e) {
+				e.printStackTrace();
+				logger.info("Error while getting perfios data");
+			}
+			
+			//scoring Data
+			Long fpProductMappingId= null;
+			try {
+
+                 UsersRequest usersRequest = new UsersRequest();
+                 usersRequest.setId(fundProviderUserId);
+                 UserResponse userResponse= usersClient.getLastAccessApplicant(usersRequest);
+                 fpProductMappingId=userResponse.getId();
+             }catch (Exception e) {
+				e.printStackTrace();
+			}
+			ScoringRequest scoringRequest = new ScoringRequest();
+			scoringRequest.setApplicationId(toApplicationId);
+			scoringRequest.setFpProductId(fpProductMappingId);
+			try {
+				ScoringResponse scoringResponse = scoringClient.getScore(scoringRequest);
+				ProposalScoreResponse proposalScoreResponse = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)scoringResponse.getDataObject(),ProposalScoreResponse.class);
+				corporatePrimaryViewResponse.setDataList(scoringResponse.getDataList());
+				corporatePrimaryViewResponse.setManagementRiskScore(proposalScoreResponse.getManagementRiskScore());
+				corporatePrimaryViewResponse.setFinancialRiskScore(proposalScoreResponse.getFinancialRiskScore());
+				corporatePrimaryViewResponse.setBuisnessRiskScore(proposalScoreResponse.getBusinessRiskScore());
+				corporatePrimaryViewResponse.setManagementRiskScoreWeight(proposalScoreResponse.getManagementRiskWeight());
+				corporatePrimaryViewResponse.setFinancialRiskScoreWeight(proposalScoreResponse.getFinancialRiskWeight());
+				corporatePrimaryViewResponse.setBuisnessRiskScoreWeight(proposalScoreResponse.getBusinessRiskWeight());
+				corporatePrimaryViewResponse.setScoreInterpretation(proposalScoreResponse.getInterpretation());
+			} catch (ScoringException | IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			
+			//Eligibility Data
+			EligibililityRequest eligibilityReq=new EligibililityRequest();
+			eligibilityReq.setApplicationId(toApplicationId);
+			eligibilityReq.setProductId(!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getProductId()) ? Long.valueOf(primaryCorporateDetail.getProductId()) : null);
+			System.out.println(" for eligibility appid============>>"+toApplicationId);
+			
+			try {
+				EligibilityResponse eligibilityResp= eligibilityClient.corporateLoanData(eligibilityReq);
+//				CLEligibilityRequest cLEligibilityRequest= MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>), CLEligibilityRequest.class);
+				corporatePrimaryViewResponse.setEligibilityDataObject(eligibilityResp.getData());
+				
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			
+			//CGTMSE
+			try {
+				CGTMSEDataResponse cgtmseDataResp = thirdPartyClient.getCalulation(toApplicationId);
+				corporatePrimaryViewResponse.setCgtmseData(cgtmseDataResp);
+			}catch (Exception e) {
+				e.printStackTrace();
+				logger.info("Error while getting CGTMSE data");
+			}
+			
 			
     		
     	
@@ -588,6 +703,28 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
             } catch (DocumentException e) {
                 e.printStackTrace();
             }
+//            documentRequest.setProductDocumentMappingId(DocumentAlias.ZIP_TEASER_VIEW);
+//            try {
+//                DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+//                corporatePrimaryViewResponse.setZipBytes(documentResponse.getDataList());
+//            } catch (DocumentException e) {
+//                e.printStackTrace();
+//            }
+//            List<Long> ids=new ArrayList<>();
+//            ids.add(354l);
+//            ids.add(358l);
+//            ids.add(365l);
+//            ids.add(406l);
+//            ZipRequest zipRequest=new ZipRequest();
+//            zipRequest.setApplicationId(toApplicationId);
+//            zipRequest.setProductDocumentMappingIds(ids);
+//            try {
+//            	DocumentResponse documentResponse=dmsClient.getGenerateZip(zipRequest);
+//				corporatePrimaryViewResponse.setZipBytes(documentResponse.getData());
+//			} catch (DocumentException e) {
+//				  e.printStackTrace();
+//			}
+            
         return corporatePrimaryViewResponse;
     }
     public String convertValue(Double value) {

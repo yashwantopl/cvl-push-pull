@@ -17,6 +17,8 @@ public class DDRAuthorizedSignDetailsRequest implements Serializable {
 	private String name;
 	
 	private String designation;
+	
+	private String occupation;
 
 	private String documentObtained;
 
@@ -69,11 +71,26 @@ public class DDRAuthorizedSignDetailsRequest implements Serializable {
 	public void setIsActive(Boolean isActive) {
 		this.isActive = isActive;
 	}
+	
+
+	/**
+	 * @return the occupation
+	 */
+	public String getOccupation() {
+		return occupation;
+	}
+
+	/**
+	 * @param occupation the occupation to set
+	 */
+	public void setOccupation(String occupation) {
+		this.occupation = occupation;
+	}
 
 	@Override
 	public String toString() {
 		return "DDRAuthorizedSignDetailsRequest [id=" + id + ", ddrFormId=" + ddrFormId + ", name=" + name
-				+ ", designation=" + designation + ", documentObtained=" + documentObtained + ", isActive=" + isActive
+				+ ", designation=" + designation + ", documentObtained=" + documentObtained + ", isActive=" + isActive + ", occupation=" + occupation
 				+ "]";
 	}
 	

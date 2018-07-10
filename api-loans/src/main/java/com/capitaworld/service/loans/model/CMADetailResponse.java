@@ -23,7 +23,7 @@ public class CMADetailResponse implements Serializable{
 		private Double depreciation; //D34
 		private Double interest;  //D62
 		private Double provisionForDeferredTax; //D77
-		
+		private Double grossBlock; //D45
 		
 		public Double getReceivableOtherThanDefferred() {
 			return receivableOtherThanDefferred;
@@ -99,6 +99,13 @@ public class CMADetailResponse implements Serializable{
 		public void setProvisionForDeferredTax(Double provisionForDeferredTax) {
 			this.provisionForDeferredTax = provisionForDeferredTax;
 		}
+		
+		public Double getGrossBlock() {
+			return grossBlock;
+		}
+		public void setGrossBlock(Double grossBlock) {
+			this.grossBlock = grossBlock;
+		}
 		@Override
 		public String toString() {
 			return "CMADetailResponse [receivableOtherThanDefferred=" + receivableOtherThanDefferred
@@ -107,9 +114,6 @@ public class CMADetailResponse implements Serializable{
 					+ sundryCreditors + ", advancePaymentsFromCustomers=" + advancePaymentsFromCustomers
 					+ ", domesticSales=" + domesticSales + ", exportSales=" + exportSales + ", netProfitOrLoss="
 					+ netProfitOrLoss + ", depreciation=" + depreciation + ", interest=" + interest
-					+ ", provisionForDeferredTax=" + provisionForDeferredTax + "]";
+					+ ", provisionForDeferredTax=" + provisionForDeferredTax + ", grossBlock=" + grossBlock + "]";
 		}
-		
-		
-		
 }

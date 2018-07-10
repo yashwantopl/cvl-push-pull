@@ -60,7 +60,23 @@ public class CorporatePrimaryViewResponse {
     private List<Object> bankStatement;
     private List<Object> cibilReport;
     private List<Object> irtPdfReport;
+    private Object monthlyDetailList;
+    private Object top5FundReceivedList;
+    private Object top5FundTransferedList;
+    private Object eligibilityDataObject;
+    private Object dataList;
+    private Object cgtmseData;
     private Long npOrgId;
+    private Object zipBytes;
+    private Object zipData;
+    private Object managementRiskScore;
+    private Object financialRiskScore;
+    private Object buisnessRiskScore;
+    private Object managementRiskScoreWeight;
+    private Object financialRiskScoreWeight;
+    private Object buisnessRiskScoreWeight;
+    private Object scoreInterpretation;
+    private Object bankData;
 
 
     
@@ -451,6 +467,199 @@ public class CorporatePrimaryViewResponse {
 	 */
 	public void setProductId(Integer productId) {
 		this.productId = productId;
+	}
+	/**
+	 * @return the monthlyDetailList
+	 */
+	public Object getMonthlyDetailList() {
+		return monthlyDetailList;
+	}
+	/**
+	 * @param monthlyDetailList the monthlyDetailList to set
+	 */
+	public void setMonthlyDetailList(Object monthlyDetailList) {
+		this.monthlyDetailList = monthlyDetailList;
+	}
+	/**
+	 * @return the top5FundReceivedList
+	 */
+	public Object getTop5FundReceivedList() {
+		return top5FundReceivedList;
+	}
+	/**
+	 * @param top5FundReceivedList the top5FundReceivedList to set
+	 */
+	public void setTop5FundReceivedList(Object top5FundReceivedList) {
+		this.top5FundReceivedList = top5FundReceivedList;
+	}
+	/**
+	 * @return the top5FundTransferedList
+	 */
+	public Object getTop5FundTransferedList() {
+		return top5FundTransferedList;
+	}
+	/**
+	 * @param top5FundTransferedList the top5FundTransferedList to set
+	 */
+	public void setTop5FundTransferedList(Object top5FundTransferedList) {
+		this.top5FundTransferedList = top5FundTransferedList;
+	}
+	
+	/**
+	 * @return the eligibilityDataObject
+	 */
+	public Object getEligibilityDataObject() {
+		return eligibilityDataObject;
+	}
+	/**
+	 * @param eligibilityDataObject the eligibilityDataObject to set
+	 */
+	public void setEligibilityDataObject(Object eligibilityDataObject) {
+		this.eligibilityDataObject = eligibilityDataObject;
+	}
+	/**
+	 * @return the dataList
+	 */
+	public Object getDataList() {
+		return dataList;
+	}
+	/**
+	 * @param dataList the dataList to set
+	 */
+	public void setDataList(Object dataList) {
+		this.dataList = dataList;
+	}
+	/**
+	 * @return the cgtmseData
+	 */
+	public Object getCgtmseData() {
+		return cgtmseData;
+	}
+	/**
+	 * @param cgtmseData the cgtmseData to set
+	 */
+	public void setCgtmseData(Object cgtmseData) {
+		this.cgtmseData = cgtmseData;
+	}
+	/**
+	 * @return the zipBytes
+	 */
+	public Object getZipBytes() {
+		return zipBytes;
+	}
+	/**
+	 * @param zipBytes the zipBytes to set
+	 */
+	public void setZipBytes(Object zipBytes) {
+		this.zipBytes = zipBytes;
+	}
+	/**
+	 * @return the zipData
+	 */
+	public Object getZipData() {
+		return zipData;
+	}
+	/**
+	 * @param zipData the zipData to set
+	 */
+	public void setZipData(Object zipData) {
+		this.zipData = zipData;
+	}
+	/**
+	 * @return the managementRiskScore
+	 */
+	public Object getManagementRiskScore() {
+		return managementRiskScore;
+	}
+	/**
+	 * @param managementRiskScore the managementRiskScore to set
+	 */
+	public void setManagementRiskScore(Object managementRiskScore) {
+		this.managementRiskScore = managementRiskScore;
+	}
+	/**
+	 * @return the financialRiskScore
+	 */
+	public Object getFinancialRiskScore() {
+		return financialRiskScore;
+	}
+	/**
+	 * @param financialRiskScore the financialRiskScore to set
+	 */
+	public void setFinancialRiskScore(Object financialRiskScore) {
+		this.financialRiskScore = financialRiskScore;
+	}
+	/**
+	 * @return the buisnessRiskScore
+	 */
+	public Object getBuisnessRiskScore() {
+		return buisnessRiskScore;
+	}
+	/**
+	 * @param buisnessRiskScore the buisnessRiskScore to set
+	 */
+	public void setBuisnessRiskScore(Object buisnessRiskScore) {
+		this.buisnessRiskScore = buisnessRiskScore;
+	}
+	/**
+	 * @return the managementRiskScoreWeight
+	 */
+	public Object getManagementRiskScoreWeight() {
+		return managementRiskScoreWeight;
+	}
+	/**
+	 * @param managementRiskScoreWeight the managementRiskScoreWeight to set
+	 */
+	public void setManagementRiskScoreWeight(Object managementRiskScoreWeight) {
+		this.managementRiskScoreWeight = managementRiskScoreWeight;
+	}
+	/**
+	 * @return the financialRiskScoreWeight
+	 */
+	public Object getFinancialRiskScoreWeight() {
+		return financialRiskScoreWeight;
+	}
+	/**
+	 * @param financialRiskScoreWeight the financialRiskScoreWeight to set
+	 */
+	public void setFinancialRiskScoreWeight(Object financialRiskScoreWeight) {
+		this.financialRiskScoreWeight = financialRiskScoreWeight;
+	}
+	/**
+	 * @return the buisnessRiskScoreWeight
+	 */
+	public Object getBuisnessRiskScoreWeight() {
+		return buisnessRiskScoreWeight;
+	}
+	/**
+	 * @param buisnessRiskScoreWeight the buisnessRiskScoreWeight to set
+	 */
+	public void setBuisnessRiskScoreWeight(Object buisnessRiskScoreWeight) {
+		this.buisnessRiskScoreWeight = buisnessRiskScoreWeight;
+	}
+	/**
+	 * @return the scoreInterpretation
+	 */
+	public Object getScoreInterpretation() {
+		return scoreInterpretation;
+	}
+	/**
+	 * @param scoreInterpretation the scoreInterpretation to set
+	 */
+	public void setScoreInterpretation(Object scoreInterpretation) {
+		this.scoreInterpretation = scoreInterpretation;
+	}
+	/**
+	 * @return the bankData
+	 */
+	public Object getBankData() {
+		return bankData;
+	}
+	/**
+	 * @param bankData the bankData to set
+	 */
+	public void setBankData(Object bankData) {
+		this.bankData = bankData;
 	}
 	
     

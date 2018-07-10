@@ -3,6 +3,7 @@ package com.capitaworld.service.loans.service.scoring;
 import java.io.IOException;
 import java.util.List;
 
+import com.capitaworld.service.scoring.model.scoringmodel.ScoringModelReqRes;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.http.ResponseEntity;
@@ -21,4 +22,14 @@ public interface ScoringService {
 	public Workbook  readScoringExcel(MultipartFile multipartFile ) throws IllegalStateException, InvalidFormatException,IOException , LoansException;
 	
 	public Workbook generateScoringExcel(List<LoansResponse> list) throws LoansException ;
+
+	/////////
+
+    public ScoringModelReqRes getScoringModelList(ScoringModelReqRes scoringModelReqRes);
+
+    public ScoringModelReqRes saveScoringModel(ScoringModelReqRes scoringModelReqRes);
+
+    public ScoringModelReqRes getScoringModelDetail(ScoringModelReqRes scoringModelReqRes);
+
+    public ScoringModelReqRes saveScoringModelDetail(ScoringModelReqRes scoringModelReqRes);
 }

@@ -78,8 +78,8 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 	 			String EXCEL_FILE_LOCATION ="cw.mca.cwtlwctlcmafile.location";
 	 			logger.warn("excel file====>>"+EXCEL_FILE_LOCATION);
 	 			
-	 			Double tenure = loanApplocationRepo.getTenure(applicationId)+1;
-	 			tenure = !CommonUtils.isObjectNullOrEmpty(tenure) ? tenure : 0.0;
+	 			Double tenure = loanApplocationRepo.getTenure(applicationId);
+	 			tenure = !CommonUtils.isObjectNullOrEmpty(tenure) ? tenure + 1 : 0.0;
 	 			
 	 			logger.warn("tenure==>>"+tenure);
 	 			if(productDocumentMappingId==(long)DocumentAlias.WC_CMA) {
@@ -181,6 +181,7 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 				//sheet1.getRow(72).getCell(j).setCellValue(operatingStatementDetails.getProfitBeforeTaxOrLoss());
 				
 				sheet1.getRow(74).getCell(j).setCellValue(operatingStatementDetails.getProvisionForTaxes());
+				sheet1.getRow(75).getCell(j).setCellValue(operatingStatementDetails.getOtherIncomeNeedTocCheckOp() != null ? operatingStatementDetails.getOtherIncomeNeedTocCheckOp() : 0.0);
 				sheet1.getRow(76).getCell(j).setCellValue(operatingStatementDetails.getProvisionForDeferredTax());
 
 				//sheet1.getRow(77).getCell(j).setCellValue(operatingStatementDetails.getNetProfitOrLoss());
@@ -294,7 +295,7 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 				sheet2.getRow(78).getCell(j).setCellValue(liabilitiesDetails.getSurplusOrDeficit());
 				sheet2.getRow(80).getCell(j).setCellValue(liabilitiesDetails.getDeferredTaxLiability());
 				sheet2.getRow(82).getCell(j).setCellValue(liabilitiesDetails.getOthers());
-				
+				sheet2.getRow(85).getCell(j).setCellValue(liabilitiesDetails.getOtherIncomeNeedTocCheckLia() != null ? liabilitiesDetails.getOtherIncomeNeedTocCheckLia() : 0.0);
 				//sheet2.getRow(84).getCell(j).setCellValue(liabilitiesDetails.getNetWorth());
 				
          	    //sheet2.getRow(86).getCell(j).setCellValue(liabilitiesDetails.getTotalLiability());
@@ -353,10 +354,10 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 				sheet3.getRow(25).getCell(j).setCellValue(assetsDetails.getRawMaterialImported());
 				sheet3.getRow(26).getCell(j).setCellValue(assetsDetails.getRawMaterialIndegenous());
 				
-				//sheet3.getRow(28).getCell(j).setCellValue(assetsDetails.getStockInProcess());
+				sheet3.getRow(28).getCell(j).setCellValue(assetsDetails.getStockInProcess());
 				
 				
-				//sheet3.getRow(30).getCell(j).setCellValue(assetsDetails.getFinishedGoods());
+				sheet3.getRow(30).getCell(j).setCellValue(assetsDetails.getFinishedGoods());
 				
 				//sheet3.getRow(32).getCell(j).setCellValue(assetsDetails.getOtherConsumableSpares());
 
@@ -410,7 +411,7 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 				sheet3.getRow(84).getCell(j).setCellValue(assetsDetails.getPrelimExpenses());
 				sheet3.getRow(85).getCell(j).setCellValue(assetsDetails.getBadOrDoubtfulExpenses());
 				sheet3.getRow(86).getCell(j).setCellValue(assetsDetails.getAnyOther());
-
+				sheet3.getRow(87).getCell(j).setCellValue(assetsDetails.getOtherIncomeNeedTocCheckAsset() != null ? assetsDetails.getOtherIncomeNeedTocCheckAsset() : 0.0);
 				//sheet3.getRow(88).getCell(j).setCellValue(assetsDetails.getTotalAssets());
 				
 				//sheet3.getRow(90).getCell(j).setCellValue(assetsDetails.getTangibleNetWorth());
@@ -426,8 +427,8 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 				sheet3.getRow(10).getCell(j).setCellValue(evaluateCellValue(sheet3.getRow(10).getCell(j)));
 				sheet3.getRow(21).getCell(j).setCellValue(evaluateCellValue(sheet3.getRow(21).getCell(j)));
 				sheet3.getRow(23).getCell(j).setCellValue(evaluateCellValue(sheet3.getRow(23).getCell(j)));
-				sheet3.getRow(28).getCell(j).setCellValue(evaluateCellValue(sheet3.getRow(28).getCell(j)));
-				sheet3.getRow(30).getCell(j).setCellValue(evaluateCellValue(sheet3.getRow(30).getCell(j)));
+				//sheet3.getRow(28).getCell(j).setCellValue(evaluateCellValue(sheet3.getRow(28).getCell(j)));
+				//sheet3.getRow(30).getCell(j).setCellValue(evaluateCellValue(sheet3.getRow(30).getCell(j)));
 				sheet3.getRow(32).getCell(j).setCellValue(evaluateCellValue(sheet3.getRow(32).getCell(j)));
 				sheet3.getRow(42).getCell(j).setCellValue(evaluateCellValue(sheet3.getRow(42).getCell(j)));
 				sheet3.getRow(44).getCell(j).setCellValue(evaluateCellValue(sheet3.getRow(44).getCell(j)));

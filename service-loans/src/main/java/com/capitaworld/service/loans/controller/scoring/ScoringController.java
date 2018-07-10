@@ -4,6 +4,12 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import com.capitaworld.service.loans.utils.CommonDocumentUtils;
+import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
+import com.capitaworld.service.rating.exception.RatingException;
+import com.capitaworld.service.rating.model.FinancialInputRequest;
+import com.capitaworld.service.rating.model.RatingResponse;
+import com.capitaworld.service.scoring.model.scoringmodel.ScoringModelReqRes;
 import org.apache.commons.io.FileUtils;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.slf4j.Logger;
@@ -12,11 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.capitaworld.service.loans.exceptions.LoansException;
@@ -24,6 +26,8 @@ import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.score.ScoringRequestLoans;
 import com.capitaworld.service.loans.service.scoring.ScoringService;
 import com.capitaworld.service.loans.utils.CommonUtils;
+
+import javax.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/score")
@@ -88,4 +92,92 @@ public class ScoringController {
 							HttpStatus.INTERNAL_SERVER_ERROR.value());
 	        }
 	}
+
+
+	////////////////
+
+
+    @RequestMapping(value = "/get_scoring_model_list", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ScoringModelReqRes> getScoringModelList(@RequestBody ScoringModelReqRes scoringModelReqRes, HttpServletRequest httpRequest, HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) throws RatingException {
+
+        try {
+            Long userId =  (Long) request.getAttribute(CommonUtils.USER_ID);;
+            scoringModelReqRes.setUserId(userId);
+            /*scoringModelReqRes.setUserId(1l);*/
+
+            logger.info("userId ============> "+userId);
+            ScoringModelReqRes scoringModelReqResNew=scoringService.getScoringModelList(scoringModelReqRes);
+            return new ResponseEntity<ScoringModelReqRes>(scoringModelReqResNew,HttpStatus.OK);
+        }
+        catch (Exception e)
+        {
+            // TODO: handle exception
+            ScoringModelReqRes res=new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG,HttpStatus.BAD_REQUEST.value());
+            logger.error("Error while getting scoring model list");
+            e.printStackTrace();
+            return new ResponseEntity<ScoringModelReqRes>(res,HttpStatus.OK);
+        }
+    }
+
+
+    @RequestMapping(value = "/save_scoring_model", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ScoringModelReqRes> saveScoringModel(@RequestBody ScoringModelReqRes scoringModelReqRes, HttpServletRequest httpRequest, HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) throws RatingException {
+
+        try {
+            Long userId =  (Long) request.getAttribute(CommonUtils.USER_ID);;
+            scoringModelReqRes.setUserId(userId);
+            /*scoringModelReqRes.setUserId(1l);*/
+            ScoringModelReqRes scoringModelReqResNew=scoringService.saveScoringModel(scoringModelReqRes);
+            return new ResponseEntity<ScoringModelReqRes>(scoringModelReqResNew,HttpStatus.OK);
+        }
+        catch (Exception e)
+        {
+            // TODO: handle exception
+            ScoringModelReqRes res=new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG,HttpStatus.BAD_REQUEST.value());
+            logger.error("Error while saving scoring model");
+            e.printStackTrace();
+            return new ResponseEntity<ScoringModelReqRes>(res,HttpStatus.OK);
+        }
+    }
+
+    @RequestMapping(value = "/get_scoring_model_detail", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ScoringModelReqRes> getScoringModelDetail(@RequestBody ScoringModelReqRes scoringModelReqRes, HttpServletRequest httpRequest, HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) throws RatingException {
+
+        try {
+            Long userId =  (Long) request.getAttribute(CommonUtils.USER_ID);;
+            scoringModelReqRes.setUserId(userId);
+           /* scoringModelReqRes.setUserId(1l);*/
+            ScoringModelReqRes scoringModelReqResNew=scoringService.getScoringModelDetail(scoringModelReqRes);
+            return new ResponseEntity<ScoringModelReqRes>(scoringModelReqResNew,HttpStatus.OK);
+        }
+        catch (Exception e)
+        {
+            // TODO: handle exception
+            ScoringModelReqRes res=new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG,HttpStatus.BAD_REQUEST.value());
+            logger.error("Error while getting scoring model detail");
+            e.printStackTrace();
+            return new ResponseEntity<ScoringModelReqRes>(res,HttpStatus.OK);
+        }
+    }
+
+
+    @RequestMapping(value = "/save_scoring_model_detail", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ScoringModelReqRes> saveScoringModelDetail(@RequestBody ScoringModelReqRes scoringModelReqRes, HttpServletRequest httpRequest, HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) throws RatingException {
+
+        try {
+            Long userId =  (Long) request.getAttribute(CommonUtils.USER_ID);;
+            scoringModelReqRes.setUserId(userId);
+            /*scoringModelReqRes.setUserId(1l);*/
+            ScoringModelReqRes scoringModelReqResNew=scoringService.saveScoringModelDetail(scoringModelReqRes);
+            return new ResponseEntity<ScoringModelReqRes>(scoringModelReqResNew,HttpStatus.OK);
+        }
+        catch (Exception e)
+        {
+            // TODO: handle exception
+            ScoringModelReqRes res=new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG,HttpStatus.BAD_REQUEST.value());
+            logger.error("Error while saving scoring model detail");
+            e.printStackTrace();
+            return new ResponseEntity<ScoringModelReqRes>(res,HttpStatus.OK);
+        }
+    }
 }

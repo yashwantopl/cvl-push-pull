@@ -56,6 +56,11 @@ public class PrimaryCorporateDetail extends LoanApplicationMaster implements Ser
     @Column(name = "cost_of_project")
     private Double costOfProject;
 
+    @Column(name = "cost_of_machinery")
+    private Double costOfMachinery;
+
+    @Column(name = "incremental_turnover")
+    private Double incrementalTurnover;
    /* @Column(name="created_by")
     private Long createdBy;
 
@@ -165,7 +170,23 @@ public class PrimaryCorporateDetail extends LoanApplicationMaster implements Ser
         this.costOfProject = costOfProject;
     }
 
-   /* @Override
+    public Double getCostOfMachinery() {
+        return costOfMachinery;
+    }
+
+    public void setCostOfMachinery(Double costOfMachinery) {
+        this.costOfMachinery = costOfMachinery;
+    }
+
+    public Double getIncrementalTurnover() {
+        return incrementalTurnover;
+    }
+
+    public void setIncrementalTurnover(Double incrementalTurnover) {
+        this.incrementalTurnover = incrementalTurnover;
+    }
+
+    /* @Override
     public Long getCreatedBy() {
         return createdBy;
     }

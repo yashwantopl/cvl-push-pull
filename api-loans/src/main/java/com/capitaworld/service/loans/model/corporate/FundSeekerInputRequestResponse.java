@@ -25,6 +25,9 @@ public class FundSeekerInputRequestResponse {
 
     private String organisationName;
     ////////////////////
+    private String aadhar;
+
+    private String msmeRegistrationNumber;
 
     private Double loanAmount;
 
@@ -43,12 +46,11 @@ public class FundSeekerInputRequestResponse {
 
     private Integer purposeOfLoanId;
 
-
-
     private Boolean haveCollateralSecurity;
 
     private Double collateralSecurityAmount;
 
+    private Integer constitutionId;
     ///////////
 
     private List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestsList;
@@ -62,6 +64,8 @@ public class FundSeekerInputRequestResponse {
 
     private List<Long> subsectors = Collections.emptyList();
     /////////
+    private Double costOfMachinery;
+    private Double incrementalTurnover;
 
     public Long getUserId() {
         return userId;
@@ -228,5 +232,45 @@ public class FundSeekerInputRequestResponse {
 
     public void setOrganisationName(String organisationName) {
         this.organisationName = organisationName;
+    }
+
+    public Integer getConstitutionId() {
+        return constitutionId;
+    }
+
+    public void setConstitutionId(Integer constitutionId) {
+        this.constitutionId = constitutionId;
+    }
+
+    public String getAadhar() {
+        return aadhar;
+    }
+
+    public void setAadhar(String aadhar) {
+        this.aadhar = aadhar;
+    }
+
+    public String getMsmeRegistrationNumber() {
+        return msmeRegistrationNumber;
+    }
+
+    public void setMsmeRegistrationNumber(String msmeRegistrationNumber) {
+        this.msmeRegistrationNumber = msmeRegistrationNumber;
+    }
+
+    public Double getCostOfMachinery() {
+        return costOfMachinery;
+    }
+
+    public void setCostOfMachinery(Double costOfMachinery) {
+        this.costOfMachinery = costOfMachinery;
+    }
+
+    public Double getIncrementalTurnover() {
+        return incrementalTurnover;
+    }
+
+    public void setIncrementalTurnover(Double incrementalTurnover) {
+        this.incrementalTurnover = incrementalTurnover;
     }
 }

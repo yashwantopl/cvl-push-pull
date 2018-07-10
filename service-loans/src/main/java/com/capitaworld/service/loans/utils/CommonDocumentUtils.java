@@ -99,8 +99,9 @@ public class CommonDocumentUtils {
 
 	public static String getCurrency(Integer currencyId) {
 		if (!CommonUtils.isObjectNullOrEmpty(currencyId)) {
-			if (!CommonUtils.isObjectNullOrEmpty(Currency.getById(currencyId))) {
-				return Currency.getById(currencyId).getValue();
+			Currency currency = Currency.getById(currencyId);
+			if (!CommonUtils.isObjectNullOrEmpty(currency)) {
+				return currency.getValue();
 			}
 		}
 		return "NA";
