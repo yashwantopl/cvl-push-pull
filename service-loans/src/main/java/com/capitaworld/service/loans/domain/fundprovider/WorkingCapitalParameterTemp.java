@@ -2,178 +2,173 @@ package com.capitaworld.service.loans.domain.fundprovider;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+
+import javax.persistence.*;
 import java.util.Date;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 /**
- * The persistent class for the fp_term_loan_details database table.
+ * The persistent class for the fp_working_capital_details database table.
  * 
  */
 @Entity
-@Table(name = "fp_term_loan_details")
-public class TermLoanParameter extends ProductMaster implements Serializable {
-	/**
-	 * 
-	 */
+@Table(name="fp_working_capital_details_temp")
+@PrimaryKeyJoinColumn(name="fp_product_id",referencedColumnName="fp_product_id")
+public class WorkingCapitalParameterTemp extends ProductMaster implements Serializable {
 	private static final long serialVersionUID = 1L;
 
+	
 	@OneToOne
-	@JoinColumn(name = "fp_product_id")
+	@JoinColumn(name="fp_product_id")
 	private ProductMaster fpProductId;
 
-	@Column(name = "created_by")
+	@Column(name="created_by")
 	private Long createdBy;
 
 	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name = "created_date")
+	@Column(name="created_date")
 	private Date createdDate;
 
 	private Integer currency;
 
 	private Integer denomination;
 
-	@Column(name = "is_active")
+	@Column(name="is_active")
 	private Boolean isActive;
 
-	@Column(name = "is_collateral_display")
-	private Boolean isCollateralDisplay = false;
+	@Column(name="is_collateral_display")
+	private Boolean isCollateralDisplay=false;
 
-	@Column(name = "is_collateral_mandatory")
-	private Boolean isCollateralMandatory = false;
+	@Column(name="is_collateral_mandatory")
+	private Boolean isCollateralMandatory=false;
 
-	@Column(name = "is_credit_rating_display")
-	private Boolean isCreditRatingDisplay = false;
+	@Column(name="is_credit_rating_display")
+	private Boolean isCreditRatingDisplay=false;
 
-	@Column(name = "is_credit_rating_mandatory")
-	private Boolean isCreditRatingMandatory = false;
+	@Column(name="is_credit_rating_mandatory")
+	private Boolean isCreditRatingMandatory=false;
 
-	@Column(name = "is_debt_equity_display")
-	private Boolean isDebtEquityDisplay = false;
+	@Column(name="is_debt_equity_display")
+	private Boolean isDebtEquityDisplay=false;
 
-	@Column(name = "is_debt_equity_mandatory")
-	private Boolean isDebtEquityMandatory = false;
+	@Column(name="is_debt_equity_mandatory")
+	private Boolean isDebtEquityMandatory=false;
 
-	@Column(name = "is_establishment_display")
-	private Boolean isEstablishmentDisplay = false;
+	@Column(name="is_establishment_display")
+	private Boolean isEstablishmentDisplay=false;
 
-	@Column(name = "is_establishment_mandatory")
-	private Boolean isEstablishmentMandatory = false;
+	@Column(name="is_establishment_mandatory")
+	private Boolean isEstablishmentMandatory=false;
 
-	@Column(name = "is_geographical_display")
-	private Boolean isGeographicalDisplay = false;
+	@Column(name="is_geographical_display")
+	private Boolean isGeographicalDisplay=false;
 
-	@Column(name = "is_geographical_mandatory")
-	private Boolean isGeographicalMandatory = false;
+	@Column(name="is_geographical_mandatory")
+	private Boolean isGeographicalMandatory=false;
 
-	@Column(name = "is_industry_sector_display")
-	private Boolean isIndustrySectorDisplay = false;
+	@Column(name="is_industry_sector_display")
+	private Boolean isIndustrySectorDisplay=false;
 
-	@Column(name = "is_industry_sector_mandatory")
-	private Boolean isIndustrySectorMandatory = false;
+	@Column(name="is_industry_sector_mandatory")
+	private Boolean isIndustrySectorMandatory=false;
 
-	@Column(name = "is_investment_size_display")
-	private Boolean isInvestmentSizeDisplay = false;
+	@Column(name="is_investment_size_display")
+	private Boolean isInvestmentSizeDisplay=false;
 
-	@Column(name = "is_investment_size_mandatory")
-	private Boolean isInvestmentSizeMandatory = false;
+	@Column(name="is_investment_size_mandatory")
+	private Boolean isInvestmentSizeMandatory=false;
 
-	@Column(name = "is_networth_display")
-	private Boolean isNetworthDisplay = false;
+	@Column(name="is_networth_display")
+	private Boolean isNetworthDisplay=false;
 
-	@Column(name = "is_networth_mandatory")
-	private Boolean isNetworthMandatory = false;
+	@Column(name="is_networth_mandatory")
+	private Boolean isNetworthMandatory=false;
 
-	@Column(name = "is_past_year_turnover_display")
-	private Boolean isPastYearTurnoverDisplay = false;
+	@Column(name="is_past_year_turnover_display")
+	private Boolean isPastYearTurnoverDisplay=false;
 
-	@Column(name = "is_past_year_turnover_mandatory")
-	private Boolean isPastYearTurnoverMandatory = false;
+	@Column(name="is_past_year_turnover_mandatory")
+	private Boolean isPastYearTurnoverMandatory=false;
 
-	@Column(name = "is_profitability_history_display")
-	private Boolean isProfitabilityHistoryDisplay = false;
+	@Column(name="is_profitability_history_display")
+	private Boolean isProfitabilityHistoryDisplay=false;
 
-	@Column(name = "is_profitability_history_mandatory")
-	private Boolean isProfitabilityHistoryMandatory = false;
+	@Column(name="is_profitability_history_mandatory")
+	private Boolean isProfitabilityHistoryMandatory=false;
 
-	@Column(name = "is_tenure_display")
-	private Boolean isTenureDisplay = false;
+	@Column(name="is_tenure_display")
+	private Boolean isTenureDisplay=false;
 
-	@Column(name = "is_tenure_mandatory")
-	private Boolean isTenureMandatory = false;
-
-	@Column(name = "Long_term_credit_rating")
-	private Integer LongTermCreditRating;
-
-	@Column(name = "max_age_establishment")
-	private Integer maxAgeEstablishment;
-
-	@Column(name = "max_collateral")
-	private BigDecimal maxCollateral;
-
-	@Column(name = "max_debt_equity")
-	private BigDecimal maxDebtEquity;
-
-	@Column(name = "max_invest_size")
-	private BigDecimal maxInvestSize;
-
-	@Column(name = "max_networth")
-	private BigDecimal maxNetworth;
-
-	@Column(name = "max_past_turnover")
-	private BigDecimal maxPastTurnover;
-
-	@Column(name = "max_tenure")
-	private BigDecimal maxTenure;
-
-	@Column(name = "min_age_establishment")
-	private Integer minAgeEstablishment;
-
-	@Column(name = "min_collateral")
-	private BigDecimal minCollateral;
-
-	@Column(name = "min_debt_equity")
-	private BigDecimal minDebtEquity;
-
-	@Column(name = "min_invest_size")
-	private BigDecimal minInvestSize;
-
-	@Column(name = "min_networth")
-	private BigDecimal minNetworth;
-
-	@Column(name = "min_past_turnover")
-	private BigDecimal minPastTurnover;
-
-	@Column(name = "min_tenure")
-	private BigDecimal minTenure;
-
-	@Column(name = "modified_by")
-	private Long modifiedBy;
-
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name = "modified_date")
-	private Date modifiedDate;
-
-	@Column(name = "profitability_history")
-	private Integer profitabilityHistory;
-
-	@Column(name = "short_term_credit_rating")
-	private Integer shortTermCreditRating;
-
-	@Column(name = "uninterested_industry")
-	private Long uninterestedIndustry;
+	@Column(name="is_tenure_mandatory")
+	private Boolean isTenureMandatory=false;
 	
 	@Column(name="is_uninterested_industry_display")
 	private Boolean isUnInterestedIndustryDisplay=false;
 
 	@Column(name="is_uninterested_industry_mandatory")
 	private Boolean isUnInterestedIndustryMandatory=false;
+
+	
+	@Column(name="long_term_credit_rating")
+	private Integer longTermCreditRating;
+
+	@Column(name="max_age_establishment")
+	private Integer maxAgeEstablishment;
+
+	@Column(name="max_collateral")
+	private BigDecimal maxCollateral;
+
+	@Column(name="max_debt_equity")
+	private BigDecimal maxDebtEquity;
+
+	@Column(name="max_invest_size")
+	private BigDecimal maxInvestSize;
+
+	@Column(name="max_networth")
+	private BigDecimal maxNetworth;
+
+	@Column(name="max_past_turnover")
+	private BigDecimal maxPastTurnover;
+
+	@Column(name="max_tenure")
+	private Integer maxTenure;
+
+	@Column(name="min_age_establishment")
+	private Integer minAgeEstablishment;
+
+	@Column(name="min_collateral")
+	private BigDecimal minCollateral;
+
+	@Column(name="min_debt_equity")
+	private BigDecimal minDebtEquity;
+
+	@Column(name="min_invest_size")
+	private BigDecimal minInvestSize;
+
+	@Column(name="min_networth")
+	private BigDecimal minNetworth;
+
+	@Column(name="min_past_turnover")
+	private BigDecimal minPastTurnover;
+
+	@Column(name="min_tenure")
+	private Integer minTenure;
+
+	@Column(name="modified_by")
+	private Long modifiedBy;
+
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name="modified_date")
+	private Date modifiedDate;
+
+	@Column(name="profitability_history")
+	private Integer profitabilityHistory;
+
+	@Column(name="short_term_credit_rating")
+	private Integer shortTermCreditRating;
+
+	@Column(name="uninterested_industry")
+	private Long uninterestedIndustry;
 
 	@Column(name="min_current_ratio")
 	private BigDecimal minCurrentRatio;
@@ -262,29 +257,29 @@ public class TermLoanParameter extends ProductMaster implements Serializable {
 	@Column(name="net_worth")
 	private Integer netWorth;
 
-	@Column(name="min_cheque_bounced")
-	private Integer minChequeBounced;
+    @Column(name="min_cheque_bounced")
+    private Integer minChequeBounced;
 
-	@Column(name="max_cheque_bounced")
-	private Integer maxChequeBounced;
+    @Column(name="max_cheque_bounced")
+    private Integer maxChequeBounced;
 
-	@Column(name="is_cheque_bounced_display")
-	private Boolean isChequeBouncedDisplay = false;
+    @Column(name="is_cheque_bounced_display")
+    private Boolean isChequeBouncedDisplay = false;
 
-	@Column(name="is_cheque_bounced_mandatory")
-	private Boolean isChequeBouncedMandatory = false;
+    @Column(name="is_cheque_bounced_mandatory")
+    private Boolean isChequeBouncedMandatory = false;
 
-	@Column(name="min_cheque_bounced_last_six_months")
-	private Integer minChequeBouncedLastSixMonths;
+    @Column(name="min_cheque_bounced_last_six_months")
+    private Integer minChequeBouncedLastSixMonths;
 
-	@Column(name="max_cheque_bounced_last_six_months")
-	private Integer maxChequeBouncedLastSixMonths;
+    @Column(name="max_cheque_bounced_last_six_months")
+    private Integer maxChequeBouncedLastSixMonths;
 
-	@Column(name="is_cheque_bounced_last_six_months_display")
-	private Boolean isChequeBouncedLastSixMonthsDisplay = false;
+    @Column(name="is_cheque_bounced_last_six_months_display")
+    private Boolean isChequeBouncedLastSixMonthsDisplay = false;
 
-	@Column(name="is_cheque_bounced_last_six_months_mandatory")
-	private Boolean isChequeBouncedLastSixMonthsMandatory = false;
+    @Column(name="is_cheque_bounced_last_six_months_mandatory")
+    private Boolean isChequeBouncedLastSixMonthsMandatory = false;
 
 	@Column(name="ddr_flow")
 	private Integer ddrFlow;
@@ -298,19 +293,36 @@ public class TermLoanParameter extends ProductMaster implements Serializable {
 	@Column(name="is_individual_cibil_mandatory")
 	private Boolean isIndividualCibilMandatory = false;
 
-	@Column(name="commercial_cibil")
-	private Integer commercialCibil;
+    @Column(name="commercial_cibil")
+    private Integer commercialCibil;
 
-	@Column(name="is_Commercial_cibil_display")
-	private Boolean isCommercialCibilDisplay = false;
+    @Column(name="is_Commercial_cibil_display")
+    private Boolean isCommercialCibilDisplay = false;
 
-	@Column(name="is_Commercial_cibil_mandatory")
-	private Boolean isCommercialCibilMandatory = false;
-	
-	@Column(name ="job_id")
-	private Long jobId;
-	
-	
+    @Column(name="is_Commercial_cibil_mandatory")
+    private Boolean isCommercialCibilMandatory = false;
+    
+	@Column(name="is_approved")
+    private Boolean isApproved;
+
+    @Column(name="is_deleted")
+    private Boolean isDeleted;
+
+    @Column(name="is_copied")
+    private Boolean isCopied;
+
+    @Column(name="is_edit")
+    private Boolean isEdit;
+
+    @Column(name="status_id")
+    private Integer statusId;
+
+    @Column(name="job_id")
+    private Long jobId;
+
+    @Column(name="approval_date")
+    private Date approvalDate;
+    
 	@Column(name="org_id")
 	private Long orgId;
 	
@@ -332,6 +344,76 @@ public class TermLoanParameter extends ProductMaster implements Serializable {
 
 
 	/**
+	 * @return the isApproved
+	 */
+	public Boolean getIsApproved() {
+		return isApproved;
+	}
+
+	/**
+	 * @param isApproved the isApproved to set
+	 */
+	public void setIsApproved(Boolean isApproved) {
+		this.isApproved = isApproved;
+	}
+
+	/**
+	 * @return the isDeleted
+	 */
+	public Boolean getIsDeleted() {
+		return isDeleted;
+	}
+
+	/**
+	 * @param isDeleted the isDeleted to set
+	 */
+	public void setIsDeleted(Boolean isDeleted) {
+		this.isDeleted = isDeleted;
+	}
+
+	/**
+	 * @return the isCopied
+	 */
+	public Boolean getIsCopied() {
+		return isCopied;
+	}
+
+	/**
+	 * @param isCopied the isCopied to set
+	 */
+	public void setIsCopied(Boolean isCopied) {
+		this.isCopied = isCopied;
+	}
+
+	/**
+	 * @return the isEdit
+	 */
+	public Boolean getIsEdit() {
+		return isEdit;
+	}
+
+	/**
+	 * @param isEdit the isEdit to set
+	 */
+	public void setIsEdit(Boolean isEdit) {
+		this.isEdit = isEdit;
+	}
+
+	/**
+	 * @return the statusId
+	 */
+	public Integer getStatusId() {
+		return statusId;
+	}
+
+	/**
+	 * @param statusId the statusId to set
+	 */
+	public void setStatusId(Integer statusId) {
+		this.statusId = statusId;
+	}
+
+	/**
 	 * @return the jobId
 	 */
 	public Long getJobId() {
@@ -344,129 +426,145 @@ public class TermLoanParameter extends ProductMaster implements Serializable {
 	public void setJobId(Long jobId) {
 		this.jobId = jobId;
 	}
+
+	/**
+	 * @return the approvalDate
+	 */
+	public Date getApprovalDate() {
+		return approvalDate;
+	}
+
+	/**
+	 * @param approvalDate the approvalDate to set
+	 */
+	public void setApprovalDate(Date approvalDate) {
+		this.approvalDate = approvalDate;
+	}
+
+
 	//-----------------------added eligibility method for product
 	@Column(name="assessment_method_id")
 	private Integer assessmentMethodId;
 
-	public Integer getIndividualCibil() {
-		return individualCibil;
-	}
+    public Integer getIndividualCibil() {
+        return individualCibil;
+    }
 
-	public void setIndividualCibil(Integer individualCibil) {
-		this.individualCibil = individualCibil;
-	}
+    public void setIndividualCibil(Integer individualCibil) {
+        this.individualCibil = individualCibil;
+    }
 
-	public Boolean getIsIndividualCibilDisplay() {
-		return isIndividualCibilDisplay;
-	}
+    public Boolean getIsIndividualCibilDisplay() {
+        return isIndividualCibilDisplay;
+    }
 
-	public void setIsIndividualCibilDisplay(Boolean individualCibilDisplay) {
-		isIndividualCibilDisplay = individualCibilDisplay;
-	}
+    public void setIsIndividualCibilDisplay(Boolean individualCibilDisplay) {
+        isIndividualCibilDisplay = individualCibilDisplay;
+    }
 
-	public Boolean getIsIndividualCibilMandatory() {
-		return isIndividualCibilMandatory;
-	}
+    public Boolean getIsIndividualCibilMandatory() {
+        return isIndividualCibilMandatory;
+    }
 
-	public void setIsIndividualCibilMandatory(Boolean individualCibilMandatory) {
-		isIndividualCibilMandatory = individualCibilMandatory;
-	}
+    public void setIsIndividualCibilMandatory(Boolean individualCibilMandatory) {
+        isIndividualCibilMandatory = individualCibilMandatory;
+    }
 
-	public Integer getCommercialCibil() {
-		return commercialCibil;
-	}
+    public Integer getCommercialCibil() {
+        return commercialCibil;
+    }
 
-	public void setCommercialCibil(Integer commercialCibil) {
-		this.commercialCibil = commercialCibil;
-	}
+    public void setCommercialCibil(Integer commercialCibil) {
+        this.commercialCibil = commercialCibil;
+    }
 
-	public Boolean getIsCommercialCibilDisplay() {
-		return isCommercialCibilDisplay;
-	}
+    public Boolean getIsCommercialCibilDisplay() {
+        return isCommercialCibilDisplay;
+    }
 
-	public void setIsCommercialCibilDisplay(Boolean commercialCibilDisplay) {
-		isCommercialCibilDisplay = commercialCibilDisplay;
-	}
+    public void setIsCommercialCibilDisplay(Boolean commercialCibilDisplay) {
+        isCommercialCibilDisplay = commercialCibilDisplay;
+    }
 
-	public Boolean getIsCommercialCibilMandatory() {
-		return isCommercialCibilMandatory;
-	}
+    public Boolean getIsCommercialCibilMandatory() {
+        return isCommercialCibilMandatory;
+    }
 
-	public void setIsCommercialCibilMandatory(Boolean commercialCibilMandatory) {
-		isCommercialCibilMandatory = commercialCibilMandatory;
-	}
+    public void setIsCommercialCibilMandatory(Boolean commercialCibilMandatory) {
+        isCommercialCibilMandatory = commercialCibilMandatory;
+    }
 
-	public Integer getDdrFlow() {
-		return ddrFlow;
-	}
+    public Integer getDdrFlow() {
+        return ddrFlow;
+    }
 
-	public void setDdrFlow(Integer ddrFlow) {
-		this.ddrFlow = ddrFlow;
-	}
+    public void setDdrFlow(Integer ddrFlow) {
+        this.ddrFlow = ddrFlow;
+    }
 
-	public Integer getMinChequeBounced() {
-		return minChequeBounced;
-	}
+    public Integer getMinChequeBounced() {
+        return minChequeBounced;
+    }
 
-	public void setMinChequeBounced(Integer minChequeBounced) {
-		this.minChequeBounced = minChequeBounced;
-	}
+    public void setMinChequeBounced(Integer minChequeBounced) {
+        this.minChequeBounced = minChequeBounced;
+    }
 
-	public Integer getMaxChequeBounced() {
-		return maxChequeBounced;
-	}
+    public Integer getMaxChequeBounced() {
+        return maxChequeBounced;
+    }
 
-	public void setMaxChequeBounced(Integer maxChequeBounced) {
-		this.maxChequeBounced = maxChequeBounced;
-	}
+    public void setMaxChequeBounced(Integer maxChequeBounced) {
+        this.maxChequeBounced = maxChequeBounced;
+    }
 
-	public Boolean getIsChequeBouncedDisplay() {
-		return isChequeBouncedDisplay;
-	}
+    public Boolean getIsChequeBouncedDisplay() {
+        return isChequeBouncedDisplay;
+    }
 
-	public void setIsChequeBouncedDisplay(Boolean chequeBouncedDisplay) {
-		isChequeBouncedDisplay = chequeBouncedDisplay;
-	}
+    public void setIsChequeBouncedDisplay(Boolean chequeBouncedDisplay) {
+        isChequeBouncedDisplay = chequeBouncedDisplay;
+    }
 
-	public Boolean getIsChequeBouncedMandatory() {
-		return isChequeBouncedMandatory;
-	}
+    public Boolean getIsChequeBouncedMandatory() {
+        return isChequeBouncedMandatory;
+    }
 
-	public void setIsChequeBouncedMandatory(Boolean chequeBouncedMandatory) {
-		isChequeBouncedMandatory = chequeBouncedMandatory;
-	}
+    public void setIsChequeBouncedMandatory(Boolean chequeBouncedMandatory) {
+        isChequeBouncedMandatory = chequeBouncedMandatory;
+    }
 
-	public Integer getMinChequeBouncedLastSixMonths() {
-		return minChequeBouncedLastSixMonths;
-	}
+    public Integer getMinChequeBouncedLastSixMonths() {
+        return minChequeBouncedLastSixMonths;
+    }
 
-	public void setMinChequeBouncedLastSixMonths(Integer minChequeBouncedLastSixMonths) {
-		this.minChequeBouncedLastSixMonths = minChequeBouncedLastSixMonths;
-	}
+    public void setMinChequeBouncedLastSixMonths(Integer minChequeBouncedLastSixMonths) {
+        this.minChequeBouncedLastSixMonths = minChequeBouncedLastSixMonths;
+    }
 
-	public Integer getMaxChequeBouncedLastSixMonths() {
-		return maxChequeBouncedLastSixMonths;
-	}
+    public Integer getMaxChequeBouncedLastSixMonths() {
+        return maxChequeBouncedLastSixMonths;
+    }
 
-	public void setMaxChequeBouncedLastSixMonths(Integer maxChequeBouncedLastSixMonths) {
-		this.maxChequeBouncedLastSixMonths = maxChequeBouncedLastSixMonths;
-	}
+    public void setMaxChequeBouncedLastSixMonths(Integer maxChequeBouncedLastSixMonths) {
+        this.maxChequeBouncedLastSixMonths = maxChequeBouncedLastSixMonths;
+    }
 
-	public Boolean getIsChequeBouncedLastSixMonthsDisplay() {
-		return isChequeBouncedLastSixMonthsDisplay;
-	}
+    public Boolean getIsChequeBouncedLastSixMonthsDisplay() {
+        return isChequeBouncedLastSixMonthsDisplay;
+    }
 
-	public void setIsChequeBouncedLastSixMonthsDisplay(Boolean chequeBouncedLastSixMonthsDisplay) {
-		isChequeBouncedLastSixMonthsDisplay = chequeBouncedLastSixMonthsDisplay;
-	}
+    public void setIsChequeBouncedLastSixMonthsDisplay(Boolean chequeBouncedLastSixMonthsDisplay) {
+        isChequeBouncedLastSixMonthsDisplay = chequeBouncedLastSixMonthsDisplay;
+    }
 
-	public Boolean getIsChequeBouncedLastSixMonthsMandatory() {
-		return isChequeBouncedLastSixMonthsMandatory;
-	}
+    public Boolean getIsChequeBouncedLastSixMonthsMandatory() {
+        return isChequeBouncedLastSixMonthsMandatory;
+    }
 
-	public void setIsChequeBouncedLastSixMonthsMandatory(Boolean chequeBouncedLastSixMonthsMandatory) {
-		isChequeBouncedLastSixMonthsMandatory = chequeBouncedLastSixMonthsMandatory;
-	}
+    public void setIsChequeBouncedLastSixMonthsMandatory(Boolean chequeBouncedLastSixMonthsMandatory) {
+        isChequeBouncedLastSixMonthsMandatory = chequeBouncedLastSixMonthsMandatory;
+    }
 
 	public BigDecimal getMinCurrentRatio() {
 		return minCurrentRatio;
@@ -548,23 +646,23 @@ public class TermLoanParameter extends ProductMaster implements Serializable {
 		this.maxGrossCashAccuralsRatio = maxGrossCashAccuralsRatio;
 	}
 
-    public BigDecimal getMinCustomerConcentration() {
-        return minCustomerConcentration;
-    }
+	public BigDecimal getMinCustomerConcentration() {
+		return minCustomerConcentration;
+	}
 
-    public void setMinCustomerConcentration(BigDecimal minCustomerConcentration) {
-        this.minCustomerConcentration = minCustomerConcentration;
-    }
+	public void setMinCustomerConcentration(BigDecimal minCustomerConcentration) {
+		this.minCustomerConcentration = minCustomerConcentration;
+	}
 
-    public BigDecimal getMaxCustomerConcentration() {
-        return maxCustomerConcentration;
-    }
+	public BigDecimal getMaxCustomerConcentration() {
+		return maxCustomerConcentration;
+	}
 
-    public void setMaxCustomerConcentration(BigDecimal maxCustomerConcentration) {
-        this.maxCustomerConcentration = maxCustomerConcentration;
-    }
+	public void setMaxCustomerConcentration(BigDecimal maxCustomerConcentration) {
+		this.maxCustomerConcentration = maxCustomerConcentration;
+	}
 
-    public Integer getMinRiskModelScore() {
+	public Integer getMinRiskModelScore() {
 		return minRiskModelScore;
 	}
 
@@ -700,7 +798,7 @@ public class TermLoanParameter extends ProductMaster implements Serializable {
 		isRiskModelScoreMandatory = riskModelScoreMandatory;
 	}
 
-	public TermLoanParameter() {
+	public WorkingCapitalParameterTemp() {
 	}
 
 	public ProductMaster getFpProductId() {
@@ -928,11 +1026,11 @@ public class TermLoanParameter extends ProductMaster implements Serializable {
 	}
 
 	public Integer getLongTermCreditRating() {
-		return this.LongTermCreditRating;
+		return this.longTermCreditRating;
 	}
 
-	public void setLongTermCreditRating(Integer LongTermCreditRating) {
-		this.LongTermCreditRating = LongTermCreditRating;
+	public void setLongTermCreditRating(Integer longTermCreditRating) {
+		this.longTermCreditRating = longTermCreditRating;
 	}
 
 	public Integer getMaxAgeEstablishment() {
@@ -943,20 +1041,38 @@ public class TermLoanParameter extends ProductMaster implements Serializable {
 		this.maxAgeEstablishment = maxAgeEstablishment;
 	}
 
-	public BigDecimal getMaxCollateral() {
-		return maxCollateral;
+
+
+	public BigDecimal getMaxInvestSize() {
+		return this.maxInvestSize;
 	}
 
-	public void setMaxCollateral(BigDecimal maxCollateral) {
-		this.maxCollateral = maxCollateral;
+	public void setMaxInvestSize(BigDecimal maxInvestSize) {
+		this.maxInvestSize = maxInvestSize;
 	}
 
-	public BigDecimal getMinCollateral() {
-		return minCollateral;
+	public BigDecimal getMaxNetworth() {
+		return this.maxNetworth;
 	}
 
-	public void setMinCollateral(BigDecimal minCollateral) {
-		this.minCollateral = minCollateral;
+	public void setMaxNetworth(BigDecimal maxNetworth) {
+		this.maxNetworth = maxNetworth;
+	}
+
+	public BigDecimal getMaxPastTurnover() {
+		return this.maxPastTurnover;
+	}
+
+	public void setMaxPastTurnover(BigDecimal maxPastTurnover) {
+		this.maxPastTurnover = maxPastTurnover;
+	}
+
+	public Integer getMaxTenure() {
+		return this.maxTenure;
+	}
+
+	public void setMaxTenure(Integer maxTenure) {
+		this.maxTenure = maxTenure;
 	}
 
 	public Integer getMinAgeEstablishment() {
@@ -967,7 +1083,23 @@ public class TermLoanParameter extends ProductMaster implements Serializable {
 		this.minAgeEstablishment = minAgeEstablishment;
 	}
 
-	public BigDecimal getMaxDebtEquity() {
+    public BigDecimal getMaxCollateral() {
+        return maxCollateral;
+    }
+
+    public void setMaxCollateral(BigDecimal maxCollateral) {
+        this.maxCollateral = maxCollateral;
+    }
+
+    public BigDecimal getMinCollateral() {
+        return minCollateral;
+    }
+
+    public void setMinCollateral(BigDecimal minCollateral) {
+        this.minCollateral = minCollateral;
+    }
+
+    public BigDecimal getMaxDebtEquity() {
 		return maxDebtEquity;
 	}
 
@@ -981,6 +1113,38 @@ public class TermLoanParameter extends ProductMaster implements Serializable {
 
 	public void setMinDebtEquity(BigDecimal minDebtEquity) {
 		this.minDebtEquity = minDebtEquity;
+	}
+
+	public BigDecimal getMinInvestSize() {
+		return this.minInvestSize;
+	}
+
+	public void setMinInvestSize(BigDecimal minInvestSize) {
+		this.minInvestSize = minInvestSize;
+	}
+
+	public BigDecimal getMinNetworth() {
+		return this.minNetworth;
+	}
+
+	public void setMinNetworth(BigDecimal minNetworth) {
+		this.minNetworth = minNetworth;
+	}
+
+	public BigDecimal getMinPastTurnover() {
+		return this.minPastTurnover;
+	}
+
+	public void setMinPastTurnover(BigDecimal minPastTurnover) {
+		this.minPastTurnover = minPastTurnover;
+	}
+
+	public Integer getMinTenure() {
+		return this.minTenure;
+	}
+
+	public void setMinTenure(Integer minTenure) {
+		this.minTenure = minTenure;
 	}
 
 	public Long getModifiedBy() {
@@ -1000,7 +1164,7 @@ public class TermLoanParameter extends ProductMaster implements Serializable {
 	}
 
 	public Integer getProfitabilityHistory() {
-		return this.profitabilityHistory;
+		return profitabilityHistory;
 	}
 
 	public void setProfitabilityHistory(Integer profitabilityHistory) {
@@ -1021,70 +1185,6 @@ public class TermLoanParameter extends ProductMaster implements Serializable {
 
 	public void setUninterestedIndustry(Long uninterestedIndustry) {
 		this.uninterestedIndustry = uninterestedIndustry;
-	}
-
-	public BigDecimal getMaxInvestSize() {
-		return maxInvestSize;
-	}
-
-	public void setMaxInvestSize(BigDecimal maxInvestSize) {
-		this.maxInvestSize = maxInvestSize;
-	}
-
-	public BigDecimal getMaxNetworth() {
-		return maxNetworth;
-	}
-
-	public void setMaxNetworth(BigDecimal maxNetworth) {
-		this.maxNetworth = maxNetworth;
-	}
-
-	public BigDecimal getMaxPastTurnover() {
-		return maxPastTurnover;
-	}
-
-	public void setMaxPastTurnover(BigDecimal maxPastTurnover) {
-		this.maxPastTurnover = maxPastTurnover;
-	}
-
-	public BigDecimal getMaxTenure() {
-		return maxTenure;
-	}
-
-	public void setMaxTenure(BigDecimal maxTenure) {
-		this.maxTenure = maxTenure;
-	}
-
-	public BigDecimal getMinInvestSize() {
-		return minInvestSize;
-	}
-
-	public void setMinInvestSize(BigDecimal minInvestSize) {
-		this.minInvestSize = minInvestSize;
-	}
-
-	public BigDecimal getMinNetworth() {
-		return minNetworth;
-	}
-
-	public void setMinNetworth(BigDecimal minNetworth) {
-		this.minNetworth = minNetworth;
-	}
-
-	public BigDecimal getMinPastTurnover() {
-		return minPastTurnover;
-	}
-
-	public void setMinPastTurnover(BigDecimal minPastTurnover) {
-		this.minPastTurnover = minPastTurnover;
-	}
-
-	public BigDecimal getMinTenure() {
-		return minTenure;
-	}
-
-	public void setMinTenure(BigDecimal minTenure) {
-		this.minTenure = minTenure;
 	}
 
 	public Boolean getIsUnInterestedIndustryDisplay() {

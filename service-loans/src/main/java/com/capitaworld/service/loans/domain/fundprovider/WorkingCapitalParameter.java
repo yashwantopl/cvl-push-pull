@@ -302,6 +302,42 @@ public class WorkingCapitalParameter extends ProductMaster implements Serializab
     @Column(name="is_Commercial_cibil_mandatory")
     private Boolean isCommercialCibilMandatory = false;
 
+    @Column(name ="job_id")
+	private Long jobId;
+    
+	@Column(name="org_id")
+	private Long orgId;
+	
+	
+
+	/**
+	 * @return the orgId
+	 */
+	public Long getOrgId() {
+		return orgId;
+	}
+
+	/**
+	 * @param orgId the orgId to set
+	 */
+	public void setOrgId(Long orgId) {
+		this.orgId = orgId;
+	}
+
+
+	/**
+	 * @return the jobId
+	 */
+	public Long getJobId() {
+		return jobId;
+	}
+
+	/**
+	 * @param jobId the jobId to set
+	 */
+	public void setJobId(Long jobId) {
+		this.jobId = jobId;
+	}
 	//-----------------------added eligibility method for product
 	@Column(name="assessment_method_id")
 	private Integer assessmentMethodId;
