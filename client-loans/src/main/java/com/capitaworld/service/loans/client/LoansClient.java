@@ -37,6 +37,7 @@ import com.capitaworld.service.loans.model.common.PersonalLoanEligibilityRequest
 import com.capitaworld.service.loans.model.common.UserLoanAmountMappingRequest;
 import com.capitaworld.service.loans.model.corporate.CMARequest;
 import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
+import com.capitaworld.service.loans.model.corporate.CorporateDirectorIncomeRequest;
 import com.capitaworld.service.loans.model.corporate.FinalTermLoanRequest;
 import com.capitaworld.service.loans.model.corporate.FinalWorkingCapitalLoanRequest;
 import com.capitaworld.service.loans.model.corporate.FundSeekerInputRequestResponse;
@@ -212,7 +213,8 @@ public class LoansClient {
     private static final String GET_CMA_BY_APPLICATIONID_PRODUCTDOCUMENTMAPPINGID = "/corporate_upload/get_CMA_by_applicationId_productDocumentMappingId";
     private static final String UPDATE_PAYMENT_STATUS = "/loan_application/update_payment_status";
     
-    
+    private static final String SAVE_UPDATE_DIRECTOR_INCOME_DETAILS = "/corporate_director_income_details/save_income_details";
+      
     
     private static final String GET_TOKEN ="/loan_application/getToken";
     private static final String SET_TOKEN_AS_EXPIRED ="/loan_application/setTokenAsExpired";
@@ -2113,6 +2115,20 @@ public class LoansClient {
 	
 	public LoansResponse updatePaymentInfoForGateway(PaymentRequest paymentRequest) throws LoansException {
 		String url = loansBaseUrl.concat(UPDATE_PAYMENT_STATUS);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<?> entity = new HttpEntity<>(null, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available");
+		}
+	}
+	
+	public LoansResponse saveOrUpdateDirectorIncomeDetails(List<CorporateDirectorIncomeRequest> request) throws LoansException {
+		String url = loansBaseUrl.concat(SAVE_UPDATE_DIRECTOR_INCOME_DETAILS);
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
