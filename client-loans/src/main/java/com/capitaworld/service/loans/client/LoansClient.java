@@ -211,7 +211,7 @@ public class LoansClient {
     
     //For Gateway
     private static final String GET_CMA_BY_APPLICATIONID_PRODUCTDOCUMENTMAPPINGID = "/corporate_upload/get_CMA_by_applicationId_productDocumentMappingId";
-    private static final String UPDATE_PAYMENT_STATUS = "/loan_application/update_payment_status";
+    private static final String UPDATE_PAYMENT_STATUS = "/loan_application/update_payment_status_sidbi";
     
     private static final String SAVE_UPDATE_DIRECTOR_INCOME_DETAILS = "/corporate_director_income_details/save_income_details";
       
