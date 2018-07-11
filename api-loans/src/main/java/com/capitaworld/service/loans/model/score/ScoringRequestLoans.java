@@ -12,12 +12,12 @@ public class ScoringRequestLoans {
 
     private Long scoringModelId;
 	private Long applicationId;
-	
+
 	private ScoreParameterRequestLoans scoreParameterRequestLoans;
-	
+
 	private ScoreParameterNTBRequest scoreParameterNTBRequest;
-	
-	
+
+
 	public Long getFsDigit() {
 		return fsDigit;
 	}
@@ -51,7 +51,7 @@ public class ScoringRequestLoans {
 		this.scoreParameterRequestLoans = scoreParameterRequestLoans;
 	}
 
-	
+
 	public ScoreParameterNTBRequest getScoreParameterNTBRequest() {
 		return scoreParameterNTBRequest;
 	}
@@ -64,5 +64,5 @@ public class ScoringRequestLoans {
 				+ scoringModelId + ", applicationId=" + applicationId + ", scoreParameterRequestLoans="
 				+ scoreParameterRequestLoans + ", scoreParameterNTBRequest=" + scoreParameterNTBRequest + "]";
 	}
-	
+
 }

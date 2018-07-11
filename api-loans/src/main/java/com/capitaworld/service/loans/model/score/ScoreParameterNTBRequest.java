@@ -17,7 +17,7 @@ public class ScoreParameterNTBRequest implements Serializable {
 	private Boolean isEmploymentType = false;
 	private Boolean isHouseOwnership = false;
 	private Boolean isMaritialStatus = false;
-	private Boolean isCWN = false;
+	private Boolean isCNW = false;
 	private Boolean isItrSalaryIncome = false;
 	private Boolean isConstitutionOfBorrower = false;
 	private Boolean isFixedObligationRatio = false;
@@ -35,19 +35,38 @@ public class ScoreParameterNTBRequest implements Serializable {
 	private Long educationQualification;
 	private Long employeeType;
 	private Long houseOwnerShip;
-	private Integer maritialStatus;
+	private Long maritialStatus;
 	private Double networth;
 	private Double loanAmount;
 	private Double itrSalaryIncome;
 	private Double itrPromotorContribution;
 	private Long constitutionOfBorrowe;
-	private Double fixedObligationIncomeRatio;
+	private Double totalIncomeItr;
+	private Double totalEmiPaid;
 	private Double chequeBouncesPastSixMonths;
 	private Double dpdOnPersonalLoan;
-	private Double assetCoverageRatio;
+	private Double colatralValue;
+	private Double cgtmseCoverageValue;
 	private Long unitFactoryPremisesDetails;
-	private Long balanceGestationPeriod;
+	private Double balanceGestationPeriod;
 	private Long environmentCategory;
+
+
+	public Double getColatralValue() {
+		return colatralValue;
+	}
+
+	public void setColatralValue(Double colatralValue) {
+		this.colatralValue = colatralValue;
+	}
+
+	public Double getCgtmseCoverageValue() {
+		return cgtmseCoverageValue;
+	}
+
+	public void setCgtmseCoverageValue(Double cgtmseCoverageValue) {
+		this.cgtmseCoverageValue = cgtmseCoverageValue;
+	}
 
 	public Boolean getIsWorkingExperience() {
 		return isWorkingExperience;
@@ -113,12 +132,12 @@ public class ScoreParameterNTBRequest implements Serializable {
 		this.isMaritialStatus = isMaritialStatus;
 	}
 
-	public Boolean getIsCWN() {
-		return isCWN;
+	public Boolean getIsCNW() {
+		return isCNW;
 	}
 
-	public void setIsCWN(Boolean isCWN) {
-		this.isCWN = isCWN;
+	public void setIsCNW(Boolean isCNW) {
+		this.isCNW = isCNW;
 	}
 
 	public Boolean getIsItrSalaryIncome() {
@@ -249,11 +268,11 @@ public class ScoreParameterNTBRequest implements Serializable {
 		this.houseOwnerShip = houseOwnerShip;
 	}
 
-	public Integer getMaritialStatus() {
+	public Long getMaritialStatus() {
 		return maritialStatus;
 	}
 
-	public void setMaritialStatus(Integer maritialStatus) {
+	public void setMaritialStatus(Long maritialStatus) {
 		this.maritialStatus = maritialStatus;
 	}
 
@@ -297,12 +316,12 @@ public class ScoreParameterNTBRequest implements Serializable {
 		this.constitutionOfBorrowe = constitutionOfBorrowe;
 	}
 
-	public Double getFixedObligationIncomeRatio() {
-		return fixedObligationIncomeRatio;
+	public Double getTotalEmiPaid() {
+		return totalEmiPaid;
 	}
 
-	public void setFixedObligationIncomeRatio(Double fixedObligationIncomeRatio) {
-		this.fixedObligationIncomeRatio = fixedObligationIncomeRatio;
+	public void setTotalEmiPaid(Double totalEmiPaid) {
+		this.totalEmiPaid = totalEmiPaid;
 	}
 
 	public Double getChequeBouncesPastSixMonths() {
@@ -321,14 +340,6 @@ public class ScoreParameterNTBRequest implements Serializable {
 		this.dpdOnPersonalLoan = dpdOnPersonalLoan;
 	}
 
-	public Double getAssetCoverageRatio() {
-		return assetCoverageRatio;
-	}
-
-	public void setAssetCoverageRatio(Double assetCoverageRatio) {
-		this.assetCoverageRatio = assetCoverageRatio;
-	}
-
 	public Long getUnitFactoryPremisesDetails() {
 		return unitFactoryPremisesDetails;
 	}
@@ -337,11 +348,11 @@ public class ScoreParameterNTBRequest implements Serializable {
 		this.unitFactoryPremisesDetails = unitFactoryPremisesDetails;
 	}
 
-	public Long getBalanceGestationPeriod() {
+	public Double getBalanceGestationPeriod() {
 		return balanceGestationPeriod;
 	}
 
-	public void setBalanceGestationPeriod(Long balanceGestationPeriod) {
+	public void setBalanceGestationPeriod(Double balanceGestationPeriod) {
 		this.balanceGestationPeriod = balanceGestationPeriod;
 	}
 
@@ -353,13 +364,21 @@ public class ScoreParameterNTBRequest implements Serializable {
 		this.environmentCategory = environmentCategory;
 	}
 
+	public Double getTotalIncomeItr() {
+		return totalIncomeItr;
+	}
+
+	public void setTotalIncomeItr(Double totalIncomeItr) {
+		this.totalIncomeItr = totalIncomeItr;
+	}
+
 	@Override
 	public String toString() {
 		return "ScoreParameterNTBRequest [isWorkingExperience=" + isWorkingExperience
 				+ ", isFamilyMemberInLineOfBusiness=" + isFamilyMemberInLineOfBusiness + ", isCibilTransunionScore="
 				+ isCibilTransunionScore + ", isAgeOfPromotor=" + isAgeOfPromotor + ", isEducationQualification="
 				+ isEducationQualification + ", isEmploymentType=" + isEmploymentType + ", isHouseOwnership="
-				+ isHouseOwnership + ", isMaritialStatus=" + isMaritialStatus + ", isCWN=" + isCWN
+				+ isHouseOwnership + ", isMaritialStatus=" + isMaritialStatus + ", isCNW=" + isCNW
 				+ ", isItrSalaryIncome=" + isItrSalaryIncome + ", isConstitutionOfBorrower=" + isConstitutionOfBorrower
 				+ ", isFixedObligationRatio=" + isFixedObligationRatio + ", isChequeBounces=" + isChequeBounces
 				+ ", isDPD=" + isDPD + ", isAssetCoverageRatio=" + isAssetCoverageRatio + ", isUnitFactoryPremises="
@@ -371,10 +390,11 @@ public class ScoreParameterNTBRequest implements Serializable {
 				+ ", houseOwnerShip=" + houseOwnerShip + ", maritialStatus=" + maritialStatus + ", networth=" + networth
 				+ ", loanAmount=" + loanAmount + ", itrSalaryIncome=" + itrSalaryIncome + ", itrPromotorContribution="
 				+ itrPromotorContribution + ", constitutionOfBorrowe=" + constitutionOfBorrowe
-				+ ", fixedObligationIncomeRatio=" + fixedObligationIncomeRatio + ", chequeBouncesPastSixMonths="
-				+ chequeBouncesPastSixMonths + ", dpdOnPersonalLoan=" + dpdOnPersonalLoan + ", assetCoverageRatio="
-				+ assetCoverageRatio + ", unitFactoryPremisesDetails=" + unitFactoryPremisesDetails
-				+ ", balanceGestationPeriod=" + balanceGestationPeriod + ", environmentCategory=" + environmentCategory
+				+ ", totalEmiPaid=" + totalEmiPaid + ", chequeBouncesPastSixMonths="
+				+ chequeBouncesPastSixMonths + ", dpdOnPersonalLoan=" + dpdOnPersonalLoan + ", colatralValue="
+				+ colatralValue +", cgtmseCoverageValue=" + cgtmseCoverageValue + ", unitFactoryPremisesDetails=" + unitFactoryPremisesDetails
+				+ ", balanceGestationPeriod=" + balanceGestationPeriod + ", environmentCategory=" + environmentCategory +
+				", totalIncomeItr=" + totalIncomeItr
 				+ "]";
 	}
 
