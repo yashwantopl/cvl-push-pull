@@ -646,4 +646,31 @@ public class ProductMasterController {
 					HttpStatus.OK);
 		}
 	}
+	
+	@RequestMapping(value = "/saveMasterFromTemp ", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> saveMasterFromTemp(HttpServletRequest request,
+			@RequestBody Long mappingId) {
+		// request must not be null
+		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+		
+		if (userId == null) {
+			logger.warn("UserId Require to saveMasterFromTemp ==>" + userId);
+			CommonDocumentUtils.endHook(logger, "saveMasterFromTemp");
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+		}
+		try {
+			CommonDocumentUtils.startHook(logger, "saveMasterFromTemp");
+			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			productMasterService.saveMasterFromTempWc(mappingId);
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while saveMasterFromTemp==>", e);
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
 }

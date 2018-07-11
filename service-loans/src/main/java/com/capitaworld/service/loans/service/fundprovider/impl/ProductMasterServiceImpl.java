@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.capitaworld.client.workflow.WorkflowClient;
 import com.capitaworld.service.dms.client.DMSClient;
 import com.capitaworld.service.dms.exception.DocumentException;
 import com.capitaworld.service.dms.model.DocumentRequest;
@@ -31,6 +32,7 @@ import com.capitaworld.service.loans.domain.fundprovider.TermLoanParameter;
 import com.capitaworld.service.loans.domain.fundprovider.UnsecureLoanParameter;
 import com.capitaworld.service.loans.domain.fundprovider.WcTlParameter;
 import com.capitaworld.service.loans.domain.fundprovider.WorkingCapitalParameter;
+import com.capitaworld.service.loans.domain.fundprovider.WorkingCapitalParameterTemp;
 import com.capitaworld.service.loans.model.FpProductDetails;
 import com.capitaworld.service.loans.model.MultipleFpPruductRequest;
 import com.capitaworld.service.loans.model.ProductDetailsForSp;
@@ -57,6 +59,7 @@ import com.capitaworld.service.loans.repository.fundprovider.PersonalLoanParamet
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.TermLoanParameterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.WorkingCapitalParameterRepository;
+import com.capitaworld.service.loans.repository.fundprovider.WorkingCapitalParameterTempRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.service.common.FundProviderSequenceService;
 import com.capitaworld.service.loans.service.fundprovider.CarLoanParameterService;
@@ -151,6 +154,13 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 
 	@Autowired
 	private DMSClient dmsClient;
+	
+
+    @Autowired
+    private WorkflowClient workflowClient;
+	
+	@Autowired
+	private WorkingCapitalParameterTempRepository workingCapitalParameterTempRepository;
 
 	@Autowired
 	private LoanApplicationRepository loanApplicationRepository;
@@ -750,6 +760,23 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 			return wcTlParameterService.getWcTlRequest(master.getId());
 		}
 		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.capitaworld.service.loans.service.fundprovider.ProductMasterService#saveMasterFromTemp(java.lang.Long)
+	 */
+	@Override
+	public void saveMasterFromTempWc(Long mappingId) throws Exception {
+		WorkingCapitalParameterTemp temp =  workingCapitalParameterTempRepository.getworkingCapitalParameterTempByFpProductId(mappingId);
+		WorkingCapitalParameter master = new WorkingCapitalParameter();
+        BeanUtils.copyProperties(temp, master);
+        
+        master.setModifiedDate(new Date());
+       
+        master.setJobId(temp.getJobId());
+        workingCapitalParameterRepository.save(master);
+
+		
 	}
 
 }
