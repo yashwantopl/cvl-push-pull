@@ -328,7 +328,25 @@ public class WcTlParameterTemp extends ProductMaster implements Serializable {
     @Column(name="approval_date")
     private Date approvalDate;
     
-    
+	@Column(name="org_id")
+	private Long orgId;
+	
+	
+
+	/**
+	 * @return the orgId
+	 */
+	public Long getOrgId() {
+		return orgId;
+	}
+
+	/**
+	 * @param orgId the orgId to set
+	 */
+	public void setOrgId(Long orgId) {
+		this.orgId = orgId;
+	}
+
 
 	/**
 	 * @return the isApproved
