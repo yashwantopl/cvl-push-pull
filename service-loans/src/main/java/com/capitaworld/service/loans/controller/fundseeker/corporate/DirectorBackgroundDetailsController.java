@@ -247,7 +247,7 @@ public class DirectorBackgroundDetailsController {
 	}
 	
 	@RequestMapping(value = "/getDirectorList/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getList(@PathParam("id") Long id) {
+	public ResponseEntity<LoansResponse> getList(@PathVariable("id") Long id) {
 		CommonDocumentUtils.startHook(logger, "getDirectorList");
 		
 		// request must not be null
