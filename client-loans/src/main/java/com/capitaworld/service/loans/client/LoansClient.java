@@ -2020,17 +2020,16 @@ public class LoansClient {
 	}
 
 	public LoansResponse getDirectorsListByApplicationId(Long applicationId) throws LoansException {
-		String url = loansBaseUrl.concat(GET_DIRECTORLIST_BY_APPLICATION_ID);
+		String url = loansBaseUrl.concat(GET_DIRECTORLIST_BY_APPLICATION_ID) + "/" + applicationId;
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
-			headers.setContentType(MediaType.APPLICATION_JSON);
-			HttpEntity<Long> entity = new HttpEntity<Long>(applicationId, headers);
-			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+			HttpEntity<?> entity = new HttpEntity<>(null, headers);
+			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new LoansException("Loans service is not available while call getChatListByApplicationId");
+			throw new LoansException("Loans service is not available while call getDirectorsListByApplicationId");
 		}
 	}
 	
