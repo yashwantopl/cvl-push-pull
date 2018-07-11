@@ -1,0 +1,16 @@
+CREATE TABLE `loan_application`.`fs_corporate_director_income_details` (
+  `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `application_id` BIGINT(20) NULL DEFAULT NULL,
+  `director_id` BIGINT(20) NULL DEFAULT NULL,
+  `year` VARCHAR(20) NULL DEFAULT NULL,
+  `salary` DOUBLE NULL DEFAULT b'0',
+  `house_property` VARCHAR(45) NULL,
+  `PGBP` VARCHAR(45) NULL,
+  `capital_gain` VARCHAR(45) NULL,
+  `other_source` VARCHAR(45) NULL,
+  `created_by` BIGINT(20) NULL DEFAULT NULL,
+  `created_date` DATETIME NULL DEFAULT NULL,
+  `modified_by` BIGINT(20) NULL DEFAULT NULL,
+  `modified_date` DATETIME NULL DEFAULT NULL,
+  `is_active` BIT(1) NULL DEFAULT b'0',
+  PRIMARY KEY (`id`));

@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.websocket.server.PathParam;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -246,7 +247,7 @@ public class DirectorBackgroundDetailsController {
 	}
 	
 	@RequestMapping(value = "/getDirectorList/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getList(@RequestBody Long id) {
+	public ResponseEntity<LoansResponse> getList(@PathVariable("id") Long id) {
 		CommonDocumentUtils.startHook(logger, "getDirectorList");
 		
 		// request must not be null
