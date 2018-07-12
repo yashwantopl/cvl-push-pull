@@ -1631,7 +1631,7 @@ public class LoanApplicationController {
 		}
 	}
 	
-	@RequestMapping(value = "/update_payment_status_sidbi", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/update_payment_status_sidbi", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> updatePaymentStatusForSidbi(@RequestBody PaymentRequest paymentRequest) {
 		try {
 			logger.info("start updatePaymentStatus from SIDBI");

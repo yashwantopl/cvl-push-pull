@@ -2118,8 +2118,7 @@ public class LoansClient {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
 			headers.setContentType(MediaType.APPLICATION_JSON);
-			HttpEntity<?> entity = new HttpEntity<>(null, headers);
-			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+			return restTemplate.exchange(url, HttpMethod.POST, new HttpEntity<PaymentRequest>(paymentRequest, headers), LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new LoansException("Loans service is not available");
@@ -2132,7 +2131,7 @@ public class LoansClient {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
 			headers.setContentType(MediaType.APPLICATION_JSON);
-			HttpEntity<?> entity = new HttpEntity<>(null, headers);
+			HttpEntity<List<CorporateDirectorIncomeRequest>> entity = new HttpEntity<List<CorporateDirectorIncomeRequest>>(request, headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();

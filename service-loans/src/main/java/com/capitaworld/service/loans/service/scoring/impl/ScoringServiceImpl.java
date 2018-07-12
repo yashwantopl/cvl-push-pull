@@ -12,10 +12,8 @@ import com.capitaworld.service.gst.GstResponse;
 import com.capitaworld.service.gst.client.GstClient;
 import com.capitaworld.service.gst.yuva.request.GSTR1Request;
 import com.capitaworld.service.loans.domain.fundprovider.ProductMaster;
-import com.capitaworld.service.loans.domain.fundseeker.corporate.AssetsDetails;
-import com.capitaworld.service.loans.domain.fundseeker.corporate.DirectorBackgroundDetail;
-import com.capitaworld.service.loans.domain.fundseeker.corporate.LiabilitiesDetails;
-import com.capitaworld.service.loans.domain.fundseeker.corporate.OperatingStatementDetails;
+import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.*;
 import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.score.ScoreParameterNTBRequest;
@@ -53,10 +51,7 @@ import javax.transaction.Transactional;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @Transactional
@@ -110,9 +105,30 @@ public class ScoringServiceImpl implements ScoringService{
     @Autowired
     private ProductMasterRepository productMasterRepository;
 
+
     @Override
     public ResponseEntity<LoansResponse> calculateScoring(ScoringRequestLoans scoringRequestLoans) {
 
+        PrimaryCorporateDetail primaryCorporateDetail=primaryCorporateDetailRepository.findOneByApplicationIdId(scoringRequestLoans.getApplicationId());
+
+        Long businessTypeId=null;
+        if(CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getBusinessTypeId()))
+                businessTypeId=ScoreParameter.BusinessType.EXISTING_BUSINESS;
+
+        if(ScoreParameter.BusinessType.EXISTING_BUSINESS == businessTypeId)
+        {
+            return calculateExistingBusinessScoring(scoringRequestLoans);
+        }
+        else if(ScoreParameter.BusinessType.EXISTING_BUSINESS == businessTypeId)
+        {
+            return calculateNTBScoring(scoringRequestLoans,primaryCorporateDetail);
+        }
+
+        return null;
+    }
+
+    @Override
+    public ResponseEntity<LoansResponse> calculateExistingBusinessScoring(ScoringRequestLoans scoringRequestLoans) {
         ScoringParameterRequest scoringParameterRequest=new ScoringParameterRequest();
 
         Long scoreModelId=scoringRequestLoans.getScoringModelId();
@@ -197,6 +213,7 @@ public class ScoringServiceImpl implements ScoringService{
             scoringRequest.setScoringModelId(scoreModelId);
             scoringRequest.setFpProductId(fpProductId);
             scoringRequest.setApplicationId(applicationId);
+            scoringRequest.setBusinessTypeId(ScoreParameter.BusinessType.EXISTING_BUSINESS);
 
             // GET ALL FIELDS FOR CALCULATE SCORE BY MODEL ID
             ScoringResponse scoringResponse=null;
@@ -270,7 +287,7 @@ public class ScoringServiceImpl implements ScoringService{
                             if(!CommonUtils.isObjectNullOrEmpty(cibilResponse) && !CommonUtils.isObjectNullOrEmpty(cibilResponse.getData()))
                             {
                                 customer_ass_concern_year = (Double)cibilResponse.getData();
-                                
+
                                 scoringParameterRequest.setCustomerAssociateConcern(customer_ass_concern_year);
                                 scoringParameterRequest.setCustomerAsscociateConcern_p(true);
 
@@ -931,7 +948,7 @@ public class ScoringServiceImpl implements ScoringService{
                         ReportRequest reportRequest = new ReportRequest();
                         reportRequest.setApplicationId(applicationId);
                         try {
-                        	AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReport(reportRequest);
+                            AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReport(reportRequest);
                             Data data = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)analyzerResponse.getData(),
                                     Data.class);
                             if(!CommonUtils.isObjectNullOrEmpty(analyzerResponse.getData())){
@@ -1019,7 +1036,531 @@ public class ScoringServiceImpl implements ScoringService{
         return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
     }
 
+    @Override
+    public ResponseEntity<LoansResponse> calculateNTBScoring(ScoringRequestLoans scoringRequestLoans,PrimaryCorporateDetail primaryCorporateDetail)
+    {
 
+
+        // Fetch Data for Calculate Director Score
+
+        List<DirectorBackgroundDetail> directorBackgroundDetailsList =  directorBackgroundDetailsRepository.listPromotorBackgroundFromAppId(scoringRequestLoans.getApplicationId());
+        if(directorBackgroundDetailsList.size() > 0)
+        {
+            for(DirectorBackgroundDetail directorBackgroundDetail : directorBackgroundDetailsList) {
+                Boolean flag = calculateDirectorScore(scoringRequestLoans,directorBackgroundDetail);
+            }
+        }
+
+        // Fetch Data for Calculate Company Score
+
+        com.capitaworld.service.scoring.model.scoringmodel.ScoreParameterNTBRequest scoreParameterNTBRequest=new com.capitaworld.service.scoring.model.scoringmodel.ScoreParameterNTBRequest();
+
+        Long scoreModelId=scoringRequestLoans.getScoringModelId();
+        Long applicationId=scoringRequestLoans.getApplicationId();
+        Long fpProductId=scoringRequestLoans.getFpProductId();
+
+        logger.info("----------------------------START------------------------------");
+        logger.info("---------------------------------------------------------------");
+        logger.info("---------------------------------------------------------------");
+
+        logger.info("APPLICATION ID   :: "+ applicationId);
+        logger.info("FP PRODUCT ID    :: "+ fpProductId);
+        logger.info("SCORING MODEL ID :: "+ scoreModelId);
+
+        ScoringResponse scoringResponseMain=null;
+
+        // GET SCORE NTB LOAN PARAMETERS
+
+
+        if(!CommonUtils.isObjectNullOrEmpty(scoreModelId))
+        {
+            ScoringRequest scoringRequest = new ScoringRequest();
+            scoringRequest.setScoringModelId(scoreModelId);
+            scoringRequest.setFpProductId(fpProductId);
+            scoringRequest.setApplicationId(applicationId);
+            scoringRequest.setBusinessTypeId(ScoreParameter.BusinessType.NTB);
+
+            // GET ALL FIELDS FOR CALCULATE SCORE BY MODEL ID
+            ScoringResponse scoringResponse=null;
+            try {
+                scoringResponse = scoringClient.listField(scoringRequest);
+            }
+            catch (Exception e) {
+                logger.error("error while getting field list");
+                e.printStackTrace();
+            }
+
+            List<Map<String, Object>> dataList = (List<Map<String, Object>>) scoringResponse.getDataList();
+
+            List<FundSeekerInputRequest> fundSeekerInputRequestList = new ArrayList<>(dataList.size());
+
+            for (int i=0;i<dataList.size();i++){
+
+                ModelParameterResponse modelParameterResponse = null;
+                try {
+                    modelParameterResponse = MultipleJSONObjectHelper.getObjectFromMap(dataList.get(i),
+                            ModelParameterResponse.class);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                FundSeekerInputRequest fundSeekerInputRequest = new FundSeekerInputRequest();
+                fundSeekerInputRequest.setFieldId(modelParameterResponse.getFieldMasterId());
+                fundSeekerInputRequest.setName(modelParameterResponse.getName());
+
+                switch (modelParameterResponse.getName()) {
+
+                    case ScoreParameter.NTB.CONSTITUTION_OF_BORROWER:
+                    {
+                        // get constitution of borrower from loan application master its drop down
+                        //remaining
+
+                        break;
+                    }
+                    case ScoreParameter.NTB.ASSET_COVERAGE_RATIO:
+                    {
+                        try
+                        {
+                            Double loanAmount=primaryCorporateDetailRepository.getLoanAmountByApplication(applicationId);
+                            scoreParameterNTBRequest.setLoanAmount(loanAmount);
+                            Double collatralValue=null;
+                            // if collatral value is null or 0 then get collatral value from CGTMSE
+                            if(!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getCollateralSecurityAmount()) && primaryCorporateDetail.getCollateralSecurityAmount() != 0.0 )
+                            {
+                                collatralValue=primaryCorporateDetail.getCollateralSecurityAmount();
+                            }
+                            else
+                            {
+                                // get collatral value from CGTMSE
+                                // remaining
+
+                            }
+                            scoreParameterNTBRequest.setColatralValue(collatralValue);
+                            scoreParameterNTBRequest.setIsAssetCoverageRatio(true);
+                        }
+                        catch (Exception e)
+                        {
+                            logger.error("error while getting ASSET_COVERAGE_RATIO parameter");
+                            e.printStackTrace();
+                            scoreParameterNTBRequest.setIsAssetCoverageRatio(false);
+                        }
+                        break;
+                    }
+                    case ScoreParameter.NTB.UNIT_FACTORY_PREMISES:
+                    {
+                        try
+                        {
+                            Long unitFactoryPremises=primaryCorporateDetail.getProposedDetailsOfUnit().longValue();
+                            scoreParameterNTBRequest.setUnitFactoryPremisesDetails(unitFactoryPremises);
+                            scoreParameterNTBRequest.setIsUnitFactoryPremises(true);
+                        }
+                        catch (Exception e)
+                        {
+                            logger.error("error while getting UNIT_FACTORY_PREMISES parameter");
+                            e.printStackTrace();
+                            scoreParameterNTBRequest.setIsUnitFactoryPremises(false);
+                        }
+                        break;
+                    }
+                    case ScoreParameter.NTB.BALANCE_GESTATION_PERIOD:
+                    {
+                        try
+                        {
+                            Date applicationDate=primaryCorporateDetail.getCreatedDate();
+                            Date commercialOperationDate=null; // remaining
+
+                            Double month=null;
+                            scoreParameterNTBRequest.setBalanceGestationPeriod(month);
+                            scoreParameterNTBRequest.setIsBalanceGestationPeriod(true);
+                        }
+                        catch (Exception e)
+                        {
+                            logger.error("error while getting BALANCE_GESTATION_PERIOD parameter");
+                            e.printStackTrace();
+                            scoreParameterNTBRequest.setIsBalanceGestationPeriod(false);
+                        }
+                        break;
+                    }
+                    case ScoreParameter.NTB.ENVIRONMENT_CATEGORY:
+                    {
+                        try
+                        {
+                            Long environmentCategory=null; // remaining
+                            scoreParameterNTBRequest.setEnvironmentCategory(environmentCategory);
+                            scoreParameterNTBRequest.setIsEnvironmentCategory(true);
+                        }
+                        catch (Exception e)
+                        {
+                            logger.error("error while getting ENVIRONMENT_CATEGORY parameter");
+                            e.printStackTrace();
+                            scoreParameterNTBRequest.setIsEnvironmentCategory(false);
+                        }
+                        break;
+                    }
+                }
+                fundSeekerInputRequestList.add(fundSeekerInputRequest);
+            }
+
+            logger.info("SCORE PARAMETER ::::::::::"+scoreParameterNTBRequest.toString());
+
+            logger.info("---------------------------------------------------------------");
+            logger.info("---------------------------------------------------------------");
+            logger.info("----------------------------END--------------------------------");
+
+            scoringRequest.setDataList(fundSeekerInputRequestList);
+            scoringRequest.setScoreParameterNTBRequest(scoreParameterNTBRequest);
+
+            try {
+                scoringResponseMain = scoringClient.calculateScore(scoringRequest);
+            }
+            catch (Exception e) {
+                logger.error("error while calling scoring");
+                e.printStackTrace();
+                LoansResponse loansResponse = new LoansResponse("error while calling scoring.", HttpStatus.INTERNAL_SERVER_ERROR.value());
+                return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+            }
+
+            if(scoringResponseMain.getStatus() == HttpStatus.OK.value())
+            {
+                logger.error("score is successfully calculated");
+                LoansResponse loansResponse = new LoansResponse("score is successfully calculated", HttpStatus.OK.value());
+                return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+            }
+            else
+            {
+                logger.error("error while calling scoring");
+                LoansResponse loansResponse = new LoansResponse("error while calling scoring.", HttpStatus.INTERNAL_SERVER_ERROR.value());
+                return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+            }
+        }
+
+        LoansResponse loansResponse = new LoansResponse("score is successfully calculated", HttpStatus.OK.value());
+        return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+    }
+
+    public Boolean calculateDirectorScore(ScoringRequestLoans scoringRequestLoans,DirectorBackgroundDetail directorBackgroundDetail)
+    {
+
+
+        // Fetch Data for Calculate Director Score
+
+        com.capitaworld.service.scoring.model.scoringmodel.ScoreParameterNTBRequest scoreParameterNTBRequest=new com.capitaworld.service.scoring.model.scoringmodel.ScoreParameterNTBRequest();
+
+        Long scoreModelId=scoringRequestLoans.getScoringModelId();
+        Long applicationId=scoringRequestLoans.getApplicationId();
+        Long fpProductId=scoringRequestLoans.getFpProductId();
+
+        logger.info("----------------------------START------------------------------");
+        logger.info("---------------------------------------------------------------");
+        logger.info("---------------------------------------------------------------");
+
+        logger.info("DIRECTOR ID :: "+ directorBackgroundDetail.getId());
+        logger.info("APPLICATION ID   :: "+ applicationId);
+        logger.info("FP PRODUCT ID    :: "+ fpProductId);
+        logger.info("SCORING MODEL ID :: "+ scoreModelId);
+
+        ScoringResponse scoringResponseMain=null;
+
+        // GET SCORE NTB LOAN PARAMETERS
+
+
+        if(!CommonUtils.isObjectNullOrEmpty(scoreModelId))
+        {
+            ScoringRequest scoringRequest = new ScoringRequest();
+            scoringRequest.setScoringModelId(scoreModelId);
+            scoringRequest.setFpProductId(fpProductId);
+            scoringRequest.setApplicationId(applicationId);
+            scoringRequest.setBusinessTypeId(ScoreParameter.BusinessType.NTB);
+            scoringRequest.setDirectorId(directorBackgroundDetail.getId());
+
+            // GET ALL FIELDS FOR CALCULATE SCORE BY MODEL ID
+            ScoringResponse scoringResponse=null;
+            try {
+                scoringResponse = scoringClient.listField(scoringRequest);
+            }
+            catch (Exception e) {
+                logger.error("error while getting field list");
+                e.printStackTrace();
+            }
+
+            List<Map<String, Object>> dataList = (List<Map<String, Object>>) scoringResponse.getDataList();
+
+            List<FundSeekerInputRequest> fundSeekerInputRequestList = new ArrayList<>(dataList.size());
+
+            for (int i=0;i<dataList.size();i++){
+
+                ModelParameterResponse modelParameterResponse = null;
+                try {
+                    modelParameterResponse = MultipleJSONObjectHelper.getObjectFromMap(dataList.get(i),
+                            ModelParameterResponse.class);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                FundSeekerInputRequest fundSeekerInputRequest = new FundSeekerInputRequest();
+                fundSeekerInputRequest.setFieldId(modelParameterResponse.getFieldMasterId());
+                fundSeekerInputRequest.setName(modelParameterResponse.getName());
+
+                switch (modelParameterResponse.getName()) {
+
+                    case ScoreParameter.NTB.WORKING_EXPERIENCE: {
+
+                        try
+                        {
+
+                            scoreParameterNTBRequest.setIsWorkingExperience(true);
+                        }
+                        catch (Exception e)
+                        {
+                            logger.error("error while getting WORKING_EXPERIENCE parameter");
+                            e.printStackTrace();
+                            scoreParameterNTBRequest.setIsWorkingExperience(false);
+                        }
+                        break;
+                    }
+                    case ScoreParameter.NTB.IS_FAMILY_MEMBER_IN_LINE_OF_BUSINESS: {
+                        try
+                        {
+
+                            scoreParameterNTBRequest.setIsFamilyMemberInLineOfBusiness(true);
+                        }
+                        catch (Exception e)
+                        {
+                            logger.error("error while getting IS_FAMILY_MEMBER_IN_LINE_OF_BUSINESS parameter");
+                            e.printStackTrace();
+                            scoreParameterNTBRequest.setIsFamilyMemberInLineOfBusiness(false);
+                        }
+                        break;
+                    }
+                    case ScoreParameter.NTB.CIBIL_TRANSUNION_SCORE: {
+                        try
+                        {
+
+                            scoreParameterNTBRequest.setIsCibilTransunionScore(true);
+                        }
+                        catch (Exception e)
+                        {
+                            logger.error("error while getting CIBIL_TRANSUNION_SCORE parameter");
+                            e.printStackTrace();
+                            scoreParameterNTBRequest.setIsCibilTransunionScore(false);
+                        }
+                        break;
+                    }
+                    case ScoreParameter.NTB.AGE_OF_PROMOTOR: {
+                        try
+                        {
+
+                            scoreParameterNTBRequest.setIsAgeOfPromotor(true);
+                        }
+                        catch (Exception e)
+                        {
+                            logger.error("error while getting AGE_OF_PROMOTOR parameter");
+                            e.printStackTrace();
+                            scoreParameterNTBRequest.setIsAgeOfPromotor(false);
+                        }
+                        break;
+                    }
+                    case ScoreParameter.NTB.EDUCATION_QUALIFICATION: {
+                        try
+                        {
+
+                            scoreParameterNTBRequest.setIsEducationQualification(true);
+                        }
+                        catch (Exception e)
+                        {
+                            logger.error("error while getting EDUCATION_QUALIFICATION parameter");
+                            e.printStackTrace();
+                            scoreParameterNTBRequest.setIsEducationQualification(false);
+                        }
+                        break;
+                    }
+                    case ScoreParameter.NTB.EMPLOYMENT_TYPE: {
+                        try
+                        {
+
+                            scoreParameterNTBRequest.setIsEmploymentType(true);
+                        }
+                        catch (Exception e)
+                        {
+                            logger.error("error while getting EMPLOYMENT_TYPE parameter");
+                            e.printStackTrace();
+                            scoreParameterNTBRequest.setIsEmploymentType(false);
+                        }
+                        break;
+                    }
+                    case ScoreParameter.NTB.HOUSE_OWNERSHIP: {
+                        try
+                        {
+
+                            scoreParameterNTBRequest.setIsHouseOwnership(true);
+                        }
+                        catch (Exception e)
+                        {
+                            logger.error("error while getting HOUSE_OWNERSHIP parameter");
+                            e.printStackTrace();
+                            scoreParameterNTBRequest.setIsHouseOwnership(false);
+                        }
+                        break;
+                    }
+                    case ScoreParameter.NTB.MARITIAL_STATUS: {
+                        try
+                        {
+
+                            scoreParameterNTBRequest.setIsMaritialStatus(true);
+                        }
+                        catch (Exception e)
+                        {
+                            logger.error("error while getting MARITIAL_STATUS parameter");
+                            e.printStackTrace();
+                            scoreParameterNTBRequest.setIsMaritialStatus(false);
+                        }
+                        break;
+                    }
+                    case ScoreParameter.NTB.CNW: {
+                        try
+                        {
+
+                            scoreParameterNTBRequest.setIsCNW(true);
+                        }
+                        catch (Exception e)
+                        {
+                            logger.error("error while getting CNW parameter");
+                            e.printStackTrace();
+                            scoreParameterNTBRequest.setIsCNW(false);
+                        }
+                        break;
+                    }
+                    case ScoreParameter.NTB.ITR_SALARY_INCOME: {
+                        try
+                        {
+
+                            scoreParameterNTBRequest.setIsItrSalaryIncome(true);
+                        }
+                        catch (Exception e)
+                        {
+                            logger.error("error while getting ITR_SALARY_INCOME parameter");
+                            e.printStackTrace();
+                            scoreParameterNTBRequest.setIsItrSalaryIncome(false);
+                        }
+                        break;
+                    }
+                    case ScoreParameter.NTB.FIXED_OBLIGATION_RATIO: {
+                        try
+                        {
+
+                            scoreParameterNTBRequest.setIsFixedObligationRatio(true);
+                        }
+                        catch (Exception e)
+                        {
+                            logger.error("error while getting FIXED_OBLIGATION_RATIO parameter");
+                            e.printStackTrace();
+                            scoreParameterNTBRequest.setIsFixedObligationRatio(false);
+                        }
+                        break;
+                    }
+                    case ScoreParameter.NTB.CHEQUE_BOUNCES: {
+                        try
+                        {
+
+                            scoreParameterNTBRequest.setIsChequeBounces(true);
+                        }
+                        catch (Exception e)
+                        {
+                            logger.error("error while getting CHEQUE_BOUNCES parameter");
+                            e.printStackTrace();
+                            scoreParameterNTBRequest.setIsChequeBounces(false);
+                        }
+                        break;
+                    }
+                    case ScoreParameter.NTB.DPD: {
+                        try
+                        {
+
+                            scoreParameterNTBRequest.setIsDPD(true);
+                        }
+                        catch (Exception e)
+                        {
+                            logger.error("error while getting DPD parameter");
+                            e.printStackTrace();
+                            scoreParameterNTBRequest.setIsDPD(false);
+                        }
+                        break;
+                    }
+                }
+                fundSeekerInputRequestList.add(fundSeekerInputRequest);
+            }
+
+            logger.info("SCORE PARAMETER ::::::::::"+scoreParameterNTBRequest.toString());
+
+            logger.info("---------------------------------------------------------------");
+            logger.info("---------------------------------------------------------------");
+            logger.info("----------------------------END--------------------------------");
+
+            scoringRequest.setDataList(fundSeekerInputRequestList);
+            scoringRequest.setScoreParameterNTBRequest(scoreParameterNTBRequest);
+
+            try {
+                scoringResponseMain = scoringClient.calculateScore(scoringRequest);
+            }
+            catch (Exception e) {
+                logger.error("error while calling scoring");
+                e.printStackTrace();
+                LoansResponse loansResponse = new LoansResponse("error while calling scoring.", HttpStatus.INTERNAL_SERVER_ERROR.value());
+                return false;
+                //return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+            }
+
+            if(scoringResponseMain.getStatus() == HttpStatus.OK.value())
+            {
+                logger.error("score is successfully calculated");
+                LoansResponse loansResponse = new LoansResponse("score is successfully calculated", HttpStatus.OK.value());
+                return true;
+                //return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+            }
+            else
+            {
+                logger.error("error while calling scoring");
+                LoansResponse loansResponse = new LoansResponse("error while calling scoring.", HttpStatus.INTERNAL_SERVER_ERROR.value());
+                return false;
+                //return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+            }
+        }
+
+
+        /*ScoreParameterNTBRequest scoreParameterNTBRequest  =null;
+        for(DirectorBackgroundDetail directorBackgroundDetail : directorBackgroundDetailsList) {
+            //director
+            scoreParameterNTBRequest =new  ScoreParameterNTBRequest();
+            scoreParameterNTBRequest.setTotalworkingExperience(directorBackgroundDetail.getTotalExperience());
+
+            //scoreParameterNTBRequest.setFamilyMemberInLineOfBusiness(directorBackgroundDetail.getFamilyMemberInBusiness());
+            scoreParameterNTBRequest.setMaritialStatus(directorBackgroundDetail.getMaritalStatus());
+            scoreParameterNTBRequest.setNetworth(directorBackgroundDetail.getNetworth());
+
+            //cibil
+            Double cibil_score_avg_promotor=null;
+            CibilRequest cibilRequest=new CibilRequest();
+            cibilRequest.setApplicationId(scoringRequestLoans.getApplicationId());
+
+            CibilResponse cibilResponse =cibilClient.getCibilScore(cibilRequest);
+            if(!CommonUtils.isObjectNullOrEmpty(cibilResponse.getData()))
+            {
+                cibil_score_avg_promotor = (Double)cibilResponse.getData();
+                scoreParameterNTBRequest.setCibilTransunionScore(cibil_score_avg_promotor);
+                scoreParameterNTBRequest.setIsCibilTransunionScore(true);;
+            }else{
+                scoreParameterNTBRequest.setIsCibilTransunionScore(false);
+            }
+
+            //corporate
+            Double loanAmount=primaryCorporateDetailRepository.getLoanAmountByApplication(scoringRequestLoans.getApplicationId());
+            scoreParameterNTBRequest.setLoanAmount(loanAmount);
+        }
+
+        */
+
+        return null;
+    }
 
 
     @Override
@@ -1278,42 +1819,5 @@ public class ScoringServiceImpl implements ScoringService{
             e.printStackTrace();
             return  new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG,HttpStatus.BAD_REQUEST.value());
         }
-    }
-    
-    public ScoringModelReqRes calculateScoreForNTB(ScoringRequestLoans scoringRequestLoans) throws Exception {
-    			
-    	List<DirectorBackgroundDetail> directorBackgroundDetailsList =  directorBackgroundDetailsRepository.listPromotorBackgroundFromAppId(scoringRequestLoans.getApplicationId());
-     
-    	ScoreParameterNTBRequest scoreParameterNTBRequest  =null;
-    	for(DirectorBackgroundDetail directorBackgroundDetail : directorBackgroundDetailsList) {
-    		//director
-    		scoreParameterNTBRequest =new  ScoreParameterNTBRequest();
-    		scoreParameterNTBRequest.setTotalworkingExperience(directorBackgroundDetail.getTotalExperience());
-
-    		//scoreParameterNTBRequest.setFamilyMemberInLineOfBusiness(directorBackgroundDetail.getFamilyMemberInBusiness());
-    		scoreParameterNTBRequest.setMaritialStatus(directorBackgroundDetail.getMaritalStatus());
-    		scoreParameterNTBRequest.setNetworth(directorBackgroundDetail.getNetworth());
-    		
-    		//cibil
-    		Double cibil_score_avg_promotor=null;
-            CibilRequest cibilRequest=new CibilRequest();
-            cibilRequest.setApplicationId(scoringRequestLoans.getApplicationId());
-            
-            CibilResponse cibilResponse =cibilClient.getCibilScore(cibilRequest);
-            if(!CommonUtils.isObjectNullOrEmpty(cibilResponse.getData()))
-            {
-            	cibil_score_avg_promotor = (Double)cibilResponse.getData();
-            	scoreParameterNTBRequest.setCibilTransunionScore(cibil_score_avg_promotor);
-            	scoreParameterNTBRequest.setIsCibilTransunionScore(true);;
-            }else{
-            	scoreParameterNTBRequest.setIsCibilTransunionScore(false);
-            }
-            
-            //corporate
-            Double loanAmount=primaryCorporateDetailRepository.getLoanAmountByApplication(scoringRequestLoans.getApplicationId());
-            scoreParameterNTBRequest.setLoanAmount(loanAmount);
-    	}
-    	
-    	return null;
     }
 }

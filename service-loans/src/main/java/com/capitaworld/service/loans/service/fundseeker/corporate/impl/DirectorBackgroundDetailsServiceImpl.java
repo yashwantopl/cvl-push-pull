@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.service.loans.model.EmploymentDetailRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -88,6 +89,11 @@ public class DirectorBackgroundDetailsServiceImpl implements DirectorBackgroundD
 
 			for (DirectorBackgroundDetail detail : directorBackgroundDetails) {
 				DirectorBackgroundDetailRequest directorBackgroundDetailRequest = new DirectorBackgroundDetailRequest();
+				if(!CommonUtils.isObjectNullOrEmpty(detail.getEmploymentDetail())){
+					EmploymentDetailRequest employmentDetailRequest = new EmploymentDetailRequest();
+					BeanUtils.copyProperties(detail.getEmploymentDetail(),employmentDetailRequest);
+					directorBackgroundDetailRequest.setEmploymentDetailRequest(employmentDetailRequest);
+				}
 				BeanUtils.copyProperties(detail, directorBackgroundDetailRequest);
 				DirectorBackgroundDetailRequest.printFields(directorBackgroundDetailRequest);
 				directorBackgroundDetailRequests.add(directorBackgroundDetailRequest);
