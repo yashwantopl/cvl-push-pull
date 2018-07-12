@@ -6,4 +6,10 @@ public interface WcTlParameterService {
 	public boolean saveOrUpdate(WcTlParameterRequest wcTlParameterRequest);
 	
 	public WcTlParameterRequest getWcTlRequest(Long id);
+
+	/**
+	 * @param mappingId
+	 * @return
+	 */
+	public Boolean saveMasterFromTempWcTl(Long mappingId) throws Exception;
 }
