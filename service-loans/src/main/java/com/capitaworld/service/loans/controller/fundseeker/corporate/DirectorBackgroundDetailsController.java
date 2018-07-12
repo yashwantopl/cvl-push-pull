@@ -151,8 +151,8 @@ public class DirectorBackgroundDetailsController {
 
 	}
 	
-	@RequestMapping(value = "/save_directors/{noOfDirector}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> saveDirectors(@RequestBody Long applicationId, @PathVariable("noOfDirector") Integer noOfDirector, HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
+	@RequestMapping(value = "/save_directors/{noOfDirector}/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> saveDirectors(@PathVariable("applicationId") Long applicationId, @PathVariable("noOfDirector") Integer noOfDirector, HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
 		logger.info("Enter saveDirectors()");
 		Long userId = null;
 		if(CommonDocumentUtils.isThisClientApplication(request) && !CommonUtils.isObjectNullOrEmpty(clientId)){
