@@ -16,6 +16,7 @@ import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.*;
 import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.LoansResponse;
+import com.capitaworld.service.loans.model.common.CGTMSECalcDataResponse;
 import com.capitaworld.service.loans.model.score.ScoreParameterNTBRequest;
 import com.capitaworld.service.loans.model.score.ScoreParameterRequestLoans;
 import com.capitaworld.service.loans.model.score.ScoringRequestLoans;
@@ -30,6 +31,8 @@ import com.capitaworld.service.scoring.ScoringClient;
 import com.capitaworld.service.scoring.model.*;
 import com.capitaworld.service.scoring.model.scoringmodel.ScoringModelReqRes;
 import com.capitaworld.service.scoring.utils.ScoreParameter;
+import com.capitaworld.service.thirdparty.model.CGTMSEDataResponse;
+import com.capitaworld.service.thirdpaty.client.ThirdPartyClient;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.UserResponse;
 import com.ibm.icu.util.Calendar;
@@ -52,6 +55,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @Transactional
@@ -104,6 +108,9 @@ public class ScoringServiceImpl implements ScoringService{
 
     @Autowired
     private ProductMasterRepository productMasterRepository;
+
+    @Autowired
+    private ThirdPartyClient thirdPartyClient;
 
 
     @Override
@@ -1112,9 +1119,26 @@ public class ScoringServiceImpl implements ScoringService{
 
                     case ScoreParameter.NTB.CONSTITUTION_OF_BORROWER:
                     {
-                        // get constitution of borrower from loan application master its drop down
-                        //remaining
+                        try
+                        {
+                            Long proposedConstitutionOfUnit=Long.parseLong(primaryCorporateDetail.getProposedConstitutionOfUnit().toString());
 
+                            if(!CommonUtils.isObjectNullOrEmpty(proposedConstitutionOfUnit))
+                            {
+                                scoreParameterNTBRequest.setConstitutionOfBorrowe(proposedConstitutionOfUnit);
+                                scoreParameterNTBRequest.setIsConstitutionOfBorrower(true);
+                            }
+                            else
+                            {
+                                scoreParameterNTBRequest.setIsConstitutionOfBorrower(false);
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            logger.error("error while getting CONSTITUTION_OF_BORROWER parameter");
+                            e.printStackTrace();
+                            scoreParameterNTBRequest.setIsConstitutionOfBorrower(false);
+                        }
                         break;
                     }
                     case ScoreParameter.NTB.ASSET_COVERAGE_RATIO:
@@ -1132,11 +1156,32 @@ public class ScoringServiceImpl implements ScoringService{
                             else
                             {
                                 // get collatral value from CGTMSE
-                                // remaining
+                                try {
+
+                                    CGTMSEDataResponse cgtmseDataResponse=thirdPartyClient.getCalulation(applicationId);
+                                    if(!CommonUtils.isObjectNullOrEmpty(cgtmseDataResponse)
+                                            && !CommonUtils.isObjectNullOrEmpty(cgtmseDataResponse.getColleteralCoverage())
+                                            && cgtmseDataResponse.getColleteralCoverage() !=0.0 )
+                                    {
+                                        collatralValue=cgtmseDataResponse.getColleteralCoverage();
+                                    }
+                                }
+                                catch (Exception e)
+                                {
+                                    logger.error("error while getting collatral value from CGTMSE ====> "+applicationId);
+                                    e.printStackTrace();
+                                }
 
                             }
                             scoreParameterNTBRequest.setColatralValue(collatralValue);
-                            scoreParameterNTBRequest.setIsAssetCoverageRatio(true);
+                            if(!CommonUtils.isObjectNullOrEmpty(collatralValue) && !CommonUtils.isObjectNullOrEmpty(loanAmount))
+                            {
+                                scoreParameterNTBRequest.setIsAssetCoverageRatio(true);
+                            }
+                            else
+                            {
+                                scoreParameterNTBRequest.setIsAssetCoverageRatio(false);
+                            }
                         }
                         catch (Exception e)
                         {
@@ -1167,10 +1212,20 @@ public class ScoringServiceImpl implements ScoringService{
                         try
                         {
                             Date applicationDate=primaryCorporateDetail.getCreatedDate();
-                            Date commercialOperationDate=null; // remaining
+                            Date commercialOperationDate=primaryCorporateDetail.getProposedOperationDate();
 
-                            Double month=null;
-                            scoreParameterNTBRequest.setBalanceGestationPeriod(month);
+                            // start find month different from two dates
+
+                            Calendar today = Calendar.getInstance();
+                            today.setTime(applicationDate);
+
+                            Calendar createdDate = Calendar.getInstance();
+                            createdDate.setTime(commercialOperationDate);
+
+                            Long diff = today.getTime().getTime() - createdDate.getTime().getTime();
+                            Long monthDiff = (TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS))/30;
+
+                            scoreParameterNTBRequest.setBalanceGestationPeriod(monthDiff.doubleValue());
                             scoreParameterNTBRequest.setIsBalanceGestationPeriod(true);
                         }
                         catch (Exception e)
