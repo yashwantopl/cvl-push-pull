@@ -17,6 +17,8 @@ public class CorporateDirectorIncomeRequest implements Serializable {
 	
 	private Long userId;
 	
+	private Double totalIncome;
+	
 	private String year;
 	
 	private Double salary;
@@ -119,13 +121,32 @@ public class CorporateDirectorIncomeRequest implements Serializable {
 		this.userId = userId;
 	}
 
+	
+	/**
+	 * @return the totalIncome
+	 */
+	public Double getTotalIncome() {
+		return totalIncome;
+	}
+
+	/**
+	 * @param totalIncome the totalIncome to set
+	 */
+	public void setTotalIncome(Double totalIncome) {
+		this.totalIncome = totalIncome;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
 	@Override
 	public String toString() {
 		return "CorporateDirectorIncomeRequest [id=" + id + ", applicationId=" + applicationId + ", directorId="
-				+ directorId + ", year=" + year + ", salary=" + salary + ", houseProperty=" + houseProperty + ", PGBP="
-				+ PGBP + ", capitalGain=" + capitalGain + ", otherSource=" + otherSource + ", isActive=" + isActive + ", userId=" + userId 
-				+ "]";
+				+ directorId + ", userId=" + userId + ", totalIncome=" + totalIncome + ", year=" + year + ", salary="
+				+ salary + ", houseProperty=" + houseProperty + ", PGBP=" + PGBP + ", capitalGain=" + capitalGain
+				+ ", otherSource=" + otherSource + ", isActive=" + isActive + "]";
 	}
+
 	
 	
 	

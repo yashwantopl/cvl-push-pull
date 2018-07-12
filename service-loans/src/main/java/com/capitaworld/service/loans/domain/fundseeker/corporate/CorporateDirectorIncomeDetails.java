@@ -40,6 +40,9 @@ public class CorporateDirectorIncomeDetails implements Serializable {
 	@Column(name="capital_gain")
 	private String capitalGain;
 	
+	@Column(name="total_income")
+	private Double totalIncome;
+	
 	@Column(name="other_source")
 	private String otherSource;
 	
@@ -171,15 +174,34 @@ public class CorporateDirectorIncomeDetails implements Serializable {
 	public void setIsActive(Boolean isActive) {
 		this.isActive = isActive;
 	}
+	
 
+	/**
+	 * @return the totalIncome
+	 */
+	public Double getTotalIncome() {
+		return totalIncome;
+	}
+
+	/**
+	 * @param totalIncome the totalIncome to set
+	 */
+	public void setTotalIncome(Double totalIncome) {
+		this.totalIncome = totalIncome;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
 	@Override
 	public String toString() {
 		return "CorporateDirectorIncomeDetails [id=" + id + ", applicationId=" + applicationId + ", directorId="
 				+ directorId + ", year=" + year + ", salary=" + salary + ", houseProperty=" + houseProperty + ", PGBP="
-				+ PGBP + ", capitalGain=" + capitalGain + ", otherSource=" + otherSource + ", createdBy=" + createdBy
-				+ ", createdDate=" + createdDate + ", modifiedBy=" + modifiedBy + ", modifiedDate=" + modifiedDate
-				+ ", isActive=" + isActive + "]";
+				+ PGBP + ", capitalGain=" + capitalGain + ", totalIncome=" + totalIncome + ", otherSource="
+				+ otherSource + ", createdBy=" + createdBy + ", createdDate=" + createdDate + ", modifiedBy="
+				+ modifiedBy + ", modifiedDate=" + modifiedDate + ", isActive=" + isActive + "]";
 	}
+
 	
 	
 	
