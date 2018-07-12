@@ -1,10 +1,11 @@
 package com.capitaworld.service.loans.service.scoring;
 
 import java.io.IOException;
-import java.util.List;
 
-import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
+import java.util.List;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
+import com.capitaworld.service.scoring.exception.ScoringException;
+import com.capitaworld.service.scoring.model.GenericCheckerReqRes;
 import com.capitaworld.service.scoring.model.scoringmodel.ScoringModelReqRes;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -40,4 +41,6 @@ public interface ScoringService {
     public ScoringModelReqRes getScoringModelDetail(ScoringModelReqRes scoringModelReqRes);
 
     public ScoringModelReqRes saveScoringModelDetail(ScoringModelReqRes scoringModelReqRes);
+    
+    public List<GenericCheckerReqRes> sendToChecker(List <GenericCheckerReqRes> genericCheckerReqRes)  throws ScoringException ;
 }
