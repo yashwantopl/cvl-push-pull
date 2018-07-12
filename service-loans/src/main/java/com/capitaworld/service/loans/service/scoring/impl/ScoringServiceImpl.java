@@ -2,6 +2,7 @@ package com.capitaworld.service.loans.service.scoring.impl;
 
 import com.capitaworld.cibil.api.model.CibilRequest;
 import com.capitaworld.cibil.api.model.CibilResponse;
+import com.capitaworld.cibil.api.model.CibilScoreLogRequest;
 import com.capitaworld.cibil.client.CIBILClient;
 import com.capitaworld.service.analyzer.client.AnalyzerClient;
 import com.capitaworld.service.analyzer.model.common.AnalyzerResponse;
@@ -1426,9 +1427,21 @@ public class ScoringServiceImpl implements ScoringService{
                     case ScoreParameter.NTB.CIBIL_TRANSUNION_SCORE: {
                         try
                         {
+                            CibilRequest cibilRequest=new CibilRequest();
+                            cibilRequest.setApplicationId(applicationId);
+                            cibilRequest.setPan(directorBackgroundDetail.getPanNo());
 
-                            // remaining
-                            scoreParameterNTBRequest.setIsCibilTransunionScore(true);
+                            CibilScoreLogRequest cibilScoreLogRequest=cibilClient.getCibilScoreByPanCard(cibilRequest);
+                            if(!CommonUtils.isObjectNullOrEmpty(cibilScoreLogRequest) && !CommonUtils.isObjectNullOrEmpty(cibilScoreLogRequest.getScore()))
+                            {
+                                Double cibilScore = Double.parseDouble(cibilScoreLogRequest.getScore());
+                                scoreParameterNTBRequest.setCibilTransunionScore(cibilScore);
+                                scoreParameterNTBRequest.setIsCibilTransunionScore(false);
+                            }
+                            else
+                            {
+                                scoreParameterNTBRequest.setIsCibilTransunionScore(false);
+                            }
                         }
                         catch (Exception e)
                         {
@@ -1563,6 +1576,7 @@ public class ScoringServiceImpl implements ScoringService{
                         try
                         {
 
+                            //remaining
                             scoreParameterNTBRequest.setIsChequeBounces(true);
                         }
                         catch (Exception e)
@@ -1577,6 +1591,7 @@ public class ScoringServiceImpl implements ScoringService{
                         try
                         {
 
+                            //remaining
                             scoreParameterNTBRequest.setIsDPD(true);
                         }
                         catch (Exception e)
