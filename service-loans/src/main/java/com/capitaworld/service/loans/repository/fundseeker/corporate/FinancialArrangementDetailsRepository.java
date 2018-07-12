@@ -43,4 +43,7 @@ public interface FinancialArrangementDetailsRepository extends JpaRepository<Fin
 
 	@Query("select o from FinancialArrangementsDetail o where o.directorBackgroundDetail.id =:directorId and o.applicationId.id =:applicationId  and o.isActive =:isActive")
 	public List<FinancialArrangementsDetail> listFinancialListForPartner(@Param("directorId")Long directorId, @Param("applicationId")Long applicationId, @Param("isActive")Boolean isActive);
+
+	@Query("select sum(o.emi) from FinancialArrangementsDetail o where o.applicationId.id =:applicationId and o.directorBackgroundDetail.id =:directorId and o.isActive = true ")
+	public Double getTotalEmiByApplicationIdAndDirectorId(@Param("applicationId")Long applicationId,@Param("directorId")Long directorId);
 }
