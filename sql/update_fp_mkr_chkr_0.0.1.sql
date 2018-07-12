@@ -336,4 +336,104 @@ CREATE TABLE `fp_term_loan_details_temp` (
   ADD job_id bigint(20) DEFAULT NULL;
   
   
+CREATE TABLE `loan_application`.`fp_product_master_temp` (
+  `fp_product_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `product_id` bigint(11) unsigned DEFAULT NULL,
+  `user_id` bigint(20) unsigned DEFAULT NULL,
+  `start_date` datetime DEFAULT NULL,
+  `end_date` datetime DEFAULT NULL,
+  `fp_name` varchar(50) DEFAULT NULL,
+  `name` varchar(50) DEFAULT NULL,
+  `is_parameter_filled` bit(1) DEFAULT b'0',
+  `created_date` datetime DEFAULT NULL,
+  `modified_date` datetime DEFAULT NULL,
+  `created_by` bigint(20) DEFAULT NULL,
+  `modified_by` bigint(20) DEFAULT NULL,
+  `is_active` bit(1) DEFAULT b'1',
+  `product_code` varchar(20) DEFAULT NULL,
+  `is_matched` bit(1) DEFAULT NULL,
+  `user_org_id` bigint(1) DEFAULT NULL,
+  `score_model_id` bigint(1) DEFAULT NULL,
+  `org_id` bigint(20) DEFAULT NULL,
+  PRIMARY KEY (`fp_product_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=440 DEFAULT CHARSET=latin1;
+
+
+CREATE TABLE `loan_application`.`industry_sector_details_temp` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `industry_id` bigint(20) DEFAULT NULL,
+  `sector_id` bigint(20) DEFAULT NULL,
+  `application_id` bigint(20) unsigned DEFAULT NULL,
+  `fp_product_id` bigint(20) unsigned DEFAULT NULL,
+  `created_date` datetime NOT NULL,
+  `modified_date` datetime DEFAULT NULL,
+  `created_by` bigint(20) DEFAULT NULL,
+  `modified_by` bigint(20) DEFAULT NULL,
+  `is_active` bit(1) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `application_id` (`application_id`),
+  KEY `fp_product_id` (`fp_product_id`),
+  CONSTRAINT `industry_sector_details_temp_ibfk_1` FOREIGN KEY (`application_id`) REFERENCES `fs_loan_application_master` (`application_id`),
+  CONSTRAINT `industry_sector_details_temp_ibfk_2` FOREIGN KEY (`fp_product_id`) REFERENCES `fp_product_master_temp` (`fp_product_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=41791 DEFAULT CHARSET=latin1;
+
+CREATE TABLE `loan_application`.`fp_geographical_state_details_temp` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `state_id` bigint(20) DEFAULT NULL,
+  `fp_product_master` bigint(20) unsigned DEFAULT NULL,
+  `created_date` datetime DEFAULT NULL,
+  `modified_date` datetime DEFAULT NULL,
+  `created_by` bigint(20) DEFAULT NULL,
+  `modified_by` bigint(20) DEFAULT NULL,
+  `is_active` bit(1) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fp_product_master` (`fp_product_master`),
+  CONSTRAINT `fp_geographical_state_details_temp_ibfk_1` FOREIGN KEY (`fp_product_master`) REFERENCES `fp_product_master_temp` (`fp_product_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=5952 DEFAULT CHARSET=latin1;
+
+
+CREATE TABLE `loan_application`.`fp_geographical_country_details_temp` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `country_id` bigint(10) DEFAULT NULL,
+  `fp_product_master` bigint(20) unsigned DEFAULT NULL,
+  `created_date` datetime DEFAULT NULL,
+  `modified_date` datetime DEFAULT NULL,
+  `created_by` bigint(20) DEFAULT NULL,
+  `modified_by` bigint(20) DEFAULT NULL,
+  `is_active` bit(1) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fp_product_master` (`fp_product_master`),
+  CONSTRAINT `fp_geographical_country_details_temp_ibfk_1` FOREIGN KEY (`fp_product_master`) REFERENCES `fp_product_master_temp` (`fp_product_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1402 DEFAULT CHARSET=latin1;
+
+
+CREATE TABLE `loan_application`.`fp_geographical_city_details_temp` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `city_id` bigint(20) DEFAULT NULL,
+  `fp_product_master_id` bigint(20) unsigned DEFAULT NULL,
+  `created_date` datetime DEFAULT NULL,
+  `modified_date` datetime DEFAULT NULL,
+  `created_by` bigint(20) DEFAULT NULL,
+  `modified_by` bigint(20) DEFAULT NULL,
+  `is_active` bit(1) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fp_product_master` (`fp_product_master_id`),
+  CONSTRAINT `fp_geographical_city_details_temp_ibfk_1` FOREIGN KEY (`fp_product_master_id`) REFERENCES `fp_product_master_temp` (`fp_product_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=402452 DEFAULT CHARSET=latin1;
+
+CREATE TABLE `loan_application`.`fp_negative_industry_temp` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `industry_id` bigint(20) unsigned DEFAULT NULL,
+  `fp_product_master_id` bigint(20) unsigned DEFAULT NULL,
+  `created_date` datetime DEFAULT CURRENT_TIMESTAMP,
+  `created_by` bigint(20) DEFAULT NULL,
+  `modified_date` datetime DEFAULT CURRENT_TIMESTAMP,
+  `modified_by` bigint(20) DEFAULT NULL,
+  `is_active` bit(1) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fp_product_master_id` (`fp_product_master_id`),
+  CONSTRAINT `fp_negative_industry_temp_ibfk_1` FOREIGN KEY (`fp_product_master_id`) REFERENCES `fp_product_master_temp` (`fp_product_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=92 DEFAULT CHARSET=latin1;
+
+
   

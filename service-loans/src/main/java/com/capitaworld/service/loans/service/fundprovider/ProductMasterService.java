@@ -58,10 +58,7 @@ public interface ProductMasterService {
 	
 	public List<ProductMasterRequest> getProductByOrgId(Long orgd);
 
-	/**
-	 * @param mappingId
-	 */
-	public void saveMasterFromTempWc(Long mappingId) throws Exception;
+	public Boolean saveCorporateMasterFromTemp(Long mappingId) throws Exception;
 
 	
 }

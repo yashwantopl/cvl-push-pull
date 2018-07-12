@@ -252,6 +252,14 @@ public class NTBServiceImpl implements NTBService {
             primaryCorporateDetail.setModifiedDate(new Date());
 
             primaryCorporateDetailRepository.saveAndFlush(primaryCorporateDetail);
+
+
+            DirectorBackgroundDetail directorBackgroundDetail = directorBackgroundDetailsRepository.findByIdAndIsActive(fundSeekerInputRequestResponse.getDirectorBackgroundDetailRequestsList().get(0).getId(), true);
+            directorBackgroundDetail.setMainDirector(true);
+            directorBackgroundDetail.setModifiedBy(userId);
+            directorBackgroundDetail.setModifiedDate(new Date());
+            directorBackgroundDetailsRepository.save(directorBackgroundDetail);
+            logger.info("director detail saved successfully");
             return true;
 
         }catch (Exception e){

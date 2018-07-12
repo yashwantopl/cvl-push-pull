@@ -18,7 +18,7 @@ import javax.persistence.TemporalType;
  */
 @Entity
 @Table(name = "fp_term_loan_details_temp")
-public class TermLoanParameterTemp extends ProductMaster implements Serializable {
+public class TermLoanParameterTemp extends ProductMasterTemp implements Serializable {
 	/**
 	 * 
 	 */

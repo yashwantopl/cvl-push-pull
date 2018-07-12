@@ -18,14 +18,21 @@ import com.capitaworld.service.loans.domain.fundprovider.GeographicalCountryDeta
 import com.capitaworld.service.loans.domain.fundprovider.GeographicalStateDetail;
 import com.capitaworld.service.loans.domain.fundprovider.NegativeIndustry;
 import com.capitaworld.service.loans.domain.fundprovider.WcTlParameter;
+import com.capitaworld.service.loans.domain.fundprovider.WcTlParameterTemp;
 import com.capitaworld.service.loans.model.DataRequest;
 import com.capitaworld.service.loans.model.corporate.WcTlParameterRequest;
 import com.capitaworld.service.loans.repository.fundprovider.GeographicalCityRepository;
+import com.capitaworld.service.loans.repository.fundprovider.GeographicalCityTempRepository;
 import com.capitaworld.service.loans.repository.fundprovider.GeographicalCountryRepository;
+import com.capitaworld.service.loans.repository.fundprovider.GeographicalCountryTempRepository;
 import com.capitaworld.service.loans.repository.fundprovider.GeographicalStateRepository;
+import com.capitaworld.service.loans.repository.fundprovider.GeographicalStateTempRepository;
 import com.capitaworld.service.loans.repository.fundprovider.NegativeIndustryRepository;
+import com.capitaworld.service.loans.repository.fundprovider.NegativeIndustryTempRepository;
 import com.capitaworld.service.loans.repository.fundprovider.WcTlLoanParameterRepository;
+import com.capitaworld.service.loans.repository.fundprovider.WcTlParameterTempRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorTempRepository;
 import com.capitaworld.service.loans.service.fundprovider.WcTlParameterService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -56,6 +63,24 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
  	
 	@Autowired
 	private OneFormClient oneFormClient; 
+	
+	@Autowired	
+	private IndustrySectorTempRepository industrySectorTempRepository;
+	
+	@Autowired 
+	private GeographicalCountryTempRepository geographicalCountryTempRepository;
+	
+	@Autowired
+	private GeographicalStateTempRepository geographicalStateTempRepository;
+	
+	@Autowired
+	private GeographicalCityTempRepository geographicalCityTempRepository;
+	
+	@Autowired
+	private NegativeIndustryTempRepository negativeIndustryTempRepository;
+	
+	@Autowired
+	private WcTlParameterTempRepository wcTlParameterTempRepository;
 
 	@Override
 	public boolean saveOrUpdate(WcTlParameterRequest wcTlParameterRequest) {
@@ -323,6 +348,132 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 		}
 		CommonDocumentUtils.endHook(logger, "saveNegativeIndustry");
 		
+	}
+
+
+
+	/* (non-Javadoc)
+	 * @see com.capitaworld.service.loans.service.fundprovider.WcTlParameterService#saveMasterFromTempWcTl(java.lang.Long)
+	 */
+	@Override
+	public Boolean saveMasterFromTempWcTl(Long mappingId) throws Exception {
+		try {
+			WcTlParameterRequest temp =  getWcTlRequestTemp(mappingId);
+
+		return saveOrUpdate(temp);
+		
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
+	public WcTlParameterRequest getWcTlRequestTemp(Long id) {
+		CommonDocumentUtils.startHook(logger, "getWcTlRequestTemp");
+		// TODO Auto-generated method stub
+		WcTlParameterRequest wcTlParameterRequest = new WcTlParameterRequest();
+		WcTlParameterTemp loanParameter =  wcTlParameterTempRepository.getWcTlParameterTempByFpProductId(id);
+		if(loanParameter==null)
+			return null;
+		BeanUtils.copyProperties(loanParameter, wcTlParameterRequest);
+		
+		if (!CommonUtils.isObjectListNull(wcTlParameterRequest.getMaxTenure()))
+			wcTlParameterRequest.setMaxTenure(wcTlParameterRequest.getMaxTenure().divide(new BigDecimal("12"), 2, RoundingMode.HALF_UP));
+		if (!CommonUtils.isObjectListNull(wcTlParameterRequest.getMinTenure()))
+			wcTlParameterRequest.setMinTenure(wcTlParameterRequest.getMinTenure().divide(new BigDecimal("12"), 2, RoundingMode.HALF_UP));
+		
+		List<Long> industryList = industrySectorTempRepository
+				.getIndustryByProductId(wcTlParameterRequest.getId());
+		if (!industryList.isEmpty()) {
+			try {
+				OneFormResponse formResponse = oneFormClient.getIndustryById(industryList);
+				wcTlParameterRequest.setIndustrylist((List<DataRequest>)formResponse.getListData());
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				logger.error("error while getWcTlRequestTemp",e);
+				e.printStackTrace();
+			}
+		}
+		
+		List<Long> sectorList = industrySectorTempRepository
+				.getSectorByProductId(wcTlParameterRequest.getId());
+		if(!sectorList.isEmpty())
+		{
+		try {
+			OneFormResponse formResponse = oneFormClient.getSectorById(sectorList);
+			wcTlParameterRequest.setSectorlist((List<DataRequest>) formResponse.getListData());
+			 
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			logger.error("error while getWcTlRequestTemp",e);
+			e.printStackTrace();
+		}
+		}
+
+		List<Long> countryList=geographicalCountryTempRepository.getCountryByFpProductId(wcTlParameterRequest.getId());
+		if(!countryList.isEmpty())
+		{
+		try {
+			OneFormResponse formResponse = oneFormClient.getCountryByCountryListId(countryList);
+			wcTlParameterRequest.setCountryList((List<DataRequest>) formResponse.getListData());
+			 
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			logger.error("error while getWcTlRequestTemp",e);
+			e.printStackTrace();
+		}
+		}
+		
+		
+		List<Long> stateList=geographicalStateTempRepository.getStateByFpProductId(wcTlParameterRequest.getId());
+		if(!stateList.isEmpty())
+		{
+		try {
+			OneFormResponse formResponse = oneFormClient.getStateByStateListId(stateList);
+			wcTlParameterRequest.setStateList((List<DataRequest>) formResponse.getListData());
+			 
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			logger.error("error while getWcTlRequestTemp",e);
+			e.printStackTrace();
+		}
+		}
+		
+		
+		List<Long> cityList=geographicalCityTempRepository.getCityByFpProductId(wcTlParameterRequest.getId());
+		if(!cityList.isEmpty())
+		{
+		try {
+			OneFormResponse formResponse = oneFormClient.getCityByCityListId(cityList);
+			wcTlParameterRequest.setCityList((List<DataRequest>) formResponse.getListData());
+			 
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			logger.error("error while getWcTlRequestTemp",e);
+			e.printStackTrace();
+		}
+		}
+		
+		
+		List<Long> negativeIndustryList = negativeIndustryTempRepository
+				.getIndustryByFpProductMasterId(wcTlParameterRequest.getId());
+		if (!negativeIndustryList.isEmpty()) {
+			try {
+				OneFormResponse formResponse = oneFormClient.getIndustryById(negativeIndustryList);
+				wcTlParameterRequest.setNegativeIndustryList((List<DataRequest>)formResponse.getListData());
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				logger.error("error while getWcTlRequestTemp",e);
+				e.printStackTrace();
+			}
+		}
+		CommonDocumentUtils.endHook(logger, "getWcTlRequestTemp");
+		return wcTlParameterRequest;
 	}
 	
 }

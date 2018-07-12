@@ -18,7 +18,7 @@ import javax.persistence.TemporalType;
  */
 @Entity
 @Table(name = "fp_wc_tl_details_temp")
-public class WcTlParameterTemp extends ProductMaster implements Serializable {
+public class WcTlParameterTemp extends ProductMasterTemp implements Serializable {
 	/**
 	 * 
 	 */

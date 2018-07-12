@@ -18,14 +18,21 @@ import com.capitaworld.service.loans.domain.fundprovider.GeographicalCountryDeta
 import com.capitaworld.service.loans.domain.fundprovider.GeographicalStateDetail;
 import com.capitaworld.service.loans.domain.fundprovider.NegativeIndustry;
 import com.capitaworld.service.loans.domain.fundprovider.TermLoanParameter;
+import com.capitaworld.service.loans.domain.fundprovider.TermLoanParameterTemp;
 import com.capitaworld.service.loans.model.DataRequest;
 import com.capitaworld.service.loans.model.corporate.TermLoanParameterRequest;
 import com.capitaworld.service.loans.repository.fundprovider.GeographicalCityRepository;
+import com.capitaworld.service.loans.repository.fundprovider.GeographicalCityTempRepository;
 import com.capitaworld.service.loans.repository.fundprovider.GeographicalCountryRepository;
+import com.capitaworld.service.loans.repository.fundprovider.GeographicalCountryTempRepository;
 import com.capitaworld.service.loans.repository.fundprovider.GeographicalStateRepository;
+import com.capitaworld.service.loans.repository.fundprovider.GeographicalStateTempRepository;
 import com.capitaworld.service.loans.repository.fundprovider.NegativeIndustryRepository;
+import com.capitaworld.service.loans.repository.fundprovider.NegativeIndustryTempRepository;
 import com.capitaworld.service.loans.repository.fundprovider.TermLoanParameterRepository;
+import com.capitaworld.service.loans.repository.fundprovider.TermLoanParameterTempRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorTempRepository;
 import com.capitaworld.service.loans.service.fundprovider.TermLoanParameterService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -53,9 +60,27 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 	
 	@Autowired
 	private NegativeIndustryRepository negativeIndustryRepository;
+	
+	@Autowired
+	private TermLoanParameterTempRepository termLoanParameterTempRepository;  
  	
 	@Autowired
 	private OneFormClient oneFormClient; 
+	
+	@Autowired	
+	private IndustrySectorTempRepository industrySectorTempRepository;
+	
+	@Autowired 
+	private GeographicalCountryTempRepository geographicalCountryTempRepository;
+	
+	@Autowired
+	private GeographicalStateTempRepository geographicalStateTempRepository;
+	
+	@Autowired
+	private GeographicalCityTempRepository geographicalCityTempRepository;
+	
+	@Autowired
+	private NegativeIndustryTempRepository negativeIndustryTempRepository;
 
 	@Override
 	public boolean saveOrUpdate(TermLoanParameterRequest termLoanParameterRequest) {
@@ -324,5 +349,130 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		CommonDocumentUtils.endHook(logger, "saveNegativeIndustry");
 		
 	}
+
+
+
+	/* (non-Javadoc)
+	 * @see com.capitaworld.service.loans.service.fundprovider.TermLoanParameterService#saveMasterFromTempTl(java.lang.Long)
+	 */
+	@Override
+	public Boolean saveMasterFromTempTl(Long mappingId) throws Exception {
+		try {
+			TermLoanParameterRequest  temp =  getTermLoanParameterRequestTemp(mappingId);
+        return saveOrUpdate(temp);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
+	public TermLoanParameterRequest getTermLoanParameterRequestTemp(Long id) {
+		CommonDocumentUtils.startHook(logger, "getTermLoanParameterRequest");
+		// TODO Auto-generated method stub
+		TermLoanParameterRequest termLoanParameterRequest = new TermLoanParameterRequest();
+		TermLoanParameterTemp loanParameter =  termLoanParameterTempRepository.getTermLoanParameterTempByFpProductId(id);
+		if(loanParameter==null)
+			return null;
+		BeanUtils.copyProperties(loanParameter, termLoanParameterRequest);
+		
+		if (!CommonUtils.isObjectListNull(termLoanParameterRequest.getMaxTenure()))
+			termLoanParameterRequest.setMaxTenure(termLoanParameterRequest.getMaxTenure().divide(new BigDecimal("12"), 2, RoundingMode.HALF_UP));
+		if (!CommonUtils.isObjectListNull(termLoanParameterRequest.getMinTenure()))
+			termLoanParameterRequest.setMinTenure(termLoanParameterRequest.getMinTenure().divide(new BigDecimal("12"), 2, RoundingMode.HALF_UP));
+		
+		List<Long> industryList = industrySectorTempRepository
+				.getIndustryByProductId(termLoanParameterRequest.getId());
+		if (!industryList.isEmpty()) {
+			try {
+				OneFormResponse formResponse = oneFormClient.getIndustryById(industryList);
+				termLoanParameterRequest.setIndustrylist((List<DataRequest>)formResponse.getListData());
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				logger.error("error while getTermLoanParameterRequestTemp",e);
+				e.printStackTrace();
+			}
+		}
+		
+		List<Long> sectorList = industrySectorTempRepository
+				.getSectorByProductId(termLoanParameterRequest.getId());
+		if(!sectorList.isEmpty())
+		{
+		try {
+			OneFormResponse formResponse = oneFormClient.getSectorById(sectorList);
+			termLoanParameterRequest.setSectorlist((List<DataRequest>) formResponse.getListData());
+			 
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			logger.error("error while getTermLoanParameterRequestTemp",e);
+			e.printStackTrace();
+		}
+		}
+
+		List<Long> countryList=geographicalCountryTempRepository.getCountryByFpProductId(termLoanParameterRequest.getId());
+		if(!countryList.isEmpty())
+		{
+		try {
+			OneFormResponse formResponse = oneFormClient.getCountryByCountryListId(countryList);
+			termLoanParameterRequest.setCountryList((List<DataRequest>) formResponse.getListData());
+			 
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			logger.error("error while getTermLoanParameterRequestTemp",e);
+			e.printStackTrace();
+		}
+		}
+		
+		
+		List<Long> stateList=geographicalStateTempRepository.getStateByFpProductId(termLoanParameterRequest.getId());
+		if(!stateList.isEmpty())
+		{
+		try {
+			OneFormResponse formResponse = oneFormClient.getStateByStateListId(stateList);
+			termLoanParameterRequest.setStateList((List<DataRequest>) formResponse.getListData());
+			 
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			logger.error("error while getTermLoanParameterRequestTemp",e);
+			e.printStackTrace();
+		}
+		}
+		
+		
+		List<Long> cityList=geographicalCityTempRepository.getCityByFpProductId(termLoanParameterRequest.getId());
+		if(!cityList.isEmpty())
+		{
+		try {
+			OneFormResponse formResponse = oneFormClient.getCityByCityListId(cityList);
+			termLoanParameterRequest.setCityList((List<DataRequest>) formResponse.getListData());
+			 
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			logger.error("error while getTermLoanParameterRequestTemp",e);
+			e.printStackTrace();
+		}
+		}
+		
+		
+		List<Long> negativeIndustryList = negativeIndustryTempRepository
+				.getIndustryByFpProductMasterId(termLoanParameterRequest.getId());
+		if (!negativeIndustryList.isEmpty()) {
+			try {
+				OneFormResponse formResponse = oneFormClient.getIndustryById(negativeIndustryList);
+				termLoanParameterRequest.setNegativeIndustryList((List<DataRequest>)formResponse.getListData());
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				logger.error("error while getTermLoanParameterRequestTemp",e);
+				e.printStackTrace();
+			}
+		}
+		CommonDocumentUtils.endHook(logger, "getTermLoanParameterRequestTemp");
+		return termLoanParameterRequest;
+	}
+	
 	
 }
