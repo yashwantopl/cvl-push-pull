@@ -47,7 +47,7 @@ public class DirectorBackgroundDetailResponseString implements Serializable{
 
 	private String relationshipType;
 	
-	private Double cibilScore;
+	private String cibilScore;
 
 	public String getAddress() {
 		return address;
@@ -185,13 +185,14 @@ public class DirectorBackgroundDetailResponseString implements Serializable{
 		this.relationshipType = relationshipType;
 	}
 
-	public Double getCibilScore() {
+	public String getCibilScore() {
 		return cibilScore;
 	}
 
-	public void setCibilScore(Double cibilScore) {
+	public void setCibilScore(String cibilScore) {
 		this.cibilScore = cibilScore;
 	}
+
 	
 	
 	
