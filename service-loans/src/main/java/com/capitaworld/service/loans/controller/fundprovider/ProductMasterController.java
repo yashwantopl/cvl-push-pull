@@ -662,7 +662,7 @@ public class ProductMasterController {
 		try {
 			CommonDocumentUtils.startHook(logger, "saveMasterFromTemp");
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
-			productMasterService.saveMasterFromTempWc(mappingId);
+			productMasterService.saveCorporateMasterFromTemp(mappingId);
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while saveMasterFromTemp==>", e);

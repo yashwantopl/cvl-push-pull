@@ -28,11 +28,11 @@ import com.capitaworld.service.loans.domain.fundprovider.HomeLoanParameter;
 import com.capitaworld.service.loans.domain.fundprovider.LapParameter;
 import com.capitaworld.service.loans.domain.fundprovider.PersonalLoanParameter;
 import com.capitaworld.service.loans.domain.fundprovider.ProductMaster;
+import com.capitaworld.service.loans.domain.fundprovider.ProductMasterTemp;
 import com.capitaworld.service.loans.domain.fundprovider.TermLoanParameter;
 import com.capitaworld.service.loans.domain.fundprovider.UnsecureLoanParameter;
 import com.capitaworld.service.loans.domain.fundprovider.WcTlParameter;
 import com.capitaworld.service.loans.domain.fundprovider.WorkingCapitalParameter;
-import com.capitaworld.service.loans.domain.fundprovider.WorkingCapitalParameterTemp;
 import com.capitaworld.service.loans.model.FpProductDetails;
 import com.capitaworld.service.loans.model.MultipleFpPruductRequest;
 import com.capitaworld.service.loans.model.ProductDetailsForSp;
@@ -57,7 +57,11 @@ import com.capitaworld.service.loans.repository.fundprovider.LapParameterReposit
 import com.capitaworld.service.loans.repository.fundprovider.LasParameterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.PersonalLoanParameterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
+import com.capitaworld.service.loans.repository.fundprovider.ProductMasterTempRepository;
 import com.capitaworld.service.loans.repository.fundprovider.TermLoanParameterRepository;
+import com.capitaworld.service.loans.repository.fundprovider.TermLoanParameterTempRepository;
+import com.capitaworld.service.loans.repository.fundprovider.WcTlLoanParameterRepository;
+import com.capitaworld.service.loans.repository.fundprovider.WcTlParameterTempRepository;
 import com.capitaworld.service.loans.repository.fundprovider.WorkingCapitalParameterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.WorkingCapitalParameterTempRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
@@ -155,16 +159,8 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	@Autowired
 	private DMSClient dmsClient;
 	
-
-    @Autowired
-    private WorkflowClient workflowClient;
-	
 	@Autowired
-	private WorkingCapitalParameterTempRepository workingCapitalParameterTempRepository;
-
-	@Autowired
-	private LoanApplicationRepository loanApplicationRepository;
-
+   	private ProductMasterTempRepository productMasterTempRepository;
 	@Override
 	public Boolean saveOrUpdate(AddProductRequest addProductRequest, Long userOrgId) {
 		CommonDocumentUtils.startHook(logger, "saveOrUpdate");
@@ -761,22 +757,31 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 		}
 		return null;
 	}
-
-	/* (non-Javadoc)
-	 * @see com.capitaworld.service.loans.service.fundprovider.ProductMasterService#saveMasterFromTemp(java.lang.Long)
-	 */
+	
 	@Override
-	public void saveMasterFromTempWc(Long mappingId) throws Exception {
-		WorkingCapitalParameterTemp temp =  workingCapitalParameterTempRepository.getworkingCapitalParameterTempByFpProductId(mappingId);
-		WorkingCapitalParameter master = new WorkingCapitalParameter();
-        BeanUtils.copyProperties(temp, master);
-        
-        master.setModifiedDate(new Date());
-       
-        master.setJobId(temp.getJobId());
-        workingCapitalParameterRepository.save(master);
-
+	public Boolean saveCorporateMasterFromTemp(Long mappingId) throws Exception {
+		// TODO Auto-generated method stub
 		
+		ProductMasterTemp corporateProduct = productMasterTempRepository.getProductMasterTemp(mappingId);
+		CommonDocumentUtils.startHook(logger, "saveCorporate");
+		if (!CommonUtils.isObjectNullOrEmpty(corporateProduct)) {
+			if (!CommonUtils.isObjectNullOrEmpty(corporateProduct.getProductId())) {
+				if (corporateProduct.getProductId() == CommonUtils.LoanType.WORKING_CAPITAL.getValue()) {
+					CommonDocumentUtils.endHook(logger, "saveCorporate");
+					return workingCapitalParameterService.saveMasterFromTempWc(mappingId);
+				} else if (corporateProduct.getProductId() == CommonUtils.LoanType.TERM_LOAN.getValue()) {
+					CommonDocumentUtils.endHook(logger, "saveCorporate");
+					return termLoanParameterService.saveMasterFromTempTl(mappingId);
+				} else if (corporateProduct.getProductId() == CommonUtils.LoanType.WCTL_LOAN.getValue()) {
+					CommonDocumentUtils.endHook(logger, "saveCorporate");
+					return wcTlParameterService.saveMasterFromTempWcTl(mappingId);
+				}
+			}
+		}
+		CommonDocumentUtils.endHook(logger, "saveCorporate");
+		return false;
 	}
+
+
 
 }

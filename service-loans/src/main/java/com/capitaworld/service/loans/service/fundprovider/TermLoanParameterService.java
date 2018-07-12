@@ -6,4 +6,10 @@ public interface TermLoanParameterService {
 	public boolean saveOrUpdate(TermLoanParameterRequest termLoanParameterRequest);
 	
 	public TermLoanParameterRequest getTermLoanParameterRequest(Long id);
+
+	/**
+	 * @param mappingId
+	 * @return
+	 */
+	public Boolean saveMasterFromTempTl(Long mappingId) throws Exception;
 }
