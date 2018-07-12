@@ -27,6 +27,7 @@ import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.loans.utils.scoreexcel.ScoreExcelFileGenerator;
 import com.capitaworld.service.loans.utils.scoreexcel.ScoreExcelReader;
 import com.capitaworld.service.scoring.ScoringClient;
+import com.capitaworld.service.scoring.exception.ScoringException;
 import com.capitaworld.service.scoring.model.*;
 import com.capitaworld.service.scoring.model.scoringmodel.ScoringModelReqRes;
 import com.capitaworld.service.scoring.utils.ScoreParameter;
@@ -1820,4 +1821,10 @@ public class ScoringServiceImpl implements ScoringService{
             return  new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG,HttpStatus.BAD_REQUEST.value());
         }
     }
+
+	@Override
+	public List<GenericCheckerReqRes> sendToChecker(List<GenericCheckerReqRes> genericCheckerReqResList) throws ScoringException {
+	            return scoringClient.sendToChecker(genericCheckerReqResList);
+	        
+	}
 }
