@@ -12,4 +12,10 @@ public interface WorkingCapitalParameterService {
 	public List<WorkingCapitalParameterRequest> getWorkingCapitalParameterListByUserId(Long id);
 	
 	public Boolean saveMasterFromTempWc(Long mappingId) throws Exception;
+
+	/**
+	 * @param capitalParameterRequest
+	 * @return
+	 */
+	public Boolean saveOrUpdateTemp(WorkingCapitalParameterRequest capitalParameterRequest);
 }

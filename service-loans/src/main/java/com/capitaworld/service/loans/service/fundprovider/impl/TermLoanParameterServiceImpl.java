@@ -12,11 +12,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.capitaworld.api.workflow.model.WorkflowResponse;
+import com.capitaworld.api.workflow.utility.WorkflowUtils;
+import com.capitaworld.client.workflow.WorkflowClient;
 import com.capitaworld.service.loans.domain.IndustrySectorDetail;
+import com.capitaworld.service.loans.domain.IndustrySectorDetailTemp;
 import com.capitaworld.service.loans.domain.fundprovider.GeographicalCityDetail;
+import com.capitaworld.service.loans.domain.fundprovider.GeographicalCityDetailTemp;
 import com.capitaworld.service.loans.domain.fundprovider.GeographicalCountryDetail;
+import com.capitaworld.service.loans.domain.fundprovider.GeographicalCountryDetailTemp;
 import com.capitaworld.service.loans.domain.fundprovider.GeographicalStateDetail;
+import com.capitaworld.service.loans.domain.fundprovider.GeographicalStateDetailTemp;
 import com.capitaworld.service.loans.domain.fundprovider.NegativeIndustry;
+import com.capitaworld.service.loans.domain.fundprovider.NegativeIndustryTemp;
 import com.capitaworld.service.loans.domain.fundprovider.TermLoanParameter;
 import com.capitaworld.service.loans.domain.fundprovider.TermLoanParameterTemp;
 import com.capitaworld.service.loans.model.DataRequest;
@@ -81,6 +89,9 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 	
 	@Autowired
 	private NegativeIndustryTempRepository negativeIndustryTempRepository;
+	
+    @Autowired
+    private WorkflowClient workflowClient;
 
 	@Override
 	public boolean saveOrUpdate(TermLoanParameterRequest termLoanParameterRequest) {
@@ -104,6 +115,7 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		termLoanParameter.setModifiedDate(new Date());
 		termLoanParameter.setIsActive(true);
 		termLoanParameter.setIsParameterFilled(true);
+		termLoanParameter.setJobId(termLoanParameterRequest.getJobId());
 		termLoanParameterRepository.save(termLoanParameter);
 		
 		industrySectorRepository.inActiveMappingByFpProductId(termLoanParameterRequest.getId());
@@ -471,8 +483,190 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 			}
 		}
 		CommonDocumentUtils.endHook(logger, "getTermLoanParameterRequestTemp");
+		
+		termLoanParameterRequest.setJobId(loanParameter.getJobId());
+		loanParameter.setStatusId(CommonUtils.Status.APPROVED);
+        loanParameter.setIsDeleted(false);
+        loanParameter.setIsEdit(false);
+        loanParameter.setIsCopied(true);
+        loanParameter.setIsApproved(true);
+        loanParameter.setApprovalDate(new Date());
+        termLoanParameterTempRepository.save(loanParameter);
 		return termLoanParameterRequest;
 	}
 	
+	@Override
+	public Boolean saveOrUpdateTemp(TermLoanParameterRequest termLoanParameterRequest) {
+		CommonDocumentUtils.startHook(logger, "saveOrUpdate");
+		// TODO Auto-generated method stub
+		
+		TermLoanParameterTemp termLoanParameter = null;
+
+		termLoanParameter = termLoanParameterTempRepository.findOne(termLoanParameterRequest.getId());
+		if (termLoanParameter == null) {
+			return false;
+		}
+		
+		if (!CommonUtils.isObjectListNull(termLoanParameterRequest.getMaxTenure()))
+			termLoanParameterRequest.setMaxTenure(termLoanParameterRequest.getMaxTenure().multiply(new BigDecimal("12")));
+		if (!CommonUtils.isObjectListNull(termLoanParameterRequest.getMinTenure()))
+			termLoanParameterRequest.setMinTenure(termLoanParameterRequest.getMinTenure().multiply(new BigDecimal("12")));
+		
+		BeanUtils.copyProperties(termLoanParameterRequest, termLoanParameter, CommonUtils.IgnorableCopy.FP_PRODUCT);
+		termLoanParameter.setModifiedBy(termLoanParameterRequest.getUserId());
+		termLoanParameter.setModifiedDate(new Date());
+		termLoanParameter.setIsActive(true);
+		termLoanParameter.setIsParameterFilled(true);
+		
+		termLoanParameter.setStatusId(CommonUtils.Status.OPEN);
+        termLoanParameter.setIsApproved(false);
+        termLoanParameter.setIsDeleted(false);
+        termLoanParameter.setIsCopied(false);
+        termLoanParameter.setApprovalDate(null);
+        
+        WorkflowResponse workflowResponse = workflowClient.createJobForMasters(WorkflowUtils.Workflow.MASTER_DATA_APPROVAL_PROCESS, WorkflowUtils.Action.SEND_FOR_APPROVAL, termLoanParameterRequest.getUserId());
+        Long jobId = null;
+        if (!CommonUtils.isObjectNullOrEmpty(workflowResponse.getData())) {
+            jobId = Long.valueOf(workflowResponse.getData().toString());
+        }
+        termLoanParameter.setJobId(jobId);    
+		termLoanParameterTempRepository.save(termLoanParameter);
+		
+		industrySectorTempRepository.inActiveMappingByFpProductId(termLoanParameterRequest.getId());
+		// industry data save
+		saveIndustryTemp(termLoanParameterRequest);
+		// Sector data save
+		saveSectorTemp(termLoanParameterRequest);
+		geographicalCountryTempRepository.inActiveMappingByFpProductId(termLoanParameterRequest.getId());
+		//country data save
+		saveCountryTemp(termLoanParameterRequest);
+		//state data save
+		geographicalStateTempRepository.inActiveMappingByFpProductId(termLoanParameterRequest.getId());
+		saveStateTemp(termLoanParameterRequest);
+		//city data save
+		geographicalCityTempRepository.inActiveMappingByFpProductId(termLoanParameterRequest.getId());
+		saveCityTemp(termLoanParameterRequest);
+		//negative industry save
+		negativeIndustryTempRepository.inActiveMappingByFpProductMasterId(termLoanParameterRequest.getId());
+		saveNegativeIndustryTemp(termLoanParameterRequest);
+		
+		CommonDocumentUtils.endHook(logger, "saveOrUpdate");
+		return true;
+
+	}
+	
+	
+	
+	private void saveIndustryTemp(TermLoanParameterRequest workingCapitalParameterRequest) {
+		logger.info("start saveIndustryTemp");
+		IndustrySectorDetailTemp industrySectorDetail = null;
+		System.out.println(workingCapitalParameterRequest.getIndustrylist());
+		for (DataRequest dataRequest : workingCapitalParameterRequest.getIndustrylist()) {
+			industrySectorDetail = new IndustrySectorDetailTemp();
+			industrySectorDetail.setFpProductId(workingCapitalParameterRequest.getId());
+			industrySectorDetail.setIndustryId(dataRequest.getId());
+			industrySectorDetail.setCreatedBy(workingCapitalParameterRequest.getUserId());
+			industrySectorDetail.setModifiedBy(workingCapitalParameterRequest.getUserId());
+			industrySectorDetail.setCreatedDate(new Date());
+			industrySectorDetail.setModifiedDate(new Date());
+			industrySectorDetail.setIsActive(true);
+			// create by and update
+			industrySectorTempRepository.save(industrySectorDetail);
+		}
+		logger.info("end saveIndustryTemp");
+	}
+
+	private void saveSectorTemp(TermLoanParameterRequest workingCapitalParameterRequest) {
+		logger.info("start saveSectorTemp");
+		IndustrySectorDetailTemp industrySectorDetail = null;
+		for (DataRequest dataRequest : workingCapitalParameterRequest.getSectorlist()) {
+			industrySectorDetail = new IndustrySectorDetailTemp();
+			industrySectorDetail.setFpProductId(workingCapitalParameterRequest.getId());
+			industrySectorDetail.setSectorId(dataRequest.getId());
+			industrySectorDetail.setCreatedBy(workingCapitalParameterRequest.getUserId());
+			industrySectorDetail.setModifiedBy(workingCapitalParameterRequest.getUserId());
+			industrySectorDetail.setCreatedDate(new Date());
+			industrySectorDetail.setModifiedDate(new Date());
+			industrySectorDetail.setIsActive(true);
+			// create by and update
+			industrySectorTempRepository.save(industrySectorDetail);
+		}
+		logger.info("end saveSectorTemp");
+	}
+	
+	private void saveCountryTemp(TermLoanParameterRequest workingCapitalParameterRequest) {
+		logger.info("save saveCountryTemp");
+		GeographicalCountryDetailTemp geographicalCountryDetail= null;
+		for (DataRequest dataRequest : workingCapitalParameterRequest.getCountryList()) {
+			geographicalCountryDetail = new GeographicalCountryDetailTemp();
+			geographicalCountryDetail.setCountryId(dataRequest.getId());
+			geographicalCountryDetail.setFpProductMaster(workingCapitalParameterRequest.getId());
+			geographicalCountryDetail.setCreatedBy(workingCapitalParameterRequest.getUserId());
+			geographicalCountryDetail.setModifiedBy(workingCapitalParameterRequest.getUserId());
+			geographicalCountryDetail.setCreatedDate(new Date());
+			geographicalCountryDetail.setModifiedDate(new Date());
+			geographicalCountryDetail.setIsActive(true);
+			// create by and update
+			geographicalCountryTempRepository.save(geographicalCountryDetail);
+		}
+		logger.info("end saveCountryTemp");
+	}
+	
+	private void saveStateTemp(TermLoanParameterRequest workingCapitalParameterRequest) {
+		logger.info("start saveStateTemp");
+		GeographicalStateDetailTemp geographicalStateDetail= null;
+		for (DataRequest dataRequest : workingCapitalParameterRequest.getStateList()) {
+			geographicalStateDetail = new GeographicalStateDetailTemp();
+			geographicalStateDetail.setStateId(dataRequest.getId());
+			geographicalStateDetail.setFpProductMaster(workingCapitalParameterRequest.getId());
+			geographicalStateDetail.setCreatedBy(workingCapitalParameterRequest.getUserId());
+			geographicalStateDetail.setModifiedBy(workingCapitalParameterRequest.getUserId());
+			geographicalStateDetail.setCreatedDate(new Date());
+			geographicalStateDetail.setModifiedDate(new Date());
+			geographicalStateDetail.setIsActive(true);
+			// create by and update
+			geographicalStateTempRepository.save(geographicalStateDetail);
+		}
+		logger.info("end saveStateTemp");
+	}
+	
+	private void saveCityTemp(TermLoanParameterRequest workingCapitalParameterRequest) {
+		logger.info("start saveCityTemp");
+		GeographicalCityDetailTemp geographicalCityDetail= null;
+		for (DataRequest dataRequest : workingCapitalParameterRequest.getCityList()) {
+			geographicalCityDetail = new GeographicalCityDetailTemp();
+			geographicalCityDetail.setCityId(dataRequest.getId());
+			geographicalCityDetail.setFpProductMaster(workingCapitalParameterRequest.getId());
+			geographicalCityDetail.setCreatedBy(workingCapitalParameterRequest.getUserId());
+			geographicalCityDetail.setModifiedBy(workingCapitalParameterRequest.getUserId());
+			geographicalCityDetail.setCreatedDate(new Date());
+			geographicalCityDetail.setModifiedDate(new Date());
+			geographicalCityDetail.setIsActive(true);
+			// create by and update
+			geographicalCityTempRepository.save(geographicalCityDetail);
+		}
+		logger.info("end saveCityTemp");
+	}
+
+	private void saveNegativeIndustryTemp(TermLoanParameterRequest workingCapitalParameterRequest) {
+		// TODO Auto-generated method stub
+		CommonDocumentUtils.startHook(logger, "saveNegativeIndustryTemp");
+		NegativeIndustryTemp negativeIndustry= null;
+		for (DataRequest dataRequest : workingCapitalParameterRequest.getUnInterestedIndustrylist()) {
+			negativeIndustry = new NegativeIndustryTemp();
+			negativeIndustry.setFpProductMasterId(workingCapitalParameterRequest.getId());
+			negativeIndustry.setIndustryId(dataRequest.getId());
+			negativeIndustry.setCreatedBy(workingCapitalParameterRequest.getUserId());
+			negativeIndustry.setModifiedBy(workingCapitalParameterRequest.getUserId());
+			negativeIndustry.setCreatedDate(new Date());
+			negativeIndustry.setModifiedDate(new Date());
+			negativeIndustry.setIsActive(true);
+			// create by and update
+			negativeIndustryTempRepository.save(negativeIndustry);
+		}
+		CommonDocumentUtils.endHook(logger, "saveNegativeIndustryTemp");
+		
+	}
+
 	
 }

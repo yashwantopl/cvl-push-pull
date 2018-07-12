@@ -60,5 +60,11 @@ public interface ProductMasterService {
 
 	public Boolean saveCorporateMasterFromTemp(Long mappingId) throws Exception;
 
+	/**
+	 * @param corporateProduct
+	 * @return
+	 */
+	public Boolean saveCorporateInTemp(CorporateProduct corporateProduct);
+
 	
 }
