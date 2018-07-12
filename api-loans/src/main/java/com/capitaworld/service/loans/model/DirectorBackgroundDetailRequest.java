@@ -86,11 +86,13 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 
 	private Integer residenceType;
 
-	private Integer residenceSince;
+    private Integer residenceSinceMonth;
+    private Integer residenceSinceYear;
+
 
 	private Boolean isFamilyMemberInBusiness;
 
-	private Long empDetailId;
+    private EmploymentDetailRequest employmentDetailRequest;
 
 	private Integer countryId;
 
@@ -101,6 +103,8 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 	private String landmark;
 
 	private Boolean isMainDirector;
+
+	private Integer qualificationId;
 
 	public Boolean getIsActive() {
 		return isActive;
@@ -304,7 +308,14 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 	public void setShareholding(Double shareholding) {
 		this.shareholding = shareholding;
 	}
-	
+
+	public Boolean getFamilyMemberInBusiness() {
+		return isFamilyMemberInBusiness;
+	}
+
+	public void setFamilyMemberInBusiness(Boolean familyMemberInBusiness) {
+		isFamilyMemberInBusiness = familyMemberInBusiness;
+	}
 
 	public Boolean getIsItrCompleted() {
 		return isItrCompleted;
@@ -402,28 +413,30 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 		this.residenceType = residenceType;
 	}
 
-	public Integer getResidenceSince() {
-		return residenceSince;
+    public Integer getResidenceSinceMonth() {
+        return residenceSinceMonth;
+    }
+
+    public void setResidenceSinceMonth(Integer residenceSinceMonth) {
+        this.residenceSinceMonth = residenceSinceMonth;
+    }
+
+    public Integer getResidenceSinceYear() {
+        return residenceSinceYear;
+    }
+
+    public void setResidenceSinceYear(Integer residenceSinceYear) {
+        this.residenceSinceYear = residenceSinceYear;
+    }
+
+
+
+	public EmploymentDetailRequest getEmploymentDetailRequest() {
+		return employmentDetailRequest;
 	}
 
-	public void setResidenceSince(Integer residenceSince) {
-		this.residenceSince = residenceSince;
-	}
-
-	public Boolean getFamilyMemberInBusiness() {
-		return isFamilyMemberInBusiness;
-	}
-
-	public void setFamilyMemberInBusiness(Boolean familyMemberInBusiness) {
-		isFamilyMemberInBusiness = familyMemberInBusiness;
-	}
-
-	public Long getEmpDetailId() {
-		return empDetailId;
-	}
-
-	public void setEmpDetailId(Long empDetailId) {
-		this.empDetailId = empDetailId;
+	public void setEmploymentDetailRequest(EmploymentDetailRequest employmentDetailRequest) {
+		this.employmentDetailRequest = employmentDetailRequest;
 	}
 
 	public Integer getCountryId() {
@@ -466,53 +479,63 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 		isMainDirector = mainDirector;
 	}
 
-	@Override
-	public String toString() {
-		return "DirectorBackgroundDetailRequest{" +
-				"id=" + id +
-				", address='" + address + '\'' +
-				", networth=" + networth +
-				", applicationId=" + applicationId +
-				", salutationId=" + salutationId +
-				", din=" + din +
-				", appointmentDate=" + appointmentDate +
-				", designation='" + designation + '\'' +
-				", panNo='" + panNo + '\'' +
-				", directorsName='" + directorsName + '\'' +
-				", totalExperience=" + totalExperience +
-				", isActive=" + isActive +
-				", pincode='" + pincode + '\'' +
-				", stateCode='" + stateCode + '\'' +
-				", city='" + city + '\'' +
-				", dob=" + dob +
-				", mobile='" + mobile + '\'' +
-				", gender=" + gender +
-				", relationshipType=" + relationshipType +
-				", firstName='" + firstName + '\'' +
-				", lastName='" + lastName + '\'' +
-				", middleName='" + middleName + '\'' +
-				", title='" + title + '\'' +
-				", shareholding=" + shareholding +
-				", isItrCompleted=" + isItrCompleted +
-				", isCibilCompleted=" + isCibilCompleted +
-				", isBankStatementCompleted=" + isBankStatementCompleted +
-				", isOneFormCompleted=" + isOneFormCompleted +
-				", aadhar='" + aadhar + '\'' +
-				", maritalStatus=" + maritalStatus +
-				", noOfDependent=" + noOfDependent +
-				", residenceType=" + residenceType +
-				", residenceSince=" + residenceSince +
-				", isFamilyMemberInBusiness=" + isFamilyMemberInBusiness +
-				", empDetailId=" + empDetailId +
-				", countryId=" + countryId +
-				", premiseNumber='" + premiseNumber + '\'' +
-				", streetName='" + streetName + '\'' +
-				", landmark='" + landmark + '\'' +
-				", isMainDirector=" + isMainDirector +
-				'}';
+	public Integer getQualificationId() {
+		return qualificationId;
 	}
 
-	public static void printFields(Object obj) throws Exception {
+	public void setQualificationId(Integer qualificationId) {
+		this.qualificationId = qualificationId;
+	}
+
+    @Override
+    public String toString() {
+        return "DirectorBackgroundDetailRequest{" +
+                "id=" + id +
+                ", address='" + address + '\'' +
+                ", networth=" + networth +
+                ", applicationId=" + applicationId +
+                ", salutationId=" + salutationId +
+                ", din=" + din +
+                ", appointmentDate=" + appointmentDate +
+                ", designation='" + designation + '\'' +
+                ", panNo='" + panNo + '\'' +
+                ", directorsName='" + directorsName + '\'' +
+                ", totalExperience=" + totalExperience +
+                ", isActive=" + isActive +
+                ", pincode='" + pincode + '\'' +
+                ", stateCode='" + stateCode + '\'' +
+                ", city='" + city + '\'' +
+                ", dob=" + dob +
+                ", mobile='" + mobile + '\'' +
+                ", gender=" + gender +
+                ", relationshipType=" + relationshipType +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", middleName='" + middleName + '\'' +
+                ", title='" + title + '\'' +
+                ", shareholding=" + shareholding +
+                ", isItrCompleted=" + isItrCompleted +
+                ", isCibilCompleted=" + isCibilCompleted +
+                ", isBankStatementCompleted=" + isBankStatementCompleted +
+                ", isOneFormCompleted=" + isOneFormCompleted +
+                ", aadhar='" + aadhar + '\'' +
+                ", maritalStatus=" + maritalStatus +
+                ", noOfDependent=" + noOfDependent +
+                ", residenceType=" + residenceType +
+                ", residenceSinceMonth=" + residenceSinceMonth +
+                ", residenceSinceYear=" + residenceSinceYear +
+                ", isFamilyMemberInBusiness=" + isFamilyMemberInBusiness +
+                ", employmentDetailRequest=" + employmentDetailRequest +
+                ", countryId=" + countryId +
+                ", premiseNumber='" + premiseNumber + '\'' +
+                ", streetName='" + streetName + '\'' +
+                ", landmark='" + landmark + '\'' +
+                ", isMainDirector=" + isMainDirector +
+                ", qualificationId=" + qualificationId +
+                '}';
+    }
+
+    public static void printFields(Object obj) throws Exception {
         Field[] fields = DirectorBackgroundDetailRequest.class.getDeclaredFields();
         System.out.println("length : "+fields.length);
         for(Field field : fields) {

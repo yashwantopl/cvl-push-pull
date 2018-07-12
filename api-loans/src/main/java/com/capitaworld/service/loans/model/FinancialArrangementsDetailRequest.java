@@ -16,7 +16,7 @@ public class FinancialArrangementsDetailRequest {
 
 	private Double amount;
 
-	/* private Integer facilityNatureId; */
+	 private Integer facilityNatureId;
 
 	private String financialInstitutionName;
 
@@ -59,14 +59,12 @@ public class FinancialArrangementsDetailRequest {
 		this.amount = amount;
 	}
 
-	/*
-	 * public Integer getFacilityNatureId() { return facilityNatureId; }
-	 * 
-	 * 
-	 * 
-	 * public void setFacilityNatureId(Integer facilityNatureId) {
-	 * this.facilityNatureId = facilityNatureId; }
-	 */
+	 public Integer getFacilityNatureId() { return facilityNatureId; }
+
+
+
+	 public void setFacilityNatureId(Integer facilityNatureId) {
+	 this.facilityNatureId = facilityNatureId; }
 
 	public String getFinancialInstitutionName() {
 		return financialInstitutionName;

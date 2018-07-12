@@ -3,12 +3,15 @@ package com.capitaworld.service.loans.controller.scoring;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
 import com.capitaworld.service.rating.exception.RatingException;
 import com.capitaworld.service.rating.model.FinancialInputRequest;
 import com.capitaworld.service.rating.model.RatingResponse;
+import com.capitaworld.service.scoring.model.GenericCheckerReqRes;
 import com.capitaworld.service.scoring.model.scoringmodel.ScoringModelReqRes;
 import org.apache.commons.io.FileUtils;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
@@ -178,6 +181,29 @@ public class ScoringController {
             logger.error("Error while saving scoring model detail");
             e.printStackTrace();
             return new ResponseEntity<ScoringModelReqRes>(res,HttpStatus.OK);
+        }
+    }
+    
+    @RequestMapping(value = "/sendToChecker", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<GenericCheckerReqRes> > sendToChecker(@RequestBody List<GenericCheckerReqRes> genericCheckerReqResList, HttpServletRequest httpRequest, HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) throws RatingException {
+    	 logger.info ("==================Enter in sendToChecker(){} ================ genericCheckerReqResList size ==> " + genericCheckerReqResList.size());
+        try {
+/*            Long userId =  (Long) request.getAttribute(CommonUtils.USER_ID);;*/
+            
+            /*scoringModelReqRes.setUserId(1l);*/
+            List<GenericCheckerReqRes>  genericCheckerReqRes=scoringService.sendToChecker(genericCheckerReqResList);
+            logger.info ("==================Exit from sendToChecker(){} ================ genericCheckerReqRes List  Size ==> " , genericCheckerReqRes.size());
+            return new ResponseEntity<List<GenericCheckerReqRes> >(genericCheckerReqRes ,HttpStatus.OK);
+        }
+        catch (Exception e)
+        {
+        	List<GenericCheckerReqRes>  res= new ArrayList<GenericCheckerReqRes >();
+        	GenericCheckerReqRes reqres= new GenericCheckerReqRes();
+        	reqres.setActionFlag(false);
+        	res.add(reqres);
+            logger.error("Error while saving scoring model detail");
+            e.printStackTrace();
+            return new ResponseEntity<List<GenericCheckerReqRes> >(res,HttpStatus.OK);
         }
     }
 }

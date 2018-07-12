@@ -59,9 +59,7 @@ public class FinancialArrangementsDetail implements Serializable {
 	@Column(name = "created_date")
 	private Date createdDate;
 
-	/*
-	 * @Column(name="facility_nature_id") private Integer facilityNatureId;
-	 */
+	 @Column(name="facility_nature_id") private Integer facilityNatureId;
 
 	@Column(name = "financial_institution_name")
 	private String financialInstitutionName;
@@ -133,12 +131,10 @@ public class FinancialArrangementsDetail implements Serializable {
 		this.createdDate = createdDate;
 	}
 
-	/*
-	 * public Integer getFacilityNatureId() { return this.facilityNatureId; }
-	 * 
-	 * public void setFacilityNatureId(Integer facilityNatureId) {
-	 * this.facilityNatureId = facilityNatureId; }
-	 */
+	 public Integer getFacilityNatureId() { return this.facilityNatureId; }
+
+	 public void setFacilityNatureId(Integer facilityNatureId) {
+	 this.facilityNatureId = facilityNatureId; }
 
 	public String getFinancialInstitutionName() {
 		return this.financialInstitutionName;

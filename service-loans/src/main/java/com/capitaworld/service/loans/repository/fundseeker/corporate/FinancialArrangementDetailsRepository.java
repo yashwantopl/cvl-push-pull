@@ -38,4 +38,9 @@ public interface FinancialArrangementDetailsRepository extends JpaRepository<Fin
 	@Query("select o from FinancialArrangementsDetail o where o.applicationId.id =:id  and o.isActive = true and o.directorBackgroundDetail IS NULL")
 	public List<FinancialArrangementsDetail> listSecurityCorporateDetailByAppId(@Param("id")Long id);
 
+	@Query("select o from FinancialArrangementsDetail o where o.directorBackgroundDetail.id =:id and o.isActive =:isActive")
+	public FinancialArrangementsDetail findByDirectorIdAndIsActive(@Param("id")Long id, @Param("isActive")Boolean isActive);
+
+	@Query("select o from FinancialArrangementsDetail o where o.directorBackgroundDetail.id =:directorId and o.applicationId.id =:applicationId  and o.isActive =:isActive")
+	public List<FinancialArrangementsDetail> listFinancialListForPartner(@Param("directorId")Long directorId, @Param("applicationId")Long applicationId, @Param("isActive")Boolean isActive);
 }
