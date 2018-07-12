@@ -67,6 +67,9 @@ public class PrimaryCorporateDetail extends LoanApplicationMaster implements Ser
 
     @Column(name = "proposed_const_of_unit")
     private Integer proposedConstitutionOfUnit;
+
+    @Column(name = "promoter_contribution")
+    private Double promoterContribution;
    /* @Column(name="created_by")
     private Long createdBy;
 
@@ -206,6 +209,14 @@ public class PrimaryCorporateDetail extends LoanApplicationMaster implements Ser
 
     public void setProposedConstitutionOfUnit(Integer proposedConstitutionOfUnit) {
         this.proposedConstitutionOfUnit = proposedConstitutionOfUnit;
+    }
+
+    public Double getPromoterContribution() {
+        return promoterContribution;
+    }
+
+    public void setPromoterContribution(Double promoterContribution) {
+        this.promoterContribution = promoterContribution;
     }
 
     /* @Override

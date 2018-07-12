@@ -79,4 +79,5 @@ CREATE TABLE `fs_corporate_employment_details` (
 
 ALTER TABLE `loan_application`.`fs_corporate_primary_details`
 ADD COLUMN `proposed_operation_date` DATETIME NULL,
-ADD COLUMN `proposed_const_of_unit` INT(2) NULL ;
+ADD COLUMN `proposed_const_of_unit` INT(2) NULL,
+ADD COLUMN `promoter_contribution` DOUBLE NULL ;
