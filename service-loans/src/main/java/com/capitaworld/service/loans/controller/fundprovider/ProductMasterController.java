@@ -673,4 +673,59 @@ public class ProductMasterController {
 		}
 	}
 	
+	@RequestMapping(value = "/saveCorporateInTemp", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> saveCorporateInTemp(
+			@RequestBody CorporateProduct corporateProduct,HttpServletRequest request) {
+		CommonDocumentUtils.startHook(logger, "save");
+		System.out.println("json"+corporateProduct.toString());
+		try {
+			if (corporateProduct == null) {
+				logger.warn("corporateProduct Object can not be empty ==>",
+						corporateProduct);
+				CommonDocumentUtils.endHook(logger, "save");
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse("Requested data can not be empty.", HttpStatus.BAD_REQUEST.value()),
+						HttpStatus.OK);
+			}
+
+			if (corporateProduct.getId() == null) {
+				logger.warn("corporateProduct id can not be empty ==>", corporateProduct);
+				CommonDocumentUtils.endHook(logger, "save");
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse("Requested data can not be empty.", HttpStatus.BAD_REQUEST.value()),
+						HttpStatus.OK);
+			}
+
+			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			//Long userId=1755l;
+			if(userId==null)
+			{
+				logger.warn("userId  id can not be empty ==>", userId);
+				CommonDocumentUtils.endHook(logger, "save");
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse("Requested data can not be empty.", HttpStatus.BAD_REQUEST.value()),
+						HttpStatus.OK);
+			}
+			corporateProduct.setUserId(userId);
+			boolean response = productMasterService.saveCorporateInTemp(corporateProduct);
+			if (response) {
+				CommonDocumentUtils.endHook(logger, "save");
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse("Successfully Saved.", HttpStatus.OK.value()), HttpStatus.OK);
+			} else {
+				CommonDocumentUtils.endHook(logger, "save");
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+						HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+		} catch (Exception e) {
+			logger.error("Error while saving corporateProduct  Parameter==>", e);
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		
+	}
+	
 }
