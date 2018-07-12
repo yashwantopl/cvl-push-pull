@@ -12,4 +12,10 @@ public interface TermLoanParameterService {
 	 * @return
 	 */
 	public Boolean saveMasterFromTempTl(Long mappingId) throws Exception;
+
+	/**
+	 * @param loanParameterRequest
+	 * @return
+	 */
+	public Boolean saveOrUpdateTemp(TermLoanParameterRequest loanParameterRequest);
 }

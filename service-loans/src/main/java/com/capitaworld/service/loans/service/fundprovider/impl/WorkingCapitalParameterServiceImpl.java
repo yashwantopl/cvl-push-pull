@@ -10,11 +10,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.capitaworld.api.workflow.model.WorkflowResponse;
+import com.capitaworld.api.workflow.utility.WorkflowUtils;
+import com.capitaworld.client.workflow.WorkflowClient;
 import com.capitaworld.service.loans.domain.IndustrySectorDetail;
+import com.capitaworld.service.loans.domain.IndustrySectorDetailTemp;
 import com.capitaworld.service.loans.domain.fundprovider.GeographicalCityDetail;
+import com.capitaworld.service.loans.domain.fundprovider.GeographicalCityDetailTemp;
 import com.capitaworld.service.loans.domain.fundprovider.GeographicalCountryDetail;
+import com.capitaworld.service.loans.domain.fundprovider.GeographicalCountryDetailTemp;
 import com.capitaworld.service.loans.domain.fundprovider.GeographicalStateDetail;
+import com.capitaworld.service.loans.domain.fundprovider.GeographicalStateDetailTemp;
 import com.capitaworld.service.loans.domain.fundprovider.NegativeIndustry;
+import com.capitaworld.service.loans.domain.fundprovider.NegativeIndustryTemp;
 import com.capitaworld.service.loans.domain.fundprovider.WorkingCapitalParameter;
 import com.capitaworld.service.loans.domain.fundprovider.WorkingCapitalParameterTemp;
 import com.capitaworld.service.loans.model.DataRequest;
@@ -79,6 +87,9 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 	
 	@Autowired
 	private NegativeIndustryTempRepository negativeIndustryTempRepository;
+	
+    @Autowired
+    private WorkflowClient workflowClient;
 
 	@Override
 	public boolean saveOrUpdate(WorkingCapitalParameterRequest workingCapitalParameterRequest) {
@@ -102,6 +113,7 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 		workingCapitalParameter.setIsActive(true);
 		workingCapitalParameter.setModifiedDate(new Date());
 		workingCapitalParameter.setIsParameterFilled(true);
+		workingCapitalParameter.setJobId(workingCapitalParameterRequest.getJobId());
 		workingCapitalParameterRepository.save(workingCapitalParameter);
 		industrySectorRepository.inActiveMappingByFpProductId(workingCapitalParameterRequest.getId());
 		// industry data save
@@ -466,11 +478,183 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 				e.printStackTrace();
 			}
 		}
-		
-		
+		workingCapitalParameterRequest.setJobId(loanParameter.getJobId());
+        loanParameter.setStatusId(CommonUtils.Status.APPROVED);
+        loanParameter.setIsDeleted(false);
+        loanParameter.setIsEdit(false);
+        loanParameter.setIsCopied(true);
+        loanParameter.setIsApproved(true);
+        loanParameter.setApprovalDate(new Date());
+        workingCapitalParameterTempRepository.save(loanParameter);
 		logger.info("end getWorkingCapitalParameterTemp");
 		return workingCapitalParameterRequest;
 	}
 
+	@Override
+	public Boolean saveOrUpdateTemp(WorkingCapitalParameterRequest workingCapitalParameterRequest) {
+		logger.info("start saveOrUpdateTemp");
+		// TODO Auto-generated method stub
+		WorkingCapitalParameterTemp workingCapitalParameter = null;
 
+		workingCapitalParameter = workingCapitalParameterTempRepository.findOne(workingCapitalParameterRequest.getId());
+		if (workingCapitalParameter == null) {
+			return false;
+		}
+		
+		if (!CommonUtils.isObjectListNull(workingCapitalParameterRequest.getMaxTenure()))
+			workingCapitalParameterRequest.setMaxTenure(workingCapitalParameterRequest.getMaxTenure() * 12);
+		if (!CommonUtils.isObjectListNull(workingCapitalParameterRequest.getMinTenure()))
+			workingCapitalParameterRequest.setMinTenure(workingCapitalParameterRequest.getMinTenure() * 12);
+		
+		BeanUtils.copyProperties(workingCapitalParameterRequest, workingCapitalParameter,
+				CommonUtils.IgnorableCopy.FP_PRODUCT);
+		workingCapitalParameter.setModifiedBy(workingCapitalParameterRequest.getUserId());
+		workingCapitalParameter.setIsActive(true);
+		workingCapitalParameter.setModifiedDate(new Date());
+		workingCapitalParameter.setIsParameterFilled(true);
+        workingCapitalParameter.setStatusId(CommonUtils.Status.OPEN);
+        workingCapitalParameter.setIsApproved(false);
+        workingCapitalParameter.setIsDeleted(false);
+        workingCapitalParameter.setIsCopied(false);
+        workingCapitalParameter.setApprovalDate(null);
+        
+        WorkflowResponse workflowResponse = workflowClient.createJobForMasters(WorkflowUtils.Workflow.MASTER_DATA_APPROVAL_PROCESS, WorkflowUtils.Action.SEND_FOR_APPROVAL, workingCapitalParameterRequest.getUserId());
+        Long jobId = null;
+        if (!CommonUtils.isObjectNullOrEmpty(workflowResponse.getData())) {
+            jobId = Long.valueOf(workflowResponse.getData().toString());
+        }
+        workingCapitalParameter.setJobId(jobId);        
+		workingCapitalParameterTempRepository.save(workingCapitalParameter);
+		industrySectorTempRepository.inActiveMappingByFpProductId(workingCapitalParameterRequest.getId());
+		// industry data save
+		saveIndustryTemp(workingCapitalParameterRequest);
+		// Sector data save
+		saveSectorTemp(workingCapitalParameterRequest);
+		geographicalCountryTempRepository.inActiveMappingByFpProductId(workingCapitalParameterRequest.getId());
+		//country data save
+		saveCountryTemp(workingCapitalParameterRequest);
+		//state data save
+		geographicalStateTempRepository.inActiveMappingByFpProductId(workingCapitalParameterRequest.getId());
+		saveStateTemp(workingCapitalParameterRequest);
+		//city data save
+		geographicalCityTempRepository.inActiveMappingByFpProductId(workingCapitalParameterRequest.getId());
+		saveCityTemp(workingCapitalParameterRequest);
+		//negative industry save
+		negativeIndustryTempRepository.inActiveMappingByFpProductMasterId(workingCapitalParameterRequest.getId());
+		saveNegativeIndustryTemp(workingCapitalParameterRequest);
+		logger.info("end saveOrUpdateTemp");
+		return true;
+	}
+	
+
+	private void saveIndustryTemp(WorkingCapitalParameterRequest workingCapitalParameterRequest) {
+		logger.info("start saveIndustryTemp");
+		IndustrySectorDetailTemp industrySectorDetail = null;
+		System.out.println(workingCapitalParameterRequest.getIndustrylist());
+		for (DataRequest dataRequest : workingCapitalParameterRequest.getIndustrylist()) {
+			industrySectorDetail = new IndustrySectorDetailTemp();
+			industrySectorDetail.setFpProductId(workingCapitalParameterRequest.getId());
+			industrySectorDetail.setIndustryId(dataRequest.getId());
+			industrySectorDetail.setCreatedBy(workingCapitalParameterRequest.getUserId());
+			industrySectorDetail.setModifiedBy(workingCapitalParameterRequest.getUserId());
+			industrySectorDetail.setCreatedDate(new Date());
+			industrySectorDetail.setModifiedDate(new Date());
+			industrySectorDetail.setIsActive(true);
+			// create by and update
+			industrySectorTempRepository.save(industrySectorDetail);
+		}
+		logger.info("end saveIndustryTemp");
+	}
+
+	private void saveSectorTemp(WorkingCapitalParameterRequest workingCapitalParameterRequest) {
+		logger.info("start saveSectorTemp");
+		IndustrySectorDetailTemp industrySectorDetail = null;
+		for (DataRequest dataRequest : workingCapitalParameterRequest.getSectorlist()) {
+			industrySectorDetail = new IndustrySectorDetailTemp();
+			industrySectorDetail.setFpProductId(workingCapitalParameterRequest.getId());
+			industrySectorDetail.setSectorId(dataRequest.getId());
+			industrySectorDetail.setCreatedBy(workingCapitalParameterRequest.getUserId());
+			industrySectorDetail.setModifiedBy(workingCapitalParameterRequest.getUserId());
+			industrySectorDetail.setCreatedDate(new Date());
+			industrySectorDetail.setModifiedDate(new Date());
+			industrySectorDetail.setIsActive(true);
+			// create by and update
+			industrySectorTempRepository.save(industrySectorDetail);
+		}
+		logger.info("end saveSectorTemp");
+	}
+	
+	private void saveCountryTemp(WorkingCapitalParameterRequest workingCapitalParameterRequest) {
+		logger.info("save saveCountryTemp");
+		GeographicalCountryDetailTemp geographicalCountryDetail= null;
+		for (DataRequest dataRequest : workingCapitalParameterRequest.getCountryList()) {
+			geographicalCountryDetail = new GeographicalCountryDetailTemp();
+			geographicalCountryDetail.setCountryId(dataRequest.getId());
+			geographicalCountryDetail.setFpProductMaster(workingCapitalParameterRequest.getId());
+			geographicalCountryDetail.setCreatedBy(workingCapitalParameterRequest.getUserId());
+			geographicalCountryDetail.setModifiedBy(workingCapitalParameterRequest.getUserId());
+			geographicalCountryDetail.setCreatedDate(new Date());
+			geographicalCountryDetail.setModifiedDate(new Date());
+			geographicalCountryDetail.setIsActive(true);
+			// create by and update
+			geographicalCountryTempRepository.save(geographicalCountryDetail);
+		}
+		logger.info("end saveCountryTemp");
+	}
+	
+	private void saveStateTemp(WorkingCapitalParameterRequest workingCapitalParameterRequest) {
+		logger.info("start saveStateTemp");
+		GeographicalStateDetailTemp geographicalStateDetail= null;
+		for (DataRequest dataRequest : workingCapitalParameterRequest.getStateList()) {
+			geographicalStateDetail = new GeographicalStateDetailTemp();
+			geographicalStateDetail.setStateId(dataRequest.getId());
+			geographicalStateDetail.setFpProductMaster(workingCapitalParameterRequest.getId());
+			geographicalStateDetail.setCreatedBy(workingCapitalParameterRequest.getUserId());
+			geographicalStateDetail.setModifiedBy(workingCapitalParameterRequest.getUserId());
+			geographicalStateDetail.setCreatedDate(new Date());
+			geographicalStateDetail.setModifiedDate(new Date());
+			geographicalStateDetail.setIsActive(true);
+			// create by and update
+			geographicalStateTempRepository.save(geographicalStateDetail);
+		}
+		logger.info("end saveStateTemp");
+	}
+	
+	private void saveCityTemp(WorkingCapitalParameterRequest workingCapitalParameterRequest) {
+		logger.info("start saveCityTemp");
+		GeographicalCityDetailTemp geographicalCityDetail= null;
+		for (DataRequest dataRequest : workingCapitalParameterRequest.getCityList()) {
+			geographicalCityDetail = new GeographicalCityDetailTemp();
+			geographicalCityDetail.setCityId(dataRequest.getId());
+			geographicalCityDetail.setFpProductMaster(workingCapitalParameterRequest.getId());
+			geographicalCityDetail.setCreatedBy(workingCapitalParameterRequest.getUserId());
+			geographicalCityDetail.setModifiedBy(workingCapitalParameterRequest.getUserId());
+			geographicalCityDetail.setCreatedDate(new Date());
+			geographicalCityDetail.setModifiedDate(new Date());
+			geographicalCityDetail.setIsActive(true);
+			// create by and update
+			geographicalCityTempRepository.save(geographicalCityDetail);
+		}
+		logger.info("end saveCityTemp");
+	}
+
+	private void saveNegativeIndustryTemp(WorkingCapitalParameterRequest workingCapitalParameterRequest) {
+		// TODO Auto-generated method stub
+		CommonDocumentUtils.startHook(logger, "saveNegativeIndustryTemp");
+		NegativeIndustryTemp negativeIndustry= null;
+		for (DataRequest dataRequest : workingCapitalParameterRequest.getUnInterestedIndustrylist()) {
+			negativeIndustry = new NegativeIndustryTemp();
+			negativeIndustry.setFpProductMasterId(workingCapitalParameterRequest.getId());
+			negativeIndustry.setIndustryId(dataRequest.getId());
+			negativeIndustry.setCreatedBy(workingCapitalParameterRequest.getUserId());
+			negativeIndustry.setModifiedBy(workingCapitalParameterRequest.getUserId());
+			negativeIndustry.setCreatedDate(new Date());
+			negativeIndustry.setModifiedDate(new Date());
+			negativeIndustry.setIsActive(true);
+			// create by and update
+			negativeIndustryTempRepository.save(negativeIndustry);
+		}
+		CommonDocumentUtils.endHook(logger, "saveNegativeIndustryTemp");
+		
+	}
 }
