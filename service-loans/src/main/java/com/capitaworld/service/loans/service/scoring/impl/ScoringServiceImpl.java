@@ -1823,8 +1823,8 @@ public class ScoringServiceImpl implements ScoringService{
     }
 
 	@Override
-	public List<GenericCheckerReqRes> sendToChecker(List<GenericCheckerReqRes> genericCheckerReqResList) throws ScoringException {
-	            return scoringClient.sendToChecker(genericCheckerReqResList);
+	public List<GenericCheckerReqRes> sendToChecker(List<GenericCheckerReqRes> genericCheckerReqResList , Long userId) throws ScoringException {
+	            return scoringClient.sendToChecker(genericCheckerReqResList, userId);
 	        
 	}
 }
