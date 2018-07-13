@@ -1153,43 +1153,17 @@ public class ScoringServiceImpl implements ScoringService{
                     {
                         try
                         {
-                            Double loanAmount=primaryCorporateDetailRepository.getLoanAmountByApplication(applicationId);
-                            scoreParameterNTBRequest.setLoanAmount(loanAmount);
-                            Double collatralValue=null;
-                            // if collatral value is null or 0 then get collatral value from CGTMSE
-                            if(!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getCollateralSecurityAmount()) && primaryCorporateDetail.getCollateralSecurityAmount() != 0.0 )
-                            {
-                                collatralValue=primaryCorporateDetail.getCollateralSecurityAmount();
-                            }
-                            else
-                            {
-                                // get collatral value from CGTMSE
-                                try {
 
-                                    CGTMSEDataResponse cgtmseDataResponse=thirdPartyClient.getCalulation(applicationId);
-                                    if(!CommonUtils.isObjectNullOrEmpty(cgtmseDataResponse)
-                                            && !CommonUtils.isObjectNullOrEmpty(cgtmseDataResponse.getColleteralCoverage())
-                                            && cgtmseDataResponse.getColleteralCoverage() !=0.0 )
-                                    {
-                                        collatralValue=cgtmseDataResponse.getColleteralCoverage();
-                                    }
-                                }
-                                catch (Exception e)
-                                {
-                                    logger.error("error while getting collatral value from CGTMSE ====> "+applicationId);
-                                    e.printStackTrace();
-                                }
-
+                            Double collatralValue=0.0;
+                            CGTMSEDataResponse cgtmseDataResponse=thirdPartyClient.getCalulation(applicationId);
+                            if(!CommonUtils.isObjectNullOrEmpty(cgtmseDataResponse)
+                                    && !CommonUtils.isObjectNullOrEmpty(cgtmseDataResponse.getColleteralCoverage()))
+                            {
+                                collatralValue=cgtmseDataResponse.getColleteralCoverage();
                             }
+
                             scoreParameterNTBRequest.setColatralValue(collatralValue);
-                            if(!CommonUtils.isObjectNullOrEmpty(collatralValue) && !CommonUtils.isObjectNullOrEmpty(loanAmount))
-                            {
-                                scoreParameterNTBRequest.setIsAssetCoverageRatio(true);
-                            }
-                            else
-                            {
-                                scoreParameterNTBRequest.setIsAssetCoverageRatio(false);
-                            }
+                            scoreParameterNTBRequest.setIsAssetCoverageRatio(true);
                         }
                         catch (Exception e)
                         {
