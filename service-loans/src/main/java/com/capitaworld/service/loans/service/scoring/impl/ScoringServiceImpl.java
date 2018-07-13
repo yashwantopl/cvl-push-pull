@@ -1249,8 +1249,16 @@ public class ScoringServiceImpl implements ScoringService{
                         try
                         {
                             Long environmentCategory=null; // remaining
-                            scoreParameterNTBRequest.setEnvironmentCategory(environmentCategory);
-                            scoreParameterNTBRequest.setIsEnvironmentCategory(true);
+                            if(!CommonUtils.isObjectNullOrEmpty(environmentCategory))
+                            {
+                                scoreParameterNTBRequest.setEnvironmentCategory(environmentCategory);
+                                scoreParameterNTBRequest.setIsEnvironmentCategory(true);
+                            }
+                            else
+                            {
+                                scoreParameterNTBRequest.setEnvironmentCategory(environmentCategory);
+                                scoreParameterNTBRequest.setIsEnvironmentCategory(false);
+                            }
                         }
                         catch (Exception e)
                         {
@@ -1263,14 +1271,25 @@ public class ScoringServiceImpl implements ScoringService{
                     case ScoreParameter.NTB.CNW: {
                         try
                         {
-
-                            Double loanAmount=primaryCorporateDetailRepository.getLoanAmountByApplication(applicationId);
-                            scoreParameterNTBRequest.setLoanAmount(loanAmount);
                             Double networth=directorBackgroundDetailsRepository.getSumOfDirectorsNetworth(applicationId);
+                            if(CommonUtils.isObjectNullOrEmpty(networth))
+                            {
+                                networth=0.0;
+                            }
                             scoreParameterNTBRequest.setNetworth(networth);
 
+                            Double loanAmount=primaryCorporateDetailRepository.getLoanAmountByApplication(applicationId);
 
-                            scoreParameterNTBRequest.setIsCNW(true);
+                            if(!CommonUtils.isObjectNullOrEmpty(loanAmount))
+                            {
+                                scoreParameterNTBRequest.setLoanAmount(loanAmount);
+                                scoreParameterNTBRequest.setIsCNW(true);
+                            }
+                            else
+                            {
+                                scoreParameterNTBRequest.setIsCNW(false);
+                            }
+
                         }
                         catch (Exception e)
                         {
@@ -1391,6 +1410,10 @@ public class ScoringServiceImpl implements ScoringService{
                         try
                         {
                             Double totalExperience= directorBackgroundDetail.getTotalExperience();
+                            if(CommonUtils.isObjectNullOrEmpty(totalExperience))
+                            {
+                                totalExperience=0.0;
+                            }
                             scoreParameterNTBRequest.setTotalworkingExperience(totalExperience);
                             scoreParameterNTBRequest.setIsWorkingExperience(true);
                         }
@@ -1492,8 +1515,17 @@ public class ScoringServiceImpl implements ScoringService{
                         try
                         {
                             Long empType= directorBackgroundDetail.getEmploymentDetail().getTypeOfEmployment();
-                            scoreParameterNTBRequest.setEmployeeType(empType);
-                            scoreParameterNTBRequest.setIsEmploymentType(true);
+
+                            if(!CommonUtils.isObjectNullOrEmpty(empType))
+                            {
+                                scoreParameterNTBRequest.setEmployeeType(empType);
+                                scoreParameterNTBRequest.setIsEmploymentType(true);
+                            }
+                            else
+                            {
+                                scoreParameterNTBRequest.setIsEmploymentType(false);
+                            }
+
                         }
                         catch (Exception e)
                         {
@@ -1541,6 +1573,11 @@ public class ScoringServiceImpl implements ScoringService{
                             Double avgSalary=(corporateDirectorIncomeDetailsRepository.getTotalSalaryByApplicationIdAndDirectorId(applicationId,directorBackgroundDetail.getId()))/3;
                             Double promotorContribution=primaryCorporateDetail.getPromoterContribution();
 
+                            if(CommonUtils.isObjectNullOrEmpty(promotorContribution))
+                            {
+                                promotorContribution=0.0;
+                            }
+
                             scoreParameterNTBRequest.setItrSalaryIncomeAvg(avgSalary);
                             scoreParameterNTBRequest.setItrPromotorContribution(promotorContribution);
                             scoreParameterNTBRequest.setIsItrSalaryIncome(true);
@@ -1560,6 +1597,16 @@ public class ScoringServiceImpl implements ScoringService{
                             Double totalSalary=corporateDirectorIncomeDetailsRepository.getTotalSalaryByApplicationIdAndDirectorId(applicationId,directorBackgroundDetail.getId());
                             Double totalEMI=financialArrangementDetailsRepository.getTotalEmiByApplicationIdAndDirectorId(applicationId,directorBackgroundDetail.getId());
 
+                            if(CommonUtils.isObjectNullOrEmpty(totalSalary))
+                            {
+                                totalSalary=0.0;
+                            }
+
+                            if(CommonUtils.isObjectNullOrEmpty(totalEMI))
+                            {
+                                totalEMI=0.0;
+                            }
+
                             scoreParameterNTBRequest.setItrSalaryIncome(totalSalary);
                             scoreParameterNTBRequest.setTotalEmiPaid(totalEMI);
                             scoreParameterNTBRequest.setIsFixedObligationRatio(true);
@@ -1575,8 +1622,31 @@ public class ScoringServiceImpl implements ScoringService{
                     case ScoreParameter.NTB.CHEQUE_BOUNCES: {
                         try
                         {
+                            Double noOfChequeBounce=null;
+                            ReportRequest reportRequest=new ReportRequest();
+                            reportRequest.setApplicationId(applicationId);
+                            reportRequest.setDirectorId(directorBackgroundDetail.getId());
 
-                            //remaining
+                            AnalyzerResponse analyzerResponse=analyzerClient.getDetailsFromReportByDirector(reportRequest);
+
+                            Data data = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)analyzerResponse.getData(),
+                                    Data.class);
+                            if(!CommonUtils.isObjectNullOrEmpty(analyzerResponse.getData())){
+                                {
+                                    if(!CommonUtils.isObjectNullOrEmpty(data.getCheckBounceForLast6Month()))
+                                    {
+                                        noOfChequeBounce=data.getCheckBounceForLast6Month().doubleValue();
+                                    }
+                                    else
+                                    {
+                                        noOfChequeBounce=0.0;
+                                    }
+
+                                }
+
+                            }
+
+                            scoreParameterNTBRequest.setChequeBouncesPastSixMonths(noOfChequeBounce);
                             scoreParameterNTBRequest.setIsChequeBounces(true);
                         }
                         catch (Exception e)
@@ -1592,7 +1662,7 @@ public class ScoringServiceImpl implements ScoringService{
                         {
 
                             //remaining
-                            scoreParameterNTBRequest.setIsDPD(true);
+                            scoreParameterNTBRequest.setIsDPD(false);
                         }
                         catch (Exception e)
                         {
