@@ -841,4 +841,32 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 		return false;
 	}
 
+	@Override
+	public Boolean saveCorporateInTemp(CorporateProduct corporateProduct) {
+		// TODO Auto-generated method stub
+		CommonDocumentUtils.startHook(logger, "saveCorporateInTemp");
+		if (!CommonUtils.isObjectNullOrEmpty(corporateProduct)) {
+			if (!CommonUtils.isObjectNullOrEmpty(corporateProduct.getProductId())) {
+				if (corporateProduct.getProductId() == CommonUtils.LoanType.WORKING_CAPITAL.getValue()) {
+					WorkingCapitalParameterRequest capitalParameterRequest = new WorkingCapitalParameterRequest();
+					BeanUtils.copyProperties(corporateProduct, capitalParameterRequest);
+					CommonDocumentUtils.endHook(logger, "saveCorporateInTemp");
+					return workingCapitalParameterService.saveOrUpdateTemp(capitalParameterRequest);
+				} else if (corporateProduct.getProductId() == CommonUtils.LoanType.TERM_LOAN.getValue()) {
+					TermLoanParameterRequest loanParameterRequest = new TermLoanParameterRequest();
+					BeanUtils.copyProperties(corporateProduct, loanParameterRequest);
+					CommonDocumentUtils.endHook(logger, "saveCorporateInTemp");
+					return termLoanParameterService.saveOrUpdateTemp(loanParameterRequest);
+				}else if (corporateProduct.getProductId() == CommonUtils.LoanType.WCTL_LOAN.getValue()) {
+					WcTlParameterRequest wcTlParameterRequest = new WcTlParameterRequest();
+					BeanUtils.copyProperties(corporateProduct, wcTlParameterRequest);
+					CommonDocumentUtils.endHook(logger, "saveCorporateInTemp");
+					return wcTlParameterService.saveOrUpdateTemp(wcTlParameterRequest);
+				}
+			}
+		}
+		CommonDocumentUtils.endHook(logger, "saveCorporate");
+		return false;
+	}
+
 }

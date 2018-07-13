@@ -23,6 +23,7 @@ public class PrimaryCorporateRequest extends LoanApplicationRequest implements S
     private Double costOfProject;
     private Date proposedOperationDate;
     private Integer proposedConstitutionOfUnit;
+    private Double promoterContribution;
 
 
 
@@ -125,5 +126,13 @@ public class PrimaryCorporateRequest extends LoanApplicationRequest implements S
 
     public void setProposedConstitutionOfUnit(Integer proposedConstitutionOfUnit) {
         this.proposedConstitutionOfUnit = proposedConstitutionOfUnit;
+    }
+
+    public Double getPromoterContribution() {
+        return promoterContribution;
+    }
+
+    public void setPromoterContribution(Double promoterContribution) {
+        this.promoterContribution = promoterContribution;
     }
 }

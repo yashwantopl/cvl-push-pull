@@ -2,6 +2,7 @@ package com.capitaworld.service.loans.service.scoring.impl;
 
 import com.capitaworld.cibil.api.model.CibilRequest;
 import com.capitaworld.cibil.api.model.CibilResponse;
+import com.capitaworld.cibil.api.model.CibilScoreLogRequest;
 import com.capitaworld.cibil.client.CIBILClient;
 import com.capitaworld.service.analyzer.client.AnalyzerClient;
 import com.capitaworld.service.analyzer.model.common.AnalyzerResponse;
@@ -16,6 +17,7 @@ import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.*;
 import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.LoansResponse;
+import com.capitaworld.service.loans.model.common.CGTMSECalcDataResponse;
 import com.capitaworld.service.loans.model.score.ScoreParameterNTBRequest;
 import com.capitaworld.service.loans.model.score.ScoreParameterRequestLoans;
 import com.capitaworld.service.loans.model.score.ScoringRequestLoans;
@@ -31,6 +33,8 @@ import com.capitaworld.service.scoring.exception.ScoringException;
 import com.capitaworld.service.scoring.model.*;
 import com.capitaworld.service.scoring.model.scoringmodel.ScoringModelReqRes;
 import com.capitaworld.service.scoring.utils.ScoreParameter;
+import com.capitaworld.service.thirdparty.model.CGTMSEDataResponse;
+import com.capitaworld.service.thirdpaty.client.ThirdPartyClient;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.UserResponse;
 import com.ibm.icu.util.Calendar;
@@ -53,6 +57,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @Transactional
@@ -98,13 +103,22 @@ public class ScoringServiceImpl implements ScoringService{
     private CIBILClient cibilClient;
 
     @Autowired
-	private Environment environment;
+    private Environment environment;
 
     @Autowired
     private UsersClient usersClient;
 
     @Autowired
     private ProductMasterRepository productMasterRepository;
+
+    @Autowired
+    private ThirdPartyClient thirdPartyClient;
+
+    @Autowired
+    private CorporateDirectorIncomeDetailsRepository corporateDirectorIncomeDetailsRepository;
+
+    @Autowired
+    private FinancialArrangementDetailsRepository financialArrangementDetailsRepository;
 
 
     @Override
@@ -114,7 +128,7 @@ public class ScoringServiceImpl implements ScoringService{
 
         Long businessTypeId=null;
         if(CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getBusinessTypeId()))
-                businessTypeId=ScoreParameter.BusinessType.EXISTING_BUSINESS;
+            businessTypeId=ScoreParameter.BusinessType.EXISTING_BUSINESS;
 
         if(ScoreParameter.BusinessType.EXISTING_BUSINESS == businessTypeId)
         {
@@ -1048,7 +1062,7 @@ public class ScoringServiceImpl implements ScoringService{
         if(directorBackgroundDetailsList.size() > 0)
         {
             for(DirectorBackgroundDetail directorBackgroundDetail : directorBackgroundDetailsList) {
-                Boolean flag = calculateDirectorScore(scoringRequestLoans,directorBackgroundDetail);
+                Boolean flag = calculateDirectorScore(scoringRequestLoans,directorBackgroundDetail,primaryCorporateDetail);
             }
         }
 
@@ -1113,9 +1127,26 @@ public class ScoringServiceImpl implements ScoringService{
 
                     case ScoreParameter.NTB.CONSTITUTION_OF_BORROWER:
                     {
-                        // get constitution of borrower from loan application master its drop down
-                        //remaining
+                        try
+                        {
+                            Long proposedConstitutionOfUnit=Long.parseLong(primaryCorporateDetail.getProposedConstitutionOfUnit().toString());
 
+                            if(!CommonUtils.isObjectNullOrEmpty(proposedConstitutionOfUnit))
+                            {
+                                scoreParameterNTBRequest.setConstitutionOfBorrowe(proposedConstitutionOfUnit);
+                                scoreParameterNTBRequest.setIsConstitutionOfBorrower(true);
+                            }
+                            else
+                            {
+                                scoreParameterNTBRequest.setIsConstitutionOfBorrower(false);
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            logger.error("error while getting CONSTITUTION_OF_BORROWER parameter");
+                            e.printStackTrace();
+                            scoreParameterNTBRequest.setIsConstitutionOfBorrower(false);
+                        }
                         break;
                     }
                     case ScoreParameter.NTB.ASSET_COVERAGE_RATIO:
@@ -1133,11 +1164,32 @@ public class ScoringServiceImpl implements ScoringService{
                             else
                             {
                                 // get collatral value from CGTMSE
-                                // remaining
+                                try {
+
+                                    CGTMSEDataResponse cgtmseDataResponse=thirdPartyClient.getCalulation(applicationId);
+                                    if(!CommonUtils.isObjectNullOrEmpty(cgtmseDataResponse)
+                                            && !CommonUtils.isObjectNullOrEmpty(cgtmseDataResponse.getColleteralCoverage())
+                                            && cgtmseDataResponse.getColleteralCoverage() !=0.0 )
+                                    {
+                                        collatralValue=cgtmseDataResponse.getColleteralCoverage();
+                                    }
+                                }
+                                catch (Exception e)
+                                {
+                                    logger.error("error while getting collatral value from CGTMSE ====> "+applicationId);
+                                    e.printStackTrace();
+                                }
 
                             }
                             scoreParameterNTBRequest.setColatralValue(collatralValue);
-                            scoreParameterNTBRequest.setIsAssetCoverageRatio(true);
+                            if(!CommonUtils.isObjectNullOrEmpty(collatralValue) && !CommonUtils.isObjectNullOrEmpty(loanAmount))
+                            {
+                                scoreParameterNTBRequest.setIsAssetCoverageRatio(true);
+                            }
+                            else
+                            {
+                                scoreParameterNTBRequest.setIsAssetCoverageRatio(false);
+                            }
                         }
                         catch (Exception e)
                         {
@@ -1168,10 +1220,20 @@ public class ScoringServiceImpl implements ScoringService{
                         try
                         {
                             Date applicationDate=primaryCorporateDetail.getCreatedDate();
-                            Date commercialOperationDate=null; // remaining
+                            Date commercialOperationDate=primaryCorporateDetail.getProposedOperationDate();
 
-                            Double month=null;
-                            scoreParameterNTBRequest.setBalanceGestationPeriod(month);
+                            // start find month different from two dates
+
+                            Calendar today = Calendar.getInstance();
+                            today.setTime(applicationDate);
+
+                            Calendar createdDate = Calendar.getInstance();
+                            createdDate.setTime(commercialOperationDate);
+
+                            Long diff = today.getTime().getTime() - createdDate.getTime().getTime();
+                            Long monthDiff = (TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS))/30;
+
+                            scoreParameterNTBRequest.setBalanceGestationPeriod(monthDiff.doubleValue());
                             scoreParameterNTBRequest.setIsBalanceGestationPeriod(true);
                         }
                         catch (Exception e)
@@ -1195,6 +1257,26 @@ public class ScoringServiceImpl implements ScoringService{
                             logger.error("error while getting ENVIRONMENT_CATEGORY parameter");
                             e.printStackTrace();
                             scoreParameterNTBRequest.setIsEnvironmentCategory(false);
+                        }
+                        break;
+                    }
+                    case ScoreParameter.NTB.CNW: {
+                        try
+                        {
+
+                            Double loanAmount=primaryCorporateDetailRepository.getLoanAmountByApplication(applicationId);
+                            scoreParameterNTBRequest.setLoanAmount(loanAmount);
+                            Double networth=directorBackgroundDetailsRepository.getSumOfDirectorsNetworth(applicationId);
+                            scoreParameterNTBRequest.setNetworth(networth);
+
+
+                            scoreParameterNTBRequest.setIsCNW(true);
+                        }
+                        catch (Exception e)
+                        {
+                            logger.error("error while getting CNW parameter");
+                            e.printStackTrace();
+                            scoreParameterNTBRequest.setIsCNW(false);
                         }
                         break;
                     }
@@ -1239,7 +1321,7 @@ public class ScoringServiceImpl implements ScoringService{
         return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
     }
 
-    public Boolean calculateDirectorScore(ScoringRequestLoans scoringRequestLoans,DirectorBackgroundDetail directorBackgroundDetail)
+    public Boolean calculateDirectorScore(ScoringRequestLoans scoringRequestLoans,DirectorBackgroundDetail directorBackgroundDetail,PrimaryCorporateDetail primaryCorporateDetail)
     {
 
 
@@ -1308,7 +1390,8 @@ public class ScoringServiceImpl implements ScoringService{
 
                         try
                         {
-
+                            Double totalExperience= directorBackgroundDetail.getTotalExperience();
+                            scoreParameterNTBRequest.setTotalworkingExperience(totalExperience);
                             scoreParameterNTBRequest.setIsWorkingExperience(true);
                         }
                         catch (Exception e)
@@ -1322,7 +1405,15 @@ public class ScoringServiceImpl implements ScoringService{
                     case ScoreParameter.NTB.IS_FAMILY_MEMBER_IN_LINE_OF_BUSINESS: {
                         try
                         {
-
+                            Boolean isFamilyMemberInBusiness=directorBackgroundDetail.getFamilyMemberInBusiness();
+                            if(CommonUtils.isObjectNullOrEmpty(isFamilyMemberInBusiness) || isFamilyMemberInBusiness == false)
+                            {
+                                scoreParameterNTBRequest.setFamilyMemberInLineOfBusiness(2l);
+                            }
+                            else
+                            {
+                                scoreParameterNTBRequest.setFamilyMemberInLineOfBusiness(1l);
+                            }
                             scoreParameterNTBRequest.setIsFamilyMemberInLineOfBusiness(true);
                         }
                         catch (Exception e)
@@ -1336,8 +1427,21 @@ public class ScoringServiceImpl implements ScoringService{
                     case ScoreParameter.NTB.CIBIL_TRANSUNION_SCORE: {
                         try
                         {
+                            CibilRequest cibilRequest=new CibilRequest();
+                            cibilRequest.setApplicationId(applicationId);
+                            cibilRequest.setPan(directorBackgroundDetail.getPanNo());
 
-                            scoreParameterNTBRequest.setIsCibilTransunionScore(true);
+                            CibilScoreLogRequest cibilScoreLogRequest=cibilClient.getCibilScoreByPanCard(cibilRequest);
+                            if(!CommonUtils.isObjectNullOrEmpty(cibilScoreLogRequest) && !CommonUtils.isObjectNullOrEmpty(cibilScoreLogRequest.getScore()))
+                            {
+                                Double cibilScore = Double.parseDouble(cibilScoreLogRequest.getScore());
+                                scoreParameterNTBRequest.setCibilTransunionScore(cibilScore);
+                                scoreParameterNTBRequest.setIsCibilTransunionScore(false);
+                            }
+                            else
+                            {
+                                scoreParameterNTBRequest.setIsCibilTransunionScore(false);
+                            }
                         }
                         catch (Exception e)
                         {
@@ -1351,7 +1455,15 @@ public class ScoringServiceImpl implements ScoringService{
                         try
                         {
 
-                            scoreParameterNTBRequest.setIsAgeOfPromotor(true);
+                            if(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetail.getDob()))
+                            {
+                                scoreParameterNTBRequest.setAgeOfPromotor(CommonUtils.getAgeFromBirthDate(directorBackgroundDetail.getDob()).doubleValue());
+                                scoreParameterNTBRequest.setIsAgeOfPromotor(true);
+                            }
+                            else
+                            {
+                                scoreParameterNTBRequest.setIsAgeOfPromotor(false);
+                            }
                         }
                         catch (Exception e)
                         {
@@ -1364,7 +1476,8 @@ public class ScoringServiceImpl implements ScoringService{
                     case ScoreParameter.NTB.EDUCATION_QUALIFICATION: {
                         try
                         {
-
+                            Long qualificationId= directorBackgroundDetail.getQualificationId().longValue();
+                            scoreParameterNTBRequest.setEducationQualification(qualificationId);
                             scoreParameterNTBRequest.setIsEducationQualification(true);
                         }
                         catch (Exception e)
@@ -1378,7 +1491,8 @@ public class ScoringServiceImpl implements ScoringService{
                     case ScoreParameter.NTB.EMPLOYMENT_TYPE: {
                         try
                         {
-
+                            Long empType= directorBackgroundDetail.getEmploymentDetail().getTypeOfEmployment();
+                            scoreParameterNTBRequest.setEmployeeType(empType);
                             scoreParameterNTBRequest.setIsEmploymentType(true);
                         }
                         catch (Exception e)
@@ -1393,6 +1507,8 @@ public class ScoringServiceImpl implements ScoringService{
                         try
                         {
 
+                            Long residentType= directorBackgroundDetail.getResidenceType().longValue();
+                            scoreParameterNTBRequest.setHouseOwnerShip(residentType);
                             scoreParameterNTBRequest.setIsHouseOwnership(true);
                         }
                         catch (Exception e)
@@ -1407,6 +1523,8 @@ public class ScoringServiceImpl implements ScoringService{
                         try
                         {
 
+                            Long maritialStatus=directorBackgroundDetail.getMaritalStatus().longValue();
+                            scoreParameterNTBRequest.setMaritialStatus(maritialStatus);
                             scoreParameterNTBRequest.setIsMaritialStatus(true);
                         }
                         catch (Exception e)
@@ -1417,24 +1535,14 @@ public class ScoringServiceImpl implements ScoringService{
                         }
                         break;
                     }
-                    case ScoreParameter.NTB.CNW: {
-                        try
-                        {
-
-                            scoreParameterNTBRequest.setIsCNW(true);
-                        }
-                        catch (Exception e)
-                        {
-                            logger.error("error while getting CNW parameter");
-                            e.printStackTrace();
-                            scoreParameterNTBRequest.setIsCNW(false);
-                        }
-                        break;
-                    }
                     case ScoreParameter.NTB.ITR_SALARY_INCOME: {
                         try
                         {
+                            Double avgSalary=(corporateDirectorIncomeDetailsRepository.getTotalSalaryByApplicationIdAndDirectorId(applicationId,directorBackgroundDetail.getId()))/3;
+                            Double promotorContribution=primaryCorporateDetail.getPromoterContribution();
 
+                            scoreParameterNTBRequest.setItrSalaryIncomeAvg(avgSalary);
+                            scoreParameterNTBRequest.setItrPromotorContribution(promotorContribution);
                             scoreParameterNTBRequest.setIsItrSalaryIncome(true);
                         }
                         catch (Exception e)
@@ -1449,6 +1557,11 @@ public class ScoringServiceImpl implements ScoringService{
                         try
                         {
 
+                            Double totalSalary=corporateDirectorIncomeDetailsRepository.getTotalSalaryByApplicationIdAndDirectorId(applicationId,directorBackgroundDetail.getId());
+                            Double totalEMI=financialArrangementDetailsRepository.getTotalEmiByApplicationIdAndDirectorId(applicationId,directorBackgroundDetail.getId());
+
+                            scoreParameterNTBRequest.setItrSalaryIncome(totalSalary);
+                            scoreParameterNTBRequest.setTotalEmiPaid(totalEMI);
                             scoreParameterNTBRequest.setIsFixedObligationRatio(true);
                         }
                         catch (Exception e)
@@ -1463,6 +1576,7 @@ public class ScoringServiceImpl implements ScoringService{
                         try
                         {
 
+                            //remaining
                             scoreParameterNTBRequest.setIsChequeBounces(true);
                         }
                         catch (Exception e)
@@ -1477,6 +1591,7 @@ public class ScoringServiceImpl implements ScoringService{
                         try
                         {
 
+                            //remaining
                             scoreParameterNTBRequest.setIsDPD(true);
                         }
                         catch (Exception e)
@@ -1526,39 +1641,6 @@ public class ScoringServiceImpl implements ScoringService{
                 //return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
             }
         }
-
-
-        /*ScoreParameterNTBRequest scoreParameterNTBRequest  =null;
-        for(DirectorBackgroundDetail directorBackgroundDetail : directorBackgroundDetailsList) {
-            //director
-            scoreParameterNTBRequest =new  ScoreParameterNTBRequest();
-            scoreParameterNTBRequest.setTotalworkingExperience(directorBackgroundDetail.getTotalExperience());
-
-            //scoreParameterNTBRequest.setFamilyMemberInLineOfBusiness(directorBackgroundDetail.getFamilyMemberInBusiness());
-            scoreParameterNTBRequest.setMaritialStatus(directorBackgroundDetail.getMaritalStatus());
-            scoreParameterNTBRequest.setNetworth(directorBackgroundDetail.getNetworth());
-
-            //cibil
-            Double cibil_score_avg_promotor=null;
-            CibilRequest cibilRequest=new CibilRequest();
-            cibilRequest.setApplicationId(scoringRequestLoans.getApplicationId());
-
-            CibilResponse cibilResponse =cibilClient.getCibilScore(cibilRequest);
-            if(!CommonUtils.isObjectNullOrEmpty(cibilResponse.getData()))
-            {
-                cibil_score_avg_promotor = (Double)cibilResponse.getData();
-                scoreParameterNTBRequest.setCibilTransunionScore(cibil_score_avg_promotor);
-                scoreParameterNTBRequest.setIsCibilTransunionScore(true);;
-            }else{
-                scoreParameterNTBRequest.setIsCibilTransunionScore(false);
-            }
-
-            //corporate
-            Double loanAmount=primaryCorporateDetailRepository.getLoanAmountByApplication(scoringRequestLoans.getApplicationId());
-            scoreParameterNTBRequest.setLoanAmount(loanAmount);
-        }
-
-        */
 
         return null;
     }
@@ -1666,50 +1748,50 @@ public class ScoringServiceImpl implements ScoringService{
     }
 
     @SuppressWarnings("resource")
-	@Override
-	public Workbook readScoringExcel(MultipartFile multipartFile) throws IllegalStateException, InvalidFormatException , IOException, LoansException{
-		logger.info("-----------------------------Enter in readScoringExcel()-----------------------------------> MultiPartfile "+ multipartFile);
-          InputStream file;
-		Workbook workbook=null;
-		Sheet scoreSheet;
-		List<ScoreParameterRequestLoans> scoreParameterRequestLoansList = null;
-		try {
-			file = new ByteArrayInputStream(multipartFile.getBytes());
-			workbook = new XSSFWorkbook(file);
-			scoreSheet = workbook.getSheetAt(0);
-			scoreParameterRequestLoansList = ScoreExcelReader.extractCellFromSheet(scoreSheet);
-	
-			// ScoringRequestLoans List
-			List<LoansResponse> loansResponseList = new ArrayList<LoansResponse>();
-     		ScoringRequestLoans scoringRequestLoans = null;
-			logger.info("calculating scorring()----------------------------------->");          
-			for (ScoreParameterRequestLoans scoreParameterRequestLoans : scoreParameterRequestLoansList) {
-				scoringRequestLoans = new ScoringRequestLoans();
-				scoringRequestLoans.setScoreParameterRequestLoans(scoreParameterRequestLoans);
-				scoringRequestLoans.setApplicationId(scoreParameterRequestLoans.getTestId().longValue());
-				scoringRequestLoans.setScoringModelId(1l);
-		           	
-				loansResponseList.add(calculateScoringTest(scoringRequestLoans).getBody());
-				
-			}
-			logger.info("calculating scorring() list size-----------------------> "+ loansResponseList.size());
-		     workbook=generateScoringExcel(loansResponseList);
-		     logger.info("------------------------Exit from readScoringExcel() ---------------name of sheet in workook -----------------------> " + workbook.getSheetName(0));
-		     
-		} catch (NullPointerException | IOException e) {
-			e.printStackTrace();
-			logger.error("----------------Error/Exception while calculating scorring()------------------------------> "+ e.getMessage());
-		    throw e; 
-		}
-		return workbook;
-	}
+    @Override
+    public Workbook readScoringExcel(MultipartFile multipartFile) throws IllegalStateException, InvalidFormatException , IOException, LoansException{
+        logger.info("-----------------------------Enter in readScoringExcel()-----------------------------------> MultiPartfile "+ multipartFile);
+        InputStream file;
+        Workbook workbook=null;
+        Sheet scoreSheet;
+        List<ScoreParameterRequestLoans> scoreParameterRequestLoansList = null;
+        try {
+            file = new ByteArrayInputStream(multipartFile.getBytes());
+            workbook = new XSSFWorkbook(file);
+            scoreSheet = workbook.getSheetAt(0);
+            scoreParameterRequestLoansList = ScoreExcelReader.extractCellFromSheet(scoreSheet);
 
-	@Override
-	public Workbook generateScoringExcel(List<LoansResponse> loansResponseList) throws  LoansException {
-		logger.info("----------------Enter in  generateScoringExcel() ------------------------------>");
-	   return  new ScoreExcelFileGenerator().scoreResultExcel(loansResponseList,environment);
+            // ScoringRequestLoans List
+            List<LoansResponse> loansResponseList = new ArrayList<LoansResponse>();
+            ScoringRequestLoans scoringRequestLoans = null;
+            logger.info("calculating scorring()----------------------------------->");
+            for (ScoreParameterRequestLoans scoreParameterRequestLoans : scoreParameterRequestLoansList) {
+                scoringRequestLoans = new ScoringRequestLoans();
+                scoringRequestLoans.setScoreParameterRequestLoans(scoreParameterRequestLoans);
+                scoringRequestLoans.setApplicationId(scoreParameterRequestLoans.getTestId().longValue());
+                scoringRequestLoans.setScoringModelId(1l);
 
-	}
+                loansResponseList.add(calculateScoringTest(scoringRequestLoans).getBody());
+
+            }
+            logger.info("calculating scorring() list size-----------------------> "+ loansResponseList.size());
+            workbook=generateScoringExcel(loansResponseList);
+            logger.info("------------------------Exit from readScoringExcel() ---------------name of sheet in workook -----------------------> " + workbook.getSheetName(0));
+
+        } catch (NullPointerException | IOException e) {
+            e.printStackTrace();
+            logger.error("----------------Error/Exception while calculating scorring()------------------------------> "+ e.getMessage());
+            throw e;
+        }
+        return workbook;
+    }
+
+    @Override
+    public Workbook generateScoringExcel(List<LoansResponse> loansResponseList) throws  LoansException {
+        logger.info("----------------Enter in  generateScoringExcel() ------------------------------>");
+        return  new ScoreExcelFileGenerator().scoreResultExcel(loansResponseList,environment);
+
+    }
 
     @Override
     public ScoringModelReqRes getScoringModelList(ScoringModelReqRes scoringModelReqRes) {
@@ -1822,9 +1904,8 @@ public class ScoringServiceImpl implements ScoringService{
         }
     }
 
-	@Override
-	public List<GenericCheckerReqRes> sendToChecker(List<GenericCheckerReqRes> genericCheckerReqResList , Long userId) throws ScoringException {
-	            return scoringClient.sendToChecker(genericCheckerReqResList, userId);
-	        
-	}
+    @Override
+    public List<GenericCheckerReqRes> sendToChecker(List<GenericCheckerReqRes> genericCheckerReqResList , Long userId) throws ScoringException {
+        return scoringClient.sendToChecker(genericCheckerReqResList, userId);
+    }
 }

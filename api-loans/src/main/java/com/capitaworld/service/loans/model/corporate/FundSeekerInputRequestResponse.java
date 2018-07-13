@@ -74,6 +74,7 @@ public class FundSeekerInputRequestResponse {
     private Double costOfProject;
     private Date proposedOperationDate;
     private Integer proposedConstitutionOfUnit;
+    private Double promoterContribution;
 
 
     public Long getUserId() {
@@ -321,5 +322,13 @@ public class FundSeekerInputRequestResponse {
 
     public void setProposedConstitutionOfUnit(Integer proposedConstitutionOfUnit) {
         this.proposedConstitutionOfUnit = proposedConstitutionOfUnit;
+    }
+
+    public Double getPromoterContribution() {
+        return promoterContribution;
+    }
+
+    public void setPromoterContribution(Double promoterContribution) {
+        this.promoterContribution = promoterContribution;
     }
 }

@@ -1124,4 +1124,11 @@ public enum APIFlags {
 		}
 		return null;
 	}
+	
+	public interface Status {
+		public static final int OPEN = 1;
+		public static final int IN_PROGRESS = 2;
+		public static final int REVERTED = 3;
+		public static final int APPROVED = 4;
+	}
 }
