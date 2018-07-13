@@ -68,6 +68,11 @@ public class FundSeekerInputRequestResponse {
     private Double costOfMachinery;
     private Double incrementalTurnover;
 
+    /*
+    * added for machinery equipment finance
+    * */
+    private Integer assessmentId;
+
     //-------------For NTB
     private Double tenureRequired;
     private Integer proposedDetailsOfUnit;
@@ -330,5 +335,13 @@ public class FundSeekerInputRequestResponse {
 
     public void setPromoterContribution(Double promoterContribution) {
         this.promoterContribution = promoterContribution;
+    }
+
+    public Integer getAssessmentId() {
+        return assessmentId;
+    }
+
+    public void setAssessmentId(Integer assessmentId) {
+        this.assessmentId = assessmentId;
     }
 }
