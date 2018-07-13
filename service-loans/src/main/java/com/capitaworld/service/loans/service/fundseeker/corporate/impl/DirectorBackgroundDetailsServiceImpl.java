@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.capitaworld.connect.api.ConnectResponse;
+import com.capitaworld.connect.client.ConnectClient;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.DirectorBackgroundDetail;
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
@@ -35,6 +37,9 @@ public class DirectorBackgroundDetailsServiceImpl implements DirectorBackgroundD
 
 	@Autowired
 	private DirectorBackgroundDetailsRepository directorBackgroundDetailsRepository;
+	
+	@Autowired
+	private ConnectClient connectClient;
 
 	@Override
 	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception {
@@ -180,9 +185,20 @@ public class DirectorBackgroundDetailsServiceImpl implements DirectorBackgroundD
 			backgroundDetail.setIsOneFormCompleted(false);
 			directorBackgroundDetailsRepository.save(backgroundDetail);
 		}
-		
+		try {
+			ConnectResponse connResponse = connectClient.postMCQNTB(applicationId, userId, CommonUtils.BusinessType.NEW_TO_BUSINESS.getId());
+			if(!CommonUtils.isObjectNullOrEmpty(connResponse) && !CommonUtils.isObjectNullOrEmpty(connResponse.getProceed()) && connResponse.getProceed()) {
+				logger.info("Connect Response--------------------------------> " + connResponse.toString());
+				return true;
+			} else {
+				logger.info("Connect Response--------------------------------> null");
+			}
+		} catch (Exception e) {
+			logger.error("Throw Exception While Call Connect Client");
+			e.printStackTrace();
+		}
 		logger.info("Exit in saveDirectors()");
-		return true;
+		return false;
 	}
 	
 	
