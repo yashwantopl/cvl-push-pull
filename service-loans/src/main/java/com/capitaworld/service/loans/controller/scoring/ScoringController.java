@@ -100,8 +100,8 @@ public class ScoringController {
 	////////////////
 
 
-    @RequestMapping(value = "/get_scoring_model_list", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ScoringModelReqRes> getScoringModelList(@RequestBody ScoringModelReqRes scoringModelReqRes, HttpServletRequest httpRequest, HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) throws RatingException {
+    @RequestMapping(value = "/get_scoring_model_tmp_list", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ScoringModelReqRes> getScoringModelTempList(@RequestBody ScoringModelReqRes scoringModelReqRes, HttpServletRequest httpRequest, HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) throws RatingException {
 
         try {
             Long userId =  (Long) request.getAttribute(CommonUtils.USER_ID);;
@@ -109,7 +109,7 @@ public class ScoringController {
             /*scoringModelReqRes.setUserId(1l);*/
 
             logger.info("userId ============> "+userId);
-            ScoringModelReqRes scoringModelReqResNew=scoringService.getScoringModelList(scoringModelReqRes);
+            ScoringModelReqRes scoringModelReqResNew=scoringService.getScoringModelTempList(scoringModelReqRes);
             return new ResponseEntity<ScoringModelReqRes>(scoringModelReqResNew,HttpStatus.OK);
         }
         catch (Exception e)
@@ -123,14 +123,14 @@ public class ScoringController {
     }
 
 
-    @RequestMapping(value = "/save_scoring_model", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ScoringModelReqRes> saveScoringModel(@RequestBody ScoringModelReqRes scoringModelReqRes, HttpServletRequest httpRequest, HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) throws RatingException {
+    @RequestMapping(value = "/save_scoring_model_temp", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ScoringModelReqRes> saveScoringModelTemp(@RequestBody ScoringModelReqRes scoringModelReqRes, HttpServletRequest httpRequest, HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) throws RatingException {
 
         try {
             Long userId =  (Long) request.getAttribute(CommonUtils.USER_ID);;
             scoringModelReqRes.setUserId(userId);
             /*scoringModelReqRes.setUserId(1l);*/
-            ScoringModelReqRes scoringModelReqResNew=scoringService.saveScoringModel(scoringModelReqRes);
+            ScoringModelReqRes scoringModelReqResNew=scoringService.saveScoringModelTemp(scoringModelReqRes);
             return new ResponseEntity<ScoringModelReqRes>(scoringModelReqResNew,HttpStatus.OK);
         }
         catch (Exception e)
@@ -143,14 +143,14 @@ public class ScoringController {
         }
     }
 
-    @RequestMapping(value = "/get_scoring_model_detail", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ScoringModelReqRes> getScoringModelDetail(@RequestBody ScoringModelReqRes scoringModelReqRes, HttpServletRequest httpRequest, HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) throws RatingException {
+    @RequestMapping(value = "/get_scoring_model_temp_detail", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ScoringModelReqRes> getScoringModelTempDetail(@RequestBody ScoringModelReqRes scoringModelReqRes, HttpServletRequest httpRequest, HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) throws RatingException {
 
         try {
             Long userId =  (Long) request.getAttribute(CommonUtils.USER_ID);;
             scoringModelReqRes.setUserId(userId);
            /* scoringModelReqRes.setUserId(1l);*/
-            ScoringModelReqRes scoringModelReqResNew=scoringService.getScoringModelDetail(scoringModelReqRes);
+            ScoringModelReqRes scoringModelReqResNew=scoringService.getScoringModelTempDetail(scoringModelReqRes);
             return new ResponseEntity<ScoringModelReqRes>(scoringModelReqResNew,HttpStatus.OK);
         }
         catch (Exception e)
@@ -164,14 +164,14 @@ public class ScoringController {
     }
 
 
-    @RequestMapping(value = "/save_scoring_model_detail", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ScoringModelReqRes> saveScoringModelDetail(@RequestBody ScoringModelReqRes scoringModelReqRes, HttpServletRequest httpRequest, HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) throws RatingException {
+    @RequestMapping(value = "/save_scoring_model_temp_detail", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ScoringModelReqRes> saveScoringModelTempDetail(@RequestBody ScoringModelReqRes scoringModelReqRes, HttpServletRequest httpRequest, HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) throws RatingException {
 
         try {
             Long userId =  (Long) request.getAttribute(CommonUtils.USER_ID);;
             scoringModelReqRes.setUserId(userId);
             /*scoringModelReqRes.setUserId(1l);*/
-            ScoringModelReqRes scoringModelReqResNew=scoringService.saveScoringModelDetail(scoringModelReqRes);
+            ScoringModelReqRes scoringModelReqResNew=scoringService.saveScoringModelTempDetail(scoringModelReqRes);
             return new ResponseEntity<ScoringModelReqRes>(scoringModelReqResNew,HttpStatus.OK);
         }
         catch (Exception e)
@@ -189,7 +189,7 @@ public class ScoringController {
     	 logger.info ("==================Enter in sendToChecker(){} ================ genericCheckerReqResList size ==> " + genericCheckerReqResList.size());
         try {
         	Long userId =  (Long) request.getAttribute(CommonUtils.USER_ID);
-            
+           
             /*scoringModelReqRes.setUserId(1l);*/
             List<GenericCheckerReqRes>  genericCheckerReqRes=scoringService.sendToChecker(genericCheckerReqResList , userId);
             logger.info ("==================Exit from sendToChecker(){} ================ genericCheckerReqRes List  Size ==> " , genericCheckerReqRes.size());
@@ -206,4 +206,47 @@ public class ScoringController {
             return new ResponseEntity<List<GenericCheckerReqRes> >(res,HttpStatus.OK);
         }
     }
+    
+    @RequestMapping(value = "/get_scoring_model_master_list", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ScoringModelReqRes> getScoringModelMasterList(@RequestBody ScoringModelReqRes scoringModelReqRes, HttpServletRequest httpRequest, HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) throws RatingException {
+
+        try {
+            Long userId =  (Long) request.getAttribute(CommonUtils.USER_ID);;
+            scoringModelReqRes.setUserId(userId);
+            /*scoringModelReqRes.setUserId(1l);*/
+
+            logger.info("userId ============> "+userId);
+            ScoringModelReqRes scoringModelReqResNew=scoringService.getScoringModelMasterList(scoringModelReqRes);
+            return new ResponseEntity<ScoringModelReqRes>(scoringModelReqResNew,HttpStatus.OK);
+        }
+        catch (Exception e)
+        {
+            // TODO: handle exception
+            ScoringModelReqRes res=new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG,HttpStatus.BAD_REQUEST.value());
+            logger.error("Error while getting scoring model list");
+            e.printStackTrace();
+            return new ResponseEntity<ScoringModelReqRes>(res,HttpStatus.OK);
+        }
+    }
+    
+    @RequestMapping(value = "/get_scoring_model_master_detail", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ScoringModelReqRes> getScoringModelMasterDetail(@RequestBody ScoringModelReqRes scoringModelReqRes, HttpServletRequest httpRequest, HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) throws RatingException {
+
+        try {
+            Long userId =  (Long) request.getAttribute(CommonUtils.USER_ID);;
+            scoringModelReqRes.setUserId(userId);
+           /* scoringModelReqRes.setUserId(1l);*/
+            ScoringModelReqRes scoringModelReqResNew=scoringService.getScoringModelMasterDetail(scoringModelReqRes);
+            return new ResponseEntity<ScoringModelReqRes>(scoringModelReqResNew,HttpStatus.OK);
+        }
+        catch (Exception e)
+        {
+            // TODO: handle exception
+            ScoringModelReqRes res=new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG,HttpStatus.BAD_REQUEST.value());
+            logger.error("Error while getting scoring model detail");
+            e.printStackTrace();
+            return new ResponseEntity<ScoringModelReqRes>(res,HttpStatus.OK);
+        }
+    }
 }
+

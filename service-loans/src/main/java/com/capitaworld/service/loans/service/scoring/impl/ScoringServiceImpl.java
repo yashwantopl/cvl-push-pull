@@ -1794,7 +1794,7 @@ public class ScoringServiceImpl implements ScoringService{
     }
 
     @Override
-    public ScoringModelReqRes getScoringModelList(ScoringModelReqRes scoringModelReqRes) {
+    public ScoringModelReqRes getScoringModelTempList(ScoringModelReqRes scoringModelReqRes) {
         try {
             /*scoringModelReqRes.setOrgId(1l);*/
             UserResponse userResponse=usersClient.getOrgIdFromUserId(scoringModelReqRes.getUserId());
@@ -1818,7 +1818,7 @@ public class ScoringServiceImpl implements ScoringService{
 
         try {
 
-            return scoringClient.getScoringModelList(scoringModelReqRes);
+            return scoringClient.getScoringModelTempList(scoringModelReqRes);
         }
         catch (Exception e)
         {
@@ -1830,7 +1830,7 @@ public class ScoringServiceImpl implements ScoringService{
     }
 
     @Override
-    public ScoringModelReqRes saveScoringModel(ScoringModelReqRes scoringModelReqRes) {
+    public ScoringModelReqRes saveScoringModelTemp(ScoringModelReqRes scoringModelReqRes) {
 
         try {
             /*scoringModelReqRes.getScoringModelResponse().setOrgId(1l);*/
@@ -1855,7 +1855,7 @@ public class ScoringServiceImpl implements ScoringService{
 
         try {
 
-            return scoringClient.saveScoringModel(scoringModelReqRes);
+            return scoringClient.saveScoringModelTemp(scoringModelReqRes);
         }
         catch (Exception e)
         {
@@ -1866,13 +1866,13 @@ public class ScoringServiceImpl implements ScoringService{
     }
 
     @Override
-    public ScoringModelReqRes getScoringModelDetail(ScoringModelReqRes scoringModelReqRes) {
+    public ScoringModelReqRes getScoringModelTempDetail(ScoringModelReqRes scoringModelReqRes) {
         try {
             Long fpProductId=scoringModelReqRes.getFpProductId();
             try {
                 ProductMaster productMaster=productMasterRepository.findOne(fpProductId);
                 scoringModelReqRes.setLoanTypeId(Long.parseLong(productMaster.getProductId().toString()));
-                return scoringClient.getScoringModelDetail(scoringModelReqRes);
+                return scoringClient.getScoringModelTempDetail(scoringModelReqRes);
             }
             catch (Exception e)
             {
@@ -1891,10 +1891,10 @@ public class ScoringServiceImpl implements ScoringService{
     }
 
     @Override
-    public ScoringModelReqRes saveScoringModelDetail(ScoringModelReqRes scoringModelReqRes) {
+    public ScoringModelReqRes saveScoringModelTempDetail(ScoringModelReqRes scoringModelReqRes) {
         try {
 
-            return scoringClient.saveScoringModelDetail(scoringModelReqRes);
+            return scoringClient.saveScoringModelTempDetail(scoringModelReqRes);
         }
         catch (Exception e)
         {
@@ -1907,5 +1907,66 @@ public class ScoringServiceImpl implements ScoringService{
     @Override
     public List<GenericCheckerReqRes> sendToChecker(List<GenericCheckerReqRes> genericCheckerReqResList , Long userId) throws ScoringException {
         return scoringClient.sendToChecker(genericCheckerReqResList, userId);
+    }
+    
+    @Override
+    public ScoringModelReqRes getScoringModelMasterList(ScoringModelReqRes scoringModelReqRes) {
+        try {
+            /*scoringModelReqRes.setOrgId(1l);*/
+            UserResponse userResponse=usersClient.getOrgIdFromUserId(scoringModelReqRes.getUserId());
+
+            if(!CommonUtils.isObjectNullOrEmpty(userResponse) && !CommonUtils.isObjectNullOrEmpty(userResponse.getData()))
+            {
+                scoringModelReqRes.setOrgId(Long.parseLong(userResponse.getData().toString()));
+                /*scoringModelReqRes.setOrgId(1l);*/
+            }
+            else
+            {
+                throw new Exception();
+            }
+        }
+        catch (Exception e)
+        {
+            logger.error("org id is null or empty");
+            e.printStackTrace();
+            return  new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG,HttpStatus.BAD_REQUEST.value());
+        }
+
+        try {
+
+            return scoringClient.getScoringModelMasterList(scoringModelReqRes);
+        }
+        catch (Exception e)
+        {
+            logger.error("error while geting score model list from scoring");
+            e.printStackTrace();
+            return  new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG,HttpStatus.BAD_REQUEST.value());
+        }
+
+    }
+    
+    @Override
+    public ScoringModelReqRes getScoringModelMasterDetail(ScoringModelReqRes scoringModelReqRes) {
+        try {
+            Long fpProductId=scoringModelReqRes.getFpProductId();
+            try {
+                ProductMaster productMaster=productMasterRepository.findOne(fpProductId);
+                scoringModelReqRes.setLoanTypeId(Long.parseLong(productMaster.getProductId().toString()));
+                return scoringClient.getScoringModelMasterDetail(scoringModelReqRes);
+            }
+            catch (Exception e)
+            {
+                logger.error("error while accessing fp product id for scoring");
+                e.printStackTrace();
+                return  new ScoringModelReqRes("Error while accessing fp product id for scoring",HttpStatus.BAD_REQUEST.value());
+            }
+
+        }
+        catch (Exception e)
+        {
+            logger.error("error while getting score model detail from scoring");
+            e.printStackTrace();
+            return  new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG,HttpStatus.BAD_REQUEST.value());
+        }
     }
 }
