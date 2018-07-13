@@ -70,6 +70,10 @@ public class PrimaryCorporateDetail extends LoanApplicationMaster implements Ser
 
     @Column(name = "promoter_contribution")
     private Double promoterContribution;
+
+    @Column(name = "assessment_id")
+    private Integer assessmentId;
+
    /* @Column(name="created_by")
     private Long createdBy;
 
@@ -219,7 +223,14 @@ public class PrimaryCorporateDetail extends LoanApplicationMaster implements Ser
         this.promoterContribution = promoterContribution;
     }
 
-    /* @Override
+    public Integer getAssessmentId() {
+        return assessmentId;
+    }
+
+    public void setAssessmentId(Integer assessmentId) {
+        this.assessmentId = assessmentId;
+    }
+/* @Override
     public Long getCreatedBy() {
         return createdBy;
     }
