@@ -158,9 +158,10 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 
 	@Autowired
 	private DMSClient dmsClient;
-	
+
 	@Autowired
-   	private ProductMasterTempRepository productMasterTempRepository;
+	private ProductMasterTempRepository productMasterTempRepository;
+
 	@Override
 	public Boolean saveOrUpdate(AddProductRequest addProductRequest, Long userOrgId) {
 		CommonDocumentUtils.startHook(logger, "saveOrUpdate");
@@ -171,8 +172,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 			if (!CommonUtils.isObjectNullOrEmpty(addProductRequest.getProductMappingId())) {
 				productMasterRepository.changeProductName(
 						(CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
-								? addProductRequest.getUserId()
-								: addProductRequest.getClientId()),
+								? addProductRequest.getUserId() : addProductRequest.getClientId()),
 						addProductRequest.getProductMappingId(), addProductRequest.getName());
 				CommonDocumentUtils.endHook(logger, "saveOrUpdate");
 				return true;
@@ -214,15 +214,12 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				productMaster.setName(addProductRequest.getName());
 				productMaster.setFpName(addProductRequest.getFpName());
 				productMaster.setUserId((CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
-						? addProductRequest.getUserId()
-						: addProductRequest.getClientId()));
+						? addProductRequest.getUserId() : addProductRequest.getClientId()));
 				productMaster.setCreatedBy((CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
-						? addProductRequest.getUserId()
-						: addProductRequest.getClientId()));
+						? addProductRequest.getUserId() : addProductRequest.getClientId()));
 				productMaster.setCreatedDate(new Date());
 				productMaster.setModifiedBy((CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
-						? addProductRequest.getUserId()
-						: addProductRequest.getClientId()));
+						? addProductRequest.getUserId() : addProductRequest.getClientId()));
 				productMaster.setIsParameterFilled(false);
 				productMaster.setModifiedDate(new Date());
 				productMaster.setIsActive(true);
@@ -483,50 +480,116 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	}
 
 	@Override
-	public List<ProductMasterRequest> getListByUserType(Long userId, Integer userType, Long userOrgId) {
+	public List<ProductMasterRequest> getListByUserType(Long userId, Integer userType, Integer stage, Long userOrgId) {
 		// TODO Auto-generated method stub
 		CommonDocumentUtils.startHook(logger, "getListByUserType");
-		List<ProductMaster> results = null;
-		if (userType == 1) {
-			if (!CommonUtils.isObjectNullOrEmpty(userOrgId)) {
-				results = productMasterRepository.getUserRetailProductListByOrgId(userOrgId);
-			} else {
-				results = productMasterRepository.getUserRetailProductList(userId);
-			}
-			/*
-			 * if (!CommonUtils.isListNullOrEmpty(results)) { for (ProductMaster master :
-			 * results) { if (master.getProductId() == 3) {
-			 * requests.add(homeLoanParameterService.getHomeLoanParameterRequest(master.
-			 * getId())); } else if (master.getProductId() == 7) {
-			 * requests.add(personalLoanParameterService.getPersonalLoanParameterRequest(
-			 * master.getId())); } else if (master.getProductId() == 12) {
-			 * requests.add(carLoanParameterService.getCarLoanParameterRequest(master.getId(
-			 * ))); } else if (master.getProductId() == 13) {
-			 * requests.add(lapLoanParameterService.getLapParameterRequest(master.getId()));
-			 * } } }
-			 */
-		} else {
-			if (!CommonUtils.isObjectNullOrEmpty(userOrgId)) {
-				results = productMasterRepository.getUserCorporateProductListByOrgId(userOrgId);
-			} else {
-				results = productMasterRepository.getUserCorporateProductList(userId);
-			}
-			/*
-			 * if (!CommonUtils.isListNullOrEmpty(results)) { for (ProductMaster master :
-			 * results) { if (master.getProductId() == 1) {
-			 * requests.add(productMasterRepository.getOne()(master.getId())); } else if
-			 * (master.getProductId() == 2) {
-			 * requests.add(termLoanParameterService.getTermLoanParameterRequest(master.
-			 * getId())); } else if (master.getProductId() == 15) {
-			 * requests.add(unsecuredLoanParameterService.getUnsecuredLoanParameterRequest(
-			 * master.getId())); } else if (master.getProductId() == 16) {
-			 * requests.add(wcTlParameterService.getWcTlRequest(master.getId())); } } }
-			 */
-		}
+		List<ProductMasterRequest> productMasterRequests = new ArrayList<>();
 
+		if (!CommonUtils.isObjectNullOrEmpty(stage) && stage == 1) {
+			List<ProductMasterTemp> results = null;
+			if (userType == 1) {
+				if (!CommonUtils.isObjectNullOrEmpty(userOrgId)) {
+					results = productMasterTempRepository.getUserRetailProductListByOrgId(userOrgId);
+				} else {
+					results = productMasterTempRepository.getUserRetailProductList(userId);
+				}
+				/*
+				 * if (!CommonUtils.isListNullOrEmpty(results)) { for
+				 * (ProductMaster master : results) { if (master.getProductId()
+				 * == 3) { requests.add(homeLoanParameterService.
+				 * getHomeLoanParameterRequest(master. getId())); } else if
+				 * (master.getProductId() == 7) {
+				 * requests.add(personalLoanParameterService.
+				 * getPersonalLoanParameterRequest( master.getId())); } else if
+				 * (master.getProductId() == 12) {
+				 * requests.add(carLoanParameterService.
+				 * getCarLoanParameterRequest(master.getId( ))); } else if
+				 * (master.getProductId() == 13) {
+				 * requests.add(lapLoanParameterService.getLapParameterRequest(
+				 * master.getId())); } } }
+				 */
+				for (ProductMasterTemp productMaster : results) {
+					ProductMasterRequest productMasterRequest = new ProductMasterRequest();
+					BeanUtils.copyProperties(productMaster, productMasterRequest);
+					productMasterRequests.add(productMasterRequest);
+				}
+			} else {
+				
+				if (!CommonUtils.isObjectNullOrEmpty(userOrgId)) {
+					results = productMasterTempRepository.getUserCorporateProductListByOrgId(userOrgId);
+				} else {
+					results = productMasterTempRepository.getUserCorporateProductList(userId);
+				}
+				/*
+				 * if (!CommonUtils.isListNullOrEmpty(results)) { for
+				 * (ProductMaster master : results) { if (master.getProductId()
+				 * == 1) {
+				 * requests.add(productMasterRepository.getOne()(master.getId())
+				 * ); } else if (master.getProductId() == 2) {
+				 * requests.add(termLoanParameterService.
+				 * getTermLoanParameterRequest(master. getId())); } else if
+				 * (master.getProductId() == 15) {
+				 * requests.add(unsecuredLoanParameterService.
+				 * getUnsecuredLoanParameterRequest( master.getId())); } else if
+				 * (master.getProductId() == 16) {
+				 * requests.add(wcTlParameterService.getWcTlRequest(master.getId
+				 * ())); } } }
+				 */
+			}
+		} else {
+			List<ProductMaster> results = null;
+			if (userType == 1) {
+				if (!CommonUtils.isObjectNullOrEmpty(userOrgId)) {
+					results = productMasterRepository.getUserRetailProductListByOrgId(userOrgId);
+				} else {
+					results = productMasterRepository.getUserRetailProductList(userId);
+				}
+				/*
+				 * if (!CommonUtils.isListNullOrEmpty(results)) { for
+				 * (ProductMaster master : results) { if (master.getProductId()
+				 * == 3) { requests.add(homeLoanParameterService.
+				 * getHomeLoanParameterRequest(master. getId())); } else if
+				 * (master.getProductId() == 7) {
+				 * requests.add(personalLoanParameterService.
+				 * getPersonalLoanParameterRequest( master.getId())); } else if
+				 * (master.getProductId() == 12) {
+				 * requests.add(carLoanParameterService.
+				 * getCarLoanParameterRequest(master.getId( ))); } else if
+				 * (master.getProductId() == 13) {
+				 * requests.add(lapLoanParameterService.getLapParameterRequest(
+				 * master.getId())); } } }
+				 */
+			} else {
+				if (!CommonUtils.isObjectNullOrEmpty(userOrgId)) {
+					results = productMasterRepository.getUserCorporateProductListByOrgId(userOrgId);
+				} else {
+					results = productMasterRepository.getUserCorporateProductList(userId);
+				}
+				/*
+				 * if (!CommonUtils.isListNullOrEmpty(results)) { for
+				 * (ProductMaster master : results) { if (master.getProductId()
+				 * == 1) {
+				 * requests.add(productMasterRepository.getOne()(master.getId())
+				 * ); } else if (master.getProductId() == 2) {
+				 * requests.add(termLoanParameterService.
+				 * getTermLoanParameterRequest(master. getId())); } else if
+				 * (master.getProductId() == 15) {
+				 * requests.add(unsecuredLoanParameterService.
+				 * getUnsecuredLoanParameterRequest( master.getId())); } else if
+				 * (master.getProductId() == 16) {
+				 * requests.add(wcTlParameterService.getWcTlRequest(master.getId
+				 * ())); } } }
+				 */
+			}
+			for (ProductMaster productMaster : results) {
+				ProductMasterRequest productMasterRequest = new ProductMasterRequest();
+				BeanUtils.copyProperties(productMaster, productMasterRequest);
+				productMasterRequests.add(productMasterRequest);
+			}
+		}
 		/*
-		 * if (CommonUtils.isListNullOrEmpty(results)) return null; for (ProductMaster
-		 * master : results) { ProductMasterRequest request = new
+		 * if (CommonUtils.isListNullOrEmpty(results)) return null; for
+		 * (ProductMaster master : results) { ProductMasterRequest request = new
 		 * ProductMasterRequest(); BeanUtils.copyProperties(master, request);
 		 * request.setIsMatched(productMasterRepository.
 		 * getMatchedAndActiveProduct(userId).size() > 0 ? true : false);
@@ -534,12 +597,8 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 		 */
 		CommonDocumentUtils.endHook(logger, "getListByUserType");
 
-		List<ProductMasterRequest> productMasterRequests = new ArrayList<>();
-		for (ProductMaster productMaster : results) {
-			ProductMasterRequest productMasterRequest = new ProductMasterRequest();
-			BeanUtils.copyProperties(productMaster, productMasterRequest);
-			productMasterRequests.add(productMasterRequest);
-		}
+		
+		
 
 		return productMasterRequests;
 	}
@@ -757,11 +816,11 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 		}
 		return null;
 	}
-	
+
 	@Override
 	public Boolean saveCorporateMasterFromTemp(Long mappingId) throws Exception {
 		// TODO Auto-generated method stub
-		
+
 		ProductMasterTemp corporateProduct = productMasterTempRepository.getProductMasterTemp(mappingId);
 		CommonDocumentUtils.startHook(logger, "saveCorporate");
 		if (!CommonUtils.isObjectNullOrEmpty(corporateProduct)) {
@@ -781,7 +840,5 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 		CommonDocumentUtils.endHook(logger, "saveCorporate");
 		return false;
 	}
-
-
 
 }
