@@ -617,7 +617,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				{
 					Data data = MultipleJSONObjectHelper.getObjectFromMap(rec, Data.class);
 					datas.add(data);
-					map.put("bankStatementAnalysis", datas);
+					map.put("bankStatementAnalysis", printFields(datas));
 				}
 			}
 		}catch (Exception e) {
@@ -652,13 +652,13 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			logger.info("Error while getting Eligibility data");
 		}
 		//MCA DATA
-		try {
+		/*try {
 			String companyId = loanApplicationMaster.getMcaCompanyId();
 			McaResponse mcaResponse = mcaClient.getCompanyDetailedData(companyId);
 			map.put("mcaData", mcaResponse.getData());
 		}catch(Exception e) {
 			e.printStackTrace();
-		}
+		}*/
 		
 		//HUNTER API ANALYSIS
 		/*try {
