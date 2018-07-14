@@ -423,7 +423,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
                     //financialArrangementsDetailResponse.setAddress(financialArrangementsDetailRequest.getAddress());
                     financialArrangementsDetailResponseList.add(financialArrangementsDetailResponse);
                 }
-                	//map.put("financialArrangments",!CommonUtils.isListNullOrEmpty(financialArrangementsDetailResponseList) ? printFields(financialArrangementsDetailResponseList) : " ");
+                	map.put("financialArrangments",!CommonUtils.isListNullOrEmpty(financialArrangementsDetailResponseList) ? printFields(financialArrangementsDetailResponseList) : " ");
 
             } catch (Exception e) {
                 logger.error("Problem to get Data of Financial Arrangements Details {}", e);
@@ -617,7 +617,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				{
 					Data data = MultipleJSONObjectHelper.getObjectFromMap(rec, Data.class);
 					datas.add(data);
-					map.put("bankStatementAnalysis", printFields(datas));
+					//map.put("bankStatementAnalysis", printFields(datas));
 				}
 			}
 		}catch (Exception e) {
