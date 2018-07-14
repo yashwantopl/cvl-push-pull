@@ -267,7 +267,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		try {
 			UsersRequest request = MultipleJSONObjectHelper.getObjectFromMap(lm,UsersRequest.class);
 			map.put("mobile", request.getMobile());
-			map.put("email", request.getEmail());
+			map.put("email", StringEscapeUtils.escapeXml(request.getEmail()));
 		} catch (IOException e1) {
 			logger.info("Error while getting registration details");
 			e1.printStackTrace();
@@ -295,7 +295,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				map.put("registeredAddCity", StringEscapeUtils.escapeXml(getCityName(corporateFinalInfoRequest.getFirstAddress().getCityId())));
 				map.put("registeredAddPincode", !CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getFirstAddress().getPincode())?corporateFinalInfoRequest.getFirstAddress().getPincode() : "");
 			}
-			map.put("corporateApplicantFinal", corporateFinalInfoRequest);
+			map.put("corporateApplicantFinal", printFields(corporateFinalInfoRequest));
 			map.put("aboutUs", StringEscapeUtils.escapeXml(corporateFinalInfoRequest.getAboutUs()));
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
@@ -335,7 +335,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		try {
 			//ONE-FORM DATA
 			map.put("corporateApplicant", printFields(corporateApplicantRequest));
-			map.put("orgName", escapeXml(corporateApplicantRequest.getOrganisationName()));
+			map.put("orgName", StringEscapeUtils.escapeXml(corporateApplicantRequest.getOrganisationName()));
 			map.put("constitution", !CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getConstitutionId()) ? StringEscapeUtils.escapeXml(Constitution.getById(corporateApplicantRequest.getConstitutionId()).getValue()) : " ");
 			
 			String establishMentYear = !CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getEstablishmentMonth()) ? EstablishmentMonths.getById(corporateApplicantRequest.getEstablishmentMonth()).getValue() : "";
@@ -847,7 +847,11 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getSharePriceFace())) {
 				shareFaceVal=corporateApplicantDetail.getSharePriceFace();
 				financialInputRequestDbl.setShareFaceValue(shareFaceVal);
+			}else{
+				financialInputRequestDbl.setShareFaceValue(1.00);
 			}
+		}else{
+			financialInputRequestDbl.setShareFaceValue(1.00);
 		}
 
 		financialInputRequestDbl.setNoOfMonth(12.0);
