@@ -17,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.capitaworld.api.eligibility.model.CLEligibilityRequest;
 import com.capitaworld.api.eligibility.model.EligibililityRequest;
 import com.capitaworld.api.eligibility.model.EligibilityResponse;
 import com.capitaworld.client.eligibility.EligibilityClient;
@@ -30,6 +29,7 @@ import com.capitaworld.service.dms.exception.DocumentException;
 import com.capitaworld.service.dms.model.DocumentRequest;
 import com.capitaworld.service.dms.model.DocumentResponse;
 import com.capitaworld.service.dms.util.DocumentAlias;
+import com.capitaworld.service.loans.domain.fundprovider.TermLoanParameter;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
@@ -38,13 +38,10 @@ import com.capitaworld.service.loans.model.DirectorBackgroundDetailResponse;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailResponse;
 import com.capitaworld.service.loans.model.teaser.primaryview.CorporatePrimaryViewResponse;
+import com.capitaworld.service.loans.repository.fundprovider.TermLoanParameterRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.SectorIndustryMappingRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorMappingRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.DirectorBackgroundDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
 import com.capitaworld.service.loans.service.irr.IrrService;
@@ -62,7 +59,6 @@ import com.capitaworld.service.oneform.enums.DirectorRelationshipType;
 import com.capitaworld.service.oneform.enums.EstablishmentMonths;
 import com.capitaworld.service.oneform.enums.Gender;
 import com.capitaworld.service.oneform.enums.LoanType;
-import com.capitaworld.service.oneform.enums.LoanTypeNatureFacility;
 import com.capitaworld.service.oneform.enums.PurposeOfLoan;
 import com.capitaworld.service.oneform.enums.Title;
 import com.capitaworld.service.oneform.model.MasterResponse;
@@ -75,8 +71,6 @@ import com.capitaworld.service.scoring.model.ProposalScoreResponse;
 import com.capitaworld.service.scoring.model.ScoringRequest;
 import com.capitaworld.service.scoring.model.ScoringResponse;
 import com.capitaworld.service.thirdparty.model.CGTMSEDataResponse;
-import com.capitaworld.service.thirdparty.model.CGTMSEResponse;
-import com.capitaworld.service.thirdparty.model.ThirdPartyRequest;
 import com.capitaworld.service.thirdpaty.client.ThirdPartyClient;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.UserResponse;
@@ -130,6 +124,8 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 	@Autowired
 	private ThirdPartyClient thirdPartyClient;
 
+	@Autowired
+	private TermLoanParameterRepository termLoanParameterRepository;
 	
     public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
     DecimalFormat decim = new DecimalFormat("#,###.00");
@@ -643,12 +639,19 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 			}
 			
 			//Eligibility Data
+			TermLoanParameter termLoanParameter = termLoanParameterRepository.getById(fpProductMappingId);
+//			Long assessmentId = termLoanParameter.getAssessmentMethodId().longValue();
+//			if(!CommonUtils.isObjectNullOrEmpty(assessmentId)) {
+//				corporatePrimaryViewResponse.setAssesmentId(assessmentId);
+//			}
 			EligibililityRequest eligibilityReq=new EligibililityRequest();
 			eligibilityReq.setApplicationId(toApplicationId);
-			eligibilityReq.setProductId(!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getProductId()) ? Long.valueOf(primaryCorporateDetail.getProductId()) : null);
+			//eligibilityReq.set
+			eligibilityReq.setFpProductMappingId(fpProductMappingId);
 			System.out.println(" for eligibility appid============>>"+toApplicationId);
 			
 			try {
+				
 				EligibilityResponse eligibilityResp= eligibilityClient.corporateLoanData(eligibilityReq);
 //				CLEligibilityRequest cLEligibilityRequest= MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>), CLEligibilityRequest.class);
 				corporatePrimaryViewResponse.setEligibilityDataObject(eligibilityResp.getData());
