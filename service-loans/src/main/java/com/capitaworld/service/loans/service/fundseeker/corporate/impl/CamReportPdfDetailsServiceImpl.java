@@ -11,18 +11,13 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-
 import javax.transaction.Transactional;
-
 import org.apache.commons.lang.StringEscapeUtils;
-
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.capitaworld.api.eligibility.model.CLEligibilityRequest;
 import com.capitaworld.api.eligibility.model.EligibililityRequest;
 import com.capitaworld.api.eligibility.model.EligibilityResponse;
@@ -1331,7 +1326,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			Object value = field.get(obj);
 			if (value instanceof String) {
 				String value1 = (String) field.get(obj);
-				String a = org.apache.commons.lang3.StringEscapeUtils.unescapeHtml4(value1);
+				String a = StringEscapeUtils.escapeXml(value1.toString());
 				value = a;
 				field.set(obj, value);
 			}else {
