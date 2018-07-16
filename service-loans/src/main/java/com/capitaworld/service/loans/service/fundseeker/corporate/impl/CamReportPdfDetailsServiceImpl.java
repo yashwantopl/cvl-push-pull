@@ -1329,7 +1329,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			Object value = field.get(obj);
 			if (value instanceof String) {
 				String value1 = (String) field.get(obj);
-				String a = StringEscapeUtils.escapeXml(" "+value1.toString()+" ");
+				String a = StringEscapeUtils.unescapeHtml4(value1);
 				value = a;
 				field.set(obj, value);
 			}else {
