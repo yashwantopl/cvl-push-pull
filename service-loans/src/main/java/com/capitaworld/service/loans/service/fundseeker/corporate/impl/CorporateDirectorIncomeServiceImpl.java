@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -68,31 +69,33 @@ public class CorporateDirectorIncomeServiceImpl implements CorporateDirectorInco
 			throws Exception {
 		
 		try {
+			CorporateDirectorIncomeRequest incomeRequest = null;
+			List<CorporateDirectorIncomeDetails> incomeDetails = null;
+			List<CorporateDirectorIncomeRequest> incomeDetailsResponse = null;
 			logger.info("Entering into getDirectorIncomeDetails=======================>");
 			
 			if(!(CommonUtils.isObjectNullOrEmpty(applicationId)) && !(CommonUtils.isObjectNullOrEmpty(directorId))){
-				
-				List<CorporateDirectorIncomeDetails> incomeDetails = incomeDetailsRepository.findByApplicationIdAndDirectorIdAndIsActive(applicationId, directorId, true);
-				List<CorporateDirectorIncomeRequest> incomeDetailsResponse = null;
+				incomeDetails = incomeDetailsRepository.findByApplicationIdAndDirectorIdAndIsActive(applicationId, directorId, true);
+				incomeDetailsResponse = new ArrayList<CorporateDirectorIncomeRequest>();
 				if(!CommonUtils.isObjectNullOrEmpty(incomeDetails)){
 					for(CorporateDirectorIncomeDetails corpObj:incomeDetails) {
 						if(!CommonUtils.isObjectNullOrEmpty(corpObj)) {
-							BeanUtils.copyProperties(corpObj, incomeDetailsResponse);
-						
-					}
-					
+							incomeRequest = new CorporateDirectorIncomeRequest();
+							BeanUtils.copyProperties(corpObj, incomeRequest);
+						}
+						incomeDetailsResponse.add(incomeRequest);
 				}
 					logger.info("Successfully get DirectorIncomeDetails=======================>"+incomeDetailsResponse);
-					return incomeDetailsResponse;
+					return incomeDetailsResponse;	
 			}
+				
 		}
-			return null;
+		  return null;
 		} catch (Exception e) {
 			logger.info("Exception Occured in gettingDirectorIncomeDetails=======================>");
 			e.printStackTrace();
 		}
-		
-		return null;
+		  return null;
 	}
 
 }
