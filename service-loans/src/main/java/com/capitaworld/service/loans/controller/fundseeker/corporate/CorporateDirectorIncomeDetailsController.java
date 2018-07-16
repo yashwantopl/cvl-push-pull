@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.capitaworld.service.gst.util.CommonUtils;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.corporate.CorporateDirectorIncomeRequest;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateDirectorIncomeService;
@@ -53,6 +54,33 @@ public class CorporateDirectorIncomeDetailsController {
 			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse("Something went wrong while calling save/update Income details",
+							HttpStatus.INTERNAL_SERVER_ERROR.value(), false),HttpStatus.OK);
+		}
+	}
+	
+	@RequestMapping(value = "/get_income_details/{applicationId}/{directorId}", method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getIncomeDetails(Long applicationId,Long directorId)
+			throws ServletException, IOException {
+		logger.info("Start get Director income details()");
+		try {
+			if (!(CommonUtils.isObjectNullOrEmpty(applicationId)) && !(CommonUtils.isObjectNullOrEmpty(directorId))) {
+				logger.info("Inside Corporate Director Income Details controller===>{}", applicationId+" "+directorId);
+				List<CorporateDirectorIncomeRequest> response = incomeDetailsService.getDirectorIncomeDetails(applicationId,directorId);
+				logger.info("Response from getting income details===>{}", response);
+				if (!CommonUtils.isObjectNullOrEmpty(response)) {
+					return new ResponseEntity<LoansResponse>(
+							new LoansResponse("Income details get successfully", HttpStatus.OK.value(), response),
+							HttpStatus.OK);
+				} 
+			}
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse("Getting income details failed", HttpStatus.BAD_REQUEST.value(), false),
+					HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while getting income details");
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse("Something went wrong while getting Income details",
 							HttpStatus.INTERNAL_SERVER_ERROR.value(), false),HttpStatus.OK);
 		}
 	}

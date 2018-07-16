@@ -63,4 +63,36 @@ public class CorporateDirectorIncomeServiceImpl implements CorporateDirectorInco
 		
 	}
 
+	@Override
+	public List<CorporateDirectorIncomeRequest> getDirectorIncomeDetails(Long applicationId, Long directorId)
+			throws Exception {
+		
+		try {
+			logger.info("Entering into getDirectorIncomeDetails=======================>");
+			
+			if(!(CommonUtils.isObjectNullOrEmpty(applicationId)) && !(CommonUtils.isObjectNullOrEmpty(directorId))){
+				
+				List<CorporateDirectorIncomeDetails> incomeDetails = incomeDetailsRepository.findByApplicationIdAndDirectorIdAndIsActive(applicationId, directorId, true);
+				List<CorporateDirectorIncomeRequest> incomeDetailsResponse = null;
+				if(!CommonUtils.isObjectNullOrEmpty(incomeDetails)){
+					for(CorporateDirectorIncomeDetails corpObj:incomeDetails) {
+						if(!CommonUtils.isObjectNullOrEmpty(corpObj)) {
+							BeanUtils.copyProperties(corpObj, incomeDetailsResponse);
+						
+					}
+					
+				}
+					logger.info("Successfully get DirectorIncomeDetails=======================>"+incomeDetailsResponse);
+					return incomeDetailsResponse;
+			}
+		}
+			return null;
+		} catch (Exception e) {
+			logger.info("Exception Occured in gettingDirectorIncomeDetails=======================>");
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+
 }
