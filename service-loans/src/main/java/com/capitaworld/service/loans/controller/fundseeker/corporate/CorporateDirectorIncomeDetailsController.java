@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -58,13 +59,13 @@ public class CorporateDirectorIncomeDetailsController {
 		}
 	}
 	
-	@RequestMapping(value = "/get_income_details/{applicationId}/{directorId}", method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getIncomeDetails(Long applicationId,Long directorId)
+	@RequestMapping(value = "/get_income_details/{applicationId}/{directorId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getIncomeDetails(@PathVariable("applicationId") Long applicationId,@PathVariable("directorId") Long directorId)
 			throws ServletException, IOException {
-		logger.info("Start get Director income details()");
+		logger.info("Start get Director income details()=============>"+applicationId+" "+directorId);
 		try {
 			if (!(CommonUtils.isObjectNullOrEmpty(applicationId)) && !(CommonUtils.isObjectNullOrEmpty(directorId))) {
-				logger.info("Inside Corporate Director Income Details controller===>{}", applicationId+" "+directorId);
+				logger.info("Inside Corporate Director Income Details controller===>{}"+ applicationId+" "+directorId);
 				List<CorporateDirectorIncomeRequest> response = incomeDetailsService.getDirectorIncomeDetails(applicationId,directorId);
 				logger.info("Response from getting income details===>{}", response);
 				if (!CommonUtils.isObjectNullOrEmpty(response)) {
