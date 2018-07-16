@@ -34,13 +34,17 @@ public interface ScoringService {
 
 	/////////
 
-    public ScoringModelReqRes getScoringModelList(ScoringModelReqRes scoringModelReqRes);
+    public ScoringModelReqRes getScoringModelTempList(ScoringModelReqRes scoringModelReqRes);
 
-    public ScoringModelReqRes saveScoringModel(ScoringModelReqRes scoringModelReqRes);
+    public ScoringModelReqRes saveScoringModelTemp(ScoringModelReqRes scoringModelReqRes);
 
-    public ScoringModelReqRes getScoringModelDetail(ScoringModelReqRes scoringModelReqRes);
+    public ScoringModelReqRes getScoringModelTempDetail(ScoringModelReqRes scoringModelReqRes);
 
-    public ScoringModelReqRes saveScoringModelDetail(ScoringModelReqRes scoringModelReqRes);
+    public ScoringModelReqRes saveScoringModelTempDetail(ScoringModelReqRes scoringModelReqRes);
     
     public List<GenericCheckerReqRes> sendToChecker(List <GenericCheckerReqRes> genericCheckerReqRes , Long userId)  throws ScoringException ;
+    
+    public ScoringModelReqRes getScoringModelMasterList(ScoringModelReqRes scoringModelReqRes);
+    
+    public ScoringModelReqRes getScoringModelMasterDetail(ScoringModelReqRes scoringModelReqRes);
 }

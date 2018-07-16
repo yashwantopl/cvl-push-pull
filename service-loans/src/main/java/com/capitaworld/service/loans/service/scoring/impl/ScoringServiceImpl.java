@@ -1153,43 +1153,17 @@ public class ScoringServiceImpl implements ScoringService{
                     {
                         try
                         {
-                            Double loanAmount=primaryCorporateDetailRepository.getLoanAmountByApplication(applicationId);
-                            scoreParameterNTBRequest.setLoanAmount(loanAmount);
-                            Double collatralValue=null;
-                            // if collatral value is null or 0 then get collatral value from CGTMSE
-                            if(!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getCollateralSecurityAmount()) && primaryCorporateDetail.getCollateralSecurityAmount() != 0.0 )
-                            {
-                                collatralValue=primaryCorporateDetail.getCollateralSecurityAmount();
-                            }
-                            else
-                            {
-                                // get collatral value from CGTMSE
-                                try {
 
-                                    CGTMSEDataResponse cgtmseDataResponse=thirdPartyClient.getCalulation(applicationId);
-                                    if(!CommonUtils.isObjectNullOrEmpty(cgtmseDataResponse)
-                                            && !CommonUtils.isObjectNullOrEmpty(cgtmseDataResponse.getColleteralCoverage())
-                                            && cgtmseDataResponse.getColleteralCoverage() !=0.0 )
-                                    {
-                                        collatralValue=cgtmseDataResponse.getColleteralCoverage();
-                                    }
-                                }
-                                catch (Exception e)
-                                {
-                                    logger.error("error while getting collatral value from CGTMSE ====> "+applicationId);
-                                    e.printStackTrace();
-                                }
-
+                            Double collatralValue=0.0;
+                            CGTMSEDataResponse cgtmseDataResponse=thirdPartyClient.getCalulation(applicationId);
+                            if(!CommonUtils.isObjectNullOrEmpty(cgtmseDataResponse)
+                                    && !CommonUtils.isObjectNullOrEmpty(cgtmseDataResponse.getColleteralCoverage()))
+                            {
+                                collatralValue=cgtmseDataResponse.getColleteralCoverage();
                             }
+
                             scoreParameterNTBRequest.setColatralValue(collatralValue);
-                            if(!CommonUtils.isObjectNullOrEmpty(collatralValue) && !CommonUtils.isObjectNullOrEmpty(loanAmount))
-                            {
-                                scoreParameterNTBRequest.setIsAssetCoverageRatio(true);
-                            }
-                            else
-                            {
-                                scoreParameterNTBRequest.setIsAssetCoverageRatio(false);
-                            }
+                            scoreParameterNTBRequest.setIsAssetCoverageRatio(true);
                         }
                         catch (Exception e)
                         {
@@ -1249,8 +1223,16 @@ public class ScoringServiceImpl implements ScoringService{
                         try
                         {
                             Long environmentCategory=null; // remaining
-                            scoreParameterNTBRequest.setEnvironmentCategory(environmentCategory);
-                            scoreParameterNTBRequest.setIsEnvironmentCategory(true);
+                            if(!CommonUtils.isObjectNullOrEmpty(environmentCategory))
+                            {
+                                scoreParameterNTBRequest.setEnvironmentCategory(environmentCategory);
+                                scoreParameterNTBRequest.setIsEnvironmentCategory(true);
+                            }
+                            else
+                            {
+                                scoreParameterNTBRequest.setEnvironmentCategory(environmentCategory);
+                                scoreParameterNTBRequest.setIsEnvironmentCategory(false);
+                            }
                         }
                         catch (Exception e)
                         {
@@ -1263,14 +1245,25 @@ public class ScoringServiceImpl implements ScoringService{
                     case ScoreParameter.NTB.CNW: {
                         try
                         {
-
-                            Double loanAmount=primaryCorporateDetailRepository.getLoanAmountByApplication(applicationId);
-                            scoreParameterNTBRequest.setLoanAmount(loanAmount);
                             Double networth=directorBackgroundDetailsRepository.getSumOfDirectorsNetworth(applicationId);
+                            if(CommonUtils.isObjectNullOrEmpty(networth))
+                            {
+                                networth=0.0;
+                            }
                             scoreParameterNTBRequest.setNetworth(networth);
 
+                            Double loanAmount=primaryCorporateDetailRepository.getLoanAmountByApplication(applicationId);
 
-                            scoreParameterNTBRequest.setIsCNW(true);
+                            if(!CommonUtils.isObjectNullOrEmpty(loanAmount))
+                            {
+                                scoreParameterNTBRequest.setLoanAmount(loanAmount);
+                                scoreParameterNTBRequest.setIsCNW(true);
+                            }
+                            else
+                            {
+                                scoreParameterNTBRequest.setIsCNW(false);
+                            }
+
                         }
                         catch (Exception e)
                         {
@@ -1391,6 +1384,10 @@ public class ScoringServiceImpl implements ScoringService{
                         try
                         {
                             Double totalExperience= directorBackgroundDetail.getTotalExperience();
+                            if(CommonUtils.isObjectNullOrEmpty(totalExperience))
+                            {
+                                totalExperience=0.0;
+                            }
                             scoreParameterNTBRequest.setTotalworkingExperience(totalExperience);
                             scoreParameterNTBRequest.setIsWorkingExperience(true);
                         }
@@ -1492,8 +1489,17 @@ public class ScoringServiceImpl implements ScoringService{
                         try
                         {
                             Long empType= directorBackgroundDetail.getEmploymentDetail().getTypeOfEmployment();
-                            scoreParameterNTBRequest.setEmployeeType(empType);
-                            scoreParameterNTBRequest.setIsEmploymentType(true);
+
+                            if(!CommonUtils.isObjectNullOrEmpty(empType))
+                            {
+                                scoreParameterNTBRequest.setEmployeeType(empType);
+                                scoreParameterNTBRequest.setIsEmploymentType(true);
+                            }
+                            else
+                            {
+                                scoreParameterNTBRequest.setIsEmploymentType(false);
+                            }
+
                         }
                         catch (Exception e)
                         {
@@ -1541,6 +1547,11 @@ public class ScoringServiceImpl implements ScoringService{
                             Double avgSalary=(corporateDirectorIncomeDetailsRepository.getTotalSalaryByApplicationIdAndDirectorId(applicationId,directorBackgroundDetail.getId()))/3;
                             Double promotorContribution=primaryCorporateDetail.getPromoterContribution();
 
+                            if(CommonUtils.isObjectNullOrEmpty(promotorContribution))
+                            {
+                                promotorContribution=0.0;
+                            }
+
                             scoreParameterNTBRequest.setItrSalaryIncomeAvg(avgSalary);
                             scoreParameterNTBRequest.setItrPromotorContribution(promotorContribution);
                             scoreParameterNTBRequest.setIsItrSalaryIncome(true);
@@ -1560,6 +1571,16 @@ public class ScoringServiceImpl implements ScoringService{
                             Double totalSalary=corporateDirectorIncomeDetailsRepository.getTotalSalaryByApplicationIdAndDirectorId(applicationId,directorBackgroundDetail.getId());
                             Double totalEMI=financialArrangementDetailsRepository.getTotalEmiByApplicationIdAndDirectorId(applicationId,directorBackgroundDetail.getId());
 
+                            if(CommonUtils.isObjectNullOrEmpty(totalSalary))
+                            {
+                                totalSalary=0.0;
+                            }
+
+                            if(CommonUtils.isObjectNullOrEmpty(totalEMI))
+                            {
+                                totalEMI=0.0;
+                            }
+
                             scoreParameterNTBRequest.setItrSalaryIncome(totalSalary);
                             scoreParameterNTBRequest.setTotalEmiPaid(totalEMI);
                             scoreParameterNTBRequest.setIsFixedObligationRatio(true);
@@ -1575,8 +1596,31 @@ public class ScoringServiceImpl implements ScoringService{
                     case ScoreParameter.NTB.CHEQUE_BOUNCES: {
                         try
                         {
+                            Double noOfChequeBounce=null;
+                            ReportRequest reportRequest=new ReportRequest();
+                            reportRequest.setApplicationId(applicationId);
+                            reportRequest.setDirectorId(directorBackgroundDetail.getId());
 
-                            //remaining
+                            AnalyzerResponse analyzerResponse=analyzerClient.getDetailsFromReportByDirector(reportRequest);
+
+                            Data data = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)analyzerResponse.getData(),
+                                    Data.class);
+                            if(!CommonUtils.isObjectNullOrEmpty(analyzerResponse.getData())){
+                                {
+                                    if(!CommonUtils.isObjectNullOrEmpty(data.getCheckBounceForLast6Month()))
+                                    {
+                                        noOfChequeBounce=data.getCheckBounceForLast6Month().doubleValue();
+                                    }
+                                    else
+                                    {
+                                        noOfChequeBounce=0.0;
+                                    }
+
+                                }
+
+                            }
+
+                            scoreParameterNTBRequest.setChequeBouncesPastSixMonths(noOfChequeBounce);
                             scoreParameterNTBRequest.setIsChequeBounces(true);
                         }
                         catch (Exception e)
@@ -1592,7 +1636,7 @@ public class ScoringServiceImpl implements ScoringService{
                         {
 
                             //remaining
-                            scoreParameterNTBRequest.setIsDPD(true);
+                            scoreParameterNTBRequest.setIsDPD(false);
                         }
                         catch (Exception e)
                         {
@@ -1794,7 +1838,7 @@ public class ScoringServiceImpl implements ScoringService{
     }
 
     @Override
-    public ScoringModelReqRes getScoringModelList(ScoringModelReqRes scoringModelReqRes) {
+    public ScoringModelReqRes getScoringModelTempList(ScoringModelReqRes scoringModelReqRes) {
         try {
             /*scoringModelReqRes.setOrgId(1l);*/
             UserResponse userResponse=usersClient.getOrgIdFromUserId(scoringModelReqRes.getUserId());
@@ -1818,7 +1862,7 @@ public class ScoringServiceImpl implements ScoringService{
 
         try {
 
-            return scoringClient.getScoringModelList(scoringModelReqRes);
+            return scoringClient.getScoringModelTempList(scoringModelReqRes);
         }
         catch (Exception e)
         {
@@ -1830,7 +1874,7 @@ public class ScoringServiceImpl implements ScoringService{
     }
 
     @Override
-    public ScoringModelReqRes saveScoringModel(ScoringModelReqRes scoringModelReqRes) {
+    public ScoringModelReqRes saveScoringModelTemp(ScoringModelReqRes scoringModelReqRes) {
 
         try {
             /*scoringModelReqRes.getScoringModelResponse().setOrgId(1l);*/
@@ -1855,7 +1899,7 @@ public class ScoringServiceImpl implements ScoringService{
 
         try {
 
-            return scoringClient.saveScoringModel(scoringModelReqRes);
+            return scoringClient.saveScoringModelTemp(scoringModelReqRes);
         }
         catch (Exception e)
         {
@@ -1866,13 +1910,13 @@ public class ScoringServiceImpl implements ScoringService{
     }
 
     @Override
-    public ScoringModelReqRes getScoringModelDetail(ScoringModelReqRes scoringModelReqRes) {
+    public ScoringModelReqRes getScoringModelTempDetail(ScoringModelReqRes scoringModelReqRes) {
         try {
             Long fpProductId=scoringModelReqRes.getFpProductId();
             try {
                 ProductMaster productMaster=productMasterRepository.findOne(fpProductId);
                 scoringModelReqRes.setLoanTypeId(Long.parseLong(productMaster.getProductId().toString()));
-                return scoringClient.getScoringModelDetail(scoringModelReqRes);
+                return scoringClient.getScoringModelTempDetail(scoringModelReqRes);
             }
             catch (Exception e)
             {
@@ -1891,10 +1935,10 @@ public class ScoringServiceImpl implements ScoringService{
     }
 
     @Override
-    public ScoringModelReqRes saveScoringModelDetail(ScoringModelReqRes scoringModelReqRes) {
+    public ScoringModelReqRes saveScoringModelTempDetail(ScoringModelReqRes scoringModelReqRes) {
         try {
 
-            return scoringClient.saveScoringModelDetail(scoringModelReqRes);
+            return scoringClient.saveScoringModelTempDetail(scoringModelReqRes);
         }
         catch (Exception e)
         {
@@ -1907,5 +1951,66 @@ public class ScoringServiceImpl implements ScoringService{
     @Override
     public List<GenericCheckerReqRes> sendToChecker(List<GenericCheckerReqRes> genericCheckerReqResList , Long userId) throws ScoringException {
         return scoringClient.sendToChecker(genericCheckerReqResList, userId);
+    }
+    
+    @Override
+    public ScoringModelReqRes getScoringModelMasterList(ScoringModelReqRes scoringModelReqRes) {
+        try {
+            /*scoringModelReqRes.setOrgId(1l);*/
+            UserResponse userResponse=usersClient.getOrgIdFromUserId(scoringModelReqRes.getUserId());
+
+            if(!CommonUtils.isObjectNullOrEmpty(userResponse) && !CommonUtils.isObjectNullOrEmpty(userResponse.getData()))
+            {
+                scoringModelReqRes.setOrgId(Long.parseLong(userResponse.getData().toString()));
+                /*scoringModelReqRes.setOrgId(1l);*/
+            }
+            else
+            {
+                throw new Exception();
+            }
+        }
+        catch (Exception e)
+        {
+            logger.error("org id is null or empty");
+            e.printStackTrace();
+            return  new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG,HttpStatus.BAD_REQUEST.value());
+        }
+
+        try {
+
+            return scoringClient.getScoringModelMasterList(scoringModelReqRes);
+        }
+        catch (Exception e)
+        {
+            logger.error("error while geting score model list from scoring");
+            e.printStackTrace();
+            return  new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG,HttpStatus.BAD_REQUEST.value());
+        }
+
+    }
+    
+    @Override
+    public ScoringModelReqRes getScoringModelMasterDetail(ScoringModelReqRes scoringModelReqRes) {
+        try {
+            Long fpProductId=scoringModelReqRes.getFpProductId();
+            try {
+                ProductMaster productMaster=productMasterRepository.findOne(fpProductId);
+                scoringModelReqRes.setLoanTypeId(Long.parseLong(productMaster.getProductId().toString()));
+                return scoringClient.getScoringModelMasterDetail(scoringModelReqRes);
+            }
+            catch (Exception e)
+            {
+                logger.error("error while accessing fp product id for scoring");
+                e.printStackTrace();
+                return  new ScoringModelReqRes("Error while accessing fp product id for scoring",HttpStatus.BAD_REQUEST.value());
+            }
+
+        }
+        catch (Exception e)
+        {
+            logger.error("error while getting score model detail from scoring");
+            e.printStackTrace();
+            return  new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG,HttpStatus.BAD_REQUEST.value());
+        }
     }
 }

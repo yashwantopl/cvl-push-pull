@@ -332,7 +332,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			GSTR1Request gstr1Request = new GSTR1Request();
 			gstr1Request.setGstin(corporateApplicantRequest.getGstIn());
 			GstResponse response = gstClient.getCalculations(gstr1Request);
-			map.put("gstResponse", !CommonUtils.isObjectNullOrEmpty(response.getData()) ? convertToDoubleForXml(response.getData(),null) : " ");
+			map.put("gstResponse", !CommonUtils.isObjectNullOrEmpty(response.getData()) ? convertToDoubleForXml(MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)response.getData(), GstResponse.class), new HashMap<>()) : " ");
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -627,7 +627,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				{
 					Data data = MultipleJSONObjectHelper.getObjectFromMap(rec, Data.class);
 					datas.add(data);
-					map.put("bankStatementAnalysis", datas);
+					map.put("bankStatementAnalysis", printFields(datas));
 				}
 			}
 		}catch (Exception e) {
@@ -641,7 +641,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			map.put("cgtmseData", cgtmseDataResponse);
 			map.put("maxCgtmseCoverageAmount", convertValue(cgtmseDataResponse.getMaxCgtmseCoverageAmount()));
 			if(!CommonUtils.isObjectNullOrEmpty(cgtmseDataResponse.getCgtmseResponse()) && !CommonUtils.isObjectNullOrEmpty(cgtmseDataResponse.getCgtmseResponse().getDetails())) {
-				map.put("cgtmseBankWise", cgtmseDataResponse.getCgtmseResponse().getDetails());
+				map.put("cgtmseBankWise", printFields(cgtmseDataResponse.getCgtmseResponse().getDetails()));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -666,13 +666,13 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			logger.info("Error while getting Eligibility data");
 		}
 		//MCA DATA
-		try {
+		/*try {
 			String companyId = loanApplicationMaster.getMcaCompanyId();
 			McaResponse mcaResponse = mcaClient.getCompanyDetailedData(companyId);
 			map.put("mcaData", mcaResponse.getData());
 		}catch(Exception e) {
 			e.printStackTrace();
-		}
+		}*/
 		
 		//HUNTER API ANALYSIS
 		/*try {
@@ -854,16 +854,16 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		LiabilitiesDetailsString liabilitiesDetailsString = new LiabilitiesDetailsString();
 		AssetDetailsString assetDetailsString = new AssetDetailsString();
 		CorporateFinalInfoRequest  corporateFinalInfoRequest = corporateFinalInfoService.get(userId ,applicationId);
-        //SET SHARE PHASE VALUE
+        //SET SHARE FACE VALUE
 		Double shareFaceVal=1.00;
 		CorporateApplicantDetail corporateApplicantDetail=corporateApplicantDetailRepository.findOneByApplicationIdId(applicationId);
-		if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail)) {
-			if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getSharePriceFace())) {
-				shareFaceVal=corporateApplicantDetail.getSharePriceFace();
-				financialInputRequestDbl.setShareFaceValue(shareFaceVal);
-			}
+		if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getSharePriceFace())) {
+			logger.info("SharePriceFace"+corporateApplicantDetail.getSharePriceFace());
+			shareFaceVal=corporateApplicantDetail.getSharePriceFace();
+			financialInputRequestDbl.setShareFaceValue(shareFaceVal);
+		}else {
+			financialInputRequestDbl.setShareFaceValue(1.00);
 		}
-
 		financialInputRequestDbl.setNoOfMonth(12.0);
 		
 		/************************************************** OPERATING STATEMENT ***************************************************/
@@ -1315,6 +1315,11 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			for(Map.Entry<Object, Object> setEntry : map.entrySet()) {
 				escapeXml(setEntry.getValue());
 			}
+		}else if(obj.getClass().isArray()){
+			Object[] arr = (Object[])obj;  
+			for(Object o : arr) {
+				escapeXml(o);
+			}
 		}
 		else {
 			escapeXml(obj);
@@ -1342,6 +1347,8 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				String a = StringEscapeUtils.escapeXml(value1.toString());
 				value = a;
 				field.set(obj, value);
+			}else if(value instanceof Double){
+				convertToDoubleForXml(value, null);
 			}else {
 				continue;
 			}
