@@ -215,6 +215,8 @@ public class LoansClient {
     
     private static final String SAVE_UPDATE_DIRECTOR_INCOME_DETAILS = "/corporate_director_income_details/save_income_details";
       
+    private static final String GET_DIRECTOR_INCOME_DETAILS = "/corporate_director_income_details/get_income_details";
+    
     
     private static final String GET_TOKEN ="/loan_application/getToken";
     private static final String SET_TOKEN_AS_EXPIRED ="/loan_application/setTokenAsExpired";
@@ -2133,6 +2135,20 @@ public class LoansClient {
 			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<List<CorporateDirectorIncomeRequest>> entity = new HttpEntity<List<CorporateDirectorIncomeRequest>>(request, headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available");
+		}
+	}
+	
+	public LoansResponse getDirectorIncomeDetails(Long applicationId,Long directorId) throws LoansException {
+		String url = loansBaseUrl.concat(GET_DIRECTOR_INCOME_DETAILS).concat("/"+applicationId+"/"+directorId);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<?> entity = new HttpEntity<>(null, headers);
+			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new LoansException("Loans service is not available");

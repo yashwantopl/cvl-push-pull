@@ -9,5 +9,7 @@ public interface CorporateDirectorIncomeService {
 
 	public Boolean saveOrUpdateIncomeDetails(List<CorporateDirectorIncomeRequest> request) throws Exception;
 	
+	public List<CorporateDirectorIncomeRequest> getDirectorIncomeDetails(Long applicationId,Long directorId) throws Exception;
+	
 
 }
