@@ -18,7 +18,7 @@ import javax.persistence.TemporalType;
  * 
  */
 @Entity
-@Table(name="fp_geographical_state_details")
+@Table(name="fp_geographical_state_details_temp")
 public class GeographicalStateDetailTemp implements Serializable {
 	private static final long serialVersionUID = 1L;
 

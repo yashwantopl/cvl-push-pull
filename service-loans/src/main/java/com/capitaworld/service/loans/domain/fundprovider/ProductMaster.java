@@ -80,6 +80,8 @@ public abstract class ProductMaster implements Serializable {
 	@Column(name = "score_model_id")
 	private Long scoreModelId;
 	
+	
+	
 
 	
 	public ProductMaster() {
@@ -220,7 +222,6 @@ public abstract class ProductMaster implements Serializable {
 	public void setScoreModelId(Long scoreModelId) {
 		this.scoreModelId = scoreModelId;
 	}
-	
 	
 	
 

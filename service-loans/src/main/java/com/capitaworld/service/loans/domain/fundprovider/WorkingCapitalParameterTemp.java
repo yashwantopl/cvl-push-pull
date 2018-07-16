@@ -14,7 +14,7 @@ import java.util.Date;
 @Entity
 @Table(name="fp_working_capital_details_temp")
 @PrimaryKeyJoinColumn(name="fp_product_id",referencedColumnName="fp_product_id")
-public class WorkingCapitalParameterTemp extends ProductMaster implements Serializable {
+public class WorkingCapitalParameterTemp extends ProductMasterTemp implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	
