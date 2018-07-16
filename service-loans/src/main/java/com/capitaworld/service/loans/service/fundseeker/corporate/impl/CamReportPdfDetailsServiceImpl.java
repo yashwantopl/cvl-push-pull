@@ -491,7 +491,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				proposalMappingRequest.setApplicationId(applicationId);
 				proposalMappingRequest.setFpProductId(productId);
 				ProposalMappingResponse proposalMappingResponse= proposalDetailsClient.getActiveProposalDetails(proposalMappingRequest);
-				map.put("proposalResponse", !CommonUtils.isObjectNullOrEmpty(proposalMappingResponse.getData()) ? printFields(proposalMappingResponse.getData()) : " ");
+				map.put("proposalResponse", !CommonUtils.isObjectNullOrEmpty(proposalMappingResponse.getData()) ? proposalMappingResponse.getData() : " ");
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -617,7 +617,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				{
 					Data data = MultipleJSONObjectHelper.getObjectFromMap(rec, Data.class);
 					datas.add(data);
-					map.put("bankStatementAnalysis", datas);
+					map.put("bankStatementAnalysis", printFields(datas));
 				}
 			}
 		}catch (Exception e) {
@@ -1329,7 +1329,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			Object value = field.get(obj);
 			if (value instanceof String) {
 				String value1 = (String) field.get(obj);
-				String a = StringEscapeUtils.escapeXml(value1.toString());
+				String a = StringEscapeUtils.escapeXml(" "+value1.toString()+" ");
 				value = a;
 				field.set(obj, value);
 			}else {
