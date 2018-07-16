@@ -52,44 +52,44 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 	@Autowired
 	private WorkingCapitalParameterRepository workingCapitalParameterRepository;
 
-	@Autowired	
+	@Autowired
 	private IndustrySectorRepository industrySectorRepository;
-	
-	@Autowired 
+
+	@Autowired
 	private GeographicalCountryRepository geographicalCountryRepository;
-	
+
 	@Autowired
 	private GeographicalStateRepository geographicalStateRepository;
-	
+
 	@Autowired
 	private GeographicalCityRepository geographicalCityRepository;
-	
-	@Autowired	
+
+	@Autowired
 	private IndustrySectorTempRepository industrySectorTempRepository;
-	
-	@Autowired 
+
+	@Autowired
 	private GeographicalCountryTempRepository geographicalCountryTempRepository;
-	
+
 	@Autowired
 	private GeographicalStateTempRepository geographicalStateTempRepository;
-	
+
 	@Autowired
 	private GeographicalCityTempRepository geographicalCityTempRepository;
- 	
+
 	@Autowired
 	private OneFormClient oneFormClient;
-	
+
 	@Autowired
 	private NegativeIndustryRepository negativeIndustryRepository;
-	
+
 	@Autowired
 	private WorkingCapitalParameterTempRepository workingCapitalParameterTempRepository;
-	
+
 	@Autowired
 	private NegativeIndustryTempRepository negativeIndustryTempRepository;
-	
-    @Autowired
-    private WorkflowClient workflowClient;
+
+	@Autowired
+	private WorkflowClient workflowClient;
 
 	@Override
 	public boolean saveOrUpdate(WorkingCapitalParameterRequest workingCapitalParameterRequest) {
@@ -101,12 +101,12 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 		if (workingCapitalParameter == null) {
 			return false;
 		}
-		
+
 		if (!CommonUtils.isObjectListNull(workingCapitalParameterRequest.getMaxTenure()))
 			workingCapitalParameterRequest.setMaxTenure(workingCapitalParameterRequest.getMaxTenure() * 12);
 		if (!CommonUtils.isObjectListNull(workingCapitalParameterRequest.getMinTenure()))
 			workingCapitalParameterRequest.setMinTenure(workingCapitalParameterRequest.getMinTenure() * 12);
-		
+
 		BeanUtils.copyProperties(workingCapitalParameterRequest, workingCapitalParameter,
 				CommonUtils.IgnorableCopy.FP_PRODUCT);
 		workingCapitalParameter.setModifiedBy(workingCapitalParameterRequest.getUserId());
@@ -121,15 +121,15 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 		// Sector data save
 		saveSector(workingCapitalParameterRequest);
 		geographicalCountryRepository.inActiveMappingByFpProductId(workingCapitalParameterRequest.getId());
-		//country data save
+		// country data save
 		saveCountry(workingCapitalParameterRequest);
-		//state data save
+		// state data save
 		geographicalStateRepository.inActiveMappingByFpProductId(workingCapitalParameterRequest.getId());
 		saveState(workingCapitalParameterRequest);
-		//city data save
+		// city data save
 		geographicalCityRepository.inActiveMappingByFpProductId(workingCapitalParameterRequest.getId());
 		saveCity(workingCapitalParameterRequest);
-		//negative industry save
+		// negative industry save
 		negativeIndustryRepository.inActiveMappingByFpProductMasterId(workingCapitalParameterRequest.getId());
 		saveNegativeIndustry(workingCapitalParameterRequest);
 		logger.info("end saveOrUpdate");
@@ -144,103 +144,93 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 		if (loanParameter == null)
 			return null;
 		BeanUtils.copyProperties(loanParameter, workingCapitalParameterRequest);
-		
+
 		if (!CommonUtils.isObjectListNull(workingCapitalParameterRequest.getMaxTenure()))
 			workingCapitalParameterRequest.setMaxTenure(workingCapitalParameterRequest.getMaxTenure() / 12);
 		if (!CommonUtils.isObjectListNull(workingCapitalParameterRequest.getMinTenure()))
 			workingCapitalParameterRequest.setMinTenure(workingCapitalParameterRequest.getMinTenure() / 12);
-		
+
 		List<Long> industryList = industrySectorRepository
 				.getIndustryByProductId(workingCapitalParameterRequest.getId());
 		if (!industryList.isEmpty()) {
 			try {
 				OneFormResponse formResponse = oneFormClient.getIndustryById(industryList);
-				workingCapitalParameterRequest.setIndustrylist((List<DataRequest>)formResponse.getListData());
+				workingCapitalParameterRequest.setIndustrylist((List<DataRequest>) formResponse.getListData());
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				logger.error(e.toString());
 				e.printStackTrace();
 			}
 		}
-		
-		List<Long> sectorList = industrySectorRepository
-				.getSectorByProductId(workingCapitalParameterRequest.getId());
-		if(!sectorList.isEmpty())
-		{
-		try {
-			OneFormResponse formResponse =oneFormClient.getSectorById(sectorList);
-			workingCapitalParameterRequest.setSectorlist((List<DataRequest>) formResponse.getListData());
-			 
-			
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			logger.error(e.toString());
-			e.printStackTrace();
+
+		List<Long> sectorList = industrySectorRepository.getSectorByProductId(workingCapitalParameterRequest.getId());
+		if (!sectorList.isEmpty()) {
+			try {
+				OneFormResponse formResponse = oneFormClient.getSectorById(sectorList);
+				workingCapitalParameterRequest.setSectorlist((List<DataRequest>) formResponse.getListData());
+
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				logger.error(e.toString());
+				e.printStackTrace();
+			}
 		}
+
+		List<Long> countryList = geographicalCountryRepository
+				.getCountryByFpProductId(workingCapitalParameterRequest.getId());
+		if (!countryList.isEmpty()) {
+			try {
+				OneFormResponse formResponse = oneFormClient.getCountryByCountryListId(countryList);
+				workingCapitalParameterRequest.setCountryList((List<DataRequest>) formResponse.getListData());
+
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				logger.error(e.toString());
+				e.printStackTrace();
+			}
 		}
-		
-		
-		List<Long> countryList=geographicalCountryRepository.getCountryByFpProductId(workingCapitalParameterRequest.getId());
-		if(!countryList.isEmpty())
-		{
-		try {
-			OneFormResponse formResponse = oneFormClient.getCountryByCountryListId(countryList);
-			workingCapitalParameterRequest.setCountryList((List<DataRequest>) formResponse.getListData());
-			 
-			
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			logger.error(e.toString());
-			e.printStackTrace();
+
+		List<Long> stateList = geographicalStateRepository
+				.getStateByFpProductId(workingCapitalParameterRequest.getId());
+		if (!stateList.isEmpty()) {
+			try {
+				OneFormResponse formResponse = oneFormClient.getStateByStateListId(stateList);
+				workingCapitalParameterRequest.setStateList((List<DataRequest>) formResponse.getListData());
+
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				logger.error(e.toString());
+				e.printStackTrace();
+			}
 		}
+
+		List<Long> cityList = geographicalCityRepository.getCityByFpProductId(workingCapitalParameterRequest.getId());
+		if (!cityList.isEmpty()) {
+			try {
+				OneFormResponse formResponse = oneFormClient.getCityByCityListId(cityList);
+				workingCapitalParameterRequest.setCityList((List<DataRequest>) formResponse.getListData());
+
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				logger.error(e.toString());
+				e.printStackTrace();
+			}
 		}
-		
-		
-		List<Long> stateList=geographicalStateRepository.getStateByFpProductId(workingCapitalParameterRequest.getId());
-		if(!stateList.isEmpty())
-		{
-		try {
-			OneFormResponse formResponse = oneFormClient.getStateByStateListId(stateList);
-			workingCapitalParameterRequest.setStateList((List<DataRequest>) formResponse.getListData());
-			 
-			
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			logger.error(e.toString());
-			e.printStackTrace();
-		}
-		}
-		
-		
-		List<Long> cityList=geographicalCityRepository.getCityByFpProductId(workingCapitalParameterRequest.getId());
-		if(!cityList.isEmpty())
-		{
-		try {
-			OneFormResponse formResponse = oneFormClient.getCityByCityListId(cityList);
-			workingCapitalParameterRequest.setCityList((List<DataRequest>) formResponse.getListData());
-			 
-			
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			logger.error(e.toString());
-			e.printStackTrace();
-		}
-		}
-		
+
 		List<Long> negativeIndustryList = negativeIndustryRepository
 				.getIndustryByFpProductMasterId(workingCapitalParameterRequest.getId());
 		if (!negativeIndustryList.isEmpty()) {
 			try {
 				OneFormResponse formResponse = oneFormClient.getIndustryById(negativeIndustryList);
-				workingCapitalParameterRequest.setUnInterestedIndustrylist((List<DataRequest>)formResponse.getListData());
+				workingCapitalParameterRequest
+						.setUnInterestedIndustrylist((List<DataRequest>) formResponse.getListData());
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
-				logger.error("error while getWCParameterRequest",e);
+				logger.error("error while getWCParameterRequest", e);
 				e.printStackTrace();
 			}
 		}
-		
-		
+
 		logger.info("end getWorkingCapitalParameter");
 		return workingCapitalParameterRequest;
 	}
@@ -281,10 +271,10 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 		}
 		logger.info("end saveSector");
 	}
-	
+
 	private void saveCountry(WorkingCapitalParameterRequest workingCapitalParameterRequest) {
 		logger.info("save saveCountry");
-		GeographicalCountryDetail geographicalCountryDetail= null;
+		GeographicalCountryDetail geographicalCountryDetail = null;
 		for (DataRequest dataRequest : workingCapitalParameterRequest.getCountryList()) {
 			geographicalCountryDetail = new GeographicalCountryDetail();
 			geographicalCountryDetail.setCountryId(dataRequest.getId());
@@ -299,10 +289,10 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 		}
 		logger.info("end saveCountry");
 	}
-	
+
 	private void saveState(WorkingCapitalParameterRequest workingCapitalParameterRequest) {
 		logger.info("start saveState");
-		GeographicalStateDetail geographicalStateDetail= null;
+		GeographicalStateDetail geographicalStateDetail = null;
 		for (DataRequest dataRequest : workingCapitalParameterRequest.getStateList()) {
 			geographicalStateDetail = new GeographicalStateDetail();
 			geographicalStateDetail.setStateId(dataRequest.getId());
@@ -317,10 +307,10 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 		}
 		logger.info("end saveState");
 	}
-	
+
 	private void saveCity(WorkingCapitalParameterRequest workingCapitalParameterRequest) {
 		logger.info("start saveCity");
-		GeographicalCityDetail geographicalCityDetail= null;
+		GeographicalCityDetail geographicalCityDetail = null;
 		for (DataRequest dataRequest : workingCapitalParameterRequest.getCityList()) {
 			geographicalCityDetail = new GeographicalCityDetail();
 			geographicalCityDetail.setCityId(dataRequest.getId());
@@ -341,12 +331,11 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
 
 	private void saveNegativeIndustry(WorkingCapitalParameterRequest workingCapitalParameterRequest) {
 		// TODO Auto-generated method stub
 		CommonDocumentUtils.startHook(logger, "saveNegativeIndustry");
-		NegativeIndustry negativeIndustry= null;
+		NegativeIndustry negativeIndustry = null;
 		for (DataRequest dataRequest : workingCapitalParameterRequest.getUnInterestedIndustrylist()) {
 			negativeIndustry = new NegativeIndustry();
 			negativeIndustry.setFpProductMasterId(workingCapitalParameterRequest.getId());
@@ -360,132 +349,124 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 			negativeIndustryRepository.save(negativeIndustry);
 		}
 		CommonDocumentUtils.endHook(logger, "saveNegativeIndustry");
-		
+
 	}
-	
+
 	public Boolean saveMasterFromTempWc(Long mappingId) throws Exception {
 		try {
-			WorkingCapitalParameterRequest workingCapitalParameterRequest = 	getWorkingCapitalParameterTemp(mappingId);
-        return saveOrUpdate(workingCapitalParameterRequest);
-		}
-		catch (Exception e) {
+			WorkingCapitalParameterRequest workingCapitalParameterRequest = getWorkingCapitalParameterTemp(mappingId);
+			return saveOrUpdate(workingCapitalParameterRequest);
+		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
 		}
-		
+
 	}
-	
-	
+
 	public WorkingCapitalParameterRequest getWorkingCapitalParameterTemp(Long id) {
 		logger.info("start getWorkingCapitalParameterTemp");
 		WorkingCapitalParameterRequest workingCapitalParameterRequest = new WorkingCapitalParameterRequest();
-		WorkingCapitalParameterTemp loanParameter = workingCapitalParameterTempRepository.getworkingCapitalParameterTempByFpProductId(id);
+		WorkingCapitalParameterTemp loanParameter = workingCapitalParameterTempRepository
+				.getworkingCapitalParameterTempByFpProductId(id);
 		if (loanParameter == null)
 			return null;
 		BeanUtils.copyProperties(loanParameter, workingCapitalParameterRequest);
-		
+
 		if (!CommonUtils.isObjectListNull(workingCapitalParameterRequest.getMaxTenure()))
 			workingCapitalParameterRequest.setMaxTenure(workingCapitalParameterRequest.getMaxTenure() / 12);
 		if (!CommonUtils.isObjectListNull(workingCapitalParameterRequest.getMinTenure()))
 			workingCapitalParameterRequest.setMinTenure(workingCapitalParameterRequest.getMinTenure() / 12);
-		
+
 		List<Long> industryList = industrySectorTempRepository
 				.getIndustryByProductId(workingCapitalParameterRequest.getId());
 		if (!industryList.isEmpty()) {
 			try {
 				OneFormResponse formResponse = oneFormClient.getIndustryById(industryList);
-				workingCapitalParameterRequest.setIndustrylist((List<DataRequest>)formResponse.getListData());
+				workingCapitalParameterRequest.setIndustrylist((List<DataRequest>) formResponse.getListData());
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				logger.error(e.toString());
 				e.printStackTrace();
 			}
 		}
-		
+
 		List<Long> sectorList = industrySectorTempRepository
 				.getSectorByProductId(workingCapitalParameterRequest.getId());
-		if(!sectorList.isEmpty())
-		{
-		try {
-			OneFormResponse formResponse =oneFormClient.getSectorById(sectorList);
-			workingCapitalParameterRequest.setSectorlist((List<DataRequest>) formResponse.getListData());
-			 
-			
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			logger.error(e.toString());
-			e.printStackTrace();
+		if (!sectorList.isEmpty()) {
+			try {
+				OneFormResponse formResponse = oneFormClient.getSectorById(sectorList);
+				workingCapitalParameterRequest.setSectorlist((List<DataRequest>) formResponse.getListData());
+
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				logger.error(e.toString());
+				e.printStackTrace();
+			}
 		}
+
+		List<Long> countryList = geographicalCountryTempRepository
+				.getCountryByFpProductId(workingCapitalParameterRequest.getId());
+		if (!countryList.isEmpty()) {
+			try {
+				OneFormResponse formResponse = oneFormClient.getCountryByCountryListId(countryList);
+				workingCapitalParameterRequest.setCountryList((List<DataRequest>) formResponse.getListData());
+
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				logger.error(e.toString());
+				e.printStackTrace();
+			}
 		}
-		
-		
-		List<Long> countryList=geographicalCountryTempRepository.getCountryByFpProductId(workingCapitalParameterRequest.getId());
-		if(!countryList.isEmpty())
-		{
-		try {
-			OneFormResponse formResponse = oneFormClient.getCountryByCountryListId(countryList);
-			workingCapitalParameterRequest.setCountryList((List<DataRequest>) formResponse.getListData());
-			 
-			
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			logger.error(e.toString());
-			e.printStackTrace();
+
+		List<Long> stateList = geographicalStateTempRepository
+				.getStateByFpProductId(workingCapitalParameterRequest.getId());
+		if (!stateList.isEmpty()) {
+			try {
+				OneFormResponse formResponse = oneFormClient.getStateByStateListId(stateList);
+				workingCapitalParameterRequest.setStateList((List<DataRequest>) formResponse.getListData());
+
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				logger.error(e.toString());
+				e.printStackTrace();
+			}
 		}
+
+		List<Long> cityList = geographicalCityTempRepository
+				.getCityByFpProductId(workingCapitalParameterRequest.getId());
+		if (!cityList.isEmpty()) {
+			try {
+				OneFormResponse formResponse = oneFormClient.getCityByCityListId(cityList);
+				workingCapitalParameterRequest.setCityList((List<DataRequest>) formResponse.getListData());
+
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				logger.error(e.toString());
+				e.printStackTrace();
+			}
 		}
-		
-		
-		List<Long> stateList=geographicalStateTempRepository.getStateByFpProductId(workingCapitalParameterRequest.getId());
-		if(!stateList.isEmpty())
-		{
-		try {
-			OneFormResponse formResponse = oneFormClient.getStateByStateListId(stateList);
-			workingCapitalParameterRequest.setStateList((List<DataRequest>) formResponse.getListData());
-			 
-			
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			logger.error(e.toString());
-			e.printStackTrace();
-		}
-		}
-		
-		
-		List<Long> cityList=geographicalCityTempRepository.getCityByFpProductId(workingCapitalParameterRequest.getId());
-		if(!cityList.isEmpty())
-		{
-		try {
-			OneFormResponse formResponse = oneFormClient.getCityByCityListId(cityList);
-			workingCapitalParameterRequest.setCityList((List<DataRequest>) formResponse.getListData());
-			 
-			
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			logger.error(e.toString());
-			e.printStackTrace();
-		}
-		}
-		
+
 		List<Long> negativeIndustryList = negativeIndustryTempRepository
 				.getIndustryByFpProductMasterId(workingCapitalParameterRequest.getId());
 		if (!negativeIndustryList.isEmpty()) {
 			try {
 				OneFormResponse formResponse = oneFormClient.getIndustryById(negativeIndustryList);
-				workingCapitalParameterRequest.setUnInterestedIndustrylist((List<DataRequest>)formResponse.getListData());
+				workingCapitalParameterRequest
+						.setUnInterestedIndustrylist((List<DataRequest>) formResponse.getListData());
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
-				logger.error("error while getWCParameterRequest",e);
+				logger.error("error while getWCParameterRequest", e);
 				e.printStackTrace();
 			}
 		}
 		workingCapitalParameterRequest.setJobId(loanParameter.getJobId());
-        loanParameter.setStatusId(CommonUtils.Status.APPROVED);
-        loanParameter.setIsDeleted(false);
-        loanParameter.setIsEdit(false);
-        loanParameter.setIsCopied(true);
-        loanParameter.setIsApproved(true);
-        loanParameter.setApprovalDate(new Date());
-        workingCapitalParameterTempRepository.save(loanParameter);
+		loanParameter.setStatusId(CommonUtils.Status.APPROVED);
+		loanParameter.setIsDeleted(false);
+		loanParameter.setIsEdit(false);
+		loanParameter.setIsCopied(true);
+		loanParameter.setIsApproved(true);
+		loanParameter.setApprovalDate(new Date());
+		workingCapitalParameterTempRepository.save(loanParameter);
 		logger.info("end getWorkingCapitalParameterTemp");
 		return workingCapitalParameterRequest;
 	}
@@ -496,56 +477,63 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 		// TODO Auto-generated method stub
 		WorkingCapitalParameterTemp workingCapitalParameter = null;
 
-		workingCapitalParameter = workingCapitalParameterTempRepository.findOne(workingCapitalParameterRequest.getId());
+		workingCapitalParameter = workingCapitalParameterTempRepository.getworkingCapitalParameterTempByFpProductMappingId(workingCapitalParameterRequest.getId());
 		if (workingCapitalParameter == null) {
-			return false;
+			workingCapitalParameter=new WorkingCapitalParameterTemp();
 		}
-		
+
 		if (!CommonUtils.isObjectListNull(workingCapitalParameterRequest.getMaxTenure()))
 			workingCapitalParameterRequest.setMaxTenure(workingCapitalParameterRequest.getMaxTenure() * 12);
 		if (!CommonUtils.isObjectListNull(workingCapitalParameterRequest.getMinTenure()))
 			workingCapitalParameterRequest.setMinTenure(workingCapitalParameterRequest.getMinTenure() * 12);
-		
+
 		BeanUtils.copyProperties(workingCapitalParameterRequest, workingCapitalParameter,
-				CommonUtils.IgnorableCopy.FP_PRODUCT);
+				CommonUtils.IgnorableCopy.FP_PRODUCT_TEMP);
+		workingCapitalParameter.setFpProductMappingId(workingCapitalParameterRequest.getId());
 		workingCapitalParameter.setModifiedBy(workingCapitalParameterRequest.getUserId());
 		workingCapitalParameter.setIsActive(true);
 		workingCapitalParameter.setModifiedDate(new Date());
 		workingCapitalParameter.setIsParameterFilled(true);
-        workingCapitalParameter.setStatusId(CommonUtils.Status.OPEN);
-        workingCapitalParameter.setIsApproved(false);
-        workingCapitalParameter.setIsDeleted(false);
-        workingCapitalParameter.setIsCopied(false);
-        workingCapitalParameter.setApprovalDate(null);
-        
-        WorkflowResponse workflowResponse = workflowClient.createJobForMasters(WorkflowUtils.Workflow.MASTER_DATA_APPROVAL_PROCESS, WorkflowUtils.Action.SEND_FOR_APPROVAL, workingCapitalParameterRequest.getUserId());
-        Long jobId = null;
-        if (!CommonUtils.isObjectNullOrEmpty(workflowResponse.getData())) {
-            jobId = Long.valueOf(workflowResponse.getData().toString());
-        }
-        workingCapitalParameter.setJobId(jobId);        
+		workingCapitalParameter.setStatusId(CommonUtils.Status.OPEN);
+		workingCapitalParameter.setIsApproved(false);
+		workingCapitalParameter.setIsDeleted(false);
+		workingCapitalParameter.setIsCopied(false);
+		workingCapitalParameter.setApprovalDate(null);
+
+		if (CommonUtils.isObjectNullOrEmpty(workingCapitalParameter.getJobId())) {
+			WorkflowResponse workflowResponse = workflowClient.createJobForMasters(
+					WorkflowUtils.Workflow.MASTER_DATA_APPROVAL_PROCESS, WorkflowUtils.Action.SEND_FOR_APPROVAL,
+					workingCapitalParameterRequest.getUserId());
+			Long jobId = null;
+			if (!CommonUtils.isObjectNullOrEmpty(workflowResponse.getData())) {
+				jobId = Long.valueOf(workflowResponse.getData().toString());
+			}
+
+			workingCapitalParameter.setJobId(jobId);
+		}
+		
 		workingCapitalParameterTempRepository.save(workingCapitalParameter);
-		industrySectorTempRepository.inActiveMappingByFpProductId(workingCapitalParameterRequest.getId());
+		workingCapitalParameterRequest.setId(workingCapitalParameter.getId());
+		industrySectorTempRepository.inActiveMappingByFpProductId(workingCapitalParameter.getId());
 		// industry data save
 		saveIndustryTemp(workingCapitalParameterRequest);
 		// Sector data save
 		saveSectorTemp(workingCapitalParameterRequest);
-		geographicalCountryTempRepository.inActiveMappingByFpProductId(workingCapitalParameterRequest.getId());
-		//country data save
+		geographicalCountryTempRepository.inActiveMappingByFpProductId(workingCapitalParameter.getId());
+		// country data save
 		saveCountryTemp(workingCapitalParameterRequest);
-		//state data save
-		geographicalStateTempRepository.inActiveMappingByFpProductId(workingCapitalParameterRequest.getId());
+		// state data save
+		geographicalStateTempRepository.inActiveMappingByFpProductId(workingCapitalParameter.getId());
 		saveStateTemp(workingCapitalParameterRequest);
-		//city data save
-		geographicalCityTempRepository.inActiveMappingByFpProductId(workingCapitalParameterRequest.getId());
+		// city data save
+		geographicalCityTempRepository.inActiveMappingByFpProductId(workingCapitalParameter.getId());
 		saveCityTemp(workingCapitalParameterRequest);
-		//negative industry save
-		negativeIndustryTempRepository.inActiveMappingByFpProductMasterId(workingCapitalParameterRequest.getId());
+		// negative industry save
+		negativeIndustryTempRepository.inActiveMappingByFpProductMasterId(workingCapitalParameter.getId());
 		saveNegativeIndustryTemp(workingCapitalParameterRequest);
 		logger.info("end saveOrUpdateTemp");
 		return true;
 	}
-	
 
 	private void saveIndustryTemp(WorkingCapitalParameterRequest workingCapitalParameterRequest) {
 		logger.info("start saveIndustryTemp");
@@ -583,10 +571,10 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 		}
 		logger.info("end saveSectorTemp");
 	}
-	
+
 	private void saveCountryTemp(WorkingCapitalParameterRequest workingCapitalParameterRequest) {
 		logger.info("save saveCountryTemp");
-		GeographicalCountryDetailTemp geographicalCountryDetail= null;
+		GeographicalCountryDetailTemp geographicalCountryDetail = null;
 		for (DataRequest dataRequest : workingCapitalParameterRequest.getCountryList()) {
 			geographicalCountryDetail = new GeographicalCountryDetailTemp();
 			geographicalCountryDetail.setCountryId(dataRequest.getId());
@@ -601,10 +589,10 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 		}
 		logger.info("end saveCountryTemp");
 	}
-	
+
 	private void saveStateTemp(WorkingCapitalParameterRequest workingCapitalParameterRequest) {
 		logger.info("start saveStateTemp");
-		GeographicalStateDetailTemp geographicalStateDetail= null;
+		GeographicalStateDetailTemp geographicalStateDetail = null;
 		for (DataRequest dataRequest : workingCapitalParameterRequest.getStateList()) {
 			geographicalStateDetail = new GeographicalStateDetailTemp();
 			geographicalStateDetail.setStateId(dataRequest.getId());
@@ -619,10 +607,10 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 		}
 		logger.info("end saveStateTemp");
 	}
-	
+
 	private void saveCityTemp(WorkingCapitalParameterRequest workingCapitalParameterRequest) {
 		logger.info("start saveCityTemp");
-		GeographicalCityDetailTemp geographicalCityDetail= null;
+		GeographicalCityDetailTemp geographicalCityDetail = null;
 		for (DataRequest dataRequest : workingCapitalParameterRequest.getCityList()) {
 			geographicalCityDetail = new GeographicalCityDetailTemp();
 			geographicalCityDetail.setCityId(dataRequest.getId());
@@ -641,7 +629,7 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 	private void saveNegativeIndustryTemp(WorkingCapitalParameterRequest workingCapitalParameterRequest) {
 		// TODO Auto-generated method stub
 		CommonDocumentUtils.startHook(logger, "saveNegativeIndustryTemp");
-		NegativeIndustryTemp negativeIndustry= null;
+		NegativeIndustryTemp negativeIndustry = null;
 		for (DataRequest dataRequest : workingCapitalParameterRequest.getUnInterestedIndustrylist()) {
 			negativeIndustry = new NegativeIndustryTemp();
 			negativeIndustry.setFpProductMasterId(workingCapitalParameterRequest.getId());
@@ -655,6 +643,6 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 			negativeIndustryTempRepository.save(negativeIndustry);
 		}
 		CommonDocumentUtils.endHook(logger, "saveNegativeIndustryTemp");
-		
+
 	}
 }

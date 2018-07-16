@@ -17,5 +17,8 @@ public interface WorkingCapitalParameterTempRepository extends JpaRepository<Wor
 	
 	@Query("select o from WorkingCapitalParameterTemp o where o.fpProductId =:fpProductId")
 	public WorkingCapitalParameterTemp getworkingCapitalParameterTempByFpProductId(@Param("fpProductId")Long fpProductId); 
+	
+	@Query("select o from WorkingCapitalParameterTemp o where o.fpProductMappingId =:fpProductMappingId and isCopied=false")
+	public WorkingCapitalParameterTemp getworkingCapitalParameterTempByFpProductMappingId(@Param("fpProductMappingId")Long fpProductId); 
 
 }

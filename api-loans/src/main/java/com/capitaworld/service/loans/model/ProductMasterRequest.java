@@ -38,6 +38,8 @@ public class ProductMasterRequest implements Serializable {
 	
 	private Long jobId;
 	
+	private Integer appstage;
+	
 	
 
 	
@@ -145,6 +147,15 @@ public class ProductMasterRequest implements Serializable {
 	public void setIsActive(Boolean isActive) {
 		this.isActive = isActive;
 	}
+
+	public Integer getAppstage() {
+		return appstage;
+	}
+
+	public void setAppstage(Integer appstage) {
+		this.appstage = appstage;
+	}
+
 	
 	
 

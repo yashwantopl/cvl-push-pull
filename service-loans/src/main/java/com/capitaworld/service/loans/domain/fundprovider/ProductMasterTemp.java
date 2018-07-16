@@ -80,6 +80,9 @@ public abstract class ProductMasterTemp implements Serializable {
 	@Column(name = "score_model_id")
 	private Long scoreModelId;
 	
+	@Column(name = "fp_product_mapping_id")
+	private Long fpProductMappingId;
+	
 
 	
 	public ProductMasterTemp() {
@@ -220,7 +223,16 @@ public abstract class ProductMasterTemp implements Serializable {
 	public void setScoreModelId(Long scoreModelId) {
 		this.scoreModelId = scoreModelId;
 	}
+
+	public Long getFpProductMappingId() {
+		return fpProductMappingId;
+	}
+
+	public void setFpProductMappingId(Long fpProductMappingId) {
+		this.fpProductMappingId = fpProductMappingId;
+	}
 	
+
 	
 	
 
