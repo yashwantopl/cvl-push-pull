@@ -15,7 +15,7 @@ import com.capitaworld.service.loans.domain.fundprovider.WorkingCapitalParameter
  */
 public interface WorkingCapitalParameterTempRepository extends JpaRepository<WorkingCapitalParameterTemp, Long> {
 	
-	@Query("select o from WorkingCapitalParameterTemp o where o.fpProductId =:fpProductId")
+	@Query("select o from WorkingCapitalParameterTemp o where o.fpProductId.id =:fpProductId")
 	public WorkingCapitalParameterTemp getworkingCapitalParameterTempByFpProductId(@Param("fpProductId")Long fpProductId); 
 	
 	@Query("select o from WorkingCapitalParameterTemp o where o.fpProductMappingId =:fpProductMappingId and isCopied=false")

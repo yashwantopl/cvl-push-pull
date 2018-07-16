@@ -18,4 +18,6 @@ public interface WcTlParameterService {
 	 * @return
 	 */
 	public Boolean saveOrUpdateTemp(WcTlParameterRequest wcTlParameterRequest);
+
+	WcTlParameterRequest getWcTlRequestTemp(Long id);
 }

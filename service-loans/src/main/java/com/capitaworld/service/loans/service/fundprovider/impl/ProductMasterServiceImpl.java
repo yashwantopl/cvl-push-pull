@@ -514,7 +514,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 					productMasterRequests.add(productMasterRequest);
 				}
 			} else {
-				
+
 				if (!CommonUtils.isObjectNullOrEmpty(userOrgId)) {
 					results = productMasterTempRepository.getUserCorporateProductListByOrgId(userOrgId);
 				} else {
@@ -535,6 +535,11 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				 * requests.add(wcTlParameterService.getWcTlRequest(master.getId
 				 * ())); } } }
 				 */
+				for (ProductMasterTemp productMaster : results) {
+					ProductMasterRequest productMasterRequest = new ProductMasterRequest();
+					BeanUtils.copyProperties(productMaster, productMasterRequest);
+					productMasterRequests.add(productMasterRequest);
+				}
 			}
 		} else {
 			List<ProductMaster> results = null;
@@ -596,9 +601,6 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 		 * requests.add(request); }
 		 */
 		CommonDocumentUtils.endHook(logger, "getListByUserType");
-
-		
-		
 
 		return productMasterRequests;
 	}
@@ -790,29 +792,44 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	}
 
 	@Override
-	public Object getProductMasterWithAllData(Long id) {
+	public Object getProductMasterWithAllData(Long id, Integer stage) {
 		// TODO Auto-generated method stub
 
-		ProductMaster master = productMasterRepository.findOne(id);
+		if (!CommonUtils.isObjectNullOrEmpty(stage) && stage == 1) {
+			ProductMasterTemp master = productMasterTempRepository.findOne(id);
 
-		if (master.getProductId() == 3) {
-			return homeLoanParameterService.getHomeLoanParameterRequest(master.getId());
-		} else if (master.getProductId() == 7) {
-			return personalLoanParameterService.getPersonalLoanParameterRequest(master.getId());
-		} else if (master.getProductId() == 12) {
-			return carLoanParameterService.getCarLoanParameterRequest(master.getId());
-		} else if (master.getProductId() == 13) {
-			return lapLoanParameterService.getLapParameterRequest(master.getId());
-		}
 
-		else if (master.getProductId() == 1) {
-			return workingCapitalParameterService.getWorkingCapitalParameter(master.getId());
-		} else if (master.getProductId() == 2) {
-			return termLoanParameterService.getTermLoanParameterRequest(master.getId());
-		} else if (master.getProductId() == 15) {
-			return unsecuredLoanParameterService.getUnsecuredLoanParameterRequest(master.getId());
-		} else if (master.getProductId() == 16) {
-			return wcTlParameterService.getWcTlRequest(master.getId());
+			 if (master.getProductId() == 1) {
+				return workingCapitalParameterService.getWorkingCapitalParameterTemp(master.getId());
+			} else if (master.getProductId() == 2) {
+				return termLoanParameterService.getTermLoanParameterRequestTemp(master.getId());
+			} /*else if (master.getProductId() == 15) {
+				return unsecuredLoanParameterService.getUnsecuredLoanParameterRequest(master.getId());
+			}*/ else if (master.getProductId() == 16) {
+				return wcTlParameterService.getWcTlRequestTemp(master.getId());
+			}
+		} else {
+			ProductMaster master = productMasterRepository.findOne(id);
+
+			if (master.getProductId() == 3) {
+				return homeLoanParameterService.getHomeLoanParameterRequest(master.getId());
+			} else if (master.getProductId() == 7) {
+				return personalLoanParameterService.getPersonalLoanParameterRequest(master.getId());
+			} else if (master.getProductId() == 12) {
+				return carLoanParameterService.getCarLoanParameterRequest(master.getId());
+			} else if (master.getProductId() == 13) {
+				return lapLoanParameterService.getLapParameterRequest(master.getId());
+			}
+
+			else if (master.getProductId() == 1) {
+				return workingCapitalParameterService.getWorkingCapitalParameter(master.getId());
+			} else if (master.getProductId() == 2) {
+				return termLoanParameterService.getTermLoanParameterRequest(master.getId());
+			} else if (master.getProductId() == 15) {
+				return unsecuredLoanParameterService.getUnsecuredLoanParameterRequest(master.getId());
+			} else if (master.getProductId() == 16) {
+				return wcTlParameterService.getWcTlRequest(master.getId());
+			}
 		}
 		return null;
 	}
@@ -857,7 +874,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 					BeanUtils.copyProperties(corporateProduct, loanParameterRequest);
 					CommonDocumentUtils.endHook(logger, "saveCorporateInTemp");
 					return termLoanParameterService.saveOrUpdateTemp(loanParameterRequest);
-				}else if (corporateProduct.getProductId() == CommonUtils.LoanType.WCTL_LOAN.getValue()) {
+				} else if (corporateProduct.getProductId() == CommonUtils.LoanType.WCTL_LOAN.getValue()) {
 					WcTlParameterRequest wcTlParameterRequest = new WcTlParameterRequest();
 					BeanUtils.copyProperties(corporateProduct, wcTlParameterRequest);
 					CommonDocumentUtils.endHook(logger, "saveCorporateInTemp");
