@@ -14,7 +14,9 @@ import java.util.TreeMap;
 
 import javax.transaction.Transactional;
 
-import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang.StringEscapeUtils;
+
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -1329,7 +1331,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			Object value = field.get(obj);
 			if (value instanceof String) {
 				String value1 = (String) field.get(obj);
-				String a = StringEscapeUtils.unescapeHtml4(value1);
+				String a = org.apache.commons.lang3.StringEscapeUtils.unescapeHtml4(value1);
 				value = a;
 				field.set(obj, value);
 			}else {
