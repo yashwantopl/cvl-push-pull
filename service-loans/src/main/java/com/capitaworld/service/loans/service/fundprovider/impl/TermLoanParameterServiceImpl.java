@@ -513,6 +513,7 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 			termLoanParameterRequest.setMinTenure(termLoanParameterRequest.getMinTenure().multiply(new BigDecimal("12")));
 		
 		BeanUtils.copyProperties(termLoanParameterRequest, termLoanParameter, CommonUtils.IgnorableCopy.FP_PRODUCT);
+		termLoanParameter.setFpProductMappingId(termLoanParameterRequest.getId());
 		termLoanParameter.setModifiedBy(termLoanParameterRequest.getUserId());
 		termLoanParameter.setModifiedDate(new Date());
 		termLoanParameter.setIsActive(true);
@@ -523,31 +524,36 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
         termLoanParameter.setIsDeleted(false);
         termLoanParameter.setIsCopied(false);
         termLoanParameter.setApprovalDate(null);
-        
-        WorkflowResponse workflowResponse = workflowClient.createJobForMasters(WorkflowUtils.Workflow.MASTER_DATA_APPROVAL_PROCESS, WorkflowUtils.Action.SEND_FOR_APPROVAL, termLoanParameterRequest.getUserId());
-        Long jobId = null;
-        if (!CommonUtils.isObjectNullOrEmpty(workflowResponse.getData())) {
-            jobId = Long.valueOf(workflowResponse.getData().toString());
-        }
-        termLoanParameter.setJobId(jobId);    
-		termLoanParameterTempRepository.save(termLoanParameter);
+		if (CommonUtils.isObjectNullOrEmpty(termLoanParameter.getJobId())) {
+			WorkflowResponse workflowResponse = workflowClient.createJobForMasters(
+					WorkflowUtils.Workflow.MASTER_DATA_APPROVAL_PROCESS, WorkflowUtils.Action.SEND_FOR_APPROVAL,
+					termLoanParameterRequest.getUserId());
+			Long jobId = null;
+			if (!CommonUtils.isObjectNullOrEmpty(workflowResponse.getData())) {
+				jobId = Long.valueOf(workflowResponse.getData().toString());
+			}
+
+			termLoanParameter.setJobId(jobId);
+		}
 		
-		industrySectorTempRepository.inActiveMappingByFpProductId(termLoanParameterRequest.getId());
+		termLoanParameterTempRepository.save(termLoanParameter);
+		termLoanParameterRequest.setId(termLoanParameter.getId());
+		industrySectorTempRepository.inActiveMappingByFpProductId(termLoanParameter.getId());
 		// industry data save
 		saveIndustryTemp(termLoanParameterRequest);
 		// Sector data save
 		saveSectorTemp(termLoanParameterRequest);
-		geographicalCountryTempRepository.inActiveMappingByFpProductId(termLoanParameterRequest.getId());
+		geographicalCountryTempRepository.inActiveMappingByFpProductId(termLoanParameter.getId());
 		//country data save
 		saveCountryTemp(termLoanParameterRequest);
 		//state data save
-		geographicalStateTempRepository.inActiveMappingByFpProductId(termLoanParameterRequest.getId());
+		geographicalStateTempRepository.inActiveMappingByFpProductId(termLoanParameter.getId());
 		saveStateTemp(termLoanParameterRequest);
 		//city data save
-		geographicalCityTempRepository.inActiveMappingByFpProductId(termLoanParameterRequest.getId());
+		geographicalCityTempRepository.inActiveMappingByFpProductId(termLoanParameter.getId());
 		saveCityTemp(termLoanParameterRequest);
 		//negative industry save
-		negativeIndustryTempRepository.inActiveMappingByFpProductMasterId(termLoanParameterRequest.getId());
+		negativeIndustryTempRepository.inActiveMappingByFpProductMasterId(termLoanParameter.getId());
 		saveNegativeIndustryTemp(termLoanParameterRequest);
 		
 		CommonDocumentUtils.endHook(logger, "saveOrUpdate");
