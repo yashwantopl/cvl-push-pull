@@ -6219,14 +6219,17 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			logger.info("Fetched Loan APplication Master for application Id : "+applicationId);
 			response.setLoanAmount(loan.getAmount());
 			response.setLoanApplicationId(loan.getApplicationCode());
-			response.setLoanType(String.valueOf(loan.getProductId()));
+			
 			
 			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 			response.setDateOfApplication(dateFormat.format(loan.getCreatedDate()));
 			response.setDateOfSubmission(dateFormat.format(new Date()));
-			
-			
 		}
+		PrimaryCorporateDetail primaryCorporate = primaryCorporateRepository.findOneByApplicationIdId(applicationId);
+		if(primaryCorporate!=null) {
+			response.setLoanType(String.valueOf(primaryCorporate.getPurposeOfLoanId()));
+		}
+		
 		logger.info("Fetching Director's background details for application Id : "+applicationId);
 		List<DirectorBackgroundDetail> directorList = directorBackgroundDetailsRepository.listPromotorBackgroundFromAppId(applicationId);
 		
