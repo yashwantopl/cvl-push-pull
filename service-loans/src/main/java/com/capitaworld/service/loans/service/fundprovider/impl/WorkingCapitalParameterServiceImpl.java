@@ -234,6 +234,8 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 		logger.info("end getWorkingCapitalParameter");
 		return workingCapitalParameterRequest;
 	}
+	
+	
 
 	private void saveIndustry(WorkingCapitalParameterRequest workingCapitalParameterRequest) {
 		logger.info("start saveIndustry");
@@ -477,9 +479,20 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 		// TODO Auto-generated method stub
 		WorkingCapitalParameterTemp workingCapitalParameter = null;
 
-		workingCapitalParameter = workingCapitalParameterTempRepository.getworkingCapitalParameterTempByFpProductMappingId(workingCapitalParameterRequest.getId());
+		if(workingCapitalParameterRequest.getAppstage()==1)
+		{
+			workingCapitalParameter = workingCapitalParameterTempRepository.findOne(workingCapitalParameterRequest.getId());
+		}
+		else
+		{
+			
+			workingCapitalParameter = workingCapitalParameterTempRepository.getworkingCapitalParameterTempByFpProductMappingId(workingCapitalParameterRequest.getId());
+			
+		}
+		
 		if (workingCapitalParameter == null) {
 			workingCapitalParameter=new WorkingCapitalParameterTemp();
+			workingCapitalParameter.setFpProductMappingId(workingCapitalParameterRequest.getId());
 		}
 
 		if (!CommonUtils.isObjectListNull(workingCapitalParameterRequest.getMaxTenure()))
@@ -489,7 +502,6 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 
 		BeanUtils.copyProperties(workingCapitalParameterRequest, workingCapitalParameter,
 				CommonUtils.IgnorableCopy.FP_PRODUCT_TEMP);
-		workingCapitalParameter.setFpProductMappingId(workingCapitalParameterRequest.getId());
 		workingCapitalParameter.setModifiedBy(workingCapitalParameterRequest.getUserId());
 		workingCapitalParameter.setIsActive(true);
 		workingCapitalParameter.setModifiedDate(new Date());

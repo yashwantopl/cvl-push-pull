@@ -187,8 +187,11 @@ public class CorporateProduct  extends  ProductMasterRequest implements Serializ
 
 	private Boolean isCommercialCibilMandatory = false;
 
+	private Integer appstage;
 	//-----------------------added eligibility method for product
 	private Integer assessmentMethodId;
+	
+	private Long userOrgId;
 
 	public Integer getIndividualCibil() {
 		return individualCibil;
@@ -961,4 +964,23 @@ public class CorporateProduct  extends  ProductMasterRequest implements Serializ
 	public void setAssessmentMethodId(Integer assessmentMethodId) {
 		this.assessmentMethodId = assessmentMethodId;
 	}
+
+	public Long getUserOrgId() {
+		return userOrgId;
+	}
+
+	public void setUserOrgId(Long userOrgId) {
+		this.userOrgId = userOrgId;
+	}
+
+	public Integer getAppstage() {
+		return appstage;
+	}
+
+	public void setAppstage(Integer appstage) {
+		this.appstage = appstage;
+	}
+
+	
+	
 }

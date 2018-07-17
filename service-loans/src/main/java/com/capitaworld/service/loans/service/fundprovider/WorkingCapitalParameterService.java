@@ -18,4 +18,6 @@ public interface WorkingCapitalParameterService {
 	 * @return
 	 */
 	public Boolean saveOrUpdateTemp(WorkingCapitalParameterRequest capitalParameterRequest);
+
+	WorkingCapitalParameterRequest getWorkingCapitalParameterTemp(Long id);
 }

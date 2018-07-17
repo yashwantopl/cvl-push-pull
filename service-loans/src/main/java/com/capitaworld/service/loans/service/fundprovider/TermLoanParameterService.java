@@ -18,4 +18,6 @@ public interface TermLoanParameterService {
 	 * @return
 	 */
 	public Boolean saveOrUpdateTemp(TermLoanParameterRequest loanParameterRequest);
+
+	TermLoanParameterRequest getTermLoanParameterRequestTemp(Long id);
 }
