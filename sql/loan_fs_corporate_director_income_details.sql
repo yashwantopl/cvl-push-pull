@@ -1,4 +1,4 @@
-CREATE TABLE `fs_corporate_director_income_details` (
+CREATE TABLE `loan_application`.`fs_corporate_director_income_details` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `application_id` bigint(20) DEFAULT NULL,
   `director_id` bigint(20) DEFAULT NULL,
