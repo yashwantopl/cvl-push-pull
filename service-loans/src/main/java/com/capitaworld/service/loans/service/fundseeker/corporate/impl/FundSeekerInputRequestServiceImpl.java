@@ -323,11 +323,17 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			}
 			fsInputRes.setFinancialArrangementsDetailRequestsList(finArrngDetailResList);
 			
-			fsInputReq.setIndustrylist(industrySectorRepository.getIndustryByApplicationId(fsInputReq.getApplicationId()));
+			List<Long> industryList = industrySectorRepository.getIndustryByApplicationId(fsInputReq.getApplicationId());
+			logger.info("TOTAL INDUSTRY FOUND ------------->" + industryList.size() + "------------By APP Id -----------> " + fsInputReq.getApplicationId());
+			fsInputReq.setIndustrylist(industryList);
             
-            fsInputReq.setSectorlist(industrySectorRepository.getSectorByApplicationId(fsInputReq.getApplicationId()));
+			List<Long> sectorList = industrySectorRepository.getSectorByApplicationId(fsInputReq.getApplicationId());
+			logger.info("TOTAL SECTOR FOUND ------------->" + sectorList.size() + "------------By APP Id -----------> " + fsInputReq.getApplicationId());
+            fsInputReq.setSectorlist(sectorList);
             
-            fsInputReq.setSubsectors(subSectorRepository.getSubSectorByApplicationId(fsInputReq.getApplicationId()));
+            List<Long> subSectorList = subSectorRepository.getSubSectorByApplicationId(fsInputReq.getApplicationId());
+			logger.info("TOTAL SUB SECTOR FOUND ------------->" + subSectorList.size() + "------------By APP Id -----------> " + fsInputReq.getApplicationId());
+            fsInputReq.setSubsectors(subSectorList);
 
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse("One form data successfully fetched", HttpStatus.OK.value(), fsInputRes),
