@@ -6,7 +6,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 @Entity
-@Table(name="fp_ntb_details")
+@Table(name="fp_ntb_tl_details")
 @PrimaryKeyJoinColumn(name="fp_product_id",referencedColumnName="fp_product_id")
 public class NTBParameter extends ProductMaster implements Serializable {
     private static final long serialVersionUID = 1L;
