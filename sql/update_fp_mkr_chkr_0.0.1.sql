@@ -1,3 +1,27 @@
+CREATE TABLE `loan_application`.`fp_product_master_temp` (
+  `fp_product_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `product_id` bigint(11) unsigned DEFAULT NULL,
+  `user_id` bigint(20) unsigned DEFAULT NULL,
+  `start_date` datetime DEFAULT NULL,
+  `end_date` datetime DEFAULT NULL,
+  `fp_name` varchar(50) DEFAULT NULL,
+  `name` varchar(50) DEFAULT NULL,
+  `is_parameter_filled` bit(1) DEFAULT b'0',
+  `created_date` datetime DEFAULT NULL,
+  `modified_date` datetime DEFAULT NULL,
+  `created_by` bigint(20) DEFAULT NULL,
+  `modified_by` bigint(20) DEFAULT NULL,
+  `is_active` bit(1) DEFAULT b'1',
+  `product_code` varchar(20) DEFAULT NULL,
+  `is_matched` bit(1) DEFAULT NULL,
+  `user_org_id` bigint(1) DEFAULT NULL,
+  `score_model_id` bigint(1) DEFAULT NULL,
+  `org_id` bigint(20) DEFAULT NULL,
+  PRIMARY KEY (`fp_product_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=440 DEFAULT CHARSET=latin1;
+
+
+
 CREATE TABLE `fp_wc_tl_details_temp` (
   `fp_product_id` bigint(20) unsigned NOT NULL,
   `currency` int(2) DEFAULT NULL,
@@ -102,7 +126,7 @@ CREATE TABLE `fp_wc_tl_details_temp` (
   `job_id`   bigint(20) DEFAULT NULL,
   `approval_date` datetime DEFAULT NULL,
   PRIMARY KEY (`fp_product_id`),
-  CONSTRAINT `fp_wc_tl_details_temp_ibfk_1` FOREIGN KEY (`fp_product_id`) REFERENCES `fp_product_master` (`fp_product_id`)
+  CONSTRAINT `fp_wc_tl_details_temp_ibfk_1` FOREIGN KEY (`fp_product_id`) REFERENCES `fp_product_master_temp` (`fp_product_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
@@ -211,7 +235,7 @@ CREATE TABLE `fp_working_capital_details_temp` (
   `job_id`   bigint(20) DEFAULT NULL,
   `approval_date` datetime DEFAULT NULL,
   PRIMARY KEY (`fp_product_id`),
-  CONSTRAINT `fp_working_capital_details_temp_ibfk_1` FOREIGN KEY (`fp_product_id`) REFERENCES `fp_product_master` (`fp_product_id`)
+  CONSTRAINT `fp_working_capital_details_temp_ibfk_1` FOREIGN KEY (`fp_product_id`) REFERENCES `fp_product_master_temp` (`fp_product_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
@@ -319,7 +343,7 @@ CREATE TABLE `fp_term_loan_details_temp` (
   `job_id`   bigint(20) DEFAULT NULL,
   `approval_date` datetime DEFAULT NULL,
   PRIMARY KEY (`fp_product_id`),
-  CONSTRAINT `fp_term_loan_details_temp_ibfk_1` FOREIGN KEY (`fp_product_id`) REFERENCES `fp_product_master` (`fp_product_id`)
+  CONSTRAINT `fp_term_loan_details_temp_ibfk_1` FOREIGN KEY (`fp_product_id`) REFERENCES `fp_product_master_temp` (`fp_product_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
@@ -336,28 +360,6 @@ CREATE TABLE `fp_term_loan_details_temp` (
   ADD job_id bigint(20) DEFAULT NULL;
   
   
-CREATE TABLE `loan_application`.`fp_product_master_temp` (
-  `fp_product_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `product_id` bigint(11) unsigned DEFAULT NULL,
-  `user_id` bigint(20) unsigned DEFAULT NULL,
-  `start_date` datetime DEFAULT NULL,
-  `end_date` datetime DEFAULT NULL,
-  `fp_name` varchar(50) DEFAULT NULL,
-  `name` varchar(50) DEFAULT NULL,
-  `is_parameter_filled` bit(1) DEFAULT b'0',
-  `created_date` datetime DEFAULT NULL,
-  `modified_date` datetime DEFAULT NULL,
-  `created_by` bigint(20) DEFAULT NULL,
-  `modified_by` bigint(20) DEFAULT NULL,
-  `is_active` bit(1) DEFAULT b'1',
-  `product_code` varchar(20) DEFAULT NULL,
-  `is_matched` bit(1) DEFAULT NULL,
-  `user_org_id` bigint(1) DEFAULT NULL,
-  `score_model_id` bigint(1) DEFAULT NULL,
-  `org_id` bigint(20) DEFAULT NULL,
-  PRIMARY KEY (`fp_product_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=440 DEFAULT CHARSET=latin1;
-
 
 CREATE TABLE `loan_application`.`industry_sector_details_temp` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,

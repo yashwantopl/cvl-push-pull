@@ -2,6 +2,7 @@ package com.capitaworld.service.loans.service.fundprovider.impl;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -9,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -504,7 +506,7 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 
 		termLoanParameter = termLoanParameterTempRepository.findOne(termLoanParameterRequest.getId());
 		if (termLoanParameter == null) {
-			return false;
+			termLoanParameter = new TermLoanParameterTemp();
 		}
 		
 		if (!CommonUtils.isObjectListNull(termLoanParameterRequest.getMaxTenure()))
@@ -512,7 +514,7 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		if (!CommonUtils.isObjectListNull(termLoanParameterRequest.getMinTenure()))
 			termLoanParameterRequest.setMinTenure(termLoanParameterRequest.getMinTenure().multiply(new BigDecimal("12")));
 		
-		BeanUtils.copyProperties(termLoanParameterRequest, termLoanParameter, CommonUtils.IgnorableCopy.FP_PRODUCT);
+		BeanUtils.copyProperties(termLoanParameterRequest, termLoanParameter, CommonUtils.IgnorableCopy.FP_PRODUCT_TEMP);
 		termLoanParameter.setFpProductMappingId(termLoanParameterRequest.getId());
 		termLoanParameter.setModifiedBy(termLoanParameterRequest.getUserId());
 		termLoanParameter.setModifiedDate(new Date());
@@ -638,6 +640,7 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 	
 	private void saveCityTemp(TermLoanParameterRequest workingCapitalParameterRequest) {
 		logger.info("start saveCityTemp");
+		List<GeographicalCityDetailTemp> list = new ArrayList<GeographicalCityDetailTemp>();
 		GeographicalCityDetailTemp geographicalCityDetail= null;
 		for (DataRequest dataRequest : workingCapitalParameterRequest.getCityList()) {
 			geographicalCityDetail = new GeographicalCityDetailTemp();
@@ -648,9 +651,11 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 			geographicalCityDetail.setCreatedDate(new Date());
 			geographicalCityDetail.setModifiedDate(new Date());
 			geographicalCityDetail.setIsActive(true);
-			// create by and update
-			geographicalCityTempRepository.save(geographicalCityDetail);
+			list.add(geographicalCityDetail);
+			
 		}
+		// create by and update
+					geographicalCityTempRepository.save(list);
 		logger.info("end saveCityTemp");
 	}
 
