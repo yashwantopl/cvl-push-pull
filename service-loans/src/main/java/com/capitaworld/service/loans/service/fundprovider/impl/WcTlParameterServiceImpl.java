@@ -517,6 +517,7 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 			wcTlParameterRequest.setMinTenure(wcTlParameterRequest.getMinTenure().multiply(new BigDecimal("12")));
 		
 		BeanUtils.copyProperties(wcTlParameterRequest, WcTlParameter, CommonUtils.IgnorableCopy.FP_PRODUCT);
+		WcTlParameter.setFpProductMappingId(wcTlParameterRequest.getId());
 		WcTlParameter.setModifiedBy(wcTlParameterRequest.getUserId());
 		WcTlParameter.setModifiedDate(new Date());
 		WcTlParameter.setIsActive(true);
@@ -527,31 +528,36 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
         WcTlParameter.setIsCopied(false);
         WcTlParameter.setApprovalDate(null);
         
-        WorkflowResponse workflowResponse = workflowClient.createJobForMasters(WorkflowUtils.Workflow.MASTER_DATA_APPROVAL_PROCESS, WorkflowUtils.Action.SEND_FOR_APPROVAL, WcTlParameter.getUserId());
-        Long jobId = null;
-        if (!CommonUtils.isObjectNullOrEmpty(workflowResponse.getData())) {
-            jobId = Long.valueOf(workflowResponse.getData().toString());
-        }
-        WcTlParameter.setJobId(jobId);  
+		if (CommonUtils.isObjectNullOrEmpty(WcTlParameter.getJobId())) {
+			WorkflowResponse workflowResponse = workflowClient.createJobForMasters(
+					WorkflowUtils.Workflow.MASTER_DATA_APPROVAL_PROCESS, WorkflowUtils.Action.SEND_FOR_APPROVAL,
+					wcTlParameterRequest.getUserId());
+			Long jobId = null;
+			if (!CommonUtils.isObjectNullOrEmpty(workflowResponse.getData())) {
+				jobId = Long.valueOf(workflowResponse.getData().toString());
+			}
+
+			WcTlParameter.setJobId(jobId);
+		}
 		
 		wcTlParameterTempRepository.save(WcTlParameter);
-		
-		industrySectorTempRepository.inActiveMappingByFpProductId(wcTlParameterRequest.getId());
+		wcTlParameterRequest.setId(WcTlParameter.getId());
+		industrySectorTempRepository.inActiveMappingByFpProductId(WcTlParameter.getId());
 		// industry data save
 		saveIndustryTemp(wcTlParameterRequest);
 		// Sector data save
 		saveSectorTemp(wcTlParameterRequest);
-		geographicalCountryTempRepository.inActiveMappingByFpProductId(wcTlParameterRequest.getId());
+		geographicalCountryTempRepository.inActiveMappingByFpProductId(WcTlParameter.getId());
 		//country data save
 		saveCountryTemp(wcTlParameterRequest);
 		//state data save
-		geographicalStateTempRepository.inActiveMappingByFpProductId(wcTlParameterRequest.getId());
+		geographicalStateTempRepository.inActiveMappingByFpProductId(WcTlParameter.getId());
 		saveStateTemp(wcTlParameterRequest);
 		//city data save
-		geographicalCityTempRepository.inActiveMappingByFpProductId(wcTlParameterRequest.getId());
+		geographicalCityTempRepository.inActiveMappingByFpProductId(WcTlParameter.getId());
 		saveCityTemp(wcTlParameterRequest);
 		//negative industry save
-		negativeIndustryTempRepository.inActiveMappingByFpProductMasterId(wcTlParameterRequest.getId());
+		negativeIndustryTempRepository.inActiveMappingByFpProductMasterId(WcTlParameter.getId());
 		saveNegativeIndustryTemp(wcTlParameterRequest);
 		
 		CommonDocumentUtils.endHook(logger, "saveOrUpdate");

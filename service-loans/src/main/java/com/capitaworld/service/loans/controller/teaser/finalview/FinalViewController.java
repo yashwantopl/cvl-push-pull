@@ -22,6 +22,7 @@ import com.capitaworld.service.loans.model.teaser.finalview.CarLoanFinalViewResp
 import com.capitaworld.service.loans.model.teaser.finalview.CorporateFinalViewResponse;
 import com.capitaworld.service.loans.model.teaser.finalview.HomeLoanFinalViewResponse;
 import com.capitaworld.service.loans.model.teaser.finalview.LapFinalViewResponse;
+import com.capitaworld.service.loans.model.teaser.finalview.NtbFinalViewResponse;
 import com.capitaworld.service.loans.model.teaser.finalview.PersonalLoanFinalViewResponse;
 import com.capitaworld.service.loans.model.teaser.finalview.TermLoanFinalViewResponse;
 import com.capitaworld.service.loans.model.teaser.finalview.UnsecuredLoanFinalViewResponse;
@@ -30,6 +31,7 @@ import com.capitaworld.service.loans.service.teaser.finalview.CarLoanFinalViewSe
 import com.capitaworld.service.loans.service.teaser.finalview.CorporateFinalViewService;
 import com.capitaworld.service.loans.service.teaser.finalview.HomeLoanFinalViewService;
 import com.capitaworld.service.loans.service.teaser.finalview.LapFinalViewService;
+import com.capitaworld.service.loans.service.teaser.finalview.NtbFinalViewService;
 import com.capitaworld.service.loans.service.teaser.finalview.PersonalLoanFinalViewService;
 import com.capitaworld.service.loans.service.teaser.finalview.TermLoanFinalViewService;
 import com.capitaworld.service.loans.service.teaser.finalview.UnsecuredLoanFinalViewService;
@@ -73,6 +75,11 @@ private static final Logger logger = LoggerFactory.getLogger(FinalViewController
 	
 	@Autowired
 	private CorporateFinalViewService corporateFinalViewService;
+	
+	@Autowired
+	private NtbFinalViewService ntbFinalViewService;
+	
+	
 	
 	@GetMapping(value = "/HomeLoan/{toApplicationId}")
     public @ResponseBody ResponseEntity<LoansResponse> finalViewHomeLoan(@PathVariable(value = "toApplicationId") Long toApplicationId,@RequestParam(value = "clientId", required = false) Long clientId,HttpServletRequest request) {
@@ -533,7 +540,8 @@ private static final Logger logger = LoggerFactory.getLogger(FinalViewController
 	
 		 //COMMON FINAL CORPORATE TEASER VIEW
 		@GetMapping(value = "/Corporate/{toApplicationId}")
-		public @ResponseBody ResponseEntity<LoansResponse> primaryViewOfCorporateCommon(@PathVariable(value = "toApplicationId") Long toApplicationId,@RequestParam(value = "clientId", required = false) Long clientId,HttpServletRequest request) {
+		public @ResponseBody ResponseEntity<LoansResponse> primaryViewOfCorporateCommon(@PathVariable(value = "toApplicationId") Long toApplicationId,@RequestParam(value = "clientId", required = false) Long clientId,HttpServletRequest request)
+		{
 			logger.info("IN FINAL CORPORATE TEASER VIEW======>"+toApplicationId);
 			LoansResponse loansResponse = new LoansResponse();
 			//GET USERID 
@@ -595,6 +603,77 @@ private static final Logger logger = LoggerFactory.getLogger(FinalViewController
 					return new ResponseEntity<LoansResponse>(loansResponse,HttpStatus.OK);
 				}catch (Exception e){
 					loansResponse.setData(corporateFinalViewResponse);
+					loansResponse.setMessage("Something went wrong..!");
+					loansResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+					return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+				}
+			}
+		}
+		
+		@GetMapping(value = "/NtbCorporate/{toApplicationId}")
+		public @ResponseBody ResponseEntity<LoansResponse> ntbFinalViewCommon(@PathVariable(value = "toApplicationId") Long toApplicationId,@RequestParam(value = "clientId", required = false) Long clientId,HttpServletRequest request)
+		{
+			logger.info("IN NTB FINAL CORPORATE TEASER VIEW======>"+toApplicationId);
+			LoansResponse loansResponse = new LoansResponse();
+			//GET USERID 
+			Long userId = null;
+			Integer userType = null;
+
+			if (CommonDocumentUtils.isThisClientApplication(request)) {
+				if(!CommonUtils.isObjectNullOrEmpty(clientId)){
+					//FOR FS,FP UNDER SP OR NP
+					userId = clientId;
+					try {
+						UserResponse response = usersClient.getUserTypeByUserId(new UsersRequest(userId));
+						if(response != null && response.getData() != null){
+							UserTypeRequest req = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>) response.getData(), UserTypeRequest.class);
+							userType = req.getId().intValue();
+						} else {
+							logger.warn("user_verification, Invalid Request... Client Id is not valid");
+							return new ResponseEntity<LoansResponse>(new LoansResponse("Client Id is not valid", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+						}
+					} catch(Exception e) {
+						logger.warn("user_verification, Invalid Request... Something went wrong");
+						e.printStackTrace();
+						return new ResponseEntity<LoansResponse>(new LoansResponse("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
+					}
+				} else {
+					if(!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_TYPE))) {
+						userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();		
+					}
+					if(!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_ID))) {
+						userId = ((Long) request.getAttribute(CommonUtils.USER_ID));		
+					}
+					/*if(CommonUtils.UserType.SERVICE_PROVIDER == userType){
+						userType = CommonUtils.UserType.SERVICE_PROVIDER;
+					}else if(CommonUtils.UserType.NETWORK_PARTNER == userType){
+						userType = CommonUtils.UserType.NETWORK_PARTNER;
+					}*/
+				}
+			} else {
+				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+				userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
+			}
+			if(CommonUtils.isObjectNullOrEmpty(toApplicationId)){
+				logger.warn("Invalid data or Requested data not found.", toApplicationId);
+				return new ResponseEntity<LoansResponse>(new LoansResponse("Invalid data or Requested data not found.", HttpStatus.BAD_REQUEST.value()),HttpStatus.OK);
+			}else {
+				NtbFinalViewResponse ntbFinalViewResponse = null;
+				try {
+					logger.info("Request users details:- toApplicationId,userType,userId is" +toApplicationId +userType +userId);
+					ntbFinalViewResponse = ntbFinalViewService.getNtbFinalViewDetails(toApplicationId, userType, userId);
+					if(!CommonUtils.isObjectNullOrEmpty(ntbFinalViewResponse)){
+						logger.info("response is"+ntbFinalViewResponse.toString());
+						loansResponse.setData(ntbFinalViewResponse);
+						loansResponse.setMessage("Corporate Primary Details");
+						loansResponse.setStatus(HttpStatus.OK.value());
+					}else{
+						loansResponse.setMessage("No data found for Corporate final view");
+						loansResponse.setStatus(HttpStatus.OK.value());
+					}
+					return new ResponseEntity<LoansResponse>(loansResponse,HttpStatus.OK);
+				}catch (Exception e){
+					loansResponse.setData(ntbFinalViewResponse);
 					loansResponse.setMessage("Something went wrong..!");
 					loansResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
 					return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);

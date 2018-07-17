@@ -77,6 +77,7 @@ public class CorporatePrimaryViewResponse {
     private Object buisnessRiskScoreWeight;
     private Object scoreInterpretation;
     private Object bankData;
+    private Long assesmentId;
 
 
     
@@ -661,6 +662,19 @@ public class CorporatePrimaryViewResponse {
 	public void setBankData(Object bankData) {
 		this.bankData = bankData;
 	}
+	/**
+	 * @return the assesmentId
+	 */
+	public Long getAssesmentId() {
+		return assesmentId;
+	}
+	/**
+	 * @param assesmentId the assesmentId to set
+	 */
+	public void setAssesmentId(Long assesmentId) {
+		this.assesmentId = assesmentId;
+	}
+	
 	
     
 }
