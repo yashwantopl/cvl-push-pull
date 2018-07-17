@@ -4,17 +4,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.capitaworld.connect.api.ConnectResponse;
 import com.capitaworld.connect.client.ConnectClient;
 import com.capitaworld.service.fraudanalytics.client.FraudAnalyticsClient;
@@ -35,8 +32,9 @@ import com.capitaworld.service.loans.model.corporate.FundSeekerInputRequestRespo
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.DirectorBackgroundDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.FinancialArrangementDetailsRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FundSeekerInputRequestService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
@@ -67,16 +65,16 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 	private CorporateApplicantService corporateApplicantService;
 
 	@Autowired
-	private JpaTransactionManager jpaTransactionManager;
-
-	@Autowired
-	private LoanApplicationRepository loanApplicationRepository;
-
-	@Autowired
 	private LoanApplicationService loanApplicationService;
 
 	@Autowired
 	private FraudAnalyticsClient fraudAnalyticsClient;
+	
+	@Autowired
+	private IndustrySectorRepository industrySectorRepository;
+	    
+	@Autowired
+	private SubSectorRepository subSectorRepository;
 
 	@Override
 	public boolean saveOrUpdate(FundSeekerInputRequestResponse fundSeekerInputRequest) throws Exception {
@@ -298,7 +296,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 					.findOneByApplicationIdId(fsInputReq.getApplicationId());
 			if (CommonUtils.isObjectNullOrEmpty(corpApplicantDetail)) {
 				logger.info("Data not found for given applicationid");
-				fsInputRes.setFinancialArrangementsDetailRequestsList(Collections.EMPTY_LIST);
+				fsInputRes.setFinancialArrangementsDetailRequestsList(Collections.emptyList());
 				return new ResponseEntity<LoansResponse>(new LoansResponse("Data not found for given applicationid",
 						HttpStatus.BAD_REQUEST.value(), fsInputRes), HttpStatus.OK);
 			}
@@ -324,6 +322,18 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 				finArrngDetailResList.add(finArrngDetailReq);
 			}
 			fsInputRes.setFinancialArrangementsDetailRequestsList(finArrngDetailResList);
+			
+			List<Long> industryList = industrySectorRepository.getIndustryByApplicationId(fsInputReq.getApplicationId());
+			logger.info("TOTAL INDUSTRY FOUND ------------->" + industryList.size() + "------------By APP Id -----------> " + fsInputReq.getApplicationId());
+			fsInputRes.setIndustrylist(industryList);
+            
+			List<Long> sectorList = industrySectorRepository.getSectorByApplicationId(fsInputReq.getApplicationId());
+			logger.info("TOTAL SECTOR FOUND ------------->" + sectorList.size() + "------------By APP Id -----------> " + fsInputReq.getApplicationId());
+			fsInputRes.setSectorlist(sectorList);
+            
+            List<Long> subSectorList = subSectorRepository.getSubSectorByApplicationId(fsInputReq.getApplicationId());
+			logger.info("TOTAL SUB SECTOR FOUND ------------->" + subSectorList.size() + "------------By APP Id -----------> " + fsInputReq.getApplicationId());
+			fsInputRes.setSubsectors(subSectorList);
 
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse("One form data successfully fetched", HttpStatus.OK.value(), fsInputRes),
