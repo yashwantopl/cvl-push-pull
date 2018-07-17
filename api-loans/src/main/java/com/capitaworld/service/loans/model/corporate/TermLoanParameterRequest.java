@@ -195,6 +195,11 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	private Boolean isCommercialCibilDisplay = false;
 
 	private Boolean isCommercialCibilMandatory = false;
+	
+	
+	private Long userOrgId;
+	
+	private Integer appstage;
 
 	//-----------------------added eligibility method for product
 	private Integer assessmentMethodId;
@@ -980,4 +985,23 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	public void setAssessmentMethodId(Integer assessmentMethodId) {
 		this.assessmentMethodId = assessmentMethodId;
 	}
+
+	public Long getUserOrgId() {
+		return userOrgId;
+	}
+
+	public void setUserOrgId(Long userOrgId) {
+		this.userOrgId = userOrgId;
+	}
+
+	public Integer getAppstage() {
+		return appstage;
+	}
+
+	public void setAppstage(Integer appstage) {
+		this.appstage = appstage;
+	}
+
+	
+	
 }
