@@ -4306,7 +4306,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 						logger.info("Before Start Saving Phase 1 Sidbi API ------------------->" + orgId);
 //						if(orgId==10L) {
 							logger.info("Start Saving Phase 1 sidbi API -------------------->" + loanApplicationMaster.getId());
-							savePhese1DataToSidbi(loanApplicationMaster.getId(), userId,orgId,fpProductId);
+							try {
+								savePhese1DataToSidbi(loanApplicationMaster.getId(), userId,orgId,fpProductId);								
+							}catch(Exception e) {
+								e.printStackTrace();
+								logger.error("Error while Saving Phase1 data to Organization Id====>{}",orgId);
+							}
 //						}
 						
 						if(connectResponse.getProceed()) {
