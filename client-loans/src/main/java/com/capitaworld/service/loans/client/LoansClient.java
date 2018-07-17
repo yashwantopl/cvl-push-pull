@@ -186,7 +186,7 @@ public class LoansClient {
 
 	private static final String GET_ORG_PAN_DETAILS = "/fs_profile/getOrgAndPanByAppId";
 	
-	private static final String  GET_FPDETAILS_BY_FPPRODUCTID = "getFpDetailsByFpProductId";
+	private static final String  GET_FPDETAILS_BY_FPPRODUCTID = "/getFpDetailsByFpProductId";
 	private static final String SAVE_PHASE_ONE = "/loan_application/save_phase1_sidbi";
 	private static final String SAVE_PHASE_TWO = "/loan_application/save_phase2_sidbi";
 	
@@ -2141,8 +2141,8 @@ public class LoansClient {
 		}
 	}
 	
-	public LoansResponse getDirectorIncomeDetails(Long applicationId,Long directorId) throws LoansException {
-		String url = loansBaseUrl.concat(GET_DIRECTOR_INCOME_DETAILS).concat("/"+applicationId+"/"+directorId);
+	public LoansResponse getDirectorIncomeDetails(Long applicationId) throws LoansException {
+		String url = loansBaseUrl.concat(GET_DIRECTOR_INCOME_DETAILS).concat("/"+applicationId);
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");

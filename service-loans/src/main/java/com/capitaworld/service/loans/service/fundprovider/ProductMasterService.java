@@ -20,7 +20,7 @@ public interface ProductMasterService {
 
 	public ProductMaster getProductMaster(Long id);
 	
-	public Object getProductMasterWithAllData(Long id);
+	public Object getProductMasterWithAllData(Long id,Integer stage);
 
 	public List<ProductMasterRequest> getList(Long userId,Long userOrgId);
 	

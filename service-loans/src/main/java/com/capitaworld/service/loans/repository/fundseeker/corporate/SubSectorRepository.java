@@ -15,6 +15,8 @@ public interface SubSectorRepository extends JpaRepository<SubsectorDetail, Long
 	@Query("update SubsectorDetail sd set sd.isActive = false where sd.applicationId =:applicationId and sd.isActive = true")
 	public int inActiveMappingByApplicationId(@Param("applicationId") Long applicationId);
 	
+	public List<Long> findBySectorSubsectorTransactionIdAndApplicationIdAndIsActive(Long sectorSubsectorTransactionId,Long applicationId, Boolean isActive);
+	
 	@Query("select sd.sectorSubsectorTransactionId from SubsectorDetail sd where sd.applicationId =:applicationId and sd.isActive = true")
 	public List<Long> getSubSectorByApplicationId(@Param("applicationId") Long applicationId);
 

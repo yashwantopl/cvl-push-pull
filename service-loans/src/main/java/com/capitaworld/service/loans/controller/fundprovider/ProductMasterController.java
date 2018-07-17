@@ -280,9 +280,9 @@ public class ProductMasterController {
 		}
 	}
 
-	@RequestMapping(value = "/getFPProduct/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/getFPProduct/{id}/{applicationStage}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getFPProduct(HttpServletRequest request,
-			@PathVariable(value = "id") Long id
+			@PathVariable(value = "id") Long id,@PathVariable(value = "applicationStage")Integer applicationStage
 			) {
 		// request must not be null
 		CommonDocumentUtils.startHook(logger, "getFPProduct");
@@ -291,7 +291,7 @@ public class ProductMasterController {
 			
 			
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
-			loansResponse.setData(productMasterService.getProductMasterWithAllData(id));
+			loansResponse.setData(productMasterService.getProductMasterWithAllData(id,applicationStage));
 			CommonDocumentUtils.endHook(logger, "getListByUserType");
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
@@ -697,6 +697,7 @@ public class ProductMasterController {
 			}
 
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			Long userOrgId = (Long) request.getAttribute(CommonUtils.USER_ORG_ID);
 			//Long userId=1755l;
 			if(userId==null)
 			{
@@ -707,6 +708,7 @@ public class ProductMasterController {
 						HttpStatus.OK);
 			}
 			corporateProduct.setUserId(userId);
+			corporateProduct.setUserOrgId(userOrgId);
 			boolean response = productMasterService.saveCorporateInTemp(corporateProduct);
 			if (response) {
 				CommonDocumentUtils.endHook(logger, "save");

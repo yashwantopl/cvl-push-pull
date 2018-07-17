@@ -15,7 +15,7 @@ import com.capitaworld.service.loans.domain.fundprovider.WcTlParameterTemp;
  */
 public interface WcTlParameterTempRepository extends JpaRepository<WcTlParameterTemp, Long> {
 	
-	@Query("select o from WcTlParameterTemp o where o.fpProductId =:fpProductId")
+	@Query("select o from WcTlParameterTemp o where o.fpProductId.id =:fpProductId")
 	public WcTlParameterTemp getWcTlParameterTempByFpProductId(@Param("fpProductId")Long fpProductId); 
 
 
