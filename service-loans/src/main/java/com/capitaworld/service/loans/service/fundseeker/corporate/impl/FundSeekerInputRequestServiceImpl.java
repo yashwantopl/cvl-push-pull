@@ -325,15 +325,15 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			
 			List<Long> industryList = industrySectorRepository.getIndustryByApplicationId(fsInputReq.getApplicationId());
 			logger.info("TOTAL INDUSTRY FOUND ------------->" + industryList.size() + "------------By APP Id -----------> " + fsInputReq.getApplicationId());
-			fsInputReq.setIndustrylist(industryList);
+			fsInputRes.setIndustrylist(industryList);
             
 			List<Long> sectorList = industrySectorRepository.getSectorByApplicationId(fsInputReq.getApplicationId());
 			logger.info("TOTAL SECTOR FOUND ------------->" + sectorList.size() + "------------By APP Id -----------> " + fsInputReq.getApplicationId());
-            fsInputReq.setSectorlist(sectorList);
+			fsInputRes.setSectorlist(sectorList);
             
             List<Long> subSectorList = subSectorRepository.getSubSectorByApplicationId(fsInputReq.getApplicationId());
 			logger.info("TOTAL SUB SECTOR FOUND ------------->" + subSectorList.size() + "------------By APP Id -----------> " + fsInputReq.getApplicationId());
-            fsInputReq.setSubsectors(subSectorList);
+			fsInputRes.setSubsectors(subSectorList);
 
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse("One form data successfully fetched", HttpStatus.OK.value(), fsInputRes),
