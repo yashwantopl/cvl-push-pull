@@ -59,14 +59,14 @@ public class CorporateDirectorIncomeDetailsController {
 		}
 	}
 	
-	@RequestMapping(value = "/get_income_details/{applicationId}/{directorId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getIncomeDetails(@PathVariable("applicationId") Long applicationId,@PathVariable("directorId") Long directorId)
+	@RequestMapping(value = "/get_income_details/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getIncomeDetails(@PathVariable("applicationId") Long applicationId)
 			throws ServletException, IOException {
-		logger.info("Start get Director income details()=============>"+applicationId+" "+directorId);
+		logger.info("Start get Director income details()=============>"+applicationId);
 		try {
-			if (!(CommonUtils.isObjectNullOrEmpty(applicationId)) && !(CommonUtils.isObjectNullOrEmpty(directorId))) {
-				logger.info("Inside Corporate Director Income Details controller===>{}"+ applicationId+" "+directorId);
-				List<CorporateDirectorIncomeRequest> response = incomeDetailsService.getDirectorIncomeDetails(applicationId,directorId);
+			if (!(CommonUtils.isObjectNullOrEmpty(applicationId))) {
+				logger.info("Inside Corporate Director Income Details controller===>{}"+ applicationId);
+				List<CorporateDirectorIncomeRequest> response = incomeDetailsService.getDirectorIncomeDetails(applicationId);
 				logger.info("Response from getting income details===>{}", response);
 				if (!CommonUtils.isObjectNullOrEmpty(response)) {
 					return new ResponseEntity<LoansResponse>(
@@ -82,6 +82,33 @@ public class CorporateDirectorIncomeDetailsController {
 			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse("Something went wrong while getting Income details",
+							HttpStatus.INTERNAL_SERVER_ERROR.value(), false),HttpStatus.OK);
+		}
+	}
+	
+	@RequestMapping(value = "/get_director_details/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getDirectorBackgroundDetails(@PathVariable("applicationId") Long applicationId)
+			throws ServletException, IOException {
+		logger.info("Start get Director background and employee details()=============>"+applicationId);
+		try {
+			if (!(CommonUtils.isObjectNullOrEmpty(applicationId))) {
+				logger.info("Inside Corporate Director Details controller===>{}"+ applicationId);
+				List<Map<String,Object>> response = incomeDetailsService.getDirectorBackGroundDetails(applicationId);
+				logger.info("Response from getting Director background and employee details===>{}", response);
+				if (!CommonUtils.isObjectNullOrEmpty(response)) {
+					return new ResponseEntity<LoansResponse>(
+							new LoansResponse("Director background and employee details get successfully", HttpStatus.OK.value(), response),
+							HttpStatus.OK);
+				} 
+			}
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse("Getting Director background and employee details failed", HttpStatus.BAD_REQUEST.value(), false),
+					HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while getting Director background and employee details");
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse("Something went wrong while Director background details",
 							HttpStatus.INTERNAL_SERVER_ERROR.value(), false),HttpStatus.OK);
 		}
 	}
