@@ -1,8 +1,8 @@
-/*Table structure for table `fp_ntb_details` */
+/*Table structure for table `fp_ntb_tl_details` */
 
-DROP TABLE IF EXISTS `fp_ntb_details`;
+DROP TABLE IF EXISTS `fp_ntb_tl_details`;
 
-CREATE TABLE `fp_ntb_details` (
+CREATE TABLE `fp_ntb_tl_details` (
   `fp_product_id` bigint(20) unsigned NOT NULL,
   `currency` int(2) DEFAULT NULL,
   `denomination` int(2) DEFAULT NULL,
