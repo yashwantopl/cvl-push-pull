@@ -66,7 +66,7 @@ public class FundSeekerInputRequestResponse {
     /////////
     private Double costOfMachinery;
     private Double incrementalTurnover;
-
+    private Integer assessmentId;
     public Long getUserId() {
         return userId;
     }
@@ -272,5 +272,13 @@ public class FundSeekerInputRequestResponse {
 
     public void setIncrementalTurnover(Double incrementalTurnover) {
         this.incrementalTurnover = incrementalTurnover;
+    }
+    
+      public Integer getAssessmentId() {
+        return assessmentId;
+    }
+
+    public void setAssessmentId(Integer assessmentId) {
+        this.assessmentId = assessmentId;
     }
 }
