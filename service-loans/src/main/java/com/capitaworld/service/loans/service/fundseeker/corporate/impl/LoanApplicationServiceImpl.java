@@ -6172,8 +6172,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			
 			String city= null;
 			List<Long> cityList = new ArrayList<>();
-			if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredStateId()))
-				cityList.add(Long.valueOf(applicantDetail.getRegisteredStateId()));
+			if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredCityId()))
+				cityList.add(Long.valueOf(applicantDetail.getRegisteredCityId()));
 			if (!CommonUtils.isListNullOrEmpty(cityList)) {
 				try {
 					OneFormResponse oneFormResponse = oneFormClient.getCityByCityListId(cityList);
@@ -6193,8 +6193,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			
 			String country= null;
 			List<Long> countryList = new ArrayList<>();
-			if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredStateId()))
-				countryList.add(Long.valueOf(applicantDetail.getRegisteredStateId()));
+			if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredCountryId()))
+				countryList.add(Long.valueOf(applicantDetail.getRegisteredCountryId()));
 			if (!CommonUtils.isListNullOrEmpty(countryList)) {
 				try {
 					OneFormResponse oneFormResponse = oneFormClient.getCountryByCountryListId(countryList);
