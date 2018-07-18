@@ -215,6 +215,11 @@
 			<artifactId>client-fraudanalytics</artifactId>
 		</dependency>
 		
+		<dependency>
+			<groupId>com.capitaworld.itr.client</groupId>
+			<artifactId>client-itr</artifactId>
+			<version>1.0.0</version>
+		</dependency>
 	</dependencies>
 
 	<build>
