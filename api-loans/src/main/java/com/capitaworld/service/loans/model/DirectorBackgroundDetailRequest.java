@@ -20,6 +20,10 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 
+	private Boolean isCibilProceed;
+
+	private String cibilMessage;
+
 	private Long id;
 
 	private String address;
@@ -487,55 +491,71 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 		this.qualificationId = qualificationId;
 	}
 
-    @Override
-    public String toString() {
-        return "DirectorBackgroundDetailRequest{" +
-                "id=" + id +
-                ", address='" + address + '\'' +
-                ", networth=" + networth +
-                ", applicationId=" + applicationId +
-                ", salutationId=" + salutationId +
-                ", din=" + din +
-                ", appointmentDate=" + appointmentDate +
-                ", designation='" + designation + '\'' +
-                ", panNo='" + panNo + '\'' +
-                ", directorsName='" + directorsName + '\'' +
-                ", totalExperience=" + totalExperience +
-                ", isActive=" + isActive +
-                ", pincode='" + pincode + '\'' +
-                ", stateCode='" + stateCode + '\'' +
-                ", city='" + city + '\'' +
-                ", dob=" + dob +
-                ", mobile='" + mobile + '\'' +
-                ", gender=" + gender +
-                ", relationshipType=" + relationshipType +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", middleName='" + middleName + '\'' +
-                ", title='" + title + '\'' +
-                ", shareholding=" + shareholding +
-                ", isItrCompleted=" + isItrCompleted +
-                ", isCibilCompleted=" + isCibilCompleted +
-                ", isBankStatementCompleted=" + isBankStatementCompleted +
-                ", isOneFormCompleted=" + isOneFormCompleted +
-                ", aadhar='" + aadhar + '\'' +
-                ", maritalStatus=" + maritalStatus +
-                ", noOfDependent=" + noOfDependent +
-                ", residenceType=" + residenceType +
-                ", residenceSinceMonth=" + residenceSinceMonth +
-                ", residenceSinceYear=" + residenceSinceYear +
-                ", isFamilyMemberInBusiness=" + isFamilyMemberInBusiness +
-                ", employmentDetailRequest=" + employmentDetailRequest +
-                ", countryId=" + countryId +
-                ", premiseNumber='" + premiseNumber + '\'' +
-                ", streetName='" + streetName + '\'' +
-                ", landmark='" + landmark + '\'' +
-                ", isMainDirector=" + isMainDirector +
-                ", qualificationId=" + qualificationId +
-                '}';
-    }
+	public Boolean getIsCibilProceed() {
+		return isCibilProceed;
+	}
 
-    public static void printFields(Object obj) throws Exception {
+	public void setIsCibilProceed(Boolean cibilProceed) {
+		isCibilProceed = cibilProceed;
+	}
+
+	public String getCibilMessage() {
+		return cibilMessage;
+	}
+
+	public void setCibilMessage(String cibilMessage) {
+		this.cibilMessage = cibilMessage;
+	}
+
+	@Override
+	public String toString() {
+		return "DirectorBackgroundDetailRequest{" +
+				"id=" + id +
+				", address='" + address + '\'' +
+				", networth=" + networth +
+				", applicationId=" + applicationId +
+				", salutationId=" + salutationId +
+				", din=" + din +
+				", appointmentDate=" + appointmentDate +
+				", designation='" + designation + '\'' +
+				", panNo='" + panNo + '\'' +
+				", directorsName='" + directorsName + '\'' +
+				", totalExperience=" + totalExperience +
+				", isActive=" + isActive +
+				", pincode='" + pincode + '\'' +
+				", stateCode='" + stateCode + '\'' +
+				", city='" + city + '\'' +
+				", dob=" + dob +
+				", mobile='" + mobile + '\'' +
+				", gender=" + gender +
+				", relationshipType=" + relationshipType +
+				", firstName='" + firstName + '\'' +
+				", lastName='" + lastName + '\'' +
+				", middleName='" + middleName + '\'' +
+				", title='" + title + '\'' +
+				", shareholding=" + shareholding +
+				", isItrCompleted=" + isItrCompleted +
+				", isCibilCompleted=" + isCibilCompleted +
+				", isBankStatementCompleted=" + isBankStatementCompleted +
+				", isOneFormCompleted=" + isOneFormCompleted +
+				", aadhar='" + aadhar + '\'' +
+				", maritalStatus=" + maritalStatus +
+				", noOfDependent=" + noOfDependent +
+				", residenceType=" + residenceType +
+				", residenceSinceMonth=" + residenceSinceMonth +
+				", residenceSinceYear=" + residenceSinceYear +
+				", isFamilyMemberInBusiness=" + isFamilyMemberInBusiness +
+				", employmentDetailRequest=" + employmentDetailRequest +
+				", countryId=" + countryId +
+				", premiseNumber='" + premiseNumber + '\'' +
+				", streetName='" + streetName + '\'' +
+				", landmark='" + landmark + '\'' +
+				", isMainDirector=" + isMainDirector +
+				", qualificationId=" + qualificationId +
+				'}';
+	}
+
+	public static void printFields(Object obj) throws Exception {
         Field[] fields = DirectorBackgroundDetailRequest.class.getDeclaredFields();
         System.out.println("length : "+fields.length);
         for(Field field : fields) {
