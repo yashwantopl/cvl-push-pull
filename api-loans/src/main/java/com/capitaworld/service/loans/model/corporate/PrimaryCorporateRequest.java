@@ -20,9 +20,9 @@ public class PrimaryCorporateRequest extends LoanApplicationRequest implements S
     private Double tenureRequired;
     private Integer proposedDetailsOfUnit;
     private Double costOfProject;
+    private Integer assessmentId;
 
-
-
+  
     public PrimaryCorporateRequest() {
     }
 
@@ -106,5 +106,13 @@ public class PrimaryCorporateRequest extends LoanApplicationRequest implements S
 
     public void setCostOfProject(Double costOfProject) {
         this.costOfProject = costOfProject;
+    }
+    
+    public Integer getAssessmentId() {
+        return assessmentId;
+    }
+
+    public void setAssessmentId(Integer assessmentId) {
+        this.assessmentId = assessmentId;
     }
 }
