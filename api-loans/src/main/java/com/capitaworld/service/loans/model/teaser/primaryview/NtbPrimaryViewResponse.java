@@ -4,9 +4,11 @@
 package com.capitaworld.service.loans.model.teaser.primaryview;
 
 import java.util.List;
+import java.util.Map;
 
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailResponse;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailResponse;
+import com.capitaworld.service.loans.model.corporate.CorporateDirectorIncomeRequest;
 
 /**
  * @author nilay
@@ -72,6 +74,8 @@ public class NtbPrimaryViewResponse {
 	    private List<Object> bankStatement;
 	    private List<Object> cibilReport;
 	    private List<Object> irtPdfReport;
+	    private List<Map<String,Object>> directorBackGroundDetails;
+	    private List<CorporateDirectorIncomeRequest> directorIncomeDetails;
 	    private Object monthlyDetailList;
 	    private Object top5FundReceivedList;
 	    private Object top5FundTransferedList;
@@ -848,6 +852,18 @@ public class NtbPrimaryViewResponse {
 		 */
 		public void setQualification(String qualification) {
 			this.qualification = qualification;
+		}
+		public List<Map<String, Object>> getDirectorBackGroundDetails() {
+			return directorBackGroundDetails;
+		}
+		public void setDirectorBackGroundDetails(List<Map<String, Object>> directorBackGroundDetails) {
+			this.directorBackGroundDetails = directorBackGroundDetails;
+		}
+		public List<CorporateDirectorIncomeRequest> getDirectorIncomeDetails() {
+			return directorIncomeDetails;
+		}
+		public void setDirectorIncomeDetails(List<CorporateDirectorIncomeRequest> directorIncomeDetails) {
+			this.directorIncomeDetails = directorIncomeDetails;
 		}
 
 
