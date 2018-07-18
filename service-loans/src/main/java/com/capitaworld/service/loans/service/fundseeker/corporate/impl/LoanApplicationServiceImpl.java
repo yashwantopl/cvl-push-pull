@@ -6004,13 +6004,21 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		}
 		Calendar cal = Calendar.getInstance();
 		Integer yearInt = cal.get(Calendar.YEAR);
-		String year = String.valueOf(yearInt);
+		String year = String.valueOf(yearInt-1);
 		System.out.println("YEAR ::::::::::::::::::::++++++++++++++>>>> "+ year);
 		AssetsDetails assetsDetails = null; 
 		assetsDetails = assetsDetailsRepository.getAssetsDetails(applicationId, year);
 		if(assetsDetails == null) {
 			year = year+".0";
 			assetsDetails = assetsDetailsRepository.getAssetsDetails(applicationId, year);
+			if(assetsDetails==null) {
+				year = yearInt+"";
+				assetsDetails = assetsDetailsRepository.getAssetsDetails(applicationId, year);
+				if(assetsDetails==null) {
+					year = yearInt+".0";
+					assetsDetails = assetsDetailsRepository.getAssetsDetails(applicationId, year);
+				}
+			}
 		}
 		
 		if(assetsDetails!=null) {
