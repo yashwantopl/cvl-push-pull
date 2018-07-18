@@ -53,7 +53,7 @@ public class FundSeekerInputRequestController {
         		Boolean resp =fundSeekerInputRequestService.invokeFraudAnalytics(fundSeekerInputRequestResponse);
         		if(!resp) {
         			return new ResponseEntity<LoansResponse>(
-                            new LoansResponse("You do not Qualify for Contactless Process, Kindly visit Bank Branch or get your Due Diligence process completed in www.capitaworld.com to connect to Banks", HttpStatus.BAD_REQUEST.value()),
+                            new LoansResponse("You do not Qualify for Contactless Process, Kindly visit Bank Branch or get your Due Diligence process completed in www.capitaworld.com to connect to Banks", HttpStatus.UNAVAILABLE_FOR_LEGAL_REASONS.value()),
                             HttpStatus.OK);
         		}
         		
