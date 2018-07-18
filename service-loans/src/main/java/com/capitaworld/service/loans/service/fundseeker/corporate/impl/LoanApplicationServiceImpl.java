@@ -4306,7 +4306,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 						logger.info("Before Start Saving Phase 1 Sidbi API ------------------->" + orgId);
 //						if(orgId==10L) {
 							logger.info("Start Saving Phase 1 sidbi API -------------------->" + loanApplicationMaster.getId());
-							savePhese1DataToSidbi(loanApplicationMaster.getId(), userId,orgId,fpProductId);
+							try {
+								savePhese1DataToSidbi(loanApplicationMaster.getId(), userId,orgId,fpProductId);								
+							}catch(Exception e) {
+								e.printStackTrace();
+								logger.error("Error while Saving Phase1 data to Organization Id====>{}",orgId);
+							}
 //						}
 						
 						if(connectResponse.getProceed()) {
@@ -4789,6 +4794,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	@Override
 	public boolean updateProductDetails(LoanApplicationRequest loanApplicationRequest) {
 		logger.info("Application id -------------------------------->"+loanApplicationRequest.getId());
+		logger.info("Request Object---------------------------->" + loanApplicationRequest.toString());
 		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.getById(loanApplicationRequest.getId());
 		if (CommonUtils.isObjectNullOrEmpty(loanApplicationMaster)) {
 			logger.info("Loan master no found-------------------------------->"+loanApplicationRequest.getId());
@@ -5999,12 +6005,21 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		}
 		Calendar cal = Calendar.getInstance();
 		Integer yearInt = cal.get(Calendar.YEAR);
-		String year = String.valueOf(yearInt);
+		String year = String.valueOf(yearInt-1);
+		System.out.println("YEAR ::::::::::::::::::::++++++++++++++>>>> "+ year);
 		AssetsDetails assetsDetails = null; 
 		assetsDetails = assetsDetailsRepository.getAssetsDetails(applicationId, year);
 		if(assetsDetails == null) {
 			year = year+".0";
 			assetsDetails = assetsDetailsRepository.getAssetsDetails(applicationId, year);
+			if(assetsDetails==null) {
+				year = yearInt+"";
+				assetsDetails = assetsDetailsRepository.getAssetsDetails(applicationId, year);
+				if(assetsDetails==null) {
+					year = yearInt+".0";
+					assetsDetails = assetsDetailsRepository.getAssetsDetails(applicationId, year);
+				}
+			}
 		}
 		
 		if(assetsDetails!=null) {

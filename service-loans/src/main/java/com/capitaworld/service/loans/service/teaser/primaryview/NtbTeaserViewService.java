@@ -9,8 +9,8 @@ import com.capitaworld.service.loans.model.teaser.primaryview.NtbPrimaryViewResp
  * @author nilay
  *
  */
-public interface NtbPrimaryViewService {
+public interface NtbTeaserViewService {
 	
-	 public NtbPrimaryViewResponse getNtbPrimaryViewDetails(Long toApplicationId, Integer userType, Long fundProviderUserId);
+	 public NtbPrimaryViewResponse getNtbTeaserViewDetails(Long toApplicationId, Integer userType, Long userId, Long productMappingId, Boolean isFinal);
 
 }
