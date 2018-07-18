@@ -610,4 +610,35 @@ public class LoanApplicationRequest implements Serializable {
 	public void setFpProductId(Long fpProductId) {
 		this.fpProductId = fpProductId;
 	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "LoanApplicationRequest [id=" + id + ", clientId=" + clientId + ", amount=" + amount + ", categoryCode="
+				+ categoryCode + ", name=" + name + ", productId=" + productId + ", tenure=" + tenure + ", typeOfLoan="
+				+ typeOfLoan + ", loanAmount=" + loanAmount + ", interestRate=" + interestRate + ", emiAmount="
+				+ emiAmount + ", nameOfEntity=" + nameOfEntity + ", fundProvider=" + fundProvider + ", userId=" + userId
+				+ ", fpProductId=" + fpProductId + ", currencyId=" + currencyId + ", denominationId=" + denominationId
+				+ ", createdDate=" + createdDate + ", hasAlreadyApplied=" + hasAlreadyApplied + ", loanTypeMain="
+				+ loanTypeMain + ", loanTypeSub=" + loanTypeSub + ", currencyValue=" + currencyValue
+				+ ", isApplicantDetailsFilled=" + isApplicantDetailsFilled + ", isApplicantPrimaryFilled="
+				+ isApplicantPrimaryFilled + ", isApplicantFinalFilled=" + isApplicantFinalFilled + ", applicationCode="
+				+ applicationCode + ", status=" + status + ", primaryFilledCount=" + primaryFilledCount
+				+ ", profilePrimaryLocked=" + profilePrimaryLocked + ", finalLocked=" + finalLocked + ", mcaCompanyId="
+				+ mcaCompanyId + ", isMca=" + isMca + ", npUserId=" + npUserId + ", npAssigneeId=" + npAssigneeId
+				+ ", fpMakerId=" + fpMakerId + ", email=" + email + ", mobile=" + mobile + ", userName=" + userName
+				+ ", providerName=" + providerName + ", paymentStatus=" + paymentStatus + ", typeOfPayment="
+				+ typeOfPayment + ", appointmentDate=" + appointmentDate + ", appointmentTime=" + appointmentTime
+				+ ", address=" + address + ", isMailSent=" + isMailSent + ", isNhbsApplication=" + isNhbsApplication
+				+ ", ddrStatusId=" + ddrStatusId + ", gstIn=" + gstIn + ", npOrgId=" + npOrgId
+				+ ", onlinePaymentSuccess=" + onlinePaymentSuccess + ", fsNameForPayment=" + fsNameForPayment
+				+ ", amountForPayment=" + amountForPayment + ", roiForPayment=" + roiForPayment + ", tenureForPayment="
+				+ tenureForPayment + ", emiForPaymentayment=" + emiForPaymentayment + ", feesForPayment="
+				+ feesForPayment + ", fpNameForPayment=" + fpNameForPayment + ", businessTypeId=" + businessTypeId
+				+ "]";
+	}
+	
+	
 }

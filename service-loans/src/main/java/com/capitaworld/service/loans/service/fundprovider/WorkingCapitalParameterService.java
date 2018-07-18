@@ -19,5 +19,5 @@ public interface WorkingCapitalParameterService {
 	 */
 	public Boolean saveOrUpdateTemp(WorkingCapitalParameterRequest capitalParameterRequest);
 
-	WorkingCapitalParameterRequest getWorkingCapitalParameterTemp(Long id);
+	WorkingCapitalParameterRequest getWorkingCapitalParameterTemp(Long id,Long role,Long userId);
 }

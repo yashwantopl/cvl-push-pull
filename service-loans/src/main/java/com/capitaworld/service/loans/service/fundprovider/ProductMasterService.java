@@ -20,7 +20,7 @@ public interface ProductMasterService {
 
 	public ProductMaster getProductMaster(Long id);
 	
-	public Object getProductMasterWithAllData(Long id,Integer stage);
+	public Object getProductMasterWithAllData(Long id,Integer stage,Long role,Long userId);
 
 	public List<ProductMasterRequest> getList(Long userId,Long userOrgId);
 	
@@ -38,7 +38,7 @@ public interface ProductMasterService {
 
 	public boolean isSelfView(Long fpProductId, Long userId);
 	
-	public Boolean changeStatus(Long fpProductId,Boolean status, Long userId);
+	public Boolean changeStatus(Long fpProductId,Boolean status, Long userId,Integer stage);
 
 	public boolean isProductMatched(Long userId, MultipleFpPruductRequest multipleFpPruductRequest) throws IOException;
 

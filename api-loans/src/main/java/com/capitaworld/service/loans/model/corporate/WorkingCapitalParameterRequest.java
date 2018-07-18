@@ -193,6 +193,8 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 	
 	private Integer appstage;
 	
+	private Object workflowData;
+	
 	//-----------------------added eligibility method for product
 	private Integer assessmentMethodId;
 
@@ -1003,6 +1005,16 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 		this.appstage = appstage;
 	}
 
+	public Object getWorkflowData() {
+		return workflowData;
+	}
+
+	public void setWorkflowData(Object workflowData) {
+		this.workflowData = workflowData;
+	}
+
+
+	
 	
 	
 }

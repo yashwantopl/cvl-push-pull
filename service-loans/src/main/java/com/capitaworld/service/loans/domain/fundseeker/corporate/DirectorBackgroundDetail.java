@@ -553,4 +553,5 @@ public class DirectorBackgroundDetail extends AuditActivity implements Serializa
 	public void setCityId(Integer cityId) {
 		this.cityId = cityId;
 	}
+
 }

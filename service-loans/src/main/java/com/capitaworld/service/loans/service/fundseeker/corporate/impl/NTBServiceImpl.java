@@ -1,11 +1,10 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
+import com.capitaworld.connect.api.ConnectResponse;
+import com.capitaworld.connect.client.ConnectClient;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.*;
-import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
-import com.capitaworld.service.loans.model.EmploymentDetailRequest;
-import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
-import com.capitaworld.service.loans.model.LoansResponse;
+import com.capitaworld.service.loans.model.*;
 import com.capitaworld.service.loans.model.corporate.FundSeekerInputRequestResponse;
 import com.capitaworld.service.loans.model.corporate.PrimaryCorporateRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.*;
@@ -50,6 +49,9 @@ public class NTBServiceImpl implements NTBService {
      @Autowired
      private CorporateApplicantService corporateApplicantService;
 
+    @Autowired
+    private ConnectClient connectClient;
+
     @Override
     public DirectorBackgroundDetailRequest getOneformDetailByDirectorId(Long directorId) throws Exception {
         logger.info("Enter getOneformDetailByDirectorId() with directorID : " + directorId);
@@ -85,8 +87,6 @@ public class NTBServiceImpl implements NTBService {
     public Boolean saveOneformDetailForDirector(DirectorBackgroundDetailRequest directorBackgroundDetailRequest, Long userId) throws Exception {
          logger.info("Enter saveOneformDetailForDirector() with data : " + directorBackgroundDetailRequest.toString());
         try {
-
-
             EmploymentDetailRequest employmentDetailRequest =directorBackgroundDetailRequest.getEmploymentDetailRequest();
             EmploymentDetail employmentDetail = null;
             if (employmentDetailRequest.getId() != null) {
@@ -104,16 +104,12 @@ public class NTBServiceImpl implements NTBService {
 
             DirectorBackgroundDetail directorBackgroundDetail = directorBackgroundDetailsRepository.findByIdAndIsActive(directorBackgroundDetailRequest.getId(), true);
             BeanUtils.copyProperties(directorBackgroundDetailRequest, directorBackgroundDetail, "isItrCompleted", "isCibilCompleted", "isBankStatementCompleted", "isOneFormCompleted");
-            directorBackgroundDetail.setOneFormCompleted(true);
+
             directorBackgroundDetail.setEmploymentDetail(employmentDetailTemp);
             directorBackgroundDetail.setModifiedBy(userId);
             directorBackgroundDetail.setModifiedDate(new Date());
             directorBackgroundDetailsRepository.save(directorBackgroundDetail);
             logger.info("director detail saved successfully");
-
-
-
-            logger.info("Exit getOneformDetailByDirectorId() with response Data :: " );
             return true;
 
         } catch (Exception e) {
@@ -122,6 +118,8 @@ public class NTBServiceImpl implements NTBService {
             return false;
         }
     }
+
+
 
     @Override
     public List<FinancialArrangementsDetailRequest> getFinancialDetails(Long applicationId, Long directorId) throws Exception {
@@ -147,7 +145,7 @@ public class NTBServiceImpl implements NTBService {
     }
 
     @Override
-    public Boolean saveFinancialDetails(List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestList, Long applicationId, Long userId) throws Exception {
+    public Boolean saveFinancialDetails(List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestList, Long applicationId, Long userId, Long directorId) throws Exception {
         logger.info("Entry in saveFinancialDetails() for applicationId : " + applicationId + " userId:" + userId);
         try {
             for (FinancialArrangementsDetailRequest reqObj : financialArrangementsDetailRequestList) {
@@ -159,6 +157,7 @@ public class NTBServiceImpl implements NTBService {
                     saveFinObj = new FinancialArrangementsDetail();
                     BeanUtils.copyProperties(reqObj, saveFinObj, "id", "createdBy", "createdDate", "modifiedBy", "modifiedDate", "isActive");
 
+                    saveFinObj.setDirectorBackgroundDetail(directorBackgroundDetailsRepository.findOne(directorId));
                     saveFinObj.setApplicationId(new LoanApplicationMaster(applicationId));
                     saveFinObj.setCreatedBy(userId);
                     saveFinObj.setCreatedDate(new Date());
@@ -171,6 +170,12 @@ public class NTBServiceImpl implements NTBService {
                 financialArrangementDetailsRepository.save(saveFinObj);
             }
             logger.info("successfully saved data for saveFinancialDetails() applicationId :" + applicationId+ " userId:" + userId);
+
+            DirectorBackgroundDetail directorBackgroundDetail = directorBackgroundDetailsRepository.findByIdAndIsActive(directorId, true);
+            directorBackgroundDetail.setOneFormCompleted(true);
+            directorBackgroundDetailsRepository.save(directorBackgroundDetail);
+            logger.info("director oneform_completed flag saved successfully");
+
             return true;
         }catch (Exception e){
             logger.info("Exception  in getOneformDetailByDirectorId  :-");
@@ -244,7 +249,7 @@ public class NTBServiceImpl implements NTBService {
             }
             BeanUtils.copyProperties(fundSeekerInputRequestResponse,primaryCorporateDetail);
             primaryCorporateDetail.setAmount(fundSeekerInputRequestResponse.getLoanAmount());
-
+            primaryCorporateDetail.setUserId(userId);
             primaryCorporateDetail.setIsApplicantDetailsFilled(true);
             primaryCorporateDetail.setIsApplicantPrimaryFilled(true);
             primaryCorporateDetail.setApplicationId(new LoanApplicationMaster(applicationId));
@@ -266,6 +271,81 @@ public class NTBServiceImpl implements NTBService {
             logger.info("Throw Exception while save and update Others Detail !!");
             e.printStackTrace();
             throw new Exception();
+        }
+    }
+
+    @Override
+    public LoansResponse postDirectorBackground(NTBRequest ntbRequest) {
+        logger.info("Start postDirectorBackground()");
+        try {
+            ConnectResponse connectResponse = connectClient.postDirectorBackground(ntbRequest.getApplicationId(),
+                    ntbRequest.getUserId(), ntbRequest.getBusineeTypeId(), ntbRequest.getDirectorId());
+            if (connectResponse == null) {
+                return new LoansResponse(
+                        "Something goes wrong with the internal server. Please try again after sometime.",
+                        HttpStatus.BAD_REQUEST.value());
+            }
+            logger.info("End postDirectorBackground()");
+            if (!connectResponse.getProceed().booleanValue()) {
+                return new LoansResponse(connectResponse.getMessage(), HttpStatus.BAD_REQUEST.value());
+            } else {
+                DirectorBackgroundDetail directorBackgroundDetail = directorBackgroundDetailsRepository.findByIdAndIsActive(ntbRequest.getDirectorId(), true);
+                DirectorBackgroundDetailRequest directorBackgroundDetailRequest = new DirectorBackgroundDetailRequest();
+                BeanUtils.copyProperties(directorBackgroundDetail, directorBackgroundDetailRequest);
+                return new LoansResponse("Success", HttpStatus.OK.value(), directorBackgroundDetailRequest);
+            }
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    public LoansResponse postDirectorsChangeStage(NTBRequest ntbRequest) {
+        logger.info("Start postDirectorsChangeStage()");
+        try {
+            ConnectResponse connectResponse = connectClient.postDirBackChangeStageNTB(ntbRequest.getApplicationId(),
+                    ntbRequest.getUserId(), ntbRequest.getBusineeTypeId());
+            if (connectResponse == null) {
+                return new LoansResponse(
+                        "Something goes wrong with the internal server. Please try again after sometime.",
+                        HttpStatus.BAD_REQUEST.value());
+            }
+            logger.info("End postDirectorsChangeStage()");
+            if (!connectResponse.getProceed().booleanValue()) {
+                return new LoansResponse(connectResponse.getMessage(), HttpStatus.BAD_REQUEST.value());
+            } else {
+                return new LoansResponse("Success", HttpStatus.OK.value());
+            }
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @Override
+    public LoansResponse postOthersChangeStage(NTBRequest ntbRequest) {
+        logger.info("Start postOthersChangeStage()");
+        try {
+            ConnectResponse connectResponse = connectClient.postNTBOneFormOtherDetails(ntbRequest.getApplicationId(),
+                    ntbRequest.getUserId(), ntbRequest.getBusineeTypeId());
+            if (connectResponse == null) {
+                return new LoansResponse(
+                        "Something goes wrong with the internal server. Please try again after sometime.",
+                        HttpStatus.BAD_REQUEST.value());
+            }
+            logger.info("End postOthersChangeStage()");
+            if (!connectResponse.getProceed().booleanValue()) {
+                return new LoansResponse(connectResponse.getMessage(), HttpStatus.BAD_REQUEST.value());
+            } else {
+                return new LoansResponse("Success", HttpStatus.OK.value());
+            }
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return null;
         }
     }
 }

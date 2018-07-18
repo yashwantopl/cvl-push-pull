@@ -373,6 +373,14 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 	public Boolean saveMasterFromTempTl(Long mappingId) throws Exception {
 		try {
 			TermLoanParameterRequest  temp =  getTermLoanParameterRequestTemp(mappingId);
+			TermLoanParameterTemp loanParameter =  termLoanParameterTempRepository.getTermLoanParameterTempByFpProductId(mappingId);
+			loanParameter.setStatusId(CommonUtils.Status.APPROVED);
+	        loanParameter.setIsDeleted(false);
+	        loanParameter.setIsEdit(false);
+	        loanParameter.setIsCopied(true);
+	        loanParameter.setIsApproved(true);
+	        loanParameter.setApprovalDate(new Date());
+	        termLoanParameterTempRepository.save(loanParameter);
         return saveOrUpdate(temp);
 		}
 		catch (Exception e) {
@@ -488,13 +496,6 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		CommonDocumentUtils.endHook(logger, "getTermLoanParameterRequestTemp");
 		
 		termLoanParameterRequest.setJobId(loanParameter.getJobId());
-		loanParameter.setStatusId(CommonUtils.Status.APPROVED);
-        loanParameter.setIsDeleted(false);
-        loanParameter.setIsEdit(false);
-        loanParameter.setIsCopied(true);
-        loanParameter.setIsApproved(true);
-        loanParameter.setApprovalDate(new Date());
-        termLoanParameterTempRepository.save(loanParameter);
 		return termLoanParameterRequest;
 	}
 	
