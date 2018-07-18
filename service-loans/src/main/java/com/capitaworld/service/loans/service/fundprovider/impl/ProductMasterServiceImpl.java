@@ -16,6 +16,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.capitaworld.api.workflow.model.WorkflowResponse;
+import com.capitaworld.api.workflow.utility.WorkflowUtils;
 import com.capitaworld.client.workflow.WorkflowClient;
 import com.capitaworld.service.dms.client.DMSClient;
 import com.capitaworld.service.dms.exception.DocumentException;
@@ -30,9 +32,12 @@ import com.capitaworld.service.loans.domain.fundprovider.PersonalLoanParameter;
 import com.capitaworld.service.loans.domain.fundprovider.ProductMaster;
 import com.capitaworld.service.loans.domain.fundprovider.ProductMasterTemp;
 import com.capitaworld.service.loans.domain.fundprovider.TermLoanParameter;
+import com.capitaworld.service.loans.domain.fundprovider.TermLoanParameterTemp;
 import com.capitaworld.service.loans.domain.fundprovider.UnsecureLoanParameter;
 import com.capitaworld.service.loans.domain.fundprovider.WcTlParameter;
+import com.capitaworld.service.loans.domain.fundprovider.WcTlParameterTemp;
 import com.capitaworld.service.loans.domain.fundprovider.WorkingCapitalParameter;
+import com.capitaworld.service.loans.domain.fundprovider.WorkingCapitalParameterTemp;
 import com.capitaworld.service.loans.model.FpProductDetails;
 import com.capitaworld.service.loans.model.MultipleFpPruductRequest;
 import com.capitaworld.service.loans.model.ProductDetailsForSp;
@@ -162,54 +167,61 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	@Autowired
 	private ProductMasterTempRepository productMasterTempRepository;
 
+	@Autowired
+	private WorkflowClient workflowClient;
+
 	@Override
 	public Boolean saveOrUpdate(AddProductRequest addProductRequest, Long userOrgId) {
 		CommonDocumentUtils.startHook(logger, "saveOrUpdate");
 
-		List<ProductMaster> masters = new ArrayList<>();
 		try {
 
 			if (!CommonUtils.isObjectNullOrEmpty(addProductRequest.getProductMappingId())) {
-				productMasterRepository.changeProductName(
-						(CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
-								? addProductRequest.getUserId() : addProductRequest.getClientId()),
-						addProductRequest.getProductMappingId(), addProductRequest.getName());
+				if (addProductRequest.getStage() == 2) {
+
+					productMasterRepository.changeProductName(
+							(CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
+									? addProductRequest.getUserId() : addProductRequest.getClientId()),
+							addProductRequest.getProductMappingId(), addProductRequest.getName());
+				} else {
+					productMasterTempRepository.changeProductName(
+							(CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
+									? addProductRequest.getUserId() : addProductRequest.getClientId()),
+							addProductRequest.getProductMappingId(), addProductRequest.getName());
+				}
 				CommonDocumentUtils.endHook(logger, "saveOrUpdate");
 				return true;
 			} else {
-				ProductMaster productMaster = null;
+				ProductMasterTemp productMaster = null;
 				LoanType loanType = LoanType.getById(Integer.parseInt(addProductRequest.getProductId().toString()));
+				WorkflowResponse workflowResponse = workflowClient.createJobForMasters(
+						WorkflowUtils.Workflow.MASTER_DATA_APPROVAL_PROCESS, WorkflowUtils.Action.SEND_FOR_APPROVAL,
+						(CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
+								? addProductRequest.getUserId() : addProductRequest.getClientId()));
+				Long jobId = null;
+
+				
 
 				switch (loanType) {
 				case WORKING_CAPITAL:
-					productMaster = new WorkingCapitalParameter();
+					productMaster = new WorkingCapitalParameterTemp();
 					break;
 				case TERM_LOAN:
-					productMaster = new TermLoanParameter();
-					break;
-				case UNSECURED_LOAN:
-					productMaster = new UnsecureLoanParameter();
+					productMaster = new TermLoanParameterTemp();
 					break;
 				case WCTL_LOAN:
-					productMaster = new WcTlParameter();
+					productMaster = new WcTlParameterTemp();
 					break;
 
-				case HOME_LOAN:
-					productMaster = new HomeLoanParameter();
-					break;
-				case CAR_LOAN:
-					productMaster = new CarLoanParameter();
-					break;
-				case PERSONAL_LOAN:
-					productMaster = new PersonalLoanParameter();
-					break;
-				case LOAN_AGAINST_PROPERTY:
-					productMaster = new LapParameter();
-					break;
 				default:
 					break;
 				}
-				productMaster.setProductId(addProductRequest.getProductId());
+
+				//productMaster.setJobId(null);
+				jobId = Long.valueOf(workflowResponse.getData().toString());
+				productMaster.setJobId(jobId);
+
+						productMaster.setProductId(addProductRequest.getProductId());
 				productMaster.setIsMatched(false);
 				productMaster.setName(addProductRequest.getName());
 				productMaster.setFpName(addProductRequest.getFpName());
@@ -226,7 +238,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				productMaster.setUserOrgId(userOrgId);
 				productMaster.setProductCode(
 						fundProviderSequenceService.getFundProviderSequenceNumber(addProductRequest.getProductId()));
-				productMasterRepository.save(productMaster);
+				productMasterTempRepository.save(productMaster);
 				return true;
 			}
 
@@ -606,11 +618,18 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	}
 
 	@Override
-	public Boolean changeStatus(Long fpProductId, Boolean status, Long userId) {
+	public Boolean changeStatus(Long fpProductId, Boolean status, Long userId,Integer stage) {
 		// TODO Auto-generated method stub
 		CommonDocumentUtils.startHook(logger, "changeStatus");
 		try {
+			if(stage==2)
+			{
 			productMasterRepository.changeStatus(userId, fpProductId, status);
+			}
+			else
+			{
+				productMasterTempRepository.changeStatus(userId, fpProductId, status);
+			}
 			return true;
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -792,20 +811,21 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	}
 
 	@Override
-	public Object getProductMasterWithAllData(Long id, Integer stage) {
+	public Object getProductMasterWithAllData(Long id, Integer stage,Long role,Long userId) {
 		// TODO Auto-generated method stub
 
 		if (!CommonUtils.isObjectNullOrEmpty(stage) && stage == 1) {
 			ProductMasterTemp master = productMasterTempRepository.findOne(id);
 
-
-			 if (master.getProductId() == 1) {
-				return workingCapitalParameterService.getWorkingCapitalParameterTemp(master.getId());
+			if (master.getProductId() == 1) {
+				return workingCapitalParameterService.getWorkingCapitalParameterTemp(master.getId(),role,userId);
 			} else if (master.getProductId() == 2) {
 				return termLoanParameterService.getTermLoanParameterRequestTemp(master.getId());
-			} /*else if (master.getProductId() == 15) {
-				return unsecuredLoanParameterService.getUnsecuredLoanParameterRequest(master.getId());
-			}*/ else if (master.getProductId() == 16) {
+			} /*
+				 * else if (master.getProductId() == 15) { return
+				 * unsecuredLoanParameterService.
+				 * getUnsecuredLoanParameterRequest(master.getId()); }
+				 */ else if (master.getProductId() == 16) {
 				return wcTlParameterService.getWcTlRequestTemp(master.getId());
 			}
 		} else {

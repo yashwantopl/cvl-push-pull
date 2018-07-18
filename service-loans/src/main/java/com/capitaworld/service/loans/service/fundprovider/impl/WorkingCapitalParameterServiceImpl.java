@@ -1,6 +1,9 @@
 package com.capitaworld.service.loans.service.fundprovider.impl;
 
+import java.io.IOException;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -10,7 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.capitaworld.api.workflow.model.WorkflowJobsTrackerRequest;
 import com.capitaworld.api.workflow.model.WorkflowResponse;
+import com.capitaworld.api.workflow.utility.MultipleJSONObjectHelper;
 import com.capitaworld.api.workflow.utility.WorkflowUtils;
 import com.capitaworld.client.workflow.WorkflowClient;
 import com.capitaworld.service.loans.domain.IndustrySectorDetail;
@@ -356,7 +361,16 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 
 	public Boolean saveMasterFromTempWc(Long mappingId) throws Exception {
 		try {
-			WorkingCapitalParameterRequest workingCapitalParameterRequest = getWorkingCapitalParameterTemp(mappingId);
+			WorkingCapitalParameterRequest workingCapitalParameterRequest = getWorkingCapitalParameterTemp(mappingId,null,null);
+			WorkingCapitalParameterTemp loanParameter = workingCapitalParameterTempRepository
+					.getworkingCapitalParameterTempByFpProductId(mappingId);
+			loanParameter.setStatusId(CommonUtils.Status.APPROVED);
+			loanParameter.setIsDeleted(false);
+			loanParameter.setIsEdit(false);
+			loanParameter.setIsCopied(true);
+			loanParameter.setIsApproved(true);
+			loanParameter.setApprovalDate(new Date());
+			workingCapitalParameterTempRepository.save(loanParameter);
 			return saveOrUpdate(workingCapitalParameterRequest);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -365,7 +379,7 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 
 	}
 
-	public WorkingCapitalParameterRequest getWorkingCapitalParameterTemp(Long id) {
+	public WorkingCapitalParameterRequest getWorkingCapitalParameterTemp(Long id,Long role,Long userId) {
 		logger.info("start getWorkingCapitalParameterTemp");
 		WorkingCapitalParameterRequest workingCapitalParameterRequest = new WorkingCapitalParameterRequest();
 		WorkingCapitalParameterTemp loanParameter = workingCapitalParameterTempRepository
@@ -462,13 +476,27 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 			}
 		}
 		workingCapitalParameterRequest.setJobId(loanParameter.getJobId());
-		loanParameter.setStatusId(CommonUtils.Status.APPROVED);
-		loanParameter.setIsDeleted(false);
-		loanParameter.setIsEdit(false);
-		loanParameter.setIsCopied(true);
-		loanParameter.setIsApproved(true);
-		loanParameter.setApprovalDate(new Date());
-		workingCapitalParameterTempRepository.save(loanParameter);
+		
+		//set workflow buttons
+		
+		 if (!CommonUtils.isObjectNullOrEmpty(loanParameter.getJobId()) && !CommonUtils.isObjectNullOrEmpty(role)) {
+             WorkflowResponse workflowResponse = workflowClient.getActiveStepForMaster(loanParameter.getJobId(),Arrays.asList(role), userId);
+             if (!CommonUtils.isObjectNullOrEmpty(workflowResponse) && !CommonUtils.isObjectNullOrEmpty(workflowResponse.getData())) {
+                 try {
+                     WorkflowJobsTrackerRequest workflowJobsTrackerRequest = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) workflowResponse.getData(), WorkflowJobsTrackerRequest.class);
+                     if (!CommonUtils.isObjectNullOrEmpty(workflowJobsTrackerRequest.getStep()) && !CommonUtils.isObjectNullOrEmpty(workflowJobsTrackerRequest.getStep().getStepActions())) {
+                    	 workingCapitalParameterRequest.setWorkflowData(workflowJobsTrackerRequest.getStep().getStepActions());
+                     } else {
+                         logger.info("response from workflow NULL jobId = {} and roleId = {}", loanParameter.getJobId(), role);
+                     }
+                 } catch (IOException e) {
+                     logger.error("Error While getting data from workflow {}", e);
+                 }
+             }
+         } else {
+             logger.info("you set jobId or list of roleId NULL for calling workflow");
+         }
+		
 		logger.info("end getWorkingCapitalParameterTemp");
 		return workingCapitalParameterRequest;
 	}

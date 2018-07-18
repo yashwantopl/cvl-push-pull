@@ -372,7 +372,14 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 	public Boolean saveMasterFromTempWcTl(Long mappingId) throws Exception {
 		try {
 			WcTlParameterRequest temp =  getWcTlRequestTemp(mappingId);
-
+			WcTlParameterTemp loanParameter =  wcTlParameterTempRepository.getWcTlParameterTempByFpProductId(mappingId);
+			loanParameter.setStatusId(CommonUtils.Status.APPROVED);
+	        loanParameter.setIsDeleted(false);
+	        loanParameter.setIsEdit(false);
+	        loanParameter.setIsCopied(true);
+	        loanParameter.setIsApproved(true);
+	        loanParameter.setApprovalDate(new Date());
+	        wcTlParameterTempRepository.save(loanParameter);
 		return saveOrUpdate(temp);
 		
 		}
@@ -487,13 +494,6 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 			}
 		}
 		wcTlParameterRequest.setJobId(loanParameter.getJobId());
-		loanParameter.setStatusId(CommonUtils.Status.APPROVED);
-        loanParameter.setIsDeleted(false);
-        loanParameter.setIsEdit(false);
-        loanParameter.setIsCopied(true);
-        loanParameter.setIsApproved(true);
-        loanParameter.setApprovalDate(new Date());
-        wcTlParameterTempRepository.save(loanParameter);
 		CommonDocumentUtils.endHook(logger, "getWcTlRequestTemp");
 		return wcTlParameterRequest;
 	}

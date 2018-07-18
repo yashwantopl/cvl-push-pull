@@ -280,18 +280,24 @@ public class ProductMasterController {
 		}
 	}
 
-	@RequestMapping(value = "/getFPProduct/{id}/{applicationStage}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/getFPProduct/{id}/{applicationStage}/{role}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getFPProduct(HttpServletRequest request,
 			@PathVariable(value = "id") Long id,@PathVariable(value = "applicationStage")Integer applicationStage
+			,@PathVariable(value = "role")Long role,@RequestParam(value = "clientId", required = false) Long clientId
 			) {
 		// request must not be null
 		CommonDocumentUtils.startHook(logger, "getFPProduct");
 		try {
 			
-			
+			Long userId = null;
+			if (CommonDocumentUtils.isThisClientApplication(request) && !CommonUtils.isObjectNullOrEmpty(clientId)) {
+				userId = clientId;
+			} else {
+				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			}	
 			
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
-			loansResponse.setData(productMasterService.getProductMasterWithAllData(id,applicationStage));
+			loansResponse.setData(productMasterService.getProductMasterWithAllData(id,applicationStage,role,userId));
 			CommonDocumentUtils.endHook(logger, "getListByUserType");
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
@@ -536,9 +542,10 @@ public class ProductMasterController {
 		}
 	}
 
-	@RequestMapping(value = "/changeStatus/{productMappingId}/{status}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/changeStatus/{productMappingId}/{status}/{stage}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> changeStatus(@PathVariable("status") Boolean status,
-			@PathVariable("productMappingId") Long productMappingId, HttpServletRequest request,
+			@PathVariable("productMappingId") Long productMappingId,
+			@PathVariable("stage") Integer stage, HttpServletRequest request,
 			@RequestParam(value = "clientId", required = false) Long clientId) {
 		// request must not be null
 		CommonDocumentUtils.startHook(logger, "changeStatus");
@@ -564,7 +571,7 @@ public class ProductMasterController {
 			}
 			LoansResponse loansResponse = new LoansResponse("changeStatus successfully.", HttpStatus.OK.value());
 			loansResponse.setMessage(status?"activated":"inactivated");
-			loansResponse.setData(productMasterService.changeStatus(productMappingId,status, userId));
+			loansResponse.setData(productMasterService.changeStatus(productMappingId,status, userId,stage));
 			CommonDocumentUtils.endHook(logger, "changeStatus");
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 

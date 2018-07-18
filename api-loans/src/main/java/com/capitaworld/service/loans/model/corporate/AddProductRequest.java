@@ -16,6 +16,8 @@ public class AddProductRequest {
 	private String name;
 	
 	private String fpName;
+	
+	private Integer stage;
 
 	
 
@@ -66,6 +68,15 @@ public class AddProductRequest {
 	public void setFpName(String fpName) {
 		this.fpName = fpName;
 	}
+
+	public Integer getStage() {
+		return stage;
+	}
+
+	public void setStage(Integer stage) {
+		this.stage = stage;
+	}
+
 
 	
 	
