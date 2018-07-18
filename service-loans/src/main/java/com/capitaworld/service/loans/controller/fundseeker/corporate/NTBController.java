@@ -3,7 +3,9 @@ package com.capitaworld.service.loans.controller.fundseeker.corporate;
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
+import com.capitaworld.service.loans.model.NTBRequest;
 import com.capitaworld.service.loans.model.corporate.FundSeekerInputRequestResponse;
+import com.capitaworld.service.loans.service.fundseeker.corporate.DirectorBackgroundDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.NTBService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -26,6 +28,8 @@ public class NTBController {
 
     @Autowired
     private NTBService ntbService;
+    @Autowired
+    private DirectorBackgroundDetailsService directorBackgroundDetailsService;
 
     @RequestMapping(value = "/ping", method = RequestMethod.GET)
     public String getPing() {
@@ -159,8 +163,8 @@ public class NTBController {
 
     }
 
-    @RequestMapping(value = "/financial/save/{applicationId}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LoansResponse> saveFinancialForPartner(@PathVariable("applicationId") Long applicationId, @RequestBody List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestList, HttpServletRequest request, @RequestParam(value = "clientId",required = false) Long clientId) {
+    @RequestMapping(value = "/financial/save/{applicationId}/{directorId}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LoansResponse> saveFinancialForPartner(@PathVariable("applicationId") Long applicationId, @PathVariable("directorId") Long directorId, @RequestBody List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestList, HttpServletRequest request, @RequestParam(value = "clientId",required = false) Long clientId) {
         logger.info("Enter saveFinancialForPartner()");
         Long userId = null;
         if(CommonDocumentUtils.isThisClientApplication(request) && !CommonUtils.isObjectNullOrEmpty(clientId)){
@@ -179,10 +183,15 @@ public class NTBController {
                 return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
             }
 
-            Boolean result = ntbService.saveFinancialDetails(financialArrangementsDetailRequestList, applicationId, userId);
+            Boolean result = ntbService.saveFinancialDetails(financialArrangementsDetailRequestList, applicationId, userId, directorId);
             LoansResponse loansResponse = null;
             if(result) {
                 loansResponse = new LoansResponse("Successfully Saved", HttpStatus.OK.value());
+               /* List<DirectorBackgroundDetailRequest> response = directorBackgroundDetailsService.getDirectorBackgroundDetailList(applicationId,userId);
+                if(!CommonUtils.isListNullOrEmpty(response)){
+                      loansResponse.setListData(response);
+                      loansResponse.setData(true);
+                }*/
             }else {
                 loansResponse = new LoansResponse("Something goes wrong while saving saveFinancialForPartner", HttpStatus.BAD_REQUEST.value());
             }
@@ -282,6 +291,101 @@ public class NTBController {
                     HttpStatus.OK);
         }
 
+    }
+
+
+    @RequestMapping(value = "/post/directorBackground", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LoansResponse> callPostIndividualDirector(@RequestBody NTBRequest ntbRequest, HttpServletRequest request)
+            throws Exception
+    {
+        try
+        {
+            Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+            if(userId == null) {
+                return new ResponseEntity<LoansResponse>(
+                        new LoansResponse("Unauthorized User! Please Re-login and try again.", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+            }
+            if(CommonUtils.isObjectListNull(ntbRequest.getDirectorId(),ntbRequest.getApplicationId(),ntbRequest.getBusineeTypeId())) {
+                logger.info("Director Id or Application Id or BusinessTypeId is NUll============>{}",ntbRequest.toString());
+                return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST,HttpStatus.BAD_REQUEST.value()),
+                        HttpStatus.OK);
+            }
+            ntbRequest.setUserId(userId);
+            logger.info("Application Id for Getting============>{}",ntbRequest.getApplicationId());
+            LoansResponse callMatchEngineClient = ntbService.postDirectorBackground(ntbRequest);
+            logger.info("Response from directorBackground ==>{}",callMatchEngineClient.toString());
+            return new ResponseEntity<LoansResponse>(callMatchEngineClient, HttpStatus.OK);
+
+        } catch (Exception e) {
+            logger.error("Error while Calling Connect Client after directorBackground");
+            e.printStackTrace();
+            return new ResponseEntity<LoansResponse>(
+                    new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+                    HttpStatus.OK);
+        }
+    }
+
+    @RequestMapping(value = "/post/dirBackChangeStage", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LoansResponse> postDirectorsChangeStage(@RequestBody NTBRequest ntbRequest, HttpServletRequest request)
+            throws Exception
+    {
+        try
+        {
+            Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+            if(userId == null) {
+                return new ResponseEntity<LoansResponse>(
+                        new LoansResponse("Unauthorized User! Please Re-login and try again.", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+            }
+            if(CommonUtils.isObjectListNull(ntbRequest.getApplicationId(),ntbRequest.getBusineeTypeId())) {
+                logger.info("Application Id or BusinessTypeId is NUll============>{}",ntbRequest.toString());
+                return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST,HttpStatus.BAD_REQUEST.value()),
+                        HttpStatus.OK);
+            }
+            ntbRequest.setUserId(userId);
+            logger.info("Application Id for Getting============>{}",ntbRequest.getApplicationId());
+            LoansResponse callMatchEngineClient = ntbService.postDirectorsChangeStage(ntbRequest);
+            logger.info("Response from dirBackChangeStage ==>{}",callMatchEngineClient.toString());
+            return new ResponseEntity<LoansResponse>(callMatchEngineClient, HttpStatus.OK);
+
+        } catch (Exception e) {
+            logger.error("Error while Calling Connect Client after dirBackChangeStage");
+            e.printStackTrace();
+            return new ResponseEntity<LoansResponse>(
+                    new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+                    HttpStatus.OK);
+        }
+    }
+
+
+    @RequestMapping(value = "/post/others", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LoansResponse> postOthersChangeStage(@RequestBody NTBRequest ntbRequest, HttpServletRequest request)
+            throws Exception
+    {
+        try
+        {
+            Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+            if(userId == null) {
+                return new ResponseEntity<LoansResponse>(
+                        new LoansResponse("Unauthorized User! Please Re-login and try again.", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+            }
+            if(CommonUtils.isObjectListNull(ntbRequest.getApplicationId(),ntbRequest.getBusineeTypeId())) {
+                logger.info("Application Id or BusinessTypeId is NUll============>{}",ntbRequest.toString());
+                return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST,HttpStatus.BAD_REQUEST.value()),
+                        HttpStatus.OK);
+            }
+            ntbRequest.setUserId(userId);
+            logger.info("Application Id for Getting============>{}",ntbRequest.getApplicationId());
+            LoansResponse callMatchEngineClient = ntbService.postOthersChangeStage(ntbRequest);
+            logger.info("Response from postOthersChangeStage ==>{}",callMatchEngineClient.toString());
+            return new ResponseEntity<LoansResponse>(callMatchEngineClient, HttpStatus.OK);
+
+        } catch (Exception e) {
+            logger.error("Error while Calling Connect Client after Oneform Submit");
+            e.printStackTrace();
+            return new ResponseEntity<LoansResponse>(
+                    new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+                    HttpStatus.OK);
+        }
     }
 
 }
