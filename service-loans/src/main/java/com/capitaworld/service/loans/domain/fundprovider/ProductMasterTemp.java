@@ -21,7 +21,7 @@ import javax.persistence.TemporalType;
 @Entity
 @Table(name = "fp_product_master_temp")
 @Inheritance(strategy = InheritanceType.JOINED)
-public abstract class ProductMasterTemp implements Serializable {
+public class ProductMasterTemp implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
@@ -82,6 +82,30 @@ public abstract class ProductMasterTemp implements Serializable {
 	
 	@Column(name = "fp_product_mapping_id")
 	private Long fpProductMappingId;
+
+	@Column(name="is_approved")
+    private Boolean isApproved;
+
+    @Column(name="is_deleted")
+    private Boolean isDeleted;
+
+    @Column(name="is_copied")
+    private Boolean isCopied;
+
+    @Column(name="is_edit")
+    private Boolean isEdit;
+
+    @Column(name="status_id")
+    private Integer statusId;
+
+    @Column(name="job_id")
+    private Long jobId;
+
+    @Column(name="approval_date")
+    private Date approvalDate;
+    
+	@Column(name="org_id")
+	private Long orgId;
 	
 
 	
@@ -231,6 +255,71 @@ public abstract class ProductMasterTemp implements Serializable {
 	public void setFpProductMappingId(Long fpProductMappingId) {
 		this.fpProductMappingId = fpProductMappingId;
 	}
+
+	public Boolean getIsApproved() {
+		return isApproved;
+	}
+
+	public void setIsApproved(Boolean isApproved) {
+		this.isApproved = isApproved;
+	}
+
+	public Boolean getIsDeleted() {
+		return isDeleted;
+	}
+
+	public void setIsDeleted(Boolean isDeleted) {
+		this.isDeleted = isDeleted;
+	}
+
+	public Boolean getIsCopied() {
+		return isCopied;
+	}
+
+	public void setIsCopied(Boolean isCopied) {
+		this.isCopied = isCopied;
+	}
+
+	public Boolean getIsEdit() {
+		return isEdit;
+	}
+
+	public void setIsEdit(Boolean isEdit) {
+		this.isEdit = isEdit;
+	}
+
+	public Integer getStatusId() {
+		return statusId;
+	}
+
+	public void setStatusId(Integer statusId) {
+		this.statusId = statusId;
+	}
+
+	public Long getJobId() {
+		return jobId;
+	}
+
+	public void setJobId(Long jobId) {
+		this.jobId = jobId;
+	}
+
+	public Date getApprovalDate() {
+		return approvalDate;
+	}
+
+	public void setApprovalDate(Date approvalDate) {
+		this.approvalDate = approvalDate;
+	}
+
+	public Long getOrgId() {
+		return orgId;
+	}
+
+	public void setOrgId(Long orgId) {
+		this.orgId = orgId;
+	}
+	
 	
 
 	
