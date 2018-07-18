@@ -20,5 +20,7 @@ public interface FinancialArrangementDetailsService {
 	public Boolean saveOrUpdate(List<FinancialArrangementsDetailRequest> existingLoanDetailRequest,Long applicationId,Long userId,Long directorId);
 	
 	public Double getTotalOfEmiByApplicationId(Long applicationId);
-	
+
+	public Double getTotalOfEmiByApplicationIdAndDirectorId(Long applicationId,Long directorId);
+
 }
