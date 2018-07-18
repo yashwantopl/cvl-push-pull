@@ -61,6 +61,9 @@ public class PrimaryCorporateDetail extends LoanApplicationMaster implements Ser
 
     @Column(name = "incremental_turnover")
     private Double incrementalTurnover;
+    
+    @Column(name = "assessment_id")
+    private Integer assessmentId;
    /* @Column(name="created_by")
     private Long createdBy;
 
@@ -185,7 +188,14 @@ public class PrimaryCorporateDetail extends LoanApplicationMaster implements Ser
     public void setIncrementalTurnover(Double incrementalTurnover) {
         this.incrementalTurnover = incrementalTurnover;
     }
+    
+    public Integer getAssessmentId() {
+        return assessmentId;
+    }
 
+    public void setAssessmentId(Integer assessmentId) {
+        this.assessmentId = assessmentId;
+    }
     /* @Override
     public Long getCreatedBy() {
         return createdBy;
