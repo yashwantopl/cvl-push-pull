@@ -4794,6 +4794,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	@Override
 	public boolean updateProductDetails(LoanApplicationRequest loanApplicationRequest) {
 		logger.info("Application id -------------------------------->"+loanApplicationRequest.getId());
+		logger.info("Request Object---------------------------->" + loanApplicationRequest.toString());
 		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.getById(loanApplicationRequest.getId());
 		if (CommonUtils.isObjectNullOrEmpty(loanApplicationMaster)) {
 			logger.info("Loan master no found-------------------------------->"+loanApplicationRequest.getId());
