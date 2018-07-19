@@ -319,9 +319,8 @@ public class NTBServiceImpl implements NTBService {
                 return new LoansResponse("Success data updated", HttpStatus.OK.value(),true);
             }
         } catch (Exception e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
-            return null;
+            return new LoansResponse("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
     }
 

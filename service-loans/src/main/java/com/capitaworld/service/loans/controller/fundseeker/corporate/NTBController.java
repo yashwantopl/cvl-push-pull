@@ -333,11 +333,11 @@ public class NTBController {
             Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
             if(userId == null) {
                 return new ResponseEntity<LoansResponse>(
-                        new LoansResponse("Unauthorized User! Please Re-login and try again.", HttpStatus.BAD_REQUEST.value(),false), HttpStatus.OK);
+                        new LoansResponse("Unauthorized User! Please Re-login and try again.", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
             }
             if(CommonUtils.isObjectListNull(ntbRequest.getApplicationId(),ntbRequest.getBusineeTypeId())) {
                 logger.info("Application Id or BusinessTypeId is NUll============>{}",ntbRequest.toString());
-                return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST,HttpStatus.BAD_REQUEST.value(),false),
+                return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST,HttpStatus.BAD_REQUEST.value()),
                         HttpStatus.OK);
             }
             ntbRequest.setUserId(userId);
@@ -350,7 +350,7 @@ public class NTBController {
             logger.error("Error while Calling Connect Client after dirBackChangeStage");
             e.printStackTrace();
             return new ResponseEntity<LoansResponse>(
-                    new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value(),false),
+                    new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
                     HttpStatus.OK);
         }
     }
