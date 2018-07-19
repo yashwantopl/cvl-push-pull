@@ -5541,6 +5541,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					target.setTitle(Title.getById(source.getSalutationId()).getValue());					
 				}
 				target.setApplicationId(applicationId);
+				target.setFirstName(source.getFirstName());
+				target.setMiddleName(source.getMiddleName());
+				target.setLastName(source.getLastName());
 				listData.add(target);
 			}
 			return listData;
@@ -6282,8 +6285,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				if (!CommonUtils.isObjectNullOrEmpty(detail.getStateCode())) {
 					ITRConnectionResponse itrConnectionResponse = itrClient.getOneFormStateIdFromITRStateId(Long.valueOf(detail.getStateCode()));
 					if(!CommonUtils.isObjectNullOrEmpty(itrConnectionResponse)) {
-					stateList.add(Long.valueOf(String.valueOf(itrConnectionResponse.getData())));
 					}
+					stateList.add(Long.valueOf(String.valueOf(itrConnectionResponse.getData())));
 				}
 				if (!CommonUtils.isListNullOrEmpty(stateList)) {
 					try {
