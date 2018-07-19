@@ -17,6 +17,10 @@ public interface WcTlParameterTempRepository extends JpaRepository<WcTlParameter
 	
 	@Query("select o from WcTlParameterTemp o where o.fpProductId.id =:fpProductId")
 	public WcTlParameterTemp getWcTlParameterTempByFpProductId(@Param("fpProductId")Long fpProductId); 
+	
+	@Query("select o from WcTlParameterTemp o where o.fpProductMappingId =:fpProductMappingId and isCopied=false")
+	public WcTlParameterTemp getWcTlParameterTempByFpProductMappingId(@Param("fpProductMappingId")Long fpProductId); 
+
 
 
 }

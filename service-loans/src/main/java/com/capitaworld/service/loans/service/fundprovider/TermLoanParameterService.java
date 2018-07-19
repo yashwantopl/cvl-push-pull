@@ -19,5 +19,5 @@ public interface TermLoanParameterService {
 	 */
 	public Boolean saveOrUpdateTemp(TermLoanParameterRequest loanParameterRequest);
 
-	TermLoanParameterRequest getTermLoanParameterRequestTemp(Long id);
+	TermLoanParameterRequest getTermLoanParameterRequestTemp(Long id,Long role,Long userId);
 }

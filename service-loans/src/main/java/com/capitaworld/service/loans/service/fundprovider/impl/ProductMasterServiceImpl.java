@@ -25,18 +25,10 @@ import com.capitaworld.service.dms.model.DocumentRequest;
 import com.capitaworld.service.dms.model.DocumentResponse;
 import com.capitaworld.service.dms.model.StorageDetailsResponse;
 import com.capitaworld.service.dms.util.DocumentAlias;
-import com.capitaworld.service.loans.domain.fundprovider.CarLoanParameter;
-import com.capitaworld.service.loans.domain.fundprovider.HomeLoanParameter;
-import com.capitaworld.service.loans.domain.fundprovider.LapParameter;
-import com.capitaworld.service.loans.domain.fundprovider.PersonalLoanParameter;
 import com.capitaworld.service.loans.domain.fundprovider.ProductMaster;
 import com.capitaworld.service.loans.domain.fundprovider.ProductMasterTemp;
-import com.capitaworld.service.loans.domain.fundprovider.TermLoanParameter;
 import com.capitaworld.service.loans.domain.fundprovider.TermLoanParameterTemp;
-import com.capitaworld.service.loans.domain.fundprovider.UnsecureLoanParameter;
-import com.capitaworld.service.loans.domain.fundprovider.WcTlParameter;
 import com.capitaworld.service.loans.domain.fundprovider.WcTlParameterTemp;
-import com.capitaworld.service.loans.domain.fundprovider.WorkingCapitalParameter;
 import com.capitaworld.service.loans.domain.fundprovider.WorkingCapitalParameterTemp;
 import com.capitaworld.service.loans.model.FpProductDetails;
 import com.capitaworld.service.loans.model.MultipleFpPruductRequest;
@@ -64,12 +56,7 @@ import com.capitaworld.service.loans.repository.fundprovider.PersonalLoanParamet
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterTempRepository;
 import com.capitaworld.service.loans.repository.fundprovider.TermLoanParameterRepository;
-import com.capitaworld.service.loans.repository.fundprovider.TermLoanParameterTempRepository;
-import com.capitaworld.service.loans.repository.fundprovider.WcTlLoanParameterRepository;
-import com.capitaworld.service.loans.repository.fundprovider.WcTlParameterTempRepository;
 import com.capitaworld.service.loans.repository.fundprovider.WorkingCapitalParameterRepository;
-import com.capitaworld.service.loans.repository.fundprovider.WorkingCapitalParameterTempRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.service.common.FundProviderSequenceService;
 import com.capitaworld.service.loans.service.fundprovider.CarLoanParameterService;
 import com.capitaworld.service.loans.service.fundprovider.HomeLoanParameterService;
@@ -820,13 +807,13 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 			if (master.getProductId() == 1) {
 				return workingCapitalParameterService.getWorkingCapitalParameterTemp(master.getId(),role,userId);
 			} else if (master.getProductId() == 2) {
-				return termLoanParameterService.getTermLoanParameterRequestTemp(master.getId());
+				return termLoanParameterService.getTermLoanParameterRequestTemp(master.getId(),role,userId);
 			} /*
 				 * else if (master.getProductId() == 15) { return
 				 * unsecuredLoanParameterService.
 				 * getUnsecuredLoanParameterRequest(master.getId()); }
 				 */ else if (master.getProductId() == 16) {
-				return wcTlParameterService.getWcTlRequestTemp(master.getId());
+				return wcTlParameterService.getWcTlRequestTemp(master.getId(),role,userId);
 			}
 		} else {
 			ProductMaster master = productMasterRepository.findOne(id);
