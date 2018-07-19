@@ -199,6 +199,8 @@ public class WcTlParameterRequest extends ProductMasterRequest implements Serial
 	private Long userOrgId;
 	
 	private Integer appstage;
+	
+	private Object workflowData;
 
 	//-----------------------added eligibility method for product
 	private Integer assessmentMethodId;
@@ -1000,6 +1002,13 @@ public class WcTlParameterRequest extends ProductMasterRequest implements Serial
 
 	public void setAppstage(Integer appstage) {
 		this.appstage = appstage;
+	}
+	public Object getWorkflowData() {
+		return workflowData;
+	}
+
+	public void setWorkflowData(Object workflowData) {
+		this.workflowData = workflowData;
 	}
 
 	

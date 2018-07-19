@@ -1,20 +1,24 @@
 package com.capitaworld.service.loans.service.fundprovider.impl;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.capitaworld.api.workflow.model.WorkflowJobsTrackerRequest;
 import com.capitaworld.api.workflow.model.WorkflowResponse;
+import com.capitaworld.api.workflow.utility.MultipleJSONObjectHelper;
 import com.capitaworld.api.workflow.utility.WorkflowUtils;
 import com.capitaworld.client.workflow.WorkflowClient;
 import com.capitaworld.service.loans.domain.IndustrySectorDetail;
@@ -372,7 +376,7 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 	@Override
 	public Boolean saveMasterFromTempTl(Long mappingId) throws Exception {
 		try {
-			TermLoanParameterRequest  temp =  getTermLoanParameterRequestTemp(mappingId);
+			TermLoanParameterRequest  temp =  getTermLoanParameterRequestTemp(mappingId,null,null);
 			TermLoanParameterTemp loanParameter =  termLoanParameterTempRepository.getTermLoanParameterTempByFpProductId(mappingId);
 			loanParameter.setStatusId(CommonUtils.Status.APPROVED);
 	        loanParameter.setIsDeleted(false);
@@ -390,7 +394,7 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 	}
 	
 	@Override
-	public TermLoanParameterRequest getTermLoanParameterRequestTemp(Long id) {
+	public TermLoanParameterRequest getTermLoanParameterRequestTemp(Long id,Long role,Long userId) {
 		CommonDocumentUtils.startHook(logger, "getTermLoanParameterRequest");
 		// TODO Auto-generated method stub
 		TermLoanParameterRequest termLoanParameterRequest = new TermLoanParameterRequest();
@@ -496,6 +500,26 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		CommonDocumentUtils.endHook(logger, "getTermLoanParameterRequestTemp");
 		
 		termLoanParameterRequest.setJobId(loanParameter.getJobId());
+		
+		//set workflow buttons
+		
+		 if (!CommonUtils.isObjectNullOrEmpty(loanParameter.getJobId()) && !CommonUtils.isObjectNullOrEmpty(role)) {
+            WorkflowResponse workflowResponse = workflowClient.getActiveStepForMaster(loanParameter.getJobId(),Arrays.asList(role), userId);
+            if (!CommonUtils.isObjectNullOrEmpty(workflowResponse) && !CommonUtils.isObjectNullOrEmpty(workflowResponse.getData())) {
+                try {
+                    WorkflowJobsTrackerRequest workflowJobsTrackerRequest = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) workflowResponse.getData(), WorkflowJobsTrackerRequest.class);
+                    if (!CommonUtils.isObjectNullOrEmpty(workflowJobsTrackerRequest.getStep()) && !CommonUtils.isObjectNullOrEmpty(workflowJobsTrackerRequest.getStep().getStepActions())) {
+                    	termLoanParameterRequest.setWorkflowData(workflowJobsTrackerRequest.getStep().getStepActions());
+                    } else {
+                        logger.info("response from workflow NULL jobId = {} and roleId = {}", loanParameter.getJobId(), role);
+                    }
+                } catch (IOException e) {
+                    logger.error("Error While getting data from workflow {}", e);
+                }
+            }
+        } else {
+            logger.info("you set jobId or list of roleId NULL for calling workflow");
+        }
 		return termLoanParameterRequest;
 	}
 	
@@ -505,10 +529,21 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		// TODO Auto-generated method stub
 		
 		TermLoanParameterTemp termLoanParameter = null;
+		
+		if(termLoanParameterRequest.getAppstage()==1)
+		{
+			termLoanParameter = termLoanParameterTempRepository.findOne(termLoanParameterRequest.getId());
+		}
+		else
+		{
+			
+			termLoanParameter = termLoanParameterTempRepository.getTermLoanParameterTempByFpProductMappingId(termLoanParameterRequest.getId());
+			
+		}
 
-		termLoanParameter = termLoanParameterTempRepository.findOne(termLoanParameterRequest.getId());
 		if (termLoanParameter == null) {
 			termLoanParameter = new TermLoanParameterTemp();
+			termLoanParameter.setFpProductMappingId(termLoanParameterRequest.getId());
 		}
 		
 		if (!CommonUtils.isObjectListNull(termLoanParameterRequest.getMaxTenure()))

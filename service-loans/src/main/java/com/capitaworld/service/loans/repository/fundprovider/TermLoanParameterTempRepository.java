@@ -17,5 +17,9 @@ public interface TermLoanParameterTempRepository extends JpaRepository<TermLoanP
 	
 	@Query("select o from TermLoanParameterTemp o where o.fpProductId =:fpProductId")
 	public TermLoanParameterTemp getTermLoanParameterTempByFpProductId(@Param("fpProductId")Long fpProductId); 
+	
+	@Query("select o from TermLoanParameterTemp o where o.fpProductMappingId =:fpProductMappingId and isCopied=false")
+	public TermLoanParameterTemp getTermLoanParameterTempByFpProductMappingId(@Param("fpProductMappingId")Long fpProductId); 
+
 
 }

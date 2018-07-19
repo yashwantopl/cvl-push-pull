@@ -19,5 +19,5 @@ public interface WcTlParameterService {
 	 */
 	public Boolean saveOrUpdateTemp(WcTlParameterRequest wcTlParameterRequest);
 
-	WcTlParameterRequest getWcTlRequestTemp(Long id);
+	WcTlParameterRequest getWcTlRequestTemp(Long id,Long role,Long userId);
 }
