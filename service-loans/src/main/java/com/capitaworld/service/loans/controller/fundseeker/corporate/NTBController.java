@@ -327,10 +327,9 @@ public class NTBController {
 
     @RequestMapping(value = "/post/dirBackChangeStage", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LoansResponse> postDirectorsChangeStage(@RequestBody NTBRequest ntbRequest, HttpServletRequest request)
-            throws Exception
-    {
-        try
-        {
+            throws Exception {
+    	logger.info("ENTER IN POST DIRECTOR BACKGROUD DETAILS --------------> ");
+        try {
             Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
             if(userId == null) {
                 return new ResponseEntity<LoansResponse>(
@@ -343,9 +342,9 @@ public class NTBController {
             }
             ntbRequest.setUserId(userId);
             logger.info("Application Id for Getting============>{}",ntbRequest.getApplicationId());
-            LoansResponse callMatchEngineClient = ntbService.postDirectorsChangeStage(ntbRequest);
-            logger.info("Response from dirBackChangeStage ==>{}",callMatchEngineClient.toString());
-            return new ResponseEntity<LoansResponse>(callMatchEngineClient, HttpStatus.OK);
+            LoansResponse loanResponse = ntbService.postDirectorsChangeStage(ntbRequest);
+            logger.info("Response from dirBackChangeStage ==>{}",loanResponse.toString());
+            return new ResponseEntity<LoansResponse>(loanResponse, HttpStatus.OK);
 
         } catch (Exception e) {
             logger.error("Error while Calling Connect Client after dirBackChangeStage");
