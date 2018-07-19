@@ -109,6 +109,9 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 	private Boolean isMainDirector;
 
 	private Integer qualificationId;
+	
+	private String amount;
+	
 
 	public Boolean getIsActive() {
 		return isActive;
@@ -505,6 +508,16 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 
 	public void setCibilMessage(String cibilMessage) {
 		this.cibilMessage = cibilMessage;
+	}
+	
+	
+
+	public String getAmount() {
+		return amount;
+	}
+
+	public void setAmount(String amount) {
+		this.amount = amount;
 	}
 
 	@Override
