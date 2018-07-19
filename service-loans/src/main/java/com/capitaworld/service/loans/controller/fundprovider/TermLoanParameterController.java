@@ -66,7 +66,7 @@ public class TermLoanParameterController {
 					HttpStatus.OK);
 		}
 		termLoanParameterRequest.setUserId(userId);
-		boolean response = termLoanParameterService.saveOrUpdate(termLoanParameterRequest);
+		boolean response = termLoanParameterService.saveOrUpdate(termLoanParameterRequest,null);
 		if (response) {
 			CommonDocumentUtils.endHook(logger, "save");
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),

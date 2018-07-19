@@ -11,6 +11,7 @@ import com.capitaworld.service.loans.model.MultipleFpPruductRequest;
 import com.capitaworld.service.loans.model.ProductDetailsForSp;
 import com.capitaworld.service.loans.model.ProductDetailsResponse;
 import com.capitaworld.service.loans.model.ProductMasterRequest;
+import com.capitaworld.service.loans.model.WorkflowData;
 import com.capitaworld.service.loans.model.common.ChatDetails;
 import com.capitaworld.service.loans.model.corporate.AddProductRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateProduct;
@@ -65,6 +66,8 @@ public interface ProductMasterService {
 	 * @return
 	 */
 	public Boolean saveCorporateInTemp(CorporateProduct corporateProduct);
+
+	public Boolean clickOnWorkFlowButton(WorkflowData workflowData);
 
 	
 }

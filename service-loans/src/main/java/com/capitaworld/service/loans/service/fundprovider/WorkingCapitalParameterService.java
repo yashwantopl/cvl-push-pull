@@ -5,7 +5,7 @@ import java.util.List;
 import com.capitaworld.service.loans.model.corporate.WorkingCapitalParameterRequest;
 
 public interface WorkingCapitalParameterService {
-	public boolean saveOrUpdate(WorkingCapitalParameterRequest workingCapitalParameterRequest);
+	public boolean saveOrUpdate(WorkingCapitalParameterRequest workingCapitalParameterRequest,Long mappingId);
 	
 	public WorkingCapitalParameterRequest getWorkingCapitalParameter(Long id);
 	

@@ -33,6 +33,7 @@ import com.capitaworld.service.loans.domain.fundprovider.NegativeIndustry;
 import com.capitaworld.service.loans.domain.fundprovider.NegativeIndustryTemp;
 import com.capitaworld.service.loans.domain.fundprovider.TermLoanParameter;
 import com.capitaworld.service.loans.domain.fundprovider.TermLoanParameterTemp;
+import com.capitaworld.service.loans.domain.fundprovider.WorkingCapitalParameter;
 import com.capitaworld.service.loans.model.DataRequest;
 import com.capitaworld.service.loans.model.corporate.TermLoanParameterRequest;
 import com.capitaworld.service.loans.repository.fundprovider.GeographicalCityRepository;
@@ -100,7 +101,7 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
     private WorkflowClient workflowClient;
 
 	@Override
-	public boolean saveOrUpdate(TermLoanParameterRequest termLoanParameterRequest) {
+	public boolean saveOrUpdate(TermLoanParameterRequest termLoanParameterRequest, Long mappingId) {
 		CommonDocumentUtils.startHook(logger, "saveOrUpdate");
 		// TODO Auto-generated method stub
 		
@@ -108,8 +109,17 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 
 		termLoanParameter = termLoanParameterRepository.findOne(termLoanParameterRequest.getId());
 		if (termLoanParameter == null) {
-			return false;
+			termLoanParameter=new TermLoanParameter();
 		}
+		
+		TermLoanParameterTemp loanParameter =  termLoanParameterTempRepository.getTermLoanParameterTempByFpProductId(mappingId);
+		loanParameter.setStatusId(CommonUtils.Status.APPROVED);
+        loanParameter.setIsDeleted(false);
+        loanParameter.setIsEdit(false);
+        loanParameter.setIsCopied(true);
+        loanParameter.setIsApproved(true);
+        loanParameter.setApprovalDate(new Date());
+        termLoanParameterTempRepository.save(loanParameter);
 		
 		if (!CommonUtils.isObjectListNull(termLoanParameterRequest.getMaxTenure()))
 			termLoanParameterRequest.setMaxTenure(termLoanParameterRequest.getMaxTenure().multiply(new BigDecimal("12")));
@@ -377,15 +387,9 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 	public Boolean saveMasterFromTempTl(Long mappingId) throws Exception {
 		try {
 			TermLoanParameterRequest  temp =  getTermLoanParameterRequestTemp(mappingId,null,null);
-			TermLoanParameterTemp loanParameter =  termLoanParameterTempRepository.getTermLoanParameterTempByFpProductId(mappingId);
-			loanParameter.setStatusId(CommonUtils.Status.APPROVED);
-	        loanParameter.setIsDeleted(false);
-	        loanParameter.setIsEdit(false);
-	        loanParameter.setIsCopied(true);
-	        loanParameter.setIsApproved(true);
-	        loanParameter.setApprovalDate(new Date());
-	        termLoanParameterTempRepository.save(loanParameter);
-        return saveOrUpdate(temp);
+			
+        return saveOrUpdate(temp,mappingId);
+			
 		}
 		catch (Exception e) {
 			e.printStackTrace();
