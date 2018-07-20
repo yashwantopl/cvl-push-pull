@@ -2,6 +2,7 @@ package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
 import com.capitaworld.connect.api.ConnectResponse;
 import com.capitaworld.connect.client.ConnectClient;
+import com.capitaworld.service.dms.util.CommonUtil;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.*;
 import com.capitaworld.service.loans.model.*;
@@ -326,25 +327,19 @@ public class NTBServiceImpl implements NTBService {
 
     @Override
     public LoansResponse postOthersChangeStage(NTBRequest ntbRequest) {
-        logger.info("Start postOthersChangeStage()");
         try {
-            ConnectResponse connectResponse = connectClient.postNTBOneFormOtherDetails(ntbRequest.getApplicationId(),
-                    ntbRequest.getUserId(), ntbRequest.getBusineeTypeId());
-            if (connectResponse == null) {
-                return new LoansResponse(
-                        "Something goes wrong with the internal server. Please try again after sometime.",
-                        HttpStatus.BAD_REQUEST.value());
+            ConnectResponse connectResponse = connectClient.postNTBOneFormOtherDetails(ntbRequest.getApplicationId(), ntbRequest.getUserId(), ntbRequest.getBusineeTypeId());
+            if (CommonUtils.isObjectNullOrEmpty(connectResponse)) {
+                return new LoansResponse( "Something goes wrong with the internal server. Please try again after sometime.", HttpStatus.BAD_REQUEST.value());
             }
-            logger.info("End postOthersChangeStage()");
             if (!connectResponse.getProceed().booleanValue()) {
-                return new LoansResponse(connectResponse.getMessage(), HttpStatus.BAD_REQUEST.value());
+                return new LoansResponse(connectResponse.getMessage(), HttpStatus.BAD_REQUEST.value(),false);
             } else {
-                return new LoansResponse("Success", HttpStatus.OK.value());
+                return new LoansResponse("Success data updated", HttpStatus.OK.value(),true);
             }
         } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            return null;
+        	e.printStackTrace();
+            return new LoansResponse("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
     }
 }
