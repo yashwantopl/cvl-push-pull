@@ -107,6 +107,7 @@ public class NTBServiceImpl implements NTBService {
             BeanUtils.copyProperties(directorBackgroundDetailRequest, directorBackgroundDetail, "isItrCompleted", "isCibilCompleted", "isBankStatementCompleted", "isOneFormCompleted");
 
             directorBackgroundDetail.setEmploymentDetail(employmentDetailTemp);
+            directorBackgroundDetail.setTotalExperience(employmentDetailRequest.getTotalExperience().doubleValue());
             directorBackgroundDetail.setModifiedBy(userId);
             directorBackgroundDetail.setModifiedDate(new Date());
             directorBackgroundDetailsRepository.save(directorBackgroundDetail);
