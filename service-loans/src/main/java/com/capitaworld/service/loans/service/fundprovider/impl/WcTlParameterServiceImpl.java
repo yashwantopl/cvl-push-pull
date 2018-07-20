@@ -1,8 +1,11 @@
 package com.capitaworld.service.loans.service.fundprovider.impl;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -12,7 +15,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.capitaworld.api.workflow.model.WorkflowJobsTrackerRequest;
 import com.capitaworld.api.workflow.model.WorkflowResponse;
+import com.capitaworld.api.workflow.utility.MultipleJSONObjectHelper;
 import com.capitaworld.api.workflow.utility.WorkflowUtils;
 import com.capitaworld.client.workflow.WorkflowClient;
 import com.capitaworld.service.loans.domain.IndustrySectorDetail;
@@ -29,7 +34,6 @@ import com.capitaworld.service.loans.domain.fundprovider.TermLoanParameter;
 import com.capitaworld.service.loans.domain.fundprovider.WcTlParameter;
 import com.capitaworld.service.loans.domain.fundprovider.WcTlParameterTemp;
 import com.capitaworld.service.loans.model.DataRequest;
-import com.capitaworld.service.loans.model.corporate.TermLoanParameterRequest;
 import com.capitaworld.service.loans.model.corporate.WcTlParameterRequest;
 import com.capitaworld.service.loans.repository.fundprovider.GeographicalCityRepository;
 import com.capitaworld.service.loans.repository.fundprovider.GeographicalCityTempRepository;
@@ -381,10 +385,10 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 	@Override
 	public Boolean saveMasterFromTempWcTl(Long mappingId) throws Exception {
 		try {
-			WcTlParameterRequest temp =  getWcTlRequestTemp(mappingId);
+			WcTlParameterRequest temp =  getWcTlRequestTemp(mappingId,null,null);
 			
 		return saveOrUpdate(temp,mappingId);
-		
+
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -393,7 +397,7 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 	}
 	
 	@Override
-	public WcTlParameterRequest getWcTlRequestTemp(Long id) {
+	public WcTlParameterRequest getWcTlRequestTemp(Long id,Long role,Long userId) {
 		CommonDocumentUtils.startHook(logger, "getWcTlRequestTemp");
 		// TODO Auto-generated method stub
 		WcTlParameterRequest wcTlParameterRequest = new WcTlParameterRequest();
@@ -497,6 +501,25 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 			}
 		}
 		wcTlParameterRequest.setJobId(loanParameter.getJobId());
+		//set workflow buttons
+		
+		 if (!CommonUtils.isObjectNullOrEmpty(loanParameter.getJobId()) && !CommonUtils.isObjectNullOrEmpty(role)) {
+            WorkflowResponse workflowResponse = workflowClient.getActiveStepForMaster(loanParameter.getJobId(),Arrays.asList(role), userId);
+            if (!CommonUtils.isObjectNullOrEmpty(workflowResponse) && !CommonUtils.isObjectNullOrEmpty(workflowResponse.getData())) {
+                try {
+                    WorkflowJobsTrackerRequest workflowJobsTrackerRequest = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) workflowResponse.getData(), WorkflowJobsTrackerRequest.class);
+                    if (!CommonUtils.isObjectNullOrEmpty(workflowJobsTrackerRequest.getStep()) && !CommonUtils.isObjectNullOrEmpty(workflowJobsTrackerRequest.getStep().getStepActions())) {
+                    	wcTlParameterRequest.setWorkflowData(workflowJobsTrackerRequest.getStep().getStepActions());
+                    } else {
+                        logger.info("response from workflow NULL jobId = {} and roleId = {}", loanParameter.getJobId(), role);
+                    }
+                } catch (IOException e) {
+                    logger.error("Error While getting data from workflow {}", e);
+                }
+            }
+        } else {
+            logger.info("you set jobId or list of roleId NULL for calling workflow");
+        }
 		CommonDocumentUtils.endHook(logger, "getWcTlRequestTemp");
 		return wcTlParameterRequest;
 	}
@@ -508,10 +531,21 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 		// TODO Auto-generated method stub
 		
 		WcTlParameterTemp WcTlParameter = null;
+		
+		if(wcTlParameterRequest.getAppstage()==1)
+		{
+			WcTlParameter = wcTlParameterTempRepository.findOne(wcTlParameterRequest.getId());
+		}
+		else
+		{
+			
+			WcTlParameter = wcTlParameterTempRepository.getWcTlParameterTempByFpProductMappingId(wcTlParameterRequest.getId());
+			
+		}
 
-		WcTlParameter = wcTlParameterTempRepository.findOne(wcTlParameterRequest.getId());
 		if (WcTlParameter == null) {
 			WcTlParameter = new WcTlParameterTemp();
+			WcTlParameter.setFpProductMappingId(wcTlParameterRequest.getId());
 		}
 		
 		if (!CommonUtils.isObjectListNull(wcTlParameterRequest.getMaxTenure()))

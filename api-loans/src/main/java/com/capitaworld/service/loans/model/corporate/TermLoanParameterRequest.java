@@ -200,9 +200,25 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	private Long userOrgId;
 	
 	private Integer appstage;
+	
+	private Object workflowData;
 
 	//-----------------------added eligibility method for product
 	private Integer assessmentMethodId;
+
+	/**
+	 * @return the workflowData
+	 */
+	public Object getWorkflowData() {
+		return workflowData;
+	}
+
+	/**
+	 * @param workflowData the workflowData to set
+	 */
+	public void setWorkflowData(Object workflowData) {
+		this.workflowData = workflowData;
+	}
 
 	public Integer getIndividualCibil() {
 		return individualCibil;

@@ -177,7 +177,7 @@ public class LoansClient {
 
 	private static final String GET_ORG_PAN_DETAILS = "/fs_profile/getOrgAndPanByAppId";
 	
-	private static final String  GET_FPDETAILS_BY_FPPRODUCTID = "/getFpDetailsByFpProductId";
+	private static final String  GET_FPDETAILS_BY_FPPRODUCTID = "/loan_application/getFpDetailsByFpProductId";
 	private static final String SAVE_PHASE_ONE = "/loan_application/save_phase1_sidbi";
 	private static final String SAVE_PHASE_TWO = "/loan_application/save_phase2_sidbi";
 	

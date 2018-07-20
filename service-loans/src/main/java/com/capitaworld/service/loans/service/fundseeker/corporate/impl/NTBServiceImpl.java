@@ -314,14 +314,13 @@ public class NTBServiceImpl implements NTBService {
             }
             logger.info("End postDirectorsChangeStage()");
             if (!connectResponse.getProceed().booleanValue()) {
-                return new LoansResponse(connectResponse.getMessage(), HttpStatus.BAD_REQUEST.value());
+                return new LoansResponse(connectResponse.getMessage(), HttpStatus.BAD_REQUEST.value(),false);
             } else {
-                return new LoansResponse("Success", HttpStatus.OK.value());
+                return new LoansResponse("Success data updated", HttpStatus.OK.value(),true);
             }
         } catch (Exception e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
-            return null;
+            return new LoansResponse("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
     }
 

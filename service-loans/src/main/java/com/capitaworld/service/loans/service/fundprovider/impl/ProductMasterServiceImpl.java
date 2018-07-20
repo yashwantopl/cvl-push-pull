@@ -804,13 +804,13 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 			if (master.getProductId() == 1) {
 				return workingCapitalParameterService.getWorkingCapitalParameterTemp(master.getId(), role, userId);
 			} else if (master.getProductId() == 2) {
-				return termLoanParameterService.getTermLoanParameterRequestTemp(master.getId());
+				return termLoanParameterService.getTermLoanParameterRequestTemp(master.getId(),role,userId);
 			} /*
 				 * else if (master.getProductId() == 15) { return
 				 * unsecuredLoanParameterService.
 				 * getUnsecuredLoanParameterRequest(master.getId()); }
 				 */ else if (master.getProductId() == 16) {
-				return wcTlParameterService.getWcTlRequestTemp(master.getId());
+				return wcTlParameterService.getWcTlRequestTemp(master.getId(),role,userId);
 			}
 		} else {
 			ProductMaster master = productMasterRepository.findOne(id);
