@@ -134,7 +134,7 @@ public class ScoringServiceImpl implements ScoringService{
         {
             return calculateExistingBusinessScoring(scoringRequestLoans);
         }
-        else if(ScoreParameter.BusinessType.EXISTING_BUSINESS == businessTypeId)
+        else if(ScoreParameter.BusinessType.NTB == businessTypeId)
         {
             return calculateNTBScoring(scoringRequestLoans,primaryCorporateDetail);
         }
