@@ -129,6 +129,8 @@ public class ScoringServiceImpl implements ScoringService{
         Long businessTypeId=null;
         if(CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getBusinessTypeId()))
             businessTypeId=ScoreParameter.BusinessType.EXISTING_BUSINESS;
+        else
+            businessTypeId= Long.valueOf(primaryCorporateDetail.getBusinessTypeId().toString());
 
         if(ScoreParameter.BusinessType.EXISTING_BUSINESS == businessTypeId)
         {
