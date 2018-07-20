@@ -19,7 +19,8 @@ public class AddProductRequest {
 	
 	private Integer stage;
 
-	
+	private Long businessTypeId;
+
 
 	public Integer getProductId() {
 		return productId;
@@ -77,8 +78,11 @@ public class AddProductRequest {
 		this.stage = stage;
 	}
 
+	public Long getBusinessTypeId() {
+		return businessTypeId;
+	}
 
-	
-	
-	
+	public void setBusinessTypeId(Long businessTypeId) {
+		this.businessTypeId = businessTypeId;
+	}
 }

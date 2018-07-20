@@ -26,7 +26,7 @@ public class WcTlParameterTemp extends ProductMasterTemp implements Serializable
 
 	@OneToOne
 	@JoinColumn(name = "fp_product_id")
-	private ProductMaster fpProductId;
+	private ProductMasterTemp fpProductId;
 
 	@Column(name = "created_by")
 	private Long createdBy;
@@ -671,11 +671,11 @@ public class WcTlParameterTemp extends ProductMasterTemp implements Serializable
 	public WcTlParameterTemp() {
 	}
 
-	public ProductMaster getFpProductId() {
+	public ProductMasterTemp getFpProductId() {
 		return this.fpProductId;
 	}
 
-	public void setFpProductId(ProductMaster fpProductId) {
+	public void setFpProductId(ProductMasterTemp fpProductId) {
 		this.fpProductId = fpProductId;
 	}
 

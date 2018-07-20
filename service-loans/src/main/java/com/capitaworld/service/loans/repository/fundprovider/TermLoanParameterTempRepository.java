@@ -15,7 +15,7 @@ import com.capitaworld.service.loans.domain.fundprovider.TermLoanParameterTemp;
  */
 public interface TermLoanParameterTempRepository extends JpaRepository<TermLoanParameterTemp, Long> {
 	
-	@Query("select o from TermLoanParameterTemp o where o.fpProductId =:fpProductId")
+	@Query("select o from TermLoanParameterTemp o where o.fpProductId.id =:fpProductId")
 	public TermLoanParameterTemp getTermLoanParameterTempByFpProductId(@Param("fpProductId")Long fpProductId); 
 	
 	@Query("select o from TermLoanParameterTemp o where o.fpProductMappingId =:fpProductMappingId and isCopied=false")
