@@ -4257,7 +4257,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			gatewayRequest.setClientId(userId);
 			gatewayRequest.setStatus(paymentRequest.getStatus());
 			gatewayRequest.setTxnId(paymentRequest.getTrxnId());
-
+			gatewayRequest.setFirstName(paymentRequest.getNameOfEntity());
+			
+			
 			Boolean updatePayment = false;
 			ProposalMappingResponse respProp = null;
 			if ("SIDBI_FEES".equals(paymentRequest.getPurposeCode())) {
