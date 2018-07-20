@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.capitaworld.api.workflow.model.WorkflowRequest;
 import com.capitaworld.api.workflow.model.WorkflowResponse;
 import com.capitaworld.api.workflow.utility.WorkflowUtils;
 import com.capitaworld.client.workflow.WorkflowClient;
@@ -25,24 +26,17 @@ import com.capitaworld.service.dms.model.DocumentRequest;
 import com.capitaworld.service.dms.model.DocumentResponse;
 import com.capitaworld.service.dms.model.StorageDetailsResponse;
 import com.capitaworld.service.dms.util.DocumentAlias;
-import com.capitaworld.service.loans.domain.fundprovider.CarLoanParameter;
-import com.capitaworld.service.loans.domain.fundprovider.HomeLoanParameter;
-import com.capitaworld.service.loans.domain.fundprovider.LapParameter;
-import com.capitaworld.service.loans.domain.fundprovider.PersonalLoanParameter;
 import com.capitaworld.service.loans.domain.fundprovider.ProductMaster;
 import com.capitaworld.service.loans.domain.fundprovider.ProductMasterTemp;
-import com.capitaworld.service.loans.domain.fundprovider.TermLoanParameter;
 import com.capitaworld.service.loans.domain.fundprovider.TermLoanParameterTemp;
-import com.capitaworld.service.loans.domain.fundprovider.UnsecureLoanParameter;
-import com.capitaworld.service.loans.domain.fundprovider.WcTlParameter;
 import com.capitaworld.service.loans.domain.fundprovider.WcTlParameterTemp;
-import com.capitaworld.service.loans.domain.fundprovider.WorkingCapitalParameter;
 import com.capitaworld.service.loans.domain.fundprovider.WorkingCapitalParameterTemp;
 import com.capitaworld.service.loans.model.FpProductDetails;
 import com.capitaworld.service.loans.model.MultipleFpPruductRequest;
 import com.capitaworld.service.loans.model.ProductDetailsForSp;
 import com.capitaworld.service.loans.model.ProductDetailsResponse;
 import com.capitaworld.service.loans.model.ProductMasterRequest;
+import com.capitaworld.service.loans.model.WorkflowData;
 import com.capitaworld.service.loans.model.common.ChatDetails;
 import com.capitaworld.service.loans.model.corporate.AddProductRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateProduct;
@@ -64,12 +58,7 @@ import com.capitaworld.service.loans.repository.fundprovider.PersonalLoanParamet
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterTempRepository;
 import com.capitaworld.service.loans.repository.fundprovider.TermLoanParameterRepository;
-import com.capitaworld.service.loans.repository.fundprovider.TermLoanParameterTempRepository;
-import com.capitaworld.service.loans.repository.fundprovider.WcTlLoanParameterRepository;
-import com.capitaworld.service.loans.repository.fundprovider.WcTlParameterTempRepository;
 import com.capitaworld.service.loans.repository.fundprovider.WorkingCapitalParameterRepository;
-import com.capitaworld.service.loans.repository.fundprovider.WorkingCapitalParameterTempRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.service.common.FundProviderSequenceService;
 import com.capitaworld.service.loans.service.fundprovider.CarLoanParameterService;
 import com.capitaworld.service.loans.service.fundprovider.HomeLoanParameterService;
@@ -200,8 +189,6 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 								? addProductRequest.getUserId() : addProductRequest.getClientId()));
 				Long jobId = null;
 
-				
-
 				switch (loanType) {
 				case WORKING_CAPITAL:
 					productMaster = new WorkingCapitalParameterTemp();
@@ -217,11 +204,11 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 					break;
 				}
 
-				//productMaster.setJobId(null);
+				// productMaster.setJobId(null);
 				jobId = Long.valueOf(workflowResponse.getData().toString());
 				productMaster.setJobId(jobId);
 
-						productMaster.setProductId(addProductRequest.getProductId());
+				productMaster.setProductId(addProductRequest.getProductId());
 				productMaster.setIsMatched(false);
 				productMaster.setName(addProductRequest.getName());
 				productMaster.setFpName(addProductRequest.getFpName());
@@ -618,16 +605,13 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	}
 
 	@Override
-	public Boolean changeStatus(Long fpProductId, Boolean status, Long userId,Integer stage) {
+	public Boolean changeStatus(Long fpProductId, Boolean status, Long userId, Integer stage) {
 		// TODO Auto-generated method stub
 		CommonDocumentUtils.startHook(logger, "changeStatus");
 		try {
-			if(stage==2)
-			{
-			productMasterRepository.changeStatus(userId, fpProductId, status);
-			}
-			else
-			{
+			if (stage == 2) {
+				productMasterRepository.changeStatus(userId, fpProductId, status);
+			} else {
 				productMasterTempRepository.changeStatus(userId, fpProductId, status);
 			}
 			return true;
@@ -650,12 +634,12 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 					WorkingCapitalParameterRequest capitalParameterRequest = new WorkingCapitalParameterRequest();
 					BeanUtils.copyProperties(corporateProduct, capitalParameterRequest);
 					CommonDocumentUtils.endHook(logger, "saveCorporate");
-					return workingCapitalParameterService.saveOrUpdate(capitalParameterRequest);
+					return workingCapitalParameterService.saveOrUpdate(capitalParameterRequest, null);
 				} else if (corporateProduct.getProductId() == CommonUtils.LoanType.TERM_LOAN.getValue()) {
 					TermLoanParameterRequest loanParameterRequest = new TermLoanParameterRequest();
 					BeanUtils.copyProperties(corporateProduct, loanParameterRequest);
 					CommonDocumentUtils.endHook(logger, "saveCorporate");
-					return termLoanParameterService.saveOrUpdate(loanParameterRequest);
+					return termLoanParameterService.saveOrUpdate(loanParameterRequest,null);
 				} else if (corporateProduct.getProductId() == CommonUtils.LoanType.UNSECURED_LOAN.getValue()) {
 					UnsecuredLoanParameterRequest unsecuredLoanParameterRequest = new UnsecuredLoanParameterRequest();
 					BeanUtils.copyProperties(corporateProduct, unsecuredLoanParameterRequest);
@@ -665,7 +649,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 					WcTlParameterRequest wcTlParameterRequest = new WcTlParameterRequest();
 					BeanUtils.copyProperties(corporateProduct, wcTlParameterRequest);
 					CommonDocumentUtils.endHook(logger, "saveCorporate");
-					return wcTlParameterService.saveOrUpdate(wcTlParameterRequest);
+					return wcTlParameterService.saveOrUpdate(wcTlParameterRequest,null);
 				}
 			}
 		}
@@ -811,14 +795,14 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	}
 
 	@Override
-	public Object getProductMasterWithAllData(Long id, Integer stage,Long role,Long userId) {
+	public Object getProductMasterWithAllData(Long id, Integer stage, Long role, Long userId) {
 		// TODO Auto-generated method stub
 
 		if (!CommonUtils.isObjectNullOrEmpty(stage) && stage == 1) {
 			ProductMasterTemp master = productMasterTempRepository.findOne(id);
 
 			if (master.getProductId() == 1) {
-				return workingCapitalParameterService.getWorkingCapitalParameterTemp(master.getId(),role,userId);
+				return workingCapitalParameterService.getWorkingCapitalParameterTemp(master.getId(), role, userId);
 			} else if (master.getProductId() == 2) {
 				return termLoanParameterService.getTermLoanParameterRequestTemp(master.getId());
 			} /*
@@ -904,6 +888,53 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 		}
 		CommonDocumentUtils.endHook(logger, "saveCorporate");
 		return false;
+	}
+
+	@Override
+	public Boolean clickOnWorkFlowButton(WorkflowData workflowData) {
+		// TODO Auto-generated method stub
+		try {
+
+			WorkflowRequest request = new WorkflowRequest();
+			request.setActionId(workflowData.getActionId());
+			request.setCurrentStep(workflowData.getWorkflowStep());
+			request.setToStep(workflowData.getNextworkflowStep());
+			request.setJobId(workflowData.getJobId());
+			request.setUserId(workflowData.getUserId());
+
+			WorkflowResponse workflowResponse = workflowClient.updateJob(request);
+			if (workflowResponse.getStatus() == 200) {
+
+				if (workflowData.getActionId() == WorkflowUtils.Action.SEND_FOR_APPROVAL) {
+					int rowUpdated = productMasterTempRepository.updateStatusToInProgress(workflowData.getFpProductId(),
+							2);
+					if (rowUpdated > 0) {
+						return true;
+					} else {
+						logger.info("could not updated in productMaster temp", workflowData.getJobId());
+						return false;
+
+					}
+				} else if (workflowData.getActionId() == WorkflowUtils.Action.APPROVED) {
+					return saveCorporateMasterFromTemp(workflowData.getFpProductId());
+				} else if (workflowData.getActionId() == WorkflowUtils.Action.SEND_BACK) {
+					int rowUpdated = productMasterTempRepository.updateStatusToInProgress(workflowData.getFpProductId(),
+							3);
+					if (rowUpdated > 0) {
+						return true;
+					} else {
+						logger.info("could not updated in productMaster temp", workflowData.getJobId());
+						return false;
+
+					}
+
+				}
+			}
+			return false;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
 	}
 
 }

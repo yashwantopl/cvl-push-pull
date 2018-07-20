@@ -25,6 +25,7 @@ import com.capitaworld.service.loans.domain.fundprovider.GeographicalStateDetail
 import com.capitaworld.service.loans.domain.fundprovider.GeographicalStateDetailTemp;
 import com.capitaworld.service.loans.domain.fundprovider.NegativeIndustry;
 import com.capitaworld.service.loans.domain.fundprovider.NegativeIndustryTemp;
+import com.capitaworld.service.loans.domain.fundprovider.TermLoanParameter;
 import com.capitaworld.service.loans.domain.fundprovider.WcTlParameter;
 import com.capitaworld.service.loans.domain.fundprovider.WcTlParameterTemp;
 import com.capitaworld.service.loans.model.DataRequest;
@@ -95,7 +96,7 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
     private WorkflowClient workflowClient;
 
 	@Override
-	public boolean saveOrUpdate(WcTlParameterRequest wcTlParameterRequest) {
+	public boolean saveOrUpdate(WcTlParameterRequest wcTlParameterRequest,Long mappingId) {
 		CommonDocumentUtils.startHook(logger, "saveOrUpdate");
 		// TODO Auto-generated method stub
 		
@@ -103,8 +104,17 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 
 		WcTlParameter = wcTlLoanParameterRepository.findOne(wcTlParameterRequest.getId());
 		if (WcTlParameter == null) {
-			return false;
+			WcTlParameter=new WcTlParameter();
 		}
+		
+		WcTlParameterTemp loanParameter =  wcTlParameterTempRepository.getWcTlParameterTempByFpProductId(mappingId);
+		loanParameter.setStatusId(CommonUtils.Status.APPROVED);
+        loanParameter.setIsDeleted(false);
+        loanParameter.setIsEdit(false);
+        loanParameter.setIsCopied(true);
+        loanParameter.setIsApproved(true);
+        loanParameter.setApprovalDate(new Date());
+        wcTlParameterTempRepository.save(loanParameter);
 		
 		if (!CommonUtils.isObjectListNull(wcTlParameterRequest.getMaxTenure()))
 			wcTlParameterRequest.setMaxTenure(wcTlParameterRequest.getMaxTenure().multiply(new BigDecimal("12")));
@@ -372,15 +382,8 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 	public Boolean saveMasterFromTempWcTl(Long mappingId) throws Exception {
 		try {
 			WcTlParameterRequest temp =  getWcTlRequestTemp(mappingId);
-			WcTlParameterTemp loanParameter =  wcTlParameterTempRepository.getWcTlParameterTempByFpProductId(mappingId);
-			loanParameter.setStatusId(CommonUtils.Status.APPROVED);
-	        loanParameter.setIsDeleted(false);
-	        loanParameter.setIsEdit(false);
-	        loanParameter.setIsCopied(true);
-	        loanParameter.setIsApproved(true);
-	        loanParameter.setApprovalDate(new Date());
-	        wcTlParameterTempRepository.save(loanParameter);
-		return saveOrUpdate(temp);
+			
+		return saveOrUpdate(temp,mappingId);
 		
 		}
 		catch (Exception e) {
