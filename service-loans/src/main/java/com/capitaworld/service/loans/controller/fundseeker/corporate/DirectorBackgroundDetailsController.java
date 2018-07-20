@@ -281,7 +281,7 @@ public class DirectorBackgroundDetailsController {
 		CommonDocumentUtils.startHook(logger, " getDirectorBasicDetailsListForNTB");
 		
 		try {
-			List<DirectorBackgroundDetailRequest> response = directorBackgroundDetailsService.getDirectorBackgroundDetailList(applicationId, null);
+			List<DirectorBackgroundDetailRequest> response = directorBackgroundDetailsService.getDirectorBasicDetailsListForNTB(applicationId);
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 			loansResponse.setListData(response);
 			CommonDocumentUtils.endHook(logger, "getList");

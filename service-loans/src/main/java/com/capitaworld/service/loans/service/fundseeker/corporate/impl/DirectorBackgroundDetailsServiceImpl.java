@@ -130,6 +130,7 @@ public class DirectorBackgroundDetailsServiceImpl implements DirectorBackgroundD
 				dirBackDetailReq.setPanNo(detail.getPanNo());
 				dirBackDetailReq.setDirectorsName(detail.getDirectorsName());
 				dirBackDetailReq.setId(detail.getId());
+				dirBackDetailReq.setMainDirector(detail.getMainDirector());
 				dirBackDetailReq.setAmount(environment.getProperty(SIDBI_AMOUNT));
 				dirBackDetailReqList.add(dirBackDetailReq);
 			}
