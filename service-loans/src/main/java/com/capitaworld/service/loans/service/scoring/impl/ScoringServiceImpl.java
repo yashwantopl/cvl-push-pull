@@ -1059,6 +1059,9 @@ public class ScoringServiceImpl implements ScoringService{
         // Fetch Data for Calculate Director Score
 
         List<DirectorBackgroundDetail> directorBackgroundDetailsList =  directorBackgroundDetailsRepository.listPromotorBackgroundFromAppId(scoringRequestLoans.getApplicationId());
+
+        logger.info("directorBackgroundDetailsList.size()==========>>"+directorBackgroundDetailsList.size());
+
         if(directorBackgroundDetailsList.size() > 0)
         {
             for(DirectorBackgroundDetail directorBackgroundDetail : directorBackgroundDetailsList) {
@@ -1106,6 +1109,8 @@ public class ScoringServiceImpl implements ScoringService{
             }
 
             List<Map<String, Object>> dataList = (List<Map<String, Object>>) scoringResponse.getDataList();
+
+            logger.info("Field List ==============>>>>>"+dataList.size());
 
             List<FundSeekerInputRequest> fundSeekerInputRequestList = new ArrayList<>(dataList.size());
 
