@@ -11,16 +11,13 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-
 import javax.transaction.Transactional;
-
 import org.apache.commons.lang.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.capitaworld.api.eligibility.model.CLEligibilityRequest;
 import com.capitaworld.api.eligibility.model.EligibililityRequest;
 import com.capitaworld.api.eligibility.model.EligibilityResponse;
@@ -273,7 +270,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		try {
 			UsersRequest request = MultipleJSONObjectHelper.getObjectFromMap(lm,UsersRequest.class);
 			map.put("mobile", request.getMobile());
-			map.put("email", request.getEmail());
+			map.put("email", StringEscapeUtils.escapeXml(request.getEmail()));
 		} catch (IOException e1) {
 			logger.info("Error while getting registration details");
 			e1.printStackTrace();
@@ -301,7 +298,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				map.put("registeredAddCity", StringEscapeUtils.escapeXml(getCityName(corporateFinalInfoRequest.getFirstAddress().getCityId())));
 				map.put("registeredAddPincode", !CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getFirstAddress().getPincode())?corporateFinalInfoRequest.getFirstAddress().getPincode() : "");
 			}
-			map.put("corporateApplicantFinal", corporateFinalInfoRequest);
+			map.put("corporateApplicantFinal", printFields(corporateFinalInfoRequest));
 			map.put("aboutUs", StringEscapeUtils.escapeXml(corporateFinalInfoRequest.getAboutUs()));
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
@@ -842,7 +839,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			}
 			
 		}
-		
+		logger.info("============CAM data=========================="+map.toString());
 		return map;
 	}
 	
@@ -857,11 +854,14 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
         //SET SHARE FACE VALUE
 		Double shareFaceVal=1.00;
 		CorporateApplicantDetail corporateApplicantDetail=corporateApplicantDetailRepository.findOneByApplicationIdId(applicationId);
-		if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getSharePriceFace())) {
-			logger.info("SharePriceFace"+corporateApplicantDetail.getSharePriceFace());
-			shareFaceVal=corporateApplicantDetail.getSharePriceFace();
-			financialInputRequestDbl.setShareFaceValue(shareFaceVal);
-		}else {
+		if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail)) {
+			if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getSharePriceFace())) {
+				shareFaceVal=corporateApplicantDetail.getSharePriceFace();
+				financialInputRequestDbl.setShareFaceValue(shareFaceVal);
+			}else{
+				financialInputRequestDbl.setShareFaceValue(1.00);
+			}
+		} else{
 			financialInputRequestDbl.setShareFaceValue(1.00);
 		}
 		financialInputRequestDbl.setNoOfMonth(12.0);

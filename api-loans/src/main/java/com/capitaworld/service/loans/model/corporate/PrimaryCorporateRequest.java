@@ -26,8 +26,7 @@ public class PrimaryCorporateRequest extends LoanApplicationRequest implements S
     private Double promoterContribution;
     private Integer assessmentId;
 
-
-
+  
     public PrimaryCorporateRequest() {
     }
 
@@ -136,7 +135,6 @@ public class PrimaryCorporateRequest extends LoanApplicationRequest implements S
     public void setPromoterContribution(Double promoterContribution) {
         this.promoterContribution = promoterContribution;
     }
-
     public Integer getAssessmentId() {
         return assessmentId;
     }
