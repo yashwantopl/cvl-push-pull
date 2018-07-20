@@ -43,6 +43,7 @@ import com.capitaworld.service.fitchengine.model.trading.FitchOutputTrad;
 import com.capitaworld.service.fitchengine.utils.CommonUtils.BusinessType;
 import com.capitaworld.service.fraudanalytics.client.FraudAnalyticsClient;
 import com.capitaworld.service.fraudanalytics.model.AnalyticsResponse;
+import com.capitaworld.service.gst.GstCalculation;
 import com.capitaworld.service.gst.GstResponse;
 import com.capitaworld.service.gst.client.GstClient;
 import com.capitaworld.service.gst.yuva.request.GSTR1Request;
@@ -257,7 +258,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 	private static final Logger logger = LoggerFactory.getLogger(CamReportPdfDetailsServiceImpl.class);
 	 public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 	DecimalFormat decim = new DecimalFormat("#,##0.00");
-	DecimalFormat decim2 = new DecimalFormat("#,###");
+	DecimalFormat decim2 = new DecimalFormat("#,###.00");
 	@Override
 	public Map<String, Object> getCamReportPrimaryDetails(Long applicationId, Long productId, boolean isFinalView) {
 		Map<String, Object> map = new HashMap<String, Object>();
@@ -329,7 +330,10 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			GSTR1Request gstr1Request = new GSTR1Request();
 			gstr1Request.setGstin(corporateApplicantRequest.getGstIn());
 			GstResponse response = gstClient.getCalculations(gstr1Request);
-			map.put("gstResponse", !CommonUtils.isObjectNullOrEmpty(response.getData()) ? convertToDoubleForXml(MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)response.getData(), GstResponse.class), new HashMap<>()) : " ");
+			GstCalculation gstData = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)response.getData(),GstCalculation.class);
+			map.put("gstResponse", !CommonUtils.isObjectNullOrEmpty(response.getData()) ? convertToDoubleForXml(response.getData(),null) : " ");
+			map.put("projectedSales", convertValue(gstData.getProjectedSales()));
+			map.put("customerConcentration", convertValue(gstData.getConcentration()));
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -624,7 +628,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				{
 					Data data = MultipleJSONObjectHelper.getObjectFromMap(rec, Data.class);
 					datas.add(data);
-					map.put("bankStatementAnalysis", printFields(datas));
+					map.put("bankStatementAnalysis", datas);
 				}
 			}
 		}catch (Exception e) {
@@ -864,6 +868,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		} else{
 			financialInputRequestDbl.setShareFaceValue(1.00);
 		}
+
 		financialInputRequestDbl.setNoOfMonth(12.0);
 		
 		/************************************************** OPERATING STATEMENT ***************************************************/
@@ -1273,7 +1278,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		return !CommonUtils.isObjectNullOrEmpty(value)? decim2.format(value).toString(): "0";
 	}
 	public Double checkDoubleNUll(Double value) {
-		return !CommonUtils.isObjectNullOrEmpty(value) ? value : 0.0;
+		return !CommonUtils.isObjectNullOrEmpty(value) ? value : 0.00;
 	}
 	public static Object convertToDoubleForXml (Object obj, Map<String, Object>data) throws Exception {
 		Field[] fields = obj.getClass().getDeclaredFields();
@@ -1315,13 +1320,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			for(Map.Entry<Object, Object> setEntry : map.entrySet()) {
 				escapeXml(setEntry.getValue());
 			}
-		}else if(obj.getClass().isArray()){
-			Object[] arr = (Object[])obj;  
-			for(Object o : arr) {
-				escapeXml(o);
-			}
-		}
-		else {
+		}else {
 			escapeXml(obj);
 		}
 		 return obj;
@@ -1347,14 +1346,14 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				String a = StringEscapeUtils.escapeXml(value1.toString());
 				value = a;
 				field.set(obj, value);
-			}else if(value instanceof Double){
-				convertToDoubleForXml(value, null);
 			}else {
 				continue;
 			}
 		}
 		return obj;
     }
+	
+	
 	@SuppressWarnings("unchecked")
 	private String getCityName(Long cityId) {
 		try {
