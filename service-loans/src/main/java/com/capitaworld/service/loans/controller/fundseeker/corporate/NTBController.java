@@ -364,8 +364,7 @@ public class NTBController {
         {
             Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
             if(userId == null) {
-                return new ResponseEntity<LoansResponse>(
-                        new LoansResponse("Unauthorized User! Please Re-login and try again.", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+                return new ResponseEntity<LoansResponse>(new LoansResponse("Unauthorized User! Please Re-login and try again.", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
             }
             if(CommonUtils.isObjectListNull(ntbRequest.getApplicationId(),ntbRequest.getBusineeTypeId())) {
                 logger.info("Application Id or BusinessTypeId is NUll============>{}",ntbRequest.toString());
@@ -374,9 +373,9 @@ public class NTBController {
             }
             ntbRequest.setUserId(userId);
             logger.info("Application Id for Getting============>{}",ntbRequest.getApplicationId());
-            LoansResponse callMatchEngineClient = ntbService.postOthersChangeStage(ntbRequest);
-            logger.info("Response from postOthersChangeStage ==>{}",callMatchEngineClient.toString());
-            return new ResponseEntity<LoansResponse>(callMatchEngineClient, HttpStatus.OK);
+            LoansResponse loanResponse = ntbService.postOthersChangeStage(ntbRequest);
+            logger.info("Response from postOthersChangeStage ==>{}",loanResponse.toString());
+            return new ResponseEntity<LoansResponse>(loanResponse, HttpStatus.OK);
 
         } catch (Exception e) {
             logger.error("Error while Calling Connect Client after Oneform Submit");
