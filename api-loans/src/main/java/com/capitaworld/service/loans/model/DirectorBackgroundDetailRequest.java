@@ -20,10 +20,6 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private Boolean isCibilProceed;
-
-	private String cibilMessage;
-
 	private Long id;
 
 	private String address;
@@ -493,24 +489,6 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 	public void setQualificationId(Integer qualificationId) {
 		this.qualificationId = qualificationId;
 	}
-
-	public Boolean getIsCibilProceed() {
-		return isCibilProceed;
-	}
-
-	public void setIsCibilProceed(Boolean cibilProceed) {
-		isCibilProceed = cibilProceed;
-	}
-
-	public String getCibilMessage() {
-		return cibilMessage;
-	}
-
-	public void setCibilMessage(String cibilMessage) {
-		this.cibilMessage = cibilMessage;
-	}
-	
-	
 
 	public String getAmount() {
 		return amount;

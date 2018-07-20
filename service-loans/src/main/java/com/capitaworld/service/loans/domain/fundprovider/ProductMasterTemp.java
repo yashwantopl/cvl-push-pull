@@ -106,8 +106,9 @@ public class ProductMasterTemp implements Serializable {
     
 	@Column(name="org_id")
 	private Long orgId;
-	
 
+	@Column(name = "business_type_id")
+	private Long businessTypeId;
 	
 	public ProductMasterTemp() {
 	}
@@ -319,10 +320,12 @@ public class ProductMasterTemp implements Serializable {
 	public void setOrgId(Long orgId) {
 		this.orgId = orgId;
 	}
-	
-	
 
-	
-	
+	public Long getBusinessTypeId() {
+		return businessTypeId;
+	}
 
+	public void setBusinessTypeId(Long businessTypeId) {
+		this.businessTypeId = businessTypeId;
+	}
 }

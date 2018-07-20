@@ -39,10 +39,13 @@ public class ProductMasterRequest implements Serializable {
 	private Long jobId;
 	
 	private Integer appstage;
-	
-	
 
-	
+	private Long scoreModelId;
+
+	private Long businessTypeId;
+
+
+
 	/**
 	 * @return the jobId
 	 */
@@ -156,8 +159,19 @@ public class ProductMasterRequest implements Serializable {
 		this.appstage = appstage;
 	}
 
-	
-	
+	public Long getScoreModelId() {
+		return scoreModelId;
+	}
 
-	
+	public void setScoreModelId(Long scoreModelId) {
+		this.scoreModelId = scoreModelId;
+	}
+
+	public Long getBusinessTypeId() {
+		return businessTypeId;
+	}
+
+	public void setBusinessTypeId(Long businessTypeId) {
+		this.businessTypeId = businessTypeId;
+	}
 }

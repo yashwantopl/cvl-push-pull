@@ -26,7 +26,7 @@ public class TermLoanParameterTemp extends ProductMasterTemp implements Serializ
 
 	@OneToOne
 	@JoinColumn(name = "fp_product_id")
-	private ProductMaster fpProductId;
+	private ProductMasterTemp fpProductId;
 
 	@Column(name = "created_by")
 	private Long createdBy;
@@ -673,11 +673,11 @@ public class TermLoanParameterTemp extends ProductMasterTemp implements Serializ
 	public TermLoanParameterTemp() {
 	}
 
-	public ProductMaster getFpProductId() {
-		return this.fpProductId;
+	public ProductMasterTemp getFpProductId() {
+		return fpProductId;
 	}
 
-	public void setFpProductId(ProductMaster fpProductId) {
+	public void setFpProductId(ProductMasterTemp fpProductId) {
 		this.fpProductId = fpProductId;
 	}
 
