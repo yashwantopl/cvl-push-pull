@@ -16,8 +16,11 @@ public interface IndustrySectorRepository extends JpaRepository<IndustrySectorDe
 	public int inActiveMappingByApplicationId(@Param("applicationId") Long applicationId);
 
 	@Query("select o.industryId from IndustrySectorDetail o where o.sectorId = :sectorId")
-
 	public Long findOneBySectorId(@Param("sectorId") Long sectorId);
+	
+	public List<Long> findBySectorIdAndApplicationIdAndIsActive(Long sectorId,Long applicationId,Boolean isActive);
+	
+	public List<Long> findByIndustryIdAndApplicationIdAndIsActive(Long sectorId,Long applicationId,Boolean isActive);
 
 	@Query("select o.industryId from IndustrySectorDetail o where o.applicationId = :applicationId and o.isActive = true and  o.sectorId = NULL")
 	public List<Long> getIndustryByApplicationId(@Param("applicationId") Long applicationId);

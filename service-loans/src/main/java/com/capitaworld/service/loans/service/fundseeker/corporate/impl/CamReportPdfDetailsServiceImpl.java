@@ -26,6 +26,7 @@ import com.capitaworld.api.workflow.model.WorkflowResponse;
 import com.capitaworld.api.workflow.utility.WorkflowUtils;
 import com.capitaworld.cibil.api.model.CibilRequest;
 import com.capitaworld.cibil.api.model.CibilResponse;
+import com.capitaworld.cibil.api.model.CibilScoreLogRequest;
 import com.capitaworld.cibil.client.CIBILClient;
 import com.capitaworld.client.eligibility.EligibilityClient;
 import com.capitaworld.client.workflow.WorkflowClient;
@@ -45,6 +46,7 @@ import com.capitaworld.service.fraudanalytics.model.AnalyticsResponse;
 import com.capitaworld.service.gst.GstResponse;
 import com.capitaworld.service.gst.client.GstClient;
 import com.capitaworld.service.gst.yuva.request.GSTR1Request;
+import com.capitaworld.service.loans.domain.fundprovider.TermLoanParameter;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.AssetsDetails;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
@@ -70,6 +72,7 @@ import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateFinalInfoRequest;
 import com.capitaworld.service.loans.model.corporate.PrimaryCorporateRequest;
 import com.capitaworld.service.loans.model.corporate.TotalCostOfProjectRequest;
+import com.capitaworld.service.loans.repository.fundprovider.TermLoanParameterRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.AssetsDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LiabilitiesDetailsRepository;
@@ -248,6 +251,9 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 	@Autowired
 	FraudAnalyticsClient fraudAnalyticsClient;
 	
+	@Autowired
+	private TermLoanParameterRepository termLoanParameterRepository;
+	
 	private static final Logger logger = LoggerFactory.getLogger(CamReportPdfDetailsServiceImpl.class);
 	 public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 	DecimalFormat decim = new DecimalFormat("#,##0.00");
@@ -323,7 +329,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			GSTR1Request gstr1Request = new GSTR1Request();
 			gstr1Request.setGstin(corporateApplicantRequest.getGstIn());
 			GstResponse response = gstClient.getCalculations(gstr1Request);
-			map.put("gstResponse", !CommonUtils.isObjectNullOrEmpty(response.getData()) ? convertToDoubleForXml(response.getData(),null) : " ");
+			map.put("gstResponse", !CommonUtils.isObjectNullOrEmpty(response.getData()) ? convertToDoubleForXml(MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)response.getData(), GstResponse.class), new HashMap<>()) : " ");
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -383,15 +389,19 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 					directorBackgroundDetailResponse.setDin(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDin())?convertValue(directorBackgroundDetailRequest.getDin()) : "");
 					directorBackgroundDetailResponse.setMobile(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getMobile())?directorBackgroundDetailRequest.getMobile(): " ");
 					directorBackgroundDetailResponse.setDob(directorBackgroundDetailRequest.getDob());
-					try {
-						CibilRequest cibilRequest = new CibilRequest();
-						cibilRequest.setPan(directorBackgroundDetailRequest.getPanNo());
-						cibilRequest.setApplicationId(applicationId);
-						CibilResponse cibilResponse = cibilClient.getCibilScoreByPanCard(cibilRequest);
-						directorBackgroundDetailResponse.setCibilScore(!CommonUtils.isObjectNullOrEmpty(cibilResponse.getData())? Double.parseDouble(cibilResponse.getData().toString()) : 0);
-					}catch(Exception e) {
-						e.printStackTrace();
-						logger.info("Error while getting cibil details",e);
+					if(directorBackgroundDetailRequest.getPanNo().charAt(3) == 'H' ||directorBackgroundDetailRequest.getPanNo().charAt(3) == 'h') {
+						directorBackgroundDetailResponse.setCibilScore("HUF");
+					}else {
+						try {
+							CibilRequest cibilRequest = new CibilRequest();
+							cibilRequest.setPan(directorBackgroundDetailRequest.getPanNo());
+							cibilRequest.setApplicationId(applicationId);
+							CibilScoreLogRequest cibilScoreByPanCard = cibilClient.getCibilScoreByPanCard(cibilRequest);
+							directorBackgroundDetailResponse.setCibilScore(!CommonUtils.isObjectNullOrEmpty(cibilScoreByPanCard)? cibilScoreByPanCard.getActualScore() : "NA");
+						}catch(Exception e) {
+							e.printStackTrace();
+							logger.info("Error while getting cibil details",e);
+						}
 					}
 					directorBackgroundDetailResponseList.add(directorBackgroundDetailResponse);
 				}
@@ -614,7 +624,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				{
 					Data data = MultipleJSONObjectHelper.getObjectFromMap(rec, Data.class);
 					datas.add(data);
-					map.put("bankStatementAnalysis", datas);
+					map.put("bankStatementAnalysis", printFields(datas));
 				}
 			}
 		}catch (Exception e) {
@@ -628,7 +638,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			map.put("cgtmseData", cgtmseDataResponse);
 			map.put("maxCgtmseCoverageAmount", convertValue(cgtmseDataResponse.getMaxCgtmseCoverageAmount()));
 			if(!CommonUtils.isObjectNullOrEmpty(cgtmseDataResponse.getCgtmseResponse()) && !CommonUtils.isObjectNullOrEmpty(cgtmseDataResponse.getCgtmseResponse().getDetails())) {
-				//map.put("cgtmseBankWise", cgtmseDataResponse.getCgtmseResponse().getDetails());
+				map.put("cgtmseBankWise", printFields(cgtmseDataResponse.getCgtmseResponse().getDetails()));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -636,10 +646,14 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		
 		//ELIGIBILITY DATA (ASSESSMENT TO LIMITS)
 		try {
+			TermLoanParameter termLoanParameter = termLoanParameterRepository.getById(productId);
+			Long assessmentId = termLoanParameter.getAssessmentMethodId().longValue();
+			if(!CommonUtils.isObjectNullOrEmpty(assessmentId)) {
+				map.put("assessmentId", assessmentId);
+			}
 			EligibililityRequest eligibilityReq=new EligibililityRequest();
 			eligibilityReq.setApplicationId(applicationId);
-			PrimaryCorporateRequest primaryCorporateRequest = primaryCorporateService.get(applicationId, userId);
-			eligibilityReq.setProductId(primaryCorporateRequest.getProductId().longValue());
+			eligibilityReq.setFpProductMappingId(productId);
 			EligibilityResponse eligibilityResp= eligibilityClient.corporateLoanData(eligibilityReq);
 			logger.info("********************Eligibility data**********************"+eligibilityResp.getData().toString());
 			map.put("assLimits",convertToDoubleForXml(MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)eligibilityResp.getData(), CLEligibilityRequest.class), new HashMap<>()));
@@ -837,7 +851,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		LiabilitiesDetailsString liabilitiesDetailsString = new LiabilitiesDetailsString();
 		AssetDetailsString assetDetailsString = new AssetDetailsString();
 		CorporateFinalInfoRequest  corporateFinalInfoRequest = corporateFinalInfoService.get(userId ,applicationId);
-        //SET SHARE PHASE VALUE
+        //SET SHARE FACE VALUE
 		Double shareFaceVal=1.00;
 		CorporateApplicantDetail corporateApplicantDetail=corporateApplicantDetailRepository.findOneByApplicationIdId(applicationId);
 		if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail)) {
@@ -847,10 +861,9 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			}else{
 				financialInputRequestDbl.setShareFaceValue(1.00);
 			}
-		}else{
+		} else{
 			financialInputRequestDbl.setShareFaceValue(1.00);
 		}
-
 		financialInputRequestDbl.setNoOfMonth(12.0);
 		
 		/************************************************** OPERATING STATEMENT ***************************************************/
@@ -1302,6 +1315,11 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			for(Map.Entry<Object, Object> setEntry : map.entrySet()) {
 				escapeXml(setEntry.getValue());
 			}
+		}else if(obj.getClass().isArray()){
+			Object[] arr = (Object[])obj;  
+			for(Object o : arr) {
+				escapeXml(o);
+			}
 		}
 		else {
 			escapeXml(obj);
@@ -1329,6 +1347,8 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				String a = StringEscapeUtils.escapeXml(value1.toString());
 				value = a;
 				field.set(obj, value);
+			}else if(value instanceof Double){
+				convertToDoubleForXml(value, null);
 			}else {
 				continue;
 			}

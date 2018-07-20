@@ -1630,6 +1630,24 @@ public class LoanApplicationController {
 					HttpStatus.OK);
 		}
 	}
+	
+	@RequestMapping(value = "/update_payment_status_sidbi", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> updatePaymentStatusForSidbi(@RequestBody PaymentRequest paymentRequest) {
+		try {
+			logger.info("start updatePaymentStatus from SIDBI");
+			
+			LoansResponse response = new LoansResponse("Success", HttpStatus.OK.value());
+			response.setData(loanApplicationService.updateLoanApplicationMasterPaymentStatus(paymentRequest, paymentRequest.getUserId()));
+			logger.info("end updatePaymentStatus from SIDBI()");
+			return new ResponseEntity<LoansResponse>(response, HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while updating Payment Status from SIDBI==>{}", e);
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+	}
 
 	@RequestMapping(value = "/get_payment_status", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getPaymentStatus(@RequestBody PaymentRequest paymentRequest,

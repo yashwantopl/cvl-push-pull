@@ -195,9 +195,30 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	private Boolean isCommercialCibilDisplay = false;
 
 	private Boolean isCommercialCibilMandatory = false;
+	
+	
+	private Long userOrgId;
+	
+	private Integer appstage;
+	
+	private Object workflowData;
 
 	//-----------------------added eligibility method for product
 	private Integer assessmentMethodId;
+
+	/**
+	 * @return the workflowData
+	 */
+	public Object getWorkflowData() {
+		return workflowData;
+	}
+
+	/**
+	 * @param workflowData the workflowData to set
+	 */
+	public void setWorkflowData(Object workflowData) {
+		this.workflowData = workflowData;
+	}
 
 	public Integer getIndividualCibil() {
 		return individualCibil;
@@ -980,4 +1001,23 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	public void setAssessmentMethodId(Integer assessmentMethodId) {
 		this.assessmentMethodId = assessmentMethodId;
 	}
+
+	public Long getUserOrgId() {
+		return userOrgId;
+	}
+
+	public void setUserOrgId(Long userOrgId) {
+		this.userOrgId = userOrgId;
+	}
+
+	public Integer getAppstage() {
+		return appstage;
+	}
+
+	public void setAppstage(Integer appstage) {
+		this.appstage = appstage;
+	}
+
+	
+	
 }

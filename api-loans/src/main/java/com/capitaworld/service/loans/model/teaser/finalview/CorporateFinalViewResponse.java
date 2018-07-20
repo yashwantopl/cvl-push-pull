@@ -156,6 +156,13 @@ public class CorporateFinalViewResponse implements Serializable {
     private Object cgtmseData;
 	private Long npOrgId;
 	private Object bankData;
+	 private Object managementRiskScore;
+	    private Object financialRiskScore;
+	    private Object buisnessRiskScore;
+	    private Object managementRiskScoreWeight;
+	    private Object financialRiskScoreWeight;
+	    private Object buisnessRiskScoreWeight;
+	    private Object scoreInterpretation;
 
 	public List<?> getMatchesList() {
 		return matchesList;
@@ -1379,6 +1386,104 @@ public class CorporateFinalViewResponse implements Serializable {
 	 */
 	public void setBankData(Object bankData) {
 		this.bankData = bankData;
+	}
+
+	/**
+	 * @return the managementRiskScore
+	 */
+	public Object getManagementRiskScore() {
+		return managementRiskScore;
+	}
+
+	/**
+	 * @param managementRiskScore the managementRiskScore to set
+	 */
+	public void setManagementRiskScore(Object managementRiskScore) {
+		this.managementRiskScore = managementRiskScore;
+	}
+
+	/**
+	 * @return the financialRiskScore
+	 */
+	public Object getFinancialRiskScore() {
+		return financialRiskScore;
+	}
+
+	/**
+	 * @param financialRiskScore the financialRiskScore to set
+	 */
+	public void setFinancialRiskScore(Object financialRiskScore) {
+		this.financialRiskScore = financialRiskScore;
+	}
+
+	/**
+	 * @return the buisnessRiskScore
+	 */
+	public Object getBuisnessRiskScore() {
+		return buisnessRiskScore;
+	}
+
+	/**
+	 * @param buisnessRiskScore the buisnessRiskScore to set
+	 */
+	public void setBuisnessRiskScore(Object buisnessRiskScore) {
+		this.buisnessRiskScore = buisnessRiskScore;
+	}
+
+	/**
+	 * @return the managementRiskScoreWeight
+	 */
+	public Object getManagementRiskScoreWeight() {
+		return managementRiskScoreWeight;
+	}
+
+	/**
+	 * @param managementRiskScoreWeight the managementRiskScoreWeight to set
+	 */
+	public void setManagementRiskScoreWeight(Object managementRiskScoreWeight) {
+		this.managementRiskScoreWeight = managementRiskScoreWeight;
+	}
+
+	/**
+	 * @return the financialRiskScoreWeight
+	 */
+	public Object getFinancialRiskScoreWeight() {
+		return financialRiskScoreWeight;
+	}
+
+	/**
+	 * @param financialRiskScoreWeight the financialRiskScoreWeight to set
+	 */
+	public void setFinancialRiskScoreWeight(Object financialRiskScoreWeight) {
+		this.financialRiskScoreWeight = financialRiskScoreWeight;
+	}
+
+	/**
+	 * @return the buisnessRiskScoreWeight
+	 */
+	public Object getBuisnessRiskScoreWeight() {
+		return buisnessRiskScoreWeight;
+	}
+
+	/**
+	 * @param buisnessRiskScoreWeight the buisnessRiskScoreWeight to set
+	 */
+	public void setBuisnessRiskScoreWeight(Object buisnessRiskScoreWeight) {
+		this.buisnessRiskScoreWeight = buisnessRiskScoreWeight;
+	}
+
+	/**
+	 * @return the scoreInterpretation
+	 */
+	public Object getScoreInterpretation() {
+		return scoreInterpretation;
+	}
+
+	/**
+	 * @param scoreInterpretation the scoreInterpretation to set
+	 */
+	public void setScoreInterpretation(Object scoreInterpretation) {
+		this.scoreInterpretation = scoreInterpretation;
 	}
 	
 
