@@ -1551,7 +1551,9 @@ public class ScoringServiceImpl implements ScoringService{
                     case ScoreParameter.NTB.ITR_SALARY_INCOME: {
                         try
                         {
-                            Double avgSalary=(corporateDirectorIncomeDetailsRepository.getTotalSalaryByApplicationIdAndDirectorId(applicationId,directorBackgroundDetail.getId()))/3;
+                            logger.info("Application id ===========>"+applicationId);
+                            logger.info("directorBackgroundDetail id ===========>"+directorBackgroundDetail.getId());
+                            Double avgSalary=corporateDirectorIncomeDetailsRepository.getTotalSalaryByApplicationIdAndDirectorId(applicationId,directorBackgroundDetail.getId());
                             if(avgSalary!=0)
                             {
                                 avgSalary=avgSalary/3;
@@ -1617,7 +1619,7 @@ public class ScoringServiceImpl implements ScoringService{
 
                             Data data = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)analyzerResponse.getData(),
                                     Data.class);
-                            if(!CommonUtils.isObjectNullOrEmpty(analyzerResponse.getData())){
+                            if(!CommonUtils.isObjectNullOrEmpty(data.getCheckBounceForLast6Month())){
                                 {
                                     if(!CommonUtils.isObjectNullOrEmpty(data.getCheckBounceForLast6Month().doubleValue()))
                                     {
