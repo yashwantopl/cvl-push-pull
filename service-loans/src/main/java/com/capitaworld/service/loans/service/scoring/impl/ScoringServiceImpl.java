@@ -1629,7 +1629,10 @@ public class ScoringServiceImpl implements ScoringService{
                                     }
 
                                 }
-
+                            }
+                            else
+                            {
+                                noOfChequeBounce=0.0;
                             }
 
                             scoreParameterNTBRequest.setChequeBouncesPastSixMonths(noOfChequeBounce);
