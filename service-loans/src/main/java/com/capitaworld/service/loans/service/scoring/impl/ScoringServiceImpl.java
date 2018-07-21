@@ -1552,6 +1552,11 @@ public class ScoringServiceImpl implements ScoringService{
                         try
                         {
                             Double avgSalary=(corporateDirectorIncomeDetailsRepository.getTotalSalaryByApplicationIdAndDirectorId(applicationId,directorBackgroundDetail.getId()))/3;
+                            if(avgSalary!=0)
+                            {
+                                avgSalary=avgSalary/3;
+                            }
+
                             Double promotorContribution=primaryCorporateDetail.getPromoterContribution();
 
                             if(CommonUtils.isObjectNullOrEmpty(promotorContribution))
@@ -1575,12 +1580,12 @@ public class ScoringServiceImpl implements ScoringService{
                         try
                         {
 
-                            Double totalSalary=corporateDirectorIncomeDetailsRepository.getTotalSalaryByApplicationIdAndDirectorId(applicationId,directorBackgroundDetail.getId());
+                            Double totalIncome=corporateDirectorIncomeDetailsRepository.getTotalIncomeByApplicationIdAndDirectorId(applicationId,directorBackgroundDetail.getId());
                             Double totalEMI=financialArrangementDetailsRepository.getTotalEmiByApplicationIdAndDirectorId(applicationId,directorBackgroundDetail.getId());
 
-                            if(CommonUtils.isObjectNullOrEmpty(totalSalary))
+                            if(CommonUtils.isObjectNullOrEmpty(totalIncome))
                             {
-                                totalSalary=0.0;
+                                totalIncome=0.0;
                             }
 
                             if(CommonUtils.isObjectNullOrEmpty(totalEMI))
@@ -1588,7 +1593,7 @@ public class ScoringServiceImpl implements ScoringService{
                                 totalEMI=0.0;
                             }
 
-                            scoreParameterNTBRequest.setItrSalaryIncome(totalSalary);
+                            scoreParameterNTBRequest.setItrSalaryIncome(totalIncome);
                             scoreParameterNTBRequest.setTotalEmiPaid(totalEMI);
                             scoreParameterNTBRequest.setIsFixedObligationRatio(true);
                         }
