@@ -19,8 +19,10 @@ public interface CorporateDirectorIncomeDetailsRepository extends JpaRepository<
 	public List<CorporateDirectorIncomeDetails> findByApplicationIdAndIsActive(Long applicationId, Boolean isActive);
 	
 	@Query("select sum(totalIncome) from CorporateDirectorIncomeDetails cd where cd.applicationId.id =:applicationId and cd.directorId =:directorId and cd.isActive=true")
-	public Double getTotalSalaryByApplicationIdAndDirectorId(@Param("applicationId") Long applicationId, @Param("directorId") Long directorId);
+	public Double getTotalIncomeByApplicationIdAndDirectorId(@Param("applicationId") Long applicationId, @Param("directorId") Long directorId);
 
 	@Query("select sum(salary) from CorporateDirectorIncomeDetails cd where cd.applicationId.id =:applicationId and cd.directorId =:directorId and cd.isActive=true")
-	public Double getTotalIncomeByApplicationIdAndDirectorId(@Param("applicationId") Long applicationId, @Param("directorId") Long directorId);
+	public Double getTotalSalaryByApplicationIdAndDirectorId(@Param("applicationId") Long applicationId, @Param("directorId") Long directorId);
+
+
 }
