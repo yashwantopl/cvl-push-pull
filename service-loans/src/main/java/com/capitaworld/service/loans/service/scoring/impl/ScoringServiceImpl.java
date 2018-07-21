@@ -1617,7 +1617,7 @@ public class ScoringServiceImpl implements ScoringService{
 
                             Data data = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)analyzerResponse.getData(),
                                     Data.class);
-                            if(!CommonUtils.isObjectNullOrEmpty(analyzerResponse.getData())){
+                            if(!CommonUtils.isObjectNullOrEmpty(data.getCheckBounceForLast6Month())){
                                 {
                                     if(!CommonUtils.isObjectNullOrEmpty(data.getCheckBounceForLast6Month().doubleValue()))
                                     {
