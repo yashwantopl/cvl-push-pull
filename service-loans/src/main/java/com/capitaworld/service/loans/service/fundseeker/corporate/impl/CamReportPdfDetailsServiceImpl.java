@@ -229,34 +229,34 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 	private ThirdPartyClient thirdPartyClient;
 	
 	@Autowired
-	OperatingStatementDetailsRepository operatingStatementDetailsRepository;
+	private OperatingStatementDetailsRepository operatingStatementDetailsRepository;
 	
 	@Autowired
-	LiabilitiesDetailsRepository liabilitiesDetailsRepository;
+	private LiabilitiesDetailsRepository liabilitiesDetailsRepository;
 	
 	@Autowired
-	AssetsDetailsRepository assetsDetailsRepository;
+	private AssetsDetailsRepository assetsDetailsRepository;
 	
 	@Autowired
-	EligibilityClient eligibilityClient;
+	private EligibilityClient eligibilityClient;
 	
 	@Autowired
-	WorkflowClient workflowClient;
+	private WorkflowClient workflowClient;
 	
 	@Autowired
-	ConnectClient connectClient;
+	private ConnectClient connectClient;
 	
 	@Autowired
-	McaClient mcaClient;
+	private McaClient mcaClient;
 	
 	@Autowired
-	FraudAnalyticsClient fraudAnalyticsClient;
+	private FraudAnalyticsClient fraudAnalyticsClient;
 	
 	@Autowired
 	private TermLoanParameterRepository termLoanParameterRepository;
 	
 	private static final Logger logger = LoggerFactory.getLogger(CamReportPdfDetailsServiceImpl.class);
-	 public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
+	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 	DecimalFormat decim = new DecimalFormat("#,##0.00");
 	DecimalFormat decim2 = new DecimalFormat("#,###.00");
 	@Override
