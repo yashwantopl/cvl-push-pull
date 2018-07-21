@@ -53,7 +53,7 @@ public class NTBCamReportController {
 			userId = ((Long) request.getAttribute(CommonUtils.USER_ID));		
 		}
 		try {
-			Map<String,Object> response = ntbCamReportService.getNtbCamReport(applicationId,productId,userId, false);
+			Map<String,Object> response = ntbCamReportService.getNtbCamReport(applicationId,productId,userId,false);
 			ReportRequest reportRequest = new ReportRequest();
 			reportRequest.setParams(response);
 			reportRequest.setTemplate("NTBCAMPRIMARY");
