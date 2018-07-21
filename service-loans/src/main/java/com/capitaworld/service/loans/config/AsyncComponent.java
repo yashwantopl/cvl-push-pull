@@ -1,5 +1,7 @@
 package com.capitaworld.service.loans.config;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -13,31 +15,46 @@ import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
+import com.capitaworld.service.loans.model.LoanApplicationRequest;
+import com.capitaworld.service.loans.model.PaymentRequest;
+import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
+import com.capitaworld.service.loans.model.retail.RetailApplicantRequest;
+import com.capitaworld.service.loans.service.fundprovider.ProductMasterService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.service.fundseeker.retail.RetailApplicantService;
-import com.capitaworld.service.loans.model.LoanApplicationRequest;
-import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
-import com.capitaworld.service.loans.model.retail.RetailApplicantRequest;
-import com.capitaworld.service.loans.service.ProposalService;
-import com.capitaworld.service.loans.service.fundprovider.ProductMasterService;
 import com.capitaworld.service.loans.utils.CommonNotificationUtils.NotificationTemplate;
+import com.capitaworld.service.loans.utils.CommonUtils;
+import com.capitaworld.service.loans.utils.CommonUtils.LoanType;
+import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.matchengine.ProposalDetailsClient;
 import com.capitaworld.service.matchengine.model.ConnectionResponse;
 import com.capitaworld.service.matchengine.model.ProposalCountResponse;
 import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
 import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
-import com.capitaworld.service.loans.utils.CommonUtils;
-import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
+import com.capitaworld.service.mca.client.McaClient;
+import com.capitaworld.service.mca.model.CompaniesHistoryPara;
+import com.capitaworld.service.mca.model.CompaniesHistoryRequest;
+import com.capitaworld.service.mca.model.CompaniesHistoryResponse;
+import com.capitaworld.service.mca.model.McaRequest;
+import com.capitaworld.service.mca.model.McaRequestPara;
+import com.capitaworld.service.mca.model.SearchCompaniesRequest;
+import com.capitaworld.service.mca.model.SearchCompaniesResponse;
+import com.capitaworld.service.mca.model.SearchCriteria;
 import com.capitaworld.service.notification.client.NotificationClient;
 import com.capitaworld.service.notification.exceptions.NotificationException;
 import com.capitaworld.service.notification.model.Notification;
 import com.capitaworld.service.notification.model.NotificationRequest;
 import com.capitaworld.service.notification.utils.ContentType;
+import com.capitaworld.service.notification.utils.NotificationAlias;
 import com.capitaworld.service.notification.utils.NotificationType;
+import com.capitaworld.service.oneform.client.OneFormClient;
+import com.capitaworld.service.oneform.model.MasterResponse;
+import com.capitaworld.service.oneform.model.OneFormResponse;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.UserResponse;
 import com.capitaworld.service.users.model.UsersRequest;
+import com.ibm.icu.text.SimpleDateFormat;
 
 @Component
 public class AsyncComponent {
@@ -66,6 +83,9 @@ public class AsyncComponent {
 	
 	@Autowired
 	private RetailApplicantService retailApplicantService;
+	
+	@Autowired
+	private OneFormClient oneFormClient;
 	
 	
 	
@@ -308,6 +328,24 @@ public class AsyncComponent {
 		}
 	}
 	
+	
+	private UsersRequest getUserNameAndEmail(Long userId){
+		try {
+			UserResponse userResponse = usersClient.getEmailAndNameByUserId(userId);
+			if (!CommonUtils.isObjectNullOrEmpty(userResponse.getData())) {
+				UsersRequest request = MultipleJSONObjectHelper
+    					.getObjectFromMap((LinkedHashMap<String, Object>) userResponse.getData(), UsersRequest.class);
+    			if(!CommonUtils.isObjectNullOrEmpty(request)) {
+    				return request;
+    			}
+    		}
+		} catch(Exception e) {
+			logger.info("Throw exception while get name and email by userid");
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 	/**
 	 * FS Mail Number :- 9
 	 *  Send Mail when Fund seeker submit profile-primary form and go to matches page
@@ -343,7 +381,7 @@ public class AsyncComponent {
 		LoanApplicationRequest loanBasicDetails = loanApplicationService.getLoanBasicDetails(applicationId, userId);
 		if(loanBasicDetails != null) {
 			parameters.put("application_id", !CommonUtils.isObjectNullOrEmpty(loanBasicDetails.getApplicationCode()) ? loanBasicDetails.getApplicationCode() : "NA");
-			parameters.put("loan", CommonUtils.getLoanNameForMail(loanBasicDetails.getProductId()));	
+			parameters.put("loan", LoanType.getType(loanBasicDetails.getProductId()).getName());	
 		} else {
 			parameters.put("application_id", "NA");
 			parameters.put("loan", "NA");
@@ -410,7 +448,7 @@ public class AsyncComponent {
 		    				LoanApplicationRequest loanBasicDetails = loanApplicationService.getLoanBasicDetails(applicationId, userId);
 		    				if(loanBasicDetails != null) {
 		    					parameters.put("application_id",  !CommonUtils.isObjectNullOrEmpty(loanBasicDetails.getApplicationCode()) ? loanBasicDetails.getApplicationCode() : "NA");
-		        				parameters.put("loan", CommonUtils.getLoanNameForMail(loanBasicDetails.getProductId()));	
+		        				parameters.put("loan", LoanType.getType(loanBasicDetails.getProductId()).getName());	
 		    				} else {
 		    					parameters.put("application_id", "NA");
 		        				parameters.put("loan", "NA");
@@ -450,6 +488,12 @@ public class AsyncComponent {
 		    				}
 		    				String[] toIds = {request.getEmail()};
 		    				sendNotification(toIds,userId.toString(),parameters, NotificationTemplate.FP_VIEW_MORE_DETAILS,fpName,false,null);
+		    				//SMS
+		    				LoanApplicationRequest respLoans = loanApplicationService.getLoanApplicationDetails(userId, applicationId);
+		    				UsersRequest resp = getEmailMobile(respLoans.getNpUserId());
+		    				
+		    				sendSMSNotification(respLoans.getNpUserId().toString(), parameters, NotificationAlias.SMS_VIEW_MORE_DETAILS, resp.getMobile());
+		    				
 		    				logger.info("Exits, Successfully sent mail when fp view more details but fs not filled final details ---->"+request.getEmail());
 		    			}
 		    		}
@@ -460,7 +504,37 @@ public class AsyncComponent {
 			e.printStackTrace();
 		}
 	}
-	
+	private void sendSMSNotification(String userId, Map<String, Object> parameters, Long templateId, String... to) throws NotificationException  {
+//		String to[] = {toNo};
+		NotificationRequest req = new NotificationRequest();
+		req.setClientRefId(userId);
+		Notification notification = new Notification();
+		notification.setContentType(ContentType.TEMPLATE);
+		notification.setTemplateId(templateId);
+		notification.setTo(to);
+		notification.setType(NotificationType.SMS);
+		notification.setParameters(parameters);
+		req.addNotification(notification);
+		
+		notificationClient.send(req);
+		
+	}
+
+	private UsersRequest getEmailMobile(Long userId) throws IOException {
+		if (CommonUtils.isObjectNullOrEmpty(userId)) {
+			logger.warn("Usesr Id is NULL===>");
+			return null;
+		}
+		UserResponse emailMobile = usersClient.getEmailMobile(userId);
+		if (CommonUtils.isObjectListNull(emailMobile, emailMobile.getData())) {
+			logger.warn("emailMobile or Data in emailMobile must not be null===>{}", emailMobile);
+			return null;
+		}
+
+		UsersRequest request = MultipleJSONObjectHelper
+				.getObjectFromMap((LinkedHashMap<String, Object>) emailMobile.getData(), UsersRequest.class);
+		return request;
+	}
 	/**
 	 * FS Mail Number :- 14
 	 *  Send Mail when FP Send Direct request to fundseeker
@@ -490,8 +564,8 @@ public class AsyncComponent {
 		    				if(loanBasicDetails != null) {
 		    					logger.info("FPSentDirectRequestToFS, Application Code ----->"+loanBasicDetails.getApplicationCode());
 		    					parameters.put("application_id", !CommonUtils.isObjectNullOrEmpty(loanBasicDetails.getApplicationCode()) ? loanBasicDetails.getApplicationCode() : "NA");
-		    					logger.info("FPSentDirectRequestToFS, Type of loan ----->"+CommonUtils.getLoanNameForMail(loanBasicDetails.getProductId()));
-		    					parameters.put("loan", CommonUtils.getLoanNameForMail(loanBasicDetails.getProductId()));	
+		    					logger.info("FPSentDirectRequestToFS, Type of loan ----->"+LoanType.getType(loanBasicDetails.getProductId()).getName());
+		    					parameters.put("loan", LoanType.getType(loanBasicDetails.getProductId()).getName());	
 		    				} else {
 		    					parameters.put("application_id", "NA");
 		        				parameters.put("loan", "NA");
@@ -626,5 +700,197 @@ public class AsyncComponent {
 		}
 		
 	}
+	
+	@Async
+	public void sendMailWhenFSSelectOnlinePayment(Long userId,PaymentRequest paymentInfo, NotificationTemplate emailNotificationTemplate,Long sysTemplateId) {
+		try {
+			if(CommonUtils.isObjectNullOrEmpty(paymentInfo.getEmailAddress())) {
+				logger.info("Email Address null or Empty while send mail when user select online payment");
+			}
+			Map<String,Object> parameters = new HashMap<>();
+			SimpleDateFormat dt = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
+			String fsName = loanApplicationService.getFsApplicantName(paymentInfo.getApplicationId());
+			parameters.put("fs_name", !CommonUtils.isObjectNullOrEmpty(fsName) ? fsName : "NA");
+			parameters.put("entity_name", !CommonUtils.isObjectNullOrEmpty(paymentInfo.getNameOfEntity()) ? paymentInfo.getNameOfEntity() : "NA");
+			parameters.put("mobile_number", !CommonUtils.isObjectNullOrEmpty(paymentInfo.getMobileNumber()) ? paymentInfo.getMobileNumber() : "NA");
+			
+			String regOfficeAdd = "";
+			if(!CommonUtils.isObjectNullOrEmpty(paymentInfo.getAddress())) {
+				regOfficeAdd = !CommonUtils.isObjectNullOrEmpty(paymentInfo.getAddress().getPremiseNumber()) ? paymentInfo.getAddress().getPremiseNumber() + ", " : "";
+				regOfficeAdd += !CommonUtils.isObjectNullOrEmpty(paymentInfo.getAddress().getStreetName()) ? paymentInfo.getAddress().getStreetName() + ", " : "";
+				regOfficeAdd += !CommonUtils.isObjectNullOrEmpty(paymentInfo.getAddress().getLandMark()) ? paymentInfo.getAddress().getLandMark() + ", " : "";
+				String countryName = getCountryName(paymentInfo.getAddress().getCountryId());
+				regOfficeAdd += !CommonUtils.isObjectNullOrEmpty(countryName) ? countryName + ", " : "";
+				String stateName = getStateName(paymentInfo.getAddress().getStateId());
+				regOfficeAdd += !CommonUtils.isObjectNullOrEmpty(stateName) ? stateName+ ", " : "";
+				String cityName = getCityName(paymentInfo.getAddress().getCityId());
+				regOfficeAdd += !CommonUtils.isObjectNullOrEmpty(cityName) ? cityName : "";
+			}
+			parameters.put("address",!CommonUtils.isObjectNullOrEmpty(regOfficeAdd) ? regOfficeAdd : "NA");
+			parameters.put("appointment_date",!CommonUtils.isObjectNullOrEmpty(paymentInfo.getAppointmentDate()) ? dt.format(paymentInfo.getAppointmentDate()) : "NA");
+			parameters.put("appointment_time",paymentInfo.getAppointmentTime());
+			
+			String[] toIds = {paymentInfo.getEmailAddress()};
+			sendNotification(toIds,userId.toString(),parameters, emailNotificationTemplate,null,false,null);
+			if(!CommonUtils.isObjectNullOrEmpty(sysTemplateId)) {
+				String[] toUserIds = {userId.toString()};
+				synNotification(toUserIds, userId, sysTemplateId, parameters, paymentInfo.getApplicationId(), null);
+				logger.info("Saved System Notification when FS select Online Payment--------------------------------->"+paymentInfo.getEmailAddress());				
+			}
+			logger.info("Send Mail when FS select Online Payment--------------------------------->"+paymentInfo.getEmailAddress());
+			
+		} catch (Exception e) {
+			logger.info("Throw Exception while send FS select online payment !!");
+			e.printStackTrace();
+		}
+		
+	}
+	
+	/**
+	 * SEND MAIL TO CHECKER WHEN MAKER LOCK FINAL DETAILS 
+	 * @param checkerId
+	 * @param makerId
+	 * @param applicationCode
+	 * @param productId
+	 * @param fsName
+	 */
+	@Async
+	public void sendEmailWhenMakerLockFinalDetails(Long checkerId,Long makerId,
+			String applicationCode,Integer productId,String fsName,Long applicationId) {
+		logger.info("Enter in send mail when aker has lock final details then send to checker ");
+		try {
+			UsersRequest checkerUserName = getUserNameAndEmail(checkerId);
+			UsersRequest makerUserName = getUserNameAndEmail(makerId);
+			if(CommonUtils.isObjectNullOrEmpty(checkerUserName) || CommonUtils.isObjectNullOrEmpty(makerUserName)) {
+				logger.info("Check request or maker request null or empty");
+				return;
+			}
+			Map<String,Object> parameters = new HashMap<>();
+			parameters.put("maker_name",makerUserName.getName());
+			parameters.put("checker_name",checkerUserName.getName());
+			parameters.put("fs_name",fsName);
+			parameters.put("lone_type", LoanType.getType(productId).getName());
+			String[] toIds = {checkerUserName.getEmail()};
+			String subject = makerUserName.getName()+ " has lock final details for " + applicationCode;
+			sendNotification(toIds,checkerId.toString(),parameters, NotificationTemplate.EMAIL_CKR_MKR_FINAL_LOCK,subject,false,null);
+			logger.info("Successfully send mail ------------------>" + checkerUserName.getEmail());
+			String[] toUserIds = {checkerId.toString()};
+			synNotification(toUserIds, makerId, NotificationAlias.SYS_CKR_MKR_FINAL_LOCK, parameters,applicationId, null);
+			logger.info("Successfully send system notification------------------>" );
+		} catch (Exception e) {
+			logger.info("Throw exception while sending final lock mail");
+			e.printStackTrace();
+		}
+		
+		
+		
+	};
+	
+	
+	/**
+	 * 
+	 * @param toIds :- TO APPLICATION USER ID
+	 * @param fromId :- CURRENT USER ID 
+	 * @param templateId :- NOTIFICATION TEMPLATE ID
+	 * @param parameters :- MAP
+	 * @param applicationId :- CURRENT APPLICATION ID
+	 * @param fpProductId :- NON MANDATOY
+	 * @return
+	 */
+	private void synNotification(String[] toIds, Long fromId, Long templateId,
+			Map<String, Object> parameters, Long applicationId, Long fpProductId) {
+
+		NotificationRequest notificationRequest = new NotificationRequest();
+		notificationRequest.setClientRefId(fromId.toString());
+
+		Notification notification = new Notification();
+
+		notification.setTo(toIds);
+		notification.setType(NotificationType.SYSTEM);
+		notification.setTemplateId(templateId);
+		notification.setContentType(ContentType.TEMPLATE);
+		notification.setParameters(parameters);
+		notification.setFrom(fromId.toString());
+		notification.setProductId(fpProductId);
+		notification.setApplicationId(applicationId);
+		notificationRequest.addNotification(notification);
+		try {
+			notificationClient.send(notificationRequest);
+		} catch (NotificationException e) {
+			logger.info("Throw Exception While Send Sys Notication");
+			e.printStackTrace();
+		}
+
+	}
+	
+	@SuppressWarnings("unchecked")
+	private String getCityName(Long cityId) {
+		try {
+			if(CommonUtils.isObjectNullOrEmpty(cityId)) {
+				return null;
+			}
+			List<Long> cityList = new ArrayList<>(1);
+			cityList.add(cityId);
+			OneFormResponse oneFormResponse = oneFormClient.getCityByCityListId(cityList);
+			List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
+					.getListData();
+			if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+				MasterResponse masterResponse = MultipleJSONObjectHelper
+						.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+				return masterResponse.getValue();
+			}
+		} catch (Exception e) {
+			logger.info("Throw Exception while get city name by city Id in Asyn Mail Integation");
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	@SuppressWarnings("unchecked")
+	private String getStateName(Integer stateId) {
+		try {
+			if(CommonUtils.isObjectNullOrEmpty(stateId)) {
+				return null;
+			}
+			List<Long> stateList = new ArrayList<>(1);
+			stateList.add(stateId.longValue());
+			OneFormResponse oneFormResponse = oneFormClient.getStateByStateListId(stateList);
+			List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
+					.getListData();
+			if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+				MasterResponse masterResponse = MultipleJSONObjectHelper
+						.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+				return masterResponse.getValue();
+			}
+		} catch (Exception e) {
+			logger.info("Throw Exception while get city name by city Id in Asyn Mail Integation");
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	@SuppressWarnings("unchecked")
+	private String getCountryName(Integer country) {
+		try {
+			if(CommonUtils.isObjectNullOrEmpty(country)) {
+				return null;
+			}
+			List<Long> countryList = new ArrayList<>(1);
+			countryList.add(country.longValue());
+			OneFormResponse oneFormResponse = oneFormClient.getCountryByCountryListId(countryList);
+			List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
+					.getListData();
+			if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+				MasterResponse masterResponse = MultipleJSONObjectHelper
+						.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+				return masterResponse.getValue();
+			}
+		} catch (Exception e) {
+			logger.info("Throw Exception while get country name by country Id in DDR Onform");
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 	
 }

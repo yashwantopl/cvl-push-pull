@@ -20,6 +20,7 @@ import com.capitaworld.service.loans.model.retail.FinalCarLoanDetailRequest;
 import com.capitaworld.service.loans.model.retail.PrimaryCarLoanDetailRequest;
 import com.capitaworld.service.loans.service.fundseeker.retail.FinalCarLoanService;
 import com.capitaworld.service.loans.service.fundseeker.retail.PrimaryCarLoanService;
+import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 
 @RestController
@@ -58,7 +59,7 @@ public class CarLoanController {
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
-			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
+			if (CommonDocumentUtils.isThisClientApplication(request)) {
 				carLoanDetailRequest.setClientId(clientId);
 			}
 			primaryCarLoanService.saveOrUpdate(carLoanDetailRequest, userId);
@@ -79,7 +80,7 @@ public class CarLoanController {
 		// request must not be null
 		try {
 			Long userId = null;
-			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
+			if (CommonDocumentUtils.isThisClientApplication(request)) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -108,7 +109,7 @@ public class CarLoanController {
 		try {
 			// request must not be null
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
+			if (CommonDocumentUtils.isThisClientApplication(request)) {
 				finalCarLoanDetailRequest.setClientId(clientId);
 			}
 
@@ -143,7 +144,7 @@ public class CarLoanController {
 
 		try {
 			Long userId = null;
-			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
+			if (CommonDocumentUtils.isThisClientApplication(request)) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);

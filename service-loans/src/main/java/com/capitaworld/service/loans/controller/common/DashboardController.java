@@ -44,7 +44,7 @@ public class DashboardController {
 		try {
 			CommonDocumentUtils.startHook(logger, "profileDetails");
 			Long userId = null;
-			if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()){
+			if(CommonDocumentUtils.isThisClientApplication(request) && !CommonUtils.isObjectNullOrEmpty(clientId)){
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -94,19 +94,19 @@ public class DashboardController {
 		try {
 			CommonDocumentUtils.startHook(logger, "getFsOrFpCount");
 			Long userId = null;
-			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
+			if (CommonDocumentUtils.isThisClientApplication(request) && !CommonUtils.isObjectNullOrEmpty(clientId)) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 			}
 			
-			if(CommonUtils.isObjectNullOrEmpty(data.getId())){
+			if(CommonUtils.isObjectNullOrEmpty(data.getValue())){
 				logger.warn("UserType must not be Empty");
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()),
 						HttpStatus.OK);
 			}
-			
+			data.setId(Long.parseLong(CommonUtils.decode(data.getValue())));
 			Integer count = dashboardService.getCount(data.getId().intValue());
 			LoansResponse loansResponse = new LoansResponse("Data Found",
 					HttpStatus.OK.value());

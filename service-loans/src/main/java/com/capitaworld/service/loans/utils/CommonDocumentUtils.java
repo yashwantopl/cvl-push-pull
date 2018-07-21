@@ -4,9 +4,13 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.slf4j.Logger;
 
 import com.capitaworld.service.dms.util.DocumentAlias;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
+import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
 import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.Currency;
 import com.capitaworld.service.oneform.enums.Denomination;
@@ -31,7 +35,7 @@ public class CommonDocumentUtils {
 			return DocumentAlias.LAP_LOAN_PROFIEL_PICTURE;
 		case 14:
 			return DocumentAlias.LAS_LOAN_PROFIEL_PICTURE;
-		case 15://UNSECURED_LOAN_PROFIEL_PICTURE
+		case 15:// UNSECURED_LOAN_PROFIEL_PICTURE
 			return DocumentAlias.UNSECURED_LOAN_PROFIEL_PICTURE;
 		}
 		return null;
@@ -95,8 +99,9 @@ public class CommonDocumentUtils {
 
 	public static String getCurrency(Integer currencyId) {
 		if (!CommonUtils.isObjectNullOrEmpty(currencyId)) {
-			if (!CommonUtils.isObjectNullOrEmpty(Currency.getById(currencyId))) {
-				return Currency.getById(currencyId).getValue();
+			Currency currency = Currency.getById(currencyId);
+			if (!CommonUtils.isObjectNullOrEmpty(currency)) {
+				return currency.getValue();
 			}
 		}
 		return "NA";
@@ -141,4 +146,67 @@ public class CommonDocumentUtils {
 		logger.info("End " + methodName + "() Method");
 	}
 
+	public static String getAdministrativeOfficeAddress(CorporateApplicantDetail applicantDetail,
+			OneFormClient oneFormClient) throws Exception {
+		String admntOfficeAdd = "";
+		admntOfficeAdd = !CommonUtils.isObjectNullOrEmpty(applicantDetail.getAdministrativePremiseNumber())
+				? applicantDetail.getAdministrativePremiseNumber() + ", "
+				: "";
+		admntOfficeAdd += !CommonUtils.isObjectNullOrEmpty(applicantDetail.getAdministrativeStreetName())
+				? applicantDetail.getAdministrativeStreetName() + ", "
+				: "";
+		admntOfficeAdd += !CommonUtils.isObjectNullOrEmpty(applicantDetail.getAdministrativeLandMark())
+				? applicantDetail.getAdministrativeLandMark() + ", "
+				: "";
+
+		String country = CommonDocumentUtils.getCountry(applicantDetail.getAdministrativeCountryId() != null ?applicantDetail.getAdministrativeCountryId().longValue() : null,
+				oneFormClient);
+		String state = CommonDocumentUtils.getState(applicantDetail.getAdministrativeStateId()!=null ? applicantDetail.getAdministrativeStateId().longValue() : null,
+				oneFormClient);
+		String city = CommonDocumentUtils.getCity(applicantDetail.getAdministrativeCityId(), oneFormClient);
+		admntOfficeAdd += !CommonUtils.isObjectNullOrEmpty(country) ? country + ", " : "";
+		admntOfficeAdd += !CommonUtils.isObjectNullOrEmpty(state) ? state + ", " : "";
+		admntOfficeAdd += !CommonUtils.isObjectNullOrEmpty(city) ? city : "";
+		return admntOfficeAdd;
+	}
+	
+	
+	public static String getPermenantAddress(RetailApplicantDetail applicantDetail,
+			OneFormClient oneFormClient) throws Exception {
+		String permAdd = "";
+		permAdd = !CommonUtils.isObjectNullOrEmpty(applicantDetail.getPermanentPremiseNumberName())
+				? applicantDetail.getPermanentPremiseNumberName() + ", "
+				: "";
+		permAdd += !CommonUtils.isObjectNullOrEmpty(applicantDetail.getPermanentStreetName())
+				? applicantDetail.getPermanentStreetName() + ", "
+				: "";
+		permAdd += !CommonUtils.isObjectNullOrEmpty(applicantDetail.getPermanentLandMark())
+				? applicantDetail.getPermanentLandMark() + ", "
+				: "";
+
+		String country = CommonDocumentUtils.getCountry(applicantDetail.getPermanentCountryId()!=null ? applicantDetail.getPermanentCountryId().longValue() : null,
+				oneFormClient);
+		String state = CommonDocumentUtils.getState(applicantDetail.getPermanentStateId()!=null ? applicantDetail.getPermanentStateId().longValue() : null,
+				oneFormClient);
+		String city = CommonDocumentUtils.getCity(applicantDetail.getPermanentCityId(), oneFormClient);
+		permAdd += !CommonUtils.isObjectNullOrEmpty(country) ? country + ", " : "";
+		permAdd += !CommonUtils.isObjectNullOrEmpty(state) ? state + ", " : "";
+		permAdd += !CommonUtils.isObjectNullOrEmpty(city) ? city : "";
+		return permAdd;
+	}
+
+	
+	public static boolean isThisClientApplication(HttpServletRequest request) {
+		if(CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_TYPE))) {
+			return false;
+		}
+		Integer userType = (Integer) request.getAttribute(CommonUtils.USER_TYPE);
+		if (CommonUtils.UserType.SERVICE_PROVIDER == userType
+			|| CommonUtils.UserType.NETWORK_PARTNER == userType 
+			|| CommonUtils.UserType.FUND_PROVIDER == userType) {
+			return true;
+		}
+		return false;
+	}
+	
 }

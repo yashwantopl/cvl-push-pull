@@ -50,6 +50,9 @@ public class LiabilitiesDetails implements Serializable{
 	@Column(name="dividend_payable")
 	private Double dividendPayable;
 
+	@Column(name="financial_yearly_statement")
+	private String financialYearlyStatement;
+	
 	@Column(name="from_application_bank")
 	private Double fromApplicationBank;
 
@@ -133,6 +136,155 @@ public class LiabilitiesDetails implements Serializable{
 
 	@Column(name="which_bp_and_bd")
 	private Double whichBpAndBd;
+	
+	@Column(name="term_liabilities_secured")
+	private Double termLiabilitiesSecured;
+	
+	
+	@Column(name="share_warrents_outstanding")
+	private Double shareWarrentsOutstanding;
+	
+	@Column(name="minority_interest")
+	private Double minorityInterest;
+	
+	@Column(name="other_ncl_unsecured_loans_from_other")
+	private Double otherNclUnsecuredLoansFromOther;
+	
+	@Column(name="other_ncl_long_term_provisions")
+	private Double otherNclLongTermProvisions;
+	
+	@Column(name="other_ncl_others")
+	private Double otherNclOthers;
+	
+	@Column(name="other_ncl_unsecured_loans_from_promoters")
+	private Double otherNclUnsecuredLoansFromPromoters;
+	
+	@Column(name="other_ncl")
+	private Double otherNcl;
+	
+	@Column(name = "other_income_need_to_chek_lia")
+	private Double otherIncomeNeedTocCheckLia;
+	
+	
+	public LiabilitiesDetails() {
+		super();
+		this.advancePaymentsFromCustomers = 0.0;
+		this.debentures = 0.0;
+		this.deferredPaymentsCredits  = 0.0;
+		this.deferredTaxLiability  = 0.0;
+		this.depositsOrInstalmentsOfTermLoans  = 0.0;
+		this.dividendPayable = 0.0;
+		this.fromApplicationBank  = 0.0;
+		this.fromOtherBanks  = 0.0;
+		this.generalReserve  = 0.0;
+		this.netWorth  = 0.0;
+		this.ordinarySharesCapital = 0.0;
+		this.otherCurrentLiability = 0.0;
+		this.otherReservse  = 0.0;
+		this.otherStatutoryLiability = 0.0;
+		this.otherTermLiabilies = 0.0;
+		this.others = 0.0;
+		this.preferencesShares  = 0.0;
+		this.provisionalForTaxation = 0.0;
+		this.revaluationReservse  = 0.0;
+		this.shortTermBorrowingFromOthers  = 0.0;
+		this.subTotalA  = 0.0;
+		this.subTotalB  = 0.0;
+		this.sundryCreditors  = 0.0;
+		this.surplusOrDeficit  = 0.0;
+		this.termDeposits  = 0.0;
+		this.termLoans  = 0.0;
+		this.totalCurrentLiabilities  = 0.0;
+		this.totalLiability  = 0.0;
+		this.totalOutsideLiabilities = 0.0;
+		this.totalTermLiabilities = 0.0;
+		this.whichBpAndBd  = 0.0;
+		this.termLiabilitiesSecured  = 0.0;
+		this.shareWarrentsOutstanding  = 0.0;
+		this.minorityInterest  = 0.0;
+		this.otherNclUnsecuredLoansFromOther  = 0.0;
+		this.otherNclLongTermProvisions = 0.0;
+		this.otherNclOthers  = 0.0;
+		this.otherNclUnsecuredLoansFromPromoters = 0.0;
+		this.otherNcl  = 0.0;
+		this.termLiabilitiesUnsecured = 0.0;
+		this.otherIncomeNeedTocCheckLia=0.0;
+	}
+
+	public Double getOtherNcl() {
+		return otherNcl;
+	}
+
+	public void setOtherNcl(Double otherNcl) {
+		this.otherNcl = otherNcl;
+	}
+
+	public Double getOtherNclUnsecuredLoansFromPromoters() {
+		return otherNclUnsecuredLoansFromPromoters;
+	}
+
+	public void setOtherNclUnsecuredLoansFromPromoters(Double otherNclUnsecuredLoansFromPromoters) {
+		this.otherNclUnsecuredLoansFromPromoters = otherNclUnsecuredLoansFromPromoters;
+	}
+
+	public Double getTermLiabilitiesSecured() {
+		return termLiabilitiesSecured;
+	}
+
+	public Double getShareWarrentsOutstanding() {
+		return shareWarrentsOutstanding;
+	}
+
+	public Double getMinorityInterest() {
+		return minorityInterest;
+	}
+
+	public Double getOtherNclUnsecuredLoansFromOther() {
+		return otherNclUnsecuredLoansFromOther;
+	}
+
+	public Double getOtherNclLongTermProvisions() {
+		return otherNclLongTermProvisions;
+	}
+
+	public Double getOtherNclOthers() {
+		return otherNclOthers;
+	}
+
+	public Double getTermLiabilitiesUnsecured() {
+		return termLiabilitiesUnsecured;
+	}
+
+	public void setTermLiabilitiesSecured(Double termLiabilitiesSecured) {
+		this.termLiabilitiesSecured = termLiabilitiesSecured;
+	}
+
+	public void setShareWarrentsOutstanding(Double shareWarrentsOutstanding) {
+		this.shareWarrentsOutstanding = shareWarrentsOutstanding;
+	}
+
+	public void setMinorityInterest(Double minorityInterest) {
+		this.minorityInterest = minorityInterest;
+	}
+
+	public void setOtherNclUnsecuredLoansFromOther(Double otherNclUnsecuredLoansFromOther) {
+		this.otherNclUnsecuredLoansFromOther = otherNclUnsecuredLoansFromOther;
+	}
+
+	public void setOtherNclLongTermProvisions(Double otherNclLongTermProvisions) {
+		this.otherNclLongTermProvisions = otherNclLongTermProvisions;
+	}
+
+	public void setOtherNclOthers(Double otherNclOthers) {
+		this.otherNclOthers = otherNclOthers;
+	}
+
+	public void setTermLiabilitiesUnsecured(Double termLiabilitiesUnsecured) {
+		this.termLiabilitiesUnsecured = termLiabilitiesUnsecured;
+	}
+
+	@Column(name="term_liabilities_unsecured")
+	private Double termLiabilitiesUnsecured;
 
 	private String year;
 	
@@ -223,6 +375,14 @@ public class LiabilitiesDetails implements Serializable{
 
 	public void setDividendPayable(Double dividendPayable) {
 		this.dividendPayable = dividendPayable;
+	}
+
+	public String getFinancialYearlyStatement() {
+		return financialYearlyStatement;
+	}
+
+	public void setFinancialYearlyStatement(String financialYearlyStatement) {
+		this.financialYearlyStatement = financialYearlyStatement;
 	}
 
 	public Double getFromApplicationBank() {
@@ -463,6 +623,20 @@ public class LiabilitiesDetails implements Serializable{
 
 	public void setFsLoanApplicationMaster(LoanApplicationMaster fsLoanApplicationMaster) {
 		this.fsLoanApplicationMaster = fsLoanApplicationMaster;
+	}
+
+	/**
+	 * @return the otherIncomeNeedTocCheckLia
+	 */
+	public Double getOtherIncomeNeedTocCheckLia() {
+		return otherIncomeNeedTocCheckLia;
+	}
+
+	/**
+	 * @param otherIncomeNeedTocCheckLia the otherIncomeNeedTocCheckLia to set
+	 */
+	public void setOtherIncomeNeedTocCheckLia(Double otherIncomeNeedTocCheckLia) {
+		this.otherIncomeNeedTocCheckLia = otherIncomeNeedTocCheckLia;
 	}
 
 

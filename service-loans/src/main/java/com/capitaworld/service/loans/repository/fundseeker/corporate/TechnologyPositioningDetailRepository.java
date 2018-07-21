@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.capitaworld.service.loans.domain.fundseeker.corporate.EmployeesCategoryBreaksDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.TechnologyPositioningDetail;
 
 import java.util.List;
@@ -21,7 +22,14 @@ public interface TechnologyPositioningDetailRepository extends JpaRepository<Tec
 	@Transactional
 	@Query("update TechnologyPositioningDetail a set a.isActive = false where a.storageDetailsId= :sId")
 	public void inActiveTechnologyPositioningDetails(@Param("sId")Long storageDetailsId);
+	
+	@Modifying
+	@Transactional
+	@Query("update TechnologyPositioningDetail a set a.isActive = false where a.applicationId.id= :applicationId and a.isActive=true")
+	public void inActiveTechnologyPositioningDetailsByAppId(@Param("applicationId")Long applicationId);
 
 	@Query("select new com.capitaworld.service.loans.model.teaser.finalview.TechnologyPositioningResponse(a.details,a.type) from TechnologyPositioningDetail a where a.applicationId.id= :applicationId and isActive=true")
 	List<TechnologyPositioningResponse> listByApplicationId(@Param("applicationId") Long applicationId);
+	
+	public List<TechnologyPositioningDetail> findByApplicationIdIdAndIsActive(Long applicationId, Boolean isActive);
 }

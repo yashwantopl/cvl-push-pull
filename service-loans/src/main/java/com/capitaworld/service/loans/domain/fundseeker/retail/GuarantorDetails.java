@@ -372,7 +372,10 @@ public class GuarantorDetails implements Serializable {
 	
 	@Column(name = "tax_paid_last_year")
 	private Double taxPaidLastYear;
-	
+
+	@Column(name = "mode_of_receipt")
+	private Integer modeOfReceipt;
+
 	public Long getId() {
 		return id;
 	}
@@ -1275,7 +1278,12 @@ public class GuarantorDetails implements Serializable {
 	public void setOwnershipTypeOthers(String ownershipTypeOthers) {
 		this.ownershipTypeOthers = ownershipTypeOthers;
 	}
-	
-	
 
+	public Integer getModeOfReceipt() {
+		return modeOfReceipt;
+	}
+
+	public void setModeOfReceipt(Integer modeOfReceipt) {
+		this.modeOfReceipt = modeOfReceipt;
+	}
 }

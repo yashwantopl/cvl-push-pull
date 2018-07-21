@@ -5,6 +5,7 @@ package com.capitaworld.service.loans.model;
  */
 
 import java.io.Serializable;
+import java.lang.reflect.Field;
 
 public class AssociatedConcernDetailRequest implements Serializable{
 
@@ -40,6 +41,8 @@ public class AssociatedConcernDetailRequest implements Serializable{
 	private Double turnOverSecondYear;
 
 	private Double turnOverThirdYear;
+	
+	private String nameOfDirector;
 
 	public Long getId() {
 		return id;
@@ -154,5 +157,26 @@ public class AssociatedConcernDetailRequest implements Serializable{
 		this.turnOverThirdYear = turnOverThirdYear;
 	}
 
+	public String getNameOfDirector() {
+		return nameOfDirector;
+	}
+
+	public void setNameOfDirector(String nameOfDirector) {
+		this.nameOfDirector = nameOfDirector;
+	}
+	
+	public static void printFields(Object obj) throws Exception {
+        Field[] fields = AssociatedConcernDetailRequest.class.getDeclaredFields();
+        System.out.println("length : "+fields.length);
+        for(Field field : fields) {
+            Object value = field.get(obj);
+            if(value instanceof String){
+             String a = value.toString().replaceAll("&", "&amp;");
+             value = a;
+             field.set(obj, value);
+            }
+        }
+    }
+	
 	
 }

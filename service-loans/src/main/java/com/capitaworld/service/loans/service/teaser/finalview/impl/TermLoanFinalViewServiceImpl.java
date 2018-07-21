@@ -179,49 +179,158 @@ public class TermLoanFinalViewServiceImpl implements TermLoanFinalViewService {
 		} catch (DocumentException e) {
 			e.printStackTrace();
 		}
-		
+
+		/*
+		 * FINAL UPLOADS
+		 * */
+		/* FINANCIAL */
 		try{
 			response.setLastAuditedAnnualReportList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.TERM_LOAN_LAST_AUDITED_ANNUAL_REPORT));
-		}catch(DocumentException e){
+		} catch (DocumentException e) {
 			e.printStackTrace();
 		}
-		
 		try{
 			response.setSanctionLetterCopyList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.TERM_LOAN_SANCTION_LETTER_COPY));
-		}catch(DocumentException e){
+		} catch (DocumentException e) {
 			e.printStackTrace();
 		}
 		try{
 			response.setLastITReturnList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.TERM_LOAN_LAST_IT_RETURN));
-		}catch(DocumentException e){
+		} catch (DocumentException e) {
+			e.printStackTrace();
+		}
+		try{
+			response.setBankStatementList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.TERM_LOAN_BANK_STATEMENT));
+		} catch (DocumentException e) {
 			e.printStackTrace();
 		}
 		try{
 			response.setNetWorthStatementOfdirectorsList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.TERM_LOAN_NET_WORTH_STATEMENT_OF_DIRECTORS));
-		}catch(DocumentException e){
+		} catch (DocumentException e) {
 			e.printStackTrace();
 		}
 		try{
 			response.setProvisionalFinancialsList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.TERM_LOAN_PROVISIONAL_FINANCIALS));
-		}catch(DocumentException e){
+		} catch (DocumentException e) {
 			e.printStackTrace();
 		}
-		try{
-			response.setPanOfDirectorsList(documentManagementService.getDocumentDetails(toApplicationId, DocumentAlias.UERT_TYPE_APPLICANT,DocumentAlias.TERM_LOAN_PAN_OF_DIRECTORS_CERTIFICATE_OF_INCORPORATION));
-		}catch(DocumentException e){
+		try {
+			response.setBrochureList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.TERM_LOAN_BROCHURE_OF_PROPOSED_ACTIVITIES)));
+		} catch (DocumentException e) {
+			e.printStackTrace();
+		}try {
+			response.setItReturnForFYOfAllDirectorsList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.TERM_LOAN_IT_RETURN_DIRECTOR)));
+		} catch (DocumentException e) {
+			e.printStackTrace();
+		}
+		try {
+			response.setFinSubsidiariesEntitiesList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.TERM_LOAN_FINANCIALS_OF_SUBSIDIARIES)));
+		} catch (DocumentException e) {
+			e.printStackTrace();
+		}
+		try {
+			response.setAssessOrderForLastThreeYearsList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.TERM_LOAN_ASSESSMENT_ORDERS)));
+		} catch (DocumentException e) {
+			e.printStackTrace();
+		}
+
+		/* KYC UPLOADS */
+		try {
+			response.setCertificateOfIncorpList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.TERM_LOAN_CERTIFICATE_OF_INCORPORATION)));
+		} catch (DocumentException e) {
 			e.printStackTrace();
 		}
 		try{
 			response.setDetailedListOfShareholdersList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.TERM_LOAN_DETAILED_LIST_OF_SHAREHOLDERS));
-		}catch(DocumentException e){
+		} catch (DocumentException e) {
+			e.printStackTrace();
+		}
+		try {
+			response.setPanCardList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.TERM_LOAN_COPY_OF_PAN_CARD)));
+		} catch (DocumentException e) {
 			e.printStackTrace();
 		}
 		try{
 			response.setPhotoOfDirectorsList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.TERM_LOAN_PHOTO_OF_DIRECTORS));
-		}catch(DocumentException e){
+		} catch (DocumentException e) {
 			e.printStackTrace();
 		}
-		
+		try{
+			response.setPanOfDirectorsList(documentManagementService.getDocumentDetails(toApplicationId, DocumentAlias.UERT_TYPE_APPLICANT,DocumentAlias.TERM_LOAN_PAN_OF_DIRECTORS_CERTIFICATE_OF_INCORPORATION));
+		} catch (DocumentException e) {
+			e.printStackTrace();
+		}
+		try{
+			response.setResidenceAddProofList(documentManagementService.getDocumentDetails(toApplicationId, DocumentAlias.UERT_TYPE_APPLICANT,DocumentAlias.TERM_LOAN_DIRECTOR_ADDRESS));
+		} catch (DocumentException e) {
+			e.printStackTrace();
+		}
+		try {
+			response.setResolutionForAdditionOfDirectorsList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.TERM_LOAN_DIRECTOR_RESOLUTION)));
+		} catch (DocumentException e) {
+			e.printStackTrace();
+		}
+
+		/* OTHERS UPLOADS */
+		try {
+			response.setMomAndAOAList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.TL_MOM_AOA)));
+		} catch (DocumentException e) {
+			e.printStackTrace();
+		}
+		try {
+			response.setDebtorsList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.TL_DEBTORS_LIST)));
+		} catch (DocumentException e) {
+			e.printStackTrace();
+		}
+		try {
+			response.setGstVATExciseList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.TL_GST_APPLIED)));
+		} catch (DocumentException e) {
+			e.printStackTrace();
+		}
+		try {
+			response.setLetterOfIntentFromFPList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.TL_LETTER_OF_INTENT)));
+		} catch (DocumentException e) {
+			e.printStackTrace();
+		}
+		try {
+			response.setCopiesOfRelevantLicenseList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.TL_RELEVANT_LICENSE)));
+		} catch (DocumentException e) {
+			e.printStackTrace();
+		}
+		try {
+			response.setSalesTaxReturnsList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.TL_SALES_TAX)));
+		} catch (DocumentException e) {
+			e.printStackTrace();
+		}
+		try {
+			response.setLatestTaxPaidCoyList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.TL_LATEST_TAX)));
+		} catch (DocumentException e) {
+			e.printStackTrace();
+		}
+		try {
+			response.setEncumbranceList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.TL_ENCUMBRANCE)));
+		} catch (DocumentException e) {
+			e.printStackTrace();
+		}
+		try {
+			response.setCopiesOfTrustDeedList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.TL_COPIES_TRUST_DEEDS)));
+		} catch (DocumentException e) {
+			e.printStackTrace();
+		}
+		try {
+			response.setMarketSurveyReportList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.TL_MARKET_SURVEY_REPORT)));
+		} catch (DocumentException e) {
+			e.printStackTrace();
+		}
+		try {
+			response.setDetailsOfContLiabilitiesList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.TL_CONTINGENT_LIABILITIES)));
+		} catch (DocumentException e) {
+			e.printStackTrace();
+		}
+
+		/*
+		 * DPR, CMA, FINANCIAL MODELS
+		 * */
 		try{
 			dprList = documentManagementService.getDocumentDetails(toApplicationId, DocumentAlias.UERT_TYPE_APPLICANT,Long.valueOf(DocumentAlias.TL_DPR_OUR_FORMAT));
 			response.setDprList(dprList);
@@ -245,21 +354,6 @@ public class TermLoanFinalViewServiceImpl implements TermLoanFinalViewService {
 		}
 		try{
 			response.setDprYourFormatList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.TL_DPR_YOUR_FORMAT)));
-		} catch (DocumentException e) {
-			e.printStackTrace();
-		}
-		try {
-			response.setBrochureList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.TERM_LOAN_BROCHURE_OF_PROPOSED_ACTIVITIES)));
-		} catch (DocumentException e) {
-			e.printStackTrace();
-		}
-		try {
-			response.setCertificateList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.TERM_LOAN_CERTIFICATE_OF_INCORPORATION)));
-		} catch (DocumentException e) {
-			e.printStackTrace();
-		}
-		try {
-			response.setPanCardList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.TERM_LOAN_COPY_OF_PAN_CARD)));
 		} catch (DocumentException e) {
 			e.printStackTrace();
 		}
@@ -338,6 +432,46 @@ public class TermLoanFinalViewServiceImpl implements TermLoanFinalViewService {
 			response.setInternalAudit(finalTermLoanRequest.getInternalAuditId() != null ? InternalAudit.getById(finalTermLoanRequest.getInternalAuditId()).getValue() : null);
 			response.setCompetence(finalTermLoanRequest.getCompetenceId() != null ? Competence.getById(finalTermLoanRequest.getCompetenceId()).getValue() : null);
 			response.setExistingShareHolder(finalTermLoanRequest.getExistingShareHoldersId() != null ? ExistingShareholders.getById(finalTermLoanRequest.getExistingShareHoldersId()).getValue() : null);
+			response.setTechnologyRiskId(finalTermLoanRequest.getTechnologyRiskId() != null ? TechnologyRisk.getById(finalTermLoanRequest.getTechnologyRiskId()).getValue() : null);
+			response.setCustomerQuality(finalTermLoanRequest.getCustomerQuality() != null ? CustomerQuality.getById(finalTermLoanRequest.getCustomerQuality()).getValue() : null);
+			response.setSupplierQuality(finalTermLoanRequest.getSupplierQuality() != null ? SupplierQuality.getById(finalTermLoanRequest.getSupplierQuality()).getValue() : null);
+			response.setSustainabilityProduct(finalTermLoanRequest.getSustainabilityProduct() != null ? SustainabilityProduct.getById(finalTermLoanRequest.getSustainabilityProduct()).getValue() : null);
+			response.setEmployeeRelations(finalTermLoanRequest.getEmployeeRelations() != null ? IndustrialRelations.getById(finalTermLoanRequest.getEmployeeRelations()).getValue() : null);
+			response.setProductSeasonality(finalTermLoanRequest.getProductSeasonality() != null ? ProductSeasonality.getById(finalTermLoanRequest.getProductSeasonality()).getValue() : null);
+			response.setImpactOnOperatingMargins(finalTermLoanRequest.getImpactOnOperatingMargins() != null ? OperatingMargins.getById(finalTermLoanRequest.getImpactOnOperatingMargins()).getValue() : null);
+			response.setOrderBookPosition(finalTermLoanRequest.getOrderBookPosition() != null ? OrderBook.getById(finalTermLoanRequest.getOrderBookPosition()).getValue() : null);
+			response.setEnvironmentalImpact(finalTermLoanRequest.getEnvironmentalImpact() != null ? EnvironmentalImpact.getById(finalTermLoanRequest.getEnvironmentalImpact()).getValue() : null);
+			response.setAccountingQuality(finalTermLoanRequest.getAccountingQuality() != null ? AccountingQuality.getById(finalTermLoanRequest.getAccountingQuality()).getValue() : null);
+			response.setFinancialRestructuringHistory(finalTermLoanRequest.getFinancialRestructuringHistory() != null ? FinancialRestructuring.getById(finalTermLoanRequest.getFinancialRestructuringHistory()).getValue() : null);
+			response.setIntegrity(finalTermLoanRequest.getIntegrity() != null ? Integrity.getById(finalTermLoanRequest.getIntegrity()).getValue() : null);
+			response.setBusinessCommitment(finalTermLoanRequest.getBusinessCommitment() != null ? BusinessCommitment.getById(finalTermLoanRequest.getBusinessCommitment()).getValue() : null);
+			response.setManagementCompetence(finalTermLoanRequest.getManagementCompetence() != null ? ManagementCompetence.getById(finalTermLoanRequest.getManagementCompetence()).getValue() : null);
+			response.setBusinessExperience(finalTermLoanRequest.getBusinessExperience() != null ? BusinessExperience.getById(finalTermLoanRequest.getBusinessExperience()).getValue() : null);
+			response.setSuccessionPlanning(finalTermLoanRequest.getSuccessionPlanning() != null ? SuccessionPlanning.getById(finalTermLoanRequest.getSuccessionPlanning()).getValue() : null);
+			response.setFinancialStrength(finalTermLoanRequest.getFinancialStrength() != null ? FinancialSupport.getById(finalTermLoanRequest.getFinancialStrength()).getValue() : null);
+			response.setAbilityToRaiseFunds(finalTermLoanRequest.getAbilityToRaiseFunds() != null ? AbilityRaiseFunds.getById(finalTermLoanRequest.getAbilityToRaiseFunds()).getValue() : null);
+			response.setIntraCompany(finalTermLoanRequest.getIntraCompany() != null ? CompanyConflicts.getById(finalTermLoanRequest.getIntraCompany()).getValue() : null);
+			response.setInternalControl(finalTermLoanRequest.getInternalControl() != null ? InternalControl.getById(finalTermLoanRequest.getInternalControl()).getValue() : null);
+			response.setCreditTrackRecord(finalTermLoanRequest.getCreditTrackRecord() != null ? CreditRecord.getById(finalTermLoanRequest.getCreditTrackRecord()).getValue() : null);
+			response.setStatusOfProjectClearances(finalTermLoanRequest.getStatusOfProjectClearances() != null ? StatusClearances.getById(finalTermLoanRequest.getStatusOfProjectClearances()).getValue() : null);
+			response.setStatusOfFinancialClosure(finalTermLoanRequest.getStatusOfFinancialClosure() != null ? StatusFinancialClosure.getById(finalTermLoanRequest.getStatusOfFinancialClosure()).getValue() : null);
+			response.setInfrastructureAvailability(finalTermLoanRequest.getInfrastructureAvailability() != null ? InfrastructureAvailability.getById(finalTermLoanRequest.getInfrastructureAvailability()).getValue() : null);
+			response.setConstructionContract(finalTermLoanRequest.getConstructionContract() != null ? ConstructionContract.getById(finalTermLoanRequest.getConstructionContract()).getValue() : null);
+			response.setNumberOfCheques(finalTermLoanRequest.getNumberOfCheques() != null ? ChequesReturned.getById(finalTermLoanRequest.getNumberOfCheques()).getValue() : null);
+			response.setNumberOfTimesDp(finalTermLoanRequest.getNumberOfTimesDp() != null ? LimitOverdrawn.getById(finalTermLoanRequest.getNumberOfTimesDp()).getValue() : null);
+			response.setCumulativeNoOfDaysDp(finalTermLoanRequest.getCumulativeNoOfDaysDp() != null ? CumulativeOverdrawn.getById(finalTermLoanRequest.getCumulativeNoOfDaysDp()).getValue() : null);
+			response.setComplianceWithSanctioned(finalTermLoanRequest.getComplianceWithSanctioned() != null ? ComplianceConditions.getById(finalTermLoanRequest.getComplianceWithSanctioned()).getValue() : null);
+			response.setProgressReports(finalTermLoanRequest.getProgressReports() != null ? SubmissionReports.getById(finalTermLoanRequest.getProgressReports()).getValue() : null);
+			response.setDelayInReceipt(finalTermLoanRequest.getDelayInReceipt() != null ? DelayInstalments.getById(finalTermLoanRequest.getDelayInReceipt()).getValue() : null);
+			response.setDelayInSubmission(finalTermLoanRequest.getDelayInSubmission() != null ? DelaySubmission.getById(finalTermLoanRequest.getDelayInSubmission()).getValue() : null);
+			response.setNumberOfLc(finalTermLoanRequest.getNumberOfLc() != null ? BorrowerInvoked.getById(finalTermLoanRequest.getNumberOfLc()).getValue() : null);
+			response.setUnhedgedForeignCurrency(finalTermLoanRequest.getUnhedgedForeignCurrency() != null ? UnhedgedCurrency.getById(finalTermLoanRequest.getUnhedgedForeignCurrency()).getValue() : null);
+			response.setProjectedDebtService(finalTermLoanRequest.getProjectedDebtService() != null ? ProjectedRatio.getById(finalTermLoanRequest.getProjectedDebtService()).getValue() : null);
+			response.setInternalRateReturn(finalTermLoanRequest.getInternalRateReturn() != null ? InternalReturn.getById(finalTermLoanRequest.getInternalRateReturn()).getValue() : null);
+			response.setSensititivityAnalysis(finalTermLoanRequest.getSensititivityAnalysis() != null ? SensititivityAnalysis.getById(finalTermLoanRequest.getSensititivityAnalysis()).getValue() : null);
+			response.setVarianceInProjectedSales(finalTermLoanRequest.getVarianceInProjectedSales() != null ? VarianceSales.getById(finalTermLoanRequest.getVarianceInProjectedSales()).getValue() : null);
+			
+			
 
 			if (finalTermLoanRequest.getIsDependsMajorlyOnGovernment()) {
 				response.setMajorlyOnGovernment("Yes");
@@ -728,9 +862,9 @@ public class TermLoanFinalViewServiceImpl implements TermLoanFinalViewService {
 			List<PromotorBackgroundDetailResponse> promotorBackgroundDetailResponseList = new ArrayList<>();
 			for (PromotorBackgroundDetailRequest promotorBackgroundDetailRequest : promotorBackgroundDetailRequestList) {
 				PromotorBackgroundDetailResponse promotorBackgroundDetailResponse = new PromotorBackgroundDetailResponse();
-				promotorBackgroundDetailResponse.setAchievements(promotorBackgroundDetailRequest.getAchivements());
+				//promotorBackgroundDetailResponse.setAchievements(promotorBackgroundDetailRequest.getAchivements());
 				promotorBackgroundDetailResponse.setAddress(promotorBackgroundDetailRequest.getAddress());
-				promotorBackgroundDetailResponse.setAge(promotorBackgroundDetailRequest.getAge());
+				//promotorBackgroundDetailResponse.setAge(promotorBackgroundDetailRequest.getAge());
 				promotorBackgroundDetailResponse.setPanNo(promotorBackgroundDetailRequest.getPanNo());
 				String promotorName = "";
 				if (promotorBackgroundDetailRequest.getSalutationId() != null){
@@ -738,9 +872,9 @@ public class TermLoanFinalViewServiceImpl implements TermLoanFinalViewService {
 				}
 				promotorName += " "+promotorBackgroundDetailRequest.getPromotorsName();
 				promotorBackgroundDetailResponse.setPromotorsName(promotorName);
-				promotorBackgroundDetailResponse.setQualification(promotorBackgroundDetailRequest.getQualification());
-				promotorBackgroundDetailResponse
-						.setTotalExperience(promotorBackgroundDetailRequest.getTotalExperience());
+				//promotorBackgroundDetailResponse.setQualification(promotorBackgroundDetailRequest.getQualification());
+				//promotorBackgroundDetailResponse
+				//		.setTotalExperience(promotorBackgroundDetailRequest.getTotalExperience());
 				promotorBackgroundDetailResponseList.add(promotorBackgroundDetailResponse);
 			}
 			response.setPromotorBackgroundDetailResponseList(promotorBackgroundDetailResponseList);
@@ -782,12 +916,19 @@ public class TermLoanFinalViewServiceImpl implements TermLoanFinalViewService {
 			List<FinancialArrangementsDetailResponse> financialArrangementsDetailResponseList = new ArrayList<>();
 			for (FinancialArrangementsDetailRequest financialArrangementsDetailRequest : financialArrangementsDetailRequestList) {
 				FinancialArrangementsDetailResponse financialArrangementsDetailResponse = new FinancialArrangementsDetailResponse();
+				financialArrangementsDetailResponse.setRelationshipSince(financialArrangementsDetailRequest.getRelationshipSince());
+				financialArrangementsDetailResponse.setOutstandingAmount(financialArrangementsDetailRequest.getOutstandingAmount());
+				financialArrangementsDetailResponse.setSecurityDetails(financialArrangementsDetailRequest.getSecurityDetails());
 				financialArrangementsDetailResponse.setAmount(financialArrangementsDetailRequest.getAmount());
-				financialArrangementsDetailResponse
-						.setFinancialInstitutionName(financialArrangementsDetailRequest.getFinancialInstitutionName());
-				financialArrangementsDetailResponse.setFacilityNature(
-						NatureFacility.getById(financialArrangementsDetailRequest.getFacilityNatureId()).getValue());
+			//	financialArrangementsDetailResponse.setLenderType(LenderType.getById(financialArrangementsDetailRequest.getLenderType()).getValue());
+				financialArrangementsDetailResponse.setLoanDate(financialArrangementsDetailRequest.getLoanDate());
+				financialArrangementsDetailResponse.setLoanType(financialArrangementsDetailRequest.getLoanType());
+				financialArrangementsDetailResponse.setFinancialInstitutionName(financialArrangementsDetailRequest.getFinancialInstitutionName());
+				financialArrangementsDetailResponse.setAddress(financialArrangementsDetailRequest.getAddress());
+//				if (financialArrangementsDetailRequest.getFacilityNatureId() != null)
+//					financialArrangementsDetailResponse.setFacilityNature(NatureFacility.getById(financialArrangementsDetailRequest.getFacilityNatureId()).getValue());
 				financialArrangementsDetailResponseList.add(financialArrangementsDetailResponse);
+				
 			}
 			response.setFinancialArrangementsDetailResponseList(financialArrangementsDetailResponseList);
 		} catch (Exception e) {

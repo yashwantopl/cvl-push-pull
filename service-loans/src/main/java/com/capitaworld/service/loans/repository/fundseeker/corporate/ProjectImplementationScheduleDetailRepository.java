@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.capitaworld.service.loans.domain.fundseeker.corporate.ProjectImplementationScheduleDetail;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.ProposedProductDetail;
 
 import java.util.List;
 
@@ -22,7 +23,14 @@ public interface ProjectImplementationScheduleDetailRepository
 	@Transactional
 	@Query("update ProjectImplementationScheduleDetail a set a.isActive = false where a.storageDetailsId= :sId")
 	public void inActiveProjectImplementationScheduleDetails(@Param("sId")Long storageDetailsId);
+	
+	@Modifying
+	@Transactional
+	@Query("update ProjectImplementationScheduleDetail a set a.isActive = false where a.applicationId.id= :applicationId and a.isActive=true")
+	public void inActiveProjectImplementationScheduleDetailsByAppId(@Param("applicationId")Long applicationId);
 
 	@Query("select new com.capitaworld.service.loans.model.teaser.finalview.ProjectImplementationScheduleResponse(a.activities,a.commencementDate,a.completionDate,a.timelineTotal) from ProjectImplementationScheduleDetail a where a.applicationId.id= :applicationId and isActive=true")
 	public List<ProjectImplementationScheduleResponse> listByApplicationId(@Param("applicationId") Long applicationId);
+	
+	public List<ProjectImplementationScheduleDetail> findByApplicationIdIdAndIsActive(Long applicationId, Boolean isActive);
 }

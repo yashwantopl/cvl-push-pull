@@ -79,8 +79,7 @@ public class CreditCardsDetailController {
 
 		try {
 			frameRequest.setUserId(userId);
-			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-					.intValue()) {
+			if (CommonDocumentUtils.isThisClientApplication(request)) {
 				frameRequest.setClientId(clientId);
 			}
 			// Checking Profile is Locked
@@ -119,8 +118,7 @@ public class CreditCardsDetailController {
 		// request must not be null
 		try {
 			Long userId = null;
-			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) request.getAttribute(CommonUtils.USER_TYPE))
-					.intValue()) {
+			if (CommonDocumentUtils.isThisClientApplication(request)) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);

@@ -20,11 +20,15 @@ import com.capitaworld.service.loans.domain.common.HomeLoanEligibilityCriteria;
 import com.capitaworld.service.loans.domain.common.LAPEligibilityCriteria;
 import com.capitaworld.service.loans.domain.common.PersonalLoanEligibilityCriteria;
 import com.capitaworld.service.loans.exceptions.ExcelException;
+import com.capitaworld.service.loans.model.CMADetailResponse;
 import com.capitaworld.service.loans.model.common.HomeLoanEligibilityRequest;
 import com.capitaworld.service.loans.model.common.LAPEligibilityRequest;
 import com.capitaworld.service.loans.model.common.LoanEligibilility;
 import com.capitaworld.service.loans.model.common.PersonalLoanEligibilityRequest;
 import com.capitaworld.service.loans.repository.common.LoanEligibilityCriteriaRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.AssetsDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.LiabilitiesDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.OperatingStatementDetailsRepository;
 import com.capitaworld.service.loans.service.common.LoanEligibilityCalculatorService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -45,6 +49,14 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 	@Autowired
 	private OneFormClient oneFormClient;
 
+	@Autowired
+	private LiabilitiesDetailsRepository liabilitiesDetailsRepository;
+
+	@Autowired
+	private AssetsDetailsRepository assetsDetailsRepository;
+
+	@Autowired
+	private OperatingStatementDetailsRepository operatingStatementDetailsRepository;
 	// HOME LOAN STARTS
 	@SuppressWarnings("unchecked")
 	private Map<Integer, JSONObject> calculateMinMaxForHomeLoan(HomeLoanEligibilityRequest homeLoanRequest)
@@ -660,6 +672,65 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 			tenure = actualTenure;
 		}
 		return tenure;
+	}
+	@Override
+	public CMADetailResponse getCMADetail(Long applicationId) {
+		logger.info("=============Enter in the getCMADetail() =======>" + applicationId);
+		CMADetailResponse  cmaDetailResponse=new  CMADetailResponse();
+		try {
+		logger.info("==================================>1");
+			
+		List<Object[]> operating=operatingStatementDetailsRepository.getCMADetail(applicationId,"Audited");
+		logger.info("==================================>2");
+			if(!CommonUtils.isObjectListNull(operating)) {
+				logger.info("==================================>3");
+				cmaDetailResponse.setDomesticSales((Double)operating.get(0)[0]);
+				logger.info("new added ==================================>19");
+				cmaDetailResponse.setInterest((Double)operating.get(0)[1]);
+				logger.info("==================================>4");
+				cmaDetailResponse.setExportSales((Double) operating.get(0)[2]);
+				logger.info("==================================>5");
+				cmaDetailResponse.setNetProfitOrLoss((Double) operating.get(0)[3]);
+				logger.info("==================================>6");
+				cmaDetailResponse.setDepreciation((Double) operating.get(0)[4]);
+				logger.info("==================================>7");
+				cmaDetailResponse.setProvisionForDeferredTax((Double)operating.get(0)[5]);
+				logger.info("==================================>8");
+				logger.info("Successfully get from operating ");
+			}
+			List<Object[]> liabilitie =liabilitiesDetailsRepository.getCMADetail(applicationId,"Audited");
+			logger.info("==================================>9");
+			if(!CommonUtils.isObjectListNull(liabilitie)) {
+				logger.info("==================================>10");
+				cmaDetailResponse.setSundryCreditors((Double)liabilitie.get(0)[0]);
+				logger.info("==================================>11");
+				cmaDetailResponse.setAdvancePaymentsFromCustomers((Double)liabilitie.get(0)[1]);
+				logger.info("==================================>12");
+				logger.info("Successfully get from liabilitie ");
+			}
+			List<Object[]> asset =assetsDetailsRepository.getCMADetail(applicationId,"Audited");
+			logger.info("==================================>13");
+			if(!CommonUtils.isObjectListNull(asset)) {
+				logger.info("==================================>14");
+				cmaDetailResponse.setReceivableOtherThanDefferred((Double)asset.get(0)[0]);
+				logger.info("==================================>15");
+				cmaDetailResponse.setExportReceivables((Double)asset.get(0)[1]);
+				logger.info("==================================>16");
+				cmaDetailResponse.setInventory((Double)asset.get(0)[2]);
+				logger.info("==================================>17");
+				cmaDetailResponse.setAdvanceToSupplierRawMaterials((Double)asset.get(0)[3]);
+				logger.info("==================================>18");
+				cmaDetailResponse.setGrossBlock((Double)asset.get(0)[4]);
+				logger.info("==================================>19");
+				logger.info("Successfully get from asset ");
+			}
+			
+		} catch (NullPointerException e) {
+			e.printStackTrace();
+			logger.info("-----------------Exception in getCMADetail() -------------------");
+		}
+		logger.info("-----------------Exit from getCMADetail() -------------------");
+		return cmaDetailResponse ;
 	}
 
 	// COMMON ENDS

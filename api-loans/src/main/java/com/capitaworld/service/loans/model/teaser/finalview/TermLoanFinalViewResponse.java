@@ -1,10 +1,24 @@
 package com.capitaworld.service.loans.model.teaser.finalview;
 
-import com.capitaworld.service.loans.model.*;
-import com.capitaworld.service.loans.model.retail.PastFinancialEstimatesDetailRequest;
-
 import java.io.Serializable;
 import java.util.List;
+
+import com.capitaworld.service.loans.model.AchievementDetailRequest;
+import com.capitaworld.service.loans.model.AssociatedConcernDetailRequest;
+import com.capitaworld.service.loans.model.DirectorBackgroundDetailResponse;
+import com.capitaworld.service.loans.model.ExistingProductDetailRequest;
+import com.capitaworld.service.loans.model.FinanceMeansDetailResponse;
+import com.capitaworld.service.loans.model.FinancialArrangementsDetailResponse;
+import com.capitaworld.service.loans.model.FutureFinancialEstimatesDetailRequest;
+import com.capitaworld.service.loans.model.GuarantorsCorporateDetailRequest;
+import com.capitaworld.service.loans.model.MonthlyTurnoverDetailRequest;
+import com.capitaworld.service.loans.model.OwnershipDetailResponse;
+import com.capitaworld.service.loans.model.PromotorBackgroundDetailResponse;
+import com.capitaworld.service.loans.model.ProposedProductDetailRequest;
+import com.capitaworld.service.loans.model.SecurityCorporateDetailRequest;
+import com.capitaworld.service.loans.model.TotalCostOfProjectResponse;
+import com.capitaworld.service.loans.model.retail.PastFinancialEstimatesDetailRequest;
+import com.capitaworld.service.loans.model.retail.ReferenceRetailDetailsRequest;
 
 /**
  * Created by dhaval on 27-May-17.
@@ -94,19 +108,39 @@ public class TermLoanFinalViewResponse implements Serializable{
     /**
      * Term Loan Final Uploads Data Fields
      */
+    // FINANCIAL UPLOADS
     private List<Object> lastAuditedAnnualReportList;
     private List<Object> sanctionLetterCopyList;
     private List<Object> lastITReturnList;
+    private List<Object> bankStatementList;
     private List<Object> netWorthStatementOfdirectorsList;
     private List<Object> provisionalFinancialsList;
-    private List<Object> panOfDirectorsList;
-    private List<Object> detailedListOfShareholdersList;
-    private List<Object> photoOfDirectorsList;
-    
-    //PRIMARY UPLOADS MOVED TO FINAL UPLOADS
     private List<Object> brochureList;
-	private List<Object> certificateList;
-	private List<Object> panCardList;
+    private List<Object> itReturnForFYOfAllDirectorsList;
+    private List<Object> finSubsidiariesEntitiesList;
+    private List<Object> assessOrderForLastThreeYearsList;
+
+    // KYC UPLOADS
+    private List<Object> certificateOfIncorpList;
+    private List<Object> detailedListOfShareholdersList;
+    private List<Object> panCardList;
+    private List<Object> photoOfDirectorsList;
+    private List<Object> panOfDirectorsList;
+    private List<Object> residenceAddProofList;
+    private List<Object> resolutionForAdditionOfDirectorsList;
+
+    // OFFLINE UPLOADS
+    private List<Object> momAndAOAList;
+    private List<Object> debtorsList;
+    private List<Object> gstVATExciseList;
+    private List<Object> letterOfIntentFromFPList;
+    private List<Object> copiesOfRelevantLicenseList;
+    private List<Object> salesTaxReturnsList;
+    private List<Object> latestTaxPaidCoyList;
+    private List<Object> encumbranceList;
+    private List<Object> copiesOfTrustDeedList;
+    private List<Object> marketSurveyReportList;
+    private List<Object> detailsOfContLiabilitiesList;
 
 
     /**
@@ -119,6 +153,50 @@ public class TermLoanFinalViewResponse implements Serializable{
     private String marketPosition;
     private String marketPositioningTop;
     private String marketShareTurnover;
+    //NEW MCQ FOR NHBS
+    private String technologyRiskId;
+    private String customerQuality;
+    private String supplierQuality;
+    private String sustainabilityProduct;
+    private String employeeRelations;
+    private String productSeasonality;
+    private String impactOnOperatingMargins;
+    private String orderBookPosition;
+    private String environmentalImpact;
+    private String accountingQuality;
+    private String financialRestructuringHistory;
+    private String integrity;
+    private String businessCommitment;
+    private String managementCompetence;
+    private String businessExperience;
+    private String successionPlanning;
+    private String financialStrength;
+    private String abilityToRaiseFunds;
+    private String intraCompany;
+    private String internalControl;
+    private String creditTrackRecord;
+    private String statusOfProjectClearances;
+    private String statusOfFinancialClosure;
+    private String infrastructureAvailability;
+    private String constructionContract;
+    private String numberOfCheques;
+    private String numberOfTimesDp;
+    private String cumulativeNoOfDaysDp;
+    private String complianceWithSanctioned;
+    private String progressReports;
+    private String delayInReceipt;
+    private String delayInSubmission;
+    private String numberOfLc;
+    private String unhedgedForeignCurrency;
+    private String projectedDebtService;
+    private String internalRateReturn;
+    private String sensititivityAnalysis;
+    private String varianceInProjectedSales;
+    
+    private Double sharePriceFace;
+	private Double sharePriceMarket;
+	private List<DirectorBackgroundDetailResponse> directorBackgroundDetailResponses;
+    private List<ReferenceRetailDetailsRequest> referenceRetailDetailsRequests;
     public String getMajorlyOnGovernment() {
 		return majorlyOnGovernment;
 	}
@@ -914,14 +992,6 @@ public class TermLoanFinalViewResponse implements Serializable{
 		this.brochureList = brochureList;
 	}
 
-	public List<Object> getCertificateList() {
-		return certificateList;
-	}
-
-	public void setCertificateList(List<Object> certificateList) {
-		this.certificateList = certificateList;
-	}
-
 	public List<Object> getPanCardList() {
 		return panCardList;
 	}
@@ -929,7 +999,485 @@ public class TermLoanFinalViewResponse implements Serializable{
 	public void setPanCardList(List<Object> panCardList) {
 		this.panCardList = panCardList;
 	}
-	
-	
 
+	public String getTechnologyRiskId() {
+		return technologyRiskId;
+	}
+
+	public void setTechnologyRiskId(String technologyRiskId) {
+		this.technologyRiskId = technologyRiskId;
+	}
+
+	public String getProductSeasonality() {
+		return productSeasonality;
+	}
+
+	public void setProductSeasonality(String productSeasonality) {
+		this.productSeasonality = productSeasonality;
+	}
+
+	public String getImpactOnOperatingMargins() {
+		return impactOnOperatingMargins;
+	}
+
+	public void setImpactOnOperatingMargins(String impactOnOperatingMargins) {
+		this.impactOnOperatingMargins = impactOnOperatingMargins;
+	}
+
+	public String getOrderBookPosition() {
+		return orderBookPosition;
+	}
+
+	public void setOrderBookPosition(String orderBookPosition) {
+		this.orderBookPosition = orderBookPosition;
+	}
+
+	public String getEnvironmentalImpact() {
+		return environmentalImpact;
+	}
+
+	public void setEnvironmentalImpact(String environmentalImpact) {
+		this.environmentalImpact = environmentalImpact;
+	}
+
+	public String getAccountingQuality() {
+		return accountingQuality;
+	}
+
+	public void setAccountingQuality(String accountingQuality) {
+		this.accountingQuality = accountingQuality;
+	}
+
+	public String getFinancialRestructuringHistory() {
+		return financialRestructuringHistory;
+	}
+
+	public void setFinancialRestructuringHistory(String financialRestructuringHistory) {
+		this.financialRestructuringHistory = financialRestructuringHistory;
+	}
+
+	public String getIntegrity() {
+		return integrity;
+	}
+
+	public void setIntegrity(String integrity) {
+		this.integrity = integrity;
+	}
+
+	public String getBusinessCommitment() {
+		return businessCommitment;
+	}
+
+	public void setBusinessCommitment(String businessCommitment) {
+		this.businessCommitment = businessCommitment;
+	}
+
+	public String getManagementCompetence() {
+		return managementCompetence;
+	}
+
+	public void setManagementCompetence(String managementCompetence) {
+		this.managementCompetence = managementCompetence;
+	}
+
+	public String getBusinessExperience() {
+		return businessExperience;
+	}
+
+	public void setBusinessExperience(String businessExperience) {
+		this.businessExperience = businessExperience;
+	}
+
+	public String getSuccessionPlanning() {
+		return successionPlanning;
+	}
+
+	public void setSuccessionPlanning(String successionPlanning) {
+		this.successionPlanning = successionPlanning;
+	}
+
+	public String getFinancialStrength() {
+		return financialStrength;
+	}
+
+	public void setFinancialStrength(String financialStrength) {
+		this.financialStrength = financialStrength;
+	}
+
+	public String getAbilityToRaiseFunds() {
+		return abilityToRaiseFunds;
+	}
+
+	public void setAbilityToRaiseFunds(String abilityToRaiseFunds) {
+		this.abilityToRaiseFunds = abilityToRaiseFunds;
+	}
+
+	public String getIntraCompany() {
+		return intraCompany;
+	}
+
+	public void setIntraCompany(String intraCompany) {
+		this.intraCompany = intraCompany;
+	}
+
+	public String getInternalControl() {
+		return internalControl;
+	}
+
+	public void setInternalControl(String internalControl) {
+		this.internalControl = internalControl;
+	}
+
+	public String getCreditTrackRecord() {
+		return creditTrackRecord;
+	}
+
+	public void setCreditTrackRecord(String creditTrackRecord) {
+		this.creditTrackRecord = creditTrackRecord;
+	}
+
+	public String getStatusOfProjectClearances() {
+		return statusOfProjectClearances;
+	}
+
+	public void setStatusOfProjectClearances(String statusOfProjectClearances) {
+		this.statusOfProjectClearances = statusOfProjectClearances;
+	}
+
+	public String getStatusOfFinancialClosure() {
+		return statusOfFinancialClosure;
+	}
+
+	public void setStatusOfFinancialClosure(String statusOfFinancialClosure) {
+		this.statusOfFinancialClosure = statusOfFinancialClosure;
+	}
+
+	public String getInfrastructureAvailability() {
+		return infrastructureAvailability;
+	}
+
+	public void setInfrastructureAvailability(String infrastructureAvailability) {
+		this.infrastructureAvailability = infrastructureAvailability;
+	}
+
+	public String getConstructionContract() {
+		return constructionContract;
+	}
+
+	public void setConstructionContract(String constructionContract) {
+		this.constructionContract = constructionContract;
+	}
+
+	public String getNumberOfCheques() {
+		return numberOfCheques;
+	}
+
+	public void setNumberOfCheques(String numberOfCheques) {
+		this.numberOfCheques = numberOfCheques;
+	}
+
+	public String getNumberOfTimesDp() {
+		return numberOfTimesDp;
+	}
+
+	public void setNumberOfTimesDp(String numberOfTimesDp) {
+		this.numberOfTimesDp = numberOfTimesDp;
+	}
+
+	public String getCumulativeNoOfDaysDp() {
+		return cumulativeNoOfDaysDp;
+	}
+
+	public void setCumulativeNoOfDaysDp(String cumulativeNoOfDaysDp) {
+		this.cumulativeNoOfDaysDp = cumulativeNoOfDaysDp;
+	}
+
+	public String getComplianceWithSanctioned() {
+		return complianceWithSanctioned;
+	}
+
+	public void setComplianceWithSanctioned(String complianceWithSanctioned) {
+		this.complianceWithSanctioned = complianceWithSanctioned;
+	}
+
+	public String getProgressReports() {
+		return progressReports;
+	}
+
+	public void setProgressReports(String progressReports) {
+		this.progressReports = progressReports;
+	}
+
+	public String getDelayInReceipt() {
+		return delayInReceipt;
+	}
+
+	public void setDelayInReceipt(String delayInReceipt) {
+		this.delayInReceipt = delayInReceipt;
+	}
+
+	public String getDelayInSubmission() {
+		return delayInSubmission;
+	}
+
+	public void setDelayInSubmission(String delayInSubmission) {
+		this.delayInSubmission = delayInSubmission;
+	}
+
+	public String getNumberOfLc() {
+		return numberOfLc;
+	}
+
+	public void setNumberOfLc(String numberOfLc) {
+		this.numberOfLc = numberOfLc;
+	}
+
+	public String getUnhedgedForeignCurrency() {
+		return unhedgedForeignCurrency;
+	}
+
+	public void setUnhedgedForeignCurrency(String unhedgedForeignCurrency) {
+		this.unhedgedForeignCurrency = unhedgedForeignCurrency;
+	}
+
+	public String getProjectedDebtService() {
+		return projectedDebtService;
+	}
+
+	public void setProjectedDebtService(String projectedDebtService) {
+		this.projectedDebtService = projectedDebtService;
+	}
+
+	public String getInternalRateReturn() {
+		return internalRateReturn;
+	}
+
+	public void setInternalRateReturn(String internalRateReturn) {
+		this.internalRateReturn = internalRateReturn;
+	}
+
+	public String getSensititivityAnalysis() {
+		return sensititivityAnalysis;
+	}
+
+	public void setSensititivityAnalysis(String sensititivityAnalysis) {
+		this.sensititivityAnalysis = sensititivityAnalysis;
+	}
+
+	public String getVarianceInProjectedSales() {
+		return varianceInProjectedSales;
+	}
+
+	public void setVarianceInProjectedSales(String varianceInProjectedSales) {
+		this.varianceInProjectedSales = varianceInProjectedSales;
+	}
+
+	public String getCustomerQuality() {
+		return customerQuality;
+	}
+
+	public void setCustomerQuality(String customerQuality) {
+		this.customerQuality = customerQuality;
+	}
+
+	public String getSupplierQuality() {
+		return supplierQuality;
+	}
+
+	public void setSupplierQuality(String supplierQuality) {
+		this.supplierQuality = supplierQuality;
+	}
+
+	public String getSustainabilityProduct() {
+		return sustainabilityProduct;
+	}
+
+	public void setSustainabilityProduct(String sustainabilityProduct) {
+		this.sustainabilityProduct = sustainabilityProduct;
+	}
+
+	public String getEmployeeRelations() {
+		return employeeRelations;
+	}
+
+	public void setEmployeeRelations(String employeeRelations) {
+		this.employeeRelations = employeeRelations;
+	}
+
+	public Double getSharePriceFace() {
+		return sharePriceFace;
+	}
+
+	public void setSharePriceFace(Double sharePriceFace) {
+		this.sharePriceFace = sharePriceFace;
+	}
+
+	public Double getSharePriceMarket() {
+		return sharePriceMarket;
+	}
+
+	public void setSharePriceMarket(Double sharePriceMarket) {
+		this.sharePriceMarket = sharePriceMarket;
+	}
+
+	public List<DirectorBackgroundDetailResponse> getDirectorBackgroundDetailResponses() {
+		return directorBackgroundDetailResponses;
+	}
+
+	public void setDirectorBackgroundDetailResponses(
+			List<DirectorBackgroundDetailResponse> directorBackgroundDetailResponses) {
+		this.directorBackgroundDetailResponses = directorBackgroundDetailResponses;
+	}
+
+	public List<ReferenceRetailDetailsRequest> getReferenceRetailDetailsRequests() {
+		return referenceRetailDetailsRequests;
+	}
+
+	public void setReferenceRetailDetailsRequests(List<ReferenceRetailDetailsRequest> referenceRetailDetailsRequests) {
+		this.referenceRetailDetailsRequests = referenceRetailDetailsRequests;
+	}
+
+    public List<Object> getBankStatementList() {
+        return bankStatementList;
+    }
+
+    public void setBankStatementList(List<Object> bankStatementList) {
+        this.bankStatementList = bankStatementList;
+    }
+
+    public List<Object> getItReturnForFYOfAllDirectorsList() {
+        return itReturnForFYOfAllDirectorsList;
+    }
+
+    public void setItReturnForFYOfAllDirectorsList(List<Object> itReturnForFYOfAllDirectorsList) {
+        this.itReturnForFYOfAllDirectorsList = itReturnForFYOfAllDirectorsList;
+    }
+
+    public List<Object> getFinSubsidiariesEntitiesList() {
+        return finSubsidiariesEntitiesList;
+    }
+
+    public void setFinSubsidiariesEntitiesList(List<Object> finSubsidiariesEntitiesList) {
+        this.finSubsidiariesEntitiesList = finSubsidiariesEntitiesList;
+    }
+
+    public List<Object> getAssessOrderForLastThreeYearsList() {
+        return assessOrderForLastThreeYearsList;
+    }
+
+    public void setAssessOrderForLastThreeYearsList(List<Object> assessOrderForLastThreeYearsList) {
+        this.assessOrderForLastThreeYearsList = assessOrderForLastThreeYearsList;
+    }
+
+    public List<Object> getCertificateOfIncorpList() {
+        return certificateOfIncorpList;
+    }
+
+    public void setCertificateOfIncorpList(List<Object> certificateOfIncorpList) {
+        this.certificateOfIncorpList = certificateOfIncorpList;
+    }
+
+    public List<Object> getResidenceAddProofList() {
+        return residenceAddProofList;
+    }
+
+    public void setResidenceAddProofList(List<Object> residenceAddProofList) {
+        this.residenceAddProofList = residenceAddProofList;
+    }
+
+    public List<Object> getResolutionForAdditionOfDirectorsList() {
+        return resolutionForAdditionOfDirectorsList;
+    }
+
+    public void setResolutionForAdditionOfDirectorsList(List<Object> resolutionForAdditionOfDirectorsList) {
+        this.resolutionForAdditionOfDirectorsList = resolutionForAdditionOfDirectorsList;
+    }
+
+    public List<Object> getMomAndAOAList() {
+        return momAndAOAList;
+    }
+
+    public void setMomAndAOAList(List<Object> momAndAOAList) {
+        this.momAndAOAList = momAndAOAList;
+    }
+
+    public List<Object> getDebtorsList() {
+        return debtorsList;
+    }
+
+    public void setDebtorsList(List<Object> debtorsList) {
+        this.debtorsList = debtorsList;
+    }
+
+    public List<Object> getGstVATExciseList() {
+        return gstVATExciseList;
+    }
+
+    public void setGstVATExciseList(List<Object> gstVATExciseList) {
+        this.gstVATExciseList = gstVATExciseList;
+    }
+
+    public List<Object> getLetterOfIntentFromFPList() {
+        return letterOfIntentFromFPList;
+    }
+
+    public void setLetterOfIntentFromFPList(List<Object> letterOfIntentFromFPList) {
+        this.letterOfIntentFromFPList = letterOfIntentFromFPList;
+    }
+
+    public List<Object> getCopiesOfRelevantLicenseList() {
+        return copiesOfRelevantLicenseList;
+    }
+
+    public void setCopiesOfRelevantLicenseList(List<Object> copiesOfRelevantLicenseList) {
+        this.copiesOfRelevantLicenseList = copiesOfRelevantLicenseList;
+    }
+
+    public List<Object> getSalesTaxReturnsList() {
+        return salesTaxReturnsList;
+    }
+
+    public void setSalesTaxReturnsList(List<Object> salesTaxReturnsList) {
+        this.salesTaxReturnsList = salesTaxReturnsList;
+    }
+
+    public List<Object> getLatestTaxPaidCoyList() {
+        return latestTaxPaidCoyList;
+    }
+
+    public void setLatestTaxPaidCoyList(List<Object> latestTaxPaidCoyList) {
+        this.latestTaxPaidCoyList = latestTaxPaidCoyList;
+    }
+
+    public List<Object> getEncumbranceList() {
+        return encumbranceList;
+    }
+
+    public void setEncumbranceList(List<Object> encumbranceList) {
+        this.encumbranceList = encumbranceList;
+    }
+
+    public List<Object> getCopiesOfTrustDeedList() {
+        return copiesOfTrustDeedList;
+    }
+
+    public void setCopiesOfTrustDeedList(List<Object> copiesOfTrustDeedList) {
+        this.copiesOfTrustDeedList = copiesOfTrustDeedList;
+    }
+
+    public List<Object> getMarketSurveyReportList() {
+        return marketSurveyReportList;
+    }
+
+    public void setMarketSurveyReportList(List<Object> marketSurveyReportList) {
+        this.marketSurveyReportList = marketSurveyReportList;
+    }
+
+    public List<Object> getDetailsOfContLiabilitiesList() {
+        return detailsOfContLiabilitiesList;
+    }
+
+    public void setDetailsOfContLiabilitiesList(List<Object> detailsOfContLiabilitiesList) {
+        this.detailsOfContLiabilitiesList = detailsOfContLiabilitiesList;
+    }
 }

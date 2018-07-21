@@ -17,7 +17,7 @@ public interface ProductMasterRepository extends JpaRepository<ProductMaster, Lo
 	public int inActive(@Param("userId") Long userId);
 	
 	@Modifying
-	@Query("update ProductMaster pm set pm.name =:name,pm.modifiedDate = NOW(),pm.modifiedBy =:userId  where pm.userId =:userId and pm.id=:productMappingId ")
+	@Query("update ProductMaster pm set pm.name =:name,pm.modifiedDate = NOW(),pm.modifiedBy =:userId  where  pm.id=:productMappingId ")
 	public int changeProductName(@Param("userId") Long userId,@Param("productMappingId") Long productMappingId,@Param("name") String name);
 	
 	@Modifying
@@ -27,17 +27,31 @@ public interface ProductMasterRepository extends JpaRepository<ProductMaster, Lo
 	@Query("from ProductMaster pm where pm.userId =:userId and pm.isActive = true")
 	public List<ProductMaster> getUserProductList(@Param("userId") Long userId);
 	
-	@Query("from ProductMaster pm where pm.userId =:userId  and productId in (1,2,15)")
+	@Query("from ProductMaster pm where pm.userOrgId =:userOrgId and pm.isActive = true")
+	public List<ProductMaster> getUserProductListByOrgId(@Param("userOrgId") Long userOrgId);
+	
+	@Query("from ProductMaster pm where pm.userId =:userId  and productId in (1,2,15,16)")
 	public List<ProductMaster> getUserCorporateProductList(@Param("userId") Long userId);
+	
+	@Query("from ProductMaster pm where pm.userOrgId =:userOrgId  and productId in (1,2,15,16)")
+	public List<ProductMaster> getUserCorporateProductListByOrgId(@Param("userOrgId") Long userOrgId);
 	
 	@Query("from ProductMaster pm where pm.userId =:userId  and productId not in (1,2)")
 	public List<ProductMaster> getUserRetailProductList(@Param("userId") Long userId);
+	
+	@Query("from ProductMaster pm where pm.userOrgId =:userOrgId  and productId not in (1,2)")
+	public List<ProductMaster> getUserRetailProductListByOrgId(@Param("userOrgId") Long userOrgId);
 	
 	@Query("from ProductMaster pm where pm.userId =:userId and productId=:productId ")
 	public List<ProductMaster> getUserProductListByProduct(@Param("userId") Long userId,@Param("productId") Integer productId);
 	
 	@Query("from ProductMaster pm where pm.userId =:userId and pm.id=:productId ")
 	public ProductMaster getUserProduct(@Param("productId") Long productId,@Param("userId") Long userId);
+	
+	public ProductMaster findByIdAndIsActive(Long id, Boolean isActive);
+	
+	@Query("from ProductMaster pm where pm.userOrgId =:userOrgId and pm.id=:productId ")
+	public ProductMaster getUserProductByOrgId(@Param("productId") Long productId,@Param("userOrgId") Long userOrgId);
 	
 	@Query("select new com.capitaworld.service.loans.model.ProductDetailsForSp(pm.id,pm.productId,pm.name)  from ProductMaster pm where pm.userId=:userId and pm.isActive = true")
 	public List<ProductDetailsForSp> getListByUserId(@Param("userId") Long userId);
@@ -68,4 +82,8 @@ public interface ProductMasterRepository extends JpaRepository<ProductMaster, Lo
 	
 	@Query(value = "SELECT name FROM fp_product_master WHERE fp_product_id=:fpProductId", nativeQuery=true)
 	public String getFpProductName(@Param("fpProductId")Long fpProductId);
+	
+	@Query("select distinct(pm.productId) from ProductMaster pm where pm.isActive = true and pm.userOrgId =:orgId")
+	public List<Integer> getProductsByOrgId(@Param("orgId")Long orgId);
+	
 }

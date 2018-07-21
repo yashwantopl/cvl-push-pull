@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.DirectorBackgroundDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.FinancialArrangementsDetail;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.FrameRequest;
@@ -67,10 +68,11 @@ public class FinancialArrangementDetailsServiceImpl implements FinancialArrangem
 	}
 
 	@Override
-	public List<FinancialArrangementsDetailRequest> getFinancialArrangementDetailsList(Long id,Long userId)throws Exception {
+	public List<FinancialArrangementsDetailRequest> getFinancialArrangementDetailsList(Long id, Long userId)
+			throws Exception {
 		try {
 			List<FinancialArrangementsDetail> financialArrangementDetails = financialArrangementDetailsRepository
-					.listSecurityCorporateDetailFromAppId(id,userId);
+					.listSecurityCorporateDetailFromAppId(id);
 			List<FinancialArrangementsDetailRequest> financialArrangementDetailRequests = new ArrayList<FinancialArrangementsDetailRequest>();
 
 			for (FinancialArrangementsDetail detail : financialArrangementDetails) {
@@ -88,4 +90,49 @@ public class FinancialArrangementDetailsServiceImpl implements FinancialArrangem
 		}
 	}
 
+	@Override
+	public Boolean saveOrUpdate(List<FinancialArrangementsDetailRequest> finArrDetailRequest,
+			Long applicationId, Long userId) {
+		financialArrangementDetailsRepository.inActive(userId, applicationId);
+		for (FinancialArrangementsDetailRequest req : finArrDetailRequest) {
+			FinancialArrangementsDetail arrangementsDetail = new FinancialArrangementsDetail();
+			BeanUtils.copyProperties(req, arrangementsDetail);
+			arrangementsDetail.setApplicationId(new LoanApplicationMaster(applicationId));
+			arrangementsDetail.setCreatedBy(userId);
+			arrangementsDetail.setIsActive(true);
+			financialArrangementDetailsRepository.save(arrangementsDetail);
+		}
+		return true;
+	}
+	
+
+	@Override
+	public Boolean saveOrUpdate(List<FinancialArrangementsDetailRequest> existingLoanDetailRequest, Long applicationId,
+			Long userId, Long directorId) {
+		financialArrangementDetailsRepository.inActive(userId, applicationId,directorId);
+		for (FinancialArrangementsDetailRequest req : existingLoanDetailRequest) {
+			FinancialArrangementsDetail arrangementsDetail = new FinancialArrangementsDetail();
+			BeanUtils.copyProperties(req, arrangementsDetail);
+			arrangementsDetail.setApplicationId(new LoanApplicationMaster(applicationId));
+			arrangementsDetail.setCreatedBy(userId);
+			arrangementsDetail.setIsActive(true);
+			arrangementsDetail.setDirectorBackgroundDetail(new DirectorBackgroundDetail(directorId));
+			financialArrangementDetailsRepository.save(arrangementsDetail);
+		}
+		return true;
+	}
+
+	@Override
+	public Double getTotalOfEmiByApplicationId(Long applicationId) {
+		Double totalEmi = financialArrangementDetailsRepository.getTotalEmiByApplicationId(applicationId);
+		logger.info("getTotalOfEmiByApplicationId=====>" + totalEmi + " For Application Id=====>{}", applicationId);
+		return totalEmi;
+	}
+
+	@Override
+	public Double getTotalOfEmiByApplicationIdAndDirectorId(Long applicationId, Long directorId) {
+		Double totalEmi = financialArrangementDetailsRepository.getTotalEmiByApplicationIdAndDirectorId(applicationId,directorId);
+		logger.info("getTotalOfEmiByApplicationIdAndDirectorId {} For Application Id = {} DirectorId = {}", totalEmi ,applicationId,directorId);
+		return totalEmi;
+	}
 }

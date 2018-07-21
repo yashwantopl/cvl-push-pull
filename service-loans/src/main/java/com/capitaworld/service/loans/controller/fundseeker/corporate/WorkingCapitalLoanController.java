@@ -50,7 +50,7 @@ public class WorkingCapitalLoanController {
 			
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 			
-			if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()){
+			if(CommonDocumentUtils.isThisClientApplication(request)){
 				capitalLoanRequest.setClientId(clientId);
 			}
 			if (userId == null) {
@@ -86,7 +86,7 @@ public class WorkingCapitalLoanController {
 		try {
 			CommonDocumentUtils.startHook(logger, "getFinal");
 			Long userId = null;
-			if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()){
+			if(CommonDocumentUtils.isThisClientApplication(request)){
 				userId = clientId;
 			}else{
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -125,7 +125,7 @@ public class WorkingCapitalLoanController {
 			// request must not be null
 			CommonDocumentUtils.startHook(logger, "savePrimary");
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()){
+			if(CommonDocumentUtils.isThisClientApplication(request)){
 				capitalLoanRequest.setClientId(clientId);
 			}
 			else
@@ -155,7 +155,7 @@ public class WorkingCapitalLoanController {
 		try {
 			CommonDocumentUtils.startHook(logger, "getPrimary");
 			Long userId = null;
-			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
+			if (CommonDocumentUtils.isThisClientApplication(request)) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -180,6 +180,29 @@ public class WorkingCapitalLoanController {
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
 		}
+		
 	}
-	
+	@RequestMapping(value = "${primary}/get_client/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getPrimaryClient(@PathVariable("applicationId") Long applicationId, HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
+		// request must not be null
+		try {
+			if (applicationId == null) {
+				logger.warn(
+						"Application ID Require to get Primary Working Details ==>" + applicationId);
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			PrimaryWorkingCapitalLoanRequest response = primaryWCService.get(applicationId,null);
+			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			loansResponse.setData(response);
+			CommonDocumentUtils.endHook(logger, "getPrimary");
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while getting Primary Working Details==>", e);
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
 }

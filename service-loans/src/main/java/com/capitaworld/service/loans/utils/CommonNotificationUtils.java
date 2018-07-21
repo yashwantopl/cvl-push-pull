@@ -18,7 +18,11 @@ public class CommonNotificationUtils {
 		LOGOUT_WITHOUT_FILLED_PRIMARY_DETAILS(NotificationAlias.EMAIL_FS_LOGOUT_WITHOUT_FILLED_PRIMARY_DETAILS),//7
 		LOGOUT_WITHOUT_FILLED_FINAL_DETAILS(NotificationAlias.EMAIL_FS_LOGOUT_WITHOUT_FILLED_FINAL_DETAILS),//12
 		FP_DIRECT_SENT_REQUEST_TO_FP(NotificationAlias.EMAIL_FP_DIRECT_SENT_MATCHES_REQUEST_TO_FS),//15
-		EMAIL_FS_UBI(NotificationAlias.EMAIL_FS_UBI_NOTIFICATION);//51
+		EMAIL_FS_UBI(NotificationAlias.EMAIL_FS_UBI_NOTIFICATION),//51
+		EMAIL_FS_PAYMENT_ONLINE(NotificationAlias.MAIL_FS_PAYMENT_ONLINE),//70
+		EMAIL_FS_PAYMENT_CASH_CHEQUE(NotificationAlias.MAIL_FS_PAYMENT_CASH_CHEQUE),//71
+		EMAIL_CKR_MKR_FINAL_LOCK(NotificationAlias.MAIL_CKR_MKR_FINAL_LOCK);//76
+		
 		
 		private Long value;
 
@@ -56,6 +60,13 @@ public class CommonNotificationUtils {
 				return "Fill Final Information: For faster Process of Your Loan"; 
 			} else if(x == NotificationAlias.EMAIL_FP_DIRECT_SENT_MATCHES_REQUEST_TO_FS) {
 				return fpName + " interested in your proposal"; 
+			} else if(x == NotificationAlias.MAIL_FS_PAYMENT_ONLINE) {
+				return "Your Payment Information"; 
+			} else if(x == NotificationAlias.MAIL_FS_PAYMENT_CASH_CHEQUE) {
+				return "Your Payment Information"; 
+			} else if(x == NotificationAlias.MAIL_CKR_MKR_FINAL_LOCK) {
+				return fpName;
+				/*return "Harshit has lock final details for aaplicationCode";*/ 
 			} else {
 				return "NA";
 			} 

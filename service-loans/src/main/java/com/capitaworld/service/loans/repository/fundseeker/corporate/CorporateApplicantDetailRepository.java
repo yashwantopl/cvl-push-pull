@@ -12,8 +12,7 @@ import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplic
 public interface CorporateApplicantDetailRepository extends JpaRepository<CorporateApplicantDetail, Long> {
 
 	@Query("from CorporateApplicantDetail cr where cr.applicationId.id =:applicationId and cr.applicationId.userId =:userId and cr.isActive=true")
-	public CorporateApplicantDetail getByApplicationAndUserId(@Param("userId") Long userId,
-			@Param("applicationId") Long applicationId);
+	public CorporateApplicantDetail getByApplicationAndUserId(@Param("userId") Long userId, @Param("applicationId") Long applicationId);
 	
 	@Query("from CorporateApplicantDetail cr where cr.applicationId.id =:applicationId and cr.applicationId.userId =:userId")
 	public CorporateApplicantDetail getByApplicationAndUserIdForSP(@Param("userId") Long userId,
@@ -22,9 +21,15 @@ public interface CorporateApplicantDetailRepository extends JpaRepository<Corpor
 	@Query("select cr.organisationName,cr.modifiedDate from CorporateApplicantDetail cr where cr.applicationId.id =:applicationId and cr.applicationId.userId =:userId and cr.isActive=true")
 	public List<Object[]> getByNameAndLastUpdateDate(@Param("userId") Long userId,
 			@Param("applicationId") Long applicationId);
+
+
+	@Query("from CorporateApplicantDetail cr where cr.applicationId.id =:applicationId")
+	public CorporateApplicantDetail findOneByApplicationIdId(@Param("applicationId") Long applicationId);
 	
+	@Query("from CorporateApplicantDetail cr where cr.applicationId.id =:applicationId and cr.isActive=true")
+	public CorporateApplicantDetail getByApplicationIdAndIsAtive(@Param("applicationId") Long applicationId);
 	
-	public CorporateApplicantDetail findOneByApplicationIdId(Long applicationId);
+	public CorporateApplicantDetail findByApplicationIdIdAndIsActive(Long applicationId,Boolean isActive);
 
 	
 	@Query("select count(cr.applicationId.id) from CorporateApplicantDetail cr where cr.applicationId.id =:applicationId and cr.applicationId.userId =:userId and cr.isActive=true and (cr.organisationName != NULL and cr.organisationName != '')")
@@ -45,4 +50,7 @@ public interface CorporateApplicantDetailRepository extends JpaRepository<Corpor
 	@Query("select cr.establishmentYear from CorporateApplicantDetail cr where cr.applicationId.id =:applicationId and cr.applicationId.userId =:userId and cr.isActive=true")
 	public Integer getApplicantEstablishmentYear(@Param("userId") Long userId,
 			@Param("applicationId") Long applicationId);
+
+	@Query("select cr.gstIn from CorporateApplicantDetail cr where cr.applicationId.id =:applicationId and cr.isActive=true")
+	public String getGstInByApplicationId(@Param("applicationId") Long applicationId);
 }

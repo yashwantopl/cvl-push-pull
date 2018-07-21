@@ -58,7 +58,10 @@ public class CoApplicantRequest {
 	private Integer previousJobYear;
 	private Integer totalExperienceMonth;
 	private Integer totalExperienceYear;
-	
+
+	//new requirement for SB
+	private Integer modeOfReceipt;
+
 	private Double monthlyLoanObligation;
 	private Double patPreviousYear;
 	private Double patCurrentYear;
@@ -639,5 +642,12 @@ public class CoApplicantRequest {
 	public void setAddressSameAsApplicant(Boolean addressSameAsApplicant) {
 		this.addressSameAsApplicant = addressSameAsApplicant;
 	}
-	
+
+	public Integer getModeOfReceipt() {
+		return modeOfReceipt;
+	}
+
+	public void setModeOfReceipt(Integer modeOfReceipt) {
+		this.modeOfReceipt = modeOfReceipt;
+	}
 }

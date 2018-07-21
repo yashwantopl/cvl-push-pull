@@ -115,7 +115,7 @@ public class UnsecureLoanParameter extends ProductMaster implements Serializable
 	private Integer maxAgeEstablishment;
 
 	@Column(name = "max_collateral")
-	private Integer maxCollateral;
+	private BigDecimal maxCollateral;
 
 	@Column(name = "max_debt_equity")
 	private BigDecimal maxDebtEquity;
@@ -136,7 +136,7 @@ public class UnsecureLoanParameter extends ProductMaster implements Serializable
 	private Integer minAgeEstablishment;
 
 	@Column(name = "min_collateral")
-	private Integer minCollateral;
+	private BigDecimal minCollateral;
 
 	@Column(name = "min_debt_equity")
 	private BigDecimal minDebtEquity;
@@ -175,6 +175,489 @@ public class UnsecureLoanParameter extends ProductMaster implements Serializable
 	@Column(name="is_uninterested_industry_mandatory")
 	private Boolean isUnInterestedIndustryMandatory=false;
 
+	@Column(name="min_current_ratio")
+	private BigDecimal minCurrentRatio;
+
+	@Column(name="max_current_ratio")
+	private BigDecimal maxCurrentRatio;
+
+	@Column(name="is_current_ratio_display")
+	private Boolean isCurrentRatioDisplay = false;
+
+	@Column(name="is_current_ratio_mandatory")
+	private Boolean isCurrentRatioMandatory = false;
+
+	@Column(name="min_interest_coverage")
+	private BigDecimal minInterestCoverage;
+
+	@Column(name="max_interest_coverage")
+	private BigDecimal maxInterestCoverage;
+
+	@Column(name="is_interest_coverage_display")
+	private Boolean isInterestCoverageDisplay = false;
+
+	@Column(name="is_interest_coverage_mandatory")
+	private Boolean isInterestCoverageMandatory = false;
+
+	@Column(name="min_tol_tnw")
+	private BigDecimal minTolTnw;
+
+	@Column(name="max_tol_tnw")
+	private BigDecimal maxTolTnw;
+
+	@Column(name="is_tol_tnw_display")
+	private Boolean isTolTnwDisplay = false;
+
+	@Column(name="is_tol_tnw_mandatory")
+	private Boolean isTolTnwMandatory = false;
+
+	@Column(name="min_turnover_ratio")
+	private BigDecimal minTurnoverRatio;
+
+	@Column(name="max_turnover_ratio")
+	private BigDecimal maxTurnoverRatio;
+
+	@Column(name="is_turnover_ratio_display")
+	private Boolean isTurnoverRatioDisplay = false;
+
+	@Column(name="is_turnover_ratio_mandatory")
+	private Boolean isTurnoverRatioMandatory = false;
+
+	@Column(name="min_gross_cash_accurals_ratio")
+	private BigDecimal minGrossCashAccuralsRatio;
+
+	@Column(name="max_gross_cash_accurals_ratio")
+	private BigDecimal maxGrossCashAccuralsRatio;
+
+	@Column(name="is_gross_cash_accurals_ratio_display")
+	private Boolean isGrossCashAccuralsRatioDisplay = false;
+
+	@Column(name="is_gross_cash_accurals_ratio_mandatory")
+	private Boolean isGrossCashAccuralsRatioMandatory = false;
+
+	@Column(name="min_customer_concentration")
+	private BigDecimal minCustomerConcentration;
+
+	@Column(name="max_customer_concentration")
+	private BigDecimal maxCustomerConcentration;
+
+	@Column(name="is_customer_concentration_display")
+	private Boolean isCustomerConcentrationDisplay = false;
+
+	@Column(name="is_customer_concentration_mandatory")
+	private Boolean isCustomerConcentrationMandatory =false;
+
+	@Column(name="min_risk_model_score")
+	private Integer minRiskModelScore;
+
+	@Column(name="max_risk_model_score")
+	private Integer maxRiskModelScore;
+
+	@Column(name="is_risk_model_score_display")
+	private Boolean isRiskModelScoreDisplay = false;
+
+	@Column(name="is_risk_model_score_mandatory")
+	private Boolean isRiskModelScoreMandatory = false;
+
+	@Column(name="net_worth")
+	private Integer netWorth;
+
+    @Column(name="min_cheque_bounced")
+    private Integer minChequeBounced;
+
+    @Column(name="max_cheque_bounced")
+    private Integer maxChequeBounced;
+
+    @Column(name="is_cheque_bounced_display")
+    private Boolean isChequeBouncedDisplay = false;
+
+    @Column(name="is_cheque_bounced_mandatory")
+    private Boolean isChequeBouncedMandatory = false;
+
+    @Column(name="min_cheque_bounced_last_six_months")
+    private Integer minChequeBouncedLastSixMonths;
+
+    @Column(name="max_cheque_bounced_last_six_months")
+    private Integer maxChequeBouncedLastSixMonths;
+
+    @Column(name="is_cheque_bounced_last_six_months_display")
+    private Boolean isChequeBouncedLastSixMonthsDisplay = false;
+
+    @Column(name="is_cheque_bounced_last_six_months_mandatory")
+    private Boolean isChequeBouncedLastSixMonthsMandatory = false;
+
+	@Column(name="ddr_flow")
+	private Integer ddrFlow;
+
+	@Column(name="individual_cibil")
+	private Integer individualCibil;
+
+	@Column(name="is_individual_cibil_display")
+	private Boolean isIndividualCibilDisplay = false;
+
+	@Column(name="is_individual_cibil_mandatory")
+	private Boolean isIndividualCibilMandatory = false;
+
+	@Column(name="commercial_cibil")
+	private Integer commercialCibil;
+
+	@Column(name="is_Commercial_cibil_display")
+	private Boolean isCommercialCibilDisplay = false;
+
+	@Column(name="is_Commercial_cibil_mandatory")
+	private Boolean isCommercialCibilMandatory = false;
+
+	public Integer getIndividualCibil() {
+		return individualCibil;
+	}
+
+	public void setIndividualCibil(Integer individualCibil) {
+		this.individualCibil = individualCibil;
+	}
+
+	public Boolean getIsIndividualCibilDisplay() {
+		return isIndividualCibilDisplay;
+	}
+
+	public void setIsIndividualCibilDisplay(Boolean individualCibilDisplay) {
+		isIndividualCibilDisplay = individualCibilDisplay;
+	}
+
+	public Boolean getIsIndividualCibilMandatory() {
+		return isIndividualCibilMandatory;
+	}
+
+	public void setIsIndividualCibilMandatory(Boolean individualCibilMandatory) {
+		isIndividualCibilMandatory = individualCibilMandatory;
+	}
+
+	public Integer getCommercialCibil() {
+		return commercialCibil;
+	}
+
+	public void setCommercialCibil(Integer commercialCibil) {
+		this.commercialCibil = commercialCibil;
+	}
+
+	public Boolean getIsCommercialCibilDisplay() {
+		return isCommercialCibilDisplay;
+	}
+
+	public void setIsCommercialCibilDisplay(Boolean commercialCibilDisplay) {
+		isCommercialCibilDisplay = commercialCibilDisplay;
+	}
+
+	public Boolean getIsCommercialCibilMandatory() {
+		return isCommercialCibilMandatory;
+	}
+
+	public void setIsCommercialCibilMandatory(Boolean commercialCibilMandatory) {
+		isCommercialCibilMandatory = commercialCibilMandatory;
+	}
+
+	public Integer getDdrFlow() {
+		return ddrFlow;
+	}
+
+	public void setDdrFlow(Integer ddrFlow) {
+		this.ddrFlow = ddrFlow;
+	}
+
+    public Integer getMinChequeBounced() {
+        return minChequeBounced;
+    }
+
+    public void setMinChequeBounced(Integer minChequeBounced) {
+        this.minChequeBounced = minChequeBounced;
+    }
+
+    public Integer getMaxChequeBounced() {
+        return maxChequeBounced;
+    }
+
+    public void setMaxChequeBounced(Integer maxChequeBounced) {
+        this.maxChequeBounced = maxChequeBounced;
+    }
+
+    public Boolean getIsChequeBouncedDisplay() {
+        return isChequeBouncedDisplay;
+    }
+
+    public void setIsChequeBouncedDisplay(Boolean chequeBouncedDisplay) {
+        isChequeBouncedDisplay = chequeBouncedDisplay;
+    }
+
+    public Boolean getIsChequeBouncedMandatory() {
+        return isChequeBouncedMandatory;
+    }
+
+    public void setIsChequeBouncedMandatory(Boolean chequeBouncedMandatory) {
+        isChequeBouncedMandatory = chequeBouncedMandatory;
+    }
+
+    public Integer getMinChequeBouncedLastSixMonths() {
+        return minChequeBouncedLastSixMonths;
+    }
+
+    public void setMinChequeBouncedLastSixMonths(Integer minChequeBouncedLastSixMonths) {
+        this.minChequeBouncedLastSixMonths = minChequeBouncedLastSixMonths;
+    }
+
+    public Integer getMaxChequeBouncedLastSixMonths() {
+        return maxChequeBouncedLastSixMonths;
+    }
+
+    public void setMaxChequeBouncedLastSixMonths(Integer maxChequeBouncedLastSixMonths) {
+        this.maxChequeBouncedLastSixMonths = maxChequeBouncedLastSixMonths;
+    }
+
+    public Boolean getIsChequeBouncedLastSixMonthsDisplay() {
+        return isChequeBouncedLastSixMonthsDisplay;
+    }
+
+    public void setIsChequeBouncedLastSixMonthsDisplay(Boolean chequeBouncedLastSixMonthsDisplay) {
+        isChequeBouncedLastSixMonthsDisplay = chequeBouncedLastSixMonthsDisplay;
+    }
+
+    public Boolean getIsChequeBouncedLastSixMonthsMandatory() {
+        return isChequeBouncedLastSixMonthsMandatory;
+    }
+
+    public void setIsChequeBouncedLastSixMonthsMandatory(Boolean chequeBouncedLastSixMonthsMandatory) {
+        isChequeBouncedLastSixMonthsMandatory = chequeBouncedLastSixMonthsMandatory;
+    }
+
+	public BigDecimal getMinCurrentRatio() {
+		return minCurrentRatio;
+	}
+
+	public void setMinCurrentRatio(BigDecimal minCurrentRatio) {
+		this.minCurrentRatio = minCurrentRatio;
+	}
+
+	public BigDecimal getMaxCurrentRatio() {
+		return maxCurrentRatio;
+	}
+
+	public void setMaxCurrentRatio(BigDecimal maxCurrentRatio) {
+		this.maxCurrentRatio = maxCurrentRatio;
+	}
+
+	public BigDecimal getMinInterestCoverage() {
+		return minInterestCoverage;
+	}
+
+	public void setMinInterestCoverage(BigDecimal minInterestCoverage) {
+		this.minInterestCoverage = minInterestCoverage;
+	}
+
+	public BigDecimal getMaxInterestCoverage() {
+		return maxInterestCoverage;
+	}
+
+	public void setMaxInterestCoverage(BigDecimal maxInterestCoverage) {
+		this.maxInterestCoverage = maxInterestCoverage;
+	}
+
+	public BigDecimal getMinTolTnw() {
+		return minTolTnw;
+	}
+
+	public void setMinTolTnw(BigDecimal minTolTnw) {
+		this.minTolTnw = minTolTnw;
+	}
+
+	public BigDecimal getMaxTolTnw() {
+		return maxTolTnw;
+	}
+
+	public void setMaxTolTnw(BigDecimal maxTolTnw) {
+		this.maxTolTnw = maxTolTnw;
+	}
+
+	public BigDecimal getMinTurnoverRatio() {
+		return minTurnoverRatio;
+	}
+
+	public void setMinTurnoverRatio(BigDecimal minTurnoverRatio) {
+		this.minTurnoverRatio = minTurnoverRatio;
+	}
+
+	public BigDecimal getMaxTurnoverRatio() {
+		return maxTurnoverRatio;
+	}
+
+	public void setMaxTurnoverRatio(BigDecimal maxTurnoverRatio) {
+		this.maxTurnoverRatio = maxTurnoverRatio;
+	}
+
+	public BigDecimal getMinGrossCashAccuralsRatio() {
+		return minGrossCashAccuralsRatio;
+	}
+
+	public void setMinGrossCashAccuralsRatio(BigDecimal minGrossCashAccuralsRatio) {
+		this.minGrossCashAccuralsRatio = minGrossCashAccuralsRatio;
+	}
+
+	public BigDecimal getMaxGrossCashAccuralsRatio() {
+		return maxGrossCashAccuralsRatio;
+	}
+
+	public void setMaxGrossCashAccuralsRatio(BigDecimal maxGrossCashAccuralsRatio) {
+		this.maxGrossCashAccuralsRatio = maxGrossCashAccuralsRatio;
+	}
+
+	public BigDecimal getMinCustomerConcentration() {
+		return minCustomerConcentration;
+	}
+
+	public void setMinCustomerConcentration(BigDecimal minCustomerConcentration) {
+		this.minCustomerConcentration = minCustomerConcentration;
+	}
+
+	public BigDecimal getMaxCustomerConcentration() {
+		return maxCustomerConcentration;
+	}
+
+	public void setMaxCustomerConcentration(BigDecimal maxCustomerConcentration) {
+		this.maxCustomerConcentration = maxCustomerConcentration;
+	}
+
+	public Integer getMinRiskModelScore() {
+		return minRiskModelScore;
+	}
+
+	public void setMinRiskModelScore(Integer minRiskModelScore) {
+		this.minRiskModelScore = minRiskModelScore;
+	}
+
+	public Integer getMaxRiskModelScore() {
+		return maxRiskModelScore;
+	}
+
+	public void setMaxRiskModelScore(Integer maxRiskModelScore) {
+		this.maxRiskModelScore = maxRiskModelScore;
+	}
+
+	public Integer getNetWorth() {
+		return netWorth;
+	}
+
+	public void setNetWorth(Integer netWorth) {
+		this.netWorth = netWorth;
+	}
+
+	public Boolean getIsCurrentRatioDisplay() {
+		return isCurrentRatioDisplay;
+	}
+
+	public void setIsCurrentRatioDisplay(Boolean currentRatioDisplay) {
+		isCurrentRatioDisplay = currentRatioDisplay;
+	}
+
+	public Boolean getIsCurrentRatioMandatory() {
+		return isCurrentRatioMandatory;
+	}
+
+	public void setIsCurrentRatioMandatory(Boolean currentRatioMandatory) {
+		isCurrentRatioMandatory = currentRatioMandatory;
+	}
+
+	public Boolean getIsInterestCoverageDisplay() {
+		return isInterestCoverageDisplay;
+	}
+
+	public void setIsInterestCoverageDisplay(Boolean interestCoverageDisplay) {
+		isInterestCoverageDisplay = interestCoverageDisplay;
+	}
+
+	public Boolean getIsInterestCoverageMandatory() {
+		return isInterestCoverageMandatory;
+	}
+
+	public void setIsInterestCoverageMandatory(Boolean interestCoverageMandatory) {
+		isInterestCoverageMandatory = interestCoverageMandatory;
+	}
+
+	public Boolean getIsTolTnwDisplay() {
+		return isTolTnwDisplay;
+	}
+
+	public void setIsTolTnwDisplay(Boolean tolTnwDisplay) {
+		isTolTnwDisplay = tolTnwDisplay;
+	}
+
+	public Boolean getIsTolTnwMandatory() {
+		return isTolTnwMandatory;
+	}
+
+	public void setIsTolTnwMandatory(Boolean tolTnwMandatory) {
+		isTolTnwMandatory = tolTnwMandatory;
+	}
+
+	public Boolean getIsTurnoverRatioDisplay() {
+		return isTurnoverRatioDisplay;
+	}
+
+	public void setIsTurnoverRatioDisplay(Boolean turnoverRatioDisplay) {
+		isTurnoverRatioDisplay = turnoverRatioDisplay;
+	}
+
+	public Boolean getIsTurnoverRatioMandatory() {
+		return isTurnoverRatioMandatory;
+	}
+
+	public void setIsTurnoverRatioMandatory(Boolean turnoverRatioMandatory) {
+		isTurnoverRatioMandatory = turnoverRatioMandatory;
+	}
+
+	public Boolean getIsGrossCashAccuralsRatioDisplay() {
+		return isGrossCashAccuralsRatioDisplay;
+	}
+
+	public void setIsGrossCashAccuralsRatioDisplay(Boolean grossCashAccuralsRatioDisplay) {
+		isGrossCashAccuralsRatioDisplay = grossCashAccuralsRatioDisplay;
+	}
+
+	public Boolean getIsGrossCashAccuralsRatioMandatory() {
+		return isGrossCashAccuralsRatioMandatory;
+	}
+
+	public void setIsGrossCashAccuralsRatioMandatory(Boolean grossCashAccuralsRatioMandatory) {
+		isGrossCashAccuralsRatioMandatory = grossCashAccuralsRatioMandatory;
+	}
+
+	public Boolean getIsCustomerConcentrationDisplay() {
+		return isCustomerConcentrationDisplay;
+	}
+
+	public void setIsCustomerConcentrationDisplay(Boolean customerConcentrationDisplay) {
+		isCustomerConcentrationDisplay = customerConcentrationDisplay;
+	}
+
+	public Boolean getIsCustomerConcentrationMandatory() {
+		return isCustomerConcentrationMandatory;
+	}
+
+	public void setIsCustomerConcentrationMandatory(Boolean customerConcentrationMandatory) {
+		isCustomerConcentrationMandatory = customerConcentrationMandatory;
+	}
+
+	public Boolean getIsRiskModelScoreDisplay() {
+		return isRiskModelScoreDisplay;
+	}
+
+	public void setIsRiskModelScoreDisplay(Boolean riskModelScoreDisplay) {
+		isRiskModelScoreDisplay = riskModelScoreDisplay;
+	}
+
+	public Boolean getIsRiskModelScoreMandatory() {
+		return isRiskModelScoreMandatory;
+	}
+
+	public void setIsRiskModelScoreMandatory(Boolean riskModelScoreMandatory) {
+		isRiskModelScoreMandatory = riskModelScoreMandatory;
+	}
 
 	public UnsecureLoanParameter() {
 	}
@@ -419,15 +902,22 @@ public class UnsecureLoanParameter extends ProductMaster implements Serializable
 		this.maxAgeEstablishment = maxAgeEstablishment;
 	}
 
-	public Integer getMaxCollateral() {
-		return this.maxCollateral;
+	public BigDecimal getMaxCollateral() {
+		return maxCollateral;
 	}
 
-	public void setMaxCollateral(Integer maxCollateral) {
+	public void setMaxCollateral(BigDecimal maxCollateral) {
 		this.maxCollateral = maxCollateral;
 	}
 
-	
+	public BigDecimal getMinCollateral() {
+		return minCollateral;
+	}
+
+	public void setMinCollateral(BigDecimal minCollateral) {
+		this.minCollateral = minCollateral;
+	}
+
 	public Integer getMinAgeEstablishment() {
 		return this.minAgeEstablishment;
 	}
@@ -435,16 +925,6 @@ public class UnsecureLoanParameter extends ProductMaster implements Serializable
 	public void setMinAgeEstablishment(Integer minAgeEstablishment) {
 		this.minAgeEstablishment = minAgeEstablishment;
 	}
-
-	public Integer getMinCollateral() {
-		return this.minCollateral;
-	}
-
-	public void setMinCollateral(Integer minCollateral) {
-		this.minCollateral = minCollateral;
-	}
-
-	
 
 	public BigDecimal getMaxDebtEquity() {
 		return maxDebtEquity;

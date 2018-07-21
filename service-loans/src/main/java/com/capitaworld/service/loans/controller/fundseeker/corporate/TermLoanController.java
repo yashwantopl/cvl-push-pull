@@ -63,7 +63,7 @@ public class TermLoanController {
 						new LoansResponse("Application ID can not be empty.", HttpStatus.BAD_REQUEST.value()),
 						HttpStatus.OK);
 			}
-			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
+			if (CommonDocumentUtils.isThisClientApplication(request)) {
 				termLoanRequest.setClientId(clientId);
 			}
 			finalTLService.saveOrUpdate(termLoanRequest, userId);
@@ -87,7 +87,7 @@ public class TermLoanController {
 			try {
 				CommonDocumentUtils.startHook(logger, "getFinal");
 				Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-				if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
+				if (CommonDocumentUtils.isThisClientApplication(request)) {
 					userId = clientId;
 				} else {
 					userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -127,7 +127,7 @@ public class TermLoanController {
 			CommonDocumentUtils.startHook(logger, "savePrimary");
 			// request must not be null
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
+			if (CommonDocumentUtils.isThisClientApplication(request)) {
 				termLoanRequest.setClientId(clientId);
 			}
 
@@ -163,7 +163,7 @@ public class TermLoanController {
 		try {
 			CommonDocumentUtils.startHook(logger, "getPrimary");
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
+			if (CommonDocumentUtils.isThisClientApplication(request)) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -188,4 +188,34 @@ public class TermLoanController {
 					HttpStatus.OK);
 		}
 	}
+
+	
+	@RequestMapping(value = "${primary}/get_client/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getPrimaryClient(@PathVariable("applicationId") Long applicationId,
+			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
+		try {	
+			
+			if (applicationId == null) {
+			logger.warn(
+					"Application ID Require to get Primary TermLoan Details ==>" + applicationId);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+		}
+			PrimaryTermLoanRequest response = primaryTLService.get(applicationId, null);
+			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			loansResponse.setData(response);
+			CommonDocumentUtils.endHook(logger, "getPrimary");
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while getting Primary Term Loan Details==>", e);
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+	}
+	
+	
+	
+
 }

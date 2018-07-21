@@ -128,8 +128,59 @@ public class CorporateApplicantDetail implements Serializable {
 	@Column(name = "pan")
 	private String panNo;
 
+	@Column(name = "gstin")
+	private String gstIn;
+
+	@Column(name = "email")
+	private String email;
+
 	@Column(name = "landline_no")
 	private String landlineNo;
+
+	@Column(name = "key_vertical_sector")
+	private Long keyVerticalSector;
+	
+	@Column(name = "key_vertical_subsector")
+	private Long keyVerticalSubsector;
+
+	@Column(name = "aadhar")
+	private String aadhar;
+
+	@Column(name = "credit_rating_id")
+	private Integer creditRatingId;
+
+	@Column(name = "cont_liability_fy_amt")
+	private Double contLiabilityFyAmt;
+
+	@Column(name = "cont_liability_sy_amt")
+	private Double contLiabilitySyAmt;
+
+	@Column(name = "cont_liability_ty_amt")
+	private Double contLiabilityTyAmt;
+
+	@Column(name = "cont_liability_year")
+	private Integer contLiabilityYear;
+
+	@Column(name = "not_applicable")
+	private Boolean notApplicable;
+
+	@Column(name = "total_cost_of_estimate")
+	private Double totalCostOfEstimate;
+
+	@Column(name = "total_means_of_finance")
+	private Double totalMeansOfFinance;
+
+	@Column(name = "share_price_face_value")
+	private Double sharePriceFace;
+
+	@Column(name = "share_price_market_value")
+	private Double sharePriceMarket;
+
+	@Column(name = "collateral_security_amt_total")
+	private Double totalCollateralDetails;
+
+	@Column(name= "msme_registration_number")
+	private String msmeRegistrationNumber;
 
 	public CorporateApplicantDetail() {
 	}
@@ -406,4 +457,148 @@ public class CorporateApplicantDetail implements Serializable {
 		this.landlineNo = landlineNo;
 	}
 
+	public Long getKeyVerticalSector() {
+		return keyVerticalSector;
+	}
+
+	public void setKeyVerticalSector(Long keyVerticalSector) {
+		this.keyVerticalSector = keyVerticalSector;
+	}
+
+	public Long getKeyVerticalSubsector() {
+		return keyVerticalSubsector;
+	}
+
+	public void setKeyVerticalSubsector(Long keyVerticalSubsector) {
+		this.keyVerticalSubsector = keyVerticalSubsector;
+	}
+
+	public String getGstIn() {
+		return gstIn;
+	}
+
+	public void setGstIn(String gstIn) {
+		this.gstIn = gstIn;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public Boolean getActive() {
+		return isActive;
+	}
+
+	public void setActive(Boolean active) {
+		isActive = active;
+	}
+
+	public String getAadhar() {
+		return aadhar;
+	}
+
+	public void setAadhar(String aadhar) {
+		this.aadhar = aadhar;
+	}
+
+	public Integer getCreditRatingId() {
+		return creditRatingId;
+	}
+
+	public void setCreditRatingId(Integer creditRatingId) {
+		this.creditRatingId = creditRatingId;
+	}
+
+	public Integer getContLiabilityYear() {
+		return contLiabilityYear;
+	}
+
+	public void setContLiabilityYear(Integer contLiabilityYear) {
+		this.contLiabilityYear = contLiabilityYear;
+	}
+
+
+	public Boolean getNotApplicable() {
+		return notApplicable;
+	}
+
+	public void setNotApplicable(Boolean notApplicable) {
+		this.notApplicable = notApplicable;
+	}
+
+	public Double getContLiabilityFyAmt() {
+		return contLiabilityFyAmt;
+	}
+
+	public void setContLiabilityFyAmt(Double contLiabilityFyAmt) {
+		this.contLiabilityFyAmt = contLiabilityFyAmt;
+	}
+
+	public Double getContLiabilitySyAmt() {
+		return contLiabilitySyAmt;
+	}
+
+	public void setContLiabilitySyAmt(Double contLiabilitySyAmt) {
+		this.contLiabilitySyAmt = contLiabilitySyAmt;
+	}
+
+	public Double getContLiabilityTyAmt() {
+		return contLiabilityTyAmt;
+	}
+
+	public void setContLiabilityTyAmt(Double contLiabilityTyAmt) {
+		this.contLiabilityTyAmt = contLiabilityTyAmt;
+	}
+
+	public Double getTotalCostOfEstimate() {
+		return totalCostOfEstimate;
+	}
+
+	public void setTotalCostOfEstimate(Double totalCostOfEstimate) {
+		this.totalCostOfEstimate = totalCostOfEstimate;
+	}
+
+	public Double getTotalMeansOfFinance() {
+		return totalMeansOfFinance;
+	}
+
+	public void setTotalMeansOfFinance(Double totalMeansOfFinance) {
+		this.totalMeansOfFinance = totalMeansOfFinance;
+	}
+
+	public Double getSharePriceFace() {
+		return sharePriceFace;
+	}
+
+	public void setSharePriceFace(Double sharePriceFace) {
+		this.sharePriceFace = sharePriceFace;
+	}
+
+	public Double getSharePriceMarket() {
+		return sharePriceMarket;
+	}
+
+	public void setSharePriceMarket(Double sharePriceMarket) {
+		this.sharePriceMarket = sharePriceMarket;
+	}
+
+	public Double getTotalCollateralDetails() {
+		return totalCollateralDetails;
+	}
+
+	public void setTotalCollateralDetails(Double totalCollateralDetails) {
+		this.totalCollateralDetails = totalCollateralDetails;
+	}
+
+	public String getMsmeRegistrationNumber() {
+		return msmeRegistrationNumber;
+	}
+
+	public void setMsmeRegistrationNumber(String msmeRegistrationNumber) {
+		this.msmeRegistrationNumber = msmeRegistrationNumber;
+	}
 }

@@ -2,6 +2,7 @@ package com.capitaworld.service.loans.model.teaser.primaryview;
 
 import com.capitaworld.service.loans.model.*;
 import com.capitaworld.service.loans.model.retail.PastFinancialEstimatesDetailRequest;
+import com.capitaworld.service.loans.model.retail.ReferenceRetailDetailsRequest;
 
 import java.util.List;
 
@@ -34,6 +35,9 @@ public class TermLoanPrimaryViewResponse {
 	private Double amount;
 	private Double totalCostOfEstimate;
 	private List<?> matchesList;
+	private Double sharePriceFace;
+	private Double sharePriceMarket;
+	private String loanAmount;
 
 	private List<ProposedProductDetailRequest> proposedProductDetailRequestList;
 	private List<AchievementDetailRequest> AchievementDetailList;
@@ -45,7 +49,8 @@ public class TermLoanPrimaryViewResponse {
 	private List<ExistingProductDetailRequest> existingProductDetailRequestList;
 	private List<SecurityCorporateDetailRequest> securityCorporateDetailRequestList;
 	private List<FinancialArrangementsDetailResponse> financialArrangementsDetailResponseList;
-
+	private List<DirectorBackgroundDetailResponse> directorBackgroundDetailResponses;
+	private List<ReferenceRetailDetailsRequest> referenceRetailDetailsRequests;
 	private List<FinanceMeansDetailResponse> financeMeansDetailResponseList;
 	private List<TotalCostOfProjectResponse> totalCostOfProjectResponseList;
 
@@ -58,6 +63,53 @@ public class TermLoanPrimaryViewResponse {
 
 	private List<String> shortTermRating;
 	private List<String> longTermRating;
+	private String gstin;
+	private String haveCollateralSecurity;
+    private String collateralSecurityAmount;
+	
+	
+
+	/**
+	 * @return the haveCollateralSecurity
+	 */
+	public String getHaveCollateralSecurity() {
+		return haveCollateralSecurity;
+	}
+
+	/**
+	 * @param haveCollateralSecurity the haveCollateralSecurity to set
+	 */
+	public void setHaveCollateralSecurity(String haveCollateralSecurity) {
+		this.haveCollateralSecurity = haveCollateralSecurity;
+	}
+
+	/**
+	 * @return the collateralSecurityAmount
+	 */
+	public String getCollateralSecurityAmount() {
+		return collateralSecurityAmount;
+	}
+
+	/**
+	 * @param collateralSecurityAmount the collateralSecurityAmount to set
+	 */
+	public void setCollateralSecurityAmount(String collateralSecurityAmount) {
+		this.collateralSecurityAmount = collateralSecurityAmount;
+	}
+
+	/**
+	 * @return the gstin
+	 */
+	public String getGstin() {
+		return gstin;
+	}
+
+	/**
+	 * @param gstin the gstin to set
+	 */
+	public void setGstin(String gstin) {
+		this.gstin = gstin;
+	}
 
 	public List<?> getIndustrySector() {
 		return industrySector;
@@ -435,6 +487,44 @@ public class TermLoanPrimaryViewResponse {
 		this.addOfficestate = addOfficestate;
 	}
 
-	
-	
+	public List<DirectorBackgroundDetailResponse> getDirectorBackgroundDetailResponses() {
+		return directorBackgroundDetailResponses;
+	}
+
+	public void setDirectorBackgroundDetailResponses(
+			List<DirectorBackgroundDetailResponse> directorBackgroundDetailResponses) {
+		this.directorBackgroundDetailResponses = directorBackgroundDetailResponses;
+	}
+
+	public Double getSharePriceFace() {
+		return sharePriceFace;
+	}
+
+	public void setSharePriceFace(Double sharePriceFace) {
+		this.sharePriceFace = sharePriceFace;
+	}
+
+	public Double getSharePriceMarket() {
+		return sharePriceMarket;
+	}
+
+	public void setSharePriceMarket(Double sharePriceMarket) {
+		this.sharePriceMarket = sharePriceMarket;
+	}
+
+	public List<ReferenceRetailDetailsRequest> getReferenceRetailDetailsRequests() {
+		return referenceRetailDetailsRequests;
+	}
+
+	public void setReferenceRetailDetailsRequests(List<ReferenceRetailDetailsRequest> referenceRetailDetailsRequests) {
+		this.referenceRetailDetailsRequests = referenceRetailDetailsRequests;
+	}
+
+	public String getLoanAmount() {
+		return loanAmount;
+	}
+
+	public void setLoanAmount(String loanAmount) {
+		this.loanAmount = loanAmount;
+	}
 }

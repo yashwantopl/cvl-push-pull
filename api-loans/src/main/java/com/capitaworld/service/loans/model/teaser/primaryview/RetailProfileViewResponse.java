@@ -40,6 +40,7 @@ public class RetailProfileViewResponse {
 	private String bonusPerAnnum;
 	private String incentivePerAnnum;
 
+	private String modeOfReceipt;
 	//new requirement cw-384
 	private String yearsInCurrentJob;
 	private String monthsInCurrentJob;
@@ -442,5 +443,12 @@ public class RetailProfileViewResponse {
 	public void setIncentivePerAnnum(String incentivePerAnnum) {
 		this.incentivePerAnnum = incentivePerAnnum;
 	}
-	
+
+	public String getModeOfReceipt() {
+		return modeOfReceipt;
+	}
+
+	public void setModeOfReceipt(String modeOfReceipt) {
+		this.modeOfReceipt = modeOfReceipt;
+	}
 }

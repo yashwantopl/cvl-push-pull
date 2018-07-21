@@ -3,13 +3,13 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>1.5.2.RELEASE</version>
 		<relativePath /> <!-- lookup parent from repository -->
+		<artifactId>spring-boot-starter-parent</artifactId>
 	</parent>
 	<groupId>com.capitaworld.loans.service.parent</groupId>
 	<artifactId>service-loans</artifactId>
-	<version>0.0.1</version>
+	<version>1.0.1</version>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -94,10 +94,22 @@
 			<artifactId>client-dms</artifactId>
 			<version>0.0.1</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>com.capitaworld.notification</groupId>
 			<artifactId>client-notification</artifactId>
+			<version>0.0.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.capitaworld.client.scoring</groupId>
+			<artifactId>client-scoring</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.capitaworld.service.gst</groupId>
+			<artifactId>client-gst</artifactId>
 			<version>0.0.1</version>
 		</dependency>
 
@@ -111,23 +123,103 @@
 		<dependency>
 			<groupId>com.capitaworld.api.loans</groupId>
 			<artifactId>api-loans</artifactId>
-			<version>1.0.0</version>
+			<version>1.0.1</version>
 		</dependency>
 		<dependency>
 			<groupId>com.capitaworld.cibil.client</groupId>
 			<artifactId>client-cibil</artifactId>
 			<version>1.0.0</version>
 		</dependency>
-		<!-- <dependency>
+		<dependency>
 			<groupId>com.capitaworld.rating</groupId>
 			<artifactId>client-rating</artifactId>
 			<version>0.0.1</version>
 		</dependency>
 		<dependency>
-			<groupId>com.capitaworld.rating</groupId>
-			<artifactId>api-rating</artifactId>
+			<groupId>com.capitaworld.service.gateway</groupId>
+			<artifactId>client-gateway</artifactId>
 			<version>0.0.1</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.3</version>
+		</dependency>
+		<dependency>
+			<groupId>com.capitaworld.service.reports</groupId>
+			<artifactId>client-reports</artifactId>
+			<version>0.0.1</version>
+		</dependency>
+		<dependency>
+			<groupId>com.capitaworld.client.analyzer</groupId>
+			<artifactId>client-analyzer</artifactId>
+			<version>0.0.1</version>
+		</dependency>
+		<dependency>
+			<groupId>com.capitaworld.fitchengine</groupId>
+			<artifactId>client-fitchengine</artifactId>
+			<version>0.0.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>
+				spring-boot-starter-data-elasticsearch
+			</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.capitaworld.connect.client</groupId>
+			<artifactId>client-connect</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.capitaworld.client.thirdparty</groupId>
+			<artifactId>client-thirdparty</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+		<!-- <dependency>
+			<groupId>com.capitaworld.connect</groupId>
+			<artifactId>api-connect</artifactId>
+			<version>1.0.1</version>
 		</dependency> -->
+		<dependency>
+		<groupId>com.capitaworld.service.loans</groupId>
+	<artifactId>client-loans</artifactId>
+	<version>1.0.1</version>
+		</dependency>
+		<dependency>
+			<groupId>com.capitaworld.sidbi.client.integration</groupId>
+			<artifactId>client-sidbi-integration</artifactId>
+			<version>0.0.1</version>
+		</dependency>
+		<dependency>
+
+			<groupId>com.capitaworld.mca</groupId>
+			<version>0.0.1</version>
+			<artifactId>client-mca</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.capitaworld.client.workflow</groupId>
+			<artifactId>client-workflow</artifactId>
+			<version>0.0.1</version>
+		</dependency>
+		<dependency>
+			<groupId>com.capitaworld.client.eligibilty</groupId>
+			<artifactId>client-eligibility</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.capitaworld.fraudanalytics.service.parent</groupId>
+			<version>1.0.0</version>
+			<artifactId>client-fraudanalytics</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>com.capitaworld.itr.client</groupId>
+			<artifactId>client-itr</artifactId>
+			<version>1.0.0</version>
+		</dependency>
 	</dependencies>
 
 	<build>

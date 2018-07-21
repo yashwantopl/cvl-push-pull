@@ -7,11 +7,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.capitaworld.service.loans.model.CMADetailResponse;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.common.HomeLoanEligibilityRequest;
 import com.capitaworld.service.loans.model.common.LAPEligibilityRequest;
@@ -437,6 +439,36 @@ public class LoanEligibilityCalculatorController {
 		}
 
 		return new LoansResponse("Success", HttpStatus.OK.value());
+	}
+	
+	@RequestMapping(value="/getCMADetail/{applicationId}" ,method =RequestMethod.POST) 
+	public CMADetailResponse getCmaDetail(@PathVariable("applicationId") Long applicationId) {
+		logger.info("Enter in getCmaDetail()========>" + applicationId);
+		CMADetailResponse cmaDetailResponse=null;
+		try {
+		cmaDetailResponse =loanEligibilityCalculatorService.getCMADetail(applicationId);
+		} catch (NullPointerException e) {
+			e.printStackTrace();
+			logger.info("Exception in getCmaDetail()========>");
+		}
+		logger.info("Exit from getCmaDetail()========>");
+		return cmaDetailResponse;
+	}
+	
+	@RequestMapping(value="/getCMADetailForEligibility/{applicationId}" ,method =RequestMethod.GET) 
+	public CMADetailResponse getCmaDetailForEligibility(@PathVariable("applicationId") Long applicationId) {
+		logger.info("Enter in getCmaDetail()========>" + applicationId);
+		CMADetailResponse cmaDetailResponse=null;
+		try {
+			logger.info("==================================>1 in Controller");
+		cmaDetailResponse =loanEligibilityCalculatorService.getCMADetail(applicationId);
+		logger.info("cmaDetailResponse==================================>1 in Controlle=={}",cmaDetailResponse.toString());
+		} catch (NullPointerException e) {
+			e.printStackTrace();
+			logger.info("Exception in getCmaDetail()========>");
+		}
+		logger.info("Exit from getCmaDetail()========>");
+		return cmaDetailResponse;
 	}
 	// LAP Calculation Ends
 

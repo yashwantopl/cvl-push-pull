@@ -40,13 +40,18 @@ public class PrimaryWorkingCapitalLoanDetail extends LoanApplicationMaster imple
 	@Column(name = "have_existing_limit")
 	private Boolean haveExistingLimit;
 
-	
 	@Lob
 	@Column(name = "project_brief")
 	private String projectBrief;
 
 	@Column(name = "collateral_security_amt_total")
 	private Double totalCollateralDetails;
+	
+	@Column(name = "share_price_face_value")
+	private Double sharePriceFace;
+	
+	@Column(name = "share_price_market_value")
+	private Double sharePriceMarket;
 
 	public PrimaryWorkingCapitalLoanDetail() {
 	}
@@ -99,4 +104,21 @@ public class PrimaryWorkingCapitalLoanDetail extends LoanApplicationMaster imple
 		this.totalCollateralDetails = totalCollateralDetails;
 	}
 
+	public Double getSharePriceFace() {
+		return sharePriceFace;
+	}
+
+	public void setSharePriceFace(Double sharePriceFace) {
+		this.sharePriceFace = sharePriceFace;
+	}
+
+	public Double getSharePriceMarket() {
+		return sharePriceMarket;
+	}
+
+	public void setSharePriceMarket(Double sharePriceMarket) {
+		this.sharePriceMarket = sharePriceMarket;
+	}
+	
+	
 }

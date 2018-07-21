@@ -19,9 +19,15 @@ public class FrameRequest implements Serializable{
 	
 	private Long clientId;
 	
+	private Long ddrFormId;
+	
 	private List<Map<String, Object>> dataList;
 	
 	private int applicantType;
+	
+	private List<String> campaignCodes;
+	
+	private Boolean isFromClient;
 	
 
 	public int getApplicantType() {
@@ -63,5 +69,31 @@ public class FrameRequest implements Serializable{
 	public void setClientId(Long clientId) {
 		this.clientId = clientId;
 	}
+
+	public Long getDdrFormId() {
+		return ddrFormId;
+	}
+
+	public void setDdrFormId(Long ddrFormId) {
+		this.ddrFormId = ddrFormId;
+	}
+
+	public List<String> getCampaignCodes() {
+		return campaignCodes;
+	}
+
+	public void setCampaignCodes(List<String> campaignCodes) {
+		this.campaignCodes = campaignCodes;
+	}
+
+	public Boolean getIsFromClient() {
+		return isFromClient;
+	}
+
+	public void setIsFromClient(Boolean isFromClient) {
+		this.isFromClient = isFromClient;
+	}
+	
+	
 
 }

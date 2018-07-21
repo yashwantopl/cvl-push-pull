@@ -23,7 +23,7 @@ public class CorporateApplicantRequest implements Serializable {
 	
 	private Long applicationId;
 
-	private String aboutUs;
+	//private String aboutUs;
 
 	private String panNo;
 
@@ -33,7 +33,7 @@ public class CorporateApplicantRequest implements Serializable {
 
 	private Integer establishmentYear;
 
-	private String groupName;
+	//private String groupName;
 
 	private Long keyVericalFunding;
 
@@ -45,15 +45,11 @@ public class CorporateApplicantRequest implements Serializable {
 
 	private Address firstAddress;
 
-	private Address secondAddress;
-
-	private Boolean sameAs;
-
 	private String websiteAddress;
 
 	private String landlineNo;
 	
-	private List<CorporateCoApplicantRequest> coApplicants = Collections.emptyList();
+	//private List<CorporateCoApplicantRequest> coApplicants = Collections.emptyList();
 
 	private List<Long> industrylist = Collections.emptyList();
 
@@ -67,7 +63,14 @@ public class CorporateApplicantRequest implements Serializable {
 	
 	private Long userId;
 	
+	private Long keyVerticalSector;
+ 	
+	private Long keyVerticalSubsector;
+
+	private String gstIn;
+	private String email;
 	
+	private String companyCIN;
 
 	public Long getUserId() {
 		return userId;
@@ -104,13 +107,7 @@ public class CorporateApplicantRequest implements Serializable {
 		this.applicationId = applicationId;
 	}
 
-	public String getAboutUs() {
-		return this.aboutUs;
-	}
 
-	public void setAboutUs(String aboutUs) {
-		this.aboutUs = aboutUs;
-	}
 
 	public Integer getConstitutionId() {
 		return this.constitutionId;
@@ -134,14 +131,6 @@ public class CorporateApplicantRequest implements Serializable {
 
 	public void setEstablishmentYear(Integer establishmentYear) {
 		this.establishmentYear = establishmentYear;
-	}
-
-	public String getGroupName() {
-		return this.groupName;
-	}
-
-	public void setGroupName(String groupName) {
-		this.groupName = groupName;
 	}
 
 	public Long getKeyVericalFunding() {
@@ -176,13 +165,7 @@ public class CorporateApplicantRequest implements Serializable {
 		this.organisationName = organisationName;
 	}
 
-	public Boolean getSameAs() {
-		return sameAs;
-	}
 
-	public void setSameAs(Boolean sameAs) {
-		this.sameAs = sameAs;
-	}
 
 	public String getWebsiteAddress() {
 		return this.websiteAddress;
@@ -216,13 +199,7 @@ public class CorporateApplicantRequest implements Serializable {
 		this.firstAddress = firstAddress;
 	}
 
-	public Address getSecondAddress() {
-		return secondAddress;
-	}
 
-	public void setSecondAddress(Address secondAddress) {
-		this.secondAddress = secondAddress;
-	}
 
 	public List<Long> getSubsectors() {
 		return subsectors;
@@ -264,12 +241,68 @@ public class CorporateApplicantRequest implements Serializable {
 		this.detailsFilledCount = detailsFilledCount;
 	}
 
-	public List<CorporateCoApplicantRequest> getCoApplicants() {
-		return coApplicants;
+
+	public Long getKeyVerticalSector() {
+		return keyVerticalSector;
 	}
 
-	public void setCoApplicants(List<CorporateCoApplicantRequest> coApplicants) {
-		this.coApplicants = coApplicants;
+	public void setKeyVerticalSector(Long keyVerticalSector) {
+		this.keyVerticalSector = keyVerticalSector;
 	}
+
+	public Long getKeyVerticalSubsector() {
+		return keyVerticalSubsector;
+	}
+
+	public void setKeyVerticalSubsector(Long keyVerticalSubsector) {
+		this.keyVerticalSubsector = keyVerticalSubsector;
+	}
+
+	public String getGstIn() {
+		return gstIn;
+	}
+
+	public void setGstIn(String gstIn) {
+		this.gstIn = gstIn;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+	
+	
+
+	/**
+	 * @return the companyCIN
+	 */
+	public String getCompanyCIN() {
+		return companyCIN;
+	}
+
+	/**
+	 * @param companyCIN the companyCIN to set
+	 */
+	public void setCompanyCIN(String companyCIN) {
+		this.companyCIN = companyCIN;
+	}
+
+	@Override
+	public String toString() {
+		return "CorporateApplicantRequest [id=" + id + ", clientId=" + clientId + ", applicationId=" + applicationId
+				+ ", panNo=" + panNo + ", constitutionId=" + constitutionId + ", establishmentMonth="
+				+ establishmentMonth + ", establishmentYear=" + establishmentYear + ", keyVericalFunding="
+				+ keyVericalFunding + ", latitude=" + latitude + ", longitude=" + longitude + ", organisationName="
+				+ organisationName + ", firstAddress=" + firstAddress + ", websiteAddress=" + websiteAddress
+				+ ", landlineNo=" + landlineNo + ", industrylist=" + industrylist + ", sectorlist=" + sectorlist
+				+ ", subsectors=" + subsectors + ", isApplicantDetailsFilled=" + isApplicantDetailsFilled
+				+ ", detailsFilledCount=" + detailsFilledCount + ", userId=" + userId + ", keyVerticalSector="
+				+ keyVerticalSector + ", keyVerticalSubsector=" + keyVerticalSubsector + ", gstIn=" + gstIn + ", email="
+				+ email + ",companyCIN=" + companyCIN + "]";
+	}
+	
 	
 }

@@ -21,8 +21,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.teaser.primaryview.CarLoanPrimaryViewResponse;
+import com.capitaworld.service.loans.model.teaser.primaryview.CorporatePrimaryViewResponse;
 import com.capitaworld.service.loans.model.teaser.primaryview.HomeLoanPrimaryViewResponse;
 import com.capitaworld.service.loans.model.teaser.primaryview.LapPrimaryViewResponse;
+import com.capitaworld.service.loans.model.teaser.primaryview.NtbPrimaryViewResponse;
 import com.capitaworld.service.loans.model.teaser.primaryview.RetailPrimaryViewResponse;
 import com.capitaworld.service.loans.model.teaser.primaryview.TermLoanPrimaryViewResponse;
 import com.capitaworld.service.loans.model.teaser.primaryview.UnsecuredLoanPrimaryViewResponse;
@@ -31,15 +33,18 @@ import com.capitaworld.service.loans.service.common.NotificationService;
 import com.capitaworld.service.loans.service.fundprovider.ProductMasterService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.service.teaser.primaryview.CarLoanPrimaryViewService;
+import com.capitaworld.service.loans.service.teaser.primaryview.CorporatePrimaryViewService;
 import com.capitaworld.service.loans.service.teaser.primaryview.HomeLoanPrimaryViewService;
 import com.capitaworld.service.loans.service.teaser.primaryview.LapPrimaryViewService;
+import com.capitaworld.service.loans.service.teaser.primaryview.NtbTeaserViewService;
 import com.capitaworld.service.loans.service.teaser.primaryview.PersonalLoansViewService;
 import com.capitaworld.service.loans.service.teaser.primaryview.TermLoanPrimaryViewService;
 import com.capitaworld.service.loans.service.teaser.primaryview.UnsecuredLoanPrimaryViewService;
 import com.capitaworld.service.loans.service.teaser.primaryview.WorkingCapitalPrimaryViewService;
+import com.capitaworld.service.loans.utils.CommonDocumentUtils;
+import com.capitaworld.service.loans.utils.CommonNotificationUtils.NotificationTemplate;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
-import com.capitaworld.service.loans.utils.CommonNotificationUtils.NotificationTemplate;
 import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
 import com.capitaworld.service.notification.utils.NotificationAlias;
 import com.capitaworld.service.users.client.UsersClient;
@@ -73,7 +78,10 @@ public class PrimaryViewController {
 	
 	@Autowired
 	private UnsecuredLoanPrimaryViewService unsecuredLoanPrimaryViewService;
-	
+
+	@Autowired
+	private CorporatePrimaryViewService corporatePrimaryViewService;
+
 	@Autowired
 	private NotificationService notificationService;
 	
@@ -86,14 +94,17 @@ public class PrimaryViewController {
 	@Autowired
 	private UsersClient usersClient;
 	
+	@Autowired
+	private NtbTeaserViewService ntbTeaserViewService;
+	
 	@GetMapping(value = "/HomeLoan/{toApplicationId}")
-    public @ResponseBody ResponseEntity<LoansResponse> primaryViewHomeLoan(@PathVariable(value = "toApplicationId") Long toApplicationId,@RequestParam(value = "clientId", required = false) Long clientId,HttpServletRequest httpServletRequest) {
+    public @ResponseBody ResponseEntity<LoansResponse> primaryViewHomeLoan(@PathVariable(value = "toApplicationId") Long toApplicationId,@RequestParam(value = "clientId", required = false) Long clientId,HttpServletRequest request) {
         LoansResponse loansResponse = new LoansResponse();
         //get user id from http servlet request
         Long userId = null;
 		Integer userType = null;
 		
-		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
+		if (CommonDocumentUtils.isThisClientApplication(request)) {
 			if(!CommonUtils.isObjectNullOrEmpty(clientId)){
 				//MEANS FS, FP VIEW
 				userId = clientId;
@@ -114,12 +125,16 @@ public class PrimaryViewController {
 							HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
 				}
 			} else {
-				userType = CommonUtils.UserType.SERVICE_PROVIDER;
+				if(CommonUtils.UserType.SERVICE_PROVIDER == userType){
+					userType = CommonUtils.UserType.SERVICE_PROVIDER;
+					}else if(CommonUtils.UserType.NETWORK_PARTNER == userType){
+						userType = CommonUtils.UserType.NETWORK_PARTNER;
+						}
 			}
 			
 		} else {
-			userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
-			userType = ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE)).intValue();
+			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
 		}
 
         if(CommonUtils.isObjectNullOrEmpty(toApplicationId)){
@@ -147,13 +162,13 @@ public class PrimaryViewController {
     }
 	
 	@GetMapping(value = "/PersonalLoan/{toApplicationId}")
-    public @ResponseBody ResponseEntity<LoansResponse> primaryViewOfPersonalLoans(@PathVariable(value = "toApplicationId") Long toApplicationId,@RequestParam(value = "clientId", required = false) Long clientId,HttpServletRequest httpServletRequest) {
+    public @ResponseBody ResponseEntity<LoansResponse> primaryViewOfPersonalLoans(@PathVariable(value = "toApplicationId") Long toApplicationId,@RequestParam(value = "clientId", required = false) Long clientId,HttpServletRequest request) {
         LoansResponse loansResponse = new LoansResponse();
         //get user id from http servlet request
         Long userId = null;
 		Integer userType = null;
 		
-		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
+		if (CommonDocumentUtils.isThisClientApplication(request)) {
 			if(!CommonUtils.isObjectNullOrEmpty(clientId)){
 				//MEANS FS, FP VIEW
 				userId = clientId;
@@ -173,13 +188,16 @@ public class PrimaryViewController {
 					return new ResponseEntity<LoansResponse>(new LoansResponse("Something went wrong",
 							HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
 				}
-			} else {
+			} else {if(CommonUtils.UserType.SERVICE_PROVIDER == userType){
 				userType = CommonUtils.UserType.SERVICE_PROVIDER;
+				}else if(CommonUtils.UserType.NETWORK_PARTNER == userType){
+					userType = CommonUtils.UserType.NETWORK_PARTNER;
+					}
 			}
 			
 		} else {
-			userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
-			userType = ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE)).intValue();
+			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
 		}
 
 		if (CommonUtils.isObjectNullOrEmpty(toApplicationId)) {
@@ -208,14 +226,14 @@ public class PrimaryViewController {
 	}
 
     @GetMapping(value = "/CarLoan/{toApplicationId}")
-    public @ResponseBody ResponseEntity<LoansResponse> primaryViewOfCarLoan(@PathVariable(value = "toApplicationId") Long toApplicationId,@RequestParam(value = "clientId", required = false) Long clientId,HttpServletRequest httpServletRequest) {
+    public @ResponseBody ResponseEntity<LoansResponse> primaryViewOfCarLoan(@PathVariable(value = "toApplicationId") Long toApplicationId,@RequestParam(value = "clientId", required = false) Long clientId,HttpServletRequest request) {
         LoansResponse loansResponse = new LoansResponse();
 
 		//get user id from http servlet request
         Long userId = null;
 		Integer userType = null;
 		
-		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
+		if (CommonDocumentUtils.isThisClientApplication(request)) {
 			if(!CommonUtils.isObjectNullOrEmpty(clientId)){
 				//MEANS FS, FP VIEW
 				userId = clientId;
@@ -236,12 +254,16 @@ public class PrimaryViewController {
 							HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
 				}
 			} else {
-				userType = CommonUtils.UserType.SERVICE_PROVIDER;
+				if(CommonUtils.UserType.SERVICE_PROVIDER == userType){
+					userType = CommonUtils.UserType.SERVICE_PROVIDER;
+					}else if(CommonUtils.UserType.NETWORK_PARTNER == userType){
+						userType = CommonUtils.UserType.NETWORK_PARTNER;
+						}
 			}
 			
 		} else {
-			userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
-			userType = ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE)).intValue();
+			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
 		}
 
         if(CommonUtils.isObjectNullOrEmpty(toApplicationId)){
@@ -270,14 +292,14 @@ public class PrimaryViewController {
     }
 
     @GetMapping(value = "/LapLoan/{toApplicationId}")
-    public @ResponseBody ResponseEntity<LoansResponse> primaryViewOfLap(@PathVariable(value = "toApplicationId") Long toApplicationId,@RequestParam(value = "clientId", required = false) Long clientId,HttpServletRequest httpServletRequest) {
+    public @ResponseBody ResponseEntity<LoansResponse> primaryViewOfLap(@PathVariable(value = "toApplicationId") Long toApplicationId,@RequestParam(value = "clientId", required = false) Long clientId,HttpServletRequest request) {
         LoansResponse loansResponse = new LoansResponse();
 
 		//get user id from http servlet request
         Long userId = null;
 		Integer userType = null;
 		
-		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
+		if (CommonDocumentUtils.isThisClientApplication(request)) {
 			if(!CommonUtils.isObjectNullOrEmpty(clientId)){
 				//MEANS FS, FP VIEW
 				userId = clientId;
@@ -298,12 +320,16 @@ public class PrimaryViewController {
 							HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
 				}
 			} else {
-				userType = CommonUtils.UserType.SERVICE_PROVIDER;
+				if(CommonUtils.UserType.SERVICE_PROVIDER == userType){
+					userType = CommonUtils.UserType.SERVICE_PROVIDER;
+					}else if(CommonUtils.UserType.NETWORK_PARTNER == userType){
+						userType = CommonUtils.UserType.NETWORK_PARTNER;
+						}
 			}
 			
 		} else {
-			userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
-			userType = ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE)).intValue();
+			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
 		}
 
         if(CommonUtils.isObjectNullOrEmpty(toApplicationId)){
@@ -333,14 +359,14 @@ public class PrimaryViewController {
     }
 
 	@GetMapping(value = "/WorkingCapital/{toApplicationId}")
-	public @ResponseBody ResponseEntity<LoansResponse> primaryViewOfWorkingCapital(@PathVariable(value = "toApplicationId") Long toApplicationId,@RequestParam(value = "clientId", required = false) Long clientId,HttpServletRequest httpServletRequest) {
+	public @ResponseBody ResponseEntity<LoansResponse> primaryViewOfWorkingCapital(@PathVariable(value = "toApplicationId") Long toApplicationId,@RequestParam(value = "clientId", required = false) Long clientId,HttpServletRequest request) {
 		LoansResponse loansResponse = new LoansResponse();
 
 		//get user id from http servlet request
 		Long userId = null;
 		Integer userType = null;
 		
-		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
+		if (CommonDocumentUtils.isThisClientApplication(request)) {
 			if(!CommonUtils.isObjectNullOrEmpty(clientId)){
 				//MEANS FS, FP VIEW
 				userId = clientId;
@@ -361,12 +387,16 @@ public class PrimaryViewController {
 							HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
 				}
 			} else {
-				userType = CommonUtils.UserType.SERVICE_PROVIDER;
+				if(CommonUtils.UserType.SERVICE_PROVIDER == userType){
+					userType = CommonUtils.UserType.SERVICE_PROVIDER;
+					}else if(CommonUtils.UserType.NETWORK_PARTNER == userType){
+						userType = CommonUtils.UserType.NETWORK_PARTNER;
+						}
 			}
 			
 		} else {
-			userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
-			userType = ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE)).intValue();
+			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
 		}
 
 		if(CommonUtils.isObjectNullOrEmpty(toApplicationId)){
@@ -395,14 +425,14 @@ public class PrimaryViewController {
 	}
 
 	@GetMapping(value = "/TermLoan/{toApplicationId}")
-	public @ResponseBody ResponseEntity<LoansResponse> primaryViewOfTermLoan(@PathVariable(value = "toApplicationId") Long toApplicationId,@RequestParam(value = "clientId", required = false) Long clientId,HttpServletRequest httpServletRequest) {
+	public @ResponseBody ResponseEntity<LoansResponse> primaryViewOfTermLoan(@PathVariable(value = "toApplicationId") Long toApplicationId,@RequestParam(value = "clientId", required = false) Long clientId,HttpServletRequest request) {
 		LoansResponse loansResponse = new LoansResponse();
 
 		// get user id from http servlet request
 		Long userId = null;
 		Integer userType = null;
 		
-		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
+		if (CommonDocumentUtils.isThisClientApplication(request)) {
 			if(!CommonUtils.isObjectNullOrEmpty(clientId)){
 				//MEANS FS, FP VIEW
 				userId = clientId;
@@ -423,12 +453,16 @@ public class PrimaryViewController {
 							HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
 				}
 			} else {
-				userType = CommonUtils.UserType.SERVICE_PROVIDER;
+				if(CommonUtils.UserType.SERVICE_PROVIDER == userType){
+					userType = CommonUtils.UserType.SERVICE_PROVIDER;
+					}else if(CommonUtils.UserType.NETWORK_PARTNER == userType){
+						userType = CommonUtils.UserType.NETWORK_PARTNER;
+						}
 			}
 			
 		} else {
-			userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
-			userType = ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE)).intValue();
+			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
 		}
 		
 		if (toApplicationId == null) {
@@ -459,14 +493,14 @@ public class PrimaryViewController {
 	//UNSECURED LOAN
 	
 		@GetMapping(value = "/UnsecuredLoan/{toApplicationId}")
-		public @ResponseBody ResponseEntity<LoansResponse> primaryViewOfUnsecuredLoan(@PathVariable(value = "toApplicationId") Long toApplicationId,@RequestParam(value = "clientId", required = false) Long clientId,HttpServletRequest httpServletRequest) {
+		public @ResponseBody ResponseEntity<LoansResponse> primaryViewOfUnsecuredLoan(@PathVariable(value = "toApplicationId") Long toApplicationId,@RequestParam(value = "clientId", required = false) Long clientId,HttpServletRequest request) {
 			LoansResponse loansResponse = new LoansResponse();
 
 			// get user id from http servlet request
 			Long userId = null;
 			Integer userType = null;
 			
-			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE)).intValue()) {
+			if (CommonDocumentUtils.isThisClientApplication(request)) {
 				if(!CommonUtils.isObjectNullOrEmpty(clientId)){
 					//MEANS FS, FP VIEW
 					userId = clientId;
@@ -487,12 +521,16 @@ public class PrimaryViewController {
 								HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
 					}
 				} else {
-					userType = CommonUtils.UserType.SERVICE_PROVIDER;
+					if(CommonUtils.UserType.SERVICE_PROVIDER == userType){
+						userType = CommonUtils.UserType.SERVICE_PROVIDER;
+						}else if(CommonUtils.UserType.NETWORK_PARTNER == userType){
+							userType = CommonUtils.UserType.NETWORK_PARTNER;
+							}
 				}
 				
 			} else {
-				userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
-				userType = ((Integer) httpServletRequest.getAttribute(CommonUtils.USER_TYPE)).intValue();
+				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+				userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
 			}
 			
 			if (toApplicationId == null) {
@@ -519,7 +557,156 @@ public class PrimaryViewController {
 				}
 			}
 		}
+
+	//-----------corporate Common
+	@GetMapping(value = "/Corporate/{toApplicationId}")
+	public @ResponseBody ResponseEntity<LoansResponse> primaryViewOfCorporateCommon(@PathVariable(value = "toApplicationId") Long toApplicationId,@RequestParam(value = "clientId", required = false) Long clientId,HttpServletRequest request) {
+		logger.info("into /Corporate/{toApplicationId} and toApplicationId is"+toApplicationId);
+		LoansResponse loansResponse = new LoansResponse();
+
+		//get user id from http servlet request
+		Long userId = null;
+		Integer userType = null;
+		Long productId= null;
+		if(!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_TYPE))) {
+			userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();		
+		}
+
+		if (CommonDocumentUtils.isThisClientApplication(request)) {
+			if(!CommonUtils.isObjectNullOrEmpty(clientId) && userType != CommonUtils.UserType.FUND_PROVIDER){
+				//MEANS FS, FP VIEW
+				userId = clientId;
+				try {
+					UserResponse response = usersClient.getUserTypeByUserId(new UsersRequest(userId));
+					if(response != null && response.getData() != null){
+						UserTypeRequest req = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>) response.getData(), UserTypeRequest.class);
+						userType = req.getId().intValue();
+					} else {
+						logger.warn("user_verification, Invalid Request... Client Id is not valid");
+						return new ResponseEntity<LoansResponse>(new LoansResponse("Client Id is not valid",
+								HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+					}
+				} catch(Exception e) {
+					logger.warn("user_verification, Invalid Request... Something went wrong");
+					e.printStackTrace();
+					return new ResponseEntity<LoansResponse>(new LoansResponse("Something went wrong",
+							HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
+				}
+			} else {
+				if(!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_TYPE))) {
+					userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();		
+				}
+				if(!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_ID))) {
+					userId = ((Long) request.getAttribute(CommonUtils.USER_ID));		
+				}
+				/*if(CommonUtils.UserType.SERVICE_PROVIDER == userType){
+					userType = CommonUtils.UserType.SERVICE_PROVIDER;
+				}else if(CommonUtils.UserType.NETWORK_PARTNER == userType){
+					userType = CommonUtils.UserType.NETWORK_PARTNER;
+				}*/
+			}
+
+		} else {
+			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
+		}
+
+		if(CommonUtils.isObjectNullOrEmpty(toApplicationId)){
+			logger.warn("Invalid data or Requested data not found.", toApplicationId);
+			return new ResponseEntity<LoansResponse>(new LoansResponse("Invalid data or Requested data not found.", HttpStatus.BAD_REQUEST.value()),HttpStatus.OK);
+		}else {
+			CorporatePrimaryViewResponse corporatePrimaryViewResponse = null;
+			try {
+				logger.info("toApplicationId,userType,userId is"+toApplicationId+userType+userId);
+				corporatePrimaryViewResponse = corporatePrimaryViewService.getCorporatePrimaryViewDetails(toApplicationId,userType,userId);
+				if(!CommonUtils.isObjectNullOrEmpty(corporatePrimaryViewResponse)){
+					logger.info("response is"+corporatePrimaryViewResponse.toString());
+					loansResponse.setData(corporatePrimaryViewResponse);
+					loansResponse.setMessage("Corporate Primary Details");
+					loansResponse.setStatus(HttpStatus.OK.value());
+				}else{
+					loansResponse.setMessage("No data found for Corporate final view");
+					loansResponse.setStatus(HttpStatus.OK.value());
+				}
+				return new ResponseEntity<LoansResponse>(loansResponse,HttpStatus.OK);
+			}catch (Exception e){
+				loansResponse.setData(corporatePrimaryViewResponse);
+				loansResponse.setMessage("Something went wrong..!");
+				loansResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+			}
+		}
+	}
 	
+	//NTB PRIMARY VIEW
+		@GetMapping(value = "/NtbPrimaryTeaserView/{toApplicationId}/{productMappingId}")
+		public @ResponseBody ResponseEntity<LoansResponse> ntbPrimaryViewOfCorporateCommon(@PathVariable(value = "toApplicationId") Long toApplicationId,@PathVariable(value = "productMappingId") Long productMappingId,@RequestParam(value = "clientId", required = false) Long clientId,HttpServletRequest request) {
+			
+			logger.info("In NTB Primary View Ctrl of applicationId"+toApplicationId+"productMappingId"+productMappingId);
+
+			//GET USER ID AND USER TYPE
+			Long userId = null;
+			Integer userType = null;
+			if(!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_TYPE))) {
+				 userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();		
+			}
+			if (CommonDocumentUtils.isThisClientApplication(request)) {
+				if(!CommonUtils.isObjectNullOrEmpty(clientId) && userType != CommonUtils.UserType.FUND_PROVIDER){
+					userId = clientId;
+					try {
+						UserResponse response = usersClient.getUserTypeByUserId(new UsersRequest(userId));
+						if(response != null && response.getData() != null){
+							UserTypeRequest req = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>) response.getData(), UserTypeRequest.class);
+							userType = req.getId().intValue();
+						}else{
+							logger.warn("user_verification, Invalid Request... Client Id is not valid");
+							return new ResponseEntity<LoansResponse>(new LoansResponse("Client Id is not valid",HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+						}
+					}catch(Exception e) {
+						logger.warn("user_verification, Invalid Request... Something went wrong");
+						e.printStackTrace();
+						return new ResponseEntity<LoansResponse>(new LoansResponse("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
+					}
+				}else {
+					if(!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_TYPE))) {
+						userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();		
+					}
+					if(!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_ID))) {
+						userId = ((Long) request.getAttribute(CommonUtils.USER_ID));		
+					}
+				}
+
+			} else {
+				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+				userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
+			}
+			if(CommonUtils.isObjectNullOrEmpty(toApplicationId) ||CommonUtils.isObjectNullOrEmpty(productMappingId)){
+				logger.warn("Invalid data or Requested data not found."+ toApplicationId +productMappingId);
+				return new ResponseEntity<LoansResponse>(new LoansResponse("Invalid data or Requested data not found.", HttpStatus.BAD_REQUEST.value()),HttpStatus.OK);
+			}else {
+				LoansResponse loansResponse = new LoansResponse();
+				NtbPrimaryViewResponse ntbPrimaryViewResponse = null;
+				try {
+					logger.info("GET PRIMARY TEASER VIEW OF USER OF APPLICATION ID"+toApplicationId+"PRODUCT MAPPING ID"+productMappingId+"USER TYPE"+userType+"USER ID"+userId);
+					 ntbPrimaryViewResponse = ntbTeaserViewService.getNtbTeaserViewDetails(toApplicationId, userType, userId, productMappingId, false);
+					if(!CommonUtils.isObjectNullOrEmpty(ntbPrimaryViewResponse)){
+						logger.info("Response of Teaser View"+ntbPrimaryViewResponse.toString());
+						loansResponse.setData(ntbPrimaryViewResponse);
+						loansResponse.setMessage("Ntb Primary Details");
+						loansResponse.setStatus(HttpStatus.OK.value());
+					}else{
+						loansResponse.setMessage("No data found for Ntb final view");
+						loansResponse.setStatus(HttpStatus.OK.value());
+					}
+					return new ResponseEntity<LoansResponse>(loansResponse,HttpStatus.OK);
+				}catch (Exception e){
+					loansResponse.setData(ntbPrimaryViewResponse);
+					loansResponse.setMessage("Something went wrong..!");
+					loansResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+					return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+				}
+			}
+		}
 	
 	@RequestMapping(value = "/sendPrimaryTeaserViewNotification", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public void primaryTeaserViewNotification(@RequestBody ProposalMappingRequest request,HttpServletRequest httpRequest,@RequestParam(value = "clientId", required = false) Long clientId,@RequestParam(value = "clientUserType", required = false) Long clientUserType) throws Exception {
@@ -530,8 +717,7 @@ public class PrimaryViewController {
 			Long fromUserTypeId = null;
 			Long loginUserType = Long.valueOf(httpRequest.getAttribute(CommonUtils.USER_TYPE).toString());
 			
-			if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpRequest.getAttribute(CommonUtils.USER_TYPE))
-					.intValue()) {
+			if (CommonDocumentUtils.isThisClientApplication(httpRequest) && !CommonUtils.isObjectNullOrEmpty(clientId)) {
 				fromUserId = clientId;
 				fromUserTypeId = clientUserType;
 			} else {
@@ -574,8 +760,7 @@ public class PrimaryViewController {
 		Long fromUserTypeId = null;
 		Long loginUserType = Long.valueOf(httpRequest.getAttribute(CommonUtils.USER_TYPE).toString());
 		
-		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpRequest.getAttribute(CommonUtils.USER_TYPE))
-				.intValue()) {
+		if (CommonDocumentUtils.isThisClientApplication(httpRequest)  && !CommonUtils.isObjectNullOrEmpty(clientId)) {
 			fromUserId = clientId;
 			fromUserTypeId = clientUserType;
 		} else {
@@ -619,8 +804,7 @@ public class PrimaryViewController {
 		Long fromUserTypeId = null;
 		Long loginUserType = Long.valueOf(httpRequest.getAttribute(CommonUtils.USER_TYPE).toString());
 		
-		if (CommonUtils.UserType.SERVICE_PROVIDER == ((Integer) httpRequest.getAttribute(CommonUtils.USER_TYPE))
-				.intValue()) {
+		if (CommonDocumentUtils.isThisClientApplication(httpRequest) && !CommonUtils.isObjectNullOrEmpty(clientId)) {
 			fromUserId = clientId;
 			fromUserTypeId = clientUserType;
 		} else {

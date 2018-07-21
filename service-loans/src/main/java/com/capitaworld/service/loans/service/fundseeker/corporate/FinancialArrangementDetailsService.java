@@ -14,5 +14,13 @@ public interface FinancialArrangementDetailsService {
 	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception;
 
 	public List<FinancialArrangementsDetailRequest> getFinancialArrangementDetailsList(Long id,Long userId) throws Exception;
+	
+	public Boolean saveOrUpdate(List<FinancialArrangementsDetailRequest> existingLoanDetailRequest,Long applicationId,Long userId);
+	
+	public Boolean saveOrUpdate(List<FinancialArrangementsDetailRequest> existingLoanDetailRequest,Long applicationId,Long userId,Long directorId);
+	
+	public Double getTotalOfEmiByApplicationId(Long applicationId);
+
+	public Double getTotalOfEmiByApplicationIdAndDirectorId(Long applicationId,Long directorId);
 
 }

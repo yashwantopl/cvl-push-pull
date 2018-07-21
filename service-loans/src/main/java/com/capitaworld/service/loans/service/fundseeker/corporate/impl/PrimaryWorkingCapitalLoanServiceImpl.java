@@ -84,7 +84,12 @@ public class PrimaryWorkingCapitalLoanServiceImpl implements PrimaryWorkingCapit
 	@Override
 	public PrimaryWorkingCapitalLoanRequest get(Long id, Long userId) throws Exception {
 		try {
-			PrimaryWorkingCapitalLoanDetail loanDetail = primaryWCRepository.getByApplicationAndUserId(id, userId);
+			PrimaryWorkingCapitalLoanDetail loanDetail = null;
+			if(userId != null) {
+				loanDetail = primaryWCRepository.getByApplicationAndUserId(id, userId);				
+			}else {
+				loanDetail = primaryWCRepository.findByApplicationIdIdAndIsActive(id,true);
+			}
 			if (loanDetail == null) {
 				throw new NullPointerException(
 						"PrimaryWorkingCapitalLoanDetail not exist in DB with ID=>" + id + " with user Id==>" + userId);

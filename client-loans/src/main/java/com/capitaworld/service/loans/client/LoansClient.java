@@ -1,39 +1,48 @@
 package com.capitaworld.service.loans.client;
 
+import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
+import com.capitaworld.service.loans.model.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.capitaworld.service.loans.exceptions.ExcelException;
 import com.capitaworld.service.loans.exceptions.LoansException;
-import com.capitaworld.service.loans.model.ExcelRequest;
-import com.capitaworld.service.loans.model.ExcelResponse;
-import com.capitaworld.service.loans.model.FrameRequest;
-import com.capitaworld.service.loans.model.LoanApplicationRequest;
-import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.common.EkycRequest;
 import com.capitaworld.service.loans.model.common.HomeLoanEligibilityRequest;
 import com.capitaworld.service.loans.model.common.LAPEligibilityRequest;
 import com.capitaworld.service.loans.model.common.LogDetailsModel;
 import com.capitaworld.service.loans.model.common.PersonalLoanEligibilityRequest;
+import com.capitaworld.service.loans.model.common.UserLoanAmountMappingRequest;
+import com.capitaworld.service.loans.model.corporate.CMARequest;
 import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
+import com.capitaworld.service.loans.model.corporate.CorporateDirectorIncomeRequest;
 import com.capitaworld.service.loans.model.corporate.FinalTermLoanRequest;
 import com.capitaworld.service.loans.model.corporate.FinalWorkingCapitalLoanRequest;
+import com.capitaworld.service.loans.model.corporate.FundSeekerInputRequestResponse;
 import com.capitaworld.service.loans.model.corporate.PrimaryTermLoanRequest;
 import com.capitaworld.service.loans.model.corporate.PrimaryWorkingCapitalLoanRequest;
-import com.capitaworld.service.loans.model.mobile.MApplicantProfileResponse;
 import com.capitaworld.service.loans.model.mobile.MRetailApplicantResponse;
 import com.capitaworld.service.loans.model.mobile.MRetailCoAppGuarResponse;
+import com.capitaworld.service.loans.model.mobile.MobileApiResponse;
 import com.capitaworld.service.loans.model.mobile.MobileFPMatchesRequest;
 import com.capitaworld.service.loans.model.mobile.MobileFrameRequest;
 import com.capitaworld.service.loans.model.mobile.MobileLoanRequest;
 import com.capitaworld.service.loans.model.retail.CreditCardsDetailRequest;
 import com.capitaworld.service.loans.model.retail.ExistingLoanDetailRequest;
 import com.capitaworld.service.loans.model.retail.RetailApplicantRequest;
+import com.capitaworld.service.loans.model.score.ScoringRequestLoans;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.CommonUtils.LoanType;
 
@@ -66,11 +75,16 @@ public class LoansClient {
 	private static final String CREATE_LOG = "/createLog";
 	private static final String SAVE_ACHIEVEMENT_DETAILS = "/achievment_details/save";
 	private static final String SAVE_ASSOCIATED_CONCERN_DETAIL = "/associated_concern_details/save";
-	private static final String CORPORATE_APPLICATION_DETAILS = "/fs_profile/save";
+	private static final String CORPORATE_APPLICATION_DETAILS_SAVE = "/fs_profile/save";
+	private static final String CORPORATE_APPLICATION_ITR_MAPPING_SAVE = "/fs_profile/saveITRMapping";
+	private static final String CORPORATE_APPLICATION_DETAILS_GET = "/fs_profile/getApplicationClientForEligibility";
+	private static final String CORPORATE_APPLICATION_DETAILS_GET_NEW= "/fs_profile/getApplicationClient";
 	private static final String CREDIT_RATING_ORGANIZATION_DETAILS = "/credit_rating_organization_details/save";
 	private static final String EXISTING_PRODUCT_DETAILS = "/existing_product_details/save";
 	private static final String MEANS_OF_FINANCE = "/means_of_finance/save";
 	private static final String FINANCIAL_ARRANGEMENT_DETAILS = "/financial_arrangement_details/save";
+	private static final String FINANCIAL_ARRANGEMENT_DETAILS_TOTAL_EMI = "/financial_arrangement_details/get_total_emi";
+	private static final String FINANCIAL_ARRANGEMENT_DETAILS_TOTAL_EMI_FROM_DIRECTOR_ID = "/financial_arrangement_details/getTotalEmiFromDirectorId";
 	private static final String FUTURE_FINANCIAL_ESTIMATE_DETAILS = "/future_financial_estimate_details/save";
 	private static final String GUARANTORS_CORPORATE_DETAILS = "/guarantors_corporate_details/save";
 	private static final String MONTHLY_TURNOVER_DETAILS = "/monthly_turnover_details/save";
@@ -81,8 +95,10 @@ public class LoansClient {
 	private static final String SECURITY_CORPORATE_DETAILS = "/security_corporate_details/save";
 	private static final String SAVE_TERM_LOAN_FINAL = "/term_loan/final/save";
 	private static final String SAVE_TERM_LOAN_PRIMARY = "/term_loan/primary/save";
+	private static final String SAVE_TERM_LOAN_PRIMARY_GET = "/term_loan/get_client";
 	private static final String TOTAL_COST_OF_PROJECT = "/total_cost_of_project/save";
 	private static final String WORKING_CAPITAL_PRIMARY = "/working_capital/primary/save";
+	private static final String WORKING_CAPITAL_PRIMARY_GET = "/working_capital/get_client";
 	private static final String WORKING_CAPITAL_FINAL = "/working_capital/final/save";
 	private static final String UPDATE_LOAN_APPLICATION = "/loan_application/updateLoanApplication";
 	private static final String BASIC_DETAIL_URL = "/fs_retail_profile/profile/get_basic_details";
@@ -113,8 +129,11 @@ public class LoansClient {
 
 	private static final String EXISTING_LOAN_DETAIL_CIBIL = "/existing_loan_details/save_from_cibil";
 	private static final String CREDIT_CARD_DETAIL_CIBIL = "/credit_cards_detail/save_from_cibil";
+	private static final String FINANCIAL_ARRANGEMENT_DETAILS_CIBIL = "/financial_arrangement_details/save_from_cibil";
+	private static final String CREDIT_RATING_DETAILS_CIBIL = "/credit_rating_organization_details/save_from_cibil";
 
 	private static final String CREATE_LOAN_FROM_CAMPAIGN = "/loan_application/create_loan_from_campaign";
+	private static final String INACTIVE_APPLICATION_BY_APPLICATION_ID = "/loan_application/inactive_application";
 
 	private static final String EKYC_AUTHENTICATION = "/loan_application/getDetailsForEkycAuthentication";
 	
@@ -130,6 +149,70 @@ public class LoansClient {
 	private static final String IS_TERM_LOAN_LESS_THAN_LIMIT = "/loan_application/isTermLoanLessThanLimit";
 	
 	private static final String SET_ELIGIBILITY_AMOUNT = "/loan_application/set_eligibility_amount";
+	
+	private static final String SAVE_DIRECTOR_BACKGROUND_DETAILS = "/director_background_details/save";
+	private static final String GET_DIRECTOR_BACKGROUND_DETAILS = "/director_background_details/getList_client";
+	private static final String GET_DIRECTOR_BACKGROUND_DETAIL = "/director_background_details/get";
+	private static final String UPDATE_DIRECTOR_BACKGROUND_API_FLAG = "/director_background_details/update_api_flag";
+
+	private static final String GET_LOAN_DETAILS = "/loan_application/get_client";
+	
+	private static final String GET_FINANCIAL_TO_BE_FILLED = "/ddr/get";
+	
+	private static final String GET_FINANCIAL_AUTO_FILLED_MASTER = "/ddr/getAutoFilledDetails";
+
+	private static final String CALCULATE_SCORING_CORPORATE = "/score/calculate_score/corporate";
+
+	private static final String GET_CMA_DETAIL = "/loan_eligibility/getCMADetailForEligibility/";
+	
+	private static final String CMA_DETAILS = "/cma/get";
+	private static final String SAVE_CMA_DETAILS = "/cma/save";
+
+	private static final String FUNDSEEKER_INPUT_REQUEST_SAVE = "/fundseeker_input_request/save";
+	private static final String FUNDSEEKER_INPUT_REQUEST_GET = "/fundseeker_input_request/get";
+
+	private static final String FUNDSEEKER_INPUT_REQUEST_SAVE_MOBILE = "/fundseeker_input_request_mobile/save_oneform";
+	private static final String FUNDSEEKER_INPUT_REQUEST_GET_MOBILE = "/fundseeker_input_request_mobile/get_oneform";
+	private static final String FUNDSEEKER_INPUT_REQUEST_MATCHES_MOBILE = "/fundseeker_input_request_mobile/match";
+
+	private static final String GET_ORG_PAN_DETAILS = "/fs_profile/getOrgAndPanByAppId";
+	
+	private static final String  GET_FPDETAILS_BY_FPPRODUCTID = "/loan_application/getFpDetailsByFpProductId";
+	private static final String SAVE_PHASE_ONE = "/loan_application/save_phase1_sidbi";
+	private static final String SAVE_PHASE_TWO = "/loan_application/save_phase2_sidbi";
+	
+    private static final String GET_CORPORATE_SCORE="/score/calculate_score/corporate/test";
+    
+    private static final String SIDBI_GET_DIRECTOR_DETAILS ="/fundseeker_input_request_mobile/get_director_detail";
+    private static final String SIDBI_SAVE_DIRECTOR_DETAILS ="/fundseeker_input_request_mobile/save_director_detail";
+    private static final String UPDATE_PRODUCT_DETAILS ="/loan_application/updateProductDetails";
+    
+    private static final String GET_SCORING_EXCEL="/score/getScoreExcel";
+    private static final String GET_DIRECTORLIST_BY_APPLICATION_ID = "/director_background_details/getDirectorList";
+    
+    private static final String GET_DATA_FOR_CGTMSE="/common/getDataForCGTMSE";
+    
+    
+    //USERLOANAMOUNTMAPPING TABLE SERVICE
+    private static final String CHECK_AMOUNT_BY_USERID_AND_PRODUCTID = "/user_amount_mapping/check_amount_by_user_and_product";
+    private static final String GET_BY_USERID_AND_PRODUCTID = "/user_amount_mapping/get_by_user_and_product";
+    
+    private static final String GET_DATA_FOR_HUNTER="/common/getDataForHunter";
+    
+    
+    //For Gateway
+    private static final String GET_CMA_BY_APPLICATIONID_PRODUCTDOCUMENTMAPPINGID = "/corporate_upload/get_CMA_by_applicationId_productDocumentMappingId";
+    private static final String UPDATE_PAYMENT_STATUS = "/loan_application/update_payment_status_sidbi";
+    
+    private static final String SAVE_UPDATE_DIRECTOR_INCOME_DETAILS = "/corporate_director_income_details/save_income_details";
+      
+    private static final String GET_DIRECTOR_INCOME_DETAILS = "/corporate_director_income_details/get_income_details";
+    
+    
+    private static final String GET_TOKEN ="/loan_application/getToken";
+    private static final String SET_TOKEN_AS_EXPIRED ="/loan_application/setTokenAsExpired";
+    
+	private static final Logger logger = LoggerFactory.getLogger(LoansClient.class);
 	
 	private String loansBaseUrl;
 	private RestTemplate restTemplate;
@@ -207,6 +290,7 @@ public class LoansClient {
 
 	private HttpEntity<ExcelRequest> setHttpHeader(ExcelRequest request) {
 		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
 		headers.set("req_auth", "true");
 		return new HttpEntity<ExcelRequest>(request, headers);
 	}
@@ -232,6 +316,7 @@ public class LoansClient {
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<Long> entity = new HttpEntity<Long>(request, headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 			/*
@@ -249,6 +334,7 @@ public class LoansClient {
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<Long> entity = new HttpEntity<Long>(request, headers);
 			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
 			/*
@@ -266,6 +352,7 @@ public class LoansClient {
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<Long> entity = new HttpEntity<Long>(request, headers);
 			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
 			/*
@@ -283,6 +370,7 @@ public class LoansClient {
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<EkycRequest> entity = new HttpEntity<EkycRequest>(request, headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
@@ -296,6 +384,7 @@ public class LoansClient {
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<Long> entity = new HttpEntity<Long>(applicationId, headers);
 			LoansResponse response = restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 			if (response != null) {
@@ -315,6 +404,7 @@ public class LoansClient {
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<List<Long>> entity = new HttpEntity<List<Long>>(request, headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
@@ -328,6 +418,7 @@ public class LoansClient {
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<Long> entity = new HttpEntity<Long>(request, headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 
@@ -341,6 +432,7 @@ public class LoansClient {
 		String url = loansBaseUrl.concat(REGISTERD_USERS_DETAILS);
 		try {
 			HttpHeaders headers = new HttpHeaders();
+			headers.setContentType(MediaType.APPLICATION_JSON);
 			headers.set("req_auth", "true");
 			HttpEntity<MobileLoanRequest> entity = new HttpEntity<MobileLoanRequest>(loanRequest, headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
@@ -356,6 +448,7 @@ public class LoansClient {
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<MobileLoanRequest> entity = new HttpEntity<MobileLoanRequest>(loanRequest, headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 
@@ -369,6 +462,7 @@ public class LoansClient {
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<MobileLoanRequest> entity = new HttpEntity<MobileLoanRequest>(loanRequest, headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 
@@ -382,6 +476,7 @@ public class LoansClient {
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<MobileLoanRequest> entity = new HttpEntity<MobileLoanRequest>(loanRequest, headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 
@@ -395,6 +490,7 @@ public class LoansClient {
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<MobileLoanRequest> entity = new HttpEntity<MobileLoanRequest>(loanRequest, headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 
@@ -408,6 +504,7 @@ public class LoansClient {
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<MobileLoanRequest> entity = new HttpEntity<MobileLoanRequest>(loanRequest, headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 
@@ -421,6 +518,7 @@ public class LoansClient {
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<MobileLoanRequest> entity = new HttpEntity<MobileLoanRequest>(loanRequest, headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 
@@ -434,6 +532,7 @@ public class LoansClient {
 		String url = loansBaseUrl.concat(GET_FILLED_LOAN_DETAILS_ADMIN_PANEL);
 		try {
 			HttpHeaders headers = new HttpHeaders();
+			headers.setContentType(MediaType.APPLICATION_JSON);
 			headers.set("req_auth", "true");
 			HttpEntity<MobileLoanRequest> entity = new HttpEntity<MobileLoanRequest>(loanRequest, headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
@@ -449,6 +548,7 @@ public class LoansClient {
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<Long> entity = new HttpEntity<Long>(productId, headers);
 			LoansResponse response = restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 			if (response != null) {
@@ -468,6 +568,7 @@ public class LoansClient {
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<Long> entity = new HttpEntity<Long>(applicationId, headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 
@@ -482,6 +583,7 @@ public class LoansClient {
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<Long> entity = new HttpEntity<Long>(productMappingId, headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 
@@ -496,6 +598,7 @@ public class LoansClient {
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<LogDetailsModel> entity = new HttpEntity<LogDetailsModel>(logDetailsModel, headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 
@@ -510,6 +613,7 @@ public class LoansClient {
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<MobileLoanRequest> entity = new HttpEntity<MobileLoanRequest>(mobileUserRequest, headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 
@@ -524,6 +628,7 @@ public class LoansClient {
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<MobileLoanRequest> entity = new HttpEntity<MobileLoanRequest>(mobileUserRequest, headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 
@@ -538,6 +643,7 @@ public class LoansClient {
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<MobileLoanRequest> entity = new HttpEntity<MobileLoanRequest>(mobileUserRequest, headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 
@@ -552,6 +658,7 @@ public class LoansClient {
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<MRetailApplicantResponse> entity = new HttpEntity<MRetailApplicantResponse>(mRetailApplicantResponse, headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 
@@ -567,6 +674,7 @@ public class LoansClient {
 			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<FrameRequest> entity = new HttpEntity<FrameRequest>(request, headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
@@ -581,6 +689,7 @@ public class LoansClient {
 			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<FrameRequest> entity = new HttpEntity<FrameRequest>(request, headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
@@ -590,11 +699,12 @@ public class LoansClient {
 	}
 
 	public LoansResponse saveCorporateApplicant(CorporateApplicantRequest applicantRequest) throws ExcelException {
-		String url = loansBaseUrl.concat(CORPORATE_APPLICATION_DETAILS);
+		String url = loansBaseUrl.concat(CORPORATE_APPLICATION_DETAILS_SAVE);
 		try {
 			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<CorporateApplicantRequest> entity = new HttpEntity<CorporateApplicantRequest>(applicantRequest,
 					headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
@@ -603,7 +713,52 @@ public class LoansClient {
 			throw new ExcelException("Loans service is not available");
 		}
 	}
-
+	
+	public LoansResponse saveITRMappingCorporateApplicant(CorporateApplicantRequest applicantRequest) throws ExcelException {
+		String url = loansBaseUrl.concat(CORPORATE_APPLICATION_ITR_MAPPING_SAVE);
+		try {
+			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<CorporateApplicantRequest> entity = new HttpEntity<CorporateApplicantRequest>(applicantRequest,
+					headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ExcelException("Loans service is not available");
+		}
+	}
+	
+	public LoansResponse getCorporateApplicant(Long applicationId) throws ExcelException {
+		String url = loansBaseUrl.concat(CORPORATE_APPLICATION_DETAILS_GET).concat("/" + applicationId);
+		System.out.println("url for Getting Corporate Details From Client=================>" + url + " and For Application Id====>" + applicationId);
+		try {
+			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			HttpEntity<?> entity = new HttpEntity<>(null, headers);
+			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ExcelException("Loans service is not available");
+		}
+	}
+	
+	public LoansResponse getCorporateApplicantNew(Long applicationId) throws ExcelException {
+		String url = loansBaseUrl.concat(CORPORATE_APPLICATION_DETAILS_GET_NEW).concat("/" + applicationId);
+		System.out.println("url for Getting Corporate Details From Client=================>" + url + " and For Application Id====>" + applicationId);
+		try {
+			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			HttpEntity<?> entity = new HttpEntity<>(null, headers);
+			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ExcelException("Loans service is not available");
+		}
+	}
 	public LoansResponse saveCreditRatingOrganizationDetails(FrameRequest request) throws ExcelException {
 		String url = loansBaseUrl.concat(CREDIT_RATING_ORGANIZATION_DETAILS);
 		try {
@@ -624,6 +779,7 @@ public class LoansClient {
 			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<FrameRequest> entity = new HttpEntity<FrameRequest>(request, headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
@@ -638,6 +794,7 @@ public class LoansClient {
 			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<FrameRequest> entity = new HttpEntity<FrameRequest>(request, headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
@@ -652,11 +809,44 @@ public class LoansClient {
 			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<FrameRequest> entity = new HttpEntity<FrameRequest>(request, headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new ExcelException("Loans service is not available");
+		}
+	}
+	
+	public LoansResponse getTotalEMI(Long applicationId) throws Exception{
+		String url = loansBaseUrl.concat(FINANCIAL_ARRANGEMENT_DETAILS_TOTAL_EMI).concat("/" + applicationId);
+		System.out.println("url for Getting TotalEMI From Client=================>" + url + " and For Application Id====>" + applicationId);
+		try {
+			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			HttpEntity<?> entity = new HttpEntity<>(null, headers);
+			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new Exception("Loans service is not available");
+		}
+	}
+
+	//Dhaval
+	public LoansResponse getTotalEMIFromDirectorId(NTBRequest request) throws Exception{
+		String url = loansBaseUrl.concat(FINANCIAL_ARRANGEMENT_DETAILS_TOTAL_EMI_FROM_DIRECTOR_ID);
+		System.out.println("url for Getting TotalEMIDirector From Client=================>" + url);
+		try {
+			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<NTBRequest> entity = new HttpEntity<NTBRequest>(request, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new Exception("Loans service is not available");
 		}
 	}
 
@@ -666,6 +856,7 @@ public class LoansClient {
 			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<FrameRequest> entity = new HttpEntity<FrameRequest>(request, headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
@@ -680,6 +871,7 @@ public class LoansClient {
 			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<FrameRequest> entity = new HttpEntity<FrameRequest>(request, headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
@@ -694,6 +886,7 @@ public class LoansClient {
 			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<FrameRequest> entity = new HttpEntity<FrameRequest>(request, headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
@@ -708,6 +901,7 @@ public class LoansClient {
 			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<FrameRequest> entity = new HttpEntity<FrameRequest>(request, headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
@@ -722,6 +916,7 @@ public class LoansClient {
 			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<FrameRequest> entity = new HttpEntity<FrameRequest>(request, headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
@@ -736,6 +931,7 @@ public class LoansClient {
 			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<FrameRequest> entity = new HttpEntity<FrameRequest>(request, headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
@@ -750,6 +946,7 @@ public class LoansClient {
 			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<FrameRequest> entity = new HttpEntity<FrameRequest>(request, headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
@@ -764,6 +961,7 @@ public class LoansClient {
 			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<FrameRequest> entity = new HttpEntity<FrameRequest>(request, headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
@@ -777,6 +975,7 @@ public class LoansClient {
 		try {
 			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
 			HttpHeaders headers = new HttpHeaders();
+			headers.setContentType(MediaType.APPLICATION_JSON);
 			headers.set("req_auth", "true");
 			HttpEntity<FinalTermLoanRequest> entity = new HttpEntity<FinalTermLoanRequest>(request, headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
@@ -792,6 +991,7 @@ public class LoansClient {
 			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<PrimaryTermLoanRequest> entity = new HttpEntity<PrimaryTermLoanRequest>(request, headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
@@ -806,6 +1006,7 @@ public class LoansClient {
 			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<FrameRequest> entity = new HttpEntity<FrameRequest>(request, headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
@@ -820,9 +1021,25 @@ public class LoansClient {
 			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<PrimaryWorkingCapitalLoanRequest> entity = new HttpEntity<PrimaryWorkingCapitalLoanRequest>(
 					request, headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ExcelException("Loans service is not available");
+		}
+	}
+	
+	public LoansResponse getWorkingCapitalPrimary(Long applicationId) throws ExcelException {
+		String url = loansBaseUrl.concat(WORKING_CAPITAL_PRIMARY_GET).concat("/" + applicationId);
+		System.out.println("url for Getting Working Capital Primary From Client=================>" + url + " and For Application Id====>" + applicationId);
+		try {
+			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			HttpEntity<?> entity = new HttpEntity<>(null, headers);
+			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new ExcelException("Loans service is not available");
@@ -835,6 +1052,7 @@ public class LoansClient {
 			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<FinalWorkingCapitalLoanRequest> entity = new HttpEntity<FinalWorkingCapitalLoanRequest>(request,
 					headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
@@ -850,6 +1068,7 @@ public class LoansClient {
 			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<FrameRequest> entity = new HttpEntity<FrameRequest>(request, headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
@@ -864,6 +1083,7 @@ public class LoansClient {
 			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<LoanApplicationRequest> entity = new HttpEntity<LoanApplicationRequest>(request, headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
@@ -877,6 +1097,7 @@ public class LoansClient {
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<LoanApplicationRequest> entity = new HttpEntity<LoanApplicationRequest>(request, headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
@@ -904,6 +1125,7 @@ public class LoansClient {
 		String url = loansBaseUrl.concat(MOBILE_GET_COAPPLICANT);
 		try {
 			HttpHeaders headers = new HttpHeaders();
+			headers.setContentType(MediaType.APPLICATION_JSON);
 			headers.set("req_auth", "true");
 			HttpEntity<MobileLoanRequest> entity = new HttpEntity<MobileLoanRequest>(mobileUserRequest, headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
@@ -920,6 +1142,7 @@ public class LoansClient {
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<MRetailCoAppGuarResponse> entity = new HttpEntity<MRetailCoAppGuarResponse>(coAppGuarResponse,
 					headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
@@ -936,6 +1159,7 @@ public class LoansClient {
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<MobileLoanRequest> entity = new HttpEntity<MobileLoanRequest>(mobileUserRequest, headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 
@@ -950,6 +1174,7 @@ public class LoansClient {
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<MRetailCoAppGuarResponse> entity = new HttpEntity<MRetailCoAppGuarResponse>(coAppGuarResponse,
 					headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
@@ -965,6 +1190,8 @@ public class LoansClient {
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
+			
+			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<HomeLoanEligibilityRequest> entity = new HttpEntity<HomeLoanEligibilityRequest>(homeLoanRequest,
 					headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
@@ -997,6 +1224,7 @@ public class LoansClient {
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<HomeLoanEligibilityRequest> entity = new HttpEntity<HomeLoanEligibilityRequest>(homeLoanRequest,
 					headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
@@ -1014,6 +1242,7 @@ public class LoansClient {
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<PersonalLoanEligibilityRequest> entity = new HttpEntity<PersonalLoanEligibilityRequest>(
 					eligibilityRequest, headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
@@ -1030,6 +1259,7 @@ public class LoansClient {
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<PersonalLoanEligibilityRequest> entity = new HttpEntity<PersonalLoanEligibilityRequest>(
 					eligibilityRequest, headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
@@ -1046,6 +1276,7 @@ public class LoansClient {
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<LAPEligibilityRequest> entity = new HttpEntity<LAPEligibilityRequest>(eligibilityRequest,
 					headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
@@ -1062,6 +1293,7 @@ public class LoansClient {
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<LAPEligibilityRequest> entity = new HttpEntity<LAPEligibilityRequest>(eligibilityRequest,
 					headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
@@ -1078,6 +1310,7 @@ public class LoansClient {
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<LAPEligibilityRequest> entity = new HttpEntity<LAPEligibilityRequest>(eligibilityRequest,
 					headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
@@ -1122,12 +1355,47 @@ public class LoansClient {
 			throw new ExcelException("Loans service is not available");
 		}
 	}
+	
+	public LoansResponse saveFinancialArrangementDetailFromCibil(List<FinancialArrangementsDetailRequest> detailRequests, Long userId,
+			Long clientId, Long applicationId,Long directorId) throws ExcelException {
+		String url = loansBaseUrl.concat(FINANCIAL_ARRANGEMENT_DETAILS_CIBIL)
+				.concat("/" + applicationId + "/" + userId + "/" + clientId + "/" + directorId);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<List<FinancialArrangementsDetailRequest>> entity = new HttpEntity<List<FinancialArrangementsDetailRequest>>(
+					detailRequests, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ExcelException(url + " in Loans service is not available");
+		}
+	}
+	
+	public LoansResponse saveCreditRatingDetailFromCibil(List<CreditRatingOrganizationDetailRequest> detailRequests, Long userId,
+			Long clientId, Long applicationId) throws Exception {
+		String url = loansBaseUrl.concat(CREDIT_RATING_DETAILS_CIBIL)
+				.concat("/" + applicationId + "/" + userId + "/" + clientId);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<List<CreditRatingOrganizationDetailRequest>> entity = new HttpEntity<List<CreditRatingOrganizationDetailRequest>>(
+					detailRequests, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new Exception(url + " in Loans service is not available");
+		}
+	}
 
 	public LoansResponse saveLoanApplicantDetails(MobileFrameRequest request) throws LoansException {
 		String url = loansBaseUrl.concat(MOBILE_SAVE_LOANAPPLICATION);
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<MobileFrameRequest> entity = new HttpEntity<MobileFrameRequest>(request, headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 
@@ -1143,6 +1411,7 @@ public class LoansClient {
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<MobileLoanRequest> entity = new HttpEntity<MobileLoanRequest>(request, headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
@@ -1156,6 +1425,7 @@ public class LoansClient {
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<MobileFPMatchesRequest> entity = new HttpEntity<MobileFPMatchesRequest>(request, headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
@@ -1169,6 +1439,7 @@ public class LoansClient {
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<MobileFPMatchesRequest> entity = new HttpEntity<MobileFPMatchesRequest>(request, headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
@@ -1181,6 +1452,7 @@ public class LoansClient {
 		String url = loansBaseUrl.concat(MOBILE_CHANGE_STATUS);
 		try {
 			HttpHeaders headers = new HttpHeaders();
+			headers.setContentType(MediaType.APPLICATION_JSON);
 			headers.set("req_auth", "true");
 			HttpEntity<MobileFPMatchesRequest> entity = new HttpEntity<MobileFPMatchesRequest>(request, headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
@@ -1190,13 +1462,14 @@ public class LoansClient {
 		}
 	}
 
-	public LoansResponse getCreateCampaignLoan(Long userId, String code) throws ExcelException {
-		String url = loansBaseUrl.concat(CREATE_LOAN_FROM_CAMPAIGN) + "/" + userId + "/" + code;
+	public LoansResponse getCreateCampaignLoan(Long userId, Boolean isActive,Integer businessTypeId, String...code) throws ExcelException {
+		String url = loansBaseUrl.concat(CREATE_LOAN_FROM_CAMPAIGN) + "?clientId=" + userId + "&isActive = " + isActive + "&businessType = " + businessTypeId;
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
-			HttpEntity<?> entity = new HttpEntity<>(headers);
-			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<List<String>> entity = new HttpEntity<List<String>>(Arrays.asList(code),headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new ExcelException("Loans service is not availables");
@@ -1208,6 +1481,7 @@ public class LoansClient {
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<Long> entity = new HttpEntity<Long>(applicantId, headers);
 			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
 			/*
@@ -1226,6 +1500,7 @@ public class LoansClient {
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<?> entity = new HttpEntity<>(headers);
 			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
@@ -1240,6 +1515,7 @@ public class LoansClient {
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<?> entity = new HttpEntity<>(headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
@@ -1293,6 +1569,7 @@ public class LoansClient {
 		String url = loansBaseUrl.concat(IS_TERM_LOAN_LESS_THAN_LIMIT) + "/" + applicationId;
 		try {
 			HttpHeaders headers = new HttpHeaders();
+			headers.setContentType(MediaType.APPLICATION_JSON);
 			headers.set("req_auth", "true");
 			HttpEntity<?> entity = new HttpEntity<>(headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
@@ -1317,4 +1594,614 @@ public class LoansClient {
 		}
 	}
 	
+	public LoansResponse saveDirectorBackgroundDetails(FrameRequest request) throws ExcelException {
+		String url = loansBaseUrl.concat(SAVE_DIRECTOR_BACKGROUND_DETAILS);
+		try {
+			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<FrameRequest> entity = new HttpEntity<FrameRequest>(request, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ExcelException("Loans service is not available");
+		}
+	}
+	
+	public LoansResponse updateDirectorAPIFlag(Long directorId,Long userId,Integer apiId, Boolean apiFlag) throws Exception {
+		String url = loansBaseUrl.concat(UPDATE_DIRECTOR_BACKGROUND_API_FLAG) + "?userId=" + userId + "&directorId=" + directorId + "&apiId=" + apiId + "&apiFlag=" + apiFlag;
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			HttpEntity<?> entity = new HttpEntity<>(null,headers);
+			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			if(e.getMessage().contains("404")) {
+				throw new Exception(url + " is Not Found");				
+			}else if(e.getMessage().contains("400")) {
+				throw new Exception(url + " is Not Valid Request");				
+			}else {
+				throw new ExcelException("Loans service is not available");
+			}
+		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<DirectorBackgroundDetailRequest> getDirectorBackgroundDetails(Long applicationId) throws ExcelException {
+		String url = loansBaseUrl.concat(GET_DIRECTOR_BACKGROUND_DETAILS).concat("/" + applicationId);
+		System.out.println("url for Getting DirectorBackgroundDetails From Client=================>" + url + " and For Application Id====>" + applicationId);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			HttpEntity<?> entity = new HttpEntity<>(null, headers);
+			return restTemplate.exchange(url, HttpMethod.GET, entity, List.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ExcelException("Loans service is not available");
+		}
+	}
+	
+	public LoansResponse getDirectorBackgroundDetail(Long id) throws Exception {
+		String url = loansBaseUrl.concat(GET_DIRECTOR_BACKGROUND_DETAIL).concat("/" + id);
+		System.out.println("url for Getting DirectorBackgroundDetail From Client=================>" + url + " and For Id====>" + id);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			HttpEntity<?> entity = new HttpEntity<>(null, headers);
+			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			if(e.getMessage().contains("404")) {
+				throw new Exception(url + " is Not Found");				
+			}else if(e.getMessage().contains("400")) {
+				throw new Exception(url + " is Not Valid Request");				
+			}else {
+				throw new ExcelException("Loans service is not available");
+			}
+		}
+	}
+	
+	
+	public LoanApplicationRequest getLoanMasterInfo(Long applicationId) throws LoansException {
+		String url = loansBaseUrl.concat(GET_LOAN_DETAILS).concat("/" + applicationId);
+		try {
+			System.out.println("url====================>" + url);
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<LoanApplicationRequest> entity = new HttpEntity<LoanApplicationRequest>(null, headers);
+			return restTemplate.exchange(url, HttpMethod.GET, entity, LoanApplicationRequest.class).getBody();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available while call getLoanMasterInfo");
+		}
+	}
+	
+	public LoansResponse getFilledDetails(Long appId) throws ExcelException {
+		String url = loansBaseUrl.concat(GET_FINANCIAL_TO_BE_FILLED).concat("/"+appId);
+		try {
+			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<FrameRequest> entity = new HttpEntity<FrameRequest>(null, headers);
+			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ExcelException("Loans service is not available");
+		}
+	}
+	
+	public LoansResponse getAutoFilledDetails(Long appId) throws ExcelException {
+		String url = loansBaseUrl.concat(GET_FINANCIAL_AUTO_FILLED_MASTER).concat("/"+appId);
+		try {
+			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<FrameRequest> entity = new HttpEntity<FrameRequest>(null, headers);
+			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ExcelException("Loans service is not available");
+		}
+	}
+
+
+
+	public LoansResponse calculateScoringCorporate(ScoringRequestLoans scoringRequestLoans) throws Exception {
+		String url = loansBaseUrl.concat(CALCULATE_SCORING_CORPORATE);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<ScoringRequestLoans> entity = new HttpEntity<ScoringRequestLoans>(scoringRequestLoans,headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new Exception("Loans service is not available");
+		}
+	}
+	public CMADetailResponse getCMADetils(Long appId) throws ExcelException {
+		String url = loansBaseUrl.concat(GET_CMA_DETAIL).concat("/"+appId);
+		try {
+			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<FrameRequest> entity = new HttpEntity<FrameRequest>(null, headers);
+			return restTemplate.exchange(url, HttpMethod.GET, entity, CMADetailResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ExcelException("Loans service is not available");
+		}
+		
+	}
+	
+	public CMARequest getCMA(Long applicationId) throws Exception {
+		String url = loansBaseUrl.concat(CMA_DETAILS) + "/" + applicationId;
+		logger.info("Enter in Loan CLient For get CMA Details ----------------------> " + url);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			HttpEntity<?> entity = new HttpEntity<Object>(headers);
+			return restTemplate.exchange(url, HttpMethod.GET, entity, CMARequest.class).getBody();
+		} catch (Exception e) {
+			logger.info("Throw Exception While Get CMA Details Using Loan CLient");
+			e.printStackTrace();
+			throw new Exception("Loans service is not available");
+		}
+	}
+	
+	public LoansResponse saveCMA(CMARequest cmaRequest) throws Exception {
+		String url = loansBaseUrl.concat(SAVE_CMA_DETAILS);
+		logger.info("Enter in save CMA details in Loan client");
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<CMARequest> entity = new HttpEntity<CMARequest>(cmaRequest,headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			logger.info("Throw Exception while call save CMA details");
+			e.printStackTrace();
+			throw new Exception("Loans service is not available");
+		}
+	}
+
+
+	public LoansResponse saveFundseekerInputRequest(FundSeekerInputRequestResponse request) throws ExcelException {
+		String url = loansBaseUrl.concat(FUNDSEEKER_INPUT_REQUEST_SAVE);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<FundSeekerInputRequestResponse> entity = new HttpEntity<FundSeekerInputRequestResponse>(request, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ExcelException("Loans service is not available");
+		}
+	}
+
+
+	public LoansResponse getFundseekerInputRequest(FundSeekerInputRequestResponse request) throws ExcelException {
+		String url = loansBaseUrl.concat(FUNDSEEKER_INPUT_REQUEST_GET);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<FundSeekerInputRequestResponse> entity = new HttpEntity<FundSeekerInputRequestResponse>(request, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ExcelException("Loans service is not available");
+		}
+	}
+	
+	public LoansResponse getOrgAndPanByAppId(Long applicationId) throws LoansException {
+		String url = loansBaseUrl.concat(GET_ORG_PAN_DETAILS).concat("/" + applicationId);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			HttpEntity<?> entity = new HttpEntity<>(null, headers);
+			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available");
+		}
+	}
+	public LoansResponse inactiveApplication(Long applicationId,Long userId) throws LoansException {
+		String url = loansBaseUrl.concat(INACTIVE_APPLICATION_BY_APPLICATION_ID).concat("/" + applicationId).concat("/" + userId);
+		System.out.println("url to Inactive Application==>" + url);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<?> entity = new HttpEntity<>(null, headers);
+			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
+			/*
+			 * return restTemplate.postForObject(url, request, LoansResponse.class);
+			 */
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available");
+		}
+	}
+	
+	public LoansResponse savePhase1Sidbi(LoanApplicationRequest loanApplicationRequest) throws LoansException {
+		String url = loansBaseUrl.concat(SAVE_PHASE_ONE);
+		System.out.println("Enter in " + SAVE_PHASE_ONE + " -------- URL ---------->" + url);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<LoanApplicationRequest> entity = new HttpEntity<LoanApplicationRequest>(loanApplicationRequest, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException(SAVE_PHASE_ONE + " Loans service is not available");
+		}
+	}
+	
+	public LoansResponse savePhase2Sidbi(LoanApplicationRequest loanApplicationRequest) throws LoansException {
+		String url = loansBaseUrl.concat(SAVE_PHASE_TWO);
+		System.out.println("Enter in " + SAVE_PHASE_TWO + " -------- URL ---------->" + url);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<LoanApplicationRequest> entity = new HttpEntity<LoanApplicationRequest>(loanApplicationRequest, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException(SAVE_PHASE_TWO + " Loans service is not available");
+		}
+	}
+	
+	public LoansResponse getFpDetailsByFpProductId(Long fpProductId) throws ExcelException {
+		String url = loansBaseUrl.concat(GET_FPDETAILS_BY_FPPRODUCTID).concat("/"+fpProductId);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<?> entity = new HttpEntity<>(fpProductId, headers);
+			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ExcelException("Loans service is not available");
+		}
+	}
+	
+	public LoansResponse getCorporateScore(ScoringRequestLoans scoringRequestLoans) throws LoansException {
+		String url = loansBaseUrl.concat(GET_CORPORATE_SCORE);
+		System.out.println("url to get Corporate Score Calculation ==>" + url);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<ScoringRequestLoans> entity = new HttpEntity<ScoringRequestLoans>(scoringRequestLoans, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+			/*
+			 * return restTemplate.postForObject(url, request, LoansResponse.class);
+			 */
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			
+			throw e;//("Loans service is not available");
+		}
+	}
+		
+	public MobileApiResponse getSIDBIDirectorDetails(FundSeekerInputRequestResponse fsInputReqRes) throws ExcelException {
+		String url = loansBaseUrl.concat(SIDBI_GET_DIRECTOR_DETAILS);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<FundSeekerInputRequestResponse> entity = new HttpEntity<FundSeekerInputRequestResponse>(fsInputReqRes, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, MobileApiResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ExcelException("Loans service is not available");
+		}
+	}
+	
+	public MobileApiResponse saveSIDBIDirectorDetails(FundSeekerInputRequestResponse fsInputReqRes) throws ExcelException {
+		String url = loansBaseUrl.concat(SIDBI_SAVE_DIRECTOR_DETAILS);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<FundSeekerInputRequestResponse> entity = new HttpEntity<FundSeekerInputRequestResponse>(fsInputReqRes, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, MobileApiResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ExcelException("Loans service is not available");
+		}
+	}
+	
+	public LoansResponse updateProductDetails(LoanApplicationRequest loanRequest) throws ExcelException {
+		String url = loansBaseUrl.concat(UPDATE_PRODUCT_DETAILS);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<LoanApplicationRequest> entity = new HttpEntity<LoanApplicationRequest>(loanRequest, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ExcelException("Loans service is not available");
+		}
+	}
+
+	public MobileApiResponse saveOneFormForMobile(FundSeekerInputRequestResponse request) throws ExcelException {
+		String url = loansBaseUrl.concat(FUNDSEEKER_INPUT_REQUEST_SAVE_MOBILE);
+		try {
+			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<FundSeekerInputRequestResponse> entity = new HttpEntity<FundSeekerInputRequestResponse>(request, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, MobileApiResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ExcelException("Loans service is not available");
+		}
+	}
+
+	public MobileApiResponse getOneFormForMobile(FundSeekerInputRequestResponse fundSeekerInputRequestResponse) throws ExcelException {
+		String url = loansBaseUrl.concat(FUNDSEEKER_INPUT_REQUEST_GET_MOBILE);
+		System.out.println("url for Getting Oneform details From Client=================>" + url);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<FundSeekerInputRequestResponse> entity = new HttpEntity<FundSeekerInputRequestResponse>(fundSeekerInputRequestResponse, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, MobileApiResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ExcelException("Loans service is not available");
+		}
+	}
+	
+	public MobileApiResponse matchesForMobile(MobileLoanRequest mobileLoanRequest) throws ExcelException {
+		String url = loansBaseUrl.concat(FUNDSEEKER_INPUT_REQUEST_MATCHES_MOBILE);
+		System.out.println("Url for MATCHES details From Client=================>" + url);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<MobileLoanRequest> entity = new HttpEntity<MobileLoanRequest>(mobileLoanRequest, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, MobileApiResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ExcelException("Loans service is not available");
+		}
+	}
+	
+	
+	public LoansResponse getScoringExcel(MultipartFile multipartFile) throws LoansException, ExcelException {
+		String url = loansBaseUrl.concat(GET_SCORING_EXCEL);
+		System.out.println("url to get Corporate Score Calculation ==>" + url);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+            headers.set("req_auth", "true");
+            MultiValueMap<String, Object> map = new LinkedMultiValueMap<String, Object>();
+            ByteArrayResource contentsAsResource = new ByteArrayResource(multipartFile.getBytes()){
+                @Override
+                public String getFilename(){
+                    return "";
+                }
+            };
+            map.add("file", contentsAsResource);
+           /* map.add("applicationId", applicationId);*/
+
+            HttpEntity<MultiValueMap<String, Object>> request = new HttpEntity<MultiValueMap<String, Object>>(map, headers);
+          return  restTemplate.postForObject(url, request,LoansResponse.class);
+            
+		} catch (IOException e) {
+			e.printStackTrace();
+			
+			throw new ExcelException("Loans service is not available");
+			//throw e;//("Loans service is not available");
+		}
+	}
+	
+	public LoansResponse getDataForCGTMSE(Long applicationId) throws LoansException {
+		String url = loansBaseUrl.concat(GET_DATA_FOR_CGTMSE).concat("/"+applicationId);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<?> entity = new HttpEntity<>(null, headers);
+			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available");
+		}
+	}
+
+	public LoansResponse getDirectorsListByApplicationId(Long applicationId) throws LoansException {
+		String url = loansBaseUrl.concat(GET_DIRECTORLIST_BY_APPLICATION_ID) + "/" + applicationId;
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			HttpEntity<?> entity = new HttpEntity<>(null, headers);
+			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available while call getDirectorsListByApplicationId");
+		}
+	}
+	
+	/**
+	 * CHEKCK AMOUNT IS UNDER USER DISBURSEMENT AUTHORITY 
+	 * @param amount
+	 * @param userId
+	 * @param productId
+	 * @return
+	 * @throws LoansException
+	 */
+	public LoansResponse checkAmountByUserIdAndProductId(Long userId, Double amount, Long productId) throws LoansException {
+		String url = loansBaseUrl.concat(CHECK_AMOUNT_BY_USERID_AND_PRODUCTID);
+		logger.info("Enter in LoanClient For Check amount for FP user ----------->" + url);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			UserLoanAmountMappingRequest req = new UserLoanAmountMappingRequest(userId,productId,amount); 
+			HttpEntity<UserLoanAmountMappingRequest> entity = new HttpEntity<UserLoanAmountMappingRequest>(req, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available while call checkAmountByUserIdAndProductId");
+		}
+	}
+	
+	/**
+	 * GET USER MIN MAX AND PRODUCT MAPPING DATA BY USER ID AND PRODUCT ID 
+	 * @param userId
+	 * @param productId
+	 * @return
+	 * @throws LoansException
+	 */
+	public LoansResponse getUserAmountMapByUserAndProduct(Long userId, Long productId) throws LoansException {
+		String url = loansBaseUrl.concat(GET_BY_USERID_AND_PRODUCTID);
+		logger.info("Enter in GET user amount mapping details by user id and product id -------> "+ url);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			UserLoanAmountMappingRequest req = new UserLoanAmountMappingRequest(userId,productId);
+			HttpEntity<UserLoanAmountMappingRequest> entity = new HttpEntity<UserLoanAmountMappingRequest>(req, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available while call getUserAmountMapByUserAndProduct");
+		}
+	}
+	
+	
+	public LoansResponse getDataForHunter(Long applicationId) throws LoansException {
+		String url = loansBaseUrl.concat(GET_DATA_FOR_HUNTER).concat("/"+applicationId);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<?> entity = new HttpEntity<>(null, headers);
+			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available");
+		}
+	}
+	
+	
+	public LoansResponse getCMAForGateway(Long applicationId,Long productDocumentMappingId) throws LoansException {
+		String url = loansBaseUrl.concat(GET_CMA_BY_APPLICATIONID_PRODUCTDOCUMENTMAPPINGID).concat("/"+applicationId+"/"+productDocumentMappingId);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<?> entity = new HttpEntity<>(null, headers);
+			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available");
+		}
+	}
+	
+	public LoansResponse updatePaymentInfoForGateway(PaymentRequest paymentRequest) throws LoansException {
+		String url = loansBaseUrl.concat(UPDATE_PAYMENT_STATUS);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			return restTemplate.exchange(url, HttpMethod.POST, new HttpEntity<PaymentRequest>(paymentRequest, headers), LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available");
+		}
+	}
+	
+	public LoansResponse saveOrUpdateDirectorIncomeDetails(List<CorporateDirectorIncomeRequest> request) throws LoansException {
+		String url = loansBaseUrl.concat(SAVE_UPDATE_DIRECTOR_INCOME_DETAILS);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<List<CorporateDirectorIncomeRequest>> entity = new HttpEntity<List<CorporateDirectorIncomeRequest>>(request, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available");
+		}
+	}
+	
+	public LoansResponse getDirectorIncomeDetails(Long applicationId) throws LoansException {
+		String url = loansBaseUrl.concat(GET_DIRECTOR_INCOME_DETAILS).concat("/"+applicationId);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<?> entity = new HttpEntity<>(null, headers);
+			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available");
+		}
+	}
+	
+	public String getToken(GenerateTokenRequest generateTokenRequest) throws LoansException {
+
+		String url = loansBaseUrl.concat(GET_TOKEN);
+		System.out.println("Sidbi Integration get token URL===>" + url);
+		try {
+			
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			
+			HttpEntity<?> entity = new HttpEntity<>(generateTokenRequest, headers);
+			
+			return restTemplate.exchange(url, HttpMethod.POST, entity , String.class)
+					.getBody();
+		} catch (Exception e) {
+			System.out.println("Exception while getting token in  Loan Client!!");
+			
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available");
+		}
+	}
+	public String setTokenAsExpired(GenerateTokenRequest generateTokenRequest) throws LoansException {
+
+		String url = loansBaseUrl.concat(SET_TOKEN_AS_EXPIRED);
+		System.out.println("Sidbi Integration set token as expire URL===>" + url);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+		
+			HttpEntity<?> entity = new HttpEntity<>(generateTokenRequest, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity , String.class)
+					.getBody();
+		} catch (Exception e) {
+			System.out.println("Exception while setting  token as expired Loan Client!!");
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available");
+		}
+	}
 }
+
+

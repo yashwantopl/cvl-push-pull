@@ -700,7 +700,9 @@ public class RecentViewServiceImpl implements RecentViewService{
 	public RecentProfileViewDetailResponse getLatestRecentViewDetailListByProdId(Long productId, Long userId) throws Exception {
 		NotificationRequest request = new NotificationRequest();
 		request.setProductId(productId);
-		request.setClientRefId(userId.toString());
+		if(userId != null) {
+			request.setClientRefId(userId.toString());			
+		}
 		NotificationResponse notificationResponse = null;
 		try {
 			notificationResponse =  notificationClient.getAllLatestRecentViewNotificationByProdId(request);
@@ -712,134 +714,136 @@ public class RecentViewServiceImpl implements RecentViewService{
 		RecentProfileViewDetailResponse detailResponse = new RecentProfileViewDetailResponse();
 		Map<String, List<RecentProfileViewResponse>> map = new HashMap<String, List<RecentProfileViewResponse>>();
 		List<RecentProfileViewResponse> listMonthWeek = new ArrayList<RecentProfileViewResponse>();
-		for(SysNotifyResponse response  : thisWeek){
-			RecentProfileViewResponse thisWeekResp = new RecentProfileViewResponse();
-			//FOR CORPORATE USER
-			Long applicationId = response.getApplicationId();
-			LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(applicationId);
-			if (CommonUtils.UserMainType.CORPORATE == CommonUtils.getUserMainType(loanApplicationMaster.getProductId()))
-			{
-				CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository.findOneByApplicationIdId(applicationId);
-				if(corporateApplicantDetail == null)
-					continue;
-				//GET ADDRESS, CITY, STATE, COUNTRY
-				String address="";
-				if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCityId()))
+		if(!CommonUtils.isListNullOrEmpty(thisWeek)) {
+			for(SysNotifyResponse response  : thisWeek){
+				RecentProfileViewResponse thisWeekResp = new RecentProfileViewResponse();
+				//FOR CORPORATE USER
+				Long applicationId = response.getApplicationId();
+				LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(applicationId);
+				if (CommonUtils.UserMainType.CORPORATE == CommonUtils.getUserMainType(loanApplicationMaster.getProductId()))
 				{
-					address+=CommonDocumentUtils.getCity(corporateApplicantDetail.getRegisteredCityId(), oneFormClient)+ ",";
-				}
-				else
-				{
-					address+="NA ,";
-				}
-				if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredStateId()))
-				{
-					address+=CommonDocumentUtils.getState(corporateApplicantDetail.getRegisteredStateId().longValue(), oneFormClient)+ ",";
-				}
-				else
-				{
-					address+="NA ,";
-				}
-				if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCountryId()))
-				{
-					address+=CommonDocumentUtils.getCountry(corporateApplicantDetail.getRegisteredCountryId().longValue(), oneFormClient);
-				}
-				else
-				{
-					address+="NA";
-				}
-				//GET ORGANIZATION NAME
-				if(CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getOrganisationName()))
-					thisWeekResp.setName("NA");
-				else
-					thisWeekResp.setName(corporateApplicantDetail.getOrganisationName());
-				//CALLING DMS FOR FS PROFILE IMAGE PATH
-				DocumentRequest documentRequest = new DocumentRequest();
-				documentRequest.setApplicationId(applicationId);
-				documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
-				documentRequest.setUserDocumentMappingId(CommonDocumentUtils.getProductDocumentId(loanApplicationMaster.getProductId()));
-				DocumentResponse documentResponse = dmsClient.listUserDocument(documentRequest);
-				String imagePath = null;
-				if (documentResponse != null && documentResponse.getStatus() == 200) {
-					List<Map<String, Object>> list = documentResponse.getDataList();
-					if (!CommonUtils.isListNullOrEmpty(list)) {
-						StorageDetailsResponse storageResponse = null;
-						storageResponse = MultipleJSONObjectHelper.getObjectFromMap(list.get(0),StorageDetailsResponse.class);
-						if(!CommonUtils.isObjectNullOrEmpty(storageResponse.getFilePath()))
-							imagePath = storageResponse.getFilePath();
-						else
-							imagePath=null;
+					CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository.findOneByApplicationIdId(applicationId);
+					if(corporateApplicantDetail == null)
+						continue;
+					//GET ADDRESS, CITY, STATE, COUNTRY
+					String address="";
+					if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCityId()))
+					{
+						address+=CommonDocumentUtils.getCity(corporateApplicantDetail.getRegisteredCityId(), oneFormClient)+ ",";
 					}
-				}
-				thisWeekResp.setProfilePic(imagePath);
-				thisWeekResp.setAddress(address);
-				thisWeekResp.setApplicationId(response.getApplicationId());
-				thisWeekResp.setProductId(response.getProductId());
-				thisWeekResp.setUserId(response.getUserId());
-				listMonthWeek.add(thisWeekResp);
-			}	
-			else{
-				//FOR RETAIL USER
-				Long fpProductId=response.getProductId();
-				RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.findOneByApplicationIdId(applicationId);
-				if(retailApplicantDetail == null)
-					continue;
-				//GET ADDRESS, CITY, STATE, COUNTRY
-				String address="";
-				if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getPermanentCityId()))
-				{
-					address+=CommonDocumentUtils.getCity(retailApplicantDetail.getPermanentCityId(), oneFormClient)+ ",";
-				}
-				else
-				{
-					address+="NA ,";
-				}
-				if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getPermanentStateId()))
-				{
-					address+=CommonDocumentUtils.getState(retailApplicantDetail.getPermanentStateId().longValue(), oneFormClient)+ ",";
-				}
-				else
-				{
-					address+="NA ,";
-				}
-				if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getPermanentCountryId()))
-				{
-					address+=CommonDocumentUtils.getCountry(retailApplicantDetail.getPermanentCountryId().longValue(), oneFormClient);
-				}
-				else
-				{
-					address+="NA";
-				}
-				//GET FUND SEEKER NAME
-				String name="";
-				if(CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getFirstName()))
-					name+="NA";
-				else name+=retailApplicantDetail.getFirstName();
-				//CALLING DMS FOR FS PROFILE PIC
-				DocumentRequest documentRequest = new DocumentRequest();
-				documentRequest.setApplicationId(applicationId);
-				documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
-				documentRequest.setUserDocumentMappingId(CommonDocumentUtils.getProductDocumentId(loanApplicationMaster.getProductId()));
-				DocumentResponse documentResponse = dmsClient.listUserDocument(documentRequest);
-				String imagePath = null;
-				if (documentResponse != null && documentResponse.getStatus() == 200) {
-					List<Map<String, Object>> list = documentResponse.getDataList();
-					if (!CommonUtils.isListNullOrEmpty(list)) {
-						StorageDetailsResponse StorsgeResponse = null;
-						StorsgeResponse = MultipleJSONObjectHelper.getObjectFromMap(list.get(0),StorageDetailsResponse.class);
-						if(!CommonUtils.isObjectNullOrEmpty(StorsgeResponse.getFilePath()))
-							imagePath = StorsgeResponse.getFilePath();
-						else
-							imagePath=null;
+					else
+					{
+						address+="NA ,";
 					}
+					if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredStateId()))
+					{
+						address+=CommonDocumentUtils.getState(corporateApplicantDetail.getRegisteredStateId().longValue(), oneFormClient)+ ",";
+					}
+					else
+					{
+						address+="NA ,";
+					}
+					if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCountryId()))
+					{
+						address+=CommonDocumentUtils.getCountry(corporateApplicantDetail.getRegisteredCountryId().longValue(), oneFormClient);
+					}
+					else
+					{
+						address+="NA";
+					}
+					//GET ORGANIZATION NAME
+					if(CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getOrganisationName()))
+						thisWeekResp.setName("NA");
+					else
+						thisWeekResp.setName(corporateApplicantDetail.getOrganisationName());
+					//CALLING DMS FOR FS PROFILE IMAGE PATH
+					DocumentRequest documentRequest = new DocumentRequest();
+					documentRequest.setApplicationId(applicationId);
+					documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
+					documentRequest.setUserDocumentMappingId(CommonDocumentUtils.getProductDocumentId(loanApplicationMaster.getProductId()));
+					DocumentResponse documentResponse = dmsClient.listUserDocument(documentRequest);
+					String imagePath = null;
+					if (documentResponse != null && documentResponse.getStatus() == 200) {
+						List<Map<String, Object>> list = documentResponse.getDataList();
+						if (!CommonUtils.isListNullOrEmpty(list)) {
+							StorageDetailsResponse storageResponse = null;
+							storageResponse = MultipleJSONObjectHelper.getObjectFromMap(list.get(0),StorageDetailsResponse.class);
+							if(!CommonUtils.isObjectNullOrEmpty(storageResponse.getFilePath()))
+								imagePath = storageResponse.getFilePath();
+							else
+								imagePath=null;
+						}
+					}
+					thisWeekResp.setProfilePic(imagePath);
+					thisWeekResp.setAddress(address);
+					thisWeekResp.setApplicationId(response.getApplicationId());
+					thisWeekResp.setProductId(response.getProductId());
+					thisWeekResp.setUserId(response.getUserId());
+					listMonthWeek.add(thisWeekResp);
+				}	
+				else{
+					//FOR RETAIL USER
+					Long fpProductId=response.getProductId();
+					RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.findOneByApplicationIdId(applicationId);
+					if(retailApplicantDetail == null)
+						continue;
+					//GET ADDRESS, CITY, STATE, COUNTRY
+					String address="";
+					if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getPermanentCityId()))
+					{
+						address+=CommonDocumentUtils.getCity(retailApplicantDetail.getPermanentCityId(), oneFormClient)+ ",";
+					}
+					else
+					{
+						address+="NA ,";
+					}
+					if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getPermanentStateId()))
+					{
+						address+=CommonDocumentUtils.getState(retailApplicantDetail.getPermanentStateId().longValue(), oneFormClient)+ ",";
+					}
+					else
+					{
+						address+="NA ,";
+					}
+					if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getPermanentCountryId()))
+					{
+						address+=CommonDocumentUtils.getCountry(retailApplicantDetail.getPermanentCountryId().longValue(), oneFormClient);
+					}
+					else
+					{
+						address+="NA";
+					}
+					//GET FUND SEEKER NAME
+					String name="";
+					if(CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getFirstName()))
+						name+="NA";
+					else name+=retailApplicantDetail.getFirstName();
+					//CALLING DMS FOR FS PROFILE PIC
+					DocumentRequest documentRequest = new DocumentRequest();
+					documentRequest.setApplicationId(applicationId);
+					documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
+					documentRequest.setUserDocumentMappingId(CommonDocumentUtils.getProductDocumentId(loanApplicationMaster.getProductId()));
+					DocumentResponse documentResponse = dmsClient.listUserDocument(documentRequest);
+					String imagePath = null;
+					if (documentResponse != null && documentResponse.getStatus() == 200) {
+						List<Map<String, Object>> list = documentResponse.getDataList();
+						if (!CommonUtils.isListNullOrEmpty(list)) {
+							StorageDetailsResponse StorsgeResponse = null;
+							StorsgeResponse = MultipleJSONObjectHelper.getObjectFromMap(list.get(0),StorageDetailsResponse.class);
+							if(!CommonUtils.isObjectNullOrEmpty(StorsgeResponse.getFilePath()))
+								imagePath = StorsgeResponse.getFilePath();
+							else
+								imagePath=null;
+						}
+					}
+					thisWeekResp.setProfilePic(imagePath);
+					thisWeekResp.setName(name);
+					thisWeekResp.setAddress(address);
+					thisWeekResp.setApplicationId(response.getApplicationId());
+					thisWeekResp.setProductId(response.getProductId());
+					thisWeekResp.setUserId(response.getUserId());
+					listMonthWeek.add(thisWeekResp);
 				}
-				thisWeekResp.setProfilePic(imagePath);
-				thisWeekResp.setName(name);
-				thisWeekResp.setAddress(address);
-				thisWeekResp.setApplicationId(response.getApplicationId());
-				thisWeekResp.setProductId(response.getProductId());
-				thisWeekResp.setUserId(response.getUserId());
-				listMonthWeek.add(thisWeekResp);
 			}
 		}
 		map.put("recentView",listMonthWeek );

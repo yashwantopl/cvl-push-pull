@@ -209,8 +209,8 @@ public class ExcelExtractionServiceImpl implements ExcelExtractionService{
 			 file = new ByteArrayInputStream(multipartFile.getBytes());
 			 workbook = new XSSFWorkbook(file);
 			 
-			 balanceSheet  = workbook.getSheetAt(0);//pass BS sheet to function
-			 profitibilityStatementSheet  = workbook.getSheetAt(1);//pass BS sheet to function
+			 balanceSheet  = workbook.getSheetAt(1);//pass BS sheet to function
+			 profitibilityStatementSheet  = workbook.getSheetAt(0);//pass BS sheet to function
 	         
 			 balanceSheetDetailService.readBalanceSheetDetails(applicationId, storageDetailsId, balanceSheet);
 			 profitibilityStatementDetailService.readProfitibilityStatementDetail(applicationId, storageDetailsId, profitibilityStatementSheet);
@@ -233,9 +233,11 @@ public class ExcelExtractionServiceImpl implements ExcelExtractionService{
 	public Boolean inActiveCMA(Long storageDetailsId) {
 		// TODO Auto-generated method stub
 		try {
+			System.out.println("trying to inActivate CMA file");
 			assetsDetailsService.inActiveAssetsDetails(storageDetailsId);
 			liabilitiesDetailsService.inActiveAssetsDetails(storageDetailsId);
 			operatingStatementDetailsService.inActiveAssetsDetails(storageDetailsId);
+			System.out.println("exit from in activation method");
 		} catch (Exception e) {
 			// TODO: handle exception
 			log.error("Error while inactive CMA");

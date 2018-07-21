@@ -13,7 +13,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.capitaworld.service.loans.domain.fundseeker.FsNegativeFpList;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryTermLoanDetail;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryWorkingCapitalLoanDetail;
 import com.capitaworld.service.loans.model.corporate.PrimaryTermLoanRequest;
+import com.capitaworld.service.loans.model.corporate.PrimaryWorkingCapitalLoanRequest;
 import com.capitaworld.service.loans.repository.fundseeker.FsNegativeFpListRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryTermLoanDetailRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
@@ -45,14 +47,14 @@ public class PrimaryTermLoanServiceImpl implements PrimaryTermLoanService {
 						+ termLoanRequest.getId() + " and UserId==>" + userId);
 			}
 			BeanUtils.copyProperties(termLoanRequest, termLoanDetail, CommonUtils.IgnorableCopy.CORPORATE);
-			termLoanDetail.setTenure(CommonUtils.isObjectNullOrEmpty(termLoanRequest.getTenure()) ? null
-					: (termLoanRequest.getTenure() * 12));
+			/*termLoanDetail.setTenure(CommonUtils.isObjectNullOrEmpty(termLoanRequest.getTenure()) ? null
+					: (termLoanRequest.getTenure() * 12));*/
 			termLoanDetail.setModifiedBy(userId);
 			termLoanDetail.setModifiedDate(new Date());
 			primaryTLRepository.save(termLoanDetail);
-			//save negative list
+			/*//save negative list
 			fsNegativeFpListRepository.inActiveMappingByApplicationId(termLoanDetail.getApplicationId().getId());
-			saveNegativeList(termLoanDetail.getApplicationId().getId(), termLoanRequest.getNegativeList());
+			saveNegativeList(termLoanDetail.getApplicationId().getId(), termLoanRequest.getNegativeList());*/
 			return true;
 		} catch (Exception e) {
 			logger.error("Error while Primary Term Loan Details:-");
@@ -61,7 +63,7 @@ public class PrimaryTermLoanServiceImpl implements PrimaryTermLoanService {
 		}
 	}
 
-	private void saveNegativeList(Long id, List<Long> negativeList) {
+	/*private void saveNegativeList(Long id, List<Long> negativeList) {
 		// TODO Auto-generated method stub
 		FsNegativeFpList fsNegativeFpList= null;
 		for (Long fpId : negativeList) {
@@ -77,9 +79,9 @@ public class PrimaryTermLoanServiceImpl implements PrimaryTermLoanService {
 			fsNegativeFpListRepository.save(fsNegativeFpList);
 		}
 		
-	}
+	}*/
 	
-	@Override
+/*	@Override
 	public PrimaryTermLoanRequest get(Long applicationId, Long userId) throws Exception {
 		try {
 			PrimaryTermLoanDetail loanDetail = primaryTLRepository.getByApplicationAndUserId(applicationId, userId);
@@ -89,7 +91,7 @@ public class PrimaryTermLoanServiceImpl implements PrimaryTermLoanService {
 			}
 			PrimaryTermLoanRequest termLoanRequest = new PrimaryTermLoanRequest();
 			//get fp negative list
-			termLoanRequest.setNegativeList(fsNegativeFpListRepository.getListByApplicationId(applicationId));
+			//termLoanRequest.setNegativeList(fsNegativeFpListRepository.getListByApplicationId(applicationId));
 			BeanUtils.copyProperties(loanDetail, termLoanRequest);
 			termLoanRequest.setTenure(
 					CommonUtils.isObjectNullOrEmpty(loanDetail.getTenure()) ? null : (loanDetail.getTenure() / 12));
@@ -104,5 +106,39 @@ public class PrimaryTermLoanServiceImpl implements PrimaryTermLoanService {
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 
+	}*/
+	
+	@Override
+	public PrimaryTermLoanRequest get(Long id, Long userId) throws Exception {
+		try {
+			PrimaryTermLoanDetail loanDetail = null;
+			if(userId != null) {
+				loanDetail = primaryTLRepository.getByApplicationAndUserId(id, userId);				
+			}else {
+				loanDetail = primaryTLRepository.findByApplicationIdIdAndIsActive(id,true);
+			}
+			if (loanDetail == null) {
+				throw new NullPointerException(
+						"PrimaryTermLoanDetail not exist in DB with ID=>" + id + " with user Id==>" + userId);
+			}
+			PrimaryTermLoanRequest termLoanRequest = new PrimaryTermLoanRequest();
+			//get fp negative list
+			termLoanRequest .setNegativeList(fsNegativeFpListRepository.getListByApplicationId(id));
+			BeanUtils.copyProperties(loanDetail, termLoanRequest );
+			termLoanRequest .setTenure(
+					CommonUtils.isObjectNullOrEmpty(loanDetail.getTenure()) ? null : (loanDetail.getTenure() / 12));
+			JSONObject result = loanApplicationService.getCurrencyAndDenomination(id,userId);
+			String data = result.get("currency").toString();
+			data = data.concat(" In "+ result.get("denomination").toString());
+			termLoanRequest.setCurrencyValue(data);
+			return termLoanRequest ;
+		} catch (Exception e) {
+			logger.error("Error while Getting term Details Profile:-");
+			e.printStackTrace();
+			throw new Exception("Something went Wrong !");
+		}
 	}
+	
+	
+	
 }

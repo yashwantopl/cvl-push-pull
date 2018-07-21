@@ -4,6 +4,8 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.capitaworld.service.dms.model.DocumentRequest;
+import com.capitaworld.service.loans.model.NTBRequest;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,13 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import com.capitaworld.cibil.api.utility.CibilUtils;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
@@ -69,7 +67,7 @@ public class FinancialArrangementDetailsController {
 
 		try {
 			frameRequest.setUserId(userId);
-			if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()){
+			if(CommonDocumentUtils.isThisClientApplication(request)){
 				frameRequest.setClientId(clientId);
 			}
 			Long finalUserId = (CommonUtils.isObjectNullOrEmpty(frameRequest.getClientId()) ? userId
@@ -101,7 +99,7 @@ public class FinancialArrangementDetailsController {
 		// request must not be null
 		CommonDocumentUtils.startHook(logger, "getList");
 		Long userId = null;
-		if(CommonUtils.UserType.SERVICE_PROVIDER == ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue()){
+		if(CommonDocumentUtils.isThisClientApplication(request)){
 			userId = clientId;
 		}else{
 			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -133,5 +131,99 @@ public class FinancialArrangementDetailsController {
 		}
 
 	}
+	
+	@RequestMapping(value = "/save_from_cibil/{applicationId}/{userId}/{clientId}/{directorId}", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> saveFromCibil(@RequestBody List<FinancialArrangementsDetailRequest> detailRequests,
+			@PathVariable("applicationId") Long applicationId, @PathVariable("userId") Long userId,
+			@PathVariable("clientId") Long clientId,@PathVariable("directorId") Long directorId) {
+		// request must not be null
+		if (CommonUtils.isListNullOrEmpty(detailRequests)) {
+			logger.warn("frameRequest can not be empty ==>" + detailRequests);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+		}
+		// application id and user id must not be null
+		if (applicationId == null || userId == null) {
+			logger.warn("application id, user id must not be null ==>");
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+		}
 
+		// When calling client for this method if one of this path variable is null it
+		// takes "null" so can not cast to Long
+		if (clientId != null && clientId == -1) {
+			clientId = null;
+		}
+
+		logger.warn("applicationId == >" + applicationId + "and userId == >" + userId + " and ClienId ==> " + clientId);
+		try {
+			// Checking Profile is Locked
+			Long finalUserId = (CommonUtils.isObjectNullOrEmpty(clientId) ? userId : clientId);
+			Boolean primaryLocked = loanApplicationService.isFinalLocked(applicationId, finalUserId);
+			if (!CommonUtils.isObjectNullOrEmpty(primaryLocked) && primaryLocked.booleanValue()) {
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.APPLICATION_LOCKED_MESSAGE, HttpStatus.BAD_REQUEST.value()),
+						HttpStatus.OK);
+			}
+
+			if(CibilUtils.isObjectNullOrEmpty(directorId) || directorId <= 0) {
+				logger.info("Going to Save Company Financial Information");
+				financialArrangementDetailsService.saveOrUpdate(detailRequests, applicationId, finalUserId);	
+			}else {
+				logger.info("Going to Save Director or Partner Financial Information");
+				financialArrangementDetailsService.saveOrUpdate(detailRequests, applicationId, finalUserId,directorId);
+			}
+			
+			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
+					HttpStatus.OK);
+
+		} catch (Exception e) {
+			logger.error("Error while saving Existing Loan Details==>", e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+
+	}
+	
+	@RequestMapping(value = "/get_total_emi/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getTotalEmi(
+			@PathVariable("applicationId") Long applicationId) {
+		// application id must not be null
+		if (applicationId == null) {
+			logger.warn("application id, must not be null ==>");
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+		}
+		logger.warn("applicationId == >" + applicationId);
+		try {
+			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value(),financialArrangementDetailsService.getTotalOfEmiByApplicationId(applicationId)),
+					HttpStatus.OK);
+
+		} catch (Exception e) {
+			logger.error("Error while Getting total EMI by Application Id==>", e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+
+	}
+
+	@PostMapping(value = "/getTotalEmiFromDirectorId", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getTotalEmi(@RequestBody NTBRequest ntbRequest) {
+		try {
+			if (!CommonUtils.isObjectNullOrEmpty(ntbRequest) && !CommonUtils.isObjectNullOrEmpty(ntbRequest.getApplicationId()) && !CommonUtils.isObjectNullOrEmpty(ntbRequest.getDirectorId())) {
+				Double emi = financialArrangementDetailsService.getTotalOfEmiByApplicationIdAndDirectorId(ntbRequest.getApplicationId(), ntbRequest.getDirectorId());
+				LoansResponse loansResponse = new LoansResponse();
+				loansResponse.setMessage("Successfully get Data!");
+				loansResponse.setData(emi);
+				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+			} else {
+				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+		} catch (Exception e) {
+			logger.error("Error while Getting total EMI by Application Id==>", e);
+			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
+		}
+	}
 }

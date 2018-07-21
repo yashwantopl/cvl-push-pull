@@ -403,6 +403,10 @@ public class GuarantorServiceImpl implements GuarantorService {
 							profileViewPLResponse.setPreviousExperienceInYears(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getPreviousJobYear()) ?  guarantorDetail.getPreviousJobYear().toString() : "-");
 							profileViewPLResponse.setPreviousEmployerName(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getPreviousEmployersName()) ?  guarantorDetail.getPreviousEmployersName() : "-");
 							profileViewPLResponse.setPreviousEmployerAddress(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getPreviousEmployersAddress()) ?  guarantorDetail.getPreviousEmployersAddress() : "-");
+							profileViewPLResponse.setMonthlyIncome(String.valueOf(guarantorDetail.getMonthlyIncome() != null
+									? String.format("%.2f", guarantorDetail.getMonthlyIncome()) : 0));
+							profileViewPLResponse.setModeOfReceipt(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getModeOfReceipt()) ?  ModeOfRecipt.getById(guarantorDetail.getModeOfReceipt()).getValue() : "-");
+							profileViewPLResponse.setMonthlyLoanObligation(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getMonthlyLoanObligation()) ? CommonUtils.CurrencyFormat( guarantorDetail.getMonthlyLoanObligation().toString()): "-");
 							break;
 						case 3: // Business
 						case 4: // Self Employed
@@ -424,6 +428,8 @@ public class GuarantorServiceImpl implements GuarantorService {
 							profileViewPLResponse.setRemunerationPreviousYear(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getRemunerationPreviousYear()) ? CommonUtils.CurrencyFormat( guarantorDetail.getRemunerationPreviousYear().toString()): "-");
 							profileViewPLResponse.setRemunerationCurrentYear(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getRemunerationCurrentYear()) ? CommonUtils.CurrencyFormat( guarantorDetail.getRemunerationCurrentYear().toString()): "-");
 							profileViewPLResponse.setBusinessExperience(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getBusinessStartDate()) ? CommonUtils.calculateBusinessExperience(guarantorDetail.getBusinessStartDate()) : "-");
+							profileViewPLResponse.setMonthlyIncome(String.valueOf(guarantorDetail.getPatCurrentYear() != null
+									? String.format("%.2f", guarantorDetail.getPatCurrentYear()) : 0));
 							break;
 						case 5:// Self Employed Professional
 							if (!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getSelfEmployedOccupationId())) {
@@ -444,6 +450,8 @@ public class GuarantorServiceImpl implements GuarantorService {
 							profileViewPLResponse.setRemunerationPreviousYear(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getRemunerationPreviousYear()) ? CommonUtils.CurrencyFormat( guarantorDetail.getRemunerationPreviousYear().toString()): "-");
 							profileViewPLResponse.setRemunerationCurrentYear(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getRemunerationCurrentYear()) ? CommonUtils.CurrencyFormat( guarantorDetail.getRemunerationCurrentYear().toString()): "-");
 							profileViewPLResponse.setBusinessExperience(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getBusinessStartDate()) ? CommonUtils.calculateBusinessExperience(guarantorDetail.getBusinessStartDate()) : "-");
+							profileViewPLResponse.setMonthlyIncome(String.valueOf(guarantorDetail.getPatCurrentYear() != null
+									? String.format("%.2f", guarantorDetail.getPatCurrentYear()) : 0));
 							break;
 						case 6:// Agriculturist
 							if (!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getLandSize())) {
@@ -463,7 +471,15 @@ public class GuarantorServiceImpl implements GuarantorService {
 							profileViewPLResponse.setRemunerationPreviousYear(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getRemunerationPreviousYear()) ? CommonUtils.CurrencyFormat( guarantorDetail.getRemunerationPreviousYear().toString()): "-");
 							profileViewPLResponse.setRemunerationCurrentYear(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getRemunerationCurrentYear()) ? CommonUtils.CurrencyFormat( guarantorDetail.getRemunerationCurrentYear().toString()): "-");
 							profileViewPLResponse.setBusinessExperience(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getBusinessStartDate()) ? CommonUtils.calculateBusinessExperience(guarantorDetail.getBusinessStartDate()) : "-");
+							profileViewPLResponse.setMonthlyIncome(String.valueOf(guarantorDetail.getPatCurrentYear() != null
+									? String.format("%.2f", guarantorDetail.getPatCurrentYear()) : 0));
 							break;
+							case 7:// Pensioner
+								profileViewPLResponse.setModeOfReceipt(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getModeOfReceipt()) ?  ModeOfRecipt.getById(guarantorDetail.getModeOfReceipt()).getValue() : "-");
+								profileViewPLResponse.setMonthlyIncome(String.valueOf(guarantorDetail.getMonthlyIncome() != null
+										? String.format("%.2f", guarantorDetail.getMonthlyIncome()) : 0));
+								profileViewPLResponse.setMonthlyLoanObligation(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getMonthlyLoanObligation()) ? CommonUtils.CurrencyFormat( guarantorDetail.getMonthlyLoanObligation().toString()): "-");
+								break;
 						default:
 							break;
 						}
@@ -609,11 +625,11 @@ public class GuarantorServiceImpl implements GuarantorService {
 					permanentAddress.setStreetName(guarantorDetail.getPermanentStreetName() !=null ? guarantorDetail.getPermanentStreetName() :"");
 					profileViewPLResponse.setContactNo(guarantorDetail.getContactNo() !=null ? guarantorDetail.getContactNo() :"");
 					profileViewPLResponse.setSecondAddress(permanentAddress);
-					profileViewPLResponse.setOtherIncome((!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getOtherIncome()) ? CommonUtils.CurrencyFormat(guarantorDetail.getOtherIncome().toString()) : ""));
-					profileViewPLResponse.setOtherInvestment((!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getOtherInvestment()) ? CommonUtils.CurrencyFormat(guarantorDetail.getOtherInvestment().toString()) : ""));
-					profileViewPLResponse.setTaxPaid((!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getTaxPaidLastYear()) ? CommonUtils.CurrencyFormat(guarantorDetail.getTaxPaidLastYear().toString()) : ""));
-					profileViewPLResponse.setBonusPerAnnum((!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getBonusPerAnnum()) ? CommonUtils.CurrencyFormat(guarantorDetail.getBonusPerAnnum().toString()) : ""));
-					profileViewPLResponse.setIncentivePerAnnum((!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getIncentivePerAnnum()) ? CommonUtils.CurrencyFormat(guarantorDetail.getIncentivePerAnnum().toString()) : ""));
+					profileViewPLResponse.setOtherIncome((!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getOtherIncome()) ? CommonUtils.CurrencyFormat(guarantorDetail.getOtherIncome().toString()) : "-"));
+					profileViewPLResponse.setOtherInvestment((!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getOtherInvestment()) ? CommonUtils.CurrencyFormat(guarantorDetail.getOtherInvestment().toString()) : "-"));
+					profileViewPLResponse.setTaxPaid((!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getTaxPaidLastYear()) ? CommonUtils.CurrencyFormat(guarantorDetail.getTaxPaidLastYear().toString()) : "-"));
+					profileViewPLResponse.setBonusPerAnnum((!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getBonusPerAnnum()) ? CommonUtils.CurrencyFormat(guarantorDetail.getBonusPerAnnum().toString()) : "-"));
+					profileViewPLResponse.setIncentivePerAnnum((!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getIncentivePerAnnum()) ? CommonUtils.CurrencyFormat(guarantorDetail.getIncentivePerAnnum().toString()) : "-"));
 					profileViewPLResponse.setBirthDate(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getBirthDate()) ? guarantorDetail.getBirthDate().toString() : "-");
 					//end of set address
 					// set pan car
@@ -633,8 +649,7 @@ public class GuarantorServiceImpl implements GuarantorService {
 							? MaritalStatus.getById(guarantorDetail.getStatusId()).getValue() : null);
 					profileViewPLResponse.setMiddleName(
 							guarantorDetail.getMiddleName() != null ? guarantorDetail.getMiddleName() : null);
-					profileViewPLResponse.setMonthlyIncome(String.valueOf(guarantorDetail.getMonthlyIncome() != null
-							? String.format("%.2f", guarantorDetail.getMonthlyIncome()) : 0));
+
 
 					// set uploads
 					switch (productId) {

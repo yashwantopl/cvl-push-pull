@@ -1,0 +1,1 @@
+alter table `loan_applications`.`fs_corporate_director_background_details` add (gender BIGINT(20), relationship_type BIGINT(20));

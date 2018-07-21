@@ -3,6 +3,7 @@ package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.json.simple.JSONObject;
@@ -10,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,15 +20,13 @@ import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PastFinancialEstimatesDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.SubsectorDetail;
-import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
 import com.capitaworld.service.loans.model.Address;
+import com.capitaworld.service.loans.model.PaymentRequest;
 import com.capitaworld.service.loans.model.common.GraphResponse;
 import com.capitaworld.service.loans.model.common.LongitudeLatitudeRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
-import com.capitaworld.service.loans.model.corporate.MsmeScoreRequest;
-import com.capitaworld.service.loans.model.corporate.SubSectorListRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateCoApplicantRequest;
-import com.capitaworld.service.loans.model.retail.CoApplicantRequest;
+import com.capitaworld.service.loans.model.corporate.SubSectorListRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
@@ -39,6 +39,10 @@ import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateCoApp
 import com.capitaworld.service.loans.utils.CommonUtils;
 //import com.capitaworld.service.rating.model.CompanyDetails;
 //import com.capitaworld.service.rating.model.RatingResponse;
+import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
+import com.capitaworld.service.users.client.UsersClient;
+import com.capitaworld.service.users.model.UserResponse;
+import com.capitaworld.service.users.model.UsersRequest;
 
 @Service
 @Transactional
@@ -70,22 +74,63 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 
 	@Autowired
 	private CorporateCoApplicantService coApplicantService;
-	
-	@Autowired
-	private CorporateCoApplicantService corporateCoApplicantService;
-	
+
 	@Autowired
 	private CorporateApplicantDetailRepository corporateApplicantDetailRepository;
+	
+	@Autowired
+	private UsersClient usersClient;
+	
+	private static final String SIDBI_AMOUNT = "com.capitaworld.sidbi.amount";
+	
+	@Autowired
+	private Environment environment;
 
-
+	@Override
+	public void saveITRMappingData (CorporateApplicantRequest applicantRequest) {
+		
+		CorporateApplicantDetail applicantDetail = applicantRepository.findByApplicationIdIdAndIsActive(applicantRequest.getApplicationId(),true);
+		if(!CommonUtils.isObjectNullOrEmpty(applicantDetail)) {
+			applicantDetail.setModifiedBy(applicantRequest.getUserId());
+			applicantDetail.setModifiedDate(new Date());
+		} else {
+			applicantDetail = new CorporateApplicantDetail();
+			applicantDetail.setCreatedBy(applicantRequest.getUserId());
+			applicantDetail.setCreatedDate(new Date());
+			applicantDetail.setIsActive(true);
+			applicantDetail.setApplicationId(new LoanApplicationMaster(applicantRequest.getApplicationId()));
+		}
+		applicantDetail.setEstablishmentMonth(applicantRequest.getEstablishmentMonth());
+		applicantDetail.setEstablishmentYear(applicantRequest.getEstablishmentYear());
+		copyAddressFromRequestToDomain(applicantRequest, applicantDetail);
+		applicantRepository.save(applicantDetail);
+		
+		if(!CommonUtils.isObjectNullOrEmpty(applicantRequest.getCompanyCIN())) {
+			logger.info("Company CIN number saving --------------------->" + applicantRequest.getCompanyCIN() + "-----------------------"  +applicantRequest.getApplicationId());
+			
+			LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.getById(applicantRequest.getApplicationId());
+			if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster)) {
+				logger.info("LoanApplicationMaster is not null");
+				loanApplicationMaster.setCompanyCinNumber(applicantRequest.getCompanyCIN());
+				loanApplicationMaster.setModifiedDate(new Date());
+				loanApplicationMaster.setModifiedBy(applicantRequest.getUserId());
+				loanApplicationRepository.save(loanApplicationMaster);
+			} else {
+				logger.info("LoanApplicationMaster is null or empty");
+			}
+		} else {
+			logger.info("Company CIN number null or empty --------------------->" );
+		}
+		
+	}
+	
 	@Override
 	public boolean save(CorporateApplicantRequest applicantRequest, Long userId) throws Exception {
 		try {
 			// application id must not be null
 			Long finalUserId = (CommonUtils.isObjectNullOrEmpty(applicantRequest.getClientId()) ? userId
 					: applicantRequest.getClientId());
-			CorporateApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId(finalUserId,
-					applicantRequest.getApplicationId());
+			CorporateApplicantDetail applicantDetail = applicantRepository.findByApplicationIdIdAndIsActive(applicantRequest.getApplicationId(),true);
 			if (applicantDetail != null) {
 				applicantDetail.setModifiedBy(userId);
 				applicantDetail.setModifiedDate(new Date());
@@ -105,18 +150,17 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 				applicantDetail.setApplicationId(new LoanApplicationMaster(applicantRequest.getApplicationId()));
 			}
 
-			BeanUtils.copyProperties(applicantRequest, applicantDetail, CommonUtils.IgnorableCopy.ID);
+			BeanUtils.copyProperties(applicantRequest, applicantDetail, CommonUtils.IgnorableCopy.CORPORATE_FINAL);
 			applicantDetail.setModifiedBy(userId);
 			applicantDetail.setModifiedDate(new Date());
 			copyAddressFromRequestToDomain(applicantRequest, applicantDetail);
 			applicantDetail = applicantRepository.save(applicantDetail);
-			
-			//save co-applicant details
+
+			/*// save co-applicant details
 			for (CorporateCoApplicantRequest request : applicantRequest.getCoApplicants()) {
 				coApplicantService.save(request, applicantRequest.getApplicationId(), finalUserId);
-			}
-			
-			
+			}*/
+
 			// industry data save
 			saveIndustry(applicantDetail.getApplicationId().getId(), applicantRequest.getIndustrylist());
 			// Sector data save
@@ -147,6 +191,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 			// TODO Auto-generated method stub
 			CorporateApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId(userId,
 					applicationId);
+
 			if (applicantDetail == null) {
 				return null;
 			}
@@ -157,7 +202,20 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 			applicantRequest.setSectorlist(industrySectorRepository.getSectorByApplicationId(applicationId));
 			applicantRequest.setSubsectors(subSectorRepository.getSubSectorByApplicationId(applicationId));
 			applicantRequest.setDetailsFilledCount(applicantDetail.getApplicationId().getDetailsFilledCount());
-			applicantRequest.setCoApplicants(coApplicantService.getList(applicationId, userId));
+			try {
+
+				UserResponse userResponse= usersClient.getEmailMobile(userId);
+				@SuppressWarnings("unchecked")
+				UsersRequest userRequest= MultipleJSONObjectHelper
+						.getObjectFromMap((LinkedHashMap<String, Object>) userResponse.getData(), UsersRequest.class);
+				applicantRequest.setEmail(userRequest.getEmail());
+				applicantRequest.setLandlineNo(userRequest.getMobile());
+			}
+			catch (Exception e){
+				logger.warn("error while get user data");
+				e.printStackTrace();
+			}
+			//applicantRequest.setCoApplicants(coApplicantService.getList(applicationId, userId));
 			return applicantRequest;
 		} catch (Exception e) {
 			logger.error("Error while getting Corporate Profile:-");
@@ -167,57 +225,67 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 	}
 
 	/*
-	 * @Override public void updateFinalCommonInformation(Long applicationId,
-	 * Long userId, Boolean flag) throws Exception { try {
-	 * loanApplicationRepository.setIsApplicantFinalMandatoryFilled(
-	 * applicationId, userId, flag); } catch (Exception e) {
+	 * @Override public void updateFinalCommonInformation(Long applicationId, Long
+	 * userId, Boolean flag) throws Exception { try {
+	 * loanApplicationRepository.setIsApplicantFinalMandatoryFilled( applicationId,
+	 * userId, flag); } catch (Exception e) {
 	 * logger.error("Error while updating final information flag");
-	 * e.printStackTrace(); throw new
-	 * Exception(CommonUtils.SOMETHING_WENT_WRONG); } }
+	 * e.printStackTrace(); throw new Exception(CommonUtils.SOMETHING_WENT_WRONG); }
+	 * }
 	 */
-
-	private void saveIndustry(Long applicationId, List<Long> industrylist) {
+	@Override
+	public void saveIndustry(Long applicationId, List<Long> industrylist) {
 		IndustrySectorDetail industrySectorDetail = null;
 		for (Long id : industrylist) {
+			
+			List<Long> resultList = industrySectorRepository.findByIndustryIdAndApplicationIdAndIsActive(id, applicationId, true);
+			if(resultList.size() > 0) {
+				continue;
+			}
 			industrySectorDetail = new IndustrySectorDetail();
 			industrySectorDetail.setApplicationId(applicationId);
 			industrySectorDetail.setIndustryId(id);
 			industrySectorDetail.setCreatedBy(applicationId);
-			industrySectorDetail.setModifiedBy(applicationId);
 			industrySectorDetail.setCreatedDate(new Date());
-			industrySectorDetail.setModifiedDate(new Date());
 			industrySectorDetail.setIsActive(true);
 			// create by and update
 			industrySectorRepository.save(industrySectorDetail);
 		}
 	}
-
-	private void saveSector(Long applicationId, List<Long> sectorlist) {
+	@Override
+	public void saveSector(Long applicationId, List<Long> sectorlist) {
 		// sector data save
 		for (Long id : sectorlist) {
+			
+			List<Long> resultList = industrySectorRepository.findBySectorIdAndApplicationIdAndIsActive(id, applicationId, true);
+			if(resultList.size() > 0) {
+				continue;
+			}
 			IndustrySectorDetail industrySectorDetail = new IndustrySectorDetail();
 			industrySectorDetail.setApplicationId(applicationId);
 			industrySectorDetail.setSectorId(id);
 			industrySectorDetail.setCreatedBy(applicationId);
-			industrySectorDetail.setModifiedBy(applicationId);
 			industrySectorDetail.setCreatedDate(new Date());
-			industrySectorDetail.setModifiedDate(new Date());
 			industrySectorDetail.setIsActive(true);
 			// create by and update
 			industrySectorRepository.save(industrySectorDetail);
 		}
 	}
-
-	private void saveSubSector(Long applicationId, List<Long> subSectorlist) {
+	@Override
+	public void saveSubSector(Long applicationId, List<Long> subSectorlist) {
 		// sector data save
 		for (Long id : subSectorlist) {
+
+			List<Long> resultList = subSectorRepository.findBySectorSubsectorTransactionIdAndApplicationIdAndIsActive(id, applicationId, true);
+			if(resultList.size() > 0) {
+				continue;
+			}
+			
 			SubsectorDetail subsectorDetail = new SubsectorDetail();
 			subsectorDetail.setApplicationId(applicationId);
 			subsectorDetail.setSectorSubsectorTransactionId(id);
 			subsectorDetail.setCreatedBy(applicationId);
-			subsectorDetail.setModifiedBy(applicationId);
 			subsectorDetail.setCreatedDate(new Date());
-			subsectorDetail.setModifiedDate(new Date());
 			subsectorDetail.setIsActive(true);
 			// create by and update
 			subSectorRepository.save(subsectorDetail);
@@ -236,7 +304,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 			to.setRegisteredCountryId(from.getFirstAddress().getCountryId());
 		}
 
-		// Setting Administrative Address
+		/*// Setting Administrative Address
 		if (from.getSameAs() != null && from.getSameAs().booleanValue()) {
 			if (from.getFirstAddress() != null) {
 				to.setAdministrativePremiseNumber(from.getFirstAddress().getPremiseNumber());
@@ -257,7 +325,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 				to.setAdministrativeStateId(from.getSecondAddress().getStateId());
 				to.setAdministrativeCountryId(from.getSecondAddress().getCountryId());
 			}
-		}
+		}*/
 	}
 
 	private static void copyAddressFromDomainToRequest(CorporateApplicantDetail from, CorporateApplicantRequest to) {
@@ -272,7 +340,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		address.setStateId(from.getRegisteredStateId());
 		address.setCountryId(from.getRegisteredCountryId());
 		to.setFirstAddress(address);
-		if (from.getSameAs() != null && from.getSameAs()) {
+		/*if (from.getSameAs() != null && from.getSameAs()) {
 			to.setSecondAddress(address);
 		} else {
 			address = new Address();
@@ -285,7 +353,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 			address.setCountryId(from.getAdministrativeCountryId());
 			to.setSecondAddress(address);
 
-		}
+		}*/
 
 		// Setting Administrative Address
 	}
@@ -327,9 +395,10 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		DecimalFormat decimalFormat = new DecimalFormat("#");
 		DecimalFormat decimalFormat1 = new DecimalFormat("#.##");
 
-		List<PastFinancialEstimatesDetail> pastEstimates = pastFinancialEstimateDetailsRepository.listPastFinancialEstimateDetailsFromAppId(applicationId);
-		if (pastEstimates.size()>4){
-			pastEstimates = pastEstimates.subList((pastEstimates.size()-4),pastEstimates.size());
+		List<PastFinancialEstimatesDetail> pastEstimates = pastFinancialEstimateDetailsRepository
+				.listPastFinancialEstimateDetailsFromAppId(applicationId);
+		if (pastEstimates.size() > 4) {
+			pastEstimates = pastEstimates.subList((pastEstimates.size() - 4), pastEstimates.size());
 		}
 		if (!CommonUtils.isListNullOrEmpty(pastEstimates) && pastEstimates.size() > 1) {
 			graphResponse.setGraphAvailable(true);
@@ -437,7 +506,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		for (int i = 0; i <= (currentAsset.size() - 1); i++) {
 			// System.out.println(sales.get(i+1)+"-"+sales.get(i));
 			val = (currentAsset.get(i) / (currentLiabilities.get(i)));
-			if(Double.isNaN(val)) {
+			if (Double.isNaN(val)) {
 				val = 0d;
 			}
 			currentRatio.add(Double.valueOf(decimalFormat1.format(val)));
@@ -538,46 +607,46 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		return coApplicantService.getList(applicationId, userId);
 	}
 
-	@Override
-	public boolean updateIsMsmeScoreRequired(MsmeScoreRequest msmeScoreRequest) throws Exception {
-		boolean msmeScoreRequired= false;
-			LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(msmeScoreRequest.getApplicationId());
-			if(msmeScoreRequest.isMsmeScoreRequired()){
-				loanApplicationMaster.setIsMsmeScoreRequired(true);
-				msmeScoreRequired= true;
-			}
-			else{
-				loanApplicationMaster.setIsMsmeScoreRequired(false);
-				msmeScoreRequired= false;
-			}
-		return msmeScoreRequired;
-	}
+//	@Override
+//	public boolean updateIsMsmeScoreRequired(MsmeScoreRequest msmeScoreRequest) throws Exception {
+//		boolean msmeScoreRequired = false;
+//		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository
+//				.findOne(msmeScoreRequest.getApplicationId());
+//		if (msmeScoreRequest.isMsmeScoreRequired()) {
+//			loanApplicationMaster.setIsMsmeScoreRequired(true);
+//			msmeScoreRequired = true;
+//		} else {
+//			loanApplicationMaster.setIsMsmeScoreRequired(false);
+//			msmeScoreRequired = false;
+//		}
+//		return msmeScoreRequired;
+//	}
 
-/*	@Override
-	public CompanyDetails getCompanyDetails(Long applicationId, Long userId) throws Exception {
-		CorporateApplicantDetail corp = corporateApplicantDetailRepository.findOneByApplicationIdId(applicationId);
-		CompanyDetails companyDetails = new CompanyDetails();
-		companyDetails.setCompanyName(corp.getOrganisationName());
-		companyDetails.setPan(corp.getPanNo());
-		companyDetails.setUserId(userId);
-		return companyDetails;
-	}*/
+	/*
+	 * @Override public CompanyDetails getCompanyDetails(Long applicationId, Long
+	 * userId) throws Exception { CorporateApplicantDetail corp =
+	 * corporateApplicantDetailRepository.findOneByApplicationIdId(applicationId);
+	 * CompanyDetails companyDetails = new CompanyDetails();
+	 * companyDetails.setCompanyName(corp.getOrganisationName());
+	 * companyDetails.setPan(corp.getPanNo()); companyDetails.setUserId(userId);
+	 * return companyDetails; }
+	 */
 
-	@Override
-	public boolean getIsMsmeScoreRequired(Long applicationId) throws Exception {
-		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(applicationId);
-		if(CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getIsMsmeScoreRequired()))
-			return false;
-		boolean msmeScoreRequired= loanApplicationMaster.getIsMsmeScoreRequired();
-		return msmeScoreRequired;
-	}
+//	@Override
+//	public boolean getIsMsmeScoreRequired(Long applicationId) throws Exception {
+//		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(applicationId);
+//		if (CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getIsMsmeScoreRequired()))
+//			return false;
+//		boolean msmeScoreRequired = loanApplicationMaster.getIsMsmeScoreRequired();
+//		return msmeScoreRequired;
+//	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public JSONObject getCoapAndGuarIds(Long userId, Long applicationId) throws Exception {
 		try {
-			List<Long> coAppIds = coApplicantService.getCoAppIds( applicationId,userId);
-			
+			List<Long> coAppIds = coApplicantService.getCoAppIds(applicationId, userId);
+
 			JSONObject obj = new JSONObject();
 			obj.put("coAppIds", coAppIds);
 			return obj;
@@ -587,4 +656,88 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
+
+	@Override
+	public PaymentRequest getPaymentInfor(Long userId, Long applicationId) throws Exception {
+		try {
+			LoanApplicationMaster loanApplicationMaster = loanApplicationRepository
+					.findOne(applicationId);
+			PaymentRequest paymentRequest = new PaymentRequest();
+			paymentRequest.setPaymentAmount(loanApplicationMaster.getPaymentAmount());
+			paymentRequest.setTypeOfPayment(loanApplicationMaster.getTypeOfPayment());
+			paymentRequest.setAppointmentDate(loanApplicationMaster.getAppointmentDate());
+			paymentRequest.setAppointmentTime(loanApplicationMaster.getAppointmentTime());
+			paymentRequest.setIsAcceptConsent(loanApplicationMaster.getIsAcceptConsent());
+			CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
+					.findOneByApplicationIdId(applicationId);
+			if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail)) {
+				paymentRequest.setNameOfEntity(corporateApplicantDetail.getOrganisationName());
+				Address address = new Address();
+                address.setPremiseNumber(corporateApplicantDetail.getRegisteredPremiseNumber());
+                address.setStreetName(corporateApplicantDetail.getRegisteredStreetName());
+                address.setLandMark(corporateApplicantDetail.getRegisteredLandMark());
+                address.setCountryId(corporateApplicantDetail.getRegisteredCountryId());
+                address.setStateId(corporateApplicantDetail.getRegisteredStateId());
+                address.setCityId(corporateApplicantDetail.getRegisteredCityId());
+                address.setPincode(corporateApplicantDetail.getRegisteredPincode());
+				paymentRequest.setAddress(address);
+			}
+			try {
+				UserResponse userResponse = usersClient.getEmailMobile(loanApplicationMaster.getUserId());
+				if (!CommonUtils.isObjectNullOrEmpty(userResponse.getData())) {
+					@SuppressWarnings("unchecked")
+					UsersRequest request = MultipleJSONObjectHelper
+							.getObjectFromMap((LinkedHashMap<String, Object>) userResponse.getData(), UsersRequest.class);
+					paymentRequest.setEmailAddress(request.getEmail());
+					paymentRequest.setMobileNumber(request.getMobile());
+				}
+			}catch(Exception e) {
+				e.printStackTrace();
+			}
+			return paymentRequest;
+		} catch (Exception e) {
+			logger.error("Error while Getting Payment Related Info:-");
+			e.printStackTrace();
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+	}
+
+	@Override
+	public CorporateApplicantRequest getCorporateApplicant(Long applicationId) {
+		logger.info("Start Method getCorporateApplicant Only for Application Id:-=>{}",applicationId);
+		CorporateApplicantDetail applicantDetail = applicantRepository.findByApplicationIdIdAndIsActive(applicationId,true);
+		logger.info("After Query Executions:-=>");
+		if (applicantDetail == null) {
+			logger.info("If Acpplicant Details is NULL:-=>");
+			return null;
+		}
+		logger.info("If Acpplicant Details is NOT NULL:-=>");
+		CorporateApplicantRequest applicantRequest = new CorporateApplicantRequest();
+		logger.info("CorporateApplicantRequest Object new Created:-=>");
+		BeanUtils.copyProperties(applicantDetail, applicantRequest);
+		copyAddressFromDomainToRequest(applicantDetail, applicantRequest);
+		logger.info("CorporateApplicantRequest Object new Created applicantRequest:-=>{}",applicantRequest.toString());
+		logger.info("Data===>:-=>{}",applicantRequest.getGstIn() + "==============>");
+		logger.info("Copy Domain to Request=======================:-=>");
+		logger.info("ENd Method getCorporateApplicant Only for Application Id:-=>{}",applicationId);
+		return applicantRequest;
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public JSONObject getOrgAndPanByAppId(Long applicationId) {
+		logger.info("Start Method getOrgAndPanByAppId Only for Application Id:-=>{}",applicationId);
+		JSONObject obj =  new JSONObject();
+		CorporateApplicantDetail applicantDetail = applicantRepository.findOneByApplicationIdId(applicationId);
+		if (!CommonUtils.isObjectListNull(applicantDetail)) {
+			obj.put("entityName", applicantDetail.getOrganisationName());
+			obj.put("panNo", applicantDetail.getPanNo());
+			obj.put("amount", environment.getProperty(SIDBI_AMOUNT));
+		}
+		logger.info("ENd Method getOrgAndPanByAppId Only for Application Id:-=>{}",applicationId);
+		return obj;
+	}
+	
+	
+
 }

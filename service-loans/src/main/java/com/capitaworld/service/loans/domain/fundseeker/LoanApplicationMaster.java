@@ -57,10 +57,10 @@ public class LoanApplicationMaster implements Serializable {
 	private Date modifiedDate;
 
 	private String name;
-	
+
 	@Column(name = "application_code")
 	private String applicationCode;
-	
+
 	@Column(name = "product_id")
 	private Integer productId;
 
@@ -74,105 +74,191 @@ public class LoanApplicationMaster implements Serializable {
 
 	@Column(name = "denomination_id")
 	private Integer denominationId;
-	
-	//Common Fields
+
+	// Common Fields
 	@Column(name = "is_applicant_details_filled")
 	private Boolean isApplicantDetailsFilled;
-	
+
 	@Column(name = "is_applicant_primary_filled")
 	private Boolean isApplicantPrimaryFilled;
-	
+
 	@Column(name = "is_applicant_final_filled")
 	private Boolean isApplicantFinalFilled;
-	
-	
-	//CoApps Fields
+
+	// CoApps Fields
 	@Column(name = "is_co_app1_details_filled")
 	private Boolean isCoApp1DetailsFilled;
-	
+
 	@Column(name = "is_co_app1_final_filled")
 	private Boolean isCoApp1FinalFilled;
-	
+
 	@Column(name = "is_co_app2_details_filled")
 	private Boolean isCoApp2DetailsFilled;
-	
+
 	@Column(name = "is_co_app2_final_filled")
 	private Boolean isCoApp2FinalFilled;
-	
-	
-	
-	//Guarantor Fields
+
+	// Guarantor Fields
 	@Column(name = "is_guarantor1_details_filled")
 	private Boolean isGuarantor1DetailsFilled;
-	
+
 	@Column(name = "is_guarantor1_final_filled")
 	private Boolean isGuarantor1FinalFilled;
-	
+
 	@Column(name = "is_guarantor2_details_filled")
 	private Boolean isGuarantor2DetailsFilled;
-	
+
 	@Column(name = "is_guarantor2_final_filled")
 	private Boolean isGuarantor2FinalFilled;
-	
-	//Upload Fields
+
+	// Upload Fields
 	@Column(name = "is_primary_upload_filled")
 	private Boolean isPrimaryUploadFilled;
-	
+
 	@Column(name = "is_final_dpr_upload_filled")
 	private Boolean isFinalDprUploadFilled;
-	
+
 	@Column(name = "is_final_upload_filled")
 	private Boolean isFinalUploadFilled;
-	
+
 	@Column(name = "is_final_mcq_filled")
 	private Boolean isFinalMcqFilled;
-	
-	//Locking Fields
-	
+
+	// Locking Fields
+
 	@Column(name = "is_primary_locked")
 	private Boolean isPrimaryLocked;
-	
+
 	@Column(name = "is_final_locked")
 	private Boolean isFinalLocked;
-	
-	//Filled Time
-	
+
+	// Filled Time
+
 	@Column(name = "details_filled_time")
 	private Boolean detailsFilledTime;
-	
+
 	@Column(name = "primary_filled_time")
 	private Boolean primaryFilledTime;
-	
+
 	@Column(name = "final_filled_time")
 	private Boolean finalFilledTime;
-	
-	
-	//Filled Count
-	
+
+	// Filled Count
+
 	@Column(name = "details_filled_count")
 	private String detailsFilledCount;
-	
+
 	@Column(name = "primary_filled_count")
 	private String primaryFilledCount;
-	
+
 	@Column(name = "final_filled_count")
 	private String finalFilledCount;
-	
+
 	@Column(name = "mca_company_id")
 	private String mcaCompanyId;
-	
+
 	@Column(name = "is_mca")
 	private Boolean isMca;
-	
+
 	@Column(name = "isMsmeScoreRequired")
 	private Boolean isMsmeScoreRequired;
-	
+
 	@Column(name = "campaign_code")
 	private String campaignCode;
-	
-	@Column(name="eligible_amnt")
+
+	@Column(name = "eligible_amnt")
 	private Double eligibleAmnt;
+
+	@Column(name = "np_user_id")
+	private Long npUserId;
+
+	@Column(name = "np_org_id")
+	private Long npOrgId;
+
+	@Column(name = "np_assignee_id")
+	private Long npAssigneeId;
+
+	@Column(name = "fp_maker_id")
+	private Long fpMakerId;
+
+	@Column(name = "ddr_status_id")
+	private Long ddrStatusId;
+
+	// payment related fields
+
+	@Column(name = "type_of_payment")
+	private String typeOfPayment;
+
+	@Column(name = "appointment_date")
+	private Date appointmentDate;
+
+	@Column(name = "appointment_time")
+	private String appointmentTime;
+
+	@Column(name = "payment_amount")
+	private Double paymentAmount;
 	
+	@Column(name = "is_accept_consent")
+	private Boolean isAcceptConsent;
+	
+	@Column(name = "approved_date")
+	private Date approvedDate;
+	
+	@Column(name="payment_status")
+	private String paymentStatus;
+	
+	@Column(name = "business_type_id")
+	private Integer businessTypeId;
+	
+	@Column(name = "company_cin_number")
+	private String companyCinNumber;
+
+	public Long getFpMakerId() {
+		return fpMakerId;
+	}
+
+	public void setFpMakerId(Long fpMakerId) {
+		this.fpMakerId = fpMakerId;
+	}
+
+	/**
+	 * @return the paymentStatus
+	 */
+	public String getPaymentStatus() {
+		return paymentStatus;
+	}
+
+	/**
+	 * @param paymentStatus the paymentStatus to set
+	 */
+	public void setPaymentStatus(String paymentStatus) {
+		this.paymentStatus = paymentStatus;
+	}
+
+	public Long getNpOrgId() {
+		return npOrgId;
+	}
+
+	public void setNpOrgId(Long npOrgId) {
+		this.npOrgId = npOrgId;
+	}
+
+	public Date getApprovedDate() {
+		return approvedDate;
+	}
+
+	public void setApprovedDate(Date approvedDate) {
+		this.approvedDate = approvedDate;
+	}
+
+	public Long getDdrStatusId() {
+		return ddrStatusId;
+	}
+
+	public void setDdrStatusId(Long ddrStatusId) {
+		this.ddrStatusId = ddrStatusId;
+	}
+
 	public Boolean getIsMsmeScoreRequired() {
 		return isMsmeScoreRequired;
 	}
@@ -201,7 +287,7 @@ public class LoanApplicationMaster implements Serializable {
 	@ManyToOne
 	@JoinColumn(name = "status")
 	private ApplicationStatusMaster applicationStatusMaster;
-	
+
 	public LoanApplicationMaster() {
 	}
 
@@ -520,7 +606,7 @@ public class LoanApplicationMaster implements Serializable {
 	public void setFinalFilledCount(String finalFilledCount) {
 		this.finalFilledCount = finalFilledCount;
 	}
-	
+
 	public String getCampaignCode() {
 		return campaignCode;
 	}
@@ -535,6 +621,86 @@ public class LoanApplicationMaster implements Serializable {
 
 	public void setEligibleAmnt(Double eligibleAmnt) {
 		this.eligibleAmnt = eligibleAmnt;
+	}
+
+	public Long getNpAssigneeId() {
+		return npAssigneeId;
+	}
+
+	public void setNpAssigneeId(Long npAssigneeId) {
+		this.npAssigneeId = npAssigneeId;
+	}
+
+	public Long getNpUserId() {
+		return npUserId;
+	}
+
+	public void setNpUserId(Long npUserId) {
+		this.npUserId = npUserId;
+	}
+	
+	public String getTypeOfPayment() {
+		return typeOfPayment;
+	}
+
+	public void setTypeOfPayment(String typeOfPayment) {
+		this.typeOfPayment = typeOfPayment;
+	}
+
+	public Date getAppointmentDate() {
+		return appointmentDate;
+	}
+
+	public void setAppointmentDate(Date appointmentDate) {
+		this.appointmentDate = appointmentDate;
+	}
+
+	public String getAppointmentTime() {
+		return appointmentTime;
+	}
+
+	public void setAppointmentTime(String appointmentTime) {
+		this.appointmentTime = appointmentTime;
+	}
+
+	public Double getPaymentAmount() {
+		return paymentAmount;
+	}
+
+	public void setPaymentAmount(Double paymentAmount) {
+		this.paymentAmount = paymentAmount;
+	}
+	
+	public Boolean getIsAcceptConsent() {
+		return isAcceptConsent;
+	}
+
+	public void setIsAcceptConsent(Boolean isAcceptConsent) {
+		this.isAcceptConsent = isAcceptConsent;
+	}
+	
+	public Integer getBusinessTypeId() {
+		return businessTypeId;
+	}
+
+	public void setBusinessTypeId(Integer businessTypeId) {
+		this.businessTypeId = businessTypeId;
+	}
+	
+	
+
+	/**
+	 * @return the companyCinNumber
+	 */
+	public String getCompanyCinNumber() {
+		return companyCinNumber;
+	}
+
+	/**
+	 * @param companyCinNumber the companyCinNumber to set
+	 */
+	public void setCompanyCinNumber(String companyCinNumber) {
+		this.companyCinNumber = companyCinNumber;
 	}
 
 	@Override

@@ -38,7 +38,9 @@ public class AssetsDetailsServiceImpl implements AssetsDetailsService {
 	@Override
 	public void inActiveAssetsDetails(Long storageDetailsId) {
 		// TODO Auto-generated method stub
+		System.out.println("in asset service");
 		assetsDetailsRepository.inActiveAssetsDetails(storageDetailsId);
+		System.out.println("out from asset service");
 
 	}
 

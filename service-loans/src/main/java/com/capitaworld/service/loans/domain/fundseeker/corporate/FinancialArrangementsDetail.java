@@ -16,50 +16,79 @@ import javax.persistence.TemporalType;
 
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 
-
 /**
- * The persistent class for the fs_corporate_current_financial_arrangements_details database table.
+ * The persistent class for the
+ * fs_corporate_current_financial_arrangements_details database table.
  * 
  */
 @Entity
-@Table(name="fs_corporate_current_financial_arrangements_details")
+@Table(name = "fs_corporate_current_financial_arrangements_details")
 public class FinancialArrangementsDetail implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
 	private Double amount;
 
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "loan_date")
+	private Date loanDate;
+	
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "reported_date")
+	private Date reportedDate;
+
+	@Column(name = "loan_type")
+	private String loanType;
+
+	private Double emi;
+
+	@Column(name="relationship_since") 
+	private Integer relationshipSince;
+
 	@ManyToOne
-	@JoinColumn(name="application_id")
+	@JoinColumn(name = "application_id")
 	private LoanApplicationMaster applicationId;
 
-	@Column(name="created_by")
+	@Column(name = "created_by")
 	private Long createdBy;
 
 	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name="created_date")
+	@Column(name = "created_date")
 	private Date createdDate;
 
-	@Column(name="facility_nature_id")
-	private Integer facilityNatureId;
+	 @Column(name="facility_nature_id") private Integer facilityNatureId;
 
-	@Column(name="financial_institution_name")
+	@Column(name = "financial_institution_name")
 	private String financialInstitutionName;
 
-	@Column(name="is_active")
+	@Column(name = "is_active")
 	private Boolean isActive;
 
-	@Column(name="modified_by")
+	@Column(name = "modified_by")
 	private Long modifiedBy;
 
 	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name="modified_date")
+	@Column(name = "modified_date")
 	private Date modifiedDate;
 
+	@Column(name = "outstanding_amount")
+	private Double outstandingAmount;
+
+	@Column(name = "security_details")
+	private String securityDetails;
+	
+	@ManyToOne
+	@JoinColumn(name = "director_id")
+	private DirectorBackgroundDetail directorBackgroundDetail;
+
 	public FinancialArrangementsDetail() {
+	}
+	
+	public FinancialArrangementsDetail(Long id) {
+		this.id = id;
 	}
 
 	public Long getId() {
@@ -102,13 +131,10 @@ public class FinancialArrangementsDetail implements Serializable {
 		this.createdDate = createdDate;
 	}
 
-	public Integer getFacilityNatureId() {
-		return this.facilityNatureId;
-	}
+	 public Integer getFacilityNatureId() { return this.facilityNatureId; }
 
-	public void setFacilityNatureId(Integer facilityNatureId) {
-		this.facilityNatureId = facilityNatureId;
-	}
+	 public void setFacilityNatureId(Integer facilityNatureId) {
+	 this.facilityNatureId = facilityNatureId; }
 
 	public String getFinancialInstitutionName() {
 		return this.financialInstitutionName;
@@ -142,4 +168,75 @@ public class FinancialArrangementsDetail implements Serializable {
 		this.modifiedDate = modifiedDate;
 	}
 
+	public Date getLoanDate() {
+		return loanDate;
+	}
+
+	public void setLoanDate(Date loanDate) {
+		this.loanDate = loanDate;
+	}
+
+	public String getLoanType() {
+		return loanType;
+	}
+
+	public void setLoanType(String loanType) {
+		this.loanType = loanType;
+	}
+
+	/*
+	 * public Integer getLenderType() { return lenderType; }
+	 * 
+	 * public void setLenderType(Integer lenderType) { this.lenderType = lenderType;
+	 * }
+	 */
+
+	public Double getOutstandingAmount() {
+		return outstandingAmount;
+	}
+
+	public void setOutstandingAmount(Double outstandingAmount) {
+		this.outstandingAmount = outstandingAmount;
+	}
+
+	public String getSecurityDetails() {
+		return securityDetails;
+	}
+
+	public void setSecurityDetails(String securityDetails) {
+		this.securityDetails = securityDetails;
+	}
+
+	public Double getEmi() {
+		return emi;
+	}
+
+	public void setEmi(Double emi) {
+		this.emi = emi;
+	}
+
+	public DirectorBackgroundDetail getDirectorBackgroundDetail() {
+		return directorBackgroundDetail;
+	}
+
+	public void setDirectorBackgroundDetail(DirectorBackgroundDetail directorBackgroundDetail) {
+		this.directorBackgroundDetail = directorBackgroundDetail;
+	}
+
+	public Date getReportedDate() {
+		return reportedDate;
+	}
+
+	public void setReportedDate(Date reportedDate) {
+		this.reportedDate = reportedDate;
+	}
+
+	public Integer getRelationshipSince() {
+		return relationshipSince;
+	}
+
+	public void setRelationshipSince(Integer relationshipSince) {
+		this.relationshipSince = relationshipSince;
+	}
+	
 }
