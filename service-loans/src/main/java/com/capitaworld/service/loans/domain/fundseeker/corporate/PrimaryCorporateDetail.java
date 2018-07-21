@@ -198,7 +198,7 @@ public class PrimaryCorporateDetail extends LoanApplicationMaster implements Ser
     public void setIncrementalTurnover(Double incrementalTurnover) {
         this.incrementalTurnover = incrementalTurnover;
     }
-
+    
     public Date getProposedOperationDate() {
         return proposedOperationDate;
     }

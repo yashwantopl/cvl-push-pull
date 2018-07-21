@@ -4257,7 +4257,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			gatewayRequest.setClientId(userId);
 			gatewayRequest.setStatus(paymentRequest.getStatus());
 			gatewayRequest.setTxnId(paymentRequest.getTrxnId());
-
+			gatewayRequest.setFirstName(paymentRequest.getNameOfEntity());
+			
+			
 			Boolean updatePayment = false;
 			ProposalMappingResponse respProp = null;
 			if ("SIDBI_FEES".equals(paymentRequest.getPurposeCode())) {
@@ -4900,18 +4902,18 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		Boolean bankStatement = false;
 		try {
 			
-			//Create Prelim Sheet Object
+			//Create Prelim Sheet Object	
 			ProfileReqRes prelimData = getPrelimData(applicationId,userId);
 			if(prelimData == null) {
-				logger.error("ProfileReqRes ==> Prelim Sheet Object is Null in savePhese1DataToSidbi() ");
+				logger.info("ProfileReqRes ==> Prelim Sheet Object is Null in savePhese1DataToSidbi() ");
 				auditComponent.updateAudit(AuditComponent.PRELIM_INFO, applicationId, userId, "ProfileReqRes ==> Prelim Sheet Object is Null ProfileReqRes prelimData  ==> " + prelimData,  savePrelimInfo);
 				setTokenAsExpired(generateTokenRequest);
 				return false;
 			}
 			try {
-				logger.error("Start Saving ProfileReqRes in savePhese1DataToSidbi() ");
-				savePrelimInfo = sidbiIntegrationClient.savePrelimInfo(prelimData);
-				logger.error("Sucessfull Saved ProfileReqRes in savePhese1DataToSidbi() ");
+				logger.info("Start Saving ProfileReqRes in savePhese1DataToSidbi() ");
+				savePrelimInfo = sidbiIntegrationClient.savePrelimInfo(prelimData,generateTokenRequest.getToken());
+				logger.info("Sucessfull Saved ProfileReqRes in savePhese1DataToSidbi() ");
 				auditComponent.updateAudit(AuditComponent.PRELIM_INFO, applicationId, userId, null,  savePrelimInfo);
 			}catch(Exception e) {
 				logger.info("Exception while saving ProfileReqRes in savePhese1DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",applicationId,fpProductMappingId +" Mgs " +e.getMessage());
@@ -4929,7 +4931,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					return false;
 				}else {
 					logger.error("Start Saving MatchesParameterRequest in savePhese1DataToSidbi() ");
-					matchesParameters = sidbiIntegrationClient.saveMatchesParameter(parameterRequest);
+					matchesParameters = sidbiIntegrationClient.saveMatchesParameter(parameterRequest,generateTokenRequest.getToken());
 					logger.info("Sucessfully save MatchesParameterRequest in savePhese1DataToSidbi()  ====>{}FpProductId====>{}",applicationId,fpProductMappingId);
 					auditComponent.updateAudit(AuditComponent.MATCHES_PARAMETER, applicationId, userId,null , matchesParameters);					
 				}
@@ -4952,13 +4954,13 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					setTokenAsExpired(generateTokenRequest);
 					return false;
 				}else {
-					logger.error("Start Saving BankStatemetnRequest in savePhese1DataToSidbi() ");
-					bankStatement = sidbiIntegrationClient.saveBankStatement(data);
+					logger.info("Start Saving BankStatemetnRequest in savePhese1DataToSidbi() ");
+					bankStatement = sidbiIntegrationClient.saveBankStatement(data,generateTokenRequest.getToken());
 					logger.info("Sucessfully save BankStatemetnRequest in savePhese1DataToSidbi()  ====>{}FpProductId====>{}",applicationId,fpProductMappingId);
 					auditComponent.updateAudit(AuditComponent.BANK_STATEMENT, applicationId, userId, null, bankStatement);					
 				}
 			}catch(Exception e) {
-				logger.info("Exception in  BankStatementRequest in savePhese1DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",applicationId,fpProductMappingId +" Mgs " +e.getMessage());
+				logger.error("Exception in  BankStatementRequest in savePhese1DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",applicationId,fpProductMappingId +" Mgs " +e.getMessage());
 				e.printStackTrace();
 				auditComponent.updateAudit(AuditComponent.BANK_STATEMENT, applicationId, userId, "Exception in  BankStatementRequest in savePhese1DataToSidbi() ==> for applicationId====>{} "+applicationId+" Msg ==> "+e.getMessage() ,bankStatement);
 				setTokenAsExpired(generateTokenRequest);
@@ -4976,8 +4978,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					return false;
 				}else {
 					logger.error("Start Saving EligibilityDetailRequest in savePhese1DataToSidbi() ");
-					eligibilityParameters = sidbiIntegrationClient.saveEligibilityDetails(eligibilityRequest);
-					logger.info("Sucessfully save EligibilityDetailRequest in savePhese1DataToSidbi() for  ApplicationId ====>{}FpProductId====>{}",applicationId,fpProductMappingId);
+					eligibilityParameters = sidbiIntegrationClient.saveEligibilityDetails(eligibilityRequest,generateTokenRequest.getToken());
+					logger.error("Sucessfully save EligibilityDetailRequest in savePhese1DataToSidbi() for  ApplicationId ====>{}FpProductId====>{}",applicationId,fpProductMappingId);
 					auditComponent.updateAudit(AuditComponent.ELIGIBILITY, applicationId, userId, null, eligibilityParameters);
 				}
 			}catch(Exception e) {
@@ -5022,7 +5024,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 							BeanUtils.copyProperties(scoreParameterResult,scoreParameterDetailsRequest);
 							try {
 								logger.error("Start Saving ScoreParameterDetailsRequest in savePhese1DataToSidbi() ");
-								scoringDetails = sidbiIntegrationClient.saveScoringDetails(scoreParameterDetailsRequest);
+								scoringDetails = sidbiIntegrationClient.saveScoringDetails(scoreParameterDetailsRequest,generateTokenRequest.getToken());
 								logger.info("Sucessfully save ScoreParameterDetailsRequest in savePhese1DataToSidbi() for  ApplicationId ====>{}FpProductId====>{}",applicationId,fpProductMappingId);
 								auditComponent.updateAudit(AuditComponent.SCORING_DETAILS, applicationId, userId,null , scoringDetails);
 							} catch (Exception e) {
@@ -5113,7 +5115,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				profileReqRes.setSecurityCorporateDetailRequestsList(getSecurityCorporateDetailRequestList(applicationId, userId));
 				try {
 					logger.info("Going to Save Detailed Infor==>");
-					saveDetailsInfo = sidbiIntegrationClient.saveDetailedInfo(profileReqRes);	
+					saveDetailsInfo = sidbiIntegrationClient.saveDetailedInfo(profileReqRes,generateTokenRequest.getToken());	
 					auditComponent.updateAudit(AuditComponent.DETAILED_INFO, applicationId, applicationMaster.getUserId(), null, saveDetailsInfo);
 				}catch(Exception e) {
 					logger.info("Exception while Saving profileReqRes by sidbiIntegrationClient   in savePhese2DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",applicationId,fpProductMappingId +" Mgs " +e.getMessage());
@@ -5127,7 +5129,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				
 				DDRFormDetailsRequest sidbiDetails = dDRFormService.getSIDBIDetails(applicationId,applicationMaster.getUserId());
 				try {
-					saveDDRInfo = sidbiIntegrationClient.saveDDRFormDetails(sidbiDetails);
+					saveDDRInfo = sidbiIntegrationClient.saveDDRFormDetails(sidbiDetails,generateTokenRequest.getToken());
 					auditComponent.updateAudit(AuditComponent.DDR_DETAILS, applicationId, applicationMaster.getUserId(), null ,saveDDRInfo);
 					logger.info("ddr saved==========>{}",saveDDRInfo);
 				}catch(Exception e) {
@@ -5175,7 +5177,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
             irrRequest.setApplicationId(applicationId.intValue());
 			irrRequest.setBusinessTypeId(ratingResponse.getBusinessTypeId());
 			try {
-				saveIRRInfo = sidbiIntegrationClient.saveIrrDetails(irrRequest);
+				saveIRRInfo = sidbiIntegrationClient.saveIrrDetails(irrRequest,generateTokenRequest.getToken());
 				auditComponent.updateAudit(AuditComponent.IRR_DETAILS, applicationId, applicationMaster.getUserId(), null ,saveIRRInfo);
 			} catch (Exception e) {
 				logger.info("Exception while Saving saveIRRInfo   by sidbiIntegrationClient   in savePhese2DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",applicationId,fpProductMappingId +" Mgs " +e.getMessage());
@@ -6132,10 +6134,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		generateTokenRequest.setApplicationId(applicationId);
 		generateTokenRequest.setPassword(request.getPassword());
 		
-		String token=null;
+			String token=null;
 			token = sidbiIntegrationClient.getToken(generateTokenRequest);
-			sidbiIntegrationClient.setToken(token);
-			logger.warn("Successfully  set token from SidbiIntegrationClient -------------- applicationId " +applicationId);
+			generateTokenRequest.setToken(token);
+			logger.info("Successfully  set token from SidbiIntegrationClient -------------- applicationId=={} and Token==> {}",applicationId,token);
 			/*Start Save Token in loan DB */
 			/*TokenDetail tokenDetail =new TokenDetail();
 			tokenDetail.setApplicationId(applicationId);
