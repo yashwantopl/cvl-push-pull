@@ -1619,7 +1619,7 @@ public class ScoringServiceImpl implements ScoringService{
                                     Data.class);
                             if(!CommonUtils.isObjectNullOrEmpty(analyzerResponse.getData())){
                                 {
-                                    if(!CommonUtils.isObjectNullOrEmpty(data.getCheckBounceForLast6Month()))
+                                    if(!CommonUtils.isObjectNullOrEmpty(data.getCheckBounceForLast6Month().doubleValue()))
                                     {
                                         noOfChequeBounce=data.getCheckBounceForLast6Month().doubleValue();
                                     }
