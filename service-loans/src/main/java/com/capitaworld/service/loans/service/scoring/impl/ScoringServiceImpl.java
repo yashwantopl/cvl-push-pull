@@ -1495,7 +1495,7 @@ public class ScoringServiceImpl implements ScoringService{
                     case ScoreParameter.NTB.EMPLOYMENT_TYPE: {
                         try
                         {
-                            Long empType= directorBackgroundDetail.getEmploymentDetail().getTypeOfEmployment();
+                            Long empType= directorBackgroundDetail.getEmploymentDetail().getEmploymentStatus();
 
                             if(!CommonUtils.isObjectNullOrEmpty(empType))
                             {
