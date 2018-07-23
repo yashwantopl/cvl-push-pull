@@ -95,6 +95,12 @@ public class NtbPrimaryViewResponse {
 	    private Object bankData;
 	    private Long assesmentId;
 	    private String qualification;
+	    private Object otherDetails;
+	    private String consitution;
+	    private String consitutionDetail;
+	    private Integer businessTypeId;
+
+
 		/**
 		 * @return the matchesList
 		 */
@@ -864,6 +870,54 @@ public class NtbPrimaryViewResponse {
 		}
 		public void setDirectorIncomeDetails(List<CorporateDirectorIncomeRequest> directorIncomeDetails) {
 			this.directorIncomeDetails = directorIncomeDetails;
+		}
+		/**
+		 * @return the otherDetails
+		 */
+		public Object getOtherDetails() {
+			return otherDetails;
+		}
+		/**
+		 * @param otherDetails the otherDetails to set
+		 */
+		public void setOtherDetails(Object otherDetails) {
+			this.otherDetails = otherDetails;
+		}
+		/**
+		 * @return the consitution
+		 */
+		public String getConsitution() {
+			return consitution;
+		}
+		/**
+		 * @param consitution the consitution to set
+		 */
+		public void setConsitution(String consitution) {
+			this.consitution = consitution;
+		}
+		/**
+		 * @return the consitutionDetail
+		 */
+		public String getConsitutionDetail() {
+			return consitutionDetail;
+		}
+		/**
+		 * @param consitutionDetail the consitutionDetail to set
+		 */
+		public void setConsitutionDetail(String consitutionDetail) {
+			this.consitutionDetail = consitutionDetail;
+		}
+		/**
+		 * @return the businessTypeId
+		 */
+		public Integer getBusinessTypeId() {
+			return businessTypeId;
+		}
+		/**
+		 * @param businessTypeId the businessTypeId to set
+		 */
+		public void setBusinessTypeId(Integer businessTypeId) {
+			this.businessTypeId = businessTypeId;
 		}
 
 
