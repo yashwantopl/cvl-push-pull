@@ -1979,8 +1979,6 @@ public class ScoringServiceImpl implements ScoringService{
         try {
             Long fpProductId=scoringModelReqRes.getFpProductId();
             try {
-                ProductMaster productMaster=productMasterRepository.findOne(fpProductId);
-                scoringModelReqRes.setLoanTypeId(Long.parseLong(productMaster.getProductId().toString()));
                 return scoringClient.getScoringModelTempDetail(scoringModelReqRes);
             }
             catch (Exception e)
@@ -2059,8 +2057,6 @@ public class ScoringServiceImpl implements ScoringService{
         try {
             Long fpProductId=scoringModelReqRes.getFpProductId();
             try {
-                ProductMaster productMaster=productMasterRepository.findOne(fpProductId);
-                scoringModelReqRes.setLoanTypeId(Long.parseLong(productMaster.getProductId().toString()));
                 return scoringClient.getScoringModelMasterDetail(scoringModelReqRes);
             }
             catch (Exception e)

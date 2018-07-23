@@ -304,26 +304,6 @@ public class WorkingCapitalParameter extends ProductMaster implements Serializab
 
     @Column(name ="job_id")
 	private Long jobId;
-    
-	@Column(name="org_id")
-	private Long orgId;
-	
-	
-
-	/**
-	 * @return the orgId
-	 */
-	public Long getOrgId() {
-		return orgId;
-	}
-
-	/**
-	 * @param orgId the orgId to set
-	 */
-	public void setOrgId(Long orgId) {
-		this.orgId = orgId;
-	}
-
 
 	/**
 	 * @return the jobId
