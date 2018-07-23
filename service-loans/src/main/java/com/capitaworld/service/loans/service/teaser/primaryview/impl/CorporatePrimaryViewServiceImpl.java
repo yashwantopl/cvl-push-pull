@@ -640,10 +640,10 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 			
 			//Eligibility Data
 			TermLoanParameter termLoanParameter = termLoanParameterRepository.getById(fpProductMappingId);
-//			Long assessmentId = termLoanParameter.getAssessmentMethodId().longValue();
-//			if(!CommonUtils.isObjectNullOrEmpty(assessmentId)) {
-//				corporatePrimaryViewResponse.setAssesmentId(assessmentId);
-//			}
+			Long assessmentId = termLoanParameter.getAssessmentMethodId().longValue();
+			if(!CommonUtils.isObjectNullOrEmpty(assessmentId)) {
+				corporatePrimaryViewResponse.setAssesmentId(assessmentId);
+			}
 			EligibililityRequest eligibilityReq=new EligibililityRequest();
 			eligibilityReq.setApplicationId(toApplicationId);
 			//eligibilityReq.set
