@@ -15,6 +15,8 @@ private String fpImage;
 private String loanName;
 private String fpOrganisationName;
 
+private Double senctionedAmount;
+
 public Long getApplicationId() {
 	return applicationId;
 }
@@ -88,9 +90,11 @@ public void setFpOrganisationName(String fpOrganisationName) {
 	this.fpOrganisationName = fpOrganisationName;
 }
 
+	public Double getSenctionedAmount() {
+		return senctionedAmount;
+	}
 
-
-
-
-
+	public void setSenctionedAmount(Double senctionedAmount) {
+		this.senctionedAmount = senctionedAmount;
+	}
 }
