@@ -13,6 +13,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.service.loans.domain.sanction.LoanSanctionDomain;
+import com.capitaworld.service.loans.repository.sanction.LoanSanctionRepository;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -415,7 +417,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	
 	@Autowired
 	private ITRClient itrClient;
-	
+
+	@Autowired
+	private LoanSanctionRepository loanSanctionRepository;
+
  	@Override
 	public boolean saveOrUpdate(FrameRequest commonRequest, Long userId) throws Exception {
 		try {
@@ -4257,7 +4262,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			gatewayRequest.setClientId(userId);
 			gatewayRequest.setStatus(paymentRequest.getStatus());
 			gatewayRequest.setTxnId(paymentRequest.getTrxnId());
-
+			gatewayRequest.setFirstName(paymentRequest.getNameOfEntity());
+			
+			
 			Boolean updatePayment = false;
 			ProposalMappingResponse respProp = null;
 			if ("SIDBI_FEES".equals(paymentRequest.getPurposeCode())) {
@@ -4701,6 +4708,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				}
 			}
 			disbursementRequest.setFpImage(imagePath);
+
+			LoanSanctionDomain loanSanctionDomain =loanSanctionRepository.findByAppliationId(disbursementRequest.getApplicationId());
+			if(!CommonUtils.isObjectNullOrEmpty(loanSanctionDomain) ){
+				disbursementRequest.setSenctionedAmount(loanSanctionDomain.getSanctionAmount());
+			}
 		} catch (Exception e) {
 			logger.warn("error while getting details of disbursement", e);
 		}

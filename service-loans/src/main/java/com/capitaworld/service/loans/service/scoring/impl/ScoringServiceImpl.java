@@ -1132,6 +1132,54 @@ public class ScoringServiceImpl implements ScoringService{
 
                 switch (modelParameterResponse.getName()) {
 
+                    case ScoreParameter.NTB.WORKING_EXPERIENCE: {
+                        scoreParameterNTBRequest.setIsWorkingExperience(true);
+                        break;
+                    }
+                    case ScoreParameter.NTB.IS_FAMILY_MEMBER_IN_LINE_OF_BUSINESS: {
+                        scoreParameterNTBRequest.setIsFamilyMemberInLineOfBusiness(true);
+                        break;
+                    }
+                    case ScoreParameter.NTB.CIBIL_TRANSUNION_SCORE: {
+                        scoreParameterNTBRequest.setIsCibilTransunionScore(true);
+                        break;
+                    }
+                    case ScoreParameter.NTB.AGE_OF_PROMOTOR: {
+                        scoreParameterNTBRequest.setIsAgeOfPromotor(true);
+                        break;
+                    }
+                    case ScoreParameter.NTB.EDUCATION_QUALIFICATION: {
+                        scoreParameterNTBRequest.setIsEducationQualification(true);
+                        break;
+                    }
+                    case ScoreParameter.NTB.EMPLOYMENT_TYPE: {
+                        scoreParameterNTBRequest.setIsEmploymentType(true);
+                        break;
+                    }
+                    case ScoreParameter.NTB.HOUSE_OWNERSHIP: {
+                        scoreParameterNTBRequest.setIsHouseOwnership(true);
+                        break;
+                    }
+                    case ScoreParameter.NTB.MARITIAL_STATUS: {
+                        scoreParameterNTBRequest.setIsMaritialStatus(true);
+                        break;
+                    }
+                    case ScoreParameter.NTB.ITR_SALARY_INCOME: {
+                        scoreParameterNTBRequest.setIsItrSalaryIncome(true);
+                        break;
+                    }
+                    case ScoreParameter.NTB.FIXED_OBLIGATION_RATIO: {
+                        scoreParameterNTBRequest.setIsFixedObligationRatio(true);
+                        break;
+                    }
+                    case ScoreParameter.NTB.CHEQUE_BOUNCES: {
+                        scoreParameterNTBRequest.setIsChequeBounces(true);
+                        break;
+                    }
+                    case ScoreParameter.NTB.DPD: {
+                        scoreParameterNTBRequest.setIsDPD(true);
+                        break;
+                    }
                     case ScoreParameter.NTB.CONSTITUTION_OF_BORROWER:
                     {
                         try
@@ -1495,7 +1543,7 @@ public class ScoringServiceImpl implements ScoringService{
                     case ScoreParameter.NTB.EMPLOYMENT_TYPE: {
                         try
                         {
-                            Long empType= directorBackgroundDetail.getEmploymentDetail().getTypeOfEmployment();
+                            Long empType= directorBackgroundDetail.getEmploymentDetail().getEmploymentStatus();
 
                             if(!CommonUtils.isObjectNullOrEmpty(empType))
                             {
@@ -1551,7 +1599,14 @@ public class ScoringServiceImpl implements ScoringService{
                     case ScoreParameter.NTB.ITR_SALARY_INCOME: {
                         try
                         {
-                            Double avgSalary=(corporateDirectorIncomeDetailsRepository.getTotalSalaryByApplicationIdAndDirectorId(applicationId,directorBackgroundDetail.getId()))/3;
+                            logger.info("Application id ===========>"+applicationId);
+                            logger.info("directorBackgroundDetail id ===========>"+directorBackgroundDetail.getId());
+                            Double avgSalary=corporateDirectorIncomeDetailsRepository.getTotalSalaryByApplicationIdAndDirectorId(applicationId,directorBackgroundDetail.getId());
+                            if(avgSalary!=0)
+                            {
+                                avgSalary=avgSalary/3;
+                            }
+
                             Double promotorContribution=primaryCorporateDetail.getPromoterContribution();
 
                             if(CommonUtils.isObjectNullOrEmpty(promotorContribution))
@@ -1575,12 +1630,12 @@ public class ScoringServiceImpl implements ScoringService{
                         try
                         {
 
-                            Double totalSalary=corporateDirectorIncomeDetailsRepository.getTotalSalaryByApplicationIdAndDirectorId(applicationId,directorBackgroundDetail.getId());
+                            Double totalIncome=corporateDirectorIncomeDetailsRepository.getTotalIncomeByApplicationIdAndDirectorId(applicationId,directorBackgroundDetail.getId());
                             Double totalEMI=financialArrangementDetailsRepository.getTotalEmiByApplicationIdAndDirectorId(applicationId,directorBackgroundDetail.getId());
 
-                            if(CommonUtils.isObjectNullOrEmpty(totalSalary))
+                            if(CommonUtils.isObjectNullOrEmpty(totalIncome))
                             {
-                                totalSalary=0.0;
+                                totalIncome=0.0;
                             }
 
                             if(CommonUtils.isObjectNullOrEmpty(totalEMI))
@@ -1588,7 +1643,7 @@ public class ScoringServiceImpl implements ScoringService{
                                 totalEMI=0.0;
                             }
 
-                            scoreParameterNTBRequest.setItrSalaryIncome(totalSalary);
+                            scoreParameterNTBRequest.setItrSalaryIncome(totalIncome);
                             scoreParameterNTBRequest.setTotalEmiPaid(totalEMI);
                             scoreParameterNTBRequest.setIsFixedObligationRatio(true);
                         }
@@ -1612,9 +1667,9 @@ public class ScoringServiceImpl implements ScoringService{
 
                             Data data = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)analyzerResponse.getData(),
                                     Data.class);
-                            if(!CommonUtils.isObjectNullOrEmpty(analyzerResponse.getData())){
+                            if(!CommonUtils.isObjectNullOrEmpty(data.getCheckBounceForLast6Month())){
                                 {
-                                    if(!CommonUtils.isObjectNullOrEmpty(data.getCheckBounceForLast6Month()))
+                                    if(!CommonUtils.isObjectNullOrEmpty(data.getCheckBounceForLast6Month().doubleValue()))
                                     {
                                         noOfChequeBounce=data.getCheckBounceForLast6Month().doubleValue();
                                     }
@@ -1624,7 +1679,10 @@ public class ScoringServiceImpl implements ScoringService{
                                     }
 
                                 }
-
+                            }
+                            else
+                            {
+                                noOfChequeBounce=0.0;
                             }
 
                             scoreParameterNTBRequest.setChequeBouncesPastSixMonths(noOfChequeBounce);
