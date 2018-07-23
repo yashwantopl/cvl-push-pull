@@ -687,7 +687,7 @@ public class PrimaryViewController {
 				LoansResponse loansResponse = new LoansResponse();
 				NtbPrimaryViewResponse ntbPrimaryViewResponse = null;
 				try {
-					logger.info("GET PRIMARY TEASER VIEW OF USER OF APPLICATION ID"+toApplicationId+"PRODUCT MAPPING ID"+productMappingId+"USER TYPE"+userType+"USER ID"+userId);
+					logger.info("GET NTB PRIMARY TEASER VIEW OF USER OF APPLICATION ID"+toApplicationId+"PRODUCT MAPPING ID"+productMappingId+"USER TYPE"+userType+"USER ID"+userId);
 					 ntbPrimaryViewResponse = ntbTeaserViewService.getNtbTeaserViewDetails(toApplicationId, userType, userId, productMappingId, false);
 					if(!CommonUtils.isObjectNullOrEmpty(ntbPrimaryViewResponse)){
 						logger.info("Response of Teaser View"+ntbPrimaryViewResponse.toString());

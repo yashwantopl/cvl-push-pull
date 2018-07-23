@@ -20,6 +20,14 @@ import com.capitaworld.service.loans.model.corporate.CorporateDirectorIncomeRequ
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateDirectorIncomeDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.DirectorBackgroundDetailsRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateDirectorIncomeService;
+import com.capitaworld.service.oneform.enums.DirectorRelationshipType;
+import com.capitaworld.service.oneform.enums.EducationQualificationNTB;
+import com.capitaworld.service.oneform.enums.EmploymentStatusNTB;
+import com.capitaworld.service.oneform.enums.EmploymentWithNTB;
+import com.capitaworld.service.oneform.enums.Gender;
+import com.capitaworld.service.oneform.enums.MaritalStatus;
+import com.capitaworld.service.oneform.enums.OccupationNatureNTB;
+import com.capitaworld.service.oneform.enums.ResidenceStatusRetailMst;
 
 @Service
 @Transactional
@@ -138,8 +146,14 @@ public class CorporateDirectorIncomeServiceImpl implements CorporateDirectorInco
 							map.put("totalExperience", corpObj.getTotalExperience());
 							map.put("dob", corpObj.getDob());
 							map.put("mobile", corpObj.getMobile());
-							map.put("gender", corpObj.getGender());
-							map.put("relationshipType", corpObj.getRelationshipType());
+							if(!CommonUtils.isObjectNullOrEmpty(corpObj.getGender())) {
+								Gender byIdGndr = Gender.getById(corpObj.getGender());
+								map.put("gender", !CommonUtils.isObjectNullOrEmpty(byIdGndr) ? byIdGndr.getValue() : "");	
+							}
+							if(!CommonUtils.isObjectNullOrEmpty(corpObj.getRelationshipType())) {
+								DirectorRelationshipType byIdRelation = DirectorRelationshipType.getById(corpObj.getRelationshipType());
+								map.put("relationshipType", !CommonUtils.isObjectNullOrEmpty(byIdRelation) ? byIdRelation.getValue() : "");	
+							}
 							map.put("firstName", corpObj.getFirstName());
 							map.put("lastName", corpObj.getLastName());
 							map.put("middleName", corpObj.getMiddleName());
@@ -150,9 +164,17 @@ public class CorporateDirectorIncomeServiceImpl implements CorporateDirectorInco
 							map.put("isBankStatementCompleted", corpObj.getIsBankStatementCompleted());
 							map.put("isOneFormCompleted", corpObj.getIsOneFormCompleted());
 							map.put("aadhar", corpObj.getAadhar());
-							map.put("maritalStatus", corpObj.getMaritalStatus());
+							if(!CommonUtils.isObjectNullOrEmpty(corpObj.getMaritalStatus())) {
+								MaritalStatus byIdMarital = MaritalStatus.getById(corpObj.getMaritalStatus());
+								map.put("maritalStatus", !CommonUtils.isObjectNullOrEmpty(byIdMarital) ? byIdMarital.getValue() : "");	
+							}
+							
 							map.put("noOfDependent", corpObj.getNoOfDependent());
-							map.put("residenceType", corpObj.getResidenceType());
+							if(!CommonUtils.isObjectNullOrEmpty(corpObj.getResidenceType())) {
+								ResidenceStatusRetailMst byIdResidentType = ResidenceStatusRetailMst.getById(corpObj.getResidenceType());
+								map.put("residenceType", !CommonUtils.isObjectNullOrEmpty(byIdResidentType) ? byIdResidentType.getValue() : "");	
+							}
+							
 							map.put("residenceSinceMonth", corpObj.getResidenceSinceMonth());
 							map.put("residenceSinceYear", corpObj.getResidenceSinceYear());
 							map.put("isFamilyMemberInBusiness", corpObj.getFamilyMemberInBusiness());
@@ -161,16 +183,30 @@ public class CorporateDirectorIncomeServiceImpl implements CorporateDirectorInco
 							map.put("premiseNumber", corpObj.getPremiseNumber());
 							map.put("streetName", corpObj.getStreetName());
 							map.put("landmark", corpObj.getLandmark());
-							map.put("qualificationId", corpObj.getQualificationId());
+							
+							if(!CommonUtils.isObjectNullOrEmpty(corpObj.getQualificationId())) {
+								EducationQualificationNTB byIdEduNtb = EducationQualificationNTB.getById(corpObj.getQualificationId());
+								map.put("qualificationId", !CommonUtils.isObjectNullOrEmpty(byIdEduNtb) ? byIdEduNtb.getValue() : "");	
+							}
+							
 							map.put("isMainDirector", corpObj.getMainDirector());
 						
 							// getting Employee Detail for each Director
 							if(!CommonUtils.isObjectNullOrEmpty(corpObj.getEmploymentDetail())) {
 							logger.info("Employment Detail======>"+corpObj.getEmploymentDetail());
 							map.put("empId", corpObj.getEmploymentDetail().getId()); 
-							map.put("typeOfEmployment", corpObj.getEmploymentDetail().getTypeOfEmployment());
-							map.put("employmentWith", corpObj.getEmploymentDetail().getEmploymentWith());
-							map.put("employmentStatus", corpObj.getEmploymentDetail().getEmploymentStatus());
+							if(!CommonUtils.isObjectNullOrEmpty(corpObj.getEmploymentDetail().getTypeOfEmployment())) {
+								OccupationNatureNTB byIdOccupation = OccupationNatureNTB.getById(Integer.parseInt(corpObj.getEmploymentDetail().getTypeOfEmployment().toString()));
+								map.put("typeOfEmployment", !CommonUtils.isObjectNullOrEmpty(byIdOccupation) ? byIdOccupation.getValue() : "");	
+							}
+							if(!CommonUtils.isObjectNullOrEmpty(corpObj.getEmploymentDetail().getEmploymentWith())) {
+								EmploymentWithNTB byIdEmpWith = EmploymentWithNTB.getById(Integer.parseInt(corpObj.getEmploymentDetail().getEmploymentWith().toString()));
+								map.put("employmentWith", !CommonUtils.isObjectNullOrEmpty(byIdEmpWith) ? byIdEmpWith.getValue() : "");	
+							}
+							if(!CommonUtils.isObjectNullOrEmpty(corpObj.getEmploymentDetail().getEmploymentStatus())) {
+								EmploymentStatusNTB byIdEmpStatus = EmploymentStatusNTB.getById(Integer.parseInt(corpObj.getEmploymentDetail().getEmploymentStatus().toString()));
+								map.put("employmentStatus", !CommonUtils.isObjectNullOrEmpty(byIdEmpStatus) ? byIdEmpStatus.getValue() : "");	
+							}
 							map.put("totalExperience", corpObj.getEmploymentDetail().getTotalExperience());
 							}
 							
