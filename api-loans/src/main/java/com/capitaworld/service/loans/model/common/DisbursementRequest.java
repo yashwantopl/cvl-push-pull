@@ -1,5 +1,9 @@
 package com.capitaworld.service.loans.model.common;
 
+import com.capitaworld.service.loans.model.LoanDisbursementRequest;
+
+import java.util.List;
+
 public class DisbursementRequest {
 private Long  applicationId;
 private Long productMappingId;
@@ -16,6 +20,7 @@ private String loanName;
 private String fpOrganisationName;
 
 private Double senctionedAmount;
+List<LoanDisbursementRequest> loanDisbursementRequestList;
 
 public Long getApplicationId() {
 	return applicationId;
@@ -96,5 +101,13 @@ public void setFpOrganisationName(String fpOrganisationName) {
 
 	public void setSenctionedAmount(Double senctionedAmount) {
 		this.senctionedAmount = senctionedAmount;
+	}
+
+	public List<LoanDisbursementRequest> getLoanDisbursementRequestList() {
+		return loanDisbursementRequestList;
+	}
+
+	public void setLoanDisbursementRequestList(List<LoanDisbursementRequest> loanDisbursementRequestList) {
+		this.loanDisbursementRequestList = loanDisbursementRequestList;
 	}
 }
