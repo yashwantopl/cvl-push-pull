@@ -5078,7 +5078,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			setTokenAsExpired(generateTokenRequest);
 		}
 		setTokenAsExpired(generateTokenRequest);
-		return (savePrelimInfo && scoringDetails && matchesParameters && bankStatement);
+		return (savePrelimInfo && scoringDetails && matchesParameters && bankStatement && eligibilityParameters);
 	}
 		
 
