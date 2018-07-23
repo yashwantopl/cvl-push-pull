@@ -4713,6 +4713,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			LoanSanctionDomain loanSanctionDomain =loanSanctionRepository.findByAppliationId(disbursementRequest.getApplicationId());
 			if(!CommonUtils.isObjectNullOrEmpty(loanSanctionDomain) ){
 				disbursementRequest.setSenctionedAmount(loanSanctionDomain.getSanctionAmount());
+				disbursementRequest.setTenure(loanSanctionDomain.getTenure());
+				disbursementRequest.setRoi(loanSanctionDomain.getRoi());
 			}
 
 			//For List of disbursed amount

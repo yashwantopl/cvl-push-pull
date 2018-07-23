@@ -21,6 +21,10 @@ private String fpOrganisationName;
 
 private Double senctionedAmount;
 List<LoanDisbursementRequest> loanDisbursementRequestList;
+private Double tenure;
+private Double roi;
+
+
 
 public Long getApplicationId() {
 	return applicationId;
@@ -109,5 +113,21 @@ public void setFpOrganisationName(String fpOrganisationName) {
 
 	public void setLoanDisbursementRequestList(List<LoanDisbursementRequest> loanDisbursementRequestList) {
 		this.loanDisbursementRequestList = loanDisbursementRequestList;
+	}
+
+	public Double getTenure() {
+		return tenure;
+	}
+
+	public void setTenure(Double tenure) {
+		this.tenure = tenure;
+	}
+
+	public Double getRoi() {
+		return roi;
+	}
+
+	public void setRoi(Double roi) {
+		this.roi = roi;
 	}
 }
