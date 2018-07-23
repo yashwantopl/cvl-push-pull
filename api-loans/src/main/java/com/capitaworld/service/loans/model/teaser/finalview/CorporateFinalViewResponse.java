@@ -163,6 +163,7 @@ public class CorporateFinalViewResponse implements Serializable {
 	    private Object financialRiskScoreWeight;
 	    private Object buisnessRiskScoreWeight;
 	    private Object scoreInterpretation;
+	    private Long assesmentId;
 
 	public List<?> getMatchesList() {
 		return matchesList;
@@ -1484,6 +1485,20 @@ public class CorporateFinalViewResponse implements Serializable {
 	 */
 	public void setScoreInterpretation(Object scoreInterpretation) {
 		this.scoreInterpretation = scoreInterpretation;
+	}
+
+	/**
+	 * @return the assesmentId
+	 */
+	public Long getAssesmentId() {
+		return assesmentId;
+	}
+
+	/**
+	 * @param assesmentId the assesmentId to set
+	 */
+	public void setAssesmentId(Long assesmentId) {
+		this.assesmentId = assesmentId;
 	}
 	
 

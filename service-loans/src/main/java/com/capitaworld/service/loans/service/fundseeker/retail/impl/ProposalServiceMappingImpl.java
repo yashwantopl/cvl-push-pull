@@ -203,7 +203,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					}
 
 					CorporateProposalDetails corporateProposalDetails = new CorporateProposalDetails();
-
+					corporateProposalDetails.setBusinessTypeId(loanApplicationMaster.getBusinessTypeId());
 					corporateProposalDetails.setAddress(address);
 
 					if (CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getOrganisationName()))

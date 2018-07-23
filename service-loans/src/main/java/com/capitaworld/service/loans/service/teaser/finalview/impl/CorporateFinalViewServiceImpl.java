@@ -29,6 +29,7 @@ import com.capitaworld.service.dms.exception.DocumentException;
 import com.capitaworld.service.dms.model.DocumentRequest;
 import com.capitaworld.service.dms.model.DocumentResponse;
 import com.capitaworld.service.dms.util.DocumentAlias;
+import com.capitaworld.service.loans.domain.fundprovider.TermLoanParameter;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
@@ -49,6 +50,7 @@ import com.capitaworld.service.loans.model.corporate.CorporateFinalInfoRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateMcqRequest;
 import com.capitaworld.service.loans.model.corporate.TotalCostOfProjectRequest;
 import com.capitaworld.service.loans.model.teaser.finalview.CorporateFinalViewResponse;
+import com.capitaworld.service.loans.repository.fundprovider.TermLoanParameterRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
@@ -251,6 +253,9 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 
 	@Autowired
 	private ThirdPartyClient thirdPartyClient;
+	
+	@Autowired
+	private TermLoanParameterRepository termLoanParameterRepository;
 
 	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 	DecimalFormat decim = new DecimalFormat("#,###.00");
@@ -1256,12 +1261,19 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 		}
 
 		//Eligibility Data
+		TermLoanParameter termLoanParameter = termLoanParameterRepository.getById(fpProductMappingId);
+		Long assessmentId = termLoanParameter.getAssessmentMethodId().longValue();
+		if(!CommonUtils.isObjectNullOrEmpty(assessmentId)) {
+			corporateFinalViewResponse.setAssesmentId(assessmentId);
+		}
 		EligibililityRequest eligibilityReq=new EligibililityRequest();
 		eligibilityReq.setApplicationId(toApplicationId);
-		eligibilityReq.setProductId(!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getProductId()) ? Long.valueOf(primaryCorporateDetail.getProductId()) : null);
+		//eligibilityReq.set
+		eligibilityReq.setFpProductMappingId(fpProductMappingId);
 		System.out.println(" for eligibility appid============>>"+toApplicationId);
 		
 		try {
+			
 			EligibilityResponse eligibilityResp= eligibilityClient.corporateLoanData(eligibilityReq);
 //			CLEligibilityRequest cLEligibilityRequest= MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>), CLEligibilityRequest.class);
 			corporateFinalViewResponse.setEligibilityDataObject(eligibilityResp.getData());
@@ -1269,7 +1281,6 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
-			logger.info("Error while getting Loan Eligibility data");
 		}
 		
 		
