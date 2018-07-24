@@ -706,22 +706,28 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 				logger.info("==================================>11");
 				cmaDetailResponse.setAdvancePaymentsFromCustomers((Double)liabilitie.get(0)[1]);
 				logger.info("==================================>12");
+				cmaDetailResponse.setSubTotalA((Double)liabilitie.get(0)[2]);
+				logger.info("==================================>13");
+				cmaDetailResponse.setSubTotalA((Double)liabilitie.get(0)[3]);
+				logger.info("==================================>14");
 				logger.info("Successfully get from liabilitie ");
 			}
 			List<Object[]> asset =assetsDetailsRepository.getCMADetail(applicationId,"Audited");
-			logger.info("==================================>13");
+			logger.info("==================================>15");
 			if(!CommonUtils.isObjectListNull(asset)) {
-				logger.info("==================================>14");
-				cmaDetailResponse.setReceivableOtherThanDefferred((Double)asset.get(0)[0]);
-				logger.info("==================================>15");
-				cmaDetailResponse.setExportReceivables((Double)asset.get(0)[1]);
 				logger.info("==================================>16");
-				cmaDetailResponse.setInventory((Double)asset.get(0)[2]);
+				cmaDetailResponse.setReceivableOtherThanDefferred((Double)asset.get(0)[0]);
 				logger.info("==================================>17");
-				cmaDetailResponse.setAdvanceToSupplierRawMaterials((Double)asset.get(0)[3]);
+				cmaDetailResponse.setExportReceivables((Double)asset.get(0)[1]);
 				logger.info("==================================>18");
-				cmaDetailResponse.setGrossBlock((Double)asset.get(0)[4]);
+				cmaDetailResponse.setInventory((Double)asset.get(0)[2]);
 				logger.info("==================================>19");
+				cmaDetailResponse.setAdvanceToSupplierRawMaterials((Double)asset.get(0)[3]);
+				logger.info("==================================>20");
+				cmaDetailResponse.setGrossBlock((Double)asset.get(0)[4]);
+				logger.info("==================================>21");
+				cmaDetailResponse.setTotalCurrentAssets((Double)asset.get(0)[5]);
+				logger.info("==================================>22");
 				logger.info("Successfully get from asset ");
 			}
 			
