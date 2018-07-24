@@ -43,15 +43,7 @@ public class ScoringController {
 
 
     @RequestMapping(value = "/calculate_score/corporate", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LoansResponse> calculateScore(@RequestBody ScoringRequestLoans scoringRequestLoans,HttpServletRequest request) {
-
-        Long userId =  (Long) request.getAttribute(CommonUtils.USER_ID);;
-        scoringRequestLoans.setUserId(userId);
-
-        logger.info("scoringRequestLoans.getApplicationId()::::"+scoringRequestLoans.getApplicationId());
-        logger.info("scoringRequestLoans.getScoringModelId()::::"+scoringRequestLoans.getScoringModelId());
-        logger.info("scoringRequestLoans.getFpProductId()::::"+scoringRequestLoans.getFpProductId());
-        logger.info("scoringRequestLoans.getUserId()::::"+scoringRequestLoans.getUserId());
+    public ResponseEntity<LoansResponse> calculateScore(@RequestBody ScoringRequestLoans scoringRequestLoans) {
 
         if (CommonUtils.isObjectNullOrEmpty(scoringRequestLoans)
                 || CommonUtils.isObjectNullOrEmpty(scoringRequestLoans.getApplicationId())
