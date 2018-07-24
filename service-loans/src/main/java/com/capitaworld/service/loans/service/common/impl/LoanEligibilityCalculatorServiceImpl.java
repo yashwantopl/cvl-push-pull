@@ -708,7 +708,7 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 				logger.info("==================================>12");
 				cmaDetailResponse.setSubTotalA((Double)liabilitie.get(0)[2]);
 				logger.info("==================================>13");
-				cmaDetailResponse.setSubTotalA((Double)liabilitie.get(0)[3]);
+				cmaDetailResponse.setTotalCurrentLiabilities((Double)liabilitie.get(0)[3]);
 				logger.info("==================================>14");
 				logger.info("Successfully get from liabilitie ");
 			}
