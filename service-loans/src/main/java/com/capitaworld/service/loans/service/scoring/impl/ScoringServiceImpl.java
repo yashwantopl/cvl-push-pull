@@ -126,11 +126,15 @@ public class ScoringServiceImpl implements ScoringService{
 
         PrimaryCorporateDetail primaryCorporateDetail=primaryCorporateDetailRepository.findOneByApplicationIdId(scoringRequestLoans.getApplicationId());
 
-        Long businessTypeId=null;
-        if(CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getBusinessTypeId()))
-            businessTypeId=ScoreParameter.BusinessType.EXISTING_BUSINESS;
-        else
-            businessTypeId= Long.valueOf(primaryCorporateDetail.getBusinessTypeId().toString());
+        if(CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail) || CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getBusinessTypeId()))
+        {
+            logger.warn("Business type id is null or empty");
+            return new ResponseEntity<LoansResponse>(
+                    new LoansResponse("Business type id is null or empty.", HttpStatus.BAD_REQUEST.value()),
+                    HttpStatus.OK);
+        }
+
+        Long businessTypeId=primaryCorporateDetail.getBusinessTypeId().longValue();
 
         if(ScoreParameter.BusinessType.EXISTING_BUSINESS == businessTypeId)
         {
@@ -230,6 +234,7 @@ public class ScoringServiceImpl implements ScoringService{
             scoringRequest.setScoringModelId(scoreModelId);
             scoringRequest.setFpProductId(fpProductId);
             scoringRequest.setApplicationId(applicationId);
+            scoringRequest.setUserId(scoringRequestLoans.getUserId());
             scoringRequest.setBusinessTypeId(ScoreParameter.BusinessType.EXISTING_BUSINESS);
 
             // GET ALL FIELDS FOR CALCULATE SCORE BY MODEL ID
@@ -1098,6 +1103,7 @@ public class ScoringServiceImpl implements ScoringService{
             scoringRequest.setScoringModelId(scoreModelId);
             scoringRequest.setFpProductId(fpProductId);
             scoringRequest.setApplicationId(applicationId);
+            scoringRequest.setUserId(scoringRequestLoans.getUserId());
             scoringRequest.setBusinessTypeId(ScoreParameter.BusinessType.NTB);
 
             // GET ALL FIELDS FOR CALCULATE SCORE BY MODEL ID
@@ -1401,6 +1407,7 @@ public class ScoringServiceImpl implements ScoringService{
             scoringRequest.setScoringModelId(scoreModelId);
             scoringRequest.setFpProductId(fpProductId);
             scoringRequest.setApplicationId(applicationId);
+            scoringRequest.setUserId(scoringRequestLoans.getUserId());
             scoringRequest.setBusinessTypeId(ScoreParameter.BusinessType.NTB);
             scoringRequest.setDirectorId(directorBackgroundDetail.getId());
 

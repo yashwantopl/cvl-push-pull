@@ -43,12 +43,16 @@ public class ScoringController {
 
 
     @RequestMapping(value = "/calculate_score/corporate", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LoansResponse> calculateScore(@RequestBody ScoringRequestLoans scoringRequestLoans) {
+    public ResponseEntity<LoansResponse> calculateScore(@RequestBody ScoringRequestLoans scoringRequestLoans,HttpServletRequest request) {
+
+        Long userId =  (Long) request.getAttribute(CommonUtils.USER_ID);;
+        scoringRequestLoans.setUserId(userId);
 
         if (CommonUtils.isObjectNullOrEmpty(scoringRequestLoans)
                 || CommonUtils.isObjectNullOrEmpty(scoringRequestLoans.getApplicationId())
                 || CommonUtils.isObjectNullOrEmpty(scoringRequestLoans.getScoringModelId())
-                || CommonUtils.isObjectNullOrEmpty(scoringRequestLoans.getFpProductId()))
+                || CommonUtils.isObjectNullOrEmpty(scoringRequestLoans.getFpProductId())
+                || CommonUtils.isObjectNullOrEmpty(scoringRequestLoans.getUserId()))
         {
             logger.warn("request parameter is null or empty");
             return new ResponseEntity<LoansResponse>(
@@ -101,7 +105,7 @@ public class ScoringController {
 
 
     @RequestMapping(value = "/get_scoring_model_tmp_list", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ScoringModelReqRes> getScoringModelTempList(@RequestBody ScoringModelReqRes scoringModelReqRes, HttpServletRequest httpRequest, HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) throws RatingException {
+    public ResponseEntity<ScoringModelReqRes> getScoringModelTempList(@RequestBody ScoringModelReqRes scoringModelReqRes,HttpServletRequest request) throws RatingException {
 
         try {
             Long userId =  (Long) request.getAttribute(CommonUtils.USER_ID);;
