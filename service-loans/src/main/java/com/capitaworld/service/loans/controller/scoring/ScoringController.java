@@ -48,6 +48,11 @@ public class ScoringController {
         Long userId =  (Long) request.getAttribute(CommonUtils.USER_ID);;
         scoringRequestLoans.setUserId(userId);
 
+        logger.info("scoringRequestLoans.getApplicationId()::::"+scoringRequestLoans.getApplicationId());
+        logger.info("scoringRequestLoans.getScoringModelId()::::"+scoringRequestLoans.getScoringModelId());
+        logger.info("scoringRequestLoans.getFpProductId()::::"+scoringRequestLoans.getFpProductId());
+        logger.info("scoringRequestLoans.getUserId()::::"+scoringRequestLoans.getUserId());
+
         if (CommonUtils.isObjectNullOrEmpty(scoringRequestLoans)
                 || CommonUtils.isObjectNullOrEmpty(scoringRequestLoans.getApplicationId())
                 || CommonUtils.isObjectNullOrEmpty(scoringRequestLoans.getScoringModelId())
