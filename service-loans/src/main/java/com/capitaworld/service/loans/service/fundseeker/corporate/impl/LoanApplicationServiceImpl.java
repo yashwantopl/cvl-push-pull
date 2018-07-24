@@ -13,8 +13,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.service.loans.domain.sanction.LoanDisbursementDomain;
 import com.capitaworld.service.loans.domain.sanction.LoanSanctionDomain;
+import com.capitaworld.service.loans.model.*;
+import com.capitaworld.service.loans.repository.sanction.LoanDisbursementRepository;
 import com.capitaworld.service.loans.repository.sanction.LoanSanctionRepository;
+import com.capitaworld.service.loans.service.sanction.LoanDisbursementService;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -83,16 +87,6 @@ import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryLasLoanDeta
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryPersonalLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
 import com.capitaworld.service.loans.exceptions.LoansException;
-import com.capitaworld.service.loans.model.AdminPanelLoanDetailsResponse;
-import com.capitaworld.service.loans.model.CommonResponse;
-import com.capitaworld.service.loans.model.DashboardProfileResponse;
-import com.capitaworld.service.loans.model.DirectorBackgroundDetailResponse;
-import com.capitaworld.service.loans.model.FrameRequest;
-import com.capitaworld.service.loans.model.LoanApplicationDetailsForSp;
-import com.capitaworld.service.loans.model.LoanApplicationRequest;
-import com.capitaworld.service.loans.model.LoanEligibilityRequest;
-import com.capitaworld.service.loans.model.PaymentRequest;
-import com.capitaworld.service.loans.model.ReportResponse;
 import com.capitaworld.service.loans.model.common.CGTMSECalcDataResponse;
 import com.capitaworld.service.loans.model.common.ChatDetails;
 import com.capitaworld.service.loans.model.common.DisbursementRequest;
@@ -420,6 +414,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Autowired
 	private LoanSanctionRepository loanSanctionRepository;
+
+	@Autowired
+	private LoanDisbursementRepository loanDisbursementRepository;
+
+	@Autowired
+	private LoanDisbursementService loanDisbursementService;
 
  	@Override
 	public boolean saveOrUpdate(FrameRequest commonRequest, Long userId) throws Exception {
@@ -4640,8 +4640,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 			//disbursementRequest.setFpName(fundProviderDetailsRequest.getOrganizationName());
 			String fpAddress = "";
-			
-			
+
+
 			List<Long> stateList = new ArrayList<>();
 			if (!CommonUtils.isObjectNullOrEmpty(fundProviderDetailsRequest.getStateId()))
 				stateList.add(Long.valueOf(fundProviderDetailsRequest.getStateId()));
@@ -4681,9 +4681,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					e.printStackTrace();
 				}
 			}
-			
-			
-			
+
+
+
 			disbursementRequest.setFpAddress(fpAddress);
 
 			disbursementRequest.setLoanName(LoanType.getType(loanApplicationMaster.getProductId()).getName());
@@ -4709,10 +4709,17 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			}
 			disbursementRequest.setFpImage(imagePath);
 
+			//For Fetching Sanctioned amount
 			LoanSanctionDomain loanSanctionDomain =loanSanctionRepository.findByAppliationId(disbursementRequest.getApplicationId());
 			if(!CommonUtils.isObjectNullOrEmpty(loanSanctionDomain) ){
 				disbursementRequest.setSenctionedAmount(loanSanctionDomain.getSanctionAmount());
+				disbursementRequest.setTenure(loanSanctionDomain.getTenure());
+				disbursementRequest.setRoi(loanSanctionDomain.getRoi());
 			}
+
+			//For List of disbursed amount
+			disbursementRequest.setLoanDisbursementRequestList(loanDisbursementService.getDisbursedList(disbursementRequest.getApplicationId()));
+
 		} catch (Exception e) {
 			logger.warn("error while getting details of disbursement", e);
 		}
@@ -5071,7 +5078,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			setTokenAsExpired(generateTokenRequest);
 		}
 		setTokenAsExpired(generateTokenRequest);
-		return (savePrelimInfo && scoringDetails && matchesParameters && bankStatement);
+		return (savePrelimInfo && scoringDetails && matchesParameters && bankStatement && eligibilityParameters);
 	}
 		
 

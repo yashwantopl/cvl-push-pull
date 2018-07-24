@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,18 +32,19 @@ import com.capitaworld.service.dms.model.DocumentResponse;
 import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.loans.domain.fundprovider.TermLoanParameter;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
-import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
-import com.capitaworld.service.loans.model.DirectorBackgroundDetailResponse;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailResponse;
 import com.capitaworld.service.loans.model.corporate.CorporateDirectorIncomeRequest;
+import com.capitaworld.service.loans.model.corporate.FundSeekerInputRequestResponse;
 import com.capitaworld.service.loans.model.teaser.primaryview.NtbPrimaryViewResponse;
 import com.capitaworld.service.loans.repository.fundprovider.TermLoanParameterRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
+import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateDirectorIncomeService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.DirectorBackgroundDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.NTBService;
 import com.capitaworld.service.loans.service.irr.IrrService;
 import com.capitaworld.service.loans.service.teaser.primaryview.NtbTeaserViewService;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -51,11 +53,9 @@ import com.capitaworld.service.matchengine.MatchEngineClient;
 import com.capitaworld.service.matchengine.model.MatchDisplayResponse;
 import com.capitaworld.service.matchengine.model.MatchRequest;
 import com.capitaworld.service.oneform.client.OneFormClient;
-import com.capitaworld.service.oneform.enums.DirectorRelationshipType;
-import com.capitaworld.service.oneform.enums.EducationQualificationNTB;
-import com.capitaworld.service.oneform.enums.Gender;
-import com.capitaworld.service.oneform.enums.MaritalStatus;
-import com.capitaworld.service.oneform.enums.Title;
+import com.capitaworld.service.oneform.enums.ProposedConstitutionOfUnitNTB;
+import com.capitaworld.service.oneform.enums.ProposedDetailOfUnitNTB;
+import com.capitaworld.service.oneform.enums.ResidenceStatusRetailMst;
 import com.capitaworld.service.scoring.ScoringClient;
 import com.capitaworld.service.scoring.exception.ScoringException;
 import com.capitaworld.service.scoring.model.ProposalScoreResponse;
@@ -64,8 +64,6 @@ import com.capitaworld.service.scoring.model.ScoringResponse;
 import com.capitaworld.service.thirdparty.model.CGTMSEDataResponse;
 import com.capitaworld.service.thirdpaty.client.ThirdPartyClient;
 import com.capitaworld.service.users.client.UsersClient;
-import com.capitaworld.service.users.model.UserResponse;
-import com.capitaworld.service.users.model.UsersRequest;
 
 /**
  * @author nilay
@@ -122,6 +120,12 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService{
 		@Autowired
 		private TermLoanParameterRepository termLoanParameterRepository;
 		
+		@Autowired 
+		private CorporateDirectorIncomeService corporateDirectorIncomeService;
+
+		@Autowired
+	    private NTBService ntbService;
+		
 	    public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 	    DecimalFormat decim = new DecimalFormat("#,###.00");
 		/* (non-Javadoc)
@@ -133,6 +137,8 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService{
 			  NtbPrimaryViewResponse ntbPrimaryViewRespone = new NtbPrimaryViewResponse();
 		      LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(toApplicationId);
 		      ntbPrimaryViewRespone.setProductId(loanApplicationMaster.getProductId());
+//		      ntbPrimaryViewRespone.setBusinessTypeId(loanApplicationMaster.getBusinessTypeId());
+		      
 
 		        /*========= Matches Data ==========*/
 		        if (userType != null) {
@@ -141,6 +147,7 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService{
 		                    MatchRequest matchRequest = new MatchRequest();
 		                    matchRequest.setApplicationId(toApplicationId);
 		                    matchRequest.setProductId(productMappingId);
+		                    matchRequest.setBusinessTypeId(loanApplicationMaster.getBusinessTypeId());
 		                    MatchDisplayResponse matchResponse = matchEngineClient.displayMatchesOfCorporate(matchRequest);
 		                    ntbPrimaryViewRespone.setMatchesList(matchResponse.getMatchDisplayObjectList());
 		            } catch (Exception e) {
@@ -150,7 +157,50 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService{
 		           }
 		       }
 		        //DIRECTOR BACKGROUND DETAILS
-	            try {
+		        
+				try {
+					List<Map<String, Object>> directorBackgroundDetails = corporateDirectorIncomeService
+							.getDirectorBackGroundDetails(toApplicationId);
+					ntbPrimaryViewRespone.setDirectorBackGroundDetails(directorBackgroundDetails);
+
+				} catch (Exception e) {
+					logger.error("Problem to get Data of Director's Background=========> {}", e);
+				}
+				       
+			// get Director Income Details
+				        
+				try {
+					List<CorporateDirectorIncomeRequest> directorIncomeDetails = corporateDirectorIncomeService
+							.getDirectorIncomeDetails(toApplicationId);
+					ntbPrimaryViewRespone.setDirectorIncomeDetails(directorIncomeDetails);
+
+				} catch (Exception e) {
+					logger.error("Problem to get Director's Income Details===========> {}", e);
+				}
+				
+				// get Other Details
+				
+				try {
+					
+					FundSeekerInputRequestResponse fundSeekerInputRequestResponse = ntbService.getOthersDetail(toApplicationId);
+					if(!CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequestResponse.getProposedConstitutionOfUnit())) {
+						ProposedConstitutionOfUnitNTB byIdProCons = ProposedConstitutionOfUnitNTB.getById(fundSeekerInputRequestResponse.getProposedConstitutionOfUnit());
+						fundSeekerInputRequestResponse.setProposedConstitutionOfUnit(CommonUtils.isObjectNullOrEmpty(byIdProCons) ? Integer.valueOf(byIdProCons.getValue()) : null);
+					}
+					if(!CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequestResponse.getProposedDetailsOfUnit())) {
+						ProposedDetailOfUnitNTB byIdProConsDet = ProposedDetailOfUnitNTB.getById(fundSeekerInputRequestResponse.getProposedDetailsOfUnit());
+						fundSeekerInputRequestResponse.setProposedDetailsOfUnit(CommonUtils.isObjectNullOrEmpty(byIdProConsDet) ? Integer.valueOf(byIdProConsDet.getValue()) : null);
+					}
+					ntbPrimaryViewRespone.setOtherDetails(fundSeekerInputRequestResponse);
+
+				} catch (Exception e) {
+					logger.error("Problem to get Other Details===========> {}", e);
+				}
+
+		
+
+		        
+	           /* try {
 	                List<DirectorBackgroundDetailRequest> directorBackgroundDetailRequestList = directorBackgroundDetailsService.getDirectorBackgroundDetailList(toApplicationId, userId);
 	                List<DirectorBackgroundDetailResponse> directorBackgroundDetailResponseList = new ArrayList<>();
 	                for (DirectorBackgroundDetailRequest directorBackgroundDetailRequest : directorBackgroundDetailRequestList) {
@@ -187,7 +237,7 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService{
 	                ntbPrimaryViewRespone.setDirectorBackgroundDetailResponses(directorBackgroundDetailResponseList);
 	            } catch (Exception e) {
 	                logger.error("Problem to get Data of Director's Background {}", e);
-	            }
+	            }*/
 	            
 	            // get value of Financial Arrangements and set in response
 	            try {
