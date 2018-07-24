@@ -111,8 +111,9 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 			List<LoanDisbursementDomain> loanDisbursementDomainList = loanDisbursementRepository.getDisbursedListByApplicationId(applicationId);
 			if(!CommonUtils.isListNullOrEmpty(loanDisbursementDomainList)){
 				List<LoanDisbursementRequest> loanDisbursementRequestList = new ArrayList<LoanDisbursementRequest>();
-				LoanDisbursementRequest loanDisbursementRequest = new LoanDisbursementRequest();
+				LoanDisbursementRequest loanDisbursementRequest = null;
 				for(LoanDisbursementDomain loanDomainObject : loanDisbursementDomainList){
+					loanDisbursementRequest = new LoanDisbursementRequest();
 					BeanUtils.copyProperties(loanDomainObject, loanDisbursementRequest);
 					loanDisbursementRequestList.add(loanDisbursementRequest);
 				}
