@@ -623,16 +623,22 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 			scoringRequest.setApplicationId(toApplicationId);
 			scoringRequest.setFpProductId(fpProductMappingId);
 			try {
+				logger.info("Enter in get scoing data -----APPID-->"+toApplicationId+"-----FPProductId------->"+ fpProductMappingId);
 				ScoringResponse scoringResponse = scoringClient.getScore(scoringRequest);
-				ProposalScoreResponse proposalScoreResponse = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)scoringResponse.getDataObject(),ProposalScoreResponse.class);
-				corporatePrimaryViewResponse.setDataList(scoringResponse.getDataList());
-				corporatePrimaryViewResponse.setManagementRiskScore(proposalScoreResponse.getManagementRiskScore());
-				corporatePrimaryViewResponse.setFinancialRiskScore(proposalScoreResponse.getFinancialRiskScore());
-				corporatePrimaryViewResponse.setBuisnessRiskScore(proposalScoreResponse.getBusinessRiskScore());
-				corporatePrimaryViewResponse.setManagementRiskScoreWeight(proposalScoreResponse.getManagementRiskWeight());
-				corporatePrimaryViewResponse.setFinancialRiskScoreWeight(proposalScoreResponse.getFinancialRiskWeight());
-				corporatePrimaryViewResponse.setBuisnessRiskScoreWeight(proposalScoreResponse.getBusinessRiskWeight());
-				corporatePrimaryViewResponse.setScoreInterpretation(proposalScoreResponse.getInterpretation());
+				if(!CommonUtils.isObjectNullOrEmpty(scoringResponse) && !CommonUtils.isObjectNullOrEmpty(scoringResponse.getDataObject())) {
+					logger.info("Find Data From Scoring ");
+					ProposalScoreResponse proposalScoreResponse = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)scoringResponse.getDataObject(),ProposalScoreResponse.class);
+					corporatePrimaryViewResponse.setDataList(scoringResponse.getDataList());
+					corporatePrimaryViewResponse.setManagementRiskScore(CommonUtils.checkDoubleNull(proposalScoreResponse.getManagementRiskScore()));
+					corporatePrimaryViewResponse.setFinancialRiskScore(CommonUtils.checkDoubleNull(proposalScoreResponse.getFinancialRiskScore()));
+					corporatePrimaryViewResponse.setBuisnessRiskScore(CommonUtils.checkDoubleNull(proposalScoreResponse.getBusinessRiskScore()));
+					corporatePrimaryViewResponse.setManagementRiskScoreWeight(CommonUtils.checkDoubleNull(proposalScoreResponse.getManagementRiskWeight()));
+					corporatePrimaryViewResponse.setFinancialRiskScoreWeight(CommonUtils.checkDoubleNull(proposalScoreResponse.getFinancialRiskWeight()));
+					corporatePrimaryViewResponse.setBuisnessRiskScoreWeight(CommonUtils.checkDoubleNull(proposalScoreResponse.getBusinessRiskWeight()));
+					corporatePrimaryViewResponse.setScoreInterpretation(proposalScoreResponse.getInterpretation());	
+				} else {
+					logger.info("SCORING OBJECT NULL OR EMPTY -------------------->");
+				}
 			} catch (ScoringException | IOException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
