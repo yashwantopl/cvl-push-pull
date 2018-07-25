@@ -193,6 +193,14 @@ public class CorporateProduct  extends  ProductMasterRequest implements Serializ
 	
 	private Long userOrgId;
 
+	private BigDecimal minCgtmseCoverage;
+	private BigDecimal maxCgtmseCoverage;
+	private Boolean isCgtmseCoverageDisplay = false;
+	private Boolean isCgtmseCoverageMandatory = false;
+	private Boolean isMsmeFundingDisplay = false;
+	private Boolean isMsmeFundingMandatory = false;
+	private List<Integer> msmeFundingIds = Collections.emptyList();
+
 	public Integer getIndividualCibil() {
 		return individualCibil;
 	}
@@ -981,6 +989,60 @@ public class CorporateProduct  extends  ProductMasterRequest implements Serializ
 		this.appstage = appstage;
 	}
 
-	
-	
+	public BigDecimal getMinCgtmseCoverage() {
+		return minCgtmseCoverage;
+	}
+
+	public void setMinCgtmseCoverage(BigDecimal minCgtmseCoverage) {
+		this.minCgtmseCoverage = minCgtmseCoverage;
+	}
+
+	public BigDecimal getMaxCgtmseCoverage() {
+		return maxCgtmseCoverage;
+	}
+
+	public void setMaxCgtmseCoverage(BigDecimal maxCgtmseCoverage) {
+		this.maxCgtmseCoverage = maxCgtmseCoverage;
+	}
+
+
+	public List<Integer> getMsmeFundingIds() {
+		return msmeFundingIds;
+	}
+
+	public void setMsmeFundingIds(List<Integer> msmeFundingIds) {
+		this.msmeFundingIds = msmeFundingIds;
+	}
+
+	public Boolean getIsCgtmseCoverageDisplay() {
+		return isCgtmseCoverageDisplay;
+	}
+
+	public void setIsCgtmseCoverageDisplay(Boolean isCgtmseCoverageDisplay) {
+		this.isCgtmseCoverageDisplay = isCgtmseCoverageDisplay;
+	}
+
+	public Boolean getIsCgtmseCoverageMandatory() {
+		return isCgtmseCoverageMandatory;
+	}
+
+	public void setIsCgtmseCoverageMandatory(Boolean isCgtmseCoverageMandatory) {
+		this.isCgtmseCoverageMandatory = isCgtmseCoverageMandatory;
+	}
+
+	public Boolean getIsMsmeFundingDisplay() {
+		return isMsmeFundingDisplay;
+	}
+
+	public void setIsMsmeFundingDisplay(Boolean isMsmeFundingDisplay) {
+		this.isMsmeFundingDisplay = isMsmeFundingDisplay;
+	}
+
+	public Boolean getIsMsmeFundingMandatory() {
+		return isMsmeFundingMandatory;
+	}
+
+	public void setIsMsmeFundingMandatory(Boolean isMsmeFundingMandatory) {
+		this.isMsmeFundingMandatory = isMsmeFundingMandatory;
+	}
 }
