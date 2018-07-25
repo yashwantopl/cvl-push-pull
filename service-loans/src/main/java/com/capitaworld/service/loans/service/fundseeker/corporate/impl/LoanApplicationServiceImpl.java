@@ -13,12 +13,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.capitaworld.service.loans.domain.sanction.LoanDisbursementDomain;
-import com.capitaworld.service.loans.domain.sanction.LoanSanctionDomain;
-import com.capitaworld.service.loans.model.*;
-import com.capitaworld.service.loans.repository.sanction.LoanDisbursementRepository;
-import com.capitaworld.service.loans.repository.sanction.LoanSanctionRepository;
-import com.capitaworld.service.loans.service.sanction.LoanDisbursementService;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,6 +48,7 @@ import com.capitaworld.service.gateway.client.GatewayClient;
 import com.capitaworld.service.gateway.model.GatewayRequest;
 import com.capitaworld.service.loans.config.AuditComponent;
 import com.capitaworld.service.loans.config.MCAAsyncComponent;
+import com.capitaworld.service.loans.domain.common.AuditMaster;
 import com.capitaworld.service.loans.domain.fundprovider.ProductMaster;
 import com.capitaworld.service.loans.domain.fundseeker.ApplicationStatusMaster;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
@@ -86,7 +81,18 @@ import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryLapLoanDeta
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryLasLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryPersonalLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
+import com.capitaworld.service.loans.domain.sanction.LoanSanctionDomain;
 import com.capitaworld.service.loans.exceptions.LoansException;
+import com.capitaworld.service.loans.model.AdminPanelLoanDetailsResponse;
+import com.capitaworld.service.loans.model.CommonResponse;
+import com.capitaworld.service.loans.model.DashboardProfileResponse;
+import com.capitaworld.service.loans.model.DirectorBackgroundDetailResponse;
+import com.capitaworld.service.loans.model.FrameRequest;
+import com.capitaworld.service.loans.model.LoanApplicationDetailsForSp;
+import com.capitaworld.service.loans.model.LoanApplicationRequest;
+import com.capitaworld.service.loans.model.LoanEligibilityRequest;
+import com.capitaworld.service.loans.model.PaymentRequest;
+import com.capitaworld.service.loans.model.ReportResponse;
 import com.capitaworld.service.loans.model.common.CGTMSECalcDataResponse;
 import com.capitaworld.service.loans.model.common.ChatDetails;
 import com.capitaworld.service.loans.model.common.DisbursementRequest;
@@ -126,17 +132,21 @@ import com.capitaworld.service.loans.repository.fundseeker.retail.GuarantorDetai
 import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryHomeLoanDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryLapLoanDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
+import com.capitaworld.service.loans.repository.sanction.LoanDisbursementRepository;
+import com.capitaworld.service.loans.repository.sanction.LoanSanctionRepository;
 import com.capitaworld.service.loans.service.ProposalService;
 import com.capitaworld.service.loans.service.common.ApplicationSequenceService;
 import com.capitaworld.service.loans.service.common.DashboardService;
 import com.capitaworld.service.loans.service.common.LogService;
 import com.capitaworld.service.loans.service.fundprovider.OrganizationReportsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.CMAService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateCoApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateUploadService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.DDRFormService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.service.irr.IrrService;
 import com.capitaworld.service.loans.service.networkpartner.NetworkPartnerService;
+import com.capitaworld.service.loans.service.sanction.LoanDisbursementService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.CommonUtils.LoanType;
@@ -220,6 +230,7 @@ import com.capitaworld.sidbi.integration.model.SecurityCorporateDetailRequest;
 import com.capitaworld.sidbi.integration.model.TotalCostOfProjectRequest;
 import com.capitaworld.sidbi.integration.model.ddr.DDRFormDetailsRequest;
 import com.capitaworld.sidbi.integration.model.eligibility.EligibilityDetailRequest;
+import com.capitaworld.sidbi.integration.model.financial.FinancialRequest;
 import com.capitaworld.sidbi.integration.model.irr.IRROutputManufacturingRequest;
 import com.capitaworld.sidbi.integration.model.irr.IRROutputServiceRequest;
 import com.capitaworld.sidbi.integration.model.irr.IRROutputTradingRequest;
@@ -348,6 +359,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	
 	@Autowired
 	private AssociatedConcernDetailRepository associatedConcernDetailRepository;
+	
+	@Autowired
+	private CMAService cmaService;
 	
 	@Value("${capitaworld.service.gateway.product}")
 	private String product;
@@ -4917,154 +4931,204 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		Boolean matchesParameters = false;
 		Boolean eligibilityParameters = false;
 		Boolean bankStatement = false;
+		Boolean saveFinancialDetails = false;
 		try {
-			
-			//Create Prelim Sheet Object	
-			ProfileReqRes prelimData = getPrelimData(applicationId,userId);
-			if(prelimData == null) {
-				logger.info("ProfileReqRes ==> Prelim Sheet Object is Null in savePhese1DataToSidbi() ");
-				auditComponent.updateAudit(AuditComponent.PRELIM_INFO, applicationId, userId, "ProfileReqRes ==> Prelim Sheet Object is Null ProfileReqRes prelimData  ==> " + prelimData,  savePrelimInfo);
-				setTokenAsExpired(generateTokenRequest);
-				return false;
-			}
-			try {
-				logger.info("Start Saving ProfileReqRes in savePhese1DataToSidbi() ");
-				savePrelimInfo = sidbiIntegrationClient.savePrelimInfo(prelimData,generateTokenRequest.getToken());
-				logger.info("Sucessfull Saved ProfileReqRes in savePhese1DataToSidbi() ");
-				auditComponent.updateAudit(AuditComponent.PRELIM_INFO, applicationId, userId, null,  savePrelimInfo);
-			}catch(Exception e) {
-				logger.info("Exception while saving ProfileReqRes in savePhese1DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",applicationId,fpProductMappingId +" Mgs " +e.getMessage());
-				auditComponent.updateAudit(AuditComponent.PRELIM_INFO, applicationId, userId,  "Exception while saving ProfileReqRes in savePhese1DataToSidbi() ==> for ApplicationId  ====>{}}"+applicationId +" Mgs " +e.getMessage() ,savePrelimInfo);
-				e.printStackTrace();
-				setTokenAsExpired(generateTokenRequest);
-			}
-			//Set Match Parameters Starts
-			try {
-				MatchesParameterRequest parameterRequest = createMatchesParameterRequest(applicationId, fpProductMappingId);
-				if(parameterRequest == null) {
-					logger.info("MatchesParameterRequest Not Found in savePhese1DataToSidbi() ==> for ApplicationId ====>{}FpProductId====>{}",applicationId,fpProductMappingId);
-					auditComponent.updateAudit(AuditComponent.MATCHES_PARAMETER, applicationId, userId, "MatchesParameterRequest Not Found for ApplicationId ====>{} "+applicationId+" FpProductId====>{} "+fpProductMappingId , matchesParameters);
+			AuditMaster audit = auditComponent.getAudit(applicationId, true, AuditComponent.PRELIM_INFO);
+			if(audit == null) {
+				//Create Prelim Sheet Object	
+				ProfileReqRes prelimData = getPrelimData(applicationId,userId);
+				if(prelimData == null) {
+					logger.info("ProfileReqRes ==> Prelim Sheet Object is Null in savePhese1DataToSidbi() ");
+					auditComponent.updateAudit(AuditComponent.PRELIM_INFO, applicationId, userId, "ProfileReqRes ==> Prelim Sheet Object is Null ProfileReqRes prelimData  ==> " + prelimData,  savePrelimInfo);
 					setTokenAsExpired(generateTokenRequest);
 					return false;
-				}else {
-					logger.error("Start Saving MatchesParameterRequest in savePhese1DataToSidbi() ");
-					matchesParameters = sidbiIntegrationClient.saveMatchesParameter(parameterRequest,generateTokenRequest.getToken());
-					logger.info("Sucessfully save MatchesParameterRequest in savePhese1DataToSidbi()  ====>{}FpProductId====>{}",applicationId,fpProductMappingId);
-					auditComponent.updateAudit(AuditComponent.MATCHES_PARAMETER, applicationId, userId,null , matchesParameters);					
 				}
-			}catch(Exception e) {
-				e.printStackTrace();
-				logger.info("Exception in  MatchesParameterRequest in savePhese1DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",applicationId,fpProductMappingId +" Mgs " +e.getMessage());
-				auditComponent.updateAudit(AuditComponent.MATCHES_PARAMETER, applicationId, userId, "Exception in  MatchesParameterRequest in savePhese1DataToSidbi()  ====>{}applicationId "+applicationId+" Msg ==> "+e.getMessage(),  matchesParameters);
-				setTokenAsExpired(generateTokenRequest);
+				try {
+						logger.info("Start Saving ProfileReqRes in savePhese1DataToSidbi() ");
+						savePrelimInfo = sidbiIntegrationClient.savePrelimInfo(prelimData,generateTokenRequest.getToken());
+						logger.info("Sucessfull Saved ProfileReqRes in savePhese1DataToSidbi() ");
+						auditComponent.updateAudit(AuditComponent.PRELIM_INFO, applicationId, userId, null,  savePrelimInfo);					
+				}catch(Exception e) {
+					logger.info("Exception while saving ProfileReqRes in savePhese1DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",applicationId,fpProductMappingId +" Mgs " +e.getMessage());
+					auditComponent.updateAudit(AuditComponent.PRELIM_INFO, applicationId, userId,  "Exception while saving ProfileReqRes in savePhese1DataToSidbi() ==> for ApplicationId  ====>{}}"+applicationId +" Mgs " +e.getMessage() ,savePrelimInfo);
+					e.printStackTrace();
+					setTokenAsExpired(generateTokenRequest);
+					return false;
+				}
+				
+			}else {
+				logger.info("PrelimInfo Already Saved so not Going to Save Again===>");
 			}
 			
+			
+			
+			//Set Match Parameters Starts
+			audit = auditComponent.getAudit(applicationId, true, AuditComponent.MATCHES_PARAMETER);
+			if(audit == null) {
+				try {
+					MatchesParameterRequest parameterRequest = createMatchesParameterRequest(applicationId, fpProductMappingId);
+					if(parameterRequest == null) {
+						logger.info("MatchesParameterRequest Not Found in savePhese1DataToSidbi() ==> for ApplicationId ====>{}FpProductId====>{}",applicationId,fpProductMappingId);
+						auditComponent.updateAudit(AuditComponent.MATCHES_PARAMETER, applicationId, userId, "MatchesParameterRequest Not Found for ApplicationId ====>{} "+applicationId+" FpProductId====>{} "+fpProductMappingId , matchesParameters);
+						setTokenAsExpired(generateTokenRequest);
+						return false;
+					}else {
+							logger.error("Start Saving MatchesParameterRequest in savePhese1DataToSidbi() ");
+							matchesParameters = sidbiIntegrationClient.saveMatchesParameter(parameterRequest,generateTokenRequest.getToken());
+							logger.info("Sucessfully save MatchesParameterRequest in savePhese1DataToSidbi()  ====>{}FpProductId====>{}",applicationId,fpProductMappingId);
+							auditComponent.updateAudit(AuditComponent.MATCHES_PARAMETER, applicationId, userId,null , matchesParameters);
+					}
+				}catch(Exception e) {
+					e.printStackTrace();
+					logger.info("Exception in  MatchesParameterRequest in savePhese1DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",applicationId,fpProductMappingId +" Mgs " +e.getMessage());
+					auditComponent.updateAudit(AuditComponent.MATCHES_PARAMETER, applicationId, userId, "Exception in  MatchesParameterRequest in savePhese1DataToSidbi()  ====>{}applicationId "+applicationId+" Msg ==> "+e.getMessage(),  matchesParameters);
+					setTokenAsExpired(generateTokenRequest);
+				}	
+			}else {
+				logger.info("Matches Parameters Already Saved so not Going to Save Again===>");	
+			}
 			//Set Match Parameters Ends
 			
 			
 			//Set Bank Statement Starts
-			try {
-				com.capitaworld.sidbi.integration.model.bankstatement.Data data = createBankStatementRequest(applicationId);
-				if(data == null) {
-					logger.info("Bank Statement data Request Not Found  in savePhese1DataToSidbi()   for ApplicationId ====>{}FpProductId====>{}",applicationId,fpProductMappingId);
-					auditComponent.updateAudit(AuditComponent.BANK_STATEMENT, applicationId, userId, "\"Bank Statement data Request Not Found for ApplicationId ====>{} "+applicationId + "FpProductId====>{}"+fpProductMappingId,  bankStatement);
+			audit = auditComponent.getAudit(applicationId, true, AuditComponent.BANK_STATEMENT);
+			if(audit == null) {
+				try {
+					com.capitaworld.sidbi.integration.model.bankstatement.Data data = createBankStatementRequest(applicationId);
+					if(data == null) {
+						logger.info("Bank Statement data Request Not Found  in savePhese1DataToSidbi()   for ApplicationId ====>{}FpProductId====>{}",applicationId,fpProductMappingId);
+						auditComponent.updateAudit(AuditComponent.BANK_STATEMENT, applicationId, userId, "\"Bank Statement data Request Not Found for ApplicationId ====>{} "+applicationId + "FpProductId====>{}"+fpProductMappingId,  bankStatement);
+						setTokenAsExpired(generateTokenRequest);
+						return false;
+					}else {
+						logger.info("Start Saving BankStatemetnRequest in savePhese1DataToSidbi() ");
+						bankStatement = sidbiIntegrationClient.saveBankStatement(data,generateTokenRequest.getToken());
+						logger.info("Sucessfully save BankStatemetnRequest in savePhese1DataToSidbi()  ====>{}FpProductId====>{}",applicationId,fpProductMappingId);
+						auditComponent.updateAudit(AuditComponent.BANK_STATEMENT, applicationId, userId, null, bankStatement);					
+					}
+				}catch(Exception e) {
+					logger.error("Exception in  BankStatementRequest in savePhese1DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",applicationId,fpProductMappingId +" Mgs " +e.getMessage());
+					e.printStackTrace();
+					auditComponent.updateAudit(AuditComponent.BANK_STATEMENT, applicationId, userId, "Exception in  BankStatementRequest in savePhese1DataToSidbi() ==> for applicationId====>{} "+applicationId+" Msg ==> "+e.getMessage() ,bankStatement);
 					setTokenAsExpired(generateTokenRequest);
-					return false;
-				}else {
-					logger.info("Start Saving BankStatemetnRequest in savePhese1DataToSidbi() ");
-					bankStatement = sidbiIntegrationClient.saveBankStatement(data,generateTokenRequest.getToken());
-					logger.info("Sucessfully save BankStatemetnRequest in savePhese1DataToSidbi()  ====>{}FpProductId====>{}",applicationId,fpProductMappingId);
-					auditComponent.updateAudit(AuditComponent.BANK_STATEMENT, applicationId, userId, null, bankStatement);					
 				}
-			}catch(Exception e) {
-				logger.error("Exception in  BankStatementRequest in savePhese1DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",applicationId,fpProductMappingId +" Mgs " +e.getMessage());
-				e.printStackTrace();
-				auditComponent.updateAudit(AuditComponent.BANK_STATEMENT, applicationId, userId, "Exception in  BankStatementRequest in savePhese1DataToSidbi() ==> for applicationId====>{} "+applicationId+" Msg ==> "+e.getMessage() ,bankStatement);
-				setTokenAsExpired(generateTokenRequest);
+			}else {
+				logger.info("Bank Statement Already Saved so not Going to Save Again===>");
 			}
-			
 			//Set Bank Statement Ends
 			
-			//Set Bank Statement Starts
-			try {
-				 EligibilityDetailRequest eligibilityRequest = createEligibilityRequest(applicationId);
-				if(eligibilityRequest == null) {
-					logger.info("Eligibiity data Request Not Found  in savePhese1DataToSidbi()  for ApplicationId ====>{}FpProductId====>{}",applicationId,fpProductMappingId);
-					auditComponent.updateAudit(AuditComponent.ELIGIBILITY, applicationId, userId, "Eligibiity data Request Not Found for ApplicationId ====>{} "+applicationId+"FpProductId====>{}"+fpProductMappingId, eligibilityParameters);
-					setTokenAsExpired(generateTokenRequest);
-					return false;
-				}else {
-					logger.error("Start Saving EligibilityDetailRequest in savePhese1DataToSidbi() ");
-					eligibilityParameters = sidbiIntegrationClient.saveEligibilityDetails(eligibilityRequest,generateTokenRequest.getToken());
-					logger.error("Sucessfully save EligibilityDetailRequest in savePhese1DataToSidbi() for  ApplicationId ====>{}FpProductId====>{}",applicationId,fpProductMappingId);
-					auditComponent.updateAudit(AuditComponent.ELIGIBILITY, applicationId, userId, null, eligibilityParameters);
-				}
-			}catch(Exception e) {
-				logger.info("Exception in  EligibilityDetailRequest in savePhese1DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",applicationId,fpProductMappingId +" Mgs " +e.getMessage());
-				e.printStackTrace();
-				auditComponent.updateAudit(AuditComponent.ELIGIBILITY, applicationId, userId, "Exception in  EligibilityDetailRequest in savePhese1DataToSidbi() ==> for ApplicationId  ====>{} " +applicationId +" Msg ==> "+ e.getMessage() , eligibilityParameters);
-				setTokenAsExpired(generateTokenRequest);
-			}
 			
+			
+			//Set Eligibility Starts
+			
+			audit = auditComponent.getAudit(applicationId, true, AuditComponent.ELIGIBILITY);
+			if(audit == null) {
+				try {
+					 EligibilityDetailRequest eligibilityRequest = createEligibilityRequest(applicationId);
+					if(eligibilityRequest == null) {
+						logger.info("Eligibiity data Request Not Found  in savePhese1DataToSidbi()  for ApplicationId ====>{}FpProductId====>{}",applicationId,fpProductMappingId);
+						auditComponent.updateAudit(AuditComponent.ELIGIBILITY, applicationId, userId, "Eligibiity data Request Not Found for ApplicationId ====>{} "+applicationId+"FpProductId====>{}"+fpProductMappingId, eligibilityParameters);
+						setTokenAsExpired(generateTokenRequest);
+						return false;
+					}else {
+						logger.error("Start Saving EligibilityDetailRequest in savePhese1DataToSidbi() ");
+						eligibilityParameters = sidbiIntegrationClient.saveEligibilityDetails(eligibilityRequest,generateTokenRequest.getToken());
+						logger.error("Sucessfully save EligibilityDetailRequest in savePhese1DataToSidbi() for  ApplicationId ====>{}FpProductId====>{}",applicationId,fpProductMappingId);
+						auditComponent.updateAudit(AuditComponent.ELIGIBILITY, applicationId, userId, null, eligibilityParameters);
+					}
+				}catch(Exception e) {
+					logger.info("Exception in  EligibilityDetailRequest in savePhese1DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",applicationId,fpProductMappingId +" Mgs " +e.getMessage());
+					e.printStackTrace();
+					auditComponent.updateAudit(AuditComponent.ELIGIBILITY, applicationId, userId, "Exception in  EligibilityDetailRequest in savePhese1DataToSidbi() ==> for ApplicationId  ====>{} " +applicationId +" Msg ==> "+ e.getMessage() , eligibilityParameters);
+					setTokenAsExpired(generateTokenRequest);
+				}
+			}else {
+				logger.info("Eligibility Already Saved so not Going to Save Again===>");
+			}
 			//Set Eligibility Ends
 			
-			// TODO Auto-generated method stub
-	        ProposalMappingRequest proposalMappingRequest = new ProposalMappingRequest();
-	        proposalMappingRequest.setApplicationId(applicationId);
-	        ProposalMappingResponse proposalMappingResponse = proposalService.listOfFundSeekerProposal(proposalMappingRequest);
-	        if(!CommonUtils.isObjectListNull(proposalMappingResponse) && !CommonUtils.isObjectListNull(proposalMappingResponse.getDataList())){
-				Long productId=null;
-	        	List<Map<String, Object>> proposalMappingResponseDataList = (List<Map<String, Object>>) proposalMappingResponse.getDataList();
-				try {
-					ProposalMappingRequest proposalMappingRequest1 = MultipleJSONObjectHelper.getObjectFromMap(proposalMappingResponseDataList.get(0),
-	                        ProposalMappingRequest.class);
-					productId = proposalMappingRequest1.getFpProductId();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-				ScoringRequest scoringRequest = new ScoringRequest();
-	            scoringRequest.setApplicationId(applicationId);
-	            scoringRequest.setFpProductId(productId);
-				try {
-					ScoringResponse scoringResponse = scoringClient.getScoreResult(scoringRequest);
-					if(!CommonUtils.isObjectListNull(scoringResponse.getDataObject())){
-						try {
-							ScoreParameterResult scoreParameterResult = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) scoringResponse.getDataObject(),
-	                                ScoreParameterResult.class);
-							if(scoreParameterResult == null) {
-								logger.info("scoreParameterResult  data Request Not Found  in savePhese1DataToSidbi()  for ApplicationId ====>{} FpProductId====>{}",applicationId,fpProductMappingId);
-								auditComponent.updateAudit(AuditComponent.SCORING_DETAILS, applicationId, userId, "Eligibiity data Request Not Found for ApplicationId ====>{} "+applicationId+"FpProductId====>{}"+fpProductMappingId, eligibilityParameters);
-								setTokenAsExpired(generateTokenRequest);
-								return false;
-							}
-							ScoreParameterDetailsRequest scoreParameterDetailsRequest = new ScoreParameterDetailsRequest();
-							BeanUtils.copyProperties(scoreParameterResult,scoreParameterDetailsRequest);
+			audit = auditComponent.getAudit(applicationId, true, AuditComponent.SCORING_DETAILS);
+			if(audit == null) {
+				// TODO Auto-generated method stub
+		        ProposalMappingRequest proposalMappingRequest = new ProposalMappingRequest();
+		        proposalMappingRequest.setApplicationId(applicationId);
+		        ProposalMappingResponse proposalMappingResponse = proposalService.listOfFundSeekerProposal(proposalMappingRequest);
+		        if(!CommonUtils.isObjectListNull(proposalMappingResponse) && !CommonUtils.isObjectListNull(proposalMappingResponse.getDataList())){
+					Long productId=null;
+		        	List<Map<String, Object>> proposalMappingResponseDataList = (List<Map<String, Object>>) proposalMappingResponse.getDataList();
+					try {
+						ProposalMappingRequest proposalMappingRequest1 = MultipleJSONObjectHelper.getObjectFromMap(proposalMappingResponseDataList.get(0),
+		                        ProposalMappingRequest.class);
+						productId = proposalMappingRequest1.getFpProductId();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+					ScoringRequest scoringRequest = new ScoringRequest();
+		            scoringRequest.setApplicationId(applicationId);
+		            scoringRequest.setFpProductId(productId);
+					try {
+						ScoringResponse scoringResponse = scoringClient.getScoreResult(scoringRequest);
+						if(!CommonUtils.isObjectListNull(scoringResponse.getDataObject())){
 							try {
-								logger.error("Start Saving ScoreParameterDetailsRequest in savePhese1DataToSidbi() ");
-								scoringDetails = sidbiIntegrationClient.saveScoringDetails(scoreParameterDetailsRequest,generateTokenRequest.getToken());
-								logger.info("Sucessfully save ScoreParameterDetailsRequest in savePhese1DataToSidbi() for  ApplicationId ====>{}FpProductId====>{}",applicationId,fpProductMappingId);
-								auditComponent.updateAudit(AuditComponent.SCORING_DETAILS, applicationId, userId,null , scoringDetails);
-							} catch (Exception e) {
-								logger.info("Exception in  ScoreParameterDetailsRequest in savePhese1DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",applicationId,fpProductMappingId +" Mgs " +e.getMessage());
-								auditComponent.updateAudit(AuditComponent.SCORING_DETAILS, applicationId, userId,"Exception in  EligibilityDetailRequest in savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "+applicationId+" Mgs " +e.getMessage() ,scoringDetails);
+								ScoreParameterResult scoreParameterResult = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) scoringResponse.getDataObject(),
+		                                ScoreParameterResult.class);
+								if(scoreParameterResult == null) {
+									logger.info("scoreParameterResult  data Request Not Found  in savePhese1DataToSidbi()  for ApplicationId ====>{} FpProductId====>{}",applicationId,fpProductMappingId);
+									auditComponent.updateAudit(AuditComponent.SCORING_DETAILS, applicationId, userId, "Eligibiity data Request Not Found for ApplicationId ====>{} "+applicationId+"FpProductId====>{}"+fpProductMappingId, eligibilityParameters);
+									setTokenAsExpired(generateTokenRequest);
+									return false;
+								}
+								ScoreParameterDetailsRequest scoreParameterDetailsRequest = new ScoreParameterDetailsRequest();
+								BeanUtils.copyProperties(scoreParameterResult,scoreParameterDetailsRequest);
+								try {
+									logger.error("Start Saving ScoreParameterDetailsRequest in savePhese1DataToSidbi() ");
+									scoringDetails = sidbiIntegrationClient.saveScoringDetails(scoreParameterDetailsRequest,generateTokenRequest.getToken());
+									logger.info("Sucessfully save ScoreParameterDetailsRequest in savePhese1DataToSidbi() for  ApplicationId ====>{}FpProductId====>{}",applicationId,fpProductMappingId);
+									auditComponent.updateAudit(AuditComponent.SCORING_DETAILS, applicationId, userId,null , scoringDetails);
+								} catch (Exception e) {
+									logger.info("Exception in  ScoreParameterDetailsRequest in savePhese1DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",applicationId,fpProductMappingId +" Mgs " +e.getMessage());
+									auditComponent.updateAudit(AuditComponent.SCORING_DETAILS, applicationId, userId,"Exception in  EligibilityDetailRequest in savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "+applicationId+" Mgs " +e.getMessage() ,scoringDetails);
+									e.printStackTrace();
+									setTokenAsExpired(generateTokenRequest);
+								}
+							} catch (IOException e) {
+								logger.info("Exception while getting Object from Map in savePhese1DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",applicationId,fpProductMappingId +" Mgs " +e.getMessage());
 								e.printStackTrace();
 								setTokenAsExpired(generateTokenRequest);
 							}
-						} catch (IOException e) {
-							logger.info("Exception while getting Object from Map in savePhese1DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",applicationId,fpProductMappingId +" Mgs " +e.getMessage());
-							e.printStackTrace();
-							setTokenAsExpired(generateTokenRequest);
+						}else {
+							//setTokenAsExpired(generateTokenRequest);
 						}
-					}else {
-						//setTokenAsExpired(generateTokenRequest);
+					} catch (ScoringException e) {
+						logger.info("Exception while getting ScoringResponse from ScoringClient in savePhese1DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",applicationId,fpProductMappingId +" Mgs " +e.getMessage());
+						auditComponent.updateAudit(AuditComponent.SCORING_DETAILS, applicationId, userId, "Exception while getting ScoringResponse from ScoringClient in savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "+applicationId+" Mgs " +e.getMessage(), false);
+						e.printStackTrace();
+						setTokenAsExpired(generateTokenRequest);
 					}
-				} catch (ScoringException e) {
-					logger.info("Exception while getting ScoringResponse from ScoringClient in savePhese1DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",applicationId,fpProductMappingId +" Mgs " +e.getMessage());
-					auditComponent.updateAudit(AuditComponent.SCORING_DETAILS, applicationId, userId, "Exception while getting ScoringResponse from ScoringClient in savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "+applicationId+" Mgs " +e.getMessage(), false);
-					e.printStackTrace();
-					setTokenAsExpired(generateTokenRequest);
 				}
+			}else {
+				logger.info("Scoring Already Saved so not Going to Save Again===>");
 			}
+			
+			//Saving Financial Details Starts
+			audit = auditComponent.getAudit(applicationId, true, AuditComponent.FINANCIAL);
+			if(audit == null) {
+				FinancialRequest financialDetails = cmaService.getFinancialDetailsForBankIntegration(applicationId);
+				if(financialDetails == null) {
+					logger.info("Financial Request Not Found  in savePhese1DataToSidbi()  for ApplicationId ====>{}FpProductId====>{}",applicationId,fpProductMappingId);
+					auditComponent.updateAudit(AuditComponent.FINANCIAL, applicationId, userId, "Eligibiity data Request Not Found for ApplicationId ====>{} "+applicationId+"FpProductId====>{}"+fpProductMappingId, false);
+					setTokenAsExpired(generateTokenRequest);
+					return false;
+				}else {
+					logger.error("Start Saving FinancialRequest in savePhese1DataToSidbi() ");
+					saveFinancialDetails = sidbiIntegrationClient.saveFinancialDetails(financialDetails, generateTokenRequest.getToken());
+					logger.info("Sucessfully save FinancialRequest in savePhese1DataToSidbi() for  ApplicationId ====>{}FpProductId====>{}Flag==>{}",applicationId,fpProductMappingId,saveFinancialDetails);
+					auditComponent.updateAudit(AuditComponent.FINANCIAL, applicationId, userId, null, eligibilityParameters);
+				}
+			}else {
+				logger.info("Financial Details Already Saved so not Going to Save Again===>");
+			}
+			//Saving Financial Details Ends
 		
 		} catch (Exception e) {
 			logger.info("Exception while Saving Requests  in savePhese1DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",applicationId,fpProductMappingId +" Mgs " +e.getMessage());
@@ -5073,6 +5137,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			auditComponent.updateAudit(AuditComponent.BANK_STATEMENT, applicationId, userId, "Exception while saving BankStatemnt in savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "+applicationId+" Mgs " +e.getMessage(), false);
 			auditComponent.updateAudit(AuditComponent.MATCHES_PARAMETER, applicationId, userId, "Exception while saving MatchesparameterRequest in savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "+applicationId+" Mgs " +e.getMessage(),false);
 			auditComponent.updateAudit(AuditComponent.ELIGIBILITY, applicationId, userId, "Exception while saving EligibiliyDetsilRequest in savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "+applicationId+" Mgs " +e.getMessage() ,false);
+			auditComponent.updateAudit(AuditComponent.FINANCIAL, applicationId, userId, "Exception while Saving  Financial Details by sidbiIntegrationClient   in savePhese2DataToSidbi() ==> for ApplicationId  ====>{} "+applicationId+" Mgs " +e.getMessage() , false);
 			logger.info("Throw Exception While Saving Phase one For SIDBI");
 			e.printStackTrace();
 			setTokenAsExpired(generateTokenRequest);
@@ -5101,46 +5166,56 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		Boolean saveDetailsInfo = false;
 		Boolean saveDDRInfo = false;
 		Boolean saveIRRInfo = false;
+		PrimaryCorporateDetail applicationMaster = null;
 		try {
-			logger.info("Start savePhese2DataToSidbi()==>");
-			PrimaryCorporateDetail applicationMaster = primaryCorporateRepository.findOneByApplicationIdId(applicationId);
-			if(applicationMaster == null) {
-				logger.info("Loan Application Found Null====>{}",applicationId);
-				auditComponent.updateAudit(AuditComponent.DETAILED_INFO, applicationId, applicationMaster !=null ? applicationMaster.getUserId() : null,"Loan Application Found Null====>{} " +applicationId  , saveDetailsInfo);
-				setTokenAsExpired(generateTokenRequest);
-				return false;
-			}
-			userId = applicationMaster.getUserId();
-			ProfileReqRes profileReqRes = new  ProfileReqRes();
-			//Create Corporate Profile Object
-			CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository.findOneByApplicationIdId(applicationId);
-			if(corporateApplicantDetail != null) {
-				profileReqRes.setCorporateProfileRequest(createProfileObj(corporateApplicantDetail,applicationMaster.getUserId()));
-				
-				//Save Achievement
-				profileReqRes.setAchievementList(getAchievementDetaisForSidbi(applicationId));
-				profileReqRes.setExPrList(getExistingProductForSidbi(applicationId));
-				profileReqRes.setProposedProdList(getProposedProductForSidbi(applicationId));
-				profileReqRes.setOwnerShipDetailsList(getOwnershipDetailForSidbi(applicationId));
-				profileReqRes.setCreditRatingOrgList(getCreditRatingDetailForSidbi(applicationId));
-				profileReqRes.setGuaDetailList(getGuarantorDetailsForSidbi(applicationId));
-				profileReqRes.setAssociateConcernList(getAssociatedConcernForSidbi(applicationId));
-				profileReqRes.setMonTurnoverList(getMonthlyTurnOverForSidbi(applicationId));
-				profileReqRes.setLoanMasterRequest(createObj(applicationMaster));
-				profileReqRes.setCostOfProjectRequestsList(getTotalCostOfProjectRequestsList(applicationId, userId));
-				profileReqRes.setFinanceMeansDetailRequestsList(getFinanceMeansDetailRequestList(applicationId, userId));
-				profileReqRes.setSecurityCorporateDetailRequestsList(getSecurityCorporateDetailRequestList(applicationId, userId));
-				try {
-					logger.info("Going to Save Detailed Infor==>");
-					saveDetailsInfo = sidbiIntegrationClient.saveDetailedInfo(profileReqRes,generateTokenRequest.getToken());	
-					auditComponent.updateAudit(AuditComponent.DETAILED_INFO, applicationId, applicationMaster.getUserId(), null, saveDetailsInfo);
-				}catch(Exception e) {
-					logger.info("Exception while Saving profileReqRes by sidbiIntegrationClient   in savePhese2DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",applicationId,fpProductMappingId +" Mgs " +e.getMessage());
-					auditComponent.updateAudit(AuditComponent.DETAILED_INFO, applicationId, applicationMaster.getUserId(),"Exception while Saving profileReqRes from SidbiIntegrationClient  in savePhese2DataToSidbi() ==> for ApplicationId  ====>{} "+applicationId +" Msg ==> "+e.getMessage() ,  false);
-					e.printStackTrace();
-					logger.info("Error while Calling Client====>");
+			AuditMaster audit = auditComponent.getAudit(applicationId, true, AuditComponent.DETAILED_INFO);
+			if(audit == null) {
+				logger.info("Start savePhese2DataToSidbi()==>");
+				applicationMaster = primaryCorporateRepository.findOneByApplicationIdId(applicationId);
+				if(applicationMaster == null) {
+					logger.info("Loan Application Found Null====>{}",applicationId);
+					auditComponent.updateAudit(AuditComponent.DETAILED_INFO, applicationId, applicationMaster !=null ? applicationMaster.getUserId() : null,"Loan Application Found Null====>{} " +applicationId  , saveDetailsInfo);
 					setTokenAsExpired(generateTokenRequest);
+					return false;
 				}
+				userId = applicationMaster.getUserId();
+				ProfileReqRes profileReqRes = new  ProfileReqRes();
+				//Create Corporate Profile Object
+				CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository.findOneByApplicationIdId(applicationId);
+				if(corporateApplicantDetail != null) {
+					profileReqRes.setCorporateProfileRequest(createProfileObj(corporateApplicantDetail,applicationMaster.getUserId()));
+					
+					//Save Achievement
+					profileReqRes.setAchievementList(getAchievementDetaisForSidbi(applicationId));
+					profileReqRes.setExPrList(getExistingProductForSidbi(applicationId));
+					profileReqRes.setProposedProdList(getProposedProductForSidbi(applicationId));
+					profileReqRes.setOwnerShipDetailsList(getOwnershipDetailForSidbi(applicationId));
+					profileReqRes.setCreditRatingOrgList(getCreditRatingDetailForSidbi(applicationId));
+					profileReqRes.setGuaDetailList(getGuarantorDetailsForSidbi(applicationId));
+					profileReqRes.setAssociateConcernList(getAssociatedConcernForSidbi(applicationId));
+					profileReqRes.setMonTurnoverList(getMonthlyTurnOverForSidbi(applicationId));
+					profileReqRes.setLoanMasterRequest(createObj(applicationMaster));
+					profileReqRes.setCostOfProjectRequestsList(getTotalCostOfProjectRequestsList(applicationId, userId));
+					profileReqRes.setFinanceMeansDetailRequestsList(getFinanceMeansDetailRequestList(applicationId, userId));
+					profileReqRes.setSecurityCorporateDetailRequestsList(getSecurityCorporateDetailRequestList(applicationId, userId));
+					try {
+						logger.info("Going to Save Detailed Infor==>");
+						saveDetailsInfo = sidbiIntegrationClient.saveDetailedInfo(profileReqRes,generateTokenRequest.getToken());	
+						auditComponent.updateAudit(AuditComponent.DETAILED_INFO, applicationId, applicationMaster.getUserId(), null, saveDetailsInfo);
+					}catch(Exception e) {
+						logger.info("Exception while Saving profileReqRes by sidbiIntegrationClient   in savePhese2DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",applicationId,fpProductMappingId +" Mgs " +e.getMessage());
+						auditComponent.updateAudit(AuditComponent.DETAILED_INFO, applicationId, applicationMaster.getUserId(),"Exception while Saving profileReqRes from SidbiIntegrationClient  in savePhese2DataToSidbi() ==> for ApplicationId  ====>{} "+applicationId +" Msg ==> "+e.getMessage() ,  false);
+						e.printStackTrace();
+						logger.info("Error while Calling Client====>");
+						setTokenAsExpired(generateTokenRequest);
+					}
+				}
+			}else {
+				logger.info("Detailed Info Already Saved so Not Going to Save======>");
+			}
+			
+			audit = auditComponent.getAudit(applicationId, true, AuditComponent.DDR_DETAILS);
+			if(audit == null) {
 				//Setting DDR
 				logger.info("Going to Save DDR Form Data===>");
 				
@@ -5156,53 +5231,60 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					logger.error("Error while calling DDRForm Details==>");
 					setTokenAsExpired(generateTokenRequest);
 				}
+			
+			}else {
+				logger.info("DDR Info Already Saved so Not Going to Save======>");
 			}
-
-			//To save irr details
-			RatingResponse rtResponse = irrService.calculateIrrRating(applicationId,applicationMaster.getUserId()).getBody();
-			RatingResponse ratingResponse = (RatingResponse)rtResponse.getData();
-			com.capitaworld.sidbi.integration.model.irr.IrrRequest irrRequest = new com.capitaworld.sidbi.integration.model.irr.IrrRequest();
-			//logger.info("Before -----------------data->"+ratingResponse.getData());
-			IrrRequest irrReq = MultipleJSONObjectHelper.getObjectFromMap((Map<String,Object>) ratingResponse.getData(),IrrRequest.class);
-			/*logger.info("After -----------------data->"+ irrReq.toString());
-			BeanUtils.copyProperties(irrReq,irrRequest);*/
-			if(com.capitaworld.service.rating.utils.CommonUtils.BusinessType.MANUFACTURING == ratingResponse.getBusinessTypeId()){
-				IRROutputManufacturingRequest irrOutputManufacturingRequest = new IRROutputManufacturingRequest();
-				IRROutputManufacturingRequest irrOutputManufacturingRequest1 = MultipleJSONObjectHelper.getObjectFromMap((Map<String,Object>) ratingResponse.getData(),IRROutputManufacturingRequest.class);
-				BeanUtils.copyProperties(irrOutputManufacturingRequest1,irrOutputManufacturingRequest);
-				irrOutputManufacturingRequest.setApplicationId(applicationId);
-				irrOutputManufacturingRequest.setUserId(applicationMaster.getUserId());
-				irrRequest.setIrrOutputManufacturingRequest(irrOutputManufacturingRequest);
-				//logger.info("After Copy Response :::::::: " +irrOutputManufacturingRequest.toString());
-			}else if(com.capitaworld.service.rating.utils.CommonUtils.BusinessType.SERVICE == ratingResponse.getBusinessTypeId()){
-				IRROutputServiceRequest irrOutputServiceRequest = new IRROutputServiceRequest();
-				IRROutputServiceRequest irrOutputServiceRequest1 = MultipleJSONObjectHelper.getObjectFromMap((Map<String,Object>) ratingResponse.getData(),IRROutputServiceRequest.class);
-				BeanUtils.copyProperties(irrOutputServiceRequest1,irrOutputServiceRequest);
-				irrOutputServiceRequest.setApplicationId(applicationId);
-				irrOutputServiceRequest.setUserId(applicationMaster.getUserId());
-				irrRequest.setIrrOutputServiceRequest(irrOutputServiceRequest);
-                //logger.info("After Copy Response :::::::: " +irrOutputServiceRequest.toString());
-			}else if(com.capitaworld.service.rating.utils.CommonUtils.BusinessType.TRADING == ratingResponse.getBusinessTypeId()){
-				IRROutputTradingRequest irrOutputTradingRequest = new IRROutputTradingRequest();
-				IRROutputTradingRequest irrOutputTradingRequest1 = MultipleJSONObjectHelper.getObjectFromMap((Map<String,Object>) ratingResponse.getData(),IRROutputTradingRequest.class);
-				BeanUtils.copyProperties(irrOutputTradingRequest1,irrOutputTradingRequest);
-				irrOutputTradingRequest.setApplicationId(applicationId);
-				irrOutputTradingRequest.setUserId(applicationMaster.getUserId());
-				irrRequest.setIrrOutputTradingRequest(irrOutputTradingRequest);
-                //logger.info("After Copy Response :::::::: " +irrOutputTradingRequest.toString());
-			}
-            irrRequest.setApplicationId(applicationId.intValue());
-			irrRequest.setBusinessTypeId(ratingResponse.getBusinessTypeId());
-			try {
-				saveIRRInfo = sidbiIntegrationClient.saveIrrDetails(irrRequest,generateTokenRequest.getToken());
-				auditComponent.updateAudit(AuditComponent.IRR_DETAILS, applicationId, applicationMaster.getUserId(), null ,saveIRRInfo);
-			} catch (Exception e) {
-				logger.info("Exception while Saving saveIRRInfo   by sidbiIntegrationClient   in savePhese2DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",applicationId,fpProductMappingId +" Mgs " +e.getMessage());
-				auditComponent.updateAudit(AuditComponent.IRR_DETAILS, applicationId, applicationMaster.getUserId(),"Exception while Saving saveIRRInfo   by sidbiIntegrationClient   in savePhese2DataToSidbi() ==> for ApplicationId  ====>{} "+applicationId+" Mgs " +e.getMessage()  ,false);
-				e.printStackTrace();
-				setTokenAsExpired(generateTokenRequest);
-			}
-
+			
+			audit = auditComponent.getAudit(applicationId, true, AuditComponent.DDR_DETAILS);
+			if(audit == null) {
+				//To save irr details
+				RatingResponse rtResponse = irrService.calculateIrrRating(applicationId,applicationMaster.getUserId()).getBody();
+				RatingResponse ratingResponse = (RatingResponse)rtResponse.getData();
+				com.capitaworld.sidbi.integration.model.irr.IrrRequest irrRequest = new com.capitaworld.sidbi.integration.model.irr.IrrRequest();
+				//logger.info("Before -----------------data->"+ratingResponse.getData());
+				IrrRequest irrReq = MultipleJSONObjectHelper.getObjectFromMap((Map<String,Object>) ratingResponse.getData(),IrrRequest.class);
+				/*logger.info("After -----------------data->"+ irrReq.toString());
+				BeanUtils.copyProperties(irrReq,irrRequest);*/
+				if(com.capitaworld.service.rating.utils.CommonUtils.BusinessType.MANUFACTURING == ratingResponse.getBusinessTypeId()){
+					IRROutputManufacturingRequest irrOutputManufacturingRequest = new IRROutputManufacturingRequest();
+					IRROutputManufacturingRequest irrOutputManufacturingRequest1 = MultipleJSONObjectHelper.getObjectFromMap((Map<String,Object>) ratingResponse.getData(),IRROutputManufacturingRequest.class);
+					BeanUtils.copyProperties(irrOutputManufacturingRequest1,irrOutputManufacturingRequest);
+					irrOutputManufacturingRequest.setApplicationId(applicationId);
+					irrOutputManufacturingRequest.setUserId(applicationMaster.getUserId());
+					irrRequest.setIrrOutputManufacturingRequest(irrOutputManufacturingRequest);
+					//logger.info("After Copy Response :::::::: " +irrOutputManufacturingRequest.toString());
+				}else if(com.capitaworld.service.rating.utils.CommonUtils.BusinessType.SERVICE == ratingResponse.getBusinessTypeId()){
+					IRROutputServiceRequest irrOutputServiceRequest = new IRROutputServiceRequest();
+					IRROutputServiceRequest irrOutputServiceRequest1 = MultipleJSONObjectHelper.getObjectFromMap((Map<String,Object>) ratingResponse.getData(),IRROutputServiceRequest.class);
+					BeanUtils.copyProperties(irrOutputServiceRequest1,irrOutputServiceRequest);
+					irrOutputServiceRequest.setApplicationId(applicationId);
+					irrOutputServiceRequest.setUserId(applicationMaster.getUserId());
+					irrRequest.setIrrOutputServiceRequest(irrOutputServiceRequest);
+	                //logger.info("After Copy Response :::::::: " +irrOutputServiceRequest.toString());
+				}else if(com.capitaworld.service.rating.utils.CommonUtils.BusinessType.TRADING == ratingResponse.getBusinessTypeId()){
+					IRROutputTradingRequest irrOutputTradingRequest = new IRROutputTradingRequest();
+					IRROutputTradingRequest irrOutputTradingRequest1 = MultipleJSONObjectHelper.getObjectFromMap((Map<String,Object>) ratingResponse.getData(),IRROutputTradingRequest.class);
+					BeanUtils.copyProperties(irrOutputTradingRequest1,irrOutputTradingRequest);
+					irrOutputTradingRequest.setApplicationId(applicationId);
+					irrOutputTradingRequest.setUserId(applicationMaster.getUserId());
+					irrRequest.setIrrOutputTradingRequest(irrOutputTradingRequest);
+	                //logger.info("After Copy Response :::::::: " +irrOutputTradingRequest.toString());
+				}
+	            irrRequest.setApplicationId(applicationId.intValue());
+				irrRequest.setBusinessTypeId(ratingResponse.getBusinessTypeId());
+				try {
+					saveIRRInfo = sidbiIntegrationClient.saveIrrDetails(irrRequest,generateTokenRequest.getToken());
+					auditComponent.updateAudit(AuditComponent.IRR_DETAILS, applicationId, applicationMaster.getUserId(), null ,saveIRRInfo);
+				} catch (Exception e) {
+					logger.info("Exception while Saving saveIRRInfo   by sidbiIntegrationClient   in savePhese2DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",applicationId,fpProductMappingId +" Mgs " +e.getMessage());
+					auditComponent.updateAudit(AuditComponent.IRR_DETAILS, applicationId, applicationMaster.getUserId(),"Exception while Saving saveIRRInfo   by sidbiIntegrationClient   in savePhese2DataToSidbi() ==> for ApplicationId  ====>{} "+applicationId+" Mgs " +e.getMessage()  ,false);
+					e.printStackTrace();
+					setTokenAsExpired(generateTokenRequest);
+				}
+			}else {
+				logger.info("DDR Info Already Saved so Not Going to Save======>");
+			}	
 			logger.info("End savePhese2DataToSidbi()==>");
 		} catch (Exception e) {
 			logger.info("Exception while Saving Requests by sidbiIntegrationClient   in savePhese2DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",applicationId,fpProductMappingId +" Mgs " +e.getMessage());
