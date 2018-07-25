@@ -667,13 +667,14 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			logger.info("Error while getting Eligibility data");
 		}
 		//MCA DATA
-		/*try {
+		try {
 			String companyId = loanApplicationMaster.getMcaCompanyId();
 			McaResponse mcaResponse = mcaClient.getCompanyDetailedData(companyId);
 			map.put("mcaData", mcaResponse.getData());
+			logger.info("MCA DATA IN CAM============>"+mcaResponse.getData());
 		}catch(Exception e) {
 			e.printStackTrace();
-		}*/
+		}
 		
 		//HUNTER API ANALYSIS
 		/*try {
