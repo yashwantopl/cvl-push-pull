@@ -4263,7 +4263,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			gatewayRequest.setStatus(paymentRequest.getStatus());
 			gatewayRequest.setTxnId(paymentRequest.getTrxnId());
 			gatewayRequest.setFirstName(paymentRequest.getNameOfEntity());
-			
+			gatewayRequest.setResponseParams(paymentRequest.getResponseParams());
 			
 			Boolean updatePayment = false;
 			ProposalMappingResponse respProp = null;
