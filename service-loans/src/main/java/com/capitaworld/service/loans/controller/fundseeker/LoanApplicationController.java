@@ -2415,8 +2415,10 @@ public class LoanApplicationController {
 			PaymentRequest paymentRequest = null;
 			int flag = 0;
 			String decodedresponse = null;
+			String responseParams = null;
 			try {
 				decodedresponse = URLDecoder.decode(response, StandardCharsets.UTF_8.toString());
+				responseParams = decodedresponse;
 				logger.info("Decoded value=======++++++>>>>"+decodedresponse);
 			} catch (UnsupportedEncodingException e) {
 				logger.info("Something went wrong while decoding the response!!!");
@@ -2488,12 +2490,14 @@ public class LoanApplicationController {
 					if (flag == 1)
 						break;
 				}
-				
+				responseParams = responseParams.replaceAll("&", " ");
+				responseParams = responseParams.replace("|", " ");
+				logger.info("Response Params================>" + responseParams);
 				paymentRequest = new PaymentRequest();
 				paymentRequest.setApplicationId(Long.valueOf(String.valueOf(map.get("applicationId"))));
 				paymentRequest.setUserId(Long.valueOf(String.valueOf(map.get("AdditionalInfo2"))));
 				paymentRequest.setPurposeCode(map.get("productinfo").toString());
-				
+				paymentRequest.setResponseParams(responseParams);
 			}
 			
 			else {
@@ -2522,11 +2526,13 @@ public class LoanApplicationController {
 					map.put(key, value);
 
 				}
-				
+				responseParams = responseParams.replaceAll("&", " ");
+				logger.info("Response Params================>" + responseParams);
 				paymentRequest = new PaymentRequest();
 				paymentRequest.setApplicationId(Long.valueOf(String.valueOf(map.get("udf1"))));
 				paymentRequest.setUserId(Long.valueOf(String.valueOf(map.get("udf2"))));
 				paymentRequest.setPurposeCode(map.get("productinfo").toString());
+				paymentRequest.setResponseParams(responseParams);
 				
 			}
 			
