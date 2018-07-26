@@ -212,7 +212,7 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	private Boolean isCgtmseCoverageMandatory = false;
 	private Boolean isMsmeFundingDisplay = false;
 	private Boolean isMsmeFundingMandatory = false;
-	private List<Integer> msmeFundingIds = Collections.emptyList();
+	private List<MsmeValueMappingRequest> msmeFundingIds;
     /**
 	 * @return the workflowData
 	 */
@@ -1041,13 +1041,13 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 		this.maxCgtmseCoverage = maxCgtmseCoverage;
 	}
 
-	public List<Integer> getMsmeFundingIds() {
-        return msmeFundingIds;
-    }
+	public List<MsmeValueMappingRequest> getMsmeFundingIds() {
+		return msmeFundingIds;
+	}
 
-    public void setMsmeFundingIds(List<Integer> msmeFundingIds) {
-        this.msmeFundingIds = msmeFundingIds;
-    }
+	public void setMsmeFundingIds(List<MsmeValueMappingRequest> msmeFundingIds) {
+		this.msmeFundingIds = msmeFundingIds;
+	}
 
 	public Boolean getIsCgtmseCoverageDisplay() {
 		return isCgtmseCoverageDisplay;
