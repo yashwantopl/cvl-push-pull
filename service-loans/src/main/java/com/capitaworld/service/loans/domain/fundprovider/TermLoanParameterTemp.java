@@ -26,7 +26,7 @@ public class TermLoanParameterTemp extends ProductMasterTemp implements Serializ
 
 	@OneToOne
 	@JoinColumn(name = "fp_product_id")
-	private ProductMaster fpProductId;
+	private ProductMasterTemp fpProductId;
 
 	@Column(name = "created_by")
 	private Long createdBy;
@@ -306,13 +306,28 @@ public class TermLoanParameterTemp extends ProductMasterTemp implements Serializ
 
 	@Column(name="is_Commercial_cibil_mandatory")
 	private Boolean isCommercialCibilMandatory = false;
-	
-	
 
 	/**
 	 * @return the orgId
 	 */
-	
+	@Column(name="min_cgtmse_coverage")
+	private BigDecimal minCgtmseCoverage;
+
+	@Column(name="max_cgtmse_coverage")
+	private BigDecimal maxCgtmseCoverage;
+
+	@Column(name="is_cgtmse_coverage_display")
+	private Boolean isCgtmseCoverageDisplay = false;
+
+	@Column(name="is_cgtmse_coverage_mandatory")
+	private Boolean isCgtmseCoverageMandatory = false;
+
+	@Column(name="is_msme_funding_display")
+	private Boolean isMsmeFundingDisplay = false;
+
+	@Column(name="is_msme_funding_mandatory")
+	private Boolean isMsmeFundingMandatory = false;
+
 
 	//-----------------------added eligibility method for product
 	@Column(name="assessment_method_id")
@@ -673,11 +688,11 @@ public class TermLoanParameterTemp extends ProductMasterTemp implements Serializ
 	public TermLoanParameterTemp() {
 	}
 
-	public ProductMaster getFpProductId() {
-		return this.fpProductId;
+	public ProductMasterTemp getFpProductId() {
+		return fpProductId;
 	}
 
-	public void setFpProductId(ProductMaster fpProductId) {
+	public void setFpProductId(ProductMasterTemp fpProductId) {
 		this.fpProductId = fpProductId;
 	}
 
@@ -1080,4 +1095,52 @@ public class TermLoanParameterTemp extends ProductMasterTemp implements Serializ
 	public void setAssessmentMethodId(Integer assessmentMethodId) {
 		this.assessmentMethodId = assessmentMethodId;
 	}
+
+	public BigDecimal getMinCgtmseCoverage() {
+		return minCgtmseCoverage;
+	}
+
+	public void setMinCgtmseCoverage(BigDecimal minCgtmseCoverage) {
+		this.minCgtmseCoverage = minCgtmseCoverage;
+	}
+
+	public BigDecimal getMaxCgtmseCoverage() {
+		return maxCgtmseCoverage;
+	}
+
+	public void setMaxCgtmseCoverage(BigDecimal maxCgtmseCoverage) {
+		this.maxCgtmseCoverage = maxCgtmseCoverage;
+	}
+	public Boolean getIsCgtmseCoverageDisplay() {
+		return isCgtmseCoverageDisplay;
+	}
+
+	public void setIsCgtmseCoverageDisplay(Boolean isCgtmseCoverageDisplay) {
+		this.isCgtmseCoverageDisplay = isCgtmseCoverageDisplay;
+	}
+
+	public Boolean getIsCgtmseCoverageMandatory() {
+		return isCgtmseCoverageMandatory;
+	}
+
+	public void setIsCgtmseCoverageMandatory(Boolean isCgtmseCoverageMandatory) {
+		this.isCgtmseCoverageMandatory = isCgtmseCoverageMandatory;
+	}
+
+	public Boolean getIsMsmeFundingDisplay() {
+		return isMsmeFundingDisplay;
+	}
+
+	public void setIsMsmeFundingDisplay(Boolean isMsmeFundingDisplay) {
+		this.isMsmeFundingDisplay = isMsmeFundingDisplay;
+	}
+
+	public Boolean getIsMsmeFundingMandatory() {
+		return isMsmeFundingMandatory;
+	}
+
+	public void setIsMsmeFundingMandatory(Boolean isMsmeFundingMandatory) {
+		this.isMsmeFundingMandatory = isMsmeFundingMandatory;
+	}
+
 }

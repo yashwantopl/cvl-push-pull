@@ -1,0 +1,2 @@
+INSERT INTO `proposal_status_master`.`proposal_status_master` (`id`, `status`, `code`, `created_date`, `modified_date`, `created_by`, `modified_by`, `is_active`) 
+VALUES('13','PartiallyDisbursed','PARTIALLY_DISBURSED','2018-07-21 14:59:11','2018-07-21 14:59:27',NULL,NULL,TRUE);

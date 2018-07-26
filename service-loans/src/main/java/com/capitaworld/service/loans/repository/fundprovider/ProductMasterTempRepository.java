@@ -97,5 +97,12 @@ public interface ProductMasterTempRepository extends JpaRepository<ProductMaster
 	
 	@Query("select distinct(pm.productId) from ProductMasterTemp pm where pm.isActive = true and pm.userOrgId =:orgId")
 	public List<Integer> getProductsByOrgId(@Param("orgId")Long orgId);
+
+
+	@Modifying
+	@Query("update ProductMasterTemp pm set pm.statusId=:statusId where pm.id =:id")
+	public int updateStatusToInProgress(@Param("id")Long id,@Param("statusId")Integer statusId);
+
+
 	
 }

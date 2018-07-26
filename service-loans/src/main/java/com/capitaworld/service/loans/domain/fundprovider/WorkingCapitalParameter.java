@@ -304,26 +304,24 @@ public class WorkingCapitalParameter extends ProductMaster implements Serializab
 
     @Column(name ="job_id")
 	private Long jobId;
-    
-	@Column(name="org_id")
-	private Long orgId;
-	
-	
 
-	/**
-	 * @return the orgId
-	 */
-	public Long getOrgId() {
-		return orgId;
-	}
+	@Column(name="min_cgtmse_coverage")
+	private BigDecimal minCgtmseCoverage;
 
-	/**
-	 * @param orgId the orgId to set
-	 */
-	public void setOrgId(Long orgId) {
-		this.orgId = orgId;
-	}
+	@Column(name="max_cgtmse_coverage")
+	private BigDecimal maxCgtmseCoverage;
 
+	@Column(name="is_cgtmse_coverage_display")
+	private Boolean isCgtmseCoverageDisplay = false;
+
+	@Column(name="is_cgtmse_coverage_mandatory")
+	private Boolean isCgtmseCoverageMandatory = false;
+
+	@Column(name="is_msme_funding_display")
+	private Boolean isMsmeFundingDisplay = false;
+
+	@Column(name="is_msme_funding_mandatory")
+	private Boolean isMsmeFundingMandatory = false;
 
 	/**
 	 * @return the jobId
@@ -1106,4 +1104,53 @@ public class WorkingCapitalParameter extends ProductMaster implements Serializab
 	public void setAssessmentMethodId(Integer assessmentMethodId) {
 		this.assessmentMethodId = assessmentMethodId;
 	}
+
+	public BigDecimal getMinCgtmseCoverage() {
+		return minCgtmseCoverage;
+	}
+
+	public void setMinCgtmseCoverage(BigDecimal minCgtmseCoverage) {
+		this.minCgtmseCoverage = minCgtmseCoverage;
+	}
+
+	public BigDecimal getMaxCgtmseCoverage() {
+		return maxCgtmseCoverage;
+	}
+
+	public void setMaxCgtmseCoverage(BigDecimal maxCgtmseCoverage) {
+		this.maxCgtmseCoverage = maxCgtmseCoverage;
+	}
+
+    public Boolean getIsCgtmseCoverageDisplay() {
+        return isCgtmseCoverageDisplay;
+    }
+
+    public void setIsCgtmseCoverageDisplay(Boolean isCgtmseCoverageDisplay) {
+        this.isCgtmseCoverageDisplay = isCgtmseCoverageDisplay;
+    }
+
+    public Boolean getIsCgtmseCoverageMandatory() {
+        return isCgtmseCoverageMandatory;
+    }
+
+    public void setIsCgtmseCoverageMandatory(Boolean isCgtmseCoverageMandatory) {
+        this.isCgtmseCoverageMandatory = isCgtmseCoverageMandatory;
+    }
+
+    public Boolean getIsMsmeFundingDisplay() {
+        return isMsmeFundingDisplay;
+    }
+
+    public void setIsMsmeFundingDisplay(Boolean isMsmeFundingDisplay) {
+        this.isMsmeFundingDisplay = isMsmeFundingDisplay;
+    }
+
+    public Boolean getIsMsmeFundingMandatory() {
+        return isMsmeFundingMandatory;
+    }
+
+    public void setIsMsmeFundingMandatory(Boolean isMsmeFundingMandatory) {
+        this.isMsmeFundingMandatory = isMsmeFundingMandatory;
+    }
+
 }

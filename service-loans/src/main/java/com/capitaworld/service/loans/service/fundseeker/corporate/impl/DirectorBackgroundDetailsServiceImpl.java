@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,6 +41,11 @@ public class DirectorBackgroundDetailsServiceImpl implements DirectorBackgroundD
 	
 	@Autowired
 	private ConnectClient connectClient;
+	
+	private static final String SIDBI_AMOUNT = "com.capitaworld.sidbi.amount";
+	
+	@Autowired
+	private Environment environment;
 
 	@Override
 	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception {
@@ -107,6 +113,30 @@ public class DirectorBackgroundDetailsServiceImpl implements DirectorBackgroundD
 			return directorBackgroundDetailRequests;
 		} catch (Exception e) {
 			logger.info("Exception  in getdirectorBackgroundDetail  :-");
+			e.printStackTrace();
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+	}
+	
+	@Override
+	public List<DirectorBackgroundDetailRequest> getDirectorBasicDetailsListForNTB(Long applicationId) throws Exception {
+		try {
+			List<DirectorBackgroundDetail> dirBackDetails = directorBackgroundDetailsRepository.listPromotorBackgroundFromAppId(applicationId);
+			List<DirectorBackgroundDetailRequest> dirBackDetailReqList = new ArrayList<DirectorBackgroundDetailRequest>();
+
+			DirectorBackgroundDetailRequest dirBackDetailReq = null;
+			for (DirectorBackgroundDetail detail : dirBackDetails) {
+				dirBackDetailReq = new DirectorBackgroundDetailRequest();
+				dirBackDetailReq.setPanNo(detail.getPanNo());
+				dirBackDetailReq.setDirectorsName(detail.getDirectorsName());
+				dirBackDetailReq.setId(detail.getId());
+				dirBackDetailReq.setMainDirector(detail.getMainDirector());
+				dirBackDetailReq.setAmount(environment.getProperty(SIDBI_AMOUNT));
+				dirBackDetailReqList.add(dirBackDetailReq);
+			}
+			return dirBackDetailReqList;
+		} catch (Exception e) {
+			logger.info("Exception  in getDirectorBasicDetailsListForNTB  :-");
 			e.printStackTrace();
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}

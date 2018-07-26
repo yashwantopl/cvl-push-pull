@@ -13,10 +13,20 @@ public class ScoringRequestLoans {
     private Long scoringModelId;
 	private Long applicationId;
 
+	private Long userId;
+
 	private ScoreParameterRequestLoans scoreParameterRequestLoans;
 
 	private ScoreParameterNTBRequest scoreParameterNTBRequest;
 
+
+	public Long getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Long userId) {
+		this.userId = userId;
+	}
 
 	public Long getFsDigit() {
 		return fsDigit;

@@ -67,7 +67,7 @@ public class FundSeekerInputRequestResponse {
     /////////
     private Double costOfMachinery;
     private Double incrementalTurnover;
-
+  
     /*
     * added for machinery equipment finance
     * */
@@ -81,7 +81,7 @@ public class FundSeekerInputRequestResponse {
     private Integer proposedConstitutionOfUnit;
     private Double promoterContribution;
 
-
+  
     public Long getUserId() {
         return userId;
     }

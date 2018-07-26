@@ -2,8 +2,12 @@ package com.capitaworld.service.loans.service.sanctionimpl;
 
 import java.io.IOException;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import javax.transaction.Transactional;
+
+import com.capitaworld.service.loans.utils.CommonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -101,4 +105,28 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 		}
 	}
 
+	@Override
+	public List<LoanDisbursementRequest> getDisbursedList(Long applicationId) throws Exception {
+		try{
+			List<LoanDisbursementDomain> loanDisbursementDomainList = loanDisbursementRepository.getDisbursedListByApplicationId(applicationId);
+			if(!CommonUtils.isListNullOrEmpty(loanDisbursementDomainList)){
+				List<LoanDisbursementRequest> loanDisbursementRequestList = new ArrayList<LoanDisbursementRequest>();
+				LoanDisbursementRequest loanDisbursementRequest = null;
+				for(LoanDisbursementDomain loanDomainObject : loanDisbursementDomainList){
+					loanDisbursementRequest = new LoanDisbursementRequest();
+					BeanUtils.copyProperties(loanDomainObject, loanDisbursementRequest);
+					loanDisbursementRequestList.add(loanDisbursementRequest);
+				}
+				logger.info("Fetched DisbursedList successfully for applicationId=>" + applicationId);
+				return loanDisbursementRequestList;
+			}
+			logger.warn("No DisbursedList found for applicationId =>" + applicationId);
+			return null;
+		}catch (Exception e){
+			logger.info("Error/Exception in getDisbursedList() -----------------------> Message "+e.getMessage());
+			e.printStackTrace();
+			throw e;
+		}
 	}
+
+}

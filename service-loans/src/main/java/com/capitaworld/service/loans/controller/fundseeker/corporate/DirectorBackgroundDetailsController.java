@@ -275,6 +275,28 @@ public class DirectorBackgroundDetailsController {
 
 	}
 	
+	
+	@RequestMapping(value = "/getDirectorBasicDetailsListForNTB/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getDirectorBasicDetailsListForNTB(@PathVariable("applicationId") Long applicationId) {
+		CommonDocumentUtils.startHook(logger, " getDirectorBasicDetailsListForNTB");
+		
+		try {
+			List<DirectorBackgroundDetailRequest> response = directorBackgroundDetailsService.getDirectorBasicDetailsListForNTB(applicationId);
+			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			loansResponse.setListData(response);
+			CommonDocumentUtils.endHook(logger, "getList");
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+
+		} catch (Exception e) {
+			logger.error("Error while getting Director Background Details FOR NTB==>", e);
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+	}
+	
 	@RequestMapping(value = "/update_api_flag", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> updateAPIFlag(@RequestParam(value = "userId", required = false) Long userId,@RequestParam(value = "directorId", required = true) Long directorId,
 			@RequestParam(value = "apiId", required = true)Integer apiId,@RequestParam(value = "apiFlag", required = true)Boolean apiFlag) {

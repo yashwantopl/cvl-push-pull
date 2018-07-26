@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import com.capitaworld.service.loans.service.fundprovider.MsmeValueMappingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -96,16 +97,30 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 	@Autowired
 	private WorkflowClient workflowClient;
 
+	@Autowired
+	private MsmeValueMappingService msmeValueMappingService;
+
 	@Override
-	public boolean saveOrUpdate(WorkingCapitalParameterRequest workingCapitalParameterRequest) {
+	public boolean saveOrUpdate(WorkingCapitalParameterRequest workingCapitalParameterRequest,Long mappingId) {
 		logger.info("start saveOrUpdate");
 		// TODO Auto-generated method stub
 		WorkingCapitalParameter workingCapitalParameter = null;
 
 		workingCapitalParameter = workingCapitalParameterRepository.findOne(workingCapitalParameterRequest.getId());
 		if (workingCapitalParameter == null) {
-			return false;
+			workingCapitalParameter=new WorkingCapitalParameter();
+			
 		}
+		WorkingCapitalParameterTemp loanParameter = workingCapitalParameterTempRepository
+				.getworkingCapitalParameterTempByFpProductId(mappingId);
+		loanParameter.setStatusId(CommonUtils.Status.APPROVED); 
+		loanParameter.setIsDeleted(false);
+		loanParameter.setIsEdit(false);
+		loanParameter.setIsCopied(true);
+		loanParameter.setIsApproved(true);
+		loanParameter.setApprovalDate(new Date());
+		loanParameter.setFpProductMappingId(workingCapitalParameter.getId());
+		workingCapitalParameterTempRepository.save(loanParameter);
 
 		if (!CommonUtils.isObjectListNull(workingCapitalParameterRequest.getMaxTenure()))
 			workingCapitalParameterRequest.setMaxTenure(workingCapitalParameterRequest.getMaxTenure() * 12);
@@ -362,16 +377,7 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 	public Boolean saveMasterFromTempWc(Long mappingId) throws Exception {
 		try {
 			WorkingCapitalParameterRequest workingCapitalParameterRequest = getWorkingCapitalParameterTemp(mappingId,null,null);
-			WorkingCapitalParameterTemp loanParameter = workingCapitalParameterTempRepository
-					.getworkingCapitalParameterTempByFpProductId(mappingId);
-			loanParameter.setStatusId(CommonUtils.Status.APPROVED);
-			loanParameter.setIsDeleted(false);
-			loanParameter.setIsEdit(false);
-			loanParameter.setIsCopied(true);
-			loanParameter.setIsApproved(true);
-			loanParameter.setApprovalDate(new Date());
-			workingCapitalParameterTempRepository.save(loanParameter);
-			return saveOrUpdate(workingCapitalParameterRequest);
+			return saveOrUpdate(workingCapitalParameterRequest,mappingId);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
@@ -571,6 +577,9 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 		// negative industry save
 		negativeIndustryTempRepository.inActiveMappingByFpProductMasterId(workingCapitalParameter.getId());
 		saveNegativeIndustryTemp(workingCapitalParameterRequest);
+		//Dhaval
+		boolean isUpdate = msmeValueMappingService.updateMsmeValueMappingTemp(workingCapitalParameterRequest.getMsmeFundingIds(),workingCapitalParameter.getFpProductMappingId());
+		logger.info("updated = {}",isUpdate);
 		logger.info("end saveOrUpdateTemp");
 		return true;
 	}
