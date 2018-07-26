@@ -204,7 +204,7 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 	private Boolean isCgtmseCoverageMandatory = false;
 	private Boolean isMsmeFundingDisplay = false;
 	private Boolean isMsmeFundingMandatory = false;
-    private List<Integer> msmeFundingIds = Collections.emptyList();
+    private List<MsmeValueMappingRequest> msmeFundingIds;
 
 	public Integer getIndividualCibil() {
 		return individualCibil;
@@ -1069,11 +1069,11 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
         this.isMsmeFundingMandatory = isMsmeFundingMandatory;
     }
 
-	public List<Integer> getMsmeFundingIds() {
+	public List<MsmeValueMappingRequest> getMsmeFundingIds() {
 		return msmeFundingIds;
 	}
 
-	public void setMsmeFundingIds(List<Integer> msmeFundingIds) {
+	public void setMsmeFundingIds(List<MsmeValueMappingRequest> msmeFundingIds) {
 		this.msmeFundingIds = msmeFundingIds;
 	}
 }

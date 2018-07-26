@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import com.capitaworld.service.loans.service.fundprovider.MsmeValueMappingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -95,6 +96,9 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 
 	@Autowired
 	private WorkflowClient workflowClient;
+
+	@Autowired
+	private MsmeValueMappingService msmeValueMappingService;
 
 	@Override
 	public boolean saveOrUpdate(WorkingCapitalParameterRequest workingCapitalParameterRequest,Long mappingId) {
@@ -573,6 +577,9 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 		// negative industry save
 		negativeIndustryTempRepository.inActiveMappingByFpProductMasterId(workingCapitalParameter.getId());
 		saveNegativeIndustryTemp(workingCapitalParameterRequest);
+		//Dhaval
+		boolean isUpdate = msmeValueMappingService.updateMsmeValueMappingTemp(workingCapitalParameterRequest.getMsmeFundingIds(),workingCapitalParameter.getFpProductMappingId());
+		logger.info("updated = {}",isUpdate);
 		logger.info("end saveOrUpdateTemp");
 		return true;
 	}
