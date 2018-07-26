@@ -6444,25 +6444,25 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	private String getConstitutionryForHunter(Integer constitutionId) {
 		if (constitutionId != null) {
 			if (Constitution.PRIVATE_LIMITED.getId() == constitutionId) {
-				return "Private Limited Co";
+				return "PRIVATE LIMITED CO";
 			} else if (Constitution.PUBLIC_LISTED.getId() == constitutionId) {
-				return "Public Limited Co";
+				return "PUBLIC LIMITED CO";
 			}
 
 			else if (Constitution.PUBLIC_UNLISTED.getId() == constitutionId) {
-				return "Public Limited Co";
+				return "PUBLIC LIMITED CO";
 			} else if (Constitution.FOREIGN_COMPANY.getId() == constitutionId) {
-				return "Multi National";
+				return "MULTI NATIONAL";
 			} else if (Constitution.SOLE_PROPRIETORSHIP.getId() == constitutionId) {
-				return "Proprietorship";
+				return "PROPRIETORSHIP";
 			} else if (Constitution.ONE_PERSON.getId() == constitutionId) {
-				return "Proprietorship";
+				return "PROPRIETORSHIP";
 			} else if (Constitution.PARTNERSHIP.getId() == constitutionId) {
-				return "Partnership";
+				return "PARTNERSHIP";
 			} else if (Constitution.GOVERNMENT_ENTITY.getId() == constitutionId) {
-				return "State Government";
+				return "STATE GOVERNMENT";
 			} else {
-				return "Others";
+				return "OTHERS";
 			}
 		} else {
 			return null;
