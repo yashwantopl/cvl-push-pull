@@ -1264,28 +1264,33 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 			e1.printStackTrace();
 		}
 
-		//Eligibility Data
-		TermLoanParameter termLoanParameter = termLoanParameterRepository.getById(fpProductMappingId);
-		Long assessmentId = termLoanParameter.getAssessmentMethodId().longValue();
-		if(!CommonUtils.isObjectNullOrEmpty(assessmentId)) {
-			corporateFinalViewResponse.setAssesmentId(assessmentId);
-		}
-		EligibililityRequest eligibilityReq=new EligibililityRequest();
-		eligibilityReq.setApplicationId(toApplicationId);
-		//eligibilityReq.set
-		eligibilityReq.setFpProductMappingId(fpProductMappingId);
-		System.out.println(" for eligibility appid============>>"+toApplicationId);
-		
-		try {
-			
-			EligibilityResponse eligibilityResp= eligibilityClient.corporateLoanData(eligibilityReq);
-//			CLEligibilityRequest cLEligibilityRequest= MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>), CLEligibilityRequest.class);
-			corporateFinalViewResponse.setEligibilityDataObject(eligibilityResp.getData());
-			
-		} catch (Exception e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+		// Eligibility Data
+				TermLoanParameter termLoanParameter = termLoanParameterRepository.getById(fpProductMappingId);
+				if (termLoanParameter != null) {
+					Long assessmentId = termLoanParameter.getAssessmentMethodId().longValue();
+					corporateFinalViewResponse.setAssesmentId(assessmentId);
+					
+					EligibililityRequest eligibilityReq = new EligibililityRequest();
+					eligibilityReq.setApplicationId(toApplicationId);
+					// eligibilityReq.set
+					eligibilityReq.setFpProductMappingId(fpProductMappingId);
+					System.out.println(" for eligibility appid============>>" + toApplicationId);
+
+					try {
+
+						EligibilityResponse eligibilityResp = eligibilityClient.corporateLoanData(eligibilityReq);
+						// CLEligibilityRequest cLEligibilityRequest=
+						// MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>),
+						// CLEligibilityRequest.class);
+						corporateFinalViewResponse.setEligibilityDataObject(eligibilityResp.getData());
+
+					} catch (Exception e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+				} else {
+					logger.warn("assesment id is null..");
+				}
 		
 		
 		
