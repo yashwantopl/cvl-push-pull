@@ -28,7 +28,7 @@ import com.capitaworld.api.workflow.model.WorkflowRequest;
 import com.capitaworld.api.workflow.model.WorkflowResponse;
 import com.capitaworld.api.workflow.utility.WorkflowUtils;
 import com.capitaworld.cibil.api.model.CibilRequest;
-import com.capitaworld.cibil.api.model.CibilResponse;
+import com.capitaworld.cibil.api.model.CibilScoreLogRequest;
 import com.capitaworld.cibil.client.CIBILClient;
 import com.capitaworld.client.eligibility.EligibilityClient;
 import com.capitaworld.client.workflow.WorkflowClient;
@@ -387,14 +387,14 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 					directorBackgroundDetailResponse.setMobile(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getMobile())?directorBackgroundDetailRequest.getMobile(): " ");
 					directorBackgroundDetailResponse.setDob(directorBackgroundDetailRequest.getDob());
 					try {
-						CibilRequest cibilRequest = new CibilRequest();
-						cibilRequest.setPan(directorBackgroundDetailRequest.getPanNo());
-						cibilRequest.setApplicationId(applicationId);
-						CibilResponse cibilResponse = cibilClient.getCibilScoreByPanCard(cibilRequest);
-						directorBackgroundDetailResponse.setCibilScore(!CommonUtils.isObjectNullOrEmpty(cibilResponse.getData())? Double.parseDouble(cibilResponse.getData().toString()) : 0);
+							CibilRequest cibilRequest = new CibilRequest();
+							cibilRequest.setPan(directorBackgroundDetailRequest.getPanNo());
+							cibilRequest.setApplicationId(applicationId);
+							CibilScoreLogRequest cibilScoreByPanCard = cibilClient.getCibilScoreByPanCard(cibilRequest);
+							directorBackgroundDetailResponse.setCibilScore(!CommonUtils.isObjectNullOrEmpty(cibilScoreByPanCard)? cibilScoreByPanCard.getActualScore() : "NA");
 					}catch(Exception e) {
-						e.printStackTrace();
-						logger.info("Error while getting cibil details",e);
+							e.printStackTrace();
+							logger.info("Error while getting cibil details",e);
 					}
 					directorBackgroundDetailResponseList.add(directorBackgroundDetailResponse);
 				}
