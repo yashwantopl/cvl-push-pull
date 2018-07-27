@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import com.capitaworld.service.loans.service.fundprovider.MsmeValueMappingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -99,6 +100,9 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
     @Autowired
     private WorkflowClient workflowClient;
 
+	@Autowired
+	private MsmeValueMappingService msmeValueMappingService;
+
 	@Override
 	public boolean saveOrUpdate(WcTlParameterRequest wcTlParameterRequest,Long mappingId) {
 		CommonDocumentUtils.startHook(logger, "saveOrUpdate");
@@ -150,7 +154,10 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 		//negative industry save
 		negativeIndustryRepository.inActiveMappingByFpProductMasterId(wcTlParameterRequest.getId());
 		saveNegativeIndustry(wcTlParameterRequest);
-		
+
+		//Ravina
+		boolean isUpdate = msmeValueMappingService.updateMsmeValueMapping(false, wcTlParameterRequest.getId());
+		logger.info("updated = {}",isUpdate);
 		CommonDocumentUtils.endHook(logger, "saveOrUpdate");
 		return true;
 
@@ -262,6 +269,7 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 				e.printStackTrace();
 			}
 		}
+		wcTlParameterRequest.setMsmeFundingIds(msmeValueMappingService.getDataListFromFpProductId(2,id, wcTlParameterRequest.getUserId()));
 		CommonDocumentUtils.endHook(logger, "getTermLoanParameterRequest");
 		return wcTlParameterRequest;
 	}
@@ -520,6 +528,7 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
         } else {
             logger.info("you set jobId or list of roleId NULL for calling workflow");
         }
+		wcTlParameterRequest.setMsmeFundingIds(msmeValueMappingService.getDataListFromFpProductId(1,id, userId));
 		CommonDocumentUtils.endHook(logger, "getWcTlRequestTemp");
 		return wcTlParameterRequest;
 	}
@@ -527,7 +536,7 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 	
 	@Override
 	public Boolean saveOrUpdateTemp(WcTlParameterRequest wcTlParameterRequest) {
-		CommonDocumentUtils.startHook(logger, "saveOrUpdate");
+		CommonDocumentUtils.startHook(logger, "saveOrUpdateTemp");
 		// TODO Auto-generated method stub
 		
 		WcTlParameterTemp WcTlParameter = null;
@@ -596,8 +605,11 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 		//negative industry save
 		negativeIndustryTempRepository.inActiveMappingByFpProductMasterId(WcTlParameter.getId());
 		saveNegativeIndustryTemp(wcTlParameterRequest);
-		
-		CommonDocumentUtils.endHook(logger, "saveOrUpdate");
+
+		//Ravina
+		boolean isUpdate = msmeValueMappingService.updateMsmeValueMappingTemp(wcTlParameterRequest.getMsmeFundingIds(),wcTlParameterRequest.getId(), wcTlParameterRequest.getUserId());
+		logger.info("updated = {}",isUpdate);
+		CommonDocumentUtils.endHook(logger, "saveOrUpdateTemp");
 		return true;
 
 	}

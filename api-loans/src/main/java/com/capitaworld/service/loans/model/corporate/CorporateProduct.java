@@ -199,7 +199,7 @@ public class CorporateProduct  extends  ProductMasterRequest implements Serializ
 	private Boolean isCgtmseCoverageMandatory = false;
 	private Boolean isMsmeFundingDisplay = false;
 	private Boolean isMsmeFundingMandatory = false;
-	private List<Integer> msmeFundingIds = Collections.emptyList();
+	private List<Integer> msmeFundingIds;
 
 	public Integer getIndividualCibil() {
 		return individualCibil;
