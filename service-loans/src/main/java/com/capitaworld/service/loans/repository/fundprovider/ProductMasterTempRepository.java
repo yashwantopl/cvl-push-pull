@@ -42,16 +42,16 @@ public interface ProductMasterTempRepository extends JpaRepository<ProductMaster
 	@Query("from ProductMasterTemp pm where pm.userOrgId =:userOrgId and pm.isActive = true")
 	public List<ProductMasterTemp> getUserProductListByOrgId(@Param("userOrgId") Long userOrgId);
 	
-	@Query("from ProductMasterTemp pm where pm.userId =:userId  and productId in (1,2,15,16)")
+	@Query("from ProductMasterTemp pm where pm.userId =:userId and pm.isApproved=false  and productId in (1,2,15,16)")
 	public List<ProductMasterTemp> getUserCorporateProductList(@Param("userId") Long userId);
 	
-	@Query("from ProductMasterTemp pm where pm.userOrgId =:userOrgId  and productId in (1,2,15,16)")
+	@Query("from ProductMasterTemp pm where pm.userOrgId =:userOrgId  and pm.isApproved=false and productId in (1,2,15,16)")
 	public List<ProductMasterTemp> getUserCorporateProductListByOrgId(@Param("userOrgId") Long userOrgId);
 	
-	@Query("from ProductMasterTemp pm where pm.userId =:userId  and productId not in (1,2)")
+	@Query("from ProductMasterTemp pm where pm.userId =:userId and pm.isApproved=false and productId not in (1,2)")
 	public List<ProductMasterTemp> getUserRetailProductList(@Param("userId") Long userId);
 	
-	@Query("from ProductMasterTemp pm where pm.userOrgId =:userOrgId  and productId not in (1,2)")
+	@Query("from ProductMasterTemp pm where pm.userOrgId =:userOrgId and pm.isApproved=false and productId not in (1,2)")
 	public List<ProductMasterTemp> getUserRetailProductListByOrgId(@Param("userOrgId") Long userOrgId);
 	
 	@Query("from ProductMasterTemp pm where pm.userId =:userId and productId=:productId ")
