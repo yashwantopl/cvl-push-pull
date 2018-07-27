@@ -128,7 +128,8 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
             primaryCorporateDetailRepository.saveAndFlush(primaryCorporateDetail);
 
             List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestsList=fundSeekerInputRequest.getFinancialArrangementsDetailRequestsList();
-            for(FinancialArrangementsDetailRequest reqObj : financialArrangementsDetailRequestsList) {
+            if(!CommonUtils.isListNullOrEmpty(financialArrangementsDetailRequestsList)){
+		for(FinancialArrangementsDetailRequest reqObj : financialArrangementsDetailRequestsList) {
                 FinancialArrangementsDetail saveFinObj = null;
                 if(!CommonUtils.isObjectNullOrEmpty(reqObj.getId())) {
                     saveFinObj = financialArrangementDetailsRepository.findByIdAndIsActive(reqObj.getId(), true);
@@ -147,8 +148,8 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
                     saveFinObj.setModifiedDate(new Date());
                 }
                 financialArrangementDetailsRepository.save(saveFinObj);
-            }
-
+            	}
+	    }
            return true;
 
         } catch (Exception e) {
