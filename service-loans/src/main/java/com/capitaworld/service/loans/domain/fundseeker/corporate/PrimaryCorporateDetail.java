@@ -74,6 +74,23 @@ public class PrimaryCorporateDetail extends LoanApplicationMaster implements Ser
     @Column(name = "assessment_id")
     private Integer assessmentId;
 
+    /*
+     * SBI MSME Integration related fields
+     * By Ravina
+     * */
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "com_op_date")
+    private Date commercialOperationDate;
+
+    @Column(name = "factory_premise")
+    private Integer factoryPremise;
+
+    @Column(name = "know_how")
+    private Integer knowHow;
+
+    @Column(name = "competition")
+    private Integer competition;
+
    /* @Column(name="created_by")
     private Long createdBy;
 
