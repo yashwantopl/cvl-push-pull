@@ -86,7 +86,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			if (CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail)) {
 				logger.info("corporateApplicantDetail is null created new object");
 				corporateApplicantDetail = new CorporateApplicantDetail();
-				BeanUtils.copyProperties(fundSeekerInputRequest, corporateApplicantDetail, "secondAddress", "sameAs",
+				BeanUtils.copyProperties(fundSeekerInputRequest, corporateApplicantDetail, "secondAddress", "sameAs","organisationName","constitutionId",
 						"creditRatingId", "contLiabilityFyAmt", "contLiabilitySyAmt", "contLiabilityTyAmt",
 						" contLiabilityYear", "notApplicable", "aboutUs", "id", "isActive");
 				corporateApplicantDetail
@@ -95,7 +95,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 				corporateApplicantDetail.setCreatedDate(new Date());
 				corporateApplicantDetail.setIsActive(true);
 			} else {
-				BeanUtils.copyProperties(fundSeekerInputRequest, corporateApplicantDetail, "secondAddress", "sameAs",
+				BeanUtils.copyProperties(fundSeekerInputRequest, corporateApplicantDetail, "secondAddress", "sameAs","organisationName","constitutionId",
 						"creditRatingId", "contLiabilityFyAmt", "contLiabilitySyAmt", "contLiabilityTyAmt",
 						" contLiabilityYear", "notApplicable", "aboutUs", "id");
 				corporateApplicantDetail.setModifiedBy(fundSeekerInputRequest.getUserId());
@@ -138,29 +138,32 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 
 			List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestsList = fundSeekerInputRequest
 					.getFinancialArrangementsDetailRequestsList();
-			for (FinancialArrangementsDetailRequest reqObj : financialArrangementsDetailRequestsList) {
-				FinancialArrangementsDetail saveFinObj = null;
-				if (!CommonUtils.isObjectNullOrEmpty(reqObj.getId())) {
-					saveFinObj = financialArrangementDetailsRepository.findByIdAndIsActive(reqObj.getId(), true);
-				}
-				if (CommonUtils.isObjectNullOrEmpty(saveFinObj)) {
-					saveFinObj = new FinancialArrangementsDetail();
-					BeanUtils.copyProperties(reqObj, saveFinObj, "id", "createdBy", "createdDate", "modifiedBy",
-							"modifiedDate", "isActive");
+			if(!CommonUtils.isListNullOrEmpty(financialArrangementsDetailRequestsList)) {
+				logger.info("Financial Arrangements Detail List Null Or Empty ------------->");
+				for (FinancialArrangementsDetailRequest reqObj : financialArrangementsDetailRequestsList) {
+					FinancialArrangementsDetail saveFinObj = null;
+					if (!CommonUtils.isObjectNullOrEmpty(reqObj.getId())) {
+						saveFinObj = financialArrangementDetailsRepository.findByIdAndIsActive(reqObj.getId(), true);
+					}
+					if (CommonUtils.isObjectNullOrEmpty(saveFinObj)) {
+						saveFinObj = new FinancialArrangementsDetail();
+						BeanUtils.copyProperties(reqObj, saveFinObj, "id", "createdBy", "createdDate", "modifiedBy",
+								"modifiedDate", "isActive");
 
-					saveFinObj.setApplicationId(new LoanApplicationMaster(fundSeekerInputRequest.getApplicationId()));
-					saveFinObj.setCreatedBy(fundSeekerInputRequest.getUserId());
-					saveFinObj.setCreatedDate(new Date());
-					saveFinObj.setIsActive(true);
-				} else {
-					BeanUtils.copyProperties(reqObj, saveFinObj, "id", "createdBy", "createdDate", "modifiedBy",
-							"modifiedDate");
-					saveFinObj.setModifiedBy(fundSeekerInputRequest.getUserId());
-					saveFinObj.setModifiedDate(new Date());
-				}
-				financialArrangementDetailsRepository.save(saveFinObj);
+						saveFinObj.setApplicationId(new LoanApplicationMaster(fundSeekerInputRequest.getApplicationId()));
+						saveFinObj.setCreatedBy(fundSeekerInputRequest.getUserId());
+						saveFinObj.setCreatedDate(new Date());
+						saveFinObj.setIsActive(true);
+					} else {
+						BeanUtils.copyProperties(reqObj, saveFinObj, "id", "createdBy", "createdDate", "modifiedBy",
+								"modifiedDate");
+						saveFinObj.setModifiedBy(fundSeekerInputRequest.getUserId());
+						saveFinObj.setModifiedDate(new Date());
+					}
+					financialArrangementDetailsRepository.save(saveFinObj);
+				}	
 			}
-
+			
 			return true;
 
 		} catch (Exception e) {
