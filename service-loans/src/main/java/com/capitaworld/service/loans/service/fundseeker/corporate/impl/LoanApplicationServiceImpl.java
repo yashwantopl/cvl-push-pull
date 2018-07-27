@@ -3,6 +3,7 @@ package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -13,12 +14,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.capitaworld.service.loans.domain.sanction.LoanDisbursementDomain;
-import com.capitaworld.service.loans.domain.sanction.LoanSanctionDomain;
-import com.capitaworld.service.loans.model.*;
-import com.capitaworld.service.loans.repository.sanction.LoanDisbursementRepository;
-import com.capitaworld.service.loans.repository.sanction.LoanSanctionRepository;
-import com.capitaworld.service.loans.service.sanction.LoanDisbursementService;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +28,18 @@ import org.springframework.transaction.annotation.Transactional;
 import com.capitaworld.api.eligibility.model.CLEligibilityRequest;
 import com.capitaworld.api.eligibility.model.EligibililityRequest;
 import com.capitaworld.api.eligibility.model.EligibilityResponse;
+import com.capitaworld.cibil.api.model.CibilRequest;
+import com.capitaworld.cibil.api.model.CibilResponse;
+import com.capitaworld.cibil.api.model.report.Address;
+import com.capitaworld.cibil.api.model.report.Account;
+import com.capitaworld.cibil.api.model.report.CreditReport;
+import com.capitaworld.cibil.api.model.report.EmploymentSegment;
+import com.capitaworld.cibil.api.model.report.Enquiry;
+import com.capitaworld.cibil.api.model.report.NameSegment;
+import com.capitaworld.cibil.api.utility.CibilUtils;
+import com.capitaworld.cibil.api.utility.CibilUtils.AccountTypeEnum;
+import com.capitaworld.cibil.api.utility.CibilUtils.GenderTypeEnum;
+import com.capitaworld.cibil.client.CIBILClient;
 import com.capitaworld.client.eligibility.EligibilityClient;
 import com.capitaworld.connect.api.ConnectResponse;
 import com.capitaworld.connect.client.ConnectClient;
@@ -86,7 +93,18 @@ import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryLapLoanDeta
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryLasLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryPersonalLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
+import com.capitaworld.service.loans.domain.sanction.LoanSanctionDomain;
 import com.capitaworld.service.loans.exceptions.LoansException;
+import com.capitaworld.service.loans.model.AdminPanelLoanDetailsResponse;
+import com.capitaworld.service.loans.model.CommonResponse;
+import com.capitaworld.service.loans.model.DashboardProfileResponse;
+import com.capitaworld.service.loans.model.DirectorBackgroundDetailResponse;
+import com.capitaworld.service.loans.model.FrameRequest;
+import com.capitaworld.service.loans.model.LoanApplicationDetailsForSp;
+import com.capitaworld.service.loans.model.LoanApplicationRequest;
+import com.capitaworld.service.loans.model.LoanEligibilityRequest;
+import com.capitaworld.service.loans.model.PaymentRequest;
+import com.capitaworld.service.loans.model.ReportResponse;
 import com.capitaworld.service.loans.model.common.CGTMSECalcDataResponse;
 import com.capitaworld.service.loans.model.common.ChatDetails;
 import com.capitaworld.service.loans.model.common.DisbursementRequest;
@@ -126,6 +144,8 @@ import com.capitaworld.service.loans.repository.fundseeker.retail.GuarantorDetai
 import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryHomeLoanDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryLapLoanDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
+import com.capitaworld.service.loans.repository.sanction.LoanDisbursementRepository;
+import com.capitaworld.service.loans.repository.sanction.LoanSanctionRepository;
 import com.capitaworld.service.loans.service.ProposalService;
 import com.capitaworld.service.loans.service.common.ApplicationSequenceService;
 import com.capitaworld.service.loans.service.common.DashboardService;
@@ -137,6 +157,7 @@ import com.capitaworld.service.loans.service.fundseeker.corporate.DDRFormService
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.service.irr.IrrService;
 import com.capitaworld.service.loans.service.networkpartner.NetworkPartnerService;
+import com.capitaworld.service.loans.service.sanction.LoanDisbursementService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.CommonUtils.LoanType;
@@ -220,6 +241,10 @@ import com.capitaworld.sidbi.integration.model.SecurityCorporateDetailRequest;
 import com.capitaworld.sidbi.integration.model.TotalCostOfProjectRequest;
 import com.capitaworld.sidbi.integration.model.ddr.DDRFormDetailsRequest;
 import com.capitaworld.sidbi.integration.model.eligibility.EligibilityDetailRequest;
+import com.capitaworld.sidbi.integration.model.individual.ContactInfoRequest;
+import com.capitaworld.sidbi.integration.model.individual.EmploymentInfoRequest;
+import com.capitaworld.sidbi.integration.model.individual.EnquiryInfoRequest;
+import com.capitaworld.sidbi.integration.model.individual.PersonalInfoRequest;
 import com.capitaworld.sidbi.integration.model.irr.IRROutputManufacturingRequest;
 import com.capitaworld.sidbi.integration.model.irr.IRROutputServiceRequest;
 import com.capitaworld.sidbi.integration.model.irr.IRROutputTradingRequest;
@@ -348,6 +373,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	
 	@Autowired
 	private AssociatedConcernDetailRepository associatedConcernDetailRepository;
+	
+	@Autowired
+	private CIBILClient cibilClient;
 	
 	@Value("${capitaworld.service.gateway.product}")
 	private String product;
@@ -5539,7 +5567,29 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			return Collections.emptyList();
 		}else {
 			List<DirectorBackgroundDetailRequest> listData = new ArrayList<>(direcotors.size());
+			SimpleDateFormat dateFormat2 = new SimpleDateFormat("dd-MM-yyyy");
 			for(DirectorBackgroundDetail source : direcotors) {
+				CibilRequest cibilRequest = new CibilRequest();
+				cibilRequest.setApplicationId(applicationId);
+				cibilRequest.setPan(source.getPanNo());
+				CibilResponse cibilResponse = null;
+				try {
+					 cibilResponse = cibilClient.getDirectorDetails(cibilRequest);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				CreditReport creditReport = null;
+				if(cibilResponse!=null && cibilResponse.getData()!=null) {
+					try {
+					creditReport = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,  Object>)cibilResponse.getData(), CreditReport.class );
+					
+					}
+					catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+				
 				DirectorBackgroundDetailRequest target = new DirectorBackgroundDetailRequest();
 				target.setName(source.getDirectorsName());
 				if(source.getGender() != null) {
@@ -5563,7 +5613,173 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				target.setFirstName(source.getFirstName());
 				target.setMiddleName(source.getMiddleName());
 				target.setLastName(source.getLastName());
+
+				if(!CommonUtils.isObjectNullOrEmpty(creditReport.getAccount())) {
+				for(Account account : creditReport.getAccount()) {
+					CurrentFinancialArrangementsDetailRequest currFin = new CurrentFinancialArrangementsDetailRequest();
+					if(!CommonUtils.isObjectNullOrEmpty(account.getAccountNonSummarySegmentFields()
+							.getHighCreditOrSanctionedAmount().doubleValue())) {
+					currFin.setAmount(account.getAccountNonSummarySegmentFields()
+							.getHighCreditOrSanctionedAmount().doubleValue());
+					}
+			
+					currFin.setApplicationId(applicationId);
+					currFin.setCreatedDate(new Date());
+					currFin.setIsActive(true);
+					if(!CommonUtils.isObjectNullOrEmpty(
+								account.getAccountNonSummarySegmentFields().getReportingMemberShortName())) {
+					currFin.setLenderName(
+								account.getAccountNonSummarySegmentFields().getReportingMemberShortName());
+					}
+//					currFin.setSanctionedAmount(sanctionedAmount);
+					target.addCurrentFinancialArrangementsDetailRequest(currFin);
+				}
+				}
+				
+				if(!CommonUtils.isObjectNullOrEmpty(creditReport.getEmploymentSegment())) {
+					EmploymentInfoRequest empInfoReq = new EmploymentInfoRequest(); 
+					if(!CommonUtils.isObjectNullOrEmpty(creditReport.getEmploymentSegment().getAccountType())){
+					empInfoReq.setAccountType(AccountTypeEnum.fromId(String.valueOf(creditReport.getEmploymentSegment().getAccountType())).getValue());
+					}
+					String date = String.valueOf(creditReport.getEmploymentSegment().getDateReportedCertified());
+					String dt = date.substring(0, 2);
+					String mon = date.substring(2, (dt.length() + 2));
+					String year = date.substring((dt.length() + 2), date.length());
+					try {
+						empInfoReq.setDateReported(dateFormat2.parse(dt + "-" + mon + "-" + year));
+					} catch (ParseException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					
+					if(!CommonUtils.isObjectNullOrEmpty(creditReport.getEmploymentSegment().getIncome())){
+					empInfoReq.setIncome(Double.valueOf(creditReport.getEmploymentSegment().getIncome()));
+					}
+					if(!CommonUtils.isObjectNullOrEmpty(creditReport.getEmploymentSegment().getOccupationCode())){
+					empInfoReq.setOccupation(creditReport.getEmploymentSegment().getOccupationCode());
+					}
+					if(!CommonUtils.isObjectNullOrEmpty(creditReport.getEmploymentSegment().getMonthlyAnnualIndicator())){
+					empInfoReq.setIncomeIndicator(creditReport.getEmploymentSegment().getMonthlyAnnualIndicator());
+					}
+					if(!CommonUtils.isObjectNullOrEmpty(creditReport.getEmploymentSegment().getLength())){
+					empInfoReq.setFrequency(creditReport.getEmploymentSegment().getLength());
+					}
+					empInfoReq.setApplicationId(applicationId);
+					empInfoReq.setCreatedDate(new Date());
+					empInfoReq.setIsActive(true);
+					target.addEmploymentInfoRequest(empInfoReq);
+				}
+				
+				if(!CommonUtils.isObjectNullOrEmpty(creditReport.getAddress())) {
+					for(Address address : creditReport.getAddress()) {
+						ContactInfoRequest contInfoReq = new ContactInfoRequest();
+						contInfoReq.setCategory(address.getAddressCategory());
+						if(!CommonUtils.isObjectNullOrEmpty(address.getDateReported())){
+						String date = String.valueOf(address.getDateReported());
+						String dt = date.substring(0, 2);
+						String mon = date.substring(2, (dt.length() + 2));
+						String year = date.substring((dt.length() + 2), date.length());
+						
+						try {
+						contInfoReq.setDateReported(dateFormat2.parse(dt + "-" + mon + "-" + year));
+						}
+						catch (Exception e) {
+							// TODO: handle exception
+						}
+						}
+						AddressRequest addReq = new AddressRequest();
+						
+//						addReq.setCity(address.get);
+						if(!CommonUtils.isObjectNullOrEmpty(address.getStateCode())){
+						addReq.setState(CibilUtils.StateEnum.fromCode(address.getStateCode()).getValue());
+						}
+						
+						if(!CommonUtils.isObjectNullOrEmpty(address.getStateCode())) {
+//							addReq.setCountry(`);
+						}
+						
+						if(!CommonUtils.isObjectNullOrEmpty(address.getAddressLine1())) {
+							addReq.setPremiseNumber(address.getAddressLine1());
+						}
+						if(!CommonUtils.isObjectNullOrEmpty(address.getAddressLine2())) {
+							addReq.setStreetName(address.getAddressLine2());
+						}
+						
+						if(!CommonUtils.isObjectNullOrEmpty(address.getAddressLine3())) {
+							addReq.setLandMark(address.getAddressLine3());
+						}
+						contInfoReq.setCreatedDate(new Date());
+						contInfoReq.setIsActive(true);
+						contInfoReq.setAddressId(addReq);
+						target.addContactInfoRequest(contInfoReq);
+					}
+				}
+				
+				if(!CommonUtils.isObjectNullOrEmpty(creditReport.getEnquiry())) {
+					for(Enquiry enq : creditReport.getEnquiry()) {
+						EnquiryInfoRequest enqInfoRe = new EnquiryInfoRequest();
+						enqInfoRe.setApplicationId(applicationId);
+						enqInfoRe.setCreatedDate(new Date());
+						if(!CommonUtils.isObjectNullOrEmpty(enq.getEnquiryAmount())) {
+						enqInfoRe.setEnquiryAmount(Double.valueOf(enq.getEnquiryAmount()));
+						}
+						if(!CommonUtils.isObjectNullOrEmpty(enq.getEnquiryPurpose())) {
+						enqInfoRe.setEnquiryPurpose(enq.getEnquiryPurpose());
+						}
+						enqInfoRe.setIsActive(true);
+						if(!CommonUtils.isObjectNullOrEmpty(enq.getEnquiringMemberShortName())) {
+						enqInfoRe.setMemberName(enq.getEnquiringMemberShortName());
+						}
+						
+						if(!CommonUtils.isObjectNullOrEmpty(enq.getDateOfEnquiryFields())){
+							String date = String.valueOf(enq.getDateOfEnquiryFields());
+							String dt = date.substring(0, 2);
+							String mon = date.substring(2, (dt.length() + 2));
+							String year = date.substring((dt.length() + 2), date.length());
+							
+							try {
+								enqInfoRe.setDateOfEnquiry(dateFormat2.parse(dt + "-" + mon + "-" + year));
+							}
+							catch (Exception e) {
+								// TODO: handle exception
+							}
+						}
+						enqInfoRe.setApplicationId(applicationId);
+						enqInfoRe.setCreatedDate(new Date());
+						enqInfoRe.setIsActive(true);
+						target.addEnquiryInfoRequest(enqInfoRe);
+					}
+						
+				}
+				if(!CommonUtils.isObjectNullOrEmpty(creditReport.getNameSegment())) {
+					PersonalInfoRequest perInfo = new PersonalInfoRequest();
+					perInfo.setApplicationId(applicationId);
+					perInfo.setCreatedDate(new Date());
+					perInfo.setIsActive(true);
+					
+					
+					perInfo.setFullName(creditReport.getNameSegment().getConsumerName1());
+					perInfo.setGender(GenderTypeEnum.fromMappingId(creditReport.getNameSegment().getGender()).getValue());
+					if(!CommonUtils.isObjectNullOrEmpty(creditReport.getNameSegment().getDateOfBirth())){
+						String date = String.valueOf(creditReport.getNameSegment().getDateOfBirth());
+						String dt = date.substring(0, 2);
+						String mon = date.substring(2, (dt.length() + 2));
+						String year = date.substring((dt.length() + 2), date.length());
+						
+						try {
+							perInfo.setDob(dt + "-" + mon + "-" + year);
+						}
+						catch (Exception e) {
+							// TODO: handle exception
+						}
+					}
+					
+					target.setPersonalInfoRequest(perInfo);
+					
+				}
+				
 				listData.add(target);
+				
 			}
 			return listData;
 		}
