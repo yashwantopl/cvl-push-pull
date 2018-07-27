@@ -5236,7 +5236,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				logger.info("DDR Info Already Saved so Not Going to Save======>");
 			}
 			
-			audit = auditComponent.getAudit(applicationId, true, AuditComponent.DDR_DETAILS);
+			audit = auditComponent.getAudit(applicationId, true, AuditComponent.IRR_DETAILS);
 			if(audit == null) {
 				//To save irr details
 				RatingResponse rtResponse = irrService.calculateIrrRating(applicationId,applicationMaster.getUserId()).getBody();
@@ -5283,7 +5283,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					setTokenAsExpired(generateTokenRequest);
 				}
 			}else {
-				logger.info("DDR Info Already Saved so Not Going to Save======>");
+				logger.info("IRR_DETAILS Info Already Saved so Not Going to Save======>");
 			}	
 			logger.info("End savePhese2DataToSidbi()==>");
 		} catch (Exception e) {
