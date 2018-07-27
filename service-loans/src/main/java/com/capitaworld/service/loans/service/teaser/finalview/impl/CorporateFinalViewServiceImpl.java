@@ -1263,10 +1263,9 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-
 		// Eligibility Data
 				TermLoanParameter termLoanParameter = termLoanParameterRepository.getById(fpProductMappingId);
-				if (termLoanParameter != null) {
+				if (termLoanParameter.getAssessmentMethodId() != null) {
 					Long assessmentId = termLoanParameter.getAssessmentMethodId().longValue();
 					corporateFinalViewResponse.setAssesmentId(assessmentId);
 					
