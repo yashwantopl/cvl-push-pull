@@ -8,7 +8,7 @@ public interface MsmeValueMappingService {
 
     public boolean updateMsmeValueMapping(Boolean isNew, Long fpProductId);
 
-    public boolean updateMsmeValueMappingTemp(List<MsmeValueMappingRequest> requestList, Long fpProductId);
+    public boolean updateMsmeValueMappingTemp(List<Integer> requestList, Long fpProductId, Long userId);
 
-    public List<MsmeValueMappingRequest> getDataListFromFpProductId(int dataRequestType,Long fpProductId);
+    public List<Integer> getDataListFromFpProductId(int dataRequestType,Long fpProductId, Long userId);
 }
