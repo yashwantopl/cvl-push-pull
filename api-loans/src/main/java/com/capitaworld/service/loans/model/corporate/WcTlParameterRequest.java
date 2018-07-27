@@ -211,7 +211,7 @@ public class WcTlParameterRequest extends ProductMasterRequest implements Serial
 	private Boolean isCgtmseCoverageMandatory = false;
 	private Boolean isMsmeFundingDisplay = false;
 	private Boolean isMsmeFundingMandatory = false;
-	private List<MsmeValueMappingRequest> msmeFundingIds;
+	private List<Integer> msmeFundingIds;
 
 	public Integer getIndividualCibil() {
 		return individualCibil;
@@ -1067,11 +1067,11 @@ public class WcTlParameterRequest extends ProductMasterRequest implements Serial
 		this.isMsmeFundingMandatory = isMsmeFundingMandatory;
 	}
 
-	public List<MsmeValueMappingRequest> getMsmeFundingIds() {
+	public List<Integer> getMsmeFundingIds() {
 		return msmeFundingIds;
 	}
 
-	public void setMsmeFundingIds(List<MsmeValueMappingRequest> msmeFundingIds) {
+	public void setMsmeFundingIds(List<Integer> msmeFundingIds) {
 		this.msmeFundingIds = msmeFundingIds;
 	}
 }
