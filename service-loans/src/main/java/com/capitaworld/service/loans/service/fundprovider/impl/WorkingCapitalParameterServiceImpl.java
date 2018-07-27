@@ -1,11 +1,10 @@
 package com.capitaworld.service.loans.service.fundprovider.impl;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.*;
 
+import com.capitaworld.service.loans.model.corporate.MsmeValueMappingRequest;
+import com.capitaworld.service.loans.service.fundprovider.MsmeValueMappingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -49,6 +48,8 @@ import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.model.OneFormResponse;
+
+import javax.persistence.criteria.CriteriaBuilder;
 
 @Service
 @Transactional
@@ -95,6 +96,9 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 
 	@Autowired
 	private WorkflowClient workflowClient;
+
+	@Autowired
+	private MsmeValueMappingService msmeValueMappingService;
 
 	@Override
 	public boolean saveOrUpdate(WorkingCapitalParameterRequest workingCapitalParameterRequest,Long mappingId) {
@@ -148,6 +152,11 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 		// negative industry save
 		negativeIndustryRepository.inActiveMappingByFpProductMasterId(workingCapitalParameterRequest.getId());
 		saveNegativeIndustry(workingCapitalParameterRequest);
+
+		//Dhaval
+		boolean isUpdate = msmeValueMappingService.updateMsmeValueMapping(false, workingCapitalParameterRequest.getId());
+		logger.info("updated = {}",isUpdate);
+
 		logger.info("end saveOrUpdate");
 		return true;
 	}
@@ -246,7 +255,7 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 				e.printStackTrace();
 			}
 		}
-
+		workingCapitalParameterRequest.setMsmeFundingIds(msmeValueMappingService.getDataListFromFpProductId(2,id, workingCapitalParameterRequest.getUserId()));
 		logger.info("end getWorkingCapitalParameter");
 		return workingCapitalParameterRequest;
 	}
@@ -498,7 +507,8 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
          } else {
              logger.info("you set jobId or list of roleId NULL for calling workflow");
          }
-		
+
+		workingCapitalParameterRequest.setMsmeFundingIds(msmeValueMappingService.getDataListFromFpProductId(1,id, userId));
 		logger.info("end getWorkingCapitalParameterTemp");
 		return workingCapitalParameterRequest;
 	}
@@ -573,6 +583,9 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 		// negative industry save
 		negativeIndustryTempRepository.inActiveMappingByFpProductMasterId(workingCapitalParameter.getId());
 		saveNegativeIndustryTemp(workingCapitalParameterRequest);
+		//Dhaval
+		boolean isUpdate = msmeValueMappingService.updateMsmeValueMappingTemp(workingCapitalParameterRequest.getMsmeFundingIds(),workingCapitalParameterRequest.getId(), workingCapitalParameterRequest.getUserId());
+		logger.info("updated = {}",isUpdate);
 		logger.info("end saveOrUpdateTemp");
 		return true;
 	}

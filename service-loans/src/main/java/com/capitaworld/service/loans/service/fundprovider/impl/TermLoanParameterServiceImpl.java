@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import com.capitaworld.service.loans.service.fundprovider.MsmeValueMappingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -100,6 +101,9 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
     @Autowired
     private WorkflowClient workflowClient;
 
+	@Autowired
+	private MsmeValueMappingService msmeValueMappingService;
+
 	@Override
 	public boolean saveOrUpdate(TermLoanParameterRequest termLoanParameterRequest, Long mappingId) {
 		CommonDocumentUtils.startHook(logger, "saveOrUpdate");
@@ -151,7 +155,10 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		//negative industry save
 		negativeIndustryRepository.inActiveMappingByFpProductMasterId(termLoanParameterRequest.getId());
 		saveNegativeIndustry(termLoanParameterRequest);
-		
+
+		//Ravina
+		boolean isUpdate = msmeValueMappingService.updateMsmeValueMapping(false, termLoanParameterRequest.getId());
+		logger.info("updated = {}",isUpdate);
 		CommonDocumentUtils.endHook(logger, "saveOrUpdate");
 		return true;
 
@@ -263,6 +270,7 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 				e.printStackTrace();
 			}
 		}
+		termLoanParameterRequest.setMsmeFundingIds(msmeValueMappingService.getDataListFromFpProductId(2,id, termLoanParameterRequest.getUserId()));
 		CommonDocumentUtils.endHook(logger, "getTermLoanParameterRequest");
 		return termLoanParameterRequest;
 	}
@@ -524,6 +532,9 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
         } else {
             logger.info("you set jobId or list of roleId NULL for calling workflow");
         }
+
+		termLoanParameterRequest.setMsmeFundingIds(msmeValueMappingService.getDataListFromFpProductId(1,id, userId));
+		logger.info("end getTermLoanParameterRequestTemp");
 		return termLoanParameterRequest;
 	}
 	
@@ -598,7 +609,10 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		//negative industry save
 		negativeIndustryTempRepository.inActiveMappingByFpProductMasterId(termLoanParameter.getId());
 		saveNegativeIndustryTemp(termLoanParameterRequest);
-		
+
+		boolean isUpdate = msmeValueMappingService.updateMsmeValueMappingTemp(termLoanParameterRequest.getMsmeFundingIds(),termLoanParameterRequest.getId(), termLoanParameterRequest.getUserId());
+		logger.info("updated = {}",isUpdate);
+
 		CommonDocumentUtils.endHook(logger, "saveOrUpdate");
 		return true;
 
