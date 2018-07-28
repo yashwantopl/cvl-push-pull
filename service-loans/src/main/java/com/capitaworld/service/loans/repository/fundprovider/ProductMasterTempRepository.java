@@ -48,7 +48,7 @@ public interface ProductMasterTempRepository extends JpaRepository<ProductMaster
 	@Query("from ProductMasterTemp pm where pm.userOrgId =:userOrgId  and productId in (1,2,15,16)")
 	public List<ProductMasterTemp> getUserCorporateProductListByOrgId(@Param("userOrgId") Long userOrgId);
 	
-	@Query("from ProductMasterTemp pm where pm.userId =:userId  and productId not in (1,2)")
+	@Query("from ProductMasterTemp pm where pm.userId =:userId and isApproved=false and productId not in (1,2)")
 	public List<ProductMasterTemp> getUserRetailProductList(@Param("userId") Long userId);
 	
 	@Query("from ProductMasterTemp pm where pm.userOrgId =:userOrgId  and productId not in (1,2)")
