@@ -5622,13 +5622,33 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			return Collections.emptyList();
 		}else {
 			List<DirectorBackgroundDetailRequest> listData = new ArrayList<>(direcotors.size());
+			AddressRequest addressRequest = null;
+			DirectorBackgroundDetailRequest target = null;
 			for(DirectorBackgroundDetail source : direcotors) {
-				DirectorBackgroundDetailRequest target = new DirectorBackgroundDetailRequest();
+				target = new DirectorBackgroundDetailRequest();
 				target.setName(source.getDirectorsName());
 				if(source.getGender() != null) {
 					target.setGender(Gender.getById(source.getGender()).getValue());						
 				}
-				target.setAddress(source.getAddress());
+				addressRequest = new AddressRequest(); 
+				addressRequest.setStreetName(source.getStreetName());
+				addressRequest.setLandMark(source.getLandmark());
+				addressRequest.setPremiseNumber(source.getPremiseNumber());
+				try {
+					if(source.getStateId() != null) {
+						addressRequest.setState(CommonDocumentUtils.getState(source.getStateId().longValue(), oneFormClient));	
+					}
+					if(source.getCountryId() != null) {
+						addressRequest.setCountry(CommonDocumentUtils.getCountry(source.getCountryId().longValue(), oneFormClient));	
+					}
+					
+					if(source.getCityId() != null) {
+						addressRequest.setCity(CommonDocumentUtils.getCity(source.getCityId().longValue(), oneFormClient));	
+					}					
+				}catch(Exception e) {
+					e.printStackTrace();
+				}
+				target.setAddress(addressRequest);
 				target.setPanNo(source.getPanNo());
 				if(source.getRelationshipType() != null) {
 					target.setRelationshipType(DirectorRelationshipType.getById(source.getRelationshipType()).getValue());						
