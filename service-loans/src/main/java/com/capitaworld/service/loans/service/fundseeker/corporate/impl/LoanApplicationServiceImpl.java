@@ -5634,6 +5634,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				addressRequest.setStreetName(source.getStreetName());
 				addressRequest.setLandMark(source.getLandmark());
 				addressRequest.setPremiseNumber(source.getPremiseNumber());
+				addressRequest.setPincode(source.getPincode());
 				try {
 					if(source.getStateId() != null) {
 						addressRequest.setState(CommonDocumentUtils.getState(source.getStateId().longValue(), oneFormClient));	
