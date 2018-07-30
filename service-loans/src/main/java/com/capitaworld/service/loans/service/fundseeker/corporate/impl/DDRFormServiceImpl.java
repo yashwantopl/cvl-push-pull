@@ -1058,6 +1058,7 @@ public class DDRFormServiceImpl implements DDRFormService{
 			return null;
 		}
 		response.setApprovedDate(loanApplicationMaster.getApprovedDate());
+		response.setDdrStatusId(loanApplicationMaster.getDdrStatusId());
 
 		//---------------------------------------------------PROFILE ------------------------------------------------------------------------
 		logger.info("Before Call Corporate Profile UserId is :- " + userId);
@@ -1218,11 +1219,14 @@ public class DDRFormServiceImpl implements DDRFormService{
             		DDRExistingBankerDetails ddrExistingBankerDetails = ddrExistingBankerDetailsRepository.findByFinancialArrangementIdAndIsActive(financialArrangementsDetailRequest.getId(), true);
             		if(!CommonUtils.isObjectNullOrEmpty(ddrExistingBankerDetails)) {
             			financialArrangementsDetailResponse.setAddress(ddrExistingBankerDetails.getAddress());
+            			financialArrangementsDetailResponse.setRelationshipSince(ddrExistingBankerDetails.getRelationshipSince());
             		}
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-            	financialArrangementsDetailResponse.setRelationshipSince(financialArrangementsDetailRequest.getRelationshipSince());
+            	if(CommonUtils.isObjectNullOrEmpty(financialArrangementsDetailResponse.getRelationshipSince())) {
+            		financialArrangementsDetailResponse.setRelationshipSince(financialArrangementsDetailRequest.getRelationshipSince());	
+            	}
                 financialArrangementsDetailResponse.setOutstandingAmount(convertDouble(financialArrangementsDetailRequest.getOutstandingAmount()));
                 financialArrangementsDetailResponse.setSecurityDetails(financialArrangementsDetailRequest.getSecurityDetails());
                 /*financialArrangementsDetailResponse.setAddress(financialArrangementsDetailRequest.getAddress());*/

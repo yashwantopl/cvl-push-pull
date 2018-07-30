@@ -221,6 +221,8 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 						? addProductRequest.getUserId() : addProductRequest.getClientId()));
 				productMaster.setIsParameterFilled(false);
 				productMaster.setModifiedDate(new Date());
+				//set business type id
+				productMaster.setBusinessTypeId(addProductRequest.getBusinessTypeId());
 				productMaster.setIsActive(true);
 				productMaster.setUserOrgId(userOrgId);
 				productMaster.setProductCode(
