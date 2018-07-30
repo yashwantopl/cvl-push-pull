@@ -1058,6 +1058,7 @@ public class DDRFormServiceImpl implements DDRFormService{
 			return null;
 		}
 		response.setApprovedDate(loanApplicationMaster.getApprovedDate());
+		response.setDdrStatusId(loanApplicationMaster.getDdrStatusId());
 
 		//---------------------------------------------------PROFILE ------------------------------------------------------------------------
 		logger.info("Before Call Corporate Profile UserId is :- " + userId);
