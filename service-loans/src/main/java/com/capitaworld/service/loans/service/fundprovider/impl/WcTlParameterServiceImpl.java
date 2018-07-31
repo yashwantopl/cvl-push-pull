@@ -549,6 +549,7 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 		{
 			
 			WcTlParameter = wcTlParameterTempRepository.getWcTlParameterTempByFpProductMappingId(wcTlParameterRequest.getId());
+			WcTlParameter.setFpProductMappingId(wcTlParameterRequest.getId());
 			
 		}
 
@@ -562,8 +563,12 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 		if (!CommonUtils.isObjectListNull(wcTlParameterRequest.getMinTenure()))
 			wcTlParameterRequest.setMinTenure(wcTlParameterRequest.getMinTenure().multiply(new BigDecimal("12")));
 		
+		
+		if(wcTlParameterRequest.getAppstage()!=1)
+		{
+			WcTlParameter.setFpProductMappingId(wcTlParameterRequest.getId());
+		}
 		BeanUtils.copyProperties(wcTlParameterRequest, WcTlParameter, CommonUtils.IgnorableCopy.FP_PRODUCT_TEMP);
-		WcTlParameter.setFpProductMappingId(wcTlParameterRequest.getId());
 		WcTlParameter.setModifiedBy(wcTlParameterRequest.getUserId());
 		WcTlParameter.setModifiedDate(new Date());
 		WcTlParameter.setIsActive(true);
