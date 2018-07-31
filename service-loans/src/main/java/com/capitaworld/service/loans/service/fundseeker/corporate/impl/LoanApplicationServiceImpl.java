@@ -3,6 +3,7 @@ package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -27,6 +28,18 @@ import org.springframework.transaction.annotation.Transactional;
 import com.capitaworld.api.eligibility.model.CLEligibilityRequest;
 import com.capitaworld.api.eligibility.model.EligibililityRequest;
 import com.capitaworld.api.eligibility.model.EligibilityResponse;
+import com.capitaworld.cibil.api.model.CibilRequest;
+import com.capitaworld.cibil.api.model.CibilResponse;
+import com.capitaworld.cibil.api.model.report.Address;
+import com.capitaworld.cibil.api.model.report.Account;
+import com.capitaworld.cibil.api.model.report.CreditReport;
+import com.capitaworld.cibil.api.model.report.EmploymentSegment;
+import com.capitaworld.cibil.api.model.report.Enquiry;
+import com.capitaworld.cibil.api.model.report.NameSegment;
+import com.capitaworld.cibil.api.utility.CibilUtils;
+import com.capitaworld.cibil.api.utility.CibilUtils.AccountTypeEnum;
+import com.capitaworld.cibil.api.utility.CibilUtils.GenderTypeEnum;
+import com.capitaworld.cibil.client.CIBILClient;
 import com.capitaworld.client.eligibility.EligibilityClient;
 import com.capitaworld.connect.api.ConnectResponse;
 import com.capitaworld.connect.client.ConnectClient;
@@ -230,6 +243,10 @@ import com.capitaworld.sidbi.integration.model.SecurityCorporateDetailRequest;
 import com.capitaworld.sidbi.integration.model.TotalCostOfProjectRequest;
 import com.capitaworld.sidbi.integration.model.ddr.DDRFormDetailsRequest;
 import com.capitaworld.sidbi.integration.model.eligibility.EligibilityDetailRequest;
+import com.capitaworld.sidbi.integration.model.individual.ContactInfoRequest;
+import com.capitaworld.sidbi.integration.model.individual.EmploymentInfoRequest;
+import com.capitaworld.sidbi.integration.model.individual.EnquiryInfoRequest;
+import com.capitaworld.sidbi.integration.model.individual.PersonalInfoRequest;
 import com.capitaworld.sidbi.integration.model.financial.FinancialRequest;
 import com.capitaworld.sidbi.integration.model.irr.IRROutputManufacturingRequest;
 import com.capitaworld.sidbi.integration.model.irr.IRROutputServiceRequest;
@@ -359,6 +376,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	
 	@Autowired
 	private AssociatedConcernDetailRepository associatedConcernDetailRepository;
+	
+	@Autowired
+	private CIBILClient cibilClient;
 	
 	@Autowired
 	private CMAService cmaService;
@@ -4913,6 +4933,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	@Override
 	public boolean savePhese1DataToSidbi(Long applicationId, Long userId,Long organizationId,Long fpProductMappingId) {
 		GenerateTokenRequest generateTokenRequest =null;
+		PrimaryCorporateDetail applicationMaster = null;
 		try {
 			generateTokenRequest = setUrlAndTokenInSidbiClient(organizationId , applicationId);
 			if(CommonUtils.isObjectNullOrEmpty(generateTokenRequest)) {
@@ -4935,8 +4956,14 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		try {
 			AuditMaster audit = auditComponent.getAudit(applicationId, true, AuditComponent.PRELIM_INFO);
 			if(audit == null) {
+				//Get and Create Loan Master
+				applicationMaster = primaryCorporateRepository.findOneByApplicationIdId(applicationId);
+				if(applicationMaster == null) {
+					logger.info("Loan Application Found Null====>{}",applicationId);
+					return false;
+				}
 				//Create Prelim Sheet Object	
-				ProfileReqRes prelimData = getPrelimData(applicationId,userId);
+				ProfileReqRes prelimData = getPrelimData(applicationMaster,userId);
 				if(prelimData == null) {
 					logger.info("ProfileReqRes ==> Prelim Sheet Object is Null in savePhese1DataToSidbi() ");
 					auditComponent.updateAudit(AuditComponent.PRELIM_INFO, applicationId, userId, "ProfileReqRes ==> Prelim Sheet Object is Null ProfileReqRes prelimData  ==> " + prelimData,  savePrelimInfo);
@@ -4966,7 +4993,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			audit = auditComponent.getAudit(applicationId, true, AuditComponent.MATCHES_PARAMETER);
 			if(audit == null) {
 				try {
-					MatchesParameterRequest parameterRequest = createMatchesParameterRequest(applicationId, fpProductMappingId);
+					MatchesParameterRequest parameterRequest = createMatchesParameterRequest(applicationId, fpProductMappingId,applicationMaster.getProductId());
 					if(parameterRequest == null) {
 						logger.info("MatchesParameterRequest Not Found in savePhese1DataToSidbi() ==> for ApplicationId ====>{}FpProductId====>{}",applicationId,fpProductMappingId);
 						auditComponent.updateAudit(AuditComponent.MATCHES_PARAMETER, applicationId, userId, "MatchesParameterRequest Not Found for ApplicationId ====>{} "+applicationId+" FpProductId====>{} "+fpProductMappingId , matchesParameters);
@@ -5301,33 +5328,27 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		return false;
 	}
 	
-	private ProfileReqRes getPrelimData(Long applicationId, Long userId) {
-		//Get and Create Loan Master
-		PrimaryCorporateDetail applicationMaster = primaryCorporateRepository.findOneByApplicationIdId(applicationId);
-		if(applicationMaster == null) {
-			logger.info("Loan Application Found Null====>{}",applicationId);
-			return null;
-		}
+	private ProfileReqRes getPrelimData(PrimaryCorporateDetail applicationMaster, Long userId) {
 		ProfileReqRes profileReqRes = new  ProfileReqRes();
 		profileReqRes.setLoanMasterRequest(createObj(applicationMaster));
 		//Create Corporate Profile Object
-		CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository.findOneByApplicationIdId(applicationId);
+		CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository.findOneByApplicationIdId(applicationMaster.getId());
 		if(corporateApplicantDetail != null) {
 			profileReqRes.setCorporateProfileRequest(createProfileObj(corporateApplicantDetail,applicationMaster.getUserId()));
 			//Setting Director Details
-			profileReqRes.setDirBackList(getDirectorListForSidbi(applicationId));
+			profileReqRes.setDirBackList(getDirectorListForSidbi(applicationMaster.getId()));
 			//Setting Current Financial Details
-			profileReqRes.setCurrentFinArrList(getCurrentFinancialDetaisForSidbi(applicationId));
+			profileReqRes.setCurrentFinArrList(getCurrentFinancialDetaisForSidbi(applicationMaster.getId()));
 			return profileReqRes;
 			
 		}else {
-			logger.warn("No Corporate Profile Found For Application Id==>{}",applicationId);
+			logger.warn("No Corporate Profile Found For Application Id==>{}",applicationMaster.getId());
 		}
 		
 		return null;
 	}
 	
-	private MatchesParameterRequest createMatchesParameterRequest(Long applicationId,Long fpProductId) {
+	private MatchesParameterRequest createMatchesParameterRequest(Long applicationId,Long fpProductId,Integer productId) {
 		MatchRequest request = new MatchRequest();
 		request.setApplicationId(applicationId);
 		request.setProductId(fpProductId);
@@ -5621,13 +5642,56 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			return Collections.emptyList();
 		}else {
 			List<DirectorBackgroundDetailRequest> listData = new ArrayList<>(direcotors.size());
+			SimpleDateFormat dateFormat2 = new SimpleDateFormat("dd-MM-yyyy");
+			AddressRequest addressRequest = null;
+			DirectorBackgroundDetailRequest target = null;
 			for(DirectorBackgroundDetail source : direcotors) {
-				DirectorBackgroundDetailRequest target = new DirectorBackgroundDetailRequest();
+				CibilRequest cibilRequest = new CibilRequest();
+				cibilRequest.setApplicationId(applicationId);
+				cibilRequest.setPan(source.getPanNo());
+				CibilResponse cibilResponse = null;
+				try {
+					 cibilResponse = cibilClient.getDirectorDetails(cibilRequest);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				CreditReport creditReport = null;
+				if(cibilResponse!=null && cibilResponse.getData()!=null) {
+					try {
+					creditReport = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,  Object>)cibilResponse.getData(), CreditReport.class );
+					
+					}
+					catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+				
+				target = new DirectorBackgroundDetailRequest();
 				target.setName(source.getDirectorsName());
 				if(source.getGender() != null) {
 					target.setGender(Gender.getById(source.getGender()).getValue());						
 				}
-				target.setAddress(source.getAddress());
+				addressRequest = new AddressRequest(); 
+				addressRequest.setStreetName(source.getStreetName());
+				addressRequest.setLandMark(source.getLandmark());
+				addressRequest.setPremiseNumber(source.getPremiseNumber());
+				addressRequest.setPincode(source.getPincode());
+				try {
+					if(source.getStateId() != null) {
+						addressRequest.setState(CommonDocumentUtils.getState(source.getStateId().longValue(), oneFormClient));	
+					}
+					if(source.getCountryId() != null) {
+						addressRequest.setCountry(CommonDocumentUtils.getCountry(source.getCountryId().longValue(), oneFormClient));	
+					}
+					
+					if(source.getCityId() != null) {
+						addressRequest.setCity(CommonDocumentUtils.getCity(source.getCityId().longValue(), oneFormClient));	
+					}					
+				}catch(Exception e) {
+					e.printStackTrace();
+				}
+				target.setAddress(addressRequest);
 				target.setPanNo(source.getPanNo());
 				if(source.getRelationshipType() != null) {
 					target.setRelationshipType(DirectorRelationshipType.getById(source.getRelationshipType()).getValue());						
@@ -5645,7 +5709,173 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				target.setFirstName(source.getFirstName());
 				target.setMiddleName(source.getMiddleName());
 				target.setLastName(source.getLastName());
+
+				if(!CommonUtils.isObjectNullOrEmpty(creditReport.getAccount())) {
+				for(Account account : creditReport.getAccount()) {
+					CurrentFinancialArrangementsDetailRequest currFin = new CurrentFinancialArrangementsDetailRequest();
+					if(!CommonUtils.isObjectNullOrEmpty(account.getAccountNonSummarySegmentFields()
+							.getHighCreditOrSanctionedAmount().doubleValue())) {
+					currFin.setAmount(account.getAccountNonSummarySegmentFields()
+							.getHighCreditOrSanctionedAmount().doubleValue());
+					}
+			
+					currFin.setApplicationId(applicationId);
+					currFin.setCreatedDate(new Date());
+					currFin.setIsActive(true);
+					if(!CommonUtils.isObjectNullOrEmpty(
+								account.getAccountNonSummarySegmentFields().getReportingMemberShortName())) {
+					currFin.setLenderName(
+								account.getAccountNonSummarySegmentFields().getReportingMemberShortName());
+					}
+//					currFin.setSanctionedAmount(sanctionedAmount);
+					target.addCurrentFinancialArrangementsDetailRequest(currFin);
+				}
+				}
+				
+				if(!CommonUtils.isObjectNullOrEmpty(creditReport.getEmploymentSegment())) {
+					EmploymentInfoRequest empInfoReq = new EmploymentInfoRequest(); 
+					if(!CommonUtils.isObjectNullOrEmpty(creditReport.getEmploymentSegment().getAccountType())){
+					empInfoReq.setAccountType(AccountTypeEnum.fromId(String.valueOf(creditReport.getEmploymentSegment().getAccountType())).getValue());
+					}
+					String date = String.valueOf(creditReport.getEmploymentSegment().getDateReportedCertified());
+					String dt = date.substring(0, 2);
+					String mon = date.substring(2, (dt.length() + 2));
+					String year = date.substring((dt.length() + 2), date.length());
+					try {
+						empInfoReq.setDateReported(dateFormat2.parse(dt + "-" + mon + "-" + year));
+					} catch (ParseException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					
+					if(!CommonUtils.isObjectNullOrEmpty(creditReport.getEmploymentSegment().getIncome())){
+					empInfoReq.setIncome(Double.valueOf(creditReport.getEmploymentSegment().getIncome()));
+					}
+					if(!CommonUtils.isObjectNullOrEmpty(creditReport.getEmploymentSegment().getOccupationCode())){
+					empInfoReq.setOccupation(creditReport.getEmploymentSegment().getOccupationCode());
+					}
+					if(!CommonUtils.isObjectNullOrEmpty(creditReport.getEmploymentSegment().getMonthlyAnnualIndicator())){
+					empInfoReq.setIncomeIndicator(creditReport.getEmploymentSegment().getMonthlyAnnualIndicator());
+					}
+					if(!CommonUtils.isObjectNullOrEmpty(creditReport.getEmploymentSegment().getLength())){
+					empInfoReq.setFrequency(creditReport.getEmploymentSegment().getLength());
+					}
+					empInfoReq.setApplicationId(applicationId);
+					empInfoReq.setCreatedDate(new Date());
+					empInfoReq.setIsActive(true);
+					target.addEmploymentInfoRequest(empInfoReq);
+				}
+				
+				if(!CommonUtils.isObjectNullOrEmpty(creditReport.getAddress())) {
+					for(Address address : creditReport.getAddress()) {
+						ContactInfoRequest contInfoReq = new ContactInfoRequest();
+						contInfoReq.setCategory(address.getAddressCategory());
+						if(!CommonUtils.isObjectNullOrEmpty(address.getDateReported())){
+						String date = String.valueOf(address.getDateReported());
+						String dt = date.substring(0, 2);
+						String mon = date.substring(2, (dt.length() + 2));
+						String year = date.substring((dt.length() + 2), date.length());
+						
+						try {
+						contInfoReq.setDateReported(dateFormat2.parse(dt + "-" + mon + "-" + year));
+						}
+						catch (Exception e) {
+							// TODO: handle exception
+						}
+						}
+						AddressRequest addReq = new AddressRequest();
+						
+//						addReq.setCity(address.get);
+						if(!CommonUtils.isObjectNullOrEmpty(address.getStateCode())){
+						addReq.setState(CibilUtils.StateEnum.fromCode(address.getStateCode()).getValue());
+						}
+						
+						if(!CommonUtils.isObjectNullOrEmpty(address.getStateCode())) {
+//							addReq.setCountry(`);
+						}
+						
+						if(!CommonUtils.isObjectNullOrEmpty(address.getAddressLine1())) {
+							addReq.setPremiseNumber(address.getAddressLine1());
+						}
+						if(!CommonUtils.isObjectNullOrEmpty(address.getAddressLine2())) {
+							addReq.setStreetName(address.getAddressLine2());
+						}
+						
+						if(!CommonUtils.isObjectNullOrEmpty(address.getAddressLine3())) {
+							addReq.setLandMark(address.getAddressLine3());
+						}
+						contInfoReq.setCreatedDate(new Date());
+						contInfoReq.setIsActive(true);
+						contInfoReq.setAddressId(addReq);
+						target.addContactInfoRequest(contInfoReq);
+					}
+				}
+				
+				if(!CommonUtils.isObjectNullOrEmpty(creditReport.getEnquiry())) {
+					for(Enquiry enq : creditReport.getEnquiry()) {
+						EnquiryInfoRequest enqInfoRe = new EnquiryInfoRequest();
+						enqInfoRe.setApplicationId(applicationId);
+						enqInfoRe.setCreatedDate(new Date());
+						if(!CommonUtils.isObjectNullOrEmpty(enq.getEnquiryAmount())) {
+						enqInfoRe.setEnquiryAmount(Double.valueOf(enq.getEnquiryAmount()));
+						}
+						if(!CommonUtils.isObjectNullOrEmpty(enq.getEnquiryPurpose())) {
+						enqInfoRe.setEnquiryPurpose(enq.getEnquiryPurpose());
+						}
+						enqInfoRe.setIsActive(true);
+						if(!CommonUtils.isObjectNullOrEmpty(enq.getEnquiringMemberShortName())) {
+						enqInfoRe.setMemberName(enq.getEnquiringMemberShortName());
+						}
+						
+						if(!CommonUtils.isObjectNullOrEmpty(enq.getDateOfEnquiryFields())){
+							String date = String.valueOf(enq.getDateOfEnquiryFields());
+							String dt = date.substring(0, 2);
+							String mon = date.substring(2, (dt.length() + 2));
+							String year = date.substring((dt.length() + 2), date.length());
+							
+							try {
+								enqInfoRe.setDateOfEnquiry(dateFormat2.parse(dt + "-" + mon + "-" + year));
+							}
+							catch (Exception e) {
+								// TODO: handle exception
+							}
+						}
+						enqInfoRe.setApplicationId(applicationId);
+						enqInfoRe.setCreatedDate(new Date());
+						enqInfoRe.setIsActive(true);
+						target.addEnquiryInfoRequest(enqInfoRe);
+					}
+						
+				}
+				if(!CommonUtils.isObjectNullOrEmpty(creditReport.getNameSegment())) {
+					PersonalInfoRequest perInfo = new PersonalInfoRequest();
+					perInfo.setApplicationId(applicationId);
+					perInfo.setCreatedDate(new Date());
+					perInfo.setIsActive(true);
+					
+					
+					perInfo.setFullName(creditReport.getNameSegment().getConsumerName1());
+					perInfo.setGender(GenderTypeEnum.fromMappingId(creditReport.getNameSegment().getGender()).getValue());
+					if(!CommonUtils.isObjectNullOrEmpty(creditReport.getNameSegment().getDateOfBirth())){
+						String date = String.valueOf(creditReport.getNameSegment().getDateOfBirth());
+						String dt = date.substring(0, 2);
+						String mon = date.substring(2, (dt.length() + 2));
+						String year = date.substring((dt.length() + 2), date.length());
+						
+						try {
+							perInfo.setDob(dt + "-" + mon + "-" + year);
+						}
+						catch (Exception e) {
+							// TODO: handle exception
+						}
+					}
+					
+					target.setPersonalInfoRequest(perInfo);
+					
+				}
+				
 				listData.add(target);
+				
 			}
 			return listData;
 		}
@@ -6548,25 +6778,25 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	private String getConstitutionryForHunter(Integer constitutionId) {
 		if (constitutionId != null) {
 			if (Constitution.PRIVATE_LIMITED.getId() == constitutionId) {
-				return "Private Limited Co";
+				return "PRIVATE LIMITED CO";
 			} else if (Constitution.PUBLIC_LISTED.getId() == constitutionId) {
-				return "Public Limited Co";
+				return "PUBLIC LIMITED CO";
 			}
 
 			else if (Constitution.PUBLIC_UNLISTED.getId() == constitutionId) {
-				return "Public Limited Co";
+				return "PUBLIC LIMITED CO";
 			} else if (Constitution.FOREIGN_COMPANY.getId() == constitutionId) {
-				return "Multi National";
+				return "MULTI NATIONAL";
 			} else if (Constitution.SOLE_PROPRIETORSHIP.getId() == constitutionId) {
-				return "Proprietorship";
+				return "PROPRIETORSHIP";
 			} else if (Constitution.ONE_PERSON.getId() == constitutionId) {
-				return "Proprietorship";
+				return "PROPRIETORSHIP";
 			} else if (Constitution.PARTNERSHIP.getId() == constitutionId) {
-				return "Partnership";
+				return "PARTNERSHIP";
 			} else if (Constitution.GOVERNMENT_ENTITY.getId() == constitutionId) {
-				return "State Government";
+				return "STATE GOVERNMENT";
 			} else {
-				return "Others";
+				return "OTHERS";
 			}
 		} else {
 			return null;

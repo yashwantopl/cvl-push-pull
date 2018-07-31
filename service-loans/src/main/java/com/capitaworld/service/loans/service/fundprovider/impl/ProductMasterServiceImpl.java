@@ -26,6 +26,7 @@ import com.capitaworld.service.dms.model.DocumentRequest;
 import com.capitaworld.service.dms.model.DocumentResponse;
 import com.capitaworld.service.dms.model.StorageDetailsResponse;
 import com.capitaworld.service.dms.util.DocumentAlias;
+import com.capitaworld.service.loans.domain.fundprovider.NtbTermLoanParameterTemp;
 import com.capitaworld.service.loans.domain.fundprovider.ProductMaster;
 import com.capitaworld.service.loans.domain.fundprovider.ProductMasterTemp;
 import com.capitaworld.service.loans.domain.fundprovider.TermLoanParameterTemp;
@@ -194,7 +195,14 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 					productMaster = new WorkingCapitalParameterTemp();
 					break;
 				case TERM_LOAN:
+					if(addProductRequest.getBusinessTypeId()==2)
+					{
+						productMaster = new NtbTermLoanParameterTemp();
+					}
+					else
+					{
 					productMaster = new TermLoanParameterTemp();
+					}
 					break;
 				case WCTL_LOAN:
 					productMaster = new WcTlParameterTemp();
@@ -806,7 +814,14 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 			if (master.getProductId() == 1) {
 				return workingCapitalParameterService.getWorkingCapitalParameterTemp(master.getId(), role, userId);
 			} else if (master.getProductId() == 2) {
+				if(master.getBusinessTypeId()!=null && master.getBusinessTypeId()==2)
+				{
+					return termLoanParameterService.getNtbTermLoanParameterRequestTemp(id, role, userId);
+				}
+				else
+				{
 				return termLoanParameterService.getTermLoanParameterRequestTemp(master.getId(),role,userId);
+				}
 			} /*
 				 * else if (master.getProductId() == 15) { return
 				 * unsecuredLoanParameterService.
@@ -853,7 +868,16 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 					return workingCapitalParameterService.saveMasterFromTempWc(mappingId);
 				} else if (corporateProduct.getProductId() == CommonUtils.LoanType.TERM_LOAN.getValue()) {
 					CommonDocumentUtils.endHook(logger, "saveCorporate");
-					return termLoanParameterService.saveMasterFromTempTl(mappingId);
+					if(corporateProduct.getBusinessTypeId()!=null && corporateProduct.getBusinessTypeId()==2)
+					{
+						return termLoanParameterService.saveMasterFromTempTl(mappingId);
+					}
+					else
+					{
+						return termLoanParameterService.saveMasterFromTempTl(mappingId);	
+					}
+					
+					
 				} else if (corporateProduct.getProductId() == CommonUtils.LoanType.WCTL_LOAN.getValue()) {
 					CommonDocumentUtils.endHook(logger, "saveCorporate");
 					return wcTlParameterService.saveMasterFromTempWcTl(mappingId);
@@ -876,10 +900,21 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 					CommonDocumentUtils.endHook(logger, "saveCorporateInTemp");
 					return workingCapitalParameterService.saveOrUpdateTemp(capitalParameterRequest);
 				} else if (corporateProduct.getProductId() == CommonUtils.LoanType.TERM_LOAN.getValue()) {
-					TermLoanParameterRequest loanParameterRequest = new TermLoanParameterRequest();
-					BeanUtils.copyProperties(corporateProduct, loanParameterRequest);
-					CommonDocumentUtils.endHook(logger, "saveCorporateInTemp");
-					return termLoanParameterService.saveOrUpdateTemp(loanParameterRequest);
+					if(corporateProduct.getBusinessTypeId()!=null&&corporateProduct.getBusinessTypeId()==2)
+					{
+						TermLoanParameterRequest loanParameterRequest = new TermLoanParameterRequest();
+						BeanUtils.copyProperties(corporateProduct, loanParameterRequest);
+						CommonDocumentUtils.endHook(logger, "saveCorporateInTemp");
+						return termLoanParameterService.saveOrUpdateNtbTemp(loanParameterRequest);
+					}
+					else
+					{
+						TermLoanParameterRequest loanParameterRequest = new TermLoanParameterRequest();
+						BeanUtils.copyProperties(corporateProduct, loanParameterRequest);
+						CommonDocumentUtils.endHook(logger, "saveCorporateInTemp");
+						return termLoanParameterService.saveOrUpdateTemp(loanParameterRequest);	
+					}
+					
 				} else if (corporateProduct.getProductId() == CommonUtils.LoanType.WCTL_LOAN.getValue()) {
 					WcTlParameterRequest wcTlParameterRequest = new WcTlParameterRequest();
 					BeanUtils.copyProperties(corporateProduct, wcTlParameterRequest);
