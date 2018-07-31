@@ -148,8 +148,8 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		termLoanParameter.setIsActive(true);
 		termLoanParameter.setIsParameterFilled(true);
 		termLoanParameter.setJobId(termLoanParameterRequest.getJobId());
-		termLoanParameterRepository.save(termLoanParameter);
-		
+		TermLoanParameter termLoanParameter2=termLoanParameterRepository.save(termLoanParameter);
+		termLoanParameterRequest.setId(termLoanParameter2.getId());
 		industrySectorRepository.inActiveMappingByFpProductId(termLoanParameterRequest.getId());
 		// industry data save
 		saveIndustry(termLoanParameterRequest);
@@ -1148,7 +1148,8 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		termLoanParameter.setIsActive(true);
 		termLoanParameter.setIsParameterFilled(true);
 		termLoanParameter.setJobId(termLoanParameterRequest.getJobId());
-		ntbParameterRepository.save(termLoanParameter);
+		NTBParameter ntbParameter=ntbParameterRepository.save(termLoanParameter);
+		termLoanParameterRequest.setId(ntbParameter.getId());
 		
 		industrySectorRepository.inActiveMappingByFpProductId(termLoanParameterRequest.getId());
 		// industry data save
