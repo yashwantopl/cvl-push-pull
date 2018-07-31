@@ -527,6 +527,7 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 		{
 			
 			workingCapitalParameter = workingCapitalParameterTempRepository.getworkingCapitalParameterTempByFpProductMappingId(workingCapitalParameterRequest.getId());
+			workingCapitalParameter.setFpProductMappingId(workingCapitalParameterRequest.getId());
 			
 		}
 		
@@ -540,6 +541,11 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 		if (!CommonUtils.isObjectListNull(workingCapitalParameterRequest.getMinTenure()))
 			workingCapitalParameterRequest.setMinTenure(workingCapitalParameterRequest.getMinTenure() * 12);
 
+		if(workingCapitalParameterRequest.getAppstage()!=1)
+		{
+			workingCapitalParameter.setFpProductMappingId(workingCapitalParameterRequest.getId());
+		}
+		
 		BeanUtils.copyProperties(workingCapitalParameterRequest, workingCapitalParameter,
 				CommonUtils.IgnorableCopy.FP_PRODUCT_TEMP);
 		workingCapitalParameter.setModifiedBy(workingCapitalParameterRequest.getUserId());
