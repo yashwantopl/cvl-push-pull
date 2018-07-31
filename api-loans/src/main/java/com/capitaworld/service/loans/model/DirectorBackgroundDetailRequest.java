@@ -107,7 +107,18 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 	private Integer qualificationId;
 	
 	private String amount;
-	
+
+	/*
+	* SBI Msme Integration fields
+	* By Ravina
+	* */
+	private String fatherOrSpouseName;
+	private Integer educationalStatus;
+	private Integer nationality;
+	private Boolean visuallyImpaired;
+	private Integer residentStatus;
+	private Boolean isGuarantor;
+	private DirectorPersonalDetailRequest directorPersonalDetailRequest;
 
 	public Boolean getIsActive() {
 		return isActive;
@@ -474,12 +485,12 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 		this.landmark = landmark;
 	}
 
-	public Boolean getMainDirector() {
+	public Boolean getIsMainDirector() {
 		return isMainDirector;
 	}
 
-	public void setMainDirector(Boolean mainDirector) {
-		isMainDirector = mainDirector;
+	public void setIsMainDirector(Boolean isMainDirector) {
+		this.isMainDirector = isMainDirector;
 	}
 
 	public Integer getQualificationId() {
@@ -496,6 +507,62 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 
 	public void setAmount(String amount) {
 		this.amount = amount;
+	}
+
+	public String getFatherOrSpouseName() {
+		return fatherOrSpouseName;
+	}
+
+	public void setFatherOrSpouseName(String fatherOrSpouseName) {
+		this.fatherOrSpouseName = fatherOrSpouseName;
+	}
+
+	public Integer getEducationalStatus() {
+		return educationalStatus;
+	}
+
+	public void setEducationalStatus(Integer educationalStatus) {
+		this.educationalStatus = educationalStatus;
+	}
+
+	public Integer getNationality() {
+		return nationality;
+	}
+
+	public void setNationality(Integer nationality) {
+		this.nationality = nationality;
+	}
+
+	public Boolean getVisuallyImpaired() {
+		return visuallyImpaired;
+	}
+
+	public void setVisuallyImpaired(Boolean visuallyImpaired) {
+		this.visuallyImpaired = visuallyImpaired;
+	}
+
+	public Integer getResidentStatus() {
+		return residentStatus;
+	}
+
+	public void setResidentStatus(Integer residentStatus) {
+		this.residentStatus = residentStatus;
+	}
+
+	public Boolean getIsGuarantor() {
+		return isGuarantor;
+	}
+
+	public void setIsGuarantor(Boolean isGuarantor) {
+		this.isGuarantor = isGuarantor;
+	}
+
+	public DirectorPersonalDetailRequest getDirectorPersonalDetailRequest() {
+		return directorPersonalDetailRequest;
+	}
+
+	public void setDirectorPersonalDetailRequest(DirectorPersonalDetailRequest directorPersonalDetailRequest) {
+		this.directorPersonalDetailRequest = directorPersonalDetailRequest;
 	}
 
 	@Override
@@ -543,6 +610,14 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 				", landmark='" + landmark + '\'' +
 				", isMainDirector=" + isMainDirector +
 				", qualificationId=" + qualificationId +
+				", amount='" + amount + '\'' +
+				", fatherOrSpouseName='" + fatherOrSpouseName + '\'' +
+				", educationalStatus=" + educationalStatus +
+				", nationality=" + nationality +
+				", visuallyImpaired=" + visuallyImpaired +
+				", residentStatus=" + residentStatus +
+				", isGuarantor=" + isGuarantor +
+				", directorPersonalDetailRequest=" + directorPersonalDetailRequest +
 				'}';
 	}
 

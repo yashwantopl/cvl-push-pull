@@ -74,6 +74,23 @@ public class PrimaryCorporateDetail extends LoanApplicationMaster implements Ser
     @Column(name = "assessment_id")
     private Integer assessmentId;
 
+    /*
+     * SBI MSME Integration related fields
+     * By Ravina
+     * */
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "com_op_date")
+    private Date commercialOperationDate;
+
+    @Column(name = "factory_premise")
+    private Integer factoryPremise;
+
+    @Column(name = "know_how")
+    private Integer knowHow;
+
+    @Column(name = "competition")
+    private Integer competition;
+
    /* @Column(name="created_by")
     private Long createdBy;
 
@@ -230,7 +247,40 @@ public class PrimaryCorporateDetail extends LoanApplicationMaster implements Ser
     public void setAssessmentId(Integer assessmentId) {
         this.assessmentId = assessmentId;
     }
-/* @Override
+
+    public Date getCommercialOperationDate() {
+        return commercialOperationDate;
+    }
+
+    public void setCommercialOperationDate(Date commercialOperationDate) {
+        this.commercialOperationDate = commercialOperationDate;
+    }
+
+    public Integer getFactoryPremise() {
+        return factoryPremise;
+    }
+
+    public void setFactoryPremise(Integer factoryPremise) {
+        this.factoryPremise = factoryPremise;
+    }
+
+    public Integer getKnowHow() {
+        return knowHow;
+    }
+
+    public void setKnowHow(Integer knowHow) {
+        this.knowHow = knowHow;
+    }
+
+    public Integer getCompetition() {
+        return competition;
+    }
+
+    public void setCompetition(Integer competition) {
+        this.competition = competition;
+    }
+
+    /* @Override
     public Long getCreatedBy() {
         return createdBy;
     }
