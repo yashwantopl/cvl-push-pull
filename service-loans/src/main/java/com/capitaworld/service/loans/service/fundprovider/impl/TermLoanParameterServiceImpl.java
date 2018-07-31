@@ -563,6 +563,7 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		{
 			
 			termLoanParameter = termLoanParameterTempRepository.getTermLoanParameterTempByFpProductMappingId(termLoanParameterRequest.getId());
+			termLoanParameter.setFpProductMappingId(termLoanParameterRequest.getId());
 			
 		}
 
@@ -576,8 +577,13 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		if (!CommonUtils.isObjectListNull(termLoanParameterRequest.getMinTenure()))
 			termLoanParameterRequest.setMinTenure(termLoanParameterRequest.getMinTenure().multiply(new BigDecimal("12")));
 		
-		BeanUtils.copyProperties(termLoanParameterRequest, termLoanParameter, CommonUtils.IgnorableCopy.FP_PRODUCT_TEMP);
+		
+		if(termLoanParameterRequest.getAppstage()!=1)
+		{
 		termLoanParameter.setFpProductMappingId(termLoanParameterRequest.getId());
+		}
+		
+		BeanUtils.copyProperties(termLoanParameterRequest, termLoanParameter, CommonUtils.IgnorableCopy.FP_PRODUCT_TEMP);
 		termLoanParameter.setModifiedBy(termLoanParameterRequest.getUserId());
 		termLoanParameter.setModifiedDate(new Date());
 		termLoanParameter.setIsActive(true);
@@ -890,17 +896,19 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		if(termLoanParameterRequest.getAppstage()==1)
 		{
 			termLoanParameter = ntbTermLoanParameterTempRepository.findOne(termLoanParameterRequest.getId());
+			
 		}
 		else
 		{
 			
 			termLoanParameter = ntbTermLoanParameterTempRepository.getNtbTermLoanParameterTempByFpProductMappingId(termLoanParameterRequest.getId());
+			termLoanParameter.setFpProductMappingId(termLoanParameterRequest.getId());
 			
 		}
 
 		if (termLoanParameter == null) {
 			termLoanParameter = new NtbTermLoanParameterTemp();
-			termLoanParameter.setFpProductMappingId(termLoanParameterRequest.getId());
+			
 		}
 		
 		if (!CommonUtils.isObjectListNull(termLoanParameterRequest.getMaxTenure()))
@@ -909,7 +917,10 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 			termLoanParameterRequest.setMinTenure(termLoanParameterRequest.getMinTenure().multiply(new BigDecimal("12")));
 		
 		BeanUtils.copyProperties(termLoanParameterRequest, termLoanParameter, CommonUtils.IgnorableCopy.FP_PRODUCT_TEMP);
+		if(termLoanParameterRequest.getAppstage()!=1)
+		{
 		termLoanParameter.setFpProductMappingId(termLoanParameterRequest.getId());
+		}
 		termLoanParameter.setModifiedBy(termLoanParameterRequest.getUserId());
 		termLoanParameter.setModifiedDate(new Date());
 		termLoanParameter.setIsActive(true);
@@ -967,7 +978,7 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		try {
 			TermLoanParameterRequest  temp =  getNtbTermLoanParameterRequestTemp(mappingId,null,null);
 			
-        return saveOrUpdate(temp,mappingId);
+        return saveOrUpdateNtb(temp,mappingId);
 			
 		}
 		catch (Exception e) {
