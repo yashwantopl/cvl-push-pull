@@ -30,8 +30,10 @@ import com.capitaworld.service.loans.domain.fundprovider.GeographicalCountryDeta
 import com.capitaworld.service.loans.domain.fundprovider.GeographicalCountryDetailTemp;
 import com.capitaworld.service.loans.domain.fundprovider.GeographicalStateDetail;
 import com.capitaworld.service.loans.domain.fundprovider.GeographicalStateDetailTemp;
+import com.capitaworld.service.loans.domain.fundprovider.NTBParameter;
 import com.capitaworld.service.loans.domain.fundprovider.NegativeIndustry;
 import com.capitaworld.service.loans.domain.fundprovider.NegativeIndustryTemp;
+import com.capitaworld.service.loans.domain.fundprovider.NtbTermLoanParameterTemp;
 import com.capitaworld.service.loans.domain.fundprovider.TermLoanParameter;
 import com.capitaworld.service.loans.domain.fundprovider.TermLoanParameterTemp;
 import com.capitaworld.service.loans.domain.fundprovider.WorkingCapitalParameter;
@@ -45,6 +47,8 @@ import com.capitaworld.service.loans.repository.fundprovider.GeographicalStateRe
 import com.capitaworld.service.loans.repository.fundprovider.GeographicalStateTempRepository;
 import com.capitaworld.service.loans.repository.fundprovider.NegativeIndustryRepository;
 import com.capitaworld.service.loans.repository.fundprovider.NegativeIndustryTempRepository;
+import com.capitaworld.service.loans.repository.fundprovider.NtbParameterRepository;
+import com.capitaworld.service.loans.repository.fundprovider.NtbTermLoanParameterTempRepository;
 import com.capitaworld.service.loans.repository.fundprovider.TermLoanParameterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.TermLoanParameterTempRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
@@ -79,6 +83,9 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 	
 	@Autowired
 	private TermLoanParameterTempRepository termLoanParameterTempRepository;  
+	
+	@Autowired
+	private NtbTermLoanParameterTempRepository ntbTermLoanParameterTempRepository; 
  	
 	@Autowired
 	private OneFormClient oneFormClient; 
@@ -103,6 +110,9 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 
 	@Autowired
 	private MsmeValueMappingService msmeValueMappingService;
+	
+	@Autowired
+	private NtbParameterRepository ntbParameterRepository; 
 
 	@Override
 	public boolean saveOrUpdate(TermLoanParameterRequest termLoanParameterRequest, Long mappingId) {
@@ -553,6 +563,7 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		{
 			
 			termLoanParameter = termLoanParameterTempRepository.getTermLoanParameterTempByFpProductMappingId(termLoanParameterRequest.getId());
+			termLoanParameter.setFpProductMappingId(termLoanParameterRequest.getId());
 			
 		}
 
@@ -566,8 +577,13 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		if (!CommonUtils.isObjectListNull(termLoanParameterRequest.getMinTenure()))
 			termLoanParameterRequest.setMinTenure(termLoanParameterRequest.getMinTenure().multiply(new BigDecimal("12")));
 		
-		BeanUtils.copyProperties(termLoanParameterRequest, termLoanParameter, CommonUtils.IgnorableCopy.FP_PRODUCT_TEMP);
+		
+		if(termLoanParameterRequest.getAppstage()!=1)
+		{
 		termLoanParameter.setFpProductMappingId(termLoanParameterRequest.getId());
+		}
+		
+		BeanUtils.copyProperties(termLoanParameterRequest, termLoanParameter, CommonUtils.IgnorableCopy.FP_PRODUCT_TEMP);
 		termLoanParameter.setModifiedBy(termLoanParameterRequest.getUserId());
 		termLoanParameter.setModifiedDate(new Date());
 		termLoanParameter.setIsActive(true);
@@ -732,6 +748,305 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		}
 		CommonDocumentUtils.endHook(logger, "saveNegativeIndustryTemp");
 		
+	}
+
+
+
+	@Override
+	public TermLoanParameterRequest getNtbTermLoanParameterRequestTemp(Long id, Long role, Long userId) {
+		// TODO Auto-generated method stub
+		CommonDocumentUtils.startHook(logger, "getNtbTermLoanParameterRequestTemp");
+		// TODO Auto-generated method stub
+		TermLoanParameterRequest termLoanParameterRequest = new TermLoanParameterRequest();
+		NtbTermLoanParameterTemp loanParameter =  ntbTermLoanParameterTempRepository.getNtbTermLoanParameterTempByFpProductId(id);
+		if(loanParameter==null)
+			return null;
+		BeanUtils.copyProperties(loanParameter, termLoanParameterRequest);
+		
+		if (!CommonUtils.isObjectListNull(termLoanParameterRequest.getMaxTenure()))
+			termLoanParameterRequest.setMaxTenure(termLoanParameterRequest.getMaxTenure().divide(new BigDecimal("12"), 2, RoundingMode.HALF_UP));
+		if (!CommonUtils.isObjectListNull(termLoanParameterRequest.getMinTenure()))
+			termLoanParameterRequest.setMinTenure(termLoanParameterRequest.getMinTenure().divide(new BigDecimal("12"), 2, RoundingMode.HALF_UP));
+		
+		List<Long> industryList = industrySectorTempRepository
+				.getIndustryByProductId(termLoanParameterRequest.getId());
+		if (!industryList.isEmpty()) {
+			try {
+				OneFormResponse formResponse = oneFormClient.getIndustryById(industryList);
+				termLoanParameterRequest.setIndustrylist((List<DataRequest>)formResponse.getListData());
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				logger.error("error while getNtbTermLoanParameterRequestTemp",e);
+				e.printStackTrace();
+			}
+		}
+		
+		List<Long> sectorList = industrySectorTempRepository
+				.getSectorByProductId(termLoanParameterRequest.getId());
+		if(!sectorList.isEmpty())
+		{
+		try {
+			OneFormResponse formResponse = oneFormClient.getSectorById(sectorList);
+			termLoanParameterRequest.setSectorlist((List<DataRequest>) formResponse.getListData());
+			 
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			logger.error("error while getNtbTermLoanParameterRequestTemp",e);
+			e.printStackTrace();
+		}
+		}
+
+		List<Long> countryList=geographicalCountryTempRepository.getCountryByFpProductId(termLoanParameterRequest.getId());
+		if(!countryList.isEmpty())
+		{
+		try {
+			OneFormResponse formResponse = oneFormClient.getCountryByCountryListId(countryList);
+			termLoanParameterRequest.setCountryList((List<DataRequest>) formResponse.getListData());
+			 
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			logger.error("error while getNtbTermLoanParameterRequestTemp",e);
+			e.printStackTrace();
+		}
+		}
+		
+		
+		List<Long> stateList=geographicalStateTempRepository.getStateByFpProductId(termLoanParameterRequest.getId());
+		if(!stateList.isEmpty())
+		{
+		try {
+			OneFormResponse formResponse = oneFormClient.getStateByStateListId(stateList);
+			termLoanParameterRequest.setStateList((List<DataRequest>) formResponse.getListData());
+			 
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			logger.error("error while getNtbTermLoanParameterRequestTemp",e);
+			e.printStackTrace();
+		}
+		}
+		
+		
+		List<Long> cityList=geographicalCityTempRepository.getCityByFpProductId(termLoanParameterRequest.getId());
+		if(!cityList.isEmpty())
+		{
+		try {
+			OneFormResponse formResponse = oneFormClient.getCityByCityListId(cityList);
+			termLoanParameterRequest.setCityList((List<DataRequest>) formResponse.getListData());
+			 
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			logger.error("error while getNtbTermLoanParameterRequestTemp",e);
+			e.printStackTrace();
+		}
+		}
+		
+		
+		List<Long> negativeIndustryList = negativeIndustryTempRepository
+				.getIndustryByFpProductMasterId(termLoanParameterRequest.getId());
+		if (!negativeIndustryList.isEmpty()) {
+			try {
+				OneFormResponse formResponse = oneFormClient.getIndustryById(negativeIndustryList);
+				termLoanParameterRequest.setNegativeIndustryList((List<DataRequest>)formResponse.getListData());
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				logger.error("error while getNtbTermLoanParameterRequestTemp",e);
+				e.printStackTrace();
+			}
+		}
+		CommonDocumentUtils.endHook(logger, "getNtbTermLoanParameterRequestTemp");
+		
+		termLoanParameterRequest.setJobId(loanParameter.getJobId());
+		
+		//set workflow buttons
+		
+		 if (!CommonUtils.isObjectNullOrEmpty(loanParameter.getJobId()) && !CommonUtils.isObjectNullOrEmpty(role)) {
+            WorkflowResponse workflowResponse = workflowClient.getActiveStepForMaster(loanParameter.getJobId(),Arrays.asList(role), userId);
+            if (!CommonUtils.isObjectNullOrEmpty(workflowResponse) && !CommonUtils.isObjectNullOrEmpty(workflowResponse.getData())) {
+                try {
+                    WorkflowJobsTrackerRequest workflowJobsTrackerRequest = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) workflowResponse.getData(), WorkflowJobsTrackerRequest.class);
+                    if (!CommonUtils.isObjectNullOrEmpty(workflowJobsTrackerRequest.getStep()) && !CommonUtils.isObjectNullOrEmpty(workflowJobsTrackerRequest.getStep().getStepActions())) {
+                    	termLoanParameterRequest.setWorkflowData(workflowJobsTrackerRequest.getStep().getStepActions());
+                    } else {
+                        logger.info("response from workflow NULL jobId = {} and roleId = {}", loanParameter.getJobId(), role);
+                    }
+                } catch (IOException e) {
+                    logger.error("Error While getting data from workflow {}", e);
+                }
+            }
+        } else {
+            logger.info("you set jobId or list of roleId NULL for calling workflow");
+        }
+
+		termLoanParameterRequest.setMsmeFundingIds(msmeValueMappingService.getDataListFromFpProductId(1,id, userId));
+		logger.info("end getNtbTermLoanParameterRequestTemp");
+		return termLoanParameterRequest;
+	}
+
+
+
+	@Override
+	public Boolean saveOrUpdateNtbTemp(TermLoanParameterRequest termLoanParameterRequest) {
+		// TODO Auto-generated method stub
+		NtbTermLoanParameterTemp termLoanParameter = null;
+		
+		if(termLoanParameterRequest.getAppstage()==1)
+		{
+			termLoanParameter = ntbTermLoanParameterTempRepository.findOne(termLoanParameterRequest.getId());
+			
+		}
+		else
+		{
+			
+			termLoanParameter = ntbTermLoanParameterTempRepository.getNtbTermLoanParameterTempByFpProductMappingId(termLoanParameterRequest.getId());
+			termLoanParameter.setFpProductMappingId(termLoanParameterRequest.getId());
+			
+		}
+
+		if (termLoanParameter == null) {
+			termLoanParameter = new NtbTermLoanParameterTemp();
+			
+		}
+		
+		if (!CommonUtils.isObjectListNull(termLoanParameterRequest.getMaxTenure()))
+			termLoanParameterRequest.setMaxTenure(termLoanParameterRequest.getMaxTenure().multiply(new BigDecimal("12")));
+		if (!CommonUtils.isObjectListNull(termLoanParameterRequest.getMinTenure()))
+			termLoanParameterRequest.setMinTenure(termLoanParameterRequest.getMinTenure().multiply(new BigDecimal("12")));
+		
+		BeanUtils.copyProperties(termLoanParameterRequest, termLoanParameter, CommonUtils.IgnorableCopy.FP_PRODUCT_TEMP);
+		if(termLoanParameterRequest.getAppstage()!=1)
+		{
+		termLoanParameter.setFpProductMappingId(termLoanParameterRequest.getId());
+		}
+		termLoanParameter.setModifiedBy(termLoanParameterRequest.getUserId());
+		termLoanParameter.setModifiedDate(new Date());
+		termLoanParameter.setIsActive(true);
+		termLoanParameter.setIsParameterFilled(true);
+		
+		termLoanParameter.setStatusId(CommonUtils.Status.OPEN);
+        termLoanParameter.setIsApproved(false);
+        termLoanParameter.setIsDeleted(false);
+        termLoanParameter.setIsCopied(false);
+        termLoanParameter.setApprovalDate(null);
+		if (CommonUtils.isObjectNullOrEmpty(termLoanParameter.getJobId())) {
+			WorkflowResponse workflowResponse = workflowClient.createJobForMasters(
+					WorkflowUtils.Workflow.MASTER_DATA_APPROVAL_PROCESS, WorkflowUtils.Action.SEND_FOR_APPROVAL,
+					termLoanParameterRequest.getUserId());
+			Long jobId = null;
+			if (!CommonUtils.isObjectNullOrEmpty(workflowResponse.getData())) {
+				jobId = Long.valueOf(workflowResponse.getData().toString());
+			}
+
+			termLoanParameter.setJobId(jobId);
+		}
+		
+		ntbTermLoanParameterTempRepository.save(termLoanParameter);
+		termLoanParameterRequest.setId(termLoanParameter.getId());
+		industrySectorTempRepository.inActiveMappingByFpProductId(termLoanParameter.getId());
+		// industry data save
+		saveIndustryTemp(termLoanParameterRequest);
+		// Sector data save
+		saveSectorTemp(termLoanParameterRequest);
+		geographicalCountryTempRepository.inActiveMappingByFpProductId(termLoanParameter.getId());
+		//country data save
+		saveCountryTemp(termLoanParameterRequest);
+		//state data save
+		geographicalStateTempRepository.inActiveMappingByFpProductId(termLoanParameter.getId());
+		saveStateTemp(termLoanParameterRequest);
+		//city data save
+		geographicalCityTempRepository.inActiveMappingByFpProductId(termLoanParameter.getId());
+		saveCityTemp(termLoanParameterRequest);
+		//negative industry save
+		negativeIndustryTempRepository.inActiveMappingByFpProductMasterId(termLoanParameter.getId());
+		saveNegativeIndustryTemp(termLoanParameterRequest);
+
+		boolean isUpdate = msmeValueMappingService.updateMsmeValueMappingTemp(termLoanParameterRequest.getMsmeFundingIds(),termLoanParameterRequest.getId(), termLoanParameterRequest.getUserId());
+		logger.info("updated = {}",isUpdate);
+
+		CommonDocumentUtils.endHook(logger, "saveOrUpdate");
+		return true;
+	}
+
+
+
+	@Override
+	public Boolean saveMasterFromNtbTempTl(Long mappingId) throws Exception {
+		// TODO Auto-generated method stub
+		try {
+			TermLoanParameterRequest  temp =  getNtbTermLoanParameterRequestTemp(mappingId,null,null);
+			
+        return saveOrUpdateNtb(temp,mappingId);
+			
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+
+
+
+	@Override
+	public boolean saveOrUpdateNtb(TermLoanParameterRequest termLoanParameterRequest, Long mappingId) {
+		// TODO Auto-generated method stub
+		CommonDocumentUtils.startHook(logger, "saveOrUpdateTmp");
+		// TODO Auto-generated method stub
+		
+		NTBParameter termLoanParameter = null;
+
+		termLoanParameter = ntbParameterRepository.findOne(termLoanParameterRequest.getId());
+		if (termLoanParameter == null) {
+			termLoanParameter=new NTBParameter();
+		}
+		
+		NtbTermLoanParameterTemp loanParameter =  ntbTermLoanParameterTempRepository.getNtbTermLoanParameterTempByFpProductId(mappingId);
+		loanParameter.setStatusId(CommonUtils.Status.APPROVED);
+        loanParameter.setIsDeleted(false);
+        loanParameter.setIsEdit(false);
+        loanParameter.setIsCopied(true);
+        loanParameter.setIsApproved(true);
+        loanParameter.setApprovalDate(new Date());
+        ntbTermLoanParameterTempRepository.save(loanParameter);
+		
+		if (!CommonUtils.isObjectListNull(termLoanParameterRequest.getMaxTenure()))
+			termLoanParameterRequest.setMaxTenure(termLoanParameterRequest.getMaxTenure().multiply(new BigDecimal("12")));
+		if (!CommonUtils.isObjectListNull(termLoanParameterRequest.getMinTenure()))
+			termLoanParameterRequest.setMinTenure(termLoanParameterRequest.getMinTenure().multiply(new BigDecimal("12")));
+		
+		BeanUtils.copyProperties(termLoanParameterRequest, termLoanParameter, CommonUtils.IgnorableCopy.FP_PRODUCT);
+		termLoanParameter.setModifiedBy(termLoanParameterRequest.getUserId());
+		termLoanParameter.setModifiedDate(new Date());
+		termLoanParameter.setIsActive(true);
+		termLoanParameter.setIsParameterFilled(true);
+		termLoanParameter.setJobId(termLoanParameterRequest.getJobId());
+		ntbParameterRepository.save(termLoanParameter);
+		
+		industrySectorRepository.inActiveMappingByFpProductId(termLoanParameterRequest.getId());
+		// industry data save
+		saveIndustry(termLoanParameterRequest);
+		// Sector data save
+		saveSector(termLoanParameterRequest);
+		geographicalCountryRepository.inActiveMappingByFpProductId(termLoanParameterRequest.getId());
+		//country data save
+		saveCountry(termLoanParameterRequest);
+		//state data save
+		geographicalStateRepository.inActiveMappingByFpProductId(termLoanParameterRequest.getId());
+		saveState(termLoanParameterRequest);
+		//city data save
+		geographicalCityRepository.inActiveMappingByFpProductId(termLoanParameterRequest.getId());
+		saveCity(termLoanParameterRequest);
+		//negative industry save
+		negativeIndustryRepository.inActiveMappingByFpProductMasterId(termLoanParameterRequest.getId());
+		saveNegativeIndustry(termLoanParameterRequest);
+
+		//Ravina
+		boolean isUpdate = msmeValueMappingService.updateMsmeValueMapping(false, termLoanParameterRequest.getId());
+		logger.info("updated = {}",isUpdate);
+		CommonDocumentUtils.endHook(logger, "saveOrUpdate");
+		return true;
 	}
 
 	
