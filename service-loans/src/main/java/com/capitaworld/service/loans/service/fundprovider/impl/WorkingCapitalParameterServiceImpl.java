@@ -191,7 +191,13 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 		if (!industryList.isEmpty()) {
 			try {
 				OneFormResponse formResponse = oneFormClient.getIndustryById(industryList);
-				workingCapitalParameterRequest.setIndustrylist((List<DataRequest>) formResponse.getListData());
+				List<DataRequest> dataRequests=new ArrayList<>(formResponse.getListData().size());
+				for(Object object:formResponse.getListData())
+				{
+					DataRequest dataRequest=com.capitaworld.service.loans.utils.MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)object, DataRequest.class);
+					dataRequests.add(dataRequest);
+				}
+				workingCapitalParameterRequest.setIndustrylist(dataRequests);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				logger.error(e.toString());
@@ -203,7 +209,14 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 		if (!sectorList.isEmpty()) {
 			try {
 				OneFormResponse formResponse = oneFormClient.getSectorById(sectorList);
-				workingCapitalParameterRequest.setSectorlist((List<DataRequest>) formResponse.getListData());
+				
+				List<DataRequest> dataRequests=new ArrayList<>(formResponse.getListData().size());
+				for(Object object:formResponse.getListData())
+				{
+					DataRequest dataRequest=com.capitaworld.service.loans.utils.MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)object, DataRequest.class);
+					dataRequests.add(dataRequest);
+				}
+				workingCapitalParameterRequest.setSectorlist(dataRequests);
 
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -217,7 +230,13 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 		if (!countryList.isEmpty()) {
 			try {
 				OneFormResponse formResponse = oneFormClient.getCountryByCountryListId(countryList);
-				workingCapitalParameterRequest.setCountryList((List<DataRequest>) formResponse.getListData());
+				List<DataRequest> dataRequests=new ArrayList<>(formResponse.getListData().size());
+				for(Object object:formResponse.getListData())
+				{
+					DataRequest dataRequest=com.capitaworld.service.loans.utils.MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)object, DataRequest.class);
+					dataRequests.add(dataRequest);
+				}
+				workingCapitalParameterRequest.setCountryList(dataRequests);
 
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -231,7 +250,13 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 		if (!stateList.isEmpty()) {
 			try {
 				OneFormResponse formResponse = oneFormClient.getStateByStateListId(stateList);
-				workingCapitalParameterRequest.setStateList((List<DataRequest>) formResponse.getListData());
+				List<DataRequest> dataRequests=new ArrayList<>(formResponse.getListData().size());
+				for(Object object:formResponse.getListData())
+				{
+					DataRequest dataRequest=com.capitaworld.service.loans.utils.MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)object, DataRequest.class);
+					dataRequests.add(dataRequest);
+				}
+				workingCapitalParameterRequest.setStateList(dataRequests);
 
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -244,7 +269,13 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 		if (!cityList.isEmpty()) {
 			try {
 				OneFormResponse formResponse = oneFormClient.getCityByCityListId(cityList);
-				workingCapitalParameterRequest.setCityList((List<DataRequest>) formResponse.getListData());
+				List<DataRequest> dataRequests=new ArrayList<>(formResponse.getListData().size());
+				for(Object object:formResponse.getListData())
+				{
+					DataRequest dataRequest=com.capitaworld.service.loans.utils.MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)object, DataRequest.class);
+					dataRequests.add(dataRequest);
+				}
+				workingCapitalParameterRequest.setCityList(dataRequests);
 
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -258,8 +289,14 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 		if (!negativeIndustryList.isEmpty()) {
 			try {
 				OneFormResponse formResponse = oneFormClient.getIndustryById(negativeIndustryList);
+				List<DataRequest> dataRequests=new ArrayList<>(formResponse.getListData().size());
+				for(Object object:formResponse.getListData())
+				{
+					DataRequest dataRequest=com.capitaworld.service.loans.utils.MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)object, DataRequest.class);
+					dataRequests.add(dataRequest);
+				}
 				workingCapitalParameterRequest
-						.setUnInterestedIndustrylist((List<DataRequest>) formResponse.getListData());
+						.setUnInterestedIndustrylist(dataRequests);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				logger.error("error while getWCParameterRequest", e);
