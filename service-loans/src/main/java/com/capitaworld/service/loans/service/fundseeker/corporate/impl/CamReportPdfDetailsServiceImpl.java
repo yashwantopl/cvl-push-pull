@@ -25,7 +25,6 @@ import com.capitaworld.api.workflow.model.WorkflowRequest;
 import com.capitaworld.api.workflow.model.WorkflowResponse;
 import com.capitaworld.api.workflow.utility.WorkflowUtils;
 import com.capitaworld.cibil.api.model.CibilRequest;
-import com.capitaworld.cibil.api.model.CibilResponse;
 import com.capitaworld.cibil.api.model.CibilScoreLogRequest;
 import com.capitaworld.cibil.client.CIBILClient;
 import com.capitaworld.client.eligibility.EligibilityClient;
@@ -654,6 +653,8 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			Long assessmentId = termLoanParameter.getAssessmentMethodId().longValue();
 			if(!CommonUtils.isObjectNullOrEmpty(assessmentId)) {
 				map.put("assessmentId", assessmentId);
+			}else {
+				map.put("assessmentId", "");
 			}
 			EligibililityRequest eligibilityReq=new EligibililityRequest();
 			eligibilityReq.setApplicationId(applicationId);
@@ -670,19 +671,18 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		try {
 			String companyId = loanApplicationMaster.getMcaCompanyId();
 			McaResponse mcaResponse = mcaClient.getCompanyDetailedData(companyId);
-			map.put("mcaData", mcaResponse.getData());
-			logger.info("MCA DATA IN CAM============>"+mcaResponse.getData());
+			map.put("mcaData", printFields(mcaResponse.getData()));
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
 		
 		//HUNTER API ANALYSIS
-		/*try {
+		try {
 			AnalyticsResponse hunterResp =fraudAnalyticsClient.getRuleAnalysisData(applicationId);
 			map.put("hunterResponse", hunterResp.getData());
 		} catch (Exception e1) {
 			e1.printStackTrace();
-		}*/
+		}
 		
 	
 		/**********************************************FINAL DETAILS*****************************************************/
@@ -844,7 +844,6 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			}
 			
 		}
-		logger.info("============CAM data=========================="+map.toString());
 		return map;
 	}
 	
