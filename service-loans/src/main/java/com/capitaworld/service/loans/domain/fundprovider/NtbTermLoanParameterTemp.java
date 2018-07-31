@@ -1,290 +1,412 @@
-package com.capitaworld.service.loans.model.corporate;
+package com.capitaworld.service.loans.domain.fundprovider;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.Collections;
-import java.util.List;
+import java.util.Date;
 
-
-import com.capitaworld.service.loans.model.DataRequest;
-import com.capitaworld.service.loans.model.ProductMasterRequest;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 /**
  * The persistent class for the fp_term_loan_details database table.
  * 
  */
-@JsonIgnoreProperties(ignoreUnknown = true)
-public class TermLoanParameterRequest extends ProductMasterRequest implements Serializable {
+@Entity
+@Table(name = "fp_ntb_tl_details_temp")
+public class NtbTermLoanParameterTemp extends ProductMasterTemp implements Serializable {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
+	@OneToOne
+	@JoinColumn(name = "fp_product_id")
+	private ProductMasterTemp fpProductId;
+
+	@Column(name = "created_by")
+	private Long createdBy;
+
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "created_date")
+	private Date createdDate;
+
 	private Integer currency;
 
 	private Integer denomination;
 
-	private Boolean isCollateralDisplay=false;
+	@Column(name = "is_active")
+	private Boolean isActive;
 
-	private Boolean isCollateralMandatory=false;
+	@Column(name = "is_collateral_display")
+	private Boolean isCollateralDisplay = false;
 
-	private Boolean isCreditRatingDisplay=false;
+	@Column(name = "is_collateral_mandatory")
+	private Boolean isCollateralMandatory = false;
 
-	private Boolean isCreditRatingMandatory=false;
+	@Column(name = "is_credit_rating_display")
+	private Boolean isCreditRatingDisplay = false;
 
-	private Boolean isDebtEquityDisplay=false;
+	@Column(name = "is_credit_rating_mandatory")
+	private Boolean isCreditRatingMandatory = false;
 
-	private Boolean isDebtEquityMandatory=false;
+	@Column(name = "is_debt_equity_display")
+	private Boolean isDebtEquityDisplay = false;
 
-	private Boolean isEstablishmentDisplay=false;
+	@Column(name = "is_debt_equity_mandatory")
+	private Boolean isDebtEquityMandatory = false;
 
-	private Boolean isEstablishmentMandatory=false;
+	@Column(name = "is_establishment_display")
+	private Boolean isEstablishmentDisplay = false;
 
-	private Boolean isGeographicalDisplay=false;
+	@Column(name = "is_establishment_mandatory")
+	private Boolean isEstablishmentMandatory = false;
 
-	private Boolean isGeographicalMandatory=false;
+	@Column(name = "is_geographical_display")
+	private Boolean isGeographicalDisplay = false;
 
-	private Boolean isIndustrySectorDisplay=false;
+	@Column(name = "is_geographical_mandatory")
+	private Boolean isGeographicalMandatory = false;
 
-	private Boolean isIndustrySectorMandatory=false;
+	@Column(name = "is_industry_sector_display")
+	private Boolean isIndustrySectorDisplay = false;
 
-	private Boolean isInvestmentSizeDisplay=false;
+	@Column(name = "is_industry_sector_mandatory")
+	private Boolean isIndustrySectorMandatory = false;
 
-	private Boolean isInvestmentSizeMandatory=false;
+	@Column(name = "is_investment_size_display")
+	private Boolean isInvestmentSizeDisplay = false;
 
-	private Boolean isNetworthDisplay=false;
+	@Column(name = "is_investment_size_mandatory")
+	private Boolean isInvestmentSizeMandatory = false;
 
-	private Boolean isNetworthMandatory=false;
+	@Column(name = "is_networth_display")
+	private Boolean isNetworthDisplay = false;
 
-	private Boolean isPastYearTurnoverDisplay=false;
+	@Column(name = "is_networth_mandatory")
+	private Boolean isNetworthMandatory = false;
 
-	private Boolean isPastYearTurnoverMandatory=false;
+	@Column(name = "is_past_year_turnover_display")
+	private Boolean isPastYearTurnoverDisplay = false;
 
-	private Boolean isProfitabilityHistoryDisplay=false;
+	@Column(name = "is_past_year_turnover_mandatory")
+	private Boolean isPastYearTurnoverMandatory = false;
 
-	private Boolean isProfitabilityHistoryMandatory=false;
+	@Column(name = "is_profitability_history_display")
+	private Boolean isProfitabilityHistoryDisplay = false;
 
-	private Boolean isTenureDisplay=false;
+	@Column(name = "is_profitability_history_mandatory")
+	private Boolean isProfitabilityHistoryMandatory = false;
 
-	private Boolean isTenureMandatory=false;
-	
-	private Boolean isUnInterestedIndustryDisplay=false;
+	@Column(name = "is_tenure_display")
+	private Boolean isTenureDisplay = false;
 
-	private Boolean isUnInterestedIndustryMandatory=false;
+	@Column(name = "is_tenure_mandatory")
+	private Boolean isTenureMandatory = false;
 
+	@Column(name = "Long_term_credit_rating")
 	private Integer LongTermCreditRating;
 
+	@Column(name = "max_age_establishment")
 	private Integer maxAgeEstablishment;
 
+	@Column(name = "max_collateral")
 	private BigDecimal maxCollateral;
 
+	@Column(name = "max_debt_equity")
 	private BigDecimal maxDebtEquity;
 
+	@Column(name = "max_invest_size")
 	private BigDecimal maxInvestSize;
 
+	@Column(name = "max_networth")
 	private BigDecimal maxNetworth;
 
+	@Column(name = "max_past_turnover")
 	private BigDecimal maxPastTurnover;
 
-	private BigDecimal maxTenure;
+	@Column(name = "max_tenure")
+	private BigDecimal maxTenureNtb;
+	
 
+	@Column(name = "min_age_establishment")
 	private Integer minAgeEstablishment;
 
+	@Column(name = "min_collateral")
 	private BigDecimal minCollateral;
 
+	@Column(name = "min_debt_equity")
 	private BigDecimal minDebtEquity;
 
+	@Column(name = "min_invest_size")
 	private BigDecimal minInvestSize;
 
+	@Column(name = "min_networth")
 	private BigDecimal minNetworth;
 
+	@Column(name = "min_past_turnover")
 	private BigDecimal minPastTurnover;
 
-	private BigDecimal minTenure;
+	@Column(name = "min_tenure")
+	private BigDecimal minTenureNtb;
 
+	@Column(name = "modified_by")
+	private Long modifiedBy;
+
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "modified_date")
+	private Date modifiedDate;
+
+	@Column(name = "profitability_history")
 	private Integer profitabilityHistory;
 
+	@Column(name = "short_term_credit_rating")
 	private Integer shortTermCreditRating;
-	
-	private Long uninterestedIndustry;
 
+	@Column(name = "uninterested_industry")
+	private Long uninterestedIndustry;
+	
+	@Column(name="is_uninterested_industry_display")
+	private Boolean isUnInterestedIndustryDisplay=false;
+
+	@Column(name="is_uninterested_industry_mandatory")
+	private Boolean isUnInterestedIndustryMandatory=false;
+
+	@Column(name="min_current_ratio")
 	private BigDecimal minCurrentRatio;
 
+	@Column(name="max_current_ratio")
 	private BigDecimal maxCurrentRatio;
 
+	@Column(name="is_current_ratio_display")
 	private Boolean isCurrentRatioDisplay = false;
 
+	@Column(name="is_current_ratio_mandatory")
 	private Boolean isCurrentRatioMandatory = false;
 
+	@Column(name="min_interest_coverage")
 	private BigDecimal minInterestCoverage;
 
+	@Column(name="max_interest_coverage")
 	private BigDecimal maxInterestCoverage;
 
+	@Column(name="is_interest_coverage_display")
 	private Boolean isInterestCoverageDisplay = false;
 
+	@Column(name="is_interest_coverage_mandatory")
 	private Boolean isInterestCoverageMandatory = false;
 
+	@Column(name="min_tol_tnw")
 	private BigDecimal minTolTnw;
 
+	@Column(name="max_tol_tnw")
 	private BigDecimal maxTolTnw;
 
+	@Column(name="is_tol_tnw_display")
 	private Boolean isTolTnwDisplay = false;
 
+	@Column(name="is_tol_tnw_mandatory")
 	private Boolean isTolTnwMandatory = false;
 
+	@Column(name="min_turnover_ratio")
 	private BigDecimal minTurnoverRatio;
 
+	@Column(name="max_turnover_ratio")
 	private BigDecimal maxTurnoverRatio;
 
+	@Column(name="is_turnover_ratio_display")
 	private Boolean isTurnoverRatioDisplay = false;
 
+	@Column(name="is_turnover_ratio_mandatory")
 	private Boolean isTurnoverRatioMandatory = false;
 
-	private BigDecimal minGrossCashAccuralsRatio;
-
-	private BigDecimal maxGrossCashAccuralsRatio;
-
-	private Boolean isGrossCashAccuralsRatioDisplay = false;
-
-	private Boolean isGrossCashAccuralsRatioMandatory = false;
-
-	private BigDecimal minCustomerConcentration;
-
-	private BigDecimal maxCustomerConcentration;
-
-	private Boolean isCustomerConcentrationDisplay = false;
-
-	private Boolean isCustomerConcentrationMandatory =false;
-
-	private Integer minRiskModelScore;
-
-	private Integer maxRiskModelScore;
-
-	private Boolean isRiskModelScoreDisplay = false;
-
-	private Boolean isRiskModelScoreMandatory = false;
-
-	private Integer netWorth;
-
-	private Integer minChequeBounced;
-
-	private Integer maxChequeBounced;
-
-	private Boolean isChequeBouncedDisplay = false;
-
-	private Boolean isChequeBouncedMandatory = false;
-
-	private Integer minChequeBouncedLastSixMonths;
-
-	private Integer maxChequeBouncedLastSixMonths;
-
-	private Boolean isChequeBouncedLastSixMonthsDisplay = false;
-
-	private Boolean isChequeBouncedLastSixMonthsMandatory = false;
-
-	private Integer ddrFlow;
-
-	private Integer individualCibil;
-
-	private Boolean isIndividualCibilDisplay = false;
-
-	private Boolean isIndividualCibilMandatory = false;
-
-	private Integer commercialCibil;
-
-	private Boolean isCommercialCibilDisplay = false;
-
-	private Boolean isCommercialCibilMandatory = false;
-	
-	
-	private Long userOrgId;
-	
-	private Integer appstage;
-	
-	private Object workflowData;
-
-	//-----------------------added eligibility method for product
-	private Integer assessmentMethodId;
-
-	private BigDecimal minCgtmseCoverage;
-	private BigDecimal maxCgtmseCoverage;
-	private Boolean isCgtmseCoverageDisplay = false;
-	private Boolean isCgtmseCoverageMandatory = false;
-	private Boolean isMsmeFundingDisplay = false;
-	private Boolean isMsmeFundingMandatory = false;
-	private List<Integer> msmeFundingIds;
-	
-	private BigDecimal minTenureNtb;
-	
-	private BigDecimal maxTenureNtb;
-    /**
-	 * @return the workflowData
-	 */
-	
-	
-	/*ntb*/
-	
+	@Column(name="min_avg_age")
 	private BigDecimal minAvrgAge;
 
+	@Column(name="max_avg_age")
 	private BigDecimal maxAvrgAge;
 	
-	private BigDecimal minAvgYearlyIncome;
-
+	@Column(name="min_avg_yearly_income")
 	private BigDecimal minAvrgYearlyIncome;
 	
+	@Column(name="max_avg_yearly_income")
 	private BigDecimal maxAvrgYearlyIncome;
 
+	@Column(name="min_cgtmse")
 	private BigDecimal mincgtmse;
 	
+	@Column(name="max_cgtmse")
 	private BigDecimal maxcgtmse;
 
+
+	@Column(name="min_loan_to_asset")
 	private BigDecimal minLoanToAsset;
 	
+	@Column(name="max_loan_to_asset")
 	private BigDecimal maxLoanToAsset;
 	
+	@Column(name="min_avg_work_exp")
 	private BigDecimal minAvgWorkExp;
 	
+	@Column(name="max_avg_work_exp")
 	private BigDecimal maxAvgWorkExp;
 	
+	@Column(name="min_current_foir")
 	private BigDecimal minCurrentFoir;
 	
+	@Column(name="max_current_foir")
 	private BigDecimal maxCurrentFoir;
 	
+	@Column(name="min_gross_cash_accurals_ratio")
+	private BigDecimal minGrossCashAccuralsRatio;
+
+	@Column(name="max_gross_cash_accurals_ratio")
+	private BigDecimal maxGrossCashAccuralsRatio;
+
+	@Column(name="is_gross_cash_accurals_ratio_display")
+	private Boolean isGrossCashAccuralsRatioDisplay = false;
+
+	@Column(name="is_gross_cash_accurals_ratio_mandatory")
+	private Boolean isGrossCashAccuralsRatioMandatory = false;
+
+	@Column(name="min_customer_concentration")
+	private BigDecimal minCustomerConcentration;
+
+	@Column(name="max_customer_concentration")
+	private BigDecimal maxCustomerConcentration;
+
+	@Column(name="is_customer_concentration_display")
+	private Boolean isCustomerConcentrationDisplay = false;
+
+	@Column(name="is_customer_concentration_mandatory")
+	private Boolean isCustomerConcentrationMandatory =false;
+
+	@Column(name="min_risk_model_score")
+	private Integer minRiskModelScore;
+
+	@Column(name="max_risk_model_score")
+	private Integer maxRiskModelScore;
+
+	@Column(name="is_risk_model_score_display")
+	private Boolean isRiskModelScoreDisplay = false;
+
+	@Column(name="is_risk_model_score_mandatory")
+	private Boolean isRiskModelScoreMandatory = false;
+
+	@Column(name="net_worth")
+	private Integer netWorth;
+
+	@Column(name="min_cheque_bounced")
+	private Integer minChequeBounced;
+
+	@Column(name="max_cheque_bounced")
+	private Integer maxChequeBounced;
+
+	@Column(name="is_cheque_bounced_display")
+	private Boolean isChequeBouncedDisplay = false;
+
+	@Column(name="is_cheque_bounced_mandatory")
+	private Boolean isChequeBouncedMandatory = false;
+
+	@Column(name="min_cheque_bounced_last_six_months")
+	private Integer minChequeBouncedLastSixMonths;
+
+	@Column(name="max_cheque_bounced_last_six_months")
+	private Integer maxChequeBouncedLastSixMonths;
+
+	@Column(name="is_cheque_bounced_last_six_months_display")
+	private Boolean isChequeBouncedLastSixMonthsDisplay = false;
+
+	@Column(name="is_cheque_bounced_last_six_months_mandatory")
+	private Boolean isChequeBouncedLastSixMonthsMandatory = false;
+
+	@Column(name="ddr_flow")
+	private Integer ddrFlow;
+
+	@Column(name="individual_cibil")
+	private Integer individualCibil;
+
+	@Column(name="is_individual_cibil_display")
+	private Boolean isIndividualCibilDisplay = false;
+
+	@Column(name="is_individual_cibil_mandatory")
+	private Boolean isIndividualCibilMandatory = false;
+
+	@Column(name="commercial_cibil")
+	private Integer commercialCibil;
+
+	@Column(name="is_Commercial_cibil_display")
+	private Boolean isCommercialCibilDisplay = false;
+
+	@Column(name="is_Commercial_cibil_mandatory")
+	private Boolean isCommercialCibilMandatory = false;
+
+	@Column(name="is_avg_age_display")
 	private Boolean isAvrgAgeDisplay = false;
 
+	@Column(name="is_avg_age_mandatory")
 	private Boolean isAvrgAgeMandatory = false;
 	
+	@Column(name="is_avg_yearly_income_display")
 	private Boolean isAvrgYearlyIncomeDisplay = false;
 
+	@Column(name="is_avg_yearly_income_mandatory")
 	private Boolean isAvrgYearlyIncomeMandatory = false;
-
+	
+	@Column(name="is_cgtmse_display")
 	private Boolean iscgtmseDisplay = false;
 
+	@Column(name="is_cgtmse_mandatory")
 	private Boolean iscgtmseMandatory = false;
 	
+	@Column(name="is_loan_to_asset_display")
 	private Boolean isLoanToAssetDisplay = false;
 
+	@Column(name="is_loan_to_asset_mandatory")
 	private Boolean isLoanToAssetMandatory = false;
 
+	@Column(name="is_avg_work_exp_display")
 	private Boolean isAvgWorkExpDisplay = false;
 
+	@Column(name="is_avg_work_exp_mandatory")
 	private Boolean isAvgWorkExpMandatory = false;
 	
+	@Column(name="is_current_foir_display")
 	private Boolean isCurrentFoirDisplay = false;
 
+	@Column(name="is_current_foir_mandatory")
 	private Boolean isCurrentFoirMandatory = false;
-	
-	public Object getWorkflowData() {
-		return workflowData;
-	}
+
 
 	/**
-	 * @param workflowData the workflowData to set
+	 * @return the orgId
 	 */
-	public void setWorkflowData(Object workflowData) {
-		this.workflowData = workflowData;
-	}
+	@Column(name="min_cgtmse_coverage")
+	private BigDecimal minCgtmseCoverage;
+
+	@Column(name="max_cgtmse_coverage")
+	private BigDecimal maxCgtmseCoverage;
+
+	@Column(name="is_cgtmse_coverage_display")
+	private Boolean isCgtmseCoverageDisplay = false;
+
+	@Column(name="is_cgtmse_coverage_mandatory")
+	private Boolean isCgtmseCoverageMandatory = false;
+
+	@Column(name="is_msme_funding_display")
+	private Boolean isMsmeFundingDisplay = false;
+
+	@Column(name="is_msme_funding_mandatory")
+	private Boolean isMsmeFundingMandatory = false;
+
+
+	//-----------------------added eligibility method for product
+	@Column(name="assessment_method_id")
+	private Integer assessmentMethodId;
 
 	public Integer getIndividualCibil() {
 		return individualCibil;
@@ -404,118 +526,6 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 
 	public void setIsChequeBouncedLastSixMonthsMandatory(Boolean chequeBouncedLastSixMonthsMandatory) {
 		isChequeBouncedLastSixMonthsMandatory = chequeBouncedLastSixMonthsMandatory;
-	}
-
-	public Boolean getIsCurrentRatioDisplay() {
-		return isCurrentRatioDisplay;
-	}
-
-	public void setIsCurrentRatioDisplay(Boolean currentRatioDisplay) {
-		isCurrentRatioDisplay = currentRatioDisplay;
-	}
-
-	public Boolean getIsCurrentRatioMandatory() {
-		return isCurrentRatioMandatory;
-	}
-
-	public void setIsCurrentRatioMandatory(Boolean currentRatioMandatory) {
-		isCurrentRatioMandatory = currentRatioMandatory;
-	}
-
-	public Boolean getIsInterestCoverageDisplay() {
-		return isInterestCoverageDisplay;
-	}
-
-	public void setIsInterestCoverageDisplay(Boolean interestCoverageDisplay) {
-		isInterestCoverageDisplay = interestCoverageDisplay;
-	}
-
-	public Boolean getIsInterestCoverageMandatory() {
-		return isInterestCoverageMandatory;
-	}
-
-	public void setIsInterestCoverageMandatory(Boolean interestCoverageMandatory) {
-		isInterestCoverageMandatory = interestCoverageMandatory;
-	}
-
-	public Boolean getIsTolTnwDisplay() {
-		return isTolTnwDisplay;
-	}
-
-	public void setIsTolTnwDisplay(Boolean tolTnwDisplay) {
-		isTolTnwDisplay = tolTnwDisplay;
-	}
-
-	public Boolean getIsTolTnwMandatory() {
-		return isTolTnwMandatory;
-	}
-
-	public void setIsTolTnwMandatory(Boolean tolTnwMandatory) {
-		isTolTnwMandatory = tolTnwMandatory;
-	}
-
-	public Boolean getIsTurnoverRatioDisplay() {
-		return isTurnoverRatioDisplay;
-	}
-
-	public void setIsTurnoverRatioDisplay(Boolean turnoverRatioDisplay) {
-		isTurnoverRatioDisplay = turnoverRatioDisplay;
-	}
-
-	public Boolean getIsTurnoverRatioMandatory() {
-		return isTurnoverRatioMandatory;
-	}
-
-	public void setIsTurnoverRatioMandatory(Boolean turnoverRatioMandatory) {
-		isTurnoverRatioMandatory = turnoverRatioMandatory;
-	}
-
-	public Boolean getIsGrossCashAccuralsRatioDisplay() {
-		return isGrossCashAccuralsRatioDisplay;
-	}
-
-	public void setIsGrossCashAccuralsRatioDisplay(Boolean grossCashAccuralsRatioDisplay) {
-		isGrossCashAccuralsRatioDisplay = grossCashAccuralsRatioDisplay;
-	}
-
-	public Boolean getIsGrossCashAccuralsRatioMandatory() {
-		return isGrossCashAccuralsRatioMandatory;
-	}
-
-	public void setIsGrossCashAccuralsRatioMandatory(Boolean grossCashAccuralsRatioMandatory) {
-		isGrossCashAccuralsRatioMandatory = grossCashAccuralsRatioMandatory;
-	}
-
-	public Boolean getIsCustomerConcentrationDisplay() {
-		return isCustomerConcentrationDisplay;
-	}
-
-	public void setIsCustomerConcentrationDisplay(Boolean customerConcentrationDisplay) {
-		isCustomerConcentrationDisplay = customerConcentrationDisplay;
-	}
-
-	public Boolean getIsCustomerConcentrationMandatory() {
-		return isCustomerConcentrationMandatory;
-	}
-
-	public void setIsCustomerConcentrationMandatory(Boolean customerConcentrationMandatory) {
-		isCustomerConcentrationMandatory = customerConcentrationMandatory;
-	}
-
-	public Boolean getIsRiskModelScoreDisplay() {
-		return isRiskModelScoreDisplay;
-	}
-
-	public void setIsRiskModelScoreDisplay(Boolean riskModelScoreDisplay) {
-		isRiskModelScoreDisplay = riskModelScoreDisplay;
-	}
-
-	public Boolean getIsRiskModelScoreMandatory() {
-		return isRiskModelScoreMandatory;
-	}
-
-	public void setIsRiskModelScoreMandatory(Boolean riskModelScoreMandatory) {
-		isRiskModelScoreMandatory = riskModelScoreMandatory;
 	}
 
 	public BigDecimal getMinCurrentRatio() {
@@ -638,20 +648,147 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 		this.netWorth = netWorth;
 	}
 
-	private List<DataRequest> industrylist = Collections.emptyList();
+	public Boolean getIsCurrentRatioDisplay() {
+		return isCurrentRatioDisplay;
+	}
 
-	private List<DataRequest> sectorlist = Collections.emptyList();
+	public void setIsCurrentRatioDisplay(Boolean currentRatioDisplay) {
+		isCurrentRatioDisplay = currentRatioDisplay;
+	}
 
-	private List<DataRequest> countryList = Collections.emptyList();
+	public Boolean getIsCurrentRatioMandatory() {
+		return isCurrentRatioMandatory;
+	}
 
-	private List<DataRequest> stateList = Collections.emptyList();
+	public void setIsCurrentRatioMandatory(Boolean currentRatioMandatory) {
+		isCurrentRatioMandatory = currentRatioMandatory;
+	}
 
-	private List<DataRequest> cityList = Collections.emptyList();
-	
-	private List<DataRequest> unInterestedIndustrylist=Collections.emptyList();
+	public Boolean getIsInterestCoverageDisplay() {
+		return isInterestCoverageDisplay;
+	}
+
+	public void setIsInterestCoverageDisplay(Boolean interestCoverageDisplay) {
+		isInterestCoverageDisplay = interestCoverageDisplay;
+	}
+
+	public Boolean getIsInterestCoverageMandatory() {
+		return isInterestCoverageMandatory;
+	}
+
+	public void setIsInterestCoverageMandatory(Boolean interestCoverageMandatory) {
+		isInterestCoverageMandatory = interestCoverageMandatory;
+	}
+
+	public Boolean getIsTolTnwDisplay() {
+		return isTolTnwDisplay;
+	}
+
+	public void setIsTolTnwDisplay(Boolean tolTnwDisplay) {
+		isTolTnwDisplay = tolTnwDisplay;
+	}
+
+	public Boolean getIsTolTnwMandatory() {
+		return isTolTnwMandatory;
+	}
+
+	public void setIsTolTnwMandatory(Boolean tolTnwMandatory) {
+		isTolTnwMandatory = tolTnwMandatory;
+	}
+
+	public Boolean getIsTurnoverRatioDisplay() {
+		return isTurnoverRatioDisplay;
+	}
+
+	public void setIsTurnoverRatioDisplay(Boolean turnoverRatioDisplay) {
+		isTurnoverRatioDisplay = turnoverRatioDisplay;
+	}
+
+	public Boolean getIsTurnoverRatioMandatory() {
+		return isTurnoverRatioMandatory;
+	}
+
+	public void setIsTurnoverRatioMandatory(Boolean turnoverRatioMandatory) {
+		isTurnoverRatioMandatory = turnoverRatioMandatory;
+	}
+
+	public Boolean getIsGrossCashAccuralsRatioDisplay() {
+		return isGrossCashAccuralsRatioDisplay;
+	}
+
+	public void setIsGrossCashAccuralsRatioDisplay(Boolean grossCashAccuralsRatioDisplay) {
+		isGrossCashAccuralsRatioDisplay = grossCashAccuralsRatioDisplay;
+	}
+
+	public Boolean getIsGrossCashAccuralsRatioMandatory() {
+		return isGrossCashAccuralsRatioMandatory;
+	}
+
+	public void setIsGrossCashAccuralsRatioMandatory(Boolean grossCashAccuralsRatioMandatory) {
+		isGrossCashAccuralsRatioMandatory = grossCashAccuralsRatioMandatory;
+	}
+
+	public Boolean getIsCustomerConcentrationDisplay() {
+		return isCustomerConcentrationDisplay;
+	}
+
+	public void setIsCustomerConcentrationDisplay(Boolean customerConcentrationDisplay) {
+		isCustomerConcentrationDisplay = customerConcentrationDisplay;
+	}
+
+	public Boolean getIsCustomerConcentrationMandatory() {
+		return isCustomerConcentrationMandatory;
+	}
+
+	public void setIsCustomerConcentrationMandatory(Boolean customerConcentrationMandatory) {
+		isCustomerConcentrationMandatory = customerConcentrationMandatory;
+	}
+
+	public Boolean getIsRiskModelScoreDisplay() {
+		return isRiskModelScoreDisplay;
+	}
+
+	public void setIsRiskModelScoreDisplay(Boolean riskModelScoreDisplay) {
+		isRiskModelScoreDisplay = riskModelScoreDisplay;
+	}
+
+	public Boolean getIsRiskModelScoreMandatory() {
+		return isRiskModelScoreMandatory;
+	}
+
+	public void setIsRiskModelScoreMandatory(Boolean riskModelScoreMandatory) {
+		isRiskModelScoreMandatory = riskModelScoreMandatory;
+	}
+
+	public NtbTermLoanParameterTemp() {
+	}
+
+	public ProductMasterTemp getFpProductId() {
+		return fpProductId;
+	}
+
+	public void setFpProductId(ProductMasterTemp fpProductId) {
+		this.fpProductId = fpProductId;
+	}
+
+	public Long getCreatedBy() {
+		return this.createdBy;
+	}
+
+	public void setCreatedBy(Long createdBy) {
+		this.createdBy = createdBy;
+	}
+
+	public Date getCreatedDate() {
+		return this.createdDate;
+	}
+
+	public void setCreatedDate(Date createdDate) {
+		this.createdDate = createdDate;
+	}
 
 	public Integer getCurrency() {
-		return currency;
+		return this.currency;
 	}
 
 	public void setCurrency(Integer currency) {
@@ -659,15 +796,23 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	}
 
 	public Integer getDenomination() {
-		return denomination;
+		return this.denomination;
 	}
 
 	public void setDenomination(Integer denomination) {
 		this.denomination = denomination;
 	}
 
+	public Boolean getIsActive() {
+		return this.isActive;
+	}
+
+	public void setIsActive(Boolean isActive) {
+		this.isActive = isActive;
+	}
+
 	public Boolean getIsCollateralDisplay() {
-		return isCollateralDisplay;
+		return this.isCollateralDisplay;
 	}
 
 	public void setIsCollateralDisplay(Boolean isCollateralDisplay) {
@@ -675,7 +820,7 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	}
 
 	public Boolean getIsCollateralMandatory() {
-		return isCollateralMandatory;
+		return this.isCollateralMandatory;
 	}
 
 	public void setIsCollateralMandatory(Boolean isCollateralMandatory) {
@@ -683,7 +828,7 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	}
 
 	public Boolean getIsCreditRatingDisplay() {
-		return isCreditRatingDisplay;
+		return this.isCreditRatingDisplay;
 	}
 
 	public void setIsCreditRatingDisplay(Boolean isCreditRatingDisplay) {
@@ -691,7 +836,7 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	}
 
 	public Boolean getIsCreditRatingMandatory() {
-		return isCreditRatingMandatory;
+		return this.isCreditRatingMandatory;
 	}
 
 	public void setIsCreditRatingMandatory(Boolean isCreditRatingMandatory) {
@@ -699,7 +844,7 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	}
 
 	public Boolean getIsDebtEquityDisplay() {
-		return isDebtEquityDisplay;
+		return this.isDebtEquityDisplay;
 	}
 
 	public void setIsDebtEquityDisplay(Boolean isDebtEquityDisplay) {
@@ -707,7 +852,7 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	}
 
 	public Boolean getIsDebtEquityMandatory() {
-		return isDebtEquityMandatory;
+		return this.isDebtEquityMandatory;
 	}
 
 	public void setIsDebtEquityMandatory(Boolean isDebtEquityMandatory) {
@@ -715,7 +860,7 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	}
 
 	public Boolean getIsEstablishmentDisplay() {
-		return isEstablishmentDisplay;
+		return this.isEstablishmentDisplay;
 	}
 
 	public void setIsEstablishmentDisplay(Boolean isEstablishmentDisplay) {
@@ -723,7 +868,7 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	}
 
 	public Boolean getIsEstablishmentMandatory() {
-		return isEstablishmentMandatory;
+		return this.isEstablishmentMandatory;
 	}
 
 	public void setIsEstablishmentMandatory(Boolean isEstablishmentMandatory) {
@@ -731,7 +876,7 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	}
 
 	public Boolean getIsGeographicalDisplay() {
-		return isGeographicalDisplay;
+		return this.isGeographicalDisplay;
 	}
 
 	public void setIsGeographicalDisplay(Boolean isGeographicalDisplay) {
@@ -739,7 +884,7 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	}
 
 	public Boolean getIsGeographicalMandatory() {
-		return isGeographicalMandatory;
+		return this.isGeographicalMandatory;
 	}
 
 	public void setIsGeographicalMandatory(Boolean isGeographicalMandatory) {
@@ -747,7 +892,7 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	}
 
 	public Boolean getIsIndustrySectorDisplay() {
-		return isIndustrySectorDisplay;
+		return this.isIndustrySectorDisplay;
 	}
 
 	public void setIsIndustrySectorDisplay(Boolean isIndustrySectorDisplay) {
@@ -755,7 +900,7 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	}
 
 	public Boolean getIsIndustrySectorMandatory() {
-		return isIndustrySectorMandatory;
+		return this.isIndustrySectorMandatory;
 	}
 
 	public void setIsIndustrySectorMandatory(Boolean isIndustrySectorMandatory) {
@@ -763,7 +908,7 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	}
 
 	public Boolean getIsInvestmentSizeDisplay() {
-		return isInvestmentSizeDisplay;
+		return this.isInvestmentSizeDisplay;
 	}
 
 	public void setIsInvestmentSizeDisplay(Boolean isInvestmentSizeDisplay) {
@@ -771,7 +916,7 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	}
 
 	public Boolean getIsInvestmentSizeMandatory() {
-		return isInvestmentSizeMandatory;
+		return this.isInvestmentSizeMandatory;
 	}
 
 	public void setIsInvestmentSizeMandatory(Boolean isInvestmentSizeMandatory) {
@@ -779,7 +924,7 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	}
 
 	public Boolean getIsNetworthDisplay() {
-		return isNetworthDisplay;
+		return this.isNetworthDisplay;
 	}
 
 	public void setIsNetworthDisplay(Boolean isNetworthDisplay) {
@@ -787,7 +932,7 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	}
 
 	public Boolean getIsNetworthMandatory() {
-		return isNetworthMandatory;
+		return this.isNetworthMandatory;
 	}
 
 	public void setIsNetworthMandatory(Boolean isNetworthMandatory) {
@@ -795,7 +940,7 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	}
 
 	public Boolean getIsPastYearTurnoverDisplay() {
-		return isPastYearTurnoverDisplay;
+		return this.isPastYearTurnoverDisplay;
 	}
 
 	public void setIsPastYearTurnoverDisplay(Boolean isPastYearTurnoverDisplay) {
@@ -803,7 +948,7 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	}
 
 	public Boolean getIsPastYearTurnoverMandatory() {
-		return isPastYearTurnoverMandatory;
+		return this.isPastYearTurnoverMandatory;
 	}
 
 	public void setIsPastYearTurnoverMandatory(Boolean isPastYearTurnoverMandatory) {
@@ -811,7 +956,7 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	}
 
 	public Boolean getIsProfitabilityHistoryDisplay() {
-		return isProfitabilityHistoryDisplay;
+		return this.isProfitabilityHistoryDisplay;
 	}
 
 	public void setIsProfitabilityHistoryDisplay(Boolean isProfitabilityHistoryDisplay) {
@@ -819,7 +964,7 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	}
 
 	public Boolean getIsProfitabilityHistoryMandatory() {
-		return isProfitabilityHistoryMandatory;
+		return this.isProfitabilityHistoryMandatory;
 	}
 
 	public void setIsProfitabilityHistoryMandatory(Boolean isProfitabilityHistoryMandatory) {
@@ -827,7 +972,7 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	}
 
 	public Boolean getIsTenureDisplay() {
-		return isTenureDisplay;
+		return this.isTenureDisplay;
 	}
 
 	public void setIsTenureDisplay(Boolean isTenureDisplay) {
@@ -835,7 +980,7 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	}
 
 	public Boolean getIsTenureMandatory() {
-		return isTenureMandatory;
+		return this.isTenureMandatory;
 	}
 
 	public void setIsTenureMandatory(Boolean isTenureMandatory) {
@@ -843,15 +988,15 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	}
 
 	public Integer getLongTermCreditRating() {
-		return LongTermCreditRating;
+		return this.LongTermCreditRating;
 	}
 
-	public void setLongTermCreditRating(Integer longTermCreditRating) {
-		LongTermCreditRating = longTermCreditRating;
+	public void setLongTermCreditRating(Integer LongTermCreditRating) {
+		this.LongTermCreditRating = LongTermCreditRating;
 	}
 
 	public Integer getMaxAgeEstablishment() {
-		return maxAgeEstablishment;
+		return this.maxAgeEstablishment;
 	}
 
 	public void setMaxAgeEstablishment(Integer maxAgeEstablishment) {
@@ -874,6 +1019,14 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 		this.minCollateral = minCollateral;
 	}
 
+	public Integer getMinAgeEstablishment() {
+		return this.minAgeEstablishment;
+	}
+
+	public void setMinAgeEstablishment(Integer minAgeEstablishment) {
+		this.minAgeEstablishment = minAgeEstablishment;
+	}
+
 	public BigDecimal getMaxDebtEquity() {
 		return maxDebtEquity;
 	}
@@ -882,8 +1035,52 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 		this.maxDebtEquity = maxDebtEquity;
 	}
 
+	public BigDecimal getMinDebtEquity() {
+		return minDebtEquity;
+	}
+
 	public void setMinDebtEquity(BigDecimal minDebtEquity) {
 		this.minDebtEquity = minDebtEquity;
+	}
+
+	public Long getModifiedBy() {
+		return this.modifiedBy;
+	}
+
+	public void setModifiedBy(Long modifiedBy) {
+		this.modifiedBy = modifiedBy;
+	}
+
+	public Date getModifiedDate() {
+		return this.modifiedDate;
+	}
+
+	public void setModifiedDate(Date modifiedDate) {
+		this.modifiedDate = modifiedDate;
+	}
+
+	public Integer getProfitabilityHistory() {
+		return this.profitabilityHistory;
+	}
+
+	public void setProfitabilityHistory(Integer profitabilityHistory) {
+		this.profitabilityHistory = profitabilityHistory;
+	}
+
+	public Integer getShortTermCreditRating() {
+		return this.shortTermCreditRating;
+	}
+
+	public void setShortTermCreditRating(Integer shortTermCreditRating) {
+		this.shortTermCreditRating = shortTermCreditRating;
+	}
+
+	public Long getUninterestedIndustry() {
+		return this.uninterestedIndustry;
+	}
+
+	public void setUninterestedIndustry(Long uninterestedIndustry) {
+		this.uninterestedIndustry = uninterestedIndustry;
 	}
 
 	public BigDecimal getMaxInvestSize() {
@@ -910,25 +1107,6 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 		this.maxPastTurnover = maxPastTurnover;
 	}
 
-	public BigDecimal getMaxTenure() {
-		return maxTenure;
-	}
-
-	public void setMaxTenure(BigDecimal maxTenure) {
-		this.maxTenure = maxTenure;
-	}
-
-	public Integer getMinAgeEstablishment() {
-		return minAgeEstablishment;
-	}
-
-	public void setMinAgeEstablishment(Integer minAgeEstablishment) {
-		this.minAgeEstablishment = minAgeEstablishment;
-	}
-
-	public BigDecimal getMinDebtEquity() {
-		return minDebtEquity;
-	}
 
 	public BigDecimal getMinInvestSize() {
 		return minInvestSize;
@@ -954,94 +1132,21 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 		this.minPastTurnover = minPastTurnover;
 	}
 
-	public BigDecimal getMinTenure() {
-		return minTenure;
+
+	public BigDecimal getMaxTenureNtb() {
+		return maxTenureNtb;
 	}
 
-	public void setMinTenure(BigDecimal minTenure) {
-		this.minTenure = minTenure;
+	public void setMaxTenureNtb(BigDecimal maxTenureNtb) {
+		this.maxTenureNtb = maxTenureNtb;
 	}
 
-	public Integer getProfitabilityHistory() {
-		return profitabilityHistory;
+	public BigDecimal getMinTenureNtb() {
+		return minTenureNtb;
 	}
 
-	public void setProfitabilityHistory(Integer profitabilityHistory) {
-		this.profitabilityHistory = profitabilityHistory;
-	}
-
-	public Integer getShortTermCreditRating() {
-		return shortTermCreditRating;
-	}
-
-	public void setShortTermCreditRating(Integer shortTermCreditRating) {
-		this.shortTermCreditRating = shortTermCreditRating;
-	}
-
-	public Long getUninterestedIndustry() {
-		return uninterestedIndustry;
-	}
-
-	public void setUninterestedIndustry(Long uninterestedIndustry) {
-		this.uninterestedIndustry = uninterestedIndustry;
-	}
-
-	public List<DataRequest> getIndustrylist() {
-		return industrylist;
-	}
-
-	public void setIndustrylist(List<DataRequest> industrylist) {
-		this.industrylist = industrylist;
-	}
-
-	public List<DataRequest> getSectorlist() {
-		return sectorlist;
-	}
-
-	public void setSectorlist(List<DataRequest> sectorlist) {
-		this.sectorlist = sectorlist;
-	}
-
-	public List<DataRequest> getCountryList() {
-		return countryList;
-	}
-
-	public void setCountryList(List<DataRequest> countryList) {
-		this.countryList = countryList;
-	}
-	
-	
-
-	public List<DataRequest> getUnInterestedIndustrylist() {
-		return unInterestedIndustrylist;
-	}
-
-	public void setUnInterestedIndustrylist(List<DataRequest> unInterestedIndustrylist) {
-		this.unInterestedIndustrylist = unInterestedIndustrylist;
-	}
-
-	public List<DataRequest> getStateList() {
-		return stateList;
-	}
-
-	public void setStateList(List<DataRequest> stateList) {
-		this.stateList = stateList;
-	}
-
-	public List<DataRequest> getCityList() {
-		return cityList;
-	}
-
-	public void setCityList(List<DataRequest> cityList) {
-		this.cityList = cityList;
-	}
-
-	public List<DataRequest> getNegativeIndustryList() {
-		return unInterestedIndustrylist;
-	}
-
-	public void setNegativeIndustryList(List<DataRequest> unInterestedIndustrylist) {
-		this.unInterestedIndustrylist = unInterestedIndustrylist;
+	public void setMinTenureNtb(BigDecimal minTenureNtb) {
+		this.minTenureNtb = minTenureNtb;
 	}
 
 	public Boolean getIsUnInterestedIndustryDisplay() {
@@ -1068,22 +1173,6 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 		this.assessmentMethodId = assessmentMethodId;
 	}
 
-	public Long getUserOrgId() {
-		return userOrgId;
-	}
-
-	public void setUserOrgId(Long userOrgId) {
-		this.userOrgId = userOrgId;
-	}
-
-	public Integer getAppstage() {
-		return appstage;
-	}
-
-	public void setAppstage(Integer appstage) {
-		this.appstage = appstage;
-	}
-
 	public BigDecimal getMinCgtmseCoverage() {
 		return minCgtmseCoverage;
 	}
@@ -1099,15 +1188,6 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	public void setMaxCgtmseCoverage(BigDecimal maxCgtmseCoverage) {
 		this.maxCgtmseCoverage = maxCgtmseCoverage;
 	}
-
-	public List<Integer> getMsmeFundingIds() {
-		return msmeFundingIds;
-	}
-
-	public void setMsmeFundingIds(List<Integer> msmeFundingIds) {
-		this.msmeFundingIds = msmeFundingIds;
-	}
-
 	public Boolean getIsCgtmseCoverageDisplay() {
 		return isCgtmseCoverageDisplay;
 	}
@@ -1157,13 +1237,6 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 		this.maxAvrgAge = maxAvrgAge;
 	}
 
-	public BigDecimal getMinAvgYearlyIncome() {
-		return minAvgYearlyIncome;
-	}
-
-	public void setMinAvgYearlyIncome(BigDecimal minAvgYearlyIncome) {
-		this.minAvgYearlyIncome = minAvgYearlyIncome;
-	}
 
 
 	public BigDecimal getMinAvrgYearlyIncome() {
@@ -1174,15 +1247,7 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 		this.minAvrgYearlyIncome = minAvrgYearlyIncome;
 	}
 
-	public BigDecimal getMaxAvrgYearlyIncome() {
-		return maxAvrgYearlyIncome;
-	}
-
-	public void setMaxAvrgYearlyIncome(BigDecimal maxAvrgYearlyIncome) {
-		this.maxAvrgYearlyIncome = maxAvrgYearlyIncome;
-	}
-
-
+	
 	public BigDecimal getMincgtmse() {
 		return mincgtmse;
 	}
@@ -1345,22 +1410,15 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 		this.isCurrentFoirMandatory = isCurrentFoirMandatory;
 	}
 
-	public BigDecimal getMinTenureNtb() {
-		return minTenureNtb;
+	public BigDecimal getMaxAvrgYearlyIncome() {
+		return maxAvrgYearlyIncome;
 	}
 
-	public void setMinTenureNtb(BigDecimal minTenureNtb) {
-		this.minTenureNtb = minTenureNtb;
+	public void setMaxAvrgYearlyIncome(BigDecimal maxAvrgYearlyIncome) {
+		this.maxAvrgYearlyIncome = maxAvrgYearlyIncome;
 	}
 
-	public BigDecimal getMaxTenureNtb() {
-		return maxTenureNtb;
-	}
+	
+	
 
-	public void setMaxTenureNtb(BigDecimal maxTenureNtb) {
-		this.maxTenureNtb = maxTenureNtb;
-	}
-	
-	
-	
 }

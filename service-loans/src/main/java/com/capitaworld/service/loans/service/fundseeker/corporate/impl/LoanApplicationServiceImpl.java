@@ -4933,6 +4933,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	@Override
 	public boolean savePhese1DataToSidbi(Long applicationId, Long userId,Long organizationId,Long fpProductMappingId) {
 		GenerateTokenRequest generateTokenRequest =null;
+		PrimaryCorporateDetail applicationMaster = null;
 		try {
 			generateTokenRequest = setUrlAndTokenInSidbiClient(organizationId , applicationId);
 			if(CommonUtils.isObjectNullOrEmpty(generateTokenRequest)) {
@@ -4955,8 +4956,14 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		try {
 			AuditMaster audit = auditComponent.getAudit(applicationId, true, AuditComponent.PRELIM_INFO);
 			if(audit == null) {
+				//Get and Create Loan Master
+				applicationMaster = primaryCorporateRepository.findOneByApplicationIdId(applicationId);
+				if(applicationMaster == null) {
+					logger.info("Loan Application Found Null====>{}",applicationId);
+					return false;
+				}
 				//Create Prelim Sheet Object	
-				ProfileReqRes prelimData = getPrelimData(applicationId,userId);
+				ProfileReqRes prelimData = getPrelimData(applicationMaster,userId);
 				if(prelimData == null) {
 					logger.info("ProfileReqRes ==> Prelim Sheet Object is Null in savePhese1DataToSidbi() ");
 					auditComponent.updateAudit(AuditComponent.PRELIM_INFO, applicationId, userId, "ProfileReqRes ==> Prelim Sheet Object is Null ProfileReqRes prelimData  ==> " + prelimData,  savePrelimInfo);
@@ -4986,7 +4993,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			audit = auditComponent.getAudit(applicationId, true, AuditComponent.MATCHES_PARAMETER);
 			if(audit == null) {
 				try {
-					MatchesParameterRequest parameterRequest = createMatchesParameterRequest(applicationId, fpProductMappingId);
+					MatchesParameterRequest parameterRequest = createMatchesParameterRequest(applicationId, fpProductMappingId,applicationMaster.getProductId());
 					if(parameterRequest == null) {
 						logger.info("MatchesParameterRequest Not Found in savePhese1DataToSidbi() ==> for ApplicationId ====>{}FpProductId====>{}",applicationId,fpProductMappingId);
 						auditComponent.updateAudit(AuditComponent.MATCHES_PARAMETER, applicationId, userId, "MatchesParameterRequest Not Found for ApplicationId ====>{} "+applicationId+" FpProductId====>{} "+fpProductMappingId , matchesParameters);
@@ -5321,33 +5328,27 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		return false;
 	}
 	
-	private ProfileReqRes getPrelimData(Long applicationId, Long userId) {
-		//Get and Create Loan Master
-		PrimaryCorporateDetail applicationMaster = primaryCorporateRepository.findOneByApplicationIdId(applicationId);
-		if(applicationMaster == null) {
-			logger.info("Loan Application Found Null====>{}",applicationId);
-			return null;
-		}
+	private ProfileReqRes getPrelimData(PrimaryCorporateDetail applicationMaster, Long userId) {
 		ProfileReqRes profileReqRes = new  ProfileReqRes();
 		profileReqRes.setLoanMasterRequest(createObj(applicationMaster));
 		//Create Corporate Profile Object
-		CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository.findOneByApplicationIdId(applicationId);
+		CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository.findOneByApplicationIdId(applicationMaster.getId());
 		if(corporateApplicantDetail != null) {
 			profileReqRes.setCorporateProfileRequest(createProfileObj(corporateApplicantDetail,applicationMaster.getUserId()));
 			//Setting Director Details
-			profileReqRes.setDirBackList(getDirectorListForSidbi(applicationId));
+			profileReqRes.setDirBackList(getDirectorListForSidbi(applicationMaster.getId()));
 			//Setting Current Financial Details
-			profileReqRes.setCurrentFinArrList(getCurrentFinancialDetaisForSidbi(applicationId));
+			profileReqRes.setCurrentFinArrList(getCurrentFinancialDetaisForSidbi(applicationMaster.getId()));
 			return profileReqRes;
 			
 		}else {
-			logger.warn("No Corporate Profile Found For Application Id==>{}",applicationId);
+			logger.warn("No Corporate Profile Found For Application Id==>{}",applicationMaster.getId());
 		}
 		
 		return null;
 	}
 	
-	private MatchesParameterRequest createMatchesParameterRequest(Long applicationId,Long fpProductId) {
+	private MatchesParameterRequest createMatchesParameterRequest(Long applicationId,Long fpProductId,Integer productId) {
 		MatchRequest request = new MatchRequest();
 		request.setApplicationId(applicationId);
 		request.setProductId(fpProductId);
@@ -5642,6 +5643,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		}else {
 			List<DirectorBackgroundDetailRequest> listData = new ArrayList<>(direcotors.size());
 			SimpleDateFormat dateFormat2 = new SimpleDateFormat("dd-MM-yyyy");
+			AddressRequest addressRequest = null;
+			DirectorBackgroundDetailRequest target = null;
 			for(DirectorBackgroundDetail source : direcotors) {
 				CibilRequest cibilRequest = new CibilRequest();
 				cibilRequest.setApplicationId(applicationId);
@@ -5664,12 +5667,31 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					}
 				}
 				
-				DirectorBackgroundDetailRequest target = new DirectorBackgroundDetailRequest();
+				target = new DirectorBackgroundDetailRequest();
 				target.setName(source.getDirectorsName());
 				if(source.getGender() != null) {
 					target.setGender(Gender.getById(source.getGender()).getValue());						
 				}
-				target.setAddress(source.getAddress());
+				addressRequest = new AddressRequest(); 
+				addressRequest.setStreetName(source.getStreetName());
+				addressRequest.setLandMark(source.getLandmark());
+				addressRequest.setPremiseNumber(source.getPremiseNumber());
+				addressRequest.setPincode(source.getPincode());
+				try {
+					if(source.getStateId() != null) {
+						addressRequest.setState(CommonDocumentUtils.getState(source.getStateId().longValue(), oneFormClient));	
+					}
+					if(source.getCountryId() != null) {
+						addressRequest.setCountry(CommonDocumentUtils.getCountry(source.getCountryId().longValue(), oneFormClient));	
+					}
+					
+					if(source.getCityId() != null) {
+						addressRequest.setCity(CommonDocumentUtils.getCity(source.getCityId().longValue(), oneFormClient));	
+					}					
+				}catch(Exception e) {
+					e.printStackTrace();
+				}
+				target.setAddress(addressRequest);
 				target.setPanNo(source.getPanNo());
 				if(source.getRelationshipType() != null) {
 					target.setRelationshipType(DirectorRelationshipType.getById(source.getRelationshipType()).getValue());						

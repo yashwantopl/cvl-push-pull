@@ -770,6 +770,7 @@ public class ProductMasterController {
 			corporateProduct.setUserId(userId);
 			corporateProduct.setUserOrgId(userOrgId);
 			boolean response = productMasterService.saveCorporateInTemp(corporateProduct);
+		//	boolean response =true;
 			if (response) {
 				CommonDocumentUtils.endHook(logger, "save");
 				return new ResponseEntity<LoansResponse>(
