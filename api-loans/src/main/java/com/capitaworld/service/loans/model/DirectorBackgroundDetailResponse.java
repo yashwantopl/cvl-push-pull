@@ -83,6 +83,8 @@ public class DirectorBackgroundDetailResponse implements Serializable{
 
 		private String title;
 		
+		private String qualification;
+		
 		
 
 		/**
@@ -439,4 +441,19 @@ public class DirectorBackgroundDetailResponse implements Serializable{
 	public void setLandmark(String landmark) {
 		this.landmark = landmark;
 	}
+
+	/**
+	 * @return the qualification
+	 */
+	public String getQualification() {
+		return qualification;
+	}
+
+	/**
+	 * @param qualification the qualification to set
+	 */
+	public void setQualification(String qualification) {
+		this.qualification = qualification;
+	}
+	
 }

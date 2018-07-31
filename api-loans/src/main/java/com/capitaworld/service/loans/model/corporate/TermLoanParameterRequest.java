@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 
+
 import com.capitaworld.service.loans.model.DataRequest;
 import com.capitaworld.service.loans.model.ProductMasterRequest;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -18,7 +19,7 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 7147132253130949658L;
+	private static final long serialVersionUID = 1L;
 
 	private Integer currency;
 
@@ -195,9 +196,95 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	private Boolean isCommercialCibilDisplay = false;
 
 	private Boolean isCommercialCibilMandatory = false;
+	
+	
+	private Long userOrgId;
+	
+	private Integer appstage;
+	
+	private Object workflowData;
 
 	//-----------------------added eligibility method for product
 	private Integer assessmentMethodId;
+
+	private BigDecimal minCgtmseCoverage;
+	private BigDecimal maxCgtmseCoverage;
+	private Boolean isCgtmseCoverageDisplay = false;
+	private Boolean isCgtmseCoverageMandatory = false;
+	private Boolean isMsmeFundingDisplay = false;
+	private Boolean isMsmeFundingMandatory = false;
+	private List<Integer> msmeFundingIds;
+	
+	private BigDecimal minTenureNtb;
+	
+	private BigDecimal maxTenureNtb;
+    /**
+	 * @return the workflowData
+	 */
+	
+	
+	/*ntb*/
+	
+	private BigDecimal minAvrgAge;
+
+	private BigDecimal maxAvrgAge;
+	
+	private BigDecimal minAvgYearlyIncome;
+
+	private BigDecimal minAvrgYearlyIncome;
+	
+	private BigDecimal maxAvrgYearlyIncome;
+
+	private BigDecimal mincgtmse;
+	
+	private BigDecimal maxcgtmse;
+
+	private BigDecimal minLoanToAsset;
+	
+	private BigDecimal maxLoanToAsset;
+	
+	private BigDecimal minAvgWorkExp;
+	
+	private BigDecimal maxAvgWorkExp;
+	
+	private BigDecimal minCurrentFoir;
+	
+	private BigDecimal maxCurrentFoir;
+	
+	private Boolean isAvrgAgeDisplay = false;
+
+	private Boolean isAvrgAgeMandatory = false;
+	
+	private Boolean isAvrgYearlyIncomeDisplay = false;
+
+	private Boolean isAvrgYearlyIncomeMandatory = false;
+
+	private Boolean iscgtmseDisplay = false;
+
+	private Boolean iscgtmseMandatory = false;
+	
+	private Boolean isLoanToAssetDisplay = false;
+
+	private Boolean isLoanToAssetMandatory = false;
+
+	private Boolean isAvgWorkExpDisplay = false;
+
+	private Boolean isAvgWorkExpMandatory = false;
+	
+	private Boolean isCurrentFoirDisplay = false;
+
+	private Boolean isCurrentFoirMandatory = false;
+	
+	public Object getWorkflowData() {
+		return workflowData;
+	}
+
+	/**
+	 * @param workflowData the workflowData to set
+	 */
+	public void setWorkflowData(Object workflowData) {
+		this.workflowData = workflowData;
+	}
 
 	public Integer getIndividualCibil() {
 		return individualCibil;
@@ -980,4 +1067,300 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	public void setAssessmentMethodId(Integer assessmentMethodId) {
 		this.assessmentMethodId = assessmentMethodId;
 	}
+
+	public Long getUserOrgId() {
+		return userOrgId;
+	}
+
+	public void setUserOrgId(Long userOrgId) {
+		this.userOrgId = userOrgId;
+	}
+
+	public Integer getAppstage() {
+		return appstage;
+	}
+
+	public void setAppstage(Integer appstage) {
+		this.appstage = appstage;
+	}
+
+	public BigDecimal getMinCgtmseCoverage() {
+		return minCgtmseCoverage;
+	}
+
+	public void setMinCgtmseCoverage(BigDecimal minCgtmseCoverage) {
+		this.minCgtmseCoverage = minCgtmseCoverage;
+	}
+
+	public BigDecimal getMaxCgtmseCoverage() {
+		return maxCgtmseCoverage;
+	}
+
+	public void setMaxCgtmseCoverage(BigDecimal maxCgtmseCoverage) {
+		this.maxCgtmseCoverage = maxCgtmseCoverage;
+	}
+
+	public List<Integer> getMsmeFundingIds() {
+		return msmeFundingIds;
+	}
+
+	public void setMsmeFundingIds(List<Integer> msmeFundingIds) {
+		this.msmeFundingIds = msmeFundingIds;
+	}
+
+	public Boolean getIsCgtmseCoverageDisplay() {
+		return isCgtmseCoverageDisplay;
+	}
+
+	public void setIsCgtmseCoverageDisplay(Boolean isCgtmseCoverageDisplay) {
+		this.isCgtmseCoverageDisplay = isCgtmseCoverageDisplay;
+	}
+
+	public Boolean getIsCgtmseCoverageMandatory() {
+		return isCgtmseCoverageMandatory;
+	}
+
+	public void setIsCgtmseCoverageMandatory(Boolean isCgtmseCoverageMandatory) {
+		this.isCgtmseCoverageMandatory = isCgtmseCoverageMandatory;
+	}
+
+	public Boolean getIsMsmeFundingDisplay() {
+		return isMsmeFundingDisplay;
+	}
+
+	public void setIsMsmeFundingDisplay(Boolean isMsmeFundingDisplay) {
+		this.isMsmeFundingDisplay = isMsmeFundingDisplay;
+	}
+
+	public Boolean getIsMsmeFundingMandatory() {
+		return isMsmeFundingMandatory;
+	}
+
+	public void setIsMsmeFundingMandatory(Boolean isMsmeFundingMandatory) {
+		this.isMsmeFundingMandatory = isMsmeFundingMandatory;
+	}
+
+
+	public BigDecimal getMinAvrgAge() {
+		return minAvrgAge;
+	}
+
+	public void setMinAvrgAge(BigDecimal minAvrgAge) {
+		this.minAvrgAge = minAvrgAge;
+	}
+
+	public BigDecimal getMaxAvrgAge() {
+		return maxAvrgAge;
+	}
+
+	public void setMaxAvrgAge(BigDecimal maxAvrgAge) {
+		this.maxAvrgAge = maxAvrgAge;
+	}
+
+	public BigDecimal getMinAvgYearlyIncome() {
+		return minAvgYearlyIncome;
+	}
+
+	public void setMinAvgYearlyIncome(BigDecimal minAvgYearlyIncome) {
+		this.minAvgYearlyIncome = minAvgYearlyIncome;
+	}
+
+
+	public BigDecimal getMinAvrgYearlyIncome() {
+		return minAvrgYearlyIncome;
+	}
+
+	public void setMinAvrgYearlyIncome(BigDecimal minAvrgYearlyIncome) {
+		this.minAvrgYearlyIncome = minAvrgYearlyIncome;
+	}
+
+	public BigDecimal getMaxAvrgYearlyIncome() {
+		return maxAvrgYearlyIncome;
+	}
+
+	public void setMaxAvrgYearlyIncome(BigDecimal maxAvrgYearlyIncome) {
+		this.maxAvrgYearlyIncome = maxAvrgYearlyIncome;
+	}
+
+
+	public BigDecimal getMincgtmse() {
+		return mincgtmse;
+	}
+
+	public void setMincgtmse(BigDecimal mincgtmse) {
+		this.mincgtmse = mincgtmse;
+	}
+
+	public BigDecimal getMaxcgtmse() {
+		return maxcgtmse;
+	}
+
+	public void setMaxcgtmse(BigDecimal maxcgtmse) {
+		this.maxcgtmse = maxcgtmse;
+	}
+
+	public BigDecimal getMinLoanToAsset() {
+		return minLoanToAsset;
+	}
+
+	public void setMinLoanToAsset(BigDecimal minLoanToAsset) {
+		this.minLoanToAsset = minLoanToAsset;
+	}
+
+	public BigDecimal getMaxLoanToAsset() {
+		return maxLoanToAsset;
+	}
+
+	public void setMaxLoanToAsset(BigDecimal maxLoanToAsset) {
+		this.maxLoanToAsset = maxLoanToAsset;
+	}
+
+	public BigDecimal getMinAvgWorkExp() {
+		return minAvgWorkExp;
+	}
+
+	public void setMinAvgWorkExp(BigDecimal minAvgWorkExp) {
+		this.minAvgWorkExp = minAvgWorkExp;
+	}
+
+	public BigDecimal getMaxAvgWorkExp() {
+		return maxAvgWorkExp;
+	}
+
+	public void setMaxAvgWorkExp(BigDecimal maxAvgWorkExp) {
+		this.maxAvgWorkExp = maxAvgWorkExp;
+	}
+
+	public BigDecimal getMinCurrentFoir() {
+		return minCurrentFoir;
+	}
+
+	public void setMinCurrentFoir(BigDecimal minCurrentFoir) {
+		this.minCurrentFoir = minCurrentFoir;
+	}
+
+	public BigDecimal getMaxCurrentFoir() {
+		return maxCurrentFoir;
+	}
+
+	public void setMaxCurrentFoir(BigDecimal maxCurrentFoir) {
+		this.maxCurrentFoir = maxCurrentFoir;
+	}
+
+
+	public Boolean getIsAvrgAgeDisplay() {
+		return isAvrgAgeDisplay;
+	}
+
+	public void setIsAvrgAgeDisplay(Boolean isAvrgAgeDisplay) {
+		this.isAvrgAgeDisplay = isAvrgAgeDisplay;
+	}
+
+	public Boolean getIsAvrgAgeMandatory() {
+		return isAvrgAgeMandatory;
+	}
+
+	public void setIsAvrgAgeMandatory(Boolean isAvrgAgeMandatory) {
+		this.isAvrgAgeMandatory = isAvrgAgeMandatory;
+	}
+
+	public Boolean getIsAvrgYearlyIncomeDisplay() {
+		return isAvrgYearlyIncomeDisplay;
+	}
+
+	public void setIsAvrgYearlyIncomeDisplay(Boolean isAvrgYearlyIncomeDisplay) {
+		this.isAvrgYearlyIncomeDisplay = isAvrgYearlyIncomeDisplay;
+	}
+
+	public Boolean getIsAvrgYearlyIncomeMandatory() {
+		return isAvrgYearlyIncomeMandatory;
+	}
+
+	public void setIsAvrgYearlyIncomeMandatory(Boolean isAvrgYearlyIncomeMandatory) {
+		this.isAvrgYearlyIncomeMandatory = isAvrgYearlyIncomeMandatory;
+	}
+
+	
+	public Boolean getIscgtmseDisplay() {
+		return iscgtmseDisplay;
+	}
+
+	public void setIscgtmseDisplay(Boolean iscgtmseDisplay) {
+		this.iscgtmseDisplay = iscgtmseDisplay;
+	}
+
+	public Boolean getIscgtmseMandatory() {
+		return iscgtmseMandatory;
+	}
+
+	public void setIscgtmseMandatory(Boolean iscgtmseMandatory) {
+		this.iscgtmseMandatory = iscgtmseMandatory;
+	}
+
+	public Boolean getIsLoanToAssetDisplay() {
+		return isLoanToAssetDisplay;
+	}
+
+	public void setIsLoanToAssetDisplay(Boolean isLoanToAssetDisplay) {
+		this.isLoanToAssetDisplay = isLoanToAssetDisplay;
+	}
+
+	public Boolean getIsLoanToAssetMandatory() {
+		return isLoanToAssetMandatory;
+	}
+
+	public void setIsLoanToAssetMandatory(Boolean isLoanToAssetMandatory) {
+		this.isLoanToAssetMandatory = isLoanToAssetMandatory;
+	}
+
+	public Boolean getIsAvgWorkExpDisplay() {
+		return isAvgWorkExpDisplay;
+	}
+
+	public void setIsAvgWorkExpDisplay(Boolean isAvgWorkExpDisplay) {
+		this.isAvgWorkExpDisplay = isAvgWorkExpDisplay;
+	}
+
+	public Boolean getIsAvgWorkExpMandatory() {
+		return isAvgWorkExpMandatory;
+	}
+
+	public void setIsAvgWorkExpMandatory(Boolean isAvgWorkExpMandatory) {
+		this.isAvgWorkExpMandatory = isAvgWorkExpMandatory;
+	}
+
+	public Boolean getIsCurrentFoirDisplay() {
+		return isCurrentFoirDisplay;
+	}
+
+	public void setIsCurrentFoirDisplay(Boolean isCurrentFoirDisplay) {
+		this.isCurrentFoirDisplay = isCurrentFoirDisplay;
+	}
+
+	public Boolean getIsCurrentFoirMandatory() {
+		return isCurrentFoirMandatory;
+	}
+
+	public void setIsCurrentFoirMandatory(Boolean isCurrentFoirMandatory) {
+		this.isCurrentFoirMandatory = isCurrentFoirMandatory;
+	}
+
+	public BigDecimal getMinTenureNtb() {
+		return minTenureNtb;
+	}
+
+	public void setMinTenureNtb(BigDecimal minTenureNtb) {
+		this.minTenureNtb = minTenureNtb;
+	}
+
+	public BigDecimal getMaxTenureNtb() {
+		return maxTenureNtb;
+	}
+
+	public void setMaxTenureNtb(BigDecimal maxTenureNtb) {
+		this.maxTenureNtb = maxTenureNtb;
+	}
+	
+	
+	
 }

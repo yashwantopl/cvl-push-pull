@@ -68,7 +68,7 @@ public class WorkingCapitalParameterController {
 						HttpStatus.OK);
 			}
 			workingCapitalParameterRequest.setUserId(userId);
-			boolean response = workingCapitalParameterService.saveOrUpdate(workingCapitalParameterRequest);
+			boolean response = workingCapitalParameterService.saveOrUpdate(workingCapitalParameterRequest,null);
 			if (response) {
 				CommonDocumentUtils.endHook(logger, "save");
 				return new ResponseEntity<LoansResponse>(

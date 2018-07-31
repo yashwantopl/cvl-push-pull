@@ -1,6 +1,9 @@
 
 package com.capitaworld.service.loans.controller.fundseeker;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -1630,6 +1633,24 @@ public class LoanApplicationController {
 					HttpStatus.OK);
 		}
 	}
+	
+	@RequestMapping(value = "/update_payment_status_sidbi", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> updatePaymentStatusForSidbi(@RequestBody PaymentRequest paymentRequest) {
+		try {
+			logger.info("start updatePaymentStatus from SIDBI");
+			
+			LoansResponse response = new LoansResponse("Success", HttpStatus.OK.value());
+			response.setData(loanApplicationService.updateLoanApplicationMasterPaymentStatus(paymentRequest, paymentRequest.getUserId()));
+			logger.info("end updatePaymentStatus from SIDBI()");
+			return new ResponseEntity<LoansResponse>(response, HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while updating Payment Status from SIDBI==>{}", e);
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+	}
 
 	@RequestMapping(value = "/get_payment_status", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getPaymentStatus(@RequestBody PaymentRequest paymentRequest,
@@ -2391,9 +2412,20 @@ public class LoanApplicationController {
 			Map<String, Object> map = new HashMap<String, Object>();
 			String responseMessageSequence = "MerchantID|txnid|Filler1|Filler2|TxnAmount|BankID|Filler3|Filler4|CurrencyType|ItemCode|Filler5|Filler6|Filler7|txnDate|statusCode|Filler7|Phone|EmailId|firstname|applicationId|productinfo|AdditionalInfo2|AdditionalInfo3|AdditionalInfo4|status|checkSum";
 			String responseType=null;
+			PaymentRequest paymentRequest = null;
 			int flag = 0;
+			String decodedresponse = null;
+			String responseParams = null;
+			try {
+				decodedresponse = URLDecoder.decode(response, StandardCharsets.UTF_8.toString());
+				responseParams = decodedresponse;
+				logger.info("Decoded value=======++++++>>>>"+decodedresponse);
+			} catch (UnsupportedEncodingException e) {
+				logger.info("Something went wrong while decoding the response!!!");
+				e.printStackTrace();
+			}
 			
-			StringTokenizer a = new StringTokenizer(response, "&");
+			StringTokenizer a = new StringTokenizer(decodedresponse, "&");
 			
 			while(a.hasMoreElements()) {
 			   String z = a.nextToken();
@@ -2427,7 +2459,7 @@ public class LoanApplicationController {
 			
 			if("BillDesk".equals(responseType)) {
 				
-				StringTokenizer x = new StringTokenizer(response, "&");
+				StringTokenizer x = new StringTokenizer(decodedresponse, "&");
 
 				while (x.hasMoreElements()) {
 					String z = x.nextToken();
@@ -2436,9 +2468,9 @@ public class LoanApplicationController {
 						String msg = p.nextToken();
 
 						if (!"msg".equals(msg)) {
-							String pipedMessage = msg.replaceAll("%7C", "|");
-							logger.info("Piped Message================>" + pipedMessage);
-							StringTokenizer b = new StringTokenizer(pipedMessage, "|");
+							//String pipedMessage = msg.replaceAll("%7C", "|");
+							logger.info("Piped Message================>" + msg);
+							StringTokenizer b = new StringTokenizer(msg, "|");
 							StringTokenizer c = new StringTokenizer(responseMessageSequence, "|");
 							while (b.hasMoreElements()) {
 								while (c.hasMoreElements()) {
@@ -2458,7 +2490,14 @@ public class LoanApplicationController {
 					if (flag == 1)
 						break;
 				}
-				
+				responseParams = responseParams.replaceAll("&", " ");
+				responseParams = responseParams.replace("|", " ");
+				logger.info("Response Params================>" + responseParams);
+				paymentRequest = new PaymentRequest();
+				paymentRequest.setApplicationId(Long.valueOf(String.valueOf(map.get("applicationId"))));
+				paymentRequest.setUserId(Long.valueOf(String.valueOf(map.get("AdditionalInfo2"))));
+				paymentRequest.setPurposeCode(map.get("productinfo").toString());
+				paymentRequest.setResponseParams(responseParams);
 			}
 			
 			else {
@@ -2487,15 +2526,15 @@ public class LoanApplicationController {
 					map.put(key, value);
 
 				}
+				responseParams = responseParams.replaceAll("&", " ");
+				logger.info("Response Params================>" + responseParams);
+				paymentRequest = new PaymentRequest();
+				paymentRequest.setApplicationId(Long.valueOf(String.valueOf(map.get("udf1"))));
+				paymentRequest.setUserId(Long.valueOf(String.valueOf(map.get("udf2"))));
+				paymentRequest.setPurposeCode(map.get("productinfo").toString());
+				paymentRequest.setResponseParams(responseParams);
 				
 			}
-			
-			
-			PaymentRequest paymentRequest = new PaymentRequest();
-			
-			paymentRequest.setApplicationId(Long.valueOf(String.valueOf(map.get("udf1"))));
-			paymentRequest.setUserId(Long.valueOf(String.valueOf(map.get("udf2"))));
-			paymentRequest.setPurposeCode(map.get("productinfo").toString());
 			
 			logger.info("AppId==>"+paymentRequest.getApplicationId()+" UserId==>"+paymentRequest.getUserId()+" PuposeCode==>"+paymentRequest.getPurposeCode());
 			

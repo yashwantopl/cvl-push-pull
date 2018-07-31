@@ -237,13 +237,16 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 	public void saveIndustry(Long applicationId, List<Long> industrylist) {
 		IndustrySectorDetail industrySectorDetail = null;
 		for (Long id : industrylist) {
+			
+			List<Long> resultList = industrySectorRepository.findByIndustryIdAndApplicationIdAndIsActive(id, applicationId, true);
+			if(resultList.size() > 0) {
+				continue;
+			}
 			industrySectorDetail = new IndustrySectorDetail();
 			industrySectorDetail.setApplicationId(applicationId);
 			industrySectorDetail.setIndustryId(id);
 			industrySectorDetail.setCreatedBy(applicationId);
-			industrySectorDetail.setModifiedBy(applicationId);
 			industrySectorDetail.setCreatedDate(new Date());
-			industrySectorDetail.setModifiedDate(new Date());
 			industrySectorDetail.setIsActive(true);
 			// create by and update
 			industrySectorRepository.save(industrySectorDetail);
@@ -253,13 +256,16 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 	public void saveSector(Long applicationId, List<Long> sectorlist) {
 		// sector data save
 		for (Long id : sectorlist) {
+			
+			List<Long> resultList = industrySectorRepository.findBySectorIdAndApplicationIdAndIsActive(id, applicationId, true);
+			if(resultList.size() > 0) {
+				continue;
+			}
 			IndustrySectorDetail industrySectorDetail = new IndustrySectorDetail();
 			industrySectorDetail.setApplicationId(applicationId);
 			industrySectorDetail.setSectorId(id);
 			industrySectorDetail.setCreatedBy(applicationId);
-			industrySectorDetail.setModifiedBy(applicationId);
 			industrySectorDetail.setCreatedDate(new Date());
-			industrySectorDetail.setModifiedDate(new Date());
 			industrySectorDetail.setIsActive(true);
 			// create by and update
 			industrySectorRepository.save(industrySectorDetail);
@@ -269,13 +275,17 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 	public void saveSubSector(Long applicationId, List<Long> subSectorlist) {
 		// sector data save
 		for (Long id : subSectorlist) {
+
+			List<Long> resultList = subSectorRepository.findBySectorSubsectorTransactionIdAndApplicationIdAndIsActive(id, applicationId, true);
+			if(resultList.size() > 0) {
+				continue;
+			}
+			
 			SubsectorDetail subsectorDetail = new SubsectorDetail();
 			subsectorDetail.setApplicationId(applicationId);
 			subsectorDetail.setSectorSubsectorTransactionId(id);
 			subsectorDetail.setCreatedBy(applicationId);
-			subsectorDetail.setModifiedBy(applicationId);
 			subsectorDetail.setCreatedDate(new Date());
-			subsectorDetail.setModifiedDate(new Date());
 			subsectorDetail.setIsActive(true);
 			// create by and update
 			subSectorRepository.save(subsectorDetail);

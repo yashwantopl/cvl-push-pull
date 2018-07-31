@@ -11,6 +11,7 @@ import com.capitaworld.service.loans.model.MultipleFpPruductRequest;
 import com.capitaworld.service.loans.model.ProductDetailsForSp;
 import com.capitaworld.service.loans.model.ProductDetailsResponse;
 import com.capitaworld.service.loans.model.ProductMasterRequest;
+import com.capitaworld.service.loans.model.WorkflowData;
 import com.capitaworld.service.loans.model.common.ChatDetails;
 import com.capitaworld.service.loans.model.corporate.AddProductRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateProduct;
@@ -20,11 +21,11 @@ public interface ProductMasterService {
 
 	public ProductMaster getProductMaster(Long id);
 	
-	public Object getProductMasterWithAllData(Long id);
+	public Object getProductMasterWithAllData(Long id,Integer stage,Long role,Long userId);
 
 	public List<ProductMasterRequest> getList(Long userId,Long userOrgId);
 	
-	public List<ProductMasterRequest> getListByUserType(Long userId,Integer userType,Long userOrgId);
+	public List<ProductMasterRequest> getListByUserType(Long userId,Integer userType,Integer stage,Long userOrgId);
 
 	public String getUserNameByApplicationId(Long productId, Long userId);
 
@@ -38,7 +39,7 @@ public interface ProductMasterService {
 
 	public boolean isSelfView(Long fpProductId, Long userId);
 	
-	public Boolean changeStatus(Long fpProductId,Boolean status, Long userId);
+	public Boolean changeStatus(Long fpProductId,Boolean status, Long userId,Integer stage);
 
 	public boolean isProductMatched(Long userId, MultipleFpPruductRequest multipleFpPruductRequest) throws IOException;
 
@@ -57,6 +58,16 @@ public interface ProductMasterService {
 	public boolean isProductActive(Long productId);
 	
 	public List<ProductMasterRequest> getProductByOrgId(Long orgd);
+
+	public Boolean saveCorporateMasterFromTemp(Long mappingId) throws Exception;
+
+	/**
+	 * @param corporateProduct
+	 * @return
+	 */
+	public Boolean saveCorporateInTemp(CorporateProduct corporateProduct);
+
+	public Boolean clickOnWorkFlowButton(WorkflowData workflowData);
 
 	
 }

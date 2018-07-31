@@ -1,6 +1,8 @@
 package com.capitaworld.service.loans.controller.fundseeker.corporate;
 
+import com.capitaworld.connect.client.ConnectClient;
 import com.capitaworld.service.loans.model.LoansResponse;
+import com.capitaworld.service.loans.model.NTBRequest;
 import com.capitaworld.service.loans.model.corporate.FundSeekerInputRequestResponse;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FundSeekerInputRequestService;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -48,7 +50,12 @@ public class FundSeekerInputRequestController {
         	if(result){
         		
         		// initiate fraudanalytics service to invoke hunter api
-//        		fundSeekerInputRequestService.invokeFraudAnalytics(fundSeekerInputRequestResponse);
+        		Boolean resp =fundSeekerInputRequestService.invokeFraudAnalytics(fundSeekerInputRequestResponse);
+        		if(!resp) {
+        			return new ResponseEntity<LoansResponse>(
+                            new LoansResponse("You do not Qualify for Contactless Process, Kindly visit Bank Branch or get your Due Diligence process completed in www.capitaworld.com to connect to Banks", HttpStatus.UNAVAILABLE_FOR_LEGAL_REASONS.value()),
+                            HttpStatus.OK);
+        		}
         		
         	    logger.info("FUNDSEEKER INPUT SAVED SUCCESSFULLY");
                 return new ResponseEntity<LoansResponse>(
@@ -178,6 +185,37 @@ public class FundSeekerInputRequestController {
 //            }
 
             LoansResponse callMatchEngineClient = fundSeekerInputRequestService.callMatchEngineClient(applicationId,userId,businessTypeId);
+            logger.info("Response from Matchengine ==>{}",callMatchEngineClient.toString());
+            return new ResponseEntity<LoansResponse>(callMatchEngineClient, HttpStatus.OK);
+
+        } catch (Exception e) {
+            logger.error("Error while Calling Connect Client after Oneform Submit");
+            e.printStackTrace();
+            return new ResponseEntity<LoansResponse>(
+                    new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+                    HttpStatus.OK);
+        }
+    }
+    
+    @RequestMapping(value = "/match_ntb", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LoansResponse> callMatchengineNTB(@RequestBody NTBRequest ntbRequest,HttpServletRequest request)
+            throws Exception
+    {
+        try
+        {
+        	Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+        	if(userId == null) {
+        		   return new ResponseEntity<LoansResponse>(
+                           new LoansResponse("Unauthorized User! Please Re-login and try again.", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+        	}
+        	if(CommonUtils.isObjectListNull(ntbRequest.getDirectorId(),ntbRequest.getApplicationId(),ntbRequest.getBusineeTypeId())) {
+        		logger.info("Director Id or Application Id or BusinessTypeId is NUll============>{}",ntbRequest.toString());
+        		return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST,HttpStatus.BAD_REQUEST.value()),
+                        HttpStatus.OK);
+        	}
+        	ntbRequest.setUserId(userId);
+        	logger.info("Application Id for Getting============>{}",ntbRequest.getApplicationId());
+            LoansResponse callMatchEngineClient = fundSeekerInputRequestService.postDirectorBackground(ntbRequest);
             logger.info("Response from Matchengine ==>{}",callMatchEngineClient.toString());
             return new ResponseEntity<LoansResponse>(callMatchEngineClient, HttpStatus.OK);
 

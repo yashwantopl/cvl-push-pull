@@ -15,6 +15,7 @@ import com.capitaworld.client.eligibility.EligibilityClient;
 import com.capitaworld.client.reports.ReportsClient;
 import com.capitaworld.client.workflow.WorkflowClient;
 import com.capitaworld.connect.client.ConnectClient;
+import com.capitaworld.itr.client.ITRClient;
 import com.capitaworld.service.analyzer.client.AnalyzerClient;
 import com.capitaworld.service.dms.client.DMSClient;
 import com.capitaworld.service.fraudanalytics.client.FraudAnalyticsClient;
@@ -108,6 +109,9 @@ public class LoansMain {
 	
 	@Value("${capitaworld.service.fraudanalytics.url}")
 	private String fraudAnalyticsUrl;
+	
+	@Value("${capitaworld.service.itr.url}")
+	private String itrUrl;
 	
 
 	public static void main(String[] args) throws Exception {
@@ -252,6 +256,13 @@ public class LoansMain {
 		FraudAnalyticsClient fraudAnalyticsClient = new FraudAnalyticsClient(fraudAnalyticsUrl);
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(fraudAnalyticsClient);
 		return fraudAnalyticsClient;
+	}
+	
+	@Bean
+	public ITRClient itrClient() {
+		ITRClient itrClient = new ITRClient(itrUrl);
+		applicationContext.getAutowireCapableBeanFactory().autowireBean(itrClient);
+		return itrClient;
 	}
 	
 }

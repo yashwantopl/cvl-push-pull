@@ -4,6 +4,8 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.capitaworld.service.dms.model.DocumentRequest;
+import com.capitaworld.service.loans.model.NTBRequest;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,12 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.capitaworld.cibil.api.utility.CibilUtils;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
@@ -212,4 +209,21 @@ public class FinancialArrangementDetailsController {
 
 	}
 
+	@PostMapping(value = "/getTotalEmiFromDirectorId", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getTotalEmi(@RequestBody NTBRequest ntbRequest) {
+		try {
+			if (!CommonUtils.isObjectNullOrEmpty(ntbRequest) && !CommonUtils.isObjectNullOrEmpty(ntbRequest.getApplicationId()) && !CommonUtils.isObjectNullOrEmpty(ntbRequest.getDirectorId())) {
+				Double emi = financialArrangementDetailsService.getTotalOfEmiByApplicationIdAndDirectorId(ntbRequest.getApplicationId(), ntbRequest.getDirectorId());
+				LoansResponse loansResponse = new LoansResponse();
+				loansResponse.setMessage("Successfully get Data!");
+				loansResponse.setData(emi);
+				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+			} else {
+				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+		} catch (Exception e) {
+			logger.error("Error while Getting total EMI by Application Id==>", e);
+			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
+		}
+	}
 }

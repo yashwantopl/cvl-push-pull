@@ -4,6 +4,7 @@ import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.io.Serializable;
+import java.util.Date;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class PrimaryCorporateRequest extends LoanApplicationRequest implements Serializable {
@@ -20,6 +21,9 @@ public class PrimaryCorporateRequest extends LoanApplicationRequest implements S
     private Double tenureRequired;
     private Integer proposedDetailsOfUnit;
     private Double costOfProject;
+    private Date proposedOperationDate;
+    private Integer proposedConstitutionOfUnit;
+    private Double promoterContribution;
     private Integer assessmentId;
 
   
@@ -107,7 +111,30 @@ public class PrimaryCorporateRequest extends LoanApplicationRequest implements S
     public void setCostOfProject(Double costOfProject) {
         this.costOfProject = costOfProject;
     }
-    
+
+    public Date getProposedOperationDate() {
+        return proposedOperationDate;
+    }
+
+    public void setProposedOperationDate(Date proposedOperationDate) {
+        this.proposedOperationDate = proposedOperationDate;
+    }
+
+    public Integer getProposedConstitutionOfUnit() {
+        return proposedConstitutionOfUnit;
+    }
+
+    public void setProposedConstitutionOfUnit(Integer proposedConstitutionOfUnit) {
+        this.proposedConstitutionOfUnit = proposedConstitutionOfUnit;
+    }
+
+    public Double getPromoterContribution() {
+        return promoterContribution;
+    }
+
+    public void setPromoterContribution(Double promoterContribution) {
+        this.promoterContribution = promoterContribution;
+    }
     public Integer getAssessmentId() {
         return assessmentId;
     }

@@ -189,8 +189,22 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 
 	private Boolean isCommercialCibilMandatory = false;
 
+	private Long userOrgId;
+	
+	private Integer appstage;
+	
+	private Object workflowData;
+	
 	//-----------------------added eligibility method for product
 	private Integer assessmentMethodId;
+
+	private BigDecimal minCgtmseCoverage;
+	private BigDecimal maxCgtmseCoverage;
+	private Boolean isCgtmseCoverageDisplay = false;
+	private Boolean isCgtmseCoverageMandatory = false;
+	private Boolean isMsmeFundingDisplay = false;
+	private Boolean isMsmeFundingMandatory = false;
+    private List<Integer> msmeFundingIds;
 
 	public Integer getIndividualCibil() {
 		return individualCibil;
@@ -981,5 +995,85 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 
 	public void setAssessmentMethodId(Integer assessmentMethodId) {
 		this.assessmentMethodId = assessmentMethodId;
+	}
+
+	public Long getUserOrgId() {
+		return userOrgId;
+	}
+
+	public void setUserOrgId(Long userOrgId) {
+		this.userOrgId = userOrgId;
+	}
+
+	public Integer getAppstage() {
+		return appstage;
+	}
+
+	public void setAppstage(Integer appstage) {
+		this.appstage = appstage;
+	}
+
+	public Object getWorkflowData() {
+		return workflowData;
+	}
+
+	public void setWorkflowData(Object workflowData) {
+		this.workflowData = workflowData;
+	}
+
+	public BigDecimal getMinCgtmseCoverage() {
+		return minCgtmseCoverage;
+	}
+
+	public void setMinCgtmseCoverage(BigDecimal minCgtmseCoverage) {
+		this.minCgtmseCoverage = minCgtmseCoverage;
+	}
+
+	public BigDecimal getMaxCgtmseCoverage() {
+		return maxCgtmseCoverage;
+	}
+
+	public void setMaxCgtmseCoverage(BigDecimal maxCgtmseCoverage) {
+		this.maxCgtmseCoverage = maxCgtmseCoverage;
+	}
+
+    public Boolean getIsCgtmseCoverageDisplay() {
+        return isCgtmseCoverageDisplay;
+    }
+
+    public void setIsCgtmseCoverageDisplay(Boolean isCgtmseCoverageDisplay) {
+        this.isCgtmseCoverageDisplay = isCgtmseCoverageDisplay;
+    }
+
+    public Boolean getIsCgtmseCoverageMandatory() {
+        return isCgtmseCoverageMandatory;
+    }
+
+    public void setIsCgtmseCoverageMandatory(Boolean isCgtmseCoverageMandatory) {
+        this.isCgtmseCoverageMandatory = isCgtmseCoverageMandatory;
+    }
+
+    public Boolean getIsMsmeFundingDisplay() {
+        return isMsmeFundingDisplay;
+    }
+
+    public void setIsMsmeFundingDisplay(Boolean isMsmeFundingDisplay) {
+        this.isMsmeFundingDisplay = isMsmeFundingDisplay;
+    }
+
+    public Boolean getIsMsmeFundingMandatory() {
+        return isMsmeFundingMandatory;
+    }
+
+    public void setIsMsmeFundingMandatory(Boolean isMsmeFundingMandatory) {
+        this.isMsmeFundingMandatory = isMsmeFundingMandatory;
+    }
+
+	public List<Integer> getMsmeFundingIds() {
+		return msmeFundingIds;
+	}
+
+	public void setMsmeFundingIds(List<Integer> msmeFundingIds) {
+		this.msmeFundingIds = msmeFundingIds;
 	}
 }

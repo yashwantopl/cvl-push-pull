@@ -118,14 +118,23 @@ public class DirectorBackgroundDetail extends AuditActivity implements Serializa
 	@Column(name="residence_type")
 	private Integer residenceType;
 
-	@Column(name="residence_since")
-	private Integer residenceSince;
+	@Column(name="residence_since_month")
+	private Integer residenceSinceMonth;
+
+	@Column(name="residence_since_year")
+	private Integer residenceSinceYear;
 
 	@Column(name="is_family_member_in_business")
 	private Boolean isFamilyMemberInBusiness;
 
 	@Column(name = "country_id")
 	private Integer countryId;
+
+	@Column(name = "state_id") // FOR NTB
+	private Integer stateId;
+
+	@Column(name = "city_id") // FOR NTB
+	private Integer cityId;
 
 	@Column(name = "premise_number")
 	private String premiseNumber;
@@ -136,9 +145,12 @@ public class DirectorBackgroundDetail extends AuditActivity implements Serializa
 	@Column(name = "landmark")
 	private String landmark;
 
+	@Column(name="qualification_id")
+	private Integer qualificationId;
+
 	@OneToOne
 	@JoinColumn(name="emp_detail_id")
-	private EmploymentDetail empDetailId;
+	private EmploymentDetail employmentDetail;
 
 	@Column(name="is_main_director")
 	private Boolean isMainDirector;
@@ -436,15 +448,23 @@ public class DirectorBackgroundDetail extends AuditActivity implements Serializa
 		this.residenceType = residenceType;
 	}
 
-	public Integer getResidenceSince() {
-		return residenceSince;
-	}
+    public Integer getResidenceSinceMonth() {
+        return residenceSinceMonth;
+    }
 
-	public void setResidenceSince(Integer residenceSince) {
-		this.residenceSince = residenceSince;
-	}
+    public void setResidenceSinceMonth(Integer residenceSinceMonth) {
+        this.residenceSinceMonth = residenceSinceMonth;
+    }
 
-	public Boolean getFamilyMemberInBusiness() {
+    public Integer getResidenceSinceYear() {
+        return residenceSinceYear;
+    }
+
+    public void setResidenceSinceYear(Integer residenceSinceYear) {
+        this.residenceSinceYear = residenceSinceYear;
+    }
+
+    public Boolean getFamilyMemberInBusiness() {
 		return isFamilyMemberInBusiness;
 	}
 
@@ -452,12 +472,12 @@ public class DirectorBackgroundDetail extends AuditActivity implements Serializa
 		isFamilyMemberInBusiness = familyMemberInBusiness;
 	}
 
-	public EmploymentDetail getEmpDetailId() {
-		return empDetailId;
+	public EmploymentDetail getEmploymentDetail() {
+		return employmentDetail;
 	}
 
-	public void setEmpDetailId(EmploymentDetail empDetailId) {
-		this.empDetailId = empDetailId;
+	public void setEmploymentDetail(EmploymentDetail employmentDetail) {
+		this.employmentDetail = employmentDetail;
 	}
 
 	public Integer getCountryId() {
@@ -499,4 +519,39 @@ public class DirectorBackgroundDetail extends AuditActivity implements Serializa
 	public void setMainDirector(Boolean mainDirector) {
 		isMainDirector = mainDirector;
 	}
+
+	public Integer getQualificationId() {
+		return qualificationId;
+	}
+
+	public void setQualificationId(Integer qualificationId) {
+		this.qualificationId = qualificationId;
+	}
+
+	/**
+	 * for NTB State city
+	 * @Param State city Id
+	 * @return state city ID
+	 */
+	public Integer getStateId() {
+		return stateId;
+	}
+
+	public void setStateId(Integer stateId) {
+		this.stateId = stateId;
+	}
+
+	/**
+	 * for NTB State city
+	 * @Param State city Id
+	 * @return state city ID
+	 */
+	public Integer getCityId() {
+		return cityId;
+	}
+
+	public void setCityId(Integer cityId) {
+		this.cityId = cityId;
+	}
+
 }

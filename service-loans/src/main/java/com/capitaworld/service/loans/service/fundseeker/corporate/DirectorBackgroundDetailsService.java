@@ -15,6 +15,8 @@ public interface DirectorBackgroundDetailsService {
 
 	List<DirectorBackgroundDetailRequest> getDirectorBackgroundDetailList(Long applicationId,Long userId) throws Exception;
 	
+	public List<DirectorBackgroundDetailRequest> getDirectorBasicDetailsListForNTB(Long applicationId) throws Exception;
+	
 	public Boolean updateFlag(Long directorId,Integer apiId,Boolean apiFlag,Long userId);
 	
 	public Boolean saveDirectors(Long applicationId,Long userId,Integer noOfDirector);

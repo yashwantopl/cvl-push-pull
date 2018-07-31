@@ -35,8 +35,31 @@ public class ProductMasterRequest implements Serializable {
 	private String fpName;
 	
 	private Boolean isActive;
-
 	
+	private Long jobId;
+	
+	private Integer appstage;
+
+	private Long scoreModelId;
+
+	private Long businessTypeId;
+
+
+
+	/**
+	 * @return the jobId
+	 */
+	public Long getJobId() {
+		return jobId;
+	}
+
+	/**
+	 * @param jobId the jobId to set
+	 */
+	public void setJobId(Long jobId) {
+		this.jobId = jobId;
+	}
+
 	public ProductMasterRequest() {
 	}
 
@@ -127,8 +150,28 @@ public class ProductMasterRequest implements Serializable {
 	public void setIsActive(Boolean isActive) {
 		this.isActive = isActive;
 	}
-	
-	
 
-	
+	public Integer getAppstage() {
+		return appstage;
+	}
+
+	public void setAppstage(Integer appstage) {
+		this.appstage = appstage;
+	}
+
+	public Long getScoreModelId() {
+		return scoreModelId;
+	}
+
+	public void setScoreModelId(Long scoreModelId) {
+		this.scoreModelId = scoreModelId;
+	}
+
+	public Long getBusinessTypeId() {
+		return businessTypeId;
+	}
+
+	public void setBusinessTypeId(Long businessTypeId) {
+		this.businessTypeId = businessTypeId;
+	}
 }
