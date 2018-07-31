@@ -663,7 +663,7 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 			workingCapitalParameter.setJobId(jobId);
 		}
 		
-		workingCapitalParameterTempRepository.save(workingCapitalParameter);
+		workingCapitalParameter = workingCapitalParameterTempRepository.save(workingCapitalParameter);
 		workingCapitalParameterRequest.setId(workingCapitalParameter.getId());
 		industrySectorTempRepository.inActiveMappingByFpProductId(workingCapitalParameter.getId());
 		// industry data save
