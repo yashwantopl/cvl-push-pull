@@ -118,7 +118,7 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 	private Boolean visuallyImpaired;
 	private Integer residentStatus;
 	private Boolean isGuarantor;
-	private DirectorPersonalDetailRequest directorPersonalDetail;
+	private DirectorPersonalDetailRequest directorPersonalDetailRequest;
 
 	public Boolean getIsActive() {
 		return isActive;
@@ -485,12 +485,12 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 		this.landmark = landmark;
 	}
 
-	public Boolean getMainDirector() {
+	public Boolean getIsMainDirector() {
 		return isMainDirector;
 	}
 
-	public void setMainDirector(Boolean mainDirector) {
-		isMainDirector = mainDirector;
+	public void setIsMainDirector(Boolean isMainDirector) {
+		this.isMainDirector = isMainDirector;
 	}
 
 	public Integer getQualificationId() {
@@ -557,12 +557,12 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 		this.isGuarantor = isGuarantor;
 	}
 
-	public DirectorPersonalDetailRequest getDirectorPersonalDetail() {
-		return directorPersonalDetail;
+	public DirectorPersonalDetailRequest getDirectorPersonalDetailRequest() {
+		return directorPersonalDetailRequest;
 	}
 
-	public void setDirectorPersonalDetail(DirectorPersonalDetailRequest directorPersonalDetail) {
-		this.directorPersonalDetail = directorPersonalDetail;
+	public void setDirectorPersonalDetailRequest(DirectorPersonalDetailRequest directorPersonalDetailRequest) {
+		this.directorPersonalDetailRequest = directorPersonalDetailRequest;
 	}
 
 	@Override
@@ -617,7 +617,7 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 				", visuallyImpaired=" + visuallyImpaired +
 				", residentStatus=" + residentStatus +
 				", isGuarantor=" + isGuarantor +
-				", directorPersonalDetail=" + directorPersonalDetail +
+				", directorPersonalDetailRequest=" + directorPersonalDetailRequest +
 				'}';
 	}
 
