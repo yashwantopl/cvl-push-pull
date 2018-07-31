@@ -145,7 +145,8 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 		workingCapitalParameter.setModifiedDate(new Date());
 		workingCapitalParameter.setIsParameterFilled(true);
 		workingCapitalParameter.setJobId(workingCapitalParameterRequest.getJobId());
-		workingCapitalParameterRepository.save(workingCapitalParameter);
+		WorkingCapitalParameter workingCapitalParameter2=workingCapitalParameterRepository.save(workingCapitalParameter);
+		workingCapitalParameterRequest.setId(workingCapitalParameter2.getId());
 		industrySectorRepository.inActiveMappingByFpProductId(workingCapitalParameterRequest.getId());
 		// industry data save
 		saveIndustry(workingCapitalParameterRequest);
@@ -618,7 +619,6 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 		{
 			
 			workingCapitalParameter = workingCapitalParameterTempRepository.getworkingCapitalParameterTempByFpProductMappingId(workingCapitalParameterRequest.getId());
-			workingCapitalParameter.setFpProductMappingId(workingCapitalParameterRequest.getId());
 			
 		}
 		
