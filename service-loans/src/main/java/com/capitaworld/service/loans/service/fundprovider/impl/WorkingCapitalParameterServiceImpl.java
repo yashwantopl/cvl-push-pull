@@ -624,7 +624,6 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 		
 		if (workingCapitalParameter == null) {
 			workingCapitalParameter=new WorkingCapitalParameterTemp();
-			workingCapitalParameter.setFpProductMappingId(workingCapitalParameterRequest.getId());
 		}
 
 		if (!CommonUtils.isObjectListNull(workingCapitalParameterRequest.getMaxTenure()))

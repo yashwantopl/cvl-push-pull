@@ -634,7 +634,7 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 			WcTlParameter.setJobId(jobId);
 		}
 		
-		wcTlParameterTempRepository.save(WcTlParameter);
+		WcTlParameter=wcTlParameterTempRepository.save(WcTlParameter);
 		wcTlParameterRequest.setId(WcTlParameter.getId());
 		industrySectorTempRepository.inActiveMappingByFpProductId(WcTlParameter.getId());
 		// industry data save
