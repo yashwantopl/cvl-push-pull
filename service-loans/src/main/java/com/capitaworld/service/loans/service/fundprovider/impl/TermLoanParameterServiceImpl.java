@@ -664,7 +664,7 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		termLoanParameter.setFpProductMappingId(termLoanParameterRequest.getId());
 		}
 		
-		BeanUtils.copyProperties(termLoanParameterRequest, termLoanParameter);
+		BeanUtils.copyProperties(termLoanParameterRequest, termLoanParameter,"id");
 		termLoanParameter.setUserId(termLoanParameterRequest.getUserId()!=null?termLoanParameterRequest.getUserId():null);
 		termLoanParameter.setProductId(termLoanParameterRequest.getProductId()!=null?termLoanParameterRequest.getProductId():null);
 		termLoanParameter.setModifiedBy(termLoanParameterRequest.getUserId());
@@ -1034,7 +1034,7 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		if (!CommonUtils.isObjectListNull(termLoanParameterRequest.getMinTenure()))
 			termLoanParameterRequest.setMinTenure(termLoanParameterRequest.getMinTenure().multiply(new BigDecimal("12")));
 		
-		BeanUtils.copyProperties(termLoanParameterRequest, termLoanParameter);
+		BeanUtils.copyProperties(termLoanParameterRequest, termLoanParameter,"id");
 		termLoanParameter.setUserId(termLoanParameterRequest.getUserId()!=null?termLoanParameterRequest.getUserId():null);
 		termLoanParameter.setProductId(termLoanParameterRequest.getProductId()!=null?termLoanParameterRequest.getProductId():null);
 		
