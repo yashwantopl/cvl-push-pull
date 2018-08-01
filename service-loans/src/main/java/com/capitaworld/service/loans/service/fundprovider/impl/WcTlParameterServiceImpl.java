@@ -591,7 +591,6 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 		{
 			
 			WcTlParameter = wcTlParameterTempRepository.getWcTlParameterTempByFpProductMappingId(wcTlParameterRequest.getId());
-			WcTlParameter.setFpProductMappingId(wcTlParameterRequest.getId());
 			
 		}
 

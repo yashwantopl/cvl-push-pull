@@ -636,8 +636,14 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 		{
 			workingCapitalParameter.setFpProductMappingId(workingCapitalParameterRequest.getId());
 		}
-		
+		if(workingCapitalParameterRequest.getAppstage()==1)
+		{
 		BeanUtils.copyProperties(workingCapitalParameterRequest, workingCapitalParameter);
+		}
+		else
+		{
+		BeanUtils.copyProperties(workingCapitalParameterRequest, workingCapitalParameter,"jobId");
+		}
 		
 		workingCapitalParameter.setUserId(workingCapitalParameterRequest.getUserId()!=null?workingCapitalParameterRequest.getUserId():null);
 		workingCapitalParameter.setProductId(workingCapitalParameterRequest.getProductId()!=null?workingCapitalParameterRequest.getProductId():null);
