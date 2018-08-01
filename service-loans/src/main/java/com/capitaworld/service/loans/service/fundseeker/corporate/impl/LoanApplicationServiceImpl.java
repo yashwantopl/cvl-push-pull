@@ -5111,7 +5111,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					try {
 						ScoringResponse scoringResponse = scoringClient.getScoreResult(scoringRequest);
 						logger.info("scoringResponse==>{}",scoringResponse);
-						if(!CommonUtils.isObjectNullOrEmpty(scoringResponse.getDataObject())){
+						if(!CommonUtils.isObjectNullOrEmpty(scoringResponse) && !CommonUtils.isObjectNullOrEmpty(scoringResponse.getDataObject())){
 							try {
 								ScoreParameterResult scoreParameterResult = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) scoringResponse.getDataObject(),
 		                                ScoreParameterResult.class);
