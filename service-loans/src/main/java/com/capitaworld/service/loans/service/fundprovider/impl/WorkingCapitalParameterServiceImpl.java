@@ -104,15 +104,23 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 	public boolean saveOrUpdate(WorkingCapitalParameterRequest workingCapitalParameterRequest,Long mappingId) {
 		logger.info("start saveOrUpdate");
 		// TODO Auto-generated method stub
+		
+		WorkingCapitalParameterTemp loanParameter = workingCapitalParameterTempRepository
+				.getworkingCapitalParameterTempByFpProductId(mappingId);
+		
+		
 		WorkingCapitalParameter workingCapitalParameter = null;
 
-		workingCapitalParameter = workingCapitalParameterRepository.findOne(workingCapitalParameterRequest.getId());
+		if(loanParameter.getFpProductMappingId()!=null)
+		{
+		workingCapitalParameter = workingCapitalParameterRepository.findOne(loanParameter.getFpProductMappingId());
+		}
 		if (workingCapitalParameter == null) {
 			workingCapitalParameter=new WorkingCapitalParameter();
 			
 		}
-		WorkingCapitalParameterTemp loanParameter = workingCapitalParameterTempRepository
-				.getworkingCapitalParameterTempByFpProductId(mappingId);
+		
+		
 		loanParameter.setStatusId(CommonUtils.Status.APPROVED); 
 		loanParameter.setIsDeleted(false);
 		loanParameter.setIsEdit(false);
@@ -127,8 +135,11 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 		if (!CommonUtils.isObjectListNull(workingCapitalParameterRequest.getMinTenure()))
 			workingCapitalParameterRequest.setMinTenure(workingCapitalParameterRequest.getMinTenure() * 12);
 
-		BeanUtils.copyProperties(workingCapitalParameterRequest, workingCapitalParameter,
-				CommonUtils.IgnorableCopy.FP_PRODUCT);
+		BeanUtils.copyProperties(workingCapitalParameterRequest, workingCapitalParameter);
+		
+		workingCapitalParameter.setUserId(workingCapitalParameterRequest.getUserId()!=null?workingCapitalParameterRequest.getUserId():null);
+		workingCapitalParameter.setProductId(workingCapitalParameterRequest.getProductId()!=null?workingCapitalParameterRequest.getProductId():null);
+		
 		workingCapitalParameter.setModifiedBy(workingCapitalParameterRequest.getUserId());
 		workingCapitalParameter.setIsActive(true);
 		workingCapitalParameter.setModifiedDate(new Date());
@@ -266,6 +277,7 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 		logger.info("start saveIndustry");
 		IndustrySectorDetail industrySectorDetail = null;
 		System.out.println(workingCapitalParameterRequest.getIndustrylist());
+		List<DataRequest> dataRequests=workingCapitalParameterRequest.getIndustrylist();
 		for (DataRequest dataRequest : workingCapitalParameterRequest.getIndustrylist()) {
 			industrySectorDetail = new IndustrySectorDetail();
 			industrySectorDetail.setFpProductId(workingCapitalParameterRequest.getId());
@@ -409,7 +421,13 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 		if (!industryList.isEmpty()) {
 			try {
 				OneFormResponse formResponse = oneFormClient.getIndustryById(industryList);
-				workingCapitalParameterRequest.setIndustrylist((List<DataRequest>) formResponse.getListData());
+				List<DataRequest> dataRequests=new ArrayList<>(formResponse.getListData().size());
+				for(Object object:formResponse.getListData())
+				{
+					DataRequest dataRequest=com.capitaworld.service.loans.utils.MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)object, DataRequest.class);
+					dataRequests.add(dataRequest);
+				}
+				workingCapitalParameterRequest.setIndustrylist(dataRequests);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				logger.error(e.toString());
@@ -422,7 +440,14 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 		if (!sectorList.isEmpty()) {
 			try {
 				OneFormResponse formResponse = oneFormClient.getSectorById(sectorList);
-				workingCapitalParameterRequest.setSectorlist((List<DataRequest>) formResponse.getListData());
+				
+				List<DataRequest> dataRequests=new ArrayList<>(formResponse.getListData().size());
+				for(Object object:formResponse.getListData())
+				{
+					DataRequest dataRequest=com.capitaworld.service.loans.utils.MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)object, DataRequest.class);
+					dataRequests.add(dataRequest);
+				}
+				workingCapitalParameterRequest.setSectorlist(dataRequests);
 
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -436,7 +461,15 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 		if (!countryList.isEmpty()) {
 			try {
 				OneFormResponse formResponse = oneFormClient.getCountryByCountryListId(countryList);
-				workingCapitalParameterRequest.setCountryList((List<DataRequest>) formResponse.getListData());
+				
+				List<DataRequest> dataRequests=new ArrayList<>(formResponse.getListData().size());
+				for(Object object:formResponse.getListData())
+				{
+					DataRequest dataRequest=com.capitaworld.service.loans.utils.MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)object, DataRequest.class);
+					dataRequests.add(dataRequest);
+				}
+				
+				workingCapitalParameterRequest.setCountryList(dataRequests);
 
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -450,7 +483,14 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 		if (!stateList.isEmpty()) {
 			try {
 				OneFormResponse formResponse = oneFormClient.getStateByStateListId(stateList);
-				workingCapitalParameterRequest.setStateList((List<DataRequest>) formResponse.getListData());
+				List<DataRequest> dataRequests=new ArrayList<>(formResponse.getListData().size());
+				for(Object object:formResponse.getListData())
+				{
+					DataRequest dataRequest=com.capitaworld.service.loans.utils.MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)object, DataRequest.class);
+					dataRequests.add(dataRequest);
+				}
+				
+				workingCapitalParameterRequest.setStateList(dataRequests);
 
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -464,7 +504,14 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 		if (!cityList.isEmpty()) {
 			try {
 				OneFormResponse formResponse = oneFormClient.getCityByCityListId(cityList);
-				workingCapitalParameterRequest.setCityList((List<DataRequest>) formResponse.getListData());
+				List<DataRequest> dataRequests=new ArrayList<>(formResponse.getListData().size());
+				for(Object object:formResponse.getListData())
+				{
+					DataRequest dataRequest=com.capitaworld.service.loans.utils.MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)object, DataRequest.class);
+					dataRequests.add(dataRequest);
+				}
+				
+				workingCapitalParameterRequest.setCityList(dataRequests);
 
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -478,8 +525,15 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 		if (!negativeIndustryList.isEmpty()) {
 			try {
 				OneFormResponse formResponse = oneFormClient.getIndustryById(negativeIndustryList);
+				List<DataRequest> dataRequests=new ArrayList<>(formResponse.getListData().size());
+				for(Object object:formResponse.getListData())
+				{
+					DataRequest dataRequest=com.capitaworld.service.loans.utils.MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)object, DataRequest.class);
+					dataRequests.add(dataRequest);
+				}
+				
 				workingCapitalParameterRequest
-						.setUnInterestedIndustrylist((List<DataRequest>) formResponse.getListData());
+						.setUnInterestedIndustrylist(dataRequests);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				logger.error("error while getWCParameterRequest", e);
@@ -546,8 +600,10 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 			workingCapitalParameter.setFpProductMappingId(workingCapitalParameterRequest.getId());
 		}
 		
-		BeanUtils.copyProperties(workingCapitalParameterRequest, workingCapitalParameter,
-				CommonUtils.IgnorableCopy.FP_PRODUCT_TEMP);
+		BeanUtils.copyProperties(workingCapitalParameterRequest, workingCapitalParameter);
+		
+		workingCapitalParameter.setUserId(workingCapitalParameterRequest.getUserId()!=null?workingCapitalParameterRequest.getUserId():null);
+		workingCapitalParameter.setProductId(workingCapitalParameterRequest.getProductId()!=null?workingCapitalParameterRequest.getProductId():null);
 		workingCapitalParameter.setModifiedBy(workingCapitalParameterRequest.getUserId());
 		workingCapitalParameter.setIsActive(true);
 		workingCapitalParameter.setModifiedDate(new Date());
