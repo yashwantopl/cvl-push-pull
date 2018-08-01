@@ -593,7 +593,7 @@ public class CorporateUploadController {
 		return new ResponseEntity<LoansResponse>(response, HttpStatus.OK);
 	}
 	
-	@RequestMapping(value="/downloadCMAAndCoCMAExcelFile/{applicationId}/{productDocumentMappingId}" , method=RequestMethod.GET)
+	/*@RequestMapping(value="/downloadCMAAndCoCMAExcelFile/{applicationId}/{productDocumentMappingId}" , method=RequestMethod.GET)
 	public void getCMADetail(@PathVariable("applicationId") Long applicationId , @PathVariable("productDocumentMappingId") Long productDocumentMappingId ,HttpServletResponse httpServletResponse) {
 		logger.info("In getCmaFile");
 		
@@ -622,6 +622,6 @@ public class CorporateUploadController {
           
         }
      
-	}
+	}*/
 	
 }
