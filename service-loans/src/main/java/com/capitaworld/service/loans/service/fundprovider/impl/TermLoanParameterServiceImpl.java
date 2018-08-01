@@ -645,7 +645,6 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		{
 			
 			termLoanParameter = termLoanParameterTempRepository.getTermLoanParameterTempByFpProductMappingId(termLoanParameterRequest.getId());
-			termLoanParameter.setFpProductMappingId(termLoanParameterRequest.getId());
 			
 		}
 
@@ -1022,7 +1021,6 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		{
 			
 			termLoanParameter = ntbTermLoanParameterTempRepository.getNtbTermLoanParameterTempByFpProductMappingId(termLoanParameterRequest.getId());
-			termLoanParameter.setFpProductMappingId(termLoanParameterRequest.getId());
 			
 		}
 
