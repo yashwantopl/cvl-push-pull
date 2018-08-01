@@ -42,10 +42,10 @@ public interface ProductMasterTempRepository extends JpaRepository<ProductMaster
 	@Query("from ProductMasterTemp pm where pm.userOrgId =:userOrgId and pm.isActive = true")
 	public List<ProductMasterTemp> getUserProductListByOrgId(@Param("userOrgId") Long userOrgId);
 	
-	@Query("from ProductMasterTemp pm where pm.userId =:userId and pm.isApproved!=true  and productId in (1,2,15,16)")
+	@Query("from ProductMasterTemp pm where pm.userId =:userId and pm.isApproved!=true and isCopied!=true and productId in (1,2,15,16)")
 	public List<ProductMasterTemp> getUserCorporateProductList(@Param("userId") Long userId);
 	
-	@Query("from ProductMasterTemp pm where pm.userOrgId =:userOrgId   and productId in (1,2,15,16)")
+	@Query("from ProductMasterTemp pm where pm.userOrgId =:userOrgId  and isCopied!=true and productId in (1,2,15,16)")
 	public List<ProductMasterTemp> getUserCorporateProductListByOrgId(@Param("userOrgId") Long userOrgId);
 	
 	@Query("from ProductMasterTemp pm where pm.userId =:userId and pm.isApproved!=true and productId not in (1,2)")
