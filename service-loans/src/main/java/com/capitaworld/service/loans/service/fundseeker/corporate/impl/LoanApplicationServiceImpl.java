@@ -5066,7 +5066,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			audit = auditComponent.getAudit(applicationId, true, AuditComponent.ELIGIBILITY);
 			if(audit == null) {
 				try {
-					 EligibilityDetailRequest eligibilityRequest = createEligibilityRequest(applicationId);
+					 EligibilityDetailRequest eligibilityRequest = createEligibilityRequest(applicationId,fpProductMappingId);
 					if(eligibilityRequest == null) {
 						logger.info("Eligibiity data Request Not Found  in savePhese1DataToSidbi()  for ApplicationId ====>{}FpProductId====>{}",applicationId,fpProductMappingId);
 						auditComponent.updateAudit(AuditComponent.ELIGIBILITY, applicationId, userId, "Eligibiity data Request Not Found for ApplicationId ====>{} "+applicationId+"FpProductId====>{}"+fpProductMappingId, eligibilityParameters);
@@ -5512,16 +5512,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 	
 	
-	private EligibilityDetailRequest createEligibilityRequest(Long applicationId) {
-		LoanApplicationMaster applicationMaster = loanApplicationRepository.findOne(applicationId);
-		if(CommonUtils.isObjectNullOrEmpty(applicationMaster)) {
-			logger.warn("ApplicationMaster Object Found NUll ForApplication==========>{}",applicationId);
-			return null;
-		}
+	private EligibilityDetailRequest createEligibilityRequest(Long applicationId,Long fpProductMappingId) {
 		EligibililityRequest eligibililityRequest = new  EligibililityRequest();
-		eligibililityRequest.setApplicationId(applicationMaster.getId());
-		eligibililityRequest.setProductId(applicationMaster.getProductId().longValue());
-		
+		eligibililityRequest.setApplicationId(applicationId);
+		eligibililityRequest.setFpProductMappingId(fpProductMappingId);
 		try {
 			EligibilityResponse eligibilityResponse = eligibilityClient.corporateLoanData(eligibililityRequest);
 			if(eligibilityResponse == null || eligibilityResponse.getData() == null) {
