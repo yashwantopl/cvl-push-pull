@@ -107,7 +107,18 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 	private Integer qualificationId;
 	
 	private String amount;
-	
+
+	/*
+	* SBI Msme Integration fields
+	* By Ravina
+	* */
+	private String fatherOrSpouseName;
+	private Integer educationalStatus;
+	private Integer nationality;
+	private Boolean visuallyImpaired;
+	private Integer residentStatus;
+	private Boolean isGuarantor;
+	private DirectorPersonalDetailRequest directorPersonalDetail;
 
 	public Boolean getIsActive() {
 		return isActive;
@@ -498,6 +509,62 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 		this.amount = amount;
 	}
 
+	public String getFatherOrSpouseName() {
+		return fatherOrSpouseName;
+	}
+
+	public void setFatherOrSpouseName(String fatherOrSpouseName) {
+		this.fatherOrSpouseName = fatherOrSpouseName;
+	}
+
+	public Integer getEducationalStatus() {
+		return educationalStatus;
+	}
+
+	public void setEducationalStatus(Integer educationalStatus) {
+		this.educationalStatus = educationalStatus;
+	}
+
+	public Integer getNationality() {
+		return nationality;
+	}
+
+	public void setNationality(Integer nationality) {
+		this.nationality = nationality;
+	}
+
+	public Boolean getVisuallyImpaired() {
+		return visuallyImpaired;
+	}
+
+	public void setVisuallyImpaired(Boolean visuallyImpaired) {
+		this.visuallyImpaired = visuallyImpaired;
+	}
+
+	public Integer getResidentStatus() {
+		return residentStatus;
+	}
+
+	public void setResidentStatus(Integer residentStatus) {
+		this.residentStatus = residentStatus;
+	}
+
+	public Boolean getIsGuarantor() {
+		return isGuarantor;
+	}
+
+	public void setIsGuarantor(Boolean isGuarantor) {
+		this.isGuarantor = isGuarantor;
+	}
+
+	public DirectorPersonalDetailRequest getDirectorPersonalDetail() {
+		return directorPersonalDetail;
+	}
+
+	public void setDirectorPersonalDetail(DirectorPersonalDetailRequest directorPersonalDetail) {
+		this.directorPersonalDetail = directorPersonalDetail;
+	}
+
 	@Override
 	public String toString() {
 		return "DirectorBackgroundDetailRequest{" +
@@ -543,6 +610,14 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 				", landmark='" + landmark + '\'' +
 				", isMainDirector=" + isMainDirector +
 				", qualificationId=" + qualificationId +
+				", amount='" + amount + '\'' +
+				", fatherOrSpouseName='" + fatherOrSpouseName + '\'' +
+				", educationalStatus=" + educationalStatus +
+				", nationality=" + nationality +
+				", visuallyImpaired=" + visuallyImpaired +
+				", residentStatus=" + residentStatus +
+				", isGuarantor=" + isGuarantor +
+				", directorPersonalDetail=" + directorPersonalDetail +
 				'}';
 	}
 

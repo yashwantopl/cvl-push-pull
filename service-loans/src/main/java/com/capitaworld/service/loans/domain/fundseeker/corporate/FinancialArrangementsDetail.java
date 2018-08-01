@@ -84,6 +84,13 @@ public class FinancialArrangementsDetail implements Serializable {
 	@JoinColumn(name = "director_id")
 	private DirectorBackgroundDetail directorBackgroundDetail;
 
+	/*
+	 * SBI MSME Integration related fields
+	 * By Ravina
+	 * */
+	@Column(name = "lc_bg_status")
+	private Integer lcBgStatus;
+
 	public FinancialArrangementsDetail() {
 	}
 	
@@ -238,5 +245,12 @@ public class FinancialArrangementsDetail implements Serializable {
 	public void setRelationshipSince(Integer relationshipSince) {
 		this.relationshipSince = relationshipSince;
 	}
-	
+
+	public Integer getLcBgStatus() {
+		return lcBgStatus;
+	}
+
+	public void setLcBgStatus(Integer lcBgStatus) {
+		this.lcBgStatus = lcBgStatus;
+	}
 }
