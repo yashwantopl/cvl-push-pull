@@ -5753,10 +5753,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				if(!CommonUtils.isObjectNullOrEmpty(creditReport.getAccount())) {
 				for(Account account : creditReport.getAccount()) {
 					CurrentFinancialArrangementsDetailRequest currFin = new CurrentFinancialArrangementsDetailRequest();
-					if(!CommonUtils.isObjectNullOrEmpty(account.getAccountNonSummarySegmentFields()
-							.getHighCreditOrSanctionedAmount().doubleValue())) {
-					currFin.setAmount(account.getAccountNonSummarySegmentFields()
-							.getHighCreditOrSanctionedAmount().doubleValue());
+					if(!CommonUtils.isObjectListNull(account.getAccountNonSummarySegmentFields(),account.getAccountNonSummarySegmentFields().getHighCreditOrSanctionedAmount())) {
+						currFin.setAmount(account.getAccountNonSummarySegmentFields().getHighCreditOrSanctionedAmount().doubleValue());
 					}
 			
 					currFin.setApplicationId(applicationId);
