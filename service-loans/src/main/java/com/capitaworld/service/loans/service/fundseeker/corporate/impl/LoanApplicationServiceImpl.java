@@ -5107,7 +5107,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					}
 					ScoringRequest scoringRequest = new ScoringRequest();
 		            scoringRequest.setApplicationId(applicationId);
-		            scoringRequest.setFpProductId(productId);
+		            scoringRequest.setFpProductId(fpProductMappingId);
 					try {
 						ScoringResponse scoringResponse = scoringClient.getScoreResult(scoringRequest);
 						logger.info("scoringResponse==>{}",scoringResponse);
