@@ -637,11 +637,11 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 		}
 		if(workingCapitalParameterRequest.getAppstage()==1)
 		{
-		BeanUtils.copyProperties(workingCapitalParameterRequest, workingCapitalParameter);
+		BeanUtils.copyProperties(workingCapitalParameterRequest, workingCapitalParameter,"id");
 		}
 		else
 		{
-		BeanUtils.copyProperties(workingCapitalParameterRequest, workingCapitalParameter,"jobId");
+		BeanUtils.copyProperties(workingCapitalParameterRequest, workingCapitalParameter,"jobId","id");
 		}
 		
 		workingCapitalParameter.setUserId(workingCapitalParameterRequest.getUserId()!=null?workingCapitalParameterRequest.getUserId():null);
