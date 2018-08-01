@@ -137,8 +137,8 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 		WcTlParameter.setIsActive(true);
 		WcTlParameter.setIsParameterFilled(true);
 		WcTlParameter.setJobId(wcTlParameterRequest.getJobId());
-		wcTlLoanParameterRepository.save(WcTlParameter);
-		
+		WcTlParameter wcTlParameter2=wcTlLoanParameterRepository.save(WcTlParameter);
+		wcTlParameterRequest.setId(wcTlParameter2.getId());
 		industrySectorRepository.inActiveMappingByFpProductId(wcTlParameterRequest.getId());
 		// industry data save
 		saveIndustry(wcTlParameterRequest);
