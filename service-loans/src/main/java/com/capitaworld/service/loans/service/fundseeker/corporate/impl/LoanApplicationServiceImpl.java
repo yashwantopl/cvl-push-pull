@@ -2,6 +2,7 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
 import java.io.IOException;
+import java.math.BigInteger;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -14,6 +15,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.service.scoring.model.scoringmodel.ScoringModelReqRes;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -7427,5 +7429,28 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		cmaRequest.setAssetsRequestList(assetsRequestList);
 		logger.info("================ Enter in getCMADetailOfAuditYears() ===========");
 		return cmaRequest;
+	}
+
+
+	@Override
+	public ScoringModelReqRes getMinMaxMarginByApplicationId(Long applicationId) {
+
+		try {
+
+			ScoringModelReqRes scoringModelReqRes=new ScoringModelReqRes();
+			List<BigInteger> fpProductList=loanApplicationRepository.getFpProductListByApplicationId(applicationId);
+
+			List<Long> scoringLongList = new ArrayList<Long>();
+			for(BigInteger i: fpProductList){
+				scoringLongList.add(i.longValue());
+			}
+			scoringModelReqRes.setScoringModelIdList(scoringLongList);
+			return  scoringClient.getMinMaxMargin(scoringModelReqRes);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			return null;
+		}
 	}
 }
