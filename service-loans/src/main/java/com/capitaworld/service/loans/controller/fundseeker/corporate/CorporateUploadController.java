@@ -593,4 +593,35 @@ public class CorporateUploadController {
 		return new ResponseEntity<LoansResponse>(response, HttpStatus.OK);
 	}
 	
+	@RequestMapping(value="/downloadCMAAndCoCMAExcelFile/{applicationId}/{productDocumentMappingId}" , method=RequestMethod.GET)
+	public void getCMADetail(@PathVariable("applicationId") Long applicationId , @PathVariable("productDocumentMappingId") Long productDocumentMappingId ,HttpServletResponse httpServletResponse) {
+		logger.info("In getCmaFile");
+		
+        try {
+        	  httpServletResponse.setContentType("application/csv");  
+          if(productDocumentMappingId==(long)DocumentAlias.WC_CMA) {
+            httpServletResponse.setHeader("Content-Disposition", "attachment; filename=\""+CommonUtils.CW_CMA_EXCEL+"\"");
+            downLoadCMAFileService.cmaFileGenerator(applicationId, productDocumentMappingId).write(httpServletResponse.getOutputStream());
+          }
+          
+          else if (productDocumentMappingId==(long)DocumentAlias.TL_CMA || productDocumentMappingId==(long) DocumentAlias.WCTL_CMA){
+        	  httpServletResponse.setContentType("application/csv");
+        	  httpServletResponse.setHeader("Content-Disposition", "attachment; filename=\""+CommonUtils.CW_TL_WCTL_EXCEL+"\"");
+              downLoadCMAFileService.cmaFileGenerator(applicationId, productDocumentMappingId).write(httpServletResponse.getOutputStream());
+		}
+          else if(productDocumentMappingId==(long)DocumentAlias.WC_COMPANY_ACT|| productDocumentMappingId==(long)DocumentAlias.TL_COMPANY_ACT || productDocumentMappingId==(long)DocumentAlias.USL_COMPANY_ACT|| productDocumentMappingId==(long) DocumentAlias.WCTL_COMPANY_ACT_DOC ) {
+        	  httpServletResponse.setContentType("application/csv");
+        	  httpServletResponse.setHeader("Content-Disposition", "attachment; filename=\""+CommonUtils.CO_CMA_EXCEL+"\"");
+              downLoadCMAFileService.coCMAFileGenerator(applicationId, productDocumentMappingId).write(httpServletResponse.getOutputStream());
+          }
+            logger.info("Out getCmaFile");
+         
+        } catch (NullPointerException |IOException e) {
+        	logger.info("thrown exception from getCmaFile");
+            e.printStackTrace();
+          
+        }
+     
+	}
+	
 }
