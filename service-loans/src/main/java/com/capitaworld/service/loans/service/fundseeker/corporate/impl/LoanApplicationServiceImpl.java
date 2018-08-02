@@ -5460,8 +5460,8 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 					addressAndContactDetailsRequest.setMobileNo(borrwerAddressContactDetails.getMobileNumber());
 					
 //					Preparing Address
-					AddressRequest registeredOfficeAddress = new AddressRequest();
 					if(!CibilUtils.isObjectNullOrEmpty(borrwerAddressContactDetails.getAddress())) {
+						AddressRequest registeredOfficeAddress = new AddressRequest();
 						String[] split = borrwerAddressContactDetails.getAddress().split(",");
 						logger.info("Length of Address Array ====================>{}",split.length);
 						if(split != null && split.length == 5) {
@@ -5473,10 +5473,8 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 							registeredOfficeAddress.setLandMark(split[0]);
 							registeredOfficeAddress.setPremiseNumber(split[0]);
 						}
+						addressAndContactDetailsRequest.setRegisteredOfficeAddress(registeredOfficeAddress);
 					}
-					addressAndContactDetailsRequest.setRegisteredOfficeAddress(registeredOfficeAddress);
-					
-					
 					borrowersDetailsRequest.setAddressAndContactDetailsRequest(addressAndContactDetailsRequest);
 					commercialRequest.setBorrowersDetailsRequest(borrowersDetailsRequest);
 					
