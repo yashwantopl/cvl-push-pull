@@ -1176,32 +1176,32 @@ public enum APIFlags {
 		 }
 		return obj;
 	}
-	public static Object printFields(Object obj) throws Exception {
+	public static Object printFields(Object obj, Boolean isBankStmt) throws Exception {
 		if(obj instanceof List) {
 			List<?> lst = (List)obj;
 			for(Object o : lst) {
-				escapeXml(o);
+				escapeXml(o,isBankStmt);
 			}
 		}else if(obj instanceof Map) {
 			Map<Object, Object> map = (Map)obj;
 			for(Map.Entry<Object, Object> setEntry : map.entrySet()) {
-				escapeXml(setEntry.getValue());
+				escapeXml(setEntry.getValue(),isBankStmt);
 			}
 		}else {
-			escapeXml(obj);
+			escapeXml(obj,isBankStmt);
 		}
 		 return obj;
 	}
-	public static Object escapeXml(Object obj) throws Exception{
+	public static Object escapeXml(Object obj, Boolean isBankStmt) throws Exception{
 		if(obj instanceof List) {
 			List<?> lst = (List)obj;
 			for(Object o : lst) {
-				escapeXml(o);
+				escapeXml(o,isBankStmt);
 			}
 		}else if(obj instanceof Map) {
 			Map<Object, Object> map = (Map)obj;
 			for(Map.Entry<Object, Object> setEntry : map.entrySet()) {
-				escapeXml(setEntry.getValue());
+				escapeXml(setEntry.getValue(),isBankStmt);
 			}
 		}
 		Field[] fields = obj.getClass().getDeclaredFields();
@@ -1210,6 +1210,10 @@ public enum APIFlags {
 			Object value = field.get(obj);
 			if (value instanceof String) {
 				String value1 = (String) field.get(obj);
+				if(isBankStmt) {
+					String a = value1.replaceAll("&amp;", " ");
+					value = a;
+				}
 				String a = StringEscapeUtils.escapeXml(value1.toString());
 				value = a;
 				field.set(obj, value);
