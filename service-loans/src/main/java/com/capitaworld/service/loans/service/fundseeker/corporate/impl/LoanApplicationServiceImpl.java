@@ -2,6 +2,8 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
 import java.io.IOException;
+import java.math.BigInteger;
+import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -13,6 +15,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
@@ -30,12 +33,18 @@ import com.capitaworld.api.eligibility.model.EligibililityRequest;
 import com.capitaworld.api.eligibility.model.EligibilityResponse;
 import com.capitaworld.cibil.api.model.CibilRequest;
 import com.capitaworld.cibil.api.model.CibilResponse;
+import com.capitaworld.cibil.api.model.msme.company.Base;
+import com.capitaworld.cibil.api.model.msme.company.Base.ResponseReport.ProductSec.BorrowerProfileSec.BorrwerAddressContactDetails;
+import com.capitaworld.cibil.api.model.msme.company.Base.ResponseReport.ProductSec.BorrowerProfileSec.BorrwerDetails;
+import com.capitaworld.cibil.api.model.msme.company.Base.ResponseReport.ProductSec.EnquiryDetailsInLast24MonthVec;
+import com.capitaworld.cibil.api.model.msme.company.Base.ResponseReport.ProductSec.EnquiryDetailsInLast24MonthVec.EnquiryDetailsInLast24Month;
 import com.capitaworld.cibil.api.model.report.Account;
 import com.capitaworld.cibil.api.model.report.Address;
 import com.capitaworld.cibil.api.model.report.CreditReport;
 import com.capitaworld.cibil.api.model.report.Enquiry;
 import com.capitaworld.cibil.api.utility.CibilUtils;
 import com.capitaworld.cibil.api.utility.CibilUtils.AccountTypeEnum;
+import com.capitaworld.cibil.api.utility.CibilUtils.CreditTypeEnum;
 import com.capitaworld.cibil.api.utility.CibilUtils.GenderTypeEnum;
 import com.capitaworld.cibil.client.CIBILClient;
 import com.capitaworld.client.eligibility.EligibilityClient;
@@ -214,6 +223,7 @@ import com.capitaworld.service.scoring.exception.ScoringException;
 import com.capitaworld.service.scoring.model.ScoreParameterResult;
 import com.capitaworld.service.scoring.model.ScoringRequest;
 import com.capitaworld.service.scoring.model.ScoringResponse;
+import com.capitaworld.service.scoring.model.scoringmodel.ScoringModelReqRes;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.FpProfileBasicDetailRequest;
 import com.capitaworld.service.users.model.FundProviderDetailsRequest;
@@ -247,6 +257,9 @@ import com.capitaworld.sidbi.integration.model.cma.AssetsDetailsRequest;
 import com.capitaworld.sidbi.integration.model.cma.CMARequest;
 import com.capitaworld.sidbi.integration.model.cma.LiabilitiesDetailsRequest;
 import com.capitaworld.sidbi.integration.model.cma.OperatingStatementDetailsRequest;
+import com.capitaworld.sidbi.integration.model.commercial.AddressAndContactDetailsRequest;
+import com.capitaworld.sidbi.integration.model.commercial.BorrowersDetailsRequest;
+import com.capitaworld.sidbi.integration.model.commercial.CommercialRequest;
 import com.capitaworld.sidbi.integration.model.ddr.DDRFormDetailsRequest;
 import com.capitaworld.sidbi.integration.model.eligibility.EligibilityDetailRequest;
 import com.capitaworld.sidbi.integration.model.financial.FinancialRequest;
@@ -4373,8 +4386,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 								logger.error("Error while Saving Phase1 data to Organization Id====>{}",orgId);
 							}
 //						}
-						
+						logger.info("connectResponse.getProceed()==============>>>"+connectResponse.getProceed());
 						if(connectResponse.getProceed()) {
+							logger.info("loanApplicationMaster.getCompanyCinNumber()==============>>>"+loanApplicationMaster.getCompanyCinNumber());
 							if(loanApplicationMaster.getCompanyCinNumber()!=null) {
 								mcaAsyncComponent.callMCA(loanApplicationMaster.getCompanyCinNumber(),loanApplicationMaster.getId(),loanApplicationMaster.getUserId());
 							}
@@ -4965,6 +4979,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		Boolean eligibilityParameters = false;
 		Boolean bankStatement = false;
 		Boolean saveFinancialDetails = false;
+		Boolean saveCmaDetails = false;
 		try {
 			AuditMaster audit = auditComponent.getAudit(applicationId, true, AuditComponent.PRELIM_INFO);
 			if(audit == null) {
@@ -5063,7 +5078,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			audit = auditComponent.getAudit(applicationId, true, AuditComponent.ELIGIBILITY);
 			if(audit == null) {
 				try {
-					 EligibilityDetailRequest eligibilityRequest = createEligibilityRequest(applicationId);
+					 EligibilityDetailRequest eligibilityRequest = createEligibilityRequest(applicationId,fpProductMappingId);
 					if(eligibilityRequest == null) {
 						logger.info("Eligibiity data Request Not Found  in savePhese1DataToSidbi()  for ApplicationId ====>{}FpProductId====>{}",applicationId,fpProductMappingId);
 						auditComponent.updateAudit(AuditComponent.ELIGIBILITY, applicationId, userId, "Eligibiity data Request Not Found for ApplicationId ====>{} "+applicationId+"FpProductId====>{}"+fpProductMappingId, eligibilityParameters);
@@ -5104,10 +5119,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					}
 					ScoringRequest scoringRequest = new ScoringRequest();
 		            scoringRequest.setApplicationId(applicationId);
-		            scoringRequest.setFpProductId(productId);
+		            scoringRequest.setFpProductId(fpProductMappingId);
 					try {
 						ScoringResponse scoringResponse = scoringClient.getScoreResult(scoringRequest);
-						if(!CommonUtils.isObjectListNull(scoringResponse.getDataObject())){
+						logger.info("scoringResponse==>{}",scoringResponse);
+						if(!CommonUtils.isObjectNullOrEmpty(scoringResponse) && !CommonUtils.isObjectNullOrEmpty(scoringResponse.getDataObject())){
 							try {
 								ScoreParameterResult scoreParameterResult = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) scoringResponse.getDataObject(),
 		                                ScoreParameterResult.class);
@@ -5129,11 +5145,13 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 									auditComponent.updateAudit(AuditComponent.SCORING_DETAILS, applicationId, userId,"Exception in  EligibilityDetailRequest in savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "+applicationId+" Mgs " +e.getMessage() ,scoringDetails);
 									e.printStackTrace();
 									setTokenAsExpired(generateTokenRequest);
+									return false;
 								}
 							} catch (IOException e) {
 								logger.info("Exception while getting Object from Map in savePhese1DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",applicationId,fpProductMappingId +" Mgs " +e.getMessage());
 								e.printStackTrace();
 								setTokenAsExpired(generateTokenRequest);
+								return false;
 							}
 						}else {
 							//setTokenAsExpired(generateTokenRequest);
@@ -5143,6 +5161,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 						auditComponent.updateAudit(AuditComponent.SCORING_DETAILS, applicationId, userId, "Exception while getting ScoringResponse from ScoringClient in savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "+applicationId+" Mgs " +e.getMessage(), false);
 						e.printStackTrace();
 						setTokenAsExpired(generateTokenRequest);
+						return false;
 					}
 				}
 			}else {
@@ -5180,8 +5199,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					return false;
 				}else {
 					logger.error("Start Saving CMA Details in savePhese1DataToSidbi() ");
-					saveFinancialDetails = sidbiIntegrationClient.saveCMADetailsOfAuditYears(cmaRequest, generateTokenRequest.getToken());
-					logger.info("Sucessfully save CMA Details in savePhese1DataToSidbi() for  ApplicationId ====>{}FpProductId====>{}Flag==>{}",applicationId,fpProductMappingId,saveFinancialDetails);
+					saveCmaDetails = sidbiIntegrationClient.saveCMADetailsOfAuditYears(cmaRequest, generateTokenRequest.getToken());
+					logger.info("Sucessfully save CMA Details in savePhese1DataToSidbi() for  ApplicationId ====>{}FpProductId====>{}Flag==>{}",applicationId,fpProductMappingId,saveCmaDetails);
 					auditComponent.updateAudit(AuditComponent.CMA_DETAIL, applicationId, userId, null, eligibilityParameters);
 				}
 			}else {
@@ -5197,12 +5216,14 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			auditComponent.updateAudit(AuditComponent.MATCHES_PARAMETER, applicationId, userId, "Exception while saving MatchesparameterRequest in savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "+applicationId+" Mgs " +e.getMessage(),false);
 			auditComponent.updateAudit(AuditComponent.ELIGIBILITY, applicationId, userId, "Exception while saving EligibiliyDetsilRequest in savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "+applicationId+" Mgs " +e.getMessage() ,false);
 			auditComponent.updateAudit(AuditComponent.FINANCIAL, applicationId, userId, "Exception while Saving  Financial Details by sidbiIntegrationClient   in savePhese2DataToSidbi() ==> for ApplicationId  ====>{} "+applicationId+" Mgs " +e.getMessage() , false);
+			auditComponent.updateAudit(AuditComponent.CMA_DETAIL, applicationId, userId, "Exception while Saving  CMA Details by sidbiIntegrationClient   in savePhese2DataToSidbi() ==> for ApplicationId  ====>{} "+applicationId+" Mgs " +e.getMessage() , false);
 			logger.info("Throw Exception While Saving Phase one For SIDBI");
 			e.printStackTrace();
 			setTokenAsExpired(generateTokenRequest);
+			return false;
 		}
 		setTokenAsExpired(generateTokenRequest);
-		return (savePrelimInfo && scoringDetails && matchesParameters && bankStatement && eligibilityParameters);
+		return (savePrelimInfo && scoringDetails && matchesParameters && bankStatement && eligibilityParameters && saveFinancialDetails && saveCmaDetails);
 	}
 		
 
@@ -5360,6 +5381,113 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		return false;
 	}
 	
+	
+public CommercialRequest createCommercialRequest(Long applicationId,String pan) {
+		
+		CibilRequest cibilRequest = new CibilRequest();
+		cibilRequest.setApplicationId(applicationId);
+		cibilRequest.setPan(pan);
+		CommercialRequest commercialRequest = null;
+		try {
+			CibilResponse msmeCommercial = cibilClient.getMsmeCommercial(cibilRequest);
+			if(!CibilUtils.isObjectListNull(msmeCommercial,msmeCommercial.getData())) {
+				commercialRequest = new CommercialRequest();
+				Base base = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)msmeCommercial.getData(), Base.class);
+				Base.ResponseReport.ProductSec productSec = base.getResponseReport().getProductSec();
+				//Set Enquiries starts
+				EnquiryDetailsInLast24MonthVec enquiryDetailsInLast24MonthVec = productSec.getEnquiryDetailsInLast24MonthVec();
+				if(CibilUtils.isObjectNullOrEmpty(enquiryDetailsInLast24MonthVec.getMessage())) {
+					List<com.capitaworld.sidbi.integration.model.commercial.EnquiryInfoRequest> enquiries = new ArrayList<>();
+					com.capitaworld.sidbi.integration.model.commercial.EnquiryInfoRequest enquiryInfoRequest = null;
+					for(EnquiryDetailsInLast24Month last24MonthEnq : enquiryDetailsInLast24MonthVec.getEnquiryDetailsInLast24Month()) {
+						enquiryInfoRequest = new com.capitaworld.sidbi.integration.model.commercial.EnquiryInfoRequest();
+						enquiryInfoRequest.setCreditLender(last24MonthEnq.getCreditLender());
+						if(!CibilUtils.isObjectNullOrEmpty(last24MonthEnq.getEnquiryDt())) {
+							DateFormat dateFormat = new SimpleDateFormat("dd-MMM-yyyy");
+							enquiryInfoRequest.setDateOfEnquiry(dateFormat.parse(last24MonthEnq.getEnquiryDt()));
+						}
+						if(!CibilUtils.isObjectNullOrEmpty(last24MonthEnq.getEnquiryAmt())) {
+							enquiryInfoRequest.setEnquiryAmount(Double.parseDouble(last24MonthEnq.getEnquiryAmt()));
+						}
+						
+						if(!CibilUtils.isObjectNullOrEmpty(last24MonthEnq.getEnquiryPurpose()) && !last24MonthEnq.getEnquiryPurpose().equalsIgnoreCase("-")) {
+							try {
+								CreditTypeEnum fromId = CibilUtils.CreditTypeEnum.fromId(last24MonthEnq.getEnquiryPurpose());
+								enquiryInfoRequest.setEnquiryPurpose(fromId.getValue());
+							}catch(Exception e) {
+								e.printStackTrace();
+							}
+						}
+						enquiries.add(enquiryInfoRequest);
+					}
+					commercialRequest.setEnquiryInfoRequestList(enquiries);
+					
+					//Set Enquiries Ends
+					
+					//Set Borrower Data Starts
+					BorrowersDetailsRequest borrowersDetailsRequest = new BorrowersDetailsRequest();
+					BorrwerDetails borrwerDetails = productSec.getBorrowerProfileSec().getBorrwerDetails();
+					borrowersDetailsRequest.setName(borrwerDetails.getName());
+					borrowersDetailsRequest.setLegalConstituition(borrwerDetails.getBorrowersLegalConstitution());
+					try {
+						String classOfActivity = borrwerDetails.getClassOfActivityVec().getClassOfActivity().stream().map(act -> act).collect(Collectors.joining(","));
+						borrowersDetailsRequest.setClassOfActivity(classOfActivity);						
+					}catch(Exception e) {
+						e.printStackTrace();
+					}
+					borrowersDetailsRequest.setBusinessCategory(borrwerDetails.getBusinessCategory());
+					borrowersDetailsRequest.setInsdustryType(borrwerDetails.getBusinessIndustryType());
+					if(!CibilUtils.isObjectNullOrEmpty(borrwerDetails.getSalesFigure())) {
+						borrowersDetailsRequest.setSales(Double.parseDouble(borrwerDetails.getSalesFigure()));						
+					}
+					if(!CibilUtils.isObjectNullOrEmpty(borrwerDetails.getNumberOfEmployees())) {
+						borrowersDetailsRequest.setNoOfEmployee(Long.parseLong(borrwerDetails.getNumberOfEmployees()));
+					}
+					
+					if(!CibilUtils.isObjectNullOrEmpty(borrwerDetails.getDateOfIncorporation())) {
+						try {
+							DateFormat dateFormat = new SimpleDateFormat("dd-MMM-yyyy");
+							borrowersDetailsRequest.setDateOfIncorporation(dateFormat.parse(borrwerDetails.getDateOfIncorporation()));
+						}catch(Exception e) {
+							
+						}
+					}
+					//Preparing Address and Contact Details
+					AddressAndContactDetailsRequest addressAndContactDetailsRequest = new AddressAndContactDetailsRequest();
+					BorrwerAddressContactDetails borrwerAddressContactDetails = productSec.getBorrowerProfileSec().getBorrwerAddressContactDetails();
+					addressAndContactDetailsRequest.setFaxNo(borrwerAddressContactDetails.getFaxNumber());
+					addressAndContactDetailsRequest.setTelephoneNo(borrwerAddressContactDetails.getTelephoneNumber());
+					addressAndContactDetailsRequest.setMobileNo(borrwerAddressContactDetails.getMobileNumber());
+					
+//					Preparing Address
+					if(!CibilUtils.isObjectNullOrEmpty(borrwerAddressContactDetails.getAddress())) {
+						AddressRequest registeredOfficeAddress = new AddressRequest();
+						String[] split = borrwerAddressContactDetails.getAddress().split(",");
+						logger.info("Length of Address Array ====================>{}",split.length);
+						if(split != null && split.length == 5) {
+							registeredOfficeAddress.setPinCode(Long.parseLong(split[split.length - 1]));
+							registeredOfficeAddress.setPincode(split[split.length - 1]);
+							registeredOfficeAddress.setState(split[split.length - 2]);
+							registeredOfficeAddress.setCity(split[split.length - 3]);
+							registeredOfficeAddress.setStreetName(split[0]);
+							registeredOfficeAddress.setLandMark(split[0]);
+							registeredOfficeAddress.setPremiseNumber(split[0]);
+						}
+						addressAndContactDetailsRequest.setRegisteredOfficeAddress(registeredOfficeAddress);
+					}
+					borrowersDetailsRequest.setAddressAndContactDetailsRequest(addressAndContactDetailsRequest);
+					commercialRequest.setBorrowersDetailsRequest(borrowersDetailsRequest);
+					
+					//Set Borrower Data End
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return commercialRequest; 
+		
+	}
+
 	private ProfileReqRes getPrelimData(PrimaryCorporateDetail applicationMaster, Long userId) {
 		ProfileReqRes profileReqRes = new  ProfileReqRes();
 		profileReqRes.setLoanMasterRequest(createObj(applicationMaster));
@@ -5504,16 +5632,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 	
 	
-	private EligibilityDetailRequest createEligibilityRequest(Long applicationId) {
-		LoanApplicationMaster applicationMaster = loanApplicationRepository.findOne(applicationId);
-		if(CommonUtils.isObjectNullOrEmpty(applicationMaster)) {
-			logger.warn("ApplicationMaster Object Found NUll ForApplication==========>{}",applicationId);
-			return null;
-		}
+	private EligibilityDetailRequest createEligibilityRequest(Long applicationId,Long fpProductMappingId) {
 		EligibililityRequest eligibililityRequest = new  EligibililityRequest();
-		eligibililityRequest.setApplicationId(applicationMaster.getId());
-		eligibililityRequest.setProductId(applicationMaster.getProductId().longValue());
-		
+		eligibililityRequest.setApplicationId(applicationId);
+		eligibililityRequest.setFpProductMappingId(fpProductMappingId);
 		try {
 			EligibilityResponse eligibilityResponse = eligibilityClient.corporateLoanData(eligibililityRequest);
 			if(eligibilityResponse == null || eligibilityResponse.getData() == null) {
@@ -5745,10 +5867,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				if(!CommonUtils.isObjectNullOrEmpty(creditReport.getAccount())) {
 				for(Account account : creditReport.getAccount()) {
 					CurrentFinancialArrangementsDetailRequest currFin = new CurrentFinancialArrangementsDetailRequest();
-					if(!CommonUtils.isObjectNullOrEmpty(account.getAccountNonSummarySegmentFields()
-							.getHighCreditOrSanctionedAmount().doubleValue())) {
-					currFin.setAmount(account.getAccountNonSummarySegmentFields()
-							.getHighCreditOrSanctionedAmount().doubleValue());
+					if(!CommonUtils.isObjectListNull(account.getAccountNonSummarySegmentFields(),account.getAccountNonSummarySegmentFields().getHighCreditOrSanctionedAmount())) {
+						currFin.setAmount(account.getAccountNonSummarySegmentFields().getHighCreditOrSanctionedAmount().doubleValue());
 					}
 			
 					currFin.setApplicationId(applicationId);
@@ -6606,7 +6726,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		if(loan!=null) {
 			logger.info("Fetched Loan APplication Master for application Id : "+applicationId);
 			response.setLoanAmount(loan.getAmount());
-			response.setLoanApplicationId(loan.getApplicationCode());
+			response.setLoanApplicationId(applicationId+"");
 			
 			
 			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -7421,5 +7541,28 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		cmaRequest.setAssetsRequestList(assetsRequestList);
 		logger.info("================ Enter in getCMADetailOfAuditYears() ===========");
 		return cmaRequest;
+	}
+
+
+	@Override
+	public ScoringModelReqRes getMinMaxMarginByApplicationId(Long applicationId) {
+
+		try {
+
+			ScoringModelReqRes scoringModelReqRes=new ScoringModelReqRes();
+			List<BigInteger> fpProductList=loanApplicationRepository.getFpProductListByApplicationId(applicationId);
+
+			List<Long> scoringLongList = new ArrayList<Long>();
+			for(BigInteger i: fpProductList){
+				scoringLongList.add(i.longValue());
+			}
+			scoringModelReqRes.setScoringModelIdList(scoringLongList);
+			return  scoringClient.getMinMaxMargin(scoringModelReqRes);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			return null;
+		}
 	}
 }
