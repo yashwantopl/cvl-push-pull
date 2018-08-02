@@ -4361,8 +4361,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 								logger.error("Error while Saving Phase1 data to Organization Id====>{}",orgId);
 							}
 //						}
-						
+						logger.info("connectResponse.getProceed()==============>>>"+connectResponse.getProceed());
 						if(connectResponse.getProceed()) {
+							logger.info("loanApplicationMaster.getCompanyCinNumber()==============>>>"+loanApplicationMaster.getCompanyCinNumber());
 							if(loanApplicationMaster.getCompanyCinNumber()!=null) {
 								mcaAsyncComponent.callMCA(loanApplicationMaster.getCompanyCinNumber(),loanApplicationMaster.getId(),loanApplicationMaster.getUserId());
 							}
