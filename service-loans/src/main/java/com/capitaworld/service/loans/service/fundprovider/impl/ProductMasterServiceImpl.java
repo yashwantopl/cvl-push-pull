@@ -848,7 +848,16 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 			else if (master.getProductId() == 1) {
 				return workingCapitalParameterService.getWorkingCapitalParameter(master.getId());
 			} else if (master.getProductId() == 2) {
-				return termLoanParameterService.getTermLoanParameterRequest(master.getId());
+				
+				
+				if(master.getBusinessTypeId()!=null && master.getBusinessTypeId()==2)
+				{
+					return termLoanParameterService.getNtbTermLoanParameterRequest(master.getId());
+				}
+				else
+				{
+					return termLoanParameterService.getTermLoanParameterRequest(master.getId());
+				}
 			} else if (master.getProductId() == 15) {
 				return unsecuredLoanParameterService.getUnsecuredLoanParameterRequest(master.getId());
 			} else if (master.getProductId() == 16) {

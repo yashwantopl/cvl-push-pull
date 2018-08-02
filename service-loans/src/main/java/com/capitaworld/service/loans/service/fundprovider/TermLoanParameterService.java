@@ -8,6 +8,8 @@ public interface TermLoanParameterService {
 	public boolean saveOrUpdateNtb(TermLoanParameterRequest termLoanParameterRequest , Long mappingId);
 	
 	public TermLoanParameterRequest getTermLoanParameterRequest(Long id);
+	
+	public TermLoanParameterRequest getNtbTermLoanParameterRequest(Long id);
 
 	/**
 	 * @param mappingId
