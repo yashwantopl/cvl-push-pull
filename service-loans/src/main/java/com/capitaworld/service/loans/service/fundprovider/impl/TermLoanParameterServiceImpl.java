@@ -689,24 +689,24 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 			termLoanParameter.setJobId(jobId);
 		}
 		
-		TermLoanParameterTemp termLoanParameter2=termLoanParameterTempRepository.save(termLoanParameter);
-		termLoanParameterRequest.setId(termLoanParameter2.getId());
-		industrySectorTempRepository.inActiveMappingByFpProductId(termLoanParameterRequest.getId());
+		termLoanParameter=termLoanParameterTempRepository.save(termLoanParameter);
+		termLoanParameterRequest.setId(termLoanParameter.getId());
+		industrySectorTempRepository.inActiveMappingByFpProductId(termLoanParameter.getId());
 		// industry data save
 		saveIndustryTemp(termLoanParameterRequest);
 		// Sector data save
 		saveSectorTemp(termLoanParameterRequest);
-		geographicalCountryTempRepository.inActiveMappingByFpProductId(termLoanParameterRequest.getId());
+		geographicalCountryTempRepository.inActiveMappingByFpProductId(termLoanParameter.getId());
 		//country data save
 		saveCountryTemp(termLoanParameterRequest);
 		//state data save
-		geographicalStateTempRepository.inActiveMappingByFpProductId(termLoanParameterRequest.getId());
+		geographicalStateTempRepository.inActiveMappingByFpProductId(termLoanParameter.getId());
 		saveStateTemp(termLoanParameterRequest);
 		//city data save
-		geographicalCityTempRepository.inActiveMappingByFpProductId(termLoanParameterRequest.getId());
+		geographicalCityTempRepository.inActiveMappingByFpProductId(termLoanParameter.getId());
 		saveCityTemp(termLoanParameterRequest);
 		//negative industry save
-		negativeIndustryTempRepository.inActiveMappingByFpProductMasterId(termLoanParameterRequest.getId());
+		negativeIndustryTempRepository.inActiveMappingByFpProductMasterId(termLoanParameter.getId());
 		saveNegativeIndustryTemp(termLoanParameterRequest);
 
 		boolean isUpdate = msmeValueMappingService.updateMsmeValueMappingTemp(termLoanParameterRequest.getMsmeFundingIds(),termLoanParameterRequest.getId(), termLoanParameterRequest.getUserId());
