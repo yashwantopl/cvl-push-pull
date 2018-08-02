@@ -2,6 +2,7 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
 import java.io.IOException;
+import java.math.BigInteger;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -14,6 +15,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.service.scoring.model.scoringmodel.ScoringModelReqRes;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -4373,8 +4375,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 								logger.error("Error while Saving Phase1 data to Organization Id====>{}",orgId);
 							}
 //						}
-						
+						logger.info("connectResponse.getProceed()==============>>>"+connectResponse.getProceed());
 						if(connectResponse.getProceed()) {
+							logger.info("loanApplicationMaster.getCompanyCinNumber()==============>>>"+loanApplicationMaster.getCompanyCinNumber());
 							if(loanApplicationMaster.getCompanyCinNumber()!=null) {
 								mcaAsyncComponent.callMCA(loanApplicationMaster.getCompanyCinNumber(),loanApplicationMaster.getId(),loanApplicationMaster.getUserId());
 							}
@@ -4965,6 +4968,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		Boolean eligibilityParameters = false;
 		Boolean bankStatement = false;
 		Boolean saveFinancialDetails = false;
+		Boolean saveCmaDetails = false;
 		try {
 			AuditMaster audit = auditComponent.getAudit(applicationId, true, AuditComponent.PRELIM_INFO);
 			if(audit == null) {
@@ -5063,7 +5067,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			audit = auditComponent.getAudit(applicationId, true, AuditComponent.ELIGIBILITY);
 			if(audit == null) {
 				try {
-					 EligibilityDetailRequest eligibilityRequest = createEligibilityRequest(applicationId);
+					 EligibilityDetailRequest eligibilityRequest = createEligibilityRequest(applicationId,fpProductMappingId);
 					if(eligibilityRequest == null) {
 						logger.info("Eligibiity data Request Not Found  in savePhese1DataToSidbi()  for ApplicationId ====>{}FpProductId====>{}",applicationId,fpProductMappingId);
 						auditComponent.updateAudit(AuditComponent.ELIGIBILITY, applicationId, userId, "Eligibiity data Request Not Found for ApplicationId ====>{} "+applicationId+"FpProductId====>{}"+fpProductMappingId, eligibilityParameters);
@@ -5104,10 +5108,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					}
 					ScoringRequest scoringRequest = new ScoringRequest();
 		            scoringRequest.setApplicationId(applicationId);
-		            scoringRequest.setFpProductId(productId);
+		            scoringRequest.setFpProductId(fpProductMappingId);
 					try {
 						ScoringResponse scoringResponse = scoringClient.getScoreResult(scoringRequest);
-						if(!CommonUtils.isObjectListNull(scoringResponse.getDataObject())){
+						logger.info("scoringResponse==>{}",scoringResponse);
+						if(!CommonUtils.isObjectNullOrEmpty(scoringResponse) && !CommonUtils.isObjectNullOrEmpty(scoringResponse.getDataObject())){
 							try {
 								ScoreParameterResult scoreParameterResult = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) scoringResponse.getDataObject(),
 		                                ScoreParameterResult.class);
@@ -5129,11 +5134,13 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 									auditComponent.updateAudit(AuditComponent.SCORING_DETAILS, applicationId, userId,"Exception in  EligibilityDetailRequest in savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "+applicationId+" Mgs " +e.getMessage() ,scoringDetails);
 									e.printStackTrace();
 									setTokenAsExpired(generateTokenRequest);
+									return false;
 								}
 							} catch (IOException e) {
 								logger.info("Exception while getting Object from Map in savePhese1DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",applicationId,fpProductMappingId +" Mgs " +e.getMessage());
 								e.printStackTrace();
 								setTokenAsExpired(generateTokenRequest);
+								return false;
 							}
 						}else {
 							//setTokenAsExpired(generateTokenRequest);
@@ -5143,6 +5150,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 						auditComponent.updateAudit(AuditComponent.SCORING_DETAILS, applicationId, userId, "Exception while getting ScoringResponse from ScoringClient in savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "+applicationId+" Mgs " +e.getMessage(), false);
 						e.printStackTrace();
 						setTokenAsExpired(generateTokenRequest);
+						return false;
 					}
 				}
 			}else {
@@ -5180,8 +5188,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					return false;
 				}else {
 					logger.error("Start Saving CMA Details in savePhese1DataToSidbi() ");
-					saveFinancialDetails = sidbiIntegrationClient.saveCMADetailsOfAuditYears(cmaRequest, generateTokenRequest.getToken());
-					logger.info("Sucessfully save CMA Details in savePhese1DataToSidbi() for  ApplicationId ====>{}FpProductId====>{}Flag==>{}",applicationId,fpProductMappingId,saveFinancialDetails);
+					saveCmaDetails = sidbiIntegrationClient.saveCMADetailsOfAuditYears(cmaRequest, generateTokenRequest.getToken());
+					logger.info("Sucessfully save CMA Details in savePhese1DataToSidbi() for  ApplicationId ====>{}FpProductId====>{}Flag==>{}",applicationId,fpProductMappingId,saveCmaDetails);
 					auditComponent.updateAudit(AuditComponent.CMA_DETAIL, applicationId, userId, null, eligibilityParameters);
 				}
 			}else {
@@ -5197,12 +5205,14 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			auditComponent.updateAudit(AuditComponent.MATCHES_PARAMETER, applicationId, userId, "Exception while saving MatchesparameterRequest in savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "+applicationId+" Mgs " +e.getMessage(),false);
 			auditComponent.updateAudit(AuditComponent.ELIGIBILITY, applicationId, userId, "Exception while saving EligibiliyDetsilRequest in savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "+applicationId+" Mgs " +e.getMessage() ,false);
 			auditComponent.updateAudit(AuditComponent.FINANCIAL, applicationId, userId, "Exception while Saving  Financial Details by sidbiIntegrationClient   in savePhese2DataToSidbi() ==> for ApplicationId  ====>{} "+applicationId+" Mgs " +e.getMessage() , false);
+			auditComponent.updateAudit(AuditComponent.CMA_DETAIL, applicationId, userId, "Exception while Saving  CMA Details by sidbiIntegrationClient   in savePhese2DataToSidbi() ==> for ApplicationId  ====>{} "+applicationId+" Mgs " +e.getMessage() , false);
 			logger.info("Throw Exception While Saving Phase one For SIDBI");
 			e.printStackTrace();
 			setTokenAsExpired(generateTokenRequest);
+			return false;
 		}
 		setTokenAsExpired(generateTokenRequest);
-		return (savePrelimInfo && scoringDetails && matchesParameters && bankStatement && eligibilityParameters);
+		return (savePrelimInfo && scoringDetails && matchesParameters && bankStatement && eligibilityParameters && saveFinancialDetails && saveCmaDetails);
 	}
 		
 
@@ -5504,16 +5514,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 	
 	
-	private EligibilityDetailRequest createEligibilityRequest(Long applicationId) {
-		LoanApplicationMaster applicationMaster = loanApplicationRepository.findOne(applicationId);
-		if(CommonUtils.isObjectNullOrEmpty(applicationMaster)) {
-			logger.warn("ApplicationMaster Object Found NUll ForApplication==========>{}",applicationId);
-			return null;
-		}
+	private EligibilityDetailRequest createEligibilityRequest(Long applicationId,Long fpProductMappingId) {
 		EligibililityRequest eligibililityRequest = new  EligibililityRequest();
-		eligibililityRequest.setApplicationId(applicationMaster.getId());
-		eligibililityRequest.setProductId(applicationMaster.getProductId().longValue());
-		
+		eligibililityRequest.setApplicationId(applicationId);
+		eligibililityRequest.setFpProductMappingId(fpProductMappingId);
 		try {
 			EligibilityResponse eligibilityResponse = eligibilityClient.corporateLoanData(eligibililityRequest);
 			if(eligibilityResponse == null || eligibilityResponse.getData() == null) {
@@ -5745,10 +5749,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				if(!CommonUtils.isObjectNullOrEmpty(creditReport.getAccount())) {
 				for(Account account : creditReport.getAccount()) {
 					CurrentFinancialArrangementsDetailRequest currFin = new CurrentFinancialArrangementsDetailRequest();
-					if(!CommonUtils.isObjectNullOrEmpty(account.getAccountNonSummarySegmentFields()
-							.getHighCreditOrSanctionedAmount().doubleValue())) {
-					currFin.setAmount(account.getAccountNonSummarySegmentFields()
-							.getHighCreditOrSanctionedAmount().doubleValue());
+					if(!CommonUtils.isObjectListNull(account.getAccountNonSummarySegmentFields(),account.getAccountNonSummarySegmentFields().getHighCreditOrSanctionedAmount())) {
+						currFin.setAmount(account.getAccountNonSummarySegmentFields().getHighCreditOrSanctionedAmount().doubleValue());
 					}
 			
 					currFin.setApplicationId(applicationId);
@@ -6606,7 +6608,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		if(loan!=null) {
 			logger.info("Fetched Loan APplication Master for application Id : "+applicationId);
 			response.setLoanAmount(loan.getAmount());
-			response.setLoanApplicationId(loan.getApplicationCode());
+			response.setLoanApplicationId(applicationId+"");
 			
 			
 			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -7421,5 +7423,28 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		cmaRequest.setAssetsRequestList(assetsRequestList);
 		logger.info("================ Enter in getCMADetailOfAuditYears() ===========");
 		return cmaRequest;
+	}
+
+
+	@Override
+	public ScoringModelReqRes getMinMaxMarginByApplicationId(Long applicationId) {
+
+		try {
+
+			ScoringModelReqRes scoringModelReqRes=new ScoringModelReqRes();
+			List<BigInteger> fpProductList=loanApplicationRepository.getFpProductListByApplicationId(applicationId);
+
+			List<Long> scoringLongList = new ArrayList<Long>();
+			for(BigInteger i: fpProductList){
+				scoringLongList.add(i.longValue());
+			}
+			scoringModelReqRes.setScoringModelIdList(scoringLongList);
+			return  scoringClient.getMinMaxMargin(scoringModelReqRes);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			return null;
+		}
 	}
 }

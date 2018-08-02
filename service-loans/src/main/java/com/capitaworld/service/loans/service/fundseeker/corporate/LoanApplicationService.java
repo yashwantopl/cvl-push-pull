@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.capitaworld.service.loans.model.common.*;
+import com.capitaworld.service.scoring.model.scoringmodel.ScoringModelReqRes;
 import org.json.simple.JSONObject;
 
 import com.capitaworld.service.gateway.model.GatewayRequest;
@@ -163,6 +164,8 @@ public interface LoanApplicationService {
 	public Map<String, Object> getFpDetailsByFpProductId(Long fpProductId) throws Exception;
 	
 	public LoanApplicationRequest getLoanApplicationDetails(Long userId, Long applicationId);
+
+	public ScoringModelReqRes getMinMaxMarginByApplicationId(Long applicationId);
 
 	/**
 	 * @param applicationId
