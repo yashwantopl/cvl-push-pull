@@ -645,7 +645,6 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		{
 			
 			termLoanParameter = termLoanParameterTempRepository.getTermLoanParameterTempByFpProductMappingId(termLoanParameterRequest.getId());
-			termLoanParameter.setFpProductMappingId(termLoanParameterRequest.getId());
 			
 		}
 
@@ -665,7 +664,7 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		termLoanParameter.setFpProductMappingId(termLoanParameterRequest.getId());
 		}
 		
-		BeanUtils.copyProperties(termLoanParameterRequest, termLoanParameter);
+		BeanUtils.copyProperties(termLoanParameterRequest, termLoanParameter,"id");
 		termLoanParameter.setUserId(termLoanParameterRequest.getUserId()!=null?termLoanParameterRequest.getUserId():null);
 		termLoanParameter.setProductId(termLoanParameterRequest.getProductId()!=null?termLoanParameterRequest.getProductId():null);
 		termLoanParameter.setModifiedBy(termLoanParameterRequest.getUserId());
@@ -690,7 +689,7 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 			termLoanParameter.setJobId(jobId);
 		}
 		
-		termLoanParameterTempRepository.save(termLoanParameter);
+		termLoanParameter=termLoanParameterTempRepository.save(termLoanParameter);
 		termLoanParameterRequest.setId(termLoanParameter.getId());
 		industrySectorTempRepository.inActiveMappingByFpProductId(termLoanParameter.getId());
 		// industry data save
@@ -1022,7 +1021,6 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		{
 			
 			termLoanParameter = ntbTermLoanParameterTempRepository.getNtbTermLoanParameterTempByFpProductMappingId(termLoanParameterRequest.getId());
-			termLoanParameter.setFpProductMappingId(termLoanParameterRequest.getId());
 			
 		}
 
@@ -1036,7 +1034,7 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		if (!CommonUtils.isObjectListNull(termLoanParameterRequest.getMinTenure()))
 			termLoanParameterRequest.setMinTenure(termLoanParameterRequest.getMinTenure().multiply(new BigDecimal("12")));
 		
-		BeanUtils.copyProperties(termLoanParameterRequest, termLoanParameter);
+		BeanUtils.copyProperties(termLoanParameterRequest, termLoanParameter,"id");
 		termLoanParameter.setUserId(termLoanParameterRequest.getUserId()!=null?termLoanParameterRequest.getUserId():null);
 		termLoanParameter.setProductId(termLoanParameterRequest.getProductId()!=null?termLoanParameterRequest.getProductId():null);
 		
@@ -1066,7 +1064,7 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 			termLoanParameter.setJobId(jobId);
 		}
 		
-		ntbTermLoanParameterTempRepository.save(termLoanParameter);
+		termLoanParameter=ntbTermLoanParameterTempRepository.save(termLoanParameter);
 		termLoanParameterRequest.setId(termLoanParameter.getId());
 		industrySectorTempRepository.inActiveMappingByFpProductId(termLoanParameter.getId());
 		// industry data save

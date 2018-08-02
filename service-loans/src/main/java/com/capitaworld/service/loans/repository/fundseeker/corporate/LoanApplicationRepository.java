@@ -322,4 +322,8 @@ public interface LoanApplicationRepository extends JpaRepository<LoanApplication
 	//fp - checker - for other applications - count
 	@Query(value = "select lm.application_id from fs_loan_application_master lm inner join proposal_details pd on pd.application_id=lm.application_id where pd.branch_id=:branchId and pd.fp_product_id=:fpProductId and lm.status >=:id and (lm.np_assignee_id IS NULL or lm.np_assignee_id!=:npUserId) and (lm.np_user_id IS NULL or lm.np_user_id!=:npUserId) and pd.is_active=true and lm.is_active = true ",nativeQuery = true)
 	public List<BigInteger> getFPCheckerProposalsWithOthersCount(@Param("id") Long applicationStatusId,@Param("npUserId") Long npUserId, @Param("branchId") Long branchId,@Param("fpProductId") Long fpProductId);
+
+	// get list of matched fpProduct based on application id
+	@Query(value = "select fp_product_id from proposal_details where application_id=:applicationId and proposal_stage = 4 and is_active = true ",nativeQuery = true)
+	public List<BigInteger> getFpProductListByApplicationId(@Param("applicationId") Long applicationId);
 }

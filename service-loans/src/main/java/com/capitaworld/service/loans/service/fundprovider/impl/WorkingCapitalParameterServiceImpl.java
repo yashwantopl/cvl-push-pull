@@ -624,7 +624,6 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 		
 		if (workingCapitalParameter == null) {
 			workingCapitalParameter=new WorkingCapitalParameterTemp();
-			workingCapitalParameter.setFpProductMappingId(workingCapitalParameterRequest.getId());
 		}
 
 		if (!CommonUtils.isObjectListNull(workingCapitalParameterRequest.getMaxTenure()))
@@ -636,8 +635,14 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 		{
 			workingCapitalParameter.setFpProductMappingId(workingCapitalParameterRequest.getId());
 		}
-		
-		BeanUtils.copyProperties(workingCapitalParameterRequest, workingCapitalParameter);
+		if(workingCapitalParameterRequest.getAppstage()==1)
+		{
+		BeanUtils.copyProperties(workingCapitalParameterRequest, workingCapitalParameter,"id");
+		}
+		else
+		{
+		BeanUtils.copyProperties(workingCapitalParameterRequest, workingCapitalParameter,"jobId","id");
+		}
 		
 		workingCapitalParameter.setUserId(workingCapitalParameterRequest.getUserId()!=null?workingCapitalParameterRequest.getUserId():null);
 		workingCapitalParameter.setProductId(workingCapitalParameterRequest.getProductId()!=null?workingCapitalParameterRequest.getProductId():null);

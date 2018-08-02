@@ -591,7 +591,6 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 		{
 			
 			WcTlParameter = wcTlParameterTempRepository.getWcTlParameterTempByFpProductMappingId(wcTlParameterRequest.getId());
-			WcTlParameter.setFpProductMappingId(wcTlParameterRequest.getId());
 			
 		}
 
@@ -610,7 +609,7 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 		{
 			WcTlParameter.setFpProductMappingId(wcTlParameterRequest.getId());
 		}
-		BeanUtils.copyProperties(wcTlParameterRequest, WcTlParameter);
+		BeanUtils.copyProperties(wcTlParameterRequest, WcTlParameter,"id");
 		WcTlParameter.setUserId(wcTlParameterRequest.getUserId()!=null?wcTlParameterRequest.getUserId():null);
 		WcTlParameter.setProductId(wcTlParameterRequest.getProductId()!=null?wcTlParameterRequest.getProductId():null);
 		WcTlParameter.setModifiedBy(wcTlParameterRequest.getUserId());
@@ -635,7 +634,7 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 			WcTlParameter.setJobId(jobId);
 		}
 		
-		wcTlParameterTempRepository.save(WcTlParameter);
+		WcTlParameter=wcTlParameterTempRepository.save(WcTlParameter);
 		wcTlParameterRequest.setId(WcTlParameter.getId());
 		industrySectorTempRepository.inActiveMappingByFpProductId(WcTlParameter.getId());
 		// industry data save
