@@ -830,95 +830,55 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 		int loanId = primaryCorporateDetail.getProductId();
 		switch (loanId) {
 		case 1:
+
 			WorkingCapitalParameter workingCapitalPara = workingCapitalRepository.getByID(fpProductMappingId);
 			if (workingCapitalPara.getAssessmentMethodId() != null) {
 				Long assessmentId = workingCapitalPara.getAssessmentMethodId().longValue();
 				corporatePrimaryViewResponse.setAssesmentId(assessmentId);
-
-				EligibililityRequest eligibilityReq = new EligibililityRequest();
-				eligibilityReq.setApplicationId(toApplicationId);
-				// eligibilityReq.set
-				eligibilityReq.setFpProductMappingId(fpProductMappingId);
-				System.out.println(" for eligibility appid============>>" + toApplicationId);
-
-				try {
-
-					EligibilityResponse eligibilityResp = eligibilityClient.corporateLoanData(eligibilityReq);
-					// CLEligibilityRequest cLEligibilityRequest=
-					// MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>),
-					// CLEligibilityRequest.class);
-					corporatePrimaryViewResponse.setEligibilityDataObject(eligibilityResp.getData());
-
-				} catch (Exception e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
 			} else {
-
 				System.out.println("assesment id is null in wc");
 			}
 			break;
 		case 2:
+
 			TermLoanParameter termLoanParameter = termLoanParameterRepository.getById(fpProductMappingId);
 			if (termLoanParameter.getAssessmentMethodId() != null) {
 				Long assessmentId = termLoanParameter.getAssessmentMethodId().longValue();
 				corporatePrimaryViewResponse.setAssesmentId(assessmentId);
-				EligibililityRequest eligibilityReq = new EligibililityRequest();
-				eligibilityReq.setApplicationId(toApplicationId);
-				// eligibilityReq.set
-				eligibilityReq.setFpProductMappingId(fpProductMappingId);
-				System.out.println(" for eligibility appid============>>" + toApplicationId);
-
-				try {
-
-					EligibilityResponse eligibilityResp = eligibilityClient.corporateLoanData(eligibilityReq);
-					// CLEligibilityRequest cLEligibilityRequest=
-					// MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>),
-					// CLEligibilityRequest.class);
-					corporatePrimaryViewResponse.setEligibilityDataObject(eligibilityResp.getData());
-
-				} catch (Exception e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
 			} else {
-
-				System.out.println("assesment id is null in tl");
+				System.out.println("assesment id is null tl");
 			}
-
 			break;
 
 		case 16:
+
 			WcTlParameter wctlPara = wctlrepo.getById(fpProductMappingId);
 			if (wctlPara.getAssessmentMethodId() != null) {
 				Long assessmentId = wctlPara.getAssessmentMethodId().longValue();
 				corporatePrimaryViewResponse.setAssesmentId(assessmentId);
-				EligibililityRequest eligibilityReq = new EligibililityRequest();
-				eligibilityReq.setApplicationId(toApplicationId);
-				// eligibilityReq.set
-				eligibilityReq.setFpProductMappingId(fpProductMappingId);
-				System.out.println(" for eligibility appid============>>" + toApplicationId);
-
-				try {
-
-					EligibilityResponse eligibilityResp = eligibilityClient.corporateLoanData(eligibilityReq);
-					// CLEligibilityRequest cLEligibilityRequest=
-					// MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>),
-					// CLEligibilityRequest.class);
-					corporatePrimaryViewResponse.setEligibilityDataObject(eligibilityResp.getData());
-
-				} catch (Exception e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
 			} else {
-
 				System.out.println("assesment id is null in wctl");
 			}
 			break;
 		default:
 			System.out.println("invalid loan id");
 			break;
+		}
+
+		EligibililityRequest eligibilityReq = new EligibililityRequest();
+		eligibilityReq.setApplicationId(toApplicationId);
+		// eligibilityReq.set
+		eligibilityReq.setFpProductMappingId(fpProductMappingId);
+		System.out.println(" for eligibility appid============>>" + toApplicationId);
+
+		try {
+
+			EligibilityResponse eligibilityResp = eligibilityClient.corporateLoanData(eligibilityReq);
+			corporatePrimaryViewResponse.setEligibilityDataObject(eligibilityResp.getData());
+
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
 		}
 		// CGTMSE
 		try {

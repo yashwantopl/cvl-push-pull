@@ -251,16 +251,16 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 
 	@Autowired
 	private AnalyzerClient analyzerClient;
-	
+
 	@Autowired
 	private EligibilityClient eligibilityClient;
 
 	@Autowired
 	private ThirdPartyClient thirdPartyClient;
-	
+
 	@Autowired
 	private TermLoanParameterRepository termLoanParameterRepository;
-	
+
 	@Autowired
 	private WorkingCapitalParameterRepository workingCapitalRepository;
 
@@ -712,9 +712,18 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 					financialInputRequest.getProfitBeforeTaxationSy(), financialInputRequest.getExceptionalIncomeSy()));
 			financialInputRequest.setProfitBeforeTaxTy(CommonUtils.addNumbers(
 					financialInputRequest.getProfitBeforeTaxationTy(), financialInputRequest.getExceptionalIncomeTy()));
-			financialInputRequest.setProfitAfterTaxFy(CommonUtils.substractNumbers(financialInputRequest.getProfitBeforeTaxFy(), financialInputRequest.getProvisionForTaxFy())+ financialInputRequest.getOtherIncomeNeedTocCheckOpFy());
-    		financialInputRequest.setProfitAfterTaxSy(CommonUtils.substractNumbers(financialInputRequest.getProfitBeforeTaxSy(), financialInputRequest.getProvisionForTaxSy())+ financialInputRequest.getOtherIncomeNeedTocCheckOpSy());
-    		financialInputRequest.setProfitAfterTaxTy(CommonUtils.substractNumbers(financialInputRequest.getProfitBeforeTaxTy(), financialInputRequest.getProvisionForTaxTy())+ financialInputRequest.getOtherIncomeNeedTocCheckOpTy());
+			financialInputRequest
+					.setProfitAfterTaxFy(CommonUtils.substractNumbers(financialInputRequest.getProfitBeforeTaxFy(),
+							financialInputRequest.getProvisionForTaxFy())
+							+ financialInputRequest.getOtherIncomeNeedTocCheckOpFy());
+			financialInputRequest
+					.setProfitAfterTaxSy(CommonUtils.substractNumbers(financialInputRequest.getProfitBeforeTaxSy(),
+							financialInputRequest.getProvisionForTaxSy())
+							+ financialInputRequest.getOtherIncomeNeedTocCheckOpSy());
+			financialInputRequest
+					.setProfitAfterTaxTy(CommonUtils.substractNumbers(financialInputRequest.getProfitBeforeTaxTy(),
+							financialInputRequest.getProvisionForTaxTy())
+							+ financialInputRequest.getOtherIncomeNeedTocCheckOpTy());
 			if (financialInputRequest.getDividendPayOutFy() == 0)
 				financialInputRequest.setEquityDividendFy(0.0);
 			else
@@ -783,9 +792,21 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 			financialInputRequest.setTotalCurruntLiablitiesTy(CommonUtils.addNumbers(
 					financialInputRequest.getTradePayablesTy(), financialInputRequest.getOtherCurruntLiablitiesTy(),
 					financialInputRequest.getShortTermProvisionTy()));
-			financialInputRequest.setTotalLiablitiesFy(CommonUtils.addNumbers(financialInputRequest.getShareHolderFundsFy(), financialInputRequest.getTotalNonCurruntLiablitiesFy(), financialInputRequest.getTotalCurruntLiablitiesFy(), financialInputRequest.getOtherIncomeNeedTocCheckLiaFy()));
-    		financialInputRequest.setTotalLiablitiesSy(CommonUtils.addNumbers(financialInputRequest.getShareHolderFundsSy(), financialInputRequest.getTotalNonCurruntLiablitiesSy(), financialInputRequest.getTotalCurruntLiablitiesSy(), financialInputRequest.getOtherIncomeNeedTocCheckLiaSy()));
-    		financialInputRequest.setTotalLiablitiesTy(CommonUtils.addNumbers(financialInputRequest.getShareHolderFundsTy(), financialInputRequest.getTotalNonCurruntLiablitiesTy(), financialInputRequest.getTotalCurruntLiablitiesTy(), financialInputRequest.getOtherIncomeNeedTocCheckLiaTy()));
+			financialInputRequest
+					.setTotalLiablitiesFy(CommonUtils.addNumbers(financialInputRequest.getShareHolderFundsFy(),
+							financialInputRequest.getTotalNonCurruntLiablitiesFy(),
+							financialInputRequest.getTotalCurruntLiablitiesFy(),
+							financialInputRequest.getOtherIncomeNeedTocCheckLiaFy()));
+			financialInputRequest
+					.setTotalLiablitiesSy(CommonUtils.addNumbers(financialInputRequest.getShareHolderFundsSy(),
+							financialInputRequest.getTotalNonCurruntLiablitiesSy(),
+							financialInputRequest.getTotalCurruntLiablitiesSy(),
+							financialInputRequest.getOtherIncomeNeedTocCheckLiaSy()));
+			financialInputRequest
+					.setTotalLiablitiesTy(CommonUtils.addNumbers(financialInputRequest.getShareHolderFundsTy(),
+							financialInputRequest.getTotalNonCurruntLiablitiesTy(),
+							financialInputRequest.getTotalCurruntLiablitiesTy(),
+							financialInputRequest.getOtherIncomeNeedTocCheckLiaTy()));
 
 			// Balance Sheet -ASSETS
 			financialInputRequest.setNetBlockFy(CommonUtils.substractThreeNumbers(
@@ -797,9 +818,24 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 			financialInputRequest.setNetBlockTy(CommonUtils.substractThreeNumbers(
 					financialInputRequest.getGrossBlockTy(), financialInputRequest.getLessAccumulatedDepreTy(),
 					financialInputRequest.getImpairmentofAssetTy()));
-			financialInputRequest.setTotalNonCurruntAssetFy(CommonUtils.addNumbers(financialInputRequest.getCapitalWorkInProgressFy(), financialInputRequest.getIntengibleAssetsFy(), financialInputRequest.getPreOperativeExpeFy(), financialInputRequest.getAssetInTransitFy(), financialInputRequest.getInvestmentInSubsidiariesFy(), financialInputRequest.getOtherInvestmentFy(), financialInputRequest.getLongTermLoansAndAdvaFy(), financialInputRequest.getOtheNonCurruntAssetFy()));
-    		financialInputRequest.setTotalNonCurruntAssetSy(CommonUtils.addNumbers(financialInputRequest.getCapitalWorkInProgressSy(), financialInputRequest.getIntengibleAssetsSy(), financialInputRequest.getPreOperativeExpeSy(), financialInputRequest.getAssetInTransitSy(), financialInputRequest.getInvestmentInSubsidiariesSy(), financialInputRequest.getOtherInvestmentSy(), financialInputRequest.getLongTermLoansAndAdvaSy(), financialInputRequest.getOtheNonCurruntAssetSy()));
-    		financialInputRequest.setTotalNonCurruntAssetTy(CommonUtils.addNumbers(financialInputRequest.getCapitalWorkInProgressTy(), financialInputRequest.getIntengibleAssetsTy(), financialInputRequest.getPreOperativeExpeTy(), financialInputRequest.getAssetInTransitTy(), financialInputRequest.getInvestmentInSubsidiariesTy(), financialInputRequest.getOtherInvestmentTy(), financialInputRequest.getLongTermLoansAndAdvaTy(), financialInputRequest.getOtheNonCurruntAssetTy()));
+			financialInputRequest.setTotalNonCurruntAssetFy(CommonUtils.addNumbers(
+					financialInputRequest.getCapitalWorkInProgressFy(), financialInputRequest.getIntengibleAssetsFy(),
+					financialInputRequest.getPreOperativeExpeFy(), financialInputRequest.getAssetInTransitFy(),
+					financialInputRequest.getInvestmentInSubsidiariesFy(), financialInputRequest.getOtherInvestmentFy(),
+					financialInputRequest.getLongTermLoansAndAdvaFy(),
+					financialInputRequest.getOtheNonCurruntAssetFy()));
+			financialInputRequest.setTotalNonCurruntAssetSy(CommonUtils.addNumbers(
+					financialInputRequest.getCapitalWorkInProgressSy(), financialInputRequest.getIntengibleAssetsSy(),
+					financialInputRequest.getPreOperativeExpeSy(), financialInputRequest.getAssetInTransitSy(),
+					financialInputRequest.getInvestmentInSubsidiariesSy(), financialInputRequest.getOtherInvestmentSy(),
+					financialInputRequest.getLongTermLoansAndAdvaSy(),
+					financialInputRequest.getOtheNonCurruntAssetSy()));
+			financialInputRequest.setTotalNonCurruntAssetTy(CommonUtils.addNumbers(
+					financialInputRequest.getCapitalWorkInProgressTy(), financialInputRequest.getIntengibleAssetsTy(),
+					financialInputRequest.getPreOperativeExpeTy(), financialInputRequest.getAssetInTransitTy(),
+					financialInputRequest.getInvestmentInSubsidiariesTy(), financialInputRequest.getOtherInvestmentTy(),
+					financialInputRequest.getLongTermLoansAndAdvaTy(),
+					financialInputRequest.getOtheNonCurruntAssetTy()));
 			financialInputRequest.setTotalCurruntAssetFy(CommonUtils.addNumbers(
 					financialInputRequest.getInventoriesFy(), financialInputRequest.getSundryDebtorsFy(),
 					financialInputRequest.getCashAndBankFy(), financialInputRequest.getOtherCurruntAssetFy(),
@@ -1209,28 +1245,27 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 			logger.error("Problem to get Data of Monthly Turnover {}", e);
 		}
 
-		//bank statement data
+		// bank statement data
 		ReportRequest reportRequest = new ReportRequest();
 		reportRequest.setApplicationId(toApplicationId);
 		reportRequest.setUserId(userId);
-		List<Data> datas=new ArrayList<>();
+		List<Data> datas = new ArrayList<>();
 		try {
 			AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReportForCam(reportRequest);
-			List<HashMap<String, Object>> hashMaps=(List<HashMap<String, Object>>) analyzerResponse.getData();
-			if(!CommonUtils.isListNullOrEmpty(hashMaps))
-			{
-			for(HashMap<String,Object> hashMap:hashMaps)
-			{
-				Data data = MultipleJSONObjectHelper.getObjectFromMap(hashMap, Data.class);
-				datas.add(data);
-			}
+			List<HashMap<String, Object>> hashMaps = (List<HashMap<String, Object>>) analyzerResponse.getData();
+			if (!CommonUtils.isListNullOrEmpty(hashMaps)) {
+				for (HashMap<String, Object> hashMap : hashMaps) {
+					Data data = MultipleJSONObjectHelper.getObjectFromMap(hashMap, Data.class);
+					datas.add(data);
+				}
 			}
 			corporateFinalViewResponse.setBankData(datas);
-//			Data data = MultipleJSONObjectHelper.getObjectFromMap((HashMap<String, Object>) analyzerResponse.getData(), Data.class);
-//			corporatePrimaryViewResponse.setMonthlyDetailList(data.getMonthlyDetailList());
-//			corporatePrimaryViewResponse.setTop5FundReceivedList(data.getTop5FundReceivedList());
-//			corporatePrimaryViewResponse.setTop5FundTransferedList(data.getTop5FundTransferedList());
-		}catch (Exception e) {
+			// Data data = MultipleJSONObjectHelper.getObjectFromMap((HashMap<String,
+			// Object>) analyzerResponse.getData(), Data.class);
+			// corporatePrimaryViewResponse.setMonthlyDetailList(data.getMonthlyDetailList());
+			// corporatePrimaryViewResponse.setTop5FundReceivedList(data.getTop5FundReceivedList());
+			// corporatePrimaryViewResponse.setTop5FundTransferedList(data.getTop5FundTransferedList());
+		} catch (Exception e) {
 			e.printStackTrace();
 			logger.info("Error while getting perfios data");
 		}
@@ -1243,8 +1278,8 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 			usersRequest.setId(fundProviderUserId);
 			UserResponse userResponse = usersClient.getLastAccessApplicant(usersRequest);
 			fpProductMappingId = userResponse.getId();
-			
-			System.out.println("fp product id=========================>>>>>"+fpProductMappingId);
+
+			System.out.println("fp product id=========================>>>>>" + fpProductMappingId);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.info("Error while getting fpMappingId For Scoring");
@@ -1253,19 +1288,28 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 		scoringRequest.setApplicationId(toApplicationId);
 		scoringRequest.setFpProductId(fpProductMappingId);
 		try {
-			logger.info("Enter in get scoing data -----APPID-->"+toApplicationId+"-----FPProductId------->"+ fpProductMappingId);
+			logger.info("Enter in get scoing data -----APPID-->" + toApplicationId + "-----FPProductId------->"
+					+ fpProductMappingId);
 			ScoringResponse scoringResponse = scoringClient.getScore(scoringRequest);
-			if(!CommonUtils.isObjectNullOrEmpty(scoringResponse) && !CommonUtils.isObjectNullOrEmpty(scoringResponse.getDataObject())) {
+			if (!CommonUtils.isObjectNullOrEmpty(scoringResponse)
+					&& !CommonUtils.isObjectNullOrEmpty(scoringResponse.getDataObject())) {
 				logger.info("Find Data From Scoring ");
-				ProposalScoreResponse proposalScoreResponse = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)scoringResponse.getDataObject(),ProposalScoreResponse.class);
+				ProposalScoreResponse proposalScoreResponse = MultipleJSONObjectHelper.getObjectFromMap(
+						(LinkedHashMap<String, Object>) scoringResponse.getDataObject(), ProposalScoreResponse.class);
 				corporateFinalViewResponse.setDataList(scoringResponse.getDataList());
-				corporateFinalViewResponse.setManagementRiskScore(CommonUtils.checkDoubleNull(proposalScoreResponse.getManagementRiskScore()));
-				corporateFinalViewResponse.setFinancialRiskScore(CommonUtils.checkDoubleNull(proposalScoreResponse.getFinancialRiskScore()));
-				corporateFinalViewResponse.setBuisnessRiskScore(CommonUtils.checkDoubleNull(proposalScoreResponse.getBusinessRiskScore()));
-				corporateFinalViewResponse.setManagementRiskScoreWeight(CommonUtils.checkDoubleNull(proposalScoreResponse.getManagementRiskWeight()));
-				corporateFinalViewResponse.setFinancialRiskScoreWeight(CommonUtils.checkDoubleNull(proposalScoreResponse.getFinancialRiskWeight()));
-				corporateFinalViewResponse.setBuisnessRiskScoreWeight(CommonUtils.checkDoubleNull(proposalScoreResponse.getBusinessRiskWeight()));
-				corporateFinalViewResponse.setScoreInterpretation(proposalScoreResponse.getInterpretation());	
+				corporateFinalViewResponse.setManagementRiskScore(
+						CommonUtils.checkDoubleNull(proposalScoreResponse.getManagementRiskScore()));
+				corporateFinalViewResponse.setFinancialRiskScore(
+						CommonUtils.checkDoubleNull(proposalScoreResponse.getFinancialRiskScore()));
+				corporateFinalViewResponse.setBuisnessRiskScore(
+						CommonUtils.checkDoubleNull(proposalScoreResponse.getBusinessRiskScore()));
+				corporateFinalViewResponse.setManagementRiskScoreWeight(
+						CommonUtils.checkDoubleNull(proposalScoreResponse.getManagementRiskWeight()));
+				corporateFinalViewResponse.setFinancialRiskScoreWeight(
+						CommonUtils.checkDoubleNull(proposalScoreResponse.getFinancialRiskWeight()));
+				corporateFinalViewResponse.setBuisnessRiskScoreWeight(
+						CommonUtils.checkDoubleNull(proposalScoreResponse.getBusinessRiskWeight()));
+				corporateFinalViewResponse.setScoreInterpretation(proposalScoreResponse.getInterpretation());
 			} else {
 				logger.info("SCORING OBJECT NULL OR EMPTY -------------------->");
 			}
@@ -1278,89 +1322,33 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 		int loanId = primaryCorporateDetail.getProductId();
 		switch (loanId) {
 		case 1:
+
 			WorkingCapitalParameter workingCapitalPara = workingCapitalRepository.getByID(fpProductMappingId);
 			if (workingCapitalPara.getAssessmentMethodId() != null) {
 				Long assessmentId = workingCapitalPara.getAssessmentMethodId().longValue();
 				corporateFinalViewResponse.setAssesmentId(assessmentId);
-
-				EligibililityRequest eligibilityReq = new EligibililityRequest();
-				eligibilityReq.setApplicationId(toApplicationId);
-				// eligibilityReq.set
-				eligibilityReq.setFpProductMappingId(fpProductMappingId);
-				System.out.println(" for eligibility appid============>>" + toApplicationId);
-
-				try {
-
-					EligibilityResponse eligibilityResp = eligibilityClient.corporateLoanData(eligibilityReq);
-					// CLEligibilityRequest cLEligibilityRequest=
-					// MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>),
-					// CLEligibilityRequest.class);
-					corporateFinalViewResponse.setEligibilityDataObject(eligibilityResp.getData());
-
-				} catch (Exception e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
 			} else {
-
 				System.out.println("assesment id is null in wc");
 			}
 			break;
 		case 2:
+			
 			TermLoanParameter termLoanParameter = termLoanParameterRepository.getById(fpProductMappingId);
 			if (termLoanParameter.getAssessmentMethodId() != null) {
 				Long assessmentId = termLoanParameter.getAssessmentMethodId().longValue();
 				corporateFinalViewResponse.setAssesmentId(assessmentId);
-				EligibililityRequest eligibilityReq = new EligibililityRequest();
-				eligibilityReq.setApplicationId(toApplicationId);
-				// eligibilityReq.set
-				eligibilityReq.setFpProductMappingId(fpProductMappingId);
-				System.out.println(" for eligibility appid============>>" + toApplicationId);
-
-				try {
-
-					EligibilityResponse eligibilityResp = eligibilityClient.corporateLoanData(eligibilityReq);
-					// CLEligibilityRequest cLEligibilityRequest=
-					// MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>),
-					// CLEligibilityRequest.class);
-					corporateFinalViewResponse.setEligibilityDataObject(eligibilityResp.getData());
-
-				} catch (Exception e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
 			} else {
-
-				System.out.println("assesment id is null in tl");
+				System.out.println("assesment id is null tl");
 			}
-
 			break;
 
 		case 16:
+			
 			WcTlParameter wctlPara = wctlrepo.getById(fpProductMappingId);
 			if (wctlPara.getAssessmentMethodId() != null) {
 				Long assessmentId = wctlPara.getAssessmentMethodId().longValue();
 				corporateFinalViewResponse.setAssesmentId(assessmentId);
-				EligibililityRequest eligibilityReq = new EligibililityRequest();
-				eligibilityReq.setApplicationId(toApplicationId);
-				// eligibilityReq.set
-				eligibilityReq.setFpProductMappingId(fpProductMappingId);
-				System.out.println(" for eligibility appid============>>" + toApplicationId);
-
-				try {
-
-					EligibilityResponse eligibilityResp = eligibilityClient.corporateLoanData(eligibilityReq);
-					// CLEligibilityRequest cLEligibilityRequest=
-					// MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>),
-					// CLEligibilityRequest.class);
-					corporateFinalViewResponse.setEligibilityDataObject(eligibilityResp.getData());
-
-				} catch (Exception e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
 			} else {
-
 				System.out.println("assesment id is null in wctl");
 			}
 			break;
@@ -1368,17 +1356,31 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 			System.out.println("invalid loan id");
 			break;
 		}
-		
-		//CGTMSE
+
+		EligibililityRequest eligibilityReq = new EligibililityRequest();
+		eligibilityReq.setApplicationId(toApplicationId);
+		// eligibilityReq.set
+		eligibilityReq.setFpProductMappingId(fpProductMappingId);
+		System.out.println(" for eligibility appid============>>" + toApplicationId);
+
+		try {
+
+			EligibilityResponse eligibilityResp = eligibilityClient.corporateLoanData(eligibilityReq);
+			corporateFinalViewResponse.setEligibilityDataObject(eligibilityResp.getData());
+
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+
+		// CGTMSE
 		try {
 			CGTMSEDataResponse cgtmseDataResp = thirdPartyClient.getCalulation(toApplicationId);
 			corporateFinalViewResponse.setCgtmseData(cgtmseDataResp);
-		}catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			logger.info("Error CGTMSE data");
 		}
-		
-		
 
 		// GET DOCUMENTS
 		DocumentRequest documentRequest = new DocumentRequest();
