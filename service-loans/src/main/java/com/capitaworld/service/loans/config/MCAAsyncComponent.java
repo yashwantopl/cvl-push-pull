@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
+import com.capitaworld.service.loans.model.LoanApplicationRequest;
+import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.mca.client.McaClient;
 import com.capitaworld.service.mca.model.CompaniesHistoryPara;
@@ -28,6 +30,9 @@ public class MCAAsyncComponent {
 	
 	@Autowired
 	private McaClient mcaClient;
+	
+	@Autowired
+	private LoanApplicationService loanService;
 	
 	/**
 	 * @param cin
@@ -65,6 +70,12 @@ public class MCAAsyncComponent {
 					request.setApplicationId(applicationId);
 					request.setUserId(userId);
 					mcaClient.getCompanyHistory(request);
+					LoanApplicationRequest loanRequest = new LoanApplicationRequest();
+					loanRequest.setUserId(userId);
+					loanRequest.setId(applicationId);
+					loanRequest.setMcaCompanyId(companyIds[0]);
+					loanRequest.setIsMca(true);
+					loanService.updateLoanApplication(loanRequest);
 				}
 			}
 		}
