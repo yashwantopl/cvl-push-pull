@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.utils;
 
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.Format;
@@ -11,6 +12,9 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+
+import org.apache.commons.lang.StringEscapeUtils;
 
 public class CommonUtils {
 
@@ -1132,4 +1136,88 @@ public enum APIFlags {
 		public static final int REVERTED = 3;
 		public static final int APPROVED = 4;
 	}
+	
+	
+	/***********************************************CAM UTILS*********************************************************/
+	static DecimalFormat decim = new DecimalFormat("#,##0.00");
+	static DecimalFormat decim2 = new DecimalFormat("#,###.00");
+	
+	public static String convertValue(Double value) {
+		return !CommonUtils.isObjectNullOrEmpty(value)? decim.format(value).toString(): "0";
+	}
+	public static String convertValueWithoutDecimal(Double value) {
+		return !CommonUtils.isObjectNullOrEmpty(value)? decim2.format(value).toString(): "0";
+	}
+	public static Object convertToDoubleForXml (Object obj, Map<String, Object>data) throws Exception {
+		Field[] fields = obj.getClass().getDeclaredFields();
+		 for(Field field : fields) {
+			 field.setAccessible(true);
+             Object value = field.get(obj);
+             if(data != null) {
+            	 data.put(field.getName(), value);
+             }
+             if(!CommonUtils.isObjectNullOrEmpty(value)) {
+            	 if(value instanceof Double){
+                	 if(!Double.isNaN((Double)value)) {
+                		 DecimalFormat decim = new DecimalFormat("0.00");
+                    	 value = Double.parseDouble(decim.format(value));
+                    	 if(data != null) {
+                    		 value = decim.format(value);
+                    		 data.put(field.getName(), value);
+                    	 }else {
+                    		 field.set(obj,value);                    		 
+                    	 }
+                	 }
+                 }
+             }
+		 }
+		 if(data != null) {
+			 return data;
+		 }
+		return obj;
+	}
+	public static Object printFields(Object obj) throws Exception {
+		if(obj instanceof List) {
+			List<?> lst = (List)obj;
+			for(Object o : lst) {
+				escapeXml(o);
+			}
+		}else if(obj instanceof Map) {
+			Map<Object, Object> map = (Map)obj;
+			for(Map.Entry<Object, Object> setEntry : map.entrySet()) {
+				escapeXml(setEntry.getValue());
+			}
+		}else {
+			escapeXml(obj);
+		}
+		 return obj;
+	}
+	public static Object escapeXml(Object obj) throws Exception{
+		if(obj instanceof List) {
+			List<?> lst = (List)obj;
+			for(Object o : lst) {
+				escapeXml(o);
+			}
+		}else if(obj instanceof Map) {
+			Map<Object, Object> map = (Map)obj;
+			for(Map.Entry<Object, Object> setEntry : map.entrySet()) {
+				escapeXml(setEntry.getValue());
+			}
+		}
+		Field[] fields = obj.getClass().getDeclaredFields();
+		for (Field field : fields) {
+			field.setAccessible(true);
+			Object value = field.get(obj);
+			if (value instanceof String) {
+				String value1 = (String) field.get(obj);
+				String a = StringEscapeUtils.escapeXml(value1.toString());
+				value = a;
+				field.set(obj, value);
+			}else {
+				continue;
+			}
+		}
+		return obj;
+    }
+	
 }
