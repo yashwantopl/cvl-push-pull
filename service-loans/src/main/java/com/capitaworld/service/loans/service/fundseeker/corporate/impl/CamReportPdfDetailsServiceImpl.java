@@ -700,9 +700,9 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			eligibilityReq.setApplicationId(applicationId);
 			eligibilityReq.setFpProductMappingId(productId);
 			EligibilityResponse eligibilityResp= eligibilityClient.corporateLoanData(eligibilityReq);
-			logger.info("********************Eligibility data**********************"+eligibilityResp.getData().toString());
-			map.put("assLimits",CommonUtils.convertToDoubleForXml(MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)eligibilityResp.getData(), CLEligibilityRequest.class), new HashMap<>()));
-			
+			if(!CommonUtils.isObjectNullOrEmpty(eligibilityResp.getData())) {
+				map.put("assLimits",CommonUtils.convertToDoubleForXml(MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)eligibilityResp.getData(), CLEligibilityRequest.class), new HashMap<>()));
+			}
 		}catch (Exception e) {
 			e.printStackTrace();
 			logger.info("Error while getting Eligibility data");
@@ -711,7 +711,9 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		try {
 			String companyId = loanApplicationMaster.getMcaCompanyId();
 			McaResponse mcaResponse = mcaClient.getCompanyDetailedData(companyId);
-			map.put("mcaData", CommonUtils.printFields(mcaResponse.getData()));
+			if(!CommonUtils.isObjectNullOrEmpty(mcaResponse.getData())) {
+				map.put("mcaData", CommonUtils.printFields(mcaResponse.getData()));
+			}
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -719,7 +721,9 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		//HUNTER API ANALYSIS
 		try {
 			AnalyticsResponse hunterResp =fraudAnalyticsClient.getRuleAnalysisData(applicationId);
-			map.put("hunterResponse", hunterResp.getData());
+			if(!CommonUtils.isObjectNullOrEmpty(hunterResp.getData())) {
+				map.put("hunterResponse", hunterResp.getData());
+			}
 		} catch (Exception e1) {
 			e1.printStackTrace();
 		}
