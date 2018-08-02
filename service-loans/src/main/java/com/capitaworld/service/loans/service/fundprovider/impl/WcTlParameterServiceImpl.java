@@ -609,7 +609,7 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 		{
 			WcTlParameter.setFpProductMappingId(wcTlParameterRequest.getId());
 		}
-		BeanUtils.copyProperties(wcTlParameterRequest, WcTlParameter);
+		BeanUtils.copyProperties(wcTlParameterRequest, WcTlParameter,"id");
 		WcTlParameter.setUserId(wcTlParameterRequest.getUserId()!=null?wcTlParameterRequest.getUserId():null);
 		WcTlParameter.setProductId(wcTlParameterRequest.getProductId()!=null?wcTlParameterRequest.getProductId():null);
 		WcTlParameter.setModifiedBy(wcTlParameterRequest.getUserId());
