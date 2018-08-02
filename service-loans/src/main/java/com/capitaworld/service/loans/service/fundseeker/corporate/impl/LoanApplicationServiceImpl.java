@@ -6728,7 +6728,7 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 		if(loan!=null) {
 			logger.info("Fetched Loan APplication Master for application Id : "+applicationId);
 			response.setLoanAmount(loan.getAmount());
-			response.setLoanApplicationId(loan.getApplicationCode());
+			response.setLoanApplicationId(applicationId+"");
 			
 			
 			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
