@@ -647,7 +647,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 					List<Object> summaryInfo = new ArrayList<Object>();
 					for(int i =0; i<hashMap.size(); i++) {
 						bankStatement.add(CommonUtils.printFields(data.getXns().getXn()));
-						monthlyDetails.add(CommonUtils.printFields(data.getTop5FundReceivedList().getItem()));
+						monthlyDetails.add(CommonUtils.printFields(data.getMonthlyDetailList()));
 						top5FundReceived.add(CommonUtils.printFields(data.getTop5FundReceivedList().getItem()));
 						top5FundTransfered.add( CommonUtils.printFields(data.getTop5FundTransferedList().getItem()));
 						bouncedChequeList.add( CommonUtils.printFields(data.getBouncedOrPenalXnList().getBouncedOrPenalXns()));
@@ -725,7 +725,8 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			eligibilityReq.setApplicationId(applicationId);
 			eligibilityReq.setFpProductMappingId(productId);
 			EligibilityResponse eligibilityResp= eligibilityClient.corporateLoanData(eligibilityReq);
-			if(!CommonUtils.isObjectNullOrEmpty(MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)eligibilityResp.getData(), CLEligibilityRequest.class))) {
+			
+			if(!CommonUtils.isObjectListNull(eligibilityResp,eligibilityResp.getData())){
 				map.put("assLimits",CommonUtils.convertToDoubleForXml(MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)eligibilityResp.getData(), CLEligibilityRequest.class), new HashMap<>()));
 			}
 		}catch (Exception e) {
