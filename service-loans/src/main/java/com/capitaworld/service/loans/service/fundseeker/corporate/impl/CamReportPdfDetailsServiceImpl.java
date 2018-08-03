@@ -724,7 +724,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		try {
 			AnalyticsResponse hunterResp =fraudAnalyticsClient.getRuleAnalysisData(applicationId);
 			if(!CommonUtils.isObjectNullOrEmpty(hunterResp.getData())) {
-				map.put("hunterResponse",  CommonUtils.printFields(hunterResp.getData()));
+			//	map.put("hunterResponse",  CommonUtils.printFields(hunterResp.getData()));
 			}
 		} catch (Exception e1) {
 			e1.printStackTrace();
