@@ -573,7 +573,6 @@ public class CorporateUploadController {
 		try {
 			
 			ByteArrayOutputStream bos = null;
-			ObjectOutputStream oos = null;
 			byte[] cmaFile = null;
 			Workbook wb = downLoadCMAFileService.cmaFileGenerator(applicationId, productDocumentMappingId);
 			logger.info("WorkBook Object====>"+wb);
