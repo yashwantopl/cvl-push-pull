@@ -35,6 +35,7 @@ import com.capitaworld.connect.api.ConnectStage;
 import com.capitaworld.connect.client.ConnectClient;
 import com.capitaworld.service.analyzer.client.AnalyzerClient;
 import com.capitaworld.service.analyzer.model.common.AnalyzerResponse;
+import com.capitaworld.service.analyzer.model.common.CustomerInfo;
 import com.capitaworld.service.analyzer.model.common.Data;
 import com.capitaworld.service.analyzer.model.common.ReportRequest;
 import com.capitaworld.service.analyzer.model.common.Xn;
@@ -637,6 +638,15 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				{
 					Data data = MultipleJSONObjectHelper.getObjectFromMap(rec, Data.class);
 					datas.add(data);
+					for(int i =0; i<hashMap.size(); i++) {
+						map.put("bankStatement" + i, CommonUtils.printFields(data.getXns().getXn()));
+						map.put("monthlyDetails" + i, CommonUtils.printFields(data.getMonthlyDetailList().getMonthlyDetails()));
+						map.put("top5FundReceived" + i, CommonUtils.printFields(data.getTop5FundReceivedList().getItem()));
+						map.put("top5FundTransfered" +i , CommonUtils.printFields(data.getTop5FundTransferedList().getItem()));
+						map.put("bouncedChequeList" + i, CommonUtils.printFields(data.getBouncedOrPenalXnList().getBouncedOrPenalXns()));
+						map.put("customerInfo" + i, CommonUtils.printFields(data.getCustomerInfo()));
+						map.put("summaryInfo" + i, CommonUtils.printFields(data.getSummaryInfo()));
+					}
 					map.put("bankStatementAnalysis", CommonUtils.printFields(datas));
 				}
 			}
