@@ -192,6 +192,7 @@ public class DirectorBackgroundDetailResponseString implements Serializable{
 	public void setCibilScore(String cibilScore) {
 		this.cibilScore = cibilScore;
 	}
+
 	
 	
 	

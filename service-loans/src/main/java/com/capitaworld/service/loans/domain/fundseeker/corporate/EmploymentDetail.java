@@ -27,6 +27,13 @@ public class EmploymentDetail extends AuditActivity implements Serializable {
     @Column(name="total_experience")
     private Long totalExperience;
 
+    public EmploymentDetail(){
+    }
+
+    public EmploymentDetail(Long id) {
+        this.id = id;
+    }
+
     public Long getId() {
         return id;
     }

@@ -86,11 +86,13 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 
 	private Integer residenceType;
 
-	private Integer residenceSince;
+    private Integer residenceSinceMonth;
+    private Integer residenceSinceYear;
+
 
 	private Boolean isFamilyMemberInBusiness;
 
-	private Long empDetailId;
+    private EmploymentDetailRequest employmentDetailRequest;
 
 	private Integer countryId;
 
@@ -101,6 +103,22 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 	private String landmark;
 
 	private Boolean isMainDirector;
+
+	private Integer qualificationId;
+	
+	private String amount;
+
+	/*
+	* SBI Msme Integration fields
+	* By Ravina
+	* */
+	private String fatherOrSpouseName;
+	private Integer educationalStatus;
+	private Integer nationality;
+	private Boolean visuallyImpaired;
+	private Integer residentStatus;
+	private Boolean isGuarantor;
+	private DirectorPersonalDetailRequest directorPersonalDetail;
 
 	public Boolean getIsActive() {
 		return isActive;
@@ -304,7 +322,14 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 	public void setShareholding(Double shareholding) {
 		this.shareholding = shareholding;
 	}
-	
+
+	public Boolean getFamilyMemberInBusiness() {
+		return isFamilyMemberInBusiness;
+	}
+
+	public void setFamilyMemberInBusiness(Boolean familyMemberInBusiness) {
+		isFamilyMemberInBusiness = familyMemberInBusiness;
+	}
 
 	public Boolean getIsItrCompleted() {
 		return isItrCompleted;
@@ -402,28 +427,30 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 		this.residenceType = residenceType;
 	}
 
-	public Integer getResidenceSince() {
-		return residenceSince;
+    public Integer getResidenceSinceMonth() {
+        return residenceSinceMonth;
+    }
+
+    public void setResidenceSinceMonth(Integer residenceSinceMonth) {
+        this.residenceSinceMonth = residenceSinceMonth;
+    }
+
+    public Integer getResidenceSinceYear() {
+        return residenceSinceYear;
+    }
+
+    public void setResidenceSinceYear(Integer residenceSinceYear) {
+        this.residenceSinceYear = residenceSinceYear;
+    }
+
+
+
+	public EmploymentDetailRequest getEmploymentDetailRequest() {
+		return employmentDetailRequest;
 	}
 
-	public void setResidenceSince(Integer residenceSince) {
-		this.residenceSince = residenceSince;
-	}
-
-	public Boolean getFamilyMemberInBusiness() {
-		return isFamilyMemberInBusiness;
-	}
-
-	public void setFamilyMemberInBusiness(Boolean familyMemberInBusiness) {
-		isFamilyMemberInBusiness = familyMemberInBusiness;
-	}
-
-	public Long getEmpDetailId() {
-		return empDetailId;
-	}
-
-	public void setEmpDetailId(Long empDetailId) {
-		this.empDetailId = empDetailId;
+	public void setEmploymentDetailRequest(EmploymentDetailRequest employmentDetailRequest) {
+		this.employmentDetailRequest = employmentDetailRequest;
 	}
 
 	public Integer getCountryId() {
@@ -466,6 +493,78 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 		isMainDirector = mainDirector;
 	}
 
+	public Integer getQualificationId() {
+		return qualificationId;
+	}
+
+	public void setQualificationId(Integer qualificationId) {
+		this.qualificationId = qualificationId;
+	}
+
+	public String getAmount() {
+		return amount;
+	}
+
+	public void setAmount(String amount) {
+		this.amount = amount;
+	}
+
+	public String getFatherOrSpouseName() {
+		return fatherOrSpouseName;
+	}
+
+	public void setFatherOrSpouseName(String fatherOrSpouseName) {
+		this.fatherOrSpouseName = fatherOrSpouseName;
+	}
+
+	public Integer getEducationalStatus() {
+		return educationalStatus;
+	}
+
+	public void setEducationalStatus(Integer educationalStatus) {
+		this.educationalStatus = educationalStatus;
+	}
+
+	public Integer getNationality() {
+		return nationality;
+	}
+
+	public void setNationality(Integer nationality) {
+		this.nationality = nationality;
+	}
+
+	public Boolean getVisuallyImpaired() {
+		return visuallyImpaired;
+	}
+
+	public void setVisuallyImpaired(Boolean visuallyImpaired) {
+		this.visuallyImpaired = visuallyImpaired;
+	}
+
+	public Integer getResidentStatus() {
+		return residentStatus;
+	}
+
+	public void setResidentStatus(Integer residentStatus) {
+		this.residentStatus = residentStatus;
+	}
+
+	public Boolean getIsGuarantor() {
+		return isGuarantor;
+	}
+
+	public void setIsGuarantor(Boolean isGuarantor) {
+		this.isGuarantor = isGuarantor;
+	}
+
+	public DirectorPersonalDetailRequest getDirectorPersonalDetail() {
+		return directorPersonalDetail;
+	}
+
+	public void setDirectorPersonalDetail(DirectorPersonalDetailRequest directorPersonalDetail) {
+		this.directorPersonalDetail = directorPersonalDetail;
+	}
+
 	@Override
 	public String toString() {
 		return "DirectorBackgroundDetailRequest{" +
@@ -501,14 +600,24 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 				", maritalStatus=" + maritalStatus +
 				", noOfDependent=" + noOfDependent +
 				", residenceType=" + residenceType +
-				", residenceSince=" + residenceSince +
+				", residenceSinceMonth=" + residenceSinceMonth +
+				", residenceSinceYear=" + residenceSinceYear +
 				", isFamilyMemberInBusiness=" + isFamilyMemberInBusiness +
-				", empDetailId=" + empDetailId +
+				", employmentDetailRequest=" + employmentDetailRequest +
 				", countryId=" + countryId +
 				", premiseNumber='" + premiseNumber + '\'' +
 				", streetName='" + streetName + '\'' +
 				", landmark='" + landmark + '\'' +
 				", isMainDirector=" + isMainDirector +
+				", qualificationId=" + qualificationId +
+				", amount='" + amount + '\'' +
+				", fatherOrSpouseName='" + fatherOrSpouseName + '\'' +
+				", educationalStatus=" + educationalStatus +
+				", nationality=" + nationality +
+				", visuallyImpaired=" + visuallyImpaired +
+				", residentStatus=" + residentStatus +
+				", isGuarantor=" + isGuarantor +
+				", directorPersonalDetail=" + directorPersonalDetail +
 				'}';
 	}
 

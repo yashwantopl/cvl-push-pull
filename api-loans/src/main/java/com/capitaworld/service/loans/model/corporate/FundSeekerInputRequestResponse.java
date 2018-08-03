@@ -5,6 +5,7 @@ import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 public class FundSeekerInputRequestResponse {
@@ -66,7 +67,21 @@ public class FundSeekerInputRequestResponse {
     /////////
     private Double costOfMachinery;
     private Double incrementalTurnover;
+  
+    /*
+    * added for machinery equipment finance
+    * */
+    private Integer assessmentId;
 
+    //-------------For NTB
+    private Double tenureRequired;
+    private Integer proposedDetailsOfUnit;
+    private Double costOfProject;
+    private Date proposedOperationDate;
+    private Integer proposedConstitutionOfUnit;
+    private Double promoterContribution;
+
+  
     public Long getUserId() {
         return userId;
     }
@@ -272,5 +287,61 @@ public class FundSeekerInputRequestResponse {
 
     public void setIncrementalTurnover(Double incrementalTurnover) {
         this.incrementalTurnover = incrementalTurnover;
+    }
+
+    public Double getTenureRequired() {
+        return tenureRequired;
+    }
+
+    public void setTenureRequired(Double tenureRequired) {
+        this.tenureRequired = tenureRequired;
+    }
+
+    public Integer getProposedDetailsOfUnit() {
+        return proposedDetailsOfUnit;
+    }
+
+    public void setProposedDetailsOfUnit(Integer proposedDetailsOfUnit) {
+        this.proposedDetailsOfUnit = proposedDetailsOfUnit;
+    }
+
+    public Double getCostOfProject() {
+        return costOfProject;
+    }
+
+    public void setCostOfProject(Double costOfProject) {
+        this.costOfProject = costOfProject;
+    }
+
+    public Date getProposedOperationDate() {
+        return proposedOperationDate;
+    }
+
+    public void setProposedOperationDate(Date proposedOperationDate) {
+        this.proposedOperationDate = proposedOperationDate;
+    }
+
+    public Integer getProposedConstitutionOfUnit() {
+        return proposedConstitutionOfUnit;
+    }
+
+    public void setProposedConstitutionOfUnit(Integer proposedConstitutionOfUnit) {
+        this.proposedConstitutionOfUnit = proposedConstitutionOfUnit;
+    }
+
+    public Double getPromoterContribution() {
+        return promoterContribution;
+    }
+
+    public void setPromoterContribution(Double promoterContribution) {
+        this.promoterContribution = promoterContribution;
+    }
+
+    public Integer getAssessmentId() {
+        return assessmentId;
+    }
+
+    public void setAssessmentId(Integer assessmentId) {
+        this.assessmentId = assessmentId;
     }
 }

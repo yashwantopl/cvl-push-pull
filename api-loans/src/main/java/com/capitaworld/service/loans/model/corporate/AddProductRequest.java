@@ -16,8 +16,11 @@ public class AddProductRequest {
 	private String name;
 	
 	private String fpName;
-
 	
+	private Integer stage;
+
+	private Long businessTypeId;
+
 
 	public Integer getProductId() {
 		return productId;
@@ -67,7 +70,19 @@ public class AddProductRequest {
 		this.fpName = fpName;
 	}
 
-	
-	
-	
+	public Integer getStage() {
+		return stage;
+	}
+
+	public void setStage(Integer stage) {
+		this.stage = stage;
+	}
+
+	public Long getBusinessTypeId() {
+		return businessTypeId;
+	}
+
+	public void setBusinessTypeId(Long businessTypeId) {
+		this.businessTypeId = businessTypeId;
+	}
 }

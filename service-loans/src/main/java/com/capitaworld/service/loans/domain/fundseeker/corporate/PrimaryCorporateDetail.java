@@ -61,6 +61,36 @@ public class PrimaryCorporateDetail extends LoanApplicationMaster implements Ser
 
     @Column(name = "incremental_turnover")
     private Double incrementalTurnover;
+
+    @Column(name = "proposed_operation_date")
+    private Date proposedOperationDate;
+
+    @Column(name = "proposed_const_of_unit")
+    private Integer proposedConstitutionOfUnit;
+
+    @Column(name = "promoter_contribution")
+    private Double promoterContribution;
+
+    @Column(name = "assessment_id")
+    private Integer assessmentId;
+
+    /*
+     * SBI MSME Integration related fields
+     * By Ravina
+     * */
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "com_op_date")
+    private Date commercialOperationDate;
+
+    @Column(name = "factory_premise")
+    private Integer factoryPremise;
+
+    @Column(name = "know_how")
+    private Integer knowHow;
+
+    @Column(name = "competition")
+    private Integer competition;
+
    /* @Column(name="created_by")
     private Long createdBy;
 
@@ -185,8 +215,39 @@ public class PrimaryCorporateDetail extends LoanApplicationMaster implements Ser
     public void setIncrementalTurnover(Double incrementalTurnover) {
         this.incrementalTurnover = incrementalTurnover;
     }
+    
+    public Date getProposedOperationDate() {
+        return proposedOperationDate;
+    }
 
-    /* @Override
+    public void setProposedOperationDate(Date proposedOperationDate) {
+        this.proposedOperationDate = proposedOperationDate;
+    }
+
+    public Integer getProposedConstitutionOfUnit() {
+        return proposedConstitutionOfUnit;
+    }
+
+    public void setProposedConstitutionOfUnit(Integer proposedConstitutionOfUnit) {
+        this.proposedConstitutionOfUnit = proposedConstitutionOfUnit;
+    }
+
+    public Double getPromoterContribution() {
+        return promoterContribution;
+    }
+
+    public void setPromoterContribution(Double promoterContribution) {
+        this.promoterContribution = promoterContribution;
+    }
+
+    public Integer getAssessmentId() {
+        return assessmentId;
+    }
+
+    public void setAssessmentId(Integer assessmentId) {
+        this.assessmentId = assessmentId;
+    }
+/* @Override
     public Long getCreatedBy() {
         return createdBy;
     }

@@ -203,7 +203,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					}
 
 					CorporateProposalDetails corporateProposalDetails = new CorporateProposalDetails();
-
+					corporateProposalDetails.setBusinessTypeId(loanApplicationMaster.getBusinessTypeId());
 					corporateProposalDetails.setAddress(address);
 
 					if (CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getOrganisationName()))
@@ -1519,7 +1519,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 	}
 
 	@Override
-	public Boolean saveDisbursementDetails(DisbursementDetailsModel request, Long userId) {
+	public ProposalMappingResponse saveDisbursementDetails(DisbursementDetailsModel request, Long userId) {
 		// TODO Auto-generated method stub
 		try {
 			//set branch id to proposal request
@@ -1527,56 +1527,16 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			ProposalMappingResponse mappingResponse=proposalDetailsClient.saveDisbursementDetails(request);
 		
 			
-			// sending SMS Notification to FS when FP clicks Submit Disbursement Details
-			
-	  /* try {
-
-			logger.info("Starting SMS service when FP Submit Disbursement Details=====>");
-			
-			UserResponse response = usersClient.getEmailMobile(finalUserId);
-			
-			UsersRequest applicantRequest = MultipleJSONObjectHelper.getObjectFromMap(
-					(Map<String, Object>) response.getData(), UsersRequest.class);
-			
-			String mobile = applicantRequest.getMobile();
 			
 		
-			String[] to = { 91+mobile };
-			NotificationRequest notificationRequest = new NotificationRequest();
-			notificationRequest.setClientRefId("123");
-			Notification notification = new Notification();
-			notification.setContentType(ContentType.TEMPLATE);
-
-		
-
-				notification.setTemplateId(NotificationAlias.SMS_FS_PAYS_PAYUMONEY);
-				notification.setTo(to);
-				notification.setType(NotificationType.SMS);
-				Map<String, Object> parameters = new HashMap<String, Object>();
-				parameters.put("bankerName", "");
-				parameters.put("productType", "");
-				notification.setParameters(parameters);
-				notificationRequest.addNotification(notification);
-
-				notificationClient.send(notificationRequest);
-
-				logger.info("End SMS service when FP Submit Disbursement Details=====>");
-			
-		} catch (Exception e) {
-
-			logger.info("Error while sending when FP Submit Disbursement Details=====>");
-			e.printStackTrace();
-
-		}
-			*/
-			
-			return (Boolean) mappingResponse.getData();
+			return mappingResponse;
 			
 		} catch (Exception e) {
 			logger.info("Throw Exception While saveDisbursementDetails");
 			e.printStackTrace();
-			return false;
+			new ProposalMappingResponse("error while saving disbursement details", HttpStatus.INTERNAL_SERVER_ERROR.value());
 		}
+		return null;
 	}
 
 	@Override

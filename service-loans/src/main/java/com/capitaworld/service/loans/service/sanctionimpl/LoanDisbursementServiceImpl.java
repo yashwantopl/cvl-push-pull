@@ -2,8 +2,12 @@ package com.capitaworld.service.loans.service.sanctionimpl;
 
 import java.io.IOException;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import javax.transaction.Transactional;
+
+import com.capitaworld.service.loans.utils.CommonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -101,4 +105,45 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 		}
 	}
 
+	@Override
+	public List<LoanDisbursementRequest> getDisbursedList(Long applicationId) throws Exception {
+		try{
+			List<LoanDisbursementDomain> loanDisbursementDomainList = loanDisbursementRepository.getDisbursedListByApplicationId(applicationId);
+			if(!CommonUtils.isListNullOrEmpty(loanDisbursementDomainList)){
+				List<LoanDisbursementRequest> loanDisbursementRequestList = new ArrayList<LoanDisbursementRequest>();
+				LoanDisbursementRequest loanDisbursementRequest = null;
+				for(LoanDisbursementDomain loanDomainObject : loanDisbursementDomainList){
+					loanDisbursementRequest = new LoanDisbursementRequest();
+					BeanUtils.copyProperties(loanDomainObject, loanDisbursementRequest);
+					loanDisbursementRequestList.add(loanDisbursementRequest);
+				}
+				logger.info("Fetched DisbursedList successfully for applicationId=>" + applicationId);
+				return loanDisbursementRequestList;
+			}
+			logger.warn("No DisbursedList found for applicationId =>" + applicationId);
+			return null;
+		}catch (Exception e){
+			logger.info("Error/Exception in getDisbursedList() -----------------------> Message "+e.getMessage());
+			e.printStackTrace();
+			throw e;
+		}
 	}
+
+	@Override
+	public String bankRequestValidationAndSave(List<LoanDisbursementRequest> loanDisbursementRequestsList,
+			Long orgId) throws IOException {
+		String reason ="Loan DisbursementRequestsList is not available --- size()-->" + loanDisbursementRequestsList.size() ;
+		for(LoanDisbursementRequest  loanDisbursementRequest : loanDisbursementRequestsList) {		
+			if(CommonUtils.isObjectListNull(loanDisbursementRequest.getDisbursedAmount(),loanDisbursementRequest.getDisbursementDate(),loanDisbursementRequest.getMode(), loanDisbursementRequest.getReferenceNo(), loanDisbursementRequest.getActionBy(), loanDisbursementRequest.getAccountNo())){
+				return "Mandatory Fields Must Not be Null";
+			}
+			reason=requestValidation(loanDisbursementRequest ,orgId);
+			if("SUCCESS".equalsIgnoreCase(reason) || "First Disbursement".equalsIgnoreCase(reason)) {
+				if(saveLoanDisbursementDetail(loanDisbursementRequest)) {
+					logger.info("Success msg while saveLoanDisbursementDetail() ----------------> msg " + reason) ;
+				}
+			}
+		}
+		return reason;
+	}
+}

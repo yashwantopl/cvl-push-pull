@@ -16,7 +16,7 @@ public class FinancialArrangementsDetailRequest {
 
 	private Double amount;
 
-	/* private Integer facilityNatureId; */
+	 private Integer facilityNatureId;
 
 	private String financialInstitutionName;
 
@@ -43,6 +43,12 @@ public class FinancialArrangementsDetailRequest {
 	
 	private Long directorId;
 
+	/*
+	 * SBI MSME Integration related fields
+	 * By Ravina
+	 * */
+	private Integer lcBgStatus;
+
 	public Long getId() {
 		return id;
 	}
@@ -59,14 +65,12 @@ public class FinancialArrangementsDetailRequest {
 		this.amount = amount;
 	}
 
-	/*
-	 * public Integer getFacilityNatureId() { return facilityNatureId; }
-	 * 
-	 * 
-	 * 
-	 * public void setFacilityNatureId(Integer facilityNatureId) {
-	 * this.facilityNatureId = facilityNatureId; }
-	 */
+	 public Integer getFacilityNatureId() { return facilityNatureId; }
+
+
+
+	 public void setFacilityNatureId(Integer facilityNatureId) {
+	 this.facilityNatureId = facilityNatureId; }
 
 	public String getFinancialInstitutionName() {
 		return financialInstitutionName;
@@ -164,5 +168,12 @@ public class FinancialArrangementsDetailRequest {
 	public void setDirectorId(Long directorId) {
 		this.directorId = directorId;
 	}
-	
+
+	public Integer getLcBgStatus() {
+		return lcBgStatus;
+	}
+
+	public void setLcBgStatus(Integer lcBgStatus) {
+		this.lcBgStatus = lcBgStatus;
+	}
 }

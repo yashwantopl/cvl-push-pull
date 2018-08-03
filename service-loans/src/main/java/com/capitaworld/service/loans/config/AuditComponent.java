@@ -23,6 +23,9 @@ public class AuditComponent {
 	public static final int BANK_STATEMENT = 6;
 	public static final int MATCHES_PARAMETER = 7;
 	public static final int ELIGIBILITY = 8;
+	public static final int FINANCIAL = 9;
+	public static final int CMA_DETAIL = 10;
+	public static final int COMMERCIAL = 11;
 	
 	@Autowired
 	private AuditMasterRepository auditMasterRepository;
@@ -43,6 +46,10 @@ public class AuditComponent {
 		auditMaster.setFailureReason(reason);
 		auditMasterRepository.save(auditMaster);
 		logger.info("SUCCESSFULLY UPADATE AUDIT DATE-----------------TYPE-->" + type + "------Application-----> "+ applicationId);
+	}
+	
+	public AuditMaster getAudit(Long applicationId, boolean isSuccess,Integer type) {
+		return auditMasterRepository.findFirstByApplicationIdAndIsSuccessAndTypeOrderByIdDesc(applicationId, isSuccess, type);
 	}
 	
 	

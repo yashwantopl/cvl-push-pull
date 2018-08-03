@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.utils;
 
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.Format;
@@ -11,6 +12,10 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import org.apache.commons.lang.StringEscapeUtils;
+
+import com.fasterxml.jackson.databind.util.ClassUtil;
 
 public class CommonUtils {
 
@@ -217,6 +222,7 @@ public class CommonUtils {
 				"applicationId" };
 		public static final String ID = "id";
 		public static final String[] FP_PRODUCT = { "userId", "productId" };
+		public static final String[] FP_PRODUCT_TEMP = { "userId","isApproved","isDeleted","isCopied","isEdit","statusId","jobId","fpProductId","id","fpProductMappingId"};
 		public static final String[] CORPORATE_PROFILE = {  "id","userId", "clientId", "applicationId","panNo","constitutionId","establishmentMonth",
 			"establishmentYear","keyVericalFunding","latitude","longitude","organisationName","firstAddress",
 			"websiteAddress","landlineNo","keyVerticalSector","keyVerticalSubsector","gstIn","email"
@@ -243,6 +249,11 @@ public class CommonUtils {
 				"poaHolderName", "presentlyIrrigated", "rainFed", "repaymentCycle", "repaymentMode",
 				"seasonalIrrigated", "shareholding", "totalLandOwned", "tradeLicenseExpiryDate", "tradeLicenseNumber",
 				"unattended", "websiteAddress", "userId" };
+		public static final String[] DIRECTOR_OBJ_EXCEPT_MAIN = {"isItrCompleted", "isCibilCompleted", "isBankStatementCompleted", "isOneFormCompleted",
+				"applicationId","dob","din","panNo","directorsName","totalExperience", "isActive","pincode","stateCode","city","mobile","gender","relationshipType",
+				"firstName","lastName", "middleName","title", "shareholding","aadhar","maritalStatus","noOfDependent","residenceType","residenceSinceMonth","residenceSinceYear",
+				"isFamilyMemberInBusiness","employmentDetailRequest","countryId","premiseNumber","streetName","landmark"
+		};
 	}
 
 	public interface ApplicantType {
@@ -1119,4 +1130,119 @@ public enum APIFlags {
 		}
 		return null;
 	}
+	
+	public interface Status {
+		public static final int OPEN = 1;
+		public static final int IN_PROGRESS = 2;
+		public static final int REVERTED = 3;
+		public static final int APPROVED = 4;
+	}
+	
+	
+	/***********************************************CAM UTILS*********************************************************/
+	static DecimalFormat decim = new DecimalFormat("#,##0.00");
+	static DecimalFormat decim2 = new DecimalFormat("#,###.00");
+	
+	public static String convertValue(Double value) {
+		return !CommonUtils.isObjectNullOrEmpty(value)? decim.format(value).toString(): "0";
+	}
+	public static String convertValueWithoutDecimal(Double value) {
+		return !CommonUtils.isObjectNullOrEmpty(value)? decim2.format(value).toString(): "0";
+	}
+	public static Object convertToDoubleForXml (Object obj, Map<String, Object>data) throws Exception {
+		Field[] fields = obj.getClass().getDeclaredFields();
+		 for(Field field : fields) {
+			 field.setAccessible(true);
+             Object value = field.get(obj);
+             if(data != null) {
+            	 data.put(field.getName(), value);
+             }
+             if(!CommonUtils.isObjectNullOrEmpty(value)) {
+            	 if(value instanceof Double){
+                	 if(!Double.isNaN((Double)value)) {
+                		 DecimalFormat decim = new DecimalFormat("0.00");
+                    	 value = Double.parseDouble(decim.format(value));
+                    	 if(data != null) {
+                    		 value = decim.format(value);
+                    		 data.put(field.getName(), value);
+                    	 }else {
+                    		 field.set(obj,value);                    		 
+                    	 }
+                	 }
+                 }
+             }
+		 }
+		 if(data != null) {
+			 return data;
+		 }
+		return obj;
+	}
+	public static Object printFields(Object obj) throws Exception {
+		if(isObjectNullOrEmpty(obj)){
+			return null;
+		}
+		System.out.println("Is Array==>" + obj.getClass().isArray());
+		System.out.println("Array Class Name==>" + obj.getClass().getName());
+		if(obj instanceof List) {
+			List<?> lst = (List)obj;
+			for(Object o : lst) { 
+				printFields(o);
+			}
+		}else if(obj instanceof Map) {
+			Map<Object, Object> map = (Map)obj;
+			for(Map.Entry<Object, Object> setEntry : map.entrySet()) {
+				printFields(setEntry.getValue());
+			}
+		}else if(obj.getClass().isArray()) {
+			Object [] arr= (Object[]) obj;
+			for(Object o : arr) {
+				printFields(o);
+			}
+		}
+		else {
+			escapeXml(obj);
+		}
+		 return obj;
+	}
+	public static Object escapeXml(Object obj) throws Exception{
+		Field[] fields = obj.getClass().getDeclaredFields();
+		for (Field field : fields) {
+			field.setAccessible(true);
+			Object object = field.get(obj);
+			if(object == null) {
+				continue;
+			}
+			System.out.println("In escapexml is Array==>" + object.getClass().isArray());
+			System.out.println("In escapexml Array Class Name==>" + field.getName());
+			if(object instanceof List) {
+				List<?> lst = (List)object;
+				for(Object o : lst) {
+					escapeXml(o);
+				}
+			}else if(object instanceof Map) {
+				Map<Object, Object> map = (Map)object;
+				for(Map.Entry<Object, Object> setEntry : map.entrySet()) {
+					escapeXml(setEntry.getValue());
+				}
+			}else if(object.getClass().isArray()) {
+				if(object.getClass() == Integer.class) {
+					continue;
+				}
+				Object [] arr= (Object[]) object;
+				for(Object o : arr) {
+					escapeXml(o);
+				}
+			}else if (object instanceof String) {
+				String value1 = (String) object;
+				String a = StringEscapeUtils.escapeXml(value1.toString());
+				object = a;
+				field.set(obj, object);
+			}
+			else {
+				continue;
+			}
+		}
+		return obj;
+    }
+	
 }
