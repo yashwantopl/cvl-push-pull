@@ -1185,17 +1185,17 @@ public enum APIFlags {
 		if(obj instanceof List) {
 			List<?> lst = (List)obj;
 			for(Object o : lst) {
-				escapeXml(o);
+				printFields(o);
 			}
 		}else if(obj instanceof Map) {
 			Map<Object, Object> map = (Map)obj;
 			for(Map.Entry<Object, Object> setEntry : map.entrySet()) {
-				escapeXml(setEntry.getValue());
+				printFields(setEntry.getValue());
 			}
 		}else if(obj.getClass().isArray()) {
 			Object [] arr= (Object[]) obj;
 			for(Object o : arr) {
-				escapeXml(o);
+				printFields(o);
 			}
 		}
 		else {
@@ -1210,7 +1210,9 @@ public enum APIFlags {
 		for (Field field : fields) {
 			field.setAccessible(true);
 			Object object = field.get(obj);
-			
+			if(object == null) {
+				continue;
+			}
 			if(object instanceof List) {
 				List<?> lst = (List)object;
 				for(Object o : lst) {
@@ -1226,8 +1228,7 @@ public enum APIFlags {
 				for(Object o : arr) {
 					escapeXml(o);
 				}
-			}
-			if (object instanceof String) {
+			}else if (object instanceof String) {
 				String value1 = (String) object;
 				String a = StringEscapeUtils.escapeXml(value1.toString());
 				object = a;
