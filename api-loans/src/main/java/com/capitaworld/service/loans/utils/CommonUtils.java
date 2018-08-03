@@ -1185,17 +1185,17 @@ public enum APIFlags {
 		if(obj instanceof List) {
 			List<?> lst = (List)obj;
 			for(Object o : lst) {
-				printFields(o);
+				escapeXml(o);
 			}
 		}else if(obj instanceof Map) {
 			Map<Object, Object> map = (Map)obj;
 			for(Map.Entry<Object, Object> setEntry : map.entrySet()) {
-				printFields(setEntry.getValue());
+				escapeXml(setEntry.getValue());
 			}
 		}else if(obj.getClass().isArray()) {
 			Object [] arr= (Object[]) obj;
 			for(Object o : arr) {
-				printFields(o);
+				escapeXml(o);
 			}
 		}
 		else {
