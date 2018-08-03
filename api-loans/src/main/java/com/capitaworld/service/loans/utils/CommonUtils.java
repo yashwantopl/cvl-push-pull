@@ -1212,7 +1212,7 @@ public enum APIFlags {
 				continue;
 			}
 			System.out.println("In escapexml is Array==>" + object.getClass().isArray());
-			System.out.println("In escapexml Array Class Name==>" + object.getClass().getName());
+			System.out.println("In escapexml Array Class Name==>" + field.getName());
 			if(object instanceof List) {
 				List<?> lst = (List)object;
 				for(Object o : lst) {
@@ -1233,8 +1233,6 @@ public enum APIFlags {
 				String a = StringEscapeUtils.escapeXml(value1.toString());
 				object = a;
 				field.set(obj, object);
-			}else if (object instanceof Object) {
-				escapeXml(object);
 			}
 			else {
 				continue;
