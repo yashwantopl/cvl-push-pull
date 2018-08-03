@@ -129,4 +129,21 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 		}
 	}
 
+	@Override
+	public String bankRequestValidationAndSave(List<LoanDisbursementRequest> loanDisbursementRequestsList,
+			Long orgId) throws IOException {
+		String reason ="Loan DisbursementRequestsList is not available --- size()-->" + loanDisbursementRequestsList.size() ;
+		for(LoanDisbursementRequest  loanDisbursementRequest : loanDisbursementRequestsList) {		
+			if(CommonUtils.isObjectListNull(loanDisbursementRequest.getDisbursedAmount(),loanDisbursementRequest.getDisbursementDate(),loanDisbursementRequest.getMode(), loanDisbursementRequest.getReferenceNo(), loanDisbursementRequest.getActionBy(), loanDisbursementRequest.getAccountNo())){
+				return "Mandatory Fields Must Not be Null";
+			}
+			reason=requestValidation(loanDisbursementRequest ,orgId);
+			if("SUCCESS".equalsIgnoreCase(reason) || "First Disbursement".equalsIgnoreCase(reason)) {
+				if(saveLoanDisbursementDetail(loanDisbursementRequest)) {
+					logger.info("Success msg while saveLoanDisbursementDetail() ----------------> msg " + reason) ;
+				}
+			}
+		}
+		return reason;
+	}
 }
