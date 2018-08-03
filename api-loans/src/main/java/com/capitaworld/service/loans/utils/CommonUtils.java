@@ -1206,32 +1206,32 @@ public enum APIFlags {
 	public static Object escapeXml(Object obj) throws Exception{
 		System.out.println("In escapexml is Array==>" + obj.getClass().isArray());
 		System.out.println("In escapexml Array Class Name==>" + obj.getClass().getName());
-		if(obj instanceof List) {
-			List<?> lst = (List)obj;
-			for(Object o : lst) {
-				escapeXml(o);
-			}
-		}else if(obj instanceof Map) {
-			Map<Object, Object> map = (Map)obj;
-			for(Map.Entry<Object, Object> setEntry : map.entrySet()) {
-				escapeXml(setEntry.getValue());
-			}
-		}else if(obj.getClass().isArray()) {
-			Object [] arr= (Object[]) obj;
-			for(Object o : arr) {
-				escapeXml(o);
-			}
-		}
-		
 		Field[] fields = obj.getClass().getDeclaredFields();
 		for (Field field : fields) {
 			field.setAccessible(true);
-			Object value = field.get(obj);
-			if (value instanceof String) {
-				String value1 = (String) field.get(obj);
+			Object object = field.get(obj);
+			
+			if(object instanceof List) {
+				List<?> lst = (List)object;
+				for(Object o : lst) {
+					escapeXml(o);
+				}
+			}else if(object instanceof Map) {
+				Map<Object, Object> map = (Map)object;
+				for(Map.Entry<Object, Object> setEntry : map.entrySet()) {
+					escapeXml(setEntry.getValue());
+				}
+			}else if(object.getClass().isArray()) {
+				Object [] arr= (Object[]) object;
+				for(Object o : arr) {
+					escapeXml(o);
+				}
+			}
+			if (object instanceof String) {
+				String value1 = (String) object;
 				String a = StringEscapeUtils.escapeXml(value1.toString());
-				value = a;
-				field.set(obj, value);
+				object = a;
+				field.set(obj, object);
 			}else {
 				continue;
 			}
