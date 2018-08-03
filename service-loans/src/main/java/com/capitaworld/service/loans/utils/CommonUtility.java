@@ -9,6 +9,7 @@ public class CommonUtility {
 		public static final Integer DETAILED_API= 4;
 		public static final Integer GENERATING_TOKEN= 5;
 		public static final Integer TOKEN_AS_EXPIRED= 6;
+		public static final Integer SANCTION_AND_DISBURSEMENT= 7;
 	}
 	
 }
