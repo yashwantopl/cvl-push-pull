@@ -1176,44 +1176,40 @@ public enum APIFlags {
 		 }
 		return obj;
 	}
-	public static Object printFields(Object obj, Boolean isBankStmt) throws Exception {
+	public static Object printFields(Object obj) throws Exception {
+		if(isObjectNullOrEmpty(obj)){
+			return null;
+		}
+		System.out.println("Is Array==>" + obj.getClass().isArray());
+		System.out.println("Array Class Name==>" + obj.getClass().getName());
 		if(obj instanceof List) {
 			List<?> lst = (List)obj;
 			for(Object o : lst) {
-				escapeXml(o,isBankStmt);
+				printFields(o);
 			}
 		}else if(obj instanceof Map) {
 			Map<Object, Object> map = (Map)obj;
 			for(Map.Entry<Object, Object> setEntry : map.entrySet()) {
-				escapeXml(setEntry.getValue(),isBankStmt);
+				printFields(setEntry.getValue());
 			}
-		}else {
-			escapeXml(obj,isBankStmt);
+		}else if(obj.getClass().isArray()) {
+			Object [] arr= (Object[]) obj;
+			for(Object o : arr) {
+				printFields(o);
+			}
+		}
+		else {
+			escapeXml(obj);
 		}
 		 return obj;
 	}
-	public static Object escapeXml(Object obj, Boolean isBankStmt) throws Exception{
-		if(obj instanceof List) {
-			List<?> lst = (List)obj;
-			for(Object o : lst) {
-				escapeXml(o,isBankStmt);
-			}
-		}else if(obj instanceof Map) {
-			Map<Object, Object> map = (Map)obj;
-			for(Map.Entry<Object, Object> setEntry : map.entrySet()) {
-				escapeXml(setEntry.getValue(),isBankStmt);
-			}
-		}
+	public static Object escapeXml(Object obj) throws Exception{
 		Field[] fields = obj.getClass().getDeclaredFields();
 		for (Field field : fields) {
 			field.setAccessible(true);
 			Object value = field.get(obj);
 			if (value instanceof String) {
 				String value1 = (String) field.get(obj);
-				if(isBankStmt) {
-					String a = value1.replaceAll("&amp;", " ");
-					value = a;
-				}
 				String a = StringEscapeUtils.escapeXml(value1.toString());
 				value = a;
 				field.set(obj, value);
