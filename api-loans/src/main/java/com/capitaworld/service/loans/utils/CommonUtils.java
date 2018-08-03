@@ -1233,7 +1233,10 @@ public enum APIFlags {
 				String a = StringEscapeUtils.escapeXml(value1.toString());
 				object = a;
 				field.set(obj, object);
-			}else {
+			}else if (object instanceof Object) {
+				escapeXml(object);
+			}
+			else {
 				continue;
 			}
 		}
