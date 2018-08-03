@@ -637,7 +637,6 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				{
 					Data data = MultipleJSONObjectHelper.getObjectFromMap(rec, Data.class);
 					datas.add(data);
-					
 					map.put("bankStatementAnalysis", CommonUtils.printFields(datas));
 				}
 			}

@@ -13,9 +13,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import org.apache.commons.lang.StringEscapeUtils;
 
-import com.fasterxml.jackson.databind.util.ClassUtil;
+import org.apache.commons.lang.StringEscapeUtils;
 
 public class CommonUtils {
 
@@ -1225,9 +1224,6 @@ public enum APIFlags {
 					escapeXml(setEntry.getValue());
 				}
 			}else if(object.getClass().isArray()) {
-				if(object.getClass() == Integer.class) {
-					continue;
-				}
 				Object [] arr= (Object[]) object;
 				for(Object o : arr) {
 					escapeXml(o);
@@ -1238,7 +1234,9 @@ public enum APIFlags {
 				object = a;
 				field.set(obj, object);
 			}
+			
 			else {
+				System.out.println("+++++++++++++++++++++++==========Continue+++++++++++++++++++++++++");
 				continue;
 			}
 		}
