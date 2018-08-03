@@ -2572,6 +2572,13 @@ public class LoanApplicationController {
 				paymentRequest.setUserId(Long.valueOf(String.valueOf(map.get("AdditionalInfo2"))));
 				paymentRequest.setPurposeCode(map.get("productinfo").toString());
 				paymentRequest.setResponseParams(responseParams);
+				
+				if ("0399".toString().equals(map.get("statusCode"))) {
+					paymentRequest.setStatus("Failed");
+				}
+				else {
+					paymentRequest.setStatus("Success");
+				}
 			}
 
 			else {
@@ -2607,17 +2614,19 @@ public class LoanApplicationController {
 				paymentRequest.setUserId(Long.valueOf(String.valueOf(map.get("udf2"))));
 				paymentRequest.setPurposeCode(map.get("productinfo").toString());
 				paymentRequest.setResponseParams(responseParams);
+				
+				if ("success".equals(map.get("status").toString())) {
+					paymentRequest.setStatus("Success");
+				} else {
+					paymentRequest.setStatus("Failed");
+				}
 
 			}
 
 			logger.info("AppId==>" + paymentRequest.getApplicationId() + " UserId==>" + paymentRequest.getUserId()
 					+ " PuposeCode==>" + paymentRequest.getPurposeCode());
 
-			if ("success".equals(map.get("status").toString())) {
-				paymentRequest.setStatus("Success");
-			} else {
-				paymentRequest.setStatus("Failed");
-			}
+			
 			paymentRequest.setTrxnId(map.get("txnid").toString());
 
 			LoansResponse loansResponse = new LoansResponse("Success", HttpStatus.OK.value());
