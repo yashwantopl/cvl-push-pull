@@ -638,15 +638,29 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				{
 					Data data = MultipleJSONObjectHelper.getObjectFromMap(rec, Data.class);
 					datas.add(data);
+					List<Object> bankStatement = new ArrayList<Object>();
+					List<Object> monthlyDetails = new ArrayList<Object>();
+					List<Object> top5FundReceived = new ArrayList<Object>();
+					List<Object> top5FundTransfered = new ArrayList<Object>();
+					List<Object> bouncedChequeList = new ArrayList<Object>();
+					List<Object> customerInfo = new ArrayList<Object>();
+					List<Object> summaryInfo = new ArrayList<Object>();
 					for(int i =0; i<hashMap.size(); i++) {
-						map.put("bankStatement" + i, CommonUtils.printFields(data.getXns().getXn()));
-						map.put("monthlyDetails" + i, CommonUtils.printFields(data.getMonthlyDetailList().getMonthlyDetails()));
-						map.put("top5FundReceived" + i, CommonUtils.printFields(data.getTop5FundReceivedList().getItem()));
-						map.put("top5FundTransfered" +i , CommonUtils.printFields(data.getTop5FundTransferedList().getItem()));
-						map.put("bouncedChequeList" + i, CommonUtils.printFields(data.getBouncedOrPenalXnList().getBouncedOrPenalXns()));
-						map.put("customerInfo" + i, CommonUtils.printFields(data.getCustomerInfo()));
-						map.put("summaryInfo" + i, CommonUtils.printFields(data.getSummaryInfo()));
+						bankStatement.add(CommonUtils.printFields(data.getXns().getXn()));
+						monthlyDetails.add(CommonUtils.printFields(data.getTop5FundReceivedList().getItem()));
+						top5FundReceived.add(CommonUtils.printFields(data.getTop5FundReceivedList().getItem()));
+						top5FundTransfered.add( CommonUtils.printFields(data.getTop5FundTransferedList().getItem()));
+						bouncedChequeList.add( CommonUtils.printFields(data.getBouncedOrPenalXnList().getBouncedOrPenalXns()));
+						customerInfo.add( CommonUtils.printFields(data.getCustomerInfo()));
+						summaryInfo.add( CommonUtils.printFields(data.getSummaryInfo()));
 					}
+					map.put("bankStatement" , bankStatement);
+					map.put("monthlyDetails" , monthlyDetails);
+					map.put("top5FundReceived" , top5FundReceived);
+					map.put("top5FundTransfered" , top5FundTransfered);
+					map.put("bouncedChequeList" , bouncedChequeList);
+					map.put("customerInfo" , customerInfo);
+					map.put("summaryInfo" , summaryInfo);
 					map.put("bankStatementAnalysis", CommonUtils.printFields(datas));
 				}
 			}
