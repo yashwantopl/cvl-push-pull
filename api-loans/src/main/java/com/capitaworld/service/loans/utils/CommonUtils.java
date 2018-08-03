@@ -1204,6 +1204,25 @@ public enum APIFlags {
 		 return obj;
 	}
 	public static Object escapeXml(Object obj) throws Exception{
+		System.out.println("In escapexml is Array==>" + obj.getClass().isArray());
+		System.out.println("In escapexml Array Class Name==>" + obj.getClass().getName());
+		if(obj instanceof List) {
+			List<?> lst = (List)obj;
+			for(Object o : lst) {
+				escapeXml(o);
+			}
+		}else if(obj instanceof Map) {
+			Map<Object, Object> map = (Map)obj;
+			for(Map.Entry<Object, Object> setEntry : map.entrySet()) {
+				escapeXml(setEntry.getValue());
+			}
+		}else if(obj.getClass().isArray()) {
+			Object [] arr= (Object[]) obj;
+			for(Object o : arr) {
+				escapeXml(o);
+			}
+		}
+		
 		Field[] fields = obj.getClass().getDeclaredFields();
 		for (Field field : fields) {
 			field.setAccessible(true);
