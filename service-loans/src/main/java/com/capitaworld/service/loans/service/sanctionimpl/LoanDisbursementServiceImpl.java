@@ -132,7 +132,7 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 	@Override
 	public String bankRequestValidationAndSave(List<LoanDisbursementRequest> loanDisbursementRequestsList,
 			Long orgId) throws IOException {
-		String reason ="Loan DisbursementRequestsList is not available --- size()-->" + loanDisbursementRequestsList.size() ;
+		String reason ="Loan DisbursementRequestsList is not available --- size()--> 0"  ;
 		for(LoanDisbursementRequest  loanDisbursementRequest : loanDisbursementRequestsList) {		
 			if(CommonUtils.isObjectListNull(loanDisbursementRequest.getDisbursedAmount(),loanDisbursementRequest.getDisbursementDate(),loanDisbursementRequest.getMode(), loanDisbursementRequest.getReferenceNo(), loanDisbursementRequest.getActionBy(), loanDisbursementRequest.getAccountNo())){
 				return "Mandatory Fields Must Not be Null";
