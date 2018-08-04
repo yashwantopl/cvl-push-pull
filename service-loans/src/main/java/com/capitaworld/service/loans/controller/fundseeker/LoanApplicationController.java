@@ -2872,8 +2872,7 @@ public class LoanApplicationController {
 	}
 
 	@RequestMapping(value = "/saveLoanSanctionDisbursementDetailFromBank", method = RequestMethod.POST, consumes = MediaType.TEXT_PLAIN_VALUE)
-	public ResponseEntity<LoansResponse> saveLoanSanctionDisbursementDetailFromBank(@RequestBody String encryptedString,
-			HttpServletRequest httpServletRequest) {
+	public ResponseEntity<LoansResponse> saveLoanSanctionDisbursementDetailFromBank(@RequestBody String encryptedString) {
 		LoansResponse loansResponse = null;
 		String reason = null;
 		Long orgId = null;
@@ -2884,7 +2883,7 @@ public class LoanApplicationController {
 		try {
 			logger.info(
 					"=============================Entry saveLoanSanctionDisbursementDetailFromBank(){} ============================= ");
-			tokenString = httpServletRequest.getHeader("token");
+			
 			/*
 			 * if(CommonUtils.isObjectNullOrEmpty(tokenString)) { reason = "Token is null";
 			 * loansResponse = new LoansResponse(reason, HttpStatus.UNAUTHORIZED .value());
@@ -2899,12 +2898,13 @@ public class LoanApplicationController {
 			// logger.info("-----------------------------Entry
 			// saveLoanSanctionDisbursementDetailFromBank(){} --------------------");
 			if (encryptedString != null) {
-
+				
 				try {
 					decrypt = AESEncryptionUtility.decrypt(encryptedString);
+					
 					loanSanctionAndDisbursedRequest = MultipleJSONObjectHelper.getObjectFromString(decrypt,
 							LoanSanctionAndDisbursedRequest.class);
-
+					
 				} catch (Exception e) {
 					e.printStackTrace();
 					logger.info(
@@ -2925,7 +2925,6 @@ public class LoanApplicationController {
 				if (!CommonUtils.isObjectListNull(loanSanctionAndDisbursedRequest,
 						loanSanctionAndDisbursedRequest.getApplicationId(),
 						loanSanctionAndDisbursedRequest.getLoanSanctionRequest(),
-						loanSanctionAndDisbursedRequest.getLoanDisbursementRequestsList(),
 						loanSanctionAndDisbursedRequest.getLoanSanctionRequest().getAccountNo(),
 						loanSanctionAndDisbursedRequest.getLoanSanctionRequest().getApplicationId(),
 						loanSanctionAndDisbursedRequest.getLoanSanctionRequest().getBranch(),
@@ -3014,10 +3013,10 @@ public class LoanApplicationController {
 			logger.info("Saving Request to DB ===> ");
 			generateTokenRequest = new GenerateTokenRequest();
 			generateTokenRequest.setToken(tokenString);
-			tokenService.setTokenAsExpired(generateTokenRequest);
 			auditComponentBankToCW.saveBankToCWReqRes(decrypt != null ? decrypt : encryptedString,
 					loanSanctionAndDisbursedRequest != null ? loanSanctionAndDisbursedRequest.getApplicationId() : null,
 					CommonUtility.ApiType.SANCTION_AND_DISBURSEMENT, loansResponse, reason, orgId);
 		}
 	}
+
 }
