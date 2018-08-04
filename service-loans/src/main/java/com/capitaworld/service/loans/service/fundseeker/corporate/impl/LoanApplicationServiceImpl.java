@@ -5887,7 +5887,12 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 				if(!CommonUtils.isObjectNullOrEmpty(creditReport.getEmploymentSegment())) {
 					EmploymentInfoRequest empInfoReq = new EmploymentInfoRequest(); 
 					if(!CommonUtils.isObjectNullOrEmpty(creditReport.getEmploymentSegment().getAccountType())){
-					empInfoReq.setAccountType(AccountTypeEnum.fromId(String.valueOf(creditReport.getEmploymentSegment().getAccountType())).getValue());
+						try {
+							empInfoReq.setAccountType(AccountTypeEnum.fromId(String.valueOf(creditReport.getEmploymentSegment().getAccountType())).getValue());
+						}catch(Exception e) {
+							logger.error("Error while Getting Account type==>");
+							e.printStackTrace();
+						}
 					}
 					String date = String.valueOf(creditReport.getEmploymentSegment().getDateReportedCertified());
 					String dt = date.substring(0, 2);
@@ -5901,16 +5906,16 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 					}
 					
 					if(!CommonUtils.isObjectNullOrEmpty(creditReport.getEmploymentSegment().getIncome())){
-					empInfoReq.setIncome(Double.valueOf(creditReport.getEmploymentSegment().getIncome()));
+						empInfoReq.setIncome(Double.valueOf(creditReport.getEmploymentSegment().getIncome()));
 					}
 					if(!CommonUtils.isObjectNullOrEmpty(creditReport.getEmploymentSegment().getOccupationCode())){
-					empInfoReq.setOccupation(creditReport.getEmploymentSegment().getOccupationCode());
+						empInfoReq.setOccupation(creditReport.getEmploymentSegment().getOccupationCode());
 					}
 					if(!CommonUtils.isObjectNullOrEmpty(creditReport.getEmploymentSegment().getMonthlyAnnualIndicator())){
-					empInfoReq.setIncomeIndicator(creditReport.getEmploymentSegment().getMonthlyAnnualIndicator());
+						empInfoReq.setIncomeIndicator(creditReport.getEmploymentSegment().getMonthlyAnnualIndicator());
 					}
 					if(!CommonUtils.isObjectNullOrEmpty(creditReport.getEmploymentSegment().getLength())){
-					empInfoReq.setFrequency(creditReport.getEmploymentSegment().getLength());
+						empInfoReq.setFrequency(creditReport.getEmploymentSegment().getLength());
 					}
 					empInfoReq.setApplicationId(applicationId);
 					empInfoReq.setCreatedDate(new Date());
