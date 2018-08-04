@@ -6462,8 +6462,33 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 	        {
 	        if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getKeyVerticalSubsector()))
 	        {
-	        	OneFormResponse oneFormResponse=oneFormClient.getSubSecNameByMappingId(applicantDetail.getKeyVerticalSubsector());
-	        	response.setSubSector((String)oneFormResponse.getData());
+	        	Long irrId=getIrrByApplicationId(applicationId);
+	        	Integer businessTypeId=null;
+	        	IrrRequest irrIndustryRequest=new IrrRequest();
+	        	irrIndustryRequest.setIrrIndustryId(irrId);
+				irrIndustryRequest=ratingClient.getIrrIndustry(irrIndustryRequest);
+				IndustryResponse industryResponse=irrIndustryRequest.getIndustryResponse();
+				if(!CommonUtils.isObjectNullOrEmpty(industryResponse))
+				{
+					
+				
+						
+				businessTypeId=industryResponse.getBusinessTypeId();
+				}
+				String natureOfEntity = null;
+				
+				if(com.capitaworld.service.rating.utils.CommonUtils.BusinessType.MANUFACTURING == businessTypeId) {
+					natureOfEntity = "Manufacturer";
+				}
+				else if(com.capitaworld.service.rating.utils.CommonUtils.BusinessType.SERVICE == businessTypeId) {
+					natureOfEntity = "Service";
+				}
+				else if(com.capitaworld.service.rating.utils.CommonUtils.BusinessType.TRADING== businessTypeId) {
+					natureOfEntity = "Trader";
+				}
+				
+				
+	        	response.setSubSector(natureOfEntity);
 	        }
 	        }
 	        catch (Exception e) {
