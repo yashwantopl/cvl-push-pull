@@ -5864,7 +5864,7 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 				target.setMiddleName(source.getMiddleName());
 				target.setLastName(source.getLastName());
 
-				if(!CommonUtils.isObjectNullOrEmpty(creditReport.getAccount())) {
+				if(!CommonUtils.isObjectListNull(creditReport,creditReport.getAccount())) {
 				for(Account account : creditReport.getAccount()) {
 					CurrentFinancialArrangementsDetailRequest currFin = new CurrentFinancialArrangementsDetailRequest();
 					if(!CommonUtils.isObjectListNull(account.getAccountNonSummarySegmentFields(),account.getAccountNonSummarySegmentFields().getHighCreditOrSanctionedAmount())) {
