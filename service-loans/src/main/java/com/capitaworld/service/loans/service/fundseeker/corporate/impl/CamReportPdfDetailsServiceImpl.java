@@ -35,6 +35,7 @@ import com.capitaworld.connect.api.ConnectStage;
 import com.capitaworld.connect.client.ConnectClient;
 import com.capitaworld.service.analyzer.client.AnalyzerClient;
 import com.capitaworld.service.analyzer.model.common.AnalyzerResponse;
+import com.capitaworld.service.analyzer.model.common.CustomerInfo;
 import com.capitaworld.service.analyzer.model.common.Data;
 import com.capitaworld.service.analyzer.model.common.ReportRequest;
 import com.capitaworld.service.analyzer.model.common.Xn;
@@ -637,7 +638,29 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				{
 					Data data = MultipleJSONObjectHelper.getObjectFromMap(rec, Data.class);
 					datas.add(data);
-					
+					List<Object> bankStatement = new ArrayList<Object>();
+					List<Object> monthlyDetails = new ArrayList<Object>();
+					List<Object> top5FundReceived = new ArrayList<Object>();
+					List<Object> top5FundTransfered = new ArrayList<Object>();
+					List<Object> bouncedChequeList = new ArrayList<Object>();
+					List<Object> customerInfo = new ArrayList<Object>();
+					List<Object> summaryInfo = new ArrayList<Object>();
+					for(int i =0; i<hashMap.size(); i++) {
+						bankStatement.add(CommonUtils.printFields(data.getXns().getXn()));
+						monthlyDetails.add(CommonUtils.printFields(data.getMonthlyDetailList()));
+						top5FundReceived.add(CommonUtils.printFields(data.getTop5FundReceivedList().getItem()));
+						top5FundTransfered.add( CommonUtils.printFields(data.getTop5FundTransferedList().getItem()));
+						bouncedChequeList.add( CommonUtils.printFields(data.getBouncedOrPenalXnList().getBouncedOrPenalXns()));
+						customerInfo.add( CommonUtils.printFields(data.getCustomerInfo()));
+						summaryInfo.add( CommonUtils.printFields(data.getSummaryInfo()));
+					}
+					map.put("bankStatement" , bankStatement);
+					map.put("monthlyDetails" , monthlyDetails);
+					map.put("top5FundReceived" , top5FundReceived);
+					map.put("top5FundTransfered" , top5FundTransfered);
+					map.put("bouncedChequeList" , bouncedChequeList);
+					map.put("customerInfo" , customerInfo);
+					map.put("summaryInfo" , summaryInfo);
 					map.put("bankStatementAnalysis", CommonUtils.printFields(datas));
 				}
 			}
@@ -702,7 +725,8 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			eligibilityReq.setApplicationId(applicationId);
 			eligibilityReq.setFpProductMappingId(productId);
 			EligibilityResponse eligibilityResp= eligibilityClient.corporateLoanData(eligibilityReq);
-			if(!CommonUtils.isObjectNullOrEmpty(MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)eligibilityResp.getData(), CLEligibilityRequest.class))) {
+			
+			if(!CommonUtils.isObjectListNull(eligibilityResp,eligibilityResp.getData())){
 				map.put("assLimits",CommonUtils.convertToDoubleForXml(MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)eligibilityResp.getData(), CLEligibilityRequest.class), new HashMap<>()));
 			}
 		}catch (Exception e) {
@@ -723,8 +747,8 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		//HUNTER API ANALYSIS
 		try {
 			AnalyticsResponse hunterResp =fraudAnalyticsClient.getRuleAnalysisData(applicationId);
-			if(!CommonUtils.isObjectNullOrEmpty(hunterResp.getData())) {
-			map.put("hunterResponse",  CommonUtils.printFields(hunterResp.getData()));
+			if(!CommonUtils.isObjectListNull(hunterResp,hunterResp.getData())) {
+				map.put("hunterResponse",  CommonUtils.printFields(hunterResp.getData()));
 			}
 		} catch (Exception e1) {
 			e1.printStackTrace();
