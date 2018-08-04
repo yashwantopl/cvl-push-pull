@@ -15,7 +15,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.capitaworld.service.scoring.model.scoringmodel.ScoringModelReqRes;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -216,6 +215,7 @@ import com.capitaworld.service.scoring.exception.ScoringException;
 import com.capitaworld.service.scoring.model.ScoreParameterResult;
 import com.capitaworld.service.scoring.model.ScoringRequest;
 import com.capitaworld.service.scoring.model.ScoringResponse;
+import com.capitaworld.service.scoring.model.scoringmodel.ScoringModelReqRes;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.FpProfileBasicDetailRequest;
 import com.capitaworld.service.users.model.FundProviderDetailsRequest;
@@ -6344,8 +6344,33 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	        {
 	        if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getKeyVerticalSubsector()))
 	        {
-	        	OneFormResponse oneFormResponse=oneFormClient.getSubSecNameByMappingId(applicantDetail.getKeyVerticalSubsector());
-	        	response.setSubSector((String)oneFormResponse.getData());
+	        	Long irrId=getIrrByApplicationId(applicationId);
+	        	Integer businessTypeId=null;
+	        	IrrRequest irrIndustryRequest=new IrrRequest();
+	        	irrIndustryRequest.setIrrIndustryId(irrId);
+				irrIndustryRequest=ratingClient.getIrrIndustry(irrIndustryRequest);
+				IndustryResponse industryResponse=irrIndustryRequest.getIndustryResponse();
+				if(!CommonUtils.isObjectNullOrEmpty(industryResponse))
+				{
+					
+				
+						
+				businessTypeId=industryResponse.getBusinessTypeId();
+				}
+				String natureOfEntity = null;
+				
+				if(com.capitaworld.service.rating.utils.CommonUtils.BusinessType.MANUFACTURING == businessTypeId) {
+					natureOfEntity = "Manufacturer";
+				}
+				else if(com.capitaworld.service.rating.utils.CommonUtils.BusinessType.SERVICE == businessTypeId) {
+					natureOfEntity = "Service";
+				}
+				else if(com.capitaworld.service.rating.utils.CommonUtils.BusinessType.TRADING== businessTypeId) {
+					natureOfEntity = "Trader";
+				}
+				
+				
+	        	response.setSubSector(natureOfEntity);
 	        }
 	        }
 	        catch (Exception e) {
