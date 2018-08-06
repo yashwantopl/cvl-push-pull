@@ -534,12 +534,12 @@ public class DirectorBackgroundDetail extends AuditActivity implements Serializa
 		this.landmark = landmark;
 	}
 
-	public Boolean getMainDirector() {
+	public Boolean getIsMainDirector() {
 		return isMainDirector;
 	}
 
-	public void setMainDirector(Boolean mainDirector) {
-		isMainDirector = mainDirector;
+	public void setIsMainDirector(Boolean isMainDirector) {
+		this.isMainDirector = isMainDirector;
 	}
 
 	public Integer getQualificationId() {
