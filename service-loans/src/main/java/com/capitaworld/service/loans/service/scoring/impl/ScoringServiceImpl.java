@@ -1262,10 +1262,11 @@ public class ScoringServiceImpl implements ScoringService{
                             java.util.Calendar appCreatedDate = java.util.Calendar.getInstance();
                             appCreatedDate.setTime(primaryCorporateDetail.getCreatedDate());
 
-                            Integer yearsInBetween = appCreatedDate.get(java.util.Calendar.YEAR) - proposedDate.get(java.util.Calendar.YEAR);
+                            Integer yearsInBetween = proposedDate.get(java.util.Calendar.YEAR) - appCreatedDate.get(java.util.Calendar.YEAR);
                             Integer monthsDiff = 1;
-                            // monthsDiff = monthsDiff + today.get(Calendar.MONTH) - 12;
-                            monthsDiff = monthsDiff + appCreatedDate.get(java.util.Calendar.MONTH) - proposedDate.get(java.util.Calendar.MONTH);
+
+                            monthsDiff = monthsDiff + proposedDate.get(java.util.Calendar.MONTH) - appCreatedDate.get(java.util.Calendar.MONTH);
+
                             Integer months = yearsInBetween * 12 + monthsDiff;
 
                             scoreParameterNTBRequest.setBalanceGestationPeriod(months.doubleValue());
