@@ -742,9 +742,9 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 							if(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetail.getStateCode())) {
 								ITRConnectionResponse itrRes = itrClient.getOneFormStateIdFromITRStateId(Long.valueOf(directorBackgroundDetail.getStateCode()));
 								if(!CommonUtils.isObjectNullOrEmpty(itrRes) && !CommonUtils.isObjectNullOrEmpty(itrRes.getData())) {
-									String stateId = (String)itrRes.getData();
+									Integer stateId = (Integer)itrRes.getData();
 									nhbsApplicationsResponse.setState(CommonDocumentUtils
-											.getState(Long.valueOf(stateId), oneFormClient));
+											.getState(stateId.longValue(), oneFormClient));
 								}	
 							}
 						} catch (Exception e) {
