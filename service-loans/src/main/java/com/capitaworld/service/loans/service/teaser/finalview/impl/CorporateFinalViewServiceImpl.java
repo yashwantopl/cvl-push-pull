@@ -20,6 +20,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.capitaworld.api.eligibility.model.EligibililityRequest;
 import com.capitaworld.api.eligibility.model.EligibilityResponse;
 import com.capitaworld.client.eligibility.EligibilityClient;
+import com.capitaworld.itr.api.model.ITRConnectionResponse;
+import com.capitaworld.itr.client.ITRClient;
 import com.capitaworld.service.analyzer.client.AnalyzerClient;
 import com.capitaworld.service.analyzer.model.common.AnalyzerResponse;
 import com.capitaworld.service.analyzer.model.common.Data;
@@ -266,6 +268,9 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 
 	@Autowired
 	private WcTlLoanParameterRepository wctlrepo;
+	
+	@Autowired
+	private ITRClient itrClient;
 
 	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 	DecimalFormat decim = new DecimalFormat("#,###.00");
@@ -954,7 +959,21 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 		} catch (Exception e) {
 			logger.error("Problem to get Data of Credit Rating {}", e);
 		}
-
+		//itr xml isUpload or Online check
+		try {
+			ITRConnectionResponse itrConnectionResponse= itrClient.getIsUploadAndYearDetails(toApplicationId);
+			if(itrConnectionResponse!= null) {
+				corporateFinalViewResponse.setItrXmlIsUploaded(itrConnectionResponse.getData());
+			}else {
+				System.out.println("itr Response is null");
+				
+			}
+			
+		} catch (Exception e) {
+			System.out.println("error while itr xml is uploaded or not check.");
+			e.printStackTrace();
+		}
+				
 		// EXISTING PRODUCT DETAILS
 		try {
 			corporateFinalViewResponse.setExistingProductDetailRequestList(
@@ -1317,10 +1336,13 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
+
 		// Eligibility Data
 
 		int loanId = primaryCorporateDetail.getProductId();
+
 		switch (loanId) {
+
 		case 1:
 
 			WorkingCapitalParameter workingCapitalPara = workingCapitalRepository.getByID(fpProductMappingId);
@@ -1331,8 +1353,9 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 				System.out.println("assesment id is null in wc");
 			}
 			break;
+
 		case 2:
-			
+
 			TermLoanParameter termLoanParameter = termLoanParameterRepository.getById(fpProductMappingId);
 			if (termLoanParameter.getAssessmentMethodId() != null) {
 				Long assessmentId = termLoanParameter.getAssessmentMethodId().longValue();
@@ -1343,7 +1366,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 			break;
 
 		case 16:
-			
+
 			WcTlParameter wctlPara = wctlrepo.getById(fpProductMappingId);
 			if (wctlPara.getAssessmentMethodId() != null) {
 				Long assessmentId = wctlPara.getAssessmentMethodId().longValue();
@@ -1352,6 +1375,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 				System.out.println("assesment id is null in wctl");
 			}
 			break;
+
 		default:
 			System.out.println("invalid loan id");
 			break;
