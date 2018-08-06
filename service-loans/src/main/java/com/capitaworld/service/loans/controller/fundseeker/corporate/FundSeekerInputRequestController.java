@@ -49,14 +49,14 @@ public class FundSeekerInputRequestController {
 
         	if(result){
         		
-        		// initiate fraudanalytics service to invoke hunter api
+        	/*	// initiate fraudanalytics service to invoke hunter api
         		Boolean resp =fundSeekerInputRequestService.invokeFraudAnalytics(fundSeekerInputRequestResponse);
         		if(!resp) {
         			return new ResponseEntity<LoansResponse>(
                             new LoansResponse("You do not Qualify for Contactless Process, Kindly visit Bank Branch or get your Due Diligence process completed in www.capitaworld.com to connect to Banks", HttpStatus.UNAVAILABLE_FOR_LEGAL_REASONS.value()),
                             HttpStatus.OK);
         		}
-        		
+        		*/
         	    logger.info("FUNDSEEKER INPUT SAVED SUCCESSFULLY");
                 return new ResponseEntity<LoansResponse>(
                         new LoansResponse("Oneform Saved Successfully", HttpStatus.OK.value()),
