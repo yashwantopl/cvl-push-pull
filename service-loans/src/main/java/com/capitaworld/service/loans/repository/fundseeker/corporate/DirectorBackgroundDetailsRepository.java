@@ -29,7 +29,7 @@ public interface DirectorBackgroundDetailsRepository extends JpaRepository<Direc
 
 	public DirectorBackgroundDetail findByIdAndIsActive(Long id,Boolean isActive);
 	
-	@Query("from DirectorBackgroundDetail o where o.applicationId.id = :id and o.isMainDirector = true")
+	@Query("from DirectorBackgroundDetail o where o.applicationId.id = :appId and o.isMainDirector = true")
 	public DirectorBackgroundDetail getByAppIdAndIsMainDirector(@Param("appId") Long appId);
 	
 	@Modifying
