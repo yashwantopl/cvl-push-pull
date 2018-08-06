@@ -6014,7 +6014,7 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 						
 						
 						perInfo.setFullName(creditReport.getNameSegment().getConsumerName1());
-						perInfo.setGender(GenderTypeEnum.fromMappingId(creditReport.getNameSegment().getGender()).getValue());
+						perInfo.setGender(GenderTypeEnum.fromId(String.valueOf(creditReport.getNameSegment().getGender())).getValue());
 						if(!CommonUtils.isObjectNullOrEmpty(creditReport.getNameSegment().getDateOfBirth())){
 							String date = String.valueOf(creditReport.getNameSegment().getDateOfBirth());
 							String dt = date.substring(0, 2);
