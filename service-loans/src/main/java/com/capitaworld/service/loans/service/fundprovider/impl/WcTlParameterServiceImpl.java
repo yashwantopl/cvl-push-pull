@@ -129,7 +129,7 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 		if (!CommonUtils.isObjectListNull(wcTlParameterRequest.getMinTenure()))
 			wcTlParameterRequest.setMinTenure(wcTlParameterRequest.getMinTenure().multiply(new BigDecimal("12")));
 		
-		BeanUtils.copyProperties(wcTlParameterRequest, WcTlParameter);
+		BeanUtils.copyProperties(wcTlParameterRequest, WcTlParameter,"id");
 		WcTlParameter.setUserId(wcTlParameterRequest.getUserId()!=null?wcTlParameterRequest.getUserId():null);
 		WcTlParameter.setProductId(wcTlParameterRequest.getProductId()!=null?wcTlParameterRequest.getProductId():null);
 		WcTlParameter.setModifiedBy(wcTlParameterRequest.getUserId());

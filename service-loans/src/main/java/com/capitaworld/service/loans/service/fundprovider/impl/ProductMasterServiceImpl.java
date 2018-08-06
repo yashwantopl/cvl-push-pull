@@ -195,13 +195,10 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 					productMaster = new WorkingCapitalParameterTemp();
 					break;
 				case TERM_LOAN:
-					if(addProductRequest.getBusinessTypeId()==2)
-					{
+					if (addProductRequest.getBusinessTypeId() == 2) {
 						productMaster = new NtbTermLoanParameterTemp();
-					}
-					else
-					{
-					productMaster = new TermLoanParameterTemp();
+					} else {
+						productMaster = new TermLoanParameterTemp();
 					}
 					break;
 				case WCTL_LOAN:
@@ -229,7 +226,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 						? addProductRequest.getUserId() : addProductRequest.getClientId()));
 				productMaster.setIsParameterFilled(false);
 				productMaster.setModifiedDate(new Date());
-				//set business type id
+				// set business type id
 				productMaster.setBusinessTypeId(addProductRequest.getBusinessTypeId());
 				productMaster.setIsCopied(false);
 				productMaster.setIsActive(true);
@@ -547,7 +544,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				 * ())); } } }
 				 */
 				for (ProductMasterTemp productMaster : results) {
-					System.out.println("is copied is"+productMaster.getIsCopied());
+					System.out.println("is copied is" + productMaster.getIsCopied());
 					ProductMasterRequest productMasterRequest = new ProductMasterRequest();
 					BeanUtils.copyProperties(productMaster, productMasterRequest);
 					productMasterRequests.add(productMasterRequest);
@@ -652,7 +649,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 					TermLoanParameterRequest loanParameterRequest = new TermLoanParameterRequest();
 					BeanUtils.copyProperties(corporateProduct, loanParameterRequest);
 					CommonDocumentUtils.endHook(logger, "saveCorporate");
-					return termLoanParameterService.saveOrUpdate(loanParameterRequest,null);
+					return termLoanParameterService.saveOrUpdate(loanParameterRequest, null);
 				} else if (corporateProduct.getProductId() == CommonUtils.LoanType.UNSECURED_LOAN.getValue()) {
 					UnsecuredLoanParameterRequest unsecuredLoanParameterRequest = new UnsecuredLoanParameterRequest();
 					BeanUtils.copyProperties(corporateProduct, unsecuredLoanParameterRequest);
@@ -662,7 +659,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 					WcTlParameterRequest wcTlParameterRequest = new WcTlParameterRequest();
 					BeanUtils.copyProperties(corporateProduct, wcTlParameterRequest);
 					CommonDocumentUtils.endHook(logger, "saveCorporate");
-					return wcTlParameterService.saveOrUpdate(wcTlParameterRequest,null);
+					return wcTlParameterService.saveOrUpdate(wcTlParameterRequest, null);
 				}
 			}
 		}
@@ -817,20 +814,17 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 			if (master.getProductId() == 1) {
 				return workingCapitalParameterService.getWorkingCapitalParameterTemp(master.getId(), role, userId);
 			} else if (master.getProductId() == 2) {
-				if(master.getBusinessTypeId()!=null && master.getBusinessTypeId()==2)
-				{
+				if (master.getBusinessTypeId() != null && master.getBusinessTypeId() == 2) {
 					return termLoanParameterService.getNtbTermLoanParameterRequestTemp(id, role, userId);
-				}
-				else
-				{
-				return termLoanParameterService.getTermLoanParameterRequestTemp(master.getId(),role,userId);
+				} else {
+					return termLoanParameterService.getTermLoanParameterRequestTemp(master.getId(), role, userId);
 				}
 			} /*
 				 * else if (master.getProductId() == 15) { return
 				 * unsecuredLoanParameterService.
 				 * getUnsecuredLoanParameterRequest(master.getId()); }
 				 */ else if (master.getProductId() == 16) {
-				return wcTlParameterService.getWcTlRequestTemp(master.getId(),role,userId);
+				return wcTlParameterService.getWcTlRequestTemp(master.getId(), role, userId);
 			}
 		} else {
 			ProductMaster master = productMasterRepository.findOne(id);
@@ -848,14 +842,10 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 			else if (master.getProductId() == 1) {
 				return workingCapitalParameterService.getWorkingCapitalParameter(master.getId());
 			} else if (master.getProductId() == 2) {
-				
-				
-				if(master.getBusinessTypeId()!=null && master.getBusinessTypeId()==2)
-				{
+
+				if (master.getBusinessTypeId() != null && master.getBusinessTypeId() == 2) {
 					return termLoanParameterService.getNtbTermLoanParameterRequest(master.getId());
-				}
-				else
-				{
+				} else {
 					return termLoanParameterService.getTermLoanParameterRequest(master.getId());
 				}
 			} else if (master.getProductId() == 15) {
@@ -880,16 +870,12 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 					return workingCapitalParameterService.saveMasterFromTempWc(mappingId);
 				} else if (corporateProduct.getProductId() == CommonUtils.LoanType.TERM_LOAN.getValue()) {
 					CommonDocumentUtils.endHook(logger, "saveCorporate");
-					if(corporateProduct.getBusinessTypeId()!=null && corporateProduct.getBusinessTypeId()==2)
-					{
+					if (corporateProduct.getBusinessTypeId() != null && corporateProduct.getBusinessTypeId() == 2) {
 						return termLoanParameterService.saveMasterFromNtbTempTl(mappingId);
+					} else {
+						return termLoanParameterService.saveMasterFromTempTl(mappingId);
 					}
-					else
-					{
-						return termLoanParameterService.saveMasterFromTempTl(mappingId);	
-					}
-					
-					
+
 				} else if (corporateProduct.getProductId() == CommonUtils.LoanType.WCTL_LOAN.getValue()) {
 					CommonDocumentUtils.endHook(logger, "saveCorporate");
 					return wcTlParameterService.saveMasterFromTempWcTl(mappingId);
@@ -912,21 +898,18 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 					CommonDocumentUtils.endHook(logger, "saveCorporateInTemp");
 					return workingCapitalParameterService.saveOrUpdateTemp(capitalParameterRequest);
 				} else if (corporateProduct.getProductId() == CommonUtils.LoanType.TERM_LOAN.getValue()) {
-					if(corporateProduct.getBusinessTypeId()!=null&&corporateProduct.getBusinessTypeId()==2)
-					{
+					if (corporateProduct.getBusinessTypeId() != null && corporateProduct.getBusinessTypeId() == 2) {
 						TermLoanParameterRequest loanParameterRequest = new TermLoanParameterRequest();
 						BeanUtils.copyProperties(corporateProduct, loanParameterRequest);
 						CommonDocumentUtils.endHook(logger, "saveCorporateInTemp");
 						return termLoanParameterService.saveOrUpdateNtbTemp(loanParameterRequest);
-					}
-					else
-					{
+					} else {
 						TermLoanParameterRequest loanParameterRequest = new TermLoanParameterRequest();
 						BeanUtils.copyProperties(corporateProduct, loanParameterRequest);
 						CommonDocumentUtils.endHook(logger, "saveCorporateInTemp");
-						return termLoanParameterService.saveOrUpdateTemp(loanParameterRequest);	
+						return termLoanParameterService.saveOrUpdateTemp(loanParameterRequest);
 					}
-					
+
 				} else if (corporateProduct.getProductId() == CommonUtils.LoanType.WCTL_LOAN.getValue()) {
 					WcTlParameterRequest wcTlParameterRequest = new WcTlParameterRequest();
 					BeanUtils.copyProperties(corporateProduct, wcTlParameterRequest);
@@ -951,33 +934,35 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 			request.setJobId(workflowData.getJobId());
 			request.setUserId(workflowData.getUserId());
 
-			WorkflowResponse workflowResponse = workflowClient.updateJob(request);
-			if (workflowResponse.getStatus() == 200) {
-
-				if (workflowData.getActionId() == WorkflowUtils.Action.SEND_FOR_APPROVAL) {
-					int rowUpdated = productMasterTempRepository.updateStatusToInProgress(workflowData.getFpProductId(),
-							2);
-					if (rowUpdated > 0) {
-						return true;
-					} else {
-						logger.info("could not updated in productMaster temp", workflowData.getJobId());
-						return false;
-
-					}
-				} else if (workflowData.getActionId() == WorkflowUtils.Action.APPROVED) {
-					return saveCorporateMasterFromTemp(workflowData.getFpProductId());
-				} else if (workflowData.getActionId() == WorkflowUtils.Action.SEND_BACK) {
-					int rowUpdated = productMasterTempRepository.updateStatusToInProgress(workflowData.getFpProductId(),
-							3);
-					if (rowUpdated > 0) {
-						return true;
-					} else {
-						logger.info("could not updated in productMaster temp", workflowData.getJobId());
-						return false;
-
-					}
+			if (workflowData.getActionId() == WorkflowUtils.Action.SEND_FOR_APPROVAL) {
+				int rowUpdated = productMasterTempRepository.updateStatusToInProgress(workflowData.getFpProductId(), 2);
+				WorkflowResponse workflowResponse = workflowClient.updateJob(request);
+				if (rowUpdated > 0 && workflowResponse.getStatus() == 200) {
+					return true;
+				} else {
+					logger.info("could not updated in productMaster temp", workflowData.getJobId());
+					return false;
 
 				}
+			} else if (workflowData.getActionId() == WorkflowUtils.Action.APPROVED) {
+				Boolean result = saveCorporateMasterFromTemp(workflowData.getFpProductId());
+				if (result) {
+					WorkflowResponse workflowResponse = workflowClient.updateJob(request);
+					if (workflowResponse.getStatus() == 200) {
+						return true;
+					}
+				}
+			} else if (workflowData.getActionId() == WorkflowUtils.Action.SEND_BACK) {
+				int rowUpdated = productMasterTempRepository.updateStatusToInProgress(workflowData.getFpProductId(), 3);
+				WorkflowResponse workflowResponse = workflowClient.updateJob(request);
+				if (rowUpdated > 0 && workflowResponse.getStatus() == 200) {
+					return true;
+				} else {
+					logger.info("could not updated in productMaster temp", workflowData.getJobId());
+					return false;
+
+				}
+
 			}
 			return false;
 		} catch (Exception e) {
