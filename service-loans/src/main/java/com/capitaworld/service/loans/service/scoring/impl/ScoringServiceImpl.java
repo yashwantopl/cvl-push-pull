@@ -1254,21 +1254,21 @@ public class ScoringServiceImpl implements ScoringService{
                     {
                         try
                         {
-                            Date applicationDate=primaryCorporateDetail.getCreatedDate();
-                            Date commercialOperationDate=primaryCorporateDetail.getProposedOperationDate();
 
-                            // start find month different from two dates
+                            Integer years = 0;
+                            java.util.Calendar proposedDate = java.util.Calendar.getInstance();
+                            proposedDate.setTime(primaryCorporateDetail.getProposedOperationDate());
 
-                            Calendar today = Calendar.getInstance();
-                            today.setTime(applicationDate);
+                            java.util.Calendar appCreatedDate = java.util.Calendar.getInstance();
+                            appCreatedDate.setTime(primaryCorporateDetail.getCreatedDate());
 
-                            Calendar createdDate = Calendar.getInstance();
-                            createdDate.setTime(commercialOperationDate);
+                            Integer yearsInBetween = appCreatedDate.get(java.util.Calendar.YEAR) - proposedDate.get(java.util.Calendar.YEAR);
+                            Integer monthsDiff = 1;
+                            // monthsDiff = monthsDiff + today.get(Calendar.MONTH) - 12;
+                            monthsDiff = monthsDiff + appCreatedDate.get(java.util.Calendar.MONTH) - proposedDate.get(java.util.Calendar.MONTH);
+                            Integer months = yearsInBetween * 12 + monthsDiff;
 
-                            Long diff = today.getTime().getTime() - createdDate.getTime().getTime();
-                            Long monthDiff = (TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS))/30;
-
-                            scoreParameterNTBRequest.setBalanceGestationPeriod(monthDiff.doubleValue());
+                            scoreParameterNTBRequest.setBalanceGestationPeriod(months.doubleValue());
                             scoreParameterNTBRequest.setIsBalanceGestationPeriod(true);
                         }
                         catch (Exception e)
