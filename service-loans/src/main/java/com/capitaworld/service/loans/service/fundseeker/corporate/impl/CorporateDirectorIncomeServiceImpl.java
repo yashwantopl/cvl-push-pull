@@ -189,7 +189,7 @@ public class CorporateDirectorIncomeServiceImpl implements CorporateDirectorInco
 								map.put("qualificationId", !CommonUtils.isObjectNullOrEmpty(byIdEduNtb) ? byIdEduNtb.getValue() : "");	
 							}
 							
-							map.put("isMainDirector", corpObj.getMainDirector());
+							map.put("isMainDirector", corpObj.getIsMainDirector());
 						
 							// getting Employee Detail for each Director
 							if(!CommonUtils.isObjectNullOrEmpty(corpObj.getEmploymentDetail())) {

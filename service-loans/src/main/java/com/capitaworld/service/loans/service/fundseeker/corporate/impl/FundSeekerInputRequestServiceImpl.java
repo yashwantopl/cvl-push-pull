@@ -276,7 +276,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 
 			LoansResponse res = new LoansResponse("director detail successfully saved", HttpStatus.OK.value());
 			res.setFlag(true);
-			logger.error("director detail successfully saved");
+			logger.info("director detail successfully saved");
 			return new ResponseEntity<LoansResponse>(res, HttpStatus.OK);
 
 		} catch (Exception e) {
