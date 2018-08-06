@@ -971,7 +971,7 @@ public class CommonUtils {
 			return value;
 		}
 
-		public int getId() {
+		public Integer getId() {
 			return id;
 		}
 		
