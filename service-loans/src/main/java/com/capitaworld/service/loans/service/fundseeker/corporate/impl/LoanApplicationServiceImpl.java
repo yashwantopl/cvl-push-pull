@@ -5120,6 +5120,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					ScoringRequest scoringRequest = new ScoringRequest();
 		            scoringRequest.setApplicationId(applicationId);
 		            scoringRequest.setFpProductId(fpProductMappingId);
+		            if(CommonUtils.isObjectNullOrEmpty(applicationMaster.getBusinessTypeId())) {
+		            	scoringRequest.setFpProductId(new Long(CommonUtils.BusinessType.EXISTING_BUSINESS.getId()));	
+		            }else {
+		            	scoringRequest.setFpProductId(applicationMaster.getBusinessTypeId().longValue());
+		            }
 					try {
 						ScoringResponse scoringResponse = scoringClient.getScoreResult(scoringRequest);
 						logger.info("scoringResponse==>{}",scoringResponse);
