@@ -153,17 +153,18 @@ public class CorporateFinalViewResponse implements Serializable {
 	private Object dataObject;
 	private Object dataList;
 	private Object eligibilityDataObject;
-    private Object cgtmseData;
+	private Object cgtmseData;
 	private Long npOrgId;
 	private Object bankData;
-	 private Object managementRiskScore;
-	    private Object financialRiskScore;
-	    private Object buisnessRiskScore;
-	    private Object managementRiskScoreWeight;
-	    private Object financialRiskScoreWeight;
-	    private Object buisnessRiskScoreWeight;
-	    private Object scoreInterpretation;
-	    private Long assesmentId;
+	private Object managementRiskScore;
+	private Object financialRiskScore;
+	private Object buisnessRiskScore;
+	private Object managementRiskScoreWeight;
+	private Object financialRiskScoreWeight;
+	private Object buisnessRiskScoreWeight;
+	private Object scoreInterpretation;
+	private Long assesmentId;
+	private Object itrXmlIsUploaded;
 
 	public List<?> getMatchesList() {
 		return matchesList;
@@ -1355,7 +1356,8 @@ public class CorporateFinalViewResponse implements Serializable {
 	}
 
 	/**
-	 * @param eligibilityDataObject the eligibilityDataObject to set
+	 * @param eligibilityDataObject
+	 *            the eligibilityDataObject to set
 	 */
 	public void setEligibilityDataObject(Object eligibilityDataObject) {
 		this.eligibilityDataObject = eligibilityDataObject;
@@ -1369,7 +1371,8 @@ public class CorporateFinalViewResponse implements Serializable {
 	}
 
 	/**
-	 * @param cgtmseData the cgtmseData to set
+	 * @param cgtmseData
+	 *            the cgtmseData to set
 	 */
 	public void setCgtmseData(Object cgtmseData) {
 		this.cgtmseData = cgtmseData;
@@ -1383,7 +1386,8 @@ public class CorporateFinalViewResponse implements Serializable {
 	}
 
 	/**
-	 * @param bankData the bankData to set
+	 * @param bankData
+	 *            the bankData to set
 	 */
 	public void setBankData(Object bankData) {
 		this.bankData = bankData;
@@ -1397,7 +1401,8 @@ public class CorporateFinalViewResponse implements Serializable {
 	}
 
 	/**
-	 * @param managementRiskScore the managementRiskScore to set
+	 * @param managementRiskScore
+	 *            the managementRiskScore to set
 	 */
 	public void setManagementRiskScore(Object managementRiskScore) {
 		this.managementRiskScore = managementRiskScore;
@@ -1411,7 +1416,8 @@ public class CorporateFinalViewResponse implements Serializable {
 	}
 
 	/**
-	 * @param financialRiskScore the financialRiskScore to set
+	 * @param financialRiskScore
+	 *            the financialRiskScore to set
 	 */
 	public void setFinancialRiskScore(Object financialRiskScore) {
 		this.financialRiskScore = financialRiskScore;
@@ -1425,7 +1431,8 @@ public class CorporateFinalViewResponse implements Serializable {
 	}
 
 	/**
-	 * @param buisnessRiskScore the buisnessRiskScore to set
+	 * @param buisnessRiskScore
+	 *            the buisnessRiskScore to set
 	 */
 	public void setBuisnessRiskScore(Object buisnessRiskScore) {
 		this.buisnessRiskScore = buisnessRiskScore;
@@ -1439,7 +1446,8 @@ public class CorporateFinalViewResponse implements Serializable {
 	}
 
 	/**
-	 * @param managementRiskScoreWeight the managementRiskScoreWeight to set
+	 * @param managementRiskScoreWeight
+	 *            the managementRiskScoreWeight to set
 	 */
 	public void setManagementRiskScoreWeight(Object managementRiskScoreWeight) {
 		this.managementRiskScoreWeight = managementRiskScoreWeight;
@@ -1453,7 +1461,8 @@ public class CorporateFinalViewResponse implements Serializable {
 	}
 
 	/**
-	 * @param financialRiskScoreWeight the financialRiskScoreWeight to set
+	 * @param financialRiskScoreWeight
+	 *            the financialRiskScoreWeight to set
 	 */
 	public void setFinancialRiskScoreWeight(Object financialRiskScoreWeight) {
 		this.financialRiskScoreWeight = financialRiskScoreWeight;
@@ -1467,7 +1476,8 @@ public class CorporateFinalViewResponse implements Serializable {
 	}
 
 	/**
-	 * @param buisnessRiskScoreWeight the buisnessRiskScoreWeight to set
+	 * @param buisnessRiskScoreWeight
+	 *            the buisnessRiskScoreWeight to set
 	 */
 	public void setBuisnessRiskScoreWeight(Object buisnessRiskScoreWeight) {
 		this.buisnessRiskScoreWeight = buisnessRiskScoreWeight;
@@ -1481,7 +1491,8 @@ public class CorporateFinalViewResponse implements Serializable {
 	}
 
 	/**
-	 * @param scoreInterpretation the scoreInterpretation to set
+	 * @param scoreInterpretation
+	 *            the scoreInterpretation to set
 	 */
 	public void setScoreInterpretation(Object scoreInterpretation) {
 		this.scoreInterpretation = scoreInterpretation;
@@ -1495,11 +1506,25 @@ public class CorporateFinalViewResponse implements Serializable {
 	}
 
 	/**
-	 * @param assesmentId the assesmentId to set
+	 * @param assesmentId
+	 *            the assesmentId to set
 	 */
 	public void setAssesmentId(Long assesmentId) {
 		this.assesmentId = assesmentId;
 	}
-	
+
+	/**
+	 * @return the itrXmlIsUploaded
+	 */
+	public Object getItrXmlIsUploaded() {
+		return itrXmlIsUploaded;
+	}
+
+	/**
+	 * @param itrXmlIsUploaded the itrXmlIsUploaded to set
+	 */
+	public void setItrXmlIsUploaded(Object itrXmlIsUploaded) {
+		this.itrXmlIsUploaded = itrXmlIsUploaded;
+	}
 
 }

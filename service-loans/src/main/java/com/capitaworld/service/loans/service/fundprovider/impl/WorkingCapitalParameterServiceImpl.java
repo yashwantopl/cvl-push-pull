@@ -135,7 +135,7 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 		if (!CommonUtils.isObjectListNull(workingCapitalParameterRequest.getMinTenure()))
 			workingCapitalParameterRequest.setMinTenure(workingCapitalParameterRequest.getMinTenure() * 12);
 
-		BeanUtils.copyProperties(workingCapitalParameterRequest, workingCapitalParameter);
+		BeanUtils.copyProperties(workingCapitalParameterRequest, workingCapitalParameter,"id");
 		
 		workingCapitalParameter.setUserId(workingCapitalParameterRequest.getUserId()!=null?workingCapitalParameterRequest.getUserId():null);
 		workingCapitalParameter.setProductId(workingCapitalParameterRequest.getProductId()!=null?workingCapitalParameterRequest.getProductId():null);
