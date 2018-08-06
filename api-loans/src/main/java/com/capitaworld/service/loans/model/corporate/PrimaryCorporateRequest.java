@@ -35,6 +35,11 @@ public class PrimaryCorporateRequest extends LoanApplicationRequest implements S
     private Integer knowHow;
     private Integer competition;
 
+    /*
+     * Promoter Contribution Logic
+     * BY Ravina
+     * */
+    private Double totalAmtPercentage;
 
     public PrimaryCorporateRequest() {
     }
@@ -182,5 +187,13 @@ public class PrimaryCorporateRequest extends LoanApplicationRequest implements S
 
     public void setCompetition(Integer competition) {
         this.competition = competition;
+    }
+
+    public Double getTotalAmtPercentage() {
+        return totalAmtPercentage;
+    }
+
+    public void setTotalAmtPercentage(Double totalAmtPercentage) {
+        this.totalAmtPercentage = totalAmtPercentage;
     }
 }

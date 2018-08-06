@@ -262,7 +262,7 @@ public class NTBServiceImpl implements NTBService {
 
 
             DirectorBackgroundDetail directorBackgroundDetail = directorBackgroundDetailsRepository.findByIdAndIsActive(fundSeekerInputRequestResponse.getDirectorBackgroundDetailRequestsList().get(0).getId(), true);
-            directorBackgroundDetail.setMainDirector(true);
+            directorBackgroundDetail.setIsMainDirector(true);
             directorBackgroundDetail.setModifiedBy(userId);
             directorBackgroundDetail.setModifiedDate(new Date());
             directorBackgroundDetailsRepository.save(directorBackgroundDetail);
