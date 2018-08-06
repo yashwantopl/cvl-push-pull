@@ -80,7 +80,14 @@ public class FundSeekerInputRequestResponse {
     private Date proposedOperationDate;
     private Integer proposedConstitutionOfUnit;
     private Double promoterContribution;
-
+    /*
+     * SBI MSME Integration related fields
+     * By Ravina
+     * */
+    private Date commercialOperationDate;
+    private Integer factoryPremise;
+    private Integer knowHow;
+    private Integer competition;
   
     public Long getUserId() {
         return userId;
@@ -343,5 +350,37 @@ public class FundSeekerInputRequestResponse {
 
     public void setAssessmentId(Integer assessmentId) {
         this.assessmentId = assessmentId;
+    }
+
+    public Date getCommercialOperationDate() {
+        return commercialOperationDate;
+    }
+
+    public void setCommercialOperationDate(Date commercialOperationDate) {
+        this.commercialOperationDate = commercialOperationDate;
+    }
+
+    public Integer getFactoryPremise() {
+        return factoryPremise;
+    }
+
+    public void setFactoryPremise(Integer factoryPremise) {
+        this.factoryPremise = factoryPremise;
+    }
+
+    public Integer getKnowHow() {
+        return knowHow;
+    }
+
+    public void setKnowHow(Integer knowHow) {
+        this.knowHow = knowHow;
+    }
+
+    public Integer getCompetition() {
+        return competition;
+    }
+
+    public void setCompetition(Integer competition) {
+        this.competition = competition;
     }
 }
