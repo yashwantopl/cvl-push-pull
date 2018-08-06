@@ -1266,9 +1266,9 @@ public class ScoringServiceImpl implements ScoringService{
                             Integer monthsDiff = 1;
                             // monthsDiff = monthsDiff + today.get(Calendar.MONTH) - 12;
                             monthsDiff = monthsDiff + appCreatedDate.get(java.util.Calendar.MONTH) - proposedDate.get(java.util.Calendar.MONTH);
-                            Integer ageInMonths = yearsInBetween * 12 + monthsDiff;
+                            Integer months = yearsInBetween * 12 + monthsDiff;
 
-                            scoreParameterNTBRequest.setBalanceGestationPeriod(ageInMonths.doubleValue());
+                            scoreParameterNTBRequest.setBalanceGestationPeriod(months.doubleValue());
                             scoreParameterNTBRequest.setIsBalanceGestationPeriod(true);
                         }
                         catch (Exception e)
