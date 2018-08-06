@@ -6851,7 +6851,7 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 				}
 				directorDetail.setCountry(country);
 				directorDetail.setPincode(detail.getPincode().toString());
-				directorDetail.setIsMainDirector(detail.getMainDirector());
+				directorDetail.setIsMainDirector(detail.getIsMainDirector());
 				response.addDirectorDetail(directorDetail);
 			}
 		}
