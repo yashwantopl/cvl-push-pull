@@ -5290,6 +5290,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			auditComponent.updateAudit(AuditComponent.ELIGIBILITY, applicationId, userId, "Exception while saving EligibiliyDetsilRequest in savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "+applicationId+" Mgs " +e.getMessage() ,false);
 			auditComponent.updateAudit(AuditComponent.FINANCIAL, applicationId, userId, "Exception while Saving  Financial Details by sidbiIntegrationClient   in savePhese2DataToSidbi() ==> for ApplicationId  ====>{} "+applicationId+" Mgs " +e.getMessage() , false);
 			auditComponent.updateAudit(AuditComponent.CMA_DETAIL, applicationId, userId, "Exception while Saving  CMA Details by sidbiIntegrationClient   in savePhese2DataToSidbi() ==> for ApplicationId  ====>{} "+applicationId+" Mgs " +e.getMessage() , false);
+			auditComponent.updateAudit(AuditComponent.LOGIC, applicationId, userId, "Exception while Saving  LOGIC Details by sidbiIntegrationClient   in savePhese2DataToSidbi() ==> for ApplicationId  ====>{} "+applicationId+" Mgs " +e.getMessage() , false);
 			logger.info("Throw Exception While Saving Phase one For SIDBI");
 			e.printStackTrace();
 			setTokenAsExpired(generateTokenRequest);
@@ -7748,7 +7749,7 @@ public ClientLogicCalculationRequest getClientLogicCalculationDetail(Long applic
 				//Priority Sector
 				clientLogicCalculationRequest.setIsPrioritySector(true);
 				//Account Type
-				clientLogicCalculationRequest.setAccountType("personal");
+				clientLogicCalculationRequest.setDirAccType("personal");
 				//Type Of Guarantee
 				clientLogicCalculationRequest.setDirGuaranteeType("personal");
 						
@@ -7759,8 +7760,12 @@ public ClientLogicCalculationRequest getClientLogicCalculationDetail(Long applic
 				clientLogicCalculationRequest.setDirGenderCode(CibilUtils.GenderTypeEnum.fromMappingId(directorBackgroundDetail.getGender()).getValue());
 				
 				//Debit Summation And Credit Summation
-				clientLogicCalculationRequest.setTotalCredit(data.getSummaryInfo().getSummaryInfoTotalDetails().getTotalCredit());
-				clientLogicCalculationRequest.setTotalDebit(data.getSummaryInfo().getSummaryInfoTotalDetails().getDebits());
+				if(! CommonUtils.isObjectListNull(data , data.getSummaryInfo() , data.getSummaryInfo().getSummaryInfoTotalDetails().getTotalCredit())) {
+					clientLogicCalculationRequest.setCreditSummation(Double.valueOf(data.getSummaryInfo().getSummaryInfoTotalDetails().getTotalCredit()));
+					if( ! CommonUtils.isObjectNullOrEmpty(data.getSummaryInfo().getSummaryInfoTotalDetails().getTotalCredit())) {
+						clientLogicCalculationRequest.setDebitSummation(Double.valueOf( data.getSummaryInfo().getSummaryInfoTotalDetails().getDebits())) ;
+					}
+				}
 				
 				//individual report from cibil
 				/*CibilRequest cibilRequest = new CibilRequest();*/
@@ -7789,6 +7794,7 @@ public ClientLogicCalculationRequest getClientLogicCalculationDetail(Long applic
 					e.printStackTrace();
 				}*/
 				
+				//Key Promoters Name
 				clientLogicCalculationRequest.setMainContactPrsnName(directorBackgroundDetail.getDirectorsName());
 				
 				/*//Guarantees given to cover Liabilities of others (if any)
@@ -7858,22 +7864,22 @@ public ClientLogicCalculationRequest getClientLogicCalculationDetail(Long applic
 					}
 				}  
 								
-				// calculate directorLabour of 15 to 16 And 16 to 17  year
-				Double directorLabour15_16 = (directLabourPrevious3Year - directLabourPrevious2Year  )/ ( directLabourPrevious2Year* 100 ) ;
-				Double directorLabour16_17  = (directLabourPrevious1Year - directLabourPrevious2Year  )/ ( directLabourPrevious2Year* 100 ) ;
+				// calculate directorLabour of previous 3 to 2 And 2 to 1  year
+				Double directorLabour3To2 = (directLabourPrevious3Year - directLabourPrevious2Year  )/ ( directLabourPrevious2Year* 100 ) ;
+				Double directorLabour2To1  = (directLabourPrevious1Year - directLabourPrevious2Year  )/ ( directLabourPrevious2Year* 100 ) ;
 				
-				clientLogicCalculationRequest.setDirectorLabour15_16(directorLabour15_16);
-				clientLogicCalculationRequest.setDirectorLabour16_17(directorLabour16_17);
+				clientLogicCalculationRequest.setDirectorLabour3To2(directorLabour3To2);
+				clientLogicCalculationRequest.setDirectorLabour2To1(directorLabour2To1);
 				
-				// calculate sellingGenlAdmnExpenses15 16 17 each year and then calculate % of all 15_16 and 16_17
-				Double sellingGenlAdmnExpenses15 = sellingAndDistributionExpensesPrevious3Year + generalAdminExpPrevious3Year; 
-				Double sellingGenlAdmnExpenses16 = sellingAndDistributionExpensesPrevious2Year + generalAdminExpPrevious2Year;
-				Double sellingGenlAdmnExpenses17 = sellingAndDistributionExpensesPrevious1Year + generalAdminExpPrevious1Year;
-				Double sellingGenlAdmnExpenses15_16 = ( sellingGenlAdmnExpenses16 - sellingGenlAdmnExpenses15 ) / sellingGenlAdmnExpenses15 * 100 ;  
-				Double sellingGenlAdmnExpenses16_17 = ( sellingGenlAdmnExpenses17 - sellingGenlAdmnExpenses16 ) / sellingGenlAdmnExpenses16 * 100 ;
+				// calculate sellingGenlAdmnExpenses Previous3 2 1 each year and then calculate % of all 3 to 2 and 2 to 1
+				Double sellingGenlAdmnExpensesPrevious3Year = sellingAndDistributionExpensesPrevious3Year + generalAdminExpPrevious3Year; 
+				Double sellingGenlAdmnExpensesPrevious2Year = sellingAndDistributionExpensesPrevious2Year + generalAdminExpPrevious2Year;
+				Double sellingGenlAdmnExpensesPrevious1Year = sellingAndDistributionExpensesPrevious1Year + generalAdminExpPrevious1Year;
+				Double sellingGenlAdmnExpenses3To2 = ( sellingGenlAdmnExpensesPrevious2Year - sellingGenlAdmnExpensesPrevious3Year ) / sellingGenlAdmnExpensesPrevious3Year * 100 ;  
+				Double sellingGenlAdmnExpenses2To1 = ( sellingGenlAdmnExpensesPrevious1Year - sellingGenlAdmnExpensesPrevious2Year ) / sellingGenlAdmnExpensesPrevious2Year * 100 ;
 
-				clientLogicCalculationRequest.setSellingGenlAdmnExpenses15_16(sellingGenlAdmnExpenses15_16);
-				clientLogicCalculationRequest.setSellingGenlAdmnExpenses16_17(sellingGenlAdmnExpenses16_17);
+				clientLogicCalculationRequest.setSellingGenlAdmnExpenses3To2(sellingGenlAdmnExpenses3To2);
+				clientLogicCalculationRequest.setSellingGenlAdmnExpenses2To1(sellingGenlAdmnExpenses2To1);
 				
 				// calculate netProfit Loss of last three year and count no of years
 				if((netProfitLossPrevious1Year > netProfitLossPrevious2Year ) && ( netProfitLossPrevious2Year >  netProfitLossPrevious3Year )  ) {
