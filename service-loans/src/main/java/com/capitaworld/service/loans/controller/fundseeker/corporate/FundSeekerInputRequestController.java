@@ -5,7 +5,10 @@ import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.NTBRequest;
 import com.capitaworld.service.loans.model.corporate.FundSeekerInputRequestResponse;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FundSeekerInputRequestService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.utils.CommonUtils;
+import com.capitaworld.service.scoring.model.ScoringResponse;
+import com.capitaworld.service.scoring.model.scoringmodel.ScoringModelReqRes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +28,9 @@ public class FundSeekerInputRequestController {
 
     @Autowired
     private FundSeekerInputRequestService fundSeekerInputRequestService;
+
+    @Autowired
+    private LoanApplicationService loanApplicationService;
 
     @RequestMapping(value = "/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LoansResponse> save(@RequestBody FundSeekerInputRequestResponse fundSeekerInputRequestResponse,HttpServletRequest request)
@@ -49,14 +55,14 @@ public class FundSeekerInputRequestController {
 
         	if(result){
         		
-        		// initiate fraudanalytics service to invoke hunter api
+        	/*	// initiate fraudanalytics service to invoke hunter api
         		Boolean resp =fundSeekerInputRequestService.invokeFraudAnalytics(fundSeekerInputRequestResponse);
         		if(!resp) {
         			return new ResponseEntity<LoansResponse>(
                             new LoansResponse("You do not Qualify for Contactless Process, Kindly visit Bank Branch or get your Due Diligence process completed in www.capitaworld.com to connect to Banks", HttpStatus.UNAVAILABLE_FOR_LEGAL_REASONS.value()),
                             HttpStatus.OK);
         		}
-        		
+        		*/
         	    logger.info("FUNDSEEKER INPUT SAVED SUCCESSFULLY");
                 return new ResponseEntity<LoansResponse>(
                         new LoansResponse("Oneform Saved Successfully", HttpStatus.OK.value()),
@@ -221,6 +227,36 @@ public class FundSeekerInputRequestController {
 
         } catch (Exception e) {
             logger.error("Error while Calling Connect Client after Oneform Submit");
+            e.printStackTrace();
+            return new ResponseEntity<LoansResponse>(
+                    new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+                    HttpStatus.OK);
+        }
+    }
+
+    @RequestMapping(value = "/get_min_max_margin/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LoansResponse> getMinMaxMargin(@PathVariable("applicationId") Long applicationId,HttpServletRequest request)
+            throws Exception
+    {
+        try
+        {
+        	Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+        	if(userId == null) {
+        		   return new ResponseEntity<LoansResponse>(
+                           new LoansResponse("Unauthorized User! Please Re-login and try again.", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+        	}
+        	if(CommonUtils.isObjectNullOrEmpty(applicationId)) {
+        		logger.info("Application Id is NUll============>{}",applicationId);
+        		return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST,HttpStatus.BAD_REQUEST.value()),
+                        HttpStatus.OK);
+        	}
+        	logger.info("Application Id for Getting Margin============>{}",applicationId);
+            ScoringModelReqRes scoringResponse = loanApplicationService.getMinMaxMarginByApplicationId(applicationId);
+            logger.info("Response from Scoring==>{}",scoringResponse.toString());
+            return new ResponseEntity<LoansResponse>(new LoansResponse("Details successfully fetched",HttpStatus.OK.value(),scoringResponse), HttpStatus.OK);
+
+        } catch (Exception e) {
+            logger.error("Error while Fetching details for min-max Margin");
             e.printStackTrace();
             return new ResponseEntity<LoansResponse>(
                     new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),

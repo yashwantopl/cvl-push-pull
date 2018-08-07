@@ -13,9 +13,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import org.apache.commons.lang.StringEscapeUtils;
 
-import com.fasterxml.jackson.databind.util.ClassUtil;
+import org.apache.commons.lang.StringEscapeUtils;
 
 public class CommonUtils {
 
@@ -972,7 +971,7 @@ public class CommonUtils {
 			return value;
 		}
 
-		public int getId() {
+		public Integer getId() {
 			return id;
 		}
 		
@@ -1178,67 +1177,43 @@ public enum APIFlags {
 		return obj;
 	}
 	public static Object printFields(Object obj) throws Exception {
-		if(isObjectNullOrEmpty(obj)){
-			return null;
-		}
-		System.out.println("Is Array==>" + obj.getClass().isArray());
-		System.out.println("Array Class Name==>" + obj.getClass().getName());
 		if(obj instanceof List) {
 			List<?> lst = (List)obj;
-			for(Object o : lst) { 
-				printFields(o);
+			for(Object o : lst) {
+				escapeXml(o);
 			}
 		}else if(obj instanceof Map) {
 			Map<Object, Object> map = (Map)obj;
 			for(Map.Entry<Object, Object> setEntry : map.entrySet()) {
-				printFields(setEntry.getValue());
+				escapeXml(setEntry.getValue());
 			}
-		}else if(obj.getClass().isArray()) {
-			Object [] arr= (Object[]) obj;
-			for(Object o : arr) {
-				printFields(o);
-			}
-		}
-		else {
+		}else {
 			escapeXml(obj);
 		}
 		 return obj;
 	}
 	public static Object escapeXml(Object obj) throws Exception{
+		if(obj instanceof List) {
+			List<?> lst = (List)obj;
+			for(Object o : lst) {
+				escapeXml(o);
+			}
+		}else if(obj instanceof Map) {
+			Map<Object, Object> map = (Map)obj;
+			for(Map.Entry<Object, Object> setEntry : map.entrySet()) {
+				escapeXml(setEntry.getValue());
+			}
+		}
 		Field[] fields = obj.getClass().getDeclaredFields();
 		for (Field field : fields) {
 			field.setAccessible(true);
-			Object object = field.get(obj);
-			if(object == null) {
-				continue;
-			}
-			System.out.println("In escapexml is Array==>" + object.getClass().isArray());
-			System.out.println("In escapexml Array Class Name==>" + field.getName());
-			if(object instanceof List) {
-				List<?> lst = (List)object;
-				for(Object o : lst) {
-					escapeXml(o);
-				}
-			}else if(object instanceof Map) {
-				Map<Object, Object> map = (Map)object;
-				for(Map.Entry<Object, Object> setEntry : map.entrySet()) {
-					escapeXml(setEntry.getValue());
-				}
-			}else if(object.getClass().isArray()) {
-				if(object.getClass() == Integer.class) {
-					continue;
-				}
-				Object [] arr= (Object[]) object;
-				for(Object o : arr) {
-					escapeXml(o);
-				}
-			}else if (object instanceof String) {
-				String value1 = (String) object;
+			Object value = field.get(obj);
+			if (value instanceof String) {
+				String value1 = (String) field.get(obj);
 				String a = StringEscapeUtils.escapeXml(value1.toString());
-				object = a;
-				field.set(obj, object);
-			}
-			else {
+				value = a;
+				field.set(obj, value);
+			}else {
 				continue;
 			}
 		}

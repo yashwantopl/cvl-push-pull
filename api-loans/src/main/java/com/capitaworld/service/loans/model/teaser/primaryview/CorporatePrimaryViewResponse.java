@@ -78,6 +78,7 @@ public class CorporatePrimaryViewResponse {
     private Object scoreInterpretation;
     private Object bankData;
     private Long assesmentId;
+    private Object itrXmlIsUploaded;
 
 
     
@@ -674,7 +675,21 @@ public class CorporatePrimaryViewResponse {
 	public void setAssesmentId(Long assesmentId) {
 		this.assesmentId = assesmentId;
 	}
-	
+	/**
+	 * @return the itrXmlIsUploaded
+	 */
+	/**
+	 * @return the itrXmlIsUploaded
+	 */
+	public Object getItrXmlIsUploaded() {
+		return itrXmlIsUploaded;
+	}
+	/**
+	 * @param itrXmlIsUploaded the itrXmlIsUploaded to set
+	 */
+	public void setItrXmlIsUploaded(Object itrXmlIsUploaded) {
+		this.itrXmlIsUploaded = itrXmlIsUploaded;
+	}
 	
     
 }

@@ -80,6 +80,11 @@ public class FundSeekerInputRequestResponse {
     private Date proposedOperationDate;
     private Integer proposedConstitutionOfUnit;
     private Double promoterContribution;
+    /*
+     * Promoter Contribution Logic
+     * BY Ravina
+     * */
+    private Double totalAmtPercentage;
 
   
     public Long getUserId() {
@@ -343,5 +348,13 @@ public class FundSeekerInputRequestResponse {
 
     public void setAssessmentId(Integer assessmentId) {
         this.assessmentId = assessmentId;
+    }
+
+    public Double getTotalAmtPercentage() {
+        return totalAmtPercentage;
+    }
+
+    public void setTotalAmtPercentage(Double totalAmtPercentage) {
+        this.totalAmtPercentage = totalAmtPercentage;
     }
 }
