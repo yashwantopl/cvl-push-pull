@@ -50,6 +50,7 @@ import com.capitaworld.cibil.client.CIBILClient;
 import com.capitaworld.client.eligibility.EligibilityClient;
 import com.capitaworld.connect.api.ConnectResponse;
 import com.capitaworld.connect.client.ConnectClient;
+import com.capitaworld.itr.api.model.ITRBasicDetailsResponse;
 import com.capitaworld.itr.api.model.ITRConnectionResponse;
 import com.capitaworld.itr.client.ITRClient;
 import com.capitaworld.service.analyzer.client.AnalyzerClient;
@@ -66,6 +67,8 @@ import com.capitaworld.service.dms.model.StorageDetailsResponse;
 import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.gateway.client.GatewayClient;
 import com.capitaworld.service.gateway.model.GatewayRequest;
+import com.capitaworld.service.gst.GstResponse;
+import com.capitaworld.service.gst.client.GstClient;
 import com.capitaworld.service.loans.config.AuditComponent;
 import com.capitaworld.service.loans.config.MCAAsyncComponent;
 import com.capitaworld.service.loans.domain.common.AuditMaster;
@@ -172,6 +175,7 @@ import com.capitaworld.service.loans.service.irr.IrrService;
 import com.capitaworld.service.loans.service.networkpartner.NetworkPartnerService;
 import com.capitaworld.service.loans.service.sanction.LoanDisbursementService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
+import com.capitaworld.service.loans.utils.CommonUtility;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.CommonUtils.LoanType;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
@@ -260,6 +264,7 @@ import com.capitaworld.sidbi.integration.model.cma.OperatingStatementDetailsRequ
 import com.capitaworld.sidbi.integration.model.commercial.AddressAndContactDetailsRequest;
 import com.capitaworld.sidbi.integration.model.commercial.BorrowersDetailsRequest;
 import com.capitaworld.sidbi.integration.model.commercial.CommercialRequest;
+import com.capitaworld.sidbi.integration.model.commercial.CreditFacilityDetailsRequest;
 import com.capitaworld.sidbi.integration.model.ddr.DDRFormDetailsRequest;
 import com.capitaworld.sidbi.integration.model.eligibility.EligibilityDetailRequest;
 import com.capitaworld.sidbi.integration.model.financial.FinancialRequest;
@@ -270,6 +275,8 @@ import com.capitaworld.sidbi.integration.model.individual.PersonalInfoRequest;
 import com.capitaworld.sidbi.integration.model.irr.IRROutputManufacturingRequest;
 import com.capitaworld.sidbi.integration.model.irr.IRROutputServiceRequest;
 import com.capitaworld.sidbi.integration.model.irr.IRROutputTradingRequest;
+import com.capitaworld.sidbi.integration.model.logic.Amount;
+import com.capitaworld.sidbi.integration.model.logic.ClientLogicCalculationRequest;
 import com.capitaworld.sidbi.integration.model.matches.MatchesParameterRequest;
 import com.capitaworld.sidbi.integration.model.scoring.ScoreParameterDetailsRequest;
 
@@ -479,6 +486,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Autowired
 	OperatingStatementDetailsRepository operatingStatementDetailsRepository;
+	
+	@Autowired
+	private GstClient gstClient;
 	
  	@Override
 	public boolean saveOrUpdate(FrameRequest commonRequest, Long userId) throws Exception {
@@ -4986,6 +4996,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		applicationMaster = primaryCorporateRepository.findOneByApplicationIdId(applicationId);
 		try {
 			AuditMaster audit = auditComponent.getAudit(applicationId, true, AuditComponent.PRELIM_INFO);
+			ProfileReqRes prelimData =null;
 			if(audit == null) {
 				//Get and Create Loan Master
 				if(applicationMaster == null) {
@@ -4993,7 +5004,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					return false;
 				}
 				//Create Prelim Sheet Object	
-				ProfileReqRes prelimData = getPrelimData(applicationMaster,userId);
+				prelimData = getPrelimData(applicationMaster,userId);
 				if(prelimData == null) {
 					logger.info("ProfileReqRes ==> Prelim Sheet Object is Null in savePhese1DataToSidbi() ");
 					auditComponent.updateAudit(AuditComponent.PRELIM_INFO, applicationId, userId, "ProfileReqRes ==> Prelim Sheet Object is Null ProfileReqRes prelimData  ==> " + prelimData,  savePrelimInfo);
@@ -5060,9 +5071,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			
 			//Set Bank Statement Starts
 			audit = auditComponent.getAudit(applicationId, true, AuditComponent.BANK_STATEMENT);
+			com.capitaworld.sidbi.integration.model.bankstatement.Data data =null;
 			if(audit == null) {
 				try {
-					com.capitaworld.sidbi.integration.model.bankstatement.Data data = createBankStatementRequest(applicationId);
+					data = createBankStatementRequest(applicationId);
 					if(data == null) {
 						logger.info("Bank Statement data Request Not Found  in savePhese1DataToSidbi()   for ApplicationId ====>{}FpProductId====>{}",applicationId,fpProductMappingId);
 						auditComponent.updateAudit(AuditComponent.BANK_STATEMENT, applicationId, userId, "\"Bank Statement data Request Not Found for ApplicationId ====>{} "+applicationId + "FpProductId====>{}"+fpProductMappingId,  bankStatement);
@@ -5227,9 +5239,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			
 			//Saving CMA Detail Starts
 			audit = auditComponent.getAudit(applicationId, true, AuditComponent.CMA_DETAIL);
+			CMARequest cmaRequest  =null;
 			if(audit == null) {
 				//FinancialRequest financialDetails = cmaService.getFinancialDetailsForBankIntegration(applicationId);
-				CMARequest cmaRequest = getCMADetailOfAuditYears(applicationId); 
+				cmaRequest = getCMADetailOfAuditYears(applicationId); 
 				if(cmaRequest == null) {
 					logger.info("CMA Details Request Not Found  in savePhese1DataToSidbi()  for ApplicationId ====>{}FpProductId====>{}",applicationId,fpProductMappingId);
 					auditComponent.updateAudit(AuditComponent.CMA_DETAIL, applicationId, userId, "CMA Details data Request Not Found for ApplicationId ====>{} "+applicationId+"FpProductId====>{}"+fpProductMappingId, false);
@@ -5245,6 +5258,28 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				logger.info("CMA Details Already Saved so not Going to Save Again===>");
 			}
 			//Saving CMA Details Ends
+			
+			//Saving Logic Detail Starts
+			audit = auditComponent.getAudit(applicationId, true, AuditComponent.LOGIC);
+			if(audit == null) {
+				
+				//FinancialRequest financialDetails = cmaService.getFinancialDetailsForBankIntegration(applicationId);
+				ClientLogicCalculationRequest clientLogicCalculationRequest= getClientLogicCalculationDetail(applicationId, userId, prelimData.getCorporateProfileRequest() , data , cmaRequest); 
+				if(clientLogicCalculationRequest == null) {
+					logger.info("LOGIC Details Request Not Found  in savePhese1DataToSidbi()  for ApplicationId ====>{}FpProductId====>{}",applicationId,fpProductMappingId);
+					auditComponent.updateAudit(AuditComponent.LOGIC, applicationId, userId, "LOGIC Details data Request Not Found for ApplicationId ====>{} "+applicationId+"FpProductId====>{}"+fpProductMappingId, false);
+					setTokenAsExpired(generateTokenRequest);
+					return false;
+				}else {
+					logger.error("Start Saving LOGIC Details in savePhese1DataToSidbi() ");
+					//saveCmaDetails = sidbiIntegrationClient.saveCMADetailsOfAuditYears(cmaRequest, generateTokenRequest.getToken());
+					logger.info("Sucessfully save LOGIC Details in savePhese1DataToSidbi() for  ApplicationId ====>{}FpProductId====>{}Flag==>{}",applicationId,fpProductMappingId,saveCmaDetails);
+					auditComponent.updateAudit(AuditComponent.LOGIC, applicationId, userId, null, eligibilityParameters);
+				}
+			}else {
+				logger.info("CMA Details Already Saved so not Going to Save Again===>");
+			}
+			//Saving Logic Details Ends
 		
 		} catch (Exception e) {
 			logger.info("Exception while Saving Requests  in savePhese1DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",applicationId,fpProductMappingId +" Mgs " +e.getMessage());
@@ -7635,4 +7670,262 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 			return null;
 		}
 	}
+	
+public ClientLogicCalculationRequest getClientLogicCalculationDetail(Long applicationId, Long userId , CorporateProfileRequest corporateProfileRequest ,  com.capitaworld.sidbi.integration.model.bankstatement.Data data  , CMARequest cmaRequest ) {
+		
+		ClientLogicCalculationRequest clientLogicCalculationRequest = new ClientLogicCalculationRequest();
+		
+		// bank statement data
+		ReportRequest reportRequest = new ReportRequest();
+		reportRequest.setApplicationId(applicationId);
+		reportRequest.setUserId(userId);
+		try {
+			//Existing Customer in sbi
+			if("SBI".equals(data.getCustomerInfo().getBank()) && "current".equals(data.getSummaryInfo().getAccType())){
+				clientLogicCalculationRequest.setIsExistingCustomer(true);
+				clientLogicCalculationRequest.setCifAccountNumber(data.getSummaryInfo().getAccNo()); 
+				clientLogicCalculationRequest.setAccountType(data.getSummaryInfo().getAccType());
+				
+			}else {
+			
+			}
+				/*CurrentFinancialArrangementsDetailRequest a= null;
+				List<FinancialArrangementsDetail> financialArrangementsDetailsList = 	financialArrangementDetailsRepository.listSecurityCorporateDetailFromAppId(applicationId, userId);
+				for(FinancialArrangementsDetail financialArrangementsDetail : financialArrangementsDetailsList ) {
+					if("SBI".equalsIgnoreCase(financialArrangementsDetail.getFinancialInstitutionName())) {
+						clientLogicCalculationRequest.setCifAccountNumber(financialArrangementsDetail.getA);
+					}
+				}*/
+			
+			//get Cash Credit , TERM Loan , CL/BG 
+				CommercialRequest commercialRequest = new CommercialRequest();
+				Amount cashCredit =new  Amount();
+				Amount termLoan =new  Amount();
+				Amount lcBg =new  Amount();
+				for(CreditFacilityDetailsRequest creditFacilityDetailsRequest : commercialRequest.getCreditFacilityDetailsRequest()) {
+					if(CommonUtility.getCashCredit(CibilUtils.CreditTypeEnum.fromValue(creditFacilityDetailsRequest.getType()))) { 
+								
+						cashCredit.setTotalSanctionAmount (cashCredit.getTotalSanctionAmount() + creditFacilityDetailsRequest.getSanctionedINRAmount()); 
+						cashCredit.setTotalOutstandingAmount(cashCredit.getTotalOutstandingAmount() + creditFacilityDetailsRequest.getOutstandingBalanceAmount());
+					}else if(CommonUtility.getTermLoan(CibilUtils.CreditTypeEnum.fromValue(creditFacilityDetailsRequest.getType()))) {
+								
+						termLoan.setTotalSanctionAmount(termLoan.getTotalSanctionAmount() + +creditFacilityDetailsRequest.getSanctionedINRAmount());
+						termLoan.setTotalOutstandingAmount(termLoan.getTotalOutstandingAmount() +creditFacilityDetailsRequest.getOutstandingBalanceAmount());
+					}else if(CommonUtility.getLcBg(CibilUtils.CreditTypeEnum.fromValue(creditFacilityDetailsRequest.getType()))) {
+								
+						lcBg.setTotalSanctionAmount(lcBg.getTotalSanctionAmount() + creditFacilityDetailsRequest.getSanctionedINRAmount());
+						lcBg.setTotalOutstandingAmount(lcBg.getTotalOutstandingAmount() + creditFacilityDetailsRequest.getOutstandingBalanceAmount());
+					}		
+				}
+				clientLogicCalculationRequest.setCashCredit(cashCredit);
+				clientLogicCalculationRequest.setTermLoan(termLoan);
+				clientLogicCalculationRequest.setLcBg(lcBg);
+				
+				//Number Of Co-Borrowers/Partners/Directors
+				Integer noOfDirector = directorBackgroundDetailsRepository.getTotalNoOfDirector(applicationId);
+				clientLogicCalculationRequest.setNoOfDirectors(noOfDirector);
+				//CGTMSE Coverage
+				clientLogicCalculationRequest.setIsCgtmseEligible(true);
+				
+				/*clientLogicCalculationRequest.setRegisteredOfficeList(commercialRequest.getLocationDetailsRequest().getRegisteredOffice());
+				clientLogicCalculationRequest.setPlantOrFactoryAddressList(commercialRequest.getLocationDetailsRequest().getPlantOrFactoryAddress());
+				clientLogicCalculationRequest.setBranchOrRegionalOfficeList(commercialRequest.getLocationDetailsRequest().getBranchOrRegionalOffice());
+				clientLogicCalculationRequest.setOthersList(commercialRequest.getLocationDetailsRequest().getOthers());
+				clientLogicCalculationRequest.setWarehouseList(commercialRequest.getLocationDetailsRequest().getWarehouse());*/
+				
+				//E-mail
+				ITRConnectionResponse  itrConnectionResponse  =null; 
+				try {
+				itrConnectionResponse = 	itrClient.getITRBasicDetails(applicationId);
+					if(! CommonUtils.isObjectListNull(itrConnectionResponse, itrConnectionResponse.getData())) {
+						ITRBasicDetailsResponse itrBasicDetailsResponse =(ITRBasicDetailsResponse) itrConnectionResponse.getData();
+						clientLogicCalculationRequest.setEmailAddress(itrBasicDetailsResponse.getEmail());
+					}
+				}catch (Exception e) {
+					e.printStackTrace();
+					logger.info("--------------- ITR service not availabel or null in data --------------- itrResponce " + itrConnectionResponse);
+				}
+				//Priority Sector
+				clientLogicCalculationRequest.setIsPrioritySector(true);
+				//Account Type
+				clientLogicCalculationRequest.setAccountType("personal");
+				//Type Of Guarantee
+				clientLogicCalculationRequest.setDirGuaranteeType("personal");
+						
+				/*clientLogicCalculationRequest.setConstitution(constitution); */
+				DirectorBackgroundDetail directorBackgroundDetail = directorBackgroundDetailsRepository.getByAppIdAndIsMainDirector(applicationId);
+				
+				//Gender Code
+				clientLogicCalculationRequest.setDirGenderCode(CibilUtils.GenderTypeEnum.fromMappingId(directorBackgroundDetail.getGender()).getValue());
+				
+				//Debit Summation And Credit Summation
+				clientLogicCalculationRequest.setTotalCredit(data.getSummaryInfo().getSummaryInfoTotalDetails().getTotalCredit());
+				clientLogicCalculationRequest.setTotalDebit(data.getSummaryInfo().getSummaryInfoTotalDetails().getDebits());
+				
+				//individual report from cibil
+				/*CibilRequest cibilRequest = new CibilRequest();*/
+				/*cibilRequest.setApplicationId(applicationId);
+				cibilRequest.setPan(panNo);
+				CibilResponse cibilResponse = null;
+				CreditReport creditReport = null;
+				try {
+					 cibilResponse = cibilClient.getDirectorDetails(cibilRequest);
+					 
+					if(cibilResponse!=null && cibilResponse.getData()!=null) {
+						creditReport = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,  Object>)cibilResponse.getData(), CreditReport.class );
+					}
+					List<com.capitaworld.sidbi.integration.model.logic.Address> addressList = new ArrayList<com.capitaworld.sidbi.integration.model.logic.Address>(); 
+					if( ! CommonUtils.isObjectNullOrEmpty(creditReport)) {
+						com.capitaworld.sidbi.integration.model.logic.Address  addressTo = null;
+						for(Address addressFrom :creditReport.getAddress()){
+							addressTo =new  com.capitaworld.sidbi.integration.model.logic.Address();  
+							BeanUtils.copyProperties(addressFrom, addressTo);
+							
+						}
+						clientLogicCalculationRequest.setAddress(addressList);
+					}
+				} catch (Exception e) {
+
+					e.printStackTrace();
+				}*/
+				
+				clientLogicCalculationRequest.setMainContactPrsnName(directorBackgroundDetail.getDirectorsName());
+				
+				/*//Guarantees given to cover Liabilities of others (if any)
+				commercialRequest.getBorrowersDetailsRequest().getName();
+				
+				//clientLogicCalculationRequest.setAccountType(CibilUtils.AccountTypeEnum(creditReport.getEmploymentSegment().getAccountType()));
+				//clientLogicCalculationRequest.setAccountType(creditReport.);
+				*/
+				
+				//Caclulate % Change in Direct Labour
+				Double directLabourPrevious1Year =0.0;
+				Double directLabourPrevious2Year =0.0;
+				Double directLabourPrevious3Year =0.0;
+				
+				//Calculate % change in Selling, Genl. & Admn.Expenses
+				Double generalAdminExpPrevious3Year =0.0;
+				Double generalAdminExpPrevious2Year =0.0;
+				Double generalAdminExpPrevious1Year =0.0;
+				Double sellingAndDistributionExpensesPrevious3Year =0.0; 
+				Double sellingAndDistributionExpensesPrevious2Year =0.0; 
+				Double sellingAndDistributionExpensesPrevious1Year =0.0;
+				
+				//Calculate Continious Net Profit (PBT)
+				Double netProfitLossPrevious3Year =0.0;
+				Double netProfitLossPrevious2Year =0.0;
+				Double netProfitLossPrevious1Year =0.0;
+				
+				//Calculate Sales show arising trend
+				Double netSalePrevious3Year = 0.0;
+				Double netSalePrevious2Year = 0.0;
+				Double netSalePrevious1Year = 0.0;
+				Double netSaleCurrentYear = 0.0;
+				
+				//
+				Calendar calendar = Calendar.getInstance();
+				int currentYear = calendar.get(Calendar.YEAR);
+				int previous1Year = currentYear-1;
+				int previous2Year = currentYear-2;
+				int previous3Year = currentYear-3;
+				
+				int totalNetProfitLossYears =0;
+				int totalNetSaleYears =0;
+				for ( OperatingStatementDetailsRequest operatingStatementDetailsRequest : cmaRequest.getOperatingStatementRequestList()) {
+					
+					if((previous3Year+"").equals(operatingStatementDetailsRequest.getYear())){
+						directLabourPrevious3Year = operatingStatementDetailsRequest.getDirectLabour() !=null ?  operatingStatementDetailsRequest.getDirectLabour() :0.0;
+						sellingAndDistributionExpensesPrevious3Year = operatingStatementDetailsRequest.getSellingAndDistributionExpenses() !=null ? operatingStatementDetailsRequest.getSellingAndDistributionExpenses() : 0.0;
+						generalAdminExpPrevious3Year = operatingStatementDetailsRequest.getGeneralAdminExp() !=null ? operatingStatementDetailsRequest.getGeneralAdminExp()  : 0.0 ;
+						netProfitLossPrevious3Year = operatingStatementDetailsRequest.getNetProfitOrLoss() !=null ? operatingStatementDetailsRequest.getNetProfitOrLoss() : 0.0 ;
+						netSalePrevious3Year = operatingStatementDetailsRequest.getNetSales() !=null ? operatingStatementDetailsRequest.getNetSales() : 0.0 ;
+
+					}else if((previous2Year+"").equals(operatingStatementDetailsRequest.getYear())){
+						directLabourPrevious2Year =operatingStatementDetailsRequest.getDirectLabour() !=null ?  operatingStatementDetailsRequest.getDirectLabour() : 0.0;
+						sellingAndDistributionExpensesPrevious2Year  =operatingStatementDetailsRequest.getSellingAndDistributionExpenses() !=null ? operatingStatementDetailsRequest.getSellingAndDistributionExpenses() : 0.0;
+						generalAdminExpPrevious2Year = operatingStatementDetailsRequest.getGeneralAdminExp() !=null ? operatingStatementDetailsRequest.getGeneralAdminExp()  : 0.0 ;
+						netProfitLossPrevious2Year =operatingStatementDetailsRequest.getNetProfitOrLoss() !=null ? operatingStatementDetailsRequest.getNetProfitOrLoss() : 0.0 ; 
+						netSalePrevious2Year = operatingStatementDetailsRequest.getNetSales() !=null ? operatingStatementDetailsRequest.getNetSales() : 0.0 ;
+					
+					}else if((previous1Year+"").equals(operatingStatementDetailsRequest.getYear())){
+						directLabourPrevious1Year = operatingStatementDetailsRequest.getDirectLabour() !=null ?  operatingStatementDetailsRequest.getDirectLabour() : 0.0; 
+						sellingAndDistributionExpensesPrevious1Year  = operatingStatementDetailsRequest.getSellingAndDistributionExpenses() !=null ? operatingStatementDetailsRequest.getSellingAndDistributionExpenses() : 0.0;
+						generalAdminExpPrevious1Year = operatingStatementDetailsRequest.getGeneralAdminExp() !=null ? operatingStatementDetailsRequest.getGeneralAdminExp()  : 0.0 ;
+						netProfitLossPrevious1Year =  operatingStatementDetailsRequest.getNetProfitOrLoss() !=null ? operatingStatementDetailsRequest.getNetProfitOrLoss() : 0.0 ;
+						netSalePrevious1Year = operatingStatementDetailsRequest.getNetSales() !=null ? operatingStatementDetailsRequest.getNetSales() : 0.0 ;
+						//Quality of receivables
+						clientLogicCalculationRequest.setQualityOfReceivable( ( operatingStatementDetailsRequest.getDomesticSales() + operatingStatementDetailsRequest.getExportSales() ) / operatingStatementDetailsRequest.getTotalGrossSales() * 12);
+					}
+				}  
+								
+				// calculate directorLabour of 15 to 16 And 16 to 17  year
+				Double directorLabour15_16 = (directLabourPrevious3Year - directLabourPrevious2Year  )/ ( directLabourPrevious2Year* 100 ) ;
+				Double directorLabour16_17  = (directLabourPrevious1Year - directLabourPrevious2Year  )/ ( directLabourPrevious2Year* 100 ) ;
+				
+				clientLogicCalculationRequest.setDirectorLabour15_16(directorLabour15_16);
+				clientLogicCalculationRequest.setDirectorLabour16_17(directorLabour16_17);
+				
+				// calculate sellingGenlAdmnExpenses15 16 17 each year and then calculate % of all 15_16 and 16_17
+				Double sellingGenlAdmnExpenses15 = sellingAndDistributionExpensesPrevious3Year + generalAdminExpPrevious3Year; 
+				Double sellingGenlAdmnExpenses16 = sellingAndDistributionExpensesPrevious2Year + generalAdminExpPrevious2Year;
+				Double sellingGenlAdmnExpenses17 = sellingAndDistributionExpensesPrevious1Year + generalAdminExpPrevious1Year;
+				Double sellingGenlAdmnExpenses15_16 = ( sellingGenlAdmnExpenses16 - sellingGenlAdmnExpenses15 ) / sellingGenlAdmnExpenses15 * 100 ;  
+				Double sellingGenlAdmnExpenses16_17 = ( sellingGenlAdmnExpenses17 - sellingGenlAdmnExpenses16 ) / sellingGenlAdmnExpenses16 * 100 ;
+
+				clientLogicCalculationRequest.setSellingGenlAdmnExpenses15_16(sellingGenlAdmnExpenses15_16);
+				clientLogicCalculationRequest.setSellingGenlAdmnExpenses16_17(sellingGenlAdmnExpenses16_17);
+				
+				// calculate netProfit Loss of last three year and count no of years
+				if((netProfitLossPrevious1Year > netProfitLossPrevious2Year ) && ( netProfitLossPrevious2Year >  netProfitLossPrevious3Year )  ) {
+					totalNetProfitLossYears = 2;
+				}else if( ((netProfitLossPrevious1Year > netProfitLossPrevious2Year ) && (netProfitLossPrevious2Year  <= netProfitLossPrevious3Year ) )  || ((netProfitLossPrevious1Year <= netProfitLossPrevious2Year ) &&  (netProfitLossPrevious2Year  > netProfitLossPrevious3Year))) {
+					totalNetProfitLossYears = 1;
+				}
+					
+				clientLogicCalculationRequest.setTotalNetProfitLossYears(totalNetProfitLossYears);
+				
+				//gst client for calculation
+				/*gstClient.get
+				 * netSaleCurrentYear getting from gst 
+				 * 
+				 * */
+				GstResponse gstResponse  =null;
+				try {
+					gstResponse =	gstClient.getCalculationForScoring(corporateProfileRequest.getGstin());
+					if(! CommonUtils.isObjectListNull(gstResponse, gstResponse.getData())) {
+						netSaleCurrentYear = gstResponse.getData() != null ? (Double) gstResponse.getData() : 0.0;
+						if(netSaleCurrentYear - netSalePrevious1Year > 0) {
+							totalNetSaleYears = 1;
+						}
+					}
+				}catch (Exception e) {
+					e.printStackTrace();
+					logger.info("--------------- GST service not availabel or null in data --------------- gst Responce " + gstResponse);
+				}
+				
+				if( netSalePrevious1Year - netSalePrevious2Year   > 0) {
+					
+					totalNetSaleYears =2 ;
+					
+				}else if( ( netSalePrevious2Year - netSalePrevious3Year)  > 0 ) {
+				
+					totalNetSaleYears =3;
+					
+				}
+				 
+				clientLogicCalculationRequest.setTotalNetSaleYears(totalNetSaleYears);
+				
+				
+				//Quality of Finished Goods
+				
+			/*}*/
+			
+		}catch (Exception e) {
+			
+		}	
+		return clientLogicCalculationRequest;
+	}
+
+	
 }
+

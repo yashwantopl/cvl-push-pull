@@ -26,6 +26,7 @@ public class AuditComponent {
 	public static final int FINANCIAL = 9;
 	public static final int CMA_DETAIL = 10;
 	public static final int COMMERCIAL = 11;
+	public static final int LOGIC = 12;
 	
 	@Autowired
 	private AuditMasterRepository auditMasterRepository;
