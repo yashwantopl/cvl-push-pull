@@ -20,6 +20,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.capitaworld.api.eligibility.model.EligibililityRequest;
 import com.capitaworld.api.eligibility.model.EligibilityResponse;
 import com.capitaworld.client.eligibility.EligibilityClient;
+import com.capitaworld.itr.api.model.ITRConnectionResponse;
+import com.capitaworld.itr.client.ITRClient;
 import com.capitaworld.service.analyzer.client.AnalyzerClient;
 import com.capitaworld.service.analyzer.model.common.AnalyzerResponse;
 import com.capitaworld.service.analyzer.model.common.Data;
@@ -139,6 +141,9 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 	@Autowired
 	private WcTlLoanParameterRepository wctlrepo;
 
+	@Autowired
+	private ITRClient itrClient;
+	
 	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 	DecimalFormat decim = new DecimalFormat("#,###.00");
 
@@ -757,6 +762,22 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		//itr xml isUpload or Online check
+				try {
+					ITRConnectionResponse itrConnectionResponse= itrClient.getIsUploadAndYearDetails(toApplicationId);
+					if(itrConnectionResponse!= null) {
+						corporatePrimaryViewResponse.setItrXmlIsUploaded(itrConnectionResponse.getData());
+					}else {
+						System.out.println("itr Response is null");
+						
+					}
+					
+				} catch (Exception e) {
+					System.out.println("error while itr xml is uploaded or not check.");
+					e.printStackTrace();
+				}
+		
 
 		// bank statement data
 		ReportRequest reportRequest = new ReportRequest();

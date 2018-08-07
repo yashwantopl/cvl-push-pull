@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,6 +34,7 @@ import com.capitaworld.service.loans.domain.fundprovider.NegativeIndustry;
 import com.capitaworld.service.loans.domain.fundprovider.NegativeIndustryTemp;
 import com.capitaworld.service.loans.domain.fundprovider.WcTlParameter;
 import com.capitaworld.service.loans.domain.fundprovider.WcTlParameterTemp;
+import com.capitaworld.service.loans.domain.fundprovider.WorkingCapitalParameter;
 import com.capitaworld.service.loans.model.DataRequest;
 import com.capitaworld.service.loans.model.corporate.WcTlParameterRequest;
 import com.capitaworld.service.loans.repository.fundprovider.GeographicalCityRepository;
@@ -108,14 +110,23 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 		CommonDocumentUtils.startHook(logger, "saveOrUpdate");
 		// TODO Auto-generated method stub
 		
+		WcTlParameterTemp loanParameter =  wcTlParameterTempRepository.getWcTlParameterTempByFpProductId(mappingId);
+		
 		WcTlParameter WcTlParameter = null;
 
-		WcTlParameter = wcTlLoanParameterRepository.findOne(wcTlParameterRequest.getId());
+		if(loanParameter.getFpProductMappingId()!=null)
+		{
+			WcTlParameter = wcTlLoanParameterRepository.findOne(loanParameter.getFpProductMappingId());
+		}
 		if (WcTlParameter == null) {
 			WcTlParameter=new WcTlParameter();
+			
 		}
 		
-		WcTlParameterTemp loanParameter =  wcTlParameterTempRepository.getWcTlParameterTempByFpProductId(mappingId);
+		
+		
+		
+		
 		loanParameter.setStatusId(CommonUtils.Status.APPROVED);
         loanParameter.setIsDeleted(false);
         loanParameter.setIsEdit(false);
@@ -129,7 +140,7 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 		if (!CommonUtils.isObjectListNull(wcTlParameterRequest.getMinTenure()))
 			wcTlParameterRequest.setMinTenure(wcTlParameterRequest.getMinTenure().multiply(new BigDecimal("12")));
 		
-		BeanUtils.copyProperties(wcTlParameterRequest, WcTlParameter);
+		BeanUtils.copyProperties(wcTlParameterRequest, WcTlParameter,"id");
 		WcTlParameter.setUserId(wcTlParameterRequest.getUserId()!=null?wcTlParameterRequest.getUserId():null);
 		WcTlParameter.setProductId(wcTlParameterRequest.getProductId()!=null?wcTlParameterRequest.getProductId():null);
 		WcTlParameter.setModifiedBy(wcTlParameterRequest.getUserId());
@@ -349,6 +360,7 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 		CommonDocumentUtils.endHook(logger, "saveState");
 	}
 	
+	@Async
 	private void saveCity(WcTlParameterRequest wcTlParameterRequest) {
 		CommonDocumentUtils.startHook(logger, "saveCity");
 		GeographicalCityDetail geographicalCityDetail= null;
@@ -367,6 +379,7 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 		CommonDocumentUtils.endHook(logger, "saveCity");
 	}
 
+	@Async
 	private void saveNegativeIndustry(WcTlParameterRequest wcTlParameterRequest) {
 		// TODO Auto-generated method stub
 		CommonDocumentUtils.startHook(logger, "saveNegativeIndustry");
@@ -735,6 +748,7 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 		logger.info("end saveStateTemp");
 	}
 	
+	@Async
 	private void saveCityTemp(WcTlParameterRequest workingCapitalParameterRequest) {
 		logger.info("start saveCityTemp");
 		GeographicalCityDetailTemp geographicalCityDetail= null;

@@ -33,12 +33,12 @@ import com.capitaworld.client.workflow.WorkflowClient;
 import com.capitaworld.connect.api.ConnectResponse;
 import com.capitaworld.connect.api.ConnectStage;
 import com.capitaworld.connect.client.ConnectClient;
+import com.capitaworld.itr.api.model.ITRConnectionResponse;
+import com.capitaworld.itr.client.ITRClient;
 import com.capitaworld.service.analyzer.client.AnalyzerClient;
 import com.capitaworld.service.analyzer.model.common.AnalyzerResponse;
-import com.capitaworld.service.analyzer.model.common.CustomerInfo;
 import com.capitaworld.service.analyzer.model.common.Data;
 import com.capitaworld.service.analyzer.model.common.ReportRequest;
-import com.capitaworld.service.analyzer.model.common.Xn;
 import com.capitaworld.service.fitchengine.model.manufacturing.FitchOutputManu;
 import com.capitaworld.service.fitchengine.model.service.FitchOutputServ;
 import com.capitaworld.service.fitchengine.model.trading.FitchOutputTrad;
@@ -265,6 +265,9 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 	
 	@Autowired
 	private WcTlLoanParameterRepository wcTlLoanParameterRepository;
+	
+	@Autowired
+	private ITRClient itrClient;
 	
 	private static final Logger logger = LoggerFactory.getLogger(CamReportPdfDetailsServiceImpl.class);
 	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
@@ -752,6 +755,16 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			}
 		} catch (Exception e1) {
 			e1.printStackTrace();
+		}
+		
+		//ITR (CHECK IF UPLOADED USING XML OR ONLINE)
+		try {
+			ITRConnectionResponse itrConnectionResponse= itrClient.getIsUploadAndYearDetails(applicationId);
+			if(!CommonUtils.isObjectNullOrEmpty(itrConnectionResponse)) {
+				map.put("checkItr", itrConnectionResponse.getData());
+			}
+		}catch(Exception e) {
+			logger.info("Error while getting ITR data");
 		}
 /**********************************************FINAL DETAILS*****************************************************/
 		

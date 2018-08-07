@@ -15,6 +15,7 @@ public class FundSeekerInputRequestResponse {
     private Long clientId;
 
     private Long applicationId;
+    private Integer businessTypeId;
 
     private Long keyVericalFunding;
 
@@ -80,6 +81,11 @@ public class FundSeekerInputRequestResponse {
     private Date proposedOperationDate;
     private Integer proposedConstitutionOfUnit;
     private Double promoterContribution;
+    /*
+     * Promoter Contribution Logic
+     * BY Ravina
+     * */
+    private Double totalAmtPercentage;
 
   
     public Long getUserId() {
@@ -104,6 +110,14 @@ public class FundSeekerInputRequestResponse {
 
     public void setApplicationId(Long applicationId) {
         this.applicationId = applicationId;
+    }
+
+    public Integer getBusinessTypeId() {
+        return businessTypeId;
+    }
+
+    public void setBusinessTypeId(Integer businessTypeId) {
+        this.businessTypeId = businessTypeId;
     }
 
     public Long getKeyVericalFunding() {
@@ -343,5 +357,13 @@ public class FundSeekerInputRequestResponse {
 
     public void setAssessmentId(Integer assessmentId) {
         this.assessmentId = assessmentId;
+    }
+
+    public Double getTotalAmtPercentage() {
+        return totalAmtPercentage;
+    }
+
+    public void setTotalAmtPercentage(Double totalAmtPercentage) {
+        this.totalAmtPercentage = totalAmtPercentage;
     }
 }

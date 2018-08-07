@@ -29,6 +29,9 @@ public interface DirectorBackgroundDetailsRepository extends JpaRepository<Direc
 
 	public DirectorBackgroundDetail findByIdAndIsActive(Long id,Boolean isActive);
 	
+	@Query("from DirectorBackgroundDetail o where o.applicationId.id = :appId and o.isMainDirector = true")
+	public DirectorBackgroundDetail getByAppIdAndIsMainDirector(@Param("appId") Long appId);
+	
 	@Modifying
 	@Query("update DirectorBackgroundDetail pm set pm.isItrCompleted =:flag,pm.modifiedDate = NOW(),pm.modifiedBy =:userId where pm.id =:id and pm.isActive = true")
 	public int updateITRFlag(@Param("userId") Long userId,@Param("id") Long directorId,@Param("flag") boolean flag);
@@ -44,5 +47,8 @@ public interface DirectorBackgroundDetailsRepository extends JpaRepository<Direc
 	@Modifying
 	@Query("update DirectorBackgroundDetail pm set pm.isOneFormCompleted =:flag,pm.modifiedDate = NOW(),pm.modifiedBy =:userId where pm.id =:id and pm.isActive = true")
 	public int updateOneFormFlag(@Param("userId") Long userId,@Param("id") Long directorId,@Param("flag") boolean flag);
+	
+	@Query("select count(o) from DirectorBackgroundDetail o where o.applicationId.id = :applicationId and isActive = true")
+	public Integer getTotalNoOfDirector(@Param("applicationId") Long applicationId);
 
 }

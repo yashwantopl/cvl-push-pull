@@ -133,8 +133,9 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 
 			primaryCorporateDetail.setIsApplicantDetailsFilled(true);
 			primaryCorporateDetail.setIsApplicantPrimaryFilled(true);
-			primaryCorporateDetail
-					.setApplicationId(new LoanApplicationMaster(fundSeekerInputRequest.getApplicationId()));
+			primaryCorporateDetail.setApplicationId(new LoanApplicationMaster(fundSeekerInputRequest.getApplicationId()));
+			logger.info("Save in LoanAppMaster with BusinessType ==>"+fundSeekerInputRequest.getBusinessTypeId());
+			primaryCorporateDetail.setBusinessTypeId(fundSeekerInputRequest.getBusinessTypeId());
 			primaryCorporateDetail.setModifiedBy(fundSeekerInputRequest.getUserId());
 			primaryCorporateDetail.setModifiedDate(new Date());
 
@@ -280,7 +281,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 
 			LoansResponse res = new LoansResponse("director detail successfully saved", HttpStatus.OK.value());
 			res.setFlag(true);
-			logger.error("director detail successfully saved");
+			logger.info("director detail successfully saved");
 			return new ResponseEntity<LoansResponse>(res, HttpStatus.OK);
 
 		} catch (Exception e) {
