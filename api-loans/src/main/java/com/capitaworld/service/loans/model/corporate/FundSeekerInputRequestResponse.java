@@ -15,6 +15,7 @@ public class FundSeekerInputRequestResponse {
     private Long clientId;
 
     private Long applicationId;
+    private Integer businessTypeId;
 
     private Long keyVericalFunding;
 
@@ -109,6 +110,14 @@ public class FundSeekerInputRequestResponse {
 
     public void setApplicationId(Long applicationId) {
         this.applicationId = applicationId;
+    }
+
+    public Integer getBusinessTypeId() {
+        return businessTypeId;
+    }
+
+    public void setBusinessTypeId(Integer businessTypeId) {
+        this.businessTypeId = businessTypeId;
     }
 
     public Long getKeyVericalFunding() {
