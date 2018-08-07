@@ -422,7 +422,7 @@ public class CommonUtils {
 		for (Object object : args) {
 			boolean flag = false;
 			if (object instanceof List) {
-				flag = isListNullOrEmpty((List) object);
+				flag = isListNullOrEmpty((List<?>) object);
 				if (flag)
 					return true;
 				else
