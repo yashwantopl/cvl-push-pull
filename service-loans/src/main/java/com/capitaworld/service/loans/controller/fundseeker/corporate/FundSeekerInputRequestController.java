@@ -1,23 +1,26 @@
 package com.capitaworld.service.loans.controller.fundseeker.corporate;
 
-import com.capitaworld.connect.client.ConnectClient;
-import com.capitaworld.service.loans.model.LoansResponse;
-import com.capitaworld.service.loans.model.NTBRequest;
-import com.capitaworld.service.loans.model.corporate.FundSeekerInputRequestResponse;
-import com.capitaworld.service.loans.service.fundseeker.corporate.FundSeekerInputRequestService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
-import com.capitaworld.service.loans.utils.CommonUtils;
-import com.capitaworld.service.scoring.model.ScoringResponse;
-import com.capitaworld.service.scoring.model.scoringmodel.ScoringModelReqRes;
+import javax.servlet.http.HttpServletRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletRequest;
+import com.capitaworld.service.loans.model.LoansResponse;
+import com.capitaworld.service.loans.model.NTBRequest;
+import com.capitaworld.service.loans.model.corporate.FundSeekerInputRequestResponse;
+import com.capitaworld.service.loans.service.fundseeker.corporate.FundSeekerInputRequestService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
+import com.capitaworld.service.loans.utils.CommonUtils;
+import com.capitaworld.service.scoring.model.scoringmodel.ScoringModelReqRes;
 
 @RestController
 @RequestMapping("/fundseeker_input_request")
@@ -55,14 +58,14 @@ public class FundSeekerInputRequestController {
 
         	if(result){
         		
-        	/*	// initiate fraudanalytics service to invoke hunter api
+        		// initiate fraudanalytics service to invoke hunter api
         		Boolean resp =fundSeekerInputRequestService.invokeFraudAnalytics(fundSeekerInputRequestResponse);
         		if(!resp) {
         			return new ResponseEntity<LoansResponse>(
                             new LoansResponse("You do not Qualify for Contactless Process, Kindly visit Bank Branch or get your Due Diligence process completed in www.capitaworld.com to connect to Banks", HttpStatus.UNAVAILABLE_FOR_LEGAL_REASONS.value()),
                             HttpStatus.OK);
         		}
-        		*/
+        		
         	    logger.info("FUNDSEEKER INPUT SAVED SUCCESSFULLY");
                 return new ResponseEntity<LoansResponse>(
                         new LoansResponse("Oneform Saved Successfully", HttpStatus.OK.value()),
