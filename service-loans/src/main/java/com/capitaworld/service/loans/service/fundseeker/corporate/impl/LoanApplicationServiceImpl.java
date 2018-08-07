@@ -7855,6 +7855,12 @@ public ClientLogicCalculationRequest getClientLogicCalculationDetail(Long applic
 						netSalePrevious1Year = operatingStatementDetailsRequest.getNetSales() !=null ? operatingStatementDetailsRequest.getNetSales() : 0.0 ;
 						totalCostSales = operatingStatementDetailsRequest.getTotalCostSales();
 						//Quality of receivables
+						if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetailsRequest.getTotalGrossSales())){
+							operatingStatementDetailsRequest.setTotalGrossSales(0.0);
+						}
+						if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetailsRequest.getDomesticSales() )) {
+							operatingStatementDetailsRequest.setDomesticSales(0.0);
+						}
 						clientLogicCalculationRequest.setQualityOfReceivable( ( operatingStatementDetailsRequest.getDomesticSales() + operatingStatementDetailsRequest.getExportSales() ) / operatingStatementDetailsRequest.getTotalGrossSales() * 12);
 					}
 				}  
@@ -7863,6 +7869,7 @@ public ClientLogicCalculationRequest getClientLogicCalculationDetail(Long applic
 				Double directorLabour3To2 = (directLabourPrevious3Year - directLabourPrevious2Year  )/ ( directLabourPrevious2Year* 100 ) ;
 				Double directorLabour2To1  = (directLabourPrevious1Year - directLabourPrevious2Year  )/ ( directLabourPrevious2Year* 100 ) ;
 				
+				clientLogicCalculationRequest.setDirectorLabourPrevious4To3(0.0);
 				clientLogicCalculationRequest.setDirectorLabourPrevious3To2(directorLabour3To2);
 				clientLogicCalculationRequest.setDirectorLabourPrevious2To1(directorLabour2To1);
 				
@@ -7873,6 +7880,7 @@ public ClientLogicCalculationRequest getClientLogicCalculationDetail(Long applic
 				Double sellingGenlAdmnExpenses3To2 = ( sellingGenlAdmnExpensesPrevious2Year - sellingGenlAdmnExpensesPrevious3Year ) / sellingGenlAdmnExpensesPrevious3Year * 100 ;  
 				Double sellingGenlAdmnExpenses2To1 = ( sellingGenlAdmnExpensesPrevious1Year - sellingGenlAdmnExpensesPrevious2Year ) / sellingGenlAdmnExpensesPrevious2Year * 100 ;
 
+				clientLogicCalculationRequest.setSellingGenlAdmnExpensesPrevious4To3(0.0);
 				clientLogicCalculationRequest.setSellingGenlAdmnExpensesPrevious3To2(sellingGenlAdmnExpenses3To2);
 				clientLogicCalculationRequest.setSellingGenlAdmnExpensesPrevious2To1(sellingGenlAdmnExpenses2To1);
 				
