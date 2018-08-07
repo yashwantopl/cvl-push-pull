@@ -130,7 +130,8 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			primaryCorporateDetail.setIsApplicantDetailsFilled(true);
 			primaryCorporateDetail.setIsApplicantPrimaryFilled(true);
 			primaryCorporateDetail.setApplicationId(new LoanApplicationMaster(fundSeekerInputRequest.getApplicationId()));
-			primaryCorporateDetail.setBusinessTypeId(CommonUtils.BusinessType.EXISTING_BUSINESS.getId());
+			logger.info("Save in LoanAppMaster with BusinessType ==>"+fundSeekerInputRequest.getBusinessTypeId());
+			primaryCorporateDetail.setBusinessTypeId(fundSeekerInputRequest.getBusinessTypeId());
 			primaryCorporateDetail.setModifiedBy(fundSeekerInputRequest.getUserId());
 			primaryCorporateDetail.setModifiedDate(new Date());
 
