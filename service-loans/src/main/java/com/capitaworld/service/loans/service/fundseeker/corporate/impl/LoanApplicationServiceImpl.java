@@ -7752,9 +7752,13 @@ public ClientLogicCalculationRequest getClientLogicCalculationDetail(Long applic
 				clientLogicCalculationRequest.setDirGenderCode(CibilUtils.GenderTypeEnum.fromMappingId(directorBackgroundDetail.getGender()).getValue());
 				
 				//Debit Summation And Credit Summation
-				if(! CommonUtils.isObjectListNull(data , data.getSummaryInfo() , data.getSummaryInfo().getSummaryInfoTotalDetails().getTotalCredit())) {
-					clientLogicCalculationRequest.setCreditSummation(Double.valueOf(data.getSummaryInfo().getSummaryInfoTotalDetails().getTotalCredit()));
+				if(! CommonUtils.isObjectListNull(data , data.getSummaryInfo() , data.getSummaryInfo().getSummaryInfoTotalDetails())) {
 					if( ! CommonUtils.isObjectNullOrEmpty(data.getSummaryInfo().getSummaryInfoTotalDetails().getTotalCredit())) {
+						
+					clientLogicCalculationRequest.setCreditSummation(Double.valueOf(data.getSummaryInfo().getSummaryInfoTotalDetails().getTotalCredit()));
+					}
+					if( ! CommonUtils.isObjectNullOrEmpty(data.getSummaryInfo().getSummaryInfoTotalDetails().getTotalDebit())) {
+						
 						clientLogicCalculationRequest.setDebitSummation(Double.valueOf( data.getSummaryInfo().getSummaryInfoTotalDetails().getDebits())) ;
 					}
 				}
@@ -7900,7 +7904,7 @@ public ClientLogicCalculationRequest getClientLogicCalculationDetail(Long applic
 				 * */
 				GstResponse gstResponse =	gstClient.getCalculationForScoring(corporateProfileRequest.getGstin());
 				if(! CommonUtils.isObjectListNull(gstResponse, gstResponse.getData())) {
-					netSaleCurrentYear = gstResponse.getData() != null ? (Double) gstResponse.getData() : 0.0;
+					netSaleCurrentYear =  (Double) gstResponse.getData() ;
 					if(netSaleCurrentYear - netSalePrevious1Year > 0) {
 						totalNetSaleYears = 1;
 					}
