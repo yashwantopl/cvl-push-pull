@@ -7829,6 +7829,8 @@ public ClientLogicCalculationRequest getClientLogicCalculationDetail(Long applic
 				
 				int totalNetProfitLossYears =0;
 				int totalNetSaleYears =0;
+				Double totalCostSales =0.0 ;
+				
 				for ( OperatingStatementDetailsRequest operatingStatementDetailsRequest : cmaRequest.getOperatingStatementRequestList()) {
 					
 					if((previous3Year+"").equals(operatingStatementDetailsRequest.getYear())){
@@ -7851,6 +7853,7 @@ public ClientLogicCalculationRequest getClientLogicCalculationDetail(Long applic
 						generalAdminExpPrevious1Year = operatingStatementDetailsRequest.getGeneralAdminExp() !=null ? operatingStatementDetailsRequest.getGeneralAdminExp()  : 0.0 ;
 						netProfitLossPrevious1Year =  operatingStatementDetailsRequest.getNetProfitOrLoss() !=null ? operatingStatementDetailsRequest.getNetProfitOrLoss() : 0.0 ;
 						netSalePrevious1Year = operatingStatementDetailsRequest.getNetSales() !=null ? operatingStatementDetailsRequest.getNetSales() : 0.0 ;
+						totalCostSales = operatingStatementDetailsRequest.getTotalCostSales();
 						//Quality of receivables
 						clientLogicCalculationRequest.setQualityOfReceivable( ( operatingStatementDetailsRequest.getDomesticSales() + operatingStatementDetailsRequest.getExportSales() ) / operatingStatementDetailsRequest.getTotalGrossSales() * 12);
 					}
@@ -7905,7 +7908,8 @@ public ClientLogicCalculationRequest getClientLogicCalculationDetail(Long applic
 				 
 				clientLogicCalculationRequest.setTotalNetSaleYears(totalNetSaleYears);
 				//Quality of Finished Goods
-				
+				AssetsDetailsRequest assetsDetailsRequest = cmaRequest.getAssetsRequestList().stream().filter(finishedGood -> (previous1Year+"").equals(finishedGood.getYear())).findFirst().orElse(null);
+				clientLogicCalculationRequest.setQualityOfFinishedGood((assetsDetailsRequest.getFinishedGoods()/totalCostSales) * 12) ;
 			/*}*/
 			
 		}catch (Exception e) {
