@@ -159,7 +159,6 @@ import com.capitaworld.service.loans.repository.fundseeker.retail.GuarantorDetai
 import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryHomeLoanDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryLapLoanDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
-import com.capitaworld.service.loans.repository.sanction.LoanDisbursementRepository;
 import com.capitaworld.service.loans.repository.sanction.LoanSanctionRepository;
 import com.capitaworld.service.loans.service.ProposalService;
 import com.capitaworld.service.loans.service.common.ApplicationSequenceService;
@@ -474,9 +473,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Autowired
 	private LoanSanctionRepository loanSanctionRepository;
-
-	@Autowired
-	private LoanDisbursementRepository loanDisbursementRepository;
 
 	@Autowired
 	private LoanDisbursementService loanDisbursementService;
@@ -7735,17 +7731,13 @@ public ClientLogicCalculationRequest getClientLogicCalculationDetail(Long applic
 				clientLogicCalculationRequest.setWarehouseList(commercialRequest.getLocationDetailsRequest().getWarehouse());*/
 				
 				//E-mail
-				ITRConnectionResponse  itrConnectionResponse  =null; 
-				try {
-				itrConnectionResponse = 	itrClient.getITRBasicDetails(applicationId);
-					if(! CommonUtils.isObjectListNull(itrConnectionResponse, itrConnectionResponse.getData())) {
-						ITRBasicDetailsResponse itrBasicDetailsResponse =(ITRBasicDetailsResponse) itrConnectionResponse.getData();
-						clientLogicCalculationRequest.setEmailAddress(itrBasicDetailsResponse.getEmail());
-					}
-				}catch (Exception e) {
-					e.printStackTrace();
+				ITRConnectionResponse itrConnectionResponse = itrClient.getITRBasicDetails(applicationId);
+				if(! CommonUtils.isObjectListNull(itrConnectionResponse, itrConnectionResponse.getData())) {
+					ITRBasicDetailsResponse itrBasicDetailsResponse =(ITRBasicDetailsResponse) itrConnectionResponse.getData();
+					clientLogicCalculationRequest.setEmailAddress(itrBasicDetailsResponse.getEmail());
+				}else { 
 					logger.info("--------------- ITR service not availabel or null in data --------------- itrResponce " + itrConnectionResponse);
-				}
+				}	
 				//Priority Sector
 				clientLogicCalculationRequest.setIsPrioritySector(true);
 				//Account Type
@@ -7868,8 +7860,8 @@ public ClientLogicCalculationRequest getClientLogicCalculationDetail(Long applic
 				Double directorLabour3To2 = (directLabourPrevious3Year - directLabourPrevious2Year  )/ ( directLabourPrevious2Year* 100 ) ;
 				Double directorLabour2To1  = (directLabourPrevious1Year - directLabourPrevious2Year  )/ ( directLabourPrevious2Year* 100 ) ;
 				
-				clientLogicCalculationRequest.setDirectorLabour3To2(directorLabour3To2);
-				clientLogicCalculationRequest.setDirectorLabour2To1(directorLabour2To1);
+				clientLogicCalculationRequest.setDirectorLabourPrevious3To2(directorLabour3To2);
+				clientLogicCalculationRequest.setDirectorLabourPrevious2To1(directorLabour2To1);
 				
 				// calculate sellingGenlAdmnExpenses Previous3 2 1 each year and then calculate % of all 3 to 2 and 2 to 1
 				Double sellingGenlAdmnExpensesPrevious3Year = sellingAndDistributionExpensesPrevious3Year + generalAdminExpPrevious3Year; 
@@ -7878,8 +7870,8 @@ public ClientLogicCalculationRequest getClientLogicCalculationDetail(Long applic
 				Double sellingGenlAdmnExpenses3To2 = ( sellingGenlAdmnExpensesPrevious2Year - sellingGenlAdmnExpensesPrevious3Year ) / sellingGenlAdmnExpensesPrevious3Year * 100 ;  
 				Double sellingGenlAdmnExpenses2To1 = ( sellingGenlAdmnExpensesPrevious1Year - sellingGenlAdmnExpensesPrevious2Year ) / sellingGenlAdmnExpensesPrevious2Year * 100 ;
 
-				clientLogicCalculationRequest.setSellingGenlAdmnExpenses3To2(sellingGenlAdmnExpenses3To2);
-				clientLogicCalculationRequest.setSellingGenlAdmnExpenses2To1(sellingGenlAdmnExpenses2To1);
+				clientLogicCalculationRequest.setSellingGenlAdmnExpensesPrevious3To2(sellingGenlAdmnExpenses3To2);
+				clientLogicCalculationRequest.setSellingGenlAdmnExpensesPrevious2To1(sellingGenlAdmnExpenses2To1);
 				
 				// calculate netProfit Loss of last three year and count no of years
 				if((netProfitLossPrevious1Year > netProfitLossPrevious2Year ) && ( netProfitLossPrevious2Year >  netProfitLossPrevious3Year )  ) {
@@ -7895,33 +7887,23 @@ public ClientLogicCalculationRequest getClientLogicCalculationDetail(Long applic
 				 * netSaleCurrentYear getting from gst 
 				 * 
 				 * */
-				GstResponse gstResponse  =null;
-				try {
-					gstResponse =	gstClient.getCalculationForScoring(corporateProfileRequest.getGstin());
-					if(! CommonUtils.isObjectListNull(gstResponse, gstResponse.getData())) {
-						netSaleCurrentYear = gstResponse.getData() != null ? (Double) gstResponse.getData() : 0.0;
-						if(netSaleCurrentYear - netSalePrevious1Year > 0) {
-							totalNetSaleYears = 1;
-						}
+				GstResponse gstResponse =	gstClient.getCalculationForScoring(corporateProfileRequest.getGstin());
+				if(! CommonUtils.isObjectListNull(gstResponse, gstResponse.getData())) {
+					netSaleCurrentYear = gstResponse.getData() != null ? (Double) gstResponse.getData() : 0.0;
+					if(netSaleCurrentYear - netSalePrevious1Year > 0) {
+						totalNetSaleYears = 1;
 					}
-				}catch (Exception e) {
-					e.printStackTrace();
+				}else {
 					logger.info("--------------- GST service not availabel or null in data --------------- gst Responce " + gstResponse);
 				}
 				
 				if( netSalePrevious1Year - netSalePrevious2Year   > 0) {
-					
 					totalNetSaleYears =2 ;
-					
 				}else if( ( netSalePrevious2Year - netSalePrevious3Year)  > 0 ) {
-				
 					totalNetSaleYears =3;
-					
 				}
 				 
 				clientLogicCalculationRequest.setTotalNetSaleYears(totalNetSaleYears);
-				
-				
 				//Quality of Finished Goods
 				
 			/*}*/
