@@ -231,8 +231,10 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				productMaster.setModifiedDate(new Date());
 				//set business type id
 				productMaster.setBusinessTypeId(addProductRequest.getBusinessTypeId());
+				productMaster.setIsCopied(false);
 				productMaster.setIsActive(true);
 				productMaster.setUserOrgId(userOrgId);
+				productMaster.setStatusId(1);
 				productMaster.setProductCode(
 						fundProviderSequenceService.getFundProviderSequenceNumber(addProductRequest.getProductId()));
 				productMasterTempRepository.save(productMaster);
@@ -545,6 +547,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				 * ())); } } }
 				 */
 				for (ProductMasterTemp productMaster : results) {
+					System.out.println("is copied is"+productMaster.getIsCopied());
 					ProductMasterRequest productMasterRequest = new ProductMasterRequest();
 					BeanUtils.copyProperties(productMaster, productMasterRequest);
 					productMasterRequests.add(productMasterRequest);
@@ -870,7 +873,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 					CommonDocumentUtils.endHook(logger, "saveCorporate");
 					if(corporateProduct.getBusinessTypeId()!=null && corporateProduct.getBusinessTypeId()==2)
 					{
-						return termLoanParameterService.saveMasterFromTempTl(mappingId);
+						return termLoanParameterService.saveMasterFromNtbTempTl(mappingId);
 					}
 					else
 					{

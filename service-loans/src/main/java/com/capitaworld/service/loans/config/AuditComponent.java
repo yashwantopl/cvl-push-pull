@@ -24,6 +24,8 @@ public class AuditComponent {
 	public static final int MATCHES_PARAMETER = 7;
 	public static final int ELIGIBILITY = 8;
 	public static final int FINANCIAL = 9;
+	public static final int CMA_DETAIL = 10;
+	public static final int COMMERCIAL = 11;
 	
 	@Autowired
 	private AuditMasterRepository auditMasterRepository;

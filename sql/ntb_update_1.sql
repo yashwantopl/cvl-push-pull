@@ -1,16 +1,17 @@
+DROP TABLE IF EXISTS `fs_corporate_employment_details`;
 CREATE TABLE `fs_corporate_employment_details` (
-  `id` bigint(20) unsigned NOT NULL,
-  `type_of_employment` bigint(20) DEFAULT NULL,
-  `employment_with` bigint(20) DEFAULT NULL,
-  `employment_status` bigint(20) DEFAULT NULL,
-  `total_experience` bigint(20) DEFAULT NULL,
-  `created_date` datetime NOT NULL,
-  `modified_date` datetime DEFAULT NULL,
-  `created_by` bigint(20) DEFAULT NULL,
-  `modified_by` bigint(20) DEFAULT NULL,
-  `is_active` bit(1) DEFAULT NULL,
+  `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `type_of_employment` BIGINT(20) DEFAULT NULL,
+  `employment_with` BIGINT(20) DEFAULT NULL,
+  `employment_status` BIGINT(20) DEFAULT NULL,
+  `total_experience` BIGINT(20) DEFAULT NULL,
+  `created_date` DATETIME NOT NULL,
+  `modified_date` DATETIME DEFAULT NULL,
+  `created_by` BIGINT(20) DEFAULT NULL,
+  `modified_by` BIGINT(20) DEFAULT NULL,
+  `is_active` BIT(1) DEFAULT NULL,
   PRIMARY KEY (`id`)
-);
+) ENGINE=INNODB DEFAULT CHARSET=latin1;
 
 
 ALTER TABLE `loan_application`.`fs_corporate_director_background_details`
@@ -61,20 +62,7 @@ ADD COLUMN `city_id` BIGINT(20) NULL ;
 
 
 
-DROP TABLE IF EXISTS `fs_corporate_employment_details`;
-CREATE TABLE `fs_corporate_employment_details` (
-  `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `type_of_employment` BIGINT(20) DEFAULT NULL,
-  `employment_with` BIGINT(20) DEFAULT NULL,
-  `employment_status` BIGINT(20) DEFAULT NULL,
-  `total_experience` BIGINT(20) DEFAULT NULL,
-  `created_date` DATETIME NOT NULL,
-  `modified_date` DATETIME DEFAULT NULL,
-  `created_by` BIGINT(20) DEFAULT NULL,
-  `modified_by` BIGINT(20) DEFAULT NULL,
-  `is_active` BIT(1) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=INNODB DEFAULT CHARSET=latin1;
+
 
 
 ALTER TABLE `loan_application`.`fs_corporate_primary_details`
