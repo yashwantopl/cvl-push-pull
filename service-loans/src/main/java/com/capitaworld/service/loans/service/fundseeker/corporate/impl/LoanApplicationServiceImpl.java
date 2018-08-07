@@ -4974,8 +4974,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				return false;
 			}
 		}catch(Exception e) {
-			generateTokenRequest = new GenerateTokenRequest();
-			generateTokenRequest.setToken("fsdaskfjbsdfbsdbfsdfvdsvfvsdhvfvdsh");
 			logger.error("Something goes wrong while setUrlAndTokenInSidbiClient savePhese1DataToSidbi() ");
 //			e.printStackTrace();
 			logger.error("Exception while getting token from SidbiIntegrationClient -------------- applicationId " +applicationId );
