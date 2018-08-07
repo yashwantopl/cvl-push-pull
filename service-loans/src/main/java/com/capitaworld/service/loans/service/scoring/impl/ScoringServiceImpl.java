@@ -175,6 +175,7 @@ public class ScoringServiceImpl implements ScoringService{
 
 
         GstResponse gstResponse=null;
+        GstResponse gstResponseScoring=null;
         GstCalculation gstCalculation=new GstCalculation();
 
         try
@@ -195,6 +196,20 @@ public class ScoringServiceImpl implements ScoringService{
             logger.error("error while getting GST parameter");
             e.printStackTrace();
         }
+
+
+        // get GST Data for Sales Show A Rising Trend
+
+        try
+        {
+            gstResponseScoring=gstClient.getCalculationForScoring(gstNumber);
+        }
+        catch (Exception e)
+        {
+            logger.error("error while getting GST parameter for GST Sales Show A Rising Trend");
+            e.printStackTrace();
+        }
+
         // end Get GST Parameter
 
         int currentYear = Calendar.getInstance().get(Calendar.YEAR);
@@ -1077,6 +1092,74 @@ public class ScoringServiceImpl implements ScoringService{
                         }
                         break;
                     }
+                    case ScoreParameter.CONTINUOUS_NET_PROFIT:
+                    {
+
+                        try {
+
+                            Double netProfitOrLossFY = operatingStatementDetailsFY.getNetProfitOrLoss();
+                            Double netProfitOrLossSY = operatingStatementDetailsSY.getNetProfitOrLoss();
+                            Double netProfitOrLossTY = operatingStatementDetailsTY.getNetProfitOrLoss();
+
+                            scoringParameterRequest.setNetProfitOrLossFY(netProfitOrLossFY);
+                            scoringParameterRequest.setNetProfitOrLossSY(netProfitOrLossSY);
+                            scoringParameterRequest.setNetProfitOrLossTY(netProfitOrLossTY);
+
+                            scoringParameterRequest.setContinousNetProfit_p(true);
+
+                        }
+                        catch (Exception e)
+                        {
+                            logger.error("error while getting CONTINUOUS_NET_PROFIT parameter");
+                            e.printStackTrace();
+                            scoringParameterRequest.setContinousNetProfit_p(false);
+                        }
+                        break;
+                    }
+                    case ScoreParameter.QUALITY_OF_RECEIVABLES:
+                    {
+
+                        try {
+
+                            Double totalSaleTY = operatingStatementDetailsTY.getDomesticSales()+operatingStatementDetailsTY.getExportSales();
+                            Double grossSaleTy = operatingStatementDetailsTY.getTotalGrossSales();
+
+                            scoringParameterRequest.setTotalSaleTy(totalSaleTY);
+                            scoringParameterRequest.setGrossSaleTy(grossSaleTy);
+
+                            scoringParameterRequest.setQualityOfReceivable_p(true);
+
+                        }
+                        catch (Exception e)
+                        {
+                            logger.error("error while getting QUALITY_OF_RECEIVABLES parameter");
+                            e.printStackTrace();
+                            scoringParameterRequest.setQualityOfReceivable_p(false);
+                        }
+                        break;
+                    }
+                    case ScoreParameter.QUALITY_OF_FINISHED_GOODS_INVENTORY:
+                    {
+
+                        try {
+
+                            Double totalCostSaleTy = operatingStatementDetailsTY.getTotalCostSales();
+                            Double finishedGoodTy = assetsDetailsTY.getFinishedGoods();
+
+                            scoringParameterRequest.setTotalCostSaleTy(totalCostSaleTy);
+                            scoringParameterRequest.setFinishedGoodTy(finishedGoodTy);
+
+                            scoringParameterRequest.setQualityOfFinishedGood_p(true);
+
+                        }
+                        catch (Exception e)
+                        {
+                            logger.error("error while getting QUALITY_OF_FINISHED_GOODS_INVENTORY parameter");
+                            e.printStackTrace();
+                            scoringParameterRequest.setQualityOfFinishedGood_p(false);
+                        }
+                        break;
+                    }
                     case ScoreParameter.KNOW_HOW:
                     {
 
@@ -1130,7 +1213,6 @@ public class ScoringServiceImpl implements ScoringService{
                     }
                     case ScoreParameter.FACTORY_PREMISES:
                     {
-
                         try {
 
                             if(!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getFactoryPremise()))
@@ -1147,6 +1229,38 @@ public class ScoringServiceImpl implements ScoringService{
                             logger.error("error while getting FACTORY_PREMISES parameter");
                             e.printStackTrace();
                             scoringParameterRequest.setFactoryPremises_p(false);
+                        }
+                        break;
+                    }
+                    case ScoreParameter.SALES_SHOW_A_RISING_TREND:
+                    {
+
+                        try {
+
+                            // getting Gst Current Year Sale from GST Client
+
+                            if(!CommonUtils.isObjectNullOrEmpty(gstResponseScoring) && !CommonUtils.isObjectNullOrEmpty(gstResponseScoring.getData()))
+                            {
+                                scoringParameterRequest.setGstSaleCurrentYear((Double) gstResponseScoring.getData());
+                            }
+                            else
+                            {
+                                scoringParameterRequest.setGstSaleCurrentYear(0.0);
+                                logger.error("Error while getting Gst data for Scoring from GST client");
+                            }
+
+                            scoringParameterRequest.setNetSaleFy(operatingStatementDetailsFY.getNetSales());
+                            scoringParameterRequest.setNetSaleSy(operatingStatementDetailsSY.getNetSales());
+                            scoringParameterRequest.setNetSaleTy(operatingStatementDetailsTY.getNetSales());
+
+                            scoringParameterRequest.setSalesShowArisingTrend_p(true);
+
+                        }
+                        catch (Exception e)
+                        {
+                            logger.error("error while getting SALES_SHOW_A_RISING_TREND parameter");
+                            e.printStackTrace();
+                            scoringParameterRequest.setSalesShowArisingTrend_p(false);
                         }
                         break;
                     }
