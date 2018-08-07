@@ -1270,7 +1270,12 @@ public class ScoringServiceImpl implements ScoringService{
                             Integer months = yearsInBetween * 12 + monthsDiff;
 
                             scoreParameterNTBRequest.setBalanceGestationPeriod(months.doubleValue());
-                            scoreParameterNTBRequest.setIsBalanceGestationPeriod(true);
+
+                            if(months.doubleValue()>=0)
+                                scoreParameterNTBRequest.setIsBalanceGestationPeriod(true);
+                            else
+                                scoreParameterNTBRequest.setIsBalanceGestationPeriod(false);
+
                         }
                         catch (Exception e)
                         {

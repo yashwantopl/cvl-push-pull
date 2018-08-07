@@ -36,6 +36,7 @@ import com.capitaworld.service.loans.domain.fundprovider.NegativeIndustryTemp;
 import com.capitaworld.service.loans.domain.fundprovider.NtbTermLoanParameterTemp;
 import com.capitaworld.service.loans.domain.fundprovider.TermLoanParameter;
 import com.capitaworld.service.loans.domain.fundprovider.TermLoanParameterTemp;
+import com.capitaworld.service.loans.domain.fundprovider.WcTlParameter;
 import com.capitaworld.service.loans.domain.fundprovider.WorkingCapitalParameter;
 import com.capitaworld.service.loans.model.DataRequest;
 import com.capitaworld.service.loans.model.corporate.TermLoanParameterRequest;
@@ -119,14 +120,19 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		CommonDocumentUtils.startHook(logger, "saveOrUpdate");
 		// TODO Auto-generated method stub
 		
+		TermLoanParameterTemp loanParameter =  termLoanParameterTempRepository.getTermLoanParameterTempByFpProductId(mappingId);
 		TermLoanParameter termLoanParameter = null;
 
-		termLoanParameter = termLoanParameterRepository.findOne(termLoanParameterRequest.getId());
+		if(loanParameter.getFpProductMappingId()!=null)
+		{
+			termLoanParameter = termLoanParameterRepository.findOne(loanParameter.getFpProductMappingId());
+		}
 		if (termLoanParameter == null) {
 			termLoanParameter=new TermLoanParameter();
+			
 		}
 		
-		TermLoanParameterTemp loanParameter =  termLoanParameterTempRepository.getTermLoanParameterTempByFpProductId(mappingId);
+		
 		loanParameter.setStatusId(CommonUtils.Status.APPROVED);
         loanParameter.setIsDeleted(false);
         loanParameter.setIsEdit(false);
@@ -1115,15 +1121,24 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		// TODO Auto-generated method stub
 		CommonDocumentUtils.startHook(logger, "saveOrUpdateTmp");
 		// TODO Auto-generated method stub
+		NtbTermLoanParameterTemp loanParameter =  ntbTermLoanParameterTempRepository.getNtbTermLoanParameterTempByFpProductId(mappingId);
+		
+		
 		
 		NTBParameter termLoanParameter = null;
-
-		termLoanParameter = ntbParameterRepository.findOne(termLoanParameterRequest.getId());
+		
+		if(loanParameter.getFpProductMappingId()!=null)
+		{
+			termLoanParameter = ntbParameterRepository.findOne(loanParameter.getFpProductMappingId());
+		}
 		if (termLoanParameter == null) {
 			termLoanParameter=new NTBParameter();
+			
 		}
+
 		
-		NtbTermLoanParameterTemp loanParameter =  ntbTermLoanParameterTempRepository.getNtbTermLoanParameterTempByFpProductId(mappingId);
+		
+		
 		loanParameter.setStatusId(CommonUtils.Status.APPROVED);
         loanParameter.setIsDeleted(false);
         loanParameter.setIsEdit(false);
