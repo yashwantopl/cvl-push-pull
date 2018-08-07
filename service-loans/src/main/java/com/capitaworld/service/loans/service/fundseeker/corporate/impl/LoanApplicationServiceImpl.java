@@ -7603,9 +7603,9 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 	public CMARequest getCMADetailOfAuditYears(Long applicationId) {
 		logger.info("================ Enter in getCMADetailOfAuditYears() ===========");
 		Calendar calendar = Calendar.getInstance();
-		Double tillYear = (double) calendar.get(Calendar.YEAR);
+		Integer tillYear =  calendar.get(Calendar.YEAR);
 
-		Double fromYear = tillYear;
+		Integer fromYear = tillYear;
 
 		List<String> yearList = new ArrayList<String>();
 		yearList.add(--fromYear + "");
@@ -7640,6 +7640,8 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 		
 		CMARequest cmaRequest = new CMARequest();
 		cmaRequest.setApplicationId(applicationId);
+		cmaRequest.setOperatingStatementRequestList(operatingStatementDetailsRequestsList);
+		cmaRequest.setLiabilitiesRequestList(liabilitiesDetailsRequestsList);
 		cmaRequest.setAssetsRequestList(assetsRequestList);
 		logger.info("================ Enter in getCMADetailOfAuditYears() ===========");
 		return cmaRequest;
