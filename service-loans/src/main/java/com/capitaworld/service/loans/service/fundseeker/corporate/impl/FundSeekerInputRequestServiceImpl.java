@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -74,7 +75,10 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 	private IndustrySectorRepository industrySectorRepository;
 	    
 	@Autowired
-	private SubSectorRepository subSectorRepository;
+	private SubSectorRepository subSectorRepository; 
+	
+	@Autowired
+	private Environment environment;
 
 	@Override
 	public boolean saveOrUpdate(FundSeekerInputRequestResponse fundSeekerInputRequest) throws Exception {
@@ -496,6 +500,8 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			throws Exception {
 
 		try {
+			logger.info("Start invokeFraudAnalytics()");
+			if("Y".equals(String.valueOf(environment.getRequiredProperty("cw.call.service_fraudanalytics")))) {
 			HunterRequestDataResponse hunterRequestDataResponse = loanApplicationService
 					.getDataForHunter(fundSeekerInputRequestResponse.getApplicationId());
 			AnalyticsRequest request = new AnalyticsRequest();
@@ -508,7 +514,13 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			if (response != null) {
 				resp = Boolean.valueOf(response.getData().toString());
 			}
+			logger.info("End invokeFraudAnalytics() with resp : "+resp);
 			return resp;
+			}
+			else {
+				logger.info("End invokeFraudAnalytics() Skiping Fraud Analytics call");
+				return true;
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new Exception();
