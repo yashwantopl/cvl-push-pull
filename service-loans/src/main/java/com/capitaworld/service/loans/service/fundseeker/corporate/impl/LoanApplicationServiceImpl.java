@@ -4225,7 +4225,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				gatewayRequest.setPaymentType(paymentRequest.getTypeOfPayment());
 				gatewayRequest.setPurposeCode(paymentRequest.getPurposeCode());
 				gatewayRequest.setRequestType(paymentRequest.getRequestType());
-
+				gatewayRequest.setBusinessTypeId(paymentRequest.getBusinessTypeId());
+				
 				Object values = gatewayClient.payout(gatewayRequest);
 
 				logger.info("Response for gateway is:- " + values);
