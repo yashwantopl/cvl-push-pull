@@ -196,6 +196,7 @@ import com.capitaworld.service.notification.utils.ContentType;
 import com.capitaworld.service.notification.utils.NotificationAlias;
 import com.capitaworld.service.notification.utils.NotificationType;
 import com.capitaworld.service.oneform.client.OneFormClient;
+import com.capitaworld.service.oneform.enums.AssessmentOptionForFS;
 import com.capitaworld.service.oneform.enums.CampaignCode;
 import com.capitaworld.service.oneform.enums.Constitution;
 import com.capitaworld.service.oneform.enums.CreditRatingFund;
@@ -6583,6 +6584,8 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 		
 		if(loan!=null) {
 			response.setLoanAmount(loan.getAmount());
+			response.setBusinessTypeId(loan.getBusinessTypeId());
+		
 		}
 		
 		List<DirectorBackgroundDetail> directorList = directorBackgroundDetailsRepository.listPromotorBackgroundFromAppId(applicationId);
@@ -6619,6 +6622,21 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 			}
 		}
 		
+		try {
+			PrimaryCorporateDetail primaryCorporateDetail = primaryCorporateRepository.findOneByApplicationIdId(applicationId);
+			response.setIsPurchaseOfEqup(false);
+			if(primaryCorporateDetail!=null) {
+				if(primaryCorporateDetail.getAssessmentId()!=null) {
+					if(primaryCorporateDetail.getAssessmentId() == AssessmentOptionForFS.EQUIPMENT_MACHINERY.getId()) {
+						response.setIsPurchaseOfEqup(true);
+						response.setCostOfMachinery(primaryCorporateDetail.getCostOfMachinery());
+					}
+				}
+			}
+		}
+		catch (Exception e) {
+			// TODO: handle exception
+		}
 		if(assetsDetails!=null) {
 			response.setGrossBlock(assetsDetails.getGrossBlock());
 		}
@@ -7651,12 +7669,20 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 
 
 	@Override
-	public ScoringModelReqRes getMinMaxMarginByApplicationId(Long applicationId) {
+	public ScoringModelReqRes getMinMaxMarginByApplicationId(Long applicationId,Integer businessTypeId) {
 
 		try {
-
 			ScoringModelReqRes scoringModelReqRes=new ScoringModelReqRes();
-			List<BigInteger> fpProductList=loanApplicationRepository.getFpProductListByApplicationId(applicationId);
+
+			List<BigInteger> fpProductList=null;
+			if(CommonUtils.BusinessType.EXISTING_BUSINESS.getId() == businessTypeId)
+			{
+				 fpProductList=loanApplicationRepository.getFpProductListByApplicationIdAndStageId(applicationId,3l);;
+			}
+			else if(CommonUtils.BusinessType.NEW_TO_BUSINESS.getId() == businessTypeId)
+			{
+				 fpProductList=loanApplicationRepository.getFpProductListByApplicationIdAndStageId(applicationId,105l);;
+			}
 
 			List<Long> scoringLongList = new ArrayList<Long>();
 			for(BigInteger i: fpProductList){

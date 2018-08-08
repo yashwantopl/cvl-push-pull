@@ -36,6 +36,58 @@ public class CGTMSECalcDataResponse {
 	private Double loanAmount;
 	
 	private Double colleteralValue;
+	
+	private Boolean isPurchaseOfEqup;
+	
+	
+	private Double costOfMachinery;
+	
+	private Integer businessTypeId;
+	
+	
+	
+	
+	/**
+	 * @return the businessTypeId
+	 */
+	public Integer getBusinessTypeId() {
+		return businessTypeId;
+	}
+
+	/**
+	 * @param businessTypeId the businessTypeId to set
+	 */
+	public void setBusinessTypeId(Integer businessTypeId) {
+		this.businessTypeId = businessTypeId;
+	}
+
+	/**
+	 * @return the costOfMachinery
+	 */
+	public Double getCostOfMachinery() {
+		return costOfMachinery;
+	}
+
+	/**
+	 * @param costOfMachinery the costOfMachinery to set
+	 */
+	public void setCostOfMachinery(Double costOfMachinery) {
+		this.costOfMachinery = costOfMachinery;
+	}
+
+	/**
+	 * @return the isPurchaseOfEqup
+	 */
+	public Boolean getIsPurchaseOfEqup() {
+		return isPurchaseOfEqup;
+	}
+
+	/**
+	 * @param isPurchaseOfEqup the isPurchaseOfEqup to set
+	 */
+	public void setIsPurchaseOfEqup(Boolean isPurchaseOfEqup) {
+		this.isPurchaseOfEqup = isPurchaseOfEqup;
+	}
 
 	private Long stateId;
 	
