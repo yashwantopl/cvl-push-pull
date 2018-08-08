@@ -4976,9 +4976,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			}
 		}catch(Exception e) {
 			logger.error("Something goes wrong while setUrlAndTokenInSidbiClient savePhese1DataToSidbi() ");
-//			e.printStackTrace();
+			e.printStackTrace();
 			logger.error("Exception while getting token from SidbiIntegrationClient -------------- applicationId " +applicationId );
-//			return false;
+			return false;
 		}
 		
 		Boolean savePrelimInfo = false;
@@ -4999,7 +4999,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					return false;
 				}
 				//Create Prelim Sheet Object	
-				prelimData = getPrelimData(applicationMaster,userId);
+				prelimData = getPrelimData(applicationMaster,userId , organizationId);
 				if(prelimData == null) {
 					logger.info("ProfileReqRes ==> Prelim Sheet Object is Null in savePhese1DataToSidbi() ");
 					auditComponent.updateAudit(AuditComponent.PRELIM_INFO, applicationId, userId, "ProfileReqRes ==> Prelim Sheet Object is Null ProfileReqRes prelimData  ==> " + prelimData,  savePrelimInfo);
@@ -5259,7 +5259,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			if(audit == null) {
 				
 				//FinancialRequest financialDetails = cmaService.getFinancialDetailsForBankIntegration(applicationId);
-				ClientLogicCalculationRequest clientLogicCalculationRequest= getClientLogicCalculationDetail(applicationId, userId, prelimData.getCorporateProfileRequest() , data , cmaRequest); 
+				ClientLogicCalculationRequest clientLogicCalculationRequest= getClientLogicCalculationDetail(applicationId, userId, prelimData.getCorporateProfileRequest() , data , cmaRequest , organizationId); 
 				if(clientLogicCalculationRequest == null) {
 					logger.info("LOGIC Details Request Not Found  in savePhese1DataToSidbi()  for ApplicationId ====>{}FpProductId====>{}",applicationId,fpProductMappingId);
 					auditComponent.updateAudit(AuditComponent.LOGIC, applicationId, userId, "LOGIC Details data Request Not Found for ApplicationId ====>{} "+applicationId+"FpProductId====>{}"+fpProductMappingId, false);
@@ -5557,7 +5557,7 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 		
 	}
 
-	private ProfileReqRes getPrelimData(PrimaryCorporateDetail applicationMaster, Long userId) {
+	private ProfileReqRes getPrelimData(PrimaryCorporateDetail applicationMaster, Long userId , Long orgId) {
 		ProfileReqRes profileReqRes = new  ProfileReqRes();
 		profileReqRes.setLoanMasterRequest(createObj(applicationMaster));
 		//Create Corporate Profile Object
@@ -5565,7 +5565,7 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 		if(corporateApplicantDetail != null) {
 			profileReqRes.setCorporateProfileRequest(createProfileObj(corporateApplicantDetail,applicationMaster.getUserId()));
 			//Setting Director Details
-			profileReqRes.setDirBackList(getDirectorListForSidbi(applicationMaster.getId()));
+			profileReqRes.setDirBackList(getDirectorListForSidbi(applicationMaster.getId() , orgId));
 			//Setting Current Financial Details
 			profileReqRes.setCurrentFinArrList(getCurrentFinancialDetaisForSidbi(applicationMaster.getId()));
 			return profileReqRes;
@@ -5858,7 +5858,7 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 		return CommonUtils.isObjectNullOrEmpty(value) ? null : value.toString();
 	}
 	
-	private List<DirectorBackgroundDetailRequest> getDirectorListForSidbi(Long applicationId){
+	private List<DirectorBackgroundDetailRequest> getDirectorListForSidbi(Long applicationId , Long orgId){
 		List<DirectorBackgroundDetail> direcotors = directorBackgroundDetailsRepository.listPromotorBackgroundFromAppId(applicationId);
 		if(CommonUtils.isListNullOrEmpty(direcotors)) {
 			logger.warn("No Directors Found for Application Id ==>{}",applicationId);
@@ -6083,7 +6083,11 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 						
 						
 						perInfo.setFullName(creditReport.getNameSegment().getConsumerName1());
-						perInfo.setGender(GenderTypeEnum.fromId(String.valueOf(creditReport.getNameSegment().getGender())).getValue());
+						if("16".equals(orgId+"")) {
+							perInfo.setGender(GenderTypeEnum.fromId(String.valueOf(creditReport.getNameSegment().getGender())).getSbiValue());
+						}else {
+							perInfo.setGender(GenderTypeEnum.fromId(String.valueOf(creditReport.getNameSegment().getGender())).getValue());
+						}
 						if(!CommonUtils.isObjectNullOrEmpty(creditReport.getNameSegment().getDateOfBirth())){
 							String date = String.valueOf(creditReport.getNameSegment().getDateOfBirth());
 							String dt = date.substring(0, 2);
@@ -6725,7 +6729,7 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 		if(Boolean.valueOf(isProduction)) {
 			sidbiIntegrationClient.setIntegrationBaseUrl(request.getProductionUrl());
 		}else {
-			sidbiIntegrationClient.setIntegrationBaseUrl(request.getUatUrl());
+			sidbiIntegrationClient.setIntegrationBaseUrl("http://localhost:8287/sidbi-integration/"); //request.getUatUrl()
 		}
 		
 		logger.warn("Getting token from SidbiIntegrationClient --------------" +applicationId);
@@ -7694,7 +7698,7 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 		}
 	}
 	
-public ClientLogicCalculationRequest getClientLogicCalculationDetail(Long applicationId, Long userId , CorporateProfileRequest corporateProfileRequest ,  com.capitaworld.sidbi.integration.model.bankstatement.Data data  , CMARequest cmaRequest ) {
+public ClientLogicCalculationRequest getClientLogicCalculationDetail(Long applicationId, Long userId , CorporateProfileRequest corporateProfileRequest ,  com.capitaworld.sidbi.integration.model.bankstatement.Data data  , CMARequest cmaRequest  , Long orgId) {
 		
 		ClientLogicCalculationRequest clientLogicCalculationRequest = new ClientLogicCalculationRequest();
 		
@@ -7778,7 +7782,12 @@ public ClientLogicCalculationRequest getClientLogicCalculationDetail(Long applic
 				DirectorBackgroundDetail directorBackgroundDetail = directorBackgroundDetailsRepository.getByAppIdAndIsMainDirector(applicationId);
 				
 				//Gender Code
-				clientLogicCalculationRequest.setDirGenderCode(CibilUtils.GenderTypeEnum.fromMappingId(directorBackgroundDetail.getGender()).getValue());
+				if("16".equals(orgId+"")) {
+					clientLogicCalculationRequest.setDirGenderCode(GenderTypeEnum.fromId(String.valueOf(directorBackgroundDetail.getGender())).getSbiValue());
+				}else {
+					clientLogicCalculationRequest.setDirGenderCode(GenderTypeEnum.fromId(String.valueOf(directorBackgroundDetail.getGender())).getValue());
+					/*clientLogicCalculationRequest.setDirGenderCode(GenderTypeEnum.fromId(directorBackgroundDetail.getGender()).getValue());*/
+				}
 				
 				//Debit Summation And Credit Summation
 				if(! CommonUtils.isObjectListNull(data , data.getSummaryInfo() , data.getSummaryInfo().getSummaryInfoTotalDetails())) {
