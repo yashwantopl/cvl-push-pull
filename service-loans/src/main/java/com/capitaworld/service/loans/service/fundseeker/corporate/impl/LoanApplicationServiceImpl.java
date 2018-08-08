@@ -7678,7 +7678,7 @@ public ClientLogicCalculationRequest getClientLogicCalculationDetail(Long applic
 		reportRequest.setUserId(userId);
 		try {
 			//Existing Customer in sbi
-			if("SBI".equals(data.getCustomerInfo().getBank()) && "current".equals(data.getSummaryInfo().getAccType())){
+			if("SBI".equalsIgnoreCase(data.getCustomerInfo().getBank()) || "STATE BANK OF INDIA".equalsIgnoreCase(data.getCustomerInfo().getBank())   && "current".equalsIgnoreCase(data.getSummaryInfo().getAccType())){
 				clientLogicCalculationRequest.setIsExistingCustomer(true);
 				clientLogicCalculationRequest.setCifAccountNumber(data.getSummaryInfo().getAccNo()); 
 				clientLogicCalculationRequest.setAccountType(data.getSummaryInfo().getAccType());
