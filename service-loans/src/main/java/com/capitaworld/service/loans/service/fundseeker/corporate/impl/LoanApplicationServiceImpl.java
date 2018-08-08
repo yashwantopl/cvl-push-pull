@@ -7647,13 +7647,11 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 
 
 	@Override
-	public ScoringModelReqRes getMinMaxMarginByApplicationId(Long applicationId) {
+	public ScoringModelReqRes getMinMaxMarginByApplicationId(Long applicationId,Integer businessTypeId) {
 
 		try {
-
 			ScoringModelReqRes scoringModelReqRes=new ScoringModelReqRes();
-			List<BigInteger> fpProductList=loanApplicationRepository.getFpProductListByApplicationId(applicationId);
-
+			List<BigInteger> fpProductList=loanApplicationRepository.getFpProductListByApplicationIdAndStageId(applicationId,businessTypeId.longValue());;
 			List<Long> scoringLongList = new ArrayList<Long>();
 			for(BigInteger i: fpProductList){
 				scoringLongList.add(i.longValue());
