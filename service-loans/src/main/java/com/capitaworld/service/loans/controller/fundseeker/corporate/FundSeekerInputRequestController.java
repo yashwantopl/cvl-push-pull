@@ -237,8 +237,8 @@ public class FundSeekerInputRequestController {
         }
     }
 
-    @RequestMapping(value = "/get_min_max_margin/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LoansResponse> getMinMaxMargin(@PathVariable("applicationId") Long applicationId,HttpServletRequest request)
+    @RequestMapping(value = "/get_min_max_margin", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LoansResponse> getMinMaxMargin(@RequestBody NTBRequest ntbRequest,HttpServletRequest request)
             throws Exception
     {
         try
@@ -248,13 +248,13 @@ public class FundSeekerInputRequestController {
         		   return new ResponseEntity<LoansResponse>(
                            new LoansResponse("Unauthorized User! Please Re-login and try again.", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
         	}
-        	if(CommonUtils.isObjectNullOrEmpty(applicationId)) {
-        		logger.info("Application Id is NUll============>{}",applicationId);
+        	if(CommonUtils.isObjectNullOrEmpty(ntbRequest.getApplicationId()) || CommonUtils.isObjectNullOrEmpty(ntbRequest.getBusineeTypeId())) {
+        		logger.info("Application Id OR BusinessTypeID is NUll============>{}");
         		return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST,HttpStatus.BAD_REQUEST.value()),
                         HttpStatus.OK);
         	}
-        	logger.info("Application Id for Getting Margin============>{}",applicationId);
-            ScoringModelReqRes scoringResponse = loanApplicationService.getMinMaxMarginByApplicationId(applicationId);
+        	logger.info("Application Id for Getting Margin============>{}"+ntbRequest.getApplicationId()+ "BusinessTypeID ====>{}"+ ntbRequest.getBusineeTypeId());
+            ScoringModelReqRes scoringResponse = loanApplicationService.getMinMaxMarginByApplicationId(ntbRequest.getApplicationId(),ntbRequest.getBusineeTypeId());
             logger.info("Response from Scoring==>{}",scoringResponse.toString());
             return new ResponseEntity<LoansResponse>(new LoansResponse("Details successfully fetched",HttpStatus.OK.value(),scoringResponse), HttpStatus.OK);
 
