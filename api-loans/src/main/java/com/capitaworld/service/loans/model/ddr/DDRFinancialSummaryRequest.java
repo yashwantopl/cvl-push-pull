@@ -3,7 +3,6 @@ package com.capitaworld.service.loans.model.ddr;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.Date;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -45,8 +44,6 @@ public class DDRFinancialSummaryRequest implements Serializable {
 	private Date modifyDate;
 	
 	private Boolean isActive;
-	
-	
 	
 
 	public String getProvisionalYearString() {
@@ -188,6 +185,8 @@ public class DDRFinancialSummaryRequest implements Serializable {
 		this.perticularId = perticularId;
 	}
 
+	
+	
 	@Override
 	public String toString() {
 		return "DDRFinancialSummaryRequest [id=" + id + ", ddrFormId=" + ddrFormId + ", perticularId=" + perticularId + ", perticularName="
@@ -201,7 +200,6 @@ public class DDRFinancialSummaryRequest implements Serializable {
 	
 	public static void printFields(Object obj) throws Exception {
         Field[] fields = DDRFinancialSummaryRequest.class.getDeclaredFields();
-        System.out.println("length : "+fields.length);
         for(Field field : fields) {
             Object value = field.get(obj);
             if(value instanceof String){
