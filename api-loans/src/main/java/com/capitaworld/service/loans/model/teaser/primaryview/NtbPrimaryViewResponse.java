@@ -101,6 +101,7 @@ public class NtbPrimaryViewResponse {
 	    private Integer businessTypeId;
 	    private Object dataObject;
 	    private Object scoringResponseList;
+	    private Boolean isMultipleUser;
 
 
 		/**
@@ -945,6 +946,19 @@ public class NtbPrimaryViewResponse {
 		public void setScoringResponseList(Object scoringResponseList) {
 			this.scoringResponseList = scoringResponseList;
 		}
+		/**
+		 * @return the isMultipleUser
+		 */
+		public Boolean getIsMultipleUser() {
+			return isMultipleUser;
+		}
+		/**
+		 * @param isMultipleUser the isMultipleUser to set
+		 */
+		public void setIsMultipleUser(Boolean isMultipleUser) {
+			this.isMultipleUser = isMultipleUser;
+		}
+
 
 
 }

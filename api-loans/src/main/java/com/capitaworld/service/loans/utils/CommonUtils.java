@@ -422,7 +422,7 @@ public class CommonUtils {
 		for (Object object : args) {
 			boolean flag = false;
 			if (object instanceof List) {
-				flag = isListNullOrEmpty((List) object);
+				flag = isListNullOrEmpty((List<?>) object);
 				if (flag)
 					return true;
 				else
@@ -1194,7 +1194,7 @@ public enum APIFlags {
 	}
 	public static Object escapeXml(Object obj) throws Exception{
 		if(obj instanceof List) {
-			List<?> lst = (List)obj;
+			List<?> lst = (List<?>)obj;
 			for(Object o : lst) {
 				escapeXml(o);
 			}

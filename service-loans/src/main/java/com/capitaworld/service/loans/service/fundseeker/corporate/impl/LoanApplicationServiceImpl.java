@@ -4974,8 +4974,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				return false;
 			}
 		}catch(Exception e) {
-			generateTokenRequest = new GenerateTokenRequest();
-			generateTokenRequest.setToken("fsdaskfjbsdfbsdbfsdfvdsvfvsdhvfvdsh");
 			logger.error("Something goes wrong while setUrlAndTokenInSidbiClient savePhese1DataToSidbi() ");
 //			e.printStackTrace();
 			logger.error("Exception while getting token from SidbiIntegrationClient -------------- applicationId " +applicationId );
@@ -7603,9 +7601,9 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 	public CMARequest getCMADetailOfAuditYears(Long applicationId) {
 		logger.info("================ Enter in getCMADetailOfAuditYears() ===========");
 		Calendar calendar = Calendar.getInstance();
-		Double tillYear = (double) calendar.get(Calendar.YEAR);
+		Integer tillYear =  calendar.get(Calendar.YEAR);
 
-		Double fromYear = tillYear;
+		Integer fromYear = tillYear;
 
 		List<String> yearList = new ArrayList<String>();
 		yearList.add(--fromYear + "");
@@ -7640,6 +7638,8 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 		
 		CMARequest cmaRequest = new CMARequest();
 		cmaRequest.setApplicationId(applicationId);
+		cmaRequest.setOperatingStatementRequestList(operatingStatementDetailsRequestsList);
+		cmaRequest.setLiabilitiesRequestList(liabilitiesDetailsRequestsList);
 		cmaRequest.setAssetsRequestList(assetsRequestList);
 		logger.info("================ Enter in getCMADetailOfAuditYears() ===========");
 		return cmaRequest;
@@ -7752,9 +7752,13 @@ public ClientLogicCalculationRequest getClientLogicCalculationDetail(Long applic
 				clientLogicCalculationRequest.setDirGenderCode(CibilUtils.GenderTypeEnum.fromMappingId(directorBackgroundDetail.getGender()).getValue());
 				
 				//Debit Summation And Credit Summation
-				if(! CommonUtils.isObjectListNull(data , data.getSummaryInfo() , data.getSummaryInfo().getSummaryInfoTotalDetails().getTotalCredit())) {
-					clientLogicCalculationRequest.setCreditSummation(Double.valueOf(data.getSummaryInfo().getSummaryInfoTotalDetails().getTotalCredit()));
+				if(! CommonUtils.isObjectListNull(data , data.getSummaryInfo() , data.getSummaryInfo().getSummaryInfoTotalDetails())) {
 					if( ! CommonUtils.isObjectNullOrEmpty(data.getSummaryInfo().getSummaryInfoTotalDetails().getTotalCredit())) {
+						
+					clientLogicCalculationRequest.setCreditSummation(Double.valueOf(data.getSummaryInfo().getSummaryInfoTotalDetails().getTotalCredit()));
+					}
+					if( ! CommonUtils.isObjectNullOrEmpty(data.getSummaryInfo().getSummaryInfoTotalDetails().getTotalDebit())) {
+						
 						clientLogicCalculationRequest.setDebitSummation(Double.valueOf( data.getSummaryInfo().getSummaryInfoTotalDetails().getDebits())) ;
 					}
 				}
@@ -7829,6 +7833,8 @@ public ClientLogicCalculationRequest getClientLogicCalculationDetail(Long applic
 				
 				int totalNetProfitLossYears =0;
 				int totalNetSaleYears =0;
+				Double totalCostSales =0.0 ;
+				
 				for ( OperatingStatementDetailsRequest operatingStatementDetailsRequest : cmaRequest.getOperatingStatementRequestList()) {
 					
 					if((previous3Year+"").equals(operatingStatementDetailsRequest.getYear())){
@@ -7851,7 +7857,14 @@ public ClientLogicCalculationRequest getClientLogicCalculationDetail(Long applic
 						generalAdminExpPrevious1Year = operatingStatementDetailsRequest.getGeneralAdminExp() !=null ? operatingStatementDetailsRequest.getGeneralAdminExp()  : 0.0 ;
 						netProfitLossPrevious1Year =  operatingStatementDetailsRequest.getNetProfitOrLoss() !=null ? operatingStatementDetailsRequest.getNetProfitOrLoss() : 0.0 ;
 						netSalePrevious1Year = operatingStatementDetailsRequest.getNetSales() !=null ? operatingStatementDetailsRequest.getNetSales() : 0.0 ;
+						totalCostSales = operatingStatementDetailsRequest.getTotalCostSales();
 						//Quality of receivables
+						if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetailsRequest.getTotalGrossSales())){
+							operatingStatementDetailsRequest.setTotalGrossSales(0.0);
+						}
+						if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetailsRequest.getDomesticSales() )) {
+							operatingStatementDetailsRequest.setDomesticSales(0.0);
+						}
 						clientLogicCalculationRequest.setQualityOfReceivable( ( operatingStatementDetailsRequest.getDomesticSales() + operatingStatementDetailsRequest.getExportSales() ) / operatingStatementDetailsRequest.getTotalGrossSales() * 12);
 					}
 				}  
@@ -7860,6 +7873,7 @@ public ClientLogicCalculationRequest getClientLogicCalculationDetail(Long applic
 				Double directorLabour3To2 = (directLabourPrevious3Year - directLabourPrevious2Year  )/ ( directLabourPrevious2Year* 100 ) ;
 				Double directorLabour2To1  = (directLabourPrevious1Year - directLabourPrevious2Year  )/ ( directLabourPrevious2Year* 100 ) ;
 				
+				clientLogicCalculationRequest.setDirectorLabourPrevious4To3(0.0);
 				clientLogicCalculationRequest.setDirectorLabourPrevious3To2(directorLabour3To2);
 				clientLogicCalculationRequest.setDirectorLabourPrevious2To1(directorLabour2To1);
 				
@@ -7870,6 +7884,7 @@ public ClientLogicCalculationRequest getClientLogicCalculationDetail(Long applic
 				Double sellingGenlAdmnExpenses3To2 = ( sellingGenlAdmnExpensesPrevious2Year - sellingGenlAdmnExpensesPrevious3Year ) / sellingGenlAdmnExpensesPrevious3Year * 100 ;  
 				Double sellingGenlAdmnExpenses2To1 = ( sellingGenlAdmnExpensesPrevious1Year - sellingGenlAdmnExpensesPrevious2Year ) / sellingGenlAdmnExpensesPrevious2Year * 100 ;
 
+				clientLogicCalculationRequest.setSellingGenlAdmnExpensesPrevious4To3(0.0);
 				clientLogicCalculationRequest.setSellingGenlAdmnExpensesPrevious3To2(sellingGenlAdmnExpenses3To2);
 				clientLogicCalculationRequest.setSellingGenlAdmnExpensesPrevious2To1(sellingGenlAdmnExpenses2To1);
 				
@@ -7889,7 +7904,7 @@ public ClientLogicCalculationRequest getClientLogicCalculationDetail(Long applic
 				 * */
 				GstResponse gstResponse =	gstClient.getCalculationForScoring(corporateProfileRequest.getGstin());
 				if(! CommonUtils.isObjectListNull(gstResponse, gstResponse.getData())) {
-					netSaleCurrentYear = gstResponse.getData() != null ? (Double) gstResponse.getData() : 0.0;
+					netSaleCurrentYear =  (Double) gstResponse.getData() ;
 					if(netSaleCurrentYear - netSalePrevious1Year > 0) {
 						totalNetSaleYears = 1;
 					}
@@ -7905,7 +7920,8 @@ public ClientLogicCalculationRequest getClientLogicCalculationDetail(Long applic
 				 
 				clientLogicCalculationRequest.setTotalNetSaleYears(totalNetSaleYears);
 				//Quality of Finished Goods
-				
+				AssetsDetailsRequest assetsDetailsRequest = cmaRequest.getAssetsRequestList().stream().filter(finishedGood -> (previous1Year+"").equals(finishedGood.getYear())).findFirst().orElse(null);
+				clientLogicCalculationRequest.setQualityOfFinishedGood((assetsDetailsRequest.getFinishedGoods()/totalCostSales) * 12) ;
 			/*}*/
 			
 		}catch (Exception e) {
