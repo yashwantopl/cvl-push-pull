@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.model.ddr;
 
+import com.capitaworld.service.loans.model.FinancialArrangementDetailResponseString;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.io.Serializable;
@@ -8,7 +9,7 @@ import java.util.Date;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DDRExistingBankerDetailRequest implements Serializable {
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
     private Long id;
 
@@ -31,6 +32,8 @@ public class DDRExistingBankerDetailRequest implements Serializable {
     private Date modifyDate;
 
     private Boolean isActive;
+    
+    private FinancialArrangementDetailResponseString finArraRes;
 
     public Long getId() {
         return id;
@@ -125,6 +128,14 @@ public class DDRExistingBankerDetailRequest implements Serializable {
 	public void setFinancialArrangementId(Long financialArrangementId) {
 		this.financialArrangementId = financialArrangementId;
 	}
+	public FinancialArrangementDetailResponseString getFinArraRes() {
+		return finArraRes;
+	}
+
+	public void setFinArraRes(FinancialArrangementDetailResponseString finArraRes) {
+		this.finArraRes = finArraRes;
+	}
+
 
 	@Override
     public String toString() {
@@ -145,7 +156,6 @@ public class DDRExistingBankerDetailRequest implements Serializable {
 
     public static void printFields(Object obj) throws Exception {
         Field[] fields = DDRExistingBankerDetailRequest.class.getDeclaredFields();
-        System.out.println("length : "+fields.length);
         for(Field field : fields) {
             Object value = field.get(obj);
             if(value instanceof String){

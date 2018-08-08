@@ -146,7 +146,7 @@ public class ProductMasterController {
 	public ResponseEntity<LoansResponse> saveCorporate(
 			@RequestBody CorporateProduct corporateProduct,HttpServletRequest request) {
 		CommonDocumentUtils.startHook(logger, "save");
-		System.out.println("json"+corporateProduct.toString());
+		logger.info("json"+corporateProduct.toString());
 		try {
 			if (corporateProduct == null) {
 				logger.warn("corporateProduct Object can not be empty ==>",
@@ -733,7 +733,7 @@ public class ProductMasterController {
 	public ResponseEntity<LoansResponse> saveCorporateInTemp(
 			@RequestBody CorporateProduct corporateProduct,HttpServletRequest request) {
 		CommonDocumentUtils.startHook(logger, "save");
-		System.out.println("json"+corporateProduct.toString());
+		logger.info("json"+corporateProduct.toString());
 		try {
 			if (corporateProduct == null) {
 				logger.warn("corporateProduct Object can not be empty ==>",
