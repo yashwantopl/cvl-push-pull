@@ -7678,7 +7678,8 @@ public ClientLogicCalculationRequest getClientLogicCalculationDetail(Long applic
 		reportRequest.setUserId(userId);
 		try {
 			//Existing Customer in sbi
-			if("SBI".equals(data.getCustomerInfo().getBank()) && "current".equals(data.getSummaryInfo().getAccType())){
+			
+			if( !CommonUtils.isObjectListNull(data, data.getCustomerInfo()) && "SBI".equalsIgnoreCase(data.getCustomerInfo().getBank()) || "STATE BANK OF INDIA".equalsIgnoreCase(data.getCustomerInfo().getBank())   && "current".equalsIgnoreCase(data.getSummaryInfo().getAccType())){
 				clientLogicCalculationRequest.setIsExistingCustomer(true);
 				clientLogicCalculationRequest.setCifAccountNumber(data.getSummaryInfo().getAccNo()); 
 				clientLogicCalculationRequest.setAccountType(data.getSummaryInfo().getAccType());
@@ -7699,20 +7700,22 @@ public ClientLogicCalculationRequest getClientLogicCalculationDetail(Long applic
 				Amount cashCredit =new  Amount();
 				Amount termLoan =new  Amount();
 				Amount lcBg =new  Amount();
-				for(CreditFacilityDetailsRequest creditFacilityDetailsRequest : commercialRequest.getCreditFacilityDetailsRequest()) {
-					if(CommonUtility.getCashCredit(CibilUtils.CreditTypeEnum.fromValue(creditFacilityDetailsRequest.getType()))) { 
+				if(!CommonUtils.isObjectListNull(commercialRequest , commercialRequest.getCreditFacilityDetailsRequest())) {
+					for(CreditFacilityDetailsRequest creditFacilityDetailsRequest : commercialRequest.getCreditFacilityDetailsRequest()) {
+						if(CommonUtility.getCashCredit(CibilUtils.CreditTypeEnum.fromValue(creditFacilityDetailsRequest.getType()))) { 
 								
-						cashCredit.setTotalSanctionAmount (cashCredit.getTotalSanctionAmount() + creditFacilityDetailsRequest.getSanctionedINRAmount()); 
-						cashCredit.setTotalOutstandingAmount(cashCredit.getTotalOutstandingAmount() + creditFacilityDetailsRequest.getOutstandingBalanceAmount());
-					}else if(CommonUtility.getTermLoan(CibilUtils.CreditTypeEnum.fromValue(creditFacilityDetailsRequest.getType()))) {
+							cashCredit.setTotalSanctionAmount (cashCredit.getTotalSanctionAmount() + creditFacilityDetailsRequest.getSanctionedINRAmount()); 
+							cashCredit.setTotalOutstandingAmount(cashCredit.getTotalOutstandingAmount() + creditFacilityDetailsRequest.getOutstandingBalanceAmount());
+						}else if(CommonUtility.getTermLoan(CibilUtils.CreditTypeEnum.fromValue(creditFacilityDetailsRequest.getType()))) {
 								
-						termLoan.setTotalSanctionAmount(termLoan.getTotalSanctionAmount() + +creditFacilityDetailsRequest.getSanctionedINRAmount());
-						termLoan.setTotalOutstandingAmount(termLoan.getTotalOutstandingAmount() +creditFacilityDetailsRequest.getOutstandingBalanceAmount());
-					}else if(CommonUtility.getLcBg(CibilUtils.CreditTypeEnum.fromValue(creditFacilityDetailsRequest.getType()))) {
-								
-						lcBg.setTotalSanctionAmount(lcBg.getTotalSanctionAmount() + creditFacilityDetailsRequest.getSanctionedINRAmount());
-						lcBg.setTotalOutstandingAmount(lcBg.getTotalOutstandingAmount() + creditFacilityDetailsRequest.getOutstandingBalanceAmount());
-					}		
+							termLoan.setTotalSanctionAmount(termLoan.getTotalSanctionAmount() + +creditFacilityDetailsRequest.getSanctionedINRAmount());
+							termLoan.setTotalOutstandingAmount(termLoan.getTotalOutstandingAmount() +creditFacilityDetailsRequest.getOutstandingBalanceAmount());
+						}else if(CommonUtility.getLcBg(CibilUtils.CreditTypeEnum.fromValue(creditFacilityDetailsRequest.getType()))) {
+									
+							lcBg.setTotalSanctionAmount(lcBg.getTotalSanctionAmount() + creditFacilityDetailsRequest.getSanctionedINRAmount());
+							lcBg.setTotalOutstandingAmount(lcBg.getTotalOutstandingAmount() + creditFacilityDetailsRequest.getOutstandingBalanceAmount());
+						}		
+					}
 				}
 				clientLogicCalculationRequest.setCashCredit(cashCredit);
 				clientLogicCalculationRequest.setTermLoan(termLoan);
@@ -7731,7 +7734,7 @@ public ClientLogicCalculationRequest getClientLogicCalculationDetail(Long applic
 				clientLogicCalculationRequest.setWarehouseList(commercialRequest.getLocationDetailsRequest().getWarehouse());*/
 				
 				//E-mail
-				ITRConnectionResponse itrConnectionResponse = itrClient.getITRBasicDetails(applicationId);
+				ITRConnectionResponse itrConnectionResponse =applicationId !=null ? itrClient.getITRBasicDetails(applicationId) : null;
 				if(! CommonUtils.isObjectListNull(itrConnectionResponse, itrConnectionResponse.getData())) {
 					ITRBasicDetailsResponse itrBasicDetailsResponse =(ITRBasicDetailsResponse) itrConnectionResponse.getData();
 					clientLogicCalculationRequest.setEmailAddress(itrBasicDetailsResponse.getEmail());
@@ -7834,41 +7837,41 @@ public ClientLogicCalculationRequest getClientLogicCalculationDetail(Long applic
 				int totalNetProfitLossYears =0;
 				int totalNetSaleYears =0;
 				Double totalCostSales =0.0 ;
-				
-				for ( OperatingStatementDetailsRequest operatingStatementDetailsRequest : cmaRequest.getOperatingStatementRequestList()) {
+				if( !CommonUtils.isObjectListNull(cmaRequest , cmaRequest.getOperatingStatementRequestList())) {
+					for ( OperatingStatementDetailsRequest operatingStatementDetailsRequest : cmaRequest.getOperatingStatementRequestList()) {
 					
-					if((previous3Year+"").equals(operatingStatementDetailsRequest.getYear())){
-						directLabourPrevious3Year = operatingStatementDetailsRequest.getDirectLabour() !=null ?  operatingStatementDetailsRequest.getDirectLabour() :0.0;
-						sellingAndDistributionExpensesPrevious3Year = operatingStatementDetailsRequest.getSellingAndDistributionExpenses() !=null ? operatingStatementDetailsRequest.getSellingAndDistributionExpenses() : 0.0;
-						generalAdminExpPrevious3Year = operatingStatementDetailsRequest.getGeneralAdminExp() !=null ? operatingStatementDetailsRequest.getGeneralAdminExp()  : 0.0 ;
-						netProfitLossPrevious3Year = operatingStatementDetailsRequest.getNetProfitOrLoss() !=null ? operatingStatementDetailsRequest.getNetProfitOrLoss() : 0.0 ;
-						netSalePrevious3Year = operatingStatementDetailsRequest.getNetSales() !=null ? operatingStatementDetailsRequest.getNetSales() : 0.0 ;
+						if((previous3Year+"").equals(operatingStatementDetailsRequest.getYear())){
+							directLabourPrevious3Year = operatingStatementDetailsRequest.getDirectLabour() !=null ?  operatingStatementDetailsRequest.getDirectLabour() :0.0;
+							sellingAndDistributionExpensesPrevious3Year = operatingStatementDetailsRequest.getSellingAndDistributionExpenses() !=null ? operatingStatementDetailsRequest.getSellingAndDistributionExpenses() : 0.0;
+							generalAdminExpPrevious3Year = operatingStatementDetailsRequest.getGeneralAdminExp() !=null ? operatingStatementDetailsRequest.getGeneralAdminExp()  : 0.0 ;
+							netProfitLossPrevious3Year = operatingStatementDetailsRequest.getNetProfitOrLoss() !=null ? operatingStatementDetailsRequest.getNetProfitOrLoss() : 0.0 ;
+							netSalePrevious3Year = operatingStatementDetailsRequest.getNetSales() !=null ? operatingStatementDetailsRequest.getNetSales() : 0.0 ;
 
-					}else if((previous2Year+"").equals(operatingStatementDetailsRequest.getYear())){
-						directLabourPrevious2Year =operatingStatementDetailsRequest.getDirectLabour() !=null ?  operatingStatementDetailsRequest.getDirectLabour() : 0.0;
-						sellingAndDistributionExpensesPrevious2Year  =operatingStatementDetailsRequest.getSellingAndDistributionExpenses() !=null ? operatingStatementDetailsRequest.getSellingAndDistributionExpenses() : 0.0;
-						generalAdminExpPrevious2Year = operatingStatementDetailsRequest.getGeneralAdminExp() !=null ? operatingStatementDetailsRequest.getGeneralAdminExp()  : 0.0 ;
-						netProfitLossPrevious2Year =operatingStatementDetailsRequest.getNetProfitOrLoss() !=null ? operatingStatementDetailsRequest.getNetProfitOrLoss() : 0.0 ; 
-						netSalePrevious2Year = operatingStatementDetailsRequest.getNetSales() !=null ? operatingStatementDetailsRequest.getNetSales() : 0.0 ;
-					
-					}else if((previous1Year+"").equals(operatingStatementDetailsRequest.getYear())){
-						directLabourPrevious1Year = operatingStatementDetailsRequest.getDirectLabour() !=null ?  operatingStatementDetailsRequest.getDirectLabour() : 0.0; 
-						sellingAndDistributionExpensesPrevious1Year  = operatingStatementDetailsRequest.getSellingAndDistributionExpenses() !=null ? operatingStatementDetailsRequest.getSellingAndDistributionExpenses() : 0.0;
-						generalAdminExpPrevious1Year = operatingStatementDetailsRequest.getGeneralAdminExp() !=null ? operatingStatementDetailsRequest.getGeneralAdminExp()  : 0.0 ;
-						netProfitLossPrevious1Year =  operatingStatementDetailsRequest.getNetProfitOrLoss() !=null ? operatingStatementDetailsRequest.getNetProfitOrLoss() : 0.0 ;
-						netSalePrevious1Year = operatingStatementDetailsRequest.getNetSales() !=null ? operatingStatementDetailsRequest.getNetSales() : 0.0 ;
-						totalCostSales = operatingStatementDetailsRequest.getTotalCostSales();
-						//Quality of receivables
-						if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetailsRequest.getTotalGrossSales())){
-							operatingStatementDetailsRequest.setTotalGrossSales(0.0);
+						}else if((previous2Year+"").equals(operatingStatementDetailsRequest.getYear())){
+							directLabourPrevious2Year =operatingStatementDetailsRequest.getDirectLabour() !=null ?  operatingStatementDetailsRequest.getDirectLabour() : 0.0;
+							sellingAndDistributionExpensesPrevious2Year  =operatingStatementDetailsRequest.getSellingAndDistributionExpenses() !=null ? operatingStatementDetailsRequest.getSellingAndDistributionExpenses() : 0.0;
+							generalAdminExpPrevious2Year = operatingStatementDetailsRequest.getGeneralAdminExp() !=null ? operatingStatementDetailsRequest.getGeneralAdminExp()  : 0.0 ;
+							netProfitLossPrevious2Year =operatingStatementDetailsRequest.getNetProfitOrLoss() !=null ? operatingStatementDetailsRequest.getNetProfitOrLoss() : 0.0 ; 
+							netSalePrevious2Year = operatingStatementDetailsRequest.getNetSales() !=null ? operatingStatementDetailsRequest.getNetSales() : 0.0 ;
+							
+						}else if((previous1Year+"").equals(operatingStatementDetailsRequest.getYear())){
+							directLabourPrevious1Year = operatingStatementDetailsRequest.getDirectLabour() !=null ?  operatingStatementDetailsRequest.getDirectLabour() : 0.0; 
+							sellingAndDistributionExpensesPrevious1Year  = operatingStatementDetailsRequest.getSellingAndDistributionExpenses() !=null ? operatingStatementDetailsRequest.getSellingAndDistributionExpenses() : 0.0;
+							generalAdminExpPrevious1Year = operatingStatementDetailsRequest.getGeneralAdminExp() !=null ? operatingStatementDetailsRequest.getGeneralAdminExp()  : 0.0 ;
+							netProfitLossPrevious1Year =  operatingStatementDetailsRequest.getNetProfitOrLoss() !=null ? operatingStatementDetailsRequest.getNetProfitOrLoss() : 0.0 ;
+							netSalePrevious1Year = operatingStatementDetailsRequest.getNetSales() !=null ? operatingStatementDetailsRequest.getNetSales() : 0.0 ;
+							totalCostSales = operatingStatementDetailsRequest.getTotalCostSales();
+							//	Quality of receivables
+							if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetailsRequest.getTotalGrossSales())){
+								operatingStatementDetailsRequest.setTotalGrossSales(0.0);
+							}
+							if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetailsRequest.getDomesticSales() )) {
+								operatingStatementDetailsRequest.setDomesticSales(0.0);
+							}
+							clientLogicCalculationRequest.setQualityOfReceivable( ( operatingStatementDetailsRequest.getDomesticSales() + operatingStatementDetailsRequest.getExportSales() ) / operatingStatementDetailsRequest.getTotalGrossSales() * 12);
 						}
-						if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetailsRequest.getDomesticSales() )) {
-							operatingStatementDetailsRequest.setDomesticSales(0.0);
-						}
-						clientLogicCalculationRequest.setQualityOfReceivable( ( operatingStatementDetailsRequest.getDomesticSales() + operatingStatementDetailsRequest.getExportSales() ) / operatingStatementDetailsRequest.getTotalGrossSales() * 12);
-					}
-				}  
-								
+					}  
+				}				
 				// calculate directorLabour of previous 3 to 2 And 2 to 1  year
 				Double directorLabour3To2 = (directLabourPrevious3Year - directLabourPrevious2Year  )/ ( directLabourPrevious2Year* 100 ) ;
 				Double directorLabour2To1  = (directLabourPrevious1Year - directLabourPrevious2Year  )/ ( directLabourPrevious2Year* 100 ) ;
@@ -7902,16 +7905,18 @@ public ClientLogicCalculationRequest getClientLogicCalculationDetail(Long applic
 				 * netSaleCurrentYear getting from gst 
 				 * 
 				 * */
-				GstResponse gstResponse =	gstClient.getCalculationForScoring(corporateProfileRequest.getGstin());
-				if(! CommonUtils.isObjectListNull(gstResponse, gstResponse.getData())) {
-					netSaleCurrentYear =  (Double) gstResponse.getData() ;
-					if(netSaleCurrentYear - netSalePrevious1Year > 0) {
-						totalNetSaleYears = 1;
-					}
-				}else {
-					logger.info("--------------- GST service not availabel or null in data --------------- gst Responce " + gstResponse);
-				}
+				if(! CommonUtils.isObjectNullOrEmpty(corporateProfileRequest)) {
+				GstResponse gstResponse = corporateProfileRequest.getGstin()!=null ? 	gstClient.getCalculationForScoring(corporateProfileRequest.getGstin()) : null;
 				
+					if(! CommonUtils.isObjectListNull(gstResponse, gstResponse.getData())) {
+						netSaleCurrentYear =  (Double) gstResponse.getData() ;
+						if(netSaleCurrentYear - netSalePrevious1Year > 0) {
+							totalNetSaleYears = 1;
+						}
+					}else {
+						logger.info("--------------- GST service not availabel or null in data --------------- gst Responce " + gstResponse);
+					}
+				}
 				if( netSalePrevious1Year - netSalePrevious2Year   > 0) {
 					totalNetSaleYears =2 ;
 				}else if( ( netSalePrevious2Year - netSalePrevious3Year)  > 0 ) {
@@ -7920,8 +7925,10 @@ public ClientLogicCalculationRequest getClientLogicCalculationDetail(Long applic
 				 
 				clientLogicCalculationRequest.setTotalNetSaleYears(totalNetSaleYears);
 				//Quality of Finished Goods
-				AssetsDetailsRequest assetsDetailsRequest = cmaRequest.getAssetsRequestList().stream().filter(finishedGood -> (previous1Year+"").equals(finishedGood.getYear())).findFirst().orElse(null);
-				clientLogicCalculationRequest.setQualityOfFinishedGood((assetsDetailsRequest.getFinishedGoods()/totalCostSales) * 12) ;
+				if(!CommonUtils.isObjectListNull(cmaRequest , cmaRequest.getAssetsRequestList())) {
+					AssetsDetailsRequest assetsDetailsRequest = cmaRequest.getAssetsRequestList().stream().filter(finishedGood -> (previous1Year+"").equals(finishedGood.getYear())).findFirst().orElse(null);
+					clientLogicCalculationRequest.setQualityOfFinishedGood((assetsDetailsRequest.getFinishedGoods()/totalCostSales) * 12) ;
+				}
 			/*}*/
 			
 		}catch (Exception e) {
@@ -7929,7 +7936,5 @@ public ClientLogicCalculationRequest getClientLogicCalculationDetail(Long applic
 		}	
 		return clientLogicCalculationRequest;
 	}
-
-	
 }
 
