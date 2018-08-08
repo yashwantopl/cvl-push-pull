@@ -1194,7 +1194,7 @@ public enum APIFlags {
 	}
 	public static Object escapeXml(Object obj) throws Exception{
 		if(obj instanceof List) {
-			List<?> lst = (List)obj;
+			List<?> lst = (List<?>)obj;
 			for(Object o : lst) {
 				escapeXml(o);
 			}
