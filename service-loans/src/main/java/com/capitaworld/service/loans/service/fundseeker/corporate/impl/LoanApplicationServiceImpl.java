@@ -7651,7 +7651,17 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 
 		try {
 			ScoringModelReqRes scoringModelReqRes=new ScoringModelReqRes();
-			List<BigInteger> fpProductList=loanApplicationRepository.getFpProductListByApplicationIdAndStageId(applicationId,businessTypeId.longValue());;
+
+			List<BigInteger> fpProductList=null;
+			if(CommonUtils.BusinessType.EXISTING_BUSINESS.getId() == businessTypeId)
+			{
+				 fpProductList=loanApplicationRepository.getFpProductListByApplicationIdAndStageId(applicationId,3l);;
+			}
+			else if(CommonUtils.BusinessType.NEW_TO_BUSINESS.getId() == businessTypeId)
+			{
+				 fpProductList=loanApplicationRepository.getFpProductListByApplicationIdAndStageId(applicationId,105l);;
+			}
+
 			List<Long> scoringLongList = new ArrayList<Long>();
 			for(BigInteger i: fpProductList){
 				scoringLongList.add(i.longValue());
