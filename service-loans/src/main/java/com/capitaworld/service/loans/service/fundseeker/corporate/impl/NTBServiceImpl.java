@@ -150,29 +150,30 @@ public class NTBServiceImpl implements NTBService {
     public Boolean saveFinancialDetails(List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestList, Long applicationId, Long userId, Long directorId) throws Exception {
         logger.info("Entry in saveFinancialDetails() for applicationId : " + applicationId + " userId:" + userId);
         try {
-            for (FinancialArrangementsDetailRequest reqObj : financialArrangementsDetailRequestList) {
-                FinancialArrangementsDetail saveFinObj = null;
-                if (!CommonUtils.isObjectNullOrEmpty(reqObj.getId())) {
-                    saveFinObj = financialArrangementDetailsRepository.findByIdAndIsActive(reqObj.getId(), true);
-                }
-                if (CommonUtils.isObjectNullOrEmpty(saveFinObj)) {
-                    saveFinObj = new FinancialArrangementsDetail();
-                    BeanUtils.copyProperties(reqObj, saveFinObj, "id", "createdBy", "createdDate", "modifiedBy", "modifiedDate", "isActive");
+            if (!CommonUtils.isListNullOrEmpty(financialArrangementsDetailRequestList)) {
+                for (FinancialArrangementsDetailRequest reqObj : financialArrangementsDetailRequestList) {
+                    FinancialArrangementsDetail saveFinObj = null;
+                    if (!CommonUtils.isObjectNullOrEmpty(reqObj.getId())) {
+                        saveFinObj = financialArrangementDetailsRepository.findByIdAndIsActive(reqObj.getId(), true);
+                    }
+                    if (CommonUtils.isObjectNullOrEmpty(saveFinObj)) {
+                        saveFinObj = new FinancialArrangementsDetail();
+                        BeanUtils.copyProperties(reqObj, saveFinObj, "id", "createdBy", "createdDate", "modifiedBy", "modifiedDate", "isActive");
 
-                    saveFinObj.setDirectorBackgroundDetail(directorBackgroundDetailsRepository.findOne(directorId));
-                    saveFinObj.setApplicationId(new LoanApplicationMaster(applicationId));
-                    saveFinObj.setCreatedBy(userId);
-                    saveFinObj.setCreatedDate(new Date());
-                    saveFinObj.setIsActive(true);
-                } else {
-                    BeanUtils.copyProperties(reqObj, saveFinObj, "id", "createdBy", "createdDate", "modifiedBy", "modifiedDate");
-                    saveFinObj.setModifiedBy(userId);
-                    saveFinObj.setModifiedDate(new Date());
+                        saveFinObj.setDirectorBackgroundDetail(directorBackgroundDetailsRepository.findOne(directorId));
+                        saveFinObj.setApplicationId(new LoanApplicationMaster(applicationId));
+                        saveFinObj.setCreatedBy(userId);
+                        saveFinObj.setCreatedDate(new Date());
+                        saveFinObj.setIsActive(true);
+                    } else {
+                        BeanUtils.copyProperties(reqObj, saveFinObj, "id", "createdBy", "createdDate", "modifiedBy", "modifiedDate");
+                        saveFinObj.setModifiedBy(userId);
+                        saveFinObj.setModifiedDate(new Date());
+                    }
+                    financialArrangementDetailsRepository.save(saveFinObj);
                 }
-                financialArrangementDetailsRepository.save(saveFinObj);
+                logger.info("successfully saved data for saveFinancialDetails() applicationId :" + applicationId+ " userId:" + userId);
             }
-            logger.info("successfully saved data for saveFinancialDetails() applicationId :" + applicationId+ " userId:" + userId);
-
             DirectorBackgroundDetail directorBackgroundDetail = directorBackgroundDetailsRepository.findByIdAndIsActive(directorId, true);
             directorBackgroundDetail.setOneFormCompleted(true);
             directorBackgroundDetailsRepository.save(directorBackgroundDetail);
@@ -293,6 +294,11 @@ public class NTBServiceImpl implements NTBService {
             } else {
                 DirectorBackgroundDetail directorBackgroundDetail = directorBackgroundDetailsRepository.findByIdAndIsActive(ntbRequest.getDirectorId(), true);
                 DirectorBackgroundDetailRequest directorBackgroundDetailRequest = new DirectorBackgroundDetailRequest();
+                if(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetail.getEmploymentDetail())){
+                    EmploymentDetailRequest employmentDetailRequest = new EmploymentDetailRequest();
+                    BeanUtils.copyProperties(directorBackgroundDetail.getEmploymentDetail(), employmentDetailRequest);
+                    directorBackgroundDetailRequest.setEmploymentDetailRequest(employmentDetailRequest);
+                }
                 BeanUtils.copyProperties(directorBackgroundDetail, directorBackgroundDetailRequest);
                 return new LoansResponse("Success", HttpStatus.OK.value(), directorBackgroundDetailRequest);
             }
