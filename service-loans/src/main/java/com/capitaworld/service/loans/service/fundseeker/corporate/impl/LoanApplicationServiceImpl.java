@@ -196,6 +196,7 @@ import com.capitaworld.service.notification.utils.ContentType;
 import com.capitaworld.service.notification.utils.NotificationAlias;
 import com.capitaworld.service.notification.utils.NotificationType;
 import com.capitaworld.service.oneform.client.OneFormClient;
+import com.capitaworld.service.oneform.enums.AssessmentOptionForFS;
 import com.capitaworld.service.oneform.enums.CampaignCode;
 import com.capitaworld.service.oneform.enums.Constitution;
 import com.capitaworld.service.oneform.enums.CreditRatingFund;
@@ -6579,6 +6580,8 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 		
 		if(loan!=null) {
 			response.setLoanAmount(loan.getAmount());
+			response.setBusinessTypeId(loan.getBusinessTypeId());
+		
 		}
 		
 		List<DirectorBackgroundDetail> directorList = directorBackgroundDetailsRepository.listPromotorBackgroundFromAppId(applicationId);
@@ -6615,6 +6618,21 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 			}
 		}
 		
+		try {
+			PrimaryCorporateDetail primaryCorporateDetail = primaryCorporateRepository.findOneByApplicationIdId(applicationId);
+			response.setIsPurchaseOfEqup(false);
+			if(primaryCorporateDetail!=null) {
+				if(primaryCorporateDetail.getAssessmentId()!=null) {
+					if(primaryCorporateDetail.getAssessmentId() == AssessmentOptionForFS.EQUIPMENT_MACHINERY.getId()) {
+						response.setIsPurchaseOfEqup(true);
+						response.setCostOfMachinery(primaryCorporateDetail.getCostOfMachinery());
+					}
+				}
+			}
+		}
+		catch (Exception e) {
+			// TODO: handle exception
+		}
 		if(assetsDetails!=null) {
 			response.setGrossBlock(assetsDetails.getGrossBlock());
 		}
