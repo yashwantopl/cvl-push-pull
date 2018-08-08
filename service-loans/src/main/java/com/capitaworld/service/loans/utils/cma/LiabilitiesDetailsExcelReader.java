@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.LiabilitiesDetails;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LiabilitiesDetailsRepository;
+import com.capitaworld.service.loans.utils.CommonUtils;
 
 public class LiabilitiesDetailsExcelReader
 {
@@ -123,7 +124,7 @@ public class LiabilitiesDetailsExcelReader
             cmaLiabilities.setFsLoanApplicationMaster(loanApplicationMaster);
             cmaLiabilities.setStorageDetailsId(storageDetailsId);
             
-            cmaLiabilities.setYear(year);
+            cmaLiabilities.setYear(CommonUtils.getCMAFilterYear(year));
             cmaLiabilities.setFinancialYearlyStatement(financialYearlyStatement);
             cmaLiabilities.setFromApplicationBank(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
             cmaLiabilities.setFromOtherBanks(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));

@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.AssetsDetails;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.AssetsDetailsRepository;
+import com.capitaworld.service.loans.utils.CommonUtils;
 
 
 
@@ -141,7 +142,7 @@ public class AssetsDetailsExcelReader
         	cmaAssets.setLoanApplicationMaster(loanApplicationMaster);
         	cmaAssets.setStorageDetailsId(storageDetailsId);
         	
-        	cmaAssets.setYear(year);
+        	cmaAssets.setYear(CommonUtils.getCMAFilterYear(year));
         	cmaAssets.setFinancialYearlyStatement(financialYearlyStatement);
             cmaAssets.setCashAndBankBalance(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
             cmaAssets.setInvestments(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));

@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.OperatingStatementDetails;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.OperatingStatementDetailsRepository;
+import com.capitaworld.service.loans.utils.CommonUtils;
 
 public class OperatingStatementDetailsExcelReader {
 	public static final Logger log = LoggerFactory.getLogger(OperatingStatementDetailsExcelReader.class);
@@ -123,8 +124,8 @@ public class OperatingStatementDetailsExcelReader {
             
             operatingStatementDetails.setLoanApplicationMaster(loanApplicationMaster);
             operatingStatementDetails.setStorageDetailsId(storageDetailsId);
-     
-            operatingStatementDetails.setYear(year);
+            
+            operatingStatementDetails.setYear(CommonUtils.getCMAFilterYear(year));
             operatingStatementDetails.setFinancialYearlyStatement(financialYearlyStatement);
             operatingStatementDetails.setDomesticSales(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
             operatingStatementDetails.setExportSales(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
