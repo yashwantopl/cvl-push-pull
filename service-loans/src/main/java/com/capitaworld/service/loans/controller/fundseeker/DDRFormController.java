@@ -31,6 +31,7 @@ import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.common.DocumentUploadFlagRequest;
 import com.capitaworld.service.loans.model.ddr.DDRFormDetailsRequest;
 import com.capitaworld.service.loans.model.ddr.DDROneFormResponse;
+import com.capitaworld.service.loans.model.ddr.DDRRequest;
 import com.capitaworld.service.loans.service.fundseeker.corporate.DDRFormService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.service.token.TokenService;
@@ -106,6 +107,69 @@ public class DDRFormController {
 					HttpStatus.OK);
 		}
 	}
+	
+	/**
+	 * GET DDR MERGE FORM DETAILS BY DDR FORM ID
+	 * 
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping(value = "/getCombinedDDR/{appId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getCombinedDDR(@PathVariable("appId") Long appId, HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
+		logger.info("Enter in COMBINED DDR Form Get Method -------------------------->" + appId);
+
+		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+		if (CommonDocumentUtils.isThisClientApplication(request) && !CommonUtils.isObjectNullOrEmpty(clientId)) {
+			userId = clientId;
+		}
+		try {
+			
+			DDRRequest ddrRequest = ddrFormService.getMergeDDR(appId, userId);
+			logger.info("DDR Form Get Successfully---------------------------->");
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse("Successfully get data", HttpStatus.OK.value(), ddrRequest),
+					HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while getting DDR Form Details ==>", e);
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+	}
+	
+	/**
+	 * SAVE DDR MERGE FORM DETAILS BY DDR FORM ID
+	 * 
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping(value = "/saveCombinedDDR/{appId}", method = RequestMethod.POST,consumes = MediaType.APPLICATION_JSON_VALUE , produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> saveCombinedDDR(@RequestBody DDRRequest ddrRequest, HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
+		logger.info("Enter in COMBINED DDR Form SAVE Method -------------------------->");
+
+		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+		if (CommonDocumentUtils.isThisClientApplication(request) && !CommonUtils.isObjectNullOrEmpty(clientId)) {
+			userId = clientId;
+		}
+		if (CommonUtils.isObjectNullOrEmpty(userId)) {
+			logger.info("Invalid Request, UserId is null or Empty, COMBINED DDR Form SAVE Method");
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+		}
+		try {
+			ddrRequest.setUserId(userId);
+			ddrFormService.saveMergeDDR(ddrRequest);
+			logger.info("DDR COMBINED Form Saved Successfully---------------------------->");
+			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Data Saved", HttpStatus.OK.value()), HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while saving COMBINED DDR Form Details ==>", e);
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+	}
 
 	/**
 	 * GET DDR FORM DETAILS BY DDR FORM ID
@@ -156,7 +220,7 @@ public class DDRFormController {
 					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}
 		try {
-			DDROneFormResponse oneFormDetails = ddrFormService.getOneFormDetails(userId, appId);
+			DDROneFormResponse oneFormDetails = ddrFormService.getOneFormDetails(userId, appId,true);
 			logger.info("DDR AutoFilled Form Get Successfully---------------------------->");
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse("Successfully get data", HttpStatus.OK.value(), oneFormDetails), HttpStatus.OK);
@@ -238,7 +302,7 @@ public class DDRFormController {
 
 		try {
 			DDRFormDetailsRequest dDRFormDetailsRequest = ddrFormService.get(appId, userId);
-			DDROneFormResponse oneFormDetails = ddrFormService.getOneFormDetails(userId, appId);
+			DDROneFormResponse oneFormDetails = ddrFormService.getOneFormDetails(userId, appId,true);
 			DDRFormDetailsRequest.printFields(dDRFormDetailsRequest);
 			DDROneFormResponse.printFields(oneFormDetails);
 			Map<String, Object> obj = new HashMap<String, Object>();

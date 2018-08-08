@@ -92,9 +92,9 @@ public class PrimaryCorporateDetail extends LoanApplicationMaster implements Ser
     private Integer competition;
 
     /*
-    * Promoter Contribution Logic
-    * BY Ravina
-    * */
+     * Promoter Contribution Logic
+     * BY Ravina
+     * */
 
     @Column(name = "total_amt_percentage")
     private Double totalAmtPercentage;
@@ -115,6 +115,16 @@ public class PrimaryCorporateDetail extends LoanApplicationMaster implements Ser
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="modified_date")
     private Date modifiedDate;*/
+
+    //Dhaval
+    @Column(name = "state_id")
+    private Long stateId;
+
+    @Column(name = "city_id")
+    private Long cityId;
+
+    @Column(name = "prop_cost")
+    private Double proposedCost;
 
     public PrimaryCorporateDetail() {
     }
@@ -223,7 +233,7 @@ public class PrimaryCorporateDetail extends LoanApplicationMaster implements Ser
     public void setIncrementalTurnover(Double incrementalTurnover) {
         this.incrementalTurnover = incrementalTurnover;
     }
-    
+
     public Date getProposedOperationDate() {
         return proposedOperationDate;
     }
@@ -343,4 +353,29 @@ public class PrimaryCorporateDetail extends LoanApplicationMaster implements Ser
     public void setModifiedDate(Date modifiedDate) {
         this.modifiedDate = modifiedDate;
     }*/
+
+    //Dhaval
+    public Long getStateId() {
+        return stateId;
+    }
+
+    public void setStateId(Long stateId) {
+        this.stateId = stateId;
+    }
+
+    public Long getCityId() {
+        return cityId;
+    }
+
+    public void setCityId(Long cityId) {
+        this.cityId = cityId;
+    }
+
+    public Double getProposedCost() {
+        return proposedCost;
+    }
+
+    public void setProposedCost(Double proposedCost) {
+        this.proposedCost = proposedCost;
+    }
 }
