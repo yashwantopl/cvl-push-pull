@@ -2016,9 +2016,9 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 			CorporateApplicantDetail corporateApplicantDetailTo,  Long userId) {
 		logger.info("================ Enter in copyCMAData() ===========");
 		Calendar calendar = Calendar.getInstance();
-		Double tillYear = (double) calendar.get(Calendar.YEAR);
+		Integer tillYear = calendar.get(Calendar.YEAR);
 
-		Double fromYear = tillYear;
+		Integer fromYear = tillYear;
 
 		List<String> yearList = new ArrayList<String>();
 		yearList.add(--fromYear + "");
@@ -2072,9 +2072,9 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 			CorporateApplicantDetail corporateApplicantDetailTo,  Long userId) {
 		logger.info("================ Enter in copyCoCMAData() ===========");
 		Calendar calendar = Calendar.getInstance();
-		Double tillYear = (double) calendar.get(Calendar.YEAR);
+		Integer tillYear = calendar.get(Calendar.YEAR);
 
-		Double fromYear = tillYear;
+		Integer fromYear = tillYear;
 		List<String> yearList = new ArrayList<String>();
 		yearList.add(--fromYear + "");
 		yearList.add(--fromYear + "");
