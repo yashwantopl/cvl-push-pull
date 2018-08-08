@@ -80,7 +80,7 @@ public class OperatingStatementDetailsExcelReader {
              */
             
              
-        System.out.println("OperatingStatementDetailsExcelReader -----------> "+sheet.getRow(4).getCell(1).getNumericCellValue());       
+            log.info("OperatingStatementDetailsExcelReader -----------> "+sheet.getRow(4).getCell(1).getNumericCellValue());       
 //        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, operatingStatementMappingList,"B",String.valueOf(sheet.getRow(4).getCell(1).getNumericCellValue()),"Audited", operatingStatementDetailsRepository);
 //        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, operatingStatementMappingList,"C",String.valueOf(sheet.getRow(4).getCell(2).getNumericCellValue()),"Audited",operatingStatementDetailsRepository);
 //        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, operatingStatementMappingList,"D",String.valueOf(sheet.getRow(4).getCell(3).getNumericCellValue()),"Audited",operatingStatementDetailsRepository);
@@ -118,7 +118,7 @@ public class OperatingStatementDetailsExcelReader {
                 ++nullCounter;
             }
         }
-        System.out.println(nullCounter);
+        log.info("nullCounter---" + nullCounter);
         if(!(nullCounter==46||nullCounter==47)) {
             OperatingStatementDetails operatingStatementDetails = new OperatingStatementDetails();
             

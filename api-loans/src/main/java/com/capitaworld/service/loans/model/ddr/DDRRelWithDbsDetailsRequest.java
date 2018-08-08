@@ -78,7 +78,7 @@ public class DDRRelWithDbsDetailsRequest implements Serializable {
 	
 	public static void printFields(Object obj) throws Exception {
         Field[] fields = DDRRelWithDbsDetailsRequest.class.getDeclaredFields();
-        System.out.println("length : "+fields.length);
+        
         for(Field field : fields) {
             Object value = field.get(obj);
             if(value instanceof String){

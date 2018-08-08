@@ -113,8 +113,6 @@ public class CommonUtils {
 		calendar.set(Calendar.DAY_OF_MONTH, date);
 		calendar.set(Calendar.MONTH, (month - 1));
 		calendar.set(Calendar.YEAR, year);
-
-		System.out.println("calendar.getTime()=======>" + calendar.getTime().toString());
 		return calendar.getTime();
 	}
 
@@ -129,9 +127,6 @@ public class CommonUtils {
 		result[0] = calendar.get(Calendar.DAY_OF_MONTH);
 		result[1] = calendar.get(Calendar.MONTH) + 1;
 		result[2] = calendar.get(Calendar.YEAR);
-		System.out.println("result[0] day Of Month=======>" + result[0]);
-		System.out.println("result[1] Month=======>" + result[1]);
-		System.out.println("result[2] Year=======>" + result[2]);
 		return result;
 	}
 
@@ -394,7 +389,6 @@ public class CommonUtils {
 			monthsDiff = monthsDiff + today.get(Calendar.MONTH) - birthDay.get(Calendar.MONTH);
 			Integer ageInMonths = yearsInBetween * 12 + monthsDiff;
 			years = ageInMonths / 12;
-			System.out.println("Age :===" + years);
 			return years;
 		} else {
 			return null;
@@ -910,7 +904,6 @@ public class CommonUtils {
 	public static String checkString(Double value) {
 		try {
 			DecimalFormat decimalFormat1 = new DecimalFormat("0.00");
-			System.out.println(decimalFormat1.format(value));
 			return decimalFormat1.format(value);
 		} catch (Exception e) {
 			return "0.00";
@@ -1113,9 +1106,7 @@ public enum APIFlags {
 	
 	public static String getEncodedUserNamePassword(String userName,String password) {
 		String keyToEncode = userName + ":" + password;
-		System.out.println("keyToEncode UPdated===============>" + keyToEncode);
 		String encodedString = "Basic " + Base64.getEncoder().encodeToString(keyToEncode.getBytes());
-		System.out.println("encodedString UPdated===============>" + encodedString);
 		return encodedString;
 	}
 	

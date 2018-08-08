@@ -4,12 +4,14 @@ import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.Date;
 
+import com.capitaworld.service.loans.model.DirectorBackgroundDetailResponse;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DDRFamilyDirectorsDetailsRequest implements Serializable {
 	
 	
+
 	private static final long serialVersionUID = 1L;
 
 	private Long id;
@@ -37,6 +39,8 @@ public class DDRFamilyDirectorsDetailsRequest implements Serializable {
 	private Date modifyDate;
 
 	private Boolean isActive;
+	
+	private DirectorBackgroundDetailResponse directorBackRes;
 
 	public Long getId() {
 		return id;
@@ -141,6 +145,13 @@ public class DDRFamilyDirectorsDetailsRequest implements Serializable {
 	public void setIsActive(Boolean isActive) {
 		this.isActive = isActive;
 	}
+	public DirectorBackgroundDetailResponse getDirectorBackRes() {
+		return directorBackRes;
+	}
+
+	public void setDirectorBackRes(DirectorBackgroundDetailResponse directorBackRes) {
+		this.directorBackRes = directorBackRes;
+	}
 
 	@Override
 	public String toString() {
@@ -154,7 +165,6 @@ public class DDRFamilyDirectorsDetailsRequest implements Serializable {
 	
 	 public static void printFields(Object obj) throws Exception {
          Field[] fields = DDRFamilyDirectorsDetailsRequest.class.getDeclaredFields();
-         System.out.println("length : "+fields.length);
          for(Field field : fields) {
              Object value = field.get(obj);
              if(value instanceof String){
