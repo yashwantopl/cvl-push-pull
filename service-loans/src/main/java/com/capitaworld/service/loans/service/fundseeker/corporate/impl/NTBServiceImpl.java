@@ -201,7 +201,7 @@ public class NTBServiceImpl implements NTBService {
                 return null;
             }
             BeanUtils.copyProperties(primaryCorporateDetail,fundSeekerInputRequestResponse);
-
+            logger.info("Data found for given applicationid ==>"+applicationId + " response Data {}===>"+fundSeekerInputRequestResponse.toString());
             return fundSeekerInputRequestResponse;
         }catch (Exception e){
             logger.info("Exception  in getOthersDetail  :-");
@@ -261,14 +261,34 @@ public class NTBServiceImpl implements NTBService {
 
             primaryCorporateDetailRepository.saveAndFlush(primaryCorporateDetail);
 
+            // =========================== Director details save=======================================================================
+            List<DirectorBackgroundDetailRequest> directorBackgroundDetailRequestList = fundSeekerInputRequestResponse.getDirectorBackgroundDetailRequestsList();
 
-            DirectorBackgroundDetail directorBackgroundDetail = directorBackgroundDetailsRepository.findByIdAndIsActive(fundSeekerInputRequestResponse.getDirectorBackgroundDetailRequestsList().get(0).getId(), true);
+            try {
+                for (DirectorBackgroundDetailRequest reqObj : directorBackgroundDetailRequestList) {
+                    DirectorBackgroundDetail saveDirObj = null;
+                    if (!CommonUtils.isObjectNullOrEmpty(reqObj.getId())) {
+                        saveDirObj = directorBackgroundDetailsRepository.findByIdAndIsActive(reqObj.getId(), true);
+                        logger.info("Old Object Retrived For Director saveDirObj.getId()==========================>{}",saveDirObj.getId());
+                        BeanUtils.copyProperties(reqObj, saveDirObj, "id", "createdBy", "createdDate", "modifiedBy","modifiedDate");
+                        saveDirObj.setModifiedBy(userId);
+                        saveDirObj.setModifiedDate(new Date());
+                    }
+                    directorBackgroundDetailsRepository.save(saveDirObj);
+                }
+            } catch (Exception e) {
+                logger.info("Directors ===============> Throw Exception While Save Director Details -------->");
+                e.printStackTrace();
+            }
+            logger.info("director detail saved successfully");
+            return true;
+
+            //=========================================================================================================================================
+            /*DirectorBackgroundDetail directorBackgroundDetail = directorBackgroundDetailsRepository.findByIdAndIsActive(fundSeekerInputRequestResponse.getDirectorBackgroundDetailRequestsList().get(0).getId(), true);
             directorBackgroundDetail.setIsMainDirector(true);
             directorBackgroundDetail.setModifiedBy(userId);
             directorBackgroundDetail.setModifiedDate(new Date());
-            directorBackgroundDetailsRepository.save(directorBackgroundDetail);
-            logger.info("director detail saved successfully");
-            return true;
+            directorBackgroundDetailsRepository.save(directorBackgroundDetail);*/
 
         }catch (Exception e){
             logger.info("Throw Exception while save and update Others Detail !!");
