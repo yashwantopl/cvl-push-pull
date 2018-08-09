@@ -364,6 +364,9 @@ public class IrrServiceImpl implements IrrService{
 		// -------------------------------------------------------THIRD year data-------------------------------------------------------------------------
 		//========= ==========================================OPERATINGSTATEMENT DETAIL 3 YR========================================================
 		int currentYear = scoringService.getFinYear(aplicationId);
+
+		financialInputRequest.setYear(currentYear-1);
+
 		financialInputRequest.setRatioAnalysisFyFullDate("31-March-"+(currentYear-1));
 		operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStatementDetails(aplicationId, currentYear-1+"");
 

@@ -104,6 +104,7 @@ import com.capitaworld.service.loans.service.fundseeker.corporate.ProposedProduc
 import com.capitaworld.service.loans.service.fundseeker.corporate.SecurityCorporateDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.TotalCostOfProjectService;
 import com.capitaworld.service.loans.service.irr.IrrService;
+import com.capitaworld.service.loans.service.scoring.ScoringService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.matchengine.MatchEngineClient;
@@ -268,6 +269,9 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 	
 	@Autowired
 	private ITRClient itrClient;
+	
+	@Autowired
+	private ScoringService scoringService;
 	
 	private static final Logger logger = LoggerFactory.getLogger(CamReportPdfDetailsServiceImpl.class);
 	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
@@ -474,7 +478,8 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		//FINANCIALS AND NOTES TO ACCOUNTS
 		try {
 			PrimaryCorporateRequest primaryCorporateRequest = primaryCorporateService.get(applicationId, userId);
-			int currentYear = Calendar.getInstance().get(Calendar.YEAR);
+			int currentYear = scoringService.getFinYear(applicationId) -1;
+			map.put("currentYr",currentYear);
 			Long denominationValue = Denomination.getById(loanApplicationMaster.getDenominationId()).getDigit();
 			Integer years[] = {currentYear-3, currentYear-2, currentYear-1};
 			Map<Integer, Object[]> financials = new TreeMap<Integer, Object[]>(Collections.reverseOrder());
@@ -492,7 +497,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				for(int i=0; i<=loanApplicationMaster.getTenure().intValue();i++) {
 					projectedFin.put(currentYear + i, calculateFinancials(userId, applicationId, null, denominationValue, currentYear + i));
 				}
-				map.put("tenure", loanApplicationMaster.getTenure().intValue() +1 );
+				map.put("tenure", loanApplicationMaster.getTenure().intValue() +1);
 			}
 			map.put("projectedFinancials", projectedFin);
 		}catch (Exception e) {
