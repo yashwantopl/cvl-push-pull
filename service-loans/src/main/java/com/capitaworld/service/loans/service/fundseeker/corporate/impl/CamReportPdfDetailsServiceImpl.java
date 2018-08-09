@@ -478,7 +478,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		//FINANCIALS AND NOTES TO ACCOUNTS
 		try {
 			PrimaryCorporateRequest primaryCorporateRequest = primaryCorporateService.get(applicationId, userId);
-			int currentYear = scoringService.getFinYear(applicationId);
+			int currentYear = scoringService.getFinYear(applicationId) -1;
 			map.put("currentYr",currentYear);
 			Long denominationValue = Denomination.getById(loanApplicationMaster.getDenominationId()).getDigit();
 			Integer years[] = {currentYear-3, currentYear-2, currentYear-1};
