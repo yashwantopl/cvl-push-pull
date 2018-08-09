@@ -6603,19 +6603,11 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 		Integer yearInt = cal.get(Calendar.YEAR);
 		String year = String.valueOf(yearInt-1);
 		System.out.println("YEAR ::::::::::::::::::::++++++++++++++>>>> "+ year);
-		AssetsDetails assetsDetails = null; 
-		assetsDetails = assetsDetailsRepository.getAssetsDetails(applicationId, year);
-		if(assetsDetails == null) {
-			year = year+".0";
-			assetsDetails = assetsDetailsRepository.getAssetsDetails(applicationId, year);
-			if(assetsDetails==null) {
-				year = yearInt+"";
-				assetsDetails = assetsDetailsRepository.getAssetsDetails(applicationId, year);
-				if(assetsDetails==null) {
-					year = yearInt+".0";
-					assetsDetails = assetsDetailsRepository.getAssetsDetails(applicationId, year);
-				}
-			}
+		List<Object[]> asset =assetsDetailsRepository.getCMADetail(applicationId,"Audited");
+		logger.info("==================================>15");
+		if(!CommonUtils.isObjectListNull(asset)) {
+			response.setGrossBlock((Double)asset.get(0)[4]);
+			logger.info("Successfully get from asset ");
 		}
 		
 		try {
@@ -6633,10 +6625,6 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 		catch (Exception e) {
 			// TODO: handle exception
 		}
-		if(assetsDetails!=null) {
-			response.setGrossBlock(assetsDetails.getGrossBlock());
-		}
-		
 		return response;
 		}
 		catch (Exception e) {
