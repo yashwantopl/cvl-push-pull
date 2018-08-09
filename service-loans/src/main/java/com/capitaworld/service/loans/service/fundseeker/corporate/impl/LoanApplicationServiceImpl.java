@@ -4310,7 +4310,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 				if(connectResponse.getProceed()) {
 					if(loanApplicationMaster.getCompanyCinNumber()!=null) {
-						mcaAsyncComponent.callMCA(loanApplicationMaster.getCompanyCinNumber(),loanApplicationMaster.getId(),loanApplicationMaster.getUserId());
+						mcaAsyncComponent.callMCAForData(loanApplicationMaster.getCompanyCinNumber(),loanApplicationMaster.getId(),loanApplicationMaster.getUserId());
 					}
 				}
 			} else {
@@ -4424,7 +4424,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 						if(connectResponse.getProceed()) {
 							logger.info("loanApplicationMaster.getCompanyCinNumber()==============>>>"+loanApplicationMaster.getCompanyCinNumber());
 							if(loanApplicationMaster.getCompanyCinNumber()!=null) {
-								mcaAsyncComponent.callMCA(loanApplicationMaster.getCompanyCinNumber(),loanApplicationMaster.getId(),loanApplicationMaster.getUserId());
+								mcaAsyncComponent.callMCAForData(loanApplicationMaster.getCompanyCinNumber(),loanApplicationMaster.getId(),loanApplicationMaster.getUserId());
 							}
 						}
 						

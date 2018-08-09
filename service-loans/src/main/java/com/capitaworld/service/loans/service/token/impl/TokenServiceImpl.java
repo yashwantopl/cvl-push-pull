@@ -58,13 +58,23 @@ public class TokenServiceImpl implements TokenService{
 	@Override
 	public String checkTokenExpiration(String tokenString) {
 		logger.info("=================Enter in checkTokenExpiration() {} ====================== ");
-		
 		System.out.println(tokenExpireTime);
-		TokenDetail tokenDetail =tokenRepository.getTokenByApplicationId(tokenString , tokenExpireTime);
-		if(CommonUtils.isObjectNullOrEmpty(tokenDetail)) {
-			logger.info("-------------------token is expired . Start saving... checkTokenExpiration() {} ------------------------");
+		TokenDetail tokenDetail = tokenRepository.getTokenByApplicationId(tokenString);
+		if (tokenDetail == null) {
+			logger.info("No Token Details FOund FOr token=====>{}",tokenString);
+			return null;
+		}
+		Long dateDifference = CommonUtils.getDateDifference(tokenDetail.getCreatedDate(), new Date(),
+				CommonUtils.DateDiffType.MINUTES);
+		logger.info("Date Diff in Minutes-=====>{}",dateDifference);
+		logger.info("Token Expiry Time-=====>{}",tokenExpireTime);
+		
+		if (dateDifference > tokenExpireTime) {
+			logger.info(
+					"-------------------token is expired . Start saving... checkTokenExpiration() {} ------------------------");
 			tokenRepository.updateTokenAsExpired(tokenString);
-			logger.info("-------------------End Successfully  update expired token... checkTokenExpiration() {} ------------------------");
+			logger.info(
+					"-------------------End Successfully  update expired token... checkTokenExpiration() {} ------------------------");
 			return null;
 		}
 		logger.info("=================Exist from checkTokenExpiration() {} ====================== ");
