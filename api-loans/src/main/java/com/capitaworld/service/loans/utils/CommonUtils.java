@@ -2,6 +2,7 @@ package com.capitaworld.service.loans.utils;
 
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
+import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.Format;
 import java.text.SimpleDateFormat;
@@ -52,7 +53,9 @@ public class CommonUtils {
 	public static final String CW_TL_WCTL_EXCEL="cw_cma_tl_wctl.xlsx";
 	public static final String CO_CMA_EXCEL = "co_cma.xlsx";
    
-	public static final String SCORING_EXCEL ="score_result.xlsx"; 
+	public static final String SCORING_EXCEL ="score_result.xlsx";
+	
+	public static final  DateFormat formatter = new SimpleDateFormat("dd-mm-yyyy");
 	
 	public interface UsersRoles {
 		public static final Long MAKER = 1l;

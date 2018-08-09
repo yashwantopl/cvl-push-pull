@@ -34,10 +34,24 @@ import com.capitaworld.api.eligibility.model.EligibilityResponse;
 import com.capitaworld.cibil.api.model.CibilRequest;
 import com.capitaworld.cibil.api.model.CibilResponse;
 import com.capitaworld.cibil.api.model.msme.company.Base;
-import com.capitaworld.cibil.api.model.msme.company.Base.ResponseReport.ProductSec.BorrowerProfileSec.BorrwerAddressContactDetails;
+import com.capitaworld.cibil.api.model.msme.company.Base.ResponseReport.ProductSec.BorrowerProfileSec.BorrowerDelinquencyReportedOnBorrower;
 import com.capitaworld.cibil.api.model.msme.company.Base.ResponseReport.ProductSec.BorrowerProfileSec.BorrwerDetails;
+import com.capitaworld.cibil.api.model.msme.company.Base.ResponseReport.ProductSec.BorrowerProfileSec.BorrwerIDDetailsVec.BorrwerIDDetails;
+import com.capitaworld.cibil.api.model.msme.company.Base.ResponseReport.ProductSec.CreditProfileSummarySec;
+import com.capitaworld.cibil.api.model.msme.company.Base.ResponseReport.ProductSec.CreditRatingSummaryVec;
+import com.capitaworld.cibil.api.model.msme.company.Base.ResponseReport.ProductSec.DerogatoryInformationSec.DerogatoryInformationBorrower;
 import com.capitaworld.cibil.api.model.msme.company.Base.ResponseReport.ProductSec.EnquiryDetailsInLast24MonthVec;
 import com.capitaworld.cibil.api.model.msme.company.Base.ResponseReport.ProductSec.EnquiryDetailsInLast24MonthVec.EnquiryDetailsInLast24Month;
+import com.capitaworld.cibil.api.model.msme.company.Base.ResponseReport.ProductSec.EnquirySummarySec;
+import com.capitaworld.cibil.api.model.msme.company.Base.ResponseReport.ProductSec.EnquirySummarySec.EnquiryOutsideInstitution;
+import com.capitaworld.cibil.api.model.msme.company.Base.ResponseReport.ProductSec.EnquirySummarySec.EnquiryYourInstitution;
+import com.capitaworld.cibil.api.model.msme.company.Base.ResponseReport.ProductSec.LocationDetailsSec;
+import com.capitaworld.cibil.api.model.msme.company.Base.ResponseReport.ProductSec.LocationDetailsSec.LocationInformationVec;
+import com.capitaworld.cibil.api.model.msme.company.Base.ResponseReport.ProductSec.LocationDetailsSec.LocationInformationVec.LocationInformation;
+import com.capitaworld.cibil.api.model.msme.company.Base.ResponseReport.ProductSec.OustandingBalanceByCFAndAssetClasificationSec;
+import com.capitaworld.cibil.api.model.msme.company.Base.ResponseReport.ProductSec.RelationshipDetailsVec;
+import com.capitaworld.cibil.api.model.msme.company.Base.ResponseReport.ProductSec.RelationshipDetailsVec.RelationshipDetails;
+import com.capitaworld.cibil.api.model.msme.company.Base.ResponseReport.ProductSec.SuitFiledVec;
 import com.capitaworld.cibil.api.model.report.Account;
 import com.capitaworld.cibil.api.model.report.Address;
 import com.capitaworld.cibil.api.model.report.CreditReport;
@@ -260,6 +274,20 @@ import com.capitaworld.sidbi.integration.model.cma.OperatingStatementDetailsRequ
 import com.capitaworld.sidbi.integration.model.commercial.AddressAndContactDetailsRequest;
 import com.capitaworld.sidbi.integration.model.commercial.BorrowersDetailsRequest;
 import com.capitaworld.sidbi.integration.model.commercial.CommercialRequest;
+import com.capitaworld.sidbi.integration.model.commercial.CreditProfileSummaryDetailRequest;
+import com.capitaworld.sidbi.integration.model.commercial.CreditProfileSummaryMasterRequest;
+import com.capitaworld.sidbi.integration.model.commercial.DefaultDetailsRequest;
+import com.capitaworld.sidbi.integration.model.commercial.DelinquencyReportedOnBorrowerRequest;
+import com.capitaworld.sidbi.integration.model.commercial.DerogatoryInformationOfBorrowerRequest;
+import com.capitaworld.sidbi.integration.model.commercial.EnquirySummaryMasterRequest;
+import com.capitaworld.sidbi.integration.model.commercial.EnquirySummaryRequest;
+import com.capitaworld.sidbi.integration.model.commercial.IdentificationDetailsRequest;
+import com.capitaworld.sidbi.integration.model.commercial.LocationDetailsRequest;
+import com.capitaworld.sidbi.integration.model.commercial.OutstandingBalancesByCreditFacilityGroupsDetailStatusRequest;
+import com.capitaworld.sidbi.integration.model.commercial.OutstandingBalancesByCreditFacilityGroupsDetailsRequest;
+import com.capitaworld.sidbi.integration.model.commercial.OutstandingBalancesByCreditFacilityGroupsMasterRequest;
+import com.capitaworld.sidbi.integration.model.commercial.RelationDetailsRequest;
+import com.capitaworld.sidbi.integration.model.commercial.SuitFiledDetailsRequest;
 import com.capitaworld.sidbi.integration.model.ddr.DDRFormDetailsRequest;
 import com.capitaworld.sidbi.integration.model.eligibility.EligibilityDetailRequest;
 import com.capitaworld.sidbi.integration.model.financial.FinancialRequest;
@@ -284,9 +312,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Autowired
 	private Environment environment;
-	
+
 	@Autowired
-	private SidbiIntegrationClient  sidbiIntegrationClient;  
+	private SidbiIntegrationClient sidbiIntegrationClient;
 
 	@Autowired
 	private LoanApplicationRepository loanApplicationRepository;
@@ -329,16 +357,16 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Autowired
 	private LogService logService;
-	
+
 	@Autowired
 	private ScoringClient scoringClient;
 
 	@Autowired
 	private ProposalService proposalService;
-	
+
 	@Autowired
 	private GatewayClient gatewayClient;
-	
+
 	@Autowired
 	private MatchEngineClient matchEngineClient;
 
@@ -362,46 +390,46 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Autowired
 	private RatingClient ratingClient;
-	
+
 	@Autowired
-	private EligibilityClient eligibilityClient; 
-	
+	private EligibilityClient eligibilityClient;
+
 	@Autowired
 	private DirectorBackgroundDetailsRepository directorBackgroundDetailsRepository;
-	
+
 	@Autowired
 	private FinancialArrangementDetailsRepository financialArrangementDetailsRepository;
-	
+
 	@Autowired
 	private AchievementDetailsRepository achievementDetailsRepository;
-	
+
 	@Autowired
 	private ExistingProductDetailsRepository existingProductDetailsRepository;
-	
+
 	@Autowired
 	private ProposedProductDetailsRepository proposedProductDetailsRepository;
-	
+
 	@Autowired
 	private OwnershipDetailsRepository ownershipDetailsRepository;
-	
+
 	@Autowired
 	private CreditRatingOrganizationDetailsRepository creditRatingOrganizationDetailsRepository;
-	
+
 	@Autowired
 	private GuarantorsCorporateDetailRepository guarantorsCorporateDetailRepository;
-	
+
 	@Autowired
 	private MonthlyTurnoverDetailRepository monthlyTurnoverDetailRepository;
-	
+
 	@Autowired
 	private AssociatedConcernDetailRepository associatedConcernDetailRepository;
-	
+
 	@Autowired
 	private CIBILClient cibilClient;
-	
+
 	@Autowired
 	private CMAService cmaService;
-	
+
 	@Value("${capitaworld.service.gateway.product}")
 	private String product;
 
@@ -410,13 +438,13 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Value("${capitaworld.service.gateway.sidbiAmount}")
 	private String sidbiAmount;
-	
+
 	@Value("${capitaworld.sidbi.integration.is_production}")
 	private String isProduction;
 
 	@Autowired
 	private ConnectClient connectClient;
-	
+
 	@Autowired
 	private AnalyzerClient analyzerClient;
 
@@ -431,37 +459,37 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Autowired
 	private PrimaryUnsecuredLoanDetailRepository primaryUnsecuredLoanDetailRepository;
-	
+
 	@Autowired
-    private PrimaryCorporateDetailRepository primaryCorporateRepository;
-	
+	private PrimaryCorporateDetailRepository primaryCorporateRepository;
+
 	@Autowired
-	private DDRFormService dDRFormService; 
+	private DDRFormService dDRFormService;
 
 	@Autowired
 	private IrrService irrService;
-	
-	@Autowired 
+
+	@Autowired
 	private AuditComponent auditComponent;
-	
+
 	@Autowired
 	private AssetsDetailsRepository assetsDetailsRepository;
-	
+
 	@Autowired
-	private MCAAsyncComponent mcaAsyncComponent; 
-	
+	private MCAAsyncComponent mcaAsyncComponent;
+
 	@Autowired
 	private FinanceMeansDetailRepository financeMeansDetailRepository;
-	
-	@Autowired 
-	private TotalCostOfProjectRepository totalCostOfProjectRepository ; 
-	
+
 	@Autowired
-	private SecurityCorporateDetailsRepository securityCorporateDetailsRepository ;
-	
+	private TotalCostOfProjectRepository totalCostOfProjectRepository;
+
+	@Autowired
+	private SecurityCorporateDetailsRepository securityCorporateDetailsRepository;
+
 	@Autowired
 	private PromotorBackgroundDetailsRepository promotorBackgroundDetailsRepository;
-	
+
 	@Autowired
 	private ITRClient itrClient;
 
@@ -479,8 +507,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Autowired
 	OperatingStatementDetailsRepository operatingStatementDetailsRepository;
-	
- 	@Override
+
+	@Override
 	public boolean saveOrUpdate(FrameRequest commonRequest, Long userId) throws Exception {
 		try {
 			LoanApplicationMaster applicationMaster = null;
@@ -547,20 +575,21 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		}
 	}
 
-//	private List<String> getCampaignCodes(Long userId) {
-//		try {
-//			UserResponse response = userClient.getCampaignCodesByUserId(userId);
-//			if (CommonUtils.isObjectNullOrEmpty(response) || CommonUtils.isObjectNullOrEmpty(response.getData())) {
-//				logger.info("No Codes Found for UserId===>{}", userId);
-//			} else {
-//				return (List<String>) response.getData();
-//			}
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//			logger.error("Error while Getting Campaign Codes using Users Client");
-//		}
-//		return Collections.emptyList();
-//	}
+	// private List<String> getCampaignCodes(Long userId) {
+	// try {
+	// UserResponse response = userClient.getCampaignCodesByUserId(userId);
+	// if (CommonUtils.isObjectNullOrEmpty(response) ||
+	// CommonUtils.isObjectNullOrEmpty(response.getData())) {
+	// logger.info("No Codes Found for UserId===>{}", userId);
+	// } else {
+	// return (List<String>) response.getData();
+	// }
+	// } catch (Exception e) {
+	// e.printStackTrace();
+	// logger.error("Error while Getting Campaign Codes using Users Client");
+	// }
+	// return Collections.emptyList();
+	// }
 
 	private void inactiveCampaignDetails(Long userId, String code) {
 		try {
@@ -602,12 +631,14 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			applicationMaster.setCreatedBy(userId);
 			applicationMaster.setCreatedDate(new Date());
 			if (CommonUtils.UserMainType.CORPORATE == CommonUtils.getUserMainType(type.getValue())) {
-				applicationMaster.setApplicationStatusMaster(new ApplicationStatusMaster(CommonUtils.ApplicationStatus.OPEN));
+				applicationMaster
+						.setApplicationStatusMaster(new ApplicationStatusMaster(CommonUtils.ApplicationStatus.OPEN));
 			}
 			applicationMaster.setDdrStatusId(CommonUtils.DdrStatus.OPEN);
 			applicationMaster.setCategoryCode(loanCode.toLowerCase());
 			applicationMaster.setCampaignCode(campaignCode);
-			applicationMaster.setApplicationCode(applicationSequenceService.getApplicationSequenceNumber(type.getValue()));
+			applicationMaster
+					.setApplicationCode(applicationSequenceService.getApplicationSequenceNumber(type.getValue()));
 			applicationMaster.setIsActive(true);
 			applicationMaster = loanApplicationRepository.save(applicationMaster);
 			BeanUtils.copyProperties(applicationMaster, request);
@@ -643,7 +674,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				if (!CommonUtils.isObjectNullOrEmpty(loanEligibilityRequest.getTenure())) {
 					applicationMaster.setTenure(loanEligibilityRequest.getTenure() * 12);
 				}
-				applicationMaster.setCategoryCode(loanEligibilityRequest.getCategoryCode()); // categaoryCode set
+				applicationMaster.setCategoryCode(loanEligibilityRequest.getCategoryCode()); // categaoryCode
+																								// set
 				applicationMaster.setProductId(loanEligibilityRequest.getProductId());
 				applicationMaster.setUserId(userId);
 				applicationMaster.setCreatedBy(userId);
@@ -665,7 +697,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 					break;
 				/*
-				 * case LAS_LOAN: applicationMaster = new PrimaryLasLoanDetail(); break;
+				 * case LAS_LOAN: applicationMaster = new
+				 * PrimaryLasLoanDetail(); break;
 				 */
 				case LAP_LOAN:
 					PrimaryLapLoanDetail lapLoanDetail = primaryLapLoanDetailRepository
@@ -745,15 +778,17 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		BeanUtils.copyProperties(applicationMaster, applicationRequest);
 		/*
 		 * 
-		 * applicationRequest.setApplicationCode(applicationMaster.getApplicationCode())
-		 * ; applicationRequest.setProductId(applicationMaster.getProductId());
+		 * applicationRequest.setApplicationCode(applicationMaster.
+		 * getApplicationCode()) ;
+		 * applicationRequest.setProductId(applicationMaster.getProductId());
 		 * applicationRequest.setAmount(applicationMaster.getAmount());
-		 * applicationRequest.setDenominationId(applicationMaster.getDenominationId());
+		 * applicationRequest.setDenominationId(applicationMaster.
+		 * getDenominationId());
 		 */
 		int userMainType = 0;
-		if(CommonUtils.isObjectNullOrEmpty(applicationMaster.getProductId())){
+		if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getProductId())) {
 			userMainType = CommonUtils.UserMainType.CORPORATE;
-		}else{
+		} else {
 			applicationRequest.setLoanTypeSub(CommonUtils.getCorporateLoanType(applicationMaster.getProductId()));
 			userMainType = CommonUtils.getUserMainType(applicationMaster.getProductId());
 		}
@@ -780,12 +815,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				throw new NullPointerException("Invalid Loan Application ID==>" + id + " of User ID==>" + userId);
 			}
 			BeanUtils.copyProperties(applicationMaster, applicationRequest, "name");
-			if(CommonUtils.isObjectNullOrEmpty(applicationMaster.getProductId())) {
+			if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getProductId())) {
 				return applicationRequest;
 			}
 			applicationRequest.setHasAlreadyApplied(
-					hasAlreadyApplied(userId, applicationMaster.getId(), applicationMaster.getProductId()));			
-			
+					hasAlreadyApplied(userId, applicationMaster.getId(), applicationMaster.getProductId()));
+
 			int userMainType = CommonUtils.getUserMainType(applicationMaster.getProductId());
 			if (userMainType == CommonUtils.UserMainType.CORPORATE) {
 				applicationRequest.setLoanTypeMain(CommonUtils.CORPORATE);
@@ -870,7 +905,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			for (LoanApplicationMaster master : results) {
 				LoanApplicationRequest request = new LoanApplicationRequest();
 				BeanUtils.copyProperties(master, request, "name");
-				if(CommonUtils.isObjectNullOrEmpty(master.getProductId())) {
+				if (CommonUtils.isObjectNullOrEmpty(master.getProductId())) {
 					request.setLoanTypeMain(CommonUtils.CORPORATE);
 					request.setLoanTypeSub("DEBT");
 					requests.add(request);
@@ -941,8 +976,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			response.setApplicationCode(loanApplicationMaster.getApplicationCode());
 			response.setLoan(CommonUtils.LoanType.getType(loanApplicationMaster.getProductId()).getName());
 			response.setAmount(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getAmount())
-					? loanApplicationMaster.getAmount()
-					: 0.0);
+					? loanApplicationMaster.getAmount() : 0.0);
 			response.setCreatedDate(loanApplicationMaster.getCreatedDate());
 			response.setProductId(loanApplicationMaster.getProductId());
 			int userMainType = CommonUtils.getUserMainType(loanApplicationMaster.getProductId());
@@ -1065,7 +1099,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				// fpName = "NA";
 				// }
 				//
-				// parameters.put("fp_name", CommonUtils.isObjectNullOrEmpty(fpName) ? "NA" :
+				// parameters.put("fp_name",
+				// CommonUtils.isObjectNullOrEmpty(fpName) ? "NA" :
 				// fpName);
 				// } catch (Exception e) {
 				// // TODO: handle exception
@@ -1111,10 +1146,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					loanApplicationRequest.setName(fsName);
 					loanApplicationRequest.setIsMailSent(true);
 					/*
-					 * asyncComponent.sendEmailWhenMakerLockFinalDetails(applicationMaster.
+					 * asyncComponent.sendEmailWhenMakerLockFinalDetails(
+					 * applicationMaster.
 					 * getNpAssigneeId(),applicationMaster.getNpUserId(),
-					 * applicationMaster.getApplicationCode(),applicationMaster.getProductId(),
-					 * fsName,applicationMaster.getId());
+					 * applicationMaster.getApplicationCode(),applicationMaster.
+					 * getProductId(), fsName,applicationMaster.getId());
 					 */
 				} else {
 					logger.info("NP userId or assign id null or empty-------------------------------------->");
@@ -1124,14 +1160,15 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			notificationClient.send(notificationRequest);
 			// send FP notification end
 
-			//SMS
-			
+			// SMS
+
 			UsersRequest resp = getEmailMobile(applicationMaster.getNpAssigneeId());
 			Map<String, Object> parameters = new HashMap<String, Object>();
 			parameters.put("url", "https://bit.ly/2IGwvBF");
 			parameters.put("maker_name", getNPName(applicationMaster.getNpUserId()));
 			parameters.put("checker_name", getNPName(applicationMaster.getNpAssigneeId()));
-			sendSMSNotification(applicationMaster.getNpAssigneeId().toString(), parameters, NotificationAlias.SMS_MAKER_LOCKS_ONEFORM, resp.getMobile());
+			sendSMSNotification(applicationMaster.getNpAssigneeId().toString(), parameters,
+					NotificationAlias.SMS_MAKER_LOCKS_ONEFORM, resp.getMobile());
 			// create log when teaser submit
 			logService.saveFsLog(applicationId, LogDateTypeMaster.FINAL_SUBMIT.getId());
 			return loanApplicationRequest;
@@ -1142,9 +1179,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 		}
 	}
-	
-	private void sendSMSNotification(String userId, Map<String, Object> parameters, Long templateId, String... to) throws NotificationException  {
-//		String to[] = {toNo};
+
+	private void sendSMSNotification(String userId, Map<String, Object> parameters, Long templateId, String... to)
+			throws NotificationException {
+		// String to[] = {toNo};
 		NotificationRequest req = new NotificationRequest();
 		req.setClientRefId(userId);
 		Notification notification = new Notification();
@@ -1154,10 +1192,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		notification.setType(NotificationType.SMS);
 		notification.setParameters(parameters);
 		req.addNotification(notification);
-		
+
 		notificationClient.send(req);
-		
+
 	}
+
 	private String getNPName(Long npUserId) throws IOException {
 		if (CommonUtils.isObjectNullOrEmpty(npUserId)) {
 			logger.warn("Np Usesr Id is NULL===>");
@@ -1191,6 +1230,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				.getObjectFromMap((LinkedHashMap<String, Object>) emailMobile.getData(), UsersRequest.class);
 		return request;
 	}
+
 	private Object[] getFPName(Long fpMappingId) {
 		List<Object[]> pm = productMasterRepository.findById(fpMappingId);
 		CommonDocumentUtils.endHook(logger, "getUserDetailsByPrductId");
@@ -1336,10 +1376,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					return false;
 
 				/*
-				 * if
-				 * (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsPrimaryUploadFilled()
-				 * ) || !applicationMaster.getIsPrimaryUploadFilled().booleanValue()) return
-				 * false;
+				 * if (CommonUtils.isObjectNullOrEmpty(applicationMaster.
+				 * getIsPrimaryUploadFilled() ) ||
+				 * !applicationMaster.getIsPrimaryUploadFilled().booleanValue())
+				 * return false;
 				 */
 
 				return true;
@@ -1413,7 +1453,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 				Long coApps = coApplicantDetailRepository.getCoAppCountByApplicationAndUserId(applicationId, userId);
 				/*
-				 * if (CommonUtils.isObjectNullOrEmpty(coApps) && coApps == 0) return false;
+				 * if (CommonUtils.isObjectNullOrEmpty(coApps) && coApps == 0)
+				 * return false;
 				 */
 
 				if (coApps == 2) {
@@ -1432,8 +1473,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				Long guarantors = guarantorDetailsRepository.getGuarantorCountByApplicationAndUserId(applicationId,
 						userId);
 				/*
-				 * if (CommonUtils.isObjectNullOrEmpty(guarantors) && guarantors == 0) return
-				 * false;
+				 * if (CommonUtils.isObjectNullOrEmpty(guarantors) && guarantors
+				 * == 0) return false;
 				 */
 
 				if (guarantors == 2) {
@@ -1722,9 +1763,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				return response;
 			}
 			/*
-			 * if
-			 * (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsPrimaryUploadFilled()
-			 * ) || !applicationMaster.getIsPrimaryUploadFilled().booleanValue()) {
+			 * if (CommonUtils.isObjectNullOrEmpty(applicationMaster.
+			 * getIsPrimaryUploadFilled() ) ||
+			 * !applicationMaster.getIsPrimaryUploadFilled().booleanValue()) {
 			 * response.put("message",
 			 * "Please Fill PRIMARY INFORMATION details to Move Next !");
 			 * response.put("result", false); return response; }
@@ -1737,22 +1778,26 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				response.put("result", false);
 				return response;
 			}
-			/*if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsApplicantDetailsFilled())
-					|| !applicationMaster.getIsApplicantDetailsFilled().booleanValue()) {
-				response.put("message", "Please Fill PROFILE details to Move Next !");
-				response.put("result", false);
-				return response;
-			}
-			if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsApplicantPrimaryFilled())
-					|| !applicationMaster.getIsApplicantPrimaryFilled().booleanValue()) {
-				response.put("message", "Please Fill PRIMARY INFORMATION details to Move Next !");
-				response.put("result", false);
-				return response;
-			}*/
+			/*
+			 * if (CommonUtils.isObjectNullOrEmpty(applicationMaster.
+			 * getIsApplicantDetailsFilled()) ||
+			 * !applicationMaster.getIsApplicantDetailsFilled().booleanValue())
+			 * { response.put("message",
+			 * "Please Fill PROFILE details to Move Next !");
+			 * response.put("result", false); return response; } if
+			 * (CommonUtils.isObjectNullOrEmpty(applicationMaster.
+			 * getIsApplicantPrimaryFilled()) ||
+			 * !applicationMaster.getIsApplicantPrimaryFilled().booleanValue())
+			 * { response.put("message",
+			 * "Please Fill PRIMARY INFORMATION details to Move Next !");
+			 * response.put("result", false); return response; }
+			 */
 			// if
 			// (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsPrimaryUploadFilled())
-			// || !applicationMaster.getIsPrimaryUploadFilled().booleanValue()) {
-			// response.put("message", "Please Fill PRIMARY INFORMATION details to Move Next
+			// || !applicationMaster.getIsPrimaryUploadFilled().booleanValue())
+			// {
+			// response.put("message", "Please Fill PRIMARY INFORMATION details
+			// to Move Next
 			// !");
 			// response.put("result", false);
 			// return response;
@@ -1766,29 +1811,32 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			break;
 		case CommonUtils.TabType.FINAL_DPR_UPLOAD:
 			isPrimaryLocked = isPrimaryLocked(applicationMaster.getId(), applicationMaster.getUserId());
-			/*if (!isPrimaryLocked) {
-				response.put("message", "Please LOCK PRIMARY DETAILS to Move next !");
-				response.put("result", false);
-				return response;
-			}
-			if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsApplicantDetailsFilled())
-					|| !applicationMaster.getIsApplicantDetailsFilled().booleanValue()) {
-				response.put("message", "Please Fill PROFILE details to Move Next !");
-				response.put("result", false);
-				return response;
-			}*/
+			/*
+			 * if (!isPrimaryLocked) { response.put("message",
+			 * "Please LOCK PRIMARY DETAILS to Move next !");
+			 * response.put("result", false); return response; } if
+			 * (CommonUtils.isObjectNullOrEmpty(applicationMaster.
+			 * getIsApplicantDetailsFilled()) ||
+			 * !applicationMaster.getIsApplicantDetailsFilled().booleanValue())
+			 * { response.put("message",
+			 * "Please Fill PROFILE details to Move Next !");
+			 * response.put("result", false); return response; }
+			 */
 			// if
 			// (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsApplicantPrimaryFilled())
-			// || !applicationMaster.getIsApplicantPrimaryFilled().booleanValue()) {
-			// response.put("message", "Please Fill PRIMARY INFORMATION details to Move Next
+			// ||
+			// !applicationMaster.getIsApplicantPrimaryFilled().booleanValue())
+			// {
+			// response.put("message", "Please Fill PRIMARY INFORMATION details
+			// to Move Next
 			// !");
 			// response.put("result", false);
 			// return response;
 			// }
 			/*
-			 * if
-			 * (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsPrimaryUploadFilled()
-			 * ) || !applicationMaster.getIsPrimaryUploadFilled().booleanValue()) {
+			 * if (CommonUtils.isObjectNullOrEmpty(applicationMaster.
+			 * getIsPrimaryUploadFilled() ) ||
+			 * !applicationMaster.getIsPrimaryUploadFilled().booleanValue()) {
 			 * response.put("message",
 			 * "Please Fill PRIMARY INFORMATION details to Move Next !");
 			 * response.put("result", false); return response; }
@@ -1814,22 +1862,24 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				return response;
 			}
 
-			/*if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsApplicantDetailsFilled())
-					|| !applicationMaster.getIsApplicantDetailsFilled().booleanValue()) {
-				response.put("message", "Please Fill PROFILE details to Move Next !");
-				response.put("result", false);
-				return response;
-			}
-			if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsApplicantPrimaryFilled())
-					|| !applicationMaster.getIsApplicantPrimaryFilled().booleanValue()) {
-				response.put("message", "Please Fill PRIMARY INFORMATION details to Move Next !");
-				response.put("result", false);
-				return response;
-			}*/
 			/*
-			 * if
-			 * (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsPrimaryUploadFilled()
-			 * ) || !applicationMaster.getIsPrimaryUploadFilled().booleanValue()) {
+			 * if (CommonUtils.isObjectNullOrEmpty(applicationMaster.
+			 * getIsApplicantDetailsFilled()) ||
+			 * !applicationMaster.getIsApplicantDetailsFilled().booleanValue())
+			 * { response.put("message",
+			 * "Please Fill PROFILE details to Move Next !");
+			 * response.put("result", false); return response; } if
+			 * (CommonUtils.isObjectNullOrEmpty(applicationMaster.
+			 * getIsApplicantPrimaryFilled()) ||
+			 * !applicationMaster.getIsApplicantPrimaryFilled().booleanValue())
+			 * { response.put("message",
+			 * "Please Fill PRIMARY INFORMATION details to Move Next !");
+			 * response.put("result", false); return response; }
+			 */
+			/*
+			 * if (CommonUtils.isObjectNullOrEmpty(applicationMaster.
+			 * getIsPrimaryUploadFilled() ) ||
+			 * !applicationMaster.getIsPrimaryUploadFilled().booleanValue()) {
 			 * response.put("message",
 			 * "Please Fill PRIMARY INFORMATION details to Move Next !");
 			 * response.put("result", false); return response; }
@@ -1847,20 +1897,22 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				return response;
 			}
 			if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsFinalDprUploadFilled())
-						|| !applicationMaster.getIsFinalDprUploadFilled().booleanValue()) {
-					response.put("message", "Please Fill Financial Model details to Move Next !");
-					response.put("result", false);
-					return response;
+					|| !applicationMaster.getIsFinalDprUploadFilled().booleanValue()) {
+				response.put("message", "Please Fill Financial Model details to Move Next !");
+				response.put("result", false);
+				return response;
 			}
 
-			/*if (applicationMaster.getProductId() == LoanType.TERM_LOAN.getValue()) {
-				if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsFinalDprUploadFilled())
-						|| !applicationMaster.getIsFinalDprUploadFilled().booleanValue()) {
-					response.put("message", "Please Fill DPR details to Move Next !");
-					response.put("result", false);
-					return response;
-				}
-			}*/
+			/*
+			 * if (applicationMaster.getProductId() ==
+			 * LoanType.TERM_LOAN.getValue()) { if
+			 * (CommonUtils.isObjectNullOrEmpty(applicationMaster.
+			 * getIsFinalDprUploadFilled()) ||
+			 * !applicationMaster.getIsFinalDprUploadFilled().booleanValue()) {
+			 * response.put("message",
+			 * "Please Fill DPR details to Move Next !"); response.put("result",
+			 * false); return response; } }
+			 */
 			break;
 		default:
 			break;
@@ -2215,10 +2267,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 			// Primary Upload Tab Validating
 			/*
-			 * if
-			 * (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsPrimaryUploadFilled()
-			 * ) || !applicationMaster.getIsPrimaryUploadFilled().booleanValue()) {
-			 * response.put("message", "Please Fill PRIMARY UPLOAD details to Move Next !");
+			 * if (CommonUtils.isObjectNullOrEmpty(applicationMaster.
+			 * getIsPrimaryUploadFilled() ) ||
+			 * !applicationMaster.getIsPrimaryUploadFilled().booleanValue()) {
+			 * response.put("message",
+			 * "Please Fill PRIMARY UPLOAD details to Move Next !");
 			 * response.put("result", false); return response; }
 			 */
 			break;
@@ -2299,10 +2352,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				return response;
 			}
 			/*
-			 * if
-			 * (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsPrimaryUploadFilled()
-			 * ) || !applicationMaster.getIsPrimaryUploadFilled().booleanValue()) {
-			 * response.put("message", "Please Fill PRIMARY UPLOAD details to Move Next !");
+			 * if (CommonUtils.isObjectNullOrEmpty(applicationMaster.
+			 * getIsPrimaryUploadFilled() ) ||
+			 * !applicationMaster.getIsPrimaryUploadFilled().booleanValue()) {
+			 * response.put("message",
+			 * "Please Fill PRIMARY UPLOAD details to Move Next !");
 			 * response.put("result", false); return response; }
 			 */
 			if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsApplicantFinalFilled())
@@ -2400,10 +2454,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				return response;
 			}
 			/*
-			 * if
-			 * (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsPrimaryUploadFilled()
-			 * ) || !applicationMaster.getIsPrimaryUploadFilled().booleanValue()) {
-			 * response.put("message", "Please Fill PRIMARY UPLOAD details to Move Next !");
+			 * if (CommonUtils.isObjectNullOrEmpty(applicationMaster.
+			 * getIsPrimaryUploadFilled() ) ||
+			 * !applicationMaster.getIsPrimaryUploadFilled().booleanValue()) {
+			 * response.put("message",
+			 * "Please Fill PRIMARY UPLOAD details to Move Next !");
 			 * response.put("result", false); return response; }
 			 */
 			if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsApplicantFinalFilled())
@@ -2510,10 +2565,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				return response;
 			}
 			/*
-			 * if
-			 * (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsPrimaryUploadFilled()
-			 * ) || !applicationMaster.getIsPrimaryUploadFilled().booleanValue()) {
-			 * response.put("message", "Please Fill PRIMARY UPLOAD details to Move Next !");
+			 * if (CommonUtils.isObjectNullOrEmpty(applicationMaster.
+			 * getIsPrimaryUploadFilled() ) ||
+			 * !applicationMaster.getIsPrimaryUploadFilled().booleanValue()) {
+			 * response.put("message",
+			 * "Please Fill PRIMARY UPLOAD details to Move Next !");
 			 * response.put("result", false); return response; }
 			 */
 			if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsApplicantFinalFilled())
@@ -2629,10 +2685,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				return response;
 			}
 			/*
-			 * if
-			 * (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsPrimaryUploadFilled()
-			 * ) || !applicationMaster.getIsPrimaryUploadFilled().booleanValue()) {
-			 * response.put("message", "Please Fill PRIMARY UPLOAD details to Move Next !");
+			 * if (CommonUtils.isObjectNullOrEmpty(applicationMaster.
+			 * getIsPrimaryUploadFilled() ) ||
+			 * !applicationMaster.getIsPrimaryUploadFilled().booleanValue()) {
+			 * response.put("message",
+			 * "Please Fill PRIMARY UPLOAD details to Move Next !");
 			 * response.put("result", false); return response; }
 			 */
 			if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsApplicantFinalFilled())
@@ -2711,7 +2768,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		if (CommonUtils.isObjectNullOrEmpty(applicationMaster))
 			return null;
 
-		if(applicationMaster.getProductId() != null) {
+		if (applicationMaster.getProductId() != null) {
 			if (CommonUtils.getUserMainType(applicationMaster.getProductId()) == CommonUtils.UserMainType.RETAIL) {
 				RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository
 						.findOneByApplicationIdId(applicationId);
@@ -2721,8 +2778,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
 						.findOneByApplicationIdId(applicationId);
 				return corporateApplicantDetail.getOrganisationName();
-			}			
-		}else {
+			}
+		} else {
 			CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
 					.findOneByApplicationIdId(applicationId);
 			return corporateApplicantDetail.getOrganisationName();
@@ -2791,10 +2848,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 							loanMstr.getPrimaryFilledCount(), loanMstr.getFinalFilledCount()) / 3);
 					obj.put("loanCode", loanMstr.getApplicationCode());
 					DecimalFormat decimalFormat = new DecimalFormat("#.##");
-					obj.put("amount",
-							!CommonUtils.isObjectListNull(loanMstr.getAmount())
-									? decimalFormat.format(loanMstr.getAmount())
-									: 0);
+					obj.put("amount", !CommonUtils.isObjectListNull(loanMstr.getAmount())
+							? decimalFormat.format(loanMstr.getAmount()) : 0);
 					obj.put("currency", currency);
 					obj.put("tenure", loanMstr.getTenure() != null ? String.valueOf(loanMstr.getTenure() / 12) : null);
 					ProposalMappingRequest proposalMappingRequest = new ProposalMappingRequest();
@@ -2827,9 +2882,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 									.getByNameAndLastUpdateDate(loanMstr.getUserId(), loanMstr.getId());
 							if (!CommonUtils.isListNullOrEmpty(corporateDataList)) {
 								Object[] corporateData = corporateDataList.get(0);
-								obj.put("oneFormName",
-										!CommonUtils.isObjectNullOrEmpty(corporateData[0]) ? corporateData[0].toString()
-												: null);
+								obj.put("oneFormName", !CommonUtils.isObjectNullOrEmpty(corporateData[0])
+										? corporateData[0].toString() : null);
 							}
 						} else {
 							List<Object[]> retailDataList = retailApplicantDetailRepository
@@ -2838,11 +2892,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 								Object[] retailData = retailDataList.get(0);
 								obj.put("oneFormName",
 										(!CommonUtils.isObjectNullOrEmpty(retailData[0]) ? retailData[0].toString()
-												: null)
-												+ " "
+												: null) + " "
 												+ (!CommonUtils.isObjectNullOrEmpty(retailData[1])
-														? retailData[1].toString()
-														: null));
+														? retailData[1].toString() : null));
 							}
 						}
 					}
@@ -2899,10 +2951,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			response.setEmail(!CommonUtils.isObjectNullOrEmpty(usersRequest) ? usersRequest.getEmail() : null);
 			response.setApplicationId(loanApplicationMaster.getApplicationCode());
 			response.setCreateDate(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getCreatedDate())
-					? loanApplicationMaster.getCreatedDate()
-					: null);
+					? loanApplicationMaster.getCreatedDate() : null);
 			response.setProductName(CommonUtils.getUserMainTypeName(loanApplicationMaster.getProductId()));
-			
+
 			LoanType loanType = CommonUtils.LoanType.getType(loanApplicationMaster.getProductId());
 			response.setSubProduct(!CommonUtils.isObjectNullOrEmpty(loanType) ? loanType.getName() : "NA");
 			response.setAbsoluteAmount(loanApplicationMaster.getAmount());
@@ -2934,8 +2985,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 			if (type == 1) {
 				response.setTenure(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getTenure())
-						? Double.valueOf((loanApplicationMaster.getTenure() / 12))
-						: null);
+						? Double.valueOf((loanApplicationMaster.getTenure() / 12)) : null);
 			} else {
 				response.setProfileAndPrimaryLocked(CommonUtils.getYesNo(loanApplicationMaster.getIsPrimaryLocked()));
 				response.setFinalLocked(CommonUtils.getYesNo(loanApplicationMaster.getIsFinalLocked()));
@@ -2960,13 +3010,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 									oneFormClient));
 							response.setState(CommonDocumentUtils.getState(
 									!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredStateId())
-											? corporateApplicantDetail.getRegisteredStateId().longValue()
-											: null,
+											? corporateApplicantDetail.getRegisteredStateId().longValue() : null,
 									oneFormClient));
 							response.setCountry(CommonDocumentUtils.getCountry(
 									!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCountryId())
-											? corporateApplicantDetail.getRegisteredCountryId().longValue()
-											: null,
+											? corporateApplicantDetail.getRegisteredCountryId().longValue() : null,
 									oneFormClient));
 							response.setConstitution(
 									!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getConstitutionId())
@@ -2980,9 +3028,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 										loanApplicationMaster.getId());
 						if (!CommonUtils.isListNullOrEmpty(corporateDataList)) {
 							Object[] corporateData = corporateDataList.get(0);
-							response.setName(
-									!CommonUtils.isObjectNullOrEmpty(corporateData[0]) ? corporateData[0].toString()
-											: null);
+							response.setName(!CommonUtils.isObjectNullOrEmpty(corporateData[0])
+									? corporateData[0].toString() : null);
 							if (!CommonUtils.isObjectNullOrEmpty(corporateData[1])) {
 								response.setLastUpdatedDate(corporateData[1].toString());
 							}
@@ -3001,18 +3048,15 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 									oneFormClient));
 							response.setState(CommonDocumentUtils.getState(
 									!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getPermanentStateId())
-											? retailApplicantDetail.getPermanentStateId().longValue()
-											: null,
+											? retailApplicantDetail.getPermanentStateId().longValue() : null,
 									oneFormClient));
 							response.setCountry(CommonDocumentUtils.getCountry(
 									!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getPermanentCountryId())
-											? retailApplicantDetail.getPermanentCountryId().longValue()
-											: null,
+											? retailApplicantDetail.getPermanentCountryId().longValue() : null,
 									oneFormClient));
 							response.setConstitution(
 									!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getGenderId())
-											? Gender.getById(retailApplicantDetail.getGenderId()).getValue()
-											: null);
+											? Gender.getById(retailApplicantDetail.getGenderId()).getValue() : null);
 
 							if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getBirthDate())) {
 								response.setAge(CommonUtils.calculateAge(retailApplicantDetail.getBirthDate()));
@@ -3026,10 +3070,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 							Object[] retailData = retailDataList.get(0);
 							response.setName(
 									(!CommonUtils.isObjectNullOrEmpty(retailData[0]) ? retailData[0].toString() : null)
-											+ " "
-											+ (!CommonUtils.isObjectNullOrEmpty(retailData[1])
-													? retailData[1].toString()
-													: null));
+											+ " " + (!CommonUtils.isObjectNullOrEmpty(retailData[1])
+													? retailData[1].toString() : null));
 							if (!CommonUtils.isObjectNullOrEmpty(retailData[2])) {
 								response.setLastUpdatedDate(retailData[2].toString());
 							}
@@ -3085,11 +3127,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			response.setMobile(
 					!CommonUtils.isObjectNullOrEmpty(usersRequest.getMobile()) ? usersRequest.getMobile() : null);
 			response.setCampaignCode(!CommonUtils.isObjectNullOrEmpty(usersRequest.getCampaignCode())
-					? CampaignCode.getById(Integer.valueOf(usersRequest.getCampaignCode())).toString()
-					: "Direct");
-			response.setLastLoginDate(
-					!CommonUtils.isObjectNullOrEmpty(usersRequest.getSignUpDate()) ? usersRequest.getSignUpDate()
-							: null);
+					? CampaignCode.getById(Integer.valueOf(usersRequest.getCampaignCode())).toString() : "Direct");
+			response.setLastLoginDate(!CommonUtils.isObjectNullOrEmpty(usersRequest.getSignUpDate())
+					? usersRequest.getSignUpDate() : null);
 			response.setProductName(CommonUtils.LoanType.getType(loanApplicationMaster.getProductId()).getName());
 
 			response.setProfileCount(CommonUtils.getBowlCount(loanApplicationMaster.getDetailsFilledCount(), null));
@@ -3190,11 +3230,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				response.setMobile(
 						!CommonUtils.isObjectNullOrEmpty(usersRequest.getMobile()) ? usersRequest.getMobile() : null);
 				response.setCampaignCode(!CommonUtils.isObjectNullOrEmpty(usersRequest.getCampaignCode())
-						? CampaignCode.getById(Integer.valueOf(usersRequest.getCampaignCode())).toString()
-						: "Direct");
-				response.setLastLoginDate(
-						!CommonUtils.isObjectNullOrEmpty(usersRequest.getSignUpDate()) ? usersRequest.getSignUpDate()
-								: null);
+						? CampaignCode.getById(Integer.valueOf(usersRequest.getCampaignCode())).toString() : "Direct");
+				response.setLastLoginDate(!CommonUtils.isObjectNullOrEmpty(usersRequest.getSignUpDate())
+						? usersRequest.getSignUpDate() : null);
 				response.setProductName(CommonUtils.LoanType.getType(loanApplicationMaster.getProductId()).getName());
 
 				response.setProfileCount(CommonUtils.getBowlCount(loanApplicationMaster.getDetailsFilledCount(), null));
@@ -3341,16 +3379,15 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 							.filter(x -> x.getId().equals(loanApplicationMaster.getUserId())).findFirst().orElse(null);
 					response.setEmail(
 							!CommonUtils.isObjectNullOrEmpty(usersRequest.getEmail()) ? usersRequest.getEmail() : null);
-					response.setMobile(
-							!CommonUtils.isObjectNullOrEmpty(usersRequest.getMobile()) ? usersRequest.getMobile()
-									: null);
+					response.setMobile(!CommonUtils.isObjectNullOrEmpty(usersRequest.getMobile())
+							? usersRequest.getMobile() : null);
 					response.setCampaignCode(!CommonUtils.isObjectNullOrEmpty(usersRequest.getCampaignCode())
 							? CampaignCode.getById(Integer.valueOf(usersRequest.getCampaignCode())).toString()
 							: "Direct");
 					response.setLastLoginDate(!CommonUtils.isObjectNullOrEmpty(usersRequest.getSignUpDate())
-							? usersRequest.getSignUpDate()
-							: null);
-					response.setProductName(CommonUtils.LoanType.getType(loanApplicationMaster.getProductId()).getName());
+							? usersRequest.getSignUpDate() : null);
+					response.setProductName(
+							CommonUtils.LoanType.getType(loanApplicationMaster.getProductId()).getName());
 
 					response.setProfileCount(
 							CommonUtils.getBowlCount(loanApplicationMaster.getDetailsFilledCount(), null));
@@ -3461,11 +3498,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			response.setMobile(
 					!CommonUtils.isObjectNullOrEmpty(usersRequest.getMobile()) ? usersRequest.getMobile() : null);
 			response.setCampaignCode(!CommonUtils.isObjectNullOrEmpty(usersRequest.getCampaignCode())
-					? CampaignCode.getById(Integer.valueOf(usersRequest.getCampaignCode())).toString()
-					: "Direct");
-			response.setLastLoginDate(
-					!CommonUtils.isObjectNullOrEmpty(usersRequest.getSignUpDate()) ? usersRequest.getSignUpDate()
-							: null);
+					? CampaignCode.getById(Integer.valueOf(usersRequest.getCampaignCode())).toString() : "Direct");
+			response.setLastLoginDate(!CommonUtils.isObjectNullOrEmpty(usersRequest.getSignUpDate())
+					? usersRequest.getSignUpDate() : null);
 			response.setProductName(CommonUtils.LoanType.getType(loanApplicationMaster.getProductId()).getName());
 
 			response.setProfileCount(CommonUtils.getBowlCount(loanApplicationMaster.getDetailsFilledCount(), null));
@@ -3615,11 +3650,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			response.setMobile(
 					!CommonUtils.isObjectNullOrEmpty(usersRequest.getMobile()) ? usersRequest.getMobile() : null);
 			response.setCampaignCode(!CommonUtils.isObjectNullOrEmpty(usersRequest.getCampaignCode())
-					? CampaignCode.getById(Integer.valueOf(usersRequest.getCampaignCode())).toString()
-					: "Direct");
-			response.setLastLoginDate(
-					!CommonUtils.isObjectNullOrEmpty(usersRequest.getSignUpDate()) ? usersRequest.getSignUpDate()
-							: null);
+					? CampaignCode.getById(Integer.valueOf(usersRequest.getCampaignCode())).toString() : "Direct");
+			response.setLastLoginDate(!CommonUtils.isObjectNullOrEmpty(usersRequest.getSignUpDate())
+					? usersRequest.getSignUpDate() : null);
 			response.setProductName(CommonUtils.LoanType.getType(loanApplicationMaster.getProductId()).getName());
 			ReportResponse reportResponse = master.stream()
 					.filter(x -> x.getApplicationId().equals(loanApplicationMaster.getId())).findFirst().orElse(null);
@@ -4032,8 +4065,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		logger.info("Entry in setEligibleLoanAmount()");
 		try {
 			Long finalUserId = CommonUtils.isObjectNullOrEmpty(applicationRequest.getClientId())
-					? applicationRequest.getUserId()
-					: applicationRequest.getClientId();
+					? applicationRequest.getUserId() : applicationRequest.getClientId();
 			int i = loanApplicationRepository.setEligibleAmount(applicationRequest.getId(), finalUserId,
 					applicationRequest.getAmount());
 			logger.info("No Of updated row in Eligible Amount===>" + i);
@@ -4196,22 +4228,21 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 				logger.info("Start updateLoanApplicationMaster when Payment Mode in ONLINE() in SIDBI");
 
-				
 				GatewayRequest gatewayRequest = new GatewayRequest();
-				
+
 				UsersRequest usersRequest = null;
 				try {
 					UserResponse emailMobile = userClient.getEmailMobile(userId);
-					usersRequest = MultipleJSONObjectHelper
-							.getObjectFromMap((LinkedHashMap<String, Object>) emailMobile.getData(), UsersRequest.class);
+					usersRequest = MultipleJSONObjectHelper.getObjectFromMap(
+							(LinkedHashMap<String, Object>) emailMobile.getData(), UsersRequest.class);
 				} catch (Exception e) {
 					logger.info("Throw Exception While Get User Email and Mobile");
 					e.printStackTrace();
-				} 
-				
-				if(!CommonUtils.isObjectNullOrEmpty(usersRequest)) {
+				}
+
+				if (!CommonUtils.isObjectNullOrEmpty(usersRequest)) {
 					gatewayRequest.setEmail(usersRequest.getEmail());
-					gatewayRequest.setPhone(usersRequest.getMobile());					
+					gatewayRequest.setPhone(usersRequest.getMobile());
 				} else {
 					gatewayRequest.setEmail("hakimuddin@capitaworld.com");
 					gatewayRequest.setPhone("7869585058");
@@ -4240,61 +4271,66 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		return paymentRequest.getTypeOfPayment();
 	}
 
-	
 	@Override
 	public void updateSkipPayment(Long userId, Long applicationId, Long orgId, Long fpProductId) throws Exception {
-		
+
 		logger.info("Enter in Update Skip Payment Details !!");
-		
-		//UPDATE PAYMENT STATE IN LOAN MASTER
+
+		// UPDATE PAYMENT STATE IN LOAN MASTER
 		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(applicationId);
-		
+
 		if (loanApplicationMaster == null) {
 			throw new NullPointerException("Invalid Loan Application ID==>" + applicationId);
 		}
-		/*LoanApplicationRequest applicationRequest = new LoanApplicationRequest();
-		BeanUtils.copyProperties(loanApplicationMaster, applicationRequest);*/
+		/*
+		 * LoanApplicationRequest applicationRequest = new
+		 * LoanApplicationRequest();
+		 * BeanUtils.copyProperties(loanApplicationMaster, applicationRequest);
+		 */
 		loanApplicationMaster.setPaymentStatus(com.capitaworld.service.gateway.utils.CommonUtils.PaymentStatus.BYPASS);
 		loanApplicationRepository.save(loanApplicationMaster);
-		
-		//UPDATE CONNECT POST PAYMENT
+
+		// UPDATE CONNECT POST PAYMENT
 		try {
-			ConnectResponse connectResponse = connectClient.postPayment(applicationId, userId,loanApplicationMaster.getBusinessTypeId());
-			
+			ConnectResponse connectResponse = connectClient.postPayment(applicationId, userId,
+					loanApplicationMaster.getBusinessTypeId());
+
 			if (!CommonUtils.isObjectListNull(connectResponse)) {
 				logger.info("Connector Response ----------------------------->" + connectResponse.toString());
 				logger.info("Before Start Saving Phase 1 Sidbi API ------------------->" + orgId);
-				if(orgId==10L) {
+				if (orgId == 10L) {
 					logger.info("Start Saving Phase 1 sidbi API -------------------->" + loanApplicationMaster.getId());
 					Long fpMappingId = null;
 					try {
-					}catch(Exception e) {
+					} catch (Exception e) {
 						e.printStackTrace();
 					}
-					savePhese1DataToSidbi(loanApplicationMaster.getId(), userId,orgId,fpProductId);
+					savePhese1DataToSidbi(loanApplicationMaster.getId(), userId, orgId, fpProductId);
 				}
 
-				if(connectResponse.getProceed()) {
-					if(loanApplicationMaster.getCompanyCinNumber()!=null) {
-						mcaAsyncComponent.callMCA(loanApplicationMaster.getCompanyCinNumber(),loanApplicationMaster.getId(),loanApplicationMaster.getUserId());
+				if (connectResponse.getProceed()) {
+					if (loanApplicationMaster.getCompanyCinNumber() != null) {
+						mcaAsyncComponent.callMCA(loanApplicationMaster.getCompanyCinNumber(),
+								loanApplicationMaster.getId(), loanApplicationMaster.getUserId());
 					}
 				}
 			} else {
 				logger.info("Connector Response null or empty");
 				throw new Exception("Something went wrong while call connect client for " + applicationId);
-			}	
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new Exception("Something went wrong while call connect client for " + applicationId);
 		}
-		
-		//TRUE MATCHES PROPOSAL
+
+		// TRUE MATCHES PROPOSAL
 		try {
-			ProposalMappingResponse proposalMappingResponse = proposalDetailsClient.activateProposalOnPayment(applicationId);
-			if(!CommonUtils.isObjectNullOrEmpty(proposalMappingResponse)) {
-				logger.info("Proposal Mapping Response---------------> "+proposalMappingResponse.toString());
-				if(proposalMappingResponse.getStatus() != HttpStatus.OK.value()) {
-					throw new Exception(proposalMappingResponse.getMessage());	
+			ProposalMappingResponse proposalMappingResponse = proposalDetailsClient
+					.activateProposalOnPayment(applicationId);
+			if (!CommonUtils.isObjectNullOrEmpty(proposalMappingResponse)) {
+				logger.info("Proposal Mapping Response---------------> " + proposalMappingResponse.toString());
+				if (proposalMappingResponse.getStatus() != HttpStatus.OK.value()) {
+					throw new Exception(proposalMappingResponse.getMessage());
 				}
 			} else {
 				logger.info("Proposal Mapping Response Null or Empty---------------> ");
@@ -4304,17 +4340,16 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			e.printStackTrace();
 			throw new Exception("Something went wrong while call proposal client for " + applicationId);
 		}
-		
-		logger.info("Exit on Update Skip Payment Details ");		
+
+		logger.info("Exit on Update Skip Payment Details ");
 	}
-	
-	
+
 	@Override
-	public LoanApplicationRequest updateLoanApplicationMasterPaymentStatus(PaymentRequest paymentRequest, Long userId) throws Exception {
+	public LoanApplicationRequest updateLoanApplicationMasterPaymentStatus(PaymentRequest paymentRequest, Long userId)
+			throws Exception {
 		logger.info("start updateLoanApplicationMasterPaymentStatus()");
 		try {
-			
-			
+
 			GatewayRequest gatewayRequest = new GatewayRequest();
 			gatewayRequest.setApplicationId(paymentRequest.getApplicationId());
 			gatewayRequest.setUserId(userId);
@@ -4323,19 +4358,20 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			gatewayRequest.setTxnId(paymentRequest.getTrxnId());
 			gatewayRequest.setFirstName(paymentRequest.getNameOfEntity());
 			gatewayRequest.setResponseParams(paymentRequest.getResponseParams());
-			
+
 			Boolean updatePayment = false;
 			ProposalMappingResponse respProp = null;
 			if ("SIDBI_FEES".equals(paymentRequest.getPurposeCode())) {
 				if ("Success".equals(paymentRequest.getStatus())) {
 					try {
-						logger.info("Start update true proposal-------------------------->" + paymentRequest.getApplicationId());
-						respProp = proposalDetailsClient.activateProposalOnPayment(paymentRequest.getApplicationId());	
+						logger.info("Start update true proposal-------------------------->"
+								+ paymentRequest.getApplicationId());
+						respProp = proposalDetailsClient.activateProposalOnPayment(paymentRequest.getApplicationId());
 					} catch (Exception e) {
 						logger.info("Throw Exception WHile Activate Proposals");
 						e.printStackTrace();
 					}
-					
+
 				}
 			}
 			try {
@@ -4344,13 +4380,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				logger.info("THROW EXCEPTION WHILE UPDATE PAYMENT ON GATEWAY CLIENT");
 				e.printStackTrace();
 			}
-			
 
 			if ("SIDBI_FEES".equals(paymentRequest.getPurposeCode())) {
 				Long orgId = null;
 				LoanApplicationMaster loanApplicationMaster = loanApplicationRepository
 						.findOne(paymentRequest.getApplicationId());
-				
+
 				if (loanApplicationMaster == null) {
 					throw new NullPointerException(
 							"Invalid Loan Application ID==>" + paymentRequest.getApplicationId());
@@ -4359,85 +4394,100 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				LoanApplicationRequest applicationRequest = new LoanApplicationRequest();
 				BeanUtils.copyProperties(loanApplicationMaster, applicationRequest);
 				loanApplicationMaster.setPaymentStatus(paymentRequest.getStatus());
-				logger.info("Business Type Id===============>"+loanApplicationMaster.getBusinessTypeId());
+				logger.info("Business Type Id===============>" + loanApplicationMaster.getBusinessTypeId());
 				loanApplicationRepository.save(loanApplicationMaster);
 				try {
-					
-					if ("Success".equals(paymentRequest.getStatus())) {
-						
-					Long fpProductId = null;
-					if(respProp != null && respProp.getData() != null) {
-						ProposalMappingRequest mappingRequest = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)respProp.getData(), ProposalMappingRequest.class);
-						fpProductId = mappingRequest.getFpProductId();
-					}
-					logger.info("Call Connector client for update payment status");
-					ConnectResponse connectResponse = connectClient.postPayment(paymentRequest.getApplicationId(),
-							userId,loanApplicationMaster.getBusinessTypeId());
-					
-					if (!CommonUtils.isObjectListNull(connectResponse)) {
-						logger.info("Connector Response ----------------------------->" + connectResponse.toString());
-						logger.info("Before Start Saving Phase 1 Sidbi API ------------------->" + orgId);
-//						if(orgId==10L) {
-							logger.info("Start Saving Phase 1 sidbi API -------------------->" + loanApplicationMaster.getId());
-							try {
-								savePhese1DataToSidbi(loanApplicationMaster.getId(), userId,orgId,fpProductId);								
-							}catch(Exception e) {
-								e.printStackTrace();
-								logger.error("Error while Saving Phase1 data to Organization Id====>{}",orgId);
-							}
-//						}
-						logger.info("connectResponse.getProceed()==============>>>"+connectResponse.getProceed());
-						if(connectResponse.getProceed()) {
-							logger.info("loanApplicationMaster.getCompanyCinNumber()==============>>>"+loanApplicationMaster.getCompanyCinNumber());
-							if(loanApplicationMaster.getCompanyCinNumber()!=null) {
-								mcaAsyncComponent.callMCA(loanApplicationMaster.getCompanyCinNumber(),loanApplicationMaster.getId(),loanApplicationMaster.getUserId());
-							}
-						}
-						
-					} else {
-						logger.info("Connector Response null or empty");
-					}
-					
-					ProposalMappingResponse response = proposalDetailsClient.getInPricipleById(paymentRequest.getApplicationId());
-					if(response!=null && response.getData()!=null) {
-					logger.info("Inside Congratulations");
-					
-					Map<String, Object> proposalresp = MultipleJSONObjectHelper.getObjectFromMap((Map<String, Object>) response.getData(), Map.class);
-//					ProposalMappingResponse resp = proposalDetailsClient.getActivateProposalById(Long.valueOf(proposalresp.get("fp_product_id").toString()), paymentRequest.getApplicationId());
-//					ProposalMappingRequest proposalMappingRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<String, Object>) resp.getData(), ProposalMappingRequest.class);
-					
-					if(proposalresp!=null) {
-					applicationRequest.setLoanAmount(proposalresp.get("amount")!=null?Double.valueOf(proposalresp.get("amount").toString() ):0.0 );
-					applicationRequest.setTenure(proposalresp.get("tenure")!=null?Double.valueOf(proposalresp.get("tenure").toString() ):0.0 );
-					applicationRequest.setEmiAmount(proposalresp.get("emi_amount")!=null?Double.valueOf(proposalresp.get("emi_amount").toString() ):0.0 );
-					applicationRequest.setTypeOfLoan(CommonUtils.LoanType.getType(applicationRequest.getProductId()).toString());
-					applicationRequest.setInterestRate(proposalresp.get("rate_interest")!=null?Double.valueOf(proposalresp.get("rate_interest").toString() ):0.0 );
-					applicationRequest.setOnlinePaymentSuccess(updatePayment);
-					applicationRequest.setNameOfEntity(paymentRequest.getNameOfEntity());
-					orgId =proposalresp.get("org_id")!=null ? Long.valueOf(proposalresp.get("org_id").toString()): null;
-					
-					applicationRequest.setFundProvider(orgId!=null ? CommonUtils.getOrganizationName(orgId) : null);
-					
 
-			  }
-					
-				}else {
-						throw new NullPointerException("Invalid user");
-					}
-				}
-					else {
+					if ("Success".equals(paymentRequest.getStatus())) {
+
+						Long fpProductId = null;
+						if (respProp != null && respProp.getData() != null) {
+							ProposalMappingRequest mappingRequest = MultipleJSONObjectHelper.getObjectFromMap(
+									(LinkedHashMap<String, Object>) respProp.getData(), ProposalMappingRequest.class);
+							fpProductId = mappingRequest.getFpProductId();
+						}
+						logger.info("Call Connector client for update payment status");
+						ConnectResponse connectResponse = connectClient.postPayment(paymentRequest.getApplicationId(),
+								userId, loanApplicationMaster.getBusinessTypeId());
+
+						if (!CommonUtils.isObjectListNull(connectResponse)) {
+							logger.info(
+									"Connector Response ----------------------------->" + connectResponse.toString());
+							logger.info("Before Start Saving Phase 1 Sidbi API ------------------->" + orgId);
+							// if(orgId==10L) {
+							logger.info("Start Saving Phase 1 sidbi API -------------------->"
+									+ loanApplicationMaster.getId());
+							try {
+								savePhese1DataToSidbi(loanApplicationMaster.getId(), userId, orgId, fpProductId);
+							} catch (Exception e) {
+								e.printStackTrace();
+								logger.error("Error while Saving Phase1 data to Organization Id====>{}", orgId);
+							}
+							// }
+							logger.info("connectResponse.getProceed()==============>>>" + connectResponse.getProceed());
+							if (connectResponse.getProceed()) {
+								logger.info("loanApplicationMaster.getCompanyCinNumber()==============>>>"
+										+ loanApplicationMaster.getCompanyCinNumber());
+								if (loanApplicationMaster.getCompanyCinNumber() != null) {
+									mcaAsyncComponent.callMCA(loanApplicationMaster.getCompanyCinNumber(),
+											loanApplicationMaster.getId(), loanApplicationMaster.getUserId());
+								}
+							}
+
+						} else {
+							logger.info("Connector Response null or empty");
+						}
+
+						ProposalMappingResponse response = proposalDetailsClient
+								.getInPricipleById(paymentRequest.getApplicationId());
+						if (response != null && response.getData() != null) {
+							logger.info("Inside Congratulations");
+
+							Map<String, Object> proposalresp = MultipleJSONObjectHelper
+									.getObjectFromMap((Map<String, Object>) response.getData(), Map.class);
+							// ProposalMappingResponse resp =
+							// proposalDetailsClient.getActivateProposalById(Long.valueOf(proposalresp.get("fp_product_id").toString()),
+							// paymentRequest.getApplicationId());
+							// ProposalMappingRequest proposalMappingRequest =
+							// MultipleJSONObjectHelper.getObjectFromMap((Map<String,
+							// Object>) resp.getData(),
+							// ProposalMappingRequest.class);
+
+							if (proposalresp != null) {
+								applicationRequest.setLoanAmount(proposalresp.get("amount") != null
+										? Double.valueOf(proposalresp.get("amount").toString()) : 0.0);
+								applicationRequest.setTenure(proposalresp.get("tenure") != null
+										? Double.valueOf(proposalresp.get("tenure").toString()) : 0.0);
+								applicationRequest.setEmiAmount(proposalresp.get("emi_amount") != null
+										? Double.valueOf(proposalresp.get("emi_amount").toString()) : 0.0);
+								applicationRequest.setTypeOfLoan(
+										CommonUtils.LoanType.getType(applicationRequest.getProductId()).toString());
+								applicationRequest.setInterestRate(proposalresp.get("rate_interest") != null
+										? Double.valueOf(proposalresp.get("rate_interest").toString()) : 0.0);
+								applicationRequest.setOnlinePaymentSuccess(updatePayment);
+								applicationRequest.setNameOfEntity(paymentRequest.getNameOfEntity());
+								orgId = proposalresp.get("org_id") != null
+										? Long.valueOf(proposalresp.get("org_id").toString()) : null;
+
+								applicationRequest
+										.setFundProvider(orgId != null ? CommonUtils.getOrganizationName(orgId) : null);
+
+							}
+
+						} else {
+							throw new NullPointerException("Invalid user");
+						}
+					} else {
 						logger.info("Payment Failed");
 					}
 				} catch (Exception e) {
 					logger.info("THROW EXCEPTION WHILE CALLING PROPOSAL DETAILS FROM MATCHE ENGINE");
 					e.printStackTrace();
 				}
-				
+
 				logger.info("End of Congratulations");
 				return applicationRequest;
 			}
-
-			
 
 			LoanApplicationRequest loanRequest = getFromClient(paymentRequest.getApplicationId());
 
@@ -4490,8 +4540,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		}
 	}
 
-
-
 	@Override
 	public GatewayRequest getPaymentStatus(PaymentRequest paymentRequest, Long userId, Long ClientId) throws Exception {
 		logger.info("start getPaymentStatus()");
@@ -4532,7 +4580,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			e.printStackTrace();
 		}
 		IndustryResponse industryResponse = irrIndustryRequest.getIndustryResponse();
-		return !CommonUtils.isObjectNullOrEmpty(industryResponse) ? industryResponse.getBusinessTypeId() : null;			
+		return !CommonUtils.isObjectNullOrEmpty(industryResponse) ? industryResponse.getBusinessTypeId() : null;
 	}
 
 	@Override
@@ -4587,7 +4635,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			}
 			// SETTING ADDRESS
 			String address = null;
-			if(!CommonUtils.isObjectNullOrEmpty(applicationMaster.getProductId())) {
+			if (!CommonUtils.isObjectNullOrEmpty(applicationMaster.getProductId())) {
 				int mainType = CommonUtils.getUserMainType(applicationMaster.getProductId().intValue());
 				if (CommonUtils.UserMainType.CORPORATE == mainType) {
 					CorporateApplicantDetail applicantDetail = corporateApplicantDetailRepository
@@ -4596,14 +4644,15 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 						address = CommonDocumentUtils.getAdministrativeOfficeAddress(applicantDetail, oneFormClient);
 					}
 				} else {
-					RetailApplicantDetail applicantDetail = retailApplicantDetailRepository.findOneByApplicationIdId(id);
+					RetailApplicantDetail applicantDetail = retailApplicantDetailRepository
+							.findOneByApplicationIdId(id);
 					if (!CommonUtils.isObjectNullOrEmpty(applicantDetail)) {
 						address = CommonDocumentUtils.getPermenantAddress(applicantDetail, oneFormClient);
 					}
 				}
 				applicationRequest.setAddress(!CommonUtils.isObjectNullOrEmpty(address) ? address : "NA");
-			}else {
-				logger.info("No ProductId Found========>");	
+			} else {
+				logger.info("No ProductId Found========>");
 			}
 			return applicationRequest;
 		} catch (Exception e) {
@@ -4698,9 +4747,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap(
 					(LinkedHashMap<String, Object>) userResponse.getData(), FundProviderDetailsRequest.class);
 
-			//disbursementRequest.setFpName(fundProviderDetailsRequest.getOrganizationName());
+			// disbursementRequest.setFpName(fundProviderDetailsRequest.getOrganizationName());
 			String fpAddress = "";
-
 
 			List<Long> stateList = new ArrayList<>();
 			if (!CommonUtils.isObjectNullOrEmpty(fundProviderDetailsRequest.getStateId()))
@@ -4742,8 +4790,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				}
 			}
 
-
-
 			disbursementRequest.setFpAddress(fpAddress);
 
 			disbursementRequest.setLoanName(LoanType.getType(loanApplicationMaster.getProductId()).getName());
@@ -4769,16 +4815,18 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			}
 			disbursementRequest.setFpImage(imagePath);
 
-			//For Fetching Sanctioned amount
-			LoanSanctionDomain loanSanctionDomain =loanSanctionRepository.findByAppliationId(disbursementRequest.getApplicationId());
-			if(!CommonUtils.isObjectNullOrEmpty(loanSanctionDomain) ){
+			// For Fetching Sanctioned amount
+			LoanSanctionDomain loanSanctionDomain = loanSanctionRepository
+					.findByAppliationId(disbursementRequest.getApplicationId());
+			if (!CommonUtils.isObjectNullOrEmpty(loanSanctionDomain)) {
 				disbursementRequest.setSenctionedAmount(loanSanctionDomain.getSanctionAmount());
 				disbursementRequest.setTenure(loanSanctionDomain.getTenure());
 				disbursementRequest.setRoi(loanSanctionDomain.getRoi());
 			}
 
-			//For List of disbursed amount
-			disbursementRequest.setLoanDisbursementRequestList(loanDisbursementService.getDisbursedList(disbursementRequest.getApplicationId()));
+			// For List of disbursed amount
+			disbursementRequest.setLoanDisbursementRequestList(
+					loanDisbursementService.getDisbursedList(disbursementRequest.getApplicationId()));
 
 		} catch (Exception e) {
 			logger.warn("error while getting details of disbursement", e);
@@ -4840,15 +4888,15 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 
 	@Override
-	public Long createMsmeLoan(Long userId,Boolean isActive,Integer businessTypeId) {
-		logger.info("IsActive======================>{}",isActive);
-		
-		if(isActive != null && isActive) {
+	public Long createMsmeLoan(Long userId, Boolean isActive, Integer businessTypeId) {
+		logger.info("IsActive======================>{}", isActive);
+
+		if (isActive != null && isActive) {
 			int inActiveCount = loanApplicationRepository.inActiveCorporateLoan(userId);
-			logger.info("Inactivated Application Count of Users are ====== {} ",inActiveCount);			
+			logger.info("Inactivated Application Count of Users are ====== {} ", inActiveCount);
 		}
 		logger.info("Entry in createMsmeLoan--------------------------->" + userId);
-		LoanApplicationMaster corporateLoan = loanApplicationRepository.getCorporateLoan(userId,businessTypeId);
+		LoanApplicationMaster corporateLoan = loanApplicationRepository.getCorporateLoan(userId, businessTypeId);
 		if (!CommonUtils.isObjectNullOrEmpty(corporateLoan)) {
 			logger.info("Corporate Application Id is Already Exists===>{}", corporateLoan.getId());
 			return corporateLoan.getId();
@@ -4863,12 +4911,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		corporateLoan.setIsActive(true);
 		logger.info("after set is active true");
 		corporateLoan.setBusinessTypeId(businessTypeId);
-        corporateLoan.setCurrencyId(Currency.RUPEES.getId());
+		corporateLoan.setCurrencyId(Currency.RUPEES.getId());
 		corporateLoan.setDenominationId(Denomination.ABSOLUTE.getId());
 		logger.info("Going to Create new Corporate UserId===>{}", userId);
 		corporateLoan = loanApplicationRepository.save(corporateLoan);
 		logger.info("Created New Corporate Loan of User Id==>{}", userId);
-		logger.info("Setting Last Application is as Last access Id in User Table---->" +corporateLoan.getIsActive());
+		logger.info("Setting Last Application is as Last access Id in User Table---->" + corporateLoan.getIsActive());
 		UsersRequest usersRequest = new UsersRequest();
 		usersRequest.setLastAccessApplicantId(corporateLoan.getId());
 		usersRequest.setId(userId);
@@ -4879,11 +4927,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Override
 	public boolean updateProductDetails(LoanApplicationRequest loanApplicationRequest) {
-		logger.info("Application id -------------------------------->"+loanApplicationRequest.getId());
+		logger.info("Application id -------------------------------->" + loanApplicationRequest.getId());
 		logger.info("Request Object---------------------------->" + loanApplicationRequest.toString());
 		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.getById(loanApplicationRequest.getId());
 		if (CommonUtils.isObjectNullOrEmpty(loanApplicationMaster)) {
-			logger.info("Loan master no found-------------------------------->"+loanApplicationRequest.getId());
+			logger.info("Loan master no found-------------------------------->" + loanApplicationRequest.getId());
 			return false;
 		}
 		loanApplicationMaster.setAmount(loanApplicationRequest.getAmount());
@@ -4892,20 +4940,21 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		loanApplicationMaster.setIsApplicantDetailsFilled(true);
 		loanApplicationMaster.setIsApplicantPrimaryFilled(true);
 		loanApplicationMaster.setIsPrimaryLocked(true);
-		if(!CommonUtils.isObjectNullOrEmpty(loanApplicationRequest.getNpOrgId())) {
-			loanApplicationMaster.setNpOrgId(loanApplicationRequest.getNpOrgId());	
+		if (!CommonUtils.isObjectNullOrEmpty(loanApplicationRequest.getNpOrgId())) {
+			loanApplicationMaster.setNpOrgId(loanApplicationRequest.getNpOrgId());
 		}
-		
+
 		LoanType type = CommonUtils.LoanType.getType(loanApplicationRequest.getProductId());
 		if (!CommonUtils.isObjectNullOrEmpty(type)) {
 			loanApplicationMaster
 					.setApplicationCode(applicationSequenceService.getApplicationSequenceNumber(type.getValue()));
 		}
 		loanApplicationRepository.save(loanApplicationMaster);
-		
-		if(CommonUtils.LoanType.WORKING_CAPITAL.getValue() == loanApplicationRequest.getProductId()) {
-			PrimaryWorkingCapitalLoanDetail wcLoan = primaryWorkingCapitalLoanDetailRepository.findByApplicationIdIdAndIsActive(loanApplicationMaster.getId(), true);
-			if(CommonUtils.isObjectNullOrEmpty(wcLoan)) {
+
+		if (CommonUtils.LoanType.WORKING_CAPITAL.getValue() == loanApplicationRequest.getProductId()) {
+			PrimaryWorkingCapitalLoanDetail wcLoan = primaryWorkingCapitalLoanDetailRepository
+					.findByApplicationIdIdAndIsActive(loanApplicationMaster.getId(), true);
+			if (CommonUtils.isObjectNullOrEmpty(wcLoan)) {
 				wcLoan = new PrimaryWorkingCapitalLoanDetail();
 				wcLoan.setId(loanApplicationMaster.getId());
 				wcLoan.setApplicationId(loanApplicationMaster);
@@ -4923,20 +4972,25 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		} else if (CommonUtils.LoanType.UNSECURED_LOAN.getValue() == loanApplicationRequest.getProductId()) {
 			PrimaryUnsecuredLoanDetail unsLoan = primaryUnsecuredLoanDetailRepository
 					.findByApplicationIdIdAndIsActive(loanApplicationMaster.getId(), true);
-			if(CommonUtils.isObjectNullOrEmpty(unsLoan)) {
+			if (CommonUtils.isObjectNullOrEmpty(unsLoan)) {
 				unsLoan = new PrimaryUnsecuredLoanDetail();
 				unsLoan.setId(loanApplicationMaster.getId());
 				unsLoan.setApplicationId(loanApplicationMaster);
 				primaryUnsecuredLoanDetailRepository.save(unsLoan);
 			}
 		}
-		
+
 		try {
 			logger.info("Call Post Matche -------------------------------------->");
-			ConnectResponse postMatches = connectClient.postMatches(loanApplicationMaster.getId(), loanApplicationMaster.getUserId(), !CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getBusinessTypeId()) ? loanApplicationMaster.getBusinessTypeId() : CommonUtils.BusinessType.EXISTING_BUSINESS.getId());
-			if(!CommonUtils.isObjectNullOrEmpty(postMatches)) {
+			ConnectResponse postMatches = connectClient.postMatches(loanApplicationMaster.getId(),
+					loanApplicationMaster.getUserId(),
+					!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getBusinessTypeId())
+							? loanApplicationMaster.getBusinessTypeId()
+							: CommonUtils.BusinessType.EXISTING_BUSINESS.getId());
+			if (!CommonUtils.isObjectNullOrEmpty(postMatches)) {
 				logger.info("Response form Connect lient ---------------->" + postMatches.toString());
-				logger.info("Successfully update loan data-------------------------------->"+loanApplicationRequest.getId());
+				logger.info("Successfully update loan data-------------------------------->"
+						+ loanApplicationRequest.getId());
 				return postMatches.getProceed();
 			} else {
 				logger.info("Response form Connect lient ---------------->" + null);
@@ -4951,28 +5005,30 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	public int inActiveApplication(Long id, Long userId) {
 		logger.info("Entry in inActiveApplication");
 		int inActiveApplication = loanApplicationRepository.inActiveApplication(id, userId);
-		logger.info("Inactivated Count==================>{}",inActiveApplication);
+		logger.info("Inactivated Count==================>{}", inActiveApplication);
 		logger.info("Exit in inActiveApplication");
 		return 0;
 	}
 
 	@Override
-	public boolean savePhese1DataToSidbi(Long applicationId, Long userId,Long organizationId,Long fpProductMappingId) {
-		GenerateTokenRequest generateTokenRequest =null;
+	public boolean savePhese1DataToSidbi(Long applicationId, Long userId, Long organizationId,
+			Long fpProductMappingId) {
+		GenerateTokenRequest generateTokenRequest = null;
 		PrimaryCorporateDetail applicationMaster = null;
 		try {
-			generateTokenRequest = setUrlAndTokenInSidbiClient(organizationId , applicationId);
-			if(CommonUtils.isObjectNullOrEmpty(generateTokenRequest)) {
+			generateTokenRequest = setUrlAndTokenInSidbiClient(organizationId, applicationId);
+			if (CommonUtils.isObjectNullOrEmpty(generateTokenRequest)) {
 				logger.warn("Something went wrong while setting URL and Token in savePhese1DataToSidbi()");
 				return false;
 			}
-		}catch(Exception e) {
+		} catch (Exception e) {
 			logger.error("Something goes wrong while setUrlAndTokenInSidbiClient savePhese1DataToSidbi() ");
 			e.printStackTrace();
-			logger.error("Exception while getting token from SidbiIntegrationClient -------------- applicationId " +applicationId );
+			logger.error("Exception while getting token from SidbiIntegrationClient -------------- applicationId "
+					+ applicationId);
 			return false;
 		}
-		
+
 		Boolean savePrelimInfo = false;
 		Boolean scoringDetails = false;
 		Boolean matchesParameters = false;
@@ -4982,325 +5038,467 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		Boolean saveCmaDetails = false;
 		try {
 			AuditMaster audit = auditComponent.getAudit(applicationId, true, AuditComponent.PRELIM_INFO);
-			if(audit == null) {
-				//Get and Create Loan Master
+			if (audit == null) {
+				// Get and Create Loan Master
 				applicationMaster = primaryCorporateRepository.findOneByApplicationIdId(applicationId);
-				if(applicationMaster == null) {
-					logger.info("Loan Application Found Null====>{}",applicationId);
+				if (applicationMaster == null) {
+					logger.info("Loan Application Found Null====>{}", applicationId);
 					return false;
 				}
-				//Create Prelim Sheet Object	
-				ProfileReqRes prelimData = getPrelimData(applicationMaster,userId);
-				if(prelimData == null) {
+				// Create Prelim Sheet Object
+				ProfileReqRes prelimData = getPrelimData(applicationMaster, userId);
+				if (prelimData == null) {
 					logger.info("ProfileReqRes ==> Prelim Sheet Object is Null in savePhese1DataToSidbi() ");
-					auditComponent.updateAudit(AuditComponent.PRELIM_INFO, applicationId, userId, "ProfileReqRes ==> Prelim Sheet Object is Null ProfileReqRes prelimData  ==> " + prelimData,  savePrelimInfo);
+					auditComponent.updateAudit(AuditComponent.PRELIM_INFO, applicationId, userId,
+							"ProfileReqRes ==> Prelim Sheet Object is Null ProfileReqRes prelimData  ==> " + prelimData,
+							savePrelimInfo);
 					setTokenAsExpired(generateTokenRequest);
 					return false;
 				}
 				try {
-						logger.info("Start Saving ProfileReqRes in savePhese1DataToSidbi() ");
-						savePrelimInfo = sidbiIntegrationClient.savePrelimInfo(prelimData,generateTokenRequest.getToken());
-						logger.info("Sucessfull Saved ProfileReqRes in savePhese1DataToSidbi() ");
-						auditComponent.updateAudit(AuditComponent.PRELIM_INFO, applicationId, userId, null,  savePrelimInfo);					
-				}catch(Exception e) {
-					logger.info("Exception while saving ProfileReqRes in savePhese1DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",applicationId,fpProductMappingId +" Mgs " +e.getMessage());
+					logger.info("Start Saving ProfileReqRes in savePhese1DataToSidbi() ");
+					savePrelimInfo = sidbiIntegrationClient.savePrelimInfo(prelimData, generateTokenRequest.getToken());
+					logger.info("Sucessfull Saved ProfileReqRes in savePhese1DataToSidbi() ");
+					auditComponent.updateAudit(AuditComponent.PRELIM_INFO, applicationId, userId, null, savePrelimInfo);
+				} catch (Exception e) {
+					logger.info(
+							"Exception while saving ProfileReqRes in savePhese1DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",
+							applicationId, fpProductMappingId + " Mgs " + e.getMessage());
 					e.printStackTrace();
-					if(e.getMessage().contains("401")) {
-						auditComponent.updateAudit(AuditComponent.PRELIM_INFO, applicationId, userId,  "Unauthorized! while saving ProfileReqRes in savePhese1DataToSidbi() ==> for ApplicationId  ====>{}}"+applicationId +" Mgs " +e.getMessage() ,savePrelimInfo);
+					if (e.getMessage().contains("401")) {
+						auditComponent.updateAudit(AuditComponent.PRELIM_INFO, applicationId, userId,
+								"Unauthorized! while saving ProfileReqRes in savePhese1DataToSidbi() ==> for ApplicationId  ====>{}}"
+										+ applicationId + " Mgs " + e.getMessage(),
+								savePrelimInfo);
 						logger.error("Invalid Token Details");
 						setTokenAsExpired(generateTokenRequest);
-						return false;						
-					}else {
-						auditComponent.updateAudit(AuditComponent.PRELIM_INFO, applicationId, userId,  "Exceptions while saving ProfileReqRes in savePhese1DataToSidbi() ==> for ApplicationId  ====>{}}"+applicationId +" Mgs " +e.getMessage() ,savePrelimInfo);
+						return false;
+					} else {
+						auditComponent.updateAudit(AuditComponent.PRELIM_INFO, applicationId, userId,
+								"Exceptions while saving ProfileReqRes in savePhese1DataToSidbi() ==> for ApplicationId  ====>{}}"
+										+ applicationId + " Mgs " + e.getMessage(),
+								savePrelimInfo);
 					}
 				}
-				
-			}else {
+
+			} else {
 				logger.info("PrelimInfo Already Saved so not Going to Save Again===>");
 			}
-			
-			
-			
-			//Set Match Parameters Starts
+
+			// Set Match Parameters Starts
 			audit = auditComponent.getAudit(applicationId, true, AuditComponent.MATCHES_PARAMETER);
-			if(audit == null) {
+			if (audit == null) {
 				try {
-					MatchesParameterRequest parameterRequest = createMatchesParameterRequest(applicationId, fpProductMappingId,applicationMaster.getProductId());
-					if(parameterRequest == null) {
-						logger.info("MatchesParameterRequest Not Found in savePhese1DataToSidbi() ==> for ApplicationId ====>{}FpProductId====>{}",applicationId,fpProductMappingId);
-						auditComponent.updateAudit(AuditComponent.MATCHES_PARAMETER, applicationId, userId, "MatchesParameterRequest Not Found for ApplicationId ====>{} "+applicationId+" FpProductId====>{} "+fpProductMappingId , matchesParameters);
+					MatchesParameterRequest parameterRequest = createMatchesParameterRequest(applicationId,
+							fpProductMappingId, applicationMaster.getProductId());
+					if (parameterRequest == null) {
+						logger.info(
+								"MatchesParameterRequest Not Found in savePhese1DataToSidbi() ==> for ApplicationId ====>{}FpProductId====>{}",
+								applicationId, fpProductMappingId);
+						auditComponent.updateAudit(AuditComponent.MATCHES_PARAMETER,
+								applicationId, userId, "MatchesParameterRequest Not Found for ApplicationId ====>{} "
+										+ applicationId + " FpProductId====>{} " + fpProductMappingId,
+								matchesParameters);
 						setTokenAsExpired(generateTokenRequest);
 						return false;
-					}else {
-							logger.error("Start Saving MatchesParameterRequest in savePhese1DataToSidbi() ");
-							matchesParameters = sidbiIntegrationClient.saveMatchesParameter(parameterRequest,generateTokenRequest.getToken());
-							logger.info("Sucessfully save MatchesParameterRequest in savePhese1DataToSidbi()  ====>{}FpProductId====>{}",applicationId,fpProductMappingId);
-							auditComponent.updateAudit(AuditComponent.MATCHES_PARAMETER, applicationId, userId,null , matchesParameters);
+					} else {
+						logger.error("Start Saving MatchesParameterRequest in savePhese1DataToSidbi() ");
+						matchesParameters = sidbiIntegrationClient.saveMatchesParameter(parameterRequest,
+								generateTokenRequest.getToken());
+						logger.info(
+								"Sucessfully save MatchesParameterRequest in savePhese1DataToSidbi()  ====>{}FpProductId====>{}",
+								applicationId, fpProductMappingId);
+						auditComponent.updateAudit(AuditComponent.MATCHES_PARAMETER, applicationId, userId, null,
+								matchesParameters);
 					}
-				}catch(Exception e) {
+				} catch (Exception e) {
 					e.printStackTrace();
-					logger.info("Exception in  MatchesParameterRequest in savePhese1DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",applicationId,fpProductMappingId +" Mgs " +e.getMessage());
-					if(e.getMessage().contains("401")) {
-						auditComponent.updateAudit(AuditComponent.MATCHES_PARAMETER, applicationId, userId, "Unauthorized! in  MatchesParameterRequest in savePhese1DataToSidbi()  ====>{}applicationId "+applicationId+" Msg ==> "+e.getMessage(),  matchesParameters);
+					logger.info(
+							"Exception in  MatchesParameterRequest in savePhese1DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",
+							applicationId, fpProductMappingId + " Mgs " + e.getMessage());
+					if (e.getMessage().contains("401")) {
+						auditComponent.updateAudit(AuditComponent.MATCHES_PARAMETER, applicationId, userId,
+								"Unauthorized! in  MatchesParameterRequest in savePhese1DataToSidbi()  ====>{}applicationId "
+										+ applicationId + " Msg ==> " + e.getMessage(),
+								matchesParameters);
 						logger.error("Invalid Token Details");
-						setTokenAsExpired(generateTokenRequest);
-						return false;						
-					}else {
-						auditComponent.updateAudit(AuditComponent.MATCHES_PARAMETER, applicationId, userId, "Exceptions in  MatchesParameterRequest in savePhese1DataToSidbi()  ====>{}applicationId "+applicationId+" Msg ==> "+e.getMessage(),  matchesParameters);
-					}
-				}	
-			}else {
-				logger.info("Matches Parameters Already Saved so not Going to Save Again===>");	
-			}
-			//Set Match Parameters Ends
-			
-			
-			//Set Bank Statement Starts
-			audit = auditComponent.getAudit(applicationId, true, AuditComponent.BANK_STATEMENT);
-			if(audit == null) {
-				try {
-					com.capitaworld.sidbi.integration.model.bankstatement.Data data = createBankStatementRequest(applicationId);
-					if(data == null) {
-						logger.info("Bank Statement data Request Not Found  in savePhese1DataToSidbi()   for ApplicationId ====>{}FpProductId====>{}",applicationId,fpProductMappingId);
-						auditComponent.updateAudit(AuditComponent.BANK_STATEMENT, applicationId, userId, "\"Bank Statement data Request Not Found for ApplicationId ====>{} "+applicationId + "FpProductId====>{}"+fpProductMappingId,  bankStatement);
 						setTokenAsExpired(generateTokenRequest);
 						return false;
-					}else {
-						logger.info("Start Saving BankStatemetnRequest in savePhese1DataToSidbi() ");
-						bankStatement = sidbiIntegrationClient.saveBankStatement(data,generateTokenRequest.getToken());
-						logger.info("Sucessfully save BankStatemetnRequest in savePhese1DataToSidbi()  ====>{}FpProductId====>{}",applicationId,fpProductMappingId);
-						auditComponent.updateAudit(AuditComponent.BANK_STATEMENT, applicationId, userId, null, bankStatement);					
-					}
-				}catch(Exception e) {
-					logger.error("Exception in  BankStatementRequest in savePhese1DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",applicationId,fpProductMappingId +" Mgs " +e.getMessage());
-					e.printStackTrace();
-					if(e.getMessage().contains("401")) {
-						auditComponent.updateAudit(AuditComponent.BANK_STATEMENT, applicationId, userId, "Unauthorized! in  BankStatementRequest in savePhese1DataToSidbi() ==> for applicationId====>{} "+applicationId+" Msg ==> "+e.getMessage() ,bankStatement);
-						logger.error("Invalid Token Details");
-						setTokenAsExpired(generateTokenRequest);
-						return false;						
-					}else {
-						auditComponent.updateAudit(AuditComponent.BANK_STATEMENT, applicationId, userId, "Exceptions! in  BankStatementRequest in savePhese1DataToSidbi() ==> for applicationId====>{} "+applicationId+" Msg ==> "+e.getMessage() ,bankStatement);
+					} else {
+						auditComponent.updateAudit(AuditComponent.MATCHES_PARAMETER, applicationId, userId,
+								"Exceptions in  MatchesParameterRequest in savePhese1DataToSidbi()  ====>{}applicationId "
+										+ applicationId + " Msg ==> " + e.getMessage(),
+								matchesParameters);
 					}
 				}
-			}else {
+			} else {
+				logger.info("Matches Parameters Already Saved so not Going to Save Again===>");
+			}
+			// Set Match Parameters Ends
+
+			// Set Bank Statement Starts
+			audit = auditComponent.getAudit(applicationId, true, AuditComponent.BANK_STATEMENT);
+			if (audit == null) {
+				try {
+					com.capitaworld.sidbi.integration.model.bankstatement.Data data = createBankStatementRequest(
+							applicationId);
+					if (data == null) {
+						logger.info(
+								"Bank Statement data Request Not Found  in savePhese1DataToSidbi()   for ApplicationId ====>{}FpProductId====>{}",
+								applicationId, fpProductMappingId);
+						auditComponent
+								.updateAudit(AuditComponent.BANK_STATEMENT, applicationId, userId,
+										"\"Bank Statement data Request Not Found for ApplicationId ====>{} "
+												+ applicationId + "FpProductId====>{}" + fpProductMappingId,
+										bankStatement);
+						setTokenAsExpired(generateTokenRequest);
+						return false;
+					} else {
+						logger.info("Start Saving BankStatemetnRequest in savePhese1DataToSidbi() ");
+						bankStatement = sidbiIntegrationClient.saveBankStatement(data, generateTokenRequest.getToken());
+						logger.info(
+								"Sucessfully save BankStatemetnRequest in savePhese1DataToSidbi()  ====>{}FpProductId====>{}",
+								applicationId, fpProductMappingId);
+						auditComponent.updateAudit(AuditComponent.BANK_STATEMENT, applicationId, userId, null,
+								bankStatement);
+					}
+				} catch (Exception e) {
+					logger.error(
+							"Exception in  BankStatementRequest in savePhese1DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",
+							applicationId, fpProductMappingId + " Mgs " + e.getMessage());
+					e.printStackTrace();
+					if (e.getMessage().contains("401")) {
+						auditComponent.updateAudit(AuditComponent.BANK_STATEMENT, applicationId, userId,
+								"Unauthorized! in  BankStatementRequest in savePhese1DataToSidbi() ==> for applicationId====>{} "
+										+ applicationId + " Msg ==> " + e.getMessage(),
+								bankStatement);
+						logger.error("Invalid Token Details");
+						setTokenAsExpired(generateTokenRequest);
+						return false;
+					} else {
+						auditComponent.updateAudit(AuditComponent.BANK_STATEMENT, applicationId, userId,
+								"Exceptions! in  BankStatementRequest in savePhese1DataToSidbi() ==> for applicationId====>{} "
+										+ applicationId + " Msg ==> " + e.getMessage(),
+								bankStatement);
+					}
+				}
+			} else {
 				logger.info("Bank Statement Already Saved so not Going to Save Again===>");
 			}
-			//Set Bank Statement Ends
-			
-			
-			
-			//Set Eligibility Starts
-			
+			// Set Bank Statement Ends
+
+			// Set Eligibility Starts
+
 			audit = auditComponent.getAudit(applicationId, true, AuditComponent.ELIGIBILITY);
-			if(audit == null) {
+			if (audit == null) {
 				try {
-					 EligibilityDetailRequest eligibilityRequest = createEligibilityRequest(applicationId,fpProductMappingId);
-					if(eligibilityRequest == null) {
-						logger.info("Eligibiity data Request Not Found  in savePhese1DataToSidbi()  for ApplicationId ====>{}FpProductId====>{}",applicationId,fpProductMappingId);
-						auditComponent.updateAudit(AuditComponent.ELIGIBILITY, applicationId, userId, "Eligibiity data Request Not Found for ApplicationId ====>{} "+applicationId+"FpProductId====>{}"+fpProductMappingId, eligibilityParameters);
+					EligibilityDetailRequest eligibilityRequest = createEligibilityRequest(applicationId,
+							fpProductMappingId);
+					if (eligibilityRequest == null) {
+						logger.info(
+								"Eligibiity data Request Not Found  in savePhese1DataToSidbi()  for ApplicationId ====>{}FpProductId====>{}",
+								applicationId, fpProductMappingId);
+						auditComponent.updateAudit(AuditComponent.ELIGIBILITY,
+								applicationId, userId, "Eligibiity data Request Not Found for ApplicationId ====>{} "
+										+ applicationId + "FpProductId====>{}" + fpProductMappingId,
+								eligibilityParameters);
 						setTokenAsExpired(generateTokenRequest);
 						return false;
-					}else {
+					} else {
 						logger.info("Start Saving EligibilityDetailRequest in savePhese1DataToSidbi() ");
-						eligibilityParameters = sidbiIntegrationClient.saveEligibilityDetails(eligibilityRequest,generateTokenRequest.getToken());
-						logger.info("Sucessfully save EligibilityDetailRequest in savePhese1DataToSidbi() for  ApplicationId ====>{}FpProductId====>{}",applicationId,fpProductMappingId);
-						auditComponent.updateAudit(AuditComponent.ELIGIBILITY, applicationId, userId, null, eligibilityParameters);
+						eligibilityParameters = sidbiIntegrationClient.saveEligibilityDetails(eligibilityRequest,
+								generateTokenRequest.getToken());
+						logger.info(
+								"Sucessfully save EligibilityDetailRequest in savePhese1DataToSidbi() for  ApplicationId ====>{}FpProductId====>{}",
+								applicationId, fpProductMappingId);
+						auditComponent.updateAudit(AuditComponent.ELIGIBILITY, applicationId, userId, null,
+								eligibilityParameters);
 					}
-				}catch(Exception e) {
-					logger.info("Exception in  EligibilityDetailRequest in savePhese1DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",applicationId,fpProductMappingId +" Mgs " +e.getMessage());
+				} catch (Exception e) {
+					logger.info(
+							"Exception in  EligibilityDetailRequest in savePhese1DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",
+							applicationId, fpProductMappingId + " Mgs " + e.getMessage());
 					e.printStackTrace();
-					if(e.getMessage().contains("401")) {
-						auditComponent.updateAudit(AuditComponent.ELIGIBILITY, applicationId, userId, "Unauthorized! in  EligibilityDetailRequest in savePhese1DataToSidbi() ==> for ApplicationId  ====>{} " +applicationId +" Msg ==> "+ e.getMessage() , eligibilityParameters);
+					if (e.getMessage().contains("401")) {
+						auditComponent.updateAudit(AuditComponent.ELIGIBILITY, applicationId, userId,
+								"Unauthorized! in  EligibilityDetailRequest in savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "
+										+ applicationId + " Msg ==> " + e.getMessage(),
+								eligibilityParameters);
 						logger.error("Invalid Token Details");
 						setTokenAsExpired(generateTokenRequest);
-						return false;						
-					}else {
-						auditComponent.updateAudit(AuditComponent.ELIGIBILITY, applicationId, userId, "Exception in  EligibilityDetailRequest in savePhese1DataToSidbi() ==> for ApplicationId  ====>{} " +applicationId +" Msg ==> "+ e.getMessage() , eligibilityParameters);
+						return false;
+					} else {
+						auditComponent.updateAudit(AuditComponent.ELIGIBILITY, applicationId, userId,
+								"Exception in  EligibilityDetailRequest in savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "
+										+ applicationId + " Msg ==> " + e.getMessage(),
+								eligibilityParameters);
 					}
 				}
-			}else {
+			} else {
 				logger.info("Eligibility Already Saved so not Going to Save Again===>");
 			}
-			//Set Eligibility Ends
-			
+			// Set Eligibility Ends
+
 			audit = auditComponent.getAudit(applicationId, true, AuditComponent.SCORING_DETAILS);
-			if(audit == null) {
+			if (audit == null) {
 				// TODO Auto-generated method stub
-		        ProposalMappingRequest proposalMappingRequest = new ProposalMappingRequest();
-		        proposalMappingRequest.setApplicationId(applicationId);
-		        ProposalMappingResponse proposalMappingResponse = proposalService.listOfFundSeekerProposal(proposalMappingRequest);
-		        if(!CommonUtils.isObjectListNull(proposalMappingResponse) && !CommonUtils.isObjectListNull(proposalMappingResponse.getDataList())){
-					Long productId=null;
-		        	List<Map<String, Object>> proposalMappingResponseDataList = (List<Map<String, Object>>) proposalMappingResponse.getDataList();
+				ProposalMappingRequest proposalMappingRequest = new ProposalMappingRequest();
+				proposalMappingRequest.setApplicationId(applicationId);
+				ProposalMappingResponse proposalMappingResponse = proposalService
+						.listOfFundSeekerProposal(proposalMappingRequest);
+				if (!CommonUtils.isObjectListNull(proposalMappingResponse)
+						&& !CommonUtils.isObjectListNull(proposalMappingResponse.getDataList())) {
+					Long productId = null;
+					List<Map<String, Object>> proposalMappingResponseDataList = (List<Map<String, Object>>) proposalMappingResponse
+							.getDataList();
 					try {
-						ProposalMappingRequest proposalMappingRequest1 = MultipleJSONObjectHelper.getObjectFromMap(proposalMappingResponseDataList.get(0),
-		                        ProposalMappingRequest.class);
+						ProposalMappingRequest proposalMappingRequest1 = MultipleJSONObjectHelper
+								.getObjectFromMap(proposalMappingResponseDataList.get(0), ProposalMappingRequest.class);
 						productId = proposalMappingRequest1.getFpProductId();
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
 					ScoringRequest scoringRequest = new ScoringRequest();
-		            scoringRequest.setApplicationId(applicationId);
-		            scoringRequest.setFpProductId(fpProductMappingId);
-		            if(CommonUtils.isObjectNullOrEmpty(applicationMaster.getBusinessTypeId())) {
-		            	scoringRequest.setBusinessTypeId(new Long(CommonUtils.BusinessType.EXISTING_BUSINESS.getId()));	
-		            }else {
-		            	scoringRequest.setBusinessTypeId(applicationMaster.getBusinessTypeId().longValue());
-		            }
+					scoringRequest.setApplicationId(applicationId);
+					scoringRequest.setFpProductId(fpProductMappingId);
+					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getBusinessTypeId())) {
+						scoringRequest.setBusinessTypeId(new Long(CommonUtils.BusinessType.EXISTING_BUSINESS.getId()));
+					} else {
+						scoringRequest.setBusinessTypeId(applicationMaster.getBusinessTypeId().longValue());
+					}
 					try {
 						ScoringResponse scoringResponse = scoringClient.getScoreResult(scoringRequest);
-						logger.info("scoringResponse==>{}",scoringResponse);
-						if(!CommonUtils.isObjectNullOrEmpty(scoringResponse) && !CommonUtils.isObjectNullOrEmpty(scoringResponse.getDataObject())){
+						logger.info("scoringResponse==>{}", scoringResponse);
+						if (!CommonUtils.isObjectNullOrEmpty(scoringResponse)
+								&& !CommonUtils.isObjectNullOrEmpty(scoringResponse.getDataObject())) {
 							try {
-								ScoreParameterResult scoreParameterResult = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) scoringResponse.getDataObject(),
-		                                ScoreParameterResult.class);
-								if(scoreParameterResult == null) {
-									logger.info("scoreParameterResult  data Request Not Found  in savePhese1DataToSidbi()  for ApplicationId ====>{} FpProductId====>{}",applicationId,fpProductMappingId);
-									auditComponent.updateAudit(AuditComponent.SCORING_DETAILS, applicationId, userId, "Eligibiity data Request Not Found for ApplicationId ====>{} "+applicationId+"FpProductId====>{}"+fpProductMappingId, eligibilityParameters);
+								ScoreParameterResult scoreParameterResult = MultipleJSONObjectHelper.getObjectFromMap(
+										(LinkedHashMap<String, Object>) scoringResponse.getDataObject(),
+										ScoreParameterResult.class);
+								if (scoreParameterResult == null) {
+									logger.info(
+											"scoreParameterResult  data Request Not Found  in savePhese1DataToSidbi()  for ApplicationId ====>{} FpProductId====>{}",
+											applicationId, fpProductMappingId);
+									auditComponent.updateAudit(AuditComponent.SCORING_DETAILS, applicationId, userId,
+											"Eligibiity data Request Not Found for ApplicationId ====>{} "
+													+ applicationId + "FpProductId====>{}" + fpProductMappingId,
+											eligibilityParameters);
 									setTokenAsExpired(generateTokenRequest);
 									return false;
 								}
 								ScoreParameterDetailsRequest scoreParameterDetailsRequest = new ScoreParameterDetailsRequest();
-								BeanUtils.copyProperties(scoreParameterResult,scoreParameterDetailsRequest);
+								BeanUtils.copyProperties(scoreParameterResult, scoreParameterDetailsRequest);
 								try {
-									logger.info("Start Saving ScoreParameterDetailsRequest in savePhese1DataToSidbi() ");
-									scoringDetails = sidbiIntegrationClient.saveScoringDetails(scoreParameterDetailsRequest,generateTokenRequest.getToken());
-									logger.info("Sucessfully save ScoreParameterDetailsRequest in savePhese1DataToSidbi() for  ApplicationId ====>{}FpProductId====>{}",applicationId,fpProductMappingId);
-									auditComponent.updateAudit(AuditComponent.SCORING_DETAILS, applicationId, userId,null , scoringDetails);
+									logger.info(
+											"Start Saving ScoreParameterDetailsRequest in savePhese1DataToSidbi() ");
+									scoringDetails = sidbiIntegrationClient.saveScoringDetails(
+											scoreParameterDetailsRequest, generateTokenRequest.getToken());
+									logger.info(
+											"Sucessfully save ScoreParameterDetailsRequest in savePhese1DataToSidbi() for  ApplicationId ====>{}FpProductId====>{}",
+											applicationId, fpProductMappingId);
+									auditComponent.updateAudit(AuditComponent.SCORING_DETAILS, applicationId, userId,
+											null, scoringDetails);
 								} catch (Exception e) {
-									logger.info("Exception in  ScoreParameterDetailsRequest in savePhese1DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",applicationId,fpProductMappingId +" Mgs " +e.getMessage());
+									logger.info(
+											"Exception in  ScoreParameterDetailsRequest in savePhese1DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",
+											applicationId, fpProductMappingId + " Mgs " + e.getMessage());
 									e.printStackTrace();
-									if(e.getMessage().contains("401")) {
-										auditComponent.updateAudit(AuditComponent.SCORING_DETAILS, applicationId, userId,"Unauthorized! in  EligibilityDetailRequest in savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "+applicationId+" Mgs " +e.getMessage() ,scoringDetails);
+									if (e.getMessage().contains("401")) {
+										auditComponent
+												.updateAudit(AuditComponent.SCORING_DETAILS, applicationId, userId,
+														"Unauthorized! in  EligibilityDetailRequest in savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "
+																+ applicationId + " Mgs " + e.getMessage(),
+														scoringDetails);
 										logger.error("Invalid Token Details");
 										setTokenAsExpired(generateTokenRequest);
-										return false;						
-									}else {
-										auditComponent.updateAudit(AuditComponent.SCORING_DETAILS, applicationId, userId,"Exception in  EligibilityDetailRequest in savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "+applicationId+" Mgs " +e.getMessage() ,scoringDetails);
+										return false;
+									} else {
+										auditComponent
+												.updateAudit(AuditComponent.SCORING_DETAILS, applicationId, userId,
+														"Exception in  EligibilityDetailRequest in savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "
+																+ applicationId + " Mgs " + e.getMessage(),
+														scoringDetails);
 									}
 								}
 							} catch (IOException e) {
-								logger.info("Exception while getting Object from Map in savePhese1DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",applicationId,fpProductMappingId +" Mgs " +e.getMessage());
+								logger.info(
+										"Exception while getting Object from Map in savePhese1DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",
+										applicationId, fpProductMappingId + " Mgs " + e.getMessage());
 								e.printStackTrace();
-								auditComponent.updateAudit(AuditComponent.SCORING_DETAILS, applicationId, userId,"Exception in  EligibilityDetailRequest in savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "+applicationId+" Mgs " +e.getMessage() ,scoringDetails);
-//								logger.error("Invalid Token Details");
-//								setTokenAsExpired(generateTokenRequest);
-//								return false;						
+								auditComponent.updateAudit(AuditComponent.SCORING_DETAILS, applicationId, userId,
+										"Exception in  EligibilityDetailRequest in savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "
+												+ applicationId + " Mgs " + e.getMessage(),
+										scoringDetails);
+								// logger.error("Invalid Token Details");
+								// setTokenAsExpired(generateTokenRequest);
+								// return false;
 							}
-						}else {
-							//setTokenAsExpired(generateTokenRequest);
+						} else {
+							// setTokenAsExpired(generateTokenRequest);
 						}
 					} catch (ScoringException e) {
-						logger.info("Exception while getting ScoringResponse from ScoringClient in savePhese1DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",applicationId,fpProductMappingId +" Mgs " +e.getMessage());
-						auditComponent.updateAudit(AuditComponent.SCORING_DETAILS, applicationId, userId, "Exception while getting ScoringResponse from ScoringClient in savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "+applicationId+" Mgs " +e.getMessage(), false);
+						logger.info(
+								"Exception while getting ScoringResponse from ScoringClient in savePhese1DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",
+								applicationId, fpProductMappingId + " Mgs " + e.getMessage());
+						auditComponent.updateAudit(AuditComponent.SCORING_DETAILS, applicationId, userId,
+								"Exception while getting ScoringResponse from ScoringClient in savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "
+										+ applicationId + " Mgs " + e.getMessage(),
+								false);
 						e.printStackTrace();
-//						setTokenAsExpired(generateTokenRequest);
-//						return false;
+						// setTokenAsExpired(generateTokenRequest);
+						// return false;
 					}
 				}
-			}else {
+			} else {
 				logger.info("Scoring Already Saved so not Going to Save Again===>");
 			}
-			
-			//Saving Financial Details Starts
+
+			// Saving Financial Details Starts
 			audit = auditComponent.getAudit(applicationId, true, AuditComponent.FINANCIAL);
-			if(audit == null) {
+			if (audit == null) {
 				FinancialRequest financialDetails = cmaService.getFinancialDetailsForBankIntegration(applicationId);
-				if(financialDetails == null) {
-					logger.info("Financial Request Not Found  in savePhese1DataToSidbi()  for ApplicationId ====>{}FpProductId====>{}",applicationId,fpProductMappingId);
-					auditComponent.updateAudit(AuditComponent.FINANCIAL, applicationId, userId, "Financial Request Not Found for ApplicationId ====>{} "+applicationId+"FpProductId====>{}"+fpProductMappingId, false);
+				if (financialDetails == null) {
+					logger.info(
+							"Financial Request Not Found  in savePhese1DataToSidbi()  for ApplicationId ====>{}FpProductId====>{}",
+							applicationId, fpProductMappingId);
+					auditComponent.updateAudit(AuditComponent.FINANCIAL, applicationId, userId,
+							"Financial Request Not Found for ApplicationId ====>{} " + applicationId
+									+ "FpProductId====>{}" + fpProductMappingId,
+							false);
 					setTokenAsExpired(generateTokenRequest);
 					return false;
-				}else {
+				} else {
 					logger.info("Start Saving FinancialRequest in savePhese1DataToSidbi() ");
-					saveFinancialDetails = sidbiIntegrationClient.saveFinancialDetails(financialDetails, generateTokenRequest.getToken());
-					logger.info("Sucessfully save FinancialRequest in savePhese1DataToSidbi() for  ApplicationId ====>{}FpProductId====>{}Flag==>{}",applicationId,fpProductMappingId,saveFinancialDetails);
-					auditComponent.updateAudit(AuditComponent.FINANCIAL, applicationId, userId, null, eligibilityParameters);
+					saveFinancialDetails = sidbiIntegrationClient.saveFinancialDetails(financialDetails,
+							generateTokenRequest.getToken());
+					logger.info(
+							"Sucessfully save FinancialRequest in savePhese1DataToSidbi() for  ApplicationId ====>{}FpProductId====>{}Flag==>{}",
+							applicationId, fpProductMappingId, saveFinancialDetails);
+					auditComponent.updateAudit(AuditComponent.FINANCIAL, applicationId, userId, null,
+							eligibilityParameters);
 				}
-			}else {
+			} else {
 				logger.info("Financial Details Already Saved so not Going to Save Again===>");
 			}
-			
-			//Saving CMA Detail Starts
+
+			// Saving CMA Detail Starts
 			audit = auditComponent.getAudit(applicationId, true, AuditComponent.CMA_DETAIL);
-			if(audit == null) {
-				//FinancialRequest financialDetails = cmaService.getFinancialDetailsForBankIntegration(applicationId);
-				CMARequest cmaRequest = getCMADetailOfAuditYears(applicationId); 
-				if(cmaRequest == null) {
-					logger.info("CMA Details Request Not Found  in savePhese1DataToSidbi()  for ApplicationId ====>{}FpProductId====>{}",applicationId,fpProductMappingId);
-					auditComponent.updateAudit(AuditComponent.CMA_DETAIL, applicationId, userId, "CMA Details data Request Not Found for ApplicationId ====>{} "+applicationId+"FpProductId====>{}"+fpProductMappingId, false);
+			if (audit == null) {
+				// FinancialRequest financialDetails =
+				// cmaService.getFinancialDetailsForBankIntegration(applicationId);
+				CMARequest cmaRequest = getCMADetailOfAuditYears(applicationId);
+				if (cmaRequest == null) {
+					logger.info(
+							"CMA Details Request Not Found  in savePhese1DataToSidbi()  for ApplicationId ====>{}FpProductId====>{}",
+							applicationId, fpProductMappingId);
+					auditComponent.updateAudit(AuditComponent.CMA_DETAIL, applicationId, userId,
+							"CMA Details data Request Not Found for ApplicationId ====>{} " + applicationId
+									+ "FpProductId====>{}" + fpProductMappingId,
+							false);
 					setTokenAsExpired(generateTokenRequest);
 					return false;
-				}else {
+				} else {
 					logger.info("Start Saving CMA Details in savePhese1DataToSidbi() ");
-					saveCmaDetails = sidbiIntegrationClient.saveCMADetailsOfAuditYears(cmaRequest, generateTokenRequest.getToken());
-					logger.info("Sucessfully save CMA Details in savePhese1DataToSidbi() for  ApplicationId ====>{}FpProductId====>{}Flag==>{}",applicationId,fpProductMappingId,saveCmaDetails);
-					auditComponent.updateAudit(AuditComponent.CMA_DETAIL, applicationId, userId, null, eligibilityParameters);
+					saveCmaDetails = sidbiIntegrationClient.saveCMADetailsOfAuditYears(cmaRequest,
+							generateTokenRequest.getToken());
+					logger.info(
+							"Sucessfully save CMA Details in savePhese1DataToSidbi() for  ApplicationId ====>{}FpProductId====>{}Flag==>{}",
+							applicationId, fpProductMappingId, saveCmaDetails);
+					auditComponent.updateAudit(AuditComponent.CMA_DETAIL, applicationId, userId, null,
+							eligibilityParameters);
 				}
-			}else {
+			} else {
 				logger.info("CMA Details Already Saved so not Going to Save Again===>");
 			}
-			//Saving CMA Details Ends
-		
+			// Saving CMA Details Ends
+
 		} catch (Exception e) {
-			logger.info("Exception while Saving Requests  in savePhese1DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",applicationId,fpProductMappingId +" Mgs " +e.getMessage());
-			auditComponent.updateAudit(AuditComponent.SCORING_DETAILS, applicationId, userId,"Exception while saving ScoringResponse  in savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "+applicationId+" Mgs " +e.getMessage() ,false);
-			auditComponent.updateAudit(AuditComponent.PRELIM_INFO, applicationId, userId, "Exception while saving ProfileReqRes ==> Prelim Sheet Object in savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "+applicationId+" Mgs " +e.getMessage(), false);
-			auditComponent.updateAudit(AuditComponent.BANK_STATEMENT, applicationId, userId, "Exception while saving BankStatemnt in savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "+applicationId+" Mgs " +e.getMessage(), false);
-			auditComponent.updateAudit(AuditComponent.MATCHES_PARAMETER, applicationId, userId, "Exception while saving MatchesparameterRequest in savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "+applicationId+" Mgs " +e.getMessage(),false);
-			auditComponent.updateAudit(AuditComponent.ELIGIBILITY, applicationId, userId, "Exception while saving EligibiliyDetsilRequest in savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "+applicationId+" Mgs " +e.getMessage() ,false);
-			auditComponent.updateAudit(AuditComponent.FINANCIAL, applicationId, userId, "Exception while Saving  Financial Details by sidbiIntegrationClient   in savePhese2DataToSidbi() ==> for ApplicationId  ====>{} "+applicationId+" Mgs " +e.getMessage() , false);
-			auditComponent.updateAudit(AuditComponent.CMA_DETAIL, applicationId, userId, "Exception while Saving  CMA Details by sidbiIntegrationClient   in savePhese2DataToSidbi() ==> for ApplicationId  ====>{} "+applicationId+" Mgs " +e.getMessage() , false);
+			logger.info(
+					"Exception while Saving Requests  in savePhese1DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",
+					applicationId, fpProductMappingId + " Mgs " + e.getMessage());
+			auditComponent.updateAudit(AuditComponent.SCORING_DETAILS, applicationId, userId,
+					"Exception while saving ScoringResponse  in savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "
+							+ applicationId + " Mgs " + e.getMessage(),
+					false);
+			auditComponent.updateAudit(AuditComponent.PRELIM_INFO, applicationId, userId,
+					"Exception while saving ProfileReqRes ==> Prelim Sheet Object in savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "
+							+ applicationId + " Mgs " + e.getMessage(),
+					false);
+			auditComponent.updateAudit(AuditComponent.BANK_STATEMENT, applicationId, userId,
+					"Exception while saving BankStatemnt in savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "
+							+ applicationId + " Mgs " + e.getMessage(),
+					false);
+			auditComponent.updateAudit(AuditComponent.MATCHES_PARAMETER, applicationId, userId,
+					"Exception while saving MatchesparameterRequest in savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "
+							+ applicationId + " Mgs " + e.getMessage(),
+					false);
+			auditComponent.updateAudit(AuditComponent.ELIGIBILITY, applicationId, userId,
+					"Exception while saving EligibiliyDetsilRequest in savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "
+							+ applicationId + " Mgs " + e.getMessage(),
+					false);
+			auditComponent.updateAudit(AuditComponent.FINANCIAL, applicationId, userId,
+					"Exception while Saving  Financial Details by sidbiIntegrationClient   in savePhese2DataToSidbi() ==> for ApplicationId  ====>{} "
+							+ applicationId + " Mgs " + e.getMessage(),
+					false);
+			auditComponent.updateAudit(AuditComponent.CMA_DETAIL, applicationId, userId,
+					"Exception while Saving  CMA Details by sidbiIntegrationClient   in savePhese2DataToSidbi() ==> for ApplicationId  ====>{} "
+							+ applicationId + " Mgs " + e.getMessage(),
+					false);
 			logger.info("Throw Exception While Saving Phase one For SIDBI");
 			e.printStackTrace();
 			setTokenAsExpired(generateTokenRequest);
 			return false;
 		}
 		setTokenAsExpired(generateTokenRequest);
-		return (savePrelimInfo && scoringDetails && matchesParameters && bankStatement && eligibilityParameters && saveFinancialDetails && saveCmaDetails);
+		return (savePrelimInfo && scoringDetails && matchesParameters && bankStatement && eligibilityParameters
+				&& saveFinancialDetails && saveCmaDetails);
 	}
-		
 
 	@Override
-	public boolean savePhese2DataToSidbi(Long applicationId, Long userId,Long organizationId,Long fpProductMappingId) {
-		GenerateTokenRequest generateTokenRequest=null;
+	public boolean savePhese2DataToSidbi(Long applicationId, Long userId, Long organizationId,
+			Long fpProductMappingId) {
+		GenerateTokenRequest generateTokenRequest = null;
 		try {
 			generateTokenRequest = setUrlAndTokenInSidbiClient(organizationId, applicationId);
-			if(CommonUtils.isObjectNullOrEmpty(generateTokenRequest)) {
+			if (CommonUtils.isObjectNullOrEmpty(generateTokenRequest)) {
 				logger.warn("Something went wrong while setting URL and Token in savePhese2DataToSidbi()");
 				return false;
 			}
-		}catch(Exception e) {
+		} catch (Exception e) {
 			logger.error("Something goes wrong while setUrlAndTokenInSidbiClient in savePhese2DataToSidbi() ");
 			e.printStackTrace();
-			logger.error("Exception while getting token from SidbiIntegrationClient -------------- applicationId " +applicationId );
+			logger.error("Exception while getting token from SidbiIntegrationClient -------------- applicationId "
+					+ applicationId);
 			return false;
 		}
-		
+
 		Boolean saveDetailsInfo = false;
 		Boolean saveDDRInfo = false;
 		Boolean saveIRRInfo = false;
 		PrimaryCorporateDetail applicationMaster = null;
 		try {
 			AuditMaster audit = auditComponent.getAudit(applicationId, true, AuditComponent.DETAILED_INFO);
-			if(audit == null) {
+			if (audit == null) {
 				logger.info("Start savePhese2DataToSidbi()==>");
 				applicationMaster = primaryCorporateRepository.findOneByApplicationIdId(applicationId);
-				if(applicationMaster == null) {
-					logger.info("Loan Application Found Null====>{}",applicationId);
-					auditComponent.updateAudit(AuditComponent.DETAILED_INFO, applicationId, applicationMaster !=null ? applicationMaster.getUserId() : null,"Loan Application Found Null====>{} " +applicationId  , saveDetailsInfo);
+				if (applicationMaster == null) {
+					logger.info("Loan Application Found Null====>{}", applicationId);
+					auditComponent.updateAudit(AuditComponent.DETAILED_INFO, applicationId,
+							applicationMaster != null ? applicationMaster.getUserId() : null,
+							"Loan Application Found Null====>{} " + applicationId, saveDetailsInfo);
 					setTokenAsExpired(generateTokenRequest);
 					return false;
 				}
 				userId = applicationMaster.getUserId();
-				ProfileReqRes profileReqRes = new  ProfileReqRes();
-				//Create Corporate Profile Object
-				CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository.findOneByApplicationIdId(applicationId);
-				if(corporateApplicantDetail != null) {
-					profileReqRes.setCorporateProfileRequest(createProfileObj(corporateApplicantDetail,applicationMaster.getUserId()));
-					
-					//Save Achievement
+				ProfileReqRes profileReqRes = new ProfileReqRes();
+				// Create Corporate Profile Object
+				CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
+						.findOneByApplicationIdId(applicationId);
+				if (corporateApplicantDetail != null) {
+					profileReqRes.setCorporateProfileRequest(
+							createProfileObj(corporateApplicantDetail, applicationMaster.getUserId()));
+
+					// Save Achievement
 					profileReqRes.setAchievementList(getAchievementDetaisForSidbi(applicationId));
 					profileReqRes.setExPrList(getExistingProductForSidbi(applicationId));
 					profileReqRes.setProposedProdList(getProposedProductForSidbi(applicationId));
@@ -5310,113 +5508,164 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					profileReqRes.setAssociateConcernList(getAssociatedConcernForSidbi(applicationId));
 					profileReqRes.setMonTurnoverList(getMonthlyTurnOverForSidbi(applicationId));
 					profileReqRes.setLoanMasterRequest(createObj(applicationMaster));
-					profileReqRes.setCostOfProjectRequestsList(getTotalCostOfProjectRequestsList(applicationId, userId));
-					profileReqRes.setFinanceMeansDetailRequestsList(getFinanceMeansDetailRequestList(applicationId, userId));
-					profileReqRes.setSecurityCorporateDetailRequestsList(getSecurityCorporateDetailRequestList(applicationId, userId));
+					profileReqRes
+							.setCostOfProjectRequestsList(getTotalCostOfProjectRequestsList(applicationId, userId));
+					profileReqRes
+							.setFinanceMeansDetailRequestsList(getFinanceMeansDetailRequestList(applicationId, userId));
+					profileReqRes.setSecurityCorporateDetailRequestsList(
+							getSecurityCorporateDetailRequestList(applicationId, userId));
 					try {
 						logger.info("Going to Save Detailed Infor==>");
-						saveDetailsInfo = sidbiIntegrationClient.saveDetailedInfo(profileReqRes,generateTokenRequest.getToken());	
-						auditComponent.updateAudit(AuditComponent.DETAILED_INFO, applicationId, applicationMaster.getUserId(), null, saveDetailsInfo);
-					}catch(Exception e) {
-						logger.info("Exception while Saving profileReqRes by sidbiIntegrationClient   in savePhese2DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",applicationId,fpProductMappingId +" Mgs " +e.getMessage());
-						auditComponent.updateAudit(AuditComponent.DETAILED_INFO, applicationId, applicationMaster.getUserId(),"Exception while Saving profileReqRes from SidbiIntegrationClient  in savePhese2DataToSidbi() ==> for ApplicationId  ====>{} "+applicationId +" Msg ==> "+e.getMessage() ,  false);
+						saveDetailsInfo = sidbiIntegrationClient.saveDetailedInfo(profileReqRes,
+								generateTokenRequest.getToken());
+						auditComponent.updateAudit(AuditComponent.DETAILED_INFO, applicationId,
+								applicationMaster.getUserId(), null, saveDetailsInfo);
+					} catch (Exception e) {
+						logger.info(
+								"Exception while Saving profileReqRes by sidbiIntegrationClient   in savePhese2DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",
+								applicationId, fpProductMappingId + " Mgs " + e.getMessage());
+						auditComponent.updateAudit(AuditComponent.DETAILED_INFO, applicationId,
+								applicationMaster.getUserId(),
+								"Exception while Saving profileReqRes from SidbiIntegrationClient  in savePhese2DataToSidbi() ==> for ApplicationId  ====>{} "
+										+ applicationId + " Msg ==> " + e.getMessage(),
+								false);
 						e.printStackTrace();
 						logger.info("Error while Calling Client====>");
 						setTokenAsExpired(generateTokenRequest);
 					}
 				}
-			}else {
+			} else {
 				logger.info("Detailed Info Already Saved so Not Going to Save======>");
 			}
-			
+
 			audit = auditComponent.getAudit(applicationId, true, AuditComponent.DDR_DETAILS);
-			if(audit == null) {
-				//Setting DDR
+			if (audit == null) {
+				// Setting DDR
 				logger.info("Going to Save DDR Form Data===>");
-				
-				DDRFormDetailsRequest sidbiDetails = dDRFormService.getSIDBIDetails(applicationId,applicationMaster.getUserId());
+
+				DDRFormDetailsRequest sidbiDetails = dDRFormService.getSIDBIDetails(applicationId,
+						applicationMaster.getUserId());
 				try {
-					saveDDRInfo = sidbiIntegrationClient.saveDDRFormDetails(sidbiDetails,generateTokenRequest.getToken());
-					auditComponent.updateAudit(AuditComponent.DDR_DETAILS, applicationId, applicationMaster.getUserId(), null ,saveDDRInfo);
-					logger.info("ddr saved==========>{}",saveDDRInfo);
-				}catch(Exception e) {
-					logger.info("Exception while Saving DDRFormDetailsRequest by sidbiIntegrationClient   in savePhese2DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",applicationId,fpProductMappingId +" Mgs " +e.getMessage());
+					saveDDRInfo = sidbiIntegrationClient.saveDDRFormDetails(sidbiDetails,
+							generateTokenRequest.getToken());
+					auditComponent.updateAudit(AuditComponent.DDR_DETAILS, applicationId, applicationMaster.getUserId(),
+							null, saveDDRInfo);
+					logger.info("ddr saved==========>{}", saveDDRInfo);
+				} catch (Exception e) {
+					logger.info(
+							"Exception while Saving DDRFormDetailsRequest by sidbiIntegrationClient   in savePhese2DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",
+							applicationId, fpProductMappingId + " Mgs " + e.getMessage());
 					e.printStackTrace();
-					auditComponent.updateAudit(AuditComponent.DDR_DETAILS , applicationId, applicationMaster.getUserId(), "Exception while Saving DDRFormDetailsRequest by sidbiIntegrationClient   in savePhese2DataToSidbi() ==> for ApplicationId  ====>{}"+ applicationId+" Mgs " +e.getMessage(),  false);
+					auditComponent.updateAudit(AuditComponent.DDR_DETAILS, applicationId, applicationMaster.getUserId(),
+							"Exception while Saving DDRFormDetailsRequest by sidbiIntegrationClient   in savePhese2DataToSidbi() ==> for ApplicationId  ====>{}"
+									+ applicationId + " Mgs " + e.getMessage(),
+							false);
 					logger.error("Error while calling DDRForm Details==>");
 					setTokenAsExpired(generateTokenRequest);
 				}
-			
-			}else {
+
+			} else {
 				logger.info("DDR Info Already Saved so Not Going to Save======>");
 			}
-			
+
 			audit = auditComponent.getAudit(applicationId, true, AuditComponent.IRR_DETAILS);
-			if(audit == null) {
-				//To save irr details
-				RatingResponse rtResponse = irrService.calculateIrrRating(applicationId,applicationMaster.getUserId()).getBody();
-				RatingResponse ratingResponse = (RatingResponse)rtResponse.getData();
+			if (audit == null) {
+				// To save irr details
+				RatingResponse rtResponse = irrService.calculateIrrRating(applicationId, applicationMaster.getUserId())
+						.getBody();
+				RatingResponse ratingResponse = (RatingResponse) rtResponse.getData();
 				com.capitaworld.sidbi.integration.model.irr.IrrRequest irrRequest = new com.capitaworld.sidbi.integration.model.irr.IrrRequest();
-				//logger.info("Before -----------------data->"+ratingResponse.getData());
-				IrrRequest irrReq = MultipleJSONObjectHelper.getObjectFromMap((Map<String,Object>) ratingResponse.getData(),IrrRequest.class);
-				/*logger.info("After -----------------data->"+ irrReq.toString());
-				BeanUtils.copyProperties(irrReq,irrRequest);*/
-				if(com.capitaworld.service.rating.utils.CommonUtils.BusinessType.MANUFACTURING == ratingResponse.getBusinessTypeId()){
+				// logger.info("Before
+				// -----------------data->"+ratingResponse.getData());
+				IrrRequest irrReq = MultipleJSONObjectHelper
+						.getObjectFromMap((Map<String, Object>) ratingResponse.getData(), IrrRequest.class);
+				/*
+				 * logger.info("After -----------------data->"+
+				 * irrReq.toString());
+				 * BeanUtils.copyProperties(irrReq,irrRequest);
+				 */
+				if (com.capitaworld.service.rating.utils.CommonUtils.BusinessType.MANUFACTURING == ratingResponse
+						.getBusinessTypeId()) {
 					IRROutputManufacturingRequest irrOutputManufacturingRequest = new IRROutputManufacturingRequest();
-					IRROutputManufacturingRequest irrOutputManufacturingRequest1 = MultipleJSONObjectHelper.getObjectFromMap((Map<String,Object>) ratingResponse.getData(),IRROutputManufacturingRequest.class);
-					BeanUtils.copyProperties(irrOutputManufacturingRequest1,irrOutputManufacturingRequest);
+					IRROutputManufacturingRequest irrOutputManufacturingRequest1 = MultipleJSONObjectHelper
+							.getObjectFromMap((Map<String, Object>) ratingResponse.getData(),
+									IRROutputManufacturingRequest.class);
+					BeanUtils.copyProperties(irrOutputManufacturingRequest1, irrOutputManufacturingRequest);
 					irrOutputManufacturingRequest.setApplicationId(applicationId);
 					irrOutputManufacturingRequest.setUserId(applicationMaster.getUserId());
 					irrRequest.setIrrOutputManufacturingRequest(irrOutputManufacturingRequest);
-					//logger.info("After Copy Response :::::::: " +irrOutputManufacturingRequest.toString());
-				}else if(com.capitaworld.service.rating.utils.CommonUtils.BusinessType.SERVICE == ratingResponse.getBusinessTypeId()){
+					// logger.info("After Copy Response :::::::: "
+					// +irrOutputManufacturingRequest.toString());
+				} else if (com.capitaworld.service.rating.utils.CommonUtils.BusinessType.SERVICE == ratingResponse
+						.getBusinessTypeId()) {
 					IRROutputServiceRequest irrOutputServiceRequest = new IRROutputServiceRequest();
-					IRROutputServiceRequest irrOutputServiceRequest1 = MultipleJSONObjectHelper.getObjectFromMap((Map<String,Object>) ratingResponse.getData(),IRROutputServiceRequest.class);
-					BeanUtils.copyProperties(irrOutputServiceRequest1,irrOutputServiceRequest);
+					IRROutputServiceRequest irrOutputServiceRequest1 = MultipleJSONObjectHelper.getObjectFromMap(
+							(Map<String, Object>) ratingResponse.getData(), IRROutputServiceRequest.class);
+					BeanUtils.copyProperties(irrOutputServiceRequest1, irrOutputServiceRequest);
 					irrOutputServiceRequest.setApplicationId(applicationId);
 					irrOutputServiceRequest.setUserId(applicationMaster.getUserId());
 					irrRequest.setIrrOutputServiceRequest(irrOutputServiceRequest);
-	                //logger.info("After Copy Response :::::::: " +irrOutputServiceRequest.toString());
-				}else if(com.capitaworld.service.rating.utils.CommonUtils.BusinessType.TRADING == ratingResponse.getBusinessTypeId()){
+					// logger.info("After Copy Response :::::::: "
+					// +irrOutputServiceRequest.toString());
+				} else if (com.capitaworld.service.rating.utils.CommonUtils.BusinessType.TRADING == ratingResponse
+						.getBusinessTypeId()) {
 					IRROutputTradingRequest irrOutputTradingRequest = new IRROutputTradingRequest();
-					IRROutputTradingRequest irrOutputTradingRequest1 = MultipleJSONObjectHelper.getObjectFromMap((Map<String,Object>) ratingResponse.getData(),IRROutputTradingRequest.class);
-					BeanUtils.copyProperties(irrOutputTradingRequest1,irrOutputTradingRequest);
+					IRROutputTradingRequest irrOutputTradingRequest1 = MultipleJSONObjectHelper.getObjectFromMap(
+							(Map<String, Object>) ratingResponse.getData(), IRROutputTradingRequest.class);
+					BeanUtils.copyProperties(irrOutputTradingRequest1, irrOutputTradingRequest);
 					irrOutputTradingRequest.setApplicationId(applicationId);
 					irrOutputTradingRequest.setUserId(applicationMaster.getUserId());
 					irrRequest.setIrrOutputTradingRequest(irrOutputTradingRequest);
-	                //logger.info("After Copy Response :::::::: " +irrOutputTradingRequest.toString());
+					// logger.info("After Copy Response :::::::: "
+					// +irrOutputTradingRequest.toString());
 				}
-	            irrRequest.setApplicationId(applicationId.intValue());
+				irrRequest.setApplicationId(applicationId.intValue());
 				irrRequest.setBusinessTypeId(ratingResponse.getBusinessTypeId());
 				try {
-					saveIRRInfo = sidbiIntegrationClient.saveIrrDetails(irrRequest,generateTokenRequest.getToken());
-					auditComponent.updateAudit(AuditComponent.IRR_DETAILS, applicationId, applicationMaster.getUserId(), null ,saveIRRInfo);
+					saveIRRInfo = sidbiIntegrationClient.saveIrrDetails(irrRequest, generateTokenRequest.getToken());
+					auditComponent.updateAudit(AuditComponent.IRR_DETAILS, applicationId, applicationMaster.getUserId(),
+							null, saveIRRInfo);
 				} catch (Exception e) {
-					logger.info("Exception while Saving saveIRRInfo   by sidbiIntegrationClient   in savePhese2DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",applicationId,fpProductMappingId +" Mgs " +e.getMessage());
-					auditComponent.updateAudit(AuditComponent.IRR_DETAILS, applicationId, applicationMaster.getUserId(),"Exception while Saving saveIRRInfo   by sidbiIntegrationClient   in savePhese2DataToSidbi() ==> for ApplicationId  ====>{} "+applicationId+" Mgs " +e.getMessage()  ,false);
+					logger.info(
+							"Exception while Saving saveIRRInfo   by sidbiIntegrationClient   in savePhese2DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",
+							applicationId, fpProductMappingId + " Mgs " + e.getMessage());
+					auditComponent.updateAudit(AuditComponent.IRR_DETAILS, applicationId, applicationMaster.getUserId(),
+							"Exception while Saving saveIRRInfo   by sidbiIntegrationClient   in savePhese2DataToSidbi() ==> for ApplicationId  ====>{} "
+									+ applicationId + " Mgs " + e.getMessage(),
+							false);
 					e.printStackTrace();
 					setTokenAsExpired(generateTokenRequest);
 				}
-			}else {
+			} else {
 				logger.info("IRR_DETAILS Info Already Saved so Not Going to Save======>");
-			}	
+			}
 			logger.info("End savePhese2DataToSidbi()==>");
 		} catch (Exception e) {
-			logger.info("Exception while Saving Requests by sidbiIntegrationClient   in savePhese2DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",applicationId,fpProductMappingId +" Mgs " +e.getMessage());
-			auditComponent.updateAudit(AuditComponent.DETAILED_INFO, applicationId, userId, "Exception while Saving DETAILED_INFO by sidbiIntegrationClient   in savePhese2DataToSidbi() ==> for ApplicationId  ====>{} "+applicationId +" Mgs " +e.getMessage(),false);
-			auditComponent.updateAudit(AuditComponent.DDR_DETAILS , applicationId, userId, "Exception while Saving DDR_DETAILS by sidbiIntegrationClient   in savePhese2DataToSidbi() ==> for ApplicationId  ====>{} " +applicationId+" Mgs " +e.getMessage(), false);
-			auditComponent.updateAudit(AuditComponent.IRR_DETAILS, applicationId, userId, "Exception while Saving  IRR_DETAILS by sidbiIntegrationClient   in savePhese2DataToSidbi() ==> for ApplicationId  ====>{} "+applicationId+" Mgs " +e.getMessage() , false);
+			logger.info(
+					"Exception while Saving Requests by sidbiIntegrationClient   in savePhese2DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",
+					applicationId, fpProductMappingId + " Mgs " + e.getMessage());
+			auditComponent.updateAudit(AuditComponent.DETAILED_INFO, applicationId, userId,
+					"Exception while Saving DETAILED_INFO by sidbiIntegrationClient   in savePhese2DataToSidbi() ==> for ApplicationId  ====>{} "
+							+ applicationId + " Mgs " + e.getMessage(),
+					false);
+			auditComponent.updateAudit(AuditComponent.DDR_DETAILS, applicationId, userId,
+					"Exception while Saving DDR_DETAILS by sidbiIntegrationClient   in savePhese2DataToSidbi() ==> for ApplicationId  ====>{} "
+							+ applicationId + " Mgs " + e.getMessage(),
+					false);
+			auditComponent.updateAudit(AuditComponent.IRR_DETAILS, applicationId, userId,
+					"Exception while Saving  IRR_DETAILS by sidbiIntegrationClient   in savePhese2DataToSidbi() ==> for ApplicationId  ====>{} "
+							+ applicationId + " Mgs " + e.getMessage(),
+					false);
 			e.printStackTrace();
 			setTokenAsExpired(generateTokenRequest);
 		}
 		setTokenAsExpired(generateTokenRequest);
-		if(saveDetailsInfo && saveDDRInfo && saveIRRInfo) {
+		if (saveDetailsInfo && saveDDRInfo && saveIRRInfo) {
 			return true;
 		}
 		return false;
 	}
-	
-	
+
 public CommercialRequest createCommercialRequest(Long applicationId,String pan) {
 		
 		CibilRequest cibilRequest = new CibilRequest();
@@ -5489,7 +5738,7 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 					}
 					//Preparing Address and Contact Details
 					AddressAndContactDetailsRequest addressAndContactDetailsRequest = new AddressAndContactDetailsRequest();
-					BorrwerAddressContactDetails borrwerAddressContactDetails = productSec.getBorrowerProfileSec().getBorrwerAddressContactDetails();
+					com.capitaworld.cibil.api.model.msme.company.Base.ResponseReport.ProductSec.BorrowerProfileSec.BorrwerAddressContactDetails borrwerAddressContactDetails = productSec.getBorrowerProfileSec().getBorrwerAddressContactDetails();
 					addressAndContactDetailsRequest.setFaxNo(borrwerAddressContactDetails.getFaxNumber());
 					addressAndContactDetailsRequest.setTelephoneNo(borrwerAddressContactDetails.getTelephoneNumber());
 					addressAndContactDetailsRequest.setMobileNo(borrwerAddressContactDetails.getMobileNumber());
@@ -5511,9 +5760,613 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 						addressAndContactDetailsRequest.setRegisteredOfficeAddress(registeredOfficeAddress);
 					}
 					borrowersDetailsRequest.setAddressAndContactDetailsRequest(addressAndContactDetailsRequest);
+					
+					//preparing Identification Details
+					IdentificationDetailsRequest identificationDetailsRequest=new IdentificationDetailsRequest();
+					com.capitaworld.cibil.api.model.msme.company.Base.ResponseReport.ProductSec.BorrowerProfileSec.BorrwerIDDetailsVec borrwerIDDetailsVec=productSec.getBorrowerProfileSec().getBorrwerIDDetailsVec();
+					if(!CommonUtils.isObjectNullOrEmpty(borrwerIDDetailsVec))
+					{
+						if(!CommonUtils.isListNullOrEmpty(productSec.getBorrowerProfileSec().getBorrwerIDDetailsVec().getBorrwerIDDetails()))
+						{
+							BorrwerIDDetails borrwerIDDetails=productSec.getBorrowerProfileSec().getBorrwerIDDetailsVec().getBorrwerIDDetails().get(0);
+							identificationDetailsRequest.setCin(borrwerIDDetails.getCin());
+							identificationDetailsRequest.setPanNo(borrwerIDDetails.getPan());
+							identificationDetailsRequest.setRegistrationNo(borrwerIDDetails.getRegistrationNumber());
+							identificationDetailsRequest.setServiceTaxNo(borrwerIDDetails.getServiceTaxNumber());
+							identificationDetailsRequest.setTin(borrwerIDDetails.getTin());
+						}
+					}
+					borrowersDetailsRequest.setIdentificationDetailsRequest(identificationDetailsRequest);
+					
+					//preparing Delinquency Reported details
+					DelinquencyReportedOnBorrowerRequest delinquencyReportedOnBorrowerRequest=new DelinquencyReportedOnBorrowerRequest();
+					
+					BorrowerDelinquencyReportedOnBorrower borrowerDelinquencyReportedOnBorrower   =productSec.getBorrowerProfileSec().getBorrowerDelinquencyReportedOnBorrower();
+					if(!CommonUtils.isObjectNullOrEmpty(borrowerDelinquencyReportedOnBorrower))
+					{
+						com.capitaworld.cibil.api.model.msme.company.Base.ResponseReport.ProductSec.BorrowerProfileSec.BorrowerDelinquencyReportedOnBorrower.OutsideInstitution outsideInstitution=borrowerDelinquencyReportedOnBorrower.getOutsideInstitution();
+						if(!CommonUtils.isObjectNullOrEmpty(outsideInstitution))
+						{
+							delinquencyReportedOnBorrowerRequest.setOutsideCurrent(outsideInstitution.getCurrent());
+							delinquencyReportedOnBorrowerRequest.setOutsideLast24Month(outsideInstitution.getLast24Months());
+						}
+						
+						com.capitaworld.cibil.api.model.msme.company.Base.ResponseReport.ProductSec.BorrowerProfileSec.BorrowerDelinquencyReportedOnBorrower.YourInstitution yourInstitution=borrowerDelinquencyReportedOnBorrower.getYourInstitution();
+						if(!CommonUtils.isObjectNullOrEmpty(yourInstitution))
+						{
+							delinquencyReportedOnBorrowerRequest.setYourCurrent(yourInstitution.getCurrent());
+							delinquencyReportedOnBorrowerRequest.setYourlast24Month(yourInstitution.getLast24Months());
+						}
+					}
+					
+					borrowersDetailsRequest.setDelinquencyReportedOnBorrowerRequest(delinquencyReportedOnBorrowerRequest);
+					
+					
 					commercialRequest.setBorrowersDetailsRequest(borrowersDetailsRequest);
 					
+					
+					
 					//Set Borrower Data End
+					
+					
+					
+					//Set Credit Profile Summary Master Starts
+					CreditProfileSummaryMasterRequest creditProfileSummaryMasterRequest=new CreditProfileSummaryMasterRequest();
+					CreditProfileSummarySec creditProfileSummarySec=  productSec.getCreditProfileSummarySec();
+					if(!CommonUtils.isObjectNullOrEmpty(creditProfileSummarySec))
+					{
+					com.capitaworld.cibil.api.model.msme.company.Base.ResponseReport.ProductSec.CreditProfileSummarySec.YourInstitution yourInstitution=	creditProfileSummarySec.getYourInstitution();
+					if(!CommonUtils.isObjectNullOrEmpty(yourInstitution))
+					{
+						CreditProfileSummaryDetailRequest creditProfileSummaryDetailRequest=new CreditProfileSummaryDetailRequest();
+						if((!CommonUtils.isObjectNullOrEmpty(yourInstitution.getLatestCFOpenedDate())) && (!yourInstitution.getLatestCFOpenedDate().equals("-")))
+						{
+							DateFormat formatter = new SimpleDateFormat("dd-mm-yyyy");
+							creditProfileSummaryDetailRequest.setLatestCFOpenedDate(formatter.parse(yourInstitution.getLatestCFOpenedDate()));
+						}
+						
+						creditProfileSummaryDetailRequest.setOpenCF(yourInstitution.getOpenCF());
+						creditProfileSummaryDetailRequest.setTotalLenders(CommonUtils.isObjectNullOrEmpty(yourInstitution.getTotalLenders())?null:Integer.parseInt(yourInstitution.getTotalLenders()));
+						
+						
+						creditProfileSummaryMasterRequest.setYourInstitution(creditProfileSummaryDetailRequest);
+					}
+					
+					}
+					commercialRequest.setCreditProfileSummaryMasterRequest(creditProfileSummaryMasterRequest);
+					
+					
+					
+					//Set Credit Profile Summary Master Starts END 
+					
+					
+					//set  Enquiry Summary
+					EnquirySummaryMasterRequest  enquirySummaryMasterRequest=new EnquirySummaryMasterRequest();
+					
+					EnquirySummarySec enquirySummarySec=productSec.getEnquirySummarySec();
+					if(!CommonUtils.isObjectNullOrEmpty(enquirySummarySec)){
+						EnquiryOutsideInstitution enquiryOutsideInstitution=  enquirySummarySec.getEnquiryOutsideInstitution();
+						if(!CommonUtils.isObjectNullOrEmpty(enquiryOutsideInstitution))
+						{
+							EnquirySummaryRequest enquirySummaryRequest=new EnquirySummaryRequest();
+							if(!CommonUtils.isObjectNullOrEmpty(enquiryOutsideInstitution.getNoOfEnquiries()))
+							{
+							enquirySummaryRequest.setMonth1(enquiryOutsideInstitution.getNoOfEnquiries().getMonth1());
+							enquirySummaryRequest.setMonth12To24(enquiryOutsideInstitution.getNoOfEnquiries().getMonth12To24());
+							enquirySummaryRequest.setMonth2To3(enquiryOutsideInstitution.getNoOfEnquiries().getMonth2To3());
+							enquirySummaryRequest.setMonth4To6(enquiryOutsideInstitution.getNoOfEnquiries().getMonth4To6());
+							enquirySummaryRequest.setMonth7To12(enquiryOutsideInstitution.getNoOfEnquiries().getMonth7To12());
+							if((!CommonUtils.isObjectNullOrEmpty(enquiryOutsideInstitution.getNoOfEnquiries().getMostRecentDate())) && (!enquiryOutsideInstitution.getNoOfEnquiries().getMostRecentDate().equals("-")))
+							{
+								DateFormat formatter = new SimpleDateFormat("dd-mm-yyyy");
+								enquirySummaryRequest.setMostRecentDate(formatter.parse(enquiryOutsideInstitution.getNoOfEnquiries().getMostRecentDate()));
+							}
+							
+							enquirySummaryRequest.setTotal(CommonUtils.isObjectNullOrEmpty(enquiryOutsideInstitution.getNoOfEnquiries().getTotal())?null:Double.parseDouble(enquiryOutsideInstitution.getNoOfEnquiries().getTotal()));
+							}
+							enquirySummaryMasterRequest.setOutside(enquirySummaryRequest);
+							
+						}
+						
+						EnquiryYourInstitution enquiryYourInstitution=  enquirySummarySec.getEnquiryYourInstitution();
+						if(!CommonUtils.isObjectNullOrEmpty(enquiryYourInstitution))
+						{
+							EnquirySummaryRequest enquirySummaryRequest=new EnquirySummaryRequest();
+							if(!CommonUtils.isObjectNullOrEmpty(enquiryYourInstitution.getNoOfEnquiries()))
+							{
+							enquirySummaryRequest.setMonth1(enquiryYourInstitution.getNoOfEnquiries().getMonth1());
+							enquirySummaryRequest.setMonth12To24(enquiryYourInstitution.getNoOfEnquiries().getMonth12To24());
+							enquirySummaryRequest.setMonth2To3(enquiryYourInstitution.getNoOfEnquiries().getMonth2To3());
+							enquirySummaryRequest.setMonth4To6(enquiryYourInstitution.getNoOfEnquiries().getMonth4To6());
+							enquirySummaryRequest.setMonth7To12(enquiryYourInstitution.getNoOfEnquiries().getMonth7To12());
+							if((!CommonUtils.isObjectNullOrEmpty(enquiryYourInstitution.getNoOfEnquiries().getMostRecentDate())) && (!enquiryYourInstitution.getNoOfEnquiries().getMostRecentDate().equals("-")))
+							{
+								DateFormat formatter = new SimpleDateFormat("dd-mm-yyyy");
+								enquirySummaryRequest.setMostRecentDate(formatter.parse(enquiryYourInstitution.getNoOfEnquiries().getMostRecentDate()));
+							}
+							
+							enquirySummaryRequest.setTotal(CommonUtils.isObjectNullOrEmpty(enquiryYourInstitution.getNoOfEnquiries().getTotal())?null:Double.parseDouble(enquiryYourInstitution.getNoOfEnquiries().getTotal()));
+							}
+							enquirySummaryMasterRequest.setYourInstitution(enquirySummaryRequest);
+							
+						}
+					}
+					
+					commercialRequest.setEnquirySummaryMasterRequest(enquirySummaryMasterRequest);
+					
+					//set  Enquiry Summary END
+					
+					//set Derogatory Information Of Borrower
+
+					DerogatoryInformationOfBorrowerRequest derogatoryInformationOfBorrowerRequest =new DerogatoryInformationOfBorrowerRequest();
+					DerogatoryInformationBorrower derogatoryInformationBorrower=productSec.getDerogatoryInformationSec().getDerogatoryInformationBorrower();
+					if(!CommonUtils.isObjectNullOrEmpty(derogatoryInformationBorrower)){
+						
+						//set outsideInstitution
+						com.capitaworld.cibil.api.model.msme.company.Base.ResponseReport.ProductSec.DerogatoryInformationSec.DerogatoryInformationBorrower.OutsideInstitution outsideInstitution=derogatoryInformationBorrower.getOutsideInstitution();
+						if(!CommonUtils.isObjectNullOrEmpty(outsideInstitution))
+						{
+							DefaultDetailsRequest defaultDetailsRequest=new DefaultDetailsRequest();
+							defaultDetailsRequest.setDishonouredCheque(outsideInstitution.getDishonoredCheque());
+							defaultDetailsRequest.setWilfulDefault(outsideInstitution.getWilfulDefault());
+							defaultDetailsRequest.setInvokedOrDevolved(outsideInstitution.getInvoked().getAmt());
+							defaultDetailsRequest.setOvredueCF(outsideInstitution.getOverdueCF().getAmt());
+							defaultDetailsRequest.setSettled(outsideInstitution.getSettled().getAmt());
+							defaultDetailsRequest.setSuitFiled(outsideInstitution.getSuitFilled().getAmt());
+							defaultDetailsRequest.setWrittenOff(outsideInstitution.getWrittenOff().getAmt());
+							
+							derogatoryInformationOfBorrowerRequest.setOutside(defaultDetailsRequest);
+							
+						}
+						
+						com.capitaworld.cibil.api.model.msme.company.Base.ResponseReport.ProductSec.DerogatoryInformationSec.DerogatoryInformationBorrower.YourInstitution yourInstitution=derogatoryInformationBorrower.getYourInstitution();
+						if(!CommonUtils.isObjectNullOrEmpty(yourInstitution))
+						{
+							DefaultDetailsRequest defaultDetailsRequest=new DefaultDetailsRequest();
+							defaultDetailsRequest.setDishonouredCheque(yourInstitution.getDishonoredCheque());
+							defaultDetailsRequest.setWilfulDefault(yourInstitution.getWilfulDefault());
+							defaultDetailsRequest.setInvokedOrDevolved(yourInstitution.getInvoked().getAmt());
+							defaultDetailsRequest.setOvredueCF(yourInstitution.getOverdueCF().getAmt());
+							defaultDetailsRequest.setSettled(yourInstitution.getSettled().getAmt());
+							defaultDetailsRequest.setSuitFiled(yourInstitution.getSuitFilled().getAmt());
+							defaultDetailsRequest.setWrittenOff(yourInstitution.getWrittenOff().getAmt());
+							
+							derogatoryInformationOfBorrowerRequest.setYourInstitution(defaultDetailsRequest);
+							
+						}
+						
+						
+					}
+					
+					commercialRequest.setDerogatoryInformationOfBorrowerRequest(derogatoryInformationOfBorrowerRequest);
+					
+					//set Derogatory Information Of Borrower END			
+					
+					
+					//set Outstanding Balances By Credit Facility
+					OutstandingBalancesByCreditFacilityGroupsMasterRequest outstandingBalancesByCreditFacilityGroupsMasterRequest=new OutstandingBalancesByCreditFacilityGroupsMasterRequest();
+					OustandingBalanceByCFAndAssetClasificationSec oustandingBalanceByCFAndAssetClasificationSec= productSec.getOustandingBalanceByCFAndAssetClasificationSec();
+					if(!CommonUtils.isObjectNullOrEmpty(oustandingBalanceByCFAndAssetClasificationSec)){
+						com.capitaworld.cibil.api.model.msme.company.Base.ResponseReport.ProductSec.OustandingBalanceByCFAndAssetClasificationSec.OutsideInstitution outsideInstitution=oustandingBalanceByCFAndAssetClasificationSec.getOutsideInstitution();
+						if(!CommonUtils.isObjectNullOrEmpty(outsideInstitution))
+						{
+						OutstandingBalancesByCreditFacilityGroupsDetailsRequest outstandingBalancesByCreditFacilityGroupsDetailsRequest=new OutstandingBalancesByCreditFacilityGroupsDetailsRequest();
+						com.capitaworld.cibil.api.model.msme.company.Base.ResponseReport.ProductSec.OustandingBalanceByCFAndAssetClasificationSec.OutsideInstitution.Forex forex= outsideInstitution.getForex();
+						if(!CommonUtils.isObjectNullOrEmpty(forex))
+						{
+							OutstandingBalancesByCreditFacilityGroupsDetailStatusRequest outstandingBalancesByCreditFacilityGroupsDetailStatusRequest=new OutstandingBalancesByCreditFacilityGroupsDetailStatusRequest();
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDbt(forex.getNONSTDVec().getDbt().getValue());
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd91To180(forex.getNONSTDVec().getDPD91To180().getValue());
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpdGT180(forex.getNONSTDVec().getGreaterThan180DPD().getValue());
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setLoss(forex.getNONSTDVec().getLoss().getValue());
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setSub(forex.getNONSTDVec().getSub().getValue());
+							
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd0(forex.getSTDVec().getDPD0().getValue());
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd1To30OrSMA0(forex.getSTDVec().getDPD1To30().getValue());
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd31To60orSMA1(forex.getSTDVec().getDPD31To60().getValue());
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd61To90orSMA2(forex.getSTDVec().getDPD61To90().getValue());
+							outstandingBalancesByCreditFacilityGroupsDetailsRequest.setForex(outstandingBalancesByCreditFacilityGroupsDetailStatusRequest);
+							
+						}
+						com.capitaworld.cibil.api.model.msme.company.Base.ResponseReport.ProductSec.OustandingBalanceByCFAndAssetClasificationSec.OutsideInstitution.NonFunded nonFunded= outsideInstitution.getNonFunded();
+						if(!CommonUtils.isObjectNullOrEmpty(nonFunded))
+						{
+							OutstandingBalancesByCreditFacilityGroupsDetailStatusRequest outstandingBalancesByCreditFacilityGroupsDetailStatusRequest=new OutstandingBalancesByCreditFacilityGroupsDetailStatusRequest();
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDbt(nonFunded.getNONSTDVec().getDbt().getValue());
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd91To180(nonFunded.getNONSTDVec().getDPD91To180().getValue());
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpdGT180(nonFunded.getNONSTDVec().getGreaterThan180DPD().getValue());
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setLoss(nonFunded.getNONSTDVec().getLoss().getValue());
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setSub(nonFunded.getNONSTDVec().getSub().getValue());
+							
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd0(nonFunded.getSTDVec().getDPD0().getValue());
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd1To30OrSMA0(nonFunded.getSTDVec().getDPD1To30().getValue());
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd31To60orSMA1(nonFunded.getSTDVec().getDPD31To60().getValue());
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd61To90orSMA2(nonFunded.getSTDVec().getDPD61To90().getValue());
+							outstandingBalancesByCreditFacilityGroupsDetailsRequest.setNonFunded(outstandingBalancesByCreditFacilityGroupsDetailStatusRequest);
+							
+						}
+						
+						
+						
+						com.capitaworld.cibil.api.model.msme.company.Base.ResponseReport.ProductSec.OustandingBalanceByCFAndAssetClasificationSec.OutsideInstitution.TermLoan  termLoan=outsideInstitution.getTermLoan();
+						if(!CommonUtils.isObjectNullOrEmpty(termLoan))
+						{
+							OutstandingBalancesByCreditFacilityGroupsDetailStatusRequest outstandingBalancesByCreditFacilityGroupsDetailStatusRequest=new OutstandingBalancesByCreditFacilityGroupsDetailStatusRequest();
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDbt(termLoan.getNONSTDVec().getDbt().getValue());
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd91To180(termLoan.getNONSTDVec().getDPD91To180().getValue());
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpdGT180(termLoan.getNONSTDVec().getGreaterThan180DPD().getValue());
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setLoss(termLoan.getNONSTDVec().getLoss().getValue());
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setSub(termLoan.getNONSTDVec().getSub().getValue());
+							
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd0(termLoan.getSTDVec().getDPD0().getValue());
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd1To30OrSMA0(termLoan.getSTDVec().getDPD1To30().getValue());
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd31To60orSMA1(termLoan.getSTDVec().getDPD31To60().getValue());
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd61To90orSMA2(termLoan.getSTDVec().getDPD61To90().getValue());
+							outstandingBalancesByCreditFacilityGroupsDetailsRequest.setTermLoan(outstandingBalancesByCreditFacilityGroupsDetailStatusRequest);
+							
+						}
+						
+						com.capitaworld.cibil.api.model.msme.company.Base.ResponseReport.ProductSec.OustandingBalanceByCFAndAssetClasificationSec.OutsideInstitution.WorkingCapital workingCapital= outsideInstitution.getWorkingCapital();
+						if(!CommonUtils.isObjectNullOrEmpty(workingCapital))
+						{
+							OutstandingBalancesByCreditFacilityGroupsDetailStatusRequest outstandingBalancesByCreditFacilityGroupsDetailStatusRequest=new OutstandingBalancesByCreditFacilityGroupsDetailStatusRequest();
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDbt(workingCapital.getNONSTDVec().getDbt().getValue());
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd91To180(workingCapital.getNONSTDVec().getDPD91To180().getValue());
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpdGT180(workingCapital.getNONSTDVec().getGreaterThan180DPD().getValue());
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setLoss(workingCapital.getNONSTDVec().getLoss().getValue());
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setSub(workingCapital.getNONSTDVec().getSub().getValue());
+							
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd0(workingCapital.getSTDVec().getDPD0().getValue());
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd1To30OrSMA0(workingCapital.getSTDVec().getDPD1To30().getValue());
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd31To60orSMA1(workingCapital.getSTDVec().getDPD31To60().getValue());
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd61To90orSMA2(workingCapital.getSTDVec().getDPD61To90().getValue());
+							outstandingBalancesByCreditFacilityGroupsDetailsRequest.setTermLoan(outstandingBalancesByCreditFacilityGroupsDetailStatusRequest);
+							
+						}
+						outstandingBalancesByCreditFacilityGroupsMasterRequest.setOutside(outstandingBalancesByCreditFacilityGroupsDetailsRequest);
+						}
+						
+						
+						com.capitaworld.cibil.api.model.msme.company.Base.ResponseReport.ProductSec.OustandingBalanceByCFAndAssetClasificationSec.YourInstitution yourInstitution=oustandingBalanceByCFAndAssetClasificationSec.getYourInstitution();
+
+						if(!CommonUtils.isObjectNullOrEmpty(yourInstitution))
+						{
+						OutstandingBalancesByCreditFacilityGroupsDetailsRequest outstandingBalancesByCreditFacilityGroupsDetailsRequest=new OutstandingBalancesByCreditFacilityGroupsDetailsRequest();
+						com.capitaworld.cibil.api.model.msme.company.Base.ResponseReport.ProductSec.OustandingBalanceByCFAndAssetClasificationSec.YourInstitution.Forex forex= yourInstitution.getForex();
+						if(!CommonUtils.isObjectNullOrEmpty(forex))
+						{
+							OutstandingBalancesByCreditFacilityGroupsDetailStatusRequest outstandingBalancesByCreditFacilityGroupsDetailStatusRequest=new OutstandingBalancesByCreditFacilityGroupsDetailStatusRequest();
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDbt(forex.getNONSTDVec().getDbt().getValue());
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd91To180(forex.getNONSTDVec().getDPD91To180().getValue());
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpdGT180(forex.getNONSTDVec().getGreaterThan180DPD().getValue());
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setLoss(forex.getNONSTDVec().getLoss().getValue());
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setSub(forex.getNONSTDVec().getSub().getValue());
+							
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd0(forex.getSTDVec().getDPD0().getValue());
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd1To30OrSMA0(forex.getSTDVec().getDPD1To30().getValue());
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd31To60orSMA1(forex.getSTDVec().getDPD31To60().getValue());
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd61To90orSMA2(forex.getSTDVec().getDPD61To90().getValue());
+							outstandingBalancesByCreditFacilityGroupsDetailsRequest.setForex(outstandingBalancesByCreditFacilityGroupsDetailStatusRequest);
+							
+						}
+						com.capitaworld.cibil.api.model.msme.company.Base.ResponseReport.ProductSec.OustandingBalanceByCFAndAssetClasificationSec.YourInstitution.NonFunded nonFunded= yourInstitution.getNonFunded();
+						if(!CommonUtils.isObjectNullOrEmpty(nonFunded))
+						{
+							OutstandingBalancesByCreditFacilityGroupsDetailStatusRequest outstandingBalancesByCreditFacilityGroupsDetailStatusRequest=new OutstandingBalancesByCreditFacilityGroupsDetailStatusRequest();
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDbt(nonFunded.getNONSTDVec().getDbt().getValue());
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd91To180(nonFunded.getNONSTDVec().getDPD91To180().getValue());
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpdGT180(nonFunded.getNONSTDVec().getGreaterThan180DPD().getValue());
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setLoss(nonFunded.getNONSTDVec().getLoss().getValue());
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setSub(nonFunded.getNONSTDVec().getSub().getValue());
+							
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd0(nonFunded.getSTDVec().getDPD0().getValue());
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd1To30OrSMA0(nonFunded.getSTDVec().getDPD1To30().getValue());
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd31To60orSMA1(nonFunded.getSTDVec().getDPD31To60().getValue());
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd61To90orSMA2(nonFunded.getSTDVec().getDPD61To90().getValue());
+							outstandingBalancesByCreditFacilityGroupsDetailsRequest.setNonFunded(outstandingBalancesByCreditFacilityGroupsDetailStatusRequest);
+							
+						}
+						
+						
+						
+						com.capitaworld.cibil.api.model.msme.company.Base.ResponseReport.ProductSec.OustandingBalanceByCFAndAssetClasificationSec.YourInstitution.TermLoan  termLoan=yourInstitution.getTermLoan();
+						if(!CommonUtils.isObjectNullOrEmpty(termLoan))
+						{
+							OutstandingBalancesByCreditFacilityGroupsDetailStatusRequest outstandingBalancesByCreditFacilityGroupsDetailStatusRequest=new OutstandingBalancesByCreditFacilityGroupsDetailStatusRequest();
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDbt(termLoan.getNONSTDVec().getDbt().getValue());
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd91To180(termLoan.getNONSTDVec().getDPD91To180().getValue());
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpdGT180(termLoan.getNONSTDVec().getGreaterThan180DPD().getValue());
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setLoss(termLoan.getNONSTDVec().getLoss().getValue());
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setSub(termLoan.getNONSTDVec().getSub().getValue());
+							
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd0(termLoan.getSTDVec().getDPD0().getValue());
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd1To30OrSMA0(termLoan.getSTDVec().getDPD1To30().getValue());
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd31To60orSMA1(termLoan.getSTDVec().getDPD31To60().getValue());
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd61To90orSMA2(termLoan.getSTDVec().getDPD61To90().getValue());
+							outstandingBalancesByCreditFacilityGroupsDetailsRequest.setTermLoan(outstandingBalancesByCreditFacilityGroupsDetailStatusRequest);
+							
+						}
+						
+						com.capitaworld.cibil.api.model.msme.company.Base.ResponseReport.ProductSec.OustandingBalanceByCFAndAssetClasificationSec.YourInstitution.WorkingCapital workingCapital= yourInstitution.getWorkingCapital();
+						if(!CommonUtils.isObjectNullOrEmpty(workingCapital))
+						{
+							OutstandingBalancesByCreditFacilityGroupsDetailStatusRequest outstandingBalancesByCreditFacilityGroupsDetailStatusRequest=new OutstandingBalancesByCreditFacilityGroupsDetailStatusRequest();
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDbt(workingCapital.getNONSTDVec().getDbt().getValue());
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd91To180(workingCapital.getNONSTDVec().getDPD91To180().getValue());
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpdGT180(workingCapital.getNONSTDVec().getGreaterThan180DPD().getValue());
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setLoss(workingCapital.getNONSTDVec().getLoss().getValue());
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setSub(workingCapital.getNONSTDVec().getSub().getValue());
+							
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd0(workingCapital.getSTDVec().getDPD0().getValue());
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd1To30OrSMA0(workingCapital.getSTDVec().getDPD1To30().getValue());
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd31To60orSMA1(workingCapital.getSTDVec().getDPD31To60().getValue());
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd61To90orSMA2(workingCapital.getSTDVec().getDPD61To90().getValue());
+							outstandingBalancesByCreditFacilityGroupsDetailsRequest.setTermLoan(outstandingBalancesByCreditFacilityGroupsDetailStatusRequest);
+							
+						}
+					
+						outstandingBalancesByCreditFacilityGroupsMasterRequest.setYourInstitution(outstandingBalancesByCreditFacilityGroupsDetailsRequest);
+						}
+						
+					}
+					
+					commercialRequest.setOutstandingBalancesByCreditFacilityGroupsMasterRequest(outstandingBalancesByCreditFacilityGroupsMasterRequest);
+					//set Outstanding Balances By Credit Facility END 
+					
+					
+					
+					//set Location Details
+					
+					LocationDetailsRequest locationDetailsRequest =new LocationDetailsRequest();
+					
+					List<AddressAndContactDetailsRequest> regOfficeaddressAndContactDetailsRequests=new ArrayList<>();
+					List<AddressAndContactDetailsRequest> otheraddressAndContactDetailsRequests=new ArrayList<>();
+					List<AddressAndContactDetailsRequest> plantaddressAndContactDetailsRequests=new ArrayList<>();
+					List<AddressAndContactDetailsRequest> warehouseaddressAndContactDetailsRequests=new ArrayList<>();
+					//locationDetailsRequest.setreg
+					//locationDetailsRequest.set
+					
+					LocationDetailsSec locationDetailsSec=productSec.getLocationDetailsSec();
+					
+					if(!CommonUtils.isObjectNullOrEmpty(locationDetailsSec))
+					{
+						LocationInformationVec locationInformationVec=locationDetailsSec.getLocationInformationVec();
+						if(!CommonUtils.isObjectNullOrEmpty(locationInformationVec))
+						{
+							List<LocationInformation> locationInformations= locationInformationVec.getLocationInformation();
+							for(LocationInformation locationInformation:locationInformations)
+							{
+								AddressAndContactDetailsRequest addressAndContactDetailsRequest2 = new AddressAndContactDetailsRequest();
+								
+								AddressRequest registeredOfficeAddress = new AddressRequest();
+								String[] split = locationInformation.getAddress().split(",");
+								logger.info("Length of Address Array ====================>{}",split.length);
+								if(split != null && split.length == 5) {
+									registeredOfficeAddress.setPinCode(Long.parseLong(split[split.length - 1]));
+									registeredOfficeAddress.setPincode(split[split.length - 1]);
+									registeredOfficeAddress.setState(split[split.length - 2]);
+									registeredOfficeAddress.setCity(split[split.length - 3]);
+									registeredOfficeAddress.setStreetName(split[0]);
+									registeredOfficeAddress.setLandMark(split[0]);
+									registeredOfficeAddress.setPremiseNumber(split[0]);
+								}
+								
+								addressAndContactDetailsRequest2.setRegisteredOfficeAddress(registeredOfficeAddress);
+								if(!CommonUtils.isObjectNullOrEmpty(locationInformation.getFirstReportedDate()))
+								{
+									DateFormat dateFormat = new SimpleDateFormat("dd-MMM-yyyy");
+									addressAndContactDetailsRequest2.setFirstReportedDate(dateFormat.parse(locationInformation.getFirstReportedDate()));
+								}
+								
+								if(!CommonUtils.isObjectNullOrEmpty(locationInformation.getLastReportedDate()))
+								{
+									DateFormat dateFormat = new SimpleDateFormat("dd-MMM-yyyy");
+									addressAndContactDetailsRequest2.setLastReportedDate(dateFormat.parse(locationInformation.getLastReportedDate()));
+								}
+								
+								
+								if(locationInformation.getBorrowerOfficeLocationType().equalsIgnoreCase("Registered Office"))
+								{
+									regOfficeaddressAndContactDetailsRequests.add(addressAndContactDetailsRequest2);
+								}
+								else if(locationInformation.getBorrowerOfficeLocationType().equalsIgnoreCase("Others"))
+								{
+									otheraddressAndContactDetailsRequests.add(addressAndContactDetailsRequest2);
+								}
+								else if(locationInformation.getBorrowerOfficeLocationType().equalsIgnoreCase("plant or factory address"))
+								{
+									plantaddressAndContactDetailsRequests.add(addressAndContactDetailsRequest2);
+								}
+								else if(locationInformation.getBorrowerOfficeLocationType().equalsIgnoreCase("warehouse"))
+								{
+									warehouseaddressAndContactDetailsRequests.add(addressAndContactDetailsRequest2);
+								}
+
+							}
+							
+						}
+					}
+					
+					locationDetailsRequest.setRegisteredOffice(regOfficeaddressAndContactDetailsRequests);
+					locationDetailsRequest.setOthers(otheraddressAndContactDetailsRequests);
+					locationDetailsRequest.setPlantOrFactoryAddress(plantaddressAndContactDetailsRequests);
+					locationDetailsRequest.setWarehouse(warehouseaddressAndContactDetailsRequests);
+					
+					commercialRequest.setLocationDetailsRequest(locationDetailsRequest);
+					//set Location Details END
+					
+					//set relation Details
+					List<RelationDetailsRequest> relationDetailsRequests=new ArrayList<>();
+					RelationshipDetailsVec relationshipDetailsVec=productSec.getRelationshipDetailsVec();
+					if(!CommonUtils.isObjectNullOrEmpty(relationshipDetailsVec))
+					{
+						List<RelationshipDetails> relationshipDetailsList=relationshipDetailsVec.getRelationshipDetails();
+						if(!CommonUtils.isListNullOrEmpty(relationshipDetailsList))
+						{
+							for(RelationshipDetails relationshipDetails:relationshipDetailsList)
+							{
+								RelationDetailsRequest relationDetailsRequest=new RelationDetailsRequest();
+							
+								//address AndContact Details
+								com.capitaworld.cibil.api.model.msme.company.Base.ResponseReport.ProductSec.RelationshipDetailsVec.RelationshipDetails.BorrwerAddressContactDetails borrwerAddressContactDetails2=relationshipDetails.getBorrwerAddressContactDetails();
+								
+								AddressAndContactDetailsRequest addressAndContactDetailsRequest2=new AddressAndContactDetailsRequest();
+								AddressRequest registeredOfficeAddress = new AddressRequest();
+								String[] split = borrwerAddressContactDetails2.getAddress().split(",");
+								logger.info("Length of Address Array ====================>{}",split.length);
+								if(split != null && split.length == 5) {
+									registeredOfficeAddress.setPinCode(Long.parseLong(split[split.length - 1]));
+									registeredOfficeAddress.setPincode(split[split.length - 1]);
+									registeredOfficeAddress.setState(split[split.length - 2]);
+									registeredOfficeAddress.setCity(split[split.length - 3]);
+									registeredOfficeAddress.setStreetName(split[0]);
+									registeredOfficeAddress.setLandMark(split[0]);
+									registeredOfficeAddress.setPremiseNumber(split[0]);
+								}
+								
+								addressAndContactDetailsRequest2.setRegisteredOfficeAddress(registeredOfficeAddress);
+								
+								addressAndContactDetailsRequest2.setFaxNo(borrwerAddressContactDetails2.getFaxNumber());
+								addressAndContactDetailsRequest2.setMobileNo(borrwerAddressContactDetails2.getMobileNumber());
+								addressAndContactDetailsRequest2.setTelephoneNo(borrwerAddressContactDetails2.getTelephoneNumber());
+								relationDetailsRequest.setAddressAndContactDetails(addressAndContactDetailsRequest2);
+								
+								//set identification Details
+								com.capitaworld.cibil.api.model.msme.company.Base.ResponseReport.ProductSec.RelationshipDetailsVec.RelationshipDetails.BorrwerIDDetailsVec borrwerIDDetailsVec2= relationshipDetails.getBorrwerIDDetailsVec();
+								IdentificationDetailsRequest identificationDetailsRequest1=new IdentificationDetailsRequest();
+								if(CommonUtils.isListNullOrEmpty(borrwerIDDetailsVec2.getBorrwerIDDetails()))
+								{
+									identificationDetailsRequest1.setCin(borrwerIDDetailsVec2.getBorrwerIDDetails().get(0).getCin());
+									identificationDetailsRequest1.setDin(borrwerIDDetailsVec2.getBorrwerIDDetails().get(0).getDin());
+									
+									
+									identificationDetailsRequest1.setDrivingLicenseNumber(borrwerIDDetailsVec2.getBorrwerIDDetails().get(0).getDrivingLicenseNo());
+									identificationDetailsRequest1.setPanNo(borrwerIDDetailsVec2.getBorrwerIDDetails().get(0).getPan());
+									identificationDetailsRequest1.setPassportNo(borrwerIDDetailsVec2.getBorrwerIDDetails().get(0).getPassportNumber());
+									identificationDetailsRequest1.setRationCardNo(borrwerIDDetailsVec2.getBorrwerIDDetails().get(0).getRationCard());
+									identificationDetailsRequest1.setRegistrationNo(borrwerIDDetailsVec2.getBorrwerIDDetails().get(0).getRegistrationNumber());
+									identificationDetailsRequest1.setServiceTaxNo(borrwerIDDetailsVec2.getBorrwerIDDetails().get(0).getServiceTaxNumber());
+									identificationDetailsRequest1.setTin(borrwerIDDetailsVec2.getBorrwerIDDetails().get(0).getTin());
+									identificationDetailsRequest1.setUid(borrwerIDDetailsVec2.getBorrwerIDDetails().get(0).getUid());
+									identificationDetailsRequest1.setVotersId(borrwerIDDetailsVec2.getBorrwerIDDetails().get(0).getVoterID());
+								}
+								relationDetailsRequest.setIdentificationDetails(identificationDetailsRequest1);
+								relationDetailsRequest.setRelationship(relationshipDetails.getRelationshipHeader());
+								
+								
+								relationDetailsRequests.add(relationDetailsRequest)	;
+							}
+						}
+						
+					}
+					commercialRequest.setRelationDetailsRequestList(relationDetailsRequests);
+					//set relation Details END
+					
+					//set credit Facility Details
+					/*List<CreditFacilityDetailsRequest> creditFacilityDetailsRequests=new ArrayList<>();
+					
+					 productSec.get
+					
+					if(!CommonUtils.isObjectNullOrEmpty(creditFacilitiesDetailsVec))
+					{
+						List<CreditFacilitiesDetails> creditFacilitiesDetails = creditFacilitiesDetailsVec.getCreditFacilitiesDetails();
+						for(CreditFacilitiesDetails creditFacilityCurrentDetails2:creditFacilitiesDetails )
+						{
+							CreditFacilityDetailsRequest creditFacilityDetailsRequest=new CreditFacilityDetailsRequest();
+							creditFacilityDetailsRequest.setAssetClassificationOrDPO(assetClassificationOrDPO);(creditFacilityCurrentDetails2.getAccountNo());
+						}
+						
+						
+						
+					}*/
+					
+					//set credit Facility Details END
+					
+					
+					
+					
+					//set cheques Dishonoured
+					/*productSec.getDerogatoryInformationSec().getDerogatoryInformationBorrower().getOutsideInstitution().*/
+					//set cheques Dishonoured END
+					
+					
+					//set guarantor Details
+					
+					//set guarantor Details END
+					
+					
+					
+					//suit Filed Details
+					SuitFiledDetailsRequest suitFiledDetailsRequest=new SuitFiledDetailsRequest(); 
+					SuitFiledVec suitFiledVec = productSec.getSuitFiledVec();
+					if(!CommonUtils.isObjectNullOrEmpty(suitFiledVec))
+					{
+						if(!CommonUtils.isListNullOrEmpty(suitFiledVec.getSuitFilled()))
+							suitFiledDetailsRequest.setSuitAmount(CommonUtils.isObjectNullOrEmpty(suitFiledVec.getSuitFilled().get(0).getSuitAmt())?null:Double.parseDouble(suitFiledVec.getSuitFilled().get(0).getSuitAmt()));
+							if(!CommonUtils.isObjectNullOrEmpty(suitFiledVec.getSuitFilled().get(0).getDateSuit()))
+							{
+							suitFiledDetailsRequest.setDateOfSuit(CommonUtils.formatter.parse(suitFiledVec.getSuitFilled().get(0).getDateSuit()));
+							}
+							suitFiledDetailsRequest.setSuitFilesBy(suitFiledVec.getSuitFilled().get(0).getSuitFilledBy());
+							suitFiledDetailsRequest.setSuitReferenceNo(suitFiledVec.getSuitFilled().get(0).getSuitRefNumber());
+							suitFiledDetailsRequest.setSuitStatus(suitFiledVec.getSuitFilled().get(0).getSuitStatus());
+					}
+					commercialRequest.setSuitFiledDetailsRequest(suitFiledDetailsRequest);
+					//suit Filed Details END
+					
+					
+					//CreditRating Organization
+					CreditRatingOrganizationDetailRequest creditRatingOrganizationDetailRequest=new CreditRatingOrganizationDetailRequest();
+					CreditRatingSummaryVec creditRatingSummaryVec = productSec.getCreditRatingSummaryVec();
+					if(!CommonUtils.isObjectNullOrEmpty(creditRatingSummaryVec ))
+					{
+						if(!CommonUtils.isListNullOrEmpty(creditRatingSummaryVec.getCreditRatingSummary()))
+						{
+							if(!CommonUtils.isListNullOrEmpty(creditRatingSummaryVec.getCreditRatingSummary().get(0).getCreditRatingSummaryDetailsVec()))
+							{
+								if(!CommonUtils.isObjectNullOrEmpty(creditRatingSummaryVec.getCreditRatingSummary().get(0).getCreditRatingSummaryDetailsVec().get(0).getRatingAsOn()))
+								{
+									creditRatingOrganizationDetailRequest.setRatingDate(CommonUtils.formatter.parse(creditRatingSummaryVec.getCreditRatingSummary().get(0).getCreditRatingSummaryDetailsVec().get(0).getRatingAsOn()));
+								}
+								creditRatingOrganizationDetailRequest.setRating(creditRatingSummaryVec.getCreditRatingSummary().get(0).getCreditRatingSummaryDetailsVec().get(0).getCreditRating());
+							}
+						}
+						
+					}
+					
+					commercialRequest.setCreditRatingOrganizationDetailRequest(creditRatingOrganizationDetailRequest);
+					//CreditRating Organization END
+					
+					// enquiry Info
+					List<com.capitaworld.sidbi.integration.model.commercial.EnquiryInfoRequest> enquiryInfoRequestList =new ArrayList<>(); 
+					if(CommonUtils.isObjectNullOrEmpty(productSec.getEnquiryDetailsInLast24MonthVec()))
+					{
+						List<EnquiryDetailsInLast24Month> enquiryDetailsInLast24Month = productSec.getEnquiryDetailsInLast24MonthVec().getEnquiryDetailsInLast24Month();
+						if(!CommonUtils.isListNullOrEmpty(enquiryDetailsInLast24Month ))
+						{
+							for(EnquiryDetailsInLast24Month enquiryDetailsInLast24Month2:enquiryDetailsInLast24Month)
+							{
+								com.capitaworld.sidbi.integration.model.commercial.EnquiryInfoRequest enquiryInfoRequest2=new com.capitaworld.sidbi.integration.model.commercial.EnquiryInfoRequest();
+								//enquiryInfoRequest2.set
+								enquiryInfoRequest2.setCreditLender(enquiryDetailsInLast24Month2.getCreditLender());
+								enquiryInfoRequest2.setEnquiryAmount(CommonUtils.isObjectNullOrEmpty(enquiryDetailsInLast24Month2.getEnquiryAmt())?null:Double.parseDouble(enquiryDetailsInLast24Month2.getEnquiryAmt()));
+								if(!CommonUtils.isObjectNullOrEmptyOrDash(enquiryDetailsInLast24Month2.getEnquiryDt()))
+								{
+								enquiryInfoRequest2.setDateOfEnquiry(CommonUtils.formatter.parse(enquiryDetailsInLast24Month2.getEnquiryDt()));
+								}
+								enquiryInfoRequest2.setEnquiryPurpose(enquiryDetailsInLast24Month2.getEnquiryPurpose());
+								enquiryInfoRequestList.add(enquiryInfoRequest2);
+							}
+						}
+					}
+					commercialRequest.setEnquiryInfoRequestList(enquiryInfoRequestList);
+					
+					
+					
+					
+					// enquiry Info END
+					
+					
 				}
 			}
 		} catch (Exception e) {
@@ -5524,26 +6377,29 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 	}
 
 	private ProfileReqRes getPrelimData(PrimaryCorporateDetail applicationMaster, Long userId) {
-		ProfileReqRes profileReqRes = new  ProfileReqRes();
+		ProfileReqRes profileReqRes = new ProfileReqRes();
 		profileReqRes.setLoanMasterRequest(createObj(applicationMaster));
-		//Create Corporate Profile Object
-		CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository.findOneByApplicationIdId(applicationMaster.getId());
-		if(corporateApplicantDetail != null) {
-			profileReqRes.setCorporateProfileRequest(createProfileObj(corporateApplicantDetail,applicationMaster.getUserId()));
-			//Setting Director Details
+		// Create Corporate Profile Object
+		CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
+				.findOneByApplicationIdId(applicationMaster.getId());
+		if (corporateApplicantDetail != null) {
+			profileReqRes.setCorporateProfileRequest(
+					createProfileObj(corporateApplicantDetail, applicationMaster.getUserId()));
+			// Setting Director Details
 			profileReqRes.setDirBackList(getDirectorListForSidbi(applicationMaster.getId()));
-			//Setting Current Financial Details
+			// Setting Current Financial Details
 			profileReqRes.setCurrentFinArrList(getCurrentFinancialDetaisForSidbi(applicationMaster.getId()));
 			return profileReqRes;
-			
-		}else {
-			logger.warn("No Corporate Profile Found For Application Id==>{}",applicationMaster.getId());
+
+		} else {
+			logger.warn("No Corporate Profile Found For Application Id==>{}", applicationMaster.getId());
 		}
-		
+
 		return null;
 	}
-	
-	private MatchesParameterRequest createMatchesParameterRequest(Long applicationId,Long fpProductId,Integer productId) {
+
+	private MatchesParameterRequest createMatchesParameterRequest(Long applicationId, Long fpProductId,
+			Integer productId) {
 		MatchRequest request = new MatchRequest();
 		request.setApplicationId(applicationId);
 		request.setProductId(fpProductId);
@@ -5553,257 +6409,267 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		if(response == null || CommonUtils.isListNullOrEmpty(response.getMatchDisplayObjectList())) {
+		if (response == null || CommonUtils.isListNullOrEmpty(response.getMatchDisplayObjectList())) {
 			return null;
 		}
 		MatchesParameterRequest res = new MatchesParameterRequest();
 		res.setApplicationId(applicationId);
-		for(int i = 0; i < response.getMatchDisplayObjectList().size(); i++) {
+		for (int i = 0; i < response.getMatchDisplayObjectList().size(); i++) {
 			MatchDisplayObject displayObject = response.getMatchDisplayObjectList().get(i);
-			switch(i) {
-				case 0:
-					res.setIndustryFp(checkIsNull(displayObject.getFpValue()));
-					res.setIndustryFs(checkIsNull(displayObject.getValue()));
-					res.setIndustryFlag(displayObject.getIsMatched());
-					break;
-				case 1:
-					res.setInvestmentSizeFp(checkIsNull(displayObject.getFpValue()));
-					res.setInvestmentSizeFs(checkIsNull(displayObject.getValue()));
-					res.setInvestmentSizeFlag(displayObject.getIsMatched());
-					break;
-				case 2:
-					res.setGeoMarketFocusFP(checkIsNull(displayObject.getFpValue()));
-					res.setGeoMarketFocusFs(checkIsNull(displayObject.getValue()));
-					res.setGeoMarketFocusFlag(displayObject.getIsMatched());
-					break;
-				case 3:
-					res.setAssetCoverageFp(checkIsNull(displayObject.getFpValue()));
-					res.setAssetCoverageFs(checkIsNull(displayObject.getValue()));
-					res.setAssetCoverageFlag(displayObject.getIsMatched());
-					break;
-				case 4:
-					res.setDebEqRatioFp(checkIsNull(displayObject.getFpValue()));
-					res.setDebEqRatioFs(checkIsNull(displayObject.getValue()));
-					res.setDebEqRatioFlag(displayObject.getIsMatched());
-					break;
-				case 5:
-					res.setCurrentRatioFp(checkIsNull(displayObject.getFpValue()));
-					res.setCurrentRatioFs(checkIsNull(displayObject.getValue()));
-					res.setIndustryFlag(displayObject.getIsMatched());
-					break;
-				case 6:
-					res.setInterestCovRatioFp(checkIsNull(displayObject.getFpValue()));
-					res.setInterestCovRatioFs(checkIsNull(displayObject.getValue()));
-					res.setInterestCovRatioFlag(displayObject.getIsMatched());
-					break;
-				case 7:
-					res.setTolTnwFp(checkIsNull(displayObject.getFpValue()));
-					res.setTolTnwFs(checkIsNull(displayObject.getValue()));
-					res.setTolTnwFlag(displayObject.getIsMatched());
-					break;
-				case 8:
-					res.setCustomerConFp(checkIsNull(displayObject.getFpValue()));
-					res.setCustomerConFs(checkIsNull(displayObject.getValue()));
-					res.setIndustryFlag(displayObject.getIsMatched());
-					break;
-				case 9:
-					res.setNoOfCheckLastOneFp(checkIsNull(displayObject.getFpValue()));
-					res.setNoOfCheckLastOneFs(checkIsNull(displayObject.getValue()));
-					res.setNoOfCheckLastOneFlag(displayObject.getIsMatched());
-					break;
-				case 10:
-					res.setNoOfMonthLastSixFp(checkIsNull(displayObject.getFpValue()));
-					res.setNoOfMonthLastSixFs(checkIsNull(displayObject.getValue()));
-					res.setNoOfMonthLastSixFlag(displayObject.getIsMatched());
-					break;
-				case 11:
-					res.setRiskModelScoreFp(checkIsNull(displayObject.getFpValue()));
-					res.setRiskModelScoreFs(checkIsNull(displayObject.getValue()));
-					res.setRiskModelScoreFlag(displayObject.getIsMatched());
-					break;
-				case 13:
-					res.setAgeEstaFp(checkIsNull(displayObject.getFpValue()));
-					res.setAgeEstaFs(checkIsNull(displayObject.getValue()));
-					res.setAgeEstaFlag(displayObject.getIsMatched());
-					break;
-				case 14:
-					res.setPositiveProfFp(checkIsNull(displayObject.getFpValue()));
-					res.setPositiveProfFs(checkIsNull(displayObject.getValue()));
-					res.setPositiveProfFlag(displayObject.getIsMatched());
-					break;
-				case 15:
-					res.setPastTernOverFp(checkIsNull(displayObject.getFpValue()));
-					res.setPastTernOverFs(checkIsNull(displayObject.getValue()));
-					res.setPastTernOverFlag(displayObject.getIsMatched());
-					break;
-				case 16:
-					res.setPositiveNetFp(checkIsNull(displayObject.getFpValue()));
-					res.setPositiveNetFs(checkIsNull(displayObject.getValue()));
-					res.setPositiveNetFlag(displayObject.getIsMatched());
-					break;
-				case 17:
-					res.setTurnOverToLoanFp(checkIsNull(displayObject.getFpValue()));
-					res.setTurnOverToLoanFs(checkIsNull(displayObject.getValue()));
-					res.setTurnOverToLoanFlag(displayObject.getIsMatched());
-					break;
-				case 18:
-					res.setGrossCashAccuralFp(checkIsNull(displayObject.getFpValue()));
-					res.setGrossCashAccuralFs(checkIsNull(displayObject.getValue()));
-					res.setGrossCashAccuralFlag(displayObject.getIsMatched());
-					break;
-				case 19:
-					res.setMinimumCibilFp(checkIsNull(displayObject.getFpValue()));
-					res.setMinimumCibilFs(checkIsNull(displayObject.getValue()));
-					res.setMinimumCibilFlag(displayObject.getIsMatched());
-					break;
-				case 20:
-					res.setCommercialCibilFp(checkIsNull(displayObject.getFpValue()));
-					res.setCommercialCibilFs(checkIsNull(displayObject.getValue()));
-					res.setCommercialCibilFlag(displayObject.getIsMatched());
-					break;
+			switch (i) {
+			case 0:
+				res.setIndustryFp(checkIsNull(displayObject.getFpValue()));
+				res.setIndustryFs(checkIsNull(displayObject.getValue()));
+				res.setIndustryFlag(displayObject.getIsMatched());
+				break;
+			case 1:
+				res.setInvestmentSizeFp(checkIsNull(displayObject.getFpValue()));
+				res.setInvestmentSizeFs(checkIsNull(displayObject.getValue()));
+				res.setInvestmentSizeFlag(displayObject.getIsMatched());
+				break;
+			case 2:
+				res.setGeoMarketFocusFP(checkIsNull(displayObject.getFpValue()));
+				res.setGeoMarketFocusFs(checkIsNull(displayObject.getValue()));
+				res.setGeoMarketFocusFlag(displayObject.getIsMatched());
+				break;
+			case 3:
+				res.setAssetCoverageFp(checkIsNull(displayObject.getFpValue()));
+				res.setAssetCoverageFs(checkIsNull(displayObject.getValue()));
+				res.setAssetCoverageFlag(displayObject.getIsMatched());
+				break;
+			case 4:
+				res.setDebEqRatioFp(checkIsNull(displayObject.getFpValue()));
+				res.setDebEqRatioFs(checkIsNull(displayObject.getValue()));
+				res.setDebEqRatioFlag(displayObject.getIsMatched());
+				break;
+			case 5:
+				res.setCurrentRatioFp(checkIsNull(displayObject.getFpValue()));
+				res.setCurrentRatioFs(checkIsNull(displayObject.getValue()));
+				res.setIndustryFlag(displayObject.getIsMatched());
+				break;
+			case 6:
+				res.setInterestCovRatioFp(checkIsNull(displayObject.getFpValue()));
+				res.setInterestCovRatioFs(checkIsNull(displayObject.getValue()));
+				res.setInterestCovRatioFlag(displayObject.getIsMatched());
+				break;
+			case 7:
+				res.setTolTnwFp(checkIsNull(displayObject.getFpValue()));
+				res.setTolTnwFs(checkIsNull(displayObject.getValue()));
+				res.setTolTnwFlag(displayObject.getIsMatched());
+				break;
+			case 8:
+				res.setCustomerConFp(checkIsNull(displayObject.getFpValue()));
+				res.setCustomerConFs(checkIsNull(displayObject.getValue()));
+				res.setIndustryFlag(displayObject.getIsMatched());
+				break;
+			case 9:
+				res.setNoOfCheckLastOneFp(checkIsNull(displayObject.getFpValue()));
+				res.setNoOfCheckLastOneFs(checkIsNull(displayObject.getValue()));
+				res.setNoOfCheckLastOneFlag(displayObject.getIsMatched());
+				break;
+			case 10:
+				res.setNoOfMonthLastSixFp(checkIsNull(displayObject.getFpValue()));
+				res.setNoOfMonthLastSixFs(checkIsNull(displayObject.getValue()));
+				res.setNoOfMonthLastSixFlag(displayObject.getIsMatched());
+				break;
+			case 11:
+				res.setRiskModelScoreFp(checkIsNull(displayObject.getFpValue()));
+				res.setRiskModelScoreFs(checkIsNull(displayObject.getValue()));
+				res.setRiskModelScoreFlag(displayObject.getIsMatched());
+				break;
+			case 13:
+				res.setAgeEstaFp(checkIsNull(displayObject.getFpValue()));
+				res.setAgeEstaFs(checkIsNull(displayObject.getValue()));
+				res.setAgeEstaFlag(displayObject.getIsMatched());
+				break;
+			case 14:
+				res.setPositiveProfFp(checkIsNull(displayObject.getFpValue()));
+				res.setPositiveProfFs(checkIsNull(displayObject.getValue()));
+				res.setPositiveProfFlag(displayObject.getIsMatched());
+				break;
+			case 15:
+				res.setPastTernOverFp(checkIsNull(displayObject.getFpValue()));
+				res.setPastTernOverFs(checkIsNull(displayObject.getValue()));
+				res.setPastTernOverFlag(displayObject.getIsMatched());
+				break;
+			case 16:
+				res.setPositiveNetFp(checkIsNull(displayObject.getFpValue()));
+				res.setPositiveNetFs(checkIsNull(displayObject.getValue()));
+				res.setPositiveNetFlag(displayObject.getIsMatched());
+				break;
+			case 17:
+				res.setTurnOverToLoanFp(checkIsNull(displayObject.getFpValue()));
+				res.setTurnOverToLoanFs(checkIsNull(displayObject.getValue()));
+				res.setTurnOverToLoanFlag(displayObject.getIsMatched());
+				break;
+			case 18:
+				res.setGrossCashAccuralFp(checkIsNull(displayObject.getFpValue()));
+				res.setGrossCashAccuralFs(checkIsNull(displayObject.getValue()));
+				res.setGrossCashAccuralFlag(displayObject.getIsMatched());
+				break;
+			case 19:
+				res.setMinimumCibilFp(checkIsNull(displayObject.getFpValue()));
+				res.setMinimumCibilFs(checkIsNull(displayObject.getValue()));
+				res.setMinimumCibilFlag(displayObject.getIsMatched());
+				break;
+			case 20:
+				res.setCommercialCibilFp(checkIsNull(displayObject.getFpValue()));
+				res.setCommercialCibilFs(checkIsNull(displayObject.getValue()));
+				res.setCommercialCibilFlag(displayObject.getIsMatched());
+				break;
 			}
 		}
 		return res;
 	}
-	
-	
-	private EligibilityDetailRequest createEligibilityRequest(Long applicationId,Long fpProductMappingId) {
-		EligibililityRequest eligibililityRequest = new  EligibililityRequest();
+
+	private EligibilityDetailRequest createEligibilityRequest(Long applicationId, Long fpProductMappingId) {
+		EligibililityRequest eligibililityRequest = new EligibililityRequest();
 		eligibililityRequest.setApplicationId(applicationId);
 		eligibililityRequest.setFpProductMappingId(fpProductMappingId);
 		try {
 			EligibilityResponse eligibilityResponse = eligibilityClient.corporateLoanData(eligibililityRequest);
-			if(eligibilityResponse == null || eligibilityResponse.getData() == null) {
-				logger.warn("EligibilityResponse Found NUll for ApplicationId===>{}",applicationId);
+			if (eligibilityResponse == null || eligibilityResponse.getData() == null) {
+				logger.warn("EligibilityResponse Found NUll for ApplicationId===>{}", applicationId);
 				return null;
 			}
-			CLEligibilityRequest clEligibilityRequest = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)eligibilityResponse.getData(), CLEligibilityRequest.class);
-				if(clEligibilityRequest == null) {
-					logger.warn("Corporate Eligibility Request Found Null====>");
-					return null;
-				}
-				EligibilityDetailRequest target = new EligibilityDetailRequest();
-				BeanUtils.copyProperties(clEligibilityRequest, target);
-				target.setApplicationId(applicationId);
-				return target;
+			CLEligibilityRequest clEligibilityRequest = MultipleJSONObjectHelper.getObjectFromMap(
+					(LinkedHashMap<String, Object>) eligibilityResponse.getData(), CLEligibilityRequest.class);
+			if (clEligibilityRequest == null) {
+				logger.warn("Corporate Eligibility Request Found Null====>");
+				return null;
+			}
+			EligibilityDetailRequest target = new EligibilityDetailRequest();
+			BeanUtils.copyProperties(clEligibilityRequest, target);
+			target.setApplicationId(applicationId);
+			return target;
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;
 	}
-	
+
 	private com.capitaworld.sidbi.integration.model.bankstatement.Data createBankStatementRequest(Long applicationId) {
 		ReportRequest reportRequest = new ReportRequest();
 		reportRequest.setApplicationId(applicationId);
 		try {
 			AnalyzerResponse detailsFromReport = analyzerClient.getDetailsFromReport(reportRequest);
-			if(detailsFromReport == null || detailsFromReport.getData() == null) {
+			if (detailsFromReport == null || detailsFromReport.getData() == null) {
 				return null;
 			}
-			Data dataResponse =  (Data)MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)detailsFromReport.getData(), Data.class);
+			Data dataResponse = (Data) MultipleJSONObjectHelper
+					.getObjectFromMap((LinkedHashMap<String, Object>) detailsFromReport.getData(), Data.class);
 			com.capitaworld.sidbi.integration.model.bankstatement.Data dataRequest = new com.capitaworld.sidbi.integration.model.bankstatement.Data();
-			if(!CommonUtils.isObjectNullOrEmpty(dataResponse)) {
+			if (!CommonUtils.isObjectNullOrEmpty(dataResponse)) {
 				BeanUtils.copyProperties(dataResponse, dataRequest);
-				//Set Customer Info
-				if(!CommonUtils.isObjectNullOrEmpty(dataResponse.getCustomerInfo())) {
+				// Set Customer Info
+				if (!CommonUtils.isObjectNullOrEmpty(dataResponse.getCustomerInfo())) {
 					com.capitaworld.sidbi.integration.model.bankstatement.CustomerInfo customerInfo = new com.capitaworld.sidbi.integration.model.bankstatement.CustomerInfo();
 					BeanUtils.copyProperties(dataResponse.getCustomerInfo(), customerInfo);
 					dataRequest.setCustomerInfo(customerInfo);
 				}
-				//Set Monthly Details
-				if(!CommonUtils.isObjectNullOrEmpty(dataResponse.getMonthlyDetailList())) {
-					if(!CommonUtils.isListNullOrEmpty(dataResponse.getMonthlyDetailList().getMonthlyDetails())) {
-						List<com.capitaworld.sidbi.integration.model.bankstatement.MonthlyDetail> monthlyDetailList = new ArrayList<>(dataResponse.getMonthlyDetailList().getMonthlyDetails().size());
-						for(MonthlyDetail monResponse :  dataResponse.getMonthlyDetailList().getMonthlyDetails()) {
+				// Set Monthly Details
+				if (!CommonUtils.isObjectNullOrEmpty(dataResponse.getMonthlyDetailList())) {
+					if (!CommonUtils.isListNullOrEmpty(dataResponse.getMonthlyDetailList().getMonthlyDetails())) {
+						List<com.capitaworld.sidbi.integration.model.bankstatement.MonthlyDetail> monthlyDetailList = new ArrayList<>(
+								dataResponse.getMonthlyDetailList().getMonthlyDetails().size());
+						for (MonthlyDetail monResponse : dataResponse.getMonthlyDetailList().getMonthlyDetails()) {
 							com.capitaworld.sidbi.integration.model.bankstatement.MonthlyDetail moRequest = new com.capitaworld.sidbi.integration.model.bankstatement.MonthlyDetail();
 							BeanUtils.copyProperties(monResponse, moRequest);
 							monthlyDetailList.add(moRequest);
 						}
 						dataRequest.setMonthlyDetails(monthlyDetailList);
-					}	
+					}
 				}
-				
-				//Set Summary Info
-				
-				if(!CommonUtils.isObjectNullOrEmpty(dataRequest.getSummaryInfo())) {
+
+				// Set Summary Info
+
+				if (!CommonUtils.isObjectNullOrEmpty(dataRequest.getSummaryInfo())) {
 					com.capitaworld.sidbi.integration.model.bankstatement.SummaryInfo summaryInfo = new com.capitaworld.sidbi.integration.model.bankstatement.SummaryInfo();
 					BeanUtils.copyProperties(dataResponse.getSummaryInfo(), summaryInfo);
-					
-					//Set SummaryInfoTotalDetail
-					if(!CommonUtils.isObjectNullOrEmpty(dataResponse.getSummaryInfo().getSummaryInfoTotalDetails())) {
-						com.capitaworld.sidbi.integration.model.bankstatement.SummaryInfoTotalDetails totalDetails = new  com.capitaworld.sidbi.integration.model.bankstatement.SummaryInfoTotalDetails();
-						BeanUtils.copyProperties(dataResponse.getSummaryInfo().getSummaryInfoTotalDetails(), totalDetails);
+
+					// Set SummaryInfoTotalDetail
+					if (!CommonUtils.isObjectNullOrEmpty(dataResponse.getSummaryInfo().getSummaryInfoTotalDetails())) {
+						com.capitaworld.sidbi.integration.model.bankstatement.SummaryInfoTotalDetails totalDetails = new com.capitaworld.sidbi.integration.model.bankstatement.SummaryInfoTotalDetails();
+						BeanUtils.copyProperties(dataResponse.getSummaryInfo().getSummaryInfoTotalDetails(),
+								totalDetails);
 						summaryInfo.setSummaryInfoTotalDetails(totalDetails);
 					}
-					
-					//Set SummaryInfoAverageDetails
-					if(!CommonUtils.isObjectNullOrEmpty(dataResponse.getSummaryInfo().getSummaryInfoAverageDetails())) {
-						com.capitaworld.sidbi.integration.model.bankstatement.SummaryInfoAverageDetails averageDetails = new  com.capitaworld.sidbi.integration.model.bankstatement.SummaryInfoAverageDetails();
-						BeanUtils.copyProperties(dataResponse.getSummaryInfo().getSummaryInfoAverageDetails(), averageDetails);
+
+					// Set SummaryInfoAverageDetails
+					if (!CommonUtils
+							.isObjectNullOrEmpty(dataResponse.getSummaryInfo().getSummaryInfoAverageDetails())) {
+						com.capitaworld.sidbi.integration.model.bankstatement.SummaryInfoAverageDetails averageDetails = new com.capitaworld.sidbi.integration.model.bankstatement.SummaryInfoAverageDetails();
+						BeanUtils.copyProperties(dataResponse.getSummaryInfo().getSummaryInfoAverageDetails(),
+								averageDetails);
 						summaryInfo.setSummaryInfoAverageDetails(averageDetails);
 					}
 					dataRequest.setSummaryInfo(summaryInfo);
 				}
-				
-				//Set Top5 Fund Received List
-				if(!CommonUtils.isObjectNullOrEmpty(dataResponse.getTop5FundReceivedList())) {
-					if(!CommonUtils.isListNullOrEmpty(dataResponse.getTop5FundReceivedList().getItem())) {
-						List<com.capitaworld.sidbi.integration.model.bankstatement.Item> top5FundReceivedList = new ArrayList<>(dataResponse.getTop5FundReceivedList().getItem().size());
-						for(Item itemResponse :  dataResponse.getTop5FundReceivedList().getItem()) {
+
+				// Set Top5 Fund Received List
+				if (!CommonUtils.isObjectNullOrEmpty(dataResponse.getTop5FundReceivedList())) {
+					if (!CommonUtils.isListNullOrEmpty(dataResponse.getTop5FundReceivedList().getItem())) {
+						List<com.capitaworld.sidbi.integration.model.bankstatement.Item> top5FundReceivedList = new ArrayList<>(
+								dataResponse.getTop5FundReceivedList().getItem().size());
+						for (Item itemResponse : dataResponse.getTop5FundReceivedList().getItem()) {
 							com.capitaworld.sidbi.integration.model.bankstatement.Item itemRequest = new com.capitaworld.sidbi.integration.model.bankstatement.Item();
 							BeanUtils.copyProperties(itemResponse, itemRequest);
 							top5FundReceivedList.add(itemRequest);
 						}
 						dataRequest.setTop5FundReceivedList(top5FundReceivedList);
-					}	
+					}
 				}
-				
-				//Set Top5 Fund Transfered List
-				if(!CommonUtils.isObjectNullOrEmpty(dataResponse.getTop5FundTransferedList())) {
-					if(!CommonUtils.isListNullOrEmpty(dataResponse.getTop5FundTransferedList().getItem())) {
-						List<com.capitaworld.sidbi.integration.model.bankstatement.Item> top5FundTransferedList = new ArrayList<>(dataResponse.getTop5FundTransferedList().getItem().size());
-						for(Item itemResponse :  dataResponse.getTop5FundTransferedList().getItem()) {
+
+				// Set Top5 Fund Transfered List
+				if (!CommonUtils.isObjectNullOrEmpty(dataResponse.getTop5FundTransferedList())) {
+					if (!CommonUtils.isListNullOrEmpty(dataResponse.getTop5FundTransferedList().getItem())) {
+						List<com.capitaworld.sidbi.integration.model.bankstatement.Item> top5FundTransferedList = new ArrayList<>(
+								dataResponse.getTop5FundTransferedList().getItem().size());
+						for (Item itemResponse : dataResponse.getTop5FundTransferedList().getItem()) {
 							com.capitaworld.sidbi.integration.model.bankstatement.Item itemRequest = new com.capitaworld.sidbi.integration.model.bankstatement.Item();
 							BeanUtils.copyProperties(itemResponse, itemRequest);
 							top5FundTransferedList.add(itemRequest);
 						}
 						dataRequest.setTop5FundTransferedList(top5FundTransferedList);
-					}	
+					}
 				}
-				
-				//Set BouncedOrPenalXnList
-				if(!CommonUtils.isObjectNullOrEmpty(dataResponse.getBouncedOrPenalXnList())) {
-					if(!CommonUtils.isListNullOrEmpty(dataResponse.getBouncedOrPenalXnList().getBouncedOrPenalXns())) {
-						List<com.capitaworld.sidbi.integration.model.bankstatement.BouncedOrPenalXn> bouncedOrPanelXnList = new ArrayList<>(dataResponse.getBouncedOrPenalXnList().getBouncedOrPenalXns().size());
-						for(BouncedOrPenalXn bounceResponse :  dataResponse.getBouncedOrPenalXnList().getBouncedOrPenalXns()) {
+
+				// Set BouncedOrPenalXnList
+				if (!CommonUtils.isObjectNullOrEmpty(dataResponse.getBouncedOrPenalXnList())) {
+					if (!CommonUtils.isListNullOrEmpty(dataResponse.getBouncedOrPenalXnList().getBouncedOrPenalXns())) {
+						List<com.capitaworld.sidbi.integration.model.bankstatement.BouncedOrPenalXn> bouncedOrPanelXnList = new ArrayList<>(
+								dataResponse.getBouncedOrPenalXnList().getBouncedOrPenalXns().size());
+						for (BouncedOrPenalXn bounceResponse : dataResponse.getBouncedOrPenalXnList()
+								.getBouncedOrPenalXns()) {
 							com.capitaworld.sidbi.integration.model.bankstatement.BouncedOrPenalXn bounceRequest = new com.capitaworld.sidbi.integration.model.bankstatement.BouncedOrPenalXn();
 							BeanUtils.copyProperties(bounceResponse, bounceRequest);
 							bouncedOrPanelXnList.add(bounceRequest);
 						}
 						dataRequest.setBouncedOrPenalXnList(bouncedOrPanelXnList);
-					}	
+					}
 				}
-				
-				//Set Panel List
-				if(!CommonUtils.isObjectNullOrEmpty(dataResponse.getPenalList())) {
-					if(!CommonUtils.isListNullOrEmpty(dataResponse.getPenalList().getBouncedOrPenalXns())) {
-						List<com.capitaworld.sidbi.integration.model.bankstatement.BouncedOrPenalXn> panelXnList = new ArrayList<>(dataResponse.getPenalList().getBouncedOrPenalXns().size());
-						for(BouncedOrPenalXn bounceResponse : dataResponse.getPenalList().getBouncedOrPenalXns()) {
+
+				// Set Panel List
+				if (!CommonUtils.isObjectNullOrEmpty(dataResponse.getPenalList())) {
+					if (!CommonUtils.isListNullOrEmpty(dataResponse.getPenalList().getBouncedOrPenalXns())) {
+						List<com.capitaworld.sidbi.integration.model.bankstatement.BouncedOrPenalXn> panelXnList = new ArrayList<>(
+								dataResponse.getPenalList().getBouncedOrPenalXns().size());
+						for (BouncedOrPenalXn bounceResponse : dataResponse.getPenalList().getBouncedOrPenalXns()) {
 							com.capitaworld.sidbi.integration.model.bankstatement.BouncedOrPenalXn bounceRequest = new com.capitaworld.sidbi.integration.model.bankstatement.BouncedOrPenalXn();
 							BeanUtils.copyProperties(bounceResponse, bounceRequest);
 							panelXnList.add(bounceRequest);
 						}
 						dataRequest.setPenalList(panelXnList);
-					}	
+					}
 				}
-				
-				//Set Xns
-				
-				if(!CommonUtils.isObjectNullOrEmpty(dataResponse.getXns())) {
+
+				// Set Xns
+
+				if (!CommonUtils.isObjectNullOrEmpty(dataResponse.getXns())) {
 					com.capitaworld.sidbi.integration.model.bankstatement.Xns xns = new com.capitaworld.sidbi.integration.model.bankstatement.Xns();
 					BeanUtils.copyProperties(dataResponse.getXns(), xns);
-					if(!CommonUtils.isObjectNullOrEmpty(dataResponse.getXns().getXn())) {
+					if (!CommonUtils.isObjectNullOrEmpty(dataResponse.getXns().getXn())) {
 						com.capitaworld.sidbi.integration.model.bankstatement.Xn xn = new com.capitaworld.sidbi.integration.model.bankstatement.Xn();
 						BeanUtils.copyProperties(dataResponse.getXns().getXn(), xn);
 					}
@@ -5817,116 +6683,124 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 			e.printStackTrace();
 		}
 		return null;
-	}	
-	
-	
+	}
+
 	private String checkIsNull(Object value) {
 		return CommonUtils.isObjectNullOrEmpty(value) ? null : value.toString();
 	}
-	
-	private List<DirectorBackgroundDetailRequest> getDirectorListForSidbi(Long applicationId){
-		List<DirectorBackgroundDetail> direcotors = directorBackgroundDetailsRepository.listPromotorBackgroundFromAppId(applicationId);
-		if(CommonUtils.isListNullOrEmpty(direcotors)) {
-			logger.warn("No Directors Found for Application Id ==>{}",applicationId);
+
+	private List<DirectorBackgroundDetailRequest> getDirectorListForSidbi(Long applicationId) {
+		List<DirectorBackgroundDetail> direcotors = directorBackgroundDetailsRepository
+				.listPromotorBackgroundFromAppId(applicationId);
+		if (CommonUtils.isListNullOrEmpty(direcotors)) {
+			logger.warn("No Directors Found for Application Id ==>{}", applicationId);
 			return Collections.emptyList();
-		}else {
+		} else {
 			List<DirectorBackgroundDetailRequest> listData = new ArrayList<>(direcotors.size());
 			SimpleDateFormat dateFormat2 = new SimpleDateFormat("dd-MM-yyyy");
 			AddressRequest addressRequest = null;
 			DirectorBackgroundDetailRequest target = null;
-			for(DirectorBackgroundDetail source : direcotors) {
+			for (DirectorBackgroundDetail source : direcotors) {
 				CibilRequest cibilRequest = new CibilRequest();
 				cibilRequest.setApplicationId(applicationId);
 				cibilRequest.setPan(source.getPanNo());
 				CibilResponse cibilResponse = null;
 				try {
-					 cibilResponse = cibilClient.getDirectorDetails(cibilRequest);
+					cibilResponse = cibilClient.getDirectorDetails(cibilRequest);
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				CreditReport creditReport = null;
-				if(cibilResponse!=null && cibilResponse.getData()!=null) {
+				if (cibilResponse != null && cibilResponse.getData() != null) {
 					try {
-					creditReport = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,  Object>)cibilResponse.getData(), CreditReport.class );
-					
-					}
-					catch (Exception e) {
+						creditReport = MultipleJSONObjectHelper.getObjectFromMap(
+								(LinkedHashMap<String, Object>) cibilResponse.getData(), CreditReport.class);
+
+					} catch (Exception e) {
 						e.printStackTrace();
 					}
 				}
-				
+
 				target = new DirectorBackgroundDetailRequest();
 				target.setName(source.getDirectorsName());
-				if(source.getGender() != null) {
-					target.setGender(Gender.getById(source.getGender()).getValue());						
+				if (source.getGender() != null) {
+					target.setGender(Gender.getById(source.getGender()).getValue());
 				}
-				addressRequest = new AddressRequest(); 
+				addressRequest = new AddressRequest();
 				addressRequest.setStreetName(source.getStreetName());
 				addressRequest.setLandMark(source.getLandmark());
 				addressRequest.setPremiseNumber(source.getPremiseNumber());
 				addressRequest.setPincode(source.getPincode());
 				try {
-					if(source.getStateId() != null) {
-						addressRequest.setState(CommonDocumentUtils.getState(source.getStateId().longValue(), oneFormClient));	
+					if (source.getStateId() != null) {
+						addressRequest
+								.setState(CommonDocumentUtils.getState(source.getStateId().longValue(), oneFormClient));
 					}
-					if(source.getCountryId() != null) {
-						addressRequest.setCountry(CommonDocumentUtils.getCountry(source.getCountryId().longValue(), oneFormClient));	
+					if (source.getCountryId() != null) {
+						addressRequest.setCountry(
+								CommonDocumentUtils.getCountry(source.getCountryId().longValue(), oneFormClient));
 					}
-					
-					if(source.getCityId() != null) {
-						addressRequest.setCity(CommonDocumentUtils.getCity(source.getCityId().longValue(), oneFormClient));	
-					}					
-				}catch(Exception e) {
+
+					if (source.getCityId() != null) {
+						addressRequest
+								.setCity(CommonDocumentUtils.getCity(source.getCityId().longValue(), oneFormClient));
+					}
+				} catch (Exception e) {
 					e.printStackTrace();
 				}
 				target.setAddress(addressRequest);
 				target.setPanNo(source.getPanNo());
-				if(source.getRelationshipType() != null) {
-					target.setRelationshipType(DirectorRelationshipType.getById(source.getRelationshipType()).getValue());						
+				if (source.getRelationshipType() != null) {
+					target.setRelationshipType(
+							DirectorRelationshipType.getById(source.getRelationshipType()).getValue());
 				}
 				target.setMobile(source.getMobile());
 				target.setDob(source.getDob());
 				target.setTotalExperience(source.getTotalExperience());
 				target.setNetworth(source.getNetworth());
-				if(!CommonUtils.isObjectNullOrEmpty(source.getDin()))
-				    target.setDin(source.getDin().toString());
-				if(source.getSalutationId() != null) {
-					target.setTitle(Title.getById(source.getSalutationId()).getValue());					
+				if (!CommonUtils.isObjectNullOrEmpty(source.getDin()))
+					target.setDin(source.getDin().toString());
+				if (source.getSalutationId() != null) {
+					target.setTitle(Title.getById(source.getSalutationId()).getValue());
 				}
 				target.setApplicationId(applicationId);
 				target.setFirstName(source.getFirstName());
 				target.setMiddleName(source.getMiddleName());
 				target.setLastName(source.getLastName());
 
-				if(!CommonUtils.isObjectNullOrEmpty(creditReport)) {
+				if (!CommonUtils.isObjectNullOrEmpty(creditReport)) {
 
-					if(!CommonUtils.isObjectListNull(creditReport.getAccount())) {
-					for(Account account : creditReport.getAccount()) {
-						CurrentFinancialArrangementsDetailRequest currFin = new CurrentFinancialArrangementsDetailRequest();
-						if(!CommonUtils.isObjectListNull(account.getAccountNonSummarySegmentFields(),account.getAccountNonSummarySegmentFields().getHighCreditOrSanctionedAmount())) {
-							currFin.setAmount(account.getAccountNonSummarySegmentFields().getHighCreditOrSanctionedAmount().doubleValue());
-						}
-				
-						currFin.setApplicationId(applicationId);
-						currFin.setCreatedDate(new Date());
-						currFin.setIsActive(true);
-						if(!CommonUtils.isObjectNullOrEmpty(
+					if (!CommonUtils.isObjectListNull(creditReport.getAccount())) {
+						for (Account account : creditReport.getAccount()) {
+							CurrentFinancialArrangementsDetailRequest currFin = new CurrentFinancialArrangementsDetailRequest();
+							if (!CommonUtils.isObjectListNull(account.getAccountNonSummarySegmentFields(),
+									account.getAccountNonSummarySegmentFields().getHighCreditOrSanctionedAmount())) {
+								currFin.setAmount(account.getAccountNonSummarySegmentFields()
+										.getHighCreditOrSanctionedAmount().doubleValue());
+							}
+
+							currFin.setApplicationId(applicationId);
+							currFin.setCreatedDate(new Date());
+							currFin.setIsActive(true);
+							if (!CommonUtils.isObjectNullOrEmpty(
 									account.getAccountNonSummarySegmentFields().getReportingMemberShortName())) {
-						currFin.setLenderName(
-									account.getAccountNonSummarySegmentFields().getReportingMemberShortName());
+								currFin.setLenderName(
+										account.getAccountNonSummarySegmentFields().getReportingMemberShortName());
+							}
+							// currFin.setSanctionedAmount(sanctionedAmount);
+							target.addCurrentFinancialArrangementsDetailRequest(currFin);
 						}
-//						currFin.setSanctionedAmount(sanctionedAmount);
-						target.addCurrentFinancialArrangementsDetailRequest(currFin);
 					}
-					}
-					
-					if(!CommonUtils.isObjectNullOrEmpty(creditReport.getEmploymentSegment())) {
-						EmploymentInfoRequest empInfoReq = new EmploymentInfoRequest(); 
-						if(!CommonUtils.isObjectNullOrEmpty(creditReport.getEmploymentSegment().getAccountType())){
+
+					if (!CommonUtils.isObjectNullOrEmpty(creditReport.getEmploymentSegment())) {
+						EmploymentInfoRequest empInfoReq = new EmploymentInfoRequest();
+						if (!CommonUtils.isObjectNullOrEmpty(creditReport.getEmploymentSegment().getAccountType())) {
 							try {
-								empInfoReq.setAccountType(AccountTypeEnum.fromId(String.valueOf(creditReport.getEmploymentSegment().getAccountType())).getValue());
-							}catch(Exception e) {
+								empInfoReq.setAccountType(AccountTypeEnum
+										.fromId(String.valueOf(creditReport.getEmploymentSegment().getAccountType()))
+										.getValue());
+							} catch (Exception e) {
 								logger.error("Error while Getting Account type==>");
 								e.printStackTrace();
 							}
@@ -5941,17 +6815,19 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
-						
-						if(!CommonUtils.isObjectNullOrEmpty(creditReport.getEmploymentSegment().getIncome())){
+
+						if (!CommonUtils.isObjectNullOrEmpty(creditReport.getEmploymentSegment().getIncome())) {
 							empInfoReq.setIncome(Double.valueOf(creditReport.getEmploymentSegment().getIncome()));
 						}
-						if(!CommonUtils.isObjectNullOrEmpty(creditReport.getEmploymentSegment().getOccupationCode())){
+						if (!CommonUtils.isObjectNullOrEmpty(creditReport.getEmploymentSegment().getOccupationCode())) {
 							empInfoReq.setOccupation(creditReport.getEmploymentSegment().getOccupationCode());
 						}
-						if(!CommonUtils.isObjectNullOrEmpty(creditReport.getEmploymentSegment().getMonthlyAnnualIndicator())){
-							empInfoReq.setIncomeIndicator(creditReport.getEmploymentSegment().getMonthlyAnnualIndicator());
+						if (!CommonUtils
+								.isObjectNullOrEmpty(creditReport.getEmploymentSegment().getMonthlyAnnualIndicator())) {
+							empInfoReq.setIncomeIndicator(
+									creditReport.getEmploymentSegment().getMonthlyAnnualIndicator());
 						}
-						if(!CommonUtils.isObjectNullOrEmpty(creditReport.getEmploymentSegment().getLength())){
+						if (!CommonUtils.isObjectNullOrEmpty(creditReport.getEmploymentSegment().getLength())) {
 							empInfoReq.setFrequency(creditReport.getEmploymentSegment().getLength());
 						}
 						empInfoReq.setApplicationId(applicationId);
@@ -5959,43 +6835,42 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 						empInfoReq.setIsActive(true);
 						target.addEmploymentInfoRequest(empInfoReq);
 					}
-					
-					if(!CommonUtils.isObjectNullOrEmpty(creditReport.getAddress())) {
-						for(Address address : creditReport.getAddress()) {
+
+					if (!CommonUtils.isObjectNullOrEmpty(creditReport.getAddress())) {
+						for (Address address : creditReport.getAddress()) {
 							ContactInfoRequest contInfoReq = new ContactInfoRequest();
 							contInfoReq.setCategory(address.getAddressCategory());
-							if(!CommonUtils.isObjectNullOrEmpty(address.getDateReported())){
-							String date = String.valueOf(address.getDateReported());
-							String dt = date.substring(0, 2);
-							String mon = date.substring(2, (dt.length() + 2));
-							String year = date.substring((dt.length() + 2), date.length());
-							
-							try {
-							contInfoReq.setDateReported(dateFormat2.parse(dt + "-" + mon + "-" + year));
-							}
-							catch (Exception e) {
-								// TODO: handle exception
-							}
+							if (!CommonUtils.isObjectNullOrEmpty(address.getDateReported())) {
+								String date = String.valueOf(address.getDateReported());
+								String dt = date.substring(0, 2);
+								String mon = date.substring(2, (dt.length() + 2));
+								String year = date.substring((dt.length() + 2), date.length());
+
+								try {
+									contInfoReq.setDateReported(dateFormat2.parse(dt + "-" + mon + "-" + year));
+								} catch (Exception e) {
+									// TODO: handle exception
+								}
 							}
 							AddressRequest addReq = new AddressRequest();
-							
-//							addReq.setCity(address.get);
-							if(!CommonUtils.isObjectNullOrEmpty(address.getStateCode())){
-							addReq.setState(CibilUtils.StateEnum.fromCode(address.getStateCode()).getValue());
+
+							// addReq.setCity(address.get);
+							if (!CommonUtils.isObjectNullOrEmpty(address.getStateCode())) {
+								addReq.setState(CibilUtils.StateEnum.fromCode(address.getStateCode()).getValue());
 							}
-							
-							if(!CommonUtils.isObjectNullOrEmpty(address.getStateCode())) {
-//								addReq.setCountry(`);
+
+							if (!CommonUtils.isObjectNullOrEmpty(address.getStateCode())) {
+								// addReq.setCountry(`);
 							}
-							
-							if(!CommonUtils.isObjectNullOrEmpty(address.getAddressLine1())) {
+
+							if (!CommonUtils.isObjectNullOrEmpty(address.getAddressLine1())) {
 								addReq.setPremiseNumber(address.getAddressLine1());
 							}
-							if(!CommonUtils.isObjectNullOrEmpty(address.getAddressLine2())) {
+							if (!CommonUtils.isObjectNullOrEmpty(address.getAddressLine2())) {
 								addReq.setStreetName(address.getAddressLine2());
 							}
-							
-							if(!CommonUtils.isObjectNullOrEmpty(address.getAddressLine3())) {
+
+							if (!CommonUtils.isObjectNullOrEmpty(address.getAddressLine3())) {
 								addReq.setLandMark(address.getAddressLine3());
 							}
 							contInfoReq.setCreatedDate(new Date());
@@ -6004,33 +6879,32 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 							target.addContactInfoRequest(contInfoReq);
 						}
 					}
-					
-					if(!CommonUtils.isObjectNullOrEmpty(creditReport.getEnquiry())) {
-						for(Enquiry enq : creditReport.getEnquiry()) {
+
+					if (!CommonUtils.isObjectNullOrEmpty(creditReport.getEnquiry())) {
+						for (Enquiry enq : creditReport.getEnquiry()) {
 							EnquiryInfoRequest enqInfoRe = new EnquiryInfoRequest();
 							enqInfoRe.setApplicationId(applicationId);
 							enqInfoRe.setCreatedDate(new Date());
-							if(!CommonUtils.isObjectNullOrEmpty(enq.getEnquiryAmount())) {
-							enqInfoRe.setEnquiryAmount(Double.valueOf(enq.getEnquiryAmount()));
+							if (!CommonUtils.isObjectNullOrEmpty(enq.getEnquiryAmount())) {
+								enqInfoRe.setEnquiryAmount(Double.valueOf(enq.getEnquiryAmount()));
 							}
-							if(!CommonUtils.isObjectNullOrEmpty(enq.getEnquiryPurpose())) {
-							enqInfoRe.setEnquiryPurpose(enq.getEnquiryPurpose());
+							if (!CommonUtils.isObjectNullOrEmpty(enq.getEnquiryPurpose())) {
+								enqInfoRe.setEnquiryPurpose(enq.getEnquiryPurpose());
 							}
 							enqInfoRe.setIsActive(true);
-							if(!CommonUtils.isObjectNullOrEmpty(enq.getEnquiringMemberShortName())) {
-							enqInfoRe.setMemberName(enq.getEnquiringMemberShortName());
+							if (!CommonUtils.isObjectNullOrEmpty(enq.getEnquiringMemberShortName())) {
+								enqInfoRe.setMemberName(enq.getEnquiringMemberShortName());
 							}
-							
-							if(!CommonUtils.isObjectNullOrEmpty(enq.getDateOfEnquiryFields())){
+
+							if (!CommonUtils.isObjectNullOrEmpty(enq.getDateOfEnquiryFields())) {
 								String date = String.valueOf(enq.getDateOfEnquiryFields());
 								String dt = date.substring(0, 2);
 								String mon = date.substring(2, (dt.length() + 2));
 								String year = date.substring((dt.length() + 2), date.length());
-								
+
 								try {
 									enqInfoRe.setDateOfEnquiry(dateFormat2.parse(dt + "-" + mon + "-" + year));
-								}
-								catch (Exception e) {
+								} catch (Exception e) {
 									// TODO: handle exception
 								}
 							}
@@ -6039,50 +6913,50 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 							enqInfoRe.setIsActive(true);
 							target.addEnquiryInfoRequest(enqInfoRe);
 						}
-							
+
 					}
-					if(!CommonUtils.isObjectNullOrEmpty(creditReport.getNameSegment())) {
+					if (!CommonUtils.isObjectNullOrEmpty(creditReport.getNameSegment())) {
 						PersonalInfoRequest perInfo = new PersonalInfoRequest();
 						perInfo.setApplicationId(applicationId);
 						perInfo.setCreatedDate(new Date());
 						perInfo.setIsActive(true);
-						
-						
+
 						perInfo.setFullName(creditReport.getNameSegment().getConsumerName1());
-						perInfo.setGender(GenderTypeEnum.fromId(String.valueOf(creditReport.getNameSegment().getGender())).getValue());
-						if(!CommonUtils.isObjectNullOrEmpty(creditReport.getNameSegment().getDateOfBirth())){
+						perInfo.setGender(GenderTypeEnum
+								.fromId(String.valueOf(creditReport.getNameSegment().getGender())).getValue());
+						if (!CommonUtils.isObjectNullOrEmpty(creditReport.getNameSegment().getDateOfBirth())) {
 							String date = String.valueOf(creditReport.getNameSegment().getDateOfBirth());
 							String dt = date.substring(0, 2);
 							String mon = date.substring(2, (dt.length() + 2));
 							String year = date.substring((dt.length() + 2), date.length());
-							
+
 							try {
 								perInfo.setDob(dt + "-" + mon + "-" + year);
-							}
-							catch (Exception e) {
+							} catch (Exception e) {
 								// TODO: handle exception
 							}
 						}
-						
+
 						target.setPersonalInfoRequest(perInfo);
-						
+
 					}
 				}
 				listData.add(target);
-				
+
 			}
 			return listData;
 		}
 	}
-	
-	private List<CurrentFinancialArrangementsDetailRequest> getCurrentFinancialDetaisForSidbi(Long applicationId){
-		List<FinancialArrangementsDetail> financialDetails = financialArrangementDetailsRepository.listSecurityCorporateDetailByAppId(applicationId);
-		if(CommonUtils.isListNullOrEmpty(financialDetails)) {
-			logger.warn("No Current Financial Details Found for Application Id ==>{}",applicationId);
+
+	private List<CurrentFinancialArrangementsDetailRequest> getCurrentFinancialDetaisForSidbi(Long applicationId) {
+		List<FinancialArrangementsDetail> financialDetails = financialArrangementDetailsRepository
+				.listSecurityCorporateDetailByAppId(applicationId);
+		if (CommonUtils.isListNullOrEmpty(financialDetails)) {
+			logger.warn("No Current Financial Details Found for Application Id ==>{}", applicationId);
 			return Collections.emptyList();
-		}else {
+		} else {
 			List<CurrentFinancialArrangementsDetailRequest> listData = new ArrayList<>(financialDetails.size());
-			for(FinancialArrangementsDetail source : financialDetails) {
+			for (FinancialArrangementsDetail source : financialDetails) {
 				CurrentFinancialArrangementsDetailRequest target = new CurrentFinancialArrangementsDetailRequest();
 				target.setLenderName(source.getFinancialInstitutionName());
 				target.setSanctionedAmount(source.getAmount());
@@ -6093,15 +6967,16 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 			return listData;
 		}
 	}
-	
-	private List<AchievementDetailRequest> getAchievementDetaisForSidbi(Long applicationId){
-		List<AchievementDetail> achievementDetails = achievementDetailsRepository.listAchievementFromAppId(applicationId);
-		if(CommonUtils.isListNullOrEmpty(achievementDetails)) {
-			logger.warn("No achievementDetails Found for Application Id ==>{}",applicationId);
+
+	private List<AchievementDetailRequest> getAchievementDetaisForSidbi(Long applicationId) {
+		List<AchievementDetail> achievementDetails = achievementDetailsRepository
+				.listAchievementFromAppId(applicationId);
+		if (CommonUtils.isListNullOrEmpty(achievementDetails)) {
+			logger.warn("No achievementDetails Found for Application Id ==>{}", applicationId);
 			return Collections.emptyList();
-		}else {
+		} else {
 			List<AchievementDetailRequest> listData = new ArrayList<>(achievementDetails.size());
-			for(AchievementDetail source : achievementDetails) {
+			for (AchievementDetail source : achievementDetails) {
 				AchievementDetailRequest target = new AchievementDetailRequest();
 				target.setYear(source.getYear());
 				target.setMilestoneAchievedDetail(source.getMilestoneAchievedDetail());
@@ -6111,16 +6986,16 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 			return listData;
 		}
 	}
-	
-	
-	private List<ExistingProductDetailRequest> getExistingProductForSidbi(Long applicationId){
-		List<ExistingProductDetail> existingDetails = existingProductDetailsRepository.listExistingProductFromAppId(applicationId);
-		if(CommonUtils.isListNullOrEmpty(existingDetails)) {
-			logger.warn("No existingDetails Found for Application Id ==>{}",applicationId);
+
+	private List<ExistingProductDetailRequest> getExistingProductForSidbi(Long applicationId) {
+		List<ExistingProductDetail> existingDetails = existingProductDetailsRepository
+				.listExistingProductFromAppId(applicationId);
+		if (CommonUtils.isListNullOrEmpty(existingDetails)) {
+			logger.warn("No existingDetails Found for Application Id ==>{}", applicationId);
 			return Collections.emptyList();
-		}else {
+		} else {
 			List<ExistingProductDetailRequest> listData = new ArrayList<>(existingDetails.size());
-			for(ExistingProductDetail source : existingDetails) {
+			for (ExistingProductDetail source : existingDetails) {
 				ExistingProductDetailRequest target = new ExistingProductDetailRequest();
 				target.setProduct(source.getProduct());
 				target.setApplication(source.getApplication());
@@ -6130,15 +7005,16 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 			return listData;
 		}
 	}
-	
-	private List<ProposedProductDetailRequest> getProposedProductForSidbi(Long applicationId){
-		List<ProposedProductDetail> proposedDetails = proposedProductDetailsRepository.findByApplicationIdIdAndIsActive(applicationId, true);
-		if(CommonUtils.isListNullOrEmpty(proposedDetails)) {
-			logger.warn("No proposedDetails Found for Application Id ==>{}",applicationId);
+
+	private List<ProposedProductDetailRequest> getProposedProductForSidbi(Long applicationId) {
+		List<ProposedProductDetail> proposedDetails = proposedProductDetailsRepository
+				.findByApplicationIdIdAndIsActive(applicationId, true);
+		if (CommonUtils.isListNullOrEmpty(proposedDetails)) {
+			logger.warn("No proposedDetails Found for Application Id ==>{}", applicationId);
 			return Collections.emptyList();
-		}else {
+		} else {
 			List<ProposedProductDetailRequest> listData = new ArrayList<>(proposedDetails.size());
-			for(ProposedProductDetail source : proposedDetails) {
+			for (ProposedProductDetail source : proposedDetails) {
 				ProposedProductDetailRequest target = new ProposedProductDetailRequest();
 				target.setProduct(source.getProduct());
 				target.setApplication(source.getApplication());
@@ -6148,18 +7024,19 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 			return listData;
 		}
 	}
-	
-	private List<OwnershipDetailRequest> getOwnershipDetailForSidbi(Long applicationId){
+
+	private List<OwnershipDetailRequest> getOwnershipDetailForSidbi(Long applicationId) {
 		List<OwnershipDetail> ownershipDetails = ownershipDetailsRepository.listOwnershipFromAppId(applicationId);
-		if(CommonUtils.isListNullOrEmpty(ownershipDetails)) {
-			logger.warn("No ownershipDetails Found for Application Id ==>{}",applicationId);
+		if (CommonUtils.isListNullOrEmpty(ownershipDetails)) {
+			logger.warn("No ownershipDetails Found for Application Id ==>{}", applicationId);
 			return Collections.emptyList();
-		}else {
+		} else {
 			List<OwnershipDetailRequest> listData = new ArrayList<>(ownershipDetails.size());
-			for(OwnershipDetail source : ownershipDetails) {
+			for (OwnershipDetail source : ownershipDetails) {
 				OwnershipDetailRequest target = new OwnershipDetailRequest();
-				if(source.getShareHoldingCategoryId() != null) {
-					target.setShareHoldingCategoryType(ShareHoldingCategory.getById(source.getShareHoldingCategoryId()).getValue());					
+				if (source.getShareHoldingCategoryId() != null) {
+					target.setShareHoldingCategoryType(
+							ShareHoldingCategory.getById(source.getShareHoldingCategoryId()).getValue());
 				}
 				target.setStackPercentage(source.getStackPercentage());
 				target.setRemarks(source.getRemarks());
@@ -6169,39 +7046,41 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 			return listData;
 		}
 	}
-	
-	
-	private List<CreditRatingOrganizationDetailRequest> getCreditRatingDetailForSidbi(Long applicationId){
-		List<CreditRatingOrganizationDetail> creditRatingDetails = creditRatingOrganizationDetailsRepository.listCreditRatingOrganizationDetailsFromAppId(applicationId);
-		if(CommonUtils.isListNullOrEmpty(creditRatingDetails)) {
-			logger.warn("No creditRatingDetails Found for Application Id ==>{}",applicationId);
+
+	private List<CreditRatingOrganizationDetailRequest> getCreditRatingDetailForSidbi(Long applicationId) {
+		List<CreditRatingOrganizationDetail> creditRatingDetails = creditRatingOrganizationDetailsRepository
+				.listCreditRatingOrganizationDetailsFromAppId(applicationId);
+		if (CommonUtils.isListNullOrEmpty(creditRatingDetails)) {
+			logger.warn("No creditRatingDetails Found for Application Id ==>{}", applicationId);
 			return Collections.emptyList();
-		}else {
+		} else {
 			List<CreditRatingOrganizationDetailRequest> listData = new ArrayList<>(creditRatingDetails.size());
-			for(CreditRatingOrganizationDetail source : creditRatingDetails) {
+			for (CreditRatingOrganizationDetail source : creditRatingDetails) {
 				CreditRatingOrganizationDetailRequest target = new CreditRatingOrganizationDetailRequest();
 				target.setRatingDate(source.getRatingDate());
-				if(source.getRatingAgencyId() != null) {
-					target.setRatingAgency(RatingAgency.getById(source.getRatingAgencyId()).getValue());					
+				if (source.getRatingAgencyId() != null) {
+					target.setRatingAgency(RatingAgency.getById(source.getRatingAgencyId()).getValue());
 				}
 				target.setFacilityName(source.getEntityName());
-				if(source.getCreditRatingFundId() != null) {
-					target.setType(CreditRatingFund.getById(source.getCreditRatingFundId()).getValue());					
+				if (source.getCreditRatingFundId() != null) {
+					target.setType(CreditRatingFund.getById(source.getCreditRatingFundId()).getValue());
 				}
-				if(source.getCreditRatingTermId() != null) {
-					target.setCreditRatingTerm(CreditRatingTerm.getById(source.getCreditRatingTermId()).getValue());					
+				if (source.getCreditRatingTermId() != null) {
+					target.setCreditRatingTerm(CreditRatingTerm.getById(source.getCreditRatingTermId()).getValue());
 				}
 				target.setAmount(source.getAmount());
-				if(source.getCreditRatingOptionId() != null) {
+				if (source.getCreditRatingOptionId() != null) {
 					try {
-						OneFormResponse oneFormResponse = oneFormClient.getRatingById(source.getCreditRatingOptionId().longValue());
-						if(oneFormResponse !=null && oneFormResponse.getData() != null) {
-							MasterResponse masterResponse =  (MasterResponse)MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)oneFormResponse.getData(), MasterResponse.class);
-							if(masterResponse != null) {
+						OneFormResponse oneFormResponse = oneFormClient
+								.getRatingById(source.getCreditRatingOptionId().longValue());
+						if (oneFormResponse != null && oneFormResponse.getData() != null) {
+							MasterResponse masterResponse = (MasterResponse) MultipleJSONObjectHelper.getObjectFromMap(
+									(LinkedHashMap<String, Object>) oneFormResponse.getData(), MasterResponse.class);
+							if (masterResponse != null) {
 								target.setRating(masterResponse.getValue());
 							}
 						}
-					}catch(Exception e) {
+					} catch (Exception e) {
 						e.printStackTrace();
 					}
 				}
@@ -6211,15 +7090,16 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 			return listData;
 		}
 	}
-	
-	private List<GuarantorsCorporateDetailRequest> getGuarantorDetailsForSidbi(Long applicationId){
-		List<GuarantorsCorporateDetail> guarantorDetails = guarantorsCorporateDetailRepository.listGuarantorsCorporateFromAppId(applicationId);
-		if(CommonUtils.isListNullOrEmpty(guarantorDetails)) {
-			logger.warn("No guarantorDetails Found for Application Id ==>{}",applicationId);
+
+	private List<GuarantorsCorporateDetailRequest> getGuarantorDetailsForSidbi(Long applicationId) {
+		List<GuarantorsCorporateDetail> guarantorDetails = guarantorsCorporateDetailRepository
+				.listGuarantorsCorporateFromAppId(applicationId);
+		if (CommonUtils.isListNullOrEmpty(guarantorDetails)) {
+			logger.warn("No guarantorDetails Found for Application Id ==>{}", applicationId);
 			return Collections.emptyList();
-		}else {
+		} else {
 			List<GuarantorsCorporateDetailRequest> listData = new ArrayList<>(guarantorDetails.size());
-			for(GuarantorsCorporateDetail source : guarantorDetails) {
+			for (GuarantorsCorporateDetail source : guarantorDetails) {
 				GuarantorsCorporateDetailRequest target = new GuarantorsCorporateDetailRequest();
 				target.setName(source.getName());
 				target.setPropertiesOwned(source.getPropertiesOwned());
@@ -6232,15 +7112,16 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 			return listData;
 		}
 	}
-	
-	private List<MonthlyTurnoverDetailRequest> getMonthlyTurnOverForSidbi(Long applicationId){
-		List<MonthlyTurnoverDetail> monthlyTurnOver = monthlyTurnoverDetailRepository.listMonthlyTurnoverFromAppId(applicationId);
-		if(CommonUtils.isListNullOrEmpty(monthlyTurnOver)) {
-			logger.warn("No monthlyTurnOver Found for Application Id ==>{}",applicationId);
+
+	private List<MonthlyTurnoverDetailRequest> getMonthlyTurnOverForSidbi(Long applicationId) {
+		List<MonthlyTurnoverDetail> monthlyTurnOver = monthlyTurnoverDetailRepository
+				.listMonthlyTurnoverFromAppId(applicationId);
+		if (CommonUtils.isListNullOrEmpty(monthlyTurnOver)) {
+			logger.warn("No monthlyTurnOver Found for Application Id ==>{}", applicationId);
 			return Collections.emptyList();
-		}else {
+		} else {
 			List<MonthlyTurnoverDetailRequest> listData = new ArrayList<>(monthlyTurnOver.size());
-			for(MonthlyTurnoverDetail source : monthlyTurnOver) {
+			for (MonthlyTurnoverDetail source : monthlyTurnOver) {
 				MonthlyTurnoverDetailRequest target = new MonthlyTurnoverDetailRequest();
 				target.setMonthName(source.getMonthName());
 				target.setAmount(source.getAmount());
@@ -6250,80 +7131,83 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 			return listData;
 		}
 	}
-	
-	private List<AssociatedConcernDetailRequest> getAssociatedConcernForSidbi(Long applicationId){
-		List<AssociatedConcernDetail> associatedConcernDetails = associatedConcernDetailRepository.listAssociatedConcernFromAppId(applicationId);
-		if(CommonUtils.isListNullOrEmpty(associatedConcernDetails)) {
-			logger.warn("No associatedConcernDetails Found for Application Id ==>{}",applicationId);
+
+	private List<AssociatedConcernDetailRequest> getAssociatedConcernForSidbi(Long applicationId) {
+		List<AssociatedConcernDetail> associatedConcernDetails = associatedConcernDetailRepository
+				.listAssociatedConcernFromAppId(applicationId);
+		if (CommonUtils.isListNullOrEmpty(associatedConcernDetails)) {
+			logger.warn("No associatedConcernDetails Found for Application Id ==>{}", applicationId);
 			return Collections.emptyList();
-		}else {
+		} else {
 			List<AssociatedConcernDetailRequest> listData = new ArrayList<>(associatedConcernDetails.size());
-			for(AssociatedConcernDetail source : associatedConcernDetails) {
+			for (AssociatedConcernDetail source : associatedConcernDetails) {
 				AssociatedConcernDetailRequest target = new AssociatedConcernDetailRequest();
 				BeanUtils.copyProperties(source, target);
 				target.setApplicationId(applicationId);
-//				target.setName(source.getName());
-//				target.setNatureAssociation(source.getNatureAssociation());
-//				target.setNameOfDirector(source.getNameOfDirector());
-//				target.setInvestedAmount(source.getInvestedAmount());
-//				target.setNatureActivity(source.getNatureActivity());
-//				target.setTurnOverFirstYear(source.getTurnOverFirstYear());
-//				target.setTurnOverSecondYear(source.getTurnOverSecondYear());
-//				target.setTurnOverThirdYear(source.getTurnOverThirdYear());
-//				target.setProfitPastOneYear(source.getProfitPastOneYear());
-//				target.setProfitPastTwoYear(source.getProfitPastTwoYear());
-//				target.setProfitPastThreeYear(source.getProfitPastThreeYear());
-//				target.setBriefDescription(source.getBriefDescription());
+				// target.setName(source.getName());
+				// target.setNatureAssociation(source.getNatureAssociation());
+				// target.setNameOfDirector(source.getNameOfDirector());
+				// target.setInvestedAmount(source.getInvestedAmount());
+				// target.setNatureActivity(source.getNatureActivity());
+				// target.setTurnOverFirstYear(source.getTurnOverFirstYear());
+				// target.setTurnOverSecondYear(source.getTurnOverSecondYear());
+				// target.setTurnOverThirdYear(source.getTurnOverThirdYear());
+				// target.setProfitPastOneYear(source.getProfitPastOneYear());
+				// target.setProfitPastTwoYear(source.getProfitPastTwoYear());
+				// target.setProfitPastThreeYear(source.getProfitPastThreeYear());
+				// target.setBriefDescription(source.getBriefDescription());
 				listData.add(target);
 			}
 			return listData;
 		}
 	}
-	
-	
+
 	private LoanMasterRequest createObj(PrimaryCorporateDetail applicationMaster) {
 		LoanMasterRequest loanMasterRequest = new LoanMasterRequest();
 		loanMasterRequest.setTenure(applicationMaster.getTenure());
 		loanMasterRequest.setProductName(CommonUtils.LoanType.getType(applicationMaster.getProductId()).getName());
-		if(applicationMaster.getApplicationStatusMaster() != null) {
-			loanMasterRequest.setStatus(applicationMaster.getApplicationStatusMaster().getStatus());			
+		if (applicationMaster.getApplicationStatusMaster() != null) {
+			loanMasterRequest.setStatus(applicationMaster.getApplicationStatusMaster().getStatus());
 		}
-        loanMasterRequest.setBusinessTypeId(getIndustryIrrByApplication(applicationMaster.getId()));
+		loanMasterRequest.setBusinessTypeId(getIndustryIrrByApplication(applicationMaster.getId()));
 		loanMasterRequest.setAmount(applicationMaster.getAmount());
 		loanMasterRequest.setHaveCollateralSecurities(applicationMaster.getHaveCollateralSecurity());
 		loanMasterRequest.setCollateralSecuritiesValue(applicationMaster.getCollateralSecurityAmount());
 		loanMasterRequest.setApplicationId(applicationMaster.getId());
 		loanMasterRequest.setApplicationCode(applicationMaster.getApplicationCode());
-		if(applicationMaster.getPurposeOfLoanId() != null) {
-			loanMasterRequest.setLoanPurpose(PurposeOfLoan.getById(applicationMaster.getPurposeOfLoanId()).getValue());			
+		if (applicationMaster.getPurposeOfLoanId() != null) {
+			loanMasterRequest.setLoanPurpose(PurposeOfLoan.getById(applicationMaster.getPurposeOfLoanId()).getValue());
 		}
 		loanMasterRequest.setApplicationDate(applicationMaster.getCreatedDate());
 
 		ProposalMappingRequest proposalMappingRequest = new ProposalMappingRequest();
 		proposalMappingRequest.setApplicationId(applicationMaster.getId());
-		Long fpProductId=null;
-		ProposalMappingResponse proposalMappingResponse = proposalService.listOfFundSeekerProposal(proposalMappingRequest);
-		if(!CommonUtils.isObjectListNull(proposalMappingResponse) && !CommonUtils.isObjectListNull(proposalMappingResponse.getDataList())) {
-			List<Map<String, Object>> proposalMappingResponseDataList = (List<Map<String, Object>>) proposalMappingResponse.getDataList();
+		Long fpProductId = null;
+		ProposalMappingResponse proposalMappingResponse = proposalService
+				.listOfFundSeekerProposal(proposalMappingRequest);
+		if (!CommonUtils.isObjectListNull(proposalMappingResponse)
+				&& !CommonUtils.isObjectListNull(proposalMappingResponse.getDataList())) {
+			List<Map<String, Object>> proposalMappingResponseDataList = (List<Map<String, Object>>) proposalMappingResponse
+					.getDataList();
 
 			try {
-				ProposalMappingRequest proposalMappingRequest1 = MultipleJSONObjectHelper.getObjectFromMap(proposalMappingResponseDataList.get(0),
-						ProposalMappingRequest.class);
+				ProposalMappingRequest proposalMappingRequest1 = MultipleJSONObjectHelper
+						.getObjectFromMap(proposalMappingResponseDataList.get(0), ProposalMappingRequest.class);
 				fpProductId = proposalMappingRequest1.getFpProductId();
 				loanMasterRequest.setFpProductId(proposalMappingRequest1.getFpProductId());
 				loanMasterRequest.setRoi(proposalMappingRequest1.getElRoi());
 				loanMasterRequest.setProcessingFee(proposalMappingRequest1.getProcessingFee());
-                loanMasterRequest.setEmi(proposalMappingRequest1.getEmi());
-                ProductMaster productMstr = productMasterRepository.findOne(proposalMappingRequest1.getFpProductId());
-                if(productMstr != null) {
-                	loanMasterRequest.setFpProductName(productMstr.getName());                	
-                }
+				loanMasterRequest.setEmi(proposalMappingRequest1.getEmi());
+				ProductMaster productMstr = productMasterRepository.findOne(proposalMappingRequest1.getFpProductId());
+				if (productMstr != null) {
+					loanMasterRequest.setFpProductName(productMstr.getName());
+				}
 			} catch (IOException e) {
 				logger.error("error while setting details from proposal details");
 				e.printStackTrace();
 			}
 		}
-		if(!CommonUtils.isObjectNullOrEmpty(fpProductId)){
+		if (!CommonUtils.isObjectNullOrEmpty(fpProductId)) {
 			ProductMaster master = productMasterRepository.findOne(fpProductId);
 			if (master.getIsActive()) {
 				UsersRequest request = new UsersRequest();
@@ -6332,7 +7216,7 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 				FundProviderDetailsRequest fundProviderDetailsRequest = null;
 				try {
 					fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap(
-                            (LinkedHashMap<String, Object>) userResponse.getData(), FundProviderDetailsRequest.class);
+							(LinkedHashMap<String, Object>) userResponse.getData(), FundProviderDetailsRequest.class);
 				} catch (IOException e) {
 					logger.error("error while setting users details from proposal details");
 					e.printStackTrace();
@@ -6342,13 +7226,14 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 		}
 		return loanMasterRequest;
 	}
-	
-	private CorporateProfileRequest createProfileObj(CorporateApplicantDetail corporateApplicantDetail,Long userId) {
+
+	private CorporateProfileRequest createProfileObj(CorporateApplicantDetail corporateApplicantDetail, Long userId) {
 		CorporateProfileRequest corporateProfileRequest = new CorporateProfileRequest();
 		corporateProfileRequest.setOrganisationName(corporateApplicantDetail.getOrganisationName());
 		corporateProfileRequest.setGstin(corporateApplicantDetail.getGstIn());
-		if(corporateApplicantDetail.getConstitutionId() != null) {
-			corporateProfileRequest.setConstitution(Constitution.getById(corporateApplicantDetail.getConstitutionId()).getValue());				
+		if (corporateApplicantDetail.getConstitutionId() != null) {
+			corporateProfileRequest
+					.setConstitution(Constitution.getById(corporateApplicantDetail.getConstitutionId()).getValue());
 		}
 		corporateProfileRequest.setEstablishmentYear(corporateApplicantDetail.getEstablishmentYear());
 		corporateProfileRequest.setPan(corporateApplicantDetail.getPanNo());
@@ -6363,80 +7248,87 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 			logger.info("Throw Exception While Get User Email and Mobile");
 			e.printStackTrace();
 		}
-		
-		//setting Registered Address
+
+		// setting Registered Address
 		AddressRequest addressRequest = new AddressRequest();
 		addressRequest.setPremiseNumber(corporateApplicantDetail.getRegisteredPremiseNumber());
 		addressRequest.setStreetName(corporateApplicantDetail.getRegisteredStreetName());
 		addressRequest.setLandMark(corporateApplicantDetail.getRegisteredLandMark());
-		if(corporateApplicantDetail.getRegisteredPincode() != null) {
-			addressRequest.setPincode(corporateApplicantDetail.getRegisteredPincode().toString());				
+		if (corporateApplicantDetail.getRegisteredPincode() != null) {
+			addressRequest.setPincode(corporateApplicantDetail.getRegisteredPincode().toString());
 		}
 		try {
-			addressRequest.setCity(CommonDocumentUtils.getCity(corporateApplicantDetail.getRegisteredCityId(), oneFormClient));
-		}catch(Exception e) {
+			addressRequest.setCity(
+					CommonDocumentUtils.getCity(corporateApplicantDetail.getRegisteredCityId(), oneFormClient));
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		try {
-			addressRequest.setState(CommonDocumentUtils.getState(corporateApplicantDetail.getRegisteredStateId().longValue(), oneFormClient));
-		}catch(Exception e) {
+			addressRequest.setState(CommonDocumentUtils
+					.getState(corporateApplicantDetail.getRegisteredStateId().longValue(), oneFormClient));
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 		try {
-			addressRequest.setCountry(CommonDocumentUtils.getCountry(corporateApplicantDetail.getRegisteredCountryId().longValue(), oneFormClient));
-		}catch(Exception e) {
+			addressRequest.setCountry(CommonDocumentUtils
+					.getCountry(corporateApplicantDetail.getRegisteredCountryId().longValue(), oneFormClient));
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		corporateProfileRequest.setRegisteredAddress(addressRequest);
-		
-		//setting Registered Address
+
+		// setting Registered Address
 		AddressRequest administrativeRequest = new AddressRequest();
-		if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getAdministrativePremiseNumber()))
-		    administrativeRequest.setPremiseNumber(corporateApplicantDetail.getAdministrativePremiseNumber());
-        if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getAdministrativeStreetName()))
-		    administrativeRequest.setStreetName(corporateApplicantDetail.getAdministrativeStreetName());
-        if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getAdministrativeLandMark()))
-            administrativeRequest.setLandMark(corporateApplicantDetail.getAdministrativeLandMark());
-		if(corporateApplicantDetail.getAdministrativePincode() != null) {
-			administrativeRequest.setPincode(corporateApplicantDetail.getAdministrativePincode().toString());				
+		if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getAdministrativePremiseNumber()))
+			administrativeRequest.setPremiseNumber(corporateApplicantDetail.getAdministrativePremiseNumber());
+		if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getAdministrativeStreetName()))
+			administrativeRequest.setStreetName(corporateApplicantDetail.getAdministrativeStreetName());
+		if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getAdministrativeLandMark()))
+			administrativeRequest.setLandMark(corporateApplicantDetail.getAdministrativeLandMark());
+		if (corporateApplicantDetail.getAdministrativePincode() != null) {
+			administrativeRequest.setPincode(corporateApplicantDetail.getAdministrativePincode().toString());
 		}
 		try {
-            if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getAdministrativeCityId()))
-			    administrativeRequest.setCity(CommonDocumentUtils.getCity(corporateApplicantDetail.getAdministrativeCityId(), oneFormClient));
-		}catch(Exception e) {
+			if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getAdministrativeCityId()))
+				administrativeRequest.setCity(
+						CommonDocumentUtils.getCity(corporateApplicantDetail.getAdministrativeCityId(), oneFormClient));
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		try {
-            if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getAdministrativeStateId()))
-			    administrativeRequest.setState(CommonDocumentUtils.getState(corporateApplicantDetail.getAdministrativeStateId().longValue(), oneFormClient));
-		}catch(Exception e) {
+			if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getAdministrativeStateId()))
+				administrativeRequest.setState(CommonDocumentUtils
+						.getState(corporateApplicantDetail.getAdministrativeStateId().longValue(), oneFormClient));
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 		try {
-            if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getAdministrativeCountryId()))
-			    administrativeRequest.setCountry(CommonDocumentUtils.getCountry(corporateApplicantDetail.getAdministrativeCountryId().longValue(), oneFormClient));
-		}catch(Exception e) {
+			if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getAdministrativeCountryId()))
+				administrativeRequest.setCountry(CommonDocumentUtils
+						.getCountry(corporateApplicantDetail.getAdministrativeCountryId().longValue(), oneFormClient));
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		corporateProfileRequest.setAdministrativeAddress(administrativeRequest);
-		if(corporateApplicantDetail.getKeyVericalFunding() != null) {
-			corporateProfileRequest.setIndustry(Industry.getById(corporateApplicantDetail.getKeyVericalFunding().intValue()).getValue());				
+		if (corporateApplicantDetail.getKeyVericalFunding() != null) {
+			corporateProfileRequest.setIndustry(
+					Industry.getById(corporateApplicantDetail.getKeyVericalFunding().intValue()).getValue());
 		}
-		
-		if(corporateApplicantDetail.getKeyVerticalSector() != null) {
-//			corporateProfileRequest.setIndustry(Sector.getById(corporateApplicantDetail.getKeyVerticalSector().intValue()).getValue());				
+
+		if (corporateApplicantDetail.getKeyVerticalSector() != null) {
+			// corporateProfileRequest.setIndustry(Sector.getById(corporateApplicantDetail.getKeyVerticalSector().intValue()).getValue());
 		}
-		
-		if(corporateApplicantDetail.getKeyVerticalSubsector() != null) {
-			//key vertical Subsector
-			try{
-				OneFormResponse oneFormResponse=oneFormClient.getSubSecNameByMappingId(corporateApplicantDetail.getKeyVerticalSubsector());
-				if(!CommonUtils.isObjectNullOrEmpty(oneFormResponse.getData()))
-					corporateProfileRequest.setSubSector((String)oneFormResponse.getData());
-			}
-			catch (Exception e) {
+
+		if (corporateApplicantDetail.getKeyVerticalSubsector() != null) {
+			// key vertical Subsector
+			try {
+				OneFormResponse oneFormResponse = oneFormClient
+						.getSubSecNameByMappingId(corporateApplicantDetail.getKeyVerticalSubsector());
+				if (!CommonUtils.isObjectNullOrEmpty(oneFormResponse.getData()))
+					corporateProfileRequest.setSubSector((String) oneFormResponse.getData());
+			} catch (Exception e) {
 				// TODO: handle exception
 				logger.warn("error while getting key vertical sub-sector");
 			}
@@ -6448,147 +7340,140 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 		corporateProfileRequest.setContLiabilitySyAmt(corporateApplicantDetail.getContLiabilitySyAmt());
 		corporateProfileRequest.setContLiabilityTyAmt(corporateApplicantDetail.getContLiabilityTyAmt());
 		corporateProfileRequest.setApplicationId(corporateApplicantDetail.getApplicationId().getId());
-		
+
 		return corporateProfileRequest;
 	}
 
-	public Map<String, Object> getFpDetailsByFpProductId(Long fpProductId) throws Exception{
-		 Map<String, Object> map= null;
+	public Map<String, Object> getFpDetailsByFpProductId(Long fpProductId) throws Exception {
+		Map<String, Object> map = null;
 		try {
-			 map = new HashMap<String, Object>();
-		ProductMaster productMaster = productMasterRepository.findOne(fpProductId);
-		if(productMaster!=null) {
-		UsersRequest request = new UsersRequest();
-		request.setId(productMaster.getUserId());
-		UserResponse resp = userClient.getEmailMobile(productMaster.getUserId());
-		UsersRequest applicantRequest = MultipleJSONObjectHelper.getObjectFromMap(
-				(Map<String, Object>) resp.getData(), UsersRequest.class);
-		map.put("fpName", applicantRequest.getName());
-		map.put("mobileNo", applicantRequest.getMobile());
-		map.put("fpUserId", productMaster.getUserId());
-		}
-		}
-		catch (Exception e) {
+			map = new HashMap<String, Object>();
+			ProductMaster productMaster = productMasterRepository.findOne(fpProductId);
+			if (productMaster != null) {
+				UsersRequest request = new UsersRequest();
+				request.setId(productMaster.getUserId());
+				UserResponse resp = userClient.getEmailMobile(productMaster.getUserId());
+				UsersRequest applicantRequest = MultipleJSONObjectHelper
+						.getObjectFromMap((Map<String, Object>) resp.getData(), UsersRequest.class);
+				map.put("fpName", applicantRequest.getName());
+				map.put("mobileNo", applicantRequest.getMobile());
+				map.put("fpUserId", productMaster.getUserId());
+			}
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 		return map;
 	}
-	
-	
+
 	public LoanApplicationRequest getLoanApplicationDetails(Long userId, Long applicationId) {
-		
+
 		LoanApplicationMaster applicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId, userId);
-		
-		
+
 		LoanApplicationRequest applicationRequest = new LoanApplicationRequest();
-		
+
 		BeanUtils.copyProperties(applicationMaster, applicationRequest);
-		
+
 		return applicationRequest;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService#getDataForCGTMSE(java.lang.Long)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.capitaworld.service.loans.service.fundseeker.corporate.
+	 * LoanApplicationService#getDataForCGTMSE(java.lang.Long)
 	 */
 	@Override
 	public CGTMSECalcDataResponse getDataForCGTMSE(Long applicationId) throws Exception {
 		try {
-			
+
 			logger.info("In getDataForCGTMSE");
-		CGTMSECalcDataResponse response = new CGTMSECalcDataResponse();
-		CorporateApplicantDetail applicantDetail =	corporateApplicantDetailRepository.findByApplicationIdIdAndIsActive(applicationId, true);
-		if(applicantDetail!=null) {
-			//key vertical Subsector
-	        try
-	        {
-	        if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getKeyVerticalSubsector()))
-	        {
-	        	Long irrId=getIrrByApplicationId(applicationId);
-	        	Integer businessTypeId=null;
-	        	IrrRequest irrIndustryRequest=new IrrRequest();
-	        	irrIndustryRequest.setIrrIndustryId(irrId);
-				irrIndustryRequest=ratingClient.getIrrIndustry(irrIndustryRequest);
-				IndustryResponse industryResponse=irrIndustryRequest.getIndustryResponse();
-				if(!CommonUtils.isObjectNullOrEmpty(industryResponse))
-				{
-					
-				
-						
-				businessTypeId=industryResponse.getBusinessTypeId();
+			CGTMSECalcDataResponse response = new CGTMSECalcDataResponse();
+			CorporateApplicantDetail applicantDetail = corporateApplicantDetailRepository
+					.findByApplicationIdIdAndIsActive(applicationId, true);
+			if (applicantDetail != null) {
+				// key vertical Subsector
+				try {
+					if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getKeyVerticalSubsector())) {
+						Long irrId = getIrrByApplicationId(applicationId);
+						Integer businessTypeId = null;
+						IrrRequest irrIndustryRequest = new IrrRequest();
+						irrIndustryRequest.setIrrIndustryId(irrId);
+						irrIndustryRequest = ratingClient.getIrrIndustry(irrIndustryRequest);
+						IndustryResponse industryResponse = irrIndustryRequest.getIndustryResponse();
+						if (!CommonUtils.isObjectNullOrEmpty(industryResponse)) {
+
+							businessTypeId = industryResponse.getBusinessTypeId();
+						}
+						String natureOfEntity = null;
+
+						if (com.capitaworld.service.rating.utils.CommonUtils.BusinessType.MANUFACTURING == businessTypeId) {
+							natureOfEntity = "Manufacturer";
+						} else if (com.capitaworld.service.rating.utils.CommonUtils.BusinessType.SERVICE == businessTypeId) {
+							natureOfEntity = "Service";
+						} else if (com.capitaworld.service.rating.utils.CommonUtils.BusinessType.TRADING == businessTypeId) {
+							natureOfEntity = "Trader";
+						}
+
+						response.setSubSector(natureOfEntity);
+					}
+				} catch (Exception e) {
+					// TODO: handle exception
+					logger.warn("error while getting key vertical sub-sector");
 				}
-				String natureOfEntity = null;
-				
-				if(com.capitaworld.service.rating.utils.CommonUtils.BusinessType.MANUFACTURING == businessTypeId) {
-					natureOfEntity = "Manufacturer";
-				}
-				else if(com.capitaworld.service.rating.utils.CommonUtils.BusinessType.SERVICE == businessTypeId) {
-					natureOfEntity = "Service";
-				}
-				else if(com.capitaworld.service.rating.utils.CommonUtils.BusinessType.TRADING== businessTypeId) {
-					natureOfEntity = "Trader";
-				}
-				
-				
-	        	response.setSubSector(natureOfEntity);
-	        }
-	        }
-	        catch (Exception e) {
-				// TODO: handle exception
-	        	logger.warn("error while getting key vertical sub-sector");
+
+				response.setStateId(applicantDetail.getRegisteredStateId() != null
+						? Long.valueOf(applicantDetail.getRegisteredStateId().toString()) : null);
+				response.setColleteralValue(applicantDetail.getTotalCollateralDetails());
 			}
-	        
-	        response.setStateId(applicantDetail.getRegisteredStateId()!=null ? Long.valueOf(applicantDetail.getRegisteredStateId().toString()) : null);
-			response.setColleteralValue(applicantDetail.getTotalCollateralDetails());
-		}
-		
-		LoanApplicationMaster loan = loanApplicationRepository.getById(applicationId);
-		
-		if(loan!=null) {
-			response.setLoanAmount(loan.getAmount());
-		}
-		
-		List<DirectorBackgroundDetail> directorList = directorBackgroundDetailsRepository.listPromotorBackgroundFromAppId(applicationId);
-		
-		response.setDirectorRespo(new ArrayList<DirectorBackgroundDetailResponse>());
-		if(directorList!=null && !directorList.isEmpty()) {
-			for(DirectorBackgroundDetail detail : directorList) {
-				if(detail.getGender()==Gender.FEMALE.getId()) {
-				DirectorBackgroundDetailResponse directorDetail = new DirectorBackgroundDetailResponse();
-				BeanUtils.copyProperties(detail, directorDetail);
-				directorDetail.setGender(Gender.getById(detail.getGender()).toString());
-				directorDetail.setShareholding(detail.getShareholding());
-				
-				response.addDirectorDetail(directorDetail);
+
+			LoanApplicationMaster loan = loanApplicationRepository.getById(applicationId);
+
+			if (loan != null) {
+				response.setLoanAmount(loan.getAmount());
+			}
+
+			List<DirectorBackgroundDetail> directorList = directorBackgroundDetailsRepository
+					.listPromotorBackgroundFromAppId(applicationId);
+
+			response.setDirectorRespo(new ArrayList<DirectorBackgroundDetailResponse>());
+			if (directorList != null && !directorList.isEmpty()) {
+				for (DirectorBackgroundDetail detail : directorList) {
+					if (detail.getGender() == Gender.FEMALE.getId()) {
+						DirectorBackgroundDetailResponse directorDetail = new DirectorBackgroundDetailResponse();
+						BeanUtils.copyProperties(detail, directorDetail);
+						directorDetail.setGender(Gender.getById(detail.getGender()).toString());
+						directorDetail.setShareholding(detail.getShareholding());
+
+						response.addDirectorDetail(directorDetail);
+					}
 				}
 			}
-		}
-		Calendar cal = Calendar.getInstance();
-		Integer yearInt = cal.get(Calendar.YEAR);
-		String year = String.valueOf(yearInt-1);
-		System.out.println("YEAR ::::::::::::::::::::++++++++++++++>>>> "+ year);
-		AssetsDetails assetsDetails = null; 
-		assetsDetails = assetsDetailsRepository.getAssetsDetails(applicationId, year);
-		if(assetsDetails == null) {
-			year = year+".0";
+			Calendar cal = Calendar.getInstance();
+			Integer yearInt = cal.get(Calendar.YEAR);
+			String year = String.valueOf(yearInt - 1);
+			System.out.println("YEAR ::::::::::::::::::::++++++++++++++>>>> " + year);
+			AssetsDetails assetsDetails = null;
 			assetsDetails = assetsDetailsRepository.getAssetsDetails(applicationId, year);
-			if(assetsDetails==null) {
-				year = yearInt+"";
+			if (assetsDetails == null) {
+				year = year + ".0";
 				assetsDetails = assetsDetailsRepository.getAssetsDetails(applicationId, year);
-				if(assetsDetails==null) {
-					year = yearInt+".0";
+				if (assetsDetails == null) {
+					year = yearInt + "";
 					assetsDetails = assetsDetailsRepository.getAssetsDetails(applicationId, year);
+					if (assetsDetails == null) {
+						year = yearInt + ".0";
+						assetsDetails = assetsDetailsRepository.getAssetsDetails(applicationId, year);
+					}
 				}
 			}
-		}
-		
-		if(assetsDetails!=null) {
-			response.setGrossBlock(assetsDetails.getGrossBlock());
-		}
-		
-		return response;
-		}
-		catch (Exception e) {
+
+			if (assetsDetails != null) {
+				response.setGrossBlock(assetsDetails.getGrossBlock());
+			}
+
+			return response;
+		} catch (Exception e) {
 			e.printStackTrace();
 			throw e;
 		}
@@ -6596,13 +7481,13 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 
 	@Override
 	public LoanApplicationRequest getProposalDataFromApplicationId(Long applicationId) {
-		
+
 		try {
 			logger.info("ENter in get Proposal Data From ApplicationId ------------------->" + applicationId);
-			LoanApplicationRequest applicationRequest= new LoanApplicationRequest();
+			LoanApplicationRequest applicationRequest = new LoanApplicationRequest();
 			LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(applicationId);
-			
-			if(CommonUtils.isObjectNullOrEmpty(loanApplicationMaster)) {
+
+			if (CommonUtils.isObjectNullOrEmpty(loanApplicationMaster)) {
 				logger.info("Application MAster response null or empty by above applicaiton iD");
 				return null;
 			}
@@ -6611,32 +7496,39 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 			if (response != null && response.getData() != null) {
 				Map<String, Object> proposalresp = null;
 				try {
-					proposalresp = MultipleJSONObjectHelper.getObjectFromMap((Map<String, Object>) response.getData(), Map.class);
+					proposalresp = MultipleJSONObjectHelper.getObjectFromMap((Map<String, Object>) response.getData(),
+							Map.class);
 				} catch (IOException e) {
 					logger.info("could not extract data");
 					e.printStackTrace();
 				}
-				 
+
 				if (!CommonUtils.isObjectNullOrEmpty(proposalresp)) {
-					applicationRequest.setLoanAmount(proposalresp.get("amount") != null ? Double.valueOf(proposalresp.get("amount").toString()) : 0.0);
-					applicationRequest.setTenure(proposalresp.get("tenure") != null ? Double.valueOf(proposalresp.get("tenure").toString()) : 0.0);
-					applicationRequest.setEmiAmount(proposalresp.get("emi_amount") != null ? Double.valueOf(proposalresp.get("emi_amount").toString()) : 0.0);
-					applicationRequest.setTypeOfLoan(CommonUtils.LoanType.getType(applicationRequest.getProductId()).toString());
-					applicationRequest.setInterestRate(proposalresp.get("rate_interest") != null ? Double.valueOf(proposalresp.get("rate_interest").toString()) : 0.0);
+					applicationRequest.setLoanAmount(proposalresp.get("amount") != null
+							? Double.valueOf(proposalresp.get("amount").toString()) : 0.0);
+					applicationRequest.setTenure(proposalresp.get("tenure") != null
+							? Double.valueOf(proposalresp.get("tenure").toString()) : 0.0);
+					applicationRequest.setEmiAmount(proposalresp.get("emi_amount") != null
+							? Double.valueOf(proposalresp.get("emi_amount").toString()) : 0.0);
+					applicationRequest
+							.setTypeOfLoan(CommonUtils.LoanType.getType(applicationRequest.getProductId()).toString());
+					applicationRequest.setInterestRate(proposalresp.get("rate_interest") != null
+							? Double.valueOf(proposalresp.get("rate_interest").toString()) : 0.0);
 					applicationRequest.setOnlinePaymentSuccess(true);
 
-					CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository.findOneByApplicationIdId(applicationId);
-					if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail)){
+					CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
+							.findOneByApplicationIdId(applicationId);
+					if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail)) {
 						applicationRequest.setNameOfEntity(corporateApplicantDetail.getOrganisationName());
 					}
 					Object orgObject = proposalresp.get("org_id");
-					if(!CommonUtils.isObjectNullOrEmpty(orgObject)) {
+					if (!CommonUtils.isObjectNullOrEmpty(orgObject)) {
 						Integer orgObjectInt = (Integer) orgObject;
 						applicationRequest.setFundProvider(CommonUtils.getOrganizationName(orgObjectInt.longValue()));
 
 					}
 					return applicationRequest;
-				} else{
+				} else {
 					logger.info("Proposal Map is null or empty !!");
 					return null;
 				}
@@ -6649,7 +7541,7 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 		}
 		return null;
 	}
-	
+
 	private UserOrganisationRequest getOrganizationDetails(Long organizationId) {
 		// Get Organization Data by OrganizationId
 		try {
@@ -6660,189 +7552,64 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 		}
 		return null;
 	}
-	
+
 	public GenerateTokenRequest setUrlAndTokenInSidbiClient(Long organizationId, Long applicationId) throws Exception {
 		UserOrganisationRequest request = getOrganizationDetails(organizationId);
-		if(request == null) {
-			logger.warn("Something is Wrong as Organization Data not found for Organization id ==>{}",organizationId);
+		if (request == null) {
+			logger.warn("Something is Wrong as Organization Data not found for Organization id ==>{}", organizationId);
 			return null;
 		}
-		if(CommonUtils.isObjectNullOrEmpty(isProduction)) {
+		if (CommonUtils.isObjectNullOrEmpty(isProduction)) {
 			logger.warn("Please Set 'capitaworld.sidbi.integration.is_production' key value to Set URL");
 			return null;
 		}
-		if(Boolean.valueOf(isProduction)) {
+		if (Boolean.valueOf(isProduction)) {
 			sidbiIntegrationClient.setIntegrationBaseUrl(request.getProductionUrl());
-		}else {
+		} else {
 			sidbiIntegrationClient.setIntegrationBaseUrl(request.getUatUrl());
 		}
-		
-		logger.warn("Getting token from SidbiIntegrationClient --------------" +applicationId);
+
+		logger.warn("Getting token from SidbiIntegrationClient --------------" + applicationId);
 		GenerateTokenRequest generateTokenRequest = new GenerateTokenRequest();
 		generateTokenRequest.setApplicationId(applicationId);
 		generateTokenRequest.setPassword(request.getPassword());
-		
-			String token=null;
-			token = sidbiIntegrationClient.getToken(generateTokenRequest);
-			generateTokenRequest.setToken(token);
-			logger.info("Successfully  set token from SidbiIntegrationClient -------------- applicationId=={} and Token==> {}",applicationId,token);
-			/*Start Save Token in loan DB */
-			/*TokenDetail tokenDetail =new TokenDetail();
-			tokenDetail.setApplicationId(applicationId);
-			tokenDetail.setCreatedDate(new Date());
-			tokenDetail.setIsActive(true);
-			tokenDetail.setToken(token);*/
-			/*End  */
-		return generateTokenRequest ;
+
+		String token = null;
+		token = sidbiIntegrationClient.getToken(generateTokenRequest);
+		generateTokenRequest.setToken(token);
+		logger.info(
+				"Successfully  set token from SidbiIntegrationClient -------------- applicationId=={} and Token==> {}",
+				applicationId, token);
+		/* Start Save Token in loan DB */
+		/*
+		 * TokenDetail tokenDetail =new TokenDetail();
+		 * tokenDetail.setApplicationId(applicationId);
+		 * tokenDetail.setCreatedDate(new Date());
+		 * tokenDetail.setIsActive(true); tokenDetail.setToken(token);
+		 */
+		/* End */
+		return generateTokenRequest;
 	}
-	
-	
+
 	@Override
 	public HunterRequestDataResponse getDataForHunter(Long applicationId) throws Exception {
 		try {
-			
-			logger.info("In getDataForHunter with Application ID : "+applicationId);
+
+			logger.info("In getDataForHunter with Application ID : " + applicationId);
 			HunterRequestDataResponse response = new HunterRequestDataResponse();
-			logger.info("Fetching Corporate Applicant Details for application Id : "+applicationId);
-		CorporateApplicantDetail applicantDetail =	corporateApplicantDetailRepository.findByApplicationIdIdAndIsActive(applicationId, true);
-		if(applicantDetail!=null) {
-			logger.info("FetchedS Corporate Applicant Details for application Id : "+applicationId);
-			//key vertical Subsector
-			
-			String state= null;
-			List<Long> stateList = new ArrayList<>();
-			if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredStateId()))
-				stateList.add(Long.valueOf(applicantDetail.getRegisteredStateId()));
-			if (!CommonUtils.isListNullOrEmpty(stateList)) {
-				try {
-					OneFormResponse oneFormResponse = oneFormClient.getStateByStateListId(stateList);
-					List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
-							.getListData();
-					if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
-						MasterResponse masterResponse = MultipleJSONObjectHelper
-								.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
-						state = masterResponse.getValue() ;
-					} else {
+			logger.info("Fetching Corporate Applicant Details for application Id : " + applicationId);
+			CorporateApplicantDetail applicantDetail = corporateApplicantDetailRepository
+					.findByApplicationIdIdAndIsActive(applicationId, true);
+			if (applicantDetail != null) {
+				logger.info("FetchedS Corporate Applicant Details for application Id : " + applicationId);
+				// key vertical Subsector
 
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-			
-			String city= null;
-			List<Long> cityList = new ArrayList<>();
-			if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredCityId()))
-				cityList.add(Long.valueOf(applicantDetail.getRegisteredCityId()));
-			if (!CommonUtils.isListNullOrEmpty(cityList)) {
-				try {
-					OneFormResponse oneFormResponse = oneFormClient.getCityByCityListId(cityList);
-					List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
-							.getListData();
-					if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
-						MasterResponse masterResponse = MultipleJSONObjectHelper
-								.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
-						city = masterResponse.getValue();
-					} else {
-
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-			
-			String country= null;
-			List<Long> countryList = new ArrayList<>();
-			if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredCountryId()))
-				countryList.add(Long.valueOf(applicantDetail.getRegisteredCountryId()));
-			if (!CommonUtils.isListNullOrEmpty(countryList)) {
-				try {
-					OneFormResponse oneFormResponse = oneFormClient.getCountryByCountryListId(countryList);
-					List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
-							.getListData();
-					if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
-						MasterResponse masterResponse = MultipleJSONObjectHelper
-								.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
-						country = masterResponse.getValue() ;
-					} else {
-
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-			
-			response.setOrganisationName(applicantDetail.getOrganisationName());
-	        response.setCompanyCity(city);
-	        response.setCompanyState(state);
-	        response.setCompanyCountry(country);
-	        response.setCompanyPincode(applicantDetail.getRegisteredPincode()!=null ? String.valueOf(applicantDetail.getRegisteredPincode()): null);
-			response.setColleteralValue(applicantDetail.getTotalCollateralDetails());
-			response.setIndustry(getIndustryForHunter(applicantDetail.getKeyVericalFunding()));
-			response.setCompanyTelephone(applicantDetail.getLandlineNo());
-			response.setConstitution(getConstitutionryForHunter(applicantDetail.getConstitutionId()));
-			
-			response.setEstablishmentDate(applicantDetail.getEstablishmentYear()+"-"+applicantDetail.getEstablishmentMonth()+"-"+"01");
-			
-			response.setCompanyAddress(applicantDetail.getRegisteredPremiseNumber()+", "+applicantDetail.getRegisteredStreetName()+", "+applicantDetail.getRegisteredLandMark());
-			response.setCompanyEmail(applicantDetail.getEmail());
-		}
-		logger.info("Fetching Loan APplication Master for application Id : "+applicationId);
-		LoanApplicationMaster loan = loanApplicationRepository.getById(applicationId);
-		
-		if(loan!=null) {
-			logger.info("Fetched Loan APplication Master for application Id : "+applicationId);
-			response.setLoanAmount(loan.getAmount());
-			response.setLoanApplicationId(applicationId+"");
-			
-			
-			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-			response.setDateOfApplication(dateFormat.format(loan.getCreatedDate()));
-			response.setDateOfSubmission(dateFormat.format(new Date()));
-		}
-		PrimaryCorporateDetail primaryCorporate = primaryCorporateRepository.findOneByApplicationIdId(applicationId);
-		if(primaryCorporate!=null) {
-			response.setLoanType(String.valueOf(primaryCorporate.getPurposeOfLoanId()));
-		}
-		
-		logger.info("Fetching Director's background details for application Id : "+applicationId);
-		List<DirectorBackgroundDetail> directorList = directorBackgroundDetailsRepository.listPromotorBackgroundFromAppId(applicationId);
-		
-		response.setDirectorRespo(new ArrayList<DirectorBackgroundDetailResponse>());
-		if(directorList!=null && !directorList.isEmpty()) {
-			logger.info("Fetched Director's background details for application Id : "+applicationId);
-			for(DirectorBackgroundDetail detail : directorList) {
-				DirectorBackgroundDetailResponse directorDetail = new DirectorBackgroundDetailResponse();
-				BeanUtils.copyProperties(detail, directorDetail);
-				String gender = null;
-				if(Gender.MALE.getId() == detail.getGender()) {
-					gender = "MALE";
-				}
-				else if(Gender.FEMALE.getId() == detail.getGender()) {
-					gender = "FEMALE";
-				}
-				else if(Gender.THIRD_GENDER.getId() == detail.getGender()) {
-					gender = "OTHER";
-				}
-				else {
-					gender = "OTHER";
-				}
-				directorDetail.setGender(gender);
-				directorDetail.setShareholding(detail.getShareholding());
-				
-				String state= null;
+				String state = null;
 				List<Long> stateList = new ArrayList<>();
-				if (!CommonUtils.isObjectNullOrEmpty(detail.getStateCode())) {
-					ITRConnectionResponse itrConnectionResponse = itrClient.getOneFormStateIdFromITRStateId(Long.valueOf(detail.getStateCode()));
-					if(!CommonUtils.isObjectNullOrEmpty(itrConnectionResponse)) {
-					}
-					stateList.add(Long.valueOf(String.valueOf(itrConnectionResponse.getData())));
-				}
+				if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredStateId()))
+					stateList.add(Long.valueOf(applicantDetail.getRegisteredStateId()));
 				if (!CommonUtils.isListNullOrEmpty(stateList)) {
 					try {
-						
-						
-						
 						OneFormResponse oneFormResponse = oneFormClient.getStateByStateListId(stateList);
 						List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
 								.getListData();
@@ -6857,12 +7624,32 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 						e.printStackTrace();
 					}
 				}
-				directorDetail.setStateCode(state);
-				
-				String country= null;
+
+				String city = null;
+				List<Long> cityList = new ArrayList<>();
+				if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredCityId()))
+					cityList.add(Long.valueOf(applicantDetail.getRegisteredCityId()));
+				if (!CommonUtils.isListNullOrEmpty(cityList)) {
+					try {
+						OneFormResponse oneFormResponse = oneFormClient.getCityByCityListId(cityList);
+						List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
+								.getListData();
+						if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+							MasterResponse masterResponse = MultipleJSONObjectHelper
+									.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+							city = masterResponse.getValue();
+						} else {
+
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+
+				String country = null;
 				List<Long> countryList = new ArrayList<>();
-				if (!CommonUtils.isObjectNullOrEmpty(detail.getCountryId()))
-					countryList.add(Long.valueOf(detail.getCountryId()));
+				if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredCountryId()))
+					countryList.add(Long.valueOf(applicantDetail.getRegisteredCountryId()));
 				if (!CommonUtils.isListNullOrEmpty(countryList)) {
 					try {
 						OneFormResponse oneFormResponse = oneFormClient.getCountryByCountryListId(countryList);
@@ -6879,31 +7666,138 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 						e.printStackTrace();
 					}
 				}
-				directorDetail.setCountry(country);
-				directorDetail.setPincode(detail.getPincode().toString());
-				directorDetail.setIsMainDirector(detail.getIsMainDirector());
-				response.addDirectorDetail(directorDetail);
+
+				response.setOrganisationName(applicantDetail.getOrganisationName());
+				response.setCompanyCity(city);
+				response.setCompanyState(state);
+				response.setCompanyCountry(country);
+				response.setCompanyPincode(applicantDetail.getRegisteredPincode() != null
+						? String.valueOf(applicantDetail.getRegisteredPincode()) : null);
+				response.setColleteralValue(applicantDetail.getTotalCollateralDetails());
+				response.setIndustry(getIndustryForHunter(applicantDetail.getKeyVericalFunding()));
+				response.setCompanyTelephone(applicantDetail.getLandlineNo());
+				response.setConstitution(getConstitutionryForHunter(applicantDetail.getConstitutionId()));
+
+				response.setEstablishmentDate(applicantDetail.getEstablishmentYear() + "-"
+						+ applicantDetail.getEstablishmentMonth() + "-" + "01");
+
+				response.setCompanyAddress(applicantDetail.getRegisteredPremiseNumber() + ", "
+						+ applicantDetail.getRegisteredStreetName() + ", " + applicantDetail.getRegisteredLandMark());
+				response.setCompanyEmail(applicantDetail.getEmail());
 			}
-		}
-		logger.info("Fetching Bank details for application Id : "+applicationId);
-		ReportRequest reportRequest = new ReportRequest();
-		reportRequest.setApplicationId(applicationId);
-		AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReport(reportRequest);
-		
-		if(analyzerResponse.getStatus() == HttpStatus.OK.value()) {
-			logger.info("Fetched Director's background details for application Id : "+applicationId);
-			Data data = MultipleJSONObjectHelper
-					.getObjectFromMap((Map<String, Object>) analyzerResponse.getData(), Data.class);
-			
-			if(data!=null && data.getSummaryInfo()!=null) {
-				response.setCompanyBankAccount(data.getSummaryInfo().getAccNo());
-				response.setCompanyBankName(data.getSummaryInfo().getInstName());
+			logger.info("Fetching Loan APplication Master for application Id : " + applicationId);
+			LoanApplicationMaster loan = loanApplicationRepository.getById(applicationId);
+
+			if (loan != null) {
+				logger.info("Fetched Loan APplication Master for application Id : " + applicationId);
+				response.setLoanAmount(loan.getAmount());
+				response.setLoanApplicationId(applicationId + "");
+
+				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+				response.setDateOfApplication(dateFormat.format(loan.getCreatedDate()));
+				response.setDateOfSubmission(dateFormat.format(new Date()));
 			}
-		}
-		logger.info("End getDataForHunter with Application ID : "+applicationId);
-		return response;
-		}
-		catch (Exception e) {
+			PrimaryCorporateDetail primaryCorporate = primaryCorporateRepository
+					.findOneByApplicationIdId(applicationId);
+			if (primaryCorporate != null) {
+				response.setLoanType(String.valueOf(primaryCorporate.getPurposeOfLoanId()));
+			}
+
+			logger.info("Fetching Director's background details for application Id : " + applicationId);
+			List<DirectorBackgroundDetail> directorList = directorBackgroundDetailsRepository
+					.listPromotorBackgroundFromAppId(applicationId);
+
+			response.setDirectorRespo(new ArrayList<DirectorBackgroundDetailResponse>());
+			if (directorList != null && !directorList.isEmpty()) {
+				logger.info("Fetched Director's background details for application Id : " + applicationId);
+				for (DirectorBackgroundDetail detail : directorList) {
+					DirectorBackgroundDetailResponse directorDetail = new DirectorBackgroundDetailResponse();
+					BeanUtils.copyProperties(detail, directorDetail);
+					String gender = null;
+					if (Gender.MALE.getId() == detail.getGender()) {
+						gender = "MALE";
+					} else if (Gender.FEMALE.getId() == detail.getGender()) {
+						gender = "FEMALE";
+					} else if (Gender.THIRD_GENDER.getId() == detail.getGender()) {
+						gender = "OTHER";
+					} else {
+						gender = "OTHER";
+					}
+					directorDetail.setGender(gender);
+					directorDetail.setShareholding(detail.getShareholding());
+
+					String state = null;
+					List<Long> stateList = new ArrayList<>();
+					if (!CommonUtils.isObjectNullOrEmpty(detail.getStateCode())) {
+						ITRConnectionResponse itrConnectionResponse = itrClient
+								.getOneFormStateIdFromITRStateId(Long.valueOf(detail.getStateCode()));
+						if (!CommonUtils.isObjectNullOrEmpty(itrConnectionResponse)) {
+						}
+						stateList.add(Long.valueOf(String.valueOf(itrConnectionResponse.getData())));
+					}
+					if (!CommonUtils.isListNullOrEmpty(stateList)) {
+						try {
+
+							OneFormResponse oneFormResponse = oneFormClient.getStateByStateListId(stateList);
+							List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
+									.getListData();
+							if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+								MasterResponse masterResponse = MultipleJSONObjectHelper
+										.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+								state = masterResponse.getValue();
+							} else {
+
+							}
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+					directorDetail.setStateCode(state);
+
+					String country = null;
+					List<Long> countryList = new ArrayList<>();
+					if (!CommonUtils.isObjectNullOrEmpty(detail.getCountryId()))
+						countryList.add(Long.valueOf(detail.getCountryId()));
+					if (!CommonUtils.isListNullOrEmpty(countryList)) {
+						try {
+							OneFormResponse oneFormResponse = oneFormClient.getCountryByCountryListId(countryList);
+							List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
+									.getListData();
+							if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+								MasterResponse masterResponse = MultipleJSONObjectHelper
+										.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+								country = masterResponse.getValue();
+							} else {
+
+							}
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+					directorDetail.setCountry(country);
+					directorDetail.setPincode(detail.getPincode().toString());
+					directorDetail.setIsMainDirector(detail.getIsMainDirector());
+					response.addDirectorDetail(directorDetail);
+				}
+			}
+			logger.info("Fetching Bank details for application Id : " + applicationId);
+			ReportRequest reportRequest = new ReportRequest();
+			reportRequest.setApplicationId(applicationId);
+			AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReport(reportRequest);
+
+			if (analyzerResponse.getStatus() == HttpStatus.OK.value()) {
+				logger.info("Fetched Director's background details for application Id : " + applicationId);
+				Data data = MultipleJSONObjectHelper.getObjectFromMap((Map<String, Object>) analyzerResponse.getData(),
+						Data.class);
+
+				if (data != null && data.getSummaryInfo() != null) {
+					response.setCompanyBankAccount(data.getSummaryInfo().getAccNo());
+					response.setCompanyBankName(data.getSummaryInfo().getInstName());
+				}
+			}
+			logger.info("End getDataForHunter with Application ID : " + applicationId);
+			return response;
+		} catch (Exception e) {
 			e.printStackTrace();
 			throw e;
 		}
@@ -6911,36 +7805,46 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 
 	@Override
 	public SanctioningDetailResponse getDetailsForSanction(DisbursementRequest disbursementRequest) throws Exception {
-		try{
-			logger.info("Start getDetailsForSanction with data application Id : "+ disbursementRequest.getApplicationId() + " ProductMapping Id :" + disbursementRequest.getProductMappingId());
+		try {
+			logger.info(
+					"Start getDetailsForSanction with data application Id : " + disbursementRequest.getApplicationId()
+							+ " ProductMapping Id :" + disbursementRequest.getProductMappingId());
 			SanctioningDetailResponse sanctioningDetailResponse = new SanctioningDetailResponse();
 
 			logger.info("Fetching data from in-principle: ");
-			ProposalMappingResponse response = proposalDetailsClient.getActivateProposalById(disbursementRequest.getProductMappingId(), disbursementRequest.getApplicationId());
-			Map<String, Object> proposalresp = MultipleJSONObjectHelper.getObjectFromMap((Map<String, Object>) response.getData(), Map.class);
-			if(proposalresp!=null){
-				sanctioningDetailResponse.setSanctionAmount(proposalresp.get("elAmount") != null ? Double.valueOf(proposalresp.get("elAmount").toString()) : 0.0);
-				sanctioningDetailResponse.setTenure(proposalresp.get("elTenure") != null ? Double.valueOf(proposalresp.get("elTenure").toString()) : 0.0);
-				sanctioningDetailResponse.setRoi(proposalresp.get("elRoi") != null ? Double.valueOf(proposalresp.get("elRoi").toString()) : 0.0);
-				sanctioningDetailResponse.setProcessingFee(proposalresp.get("processingFee") != null ? Double.valueOf(proposalresp.get("processingFee").toString()) : 0.0);
-				sanctioningDetailResponse.setBranch(proposalresp.get("branchId") != null ? Long.valueOf(proposalresp.get("branchId").toString()) : null);
-				sanctioningDetailResponse.setUserOrgId(proposalresp.get("userOrgId") != null ? Long.valueOf(proposalresp.get("userOrgId").toString()) : null);
+			ProposalMappingResponse response = proposalDetailsClient.getActivateProposalById(
+					disbursementRequest.getProductMappingId(), disbursementRequest.getApplicationId());
+			Map<String, Object> proposalresp = MultipleJSONObjectHelper
+					.getObjectFromMap((Map<String, Object>) response.getData(), Map.class);
+			if (proposalresp != null) {
+				sanctioningDetailResponse.setSanctionAmount(proposalresp.get("elAmount") != null
+						? Double.valueOf(proposalresp.get("elAmount").toString()) : 0.0);
+				sanctioningDetailResponse.setTenure(proposalresp.get("elTenure") != null
+						? Double.valueOf(proposalresp.get("elTenure").toString()) : 0.0);
+				sanctioningDetailResponse.setRoi(
+						proposalresp.get("elRoi") != null ? Double.valueOf(proposalresp.get("elRoi").toString()) : 0.0);
+				sanctioningDetailResponse.setProcessingFee(proposalresp.get("processingFee") != null
+						? Double.valueOf(proposalresp.get("processingFee").toString()) : 0.0);
+				sanctioningDetailResponse.setBranch(proposalresp.get("branchId") != null
+						? Long.valueOf(proposalresp.get("branchId").toString()) : null);
+				sanctioningDetailResponse.setUserOrgId(proposalresp.get("userOrgId") != null
+						? Long.valueOf(proposalresp.get("userOrgId").toString()) : null);
 			}
 
 			logger.info("Fetching data for proposal: ");
-			DisbursementRequest disbursementDetailsResponse =getDisbursementDetails(disbursementRequest);
+			DisbursementRequest disbursementDetailsResponse = getDisbursementDetails(disbursementRequest);
 
-			if(disbursementDetailsResponse != null){
-				BeanUtils.copyProperties(disbursementDetailsResponse,sanctioningDetailResponse);
+			if (disbursementDetailsResponse != null) {
+				BeanUtils.copyProperties(disbursementDetailsResponse, sanctioningDetailResponse);
 			}
-			logger.info("End getDetailsForSanction with data application Id : "+ disbursementRequest.getApplicationId() + " ProductMapping Id :" + disbursementRequest.getProductMappingId());
+			logger.info("End getDetailsForSanction with data application Id : " + disbursementRequest.getApplicationId()
+					+ " ProductMapping Id :" + disbursementRequest.getProductMappingId());
 			return sanctioningDetailResponse;
-		}catch (Exception e){
+		} catch (Exception e) {
 			e.printStackTrace();
 			throw e;
 		}
 	}
-
 
 	private String getIndustryForHunter(Long industryId) {
 		if (industryId != null) {
@@ -6992,8 +7896,7 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 			return null;
 		}
 	}
-	
-	
+
 	private String getConstitutionryForHunter(Integer constitutionId) {
 		if (constitutionId != null) {
 			if (Constitution.PRIVATE_LIMITED.getId() == constitutionId) {
@@ -7021,148 +7924,170 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 			return null;
 		}
 	}
-	
+
 	@Override
-	public String saveDetailedInfo(ProfileReqRes profileReqRes) throws LoansException , Exception {
-	      logger.info("================== Enter in saveDetailedInfo =============== ");
-	      Long applicationId=null;
-	      CorporateProfileRequest corporateProfileRequest =profileReqRes.getCorporateProfileRequest();
-	       
-	      if(!CommonUtils.isObjectListNull(corporateProfileRequest , corporateProfileRequest.getApplicationId() , corporateProfileRequest.getUdhyogAdhaar(),  corporateProfileRequest.getAdministrativeAddress() , corporateProfileRequest.getAdministrativeAddress().getCityId() , corporateProfileRequest.getAdministrativeAddress().getStateId(), corporateProfileRequest.getAdministrativeAddress().getCountryId() , corporateProfileRequest.getAdministrativeAddress().getPincode() , corporateProfileRequest.getContLiabilityFyAmt() ,corporateProfileRequest.getContLiabilitySyAmt() ,corporateProfileRequest.getContLiabilityTyAmt() )) {
-	    	  throw new Exception("Mandatory field must not be null (** applicationId , udhyogAddhar , city , state , country , pincode , ContLiabilityFyAmt ,  ContLiabilitySyAmt ,  ContLiabilityTyAmt ** ) " );
-	      }
-				applicationId = saveCorporateProfile(profileReqRes.getCorporateProfileRequest());
-				if(CommonUtils.isObjectListNull(applicationId)) {
-					throw new 	LoansException("Invalid applicationId");
-				}
-				logger.info("Sucessfully save CorporateProfile =============> ");
-				if(!CommonUtils.isListNullOrEmpty(profileReqRes.getAchievementList())) {
-					saveAchivementDetail(applicationId, profileReqRes.getAchievementList());
-					logger.info("Sucessfully save AchivementDetail =============> ");
-				}
-				
-				if(!CommonUtils.isListNullOrEmpty(profileReqRes.getAssociateConcernList())) {
-		    	  	saveAssociatedConcernDetail(applicationId ,profileReqRes.getAssociateConcernList());
-					logger.info("Sucessfully save AssociatedConcernDetailList =============> ");
-				}
-			
-				if(!CommonUtils.isListNullOrEmpty(profileReqRes.getCreditRatingOrgList())) {
-					saveCreditRatingOrganizationDetail(applicationId ,profileReqRes.getCreditRatingOrgList());
-					logger.info("Sucessfully save CreditRatingOrganizationDetailList =============> ");
-				}
-				
-				if(!CommonUtils.isListNullOrEmpty(profileReqRes.getFinanceMeansDetailRequestsList())) {
-					saveFinanceMeansDetail(applicationId , profileReqRes.getFinanceMeansDetailRequestsList());
-					logger.info("Sucessfully save FinanceMeansDetailRequestsList =============> ");
-				}	
-				if(!CommonUtils.isListNullOrEmpty(profileReqRes.getExPrList())) {
-					if(!saveExistingProductDetail(applicationId ,profileReqRes.getExPrList())) {
-						throw new LoansException("Mandatory field must not be null ( ** Product and Application ** )"); 
-					}
-					logger.info("Sucessfully save ExistingProductDetailList =============> ");
-				}
-				if(!CommonUtils.isListNullOrEmpty(profileReqRes.getGuaCorpList())) {
-					saveGuarantorsCorporateDetail(applicationId ,  profileReqRes.getGuaDetailList());
-					logger.info("Sucessfully save GuarantorsCorporateDetailList  =============> ");
-				}	
-				if(!CommonUtils.isListNullOrEmpty(profileReqRes.getMonTurnoverList())) {
-					if(!saveMonthlyTurnoverDetail(applicationId, profileReqRes.getMonTurnoverList())) {
-						throw new LoansException("Mandatory field must not be null (** MonthNamne and TurnOver ** )");
-					}
-					logger.info("Sucessfully save MonthlyTurnoverDetailList  =============> ");
-				}
-				/*if(!CommonUtils.isListNullOrEmpty(profileReqRes.getOwnerShipDetailsList())) {
-					saveOwnershipDetail(applicationId, profileReqRes.getOwnerShipDetailsList());
-					logger.info("Sucessfully save OwnershipDetailList  =============> ");
-				}*/
-				if(!CommonUtils.isListNullOrEmpty(profileReqRes.getPromotorBackgroundDetailRequestsList())) {
-					if(! savePromotorBackgroundDetail(applicationId,profileReqRes.getPromotorBackgroundDetailRequestsList())){
-						throw new LoansException("Mandsatory field must not be null ( ** salutationId , name , panNo , designation , address , mobileNO , dob , totalExperience and networth ** )"); 
-					}
-					logger.info("Sucessfully save PromotorBackgroundDetail =============> ");
-				}
-				if(!CommonUtils.isListNullOrEmpty(profileReqRes.getProposedProdList())) {
-					if(!saveProposedProductDetail(applicationId, profileReqRes.getProposedProdList())) {
-						throw new LoansException("Mandsatory field must not be null ( ** product/proposed and application ** )"); 
-					}
-					logger.info("Sucessfully save ProposedProductDetailList  =============> ");
-				}
-				if(!CommonUtils.isListNullOrEmpty(profileReqRes.getCostOfProjectRequestsList())) {
-					saveTotalCostOfProject(applicationId ,profileReqRes.getCostOfProjectRequestsList());
-					logger.info("Sucessfully save TotalCostOfProjectList  =============> ");
-				}
-				if(!CommonUtils.isListNullOrEmpty(profileReqRes.getSecurityCorporateDetailRequestsList())) {
-					saveSecurityCorporateDetail(applicationId ,profileReqRes.getSecurityCorporateDetailRequestsList());
-					logger.info("Sucessfully save SecurityCorporateDetailList  =============> ");
-				}
+	public String saveDetailedInfo(ProfileReqRes profileReqRes) throws LoansException, Exception {
+		logger.info("================== Enter in saveDetailedInfo =============== ");
+		Long applicationId = null;
+		CorporateProfileRequest corporateProfileRequest = profileReqRes.getCorporateProfileRequest();
+
+		if (!CommonUtils.isObjectListNull(corporateProfileRequest, corporateProfileRequest.getApplicationId(),
+				corporateProfileRequest.getUdhyogAdhaar(), corporateProfileRequest.getAdministrativeAddress(),
+				corporateProfileRequest.getAdministrativeAddress().getCityId(),
+				corporateProfileRequest.getAdministrativeAddress().getStateId(),
+				corporateProfileRequest.getAdministrativeAddress().getCountryId(),
+				corporateProfileRequest.getAdministrativeAddress().getPincode(),
+				corporateProfileRequest.getContLiabilityFyAmt(), corporateProfileRequest.getContLiabilitySyAmt(),
+				corporateProfileRequest.getContLiabilityTyAmt())) {
+			throw new Exception(
+					"Mandatory field must not be null (** applicationId , udhyogAddhar , city , state , country , pincode , ContLiabilityFyAmt ,  ContLiabilitySyAmt ,  ContLiabilityTyAmt ** ) ");
+		}
+		applicationId = saveCorporateProfile(profileReqRes.getCorporateProfileRequest());
+		if (CommonUtils.isObjectListNull(applicationId)) {
+			throw new LoansException("Invalid applicationId");
+		}
+		logger.info("Sucessfully save CorporateProfile =============> ");
+		if (!CommonUtils.isListNullOrEmpty(profileReqRes.getAchievementList())) {
+			saveAchivementDetail(applicationId, profileReqRes.getAchievementList());
+			logger.info("Sucessfully save AchivementDetail =============> ");
+		}
+
+		if (!CommonUtils.isListNullOrEmpty(profileReqRes.getAssociateConcernList())) {
+			saveAssociatedConcernDetail(applicationId, profileReqRes.getAssociateConcernList());
+			logger.info("Sucessfully save AssociatedConcernDetailList =============> ");
+		}
+
+		if (!CommonUtils.isListNullOrEmpty(profileReqRes.getCreditRatingOrgList())) {
+			saveCreditRatingOrganizationDetail(applicationId, profileReqRes.getCreditRatingOrgList());
+			logger.info("Sucessfully save CreditRatingOrganizationDetailList =============> ");
+		}
+
+		if (!CommonUtils.isListNullOrEmpty(profileReqRes.getFinanceMeansDetailRequestsList())) {
+			saveFinanceMeansDetail(applicationId, profileReqRes.getFinanceMeansDetailRequestsList());
+			logger.info("Sucessfully save FinanceMeansDetailRequestsList =============> ");
+		}
+		if (!CommonUtils.isListNullOrEmpty(profileReqRes.getExPrList())) {
+			if (!saveExistingProductDetail(applicationId, profileReqRes.getExPrList())) {
+				throw new LoansException("Mandatory field must not be null ( ** Product and Application ** )");
+			}
+			logger.info("Sucessfully save ExistingProductDetailList =============> ");
+		}
+		if (!CommonUtils.isListNullOrEmpty(profileReqRes.getGuaCorpList())) {
+			saveGuarantorsCorporateDetail(applicationId, profileReqRes.getGuaDetailList());
+			logger.info("Sucessfully save GuarantorsCorporateDetailList  =============> ");
+		}
+		if (!CommonUtils.isListNullOrEmpty(profileReqRes.getMonTurnoverList())) {
+			if (!saveMonthlyTurnoverDetail(applicationId, profileReqRes.getMonTurnoverList())) {
+				throw new LoansException("Mandatory field must not be null (** MonthNamne and TurnOver ** )");
+			}
+			logger.info("Sucessfully save MonthlyTurnoverDetailList  =============> ");
+		}
+		/*
+		 * if(!CommonUtils.isListNullOrEmpty(profileReqRes.
+		 * getOwnerShipDetailsList())) { saveOwnershipDetail(applicationId,
+		 * profileReqRes.getOwnerShipDetailsList());
+		 * logger.info("Sucessfully save OwnershipDetailList  =============> ");
+		 * }
+		 */
+		if (!CommonUtils.isListNullOrEmpty(profileReqRes.getPromotorBackgroundDetailRequestsList())) {
+			if (!savePromotorBackgroundDetail(applicationId, profileReqRes.getPromotorBackgroundDetailRequestsList())) {
+				throw new LoansException(
+						"Mandsatory field must not be null ( ** salutationId , name , panNo , designation , address , mobileNO , dob , totalExperience and networth ** )");
+			}
+			logger.info("Sucessfully save PromotorBackgroundDetail =============> ");
+		}
+		if (!CommonUtils.isListNullOrEmpty(profileReqRes.getProposedProdList())) {
+			if (!saveProposedProductDetail(applicationId, profileReqRes.getProposedProdList())) {
+				throw new LoansException(
+						"Mandsatory field must not be null ( ** product/proposed and application ** )");
+			}
+			logger.info("Sucessfully save ProposedProductDetailList  =============> ");
+		}
+		if (!CommonUtils.isListNullOrEmpty(profileReqRes.getCostOfProjectRequestsList())) {
+			saveTotalCostOfProject(applicationId, profileReqRes.getCostOfProjectRequestsList());
+			logger.info("Sucessfully save TotalCostOfProjectList  =============> ");
+		}
+		if (!CommonUtils.isListNullOrEmpty(profileReqRes.getSecurityCorporateDetailRequestsList())) {
+			saveSecurityCorporateDetail(applicationId, profileReqRes.getSecurityCorporateDetailRequestsList());
+			logger.info("Sucessfully save SecurityCorporateDetailList  =============> ");
+		}
 		logger.info("=============== Exit from saveDetailedInfo ============== ");
-		
+
 		return "Sucess";
 	}
-	
+
 	public Long saveCorporateProfile(CorporateProfileRequest corporateProfileRequest) {
-		
-		CorporateApplicantDetail  corporateApplicantDetail = corporateApplicantDetailRepository.getByApplicationIdAndIsAtive(corporateProfileRequest.getApplicationId());
-		if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail )){
+
+		CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
+				.getByApplicationIdAndIsAtive(corporateProfileRequest.getApplicationId());
+		if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail)) {
 			corporateApplicantDetail.setAadhar(corporateProfileRequest.getUdhyogAdhaar());
 			corporateApplicantDetail.setAboutUs(corporateProfileRequest.getAbout());
-			
-			corporateApplicantDetail.setAdministrativePremiseNumber(corporateProfileRequest.getAdministrativeAddress().getPremiseNumber());
-			corporateApplicantDetail.setAdministrativeStreetName(corporateProfileRequest.getAdministrativeAddress().getStreetName());
-			corporateApplicantDetail.setAdministrativeLandMark(corporateProfileRequest.getAdministrativeAddress().getLandMark());
-			corporateApplicantDetail.setAdministrativeCityId(corporateProfileRequest.getAdministrativeAddress().getCityId() );
-			corporateApplicantDetail.setAdministrativeStateId(corporateProfileRequest.getAdministrativeAddress().getStateId());
-			corporateApplicantDetail.setAdministrativeCountryId(corporateProfileRequest.getAdministrativeAddress().getCountryId());
-			corporateApplicantDetail.setAdministrativePincode(corporateProfileRequest.getAdministrativeAddress().getPinCode());
+
+			corporateApplicantDetail.setAdministrativePremiseNumber(
+					corporateProfileRequest.getAdministrativeAddress().getPremiseNumber());
+			corporateApplicantDetail
+					.setAdministrativeStreetName(corporateProfileRequest.getAdministrativeAddress().getStreetName());
+			corporateApplicantDetail
+					.setAdministrativeLandMark(corporateProfileRequest.getAdministrativeAddress().getLandMark());
+			corporateApplicantDetail
+					.setAdministrativeCityId(corporateProfileRequest.getAdministrativeAddress().getCityId());
+			corporateApplicantDetail
+					.setAdministrativeStateId(corporateProfileRequest.getAdministrativeAddress().getStateId());
+			corporateApplicantDetail
+					.setAdministrativeCountryId(corporateProfileRequest.getAdministrativeAddress().getCountryId());
+			corporateApplicantDetail
+					.setAdministrativePincode(corporateProfileRequest.getAdministrativeAddress().getPinCode());
 			corporateApplicantDetail.setContLiabilityFyAmt(corporateProfileRequest.getContLiabilityFyAmt());
 			corporateApplicantDetail.setContLiabilitySyAmt(corporateProfileRequest.getContLiabilitySyAmt());
 			corporateApplicantDetail.setContLiabilityTyAmt(corporateProfileRequest.getContLiabilityTyAmt());
-			
+
 			corporateApplicantDetail.setModifiedBy(corporateProfileRequest.getApplicationId());
-			corporateApplicantDetail.setModifiedDate( new Date());
+			corporateApplicantDetail.setModifiedDate(new Date());
 			corporateApplicantDetail.setIsActive(true);
 			return corporateApplicantDetailRepository.save(corporateApplicantDetail).getApplicationId().getId();
 		}
 		return null;
-		
+
 	}
-	
-	public Boolean saveAchivementDetail(Long applicationId,List<AchievementDetailRequest> achievementList) {
-		AchievementDetail achievementDetail =null;
+
+	public Boolean saveAchivementDetail(Long applicationId, List<AchievementDetailRequest> achievementList) {
+		AchievementDetail achievementDetail = null;
 		try {
 			achievementDetailsRepository.inActive(null, applicationId);
-		for (AchievementDetailRequest achievementDetailRequest : achievementList) {
-			achievementDetail= new AchievementDetail();
-			
-			achievementDetail.setMilestoneAchievedDetail(achievementDetailRequest.getMilestoneAchievedDetail());
-			achievementDetail.setYear(achievementDetailRequest.getYear());
-			
-			achievementDetail.setCreatedBy(applicationId);
-			achievementDetail.setCreatedDate(new Date());
-			achievementDetail.setModifiedBy(applicationId);
-			achievementDetail.setModifiedDate(new Date());
-			achievementDetail.setIsActive(true);
-			achievementDetailsRepository.save(achievementDetail);
-		}
-		return true;
-		}catch (Exception e) {
+			for (AchievementDetailRequest achievementDetailRequest : achievementList) {
+				achievementDetail = new AchievementDetail();
+
+				achievementDetail.setMilestoneAchievedDetail(achievementDetailRequest.getMilestoneAchievedDetail());
+				achievementDetail.setYear(achievementDetailRequest.getYear());
+
+				achievementDetail.setCreatedBy(applicationId);
+				achievementDetail.setCreatedDate(new Date());
+				achievementDetail.setModifiedBy(applicationId);
+				achievementDetail.setModifiedDate(new Date());
+				achievementDetail.setIsActive(true);
+				achievementDetailsRepository.save(achievementDetail);
+			}
+			return true;
+		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
 		}
 	}
 
-	public Boolean saveAssociatedConcernDetail(Long applicationId,List<AssociatedConcernDetailRequest> associateConcernList) {
-		AssociatedConcernDetail associatedConcernDetail=null;
+	public Boolean saveAssociatedConcernDetail(Long applicationId,
+			List<AssociatedConcernDetailRequest> associateConcernList) {
+		AssociatedConcernDetail associatedConcernDetail = null;
 		try {
 			associatedConcernDetailRepository.inActive(null, applicationId);
 			for (AssociatedConcernDetailRequest associatedConcernDetailRequest : associateConcernList) {
-				associatedConcernDetail =new AssociatedConcernDetail();
-				
+				associatedConcernDetail = new AssociatedConcernDetail();
+
 				associatedConcernDetail.setName(associatedConcernDetailRequest.getName());
 				associatedConcernDetail.setNatureAssociation(associatedConcernDetailRequest.getNatureAssociation());
-				associatedConcernDetail.setNameOfDirector(associatedConcernDetailRequest.getNameOfDirector() );
+				associatedConcernDetail.setNameOfDirector(associatedConcernDetailRequest.getNameOfDirector());
 				associatedConcernDetail.setInvestedAmount(associatedConcernDetailRequest.getInvestedAmount());
-				associatedConcernDetail.setNatureActivity(associatedConcernDetailRequest.getNatureActivity() );
+				associatedConcernDetail.setNatureActivity(associatedConcernDetailRequest.getNatureActivity());
 				associatedConcernDetail.setTurnOverFirstYear(associatedConcernDetailRequest.getTurnOverFirstYear());
 				associatedConcernDetail.setTurnOverSecondYear(associatedConcernDetailRequest.getTurnOverSecondYear());
 				associatedConcernDetail.setTurnOverThirdYear(associatedConcernDetailRequest.getTurnOverThirdYear());
@@ -7171,67 +8096,73 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 				associatedConcernDetail.setProfitPastThreeYear(associatedConcernDetailRequest.getProfitPastThreeYear());
 				associatedConcernDetail.setBriefDescription(associatedConcernDetailRequest.getBriefDescription());
 				associatedConcernDetail.setApplicationId(new LoanApplicationMaster(applicationId));
-				
+
 				associatedConcernDetail.setCreatedBy(applicationId);
-				associatedConcernDetail.setCreatedDate(new Date()); 
+				associatedConcernDetail.setCreatedDate(new Date());
 				associatedConcernDetail.setModifiedBy(applicationId);
-				associatedConcernDetail.setModifiedDate( new Date());
+				associatedConcernDetail.setModifiedDate(new Date());
 				associatedConcernDetail.setIsActive(true);
 				associatedConcernDetailRepository.save(associatedConcernDetail);
 			}
 			return true;
-		}catch (Exception e) {
-		e.printStackTrace();
-		return false;
-		}
-	}
-
-	public Boolean saveCreditRatingOrganizationDetail(Long applicationId, List<CreditRatingOrganizationDetailRequest> creditRatingOrgList) {
-		CreditRatingOrganizationDetail  creditRatingOrganizationDetail = null; 
-		try {
-			creditRatingOrganizationDetailsRepository.inActive(null, applicationId);
-		for (CreditRatingOrganizationDetailRequest creditRatingOrganizationDetailRequest : creditRatingOrgList) {
-			creditRatingOrganizationDetail =new CreditRatingOrganizationDetail();
-			
-			creditRatingOrganizationDetail.setRatingDate(creditRatingOrganizationDetailRequest.getRatingDate());
-			creditRatingOrganizationDetail.setRatingAgencyId(creditRatingOrganizationDetailRequest.getRatingAgencyId());
-			creditRatingOrganizationDetail.setFacilityName(creditRatingOrganizationDetailRequest.getFacilityName());
-			creditRatingOrganizationDetail.setCreditRatingFundId(creditRatingOrganizationDetailRequest.getCreditRatingFundId()); 
-			creditRatingOrganizationDetail.setCreditRatingTermId(creditRatingOrganizationDetailRequest.getCreditRatingTermId()); 
-			creditRatingOrganizationDetail.setAmount(creditRatingOrganizationDetailRequest.getAmount());
-			creditRatingOrganizationDetail.setCreditRatingOptionId(creditRatingOrganizationDetailRequest.getCreditRatingOptionId()); 
-			
-			creditRatingOrganizationDetail.setCreatedBy(applicationId);
-			creditRatingOrganizationDetail.setCreatedDate(new Date());
-			creditRatingOrganizationDetail.setModifiedBy(applicationId);
-			creditRatingOrganizationDetail.setModifiedDate(new Date());
-			creditRatingOrganizationDetail.setIsActive(true);
-			creditRatingOrganizationDetailsRepository.save(creditRatingOrganizationDetail);
-		}
-		return true;
-		}catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
 		}
 	}
-	
-	public Boolean saveExistingProductDetail(Long applicationId,List<ExistingProductDetailRequest> exPrList) {
-		ExistingProductDetail existingProductDetail =null; 
-		if(CommonUtils.isObjectNullOrEmpty(exPrList.get(0))){
+
+	public Boolean saveCreditRatingOrganizationDetail(Long applicationId,
+			List<CreditRatingOrganizationDetailRequest> creditRatingOrgList) {
+		CreditRatingOrganizationDetail creditRatingOrganizationDetail = null;
+		try {
+			creditRatingOrganizationDetailsRepository.inActive(null, applicationId);
+			for (CreditRatingOrganizationDetailRequest creditRatingOrganizationDetailRequest : creditRatingOrgList) {
+				creditRatingOrganizationDetail = new CreditRatingOrganizationDetail();
+
+				creditRatingOrganizationDetail.setRatingDate(creditRatingOrganizationDetailRequest.getRatingDate());
+				creditRatingOrganizationDetail
+						.setRatingAgencyId(creditRatingOrganizationDetailRequest.getRatingAgencyId());
+				creditRatingOrganizationDetail.setFacilityName(creditRatingOrganizationDetailRequest.getFacilityName());
+				creditRatingOrganizationDetail
+						.setCreditRatingFundId(creditRatingOrganizationDetailRequest.getCreditRatingFundId());
+				creditRatingOrganizationDetail
+						.setCreditRatingTermId(creditRatingOrganizationDetailRequest.getCreditRatingTermId());
+				creditRatingOrganizationDetail.setAmount(creditRatingOrganizationDetailRequest.getAmount());
+				creditRatingOrganizationDetail
+						.setCreditRatingOptionId(creditRatingOrganizationDetailRequest.getCreditRatingOptionId());
+
+				creditRatingOrganizationDetail.setCreatedBy(applicationId);
+				creditRatingOrganizationDetail.setCreatedDate(new Date());
+				creditRatingOrganizationDetail.setModifiedBy(applicationId);
+				creditRatingOrganizationDetail.setModifiedDate(new Date());
+				creditRatingOrganizationDetail.setIsActive(true);
+				creditRatingOrganizationDetailsRepository.save(creditRatingOrganizationDetail);
+			}
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+
+	public Boolean saveExistingProductDetail(Long applicationId, List<ExistingProductDetailRequest> exPrList) {
+		ExistingProductDetail existingProductDetail = null;
+		if (CommonUtils.isObjectNullOrEmpty(exPrList.get(0))) {
 			return false;
 		}
 		existingProductDetailsRepository.inActive(null, applicationId);
 		for (ExistingProductDetailRequest existingProductDetailRequest : exPrList) {
-			if(CommonUtils.isObjectListNull(existingProductDetailRequest.getProduct() , existingProductDetailRequest.getApplication())) {
+			if (CommonUtils.isObjectListNull(existingProductDetailRequest.getProduct(),
+					existingProductDetailRequest.getApplication())) {
 				return false;
 			}
 
-			existingProductDetail =new ExistingProductDetail();
-			
+			existingProductDetail = new ExistingProductDetail();
+
 			existingProductDetail.setProduct(existingProductDetailRequest.getProduct());
 			existingProductDetail.setApplication(existingProductDetailRequest.getApplication());
 			existingProductDetail.setApplicationId(new LoanApplicationMaster(applicationId));
-			
+
 			existingProductDetail.setCreatedBy(applicationId);
 			existingProductDetail.setCreatedDate(new Date());
 			existingProductDetail.setModifiedBy(applicationId);
@@ -7241,77 +8172,81 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 		}
 		return true;
 	}
-	
-	public Boolean saveFinanceMeansDetail(Long applicationId , List<FinanceMeansDetailRequest> financeMeansDetailRequestsList) {
-		FinanceMeansDetail financeMeansDetail =null; 
+
+	public Boolean saveFinanceMeansDetail(Long applicationId,
+			List<FinanceMeansDetailRequest> financeMeansDetailRequestsList) {
+		FinanceMeansDetail financeMeansDetail = null;
 		try {
 			financeMeansDetailRepository.inActive(null, applicationId);
-		for (FinanceMeansDetailRequest financeMeansDetailRequest : financeMeansDetailRequestsList) {
-			financeMeansDetail =new FinanceMeansDetail();
-			
-			financeMeansDetail.setFinanceMeansCategoryId(financeMeansDetailRequest.getFinanceMeansCategoryId());
-			financeMeansDetail.setTotal(financeMeansDetailRequest.getTotal());
-			financeMeansDetail.setAlreadyInfused(financeMeansDetailRequest.getAlreadyInfused());
-			financeMeansDetail.setApplicationId(new LoanApplicationMaster(applicationId));
-			
-			financeMeansDetail.setCreatedBy(applicationId);
-			financeMeansDetail.setCreatedDate(new Date());
-			financeMeansDetail.setModifiedBy(applicationId );
-			financeMeansDetail.setModifiedDate(new Date());
-			financeMeansDetail.setIsActive(true);
-			financeMeansDetailRepository.save(financeMeansDetail);
-		}
-		return true;
-		}catch (Exception e) {
+			for (FinanceMeansDetailRequest financeMeansDetailRequest : financeMeansDetailRequestsList) {
+				financeMeansDetail = new FinanceMeansDetail();
+
+				financeMeansDetail.setFinanceMeansCategoryId(financeMeansDetailRequest.getFinanceMeansCategoryId());
+				financeMeansDetail.setTotal(financeMeansDetailRequest.getTotal());
+				financeMeansDetail.setAlreadyInfused(financeMeansDetailRequest.getAlreadyInfused());
+				financeMeansDetail.setApplicationId(new LoanApplicationMaster(applicationId));
+
+				financeMeansDetail.setCreatedBy(applicationId);
+				financeMeansDetail.setCreatedDate(new Date());
+				financeMeansDetail.setModifiedBy(applicationId);
+				financeMeansDetail.setModifiedDate(new Date());
+				financeMeansDetail.setIsActive(true);
+				financeMeansDetailRepository.save(financeMeansDetail);
+			}
+			return true;
+		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
 		}
 	}
-	
-	public Boolean saveGuarantorsCorporateDetail(Long applicationId , List<GuarantorsCorporateDetailRequest> guaCorpList) {
-		GuarantorsCorporateDetail guarantorsCorporateDetail= null;
+
+	public Boolean saveGuarantorsCorporateDetail(Long applicationId,
+			List<GuarantorsCorporateDetailRequest> guaCorpList) {
+		GuarantorsCorporateDetail guarantorsCorporateDetail = null;
 		try {
-			guarantorsCorporateDetailRepository.inActive(null, applicationId); 
-		for (GuarantorsCorporateDetailRequest guarantorsCorporateDetailRequest : guaCorpList) {
-			guarantorsCorporateDetail =new GuarantorsCorporateDetail();
-			
-			guarantorsCorporateDetail.setName(guarantorsCorporateDetailRequest.getName());
-			guarantorsCorporateDetail.setPropertiesOwned(guarantorsCorporateDetailRequest.getPropertiesOwned());
-			guarantorsCorporateDetail.setPropertyType(guarantorsCorporateDetailRequest.getValue());;
-			guarantorsCorporateDetail.setAddress(guarantorsCorporateDetailRequest.getAddress());
-			guarantorsCorporateDetail.setOccupation(guarantorsCorporateDetailRequest.getOccupation());
-			guarantorsCorporateDetail.setApplicationId(new LoanApplicationMaster(applicationId));
-			
-			guarantorsCorporateDetail.setCreatedBy(applicationId);
-			guarantorsCorporateDetail.setCreatedDate(new Date());
-			guarantorsCorporateDetail.setModifiedBy(applicationId);
-			guarantorsCorporateDetail.setModifiedDate(new Date());
-			guarantorsCorporateDetail.setIsActive(true);
-			guarantorsCorporateDetailRepository.save(guarantorsCorporateDetail);
-		}
-		return true;
-		}catch (Exception e) {
+			guarantorsCorporateDetailRepository.inActive(null, applicationId);
+			for (GuarantorsCorporateDetailRequest guarantorsCorporateDetailRequest : guaCorpList) {
+				guarantorsCorporateDetail = new GuarantorsCorporateDetail();
+
+				guarantorsCorporateDetail.setName(guarantorsCorporateDetailRequest.getName());
+				guarantorsCorporateDetail.setPropertiesOwned(guarantorsCorporateDetailRequest.getPropertiesOwned());
+				guarantorsCorporateDetail.setPropertyType(guarantorsCorporateDetailRequest.getValue());
+				;
+				guarantorsCorporateDetail.setAddress(guarantorsCorporateDetailRequest.getAddress());
+				guarantorsCorporateDetail.setOccupation(guarantorsCorporateDetailRequest.getOccupation());
+				guarantorsCorporateDetail.setApplicationId(new LoanApplicationMaster(applicationId));
+
+				guarantorsCorporateDetail.setCreatedBy(applicationId);
+				guarantorsCorporateDetail.setCreatedDate(new Date());
+				guarantorsCorporateDetail.setModifiedBy(applicationId);
+				guarantorsCorporateDetail.setModifiedDate(new Date());
+				guarantorsCorporateDetail.setIsActive(true);
+				guarantorsCorporateDetailRepository.save(guarantorsCorporateDetail);
+			}
+			return true;
+		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
 		}
 	}
-	
-	public Boolean saveMonthlyTurnoverDetail(Long applicationId , List<MonthlyTurnoverDetailRequest> monTurnoverList) {
-		MonthlyTurnoverDetail  monthlyTurnoverDetail =null;
-		if(CommonUtils.isObjectNullOrEmpty(monTurnoverList.get(0))) {
+
+	public Boolean saveMonthlyTurnoverDetail(Long applicationId, List<MonthlyTurnoverDetailRequest> monTurnoverList) {
+		MonthlyTurnoverDetail monthlyTurnoverDetail = null;
+		if (CommonUtils.isObjectNullOrEmpty(monTurnoverList.get(0))) {
 			return false;
 		}
 		monthlyTurnoverDetailRepository.inActive(null, applicationId);
 		for (MonthlyTurnoverDetailRequest monthlyTurnoverDetailRequest : monTurnoverList) {
-			if(CommonUtils.isObjectListNull(monthlyTurnoverDetailRequest.getMonthName() , monthlyTurnoverDetailRequest.getAmount())) {
+			if (CommonUtils.isObjectListNull(monthlyTurnoverDetailRequest.getMonthName(),
+					monthlyTurnoverDetailRequest.getAmount())) {
 				return false;
 			}
-			monthlyTurnoverDetail =new MonthlyTurnoverDetail();
-			
+			monthlyTurnoverDetail = new MonthlyTurnoverDetail();
+
 			monthlyTurnoverDetail.setMonthName(monthlyTurnoverDetailRequest.getMonthName());
 			monthlyTurnoverDetail.setAmount(monthlyTurnoverDetailRequest.getAmount());
 			monthlyTurnoverDetail.setApplicationId(new LoanApplicationMaster(applicationId));
-			
+
 			monthlyTurnoverDetail.setCreatedBy(applicationId);
 			monthlyTurnoverDetail.setCreatedDate(new Date());
 			monthlyTurnoverDetail.setModifiedBy(applicationId);
@@ -7321,42 +8256,50 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 		}
 		return true;
 	}
-	/*public Boolean saveOwnershipDetail(Long applicationId ,List<OwnershipDetailRequest> ownerShipDetailsList) {
-		OwnershipDetail ownershipDetail =null;
-		if(CommonUtils.isObjectNullOrEmpty(ownerShipDetailsList.get(0))) {
-			return false;
-		}
-		for (OwnershipDetailRequest ownershipDetailRequest : ownerShipDetailsList) {
-			if(true);
-			
-			ownershipDetail= new  OwnershipDetail();
-			
-			//ownershipDetail.setShareHoldingCategoryId(ownershipDetailRequest.getShareHoldingCategoryType());
-			ownershipDetail.setStackPercentage(ownershipDetailRequest.getStackPercentage());
-			ownershipDetail.setRemarks(ownershipDetailRequest.getRemarks());
-			ownershipDetail.setApplicationId(new LoanApplicationMaster(applicationId));
-			
-			ownershipDetail.setModifiedBy(ownershipDetailRequest.getApplicationId());
-			ownershipDetail.setModifiedDate(new Date());
-			ownershipDetail.setIsActive(true);
-			ownershipDetailsRepository.save(ownershipDetail);
-		}
-		return true;
-	}*/
-	
-	public Boolean savePromotorBackgroundDetail(Long applicationId, List<PromotorBackgroundDetailRequest> promotorBackgroundDetailRequestsList) {
-		PromotorBackgroundDetail  promotorBackgroundDetail=null;
-		if(CommonUtils.isObjectNullOrEmpty(promotorBackgroundDetailRequestsList.get(0))) {
+	/*
+	 * public Boolean saveOwnershipDetail(Long applicationId
+	 * ,List<OwnershipDetailRequest> ownerShipDetailsList) { OwnershipDetail
+	 * ownershipDetail =null;
+	 * if(CommonUtils.isObjectNullOrEmpty(ownerShipDetailsList.get(0))) { return
+	 * false; } for (OwnershipDetailRequest ownershipDetailRequest :
+	 * ownerShipDetailsList) { if(true);
+	 * 
+	 * ownershipDetail= new OwnershipDetail();
+	 * 
+	 * //ownershipDetail.setShareHoldingCategoryId(ownershipDetailRequest.
+	 * getShareHoldingCategoryType());
+	 * ownershipDetail.setStackPercentage(ownershipDetailRequest.
+	 * getStackPercentage());
+	 * ownershipDetail.setRemarks(ownershipDetailRequest.getRemarks());
+	 * ownershipDetail.setApplicationId(new
+	 * LoanApplicationMaster(applicationId));
+	 * 
+	 * ownershipDetail.setModifiedBy(ownershipDetailRequest.getApplicationId());
+	 * ownershipDetail.setModifiedDate(new Date());
+	 * ownershipDetail.setIsActive(true);
+	 * ownershipDetailsRepository.save(ownershipDetail); } return true; }
+	 */
+
+	public Boolean savePromotorBackgroundDetail(Long applicationId,
+			List<PromotorBackgroundDetailRequest> promotorBackgroundDetailRequestsList) {
+		PromotorBackgroundDetail promotorBackgroundDetail = null;
+		if (CommonUtils.isObjectNullOrEmpty(promotorBackgroundDetailRequestsList.get(0))) {
 			return false;
 		}
 		promotorBackgroundDetailsRepository.inActive(null, applicationId);
 		for (PromotorBackgroundDetailRequest promotorBackgroundDetailRequest : promotorBackgroundDetailRequestsList) {
-			if(CommonUtils.isObjectListNull(promotorBackgroundDetailRequest, promotorBackgroundDetailRequest.getSalutationId() , promotorBackgroundDetailRequest.getPromotorsName() , promotorBackgroundDetailRequest.getPanNo() , promotorBackgroundDetailRequest.getDesignation() ,promotorBackgroundDetailRequest.getAddress() , promotorBackgroundDetailRequest.getMobile() , promotorBackgroundDetailRequest.getDob() , promotorBackgroundDetailRequest.getTotalExperience() , promotorBackgroundDetailRequest.getNetworth())) {
+			if (CommonUtils.isObjectListNull(promotorBackgroundDetailRequest,
+					promotorBackgroundDetailRequest.getSalutationId(),
+					promotorBackgroundDetailRequest.getPromotorsName(), promotorBackgroundDetailRequest.getPanNo(),
+					promotorBackgroundDetailRequest.getDesignation(), promotorBackgroundDetailRequest.getAddress(),
+					promotorBackgroundDetailRequest.getMobile(), promotorBackgroundDetailRequest.getDob(),
+					promotorBackgroundDetailRequest.getTotalExperience(),
+					promotorBackgroundDetailRequest.getNetworth())) {
 				return false;
 			}
-			
-			promotorBackgroundDetail =new PromotorBackgroundDetail();
-			
+
+			promotorBackgroundDetail = new PromotorBackgroundDetail();
+
 			promotorBackgroundDetail.setSalutationId(promotorBackgroundDetailRequest.getSalutationId());
 			promotorBackgroundDetail.setPromotorsName(promotorBackgroundDetailRequest.getPromotorsName());
 			promotorBackgroundDetail.setPanNo(promotorBackgroundDetailRequest.getPanNo());
@@ -7368,146 +8311,151 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 			promotorBackgroundDetail.setTotalExperience(promotorBackgroundDetailRequest.getTotalExperience());
 			promotorBackgroundDetail.setNetworth(promotorBackgroundDetailRequest.getNetworth());
 			promotorBackgroundDetail.setApplicationId(new LoanApplicationMaster(applicationId));
-			
+
 			promotorBackgroundDetail.setCreatedBy(applicationId);
 			promotorBackgroundDetail.setCreatedDate(new Date());
 			promotorBackgroundDetail.setModifiedBy(promotorBackgroundDetailRequest.getApplicationId());
 			promotorBackgroundDetail.setModifiedDate(new Date());
 			promotorBackgroundDetail.setIsActive(true);
 			promotorBackgroundDetailsRepository.save(promotorBackgroundDetail);
-		} 
+		}
 		return true;
-		
+
 	}
-	
-	public Boolean saveProposedProductDetail(Long applicationId , List<ProposedProductDetailRequest> proposedProdList) {
-		ProposedProductDetail  proposedProductDetail= null;
-	
-		if(CommonUtils.isObjectNullOrEmpty(proposedProdList.get(0))) {
+
+	public Boolean saveProposedProductDetail(Long applicationId, List<ProposedProductDetailRequest> proposedProdList) {
+		ProposedProductDetail proposedProductDetail = null;
+
+		if (CommonUtils.isObjectNullOrEmpty(proposedProdList.get(0))) {
 			return false;
-		}	
-		proposedProductDetailsRepository.inActive(null, applicationId); 
+		}
+		proposedProductDetailsRepository.inActive(null, applicationId);
 		for (ProposedProductDetailRequest proposedProductDetailRequest : proposedProdList) {
-			if(CommonUtils.isObjectListNull(proposedProductDetailRequest.getProduct(), proposedProductDetailRequest.getApplication())) {
+			if (CommonUtils.isObjectListNull(proposedProductDetailRequest.getProduct(),
+					proposedProductDetailRequest.getApplication())) {
 				return false;
 			}
-			
-			proposedProductDetail =new ProposedProductDetail();
-			
+
+			proposedProductDetail = new ProposedProductDetail();
+
 			proposedProductDetail.setApplication(proposedProductDetailRequest.getApplication());
 			proposedProductDetail.setProduct(proposedProductDetailRequest.getProduct());
 			proposedProductDetail.setApplicationId(new LoanApplicationMaster(applicationId));
-			
+
 			proposedProductDetail.setCreatedBy(applicationId);
 			proposedProductDetail.setCreatedDate(new Date());
 			proposedProductDetail.setModifiedBy(proposedProductDetailRequest.getApplicationId());
 			proposedProductDetail.setModifiedDate(new Date());
 			proposedProductDetail.setIsActive(true);
-			proposedProductDetailsRepository.save(proposedProductDetail );
+			proposedProductDetailsRepository.save(proposedProductDetail);
 		}
 		return true;
 	}
-	
-	public Boolean saveTotalCostOfProject(Long applicationId , List<TotalCostOfProjectRequest> costOfProjectRequestsList) {
-		TotalCostOfProject totalCostOfProject =null;
+
+	public Boolean saveTotalCostOfProject(Long applicationId,
+			List<TotalCostOfProjectRequest> costOfProjectRequestsList) {
+		TotalCostOfProject totalCostOfProject = null;
 		try {
 			totalCostOfProjectRepository.inActive(null, applicationId);
-		for (TotalCostOfProjectRequest totalCostOfProjectRequest : costOfProjectRequestsList) {
-			totalCostOfProject =new TotalCostOfProject(); 
-		
-			totalCostOfProject.setAlreadyIncurred(totalCostOfProjectRequest.getAlreadyIncurred());
-			totalCostOfProject.setTotalCost(totalCostOfProjectRequest.getTotalCost());
-			totalCostOfProject.setParticularsId(totalCostOfProject.getParticularsId());
-			totalCostOfProject.setApplicationId(new LoanApplicationMaster(applicationId));
-			
-			totalCostOfProject.setCreatedBy(applicationId);
-			totalCostOfProject.setCreatedDate(new Date());
-			totalCostOfProject.setModifiedBy(applicationId);
-			totalCostOfProject.setModifiedDate(new Date());
-			totalCostOfProject.setIsActive(true);
-			totalCostOfProjectRepository.save(totalCostOfProject); 
-		}
-		return true;
-		}catch (Exception e) {
+			for (TotalCostOfProjectRequest totalCostOfProjectRequest : costOfProjectRequestsList) {
+				totalCostOfProject = new TotalCostOfProject();
+
+				totalCostOfProject.setAlreadyIncurred(totalCostOfProjectRequest.getAlreadyIncurred());
+				totalCostOfProject.setTotalCost(totalCostOfProjectRequest.getTotalCost());
+				totalCostOfProject.setParticularsId(totalCostOfProject.getParticularsId());
+				totalCostOfProject.setApplicationId(new LoanApplicationMaster(applicationId));
+
+				totalCostOfProject.setCreatedBy(applicationId);
+				totalCostOfProject.setCreatedDate(new Date());
+				totalCostOfProject.setModifiedBy(applicationId);
+				totalCostOfProject.setModifiedDate(new Date());
+				totalCostOfProject.setIsActive(true);
+				totalCostOfProjectRepository.save(totalCostOfProject);
+			}
+			return true;
+		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
 		}
 	}
-	
-	public Boolean saveSecurityCorporateDetail(Long applicationId, List<SecurityCorporateDetailRequest> securityCorporateDetailRequestsList) {
-		SecurityCorporateDetail  securityCorporateDetail =null;
+
+	public Boolean saveSecurityCorporateDetail(Long applicationId,
+			List<SecurityCorporateDetailRequest> securityCorporateDetailRequestsList) {
+		SecurityCorporateDetail securityCorporateDetail = null;
 		try {
 			securityCorporateDetailsRepository.inActive(null, applicationId);
-		for (SecurityCorporateDetailRequest securityCorporateDetailRequest : securityCorporateDetailRequestsList) {
-			securityCorporateDetail= new SecurityCorporateDetail();
+			for (SecurityCorporateDetailRequest securityCorporateDetailRequest : securityCorporateDetailRequestsList) {
+				securityCorporateDetail = new SecurityCorporateDetail();
 
-			securityCorporateDetail.setPrimarySecurityName(securityCorporateDetailRequest.getPrimarySecurityName());
-			securityCorporateDetail.setAmount(securityCorporateDetailRequest.getAmount());
-			securityCorporateDetail.setApplicationId( new LoanApplicationMaster(applicationId));
-			
-			securityCorporateDetail.setCreatedBy(applicationId);
-			securityCorporateDetail.setCreatedDate(new Date());
-			securityCorporateDetail.setModifiedBy(applicationId);
-			securityCorporateDetail.setModifiedDate(new Date());
-			securityCorporateDetail.setIsActive(true);
-			securityCorporateDetailsRepository.save(securityCorporateDetail);
-		}
-		return true;
-		}catch (Exception e) {
+				securityCorporateDetail.setPrimarySecurityName(securityCorporateDetailRequest.getPrimarySecurityName());
+				securityCorporateDetail.setAmount(securityCorporateDetailRequest.getAmount());
+				securityCorporateDetail.setApplicationId(new LoanApplicationMaster(applicationId));
+
+				securityCorporateDetail.setCreatedBy(applicationId);
+				securityCorporateDetail.setCreatedDate(new Date());
+				securityCorporateDetail.setModifiedBy(applicationId);
+				securityCorporateDetail.setModifiedDate(new Date());
+				securityCorporateDetail.setIsActive(true);
+				securityCorporateDetailsRepository.save(securityCorporateDetail);
+			}
+			return true;
+		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
 		}
 	}
-	
-	/*@Override
-	public Boolean updatePaymentStatusForMobile(PaymentRequest paymentRequest) {
-		
-		Boolean updatePayment=false;
-		
-		GatewayRequest gatewayRequest = new GatewayRequest();
-		gatewayRequest.setApplicationId(paymentRequest.getApplicationId());
-		gatewayRequest.setUserId(paymentRequest.getUserId());
-		gatewayRequest.setStatus(paymentRequest.getStatus());
-		gatewayRequest.setTxnId(paymentRequest.getTrxnId());
 
-		
-		try {
-			updatePayment = gatewayClient.updatePayment(gatewayRequest);
-		} catch (Exception e) {
-			logger.info("THROW EXCEPTION WHILE UPDATE PAYMENT ON GATEWAY CLIENT");
-			e.printStackTrace();
-		}
-		
-		return updatePayment;
-	}*/
+	/*
+	 * @Override public Boolean updatePaymentStatusForMobile(PaymentRequest
+	 * paymentRequest) {
+	 * 
+	 * Boolean updatePayment=false;
+	 * 
+	 * GatewayRequest gatewayRequest = new GatewayRequest();
+	 * gatewayRequest.setApplicationId(paymentRequest.getApplicationId());
+	 * gatewayRequest.setUserId(paymentRequest.getUserId());
+	 * gatewayRequest.setStatus(paymentRequest.getStatus());
+	 * gatewayRequest.setTxnId(paymentRequest.getTrxnId());
+	 * 
+	 * 
+	 * try { updatePayment = gatewayClient.updatePayment(gatewayRequest); }
+	 * catch (Exception e) {
+	 * logger.info("THROW EXCEPTION WHILE UPDATE PAYMENT ON GATEWAY CLIENT");
+	 * e.printStackTrace(); }
+	 * 
+	 * return updatePayment; }
+	 */
 
 	public void setTokenAsExpired(GenerateTokenRequest generateTokenRequest) {
-		logger.info("Start expiring Token in setTokenAsExpired(){} ------------- generateTokenRequest "+ generateTokenRequest ); 
+		logger.info("Start expiring Token in setTokenAsExpired(){} ------------- generateTokenRequest "
+				+ generateTokenRequest);
 		try {
 			sidbiIntegrationClient.setTokenAsExpired(generateTokenRequest);
 		} catch (Exception e) {
-			logger.info("Exception while set token as  expiring Token ------------- Msg "+e.getMessage());
+			logger.info("Exception while set token as  expiring Token ------------- Msg " + e.getMessage());
 			e.printStackTrace();
-			
+
 		}
 		logger.info("End expiring Token setTokenAsExpired(){} -------------");
-		
+
 	}
-	
-	public List<TotalCostOfProjectRequest> getTotalCostOfProjectRequestsList(Long applicationId, Long userId){
-		List<TotalCostOfProject> totalCostOfProjectsList= totalCostOfProjectRepository.listCostOfProjectFromAppId(applicationId, userId);
-				
-		if(CommonUtils.isListNullOrEmpty(totalCostOfProjectsList)) {
-			logger.warn("No totalCostOfProjectsList Found for Application Id ==>{}",applicationId);
+
+	public List<TotalCostOfProjectRequest> getTotalCostOfProjectRequestsList(Long applicationId, Long userId) {
+		List<TotalCostOfProject> totalCostOfProjectsList = totalCostOfProjectRepository
+				.listCostOfProjectFromAppId(applicationId, userId);
+
+		if (CommonUtils.isListNullOrEmpty(totalCostOfProjectsList)) {
+			logger.warn("No totalCostOfProjectsList Found for Application Id ==>{}", applicationId);
 			return Collections.emptyList();
-		}else {
-			List<TotalCostOfProjectRequest> totalCostOfProjectRequestsList = new ArrayList<>(totalCostOfProjectsList.size());
-			TotalCostOfProjectRequest target =null;
-			for(TotalCostOfProject totalCostOfProject : totalCostOfProjectsList) {
+		} else {
+			List<TotalCostOfProjectRequest> totalCostOfProjectRequestsList = new ArrayList<>(
+					totalCostOfProjectsList.size());
+			TotalCostOfProjectRequest target = null;
+			for (TotalCostOfProject totalCostOfProject : totalCostOfProjectsList) {
 				target = new TotalCostOfProjectRequest();
 				target.setAlreadyIncurred(totalCostOfProject.getAlreadyIncurred());
 				target.setApplicationId(applicationId);
-				if(totalCostOfProject.getParticularsId()!= null) {
+				if (totalCostOfProject.getParticularsId() != null) {
 					target.setParticulars(Particular.getById(totalCostOfProject.getParticularsId()).getValue());
 				}
 				target.setToBeIncurred(totalCostOfProject.getToBeIncurred());
@@ -7516,24 +8464,28 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 				totalCostOfProjectRequestsList.add(target);
 			}
 			return totalCostOfProjectRequestsList;
-		}	
+		}
 	}
-	
-	public List<FinanceMeansDetailRequest> getFinanceMeansDetailRequestList(Long applicationId, Long userId){
-		List<FinanceMeansDetail> financeMeansDetailsList=  financeMeansDetailRepository.listFinanceMeansFromAppId(applicationId, userId);
-				
-		if(CommonUtils.isListNullOrEmpty(financeMeansDetailsList)) {
-			logger.warn("No FinanceMeansDetailList Found for Application Id ==>{} ",applicationId +  " userId==>{} ",userId);
+
+	public List<FinanceMeansDetailRequest> getFinanceMeansDetailRequestList(Long applicationId, Long userId) {
+		List<FinanceMeansDetail> financeMeansDetailsList = financeMeansDetailRepository
+				.listFinanceMeansFromAppId(applicationId, userId);
+
+		if (CommonUtils.isListNullOrEmpty(financeMeansDetailsList)) {
+			logger.warn("No FinanceMeansDetailList Found for Application Id ==>{} ", applicationId + " userId==>{} ",
+					userId);
 			return Collections.emptyList();
-		}else {
-			List<FinanceMeansDetailRequest> financeMeansDetailRequestList = new ArrayList<>(financeMeansDetailsList.size());
-			FinanceMeansDetailRequest target =null;
-			for(FinanceMeansDetail financeMeansDetail : financeMeansDetailsList) {
+		} else {
+			List<FinanceMeansDetailRequest> financeMeansDetailRequestList = new ArrayList<>(
+					financeMeansDetailsList.size());
+			FinanceMeansDetailRequest target = null;
+			for (FinanceMeansDetail financeMeansDetail : financeMeansDetailsList) {
 				target = new FinanceMeansDetailRequest();
 				target.setAlreadyInfused(financeMeansDetail.getAlreadyInfused());
 				target.setApplicationId(applicationId);
-				if(financeMeansDetail.getFinanceMeansCategoryId()!=null) {
-					target.setFinanceMeansCategory(FinanceCategory.getById(financeMeansDetail.getFinanceMeansCategoryId().intValue()).getValue());
+				if (financeMeansDetail.getFinanceMeansCategoryId() != null) {
+					target.setFinanceMeansCategory(FinanceCategory
+							.getById(financeMeansDetail.getFinanceMeansCategoryId().intValue()).getValue());
 				}
 				target.setToBeIncurred(financeMeansDetail.getToBeIncurred());
 				target.setTotal(financeMeansDetail.getTotal());
@@ -7541,19 +8493,21 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 				financeMeansDetailRequestList.add(target);
 			}
 			return financeMeansDetailRequestList;
-		}	
+		}
 	}
-	
-	public List<SecurityCorporateDetailRequest> getSecurityCorporateDetailRequestList(Long applicationId, Long userId){
-		List<SecurityCorporateDetail> securityCorporateDetailList= securityCorporateDetailsRepository.listSecurityCorporateDetailFromAppId(applicationId, userId);
-				
-		if(CommonUtils.isListNullOrEmpty(securityCorporateDetailList)) {
-			logger.warn("No SecurityCorporateDetailList Found for Application Id ==>{}",applicationId);
+
+	public List<SecurityCorporateDetailRequest> getSecurityCorporateDetailRequestList(Long applicationId, Long userId) {
+		List<SecurityCorporateDetail> securityCorporateDetailList = securityCorporateDetailsRepository
+				.listSecurityCorporateDetailFromAppId(applicationId, userId);
+
+		if (CommonUtils.isListNullOrEmpty(securityCorporateDetailList)) {
+			logger.warn("No SecurityCorporateDetailList Found for Application Id ==>{}", applicationId);
 			return Collections.emptyList();
-		}else {
-			List<SecurityCorporateDetailRequest> securityCorporateDetailRequestList = new ArrayList<>(securityCorporateDetailList.size());
-			SecurityCorporateDetailRequest target =null;
-			for(SecurityCorporateDetail securityCorporateDetail : securityCorporateDetailList) {
+		} else {
+			List<SecurityCorporateDetailRequest> securityCorporateDetailRequestList = new ArrayList<>(
+					securityCorporateDetailList.size());
+			SecurityCorporateDetailRequest target = null;
+			for (SecurityCorporateDetail securityCorporateDetail : securityCorporateDetailList) {
 				target = new SecurityCorporateDetailRequest();
 				target.setAmount(securityCorporateDetail.getAmount());
 				target.setPrimarySecurityName(securityCorporateDetail.getPrimarySecurityName());
@@ -7562,9 +8516,9 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 				securityCorporateDetailRequestList.add(target);
 			}
 			return securityCorporateDetailRequestList;
-		}	
+		}
 	}
-	
+
 	public CMARequest getCMADetailOfAuditYears(Long applicationId) {
 		logger.info("================ Enter in getCMADetailOfAuditYears() ===========");
 		Calendar calendar = Calendar.getInstance();
@@ -7576,7 +8530,8 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 		yearList.add(--fromYear + "");
 		yearList.add(--fromYear + "");
 		yearList.add(--fromYear + "");
-		List<OperatingStatementDetails> operatingStatementDetailsList = operatingStatementDetailsRepository.getOperatingStatementDetailsByApplicationId(applicationId,yearList, "Audited");
+		List<OperatingStatementDetails> operatingStatementDetailsList = operatingStatementDetailsRepository
+				.getOperatingStatementDetailsByApplicationId(applicationId, yearList, "Audited");
 		List<OperatingStatementDetailsRequest> operatingStatementDetailsRequestsList = new ArrayList<OperatingStatementDetailsRequest>();
 		OperatingStatementDetailsRequest operatingStatementDetailsRequest = null;
 		for (OperatingStatementDetails operatingStatementDetails : operatingStatementDetailsList) {
@@ -7584,17 +8539,19 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 			BeanUtils.copyProperties(operatingStatementDetails, operatingStatementDetailsRequest, "id");
 			operatingStatementDetailsRequestsList.add(operatingStatementDetailsRequest);
 		}
-		
-		List<LiabilitiesDetails> liabilitiesDetailsList = liabilitiesDetailsRepository.getLiabilitiesDetailsByApplicationId(applicationId, yearList,"Audited");
-		List<LiabilitiesDetailsRequest > liabilitiesDetailsRequestsList = new ArrayList<LiabilitiesDetailsRequest>();
+
+		List<LiabilitiesDetails> liabilitiesDetailsList = liabilitiesDetailsRepository
+				.getLiabilitiesDetailsByApplicationId(applicationId, yearList, "Audited");
+		List<LiabilitiesDetailsRequest> liabilitiesDetailsRequestsList = new ArrayList<LiabilitiesDetailsRequest>();
 		LiabilitiesDetailsRequest liabilitiesDetailsRequest = null;
 		for (LiabilitiesDetails liabilitiesDetailsFrom : liabilitiesDetailsList) {
 			liabilitiesDetailsRequest = new LiabilitiesDetailsRequest();
 			BeanUtils.copyProperties(liabilitiesDetailsFrom, liabilitiesDetailsRequest, "id");
 			liabilitiesDetailsRequestsList.add(liabilitiesDetailsRequest);
-	
+
 		}
-		List<AssetsDetails> assetsDetailsList = assetsDetailsRepository.getAssetsDetailsByApplicationId(applicationId, yearList, "Audited");
+		List<AssetsDetails> assetsDetailsList = assetsDetailsRepository.getAssetsDetailsByApplicationId(applicationId,
+				yearList, "Audited");
 		List<AssetsDetailsRequest> assetsRequestList = new ArrayList<AssetsDetailsRequest>();
 		AssetsDetailsRequest assetsDetailsRequest = null;
 		for (AssetsDetails assetsDetails : assetsDetailsList) {
@@ -7602,7 +8559,7 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 			BeanUtils.copyProperties(assetsDetails, assetsDetailsRequest, "id");
 			assetsRequestList.add(assetsDetailsRequest);
 		}
-		
+
 		CMARequest cmaRequest = new CMARequest();
 		cmaRequest.setApplicationId(applicationId);
 		cmaRequest.setAssetsRequestList(assetsRequestList);
@@ -7610,24 +8567,21 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 		return cmaRequest;
 	}
 
-
 	@Override
 	public ScoringModelReqRes getMinMaxMarginByApplicationId(Long applicationId) {
 
 		try {
 
-			ScoringModelReqRes scoringModelReqRes=new ScoringModelReqRes();
-			List<BigInteger> fpProductList=loanApplicationRepository.getFpProductListByApplicationId(applicationId);
+			ScoringModelReqRes scoringModelReqRes = new ScoringModelReqRes();
+			List<BigInteger> fpProductList = loanApplicationRepository.getFpProductListByApplicationId(applicationId);
 
 			List<Long> scoringLongList = new ArrayList<Long>();
-			for(BigInteger i: fpProductList){
+			for (BigInteger i : fpProductList) {
 				scoringLongList.add(i.longValue());
 			}
 			scoringModelReqRes.setScoringModelIdList(scoringLongList);
-			return  scoringClient.getMinMaxMargin(scoringModelReqRes);
-		}
-		catch (Exception e)
-		{
+			return scoringClient.getMinMaxMargin(scoringModelReqRes);
+		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
 		}
