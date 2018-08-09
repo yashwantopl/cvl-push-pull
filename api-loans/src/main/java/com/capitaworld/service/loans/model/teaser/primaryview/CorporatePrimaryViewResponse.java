@@ -79,8 +79,12 @@ public class CorporatePrimaryViewResponse {
     private Object bankData;
     private Long assesmentId;
     private Object itrXmlIsUploaded;
-
-
+    private Object managementRiskMaxTotalScore;
+    private Object financialRiskMaxTotalScore;
+    private Object businessRiskMaxTotalScore;
+    private Object managementRiskWeightOfScoring;
+    private Object financialRiskWeightOfScoring;
+    private Object businessRiskWeightOfScoring;
     
     
 
@@ -689,6 +693,78 @@ public class CorporatePrimaryViewResponse {
 	 */
 	public void setItrXmlIsUploaded(Object itrXmlIsUploaded) {
 		this.itrXmlIsUploaded = itrXmlIsUploaded;
+	}
+	/**
+	 * @return the managementRiskMaxTotalScore
+	 */
+	public Object getManagementRiskMaxTotalScore() {
+		return managementRiskMaxTotalScore;
+	}
+	/**
+	 * @param managementRiskMaxTotalScore the managementRiskMaxTotalScore to set
+	 */
+	public void setManagementRiskMaxTotalScore(Object managementRiskMaxTotalScore) {
+		this.managementRiskMaxTotalScore = managementRiskMaxTotalScore;
+	}
+	/**
+	 * @return the financialRiskMaxTotalScore
+	 */
+	public Object getFinancialRiskMaxTotalScore() {
+		return financialRiskMaxTotalScore;
+	}
+	/**
+	 * @param financialRiskMaxTotalScore the financialRiskMaxTotalScore to set
+	 */
+	public void setFinancialRiskMaxTotalScore(Object financialRiskMaxTotalScore) {
+		this.financialRiskMaxTotalScore = financialRiskMaxTotalScore;
+	}
+	/**
+	 * @return the businessRiskMaxTotalScore
+	 */
+	public Object getBusinessRiskMaxTotalScore() {
+		return businessRiskMaxTotalScore;
+	}
+	/**
+	 * @param businessRiskMaxTotalScore the businessRiskMaxTotalScore to set
+	 */
+	public void setBusinessRiskMaxTotalScore(Object businessRiskMaxTotalScore) {
+		this.businessRiskMaxTotalScore = businessRiskMaxTotalScore;
+	}
+	/**
+	 * @return the managementRiskWeightOfScoring
+	 */
+	public Object getManagementRiskWeightOfScoring() {
+		return managementRiskWeightOfScoring;
+	}
+	/**
+	 * @param managementRiskWeightOfScoring the managementRiskWeightOfScoring to set
+	 */
+	public void setManagementRiskWeightOfScoring(Object managementRiskWeightOfScoring) {
+		this.managementRiskWeightOfScoring = managementRiskWeightOfScoring;
+	}
+	/**
+	 * @return the financialRiskWeightOfScoring
+	 */
+	public Object getFinancialRiskWeightOfScoring() {
+		return financialRiskWeightOfScoring;
+	}
+	/**
+	 * @param financialRiskWeightOfScoring the financialRiskWeightOfScoring to set
+	 */
+	public void setFinancialRiskWeightOfScoring(Object financialRiskWeightOfScoring) {
+		this.financialRiskWeightOfScoring = financialRiskWeightOfScoring;
+	}
+	/**
+	 * @return the businessRiskWeightOfScoring
+	 */
+	public Object getBusinessRiskWeightOfScoring() {
+		return businessRiskWeightOfScoring;
+	}
+	/**
+	 * @param businessRiskWeightOfScoring the businessRiskWeightOfScoring to set
+	 */
+	public void setBusinessRiskWeightOfScoring(Object businessRiskWeightOfScoring) {
+		this.businessRiskWeightOfScoring = businessRiskWeightOfScoring;
 	}
 	
     

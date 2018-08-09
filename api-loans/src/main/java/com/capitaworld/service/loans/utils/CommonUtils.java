@@ -453,12 +453,15 @@ public class CommonUtils {
 
 	public static List<String> urlsBrforeLogin = null;
 	static {
-		urlsBrforeLogin = new ArrayList<String>(3);
+		urlsBrforeLogin = new ArrayList<String>(8);
 		urlsBrforeLogin.add("/loans/loan_application/getUsersRegisteredLoanDetails");
 		urlsBrforeLogin.add("/loans/loan_application/getLoanDetailsForAdminPanel");
 		urlsBrforeLogin.add("/loans/corporate_upload/downloadCMAAndCoCMAExcelFile/**");
 		urlsBrforeLogin.add("/loans/loan_application/save_payment_info_for_mobile");
 		urlsBrforeLogin.add("/loans/loan_application/mobile/successUrl");
+		urlsBrforeLogin.add("/loans/loan_application/getToken");
+		urlsBrforeLogin.add("/loans/loan_application/saveLoanDisbursementDetail");
+		urlsBrforeLogin.add("/loans/loan_application/saveLoanSanctionDetail");
 		
 	}
 
@@ -1198,20 +1201,27 @@ public enum APIFlags {
 				escapeXml(setEntry.getValue());
 			}
 		}
-		Field[] fields = obj.getClass().getDeclaredFields();
-		for (Field field : fields) {
-			field.setAccessible(true);
-			Object value = field.get(obj);
-			if (value instanceof String) {
-				String value1 = (String) field.get(obj);
-				String a = StringEscapeUtils.escapeXml(value1.toString());
-				value = a;
-				field.set(obj, value);
-			}else {
-				continue;
+		if(obj!=null) {
+			Field[] fields = obj.getClass().getDeclaredFields();
+			for (Field field : fields) {
+				field.setAccessible(true);
+				Object value = field.get(obj);
+				if (value instanceof String) {
+					String value1 = (String) field.get(obj);
+					String a = StringEscapeUtils.escapeXml(value1.toString());
+					value = a;
+					field.set(obj, value);
+				}if(value instanceof Double) {
+					convertToDoubleForXml(value, null);
+				}
+				else {
+					continue;
+				}
 			}
 		}
 		return obj;
     }
+	
+	
 	
 }
