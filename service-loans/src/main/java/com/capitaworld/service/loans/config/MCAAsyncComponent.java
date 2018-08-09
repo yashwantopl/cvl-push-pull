@@ -43,8 +43,8 @@ public class MCAAsyncComponent {
 	 * @param applicationId
 	 * @param userId
 	 */
-	@Async
-	public void callMCA(String cin, Long applicationId, Long userId) throws Exception{
+	
+	private void callMCA(String cin, Long applicationId, Long userId) throws Exception{
 		try {
 		McaRequest request = new McaRequest();
 		
@@ -90,6 +90,16 @@ public class MCAAsyncComponent {
 		}
 		catch (Exception e) {
 			throw new Exception();
+		}
+	}
+	
+	@Async
+	public void callMCAForData(String cin, Long applicationId, Long userId) {
+		try {
+			callMCA(cin, applicationId, userId);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 
