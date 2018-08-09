@@ -33,6 +33,8 @@ import com.capitaworld.service.dms.model.DocumentResponse;
 import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.loans.domain.fundprovider.TermLoanParameter;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailResponse;
 import com.capitaworld.service.loans.model.corporate.CorporateDirectorIncomeRequest;
@@ -54,9 +56,12 @@ import com.capitaworld.service.matchengine.MatchEngineClient;
 import com.capitaworld.service.matchengine.model.MatchDisplayResponse;
 import com.capitaworld.service.matchengine.model.MatchRequest;
 import com.capitaworld.service.oneform.client.OneFormClient;
+import com.capitaworld.service.oneform.enums.Currency;
+import com.capitaworld.service.oneform.enums.Denomination;
+import com.capitaworld.service.oneform.enums.LoanType;
 import com.capitaworld.service.oneform.enums.ProposedConstitutionOfUnitNTB;
 import com.capitaworld.service.oneform.enums.ProposedDetailOfUnitNTB;
-import com.capitaworld.service.oneform.enums.ResidenceStatusRetailMst;
+import com.capitaworld.service.oneform.enums.PurposeOfLoan;
 import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
 import com.capitaworld.service.oneform.model.SectorIndustryModel;
@@ -166,12 +171,80 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService {
 				}
 			}
 		}
+
+		CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
+				.findOneByApplicationIdId(toApplicationId);
+		// set value of org name to response
+		if (corporateApplicantDetail != null) {
+			ntbPrimaryViewRespone.setOrganisationName(corporateApplicantDetail.getOrganisationName());
+		}
+
+		// Primary Details of applicant
+		try {
+			PrimaryCorporateDetail primaryCorporateDetail = primaryCorporateRepository
+					.findOneByApplicationIdId(toApplicationId);
+			if (primaryCorporateDetail != null) {
+
+				if (!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getCurrencyId())
+						&& !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getDenominationId())) {
+					ntbPrimaryViewRespone.setCurrencyDenomination(
+							Currency.getById(primaryCorporateDetail.getCurrencyId()).getValue() + " in "
+									+ Denomination.getById(primaryCorporateDetail.getDenominationId()).getValue());
+				}
+				ntbPrimaryViewRespone.setLoanType(primaryCorporateDetail.getProductId() != null
+						? LoanType.getById(primaryCorporateDetail.getProductId()).getValue()
+						: null);
+				ntbPrimaryViewRespone.setLoanAmount(
+						primaryCorporateDetail.getAmount() != null ? String.valueOf(primaryCorporateDetail.getAmount())
+								: null);
+
+				ntbPrimaryViewRespone.setPurposeOfLoan(
+						CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getPurposeOfLoanId()) ? null
+								: PurposeOfLoan.getById(primaryCorporateDetail.getPurposeOfLoanId()).getValue()
+										.toString());
+				ntbPrimaryViewRespone.setBusinessAssetAmount(primaryCorporateDetail.getBusinessAssetAmount() != null
+						? String.valueOf(primaryCorporateDetail.getBusinessAssetAmount())
+						: null);
+				ntbPrimaryViewRespone.setWcAmount(primaryCorporateDetail.getWcAmount() != null
+						? String.valueOf(primaryCorporateDetail.getWcAmount())
+						: null);
+				ntbPrimaryViewRespone.setOtherAmt(primaryCorporateDetail.getOtherAmt() != null
+						? String.valueOf(primaryCorporateDetail.getOtherAmt())
+						: null);
+
+				ntbPrimaryViewRespone
+						.setHaveCollateralSecurity(primaryCorporateDetail.getHaveCollateralSecurity() != null
+								? String.valueOf(primaryCorporateDetail.getHaveCollateralSecurity())
+								: null);
+				ntbPrimaryViewRespone
+						.setCollateralSecurityAmount(primaryCorporateDetail.getCollateralSecurityAmount() != null
+								? String.valueOf(primaryCorporateDetail.getCollateralSecurityAmount())
+								: null);
+				ntbPrimaryViewRespone.setNpOrgId(loanApplicationMaster.getNpOrgId());
+				// workingCapitalPrimaryViewResponse.setSharePriceFace(primaryWorkingCapitalLoanDetail.getSharePriceFace());
+				// workingCapitalPrimaryViewResponse.setSharePriceMarket(primaryWorkingCapitalLoanDetail.getSharePriceMarket());
+				if (!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getModifiedDate()))
+					ntbPrimaryViewRespone.setDateOfProposal(primaryCorporateDetail.getModifiedDate() != null
+							? DATE_FORMAT.format(primaryCorporateDetail.getModifiedDate())
+							: null);
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
 		// DIRECTOR BACKGROUND DETAILS
 
 		try {
 			List<Map<String, Object>> directorBackgroundDetails = corporateDirectorIncomeService
 					.getDirectorBackGroundDetails(toApplicationId);
 			ntbPrimaryViewRespone.setDirectorBackGroundDetails(directorBackgroundDetails);
+			if(directorBackgroundDetails.size() >1) {
+				
+				ntbPrimaryViewRespone.setIsMultipleUser(false);
+			}else {
+				ntbPrimaryViewRespone.setIsMultipleUser(true);
+			}
 
 		} catch (Exception e) {
 			logger.error("Problem to get Data of Director's Background=========> {}", e);
@@ -456,6 +529,8 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService {
 
 		// CGTMSE
 		try {
+			boolean isMultipleUserForCgtmse=ntbPrimaryViewRespone.getIsMultipleUser();
+			System.out.println("is multiple user...??"+isMultipleUserForCgtmse);
 			CGTMSEDataResponse cgtmseDataResp = thirdPartyClient.getCalulation(toApplicationId);
 			ntbPrimaryViewRespone.setCgtmseData(cgtmseDataResp);
 		} catch (Exception e) {

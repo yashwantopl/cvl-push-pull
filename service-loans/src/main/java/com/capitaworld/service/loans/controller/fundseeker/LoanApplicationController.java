@@ -2572,6 +2572,7 @@ public class LoanApplicationController {
 				paymentRequest.setUserId(Long.valueOf(String.valueOf(map.get("AdditionalInfo2"))));
 				paymentRequest.setPurposeCode(map.get("productinfo").toString());
 				paymentRequest.setResponseParams(responseParams);
+				paymentRequest.setNameOfEntity(map.get("firstname").toString());
 				
 				if ("0399".toString().equals(map.get("statusCode"))) {
 					paymentRequest.setStatus("Failed");
@@ -2614,6 +2615,7 @@ public class LoanApplicationController {
 				paymentRequest.setUserId(Long.valueOf(String.valueOf(map.get("udf2"))));
 				paymentRequest.setPurposeCode(map.get("productinfo").toString());
 				paymentRequest.setResponseParams(responseParams);
+				paymentRequest.setNameOfEntity(map.get("firstname").toString());
 				
 				if ("success".equals(map.get("status").toString())) {
 					paymentRequest.setStatus("Success");
