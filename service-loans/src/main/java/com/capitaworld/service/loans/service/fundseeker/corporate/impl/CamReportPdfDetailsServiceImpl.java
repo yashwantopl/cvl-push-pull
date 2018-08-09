@@ -478,7 +478,8 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		//FINANCIALS AND NOTES TO ACCOUNTS
 		try {
 			PrimaryCorporateRequest primaryCorporateRequest = primaryCorporateService.get(applicationId, userId);
-			int currentYear = scoringService.getFinYear(applicationId);
+			int currentYear = scoringService.getFinYear(applicationId) -1;
+			map.put("currentYr",currentYear);
 			Long denominationValue = Denomination.getById(loanApplicationMaster.getDenominationId()).getDigit();
 			Integer years[] = {currentYear-3, currentYear-2, currentYear-1};
 			Map<Integer, Object[]> financials = new TreeMap<Integer, Object[]>(Collections.reverseOrder());
@@ -679,7 +680,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		//CGTMSE DATA
 		try {
 			CGTMSEDataResponse cgtmseDataResponse = thirdPartyClient.getCalulation(applicationId);
-			map.put("cgtmseData", CommonUtils.convertToDoubleForXml(cgtmseDataResponse,null));
+			map.put("cgtmseData", cgtmseDataResponse);
 			map.put("maxCgtmseCoverageAmount", CommonUtils.convertValue(cgtmseDataResponse.getMaxCgtmseCoverageAmount()));
 			if(!CommonUtils.isObjectNullOrEmpty(cgtmseDataResponse.getCgtmseResponse()) && !CommonUtils.isObjectNullOrEmpty(cgtmseDataResponse.getCgtmseResponse().getDetails())) {
 				map.put("cgtmseBankWise", CommonUtils.printFields(cgtmseDataResponse.getCgtmseResponse().getDetails()));
