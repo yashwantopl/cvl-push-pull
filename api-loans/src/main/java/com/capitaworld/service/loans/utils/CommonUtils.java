@@ -453,7 +453,7 @@ public class CommonUtils {
 
 	public static List<String> urlsBrforeLogin = null;
 	static {
-		urlsBrforeLogin = new ArrayList<String>(3);
+		urlsBrforeLogin = new ArrayList<String>(8);
 		urlsBrforeLogin.add("/loans/loan_application/getUsersRegisteredLoanDetails");
 		urlsBrforeLogin.add("/loans/loan_application/getLoanDetailsForAdminPanel");
 		urlsBrforeLogin.add("/loans/corporate_upload/downloadCMAAndCoCMAExcelFile/**");
