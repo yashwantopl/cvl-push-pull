@@ -8210,6 +8210,7 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 		for (OperatingStatementDetails operatingStatementDetails : operatingStatementDetailsList) {
 			operatingStatementDetailsRequest = new OperatingStatementDetailsRequest();
 			BeanUtils.copyProperties(operatingStatementDetails, operatingStatementDetailsRequest, "id");
+			operatingStatementDetailsRequest.setApplicationId(applicationId);
 			operatingStatementDetailsRequestsList.add(operatingStatementDetailsRequest);
 		}
 		
@@ -8219,6 +8220,7 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 		for (LiabilitiesDetails liabilitiesDetailsFrom : liabilitiesDetailsList) {
 			liabilitiesDetailsRequest = new LiabilitiesDetailsRequest();
 			BeanUtils.copyProperties(liabilitiesDetailsFrom, liabilitiesDetailsRequest, "id");
+			liabilitiesDetailsRequest.setApplicationId(applicationId);
 			liabilitiesDetailsRequestsList.add(liabilitiesDetailsRequest);
 	
 		}
@@ -8228,6 +8230,7 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 		for (AssetsDetails assetsDetails : assetsDetailsList) {
 			assetsDetailsRequest = new AssetsDetailsRequest();
 			BeanUtils.copyProperties(assetsDetails, assetsDetailsRequest, "id");
+			liabilitiesDetailsRequest.setApplicationId(applicationId);
 			assetsRequestList.add(assetsDetailsRequest);
 		}
 		
