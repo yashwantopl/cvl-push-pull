@@ -459,6 +459,9 @@ public class CommonUtils {
 		urlsBrforeLogin.add("/loans/corporate_upload/downloadCMAAndCoCMAExcelFile/**");
 		urlsBrforeLogin.add("/loans/loan_application/save_payment_info_for_mobile");
 		urlsBrforeLogin.add("/loans/loan_application/mobile/successUrl");
+		urlsBrforeLogin.add("/loans/loan_application/getToken");
+		urlsBrforeLogin.add("/loans/loan_application/saveLoanDisbursementDetail");
+		urlsBrforeLogin.add("/loans/loan_application/saveLoanSanctionDetail");
 		
 	}
 
