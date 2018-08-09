@@ -89,7 +89,7 @@ public class AssetsDetailsExcelReader
               * e.g. you want to extract B13,B14,... cell data for year 2014
              */
       
-       System.out.println("OperatingStatementDetailsExcelReader -----------> "+ sheet.getRow(4).getCell(1).getNumericCellValue());   
+        log.info("OperatingStatementDetailsExcelReader -----------> "+ sheet.getRow(4).getCell(1).getNumericCellValue());   
 //        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, assetsMappingList,"B",String.valueOf(sheet.getRow(4).getCell(1).getNumericCellValue()),"Audited", assetsDetailsRepository);
 //        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, assetsMappingList,"C",String.valueOf(sheet.getRow(4).getCell(2).getNumericCellValue()),"Audited", assetsDetailsRepository);
 //        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, assetsMappingList,"D",String.valueOf(sheet.getRow(4).getCell(3).getNumericCellValue()),"Audited", assetsDetailsRepository);
@@ -138,7 +138,7 @@ public class AssetsDetailsExcelReader
         if(!(nullCounter==54)) {
             
         	AssetsDetails cmaAssets = new AssetsDetails();
-            System.out.println("calledd===============");
+        	log.info("calledd===============");
         	cmaAssets.setLoanApplicationMaster(loanApplicationMaster);
         	cmaAssets.setStorageDetailsId(storageDetailsId);
         	

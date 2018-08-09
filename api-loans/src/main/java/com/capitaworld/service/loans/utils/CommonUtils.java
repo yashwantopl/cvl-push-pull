@@ -2,6 +2,7 @@ package com.capitaworld.service.loans.utils;
 
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
+import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.Format;
 import java.text.SimpleDateFormat;
@@ -52,7 +53,9 @@ public class CommonUtils {
 	public static final String CW_TL_WCTL_EXCEL="cw_cma_tl_wctl.xlsx";
 	public static final String CO_CMA_EXCEL = "co_cma.xlsx";
    
-	public static final String SCORING_EXCEL ="score_result.xlsx"; 
+	public static final String SCORING_EXCEL ="score_result.xlsx";
+	
+	public static final  DateFormat formatter = new SimpleDateFormat("dd-mm-yyyy");
 	
 	public interface UsersRoles {
 		public static final Long MAKER = 1l;
@@ -113,8 +116,6 @@ public class CommonUtils {
 		calendar.set(Calendar.DAY_OF_MONTH, date);
 		calendar.set(Calendar.MONTH, (month - 1));
 		calendar.set(Calendar.YEAR, year);
-
-		System.out.println("calendar.getTime()=======>" + calendar.getTime().toString());
 		return calendar.getTime();
 	}
 
@@ -129,9 +130,6 @@ public class CommonUtils {
 		result[0] = calendar.get(Calendar.DAY_OF_MONTH);
 		result[1] = calendar.get(Calendar.MONTH) + 1;
 		result[2] = calendar.get(Calendar.YEAR);
-		System.out.println("result[0] day Of Month=======>" + result[0]);
-		System.out.println("result[1] Month=======>" + result[1]);
-		System.out.println("result[2] Year=======>" + result[2]);
 		return result;
 	}
 
@@ -394,7 +392,6 @@ public class CommonUtils {
 			monthsDiff = monthsDiff + today.get(Calendar.MONTH) - birthDay.get(Calendar.MONTH);
 			Integer ageInMonths = yearsInBetween * 12 + monthsDiff;
 			years = ageInMonths / 12;
-			System.out.println("Age :===" + years);
 			return years;
 		} else {
 			return null;
@@ -456,12 +453,15 @@ public class CommonUtils {
 
 	public static List<String> urlsBrforeLogin = null;
 	static {
-		urlsBrforeLogin = new ArrayList<String>(3);
+		urlsBrforeLogin = new ArrayList<String>(8);
 		urlsBrforeLogin.add("/loans/loan_application/getUsersRegisteredLoanDetails");
 		urlsBrforeLogin.add("/loans/loan_application/getLoanDetailsForAdminPanel");
 		urlsBrforeLogin.add("/loans/corporate_upload/downloadCMAAndCoCMAExcelFile/**");
 		urlsBrforeLogin.add("/loans/loan_application/save_payment_info_for_mobile");
 		urlsBrforeLogin.add("/loans/loan_application/mobile/successUrl");
+		urlsBrforeLogin.add("/loans/loan_application/getToken");
+		urlsBrforeLogin.add("/loans/loan_application/saveLoanDisbursementDetail");
+		urlsBrforeLogin.add("/loans/loan_application/saveLoanSanctionDetail");
 		
 	}
 
@@ -910,7 +910,6 @@ public class CommonUtils {
 	public static String checkString(Double value) {
 		try {
 			DecimalFormat decimalFormat1 = new DecimalFormat("0.00");
-			System.out.println(decimalFormat1.format(value));
 			return decimalFormat1.format(value);
 		} catch (Exception e) {
 			return "0.00";
@@ -1113,9 +1112,7 @@ public enum APIFlags {
 	
 	public static String getEncodedUserNamePassword(String userName,String password) {
 		String keyToEncode = userName + ":" + password;
-		System.out.println("keyToEncode UPdated===============>" + keyToEncode);
 		String encodedString = "Basic " + Base64.getEncoder().encodeToString(keyToEncode.getBytes());
-		System.out.println("encodedString UPdated===============>" + encodedString);
 		return encodedString;
 	}
 	

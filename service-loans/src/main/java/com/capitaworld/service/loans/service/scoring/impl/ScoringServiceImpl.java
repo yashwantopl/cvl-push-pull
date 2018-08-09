@@ -4,6 +4,9 @@ import com.capitaworld.cibil.api.model.CibilRequest;
 import com.capitaworld.cibil.api.model.CibilResponse;
 import com.capitaworld.cibil.api.model.CibilScoreLogRequest;
 import com.capitaworld.cibil.client.CIBILClient;
+import com.capitaworld.itr.api.model.ITRBasicDetailsResponse;
+import com.capitaworld.itr.api.model.ITRConnectionResponse;
+import com.capitaworld.itr.client.ITRClient;
 import com.capitaworld.service.analyzer.client.AnalyzerClient;
 import com.capitaworld.service.analyzer.model.common.AnalyzerResponse;
 import com.capitaworld.service.analyzer.model.common.Data;
@@ -120,6 +123,9 @@ public class ScoringServiceImpl implements ScoringService{
     @Autowired
     private FinancialArrangementDetailsRepository financialArrangementDetailsRepository;
 
+    @Autowired
+    private ITRClient itrClient;
+
 
     @Override
     public ResponseEntity<LoansResponse> calculateScoring(ScoringRequestLoans scoringRequestLoans) {
@@ -195,7 +201,13 @@ public class ScoringServiceImpl implements ScoringService{
         }
         // end Get GST Parameter
 
-        int currentYear = Calendar.getInstance().get(Calendar.YEAR);
+        int currentYear = getFinYear(applicationId);
+        if(CommonUtils.isObjectNullOrEmpty(currentYear))
+        {
+            logger.error("error while getting current year from itr");
+            LoansResponse loansResponse = new LoansResponse("error while getting current year from itr.", HttpStatus.INTERNAL_SERVER_ERROR.value());
+            return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+        }
 
         // CMA
         OperatingStatementDetails operatingStatementDetailsFY = new OperatingStatementDetails();
@@ -2086,5 +2098,37 @@ public class ScoringServiceImpl implements ScoringService{
             e.printStackTrace();
             return  new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG,HttpStatus.BAD_REQUEST.value());
         }
+    }
+
+
+    public Integer getFinYear(Long applicationId)
+    {
+        Integer year = 0;
+        ITRConnectionResponse itrConnectionResponse = null;
+        try
+        {
+                itrConnectionResponse = itrClient.getIsUploadAndYearDetails(applicationId);
+        }
+        catch (Exception e)
+        {
+            logger.error("error while calling itr client for getIsUploadAndYearDetails()"); e.printStackTrace();
+        }
+        try
+        {
+            if(!CommonUtils.isObjectNullOrEmpty(itrConnectionResponse) && !CommonUtils.isObjectNullOrEmpty(itrConnectionResponse.getData()))
+            {
+                Map<String,Object> map = (Map<String,Object>)itrConnectionResponse.getData();
+                ITRBasicDetailsResponse res = MultipleJSONObjectHelper.getObjectFromMap(map, ITRBasicDetailsResponse.class);
+                if(!CommonUtils.isObjectNullOrEmpty(res))
+                {
+                    year = Integer.valueOf(res.getYear());
+                }
+            }
+        }
+        catch (IOException e)
+        {
+            logger.error("error while getting year from itr response"); e.printStackTrace();
+        }
+        return year+1;
     }
 }
