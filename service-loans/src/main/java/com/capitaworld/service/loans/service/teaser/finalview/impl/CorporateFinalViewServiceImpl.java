@@ -1331,6 +1331,12 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 				corporateFinalViewResponse.setBuisnessRiskScoreWeight(
 						CommonUtils.checkDoubleNull(proposalScoreResponse.getBusinessRiskWeight()));
 				corporateFinalViewResponse.setScoreInterpretation(proposalScoreResponse.getInterpretation());
+				corporateFinalViewResponse.setManagementRiskMaxTotalScore(proposalScoreResponse.getManagementRiskMaxTotalScore());
+				corporateFinalViewResponse.setFinancialRiskMaxTotalScore(proposalScoreResponse.getFinancialRiskMaxTotalScore());
+				corporateFinalViewResponse.setBusinessRiskMaxTotalScore(proposalScoreResponse.getBusinessRiskMaxTotalScore());
+				corporateFinalViewResponse.setManagementRiskWeightOfScoring(proposalScoreResponse.getManagementRiskWeightOfScoring());
+				corporateFinalViewResponse.setFinancialRiskWeightOfScoring(proposalScoreResponse.getFinancialRiskWeightOfScoring());
+				corporateFinalViewResponse.setBusinessRiskWeightOfScoring(proposalScoreResponse.getBusinessRiskWeightOfScoring());
 			} else {
 				logger.info("SCORING OBJECT NULL OR EMPTY -------------------->");
 			}
