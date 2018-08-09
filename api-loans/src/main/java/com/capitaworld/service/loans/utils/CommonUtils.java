@@ -1201,20 +1201,27 @@ public enum APIFlags {
 				escapeXml(setEntry.getValue());
 			}
 		}
-		Field[] fields = obj.getClass().getDeclaredFields();
-		for (Field field : fields) {
-			field.setAccessible(true);
-			Object value = field.get(obj);
-			if (value instanceof String) {
-				String value1 = (String) field.get(obj);
-				String a = StringEscapeUtils.escapeXml(value1.toString());
-				value = a;
-				field.set(obj, value);
-			}else {
-				continue;
+		if(obj!=null) {
+			Field[] fields = obj.getClass().getDeclaredFields();
+			for (Field field : fields) {
+				field.setAccessible(true);
+				Object value = field.get(obj);
+				if (value instanceof String) {
+					String value1 = (String) field.get(obj);
+					String a = StringEscapeUtils.escapeXml(value1.toString());
+					value = a;
+					field.set(obj, value);
+				}if(value instanceof Double) {
+					convertToDoubleForXml(value, null);
+				}
+				else {
+					continue;
+				}
 			}
 		}
 		return obj;
     }
+	
+	
 	
 }
