@@ -7,10 +7,15 @@ import org.json.simple.JSONObject;
 import com.capitaworld.service.loans.model.common.DocumentUploadFlagRequest;
 import com.capitaworld.service.loans.model.ddr.DDRFormDetailsRequest;
 import com.capitaworld.service.loans.model.ddr.DDROneFormResponse;
+import com.capitaworld.service.loans.model.ddr.DDRRequest;
 
 public interface DDRFormService {
 
 	public void saveDDRForm(DDRFormDetailsRequest ddrFormDetailsRequest) throws Exception;
+	
+	public DDRRequest getMergeDDR(Long appId,Long userId) ;
+	
+	public void saveMergeDDR(DDRRequest dDRRequest) throws Exception;
 	
 	public DDRFormDetailsRequest get(Long id,Long userId);
 	
@@ -18,7 +23,7 @@ public interface DDRFormService {
 	
 	public List<JSONObject> getFinancialSummaryToBeFieldsList();
 	
-	public DDROneFormResponse getOneFormDetails(Long userId, Long applicationId);
+	public DDROneFormResponse getOneFormDetails(Long userId, Long applicationId,boolean setExistingData);
 	
 	public Long saveDocumentFLag(DocumentUploadFlagRequest documentUploadFlagRequest) throws Exception;
 	

@@ -9,6 +9,7 @@ public interface LoanDisbursementService {
 	public Boolean saveLoanDisbursementDetail(LoanDisbursementRequest loanDisbursementRequest)throws IOException ;
 	
 	public String requestValidation(LoanDisbursementRequest loanDisbursementRequest, Long orgId)throws IOException ;
+	public String bankRequestValidationAndSave(List<LoanDisbursementRequest> loanDisbursementRequestsList , Long orgId)throws IOException ;
 
 	public List<LoanDisbursementRequest> getDisbursedList(Long applicationId) throws Exception;
 }

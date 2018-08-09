@@ -1,6 +1,8 @@
 package com.capitaworld.service.loans.utils;
 
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
+import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.Format;
 import java.text.SimpleDateFormat;
@@ -11,6 +13,9 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+
+import org.apache.commons.lang.StringEscapeUtils;
 
 public class CommonUtils {
 
@@ -48,7 +53,9 @@ public class CommonUtils {
 	public static final String CW_TL_WCTL_EXCEL="cw_cma_tl_wctl.xlsx";
 	public static final String CO_CMA_EXCEL = "co_cma.xlsx";
    
-	public static final String SCORING_EXCEL ="score_result.xlsx"; 
+	public static final String SCORING_EXCEL ="score_result.xlsx";
+	
+	public static final  DateFormat formatter = new SimpleDateFormat("dd-mm-yyyy");
 	
 	public interface UsersRoles {
 		public static final Long MAKER = 1l;
@@ -109,8 +116,6 @@ public class CommonUtils {
 		calendar.set(Calendar.DAY_OF_MONTH, date);
 		calendar.set(Calendar.MONTH, (month - 1));
 		calendar.set(Calendar.YEAR, year);
-
-		System.out.println("calendar.getTime()=======>" + calendar.getTime().toString());
 		return calendar.getTime();
 	}
 
@@ -125,9 +130,6 @@ public class CommonUtils {
 		result[0] = calendar.get(Calendar.DAY_OF_MONTH);
 		result[1] = calendar.get(Calendar.MONTH) + 1;
 		result[2] = calendar.get(Calendar.YEAR);
-		System.out.println("result[0] day Of Month=======>" + result[0]);
-		System.out.println("result[1] Month=======>" + result[1]);
-		System.out.println("result[2] Year=======>" + result[2]);
 		return result;
 	}
 
@@ -390,7 +392,6 @@ public class CommonUtils {
 			monthsDiff = monthsDiff + today.get(Calendar.MONTH) - birthDay.get(Calendar.MONTH);
 			Integer ageInMonths = yearsInBetween * 12 + monthsDiff;
 			years = ageInMonths / 12;
-			System.out.println("Age :===" + years);
 			return years;
 		} else {
 			return null;
@@ -418,7 +419,7 @@ public class CommonUtils {
 		for (Object object : args) {
 			boolean flag = false;
 			if (object instanceof List) {
-				flag = isListNullOrEmpty((List) object);
+				flag = isListNullOrEmpty((List<?>) object);
 				if (flag)
 					return true;
 				else
@@ -452,12 +453,15 @@ public class CommonUtils {
 
 	public static List<String> urlsBrforeLogin = null;
 	static {
-		urlsBrforeLogin = new ArrayList<String>(3);
+		urlsBrforeLogin = new ArrayList<String>(8);
 		urlsBrforeLogin.add("/loans/loan_application/getUsersRegisteredLoanDetails");
 		urlsBrforeLogin.add("/loans/loan_application/getLoanDetailsForAdminPanel");
 		urlsBrforeLogin.add("/loans/corporate_upload/downloadCMAAndCoCMAExcelFile/**");
 		urlsBrforeLogin.add("/loans/loan_application/save_payment_info_for_mobile");
 		urlsBrforeLogin.add("/loans/loan_application/mobile/successUrl");
+		urlsBrforeLogin.add("/loans/loan_application/getToken");
+		urlsBrforeLogin.add("/loans/loan_application/saveLoanDisbursementDetail");
+		urlsBrforeLogin.add("/loans/loan_application/saveLoanSanctionDetail");
 		
 	}
 
@@ -906,7 +910,6 @@ public class CommonUtils {
 	public static String checkString(Double value) {
 		try {
 			DecimalFormat decimalFormat1 = new DecimalFormat("0.00");
-			System.out.println(decimalFormat1.format(value));
 			return decimalFormat1.format(value);
 		} catch (Exception e) {
 			return "0.00";
@@ -967,7 +970,7 @@ public class CommonUtils {
 			return value;
 		}
 
-		public int getId() {
+		public Integer getId() {
 			return id;
 		}
 		
@@ -1109,9 +1112,7 @@ public enum APIFlags {
 	
 	public static String getEncodedUserNamePassword(String userName,String password) {
 		String keyToEncode = userName + ":" + password;
-		System.out.println("keyToEncode UPdated===============>" + keyToEncode);
 		String encodedString = "Basic " + Base64.getEncoder().encodeToString(keyToEncode.getBytes());
-		System.out.println("encodedString UPdated===============>" + encodedString);
 		return encodedString;
 	}
 	
@@ -1132,4 +1133,88 @@ public enum APIFlags {
 		public static final int REVERTED = 3;
 		public static final int APPROVED = 4;
 	}
+	
+	
+	/***********************************************CAM UTILS*********************************************************/
+	static DecimalFormat decim = new DecimalFormat("#,##0.00");
+	static DecimalFormat decim2 = new DecimalFormat("#,###.00");
+	
+	public static String convertValue(Double value) {
+		return !CommonUtils.isObjectNullOrEmpty(value)? decim.format(value).toString(): "0";
+	}
+	public static String convertValueWithoutDecimal(Double value) {
+		return !CommonUtils.isObjectNullOrEmpty(value)? decim2.format(value).toString(): "0";
+	}
+	public static Object convertToDoubleForXml (Object obj, Map<String, Object>data) throws Exception {
+		Field[] fields = obj.getClass().getDeclaredFields();
+		 for(Field field : fields) {
+			 field.setAccessible(true);
+             Object value = field.get(obj);
+             if(data != null) {
+            	 data.put(field.getName(), value);
+             }
+             if(!CommonUtils.isObjectNullOrEmpty(value)) {
+            	 if(value instanceof Double){
+                	 if(!Double.isNaN((Double)value)) {
+                		 DecimalFormat decim = new DecimalFormat("0.00");
+                    	 value = Double.parseDouble(decim.format(value));
+                    	 if(data != null) {
+                    		 value = decim.format(value);
+                    		 data.put(field.getName(), value);
+                    	 }else {
+                    		 field.set(obj,value);                    		 
+                    	 }
+                	 }
+                 }
+             }
+		 }
+		 if(data != null) {
+			 return data;
+		 }
+		return obj;
+	}
+	public static Object printFields(Object obj) throws Exception {
+		if(obj instanceof List) {
+			List<?> lst = (List)obj;
+			for(Object o : lst) {
+				escapeXml(o);
+			}
+		}else if(obj instanceof Map) {
+			Map<Object, Object> map = (Map)obj;
+			for(Map.Entry<Object, Object> setEntry : map.entrySet()) {
+				escapeXml(setEntry.getValue());
+			}
+		}else {
+			escapeXml(obj);
+		}
+		 return obj;
+	}
+	public static Object escapeXml(Object obj) throws Exception{
+		if(obj instanceof List) {
+			List<?> lst = (List<?>)obj;
+			for(Object o : lst) {
+				escapeXml(o);
+			}
+		}else if(obj instanceof Map) {
+			Map<Object, Object> map = (Map)obj;
+			for(Map.Entry<Object, Object> setEntry : map.entrySet()) {
+				escapeXml(setEntry.getValue());
+			}
+		}
+		Field[] fields = obj.getClass().getDeclaredFields();
+		for (Field field : fields) {
+			field.setAccessible(true);
+			Object value = field.get(obj);
+			if (value instanceof String) {
+				String value1 = (String) field.get(obj);
+				String a = StringEscapeUtils.escapeXml(value1.toString());
+				value = a;
+				field.set(obj, value);
+			}else {
+				continue;
+			}
+		}
+		return obj;
+    }
+	
 }

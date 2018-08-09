@@ -1,9 +1,7 @@
 package com.capitaworld.service.loans.controller.fundprovider;
 
 import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.capitaworld.service.loans.controller.fundseeker.LoanApplicationController;
 import com.capitaworld.service.loans.model.FpProductDetails;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.ProductDetailsForSp;
@@ -34,7 +30,7 @@ import com.capitaworld.service.loans.utils.CommonUtils;
 @RestController
 @RequestMapping("/product_master")
 public class ProductMasterController {
-	private static final Logger logger = LoggerFactory.getLogger(LoanApplicationController.class);
+	private static final Logger logger = LoggerFactory.getLogger(ProductMasterController.class);
 
 	@Autowired
 	private ProductMasterService productMasterService;
@@ -150,7 +146,7 @@ public class ProductMasterController {
 	public ResponseEntity<LoansResponse> saveCorporate(
 			@RequestBody CorporateProduct corporateProduct,HttpServletRequest request) {
 		CommonDocumentUtils.startHook(logger, "save");
-		System.out.println("json"+corporateProduct.toString());
+		logger.info("json"+corporateProduct.toString());
 		try {
 			if (corporateProduct == null) {
 				logger.warn("corporateProduct Object can not be empty ==>",
@@ -737,7 +733,7 @@ public class ProductMasterController {
 	public ResponseEntity<LoansResponse> saveCorporateInTemp(
 			@RequestBody CorporateProduct corporateProduct,HttpServletRequest request) {
 		CommonDocumentUtils.startHook(logger, "save");
-		System.out.println("json"+corporateProduct.toString());
+		logger.info("json"+corporateProduct.toString());
 		try {
 			if (corporateProduct == null) {
 				logger.warn("corporateProduct Object can not be empty ==>",

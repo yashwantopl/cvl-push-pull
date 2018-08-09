@@ -16,6 +16,8 @@ import com.capitaworld.api.workflow.model.WorkflowRequest;
 import com.capitaworld.api.workflow.model.WorkflowResponse;
 import com.capitaworld.api.workflow.utility.WorkflowUtils;
 import com.capitaworld.client.workflow.WorkflowClient;
+import com.capitaworld.itr.api.model.ITRConnectionResponse;
+import com.capitaworld.itr.client.ITRClient;
 import com.capitaworld.service.gateway.model.GatewayResponse;
 import com.capitaworld.service.gateway.model.PaymentTypeRequest;
 import com.capitaworld.service.loans.domain.fundprovider.FpNpMapping;
@@ -46,10 +48,12 @@ import com.capitaworld.service.loans.domain.fundseeker.ApplicationStatusAudit;
 import com.capitaworld.service.loans.domain.fundseeker.ApplicationStatusMaster;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.DirectorBackgroundDetail;
 import com.capitaworld.service.loans.model.NhbsApplicationRequest;
 import com.capitaworld.service.loans.model.NhbsApplicationsResponse;
 import com.capitaworld.service.loans.repository.fundseeker.ApplicationStatusAuditRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.DirectorBackgroundDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.service.networkpartner.NetworkPartnerService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
@@ -102,13 +106,16 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 	private FpNpMappingRepository fpNpMappingRepository;
 
 	@Autowired
-	private ProposalDetailsRepository proposalDetailsRepository;
+	private ITRClient itrClient;
 
 	@Autowired
 	private WorkflowClient workflowClient;
 	
 	@Autowired
-	private Environment environment; 
+	private Environment environment;
+	
+	@Autowired
+	private DirectorBackgroundDetailsRepository directorBackgroundDetailsRepository;
 	
 	
 	private static String isPaymentBypass="cw.is_payment_bypass";
@@ -724,33 +731,65 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 				}else {
 					nhbsApplicationsResponse.setCheckerName("NA");
 				}
-				CorporateApplicantDetail applicantDetail = corpApplicantRepository.getByApplicationAndUserId(loanApplicationMaster.getUserId(), loanApplicationMaster.getId());
-				if(applicantDetail != null){
-					nhbsApplicationsResponse.setClientName(applicantDetail.getOrganisationName());
-					try {
-						// Setting City Value
-						if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredCityId())) {
-							nhbsApplicationsResponse.setCity(
-									CommonDocumentUtils.getCity(applicantDetail.getRegisteredCityId(), oneFormClient));
+				
+				if(CommonUtils.BusinessType.NEW_TO_BUSINESS.getId().equals(loanApplicationMaster.getBusinessTypeId())) {//MEANS GET DIRECTOR NAME
+					
+					DirectorBackgroundDetail directorBackgroundDetail = directorBackgroundDetailsRepository.getByAppIdAndIsMainDirector(loanApplicationMaster.getId());
+					if(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetail)) {
+						nhbsApplicationsResponse.setClientName(directorBackgroundDetail.getDirectorsName());
+						nhbsApplicationsResponse.setCity(directorBackgroundDetail.getCity());
+						try {
+							if(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetail.getStateCode())) {
+								ITRConnectionResponse itrRes = itrClient.getOneFormStateIdFromITRStateId(Long.valueOf(directorBackgroundDetail.getStateCode()));
+								if(!CommonUtils.isObjectNullOrEmpty(itrRes) && !CommonUtils.isObjectNullOrEmpty(itrRes.getData())) {
+									Integer stateId = (Integer)itrRes.getData();
+									nhbsApplicationsResponse.setState(CommonDocumentUtils
+											.getState(stateId.longValue(), oneFormClient));
+								}	
+							}
+						} catch (Exception e) {
+							e.printStackTrace();
 						}
-
-						// Setting State Value
-						if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredStateId())) {
-							nhbsApplicationsResponse.setState(CommonDocumentUtils
-									.getState(applicantDetail.getRegisteredStateId().longValue(), oneFormClient));
+						if (!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetail.getCountryId())) {
+							try {
+								nhbsApplicationsResponse.setCountry(CommonDocumentUtils.getCountry(Long.valueOf(directorBackgroundDetail.getCountryId()), oneFormClient));	
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+							
 						}
-
-						// Country State Value
-						if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredCountryId())) {
-							nhbsApplicationsResponse.setCountry(CommonDocumentUtils
-									.getCountry(applicantDetail.getRegisteredCountryId().longValue(), oneFormClient));
-						}
-					} catch (Exception e) {
-						// TODO: handle exception
-						logger.error("error while fetching details from oneform client for city/state/country");
-						e.printStackTrace();
 					}
+					
+				} else {
+					CorporateApplicantDetail applicantDetail = corpApplicantRepository.getByApplicationAndUserId(loanApplicationMaster.getUserId(), loanApplicationMaster.getId());
+					if(applicantDetail != null){
+						nhbsApplicationsResponse.setClientName(applicantDetail.getOrganisationName());
+						try {
+							// Setting City Value
+							if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredCityId())) {
+								nhbsApplicationsResponse.setCity(
+										CommonDocumentUtils.getCity(applicantDetail.getRegisteredCityId(), oneFormClient));
+							}
+
+							// Setting State Value
+							if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredStateId())) {
+								nhbsApplicationsResponse.setState(CommonDocumentUtils
+										.getState(applicantDetail.getRegisteredStateId().longValue(), oneFormClient));
+							}
+
+							// Country State Value
+							if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredCountryId())) {
+								nhbsApplicationsResponse.setCountry(CommonDocumentUtils
+										.getCountry(applicantDetail.getRegisteredCountryId().longValue(), oneFormClient));
+							}
+						} catch (Exception e) {
+							// TODO: handle exception
+							logger.error("error while fetching details from oneform client for city/state/country");
+							e.printStackTrace();
+						}
+					}	
 				}
+				
 
 				// get profile pic
 				DocumentRequest documentRequest = new DocumentRequest();

@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.AssetsDetails;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.AssetsDetailsRepository;
+import com.capitaworld.service.loans.utils.CommonUtils;
 
 
 
@@ -88,7 +89,7 @@ public class AssetsDetailsExcelReader
               * e.g. you want to extract B13,B14,... cell data for year 2014
              */
       
-       System.out.println("OperatingStatementDetailsExcelReader -----------> "+ sheet.getRow(4).getCell(1).getNumericCellValue());   
+        log.info("OperatingStatementDetailsExcelReader -----------> "+ sheet.getRow(4).getCell(1).getNumericCellValue());   
 //        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, assetsMappingList,"B",String.valueOf(sheet.getRow(4).getCell(1).getNumericCellValue()),"Audited", assetsDetailsRepository);
 //        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, assetsMappingList,"C",String.valueOf(sheet.getRow(4).getCell(2).getNumericCellValue()),"Audited", assetsDetailsRepository);
 //        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, assetsMappingList,"D",String.valueOf(sheet.getRow(4).getCell(3).getNumericCellValue()),"Audited", assetsDetailsRepository);
@@ -137,11 +138,11 @@ public class AssetsDetailsExcelReader
         if(!(nullCounter==54)) {
             
         	AssetsDetails cmaAssets = new AssetsDetails();
-            System.out.println("calledd===============");
+        	log.info("calledd===============");
         	cmaAssets.setLoanApplicationMaster(loanApplicationMaster);
         	cmaAssets.setStorageDetailsId(storageDetailsId);
         	
-        	cmaAssets.setYear(year);
+        	cmaAssets.setYear(CommonUtils.getCMAFilterYear(year));
         	cmaAssets.setFinancialYearlyStatement(financialYearlyStatement);
             cmaAssets.setCashAndBankBalance(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
             cmaAssets.setInvestments(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
