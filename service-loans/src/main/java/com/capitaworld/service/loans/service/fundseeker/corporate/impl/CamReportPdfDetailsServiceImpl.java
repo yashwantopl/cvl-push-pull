@@ -141,7 +141,6 @@ import com.capitaworld.service.thirdpaty.client.ThirdPartyClient;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.UserResponse;
 import com.capitaworld.service.users.model.UsersRequest;
-import com.ibm.icu.util.Calendar;
 
 @Service
 @Transactional
@@ -478,7 +477,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		//FINANCIALS AND NOTES TO ACCOUNTS
 		try {
 			PrimaryCorporateRequest primaryCorporateRequest = primaryCorporateService.get(applicationId, userId);
-			int currentYear = scoringService.getFinYear(applicationId) -1;
+			int currentYear = scoringService.getFinYear(applicationId);
 			map.put("currentYr",currentYear);
 			Long denominationValue = Denomination.getById(loanApplicationMaster.getDenominationId()).getDigit();
 			Integer years[] = {currentYear-3, currentYear-2, currentYear-1};
@@ -487,7 +486,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				Object[] data = calculateFinancials(userId, applicationId, null, denominationValue, year);
 				financials.put(year, data);
 			}
-			calculateRatioAnalysis(financials);
+			calculateRatioAnalysis(financials, applicationId);
 			map.put("financials", financials);
 			Map<Integer, Object[]> projectedFin = new HashMap<Integer, Object[]>(loanApplicationMaster.getTenure().intValue());
 			if(primaryCorporateRequest.getProductId() == 1) {
@@ -533,8 +532,12 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			scoringRequest.setFpProductId(productId);
 			ScoringResponse scoringResponse = scoringClient.getScore(scoringRequest);
 			ProposalScoreResponse proposalScoreResponse = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)scoringResponse.getDataObject(),ProposalScoreResponse.class);
-			map.put("proposalScoreResponse",CommonUtils.convertToDoubleForXml(proposalScoreResponse,null));
-			map.put("totalActualScore", CommonUtils.addNumbers(proposalScoreResponse.getManagementRiskScore(), proposalScoreResponse.getFinancialRiskScore(), proposalScoreResponse.getBusinessRiskScore()));
+			if(!CommonUtils.isObjectNullOrEmpty(proposalScoreResponse)) {
+				map.put("proposalScoreResponse",CommonUtils.convertToDoubleForXml(proposalScoreResponse,null));
+				map.put("totalActualScore", CommonUtils.addNumbers(proposalScoreResponse.getManagementRiskScore(), proposalScoreResponse.getFinancialRiskScore(), proposalScoreResponse.getBusinessRiskScore()));
+				map.put("totalOutOfScore", CommonUtils.addNumbers(proposalScoreResponse.getManagementRiskMaxTotalScore(), proposalScoreResponse.getFinancialRiskMaxTotalScore(), proposalScoreResponse.getBusinessRiskMaxTotalScore()));
+				map.put("totalWeight", CommonUtils.addNumbers(proposalScoreResponse.getManagementRiskWeightOfScoring(), proposalScoreResponse.getFinancialRiskWeightOfScoring(), proposalScoreResponse.getBusinessRiskWeightOfScoring()));
+			}
 			List<Map<String, Object>> proposalScoreDetailResponseList = (List<Map<String, Object>>) scoringResponse.getDataList();
 			logger.info("proposalScoreDetailResponseList Size ::::"+proposalScoreDetailResponseList.size());
 			for(int i=0;i<proposalScoreDetailResponseList.size();i++)
@@ -654,13 +657,13 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 					List<Object> customerInfo = new ArrayList<Object>();
 					List<Object> summaryInfo = new ArrayList<Object>();
 					for(int i =0; i<hashMap.size(); i++) {
-						bankStatement.add(CommonUtils.printFields(data.getXns().getXn()));
-						monthlyDetails.add(CommonUtils.printFields(data.getMonthlyDetailList()));
-						top5FundReceived.add(CommonUtils.printFields(data.getTop5FundReceivedList().getItem()));
-						top5FundTransfered.add( CommonUtils.printFields(data.getTop5FundTransferedList().getItem()));
-						bouncedChequeList.add( CommonUtils.printFields(data.getBouncedOrPenalXnList().getBouncedOrPenalXns()));
-						customerInfo.add( CommonUtils.printFields(data.getCustomerInfo()));
-						summaryInfo.add( CommonUtils.printFields(data.getSummaryInfo()));
+						bankStatement.add(!CommonUtils.isObjectNullOrEmpty(data.getXns()) ? CommonUtils.printFields(data.getXns().getXn()) : " ");
+						monthlyDetails.add(!CommonUtils.isObjectNullOrEmpty(data.getMonthlyDetailList()) ? CommonUtils.printFields(data.getMonthlyDetailList()) : "");
+						top5FundReceived.add(!CommonUtils.isObjectNullOrEmpty(data.getTop5FundReceivedList().getItem()) ? CommonUtils.printFields(data.getTop5FundReceivedList().getItem()) : "");
+						top5FundTransfered.add(!CommonUtils.isObjectNullOrEmpty(data.getTop5FundTransferedList().getItem()) ? CommonUtils.printFields(data.getTop5FundTransferedList().getItem()) : "");
+						bouncedChequeList.add(!CommonUtils.isObjectNullOrEmpty(data.getBouncedOrPenalXnList()) ? CommonUtils.printFields(data.getBouncedOrPenalXnList().getBouncedOrPenalXns()) : " ");
+						customerInfo.add(!CommonUtils.isObjectNullOrEmpty(data.getCustomerInfo()) ? CommonUtils.printFields(data.getCustomerInfo()) : " ");
+						summaryInfo.add(!CommonUtils.isObjectNullOrEmpty(data.getSummaryInfo()) ?CommonUtils.printFields(data.getSummaryInfo()) : " ");
 					}
 					map.put("bankStatement" , bankStatement);
 					map.put("monthlyDetails" , monthlyDetails);
@@ -680,10 +683,12 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		//CGTMSE DATA
 		try {
 			CGTMSEDataResponse cgtmseDataResponse = thirdPartyClient.getCalulation(applicationId);
-			map.put("cgtmseData", cgtmseDataResponse);
-			map.put("maxCgtmseCoverageAmount", CommonUtils.convertValue(cgtmseDataResponse.getMaxCgtmseCoverageAmount()));
-			if(!CommonUtils.isObjectNullOrEmpty(cgtmseDataResponse.getCgtmseResponse()) && !CommonUtils.isObjectNullOrEmpty(cgtmseDataResponse.getCgtmseResponse().getDetails())) {
-				map.put("cgtmseBankWise", CommonUtils.printFields(cgtmseDataResponse.getCgtmseResponse().getDetails()));
+			if(!CommonUtils.isObjectNullOrEmpty(cgtmseDataResponse)) {
+				map.put("cgtmseData", cgtmseDataResponse);
+				map.put("maxCgtmseCoverageAmount", CommonUtils.convertValue(cgtmseDataResponse.getMaxCgtmseCoverageAmount()));
+				if(!CommonUtils.isObjectNullOrEmpty(cgtmseDataResponse.getCgtmseResponse()) && !CommonUtils.isObjectNullOrEmpty(cgtmseDataResponse.getCgtmseResponse().getDetails())) {
+					map.put("cgtmseBankWise", CommonUtils.printFields(cgtmseDataResponse.getCgtmseResponse().getDetails()));
+				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1227,8 +1232,8 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		return new Object[] {osDetailsString, liabilitiesDetailsString, assetDetailsString , financialInputRequestString , financialInputRequestDbl };
 	}
 	
-	public void calculateRatioAnalysis(Map<Integer, Object[]>financials) {
-		int currentYear = Calendar.getInstance().get(Calendar.YEAR);
+	public void calculateRatioAnalysis(Map<Integer, Object[]>financials,Long applicationId) {
+		int currentYear = scoringService.getFinYear(applicationId);
 		Object[] curFinYear = financials.get(currentYear - 1);
 		Object[] prevFinYear = financials.get(currentYear - 2);
 		Object[] yrBeforePrevFinYear = financials.get(currentYear - 3);
