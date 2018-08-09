@@ -20,6 +20,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.capitaworld.api.eligibility.model.EligibililityRequest;
 import com.capitaworld.api.eligibility.model.EligibilityResponse;
 import com.capitaworld.client.eligibility.EligibilityClient;
+import com.capitaworld.itr.api.model.ITRConnectionResponse;
+import com.capitaworld.itr.client.ITRClient;
 import com.capitaworld.service.analyzer.client.AnalyzerClient;
 import com.capitaworld.service.analyzer.model.common.AnalyzerResponse;
 import com.capitaworld.service.analyzer.model.common.Data;
@@ -30,6 +32,9 @@ import com.capitaworld.service.dms.model.DocumentRequest;
 import com.capitaworld.service.dms.model.DocumentResponse;
 import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.loans.domain.fundprovider.TermLoanParameter;
+import com.capitaworld.service.loans.domain.fundprovider.WcTlParameter;
+import com.capitaworld.service.loans.domain.fundprovider.WorkingCapitalParameter;
+import com.capitaworld.service.loans.domain.fundprovider.WorkingCapitalParameterTemp;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
@@ -39,6 +44,9 @@ import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailResponse;
 import com.capitaworld.service.loans.model.teaser.primaryview.CorporatePrimaryViewResponse;
 import com.capitaworld.service.loans.repository.fundprovider.TermLoanParameterRepository;
+import com.capitaworld.service.loans.repository.fundprovider.WcTlLoanParameterRepository;
+import com.capitaworld.service.loans.repository.fundprovider.WorkingCapitalParameterRepository;
+import com.capitaworld.service.loans.repository.fundprovider.WorkingCapitalParameterTempRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
@@ -127,6 +135,15 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 	@Autowired
 	private TermLoanParameterRepository termLoanParameterRepository;
 
+	@Autowired
+	private WorkingCapitalParameterRepository workingCapitalRepository;
+
+	@Autowired
+	private WcTlLoanParameterRepository wctlrepo;
+
+	@Autowired
+	private ITRClient itrClient;
+	
 	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 	DecimalFormat decim = new DecimalFormat("#,###.00");
 
@@ -530,6 +547,8 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 		try {
 			FinancialInputRequest financialInputRequest = irrService.cmaIrrMappingService(userId, toApplicationId, null,
 					denomination);
+			
+			System.out.println("financialInputRequest.getYear()===>>>"+financialInputRequest.getYear());
 			// Profit & Loss Statement
 			financialInputRequest.setNetSaleFy(CommonUtils.substractNumbers(financialInputRequest.getGrossSalesFy(),
 					financialInputRequest.getLessExciseDuityFy()));
@@ -745,6 +764,22 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		//itr xml isUpload or Online check
+				try {
+					ITRConnectionResponse itrConnectionResponse= itrClient.getIsUploadAndYearDetails(toApplicationId);
+					if(itrConnectionResponse!= null) {
+						corporatePrimaryViewResponse.setItrXmlIsUploaded(itrConnectionResponse.getData());
+					}else {
+						System.out.println("itr Response is null");
+						
+					}
+					
+				} catch (Exception e) {
+					System.out.println("error while itr xml is uploaded or not check.");
+					e.printStackTrace();
+				}
+		
 
 		// bank statement data
 		ReportRequest reportRequest = new ReportRequest();
@@ -814,34 +849,60 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 		}
 
 		// Eligibility Data
-		TermLoanParameter termLoanParameter = termLoanParameterRepository.getById(fpProductMappingId);
-		if (termLoanParameter.getAssessmentMethodId() != null) {
-			Long assessmentId = termLoanParameter.getAssessmentMethodId().longValue();
-			corporatePrimaryViewResponse.setAssesmentId(assessmentId);
-			
-			EligibililityRequest eligibilityReq = new EligibililityRequest();
-			eligibilityReq.setApplicationId(toApplicationId);
-			// eligibilityReq.set
-			eligibilityReq.setFpProductMappingId(fpProductMappingId);
-			System.out.println(" for eligibility appid============>>" + toApplicationId);
 
-			try {
+		int loanId = primaryCorporateDetail.getProductId();
+		switch (loanId) {
+		case 1:
 
-				EligibilityResponse eligibilityResp = eligibilityClient.corporateLoanData(eligibilityReq);
-				// CLEligibilityRequest cLEligibilityRequest=
-				// MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>),
-				// CLEligibilityRequest.class);
-				corporatePrimaryViewResponse.setEligibilityDataObject(eligibilityResp.getData());
-
-			} catch (Exception e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+			WorkingCapitalParameter workingCapitalPara = workingCapitalRepository.getByID(fpProductMappingId);
+			if (workingCapitalPara.getAssessmentMethodId() != null) {
+				Long assessmentId = workingCapitalPara.getAssessmentMethodId().longValue();
+				corporatePrimaryViewResponse.setAssesmentId(assessmentId);
+			} else {
+				System.out.println("assesment id is null in wc");
 			}
-		} else {
-			logger.warn("assesment id is null..");
-		}
-		
+			break;
+		case 2:
 
+			TermLoanParameter termLoanParameter = termLoanParameterRepository.getById(fpProductMappingId);
+			if (termLoanParameter.getAssessmentMethodId() != null) {
+				Long assessmentId = termLoanParameter.getAssessmentMethodId().longValue();
+				corporatePrimaryViewResponse.setAssesmentId(assessmentId);
+			} else {
+				System.out.println("assesment id is null tl");
+			}
+			break;
+
+		case 16:
+
+			WcTlParameter wctlPara = wctlrepo.getById(fpProductMappingId);
+			if (wctlPara.getAssessmentMethodId() != null) {
+				Long assessmentId = wctlPara.getAssessmentMethodId().longValue();
+				corporatePrimaryViewResponse.setAssesmentId(assessmentId);
+			} else {
+				System.out.println("assesment id is null in wctl");
+			}
+			break;
+		default:
+			System.out.println("invalid loan id");
+			break;
+		}
+
+		EligibililityRequest eligibilityReq = new EligibililityRequest();
+		eligibilityReq.setApplicationId(toApplicationId);
+		// eligibilityReq.set
+		eligibilityReq.setFpProductMappingId(fpProductMappingId);
+		System.out.println(" for eligibility appid============>>" + toApplicationId);
+
+		try {
+
+			EligibilityResponse eligibilityResp = eligibilityClient.corporateLoanData(eligibilityReq);
+			corporatePrimaryViewResponse.setEligibilityDataObject(eligibilityResp.getData());
+
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		// CGTMSE
 		try {
 			CGTMSEDataResponse cgtmseDataResp = thirdPartyClient.getCalulation(toApplicationId);

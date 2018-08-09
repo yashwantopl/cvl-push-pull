@@ -15,6 +15,7 @@ public class FundSeekerInputRequestResponse {
     private Long clientId;
 
     private Long applicationId;
+    private Integer businessTypeId;
 
     private Long keyVericalFunding;
 
@@ -81,6 +82,17 @@ public class FundSeekerInputRequestResponse {
     private Integer proposedConstitutionOfUnit;
     private Double promoterContribution;
     /*
+     * Promoter Contribution Logic
+     * BY Ravina
+     * */
+    private Double totalAmtPercentage;
+
+
+    private Long stateId;
+    private Long cityId;
+    private Double proposedCost;
+
+    /*
      * SBI MSME Integration related fields
      * By Ravina
      * */
@@ -88,7 +100,7 @@ public class FundSeekerInputRequestResponse {
     private Integer factoryPremise;
     private Integer knowHow;
     private Integer competition;
-  
+
     public Long getUserId() {
         return userId;
     }
@@ -111,6 +123,14 @@ public class FundSeekerInputRequestResponse {
 
     public void setApplicationId(Long applicationId) {
         this.applicationId = applicationId;
+    }
+
+    public Integer getBusinessTypeId() {
+        return businessTypeId;
+    }
+
+    public void setBusinessTypeId(Integer businessTypeId) {
+        this.businessTypeId = businessTypeId;
     }
 
     public Long getKeyVericalFunding() {
@@ -350,6 +370,81 @@ public class FundSeekerInputRequestResponse {
 
     public void setAssessmentId(Integer assessmentId) {
         this.assessmentId = assessmentId;
+    }
+
+    public Double getTotalAmtPercentage() {
+        return totalAmtPercentage;
+    }
+
+    public void setTotalAmtPercentage(Double totalAmtPercentage) {
+        this.totalAmtPercentage = totalAmtPercentage;
+    }
+
+    public Long getStateId() {
+        return stateId;
+    }
+
+    public void setStateId(Long stateId) {
+        this.stateId = stateId;
+    }
+
+    public Long getCityId() {
+        return cityId;
+    }
+
+    public void setCityId(Long cityId) {
+        this.cityId = cityId;
+    }
+
+    public Double getProposedCost() {
+        return proposedCost;
+    }
+
+    public void setProposedCost(Double proposedCost) {
+        this.proposedCost = proposedCost;
+    }
+
+    @Override
+    public String toString() {
+        return "FundSeekerInputRequestResponse{" +
+                "userId=" + userId +
+                ", clientId=" + clientId +
+                ", applicationId=" + applicationId +
+                ", businessTypeId=" + businessTypeId +
+                ", keyVericalFunding=" + keyVericalFunding +
+                ", keyVerticalSector=" + keyVerticalSector +
+                ", keyVerticalSubsector=" + keyVerticalSubsector +
+                ", firstAddress=" + firstAddress +
+                ", organisationName='" + organisationName + '\'' +
+                ", aadhar='" + aadhar + '\'' +
+                ", msmeRegistrationNumber='" + msmeRegistrationNumber + '\'' +
+                ", loanAmount=" + loanAmount +
+                ", businessAssetAmount=" + businessAssetAmount +
+                ", wcAmount=" + wcAmount +
+                ", otherAmt=" + otherAmt +
+                ", purposeOfLoanId=" + purposeOfLoanId +
+                ", haveCollateralSecurity=" + haveCollateralSecurity +
+                ", collateralSecurityAmount=" + collateralSecurityAmount +
+                ", constitutionId=" + constitutionId +
+                ", financialArrangementsDetailRequestsList=" + financialArrangementsDetailRequestsList +
+                ", directorBackgroundDetailRequestsList=" + directorBackgroundDetailRequestsList +
+                ", industrylist=" + industrylist +
+                ", sectorlist=" + sectorlist +
+                ", subsectors=" + subsectors +
+                ", costOfMachinery=" + costOfMachinery +
+                ", incrementalTurnover=" + incrementalTurnover +
+                ", assessmentId=" + assessmentId +
+                ", tenureRequired=" + tenureRequired +
+                ", proposedDetailsOfUnit=" + proposedDetailsOfUnit +
+                ", costOfProject=" + costOfProject +
+                ", proposedOperationDate=" + proposedOperationDate +
+                ", proposedConstitutionOfUnit=" + proposedConstitutionOfUnit +
+                ", promoterContribution=" + promoterContribution +
+                ", totalAmtPercentage=" + totalAmtPercentage +
+                ", stateId=" + stateId +
+                ", cityId=" + cityId +
+                ", proposedCost=" + proposedCost +
+                '}';
     }
 
     public Date getCommercialOperationDate() {

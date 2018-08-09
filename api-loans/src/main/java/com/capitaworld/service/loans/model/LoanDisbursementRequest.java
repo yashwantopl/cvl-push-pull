@@ -3,11 +3,13 @@ package com.capitaworld.service.loans.model;
 import java.io.Serializable;
 
 import java.util.Date;
+
+import com.capitaworld.service.loans.model.common.AuditActivityRequest;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class LoanDisbursementRequest implements Serializable {
+public class LoanDisbursementRequest extends AuditActivityRequest implements Serializable {
 
 	/**
 	 * 

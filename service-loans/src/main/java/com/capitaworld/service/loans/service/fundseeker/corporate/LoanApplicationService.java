@@ -165,7 +165,7 @@ public interface LoanApplicationService {
 	
 	public LoanApplicationRequest getLoanApplicationDetails(Long userId, Long applicationId);
 
-	public ScoringModelReqRes getMinMaxMarginByApplicationId(Long applicationId);
+	public ScoringModelReqRes getMinMaxMarginByApplicationId(Long applicationId,Integer businessTypeId);
 
 	/**
 	 * @param applicationId
