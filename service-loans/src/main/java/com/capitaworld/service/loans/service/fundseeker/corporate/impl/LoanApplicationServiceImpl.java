@@ -4310,7 +4310,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 				if(connectResponse.getProceed()) {
 					if(loanApplicationMaster.getCompanyCinNumber()!=null) {
-						mcaAsyncComponent.callMCA(loanApplicationMaster.getCompanyCinNumber(),loanApplicationMaster.getId(),loanApplicationMaster.getUserId());
+						mcaAsyncComponent.callMCAForData(loanApplicationMaster.getCompanyCinNumber(),loanApplicationMaster.getId(),loanApplicationMaster.getUserId());
 					}
 				}
 			} else {
@@ -4424,7 +4424,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 						if(connectResponse.getProceed()) {
 							logger.info("loanApplicationMaster.getCompanyCinNumber()==============>>>"+loanApplicationMaster.getCompanyCinNumber());
 							if(loanApplicationMaster.getCompanyCinNumber()!=null) {
-								mcaAsyncComponent.callMCA(loanApplicationMaster.getCompanyCinNumber(),loanApplicationMaster.getId(),loanApplicationMaster.getUserId());
+								mcaAsyncComponent.callMCAForData(loanApplicationMaster.getCompanyCinNumber(),loanApplicationMaster.getId(),loanApplicationMaster.getUserId());
 							}
 						}
 						
@@ -6668,11 +6668,7 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 						
 						
 						perInfo.setFullName(creditReport.getNameSegment().getConsumerName1());
-						if("16".equals(orgId+"")) {
-							perInfo.setGender(GenderTypeEnum.fromId(String.valueOf(creditReport.getNameSegment().getGender())).getSbiValue());
-						}else {
-							perInfo.setGender(GenderTypeEnum.fromId(String.valueOf(creditReport.getNameSegment().getGender())).getValue());
-						}
+						perInfo.setGender(GenderTypeEnum.fromId(String.valueOf(creditReport.getNameSegment().getGender())).getValue());
 						if(!CommonUtils.isObjectNullOrEmpty(creditReport.getNameSegment().getDateOfBirth())){
 							String date = String.valueOf(creditReport.getNameSegment().getDateOfBirth());
 							String dt = date.substring(0, 2);
@@ -7302,7 +7298,7 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 		if(Boolean.valueOf(isProduction)) {
 			sidbiIntegrationClient.setIntegrationBaseUrl(request.getProductionUrl());
 		}else {
-			sidbiIntegrationClient.setIntegrationBaseUrl("http://localhost:8287/sidbi-integration/"); //request.getUatUrl()
+			sidbiIntegrationClient.setIntegrationBaseUrl(request.getUatUrl()); //request.getUatUrl()
 		}
 		
 		logger.warn("Getting token from SidbiIntegrationClient --------------" +applicationId);
@@ -8210,6 +8206,7 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 		for (OperatingStatementDetails operatingStatementDetails : operatingStatementDetailsList) {
 			operatingStatementDetailsRequest = new OperatingStatementDetailsRequest();
 			BeanUtils.copyProperties(operatingStatementDetails, operatingStatementDetailsRequest, "id");
+			operatingStatementDetailsRequest.setApplicationId(applicationId);
 			operatingStatementDetailsRequestsList.add(operatingStatementDetailsRequest);
 		}
 		
@@ -8219,6 +8216,7 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 		for (LiabilitiesDetails liabilitiesDetailsFrom : liabilitiesDetailsList) {
 			liabilitiesDetailsRequest = new LiabilitiesDetailsRequest();
 			BeanUtils.copyProperties(liabilitiesDetailsFrom, liabilitiesDetailsRequest, "id");
+			liabilitiesDetailsRequest.setApplicationId(applicationId);
 			liabilitiesDetailsRequestsList.add(liabilitiesDetailsRequest);
 	
 		}
@@ -8228,6 +8226,7 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 		for (AssetsDetails assetsDetails : assetsDetailsList) {
 			assetsDetailsRequest = new AssetsDetailsRequest();
 			BeanUtils.copyProperties(assetsDetails, assetsDetailsRequest, "id");
+			liabilitiesDetailsRequest.setApplicationId(applicationId);
 			assetsRequestList.add(assetsDetailsRequest);
 		}
 		
@@ -8355,12 +8354,8 @@ public ClientLogicCalculationRequest getClientLogicCalculationDetail(Long applic
 				DirectorBackgroundDetail directorBackgroundDetail = directorBackgroundDetailsRepository.getByAppIdAndIsMainDirector(applicationId);
 				
 				//Gender Code
-				if("16".equals(orgId+"")) {
-					clientLogicCalculationRequest.setDirGenderCode(GenderTypeEnum.fromId(String.valueOf(directorBackgroundDetail.getGender())).getSbiValue());
-				}else {
-					clientLogicCalculationRequest.setDirGenderCode(GenderTypeEnum.fromId(String.valueOf(directorBackgroundDetail.getGender())).getValue());
-					/*clientLogicCalculationRequest.setDirGenderCode(GenderTypeEnum.fromId(directorBackgroundDetail.getGender()).getValue());*/
-				}
+				clientLogicCalculationRequest.setDirGenderCode(GenderTypeEnum.fromId(String.valueOf(directorBackgroundDetail.getGender())).getValue());
+				/*clientLogicCalculationRequest.setDirGenderCode(GenderTypeEnum.fromId(directorBackgroundDetail.getGender()).getValue());*/
 				
 				//Debit Summation And Credit Summation
 				if(! CommonUtils.isObjectListNull(data , data.getSummaryInfo() , data.getSummaryInfo().getSummaryInfoTotalDetails())) {
