@@ -1317,8 +1317,31 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		prevFinYearString.setAdjustedTotalDebtEquity(CommonUtils.convertValue(prevFinYearDouble.getAdjustedTotalDebtEquity()));
 		yrBeforePrevFinYearString.setAdjustedTotalDebtEquity(CommonUtils.convertValue(yrBeforePrevFinYearDouble.getAdjustedTotalDebtEquity()));
 		
-		curFinYearString.setGrowthDebtEquity(CommonUtils.convertValue(CommonUtils.substractNumbers(curFinYearDouble.getAdjustedTotalDebtEquity(),prevFinYearDouble.getAdjustedTotalDebtEquity())/prevFinYearDouble.getAdjustedTotalDebtEquity()));
-		prevFinYearString.setGrowthDebtEquity(CommonUtils.convertValue(CommonUtils.substractNumbers(prevFinYearDouble.getAdjustedTotalDebtEquity(),yrBeforePrevFinYearDouble.getAdjustedTotalDebtEquity())/yrBeforePrevFinYearDouble.getAdjustedTotalDebtEquity()));
+		Double step1GrowthDebtEq = CommonUtils.substractNumbers(curFinYearDouble.getAdjustedTotalDebtEquity(),prevFinYearDouble.getAdjustedTotalDebtEquity()); 
+		if(step1GrowthDebtEq != 0.0 && !CommonUtils.isObjectNullOrEmpty(step1GrowthDebtEq)) {
+			Double step2GrowthDebtEq = step1GrowthDebtEq / prevFinYearDouble.getAdjustedTotalDebtEquity();
+			if(step2GrowthDebtEq !=0.0 && !CommonUtils.isObjectNullOrEmpty(step2GrowthDebtEq)) {
+				curFinYearString.setGrowthDebtEquity(CommonUtils.convertValue(step2GrowthDebtEq));
+			}else {
+				curFinYearString.setGrowthDebtEquity("0.0");
+			}
+		}else {
+			curFinYearString.setGrowthDebtEquity("0.0");
+		}
+		//curFinYearString.setGrowthDebtEquity(CommonUtils.convertValue(CommonUtils.substractNumbers(curFinYearDouble.getAdjustedTotalDebtEquity(),prevFinYearDouble.getAdjustedTotalDebtEquity())/prevFinYearDouble.getAdjustedTotalDebtEquity()));
+		
+		Double step1GrowthDebtEq2 = CommonUtils.substractNumbers(prevFinYearDouble.getAdjustedTotalDebtEquity(),yrBeforePrevFinYearDouble.getAdjustedTotalDebtEquity()); 
+		if(step1GrowthDebtEq2 != 0.0 && !CommonUtils.isObjectNullOrEmpty(step1GrowthDebtEq2)) {
+			Double step2GrowthDebtEq2 = step1GrowthDebtEq2 / yrBeforePrevFinYearDouble.getAdjustedTotalDebtEquity();
+			if(step2GrowthDebtEq2 !=0.0 && !CommonUtils.isObjectNullOrEmpty(step2GrowthDebtEq2)) {
+				prevFinYearString.setGrowthDebtEquity(CommonUtils.convertValue(step2GrowthDebtEq2));
+			}else {
+				prevFinYearString.setGrowthDebtEquity("0.0");
+			}
+		}else {
+			prevFinYearString.setGrowthDebtEquity("0.0");
+		} 
+		//prevFinYearString.setGrowthDebtEquity(CommonUtils.convertValue(CommonUtils.substractNumbers(prevFinYearDouble.getAdjustedTotalDebtEquity(),yrBeforePrevFinYearDouble.getAdjustedTotalDebtEquity())/yrBeforePrevFinYearDouble.getAdjustedTotalDebtEquity()));
 		
 		curFinYearString.setCurruntRatioX(CommonUtils.convertValue(CommonUtils.divideNumbers((CommonUtils.addNumbers(curFinYearDouble.getInventories(),curFinYearDouble.getSundryDebtors())), curFinYearDouble.getTradePayables())));
 		prevFinYearString.setCurruntRatioX(CommonUtils.convertValue(CommonUtils.divideNumbers((CommonUtils.addNumbers(prevFinYearDouble.getInventories(),prevFinYearDouble.getSundryDebtors())), prevFinYearDouble.getTradePayables())));
