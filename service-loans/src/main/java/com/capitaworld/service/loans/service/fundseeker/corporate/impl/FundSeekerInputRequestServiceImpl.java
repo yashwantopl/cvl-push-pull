@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+
+import com.capitaworld.service.loans.domain.fundseeker.corporate.*;
+import com.capitaworld.service.loans.model.*;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -19,23 +23,8 @@ import com.capitaworld.service.fraudanalytics.client.FraudAnalyticsClient;
 import com.capitaworld.service.fraudanalytics.model.AnalyticsRequest;
 import com.capitaworld.service.fraudanalytics.model.AnalyticsResponse;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
-import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
-import com.capitaworld.service.loans.domain.fundseeker.corporate.DirectorBackgroundDetail;
-import com.capitaworld.service.loans.domain.fundseeker.corporate.FinancialArrangementsDetail;
-import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
-import com.capitaworld.service.loans.model.Address;
-import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
-import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
-import com.capitaworld.service.loans.model.LoansResponse;
-import com.capitaworld.service.loans.model.NTBRequest;
 import com.capitaworld.service.loans.model.common.HunterRequestDataResponse;
 import com.capitaworld.service.loans.model.corporate.FundSeekerInputRequestResponse;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.DirectorBackgroundDetailsRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.FinancialArrangementDetailsRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FundSeekerInputRequestService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
@@ -79,6 +68,9 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 	
 	@Autowired
 	private Environment environment;
+
+	@Autowired
+	private DirectorPersonalDetailRepository directorPersonalDetailRepository;
 
 	@Override
 	public boolean saveOrUpdate(FundSeekerInputRequestResponse fundSeekerInputRequest) throws Exception {
@@ -166,9 +158,9 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 						saveFinObj.setModifiedDate(new Date());
 					}
 					financialArrangementDetailsRepository.save(saveFinObj);
-				}	
+				}
 			}
-			
+
 			return true;
 
 		} catch (Exception e) {
@@ -241,12 +233,11 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 				corporateApplicantDetail.setModifiedDate(new Date());
 			}
 			copyAddressFromRequestToDomain(fundSeekerInputRequest, corporateApplicantDetail);
-			logger.info("Just Before Save ------------------------------------->"
-					+ corporateApplicantDetail.getConstitutionId());
+
+			logger.info("Just Before Save ------------------------------------->" + corporateApplicantDetail.getConstitutionId());
 			corporateApplicantDetailRepository.save(corporateApplicantDetail);
 			// ==== Director details
-			List<DirectorBackgroundDetailRequest> directorBackgroundDetailRequestList = fundSeekerInputRequest
-					.getDirectorBackgroundDetailRequestsList();
+			List<DirectorBackgroundDetailRequest> directorBackgroundDetailRequestList = fundSeekerInputRequest.getDirectorBackgroundDetailRequestsList();
 
 			try {
 				for (DirectorBackgroundDetailRequest reqObj : directorBackgroundDetailRequestList) {
@@ -270,7 +261,25 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 						saveDirObj.setCreatedDate(new Date());
 						saveDirObj.setIsActive(true);
 					}
-
+					if(reqObj.getIsMainDirector()){
+						DirectorPersonalDetailRequest directorPersonalDetailRequest = reqObj.getDirectorPersonalDetailRequest();
+						DirectorPersonalDetail directorPersonalDetail = null;
+						if(directorPersonalDetailRequest.getId() != null){
+							directorPersonalDetail = directorPersonalDetailRepository.findOne(directorPersonalDetailRequest.getId());
+						}else{
+							directorPersonalDetail = new DirectorPersonalDetail();
+							directorPersonalDetail.setCreatedBy(fundSeekerInputRequest.getUserId());
+							directorPersonalDetail.setCreatedDate(new Date());
+						}
+						BeanUtils.copyProperties(directorPersonalDetailRequest,directorPersonalDetail);
+						directorPersonalDetail.setModifiedBy(fundSeekerInputRequest.getUserId());
+						directorPersonalDetail.setModifiedDate(new Date());
+						DirectorPersonalDetail directorPersonalDetailTemp=directorPersonalDetailRepository.save(directorPersonalDetail);
+						logger.info("employment detail saved successfully");
+						saveDirObj.setDirectorPersonalDetail(directorPersonalDetailTemp);
+					}else{
+						saveDirObj.setDirectorPersonalDetail(null);
+					}
 					directorBackgroundDetailsRepository.save(saveDirObj);
 				}
 			} catch (Exception e) {
@@ -384,6 +393,11 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 
 				directorBackgroundDetailRequest = new DirectorBackgroundDetailRequest();
 				BeanUtils.copyProperties(directorBackgroundDetail, directorBackgroundDetailRequest);
+				if(directorBackgroundDetail.getIsMainDirector() && !CommonUtils.isObjectNullOrEmpty(directorBackgroundDetail.getDirectorPersonalDetail())){
+					DirectorPersonalDetailRequest directorPersonalDetailRequest = new DirectorPersonalDetailRequest();
+					BeanUtils.copyProperties(directorBackgroundDetail.getDirectorPersonalDetail(), directorPersonalDetailRequest);
+					directorBackgroundDetailRequest.setDirectorPersonalDetailRequest(directorPersonalDetailRequest);
+				}
 				directorBackgroundDetailRequestList.add(directorBackgroundDetailRequest);
 			}
 			fundSeekerInputResponse.setDirectorBackgroundDetailRequestsList(directorBackgroundDetailRequestList);
