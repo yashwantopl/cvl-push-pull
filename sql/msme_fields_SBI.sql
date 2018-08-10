@@ -1,5 +1,5 @@
 CREATE TABLE `loan_application`.`fs_corporate_director_personal_detail` (
-  `id` BIGINT(20) UNSIGNED NOT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `marital_status` BIGINT(20) NULL,
   `spouse_detail` BIGINT(20) NULL,
   `no_of_children` BIGINT(20) NULL,

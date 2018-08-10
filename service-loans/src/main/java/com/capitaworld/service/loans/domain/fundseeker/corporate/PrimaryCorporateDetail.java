@@ -233,7 +233,7 @@ public class PrimaryCorporateDetail extends LoanApplicationMaster implements Ser
     public void setIncrementalTurnover(Double incrementalTurnover) {
         this.incrementalTurnover = incrementalTurnover;
     }
-
+    
     public Date getProposedOperationDate() {
         return proposedOperationDate;
     }
@@ -304,6 +304,40 @@ public class PrimaryCorporateDetail extends LoanApplicationMaster implements Ser
 
     public void setTotalAmtPercentage(Double totalAmtPercentage) {
         this.totalAmtPercentage = totalAmtPercentage;
+    }
+
+    /* @Override
+
+    public Date getCommercialOperationDate() {
+        return commercialOperationDate;
+    }
+
+    public void setCommercialOperationDate(Date commercialOperationDate) {
+        this.commercialOperationDate = commercialOperationDate;
+    }
+
+    public Integer getFactoryPremise() {
+        return factoryPremise;
+    }
+
+    public void setFactoryPremise(Integer factoryPremise) {
+        this.factoryPremise = factoryPremise;
+    }
+
+    public Integer getKnowHow() {
+        return knowHow;
+    }
+
+    public void setKnowHow(Integer knowHow) {
+        this.knowHow = knowHow;
+    }
+
+    public Integer getCompetition() {
+        return competition;
+    }
+
+    public void setCompetition(Integer competition) {
+        this.competition = competition;
     }
 
     /* @Override
