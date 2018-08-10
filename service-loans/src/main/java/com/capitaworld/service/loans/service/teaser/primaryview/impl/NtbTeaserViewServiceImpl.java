@@ -34,6 +34,7 @@ import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.loans.domain.fundprovider.TermLoanParameter;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.DirectorBackgroundDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailResponse;
@@ -239,14 +240,46 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService {
 			List<Map<String, Object>> directorBackgroundDetails = corporateDirectorIncomeService
 					.getDirectorBackGroundDetails(toApplicationId);
 			ntbPrimaryViewRespone.setDirectorBackGroundDetails(directorBackgroundDetails);
+			
+			/*for(int i=0 ; i<directorBackgroundDetails.size() ; i++) {
+				DirectorBackgroundDetail dir = MultipleJSONObjectHelper.getObjectFromMap(directorBackgroundDetails.get(i), DirectorBackgroundDetail.class);
+				Long dirId = dir.getId();
+				try {
+					List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestList = financialArrangementDetailsService
+							.getFinancialArrangementDetailsList(toApplicationId, dirId);
+					List<FinancialArrangementsDetailResponse> financialArrangementsDetailResponseList = new ArrayList<>();
+					for (FinancialArrangementsDetailRequest financialArrangementsDetailRequest : financialArrangementsDetailRequestList) {
+						FinancialArrangementsDetailResponse financialArrangementsDetailResponse = new FinancialArrangementsDetailResponse();
+						// financialArrangementsDetailResponse.setRelationshipSince(financialArrangementsDetailRequest.getRelationshipSince());
+						financialArrangementsDetailResponse
+								.setOutstandingAmount(financialArrangementsDetailRequest.getOutstandingAmount());
+						financialArrangementsDetailResponse
+								.setSecurityDetails(financialArrangementsDetailRequest.getSecurityDetails());
+						financialArrangementsDetailResponse.setAmount(financialArrangementsDetailRequest.getAmount());
+						// financialArrangementsDetailResponse.setLenderType(LenderType.getById(financialArrangementsDetailRequest.getLenderType()).getValue());
+						financialArrangementsDetailResponse.setLoanDate(financialArrangementsDetailRequest.getLoanDate());
+						financialArrangementsDetailResponse.setLoanType(financialArrangementsDetailRequest.getLoanType());
+						financialArrangementsDetailResponse
+								.setFinancialInstitutionName(financialArrangementsDetailRequest.getFinancialInstitutionName());
+						// financialArrangementsDetailResponse.setFacilityNature(NatureFacility.getById(financialArrangementsDetailRequest.getFacilityNatureId()).getValue());
+						// financialArrangementsDetailResponse.setAddress(financialArrangementsDetailRequest.getAddress());
+						financialArrangementsDetailResponseList.add(financialArrangementsDetailResponse);
+					}
+					ntbPrimaryViewRespone.setFinancialArrangementsDetailResponseList(financialArrangementsDetailResponseList);
+
+				} catch (Exception e) {
+					logger.error("Problem to get Data of Financial Arrangements Details {}", e);
+				}
+			}*/
+			
 			if(directorBackgroundDetails.size() >1) {
 				
 				ntbPrimaryViewRespone.setIsMultipleUser(false);
 			}else {
 				ntbPrimaryViewRespone.setIsMultipleUser(true);
 			}
-
 		} catch (Exception e) {
+			e.printStackTrace();
 			logger.error("Problem to get Data of Director's Background=========> {}", e);
 		}
 
@@ -418,7 +451,7 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService {
 		 */
 
 		// get value of Financial Arrangements and set in response
-		try {
+		/*try {
 			List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestList = financialArrangementDetailsService
 					.getFinancialArrangementDetailsList(toApplicationId, userId);
 			List<FinancialArrangementsDetailResponse> financialArrangementsDetailResponseList = new ArrayList<>();
@@ -443,7 +476,7 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService {
 
 		} catch (Exception e) {
 			logger.error("Problem to get Data of Financial Arrangements Details {}", e);
-		}
+		}*/
 
 		// BANK STATEMENT
 		ReportRequest reportRequest = new ReportRequest();
