@@ -962,7 +962,7 @@ public class ScoringServiceImpl implements ScoringService{
 
                             if(!CommonUtils.isObjectNullOrEmpty(mainDirectorBackgroundDetail.getDirectorPersonalDetail().getOwningHouse()))
                             {
-                                scoringParameterRequest.setOwningHouse(true == mainDirectorBackgroundDetail.getDirectorPersonalDetail().getOwningHouse() ? 1l :2l);
+                                scoringParameterRequest.setOwningHouse(1 == mainDirectorBackgroundDetail.getDirectorPersonalDetail().getOwningHouse() ? 1l :2l);
                                 scoringParameterRequest.setOwningHouse_p(true);
                             }
                             else {
@@ -1050,7 +1050,7 @@ public class ScoringServiceImpl implements ScoringService{
 
                             if(!CommonUtils.isObjectNullOrEmpty(mainDirectorBackgroundDetail.getDirectorPersonalDetail().getAssessedForIt()))
                             {
-                                scoringParameterRequest.setAssessedFOrIT(true == mainDirectorBackgroundDetail.getDirectorPersonalDetail().getAssessedForIt() ? 1l : 2l);
+                                scoringParameterRequest.setAssessedFOrIT(1 == mainDirectorBackgroundDetail.getDirectorPersonalDetail().getAssessedForIt() ? 1l : 2l);
                                 scoringParameterRequest.setAssessedForIncomeTax_p(true);
                             }
                             else {
@@ -1072,7 +1072,7 @@ public class ScoringServiceImpl implements ScoringService{
 
                             if(!CommonUtils.isObjectNullOrEmpty(mainDirectorBackgroundDetail.getDirectorPersonalDetail().getHaveLiPolicy()))
                             {
-                                scoringParameterRequest.setHaveLIPolicy(true == mainDirectorBackgroundDetail.getDirectorPersonalDetail().getHaveLiPolicy() ? 1l : 2l);
+                                scoringParameterRequest.setHaveLIPolicy(1 == mainDirectorBackgroundDetail.getDirectorPersonalDetail().getHaveLiPolicy() ? 1l : 2l);
                                 scoringParameterRequest.setHaveLifeIncPolicy_p(true);
                             }
                             else {
