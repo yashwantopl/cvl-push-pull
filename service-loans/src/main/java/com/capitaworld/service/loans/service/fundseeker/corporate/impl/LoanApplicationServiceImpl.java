@@ -7310,8 +7310,7 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 		GenerateTokenRequest generateTokenRequest = new GenerateTokenRequest();
 		generateTokenRequest.setApplicationId(applicationId);
 		generateTokenRequest.setPassword(request.getPassword());
-		String bankToken = null;
-		if(organizationId == 16l) {
+		if(organizationId == 16l || organizationId == 17l) {
 			String reqTok = "bobc:bob12345";
 			String requestDataEnc = Base64.getEncoder().encodeToString(reqTok.getBytes());
 			generateTokenRequest.setBankToken(requestDataEnc);
