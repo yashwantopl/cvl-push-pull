@@ -16,9 +16,10 @@ public class DirectorPersonalDetailRequest implements Serializable {
     private Integer maritalStatus;
     private Integer spouseDetail;
     private Integer noOfChildren;
-    private Boolean owningHouse;
-    private Boolean assessedForIt;
-    private Boolean haveLiPolicy;
+    private Integer owningHouse;
+    private Integer assessedForIt;
+    private Integer haveLiPolicy;
+    private String spouseName;
 
     public Long getId() {
         return id;
@@ -52,27 +53,35 @@ public class DirectorPersonalDetailRequest implements Serializable {
         this.noOfChildren = noOfChildren;
     }
 
-    public Boolean getOwningHouse() {
+    public Integer getOwningHouse() {
         return owningHouse;
     }
 
-    public void setOwningHouse(Boolean owningHouse) {
+    public void setOwningHouse(Integer owningHouse) {
         this.owningHouse = owningHouse;
     }
 
-    public Boolean getAssessedForIt() {
+    public Integer getAssessedForIt() {
         return assessedForIt;
     }
 
-    public void setAssessedForIt(Boolean assessedForIt) {
+    public void setAssessedForIt(Integer assessedForIt) {
         this.assessedForIt = assessedForIt;
     }
 
-    public Boolean getHaveLiPolicy() {
+    public Integer getHaveLiPolicy() {
         return haveLiPolicy;
     }
 
-    public void setHaveLiPolicy(Boolean haveLiPolicy) {
+    public void setHaveLiPolicy(Integer haveLiPolicy) {
         this.haveLiPolicy = haveLiPolicy;
+    }
+
+    public String getSpouseName() {
+        return spouseName;
+    }
+
+    public void setSpouseName(String spouseName) {
+        this.spouseName = spouseName;
     }
 }

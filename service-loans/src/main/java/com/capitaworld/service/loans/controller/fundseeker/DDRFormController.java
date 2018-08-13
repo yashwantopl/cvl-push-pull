@@ -123,7 +123,7 @@ public class DDRFormController {
 			userId = clientId;
 		}
 		try {
-			
+			userId = 2827l;
 			DDRRequest ddrRequest = ddrFormService.getMergeDDR(appId, userId);
 			logger.info("DDR Form Get Successfully---------------------------->");
 			return new ResponseEntity<LoansResponse>(
@@ -144,7 +144,7 @@ public class DDRFormController {
 	 * @param id
 	 * @return
 	 */
-	@RequestMapping(value = "/saveCombinedDDR/{appId}", method = RequestMethod.POST,consumes = MediaType.APPLICATION_JSON_VALUE , produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/saveCombinedDDR", method = RequestMethod.POST,consumes = MediaType.APPLICATION_JSON_VALUE , produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> saveCombinedDDR(@RequestBody DDRRequest ddrRequest, HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
 		logger.info("Enter in COMBINED DDR Form SAVE Method -------------------------->");
 
@@ -152,13 +152,13 @@ public class DDRFormController {
 		if (CommonDocumentUtils.isThisClientApplication(request) && !CommonUtils.isObjectNullOrEmpty(clientId)) {
 			userId = clientId;
 		}
-		if (CommonUtils.isObjectNullOrEmpty(userId)) {
+		/*if (CommonUtils.isObjectNullOrEmpty(userId)) {
 			logger.info("Invalid Request, UserId is null or Empty, COMBINED DDR Form SAVE Method");
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
-		}
+		}*/
 		try {
-			ddrRequest.setUserId(userId);
+			ddrRequest.setUserId(2827l);
 			ddrFormService.saveMergeDDR(ddrRequest);
 			logger.info("DDR COMBINED Form Saved Successfully---------------------------->");
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Data Saved", HttpStatus.OK.value()), HttpStatus.OK);

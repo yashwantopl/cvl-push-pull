@@ -69,7 +69,7 @@ public class SecurityCorporateDetailsServiceImpl implements SecurityCorporateDet
 	public List<SecurityCorporateDetailRequest> getsecurityCorporateDetailsList(Long id,Long userId) throws Exception {
 		try {
 			List<SecurityCorporateDetail> securityCorporateDetails = securityCorporateDetailsRepository
-					.listSecurityCorporateDetailFromAppId(id,userId);
+					.getSecurityCorporateDetailFromAppId(id);
 			List<SecurityCorporateDetailRequest> securityCorporateDetailRequests = new ArrayList<SecurityCorporateDetailRequest>();
 
 			for (SecurityCorporateDetail detail : securityCorporateDetails) {

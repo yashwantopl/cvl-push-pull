@@ -68,7 +68,7 @@ public class ExistingProductDetailsServiceImpl implements ExistingProductDetails
 	public List<ExistingProductDetailRequest> getExistingProductDetailList(Long applicationId, Long userId) throws Exception {
 		try {
 			List<ExistingProductDetail> existingProductDetails = existingProductDetailsRepository
-					.listExistingProductFromAppId(applicationId,userId);
+					.listExistingProductFromAppId(applicationId);
 			List<ExistingProductDetailRequest> existingProductDetailRequests = new ArrayList<ExistingProductDetailRequest>();
 
 			for (ExistingProductDetail detail : existingProductDetails) {

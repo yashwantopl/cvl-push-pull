@@ -5014,6 +5014,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		Boolean bankStatement = false;
 		Boolean saveFinancialDetails = false;
 		Boolean saveCmaDetails = false;
+		Boolean saveLogicDetails = false;
 		applicationMaster = primaryCorporateRepository.findOneByApplicationIdId(applicationId);
 		try {
 			AuditMaster audit = auditComponent.getAudit(applicationId, true, AuditComponent.PRELIM_INFO);
@@ -5252,7 +5253,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					logger.info("Start Saving FinancialRequest in savePhese1DataToSidbi() ");
 					saveFinancialDetails = sidbiIntegrationClient.saveFinancialDetails(financialDetails, generateTokenRequest.getToken());
 					logger.info("Sucessfully save FinancialRequest in savePhese1DataToSidbi() for  ApplicationId ====>{}FpProductId====>{}Flag==>{}",applicationId,fpProductMappingId,saveFinancialDetails);
-					auditComponent.updateAudit(AuditComponent.FINANCIAL, applicationId, userId, null, eligibilityParameters);
+					auditComponent.updateAudit(AuditComponent.FINANCIAL, applicationId, userId, null, saveFinancialDetails);
 				}
 			}else {
 				logger.info("Financial Details Already Saved so not Going to Save Again===>");
@@ -5273,7 +5274,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					logger.info("Start Saving CMA Details in savePhese1DataToSidbi() ");
 					saveCmaDetails = sidbiIntegrationClient.saveCMADetailsOfAuditYears(cmaRequest, generateTokenRequest.getToken());
 					logger.info("Sucessfully save CMA Details in savePhese1DataToSidbi() for  ApplicationId ====>{}FpProductId====>{}Flag==>{}",applicationId,fpProductMappingId,saveCmaDetails);
-					auditComponent.updateAudit(AuditComponent.CMA_DETAIL, applicationId, userId, null, eligibilityParameters);
+					auditComponent.updateAudit(AuditComponent.CMA_DETAIL, applicationId, userId, null, saveCmaDetails);
 				}
 			}else {
 				logger.info("CMA Details Already Saved so not Going to Save Again===>");
@@ -5293,12 +5294,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					return false;
 				}else {
 					logger.error("Start Saving LOGIC Details in savePhese1DataToSidbi() ");
-					//saveCmaDetails = sidbiIntegrationClient.saveCMADetailsOfAuditYears(cmaRequest, generateTokenRequest.getToken());
-					logger.info("Sucessfully save LOGIC Details in savePhese1DataToSidbi() for  ApplicationId ====>{}FpProductId====>{}Flag==>{}",applicationId,fpProductMappingId,saveCmaDetails);
-					auditComponent.updateAudit(AuditComponent.LOGIC, applicationId, userId, null, eligibilityParameters);
+					saveLogicDetails = sidbiIntegrationClient.saveLogic(clientLogicCalculationRequest, generateTokenRequest.getToken());
+					logger.info("Sucessfully save LOGIC Details in savePhese1DataToSidbi() for  ApplicationId ====>{}FpProductId====>{}Flag==>{}",applicationId,fpProductMappingId,saveLogicDetails);
+					auditComponent.updateAudit(AuditComponent.LOGIC, applicationId, userId, null, saveLogicDetails);
 				}
 			}else {
-				logger.info("CMA Details Already Saved so not Going to Save Again===>");
+				logger.info("Logic Details Already Saved so not Going to Save Again===>");
 			}
 			//Saving Logic Details Ends
 		

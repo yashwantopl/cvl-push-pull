@@ -112,10 +112,10 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 	* SBI Msme Integration fields
 	* By Ravina
 	* */
-	private String fatherOrSpouseName;
+	private String fatherName;
 	private Integer educationalStatus;
 	private Integer nationality;
-	private Boolean visuallyImpaired;
+	private Integer visuallyImpaired;
 	private Integer residentStatus;
 	private Boolean isGuarantor;
 	private DirectorPersonalDetailRequest directorPersonalDetailRequest;
@@ -509,12 +509,12 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 		this.amount = amount;
 	}
 
-	public String getFatherOrSpouseName() {
-		return fatherOrSpouseName;
+	public String getFatherName() {
+		return fatherName;
 	}
 
-	public void setFatherOrSpouseName(String fatherOrSpouseName) {
-		this.fatherOrSpouseName = fatherOrSpouseName;
+	public void setFatherName(String fatherName) {
+		this.fatherName = fatherName;
 	}
 
 	public Integer getEducationalStatus() {
@@ -533,11 +533,11 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 		this.nationality = nationality;
 	}
 
-	public Boolean getVisuallyImpaired() {
+	public Integer getVisuallyImpaired() {
 		return visuallyImpaired;
 	}
 
-	public void setVisuallyImpaired(Boolean visuallyImpaired) {
+	public void setVisuallyImpaired(Integer visuallyImpaired) {
 		this.visuallyImpaired = visuallyImpaired;
 	}
 
@@ -611,7 +611,7 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 				", isMainDirector=" + isMainDirector +
 				", qualificationId=" + qualificationId +
 				", amount='" + amount + '\'' +
-				", fatherOrSpouseName='" + fatherOrSpouseName + '\'' +
+				", fatherName='" + fatherName + '\'' +
 				", educationalStatus=" + educationalStatus +
 				", nationality=" + nationality +
 				", visuallyImpaired=" + visuallyImpaired +
