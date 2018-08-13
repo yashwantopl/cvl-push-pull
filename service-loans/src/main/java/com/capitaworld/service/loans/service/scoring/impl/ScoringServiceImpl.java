@@ -962,7 +962,7 @@ public class ScoringServiceImpl implements ScoringService{
 
                             if(!CommonUtils.isObjectNullOrEmpty(mainDirectorBackgroundDetail.getDirectorPersonalDetail().getOwningHouse()))
                             {
-                                scoringParameterRequest.setOwningHouse(1 == mainDirectorBackgroundDetail.getDirectorPersonalDetail().getOwningHouse() ? 1l :2l);
+                                scoringParameterRequest.setOwningHouse(mainDirectorBackgroundDetail.getDirectorPersonalDetail().getOwningHouse().longValue());
                                 scoringParameterRequest.setOwningHouse_p(true);
                             }
                             else {
@@ -1050,7 +1050,7 @@ public class ScoringServiceImpl implements ScoringService{
 
                             if(!CommonUtils.isObjectNullOrEmpty(mainDirectorBackgroundDetail.getDirectorPersonalDetail().getAssessedForIt()))
                             {
-                                scoringParameterRequest.setAssessedFOrIT(1 == mainDirectorBackgroundDetail.getDirectorPersonalDetail().getAssessedForIt() ? 1l : 2l);
+                                scoringParameterRequest.setAssessedFOrIT(mainDirectorBackgroundDetail.getDirectorPersonalDetail().getAssessedForIt().longValue());
                                 scoringParameterRequest.setAssessedForIncomeTax_p(true);
                             }
                             else {
@@ -1072,7 +1072,7 @@ public class ScoringServiceImpl implements ScoringService{
 
                             if(!CommonUtils.isObjectNullOrEmpty(mainDirectorBackgroundDetail.getDirectorPersonalDetail().getHaveLiPolicy()))
                             {
-                                scoringParameterRequest.setHaveLIPolicy(1 == mainDirectorBackgroundDetail.getDirectorPersonalDetail().getHaveLiPolicy() ? 1l : 2l);
+                                scoringParameterRequest.setHaveLIPolicy(mainDirectorBackgroundDetail.getDirectorPersonalDetail().getHaveLiPolicy().longValue());
                                 scoringParameterRequest.setHaveLifeIncPolicy_p(true);
                             }
                             else {
@@ -1093,7 +1093,7 @@ public class ScoringServiceImpl implements ScoringService{
                         try {
 
                                 // get repayment period from one form // remaining
-                                scoringParameterRequest.setRepaymentPeriod(null);
+                                scoringParameterRequest.setRepaymentPeriod(5.0);
                                 scoringParameterRequest.setRepaymentPeriod_p(false);
                         }
                         catch (Exception e)
@@ -1197,7 +1197,7 @@ public class ScoringServiceImpl implements ScoringService{
                     case ScoreParameter.LINE_OF_ACTIVITY:
                     {
                         scoringParameterRequest.setLineOfActivity(1l);
-                        scoringParameterRequest.setKnowHow_p(true);
+                        scoringParameterRequest.setLineOfActivity_p(true);
 
                         break;
                     }
