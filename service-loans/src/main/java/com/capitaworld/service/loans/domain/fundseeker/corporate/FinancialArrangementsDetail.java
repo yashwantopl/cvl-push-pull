@@ -91,6 +91,9 @@ public class FinancialArrangementsDetail implements Serializable {
 	@Column(name = "lc_bg_status")
 	private Integer lcBgStatus;
 
+	@Column(name = "credit_type")
+	private String creditType;
+
 	public FinancialArrangementsDetail() {
 	}
 	
@@ -252,5 +255,13 @@ public class FinancialArrangementsDetail implements Serializable {
 
 	public void setLcBgStatus(Integer lcBgStatus) {
 		this.lcBgStatus = lcBgStatus;
+	}
+
+	public String getCreditType() {
+		return creditType;
+	}
+
+	public void setCreditType(String creditType) {
+		this.creditType = creditType;
 	}
 }
