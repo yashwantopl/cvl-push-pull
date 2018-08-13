@@ -327,6 +327,9 @@ public class TermLoanParameterTemp extends ProductMasterTemp implements Serializ
 
 	@Column(name="is_msme_funding_mandatory")
 	private Boolean isMsmeFundingMandatory = false;
+	
+	@Column(name="cgtmse_coverage")
+	private Integer cgtmseCoverage;
 
 
 	//-----------------------added eligibility method for product
@@ -1142,5 +1145,15 @@ public class TermLoanParameterTemp extends ProductMasterTemp implements Serializ
 	public void setIsMsmeFundingMandatory(Boolean isMsmeFundingMandatory) {
 		this.isMsmeFundingMandatory = isMsmeFundingMandatory;
 	}
+
+	public Integer getCgtmseCoverage() {
+		return cgtmseCoverage;
+	}
+
+	public void setCgtmseCoverage(Integer cgtmseCoverage) {
+		this.cgtmseCoverage = cgtmseCoverage;
+	}
+	
+	
 
 }

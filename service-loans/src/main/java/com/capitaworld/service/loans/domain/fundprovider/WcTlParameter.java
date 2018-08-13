@@ -329,6 +329,8 @@ public class WcTlParameter extends ProductMaster implements Serializable {
 	@Column(name="is_msme_funding_mandatory")
 	private Boolean isMsmeFundingMandatory = false;
 
+	@Column(name="cgtmse_coverage")
+	private Integer cgtmseCoverage;
 	/**
 	 * @return the jobId
 	 */
@@ -1157,4 +1159,13 @@ public class WcTlParameter extends ProductMaster implements Serializable {
         this.isMsmeFundingMandatory = isMsmeFundingMandatory;
     }
 
+	public Integer getCgtmseCoverage() {
+		return cgtmseCoverage;
+	}
+
+	public void setCgtmseCoverage(Integer cgtmseCoverage) {
+		this.cgtmseCoverage = cgtmseCoverage;
+	}
+
+    
 }
