@@ -73,7 +73,7 @@ public class AssociatedConcernDetailServiceImpl implements AssociatedConcernDeta
 		try {
 			CommonDocumentUtils.startHook(logger, "getAssociatedConcernsDetailList");
 			List<AssociatedConcernDetail> associatedConcernDetail = associatedConcernDetailRepository
-					.listAssociatedConcernFromAppId(id,userId);
+					.listAssociatedConcernFromAppId(id);
 			List<AssociatedConcernDetailRequest> associatedConcernDetailRequests = new ArrayList<AssociatedConcernDetailRequest>();
 
 			for (AssociatedConcernDetail detail : associatedConcernDetail) {

@@ -70,7 +70,7 @@ public class ProposedProductDetailsServiceImpl implements ProposedProductDetails
 	public List<ProposedProductDetailRequest> getProposedProductDetailList(Long id,Long userId) throws Exception {
 		try {
 			List<ProposedProductDetail> proposedProductDetails = proposedProductDetailsRepository
-					.listProposedProductFromAppId(id,userId);
+					.findByApplicationIdIdAndIsActive(id,true);
 			List<ProposedProductDetailRequest> proposedProductDetailRequests = new ArrayList<ProposedProductDetailRequest>();
 
 			for (ProposedProductDetail detail : proposedProductDetails) {
