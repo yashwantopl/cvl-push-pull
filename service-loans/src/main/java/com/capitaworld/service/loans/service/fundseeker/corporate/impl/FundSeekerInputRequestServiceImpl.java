@@ -1,13 +1,15 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
+import com.capitaworld.service.analyzer.client.AnalyzerClient;
+import com.capitaworld.service.analyzer.model.common.AnalyzerResponse;
+import com.capitaworld.service.analyzer.model.common.Data;
+import com.capitaworld.service.analyzer.model.common.ReportRequest;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.*;
 import com.capitaworld.service.loans.model.*;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.*;
+import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -50,6 +52,9 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 
 	@Autowired
 	private ConnectClient connectClient;
+
+	@Autowired
+	private AnalyzerClient analyzerClient;
 
 	@Autowired
 	private CorporateApplicantService corporateApplicantService;
@@ -381,6 +386,18 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 
 			BeanUtils.copyProperties(corporateApplicantDetail, fundSeekerInputResponse);
 			copyAddressFromDomainToRequest(corporateApplicantDetail, fundSeekerInputResponse);
+			if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getConstitutionId()) && corporateApplicantDetail.getConstitutionId()==7){
+				ReportRequest reportRequest = new ReportRequest();
+				reportRequest.setApplicationId(fundSeekerInputRequest.getApplicationId());
+				try {
+					String orgName = analyzerClient.getOrgNameByAppId(reportRequest);
+					fundSeekerInputResponse.setOrganisationName(orgName);
+					logger.info("Fetched Organisation Name from Bank Statement ==>"+orgName);
+				} catch (Exception e) {
+					e.printStackTrace();
+					logger.info("Error while getting perfios data");
+				}
+			}
 			// === Director
 			List<DirectorBackgroundDetail> directorBackgroundDetailList = directorBackgroundDetailsRepository
 					.listPromotorBackgroundFromAppId(fundSeekerInputRequest.getApplicationId());
