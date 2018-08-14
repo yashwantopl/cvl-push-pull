@@ -92,7 +92,15 @@ public class FundSeekerInputRequestResponse {
     private Long cityId;
     private Double proposedCost;
 
-  
+    /*
+     * SBI MSME Integration related fields
+     * By Ravina
+     * */
+    private Date commercialOperationDate;
+    private Integer factoryPremise;
+    private Integer knowHow;
+    private Integer competition;
+
     public Long getUserId() {
         return userId;
     }
@@ -437,5 +445,37 @@ public class FundSeekerInputRequestResponse {
                 ", cityId=" + cityId +
                 ", proposedCost=" + proposedCost +
                 '}';
+    }
+
+    public Date getCommercialOperationDate() {
+        return commercialOperationDate;
+    }
+
+    public void setCommercialOperationDate(Date commercialOperationDate) {
+        this.commercialOperationDate = commercialOperationDate;
+    }
+
+    public Integer getFactoryPremise() {
+        return factoryPremise;
+    }
+
+    public void setFactoryPremise(Integer factoryPremise) {
+        this.factoryPremise = factoryPremise;
+    }
+
+    public Integer getKnowHow() {
+        return knowHow;
+    }
+
+    public void setKnowHow(Integer knowHow) {
+        this.knowHow = knowHow;
+    }
+
+    public Integer getCompetition() {
+        return competition;
+    }
+
+    public void setCompetition(Integer competition) {
+        this.competition = competition;
     }
 }

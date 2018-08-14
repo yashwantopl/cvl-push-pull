@@ -514,6 +514,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	@Autowired
 	private GstClient gstClient;
 	
+	public static final String EMAIL_ADDRESS_FROM = "no-reply@capitaworld.com";
+	
  	@Override
 	public boolean saveOrUpdate(FrameRequest commonRequest, Long userId) throws Exception {
 		try {
@@ -4453,7 +4455,47 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					
 					applicationRequest.setFundProvider(orgId!=null ? CommonUtils.getOrganizationName(orgId) : null);
 					
+                 // ==================Sending Mail to all Maker's after FS recieves In-principle Approval==================	
+					
+					
+					try {
+						
+						logger.info("Into sending Mail to all Makers after FS gets In-Principle Approval===>{}");
+						String subject = "Intimation : New Proposal -  Application ID "+paymentRequest.getApplicationId();
+						Map<String, Object> mailParameters = new HashMap<String, Object>();
+						mailParameters.put("fs_name", paymentRequest.getNameOfEntity()!=null?paymentRequest.getNameOfEntity():" ");
 
+						Long branchId = null;
+						if(!CommonUtils.isObjectNullOrEmpty(proposalresp.get("branch_id"))) {
+							branchId = Long.valueOf(proposalresp.get("branch_id").toString());	
+						}
+                        
+						UserResponse userResponse = userClient.getUserDetailByOrgRoleBranchId(orgId,com.capitaworld.service.users.utils.CommonUtils.UserRoles.FP_MAKER,branchId);
+						List<Map<String, Object>> usersRespList = (List<Map<String, Object>>) userResponse.getListData();
+						List<UsersRequest> usersList = new ArrayList<UsersRequest>();
+						String to[] = new String[100];
+						for (int i = 0; i < usersRespList.size(); i++) {
+							UsersRequest userObj = MultipleJSONObjectHelper.getObjectFromMap(usersRespList.get(i),
+									UsersRequest.class);
+							if(!CommonUtils.isObjectNullOrEmpty(userObj.getEmail())) {
+								to[i] = userObj.getEmail();	
+							}
+					    	
+						} 	
+						createNotificationForEmail(to, userId.toString(),
+								mailParameters, NotificationAlias.EMAIL_ALL_MAKERS_AFTER_INPRINCIPLE_TO_FS, subject);
+
+						
+						}catch (NotificationException e) {
+						logger.info("An exception getting while sending mail to all Makers=============>{}");
+
+						e.printStackTrace();
+					}
+					
+				//========================================================================================================
+
+
+                 
 			  }
 					
 				}else {
@@ -4525,7 +4567,29 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		}
 	}
 
+		
+	private void createNotificationForEmail(String to[], String userId, Map<String, Object> mailParameters,
+			Long templateId, String emailSubject) throws NotificationException {
 
+		NotificationRequest notificationRequest = new NotificationRequest();
+		notificationRequest.setClientRefId(userId);
+
+		Notification notification = new Notification();
+		notification.setContentType(ContentType.TEMPLATE);
+		notification.setTemplateId(templateId);
+		notification.setSubject(emailSubject);
+		notification.setTo(to);
+		notification.setType(NotificationType.EMAIL);
+		notification.setFrom(environment.getRequiredProperty(EMAIL_ADDRESS_FROM));
+		notification.setParameters(mailParameters);
+		notificationRequest.addNotification(notification);
+		sendEmail(notificationRequest);
+
+	}
+
+	private void sendEmail(NotificationRequest notificationRequest) throws NotificationException {
+		notificationClient.send(notificationRequest);
+	}
 
 	@Override
 	public GatewayRequest getPaymentStatus(PaymentRequest paymentRequest, Long userId, Long ClientId) throws Exception {
@@ -5015,6 +5079,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		Boolean bankStatement = false;
 		Boolean saveFinancialDetails = false;
 		Boolean saveCmaDetails = false;
+		Boolean saveLogicDetails = false;
 		applicationMaster = primaryCorporateRepository.findOneByApplicationIdId(applicationId);
 		try {
 			AuditMaster audit = auditComponent.getAudit(applicationId, true, AuditComponent.PRELIM_INFO);
@@ -5253,7 +5318,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					logger.info("Start Saving FinancialRequest in savePhese1DataToSidbi() ");
 					saveFinancialDetails = sidbiIntegrationClient.saveFinancialDetails(financialDetails, generateTokenRequest.getToken(),generateTokenRequest.getBankToken());
 					logger.info("Sucessfully save FinancialRequest in savePhese1DataToSidbi() for  ApplicationId ====>{}FpProductId====>{}Flag==>{}",applicationId,fpProductMappingId,saveFinancialDetails);
-					auditComponent.updateAudit(AuditComponent.FINANCIAL, applicationId, userId, null, eligibilityParameters);
+					auditComponent.updateAudit(AuditComponent.FINANCIAL, applicationId, userId, null, saveFinancialDetails);
 				}
 			}else {
 				logger.info("Financial Details Already Saved so not Going to Save Again===>");
@@ -5274,7 +5339,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					logger.info("Start Saving CMA Details in savePhese1DataToSidbi() ");
 					saveCmaDetails = sidbiIntegrationClient.saveCMADetailsOfAuditYears(cmaRequest, generateTokenRequest.getToken(),generateTokenRequest.getBankToken());
 					logger.info("Sucessfully save CMA Details in savePhese1DataToSidbi() for  ApplicationId ====>{}FpProductId====>{}Flag==>{}",applicationId,fpProductMappingId,saveCmaDetails);
-					auditComponent.updateAudit(AuditComponent.CMA_DETAIL, applicationId, userId, null, eligibilityParameters);
+					auditComponent.updateAudit(AuditComponent.CMA_DETAIL, applicationId, userId, null, saveCmaDetails);
 				}
 			}else {
 				logger.info("CMA Details Already Saved so not Going to Save Again===>");
@@ -5294,12 +5359,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					return false;
 				}else {
 					logger.error("Start Saving LOGIC Details in savePhese1DataToSidbi() ");
-					//saveCmaDetails = sidbiIntegrationClient.saveCMADetailsOfAuditYears(cmaRequest, generateTokenRequest.getToken());
-					logger.info("Sucessfully save LOGIC Details in savePhese1DataToSidbi() for  ApplicationId ====>{}FpProductId====>{}Flag==>{}",applicationId,fpProductMappingId,saveCmaDetails);
-					auditComponent.updateAudit(AuditComponent.LOGIC, applicationId, userId, null, eligibilityParameters);
+					saveLogicDetails = sidbiIntegrationClient.saveLogic(clientLogicCalculationRequest, generateTokenRequest.getToken(),generateTokenRequest.getBankToken());
+					logger.info("Sucessfully save LOGIC Details in savePhese1DataToSidbi() for  ApplicationId ====>{}FpProductId====>{}Flag==>{}",applicationId,fpProductMappingId,saveLogicDetails);
+					auditComponent.updateAudit(AuditComponent.LOGIC, applicationId, userId, null, saveLogicDetails);
 				}
 			}else {
-				logger.info("CMA Details Already Saved so not Going to Save Again===>");
+				logger.info("Logic Details Already Saved so not Going to Save Again===>");
 			}
 			//Saving Logic Details Ends
 		
@@ -6669,11 +6734,7 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 						
 						
 						perInfo.setFullName(creditReport.getNameSegment().getConsumerName1());
-						if("16".equals(orgId+"")) {
-							perInfo.setGender(GenderTypeEnum.fromId(String.valueOf(creditReport.getNameSegment().getGender())).getSbiValue());
-						}else {
-							perInfo.setGender(GenderTypeEnum.fromId(String.valueOf(creditReport.getNameSegment().getGender())).getValue());
-						}
+						perInfo.setGender(GenderTypeEnum.fromId(String.valueOf(creditReport.getNameSegment().getGender())).getValue());
 						if(!CommonUtils.isObjectNullOrEmpty(creditReport.getNameSegment().getDateOfBirth())){
 							String date = String.valueOf(creditReport.getNameSegment().getDateOfBirth());
 							String dt = date.substring(0, 2);
@@ -7305,7 +7366,6 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 		}else {
 			sidbiIntegrationClient.setIntegrationBaseUrl(request.getUatUrl()); //request.getUatUrl()
 		}
-		
 		logger.warn("Getting token from SidbiIntegrationClient --------------" +applicationId);
 		GenerateTokenRequest generateTokenRequest = new GenerateTokenRequest();
 		generateTokenRequest.setApplicationId(applicationId);
@@ -8363,12 +8423,8 @@ public ClientLogicCalculationRequest getClientLogicCalculationDetail(Long applic
 				DirectorBackgroundDetail directorBackgroundDetail = directorBackgroundDetailsRepository.getByAppIdAndIsMainDirector(applicationId);
 				
 				//Gender Code
-				if("16".equals(orgId+"")) {
-					clientLogicCalculationRequest.setDirGenderCode(GenderTypeEnum.fromId(String.valueOf(directorBackgroundDetail.getGender())).getSbiValue());
-				}else {
-					clientLogicCalculationRequest.setDirGenderCode(GenderTypeEnum.fromId(String.valueOf(directorBackgroundDetail.getGender())).getValue());
-					/*clientLogicCalculationRequest.setDirGenderCode(GenderTypeEnum.fromId(directorBackgroundDetail.getGender()).getValue());*/
-				}
+				clientLogicCalculationRequest.setDirGenderCode(GenderTypeEnum.fromId(String.valueOf(directorBackgroundDetail.getGender())).getValue());
+				/*clientLogicCalculationRequest.setDirGenderCode(GenderTypeEnum.fromId(directorBackgroundDetail.getGender()).getValue());*/
 				
 				//Debit Summation And Credit Summation
 				if(! CommonUtils.isObjectListNull(data , data.getSummaryInfo() , data.getSummaryInfo().getSummaryInfoTotalDetails())) {

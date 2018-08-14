@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.Date;
 
+import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailResponse;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -11,6 +12,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public class DDRFamilyDirectorsDetailsRequest implements Serializable {
 	
 	
+
+	
+
 
 	private static final long serialVersionUID = 1L;
 
@@ -40,7 +44,7 @@ public class DDRFamilyDirectorsDetailsRequest implements Serializable {
 
 	private Boolean isActive;
 	
-	private DirectorBackgroundDetailResponse directorBackRes;
+	private DirectorBackgroundDetailRequest directorBackReq;
 
 	public Long getId() {
 		return id;
@@ -145,14 +149,14 @@ public class DDRFamilyDirectorsDetailsRequest implements Serializable {
 	public void setIsActive(Boolean isActive) {
 		this.isActive = isActive;
 	}
-	public DirectorBackgroundDetailResponse getDirectorBackRes() {
-		return directorBackRes;
+	
+	public DirectorBackgroundDetailRequest getDirectorBackReq() {
+		return directorBackReq;
 	}
 
-	public void setDirectorBackRes(DirectorBackgroundDetailResponse directorBackRes) {
-		this.directorBackRes = directorBackRes;
+	public void setDirectorBackReq(DirectorBackgroundDetailRequest directorBackReq) {
+		this.directorBackReq = directorBackReq;
 	}
-
 	@Override
 	public String toString() {
 		return "DDRFamilyDirectorsDetailsRequest [id=" + id + ", ddrFormId=" + ddrFormId + ", backgroundId="
