@@ -5079,6 +5079,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		Boolean bankStatement = false;
 		Boolean saveFinancialDetails = false;
 		Boolean saveCmaDetails = false;
+		Boolean saveLogicDetails = false;
 		applicationMaster = primaryCorporateRepository.findOneByApplicationIdId(applicationId);
 		try {
 			AuditMaster audit = auditComponent.getAudit(applicationId, true, AuditComponent.PRELIM_INFO);
@@ -7369,6 +7370,7 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 		GenerateTokenRequest generateTokenRequest = new GenerateTokenRequest();
 		generateTokenRequest.setApplicationId(applicationId);
 		generateTokenRequest.setPassword(request.getPassword());
+		
 		if(organizationId == 17l || organizationId == 16l) {
 			String reqTok = "bobc:bob12345";
 			String requestDataEnc = Base64.getEncoder().encodeToString(reqTok.getBytes());
