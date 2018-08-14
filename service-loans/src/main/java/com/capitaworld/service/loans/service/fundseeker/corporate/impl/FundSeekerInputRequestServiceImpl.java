@@ -343,12 +343,12 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 						}else {
 							logger.info("Director Not Found for Application Id====>{} and Pan No==========>{}",fsInputReq.getApplicationId(), corpApplicantDetail.getPanNo());
 						}
+					}else {
+						logger.info("No Current Financial Loans for Pan No======>{}",corpApplicantDetail.getPanNo());	
 					}
 				}else {
 					logger.info("Pan No is Blank from Corporate Profile");				
 				}
-				
-				
 			}
 
 			List<FinancialArrangementsDetailRequest> finArrngDetailResList = new ArrayList<FinancialArrangementsDetailRequest>(
