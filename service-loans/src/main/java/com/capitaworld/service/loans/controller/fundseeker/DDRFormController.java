@@ -123,7 +123,6 @@ public class DDRFormController {
 			userId = clientId;
 		}
 		try {
-			userId = 2827l;
 			DDRRequest ddrRequest = ddrFormService.getMergeDDR(appId, userId);
 			logger.info("DDR Form Get Successfully---------------------------->");
 			return new ResponseEntity<LoansResponse>(
