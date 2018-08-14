@@ -40,7 +40,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 
 	@Autowired
 	private CorporateApplicantDetailRepository corporateApplicantDetailRepository;
-
+  
 	@Autowired
 	private PrimaryCorporateDetailRepository primaryCorporateDetailRepository;
 
