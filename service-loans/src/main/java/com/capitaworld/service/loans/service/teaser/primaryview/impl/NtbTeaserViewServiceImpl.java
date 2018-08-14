@@ -3,6 +3,8 @@
  */
 package com.capitaworld.service.loans.service.teaser.primaryview.impl;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -15,6 +17,7 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,7 +34,6 @@ import com.capitaworld.service.dms.exception.DocumentException;
 import com.capitaworld.service.dms.model.DocumentRequest;
 import com.capitaworld.service.dms.model.DocumentResponse;
 import com.capitaworld.service.dms.util.DocumentAlias;
-import com.capitaworld.service.loans.domain.fundprovider.TermLoanParameter;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.DirectorBackgroundDetail;
@@ -59,6 +61,7 @@ import com.capitaworld.service.matchengine.model.MatchRequest;
 import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.Currency;
 import com.capitaworld.service.oneform.enums.Denomination;
+import com.capitaworld.service.oneform.enums.Gender;
 import com.capitaworld.service.oneform.enums.LoanType;
 import com.capitaworld.service.oneform.enums.ProposedConstitutionOfUnitNTB;
 import com.capitaworld.service.oneform.enums.ProposedDetailOfUnitNTB;
@@ -241,12 +244,18 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService {
 					.getDirectorBackGroundDetails(toApplicationId);
 			ntbPrimaryViewRespone.setDirectorBackGroundDetails(directorBackgroundDetails);
 			
-			/*for(int i=0 ; i<directorBackgroundDetails.size() ; i++) {
-				DirectorBackgroundDetail dir = MultipleJSONObjectHelper.getObjectFromMap(directorBackgroundDetails.get(i), DirectorBackgroundDetail.class);
+			for(int i=0 ; i<directorBackgroundDetails.size() ; i++) {
+				DirectorBackgroundDetail dir = new DirectorBackgroundDetail();
+				
+				//MultipleJSONObjectHelper.getObjectFromMap(directorBackgroundDetails.get(i), DirectorBackgroundDetail.class);
+				
+				BeanUtils.copyProperties(directorBackgroundDetails.get(i),dir);
+//				dir.setGender(Integer.valueOf(String.valueOf(directorBackgroundDetails.get(i).get("genderInt"))));
+				dir.setId(Long.valueOf(String.valueOf(directorBackgroundDetails.get(i).get("directorId"))));
 				Long dirId = dir.getId();
 				try {
 					List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestList = financialArrangementDetailsService
-							.getFinancialArrangementDetailsList(toApplicationId, dirId);
+							.getFinancialArrangementDetailsListDirId(dirId,toApplicationId);
 					List<FinancialArrangementsDetailResponse> financialArrangementsDetailResponseList = new ArrayList<>();
 					for (FinancialArrangementsDetailRequest financialArrangementsDetailRequest : financialArrangementsDetailRequestList) {
 						FinancialArrangementsDetailResponse financialArrangementsDetailResponse = new FinancialArrangementsDetailResponse();
@@ -268,9 +277,10 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService {
 					ntbPrimaryViewRespone.setFinancialArrangementsDetailResponseList(financialArrangementsDetailResponseList);
 
 				} catch (Exception e) {
+					e.printStackTrace();
 					logger.error("Problem to get Data of Financial Arrangements Details {}", e);
 				}
-			}*/
+			}
 			
 			if(directorBackgroundDetails.size() >1) {
 				
@@ -537,7 +547,7 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService {
 		}
 
 		// Eligibility Data
-		TermLoanParameter termLoanParameter = termLoanParameterRepository.getById(productMappingId);
+		/*TermLoanParameter termLoanParameter = termLoanParameterRepository.getById(productMappingId);*/
 		// Long assessmentId = termLoanParameter.getAssessmentMethodId().longValue();
 		// if(!CommonUtils.isObjectNullOrEmpty(assessmentId)) {
 		// ntbPrimaryViewRespone.setAssesmentId(assessmentId);
