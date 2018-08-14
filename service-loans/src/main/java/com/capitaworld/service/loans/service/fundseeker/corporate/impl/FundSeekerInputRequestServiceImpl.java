@@ -350,22 +350,22 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			List<FinancialArrangementsDetail> finArngDetailList = financialArrangementDetailsRepository
 					.listSecurityCorporateDetailByAppId(fsInputReq.getApplicationId());
 			
-			if(CommonUtils.isListNullOrEmpty(finArngDetailList)) {
-				if(!CommonUtils.isObjectNullOrEmpty(corpApplicantDetail.getPanNo())) {
-					if(corpApplicantDetail.getPanNo().charAt(3) == 'P' || corpApplicantDetail.getPanNo().charAt(3) == 'p') {
-						DirectorBackgroundDetail backgroundDetail = directorBackgroundDetailsRepository.findByApplicationIdIdAndPanNoAndIsActive(fsInputReq.getApplicationId(), corpApplicantDetail.getPanNo().toUpperCase(), true);
-						if(!CommonUtils.isObjectNullOrEmpty(backgroundDetail) && !CommonUtils.isObjectNullOrEmpty(backgroundDetail.getId())) {
-							finArngDetailList = financialArrangementDetailsRepository.findByDirectorBackgroundDetailIdAndApplicationIdIdAndIsActive(backgroundDetail.getId(), fsInputReq.getApplicationId(), true);
-						}else {
-							logger.info("Director Not Found for Application Id====>{} and Pan No==========>{}",fsInputReq.getApplicationId(), corpApplicantDetail.getPanNo());
-						}
-					}else {
-						logger.info("No Current Financial Loans for Pan No======>{}",corpApplicantDetail.getPanNo());	
-					}	
-				}else {
-					logger.info("Pan No is Blank from Corporate Profile");				
-				}
-			}
+//			if(CommonUtils.isListNullOrEmpty(finArngDetailList)) {
+//				if(!CommonUtils.isObjectNullOrEmpty(corpApplicantDetail.getPanNo())) {
+//					if(corpApplicantDetail.getPanNo().charAt(3) == 'P' || corpApplicantDetail.getPanNo().charAt(3) == 'p') {
+//						DirectorBackgroundDetail backgroundDetail = directorBackgroundDetailsRepository.findByApplicationIdIdAndPanNoAndIsActive(fsInputReq.getApplicationId(), corpApplicantDetail.getPanNo().toUpperCase(), true);
+//						if(!CommonUtils.isObjectNullOrEmpty(backgroundDetail) && !CommonUtils.isObjectNullOrEmpty(backgroundDetail.getId())) {
+//							finArngDetailList = financialArrangementDetailsRepository.findByDirectorBackgroundDetailIdAndApplicationIdIdAndIsActive(backgroundDetail.getId(), fsInputReq.getApplicationId(), true);
+//						}else {
+//							logger.info("Director Not Found for Application Id====>{} and Pan No==========>{}",fsInputReq.getApplicationId(), corpApplicantDetail.getPanNo());
+//						}
+//					}else {
+//						logger.info("No Current Financial Loans for Pan No======>{}",corpApplicantDetail.getPanNo());	
+//					}	
+//				}else {
+//					logger.info("Pan No is Blank from Corporate Profile");				
+//				}
+//			}
 
 			List<FinancialArrangementsDetailRequest> finArrngDetailResList = new ArrayList<FinancialArrangementsDetailRequest>(
 					finArngDetailList.size());

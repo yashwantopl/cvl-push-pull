@@ -53,8 +53,4 @@ public interface DirectorBackgroundDetailsRepository extends JpaRepository<Direc
 
 	@Query("from DirectorBackgroundDetail o where o.applicationId.id = :applicationId and o.isMainDirector = true and isActive = true")
 	public DirectorBackgroundDetail getMainDirectorByApplicationId(@Param("applicationId") Long applicationId);
-	
-	//Using when COnstituion is Propritorship as there will be only one director
-	public DirectorBackgroundDetail findByApplicationIdIdAndPanNoAndIsActive(Long applicationId,String pan, Boolean isActive);
-
 }
