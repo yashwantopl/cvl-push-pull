@@ -5358,7 +5358,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					setTokenAsExpired(generateTokenRequest);
 					return false;
 				}else {
-					logger.error("Start Saving LOGIC Details in savePhese1DataToSidbi() ");
+					logger.info("Start Saving LOGIC Details in savePhese1DataToSidbi() ");
 					saveLogicDetails = sidbiIntegrationClient.saveLogic(clientLogicCalculationRequest, generateTokenRequest.getToken(),generateTokenRequest.getBankToken());
 					logger.info("Sucessfully save LOGIC Details in savePhese1DataToSidbi() for  ApplicationId ====>{}FpProductId====>{}Flag==>{}",applicationId,fpProductMappingId,saveLogicDetails);
 					auditComponent.updateAudit(AuditComponent.LOGIC, applicationId, userId, null, saveLogicDetails);
