@@ -49,8 +49,6 @@ public class FinancialArrangementsDetailRequest {
 	 * */
 	private Integer lcBgStatus;
 
-	private String creditType;
-
 	public Long getId() {
 		return id;
 	}
@@ -179,11 +177,4 @@ public class FinancialArrangementsDetailRequest {
 		this.lcBgStatus = lcBgStatus;
 	}
 
-	public String getCreditType() {
-		return creditType;
-	}
-
-	public void setCreditType(String creditType) {
-		this.creditType = creditType;
-	}
 }
