@@ -205,6 +205,8 @@ public class CorporateProduct  extends  ProductMasterRequest implements Serializ
 	private Boolean isMsmeFundingMandatory = false;
 	private List<Integer> msmeFundingIds;
 	
+	private Integer cgtmseCoverage;
+	
 /*ntb*/
 	
 	private BigDecimal minAvrgAge;
@@ -1319,6 +1321,15 @@ public class CorporateProduct  extends  ProductMasterRequest implements Serializ
 		this.maxTenureNtb = maxTenureNtb;
 	}
 
+	public Integer getCgtmseCoverage() {
+		return cgtmseCoverage;
+	}
+
+	public void setCgtmseCoverage(Integer cgtmseCoverage) {
+		this.cgtmseCoverage = cgtmseCoverage;
+	}
+
+	
 	
 	
 	

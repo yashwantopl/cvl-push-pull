@@ -328,6 +328,9 @@ public class TermLoanParameter extends ProductMaster implements Serializable {
 
 	@Column(name="is_msme_funding_mandatory")
 	private Boolean isMsmeFundingMandatory = false;
+	
+	@Column(name="cgtmse_coverage")
+	private Integer cgtmseCoverage;
 
 
 
@@ -1159,5 +1162,14 @@ public class TermLoanParameter extends ProductMaster implements Serializable {
 		this.isMsmeFundingMandatory = isMsmeFundingMandatory;
 	}
 
+	public Integer getCgtmseCoverage() {
+		return cgtmseCoverage;
+	}
+
+	public void setCgtmseCoverage(Integer cgtmseCoverage) {
+		this.cgtmseCoverage = cgtmseCoverage;
+	}
+
+	
 
 }

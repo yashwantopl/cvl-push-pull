@@ -324,6 +324,9 @@ public class WorkingCapitalParameterTemp extends ProductMasterTemp implements Se
 	//-----------------------added eligibility method for product
 	@Column(name="assessment_method_id")
 	private Integer assessmentMethodId;
+	
+	@Column(name="cgtmse_coverage")
+	private Integer cgtmseCoverage;
 
     public Integer getIndividualCibil() {
         return individualCibil;
@@ -1137,4 +1140,14 @@ public class WorkingCapitalParameterTemp extends ProductMasterTemp implements Se
 	public void setIsMsmeFundingMandatory(Boolean isMsmeFundingMandatory) {
 		this.isMsmeFundingMandatory = isMsmeFundingMandatory;
 	}
+
+	public Integer getCgtmseCoverage() {
+		return cgtmseCoverage;
+	}
+
+	public void setCgtmseCoverage(Integer cgtmseCoverage) {
+		this.cgtmseCoverage = cgtmseCoverage;
+	}
+	
+	
 }
