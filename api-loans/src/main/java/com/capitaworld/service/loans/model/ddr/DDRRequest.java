@@ -7,17 +7,17 @@ import java.util.List;
 
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
+import com.capitaworld.service.loans.model.Address;
 import com.capitaworld.service.loans.model.AssociatedConcernDetailRequest;
-import com.capitaworld.service.loans.model.DirectorBackgroundDetailResponse;
+import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
 import com.capitaworld.service.loans.model.ExistingProductDetailRequest;
-import com.capitaworld.service.loans.model.FinancialArrangementDetailResponseString;
-import com.capitaworld.service.loans.model.FinancialArrangementsDetailResponse;
+import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
+import com.capitaworld.service.loans.model.OwnershipDetailRequest;
 import com.capitaworld.service.loans.model.OwnershipDetailResponse;
-import com.capitaworld.service.loans.model.PromotorBackgroundDetailResponse;
+import com.capitaworld.service.loans.model.PromotorBackgroundDetailRequest;
 import com.capitaworld.service.loans.model.ProposedProductDetailRequest;
 import com.capitaworld.service.loans.model.SecurityCorporateDetailRequest;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonInclude;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 /*@JsonInclude(JsonInclude.Include.NON_NULL)*/
@@ -27,6 +27,7 @@ public class DDRRequest implements Serializable {
 
 	private Long id;
 	private Long applicationId;
+	private Long roleId;
 	private Long userId;
 	private String godownStockyard;
 	private String companySuccessPlan;
@@ -103,29 +104,28 @@ public class DDRRequest implements Serializable {
 	
 	//AUTO FILED
 	private String nameOfBorrower;
-	private String regOfficeAddress;
 	private String contactNo;
-	private String corpOfficeAddress;
 	private String regEmailId;
 	private String constitution;
 	private String establishMentYear;
 	private String aboutMe;
 	private String orgName;
+	private Address regOfficeAddress;
+	private Address corpOfficeAddress;
 	private Long ddrStatusId;
 	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd-MM-yyyy")
 	private Date approvedDate;
 	
 	//AUTO FIELD
-	private List<PromotorBackgroundDetailResponse> promoBackRespList = new ArrayList<PromotorBackgroundDetailResponse>();
-	private List<OwnershipDetailResponse> ownershipRespList = new ArrayList<OwnershipDetailResponse>();
-	private List<FinancialArrangementsDetailResponse> fincArrngDetailResList = new ArrayList<FinancialArrangementsDetailResponse>();
+	private List<PromotorBackgroundDetailRequest> promoBackRespList = new ArrayList<PromotorBackgroundDetailRequest>();
+	private List<OwnershipDetailRequest> ownershipReqList = new ArrayList<OwnershipDetailRequest>();
+	private List<FinancialArrangementsDetailRequest> fincArrngDetailReqList = new ArrayList<FinancialArrangementsDetailRequest>();
 	private List<ProposedProductDetailRequest> proposedProductDetailList = new ArrayList<ProposedProductDetailRequest>();
 	private List<ExistingProductDetailRequest> existingProductDetailList = new ArrayList<ExistingProductDetailRequest>();
 	private List<AssociatedConcernDetailRequest> associatedConcernDetailList = new ArrayList<AssociatedConcernDetailRequest>();
 	private List<DDRCMACalculationResponse> dDRCMACalculationList = new ArrayList<DDRCMACalculationResponse>();
 	private List<SecurityCorporateDetailRequest> securityCorporateDetailList = new ArrayList<SecurityCorporateDetailRequest>();
-	private List<DirectorBackgroundDetailResponse> directorBackgroundDetailResponses = new ArrayList<DirectorBackgroundDetailResponse>();
-	private List<FinancialArrangementDetailResponseString> financialArrangementsDetailResponseList = new ArrayList<FinancialArrangementDetailResponseString>();
+	private List<DirectorBackgroundDetailRequest> directorBackgroundDetailRequest = new ArrayList<DirectorBackgroundDetailRequest>();
 	
 	//TO BE FIELD
 	private List<DDRAuthorizedSignDetailsRequest> dDRAuthSignDetailsList = new ArrayList<DDRAuthorizedSignDetailsRequest>();
@@ -595,24 +595,14 @@ public class DDRRequest implements Serializable {
 	public void setNameOfBorrower(String nameOfBorrower) {
 		this.nameOfBorrower = nameOfBorrower;
 	}
-	public String getRegOfficeAddress() {
-		return regOfficeAddress;
-	}
-	public void setRegOfficeAddress(String regOfficeAddress) {
-		this.regOfficeAddress = regOfficeAddress;
-	}
+
 	public String getContactNo() {
 		return contactNo;
 	}
 	public void setContactNo(String contactNo) {
 		this.contactNo = contactNo;
 	}
-	public String getCorpOfficeAddress() {
-		return corpOfficeAddress;
-	}
-	public void setCorpOfficeAddress(String corpOfficeAddress) {
-		this.corpOfficeAddress = corpOfficeAddress;
-	}
+	
 	public String getRegEmailId() {
 		return regEmailId;
 	}
@@ -655,24 +645,6 @@ public class DDRRequest implements Serializable {
 	public void setApprovedDate(Date approvedDate) {
 		this.approvedDate = approvedDate;
 	}
-	public List<PromotorBackgroundDetailResponse> getPromoBackRespList() {
-		return promoBackRespList;
-	}
-	public void setPromoBackRespList(List<PromotorBackgroundDetailResponse> promoBackRespList) {
-		this.promoBackRespList = promoBackRespList;
-	}
-	public List<OwnershipDetailResponse> getOwnershipRespList() {
-		return ownershipRespList;
-	}
-	public void setOwnershipRespList(List<OwnershipDetailResponse> ownershipRespList) {
-		this.ownershipRespList = ownershipRespList;
-	}
-	public List<FinancialArrangementsDetailResponse> getFincArrngDetailResList() {
-		return fincArrngDetailResList;
-	}
-	public void setFincArrngDetailResList(List<FinancialArrangementsDetailResponse> fincArrngDetailResList) {
-		this.fincArrngDetailResList = fincArrngDetailResList;
-	}
 	public List<ProposedProductDetailRequest> getProposedProductDetailList() {
 		return proposedProductDetailList;
 	}
@@ -702,20 +674,6 @@ public class DDRRequest implements Serializable {
 	}
 	public void setSecurityCorporateDetailList(List<SecurityCorporateDetailRequest> securityCorporateDetailList) {
 		this.securityCorporateDetailList = securityCorporateDetailList;
-	}
-	public List<DirectorBackgroundDetailResponse> getDirectorBackgroundDetailResponses() {
-		return directorBackgroundDetailResponses;
-	}
-	public void setDirectorBackgroundDetailResponses(
-			List<DirectorBackgroundDetailResponse> directorBackgroundDetailResponses) {
-		this.directorBackgroundDetailResponses = directorBackgroundDetailResponses;
-	}
-	public List<FinancialArrangementDetailResponseString> getFinancialArrangementsDetailResponseList() {
-		return financialArrangementsDetailResponseList;
-	}
-	public void setFinancialArrangementsDetailResponseList(
-			List<FinancialArrangementDetailResponseString> financialArrangementsDetailResponseList) {
-		this.financialArrangementsDetailResponseList = financialArrangementsDetailResponseList;
 	}
 	public List<DDRAuthorizedSignDetailsRequest> getdDRAuthSignDetailsList() {
 		return dDRAuthSignDetailsList;
@@ -778,6 +736,48 @@ public class DDRRequest implements Serializable {
 		this.dDRFamilyDirectorsList = dDRFamilyDirectorsList;
 	}
 	
+	public Address getRegOfficeAddress() {
+		return regOfficeAddress;
+	}
+	public void setRegOfficeAddress(Address regOfficeAddress) {
+		this.regOfficeAddress = regOfficeAddress;
+	}
+	public Address getCorpOfficeAddress() {
+		return corpOfficeAddress;
+	}
+	public void setCorpOfficeAddress(Address corpOfficeAddress) {
+		this.corpOfficeAddress = corpOfficeAddress;
+	}
+	public List<PromotorBackgroundDetailRequest> getPromoBackRespList() {
+		return promoBackRespList;
+	}
+	public void setPromoBackRespList(List<PromotorBackgroundDetailRequest> promoBackRespList) {
+		this.promoBackRespList = promoBackRespList;
+	}
+	public List<FinancialArrangementsDetailRequest> getFincArrngDetailReqList() {
+		return fincArrngDetailReqList;
+	}
+	public void setFincArrngDetailReqList(List<FinancialArrangementsDetailRequest> fincArrngDetailReqList) {
+		this.fincArrngDetailReqList = fincArrngDetailReqList;
+	}
+	public List<DirectorBackgroundDetailRequest> getDirectorBackgroundDetailRequest() {
+		return directorBackgroundDetailRequest;
+	}
+	public void setDirectorBackgroundDetailRequest(List<DirectorBackgroundDetailRequest> directorBackgroundDetailRequest) {
+		this.directorBackgroundDetailRequest = directorBackgroundDetailRequest;
+	}
 	
+	public Long getRoleId() {
+		return roleId;
+	}
+	public void setRoleId(Long roleId) {
+		this.roleId = roleId;
+	}
+	public List<OwnershipDetailRequest> getOwnershipReqList() {
+		return ownershipReqList;
+	}
+	public void setOwnershipReqList(List<OwnershipDetailRequest> ownershipReqList) {
+		this.ownershipReqList = ownershipReqList;
+	}
 	
 }
