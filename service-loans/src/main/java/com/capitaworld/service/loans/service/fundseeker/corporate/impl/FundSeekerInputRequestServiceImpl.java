@@ -333,6 +333,23 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 
 			List<FinancialArrangementsDetail> finArngDetailList = financialArrangementDetailsRepository
 					.listSecurityCorporateDetailByAppId(fsInputReq.getApplicationId());
+			
+			if(CommonUtils.isListNullOrEmpty(finArngDetailList)) {
+				if(!CommonUtils.isObjectNullOrEmpty(corpApplicantDetail.getPanNo())) {
+					if(corpApplicantDetail.getPanNo().charAt(3) == 'P' || corpApplicantDetail.getPanNo().charAt(3) == 'p') {
+						Long dirId = directorBackgroundDetailsRepository.findFirstIdByApplicationIdAndPanNoAndIsActiveOrderByIdDesc(fsInputReq.getApplicationId(), corpApplicantDetail.getPanNo().toUpperCase(), true);
+						if(!CommonUtils.isObjectNullOrEmpty(dirId)) {
+							finArngDetailList = financialArrangementDetailsRepository.findByDirectorBackgroundDetailIdAndApplicationIdIdAndIsActive(dirId, fsInputReq.getApplicationId(), true);
+						}else {
+							logger.info("Director Not Found for Application Id====>{} and Pan No==========>{}",fsInputReq.getApplicationId(), corpApplicantDetail.getPanNo());
+						}
+					}
+				}else {
+					logger.info("Pan No is Blank from Corporate Profile");				
+				}
+				
+				
+			}
 
 			List<FinancialArrangementsDetailRequest> finArrngDetailResList = new ArrayList<FinancialArrangementsDetailRequest>(
 					finArngDetailList.size());
