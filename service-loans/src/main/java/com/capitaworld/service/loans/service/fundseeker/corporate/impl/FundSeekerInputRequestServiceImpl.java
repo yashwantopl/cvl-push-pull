@@ -337,7 +337,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			if(CommonUtils.isListNullOrEmpty(finArngDetailList)) {
 				if(!CommonUtils.isObjectNullOrEmpty(corpApplicantDetail.getPanNo())) {
 					if(corpApplicantDetail.getPanNo().charAt(3) == 'P' || corpApplicantDetail.getPanNo().charAt(3) == 'p') {
-						Long dirId = directorBackgroundDetailsRepository.findFirstIdByApplicationIdAndPanNoAndIsActiveOrderByIdDesc(fsInputReq.getApplicationId(), corpApplicantDetail.getPanNo().toUpperCase(), true);
+						Long dirId = directorBackgroundDetailsRepository.findFirstIdByApplicationIdIdAndPanNoAndIsActiveOrderByIdDesc(fsInputReq.getApplicationId(), corpApplicantDetail.getPanNo().toUpperCase(), true);
 						if(!CommonUtils.isObjectNullOrEmpty(dirId)) {
 							finArngDetailList = financialArrangementDetailsRepository.findByDirectorBackgroundDetailIdAndApplicationIdIdAndIsActive(dirId, fsInputReq.getApplicationId(), true);
 						}else {
