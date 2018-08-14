@@ -253,4 +253,5 @@ public class FinancialArrangementsDetail implements Serializable {
 	public void setLcBgStatus(Integer lcBgStatus) {
 		this.lcBgStatus = lcBgStatus;
 	}
+
 }

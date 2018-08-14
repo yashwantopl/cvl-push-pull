@@ -127,7 +127,7 @@ public class NTBServiceImpl implements NTBService {
     public List<FinancialArrangementsDetailRequest> getFinancialDetails(Long applicationId, Long directorId) throws Exception {
         logger.info("Entry in getFinancialDetails() for applicationId : " + applicationId + " directorId : " + directorId);
         try{
-            List<FinancialArrangementsDetail> finArngDetailList = financialArrangementDetailsRepository.listFinancialListForPartner(directorId, applicationId, true);
+            List<FinancialArrangementsDetail> finArngDetailList = financialArrangementDetailsRepository.findByDirectorBackgroundDetailIdAndApplicationIdIdAndIsActive(directorId, applicationId, true);
             List<FinancialArrangementsDetailRequest> finArrngDetailResList = new ArrayList<FinancialArrangementsDetailRequest>(finArngDetailList.size());
 
             FinancialArrangementsDetailRequest finArrngDetailReq = null;

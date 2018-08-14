@@ -135,4 +135,30 @@ public class FinancialArrangementDetailsServiceImpl implements FinancialArrangem
 		logger.info("getTotalOfEmiByApplicationIdAndDirectorId {} For Application Id = {} DirectorId = {}", totalEmi ,applicationId,directorId);
 		return totalEmi;
 	}
+
+	/* (non-Javadoc)
+	 * @see com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService#getFinancialArrangementDetailsListDirId(java.lang.Long, java.lang.Long)
+	 */
+	@Override
+	public List<FinancialArrangementsDetailRequest> getFinancialArrangementDetailsListDirId(Long dirId, Long id)
+			throws Exception {
+		try {
+			List<FinancialArrangementsDetail> financialArrangementDetails = financialArrangementDetailsRepository
+					.findByDirectorBackgroundDetailIdAndApplicationIdIdAndIsActive(dirId,id,true);
+			List<FinancialArrangementsDetailRequest> financialArrangementDetailRequests = new ArrayList<FinancialArrangementsDetailRequest>();
+
+			for (FinancialArrangementsDetail detail : financialArrangementDetails) {
+				FinancialArrangementsDetailRequest financialArrangementDetailsRequest = new FinancialArrangementsDetailRequest();
+				BeanUtils.copyProperties(detail, financialArrangementDetailsRequest);
+				financialArrangementDetailRequests.add(financialArrangementDetailsRequest);
+			}
+			return financialArrangementDetailRequests;
+		}
+
+		catch (Exception e) {
+			logger.info("Exception  in save financialArrangementsDetail  :-");
+			e.printStackTrace();
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+	}
 }
