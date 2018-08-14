@@ -40,7 +40,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 
 	@Autowired
 	private CorporateApplicantDetailRepository corporateApplicantDetailRepository;
-
+  
 	@Autowired
 	private PrimaryCorporateDetailRepository primaryCorporateDetailRepository;
 
@@ -410,7 +410,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 
 				directorBackgroundDetailRequest = new DirectorBackgroundDetailRequest();
 				BeanUtils.copyProperties(directorBackgroundDetail, directorBackgroundDetailRequest);
-				if(directorBackgroundDetail.getIsMainDirector() && !CommonUtils.isObjectNullOrEmpty(directorBackgroundDetail.getDirectorPersonalDetail())){
+				if(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetail.getIsMainDirector()) && (directorBackgroundDetail.getIsMainDirector()) && !CommonUtils.isObjectNullOrEmpty(directorBackgroundDetail.getDirectorPersonalDetail())){
 					DirectorPersonalDetailRequest directorPersonalDetailRequest = new DirectorPersonalDetailRequest();
 					BeanUtils.copyProperties(directorBackgroundDetail.getDirectorPersonalDetail(), directorPersonalDetailRequest);
 					directorBackgroundDetailRequest.setDirectorPersonalDetailRequest(directorPersonalDetailRequest);
