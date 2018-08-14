@@ -592,6 +592,20 @@ public class CorporateUploadController {
 		return new ResponseEntity<LoansResponse>(response, HttpStatus.OK);
 	}
 	
+	
+	@RequestMapping(value="/listOfDocumentByMultiProDocMapId" , method=RequestMethod.POST,consumes = MediaType.APPLICATION_JSON_VALUE,produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<DocumentResponse> listOfDocumentByMultiProDocMapId(@RequestBody DocumentRequest documentRequest) throws IOException {
+		logger.info("In getCmaFile");
+		
+		try {
+			return new ResponseEntity<DocumentResponse>(corporateUploadService.listOfDocumentByMultiProDocMapId(documentRequest), HttpStatus.OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.info("Thrown exception from getCmaFile====>"+e.getMessage());
+			return new ResponseEntity<DocumentResponse>(new DocumentResponse("Something went wrong",HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
 	/*@RequestMapping(value="/downloadCMAAndCoCMAExcelFile/{applicationId}/{productDocumentMappingId}" , method=RequestMethod.GET)
 	public void getCMADetail(@PathVariable("applicationId") Long applicationId , @PathVariable("productDocumentMappingId") Long productDocumentMappingId ,HttpServletResponse httpServletResponse) {
 		logger.info("In getCmaFile");
