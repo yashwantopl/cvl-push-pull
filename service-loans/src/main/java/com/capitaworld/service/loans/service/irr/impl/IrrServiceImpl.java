@@ -2099,7 +2099,6 @@ public class IrrServiceImpl implements IrrService{
 		corporateMcqDetail = corporateMcqDetailRepository.getByApplicationAndUserId(aplicationId,userId);
 
 		qualitativeInputSheetManuRequest.setAccountingQuality(corporateMcqDetail.getAccountingQuality().longValue());
-		System.out.println("corporateMcqDetail.getUnhedgedForeignCurrency():::::::::::::::::::::"+corporateMcqDetail.getUnhedgedForeignCurrency());
 		qualitativeInputSheetManuRequest.setUnhedgedForeignCurrencyExposure(corporateMcqDetail.getUnhedgedForeignCurrency().longValue());
 		qualitativeInputSheetManuRequest.setFinancialRestructuringHistory(corporateMcqDetail.getFinancialRestructuringHistory().longValue());
 		qualitativeInputSheetManuRequest.setIndustryRiskScore(industryRiskScore); //-----Industry mapping -- Remaining
