@@ -1,15 +1,10 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 
-import com.capitaworld.service.analyzer.client.AnalyzerClient;
-import com.capitaworld.service.analyzer.model.common.AnalyzerResponse;
-import com.capitaworld.service.analyzer.model.common.Data;
-import com.capitaworld.service.analyzer.model.common.ReportRequest;
-import com.capitaworld.service.loans.domain.fundseeker.corporate.*;
-import com.capitaworld.service.loans.model.*;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.*;
-import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -19,14 +14,35 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import com.capitaworld.connect.api.ConnectResponse;
 import com.capitaworld.connect.client.ConnectClient;
+import com.capitaworld.service.analyzer.client.AnalyzerClient;
+import com.capitaworld.service.analyzer.model.common.ReportRequest;
 import com.capitaworld.service.fraudanalytics.client.FraudAnalyticsClient;
 import com.capitaworld.service.fraudanalytics.model.AnalyticsRequest;
 import com.capitaworld.service.fraudanalytics.model.AnalyticsResponse;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.DirectorBackgroundDetail;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.DirectorPersonalDetail;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.FinancialArrangementsDetail;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
+import com.capitaworld.service.loans.model.Address;
+import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
+import com.capitaworld.service.loans.model.DirectorPersonalDetailRequest;
+import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
+import com.capitaworld.service.loans.model.LoansResponse;
+import com.capitaworld.service.loans.model.NTBRequest;
 import com.capitaworld.service.loans.model.common.HunterRequestDataResponse;
 import com.capitaworld.service.loans.model.corporate.FundSeekerInputRequestResponse;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.DirectorBackgroundDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.DirectorPersonalDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.FinancialArrangementDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FundSeekerInputRequestService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
@@ -337,15 +353,15 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			if(CommonUtils.isListNullOrEmpty(finArngDetailList)) {
 				if(!CommonUtils.isObjectNullOrEmpty(corpApplicantDetail.getPanNo())) {
 					if(corpApplicantDetail.getPanNo().charAt(3) == 'P' || corpApplicantDetail.getPanNo().charAt(3) == 'p') {
-						Long dirId = directorBackgroundDetailsRepository.findFirstIdByApplicationIdIdAndPanNoAndIsActiveOrderByIdDesc(fsInputReq.getApplicationId(), corpApplicantDetail.getPanNo().toUpperCase(), true);
-						if(!CommonUtils.isObjectNullOrEmpty(dirId)) {
-							finArngDetailList = financialArrangementDetailsRepository.findByDirectorBackgroundDetailIdAndApplicationIdIdAndIsActive(dirId, fsInputReq.getApplicationId(), true);
+						DirectorBackgroundDetail backgroundDetail = directorBackgroundDetailsRepository.findByApplicationIdIdAndPanNoAndIsActive(fsInputReq.getApplicationId(), corpApplicantDetail.getPanNo().toUpperCase(), true);
+						if(!CommonUtils.isObjectNullOrEmpty(backgroundDetail) && !CommonUtils.isObjectNullOrEmpty(backgroundDetail.getId())) {
+							finArngDetailList = financialArrangementDetailsRepository.findByDirectorBackgroundDetailIdAndApplicationIdIdAndIsActive(backgroundDetail.getId(), fsInputReq.getApplicationId(), true);
 						}else {
 							logger.info("Director Not Found for Application Id====>{} and Pan No==========>{}",fsInputReq.getApplicationId(), corpApplicantDetail.getPanNo());
 						}
 					}else {
 						logger.info("No Current Financial Loans for Pan No======>{}",corpApplicantDetail.getPanNo());	
-					}
+					}	
 				}else {
 					logger.info("Pan No is Blank from Corporate Profile");				
 				}
@@ -358,6 +374,9 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			for (FinancialArrangementsDetail finArrngDetail : finArngDetailList) {
 				finArrngDetailReq = new FinancialArrangementsDetailRequest();
 				BeanUtils.copyProperties(finArrngDetail, finArrngDetailReq);
+				if(!CommonUtils.isObjectNullOrEmpty(finArrngDetail.getDirectorBackgroundDetail())) {
+					finArrngDetailReq.setDirectorId(finArrngDetail.getDirectorBackgroundDetail().getId());					
+				}
 				finArrngDetailResList.add(finArrngDetailReq);
 			}
 			fsInputRes.setFinancialArrangementsDetailRequestsList(finArrngDetailResList);
