@@ -282,7 +282,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 						saveDirObj.setCreatedDate(new Date());
 						saveDirObj.setIsActive(true);
 					}
-					if(reqObj.getIsMainDirector()){
+					if(!CommonUtils.isObjectNullOrEmpty(reqObj.getIsMainDirector()) && (reqObj.getIsMainDirector())){
 						DirectorPersonalDetailRequest directorPersonalDetailRequest = reqObj.getDirectorPersonalDetailRequest();
 						DirectorPersonalDetail directorPersonalDetail = null;
 						if(directorPersonalDetailRequest.getId() != null){
