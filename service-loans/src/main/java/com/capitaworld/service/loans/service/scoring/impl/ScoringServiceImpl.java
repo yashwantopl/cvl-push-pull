@@ -1094,7 +1094,7 @@ public class ScoringServiceImpl implements ScoringService{
 
                                 // get repayment period from one form // remaining
                                 scoringParameterRequest.setRepaymentPeriod(5.0);
-                                scoringParameterRequest.setRepaymentPeriod_p(false);
+                                scoringParameterRequest.setRepaymentPeriod_p(true);
                         }
                         catch (Exception e)
                         {
