@@ -32,6 +32,7 @@ import com.capitaworld.service.loans.model.common.DocumentUploadFlagRequest;
 import com.capitaworld.service.loans.model.ddr.DDRFormDetailsRequest;
 import com.capitaworld.service.loans.model.ddr.DDROneFormResponse;
 import com.capitaworld.service.loans.model.ddr.DDRRequest;
+import com.capitaworld.service.loans.model.ddr.DDRUploadRequest;
 import com.capitaworld.service.loans.service.fundseeker.corporate.DDRFormService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.service.token.TokenService;
@@ -268,6 +269,20 @@ public class DDRFormController {
 					ddrFormService.getFinancialSummaryFieldsList()), HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getting DDR Financial Auto Filled Details ==>", e);
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+	}
+	
+	@RequestMapping(value = "/deleteDocs", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> deleteDocuments(@RequestBody DDRUploadRequest ddrUploadRequest) {
+		try {
+			boolean deleteDocument = ddrFormService.deleteDocument(ddrUploadRequest);
+			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Deleted", HttpStatus.OK.value(), deleteDocument), HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while DDR Delete Documents ==>", e);	
 			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),

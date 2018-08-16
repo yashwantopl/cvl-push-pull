@@ -8,6 +8,7 @@ import com.capitaworld.service.loans.model.common.DocumentUploadFlagRequest;
 import com.capitaworld.service.loans.model.ddr.DDRFormDetailsRequest;
 import com.capitaworld.service.loans.model.ddr.DDROneFormResponse;
 import com.capitaworld.service.loans.model.ddr.DDRRequest;
+import com.capitaworld.service.loans.model.ddr.DDRUploadRequest;
 
 public interface DDRFormService {
 
@@ -30,5 +31,7 @@ public interface DDRFormService {
 	public Boolean isDDRApproved(Long userId, Long applicationId) throws Exception;
 	
 	public com.capitaworld.sidbi.integration.model.ddr.DDRFormDetailsRequest getSIDBIDetails(Long appId,Long userId);
+	
+	public boolean deleteDocument(DDRUploadRequest ddrUploadRequest);
 	
 }

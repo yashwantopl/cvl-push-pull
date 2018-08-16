@@ -57,6 +57,9 @@ public class CorporateUploadController {
 	
 	@Autowired
 	private DownLoadCMAFileService downLoadCMAFileService;
+	
+	@Autowired
+	private DMSClient dmsClient;
 
 	@RequestMapping(value = "/ping", method = RequestMethod.GET)
 	public String getPing() {
@@ -200,8 +203,6 @@ public class CorporateUploadController {
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
-			DMSClient dmsClient = new DMSClient(environment.getRequiredProperty(CommonUtils.DMS_BASE_URL_KEY));
-
 			DocumentResponse response = dmsClient.listProductDocument(documentRequest);
 			if (response != null && response.getStatus() == 200) {
 				logger.info("File Uploaded SuccessFully -->");
@@ -244,7 +245,6 @@ public class CorporateUploadController {
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
-			DMSClient dmsClient = new DMSClient(environment.getRequiredProperty(CommonUtils.DMS_BASE_URL_KEY));
 
 			Long applicationId = MultipleJSONObjectHelper.getNestedObject(documentRequestString, "applicationId",
 					Long.class);
@@ -366,7 +366,6 @@ public class CorporateUploadController {
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
-			DMSClient dmsClient = new DMSClient(environment.getRequiredProperty(CommonUtils.DMS_BASE_URL_KEY));
 
 			JSONObject json = new JSONObject();
 			json.put("id", docId);
@@ -418,9 +417,7 @@ public class CorporateUploadController {
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 
-			DMSClient dmsClient = new DMSClient(environment.getRequiredProperty(CommonUtils.DMS_BASE_URL_KEY));
 			
-			System.out.println("dms client url is====>>>>"+dmsClient);
 
 			// code for inactive CMA BS and DPR recored
 
