@@ -2574,11 +2574,11 @@ public class LoanApplicationController {
 				paymentRequest.setResponseParams(responseParams);
 				paymentRequest.setNameOfEntity(map.get("firstname").toString());
 				
-				if ("0399".toString().equals(map.get("statusCode"))) {
-					paymentRequest.setStatus("Failed");
+				if ("0300".toString().equals(map.get("statusCode"))) {
+					paymentRequest.setStatus("Success");
 				}
 				else {
-					paymentRequest.setStatus("Success");
+					paymentRequest.setStatus("Failed");
 				}
 			}
 
