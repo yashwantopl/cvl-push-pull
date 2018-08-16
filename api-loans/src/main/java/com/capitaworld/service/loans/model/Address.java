@@ -74,7 +74,13 @@ public class Address {
 	public void setStreetName(String streetName) {
 		this.streetName = streetName;
 	}
-	
+	@Override
+	public String toString() {
+		return "Address [cityId=" + cityId + ", countryId=" + countryId + ", landMark=" + landMark + ", pincode="
+				+ pincode + ", premiseNumber=" + premiseNumber + ", stateId=" + stateId + ", streetName=" + streetName
+				+ "]";
+	}
+
 	
 
 }
