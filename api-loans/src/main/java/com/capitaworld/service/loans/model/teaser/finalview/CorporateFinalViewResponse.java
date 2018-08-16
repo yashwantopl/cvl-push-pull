@@ -171,6 +171,8 @@ public class CorporateFinalViewResponse implements Serializable {
     private Object managementRiskWeightOfScoring;
     private Object financialRiskWeightOfScoring;
     private Object businessRiskWeightOfScoring;
+    private Object promotersContribution;
+    private Object promotersContributionPer;
 
 	public List<?> getMatchesList() {
 		return matchesList;
@@ -1615,6 +1617,34 @@ public class CorporateFinalViewResponse implements Serializable {
 	 */
 	public void setBusinessRiskWeightOfScoring(Object businessRiskWeightOfScoring) {
 		this.businessRiskWeightOfScoring = businessRiskWeightOfScoring;
+	}
+
+	/**
+	 * @return the promotersContribution
+	 */
+	public Object getPromotersContribution() {
+		return promotersContribution;
+	}
+
+	/**
+	 * @param promotersContribution the promotersContribution to set
+	 */
+	public void setPromotersContribution(Object promotersContribution) {
+		this.promotersContribution = promotersContribution;
+	}
+
+	/**
+	 * @return the promotersContributionPer
+	 */
+	public Object getPromotersContributionPer() {
+		return promotersContributionPer;
+	}
+
+	/**
+	 * @param promotersContributionPer the promotersContributionPer to set
+	 */
+	public void setPromotersContributionPer(Object promotersContributionPer) {
+		this.promotersContributionPer = promotersContributionPer;
 	}
 
 }
