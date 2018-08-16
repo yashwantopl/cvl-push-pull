@@ -1,10 +1,8 @@
 package com.capitaworld.service.loans.service.scoring.impl;
 
-import com.capitaworld.api.eligibility.utility.EligibilityUtils;
 import com.capitaworld.cibil.api.model.CibilRequest;
 import com.capitaworld.cibil.api.model.CibilResponse;
 import com.capitaworld.cibil.api.model.CibilScoreLogRequest;
-import com.capitaworld.cibil.api.utility.CibilUtils;
 import com.capitaworld.cibil.client.CIBILClient;
 import com.capitaworld.itr.api.model.ITRBasicDetailsResponse;
 import com.capitaworld.itr.api.model.ITRConnectionResponse;
@@ -17,13 +15,9 @@ import com.capitaworld.service.gst.GstCalculation;
 import com.capitaworld.service.gst.GstResponse;
 import com.capitaworld.service.gst.client.GstClient;
 import com.capitaworld.service.gst.yuva.request.GSTR1Request;
-import com.capitaworld.service.loans.domain.fundprovider.ProductMaster;
-import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.*;
 import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.LoansResponse;
-import com.capitaworld.service.loans.model.common.CGTMSECalcDataResponse;
-import com.capitaworld.service.loans.model.score.ScoreParameterNTBRequest;
 import com.capitaworld.service.loans.model.score.ScoreParameterRequestLoans;
 import com.capitaworld.service.loans.model.score.ScoringRequestLoans;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
@@ -42,7 +36,6 @@ import com.capitaworld.service.thirdparty.model.CGTMSEDataResponse;
 import com.capitaworld.service.thirdpaty.client.ThirdPartyClient;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.UserResponse;
-import com.ibm.icu.util.Calendar;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -62,7 +55,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 @Service
 @Transactional
@@ -178,6 +170,8 @@ public class ScoringServiceImpl implements ScoringService{
 
         String gstNumber=corporateApplicantDetailRepository.getGstInByApplicationId(applicationId);
         Double loanAmount=primaryCorporateDetailRepository.getLoanAmountByApplication(applicationId);
+
+        CorporateApplicantDetail corporateApplicantDetail=corporateApplicantDetailRepository.findOneByApplicationIdId(applicationId);
 
 
         GstResponse gstResponse=null;
@@ -1087,6 +1081,31 @@ public class ScoringServiceImpl implements ScoringService{
                         }
                         break;
                     }
+                    case ScoreParameter.YEARS_IN_BUSINESS:
+                    {
+                        try {
+
+                            java.util.Calendar todayDate = java.util.Calendar.getInstance();
+                            todayDate.setTime(new Date());
+
+                            Integer yearsInBetween = todayDate.get(java.util.Calendar.YEAR) - corporateApplicantDetail.getEstablishmentYear();
+                            Integer monthsDiff = 0;
+
+                            monthsDiff = todayDate.get(java.util.Calendar.MONTH) - corporateApplicantDetail.getEstablishmentMonth();
+
+                            Double yearsInBusiness = Double.valueOf((yearsInBetween * 12 + monthsDiff)/12);
+
+                            scoringParameterRequest.setYearsInBusiness(yearsInBusiness);
+                            scoringParameterRequest.setYearsInBusiness_p(true);
+                        }
+                        catch (Exception e)
+                        {
+                            logger.error("error while getting YEARS_IN_BUSINESS parameter");
+                            e.printStackTrace();
+                            scoringParameterRequest.setYearsInBusiness_p(false);
+                        }
+                        break;
+                    }
                     case ScoreParameter.REPAYMENT_PERIOD:
                     {
 
@@ -1109,9 +1128,9 @@ public class ScoringServiceImpl implements ScoringService{
 
                         try {
 
-                            Double netProfitOrLossFY = operatingStatementDetailsFY.getNetProfitOrLoss();
-                            Double netProfitOrLossSY = operatingStatementDetailsSY.getNetProfitOrLoss();
-                            Double netProfitOrLossTY = operatingStatementDetailsTY.getNetProfitOrLoss();
+                            Double netProfitOrLossFY = operatingStatementDetailsFY.getProfitBeforeTaxOrLoss();
+                            Double netProfitOrLossSY = operatingStatementDetailsSY.getProfitBeforeTaxOrLoss();
+                            Double netProfitOrLossTY = operatingStatementDetailsTY.getProfitBeforeTaxOrLoss();
 
                             scoringParameterRequest.setNetProfitOrLossFY(netProfitOrLossFY);
                             scoringParameterRequest.setNetProfitOrLossSY(netProfitOrLossSY);
