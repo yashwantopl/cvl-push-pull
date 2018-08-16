@@ -23,6 +23,7 @@ import com.capitaworld.service.notification.utils.ContentType;
 import com.capitaworld.service.notification.utils.NotificationAlias;
 import com.capitaworld.service.notification.utils.NotificationType;
 import com.capitaworld.service.users.client.UsersClient;
+import com.capitaworld.service.users.model.FundProviderDetailsRequest;
 import com.capitaworld.service.users.model.UserResponse;
 import com.capitaworld.service.users.model.UsersRequest;
 
@@ -42,7 +43,7 @@ public class FPAsyncComponent {
 	@Value("${capitaworld.sidbi.mail.to.maker.checker}")
 	private Boolean mailToMakerChecker;
 	
-	// ==================Sending Mail to all Makers after FS recieves In-principle Approval==================
+	// ==================Sending Mail to all Makers after FS receives In-principle Approval==================
 	
 		@Async
 		public void sendEmailToAllMakersWhenFSRecievesInPrinciple(Map<String,Object> proposalresp, PaymentRequest paymentRequest, Long userId, Long orgId) {
@@ -67,24 +68,39 @@ public class FPAsyncComponent {
 					Long branchId = null;
 					if(!CommonUtils.isObjectNullOrEmpty(proposalresp.get("branch_id"))) {
 						branchId = Long.valueOf(proposalresp.get("branch_id").toString());	
-						 System.out.println("BranchId:--- "+branchId);
-						 System.out.println("orgId:--- "+orgId);
+						 //System.out.println("BranchId:--- "+branchId);
+						 //System.out.println("orgId:--- "+orgId);
 					}
 	                
 					UserResponse userResponse = userClient.getUserDetailByOrgRoleBranchId(orgId,com.capitaworld.service.users.utils.CommonUtils.UserRoles.FP_MAKER,branchId);
 					List<Map<String, Object>> usersRespList = (List<Map<String, Object>>) userResponse.getListData();
 					//String[] to = new String[usersRespList.size()];
+				
+					
 					String to = null;
 					for (int i = 0; i < usersRespList.size(); i++) {
-						System.out.println("Inside For Loop:---");
+						//System.out.println("Inside For Loop:---");
 						UsersRequest userObj = MultipleJSONObjectHelper.getObjectFromMap(usersRespList.get(i),
 								UsersRequest.class);
-						if(!CommonUtils.isObjectNullOrEmpty(userObj.getEmail())) {
-							System.out.println("Maker ID:---"+userObj.getEmail());
-							to = userObj.getEmail();	
-							mailParameters.put("maker_name", userObj.getUsername()!=null?userObj.getUsername():"");
-							System.out.println("Mail ID:---"+to);
+						FundProviderDetailsRequest fundProviderDetailsRequest = null;
+						try {
+							UserResponse userResponseForName = userClient.getFPDetails(userObj);
+							fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<Object,Object>)userResponseForName.getData(),
+									FundProviderDetailsRequest.class);
 							
+						} catch (Exception e) {
+							logger.error("error while fetching Maker name======>");
+							e.printStackTrace();
+						}
+						System.out.println("Maker details:-"+fundProviderDetailsRequest);
+						String makerName = fundProviderDetailsRequest.getFirstName()!=null?fundProviderDetailsRequest.getFirstName():""+" "
+						                   +fundProviderDetailsRequest.getLastName()!=null?fundProviderDetailsRequest.getLastName():"";
+						
+						if(!CommonUtils.isObjectNullOrEmpty(userObj.getEmail())) {
+							//System.out.println("Maker ID:---"+userObj.getEmail());
+							to = userObj.getEmail();	
+							mailParameters.put("maker_name", makerName);
+							//System.out.println("Mail ID:---"+to);
 							createNotificationForEmail(to, userId.toString(),
 									mailParameters, NotificationAlias.EMAIL_ALL_MAKERS_AFTER_INPRINCIPLE_TO_FS, subject);
 						}
@@ -107,7 +123,7 @@ public class FPAsyncComponent {
 		//==========================================================================================================
 		
 	
-		// ==================Sending Mail to all Checkers after FS recieves In-principle Approval==================
+		// ==================Sending Mail to all Checkers after FS receives In-principle Approval==================
 		
 			@Async
 			public void sendEmailToAllCheckersWhenFSRecievesInPrinciple(Map<String,Object> proposalresp, PaymentRequest paymentRequest, Long userId, Long orgId) {
@@ -132,8 +148,8 @@ public class FPAsyncComponent {
 						Long branchId = null;
 						if(!CommonUtils.isObjectNullOrEmpty(proposalresp.get("branch_id"))) {
 							branchId = Long.valueOf(proposalresp.get("branch_id").toString());	
-							 System.out.println("BranchId:--- "+branchId);
-							 System.out.println("orgId:--- "+orgId);
+							// System.out.println("BranchId:--- "+branchId);
+							// System.out.println("orgId:--- "+orgId);
 						}
 		                
 						UserResponse userResponse = userClient.getUserDetailByOrgRoleBranchId(orgId,com.capitaworld.service.users.utils.CommonUtils.UserRoles.FP_CHECKER,branchId);
@@ -141,14 +157,14 @@ public class FPAsyncComponent {
 						//String[] to = new String[usersRespList.size()];
 						String to = null;
 						for (int i = 0; i < usersRespList.size(); i++) {
-							System.out.println("Inside For Loop:---");
+						//	System.out.println("Inside For Loop:---");
 							UsersRequest userObj = MultipleJSONObjectHelper.getObjectFromMap(usersRespList.get(i),
 									UsersRequest.class);
 							if(!CommonUtils.isObjectNullOrEmpty(userObj.getEmail())) {
-								System.out.println("Checker ID:---"+userObj.getEmail());
+							//	System.out.println("Checker ID:---"+userObj.getEmail());
 								to = userObj.getEmail();	
 								mailParameters.put("checker_name", userObj.getUsername()!=null?userObj.getUsername():"");
-								System.out.println("Mail ID:---"+to);
+							//	System.out.println("Mail ID:---"+to);
 								
 								createNotificationForEmail(to, userId.toString(),
 										mailParameters, NotificationAlias.EMAIL_ALL_CHECKERS_AFTER_INPRINCIPLE_TO_FS, subject);
@@ -171,7 +187,7 @@ public class FPAsyncComponent {
 			
 			//==========================================================================================================
 			
-		
+	
 		
 		private void createNotificationForEmail(String toNo, String userId, Map<String, Object> mailParameters,
 				Long templateId, String emailSubject) throws NotificationException {
