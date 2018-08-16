@@ -1132,9 +1132,9 @@ public class ScoringServiceImpl implements ScoringService{
                             Double netProfitOrLossSY = operatingStatementDetailsSY.getProfitBeforeTaxOrLoss();
                             Double netProfitOrLossTY = operatingStatementDetailsTY.getProfitBeforeTaxOrLoss();
 
-                            scoringParameterRequest.setNetProfitOrLossFY(netProfitOrLossFY);
-                            scoringParameterRequest.setNetProfitOrLossSY(netProfitOrLossSY);
-                            scoringParameterRequest.setNetProfitOrLossTY(netProfitOrLossTY);
+                            scoringParameterRequest.setContinuousNetProfitOrLossFY(netProfitOrLossFY);
+                            scoringParameterRequest.setContinuousNetProfitOrLossSY(netProfitOrLossSY);
+                            scoringParameterRequest.setContinuousNetProfitOrLossTY(netProfitOrLossTY);
 
                             scoringParameterRequest.setContinousNetProfit_p(true);
 
