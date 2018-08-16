@@ -102,6 +102,9 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 
 	private String landmark;
 
+	private Integer stateId;
+	private Integer cityId;
+
 	private Boolean isMainDirector;
 
 	private Integer qualificationId;
@@ -119,6 +122,11 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 	private Integer residentStatus;
 	private Boolean isGuarantor;
 	private DirectorPersonalDetailRequest directorPersonalDetailRequest;
+
+	private String district;
+	private String subDistrict;
+	private String village;
+	private Long districtMappingId;
 
 	public Boolean getIsActive() {
 		return isActive;
@@ -563,6 +571,54 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 
 	public void setDirectorPersonalDetailRequest(DirectorPersonalDetailRequest directorPersonalDetailRequest) {
 		this.directorPersonalDetailRequest = directorPersonalDetailRequest;
+	}
+
+	public String getDistrict() {
+		return district;
+	}
+
+	public void setDistrict(String district) {
+		this.district = district;
+	}
+
+	public String getSubDistrict() {
+		return subDistrict;
+	}
+
+	public void setSubDistrict(String subDistrict) {
+		this.subDistrict = subDistrict;
+	}
+
+	public String getVillage() {
+		return village;
+	}
+
+	public void setVillage(String village) {
+		this.village = village;
+	}
+
+	public Long getDistrictMappingId() {
+		return districtMappingId;
+	}
+
+	public void setDistrictMappingId(Long districtMappingId) {
+		this.districtMappingId = districtMappingId;
+	}
+
+	public Integer getCityId() {
+		return cityId;
+	}
+
+	public void setCityId(Integer cityId) {
+		this.cityId = cityId;
+	}
+
+	public Integer getStateId() {
+		return stateId;
+	}
+
+	public void setStateId(Integer stateId) {
+		this.stateId = stateId;
 	}
 
 	@Override
