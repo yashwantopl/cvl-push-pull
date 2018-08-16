@@ -1212,8 +1212,12 @@ public enum APIFlags {
 					String a = StringEscapeUtils.escapeXml(value1.toString());
 					value = a;
 					field.set(obj, value);
-				}if(value instanceof Double) {
-					convertToDoubleForXml(value, null);
+				}else if(value instanceof Double) {
+					if(!Double.isNaN((Double)value)) {
+						DecimalFormat decim = new DecimalFormat("0.00");
+						String a = decim.format(value);
+						field.set(obj, Double.valueOf(a.toString()));
+					}
 				}
 				else {
 					continue;
