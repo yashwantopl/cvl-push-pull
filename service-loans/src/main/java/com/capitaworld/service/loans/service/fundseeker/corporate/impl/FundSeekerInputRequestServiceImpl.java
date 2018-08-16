@@ -502,6 +502,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			to.setRegisteredCityId(from.getFirstAddress().getCityId());
 			to.setRegisteredStateId(from.getFirstAddress().getStateId());
 			to.setRegisteredCountryId(from.getFirstAddress().getCountryId());
+			to.setRegisteredDistMappingId(from.getFirstAddress().getDistrictMappingId());
 		}
 
 		/*
@@ -537,6 +538,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 		address.setCityId(from.getRegisteredCityId());
 		address.setStateId(from.getRegisteredStateId());
 		address.setCountryId(from.getRegisteredCountryId());
+		address.setDistrictMappingId(from.getRegisteredDistMappingId());
 		to.setFirstAddress(address);
 		/*
 		 * if (from.getSameAs() != null && from.getSameAs()) {

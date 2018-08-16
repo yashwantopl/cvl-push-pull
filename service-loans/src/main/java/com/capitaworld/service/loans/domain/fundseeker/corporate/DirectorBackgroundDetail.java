@@ -173,6 +173,9 @@ public class DirectorBackgroundDetail extends AuditActivity implements Serializa
 	@Column(name="is_guarantor")
 	private Boolean isGuarantor;
 
+	@Column(name="district_mapping_id")
+	private Long districtMappingId;
+
 	@OneToOne
 	@JoinColumn(name="personal_detail_id")
 	private DirectorPersonalDetail directorPersonalDetail;
@@ -630,5 +633,13 @@ public class DirectorBackgroundDetail extends AuditActivity implements Serializa
 
 	public void setDirectorPersonalDetail(DirectorPersonalDetail directorPersonalDetail) {
 		this.directorPersonalDetail = directorPersonalDetail;
+	}
+
+	public Long getDistrictMappingId() {
+		return districtMappingId;
+	}
+
+	public void setDistrictMappingId(Long districtMappingId) {
+		this.districtMappingId = districtMappingId;
 	}
 }
