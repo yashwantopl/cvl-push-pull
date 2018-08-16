@@ -455,6 +455,9 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 					.setCollateralSecurityAmount(primaryCorporateDetail.getCollateralSecurityAmount() != null
 							? String.valueOf(primaryCorporateDetail.getCollateralSecurityAmount())
 							: null);
+			corporatePrimaryViewResponse.setPromotersContribution(primaryCorporateDetail.getPromoterContribution());
+			corporatePrimaryViewResponse.setPromotersContributionPer(primaryCorporateDetail.getTotalAmtPercentage()!= null ? " ("+convertValue(primaryCorporateDetail.getTotalAmtPercentage())+"%)" : null);
+			
 			corporatePrimaryViewResponse.setNpOrgId(loanApplicationMaster.getNpOrgId());
 			// workingCapitalPrimaryViewResponse.setSharePriceFace(primaryWorkingCapitalLoanDetail.getSharePriceFace());
 			// workingCapitalPrimaryViewResponse.setSharePriceMarket(primaryWorkingCapitalLoanDetail.getSharePriceMarket());

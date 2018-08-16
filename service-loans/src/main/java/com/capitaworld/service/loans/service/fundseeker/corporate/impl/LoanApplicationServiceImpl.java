@@ -84,6 +84,7 @@ import com.capitaworld.service.gateway.model.GatewayRequest;
 import com.capitaworld.service.gst.GstResponse;
 import com.capitaworld.service.gst.client.GstClient;
 import com.capitaworld.service.loans.config.AuditComponent;
+import com.capitaworld.service.loans.config.FPAsyncComponent;
 import com.capitaworld.service.loans.config.MCAAsyncComponent;
 import com.capitaworld.service.loans.domain.common.AuditMaster;
 import com.capitaworld.service.loans.domain.fundprovider.ProductMaster;
@@ -432,6 +433,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	
 	@Autowired
 	private CIBILClient cibilClient;
+	
+	@Autowired
+	private FPAsyncComponent fpasyncComponent;
 	
 	@Autowired
 	private CMAService cmaService;
@@ -4455,47 +4459,30 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					
 					applicationRequest.setFundProvider(orgId!=null ? CommonUtils.getOrganizationName(orgId) : null);
 					
-                 // ==================Sending Mail to all Maker's after FS recieves In-principle Approval==================	
-					
+                 // ==================Sending Mail to all Checker's & Maker's of that branch after FS recieves In-principle Approval==================	
 					
 					try {
+						fpasyncComponent.sendEmailToAllMakersWhenFSRecievesInPrinciple(proposalresp, paymentRequest, userId, orgId);	
+					}
+					catch(Exception e) {
 						
-						logger.info("Into sending Mail to all Makers after FS gets In-Principle Approval===>{}");
-						String subject = "Intimation : New Proposal -  Application ID "+paymentRequest.getApplicationId();
-						Map<String, Object> mailParameters = new HashMap<String, Object>();
-						mailParameters.put("fs_name", paymentRequest.getNameOfEntity()!=null?paymentRequest.getNameOfEntity():" ");
-
-						Long branchId = null;
-						if(!CommonUtils.isObjectNullOrEmpty(proposalresp.get("branch_id"))) {
-							branchId = Long.valueOf(proposalresp.get("branch_id").toString());	
-						}
-                        
-						UserResponse userResponse = userClient.getUserDetailByOrgRoleBranchId(orgId,com.capitaworld.service.users.utils.CommonUtils.UserRoles.FP_MAKER,branchId);
-						List<Map<String, Object>> usersRespList = (List<Map<String, Object>>) userResponse.getListData();
-						List<UsersRequest> usersList = new ArrayList<UsersRequest>();
-						String to[] = new String[100];
-						for (int i = 0; i < usersRespList.size(); i++) {
-							UsersRequest userObj = MultipleJSONObjectHelper.getObjectFromMap(usersRespList.get(i),
-									UsersRequest.class);
-							if(!CommonUtils.isObjectNullOrEmpty(userObj.getEmail())) {
-								to[i] = userObj.getEmail();	
-							}
-					    	
-						} 	
-						createNotificationForEmail(to, userId.toString(),
-								mailParameters, NotificationAlias.EMAIL_ALL_MAKERS_AFTER_INPRINCIPLE_TO_FS, subject);
-
-						
-						}catch (NotificationException e) {
-						logger.info("An exception getting while sending mail to all Makers=============>{}");
-
+						logger.info("Exception occured while Sending Mail to All Makers");
 						e.printStackTrace();
+						
 					}
 					
-				//========================================================================================================
-
-
-                 
+					try {
+						fpasyncComponent.sendEmailToAllCheckersWhenFSRecievesInPrinciple(proposalresp, paymentRequest, userId, orgId);	
+					}
+					catch(Exception e) {
+						
+						logger.info("Exception occured while Sending Mail to All Checkers");
+						e.printStackTrace();
+						
+					}
+							
+				//=======================================================================================================================================
+      
 			  }
 					
 				}else {
@@ -4566,30 +4553,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
-
-		
-	private void createNotificationForEmail(String to[], String userId, Map<String, Object> mailParameters,
-			Long templateId, String emailSubject) throws NotificationException {
-
-		NotificationRequest notificationRequest = new NotificationRequest();
-		notificationRequest.setClientRefId(userId);
-
-		Notification notification = new Notification();
-		notification.setContentType(ContentType.TEMPLATE);
-		notification.setTemplateId(templateId);
-		notification.setSubject(emailSubject);
-		notification.setTo(to);
-		notification.setType(NotificationType.EMAIL);
-		notification.setFrom(environment.getRequiredProperty(EMAIL_ADDRESS_FROM));
-		notification.setParameters(mailParameters);
-		notificationRequest.addNotification(notification);
-		sendEmail(notificationRequest);
-
-	}
-
-	private void sendEmail(NotificationRequest notificationRequest) throws NotificationException {
-		notificationClient.send(notificationRequest);
-	}
+	
 
 	@Override
 	public GatewayRequest getPaymentStatus(PaymentRequest paymentRequest, Long userId, Long ClientId) throws Exception {
