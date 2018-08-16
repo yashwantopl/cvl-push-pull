@@ -75,32 +75,18 @@ public class FPAsyncComponent {
 					UserResponse userResponse = userClient.getUserDetailByOrgRoleBranchId(orgId,com.capitaworld.service.users.utils.CommonUtils.UserRoles.FP_MAKER,branchId);
 					List<Map<String, Object>> usersRespList = (List<Map<String, Object>>) userResponse.getListData();
 					//String[] to = new String[usersRespList.size()];
-				
-					
+							
 					String to = null;
 					for (int i = 0; i < usersRespList.size(); i++) {
 						//System.out.println("Inside For Loop:---");
 						UsersRequest userObj = MultipleJSONObjectHelper.getObjectFromMap(usersRespList.get(i),
 								UsersRequest.class);
-						FundProviderDetailsRequest fundProviderDetailsRequest = null;
-						try {
-							UserResponse userResponseForName = userClient.getFPDetails(userObj);
-							fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<Object,Object>)userResponseForName.getData(),
-									FundProviderDetailsRequest.class);
-							
-						} catch (Exception e) {
-							logger.error("error while fetching Maker name======>");
-							e.printStackTrace();
-						}
-						System.out.println("Maker details:-"+fundProviderDetailsRequest);
-						String makerName = fundProviderDetailsRequest.getFirstName()!=null?fundProviderDetailsRequest.getFirstName():""+" "
-						                   +fundProviderDetailsRequest.getLastName()!=null?fundProviderDetailsRequest.getLastName():"";
-						
 						if(!CommonUtils.isObjectNullOrEmpty(userObj.getEmail())) {
 							//System.out.println("Maker ID:---"+userObj.getEmail());
 							to = userObj.getEmail();	
-							mailParameters.put("maker_name", makerName);
+							mailParameters.put("maker_name", userObj.getUsername()!=null?userObj.getUsername():"");
 							//System.out.println("Mail ID:---"+to);
+							
 							createNotificationForEmail(to, userId.toString(),
 									mailParameters, NotificationAlias.EMAIL_ALL_MAKERS_AFTER_INPRINCIPLE_TO_FS, subject);
 						}
