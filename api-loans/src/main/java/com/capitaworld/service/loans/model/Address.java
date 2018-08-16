@@ -19,6 +19,11 @@ public class Address {
 
 	private String streetName;
 
+	private String district;
+	private String subDistrict;
+	private String village;
+	private Long districtMappingId;
+
 	public Long getCityId() {
 		return cityId;
 	}
@@ -74,13 +79,53 @@ public class Address {
 	public void setStreetName(String streetName) {
 		this.streetName = streetName;
 	}
-	@Override
-	public String toString() {
-		return "Address [cityId=" + cityId + ", countryId=" + countryId + ", landMark=" + landMark + ", pincode="
-				+ pincode + ", premiseNumber=" + premiseNumber + ", stateId=" + stateId + ", streetName=" + streetName
-				+ "]";
+
+	public String getDistrict() {
+		return district;
 	}
 
-	
+	public void setDistrict(String district) {
+		this.district = district;
+	}
 
+	public String getSubDistrict() {
+		return subDistrict;
+	}
+
+	public void setSubDistrict(String subDistrict) {
+		this.subDistrict = subDistrict;
+	}
+
+	public String getVillage() {
+		return village;
+	}
+
+	public void setVillage(String village) {
+		this.village = village;
+	}
+
+	public Long getDistrictMappingId() {
+		return districtMappingId;
+	}
+
+	public void setDistrictMappingId(Long districtMappingId) {
+		this.districtMappingId = districtMappingId;
+	}
+
+	@Override
+	public String toString() {
+		return "Address{" +
+				"cityId=" + cityId +
+				", countryId=" + countryId +
+				", landMark='" + landMark + '\'' +
+				", pincode=" + pincode +
+				", premiseNumber='" + premiseNumber + '\'' +
+				", stateId=" + stateId +
+				", streetName='" + streetName + '\'' +
+				", district='" + district + '\'' +
+				", subDistrict='" + subDistrict + '\'' +
+				", village='" + village + '\'' +
+				", districtMappingId=" + districtMappingId +
+				'}';
+	}
 }
