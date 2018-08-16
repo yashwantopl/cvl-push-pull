@@ -6,4 +6,6 @@ import java.util.List;
 
 public interface PincodeDateService {
     public List<PincodeDataResponse> listData(String pincode);
+    
+    public PincodeDataResponse getById(Long id);
 }
