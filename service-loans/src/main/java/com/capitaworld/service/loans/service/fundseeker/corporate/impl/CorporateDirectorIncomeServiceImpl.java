@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -41,7 +42,7 @@ public class CorporateDirectorIncomeServiceImpl implements CorporateDirectorInco
 	private DirectorBackgroundDetailsRepository backgroundDetailsRepository;
 	
 	private static final Logger logger = LoggerFactory.getLogger(CorporateDirectorIncomeServiceImpl.class.getName());
-	
+	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 	@Override
 	public Boolean saveOrUpdateIncomeDetails(List<CorporateDirectorIncomeRequest> corporateRequest) throws Exception {
 
@@ -97,6 +98,8 @@ public class CorporateDirectorIncomeServiceImpl implements CorporateDirectorInco
 						if(!CommonUtils.isObjectNullOrEmpty(corpObj)) {
 							incomeRequest = new CorporateDirectorIncomeRequest();
 							BeanUtils.copyProperties(corpObj, incomeRequest);
+							String directorName = backgroundDetailsRepository.getDirectorNamefromDirectorId(incomeRequest.getDirectorId());
+							incomeRequest.setDirectorName(directorName);
 						}
 						incomeDetailsResponse.add(incomeRequest);
 				}
@@ -144,7 +147,7 @@ public class CorporateDirectorIncomeServiceImpl implements CorporateDirectorInco
 							map.put("designation", corpObj.getDesignation());
 							map.put("directorsName", corpObj.getDirectorsName());
 							map.put("totalExperience", corpObj.getTotalExperience());
-							map.put("dob", corpObj.getDob());
+							map.put("dob", DATE_FORMAT.format(corpObj.getDob()));
 							map.put("mobile", corpObj.getMobile());
 							if(!CommonUtils.isObjectNullOrEmpty(corpObj.getGender())) {
 								Gender byIdGndr = Gender.getById(corpObj.getGender());
