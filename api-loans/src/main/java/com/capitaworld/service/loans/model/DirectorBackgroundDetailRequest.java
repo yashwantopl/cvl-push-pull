@@ -15,6 +15,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DirectorBackgroundDetailRequest implements Serializable {
 
+	
+
 	/**
 	 * 
 	 */
@@ -53,6 +55,7 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 
 	/*@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd-MM-yyyy")*/
 	private Date dob;
+	private String dobString;
 
 	private String mobile;
 
@@ -619,6 +622,13 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 
 	public void setStateId(Integer stateId) {
 		this.stateId = stateId;
+	}
+	public String getDobString() {
+		return dobString;
+	}
+
+	public void setDobString(String dobString) {
+		this.dobString = dobString;
 	}
 
 	@Override
