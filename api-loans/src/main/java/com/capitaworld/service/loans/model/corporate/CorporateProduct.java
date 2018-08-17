@@ -207,6 +207,8 @@ public class CorporateProduct  extends  ProductMasterRequest implements Serializ
 	
 	private Integer cgtmseCoverage;
 	
+	private Integer cashMargin;
+	
 /*ntb*/
 	
 	private BigDecimal minAvrgAge;
@@ -1329,6 +1331,16 @@ public class CorporateProduct  extends  ProductMasterRequest implements Serializ
 		this.cgtmseCoverage = cgtmseCoverage;
 	}
 
+	public Integer getCashMargin() {
+		return cashMargin;
+	}
+
+	public void setCashMargin(Integer cashMargin) {
+		this.cashMargin = cashMargin;
+	}
+
+
+	
 	
 	
 	
