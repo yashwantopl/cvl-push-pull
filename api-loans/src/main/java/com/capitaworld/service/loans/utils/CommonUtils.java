@@ -64,6 +64,11 @@ public class CommonUtils {
 		public static final Long ADMIN_HO = 4l;
 		public static final Long HO = 5l;
 		public static final Long BO = 6l;
+		public static final Long DEFAULT_FS = 7l;
+		public static final Long FP_MAKER = 8l;
+		public static final Long FP_CHECKER = 9l;
+		public static final Long ADMIN_MAKER = 10l;
+		public static final Long ADMIN_CHECKER = 11l;
 	}
 
 	public interface DenominationInAmount {
