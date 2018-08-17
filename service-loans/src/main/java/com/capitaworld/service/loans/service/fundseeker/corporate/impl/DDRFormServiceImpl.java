@@ -256,7 +256,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 			dDRFormDetails = ddrFormDetailsRepository.save(dDRFormDetails);
 
 			// SAVE AUTO FILEDS DATA
-			if (CommonUtils.UsersRoles.MAKER.equals(dDRRequest.getRoleId())) {
+			if (CommonUtils.UsersRoles.MAKER.equals(dDRRequest.getRoleId()) || CommonUtils.UsersRoles.FP_MAKER.equals(dDRRequest.getRoleId())) {
 
 				CorporateApplicantDetail applicantDetail = corporateApplicantDetailRepository
 						.getByApplicationIdAndIsAtive(dDRRequest.getApplicationId());
@@ -506,6 +506,8 @@ public class DDRFormServiceImpl implements DDRFormService {
 
 				}
 
+			} else {
+				logger.info("ROLE ID NOT MATCHES --------------------------------------------------------->" + dDRRequest.getRoleId());
 			}
 
 			// SAVE ALL LIST DATA
