@@ -102,7 +102,10 @@ public class NtbPrimaryViewResponse {
 	    private Object dataObject;
 	    private Object scoringResponseList;
 	    private Boolean isMultipleUser;
-
+	    private Boolean isMainDir;
+	    private Long appId;
+	    private String dirPan;
+	    private Object cibilOfMainDir;
 
 		/**
 		 * @return the matchesList
@@ -958,6 +961,58 @@ public class NtbPrimaryViewResponse {
 		public void setIsMultipleUser(Boolean isMultipleUser) {
 			this.isMultipleUser = isMultipleUser;
 		}
+		/**
+		 * @return the isMainDir
+		 */
+		public Boolean getIsMainDir() {
+			return isMainDir;
+		}
+		/**
+		 * @param isMainDir the isMainDir to set
+		 */
+		public void setIsMainDir(Boolean isMainDir) {
+			this.isMainDir = isMainDir;
+		}
+		/**
+		 * @return the appId
+		 */
+		public Long getAppId() {
+			return appId;
+		}
+		/**
+		 * @param appId the appId to set
+		 */
+		public void setAppId(Long appId) {
+			this.appId = appId;
+		}
+		/**
+		 * @return the dirPan
+		 */
+		/**
+		 * @return the dirPan
+		 */
+		public String getDirPan() {
+			return dirPan;
+		}
+		/**
+		 * @param dirPan the dirPan to set
+		 */
+		public void setDirPan(String dirPan) {
+			this.dirPan = dirPan;
+		}
+		/**
+		 * @return the cibilOfMainDir
+		 */
+		public Object getCibilOfMainDir() {
+			return cibilOfMainDir;
+		}
+		/**
+		 * @param cibilOfMainDir the cibilOfMainDir to set
+		 */
+		public void setCibilOfMainDir(Object cibilOfMainDir) {
+			this.cibilOfMainDir = cibilOfMainDir;
+		}
+
 
 
 

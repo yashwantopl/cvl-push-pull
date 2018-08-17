@@ -4638,12 +4638,19 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		IndustryResponse industryResponse = irrIndustryRequest.getIndustryResponse();
 		return !CommonUtils.isObjectNullOrEmpty(industryResponse) ? industryResponse.getBusinessTypeId() : null;			
 	}
+	
+	@Override
+	public Long getDDRStatusId(Long applicationId) {
+		LoanApplicationMaster applicationMaster = loanApplicationRepository.getById(applicationId);
+		return !CommonUtils.isObjectNullOrEmpty(applicationMaster) ? applicationMaster.getDdrStatusId() : null;
+		
+	}
 
 	@Override
 	public Boolean updateDDRStatus(Long applicationId, Long userId, Long clientId, Long statusId) throws Exception {
 		logger.info("start getPaymentStatus()");
 		try {
-			LoanApplicationMaster applicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId, userId);
+			LoanApplicationMaster applicationMaster = loanApplicationRepository.getById(applicationId);
 			if (applicationMaster == null) {
 				throw new Exception("LoanapplicationMaster object Must not be null while Updating DDR Status==>"
 						+ applicationMaster);
@@ -5357,7 +5364,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			if(audit == null) {
 				
 				//FinancialRequest financialDetails = cmaService.getFinancialDetailsForBankIntegration(applicationId);
-				ClientLogicCalculationRequest clientLogicCalculationRequest= getClientLogicCalculationDetail(applicationId, userId, prelimData.getCorporateProfileRequest() , data , cmaRequest , organizationId); 
+				ClientLogicCalculationRequest clientLogicCalculationRequest= getClientLogicCalculationDetail(applicationId, userId,  prelimData !=null ? prelimData.getCorporateProfileRequest() : null , data , cmaRequest , organizationId); 
 				if(clientLogicCalculationRequest == null) {
 					logger.info("LOGIC Details Request Not Found  in savePhese1DataToSidbi()  for ApplicationId ====>{}FpProductId====>{}",applicationId,fpProductMappingId);
 					auditComponent.updateAudit(AuditComponent.LOGIC, applicationId, userId, "LOGIC Details data Request Not Found for ApplicationId ====>{} "+applicationId+"FpProductId====>{}"+fpProductMappingId, false);
@@ -5378,20 +5385,23 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			//Saving Logic Detail Starts
 			audit = auditComponent.getAudit(applicationId, true, AuditComponent.COMMERCIAL);
 			if(audit == null) {
-				if(!CommonUtils.isObjectListNull(prelimData, prelimData.getCorporateProfileRequest() , prelimData.getCorporateProfileRequest().getPan())) {
-					CommercialRequest commercialRequest = createCommercialRequest(applicationId, prelimData.getCorporateProfileRequest().getPan()); 
-					if(commercialRequest== null) {
-						logger.info("Commercial Details Request Not Found  in savePhese1DataToSidbi()  for ApplicationId ====>{}FpProductId====>{}",applicationId,fpProductMappingId);
-						auditComponent.updateAudit(AuditComponent.COMMERCIAL, applicationId, userId, "Commercial Details data Request Not Found for ApplicationId ====>{} "+applicationId+"FpProductId====>{}"+fpProductMappingId, false);
-						setTokenAsExpired(generateTokenRequest);
-						return false;
-					}else {
-						logger.info("Start Saving Commercial Details in savePhese1DataToSidbi() ");
-						saveCommercialDetails = sidbiIntegrationClient.saveCommercialDetails(commercialRequest, generateTokenRequest.getToken(), generateTokenRequest.getBankToken());
-						logger.info("Sucessfully save COMMERCIAL Details in savePhese1DataToSidbi() for  ApplicationId ====>{}FpProductId====>{}Flag==>{}",applicationId,fpProductMappingId,saveCommercialDetails);
-						auditComponent.updateAudit(AuditComponent.COMMERCIAL, applicationId, userId, null, saveCommercialDetails);
-					}
+				String pan = null ;
+				if(! CommonUtils.isObjectNullOrEmpty(prelimData) && ! CommonUtils.isObjectNullOrEmpty( prelimData.getCorporateProfileRequest() )  && ! CommonUtils.isObjectNullOrEmpty ( prelimData.getCorporateProfileRequest().getPan())) {
+					pan = prelimData.getCorporateProfileRequest().getPan() ;
 				}
+				CommercialRequest commercialRequest = createCommercialRequest(applicationId, pan); 
+				if(commercialRequest== null) {
+					logger.info("Commercial Details Request Not Found  in savePhese1DataToSidbi()  for ApplicationId ====>{}FpProductId====>{}",applicationId,fpProductMappingId);
+					auditComponent.updateAudit(AuditComponent.COMMERCIAL, applicationId, userId, "Commercial Details data Request Not Found for ApplicationId ====>{} "+applicationId+"FpProductId====>{}"+fpProductMappingId, false);
+					setTokenAsExpired(generateTokenRequest);
+					return false;
+				}else {
+					logger.info("Start Saving Commercial Details in savePhese1DataToSidbi() ");
+					saveCommercialDetails = sidbiIntegrationClient.saveCommercialDetails(commercialRequest, generateTokenRequest.getToken(), generateTokenRequest.getBankToken());
+					logger.info("Sucessfully save COMMERCIAL Details in savePhese1DataToSidbi() for  ApplicationId ====>{}FpProductId====>{}Flag==>{}",applicationId,fpProductMappingId,saveCommercialDetails);
+					auditComponent.updateAudit(AuditComponent.COMMERCIAL, applicationId, userId, null, saveCommercialDetails);
+				}
+				
 			}else {
 				logger.info("COMMERCIAL Details Already Saved so not Going to Save Again===>");
 			}
@@ -5577,14 +5587,17 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 		
 		CibilRequest cibilRequest = new CibilRequest();
 		cibilRequest.setApplicationId(applicationId);
+		if(CommonUtils.isObjectNullOrEmpty(pan)) {
+			pan = corporateApplicantDetailRepository.getPanNoByApplicationId(applicationId);	
+		}
 		cibilRequest.setPan(pan);
 		CommercialRequest commercialRequest = null;
 		try {
-			CibilResponse msmeCommercial = cibilClient.getMsmeCommercial(cibilRequest);
-			if(!CibilUtils.isObjectListNull(msmeCommercial,msmeCommercial.getData())) {
+			Base base= cibilClient.getMsmeCommercial(cibilRequest);
+			if(!CibilUtils.isObjectNullOrEmpty(base)) {
 				commercialRequest = new CommercialRequest();
-				Base base = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)msmeCommercial.getData(), Base.class);
-				if(! CommonUtils.isObjectListNull(base ,base.getResponseReport() , base.getResponseReport().getProductSec())){
+				/*Base base = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)msmeCommercial.getData(), Base.class);*/
+				if(! CommonUtils.isObjectNullOrEmpty(base ) && !  CommonUtils.isObjectNullOrEmpty( base.getResponseReport()) && ! CommonUtils.isObjectNullOrEmpty (base.getResponseReport().getProductSec())){
 					Base.ResponseReport.ProductSec productSec = base.getResponseReport().getProductSec();
 					if(!CommonUtils.isObjectNullOrEmpty(productSec)) {
 						commercialRequest.setApplicationId(applicationId);
@@ -5605,7 +5618,7 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 						commercialRequest.setOutstandingBalancesByCreditFacilityGroupsMasterRequest(setOutstandingBalancesByCreditFacilityGroupsMaster(productSec, applicationId) );
 						commercialRequest.setRelationDetailsRequestList(setRelationDetails(productSec, applicationId));
 						commercialRequest.setSuitFiledDetailsRequestList(setSuitFiledDetails(productSec, applicationId));
-						
+						commercialRequest.setApplicationId(applicationId);
 					}
 				}
 			}		
@@ -5913,6 +5926,7 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 	
 	
 	private String checkIsNull(Object value) {
+			
 		return CommonUtils.isObjectNullOrEmpty(value) ? null : value.toString();
 	}
 	
@@ -7778,15 +7792,20 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 	public ClientLogicCalculationRequest getClientLogicCalculationDetail(Long applicationId, Long userId , CorporateProfileRequest corporateProfileRequest ,  com.capitaworld.sidbi.integration.model.bankstatement.Data data  , CMARequest cmaRequest  , Long orgId) {
 		
 		ClientLogicCalculationRequest clientLogicCalculationRequest = new ClientLogicCalculationRequest();
-		
+		clientLogicCalculationRequest.setApplicationId(applicationId);
 		// bank statement data
 		ReportRequest reportRequest = new ReportRequest();
 		reportRequest.setApplicationId(applicationId);
 		reportRequest.setUserId(userId);
 		try {
 			//Existing Customer in sbi
-			
-			if( !CommonUtils.isObjectListNull(data, data.getCustomerInfo()) && "SBI".equalsIgnoreCase(data.getCustomerInfo().getBank()) || "STATE BANK OF INDIA".equalsIgnoreCase(data.getCustomerInfo().getBank())   && "current".equalsIgnoreCase(data.getSummaryInfo().getAccType())){
+			if(CommonUtils.isObjectNullOrEmpty(data)) {
+				data = createBankStatementRequest(applicationId);
+			}
+			if(CommonUtils.isObjectNullOrEmpty(cmaRequest)) {
+				cmaRequest = getCMADetailOfAuditYears(applicationId);
+			}
+			if( !CommonUtils.isObjectNullOrEmpty(data) && ! CommonUtils.isObjectNullOrEmpty( data.getCustomerInfo()) && "SBI".equalsIgnoreCase(data.getCustomerInfo().getBank()) || "STATE BANK OF INDIA".equalsIgnoreCase(data.getCustomerInfo().getBank())   && "current".equalsIgnoreCase(data.getSummaryInfo().getAccType())){
 				clientLogicCalculationRequest.setIsExistingCustomer(true);
 				clientLogicCalculationRequest.setCifAccountNumber(data.getSummaryInfo().getAccNo()); 
 				clientLogicCalculationRequest.setAccountType(data.getSummaryInfo().getAccType());
@@ -7807,7 +7826,7 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 				Amount cashCredit =new  Amount();
 				Amount termLoan =new  Amount();
 				Amount lcBg =new  Amount();
-				if(!CommonUtils.isObjectListNull(commercialRequest , commercialRequest.getCreditFacilityDetailsRequest())) {
+				if(!CommonUtils.isObjectNullOrEmpty(commercialRequest ) && ! CommonUtils.isObjectNullOrEmpty(commercialRequest.getCreditFacilityDetailsRequest())) {
 					for(CreditFacilityDetailsRequest creditFacilityDetailsRequest : commercialRequest.getCreditFacilityDetailsRequest()) {
 						if(CommonUtility.getCashCredit(CibilUtils.CreditTypeEnum.fromValue(creditFacilityDetailsRequest.getType()))) { 
 								
@@ -7863,14 +7882,14 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 				/*clientLogicCalculationRequest.setDirGenderCode(GenderTypeEnum.fromId(directorBackgroundDetail.getGender()).getValue());*/
 				
 				//Debit Summation And Credit Summation
-				if(! CommonUtils.isObjectListNull(data , data.getSummaryInfo() , data.getSummaryInfo().getSummaryInfoTotalDetails())) {
+				if(! CommonUtils.isObjectNullOrEmpty(data ) && !CommonUtils.isObjectNullOrEmpty( data.getSummaryInfo()) && ! CommonUtils.isObjectNullOrEmpty(data.getSummaryInfo().getSummaryInfoTotalDetails())) {
 					if( ! CommonUtils.isObjectNullOrEmpty(data.getSummaryInfo().getSummaryInfoTotalDetails().getTotalCredit())) {
 						
-					clientLogicCalculationRequest.setCreditSummation(Double.valueOf(data.getSummaryInfo().getSummaryInfoTotalDetails().getTotalCredit()));
+					clientLogicCalculationRequest.setCreditSummation(getInDouble(data.getSummaryInfo().getSummaryInfoTotalDetails().getTotalCredit()));
 					}
 					if( ! CommonUtils.isObjectNullOrEmpty(data.getSummaryInfo().getSummaryInfoTotalDetails().getTotalDebit())) {
 						
-						clientLogicCalculationRequest.setDebitSummation(Double.valueOf( data.getSummaryInfo().getSummaryInfoTotalDetails().getDebits())) ;
+						clientLogicCalculationRequest.setDebitSummation(getInDouble( data.getSummaryInfo().getSummaryInfoTotalDetails().getDebits())) ;
 					}
 				}
 				
@@ -7945,41 +7964,44 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 				int totalNetProfitLossYears =0;
 				int totalNetSaleYears =0;
 				Double totalCostSales =0.0 ;
-				if( !CommonUtils.isObjectListNull(cmaRequest , cmaRequest.getOperatingStatementRequestList())) {
-					for ( OperatingStatementDetailsRequest operatingStatementDetailsRequest : cmaRequest.getOperatingStatementRequestList()) {
+				if( CommonUtils.isObjectNullOrEmpty(cmaRequest ) && !CommonUtils.isObjectNullOrEmpty(cmaRequest.getOperatingStatementRequestList()) && ! CommonUtils.isObjectNullOrEmpty( cmaRequest.getAssetsRequestList())) {
+	
+					cmaRequest = getCMADetailOfAuditYears(applicationId);
+				}
+				for ( OperatingStatementDetailsRequest operatingStatementDetailsRequest : cmaRequest.getOperatingStatementRequestList()) {
 					
-						if((previous3Year+"").equals(operatingStatementDetailsRequest.getYear())){
-							directLabourPrevious3Year = operatingStatementDetailsRequest.getDirectLabour() !=null ?  operatingStatementDetailsRequest.getDirectLabour() :0.0;
-							sellingAndDistributionExpensesPrevious3Year = operatingStatementDetailsRequest.getSellingAndDistributionExpenses() !=null ? operatingStatementDetailsRequest.getSellingAndDistributionExpenses() : 0.0;
-							generalAdminExpPrevious3Year = operatingStatementDetailsRequest.getGeneralAdminExp() !=null ? operatingStatementDetailsRequest.getGeneralAdminExp()  : 0.0 ;
-							netProfitLossPrevious3Year = operatingStatementDetailsRequest.getNetProfitOrLoss() !=null ? operatingStatementDetailsRequest.getNetProfitOrLoss() : 0.0 ;
-							netSalePrevious3Year = operatingStatementDetailsRequest.getNetSales() !=null ? operatingStatementDetailsRequest.getNetSales() : 0.0 ;
+					if((previous3Year+"").equals(operatingStatementDetailsRequest.getYear())){
+						directLabourPrevious3Year = operatingStatementDetailsRequest.getDirectLabour() !=null ?  operatingStatementDetailsRequest.getDirectLabour() :0.0;
+						sellingAndDistributionExpensesPrevious3Year = operatingStatementDetailsRequest.getSellingAndDistributionExpenses() !=null ? operatingStatementDetailsRequest.getSellingAndDistributionExpenses() : 0.0;
+						generalAdminExpPrevious3Year = operatingStatementDetailsRequest.getGeneralAdminExp() !=null ? operatingStatementDetailsRequest.getGeneralAdminExp()  : 0.0 ;
+						netProfitLossPrevious3Year = operatingStatementDetailsRequest.getNetProfitOrLoss() !=null ? operatingStatementDetailsRequest.getNetProfitOrLoss() : 0.0 ;
+						netSalePrevious3Year = operatingStatementDetailsRequest.getNetSales() !=null ? operatingStatementDetailsRequest.getNetSales() : 0.0 ;
 
-						}else if((previous2Year+"").equals(operatingStatementDetailsRequest.getYear())){
-							directLabourPrevious2Year =operatingStatementDetailsRequest.getDirectLabour() !=null ?  operatingStatementDetailsRequest.getDirectLabour() : 0.0;
-							sellingAndDistributionExpensesPrevious2Year  =operatingStatementDetailsRequest.getSellingAndDistributionExpenses() !=null ? operatingStatementDetailsRequest.getSellingAndDistributionExpenses() : 0.0;
-							generalAdminExpPrevious2Year = operatingStatementDetailsRequest.getGeneralAdminExp() !=null ? operatingStatementDetailsRequest.getGeneralAdminExp()  : 0.0 ;
-							netProfitLossPrevious2Year =operatingStatementDetailsRequest.getNetProfitOrLoss() !=null ? operatingStatementDetailsRequest.getNetProfitOrLoss() : 0.0 ; 
-							netSalePrevious2Year = operatingStatementDetailsRequest.getNetSales() !=null ? operatingStatementDetailsRequest.getNetSales() : 0.0 ;
+					}else if((previous2Year+"").equals(operatingStatementDetailsRequest.getYear())){
+						directLabourPrevious2Year =operatingStatementDetailsRequest.getDirectLabour() !=null ?  operatingStatementDetailsRequest.getDirectLabour() : 0.0;
+						sellingAndDistributionExpensesPrevious2Year  =operatingStatementDetailsRequest.getSellingAndDistributionExpenses() !=null ? operatingStatementDetailsRequest.getSellingAndDistributionExpenses() : 0.0;
+						generalAdminExpPrevious2Year = operatingStatementDetailsRequest.getGeneralAdminExp() !=null ? operatingStatementDetailsRequest.getGeneralAdminExp()  : 0.0 ;
+						netProfitLossPrevious2Year =operatingStatementDetailsRequest.getNetProfitOrLoss() !=null ? operatingStatementDetailsRequest.getNetProfitOrLoss() : 0.0 ; 
+						netSalePrevious2Year = operatingStatementDetailsRequest.getNetSales() !=null ? operatingStatementDetailsRequest.getNetSales() : 0.0 ;
 							
-						}else if((previous1Year+"").equals(operatingStatementDetailsRequest.getYear())){
-							directLabourPrevious1Year = operatingStatementDetailsRequest.getDirectLabour() !=null ?  operatingStatementDetailsRequest.getDirectLabour() : 0.0; 
-							sellingAndDistributionExpensesPrevious1Year  = operatingStatementDetailsRequest.getSellingAndDistributionExpenses() !=null ? operatingStatementDetailsRequest.getSellingAndDistributionExpenses() : 0.0;
-							generalAdminExpPrevious1Year = operatingStatementDetailsRequest.getGeneralAdminExp() !=null ? operatingStatementDetailsRequest.getGeneralAdminExp()  : 0.0 ;
-							netProfitLossPrevious1Year =  operatingStatementDetailsRequest.getNetProfitOrLoss() !=null ? operatingStatementDetailsRequest.getNetProfitOrLoss() : 0.0 ;
-							netSalePrevious1Year = operatingStatementDetailsRequest.getNetSales() !=null ? operatingStatementDetailsRequest.getNetSales() : 0.0 ;
-							totalCostSales = operatingStatementDetailsRequest.getTotalCostSales();
-							//	Quality of receivables
-							if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetailsRequest.getTotalGrossSales())){
-								operatingStatementDetailsRequest.setTotalGrossSales(0.0);
-							}
-							if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetailsRequest.getDomesticSales() )) {
-								operatingStatementDetailsRequest.setDomesticSales(0.0);
-							}
-							clientLogicCalculationRequest.setQualityOfReceivable( ( operatingStatementDetailsRequest.getDomesticSales() + operatingStatementDetailsRequest.getExportSales() ) / operatingStatementDetailsRequest.getTotalGrossSales() * 12);
+					}else if((previous1Year+"").equals(operatingStatementDetailsRequest.getYear())){
+						directLabourPrevious1Year = operatingStatementDetailsRequest.getDirectLabour() !=null ?  operatingStatementDetailsRequest.getDirectLabour() : 0.0; 
+						sellingAndDistributionExpensesPrevious1Year  = operatingStatementDetailsRequest.getSellingAndDistributionExpenses() !=null ? operatingStatementDetailsRequest.getSellingAndDistributionExpenses() : 0.0;
+						generalAdminExpPrevious1Year = operatingStatementDetailsRequest.getGeneralAdminExp() !=null ? operatingStatementDetailsRequest.getGeneralAdminExp()  : 0.0 ;
+						netProfitLossPrevious1Year =  operatingStatementDetailsRequest.getNetProfitOrLoss() !=null ? operatingStatementDetailsRequest.getNetProfitOrLoss() : 0.0 ;
+						netSalePrevious1Year = operatingStatementDetailsRequest.getNetSales() !=null ? operatingStatementDetailsRequest.getNetSales() : 0.0 ;
+						totalCostSales = operatingStatementDetailsRequest.getTotalCostSales();
+						//	Quality of receivables
+						if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetailsRequest.getTotalGrossSales())){
+							operatingStatementDetailsRequest.setTotalGrossSales(0.0);
 						}
-					}  
-				}				
+						if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetailsRequest.getDomesticSales() )) {
+							operatingStatementDetailsRequest.setDomesticSales(0.0);
+						}
+						clientLogicCalculationRequest.setQualityOfReceivable( ( operatingStatementDetailsRequest.getDomesticSales() + operatingStatementDetailsRequest.getExportSales() ) / operatingStatementDetailsRequest.getTotalGrossSales() * 12);
+					}
+				}  
+								
 				// calculate directorLabour of previous 3 to 2 And 2 to 1  year
 				Double directorLabour3To2 = (directLabourPrevious3Year - directLabourPrevious2Year  )/ ( directLabourPrevious2Year* 100 ) ;
 				Double directorLabour2To1  = (directLabourPrevious1Year - directLabourPrevious2Year  )/ ( directLabourPrevious2Year* 100 ) ;
@@ -8013,8 +8035,13 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 				 * netSaleCurrentYear getting from gst 
 				 * 
 				 * */
-				if(! CommonUtils.isObjectNullOrEmpty(corporateProfileRequest)) {
-				GstResponse gstResponse = corporateProfileRequest.getGstin()!=null ? 	gstClient.getCalculationForScoring(corporateProfileRequest.getGstin()) : null;
+				String gstIn= null;
+				if(CommonUtils.isObjectNullOrEmpty(corporateProfileRequest ) && CommonUtils.isObjectNullOrEmpty( corporateProfileRequest.getGstin())) {
+					gstIn = corporateApplicantDetailRepository.getGstInByApplicationId(applicationId);
+				}else {
+					gstIn = corporateProfileRequest.getGstin();
+				}
+				GstResponse gstResponse = gstClient.getCalculationForScoring(gstIn);
 				
 					if(! CommonUtils.isObjectListNull(gstResponse, gstResponse.getData())) {
 						netSaleCurrentYear =  (Double) gstResponse.getData() ;
@@ -8024,7 +8051,7 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 					}else {
 						logger.info("--------------- GST service not availabel or null in data --------------- gst Responce " + gstResponse);
 					}
-				}
+				
 				if( netSalePrevious1Year - netSalePrevious2Year   > 0) {
 					totalNetSaleYears =2 ;
 				}else if( ( netSalePrevious2Year - netSalePrevious3Year)  > 0 ) {
@@ -8033,10 +8060,11 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 				 
 				clientLogicCalculationRequest.setTotalNetSaleYears(totalNetSaleYears);
 				//Quality of Finished Goods
-				if(!CommonUtils.isObjectListNull(cmaRequest , cmaRequest.getAssetsRequestList())) {
+				if(!CommonUtils.isObjectNullOrEmpty(cmaRequest) && !CommonUtils.isObjectNullOrEmpty(cmaRequest.getAssetsRequestList())) {
 					AssetsDetailsRequest assetsDetailsRequest = cmaRequest.getAssetsRequestList().stream().filter(finishedGood -> (previous1Year+"").equals(finishedGood.getYear())).findFirst().orElse(null);
 					clientLogicCalculationRequest.setQualityOfFinishedGood((assetsDetailsRequest.getFinishedGoods()/totalCostSales) * 12) ;
 				}
+				System.out.println("appppppppppppId =----------------------------------->" + applicationId) ;
 			/*}*/
 			
 		}catch (Exception e) {
@@ -8152,52 +8180,52 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 			  	creditProfileSummaryDetailRequest.setTotalLenders(CommonUtils.isObjectNullOrEmpty(yourInstitution.getTotalLenders()) ? null : Integer.parseInt(yourInstitution.getTotalLenders()));
 				
 				if(!CommonUtils.isObjectNullOrEmpty(yourInstitution.getDelinquentOutstanding().getBorrower())) {
-					creditProfileSummaryDetailRequest.setDeliquentOutstandingBorrower(Double.valueOf(yourInstitution.getDelinquentOutstanding().getBorrower()));
+					creditProfileSummaryDetailRequest.setDeliquentOutstandingBorrower(getInDouble(yourInstitution.getDelinquentOutstanding().getBorrower()));
 				}
 				if(!CommonUtils.isObjectNullOrEmpty(yourInstitution.getDelinquentOutstanding().getBorrowerPercentage())) {
-					creditProfileSummaryDetailRequest.setDeliquentOutstandingBorrowerPercentage(Double.valueOf(yourInstitution.getDelinquentOutstanding().getBorrowerPercentage()));
+					creditProfileSummaryDetailRequest.setDeliquentOutstandingBorrowerPercentage(getInDouble(yourInstitution.getDelinquentOutstanding().getBorrowerPercentage()));
 				}
 				if(!CommonUtils.isObjectNullOrEmpty(yourInstitution.getDelinquentOutstanding().getGuarantor())) {
-					creditProfileSummaryDetailRequest.setDeliquentOutstandingGuarantor(Double.valueOf(yourInstitution.getDelinquentOutstanding().getGuarantor()));
+					creditProfileSummaryDetailRequest.setDeliquentOutstandingGuarantor(getInDouble(yourInstitution.getDelinquentOutstanding().getGuarantor()));
 				}
 				if(!CommonUtils.isObjectNullOrEmpty(yourInstitution.getDelinquentOutstanding().getGuarantorPercentage())) {
-					creditProfileSummaryDetailRequest.setDeliquentOutstandingGuarantorPercentage(Double.valueOf (yourInstitution.getDelinquentOutstanding().getGuarantorPercentage()));
+					creditProfileSummaryDetailRequest.setDeliquentOutstandingGuarantorPercentage(getInDouble (yourInstitution.getDelinquentOutstanding().getGuarantorPercentage()));
 				}
 				if(!CommonUtils.isObjectNullOrEmpty(yourInstitution.getTotalCF().getBorrower())) {
-					creditProfileSummaryDetailRequest.setTotalCFsBorrower(Double.valueOf(yourInstitution.getTotalCF().getBorrower()));
+					creditProfileSummaryDetailRequest.setTotalCFsBorrower(getInDouble(yourInstitution.getTotalCF().getBorrower()));
 				}
 				if(!CommonUtils.isObjectNullOrEmpty(yourInstitution.getTotalCF().getBorrowerPercentage())) {
-					creditProfileSummaryDetailRequest.setTotalCFsBorrowerPercentage(Double.valueOf(yourInstitution.getTotalCF().getBorrowerPercentage()));
+					creditProfileSummaryDetailRequest.setTotalCFsBorrowerPercentage(getInDouble(yourInstitution.getTotalCF().getBorrowerPercentage()));
 				}
 				if(!CommonUtils.isObjectNullOrEmpty(yourInstitution.getTotalCF().getGuarantor())) {
-					creditProfileSummaryDetailRequest.setTotalCFsGuarantor(Double.valueOf(yourInstitution.getTotalCF().getGuarantor()));
+					creditProfileSummaryDetailRequest.setTotalCFsGuarantor(getInDouble(yourInstitution.getTotalCF().getGuarantor()));
 				}
 				if(!CommonUtils.isObjectNullOrEmpty(yourInstitution.getTotalCF().getGuarantorPercentage())) {
-					creditProfileSummaryDetailRequest.setTotalCFsGuarantorPercentage(Double.valueOf(yourInstitution.getTotalCF().getGuarantorPercentage()));
+					creditProfileSummaryDetailRequest.setTotalCFsGuarantorPercentage(getInDouble(yourInstitution.getTotalCF().getGuarantorPercentage()));
 				}
 				if(!CommonUtils.isObjectNullOrEmpty(yourInstitution.getTotalOutstanding().getBorrower())) {
-					creditProfileSummaryDetailRequest.setTotalOutstandingBorrower(Double.valueOf(yourInstitution.getTotalOutstanding().getBorrower()));
+					creditProfileSummaryDetailRequest.setTotalOutstandingBorrower(getInDouble(yourInstitution.getTotalOutstanding().getBorrower()));
 				}
 				if(! CommonUtils.isObjectNullOrEmpty(yourInstitution.getTotalOutstanding().getBorrowerPercentage())) {
-					creditProfileSummaryDetailRequest.setTotalOutstandingBorrowerPercentage(Double.valueOf(yourInstitution.getTotalOutstanding().getBorrowerPercentage()));
+					creditProfileSummaryDetailRequest.setTotalOutstandingBorrowerPercentage(getInDouble(yourInstitution.getTotalOutstanding().getBorrowerPercentage()));
 				}
 				if(!CommonUtils.isObjectNullOrEmpty(yourInstitution.getTotalOutstanding().getGuarantor())) {
-					creditProfileSummaryDetailRequest.setTotalOutstandingGuarantor(Double.valueOf(yourInstitution.getTotalOutstanding().getGuarantor()));
+					creditProfileSummaryDetailRequest.setTotalOutstandingGuarantor(getInDouble(yourInstitution.getTotalOutstanding().getGuarantor()));
 				}
 				if(!CommonUtils.isObjectNullOrEmpty(yourInstitution.getTotalOutstanding().getGuarantorPercentage())) {
-					creditProfileSummaryDetailRequest.setTotalOutstandingGuarantorPercentage(Double.valueOf(yourInstitution.getTotalOutstanding().getGuarantorPercentage()));
+					creditProfileSummaryDetailRequest.setTotalOutstandingGuarantorPercentage(getInDouble(yourInstitution.getTotalOutstanding().getGuarantorPercentage()));
 				}
 				if(!CommonUtils.isObjectNullOrEmpty(yourInstitution.getDelinquentCF().getBorrower())) {
-					creditProfileSummaryDetailRequest.setDeliquentCFBorrower(Double.valueOf(yourInstitution.getDelinquentCF().getBorrower()));
+					creditProfileSummaryDetailRequest.setDeliquentCFBorrower(getInDouble(yourInstitution.getDelinquentCF().getBorrower()));
 				}
 				if(!CommonUtils.isObjectNullOrEmpty(yourInstitution.getDelinquentCF().getBorrowerPercentage())) {
-					creditProfileSummaryDetailRequest.setDeliquentCFBorrowerPercentage(Double.valueOf(yourInstitution.getDelinquentCF().getBorrowerPercentage()));
+					creditProfileSummaryDetailRequest.setDeliquentCFBorrowerPercentage(getInDouble(yourInstitution.getDelinquentCF().getBorrowerPercentage()));
 				}
 				if(!CommonUtils.isObjectNullOrEmpty(yourInstitution.getDelinquentCF().getGuarantor())) {
-					creditProfileSummaryDetailRequest.setDeliquentCFGuarantor(Double.valueOf(yourInstitution.getDelinquentCF().getGuarantor()));
+					creditProfileSummaryDetailRequest.setDeliquentCFGuarantor(getInDouble(yourInstitution.getDelinquentCF().getGuarantor()));
 				}
 				if(! CommonUtils.isObjectNullOrEmpty(yourInstitution.getDelinquentCF().getGuarantorPercentage())) {
-					creditProfileSummaryDetailRequest.setDeliquentCFGuarantorPercentage(Double.valueOf(yourInstitution.getDelinquentCF().getGuarantorPercentage()));
+					creditProfileSummaryDetailRequest.setDeliquentCFGuarantorPercentage(getInDouble(yourInstitution.getDelinquentCF().getGuarantorPercentage()));
 				}
 				creditProfileSummaryDetailRequest.setTotalCFs(0.0);
 				creditProfileSummaryDetailRequest.setTotalOutstanding(0.0);
@@ -8220,52 +8248,52 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 						creditProfileSummaryDetailRequest.setTotalLenders(CommonUtils.isObjectNullOrEmpty(otherPublicSectorBanks.getTotalLenders()) ? null : Integer.parseInt(yourInstitution.getTotalLenders()));
 						
 						if(!CommonUtils.isObjectNullOrEmpty(otherPublicSectorBanks.getDelinquentOutstanding().getBorrower())) {
-							creditProfileSummaryDetailRequest.setDeliquentOutstandingBorrower(Double.valueOf(otherPublicSectorBanks.getDelinquentOutstanding().getBorrower()));
+							creditProfileSummaryDetailRequest.setDeliquentOutstandingBorrower(getInDouble(otherPublicSectorBanks.getDelinquentOutstanding().getBorrower()));
 						}
 						if(!CommonUtils.isObjectNullOrEmpty(otherPublicSectorBanks.getDelinquentOutstanding().getBorrowerPercentage())) {
-							creditProfileSummaryDetailRequest.setDeliquentOutstandingBorrowerPercentage(Double.valueOf(otherPublicSectorBanks.getDelinquentOutstanding().getBorrowerPercentage()));
+							creditProfileSummaryDetailRequest.setDeliquentOutstandingBorrowerPercentage(getInDouble(otherPublicSectorBanks.getDelinquentOutstanding().getBorrowerPercentage()));
 						}
 						if(!CommonUtils.isObjectNullOrEmpty(otherPublicSectorBanks.getDelinquentOutstanding().getGuarantor())) {
-							creditProfileSummaryDetailRequest.setDeliquentOutstandingGuarantor(Double.valueOf(otherPublicSectorBanks.getDelinquentOutstanding().getGuarantor()));
+							creditProfileSummaryDetailRequest.setDeliquentOutstandingGuarantor(getInDouble(otherPublicSectorBanks.getDelinquentOutstanding().getGuarantor()));
 						}
 						if(!CommonUtils.isObjectNullOrEmpty(otherPublicSectorBanks.getDelinquentOutstanding().getGuarantorPercentage())) {
-							creditProfileSummaryDetailRequest.setDeliquentOutstandingGuarantorPercentage(Double.valueOf (otherPublicSectorBanks.getDelinquentOutstanding().getGuarantorPercentage()));
+							creditProfileSummaryDetailRequest.setDeliquentOutstandingGuarantorPercentage(getInDouble (otherPublicSectorBanks.getDelinquentOutstanding().getGuarantorPercentage()));
 						}
 						if(!CommonUtils.isObjectNullOrEmpty(otherPublicSectorBanks.getTotalCF().getBorrower())) {
-							creditProfileSummaryDetailRequest.setTotalCFsBorrower(Double.valueOf(otherPublicSectorBanks.getTotalCF().getBorrower()));
+							creditProfileSummaryDetailRequest.setTotalCFsBorrower(getInDouble(otherPublicSectorBanks.getTotalCF().getBorrower()));
 						}
 						if(!CommonUtils.isObjectNullOrEmpty(otherPublicSectorBanks.getTotalCF().getBorrowerPercentage())) {
-							creditProfileSummaryDetailRequest.setTotalCFsBorrowerPercentage(Double.valueOf(otherPublicSectorBanks.getTotalCF().getBorrowerPercentage()));
+							creditProfileSummaryDetailRequest.setTotalCFsBorrowerPercentage(getInDouble(otherPublicSectorBanks.getTotalCF().getBorrowerPercentage()));
 						}
 						if(!CommonUtils.isObjectNullOrEmpty(otherPublicSectorBanks.getTotalCF().getGuarantor())) {
-							creditProfileSummaryDetailRequest.setTotalCFsGuarantor(Double.valueOf(otherPublicSectorBanks.getTotalCF().getGuarantor()));
+							creditProfileSummaryDetailRequest.setTotalCFsGuarantor(getInDouble(otherPublicSectorBanks.getTotalCF().getGuarantor()));
 						}	
 						if(!CommonUtils.isObjectNullOrEmpty(otherPublicSectorBanks.getTotalCF().getGuarantorPercentage())) {
-							creditProfileSummaryDetailRequest.setTotalCFsGuarantorPercentage(Double.valueOf(otherPublicSectorBanks.getTotalCF().getGuarantorPercentage()));
+							creditProfileSummaryDetailRequest.setTotalCFsGuarantorPercentage(getInDouble(otherPublicSectorBanks.getTotalCF().getGuarantorPercentage()));
 						}
 						if(!CommonUtils.isObjectNullOrEmpty(otherPublicSectorBanks.getTotalOutstanding().getBorrower())) {
-							creditProfileSummaryDetailRequest.setTotalOutstandingBorrower(Double.valueOf(otherPublicSectorBanks.getTotalOutstanding().getBorrower()));
+							creditProfileSummaryDetailRequest.setTotalOutstandingBorrower(getInDouble(otherPublicSectorBanks.getTotalOutstanding().getBorrower()));
 						}
 						if(! CommonUtils.isObjectNullOrEmpty(otherPublicSectorBanks.getTotalOutstanding().getBorrowerPercentage())) {
-							creditProfileSummaryDetailRequest.setTotalOutstandingBorrowerPercentage(Double.valueOf(otherPublicSectorBanks.getTotalOutstanding().getBorrowerPercentage()));
+							creditProfileSummaryDetailRequest.setTotalOutstandingBorrowerPercentage(getInDouble(otherPublicSectorBanks.getTotalOutstanding().getBorrowerPercentage()));
 						}
 						if(!CommonUtils.isObjectNullOrEmpty(otherPublicSectorBanks.getTotalOutstanding().getGuarantor())) {
-							creditProfileSummaryDetailRequest.setTotalOutstandingGuarantor(Double.valueOf(otherPublicSectorBanks.getTotalOutstanding().getGuarantor()));
+							creditProfileSummaryDetailRequest.setTotalOutstandingGuarantor(getInDouble(otherPublicSectorBanks.getTotalOutstanding().getGuarantor()));
 						}
 						if(!CommonUtils.isObjectNullOrEmpty(otherPublicSectorBanks.getTotalOutstanding().getGuarantorPercentage())) {
-							creditProfileSummaryDetailRequest.setTotalOutstandingGuarantorPercentage(Double.valueOf(otherPublicSectorBanks.getTotalOutstanding().getGuarantorPercentage()));
+							creditProfileSummaryDetailRequest.setTotalOutstandingGuarantorPercentage(getInDouble(otherPublicSectorBanks.getTotalOutstanding().getGuarantorPercentage()));
 						}
 						if(!CommonUtils.isObjectNullOrEmpty(otherPublicSectorBanks.getDelinquentCF().getBorrower())) {
-							creditProfileSummaryDetailRequest.setDeliquentCFBorrower(Double.valueOf(otherPublicSectorBanks.getDelinquentCF().getBorrower()));
+							creditProfileSummaryDetailRequest.setDeliquentCFBorrower(getInDouble(otherPublicSectorBanks.getDelinquentCF().getBorrower()));
 						}
 						if(!CommonUtils.isObjectNullOrEmpty(otherPublicSectorBanks.getDelinquentCF().getBorrowerPercentage())) {
-							creditProfileSummaryDetailRequest.setDeliquentCFBorrowerPercentage(Double.valueOf(otherPublicSectorBanks.getDelinquentCF().getBorrowerPercentage()));
+							creditProfileSummaryDetailRequest.setDeliquentCFBorrowerPercentage(getInDouble(otherPublicSectorBanks.getDelinquentCF().getBorrowerPercentage()));
 						}
 						if(!CommonUtils.isObjectNullOrEmpty(otherPublicSectorBanks.getDelinquentCF().getGuarantor())) {
-							creditProfileSummaryDetailRequest.setDeliquentCFGuarantor(Double.valueOf(otherPublicSectorBanks.getDelinquentCF().getGuarantor()));
+							creditProfileSummaryDetailRequest.setDeliquentCFGuarantor(getInDouble(otherPublicSectorBanks.getDelinquentCF().getGuarantor()));
 						}
 						if(! CommonUtils.isObjectNullOrEmpty(otherPublicSectorBanks.getDelinquentCF().getGuarantorPercentage())) {
-							creditProfileSummaryDetailRequest.setDeliquentCFGuarantorPercentage(Double.valueOf(otherPublicSectorBanks.getDelinquentCF().getGuarantorPercentage()));
+							creditProfileSummaryDetailRequest.setDeliquentCFGuarantorPercentage(getInDouble(otherPublicSectorBanks.getDelinquentCF().getGuarantorPercentage()));
 						}
 						creditProfileSummaryDetailRequest.setTotalCFs(0.0);
 						creditProfileSummaryDetailRequest.setTotalOutstanding(0.0);
@@ -8287,52 +8315,52 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 						creditProfileSummaryDetailRequest.setTotalLenders(CommonUtils.isObjectNullOrEmpty(otherPrivateForeignBanks.getTotalLenders()) ? null : Integer.parseInt(yourInstitution.getTotalLenders()));
 						
 						if(!CommonUtils.isObjectNullOrEmpty(otherPrivateForeignBanks.getDelinquentOutstanding().getBorrower())) {
-							creditProfileSummaryDetailRequest.setDeliquentOutstandingBorrower(Double.valueOf(otherPrivateForeignBanks.getDelinquentOutstanding().getBorrower()));
+							creditProfileSummaryDetailRequest.setDeliquentOutstandingBorrower(getInDouble(otherPrivateForeignBanks.getDelinquentOutstanding().getBorrower()));
 						}
 						if(!CommonUtils.isObjectNullOrEmpty(otherPrivateForeignBanks.getDelinquentOutstanding().getBorrowerPercentage())) {
-							creditProfileSummaryDetailRequest.setDeliquentOutstandingBorrowerPercentage(Double.valueOf(otherPrivateForeignBanks.getDelinquentOutstanding().getBorrowerPercentage()));
+							creditProfileSummaryDetailRequest.setDeliquentOutstandingBorrowerPercentage(getInDouble(otherPrivateForeignBanks.getDelinquentOutstanding().getBorrowerPercentage()));
 						}
 						if(!CommonUtils.isObjectNullOrEmpty(otherPrivateForeignBanks.getDelinquentOutstanding().getGuarantor())) {
-							creditProfileSummaryDetailRequest.setDeliquentOutstandingGuarantor(Double.valueOf(otherPrivateForeignBanks.getDelinquentOutstanding().getGuarantor()));
+							creditProfileSummaryDetailRequest.setDeliquentOutstandingGuarantor(getInDouble(otherPrivateForeignBanks.getDelinquentOutstanding().getGuarantor()));
 						}
 						if(!CommonUtils.isObjectNullOrEmpty(otherPrivateForeignBanks.getDelinquentOutstanding().getGuarantorPercentage())) {
-							creditProfileSummaryDetailRequest.setDeliquentOutstandingGuarantorPercentage(Double.valueOf (otherPrivateForeignBanks.getDelinquentOutstanding().getGuarantorPercentage()));
+							creditProfileSummaryDetailRequest.setDeliquentOutstandingGuarantorPercentage(getInDouble (otherPrivateForeignBanks.getDelinquentOutstanding().getGuarantorPercentage()));
 						}
 						if(!CommonUtils.isObjectNullOrEmpty(otherPrivateForeignBanks.getTotalCF().getBorrower())) {
-							creditProfileSummaryDetailRequest.setTotalCFsBorrower(Double.valueOf(otherPrivateForeignBanks.getTotalCF().getBorrower()));
+							creditProfileSummaryDetailRequest.setTotalCFsBorrower(getInDouble(otherPrivateForeignBanks.getTotalCF().getBorrower()));
 						}	
 						if(!CommonUtils.isObjectNullOrEmpty(otherPrivateForeignBanks.getTotalCF().getBorrowerPercentage())) {
-							creditProfileSummaryDetailRequest.setTotalCFsBorrowerPercentage(Double.valueOf(otherPrivateForeignBanks.getTotalCF().getBorrowerPercentage()));
+							creditProfileSummaryDetailRequest.setTotalCFsBorrowerPercentage(getInDouble(otherPrivateForeignBanks.getTotalCF().getBorrowerPercentage()));
 						}
 						if(!CommonUtils.isObjectNullOrEmpty(otherPrivateForeignBanks.getTotalCF().getGuarantor())) {
-							creditProfileSummaryDetailRequest.setTotalCFsGuarantor(Double.valueOf(otherPrivateForeignBanks.getTotalCF().getGuarantor()));
+							creditProfileSummaryDetailRequest.setTotalCFsGuarantor(getInDouble(otherPrivateForeignBanks.getTotalCF().getGuarantor()));
 						}
 						if(!CommonUtils.isObjectNullOrEmpty(otherPrivateForeignBanks.getTotalCF().getGuarantorPercentage())) {
-							creditProfileSummaryDetailRequest.setTotalCFsGuarantorPercentage(Double.valueOf(otherPrivateForeignBanks.getTotalCF().getGuarantorPercentage()));
+							creditProfileSummaryDetailRequest.setTotalCFsGuarantorPercentage(getInDouble(otherPrivateForeignBanks.getTotalCF().getGuarantorPercentage()));
 						}
 						if(!CommonUtils.isObjectNullOrEmpty(otherPrivateForeignBanks.getTotalOutstanding().getBorrower())) {
-							creditProfileSummaryDetailRequest.setTotalOutstandingBorrower(Double.valueOf(otherPrivateForeignBanks.getTotalOutstanding().getBorrower()));
+							creditProfileSummaryDetailRequest.setTotalOutstandingBorrower(getInDouble(otherPrivateForeignBanks.getTotalOutstanding().getBorrower()));
 						}
 						if(! CommonUtils.isObjectNullOrEmpty(otherPrivateForeignBanks.getTotalOutstanding().getBorrowerPercentage())) {
-							creditProfileSummaryDetailRequest.setTotalOutstandingBorrowerPercentage(Double.valueOf(otherPrivateForeignBanks.getTotalOutstanding().getBorrowerPercentage()));
+							creditProfileSummaryDetailRequest.setTotalOutstandingBorrowerPercentage(getInDouble(otherPrivateForeignBanks.getTotalOutstanding().getBorrowerPercentage()));
 						}
 						if(!CommonUtils.isObjectNullOrEmpty(otherPrivateForeignBanks.getTotalOutstanding().getGuarantor())) {
-							creditProfileSummaryDetailRequest.setTotalOutstandingGuarantor(Double.valueOf(otherPrivateForeignBanks.getTotalOutstanding().getGuarantor()));
+							creditProfileSummaryDetailRequest.setTotalOutstandingGuarantor(getInDouble(otherPrivateForeignBanks.getTotalOutstanding().getGuarantor()));
 						}
 						if(!CommonUtils.isObjectNullOrEmpty(otherPrivateForeignBanks.getTotalOutstanding().getGuarantorPercentage())) {
-							creditProfileSummaryDetailRequest.setTotalOutstandingGuarantorPercentage(Double.valueOf(otherPrivateForeignBanks.getTotalOutstanding().getGuarantorPercentage()));
+							creditProfileSummaryDetailRequest.setTotalOutstandingGuarantorPercentage(getInDouble(otherPrivateForeignBanks.getTotalOutstanding().getGuarantorPercentage()));
 						}
 						if(!CommonUtils.isObjectNullOrEmpty(otherPrivateForeignBanks.getDelinquentCF().getBorrower())) {
-							creditProfileSummaryDetailRequest.setDeliquentCFBorrower(Double.valueOf(otherPrivateForeignBanks.getDelinquentCF().getBorrower()));
+							creditProfileSummaryDetailRequest.setDeliquentCFBorrower(getInDouble(otherPrivateForeignBanks.getDelinquentCF().getBorrower()));
 						}
 						if(!CommonUtils.isObjectNullOrEmpty(otherPrivateForeignBanks.getDelinquentCF().getBorrowerPercentage())) {
-							creditProfileSummaryDetailRequest.setDeliquentCFBorrowerPercentage(Double.valueOf(otherPrivateForeignBanks.getDelinquentCF().getBorrowerPercentage()));
+							creditProfileSummaryDetailRequest.setDeliquentCFBorrowerPercentage(getInDouble(otherPrivateForeignBanks.getDelinquentCF().getBorrowerPercentage()));
 						}
 						if(!CommonUtils.isObjectNullOrEmpty(otherPrivateForeignBanks.getDelinquentCF().getGuarantor())) {
-							creditProfileSummaryDetailRequest.setDeliquentCFGuarantor(Double.valueOf(otherPrivateForeignBanks.getDelinquentCF().getGuarantor()));
+							creditProfileSummaryDetailRequest.setDeliquentCFGuarantor(getInDouble(otherPrivateForeignBanks.getDelinquentCF().getGuarantor()));
 						}
 						if(! CommonUtils.isObjectNullOrEmpty(otherPrivateForeignBanks.getDelinquentCF().getGuarantorPercentage())) {
-							creditProfileSummaryDetailRequest.setDeliquentCFGuarantorPercentage(Double.valueOf(otherPrivateForeignBanks.getDelinquentCF().getGuarantorPercentage()));
+							creditProfileSummaryDetailRequest.setDeliquentCFGuarantorPercentage(getInDouble(otherPrivateForeignBanks.getDelinquentCF().getGuarantorPercentage()));
 						}
 				
 						creditProfileSummaryDetailRequest.setTotalCFs(0.0);
@@ -8354,53 +8382,53 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 						creditProfileSummaryDetailRequest.setOpenCF(nbfcOthers.getOpenCF());
 						creditProfileSummaryDetailRequest.setTotalLenders(CommonUtils.isObjectNullOrEmpty(nbfcOthers.getTotalLenders()) ? null : Integer.parseInt(nbfcOthers.getTotalLenders()));
 						
-						if(CommonUtils.isObjectNullOrEmpty(nbfcOthers.getDelinquentOutstanding().getBorrower())) {
-							creditProfileSummaryDetailRequest.setDeliquentOutstandingBorrower(Double.valueOf(nbfcOthers.getDelinquentOutstanding().getBorrower()));
+						if(!CommonUtils.isObjectNullOrEmpty(nbfcOthers.getDelinquentOutstanding().getBorrower())) {
+							creditProfileSummaryDetailRequest.setDeliquentOutstandingBorrower(getInDouble(nbfcOthers.getDelinquentOutstanding().getBorrower()));
 						}
-						if(CommonUtils.isObjectNullOrEmpty(nbfcOthers.getDelinquentOutstanding().getBorrowerPercentage())) {
-							creditProfileSummaryDetailRequest.setDeliquentOutstandingBorrowerPercentage(Double.valueOf(nbfcOthers.getDelinquentOutstanding().getBorrowerPercentage()));
+						if(!CommonUtils.isObjectNullOrEmpty(nbfcOthers.getDelinquentOutstanding().getBorrowerPercentage())) {
+							creditProfileSummaryDetailRequest.setDeliquentOutstandingBorrowerPercentage(getInDouble(nbfcOthers.getDelinquentOutstanding().getBorrowerPercentage()));
 						}		
-						if(CommonUtils.isObjectNullOrEmpty(nbfcOthers.getDelinquentOutstanding().getGuarantor())) {
-							creditProfileSummaryDetailRequest.setDeliquentOutstandingGuarantor(Double.valueOf(nbfcOthers.getDelinquentOutstanding().getGuarantor()));
+						if(!CommonUtils.isObjectNullOrEmpty(nbfcOthers.getDelinquentOutstanding().getGuarantor())) {
+							creditProfileSummaryDetailRequest.setDeliquentOutstandingGuarantor(getInDouble(nbfcOthers.getDelinquentOutstanding().getGuarantor()));
 						}
 						if(!CommonUtils.isObjectNullOrEmpty(nbfcOthers.getDelinquentOutstanding().getGuarantorPercentage())) {
-							creditProfileSummaryDetailRequest.setDeliquentOutstandingGuarantorPercentage(Double.valueOf (nbfcOthers.getDelinquentOutstanding().getGuarantorPercentage()));
+							creditProfileSummaryDetailRequest.setDeliquentOutstandingGuarantorPercentage(getInDouble (nbfcOthers.getDelinquentOutstanding().getGuarantorPercentage()));
 						}
 						if(!CommonUtils.isObjectNullOrEmpty(nbfcOthers.getTotalCF().getBorrower())) {
-							creditProfileSummaryDetailRequest.setTotalCFsBorrower(Double.valueOf(nbfcOthers.getTotalCF().getBorrower()));
+							creditProfileSummaryDetailRequest.setTotalCFsBorrower(getInDouble(nbfcOthers.getTotalCF().getBorrower()));
 						}
 						if(!CommonUtils.isObjectNullOrEmpty(nbfcOthers.getTotalCF().getBorrowerPercentage())) {
-							creditProfileSummaryDetailRequest.setTotalCFsBorrowerPercentage(Double.valueOf(nbfcOthers.getTotalCF().getBorrowerPercentage()));
+							creditProfileSummaryDetailRequest.setTotalCFsBorrowerPercentage(getInDouble(nbfcOthers.getTotalCF().getBorrowerPercentage()));
 						}
 						if(!CommonUtils.isObjectNullOrEmpty(nbfcOthers.getTotalCF().getGuarantor())) {
-							creditProfileSummaryDetailRequest.setTotalCFsGuarantor(Double.valueOf(nbfcOthers.getTotalCF().getGuarantor()));
+							creditProfileSummaryDetailRequest.setTotalCFsGuarantor(getInDouble(nbfcOthers.getTotalCF().getGuarantor()));
 						}
 						if(!CommonUtils.isObjectNullOrEmpty(nbfcOthers.getTotalCF().getGuarantorPercentage())) {
-							creditProfileSummaryDetailRequest.setTotalCFsGuarantorPercentage(Double.valueOf(nbfcOthers.getTotalCF().getGuarantorPercentage()));
+							creditProfileSummaryDetailRequest.setTotalCFsGuarantorPercentage(getInDouble(nbfcOthers.getTotalCF().getGuarantorPercentage()));
 						}
 						if(!CommonUtils.isObjectNullOrEmpty(nbfcOthers.getTotalOutstanding().getBorrower())) {
-							creditProfileSummaryDetailRequest.setTotalOutstandingBorrower(Double.valueOf(nbfcOthers.getTotalOutstanding().getBorrower()));
+							creditProfileSummaryDetailRequest.setTotalOutstandingBorrower(getInDouble(nbfcOthers.getTotalOutstanding().getBorrower()));
 						}
 						if(! CommonUtils.isObjectNullOrEmpty(nbfcOthers.getTotalOutstanding().getBorrowerPercentage())) {
-							creditProfileSummaryDetailRequest.setTotalOutstandingBorrowerPercentage(Double.valueOf(nbfcOthers.getTotalOutstanding().getBorrowerPercentage()));
+							creditProfileSummaryDetailRequest.setTotalOutstandingBorrowerPercentage(getInDouble(nbfcOthers.getTotalOutstanding().getBorrowerPercentage()));
 						}
 						if(!CommonUtils.isObjectNullOrEmpty(nbfcOthers.getTotalOutstanding().getGuarantor())) {
-							creditProfileSummaryDetailRequest.setTotalOutstandingGuarantor(Double.valueOf(nbfcOthers.getTotalOutstanding().getGuarantor()));
+							creditProfileSummaryDetailRequest.setTotalOutstandingGuarantor(getInDouble(nbfcOthers.getTotalOutstanding().getGuarantor()));
 						}
 						if(!CommonUtils.isObjectNullOrEmpty(nbfcOthers.getTotalOutstanding().getGuarantorPercentage())) {
-							creditProfileSummaryDetailRequest.setTotalOutstandingGuarantorPercentage(Double.valueOf(nbfcOthers.getTotalOutstanding().getGuarantorPercentage()));
+							creditProfileSummaryDetailRequest.setTotalOutstandingGuarantorPercentage(getInDouble(nbfcOthers.getTotalOutstanding().getGuarantorPercentage()));
 						}
 						if(!CommonUtils.isObjectNullOrEmpty(nbfcOthers.getDelinquentCF().getBorrower())) {
-							creditProfileSummaryDetailRequest.setDeliquentCFBorrower(Double.valueOf(nbfcOthers.getDelinquentCF().getBorrower()));
+							creditProfileSummaryDetailRequest.setDeliquentCFBorrower(getInDouble(nbfcOthers.getDelinquentCF().getBorrower()));
 						}
 						if(!CommonUtils.isObjectNullOrEmpty(nbfcOthers.getDelinquentCF().getBorrowerPercentage())) {
-							creditProfileSummaryDetailRequest.setDeliquentCFBorrowerPercentage(Double.valueOf(nbfcOthers.getDelinquentCF().getBorrowerPercentage()));
+							creditProfileSummaryDetailRequest.setDeliquentCFBorrowerPercentage(getInDouble(nbfcOthers.getDelinquentCF().getBorrowerPercentage()));
 						}
 						if(!CommonUtils.isObjectNullOrEmpty(nbfcOthers.getDelinquentCF().getGuarantor())) {
-							creditProfileSummaryDetailRequest.setDeliquentCFGuarantor(Double.valueOf(nbfcOthers.getDelinquentCF().getGuarantor()));
+							creditProfileSummaryDetailRequest.setDeliquentCFGuarantor(getInDouble(nbfcOthers.getDelinquentCF().getGuarantor()));
 						}
 						if(! CommonUtils.isObjectNullOrEmpty(nbfcOthers.getDelinquentCF().getGuarantorPercentage())) {
-							creditProfileSummaryDetailRequest.setDeliquentCFGuarantorPercentage(Double.valueOf(nbfcOthers.getDelinquentCF().getGuarantorPercentage()));
+							creditProfileSummaryDetailRequest.setDeliquentCFGuarantorPercentage(getInDouble(nbfcOthers.getDelinquentCF().getGuarantorPercentage()));
 						}
 						
 						creditProfileSummaryDetailRequest.setTotalCFs(0.0);
@@ -8416,60 +8444,61 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 					OutsideTotal outsideTotal = productSec.getCreditProfileSummarySec().getOutsideInstitution().getOutsideTotal();
 					if(!CommonUtils.isObjectNullOrEmpty(outsideTotal) && CommonUtils.isObjectNullOrEmpty(outsideTotal.getMessage())){
 						CreditProfileSummaryDetailRequest creditProfileSummaryDetailRequest=new CreditProfileSummaryDetailRequest();
-						if((!CommonUtils.isObjectNullOrEmpty(outsideTotal.getLatestCFOpenedDate())) && (!outsideTotal.getLatestCFOpenedDate().equals("-")))
+						if((!CommonUtils.isObjectNullOrEmpty(outsideTotal.getLatestCFOpenedDate())) && (!outsideTotal.getLatestCFOpenedDate().equalsIgnoreCase("-")))
 						{	
 							creditProfileSummaryDetailRequest.setLatestCFOpenedDate(getInDate(outsideTotal.getLatestCFOpenedDate()));
 						}
 						creditProfileSummaryDetailRequest.setOpenCF(outsideTotal.getOpenCF());
 						creditProfileSummaryDetailRequest.setTotalLenders(CommonUtils.isObjectNullOrEmpty(outsideTotal.getTotalLenders()) ? null : Integer.parseInt(outsideTotal.getTotalLenders()));
 						
-						if(CommonUtils.isObjectNullOrEmpty(outsideTotal.getDelinquentOutstanding().getBorrower())) {
-							creditProfileSummaryDetailRequest.setDeliquentOutstandingBorrower(Double.valueOf(outsideTotal.getDelinquentOutstanding().getBorrower()));
+						if(!CommonUtils.isObjectNullOrEmpty(outsideTotal.getDelinquentOutstanding().getBorrower())) {
+							creditProfileSummaryDetailRequest.setDeliquentOutstandingBorrower(getInDouble(outsideTotal.getDelinquentOutstanding().getBorrower()));
 						}
 						if(!CommonUtils.isObjectNullOrEmpty(outsideTotal.getDelinquentOutstanding().getBorrowerPercentage())) {
-							creditProfileSummaryDetailRequest.setDeliquentOutstandingBorrowerPercentage(Double.valueOf(outsideTotal.getDelinquentOutstanding().getBorrowerPercentage()));
+							
+							creditProfileSummaryDetailRequest.setDeliquentOutstandingBorrowerPercentage(getInDouble(outsideTotal.getDelinquentOutstanding().getBorrowerPercentage()));
 						}
 						if(!CommonUtils.isObjectNullOrEmpty(outsideTotal.getDelinquentOutstanding().getGuarantor())) {
-							creditProfileSummaryDetailRequest.setDeliquentOutstandingGuarantor(Double.valueOf(outsideTotal.getDelinquentOutstanding().getGuarantor()));
+							creditProfileSummaryDetailRequest.setDeliquentOutstandingGuarantor(getInDouble(outsideTotal.getDelinquentOutstanding().getGuarantor()));
 						}
 						if(!CommonUtils.isObjectNullOrEmpty(outsideTotal.getDelinquentOutstanding().getGuarantorPercentage())) {
-							creditProfileSummaryDetailRequest.setDeliquentOutstandingGuarantorPercentage(Double.valueOf (outsideTotal.getDelinquentOutstanding().getGuarantorPercentage()));
+							creditProfileSummaryDetailRequest.setDeliquentOutstandingGuarantorPercentage(getInDouble(outsideTotal.getDelinquentOutstanding().getGuarantorPercentage()));
 						}
 						if(!CommonUtils.isObjectNullOrEmpty(outsideTotal.getTotalCF().getBorrower())) {
-							creditProfileSummaryDetailRequest.setTotalCFsBorrower(Double.valueOf(outsideTotal.getTotalCF().getBorrower()));
+							creditProfileSummaryDetailRequest.setTotalCFsBorrower(getInDouble(outsideTotal.getTotalCF().getBorrower()));
 						}	
 						if(!CommonUtils.isObjectNullOrEmpty(outsideTotal.getTotalCF().getBorrowerPercentage())) {
-							creditProfileSummaryDetailRequest.setTotalCFsBorrowerPercentage(Double.valueOf(outsideTotal.getTotalCF().getBorrowerPercentage()));
+							creditProfileSummaryDetailRequest.setTotalCFsBorrowerPercentage(getInDouble(outsideTotal.getTotalCF().getBorrowerPercentage()));
 						}
 						if(!CommonUtils.isObjectNullOrEmpty(outsideTotal.getTotalCF().getGuarantor())) {
-								creditProfileSummaryDetailRequest.setTotalCFsGuarantor(Double.valueOf(outsideTotal.getTotalCF().getGuarantor()));
+								creditProfileSummaryDetailRequest.setTotalCFsGuarantor(getInDouble(outsideTotal.getTotalCF().getGuarantor()));
 						}
 						if(!CommonUtils.isObjectNullOrEmpty(outsideTotal.getTotalCF().getGuarantorPercentage())) {
-							creditProfileSummaryDetailRequest.setTotalCFsGuarantorPercentage(Double.valueOf(outsideTotal.getTotalCF().getGuarantorPercentage()));
+							creditProfileSummaryDetailRequest.setTotalCFsGuarantorPercentage(getInDouble(outsideTotal.getTotalCF().getGuarantorPercentage()));
 						}
 						if(!CommonUtils.isObjectNullOrEmpty(outsideTotal.getTotalOutstanding().getBorrower())) {
-							creditProfileSummaryDetailRequest.setTotalOutstandingBorrower(Double.valueOf(outsideTotal.getTotalOutstanding().getBorrower()));
+							creditProfileSummaryDetailRequest.setTotalOutstandingBorrower(getInDouble(outsideTotal.getTotalOutstanding().getBorrower()));
 						}
 						if(! CommonUtils.isObjectNullOrEmpty(outsideTotal.getTotalOutstanding().getBorrowerPercentage())) {
-							creditProfileSummaryDetailRequest.setTotalOutstandingBorrowerPercentage(Double.valueOf(outsideTotal.getTotalOutstanding().getBorrowerPercentage()));
+							creditProfileSummaryDetailRequest.setTotalOutstandingBorrowerPercentage(getInDouble(outsideTotal.getTotalOutstanding().getBorrowerPercentage()));
 						}
 						if(!CommonUtils.isObjectNullOrEmpty(outsideTotal.getTotalOutstanding().getGuarantor())) {
-							creditProfileSummaryDetailRequest.setTotalOutstandingGuarantor(Double.valueOf(outsideTotal.getTotalOutstanding().getGuarantor()));
+							creditProfileSummaryDetailRequest.setTotalOutstandingGuarantor(getInDouble(outsideTotal.getTotalOutstanding().getGuarantor()));
 						}
 						if(!CommonUtils.isObjectNullOrEmpty(outsideTotal.getTotalOutstanding().getGuarantorPercentage())) {
-							creditProfileSummaryDetailRequest.setTotalOutstandingGuarantorPercentage(Double.valueOf(outsideTotal.getTotalOutstanding().getGuarantorPercentage()));
+							creditProfileSummaryDetailRequest.setTotalOutstandingGuarantorPercentage(getInDouble(outsideTotal.getTotalOutstanding().getGuarantorPercentage()));
 						}
 						if(!CommonUtils.isObjectNullOrEmpty(outsideTotal.getDelinquentCF().getBorrower())) {
-							creditProfileSummaryDetailRequest.setDeliquentCFBorrower(Double.valueOf(outsideTotal.getDelinquentCF().getBorrower()));
+							creditProfileSummaryDetailRequest.setDeliquentCFBorrower(getInDouble(outsideTotal.getDelinquentCF().getBorrower()));
 						}
 						if(!CommonUtils.isObjectNullOrEmpty(outsideTotal.getDelinquentCF().getBorrowerPercentage())) {
-							creditProfileSummaryDetailRequest.setDeliquentCFBorrowerPercentage(Double.valueOf(outsideTotal.getDelinquentCF().getBorrowerPercentage()));
+							creditProfileSummaryDetailRequest.setDeliquentCFBorrowerPercentage(getInDouble(outsideTotal.getDelinquentCF().getBorrowerPercentage()));
 						}
 						if(!CommonUtils.isObjectNullOrEmpty(outsideTotal.getDelinquentCF().getGuarantor())) {
-							creditProfileSummaryDetailRequest.setDeliquentCFGuarantor(Double.valueOf(outsideTotal.getDelinquentCF().getGuarantor()));
+							creditProfileSummaryDetailRequest.setDeliquentCFGuarantor(getInDouble(outsideTotal.getDelinquentCF().getGuarantor()));
 						}
 						if(! CommonUtils.isObjectNullOrEmpty(outsideTotal.getDelinquentCF().getGuarantorPercentage())) {
-							creditProfileSummaryDetailRequest.setDeliquentCFGuarantorPercentage(Double.valueOf(outsideTotal.getDelinquentCF().getGuarantorPercentage()));
+							creditProfileSummaryDetailRequest.setDeliquentCFGuarantorPercentage(getInDouble(outsideTotal.getDelinquentCF().getGuarantorPercentage()));
 						}
 						
 						creditProfileSummaryDetailRequest.setTotalCFs(0.0);
@@ -8486,15 +8515,15 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 				if(!CommonUtils.isObjectNullOrEmpty(total)){
 					CreditProfileSummaryDetailRequest creditProfileSummaryDetailRequest=new CreditProfileSummaryDetailRequest();
 					
-					creditProfileSummaryDetailRequest.setDeliquentCF(Double.valueOf(total.getDelinquentCF()));
-					creditProfileSummaryDetailRequest.setDeliquentOutstanding(Double.valueOf(total.getDelinquentOutstanding()));
+					creditProfileSummaryDetailRequest.setDeliquentCF(getInDouble(total.getDelinquentCF()));
+					creditProfileSummaryDetailRequest.setDeliquentOutstanding(getInDouble(total.getDelinquentOutstanding()));
 					
 					creditProfileSummaryDetailRequest.setLatestCFOpenedDate(getInDate(total.getLatestCFOpenedDate()));
 					
 					creditProfileSummaryDetailRequest.setOpenCF(total.getOpenCF());
-					creditProfileSummaryDetailRequest.setTotalCFs(Double.valueOf(total.getTotalCF()));
+					creditProfileSummaryDetailRequest.setTotalCFs(getInDouble(total.getTotalCF()));
 					creditProfileSummaryDetailRequest.setTotalLenders(CommonUtils.isObjectNullOrEmpty(total.getTotalLenders()) ? null : Integer.parseInt(total.getTotalLenders()));
-					creditProfileSummaryDetailRequest.setTotalOutstanding(Double.valueOf(total.getTotalOutstanding()));
+					creditProfileSummaryDetailRequest.setTotalOutstanding(getInDouble(total.getTotalOutstanding()));
 					
 					creditProfileSummaryMasterRequest.setTotal(creditProfileSummaryDetailRequest);
 				}
@@ -8695,17 +8724,17 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 				{
 					OutstandingBalancesByCreditFacilityGroupsDetailStatusRequest outstandingBalancesByCreditFacilityGroupsDetailStatusRequest=new OutstandingBalancesByCreditFacilityGroupsDetailStatusRequest();
 					if(!CommonUtils.isObjectNullOrEmpty(forex.getNONSTDVec())) {
-						outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDbt(checkIsNull(forex.getNONSTDVec().getDbt().getValue()));
-						outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd91To180(checkIsNull( forex.getNONSTDVec().getDPD91To180().getValue()));
-						outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpdGT180(checkIsNull( forex.getNONSTDVec().getGreaterThan180DPD().getValue()));
-						outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setLoss(checkIsNull( forex.getNONSTDVec().getLoss().getValue()));
-						outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setSub(checkIsNull( forex.getNONSTDVec().getSub().getValue()));
+						outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDbt(!CommonUtils.isObjectNullOrEmpty(forex.getNONSTDVec().getDbt()) ?  forex.getNONSTDVec().getDbt().getValue() : null);
+						outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd91To180(!CommonUtils.isObjectNullOrEmpty( forex.getNONSTDVec().getDPD91To180())  ? forex.getNONSTDVec().getDPD91To180().getValue() : null);
+						outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpdGT180(!CommonUtils.isObjectNullOrEmpty( forex.getNONSTDVec().getGreaterThan180DPD() ) ?  forex.getNONSTDVec().getGreaterThan180DPD().getValue() : null);
+						outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setLoss(!CommonUtils.isObjectNullOrEmpty( forex.getNONSTDVec().getLoss() )  ?  forex.getNONSTDVec().getLoss().getValue() : null);
+						outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setSub(!CommonUtils.isObjectNullOrEmpty( forex.getNONSTDVec().getSub()) ?  forex.getNONSTDVec().getSub().getValue() : null);
 					}
 					if(!CommonUtils.isObjectNullOrEmpty(forex.getSTDVec())) {
-						outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd0(checkIsNull(forex.getSTDVec().getDPD0().getValue()));
-						outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd1To30OrSMA0(checkIsNull( forex.getSTDVec().getDPD1To30().getValue()));
-						outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd31To60orSMA1(checkIsNull( forex.getSTDVec().getDPD31To60().getValue()));
-						outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd61To90orSMA2(checkIsNull( forex.getSTDVec().getDPD61To90().getValue()));
+						outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd0(!CommonUtils.isObjectNullOrEmpty(forex.getSTDVec().getDPD0())  ? forex.getSTDVec().getDPD0().getValue() : null);
+						outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd1To30OrSMA0(!CommonUtils.isObjectNullOrEmpty( forex.getSTDVec().getDPD1To30()) ?  forex.getSTDVec().getDPD1To30().getValue() : null);
+						outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd31To60orSMA1(!CommonUtils.isObjectNullOrEmpty( forex.getSTDVec().getDPD31To60()) ?  forex.getSTDVec().getDPD31To60().getValue() : null);
+						outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd61To90orSMA2(!CommonUtils.isObjectNullOrEmpty( forex.getSTDVec().getDPD61To90()) ?  forex.getSTDVec().getDPD61To90().getValue() : null);
 						outstandingBalancesByCreditFacilityGroupsDetailsRequest.setForex(outstandingBalancesByCreditFacilityGroupsDetailStatusRequest);
 					}
 				}
@@ -8714,17 +8743,17 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 				{
 					OutstandingBalancesByCreditFacilityGroupsDetailStatusRequest outstandingBalancesByCreditFacilityGroupsDetailStatusRequest=new OutstandingBalancesByCreditFacilityGroupsDetailStatusRequest();
 					if(!CommonUtils.isObjectNullOrEmpty(nonFunded.getNONSTDVec())) {
-						outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDbt(checkIsNull( nonFunded.getNONSTDVec().getDbt().getValue()));
-						outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd91To180(checkIsNull( nonFunded.getNONSTDVec().getDPD91To180().getValue()));
-						outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpdGT180(checkIsNull( nonFunded.getNONSTDVec().getGreaterThan180DPD().getValue()));
-						outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setLoss(checkIsNull(nonFunded.getNONSTDVec().getLoss().getValue()));
-						outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setSub(checkIsNull( nonFunded.getNONSTDVec().getSub().getValue()));
+						outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDbt(!CommonUtils.isObjectNullOrEmpty( nonFunded.getNONSTDVec().getDbt()) ?  nonFunded.getNONSTDVec().getDbt().getValue() : null);
+						outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd91To180(!CommonUtils.isObjectNullOrEmpty( nonFunded.getNONSTDVec().getDPD91To180()) ?  nonFunded.getNONSTDVec().getDPD91To180().getValue() : null);
+						outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpdGT180(!CommonUtils.isObjectNullOrEmpty( nonFunded.getNONSTDVec().getGreaterThan180DPD()) ?  nonFunded.getNONSTDVec().getGreaterThan180DPD().getValue() : null);
+						outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setLoss(!CommonUtils.isObjectNullOrEmpty(nonFunded.getNONSTDVec().getLoss()) ?  nonFunded.getNONSTDVec().getLoss().getValue() : null);
+						outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setSub(!CommonUtils.isObjectNullOrEmpty( nonFunded.getNONSTDVec().getSub()) ?  nonFunded.getNONSTDVec().getSub().getValue() : null);
 					}
 					if(!CommonUtils.isObjectNullOrEmpty(nonFunded.getSTDVec())) {
-						outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd0(checkIsNull(nonFunded.getSTDVec().getDPD0().getValue()));
-						outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd1To30OrSMA0(checkIsNull( nonFunded.getSTDVec().getDPD1To30().getValue()));
-						outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd31To60orSMA1(checkIsNull(nonFunded.getSTDVec().getDPD31To60().getValue()));
-						outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd61To90orSMA2(checkIsNull( nonFunded.getSTDVec().getDPD61To90().getValue()));
+						outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd0(!CommonUtils.isObjectNullOrEmpty(nonFunded.getSTDVec().getDPD0())  ? nonFunded.getSTDVec().getDPD0().getValue() : null);
+						outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd1To30OrSMA0(!CommonUtils.isObjectNullOrEmpty( nonFunded.getSTDVec().getDPD1To30()) ?  nonFunded.getSTDVec().getDPD1To30().getValue() : null);
+						outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd31To60orSMA1(!CommonUtils.isObjectNullOrEmpty(nonFunded.getSTDVec().getDPD31To60()) ?  nonFunded.getSTDVec().getDPD31To60().getValue() : null);
+						outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd61To90orSMA2(!CommonUtils.isObjectNullOrEmpty( nonFunded.getSTDVec().getDPD61To90()) ?  nonFunded.getSTDVec().getDPD61To90().getValue() : null);
 						outstandingBalancesByCreditFacilityGroupsDetailsRequest.setNonFunded(outstandingBalancesByCreditFacilityGroupsDetailStatusRequest);
 					}
 				}
@@ -8734,17 +8763,17 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 				{
 					OutstandingBalancesByCreditFacilityGroupsDetailStatusRequest outstandingBalancesByCreditFacilityGroupsDetailStatusRequest=new OutstandingBalancesByCreditFacilityGroupsDetailStatusRequest();
 					if(!CommonUtils.isObjectNullOrEmpty(termLoan.getNONSTDVec())) {
-						outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDbt(checkIsNull(termLoan.getNONSTDVec().getDbt().getValue()));
-						outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd91To180(checkIsNull( termLoan.getNONSTDVec().getDPD91To180().getValue()));
-						outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpdGT180(checkIsNull(termLoan.getNONSTDVec().getGreaterThan180DPD().getValue()));
-						outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setLoss(checkIsNull(termLoan.getNONSTDVec().getLoss().getValue()));
-						outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setSub(checkIsNull(termLoan.getNONSTDVec().getSub().getValue()));
+						outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDbt(!CommonUtils.isObjectNullOrEmpty(termLoan.getNONSTDVec().getDbt()) ?  termLoan.getNONSTDVec().getDbt().getValue() : null);
+						outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd91To180(!CommonUtils.isObjectNullOrEmpty( termLoan.getNONSTDVec().getDPD91To180()) ?  termLoan.getNONSTDVec().getDPD91To180().getValue() : null);
+						outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpdGT180(!CommonUtils.isObjectNullOrEmpty(termLoan.getNONSTDVec().getGreaterThan180DPD()) ?  termLoan.getNONSTDVec().getGreaterThan180DPD().getValue() : null);
+						outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setLoss(!CommonUtils.isObjectNullOrEmpty(termLoan.getNONSTDVec().getLoss()) ?  termLoan.getNONSTDVec().getLoss().getValue() : null);
+						outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setSub(!CommonUtils.isObjectNullOrEmpty(termLoan.getNONSTDVec().getSub()) ?  termLoan.getNONSTDVec().getSub().getValue() : null);
 					}
 					if(!CommonUtils.isObjectNullOrEmpty(termLoan.getSTDVec())) {
-						outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd0(checkIsNull(termLoan.getSTDVec().getDPD0().getValue()));
-						outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd1To30OrSMA0(checkIsNull(termLoan.getSTDVec().getDPD1To30().getValue()));
-						outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd31To60orSMA1(checkIsNull(termLoan.getSTDVec().getDPD31To60().getValue()));
-						outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd61To90orSMA2(checkIsNull(termLoan.getSTDVec().getDPD61To90().getValue()));
+						outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd0(!CommonUtils.isObjectNullOrEmpty(termLoan.getSTDVec().getDPD0()) ?  termLoan.getSTDVec().getDPD0().getValue() : null);
+						outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd1To30OrSMA0(!CommonUtils.isObjectNullOrEmpty(termLoan.getSTDVec().getDPD1To30()) ?  termLoan.getSTDVec().getDPD1To30().getValue() : null);
+						outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd31To60orSMA1(!CommonUtils.isObjectNullOrEmpty(termLoan.getSTDVec().getDPD31To60()) ?  termLoan.getSTDVec().getDPD31To60().getValue() : null);
+						outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd61To90orSMA2(!CommonUtils.isObjectNullOrEmpty(termLoan.getSTDVec().getDPD61To90()) ?  termLoan.getSTDVec().getDPD61To90().getValue() : null);
 						outstandingBalancesByCreditFacilityGroupsDetailsRequest.setTermLoan(outstandingBalancesByCreditFacilityGroupsDetailStatusRequest);
 					}
 				}
@@ -8754,17 +8783,17 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 				{
 					OutstandingBalancesByCreditFacilityGroupsDetailStatusRequest outstandingBalancesByCreditFacilityGroupsDetailStatusRequest=new OutstandingBalancesByCreditFacilityGroupsDetailStatusRequest();
 					if(!CommonUtils.isObjectNullOrEmpty(workingCapital.getNONSTDVec())) {
-						outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDbt(checkIsNull( workingCapital.getNONSTDVec().getDbt().getValue()));
-						outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd91To180(checkIsNull( workingCapital.getNONSTDVec().getDPD91To180().getValue()));
-						outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpdGT180(checkIsNull( workingCapital.getNONSTDVec().getGreaterThan180DPD().getValue()));
-						outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setLoss(checkIsNull( workingCapital.getNONSTDVec().getLoss().getValue()));
-						outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setSub(checkIsNull(workingCapital.getNONSTDVec().getSub().getValue()));
+						outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDbt(!CommonUtils.isObjectNullOrEmpty( workingCapital.getNONSTDVec().getDbt()) ?  workingCapital.getNONSTDVec().getDbt().getValue() : null);
+						outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd91To180(!CommonUtils.isObjectNullOrEmpty( workingCapital.getNONSTDVec().getDPD91To180()) ? workingCapital.getNONSTDVec().getDPD91To180() .getValue() : null);
+						outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpdGT180(!CommonUtils.isObjectNullOrEmpty( workingCapital.getNONSTDVec().getGreaterThan180DPD()) ?  workingCapital.getNONSTDVec().getGreaterThan180DPD().getValue() : null);
+						outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setLoss(!CommonUtils.isObjectNullOrEmpty( workingCapital.getNONSTDVec().getLoss()) ?  workingCapital.getNONSTDVec().getLoss().getValue() : null);
+						outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setSub(!CommonUtils.isObjectNullOrEmpty(workingCapital.getNONSTDVec().getSub()) ?  workingCapital.getNONSTDVec().getSub().getValue() : null);
 					}
 					if(!CommonUtils.isObjectNullOrEmpty(workingCapital.getSTDVec())) {
-						outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd0(checkIsNull(workingCapital.getSTDVec().getDPD0().getValue()));
-						outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd1To30OrSMA0(checkIsNull( workingCapital.getSTDVec().getDPD1To30().getValue()));
-						outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd31To60orSMA1(checkIsNull( workingCapital.getSTDVec().getDPD31To60().getValue()));
-						outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd61To90orSMA2(checkIsNull( workingCapital.getSTDVec().getDPD61To90().getValue() ));
+						outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd0(!CommonUtils.isObjectNullOrEmpty(workingCapital.getSTDVec().getDPD0()) ? workingCapital.getSTDVec().getDPD0().getValue() : null);
+						outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd1To30OrSMA0(!CommonUtils.isObjectNullOrEmpty( workingCapital.getSTDVec().getDPD1To30()) ?  workingCapital.getSTDVec().getDPD1To30().getValue() : null);
+						outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd31To60orSMA1(!CommonUtils.isObjectNullOrEmpty( workingCapital.getSTDVec().getDPD31To60()) ? workingCapital.getSTDVec().getDPD31To60() .getValue() : null);
+						outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd61To90orSMA2(!CommonUtils.isObjectNullOrEmpty( workingCapital.getSTDVec().getDPD61To90()) ?  workingCapital.getSTDVec().getDPD61To90().getValue() : null );
 						outstandingBalancesByCreditFacilityGroupsDetailsRequest.setTermLoan(outstandingBalancesByCreditFacilityGroupsDetailStatusRequest);
 					}
 				}
@@ -8781,17 +8810,17 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 					{
 						OutstandingBalancesByCreditFacilityGroupsDetailStatusRequest outstandingBalancesByCreditFacilityGroupsDetailStatusRequest=new OutstandingBalancesByCreditFacilityGroupsDetailStatusRequest();
 						if(!CommonUtils.isObjectNullOrEmpty(forex.getNONSTDVec())) {
-							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDbt(checkIsNull(forex.getNONSTDVec().getDbt().getValue()));
-							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd91To180(checkIsNull( forex.getNONSTDVec().getDPD91To180().getValue()));
-							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpdGT180(checkIsNull( forex.getNONSTDVec().getGreaterThan180DPD().getValue()));
-							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setLoss(checkIsNull( forex.getNONSTDVec().getLoss().getValue()));
-							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setSub(checkIsNull( forex.getNONSTDVec().getSub().getValue()));
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDbt(!CommonUtils.isObjectNullOrEmpty(forex.getNONSTDVec().getDbt()) ?  forex.getNONSTDVec().getDbt().getValue() : null);
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd91To180(!CommonUtils.isObjectNullOrEmpty( forex.getNONSTDVec().getDPD91To180())  ? forex.getNONSTDVec().getDPD91To180().getValue() : null);
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpdGT180(!CommonUtils.isObjectNullOrEmpty( forex.getNONSTDVec().getGreaterThan180DPD() ) ?  forex.getNONSTDVec().getGreaterThan180DPD().getValue() : null);
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setLoss(!CommonUtils.isObjectNullOrEmpty( forex.getNONSTDVec().getLoss() )  ?  forex.getNONSTDVec().getLoss().getValue() : null);
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setSub(!CommonUtils.isObjectNullOrEmpty( forex.getNONSTDVec().getSub()) ?  forex.getNONSTDVec().getSub().getValue() : null);
 						}
 						if(!CommonUtils.isObjectNullOrEmpty(forex.getSTDVec())) {
-							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd0(checkIsNull(forex.getSTDVec().getDPD0().getValue()));
-							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd1To30OrSMA0(checkIsNull( forex.getSTDVec().getDPD1To30().getValue()));
-							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd31To60orSMA1(checkIsNull( forex.getSTDVec().getDPD31To60().getValue()));
-							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd61To90orSMA2(checkIsNull( forex.getSTDVec().getDPD61To90().getValue()));
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd0(!CommonUtils.isObjectNullOrEmpty(forex.getSTDVec().getDPD0())  ? forex.getSTDVec().getDPD0().getValue() : null);
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd1To30OrSMA0(!CommonUtils.isObjectNullOrEmpty( forex.getSTDVec().getDPD1To30()) ?  forex.getSTDVec().getDPD1To30().getValue() : null);
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd31To60orSMA1(!CommonUtils.isObjectNullOrEmpty( forex.getSTDVec().getDPD31To60()) ?  forex.getSTDVec().getDPD31To60().getValue() : null);
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd61To90orSMA2(!CommonUtils.isObjectNullOrEmpty( forex.getSTDVec().getDPD61To90()) ?  forex.getSTDVec().getDPD61To90().getValue() : null);
 							outstandingBalancesByCreditFacilityGroupsDetailsRequest.setForex(outstandingBalancesByCreditFacilityGroupsDetailStatusRequest);
 						}
 					}
@@ -8800,17 +8829,17 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 					{
 						OutstandingBalancesByCreditFacilityGroupsDetailStatusRequest outstandingBalancesByCreditFacilityGroupsDetailStatusRequest=new OutstandingBalancesByCreditFacilityGroupsDetailStatusRequest();
 						if(!CommonUtils.isObjectNullOrEmpty(nonFunded.getNONSTDVec())) {
-							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDbt(checkIsNull( nonFunded.getNONSTDVec().getDbt().getValue()));
-							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd91To180(checkIsNull( nonFunded.getNONSTDVec().getDPD91To180().getValue()));
-							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpdGT180(checkIsNull( nonFunded.getNONSTDVec().getGreaterThan180DPD().getValue()));
-							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setLoss(checkIsNull(nonFunded.getNONSTDVec().getLoss().getValue()));
-							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setSub(checkIsNull( nonFunded.getNONSTDVec().getSub().getValue()));
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDbt(!CommonUtils.isObjectNullOrEmpty( nonFunded.getNONSTDVec().getDbt()) ?  nonFunded.getNONSTDVec().getDbt().getValue() : null);
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd91To180(!CommonUtils.isObjectNullOrEmpty( nonFunded.getNONSTDVec().getDPD91To180()) ?  nonFunded.getNONSTDVec().getDPD91To180().getValue() : null);
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpdGT180(!CommonUtils.isObjectNullOrEmpty( nonFunded.getNONSTDVec().getGreaterThan180DPD()) ?  nonFunded.getNONSTDVec().getGreaterThan180DPD().getValue() : null);
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setLoss(!CommonUtils.isObjectNullOrEmpty(nonFunded.getNONSTDVec().getLoss()) ?  nonFunded.getNONSTDVec().getLoss().getValue() : null);
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setSub(!CommonUtils.isObjectNullOrEmpty( nonFunded.getNONSTDVec().getSub()) ?  nonFunded.getNONSTDVec().getSub().getValue() : null);
 						}
 						if(!CommonUtils.isObjectNullOrEmpty(nonFunded.getSTDVec())) {
-							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd0(checkIsNull(nonFunded.getSTDVec().getDPD0().getValue()));
-							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd1To30OrSMA0(checkIsNull( nonFunded.getSTDVec().getDPD1To30().getValue()));
-							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd31To60orSMA1(checkIsNull(nonFunded.getSTDVec().getDPD31To60().getValue()));
-							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd61To90orSMA2(checkIsNull( nonFunded.getSTDVec().getDPD61To90().getValue()));
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd0(!CommonUtils.isObjectNullOrEmpty(nonFunded.getSTDVec().getDPD0())  ? nonFunded.getSTDVec().getDPD0().getValue() : null);
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd1To30OrSMA0(!CommonUtils.isObjectNullOrEmpty( nonFunded.getSTDVec().getDPD1To30()) ?  nonFunded.getSTDVec().getDPD1To30().getValue() : null);
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd31To60orSMA1(!CommonUtils.isObjectNullOrEmpty(nonFunded.getSTDVec().getDPD31To60()) ?  nonFunded.getSTDVec().getDPD31To60().getValue() : null);
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd61To90orSMA2(!CommonUtils.isObjectNullOrEmpty( nonFunded.getSTDVec().getDPD61To90()) ?  nonFunded.getSTDVec().getDPD61To90().getValue() : null);
 							outstandingBalancesByCreditFacilityGroupsDetailsRequest.setNonFunded(outstandingBalancesByCreditFacilityGroupsDetailStatusRequest);
 						}
 					}
@@ -8820,17 +8849,17 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 					{
 						OutstandingBalancesByCreditFacilityGroupsDetailStatusRequest outstandingBalancesByCreditFacilityGroupsDetailStatusRequest=new OutstandingBalancesByCreditFacilityGroupsDetailStatusRequest();
 						if(!CommonUtils.isObjectNullOrEmpty(termLoan.getNONSTDVec())) {
-							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDbt(checkIsNull(termLoan.getNONSTDVec().getDbt().getValue()));
-							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd91To180(checkIsNull( termLoan.getNONSTDVec().getDPD91To180().getValue()));
-							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpdGT180(checkIsNull(termLoan.getNONSTDVec().getGreaterThan180DPD().getValue()));
-							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setLoss(checkIsNull(termLoan.getNONSTDVec().getLoss().getValue()));
-							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setSub(checkIsNull(termLoan.getNONSTDVec().getSub().getValue()));
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDbt(!CommonUtils.isObjectNullOrEmpty(termLoan.getNONSTDVec().getDbt()) ?  termLoan.getNONSTDVec().getDbt().getValue() : null);
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd91To180(!CommonUtils.isObjectNullOrEmpty( termLoan.getNONSTDVec().getDPD91To180()) ?  termLoan.getNONSTDVec().getDPD91To180().getValue() : null);
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpdGT180(!CommonUtils.isObjectNullOrEmpty(termLoan.getNONSTDVec().getGreaterThan180DPD()) ?  termLoan.getNONSTDVec().getGreaterThan180DPD().getValue() : null);
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setLoss(!CommonUtils.isObjectNullOrEmpty(termLoan.getNONSTDVec().getLoss()) ?  termLoan.getNONSTDVec().getLoss().getValue() : null);
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setSub(!CommonUtils.isObjectNullOrEmpty(termLoan.getNONSTDVec().getSub()) ?  termLoan.getNONSTDVec().getSub().getValue() : null);
 						}
 						if(!CommonUtils.isObjectNullOrEmpty(termLoan.getSTDVec())) {
-							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd0(checkIsNull(termLoan.getSTDVec().getDPD0().getValue()));
-							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd1To30OrSMA0(checkIsNull(termLoan.getSTDVec().getDPD1To30().getValue()));
-							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd31To60orSMA1(checkIsNull(termLoan.getSTDVec().getDPD31To60().getValue()));
-							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd61To90orSMA2(checkIsNull(termLoan.getSTDVec().getDPD61To90().getValue()));
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd0(!CommonUtils.isObjectNullOrEmpty(termLoan.getSTDVec().getDPD0()) ?  termLoan.getSTDVec().getDPD0().getValue() : null);
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd1To30OrSMA0(!CommonUtils.isObjectNullOrEmpty(termLoan.getSTDVec().getDPD1To30()) ?  termLoan.getSTDVec().getDPD1To30().getValue() : null);
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd31To60orSMA1(!CommonUtils.isObjectNullOrEmpty(termLoan.getSTDVec().getDPD31To60()) ?  termLoan.getSTDVec().getDPD31To60().getValue() : null);
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd61To90orSMA2(!CommonUtils.isObjectNullOrEmpty(termLoan.getSTDVec().getDPD61To90()) ?  termLoan.getSTDVec().getDPD61To90().getValue() : null);
 							outstandingBalancesByCreditFacilityGroupsDetailsRequest.setTermLoan(outstandingBalancesByCreditFacilityGroupsDetailStatusRequest);
 						}
 					}
@@ -8840,17 +8869,17 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 					{
 						OutstandingBalancesByCreditFacilityGroupsDetailStatusRequest outstandingBalancesByCreditFacilityGroupsDetailStatusRequest=new OutstandingBalancesByCreditFacilityGroupsDetailStatusRequest();
 						if(!CommonUtils.isObjectNullOrEmpty(workingCapital.getNONSTDVec())) {
-							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDbt(checkIsNull( workingCapital.getNONSTDVec().getDbt().getValue()));
-							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd91To180(checkIsNull( workingCapital.getNONSTDVec().getDPD91To180().getValue()));
-							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpdGT180(checkIsNull( workingCapital.getNONSTDVec().getGreaterThan180DPD().getValue()));
-							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setLoss(checkIsNull( workingCapital.getNONSTDVec().getLoss().getValue()));
-							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setSub(checkIsNull(workingCapital.getNONSTDVec().getSub().getValue()));
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDbt(!CommonUtils.isObjectNullOrEmpty( workingCapital.getNONSTDVec().getDbt()) ?  workingCapital.getNONSTDVec().getDbt().getValue() : null);
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd91To180(!CommonUtils.isObjectNullOrEmpty( workingCapital.getNONSTDVec().getDPD91To180()) ? workingCapital.getNONSTDVec().getDPD91To180() .getValue() : null);
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpdGT180(!CommonUtils.isObjectNullOrEmpty( workingCapital.getNONSTDVec().getGreaterThan180DPD()) ?  workingCapital.getNONSTDVec().getGreaterThan180DPD().getValue() : null);
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setLoss(!CommonUtils.isObjectNullOrEmpty( workingCapital.getNONSTDVec().getLoss()) ?  workingCapital.getNONSTDVec().getLoss().getValue() : null);
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setSub(!CommonUtils.isObjectNullOrEmpty(workingCapital.getNONSTDVec().getSub()) ?  workingCapital.getNONSTDVec().getSub().getValue() : null);
 						}
 						if(!CommonUtils.isObjectNullOrEmpty(workingCapital.getSTDVec())) {
-							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd0(checkIsNull(workingCapital.getSTDVec().getDPD0().getValue()));
-							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd1To30OrSMA0(checkIsNull( workingCapital.getSTDVec().getDPD1To30().getValue()));
-							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd31To60orSMA1(checkIsNull( workingCapital.getSTDVec().getDPD31To60().getValue()));
-							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd61To90orSMA2(checkIsNull( workingCapital.getSTDVec().getDPD61To90().getValue() ));
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd0(!CommonUtils.isObjectNullOrEmpty(workingCapital.getSTDVec().getDPD0()) ? workingCapital.getSTDVec().getDPD0().getValue() : null);
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd1To30OrSMA0(!CommonUtils.isObjectNullOrEmpty( workingCapital.getSTDVec().getDPD1To30()) ?  workingCapital.getSTDVec().getDPD1To30().getValue() : null);
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd31To60orSMA1(!CommonUtils.isObjectNullOrEmpty( workingCapital.getSTDVec().getDPD31To60()) ? workingCapital.getSTDVec().getDPD31To60() .getValue() : null);
+							outstandingBalancesByCreditFacilityGroupsDetailStatusRequest.setDpd61To90orSMA2(!CommonUtils.isObjectNullOrEmpty( workingCapital.getSTDVec().getDPD61To90()) ?  workingCapital.getSTDVec().getDPD61To90().getValue() : null );
 							outstandingBalancesByCreditFacilityGroupsDetailsRequest.setTermLoan(outstandingBalancesByCreditFacilityGroupsDetailStatusRequest);
 						}
 					}
@@ -9047,7 +9076,7 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 						dPDDetailsRequest = new DPDDetailsRequest();
 						dPDDetailsRequest.setaCorDPD(historyforACOrDPDupto24Months.getACorDPD());
 						dPDDetailsRequest.setMonth(historyforACOrDPDupto24Months.getMonth());
-						dPDDetailsRequest.setOsAmount(historyforACOrDPDupto24Months.getOSAmount() !=null ? Double.valueOf(historyforACOrDPDupto24Months.getOSAmount()) : 0.0);
+						dPDDetailsRequest.setOsAmount(getInDouble(historyforACOrDPDupto24Months.getOSAmount()));
 						dPDDetailsRequestList.add(dPDDetailsRequest);
 					}
 					creditFacilityDetailsRequest.setDpdDetailsRequestList(dPDDetailsRequestList);
@@ -9154,7 +9183,7 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 						
 						creditFacilityDetailsRequest.setContractsClassifiedAsNPA(creditFacilityDetailsasBorrowerSec.getCreditFacilityCurrentDetailsVec().getCreditFacilityCurrentDetails().getAmount().getContractsClassifiedAsNPA());
 						creditFacilityDetailsRequest.setCurrency(creditFacilityDetailsasBorrowerSec.getCreditFacilityCurrentDetailsVec().getCreditFacilityCurrentDetails().getAmount().getCurrency());
-						creditFacilityDetailsRequest.setDrawingPowerAmount(Double.valueOf(creditFacilityDetailsasBorrowerSec.getCreditFacilityCurrentDetailsVec().getCreditFacilityCurrentDetails().getAmount().getDrawingPower()));
+						creditFacilityDetailsRequest.setDrawingPowerAmount(getInDouble(creditFacilityDetailsasBorrowerSec.getCreditFacilityCurrentDetailsVec().getCreditFacilityCurrentDetails().getAmount().getDrawingPower()));
 						creditFacilityDetailsRequest.setHighCreditAmount(getInDouble(creditFacilityDetailsasBorrowerSec.getCreditFacilityCurrentDetailsVec().getCreditFacilityCurrentDetails().getAmount().getHighCredit()));
 						creditFacilityDetailsRequest.setInstallmentAmount(getInDouble(creditFacilityDetailsasBorrowerSec.getCreditFacilityCurrentDetailsVec().getCreditFacilityCurrentDetails().getAmount().getInstallmentAmt()));
 						creditFacilityDetailsRequest.setLastRepaidAmount(getInDouble(creditFacilityDetailsasBorrowerSec.getCreditFacilityCurrentDetailsVec().getCreditFacilityCurrentDetails().getAmount().getLastRepaid()));
@@ -9268,8 +9297,9 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 				
 				if(!CibilUtils.isObjectNullOrEmpty(last24MonthEnq.getEnquiryPurpose()) && !last24MonthEnq.getEnquiryPurpose().equalsIgnoreCase("-")) {
 					try {
-						CreditTypeEnum fromId = CibilUtils.CreditTypeEnum.fromId(last24MonthEnq.getEnquiryPurpose());
-						enquiryInfoRequest.setEnquiryPurpose(fromId.getValue());
+						/*CreditTypeEnum fromId = CibilUtils.CreditTypeEnum.fromId(last24MonthEnq.getEnquiryPurpose());
+						enquiryInfoRequest.setEnquiryPurpose(fromId.getValue());*/
+						enquiryInfoRequest.setEnquiryPurpose(last24MonthEnq.getEnquiryPurpose());
 					}catch(Exception e) {
 						e.printStackTrace();
 					}
@@ -9285,6 +9315,9 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 	public Double getInDouble(String data) {
 		
 		if (! CommonUtils.isObjectNullOrEmpty(data)){
+			if(data.contains("%")) {
+				return Double.valueOf(data.replaceAll("%", ""));
+			}
 			return Double.valueOf(data);
 		}
 		return 0.0;
@@ -9292,7 +9325,10 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 	}
 	
 	public Date getInDate(String data) {
-		if(!CibilUtils.isObjectNullOrEmpty(data) && ! "-".equals(data)) {
+		if(!CibilUtils.isObjectNullOrEmpty(data)) {
+			if( "-".equals(data.trim())){
+				return null;
+			}
 			DateFormat dateFormat = new SimpleDateFormat("dd-MMM-yyyy");
 			try {
 				return dateFormat.parse(data);
