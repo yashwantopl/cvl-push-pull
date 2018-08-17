@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-import com.capitaworld.service.loans.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ByteArrayResource;
@@ -19,6 +18,18 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.capitaworld.service.loans.exceptions.ExcelException;
 import com.capitaworld.service.loans.exceptions.LoansException;
+import com.capitaworld.service.loans.model.CMADetailResponse;
+import com.capitaworld.service.loans.model.CreditRatingOrganizationDetailRequest;
+import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
+import com.capitaworld.service.loans.model.ExcelRequest;
+import com.capitaworld.service.loans.model.ExcelResponse;
+import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
+import com.capitaworld.service.loans.model.FrameRequest;
+import com.capitaworld.service.loans.model.GenerateTokenRequest;
+import com.capitaworld.service.loans.model.LoanApplicationRequest;
+import com.capitaworld.service.loans.model.LoansResponse;
+import com.capitaworld.service.loans.model.NTBRequest;
+import com.capitaworld.service.loans.model.PaymentRequest;
 import com.capitaworld.service.loans.model.common.EkycRequest;
 import com.capitaworld.service.loans.model.common.HomeLoanEligibilityRequest;
 import com.capitaworld.service.loans.model.common.LAPEligibilityRequest;
@@ -83,7 +94,7 @@ public class LoansClient {
 	private static final String EXISTING_PRODUCT_DETAILS = "/existing_product_details/save";
 	private static final String MEANS_OF_FINANCE = "/means_of_finance/save";
 	private static final String FINANCIAL_ARRANGEMENT_DETAILS = "/financial_arrangement_details/save";
-	private static final String FINANCIAL_ARRANGEMENT_DETAILS_TOTAL_EMI = "/financial_arrangement_details/get_total_emi";
+	private static final String FINANCIAL_ARRANGEMENT_DETAILS_TOTAL_EMI = "/financial_arrangement_details/get_total_emi_sanction_amount";
 	private static final String FINANCIAL_ARRANGEMENT_DETAILS_TOTAL_EMI_FROM_DIRECTOR_ID = "/financial_arrangement_details/getTotalEmiFromDirectorId";
 	private static final String FUTURE_FINANCIAL_ESTIMATE_DETAILS = "/future_financial_estimate_details/save";
 	private static final String GUARANTORS_CORPORATE_DETAILS = "/guarantors_corporate_details/save";
@@ -818,7 +829,7 @@ public class LoansClient {
 		}
 	}
 	
-	public LoansResponse getTotalEMI(Long applicationId) throws Exception{
+	public FinancialArrangementsDetailRequest getTotalEMI(Long applicationId) throws Exception{
 		String url = loansBaseUrl.concat(FINANCIAL_ARRANGEMENT_DETAILS_TOTAL_EMI).concat("/" + applicationId);
 		System.out.println("url for Getting TotalEMI From Client=================>" + url + " and For Application Id====>" + applicationId);
 		try {
@@ -826,7 +837,7 @@ public class LoansClient {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
 			HttpEntity<?> entity = new HttpEntity<>(null, headers);
-			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
+			return restTemplate.exchange(url, HttpMethod.GET, entity, FinancialArrangementsDetailRequest.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new Exception("Loans service is not available");
