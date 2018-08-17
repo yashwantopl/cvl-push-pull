@@ -829,7 +829,7 @@ public class LoansClient {
 		}
 	}
 	
-	public FinancialArrangementsDetailRequest getTotalEMI(Long applicationId) throws Exception{
+	public FinancialArrangementsDetailRequest getTotalEMIAndSanctionAmount(Long applicationId) throws Exception{
 		String url = loansBaseUrl.concat(FINANCIAL_ARRANGEMENT_DETAILS_TOTAL_EMI).concat("/" + applicationId);
 		System.out.println("url for Getting TotalEMI From Client=================>" + url + " and For Application Id====>" + applicationId);
 		try {
