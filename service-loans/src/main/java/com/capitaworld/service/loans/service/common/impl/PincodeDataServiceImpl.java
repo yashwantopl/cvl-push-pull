@@ -30,4 +30,15 @@ public class PincodeDataServiceImpl implements PincodeDateService {
         }
         return dataResponseList;
     }
+
+	@Override
+	public PincodeDataResponse getById(Long id) {
+		PincodeData findOne = pincodeDataRepository.findOne(id);
+		if(findOne == null) {
+			return null;
+		}
+		PincodeDataResponse response = new PincodeDataResponse();
+        BeanUtils.copyProperties(findOne,response);
+		return response;
+	}
 }

@@ -139,6 +139,7 @@ import com.capitaworld.service.loans.model.LoanApplicationDetailsForSp;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.model.LoanEligibilityRequest;
 import com.capitaworld.service.loans.model.PaymentRequest;
+import com.capitaworld.service.loans.model.PincodeDataResponse;
 import com.capitaworld.service.loans.model.ReportResponse;
 import com.capitaworld.service.loans.model.common.CGTMSECalcDataResponse;
 import com.capitaworld.service.loans.model.common.ChatDetails;
@@ -186,6 +187,7 @@ import com.capitaworld.service.loans.service.ProposalService;
 import com.capitaworld.service.loans.service.common.ApplicationSequenceService;
 import com.capitaworld.service.loans.service.common.DashboardService;
 import com.capitaworld.service.loans.service.common.LogService;
+import com.capitaworld.service.loans.service.common.PincodeDateService;
 import com.capitaworld.service.loans.service.fundprovider.OrganizationReportsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CMAService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateCoApplicantService;
@@ -455,6 +457,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	
 	@Autowired
 	private CMAService cmaService;
+	
+	@Autowired
+	private PincodeDateService pincodeDateService;
 	
 	@Value("${capitaworld.service.gateway.product}")
 	private String product;
@@ -4475,7 +4480,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					
 					applicationRequest.setFundProvider(orgId!=null ? CommonUtils.getOrganizationName(orgId) : null);
 					
-                 // ==================Sending Mail to all Checker's & Maker's of that branch after FS recieves In-principle Approval==================	
+                 // ==================Sending Mail to all Checker's & Maker's & HO & BO of that branch after FS recieves In-principle Approval==================	
 					
 					try {
 						fpasyncComponent.sendEmailToAllMakersWhenFSRecievesInPrinciple(proposalresp, paymentRequest, userId, orgId);	
@@ -4493,6 +4498,26 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					catch(Exception e) {
 						
 						logger.info("Exception occured while Sending Mail to All Checkers");
+						e.printStackTrace();
+						
+					}
+					
+					try {
+						fpasyncComponent.sendEmailToHOWhenFSRecievesInPrinciple(proposalresp, paymentRequest, userId, orgId);	
+					}
+					catch(Exception e) {
+						
+						logger.info("Exception occured while Sending Mail to HO");
+						e.printStackTrace();
+						
+					}
+					
+					try {
+						fpasyncComponent.sendEmailToAllBOWhenFSRecievesInPrinciple(proposalresp, paymentRequest, userId, orgId);	
+					}
+					catch(Exception e) {
+						
+						logger.info("Exception occured while Sending Mail to All BO");
 						e.printStackTrace();
 						
 					}
@@ -5940,6 +5965,14 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 				addressRequest.setLandMark(source.getLandmark());
 				addressRequest.setPremiseNumber(source.getPremiseNumber());
 				addressRequest.setPincode(source.getPincode());
+				if(!CommonUtils.isObjectNullOrEmpty(source.getDistrictMappingId())) {
+					PincodeDataResponse data = pincodeDateService.getById(source.getDistrictMappingId());
+					if(data != null) {
+						addressRequest.setDistrict(data.getDistrictName());
+						addressRequest.setSubDistrict(data.getDivisionName());
+						addressRequest.setTownVillageTaluka(data.getTaluka());
+					}
+				}
 				try {
 					if(source.getStateId() != null) {
 						addressRequest.setState(CommonDocumentUtils.getState(source.getStateId().longValue(), oneFormClient));	
@@ -6446,6 +6479,16 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 		if(corporateApplicantDetail.getRegisteredPincode() != null) {
 			addressRequest.setPincode(corporateApplicantDetail.getRegisteredPincode().toString());				
 		}
+		if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredDistMappingId())) {
+			PincodeDataResponse data = pincodeDateService.getById(corporateApplicantDetail.getRegisteredDistMappingId());
+			if(data != null) {
+				addressRequest.setDistrict(data.getDistrictName());
+				addressRequest.setSubDistrict(data.getDivisionName());
+				addressRequest.setTownVillageTaluka(data.getTaluka());
+			}
+		}
+		
+		
 		try {
 			addressRequest.setCity(CommonDocumentUtils.getCity(corporateApplicantDetail.getRegisteredCityId(), oneFormClient));
 		}catch(Exception e) {
@@ -6475,6 +6518,16 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 		if(corporateApplicantDetail.getAdministrativePincode() != null) {
 			administrativeRequest.setPincode(corporateApplicantDetail.getAdministrativePincode().toString());				
 		}
+		
+		if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getAdministrativeDistMappingId())) {
+			PincodeDataResponse data = pincodeDateService.getById(corporateApplicantDetail.getAdministrativeDistMappingId());
+			if(data != null) {
+				administrativeRequest.setDistrict(data.getDistrictName());
+				administrativeRequest.setSubDistrict(data.getDivisionName());
+				administrativeRequest.setTownVillageTaluka(data.getTaluka());
+			}
+		}
+		
 		try {
             if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getAdministrativeCityId()))
 			    administrativeRequest.setCity(CommonDocumentUtils.getCity(corporateApplicantDetail.getAdministrativeCityId(), oneFormClient));

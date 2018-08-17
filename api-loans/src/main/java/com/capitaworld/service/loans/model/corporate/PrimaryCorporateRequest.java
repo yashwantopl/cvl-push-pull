@@ -43,6 +43,8 @@ public class PrimaryCorporateRequest extends LoanApplicationRequest implements S
      * BY Ravina
      * */
     private Double totalAmtPercentage;
+    /*For Eligibility Hybrid-payback method*/
+    private Double incrementalMargin;
 
     public PrimaryCorporateRequest() {
     }
@@ -221,5 +223,13 @@ public class PrimaryCorporateRequest extends LoanApplicationRequest implements S
 
     public void setProposedCost(Double proposedCost) {
         this.proposedCost = proposedCost;
+    }
+
+    public Double getIncrementalMargin() {
+        return incrementalMargin;
+    }
+
+    public void setIncrementalMargin(Double incrementalMargin) {
+        this.incrementalMargin = incrementalMargin;
     }
 }

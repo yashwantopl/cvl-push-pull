@@ -335,6 +335,9 @@ public class TermLoanParameterTemp extends ProductMasterTemp implements Serializ
 	//-----------------------added eligibility method for product
 	@Column(name="assessment_method_id")
 	private Integer assessmentMethodId;
+	
+	@Column(name="cash_margin")
+	private Integer cashMargin;
 
 	public Integer getIndividualCibil() {
 		return individualCibil;
@@ -1153,6 +1156,15 @@ public class TermLoanParameterTemp extends ProductMasterTemp implements Serializ
 	public void setCgtmseCoverage(Integer cgtmseCoverage) {
 		this.cgtmseCoverage = cgtmseCoverage;
 	}
+
+	public Integer getCashMargin() {
+		return cashMargin;
+	}
+
+	public void setCashMargin(Integer cashMargin) {
+		this.cashMargin = cashMargin;
+	}
+
 	
 	
 
