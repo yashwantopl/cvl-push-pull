@@ -4511,6 +4511,16 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 						e.printStackTrace();
 						
 					}
+					
+					try {
+						fpasyncComponent.sendEmailToAllBOWhenFSRecievesInPrinciple(proposalresp, paymentRequest, userId, orgId);	
+					}
+					catch(Exception e) {
+						
+						logger.info("Exception occured while Sending Mail to All BO");
+						e.printStackTrace();
+						
+					}
 							
 				//=======================================================================================================================================
       
