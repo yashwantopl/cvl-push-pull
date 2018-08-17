@@ -331,6 +331,9 @@ public class TermLoanParameter extends ProductMaster implements Serializable {
 	
 	@Column(name="cgtmse_coverage")
 	private Integer cgtmseCoverage;
+	
+	@Column(name="cash_margin")
+	private Integer cashMargin;
 
 
 
@@ -1170,6 +1173,15 @@ public class TermLoanParameter extends ProductMaster implements Serializable {
 		this.cgtmseCoverage = cgtmseCoverage;
 	}
 
+	public Integer getCashMargin() {
+		return cashMargin;
+	}
+
+	public void setCashMargin(Integer cashMargin) {
+		this.cashMargin = cashMargin;
+	}
+
+	
 	
 
 }
