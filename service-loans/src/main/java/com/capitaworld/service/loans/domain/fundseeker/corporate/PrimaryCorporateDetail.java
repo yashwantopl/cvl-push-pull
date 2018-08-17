@@ -126,6 +126,9 @@ public class PrimaryCorporateDetail extends LoanApplicationMaster implements Ser
     @Column(name = "prop_cost")
     private Double proposedCost;
 
+    @Column(name = "incremental_margin")
+    private Double incrementalMargin;
+
     public PrimaryCorporateDetail() {
     }
 
@@ -411,5 +414,13 @@ public class PrimaryCorporateDetail extends LoanApplicationMaster implements Ser
 
     public void setProposedCost(Double proposedCost) {
         this.proposedCost = proposedCost;
+    }
+
+    public Double getIncrementalMargin() {
+        return incrementalMargin;
+    }
+
+    public void setIncrementalMargin(Double incrementalMargin) {
+        this.incrementalMargin = incrementalMargin;
     }
 }

@@ -101,6 +101,9 @@ public class FundSeekerInputRequestResponse {
     private Integer knowHow;
     private Integer competition;
 
+    /*For Eligibility method*/
+    private Double incrementalMargin;
+
     public Long getUserId() {
         return userId;
     }
@@ -404,6 +407,47 @@ public class FundSeekerInputRequestResponse {
         this.proposedCost = proposedCost;
     }
 
+
+    public Date getCommercialOperationDate() {
+        return commercialOperationDate;
+    }
+
+    public void setCommercialOperationDate(Date commercialOperationDate) {
+        this.commercialOperationDate = commercialOperationDate;
+    }
+
+    public Integer getFactoryPremise() {
+        return factoryPremise;
+    }
+
+    public void setFactoryPremise(Integer factoryPremise) {
+        this.factoryPremise = factoryPremise;
+    }
+
+    public Integer getKnowHow() {
+        return knowHow;
+    }
+
+    public void setKnowHow(Integer knowHow) {
+        this.knowHow = knowHow;
+    }
+
+    public Integer getCompetition() {
+        return competition;
+    }
+
+    public void setCompetition(Integer competition) {
+        this.competition = competition;
+    }
+
+    public Double getIncrementalMargin() {
+        return incrementalMargin;
+    }
+
+    public void setIncrementalMargin(Double incrementalMargin) {
+        this.incrementalMargin = incrementalMargin;
+    }
+
     @Override
     public String toString() {
         return "FundSeekerInputRequestResponse{" +
@@ -444,38 +488,11 @@ public class FundSeekerInputRequestResponse {
                 ", stateId=" + stateId +
                 ", cityId=" + cityId +
                 ", proposedCost=" + proposedCost +
+                ", commercialOperationDate=" + commercialOperationDate +
+                ", factoryPremise=" + factoryPremise +
+                ", knowHow=" + knowHow +
+                ", competition=" + competition +
+                ", incrementalMargin=" + incrementalMargin +
                 '}';
-    }
-
-    public Date getCommercialOperationDate() {
-        return commercialOperationDate;
-    }
-
-    public void setCommercialOperationDate(Date commercialOperationDate) {
-        this.commercialOperationDate = commercialOperationDate;
-    }
-
-    public Integer getFactoryPremise() {
-        return factoryPremise;
-    }
-
-    public void setFactoryPremise(Integer factoryPremise) {
-        this.factoryPremise = factoryPremise;
-    }
-
-    public Integer getKnowHow() {
-        return knowHow;
-    }
-
-    public void setKnowHow(Integer knowHow) {
-        this.knowHow = knowHow;
-    }
-
-    public Integer getCompetition() {
-        return competition;
-    }
-
-    public void setCompetition(Integer competition) {
-        this.competition = competition;
     }
 }
