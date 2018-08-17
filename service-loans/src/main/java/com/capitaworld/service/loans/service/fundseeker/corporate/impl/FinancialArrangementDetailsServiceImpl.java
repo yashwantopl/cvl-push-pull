@@ -1,6 +1,7 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -123,10 +124,16 @@ public class FinancialArrangementDetailsServiceImpl implements FinancialArrangem
 	}
 
 	@Override
-	public Double getTotalOfEmiByApplicationId(Long applicationId) {
+	public FinancialArrangementsDetailRequest getTotalEmiAndSanctionAmountByApplicationId(Long applicationId) {
 		Double totalEmi = financialArrangementDetailsRepository.getTotalEmiByApplicationId(applicationId);
-		logger.info("getTotalOfEmiByApplicationId=====>" + totalEmi + " For Application Id=====>{}", applicationId);
-		return totalEmi;
+		logger.info("getTotalOfEmiByApplicationId=====>" + totalEmi + " For Application Id=====>{}", applicationId);		
+		List<String> loanTypes = Arrays.asList(new String[]{"cash credit","overdraft"});
+		Double existingLimits = financialArrangementDetailsRepository.getExistingLimits(applicationId, loanTypes);
+		logger.info("existingLimits=====>" + existingLimits + " For Application Id=====>{}", applicationId);
+		FinancialArrangementsDetailRequest arrangementsDetailRequest = new FinancialArrangementsDetailRequest();
+		arrangementsDetailRequest.setAmount(existingLimits);
+		arrangementsDetailRequest.setEmi(totalEmi);
+		return arrangementsDetailRequest;
 	}
 
 	@Override
