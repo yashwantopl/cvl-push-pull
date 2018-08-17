@@ -4480,7 +4480,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					
 					applicationRequest.setFundProvider(orgId!=null ? CommonUtils.getOrganizationName(orgId) : null);
 					
-                 // ==================Sending Mail to all Checker's & Maker's of that branch after FS recieves In-principle Approval==================	
+                 // ==================Sending Mail to all Checker's & Maker's & HO & BO of that branch after FS recieves In-principle Approval==================	
 					
 					try {
 						fpasyncComponent.sendEmailToAllMakersWhenFSRecievesInPrinciple(proposalresp, paymentRequest, userId, orgId);	
@@ -4498,6 +4498,16 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					catch(Exception e) {
 						
 						logger.info("Exception occured while Sending Mail to All Checkers");
+						e.printStackTrace();
+						
+					}
+					
+					try {
+						fpasyncComponent.sendEmailToHOWhenFSRecievesInPrinciple(proposalresp, paymentRequest, userId, orgId);	
+					}
+					catch(Exception e) {
+						
+						logger.info("Exception occured while Sending Mail to HO");
 						e.printStackTrace();
 						
 					}

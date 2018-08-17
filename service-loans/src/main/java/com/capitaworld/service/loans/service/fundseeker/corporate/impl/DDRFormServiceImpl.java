@@ -17,8 +17,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.capitaworld.service.dms.client.DMSClient;
+import com.capitaworld.service.dms.model.DocumentResponse;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.AssetsDetails;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.AssociatedConcernDetail;
@@ -180,6 +184,9 @@ public class DDRFormServiceImpl implements DDRFormService {
 
 	@Autowired
 	private DDRExistingBankerDetailsRepository ddrExistingBankerDetailsRepository;
+	
+	@Autowired
+	private DMSClient dmsClient;
 
 	@Override
 	public DDRRequest getMergeDDR(Long appId, Long userId) {
@@ -279,9 +286,8 @@ public class DDRFormServiceImpl implements DDRFormService {
 					// Existing - Application proposedProductDetailList and
 					// existingProductDetailList
 					List<ProposedProductDetailRequest> proProductList = dDRRequest.getProposedProductDetailList();
-					ProposedProductDetail proposedProductDetail = null;
 					for (ProposedProductDetailRequest proProduct : proProductList) {
-
+						ProposedProductDetail proposedProductDetail = null;
 						if (!CommonUtils.isObjectNullOrEmpty(proProduct.getId())) {
 							proposedProductDetail = proposedProductDetailsRepository
 									.findByIdAndIsActive(proProduct.getId(), true);
@@ -306,9 +312,9 @@ public class DDRFormServiceImpl implements DDRFormService {
 					if (!CommonUtils.isListNullOrEmpty(dDRRequest.getExistingProductDetailList())) {
 						List<ExistingProductDetailRequest> existingProductDetailList = dDRRequest
 								.getExistingProductDetailList();
-						ExistingProductDetail existingProductDetail = null;
+						
 						for (ExistingProductDetailRequest existingPro : existingProductDetailList) {
-
+							ExistingProductDetail existingProductDetail = null;
 							if (!CommonUtils.isObjectNullOrEmpty(existingPro.getId())) {
 								existingProductDetail = existingProductDetailsRepository
 										.findByIdAndIsActive(existingPro.getId(), true);
@@ -334,8 +340,9 @@ public class DDRFormServiceImpl implements DDRFormService {
 					// promoBackRespList
 					if (!CommonUtils.isListNullOrEmpty(dDRRequest.getPromoBackRespList())) {
 						List<PromotorBackgroundDetailRequest> promoBackRespList = dDRRequest.getPromoBackRespList();
-						PromotorBackgroundDetail promBack = null;
+						
 						for (PromotorBackgroundDetailRequest promoBackReq : promoBackRespList) {
+							PromotorBackgroundDetail promBack = null;
 							if (!CommonUtils.isObjectNullOrEmpty(promoBackReq.getId())) {
 								promBack = promotorBackgroundDetailsRepository.findByIdAndIsActive(promoBackReq.getId(),
 										true);
@@ -404,8 +411,9 @@ public class DDRFormServiceImpl implements DDRFormService {
 					// ownershipRespList
 					if (!CommonUtils.isListNullOrEmpty(dDRRequest.getOwnershipReqList())) {
 						List<OwnershipDetailRequest> ownershipReqList = dDRRequest.getOwnershipReqList();
-						OwnershipDetail ownership = null;
+						
 						for (OwnershipDetailRequest ownershipReq : ownershipReqList) {
+							OwnershipDetail ownership = null;
 							if (!CommonUtils.isObjectNullOrEmpty(ownershipReq.getId())) {
 								ownership = ownershipDetailsRepository.findByIdAndIsActive(ownershipReq.getId(), true);
 							}
@@ -430,8 +438,9 @@ public class DDRFormServiceImpl implements DDRFormService {
 					if (!CommonUtils.isListNullOrEmpty(dDRRequest.getAssociatedConcernDetailList())) {
 						List<AssociatedConcernDetailRequest> assConcernDetailList = dDRRequest
 								.getAssociatedConcernDetailList();
-						AssociatedConcernDetail assConcernDetail = null;
+						
 						for (AssociatedConcernDetailRequest assConcernDetailReq : assConcernDetailList) {
+							AssociatedConcernDetail assConcernDetail = null;
 							if (!CommonUtils.isObjectNullOrEmpty(assConcernDetailReq.getId())) {
 								assConcernDetail = associatedConcernDetailRepository
 										.findByIdAndIsActive(assConcernDetailReq.getId(), true);
@@ -468,8 +477,9 @@ public class DDRFormServiceImpl implements DDRFormService {
 					if (!CommonUtils.isListNullOrEmpty(dDRRequest.getSecurityCorporateDetailList())) {
 						List<SecurityCorporateDetailRequest> securityCorporateDetailList = dDRRequest
 								.getSecurityCorporateDetailList();
-						SecurityCorporateDetail securityCorporateDetail = null;
+						
 						for (SecurityCorporateDetailRequest securityCorDetailReq : securityCorporateDetailList) {
+							SecurityCorporateDetail securityCorporateDetail = null;
 							if (!CommonUtils.isObjectNullOrEmpty(securityCorDetailReq.getId())) {
 								securityCorporateDetail = securityCorporateDetailsRepository
 										.findByIdAndIsActive(securityCorDetailReq.getId(), true);
@@ -1556,20 +1566,15 @@ public class DDRFormServiceImpl implements DDRFormService {
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
-						if (setExistingData && !CommonUtils.isObjectNullOrEmpty(obj.getBackgroundId())) {// SET DIRECTOR
-																											// BACK
-																											// DETAILS
-																											// IN NEW
-																											// DDR
-																											// OBJECT
-																											// FOR MERGE
-																											// DDR
+						if (setExistingData && !CommonUtils.isObjectNullOrEmpty(obj.getBackgroundId())) {// SET DIRECTOR BACK DETAILS IN NEW DDR OBJECT FOR MERGE DDR
 							try {
 								DirectorBackgroundDetail dirBackDetails = directorBackgroundDetailsRepository
 										.findByIdAndIsActive(obj.getBackgroundId(), true);
 								if (!CommonUtils.isObjectNullOrEmpty(dirBackDetails)) {
 									DirectorBackgroundDetailRequest dirRes = new DirectorBackgroundDetailRequest();
 									BeanUtils.copyProperties(dirBackDetails, dirRes);
+									SimpleDateFormat sd = new SimpleDateFormat("dd-MM-yyyy");
+									dirRes.setDobString(sd.format(dirBackDetails.getDob()));
 									response.setDirectorBackReq(dirRes);
 								}
 							} catch (Exception e) {
@@ -1596,6 +1601,8 @@ public class DDRFormServiceImpl implements DDRFormService {
 					if (setExistingData) {
 						dirRes = new DirectorBackgroundDetailRequest();
 						BeanUtils.copyProperties(drDetails, dirRes);
+						SimpleDateFormat sd = new SimpleDateFormat("dd-MM-yyyy");
+						dirRes.setDobString(sd.format(dirRes.getDob()));
 						response.setDirectorBackReq(dirRes);
 					}
 					responseList.add(response);
@@ -3825,6 +3832,94 @@ public class DDRFormServiceImpl implements DDRFormService {
 		}
 
 		return 0L;
+	}
+	
+	
+	@Override
+	public boolean deleteDocument(DDRUploadRequest ddrUploadRequest) {
+		try {
+			JSONObject json = new JSONObject();
+			json.put("id", ddrUploadRequest.getDocId());
+			DocumentResponse docResponse = dmsClient.deleteProductDocument(json.toJSONString());
+			if(!CommonUtils.isObjectNullOrEmpty(docResponse) && docResponse.getStatus().equals(HttpStatus.OK.value())) {
+				
+				if(ddrUploadRequest.getTotalDocs() < 1) {
+					DDRFormDetails dDRFormDetails = ddrFormDetailsRepository.getByAppIdAndIsActive(ddrUploadRequest.getApplicationId());
+					
+					switch (ddrUploadRequest.getModelName()) {
+					case "fieldAuditReport":
+						dDRFormDetails.setFieldAuditReport("No");
+						break;
+					case "auditedFinancialsForLast3years":
+						dDRFormDetails.setAuditedFinancialsForLast3years("No");
+						break;
+					case "provisionalFinancialsForCurrentYear":
+						dDRFormDetails.setProvisionalFinancialsForCurrentYear("No");
+						break;
+					case "itrForLast3years":
+						dDRFormDetails.setItrForLast3years("No");	
+						break;
+					case "sanctionLetter":
+						dDRFormDetails.setSanctionLetter("No");
+						break;
+					case "bankStatementOfLast12months":
+						dDRFormDetails.setBankStatementOfLast12months("No");
+						break;
+					case "debtorsList":
+						dDRFormDetails.setDebtorsList("No");
+						break;
+					case "financialFigures":
+						dDRFormDetails.setFinancialFigures("No");
+						break;
+					case "moaOfTheCompany":
+						dDRFormDetails.setMoaOfTheCompany("No");
+						break;
+					case "panCardOfTheCompany":
+						dDRFormDetails.setPanCardOfTheCompany("No");
+						break;
+					case "resolutionAndForm32forAdditionOfDirector":
+						dDRFormDetails.setResolutionAndForm32forAdditionOfDirector("No");
+						break;
+					case "centralSalesTaxRegistrationOfCompany":
+						dDRFormDetails.setCentralSalesTaxRegistrationOfCompany("No");
+						break;
+					case "centralExciseRegistrationOfCompany":
+						dDRFormDetails.setCentralExciseRegistrationOfCompany("No");
+						break;
+					case "vatRegistrationOfCompany":
+						dDRFormDetails.setVatRegistrationOfCompany("No");
+						break;
+					case "letterOfIntentFromFundProviders":
+						dDRFormDetails.setLetterOfIntentFromFundProviders("No");
+						break;
+					case "panCardAndResidenceAddProofOfDirectors":
+						dDRFormDetails.setPanCardAndResidenceAddProofOfDirectors("No");
+						break;
+					case "caCertifiedNetworthStatement":
+						dDRFormDetails.setCaCertifiedNetworthStatement("No");
+						break;
+					case "irrOfAllDirectorsForLast2years":
+						dDRFormDetails.setIrrOfAllDirectorsForLast2years("No");
+						break;
+					case "listOfDirectors":
+						dDRFormDetails.setListOfDirectors("No");
+						break;
+					case "listOfShareholdersAndShareHoldingPatter":
+						dDRFormDetails.setListOfShareholdersAndShareHoldingPatter("No");
+						break;
+
+					default:
+						break;
+					}
+					ddrFormDetailsRepository.save(dDRFormDetails); 
+				}
+			}
+			return true;
+		} catch (Exception e) {
+			logger.info("Error WHile Delete Documents");
+			e.printStackTrace();
+			return false;
+		}
 	}
 
 	/*
