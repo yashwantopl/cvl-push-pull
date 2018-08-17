@@ -4638,12 +4638,19 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		IndustryResponse industryResponse = irrIndustryRequest.getIndustryResponse();
 		return !CommonUtils.isObjectNullOrEmpty(industryResponse) ? industryResponse.getBusinessTypeId() : null;			
 	}
+	
+	@Override
+	public Long getDDRStatusId(Long applicationId) {
+		LoanApplicationMaster applicationMaster = loanApplicationRepository.getById(applicationId);
+		return !CommonUtils.isObjectNullOrEmpty(applicationMaster) ? applicationMaster.getDdrStatusId() : null;
+		
+	}
 
 	@Override
 	public Boolean updateDDRStatus(Long applicationId, Long userId, Long clientId, Long statusId) throws Exception {
 		logger.info("start getPaymentStatus()");
 		try {
-			LoanApplicationMaster applicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId, userId);
+			LoanApplicationMaster applicationMaster = loanApplicationRepository.getById(applicationId);
 			if (applicationMaster == null) {
 				throw new Exception("LoanapplicationMaster object Must not be null while Updating DDR Status==>"
 						+ applicationMaster);
