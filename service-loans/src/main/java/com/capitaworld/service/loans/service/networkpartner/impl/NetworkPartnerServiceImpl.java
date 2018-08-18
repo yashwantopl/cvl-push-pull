@@ -25,6 +25,7 @@ import com.capitaworld.service.loans.model.FpNpMappingRequest;
 import com.capitaworld.service.loans.repository.fundprovider.FpNpMappingRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
 import com.capitaworld.service.loans.service.fundprovider.FpNpMappingService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.users.model.*;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
@@ -59,6 +60,8 @@ import com.capitaworld.service.loans.service.networkpartner.NetworkPartnerServic
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
+import com.capitaworld.service.mca.client.McaClient;
+import com.capitaworld.service.mca.model.McaResponse;
 import com.capitaworld.service.notification.client.NotificationClient;
 import com.capitaworld.service.notification.model.Notification;
 import com.capitaworld.service.notification.model.NotificationRequest;
@@ -116,6 +119,12 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 	
 	@Autowired
 	private DirectorBackgroundDetailsRepository directorBackgroundDetailsRepository;
+	
+	@Autowired
+	private LoanApplicationService loanApplicationService;
+	
+	@Autowired
+	private McaClient mcaClient;
 	
 	
 	private static String isPaymentBypass="cw.is_payment_bypass";
@@ -675,6 +684,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 	public List<NhbsApplicationsResponse> getListOfProposalsFP(NhbsApplicationRequest request,Long npOrgId,Long userId) {
 		logger.info("entry in getListOfProposalsFP()");
 		Long branchId = null;
+		String mcaCompanyId = null;
 		UsersRequest usersRequestForBranch = new UsersRequest();
 		usersRequestForBranch.setId(userId);
 		try {
@@ -724,6 +734,19 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 						FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<Object,Object>)userResponseForName.getData(),
 								FundProviderDetailsRequest.class);
 						nhbsApplicationsResponse.setCheckerName(fundProviderDetailsRequest.getFirstName() + " " + (fundProviderDetailsRequest.getLastName() == null ? "": fundProviderDetailsRequest.getLastName()));
+					
+						mcaCompanyId = loanApplicationService.getMcaCompanyId(applicationId.longValue(), userId);
+						if(mcaCompanyId != null) {
+							McaResponse mcaResponse = mcaClient.mcaStatusCheck(applicationId.toString(), mcaCompanyId.toString());
+							if(mcaResponse.getData().equals(true)) {
+								nhbsApplicationsResponse.setMcaStatus(CommonUtils.COMPLETED);
+							}else {
+								nhbsApplicationsResponse.setMcaStatus(CommonUtils.IN_PROGRESS);
+							}
+						}else {
+							nhbsApplicationsResponse.setMcaStatus(CommonUtils.NA);
+						}
+						
 					} catch (Exception e) {
 						logger.error("error while fetching FP details");
 						e.printStackTrace();

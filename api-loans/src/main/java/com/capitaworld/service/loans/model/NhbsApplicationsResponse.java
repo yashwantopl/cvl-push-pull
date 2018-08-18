@@ -47,6 +47,9 @@ public class NhbsApplicationsResponse implements Serializable{
 	
 	private int ddrStatusId;
 	
+	private String mcaStatus;
+	
+	
 	public int getDdrStatusId() {
 		return ddrStatusId;
 	}
@@ -251,4 +254,14 @@ public class NhbsApplicationsResponse implements Serializable{
 	public void setApprovalDate(Date approvalDate) {
 		this.approvalDate = approvalDate;
 	}
+
+	public String getMcaStatus() {
+		return mcaStatus;
+	}
+
+	public void setMcaStatus(String mcaStatus) {
+		this.mcaStatus = mcaStatus;
+	}
+	
+	
 }
