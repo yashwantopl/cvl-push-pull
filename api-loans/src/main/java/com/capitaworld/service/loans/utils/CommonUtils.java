@@ -57,6 +57,10 @@ public class CommonUtils {
 	
 	public static final  DateFormat formatter = new SimpleDateFormat("dd-mm-yyyy");
 	
+	public static final String IN_PROGRESS = "In Progress";
+	public static final String COMPLETED = "Completed";
+	public static final String NA = "NA";
+	
 	public interface UsersRoles {
 		public static final Long MAKER = 1l;
 		public static final Long CHECKER = 2l;
