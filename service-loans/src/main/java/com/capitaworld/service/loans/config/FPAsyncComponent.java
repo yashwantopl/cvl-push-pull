@@ -402,7 +402,7 @@ public class FPAsyncComponent {
 										if(!CommonUtils.isObjectNullOrEmpty(userObj.getEmail())) {
 										//	System.out.println("Checker ID:---"+userObj.getEmail());
 											to = userObj.getEmail();	
-											mailParameters.put("ho_name", userObj.getUsername()!=null?userObj.getUsername():"");
+											mailParameters.put("bo_name", userObj.getUsername()!=null?userObj.getUsername():"");
 											
 											createNotificationForEmail(to, userId.toString(),
 													mailParameters, NotificationAlias.EMAIL_ALL_BO_INPRINCIPLE_TO_FS, subject);
