@@ -141,7 +141,7 @@ public class FPAsyncComponent {
 				
 				logger.info("Mail to Makers after In-principle to FS is disabled==========>");
 			}
-		};
+		}
 		
 		//==========================================================================================================
 		

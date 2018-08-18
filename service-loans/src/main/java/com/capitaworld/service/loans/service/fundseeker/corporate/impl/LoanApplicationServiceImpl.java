@@ -4483,6 +4483,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
                  // ==================Sending Mail to all Checker's & Maker's & HO & BO of that branch after FS recieves In-principle Approval==================	
 					
 					try {
+						logger.info("Inside sending mail to Maker after In-principle Approval");
 						fpasyncComponent.sendEmailToAllMakersWhenFSRecievesInPrinciple(proposalresp, paymentRequest, userId, orgId);	
 					}
 					catch(Exception e) {
@@ -4493,6 +4494,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					}
 					
 					try {
+						logger.info("Inside sending mail to Checker after In-principle Approval");
 						fpasyncComponent.sendEmailToAllCheckersWhenFSRecievesInPrinciple(proposalresp, paymentRequest, userId, orgId);	
 					}
 					catch(Exception e) {
@@ -4503,6 +4505,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					}
 					
 					try {
+						logger.info("Inside sending mail to HO after In-principle Approval");
 						fpasyncComponent.sendEmailToHOWhenFSRecievesInPrinciple(proposalresp, paymentRequest, userId, orgId);	
 					}
 					catch(Exception e) {
@@ -4513,6 +4516,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					}
 					
 					try {
+						logger.info("Inside sending mail to BO after In-principle Approval");
 						fpasyncComponent.sendEmailToAllBOWhenFSRecievesInPrinciple(proposalresp, paymentRequest, userId, orgId);	
 					}
 					catch(Exception e) {
