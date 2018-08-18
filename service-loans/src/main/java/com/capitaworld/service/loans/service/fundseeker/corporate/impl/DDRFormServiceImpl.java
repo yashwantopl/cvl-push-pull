@@ -408,6 +408,9 @@ public class DDRFormServiceImpl implements DDRFormService {
 								dirBack.setTotalExperience(directorBackReq.getTotalExperience());
 								dirBack.setNetworth(directorBackReq.getNetworth());
 								dirBack.setAppointmentDate(directorBackReq.getAppointmentDate());
+								dirBack.setPremiseNumber(directorBackReq.getPremiseNumber());
+								dirBack.setStreetName(directorBackReq.getStreetName());
+								dirBack.setLandmark(directorBackReq.getLandmark());
 								directorBackgroundDetailsRepository.save(dirBack);
 							}
 						}
