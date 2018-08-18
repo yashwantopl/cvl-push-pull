@@ -51,7 +51,7 @@ public class FPAsyncComponent {
 	
 	// ==================Sending Mail to all Makers after FS receives In-principle Approval==================
 	
-		//@Async
+		@Async
 		public void sendEmailToAllMakersWhenFSRecievesInPrinciple(Map<String,Object> proposalresp, PaymentRequest paymentRequest, Long userId, Long orgId) {
 			if(mailToMakerChecker) {
 				
