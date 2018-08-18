@@ -113,10 +113,24 @@ public class FPAsyncComponent {
 						for (int i = 0; i < usersRespList.size(); i++) {
 							UsersRequest userObj = MultipleJSONObjectHelper.getObjectFromMap(usersRespList.get(i),
 									UsersRequest.class);
+							
+							String name = null;
+							
+							try {
+								logger.error("Into getting FP Name======>"+userObj);
+								UserResponse userResponseForName = userClient.getFPDetails(userObj);
+								FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<Object,Object>)userResponseForName.getData(),
+										FundProviderDetailsRequest.class);
+								name = fundProviderDetailsRequest.getFirstName() + " " + (fundProviderDetailsRequest.getLastName() == null ? "": fundProviderDetailsRequest.getLastName());
+							} catch (Exception e) {
+								logger.error("error while fetching FP name");
+								e.printStackTrace();
+							}
+							
 							if(!CommonUtils.isObjectNullOrEmpty(userObj.getEmail())) {
 								//System.out.println("Maker ID:---"+userObj.getEmail());
 								to = userObj.getEmail();	
-								mailParameters.put("maker_name", userObj.getUsername()!=null?userObj.getUsername():"");
+								mailParameters.put("maker_name", name!=null?name:"");
 								
 								createNotificationForEmail(to, userId.toString(),
 										mailParameters, NotificationAlias.EMAIL_ALL_MAKERS_AFTER_INPRINCIPLE_TO_FS, subject);
@@ -209,10 +223,23 @@ public class FPAsyncComponent {
 							for (int i = 0; i < usersRespList.size(); i++) {
 									UsersRequest userObj = MultipleJSONObjectHelper.getObjectFromMap(usersRespList.get(i),
 											UsersRequest.class);
+									
+									String name = null;
+									
+									try {
+										logger.error("Into getting FP Name======>"+userObj);
+										UserResponse userResponseForName = userClient.getFPDetails(userObj);
+										FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<Object,Object>)userResponseForName.getData(),
+												FundProviderDetailsRequest.class);
+										name = fundProviderDetailsRequest.getFirstName() + " " + (fundProviderDetailsRequest.getLastName() == null ? "": fundProviderDetailsRequest.getLastName());
+									} catch (Exception e) {
+										logger.error("error while fetching FP name");
+										e.printStackTrace();
+									}
 									if(!CommonUtils.isObjectNullOrEmpty(userObj.getEmail())) {
 									//	System.out.println("Checker ID:---"+userObj.getEmail());
 										to = userObj.getEmail();	
-										mailParameters.put("checker_name", userObj.getUsername()!=null?userObj.getUsername():"");
+										mailParameters.put("checker_name", name!=null?name:"");
 										
 										createNotificationForEmail(to, userId.toString(),
 												mailParameters, NotificationAlias.EMAIL_ALL_CHECKERS_AFTER_INPRINCIPLE_TO_FS, subject);
@@ -304,10 +331,24 @@ public class FPAsyncComponent {
 								for (int i = 0; i < usersRespList.size(); i++) {
 										UsersRequest userObj = MultipleJSONObjectHelper.getObjectFromMap(usersRespList.get(i),
 												UsersRequest.class);
+										
+										String name = null;
+										
+										try {
+											logger.error("Into getting FP Name======>"+userObj);
+											UserResponse userResponseForName = userClient.getFPDetails(userObj);
+											FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<Object,Object>)userResponseForName.getData(),
+													FundProviderDetailsRequest.class);
+											name = fundProviderDetailsRequest.getFirstName() + " " + (fundProviderDetailsRequest.getLastName() == null ? "": fundProviderDetailsRequest.getLastName());
+										} catch (Exception e) {
+											logger.error("error while fetching FP name");
+											e.printStackTrace();
+										}
+										
 										if(!CommonUtils.isObjectNullOrEmpty(userObj.getEmail())) {
 										//	System.out.println("Checker ID:---"+userObj.getEmail());
 											to = userObj.getEmail();	
-											mailParameters.put("ho_name", userObj.getUsername()!=null?userObj.getUsername():"");
+											mailParameters.put("ho_name", name!=null?name:"");
 											
 											createNotificationForEmail(to, userId.toString(),
 													mailParameters, NotificationAlias.EMAIL_HO_INPRINCIPLE_TO_FS, subject);
@@ -399,10 +440,24 @@ public class FPAsyncComponent {
 								for (int i = 0; i < usersRespList.size(); i++) {
 										UsersRequest userObj = MultipleJSONObjectHelper.getObjectFromMap(usersRespList.get(i),
 												UsersRequest.class);
+										
+                                        String name = null;
+										
+										try {
+											logger.error("Into getting FP Name======>"+userObj);
+											UserResponse userResponseForName = userClient.getFPDetails(userObj);
+											FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<Object,Object>)userResponseForName.getData(),
+													FundProviderDetailsRequest.class);
+											name = fundProviderDetailsRequest.getFirstName() + " " + (fundProviderDetailsRequest.getLastName() == null ? "": fundProviderDetailsRequest.getLastName());
+										} catch (Exception e) {
+											logger.error("error while fetching FP name");
+											e.printStackTrace();
+										}
+										
 										if(!CommonUtils.isObjectNullOrEmpty(userObj.getEmail())) {
 										//	System.out.println("Checker ID:---"+userObj.getEmail());
 											to = userObj.getEmail();	
-											mailParameters.put("bo_name", userObj.getUsername()!=null?userObj.getUsername():"");
+											mailParameters.put("bo_name", name!=null?name:"");
 											
 											createNotificationForEmail(to, userId.toString(),
 													mailParameters, NotificationAlias.EMAIL_ALL_BO_INPRINCIPLE_TO_FS, subject);
