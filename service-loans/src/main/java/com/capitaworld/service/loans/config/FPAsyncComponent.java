@@ -151,7 +151,6 @@ public class FPAsyncComponent {
 							if(!CommonUtils.isObjectNullOrEmpty(userObj.getId())) {
 								//System.out.println("Maker ID:---"+userObj.getEmail());
 								Map<String, Object> sysParameters = new HashMap<String, Object>();
-								to = userObj.getMobile();	
 								sysParameters.put("fs_name", paymentRequest.getNameOfEntity()!=null?paymentRequest.getNameOfEntity():"NA");
 								
 								sendSYSNotification(userId.toString(),
@@ -284,7 +283,6 @@ public class FPAsyncComponent {
 									if(!CommonUtils.isObjectNullOrEmpty(userObj.getId())) {
 										//System.out.println("Maker ID:---"+userObj.getEmail());
 										Map<String, Object> sysParameters = new HashMap<String, Object>();
-										to = userObj.getMobile();	
 										sysParameters.put("fs_name", paymentRequest.getNameOfEntity()!=null?paymentRequest.getNameOfEntity():"NA");
 										
 										sendSYSNotification(userId.toString(),
@@ -415,7 +413,6 @@ public class FPAsyncComponent {
 										if(!CommonUtils.isObjectNullOrEmpty(userObj.getId())) {
 											//System.out.println("Maker ID:---"+userObj.getEmail());
 											Map<String, Object> sysParameters = new HashMap<String, Object>();
-											to = userObj.getMobile();	
 											sysParameters.put("fs_name", paymentRequest.getNameOfEntity()!=null?paymentRequest.getNameOfEntity():"NA");
 											sysParameters.put("product_type", proposalresp.get("loan_type")!=null?proposalresp.get("loan_type").toString():"NA");
 																	
@@ -547,7 +544,6 @@ public class FPAsyncComponent {
 										if(!CommonUtils.isObjectNullOrEmpty(userObj.getId())) {
 											//System.out.println("Maker ID:---"+userObj.getEmail());
 											Map<String, Object> sysParameters = new HashMap<String, Object>();
-											to = userObj.getMobile();	
 											sysParameters.put("fs_name", paymentRequest.getNameOfEntity()!=null?paymentRequest.getNameOfEntity():"NA");
 											sysParameters.put("product_type", proposalresp.get("loan_type")!=null?proposalresp.get("loan_type").toString():"NA");
 																	
