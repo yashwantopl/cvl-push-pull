@@ -57,6 +57,10 @@ public class CommonUtils {
 	
 	public static final  DateFormat formatter = new SimpleDateFormat("dd-mm-yyyy");
 	
+	public static final String IN_PROGRESS = "In Progress";
+	public static final String COMPLETED = "Completed";
+	public static final String NA = "NA";
+	
 	public interface UsersRoles {
 		public static final Long MAKER = 1l;
 		public static final Long CHECKER = 2l;
@@ -64,6 +68,11 @@ public class CommonUtils {
 		public static final Long ADMIN_HO = 4l;
 		public static final Long HO = 5l;
 		public static final Long BO = 6l;
+		public static final Long DEFAULT_FS = 7l;
+		public static final Long FP_MAKER = 8l;
+		public static final Long FP_CHECKER = 9l;
+		public static final Long ADMIN_MAKER = 10l;
+		public static final Long ADMIN_CHECKER = 11l;
 	}
 
 	public interface DenominationInAmount {

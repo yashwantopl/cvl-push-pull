@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.capitaworld.service.dms.client.DMSClient;
 import com.capitaworld.service.dms.model.DocumentResponse;
+import com.capitaworld.service.loans.domain.PincodeData;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.AssetsDetails;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.AssociatedConcernDetail;
@@ -51,6 +52,7 @@ import com.capitaworld.service.loans.model.PromotorBackgroundDetailResponse;
 import com.capitaworld.service.loans.model.ProposedProductDetailRequest;
 import com.capitaworld.service.loans.model.SecurityCorporateDetailRequest;
 import com.capitaworld.service.loans.model.common.DocumentUploadFlagRequest;
+import com.capitaworld.service.loans.repository.PincodeDataRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.AssetsDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.AssociatedConcernDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.BalanceSheetDetailRepository;
@@ -188,6 +190,9 @@ public class DDRFormServiceImpl implements DDRFormService {
 	@Autowired
 	private DMSClient dmsClient;
 
+	@Autowired
+	private PincodeDataRepository pincodeDataRepository;
+	
 	@Override
 	public DDRRequest getMergeDDR(Long appId, Long userId) {
 
@@ -256,7 +261,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 			dDRFormDetails = ddrFormDetailsRepository.save(dDRFormDetails);
 
 			// SAVE AUTO FILEDS DATA
-			if (CommonUtils.UsersRoles.MAKER.equals(dDRRequest.getRoleId())) {
+			if (CommonUtils.UsersRoles.MAKER.equals(dDRRequest.getRoleId()) || CommonUtils.UsersRoles.FP_MAKER.equals(dDRRequest.getRoleId())) {
 
 				CorporateApplicantDetail applicantDetail = corporateApplicantDetailRepository
 						.getByApplicationIdAndIsAtive(dDRRequest.getApplicationId());
@@ -403,6 +408,9 @@ public class DDRFormServiceImpl implements DDRFormService {
 								dirBack.setTotalExperience(directorBackReq.getTotalExperience());
 								dirBack.setNetworth(directorBackReq.getNetworth());
 								dirBack.setAppointmentDate(directorBackReq.getAppointmentDate());
+								dirBack.setPremiseNumber(directorBackReq.getPremiseNumber());
+								dirBack.setStreetName(directorBackReq.getStreetName());
+								dirBack.setLandmark(directorBackReq.getLandmark());
 								directorBackgroundDetailsRepository.save(dirBack);
 							}
 						}
@@ -506,6 +514,8 @@ public class DDRFormServiceImpl implements DDRFormService {
 
 				}
 
+			} else {
+				logger.info("ROLE ID NOT MATCHES --------------------------------------------------------->" + dDRRequest.getRoleId());
 			}
 
 			// SAVE ALL LIST DATA
@@ -583,6 +593,15 @@ public class DDRFormServiceImpl implements DDRFormService {
 		address.setStateId(applicantDetail.getRegisteredStateId());
 		address.setCityId(applicantDetail.getRegisteredCityId());
 		address.setPincode(applicantDetail.getRegisteredPincode());
+		if(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredDistMappingId())) {
+			PincodeData pincodeData = pincodeDataRepository.findOne(applicantDetail.getRegisteredDistMappingId());
+			if(!CommonUtils.isObjectNullOrEmpty(pincodeData)) {
+				address.setVillage(pincodeData.getOfficeName());
+				address.setDistrict(pincodeData.getDistrictName());
+				address.setSubDistrict(pincodeData.getTaluka());
+				address.setDistrictMappingId(applicantDetail.getRegisteredDistMappingId());
+			}
+		}
 		response.setRegOfficeAddress(address);
 
 		// GET ADMINISRATIVE (Corporate Office) ADDRESS :- LINENO:9
@@ -594,6 +613,15 @@ public class DDRFormServiceImpl implements DDRFormService {
 		address.setStateId(applicantDetail.getAdministrativeStateId());
 		address.setCityId(applicantDetail.getAdministrativeCityId());
 		address.setPincode(applicantDetail.getAdministrativePincode());
+		if(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getAdministrativeDistMappingId())) {
+			PincodeData pincodeData = pincodeDataRepository.findOne(applicantDetail.getAdministrativeDistMappingId());
+			if(!CommonUtils.isObjectNullOrEmpty(pincodeData)) {
+				address.setVillage(pincodeData.getOfficeName());
+				address.setDistrict(pincodeData.getDistrictName());
+				address.setSubDistrict(pincodeData.getTaluka());
+				address.setDistrictMappingId(applicantDetail.getAdministrativeDistMappingId());
+			}
+		}
 		response.setCorpOfficeAddress(address);
 
 		// GET RERGISTERED EMAIL ID :- LINENO:11
@@ -1575,6 +1603,14 @@ public class DDRFormServiceImpl implements DDRFormService {
 									BeanUtils.copyProperties(dirBackDetails, dirRes);
 									SimpleDateFormat sd = new SimpleDateFormat("dd-MM-yyyy");
 									dirRes.setDobString(sd.format(dirBackDetails.getDob()));
+									if(!CommonUtils.isObjectNullOrEmpty(dirBackDetails.getDistrictMappingId())) {
+										PincodeData pincodeData = pincodeDataRepository.findOne(dirBackDetails.getDistrictMappingId());
+										if(!CommonUtils.isObjectNullOrEmpty(pincodeData)) {
+											dirRes.setVillage(pincodeData.getOfficeName());
+											dirRes.setDistrict(pincodeData.getDistrictName());
+											dirRes.setSubDistrict(pincodeData.getTaluka());
+										}
+									}
 									response.setDirectorBackReq(dirRes);
 								}
 							} catch (Exception e) {
@@ -1603,6 +1639,14 @@ public class DDRFormServiceImpl implements DDRFormService {
 						BeanUtils.copyProperties(drDetails, dirRes);
 						SimpleDateFormat sd = new SimpleDateFormat("dd-MM-yyyy");
 						dirRes.setDobString(sd.format(dirRes.getDob()));
+						if(!CommonUtils.isObjectNullOrEmpty(drDetails.getDistrictMappingId())) {
+							PincodeData pincodeData = pincodeDataRepository.findOne(drDetails.getDistrictMappingId());
+							if(!CommonUtils.isObjectNullOrEmpty(pincodeData)) {
+								dirRes.setVillage(pincodeData.getOfficeName());
+								dirRes.setDistrict(pincodeData.getDistrictName());
+								dirRes.setSubDistrict(pincodeData.getTaluka());
+							}
+						}
 						response.setDirectorBackReq(dirRes);
 					}
 					responseList.add(response);

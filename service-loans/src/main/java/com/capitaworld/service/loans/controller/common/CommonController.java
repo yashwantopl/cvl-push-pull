@@ -251,6 +251,13 @@ public class CommonController {
 				if (!CommonUtils.isObjectNullOrEmpty(response.getId())) {
 					obj.put("campaignCode", applicationService.getCampaignCodeByApplicationId(response.getId()));
 					obj.put("isProfileAndPrimaryLocked", applicationService.isPrimaryLocked(response.getId(), userId));
+					
+					
+					//SET DDR STATUS ID 
+					if (userType == CommonUtils.UserType.FUND_SEEKER) {
+						obj.put("ddrStatusId", applicationService.getDDRStatusId(response.getId()));	
+					}
+					
 				}
 			} catch (Exception e) {
 				e.printStackTrace();

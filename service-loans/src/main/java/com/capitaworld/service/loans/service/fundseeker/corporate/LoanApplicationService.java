@@ -145,6 +145,8 @@ public interface LoanApplicationService {
 	
 	public GatewayRequest getPaymentStatus(PaymentRequest paymentRequest, Long userId, Long ClientId) throws Exception;
 	
+	public Long getDDRStatusId(Long applicationId);
+	
 	public Boolean updateDDRStatus(Long applicationId, Long userId , Long clientId, Long statusId) throws Exception;
 	
 	public LoanApplicationRequest getFromClient(Long id) throws Exception;

@@ -12,7 +12,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
+import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.model.PaymentRequest;
+import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
+import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.notification.client.NotificationClient;
@@ -38,6 +41,9 @@ public class FPAsyncComponent {
 	@Autowired
 	private UsersClient userClient;
 	
+	@Autowired
+	private CorporateApplicantService corporateapplicantService;
+	
 	private static final String EMAIL_ADDRESS_FROM = "no-reply@capitaworld.com";
 	
 	@Value("${capitaworld.sidbi.mail.to.maker.checker}")
@@ -60,9 +66,38 @@ public class FPAsyncComponent {
 					mailParameters.put("emi_amount", proposalresp.get("emi_amount")!=null?Double.valueOf(proposalresp.get("emi_amount").toString() ):" ");
 					mailParameters.put("interest_rate", proposalresp.get("rate_interest")!=null?Double.valueOf(proposalresp.get("rate_interest").toString() ):" ");
 					mailParameters.put("application_id", paymentRequest.getApplicationId());
+				
+					UserResponse response = null;
 					
-					mailParameters.put("mobile_no", " ");
-					mailParameters.put("address", " ");
+					try {
+						response = userClient.getEmailMobile(userId);
+					}
+					catch(Exception e) {
+						logger.info("Something went wrong while calling Users client===>{}");
+						e.printStackTrace();
+					}
+					
+					if(!CommonUtils.isObjectNullOrEmpty(response)) {
+						UsersRequest signUpUser = MultipleJSONObjectHelper
+								.getObjectFromMap((Map<String, Object>) response.getData(), UsersRequest.class);
+
+						String mobile = signUpUser.getMobile();
+						System.out.println("Mobile no:-"+mobile);
+						mailParameters.put("mobile_no", mobile!=null?mobile:" ");
+						
+					}
+					
+					CorporateApplicantRequest applicantRequest = corporateapplicantService.getCorporateApplicant(paymentRequest.getApplicationId());
+					String address = null;
+					if(!CommonUtils.isObjectNullOrEmpty(applicantRequest) 
+							&& !CommonUtils.isObjectNullOrEmpty(applicantRequest.getFirstAddress())){
+						address = applicantRequest.getFirstAddress().getPremiseNumber()!=null?applicantRequest.getFirstAddress().getPremiseNumber():""	
+	                              +" "+applicantRequest.getFirstAddress().getStreetName()!=null?applicantRequest.getFirstAddress().getStreetName():""
+	                              +" "+applicantRequest.getFirstAddress().getLandMark()!=null?applicantRequest.getFirstAddress().getLandMark():"";  
+					
+					}
+					System.out.println("Address:-"+address);
+					mailParameters.put("address", address);
 					
 					
 					Long branchId = null;
@@ -78,10 +113,24 @@ public class FPAsyncComponent {
 						for (int i = 0; i < usersRespList.size(); i++) {
 							UsersRequest userObj = MultipleJSONObjectHelper.getObjectFromMap(usersRespList.get(i),
 									UsersRequest.class);
+							
+							String name = null;
+							
+							try {
+								logger.error("Into getting FP Name======>"+userObj);
+								UserResponse userResponseForName = userClient.getFPDetails(userObj);
+								FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<Object,Object>)userResponseForName.getData(),
+										FundProviderDetailsRequest.class);
+								name = fundProviderDetailsRequest.getFirstName() + " " + (fundProviderDetailsRequest.getLastName() == null ? "": fundProviderDetailsRequest.getLastName());
+							} catch (Exception e) {
+								logger.error("error while fetching FP name");
+								e.printStackTrace();
+							}
+							
 							if(!CommonUtils.isObjectNullOrEmpty(userObj.getEmail())) {
 								//System.out.println("Maker ID:---"+userObj.getEmail());
 								to = userObj.getEmail();	
-								mailParameters.put("maker_name", userObj.getUsername()!=null?userObj.getUsername():"");
+								mailParameters.put("maker_name", name!=null?name:"");
 								
 								createNotificationForEmail(to, userId.toString(),
 										mailParameters, NotificationAlias.EMAIL_ALL_MAKERS_AFTER_INPRINCIPLE_TO_FS, subject);
@@ -106,7 +155,7 @@ public class FPAsyncComponent {
 				
 				logger.info("Mail to Makers after In-principle to FS is disabled==========>");
 			}
-		};
+		}
 		
 		//==========================================================================================================
 		
@@ -129,8 +178,37 @@ public class FPAsyncComponent {
 						mailParameters.put("interest_rate", proposalresp.get("rate_interest")!=null?Double.valueOf(proposalresp.get("rate_interest").toString() ):" ");
 						mailParameters.put("application_id", paymentRequest.getApplicationId());
 						
-						mailParameters.put("mobile_no", " ");
-						mailParameters.put("address", " ");
+						UserResponse response = null;
+						
+						try {
+							response = userClient.getEmailMobile(userId);
+						}
+						catch(Exception e) {
+							logger.info("Something went wrong while calling Users client===>{}");
+							e.printStackTrace();
+						}
+						
+						if(!CommonUtils.isObjectNullOrEmpty(response)) {
+							UsersRequest signUpUser = MultipleJSONObjectHelper
+									.getObjectFromMap((Map<String, Object>) response.getData(), UsersRequest.class);
+
+							String mobile = signUpUser.getMobile();
+							System.out.println("Mobile no:-"+mobile);
+							mailParameters.put("mobile_no", mobile!=null?mobile:" ");
+							
+						}
+						
+						CorporateApplicantRequest applicantRequest = corporateapplicantService.getCorporateApplicant(paymentRequest.getApplicationId());
+						String address = null;
+						if(!CommonUtils.isObjectNullOrEmpty(applicantRequest) 
+								&& !CommonUtils.isObjectNullOrEmpty(applicantRequest.getFirstAddress())){
+							address = applicantRequest.getFirstAddress().getPremiseNumber()!=null?applicantRequest.getFirstAddress().getPremiseNumber():""	
+		                              +" "+applicantRequest.getFirstAddress().getStreetName()!=null?applicantRequest.getFirstAddress().getStreetName():""
+		                              +" "+applicantRequest.getFirstAddress().getLandMark()!=null?applicantRequest.getFirstAddress().getLandMark():"";  
+						
+						}
+						System.out.println("Address:-"+address);
+						mailParameters.put("address", address);
 						
 						
 						Long branchId = null;
@@ -145,10 +223,23 @@ public class FPAsyncComponent {
 							for (int i = 0; i < usersRespList.size(); i++) {
 									UsersRequest userObj = MultipleJSONObjectHelper.getObjectFromMap(usersRespList.get(i),
 											UsersRequest.class);
+									
+									String name = null;
+									
+									try {
+										logger.error("Into getting FP Name======>"+userObj);
+										UserResponse userResponseForName = userClient.getFPDetails(userObj);
+										FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<Object,Object>)userResponseForName.getData(),
+												FundProviderDetailsRequest.class);
+										name = fundProviderDetailsRequest.getFirstName() + " " + (fundProviderDetailsRequest.getLastName() == null ? "": fundProviderDetailsRequest.getLastName());
+									} catch (Exception e) {
+										logger.error("error while fetching FP name");
+										e.printStackTrace();
+									}
 									if(!CommonUtils.isObjectNullOrEmpty(userObj.getEmail())) {
 									//	System.out.println("Checker ID:---"+userObj.getEmail());
 										to = userObj.getEmail();	
-										mailParameters.put("checker_name", userObj.getUsername()!=null?userObj.getUsername():"");
+										mailParameters.put("checker_name", name!=null?name:"");
 										
 										createNotificationForEmail(to, userId.toString(),
 												mailParameters, NotificationAlias.EMAIL_ALL_CHECKERS_AFTER_INPRINCIPLE_TO_FS, subject);
@@ -195,8 +286,37 @@ public class FPAsyncComponent {
 							mailParameters.put("interest_rate", proposalresp.get("rate_interest")!=null?Double.valueOf(proposalresp.get("rate_interest").toString() ):" ");
 							mailParameters.put("application_id", paymentRequest.getApplicationId());
 							
-							mailParameters.put("mobile_no", " ");
-							mailParameters.put("address", " ");
+							UserResponse response = null;
+							
+							try {
+								response = userClient.getEmailMobile(userId);
+							}
+							catch(Exception e) {
+								logger.info("Something went wrong while calling Users client===>{}");
+								e.printStackTrace();
+							}
+							
+							if(!CommonUtils.isObjectNullOrEmpty(response)) {
+								UsersRequest signUpUser = MultipleJSONObjectHelper
+										.getObjectFromMap((Map<String, Object>) response.getData(), UsersRequest.class);
+
+								String mobile = signUpUser.getMobile();
+								System.out.println("Mobile no:-"+mobile);
+								mailParameters.put("mobile_no", mobile!=null?mobile:" ");
+								
+							}
+							
+							CorporateApplicantRequest applicantRequest = corporateapplicantService.getCorporateApplicant(paymentRequest.getApplicationId());
+							String address = null;
+							if(!CommonUtils.isObjectNullOrEmpty(applicantRequest) 
+									&& !CommonUtils.isObjectNullOrEmpty(applicantRequest.getFirstAddress())){
+								address = applicantRequest.getFirstAddress().getPremiseNumber()!=null?applicantRequest.getFirstAddress().getPremiseNumber():""	
+			                              +" "+applicantRequest.getFirstAddress().getStreetName()!=null?applicantRequest.getFirstAddress().getStreetName():""
+			                              +" "+applicantRequest.getFirstAddress().getLandMark()!=null?applicantRequest.getFirstAddress().getLandMark():"";  
+							
+							}
+							System.out.println("Address:-"+address);
+							mailParameters.put("address", address);
 							
 							
 							Long branchId = null;
@@ -211,10 +331,24 @@ public class FPAsyncComponent {
 								for (int i = 0; i < usersRespList.size(); i++) {
 										UsersRequest userObj = MultipleJSONObjectHelper.getObjectFromMap(usersRespList.get(i),
 												UsersRequest.class);
+										
+										String name = null;
+										
+										try {
+											logger.error("Into getting FP Name======>"+userObj);
+											UserResponse userResponseForName = userClient.getFPDetails(userObj);
+											FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<Object,Object>)userResponseForName.getData(),
+													FundProviderDetailsRequest.class);
+											name = fundProviderDetailsRequest.getFirstName() + " " + (fundProviderDetailsRequest.getLastName() == null ? "": fundProviderDetailsRequest.getLastName());
+										} catch (Exception e) {
+											logger.error("error while fetching FP name");
+											e.printStackTrace();
+										}
+										
 										if(!CommonUtils.isObjectNullOrEmpty(userObj.getEmail())) {
 										//	System.out.println("Checker ID:---"+userObj.getEmail());
 											to = userObj.getEmail();	
-											mailParameters.put("ho_name", userObj.getUsername()!=null?userObj.getUsername():"");
+											mailParameters.put("ho_name", name!=null?name:"");
 											
 											createNotificationForEmail(to, userId.toString(),
 													mailParameters, NotificationAlias.EMAIL_HO_INPRINCIPLE_TO_FS, subject);
@@ -243,7 +377,115 @@ public class FPAsyncComponent {
 				
 				//==========================================================================================================
 				
-	
+				// ==================Sending Mail to BO after FS receives In-principle Approval==================
+				
+				@Async
+				public void sendEmailToAllBOWhenFSRecievesInPrinciple(Map<String,Object> proposalresp, PaymentRequest paymentRequest, Long userId, Long orgId) {
+					if(mailToMakerChecker) {
+						
+						try {
+							
+							logger.info("Into sending Mail to all BO after FS gets In-Principle Approval===>{}");
+							String subject = "Intimation : New Proposal -  Application ID "+paymentRequest.getApplicationId();
+							Map<String, Object> mailParameters = new HashMap<String, Object>();
+							mailParameters.put("fs_name", paymentRequest.getNameOfEntity()!=null?paymentRequest.getNameOfEntity():" ");
+							mailParameters.put("product_type", proposalresp.get("loan_type")!=null?proposalresp.get("loan_type").toString():" ");
+							mailParameters.put("loan_amount", proposalresp.get("amount")!=null?Double.valueOf(proposalresp.get("amount").toString() ):" ");
+							mailParameters.put("emi_amount", proposalresp.get("emi_amount")!=null?Double.valueOf(proposalresp.get("emi_amount").toString() ):" ");
+							mailParameters.put("interest_rate", proposalresp.get("rate_interest")!=null?Double.valueOf(proposalresp.get("rate_interest").toString() ):" ");
+							mailParameters.put("application_id", paymentRequest.getApplicationId());
+							
+							UserResponse response = null;
+							
+							try {
+								response = userClient.getEmailMobile(userId);
+							}
+							catch(Exception e) {
+								logger.info("Something went wrong while calling Users client===>{}");
+								e.printStackTrace();
+							}
+							
+							if(!CommonUtils.isObjectNullOrEmpty(response)) {
+								UsersRequest signUpUser = MultipleJSONObjectHelper
+										.getObjectFromMap((Map<String, Object>) response.getData(), UsersRequest.class);
+
+								String mobile = signUpUser.getMobile();
+								System.out.println("Mobile no:-"+mobile);
+								mailParameters.put("mobile_no", mobile!=null?mobile:" ");
+								
+							}
+							
+							CorporateApplicantRequest applicantRequest = corporateapplicantService.getCorporateApplicant(paymentRequest.getApplicationId());
+							String address = null;
+							if(!CommonUtils.isObjectNullOrEmpty(applicantRequest) 
+									&& !CommonUtils.isObjectNullOrEmpty(applicantRequest.getFirstAddress())){
+								address = applicantRequest.getFirstAddress().getPremiseNumber()!=null?applicantRequest.getFirstAddress().getPremiseNumber():""	
+			                              +" "+applicantRequest.getFirstAddress().getStreetName()!=null?applicantRequest.getFirstAddress().getStreetName():""
+			                              +" "+applicantRequest.getFirstAddress().getLandMark()!=null?applicantRequest.getFirstAddress().getLandMark():"";  
+							
+							}
+							System.out.println("Address:-"+address);
+							mailParameters.put("address", address);
+							
+							
+							Long branchId = null;
+							if(!CommonUtils.isObjectNullOrEmpty(proposalresp.get("branch_id"))) {
+								branchId = Long.valueOf(proposalresp.get("branch_id").toString());	
+							}
+			                
+							UserResponse userResponse = userClient.getUserDetailByOrgRoleBranchId(orgId,com.capitaworld.service.users.utils.CommonUtils.UserRoles.BRANCH_OFFICER,branchId);
+							List<Map<String, Object>> usersRespList = (List<Map<String, Object>>) userResponse.getListData();
+							String to = null;
+							if(!CommonUtils.isObjectNullOrEmpty(usersRespList)) {
+								for (int i = 0; i < usersRespList.size(); i++) {
+										UsersRequest userObj = MultipleJSONObjectHelper.getObjectFromMap(usersRespList.get(i),
+												UsersRequest.class);
+										
+                                        String name = null;
+										
+										try {
+											logger.error("Into getting FP Name======>"+userObj);
+											UserResponse userResponseForName = userClient.getFPDetails(userObj);
+											FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<Object,Object>)userResponseForName.getData(),
+													FundProviderDetailsRequest.class);
+											name = fundProviderDetailsRequest.getFirstName() + " " + (fundProviderDetailsRequest.getLastName() == null ? "": fundProviderDetailsRequest.getLastName());
+										} catch (Exception e) {
+											logger.error("error while fetching FP name");
+											e.printStackTrace();
+										}
+										
+										if(!CommonUtils.isObjectNullOrEmpty(userObj.getEmail())) {
+										//	System.out.println("Checker ID:---"+userObj.getEmail());
+											to = userObj.getEmail();	
+											mailParameters.put("bo_name", name!=null?name:"");
+											
+											createNotificationForEmail(to, userId.toString(),
+													mailParameters, NotificationAlias.EMAIL_ALL_BO_INPRINCIPLE_TO_FS, subject);
+										}
+								    	
+									}
+								
+							}
+							else {
+								logger.info("No BO found=================>");
+							}
+							 	
+							
+						}catch (Exception e) {
+							logger.info("An exception getting while sending mail to BO=============>{}");
+
+							e.printStackTrace();
+						}
+						
+					}
+					else {
+						
+						logger.info("Mail to BO after In-principle to FS is disabled==========>");
+					}
+				};
+				
+				//==========================================================================================================
+
 		
 		private void createNotificationForEmail(String toNo, String userId, Map<String, Object> mailParameters,
 				Long templateId, String emailSubject) throws NotificationException {
