@@ -835,7 +835,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 				
 					
 				try {
-					mcaCompanyId = loanApplicationService.getMcaCompanyId(applicationId.longValue(), userId);
+					mcaCompanyId = loanApplicationService.getMCACompanyIdById(applicationId.longValue());
 					if(mcaCompanyId != null) {
 						mcaResponse = mcaClient.mcaStatusCheck(applicationId.toString(), mcaCompanyId.toString());
 						if(mcaResponse.getData().equals(true)) {
