@@ -60,12 +60,12 @@ public class FPAsyncComponent {
 					logger.info("Into sending Mail to all Makers after FS gets In-Principle Approval===>{}");
 					String subject = "Intimation : New Proposal -  Application ID "+paymentRequest.getApplicationId();
 					Map<String, Object> mailParameters = new HashMap<String, Object>();
-					mailParameters.put("fs_name", paymentRequest.getNameOfEntity()!=null?paymentRequest.getNameOfEntity():" ");
-					mailParameters.put("product_type", proposalresp.get("loan_type")!=null?proposalresp.get("loan_type").toString():" ");
-					mailParameters.put("loan_amount", proposalresp.get("amount")!=null?Double.valueOf(proposalresp.get("amount").toString() ):" ");
-					mailParameters.put("emi_amount", proposalresp.get("emi_amount")!=null?Double.valueOf(proposalresp.get("emi_amount").toString() ):" ");
-					mailParameters.put("interest_rate", proposalresp.get("rate_interest")!=null?Double.valueOf(proposalresp.get("rate_interest").toString() ):" ");
-					mailParameters.put("application_id", paymentRequest.getApplicationId());
+					mailParameters.put("fs_name", paymentRequest.getNameOfEntity()!=null?paymentRequest.getNameOfEntity():"NA");
+					mailParameters.put("product_type", proposalresp.get("loan_type")!=null?proposalresp.get("loan_type").toString():"NA");
+					mailParameters.put("loan_amount", proposalresp.get("amount")!=null?Double.valueOf(proposalresp.get("amount").toString() ):"NA");
+					mailParameters.put("emi_amount", proposalresp.get("emi_amount")!=null?Double.valueOf(proposalresp.get("emi_amount").toString() ):"NA");
+					mailParameters.put("interest_rate", proposalresp.get("rate_interest")!=null?Double.valueOf(proposalresp.get("rate_interest").toString() ):"NA");
+					mailParameters.put("application_id", paymentRequest.getApplicationId()!=null?paymentRequest.getApplicationId():"NA");
 				
 					UserResponse response = null;
 					
@@ -83,7 +83,7 @@ public class FPAsyncComponent {
 
 						String mobile = signUpUser.getMobile();
 						System.out.println("Mobile no:-"+mobile);
-						mailParameters.put("mobile_no", mobile!=null?mobile:" ");
+						mailParameters.put("mobile_no", mobile!=null?mobile:"NA");
 						
 					}
 					
@@ -97,7 +97,7 @@ public class FPAsyncComponent {
 					
 					}
 					System.out.println("Address:-"+address);
-					mailParameters.put("address", address);
+					mailParameters.put("address", address!=null?address:"NA");
 					
 					
 					Long branchId = null;
@@ -130,11 +130,33 @@ public class FPAsyncComponent {
 							if(!CommonUtils.isObjectNullOrEmpty(userObj.getEmail())) {
 								//System.out.println("Maker ID:---"+userObj.getEmail());
 								to = userObj.getEmail();	
-								mailParameters.put("maker_name", name!=null?name:"");
+								mailParameters.put("maker_name", name!=null?name:"NA");
 								
 								createNotificationForEmail(to, userId.toString(),
 										mailParameters, NotificationAlias.EMAIL_ALL_MAKERS_AFTER_INPRINCIPLE_TO_FS, subject);
 							}
+							
+							if(!CommonUtils.isObjectNullOrEmpty(userObj.getMobile())) {
+								//System.out.println("Maker ID:---"+userObj.getEmail());
+								Map<String, Object> smsParameters = new HashMap<String, Object>();
+								to = userObj.getMobile();	
+								smsParameters.put("fs_name", paymentRequest.getNameOfEntity()!=null?paymentRequest.getNameOfEntity():"NA");
+								smsParameters.put("product_type", proposalresp.get("loan_type")!=null?proposalresp.get("loan_type").toString():"NA");
+								smsParameters.put("url", "www.bitly.com");
+								
+								sendSMSNotification(userId.toString(),
+										smsParameters, NotificationAlias.SMS_ALL_MAKERS_AFTER_INPRINCIPLE_TO_FS, to);
+							}
+							
+							if(!CommonUtils.isObjectNullOrEmpty(userObj.getId())) {
+								//System.out.println("Maker ID:---"+userObj.getEmail());
+								Map<String, Object> sysParameters = new HashMap<String, Object>();
+								sysParameters.put("fs_name", paymentRequest.getNameOfEntity()!=null?paymentRequest.getNameOfEntity():"NA");
+								
+								sendSYSNotification(userId.toString(),
+										sysParameters, NotificationAlias.SYS_ALL_MAKERS_AFTER_INPRINCIPLE_TO_FS, userId.toString(), userObj.getId().toString());
+							}
+							
 					    	
 						}
 						
@@ -171,11 +193,11 @@ public class FPAsyncComponent {
 						logger.info("Into sending Mail to all Checkers after FS gets In-Principle Approval===>{}");
 						String subject = "Intimation : New Proposal -  Application ID "+paymentRequest.getApplicationId();
 						Map<String, Object> mailParameters = new HashMap<String, Object>();
-						mailParameters.put("fs_name", paymentRequest.getNameOfEntity()!=null?paymentRequest.getNameOfEntity():" ");
-						mailParameters.put("product_type", proposalresp.get("loan_type")!=null?proposalresp.get("loan_type").toString():" ");
-						mailParameters.put("loan_amount", proposalresp.get("amount")!=null?Double.valueOf(proposalresp.get("amount").toString() ):" ");
-						mailParameters.put("emi_amount", proposalresp.get("emi_amount")!=null?Double.valueOf(proposalresp.get("emi_amount").toString() ):" ");
-						mailParameters.put("interest_rate", proposalresp.get("rate_interest")!=null?Double.valueOf(proposalresp.get("rate_interest").toString() ):" ");
+						mailParameters.put("fs_name", paymentRequest.getNameOfEntity()!=null?paymentRequest.getNameOfEntity():"NA");
+						mailParameters.put("product_type", proposalresp.get("loan_type")!=null?proposalresp.get("loan_type").toString():"NA");
+						mailParameters.put("loan_amount", proposalresp.get("amount")!=null?Double.valueOf(proposalresp.get("amount").toString() ):"NA");
+						mailParameters.put("emi_amount", proposalresp.get("emi_amount")!=null?Double.valueOf(proposalresp.get("emi_amount").toString() ):"NA");
+						mailParameters.put("interest_rate", proposalresp.get("rate_interest")!=null?Double.valueOf(proposalresp.get("rate_interest").toString() ):"NA");
 						mailParameters.put("application_id", paymentRequest.getApplicationId());
 						
 						UserResponse response = null;
@@ -194,7 +216,7 @@ public class FPAsyncComponent {
 
 							String mobile = signUpUser.getMobile();
 							System.out.println("Mobile no:-"+mobile);
-							mailParameters.put("mobile_no", mobile!=null?mobile:" ");
+							mailParameters.put("mobile_no", mobile!=null?mobile:"NA");
 							
 						}
 						
@@ -208,7 +230,7 @@ public class FPAsyncComponent {
 						
 						}
 						System.out.println("Address:-"+address);
-						mailParameters.put("address", address);
+						mailParameters.put("address", address!=null?address:"NA");
 						
 						
 						Long branchId = null;
@@ -239,10 +261,32 @@ public class FPAsyncComponent {
 									if(!CommonUtils.isObjectNullOrEmpty(userObj.getEmail())) {
 									//	System.out.println("Checker ID:---"+userObj.getEmail());
 										to = userObj.getEmail();	
-										mailParameters.put("checker_name", name!=null?name:"");
+										mailParameters.put("checker_name", name!=null?name:"NA");
 										
 										createNotificationForEmail(to, userId.toString(),
 												mailParameters, NotificationAlias.EMAIL_ALL_CHECKERS_AFTER_INPRINCIPLE_TO_FS, subject);
+									}
+									
+									if(!CommonUtils.isObjectNullOrEmpty(userObj.getMobile())) {
+										//System.out.println("Maker ID:---"+userObj.getEmail());
+										Map<String, Object> smsParameters = new HashMap<String, Object>();
+										to = userObj.getMobile();	
+										smsParameters.put("checker_name", name!=null?name:"NA");
+										smsParameters.put("fs_name", paymentRequest.getNameOfEntity()!=null?paymentRequest.getNameOfEntity():"NA");
+										smsParameters.put("product_type", proposalresp.get("loan_type")!=null?proposalresp.get("loan_type").toString():"NA");
+										smsParameters.put("url", "www.bitly.com");
+										
+										sendSMSNotification(userId.toString(),
+												smsParameters, NotificationAlias.SMS_ALL_CHECKERS_AFTER_INPRINCIPLE_TO_FS, to);
+									}
+									
+									if(!CommonUtils.isObjectNullOrEmpty(userObj.getId())) {
+										//System.out.println("Maker ID:---"+userObj.getEmail());
+										Map<String, Object> sysParameters = new HashMap<String, Object>();
+										sysParameters.put("fs_name", paymentRequest.getNameOfEntity()!=null?paymentRequest.getNameOfEntity():"NA");
+										
+										sendSYSNotification(userId.toString(),
+												sysParameters, NotificationAlias.SYS_ALL_CHECKERS_AFTER_INPRINCIPLE_TO_FS, userId.toString(), userObj.getId().toString());
 									}
 							    	
 								}
@@ -279,11 +323,11 @@ public class FPAsyncComponent {
 							logger.info("Into sending Mail to all Checkers after FS gets In-Principle Approval===>{}");
 							String subject = "Intimation : New Proposal -  Application ID "+paymentRequest.getApplicationId();
 							Map<String, Object> mailParameters = new HashMap<String, Object>();
-							mailParameters.put("fs_name", paymentRequest.getNameOfEntity()!=null?paymentRequest.getNameOfEntity():" ");
-							mailParameters.put("product_type", proposalresp.get("loan_type")!=null?proposalresp.get("loan_type").toString():" ");
-							mailParameters.put("loan_amount", proposalresp.get("amount")!=null?Double.valueOf(proposalresp.get("amount").toString() ):" ");
-							mailParameters.put("emi_amount", proposalresp.get("emi_amount")!=null?Double.valueOf(proposalresp.get("emi_amount").toString() ):" ");
-							mailParameters.put("interest_rate", proposalresp.get("rate_interest")!=null?Double.valueOf(proposalresp.get("rate_interest").toString() ):" ");
+							mailParameters.put("fs_name", paymentRequest.getNameOfEntity()!=null?paymentRequest.getNameOfEntity():"NA");
+							mailParameters.put("product_type", proposalresp.get("loan_type")!=null?proposalresp.get("loan_type").toString():"NA");
+							mailParameters.put("loan_amount", proposalresp.get("amount")!=null?Double.valueOf(proposalresp.get("amount").toString() ):"NA");
+							mailParameters.put("emi_amount", proposalresp.get("emi_amount")!=null?Double.valueOf(proposalresp.get("emi_amount").toString() ):"NA");
+							mailParameters.put("interest_rate", proposalresp.get("rate_interest")!=null?Double.valueOf(proposalresp.get("rate_interest").toString() ):"NA");
 							mailParameters.put("application_id", paymentRequest.getApplicationId());
 							
 							UserResponse response = null;
@@ -302,7 +346,7 @@ public class FPAsyncComponent {
 
 								String mobile = signUpUser.getMobile();
 								System.out.println("Mobile no:-"+mobile);
-								mailParameters.put("mobile_no", mobile!=null?mobile:" ");
+								mailParameters.put("mobile_no", mobile!=null?mobile:"NA");
 								
 							}
 							
@@ -316,7 +360,7 @@ public class FPAsyncComponent {
 							
 							}
 							System.out.println("Address:-"+address);
-							mailParameters.put("address", address);
+							mailParameters.put("address", address!=null?address:"NA");
 							
 							
 							Long branchId = null;
@@ -348,10 +392,32 @@ public class FPAsyncComponent {
 										if(!CommonUtils.isObjectNullOrEmpty(userObj.getEmail())) {
 										//	System.out.println("Checker ID:---"+userObj.getEmail());
 											to = userObj.getEmail();	
-											mailParameters.put("ho_name", name!=null?name:"");
+											mailParameters.put("ho_name", name!=null?name:"NA");
 											
 											createNotificationForEmail(to, userId.toString(),
 													mailParameters, NotificationAlias.EMAIL_HO_INPRINCIPLE_TO_FS, subject);
+										}
+										
+										if(!CommonUtils.isObjectNullOrEmpty(userObj.getMobile())) {
+											//System.out.println("Maker ID:---"+userObj.getEmail());
+											Map<String, Object> smsParameters = new HashMap<String, Object>();
+											to = userObj.getMobile();	
+											smsParameters.put("fs_name", paymentRequest.getNameOfEntity()!=null?paymentRequest.getNameOfEntity():"NA");
+											smsParameters.put("product_type", proposalresp.get("loan_type")!=null?proposalresp.get("loan_type").toString():"NA");
+											smsParameters.put("url", "www.bitly.com");
+											
+											sendSMSNotification(userId.toString(),
+													smsParameters, NotificationAlias.SMS_HO_INPRINCIPLE_TO_FS, to);
+										}
+										
+										if(!CommonUtils.isObjectNullOrEmpty(userObj.getId())) {
+											//System.out.println("Maker ID:---"+userObj.getEmail());
+											Map<String, Object> sysParameters = new HashMap<String, Object>();
+											sysParameters.put("fs_name", paymentRequest.getNameOfEntity()!=null?paymentRequest.getNameOfEntity():"NA");
+											sysParameters.put("product_type", proposalresp.get("loan_type")!=null?proposalresp.get("loan_type").toString():"NA");
+																	
+											sendSYSNotification(userId.toString(),
+													sysParameters, NotificationAlias.SYS_HO_INPRINCIPLE_TO_FS, userId.toString(), userObj.getId().toString());
 										}
 								    	
 									}
@@ -388,11 +454,11 @@ public class FPAsyncComponent {
 							logger.info("Into sending Mail to all BO after FS gets In-Principle Approval===>{}");
 							String subject = "Intimation : New Proposal -  Application ID "+paymentRequest.getApplicationId();
 							Map<String, Object> mailParameters = new HashMap<String, Object>();
-							mailParameters.put("fs_name", paymentRequest.getNameOfEntity()!=null?paymentRequest.getNameOfEntity():" ");
-							mailParameters.put("product_type", proposalresp.get("loan_type")!=null?proposalresp.get("loan_type").toString():" ");
-							mailParameters.put("loan_amount", proposalresp.get("amount")!=null?Double.valueOf(proposalresp.get("amount").toString() ):" ");
-							mailParameters.put("emi_amount", proposalresp.get("emi_amount")!=null?Double.valueOf(proposalresp.get("emi_amount").toString() ):" ");
-							mailParameters.put("interest_rate", proposalresp.get("rate_interest")!=null?Double.valueOf(proposalresp.get("rate_interest").toString() ):" ");
+							mailParameters.put("fs_name", paymentRequest.getNameOfEntity()!=null?paymentRequest.getNameOfEntity():"NA");
+							mailParameters.put("product_type", proposalresp.get("loan_type")!=null?proposalresp.get("loan_type").toString():"NA");
+							mailParameters.put("loan_amount", proposalresp.get("amount")!=null?Double.valueOf(proposalresp.get("amount").toString() ):"NA");
+							mailParameters.put("emi_amount", proposalresp.get("emi_amount")!=null?Double.valueOf(proposalresp.get("emi_amount").toString() ):"NA");
+							mailParameters.put("interest_rate", proposalresp.get("rate_interest")!=null?Double.valueOf(proposalresp.get("rate_interest").toString() ):"NA");
 							mailParameters.put("application_id", paymentRequest.getApplicationId());
 							
 							UserResponse response = null;
@@ -411,7 +477,7 @@ public class FPAsyncComponent {
 
 								String mobile = signUpUser.getMobile();
 								System.out.println("Mobile no:-"+mobile);
-								mailParameters.put("mobile_no", mobile!=null?mobile:" ");
+								mailParameters.put("mobile_no", mobile!=null?mobile:"NA");
 								
 							}
 							
@@ -425,7 +491,7 @@ public class FPAsyncComponent {
 							
 							}
 							System.out.println("Address:-"+address);
-							mailParameters.put("address", address);
+							mailParameters.put("address", address!=null?address:"NA");
 							
 							
 							Long branchId = null;
@@ -457,10 +523,32 @@ public class FPAsyncComponent {
 										if(!CommonUtils.isObjectNullOrEmpty(userObj.getEmail())) {
 										//	System.out.println("Checker ID:---"+userObj.getEmail());
 											to = userObj.getEmail();	
-											mailParameters.put("bo_name", name!=null?name:"");
+											mailParameters.put("bo_name", name!=null?name:"NA");
 											
 											createNotificationForEmail(to, userId.toString(),
 													mailParameters, NotificationAlias.EMAIL_ALL_BO_INPRINCIPLE_TO_FS, subject);
+										}
+										
+										if(!CommonUtils.isObjectNullOrEmpty(userObj.getMobile())) {
+											//System.out.println("Maker ID:---"+userObj.getEmail());
+											Map<String, Object> smsParameters = new HashMap<String, Object>();
+											to = userObj.getMobile();	
+											smsParameters.put("fs_name", paymentRequest.getNameOfEntity()!=null?paymentRequest.getNameOfEntity():"NA");
+											smsParameters.put("product_type", proposalresp.get("loan_type")!=null?proposalresp.get("loan_type").toString():"NA");
+											smsParameters.put("url", "www.bitly.com");
+											
+											sendSMSNotification(userId.toString(),
+													smsParameters, NotificationAlias.SMS_ALL_BO_INPRINCIPLE_TO_FS, to);
+										}
+										
+										if(!CommonUtils.isObjectNullOrEmpty(userObj.getId())) {
+											//System.out.println("Maker ID:---"+userObj.getEmail());
+											Map<String, Object> sysParameters = new HashMap<String, Object>();
+											sysParameters.put("fs_name", paymentRequest.getNameOfEntity()!=null?paymentRequest.getNameOfEntity():"NA");
+											sysParameters.put("product_type", proposalresp.get("loan_type")!=null?proposalresp.get("loan_type").toString():"NA");
+																	
+											sendSYSNotification(userId.toString(),
+													sysParameters, NotificationAlias.SYS_ALL_BO_INPRINCIPLE_TO_FS, userId.toString(), userObj.getId().toString());
 										}
 								    	
 									}
@@ -505,11 +593,50 @@ public class FPAsyncComponent {
 			sendEmail(notificationRequest);
 			logger.info("Outside send notification===>{}"+toNo);
 		}
+		
+		private void sendSMSNotification(String userId, Map<String, Object> parameters, Long templateId, String... to)
+				throws NotificationException {
+			// String to[] = {toNo};
+			logger.info("Inside send SMS===>{}");
+			NotificationRequest req = new NotificationRequest();
+			req.setClientRefId(userId);
+			Notification notification = new Notification();
+			notification.setContentType(ContentType.TEMPLATE);
+			notification.setTemplateId(templateId);
+			notification.setTo(to);
+			notification.setType(NotificationType.SMS);
+			notification.setParameters(parameters);
+			req.addNotification(notification);
+
+			sendEmail(req);
+			logger.info("Outside send SMS===>{}");
+
+		}
+		
+		private void sendSYSNotification(String toUserId, Map<String, Object> parameters, Long templateId,
+				String fromId, String... to) throws NotificationException {
+			// String to[] = {toNo};
+			logger.info("Inside send SYSTEM notification===>{}");
+			NotificationRequest req = new NotificationRequest();
+			req.setClientRefId(toUserId);
+			Notification notification = new Notification();
+			notification.setContentType(ContentType.TEMPLATE);
+			notification.setTemplateId(templateId);
+			notification.setTo(to);
+			notification.setType(NotificationType.SYSTEM);
+			notification.setParameters(parameters);
+			notification.setFrom(fromId);
+			req.addNotification(notification);
+
+			sendEmail(req);
+			logger.info("Outside send SYSTEM notification===>{}");
+
+		}
 
 		private void sendEmail(NotificationRequest notificationRequest) throws NotificationException {
-			logger.info("Inside send Email for Maker===>{}");
+			logger.info("Inside send Email===>{}");
 			notificationClient.send(notificationRequest);
-			logger.info("Outside send Email for Maker===>{}");
+			logger.info("Outside send Email===>{}");
 		}
 	
 }

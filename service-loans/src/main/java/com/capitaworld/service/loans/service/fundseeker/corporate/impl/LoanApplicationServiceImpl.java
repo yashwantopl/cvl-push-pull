@@ -3979,6 +3979,18 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			return null;
 		}
 	}
+	
+	
+
+	public String getMCACompanyIdById(Long applicationId) {
+		try {
+			return loanApplicationRepository.getMCACompanyIdById(applicationId).getMcaCompanyId();
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	
+	
 
 	@Override
 	public void updateLoanApplication(LoanApplicationRequest loanRequest) {
