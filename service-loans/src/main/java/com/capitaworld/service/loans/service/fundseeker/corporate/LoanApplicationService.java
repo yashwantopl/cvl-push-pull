@@ -193,6 +193,8 @@ public interface LoanApplicationService {
 	
 	public Boolean updatePaymentStatusForMobile(PaymentRequest paymentRequest);
 */
+	
+	public String getMCACompanyIdById(Long applicationId);
 }
 
 
