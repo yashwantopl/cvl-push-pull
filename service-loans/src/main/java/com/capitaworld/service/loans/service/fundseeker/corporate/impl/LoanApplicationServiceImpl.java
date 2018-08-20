@@ -5409,16 +5409,21 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					pan = prelimData.getCorporateProfileRequest().getPan() ;
 				}
 				CommercialRequest commercialRequest = createCommercialRequest(applicationId, pan); 
-				if(commercialRequest== null) {
-					logger.info("Commercial Details Request Not Found  in savePhese1DataToSidbi()  for ApplicationId ====>{}FpProductId====>{}",applicationId,fpProductMappingId);
-					auditComponent.updateAudit(AuditComponent.COMMERCIAL, applicationId, userId, "Commercial Details data Request Not Found for ApplicationId ====>{} "+applicationId+"FpProductId====>{}"+fpProductMappingId, false);
-//					setTokenAsExpired(generateTokenRequest);
-//					return false;
-				}else {
-					logger.info("Start Saving Commercial Details in savePhese1DataToSidbi() ");
-					saveCommercialDetails = sidbiIntegrationClient.saveCommercialDetails(commercialRequest, generateTokenRequest.getToken(), generateTokenRequest.getBankToken());
-					logger.info("Sucessfully save COMMERCIAL Details in savePhese1DataToSidbi() for  ApplicationId ====>{}FpProductId====>{}Flag==>{}",applicationId,fpProductMappingId,saveCommercialDetails);
-					auditComponent.updateAudit(AuditComponent.COMMERCIAL, applicationId, userId, null, saveCommercialDetails);
+				try {
+					if(commercialRequest== null) {
+						logger.info("Commercial Details Request Not Found  in savePhese1DataToSidbi()  for ApplicationId ====>{}FpProductId====>{}",applicationId,fpProductMappingId);
+						auditComponent.updateAudit(AuditComponent.COMMERCIAL, applicationId, userId, "Commercial Details data Request Not Found for ApplicationId ====>{} "+applicationId+"FpProductId====>{}"+fpProductMappingId, false);
+//						setTokenAsExpired(generateTokenRequest);
+//						return false;
+					}else {
+						logger.info("Start Saving Commercial Details in savePhese1DataToSidbi() ");
+						saveCommercialDetails = sidbiIntegrationClient.saveCommercialDetails(commercialRequest, generateTokenRequest.getToken(), generateTokenRequest.getBankToken());
+						logger.info("Sucessfully save COMMERCIAL Details in savePhese1DataToSidbi() for  ApplicationId ====>{}FpProductId====>{}Flag==>{}",applicationId,fpProductMappingId,saveCommercialDetails);
+						auditComponent.updateAudit(AuditComponent.COMMERCIAL, applicationId, userId, null, saveCommercialDetails);
+					}
+				}catch(Exception e) {
+					e.printStackTrace();
+					logger.error("Error while calling client of Commercial in SIdbi");
 				}
 				
 			}else {
@@ -5466,12 +5471,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		Boolean saveDetailsInfo = false;
 		Boolean saveDDRInfo = false;
 		Boolean saveIRRInfo = false;
-		PrimaryCorporateDetail applicationMaster = null;
+		PrimaryCorporateDetail applicationMaster = primaryCorporateRepository.findOneByApplicationIdId(applicationId);
 		try {
+			
 			AuditMaster audit = auditComponent.getAudit(applicationId, true, AuditComponent.DETAILED_INFO);
 			if(audit == null) {
 				logger.info("Start savePhese2DataToSidbi()==>");
-				applicationMaster = primaryCorporateRepository.findOneByApplicationIdId(applicationId);
 				if(applicationMaster == null) {
 					logger.info("Loan Application Found Null====>{}",applicationId);
 					auditComponent.updateAudit(AuditComponent.DETAILED_INFO, applicationId, applicationMaster !=null ? applicationMaster.getUserId() : null,"Loan Application Found Null====>{} " +applicationId  , saveDetailsInfo);
