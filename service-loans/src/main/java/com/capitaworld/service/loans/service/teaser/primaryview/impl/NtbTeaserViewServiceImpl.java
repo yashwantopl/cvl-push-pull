@@ -15,15 +15,13 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.capitaworld.api.eligibility.model.EligibililityRequest;
 import com.capitaworld.api.eligibility.model.EligibilityResponse;
-import com.capitaworld.cibil.api.model.CibilRequest;
-import com.capitaworld.cibil.api.model.CibilScoreLogRequest;
+import com.capitaworld.cibil.api.model.CibilResponse;
 import com.capitaworld.cibil.client.CIBILClient;
 import com.capitaworld.client.eligibility.EligibilityClient;
 import com.capitaworld.service.analyzer.client.AnalyzerClient;
@@ -37,7 +35,6 @@ import com.capitaworld.service.dms.model.DocumentResponse;
 import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
-import com.capitaworld.service.loans.domain.fundseeker.corporate.DirectorBackgroundDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailResponse;
@@ -241,6 +238,9 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
+		
+		
 
 		// DIRECTOR BACKGROUND DETAILS
 
@@ -254,7 +254,7 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService {
 			} else {
 				ntbPrimaryViewRespone.setIsMultipleUser(true);
 			}
-			for (int i = 0; i < directorBackgroundDetails.size(); i++) {
+			/*for (int i = 0; i < directorBackgroundDetails.size(); i++) {
 				DirectorBackgroundDetail dir = new DirectorBackgroundDetail();
 
 				// MultipleJSONObjectHelper.getObjectFromMap(directorBackgroundDetails.get(i),
@@ -283,13 +283,26 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService {
 					}
 
 				}
-			}
+			}*/
 
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error("Problem to get Data of Director's Background=========> {}", e);
 		}
 
+		
+		//Cibil Client Call
+				/*CibilRequest cibilRequest = new CibilRequest();
+				cibilRequest.setApplicationId(toApplicationId);
+				cibilRequest.setPan(ntbPrimaryViewRespone.getDirPan());*/
+				try {
+					CibilResponse cibilRes = cibilClient.getDirectorAverageScore(toApplicationId);
+					ntbPrimaryViewRespone.setCibilOfMainDir(cibilRes);
+				} catch (Exception e) {
+					logger.info("Error While calling Cibil Score By PanCard");
+					e.printStackTrace();
+				}
+				
 		// get Director Income Details
 
 		try {
