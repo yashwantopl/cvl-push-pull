@@ -685,6 +685,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 		logger.info("entry in getListOfProposalsFP()");
 		Long branchId = null;
 		String mcaCompanyId = null;
+		McaResponse mcaResponse;
 		UsersRequest usersRequestForBranch = new UsersRequest();
 		usersRequestForBranch.setId(userId);
 		try {
@@ -734,18 +735,6 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 						FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<Object,Object>)userResponseForName.getData(),
 								FundProviderDetailsRequest.class);
 						nhbsApplicationsResponse.setCheckerName(fundProviderDetailsRequest.getFirstName() + " " + (fundProviderDetailsRequest.getLastName() == null ? "": fundProviderDetailsRequest.getLastName()));
-					
-						mcaCompanyId = loanApplicationService.getMcaCompanyId(applicationId.longValue(), userId);
-						if(mcaCompanyId != null) {
-							McaResponse mcaResponse = mcaClient.mcaStatusCheck(applicationId.toString(), mcaCompanyId.toString());
-							if(mcaResponse.getData().equals(true)) {
-								nhbsApplicationsResponse.setMcaStatus(CommonUtils.COMPLETED);
-							}else {
-								nhbsApplicationsResponse.setMcaStatus(CommonUtils.IN_PROGRESS);
-							}
-						}else {
-							nhbsApplicationsResponse.setMcaStatus(CommonUtils.NA);
-						}
 						
 					} catch (Exception e) {
 						logger.error("error while fetching FP details");
@@ -843,6 +832,27 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 				}
 
 				nhbsApplicationsResponse.setApplicationDate(loanApplicationMaster.getCreatedDate());
+				
+					
+				try {
+					mcaCompanyId = loanApplicationService.getMcaCompanyId(applicationId.longValue(), userId);
+					if(mcaCompanyId != null) {
+						mcaResponse = mcaClient.mcaStatusCheck(applicationId.toString(), mcaCompanyId.toString());
+						if(mcaResponse.getData().equals(true)) {
+							nhbsApplicationsResponse.setMcaStatus(CommonUtils.COMPLETED);
+						}else {
+							nhbsApplicationsResponse.setMcaStatus(CommonUtils.IN_PROGRESS);
+						}
+					}else {
+						nhbsApplicationsResponse.setMcaStatus(CommonUtils.NA);
+					}
+				} catch (Exception e) {
+					logger.error("error while getting MCA Status");
+					e.printStackTrace();
+				}
+					
+				
+				
 				if(loanApplicationMaster.getApplicationStatusMaster().getId()>=CommonUtils.ApplicationStatus.ASSIGNED){
 					if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getDdrStatusId())){
 						nhbsApplicationsResponse.setDdrStatus(CommonUtils.getDdrStatusString(loanApplicationMaster.getDdrStatusId().intValue()));
