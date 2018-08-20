@@ -5147,8 +5147,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					if(parameterRequest == null) {
 						logger.info("MatchesParameterRequest Not Found in savePhese1DataToSidbi() ==> for ApplicationId ====>{}FpProductId====>{}",applicationId,fpProductMappingId);
 						auditComponent.updateAudit(AuditComponent.MATCHES_PARAMETER, applicationId, userId, "MatchesParameterRequest Not Found for ApplicationId ====>{} "+applicationId+" FpProductId====>{} "+fpProductMappingId , matchesParameters);
-						setTokenAsExpired(generateTokenRequest);
-						return false;
+//						setTokenAsExpired(generateTokenRequest);
+//						return false;
 					}else {
 							logger.error("Start Saving MatchesParameterRequest in savePhese1DataToSidbi() ");
 							matchesParameters = sidbiIntegrationClient.saveMatchesParameter(parameterRequest,generateTokenRequest.getToken(),generateTokenRequest.getBankToken());
@@ -5182,8 +5182,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					if(data == null) {
 						logger.info("Bank Statement data Request Not Found  in savePhese1DataToSidbi()   for ApplicationId ====>{}FpProductId====>{}",applicationId,fpProductMappingId);
 						auditComponent.updateAudit(AuditComponent.BANK_STATEMENT, applicationId, userId, "\"Bank Statement data Request Not Found for ApplicationId ====>{} "+applicationId + "FpProductId====>{}"+fpProductMappingId,  bankStatement);
-						setTokenAsExpired(generateTokenRequest);
-						return false;
+//						setTokenAsExpired(generateTokenRequest);
+//						return false;
 					}else {
 						logger.info("Start Saving BankStatemetnRequest in savePhese1DataToSidbi() ");
 						bankStatement = sidbiIntegrationClient.saveBankStatement(data,generateTokenRequest.getToken(),generateTokenRequest.getBankToken());
@@ -5218,8 +5218,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					if(eligibilityRequest == null) {
 						logger.info("Eligibiity data Request Not Found  in savePhese1DataToSidbi()  for ApplicationId ====>{}FpProductId====>{}",applicationId,fpProductMappingId);
 						auditComponent.updateAudit(AuditComponent.ELIGIBILITY, applicationId, userId, "Eligibiity data Request Not Found for ApplicationId ====>{} "+applicationId+"FpProductId====>{}"+fpProductMappingId, eligibilityParameters);
-						setTokenAsExpired(generateTokenRequest);
-						return false;
+//						setTokenAsExpired(generateTokenRequest);
+//						return false;
 					}else {
 						logger.info("Start Saving EligibilityDetailRequest in savePhese1DataToSidbi() ");
 						eligibilityParameters = sidbiIntegrationClient.saveEligibilityDetails(eligibilityRequest,generateTokenRequest.getToken(),generateTokenRequest.getBankToken());
@@ -5326,16 +5326,21 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			audit = auditComponent.getAudit(applicationId, true, AuditComponent.FINANCIAL);
 			if(audit == null) {
 				FinancialRequest financialDetails = cmaService.getFinancialDetailsForBankIntegration(applicationId);
-				if(financialDetails == null) {
-					logger.info("Financial Request Not Found  in savePhese1DataToSidbi()  for ApplicationId ====>{}FpProductId====>{}",applicationId,fpProductMappingId);
-					auditComponent.updateAudit(AuditComponent.FINANCIAL, applicationId, userId, "Financial Request Not Found for ApplicationId ====>{} "+applicationId+"FpProductId====>{}"+fpProductMappingId, false);
-					setTokenAsExpired(generateTokenRequest);
-					return false;
-				}else {
-					logger.info("Start Saving FinancialRequest in savePhese1DataToSidbi() ");
-					saveFinancialDetails = sidbiIntegrationClient.saveFinancialDetails(financialDetails, generateTokenRequest.getToken(),generateTokenRequest.getBankToken());
-					logger.info("Sucessfully save FinancialRequest in savePhese1DataToSidbi() for  ApplicationId ====>{}FpProductId====>{}Flag==>{}",applicationId,fpProductMappingId,saveFinancialDetails);
-					auditComponent.updateAudit(AuditComponent.FINANCIAL, applicationId, userId, null, saveFinancialDetails);
+				try {
+					if(financialDetails == null) {
+						logger.info("Financial Request Not Found  in savePhese1DataToSidbi()  for ApplicationId ====>{}FpProductId====>{}",applicationId,fpProductMappingId);
+						auditComponent.updateAudit(AuditComponent.FINANCIAL, applicationId, userId, "Financial Request Not Found for ApplicationId ====>{} "+applicationId+"FpProductId====>{}"+fpProductMappingId, false);
+//						setTokenAsExpired(generateTokenRequest);
+//						return false;
+					}else {
+						logger.info("Start Saving FinancialRequest in savePhese1DataToSidbi() ");
+						saveFinancialDetails = sidbiIntegrationClient.saveFinancialDetails(financialDetails, generateTokenRequest.getToken(),generateTokenRequest.getBankToken());
+						logger.info("Sucessfully save FinancialRequest in savePhese1DataToSidbi() for  ApplicationId ====>{}FpProductId====>{}Flag==>{}",applicationId,fpProductMappingId,saveFinancialDetails);
+						auditComponent.updateAudit(AuditComponent.FINANCIAL, applicationId, userId, null, saveFinancialDetails);
+					}
+				}catch(Exception e) {
+					logger.error("Error while Saving Financial Details to BANK");
+					e.printStackTrace();
 				}
 			}else {
 				logger.info("Financial Details Already Saved so not Going to Save Again===>");
@@ -5347,16 +5352,21 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			if(audit == null) {
 				//FinancialRequest financialDetails = cmaService.getFinancialDetailsForBankIntegration(applicationId);
 				cmaRequest = getCMADetailOfAuditYears(applicationId); 
-				if(cmaRequest == null) {
-					logger.info("CMA Details Request Not Found  in savePhese1DataToSidbi()  for ApplicationId ====>{}FpProductId====>{}",applicationId,fpProductMappingId);
-					auditComponent.updateAudit(AuditComponent.CMA_DETAIL, applicationId, userId, "CMA Details data Request Not Found for ApplicationId ====>{} "+applicationId+"FpProductId====>{}"+fpProductMappingId, false);
-					setTokenAsExpired(generateTokenRequest);
-					return false;
-				}else {
-					logger.info("Start Saving CMA Details in savePhese1DataToSidbi() ");
-					saveCmaDetails = sidbiIntegrationClient.saveCMADetailsOfAuditYears(cmaRequest, generateTokenRequest.getToken(),generateTokenRequest.getBankToken());
-					logger.info("Sucessfully save CMA Details in savePhese1DataToSidbi() for  ApplicationId ====>{}FpProductId====>{}Flag==>{}",applicationId,fpProductMappingId,saveCmaDetails);
-					auditComponent.updateAudit(AuditComponent.CMA_DETAIL, applicationId, userId, null, saveCmaDetails);
+				try {
+					if(cmaRequest == null) {
+						logger.info("CMA Details Request Not Found  in savePhese1DataToSidbi()  for ApplicationId ====>{}FpProductId====>{}",applicationId,fpProductMappingId);
+						auditComponent.updateAudit(AuditComponent.CMA_DETAIL, applicationId, userId, "CMA Details data Request Not Found for ApplicationId ====>{} "+applicationId+"FpProductId====>{}"+fpProductMappingId, false);
+//						setTokenAsExpired(generateTokenRequest);
+//						return false;
+					}else {
+						logger.info("Start Saving CMA Details in savePhese1DataToSidbi() ");
+						saveCmaDetails = sidbiIntegrationClient.saveCMADetailsOfAuditYears(cmaRequest, generateTokenRequest.getToken(),generateTokenRequest.getBankToken());
+						logger.info("Sucessfully save CMA Details in savePhese1DataToSidbi() for  ApplicationId ====>{}FpProductId====>{}Flag==>{}",applicationId,fpProductMappingId,saveCmaDetails);
+						auditComponent.updateAudit(AuditComponent.CMA_DETAIL, applicationId, userId, null, saveCmaDetails);
+					}
+				}catch(Exception e) {
+					e.printStackTrace();
+					logger.error("Error while Calling CMA client in integration");
 				}
 			}else {
 				logger.info("CMA Details Already Saved so not Going to Save Again===>");
@@ -5369,16 +5379,21 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				
 				//FinancialRequest financialDetails = cmaService.getFinancialDetailsForBankIntegration(applicationId);
 				ClientLogicCalculationRequest clientLogicCalculationRequest= getClientLogicCalculationDetail(applicationId, userId,  prelimData !=null ? prelimData.getCorporateProfileRequest() : null , data , cmaRequest , organizationId); 
-				if(clientLogicCalculationRequest == null) {
-					logger.info("LOGIC Details Request Not Found  in savePhese1DataToSidbi()  for ApplicationId ====>{}FpProductId====>{}",applicationId,fpProductMappingId);
-					auditComponent.updateAudit(AuditComponent.LOGIC, applicationId, userId, "LOGIC Details data Request Not Found for ApplicationId ====>{} "+applicationId+"FpProductId====>{}"+fpProductMappingId, false);
-					setTokenAsExpired(generateTokenRequest);
-					return false;
-				}else {
-					logger.info("Start Saving LOGIC Details in savePhese1DataToSidbi() ");
-					saveLogicDetails = sidbiIntegrationClient.saveLogic(clientLogicCalculationRequest, generateTokenRequest.getToken(),generateTokenRequest.getBankToken());
-					logger.info("Sucessfully save LOGIC Details in savePhese1DataToSidbi() for  ApplicationId ====>{}FpProductId====>{}Flag==>{}",applicationId,fpProductMappingId,saveLogicDetails);
-					auditComponent.updateAudit(AuditComponent.LOGIC, applicationId, userId, null, saveLogicDetails);
+				try {
+					if(clientLogicCalculationRequest == null) {
+						logger.info("LOGIC Details Request Not Found  in savePhese1DataToSidbi()  for ApplicationId ====>{}FpProductId====>{}",applicationId,fpProductMappingId);
+						auditComponent.updateAudit(AuditComponent.LOGIC, applicationId, userId, "LOGIC Details data Request Not Found for ApplicationId ====>{} "+applicationId+"FpProductId====>{}"+fpProductMappingId, false);
+//						setTokenAsExpired(generateTokenRequest);
+//						return false;
+					}else {
+						logger.info("Start Saving LOGIC Details in savePhese1DataToSidbi() ");
+						saveLogicDetails = sidbiIntegrationClient.saveLogic(clientLogicCalculationRequest, generateTokenRequest.getToken(),generateTokenRequest.getBankToken());
+						logger.info("Sucessfully save LOGIC Details in savePhese1DataToSidbi() for  ApplicationId ====>{}FpProductId====>{}Flag==>{}",applicationId,fpProductMappingId,saveLogicDetails);
+						auditComponent.updateAudit(AuditComponent.LOGIC, applicationId, userId, null, saveLogicDetails);
+					}
+				}catch(Exception e) {
+					e.printStackTrace();
+					logger.error("Error while calling logic client");
 				}
 			}else {
 				logger.info("Logic Details Already Saved so not Going to Save Again===>");
@@ -5397,8 +5412,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				if(commercialRequest== null) {
 					logger.info("Commercial Details Request Not Found  in savePhese1DataToSidbi()  for ApplicationId ====>{}FpProductId====>{}",applicationId,fpProductMappingId);
 					auditComponent.updateAudit(AuditComponent.COMMERCIAL, applicationId, userId, "Commercial Details data Request Not Found for ApplicationId ====>{} "+applicationId+"FpProductId====>{}"+fpProductMappingId, false);
-					setTokenAsExpired(generateTokenRequest);
-					return false;
+//					setTokenAsExpired(generateTokenRequest);
+//					return false;
 				}else {
 					logger.info("Start Saving Commercial Details in savePhese1DataToSidbi() ");
 					saveCommercialDetails = sidbiIntegrationClient.saveCommercialDetails(commercialRequest, generateTokenRequest.getToken(), generateTokenRequest.getBankToken());
@@ -5428,7 +5443,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			return false;
 		}
 		setTokenAsExpired(generateTokenRequest);
-		return (savePrelimInfo && scoringDetails && matchesParameters && bankStatement && eligibilityParameters && saveFinancialDetails && saveCmaDetails);
+		return (savePrelimInfo && scoringDetails && matchesParameters && bankStatement && eligibilityParameters && saveFinancialDetails && saveCmaDetails && saveLogicDetails && saveCommercialDetails);
 	}
 		
 
