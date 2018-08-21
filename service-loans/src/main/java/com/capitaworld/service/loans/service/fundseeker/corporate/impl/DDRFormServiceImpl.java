@@ -3376,137 +3376,161 @@ public class DDRFormServiceImpl implements DDRFormService {
 			case 502:// TL
 			case 503:// USL
 			case 504:// WCTL
-			dDRFormDetails.setFieldAuditReport("Yes");
+				dDRFormDetails.setFieldAuditReport("Yes");
+				break;
 			
 			case 9:// WC
 			case 36:// TL
 			case 276:// USL
 			case 375:// WCTL
-			dDRFormDetails.setAuditedFinancialsForLast3years("Yes");
+				dDRFormDetails.setAuditedFinancialsForLast3years("Yes");
+				break;
 			
 			case 280:// WC
 			case 13:// TL
 			case 40:// USL
 			case 379:// WCTL
-			dDRFormDetails.setProvisionalFinancialsForCurrentYear("Yes");
+				dDRFormDetails.setProvisionalFinancialsForCurrentYear("Yes");
+				break;
 			
 			case 11:// WC
 			case 38:// TL
 			case 278:// USL
 			case 377:// WCTL
-			dDRFormDetails.setItrForLast3years("Yes");
+				dDRFormDetails.setItrForLast3years("Yes");
+				break;
 			
 			case 10:// WC
 			case 37:// TL
 			case 277:// USL
 			case 376:// WCTL
-			dDRFormDetails.setSanctionLetter("Yes");
+				dDRFormDetails.setSanctionLetter("Yes");
+				break;
 			
 			case 505:// WC
 			case 506:// TL
 			case 507:// USL
 			case 508:// WCTL
-			dDRFormDetails.setBankStatementOfLast12months("Yes");
+				dDRFormDetails.setBankStatementOfLast12months("Yes");
+				break;
 			
 			case 308:// WC
 			case 309:// TL
 			case 310:// USL
 			case 399:// WCTL
-			dDRFormDetails.setDebtorsList("Yes");
+				dDRFormDetails.setDebtorsList("Yes");
+				break;
 			
 			case 509:// WC
 			case 510:// TL
 			case 511:// USL
 			case 512:// WCTL
-			dDRFormDetails.setFinancialFigures("Yes");
+				dDRFormDetails.setFinancialFigures("Yes");
+				break;
 			
 			case 18:// WC
 			case 45:// TL
 			case 311:// USL
 			case 384:// WCTL
-			dDRFormDetails.setMoaOfTheCompany("Yes");
+				dDRFormDetails.setMoaOfTheCompany("Yes");
+				break;
 			
 			case 3:// WC
 			case 30:// TL
 			case 283:// USL
 			case 369:// WCTL
-			dDRFormDetails.setPanCardOfTheCompany("Yes");
+				dDRFormDetails.setPanCardOfTheCompany("Yes");
+				break;
 			
 			case 305:// WC
 			case 306:// TL
 			case 307:// USL
 			case 398:// WCTL
-			dDRFormDetails.setResolutionAndForm32forAdditionOfDirector("Yes");
+				dDRFormDetails.setResolutionAndForm32forAdditionOfDirector("Yes");
+				break;
 			
 			case 513:// WC
 			case 514:// TL
 			case 515:// USL
 			case 516:// WCTL
-			dDRFormDetails.setCentralSalesTaxRegistrationOfCompany("Yes");
+				dDRFormDetails.setCentralSalesTaxRegistrationOfCompany("Yes");
+				break;
 			
 			case 517:// WC
 			case 518:// TL
 			case 519:// USL
 			case 520:// WCTL
-			dDRFormDetails.setCentralExciseRegistrationOfCompany("Yes");
+				dDRFormDetails.setCentralExciseRegistrationOfCompany("Yes");
+				break;
 			
 			case 521:// WC
 			case 522:// TL
 			case 523:// USL
 			case 524:// WCTL
-			dDRFormDetails.setVatRegistrationOfCompany("Yes");
+				dDRFormDetails.setVatRegistrationOfCompany("Yes");
+				break;
 			
 			case 315:// WC
 			case 316:// TL
 			case 317:// USL
 			case 401:// WCTL
-			dDRFormDetails.setLetterOfIntentFromFundProviders("Yes");
+				dDRFormDetails.setLetterOfIntentFromFundProviders("Yes");
+				break;
 			
 			case 14:// WC
 			case 41:// TL
 			case 284:// USL
 			case 397:// WCTL
-			dDRFormDetails.setPanCardAndResidenceAddProofOfDirectors("Yes");
+				dDRFormDetails.setPanCardAndResidenceAddProofOfDirectors("Yes");
+				break;
 			
 			case 12:// WC
 			case 39:// TL
 			case 279:// USL
 			case 378:// WCTL
-			dDRFormDetails.setCaCertifiedNetworthStatement("Yes");
+				dDRFormDetails.setCaCertifiedNetworthStatement("Yes");
+				break;
 			
 			case 297:// WC
 			case 298:// TL
 			case 299:// USL
 			case 396:// WCTL
-			dDRFormDetails.setIrrOfAllDirectorsForLast2years("Yes");
+				dDRFormDetails.setIrrOfAllDirectorsForLast2years("Yes");
+				break;
 			
 			case 525:// WC
 			case 526:// TL
 			case 527:// USL
 			case 528:// WCTL
-			dDRFormDetails.setListOfDirectors("Yes");
+				dDRFormDetails.setListOfDirectors("Yes");
+				break;
 			
 			case 15:// WC
 			case 42:// TL
 			case 285:// USL
 			case 381:// WCTL
-			dDRFormDetails.setListOfShareholdersAndShareHoldingPatter("Yes");
+				dDRFormDetails.setListOfShareholdersAndShareHoldingPatter("Yes");
+				break;
 			
 			case 535:// WC
 			case 536:// TL
 			case 537:// USL
 			case 538:// WCTL
-			dDRFormDetails.setProfilePicCompany("Yes");
+				dDRFormDetails.setProfilePicCompany("Yes");
+				break;
 			
 			case 539:// WC
 			case 540:// TL
 			case 541:// USL
 			case 542:// WCTL
-			dDRFormDetails.setSiteOrPromotorsPhotos("Yes");
+				dDRFormDetails.setSiteOrPromotorsPhotos("Yes");
+				break;
 
 			default:
 				break;
 			}
+			dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
+			dDRFormDetails.setModifyDate(new Date());
 			ddrFormDetailsRepository.save(dDRFormDetails);
 			return 1L;
 		} catch (Exception e) {
