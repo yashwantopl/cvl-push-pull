@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
+import com.capitaworld.service.loans.domain.fundprovider.ProductMasterTemp;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.model.PaymentRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
@@ -570,11 +571,485 @@ public class FPAsyncComponent {
 						
 						logger.info("Mail to BO after In-principle to FS is disabled==========>");
 					}
-				};
+				}
 				
 				//==========================================================================================================
 
 		
+				@Async
+				public void sendEmailToCheckerWhenAdminMakerSendProductForApproval(ProductMasterTemp productMasterTemp, Long userId) {
+					
+					try {
+							
+						logger.info("Into sending Mail to Checker when Admin Maker send product for Approval===>{}");
+						String subject = "Intimation: New Product - "+productMasterTemp.getName();
+						Map<String, Object> mailParameters = new HashMap<String, Object>();
+						
+						mailParameters.put("product_name", productMasterTemp.getName()!=null?productMasterTemp.getName():"NA");
+						mailParameters.put("product_type", " ");
+						
+						
+						UserResponse response = null;
+						
+						try {
+							response = userClient.getEmailMobile(userId);
+						}
+						catch(Exception e) {
+							logger.info("Something went wrong while calling Users client===>{}");
+							e.printStackTrace();
+						}
+						
+						UsersRequest adminMaker = null;
+						
+						if(!CommonUtils.isObjectNullOrEmpty(response)) {
+							adminMaker = MultipleJSONObjectHelper
+									.getObjectFromMap((Map<String, Object>) response.getData(), UsersRequest.class);
+
+						}
+						
+						String adminMakerName=null;
+						
+						try {
+							logger.error("Into getting FP Name======>"+adminMaker);
+							UserResponse userResponseForName = userClient.getFPDetails(adminMaker);
+							FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<Object,Object>)userResponseForName.getData(),
+									FundProviderDetailsRequest.class);
+							adminMakerName = fundProviderDetailsRequest.getFirstName() + " " + (fundProviderDetailsRequest.getLastName() == null ? "": fundProviderDetailsRequest.getLastName());
+						} catch (Exception e) {
+							logger.error("error while fetching FP name");
+							e.printStackTrace();
+						}
+						
+						mailParameters.put("admin_maker", adminMakerName!=null?adminMakerName:"NA");
+						
+						UserResponse userResponse = userClient.getUserDetailByOrgRoleId(productMasterTemp.getUserOrgId(),com.capitaworld.service.users.utils.CommonUtils.UserRoles.ADMIN_CHECKER);
+						List<Map<String, Object>> usersRespList = (List<Map<String, Object>>) userResponse.getListData();
+								
+						String to = null;
+						if(!CommonUtils.isObjectNullOrEmpty(usersRespList)) {
+							for (int i = 0; i < usersRespList.size(); i++) {
+								UsersRequest userObj = MultipleJSONObjectHelper.getObjectFromMap(usersRespList.get(i),
+										UsersRequest.class);
+								
+								String name = null;
+								
+								try {
+									logger.error("Into getting FP Name======>"+userObj);
+									UserResponse userResponseForName = userClient.getFPDetails(userObj);
+									FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<Object,Object>)userResponseForName.getData(),
+											FundProviderDetailsRequest.class);
+									name = fundProviderDetailsRequest.getFirstName() + " " + (fundProviderDetailsRequest.getLastName() == null ? "": fundProviderDetailsRequest.getLastName());
+								} catch (Exception e) {
+									logger.error("error while fetching FP name");
+									e.printStackTrace();
+								}
+								
+								if(!CommonUtils.isObjectNullOrEmpty(userObj.getEmail())) {
+									//System.out.println("Maker ID:---"+userObj.getEmail());
+									to = userObj.getEmail();	
+									mailParameters.put("admin_checker", name!=null?name:"NA");
+									
+									createNotificationForEmail(to, userId.toString(),
+											mailParameters, NotificationAlias.EMAIL_ADMIN_CHECKER_ADMIN_MAKER_CREATES_PRODUCT, subject);
+								}
+								
+								if(!CommonUtils.isObjectNullOrEmpty(userObj.getMobile())) {
+									//System.out.println("Maker ID:---"+userObj.getEmail());
+									Map<String, Object> smsParameters = new HashMap<String, Object>();
+									to = userObj.getMobile();	
+									smsParameters.put("admin_checker", name!=null?name:"NA");
+									smsParameters.put("admin_maker", adminMakerName!=null?adminMakerName:"NA");
+									smsParameters.put("product_name", productMasterTemp.getName()!=null?productMasterTemp.getName():"NA");
+									smsParameters.put("product_type", " ");
+									smsParameters.put("url", "www.bitly.com");
+									
+									sendSMSNotification(userId.toString(),
+											smsParameters, NotificationAlias.SMS_ADMIN_CHECKER_ADMIN_MAKER_CREATES_PRODUCT, to);
+								}
+								
+								if(!CommonUtils.isObjectNullOrEmpty(userObj.getId())) {
+									//System.out.println("Maker ID:---"+userObj.getEmail());
+									Map<String, Object> sysParameters = new HashMap<String, Object>();
+									sysParameters.put("admin_maker", adminMakerName!=null?adminMakerName:"NA");
+									sysParameters.put("product_name", productMasterTemp.getName()!=null?productMasterTemp.getName():"NA");
+									sysParameters.put("product_type", " ");
+									
+									sendSYSNotification(userObj.getId().toString(),
+											sysParameters, NotificationAlias.SYS_ADMIN_CHECKER_ADMIN_MAKER_CREATES_PRODUCT, userObj.getId().toString(), userObj.getId().toString());
+								}
+								
+							}
+							
+						}
+						else {
+							logger.info("No Admin Checker found=================>");
+						}
+						
+						}catch (Exception e) {
+							
+							logger.info("An exception getting while sending Mail to Checker when Admin Maker send product for Approval=============>{}");
+
+							e.printStackTrace();
+						}
+						
+					}
+				
+				@Async
+				public void sendEmailToCheckerWhenAdminMakerResendProductForApproval(ProductMasterTemp productMasterTemp, Long userId) {
+					
+					try {
+							
+						logger.info("Into sending Mail to Checker when Admin Maker resend product for Approval===>{}");
+						String subject = "Intimation: Re-sent Product - "+productMasterTemp.getName();
+						Map<String, Object> mailParameters = new HashMap<String, Object>();
+						
+						mailParameters.put("product_name", productMasterTemp.getName()!=null?productMasterTemp.getName():"NA");
+						mailParameters.put("date", productMasterTemp.getModifiedDate()!=null?productMasterTemp.getModifiedDate():"NA");
+						
+						
+						UserResponse response = null;
+						
+						try {
+							response = userClient.getEmailMobile(userId);
+						}
+						catch(Exception e) {
+							logger.info("Something went wrong while calling Users client===>{}");
+							e.printStackTrace();
+						}
+						
+						UsersRequest adminMaker = null;
+						
+						if(!CommonUtils.isObjectNullOrEmpty(response)) {
+							adminMaker = MultipleJSONObjectHelper
+									.getObjectFromMap((Map<String, Object>) response.getData(), UsersRequest.class);
+
+						}
+						
+						String adminMakerName=null;
+						
+						try {
+							logger.error("Into getting FP Name======>"+adminMaker);
+							UserResponse userResponseForName = userClient.getFPDetails(adminMaker);
+							FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<Object,Object>)userResponseForName.getData(),
+									FundProviderDetailsRequest.class);
+							adminMakerName = fundProviderDetailsRequest.getFirstName() + " " + (fundProviderDetailsRequest.getLastName() == null ? "": fundProviderDetailsRequest.getLastName());
+						} catch (Exception e) {
+							logger.error("error while fetching FP name");
+							e.printStackTrace();
+						}
+						
+						mailParameters.put("admin_maker", adminMakerName!=null?adminMakerName:"NA");
+						
+						UserResponse userResponse = userClient.getUserDetailByOrgRoleId(productMasterTemp.getUserOrgId(),com.capitaworld.service.users.utils.CommonUtils.UserRoles.ADMIN_CHECKER);
+						List<Map<String, Object>> usersRespList = (List<Map<String, Object>>) userResponse.getListData();
+								
+						String to = null;
+						if(!CommonUtils.isObjectNullOrEmpty(usersRespList)) {
+							for (int i = 0; i < usersRespList.size(); i++) {
+								UsersRequest userObj = MultipleJSONObjectHelper.getObjectFromMap(usersRespList.get(i),
+										UsersRequest.class);
+								
+								String name = null;
+								
+								try {
+									logger.error("Into getting FP Name======>"+userObj);
+									UserResponse userResponseForName = userClient.getFPDetails(userObj);
+									FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<Object,Object>)userResponseForName.getData(),
+											FundProviderDetailsRequest.class);
+									name = fundProviderDetailsRequest.getFirstName() + " " + (fundProviderDetailsRequest.getLastName() == null ? "": fundProviderDetailsRequest.getLastName());
+								} catch (Exception e) {
+									logger.error("error while fetching FP name");
+									e.printStackTrace();
+								}
+								
+								if(!CommonUtils.isObjectNullOrEmpty(userObj.getEmail())) {
+									//System.out.println("Maker ID:---"+userObj.getEmail());
+									to = userObj.getEmail();	
+									mailParameters.put("admin_checker", name!=null?name:"NA");
+									
+									createNotificationForEmail(to, userId.toString(),
+											mailParameters, NotificationAlias.EMAIL_ADMIN_CHECKER_ADMIN_MAKER_RESENDS_PRODUCT, subject);
+								}
+								
+								if(!CommonUtils.isObjectNullOrEmpty(userObj.getMobile())) {
+									//System.out.println("Maker ID:---"+userObj.getEmail());
+									Map<String, Object> smsParameters = new HashMap<String, Object>();
+									to = userObj.getMobile();	
+									smsParameters.put("admin_checker", name!=null?name:"NA");
+									smsParameters.put("admin_maker", adminMakerName!=null?adminMakerName:"NA");
+									smsParameters.put("product_name", productMasterTemp.getName()!=null?productMasterTemp.getName():"NA");
+									smsParameters.put("product_type", " ");
+									smsParameters.put("url", "www.bitly.com");
+									
+									sendSMSNotification(userId.toString(),
+											smsParameters, NotificationAlias.SMS_ADMIN_CHECKER_ADMIN_MAKER_RESENDS_PRODUCT, to);
+								}
+								
+								if(!CommonUtils.isObjectNullOrEmpty(userObj.getId())) {
+									//System.out.println("Maker ID:---"+userObj.getEmail());
+									Map<String, Object> sysParameters = new HashMap<String, Object>();
+									sysParameters.put("admin_maker", adminMakerName!=null?adminMakerName:"NA");
+									sysParameters.put("product_name", productMasterTemp.getName()!=null?productMasterTemp.getName():"NA");
+									sysParameters.put("product_type", " ");
+									
+									sendSYSNotification(userObj.getId().toString(),
+											sysParameters, NotificationAlias.SYS_ADMIN_CHECKER_ADMIN_MAKER_RESENDS_PRODUCT, userObj.getId().toString(), userObj.getId().toString());
+								}
+								
+							}
+							
+						}
+						else {
+							logger.info("No Admin Checker found=================>");
+						}
+						
+						}catch (Exception e) {
+							
+							logger.info("An exception getting while sending Mail to Checker when Admin Maker resend product for Approval=============>{}");
+
+							e.printStackTrace();
+						}
+						
+					}
+				
+				@Async
+				public void sendEmailToMakerWhenAdminCheckerApprovedProduct(ProductMasterTemp productMasterTemp, Long userId) {
+					
+					try {
+							
+						logger.info("Into sending Mail to Maker when Admin Checker Approved product===>{}");
+						String subject = "Intimation : Product "+productMasterTemp.getName()+ " Approved";
+						Map<String, Object> mailParameters = new HashMap<String, Object>();
+						
+						mailParameters.put("product_name", productMasterTemp.getName()!=null?productMasterTemp.getName():"NA");
+						mailParameters.put("product_type", " ");
+						
+						
+						UserResponse response = null;
+						
+						try {
+							response = userClient.getEmailMobile(userId);
+						}
+						catch(Exception e) {
+							logger.info("Something went wrong while calling Users client===>{}");
+							e.printStackTrace();
+						}
+						
+						UsersRequest adminChecker = null;
+						
+						if(!CommonUtils.isObjectNullOrEmpty(response)) {
+							adminChecker = MultipleJSONObjectHelper
+									.getObjectFromMap((Map<String, Object>) response.getData(), UsersRequest.class);
+
+						}
+						
+						String adminCheckerName=null;
+						
+						try {
+							logger.error("Into getting FP Name======>"+adminChecker);
+							UserResponse userResponseForName = userClient.getFPDetails(adminChecker);
+							FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<Object,Object>)userResponseForName.getData(),
+									FundProviderDetailsRequest.class);
+							adminCheckerName = fundProviderDetailsRequest.getFirstName() + " " + (fundProviderDetailsRequest.getLastName() == null ? "": fundProviderDetailsRequest.getLastName());
+						} catch (Exception e) {
+							logger.error("error while fetching FP name");
+							e.printStackTrace();
+						}
+						
+						mailParameters.put("admin_checker", adminCheckerName!=null?adminCheckerName:"NA");
+						
+						UserResponse userResponse = userClient.getUserDetailByOrgRoleId(productMasterTemp.getUserOrgId(),com.capitaworld.service.users.utils.CommonUtils.UserRoles.ADMIN_MAKER);
+						List<Map<String, Object>> usersRespList = (List<Map<String, Object>>) userResponse.getListData();
+								
+						String to = null;
+						if(!CommonUtils.isObjectNullOrEmpty(usersRespList)) {
+							for (int i = 0; i < usersRespList.size(); i++) {
+								UsersRequest userObj = MultipleJSONObjectHelper.getObjectFromMap(usersRespList.get(i),
+										UsersRequest.class);
+								
+								String name = null;
+								
+								try {
+									logger.error("Into getting FP Name======>"+userObj);
+									UserResponse userResponseForName = userClient.getFPDetails(userObj);
+									FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<Object,Object>)userResponseForName.getData(),
+											FundProviderDetailsRequest.class);
+									name = fundProviderDetailsRequest.getFirstName() + " " + (fundProviderDetailsRequest.getLastName() == null ? "": fundProviderDetailsRequest.getLastName());
+								} catch (Exception e) {
+									logger.error("error while fetching FP name");
+									e.printStackTrace();
+								}
+								
+								if(!CommonUtils.isObjectNullOrEmpty(userObj.getEmail())) {
+									//System.out.println("Maker ID:---"+userObj.getEmail());
+									to = userObj.getEmail();	
+									mailParameters.put("admin_maker", name!=null?name:"NA");
+									
+									createNotificationForEmail(to, userId.toString(),
+											mailParameters, NotificationAlias.EMAIL_ADMIN_MAKER_PRODUCT_APPROVED_BY_CHECKER, subject);
+								}
+								
+								if(!CommonUtils.isObjectNullOrEmpty(userObj.getMobile())) {
+									//System.out.println("Maker ID:---"+userObj.getEmail());
+									Map<String, Object> smsParameters = new HashMap<String, Object>();
+									to = userObj.getMobile();	
+									smsParameters.put("admin_checker", adminCheckerName!=null?adminCheckerName:"NA");
+									smsParameters.put("product_name", productMasterTemp.getName()!=null?productMasterTemp.getName():"NA");
+									smsParameters.put("product_type", " ");
+									smsParameters.put("url", "www.bitly.com");
+									
+									sendSMSNotification(userId.toString(),
+											smsParameters, NotificationAlias.SMS_ADMIN_MAKER_PRODUCT_APPROVED_BY_CHECKER, to);
+								}
+								
+								if(!CommonUtils.isObjectNullOrEmpty(userObj.getId())) {
+									//System.out.println("Maker ID:---"+userObj.getEmail());
+									Map<String, Object> sysParameters = new HashMap<String, Object>();
+									sysParameters.put("admin_checker", adminCheckerName!=null?adminCheckerName:"NA");
+									sysParameters.put("product_name", productMasterTemp.getName()!=null?productMasterTemp.getName():"NA");
+									sysParameters.put("product_type", " ");
+									
+									sendSYSNotification(userObj.getId().toString(),
+											sysParameters, NotificationAlias.SYS_ADMIN_MAKER_PRODUCT_APPROVED_BY_CHECKER, userObj.getId().toString(), userObj.getId().toString());
+								}
+								
+						    	
+							}
+							
+						}
+						else {
+							logger.info("No Admin Maker found=================>");
+						}
+						
+						
+						}catch (Exception e) {
+							
+							logger.info("An exception getting while sending Mail to Maker when Admin Checker Approved product=============>{}");
+
+							e.printStackTrace();
+						}
+						
+					}
+				
+				@Async
+				public void sendEmailToMakerWhenAdminCheckerRevertedProduct(ProductMasterTemp productMasterTemp, Long userId) {
+					
+					try {
+							
+						logger.info("Into sending Mail to Maker when Admin Checker reverted product===>{}");
+						String subject = "Intimation :Re-Sent Product - "+productMasterTemp.getName()+" - Modification";
+						Map<String, Object> mailParameters = new HashMap<String, Object>();
+						
+						mailParameters.put("product_name", productMasterTemp.getName()!=null?productMasterTemp.getName():"NA");
+						mailParameters.put("product_type", " ");
+						
+						
+						UserResponse response = null;
+						
+						try {
+							response = userClient.getEmailMobile(userId);
+						}
+						catch(Exception e) {
+							logger.info("Something went wrong while calling Users client===>{}");
+							e.printStackTrace();
+						}
+						
+						UsersRequest adminChecker = null;
+						
+						if(!CommonUtils.isObjectNullOrEmpty(response)) {
+							adminChecker = MultipleJSONObjectHelper
+									.getObjectFromMap((Map<String, Object>) response.getData(), UsersRequest.class);
+
+						}
+						
+						String adminCheckerName=null;
+						
+						try {
+							logger.error("Into getting FP Name======>"+adminChecker);
+							UserResponse userResponseForName = userClient.getFPDetails(adminChecker);
+							FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<Object,Object>)userResponseForName.getData(),
+									FundProviderDetailsRequest.class);
+							adminCheckerName = fundProviderDetailsRequest.getFirstName() + " " + (fundProviderDetailsRequest.getLastName() == null ? "": fundProviderDetailsRequest.getLastName());
+						} catch (Exception e) {
+							logger.error("error while fetching FP name");
+							e.printStackTrace();
+						}
+						
+						mailParameters.put("admin_checker", adminCheckerName!=null?adminCheckerName:"NA");
+						
+						UserResponse userResponse = userClient.getUserDetailByOrgRoleId(productMasterTemp.getUserOrgId(),com.capitaworld.service.users.utils.CommonUtils.UserRoles.ADMIN_MAKER);
+						List<Map<String, Object>> usersRespList = (List<Map<String, Object>>) userResponse.getListData();
+								
+						String to = null;
+						if(!CommonUtils.isObjectNullOrEmpty(usersRespList)) {
+							for (int i = 0; i < usersRespList.size(); i++) {
+								UsersRequest userObj = MultipleJSONObjectHelper.getObjectFromMap(usersRespList.get(i),
+										UsersRequest.class);
+								
+								String name = null;
+								
+								try {
+									logger.error("Into getting FP Name======>"+userObj);
+									UserResponse userResponseForName = userClient.getFPDetails(userObj);
+									FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<Object,Object>)userResponseForName.getData(),
+											FundProviderDetailsRequest.class);
+									name = fundProviderDetailsRequest.getFirstName() + " " + (fundProviderDetailsRequest.getLastName() == null ? "": fundProviderDetailsRequest.getLastName());
+								} catch (Exception e) {
+									logger.error("error while fetching FP name");
+									e.printStackTrace();
+								}
+								
+								if(!CommonUtils.isObjectNullOrEmpty(userObj.getEmail())) {
+									//System.out.println("Maker ID:---"+userObj.getEmail());
+									to = userObj.getEmail();	
+									mailParameters.put("admin_maker", name!=null?name:"NA");
+									
+									createNotificationForEmail(to, userId.toString(),
+											mailParameters, NotificationAlias.EMAIL_ADMIN_MAKER_PRODUCT_REVERTED_BY_CHECKER, subject);
+								}
+								
+								if(!CommonUtils.isObjectNullOrEmpty(userObj.getMobile())) {
+									//System.out.println("Maker ID:---"+userObj.getEmail());
+									Map<String, Object> smsParameters = new HashMap<String, Object>();
+									to = userObj.getMobile();	
+									smsParameters.put("admin_checker", adminCheckerName!=null?adminCheckerName:"NA");
+									smsParameters.put("product_name", productMasterTemp.getName()!=null?productMasterTemp.getName():"NA");
+									smsParameters.put("product_type", " ");
+									smsParameters.put("url", "www.bitly.com");
+									
+									sendSMSNotification(userId.toString(),
+											smsParameters, NotificationAlias.SMS_ADMIN_MAKER_PRODUCT_REVERTED_BY_CHECKER, to);
+								}
+								
+								if(!CommonUtils.isObjectNullOrEmpty(userObj.getId())) {
+									//System.out.println("Maker ID:---"+userObj.getEmail());
+									Map<String, Object> sysParameters = new HashMap<String, Object>();
+									sysParameters.put("admin_checker", adminCheckerName!=null?adminCheckerName:"NA");
+									sysParameters.put("product_name", productMasterTemp.getName()!=null?productMasterTemp.getName():"NA");
+									sysParameters.put("product_type", " ");
+									
+									sendSYSNotification(userObj.getId().toString(),
+											sysParameters, NotificationAlias.SYS_ADMIN_MAKER_PRODUCT_REVERTED_BY_CHECKER, userObj.getId().toString(), userObj.getId().toString());
+								}
+						    	
+							}
+							
+						}
+						else {
+							logger.info("No Admin Maker found=================>");
+						}
+						
+						
+						}catch (Exception e) {
+							
+							logger.info("An exception getting while sending Mail to Maker when Admin Checker reverted product=============>{}");
+
+							e.printStackTrace();
+						}
+						
+					}
+				
+				
 		private void createNotificationForEmail(String toNo, String userId, Map<String, Object> mailParameters,
 				Long templateId, String emailSubject) throws NotificationException {
 			logger.info("Inside send notification===>{}"+toNo);
