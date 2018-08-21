@@ -840,7 +840,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 						mcaResponse = mcaClient.mcaStatusCheck(applicationId.toString(), mcaCompanyId.toString());
 						System.out.println("MCA Response"+mcaResponse);
 						System.out.println("MCA Response---===+++>>"+mcaResponse!=null?mcaResponse.getData():null);
-						if(mcaResponse.getData().equals(true)) {
+						if("true".equalsIgnoreCase(String.valueOf(mcaResponse.getData()))) {
 							nhbsApplicationsResponse.setMcaStatus(CommonUtils.COMPLETED);
 						}else {
 							nhbsApplicationsResponse.setMcaStatus(CommonUtils.IN_PROGRESS);
