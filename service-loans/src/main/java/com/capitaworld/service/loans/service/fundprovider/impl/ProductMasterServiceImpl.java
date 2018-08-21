@@ -940,9 +940,14 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 			
 			ProductMasterTemp productMasterTemp = productMasterTempRepository.findOne(workflowData.getFpProductId());
 			Integer productStatus = null;
+			String productType = null;
 			if(!CommonUtils.isObjectNullOrEmpty(productMasterTemp) && 
 			   !CommonUtils.isObjectNullOrEmpty(productMasterTemp.getStatusId())) {
 				productStatus = productMasterTemp.getStatusId();
+			}
+			
+			if(productMasterTemp.getProductId() !=null) {
+			  productType = CommonUtils.LoanType.getType(productMasterTemp.getProductId()).getName();
 			}
 
 			if (workflowData.getActionId() == WorkflowUtils.Action.SEND_FOR_APPROVAL) {
@@ -954,7 +959,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 						if(productStatus == CommonUtils.Status.REVERTED) {
 							try {
 								logger.info("Inside sending mail to Checker when Admin Maker resend product for Approval");
-								fpAsyncComponent.sendEmailToCheckerWhenAdminMakerResendProductForApproval(productMasterTemp,workflowData.getUserId());	
+								fpAsyncComponent.sendEmailToCheckerWhenAdminMakerResendProductForApproval(productMasterTemp,workflowData.getUserId(),productType);	
 							}
 							catch(Exception e) {
 								logger.info("Exception occured while sending mail to Checker when Admin Maker resend product for Approval");
@@ -964,7 +969,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 						else {
 							try {
 								logger.info("Inside sending mail to Checker when Admin Maker send product for Approval");
-								fpAsyncComponent.sendEmailToCheckerWhenAdminMakerSendProductForApproval(productMasterTemp,workflowData.getUserId());	
+								fpAsyncComponent.sendEmailToCheckerWhenAdminMakerSendProductForApproval(productMasterTemp,workflowData.getUserId(),productType);	
 							}
 							catch(Exception e) {
 								logger.info("Exception occured while sending mail to Checker when Admin Maker send product for Approval");
@@ -987,7 +992,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 						if(!CommonUtils.isObjectNullOrEmpty(productMasterTemp)) {
 							try {
 								logger.info("Inside sending mail to Maker when Admin Checker Approved Product");
-								fpAsyncComponent.sendEmailToMakerWhenAdminCheckerApprovedProduct(productMasterTemp,workflowData.getUserId());	
+								fpAsyncComponent.sendEmailToMakerWhenAdminCheckerApprovedProduct(productMasterTemp,workflowData.getUserId(),productType);	
 							}
 							catch(Exception e) {
 								logger.info("Exception occured while sending mail to Maker when Admin Checker Approved Product");
@@ -1004,7 +1009,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 					if(!CommonUtils.isObjectNullOrEmpty(productMasterTemp)) {
 						try {
 							logger.info("Inside sending mail to Maker when Admin Checker reverted Product");
-							fpAsyncComponent.sendEmailToMakerWhenAdminCheckerRevertedProduct(productMasterTemp,workflowData.getUserId());	
+							fpAsyncComponent.sendEmailToMakerWhenAdminCheckerRevertedProduct(productMasterTemp,workflowData.getUserId(),productType);	
 						}
 						catch(Exception e) {
 							logger.info("Exception occured while sending mail to Maker when Admin Checker reverted Product");

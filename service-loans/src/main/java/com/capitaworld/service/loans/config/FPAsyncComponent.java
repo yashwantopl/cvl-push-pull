@@ -577,7 +577,7 @@ public class FPAsyncComponent {
 
 		
 				@Async
-				public void sendEmailToCheckerWhenAdminMakerSendProductForApproval(ProductMasterTemp productMasterTemp, Long userId) {
+				public void sendEmailToCheckerWhenAdminMakerSendProductForApproval(ProductMasterTemp productMasterTemp, Long userId, String productType) {
 					
 					try {
 							
@@ -586,7 +586,7 @@ public class FPAsyncComponent {
 						Map<String, Object> mailParameters = new HashMap<String, Object>();
 						
 						mailParameters.put("product_name", productMasterTemp.getName()!=null?productMasterTemp.getName():"NA");
-						mailParameters.put("product_type", " ");
+						mailParameters.put("product_type", productType!=null?productType:"NA");
 						
 						
 						UserResponse response = null;
@@ -660,7 +660,7 @@ public class FPAsyncComponent {
 									smsParameters.put("admin_checker", name!=null?name:"NA");
 									smsParameters.put("admin_maker", adminMakerName!=null?adminMakerName:"NA");
 									smsParameters.put("product_name", productMasterTemp.getName()!=null?productMasterTemp.getName():"NA");
-									smsParameters.put("product_type", " ");
+									smsParameters.put("product_type", productType!=null?productType:"NA");
 									smsParameters.put("url", "www.bitly.com");
 									
 									sendSMSNotification(userId.toString(),
@@ -672,7 +672,7 @@ public class FPAsyncComponent {
 									Map<String, Object> sysParameters = new HashMap<String, Object>();
 									sysParameters.put("admin_maker", adminMakerName!=null?adminMakerName:"NA");
 									sysParameters.put("product_name", productMasterTemp.getName()!=null?productMasterTemp.getName():"NA");
-									sysParameters.put("product_type", " ");
+									sysParameters.put("product_type", productType!=null?productType:"NA");
 									
 									sendSYSNotification(userObj.getId().toString(),
 											sysParameters, NotificationAlias.SYS_ADMIN_CHECKER_ADMIN_MAKER_CREATES_PRODUCT, userObj.getId().toString(), userObj.getId().toString());
@@ -695,7 +695,7 @@ public class FPAsyncComponent {
 					}
 				
 				@Async
-				public void sendEmailToCheckerWhenAdminMakerResendProductForApproval(ProductMasterTemp productMasterTemp, Long userId) {
+				public void sendEmailToCheckerWhenAdminMakerResendProductForApproval(ProductMasterTemp productMasterTemp, Long userId, String productType) {
 					
 					try {
 							
@@ -778,7 +778,7 @@ public class FPAsyncComponent {
 									smsParameters.put("admin_checker", name!=null?name:"NA");
 									smsParameters.put("admin_maker", adminMakerName!=null?adminMakerName:"NA");
 									smsParameters.put("product_name", productMasterTemp.getName()!=null?productMasterTemp.getName():"NA");
-									smsParameters.put("product_type", " ");
+									smsParameters.put("product_type", productType!=null?productType:"NA");
 									smsParameters.put("url", "www.bitly.com");
 									
 									sendSMSNotification(userId.toString(),
@@ -790,7 +790,7 @@ public class FPAsyncComponent {
 									Map<String, Object> sysParameters = new HashMap<String, Object>();
 									sysParameters.put("admin_maker", adminMakerName!=null?adminMakerName:"NA");
 									sysParameters.put("product_name", productMasterTemp.getName()!=null?productMasterTemp.getName():"NA");
-									sysParameters.put("product_type", " ");
+									sysParameters.put("product_type", productType!=null?productType:"NA");
 									
 									sendSYSNotification(userObj.getId().toString(),
 											sysParameters, NotificationAlias.SYS_ADMIN_CHECKER_ADMIN_MAKER_RESENDS_PRODUCT, userObj.getId().toString(), userObj.getId().toString());
@@ -813,7 +813,7 @@ public class FPAsyncComponent {
 					}
 				
 				@Async
-				public void sendEmailToMakerWhenAdminCheckerApprovedProduct(ProductMasterTemp productMasterTemp, Long userId) {
+				public void sendEmailToMakerWhenAdminCheckerApprovedProduct(ProductMasterTemp productMasterTemp, Long userId, String productType) {
 					
 					try {
 							
@@ -822,7 +822,7 @@ public class FPAsyncComponent {
 						Map<String, Object> mailParameters = new HashMap<String, Object>();
 						
 						mailParameters.put("product_name", productMasterTemp.getName()!=null?productMasterTemp.getName():"NA");
-						mailParameters.put("product_type", " ");
+						mailParameters.put("product_type", productType!=null?productType:"NA");
 						
 						
 						UserResponse response = null;
@@ -895,7 +895,7 @@ public class FPAsyncComponent {
 									to = userObj.getMobile();	
 									smsParameters.put("admin_checker", adminCheckerName!=null?adminCheckerName:"NA");
 									smsParameters.put("product_name", productMasterTemp.getName()!=null?productMasterTemp.getName():"NA");
-									smsParameters.put("product_type", " ");
+									smsParameters.put("product_type", productType!=null?productType:"NA");
 									smsParameters.put("url", "www.bitly.com");
 									
 									sendSMSNotification(userId.toString(),
@@ -907,7 +907,7 @@ public class FPAsyncComponent {
 									Map<String, Object> sysParameters = new HashMap<String, Object>();
 									sysParameters.put("admin_checker", adminCheckerName!=null?adminCheckerName:"NA");
 									sysParameters.put("product_name", productMasterTemp.getName()!=null?productMasterTemp.getName():"NA");
-									sysParameters.put("product_type", " ");
+									sysParameters.put("product_type", productType!=null?productType:"NA");
 									
 									sendSYSNotification(userObj.getId().toString(),
 											sysParameters, NotificationAlias.SYS_ADMIN_MAKER_PRODUCT_APPROVED_BY_CHECKER, userObj.getId().toString(), userObj.getId().toString());
@@ -932,7 +932,7 @@ public class FPAsyncComponent {
 					}
 				
 				@Async
-				public void sendEmailToMakerWhenAdminCheckerRevertedProduct(ProductMasterTemp productMasterTemp, Long userId) {
+				public void sendEmailToMakerWhenAdminCheckerRevertedProduct(ProductMasterTemp productMasterTemp, Long userId, String productType) {
 					
 					try {
 							
@@ -941,7 +941,7 @@ public class FPAsyncComponent {
 						Map<String, Object> mailParameters = new HashMap<String, Object>();
 						
 						mailParameters.put("product_name", productMasterTemp.getName()!=null?productMasterTemp.getName():"NA");
-						mailParameters.put("product_type", " ");
+						mailParameters.put("product_type", productType!=null?productType:"NA");
 						
 						
 						UserResponse response = null;
@@ -1014,7 +1014,7 @@ public class FPAsyncComponent {
 									to = userObj.getMobile();	
 									smsParameters.put("admin_checker", adminCheckerName!=null?adminCheckerName:"NA");
 									smsParameters.put("product_name", productMasterTemp.getName()!=null?productMasterTemp.getName():"NA");
-									smsParameters.put("product_type", " ");
+									smsParameters.put("product_type", productType!=null?productType:"NA");
 									smsParameters.put("url", "www.bitly.com");
 									
 									sendSMSNotification(userId.toString(),
@@ -1026,7 +1026,7 @@ public class FPAsyncComponent {
 									Map<String, Object> sysParameters = new HashMap<String, Object>();
 									sysParameters.put("admin_checker", adminCheckerName!=null?adminCheckerName:"NA");
 									sysParameters.put("product_name", productMasterTemp.getName()!=null?productMasterTemp.getName():"NA");
-									sysParameters.put("product_type", " ");
+									sysParameters.put("product_type", productType!=null?productType:"NA");
 									
 									sendSYSNotification(userObj.getId().toString(),
 											sysParameters, NotificationAlias.SYS_ADMIN_MAKER_PRODUCT_REVERTED_BY_CHECKER, userObj.getId().toString(), userObj.getId().toString());
