@@ -15,6 +15,7 @@ public class LoanSanctionRequest extends AuditActivityRequest implements Seriali
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	private Long id;
 	private String accountNo;
 	private Double sanctionAmount;
 	private String transactionNo;
@@ -35,6 +36,15 @@ public class LoanSanctionRequest extends AuditActivityRequest implements Seriali
 
 	private Long proposalId;
 	private Long proposalStatusId;
+	private Boolean isSaved = false;
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
 
 	public String getAccountNo() {
 		return accountNo;
@@ -180,27 +190,22 @@ public class LoanSanctionRequest extends AuditActivityRequest implements Seriali
 		this.proposalStatusId = proposalStatusId;
 	}
 
+	public Boolean getIsSaved() {
+		return isSaved;
+	}
+
+	public void setIsSaved(Boolean isSaved) {
+		this.isSaved = isSaved;
+	}
+
 	@Override
 	public String toString() {
-		return "LoanSanctionRequest{" +
-				"accountNo='" + accountNo + '\'' +
-				", sanctionAmount=" + sanctionAmount +
-				", transactionNo='" + transactionNo + '\'' +
-				", roi=" + roi +
-				", sanctionDate=" + sanctionDate +
-				", branch=" + branch +
-				", applicationId=" + applicationId +
-				", referenceNo=" + referenceNo +
-				", tenure=" + tenure +
-				", sanctionAuthority='" + sanctionAuthority + '\'' +
-				", remark='" + remark + '\'' +
-				", userName='" + userName + '\'' +
-				", password='" + password + '\'' +
-				", actionBy='" + actionBy + '\'' +
-				", processingFee=" + processingFee +
-				", orgId=" + orgId +
-				", proposalId=" + proposalId +
-				", proposalStatusId=" + proposalStatusId +
-				'}';
+		return "LoanSanctionRequest [id=" + id + ", accountNo=" + accountNo + ", sanctionAmount=" + sanctionAmount
+				+ ", transactionNo=" + transactionNo + ", roi=" + roi + ", sanctionDate=" + sanctionDate + ", branch="
+				+ branch + ", applicationId=" + applicationId + ", referenceNo=" + referenceNo + ", tenure=" + tenure
+				+ ", sanctionAuthority=" + sanctionAuthority + ", remark=" + remark + ", userName=" + userName
+				+ ", password=" + password + ", actionBy=" + actionBy + ", processingFee=" + processingFee + ", orgId="
+				+ orgId + ", proposalId=" + proposalId + ", proposalStatusId=" + proposalStatusId + ", isSaved="
+				+ isSaved + "]";
 	}
 }
