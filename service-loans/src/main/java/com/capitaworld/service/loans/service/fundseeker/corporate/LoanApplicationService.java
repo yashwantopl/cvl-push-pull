@@ -195,6 +195,13 @@ public interface LoanApplicationService {
 */
 	
 	public String getMCACompanyIdById(Long applicationId);
+
+	/**
+	 * @param applicationId
+	 * @return
+	 * @throws Exception
+	 */
+	public HunterRequestDataResponse getDataForHunterForNTB(Long applicationId) throws Exception;
 }
 
 
