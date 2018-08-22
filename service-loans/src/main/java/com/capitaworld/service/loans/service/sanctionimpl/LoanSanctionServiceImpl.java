@@ -14,8 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-
 import com.capitaworld.service.loans.config.AuditComponentBankToCW;
+import com.capitaworld.service.loans.config.FPAsyncComponent;
 import com.capitaworld.service.loans.domain.sanction.LoanSanctionDomain;
 import com.capitaworld.service.loans.model.LoanSanctionRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
@@ -64,6 +64,10 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 	
 	@Autowired
 	private LoanDisbursementService loanDisbursementService;
+
+	@Autowired
+	private FPAsyncComponent fpAsyncComponent;
+
 	@Override
 	public Boolean saveLoanSanctionDetail(LoanSanctionRequest loanSanctionRequest) throws Exception {
 		try {
@@ -80,6 +84,13 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 			BeanUtils.copyProperties(loanSanctionRequest, loanSanctionDomainOld,"id");
 			loanSanctionDomainOld.setModifiedBy(loanSanctionRequest.getActionBy());
 			loanSanctionDomainOld.setModifiedDate(new Date());
+			
+			//==================Sending Mail notification to Maker=============================
+			
+			fpAsyncComponent.sendEmailToMakerHOBOWhenCheckerSanctionLoan(loanSanctionDomainOld);
+			
+			//=================================================================================
+			
 		}
 		logger.info("Exit saveLoanSanctionDetail() -----------------------> LoanSanctionDomain "+ loanSanctionDomainOld);
 		return loanSanctionRepository.save(loanSanctionDomainOld) != null;
