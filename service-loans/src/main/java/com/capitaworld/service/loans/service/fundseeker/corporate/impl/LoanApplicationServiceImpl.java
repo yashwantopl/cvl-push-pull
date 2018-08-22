@@ -7,6 +7,10 @@ import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.Temporal;
+import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Calendar;
@@ -7100,7 +7104,10 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 			logger.info("In getDataForHunter with Application ID : "+applicationId);
 			HunterRequestDataResponse response = new HunterRequestDataResponse();
 		LoanApplicationMaster loan = loanApplicationRepository.getById(applicationId);
-		
+		CorporateApplicantDetail applicantDetail =	corporateApplicantDetailRepository.findByApplicationIdIdAndIsActive(applicationId, true);
+		if(applicantDetail!=null) {
+			response.setColleteralValue(applicantDetail.getTotalCollateralDetails());
+		}
 		if(loan!=null) {
 			logger.info("Fetched Loan APplication Master for application Id : "+applicationId);
 			response.setLoanAmount(loan.getAmount());
@@ -7210,6 +7217,13 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 						directorDetail.setDirectorBankAccount(data.getSummaryInfo().getAccNo());
 						directorDetail.setDirectorBankName(data.getSummaryInfo().getInstName());
 					}
+				}
+				if(detail.getResidenceSinceYear()!=null && detail.getResidenceSinceMonth()!=null) {
+					Calendar a = Calendar.getInstance();
+					LocalDate now = LocalDate.now();
+					LocalDate before = LocalDate.of(detail.getResidenceSinceYear(), detail.getResidenceSinceMonth(), 1);
+					Long timeAtAddress = ChronoUnit.MONTHS.between(before, now);
+					directorDetail.setTimeAtAddress(new BigInteger(String.valueOf(timeAtAddress)));
 				}
 				
 				response.addDirectorDetail(directorDetail);
