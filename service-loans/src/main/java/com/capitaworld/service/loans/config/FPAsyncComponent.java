@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.config;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -1077,6 +1078,8 @@ public class FPAsyncComponent {
 								productType = "NA";
 							}
 							
+							SimpleDateFormat form = new SimpleDateFormat("dd/MM/yyyy");
+							
 							mailParameters.put("fs_name", applicationRequest.getUserName()!=null?applicationRequest.getUserName():"NA");
 							mailParameters.put("product_type", productType!=null?productType:"NA");
 							mailParameters.put("loan_amount", applicationRequest.getLoanAmount()!=null?Double.valueOf(applicationRequest.getLoanAmount().toString()):"NA");
@@ -1085,7 +1088,7 @@ public class FPAsyncComponent {
 							mailParameters.put("interest_rate", loanSanctionDomainOld.getRoi()!=null?loanSanctionDomainOld.getRoi():"NA");	
 							mailParameters.put("tenure", loanSanctionDomainOld.getTenure()!=null?loanSanctionDomainOld.getTenure():"NA");
 							mailParameters.put("fp_name", " ");	
-							mailParameters.put("date", loanSanctionDomainOld.getSanctionDate()!=null?loanSanctionDomainOld.getSanctionDate():"NA");	
+							mailParameters.put("date", form.format(loanSanctionDomainOld.getSanctionDate())!=null?form.format(loanSanctionDomainOld.getSanctionDate()):"NA");	
 						
 							UserResponse checkerResponse = null;
 						
