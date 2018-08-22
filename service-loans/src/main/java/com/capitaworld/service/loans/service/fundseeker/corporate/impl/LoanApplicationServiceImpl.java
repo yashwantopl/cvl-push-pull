@@ -228,10 +228,12 @@ import com.capitaworld.service.oneform.enums.CreditRatingTerm;
 import com.capitaworld.service.oneform.enums.Currency;
 import com.capitaworld.service.oneform.enums.Denomination;
 import com.capitaworld.service.oneform.enums.DirectorRelationshipType;
+import com.capitaworld.service.oneform.enums.EducationQualificationNTB;
 import com.capitaworld.service.oneform.enums.FinanceCategory;
 import com.capitaworld.service.oneform.enums.Gender;
 import com.capitaworld.service.oneform.enums.Industry;
 import com.capitaworld.service.oneform.enums.LogDateTypeMaster;
+import com.capitaworld.service.oneform.enums.MaritalStatus;
 import com.capitaworld.service.oneform.enums.OccupationNature;
 import com.capitaworld.service.oneform.enums.Particular;
 import com.capitaworld.service.oneform.enums.PurposeOfLoan;
@@ -7008,7 +7010,8 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 				}
 				directorDetail.setGender(gender);
 				directorDetail.setShareholding(detail.getShareholding());
-				
+				directorDetail.setQualification(getQualificationForHunter(detail.getQualificationId()));
+				directorDetail.setMaritalStatus(getMaritalStatusForHunter(detail.getMaritalStatus()));
 				String state= null;
 				List<Long> stateList = new ArrayList<>();
 				if (!CommonUtils.isObjectNullOrEmpty(detail.getStateCode())) {
@@ -7088,6 +7091,141 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 		}
 	}
 
+	
+	
+	@Override
+	public HunterRequestDataResponse getDataForHunterForNTB(Long applicationId) throws Exception {
+		try {
+			
+			logger.info("In getDataForHunter with Application ID : "+applicationId);
+			HunterRequestDataResponse response = new HunterRequestDataResponse();
+		LoanApplicationMaster loan = loanApplicationRepository.getById(applicationId);
+		
+		if(loan!=null) {
+			logger.info("Fetched Loan APplication Master for application Id : "+applicationId);
+			response.setLoanAmount(loan.getAmount());
+			response.setLoanApplicationId(applicationId+"");
+			
+			
+			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+			response.setDateOfApplication(dateFormat.format(loan.getCreatedDate()));
+			response.setDateOfSubmission(dateFormat.format(new Date()));
+		}
+		PrimaryCorporateDetail primaryCorporate = primaryCorporateRepository.findOneByApplicationIdId(applicationId);
+		if(primaryCorporate!=null) {
+			response.setLoanType(String.valueOf(primaryCorporate.getPurposeOfLoanId()));
+		}
+		
+		logger.info("Fetching Director's background details for application Id : "+applicationId);
+		List<DirectorBackgroundDetail> directorList = directorBackgroundDetailsRepository.listPromotorBackgroundFromAppId(applicationId);
+		
+		response.setDirectorRespo(new ArrayList<DirectorBackgroundDetailResponse>());
+		if(directorList!=null && !directorList.isEmpty()) {
+			logger.info("Fetched Director's background details for application Id : "+applicationId);
+			for(DirectorBackgroundDetail detail : directorList) {
+				DirectorBackgroundDetailResponse directorDetail = new DirectorBackgroundDetailResponse();
+				BeanUtils.copyProperties(detail, directorDetail);
+				String gender = null;
+				if(Gender.MALE.getId() == detail.getGender()) {
+					gender = "MALE";
+				}
+				else if(Gender.FEMALE.getId() == detail.getGender()) {
+					gender = "FEMALE";
+				}
+				else if(Gender.THIRD_GENDER.getId() == detail.getGender()) {
+					gender = "OTHER";
+				}
+				else {
+					gender = "OTHER";
+				}
+				directorDetail.setGender(gender);
+				directorDetail.setShareholding(detail.getShareholding());
+				directorDetail.setQualification(getQualificationForHunter(detail.getQualificationId()));
+				directorDetail.setMaritalStatus(getMaritalStatusForHunter(detail.getMaritalStatus()));
+				String state= null;
+				List<Long> stateList = new ArrayList<>();
+				if (!CommonUtils.isObjectNullOrEmpty(detail.getStateCode())) {
+					ITRConnectionResponse itrConnectionResponse = itrClient.getOneFormStateIdFromITRStateId(Long.valueOf(detail.getStateCode()));
+					if(!CommonUtils.isObjectNullOrEmpty(itrConnectionResponse)) {
+					}
+					stateList.add(Long.valueOf(String.valueOf(itrConnectionResponse.getData())));
+				}
+				if (!CommonUtils.isListNullOrEmpty(stateList)) {
+					try {
+						
+						
+						
+						OneFormResponse oneFormResponse = oneFormClient.getStateByStateListId(stateList);
+						List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
+								.getListData();
+						if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+							MasterResponse masterResponse = MultipleJSONObjectHelper
+									.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+							state = masterResponse.getValue();
+						} else {
+
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+				directorDetail.setStateCode(state);
+				
+				String country= null;
+				List<Long> countryList = new ArrayList<>();
+				if (!CommonUtils.isObjectNullOrEmpty(detail.getCountryId()))
+					countryList.add(Long.valueOf(detail.getCountryId()));
+				if (!CommonUtils.isListNullOrEmpty(countryList)) {
+					try {
+						OneFormResponse oneFormResponse = oneFormClient.getCountryByCountryListId(countryList);
+						List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
+								.getListData();
+						if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+							MasterResponse masterResponse = MultipleJSONObjectHelper
+									.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+							country = masterResponse.getValue();
+						} else {
+
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+				directorDetail.setCountry(country);
+				directorDetail.setPincode(detail.getPincode().toString());
+				directorDetail.setIsMainDirector(detail.getIsMainDirector());
+				
+				
+				ReportRequest reportRequest = new ReportRequest();
+				reportRequest.setApplicationId(applicationId);
+				reportRequest.setDirectorId(detail.getId());
+				AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReport(reportRequest);
+				
+				if(analyzerResponse.getStatus() == HttpStatus.OK.value()) {
+					logger.info("Fetched Director's background details for application Id : "+applicationId);
+					Data data = MultipleJSONObjectHelper
+							.getObjectFromMap((Map<String, Object>) analyzerResponse.getData(), Data.class);
+					
+					if(data!=null && data.getSummaryInfo()!=null) {
+						directorDetail.setDirectorBankAccount(data.getSummaryInfo().getAccNo());
+						directorDetail.setDirectorBankName(data.getSummaryInfo().getInstName());
+					}
+				}
+				
+				response.addDirectorDetail(directorDetail);
+			}
+		}
+		logger.info("Fetching Bank details for application Id : "+applicationId);
+
+		logger.info("End getDataForHunter with Application ID : "+applicationId);
+		return response;
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+	}
+
 	@Override
 	public SanctioningDetailResponse getDetailsForSanction(DisbursementRequest disbursementRequest) throws Exception {
 		try{
@@ -7120,6 +7258,51 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 		}
 	}
 
+	private String getQualificationForHunter(Integer qualificationId) {
+		if(qualificationId!=null) {
+			if(EducationQualificationNTB.TECHNICAL.getId() == qualificationId) {
+				return "ENGINEER";
+			}
+			else if(EducationQualificationNTB.IIT.getId() == qualificationId) {
+				return "IT - TECH DIPLOMA";
+			}
+			else if(EducationQualificationNTB.IIM.getId() == qualificationId) {
+				return "POST GRADUATE";
+			}
+			else if(EducationQualificationNTB.PROFESSIONAL.getId() == qualificationId) {
+				return "PROFESSIONAL";
+			}
+			else if(EducationQualificationNTB.CA.getId() == qualificationId) {
+				return "PROFESSIONAL";
+			}
+			else if(EducationQualificationNTB.OTHERS.getId() == qualificationId) {
+				return "OTHER";
+			}
+			else {
+				return "OTHER";
+			}
+		}
+		return null;
+	}
+	
+	
+	private String getMaritalStatusForHunter(Integer maritakStatusId) {
+		if(maritakStatusId!=null) {
+			if(MaritalStatus.MARRIED.getId() == maritakStatusId) {
+				return "MARRIED";
+			}
+			else if(MaritalStatus.SINGLE.getId() == maritakStatusId) {
+				return "SINGLE";
+			}
+			else if(MaritalStatus.DIVORCED.getId() == maritakStatusId) {
+				return "DIVORCED";
+			}
+			else if(MaritalStatus.WIDOWED.getId() == maritakStatusId) {
+				return "WIDOWED";
+			}
+		}
+		return null;
+	}
 
 	private String getIndustryForHunter(Long industryId) {
 		if (industryId != null) {
