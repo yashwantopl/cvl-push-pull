@@ -209,7 +209,7 @@ public class LoansClient {
     private static final String GET_BY_USERID_AND_PRODUCTID = "/user_amount_mapping/get_by_user_and_product";
     
     private static final String GET_DATA_FOR_HUNTER="/common/getDataForHunter";
-    
+    private static final String GET_DATA_FOR_HUNTER_NTB="/common/getDataForHunterForNTB";
     
     //For Gateway
     private static final String GET_CMA_BY_APPLICATIONID_PRODUCTDOCUMENTMAPPINGID = "/corporate_upload/get_CMA_by_applicationId_productDocumentMappingId";
@@ -2111,7 +2111,19 @@ public class LoansClient {
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
-			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<?> entity = new HttpEntity<>(null, headers);
+			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available");
+		}
+	}
+	
+	public LoansResponse getDataForHunterForNTB(Long applicationId) throws LoansException {
+		String url = loansBaseUrl.concat(GET_DATA_FOR_HUNTER_NTB).concat("/"+applicationId);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
 			HttpEntity<?> entity = new HttpEntity<>(null, headers);
 			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
