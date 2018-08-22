@@ -8,6 +8,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.capitaworld.service.loans.config.FPAsyncComponent;
 import com.capitaworld.service.loans.domain.sanction.LoanSanctionDomain;
 import com.capitaworld.service.loans.model.LoanSanctionRequest;
 import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
@@ -34,6 +36,9 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 	
 	@Autowired
 	private UsersClient userClient;
+	
+	@Autowired
+	private FPAsyncComponent fpAsyncComponent;
 
 	@Override
 	public Boolean saveLoanSanctionDetail(LoanSanctionRequest loanSanctionRequest) throws Exception {
@@ -51,6 +56,13 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 			BeanUtils.copyProperties(loanSanctionRequest, loanSanctionDomainOld,"id");
 			loanSanctionDomainOld.setModifiedBy(loanSanctionRequest.getActionBy());
 			loanSanctionDomainOld.setModifiedDate(new Date());
+			
+			//==================Sending Mail notification to Maker=============================
+			
+			fpAsyncComponent.sendEmailToMakerHOBOWhenCheckerSanctionLoan(loanSanctionDomainOld);
+			
+			//=================================================================================
+			
 		}
 		logger.info("Exit saveLoanSanctionDetail() -----------------------> LoanSanctionDomain "+ loanSanctionDomainOld);
 		return loanSanctionRepository.save(loanSanctionDomainOld) != null;
