@@ -772,7 +772,8 @@ public class AsyncComponent {
 			parameters.put("lone_type", LoanType.getType(productId).getName());
 			String[] toIds = {checkerUserName.getEmail()};
 			String subject = makerUserName.getName()+ " has lock final details for " + applicationCode;
-			sendNotification(toIds,checkerId.toString(),parameters, NotificationTemplate.EMAIL_CKR_MKR_FINAL_LOCK,subject,false,null);
+		// STOP THIS MAIL RAHUL WRONG MAIL
+			//sendNotification(toIds,checkerId.toString(),parameters, NotificationTemplate.EMAIL_CKR_MKR_FINAL_LOCK,subject,false,null);
 			logger.info("Successfully send mail ------------------>" + checkerUserName.getEmail());
 			String[] toUserIds = {checkerId.toString()};
 			synNotification(toUserIds, makerId, NotificationAlias.SYS_CKR_MKR_FINAL_LOCK, parameters,applicationId, null);
