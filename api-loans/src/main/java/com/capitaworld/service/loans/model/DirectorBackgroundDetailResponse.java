@@ -1,6 +1,7 @@
 package com.capitaworld.service.loans.model;
 
 import java.io.Serializable;
+import java.math.BigInteger;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -89,9 +90,26 @@ public class DirectorBackgroundDetailResponse implements Serializable{
 		
 		private String directorBankAccount;
 		
+		private BigInteger timeAtAddress;
 		
 		
 		
+
+		
+
+		/**
+		 * @return the timeAtAddress
+		 */
+		public BigInteger getTimeAtAddress() {
+			return timeAtAddress;
+		}
+
+		/**
+		 * @param timeAtAddress the timeAtAddress to set
+		 */
+		public void setTimeAtAddress(BigInteger timeAtAddress) {
+			this.timeAtAddress = timeAtAddress;
+		}
 
 		/**
 		 * @return the directorBankName
