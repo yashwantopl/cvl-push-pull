@@ -85,7 +85,41 @@ public class DirectorBackgroundDetailResponse implements Serializable{
 		
 		private String qualification;
 		
+		private String directorBankName;
 		
+		private String directorBankAccount;
+		
+		
+		
+		
+
+		/**
+		 * @return the directorBankName
+		 */
+		public String getDirectorBankName() {
+			return directorBankName;
+		}
+
+		/**
+		 * @param directorBankName the directorBankName to set
+		 */
+		public void setDirectorBankName(String directorBankName) {
+			this.directorBankName = directorBankName;
+		}
+
+		/**
+		 * @return the directorBankAccount
+		 */
+		public String getDirectorBankAccount() {
+			return directorBankAccount;
+		}
+
+		/**
+		 * @param directorBankAccount the directorBankAccount to set
+		 */
+		public void setDirectorBankAccount(String directorBankAccount) {
+			this.directorBankAccount = directorBankAccount;
+		}
 
 		/**
 		 * @return the firstName

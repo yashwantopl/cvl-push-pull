@@ -572,7 +572,12 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 		try {
 			logger.info("Start invokeFraudAnalytics()");
 			if("Y".equals(String.valueOf(environment.getRequiredProperty("cw.call.service_fraudanalytics")))) {
-			HunterRequestDataResponse hunterRequestDataResponse = loanApplicationService
+				HunterRequestDataResponse hunterRequestDataResponse = null;
+				if(fundSeekerInputRequestResponse.getBusinessTypeId()!=null && fundSeekerInputRequestResponse.getBusinessTypeId() == 2) {// FOR NTB ONLY
+					hunterRequestDataResponse = loanApplicationService
+							.getDataForHunterForNTB(fundSeekerInputRequestResponse.getApplicationId());
+				}
+			hunterRequestDataResponse = loanApplicationService
 					.getDataForHunter(fundSeekerInputRequestResponse.getApplicationId());
 			AnalyticsRequest request = new AnalyticsRequest();
 			request.setApplicationId(fundSeekerInputRequestResponse.getApplicationId());
