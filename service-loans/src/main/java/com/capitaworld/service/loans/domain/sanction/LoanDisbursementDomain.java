@@ -14,43 +14,43 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-@Table(name="disbursement_detail")
-public class LoanDisbursementDomain  implements Serializable{
+@Table(name = "disbursement_detail")
+public class LoanDisbursementDomain implements Serializable {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
+
 	@Id
-	@GeneratedValue(strategy= GenerationType.IDENTITY )
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	
-	@Column(name="application_id") 
+
+	@Column(name = "application_id")
 	private Long applicationId;
-	
-	@Column(name="reference_no")
+
+	@Column(name = "reference_no")
 	private Long referenceNo;
-	
-	@Column(name="disbursement_date")
+
+	@Column(name = "disbursement_date")
 	private Date disbursementDate;
-	
-	@Column(name="account_no")
+
+	@Column(name = "account_no")
 	private String accountNo;
-	
-	@Column(name="disbursed_amount")
+
+	@Column(name = "disbursed_amount")
 	private Double disbursedAmount;
-	
+
 	private Long mode;
-		
+
 	@Column(name = "disbursement_authority")
 	private String disbursementAuthority;
-				   
+
 	@Column(name = "transaction_no")
 	private String transactionNo;
-	 
+
 	private String remark;
-	
+
 	@Column(name = "created_by")
 	private String createdBy;
 
@@ -68,6 +68,9 @@ public class LoanDisbursementDomain  implements Serializable{
 	@Column(name = "is_active")
 	private Boolean isActive;
 
+	@Column(name = "bank_disbursement_pk")
+	private Long bankDisbursementPrimaryKey;
+	
 	public Long getId() {
 		return id;
 	}
@@ -187,5 +190,22 @@ public class LoanDisbursementDomain  implements Serializable{
 	public void setIsActive(Boolean isActive) {
 		this.isActive = isActive;
 	}
-	
+
+	public Long getBankDisbursementPrimaryKey() {
+		return bankDisbursementPrimaryKey;
+	}
+
+	public void setBankDisbursementPrimaryKey(Long bankDisbursementPrimaryKey) {
+		this.bankDisbursementPrimaryKey = bankDisbursementPrimaryKey;
+	}
+
+	@Override
+	public String toString() {
+		return "LoanDisbursementDomain [id=" + id + ", applicationId=" + applicationId + ", referenceNo=" + referenceNo
+				+ ", disbursementDate=" + disbursementDate + ", accountNo=" + accountNo + ", disbursedAmount="
+				+ disbursedAmount + ", mode=" + mode + ", disbursementAuthority=" + disbursementAuthority
+				+ ", transactionNo=" + transactionNo + ", remark=" + remark + ", createdBy=" + createdBy
+				+ ", createdDate=" + createdDate + ", modifiedBy=" + modifiedBy + ", modifiedDate=" + modifiedDate
+				+ ", isActive=" + isActive + ", bankDisbursementPrimaryKey=" + bankDisbursementPrimaryKey + "]";
+	}
 }
