@@ -3035,7 +3035,7 @@ public class LoanApplicationController {
 
 	
 	@RequestMapping(value = "/reverse_api", method = RequestMethod.GET)
-	public void reverseAPI(@PathVariable("appId") Long appId) {
+	public void reverseAPI() {
 		try {
 			logger.info("start reverseAPI()");
 			loanSanctionService.saveSanctionAndDisbursementDetailsFromBank();
