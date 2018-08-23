@@ -27,6 +27,11 @@ public class EmploymentDetail extends AuditActivity implements Serializable {
     @Column(name="total_experience")
     private Long totalExperience;
 
+    @Column(name="name_of_employer")
+    private String nameOfEmployer;
+
+    private Double salary;
+
     public EmploymentDetail(){
     }
 
@@ -74,4 +79,19 @@ public class EmploymentDetail extends AuditActivity implements Serializable {
         this.totalExperience = totalExperience;
     }
 
+    public String getNameOfEmployer() {
+        return nameOfEmployer;
+    }
+
+    public void setNameOfEmployer(String nameOfEmployer) {
+        this.nameOfEmployer = nameOfEmployer;
+    }
+
+    public Double getSalary() {
+        return salary;
+    }
+
+    public void setSalary(Double salary) {
+        this.salary = salary;
+    }
 }
