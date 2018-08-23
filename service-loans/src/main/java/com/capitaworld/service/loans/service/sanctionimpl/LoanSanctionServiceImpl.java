@@ -161,8 +161,14 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 					for(Map<String , Object> map : userOrganisationRequestList) {
 						userOrganisationRequest = (UserOrganisationRequest)	MultipleJSONObjectHelper.getObjectFromMap(map, UserOrganisationRequest.class);
 						if(CommonUtils.isObjectNullOrEmpty(isProduction)){
+							if(CommonUtils.isObjectNullOrEmpty(userOrganisationRequest.getProductionUrl())) {
+								continue;
+							}
 							sidbiIntegrationClient.setIntegrationBaseUrl(userOrganisationRequest.getProductionUrl());
 						}else {
+							if(CommonUtils.isObjectNullOrEmpty(userOrganisationRequest.getUatUrl())) {
+								continue;
+							}
 							sidbiIntegrationClient.setIntegrationBaseUrl(userOrganisationRequest.getUatUrl());//
 						}
 						logger.warn("Getting token from SidbiIntegrationClient --------------" +userOrganisationRequest);
