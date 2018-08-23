@@ -88,7 +88,7 @@ public class FPAsyncComponent {
 					mailParameters.put("loan_amount", proposalresp.get("amount")!=null?Double.valueOf(proposalresp.get("amount").toString() ):"NA");
 					mailParameters.put("emi_amount", proposalresp.get("emi_amount")!=null?Double.valueOf(proposalresp.get("emi_amount").toString() ):"NA");
 					mailParameters.put("interest_rate", proposalresp.get("rate_interest")!=null?Double.valueOf(proposalresp.get("rate_interest").toString() ):"NA");
-					mailParameters.put("application_id", paymentRequest.getApplicationId()!=null?paymentRequest.getApplicationId():"NA");
+					mailParameters.put("application_id", paymentRequest.getApplicationId()!=null?paymentRequest.getApplicationId().toString():"NA");
 				
 					UserResponse response = null;
 					
@@ -351,7 +351,7 @@ public class FPAsyncComponent {
 							mailParameters.put("loan_amount", proposalresp.get("amount")!=null?Double.valueOf(proposalresp.get("amount").toString() ):"NA");
 							mailParameters.put("emi_amount", proposalresp.get("emi_amount")!=null?Double.valueOf(proposalresp.get("emi_amount").toString() ):"NA");
 							mailParameters.put("interest_rate", proposalresp.get("rate_interest")!=null?Double.valueOf(proposalresp.get("rate_interest").toString() ):"NA");
-							mailParameters.put("application_id", paymentRequest.getApplicationId());
+							mailParameters.put("application_id", paymentRequest.getApplicationId()!=null?paymentRequest.getApplicationId().toString():"NA");
 							
 							UserResponse response = null;
 							
@@ -482,7 +482,7 @@ public class FPAsyncComponent {
 							mailParameters.put("loan_amount", proposalresp.get("amount")!=null?Double.valueOf(proposalresp.get("amount").toString() ):"NA");
 							mailParameters.put("emi_amount", proposalresp.get("emi_amount")!=null?Double.valueOf(proposalresp.get("emi_amount").toString() ):"NA");
 							mailParameters.put("interest_rate", proposalresp.get("rate_interest")!=null?Double.valueOf(proposalresp.get("rate_interest").toString() ):"NA");
-							mailParameters.put("application_id", paymentRequest.getApplicationId());
+							mailParameters.put("application_id", paymentRequest.getApplicationId()!=null?paymentRequest.getApplicationId().toString():"NA");
 							
 							UserResponse response = null;
 							
@@ -718,7 +718,7 @@ public class FPAsyncComponent {
 									parameters.put("product_type","NA");	
 								}
 								parameters.put("loan_amount", applicationRequest.getLoanAmount()!=null?applicationRequest.getLoanAmount():"NA");
-								parameters.put("application_id", request.getApplicationId());
+								parameters.put("application_id", request.getApplicationId().toString());
 								parameters.put("mobile_no", "NA");
 								parameters.put("state", state!=null?state:"NA");
 								parameters.put("city", "NA");
@@ -1513,22 +1513,6 @@ public class FPAsyncComponent {
 							mailParameters.put("fp_name", " ");	
 							mailParameters.put("date", form.format(loanSanctionDomainOld.getSanctionDate())!=null?form.format(loanSanctionDomainOld.getSanctionDate()):"NA");	
 						
-							UserResponse checkerResponse = null;
-						
-							try {
-								checkerResponse = userClient.getEmailMobile(Long.valueOf(loanSanctionDomainOld.getModifiedBy()));
-							}
-							catch(Exception e) {
-								logger.info("Something went wrong while calling Users client===>{}");
-								e.printStackTrace();
-							}
-							
-							UsersRequest checker = null;
-							if(!CommonUtils.isObjectNullOrEmpty(checkerResponse)) {
-								checker = MultipleJSONObjectHelper
-										.getObjectFromMap((Map<String, Object>) checkerResponse.getData(), UsersRequest.class);
-							}
-							
 							UsersRequest checkerForName = new UsersRequest();
 							checkerForName.setId(Long.valueOf(loanSanctionDomainOld.getModifiedBy()));
 							
@@ -1548,7 +1532,6 @@ public class FPAsyncComponent {
 							
 							
 							UserResponse makerResponse = null;
-							
 							try {
 								makerResponse = userClient.getEmailMobile(applicationRequest.getFpMakerId());
 							}
@@ -1593,12 +1576,12 @@ public class FPAsyncComponent {
 										NotificationAlias.MAIL_MKR_DDR_APPROVE, NotificationType.EMAIL, subjcet);
 								*/
 								// ====================== MAIL TO MAKER by new code ======================
-								createNotificationForEmail(toIds, maker.getId().toString(), mailParameters,
+								createNotificationForEmail(toIds, applicationRequest.getFpMakerId().toString(), mailParameters,
 										NotificationAlias.EMAIL_MAKER_AFTER_CHECKER_SUBMIT_SANCTION_POPUP, subject);
 								
 							}
 								
-							if(!CommonUtils.isObjectNullOrEmpty(maker.getId())) {
+							if(!CommonUtils.isObjectNullOrEmpty(applicationRequest.getFpMakerId())) {
 								//System.out.println("Maker ID:---"+userObj.getEmail());
 								Map<String, Object> sysParameters = new HashMap<String, Object>();
 								
@@ -1606,8 +1589,8 @@ public class FPAsyncComponent {
 								sysParameters.put("fs_name", applicationRequest.getUserName()!=null?applicationRequest.getUserName():"NA");
 								sysParameters.put("product_type", productType!=null?productType:"NA");
 						
-								sendSYSNotification(maker.getId().toString(),
-										sysParameters, NotificationAlias.SYS_MAKER_AFTER_CHECKER_SUBMIT_SANCTION_POPUP, maker.getId().toString(), maker.getId().toString());
+								sendSYSNotification(applicationRequest.getFpMakerId().toString(),
+										sysParameters, NotificationAlias.SYS_MAKER_AFTER_CHECKER_SUBMIT_SANCTION_POPUP, applicationRequest.getFpMakerId().toString(), applicationRequest.getFpMakerId().toString());
 							}
 							
 							//==================================================================================
