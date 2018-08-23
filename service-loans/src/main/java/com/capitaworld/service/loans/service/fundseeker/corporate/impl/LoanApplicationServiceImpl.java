@@ -6492,11 +6492,11 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 				try {
 					fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap(
                             (LinkedHashMap<String, Object>) userResponse.getData(), FundProviderDetailsRequest.class);
+					loanMasterRequest.setBankName(fundProviderDetailsRequest.getOrganizationName());
 				} catch (IOException e) {
 					logger.error("error while setting users details from proposal details");
 					e.printStackTrace();
 				}
-				loanMasterRequest.setBankName(fundProviderDetailsRequest.getOrganizationName());
 			}
 		}
 		return loanMasterRequest;
