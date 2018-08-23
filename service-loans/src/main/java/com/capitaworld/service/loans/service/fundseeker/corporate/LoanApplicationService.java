@@ -193,6 +193,15 @@ public interface LoanApplicationService {
 	
 	public Boolean updatePaymentStatusForMobile(PaymentRequest paymentRequest);
 */
+	
+	public String getMCACompanyIdById(Long applicationId);
+
+	/**
+	 * @param applicationId
+	 * @return
+	 * @throws Exception
+	 */
+	public HunterRequestDataResponse getDataForHunterForNTB(Long applicationId) throws Exception;
 }
 
 

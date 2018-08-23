@@ -26,6 +26,7 @@ import com.capitaworld.service.dms.model.DocumentRequest;
 import com.capitaworld.service.dms.model.DocumentResponse;
 import com.capitaworld.service.dms.model.StorageDetailsResponse;
 import com.capitaworld.service.dms.util.DocumentAlias;
+import com.capitaworld.service.loans.config.FPAsyncComponent;
 import com.capitaworld.service.loans.domain.fundprovider.NtbTermLoanParameterTemp;
 import com.capitaworld.service.loans.domain.fundprovider.ProductMaster;
 import com.capitaworld.service.loans.domain.fundprovider.ProductMasterTemp;
@@ -159,6 +160,9 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 
 	@Autowired
 	private WorkflowClient workflowClient;
+	
+	@Autowired
+	private FPAsyncComponent fpAsyncComponent;
 
 	@Override
 	public Boolean saveOrUpdate(AddProductRequest addProductRequest, Long userOrgId) {
@@ -933,11 +937,47 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 			request.setToStep(workflowData.getNextworkflowStep());
 			request.setJobId(workflowData.getJobId());
 			request.setUserId(workflowData.getUserId());
+			
+			ProductMasterTemp productMasterTemp = productMasterTempRepository.findOne(workflowData.getFpProductId());
+			Integer productStatus = null;
+			String productType = null;
+			if(!CommonUtils.isObjectNullOrEmpty(productMasterTemp) && 
+			   !CommonUtils.isObjectNullOrEmpty(productMasterTemp.getStatusId())) {
+				productStatus = productMasterTemp.getStatusId();
+			}
+			
+			if(productMasterTemp.getProductId() !=null) {
+			  productType = CommonUtils.LoanType.getType(productMasterTemp.getProductId()).getName();
+			}
 
 			if (workflowData.getActionId() == WorkflowUtils.Action.SEND_FOR_APPROVAL) {
 				int rowUpdated = productMasterTempRepository.updateStatusToInProgress(workflowData.getFpProductId(), 2);
 				WorkflowResponse workflowResponse = workflowClient.updateJob(request);
 				if (rowUpdated > 0 && workflowResponse.getStatus() == 200) {
+					if(!CommonUtils.isObjectNullOrEmpty(productMasterTemp)) {
+						
+						if(productStatus == CommonUtils.Status.REVERTED) {
+							try {
+								logger.info("Inside sending mail to Checker when Admin Maker resend product for Approval");
+								fpAsyncComponent.sendEmailToCheckerWhenAdminMakerResendProductForApproval(productMasterTemp,workflowData.getUserId(),productType);	
+							}
+							catch(Exception e) {
+								logger.info("Exception occured while sending mail to Checker when Admin Maker resend product for Approval");
+								e.printStackTrace();
+							}
+						}
+						else {
+							try {
+								logger.info("Inside sending mail to Checker when Admin Maker send product for Approval");
+								fpAsyncComponent.sendEmailToCheckerWhenAdminMakerSendProductForApproval(productMasterTemp,workflowData.getUserId(),productType);	
+							}
+							catch(Exception e) {
+								logger.info("Exception occured while sending mail to Checker when Admin Maker send product for Approval");
+								e.printStackTrace();
+							}
+						}
+						
+					}
 					return true;
 				} else {
 					logger.info("could not updated in productMaster temp", workflowData.getJobId());
@@ -949,6 +989,16 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				if (result) {
 					WorkflowResponse workflowResponse = workflowClient.updateJob(request);
 					if (workflowResponse.getStatus() == 200) {
+						if(!CommonUtils.isObjectNullOrEmpty(productMasterTemp)) {
+							try {
+								logger.info("Inside sending mail to Maker when Admin Checker Approved Product");
+								fpAsyncComponent.sendEmailToMakerWhenAdminCheckerApprovedProduct(productMasterTemp,workflowData.getUserId(),productType);	
+							}
+							catch(Exception e) {
+								logger.info("Exception occured while sending mail to Maker when Admin Checker Approved Product");
+								e.printStackTrace();
+							}
+						}
 						return true;
 					}
 				}
@@ -956,6 +1006,16 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				int rowUpdated = productMasterTempRepository.updateStatusToInProgress(workflowData.getFpProductId(), 3);
 				WorkflowResponse workflowResponse = workflowClient.updateJob(request);
 				if (rowUpdated > 0 && workflowResponse.getStatus() == 200) {
+					if(!CommonUtils.isObjectNullOrEmpty(productMasterTemp)) {
+						try {
+							logger.info("Inside sending mail to Maker when Admin Checker reverted Product");
+							fpAsyncComponent.sendEmailToMakerWhenAdminCheckerRevertedProduct(productMasterTemp,workflowData.getUserId(),productType);	
+						}
+						catch(Exception e) {
+							logger.info("Exception occured while sending mail to Maker when Admin Checker reverted Product");
+							e.printStackTrace();
+						}
+					}
 					return true;
 				} else {
 					logger.info("could not updated in productMaster temp", workflowData.getJobId());
