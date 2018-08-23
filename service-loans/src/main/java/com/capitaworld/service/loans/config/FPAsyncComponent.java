@@ -1282,11 +1282,12 @@ public class FPAsyncComponent {
 					try {
 							
 						logger.info("Into sending Mail to Maker when Admin Checker Approved product===>{}");
-						String subject = "Intimation : Product "+productMasterTemp.getName()+ " Approved";
+						
 						Map<String, Object> mailParameters = new HashMap<String, Object>();
 						
 						mailParameters.put("product_name", productMasterTemp.getName()!=null?productMasterTemp.getName():"NA");
 						mailParameters.put("product_type", productType!=null?productType:"NA");
+						String subject = "Intimation : "+productType+ " - "+productMasterTemp.getName()+ " Approved";
 						
 						UsersRequest adminForChecker = new UsersRequest();
 						adminForChecker.setId(userId);
