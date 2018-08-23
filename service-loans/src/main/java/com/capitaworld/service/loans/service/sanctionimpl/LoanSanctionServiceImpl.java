@@ -162,11 +162,13 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 						userOrganisationRequest = (UserOrganisationRequest)	MultipleJSONObjectHelper.getObjectFromMap(map, UserOrganisationRequest.class);
 						if(CommonUtils.isObjectNullOrEmpty(isProduction)){
 							if(CommonUtils.isObjectNullOrEmpty(userOrganisationRequest.getProductionUrl())) {
+								logger.info("Production URL is NULL for Bank==========>{}",userOrganisationRequest.getOrganisationName());
 								continue;
 							}
 							sidbiIntegrationClient.setIntegrationBaseUrl(userOrganisationRequest.getProductionUrl());
 						}else {
 							if(CommonUtils.isObjectNullOrEmpty(userOrganisationRequest.getUatUrl())) {
+								logger.info("UAT URL is NULL for Bank==========>{}",userOrganisationRequest.getOrganisationName());
 								continue;
 							}
 							sidbiIntegrationClient.setIntegrationBaseUrl(userOrganisationRequest.getUatUrl());//

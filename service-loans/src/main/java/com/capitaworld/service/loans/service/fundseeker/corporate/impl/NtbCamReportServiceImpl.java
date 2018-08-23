@@ -1,12 +1,14 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
-import java.lang.reflect.Field;
-import java.text.DecimalFormat;
+
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
@@ -16,7 +18,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.capitaworld.api.eligibility.model.CLEligibilityRequest;
 import com.capitaworld.api.eligibility.model.EligibililityRequest;
 import com.capitaworld.api.eligibility.model.EligibilityResponse;
 import com.capitaworld.client.eligibility.EligibilityClient;
@@ -24,12 +25,16 @@ import com.capitaworld.service.analyzer.client.AnalyzerClient;
 import com.capitaworld.service.analyzer.model.common.AnalyzerResponse;
 import com.capitaworld.service.analyzer.model.common.Data;
 import com.capitaworld.service.analyzer.model.common.ReportRequest;
-import com.capitaworld.service.loans.domain.fundprovider.TermLoanParameter;
+import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
+import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
+import com.capitaworld.service.loans.model.FinancialArrangementsDetailResponse;
 import com.capitaworld.service.loans.model.corporate.CorporateDirectorIncomeRequest;
 import com.capitaworld.service.loans.model.corporate.FundSeekerInputRequestResponse;
 import com.capitaworld.service.loans.repository.fundprovider.TermLoanParameterRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.DirectorBackgroundDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateDirectorIncomeService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.NTBService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.NtbCamReportService;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -37,6 +42,21 @@ import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.matchengine.MatchEngineClient;
 import com.capitaworld.service.matchengine.model.MatchDisplayResponse;
 import com.capitaworld.service.matchengine.model.MatchRequest;
+import com.capitaworld.service.oneform.client.OneFormClient;
+import com.capitaworld.service.oneform.enums.ProposedConstitutionOfUnitNTB;
+import com.capitaworld.service.oneform.enums.ProposedDetailOfUnitNTB;
+import com.capitaworld.service.oneform.model.MasterResponse;
+import com.capitaworld.service.oneform.model.OneFormResponse;
+import com.capitaworld.service.oneform.model.SectorIndustryModel;
+import com.capitaworld.service.scoring.ScoringClient;
+import com.capitaworld.service.scoring.model.ProposalScoreDetailResponse;
+import com.capitaworld.service.scoring.model.ProposalScoreResponse;
+import com.capitaworld.service.scoring.model.ScoringRequest;
+import com.capitaworld.service.scoring.model.ScoringResponse;
+import com.capitaworld.service.scoring.utils.ScoreParameter.NTB;
+import com.capitaworld.service.thirdparty.model.CGTMSEDataResponse;
+import com.capitaworld.service.thirdpaty.client.ThirdPartyClient;
+
 
 @Service
 @Transactional
@@ -63,183 +83,397 @@ public class NtbCamReportServiceImpl implements NtbCamReportService{
 	@Autowired
 	private LoanApplicationRepository loanApplicationRepository;
 	
+	@Autowired
+	private ScoringClient scoringClient;
+	
+	@Autowired
+	private OneFormClient oneFormClient;
+	
+	@Autowired 
+	private DirectorBackgroundDetailsRepository dirBackgroundDetailsRepository;
+	
+	@Autowired
+	private FinancialArrangementDetailsService financialArrangementDetailsService;
+	
+	@Autowired
+	private ThirdPartyClient thirdPartyClient; 
+	
 	private static final Logger logger = LoggerFactory.getLogger(NtbCamReportServiceImpl.class);
+	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 	
 	@Override
 	public Map<String, Object> getNtbCamReport(Long applicationId, Long productId, Long userId, boolean isFinalView) {
-		
-		logger.info("Entering into NTB CAM REPORT service=========> {}" +applicationId+" "+productId+" "+isFinalView);
+		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(applicationId);
+		logger.info("Entering into NTB CAM REPORT service=========> {}" +applicationId+" "+productId+" "+isFinalView + loanApplicationMaster.getBusinessTypeId());
 		Map<String, Object> map = new HashMap<String, Object>();
-		
-		// GET DIRECTOR BACKGROUND DETAILS
-		
-		try {
-			List<Map<String, Object>> directorBackgroundDetails = corporateDirectorIncomeService
-					.getDirectorBackGroundDetails(applicationId);
-			map.put("directorBackgroundDetails", directorBackgroundDetails);
-
-		} catch (Exception e) {
-			logger.error("Problem to get Data of Director's Background=========> {}", e);
-		}
-		       
-    	
-		// GET DIRECTOR INCOME DETAILS
-		
-		try {
-			List<CorporateDirectorIncomeRequest> directorIncomeDetails = corporateDirectorIncomeService
-					.getDirectorIncomeDetails(applicationId);
-			map.put("directorIncomeDetails", directorIncomeDetails);
-
-		} catch (Exception e) {
-			logger.error("Problem to get Director's Income Details===========> {}", e);
-		}
-		        	
-	
-		// GET OTHER DETAILS
-		
-		try {
-			
-			FundSeekerInputRequestResponse fundSeekerInputRequestResponse = ntbService.getOthersDetail(applicationId);
-			map.put("otherDetails", fundSeekerInputRequestResponse);
-			
-		} catch (Exception e) {
-			logger.error("Problem to get Other Details===========> {}", e);
-		}
-		
-		
-		//ELIGIBILITY DATA (ASSESSMENT TO LIMITS)
-				
-		try {
-			TermLoanParameter termLoanParameter = termLoanParameterRepository.getById(productId);
-			Long assessmentId = termLoanParameter.getAssessmentMethodId().longValue();
-			if(!CommonUtils.isObjectNullOrEmpty(assessmentId)) {
-				map.put("assessmentId", assessmentId);
-			}
-			EligibililityRequest eligibilityReq=new EligibililityRequest();
-			eligibilityReq.setApplicationId(applicationId);
-			eligibilityReq.setFpProductMappingId(productId);
-			EligibilityResponse eligibilityResp= eligibilityClient.corporateLoanData(eligibilityReq);
-			logger.info("********************Eligibility data**********************"+eligibilityResp.getData().toString());
-			map.put("assLimits",convertToDoubleForXml(MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)eligibilityResp.getData(), CLEligibilityRequest.class), new HashMap<>()));
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.info("Error while getting Eligibility data");
-		}		
-				
-		
 		//MATCHES RESPONSE
-		
 		try {
 			MatchRequest matchRequest = new MatchRequest();
 			matchRequest.setApplicationId(applicationId);
 			matchRequest.setProductId(productId);
+			matchRequest.setBusinessTypeId(loanApplicationMaster.getBusinessTypeId());
 			MatchDisplayResponse matchResponse= matchEngineClient.displayMatchesOfCorporate(matchRequest);
-			map.put("matchesResponse", !CommonUtils.isListNullOrEmpty(matchResponse.getMatchDisplayObjectList()) ? printFields(matchResponse.getMatchDisplayObjectList()) : " ");
-		}
-		catch (Exception e) {
+			map.put("matchesResponse", !CommonUtils.isListNullOrEmpty(matchResponse.getMatchDisplayObjectList()) ? CommonUtils.printFields(matchResponse.getMatchDisplayObjectList()) : " ");
+		}catch (Exception e) {
 			logger.info("Error while getting Match Engine data");
 			e.printStackTrace();
+		}
+		
+		// GET DIRECTOR BACKGROUND DETAILS
+		try {
+			List<Map<String, Object>> directorBackgroundDetails = corporateDirectorIncomeService.getDirectorBackGroundDetails(applicationId);
+			map.put("directorBackgroundDetails", directorBackgroundDetails);
+			if (directorBackgroundDetails.size() == 1) {
+				map.put("isMultipleDirector", false);
+			} else {
+				map.put("isMultipleDirector", true);
+			}
+			int size = directorBackgroundDetails.size() * 2;
+			List<Integer> columnWidth = new ArrayList<>(size);
+			for(int i=0; i < size; i++) {
+				columnWidth.add(i);
+			}
+			map.put("columnWidth", columnWidth);
+			
+		} catch (Exception e) {
+			logger.error("Problem to get Data of Director's Background=========> {}", e);
+		}
+		
+		//GET OTHER DETAILS
+		try {
+
+			FundSeekerInputRequestResponse fundSeekerInputRequestResponse = ntbService.getOthersDetail(applicationId);
+			if (!CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequestResponse.getProposedConstitutionOfUnit())) {
+				ProposedConstitutionOfUnitNTB byIdProCons = ProposedConstitutionOfUnitNTB.getById(fundSeekerInputRequestResponse.getProposedConstitutionOfUnit());
+				fundSeekerInputRequestResponse.setProposedConstitutionOfUnit(CommonUtils.isObjectNullOrEmpty(byIdProCons) ? Integer.valueOf(byIdProCons.getValue()) : null);
+			}
+			if (!CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequestResponse.getProposedDetailsOfUnit())) {
+				ProposedDetailOfUnitNTB byIdProConsDet = ProposedDetailOfUnitNTB.getById(fundSeekerInputRequestResponse.getProposedDetailsOfUnit());
+				fundSeekerInputRequestResponse.setProposedDetailsOfUnit(CommonUtils.isObjectNullOrEmpty(byIdProConsDet) ? Integer.valueOf(byIdProConsDet.getValue()) : null);
+			}
+			//KEY VERTICAL FUNDING
+			List<Long> keyVerticalFundingId = new ArrayList<>();
+			if (!CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequestResponse.getKeyVericalFunding()))
+				keyVerticalFundingId.add(fundSeekerInputRequestResponse.getKeyVericalFunding());
+			if (!CommonUtils.isListNullOrEmpty(keyVerticalFundingId)) {
+				try {
+					OneFormResponse oneFormResponse = oneFormClient.getIndustryById(keyVerticalFundingId);
+					List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse.getListData();
+					if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+						MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+						map.put("keyVerticalFunding", masterResponse.getValue());
+					} else {
+						map.put("keyVerticalFunding", "-");
+					}
+
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+			//KEY VERTICAL SECTOR
+			List<Long> keyVerticalSectorId = new ArrayList<>();
+			if (!CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequestResponse.getKeyVerticalSector()))
+				keyVerticalSectorId.add(fundSeekerInputRequestResponse.getKeyVerticalSector());
+			try {
+				OneFormResponse formResponse = oneFormClient.getIndustrySecByMappingId(fundSeekerInputRequestResponse.getKeyVerticalSector());
+				SectorIndustryModel sectorIndustryModel = MultipleJSONObjectHelper.getObjectFromMap((Map) formResponse.getData(), SectorIndustryModel.class);
+				OneFormResponse oneFormResponse = oneFormClient.getSectorById(Arrays.asList(sectorIndustryModel.getSectorId()));
+				List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse.getListData();
+				if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+					MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+					map.put("keyVerticalSector", masterResponse.getValue());
+				} else {
+					map.put("keyVerticalSector", "-");
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			//KEY VERTICAL SUBSECTOR
+			try {
+				if (!CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequestResponse.getKeyVerticalSubsector())) {
+					OneFormResponse oneFormResponse = oneFormClient
+							.getSubSecNameByMappingId(fundSeekerInputRequestResponse.getKeyVerticalSubsector());
+					map.put("keyVerticalSubSector",(String) oneFormResponse.getData());
+				}
+			} catch (Exception e) {
+				logger.warn("error while getting key vertical sub-sector");
+			}
+
+			map.put("otherDetails",fundSeekerInputRequestResponse);
+			map.put("proposedOperationDate",DATE_FORMAT.format(fundSeekerInputRequestResponse.getProposedOperationDate()));
+
+		} catch (Exception e) {
+			logger.error("Problem to get Other Details===========> {}", e);
+		}
+		
+		// GET DIRECTOR INCOME DETAILS
+		try {
+			List<CorporateDirectorIncomeRequest> directorIncomeDetails = corporateDirectorIncomeService.getDirectorIncomeDetails(applicationId);
+			Map<String, List<CorporateDirectorIncomeRequest>> dirIncomeDetail = directorIncomeDetails.stream().collect(Collectors.groupingBy(CorporateDirectorIncomeRequest:: getDirectorName));
+			map.put("directorIncomeDetails", dirIncomeDetail);
+		} catch (Exception e) {
+			logger.error("Problem to get Director's Income Details===========> {}", e);
+		}
+		
+		//GET EXISTING FINANCIAL DETAILS 
+		List<Long> dirIdList = dirBackgroundDetailsRepository.getDirectorIdFromApplicationId(applicationId);
+		for(Long dirId : dirIdList) {
+		try {
+			List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestList = financialArrangementDetailsService.getFinancialArrangementDetailsListDirId(dirId,applicationId);
+			List<FinancialArrangementsDetailResponse> financialArrangementsDetailResponseList = new ArrayList<>(financialArrangementsDetailRequestList.size());
+			String directorName = dirBackgroundDetailsRepository.getDirectorNamefromDirectorId(dirId);
+			FinancialArrangementsDetailResponse financialArrangementsDetailResponse = null;
+			for (FinancialArrangementsDetailRequest financialArrangementsDetailRequest : financialArrangementsDetailRequestList) {
+				financialArrangementsDetailResponse = new FinancialArrangementsDetailResponse();
+				// financialArrangementsDetailResponse.setRelationshipSince(financialArrangementsDetailRequest.getRelationshipSince());
+				financialArrangementsDetailResponse.setOutstandingAmount(financialArrangementsDetailRequest.getOutstandingAmount());
+				financialArrangementsDetailResponse.setSecurityDetails(financialArrangementsDetailRequest.getSecurityDetails());
+				financialArrangementsDetailResponse.setAmount(financialArrangementsDetailRequest.getAmount());
+				// financialArrangementsDetailResponse.setLenderType(LenderType.getById(financialArrangementsDetailRequest.getLenderType()).getValue());
+				financialArrangementsDetailResponse.setLoanDate(financialArrangementsDetailRequest.getLoanDate());
+				financialArrangementsDetailResponse.setLoanType(financialArrangementsDetailRequest.getLoanType());
+				financialArrangementsDetailResponse.setFinancialInstitutionName(financialArrangementsDetailRequest.getFinancialInstitutionName());
+				// financialArrangementsDetailResponse.setFacilityNature(NatureFacility.getById(financialArrangementsDetailRequest.getFacilityNatureId()).getValue());
+				// financialArrangementsDetailResponse.setAddress(financialArrangementsDetailRequest.getAddress());
+				financialArrangementsDetailResponse.setDirectorName(directorName);
+				financialArrangementsDetailResponseList.add(financialArrangementsDetailResponse);
+			}
+			Map<String, List<FinancialArrangementsDetailResponse>> financialArrangementDetails = financialArrangementsDetailResponseList.stream().collect(Collectors.groupingBy(FinancialArrangementsDetailResponse:: getDirectorName));
+			map.put("existingFinancialArrangement",financialArrangementDetails);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Problem to get Data of Financial Arrangements Details {}", e);
+		}
+	}
+		
+		//ELIGIBILITY DATA (ASSESSMENT TO LIMITS)
+		EligibililityRequest eligibilityReq = new EligibililityRequest();
+		eligibilityReq.setApplicationId(applicationId);
+		eligibilityReq.setFpProductMappingId(productId);
+		try {
+			EligibilityResponse eligibilityResp = eligibilityClient.corporateLoanData(eligibilityReq);
+			map.put("assLimits",eligibilityResp);
+		} catch (Exception e1) {
+			e1.printStackTrace();
+			logger.info("Error while getting Eligibility data");
+		}
+		
+		//SCORING DATA
+		try {
+			ScoringRequest scoringRequest = new ScoringRequest();
+			scoringRequest.setApplicationId(applicationId);
+			scoringRequest.setFpProductId(productId);
+			ScoringResponse scoringResponse = scoringClient.getScore(scoringRequest);
+			if(!CommonUtils.isListNullOrEmpty(scoringResponse.getScoringResponseList())) {
+				List<Map<String,Object>> scoreResponse = new ArrayList<>(scoringResponse.getScoringResponseList().size());
+				Map<String,Object> map2 = null;
+				for(ScoringResponse o : scoringResponse.getScoringResponseList()) {
+					map2 = new HashMap<>();
+					ProposalScoreResponse proposalScoreResponse =  (ProposalScoreResponse)MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)o.getDataObject(),ProposalScoreResponse.class);
+					map2.put("dataObject", CommonUtils.printFields(proposalScoreResponse));
+					//Filter Parameters
+					List<LinkedHashMap<String, Object>> mapList = (List<LinkedHashMap<String, Object>>)o.getDataList();
+					List<ProposalScoreDetailResponse> newMapList = new ArrayList<>(mapList.size());
+					for(LinkedHashMap<String, Object> mp : mapList) {
+						newMapList.add(MultipleJSONObjectHelper.getObjectFromMap(mp,ProposalScoreDetailResponse.class));
+					}
+					List<ProposalScoreDetailResponse> collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(NTB.WORKING_EXPERIENCE)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						map2.put(NTB.WORKING_EXPERIENCE, CommonUtils.printFields(collect.get(0)));
+					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(NTB.IS_FAMILY_MEMBER_IN_LINE_OF_BUSINESS)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						map2.put(NTB.IS_FAMILY_MEMBER_IN_LINE_OF_BUSINESS, CommonUtils.printFields(collect.get(0)));
+					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(NTB.AGE_OF_PROMOTOR)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						map2.put(NTB.AGE_OF_PROMOTOR, CommonUtils.printFields(collect.get(0)));
+					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(NTB.EDUCATION_QUALIFICATION)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						map2.put(NTB.EDUCATION_QUALIFICATION, CommonUtils.printFields(collect.get(0)));
+					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(NTB.EMPLOYMENT_TYPE)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						map2.put(NTB.EMPLOYMENT_TYPE, CommonUtils.printFields(collect.get(0)));
+					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(NTB.HOUSE_OWNERSHIP)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						map2.put(NTB.HOUSE_OWNERSHIP, CommonUtils.printFields(collect.get(0)));
+					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(NTB.MARITIAL_STATUS)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						map2.put(NTB.MARITIAL_STATUS, CommonUtils.printFields(collect.get(0)));
+					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(NTB.ITR_SALARY_INCOME)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						map2.put(NTB.ITR_SALARY_INCOME, CommonUtils.printFields(collect.get(0)));
+					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(NTB.FIXED_OBLIGATION_RATIO)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						map2.put(NTB.FIXED_OBLIGATION_RATIO, CommonUtils.printFields(collect.get(0)));
+					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(NTB.CHEQUE_BOUNCES)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						map2.put(NTB.CHEQUE_BOUNCES, CommonUtils.printFields(collect.get(0)));
+					}
+					scoreResponse.add(map2);
+					}
+					map.put("directorScoringData", scoreResponse);
+				}
+					
+					List<Map<String,Object>> scoreResponse = new ArrayList<>(scoringResponse.getDataList().size());
+					Map<String,Object> companyMap =new HashMap<>();
+					ProposalScoreResponse proposalScoreResponse =  (ProposalScoreResponse)MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)scoringResponse.getDataObject(),ProposalScoreResponse.class);
+					companyMap.put("companyDataObject", CommonUtils.printFields(proposalScoreResponse));
+					map.put("totalWeight", CommonUtils.addNumbers(proposalScoreResponse.getBusinessRiskWeight(), proposalScoreResponse.getFinancialRiskWeight(), proposalScoreResponse.getManagementRiskWeight()));
+					map.put("totalWeightActualScore", CommonUtils.addNumbers(proposalScoreResponse.getManagementRiskWeightOfScoring(), proposalScoreResponse.getFinancialRiskWeightOfScoring(), proposalScoreResponse.getBusinessRiskWeightOfScoring()));
+					map.put("totalWeightOutOfScore", CommonUtils.addNumbers(proposalScoreResponse.getManagementScoreWithRiskWeight(), proposalScoreResponse.getFinancialScoreWithRiskWeight(), proposalScoreResponse.getBusinessScoreWithRiskWeight()));
+					//Filter Parameters
+					List<LinkedHashMap<String, Object>> mapList = (List<LinkedHashMap<String, Object>>)scoringResponse.getDataList();
+					List<ProposalScoreDetailResponse> newMapList = new ArrayList<>(mapList.size());
+					for(LinkedHashMap<String, Object> mp : mapList) {
+						newMapList.add(MultipleJSONObjectHelper.getObjectFromMap(mp,ProposalScoreDetailResponse.class));
+					}
+					List<ProposalScoreDetailResponse> collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(NTB.WORKING_EXPERIENCE)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(NTB.WORKING_EXPERIENCE, CommonUtils.printFields(collect.get(0)));
+					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(NTB.IS_FAMILY_MEMBER_IN_LINE_OF_BUSINESS)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(NTB.IS_FAMILY_MEMBER_IN_LINE_OF_BUSINESS, CommonUtils.printFields(collect.get(0)));
+					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(NTB.AGE_OF_PROMOTOR)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(NTB.AGE_OF_PROMOTOR, CommonUtils.printFields(collect.get(0)));
+					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(NTB.EDUCATION_QUALIFICATION)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(NTB.EDUCATION_QUALIFICATION, CommonUtils.printFields(collect.get(0)));
+					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(NTB.EMPLOYMENT_TYPE)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(NTB.EMPLOYMENT_TYPE, CommonUtils.printFields(collect.get(0)));
+					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(NTB.HOUSE_OWNERSHIP)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(NTB.HOUSE_OWNERSHIP, CommonUtils.printFields(collect.get(0)));
+					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(NTB.MARITIAL_STATUS)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(NTB.MARITIAL_STATUS, CommonUtils.printFields(collect.get(0)));
+					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(NTB.ITR_SALARY_INCOME)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(NTB.ITR_SALARY_INCOME, CommonUtils.printFields(collect.get(0)));
+					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(NTB.FIXED_OBLIGATION_RATIO)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(NTB.FIXED_OBLIGATION_RATIO, CommonUtils.printFields(collect.get(0)));
+					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(NTB.CHEQUE_BOUNCES)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(NTB.CHEQUE_BOUNCES, CommonUtils.printFields(collect.get(0)));
+					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(NTB.CIBIL_TRANSUNION_SCORE)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(NTB.CIBIL_TRANSUNION_SCORE, CommonUtils.printFields(collect.get(0)));
+					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(NTB.CNW)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(NTB.CNW, CommonUtils.printFields(collect.get(0)));
+					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(NTB.CONSTITUTION_OF_BORROWER)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(NTB.CONSTITUTION_OF_BORROWER, CommonUtils.printFields(collect.get(0)));
+					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(NTB.DPD)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(NTB.DPD, CommonUtils.printFields(collect.get(0)));
+					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(NTB.ASSET_COVERAGE_RATIO)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(NTB.ASSET_COVERAGE_RATIO, CommonUtils.printFields(collect.get(0)));
+					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(NTB.UNIT_FACTORY_PREMISES)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(NTB.UNIT_FACTORY_PREMISES, CommonUtils.printFields(collect.get(0)));
+					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(NTB.BALANCE_GESTATION_PERIOD)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(NTB.BALANCE_GESTATION_PERIOD, CommonUtils.printFields(collect.get(0)));
+					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(NTB.ENVIRONMENT_CATEGORY)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(NTB.ENVIRONMENT_CATEGORY, CommonUtils.printFields(collect.get(0)));
+					}
+					scoreResponse.add(companyMap);
+					map.put("companyScoreResponse", scoreResponse);
+			
+		}catch (Exception e) {
+			e.printStackTrace();
+			logger.info("Error while getting scoring data");
+		}
+		
+		//CGTMSE 
+		try {
+			CGTMSEDataResponse cgtmseDataResp = thirdPartyClient.getCalulation(applicationId);
+			map.put("cgtmseData", CommonUtils.printFields(cgtmseDataResp));
+		} catch (Exception e) {
+		
+			e.printStackTrace();
+			logger.info("Error while getting CGTMSE data");
 		}
 		
 		//BANK STATEMENT
 		ReportRequest reportRequest = new ReportRequest();
 		reportRequest.setApplicationId(applicationId);
 		reportRequest.setUserId(userId);
-		List<Data> datas=new ArrayList<>();
+		List<Data> datas = new ArrayList<>();
 		try {
 			AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReportForCam(reportRequest);
-			List<HashMap<String, Object>> hashMaps=(List<HashMap<String, Object>>) analyzerResponse.getData();
-				if(!CommonUtils.isListNullOrEmpty(hashMaps)){
-					for(HashMap<String,Object> hashMap:hashMaps){
-						Data data = MultipleJSONObjectHelper.getObjectFromMap(hashMap, Data.class);
-						datas.add(data);
+			List<HashMap<String, Object>> hashMap=(List<HashMap<String, Object>>) analyzerResponse.getData();
+			if(!CommonUtils.isListNullOrEmpty(hashMap))
+			{
+				for(HashMap<String,Object> rec:hashMap)
+				{
+					Data data = MultipleJSONObjectHelper.getObjectFromMap(rec, Data.class);
+					datas.add(data);
+					List<Object> bankStatement = new ArrayList<Object>();
+					List<Object> monthlyDetails = new ArrayList<Object>();
+					List<Object> top5FundReceived = new ArrayList<Object>();
+					List<Object> top5FundTransfered = new ArrayList<Object>();
+					List<Object> bouncedChequeList = new ArrayList<Object>();
+					List<Object> customerInfo = new ArrayList<Object>();
+					List<Object> summaryInfo = new ArrayList<Object>();
+					for(int i =0; i<hashMap.size(); i++) {
+						bankStatement.add(!CommonUtils.isObjectNullOrEmpty(data.getXns()) ? CommonUtils.printFields(data.getXns().getXn()) : " ");
+						monthlyDetails.add(!CommonUtils.isObjectNullOrEmpty(data.getMonthlyDetailList()) ? CommonUtils.printFields(data.getMonthlyDetailList()) : "");
+						top5FundReceived.add(!CommonUtils.isObjectNullOrEmpty(data.getTop5FundReceivedList().getItem()) ? CommonUtils.printFields(data.getTop5FundReceivedList().getItem()) : "");
+						top5FundTransfered.add(!CommonUtils.isObjectNullOrEmpty(data.getTop5FundTransferedList().getItem()) ? CommonUtils.printFields(data.getTop5FundTransferedList().getItem()) : "");
+						bouncedChequeList.add(!CommonUtils.isObjectNullOrEmpty(data.getBouncedOrPenalXnList()) ? CommonUtils.printFields(data.getBouncedOrPenalXnList().getBouncedOrPenalXns()) : " ");
+						customerInfo.add(!CommonUtils.isObjectNullOrEmpty(data.getCustomerInfo()) ? CommonUtils.printFields(data.getCustomerInfo()) : " ");
+						summaryInfo.add(!CommonUtils.isObjectNullOrEmpty(data.getSummaryInfo()) ?CommonUtils.printFields(data.getSummaryInfo()) : " ");
 					}
+					map.put("bankStatement" , bankStatement);
+					map.put("monthlyDetails" , monthlyDetails);
+					map.put("top5FundReceived" , top5FundReceived);
+					map.put("top5FundTransfered" , top5FundTransfered);
+					map.put("bouncedChequeList" , bouncedChequeList);
+					map.put("customerInfo" , customerInfo);
+					map.put("summaryInfo" , summaryInfo);
+					map.put("bankStatementAnalysis", CommonUtils.printFields(datas));
+				}
 			}
-			map.put("bankStatementData", datas);
 		}catch (Exception e) {
-			logger.info("Error while getting perfios data");
 			e.printStackTrace();
+			logger.info("Error while getting perfios data");
 		}
-				
+		
 		return map;
 	}
 	
-	/*********************************************************CAM UTILS****************************************************************/
 	
-	public static Object convertToDoubleForXml (Object obj, Map<String, Object>data) throws Exception {
-		Field[] fields = obj.getClass().getDeclaredFields();
-		 for(Field field : fields) {
-			 field.setAccessible(true);
-             Object value = field.get(obj);
-             if(data != null) {
-            	 data.put(field.getName(), value);
-             }
-             if(!CommonUtils.isObjectNullOrEmpty(value)) {
-            	 if(value instanceof Double){
-                	 if(!Double.isNaN((Double)value)) {
-                		 DecimalFormat decim = new DecimalFormat("0.00");
-                    	 value = Double.parseDouble(decim.format(value));
-                    	 if(data != null) {
-                    		 logger.info("eligibility data================>"+field.getName());
-                    		 value = decim.format(value);
-                    		 data.put(field.getName(), value);
-                    	 }else {
-                    		 field.set(obj,value);                    		 
-                    	 }
-                	 }
-                 }
-             }
-		 }
-		 if(data != null) {
-			 return data;
-		 }
-		return obj;
-	}
-	
-	public static Object printFields(Object obj) throws Exception {
-		if(obj instanceof List) {
-			List<?> lst = (List)obj;
-			for(Object o : lst) {
-				escapeXml(o);
-			}
-		}else if(obj instanceof Map) {
-			Map<Object, Object> map = (Map)obj;
-			for(Map.Entry<Object, Object> setEntry : map.entrySet()) {
-				escapeXml(setEntry.getValue());
-			}
-		}else {
-			escapeXml(obj);
-		}
-		 return obj;
-	}
-	
-	public static Object escapeXml(Object obj) throws Exception{
-		if(obj instanceof List) {
-			List<?> lst = (List)obj;
-			for(Object o : lst) {
-				escapeXml(o);
-			}
-		}else if(obj instanceof Map) {
-			Map<Object, Object> map = (Map)obj;
-			for(Map.Entry<Object, Object> setEntry : map.entrySet()) {
-				escapeXml(setEntry.getValue());
-			}
-		}
-		Field[] fields = obj.getClass().getDeclaredFields();
-		for (Field field : fields) {
-			field.setAccessible(true);
-			Object value = field.get(obj);
-			if (value instanceof String) {
-				String value1 = (String) field.get(obj);
-				String a = StringEscapeUtils.escapeXml(value1.toString());
-				value = a;
-				field.set(obj, value);
-			}else {
-				continue;
-			}
-		}
-		return obj;
-    }
 
 }
