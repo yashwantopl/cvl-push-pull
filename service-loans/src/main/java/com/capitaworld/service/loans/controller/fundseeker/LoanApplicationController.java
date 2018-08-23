@@ -25,6 +25,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.capitaworld.cibil.api.model.CibilRequest;
+import com.capitaworld.cibil.api.model.msme.company.Base;
+import com.capitaworld.cibil.client.CIBILClient;
 import com.capitaworld.service.gateway.model.GatewayRequest;
 import com.capitaworld.service.loans.config.AsyncComponent;
 import com.capitaworld.service.loans.config.AuditComponentBankToCW;
@@ -40,7 +43,7 @@ import com.capitaworld.service.loans.model.common.AutoFillOneFormDetailRequest;
 import com.capitaworld.service.loans.model.common.DisbursementRequest;
 import com.capitaworld.service.loans.model.common.EkycRequest;
 import com.capitaworld.service.loans.model.mobile.MobileLoanRequest;
-import com.capitaworld.service.loans.model.sanction.LoanSanctionAndDisbursedRequest;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.service.common.AutoFillOneFormDetailService;
 import com.capitaworld.service.loans.service.common.FsDetailsForPdfService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
@@ -2103,7 +2106,7 @@ public class LoanApplicationController {
 					orgId = auditComponentBankToCW.getOrgIdByCredential(loanSanctionRequest.getUserName(),
 							loanSanctionRequest.getPassword());
 					if (!CommonUtils.isObjectNullOrEmpty(orgId)) {
-						reason = loanSanctionService.requestValidation(loanSanctionRequest.getApplicationId(), orgId);
+						reason = loanSanctionService.sanctionRequestValidation(loanSanctionRequest.getApplicationId(), orgId);
 						if ("SUCCESS".equalsIgnoreCase(reason)) {
 							logger.info("Success msg while saveLoanSanctionDetail() ----------------> msg " + reason);
 							reason = null;
@@ -2228,7 +2231,7 @@ public class LoanApplicationController {
 							loanDisbursementRequest.getPassword());
 					if (!CommonUtils.isObjectNullOrEmpty(orgId)) {
 
-						reason = loanDisbursementService.requestValidation(loanDisbursementRequest, orgId);
+						reason = loanDisbursementService.disbursementRequestValidation(null , loanDisbursementRequest, orgId , CommonUtility.ApiType.DISBURSEMENT);
 
 						if ("SUCCESS".equalsIgnoreCase(reason) || "First Disbursement".equalsIgnoreCase(reason)) {
 							logger.info(
@@ -2873,7 +2876,7 @@ public class LoanApplicationController {
 		}
 	}
 
-	@RequestMapping(value = "/saveLoanSanctionDisbursementDetailFromBank", method = RequestMethod.POST, consumes = MediaType.TEXT_PLAIN_VALUE)
+	/*@RequestMapping(value = "/saveLoanSanctionDisbursementDetailFromBank", method = RequestMethod.POST, consumes = MediaType.TEXT_PLAIN_VALUE)
 	public ResponseEntity<LoansResponse> saveLoanSanctionDisbursementDetailFromBank(@RequestBody String encryptedString) {
 		LoansResponse loansResponse = null;
 		String sanctionReason = null;
@@ -2887,7 +2890,7 @@ public class LoanApplicationController {
 			logger.info(
 					"=============================Entry saveLoanSanctionDisbursementDetailFromBank(){} ============================= ");
 			
-			/*
+			
 			 * if(CommonUtils.isObjectNullOrEmpty(tokenString)) { reason = "Token is null";
 			 * loansResponse = new LoansResponse(reason, HttpStatus.UNAUTHORIZED .value());
 			 * return new ResponseEntity<LoansResponse>(loansResponse,
@@ -2897,7 +2900,7 @@ public class LoanApplicationController {
 			 * "Token is Expired "; loansResponse = new LoansResponse(reason,
 			 * HttpStatus.UNAUTHORIZED .value()); return new
 			 * ResponseEntity<LoansResponse>(loansResponse, HttpStatus.UNAUTHORIZED); } }
-			 */
+			 
 			// logger.info("-----------------------------Entry
 			// saveLoanSanctionDisbursementDetailFromBank(){} --------------------");
 			if (encryptedString != null) {
@@ -2947,7 +2950,7 @@ public class LoanApplicationController {
 								.saveLoanSanctionDetail(loanSanctionAndDisbursedRequest.getLoanSanctionRequest())) {
 							if(! CommonUtils.isListNullOrEmpty(loanSanctionAndDisbursedRequest.getLoanDisbursementRequestsList())) {
 								disbursementReason = loanDisbursementService.bankRequestValidationAndSave(
-									loanSanctionAndDisbursedRequest.getLoanDisbursementRequestsList(), orgId);
+									loanSanctionAndDisbursedRequest.getLoanDisbursementRequestsList(), orgId , CommonUtility.ApiType.SANCTION_AND_DISBURSEMENT);
 							}
 						}
 
@@ -3026,6 +3029,6 @@ public class LoanApplicationController {
 					loanSanctionAndDisbursedRequest != null ? loanSanctionAndDisbursedRequest.getApplicationId() : null,
 					CommonUtility.ApiType.SANCTION_AND_DISBURSEMENT, loansResponse, sanctionReason, orgId);
 		}
-	}
+	}*/
 
 }

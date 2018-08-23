@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -572,12 +573,20 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 		try {
 			logger.info("Start invokeFraudAnalytics()");
 			if("Y".equals(String.valueOf(environment.getRequiredProperty("cw.call.service_fraudanalytics")))) {
-			HunterRequestDataResponse hunterRequestDataResponse = loanApplicationService
+				Boolean isNTB = false;
+				HunterRequestDataResponse hunterRequestDataResponse = null;
+				if(fundSeekerInputRequestResponse.getBusinessTypeId()!=null && fundSeekerInputRequestResponse.getBusinessTypeId() == 2) {// FOR NTB ONLY
+					isNTB = true;
+					hunterRequestDataResponse = loanApplicationService
+							.getDataForHunterForNTB(fundSeekerInputRequestResponse.getApplicationId());
+				}
+			hunterRequestDataResponse = loanApplicationService
 					.getDataForHunter(fundSeekerInputRequestResponse.getApplicationId());
 			AnalyticsRequest request = new AnalyticsRequest();
 			request.setApplicationId(fundSeekerInputRequestResponse.getApplicationId());
 			request.setUserId(fundSeekerInputRequestResponse.getUserId());
 			request.setData(hunterRequestDataResponse);
+			request.setIsNtb(isNTB);
 
 			AnalyticsResponse response = fraudAnalyticsClient.callHunterIIAPI(request);
 			Boolean resp = false;
