@@ -48,6 +48,7 @@ import com.capitaworld.service.fraudanalytics.model.AnalyticsResponse;
 import com.capitaworld.service.gst.GstCalculation;
 import com.capitaworld.service.gst.GstResponse;
 import com.capitaworld.service.gst.client.GstClient;
+import com.capitaworld.service.gst.model.CAMGSTData;
 import com.capitaworld.service.gst.yuva.request.GSTR1Request;
 import com.capitaworld.service.loans.domain.fundprovider.TermLoanParameter;
 import com.capitaworld.service.loans.domain.fundprovider.WcTlParameter;
@@ -354,6 +355,16 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			e.printStackTrace();
 		}
 		
+		try {
+			GstResponse response = gstClient.detailCalculation(corporateApplicantRequest.getGstIn());
+			map.put("gstDetailedResp",response.getData());
+			CAMGSTData camgstData = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)response.getData(),CAMGSTData.class);
+			map.put("keyObservation", CommonUtils.convertToDoubleForXml(camgstData.getKeyObservation(), null));
+			map.put("overview", CommonUtils.convertToDoubleForXml(camgstData.getOverview(), null));
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		
 		//ONE-FORM DATA
 		try {
 			//ONE-FORM DATA
@@ -539,11 +550,9 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				map.put("totalWeight", CommonUtils.addNumbers(proposalScoreResponse.getManagementRiskWeightOfScoring(), proposalScoreResponse.getFinancialRiskWeightOfScoring(), proposalScoreResponse.getBusinessRiskWeightOfScoring()));
 			}
 			List<Map<String, Object>> proposalScoreDetailResponseList = (List<Map<String, Object>>) scoringResponse.getDataList();
-			logger.info("proposalScoreDetailResponseList Size ::::"+proposalScoreDetailResponseList.size());
 			for(int i=0;i<proposalScoreDetailResponseList.size();i++)
 			{
 				ProposalScoreDetailResponse proposalScoreDetailResponse = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)proposalScoreDetailResponseList.get(i),ProposalScoreDetailResponse.class);
-				logger.info(proposalScoreDetailResponse.getParameterName());
 				switch (proposalScoreDetailResponse.getParameterName()) {
 				case ScoreParameter.COMBINED_NETWORTH:
 					map.put("combinedNetworthActual", StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()));
@@ -625,6 +634,91 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 					map.put("creditSummationScoreActual", proposalScoreDetailResponse.getObtainedScore());
 					map.put("creditSummationScoreOutOf", proposalScoreDetailResponse.getMaxScore());
 					continue;
+				case ScoreParameter.AGE:
+					map.put("ageActual", StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()));
+					map.put("ageScoreActual", proposalScoreDetailResponse.getObtainedScore());
+					map.put("ageScoreOutOf", proposalScoreDetailResponse.getMaxScore());
+					continue;
+				case ScoreParameter.NO_OF_CHILDREN:
+					map.put("noOfChildrenActual", StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()));
+					map.put("noOfChildrenScoreActual", proposalScoreDetailResponse.getObtainedScore());
+					map.put("noOfChildrenScoreOutOf", proposalScoreDetailResponse.getMaxScore());
+					continue;
+				case ScoreParameter.OWNING_HOUSE:
+					map.put("owningHouseActual", StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()));
+					map.put("owningHouseScoreActual", proposalScoreDetailResponse.getObtainedScore());
+					map.put("owningHouseScoreOutOf", proposalScoreDetailResponse.getMaxScore());
+					continue;
+				case ScoreParameter.ACADEMIC_QUALIFICATION:
+					map.put("acadamicQualificationActual", StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()));
+					map.put("acadamicQualificationScoreActual", proposalScoreDetailResponse.getObtainedScore());
+					map.put("acadamicQualificationScoreOutOf", proposalScoreDetailResponse.getMaxScore());
+					continue;
+				case ScoreParameter.EXPERIENCE_IN_THE_LINE_OF_TRADE:
+					map.put("experienceInTradeActual", StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()));
+					map.put("experienceInTradeScoreActual", proposalScoreDetailResponse.getObtainedScore());
+					map.put("experienceInTradeScoreOutOf", proposalScoreDetailResponse.getMaxScore());
+					continue;
+				case ScoreParameter.SPOUSE_DETAILS:
+					map.put("spouseDetailsActual", StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()));
+					map.put("spouseDetailsScoreActual", proposalScoreDetailResponse.getObtainedScore());
+					map.put("spouseDetailsScoreOutOf", proposalScoreDetailResponse.getMaxScore());
+					continue;
+				case ScoreParameter.ASSESSED_FOR_INCOME_TAX:
+					map.put("assessedITActual", StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()));
+					map.put("assessedITScoreActual", proposalScoreDetailResponse.getObtainedScore());
+					map.put("assessedITScoreOutOf", proposalScoreDetailResponse.getMaxScore());
+					continue;
+				case ScoreParameter.HAVE_LIFE_INSURANCE_POLICY:
+					map.put("lifeInsurancePolicyActual", StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()));
+					map.put("lifeInsurancePolicyScoreActual", proposalScoreDetailResponse.getObtainedScore());
+					map.put("lifeInsurancePolicyScoreOutOf", proposalScoreDetailResponse.getMaxScore());
+					continue;
+				case ScoreParameter.REPAYMENT_PERIOD:
+					map.put("repaymentPeriodActual", StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()));
+					map.put("repaymentPeriodScoreActual", proposalScoreDetailResponse.getObtainedScore());
+					map.put("repaymentPeriodScoreOutOf", proposalScoreDetailResponse.getMaxScore());
+					continue;
+				case ScoreParameter.CONTINUOUS_NET_PROFIT:
+					map.put("continuousNetProfitActual", StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()));
+					map.put("continuousNetProfitScoreActual", proposalScoreDetailResponse.getObtainedScore());
+					map.put("continuousNetProfitScoreOutOf", proposalScoreDetailResponse.getMaxScore());
+					continue;
+				case ScoreParameter.QUALITY_OF_RECEIVABLES:
+					map.put("qualityReceivablesActual", StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()));
+					map.put("qualityReceivablesScoreActual", proposalScoreDetailResponse.getObtainedScore());
+					map.put("qualityReceivablesScoreOutOf", proposalScoreDetailResponse.getMaxScore());
+					continue;
+				case ScoreParameter.QUALITY_OF_FINISHED_GOODS_INVENTORY:
+					map.put("qualityFinishedGoodsActual", StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()));
+					map.put("qualityFinishedGoodsScoreActual", proposalScoreDetailResponse.getObtainedScore());
+					map.put("qualityFinishedGoodsScoreOutOf", proposalScoreDetailResponse.getMaxScore());
+					continue;
+				case ScoreParameter.KNOW_HOW:
+					map.put("knowHowActual", StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()));
+					map.put("knowHowScoreActual", proposalScoreDetailResponse.getObtainedScore());
+					map.put("knowHowScoreOutOf", proposalScoreDetailResponse.getMaxScore());
+					continue;
+				case ScoreParameter.LINE_OF_ACTIVITY:
+					map.put("lineOfActivityActual", StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()));
+					map.put("lineOfActivityScoreActual", proposalScoreDetailResponse.getObtainedScore());
+					map.put("lineOfActivityScoreOutOf", proposalScoreDetailResponse.getMaxScore());
+					continue;
+				case ScoreParameter.COMPETITION:
+					map.put("competitionActual", StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()));
+					map.put("competitionScoreActual", proposalScoreDetailResponse.getObtainedScore());
+					map.put("competitionScoreOutOf", proposalScoreDetailResponse.getMaxScore());
+					continue;
+				case ScoreParameter.FACTORY_PREMISES:
+					map.put("factoryPremisesActual", StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()));
+					map.put("factoryPremisesScoreActual", proposalScoreDetailResponse.getObtainedScore());
+					map.put("factoryPremisesScoreOutOf", proposalScoreDetailResponse.getMaxScore());
+					continue;
+				case ScoreParameter.SALES_SHOW_A_RISING_TREND:
+					map.put("salesShowActual", StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()));
+					map.put("salesShowScoreActual", proposalScoreDetailResponse.getObtainedScore());
+					map.put("salesShowScoreOutOf", proposalScoreDetailResponse.getMaxScore());
+					continue;
 				default:
 					break;
 				}
@@ -684,8 +778,9 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		try {
 			CGTMSEDataResponse cgtmseDataResponse = thirdPartyClient.getCalulation(applicationId);
 			if(!CommonUtils.isObjectNullOrEmpty(cgtmseDataResponse)) {
-				map.put("cgtmseData", cgtmseDataResponse);
+				map.put("cgtmseData", CommonUtils.printFields(cgtmseDataResponse));
 				map.put("maxCgtmseCoverageAmount", CommonUtils.convertValue(cgtmseDataResponse.getMaxCgtmseCoverageAmount()));
+				map.put("identityAmount", CommonUtils.convertValue(cgtmseDataResponse.getIdentityAmount()));
 				if(!CommonUtils.isObjectNullOrEmpty(cgtmseDataResponse.getCgtmseResponse()) && !CommonUtils.isObjectNullOrEmpty(cgtmseDataResponse.getCgtmseResponse().getDetails())) {
 					map.put("cgtmseBankWise", CommonUtils.printFields(cgtmseDataResponse.getCgtmseResponse().getDetails()));
 				}
