@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+
 import com.capitaworld.service.loans.config.AuditComponentBankToCW;
 import com.capitaworld.service.loans.config.FPAsyncComponent;
 import com.capitaworld.service.loans.domain.sanction.LoanSanctionDomain;
@@ -55,6 +56,9 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 	
 	@Value("${capitaworld.sidbi.integration.is_production}")
 	private String isProduction; 
+	
+	@Value("${capitaworld.sidbi.integration.reverse_api_timeout}")
+	private String reverseAPITimeOut; 
 	
 	@Autowired
 	private SidbiIntegrationClient sidbiIntegrationClient;
@@ -160,9 +164,22 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 					UserOrganisationRequest	userOrganisationRequest =null;
 					for(Map<String , Object> map : userOrganisationRequestList) {
 						userOrganisationRequest = (UserOrganisationRequest)	MultipleJSONObjectHelper.getObjectFromMap(map, UserOrganisationRequest.class);
+						if(userOrganisationRequest.getUserOrgId() != 10l) {
+							logger.info("Organization ID==========>{}",userOrganisationRequest.getUserOrgId());
+							continue;
+						}
+						
 						if(CommonUtils.isObjectNullOrEmpty(isProduction)){
+							if(CommonUtils.isObjectNullOrEmpty(userOrganisationRequest.getProductionUrl())) {
+								logger.info("Production URL is NULL for Bank==========>{}",userOrganisationRequest.getOrganisationName());
+								continue;
+							}
 							sidbiIntegrationClient.setIntegrationBaseUrl(userOrganisationRequest.getProductionUrl());
 						}else {
+							if(CommonUtils.isObjectNullOrEmpty(userOrganisationRequest.getUatUrl())) {
+								logger.info("UAT URL is NULL for Bank==========>{}",userOrganisationRequest.getOrganisationName());
+								continue;
+							}
 							sidbiIntegrationClient.setIntegrationBaseUrl(userOrganisationRequest.getUatUrl());//
 						}
 						logger.warn("Getting token from SidbiIntegrationClient --------------" +userOrganisationRequest);
@@ -176,33 +193,38 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 							generateTokenRequest.setBankToken(requestDataEnc);
 						}
 						String token=null;
-						token = sidbiIntegrationClient.getToken(generateTokenRequest,generateTokenRequest.getBankToken());
-						generateTokenRequest.setToken(token);
-						//Getting sanction and disbursement Details from Bank 
-						SidbiIntegerationResponse sidbiIntegerationResponse = sidbiIntegrationClient.getSanctionAndDisbursmentDetailList(token, generateTokenRequest.getBankToken());
-						if(!CommonUtils.isObjectNullOrEmpty(sidbiIntegerationResponse)) {
-							if(!CommonUtils.isObjectNullOrEmpty(sidbiIntegerationResponse.getData())) {
-								Object res = sanctionAndDisbursementValidation((String)sidbiIntegerationResponse.getData()); 
-								if(res instanceof List){
-									System.out.println("********************************* " + ((List<LoanSanctionAndDisbursedRequest> )res).size() +" ***********************************");
-									/*if( CommonUtility.ApiType.SANCTION.toString().equals(res) ||  CommonUtility.ApiType.SANCTION_AND_DISBURSEMENT.toString().equals(res)){*/
-									String encryptString  = MultipleJSONObjectHelper.getStringfromObject(res);
-									encryptString  = AESEncryptionUtility.encrypt(encryptString);
-									if(sidbiIntegrationClient.updateSavedSanctionAndDisbursmentDetailList(encryptString , generateTokenRequest.getToken(), generateTokenRequest.getBankToken())) {	
-										try {
-											//wait foo 15 minute
-											logger.info("*******Sucessgfully updated sanction and disbursement details in sidbi integration********** ");
-											Thread.sleep(15000);
-										}catch (Exception e) {
-											logger.info("Error/Exception in for 15 min wait() ----------------------->  Message "+ e.getMessage());
-											e.printStackTrace();
+						
+						try {
+							token = sidbiIntegrationClient.getToken(generateTokenRequest,generateTokenRequest.getBankToken());
+							generateTokenRequest.setToken(token);
+							//Getting sanction and disbursement Details from Bank 
+							SidbiIntegerationResponse sidbiIntegerationResponse = sidbiIntegrationClient.getSanctionAndDisbursmentDetailList(token, generateTokenRequest.getBankToken());
+							if(!CommonUtils.isObjectNullOrEmpty(sidbiIntegerationResponse)) {
+								if(!CommonUtils.isObjectNullOrEmpty(sidbiIntegerationResponse.getData())) {
+									Object res = sanctionAndDisbursementValidation((String)sidbiIntegerationResponse.getData()); 
+									if(res instanceof List){
+										List<com.capitaworld.sidbi.integration.model.sanction.LoanSanctionAndDisbursedRequest> list = (List<com.capitaworld.sidbi.integration.model.sanction.LoanSanctionAndDisbursedRequest> )res;
+										logger.info("********************************* " + list.size() +" ***********************************");
+										if(sidbiIntegrationClient.updateSavedSanctionAndDisbursmentDetailList(list , generateTokenRequest.getToken(), generateTokenRequest.getBankToken())) {	
+											try {
+												//wait foo 15 minute
+												logger.info("*******Sucessgfully updated sanction and disbursement details in sidbi integration********** ");
+												Thread.sleep(Integer.parseInt(reverseAPITimeOut));
+												logger.info("*******Going to Call another Bank Reverse API.********** ");
+											}catch (Exception e) {
+												logger.info("Error/Exception in for 15 min wait() ----------------------->  Message "+ e.getMessage());
+												e.printStackTrace();
+											}
 										}
+										/*}*/
+									}else {
+										logger.info("*******Unable to store sanction or disbursement detail   **********  reasion is =={}", (res != null ? res.toString() : res));
 									}
-									/*}*/
-								}else {
-									logger.info("*******Unable to store sanction or disbursement detail   **********  reasion is "+ res);
 								}
 							}
+						}catch(Exception e) {
+							e.printStackTrace();
+							logger.error("Error while Calling get token API");
 						}
 					}
 				}
@@ -269,10 +291,10 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 						loanSanctionAndDisbursedRequest.getLoanSanctionRequest().getSanctionDate(),
 						loanSanctionAndDisbursedRequest.getLoanSanctionRequest().getTenure(),
 						loanSanctionAndDisbursedRequest.getLoanSanctionRequest().getUserName(),
-						loanSanctionAndDisbursedRequest.getLoanSanctionRequest().getPassword(),
+						loanSanctionAndDisbursedRequest.getLoanSanctionRequest().getPassword()/*,
 						loanSanctionAndDisbursedRequest.getLoanSanctionRequest().getReferenceNo(),
-						loanSanctionAndDisbursedRequest.getLoanSanctionRequest().getActionBy())) {
-						if(!CommonUtils.isObjectNullOrEmpty(loanSanctionAndDisbursedRequest)){
+						loanSanctionAndDisbursedRequest.getLoanSanctionRequest().getActionBy()*/)) {
+//						if(!CommonUtils.isObjectNullOrEmpty(loanSanctionAndDisbursedRequest)){
 							applicationId = loanSanctionAndDisbursedRequest.getApplicationId();
 							//	checking validation for right organization
 							orgId = auditComponentBankToCW.getOrgIdByCredential(loanSanctionAndDisbursedRequest.getUserName(),loanSanctionAndDisbursedRequest.getPassword());
@@ -294,13 +316,19 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 								logger.info("================== Exit saveLoanDisbursementDetail() =================");
 								return sanctionReason;
 							}	
-						} else {
-							logger.info("Null in LoanSanctionAndDisbursedRequest while saveLoanSanctionDisbursementDetailFromBank() ----------------> LoanDisbursementRequest"+ loanSanctionAndDisbursedRequest);
-							loansResponse = new LoansResponse("Mandatory Fields Must Not be Null",HttpStatus.BAD_REQUEST.value(), HttpStatus.OK);
-							loansResponse.setData(false);
-							sanctionReason = "Mandatory Fields Must Not be Null while saveLoanSanctionDisbursementDetailFromBank() ===> LoanDisbursementRequest ====> "+ loanSanctionAndDisbursedRequest;
-							return sanctionReason;
-						}
+//						} else {
+//							logger.info("Null in LoanSanctionAndDisbursedRequest while saveLoanSanctionDisbursementDetailFromBank() ----------------> LoanDisbursementRequest"+ loanSanctionAndDisbursedRequest);
+//							loansResponse = new LoansResponse("Mandatory Fields Must Not be Null",HttpStatus.BAD_REQUEST.value(), HttpStatus.OK);
+//							loansResponse.setData(false);
+//							sanctionReason = "Mandatory Fields Must Not be Null while saveLoanSanctionDisbursementDetailFromBank() ===> LoanDisbursementRequest ====> "+ loanSanctionAndDisbursedRequest;
+//							return sanctionReason;
+//						}
+					}else {
+						logger.info("SOME of Values from  LoanSanctionAndDisbursedRequest while saveLoanSanctionDisbursementDetailFromBank() ----------------> LoanDisbursementRequest"+ loanSanctionAndDisbursedRequest);
+						loansResponse = new LoansResponse("Mandatory Fields Must Not be Null",HttpStatus.BAD_REQUEST.value(), HttpStatus.OK);
+						loansResponse.setData(false);
+						sanctionReason = "Mandatory Fields Must Not be Null while saveLoanSanctionDisbursementDetailFromBank() ===> LoanDisbursementRequest ====> "+ loanSanctionAndDisbursedRequest;
+						return sanctionReason;
 					}
 				}	
 				if ("SUCCESS".equalsIgnoreCase(sanctionReason) || "First Disbursement".equalsIgnoreCase(sanctionReason)) {

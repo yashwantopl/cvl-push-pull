@@ -31,7 +31,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
 
 		String requestURI = request.getRequestURI();
 		logger.info("Loan Request URI------------------------------> " + requestURI);
-		if(CommonUtils.urlsBrforeLogin.contains(requestURI)){
+		if(CommonUtils.urlsBrforeLogin.contains(requestURI.toLowerCase())){
 			return true;
 		}
 		
@@ -54,7 +54,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
 
 		if (StringUtils.isEmpty(accessToken) || StringUtils.isEmpty(username) || StringUtils.isEmpty(refreshToken)
 				|| StringUtils.isEmpty(loginToken)) {
-			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 			logger.warn("Access Token ----------> " + accessToken);
 			logger.warn("UserName --------------> " + username);
 			logger.warn("Refresh Token  --------> " + refreshToken);

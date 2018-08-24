@@ -4681,6 +4681,20 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			if (statusId.equals(CommonUtils.DdrStatus.APPROVED)) {
 				applicationMaster.setApprovedDate(new Date());
 			}
+			
+			Long appStatusId = null;
+			if(CommonUtils.DdrStatus.APPROVED.equals(statusId)) {
+				appStatusId = CommonUtils.ApplicationStatus.APPROVED;
+			} else if(CommonUtils.DdrStatus.REVERTED.equals(statusId)) {
+				appStatusId = CommonUtils.ApplicationStatus.REVERTED;
+			} else if(CommonUtils.DdrStatus.SUBMITTED.equals(statusId)) {
+				appStatusId = CommonUtils.ApplicationStatus.ASSIGNED_TO_CHECKER;
+			} else if(CommonUtils.DdrStatus.SUBMITTED_TO_APPROVER.equals(statusId)) {
+				appStatusId = CommonUtils.ApplicationStatus.SUBMITTED_TO_APPROVER;
+			} 
+			if(!CommonUtils.isObjectNullOrEmpty(appStatusId)) {
+				applicationMaster.setApplicationStatusMaster(new ApplicationStatusMaster(appStatusId));	
+			}
 
 			applicationMaster.setDdrStatusId(statusId);
 			applicationMaster.setModifiedBy(userId);
@@ -5130,10 +5144,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				if(prelimData == null) {
 					logger.info("ProfileReqRes ==> Prelim Sheet Object is Null in savePhese1DataToSidbi() ");
 					auditComponent.updateAudit(AuditComponent.PRELIM_INFO, applicationId, userId, "ProfileReqRes ==> Prelim Sheet Object is Null ProfileReqRes prelimData  ==> " + prelimData,  savePrelimInfo);
-					setTokenAsExpired(generateTokenRequest);
-					return false;
-				}
-				try {
+//					setTokenAsExpired(generateTokenRequest);
+//					return false;
+				}else {
+					try {
 						logger.info("Start Saving ProfileReqRes in savePhese1DataToSidbi() ");
 						savePrelimInfo = sidbiIntegrationClient.savePrelimInfo(prelimData,generateTokenRequest.getToken(),generateTokenRequest.getBankToken());
 						logger.info("Sucessfull Saved ProfileReqRes in savePhese1DataToSidbi() ");
@@ -5149,6 +5163,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					}else {
 						auditComponent.updateAudit(AuditComponent.PRELIM_INFO, applicationId, userId,  "Exceptions while saving ProfileReqRes in savePhese1DataToSidbi() ==> for ApplicationId  ====>{}}"+applicationId +" Mgs " +e.getMessage() ,savePrelimInfo);
 					}
+				}
+				
 				}
 				
 			}else {
@@ -5182,7 +5198,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 						setTokenAsExpired(generateTokenRequest);
 						return false;						
 					}else {
-						auditComponent.updateAudit(AuditComponent.MATCHES_PARAMETER, applicationId, userId, "Exceptions in  MatchesParameterRequest in savePhese1DataToSidbi()  ====>{}applicationId "+applicationId+" Msg ==> "+e.getMessage(),  matchesParameters);
+					auditComponent.updateAudit(AuditComponent.MATCHES_PARAMETER, applicationId, userId, "Exceptions in  MatchesParameterRequest in savePhese1DataToSidbi()  ====>{}applicationId "+applicationId+" Msg ==> "+e.getMessage(),  matchesParameters);
 					}
 				}	
 			}else {
@@ -5295,26 +5311,27 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 								if(scoreParameterResult == null) {
 									logger.info("scoreParameterResult  data Request Not Found  in savePhese1DataToSidbi()  for ApplicationId ====>{} FpProductId====>{}",applicationId,fpProductMappingId);
 									auditComponent.updateAudit(AuditComponent.SCORING_DETAILS, applicationId, userId, "Eligibiity data Request Not Found for ApplicationId ====>{} "+applicationId+"FpProductId====>{}"+fpProductMappingId, eligibilityParameters);
-									setTokenAsExpired(generateTokenRequest);
-									return false;
-								}
-								ScoreParameterDetailsRequest scoreParameterDetailsRequest = new ScoreParameterDetailsRequest();
-								BeanUtils.copyProperties(scoreParameterResult,scoreParameterDetailsRequest);
-								try {
-									logger.info("Start Saving ScoreParameterDetailsRequest in savePhese1DataToSidbi() ");
-									scoringDetails = sidbiIntegrationClient.saveScoringDetails(scoreParameterDetailsRequest,generateTokenRequest.getToken(),generateTokenRequest.getBankToken());
-									logger.info("Sucessfully save ScoreParameterDetailsRequest in savePhese1DataToSidbi() for  ApplicationId ====>{}FpProductId====>{}",applicationId,fpProductMappingId);
-									auditComponent.updateAudit(AuditComponent.SCORING_DETAILS, applicationId, userId,null , scoringDetails);
-								} catch (Exception e) {
-									logger.info("Exception in  ScoreParameterDetailsRequest in savePhese1DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",applicationId,fpProductMappingId +" Mgs " +e.getMessage());
-									e.printStackTrace();
-									if(e.getMessage() != null && e.getMessage().contains("401")) {
-										auditComponent.updateAudit(AuditComponent.SCORING_DETAILS, applicationId, userId,"Unauthorized! in  EligibilityDetailRequest in savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "+applicationId+" Mgs " +e.getMessage() ,scoringDetails);
-										logger.error("Invalid Token Details");
-										setTokenAsExpired(generateTokenRequest);
-										return false;						
-									}else {
-										auditComponent.updateAudit(AuditComponent.SCORING_DETAILS, applicationId, userId,"Exception in  EligibilityDetailRequest in savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "+applicationId+" Mgs " +e.getMessage() ,scoringDetails);
+//									setTokenAsExpired(generateTokenRequest);
+//									return false;
+								}else {
+									ScoreParameterDetailsRequest scoreParameterDetailsRequest = new ScoreParameterDetailsRequest();
+									BeanUtils.copyProperties(scoreParameterResult,scoreParameterDetailsRequest);
+									try {
+										logger.info("Start Saving ScoreParameterDetailsRequest in savePhese1DataToSidbi() ");
+										scoringDetails = sidbiIntegrationClient.saveScoringDetails(scoreParameterDetailsRequest,generateTokenRequest.getToken(),generateTokenRequest.getBankToken());
+										logger.info("Sucessfully save ScoreParameterDetailsRequest in savePhese1DataToSidbi() for  ApplicationId ====>{}FpProductId====>{}",applicationId,fpProductMappingId);
+										auditComponent.updateAudit(AuditComponent.SCORING_DETAILS, applicationId, userId,null , scoringDetails);
+									} catch (Exception e) {
+										logger.info("Exception in  ScoreParameterDetailsRequest in savePhese1DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",applicationId,fpProductMappingId +" Mgs " +e.getMessage());
+										e.printStackTrace();
+										if(e.getMessage() != null && e.getMessage().contains("401")) {
+											auditComponent.updateAudit(AuditComponent.SCORING_DETAILS, applicationId, userId,"Unauthorized! in  EligibilityDetailRequest in savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "+applicationId+" Mgs " +e.getMessage() ,scoringDetails);
+											logger.error("Invalid Token Details");
+											setTokenAsExpired(generateTokenRequest);
+											return false;						
+										}else {
+											auditComponent.updateAudit(AuditComponent.SCORING_DETAILS, applicationId, userId,"Exception in  EligibilityDetailRequest in savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "+applicationId+" Mgs " +e.getMessage() ,scoringDetails);
+										}
 									}
 								}
 							} catch (IOException e) {
@@ -6489,11 +6506,11 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 				try {
 					fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap(
                             (LinkedHashMap<String, Object>) userResponse.getData(), FundProviderDetailsRequest.class);
+					loanMasterRequest.setBankName(fundProviderDetailsRequest.getOrganizationName());
 				} catch (IOException e) {
 					logger.error("error while setting users details from proposal details");
 					e.printStackTrace();
 				}
-				loanMasterRequest.setBankName(fundProviderDetailsRequest.getOrganizationName());
 			}
 		}
 		return loanMasterRequest;

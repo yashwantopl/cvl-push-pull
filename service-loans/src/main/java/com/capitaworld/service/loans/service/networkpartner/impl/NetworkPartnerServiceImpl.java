@@ -20,6 +20,7 @@ import com.capitaworld.itr.api.model.ITRConnectionResponse;
 import com.capitaworld.itr.client.ITRClient;
 import com.capitaworld.service.gateway.model.GatewayResponse;
 import com.capitaworld.service.gateway.model.PaymentTypeRequest;
+import com.capitaworld.service.loans.config.FPAsyncComponent;
 import com.capitaworld.service.loans.domain.fundprovider.FpNpMapping;
 import com.capitaworld.service.loans.model.FpNpMappingRequest;
 import com.capitaworld.service.loans.repository.fundprovider.FpNpMappingRepository;
@@ -125,6 +126,9 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 	
 	@Autowired
 	private McaClient mcaClient;
+	
+	@Autowired
+	private FPAsyncComponent fpAsyncComponent;
 	
 	
 	private static String isPaymentBypass="cw.is_payment_bypass";
@@ -1347,6 +1351,12 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 				logger.error("Error while Creating Process ==>{}", e);
 			}
 
+			//=====================Sending Mail to all Makers/Checkers/HO/BO when maker accept to fill the Proposal===================
+			
+			    fpAsyncComponent.sendMailToMakerandAllMakersWhenMakerAcceptProposal(request);
+			
+			//========================================================================================================================
+			 
 			logger.info("exit from setFPMaker()");
 			return true;
 		}

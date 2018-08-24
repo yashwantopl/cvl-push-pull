@@ -2875,6 +2875,8 @@ public class LoanApplicationController {
 					CommonUtility.ApiType.GENERATING_TOKEN, loansResponse, reason, orgId);
 		}
 	}
+	
+//	loanSanctionService.saveSanctionAndDisbursementDetailsFromBank();
 
 	/*@RequestMapping(value = "/saveLoanSanctionDisbursementDetailFromBank", method = RequestMethod.POST, consumes = MediaType.TEXT_PLAIN_VALUE)
 	public ResponseEntity<LoansResponse> saveLoanSanctionDisbursementDetailFromBank(@RequestBody String encryptedString) {
@@ -3031,4 +3033,15 @@ public class LoanApplicationController {
 		}
 	}*/
 
+	
+	@RequestMapping(value = "/reverse_api", method = RequestMethod.GET)
+	public void reverseAPI() {
+		try {
+			logger.info("start reverseAPI()");
+			loanSanctionService.saveSanctionAndDisbursementDetailsFromBank();
+		} catch (Exception e) {
+			logger.error("Error while reverseAPI ==>{}", e);
+			e.printStackTrace();
+		}
+	}
 }
