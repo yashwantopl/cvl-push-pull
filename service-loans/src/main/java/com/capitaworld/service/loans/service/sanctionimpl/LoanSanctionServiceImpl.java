@@ -291,9 +291,9 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 						loanSanctionAndDisbursedRequest.getLoanSanctionRequest().getSanctionDate(),
 						loanSanctionAndDisbursedRequest.getLoanSanctionRequest().getTenure(),
 						loanSanctionAndDisbursedRequest.getLoanSanctionRequest().getUserName(),
-						loanSanctionAndDisbursedRequest.getLoanSanctionRequest().getPassword(),
+						loanSanctionAndDisbursedRequest.getLoanSanctionRequest().getPassword()/*,
 						loanSanctionAndDisbursedRequest.getLoanSanctionRequest().getReferenceNo(),
-						loanSanctionAndDisbursedRequest.getLoanSanctionRequest().getActionBy())) {
+						loanSanctionAndDisbursedRequest.getLoanSanctionRequest().getActionBy()*/)) {
 //						if(!CommonUtils.isObjectNullOrEmpty(loanSanctionAndDisbursedRequest)){
 							applicationId = loanSanctionAndDisbursedRequest.getApplicationId();
 							//	checking validation for right organization
