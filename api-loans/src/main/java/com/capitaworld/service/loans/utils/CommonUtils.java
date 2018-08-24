@@ -472,6 +472,7 @@ public class CommonUtils {
 		urlsBrforeLogin.add("/loans/loan_application/saveLoanDisbursementDetail");
 		urlsBrforeLogin.add("/loans/loan_application/saveLoanSanctionDetail");
 		urlsBrforeLogin.add("/loans/loan_application/saveLoanSanctionDisbursementDetailFromBank");
+		urlsBrforeLogin.add("/loans/loan_application/getToken");
 		
 	}
 
