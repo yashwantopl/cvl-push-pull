@@ -16,7 +16,7 @@ public class APIScheduled {
 	@Autowired
 	private LoanSanctionService loanSanctionService;
 	
-	@Scheduled(cron = " * * 8 * * *")
+	@Scheduled(cron = " 0 0 24 * * *")
 	public void saveSanctionAndDisbursementDetailFromBank() {
 		logger.info("============ start calling saveSanctionAndDisbursementDetailFromBank(){} call at scheduled time==============  ");
 		try {
