@@ -169,7 +169,7 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 		saveNegativeIndustry(wcTlParameterRequest);
 
 		//Ravina
-		boolean isUpdate = msmeValueMappingService.updateMsmeValueMapping(false, wcTlParameterRequest.getId());
+		boolean isUpdate = msmeValueMappingService.updateMsmeValueMapping(false, wcTlParameterRequest.getId(),wcTlParameter2.getId());
 		logger.info("updated = {}",isUpdate);
 		CommonDocumentUtils.endHook(logger, "saveOrUpdate");
 		return true;

@@ -32,7 +32,7 @@ public class MsmeValueMappingServiceImpl implements MsmeValueMappingService {
     private MsmeValueMappingTempRepository tempRepository;
 
     @Override
-    public boolean updateMsmeValueMapping(Boolean isNew, Long fpProductId) {
+    public boolean updateMsmeValueMapping(Boolean isNew, Long fpProductId,Long wcId) {
         logger.info("entry in updateMsmeValueMapping()");
         try {
             if (isNew) {
@@ -46,7 +46,7 @@ public class MsmeValueMappingServiceImpl implements MsmeValueMappingService {
                     }
                 }
             } else {
-                masterRepository.inActiveMasterByFpProductId(fpProductId);
+                masterRepository.inActiveMasterByFpProductId(wcId);
                 List<MsmeValueMappingTemp> tempList = tempRepository.findByFpProductIdAndIsActive(fpProductId,true);
                 if (!CommonUtils.isListNullOrEmpty(tempList)) {
                     for (MsmeValueMappingTemp temp : tempList) {
@@ -55,6 +55,7 @@ public class MsmeValueMappingServiceImpl implements MsmeValueMappingService {
                         master.setCreatedDate(new Date());
                         master.setModifiedDate(new Date());
                         master.setActive(true);
+                        master.setFpProductId(wcId);
                         masterRepository.save(master);
                     }
                 }
