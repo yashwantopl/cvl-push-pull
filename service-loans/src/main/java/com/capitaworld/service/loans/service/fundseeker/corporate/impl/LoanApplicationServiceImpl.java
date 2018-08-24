@@ -4681,6 +4681,20 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			if (statusId.equals(CommonUtils.DdrStatus.APPROVED)) {
 				applicationMaster.setApprovedDate(new Date());
 			}
+			
+			Long appStatusId = null;
+			if(CommonUtils.DdrStatus.APPROVED.equals(statusId)) {
+				appStatusId = CommonUtils.ApplicationStatus.APPROVED;
+			} else if(CommonUtils.DdrStatus.REVERTED.equals(statusId)) {
+				appStatusId = CommonUtils.ApplicationStatus.REVERTED;
+			} else if(CommonUtils.DdrStatus.SUBMITTED.equals(statusId)) {
+				appStatusId = CommonUtils.ApplicationStatus.ASSIGNED_TO_CHECKER;
+			} else if(CommonUtils.DdrStatus.SUBMITTED_TO_APPROVER.equals(statusId)) {
+				appStatusId = CommonUtils.ApplicationStatus.SUBMITTED_TO_APPROVER;
+			} 
+			if(!CommonUtils.isObjectNullOrEmpty(appStatusId)) {
+				applicationMaster.setApplicationStatusMaster(new ApplicationStatusMaster(appStatusId));	
+			}
 
 			applicationMaster.setDdrStatusId(statusId);
 			applicationMaster.setModifiedBy(userId);
