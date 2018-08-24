@@ -6732,7 +6732,7 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 			}
 	        
 	        response.setStateId(applicantDetail.getRegisteredStateId()!=null ? Long.valueOf(applicantDetail.getRegisteredStateId().toString()) : null);
-			response.setColleteralValue(applicantDetail.getTotalCollateralDetails());
+		
 		}
 		
 		LoanApplicationMaster loan = loanApplicationRepository.getById(applicationId);
@@ -6773,6 +6773,7 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 			PrimaryCorporateDetail primaryCorporateDetail = primaryCorporateRepository.findOneByApplicationIdId(applicationId);
 			response.setIsPurchaseOfEqup(false);
 			if(primaryCorporateDetail!=null) {
+				response.setColleteralValue(primaryCorporateDetail.getCollateralSecurityAmount());
 				if(primaryCorporateDetail.getAssessmentId()!=null) {
 					if(primaryCorporateDetail.getAssessmentId() == AssessmentOptionForFS.EQUIPMENT_MACHINERY.getId()) {
 						response.setIsPurchaseOfEqup(true);
