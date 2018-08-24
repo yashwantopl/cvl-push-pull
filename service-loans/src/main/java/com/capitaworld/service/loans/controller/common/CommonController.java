@@ -365,7 +365,7 @@ public class CommonController {
 			HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
 		// request must not be null
 		try {
-			logger.info("In getDataForHunter with Application ID : "+applicationId);
+			logger.info("In getDataForHunterForNTB with Application ID : "+applicationId);
 			if (applicationId == null) {
 				logger.warn("ID Require to getDataForHunter ==>" + applicationId);
 				return new ResponseEntity<LoansResponse>(
@@ -378,11 +378,11 @@ public class CommonController {
 			HunterRequestDataResponse response = applicationService.getDataForHunterForNTB(applicationId);
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 			loansResponse.setData(response);
-			logger.info("End getDataForHunter with Application ID : "+applicationId);
+			logger.info("End getDataForHunterForNTB with Application ID : "+applicationId);
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
 		} catch (Exception e) {
-			logger.error("Error while getting getDataForHunter==>", e);
+			logger.error("Error while getting getDataForHunterForNTB==>", e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
