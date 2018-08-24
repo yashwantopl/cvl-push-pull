@@ -153,8 +153,12 @@ public class FPAsyncComponent {
 							if(!CommonUtils.isObjectNullOrEmpty(userObj.getEmail())) {
 								//System.out.println("Maker ID:---"+userObj.getEmail());
 								to = userObj.getEmail();	
-								mailParameters.put("maker_name", name!=null?name:"NA");
-								
+							
+								if("null".equals(name)) {
+									mailParameters.put("maker_name","NA");	
+								}else {
+									mailParameters.put("maker_name",name!=null?name:"NA");	
+								}
 								createNotificationForEmail(to, userId.toString(),
 										mailParameters, NotificationAlias.EMAIL_ALL_MAKERS_AFTER_INPRINCIPLE_TO_FS, subject);
 							}
@@ -179,7 +183,6 @@ public class FPAsyncComponent {
 								sendSYSNotification(userObj.getId().toString(),
 										sysParameters, NotificationAlias.SYS_ALL_MAKERS_AFTER_INPRINCIPLE_TO_FS, userObj.getId().toString(), userObj.getId().toString());
 							}
-							
 					    	
 						}
 						
@@ -284,7 +287,11 @@ public class FPAsyncComponent {
 									if(!CommonUtils.isObjectNullOrEmpty(userObj.getEmail())) {
 									//	System.out.println("Checker ID:---"+userObj.getEmail());
 										to = userObj.getEmail();	
-										mailParameters.put("checker_name", name!=null?name:"NA");
+										if("null".equals(name)) {
+											mailParameters.put("checker_name","NA");	
+										}else {
+											mailParameters.put("checker_name",name!=null?name:"NA");	
+										}
 										
 										createNotificationForEmail(to, userId.toString(),
 												mailParameters, NotificationAlias.EMAIL_ALL_CHECKERS_AFTER_INPRINCIPLE_TO_FS, subject);
@@ -294,7 +301,11 @@ public class FPAsyncComponent {
 										//System.out.println("Maker ID:---"+userObj.getEmail());
 										Map<String, Object> smsParameters = new HashMap<String, Object>();
 										to = userObj.getMobile();	
-										smsParameters.put("checker_name", name!=null?name:"NA");
+										if("null".equals(name)) {
+											smsParameters.put("checker_name","NA");	
+										}else {
+											smsParameters.put("checker_name",name!=null?name:"NA");	
+										}
 										smsParameters.put("fs_name", paymentRequest.getNameOfEntity()!=null?paymentRequest.getNameOfEntity():"NA");
 										smsParameters.put("product_type", proposalresp.get("loan_type")!=null?proposalresp.get("loan_type").toString():"NA");
 										smsParameters.put("url", "www.bitly.com");
@@ -415,7 +426,11 @@ public class FPAsyncComponent {
 										if(!CommonUtils.isObjectNullOrEmpty(userObj.getEmail())) {
 										//	System.out.println("Checker ID:---"+userObj.getEmail());
 											to = userObj.getEmail();	
-											mailParameters.put("ho_name", name!=null?name:"NA");
+											if("null".equals(name)) {
+												mailParameters.put("ho_name","NA");	
+											}else {
+												mailParameters.put("ho_name",name!=null?name:"NA");	
+											}
 											
 											createNotificationForEmail(to, userId.toString(),
 													mailParameters, NotificationAlias.EMAIL_HO_INPRINCIPLE_TO_FS, subject);
@@ -546,7 +561,11 @@ public class FPAsyncComponent {
 										if(!CommonUtils.isObjectNullOrEmpty(userObj.getEmail())) {
 										//	System.out.println("Checker ID:---"+userObj.getEmail());
 											to = userObj.getEmail();	
-											mailParameters.put("bo_name", name!=null?name:"NA");
+											if("null".equals(name)) {
+												mailParameters.put("bo_name","NA");	
+											}else {
+												mailParameters.put("bo_name",name!=null?name:"NA");	
+											}
 											
 											createNotificationForEmail(to, userId.toString(),
 													mailParameters, NotificationAlias.EMAIL_ALL_BO_INPRINCIPLE_TO_FS, subject);
@@ -705,8 +724,13 @@ public class FPAsyncComponent {
 									
 								//=======================================================================================
 								
-								String assignedMakerName = makerName!=null?makerName:"NA";
+								String assignedMakerName = null;
 								
+								if("null".equals(makerName)) {
+									assignedMakerName = "NA";	
+								}else {
+									assignedMakerName = makerName!=null?makerName:"NA";	
+								}
 								
 								parameters.put("maker_name", assignedMakerName);
 								parameters.put("fs_name", applicationRequest.getUserName()!=null?applicationRequest.getUserName():"NA");
@@ -733,7 +757,6 @@ public class FPAsyncComponent {
 										String toIds = assignedMaker.getEmail();
 										logger.info("Email Sending TO MAKER when Maker accepts Proposal===to==>{}"+ toIds);
 
-										
 										createNotificationForEmail(toIds, request.getFpMakerId().toString(), parameters,
 												NotificationAlias.EMAIL_MAKER_ACCEPT_PROPOSAL_OF_FS, subject);
 									}
@@ -797,7 +820,11 @@ public class FPAsyncComponent {
 											//	System.out.println("Checker ID:---"+userObj.getEmail());
 												String to =  makerObj.getEmail();
 												parameters.put("assigned_maker_name", assignedMakerName);
-												parameters.put("maker_name", name!=null?name:"NA");
+												if("null".equals(name)) {
+													parameters.put("maker_name","NA");	
+												}else {
+													parameters.put("maker_name",name!=null?name:"NA");	
+												}
 												createNotificationForEmail(to, makerObj.getId().toString(),
 														parameters, NotificationAlias.EMAIL_ALL_MAKERS_AFTER_MAKER_ACCEPT_PROPOSAL_OF_FS, subject);
 											}
@@ -867,7 +894,11 @@ public class FPAsyncComponent {
 											//	System.out.println("Checker ID:---"+userObj.getEmail());
 												String to =  checkerObj.getEmail();
 												parameters.put("maker_name", assignedMakerName);
-												parameters.put("checker_name", name!=null?name:"NA");
+												if("null".equals(name)) {
+													parameters.put("checker_name","NA");	
+												}else {
+													parameters.put("checker_name",name!=null?name:"NA");	
+												}
 												createNotificationForEmail(to, checkerObj.getId().toString(),
 														parameters, NotificationAlias.EMAIL_ALL_CHECKERS_AFTER_MAKER_ACCEPT_PROPOSAL, subject);
 											}
@@ -876,7 +907,11 @@ public class FPAsyncComponent {
 												//System.out.println("Maker ID:---"+userObj.getEmail());
 												Map<String, Object> smsParameters = new HashMap<String, Object>();
 												String to = checkerObj.getMobile();	
-												smsParameters.put("checker_name", name!=null?name:"NA");
+												if("null".equals(name)) {
+													smsParameters.put("checker_name","NA");	
+												}else {
+													smsParameters.put("checker_name",name!=null?name:"NA");	
+												}
 												smsParameters.put("maker_name", assignedMakerName);
 												smsParameters.put("fs_name", applicationRequest.getUserName()!=null?applicationRequest.getUserName():"NA");
 												if(!CommonUtils.isObjectNullOrEmpty(proposalresp.get("loan_type"))) {
@@ -943,7 +978,11 @@ public class FPAsyncComponent {
 											//	System.out.println("Checker ID:---"+userObj.getEmail());
 												String to = hoObj.getEmail();
 												parameters.put("maker_name", assignedMakerName);
-												parameters.put("ho_name", name!=null?name:"NA");
+												if("null".equals(name)) {
+													parameters.put("ho_name","NA");	
+												}else {
+													parameters.put("ho_name",name!=null?name:"NA");	
+												}
 												createNotificationForEmail(to, hoObj.getId().toString(),
 														parameters, NotificationAlias.EMAIL_HO_MAKER_ACCEPT_PROPOSAL_OF_FS, subject);
 											}
@@ -1018,7 +1057,11 @@ public class FPAsyncComponent {
 											//	System.out.println("Checker ID:---"+userObj.getEmail());
 												String to = boObj.getEmail();
 												parameters.put("maker_name", assignedMakerName);
-												parameters.put("bo_name", name!=null?name:"NA");
+												if("null".equals(name)) {
+													parameters.put("bo_name","NA");	
+												}else {
+													parameters.put("bo_name",name!=null?name:"NA");	
+												}
 												createNotificationForEmail(to, boObj.getId().toString(),
 														parameters, NotificationAlias.EMAIL_ALL_BO_MAKER_ACCEPT_PROPOSAL_OF_FS, subject);
 											}
@@ -1101,8 +1144,12 @@ public class FPAsyncComponent {
 							e.printStackTrace();
 						}
 						
-						mailParameters.put("admin_maker", adminMakerName!=null?adminMakerName:"NA");
-						
+						if("null".equals(adminMakerName)) {
+							adminMakerName = "NA";
+						}else {
+							adminMakerName = adminMakerName!=null?adminMakerName:"NA";
+						}
+						mailParameters.put("admin_maker",adminMakerName);	
 						UserResponse userResponse = userClient.getUserDetailByOrgRoleId(productMasterTemp.getUserOrgId(),com.capitaworld.service.users.utils.CommonUtils.UserRoles.ADMIN_CHECKER);
 						List<Map<String, Object>> usersRespList = (List<Map<String, Object>>) userResponse.getListData();
 								
@@ -1128,7 +1175,11 @@ public class FPAsyncComponent {
 								if(!CommonUtils.isObjectNullOrEmpty(userObj.getEmail())) {
 									//System.out.println("Maker ID:---"+userObj.getEmail());
 									to = userObj.getEmail();	
-									mailParameters.put("admin_checker", name!=null?name:"NA");
+									if("null".equals(name)) {
+										mailParameters.put("admin_checker","NA");	
+									}else {
+										mailParameters.put("admin_checker",name!=null?name:"NA");	
+									}
 									
 									createNotificationForEmail(to, userId.toString(),
 											mailParameters, NotificationAlias.EMAIL_ADMIN_CHECKER_ADMIN_MAKER_CREATES_PRODUCT, subject);
@@ -1138,7 +1189,11 @@ public class FPAsyncComponent {
 									//System.out.println("Maker ID:---"+userObj.getEmail());
 									Map<String, Object> smsParameters = new HashMap<String, Object>();
 									to = userObj.getMobile();	
-									smsParameters.put("admin_checker", name!=null?name:"NA");
+									if("null".equals(name)) {
+										smsParameters.put("admin_checker","NA");	
+									}else {
+										smsParameters.put("admin_checker",name!=null?name:"NA");	
+									}
 									smsParameters.put("admin_maker", adminMakerName!=null?adminMakerName:"NA");
 									smsParameters.put("product_name", productMasterTemp.getName()!=null?productMasterTemp.getName():"NA");
 									smsParameters.put("product_type", productType!=null?productType:"NA");
@@ -1202,8 +1257,13 @@ public class FPAsyncComponent {
 							e.printStackTrace();
 						}
 						
-						mailParameters.put("admin_maker", adminMakerName!=null?adminMakerName:"NA");
+						if("null".equals(adminMakerName)) {
+							adminMakerName = "NA";
+						}else {
+							adminMakerName = adminMakerName!=null?adminMakerName:"NA";
+						}
 						
+						mailParameters.put("admin_maker", adminMakerName!=null?adminMakerName:"NA");
 						UserResponse userResponse = userClient.getUserDetailByOrgRoleId(productMasterTemp.getUserOrgId(),com.capitaworld.service.users.utils.CommonUtils.UserRoles.ADMIN_CHECKER);
 						List<Map<String, Object>> usersRespList = (List<Map<String, Object>>) userResponse.getListData();
 								
@@ -1229,8 +1289,11 @@ public class FPAsyncComponent {
 								if(!CommonUtils.isObjectNullOrEmpty(userObj.getEmail())) {
 									//System.out.println("Maker ID:---"+userObj.getEmail());
 									to = userObj.getEmail();	
-									mailParameters.put("admin_checker", name!=null?name:"NA");
-									
+									if("null".equals(name)) {
+										mailParameters.put("admin_checker","NA");	
+									}else {
+										mailParameters.put("admin_checker",name!=null?name:"NA");	
+									}
 									createNotificationForEmail(to, userId.toString(),
 											mailParameters, NotificationAlias.EMAIL_ADMIN_CHECKER_ADMIN_MAKER_RESENDS_PRODUCT, subject);
 								}
@@ -1239,7 +1302,11 @@ public class FPAsyncComponent {
 									//System.out.println("Maker ID:---"+userObj.getEmail());
 									Map<String, Object> smsParameters = new HashMap<String, Object>();
 									to = userObj.getMobile();	
-									smsParameters.put("admin_checker", name!=null?name:"NA");
+									if("null".equals(name)) {
+										smsParameters.put("admin_checker","NA");	
+									}else {
+										smsParameters.put("admin_checker",name!=null?name:"NA");	
+									}
 									smsParameters.put("admin_maker", adminMakerName!=null?adminMakerName:"NA");
 									smsParameters.put("product_name", productMasterTemp.getName()!=null?productMasterTemp.getName():"NA");
 									smsParameters.put("product_type", productType!=null?productType:"NA");
@@ -1304,8 +1371,13 @@ public class FPAsyncComponent {
 							e.printStackTrace();
 						}
 						
-						mailParameters.put("admin_checker", adminCheckerName!=null?adminCheckerName:"NA");
-						
+						if("null".equals(adminCheckerName)) {
+							adminCheckerName = "NA";
+						}else {
+							adminCheckerName = adminCheckerName!=null?adminCheckerName:"NA";
+						}
+
+						mailParameters.put("admin_checker",adminCheckerName);
 						UserResponse userResponse = userClient.getUserDetailByOrgRoleId(productMasterTemp.getUserOrgId(),com.capitaworld.service.users.utils.CommonUtils.UserRoles.ADMIN_MAKER);
 						List<Map<String, Object>> usersRespList = (List<Map<String, Object>>) userResponse.getListData();
 								
@@ -1331,7 +1403,11 @@ public class FPAsyncComponent {
 								if(!CommonUtils.isObjectNullOrEmpty(userObj.getEmail())) {
 									//System.out.println("Maker ID:---"+userObj.getEmail());
 									to = userObj.getEmail();	
-									mailParameters.put("admin_maker", name!=null?name:"NA");
+									if("null".equals(name)) {
+										mailParameters.put("admin_maker","NA");	
+									}else {
+										mailParameters.put("admin_maker",name!=null?name:"NA");	
+									}
 									
 									createNotificationForEmail(to, userId.toString(),
 											mailParameters, NotificationAlias.EMAIL_ADMIN_MAKER_PRODUCT_APPROVED_BY_CHECKER, subject);
@@ -1406,8 +1482,13 @@ public class FPAsyncComponent {
 							e.printStackTrace();
 						}
 						
-						mailParameters.put("admin_checker", adminCheckerName!=null?adminCheckerName:"NA");
-						
+						if("null".equals(adminCheckerName)) {
+							adminCheckerName = "NA";
+						}else {
+							adminCheckerName = adminCheckerName!=null?adminCheckerName:"NA";
+						}
+
+						mailParameters.put("admin_checker",adminCheckerName);
 						UserResponse userResponse = userClient.getUserDetailByOrgRoleId(productMasterTemp.getUserOrgId(),com.capitaworld.service.users.utils.CommonUtils.UserRoles.ADMIN_MAKER);
 						List<Map<String, Object>> usersRespList = (List<Map<String, Object>>) userResponse.getListData();
 								
@@ -1433,8 +1514,11 @@ public class FPAsyncComponent {
 								if(!CommonUtils.isObjectNullOrEmpty(userObj.getEmail())) {
 									//System.out.println("Maker ID:---"+userObj.getEmail());
 									to = userObj.getEmail();	
-									mailParameters.put("admin_maker", name!=null?name:"NA");
-									
+									if("null".equals(name)) {
+										mailParameters.put("admin_maker","NA");	
+									}else {
+										mailParameters.put("admin_maker",name!=null?name:"NA");	
+									}
 									createNotificationForEmail(to, userId.toString(),
 											mailParameters, NotificationAlias.EMAIL_ADMIN_MAKER_PRODUCT_REVERTED_BY_CHECKER, subject);
 								}
@@ -1524,8 +1608,12 @@ public class FPAsyncComponent {
 								FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<Object,Object>)userResponseForName.getData(),
 										FundProviderDetailsRequest.class);
 								checkerName = fundProviderDetailsRequest.getFirstName() + " " + (fundProviderDetailsRequest.getLastName() == null ? "": fundProviderDetailsRequest.getLastName());
-								mailParameters.put("checker_name", checkerName!=null?checkerName:"NA");	
-								
+								if("null".equals(checkerName)) {
+									checkerName = "NA";
+								}else {
+									checkerName = checkerName!=null?checkerName:"NA";
+								}
+								mailParameters.put("checker_name",checkerName);	
 							} catch (Exception e) {
 								logger.error("error while fetching FP name");
 								e.printStackTrace();
@@ -1558,8 +1646,12 @@ public class FPAsyncComponent {
 								FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<Object,Object>)userResponseForName.getData(),
 										FundProviderDetailsRequest.class);
 								makerName = fundProviderDetailsRequest.getFirstName() + " " + (fundProviderDetailsRequest.getLastName() == null ? "": fundProviderDetailsRequest.getLastName());
-								mailParameters.put("maker_name", makerName!=null?makerName:"NA");	
-								
+								if("null".equals(makerName)) {
+									makerName = "NA";
+								}else {
+									makerName = makerName!=null?makerName:"NA";
+								}	
+								mailParameters.put("maker_name",makerName);									
 							} catch (Exception e) {
 								logger.error("error while fetching FP name");
 								e.printStackTrace();
@@ -1630,7 +1722,11 @@ public class FPAsyncComponent {
 									if(!CommonUtils.isObjectNullOrEmpty(userObj.getEmail())) {
 										//System.out.println("Maker ID:---"+userObj.getEmail());
 										to = userObj.getEmail();	
-										mailParameters.put("ho_name", name!=null?name:"NA");
+										if("null".equals(name)) {
+											mailParameters.put("ho_name","NA");	
+										}else {
+											mailParameters.put("ho_name",name!=null?name:"NA");	
+										}	
 										
 										createNotificationForEmail(to, userObj.getId().toString(),
 												mailParameters, NotificationAlias.EMAIL_HO_CHECKER_SANCTIONED, subject);
@@ -1698,7 +1794,11 @@ public class FPAsyncComponent {
 									if(!CommonUtils.isObjectNullOrEmpty(userObj.getEmail())) {
 										//System.out.println("Maker ID:---"+userObj.getEmail());
 										to = userObj.getEmail();	
-										mailParameters.put("ho_name", name!=null?name:"NA");
+										if("null".equals(name)) {
+											mailParameters.put("bo_name","NA");	
+										}else {
+											mailParameters.put("bo_name",name!=null?name:"NA");	
+										}	
 										
 										createNotificationForEmail(to, userObj.getId().toString(),
 												mailParameters, NotificationAlias.EMAIL_ALL_BO_CHECKER_SANCTIONED, subject);
@@ -1729,7 +1829,6 @@ public class FPAsyncComponent {
 										sendSYSNotification(userObj.getId().toString(),
 												sysParameters, NotificationAlias.SYS_ALL_BO_CHECKER_SANCTIONED, userObj.getId().toString(), userObj.getId().toString());
 									}
-									
 							    	
 								}
 								
