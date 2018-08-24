@@ -463,17 +463,15 @@ public class CommonUtils {
 	public static List<String> urlsBrforeLogin = null;
 	static {
 		urlsBrforeLogin = new ArrayList<String>(8);
-		urlsBrforeLogin.add("/loans/loan_application/getUsersRegisteredLoanDetails");
-		urlsBrforeLogin.add("/loans/loan_application/getLoanDetailsForAdminPanel");
-		urlsBrforeLogin.add("/loans/corporate_upload/downloadCMAAndCoCMAExcelFile/**");
-		urlsBrforeLogin.add("/loans/loan_application/save_payment_info_for_mobile");
-		urlsBrforeLogin.add("/loans/loan_application/mobile/successUrl");
-		urlsBrforeLogin.add("/loans/loan_application/getToken");
-		urlsBrforeLogin.add("/loans/loan_application/saveLoanDisbursementDetail");
-		urlsBrforeLogin.add("/loans/loan_application/saveLoanSanctionDetail");
-		urlsBrforeLogin.add("/loans/loan_application/saveLoanSanctionDisbursementDetailFromBank");
-		urlsBrforeLogin.add("/loans/loan_application/getToken");
-		
+		urlsBrforeLogin.add("/loans/loan_application/getUsersRegisteredLoanDetails".toLowerCase());
+		urlsBrforeLogin.add("/loans/loan_application/getLoanDetailsForAdminPanel".toLowerCase());
+		urlsBrforeLogin.add("/loans/corporate_upload/downloadCMAAndCoCMAExcelFile/**".toLowerCase());
+		urlsBrforeLogin.add("/loans/loan_application/save_payment_info_for_mobile".toLowerCase());
+		urlsBrforeLogin.add("/loans/loan_application/mobile/successUrl".toLowerCase());
+		urlsBrforeLogin.add("/loans/loan_application/getToken".toLowerCase());
+		urlsBrforeLogin.add("/loans/loan_application/saveLoanDisbursementDetail".toLowerCase());
+		urlsBrforeLogin.add("/loans/loan_application/saveLoanSanctionDetail".toLowerCase());
+		urlsBrforeLogin.add("/loans/loan_application/saveLoanSanctionDisbursementDetailFromBank".toLowerCase());
 	}
 
 	public static int calculateAge(Date dateOfBirth) {
