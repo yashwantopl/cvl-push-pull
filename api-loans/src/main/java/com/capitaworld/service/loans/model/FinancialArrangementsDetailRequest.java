@@ -176,4 +176,5 @@ public class FinancialArrangementsDetailRequest {
 	public void setLcBgStatus(Integer lcBgStatus) {
 		this.lcBgStatus = lcBgStatus;
 	}
+
 }

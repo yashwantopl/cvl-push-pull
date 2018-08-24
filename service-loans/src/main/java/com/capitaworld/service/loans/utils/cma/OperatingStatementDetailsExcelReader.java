@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.OperatingStatementDetails;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.OperatingStatementDetailsRepository;
+import com.capitaworld.service.loans.utils.CommonUtils;
 
 public class OperatingStatementDetailsExcelReader {
 	public static final Logger log = LoggerFactory.getLogger(OperatingStatementDetailsExcelReader.class);
@@ -79,7 +80,7 @@ public class OperatingStatementDetailsExcelReader {
              */
             
              
-        System.out.println("OperatingStatementDetailsExcelReader -----------> "+sheet.getRow(4).getCell(1).getNumericCellValue());       
+            log.info("OperatingStatementDetailsExcelReader -----------> "+sheet.getRow(4).getCell(1).getNumericCellValue());       
 //        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, operatingStatementMappingList,"B",String.valueOf(sheet.getRow(4).getCell(1).getNumericCellValue()),"Audited", operatingStatementDetailsRepository);
 //        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, operatingStatementMappingList,"C",String.valueOf(sheet.getRow(4).getCell(2).getNumericCellValue()),"Audited",operatingStatementDetailsRepository);
 //        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, operatingStatementMappingList,"D",String.valueOf(sheet.getRow(4).getCell(3).getNumericCellValue()),"Audited",operatingStatementDetailsRepository);
@@ -117,14 +118,14 @@ public class OperatingStatementDetailsExcelReader {
                 ++nullCounter;
             }
         }
-        System.out.println(nullCounter);
+        log.info("nullCounter---" + nullCounter);
         if(!(nullCounter==46||nullCounter==47)) {
             OperatingStatementDetails operatingStatementDetails = new OperatingStatementDetails();
             
             operatingStatementDetails.setLoanApplicationMaster(loanApplicationMaster);
             operatingStatementDetails.setStorageDetailsId(storageDetailsId);
-     
-            operatingStatementDetails.setYear(year);
+            
+            operatingStatementDetails.setYear(CommonUtils.getCMAFilterYear(year));
             operatingStatementDetails.setFinancialYearlyStatement(financialYearlyStatement);
             operatingStatementDetails.setDomesticSales(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
             operatingStatementDetails.setExportSales(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));

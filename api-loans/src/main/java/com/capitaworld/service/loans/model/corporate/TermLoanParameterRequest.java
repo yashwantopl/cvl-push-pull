@@ -218,6 +218,10 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	private BigDecimal minTenureNtb;
 	
 	private BigDecimal maxTenureNtb;
+	
+	private Integer cgtmseCoverage;
+	
+	private Integer cashMargin;
     /**
 	 * @return the workflowData
 	 */
@@ -1360,6 +1364,24 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	public void setMaxTenureNtb(BigDecimal maxTenureNtb) {
 		this.maxTenureNtb = maxTenureNtb;
 	}
+
+	public Integer getCgtmseCoverage() {
+		return cgtmseCoverage;
+	}
+
+	public void setCgtmseCoverage(Integer cgtmseCoverage) {
+		this.cgtmseCoverage = cgtmseCoverage;
+	}
+
+	public Integer getCashMargin() {
+		return cashMargin;
+	}
+
+	public void setCashMargin(Integer cashMargin) {
+		this.cashMargin = cashMargin;
+	}
+
+	
 	
 	
 	

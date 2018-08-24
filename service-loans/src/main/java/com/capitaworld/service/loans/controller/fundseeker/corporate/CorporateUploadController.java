@@ -57,6 +57,9 @@ public class CorporateUploadController {
 	
 	@Autowired
 	private DownLoadCMAFileService downLoadCMAFileService;
+	
+	@Autowired
+	private DMSClient dmsClient;
 
 	@RequestMapping(value = "/ping", method = RequestMethod.GET)
 	public String getPing() {
@@ -200,8 +203,6 @@ public class CorporateUploadController {
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
-			DMSClient dmsClient = new DMSClient(environment.getRequiredProperty(CommonUtils.DMS_BASE_URL_KEY));
-
 			DocumentResponse response = dmsClient.listProductDocument(documentRequest);
 			if (response != null && response.getStatus() == 200) {
 				logger.info("File Uploaded SuccessFully -->");
@@ -244,7 +245,6 @@ public class CorporateUploadController {
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
-			DMSClient dmsClient = new DMSClient(environment.getRequiredProperty(CommonUtils.DMS_BASE_URL_KEY));
 
 			Long applicationId = MultipleJSONObjectHelper.getNestedObject(documentRequestString, "applicationId",
 					Long.class);
@@ -366,7 +366,6 @@ public class CorporateUploadController {
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
-			DMSClient dmsClient = new DMSClient(environment.getRequiredProperty(CommonUtils.DMS_BASE_URL_KEY));
 
 			JSONObject json = new JSONObject();
 			json.put("id", docId);
@@ -418,9 +417,7 @@ public class CorporateUploadController {
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 
-			DMSClient dmsClient = new DMSClient(environment.getRequiredProperty(CommonUtils.DMS_BASE_URL_KEY));
 			
-			System.out.println("dms client url is====>>>>"+dmsClient);
 
 			// code for inactive CMA BS and DPR recored
 
@@ -590,6 +587,20 @@ public class CorporateUploadController {
 		}
 		LoansResponse response = new LoansResponse("Mapping Id not matched", HttpStatus.OK.value(), null);
 		return new ResponseEntity<LoansResponse>(response, HttpStatus.OK);
+	}
+	
+	
+	@RequestMapping(value="/listOfDocumentByMultiProDocMapId" , method=RequestMethod.POST,consumes = MediaType.APPLICATION_JSON_VALUE,produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<DocumentResponse> listOfDocumentByMultiProDocMapId(@RequestBody DocumentRequest documentRequest) throws IOException {
+		logger.info("In getCmaFile");
+		
+		try {
+			return new ResponseEntity<DocumentResponse>(corporateUploadService.listOfDocumentByMultiProDocMapId(documentRequest), HttpStatus.OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.info("Thrown exception from getCmaFile====>"+e.getMessage());
+			return new ResponseEntity<DocumentResponse>(new DocumentResponse("Something went wrong",HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 	}
 	
 	/*@RequestMapping(value="/downloadCMAAndCoCMAExcelFile/{applicationId}/{productDocumentMappingId}" , method=RequestMethod.GET)

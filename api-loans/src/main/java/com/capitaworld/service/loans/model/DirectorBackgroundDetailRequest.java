@@ -15,6 +15,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DirectorBackgroundDetailRequest implements Serializable {
 
+	
+
 	/**
 	 * 
 	 */
@@ -53,6 +55,7 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 
 	/*@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd-MM-yyyy")*/
 	private Date dob;
+	private String dobString;
 
 	private String mobile;
 
@@ -102,6 +105,9 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 
 	private String landmark;
 
+	private Integer stateId;
+	private Integer cityId;
+
 	private Boolean isMainDirector;
 
 	private Integer qualificationId;
@@ -112,13 +118,18 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 	* SBI Msme Integration fields
 	* By Ravina
 	* */
-	private String fatherOrSpouseName;
+	private String fatherName;
 	private Integer educationalStatus;
 	private Integer nationality;
-	private Boolean visuallyImpaired;
+	private Integer visuallyImpaired;
 	private Integer residentStatus;
 	private Boolean isGuarantor;
-	private DirectorPersonalDetailRequest directorPersonalDetail;
+	private DirectorPersonalDetailRequest directorPersonalDetailRequest;
+
+	private String district;
+	private String subDistrict;
+	private String village;
+	private Long districtMappingId;
 
 	public Boolean getIsActive() {
 		return isActive;
@@ -509,12 +520,12 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 		this.amount = amount;
 	}
 
-	public String getFatherOrSpouseName() {
-		return fatherOrSpouseName;
+	public String getFatherName() {
+		return fatherName;
 	}
 
-	public void setFatherOrSpouseName(String fatherOrSpouseName) {
-		this.fatherOrSpouseName = fatherOrSpouseName;
+	public void setFatherName(String fatherName) {
+		this.fatherName = fatherName;
 	}
 
 	public Integer getEducationalStatus() {
@@ -533,11 +544,11 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 		this.nationality = nationality;
 	}
 
-	public Boolean getVisuallyImpaired() {
+	public Integer getVisuallyImpaired() {
 		return visuallyImpaired;
 	}
 
-	public void setVisuallyImpaired(Boolean visuallyImpaired) {
+	public void setVisuallyImpaired(Integer visuallyImpaired) {
 		this.visuallyImpaired = visuallyImpaired;
 	}
 
@@ -557,12 +568,67 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 		this.isGuarantor = isGuarantor;
 	}
 
-	public DirectorPersonalDetailRequest getDirectorPersonalDetail() {
-		return directorPersonalDetail;
+	public DirectorPersonalDetailRequest getDirectorPersonalDetailRequest() {
+		return directorPersonalDetailRequest;
 	}
 
-	public void setDirectorPersonalDetail(DirectorPersonalDetailRequest directorPersonalDetail) {
-		this.directorPersonalDetail = directorPersonalDetail;
+	public void setDirectorPersonalDetailRequest(DirectorPersonalDetailRequest directorPersonalDetailRequest) {
+		this.directorPersonalDetailRequest = directorPersonalDetailRequest;
+	}
+
+	public String getDistrict() {
+		return district;
+	}
+
+	public void setDistrict(String district) {
+		this.district = district;
+	}
+
+	public String getSubDistrict() {
+		return subDistrict;
+	}
+
+	public void setSubDistrict(String subDistrict) {
+		this.subDistrict = subDistrict;
+	}
+
+	public String getVillage() {
+		return village;
+	}
+
+	public void setVillage(String village) {
+		this.village = village;
+	}
+
+	public Long getDistrictMappingId() {
+		return districtMappingId;
+	}
+
+	public void setDistrictMappingId(Long districtMappingId) {
+		this.districtMappingId = districtMappingId;
+	}
+
+	public Integer getCityId() {
+		return cityId;
+	}
+
+	public void setCityId(Integer cityId) {
+		this.cityId = cityId;
+	}
+
+	public Integer getStateId() {
+		return stateId;
+	}
+
+	public void setStateId(Integer stateId) {
+		this.stateId = stateId;
+	}
+	public String getDobString() {
+		return dobString;
+	}
+
+	public void setDobString(String dobString) {
+		this.dobString = dobString;
 	}
 
 	@Override
@@ -611,19 +677,19 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 				", isMainDirector=" + isMainDirector +
 				", qualificationId=" + qualificationId +
 				", amount='" + amount + '\'' +
-				", fatherOrSpouseName='" + fatherOrSpouseName + '\'' +
+				", fatherName='" + fatherName + '\'' +
 				", educationalStatus=" + educationalStatus +
 				", nationality=" + nationality +
 				", visuallyImpaired=" + visuallyImpaired +
 				", residentStatus=" + residentStatus +
 				", isGuarantor=" + isGuarantor +
-				", directorPersonalDetail=" + directorPersonalDetail +
+				", directorPersonalDetailRequest=" + directorPersonalDetailRequest +
 				'}';
 	}
 
 	public static void printFields(Object obj) throws Exception {
         Field[] fields = DirectorBackgroundDetailRequest.class.getDeclaredFields();
-        System.out.println("length : "+fields.length);
+        
         for(Field field : fields) {
             Object value = field.get(obj);
             if(value instanceof String){

@@ -182,6 +182,12 @@ public class CorporateApplicantDetail implements Serializable {
 	@Column(name= "msme_registration_number")
 	private String msmeRegistrationNumber;
 
+	@Column(name= "administrative_dist_mapping_id")
+	private Long administrativeDistMappingId;
+
+	@Column(name= "registered_dist_mapping_id")
+	private Long registeredDistMappingId;
+
 	public CorporateApplicantDetail() {
 	}
 
@@ -600,5 +606,21 @@ public class CorporateApplicantDetail implements Serializable {
 
 	public void setMsmeRegistrationNumber(String msmeRegistrationNumber) {
 		this.msmeRegistrationNumber = msmeRegistrationNumber;
+	}
+
+	public Long getAdministrativeDistMappingId() {
+		return administrativeDistMappingId;
+	}
+
+	public void setAdministrativeDistMappingId(Long administrativeDistMappingId) {
+		this.administrativeDistMappingId = administrativeDistMappingId;
+	}
+
+	public Long getRegisteredDistMappingId() {
+		return registeredDistMappingId;
+	}
+
+	public void setRegisteredDistMappingId(Long registeredDistMappingId) {
+		this.registeredDistMappingId = registeredDistMappingId;
 	}
 }

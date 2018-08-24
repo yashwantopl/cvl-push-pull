@@ -19,6 +19,10 @@ public class EmploymentDetailRequest  implements Serializable {
 
     private Long totalExperience;
 
+    private String nameOfEmployer;
+
+    private Double salary;
+
     public Long getId() {
         return id;
     }
@@ -59,6 +63,22 @@ public class EmploymentDetailRequest  implements Serializable {
         this.totalExperience = totalExperience;
     }
 
+    public String getNameOfEmployer() {
+        return nameOfEmployer;
+    }
+
+    public void setNameOfEmployer(String nameOfEmployer) {
+        this.nameOfEmployer = nameOfEmployer;
+    }
+
+    public Double getSalary() {
+        return salary;
+    }
+
+    public void setSalary(Double salary) {
+        this.salary = salary;
+    }
+
     @Override
     public String toString() {
         return "EmploymentDetailRequest{" +
@@ -67,6 +87,8 @@ public class EmploymentDetailRequest  implements Serializable {
                 ", employmentWith=" + employmentWith +
                 ", employmentStatus=" + employmentStatus +
                 ", totalExperience=" + totalExperience +
+                ", nameOfEmployer='" + nameOfEmployer + '\'' +
+                ", salary=" + salary +
                 '}';
     }
 }

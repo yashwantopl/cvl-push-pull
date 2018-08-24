@@ -205,6 +205,8 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 	private Boolean isMsmeFundingDisplay = false;
 	private Boolean isMsmeFundingMandatory = false;
     private List<Integer> msmeFundingIds;
+    
+    private Integer cgtmseCoverage;
 
 	public Integer getIndividualCibil() {
 		return individualCibil;
@@ -1076,4 +1078,14 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 	public void setMsmeFundingIds(List<Integer> msmeFundingIds) {
 		this.msmeFundingIds = msmeFundingIds;
 	}
+
+	public Integer getCgtmseCoverage() {
+		return cgtmseCoverage;
+	}
+
+	public void setCgtmseCoverage(Integer cgtmseCoverage) {
+		this.cgtmseCoverage = cgtmseCoverage;
+	}
+	
+	
 }

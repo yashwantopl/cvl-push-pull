@@ -455,6 +455,9 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 					.setCollateralSecurityAmount(primaryCorporateDetail.getCollateralSecurityAmount() != null
 							? String.valueOf(primaryCorporateDetail.getCollateralSecurityAmount())
 							: null);
+			corporatePrimaryViewResponse.setPromotersContribution(primaryCorporateDetail.getPromoterContribution());
+			corporatePrimaryViewResponse.setPromotersContributionPer(primaryCorporateDetail.getTotalAmtPercentage()!= null ? " ("+convertValue(primaryCorporateDetail.getTotalAmtPercentage())+"%)" : null);
+			
 			corporatePrimaryViewResponse.setNpOrgId(loanApplicationMaster.getNpOrgId());
 			// workingCapitalPrimaryViewResponse.setSharePriceFace(primaryWorkingCapitalLoanDetail.getSharePriceFace());
 			// workingCapitalPrimaryViewResponse.setSharePriceMarket(primaryWorkingCapitalLoanDetail.getSharePriceMarket());
@@ -547,6 +550,8 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 		try {
 			FinancialInputRequest financialInputRequest = irrService.cmaIrrMappingService(userId, toApplicationId, null,
 					denomination);
+			
+			System.out.println("financialInputRequest.getYear()===>>>"+financialInputRequest.getYear());
 			// Profit & Loss Statement
 			financialInputRequest.setNetSaleFy(CommonUtils.substractNumbers(financialInputRequest.getGrossSalesFy(),
 					financialInputRequest.getLessExciseDuityFy()));
@@ -837,6 +842,12 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 						.setFinancialRiskScoreWeight(proposalScoreResponse.getFinancialRiskWeight());
 				corporatePrimaryViewResponse.setBuisnessRiskScoreWeight(proposalScoreResponse.getBusinessRiskWeight());
 				corporatePrimaryViewResponse.setScoreInterpretation(proposalScoreResponse.getInterpretation());
+				corporatePrimaryViewResponse.setManagementRiskMaxTotalScore(proposalScoreResponse.getManagementRiskMaxTotalScore());
+				corporatePrimaryViewResponse.setFinancialRiskMaxTotalScore(proposalScoreResponse.getFinancialRiskMaxTotalScore());
+				corporatePrimaryViewResponse.setBusinessRiskMaxTotalScore(proposalScoreResponse.getBusinessRiskMaxTotalScore());
+				corporatePrimaryViewResponse.setManagementRiskWeightOfScoring(proposalScoreResponse.getManagementRiskWeightOfScoring());
+				corporatePrimaryViewResponse.setFinancialRiskWeightOfScoring(proposalScoreResponse.getFinancialRiskWeightOfScoring());
+				corporatePrimaryViewResponse.setBusinessRiskWeightOfScoring(proposalScoreResponse.getBusinessRiskWeightOfScoring());
 				System.out.println("complete");
 			} else {
 				logger.info("SCORING OBJECT NULL OR EMPTY -------------------->");

@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -41,7 +42,7 @@ public class CorporateDirectorIncomeServiceImpl implements CorporateDirectorInco
 	private DirectorBackgroundDetailsRepository backgroundDetailsRepository;
 	
 	private static final Logger logger = LoggerFactory.getLogger(CorporateDirectorIncomeServiceImpl.class.getName());
-	
+	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 	@Override
 	public Boolean saveOrUpdateIncomeDetails(List<CorporateDirectorIncomeRequest> corporateRequest) throws Exception {
 
@@ -97,6 +98,8 @@ public class CorporateDirectorIncomeServiceImpl implements CorporateDirectorInco
 						if(!CommonUtils.isObjectNullOrEmpty(corpObj)) {
 							incomeRequest = new CorporateDirectorIncomeRequest();
 							BeanUtils.copyProperties(corpObj, incomeRequest);
+							String directorName = backgroundDetailsRepository.getDirectorNamefromDirectorId(incomeRequest.getDirectorId());
+							incomeRequest.setDirectorName(directorName);
 						}
 						incomeDetailsResponse.add(incomeRequest);
 				}
@@ -144,15 +147,21 @@ public class CorporateDirectorIncomeServiceImpl implements CorporateDirectorInco
 							map.put("designation", corpObj.getDesignation());
 							map.put("directorsName", corpObj.getDirectorsName());
 							map.put("totalExperience", corpObj.getTotalExperience());
-							map.put("dob", corpObj.getDob());
+							map.put("dob", DATE_FORMAT.format(corpObj.getDob()));
 							map.put("mobile", corpObj.getMobile());
 							if(!CommonUtils.isObjectNullOrEmpty(corpObj.getGender())) {
 								Gender byIdGndr = Gender.getById(corpObj.getGender());
 								map.put("gender", !CommonUtils.isObjectNullOrEmpty(byIdGndr) ? byIdGndr.getValue() : "");	
 							}
+							if(!CommonUtils.isObjectNullOrEmpty(corpObj.getGender())) {
+								map.put("genderInt", corpObj.getGender());	
+							}
 							if(!CommonUtils.isObjectNullOrEmpty(corpObj.getRelationshipType())) {
 								DirectorRelationshipType byIdRelation = DirectorRelationshipType.getById(corpObj.getRelationshipType());
 								map.put("relationshipType", !CommonUtils.isObjectNullOrEmpty(byIdRelation) ? byIdRelation.getValue() : "");	
+							}
+							if(!CommonUtils.isObjectNullOrEmpty(corpObj.getRelationshipType())) {
+								map.put("relationshipTypeInt", corpObj.getRelationshipType());	
 							}
 							map.put("firstName", corpObj.getFirstName());
 							map.put("lastName", corpObj.getLastName());
@@ -168,11 +177,16 @@ public class CorporateDirectorIncomeServiceImpl implements CorporateDirectorInco
 								MaritalStatus byIdMarital = MaritalStatus.getById(corpObj.getMaritalStatus());
 								map.put("maritalStatus", !CommonUtils.isObjectNullOrEmpty(byIdMarital) ? byIdMarital.getValue() : "");	
 							}
-							
+							if(!CommonUtils.isObjectNullOrEmpty(corpObj.getMaritalStatus())) {
+								map.put("maritalStatusInt", corpObj.getMaritalStatus());	
+							}
 							map.put("noOfDependent", corpObj.getNoOfDependent());
 							if(!CommonUtils.isObjectNullOrEmpty(corpObj.getResidenceType())) {
 								ResidenceStatusRetailMst byIdResidentType = ResidenceStatusRetailMst.getById(corpObj.getResidenceType());
 								map.put("residenceType", !CommonUtils.isObjectNullOrEmpty(byIdResidentType) ? byIdResidentType.getValue() : "");	
+							}
+							if(!CommonUtils.isObjectNullOrEmpty(corpObj.getResidenceType())) {
+								map.put("residenceTypeInt", corpObj.getResidenceType());	
 							}
 							
 							map.put("residenceSinceMonth", corpObj.getResidenceSinceMonth());
@@ -188,6 +202,9 @@ public class CorporateDirectorIncomeServiceImpl implements CorporateDirectorInco
 								EducationQualificationNTB byIdEduNtb = EducationQualificationNTB.getById(corpObj.getQualificationId());
 								map.put("qualificationId", !CommonUtils.isObjectNullOrEmpty(byIdEduNtb) ? byIdEduNtb.getValue() : "");	
 							}
+							if(!CommonUtils.isObjectNullOrEmpty(corpObj.getQualificationId())) {
+								map.put("qualificationIdInt", corpObj.getQualificationId());	
+							}
 							
 							map.put("isMainDirector", corpObj.getIsMainDirector());
 						
@@ -198,6 +215,10 @@ public class CorporateDirectorIncomeServiceImpl implements CorporateDirectorInco
 							if(!CommonUtils.isObjectNullOrEmpty(corpObj.getEmploymentDetail().getTypeOfEmployment())) {
 								OccupationNatureNTB byIdOccupation = OccupationNatureNTB.getById(Integer.parseInt(corpObj.getEmploymentDetail().getTypeOfEmployment().toString()));
 								map.put("typeOfEmployment", !CommonUtils.isObjectNullOrEmpty(byIdOccupation) ? byIdOccupation.getValue() : "");	
+							}
+							if(!CommonUtils.isObjectNullOrEmpty(corpObj.getEmploymentDetail().getTypeOfEmployment())) {
+								OccupationNatureNTB byIdOccupation = OccupationNatureNTB.getById(Integer.parseInt(corpObj.getEmploymentDetail().getTypeOfEmployment().toString()));
+								map.put("typeOfEmploymentInt", !CommonUtils.isObjectNullOrEmpty(byIdOccupation) ? byIdOccupation.getValue() : "");	
 							}
 							if(!CommonUtils.isObjectNullOrEmpty(corpObj.getEmploymentDetail().getEmploymentWith())) {
 								EmploymentWithNTB byIdEmpWith = EmploymentWithNTB.getById(Integer.parseInt(corpObj.getEmploymentDetail().getEmploymentWith().toString()));

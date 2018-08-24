@@ -205,6 +205,10 @@ public class CorporateProduct  extends  ProductMasterRequest implements Serializ
 	private Boolean isMsmeFundingMandatory = false;
 	private List<Integer> msmeFundingIds;
 	
+	private Integer cgtmseCoverage;
+	
+	private Integer cashMargin;
+	
 /*ntb*/
 	
 	private BigDecimal minAvrgAge;
@@ -1319,6 +1323,25 @@ public class CorporateProduct  extends  ProductMasterRequest implements Serializ
 		this.maxTenureNtb = maxTenureNtb;
 	}
 
+	public Integer getCgtmseCoverage() {
+		return cgtmseCoverage;
+	}
+
+	public void setCgtmseCoverage(Integer cgtmseCoverage) {
+		this.cgtmseCoverage = cgtmseCoverage;
+	}
+
+	public Integer getCashMargin() {
+		return cashMargin;
+	}
+
+	public void setCashMargin(Integer cashMargin) {
+		this.cashMargin = cashMargin;
+	}
+
+
+	
+	
 	
 	
 	

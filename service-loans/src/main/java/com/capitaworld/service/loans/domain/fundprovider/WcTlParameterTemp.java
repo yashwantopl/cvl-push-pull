@@ -326,6 +326,8 @@ public class WcTlParameterTemp extends ProductMasterTemp implements Serializable
 	@Column(name="is_msme_funding_mandatory")
 	private Boolean isMsmeFundingMandatory = false;
 
+	@Column(name="cgtmse_coverage")
+	private Integer cgtmseCoverage;
 
 
 
@@ -1142,4 +1144,14 @@ public class WcTlParameterTemp extends ProductMasterTemp implements Serializable
 	public void setIsMsmeFundingMandatory(Boolean isMsmeFundingMandatory) {
 		this.isMsmeFundingMandatory = isMsmeFundingMandatory;
 	}
+
+	public Integer getCgtmseCoverage() {
+		return cgtmseCoverage;
+	}
+
+	public void setCgtmseCoverage(Integer cgtmseCoverage) {
+		this.cgtmseCoverage = cgtmseCoverage;
+	}
+	
+	
 }

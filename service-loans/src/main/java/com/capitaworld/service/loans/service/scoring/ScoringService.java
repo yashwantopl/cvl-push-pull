@@ -47,4 +47,6 @@ public interface ScoringService {
     public ScoringModelReqRes getScoringModelMasterList(ScoringModelReqRes scoringModelReqRes);
     
     public ScoringModelReqRes getScoringModelMasterDetail(ScoringModelReqRes scoringModelReqRes);
+
+    public Integer getFinYear(Long applicationId);
 }

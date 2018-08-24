@@ -155,8 +155,8 @@ public class DirectorBackgroundDetail extends AuditActivity implements Serializa
 	@Column(name="is_main_director")
 	private Boolean isMainDirector;
 
-	@Column(name="father_or_spouse_name")
-	private String fatherOrSpouseName;
+	@Column(name="father_name")
+	private String fatherName;
 
 	@Column(name="educational_status")
 	private Integer educationalStatus;
@@ -165,13 +165,16 @@ public class DirectorBackgroundDetail extends AuditActivity implements Serializa
 	private Integer nationality;
 
 	@Column(name="visually_impaired")
-	private Boolean visuallyImpaired;
+	private Integer visuallyImpaired;
 
 	@Column(name="resident_status")
 	private Integer residentStatus;
 
 	@Column(name="is_guarantor")
 	private Boolean isGuarantor;
+
+	@Column(name="district_mapping_id")
+	private Long districtMappingId;
 
 	@OneToOne
 	@JoinColumn(name="personal_detail_id")
@@ -576,12 +579,12 @@ public class DirectorBackgroundDetail extends AuditActivity implements Serializa
 		this.cityId = cityId;
 	}
 
-	public String getFatherOrSpouseName() {
-		return fatherOrSpouseName;
+	public String getFatherName() {
+		return fatherName;
 	}
 
-	public void setFatherOrSpouseName(String fatherOrSpouseName) {
-		this.fatherOrSpouseName = fatherOrSpouseName;
+	public void setFatherName(String fatherName) {
+		this.fatherName = fatherName;
 	}
 
 	public Integer getEducationalStatus() {
@@ -600,11 +603,11 @@ public class DirectorBackgroundDetail extends AuditActivity implements Serializa
 		this.nationality = nationality;
 	}
 
-	public Boolean getVisuallyImpaired() {
+	public Integer getVisuallyImpaired() {
 		return visuallyImpaired;
 	}
 
-	public void setVisuallyImpaired(Boolean visuallyImpaired) {
+	public void setVisuallyImpaired(Integer visuallyImpaired) {
 		this.visuallyImpaired = visuallyImpaired;
 	}
 
@@ -630,5 +633,13 @@ public class DirectorBackgroundDetail extends AuditActivity implements Serializa
 
 	public void setDirectorPersonalDetail(DirectorPersonalDetail directorPersonalDetail) {
 		this.directorPersonalDetail = directorPersonalDetail;
+	}
+
+	public Long getDistrictMappingId() {
+		return districtMappingId;
+	}
+
+	public void setDistrictMappingId(Long districtMappingId) {
+		this.districtMappingId = districtMappingId;
 	}
 }

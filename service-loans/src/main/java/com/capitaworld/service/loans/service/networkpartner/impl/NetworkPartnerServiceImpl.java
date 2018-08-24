@@ -20,11 +20,13 @@ import com.capitaworld.itr.api.model.ITRConnectionResponse;
 import com.capitaworld.itr.client.ITRClient;
 import com.capitaworld.service.gateway.model.GatewayResponse;
 import com.capitaworld.service.gateway.model.PaymentTypeRequest;
+import com.capitaworld.service.loans.config.FPAsyncComponent;
 import com.capitaworld.service.loans.domain.fundprovider.FpNpMapping;
 import com.capitaworld.service.loans.model.FpNpMappingRequest;
 import com.capitaworld.service.loans.repository.fundprovider.FpNpMappingRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
 import com.capitaworld.service.loans.service.fundprovider.FpNpMappingService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.users.model.*;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
@@ -59,6 +61,8 @@ import com.capitaworld.service.loans.service.networkpartner.NetworkPartnerServic
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
+import com.capitaworld.service.mca.client.McaClient;
+import com.capitaworld.service.mca.model.McaResponse;
 import com.capitaworld.service.notification.client.NotificationClient;
 import com.capitaworld.service.notification.model.Notification;
 import com.capitaworld.service.notification.model.NotificationRequest;
@@ -116,6 +120,15 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 	
 	@Autowired
 	private DirectorBackgroundDetailsRepository directorBackgroundDetailsRepository;
+	
+	@Autowired
+	private LoanApplicationService loanApplicationService;
+	
+	@Autowired
+	private McaClient mcaClient;
+	
+	@Autowired
+	private FPAsyncComponent fpAsyncComponent;
 	
 	
 	private static String isPaymentBypass="cw.is_payment_bypass";
@@ -675,6 +688,8 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 	public List<NhbsApplicationsResponse> getListOfProposalsFP(NhbsApplicationRequest request,Long npOrgId,Long userId) {
 		logger.info("entry in getListOfProposalsFP()");
 		Long branchId = null;
+		String mcaCompanyId = null;
+		McaResponse mcaResponse;
 		UsersRequest usersRequestForBranch = new UsersRequest();
 		usersRequestForBranch.setId(userId);
 		try {
@@ -724,6 +739,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 						FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<Object,Object>)userResponseForName.getData(),
 								FundProviderDetailsRequest.class);
 						nhbsApplicationsResponse.setCheckerName(fundProviderDetailsRequest.getFirstName() + " " + (fundProviderDetailsRequest.getLastName() == null ? "": fundProviderDetailsRequest.getLastName()));
+						
 					} catch (Exception e) {
 						logger.error("error while fetching FP details");
 						e.printStackTrace();
@@ -820,6 +836,29 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 				}
 
 				nhbsApplicationsResponse.setApplicationDate(loanApplicationMaster.getCreatedDate());
+				
+					
+				try {
+					mcaCompanyId = loanApplicationService.getMCACompanyIdById(applicationId.longValue());
+					if(mcaCompanyId != null) {
+						mcaResponse = mcaClient.mcaStatusCheck(applicationId.toString(), mcaCompanyId.toString());
+						System.out.println("MCA Response"+mcaResponse);
+						System.out.println("MCA Response---===+++>>"+mcaResponse!=null?mcaResponse.getData():null);
+						if("true".equalsIgnoreCase(String.valueOf(mcaResponse.getData()))) {
+							nhbsApplicationsResponse.setMcaStatus(CommonUtils.COMPLETED);
+						}else {
+							nhbsApplicationsResponse.setMcaStatus(CommonUtils.IN_PROGRESS);
+						}
+					}else {
+						nhbsApplicationsResponse.setMcaStatus(CommonUtils.NA);
+					}
+				} catch (Exception e) {
+					logger.error("error while getting MCA Status");
+					e.printStackTrace();
+				}
+					
+				
+				
 				if(loanApplicationMaster.getApplicationStatusMaster().getId()>=CommonUtils.ApplicationStatus.ASSIGNED){
 					if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getDdrStatusId())){
 						nhbsApplicationsResponse.setDdrStatus(CommonUtils.getDdrStatusString(loanApplicationMaster.getDdrStatusId().intValue()));
@@ -1312,6 +1351,12 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 				logger.error("Error while Creating Process ==>{}", e);
 			}
 
+			//=====================Sending Mail to all Makers/Checkers/HO/BO when maker accept to fill the Proposal===================
+			
+			    fpAsyncComponent.sendMailToMakerandAllMakersWhenMakerAcceptProposal(request);
+			
+			//========================================================================================================================
+			 
 			logger.info("exit from setFPMaker()");
 			return true;
 		}

@@ -24,5 +24,7 @@ public interface ProposedProductDetailsRepository extends JpaRepository<Proposed
 	public int inActive(@Param("userId") Long userId,@Param("applicationId") Long applicationId);
 
     public List<ProposedProductDetail> findByApplicationIdIdAndIsActive(Long applicationId, Boolean isActive);
+    
+    public ProposedProductDetail findByIdAndIsActive(Long id, Boolean isActive);
 
 }

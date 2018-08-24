@@ -38,6 +38,7 @@ public class FinancialArrangementsDetailResponse implements Serializable{
     
     private String address;
     
+    private String directorName;
     
     
    /* public String getFacilityNature() {
@@ -127,11 +128,17 @@ public class FinancialArrangementsDetailResponse implements Serializable{
 	public void setAddress(String address) {
 		this.address = address;
 	}
+	public String getDirectorName() {
+		return directorName;
+	}
 
-	
+	public void setDirectorName(String directorName) {
+		this.directorName = directorName;
+	}
+
 	public static void printFields(Object obj) throws Exception {
         Field[] fields = FinancialArrangementsDetailResponse.class.getDeclaredFields();
-        System.out.println("length : "+fields.length);
+        
         for(Field field : fields) {
             Object value = field.get(obj);
             if(value instanceof String){

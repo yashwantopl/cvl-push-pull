@@ -11,7 +11,7 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<project.resources.sourceEncoding>UTF-8</project.resources.sourceEncoding>
 		<org.slf4j-version>1.7.5</org.slf4j-version>
-		<jackson.databind-version>2.5.2</jackson.databind-version>
+		<jackson.databind-version>2.9.1</jackson.databind-version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -23,6 +23,11 @@
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
 			<version>${jackson.databind-version}</version>
+		</dependency>
+		<dependency>
+		  	<groupId>com.fasterxml.jackson.core</groupId>
+		  	<artifactId>jackson-annotations</artifactId>
+		  	<version>${jackson.databind-version}</version>
 		</dependency>
 
 		<dependency>

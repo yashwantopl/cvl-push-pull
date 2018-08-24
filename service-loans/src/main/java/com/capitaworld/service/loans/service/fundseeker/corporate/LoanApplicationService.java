@@ -145,6 +145,8 @@ public interface LoanApplicationService {
 	
 	public GatewayRequest getPaymentStatus(PaymentRequest paymentRequest, Long userId, Long ClientId) throws Exception;
 	
+	public Long getDDRStatusId(Long applicationId);
+	
 	public Boolean updateDDRStatus(Long applicationId, Long userId , Long clientId, Long statusId) throws Exception;
 	
 	public LoanApplicationRequest getFromClient(Long id) throws Exception;
@@ -165,7 +167,7 @@ public interface LoanApplicationService {
 	
 	public LoanApplicationRequest getLoanApplicationDetails(Long userId, Long applicationId);
 
-	public ScoringModelReqRes getMinMaxMarginByApplicationId(Long applicationId);
+	public ScoringModelReqRes getMinMaxMarginByApplicationId(Long applicationId,Integer businessTypeId);
 
 	/**
 	 * @param applicationId
@@ -191,6 +193,15 @@ public interface LoanApplicationService {
 	
 	public Boolean updatePaymentStatusForMobile(PaymentRequest paymentRequest);
 */
+	
+	public String getMCACompanyIdById(Long applicationId);
+
+	/**
+	 * @param applicationId
+	 * @return
+	 * @throws Exception
+	 */
+	public HunterRequestDataResponse getDataForHunterForNTB(Long applicationId) throws Exception;
 }
 
 

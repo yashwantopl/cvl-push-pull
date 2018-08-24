@@ -16,6 +16,7 @@ public class LoanDisbursementRequest extends AuditActivityRequest implements Ser
 	 */
 	private static final long serialVersionUID = 1L;
 
+	private Long id;
 	private Long applicationId;
 	private String referenceNo;
 	private String transactionNo;
@@ -31,6 +32,16 @@ public class LoanDisbursementRequest extends AuditActivityRequest implements Ser
 	private String userName;
 	private String password;
 	private String actionBy;
+
+	private Boolean isSaved = true;
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
 
 	public Long getApplicationId() {
 		return applicationId;
@@ -128,14 +139,21 @@ public class LoanDisbursementRequest extends AuditActivityRequest implements Ser
 		this.actionBy = actionBy;
 	}
 
+	public Boolean getIsSaved() {
+		return isSaved;
+	}
+
+	public void setIsSaved(Boolean isSaved) {
+		this.isSaved = isSaved;
+	}
+
 	@Override
 	public String toString() {
-		return "LoanDisbursementRequest [applicationId=" + applicationId + ", referenceNo=" + referenceNo
+		return "LoanDisbursementRequest [id=" + id + ", applicationId=" + applicationId + ", referenceNo=" + referenceNo
 				+ ", transactionNo=" + transactionNo + ", accountNo=" + accountNo + ", disbursedAmount="
 				+ disbursedAmount + ", disbursementDate=" + disbursementDate + ", disbursementAuthority="
 				+ disbursementAuthority + ", mode=" + mode + ", remark=" + remark + ", userName=" + userName
-				+ ", password=" + password + ", actionBy=" + actionBy + "]";
+				+ ", password=" + password + ", actionBy=" + actionBy + ", isSaved=" + isSaved + "]";
 	}
-
 
 }

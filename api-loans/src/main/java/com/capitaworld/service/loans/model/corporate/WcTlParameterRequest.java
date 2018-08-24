@@ -13,6 +13,10 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  * The persistent class for the fp_term_loan_details database table.
  * 
  */
+/**
+ * @author jitesh-pc
+ *
+ */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class WcTlParameterRequest extends ProductMasterRequest implements Serializable {
 	/**
@@ -212,6 +216,8 @@ public class WcTlParameterRequest extends ProductMasterRequest implements Serial
 	private Boolean isMsmeFundingDisplay = false;
 	private Boolean isMsmeFundingMandatory = false;
 	private List<Integer> msmeFundingIds;
+	
+	private Integer cgtmseCoverage;
 
 	public Integer getIndividualCibil() {
 		return individualCibil;
@@ -1074,4 +1080,15 @@ public class WcTlParameterRequest extends ProductMasterRequest implements Serial
 	public void setMsmeFundingIds(List<Integer> msmeFundingIds) {
 		this.msmeFundingIds = msmeFundingIds;
 	}
+
+	public Integer getCgtmseCoverage() {
+		return cgtmseCoverage;
+	}
+
+	public void setCgtmseCoverage(Integer cgtmseCoverage) {
+		this.cgtmseCoverage = cgtmseCoverage;
+	}
+
+	
+	
 }

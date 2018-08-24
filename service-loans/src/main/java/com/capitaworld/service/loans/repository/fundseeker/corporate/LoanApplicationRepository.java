@@ -163,6 +163,9 @@ public interface LoanApplicationRepository extends JpaRepository<LoanApplication
 	@Query("select lm from LoanApplicationMaster lm where lm.id =:id and lm.userId =:userId and lm.isActive = true order by lm.id")
 	public LoanApplicationMaster getMCACompanyIdByIdAndUserId(@Param("id") Long id, @Param("userId") Long userId);
 	
+	@Query("select lm from LoanApplicationMaster lm where lm.id =:id and lm.isActive = true order by lm.id")
+	public LoanApplicationMaster getMCACompanyIdById(@Param("id") Long id);
+	
 	@Query("select count(lm.id) from LoanApplicationMaster lm where lm.userId =:userId and lm.isActive = true")
 	public Long getTotalUserApplication(@Param("userId") Long userId);
 	
@@ -324,6 +327,10 @@ public interface LoanApplicationRepository extends JpaRepository<LoanApplication
 	public List<BigInteger> getFPCheckerProposalsWithOthersCount(@Param("id") Long applicationStatusId,@Param("npUserId") Long npUserId, @Param("branchId") Long branchId,@Param("fpProductId") Long fpProductId);
 
 	// get list of matched fpProduct based on application id
-	@Query(value = "SELECT  score_model_id  FROM  fp_product_master WHERE  fp_product_id IN (select fp_product_id from application_product_audit where application_id=:applicationId and stage_id = 3 and is_active = true) ",nativeQuery = true)
-	public List<BigInteger> getFpProductListByApplicationId(@Param("applicationId") Long applicationId);
+	@Query(value = "SELECT  score_model_id  FROM  fp_product_master WHERE  fp_product_id IN (select fp_product_id from application_product_audit where application_id=:applicationId and stage_id=:stageId and is_active = true) ",nativeQuery = true)
+	public List<BigInteger> getFpProductListByApplicationIdAndStageId(@Param("applicationId") Long applicationId,@Param("stageId") Long stageId);
+	
+	//fwt busynessTypeId by applicationId
+	@Query("select lm.businessTypeId from LoanApplicationMaster lm where lm.id =:applicationId and lm.isActive = true ")
+	public Integer findOneBusinessTypeIdByIdAndIsActive(@Param("applicationId")  Long applicationId); 
 }

@@ -567,6 +567,8 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 					.setCollateralSecurityAmount(primaryCorporateDetail.getCollateralSecurityAmount() != null
 							? String.valueOf(primaryCorporateDetail.getCollateralSecurityAmount())
 							: null);
+			corporateFinalViewResponse.setPromotersContribution(primaryCorporateDetail.getPromoterContribution());
+			corporateFinalViewResponse.setPromotersContributionPer(primaryCorporateDetail.getTotalAmtPercentage()!= null ? " ("+convertValue(primaryCorporateDetail.getTotalAmtPercentage())+"%)" : null);
 			corporateFinalViewResponse.setNpOrgId(loanApplicationMaster.getNpOrgId());
 			// workingCapitalPrimaryViewResponse.setSharePriceFace(primaryWorkingCapitalLoanDetail.getSharePriceFace());
 			// workingCapitalPrimaryViewResponse.setSharePriceMarket(primaryWorkingCapitalLoanDetail.getSharePriceMarket());
@@ -659,6 +661,8 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 		try {
 			FinancialInputRequest financialInputRequest = irrService.cmaIrrMappingService(userId, toApplicationId, null,
 					denomination);
+			
+			System.out.println("financialInputRequest.getYear()===>>>"+financialInputRequest.getYear());
 			// Profit & Loss Statement
 			financialInputRequest.setNetSaleFy(CommonUtils.substractNumbers(financialInputRequest.getGrossSalesFy(),
 					financialInputRequest.getLessExciseDuityFy()));
@@ -1329,6 +1333,12 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 				corporateFinalViewResponse.setBuisnessRiskScoreWeight(
 						CommonUtils.checkDoubleNull(proposalScoreResponse.getBusinessRiskWeight()));
 				corporateFinalViewResponse.setScoreInterpretation(proposalScoreResponse.getInterpretation());
+				corporateFinalViewResponse.setManagementRiskMaxTotalScore(proposalScoreResponse.getManagementRiskMaxTotalScore());
+				corporateFinalViewResponse.setFinancialRiskMaxTotalScore(proposalScoreResponse.getFinancialRiskMaxTotalScore());
+				corporateFinalViewResponse.setBusinessRiskMaxTotalScore(proposalScoreResponse.getBusinessRiskMaxTotalScore());
+				corporateFinalViewResponse.setManagementRiskWeightOfScoring(proposalScoreResponse.getManagementRiskWeightOfScoring());
+				corporateFinalViewResponse.setFinancialRiskWeightOfScoring(proposalScoreResponse.getFinancialRiskWeightOfScoring());
+				corporateFinalViewResponse.setBusinessRiskWeightOfScoring(proposalScoreResponse.getBusinessRiskWeightOfScoring());
 			} else {
 				logger.info("SCORING OBJECT NULL OR EMPTY -------------------->");
 			}

@@ -35,6 +35,7 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.OperatingSt
 import com.capitaworld.service.loans.repository.fundseeker.corporate.ProfitibilityStatementDetailRepository;
 import com.capitaworld.service.loans.service.common.DownLoadCMAFileService;
 import com.capitaworld.service.loans.utils.CommonUtils;
+import com.capitaworld.service.loans.utils.CommonUtils.BusinessType;
 
 @Service
 @Transactional
@@ -58,7 +59,7 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 	BalanceSheetDetailRepository balanceSheetDetailRepository;
 	
 	@Autowired
-	private LoanApplicationRepository loanApplocationRepo;
+	private LoanApplicationRepository loanApplicationRepository;
 
 	
 	private FormulaEvaluator evaluator;
@@ -74,23 +75,38 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 		DocumentResponse documentResponse = null;
 		Workbook wb = null;
 		try {
-	             Double total_Column=24.0;
-	 			String EXCEL_FILE_LOCATION ="cw.mca.cwtlwctlcmafile.location";
-	 			logger.warn("excel file====>>"+EXCEL_FILE_LOCATION);
-	 			
-	 			Double tenure = loanApplocationRepo.getTenure(applicationId);
-	 			tenure = !CommonUtils.isObjectNullOrEmpty(tenure) ? tenure + 1 : 0.0;
-	 			
-	 			logger.warn("tenure==>>"+tenure);
-	 			if(productDocumentMappingId==(long)DocumentAlias.WC_CMA) {
-		      		 EXCEL_FILE_LOCATION =	"cw.mca.cwcmafile.location";
-		      		 total_Column=0.0;
-				}
-	 			
-			if(productDocumentMappingId==(long)DocumentAlias.USL_CMA) {
-	      		 EXCEL_FILE_LOCATION =	"cw.mca.cwcmafile.usl.location";
-	      		 total_Column=0.0;
-			}
+            Double total_Column=24.0;
+             
+            //EXISTING WCTL_CMA OR TL 
+            String EXCEL_FILE_LOCATION ="cw.mca.cwtlwctlcmafile.location";
+ 			logger.warn("excel file====>>"+EXCEL_FILE_LOCATION);
+ 			Integer businessTypeId =loanApplicationRepository.findOneBusinessTypeIdByIdAndIsActive(applicationId);
+ 			logger.info("Busyness Type ID=====>" + businessTypeId);
+ 			if(BusinessType.NEW_TO_BUSINESS.getId() == businessTypeId) {
+
+ 				EXCEL_FILE_LOCATION =	"cw.mca.ntbtlcmafile.location"; //NTB TL
+ 				//NTB WC
+ 				/*if(productDocumentMappingId==(long)DocumentAlias.WC_CMA) {
+ 		      		 EXCEL_FILE_LOCATION =	"cw.mca.cwcmafile.usl.location";
+ 		      		 total_Column=0.0;
+ 				}*/	
+ 			}else if(BusinessType.EXISTING_BUSINESS.getId() == businessTypeId) {
+ 				
+ 				/*EXCEL_FILE_LOCATION ="cw.mca.cwtlwctlcmafile.location"; //EXISTING WCTL_CMA OR TL */
+
+ 				if(productDocumentMappingId==(long)DocumentAlias.WC_CMA) { //EXISTING WC  
+ 					EXCEL_FILE_LOCATION =	"cw.mca.cwcmafile.location";
+ 					total_Column=0.0;
+ 				}else if(productDocumentMappingId==(long)DocumentAlias.USL_CMA) { //EXISTING USL 
+ 					EXCEL_FILE_LOCATION =	"cw.mca.cwcmafile.usl.location";
+ 					total_Column=0.0;
+ 				}
+ 			}
+			
+ 			Double tenure = loanApplicationRepository.getTenure(applicationId);
+ 			tenure = !CommonUtils.isObjectNullOrEmpty(tenure) ? tenure + 1 : 0.0;
+ 			logger.warn("tenure==>>"+tenure);
+	 		
 			wb = new XSSFWorkbook(OPCPackage.open(environment.getRequiredProperty(EXCEL_FILE_LOCATION)));
 			
 			Sheet sheet1 = wb.getSheetAt(0);
@@ -229,7 +245,7 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 				k++;
 			}
 			// Operating Stmt. ends              
-			setyear(sheet1, temp, operatingStatementDetailsList.size() , total_Column, true);
+			setyear(sheet1, temp, operatingStatementDetailsList.size() , total_Column, true , businessTypeId);
 			
 			
 			// Liabilities Starts
@@ -324,7 +340,7 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 				o++;
 			}
 			// Liabilities Ends
-			setyear(sheet2, temp, liabilitiesDetailsList.size(),total_Column, true);
+			setyear(sheet2, temp, liabilitiesDetailsList.size(),total_Column, true , businessTypeId);
 
 			
 			
@@ -458,7 +474,7 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 				p++;
 			}
 			// Asset Ends
-			setyear(sheet3, temp, assetsDetailsList.size(),total_Column, true);
+			setyear(sheet3, temp, assetsDetailsList.size(),total_Column, true, businessTypeId);
 			//documentResponse =fileUpload(wb, applicationId, productDocumentMappingId);
 			logger.info("Exit with cmaFileGenerator() {} ", documentResponse);
 
@@ -478,12 +494,12 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 		try {
 			 Double total_Column=12.0;
 			String EXCEL_FILE_LOCATION = "cw.mca.cocmafile.location";
-			
+			Integer businessTypeId =loanApplicationRepository.findOneBusinessTypeIdByIdAndIsActive(applicationId); 
 			if(productDocumentMappingId==(long)DocumentAlias.USL_COMPANY_ACT) {
 	      		 EXCEL_FILE_LOCATION =	"cw.mca.cocmafile.usl.location";
 	      		 total_Column=0.0;
 			}
-
+			
 			wb = new XSSFWorkbook(OPCPackage.open(environment.getRequiredProperty(EXCEL_FILE_LOCATION)));
 
 			Sheet sheet1 = wb.getSheetAt(0);
@@ -641,7 +657,7 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 				j++;
 
 			}
-			setyear(sheet1, temp, profitibilityStatementDetailsList.size() ,total_Column, false);
+			setyear(sheet1, temp, profitibilityStatementDetailsList.size() ,total_Column, false , businessTypeId);
 
 		List<BalanceSheetDetail>	balanceSheetDetailsList = balanceSheetDetailRepository.getByApplicationId(applicationId);
 			j = 2;
@@ -847,7 +863,7 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 
 			}			// Asset Ends
             
-			setyear(sheet2, temp, balanceSheetDetailsList.size(),total_Column, true);
+			setyear(sheet2, temp, balanceSheetDetailsList.size(),total_Column, true , businessTypeId);
 			logger.info("Exit with cmaFileGenerator() {} ");
 
 		} catch ( IllegalStateException | IOException | InvalidFormatException e) {
@@ -859,15 +875,18 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 
 	}
 	
-	private void setyear(Sheet sheet , Double temp ,int j, Double total_Column, Boolean flag) {
+	private void setyear(Sheet sheet , Double temp ,int j, Double total_Column, Boolean flag  , Integer businessTypeId) {
 		Calendar  calendar =Calendar.getInstance();
  		Double tillYear =(double)calendar.get(Calendar.YEAR);
        		
 		Double totalYear= temp+total_Column-j+1;
 		temp++;
-		if(j==0) {
+		if(j==0 && BusinessType.EXISTING_BUSINESS.getId() == businessTypeId ) {
 			temp=tillYear-3;
 			totalYear=temp+total_Column-1;  
+		}else if (j==0 && BusinessType.NEW_TO_BUSINESS.getId() == businessTypeId ) {
+			temp= tillYear +1 ;   
+			totalYear=temp+total_Column-4;
 		}
 		if(profitibilitySheet.equals(sheet.getSheetName())|| balanceSheet.equals(sheet.getSheetName())) {
 			j=1;
@@ -875,6 +894,7 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 		for (int i = j; temp <totalYear;++temp) {
 			if(flag) {
 //				System.out.println(i+" cell "+sheet.getRow(4).getCell(i).getNumericCellValue());
+				//System.out.println(i+" " + temp);
 				sheet.getRow(4).getCell(++i).setCellValue(temp);
 			}
 			else {

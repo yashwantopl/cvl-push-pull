@@ -15,7 +15,7 @@ public class PrimaryCorporateRequest extends LoanApplicationRequest implements S
     private Double businessAssetAmount;
     private Double wcAmount;
     private Double otherAmt;
-    private Boolean  haveCollateralSecurity;
+    private Boolean haveCollateralSecurity;
     private Double collateralSecurityAmount;
     private Integer purposeOfLoanId;
     private Double tenureRequired;
@@ -25,11 +25,14 @@ public class PrimaryCorporateRequest extends LoanApplicationRequest implements S
     private Integer proposedConstitutionOfUnit;
     private Double promoterContribution;
     private Integer assessmentId;
+    private Long stateId;
+    private Long cityId;
+    private Double proposedCost;
 
     /*
      * SBI MSME Integration related fields
      * By Ravina
-    * */
+     * */
     private Date commercialOperationDate;
     private Integer factoryPremise;
     private Integer knowHow;
@@ -40,6 +43,8 @@ public class PrimaryCorporateRequest extends LoanApplicationRequest implements S
      * BY Ravina
      * */
     private Double totalAmtPercentage;
+    /*For Eligibility Hybrid-payback method*/
+    private Double incrementalMargin;
 
     public PrimaryCorporateRequest() {
     }
@@ -91,8 +96,6 @@ public class PrimaryCorporateRequest extends LoanApplicationRequest implements S
     public void setCollateralSecurityAmount(Double collateralSecurityAmount) {
         this.collateralSecurityAmount = collateralSecurityAmount;
     }
-
-
 
     public Integer getPurposeOfLoanId() {
         return purposeOfLoanId;
@@ -149,6 +152,7 @@ public class PrimaryCorporateRequest extends LoanApplicationRequest implements S
     public void setPromoterContribution(Double promoterContribution) {
         this.promoterContribution = promoterContribution;
     }
+
     public Integer getAssessmentId() {
         return assessmentId;
     }
@@ -195,5 +199,37 @@ public class PrimaryCorporateRequest extends LoanApplicationRequest implements S
 
     public void setTotalAmtPercentage(Double totalAmtPercentage) {
         this.totalAmtPercentage = totalAmtPercentage;
+    }
+
+    public Long getStateId() {
+        return stateId;
+    }
+
+    public void setStateId(Long stateId) {
+        this.stateId = stateId;
+    }
+
+    public Long getCityId() {
+        return cityId;
+    }
+
+    public void setCityId(Long cityId) {
+        this.cityId = cityId;
+    }
+
+    public Double getProposedCost() {
+        return proposedCost;
+    }
+
+    public void setProposedCost(Double proposedCost) {
+        this.proposedCost = proposedCost;
+    }
+
+    public Double getIncrementalMargin() {
+        return incrementalMargin;
+    }
+
+    public void setIncrementalMargin(Double incrementalMargin) {
+        this.incrementalMargin = incrementalMargin;
     }
 }

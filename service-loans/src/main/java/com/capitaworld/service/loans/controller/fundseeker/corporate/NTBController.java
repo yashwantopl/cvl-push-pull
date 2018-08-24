@@ -178,10 +178,10 @@ public class NTBController {
 
         // request must not be null
         try {
-            if (CommonUtils.isListNullOrEmpty(financialArrangementsDetailRequestList)) {
+            /*if (CommonUtils.isListNullOrEmpty(financialArrangementsDetailRequestList)) {
                 logger.warn("Object can not be empty ==>" + financialArrangementsDetailRequestList);
                 return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
-            }
+            }*/
 
             Boolean result = ntbService.saveFinancialDetails(financialArrangementsDetailRequestList, applicationId, userId, directorId);
             LoansResponse loansResponse = null;

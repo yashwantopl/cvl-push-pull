@@ -166,7 +166,7 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 		saveNegativeIndustry(workingCapitalParameterRequest);
 
 		//Dhaval
-		boolean isUpdate = msmeValueMappingService.updateMsmeValueMapping(false, workingCapitalParameterRequest.getId());
+		boolean isUpdate = msmeValueMappingService.updateMsmeValueMapping(false, mappingId,workingCapitalParameter2.getId());
 		logger.info("updated = {}",isUpdate);
 
 		logger.info("end saveOrUpdate");

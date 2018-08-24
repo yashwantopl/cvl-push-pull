@@ -2,6 +2,7 @@ package com.capitaworld.service.loans.utils;
 
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
+import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.Format;
 import java.text.SimpleDateFormat;
@@ -52,7 +53,13 @@ public class CommonUtils {
 	public static final String CW_TL_WCTL_EXCEL="cw_cma_tl_wctl.xlsx";
 	public static final String CO_CMA_EXCEL = "co_cma.xlsx";
    
-	public static final String SCORING_EXCEL ="score_result.xlsx"; 
+	public static final String SCORING_EXCEL ="score_result.xlsx";
+	
+	public static final  DateFormat formatter = new SimpleDateFormat("dd-mm-yyyy");
+	
+	public static final String IN_PROGRESS = "In Progress";
+	public static final String COMPLETED = "Completed";
+	public static final String NA = "NA";
 	
 	public interface UsersRoles {
 		public static final Long MAKER = 1l;
@@ -61,6 +68,11 @@ public class CommonUtils {
 		public static final Long ADMIN_HO = 4l;
 		public static final Long HO = 5l;
 		public static final Long BO = 6l;
+		public static final Long DEFAULT_FS = 7l;
+		public static final Long FP_MAKER = 8l;
+		public static final Long FP_CHECKER = 9l;
+		public static final Long ADMIN_MAKER = 10l;
+		public static final Long ADMIN_CHECKER = 11l;
 	}
 
 	public interface DenominationInAmount {
@@ -113,8 +125,6 @@ public class CommonUtils {
 		calendar.set(Calendar.DAY_OF_MONTH, date);
 		calendar.set(Calendar.MONTH, (month - 1));
 		calendar.set(Calendar.YEAR, year);
-
-		System.out.println("calendar.getTime()=======>" + calendar.getTime().toString());
 		return calendar.getTime();
 	}
 
@@ -129,9 +139,6 @@ public class CommonUtils {
 		result[0] = calendar.get(Calendar.DAY_OF_MONTH);
 		result[1] = calendar.get(Calendar.MONTH) + 1;
 		result[2] = calendar.get(Calendar.YEAR);
-		System.out.println("result[0] day Of Month=======>" + result[0]);
-		System.out.println("result[1] Month=======>" + result[1]);
-		System.out.println("result[2] Year=======>" + result[2]);
 		return result;
 	}
 
@@ -394,7 +401,6 @@ public class CommonUtils {
 			monthsDiff = monthsDiff + today.get(Calendar.MONTH) - birthDay.get(Calendar.MONTH);
 			Integer ageInMonths = yearsInBetween * 12 + monthsDiff;
 			years = ageInMonths / 12;
-			System.out.println("Age :===" + years);
 			return years;
 		} else {
 			return null;
@@ -422,7 +428,7 @@ public class CommonUtils {
 		for (Object object : args) {
 			boolean flag = false;
 			if (object instanceof List) {
-				flag = isListNullOrEmpty((List) object);
+				flag = isListNullOrEmpty((List<?>) object);
 				if (flag)
 					return true;
 				else
@@ -456,13 +462,16 @@ public class CommonUtils {
 
 	public static List<String> urlsBrforeLogin = null;
 	static {
-		urlsBrforeLogin = new ArrayList<String>(3);
-		urlsBrforeLogin.add("/loans/loan_application/getUsersRegisteredLoanDetails");
-		urlsBrforeLogin.add("/loans/loan_application/getLoanDetailsForAdminPanel");
-		urlsBrforeLogin.add("/loans/corporate_upload/downloadCMAAndCoCMAExcelFile/**");
-		urlsBrforeLogin.add("/loans/loan_application/save_payment_info_for_mobile");
-		urlsBrforeLogin.add("/loans/loan_application/mobile/successUrl");
-		
+		urlsBrforeLogin = new ArrayList<String>(8);
+		urlsBrforeLogin.add("/loans/loan_application/getUsersRegisteredLoanDetails".toLowerCase());
+		urlsBrforeLogin.add("/loans/loan_application/getLoanDetailsForAdminPanel".toLowerCase());
+		urlsBrforeLogin.add("/loans/corporate_upload/downloadCMAAndCoCMAExcelFile/**".toLowerCase());
+		urlsBrforeLogin.add("/loans/loan_application/save_payment_info_for_mobile".toLowerCase());
+		urlsBrforeLogin.add("/loans/loan_application/mobile/successUrl".toLowerCase());
+		urlsBrforeLogin.add("/loans/loan_application/getToken".toLowerCase());
+		urlsBrforeLogin.add("/loans/loan_application/saveLoanDisbursementDetail".toLowerCase());
+		urlsBrforeLogin.add("/loans/loan_application/saveLoanSanctionDetail".toLowerCase());
+		urlsBrforeLogin.add("/loans/loan_application/saveLoanSanctionDisbursementDetailFromBank".toLowerCase());
 	}
 
 	public static int calculateAge(Date dateOfBirth) {
@@ -910,7 +919,6 @@ public class CommonUtils {
 	public static String checkString(Double value) {
 		try {
 			DecimalFormat decimalFormat1 = new DecimalFormat("0.00");
-			System.out.println(decimalFormat1.format(value));
 			return decimalFormat1.format(value);
 		} catch (Exception e) {
 			return "0.00";
@@ -1113,9 +1121,7 @@ public enum APIFlags {
 	
 	public static String getEncodedUserNamePassword(String userName,String password) {
 		String keyToEncode = userName + ":" + password;
-		System.out.println("keyToEncode UPdated===============>" + keyToEncode);
 		String encodedString = "Basic " + Base64.getEncoder().encodeToString(keyToEncode.getBytes());
-		System.out.println("encodedString UPdated===============>" + encodedString);
 		return encodedString;
 	}
 	
@@ -1194,7 +1200,7 @@ public enum APIFlags {
 	}
 	public static Object escapeXml(Object obj) throws Exception{
 		if(obj instanceof List) {
-			List<?> lst = (List)obj;
+			List<?> lst = (List<?>)obj;
 			for(Object o : lst) {
 				escapeXml(o);
 			}
@@ -1204,20 +1210,31 @@ public enum APIFlags {
 				escapeXml(setEntry.getValue());
 			}
 		}
-		Field[] fields = obj.getClass().getDeclaredFields();
-		for (Field field : fields) {
-			field.setAccessible(true);
-			Object value = field.get(obj);
-			if (value instanceof String) {
-				String value1 = (String) field.get(obj);
-				String a = StringEscapeUtils.escapeXml(value1.toString());
-				value = a;
-				field.set(obj, value);
-			}else {
-				continue;
+		if(obj!=null) {
+			Field[] fields = obj.getClass().getDeclaredFields();
+			for (Field field : fields) {
+				field.setAccessible(true);
+				Object value = field.get(obj);
+				if (value instanceof String) {
+					String value1 = (String) field.get(obj);
+					String a = StringEscapeUtils.escapeXml(value1.toString());
+					value = a;
+					field.set(obj, value);
+				}else if(value instanceof Double) {
+					if(!Double.isNaN((Double)value)) {
+						DecimalFormat decim = new DecimalFormat("0.00");
+						String a = decim.format(value);
+						field.set(obj, Double.valueOf(a.toString()));
+					}
+				}
+				else {
+					continue;
+				}
 			}
 		}
 		return obj;
     }
+	
+	
 	
 }
