@@ -288,7 +288,7 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 						loanSanctionAndDisbursedRequest.getLoanSanctionRequest().getBranch(),
 						loanSanctionAndDisbursedRequest.getLoanSanctionRequest().getRoi(),
 						loanSanctionAndDisbursedRequest.getLoanSanctionRequest().getSanctionAmount(),
-						/*loanSanctionAndDisbursedRequest.getLoanSanctionRequest().getSanctionDate(),*/
+						loanSanctionAndDisbursedRequest.getLoanSanctionRequest().getSanctionDate(),
 						loanSanctionAndDisbursedRequest.getLoanSanctionRequest().getTenure(),
 						loanSanctionAndDisbursedRequest.getLoanSanctionRequest().getUserName(),
 						loanSanctionAndDisbursedRequest.getLoanSanctionRequest().getPassword()/*,
