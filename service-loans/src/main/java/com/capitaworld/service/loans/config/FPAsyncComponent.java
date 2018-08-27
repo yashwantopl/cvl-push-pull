@@ -691,7 +691,7 @@ public class FPAsyncComponent {
 								
 								UserResponse assignedMakerResponse = null;
 								try {
-									assignedMakerResponse = userClient.getEmailMobile(request.getFpMakerId());
+									assignedMakerResponse = userClient.getEmailMobile(request.getUserId());
 								}
 								catch(Exception e) {
 									logger.info("Something went wrong while calling Users client===>{}");
