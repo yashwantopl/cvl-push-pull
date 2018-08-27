@@ -2,6 +2,7 @@ package com.capitaworld.service.loans.config;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -1116,6 +1117,640 @@ public class FPAsyncComponent {
 				}
 					//=====================================================================================================
 
+				
+				@Async
+				public void sendMailWhenMakerAssignDDRToChecker(NhbsApplicationRequest request) {
+					logger.info("Enter in sending mail to Checker/HO/BO When Maker Assign DDR To Checker");
+					try {
+						        Map<String, Object> parameters = new HashMap<String, Object>();
+						        LoanApplicationRequest applicationRequest = loanApplicationService.getFromClient(request.getApplicationId());
+								ProposalMappingResponse proposalResponse = null;
+								Map<String, Object> proposalresp = null;
+								try {
+									logger.info("Calling Proposal details client for getting Branch Id:-"+request.getApplicationId());
+									proposalResponse = proposalDetailsClient.getInPricipleById(request.getApplicationId());
+									logger.info("Got Inprinciple response from Proposal Details Client"+proposalResponse);
+									proposalresp = MultipleJSONObjectHelper
+											.getObjectFromMap((Map<String, Object>) proposalResponse.getData(), Map.class);
+								} catch (Exception e) {
+					                logger.info("Error calling Proposal Details Client for getting Branch Id:-"+request.getApplicationId());
+					                
+					                e.printStackTrace();
+									
+								}
+								
+								Long branchId = null;
+								if(!CommonUtils.isObjectNullOrEmpty(proposalresp.get("branch_id"))) {
+									branchId = Long.valueOf(proposalresp.get("branch_id").toString());	
+								}
+
+							
+								//=========================================Getting Maker=====================================
+							
+								UsersRequest assignedMakerForName = new UsersRequest();
+								assignedMakerForName.setId(request.getUserId());
+								
+								String makerName = null;
+								if(!CommonUtils.isObjectNullOrEmpty(assignedMakerForName)) {
+								
+									try {
+										logger.error("Into getting FP Name======>"+assignedMakerForName);
+										UserResponse userResponseForName = userClient.getFPDetails(assignedMakerForName);
+										FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<Object,Object>)userResponseForName.getData(),
+												FundProviderDetailsRequest.class);
+										makerName = fundProviderDetailsRequest.getFirstName() + " " + (fundProviderDetailsRequest.getLastName() == null ? "": fundProviderDetailsRequest.getLastName());
+									} catch (Exception e) {
+										logger.error("error while fetching FP name");
+										e.printStackTrace();
+									}
+								}
+								
+								if("null".equals(makerName)) {
+									makerName = "NA";	
+								}else {
+									makerName = makerName!=null?makerName:"NA";	
+								}
+									
+								//========================================================================================================
+								
+								//=========================================Getting Checker=====================================
+								
+								UserResponse checkerResponse = null;
+								try {
+									checkerResponse = userClient.getEmailMobile(request.getNpUserId());
+								}
+								catch(Exception e) {
+									logger.info("Something went wrong while calling Users client===>{}");
+									e.printStackTrace();
+								}
+								UsersRequest assignedChecker = null;
+								if(!CommonUtils.isObjectNullOrEmpty(checkerResponse)) {
+									assignedChecker = MultipleJSONObjectHelper
+											.getObjectFromMap((Map<String, Object>) checkerResponse.getData(), UsersRequest.class);
+								}
+								
+								UsersRequest assignedCheckerForName = new UsersRequest();
+								assignedCheckerForName.setId(request.getNpUserId());
+								
+								String checkerName = null;
+								if(!CommonUtils.isObjectNullOrEmpty(assignedCheckerForName)) {
+								
+									try {
+										logger.error("Into getting FP Name======>"+assignedCheckerForName);
+										UserResponse userResponseForName = userClient.getFPDetails(assignedCheckerForName);
+										FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<Object,Object>)userResponseForName.getData(),
+												FundProviderDetailsRequest.class);
+										checkerName = fundProviderDetailsRequest.getFirstName() + " " + (fundProviderDetailsRequest.getLastName() == null ? "": fundProviderDetailsRequest.getLastName());
+									} catch (Exception e) {
+										logger.error("error while fetching FP name");
+										e.printStackTrace();
+									}
+								}
+								
+								if("null".equals(checkerName)) {
+									checkerName = "NA";
+								}
+								else {
+									checkerName = checkerName!=null?checkerName:"NA";
+								}
+								
+								//========================================================================================================
+	
+								
+								parameters.put("maker_name", makerName!=null?makerName:"NA");
+								parameters.put("checker_name", checkerName!=null?checkerName:"NA");
+								parameters.put("fs_name", applicationRequest.getUserName());
+								parameters.put("application_id", request.getApplicationId().toString());
+								
+								if(!CommonUtils.isObjectNullOrEmpty(proposalresp.get("loan_type"))) {
+								
+								  parameters.put("product_type",proposalresp.get("loan_type").toString()!=null?proposalresp.get("loan_type").toString():"NA");
+								}
+								else {
+									
+								 parameters.put("product_type","NA");
+
+								}
+													
+								parameters.put("mobile_no", "NA");
+								
+								CorporateApplicantRequest applicantRequest = corporateapplicantService.getCorporateApplicant(request.getApplicationId());
+								 String address = null;
+								if(!CommonUtils.isObjectNullOrEmpty(applicantRequest) && 
+								   !CommonUtils.isObjectNullOrEmpty(applicantRequest.getFirstAddress())){
+									address = applicantRequest.getFirstAddress().getPremiseNumber()!=null?applicantRequest.getFirstAddress().getPremiseNumber():""	
+				                              +" "+applicantRequest.getFirstAddress().getStreetName()!=null?applicantRequest.getFirstAddress().getStreetName():""
+				                              +" "+applicantRequest.getFirstAddress().getLandMark()!=null?applicantRequest.getFirstAddress().getLandMark():"";  
+				                             
+								}
+								parameters.put("address", address!=null?address:"NA");
+								
+								String subjcet = "Intimation: Assigned - Application ID "+request.getApplicationId();
+								if (!CommonUtils.isObjectNullOrEmpty(assignedChecker) && !CommonUtils.isObjectNullOrEmpty(assignedChecker.getEmail())) {
+									
+									String toIds =  assignedChecker.getEmail();
+									logger.info("Email Sending TO CHECKER on sendMailWhenMakerAssignDDRToChecker===to==>{}", toIds);
+									// ====================== MAIL TO CHECKER ======================
+									createNotificationForEmail(toIds, request.getNpUserId().toString(), parameters,
+											NotificationAlias.EMAIL_CHECKER_MAKER_ASSIGN_APPLICATION_TO_CHECKER, subjcet);
+									
+								}
+								
+								if(!CommonUtils.isObjectNullOrEmpty(assignedChecker.getMobile())) {
+									//System.out.println("Maker ID:---"+userObj.getEmail());
+									Map<String, Object> smsParameters = new HashMap<String, Object>();
+									String to = assignedChecker.getMobile();	
+									smsParameters.put("maker_name", makerName!=null?makerName:"NA");
+									smsParameters.put("fs_name", applicationRequest.getUserName()!=null?applicationRequest.getUserName():"NA");
+									
+									smsParameters.put("url", "www.bitly.com");
+									
+									sendSMSNotification(request.getNpUserId().toString(),
+											smsParameters, NotificationAlias.SMS_CHECKER_MAKER_ASSIGN_APPLICATION_TO_CHECKER, to);
+								}
+								
+								if(!CommonUtils.isObjectNullOrEmpty(request.getNpUserId())) {
+									//System.out.println("Maker ID:---"+userObj.getEmail());
+									Map<String, Object> sysParameters = new HashMap<String, Object>();
+									sysParameters.put("maker_name", makerName!=null?makerName:"NA");
+									sysParameters.put("fs_name", applicationRequest.getUserName()!=null?applicationRequest.getUserName():"NA");
+									
+									sendSYSNotification(request.getNpUserId().toString(),
+											sysParameters, NotificationAlias.SYS_CHECKER_MAKER_ASSIGN_APPLICATION_TO_CHECKER, request.getNpUserId().toString(), request.getNpUserId().toString());
+								}
+								
+								
+			                  //====================Sending Mail to HO when Maker Assigns DDR to Checker=====================
+								
+								String subject = "Intimation: Assigned DDR- Application ID "+ request.getApplicationId();
+								
+								UserResponse hoResponse = userClient.getUserDetailByOrgRoleBranchId(applicationRequest.getNpOrgId(),com.capitaworld.service.users.utils.CommonUtils.UserRoles.HEAD_OFFICER,branchId);
+								List<Map<String, Object>> hoRespList = (List<Map<String, Object>>) hoResponse.getListData();
+								if(!CommonUtils.isObjectNullOrEmpty(hoRespList)) {
+									for (int i = 0; i < hoRespList.size(); i++) {
+											UsersRequest hoObj = MultipleJSONObjectHelper.getObjectFromMap(hoRespList.get(i),
+													UsersRequest.class);
+											
+			                                String name = null;
+											
+											try {
+												logger.error("Into getting FP Name======>"+hoObj);
+												UserResponse userResponseForName = userClient.getFPDetails(hoObj);
+												FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<Object,Object>)userResponseForName.getData(),
+														FundProviderDetailsRequest.class);
+												name = fundProviderDetailsRequest.getFirstName() + " " + (fundProviderDetailsRequest.getLastName() == null ? "": fundProviderDetailsRequest.getLastName());
+											} catch (Exception e) {
+												logger.error("error while fetching FP name");
+												e.printStackTrace();
+											}
+											
+											if(!CommonUtils.isObjectNullOrEmpty(hoObj.getEmail())) {
+											//	System.out.println("Checker ID:---"+userObj.getEmail());
+												String to =  hoObj.getEmail();
+												if("null".equals(name)) {
+													name = "NA";
+												}
+												else {
+													name = name!=null?name:"NA";
+												}
+												parameters.put("ho_name", name!=null?name:"NA");
+												createNotificationForEmail(to, request.getUserId().toString(),
+														parameters, NotificationAlias.EMAIL_HO_MAKER_ASSIGN_APPLICATION_TO_CHECKER, subject);
+											}
+											
+											if(!CommonUtils.isObjectNullOrEmpty(hoObj.getMobile())) {
+												//System.out.println("Maker ID:---"+userObj.getEmail());
+												Map<String, Object> smsParameters = new HashMap<String, Object>();
+												String to = hoObj.getMobile();	
+												smsParameters.put("maker_name", makerName!=null?makerName:"NA");
+												smsParameters.put("fs_name", applicationRequest.getUserName()!=null?applicationRequest.getUserName():"NA");
+												
+												smsParameters.put("url", "www.bitly.com");
+												
+												sendSMSNotification(hoObj.getId().toString(),
+														smsParameters, NotificationAlias.SMS_HO_MAKER_ASSIGN_APPLICATION_TO_CHECKER, to);
+											}
+											
+											if(!CommonUtils.isObjectNullOrEmpty(hoObj.getId())) {
+												//System.out.println("Maker ID:---"+userObj.getEmail());
+												Map<String, Object> sysParameters = new HashMap<String, Object>();
+												sysParameters.put("maker_name", makerName!=null?makerName:"NA");
+												sysParameters.put("checker_name", checkerName!=null?checkerName:"NA");
+												sysParameters.put("product_type", proposalresp.get("loan_type").toString()!=null?proposalresp.get("loan_type").toString():"NA");
+												sysParameters.put("fs_name", applicationRequest.getUserName()!=null?applicationRequest.getUserName():"NA");
+												
+												sendSYSNotification(hoObj.getId().toString(),
+														sysParameters, NotificationAlias.SYS_HO_MAKER_ASSIGN_APPLICATION_TO_CHECKER, hoObj.getId().toString(), hoObj.getId().toString());
+											}
+									    	
+										}
+									
+								}
+								else {
+									logger.info("No HO found=================>");
+								}
+								
+										
+								//=========================================================================================
+								
+								
+			                    //====================Sending Mail to BO when Maker Assigns DDR to Checker=====================
+								
+			                    subject = "Intimation: Assigned DDR- Application ID "+ request.getApplicationId();
+								
+								UserResponse boResponse = userClient.getUserDetailByOrgRoleBranchId(applicationRequest.getNpOrgId(),com.capitaworld.service.users.utils.CommonUtils.UserRoles.BRANCH_OFFICER,branchId);
+								List<Map<String, Object>> boRespList = (List<Map<String, Object>>) boResponse.getListData();
+								if(!CommonUtils.isObjectNullOrEmpty(boRespList)) {
+									for (int i = 0; i < boRespList.size(); i++) {
+											UsersRequest boObj = MultipleJSONObjectHelper.getObjectFromMap(boRespList.get(i),
+													UsersRequest.class);
+											
+											String name = null;
+											
+											try {
+												logger.error("Into getting FP Name======>"+boObj);
+												UserResponse userResponseForName = userClient.getFPDetails(boObj);
+												FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<Object,Object>)userResponseForName.getData(),
+														FundProviderDetailsRequest.class);
+												name = fundProviderDetailsRequest.getFirstName() + " " + (fundProviderDetailsRequest.getLastName() == null ? "": fundProviderDetailsRequest.getLastName());
+											} catch (Exception e) {
+												logger.error("error while fetching FP name");
+												e.printStackTrace();
+											}
+											
+											if(!CommonUtils.isObjectNullOrEmpty(boObj.getEmail())) {
+											//	System.out.println("Checker ID:---"+userObj.getEmail());
+												String to =  boObj.getEmail();
+												if("null".equals(name)) {
+													name = "NA";
+												}
+												else {
+													name = name!=null?name:"NA";
+												}
+												parameters.put("bo_name", name!=null?name:"NA");
+												createNotificationForEmail(to, request.getUserId().toString(),
+														parameters, NotificationAlias.EMAIL_ALL_BO_MAKER_ASSIGN_APPLICATION_TO_CHECKER, subject);
+											}
+											
+											if(!CommonUtils.isObjectNullOrEmpty(boObj.getMobile())) {
+												//System.out.println("Maker ID:---"+userObj.getEmail());
+												Map<String, Object> smsParameters = new HashMap<String, Object>();
+												String to = boObj.getMobile();	
+												smsParameters.put("maker_name", makerName!=null?makerName:"NA");
+												smsParameters.put("fs_name", applicationRequest.getUserName()!=null?applicationRequest.getUserName():"NA");
+												
+												smsParameters.put("url", "www.bitly.com");
+												
+												sendSMSNotification(boObj.getId().toString(),
+														smsParameters, NotificationAlias.SMS_ALL_BO_MAKER_ASSIGN_APPLICATION_TO_CHECKER, to);
+											}
+											
+											if(!CommonUtils.isObjectNullOrEmpty(boObj.getId())) {
+												//System.out.println("Maker ID:---"+userObj.getEmail());
+												Map<String, Object> sysParameters = new HashMap<String, Object>();
+												sysParameters.put("maker_name", makerName!=null?makerName:"NA");
+												sysParameters.put("checker_name", checkerName!=null?checkerName:"NA");
+												sysParameters.put("product_type", proposalresp.get("loan_type").toString()!=null?proposalresp.get("loan_type").toString():"NA");
+												sysParameters.put("fs_name", applicationRequest.getUserName()!=null?applicationRequest.getUserName():"NA");
+												
+												sendSYSNotification(boObj.getId().toString(),
+														sysParameters, NotificationAlias.SYS_ALL_BO_MAKER_ASSIGN_APPLICATION_TO_CHECKER, boObj.getId().toString(), boObj.getId().toString());
+											}
+									    	
+										}
+									
+								}
+								else {
+									logger.info("No BO found=================>");
+								}
+								
+								//=========================================================================================
+				
+					} catch (Exception e) {
+						logger.info("Throw exception while sending mail to Checker/HO/BO when Maker Assign DDR to Checker");
+						e.printStackTrace();
+					}
+				}
+				
+				@Async
+				public void sendMailWhenMakerReAssignDDRToChecker(NhbsApplicationRequest request, Date lastModifiedDate) {
+					logger.info("Enter in sending mail to Checker/HO/BO When Maker Reassign DDR To Checker");
+					try {
+						        Map<String, Object> parameters = new HashMap<String, Object>();
+						        LoanApplicationRequest applicationRequest = loanApplicationService.getFromClient(request.getApplicationId());
+								ProposalMappingResponse proposalResponse = null;
+								Map<String, Object> proposalresp = null;
+								try {
+									logger.info("Calling Proposal details client for getting Branch Id:-"+request.getApplicationId());
+									proposalResponse = proposalDetailsClient.getInPricipleById(request.getApplicationId());
+									logger.info("Got Inprinciple response from Proposal Details Client"+proposalResponse);
+									proposalresp = MultipleJSONObjectHelper
+											.getObjectFromMap((Map<String, Object>) proposalResponse.getData(), Map.class);
+								} catch (Exception e) {
+					                logger.info("Error calling Proposal Details Client for getting Branch Id:-"+request.getApplicationId());
+					                
+					                e.printStackTrace();
+									
+								}
+								
+								Long branchId = null;
+								if(!CommonUtils.isObjectNullOrEmpty(proposalresp.get("branch_id"))) {
+									branchId = Long.valueOf(proposalresp.get("branch_id").toString());	
+								}
+
+							
+								//=========================================Getting Maker=====================================
+							
+								UsersRequest assignedMakerForName = new UsersRequest();
+								assignedMakerForName.setId(request.getUserId());
+								
+								String makerName = null;
+								if(!CommonUtils.isObjectNullOrEmpty(assignedMakerForName)) {
+								
+									try {
+										logger.error("Into getting FP Name======>"+assignedMakerForName);
+										UserResponse userResponseForName = userClient.getFPDetails(assignedMakerForName);
+										FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<Object,Object>)userResponseForName.getData(),
+												FundProviderDetailsRequest.class);
+										makerName = fundProviderDetailsRequest.getFirstName() + " " + (fundProviderDetailsRequest.getLastName() == null ? "": fundProviderDetailsRequest.getLastName());
+									} catch (Exception e) {
+										logger.error("error while fetching FP name");
+										e.printStackTrace();
+									}
+								}
+								
+								if("null".equals(makerName)) {
+									makerName = "NA";	
+								}else {
+									makerName = makerName!=null?makerName:"NA";	
+								}
+									
+								//========================================================================================================
+								
+								//=========================================Getting Checker=====================================
+								
+								UserResponse checkerResponse = null;
+								try {
+									checkerResponse = userClient.getEmailMobile(request.getNpUserId());
+								}
+								catch(Exception e) {
+									logger.info("Something went wrong while calling Users client===>{}");
+									e.printStackTrace();
+								}
+								UsersRequest assignedChecker = null;
+								if(!CommonUtils.isObjectNullOrEmpty(checkerResponse)) {
+									assignedChecker = MultipleJSONObjectHelper
+											.getObjectFromMap((Map<String, Object>) checkerResponse.getData(), UsersRequest.class);
+								}
+								
+								UsersRequest assignedCheckerForName = new UsersRequest();
+								assignedCheckerForName.setId(request.getNpUserId());
+								
+								String checkerName = null;
+								if(!CommonUtils.isObjectNullOrEmpty(assignedCheckerForName)) {
+								
+									try {
+										logger.error("Into getting FP Name======>"+assignedCheckerForName);
+										UserResponse userResponseForName = userClient.getFPDetails(assignedCheckerForName);
+										FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<Object,Object>)userResponseForName.getData(),
+												FundProviderDetailsRequest.class);
+										checkerName = fundProviderDetailsRequest.getFirstName() + " " + (fundProviderDetailsRequest.getLastName() == null ? "": fundProviderDetailsRequest.getLastName());
+									} catch (Exception e) {
+										logger.error("error while fetching FP name");
+										e.printStackTrace();
+									}
+								}
+								
+								if("null".equals(checkerName)) {
+									checkerName = "NA";
+								}
+								else {
+									checkerName = checkerName!=null?checkerName:"NA";
+								}
+								
+								//========================================================================================================
+	
+								SimpleDateFormat form = new SimpleDateFormat("dd/MM/yyyy");
+								parameters.put("maker_name", makerName!=null?makerName:"NA");
+								parameters.put("checker_name", checkerName!=null?checkerName:"NA");
+								parameters.put("fs_name", applicationRequest.getUserName());
+								parameters.put("application_id", request.getApplicationId().toString());
+                                if(!CommonUtils.isObjectNullOrEmpty(lastModifiedDate)) {
+                                   parameters.put("date", form.format(lastModifiedDate)!=null?form.format(lastModifiedDate):"NA");
+                                }
+                                else {
+                                   parameters.put("date", "NA");
+                                }
+								
+								if(!CommonUtils.isObjectNullOrEmpty(proposalresp.get("loan_type"))) {
+								
+								  parameters.put("product_type",proposalresp.get("loan_type").toString()!=null?proposalresp.get("loan_type").toString():"NA");
+								}
+								else {
+									
+								 parameters.put("product_type","NA");
+
+								}
+													
+								parameters.put("mobile_no", "NA");
+								
+								CorporateApplicantRequest applicantRequest = corporateapplicantService.getCorporateApplicant(request.getApplicationId());
+								 String address = null;
+								if(!CommonUtils.isObjectNullOrEmpty(applicantRequest) && 
+								   !CommonUtils.isObjectNullOrEmpty(applicantRequest.getFirstAddress())){
+									address = applicantRequest.getFirstAddress().getPremiseNumber()!=null?applicantRequest.getFirstAddress().getPremiseNumber():""	
+				                              +" "+applicantRequest.getFirstAddress().getStreetName()!=null?applicantRequest.getFirstAddress().getStreetName():""
+				                              +" "+applicantRequest.getFirstAddress().getLandMark()!=null?applicantRequest.getFirstAddress().getLandMark():"";  
+				                             
+								}
+								parameters.put("address", address!=null?address:"NA");
+								
+								String subjcet = "Intimation : Sent Back - Application ID "+request.getApplicationId();
+								if (!CommonUtils.isObjectNullOrEmpty(assignedChecker) && !CommonUtils.isObjectNullOrEmpty(assignedChecker.getEmail())) {
+									
+									String toIds =  assignedChecker.getEmail();
+									logger.info("Email Sending TO CHECKER on sendMailWhenMakerAssignDDRToChecker===to==>{}", toIds);
+									// ====================== MAIL TO CHECKER ======================
+									createNotificationForEmail(toIds, request.getNpUserId().toString(), parameters,
+											NotificationAlias.EMAIL_CHECKER_MAKER_REASSIGN_TO_CHECKER, subjcet);
+									
+								}
+								
+								if(!CommonUtils.isObjectNullOrEmpty(assignedChecker.getMobile())) {
+									//System.out.println("Maker ID:---"+userObj.getEmail());
+									Map<String, Object> smsParameters = new HashMap<String, Object>();
+									String to = assignedChecker.getMobile();	
+									smsParameters.put("maker_name", makerName!=null?makerName:"NA");
+									smsParameters.put("fs_name", applicationRequest.getUserName()!=null?applicationRequest.getUserName():"NA");
+									
+									smsParameters.put("url", "www.bitly.com");
+									
+									sendSMSNotification(request.getNpUserId().toString(),
+											smsParameters, NotificationAlias.SMS_CHECKER_MAKER_REASSIGN_TO_CHECKER, to);
+								}
+								
+								if(!CommonUtils.isObjectNullOrEmpty(request.getNpUserId())) {
+									//System.out.println("Maker ID:---"+userObj.getEmail());
+									Map<String, Object> sysParameters = new HashMap<String, Object>();
+									sysParameters.put("maker_name", makerName!=null?makerName:"NA");
+									sysParameters.put("fs_name", applicationRequest.getUserName()!=null?applicationRequest.getUserName():"NA");
+									
+									sendSYSNotification(request.getNpUserId().toString(),
+											sysParameters, NotificationAlias.SYS_CHECKER_MAKER_REASSIGN_TO_CHECKER, request.getNpUserId().toString(), request.getNpUserId().toString());
+								}
+								
+								
+			                  //====================Sending Mail to HO when Maker Assigns DDR to Checker=====================
+								
+								String subject = "Intimation: Re-assigned DDR - Application ID "+ request.getApplicationId();
+								
+								UserResponse hoResponse = userClient.getUserDetailByOrgRoleBranchId(applicationRequest.getNpOrgId(),com.capitaworld.service.users.utils.CommonUtils.UserRoles.HEAD_OFFICER,branchId);
+								List<Map<String, Object>> hoRespList = (List<Map<String, Object>>) hoResponse.getListData();
+								if(!CommonUtils.isObjectNullOrEmpty(hoRespList)) {
+									for (int i = 0; i < hoRespList.size(); i++) {
+											UsersRequest hoObj = MultipleJSONObjectHelper.getObjectFromMap(hoRespList.get(i),
+													UsersRequest.class);
+											
+			                                String name = null;
+											
+											try {
+												logger.error("Into getting FP Name======>"+hoObj);
+												UserResponse userResponseForName = userClient.getFPDetails(hoObj);
+												FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<Object,Object>)userResponseForName.getData(),
+														FundProviderDetailsRequest.class);
+												name = fundProviderDetailsRequest.getFirstName() + " " + (fundProviderDetailsRequest.getLastName() == null ? "": fundProviderDetailsRequest.getLastName());
+											} catch (Exception e) {
+												logger.error("error while fetching FP name");
+												e.printStackTrace();
+											}
+											
+											if(!CommonUtils.isObjectNullOrEmpty(hoObj.getEmail())) {
+											//	System.out.println("Checker ID:---"+userObj.getEmail());
+												String to =  hoObj.getEmail();
+												if("null".equals(name)) {
+													name = "NA";
+												}
+												else {
+													name = name!=null?name:"NA";
+												}
+												parameters.put("ho_name", name!=null?name:"NA");
+												createNotificationForEmail(to, request.getUserId().toString(),
+														parameters, NotificationAlias.EMAIL_HO_MAKER_REASSIGN_TO_CHECKER, subject);
+											}
+											
+											if(!CommonUtils.isObjectNullOrEmpty(hoObj.getMobile())) {
+												//System.out.println("Maker ID:---"+userObj.getEmail());
+												Map<String, Object> smsParameters = new HashMap<String, Object>();
+												String to = hoObj.getMobile();	
+												smsParameters.put("maker_name", makerName!=null?makerName:"NA");
+												smsParameters.put("fs_name", applicationRequest.getUserName()!=null?applicationRequest.getUserName():"NA");
+												
+												smsParameters.put("url", "www.bitly.com");
+												
+												sendSMSNotification(hoObj.getId().toString(),
+														smsParameters, NotificationAlias.SMS_HO_MAKER_REASSIGN_TO_CHECKER, to);
+											}
+											
+											if(!CommonUtils.isObjectNullOrEmpty(hoObj.getId())) {
+												//System.out.println("Maker ID:---"+userObj.getEmail());
+												Map<String, Object> sysParameters = new HashMap<String, Object>();
+												sysParameters.put("maker_name", makerName!=null?makerName:"NA");
+												sysParameters.put("checker_name", checkerName!=null?checkerName:"NA");
+												sysParameters.put("product_type", proposalresp.get("loan_type").toString()!=null?proposalresp.get("loan_type").toString():"NA");
+												sysParameters.put("fs_name", applicationRequest.getUserName()!=null?applicationRequest.getUserName():"NA");
+												
+												sendSYSNotification(hoObj.getId().toString(),
+														sysParameters, NotificationAlias.SYS_HO_MAKER_REASSIGN_TO_CHECKER, hoObj.getId().toString(), hoObj.getId().toString());
+											}
+									    	
+										}
+									
+								}
+								else {
+									logger.info("No HO found=================>");
+								}
+								
+										
+								//=========================================================================================
+								
+								
+			                    //====================Sending Mail to BO when Maker Assigns DDR to Checker=====================
+								
+			                    subject = "Intimation: Re-assigned DDR - Application ID "+ request.getApplicationId();
+								
+								UserResponse boResponse = userClient.getUserDetailByOrgRoleBranchId(applicationRequest.getNpOrgId(),com.capitaworld.service.users.utils.CommonUtils.UserRoles.BRANCH_OFFICER,branchId);
+								List<Map<String, Object>> boRespList = (List<Map<String, Object>>) boResponse.getListData();
+								if(!CommonUtils.isObjectNullOrEmpty(boRespList)) {
+									for (int i = 0; i < boRespList.size(); i++) {
+											UsersRequest boObj = MultipleJSONObjectHelper.getObjectFromMap(boRespList.get(i),
+													UsersRequest.class);
+											
+											String name = null;
+											
+											try {
+												logger.error("Into getting FP Name======>"+boObj);
+												UserResponse userResponseForName = userClient.getFPDetails(boObj);
+												FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<Object,Object>)userResponseForName.getData(),
+														FundProviderDetailsRequest.class);
+												name = fundProviderDetailsRequest.getFirstName() + " " + (fundProviderDetailsRequest.getLastName() == null ? "": fundProviderDetailsRequest.getLastName());
+											} catch (Exception e) {
+												logger.error("error while fetching FP name");
+												e.printStackTrace();
+											}
+											
+											if(!CommonUtils.isObjectNullOrEmpty(boObj.getEmail())) {
+											//	System.out.println("Checker ID:---"+userObj.getEmail());
+												String to =  boObj.getEmail();
+												if("null".equals(name)) {
+													name = "NA";
+												}
+												else {
+													name = name!=null?name:"NA";
+												}
+												parameters.put("bo_name", name!=null?name:"NA");
+												createNotificationForEmail(to, request.getUserId().toString(),
+														parameters, NotificationAlias.EMAIL_ALL_BO_MAKER_REASSIGN_TO_CHECKER, subject);
+											}
+											
+											if(!CommonUtils.isObjectNullOrEmpty(boObj.getMobile())) {
+												//System.out.println("Maker ID:---"+userObj.getEmail());
+												Map<String, Object> smsParameters = new HashMap<String, Object>();
+												String to = boObj.getMobile();	
+												smsParameters.put("maker_name", makerName!=null?makerName:"NA");
+												smsParameters.put("fs_name", applicationRequest.getUserName()!=null?applicationRequest.getUserName():"NA");
+												
+												smsParameters.put("url", "www.bitly.com");
+												
+												sendSMSNotification(boObj.getId().toString(),
+														smsParameters, NotificationAlias.SMS_ALL_BO_MAKER_REASSIGN_TO_CHECKER, to);
+											}
+											
+											if(!CommonUtils.isObjectNullOrEmpty(boObj.getId())) {
+												//System.out.println("Maker ID:---"+userObj.getEmail());
+												Map<String, Object> sysParameters = new HashMap<String, Object>();
+												sysParameters.put("maker_name", makerName!=null?makerName:"NA");
+												sysParameters.put("checker_name", checkerName!=null?checkerName:"NA");
+												sysParameters.put("product_type", proposalresp.get("loan_type").toString()!=null?proposalresp.get("loan_type").toString():"NA");
+												sysParameters.put("fs_name", applicationRequest.getUserName()!=null?applicationRequest.getUserName():"NA");
+												
+												sendSYSNotification(boObj.getId().toString(),
+														sysParameters, NotificationAlias.SYS_ALL_BO_MAKER_REASSIGN_TO_CHECKER, boObj.getId().toString(), boObj.getId().toString());
+											}
+									    	
+										}
+									
+								}
+								else {
+									logger.info("No BO found=================>");
+								}
+								
+								//=========================================================================================
+				
+					} catch (Exception e) {
+						logger.info("Throw exception while sending mail to Checker/HO/BO when Maker Reassign DDR to Checker");
+						e.printStackTrace();
+					}
+				}
 		
 				@Async
 				public void sendEmailToCheckerWhenAdminMakerSendProductForApproval(ProductMasterTemp productMasterTemp, Long userId, String productType) {
