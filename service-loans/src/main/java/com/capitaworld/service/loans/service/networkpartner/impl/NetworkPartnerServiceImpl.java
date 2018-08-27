@@ -1368,7 +1368,19 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 	public boolean setFPChecker(NhbsApplicationRequest request) {
 		logger.info("entry in setFPChecker()");
 		LoanApplicationMaster applicationMaster = loanApplicationRepository.findOne(request.getApplicationId());
-		if(!CommonUtils.isObjectNullOrEmpty(applicationMaster)){
+        
+		Long applicationStatus = null;
+		Date lastModifiedDate = null;
+		if(!CommonUtils.isObjectNullOrEmpty(applicationMaster)) {
+			if(!CommonUtils.isObjectNullOrEmpty(applicationMaster.getApplicationStatusMaster()) 
+			   && !CommonUtils.isObjectNullOrEmpty(applicationMaster.getApplicationStatusMaster().getId())) {
+				applicationStatus = applicationMaster.getApplicationStatusMaster().getId();
+				if(!CommonUtils.isObjectNullOrEmpty(applicationMaster.getModifiedDate())) {
+					lastModifiedDate = applicationMaster.getModifiedDate();	
+				}
+			}
+		}
+			if(!CommonUtils.isObjectNullOrEmpty(applicationMaster)){
 			ApplicationStatusMaster applicationStatusMaster = new ApplicationStatusMaster();
 			applicationStatusMaster.setId(CommonUtils.ApplicationStatus.ASSIGNED_TO_CHECKER);
 			applicationMaster.setApplicationStatusMaster(applicationStatusMaster);
@@ -1377,6 +1389,19 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 			applicationMaster.setModifiedBy(request.getUserId());
 			applicationMaster.setModifiedDate(new Date());
 			loanApplicationRepository.save(applicationMaster);
+			
+			//=====================Sending Mail to all Checker/HO/BO when Maker assign/Re-assign DDR to Checker===================
+	
+			if(!CommonUtils.isObjectNullOrEmpty(applicationStatus) && CommonUtils.ApplicationStatus.ASSIGNED.equals(applicationStatus)) {
+				fpAsyncComponent.sendMailWhenMakerAssignDDRToChecker(request);	
+			} 
+			else if(!CommonUtils.isObjectNullOrEmpty(applicationStatus) && CommonUtils.ApplicationStatus.REVERTED.equals(applicationStatus)) {
+				fpAsyncComponent.sendMailWhenMakerReAssignDDRToChecker(request, lastModifiedDate);	
+			}
+		
+     		//========================================================================================================================
+
+			
 			logger.info("exit from setFPChecker()");
 			return true;
 		}
