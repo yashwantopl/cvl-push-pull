@@ -704,7 +704,7 @@ public class FPAsyncComponent {
 								}
 								
 								UsersRequest assignedMakerForName = new UsersRequest();
-								assignedMakerForName.setId(request.getFpMakerId());
+								assignedMakerForName.setId(request.getUserId());
 								
 								String makerName = null;
 								if(!CommonUtils.isObjectNullOrEmpty(assignedMakerForName)) {
@@ -757,7 +757,7 @@ public class FPAsyncComponent {
 										String toIds = assignedMaker.getEmail();
 										logger.info("Email Sending TO MAKER when Maker accepts Proposal===to==>{}"+ toIds);
 
-										createNotificationForEmail(toIds, request.getFpMakerId().toString(), parameters,
+										createNotificationForEmail(toIds, request.getUserId().toString(), parameters,
 												NotificationAlias.EMAIL_MAKER_ACCEPT_PROPOSAL_OF_FS, subject);
 									}
 									
@@ -775,7 +775,7 @@ public class FPAsyncComponent {
 										}
 										smsParameters.put("url", "www.bitly.com");
 										
-										sendSMSNotification(request.getFpMakerId().toString(),
+										sendSMSNotification(request.getUserId().toString(),
 												smsParameters, NotificationAlias.SMS_MAKER_ACCEPT_PROPOSAL_OF_FS, to);
 									}
 									
@@ -784,8 +784,8 @@ public class FPAsyncComponent {
 										Map<String, Object> sysParameters = new HashMap<String, Object>();
 										sysParameters.put("fs_name", applicationRequest.getUserName()!=null?applicationRequest.getUserName():"NA");
 										
-										sendSYSNotification(request.getFpMakerId().toString(),
-												sysParameters, NotificationAlias.SYS_MAKER_ACCEPT_PROPOSAL_OF_FS, request.getFpMakerId().toString(), request.getFpMakerId().toString());
+										sendSYSNotification(request.getUserId().toString(),
+												sysParameters, NotificationAlias.SYS_MAKER_ACCEPT_PROPOSAL_OF_FS, request.getUserId().toString(), request.getUserId().toString());
 									}
 				
 								}
