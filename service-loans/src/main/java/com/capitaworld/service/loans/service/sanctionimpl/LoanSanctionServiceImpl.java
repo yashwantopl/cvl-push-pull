@@ -165,7 +165,7 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 					UserOrganisationRequest	userOrganisationRequest =null;
 					for(Map<String , Object> map : userOrganisationRequestList) {
 						userOrganisationRequest = (UserOrganisationRequest)	MultipleJSONObjectHelper.getObjectFromMap(map, UserOrganisationRequest.class);
-						if(userOrganisationRequest.getUserOrgId() != 10l) {
+						if(userOrganisationRequest.getUserOrgId() != 10l && userOrganisationRequest.getUserOrgId() != 17l) {
 							logger.info("Organization ID==========>{}",userOrganisationRequest.getUserOrgId());
 							continue;
 						}
