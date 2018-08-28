@@ -1146,7 +1146,7 @@ public enum APIFlags {
 	
 	/***********************************************CAM UTILS*********************************************************/
 	static DecimalFormat decim = new DecimalFormat("#,##0.00");
-	static DecimalFormat decim2 = new DecimalFormat("#,###.00");
+	static DecimalFormat decim2 = new DecimalFormat("#,###");
 	
 	public static String convertValue(Double value) {
 		return !CommonUtils.isObjectNullOrEmpty(value)? decim.format(value).toString(): "0";
