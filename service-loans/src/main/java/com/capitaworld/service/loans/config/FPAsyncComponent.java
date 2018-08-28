@@ -1231,8 +1231,25 @@ public class FPAsyncComponent {
 								 parameters.put("product_type","NA");
 
 								}
-													
-								parameters.put("mobile_no", "NA");
+									
+								UserResponse signUpuser = null;
+								try {
+									signUpuser = userClient.getEmailMobile(applicationRequest.getUserId());
+								}
+								catch(Exception e) {
+									logger.info("Something went wrong while calling Users client===>{}");
+									e.printStackTrace();
+								}
+								
+								if(!CommonUtils.isObjectNullOrEmpty(signUpuser)) {
+									UsersRequest signUpUser = MultipleJSONObjectHelper
+											.getObjectFromMap((Map<String, Object>) signUpuser.getData(), UsersRequest.class);
+
+									String mobile = signUpUser.getMobile();
+									System.out.println("Mobile no:-"+mobile);
+									parameters.put("mobile_no", mobile!=null?mobile:"NA");
+									
+								}
 								
 								CorporateApplicantRequest applicantRequest = corporateapplicantService.getCorporateApplicant(request.getApplicationId());
 								 String address = null;
@@ -1552,7 +1569,24 @@ public class FPAsyncComponent {
 
 								}
 													
-								parameters.put("mobile_no", "NA");
+								UserResponse signUpuser = null;
+								try {
+									signUpuser = userClient.getEmailMobile(applicationRequest.getUserId());
+								}
+								catch(Exception e) {
+									logger.info("Something went wrong while calling Users client===>{}");
+									e.printStackTrace();
+								}
+								
+								if(!CommonUtils.isObjectNullOrEmpty(signUpuser)) {
+									UsersRequest signUpUser = MultipleJSONObjectHelper
+											.getObjectFromMap((Map<String, Object>) signUpuser.getData(), UsersRequest.class);
+
+									String mobile = signUpUser.getMobile();
+									System.out.println("Mobile no:-"+mobile);
+									parameters.put("mobile_no", mobile!=null?mobile:"NA");
+									
+								}
 								
 								CorporateApplicantRequest applicantRequest = corporateapplicantService.getCorporateApplicant(request.getApplicationId());
 								 String address = null;
