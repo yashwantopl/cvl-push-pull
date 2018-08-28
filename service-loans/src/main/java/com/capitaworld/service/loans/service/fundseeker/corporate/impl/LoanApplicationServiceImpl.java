@@ -4289,8 +4289,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					gatewayRequest.setEmail(usersRequest.getEmail());
 					gatewayRequest.setPhone(usersRequest.getMobile());					
 				} else {
-					gatewayRequest.setEmail("hakimuddin@capitaworld.com");
-					gatewayRequest.setPhone("7869585058");
+					return "No Email or Mobile Number found, insufficient parameters for Gateway!!!";
 				}
 				gatewayRequest.setApplicationId(paymentRequest.getApplicationId());
 				gatewayRequest.setGatewayType(paymentRequest.getGatewayType());
