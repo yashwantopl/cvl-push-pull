@@ -70,6 +70,9 @@ public class NhbsApplicationsResponse implements Serializable{
 
 	private String applicationWith;
 
+	private Integer businessTypeId;
+
+	private Long clientId;
 	public Date getAssignedToCheckerDate() {
 		return assignedToCheckerDate;
 	}
@@ -262,6 +265,20 @@ public class NhbsApplicationsResponse implements Serializable{
 	public void setMcaStatus(String mcaStatus) {
 		this.mcaStatus = mcaStatus;
 	}
-	
-	
+
+	public Integer getBusinessTypeId() {
+		return businessTypeId;
+	}
+
+	public void setBusinessTypeId(Integer businessTypeId) {
+		this.businessTypeId = businessTypeId;
+	}
+
+	public Long getClientId() {
+		return clientId;
+	}
+
+	public void setClientId(Long clientId) {
+		this.clientId = clientId;
+	}
 }

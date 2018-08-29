@@ -163,6 +163,7 @@ public class LoansClient {
 	
 	private static final String SAVE_DIRECTOR_BACKGROUND_DETAILS = "/director_background_details/save";
 	private static final String GET_DIRECTOR_BACKGROUND_DETAILS = "/director_background_details/getList_client";
+	private static final String GET_DIRECTOR_BACKGROUND_DETAILS_FOR_NTB = "/director_background_details/getDirectorBasicDetailsListForNTB";
 	private static final String GET_DIRECTOR_BACKGROUND_DETAIL = "/director_background_details/get";
 	private static final String UPDATE_DIRECTOR_BACKGROUND_API_FLAG = "/director_background_details/update_api_flag";
 
@@ -1653,6 +1654,20 @@ public class LoansClient {
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new ExcelException("Loans service is not available");
+		}
+	}
+	
+	public LoansResponse getDirectorBackgroundDetailsForNTB(Long applicationId) throws Exception {
+		String url = loansBaseUrl.concat(GET_DIRECTOR_BACKGROUND_DETAILS_FOR_NTB).concat("/" + applicationId);
+		System.out.println("url for Getting DirectorBackgroundDetails for NTB From Client=================>" + url + " and For Application Id====>" + applicationId);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			HttpEntity<?> entity = new HttpEntity<>(null, headers);
+			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new Exception("Loans service is not available");
 		}
 	}
 	
