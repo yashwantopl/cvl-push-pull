@@ -580,8 +580,10 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 					hunterRequestDataResponse = loanApplicationService
 							.getDataForHunterForNTB(fundSeekerInputRequestResponse.getApplicationId());
 				}
+				else {
 			hunterRequestDataResponse = loanApplicationService
 					.getDataForHunter(fundSeekerInputRequestResponse.getApplicationId());
+				}
 			AnalyticsRequest request = new AnalyticsRequest();
 			request.setApplicationId(fundSeekerInputRequestResponse.getApplicationId());
 			request.setUserId(fundSeekerInputRequestResponse.getUserId());
