@@ -5540,10 +5540,15 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 						auditComponent.updateAudit(AuditComponent.DETAILED_INFO, applicationId, applicationMaster.getUserId(), null, saveDetailsInfo);
 					}catch(Exception e) {
 						logger.info("Exception while Saving profileReqRes by sidbiIntegrationClient   in savePhese2DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",applicationId,fpProductMappingId +" Mgs " +e.getMessage());
-						auditComponent.updateAudit(AuditComponent.DETAILED_INFO, applicationId, applicationMaster.getUserId(),"Exception while Saving profileReqRes from SidbiIntegrationClient  in savePhese2DataToSidbi() ==> for ApplicationId  ====>{} "+applicationId +" Msg ==> "+e.getMessage() ,  false);
 						e.printStackTrace();
-						logger.info("Error while Calling Client====>");
-						setTokenAsExpired(generateTokenRequest);
+						if(e.getMessage() != null && e.getMessage().contains("401")) {
+							auditComponent.updateAudit(AuditComponent.DETAILED_INFO, applicationId, userId,"Unauthorized! in  profileReqRes from SidbiIntegrationClient in savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "+applicationId+" Mgs " +e.getMessage() ,false);
+							logger.error("Invalid Token Details");
+							setTokenAsExpired(generateTokenRequest);
+							return false;						
+						}else {
+							auditComponent.updateAudit(AuditComponent.DETAILED_INFO, applicationId, applicationMaster.getUserId(),"Exception while Saving profileReqRes from SidbiIntegrationClient  in savePhese2DataToSidbi() ==> for ApplicationId  ====>{} "+applicationId +" Msg ==> "+e.getMessage() ,  false);
+						}
 					}
 				}
 			}else {
@@ -5563,9 +5568,14 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				}catch(Exception e) {
 					logger.info("Exception while Saving DDRFormDetailsRequest by sidbiIntegrationClient   in savePhese2DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",applicationId,fpProductMappingId +" Mgs " +e.getMessage());
 					e.printStackTrace();
-					auditComponent.updateAudit(AuditComponent.DDR_DETAILS , applicationId, applicationMaster.getUserId(), "Exception while Saving DDRFormDetailsRequest by sidbiIntegrationClient   in savePhese2DataToSidbi() ==> for ApplicationId  ====>{}"+ applicationId+" Mgs " +e.getMessage(),  false);
-					logger.error("Error while calling DDRForm Details==>");
-					setTokenAsExpired(generateTokenRequest);
+					if(e.getMessage() != null && e.getMessage().contains("401")) {
+						auditComponent.updateAudit(AuditComponent.DDR_DETAILS, applicationId, userId,"Unauthorized! in  DDRFormDetailsRequest from SidbiIntegrationClient in savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "+applicationId+" Mgs " +e.getMessage() ,false);
+						logger.error("Invalid Token Details");
+						setTokenAsExpired(generateTokenRequest);
+						return false;						
+					}else {
+						auditComponent.updateAudit(AuditComponent.DDR_DETAILS , applicationId, applicationMaster.getUserId(), "Exception while Saving DDRFormDetailsRequest by sidbiIntegrationClient   in savePhese2DataToSidbi() ==> for ApplicationId  ====>{}"+ applicationId+" Mgs " +e.getMessage(),  false);
+					}
 				}
 			
 			}else {
@@ -5614,9 +5624,15 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					auditComponent.updateAudit(AuditComponent.IRR_DETAILS, applicationId, applicationMaster.getUserId(), null ,saveIRRInfo);
 				} catch (Exception e) {
 					logger.info("Exception while Saving saveIRRInfo   by sidbiIntegrationClient   in savePhese2DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",applicationId,fpProductMappingId +" Mgs " +e.getMessage());
-					auditComponent.updateAudit(AuditComponent.IRR_DETAILS, applicationId, applicationMaster.getUserId(),"Exception while Saving saveIRRInfo   by sidbiIntegrationClient   in savePhese2DataToSidbi() ==> for ApplicationId  ====>{} "+applicationId+" Mgs " +e.getMessage()  ,false);
 					e.printStackTrace();
-					setTokenAsExpired(generateTokenRequest);
+					if(e.getMessage() != null && e.getMessage().contains("401")) {
+						auditComponent.updateAudit(AuditComponent.IRR_DETAILS, applicationId, userId,"Unauthorized! in  saveIRRInfo from SidbiIntegrationClient in savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "+applicationId+" Mgs " +e.getMessage() ,false);
+						logger.error("Invalid Token Details");
+						setTokenAsExpired(generateTokenRequest);
+						return false;						
+					}else {
+						auditComponent.updateAudit(AuditComponent.IRR_DETAILS, applicationId, applicationMaster.getUserId(),"Exception while Saving saveIRRInfo   by sidbiIntegrationClient   in savePhese2DataToSidbi() ==> for ApplicationId  ====>{} "+applicationId+" Mgs " +e.getMessage()  ,false);
+					}
 				}
 			}else {
 				logger.info("IRR_DETAILS Info Already Saved so Not Going to Save======>");
