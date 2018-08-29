@@ -9,8 +9,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.Temporal;
-import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Calendar;
@@ -69,7 +67,6 @@ import com.capitaworld.cibil.api.model.report.CreditReport;
 import com.capitaworld.cibil.api.model.report.Enquiry;
 import com.capitaworld.cibil.api.utility.CibilUtils;
 import com.capitaworld.cibil.api.utility.CibilUtils.AccountTypeEnum;
-import com.capitaworld.cibil.api.utility.CibilUtils.CreditTypeEnum;
 import com.capitaworld.cibil.api.utility.CibilUtils.GenderTypeEnum;
 import com.capitaworld.cibil.client.CIBILClient;
 import com.capitaworld.client.eligibility.EligibilityClient;
@@ -4292,8 +4289,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					gatewayRequest.setEmail(usersRequest.getEmail());
 					gatewayRequest.setPhone(usersRequest.getMobile());					
 				} else {
-					gatewayRequest.setEmail("hakimuddin@capitaworld.com");
-					gatewayRequest.setPhone("7869585058");
+					return "No Email or Mobile Number found, insufficient parameters for Gateway!!!";
 				}
 				gatewayRequest.setApplicationId(paymentRequest.getApplicationId());
 				gatewayRequest.setGatewayType(paymentRequest.getGatewayType());

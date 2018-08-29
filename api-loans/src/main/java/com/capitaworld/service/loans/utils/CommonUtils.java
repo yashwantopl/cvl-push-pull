@@ -247,7 +247,9 @@ public class CommonUtils {
 				"depreciationCurrentYear", "remunerationPreviousYear", "remunerationCurrentYear",
 				"highestQualification", "qualifyingYear", "institute", "residingYear", "residingMonth", "spouseName",
 				"isSpouseEmployed" };
-
+		public static final String[] NTB_FINAL_EXCLUSION = {"id","userId", "clientId", "applicationId","establishmentMonth","establishmentYear","groupName","keyVericalFunding"
+				,"latitude","longitude","websiteAddress","gstIn","email","keyVerticalSector","keyVerticalSubsector","aadhar","creditRatingId"
+				,"contLiabilityFyAmt","contLiabilitySyAmt" ,"contLiabilityTyAmt","notApplicable","msmeRegistrationNumber"} ;
 		public static final String[] RETAIL_FINAL = { "castId", "castOther", "religion", "religionOther", "birthPlace",
 				"fatherName", "motherName", "noChildren", "noDependent", "highestQualificationOther", "residenceType",
 				"annualRent", "noPartners", "birthDate", "currentDepartment", "currentDesignation", "currentIndustry",
@@ -1146,7 +1148,7 @@ public enum APIFlags {
 	
 	/***********************************************CAM UTILS*********************************************************/
 	static DecimalFormat decim = new DecimalFormat("#,##0.00");
-	static DecimalFormat decim2 = new DecimalFormat("#,###.00");
+	static DecimalFormat decim2 = new DecimalFormat("#,###");
 	
 	public static String convertValue(Double value) {
 		return !CommonUtils.isObjectNullOrEmpty(value)? decim.format(value).toString(): "0";
@@ -1234,7 +1236,72 @@ public enum APIFlags {
 		}
 		return obj;
     }
-	
-	
+
+	public enum BankName {
+		UNION_BANK_OF_INDIA(1,"Union Bank of India",""),
+		SARASWAT(2,"Saraswat",""),
+		AXIS(3,"Axis",""),
+		ICICI(4,"ICICI",""),
+		IDBI(5,"IDBI","https://s3.ap-south-1.amazonaws.com/qa-sidbi-data/images/IDBI.jpg"),
+		RBL(6,"RBL",""),
+		TATA_CAPITAL(7,"Tata Capital",""),
+		IDFC(8,"IDFC",""),
+		DENA_BANK(9,"Dena Bank",""),
+		SIDBI(10,"SIDBI","https://s3.ap-south-1.amazonaws.com/qa-sidbi-data/images/Sidbi.jpg"),
+		NHBS(11,"NHBS",""),
+		CANARA_BANK(12,"CANARA BANK","https://s3.ap-south-1.amazonaws.com/qa-sidbi-data/images/Canara-Bank.jpg"),
+		INDIAN_BANK(13,"Indian Bank","https://s3.ap-south-1.amazonaws.com/qa-sidbi-data/images/Indian-Bank.jpg"),
+		BOI(14,"BOI","https://s3.ap-south-1.amazonaws.com/qa-sidbi-data/images/BOI.jpg"),
+		VIJAYA_BANK(15,"Vijaya Bank","https://s3.ap-south-1.amazonaws.com/uat-sidbi-data/images/vijya.png"),
+		SBI(16,"SBI","https://s3.ap-south-1.amazonaws.com/uat-sidbi-data/images/sbi.png"),
+		BOB(17,"BOB","https://s3.ap-south-1.amazonaws.com/uat-sidbi-data/images/BOB.png"),
+		PNB(18,"PNB","https://s3.ap-south-1.amazonaws.com/qa-sidbi-data/images/PNB.jpg"),
+		UCO_BANK(19,"UCO Bank",""),
+		PSB(20,"PSB",""),
+		ORIENTAL_BANK_OF_COMMERCE(21,"Oriental Bank of Commerce",""),
+		SYNDICATE_BANK(22,"Syndicate Bank",""),
+		ALLAHABAD_BANK(23,"Allahabad bank",""),
+		CORPORATION_BANK(24,"Corporation Bank",""),
+		CENTRAL_BANK(25,"Central Bank",""),
+		ANDHRA_BANK(26,"Andhra Bank",""),
+		BANK_OF_MAHARASHTRA(27,"Bank of Maharashtra",""),
+		INDIAN_OVERSEAS_BANK(28,"Indian Overseas Bank",""),
+		UNITED_BANK_OF_INDIA(29,"United Bank of India","");
+
+		private Integer id;
+		private String value;
+		private String imageUrl;
+
+		private BankName(Integer id) {
+			this.id = id;
+		}
+
+		private BankName(Integer id, String value,String imageUrl) {
+			this.id = id;
+			this.value = value;
+			this.imageUrl = imageUrl;
+		}
+
+		public String getValue() {
+			return value;
+		}
+
+		public Integer getId() {
+			return id;
+		}
+
+		public String getImageUrl() {
+			return imageUrl;
+		}
+
+		public static BankName getDataFormBankId(Integer id){
+			for (BankName bankName:BankName.values()) {
+				if (bankName.id == id) {
+					return bankName;
+				}
+			}
+			return null;
+		}
+	}
 	
 }

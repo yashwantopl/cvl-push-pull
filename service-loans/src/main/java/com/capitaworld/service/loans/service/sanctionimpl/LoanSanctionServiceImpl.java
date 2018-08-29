@@ -4,6 +4,7 @@ import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import javax.transaction.Transactional;
 
@@ -164,8 +165,8 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 					UserOrganisationRequest	userOrganisationRequest =null;
 					for(Map<String , Object> map : userOrganisationRequestList) {
 						userOrganisationRequest = (UserOrganisationRequest)	MultipleJSONObjectHelper.getObjectFromMap(map, UserOrganisationRequest.class);
-						if(userOrganisationRequest.getUserOrgId() != 10l) {
-							logger.info("Organization ID==========>{}",userOrganisationRequest.getUserOrgId());
+						if(CommonUtils.isObjectNullOrEmpty(userOrganisationRequest.getIsReverseApiActivated()) || !userOrganisationRequest.getIsReverseApiActivated().booleanValue()) {
+							logger.info("Organization ID is Not Activated==========>{}=====Name============>{}",userOrganisationRequest.getUserOrgId(),userOrganisationRequest.getOrganisationName());
 							continue;
 						}
 						
@@ -209,7 +210,7 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 											try {
 												//wait foo 15 minute
 												logger.info("*******Sucessgfully updated sanction and disbursement details in sidbi integration********** ");
-												Thread.sleep(Integer.parseInt(reverseAPITimeOut));
+												TimeUnit.MINUTES.sleep(1);
 												logger.info("*******Going to Call another Bank Reverse API.********** ");
 											}catch (Exception e) {
 												logger.info("Error/Exception in for 15 min wait() ----------------------->  Message "+ e.getMessage());
