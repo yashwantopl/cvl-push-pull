@@ -156,7 +156,9 @@ public interface LoanApplicationService {
 	public DisbursementRequest getDisbursementDetails(DisbursementRequest disbursementRequest);
 	
 	public Long createMsmeLoan(Long userId,Boolean isActive,Integer businessTypeId);
-	
+
+	public Long createRetailLoan(Long userId, Boolean isActive, Integer businessTypeId);
+
 	public boolean updateProductDetails(LoanApplicationRequest loanApplicationRequest);
 	
 	public boolean savePhese1DataToSidbi(Long applicationId,Long userId,Long organizationId,Long fpProductMappingId);

@@ -1217,7 +1217,14 @@ public class LoanApplicationController {
 					logger.info("codeExist====>{}", isMsmeUserFromGeneric);
 					if (isMsmeUserFromGeneric) {
 						// In this case
-						Long createdId = loanApplicationService.createMsmeLoan(clientId, isActive, busineeTypeId);
+						Long createdId =null;
+						if (CommonUtils.BusinessType.NEW_TO_BUSINESS.getId() == busineeTypeId ||
+								CommonUtils.BusinessType.EXISTING_BUSINESS.getId() == busineeTypeId) {
+							createdId = loanApplicationService.createMsmeLoan(clientId, isActive, busineeTypeId);
+						}else if(CommonUtils.BusinessType.RETAIL_PERSONAL_LOAN.getId() == busineeTypeId){
+							createdId = loanApplicationService.createRetailLoan(clientId, isActive, busineeTypeId);
+						}
+
 						return new ResponseEntity<LoansResponse>(
 								new LoansResponse(createdId, "Successfully New Loan Created", HttpStatus.OK.value()),
 								HttpStatus.OK);

@@ -961,7 +961,9 @@ public class CommonUtils {
 	
 	public enum BusinessType {
 		
-		NEW_TO_BUSINESS(2, "New to Business"),EXISTING_BUSINESS(1, "Existing Business");
+		NEW_TO_BUSINESS(2, "New to Business"),
+		EXISTING_BUSINESS(1, "Existing Business"),
+		RETAIL_PERSONAL_LOAN(3, "Retail Personal Loan");
 
 		private Integer id;
 		private String value;
