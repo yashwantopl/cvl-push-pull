@@ -165,8 +165,8 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 					UserOrganisationRequest	userOrganisationRequest =null;
 					for(Map<String , Object> map : userOrganisationRequestList) {
 						userOrganisationRequest = (UserOrganisationRequest)	MultipleJSONObjectHelper.getObjectFromMap(map, UserOrganisationRequest.class);
-						if(userOrganisationRequest.getUserOrgId() != 10l && userOrganisationRequest.getUserOrgId() != 17l && userOrganisationRequest.getUserOrgId() != 14l && userOrganisationRequest.getUserOrgId() != 15l) {
-							logger.info("Organization ID==========>{}",userOrganisationRequest.getUserOrgId());
+						if(CommonUtils.isObjectNullOrEmpty(userOrganisationRequest.getIsReverseApiActivated()) || !userOrganisationRequest.getIsReverseApiActivated().booleanValue()) {
+							logger.info("Organization ID is Not Activated==========>{}=====Name============>{}",userOrganisationRequest.getUserOrgId(),userOrganisationRequest.getOrganisationName());
 							continue;
 						}
 						

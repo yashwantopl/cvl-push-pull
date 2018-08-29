@@ -188,6 +188,11 @@ public class CorporateApplicantDetail implements Serializable {
 	@Column(name= "registered_dist_mapping_id")
 	private Long registeredDistMappingId;
 
+
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "establishment_date")
+	private Date establishmentDate;
+
 	public CorporateApplicantDetail() {
 	}
 
@@ -622,5 +627,13 @@ public class CorporateApplicantDetail implements Serializable {
 
 	public void setRegisteredDistMappingId(Long registeredDistMappingId) {
 		this.registeredDistMappingId = registeredDistMappingId;
+	}
+
+	public Date getEstablishmentDate() {
+		return establishmentDate;
+	}
+
+	public void setEstablishmentDate(Date establishmentDate) {
+		this.establishmentDate = establishmentDate;
 	}
 }
