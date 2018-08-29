@@ -5021,6 +5021,33 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 
 	@Override
+	public Long createRetailLoan(Long userId, Boolean isActive, Integer businessTypeId) {
+		logger.info("Entry in createRetailLoan=>{} and business type id =>{}", userId,businessTypeId);
+		LoanApplicationMaster retailLoanObj = loanApplicationRepository.getCorporateLoan(userId,businessTypeId);
+		if (!CommonUtils.isObjectNullOrEmpty(retailLoanObj)) {
+			return retailLoanObj.getId();
+		}
+		logger.info("Successfully get result");
+		retailLoanObj = new PrimaryPersonalLoanDetail();
+		retailLoanObj.setApplicationStatusMaster(new ApplicationStatusMaster(CommonUtils.ApplicationStatus.OPEN));
+		retailLoanObj.setCreatedBy(userId);
+		retailLoanObj.setCreatedDate(new Date());
+		retailLoanObj.setUserId(userId);
+		retailLoanObj.setIsActive(true);
+		retailLoanObj.setApplicationCode(applicationSequenceService.getApplicationSequenceNumber(LoanType.PERSONAL_LOAN.getValue()));
+		retailLoanObj.setProductId(LoanType.PERSONAL_LOAN.getValue());
+		retailLoanObj.setBusinessTypeId(businessTypeId);
+		retailLoanObj.setCurrencyId(Currency.RUPEES.getId());
+		retailLoanObj.setDenominationId(Denomination.ABSOLUTE.getId());
+		retailLoanObj = loanApplicationRepository.save(retailLoanObj);
+		UsersRequest usersRequest = new UsersRequest();
+		usersRequest.setLastAccessApplicantId(retailLoanObj.getId());
+		usersRequest.setId(userId);
+		userClient.setLastAccessApplicant(usersRequest);
+		return retailLoanObj.getId();
+	}
+
+	@Override
 	public boolean updateProductDetails(LoanApplicationRequest loanApplicationRequest) {
 		logger.info("Application id -------------------------------->"+loanApplicationRequest.getId());
 		logger.info("Request Object---------------------------->" + loanApplicationRequest.toString());
