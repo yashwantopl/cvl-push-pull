@@ -87,7 +87,11 @@ public class CorporatePrimaryViewResponse {
     private Object businessRiskWeightOfScoring;
     private Object promotersContribution;
     private Object promotersContributionPer;
-    
+    private Object mcaData;
+    private Object hufReport;
+    private Object nameAsPerItr;
+    private Object nameAsPerGst;
+    private Object mcaCheckStatus;
     
 
 	public List<Object> getCibilReport() {
@@ -792,6 +796,67 @@ public class CorporatePrimaryViewResponse {
 	public void setPromotersContributionPer(Object promotersContributionPer) {
 		this.promotersContributionPer = promotersContributionPer;
 	}
+	/**
+	 * @return the mcaData
+	 */
+	public Object getMcaData() {
+		return mcaData;
+	}
+	/**
+	 * @param mcaData the mcaData to set
+	 */
+	public void setMcaData(Object mcaData) {
+		this.mcaData = mcaData;
+	}
+	/**
+	 * @return the hufReport
+	 */
+	public Object getHufReport() {
+		return hufReport;
+	}
+	/**
+	 * @param hufReport the hufReport to set
+	 */
+	public void setHufReport(Object hufReport) {
+		this.hufReport = hufReport;
+	}
+	/**
+	 * @return the nameAsPerItr
+	 */
+	public Object getNameAsPerItr() {
+		return nameAsPerItr;
+	}
+	/**
+	 * @param nameAsPerItr the nameAsPerItr to set
+	 */
+	public void setNameAsPerItr(Object nameAsPerItr) {
+		this.nameAsPerItr = nameAsPerItr;
+	}
+	/**
+	 * @return the mcaCheckStatus
+	 */
+	public Object getMcaCheckStatus() {
+		return mcaCheckStatus;
+	}
+	/**
+	 * @param mcaCheckStatus the mcaCheckStatus to set
+	 */
+	public void setMcaCheckStatus(Object mcaCheckStatus) {
+		this.mcaCheckStatus = mcaCheckStatus;
+	}
+	/**
+	 * @return the nameAsPerGst
+	 */
+	public Object getNameAsPerGst() {
+		return nameAsPerGst;
+	}
+	/**
+	 * @param nameAsPerGst the nameAsPerGst to set
+	 */
+	public void setNameAsPerGst(Object nameAsPerGst) {
+		this.nameAsPerGst = nameAsPerGst;
+	}
+	
 	
     
 }

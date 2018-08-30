@@ -31,6 +31,8 @@ import com.capitaworld.service.dms.exception.DocumentException;
 import com.capitaworld.service.dms.model.DocumentRequest;
 import com.capitaworld.service.dms.model.DocumentResponse;
 import com.capitaworld.service.dms.util.DocumentAlias;
+import com.capitaworld.service.gst.GstResponse;
+import com.capitaworld.service.gst.client.GstClient;
 import com.capitaworld.service.loans.domain.fundprovider.TermLoanParameter;
 import com.capitaworld.service.loans.domain.fundprovider.WcTlParameter;
 import com.capitaworld.service.loans.domain.fundprovider.WorkingCapitalParameter;
@@ -88,6 +90,8 @@ import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.matchengine.MatchEngineClient;
 import com.capitaworld.service.matchengine.model.MatchDisplayResponse;
 import com.capitaworld.service.matchengine.model.MatchRequest;
+import com.capitaworld.service.mca.client.McaClient;
+import com.capitaworld.service.mca.model.McaResponse;
 import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.AbilityRaiseFunds;
 import com.capitaworld.service.oneform.enums.AccountingQuality;
@@ -152,7 +156,6 @@ import com.capitaworld.service.scoring.model.ProposalScoreResponse;
 import com.capitaworld.service.scoring.model.ScoringRequest;
 import com.capitaworld.service.scoring.model.ScoringResponse;
 import com.capitaworld.service.thirdparty.model.CGTMSEDataResponse;
-import com.capitaworld.service.thirdparty.model.ThirdPartyRequest;
 import com.capitaworld.service.thirdpaty.client.ThirdPartyClient;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.UserResponse;
@@ -268,9 +271,15 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 
 	@Autowired
 	private WcTlLoanParameterRepository wctlrepo;
-	
+
 	@Autowired
 	private ITRClient itrClient;
+
+	@Autowired
+	private McaClient mcaClient;
+
+	@Autowired
+	private GstClient gstClient;
 
 	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 	DecimalFormat decim = new DecimalFormat("#,###.00");
@@ -568,7 +577,10 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 							? String.valueOf(primaryCorporateDetail.getCollateralSecurityAmount())
 							: null);
 			corporateFinalViewResponse.setPromotersContribution(primaryCorporateDetail.getPromoterContribution());
-			corporateFinalViewResponse.setPromotersContributionPer(primaryCorporateDetail.getTotalAmtPercentage()!= null ? " ("+convertValue(primaryCorporateDetail.getTotalAmtPercentage())+"%)" : null);
+			corporateFinalViewResponse
+					.setPromotersContributionPer(primaryCorporateDetail.getTotalAmtPercentage() != null
+							? " (" + convertValue(primaryCorporateDetail.getTotalAmtPercentage()) + "%)"
+							: null);
 			corporateFinalViewResponse.setNpOrgId(loanApplicationMaster.getNpOrgId());
 			// workingCapitalPrimaryViewResponse.setSharePriceFace(primaryWorkingCapitalLoanDetail.getSharePriceFace());
 			// workingCapitalPrimaryViewResponse.setSharePriceMarket(primaryWorkingCapitalLoanDetail.getSharePriceMarket());
@@ -661,8 +673,8 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 		try {
 			FinancialInputRequest financialInputRequest = irrService.cmaIrrMappingService(userId, toApplicationId, null,
 					denomination);
-			
-			System.out.println("financialInputRequest.getYear()===>>>"+financialInputRequest.getYear());
+
+			System.out.println("financialInputRequest.getYear()===>>>" + financialInputRequest.getYear());
 			// Profit & Loss Statement
 			financialInputRequest.setNetSaleFy(CommonUtils.substractNumbers(financialInputRequest.getGrossSalesFy(),
 					financialInputRequest.getLessExciseDuityFy()));
@@ -963,21 +975,21 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 		} catch (Exception e) {
 			logger.error("Problem to get Data of Credit Rating {}", e);
 		}
-		//itr xml isUpload or Online check
+		// itr xml isUpload or Online check
 		try {
-			ITRConnectionResponse itrConnectionResponse= itrClient.getIsUploadAndYearDetails(toApplicationId);
-			if(itrConnectionResponse!= null) {
+			ITRConnectionResponse itrConnectionResponse = itrClient.getIsUploadAndYearDetails(toApplicationId);
+			if (itrConnectionResponse != null) {
 				corporateFinalViewResponse.setItrXmlIsUploaded(itrConnectionResponse.getData());
-			}else {
+			} else {
 				System.out.println("itr Response is null");
-				
+
 			}
-			
+
 		} catch (Exception e) {
 			System.out.println("error while itr xml is uploaded or not check.");
 			e.printStackTrace();
 		}
-				
+
 		// EXISTING PRODUCT DETAILS
 		try {
 			corporateFinalViewResponse.setExistingProductDetailRequestList(
@@ -1333,12 +1345,18 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 				corporateFinalViewResponse.setBuisnessRiskScoreWeight(
 						CommonUtils.checkDoubleNull(proposalScoreResponse.getBusinessRiskWeight()));
 				corporateFinalViewResponse.setScoreInterpretation(proposalScoreResponse.getInterpretation());
-				corporateFinalViewResponse.setManagementRiskMaxTotalScore(proposalScoreResponse.getManagementRiskMaxTotalScore());
-				corporateFinalViewResponse.setFinancialRiskMaxTotalScore(proposalScoreResponse.getFinancialRiskMaxTotalScore());
-				corporateFinalViewResponse.setBusinessRiskMaxTotalScore(proposalScoreResponse.getBusinessRiskMaxTotalScore());
-				corporateFinalViewResponse.setManagementRiskWeightOfScoring(proposalScoreResponse.getManagementRiskWeightOfScoring());
-				corporateFinalViewResponse.setFinancialRiskWeightOfScoring(proposalScoreResponse.getFinancialRiskWeightOfScoring());
-				corporateFinalViewResponse.setBusinessRiskWeightOfScoring(proposalScoreResponse.getBusinessRiskWeightOfScoring());
+				corporateFinalViewResponse
+						.setManagementRiskMaxTotalScore(proposalScoreResponse.getManagementRiskMaxTotalScore());
+				corporateFinalViewResponse
+						.setFinancialRiskMaxTotalScore(proposalScoreResponse.getFinancialRiskMaxTotalScore());
+				corporateFinalViewResponse
+						.setBusinessRiskMaxTotalScore(proposalScoreResponse.getBusinessRiskMaxTotalScore());
+				corporateFinalViewResponse
+						.setManagementRiskWeightOfScoring(proposalScoreResponse.getManagementRiskWeightOfScoring());
+				corporateFinalViewResponse
+						.setFinancialRiskWeightOfScoring(proposalScoreResponse.getFinancialRiskWeightOfScoring());
+				corporateFinalViewResponse
+						.setBusinessRiskWeightOfScoring(proposalScoreResponse.getBusinessRiskWeightOfScoring());
 			} else {
 				logger.info("SCORING OBJECT NULL OR EMPTY -------------------->");
 			}
@@ -1414,6 +1432,73 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.info("Error CGTMSE data");
+		}
+
+		// MCA DATA
+		try {
+			String companyId = loanApplicationMaster.getMcaCompanyId();
+			System.out.println("mca comp id==>>" + companyId);
+
+			if (companyId != null) {
+
+				McaResponse mcaResponse = mcaClient.getCompanyDetailedData(companyId);
+				McaResponse mcaStatusResponse = mcaClient.mcaStatusCheck(String.valueOf(toApplicationId), companyId);
+				if (mcaStatusResponse != null) {
+					corporateFinalViewResponse.setMcaCheckStatus(mcaStatusResponse.getData());
+				} else {
+
+					logger.warn("::::::=====MCA Check Status Data is Null====:::::::For:::::==>" + companyId);
+				}
+
+				if (!CommonUtils.isObjectNullOrEmpty(mcaResponse.getData())) {
+
+					corporateFinalViewResponse.setMcaData(mcaResponse);
+
+				} else {
+
+					logger.warn("::::::=====MCA Data is Null====:::::::For:::::==>" + companyId);
+				}
+			} else {
+				logger.warn("Mca Company Id is Null");
+
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		// Name As Per
+
+		try {
+			ITRConnectionResponse resNameAsPerITR = itrClient.getITRBasicDetails(toApplicationId);
+			if (resNameAsPerITR != null) {
+
+				corporateFinalViewResponse
+						.setNameAsPerItr(resNameAsPerITR.getData() != null ? resNameAsPerITR.getData() : "NA");
+			} else {
+
+				logger.warn("-----------:::::::::::::: ItrResponse is null ::::::::::::---------");
+			}
+
+		} catch (Exception e) {
+			logger.warn(":::::::::::---------Error while fetching name as per itr----------:::::::::::");
+			e.printStackTrace();
+		}
+
+		// Name as per Gst
+
+		try {
+			GstResponse response = gstClient.detailCalculation(corporateApplicantDetail.getGstIn());
+			if (response != null) {
+				corporateFinalViewResponse.setNameAsPerGst(response);
+			} else {
+
+				logger.warn("----------:::::::: Gst Response is null :::::::---------");
+
+			}
+
+		} catch (Exception e) {
+			logger.warn(":::::::------Error while calling gst client for name as per gst---:::::::");
+			e.printStackTrace();
 		}
 
 		// GET DOCUMENTS
