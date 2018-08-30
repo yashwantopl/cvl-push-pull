@@ -1705,7 +1705,12 @@ public class FPAsyncComponent {
 									String to = "91"+assignedChecker.getMobile();	
 									smsParameters.put("maker_name", makerName!=null?makerName:"NA");
 									smsParameters.put("fs_name", fsName!=null?fsName:"NA");
-									
+									if(!CommonUtils.isObjectNullOrEmpty(lastModifiedDate)) {
+										smsParameters.put("date", form.format(lastModifiedDate)!=null?form.format(lastModifiedDate):"NA");
+		                            }
+									else{
+		                                smsParameters.put("date", "NA");
+		                            }
 									smsParameters.put("url", "www.bitly.com");
 									
 									sendSMSNotification(request.getNpUserId().toString(),
@@ -1767,7 +1772,12 @@ public class FPAsyncComponent {
 												String to = "91"+hoObj.getMobile();	
 												smsParameters.put("maker_name", makerName!=null?makerName:"NA");
 												smsParameters.put("fs_name", fsName!=null?fsName:"NA");
-												
+												if(!CommonUtils.isObjectNullOrEmpty(lastModifiedDate)) {
+													smsParameters.put("date", form.format(lastModifiedDate)!=null?form.format(lastModifiedDate):"NA");
+					                            }
+												else{
+					                                smsParameters.put("date", "NA");
+					                            }
 												smsParameters.put("url", "www.bitly.com");
 												
 												sendSMSNotification(hoObj.getId().toString(),
@@ -1841,7 +1851,12 @@ public class FPAsyncComponent {
 												String to = "91"+boObj.getMobile();	
 												smsParameters.put("maker_name", makerName!=null?makerName:"NA");
 												smsParameters.put("fs_name", fsName!=null?fsName:"NA");
-												
+												if(!CommonUtils.isObjectNullOrEmpty(lastModifiedDate)) {
+													smsParameters.put("date", form.format(lastModifiedDate)!=null?form.format(lastModifiedDate):"NA");
+					                            }
+												else{
+					                                smsParameters.put("date", "NA");
+					                            }
 												smsParameters.put("url", "www.bitly.com");
 												
 												sendSMSNotification(boObj.getId().toString(),
