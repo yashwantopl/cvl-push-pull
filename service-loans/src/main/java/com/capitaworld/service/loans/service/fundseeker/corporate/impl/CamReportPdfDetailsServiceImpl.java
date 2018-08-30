@@ -354,14 +354,9 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			map.put("customerConcentration", CommonUtils.convertValue(gstData.getConcentration()));
 		}catch(Exception e) {
 			e.printStackTrace();
-		}
-		
-		try {
+		}try {
 			GstResponse response = gstClient.detailCalculation(corporateApplicantRequest.getGstIn());
 			map.put("gstDetailedResp",response.getData());
-			CAMGSTData camgstData = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)response.getData(),CAMGSTData.class);
-			map.put("keyObservation", CommonUtils.convertToDoubleForXml(camgstData.getKeyObservation(), null));
-			map.put("overview", CommonUtils.convertToDoubleForXml(camgstData.getOverview(), null));
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
