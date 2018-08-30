@@ -1,6 +1,7 @@
 package com.capitaworld.service.loans.utils;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
@@ -963,7 +964,9 @@ public class CommonUtils {
 	
 	public enum BusinessType {
 		
-		NEW_TO_BUSINESS(2, "New to Business"),EXISTING_BUSINESS(1, "Existing Business");
+		NEW_TO_BUSINESS(2, "New to Business"),
+		EXISTING_BUSINESS(1, "Existing Business"),
+		RETAIL_PERSONAL_LOAN(3, "Retail Personal Loan");
 
 		private Integer id;
 		private String value;
@@ -1185,57 +1188,47 @@ public enum APIFlags {
 		return obj;
 	}
 	public static Object printFields(Object obj) throws Exception {
+		if(obj != null) {
+			if(obj.getClass().isArray()) {
+		}
+		}else {
+			return obj;
+		}
 		if(obj instanceof List) {
 			List<?> lst = (List)obj;
 			for(Object o : lst) {
-				escapeXml(o);
+				o = printFields(o);
 			}
 		}else if(obj instanceof Map) {
 			Map<Object, Object> map = (Map)obj;
 			for(Map.Entry<Object, Object> setEntry : map.entrySet()) {
-				escapeXml(setEntry.getValue());
+				setEntry.setValue(printFields(setEntry.getValue()));
+		}
+		}else if(obj instanceof String) {
+			obj = StringEscapeUtils.escapeXml((String)obj);
+			return obj;
+		}else if(obj instanceof Double) {
+			if(!Double.isNaN((Double)obj)) {
+				DecimalFormat decim = new DecimalFormat("0.00");
+				String a = decim.format(obj);
+				obj = Double.valueOf(a);
+				return obj;
 			}
 		}else {
-			escapeXml(obj);
+			if(obj.getClass().getName().startsWith("com.capitaworld")) {
+				Field[] fields = obj.getClass().getDeclaredFields();
+				for (Field field : fields) {
+					if((field.getModifiers()& Modifier.STATIC) == Modifier.STATIC){
+					}else {
+						field.setAccessible(true);
+						Object value = field.get(obj);
+						field.set(obj, printFields(value));	
+					}
+				}
+			}
 		}
 		 return obj;
 	}
-	public static Object escapeXml(Object obj) throws Exception{
-		if(obj instanceof List) {
-			List<?> lst = (List<?>)obj;
-			for(Object o : lst) {
-				escapeXml(o);
-			}
-		}else if(obj instanceof Map) {
-			Map<Object, Object> map = (Map)obj;
-			for(Map.Entry<Object, Object> setEntry : map.entrySet()) {
-				escapeXml(setEntry.getValue());
-			}
-		}
-		if(obj!=null) {
-			Field[] fields = obj.getClass().getDeclaredFields();
-			for (Field field : fields) {
-				field.setAccessible(true);
-				Object value = field.get(obj);
-				if (value instanceof String) {
-					String value1 = (String) field.get(obj);
-					String a = StringEscapeUtils.escapeXml(value1.toString());
-					value = a;
-					field.set(obj, value);
-				}else if(value instanceof Double) {
-					if(!Double.isNaN((Double)value)) {
-						DecimalFormat decim = new DecimalFormat("0.00");
-						String a = decim.format(value);
-						field.set(obj, Double.valueOf(a.toString()));
-					}
-				}
-				else {
-					continue;
-				}
-			}
-		}
-		return obj;
-    }
 
 	public enum BankName {
 		UNION_BANK_OF_INDIA(1,"Union Bank of India",""),

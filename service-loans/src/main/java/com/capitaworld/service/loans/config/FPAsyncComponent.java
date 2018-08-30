@@ -19,12 +19,14 @@ import com.capitaworld.api.workflow.utility.WorkflowUtils;
 import com.capitaworld.service.loans.domain.fundprovider.ProductMasterTemp;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.sanction.LoanSanctionDomain;
+import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.NhbsApplicationRequest;
 import com.capitaworld.service.loans.model.PaymentRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.DirectorBackgroundDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
@@ -67,6 +69,9 @@ public class FPAsyncComponent {
 	
 	@Autowired
 	private OneFormClient oneFormClient;
+	
+	@Autowired
+	private DirectorBackgroundDetailsService directorBackgroundDetailsService;
 	
 	private static final String EMAIL_ADDRESS_FROM = "no-reply@capitaworld.com";
 	
@@ -181,7 +186,7 @@ public class FPAsyncComponent {
 								Map<String, Object> sysParameters = new HashMap<String, Object>();
 								sysParameters.put("fs_name", paymentRequest.getNameOfEntity()!=null?paymentRequest.getNameOfEntity():"NA");
 								
-								sendSYSNotification(userObj.getId().toString(),
+								sendSYSNotification(paymentRequest.getApplicationId(),userObj.getId().toString(),
 										sysParameters, NotificationAlias.SYS_ALL_MAKERS_AFTER_INPRINCIPLE_TO_FS, userObj.getId().toString(), userObj.getId().toString());
 							}
 					    	
@@ -320,7 +325,7 @@ public class FPAsyncComponent {
 										Map<String, Object> sysParameters = new HashMap<String, Object>();
 										sysParameters.put("fs_name", paymentRequest.getNameOfEntity()!=null?paymentRequest.getNameOfEntity():"NA");
 										
-										sendSYSNotification(userObj.getId().toString(),
+										sendSYSNotification(paymentRequest.getApplicationId(),userObj.getId().toString(),
 												sysParameters, NotificationAlias.SYS_ALL_CHECKERS_AFTER_INPRINCIPLE_TO_FS, userObj.getId().toString(), userObj.getId().toString());
 									}
 							    	
@@ -455,7 +460,7 @@ public class FPAsyncComponent {
 											sysParameters.put("fs_name", paymentRequest.getNameOfEntity()!=null?paymentRequest.getNameOfEntity():"NA");
 											sysParameters.put("product_type", proposalresp.get("loan_type")!=null?proposalresp.get("loan_type").toString():"NA");
 																	
-											sendSYSNotification(userObj.getId().toString(),
+											sendSYSNotification(paymentRequest.getApplicationId(),userObj.getId().toString(),
 													sysParameters, NotificationAlias.SYS_HO_INPRINCIPLE_TO_FS, userObj.getId().toString(), userObj.getId().toString());
 										}
 								    	
@@ -590,7 +595,7 @@ public class FPAsyncComponent {
 											sysParameters.put("fs_name", paymentRequest.getNameOfEntity()!=null?paymentRequest.getNameOfEntity():"NA");
 											sysParameters.put("product_type", proposalresp.get("loan_type")!=null?proposalresp.get("loan_type").toString():"NA");
 																	
-											sendSYSNotification(userObj.getId().toString(),
+											sendSYSNotification(paymentRequest.getApplicationId(),userObj.getId().toString(),
 													sysParameters, NotificationAlias.SYS_ALL_BO_INPRINCIPLE_TO_FS, userObj.getId().toString(), userObj.getId().toString());
 										}
 								    	
@@ -732,9 +737,36 @@ public class FPAsyncComponent {
 								}else {
 									assignedMakerName = makerName!=null?makerName:"NA";	
 								}
-								
 								parameters.put("maker_name", assignedMakerName);
-								parameters.put("fs_name", applicationRequest.getUserName()!=null?applicationRequest.getUserName():"NA");
+							
+								// For getting Fund Seeker's Name
+								//=========================================================================================================
+								String fsName = null;
+								List<DirectorBackgroundDetailRequest> NTBResponse = null;
+								if (applicationRequest.getBusinessTypeId() == 2) {
+									NTBResponse = directorBackgroundDetailsService
+											.getDirectorBasicDetailsListForNTB(request.getApplicationId());
+					                if(!CommonUtils.isObjectNullOrEmpty(NTBResponse)) {
+					                	int isMainDirector = 0;
+					                	for(DirectorBackgroundDetailRequest director : NTBResponse) {
+						                	if(!CommonUtils.isObjectNullOrEmpty(director) && director.getIsMainDirector()){
+						                		fsName = director.getDirectorsName()!=null?director.getDirectorsName():"NA"; 	
+						                		isMainDirector = 1;
+						                	}
+						                }
+					                	if(isMainDirector == 0) {
+					                		fsName = NTBResponse.get(0).getDirectorsName()!=null?NTBResponse.get(0).getDirectorsName():"NA";
+					                	}
+					                }
+					                else {
+					                	fsName = "NA";
+									}
+								}
+								else {
+									fsName = applicationRequest.getUserName()!=null?applicationRequest.getUserName():"NA";
+								}
+								parameters.put("fs_name", fsName!=null?fsName:"NA");
+								//=========================================================================================================
 								
 								if(!CommonUtils.isObjectNullOrEmpty(proposalresp.get("loan_type"))) {
 									parameters.put("product_type",proposalresp.get("loan_type").toString()!=null?proposalresp.get("loan_type").toString():"NA");
@@ -767,7 +799,7 @@ public class FPAsyncComponent {
 										Map<String, Object> smsParameters = new HashMap<String, Object>();
 										String to = "91"+assignedMaker.getMobile();	
 										smsParameters.put("maker_name", assignedMakerName);
-										smsParameters.put("fs_name", applicationRequest.getUserName()!=null?applicationRequest.getUserName():"NA");
+										smsParameters.put("fs_name", fsName!=null?fsName:"NA");
 										if(!CommonUtils.isObjectNullOrEmpty(proposalresp.get("loan_type"))) {
 											smsParameters.put("product_type",proposalresp.get("loan_type").toString()!=null?proposalresp.get("loan_type").toString():"NA");
 										}
@@ -783,9 +815,9 @@ public class FPAsyncComponent {
 									if(!CommonUtils.isObjectNullOrEmpty(assignedMaker.getId())) {
 										//System.out.println("Maker ID:---"+userObj.getEmail());
 										Map<String, Object> sysParameters = new HashMap<String, Object>();
-										sysParameters.put("fs_name", applicationRequest.getUserName()!=null?applicationRequest.getUserName():"NA");
+										sysParameters.put("fs_name", fsName!=null?fsName:"NA");
 										
-										sendSYSNotification(request.getUserId().toString(),
+										sendSYSNotification(request.getApplicationId(),request.getUserId().toString(),
 												sysParameters, NotificationAlias.SYS_MAKER_ACCEPT_PROPOSAL_OF_FS, request.getUserId().toString(), request.getUserId().toString());
 									}
 				
@@ -835,7 +867,7 @@ public class FPAsyncComponent {
 												Map<String, Object> smsParameters = new HashMap<String, Object>();
 												String to = "91"+makerObj.getMobile();	
 												smsParameters.put("maker_name", assignedMakerName);
-												smsParameters.put("fs_name", applicationRequest.getUserName()!=null?applicationRequest.getUserName():"NA");
+												smsParameters.put("fs_name", fsName!=null?fsName:"NA");
 												if(!CommonUtils.isObjectNullOrEmpty(proposalresp.get("loan_type"))) {
 													smsParameters.put("product_type",proposalresp.get("loan_type").toString()!=null?proposalresp.get("loan_type").toString():"NA");
 												}
@@ -852,9 +884,9 @@ public class FPAsyncComponent {
 												//System.out.println("Maker ID:---"+userObj.getEmail());
 												Map<String, Object> sysParameters = new HashMap<String, Object>();
 												sysParameters.put("maker_name", assignedMakerName);
-												sysParameters.put("fs_name", applicationRequest.getUserName()!=null?applicationRequest.getUserName():"NA");
+												sysParameters.put("fs_name", fsName!=null?fsName:"NA");
 												
-												sendSYSNotification(makerObj.getId().toString(),
+												sendSYSNotification(request.getApplicationId(),makerObj.getId().toString(),
 														sysParameters, NotificationAlias.SYS_ALL_MAKERS_AFTER_MAKER_ACCEPT_PROPOSAL_OF_FS, makerObj.getId().toString(), makerObj.getId().toString());
 											}
 									    	
@@ -914,7 +946,7 @@ public class FPAsyncComponent {
 													smsParameters.put("checker_name",name!=null?name:"NA");	
 												}
 												smsParameters.put("maker_name", assignedMakerName);
-												smsParameters.put("fs_name", applicationRequest.getUserName()!=null?applicationRequest.getUserName():"NA");
+												smsParameters.put("fs_name", fsName!=null?fsName:"NA");
 												if(!CommonUtils.isObjectNullOrEmpty(proposalresp.get("loan_type"))) {
 													smsParameters.put("product_type",proposalresp.get("loan_type").toString()!=null?proposalresp.get("loan_type").toString():"NA");
 												}
@@ -931,14 +963,14 @@ public class FPAsyncComponent {
 												//System.out.println("Maker ID:---"+userObj.getEmail());
 												Map<String, Object> sysParameters = new HashMap<String, Object>();
 												sysParameters.put("maker_name", assignedMakerName);
-												sysParameters.put("fs_name", applicationRequest.getUserName()!=null?applicationRequest.getUserName():"NA");
+												sysParameters.put("fs_name", fsName!=null?fsName:"NA");
 												if(!CommonUtils.isObjectNullOrEmpty(proposalresp.get("loan_type"))) {
 													sysParameters.put("product_type",proposalresp.get("loan_type").toString()!=null?proposalresp.get("loan_type").toString():"NA");
 												}
 												else {
 													sysParameters.put("product_type","NA");	
 												}
-												sendSYSNotification(checkerObj.getId().toString(),
+												sendSYSNotification(request.getApplicationId(),checkerObj.getId().toString(),
 														sysParameters, NotificationAlias.SYS_ALL_CHECKERS_AFTER_MAKER_ACCEPT_PROPOSAL, checkerObj.getId().toString(), checkerObj.getId().toString());
 											}
 									    	
@@ -993,7 +1025,7 @@ public class FPAsyncComponent {
 												Map<String, Object> smsParameters = new HashMap<String, Object>();
 												String to = "91"+hoObj.getMobile();	
 												smsParameters.put("maker_name", assignedMakerName);
-												smsParameters.put("fs_name", applicationRequest.getUserName()!=null?applicationRequest.getUserName():"NA");
+												smsParameters.put("fs_name", fsName!=null?fsName:"NA");
 												if(!CommonUtils.isObjectNullOrEmpty(proposalresp.get("loan_type"))) {
 													smsParameters.put("product_type",proposalresp.get("loan_type").toString()!=null?proposalresp.get("loan_type").toString():"NA");
 												}
@@ -1010,14 +1042,14 @@ public class FPAsyncComponent {
 												//System.out.println("Maker ID:---"+userObj.getEmail());
 												Map<String, Object> sysParameters = new HashMap<String, Object>();
 												sysParameters.put("maker_name", assignedMakerName);
-												sysParameters.put("fs_name", applicationRequest.getUserName()!=null?applicationRequest.getUserName():"NA");
+												sysParameters.put("fs_name", fsName!=null?fsName:"NA");
 												if(!CommonUtils.isObjectNullOrEmpty(proposalresp.get("loan_type"))) {
 													sysParameters.put("product_type",proposalresp.get("loan_type").toString()!=null?proposalresp.get("loan_type").toString():"NA");
 												}
 												else {
 													sysParameters.put("product_type","NA");	
 												}
-												sendSYSNotification(hoObj.getId().toString(),
+												sendSYSNotification(request.getApplicationId(),hoObj.getId().toString(),
 														sysParameters, NotificationAlias.SYS_HO_MAKER_ACCEPT_PROPOSAL_OF_FS, hoObj.getId().toString(), hoObj.getId().toString());
 											}
 									    	
@@ -1072,7 +1104,7 @@ public class FPAsyncComponent {
 												Map<String, Object> smsParameters = new HashMap<String, Object>();
 												String to = "91"+boObj.getMobile();	
 												smsParameters.put("maker_name", assignedMakerName);
-												smsParameters.put("fs_name", applicationRequest.getUserName()!=null?applicationRequest.getUserName():"NA");
+												smsParameters.put("fs_name", fsName!=null?fsName:"NA");
 												if(!CommonUtils.isObjectNullOrEmpty(proposalresp.get("loan_type"))) {
 													smsParameters.put("product_type",proposalresp.get("loan_type").toString()!=null?proposalresp.get("loan_type").toString():"NA");
 												}
@@ -1089,14 +1121,14 @@ public class FPAsyncComponent {
 												//System.out.println("Maker ID:---"+userObj.getEmail());
 												Map<String, Object> sysParameters = new HashMap<String, Object>();
 												sysParameters.put("maker_name", assignedMakerName);
-												sysParameters.put("fs_name", applicationRequest.getUserName()!=null?applicationRequest.getUserName():"NA");
+												sysParameters.put("fs_name", fsName!=null?fsName:"NA");
 												if(!CommonUtils.isObjectNullOrEmpty(proposalresp.get("loan_type"))) {
 													sysParameters.put("product_type",proposalresp.get("loan_type").toString()!=null?proposalresp.get("loan_type").toString():"NA");
 												}
 												else {
 													sysParameters.put("product_type","NA");	
 												}
-												sendSYSNotification(boObj.getId().toString(),
+												sendSYSNotification(request.getApplicationId(),boObj.getId().toString(),
 														sysParameters, NotificationAlias.SYS_ALL_BO_MAKER_ACCEPT_PROPOSAL_OF_FS, boObj.getId().toString(), boObj.getId().toString());
 											}
 									    	
@@ -1219,8 +1251,37 @@ public class FPAsyncComponent {
 								
 								parameters.put("maker_name", makerName!=null?makerName:"NA");
 								parameters.put("checker_name", checkerName!=null?checkerName:"NA");
-								parameters.put("fs_name", applicationRequest.getUserName());
 								parameters.put("application_id", request.getApplicationId().toString());
+								
+								// For getting Fund Seeker's Name
+								//=========================================================================================================
+								String fsName = null;
+								List<DirectorBackgroundDetailRequest> NTBResponse = null;
+								if (applicationRequest.getBusinessTypeId() == 2) {
+									NTBResponse = directorBackgroundDetailsService
+											.getDirectorBasicDetailsListForNTB(request.getApplicationId());
+					                if(!CommonUtils.isObjectNullOrEmpty(NTBResponse)) {
+					                	int isMainDirector = 0;
+					                	for(DirectorBackgroundDetailRequest director : NTBResponse) {
+						                	if(!CommonUtils.isObjectNullOrEmpty(director) && director.getIsMainDirector()){
+						                		fsName = director.getDirectorsName()!=null?director.getDirectorsName():"NA"; 	
+						                		isMainDirector = 1;
+						                	}
+						                }
+					                	if(isMainDirector == 0) {
+					                		fsName = NTBResponse.get(0).getDirectorsName()!=null?NTBResponse.get(0).getDirectorsName():"NA";
+					                	}
+					                }
+					                else {
+					                	fsName = "NA";
+									}
+								}
+								else {
+									fsName = applicationRequest.getUserName()!=null?applicationRequest.getUserName():"NA";
+								}
+								parameters.put("fs_name", fsName!=null?fsName:"NA");
+								//=========================================================================================================
+
 								
 								if(!CommonUtils.isObjectNullOrEmpty(proposalresp.get("loan_type"))) {
 								
@@ -1278,7 +1339,7 @@ public class FPAsyncComponent {
 									Map<String, Object> smsParameters = new HashMap<String, Object>();
 									String to = "91"+assignedChecker.getMobile();	
 									smsParameters.put("maker_name", makerName!=null?makerName:"NA");
-									smsParameters.put("fs_name", applicationRequest.getUserName()!=null?applicationRequest.getUserName():"NA");
+									smsParameters.put("fs_name", fsName!=null?fsName:"NA");
 									
 									smsParameters.put("url", "www.bitly.com");
 									
@@ -1290,9 +1351,9 @@ public class FPAsyncComponent {
 									//System.out.println("Maker ID:---"+userObj.getEmail());
 									Map<String, Object> sysParameters = new HashMap<String, Object>();
 									sysParameters.put("maker_name", makerName!=null?makerName:"NA");
-									sysParameters.put("fs_name", applicationRequest.getUserName()!=null?applicationRequest.getUserName():"NA");
+									sysParameters.put("fs_name", fsName!=null?fsName:"NA");
 									
-									sendSYSNotification(request.getNpUserId().toString(),
+									sendSYSNotification(request.getApplicationId(),request.getNpUserId().toString(),
 											sysParameters, NotificationAlias.SYS_CHECKER_MAKER_ASSIGN_APPLICATION_TO_CHECKER, request.getNpUserId().toString(), request.getNpUserId().toString());
 								}
 								
@@ -1340,7 +1401,7 @@ public class FPAsyncComponent {
 												Map<String, Object> smsParameters = new HashMap<String, Object>();
 												String to = "91"+hoObj.getMobile();	
 												smsParameters.put("maker_name", makerName!=null?makerName:"NA");
-												smsParameters.put("fs_name", applicationRequest.getUserName()!=null?applicationRequest.getUserName():"NA");
+												smsParameters.put("fs_name", fsName!=null?fsName:"NA");
 												
 												smsParameters.put("url", "www.bitly.com");
 												
@@ -1354,9 +1415,9 @@ public class FPAsyncComponent {
 												sysParameters.put("maker_name", makerName!=null?makerName:"NA");
 												sysParameters.put("checker_name", checkerName!=null?checkerName:"NA");
 												sysParameters.put("product_type", proposalresp.get("loan_type").toString()!=null?proposalresp.get("loan_type").toString():"NA");
-												sysParameters.put("fs_name", applicationRequest.getUserName()!=null?applicationRequest.getUserName():"NA");
+												sysParameters.put("fs_name", fsName!=null?fsName:"NA");
 												
-												sendSYSNotification(hoObj.getId().toString(),
+												sendSYSNotification(request.getApplicationId(),hoObj.getId().toString(),
 														sysParameters, NotificationAlias.SYS_HO_MAKER_ASSIGN_APPLICATION_TO_CHECKER, hoObj.getId().toString(), hoObj.getId().toString());
 											}
 									    	
@@ -1414,7 +1475,7 @@ public class FPAsyncComponent {
 												Map<String, Object> smsParameters = new HashMap<String, Object>();
 												String to = "91"+boObj.getMobile();	
 												smsParameters.put("maker_name", makerName!=null?makerName:"NA");
-												smsParameters.put("fs_name", applicationRequest.getUserName()!=null?applicationRequest.getUserName():"NA");
+												smsParameters.put("fs_name", fsName!=null?fsName:"NA");
 												
 												smsParameters.put("url", "www.bitly.com");
 												
@@ -1428,9 +1489,9 @@ public class FPAsyncComponent {
 												sysParameters.put("maker_name", makerName!=null?makerName:"NA");
 												sysParameters.put("checker_name", checkerName!=null?checkerName:"NA");
 												sysParameters.put("product_type", proposalresp.get("loan_type").toString()!=null?proposalresp.get("loan_type").toString():"NA");
-												sysParameters.put("fs_name", applicationRequest.getUserName()!=null?applicationRequest.getUserName():"NA");
+												sysParameters.put("fs_name", fsName!=null?fsName:"NA");
 												
-												sendSYSNotification(boObj.getId().toString(),
+												sendSYSNotification(request.getApplicationId(),boObj.getId().toString(),
 														sysParameters, NotificationAlias.SYS_ALL_BO_MAKER_ASSIGN_APPLICATION_TO_CHECKER, boObj.getId().toString(), boObj.getId().toString());
 											}
 									    	
@@ -1550,7 +1611,6 @@ public class FPAsyncComponent {
 								SimpleDateFormat form = new SimpleDateFormat("dd/MM/yyyy");
 								parameters.put("maker_name", makerName!=null?makerName:"NA");
 								parameters.put("checker_name", checkerName!=null?checkerName:"NA");
-								parameters.put("fs_name", applicationRequest.getUserName());
 								parameters.put("application_id", request.getApplicationId().toString());
                                 if(!CommonUtils.isObjectNullOrEmpty(lastModifiedDate)) {
                                    parameters.put("date", form.format(lastModifiedDate)!=null?form.format(lastModifiedDate):"NA");
@@ -1568,7 +1628,36 @@ public class FPAsyncComponent {
 								 parameters.put("product_type","NA");
 
 								}
-													
+											
+								// For getting Fund Seeker's Name
+								//=========================================================================================================
+								String fsName = null;
+								List<DirectorBackgroundDetailRequest> NTBResponse = null;
+								if (applicationRequest.getBusinessTypeId() == 2) {
+									NTBResponse = directorBackgroundDetailsService
+											.getDirectorBasicDetailsListForNTB(request.getApplicationId());
+					                if(!CommonUtils.isObjectNullOrEmpty(NTBResponse)) {
+					                	int isMainDirector = 0;
+					                	for(DirectorBackgroundDetailRequest director : NTBResponse) {
+						                	if(!CommonUtils.isObjectNullOrEmpty(director) && director.getIsMainDirector()){
+						                		fsName = director.getDirectorsName()!=null?director.getDirectorsName():"NA"; 	
+						                		isMainDirector = 1;
+						                	}
+						                }
+					                	if(isMainDirector == 0) {
+					                		fsName = NTBResponse.get(0).getDirectorsName()!=null?NTBResponse.get(0).getDirectorsName():"NA";
+					                	}
+					                }
+					                else {
+					                	fsName = "NA";
+									}
+								}
+								else {
+									fsName = applicationRequest.getUserName()!=null?applicationRequest.getUserName():"NA";
+								}
+								parameters.put("fs_name", fsName!=null?fsName:"NA");
+								//=========================================================================================================
+
 								UserResponse signUpuser = null;
 								try {
 									signUpuser = userClient.getEmailMobile(applicationRequest.getUserId());
@@ -1615,7 +1704,7 @@ public class FPAsyncComponent {
 									Map<String, Object> smsParameters = new HashMap<String, Object>();
 									String to = "91"+assignedChecker.getMobile();	
 									smsParameters.put("maker_name", makerName!=null?makerName:"NA");
-									smsParameters.put("fs_name", applicationRequest.getUserName()!=null?applicationRequest.getUserName():"NA");
+									smsParameters.put("fs_name", fsName!=null?fsName:"NA");
 									
 									smsParameters.put("url", "www.bitly.com");
 									
@@ -1627,9 +1716,9 @@ public class FPAsyncComponent {
 									//System.out.println("Maker ID:---"+userObj.getEmail());
 									Map<String, Object> sysParameters = new HashMap<String, Object>();
 									sysParameters.put("maker_name", makerName!=null?makerName:"NA");
-									sysParameters.put("fs_name", applicationRequest.getUserName()!=null?applicationRequest.getUserName():"NA");
+									sysParameters.put("fs_name", fsName!=null?fsName:"NA");
 									
-									sendSYSNotification(request.getNpUserId().toString(),
+									sendSYSNotification(request.getApplicationId(),request.getNpUserId().toString(),
 											sysParameters, NotificationAlias.SYS_CHECKER_MAKER_REASSIGN_TO_CHECKER, request.getNpUserId().toString(), request.getNpUserId().toString());
 								}
 								
@@ -1677,7 +1766,7 @@ public class FPAsyncComponent {
 												Map<String, Object> smsParameters = new HashMap<String, Object>();
 												String to = "91"+hoObj.getMobile();	
 												smsParameters.put("maker_name", makerName!=null?makerName:"NA");
-												smsParameters.put("fs_name", applicationRequest.getUserName()!=null?applicationRequest.getUserName():"NA");
+												smsParameters.put("fs_name", fsName!=null?fsName:"NA");
 												
 												smsParameters.put("url", "www.bitly.com");
 												
@@ -1691,9 +1780,9 @@ public class FPAsyncComponent {
 												sysParameters.put("maker_name", makerName!=null?makerName:"NA");
 												sysParameters.put("checker_name", checkerName!=null?checkerName:"NA");
 												sysParameters.put("product_type", proposalresp.get("loan_type").toString()!=null?proposalresp.get("loan_type").toString():"NA");
-												sysParameters.put("fs_name", applicationRequest.getUserName()!=null?applicationRequest.getUserName():"NA");
+												sysParameters.put("fs_name", fsName!=null?fsName:"NA");
 												
-												sendSYSNotification(hoObj.getId().toString(),
+												sendSYSNotification(request.getApplicationId(),hoObj.getId().toString(),
 														sysParameters, NotificationAlias.SYS_HO_MAKER_REASSIGN_TO_CHECKER, hoObj.getId().toString(), hoObj.getId().toString());
 											}
 									    	
@@ -1751,7 +1840,7 @@ public class FPAsyncComponent {
 												Map<String, Object> smsParameters = new HashMap<String, Object>();
 												String to = "91"+boObj.getMobile();	
 												smsParameters.put("maker_name", makerName!=null?makerName:"NA");
-												smsParameters.put("fs_name", applicationRequest.getUserName()!=null?applicationRequest.getUserName():"NA");
+												smsParameters.put("fs_name", fsName!=null?fsName:"NA");
 												
 												smsParameters.put("url", "www.bitly.com");
 												
@@ -1765,9 +1854,9 @@ public class FPAsyncComponent {
 												sysParameters.put("maker_name", makerName!=null?makerName:"NA");
 												sysParameters.put("checker_name", checkerName!=null?checkerName:"NA");
 												sysParameters.put("product_type", proposalresp.get("loan_type").toString()!=null?proposalresp.get("loan_type").toString():"NA");
-												sysParameters.put("fs_name", applicationRequest.getUserName()!=null?applicationRequest.getUserName():"NA");
+												sysParameters.put("fs_name", fsName!=null?fsName:"NA");
 												
-												sendSYSNotification(boObj.getId().toString(),
+												sendSYSNotification(request.getApplicationId(),boObj.getId().toString(),
 														sysParameters, NotificationAlias.SYS_ALL_BO_MAKER_REASSIGN_TO_CHECKER, boObj.getId().toString(), boObj.getId().toString());
 											}
 									    	
@@ -1879,7 +1968,7 @@ public class FPAsyncComponent {
 									sysParameters.put("product_name", productMasterTemp.getName()!=null?productMasterTemp.getName():"NA");
 									sysParameters.put("product_type", productType!=null?productType:"NA");
 									
-									sendSYSNotification(userObj.getId().toString(),
+									sendSYSNotification(userId,userObj.getId().toString(),
 											sysParameters, NotificationAlias.SYS_ADMIN_CHECKER_ADMIN_MAKER_CREATES_PRODUCT, userObj.getId().toString(), userObj.getId().toString());
 								}
 								
@@ -1992,7 +2081,7 @@ public class FPAsyncComponent {
 									sysParameters.put("product_name", productMasterTemp.getName()!=null?productMasterTemp.getName():"NA");
 									sysParameters.put("product_type", productType!=null?productType:"NA");
 									
-									sendSYSNotification(userObj.getId().toString(),
+									sendSYSNotification(userId,userObj.getId().toString(),
 											sysParameters, NotificationAlias.SYS_ADMIN_CHECKER_ADMIN_MAKER_RESENDS_PRODUCT, userObj.getId().toString(), userObj.getId().toString());
 								}
 								
@@ -2102,7 +2191,7 @@ public class FPAsyncComponent {
 									sysParameters.put("product_name", productMasterTemp.getName()!=null?productMasterTemp.getName():"NA");
 									sysParameters.put("product_type", productType!=null?productType:"NA");
 									
-									sendSYSNotification(userObj.getId().toString(),
+									sendSYSNotification(userId,userObj.getId().toString(),
 											sysParameters, NotificationAlias.SYS_ADMIN_MAKER_PRODUCT_APPROVED_BY_CHECKER, userObj.getId().toString(), userObj.getId().toString());
 								}
 								
@@ -2212,7 +2301,7 @@ public class FPAsyncComponent {
 									sysParameters.put("product_name", productMasterTemp.getName()!=null?productMasterTemp.getName():"NA");
 									sysParameters.put("product_type", productType!=null?productType:"NA");
 									
-									sendSYSNotification(userObj.getId().toString(),
+									sendSYSNotification(userId,userObj.getId().toString(),
 											sysParameters, NotificationAlias.SYS_ADMIN_MAKER_PRODUCT_REVERTED_BY_CHECKER, userObj.getId().toString(), userObj.getId().toString());
 								}
 						    	
@@ -2257,7 +2346,6 @@ public class FPAsyncComponent {
 							
 							SimpleDateFormat form = new SimpleDateFormat("dd/MM/yyyy");
 							
-							mailParameters.put("fs_name", applicationRequest.getUserName()!=null?applicationRequest.getUserName():"NA");
 							mailParameters.put("product_type", productType!=null?productType:"NA");
 							mailParameters.put("loan_amount", applicationRequest.getLoanAmount()!=null?Double.valueOf(applicationRequest.getLoanAmount().toString()):"NA");
 							mailParameters.put("processing_fees", loanSanctionDomainOld.getProcessingFee()!=null?loanSanctionDomainOld.getProcessingFee():"NA");
@@ -2267,6 +2355,36 @@ public class FPAsyncComponent {
 							mailParameters.put("fp_name", " ");	
 							mailParameters.put("date", form.format(loanSanctionDomainOld.getSanctionDate())!=null?form.format(loanSanctionDomainOld.getSanctionDate()):"NA");	
 						
+							// For getting Fund Seeker's Name
+							//=========================================================================================================
+							String fsName = null;
+							List<DirectorBackgroundDetailRequest> NTBResponse = null;
+							if (applicationRequest.getBusinessTypeId() == 2) {
+								NTBResponse = directorBackgroundDetailsService
+										.getDirectorBasicDetailsListForNTB(loanSanctionDomainOld.getApplicationId());
+				                if(!CommonUtils.isObjectNullOrEmpty(NTBResponse)) {
+				                	int isMainDirector = 0;
+				                	for(DirectorBackgroundDetailRequest director : NTBResponse) {
+					                	if(!CommonUtils.isObjectNullOrEmpty(director) && director.getIsMainDirector()){
+					                		fsName = director.getDirectorsName()!=null?director.getDirectorsName():"NA"; 	
+					                		isMainDirector = 1;
+					                	}
+					                }
+				                	if(isMainDirector == 0) {
+				                		fsName = NTBResponse.get(0).getDirectorsName()!=null?NTBResponse.get(0).getDirectorsName():"NA";
+				                	}
+				                }
+				                else {
+				                	fsName = "NA";
+								}
+							}
+							else {
+								fsName = applicationRequest.getUserName()!=null?applicationRequest.getUserName():"NA";
+							}
+							mailParameters.put("fs_name", fsName!=null?fsName:"NA");
+							//=========================================================================================================
+
+							
 							UsersRequest checkerForName = new UsersRequest();
 							checkerForName.setId(Long.valueOf(loanSanctionDomainOld.getModifiedBy()));
 							
@@ -2348,10 +2466,10 @@ public class FPAsyncComponent {
 								Map<String, Object> sysParameters = new HashMap<String, Object>();
 								
 								sysParameters.put("checker_name", checkerName!=null?checkerName:"NA");	
-								sysParameters.put("fs_name", applicationRequest.getUserName()!=null?applicationRequest.getUserName():"NA");
+								sysParameters.put("fs_name", fsName!=null?fsName:"NA");
 								sysParameters.put("product_type", productType!=null?productType:"NA");
 						
-								sendSYSNotification(applicationRequest.getFpMakerId().toString(),
+								sendSYSNotification(loanSanctionDomainOld.getApplicationId(),applicationRequest.getFpMakerId().toString(),
 										sysParameters, NotificationAlias.SYS_MAKER_AFTER_CHECKER_SUBMIT_SANCTION_POPUP, applicationRequest.getFpMakerId().toString(), applicationRequest.getFpMakerId().toString());
 							}
 							
@@ -2406,7 +2524,7 @@ public class FPAsyncComponent {
 										Map<String, Object> smsParameters = new HashMap<String, Object>();
 										to = "91"+userObj.getMobile();	
 										smsParameters.put("checker_name", checkerName!=null?checkerName:"NA");	
-										smsParameters.put("fs_name", applicationRequest.getUserName()!=null?applicationRequest.getUserName():"NA");
+										smsParameters.put("fs_name", fsName!=null?fsName:"NA");
 										smsParameters.put("product_type", productType!=null?productType:"NA");
 										smsParameters.put("loan_amount", applicationRequest.getLoanAmount()!=null?Double.valueOf(applicationRequest.getLoanAmount().toString()):"NA");
 
@@ -2420,10 +2538,10 @@ public class FPAsyncComponent {
 										//System.out.println("Maker ID:---"+userObj.getEmail());
 										Map<String, Object> sysParameters = new HashMap<String, Object>();
 										sysParameters.put("checker_name", checkerName!=null?checkerName:"NA");	
-										sysParameters.put("fs_name", applicationRequest.getUserName()!=null?applicationRequest.getUserName():"NA");
+										sysParameters.put("fs_name", fsName!=null?fsName:"NA");
 										sysParameters.put("product_type", productType!=null?productType:"NA");
 																				
-										sendSYSNotification(userObj.getId().toString(),
+										sendSYSNotification(loanSanctionDomainOld.getApplicationId(),userObj.getId().toString(),
 												sysParameters, NotificationAlias.SYS_HO_CHECKER_SANCTIONED, userObj.getId().toString(), userObj.getId().toString());
 									}
 									
@@ -2478,7 +2596,7 @@ public class FPAsyncComponent {
 										Map<String, Object> smsParameters = new HashMap<String, Object>();
 										to = "91"+userObj.getMobile();	
 										smsParameters.put("checker_name", checkerName!=null?checkerName:"NA");	
-										smsParameters.put("fs_name", applicationRequest.getUserName()!=null?applicationRequest.getUserName():"NA");
+										smsParameters.put("fs_name", fsName!=null?fsName:"NA");
 										smsParameters.put("product_type", productType!=null?productType:"NA");
 										smsParameters.put("loan_amount", applicationRequest.getLoanAmount()!=null?Double.valueOf(applicationRequest.getLoanAmount().toString()):"NA");
 
@@ -2492,10 +2610,10 @@ public class FPAsyncComponent {
 										//System.out.println("Maker ID:---"+userObj.getEmail());
 										Map<String, Object> sysParameters = new HashMap<String, Object>();
 										sysParameters.put("checker_name", checkerName!=null?checkerName:"NA");	
-										sysParameters.put("fs_name", applicationRequest.getUserName()!=null?applicationRequest.getUserName():"NA");
+										sysParameters.put("fs_name", fsName!=null?fsName:"NA");
 										sysParameters.put("product_type", productType!=null?productType:"NA");
 																				
-										sendSYSNotification(userObj.getId().toString(),
+										sendSYSNotification(loanSanctionDomainOld.getApplicationId(),userObj.getId().toString(),
 												sysParameters, NotificationAlias.SYS_ALL_BO_CHECKER_SANCTIONED, userObj.getId().toString(), userObj.getId().toString());
 									}
 							    	
@@ -2557,7 +2675,7 @@ public class FPAsyncComponent {
 
 		}
 		
-		private void sendSYSNotification(String toUserId, Map<String, Object> parameters, Long templateId,
+		private void sendSYSNotification(Long applicationId, String toUserId, Map<String, Object> parameters, Long templateId,
 				String fromId, String... to) throws NotificationException {
 			// String to[] = {toNo};
 			logger.info("Inside send SYSTEM notification===>{}");
@@ -2570,6 +2688,7 @@ public class FPAsyncComponent {
 			notification.setType(NotificationType.SYSTEM);
 			notification.setParameters(parameters);
 			notification.setFrom(fromId);
+			notification.setApplicationId(applicationId);
 			req.addNotification(notification);
 
 			sendEmail(req);

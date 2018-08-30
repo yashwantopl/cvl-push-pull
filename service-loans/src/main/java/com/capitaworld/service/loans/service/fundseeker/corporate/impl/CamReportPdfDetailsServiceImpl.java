@@ -316,7 +316,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				map.put("registeredAddCity", StringEscapeUtils.escapeXml(getCityName(corporateFinalInfoRequest.getFirstAddress().getCityId())));
 				map.put("registeredAddPincode", !CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getFirstAddress().getPincode())?corporateFinalInfoRequest.getFirstAddress().getPincode() : "");
 			}
-			map.put("corporateApplicantFinal", CommonUtils.printFields(corporateFinalInfoRequest));
+			map.put("corporateApplicantFinal",corporateFinalInfoRequest);
 			map.put("aboutUs", StringEscapeUtils.escapeXml(corporateFinalInfoRequest.getAboutUs()));
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
@@ -369,7 +369,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		//ONE-FORM DATA
 		try {
 			//ONE-FORM DATA
-			map.put("corporateApplicant", CommonUtils.printFields(corporateApplicantRequest));
+    		map.put("corporateApplicant", corporateApplicantRequest);
 			map.put("orgName", CommonUtils.printFields(corporateApplicantRequest.getOrganisationName()));
 			map.put("constitution", !CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getConstitutionId()) ? StringEscapeUtils.escapeXml(Constitution.getById(corporateApplicantRequest.getConstitutionId()).getValue()) : " ");
 			
@@ -414,7 +414,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 					directorName += " "+directorBackgroundDetailRequest.getDirectorsName();
 					directorBackgroundDetailResponse.setDirectorsName(directorName);
 					//directorBackgroundDetailResponse.setQualification(directorBackgroundDetailRequest.getQualification());
-					directorBackgroundDetailResponse.setTotalExperience(directorBackgroundDetailRequest.getTotalExperience().toString());
+					directorBackgroundDetailResponse.setTotalExperience(CommonUtils.convertValueWithoutDecimal(directorBackgroundDetailRequest.getTotalExperience()));
 					directorBackgroundDetailResponse.setNetworth(CommonUtils.convertValue(directorBackgroundDetailRequest.getNetworth()));
 					directorBackgroundDetailResponse.setDesignation(directorBackgroundDetailRequest.getDesignation());
 					directorBackgroundDetailResponse.setAppointmentDate(directorBackgroundDetailRequest.getAppointmentDate());
@@ -977,7 +977,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 					promotorBackgroundDetailResponse.setAddress(promotorBackgroundDetailRequest.getAddress());
 					promotorBackgroundDetailResponse.setGender((promotorBackgroundDetailRequest.getGender() != null ? Gender.getById(promotorBackgroundDetailRequest.getGender()).getValue() : " " ));
 					promotorBackgroundDetailResponse.setDin(!CommonUtils.isObjectNullOrEmpty(promotorBackgroundDetailRequest.getDin()) ? CommonUtils.convertValue(promotorBackgroundDetailRequest.getDin()) : " ");
-					promotorBackgroundDetailResponse.setTotalExperience(CommonUtils.convertValue(promotorBackgroundDetailRequest.getTotalExperience()));
+					promotorBackgroundDetailResponse.setTotalExperience(CommonUtils.convertValueWithoutDecimal(promotorBackgroundDetailRequest.getTotalExperience()));
 					promotorBackgroundDetailResponse.setNetworth(CommonUtils.convertValue(promotorBackgroundDetailRequest.getNetworth()));
 					promotorBackgroundDetailResponse.setAppointmentDate(promotorBackgroundDetailRequest.getAppointmentDate() != null ? DATE_FORMAT.format(promotorBackgroundDetailRequest.getAppointmentDate()) : null);
 					promotorBackgroundDetailResponse.setRelationshipType((promotorBackgroundDetailRequest.getRelationshipType() != null ? DirectorRelationshipType.getById(promotorBackgroundDetailRequest.getRelationshipType()).getValue() : " " ));
