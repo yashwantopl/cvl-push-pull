@@ -6999,10 +6999,14 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 			response.setDateOfApplication(dateFormat.format(loan.getCreatedDate()));
 			response.setDateOfSubmission(dateFormat.format(new Date()));
 		}
+		logger.info("Fetching Corporate Primary details for application Id : "+applicationId);
 		PrimaryCorporateDetail primaryCorporate = primaryCorporateRepository.findOneByApplicationIdId(applicationId);
 		if(primaryCorporate!=null) {
 			response.setLoanType(String.valueOf(primaryCorporate.getPurposeOfLoanId()));
 		}
+		
+		logger.info("Fetching Corporate Primary details Purpose Of Loan from db: "+primaryCorporate.getPurposeOfLoanId());
+		logger.info("Fetching Corporate Primary details Purpose Of Loan from change : "+response.getLoanType());
 		
 		logger.info("Fetching Director's background details for application Id : "+applicationId);
 		List<DirectorBackgroundDetail> directorList = directorBackgroundDetailsRepository.listPromotorBackgroundFromAppId(applicationId);
