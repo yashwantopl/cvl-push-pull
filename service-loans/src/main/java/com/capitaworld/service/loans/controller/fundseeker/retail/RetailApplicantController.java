@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -285,6 +286,30 @@ public class RetailApplicantController {
 			e.printStackTrace();
 			logger.error("Error while getting Retail Applicant Profile Details==>", e);
 			return null;
+		}
+	}
+	
+	@RequestMapping(value = "/getNameAndPanByAppId/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getNameAndPanByAppId(@PathVariable("applicationId") Long applicationId) {
+		logger.info("Enter in getNameAndPanByAppId method----------------->" + applicationId);
+		try {
+			CommonDocumentUtils.startHook(logger, "get");
+			if (applicationId == null) {
+				logger.warn("ApplicationId Require to get Retail Profile Details for CLient Application Id ==>" + applicationId);
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+
+			JSONObject response = applicantService.getNameAndPanByAppId(applicationId);
+			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			loansResponse.setData(response);
+			CommonDocumentUtils.endHook(logger, "get");
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while getting NameAndPanByAppId Details==>", e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
 		}
 	}
 
