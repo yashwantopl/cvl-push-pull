@@ -7046,9 +7046,10 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 		PrimaryCorporateDetail primaryCorporate = primaryCorporateRepository.findOneByApplicationIdId(applicationId);
 		if(primaryCorporate!=null) {
 			response.setLoanType(String.valueOf(primaryCorporate.getPurposeOfLoanId()));
+			
+			logger.info("Fetching Corporate Primary details Purpose Of Loan from db: "+primaryCorporate.getPurposeOfLoanId());
 		}
-		
-		logger.info("Fetching Corporate Primary details Purpose Of Loan from db: "+primaryCorporate.getPurposeOfLoanId());
+
 		logger.info("Fetching Corporate Primary details Purpose Of Loan from change : "+response.getLoanType());
 		
 		logger.info("Fetching Director's background details for application Id : "+applicationId);
