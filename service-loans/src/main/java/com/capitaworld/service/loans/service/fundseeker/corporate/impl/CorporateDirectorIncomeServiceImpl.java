@@ -229,6 +229,8 @@ public class CorporateDirectorIncomeServiceImpl implements CorporateDirectorInco
 								map.put("employmentStatus", !CommonUtils.isObjectNullOrEmpty(byIdEmpStatus) ? byIdEmpStatus.getValue() : "");	
 							}
 							map.put("totalExperience", corpObj.getEmploymentDetail().getTotalExperience());
+							map.put("nameOfEmployer", corpObj.getEmploymentDetail().getNameOfEmployer());
+							map.put("salary", corpObj.getEmploymentDetail().getSalary());
 							}
 							
 							directorBackgroundlist.add(map);

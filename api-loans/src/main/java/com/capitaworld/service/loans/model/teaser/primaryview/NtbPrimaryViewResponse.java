@@ -106,6 +106,8 @@ public class NtbPrimaryViewResponse {
 	    private Long appId;
 	    private String dirPan;
 	    private Object cibilOfMainDir;
+	    private Object promotersContribution;
+	    private Object promotersContributionPer;
 
 		/**
 		 * @return the matchesList
@@ -1011,6 +1013,30 @@ public class NtbPrimaryViewResponse {
 		 */
 		public void setCibilOfMainDir(Object cibilOfMainDir) {
 			this.cibilOfMainDir = cibilOfMainDir;
+		}
+		/**
+		 * @return the promotersContribution
+		 */
+		public Object getPromotersContribution() {
+			return promotersContribution;
+		}
+		/**
+		 * @param promotersContribution the promotersContribution to set
+		 */
+		public void setPromotersContribution(Object promotersContribution) {
+			this.promotersContribution = promotersContribution;
+		}
+		/**
+		 * @return the promotersContributionPer
+		 */
+		public Object getPromotersContributionPer() {
+			return promotersContributionPer;
+		}
+		/**
+		 * @param promotersContributionPer the promotersContributionPer to set
+		 */
+		public void setPromotersContributionPer(Object promotersContributionPer) {
+			this.promotersContributionPer = promotersContributionPer;
 		}
 
 
