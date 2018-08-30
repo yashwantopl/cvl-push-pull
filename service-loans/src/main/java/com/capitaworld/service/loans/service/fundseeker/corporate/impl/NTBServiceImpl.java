@@ -278,7 +278,7 @@ public class NTBServiceImpl implements NTBService {
             primaryCorporateDetail.setApplicationId(new LoanApplicationMaster(applicationId));
             primaryCorporateDetail.setModifiedBy(userId);
             primaryCorporateDetail.setModifiedDate(new Date());
-
+            primaryCorporateDetail.setIsActive(true);
             primaryCorporateDetailRepository.saveAndFlush(primaryCorporateDetail);
 
             // =========================== Director details save=======================================================================
