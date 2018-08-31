@@ -1,0 +1,233 @@
+ALTER TABLE `loan_application`.`fp_personal_loan_details`  
+ADD COLUMN `min_monthly_income_range` DOUBLE DEFAULT NULL ,
+ADD COLUMN `max_monthly_income_range` DOUBLE DEFAULT NULL ,
+ADD COLUMN `is_monthly_income_range_display` BIT(1) DEFAULT b'0',
+ADD COLUMN `is_monthly_income_range_mandatory` BIT(1) DEFAULT b'0',
+ADD COLUMN `min_bureau` DOUBLE DEFAULT NULL ,
+ADD COLUMN `max_bureau` DOUBLE DEFAULT NULL ,
+ADD COLUMN `is_bureau_display` BIT(1) DEFAULT b'0',
+ADD COLUMN `is_bureau_mandatory` BIT(1) DEFAULT b'0',
+ADD COLUMN `min_bureau_days` DOUBLE DEFAULT NULL ,
+ADD COLUMN `max_bureau_days` DOUBLE DEFAULT NULL ,
+ADD COLUMN `is_bureau_display_days` BIT(1) DEFAULT b'0',
+ADD COLUMN `is_bureau_mandatory_days` BIT(1) DEFAULT b'0',
+
+ADD COLUMN `min_risk_score_model` DOUBLE DEFAULT NULL ,
+ADD COLUMN `max_risk_score_model` DOUBLE DEFAULT NULL ,
+ADD COLUMN `is_risk_score_model_display` BIT(1) DEFAULT b'0',
+ADD COLUMN `is_risk_score_model_mandatory` BIT(1) DEFAULT b'0',
+
+ADD COLUMN `is_credit_rating_display` BIT(1) DEFAULT b'0',
+ADD COLUMN `is_credit_rating_mandatory` BIT(1) DEFAULT b'0',
+
+ADD COLUMN `is_employment_type_display` BIT(1) DEFAULT b'0',
+ADD COLUMN `is_employment_type_mandatory` BIT(1) DEFAULT b'0',
+
+ADD COLUMN `is_employment_status_display` BIT(1) DEFAULT b'0',
+ADD COLUMN `is_employment_status_mandatory` BIT(1) DEFAULT b'0';
+
+
+ALTER TABLE `loan_application`.`fp_personal_loan_details`  
+
+
+ADD COLUMN `is_total_job_experience_display` BIT(1) DEFAULT b'0',
+ADD COLUMN `is_total_job_experience_mandatory` BIT(1) DEFAULT b'0',
+ADD COLUMN `is_current_job_experience_display` BIT(1) DEFAULT b'0',
+ADD COLUMN `is_current_job_experience_mandatory` BIT(1) DEFAULT b'0';
+
+
+
+
+
+
+
+
+
+
+
+
+
+DROP TABLE IF EXISTS `loan_application`.`fs_retail_emp_type_mapping_details`;
+
+CREATE TABLE `loan_application`.`fs_retail_emp_type_mapping_details` (
+  `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `emp_type_id` INT(2) UNSIGNED DEFAULT NULL,
+  `fp_product_id` BIGINT(20) UNSIGNED DEFAULT NULL,
+  `created_date` DATETIME DEFAULT NULL,
+  `modified_date` DATETIME DEFAULT NULL,
+  `created_by` BIGINT(20) DEFAULT NULL,
+  `modified_by` BIGINT(20) DEFAULT NULL,
+  `is_active` BIT(1) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  
+  KEY `FKBD855AD4549B531` (`fp_product_id`)
+) ENGINE=INNODB AUTO_INCREMENT=927 DEFAULT CHARSET=utf8;
+
+
+
+
+
+
+
+
+
+DROP TABLE IF EXISTS `loan_application`.`fs_retail_emp_status_mapping_details`;
+
+CREATE TABLE `loan_application`.`fs_retail_emp_status_mapping_details` (
+  `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `emp_status_id` INT(2) UNSIGNED DEFAULT NULL,
+  `fp_product_id` BIGINT(20) UNSIGNED DEFAULT NULL,
+  `created_date` DATETIME DEFAULT NULL,
+  `modified_date` DATETIME DEFAULT NULL,
+  `created_by` BIGINT(20) DEFAULT NULL,
+  `modified_by` BIGINT(20) DEFAULT NULL,
+  `is_active` BIT(1) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  
+  KEY `FKBD855AD4549B531` (`fp_product_id`)
+) ENGINE=INNODB AUTO_INCREMENT=927 DEFAULT CHARSET=utf8;
+
+
+
+
+
+ALTER TABLE `loan_application`.`fp_personal_loan_details`  
+ADD COLUMN `min_current_job_experience` DOUBLE DEFAULT NULL ,
+ADD COLUMN `max_current_job_experience` DOUBLE DEFAULT NULL ,
+ADD COLUMN `min_total_job_experience` DOUBLE DEFAULT NULL ,
+ADD COLUMN `max_total_job_experience` DOUBLE DEFAULT NULL ;
+
+
+
+
+
+DROP TABLE IF EXISTS `loan_application`.`fp_personal_loan_details_temp`;
+
+CREATE TABLE `loan_application`.`fp_personal_loan_details_temp` (
+  `fp_product_id` BIGINT(20) UNSIGNED NOT NULL,
+  `currency` INT(2) DEFAULT NULL,
+  `min_loan_amount` DECIMAL(19,2) DEFAULT NULL,
+  `max_loan_amount` DECIMAL(19,2) DEFAULT NULL,
+  `min_yearly_income_range` DOUBLE DEFAULT NULL,
+  `max_yearly_income_range` DOUBLE DEFAULT NULL,
+  `min_age` DOUBLE DEFAULT NULL,
+  `max_age` DOUBLE DEFAULT NULL,
+  `min_tenure` DOUBLE DEFAULT NULL,
+  `max_tenure` DOUBLE DEFAULT NULL,
+  `is_loan_amount_display` BIT(1) DEFAULT b'0',
+  `is_loan_amount_mandatory` BIT(1) DEFAULT b'0',
+  `is_yearly_income_range_display` BIT(1) DEFAULT b'0',
+  `is_yearly_income_range_mandatory` BIT(1) DEFAULT b'0',
+  `is_age_display` BIT(1) DEFAULT b'0',
+  `is_age_mandatory` BIT(1) DEFAULT b'0',
+  `is_tenure_display` BIT(1) DEFAULT b'0',
+  `is_tenure_mandatory` BIT(1) DEFAULT b'0',
+  `is_geographical_display` BIT(1) DEFAULT b'0',
+  `is_geographical_mandatory` BIT(1) DEFAULT b'0',
+  `created_date` DATETIME DEFAULT NULL,
+  `modified_date` DATETIME DEFAULT NULL,
+  `created_by` BIGINT(20) DEFAULT NULL,
+  `modified_by` BIGINT(20) DEFAULT NULL,
+  `is_active` BIT(1) DEFAULT b'1',
+  `is_asset_value_display` BIT(1) DEFAULT b'0',
+  `is_asset_value_mandatory` BIT(1) DEFAULT b'0',
+  `min_monthly_income_range` DOUBLE DEFAULT NULL,
+  `max_monthly_income_range` DOUBLE DEFAULT NULL,
+  `is_monthly_income_range_display` BIT(1) DEFAULT b'0',
+  `is_monthly_income_range_mandatory` BIT(1) DEFAULT b'0',
+  `min_bureau` DOUBLE DEFAULT NULL,
+  `max_bureau` DOUBLE DEFAULT NULL,
+  `is_bureau_display` BIT(1) DEFAULT b'0',
+  `is_bureau_mandatory` BIT(1) DEFAULT b'0',
+  `min_bureau_days` DOUBLE DEFAULT NULL,
+  `max_bureau_days` DOUBLE DEFAULT NULL,
+  `is_bureau_display_days` BIT(1) DEFAULT b'0',
+  `is_bureau_mandatory_days` BIT(1) DEFAULT b'0',
+  `min_risk_score_model` DOUBLE DEFAULT NULL,
+  `max_risk_score_model` DOUBLE DEFAULT NULL,
+  `is_risk_score_model_display` BIT(1) DEFAULT b'0',
+  `is_risk_score_model_mandatory` BIT(1) DEFAULT b'0',
+  `is_credit_rating_display` BIT(1) DEFAULT b'0',
+  `is_credit_rating_mandatory` BIT(1) DEFAULT b'0',
+  `is_employment_type_display` BIT(1) DEFAULT b'0',
+  `is_employment_type_mandatory` BIT(1) DEFAULT b'0',
+  `is_employment_status_display` BIT(1) DEFAULT b'0',
+  `is_employment_status_mandatory` BIT(1) DEFAULT b'0',
+  `is_total_job_experience_display` BIT(1) DEFAULT b'0',
+  `is_total_job_experience_mandatory` BIT(1) DEFAULT b'0',
+  `is_current_job_experience_display` BIT(1) DEFAULT b'0',
+  `is_current_job_experience_mandatory` BIT(1) DEFAULT b'0',
+  `min_current_job_experience` DOUBLE DEFAULT NULL,
+  `max_current_job_experience` DOUBLE DEFAULT NULL,
+  `min_total_job_experience` DOUBLE DEFAULT NULL,
+  `max_total_job_experience` DOUBLE DEFAULT NULL,
+  PRIMARY KEY (`fp_product_id`),
+  CONSTRAINT `fp_personal_loan_details_temp_ibfk_1` FOREIGN KEY (`fp_product_id`) REFERENCES `fp_product_master_temp` (`fp_product_id`)
+) ENGINE=INNODB DEFAULT CHARSET=latin1;
+
+
+
+
+DROP TABLE IF EXISTS `loan_application`.`fs_retail_emp_type_mapping_details_temp`;
+
+CREATE TABLE `loan_application`.`fs_retail_emp_type_mapping_details_temp` (
+  `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `emp_type_id` INT(2) UNSIGNED DEFAULT NULL,
+  `fp_product_id` BIGINT(20) UNSIGNED DEFAULT NULL,
+  `created_date` DATETIME DEFAULT NULL,
+  `modified_date` DATETIME DEFAULT NULL,
+  `created_by` BIGINT(20) DEFAULT NULL,
+  `modified_by` BIGINT(20) DEFAULT NULL,
+  `is_active` BIT(1) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  
+  KEY `FKBD855AD4549B531` (`fp_product_id`)
+) ENGINE=INNODB AUTO_INCREMENT=927 DEFAULT CHARSET=utf8;
+
+
+
+
+
+
+
+
+
+DROP TABLE IF EXISTS `loan_application`.`fs_retail_emp_status_mapping_details_temp`;
+
+CREATE TABLE `loan_application`.`fs_retail_emp_status_mapping_details_temp` (
+  `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `emp_status_id` INT(2) UNSIGNED DEFAULT NULL,
+  `fp_product_id` BIGINT(20) UNSIGNED DEFAULT NULL,
+  `created_date` DATETIME DEFAULT NULL,
+  `modified_date` DATETIME DEFAULT NULL,
+  `created_by` BIGINT(20) DEFAULT NULL,
+  `modified_by` BIGINT(20) DEFAULT NULL,
+  `is_active` BIT(1) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  
+  KEY `FKBD855AD4549B531` (`fp_product_id`)
+) ENGINE=INNODB AUTO_INCREMENT=927 DEFAULT CHARSET=utf8;
+
+
+
+DROP TABLE IF EXISTS `one_form`.`rating_agency_parameter`;
+
+CREATE TABLE `one_form`.`rating_agency_parameter` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `value` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
+
+
+
+
+DROP TABLE IF EXISTS `one_form`.`rating_agency_parameter_mapping`;
+
+CREATE TABLE `one_form`.`rating_agency_parameter_mapping` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `value` varchar(50) DEFAULT NULL,
+  `rating_agency_id` int(10) unsigned DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `rating_agency_id` (`rating_agency_id`),
+  CONSTRAINT `rating_agency_parameter_mapping_ibfk_1` FOREIGN KEY (`rating_agency_id`) REFERENCES `one_form`.`rating_agency_parameter` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=102 DEFAULT CHARSET=latin1;
