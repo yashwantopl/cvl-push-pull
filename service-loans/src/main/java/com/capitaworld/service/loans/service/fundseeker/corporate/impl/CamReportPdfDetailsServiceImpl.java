@@ -424,7 +424,16 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 							cibilRequest.setPan(directorBackgroundDetailRequest.getPanNo());
 							cibilRequest.setApplicationId(applicationId);
 							CibilScoreLogRequest cibilScoreByPanCard = cibilClient.getCibilScoreByPanCard(cibilRequest);
-							directorBackgroundDetailResponse.setCibilScore(!CommonUtils.isObjectNullOrEmpty(cibilScoreByPanCard)? cibilScoreByPanCard.getActualScore() : "NA");
+							if(!CommonUtils.isObjectNullOrEmpty(cibilScoreByPanCard)) {
+								if("000-1".equalsIgnoreCase(cibilScoreByPanCard.getActualScore())) {
+									directorBackgroundDetailResponse.setCibilScore("-1");
+								}else {
+									directorBackgroundDetailResponse.setCibilScore(Integer.valueOf(cibilScoreByPanCard.getActualScore()).toString());								
+								}								
+							}else {
+								directorBackgroundDetailResponse.setCibilScore("-");
+							}
+							
 						}catch(Exception e) {
 							e.printStackTrace();
 							logger.info("Error while getting cibil details",e);
@@ -744,7 +753,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		try{
 			ITRConnectionResponse itrResponse = itrClient.getITRBasicDetails(applicationId);
 			System.out.println("ITR RESPONSE===========>"+itrResponse);
-			map.put("nameAsPerItr", itrResponse.getData());
+			map.put("nameAsPerItr", CommonUtils.printFields(itrResponse.getData()));
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
