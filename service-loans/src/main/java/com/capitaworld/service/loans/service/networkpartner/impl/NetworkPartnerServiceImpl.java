@@ -1394,12 +1394,12 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 			
 			//=====================Sending Mail to all Checker/HO/BO when Maker assign/Re-assign DDR to Checker===================
 	
-			if(!CommonUtils.isObjectNullOrEmpty(applicationStatus) && CommonUtils.ApplicationStatus.ASSIGNED.equals(applicationStatus)) {
-				fpAsyncComponent.sendMailWhenMakerAssignDDRToChecker(request);	
-			} 
-			else if(!CommonUtils.isObjectNullOrEmpty(applicationStatus) && CommonUtils.ApplicationStatus.REVERTED.equals(applicationStatus)) {
+			if(!CommonUtils.isObjectNullOrEmpty(applicationStatus) && CommonUtils.ApplicationStatus.REVERTED.equals(applicationStatus)) {
 				fpAsyncComponent.sendMailWhenMakerReAssignDDRToChecker(request, lastModifiedDate);	
 			}
+			else {
+				fpAsyncComponent.sendMailWhenMakerAssignDDRToChecker(request);	
+			} 
 		
      		//========================================================================================================================
 

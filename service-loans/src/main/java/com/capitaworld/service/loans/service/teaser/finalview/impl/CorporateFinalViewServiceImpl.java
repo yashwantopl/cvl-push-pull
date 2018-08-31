@@ -66,6 +66,7 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorp
 import com.capitaworld.service.loans.repository.fundseeker.corporate.SectorIndustryMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorRepository;
+import com.capitaworld.service.loans.service.common.PincodeDateService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.AchievmentDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.AssociatedConcernDetailService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateFinalInfoService;
@@ -281,6 +282,9 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 	@Autowired
 	private GstClient gstClient;
 
+	@Autowired
+    private PincodeDateService pincodeDateService;
+	
 	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 	DecimalFormat decim = new DecimalFormat("#,###.00");
 
@@ -622,6 +626,15 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 				directorBackgroundDetailResponse.setMobile(directorBackgroundDetailRequest.getMobile());
 				directorBackgroundDetailResponse.setDob(directorBackgroundDetailRequest.getDob());
 				directorBackgroundDetailResponse.setPincode(directorBackgroundDetailRequest.getPincode());
+				
+				try {
+					if(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDistrictMappingId())) {
+						directorBackgroundDetailResponse.setPinData(pincodeDateService.getById(directorBackgroundDetailRequest.getDistrictMappingId()));				
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				
 				directorBackgroundDetailResponse.setStateCode(directorBackgroundDetailRequest.getStateCode());
 				directorBackgroundDetailResponse.setCity(directorBackgroundDetailRequest.getCity());
 				directorBackgroundDetailResponse.setGender((directorBackgroundDetailRequest.getGender() != null

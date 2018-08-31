@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,6 +44,8 @@ import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailResponse;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailResponse;
+import com.capitaworld.service.loans.model.LoansResponse;
+import com.capitaworld.service.loans.model.PincodeDataResponse;
 import com.capitaworld.service.loans.model.teaser.primaryview.CorporatePrimaryViewResponse;
 import com.capitaworld.service.loans.repository.fundprovider.TermLoanParameterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.WcTlLoanParameterRepository;
@@ -50,6 +53,7 @@ import com.capitaworld.service.loans.repository.fundprovider.WorkingCapitalParam
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
+import com.capitaworld.service.loans.service.common.PincodeDateService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.DirectorBackgroundDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
 import com.capitaworld.service.loans.service.irr.IrrService;
@@ -151,6 +155,9 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 	
 	@Autowired 
 	private GstClient gstClient;
+	
+	@Autowired
+    private PincodeDateService pincodeDateService;
 
 	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 	DecimalFormat decim = new DecimalFormat("#,###.00");
@@ -509,6 +516,15 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 				directorBackgroundDetailResponse.setMobile(directorBackgroundDetailRequest.getMobile());
 				directorBackgroundDetailResponse.setDob(directorBackgroundDetailRequest.getDob());
 				directorBackgroundDetailResponse.setPincode(directorBackgroundDetailRequest.getPincode());
+				
+				try {
+					if(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDistrictMappingId())) {
+						directorBackgroundDetailResponse.setPinData(pincodeDateService.getById(directorBackgroundDetailRequest.getDistrictMappingId()));				
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				
 				directorBackgroundDetailResponse.setStateCode(directorBackgroundDetailRequest.getStateCode());
 				directorBackgroundDetailResponse.setCity(directorBackgroundDetailRequest.getCity());
 				directorBackgroundDetailResponse.setGender((directorBackgroundDetailRequest.getGender() != null
