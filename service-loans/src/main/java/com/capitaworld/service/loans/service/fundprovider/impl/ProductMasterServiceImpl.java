@@ -975,7 +975,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 								e.printStackTrace();
 							}
 						}
-						else {
+						else if(productStatus == CommonUtils.Status.OPEN){
 							try {
 								logger.info("Inside sending mail to Checker when Admin Maker send product for Approval");
 								fpAsyncComponent.sendEmailToCheckerWhenAdminMakerSendProductForApproval(productMasterTemp,workflowData.getUserId(),productType);	

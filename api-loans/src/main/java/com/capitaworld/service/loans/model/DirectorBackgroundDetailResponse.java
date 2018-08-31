@@ -92,6 +92,10 @@ public class DirectorBackgroundDetailResponse implements Serializable{
 		
 		private BigInteger timeAtAddress;
 		
+		private Long districtMappingId;
+		
+		private Object pinData;
+		
 		
 		
 
@@ -507,5 +511,34 @@ public class DirectorBackgroundDetailResponse implements Serializable{
 	public void setQualification(String qualification) {
 		this.qualification = qualification;
 	}
+
+	/**
+	 * @return the districtMappingId
+	 */
+	public Long getDistrictMappingId() {
+		return districtMappingId;
+	}
+
+	/**
+	 * @param districtMappingId the districtMappingId to set
+	 */
+	public void setDistrictMappingId(Long districtMappingId) {
+		this.districtMappingId = districtMappingId;
+	}
+
+	/**
+	 * @return the pinData
+	 */
+	public Object getPinData() {
+		return pinData;
+	}
+
+	/**
+	 * @param pinData the pinData to set
+	 */
+	public void setPinData(Object pinData) {
+		this.pinData = pinData;
+	}
+
 	
 }

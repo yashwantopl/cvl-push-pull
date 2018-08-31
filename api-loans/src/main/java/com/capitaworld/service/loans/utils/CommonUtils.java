@@ -1,6 +1,7 @@
 package com.capitaworld.service.loans.utils;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
@@ -247,7 +248,9 @@ public class CommonUtils {
 				"depreciationCurrentYear", "remunerationPreviousYear", "remunerationCurrentYear",
 				"highestQualification", "qualifyingYear", "institute", "residingYear", "residingMonth", "spouseName",
 				"isSpouseEmployed" };
-
+		public static final String[] NTB_FINAL_EXCLUSION = {"id","userId", "clientId", "applicationId","establishmentMonth","establishmentYear","groupName","keyVericalFunding"
+				,"latitude","longitude","websiteAddress","gstIn","email","keyVerticalSector","keyVerticalSubsector","aadhar","creditRatingId"
+				,"contLiabilityFyAmt","contLiabilitySyAmt" ,"contLiabilityTyAmt","notApplicable","msmeRegistrationNumber"} ;
 		public static final String[] RETAIL_FINAL = { "castId", "castOther", "religion", "religionOther", "birthPlace",
 				"fatherName", "motherName", "noChildren", "noDependent", "highestQualificationOther", "residenceType",
 				"annualRent", "noPartners", "birthDate", "currentDepartment", "currentDesignation", "currentIndustry",
@@ -961,7 +964,9 @@ public class CommonUtils {
 	
 	public enum BusinessType {
 		
-		NEW_TO_BUSINESS(2, "New to Business"),EXISTING_BUSINESS(1, "Existing Business");
+		NEW_TO_BUSINESS(2, "New to Business"),
+		EXISTING_BUSINESS(1, "Existing Business"),
+		RETAIL_PERSONAL_LOAN(3, "Retail Personal Loan");
 
 		private Integer id;
 		private String value;
@@ -1146,7 +1151,7 @@ public enum APIFlags {
 	
 	/***********************************************CAM UTILS*********************************************************/
 	static DecimalFormat decim = new DecimalFormat("#,##0.00");
-	static DecimalFormat decim2 = new DecimalFormat("#,###.00");
+	static DecimalFormat decim2 = new DecimalFormat("#,###");
 	
 	public static String convertValue(Double value) {
 		return !CommonUtils.isObjectNullOrEmpty(value)? decim.format(value).toString(): "0";
@@ -1183,58 +1188,113 @@ public enum APIFlags {
 		return obj;
 	}
 	public static Object printFields(Object obj) throws Exception {
+		if(obj != null) {
+			if(obj.getClass().isArray()) {
+		}
+		}else {
+			return obj;
+		}
 		if(obj instanceof List) {
 			List<?> lst = (List)obj;
 			for(Object o : lst) {
-				escapeXml(o);
+				o = printFields(o);
 			}
 		}else if(obj instanceof Map) {
 			Map<Object, Object> map = (Map)obj;
 			for(Map.Entry<Object, Object> setEntry : map.entrySet()) {
-				escapeXml(setEntry.getValue());
+				setEntry.setValue(printFields(setEntry.getValue()));
+		}
+		}else if(obj instanceof String) {
+			obj = StringEscapeUtils.escapeXml((String)obj);
+			return obj;
+		}else if(obj instanceof Double) {
+			if(!Double.isNaN((Double)obj)) {
+				DecimalFormat decim = new DecimalFormat("0.00");
+				String a = decim.format(obj);
+				obj = Double.valueOf(a);
+				return obj;
 			}
 		}else {
-			escapeXml(obj);
+			if(obj.getClass().getName().startsWith("com.capitaworld")) {
+				Field[] fields = obj.getClass().getDeclaredFields();
+				for (Field field : fields) {
+					if((field.getModifiers()& Modifier.STATIC) == Modifier.STATIC){
+					}else {
+						field.setAccessible(true);
+						Object value = field.get(obj);
+						field.set(obj, printFields(value));	
+					}
+				}
+			}
 		}
 		 return obj;
 	}
-	public static Object escapeXml(Object obj) throws Exception{
-		if(obj instanceof List) {
-			List<?> lst = (List<?>)obj;
-			for(Object o : lst) {
-				escapeXml(o);
-			}
-		}else if(obj instanceof Map) {
-			Map<Object, Object> map = (Map)obj;
-			for(Map.Entry<Object, Object> setEntry : map.entrySet()) {
-				escapeXml(setEntry.getValue());
-			}
+
+	public enum BankName {
+		UNION_BANK_OF_INDIA(1,"Union Bank of India",""),
+		SARASWAT(2,"Saraswat",""),
+		AXIS(3,"Axis",""),
+		ICICI(4,"ICICI",""),
+		IDBI(5,"IDBI","https://s3.ap-south-1.amazonaws.com/qa-sidbi-data/images/IDBI.jpg"),
+		RBL(6,"RBL",""),
+		TATA_CAPITAL(7,"Tata Capital",""),
+		IDFC(8,"IDFC",""),
+		DENA_BANK(9,"Dena Bank",""),
+		SIDBI(10,"SIDBI","https://s3.ap-south-1.amazonaws.com/qa-sidbi-data/images/Sidbi.jpg"),
+		NHBS(11,"NHBS",""),
+		CANARA_BANK(12,"CANARA BANK","https://s3.ap-south-1.amazonaws.com/qa-sidbi-data/images/Canara-Bank.jpg"),
+		INDIAN_BANK(13,"Indian Bank","https://s3.ap-south-1.amazonaws.com/qa-sidbi-data/images/Indian-Bank.jpg"),
+		BOI(14,"BOI","https://s3.ap-south-1.amazonaws.com/qa-sidbi-data/images/BOI.jpg"),
+		VIJAYA_BANK(15,"Vijaya Bank","https://s3.ap-south-1.amazonaws.com/uat-sidbi-data/images/vijya.png"),
+		SBI(16,"SBI","https://s3.ap-south-1.amazonaws.com/uat-sidbi-data/images/sbi.png"),
+		BOB(17,"BOB","https://s3.ap-south-1.amazonaws.com/uat-sidbi-data/images/BOB.png"),
+		PNB(18,"PNB","https://s3.ap-south-1.amazonaws.com/qa-sidbi-data/images/PNB.jpg"),
+		UCO_BANK(19,"UCO Bank",""),
+		PSB(20,"PSB",""),
+		ORIENTAL_BANK_OF_COMMERCE(21,"Oriental Bank of Commerce",""),
+		SYNDICATE_BANK(22,"Syndicate Bank",""),
+		ALLAHABAD_BANK(23,"Allahabad bank",""),
+		CORPORATION_BANK(24,"Corporation Bank",""),
+		CENTRAL_BANK(25,"Central Bank",""),
+		ANDHRA_BANK(26,"Andhra Bank",""),
+		BANK_OF_MAHARASHTRA(27,"Bank of Maharashtra",""),
+		INDIAN_OVERSEAS_BANK(28,"Indian Overseas Bank",""),
+		UNITED_BANK_OF_INDIA(29,"United Bank of India","");
+
+		private Integer id;
+		private String value;
+		private String imageUrl;
+
+		private BankName(Integer id) {
+			this.id = id;
 		}
-		if(obj!=null) {
-			Field[] fields = obj.getClass().getDeclaredFields();
-			for (Field field : fields) {
-				field.setAccessible(true);
-				Object value = field.get(obj);
-				if (value instanceof String) {
-					String value1 = (String) field.get(obj);
-					String a = StringEscapeUtils.escapeXml(value1.toString());
-					value = a;
-					field.set(obj, value);
-				}else if(value instanceof Double) {
-					if(!Double.isNaN((Double)value)) {
-						DecimalFormat decim = new DecimalFormat("0.00");
-						String a = decim.format(value);
-						field.set(obj, Double.valueOf(a.toString()));
-					}
-				}
-				else {
-					continue;
+
+		private BankName(Integer id, String value,String imageUrl) {
+			this.id = id;
+			this.value = value;
+			this.imageUrl = imageUrl;
+		}
+
+		public String getValue() {
+			return value;
+		}
+
+		public Integer getId() {
+			return id;
+		}
+
+		public String getImageUrl() {
+			return imageUrl;
+		}
+
+		public static BankName getDataFormBankId(Integer id){
+			for (BankName bankName:BankName.values()) {
+				if (bankName.id == id) {
+					return bankName;
 				}
 			}
+			return null;
 		}
-		return obj;
-    }
-	
-	
+	}
 	
 }

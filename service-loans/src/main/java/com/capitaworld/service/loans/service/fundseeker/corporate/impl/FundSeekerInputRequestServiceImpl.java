@@ -152,7 +152,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			primaryCorporateDetail.setBusinessTypeId(fundSeekerInputRequest.getBusinessTypeId());
 			primaryCorporateDetail.setModifiedBy(fundSeekerInputRequest.getUserId());
 			primaryCorporateDetail.setModifiedDate(new Date());
-
+			primaryCorporateDetail.setIsActive(true);
 			primaryCorporateDetailRepository.saveAndFlush(primaryCorporateDetail);
 
 			List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestsList = fundSeekerInputRequest
@@ -580,8 +580,10 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 					hunterRequestDataResponse = loanApplicationService
 							.getDataForHunterForNTB(fundSeekerInputRequestResponse.getApplicationId());
 				}
+				else {
 			hunterRequestDataResponse = loanApplicationService
 					.getDataForHunter(fundSeekerInputRequestResponse.getApplicationId());
+				}
 			AnalyticsRequest request = new AnalyticsRequest();
 			request.setApplicationId(fundSeekerInputRequestResponse.getApplicationId());
 			request.setUserId(fundSeekerInputRequestResponse.getUserId());

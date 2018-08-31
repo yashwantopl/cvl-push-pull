@@ -92,6 +92,7 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 			
 			//==================Sending Mail notification to Maker=============================
 			
+			//fpAsyncComponent.sendEmailToFSWhenCheckerSanctionLoan(loanSanctionDomainOld);
 			fpAsyncComponent.sendEmailToMakerHOBOWhenCheckerSanctionLoan(loanSanctionDomainOld);
 			
 			//=================================================================================
@@ -165,8 +166,8 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 					UserOrganisationRequest	userOrganisationRequest =null;
 					for(Map<String , Object> map : userOrganisationRequestList) {
 						userOrganisationRequest = (UserOrganisationRequest)	MultipleJSONObjectHelper.getObjectFromMap(map, UserOrganisationRequest.class);
-						if(userOrganisationRequest.getUserOrgId() != 10l) {
-							logger.info("Organization ID==========>{}",userOrganisationRequest.getUserOrgId());
+						if(CommonUtils.isObjectNullOrEmpty(userOrganisationRequest.getIsReverseApiActivated()) || !userOrganisationRequest.getIsReverseApiActivated().booleanValue()) {
+							logger.info("Organization ID is Not Activated==========>{}=====Name============>{}",userOrganisationRequest.getUserOrgId(),userOrganisationRequest.getOrganisationName());
 							continue;
 						}
 						
@@ -196,7 +197,7 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 						String token=null;
 						
 						try {
-							token = sidbiIntegrationClient.getToken(generateTokenRequest,generateTokenRequest.getBankToken());
+							/*token = sidbiIntegrationClient.getToken(generateTokenRequest,generateTokenRequest.getBankToken());
 							generateTokenRequest.setToken(token);
 							//Getting sanction and disbursement Details from Bank 
 							SidbiIntegerationResponse sidbiIntegerationResponse = sidbiIntegrationClient.getSanctionAndDisbursmentDetailList(token, generateTokenRequest.getBankToken());
@@ -206,7 +207,7 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 									if(res instanceof List){
 										List<com.capitaworld.sidbi.integration.model.sanction.LoanSanctionAndDisbursedRequest> list = (List<com.capitaworld.sidbi.integration.model.sanction.LoanSanctionAndDisbursedRequest> )res;
 										logger.info("********************************* " + list.size() +" ***********************************");
-										if(sidbiIntegrationClient.updateSavedSanctionAndDisbursmentDetailList(list , generateTokenRequest.getToken(), generateTokenRequest.getBankToken())) {	
+										if(sidbiIntegrationClient.updateSavedSanctionAndDisbursmentDetailList(list , generateTokenRequest.getToken(), generateTokenRequest.getBankToken())) {
 											try {
 												//wait foo 15 minute
 												logger.info("*******Sucessgfully updated sanction and disbursement details in sidbi integration********** ");
@@ -217,12 +218,12 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 												e.printStackTrace();
 											}
 										}
-										/*}*/
+										*//*}*//*
 									}else {
 										logger.info("*******Unable to store sanction or disbursement detail   **********  reasion is =={}", (res != null ? res.toString() : res));
 									}
 								}
-							}
+							}*/
 						}catch(Exception e) {
 							e.printStackTrace();
 							logger.error("Error while Calling get token API");
@@ -379,7 +380,7 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 		try {
 		logger.info("Enter in saveLoanSanctionDetail() ----------------------->  LoanSanctionRequest==> "+ loanSanctionRequest);
 		                                                                       
-		LoanSanctionDomain loanSanctionDomainOld =loanSanctionRepository.findByBankSanctionPrimaryKeyAndIsActive(loanSanctionRequest.getId(), true);
+		LoanSanctionDomain loanSanctionDomainOld =loanSanctionRepository.findByBankSanctionPrimaryKeyAndIsActiveAndApplicationId(loanSanctionRequest.getId(), true,loanSanctionRequest.getApplicationId());
 		if(CommonUtils.isObjectNullOrEmpty(loanSanctionDomainOld) ) {
 			loanSanctionDomainOld = new LoanSanctionDomain();
 			loanSanctionDomainOld.setCreatedBy(loanSanctionRequest.getActionBy());
