@@ -2770,7 +2770,7 @@ public class FPAsyncComponent {
 							*/
 							// ====================== MAIL TO MAKER by new code ======================
 							createNotificationForEmail(toIds, applicationRequest.getUserId().toString(), mailParameters,
-									NotificationAlias.EMAIL_MAKER_AFTER_CHECKER_SUBMIT_SANCTION_POPUP, subject);
+									NotificationAlias.EMAIL_FS_CHECKER_SANCTIONED, subject);
 							
 						}
 						if(!CommonUtils.isObjectNullOrEmpty(fs.getMobile())) {
@@ -2783,7 +2783,7 @@ public class FPAsyncComponent {
 							smsParameters.put("url", "www.bitly.com");
 							
 							sendSMSNotification(applicationRequest.getUserId().toString(),
-									smsParameters, NotificationAlias.SMS_ADMIN_MAKER_PRODUCT_REVERTED_BY_CHECKER, to);
+									smsParameters, NotificationAlias.SMS_FS_CHECKER_SANCTIONED, to);
 						}	
 						if(!CommonUtils.isObjectNullOrEmpty(applicationRequest.getUserId())) {
 							//System.out.println("Maker ID:---"+userObj.getEmail());
@@ -2794,7 +2794,7 @@ public class FPAsyncComponent {
 							sysParameters.put("product_type", productType!=null?productType:"NA");
 					
 							sendSYSNotification(loanSanctionDomainOld.getApplicationId(),applicationRequest.getUserId().toString(),
-									sysParameters, NotificationAlias.SYS_MAKER_AFTER_CHECKER_SUBMIT_SANCTION_POPUP, applicationRequest.getUserId().toString(), applicationRequest.getUserId().toString());
+									sysParameters, NotificationAlias.SYS_FS_CHECKER_SANCTIONED, applicationRequest.getUserId().toString(), applicationRequest.getUserId().toString());
 						}
 						
 						//==================================================================================
