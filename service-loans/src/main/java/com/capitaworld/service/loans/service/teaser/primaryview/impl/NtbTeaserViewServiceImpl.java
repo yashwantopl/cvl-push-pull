@@ -228,6 +228,12 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService {
 						.setCollateralSecurityAmount(primaryCorporateDetail.getCollateralSecurityAmount() != null
 								? String.valueOf(primaryCorporateDetail.getCollateralSecurityAmount())
 								: null);
+
+				ntbPrimaryViewRespone.setPromotersContribution(primaryCorporateDetail.getPromoterContribution());
+				ntbPrimaryViewRespone.setPromotersContributionPer(primaryCorporateDetail.getTotalAmtPercentage() != null
+						? " (" + convertValue(primaryCorporateDetail.getTotalAmtPercentage()) + "%)"
+						: null);
+
 				ntbPrimaryViewRespone.setNpOrgId(loanApplicationMaster.getNpOrgId());
 				if (!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getModifiedDate()))
 					ntbPrimaryViewRespone.setDateOfProposal(primaryCorporateDetail.getModifiedDate() != null
@@ -238,9 +244,6 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
-		
-		
 
 		// DIRECTOR BACKGROUND DETAILS
 
@@ -254,55 +257,59 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService {
 			} else {
 				ntbPrimaryViewRespone.setIsMultipleUser(true);
 			}
-			/*for (int i = 0; i < directorBackgroundDetails.size(); i++) {
-				DirectorBackgroundDetail dir = new DirectorBackgroundDetail();
-
-				// MultipleJSONObjectHelper.getObjectFromMap(directorBackgroundDetails.get(i),
-				// DirectorBackgroundDetail.class);
-
-				BeanUtils.copyProperties(directorBackgroundDetails.get(i), dir);
-				// dir.setGender(Integer.valueOf(String.valueOf(directorBackgroundDetails.get(i).get("genderInt"))));
-				dir.setId(Long.valueOf(String.valueOf(directorBackgroundDetails.get(i).get("directorId"))));
-				ntbPrimaryViewRespone.setIsMainDir(
-						Boolean.valueOf(String.valueOf(directorBackgroundDetails.get(i).get("isMainDirector"))));
-				if (ntbPrimaryViewRespone.getIsMainDir() == true) {
-
-					ntbPrimaryViewRespone.setAppId(
-							Long.valueOf(String.valueOf(directorBackgroundDetails.get(i).get("applicationId"))));
-					ntbPrimaryViewRespone.setDirPan(String.valueOf(directorBackgroundDetails.get(i).get("panNo")));
-
-					CibilRequest cibilRequest = new CibilRequest();
-					cibilRequest.setApplicationId(ntbPrimaryViewRespone.getAppId());
-					cibilRequest.setPan(ntbPrimaryViewRespone.getDirPan());
-					try {
-						CibilScoreLogRequest cibilRes = cibilClient.getCibilScoreByPanCard(cibilRequest);
-						ntbPrimaryViewRespone.setCibilOfMainDir(cibilRes);
-					} catch (Exception e) {
-						logger.info("Error While calling Cibil Score By PanCard");
-						e.printStackTrace();
-					}
-
-				}
-			}*/
+			/*
+			 * for (int i = 0; i < directorBackgroundDetails.size(); i++) {
+			 * DirectorBackgroundDetail dir = new DirectorBackgroundDetail();
+			 * 
+			 * //
+			 * MultipleJSONObjectHelper.getObjectFromMap(directorBackgroundDetails.get(i),
+			 * // DirectorBackgroundDetail.class);
+			 * 
+			 * BeanUtils.copyProperties(directorBackgroundDetails.get(i), dir); //
+			 * dir.setGender(Integer.valueOf(String.valueOf(directorBackgroundDetails.get(i)
+			 * .get("genderInt"))));
+			 * dir.setId(Long.valueOf(String.valueOf(directorBackgroundDetails.get(i).get(
+			 * "directorId")))); ntbPrimaryViewRespone.setIsMainDir(
+			 * Boolean.valueOf(String.valueOf(directorBackgroundDetails.get(i).get(
+			 * "isMainDirector")))); if (ntbPrimaryViewRespone.getIsMainDir() == true) {
+			 * 
+			 * ntbPrimaryViewRespone.setAppId(
+			 * Long.valueOf(String.valueOf(directorBackgroundDetails.get(i).get(
+			 * "applicationId"))));
+			 * ntbPrimaryViewRespone.setDirPan(String.valueOf(directorBackgroundDetails.get(
+			 * i).get("panNo")));
+			 * 
+			 * CibilRequest cibilRequest = new CibilRequest();
+			 * cibilRequest.setApplicationId(ntbPrimaryViewRespone.getAppId());
+			 * cibilRequest.setPan(ntbPrimaryViewRespone.getDirPan()); try {
+			 * CibilScoreLogRequest cibilRes =
+			 * cibilClient.getCibilScoreByPanCard(cibilRequest);
+			 * ntbPrimaryViewRespone.setCibilOfMainDir(cibilRes); } catch (Exception e) {
+			 * logger.info("Error While calling Cibil Score By PanCard");
+			 * e.printStackTrace(); }
+			 * 
+			 * } }
+			 */
 
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error("Problem to get Data of Director's Background=========> {}", e);
 		}
 
-		
-		//Cibil Client Call
-				/*CibilRequest cibilRequest = new CibilRequest();
-				cibilRequest.setApplicationId(toApplicationId);
-				cibilRequest.setPan(ntbPrimaryViewRespone.getDirPan());*/
-				try {
-					CibilResponse cibilRes = cibilClient.getDirectorAverageScore(toApplicationId);
-					ntbPrimaryViewRespone.setCibilOfMainDir(cibilRes);
-				} catch (Exception e) {
-					logger.info("Error While calling Cibil Score By PanCard");
-					e.printStackTrace();
-				}
-				
+		// Cibil Client Call
+		/*
+		 * CibilRequest cibilRequest = new CibilRequest();
+		 * cibilRequest.setApplicationId(toApplicationId);
+		 * cibilRequest.setPan(ntbPrimaryViewRespone.getDirPan());
+		 */
+		try {
+			CibilResponse cibilRes = cibilClient.getDirectorAverageScore(toApplicationId);
+			ntbPrimaryViewRespone.setCibilOfMainDir(cibilRes);
+		} catch (Exception e) {
+			logger.info("Error While calling Cibil Score By PanCard");
+			e.printStackTrace();
+		}
+
 		// get Director Income Details
 
 		try {
@@ -399,7 +406,6 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService {
 			logger.error("Problem to get Other Details===========> {}", e);
 		}
 
-
 		// GET EXISTING FINANCIAL DETAILS
 		List<Long> dirIdList = dirBackgroundDetailsRepository.getDirectorIdFromApplicationId(toApplicationId);
 		for (Long dirId : dirIdList) {
@@ -444,37 +450,37 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService {
 		List<Data> datas = new ArrayList<>();
 		try {
 			AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReportForCam(reportRequest);
-			
+
 			List<HashMap<String, Object>> hashMaps = (List<HashMap<String, Object>>) analyzerResponse.getData();
-			
+
 			if (!CommonUtils.isListNullOrEmpty(hashMaps)) {
-				
+
 				for (HashMap<String, Object> hashMap : hashMaps) {
-					
+
 					Data data = MultipleJSONObjectHelper.getObjectFromMap(hashMap, Data.class);
 					datas.add(data);
 				}
 			}
 			ntbPrimaryViewRespone.setBankData(datas);
-			
+
 		} catch (Exception e) {
-			
+
 			e.printStackTrace();
 			logger.info("Error while getting perfios data");
-		
+
 		}
 
 		// SCORING DATA
 		ScoringRequest scoringRequest = new ScoringRequest();
 		scoringRequest.setApplicationId(toApplicationId);
 		scoringRequest.setFpProductId(productMappingId);
-		
+
 		try {
-		
+
 			ScoringResponse scoringResponse = scoringClient.getScore(scoringRequest);
 			ProposalScoreResponse proposalScoreResponse = MultipleJSONObjectHelper.getObjectFromMap(
 					(LinkedHashMap<String, Object>) scoringResponse.getDataObject(), ProposalScoreResponse.class);
-			
+
 			ntbPrimaryViewRespone.setDataList(scoringResponse.getDataList());
 			ntbPrimaryViewRespone.setDataObject(scoringResponse.getDataObject());
 			ntbPrimaryViewRespone.setScoringResponseList(scoringResponse.getScoringResponseList());
@@ -506,12 +512,12 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService {
 		try {
 			boolean isMultipleUserForCgtmse = ntbPrimaryViewRespone.getIsMultipleUser();
 			System.out.println("is multiple user...??" + isMultipleUserForCgtmse);
-			
+
 			CGTMSEDataResponse cgtmseDataResp = thirdPartyClient.getCalulation(toApplicationId);
-			
+
 			ntbPrimaryViewRespone.setCgtmseData(cgtmseDataResp);
 		} catch (Exception e) {
-		
+
 			e.printStackTrace();
 			logger.info("Error while getting CGTMSE data");
 		}
@@ -521,7 +527,7 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService {
 		documentRequest.setApplicationId(toApplicationId);
 		documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
 		documentRequest.setProductDocumentMappingId(DocumentAlias.WORKING_CAPITAL_PROFIEL_PICTURE);
-		
+
 		try {
 			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 			ntbPrimaryViewRespone.setProfilePic(documentResponse.getDataList());
@@ -535,6 +541,13 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService {
 		} catch (DocumentException e) {
 			e.printStackTrace();
 		}
+		documentRequest.setProductDocumentMappingId(DocumentAlias.CORPORATE_ITR_PDF);
+		try {
+			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+			ntbPrimaryViewRespone.setIrtPdfReport(documentResponse.getDataList());
+		} catch (DocumentException e) {
+			e.printStackTrace();
+		}
 
 		if (isFinal) {
 
@@ -542,4 +555,7 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService {
 		return ntbPrimaryViewRespone;
 	}
 
+	public String convertValue(Double value) {
+		return !CommonUtils.isObjectNullOrEmpty(value) ? decim.format(value).toString() : "0";
+	}
 }

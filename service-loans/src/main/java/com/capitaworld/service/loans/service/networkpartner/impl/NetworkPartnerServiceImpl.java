@@ -731,6 +731,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 				nhbsApplicationsResponse.setUserId(loanApplicationMaster.getUserId());
 				nhbsApplicationsResponse.setApplicationId(loanApplicationMaster.getId());
 				nhbsApplicationsResponse.setApplicationType(loanApplicationMaster.getProductId());
+				nhbsApplicationsResponse.setBusinessTypeId(loanApplicationMaster.getBusinessTypeId());
 				if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getNpUserId())){
 					UsersRequest usersRequest = new UsersRequest();
 					usersRequest.setId(loanApplicationMaster.getNpUserId());
@@ -752,6 +753,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 					
 					DirectorBackgroundDetail directorBackgroundDetail = directorBackgroundDetailsRepository.getByAppIdAndIsMainDirector(loanApplicationMaster.getId());
 					if(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetail)) {
+					    nhbsApplicationsResponse.setClientId(directorBackgroundDetail.getId());
 						nhbsApplicationsResponse.setClientName(directorBackgroundDetail.getDirectorsName());
 						nhbsApplicationsResponse.setCity(directorBackgroundDetail.getCity());
 						try {

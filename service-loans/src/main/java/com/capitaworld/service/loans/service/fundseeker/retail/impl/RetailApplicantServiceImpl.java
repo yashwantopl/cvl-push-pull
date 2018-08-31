@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -59,6 +60,11 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 
 	@Autowired
 	private UsersClient usersClient;
+	
+	@Autowired
+	private Environment environment;
+	
+	private static final String SIDBI_AMOUNT = "com.capitaworld.sidbi.amount";
 
 	@Override
 	public boolean save(RetailApplicantRequest applicantRequest, Long userId) throws Exception {
@@ -368,6 +374,18 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 				to.setSecondAddress(address);
 			}
 		}
+	}
+	
+	@Override
+	public JSONObject getNameAndPanByAppId(Long applicationId) {
+		JSONObject obj = new JSONObject();
+		RetailApplicantDetail applicantDetail = applicantRepository.findOneByApplicationIdId(applicationId);
+		if(!CommonUtils.isObjectNullOrEmpty(applicantDetail)) {
+			obj.put("name", applicantDetail.getFirstName() + " " + applicantDetail.getMiddleName() + " " + applicantDetail.getLastName());
+			obj.put("pan", applicantDetail.getPan());
+			obj.put("amount", environment.getProperty(SIDBI_AMOUNT));
+		}
+		return obj;
 	}
 
 }
