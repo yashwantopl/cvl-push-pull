@@ -92,6 +92,7 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 			
 			//==================Sending Mail notification to Maker=============================
 			
+			fpAsyncComponent.sendEmailToFSWhenCheckerSanctionLoan(loanSanctionDomainOld);
 			fpAsyncComponent.sendEmailToMakerHOBOWhenCheckerSanctionLoan(loanSanctionDomainOld);
 			
 			//=================================================================================
