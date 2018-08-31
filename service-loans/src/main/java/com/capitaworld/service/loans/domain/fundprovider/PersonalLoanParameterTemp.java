@@ -17,13 +17,13 @@ import javax.persistence.TemporalType;
  * 
  */
 @Entity
-@Table(name="fp_personal_loan_details")
-public class PersonalLoanParameter extends ProductMaster implements Serializable {
+@Table(name="fp_personal_loan_details_temp")
+public class PersonalLoanParameterTemp extends ProductMasterTemp implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@OneToOne
 	@JoinColumn(name="fp_product_id")
-	private ProductMaster fpProductId;
+	private ProductMasterTemp fpProductId;
 
 	@Column(name="created_by")
 	private Long createdBy;
@@ -214,16 +214,22 @@ public class PersonalLoanParameter extends ProductMaster implements Serializable
 	@Column(name="is_total_job_experience_mandatory")
 	private Boolean isTotalJobExperienceMandatory=false;
 
-	public PersonalLoanParameter() {
+	public PersonalLoanParameterTemp() {
 	}
 
-	public ProductMaster getFpProductId() {
-		return this.fpProductId;
+	
+
+	public ProductMasterTemp getFpProductId() {
+		return fpProductId;
 	}
 
-	public void setFpProductId(ProductMaster fpProductId) {
+
+
+	public void setFpProductId(ProductMasterTemp fpProductId) {
 		this.fpProductId = fpProductId;
 	}
+
+
 
 	public Long getCreatedBy() {
 		return this.createdBy;
