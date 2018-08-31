@@ -70,7 +70,7 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 			if(CommonUtility.ApiType.DISBURSEMENT == apiType) {
 				loanSanctionDomain  = loanSanctionRepository.findByAppliationId(loanDisbursementRequest.getApplicationId());
 			}else {
-				loanSanctionDomain  = loanSanctionRepository.findByBankSanctionPrimaryKeyAndIsActive(sanctionPrimaryId , true);
+				loanSanctionDomain  = loanSanctionRepository.findByBankSanctionPrimaryKeyAndIsActiveAndApplicationId(sanctionPrimaryId , true,loanDisbursementRequest.getApplicationId());
 			}
 			if(loanSanctionDomain == null || loanSanctionDomain.getSanctionAmount()==null) {
 				logger.info("Exit saveLoanDisbursementDetail() -----------------------> msg==>" +"Please Sanction Before Disbursement for this applicationId==>" +loanDisbursementRequest.getApplicationId() );
