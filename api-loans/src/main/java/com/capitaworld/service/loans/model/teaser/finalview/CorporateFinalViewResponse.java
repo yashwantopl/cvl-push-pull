@@ -174,10 +174,9 @@ public class CorporateFinalViewResponse implements Serializable {
     private Object promotersContribution;
     private Object promotersContributionPer;
     private Object mcaData;
-    private Object hufReport;
     private Object nameAsPerItr;
     private Object mcaCheckStatus;
-    private Object nameAsPerGst;
+    private Object gstData;
 
 	public List<?> getMatchesList() {
 		return matchesList;
@@ -1695,17 +1694,19 @@ public class CorporateFinalViewResponse implements Serializable {
 	}
 
 	/**
-	 * @return the nameAsPerGst
+	 * @return the gstData
 	 */
-	public Object getNameAsPerGst() {
-		return nameAsPerGst;
+	public Object getGstData() {
+		return gstData;
 	}
 
 	/**
-	 * @param nameAsPerGst the nameAsPerGst to set
+	 * @param gstData the gstData to set
 	 */
-	public void setNameAsPerGst(Object nameAsPerGst) {
-		this.nameAsPerGst = nameAsPerGst;
+	public void setGstData(Object gstData) {
+		this.gstData = gstData;
 	}
+
+
 
 }
