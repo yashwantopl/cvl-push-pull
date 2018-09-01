@@ -1352,6 +1352,7 @@ public class FPAsyncComponent {
 									Map<String, Object> sysParameters = new HashMap<String, Object>();
 									sysParameters.put("maker_name", makerName!=null?makerName:"NA");
 									sysParameters.put("fs_name", fsName!=null?fsName:"NA");
+									sysParameters.put("product_type", proposalresp.get("loan_type").toString()!=null?proposalresp.get("loan_type").toString():"NA");
 									
 									sendSYSNotification(request.getApplicationId(),request.getNpUserId().toString(),
 											sysParameters, NotificationAlias.SYS_CHECKER_MAKER_ASSIGN_APPLICATION_TO_CHECKER, request.getNpUserId().toString(), request.getNpUserId().toString());
