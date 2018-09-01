@@ -92,8 +92,7 @@ public class CorporatePrimaryViewResponse {
     private Object nameAsPerItr;
     private Object nameAsPerGst;
     private Object mcaCheckStatus;
-    
-
+   
 	public List<Object> getCibilReport() {
 		return cibilReport;
 	}

@@ -28,6 +28,8 @@ import com.capitaworld.service.dms.model.StorageDetailsResponse;
 import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.loans.config.FPAsyncComponent;
 import com.capitaworld.service.loans.domain.fundprovider.NtbTermLoanParameterTemp;
+import com.capitaworld.service.loans.domain.fundprovider.PersonalLoanParameter;
+import com.capitaworld.service.loans.domain.fundprovider.PersonalLoanParameterTemp;
 import com.capitaworld.service.loans.domain.fundprovider.ProductMaster;
 import com.capitaworld.service.loans.domain.fundprovider.ProductMasterTemp;
 import com.capitaworld.service.loans.domain.fundprovider.TermLoanParameterTemp;
@@ -207,6 +209,9 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 					break;
 				case WCTL_LOAN:
 					productMaster = new WcTlParameterTemp();
+					break;
+				case PERSONAL_LOAN:
+					productMaster = new PersonalLoanParameterTemp();
 					break;
 
 				default:
@@ -823,7 +828,11 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				} else {
 					return termLoanParameterService.getTermLoanParameterRequestTemp(master.getId(), role, userId);
 				}
-			} /*
+			} 
+			else if (master.getProductId() == 7) {
+				return personalLoanParameterService.getPersonalLoanParameterRequestTemp(master.getId(), role, userId);
+			}
+			/*
 				 * else if (master.getProductId() == 15) { return
 				 * unsecuredLoanParameterService.
 				 * getUnsecuredLoanParameterRequest(master.getId()); }
