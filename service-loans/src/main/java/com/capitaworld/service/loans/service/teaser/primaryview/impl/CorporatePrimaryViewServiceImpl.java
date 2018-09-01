@@ -1005,12 +1005,12 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 			e.printStackTrace();
 		}
 		
-		//Name as per Gst
+		// Gst Data
 		
 		try {
 			GstResponse response = gstClient.detailCalculation(corporateApplicantDetail.getGstIn());
 			if(response !=null) {
-				corporatePrimaryViewResponse.setNameAsPerGst(response);
+				corporatePrimaryViewResponse.setGstData(response);
 			}else {
 				
 				logger.warn("----------:::::::: Gst Response is null :::::::---------");
@@ -1018,7 +1018,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 			}
 			
 		} catch (Exception e) {
-			logger.warn(":::::::------Error while calling gst client for name as per gst---:::::::");
+			logger.warn(":::::::------Error while calling gstData---:::::::");
 			e.printStackTrace();
 		}
 		
