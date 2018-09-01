@@ -316,7 +316,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				map.put("registeredAddCity", StringEscapeUtils.escapeXml(getCityName(corporateFinalInfoRequest.getFirstAddress().getCityId())));
 				map.put("registeredAddPincode", !CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getFirstAddress().getPincode())?corporateFinalInfoRequest.getFirstAddress().getPincode() : "");
 			}
-			map.put("corporateApplicantFinal", CommonUtils.printFields(corporateFinalInfoRequest));
+			map.put("corporateApplicantFinal",corporateFinalInfoRequest);
 			map.put("aboutUs", StringEscapeUtils.escapeXml(corporateFinalInfoRequest.getAboutUs()));
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
@@ -348,19 +348,15 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			gstr1Request.setGstin(corporateApplicantRequest.getGstIn());
 			GstResponse response = gstClient.getCalculations(gstr1Request);
 			GstCalculation gstData = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)response.getData(),GstCalculation.class);
-			map.put("gstResponse", !CommonUtils.isObjectNullOrEmpty(response.getData()) ? CommonUtils.convertToDoubleForXml(response.getData(),null) : " ");
+			int noOfCustomer = gstData.getNoOfCustomer().intValue();
+			map.put("noOfCustomer", noOfCustomer);
 			map.put("projectedSales", CommonUtils.convertValue(gstData.getProjectedSales()));
 			map.put("customerConcentration", CommonUtils.convertValue(gstData.getConcentration()));
 		}catch(Exception e) {
 			e.printStackTrace();
-		}
-		
-		try {
+		}try {
 			GstResponse response = gstClient.detailCalculation(corporateApplicantRequest.getGstIn());
 			map.put("gstDetailedResp",response.getData());
-			CAMGSTData camgstData = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)response.getData(),CAMGSTData.class);
-			map.put("keyObservation", CommonUtils.convertToDoubleForXml(camgstData.getKeyObservation(), null));
-			map.put("overview", CommonUtils.convertToDoubleForXml(camgstData.getOverview(), null));
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -368,7 +364,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		//ONE-FORM DATA
 		try {
 			//ONE-FORM DATA
-			map.put("corporateApplicant", CommonUtils.printFields(corporateApplicantRequest));
+    		map.put("corporateApplicant", corporateApplicantRequest);
 			map.put("orgName", CommonUtils.printFields(corporateApplicantRequest.getOrganisationName()));
 			map.put("constitution", !CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getConstitutionId()) ? StringEscapeUtils.escapeXml(Constitution.getById(corporateApplicantRequest.getConstitutionId()).getValue()) : " ");
 			
@@ -413,11 +409,11 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 					directorName += " "+directorBackgroundDetailRequest.getDirectorsName();
 					directorBackgroundDetailResponse.setDirectorsName(directorName);
 					//directorBackgroundDetailResponse.setQualification(directorBackgroundDetailRequest.getQualification());
-					directorBackgroundDetailResponse.setTotalExperience(directorBackgroundDetailRequest.getTotalExperience().toString());
+					directorBackgroundDetailResponse.setTotalExperience(CommonUtils.convertValueWithoutDecimal(directorBackgroundDetailRequest.getTotalExperience()));
 					directorBackgroundDetailResponse.setNetworth(CommonUtils.convertValue(directorBackgroundDetailRequest.getNetworth()));
 					directorBackgroundDetailResponse.setDesignation(directorBackgroundDetailRequest.getDesignation());
 					directorBackgroundDetailResponse.setAppointmentDate(directorBackgroundDetailRequest.getAppointmentDate());
-					directorBackgroundDetailResponse.setDin(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDin())?CommonUtils.convertValue(directorBackgroundDetailRequest.getDin()) : "");
+					directorBackgroundDetailResponse.setDin(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDin())?CommonUtils.convertValueWithoutDecimal(directorBackgroundDetailRequest.getDin()) : "");
 					directorBackgroundDetailResponse.setMobile(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getMobile())?directorBackgroundDetailRequest.getMobile(): " ");
 					directorBackgroundDetailResponse.setDob(directorBackgroundDetailRequest.getDob());
 					if(directorBackgroundDetailRequest.getPanNo().charAt(3) == 'H' ||directorBackgroundDetailRequest.getPanNo().charAt(3) == 'h') {
@@ -428,7 +424,16 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 							cibilRequest.setPan(directorBackgroundDetailRequest.getPanNo());
 							cibilRequest.setApplicationId(applicationId);
 							CibilScoreLogRequest cibilScoreByPanCard = cibilClient.getCibilScoreByPanCard(cibilRequest);
-							directorBackgroundDetailResponse.setCibilScore(!CommonUtils.isObjectNullOrEmpty(cibilScoreByPanCard)? cibilScoreByPanCard.getActualScore() : "NA");
+							if(!CommonUtils.isObjectNullOrEmpty(cibilScoreByPanCard)) {
+								if("000-1".equalsIgnoreCase(cibilScoreByPanCard.getActualScore())) {
+									directorBackgroundDetailResponse.setCibilScore("-1");
+								}else {
+									directorBackgroundDetailResponse.setCibilScore(Integer.valueOf(cibilScoreByPanCard.getActualScore()).toString());								
+								}								
+							}else {
+								directorBackgroundDetailResponse.setCibilScore("-");
+							}
+							
 						}catch(Exception e) {
 							e.printStackTrace();
 							logger.info("Error while getting cibil details",e);
@@ -471,7 +476,8 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			PrimaryCorporateRequest primaryCorporateRequest = primaryCorporateService.get(applicationId, userId);
 			map.put("loanAmt", !CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getLoanAmount()) ? CommonUtils.convertValueWithoutDecimal(primaryCorporateRequest.getAmount()) : " ");
 			map.put("loanType", !CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getProductId()) ? CommonUtils.LoanType.getType(primaryCorporateRequest.getProductId()).getName() : " ");
-			
+			map.put("promotorsContribution", CommonUtils.convertValue(primaryCorporateRequest.getPromoterContribution()));
+			map.put("totalAmtPer", !CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getTotalAmtPercentage()) ? " ("+CommonUtils.convertValue(primaryCorporateRequest.getTotalAmtPercentage())+"%)" : null);
 			if(!CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getPurposeOfLoanId())) {
 				map.put("purpose", StringEscapeUtils.escapeXml(PurposeOfLoan.getById(primaryCorporateRequest.getPurposeOfLoanId()).getValue()));
 			}else {
@@ -544,10 +550,24 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			ScoringResponse scoringResponse = scoringClient.getScore(scoringRequest);
 			ProposalScoreResponse proposalScoreResponse = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)scoringResponse.getDataObject(),ProposalScoreResponse.class);
 			if(!CommonUtils.isObjectNullOrEmpty(proposalScoreResponse)) {
-				map.put("proposalScoreResponse",CommonUtils.convertToDoubleForXml(proposalScoreResponse,null));
-				map.put("totalActualScore", CommonUtils.addNumbers(proposalScoreResponse.getManagementRiskScore(), proposalScoreResponse.getFinancialRiskScore(), proposalScoreResponse.getBusinessRiskScore()));
-				map.put("totalOutOfScore", CommonUtils.addNumbers(proposalScoreResponse.getManagementRiskMaxTotalScore(), proposalScoreResponse.getFinancialRiskMaxTotalScore(), proposalScoreResponse.getBusinessRiskMaxTotalScore()));
-				map.put("totalWeight", CommonUtils.addNumbers(proposalScoreResponse.getManagementRiskWeightOfScoring(), proposalScoreResponse.getFinancialRiskWeightOfScoring(), proposalScoreResponse.getBusinessRiskWeightOfScoring()));
+				map.put("managementRiskScore",!CommonUtils.isObjectNullOrEmpty(proposalScoreResponse.getManagementRiskScore()) ? proposalScoreResponse.getManagementRiskScore().intValue(): "-");
+				map.put("managementRiskMaxTotalScore",!CommonUtils.isObjectNullOrEmpty(proposalScoreResponse.getManagementRiskMaxTotalScore()) ?  proposalScoreResponse.getManagementRiskMaxTotalScore().intValue():"-");
+				map.put("managementRiskWeightOfScoring",!CommonUtils.isObjectNullOrEmpty(proposalScoreResponse.getManagementRiskWeightOfScoring()) ? proposalScoreResponse.getManagementRiskWeightOfScoring().intValue() :"-");
+				map.put("managementRiskWeight", !CommonUtils.isObjectNullOrEmpty(proposalScoreResponse.getManagementRiskWeight()) ? proposalScoreResponse.getManagementRiskWeight().intValue(): "-");
+				
+				map.put("financialRiskScore",!CommonUtils.isObjectNullOrEmpty(proposalScoreResponse.getFinancialRiskScore()) ? proposalScoreResponse.getFinancialRiskScore().intValue() : "-");
+				map.put("financialRiskMaxTotalScore",!CommonUtils.isObjectNullOrEmpty(proposalScoreResponse.getFinancialRiskMaxTotalScore()) ? proposalScoreResponse.getFinancialRiskMaxTotalScore().intValue():"-");
+				map.put("financialRiskWeightOfScoring",!CommonUtils.isObjectNullOrEmpty(proposalScoreResponse.getFinancialRiskWeightOfScoring()) ? proposalScoreResponse.getFinancialRiskWeightOfScoring().intValue(): "-");
+				map.put("financialRiskWeight",!CommonUtils.isObjectNullOrEmpty(proposalScoreResponse.getFinancialRiskWeight()) ? proposalScoreResponse.getFinancialRiskWeight().intValue() : "-");
+				
+				map.put("businessRiskScore", !CommonUtils.isObjectNullOrEmpty(proposalScoreResponse.getBusinessRiskScore()) ? proposalScoreResponse.getBusinessRiskScore().intValue():"-");
+				map.put("businessRiskMaxTotalScore",!CommonUtils.isObjectNullOrEmpty(proposalScoreResponse.getBusinessRiskMaxTotalScore()) ? proposalScoreResponse.getBusinessRiskMaxTotalScore().intValue():"-");
+				map.put("businessRiskWeightOfScoring", !CommonUtils.isObjectNullOrEmpty(proposalScoreResponse.getBusinessRiskWeightOfScoring()) ? proposalScoreResponse.getBusinessRiskWeightOfScoring().intValue():"-");
+				map.put("businessRiskWeight", !CommonUtils.isObjectNullOrEmpty(proposalScoreResponse.getBusinessRiskWeight()) ? proposalScoreResponse.getBusinessRiskWeight().intValue():"-");
+				
+				map.put("totalActualScore", CommonUtils.addNumbers(proposalScoreResponse.getManagementRiskScore(), proposalScoreResponse.getFinancialRiskScore(), proposalScoreResponse.getBusinessRiskScore()).intValue());
+				map.put("totalOutOfScore", CommonUtils.addNumbers(proposalScoreResponse.getManagementRiskMaxTotalScore(), proposalScoreResponse.getFinancialRiskMaxTotalScore(), proposalScoreResponse.getBusinessRiskMaxTotalScore()).intValue());
+				map.put("totalWeight", CommonUtils.addNumbers(proposalScoreResponse.getManagementRiskWeightOfScoring(), proposalScoreResponse.getFinancialRiskWeightOfScoring(), proposalScoreResponse.getBusinessRiskWeightOfScoring()).intValue());
 			}
 			List<Map<String, Object>> proposalScoreDetailResponseList = (List<Map<String, Object>>) scoringResponse.getDataList();
 			for(int i=0;i<proposalScoreDetailResponseList.size();i++)
@@ -555,169 +575,174 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				ProposalScoreDetailResponse proposalScoreDetailResponse = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)proposalScoreDetailResponseList.get(i),ProposalScoreDetailResponse.class);
 				switch (proposalScoreDetailResponse.getParameterName()) {
 				case ScoreParameter.COMBINED_NETWORTH:
-					map.put("combinedNetworthActual", StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()));
-					map.put("combinedNetworthScoreActual", proposalScoreDetailResponse.getObtainedScore());
-					map.put("combinedNetworthScoreOutOf", proposalScoreDetailResponse.getMaxScore());
+					map.put("combinedNetworthActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
+					map.put("combinedNetworthScoreActual",!CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
+					map.put("combinedNetworthScoreOutOf", proposalScoreDetailResponse.getMaxScore().intValue());
 					continue;
 				case ScoreParameter.CUSTOMER_ASSOCIATE_CONCERN:
-					map.put("customerAssociateConcernActual", StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()));
-					map.put("customerAssociateConcernScoreActual", proposalScoreDetailResponse.getObtainedScore());
-					map.put("customerAssociateConcernScoreOutOf", proposalScoreDetailResponse.getMaxScore());
+					map.put("customerAssociateConcernActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
+					map.put("customerAssociateConcernScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
+					map.put("customerAssociateConcernScoreOutOf", proposalScoreDetailResponse.getMaxScore().intValue());
 					continue;
 				case ScoreParameter.CIBIL_TRANSUNION_SCORE:
-					map.put("cibilTransunionScoreActual", StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()));
-					map.put("cibilTransunionScoreScoreActual", proposalScoreDetailResponse.getObtainedScore());
-					map.put("cibilTransunionScoreScoreOutOf", proposalScoreDetailResponse.getMaxScore());
+					map.put("cibilTransunionScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
+					map.put("cibilTransunionScoreScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
+					map.put("cibilTransunionScoreScoreOutOf", proposalScoreDetailResponse.getMaxScore().intValue());
 					continue;
 				case ScoreParameter.EXPERIENCE_IN_THE_BUSINESS:
-					map.put("experienceInBusinessActual", StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()));
-					map.put("experienceInBusinessScoreActual", proposalScoreDetailResponse.getObtainedScore());
-					map.put("experienceInBusinessScoreOutOf", proposalScoreDetailResponse.getMaxScore());
+					map.put("experienceInBusinessActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
+					map.put("experienceInBusinessScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
+					map.put("experienceInBusinessScoreOutOf", proposalScoreDetailResponse.getMaxScore().intValue());
 					continue;
 				case ScoreParameter.DEBT_EQUITY_RATIO:
-					map.put("debtEquityRatioActual", StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()));
-					map.put("debtEquityRatioScoreActual", proposalScoreDetailResponse.getObtainedScore());
-					map.put("debtEquityRatioScoreOutOf", proposalScoreDetailResponse.getMaxScore());
+					map.put("debtEquityRatioActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
+					map.put("debtEquityRatioScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
+					map.put("debtEquityRatioScoreOutOf", proposalScoreDetailResponse.getMaxScore().intValue());
 					continue;
 				case ScoreParameter.TOL_TNW:
-					map.put("tolTnwActual", StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()));
-					map.put("tolTnwScoreActual", proposalScoreDetailResponse.getObtainedScore());
-					map.put("tolTnwScoreOutOf", proposalScoreDetailResponse.getMaxScore());
+					map.put("tolTnwActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
+					map.put("tolTnwScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
+					map.put("tolTnwScoreOutOf", proposalScoreDetailResponse.getMaxScore().intValue());
 					continue;
 				case ScoreParameter.AVERAGE_CURRENT_RATIO:
-					map.put("avgCurrentRatioActual", StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()));
-					map.put("avgCurrentRatioScoreActual", proposalScoreDetailResponse.getObtainedScore());
-					map.put("avgCurrentRatioScoreOutOf", proposalScoreDetailResponse.getMaxScore());
+					map.put("avgCurrentRatioActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
+					map.put("avgCurrentRatioScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
+					map.put("avgCurrentRatioScoreOutOf", proposalScoreDetailResponse.getMaxScore().intValue());
 					continue;
 				case ScoreParameter.WORKING_CAPITAL_CYCLE:
-					map.put("wcCycleActual", StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()));
-					map.put("wcCycleScoreActual", proposalScoreDetailResponse.getObtainedScore());
-					map.put("wcCycleScoreOutOf", proposalScoreDetailResponse.getMaxScore());
+					map.put("wcCycleActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
+					map.put("wcCycleScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
+					map.put("wcCycleScoreOutOf", proposalScoreDetailResponse.getMaxScore().intValue());
 					continue;
 				case ScoreParameter.AVERAGE_ANNUAL_GROWTH_GROSS_CASH:
-					map.put("avgAnnualgrowthGrossActual", StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()));
-					map.put("avgAnnualgrowthGrossScoreActual", proposalScoreDetailResponse.getObtainedScore());
-					map.put("avgAnnualgrowthGrossScoreOutOf", proposalScoreDetailResponse.getMaxScore());
+					map.put("avgAnnualgrowthGrossActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
+					map.put("avgAnnualgrowthGrossScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
+					map.put("avgAnnualgrowthGrossScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue():"-");
 					continue;
 				case ScoreParameter.AVERAGE_ANNUAL_GROWTH_NET_SALE:
-					map.put("avgAnnualgrowthNetSaleActual", StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()));
-					map.put("avgAnnualgrowthNetSaleScoreActual", proposalScoreDetailResponse.getObtainedScore());
-					map.put("avgAnnualgrowthNetSaleScoreOutOf", proposalScoreDetailResponse.getMaxScore());
+					map.put("avgAnnualgrowthNetSaleActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
+					map.put("avgAnnualgrowthNetSaleScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
+					map.put("avgAnnualgrowthNetSaleScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue():"-");
 					continue;
 				case ScoreParameter.AVERAGE_EBIDTA:
-					map.put("avgEbidtaActual", StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()));
-					map.put("avgEbidtaScoreActual", proposalScoreDetailResponse.getObtainedScore());
-					map.put("avgEbidtaScoreOutOf", proposalScoreDetailResponse.getMaxScore());
+					map.put("avgEbidtaActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
+					map.put("avgEbidtaScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
+					map.put("avgEbidtaScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue():"-");
 					continue;
 				case ScoreParameter.AVERAGE_ANNUAL_GROSS_CASH_ACCRUALS:
-					map.put("avgAnnualGrossCashActual", StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()));
-					map.put("avgAnnualGrossCashScoreActual", proposalScoreDetailResponse.getObtainedScore());
-					map.put("avgAnnualGrossCashScoreOutOf", proposalScoreDetailResponse.getMaxScore());
+					map.put("avgAnnualGrossCashActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
+					map.put("avgAnnualGrossCashScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
+					map.put("avgAnnualGrossCashScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue():"-");
 					continue;
 				case ScoreParameter.AVERAGE_INTEREST_COV_RATIO:
-					map.put("avgIntCovRatioActual", StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()));
-					map.put("avgIntCovRatioScoreActual", proposalScoreDetailResponse.getObtainedScore());
-					map.put("avgIntCovRatioScoreOutOf", proposalScoreDetailResponse.getMaxScore());
+					map.put("avgIntCovRatioActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
+					map.put("avgIntCovRatioScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
+					map.put("avgIntCovRatioScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue():"-");
 					continue;
 				case ScoreParameter.NO_OF_CUSTOMER:
-					map.put("noOfCustomerActual", StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()));
-					map.put("noOfCustomerScoreActual", proposalScoreDetailResponse.getObtainedScore());
-					map.put("noOfCustomerScoreOutOf", proposalScoreDetailResponse.getMaxScore());
+					map.put("noOfCustomerActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
+					map.put("noOfCustomerScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
+					map.put("noOfCustomerScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue():"-");
 					continue;
 				case ScoreParameter.CONCENTRATION_CUSTOMER:
-					map.put("concentrationCustomerActual", StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()));
-					map.put("concentrationCustomerScoreActual", proposalScoreDetailResponse.getObtainedScore());
-					map.put("concentrationCustomerScoreOutOf", proposalScoreDetailResponse.getMaxScore());
+					map.put("concentrationCustomerActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
+					map.put("concentrationCustomerScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
+					map.put("concentrationCustomerScoreOutOf",!CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue():"-");
 					continue;
 				case ScoreParameter.CREDIT_SUMMATION:
-					map.put("creditSummationActual", StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()));
-					map.put("creditSummationScoreActual", proposalScoreDetailResponse.getObtainedScore());
-					map.put("creditSummationScoreOutOf", proposalScoreDetailResponse.getMaxScore());
+					map.put("creditSummationActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
+					map.put("creditSummationScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
+					map.put("creditSummationScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue():"-");
 					continue;
 				case ScoreParameter.AGE:
-					map.put("ageActual", StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()));
-					map.put("ageScoreActual", proposalScoreDetailResponse.getObtainedScore());
-					map.put("ageScoreOutOf", proposalScoreDetailResponse.getMaxScore());
+					map.put("ageActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
+					map.put("ageScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
+					map.put("ageScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue():"-");
 					continue;
 				case ScoreParameter.NO_OF_CHILDREN:
-					map.put("noOfChildrenActual", StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()));
-					map.put("noOfChildrenScoreActual", proposalScoreDetailResponse.getObtainedScore());
-					map.put("noOfChildrenScoreOutOf", proposalScoreDetailResponse.getMaxScore());
+					map.put("noOfChildrenActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
+					map.put("noOfChildrenScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
+					map.put("noOfChildrenScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue():"-");
 					continue;
 				case ScoreParameter.OWNING_HOUSE:
-					map.put("owningHouseActual", StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()));
-					map.put("owningHouseScoreActual", proposalScoreDetailResponse.getObtainedScore());
-					map.put("owningHouseScoreOutOf", proposalScoreDetailResponse.getMaxScore());
+					map.put("owningHouseActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
+					map.put("owningHouseScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
+					map.put("owningHouseScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue():"-");
 					continue;
 				case ScoreParameter.ACADEMIC_QUALIFICATION:
-					map.put("acadamicQualificationActual", StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()));
-					map.put("acadamicQualificationScoreActual", proposalScoreDetailResponse.getObtainedScore());
-					map.put("acadamicQualificationScoreOutOf", proposalScoreDetailResponse.getMaxScore());
+					map.put("acadamicQualificationActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
+					map.put("acadamicQualificationScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
+					map.put("acadamicQualificationScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue():"-");
 					continue;
 				case ScoreParameter.EXPERIENCE_IN_THE_LINE_OF_TRADE:
-					map.put("experienceInTradeActual", StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()));
-					map.put("experienceInTradeScoreActual", proposalScoreDetailResponse.getObtainedScore());
-					map.put("experienceInTradeScoreOutOf", proposalScoreDetailResponse.getMaxScore());
+					map.put("experienceInTradeActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
+					map.put("experienceInTradeScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
+					map.put("experienceInTradeScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue():"-");
 					continue;
 				case ScoreParameter.SPOUSE_DETAILS:
-					map.put("spouseDetailsActual", StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()));
-					map.put("spouseDetailsScoreActual", proposalScoreDetailResponse.getObtainedScore());
-					map.put("spouseDetailsScoreOutOf", proposalScoreDetailResponse.getMaxScore());
+					map.put("spouseDetailsActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
+					map.put("spouseDetailsScoreActual",!CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
+					map.put("spouseDetailsScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue():"-");
 					continue;
 				case ScoreParameter.ASSESSED_FOR_INCOME_TAX:
-					map.put("assessedITActual", StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()));
-					map.put("assessedITScoreActual", proposalScoreDetailResponse.getObtainedScore());
-					map.put("assessedITScoreOutOf", proposalScoreDetailResponse.getMaxScore());
+					map.put("assessedITActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
+					map.put("assessedITScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
+					map.put("assessedITScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue():"-");
 					continue;
 				case ScoreParameter.HAVE_LIFE_INSURANCE_POLICY:
-					map.put("lifeInsurancePolicyActual", StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()));
-					map.put("lifeInsurancePolicyScoreActual", proposalScoreDetailResponse.getObtainedScore());
-					map.put("lifeInsurancePolicyScoreOutOf", proposalScoreDetailResponse.getMaxScore());
+					map.put("lifeInsurancePolicyActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
+					map.put("lifeInsurancePolicyScoreActual",!CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
+					map.put("lifeInsurancePolicyScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue():"-");
 					continue;
 				case ScoreParameter.REPAYMENT_PERIOD:
-					map.put("repaymentPeriodActual", StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()));
-					map.put("repaymentPeriodScoreActual", proposalScoreDetailResponse.getObtainedScore());
-					map.put("repaymentPeriodScoreOutOf", proposalScoreDetailResponse.getMaxScore());
+					map.put("repaymentPeriodActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
+					map.put("repaymentPeriodScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
+					map.put("repaymentPeriodScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue():"-");
 					continue;
 				case ScoreParameter.CONTINUOUS_NET_PROFIT:
-					map.put("continuousNetProfitActual", StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()));
-					map.put("continuousNetProfitScoreActual", proposalScoreDetailResponse.getObtainedScore());
-					map.put("continuousNetProfitScoreOutOf", proposalScoreDetailResponse.getMaxScore());
+					map.put("continuousNetProfitActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
+					map.put("continuousNetProfitScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
+					map.put("continuousNetProfitScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue():"-");
 					continue;
 				case ScoreParameter.QUALITY_OF_RECEIVABLES:
-					map.put("qualityReceivablesActual", StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()));
-					map.put("qualityReceivablesScoreActual", proposalScoreDetailResponse.getObtainedScore());
-					map.put("qualityReceivablesScoreOutOf", proposalScoreDetailResponse.getMaxScore());
+					map.put("qualityReceivablesActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
+					map.put("qualityReceivablesScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
+					map.put("qualityReceivablesScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue():"-");
 					continue;
 				case ScoreParameter.QUALITY_OF_FINISHED_GOODS_INVENTORY:
-					map.put("qualityFinishedGoodsActual", StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()));
-					map.put("qualityFinishedGoodsScoreActual", proposalScoreDetailResponse.getObtainedScore());
-					map.put("qualityFinishedGoodsScoreOutOf", proposalScoreDetailResponse.getMaxScore());
+					map.put("qualityFinishedGoodsActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
+					map.put("qualityFinishedGoodsScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
+					map.put("qualityFinishedGoodsScoreOutOf",!CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue():"-");
 					continue;
 				case ScoreParameter.KNOW_HOW:
-					map.put("knowHowActual", StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()));
-					map.put("knowHowScoreActual", proposalScoreDetailResponse.getObtainedScore());
-					map.put("knowHowScoreOutOf", proposalScoreDetailResponse.getMaxScore());
+					map.put("knowHowActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
+					map.put("knowHowScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
+					map.put("knowHowScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue():"-");
 					continue;
 				case ScoreParameter.LINE_OF_ACTIVITY:
-					map.put("lineOfActivityActual", StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()));
-					map.put("lineOfActivityScoreActual", proposalScoreDetailResponse.getObtainedScore());
-					map.put("lineOfActivityScoreOutOf", proposalScoreDetailResponse.getMaxScore());
+					map.put("lineOfActivityActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
+					map.put("lineOfActivityScoreActual",!CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
+					map.put("lineOfActivityScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue():"-");
 					continue;
 				case ScoreParameter.COMPETITION:
-					map.put("competitionActual", StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()));
-					map.put("competitionScoreActual", proposalScoreDetailResponse.getObtainedScore());
-					map.put("competitionScoreOutOf", proposalScoreDetailResponse.getMaxScore());
+					map.put("competitionActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
+					map.put("competitionScoreActual",!CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
+					map.put("competitionScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue():"-");
 					continue;
 				case ScoreParameter.FACTORY_PREMISES:
-					map.put("factoryPremisesActual", StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()));
-					map.put("factoryPremisesScoreActual", proposalScoreDetailResponse.getObtainedScore());
-					map.put("factoryPremisesScoreOutOf", proposalScoreDetailResponse.getMaxScore());
+					map.put("factoryPremisesActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
+					map.put("factoryPremisesScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
+					map.put("factoryPremisesScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue():"-");
 					continue;
 				case ScoreParameter.SALES_SHOW_A_RISING_TREND:
-					map.put("salesShowActual", StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()));
-					map.put("salesShowScoreActual", proposalScoreDetailResponse.getObtainedScore());
-					map.put("salesShowScoreOutOf", proposalScoreDetailResponse.getMaxScore());
+					map.put("salesShowActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
+					map.put("salesShowScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
+					map.put("salesShowScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue():"-");
+					continue;
+				case ScoreParameter.YEARS_IN_BUSINESS:
+					map.put("yearsInBusinessActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
+					map.put("yearsInBusinessScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
+					map.put("yearsInBusinessScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue():"-");
 					continue;
 				default:
 					break;
@@ -728,6 +753,15 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				e.printStackTrace();
 				logger.info("Error while getting scoring data");
 			}
+		
+		//NAME AS PER ITR
+		try{
+			ITRConnectionResponse itrResponse = itrClient.getITRBasicDetails(applicationId);
+			System.out.println("ITR RESPONSE===========>"+itrResponse);
+			map.put("nameAsPerItr", CommonUtils.printFields(itrResponse.getData()));
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
 		
 		//PERFIOS API DATA (BANK STATEMENT ANALYSIS)
 		ReportRequest reportRequest = new ReportRequest();
@@ -779,8 +813,18 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			CGTMSEDataResponse cgtmseDataResponse = thirdPartyClient.getCalulation(applicationId);
 			if(!CommonUtils.isObjectNullOrEmpty(cgtmseDataResponse)) {
 				map.put("cgtmseData", CommonUtils.printFields(cgtmseDataResponse));
-				map.put("maxCgtmseCoverageAmount", CommonUtils.convertValue(cgtmseDataResponse.getMaxCgtmseCoverageAmount()));
-				map.put("identityAmount", CommonUtils.convertValue(cgtmseDataResponse.getIdentityAmount()));
+				map.put("maxCgtmseCoverageAmount", CommonUtils.convertValueWithoutDecimal(cgtmseDataResponse.getMaxCgtmseCoverageAmount()));
+				map.put("identityAmount", CommonUtils.convertValueWithoutDecimal(cgtmseDataResponse.getIdentityAmount()));
+				map.put("gutAmt", CommonUtils.convertValueWithoutDecimal(cgtmseDataResponse.getGutAmt()));
+				map.put("loanAmount", CommonUtils.convertValueWithoutDecimal(cgtmseDataResponse.getLoanAmount()));
+				map.put("cgtmseCoverageAmount", CommonUtils.convertValueWithoutDecimal(cgtmseDataResponse.getCgtmseCoverageAmount()));
+				map.put("amountOfColleteral", CommonUtils.convertValueWithoutDecimal(cgtmseDataResponse.getAmountOfColleteral()));
+				map.put("totalColleteralAmount", CommonUtils.convertValueWithoutDecimal(cgtmseDataResponse.getTotalColleteralAmount()));
+				map.put("gurAmtCarld", CommonUtils.convertValueWithoutDecimal(cgtmseDataResponse.getGurAmtCarld()));
+				map.put("colleteralCoverage", CommonUtils.convertValueWithoutDecimal(cgtmseDataResponse.getColleteralCoverage()));
+				map.put("colleteralCoverage", CommonUtils.convertValueWithoutDecimal(cgtmseDataResponse.getColleteralCoverage()));
+				map.put("percTerms", CommonUtils.convertValueWithoutDecimal(cgtmseDataResponse.getPercTerms()));
+				map.put("assetAqu", CommonUtils.convertValueWithoutDecimal(cgtmseDataResponse.getAssetAqusition()));
 				if(!CommonUtils.isObjectNullOrEmpty(cgtmseDataResponse.getCgtmseResponse()) && !CommonUtils.isObjectNullOrEmpty(cgtmseDataResponse.getCgtmseResponse().getDetails())) {
 					map.put("cgtmseBankWise", CommonUtils.printFields(cgtmseDataResponse.getCgtmseResponse().getDetails()));
 				}
@@ -942,7 +986,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 					promotorBackgroundDetailResponse.setAddress(promotorBackgroundDetailRequest.getAddress());
 					promotorBackgroundDetailResponse.setGender((promotorBackgroundDetailRequest.getGender() != null ? Gender.getById(promotorBackgroundDetailRequest.getGender()).getValue() : " " ));
 					promotorBackgroundDetailResponse.setDin(!CommonUtils.isObjectNullOrEmpty(promotorBackgroundDetailRequest.getDin()) ? CommonUtils.convertValue(promotorBackgroundDetailRequest.getDin()) : " ");
-					promotorBackgroundDetailResponse.setTotalExperience(CommonUtils.convertValue(promotorBackgroundDetailRequest.getTotalExperience()));
+					promotorBackgroundDetailResponse.setTotalExperience(CommonUtils.convertValueWithoutDecimal(promotorBackgroundDetailRequest.getTotalExperience()));
 					promotorBackgroundDetailResponse.setNetworth(CommonUtils.convertValue(promotorBackgroundDetailRequest.getNetworth()));
 					promotorBackgroundDetailResponse.setAppointmentDate(promotorBackgroundDetailRequest.getAppointmentDate() != null ? DATE_FORMAT.format(promotorBackgroundDetailRequest.getAppointmentDate()) : null);
 					promotorBackgroundDetailResponse.setRelationshipType((promotorBackgroundDetailRequest.getRelationshipType() != null ? DirectorRelationshipType.getById(promotorBackgroundDetailRequest.getRelationshipType()).getValue() : " " ));
@@ -971,8 +1015,8 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			
 			//SHARE PRICE
 			CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository.getByApplicationAndUserId(userId, applicationId);
-			map.put("sharePriceFace", CommonUtils.convertValueWithoutDecimal(corporateApplicantDetail.getSharePriceFace()));
-			map.put("sharePriceMarket", CommonUtils.convertValueWithoutDecimal(corporateApplicantDetail.getSharePriceMarket()));
+			map.put("sharePriceFace", CommonUtils.convertValue(corporateApplicantDetail.getSharePriceFace()));
+			map.put("sharePriceMarket", CommonUtils.convertValue(corporateApplicantDetail.getSharePriceMarket()));
 			
 			//DETAILS OF GUARANTER
 			try {
@@ -1378,6 +1422,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		
 		curFinYearString.setRoce(CommonUtils.convertValue(((curFinYearDouble.getOperatingProfitEbitadOi()*2/(CommonUtils.addNumbers(curFinYearDouble.getShareHolderFunds(), prevFinYearDouble.getShareHolderFunds(), curFinYearDouble.getTotalNonCurruntLiablities(), prevFinYearDouble.getTotalNonCurruntLiablities())))*12/curFinYearDouble.getNoOfMonth())* 100));
 		prevFinYearString.setRoce(CommonUtils.convertValue(((prevFinYearDouble.getOperatingProfitEbitadOi()*2/(CommonUtils.addNumbers(prevFinYearDouble.getShareHolderFunds(), yrBeforePrevFinYearDouble.getShareHolderFunds(), prevFinYearDouble.getTotalNonCurruntLiablities(), yrBeforePrevFinYearDouble.getTotalNonCurruntLiablities())))*12/prevFinYearDouble.getNoOfMonth())* 100));
+		yrBeforePrevFinYearString.setRoce("-");
 		
 		curFinYearString.setAssetTurnOver(CommonUtils.convertValue(CommonUtils.divideNumbers(curFinYearDouble.getNetSale() * 12, (CommonUtils.multiplyNumbers(curFinYearDouble.getTotalAsset(), curFinYearDouble.getNoOfMonth())))));
 		prevFinYearString.setAssetTurnOver(CommonUtils.convertValue(CommonUtils.divideNumbers(prevFinYearDouble.getNetSale() * 12, (CommonUtils.multiplyNumbers(prevFinYearDouble.getTotalAsset(), prevFinYearDouble.getNoOfMonth())))));
@@ -1401,10 +1446,12 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		
 		curFinYearString.setNetSalesGrowthCapital(CommonUtils.convertValue((CommonUtils.divideNumbers(curFinYearDouble.getNetSale(),prevFinYearDouble.getNetSale())-1)* 100));
 		prevFinYearString.setNetSalesGrowthCapital(CommonUtils.convertValue((CommonUtils.divideNumbers(prevFinYearDouble.getNetSale(),yrBeforePrevFinYearDouble.getNetSale())-1)* 100));
+		yrBeforePrevFinYearString.setNetSalesGrowthCapital("-");
 		
 		curFinYearString.setPatGrowthCapital(CommonUtils.convertValue((CommonUtils.divideNumbers(curFinYearDouble.getProfitAfterTax(),prevFinYearDouble.getProfitAfterTax())-1)* 100));
 		prevFinYearString.setPatGrowthCapital(CommonUtils.convertValue((CommonUtils.divideNumbers(prevFinYearDouble.getProfitAfterTax(),yrBeforePrevFinYearDouble.getProfitAfterTax())-1)* 100));
-
+		yrBeforePrevFinYearString.setPatGrowthCapital("-");
+		
 		curFinYearDouble.setAdjustedTotalDebtEquity(CommonUtils.divideNumbers((CommonUtils.substractThreeNumbers(curFinYearDouble.getTotalNonCurruntLiablities(),curFinYearDouble.getLongTermProvision(),curFinYearDouble.getUnsecuredLoansPromoters())), (CommonUtils.addNumbers(curFinYearDouble.getShareHolderFunds(),curFinYearDouble.getUnsecuredLoansPromoters()))));
 		prevFinYearDouble.setAdjustedTotalDebtEquity(CommonUtils.divideNumbers((CommonUtils.substractThreeNumbers(prevFinYearDouble.getTotalNonCurruntLiablities(),prevFinYearDouble.getLongTermProvision(),prevFinYearDouble.getUnsecuredLoansPromoters())), (CommonUtils.addNumbers(prevFinYearDouble.getShareHolderFunds(),prevFinYearDouble.getUnsecuredLoansPromoters()))));
 		yrBeforePrevFinYearDouble.setAdjustedTotalDebtEquity(CommonUtils.divideNumbers((CommonUtils.substractThreeNumbers(yrBeforePrevFinYearDouble.getTotalNonCurruntLiablities(),yrBeforePrevFinYearDouble.getLongTermProvision(),yrBeforePrevFinYearDouble.getUnsecuredLoansPromoters())), (CommonUtils.addNumbers(yrBeforePrevFinYearDouble.getShareHolderFunds(),yrBeforePrevFinYearDouble.getUnsecuredLoansPromoters()))));
@@ -1437,6 +1484,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			prevFinYearString.setGrowthDebtEquity("0.0");
 		} 
 		//prevFinYearString.setGrowthDebtEquity(CommonUtils.convertValue(CommonUtils.substractNumbers(prevFinYearDouble.getAdjustedTotalDebtEquity(),yrBeforePrevFinYearDouble.getAdjustedTotalDebtEquity())/yrBeforePrevFinYearDouble.getAdjustedTotalDebtEquity()));
+		yrBeforePrevFinYearString.setGrowthDebtEquity("-");
 		
 		curFinYearString.setCurruntRatioX(CommonUtils.convertValue(CommonUtils.divideNumbers((CommonUtils.addNumbers(curFinYearDouble.getInventories(),curFinYearDouble.getSundryDebtors())), curFinYearDouble.getTradePayables())));
 		prevFinYearString.setCurruntRatioX(CommonUtils.convertValue(CommonUtils.divideNumbers((CommonUtils.addNumbers(prevFinYearDouble.getInventories(),prevFinYearDouble.getSundryDebtors())), prevFinYearDouble.getTradePayables())));
@@ -1448,6 +1496,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		
 		curFinYearString.setCashInterestCover(CommonUtils.convertValue(CommonUtils.divideNumbers((CommonUtils.addNumbers(curFinYearDouble.getCashFromOperating(),curFinYearDouble.getInterest())), curFinYearDouble.getInterest())));
 		prevFinYearString.setCashInterestCover(CommonUtils.convertValue(CommonUtils.divideNumbers((CommonUtils.addNumbers(prevFinYearDouble.getCashFromOperating(),prevFinYearDouble.getInterest())), prevFinYearDouble.getInterest())));
+		yrBeforePrevFinYearString.setCashInterestCover("-");
 		
 		curFinYearString.setDebtEbitad(CommonUtils.convertValue(CommonUtils.divideNumbers((CommonUtils.substractThreeNumbers(curFinYearDouble.getTotalNonCurruntLiablities(),curFinYearDouble.getUnsecuredLoansPromoters(),curFinYearDouble.getLongTermProvision())), (12*CommonUtils.divideNumbers(curFinYearDouble.getOperatingProfitEbitadOi(),curFinYearDouble.getNoOfMonth())))));
 		prevFinYearString.setDebtEbitad(CommonUtils.convertValue(CommonUtils.divideNumbers((CommonUtils.substractThreeNumbers(prevFinYearDouble.getTotalNonCurruntLiablities(),prevFinYearDouble.getUnsecuredLoansPromoters(),prevFinYearDouble.getLongTermProvision())), (12*CommonUtils.divideNumbers(prevFinYearDouble.getOperatingProfitEbitadOi(),prevFinYearDouble.getNoOfMonth())))));
@@ -1461,9 +1510,11 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		prevFinYearDouble.setCfoMargine(CommonUtils.divideNumbers(prevFinYearDouble.getCashFromOperating(),prevFinYearDouble.getNetSale()));
 		curFinYearString.setCfoMargine(CommonUtils.convertValue(curFinYearDouble.getCfoMargine()));
 		prevFinYearString.setCfoMargine(CommonUtils.convertValue(prevFinYearDouble.getCfoMargine()));
+		yrBeforePrevFinYearString.setCfoMargine("-");
 		
 		curFinYearString.setGrowthCfoMargine(CommonUtils.convertValue(CommonUtils.divideNumbers((CommonUtils.substractNumbers(curFinYearDouble.getCfoMargine(),prevFinYearDouble.getCfoMargine())), prevFinYearDouble.getCfoMargine())));
-		prevFinYearString.setGrowthCfoMargine("0.0");
+		prevFinYearString.setGrowthCfoMargine("-");
+		yrBeforePrevFinYearString.setGrowthCfoMargine("-");
 		
 		
 		curFinYear[curFinYear.length - 2] = curFinYearString;

@@ -53,6 +53,12 @@ public class NTBServiceImpl implements NTBService {
     @Autowired
     private ConnectClient connectClient;
 
+    @Autowired
+    private IndustrySectorRepository industrySectorRepository;
+
+    @Autowired
+    private SubSectorRepository subSectorRepository;
+
     @Override
     public DirectorBackgroundDetailRequest getOneformDetailByDirectorId(Long directorId) throws Exception {
         logger.info("Enter getOneformDetailByDirectorId() with directorID : " + directorId);
@@ -201,6 +207,20 @@ public class NTBServiceImpl implements NTBService {
                 return null;
             }
             BeanUtils.copyProperties(primaryCorporateDetail,fundSeekerInputRequestResponse);
+
+            //---industry
+            List<Long> industryList = industrySectorRepository.getIndustryByApplicationId(applicationId);
+            logger.info("TOTAL INDUSTRY FOUND ------------->" + industryList.size() + "------------By APP Id -----------> " + applicationId);
+            fundSeekerInputRequestResponse.setIndustrylist(industryList);
+
+            List<Long> sectorList = industrySectorRepository.getSectorByApplicationId(applicationId);
+            logger.info("TOTAL SECTOR FOUND ------------->" + sectorList.size() + "------------By APP Id -----------> " + applicationId);
+            fundSeekerInputRequestResponse.setSectorlist(sectorList);
+
+            List<Long> subSectorList = subSectorRepository.getSubSectorByApplicationId(applicationId);
+            logger.info("TOTAL SUB SECTOR FOUND ------------->" + subSectorList.size() + "fundSeekerInputRequestResponse " + applicationId);
+            fundSeekerInputRequestResponse.setSubsectors(subSectorList);
+
             logger.info("Data found for given applicationid ==>"+applicationId + " response Data {}===>"+fundSeekerInputRequestResponse.toString());
             return fundSeekerInputRequestResponse;
         }catch (Exception e){
@@ -258,7 +278,7 @@ public class NTBServiceImpl implements NTBService {
             primaryCorporateDetail.setApplicationId(new LoanApplicationMaster(applicationId));
             primaryCorporateDetail.setModifiedBy(userId);
             primaryCorporateDetail.setModifiedDate(new Date());
-
+            primaryCorporateDetail.setIsActive(true);
             primaryCorporateDetailRepository.saveAndFlush(primaryCorporateDetail);
 
             // =========================== Director details save=======================================================================

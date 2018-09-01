@@ -87,9 +87,59 @@ public class PersonalLoanParameter extends ProductMaster implements Serializable
 
 	@Column(name="min_tenure")
 	private Double minTenure;
+	
+	@Column(name="min_bureau")
+	private Double minBureauScore;
+	
+	@Column(name="max_bureau")
+	private Double maxBureauScore;
+	
+	@Column(name="is_bureau_display")
+	private Boolean isBureauScoreDisplay=false;
+
+	@Column(name="is_bureau_mandatory")
+	private Boolean isBureauScoreMandatory=false;
+	
+	@Column(name="min_bureau_days")
+	private Double minBureauScoreDays;
+	
+	@Column(name="max_bureau_days")
+	private Double maxBureauScoreDays;
+	
+	@Column(name="is_bureau_display_days")
+	private Boolean isBureauScoreDisplayDays=false;
+
+	@Column(name="is_bureau_mandatory_days")
+	private Boolean isBureauScoreMandatoryDays=false;
+	
+	
+	@Column(name="min_risk_score_model")
+	private Double minRiskScore;
+	
+	@Column(name="max_risk_score_model")
+	private Double maxRiskScore;
+	
+	@Column(name="is_risk_score_model_display")
+	private Boolean isRiskScoreDisplay=false;
+
+	@Column(name="is_risk_score_model_mandatory")
+	private Boolean isRiskScoreMandatory=false;
+	
 
 	@Column(name="min_yearly_income_range")
 	private Double minYearlyIncomeRange;
+	
+	@Column(name="min_monthly_income_range")
+	private Double minMonthlyIncomeRange;
+	
+	@Column(name="max_monthly_income_range")
+	private Double maxMonthlyIncomeRange;
+	
+	@Column(name="is_monthly_income_range_display")
+	private Boolean isMonthlyIncomeRangeDisplay=false;
+
+	@Column(name="is_monthly_income_range_mandatory")
+	private Boolean isMonthlyIncomeRangeMandatory=false;
 
 	@Column(name="modified_by")
 	private Long modifiedBy;
@@ -98,12 +148,6 @@ public class PersonalLoanParameter extends ProductMaster implements Serializable
 	@Column(name="modified_date")
 	private Date modifiedDate;
 	
-	/*//FP NEW REQUIREMENT
-	@Column(name="employment_id")
-	private Integer employmentId;
-	
-	@Column(name="employment_place_id")
-	private Integer employmentPlaceId;
 	
 	@Column(name="min_current_job_experience")
 	private Integer mincurrentJobExperience;
@@ -117,20 +161,46 @@ public class PersonalLoanParameter extends ProductMaster implements Serializable
 	@Column(name="max_total_job_experience")
 	private Integer maxTotalJobExperience;
 	
-	@Column(name="foir")
-	private Double foir;
-	
 	@Column(name="is_employment_type_display")
 	private Boolean isEmploymentTypeDisplay=false;
 
 	@Column(name="is_employment_type_mandatory")
 	private Boolean isEmploymentTypeMandatory=false;
 	
+	@Column(name="is_employment_status_display")
+	private Boolean isEmploymentStatusDisplay=false;
+
+	@Column(name="is_employment_status_mandatory")
+	private Boolean isEmploymentStatusMandatory=false;
+	
+	@Column(name="is_credit_rating_display")
+	private Boolean isCreditRatingDisplay=false;
+
+	@Column(name="is_credit_rating_mandatory")
+	private Boolean isCreditRatingMandatory=false;
+	
+	
+	
+	/*//FP NEW REQUIREMENT
+	@Column(name="employment_id")
+	private Integer employmentId;
+	
+	@Column(name="employment_place_id")
+	private Integer employmentPlaceId;
+	
+	
+	
+	@Column(name="foir")
+	private Double foir;
+	
+	
+	
 	@Column(name="is_employment_place_display")
 	private Boolean isEmploymentPlaceDisplay=false;
 
 	@Column(name="is_employment_place_mandatory")
 	private Boolean isEmploymentPlaceMandatory=false;
+	*/
 	
 	@Column(name="is_current_job_experience_display")
 	private Boolean isCurrentJobExperienceDisplay=false;
@@ -142,7 +212,7 @@ public class PersonalLoanParameter extends ProductMaster implements Serializable
 	private Boolean isTotalJobExperienceDisplay=false;
 
 	@Column(name="is_total_job_experience_mandatory")
-	private Boolean isTotalJobExperienceMandatory=false;*/
+	private Boolean isTotalJobExperienceMandatory=false;
 
 	public PersonalLoanParameter() {
 	}
@@ -347,6 +417,246 @@ public class PersonalLoanParameter extends ProductMaster implements Serializable
 		this.modifiedDate = modifiedDate;
 	}
 
+	public Double getMinBureauScore() {
+		return minBureauScore;
+	}
+
+	public void setMinBureauScore(Double minBureauScore) {
+		this.minBureauScore = minBureauScore;
+	}
+
+	public Double getMaxBureauScore() {
+		return maxBureauScore;
+	}
+
+	public void setMaxBureauScore(Double maxBureauScore) {
+		this.maxBureauScore = maxBureauScore;
+	}
+
+	public Boolean getIsBureauScoreDisplay() {
+		return isBureauScoreDisplay;
+	}
+
+	public void setIsBureauScoreDisplay(Boolean isBureauScoreDisplay) {
+		this.isBureauScoreDisplay = isBureauScoreDisplay;
+	}
+
+	public Boolean getIsBureauScoreMandatory() {
+		return isBureauScoreMandatory;
+	}
+
+	public void setIsBureauScoreMandatory(Boolean isBureauScoreMandatory) {
+		this.isBureauScoreMandatory = isBureauScoreMandatory;
+	}
+
+	public Double getMinBureauScoreDays() {
+		return minBureauScoreDays;
+	}
+
+	public void setMinBureauScoreDays(Double minBureauScoreDays) {
+		this.minBureauScoreDays = minBureauScoreDays;
+	}
+
+	public Double getMaxBureauScoreDays() {
+		return maxBureauScoreDays;
+	}
+
+	public void setMaxBureauScoreDays(Double maxBureauScoreDays) {
+		this.maxBureauScoreDays = maxBureauScoreDays;
+	}
+
+	public Boolean getIsBureauScoreDisplayDays() {
+		return isBureauScoreDisplayDays;
+	}
+
+	public void setIsBureauScoreDisplayDays(Boolean isBureauScoreDisplayDays) {
+		this.isBureauScoreDisplayDays = isBureauScoreDisplayDays;
+	}
+
+	public Boolean getIsBureauScoreMandatoryDays() {
+		return isBureauScoreMandatoryDays;
+	}
+
+	public void setIsBureauScoreMandatoryDays(Boolean isBureauScoreMandatoryDays) {
+		this.isBureauScoreMandatoryDays = isBureauScoreMandatoryDays;
+	}
+
+	public Double getMinRiskScore() {
+		return minRiskScore;
+	}
+
+	public void setMinRiskScore(Double minRiskScore) {
+		this.minRiskScore = minRiskScore;
+	}
+
+	public Double getMaxRiskScore() {
+		return maxRiskScore;
+	}
+
+	public void setMaxRiskScore(Double maxRiskScore) {
+		this.maxRiskScore = maxRiskScore;
+	}
+
+	public Boolean getIsRiskScoreDisplay() {
+		return isRiskScoreDisplay;
+	}
+
+	public void setIsRiskScoreDisplay(Boolean isRiskScoreDisplay) {
+		this.isRiskScoreDisplay = isRiskScoreDisplay;
+	}
+
+	public Boolean getIsRiskScoreMandatory() {
+		return isRiskScoreMandatory;
+	}
+
+	public void setIsRiskScoreMandatory(Boolean isRiskScoreMandatory) {
+		this.isRiskScoreMandatory = isRiskScoreMandatory;
+	}
+
+	public Double getMinMonthlyIncomeRange() {
+		return minMonthlyIncomeRange;
+	}
+
+	public void setMinMonthlyIncomeRange(Double minMonthlyIncomeRange) {
+		this.minMonthlyIncomeRange = minMonthlyIncomeRange;
+	}
+
+	public Double getMaxMonthlyIncomeRange() {
+		return maxMonthlyIncomeRange;
+	}
+
+	public void setMaxMonthlyIncomeRange(Double maxMonthlyIncomeRange) {
+		this.maxMonthlyIncomeRange = maxMonthlyIncomeRange;
+	}
+
+	public Boolean getIsMonthlyIncomeRangeDisplay() {
+		return isMonthlyIncomeRangeDisplay;
+	}
+
+	public void setIsMonthlyIncomeRangeDisplay(Boolean isMonthlyIncomeRangeDisplay) {
+		this.isMonthlyIncomeRangeDisplay = isMonthlyIncomeRangeDisplay;
+	}
+
+	public Boolean getIsMonthlyIncomeRangeMandatory() {
+		return isMonthlyIncomeRangeMandatory;
+	}
+
+	public void setIsMonthlyIncomeRangeMandatory(Boolean isMonthlyIncomeRangeMandatory) {
+		this.isMonthlyIncomeRangeMandatory = isMonthlyIncomeRangeMandatory;
+	}
+
+	public Integer getMincurrentJobExperience() {
+		return mincurrentJobExperience;
+	}
+
+	public void setMincurrentJobExperience(Integer mincurrentJobExperience) {
+		this.mincurrentJobExperience = mincurrentJobExperience;
+	}
+
+	public Integer getMaxCurrentJobExperience() {
+		return maxCurrentJobExperience;
+	}
+
+	public void setMaxCurrentJobExperience(Integer maxCurrentJobExperience) {
+		this.maxCurrentJobExperience = maxCurrentJobExperience;
+	}
+
+	public Integer getMinTotalJobExperience() {
+		return minTotalJobExperience;
+	}
+
+	public void setMinTotalJobExperience(Integer minTotalJobExperience) {
+		this.minTotalJobExperience = minTotalJobExperience;
+	}
+
+	public Integer getMaxTotalJobExperience() {
+		return maxTotalJobExperience;
+	}
+
+	public void setMaxTotalJobExperience(Integer maxTotalJobExperience) {
+		this.maxTotalJobExperience = maxTotalJobExperience;
+	}
+
+	public Boolean getIsEmploymentTypeDisplay() {
+		return isEmploymentTypeDisplay;
+	}
+
+	public void setIsEmploymentTypeDisplay(Boolean isEmploymentTypeDisplay) {
+		this.isEmploymentTypeDisplay = isEmploymentTypeDisplay;
+	}
+
+	public Boolean getIsEmploymentTypeMandatory() {
+		return isEmploymentTypeMandatory;
+	}
+
+	public void setIsEmploymentTypeMandatory(Boolean isEmploymentTypeMandatory) {
+		this.isEmploymentTypeMandatory = isEmploymentTypeMandatory;
+	}
+
+	public Boolean getIsCreditRatingDisplay() {
+		return isCreditRatingDisplay;
+	}
+
+	public void setIsCreditRatingDisplay(Boolean isCreditRatingDisplay) {
+		this.isCreditRatingDisplay = isCreditRatingDisplay;
+	}
+
+	public Boolean getIsCreditRatingMandatory() {
+		return isCreditRatingMandatory;
+	}
+
+	public void setIsCreditRatingMandatory(Boolean isCreditRatingMandatory) {
+		this.isCreditRatingMandatory = isCreditRatingMandatory;
+	}
+
+	public Boolean getIsCurrentJobExperienceDisplay() {
+		return isCurrentJobExperienceDisplay;
+	}
+
+	public void setIsCurrentJobExperienceDisplay(Boolean isCurrentJobExperienceDisplay) {
+		this.isCurrentJobExperienceDisplay = isCurrentJobExperienceDisplay;
+	}
+
+	public Boolean getIsCurrentJobExperienceMandatory() {
+		return isCurrentJobExperienceMandatory;
+	}
+
+	public void setIsCurrentJobExperienceMandatory(Boolean isCurrentJobExperienceMandatory) {
+		this.isCurrentJobExperienceMandatory = isCurrentJobExperienceMandatory;
+	}
+
+	public Boolean getIsTotalJobExperienceDisplay() {
+		return isTotalJobExperienceDisplay;
+	}
+
+	public void setIsTotalJobExperienceDisplay(Boolean isTotalJobExperienceDisplay) {
+		this.isTotalJobExperienceDisplay = isTotalJobExperienceDisplay;
+	}
+
+	public Boolean getIsTotalJobExperienceMandatory() {
+		return isTotalJobExperienceMandatory;
+	}
+
+	public void setIsTotalJobExperienceMandatory(Boolean isTotalJobExperienceMandatory) {
+		this.isTotalJobExperienceMandatory = isTotalJobExperienceMandatory;
+	}
+
+	public Boolean getIsEmploymentStatusDisplay() {
+		return isEmploymentStatusDisplay;
+	}
+
+	public void setIsEmploymentStatusDisplay(Boolean isEmploymentStatusDisplay) {
+		this.isEmploymentStatusDisplay = isEmploymentStatusDisplay;
+	}
+
+	public Boolean getIsEmploymentStatusMandatory() {
+		return isEmploymentStatusMandatory;
+	}
+
+	public void setIsEmploymentStatusMandatory(Boolean isEmploymentStatusMandatory) {
+		this.isEmploymentStatusMandatory = isEmploymentStatusMandatory;
+	}
+
 	/*public Integer getEmploymentId() {
 		return employmentId;
 	}
@@ -466,6 +776,9 @@ public class PersonalLoanParameter extends ProductMaster implements Serializable
 	public void setIsTotalJobExperienceMandatory(Boolean isTotalJobExperienceMandatory) {
 		this.isTotalJobExperienceMandatory = isTotalJobExperienceMandatory;
 	}*/
+	
+	
+	
 
 	
 }
