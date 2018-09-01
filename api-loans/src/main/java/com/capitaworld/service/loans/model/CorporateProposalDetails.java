@@ -42,6 +42,8 @@ public class CorporateProposalDetails {
 	private Integer pincode;
 	private Integer businessTypeId;
 	
+	private String ntbMainDirName;
+	
 
 	public String getAddress() {
 		return address;
@@ -253,6 +255,20 @@ public class CorporateProposalDetails {
 	 */
 	public void setBusinessTypeId(Integer businessTypeId) {
 		this.businessTypeId = businessTypeId;
+	}
+
+	/**
+	 * @return the ntbMainDirName
+	 */
+	public String getNtbMainDirName() {
+		return ntbMainDirName;
+	}
+
+	/**
+	 * @param ntbMainDirName the ntbMainDirName to set
+	 */
+	public void setNtbMainDirName(String ntbMainDirName) {
+		this.ntbMainDirName = ntbMainDirName;
 	}
 
 	/**

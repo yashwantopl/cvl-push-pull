@@ -90,7 +90,7 @@ public class CorporatePrimaryViewResponse {
     private Object mcaData;
     private Object hufReport;
     private Object nameAsPerItr;
-    private Object nameAsPerGst;
+    private Object gstData;
     private Object mcaCheckStatus;
    
 	public List<Object> getCibilReport() {
@@ -844,17 +844,18 @@ public class CorporatePrimaryViewResponse {
 		this.mcaCheckStatus = mcaCheckStatus;
 	}
 	/**
-	 * @return the nameAsPerGst
+	 * @return the gstData
 	 */
-	public Object getNameAsPerGst() {
-		return nameAsPerGst;
+	public Object getGstData() {
+		return gstData;
 	}
 	/**
-	 * @param nameAsPerGst the nameAsPerGst to set
+	 * @param gstData the gstData to set
 	 */
-	public void setNameAsPerGst(Object nameAsPerGst) {
-		this.nameAsPerGst = nameAsPerGst;
+	public void setGstData(Object gstData) {
+		this.gstData = gstData;
 	}
+
 	
 	
     
