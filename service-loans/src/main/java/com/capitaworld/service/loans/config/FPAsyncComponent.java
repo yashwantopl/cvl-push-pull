@@ -14,8 +14,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
-import com.capitaworld.api.workflow.model.WorkflowRequest;
-import com.capitaworld.api.workflow.utility.WorkflowUtils;
 import com.capitaworld.service.loans.domain.fundprovider.ProductMasterTemp;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.sanction.LoanSanctionDomain;
@@ -160,9 +158,10 @@ public class FPAsyncComponent {
 								//System.out.println("Maker ID:---"+userObj.getEmail());
 								to = userObj.getEmail();	
 							
-								if("null".equals(name)) {
+								if("null ".equals(name)) {
 									mailParameters.put("maker_name","NA");	
-								}else {
+								}
+								else {
 									mailParameters.put("maker_name",name!=null?name:"NA");	
 								}
 								createNotificationForEmail(to, userId.toString(),
@@ -293,7 +292,7 @@ public class FPAsyncComponent {
 									if(!CommonUtils.isObjectNullOrEmpty(userObj.getEmail())) {
 									//	System.out.println("Checker ID:---"+userObj.getEmail());
 										to = userObj.getEmail();	
-										if("null".equals(name)) {
+										if("null ".equals(name)) {
 											mailParameters.put("checker_name","NA");	
 										}else {
 											mailParameters.put("checker_name",name!=null?name:"NA");	
@@ -307,7 +306,7 @@ public class FPAsyncComponent {
 										//System.out.println("Maker ID:---"+userObj.getEmail());
 										Map<String, Object> smsParameters = new HashMap<String, Object>();
 										to = "91"+userObj.getMobile();	
-										if("null".equals(name)) {
+										if("null ".equals(name)) {
 											smsParameters.put("checker_name","NA");	
 										}else {
 											smsParameters.put("checker_name",name!=null?name:"NA");	
@@ -432,7 +431,7 @@ public class FPAsyncComponent {
 										if(!CommonUtils.isObjectNullOrEmpty(userObj.getEmail())) {
 										//	System.out.println("Checker ID:---"+userObj.getEmail());
 											to = userObj.getEmail();	
-											if("null".equals(name)) {
+											if("null ".equals(name)) {
 												mailParameters.put("ho_name","NA");	
 											}else {
 												mailParameters.put("ho_name",name!=null?name:"NA");	
@@ -567,7 +566,7 @@ public class FPAsyncComponent {
 										if(!CommonUtils.isObjectNullOrEmpty(userObj.getEmail())) {
 										//	System.out.println("Checker ID:---"+userObj.getEmail());
 											to = userObj.getEmail();	
-											if("null".equals(name)) {
+											if("null ".equals(name)) {
 												mailParameters.put("bo_name","NA");	
 											}else {
 												mailParameters.put("bo_name",name!=null?name:"NA");	
@@ -732,7 +731,7 @@ public class FPAsyncComponent {
 								
 								String assignedMakerName = null;
 								
-								if("null".equals(makerName)) {
+								if("null ".equals(makerName)) {
 									assignedMakerName = "NA";	
 								}else {
 									assignedMakerName = makerName!=null?makerName:"NA";	
@@ -853,7 +852,7 @@ public class FPAsyncComponent {
 											//	System.out.println("Checker ID:---"+userObj.getEmail());
 												String to =  makerObj.getEmail();
 												parameters.put("assigned_maker_name", assignedMakerName);
-												if("null".equals(name)) {
+												if("null ".equals(name)) {
 													parameters.put("maker_name","NA");	
 												}else {
 													parameters.put("maker_name",name!=null?name:"NA");	
@@ -927,7 +926,7 @@ public class FPAsyncComponent {
 											//	System.out.println("Checker ID:---"+userObj.getEmail());
 												String to =  checkerObj.getEmail();
 												parameters.put("maker_name", assignedMakerName);
-												if("null".equals(name)) {
+												if("null ".equals(name)) {
 													parameters.put("checker_name","NA");	
 												}else {
 													parameters.put("checker_name",name!=null?name:"NA");	
@@ -940,7 +939,7 @@ public class FPAsyncComponent {
 												//System.out.println("Maker ID:---"+userObj.getEmail());
 												Map<String, Object> smsParameters = new HashMap<String, Object>();
 												String to = "91"+checkerObj.getMobile();	
-												if("null".equals(name)) {
+												if("null ".equals(name)) {
 													smsParameters.put("checker_name","NA");	
 												}else {
 													smsParameters.put("checker_name",name!=null?name:"NA");	
@@ -1011,7 +1010,7 @@ public class FPAsyncComponent {
 											//	System.out.println("Checker ID:---"+userObj.getEmail());
 												String to = hoObj.getEmail();
 												parameters.put("maker_name", assignedMakerName);
-												if("null".equals(name)) {
+												if("null ".equals(name)) {
 													parameters.put("ho_name","NA");	
 												}else {
 													parameters.put("ho_name",name!=null?name:"NA");	
@@ -1090,7 +1089,7 @@ public class FPAsyncComponent {
 											//	System.out.println("Checker ID:---"+userObj.getEmail());
 												String to = boObj.getEmail();
 												parameters.put("maker_name", assignedMakerName);
-												if("null".equals(name)) {
+												if("null ".equals(name)) {
 													parameters.put("bo_name","NA");	
 												}else {
 													parameters.put("bo_name",name!=null?name:"NA");	
@@ -1197,7 +1196,7 @@ public class FPAsyncComponent {
 									}
 								}
 								
-								if("null".equals(makerName)) {
+								if("null ".equals(makerName)) {
 									makerName = "NA";	
 								}else {
 									makerName = makerName!=null?makerName:"NA";	
@@ -1239,7 +1238,7 @@ public class FPAsyncComponent {
 									}
 								}
 								
-								if("null".equals(checkerName)) {
+								if("null ".equals(checkerName)) {
 									checkerName = "NA";
 								}
 								else {
@@ -1386,7 +1385,7 @@ public class FPAsyncComponent {
 											if(!CommonUtils.isObjectNullOrEmpty(hoObj.getEmail())) {
 											//	System.out.println("Checker ID:---"+userObj.getEmail());
 												String to =  hoObj.getEmail();
-												if("null".equals(name)) {
+												if("null ".equals(name)) {
 													name = "NA";
 												}
 												else {
@@ -1460,7 +1459,7 @@ public class FPAsyncComponent {
 											if(!CommonUtils.isObjectNullOrEmpty(boObj.getEmail())) {
 											//	System.out.println("Checker ID:---"+userObj.getEmail());
 												String to =  boObj.getEmail();
-												if("null".equals(name)) {
+												if("null ".equals(name)) {
 													name = "NA";
 												}
 												else {
@@ -1558,7 +1557,7 @@ public class FPAsyncComponent {
 									}
 								}
 								
-								if("null".equals(makerName)) {
+								if("null ".equals(makerName)) {
 									makerName = "NA";	
 								}else {
 									makerName = makerName!=null?makerName:"NA";	
@@ -1600,7 +1599,7 @@ public class FPAsyncComponent {
 									}
 								}
 								
-								if("null".equals(checkerName)) {
+								if("null ".equals(checkerName)) {
 									checkerName = "NA";
 								}
 								else {
@@ -1756,7 +1755,7 @@ public class FPAsyncComponent {
 											if(!CommonUtils.isObjectNullOrEmpty(hoObj.getEmail())) {
 											//	System.out.println("Checker ID:---"+userObj.getEmail());
 												String to =  hoObj.getEmail();
-												if("null".equals(name)) {
+												if("null ".equals(name)) {
 													name = "NA";
 												}
 												else {
@@ -1835,7 +1834,7 @@ public class FPAsyncComponent {
 											if(!CommonUtils.isObjectNullOrEmpty(boObj.getEmail())) {
 											//	System.out.println("Checker ID:---"+userObj.getEmail());
 												String to =  boObj.getEmail();
-												if("null".equals(name)) {
+												if("null ".equals(name)) {
 													name = "NA";
 												}
 												else {
@@ -1918,7 +1917,7 @@ public class FPAsyncComponent {
 							e.printStackTrace();
 						}
 						
-						if("null".equals(adminMakerName)) {
+						if("null ".equals(adminMakerName)) {
 							adminMakerName = "NA";
 						}else {
 							adminMakerName = adminMakerName!=null?adminMakerName:"NA";
@@ -1949,7 +1948,7 @@ public class FPAsyncComponent {
 								if(!CommonUtils.isObjectNullOrEmpty(userObj.getEmail())) {
 									//System.out.println("Maker ID:---"+userObj.getEmail());
 									to = userObj.getEmail();	
-									if("null".equals(name)) {
+									if("null ".equals(name)) {
 										mailParameters.put("admin_checker","NA");	
 									}else {
 										mailParameters.put("admin_checker",name!=null?name:"NA");	
@@ -1963,7 +1962,7 @@ public class FPAsyncComponent {
 									//System.out.println("Maker ID:---"+userObj.getEmail());
 									Map<String, Object> smsParameters = new HashMap<String, Object>();
 									to = "91"+userObj.getMobile();	
-									if("null".equals(name)) {
+									if("null ".equals(name)) {
 										smsParameters.put("admin_checker","NA");	
 									}else {
 										smsParameters.put("admin_checker",name!=null?name:"NA");	
@@ -2031,7 +2030,7 @@ public class FPAsyncComponent {
 							e.printStackTrace();
 						}
 						
-						if("null".equals(adminMakerName)) {
+						if("null ".equals(adminMakerName)) {
 							adminMakerName = "NA";
 						}else {
 							adminMakerName = adminMakerName!=null?adminMakerName:"NA";
@@ -2063,7 +2062,7 @@ public class FPAsyncComponent {
 								if(!CommonUtils.isObjectNullOrEmpty(userObj.getEmail())) {
 									//System.out.println("Maker ID:---"+userObj.getEmail());
 									to = userObj.getEmail();	
-									if("null".equals(name)) {
+									if("null ".equals(name)) {
 										mailParameters.put("admin_checker","NA");	
 									}else {
 										mailParameters.put("admin_checker",name!=null?name:"NA");	
@@ -2076,7 +2075,7 @@ public class FPAsyncComponent {
 									//System.out.println("Maker ID:---"+userObj.getEmail());
 									Map<String, Object> smsParameters = new HashMap<String, Object>();
 									to = "91"+userObj.getMobile();	
-									if("null".equals(name)) {
+									if("null ".equals(name)) {
 										smsParameters.put("admin_checker","NA");	
 									}else {
 										smsParameters.put("admin_checker",name!=null?name:"NA");	
@@ -2145,7 +2144,7 @@ public class FPAsyncComponent {
 							e.printStackTrace();
 						}
 						
-						if("null".equals(adminCheckerName)) {
+						if("null ".equals(adminCheckerName)) {
 							adminCheckerName = "NA";
 						}else {
 							adminCheckerName = adminCheckerName!=null?adminCheckerName:"NA";
@@ -2177,7 +2176,7 @@ public class FPAsyncComponent {
 								if(!CommonUtils.isObjectNullOrEmpty(userObj.getEmail())) {
 									//System.out.println("Maker ID:---"+userObj.getEmail());
 									to = userObj.getEmail();	
-									if("null".equals(name)) {
+									if("null ".equals(name)) {
 										mailParameters.put("admin_maker","NA");	
 									}else {
 										mailParameters.put("admin_maker",name!=null?name:"NA");	
@@ -2256,7 +2255,7 @@ public class FPAsyncComponent {
 							e.printStackTrace();
 						}
 						
-						if("null".equals(adminCheckerName)) {
+						if("null ".equals(adminCheckerName)) {
 							adminCheckerName = "NA";
 						}else {
 							adminCheckerName = adminCheckerName!=null?adminCheckerName:"NA";
@@ -2288,7 +2287,7 @@ public class FPAsyncComponent {
 								if(!CommonUtils.isObjectNullOrEmpty(userObj.getEmail())) {
 									//System.out.println("Maker ID:---"+userObj.getEmail());
 									to = userObj.getEmail();	
-									if("null".equals(name)) {
+									if("null ".equals(name)) {
 										mailParameters.put("admin_maker","NA");	
 									}else {
 										mailParameters.put("admin_maker",name!=null?name:"NA");	
@@ -2426,7 +2425,7 @@ public class FPAsyncComponent {
 								FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<Object,Object>)userResponseForName.getData(),
 										FundProviderDetailsRequest.class);
 								checkerName = fundProviderDetailsRequest.getFirstName() + " " + (fundProviderDetailsRequest.getLastName() == null ? "": fundProviderDetailsRequest.getLastName());
-								if("null".equals(checkerName)) {
+								if("null ".equals(checkerName)) {
 									checkerName = "NA";
 								}else {
 									checkerName = checkerName!=null?checkerName:"NA";
@@ -2464,7 +2463,7 @@ public class FPAsyncComponent {
 								FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<Object,Object>)userResponseForName.getData(),
 										FundProviderDetailsRequest.class);
 								makerName = fundProviderDetailsRequest.getFirstName() + " " + (fundProviderDetailsRequest.getLastName() == null ? "": fundProviderDetailsRequest.getLastName());
-								if("null".equals(makerName)) {
+								if("null ".equals(makerName)) {
 									makerName = "NA";
 								}else {
 									makerName = makerName!=null?makerName:"NA";
@@ -2540,7 +2539,7 @@ public class FPAsyncComponent {
 									if(!CommonUtils.isObjectNullOrEmpty(userObj.getEmail())) {
 										//System.out.println("Maker ID:---"+userObj.getEmail());
 										to = userObj.getEmail();	
-										if("null".equals(name)) {
+										if("null ".equals(name)) {
 											mailParameters.put("ho_name","NA");	
 										}else {
 											mailParameters.put("ho_name",name!=null?name:"NA");	
@@ -2612,7 +2611,7 @@ public class FPAsyncComponent {
 									if(!CommonUtils.isObjectNullOrEmpty(userObj.getEmail())) {
 										//System.out.println("Maker ID:---"+userObj.getEmail());
 										to = userObj.getEmail();	
-										if("null".equals(name)) {
+										if("null ".equals(name)) {
 											mailParameters.put("bo_name","NA");	
 										}else {
 											mailParameters.put("bo_name",name!=null?name:"NA");	
