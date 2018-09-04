@@ -48,6 +48,7 @@ public class FinancialArrangementsDetailRequest {
 	 * By Ravina
 	 * */
 	private Integer lcBgStatus;
+	private String othersBankName;
 
 	public Long getId() {
 		return id;
@@ -177,4 +178,11 @@ public class FinancialArrangementsDetailRequest {
 		this.lcBgStatus = lcBgStatus;
 	}
 
+	public String getOthersBankName() {
+		return othersBankName;
+	}
+
+	public void setOthersBankName(String othersBankName) {
+		this.othersBankName = othersBankName;
+	}
 }
