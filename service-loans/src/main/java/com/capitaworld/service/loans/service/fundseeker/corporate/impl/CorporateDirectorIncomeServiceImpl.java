@@ -17,9 +17,11 @@ import org.springframework.transaction.annotation.Transactional;
 import com.capitaworld.service.gst.util.CommonUtils;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateDirectorIncomeDetails;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.DirectorBackgroundDetail;
+import com.capitaworld.service.loans.model.PincodeDataResponse;
 import com.capitaworld.service.loans.model.corporate.CorporateDirectorIncomeRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateDirectorIncomeDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.DirectorBackgroundDetailsRepository;
+import com.capitaworld.service.loans.service.common.PincodeDateService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateDirectorIncomeService;
 import com.capitaworld.service.oneform.enums.DirectorRelationshipType;
 import com.capitaworld.service.oneform.enums.EducationQualificationNTB;
@@ -40,6 +42,9 @@ public class CorporateDirectorIncomeServiceImpl implements CorporateDirectorInco
 	
 	@Autowired
 	private DirectorBackgroundDetailsRepository backgroundDetailsRepository;
+	
+	@Autowired
+    private PincodeDateService pincodeDateService;
 	
 	private static final Logger logger = LoggerFactory.getLogger(CorporateDirectorIncomeServiceImpl.class.getName());
 	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
@@ -144,6 +149,7 @@ public class CorporateDirectorIncomeServiceImpl implements CorporateDirectorInco
 							map.put("appointmentDate", corpObj.getAppointmentDate());
 							map.put("salutationId", corpObj.getSalutationId());
 							map.put("panNo", corpObj.getPanNo());
+							map.put("districtMappingId", corpObj.getDistrictMappingId());
 							map.put("designation", corpObj.getDesignation());
 							map.put("directorsName", corpObj.getDirectorsName());
 							map.put("totalExperience", corpObj.getTotalExperience());
@@ -232,7 +238,16 @@ public class CorporateDirectorIncomeServiceImpl implements CorporateDirectorInco
 							map.put("nameOfEmployer", corpObj.getEmploymentDetail().getNameOfEmployer());
 							map.put("salary", corpObj.getEmploymentDetail().getSalary());
 							}
-							
+							 try {
+									if(!CommonUtils.isObjectNullOrEmpty(corpObj.getDistrictMappingId())) {
+										PincodeDataResponse pinRes=(pincodeDateService.getById(Long.valueOf(String.valueOf(corpObj.getDistrictMappingId()))));
+										map.put("pindata", pinRes);
+										
+									}
+								} catch (Exception e) {
+									e.printStackTrace();
+								}
+							 
 							directorBackgroundlist.add(map);
 						}
 						

@@ -15,6 +15,7 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,9 +36,11 @@ import com.capitaworld.service.dms.model.DocumentResponse;
 import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.DirectorBackgroundDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailResponse;
+import com.capitaworld.service.loans.model.PincodeDataResponse;
 import com.capitaworld.service.loans.model.corporate.CorporateDirectorIncomeRequest;
 import com.capitaworld.service.loans.model.corporate.FundSeekerInputRequestResponse;
 import com.capitaworld.service.loans.model.teaser.primaryview.NtbPrimaryViewResponse;
@@ -46,6 +49,7 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateAp
 import com.capitaworld.service.loans.repository.fundseeker.corporate.DirectorBackgroundDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
+import com.capitaworld.service.loans.service.common.PincodeDateService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateDirectorIncomeService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.DirectorBackgroundDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
@@ -257,39 +261,28 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService {
 			} else {
 				ntbPrimaryViewRespone.setIsMultipleUser(true);
 			}
-			/*
-			 * for (int i = 0; i < directorBackgroundDetails.size(); i++) {
-			 * DirectorBackgroundDetail dir = new DirectorBackgroundDetail();
-			 * 
-			 * //
-			 * MultipleJSONObjectHelper.getObjectFromMap(directorBackgroundDetails.get(i),
-			 * // DirectorBackgroundDetail.class);
-			 * 
-			 * BeanUtils.copyProperties(directorBackgroundDetails.get(i), dir); //
-			 * dir.setGender(Integer.valueOf(String.valueOf(directorBackgroundDetails.get(i)
-			 * .get("genderInt"))));
-			 * dir.setId(Long.valueOf(String.valueOf(directorBackgroundDetails.get(i).get(
-			 * "directorId")))); ntbPrimaryViewRespone.setIsMainDir(
-			 * Boolean.valueOf(String.valueOf(directorBackgroundDetails.get(i).get(
-			 * "isMainDirector")))); if (ntbPrimaryViewRespone.getIsMainDir() == true) {
-			 * 
-			 * ntbPrimaryViewRespone.setAppId(
-			 * Long.valueOf(String.valueOf(directorBackgroundDetails.get(i).get(
-			 * "applicationId"))));
-			 * ntbPrimaryViewRespone.setDirPan(String.valueOf(directorBackgroundDetails.get(
-			 * i).get("panNo")));
-			 * 
-			 * CibilRequest cibilRequest = new CibilRequest();
-			 * cibilRequest.setApplicationId(ntbPrimaryViewRespone.getAppId());
-			 * cibilRequest.setPan(ntbPrimaryViewRespone.getDirPan()); try {
-			 * CibilScoreLogRequest cibilRes =
-			 * cibilClient.getCibilScoreByPanCard(cibilRequest);
-			 * ntbPrimaryViewRespone.setCibilOfMainDir(cibilRes); } catch (Exception e) {
-			 * logger.info("Error While calling Cibil Score By PanCard");
-			 * e.printStackTrace(); }
-			 * 
-			 * } }
-			 */
+			
+			 /* for (int i = 0; i < directorBackgroundDetails.size(); i++) {
+			  DirectorBackgroundDetail dir = new DirectorBackgroundDetail();
+			  
+			  // DirectorBackgroundDetail.class);
+			  
+			  BeanUtils.copyProperties(directorBackgroundDetails.get(i), dir); 
+			  dir.setPincode(String.valueOf(directorBackgroundDetails.get(i).get("pincode"))); 
+			  
+			  try {
+					if(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetails.get(i).get("districtMappingId"))) {
+						PincodeDataResponse pinRes=(pincodeDateService.getById(Long.valueOf(String.valueOf(directorBackgroundDetails.get(i).get("districtMappingId")))));
+						ntbPrimaryViewRespone.setPindata(pinRes);
+						
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+
+			  
+			   }*/
+			 
 
 		} catch (Exception e) {
 			e.printStackTrace();
