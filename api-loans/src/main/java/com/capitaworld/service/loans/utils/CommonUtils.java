@@ -38,6 +38,8 @@ public class CommonUtils {
 	public static final String APPLICATION_LOCKED_MESSAGE = "Your Application is locked. Please Contact Administrator to update the Details.";
 	public static final String MAXIMUM = "maximum";
 	public static final String MINIMUM = "minimum";
+	
+	public static final String HUNTER_INELIGIBLE_MESSAGE= "You do not Qualify for Contactless Process, Kindly visit Bank Branch or get your Due Diligence process completed in www.capitaworld.com to connect to Banks";
 
 	public static final Long RETAIL_APPLICANT = 1L;
 	public static final Long RETAIL_COAPPLICANT = 2L;
