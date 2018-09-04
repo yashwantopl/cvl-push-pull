@@ -79,7 +79,7 @@ public class CorporateFinalViewResponse implements Serializable {
 	private String contigentLiablitiesFy;
 	private String contigentLiablitiesSy;
 	private String contigentLiablitiesTy;
-
+;
 	// FINAL MCQ
 
 	private String technologyRiskId;
@@ -173,6 +173,10 @@ public class CorporateFinalViewResponse implements Serializable {
     private Object businessRiskWeightOfScoring;
     private Object promotersContribution;
     private Object promotersContributionPer;
+    private Object mcaData;
+    private Object nameAsPerItr;
+    private Object mcaCheckStatus;
+    private Object gstData;
 
 	public List<?> getMatchesList() {
 		return matchesList;
@@ -1646,5 +1650,63 @@ public class CorporateFinalViewResponse implements Serializable {
 	public void setPromotersContributionPer(Object promotersContributionPer) {
 		this.promotersContributionPer = promotersContributionPer;
 	}
+
+	/**
+	 * @return the mcaData
+	 */
+	public Object getMcaData() {
+		return mcaData;
+	}
+
+	/**
+	 * @param mcaData the mcaData to set
+	 */
+	public void setMcaData(Object mcaData) {
+		this.mcaData = mcaData;
+	}
+
+	/**
+	 * @return the nameAsPerItr
+	 */
+	public Object getNameAsPerItr() {
+		return nameAsPerItr;
+	}
+
+	/**
+	 * @param nameAsPerItr the nameAsPerItr to set
+	 */
+	public void setNameAsPerItr(Object nameAsPerItr) {
+		this.nameAsPerItr = nameAsPerItr;
+	}
+
+	/**
+	 * @return the mcaCheckStatus
+	 */
+	public Object getMcaCheckStatus() {
+		return mcaCheckStatus;
+	}
+
+	/**
+	 * @param mcaCheckStatus the mcaCheckStatus to set
+	 */
+	public void setMcaCheckStatus(Object mcaCheckStatus) {
+		this.mcaCheckStatus = mcaCheckStatus;
+	}
+
+	/**
+	 * @return the gstData
+	 */
+	public Object getGstData() {
+		return gstData;
+	}
+
+	/**
+	 * @param gstData the gstData to set
+	 */
+	public void setGstData(Object gstData) {
+		this.gstData = gstData;
+	}
+
+
 
 }

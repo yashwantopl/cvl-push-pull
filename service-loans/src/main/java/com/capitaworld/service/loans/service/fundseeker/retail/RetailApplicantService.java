@@ -29,4 +29,6 @@ public interface RetailApplicantService {
 	public JSONObject getCoapAndGuarIds(Long userId, Long applicationId) throws Exception;
 	
 	public CibilFullFillOfferRequest getProfile(Long userId, Long applicationId) throws Exception;
+	
+	public JSONObject getNameAndPanByAppId(Long applicationId);
 }
