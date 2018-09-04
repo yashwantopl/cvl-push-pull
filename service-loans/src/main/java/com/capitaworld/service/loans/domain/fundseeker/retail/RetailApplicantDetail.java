@@ -383,6 +383,69 @@ public class RetailApplicantDetail implements Serializable {
 	@Column(name = "mode_of_receipt")
 	private Integer modeOfReceipt;
 
+	@Column(name = "loan_amount_required")
+	private Double loanAmountRequired;
+
+	@Column(name="loan_purpose")
+	private Integer loanPurpose;
+
+	@Column(name="loan_purpose_other")
+	private String loanPurposeOther;
+
+	@Column(name="tenure_required")
+	private Integer tenureRequired;
+
+	@Column(name="repayment")
+	private Integer repayment;
+
+	@Column(name="education_qualification")
+	private Integer educationQualification;
+
+	@Column(name="employment_type")
+	private Integer employmentType;
+
+	@Column(name="name_of_employer")
+	private String nameOfEmployer;
+
+	@Column(name = "key_verical_funding")
+	private Long keyVerticalFunding;
+
+	@Column(name = "key_vertical_sector")
+	private Long keyVerticalSector;
+
+	@Column(name = "key_vertical_subsector")
+	private Long keyVerticalSubSector;
+
+	@Column(name = "email")
+	private String email;
+
+	@Column(name = "mobile")
+	private String mobile;
+
+	@Column(name = "permanent_district_mapping_id")
+	private Long permanentdistrictMappingId;
+
+	@Column(name = "address_district_mapping_id")
+	private Long addressDistrictMappingId;
+
+	@Column(name="employment_with")
+	private Integer employmentWith;
+
+	@Column(name="central_gov_id")
+	private Integer centralGovId;
+
+	@Column(name="state_gov_id")
+	private Integer stateGovId;
+
+	@Column(name="psu_id")
+	private Integer psuId;
+
+	@Column(name="corporate_id")
+	private Integer corporateId;
+
+	@Column(name="edu_inst_id")
+	private Integer eduInstId;
+
 	public RetailApplicantDetail() {
 	}
 
@@ -1322,12 +1385,179 @@ public class RetailApplicantDetail implements Serializable {
 		this.ownershipTypeOthers = ownershipTypeOthers;
 	}
 
-
 	public Integer getModeOfReceipt() {
 		return modeOfReceipt;
 	}
 
 	public void setModeOfReceipt(Integer modeOfReceipt) {
 		this.modeOfReceipt = modeOfReceipt;
+	}
+
+    public Double getLoanAmountRequired() {
+        return loanAmountRequired;
+    }
+
+    public void setLoanAmountRequired(Double loanAmountRequired) {
+        this.loanAmountRequired = loanAmountRequired;
+    }
+
+    public Integer getLoanPurpose() {
+        return loanPurpose;
+    }
+
+    public void setLoanPurpose(Integer loanPurpose) {
+        this.loanPurpose = loanPurpose;
+    }
+
+    public String getLoanPurposeOther() {
+        return loanPurposeOther;
+    }
+
+    public void setLoanPurposeOther(String loanPurposeOther) {
+        this.loanPurposeOther = loanPurposeOther;
+    }
+
+	public Integer getTenureRequired() {
+		return tenureRequired;
+	}
+
+	public void setTenureRequired(Integer tenureRequired) {
+		this.tenureRequired = tenureRequired;
+	}
+
+	public Integer getRepayment() {
+        return repayment;
+    }
+
+    public void setRepayment(Integer repayment) {
+        this.repayment = repayment;
+    }
+
+	public Integer getEducationQualification() {
+		return educationQualification;
+	}
+
+	public void setEducationQualification(Integer educationQualification) {
+		this.educationQualification = educationQualification;
+	}
+
+	public Integer getEmploymentType() {
+		return employmentType;
+	}
+
+	public void setEmploymentType(Integer employmentType) {
+		this.employmentType = employmentType;
+	}
+
+	public String getNameOfEmployer() {
+		return nameOfEmployer;
+	}
+
+	public void setNameOfEmployer(String nameOfEmployer) {
+		this.nameOfEmployer = nameOfEmployer;
+	}
+
+    public Long getKeyVerticalFunding() {
+        return keyVerticalFunding;
+    }
+
+    public void setKeyVerticalFunding(Long keyVerticalFunding) {
+        this.keyVerticalFunding = keyVerticalFunding;
+    }
+
+    public Long getKeyVerticalSector() {
+        return keyVerticalSector;
+    }
+
+    public void setKeyVerticalSector(Long keyVerticalSector) {
+        this.keyVerticalSector = keyVerticalSector;
+    }
+
+    public Long getKeyVerticalSubSector() {
+        return keyVerticalSubSector;
+    }
+
+    public void setKeyVerticalSubSector(Long keyVerticalSubSector) {
+        this.keyVerticalSubSector = keyVerticalSubSector;
+    }
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public String getMobile() {
+		return mobile;
+	}
+
+	public void setMobile(String mobile) {
+		this.mobile = mobile;
+	}
+
+	public Long getPermanentdistrictMappingId() {
+		return permanentdistrictMappingId;
+	}
+
+	public void setPermanentdistrictMappingId(Long permanentdistrictMappingId) {
+		this.permanentdistrictMappingId = permanentdistrictMappingId;
+	}
+
+	public Long getAddressDistrictMappingId() {
+		return addressDistrictMappingId;
+	}
+
+	public void setAddressDistrictMappingId(Long addressDistrictMappingId) {
+		this.addressDistrictMappingId = addressDistrictMappingId;
+	}
+
+	public Integer getEmploymentWith() {
+		return employmentWith;
+	}
+
+	public void setEmploymentWith(Integer employmentWith) {
+		this.employmentWith = employmentWith;
+	}
+
+	public Integer getCentralGovId() {
+		return centralGovId;
+	}
+
+	public void setCentralGovId(Integer centralGovId) {
+		this.centralGovId = centralGovId;
+	}
+
+	public Integer getStateGovId() {
+		return stateGovId;
+	}
+
+	public void setStateGovId(Integer stateGovId) {
+		this.stateGovId = stateGovId;
+	}
+
+	public Integer getPsuId() {
+		return psuId;
+	}
+
+	public void setPsuId(Integer psuId) {
+		this.psuId = psuId;
+	}
+
+	public Integer getCorporateId() {
+		return corporateId;
+	}
+
+	public void setCorporateId(Integer corporateId) {
+		this.corporateId = corporateId;
+	}
+
+	public Integer getEduInstId() {
+		return eduInstId;
+	}
+
+	public void setEduInstId(Integer eduInstId) {
+		this.eduInstId = eduInstId;
 	}
 }
