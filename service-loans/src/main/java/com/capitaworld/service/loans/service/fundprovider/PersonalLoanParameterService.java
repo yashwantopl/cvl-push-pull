@@ -6,4 +6,6 @@ public interface PersonalLoanParameterService {
 	public boolean saveOrUpdate(PersonalLoanParameterRequest personalLoanParameterRequest);
 	
 	public PersonalLoanParameterRequest getPersonalLoanParameterRequest(Long id);
+
+	public PersonalLoanParameterRequest getPersonalLoanParameterRequestTemp(Long id, Long role, Long userId);
 }
