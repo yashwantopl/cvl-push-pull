@@ -120,6 +120,44 @@ public class CorporateDirectorIncomeServiceImpl implements CorporateDirectorInco
 		}
 		  return null;
 	}
+	
+	@Override
+	public List<CorporateDirectorIncomeRequest> getDirectorIncomeLatestYearDetails(Long applicationId)
+			throws Exception {
+		try {
+			CorporateDirectorIncomeRequest incomeRequest = null;
+			List<CorporateDirectorIncomeDetails> incomeDetails = null;
+			List<CorporateDirectorIncomeRequest> incomeDetailsResponse = null;
+			logger.info("ENTER IN getDirectorIncomeLatestYearDetails---------->>>>");
+			
+			if(!(CommonUtils.isObjectNullOrEmpty(applicationId))){
+				incomeDetails = incomeDetailsRepository.getLatestYearDetails(applicationId);
+				incomeDetailsResponse = new ArrayList<CorporateDirectorIncomeRequest>();
+				if(!CommonUtils.isObjectNullOrEmpty(incomeDetails)){
+					for(CorporateDirectorIncomeDetails corpObj:incomeDetails) {
+						if(!CommonUtils.isObjectNullOrEmpty(corpObj)) {
+							incomeRequest = new CorporateDirectorIncomeRequest();
+							BeanUtils.copyProperties(corpObj, incomeRequest);
+							String directorName = backgroundDetailsRepository.getDirectorNamefromDirectorId(incomeRequest.getDirectorId());
+							incomeRequest.setDirectorName(directorName);
+						}
+						incomeDetailsResponse.add(incomeRequest);
+				}
+					logger.info("Successfully get DirectorIncomeLatestYearDetails------------>"+incomeDetailsResponse);
+					return incomeDetailsResponse;	
+			}
+				
+		}
+		  return null;
+		} catch (Exception e) {
+			logger.info("Exception Occured in gettingDirectorLatestYearIncomeDetails------------->");
+			e.printStackTrace();
+		}
+		  return null;
+	}
+	
+	
+	
 
 	@Override
 	public List<Map<String, Object>> getDirectorBackGroundDetails(Long applicationId) throws Exception {

@@ -218,8 +218,10 @@ public class LoansClient {
     private static final String UPDATE_PAYMENT_STATUS = "/loan_application/update_payment_status_sidbi";
     
     private static final String SAVE_UPDATE_DIRECTOR_INCOME_DETAILS = "/corporate_director_income_details/save_income_details";
+ 
       
     private static final String GET_DIRECTOR_INCOME_DETAILS = "/corporate_director_income_details/get_income_details";
+    private static final String GET_DIRECTOR_INCOME_LATEST_YEAR_DETAILS = "/corporate_director_income_details/get_income_details_latest_year";
     private static final String GET_RETAIL_APPLICANT_INCOME_DETAILS = "/retail_applicant_income/get";
     private static final String SAVE_RETAIL_APPLICANT_INCOME_DETAILS = "/retail_applicant_income/saveAll";
     
@@ -2194,6 +2196,20 @@ public class LoansClient {
 	
 	public LoansResponse getDirectorIncomeDetails(Long applicationId) throws LoansException {
 		String url = loansBaseUrl.concat(GET_DIRECTOR_INCOME_DETAILS).concat("/"+applicationId);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<?> entity = new HttpEntity<>(null, headers);
+			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available");
+		}
+	}
+	
+	public LoansResponse getDirectorIncomeLatestYearDetails(Long applicationId) throws LoansException {
+		String url = loansBaseUrl.concat(GET_DIRECTOR_INCOME_LATEST_YEAR_DETAILS).concat("/"+applicationId);
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
