@@ -1730,7 +1730,7 @@ public class FPAsyncComponent {
 								
 			                  //====================Sending Mail to HO when Maker Assigns DDR to Checker=====================
 								
-								String subject = "Intimation: Re-assigned DDR - Application ID "+ request.getApplicationId();
+								String subject = "Intimation: DDR Sent Back - Application ID "+ request.getApplicationId();
 								
 								UserResponse hoResponse = userClient.getUserDetailByOrgRoleBranchId(applicationRequest.getNpOrgId(),com.capitaworld.service.users.utils.CommonUtils.UserRoles.HEAD_OFFICER,branchId);
 								List<Map<String, Object>> hoRespList = (List<Map<String, Object>>) hoResponse.getListData();
@@ -1809,7 +1809,7 @@ public class FPAsyncComponent {
 								
 			                    //====================Sending Mail to BO when Maker Assigns DDR to Checker=====================
 								
-			                    subject = "Intimation: Re-assigned DDR - Application ID "+ request.getApplicationId();
+			                    subject = "Intimation: DDR Sent Back - Application ID "+ request.getApplicationId();
 								
 								UserResponse boResponse = userClient.getUserDetailByOrgRoleBranchId(applicationRequest.getNpOrgId(),com.capitaworld.service.users.utils.CommonUtils.UserRoles.BRANCH_OFFICER,branchId);
 								List<Map<String, Object>> boRespList = (List<Map<String, Object>>) boResponse.getListData();
