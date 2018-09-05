@@ -26,6 +26,7 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplica
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
 import com.capitaworld.service.loans.service.fundseeker.retail.CoApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.retail.GuarantorService;
+import com.capitaworld.service.loans.service.fundseeker.retail.RetailApplicantIncomeService;
 import com.capitaworld.service.loans.service.fundseeker.retail.RetailApplicantService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -45,6 +46,10 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 
 	@Autowired
 	private RetailApplicantDetailRepository applicantRepository;
+	
+	
+	@Autowired
+	private RetailApplicantIncomeService applicantIncomeService;
 
 	@Autowired
 	private CoApplicantService coApplicantService;
@@ -119,6 +124,36 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 
 			return true;
 
+		} catch (Exception e) {
+			logger.error("Error while Saving Retail Profile:-");
+			e.printStackTrace();
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+	}
+	
+	@Override
+	public boolean saveITRResponse(RetailApplicantRequest applicantRequest) throws Exception {
+		try {
+			RetailApplicantDetail applicantDetail = applicantRepository.findOneByApplicationIdIdAndIsActive(applicantRequest.getApplicationId(), true);
+			if (applicantDetail != null) {
+				applicantDetail.setModifiedBy(applicantRequest.getUserId());
+				applicantDetail.setModifiedDate(new Date());
+			} else {
+				applicantDetail = new RetailApplicantDetail();
+				applicantDetail.setCreatedBy(applicantRequest.getUserId());
+				applicantDetail.setCreatedDate(new Date());
+				applicantDetail.setIsActive(true);
+				applicantDetail.setApplicationId(new LoanApplicationMaster(applicantRequest.getApplicationId()));
+			}
+
+			BeanUtils.copyProperties(applicantRequest, applicantDetail, CommonUtils.IgnorableCopy.RETAIL_FINAL);
+			copyAddressFromRequestToDomain(applicantRequest, applicantDetail);
+			applicantDetail.setBirthDate(applicantRequest.getDob());
+			applicantDetail = applicantRepository.save(applicantDetail);
+
+			//SAVE INCOME DETAILS 
+			applicantIncomeService.saveAll(applicantRequest.getIncomeDetailsList());
+			return true;
 		} catch (Exception e) {
 			logger.error("Error while Saving Retail Profile:-");
 			e.printStackTrace();

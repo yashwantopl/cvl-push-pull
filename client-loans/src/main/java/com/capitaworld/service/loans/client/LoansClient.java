@@ -157,6 +157,7 @@ public class LoansClient {
 	private static final String GET_FULL_PRIMARY_PL = "/personal/primary/get_primary_info";
 	private static final String GET_FULL_PRIMARY_LAP = "/lap/primary/get_primary_info";
 	private static final String GET_FULL_PROFILE = "/fs_retail_profile/profile/get_profile";
+	private static final String SAVE_ITR_RETAIL_APPLICANT_DETAILS= "/fs_retail_profile/profile/saveITRRes";
 	
 	private static final String IS_TERM_LOAN_LESS_THAN_LIMIT = "/loan_application/isTermLoanLessThanLimit";
 	
@@ -218,8 +219,10 @@ public class LoansClient {
     private static final String UPDATE_PAYMENT_STATUS = "/loan_application/update_payment_status_sidbi";
     
     private static final String SAVE_UPDATE_DIRECTOR_INCOME_DETAILS = "/corporate_director_income_details/save_income_details";
+ 
       
     private static final String GET_DIRECTOR_INCOME_DETAILS = "/corporate_director_income_details/get_income_details";
+    private static final String GET_DIRECTOR_INCOME_LATEST_YEAR_DETAILS = "/corporate_director_income_details/get_income_details_latest_year";
     private static final String GET_RETAIL_APPLICANT_INCOME_DETAILS = "/retail_applicant_income/get";
     private static final String SAVE_RETAIL_APPLICANT_INCOME_DETAILS = "/retail_applicant_income/saveAll";
     
@@ -2206,6 +2209,20 @@ public class LoansClient {
 		}
 	}
 	
+	public LoansResponse getDirectorIncomeLatestYearDetails(Long applicationId) throws LoansException {
+		String url = loansBaseUrl.concat(GET_DIRECTOR_INCOME_LATEST_YEAR_DETAILS).concat("/"+applicationId);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<?> entity = new HttpEntity<>(null, headers);
+			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available");
+		}
+	}
+	
 	public String getToken(GenerateTokenRequest generateTokenRequest) throws LoansException {
 
 		String url = loansBaseUrl.concat(GET_TOKEN);
@@ -2273,6 +2290,21 @@ public class LoansClient {
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new LoansException("Loans service is not available while save retail applicant income details");
+		}
+	}
+	
+	public LoansResponse saveITRResRetailApplicantDetails(RetailApplicantRequest request) throws LoansException {
+		String url = loansBaseUrl.concat(SAVE_ITR_RETAIL_APPLICANT_DETAILS);
+		try {
+			System.out.println("Enter in save ITR Response Retail Applicant Details---------->" + url);
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<RetailApplicantRequest> entity = new HttpEntity<RetailApplicantRequest>(request, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available while save ITR res retail applicant details");
 		}
 	}
 }

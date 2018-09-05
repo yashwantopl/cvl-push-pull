@@ -86,6 +86,33 @@ public class CorporateDirectorIncomeDetailsController {
 		}
 	}
 	
+	@RequestMapping(value = "/get_income_details_latest_year/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getIncomeDetailsLatestYear(@PathVariable("applicationId") Long applicationId)
+			throws ServletException, IOException {
+		logger.info("Start get Director income latest year details()=============>"+applicationId);
+		try {
+			if (!(CommonUtils.isObjectNullOrEmpty(applicationId))) {
+				logger.info("Inside Corporate Director Income latest year Details controller===>{}"+ applicationId);
+				List<CorporateDirectorIncomeRequest> response = incomeDetailsService.getDirectorIncomeLatestYearDetails(applicationId);
+				logger.info("Response from getting income details latest year ===>{}", response);
+				if (!CommonUtils.isObjectNullOrEmpty(response)) {
+					return new ResponseEntity<LoansResponse>(
+							new LoansResponse("Income details latest year get successfully", HttpStatus.OK.value(), response),
+							HttpStatus.OK);
+				} 
+			}
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse("Getting income  latest year details failed", HttpStatus.BAD_REQUEST.value(), false),
+					HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while getting income latest year details");
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse("Something went wrong while getting Income details",
+							HttpStatus.INTERNAL_SERVER_ERROR.value(), false),HttpStatus.OK);
+		}
+	}
+	
 	@RequestMapping(value = "/get_director_details/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getDirectorBackgroundDetails(@PathVariable("applicationId") Long applicationId)
 			throws ServletException, IOException {
