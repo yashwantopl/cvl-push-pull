@@ -6,9 +6,9 @@ import com.capitaworld.service.loans.model.retail.RetailApplicantIncomeRequest;
 
 public interface RetailApplicantIncomeService {
 	
-	public boolean save(RetailApplicantIncomeRequest appIncomeReq);
+	public boolean save(RetailApplicantIncomeRequest appIncomeReq) throws Exception;
 	
-	public boolean saveAll(List<RetailApplicantIncomeRequest> appIncomeReqList);
+	public boolean saveAll(List<RetailApplicantIncomeRequest> appIncomeReqList) throws Exception;
 	
 	public List<RetailApplicantIncomeRequest> getAll(Long applicationId);
 

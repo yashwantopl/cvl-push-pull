@@ -28,10 +28,10 @@ public class RetailApplicantIncomeServiceImpl implements RetailApplicantIncomeSe
 	private RetailApplicantIncomeRepository appIncomeRepository;
 	
 	@Override
-	public boolean save(RetailApplicantIncomeRequest appIncomeReq) {
+	public boolean save(RetailApplicantIncomeRequest appIncomeReq) throws Exception  {
 		if(CommonUtils.isObjectNullOrEmpty(appIncomeReq.getApplicationId()) || CommonUtils.isObjectNullOrEmpty(appIncomeReq.getYear())) {
 			logger.info("ApplicationId or Year Null Or Empty !! ");
-			return false;
+			throw new Exception("ApplicationId or Year Null Or Empty");
 		}
 		try {
 			RetailApplicantIncomeDetail appIncomeDetail = null;
@@ -65,13 +65,13 @@ public class RetailApplicantIncomeServiceImpl implements RetailApplicantIncomeSe
 		} catch (Exception e) {
 			logger.error("THROW EXCEPTION WHILE SAVE RETAIL APPLICANT INCOME DETAILS");
 			e.printStackTrace();
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
-		return false;
 	}
 	
 	
 	@Override
-	public boolean saveAll(List<RetailApplicantIncomeRequest> appIncomeReqList) {
+	public boolean saveAll(List<RetailApplicantIncomeRequest> appIncomeReqList) throws Exception{
 		for(RetailApplicantIncomeRequest appIncomeReq : appIncomeReqList) {
 			if(!CommonUtils.isObjectNullOrEmpty(appIncomeReq)) {
 				save(appIncomeReq);
