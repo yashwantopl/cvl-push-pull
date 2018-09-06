@@ -66,6 +66,8 @@ public interface ProductMasterService {
 	 * @return
 	 */
 	public Boolean saveCorporateInTemp(CorporateProduct corporateProduct);
+	
+	public Boolean saveRetailInTemp(RetailProduct retailProduct);
 
 	public Boolean clickOnWorkFlowButton(WorkflowData workflowData);
 

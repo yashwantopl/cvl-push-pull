@@ -107,23 +107,23 @@ public class PersonalLoanParameterTemp extends ProductMasterTemp implements Seri
 	private Double maxBureauScoreDays;
 	
 	@Column(name="is_bureau_display_days")
-	private Boolean isBureauScoreDisplayDays=false;
+	private Boolean isBureauScoreDaysDisplay=false;
 
 	@Column(name="is_bureau_mandatory_days")
-	private Boolean isBureauScoreMandatoryDays=false;
+	private Boolean isBureauScoreDaysMandatory=false;
 	
 	
 	@Column(name="min_risk_score_model")
-	private Double minRiskScore;
+	private Double minRiskScoreRetail;
 	
 	@Column(name="max_risk_score_model")
-	private Double maxRiskScore;
+	private Double maxRiskScoreRetail;
 	
 	@Column(name="is_risk_score_model_display")
-	private Boolean isRiskScoreDisplay=false;
+	private Boolean isRiskScoreRetailDisplay=false;
 
 	@Column(name="is_risk_score_model_mandatory")
-	private Boolean isRiskScoreMandatory=false;
+	private Boolean isRiskScoreRetailMandatory=false;
 	
 
 	@Column(name="min_yearly_income_range")
@@ -150,34 +150,34 @@ public class PersonalLoanParameterTemp extends ProductMasterTemp implements Seri
 	
 	
 	@Column(name="min_current_job_experience")
-	private Integer mincurrentJobExperience;
+	private Double minTotalCurrentJobExp;
 	
 	@Column(name="max_current_job_experience")
-	private Integer maxCurrentJobExperience;
+	private Double maxTotalCurrentJobExp;
 	
 	@Column(name="min_total_job_experience")
-	private Integer minTotalJobExperience;
+	private Double minTotalJobExp;
 	
 	@Column(name="max_total_job_experience")
-	private Integer maxTotalJobExperience;
+	private Double maxTotalJobExp;
 	
 	@Column(name="is_employment_type_display")
-	private Boolean isEmploymentTypeDisplay=false;
+	private Boolean isEmpWithDisplay=false;
 
 	@Column(name="is_employment_type_mandatory")
-	private Boolean isEmploymentTypeMandatory=false;
+	private Boolean isEmpWithMandatory=false;
 	
 	@Column(name="is_employment_status_display")
-	private Boolean isEmploymentStatusDisplay=false;
+	private Boolean isEmpStatusDisplay=false;
 
 	@Column(name="is_employment_status_mandatory")
-	private Boolean isEmploymentStatusMandatory=false;
+	private Boolean isEmpStatusMandatory=false;
 	
 	@Column(name="is_credit_rating_display")
-	private Boolean isCreditRatingDisplay=false;
+	private Boolean isEmpRatingDisplay=false;
 
 	@Column(name="is_credit_rating_mandatory")
-	private Boolean isCreditRatingMandatory=false;
+	private Boolean isEmpRatingMandatory=false;
 	
 	
 	
@@ -203,16 +203,16 @@ public class PersonalLoanParameterTemp extends ProductMasterTemp implements Seri
 	*/
 	
 	@Column(name="is_current_job_experience_display")
-	private Boolean isCurrentJobExperienceDisplay=false;
+	private Boolean isTotalCurrentJobExpDisplay=false;
 
 	@Column(name="is_current_job_experience_mandatory")
-	private Boolean isCurrentJobExperienceMandatory=false;
+	private Boolean isTotalCurrentJobExpMandatory=false;
 	
 	@Column(name="is_total_job_experience_display")
-	private Boolean isTotalJobExperienceDisplay=false;
+	private Boolean isTotalJobExpDisplay=false;
 
 	@Column(name="is_total_job_experience_mandatory")
-	private Boolean isTotalJobExperienceMandatory=false;
+	private Boolean isTotalJobExpMandatory=false;
 
 	public PersonalLoanParameterTemp() {
 	}
@@ -471,319 +471,301 @@ public class PersonalLoanParameterTemp extends ProductMasterTemp implements Seri
 		this.maxBureauScoreDays = maxBureauScoreDays;
 	}
 
-	public Boolean getIsBureauScoreDisplayDays() {
-		return isBureauScoreDisplayDays;
+	
+
+
+
+	public Boolean getIsBureauScoreDaysDisplay() {
+		return isBureauScoreDaysDisplay;
 	}
 
-	public void setIsBureauScoreDisplayDays(Boolean isBureauScoreDisplayDays) {
-		this.isBureauScoreDisplayDays = isBureauScoreDisplayDays;
+
+
+	public void setIsBureauScoreDaysDisplay(Boolean isBureauScoreDaysDisplay) {
+		this.isBureauScoreDaysDisplay = isBureauScoreDaysDisplay;
 	}
 
-	public Boolean getIsBureauScoreMandatoryDays() {
-		return isBureauScoreMandatoryDays;
+
+
+	public Boolean getIsBureauScoreDaysMandatory() {
+		return isBureauScoreDaysMandatory;
 	}
 
-	public void setIsBureauScoreMandatoryDays(Boolean isBureauScoreMandatoryDays) {
-		this.isBureauScoreMandatoryDays = isBureauScoreMandatoryDays;
+
+
+	public void setIsBureauScoreDaysMandatory(Boolean isBureauScoreDaysMandatory) {
+		this.isBureauScoreDaysMandatory = isBureauScoreDaysMandatory;
 	}
 
-	public Double getMinRiskScore() {
-		return minRiskScore;
+
+
+	public Double getMinRiskScoreRetail() {
+		return minRiskScoreRetail;
 	}
 
-	public void setMinRiskScore(Double minRiskScore) {
-		this.minRiskScore = minRiskScore;
+
+
+	public void setMinRiskScoreRetail(Double minRiskScoreRetail) {
+		this.minRiskScoreRetail = minRiskScoreRetail;
 	}
 
-	public Double getMaxRiskScore() {
-		return maxRiskScore;
+
+
+	public Double getMaxRiskScoreRetail() {
+		return maxRiskScoreRetail;
 	}
 
-	public void setMaxRiskScore(Double maxRiskScore) {
-		this.maxRiskScore = maxRiskScore;
+
+
+	public void setMaxRiskScoreRetail(Double maxRiskScoreRetail) {
+		this.maxRiskScoreRetail = maxRiskScoreRetail;
 	}
 
-	public Boolean getIsRiskScoreDisplay() {
-		return isRiskScoreDisplay;
+
+
+	public Boolean getIsRiskScoreRetailDisplay() {
+		return isRiskScoreRetailDisplay;
 	}
 
-	public void setIsRiskScoreDisplay(Boolean isRiskScoreDisplay) {
-		this.isRiskScoreDisplay = isRiskScoreDisplay;
+
+
+	public void setIsRiskScoreRetailDisplay(Boolean isRiskScoreRetailDisplay) {
+		this.isRiskScoreRetailDisplay = isRiskScoreRetailDisplay;
 	}
 
-	public Boolean getIsRiskScoreMandatory() {
-		return isRiskScoreMandatory;
+
+
+	public Boolean getIsRiskScoreRetailMandatory() {
+		return isRiskScoreRetailMandatory;
 	}
 
-	public void setIsRiskScoreMandatory(Boolean isRiskScoreMandatory) {
-		this.isRiskScoreMandatory = isRiskScoreMandatory;
+
+
+	public void setIsRiskScoreRetailMandatory(Boolean isRiskScoreRetailMandatory) {
+		this.isRiskScoreRetailMandatory = isRiskScoreRetailMandatory;
 	}
+
+
 
 	public Double getMinMonthlyIncomeRange() {
 		return minMonthlyIncomeRange;
 	}
 
+
+
 	public void setMinMonthlyIncomeRange(Double minMonthlyIncomeRange) {
 		this.minMonthlyIncomeRange = minMonthlyIncomeRange;
 	}
+
+
 
 	public Double getMaxMonthlyIncomeRange() {
 		return maxMonthlyIncomeRange;
 	}
 
+
+
 	public void setMaxMonthlyIncomeRange(Double maxMonthlyIncomeRange) {
 		this.maxMonthlyIncomeRange = maxMonthlyIncomeRange;
 	}
+
+
 
 	public Boolean getIsMonthlyIncomeRangeDisplay() {
 		return isMonthlyIncomeRangeDisplay;
 	}
 
+
+
 	public void setIsMonthlyIncomeRangeDisplay(Boolean isMonthlyIncomeRangeDisplay) {
 		this.isMonthlyIncomeRangeDisplay = isMonthlyIncomeRangeDisplay;
 	}
+
+
 
 	public Boolean getIsMonthlyIncomeRangeMandatory() {
 		return isMonthlyIncomeRangeMandatory;
 	}
 
+
+
 	public void setIsMonthlyIncomeRangeMandatory(Boolean isMonthlyIncomeRangeMandatory) {
 		this.isMonthlyIncomeRangeMandatory = isMonthlyIncomeRangeMandatory;
 	}
 
-	public Integer getMincurrentJobExperience() {
-		return mincurrentJobExperience;
-	}
 
-	public void setMincurrentJobExperience(Integer mincurrentJobExperience) {
-		this.mincurrentJobExperience = mincurrentJobExperience;
-	}
 
-	public Integer getMaxCurrentJobExperience() {
-		return maxCurrentJobExperience;
-	}
-
-	public void setMaxCurrentJobExperience(Integer maxCurrentJobExperience) {
-		this.maxCurrentJobExperience = maxCurrentJobExperience;
-	}
-
-	public Integer getMinTotalJobExperience() {
-		return minTotalJobExperience;
-	}
-
-	public void setMinTotalJobExperience(Integer minTotalJobExperience) {
-		this.minTotalJobExperience = minTotalJobExperience;
-	}
-
-	public Integer getMaxTotalJobExperience() {
-		return maxTotalJobExperience;
-	}
-
-	public void setMaxTotalJobExperience(Integer maxTotalJobExperience) {
-		this.maxTotalJobExperience = maxTotalJobExperience;
-	}
-
-	public Boolean getIsEmploymentTypeDisplay() {
-		return isEmploymentTypeDisplay;
-	}
-
-	public void setIsEmploymentTypeDisplay(Boolean isEmploymentTypeDisplay) {
-		this.isEmploymentTypeDisplay = isEmploymentTypeDisplay;
-	}
-
-	public Boolean getIsEmploymentTypeMandatory() {
-		return isEmploymentTypeMandatory;
-	}
-
-	public void setIsEmploymentTypeMandatory(Boolean isEmploymentTypeMandatory) {
-		this.isEmploymentTypeMandatory = isEmploymentTypeMandatory;
-	}
-
-	public Boolean getIsCreditRatingDisplay() {
-		return isCreditRatingDisplay;
-	}
-
-	public void setIsCreditRatingDisplay(Boolean isCreditRatingDisplay) {
-		this.isCreditRatingDisplay = isCreditRatingDisplay;
-	}
-
-	public Boolean getIsCreditRatingMandatory() {
-		return isCreditRatingMandatory;
-	}
-
-	public void setIsCreditRatingMandatory(Boolean isCreditRatingMandatory) {
-		this.isCreditRatingMandatory = isCreditRatingMandatory;
-	}
-
-	public Boolean getIsCurrentJobExperienceDisplay() {
-		return isCurrentJobExperienceDisplay;
-	}
-
-	public void setIsCurrentJobExperienceDisplay(Boolean isCurrentJobExperienceDisplay) {
-		this.isCurrentJobExperienceDisplay = isCurrentJobExperienceDisplay;
-	}
-
-	public Boolean getIsCurrentJobExperienceMandatory() {
-		return isCurrentJobExperienceMandatory;
-	}
-
-	public void setIsCurrentJobExperienceMandatory(Boolean isCurrentJobExperienceMandatory) {
-		this.isCurrentJobExperienceMandatory = isCurrentJobExperienceMandatory;
-	}
-
-	public Boolean getIsTotalJobExperienceDisplay() {
-		return isTotalJobExperienceDisplay;
-	}
-
-	public void setIsTotalJobExperienceDisplay(Boolean isTotalJobExperienceDisplay) {
-		this.isTotalJobExperienceDisplay = isTotalJobExperienceDisplay;
-	}
-
-	public Boolean getIsTotalJobExperienceMandatory() {
-		return isTotalJobExperienceMandatory;
-	}
-
-	public void setIsTotalJobExperienceMandatory(Boolean isTotalJobExperienceMandatory) {
-		this.isTotalJobExperienceMandatory = isTotalJobExperienceMandatory;
-	}
-
-	public Boolean getIsEmploymentStatusDisplay() {
-		return isEmploymentStatusDisplay;
-	}
-
-	public void setIsEmploymentStatusDisplay(Boolean isEmploymentStatusDisplay) {
-		this.isEmploymentStatusDisplay = isEmploymentStatusDisplay;
-	}
-
-	public Boolean getIsEmploymentStatusMandatory() {
-		return isEmploymentStatusMandatory;
-	}
-
-	public void setIsEmploymentStatusMandatory(Boolean isEmploymentStatusMandatory) {
-		this.isEmploymentStatusMandatory = isEmploymentStatusMandatory;
-	}
-
-	/*public Integer getEmploymentId() {
-		return employmentId;
-	}
-
-	public void setEmploymentId(Integer employmentId) {
-		this.employmentId = employmentId;
-	}
-
-	public Integer getEmploymentPlaceId() {
-		return employmentPlaceId;
-	}
-
-	public void setEmploymentPlaceId(Integer employmentPlaceId) {
-		this.employmentPlaceId = employmentPlaceId;
-	}
-
-	public Integer getMincurrentJobExperience() {
-		return mincurrentJobExperience;
-	}
-
-	public void setMincurrentJobExperience(Integer mincurrentJobExperience) {
-		this.mincurrentJobExperience = mincurrentJobExperience;
-	}
-
-	public Integer getMaxCurrentJobExperience() {
-		return maxCurrentJobExperience;
-	}
-
-	public void setMaxCurrentJobExperience(Integer maxCurrentJobExperience) {
-		this.maxCurrentJobExperience = maxCurrentJobExperience;
-	}
-
-	public Integer getMinTotalJobExperience() {
-		return minTotalJobExperience;
-	}
-
-	public void setMinTotalJobExperience(Integer minTotalJobExperience) {
-		this.minTotalJobExperience = minTotalJobExperience;
-	}
-
-	public Integer getMaxTotalJobExperience() {
-		return maxTotalJobExperience;
-	}
-
-	public void setMaxTotalJobExperience(Integer maxTotalJobExperience) {
-		this.maxTotalJobExperience = maxTotalJobExperience;
-	}
-
-	public Double getFoir() {
-		return foir;
-	}
-
-	public void setFoir(Double foir) {
-		this.foir = foir;
-	}
-
-	public Boolean getIsEmploymentTypeDisplay() {
-		return isEmploymentTypeDisplay;
-	}
-
-	public void setIsEmploymentTypeDisplay(Boolean isEmploymentTypeDisplay) {
-		this.isEmploymentTypeDisplay = isEmploymentTypeDisplay;
-	}
-
-	public Boolean getIsEmploymentTypeMandatory() {
-		return isEmploymentTypeMandatory;
-	}
-
-	public void setIsEmploymentTypeMandatory(Boolean isEmploymentTypeMandatory) {
-		this.isEmploymentTypeMandatory = isEmploymentTypeMandatory;
-	}
-
-	public Boolean getIsEmploymentPlaceDisplay() {
-		return isEmploymentPlaceDisplay;
-	}
-
-	public void setIsEmploymentPlaceDisplay(Boolean isEmploymentPlaceDisplay) {
-		this.isEmploymentPlaceDisplay = isEmploymentPlaceDisplay;
-	}
-
-	public Boolean getIsEmploymentPlaceMandatory() {
-		return isEmploymentPlaceMandatory;
-	}
-
-	public void setIsEmploymentPlaceMandatory(Boolean isEmploymentPlaceMandatory) {
-		this.isEmploymentPlaceMandatory = isEmploymentPlaceMandatory;
-	}
-
-	public Boolean getIsCurrentJobExperienceDisplay() {
-		return isCurrentJobExperienceDisplay;
-	}
-
-	public void setIsCurrentJobExperienceDisplay(Boolean isCurrentJobExperienceDisplay) {
-		this.isCurrentJobExperienceDisplay = isCurrentJobExperienceDisplay;
-	}
-
-	public Boolean getIsCurrentJobExperienceMandatory() {
-		return isCurrentJobExperienceMandatory;
-	}
-
-	public void setIsCurrentJobExperienceMandatory(Boolean isCurrentJobExperienceMandatory) {
-		this.isCurrentJobExperienceMandatory = isCurrentJobExperienceMandatory;
-	}
-
-	public Boolean getIsTotalJobExperienceDisplay() {
-		return isTotalJobExperienceDisplay;
-	}
-
-	public void setIsTotalJobExperienceDisplay(Boolean isTotalJobExperienceDisplay) {
-		this.isTotalJobExperienceDisplay = isTotalJobExperienceDisplay;
-	}
-
-	public Boolean getIsTotalJobExperienceMandatory() {
-		return isTotalJobExperienceMandatory;
-	}
-
-	public void setIsTotalJobExperienceMandatory(Boolean isTotalJobExperienceMandatory) {
-		this.isTotalJobExperienceMandatory = isTotalJobExperienceMandatory;
-	}*/
 	
-	
+
+
+
+	public Double getMinTotalCurrentJobExp() {
+		return minTotalCurrentJobExp;
+	}
+
+
+
+	public void setMinTotalCurrentJobExp(Double minTotalCurrentJobExp) {
+		this.minTotalCurrentJobExp = minTotalCurrentJobExp;
+	}
+
+
+
+	public Double getMaxTotalCurrentJobExp() {
+		return maxTotalCurrentJobExp;
+	}
+
+
+
+	public void setMaxTotalCurrentJobExp(Double maxTotalCurrentJobExp) {
+		this.maxTotalCurrentJobExp = maxTotalCurrentJobExp;
+	}
+
+
+
+	public Double getMinTotalJobExp() {
+		return minTotalJobExp;
+	}
+
+
+
+	public void setMinTotalJobExp(Double minTotalJobExp) {
+		this.minTotalJobExp = minTotalJobExp;
+	}
+
+
+
+	public Double getMaxTotalJobExp() {
+		return maxTotalJobExp;
+	}
+
+
+
+	public void setMaxTotalJobExp(Double maxTotalJobExp) {
+		this.maxTotalJobExp = maxTotalJobExp;
+	}
+
+
+
+	public Boolean getIsEmpWithDisplay() {
+		return isEmpWithDisplay;
+	}
+
+
+
+	public void setIsEmpWithDisplay(Boolean isEmpWithDisplay) {
+		this.isEmpWithDisplay = isEmpWithDisplay;
+	}
+
+
+
+	public Boolean getIsEmpWithMandatory() {
+		return isEmpWithMandatory;
+	}
+
+
+
+	public void setIsEmpWithMandatory(Boolean isEmpWithMandatory) {
+		this.isEmpWithMandatory = isEmpWithMandatory;
+	}
+
+
+
+	public Boolean getIsEmpStatusDisplay() {
+		return isEmpStatusDisplay;
+	}
+
+
+
+	public void setIsEmpStatusDisplay(Boolean isEmpStatusDisplay) {
+		this.isEmpStatusDisplay = isEmpStatusDisplay;
+	}
+
+
+
+	public Boolean getIsEmpStatusMandatory() {
+		return isEmpStatusMandatory;
+	}
+
+
+
+	public void setIsEmpStatusMandatory(Boolean isEmpStatusMandatory) {
+		this.isEmpStatusMandatory = isEmpStatusMandatory;
+	}
+
+
+
+	public Boolean getIsEmpRatingDisplay() {
+		return isEmpRatingDisplay;
+	}
+
+
+
+	public void setIsEmpRatingDisplay(Boolean isEmpRatingDisplay) {
+		this.isEmpRatingDisplay = isEmpRatingDisplay;
+	}
+
+
+
+	public Boolean getIsEmpRatingMandatory() {
+		return isEmpRatingMandatory;
+	}
+
+
+
+	public void setIsEmpRatingMandatory(Boolean isEmpRatingMandatory) {
+		this.isEmpRatingMandatory = isEmpRatingMandatory;
+	}
+
+
+
+	public Boolean getIsTotalCurrentJobExpDisplay() {
+		return isTotalCurrentJobExpDisplay;
+	}
+
+
+
+	public void setIsTotalCurrentJobExpDisplay(Boolean isTotalCurrentJobExpDisplay) {
+		this.isTotalCurrentJobExpDisplay = isTotalCurrentJobExpDisplay;
+	}
+
+
+
+	public Boolean getIsTotalCurrentJobExpMandatory() {
+		return isTotalCurrentJobExpMandatory;
+	}
+
+
+
+	public void setIsTotalCurrentJobExpMandatory(Boolean isTotalCurrentJobExpMandatory) {
+		this.isTotalCurrentJobExpMandatory = isTotalCurrentJobExpMandatory;
+	}
+
+
+
+	public Boolean getIsTotalJobExpDisplay() {
+		return isTotalJobExpDisplay;
+	}
+
+
+
+	public void setIsTotalJobExpDisplay(Boolean isTotalJobExpDisplay) {
+		this.isTotalJobExpDisplay = isTotalJobExpDisplay;
+	}
+
+
+
+	public Boolean getIsTotalJobExpMandatory() {
+		return isTotalJobExpMandatory;
+	}
+
+
+
+	public void setIsTotalJobExpMandatory(Boolean isTotalJobExpMandatory) {
+		this.isTotalJobExpMandatory = isTotalJobExpMandatory;
+	}
+
+		
 	
 
 	
