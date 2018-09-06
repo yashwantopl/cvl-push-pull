@@ -787,4 +787,63 @@ public class ProductMasterController {
 		
 	}
 	
+	
+	@RequestMapping(value = "/saveRetailInTemp", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> saveRetailInTemp(
+			@RequestBody RetailProduct retailProduct,HttpServletRequest request) {
+		CommonDocumentUtils.startHook(logger, "save");
+		logger.info("json"+retailProduct.toString());
+		try {
+			if (retailProduct == null) {
+				logger.warn("retailProduct Object can not be empty ==>",
+						retailProduct);
+				CommonDocumentUtils.endHook(logger, "save");
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse("Requested data can not be empty.", HttpStatus.BAD_REQUEST.value()),
+						HttpStatus.OK);
+			}
+
+			if (retailProduct.getId() == null) {
+				logger.warn("corporateProduct id can not be empty ==>", retailProduct);
+				CommonDocumentUtils.endHook(logger, "save");
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse("Requested data can not be empty.", HttpStatus.BAD_REQUEST.value()),
+						HttpStatus.OK);
+			}
+
+			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			Long userOrgId = (Long) request.getAttribute(CommonUtils.USER_ORG_ID);
+			//Long userId=1755l;
+			if(userId==null)
+			{
+				logger.warn("userId  id can not be empty ==>", userId);
+				CommonDocumentUtils.endHook(logger, "save");
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse("Requested data can not be empty.", HttpStatus.BAD_REQUEST.value()),
+						HttpStatus.OK);
+			}
+			retailProduct.setUserId(userId);
+			retailProduct.setUserOrgId(userOrgId);
+			boolean response = productMasterService.saveRetailInTemp(retailProduct);
+		//	boolean response =true;
+			if (response) {
+				CommonDocumentUtils.endHook(logger, "save");
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse("Successfully Saved.", HttpStatus.OK.value()), HttpStatus.OK);
+			} else {
+				CommonDocumentUtils.endHook(logger, "save");
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+						HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+		} catch (Exception e) {
+			logger.error("Error while saving saveRetailInTemp  Parameter==>", e);
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		
+	}
+	
 }
