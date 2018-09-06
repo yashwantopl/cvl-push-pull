@@ -27,8 +27,8 @@ public interface RetailApplicantDetailRepository extends JpaRepository<RetailApp
 			@Param("applicationId") Long applicationId);
 	
 	public RetailApplicantDetail findOneByApplicationIdId(Long applicationId);
-
 	
+	public RetailApplicantDetail findOneByApplicationIdIdAndIsActive(Long applicationId,Boolean isActive);
 	
 	@Query("select count(rt.applicationId.id) from RetailApplicantDetail rt where rt.applicationId.id =:applicationId and rt.applicationId.userId =:userId and rt.isActive = true and (rt.firstName != NULL and rt.firstName != '') ")
 	public Long hasAlreadyApplied(@Param("userId") Long userId,

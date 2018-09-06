@@ -243,8 +243,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 		Long userId = dDRRequest.getUserId();
 
 		try {
-			DDRFormDetails dDRFormDetails = ddrFormDetailsRepository.getByIdAndAppIdAndIsActive(dDRRequest.getId(),
-					dDRRequest.getApplicationId());
+			DDRFormDetails dDRFormDetails = ddrFormDetailsRepository.getByAppIdAndIsActive(dDRRequest.getApplicationId());
 			if (CommonUtils.isObjectNullOrEmpty(dDRFormDetails)) {
 				logger.info("DDR ===============> New DDR Form Saving ------------------------->");
 				dDRFormDetails = new DDRFormDetails();

@@ -6710,7 +6710,7 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 	
 	public LoanApplicationRequest getLoanApplicationDetails(Long userId, Long applicationId) {
 		
-		LoanApplicationMaster applicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId, userId);
+		LoanApplicationMaster applicationMaster = loanApplicationRepository.getById(applicationId);
 		
 		
 		LoanApplicationRequest applicationRequest = new LoanApplicationRequest();

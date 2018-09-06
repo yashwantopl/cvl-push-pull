@@ -8,8 +8,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.capitaworld.service.loans.model.*;
-import com.capitaworld.service.users.model.*;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,15 +29,23 @@ import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.loans.domain.fundprovider.ProductMaster;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.DirectorBackgroundDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
+import com.capitaworld.service.loans.model.CorporateProposalDetails;
+import com.capitaworld.service.loans.model.FundProviderProposalDetails;
+import com.capitaworld.service.loans.model.LoansResponse;
+import com.capitaworld.service.loans.model.ProposalResponse;
+import com.capitaworld.service.loans.model.RetailProposalDetails;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.DirectorBackgroundDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
 import com.capitaworld.service.loans.service.ProposalService;
 import com.capitaworld.service.loans.service.common.LogService;
 import com.capitaworld.service.loans.service.common.NotificationService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateDirectorIncomeService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -62,6 +68,11 @@ import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
 import com.capitaworld.service.oneform.model.SectorIndustryModel;
 import com.capitaworld.service.users.client.UsersClient;
+import com.capitaworld.service.users.model.BranchBasicDetailsRequest;
+import com.capitaworld.service.users.model.CheckerDetailRequest;
+import com.capitaworld.service.users.model.FundProviderDetailsRequest;
+import com.capitaworld.service.users.model.UserResponse;
+import com.capitaworld.service.users.model.UsersRequest;
 
 @Service
 @Transactional
@@ -111,11 +122,26 @@ public class ProposalServiceMappingImpl implements ProposalService {
 	
 	@Autowired
 	private LogService logService;
+	
+	@Autowired
+	private CorporateDirectorIncomeService corporateDirectorIncomeService;
+	
+	@Autowired
+	private DirectorBackgroundDetailsRepository directorBackgroundDetailsRepository;
 
 	DecimalFormat df = new DecimalFormat("#");
 	
 	private static final Logger logger = LoggerFactory.getLogger(ProposalServiceMappingImpl.class.getName());
 
+	private String getMainDirectorName(Long appId) {
+		DirectorBackgroundDetail dirBackDetails = directorBackgroundDetailsRepository.getMainDirectorByApplicationId(appId);
+		if(!CommonUtils.isObjectNullOrEmpty(dirBackDetails)) {
+			return dirBackDetails.getDirectorsName();	
+		}
+		return "NA";
+		
+	}
+	
 	@Override
 	public List fundproviderProposal(ProposalMappingRequest request) {
 		// TODO Auto-generated method stub
@@ -161,6 +187,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 
 				Long applicationId = proposalrequest.getApplicationId();
 				LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(applicationId);
+				Integer bId= loanApplicationMaster.getBusinessTypeId();
 				
 				if(CommonUtils.isObjectNullOrEmpty(loanApplicationMaster)) {
 					logger.info("loanApplicationMaster null ot empty !!");
@@ -206,11 +233,17 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					corporateProposalDetails.setBusinessTypeId(loanApplicationMaster.getBusinessTypeId());
 					corporateProposalDetails.setAddress(address);
 
-					if (CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getOrganisationName()))
-						corporateProposalDetails.setName("NA");
-					else
-						corporateProposalDetails.setName(corporateApplicantDetail.getOrganisationName());
-
+					if(CommonUtils.BusinessType.NEW_TO_BUSINESS.getId().equals(bId)) {
+						
+						corporateProposalDetails.setName(getMainDirectorName(applicationId));
+						
+					} else if(CommonUtils.BusinessType.EXISTING_BUSINESS.getId().equals(bId) || bId == null) {
+						if (CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getOrganisationName()))
+							corporateProposalDetails.setName("NA");
+						else
+							corporateProposalDetails.setName(corporateApplicantDetail.getOrganisationName());		
+					}
+					
 					corporateProposalDetails
 							.setFsMainType(CommonUtils.getCorporateLoanType(loanApplicationMaster.getProductId()));
 
@@ -731,6 +764,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 						BigInteger applicationId = (BigInteger) connectionResponse.getSuggetionByMatchesList().get(i);
 						LoanApplicationMaster loanApplicationMaster = loanApplicationRepository
 								.findOne(applicationId.longValue());
+						Integer bId = loanApplicationMaster.getBusinessTypeId();
 						if (CommonUtils.UserMainType.CORPORATE == CommonUtils
 								.getUserMainType(loanApplicationMaster.getProductId())) {
 
@@ -766,10 +800,16 @@ public class ProposalServiceMappingImpl implements ProposalService {
 
 							corporateProposalDetails.setAddress(address);
 
-							if (CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getOrganisationName()))
-								corporateProposalDetails.setName("NA");
-							else
-								corporateProposalDetails.setName(corporateApplicantDetail.getOrganisationName());
+							if(CommonUtils.BusinessType.NEW_TO_BUSINESS.getId().equals(bId)) {
+								
+								corporateProposalDetails.setName(getMainDirectorName(applicationId.longValue()));
+								
+							} else if(CommonUtils.BusinessType.EXISTING_BUSINESS.getId().equals(bId) || bId == null) {
+								if (CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getOrganisationName()))
+									corporateProposalDetails.setName("NA");
+								else
+									corporateProposalDetails.setName(corporateApplicantDetail.getOrganisationName());		
+							}
 
 							corporateProposalDetails.setFsMainType(
 									CommonUtils.getCorporateLoanType(loanApplicationMaster.getProductId()));
@@ -901,6 +941,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 						BigInteger applicationId = (BigInteger) connectionResponse.getSuggetionList().get(i);
 						LoanApplicationMaster loanApplicationMaster = loanApplicationRepository
 								.findOne(applicationId.longValue());
+						Integer bId=loanApplicationMaster.getBusinessTypeId();
 						if (CommonUtils.UserMainType.CORPORATE == CommonUtils
 								.getUserMainType(loanApplicationMaster.getProductId())) {
 
@@ -936,10 +977,16 @@ public class ProposalServiceMappingImpl implements ProposalService {
 
 							corporateProposalDetails.setAddress(address);
 
-							if (CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getOrganisationName()))
-								corporateProposalDetails.setName("NA");
-							else
-								corporateProposalDetails.setName(corporateApplicantDetail.getOrganisationName());
+							if(CommonUtils.BusinessType.NEW_TO_BUSINESS.getId().equals(bId)) {
+								
+								corporateProposalDetails.setName(getMainDirectorName(applicationId.longValue()));
+								
+							} else if(CommonUtils.BusinessType.EXISTING_BUSINESS.getId().equals(bId) || bId == null) {
+								if (CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getOrganisationName()))
+									corporateProposalDetails.setName("NA");
+								else
+									corporateProposalDetails.setName(corporateApplicantDetail.getOrganisationName());		
+							}
 
 							corporateProposalDetails.setFsMainType(
 									CommonUtils.getCorporateLoanType(loanApplicationMaster.getProductId()));
@@ -1301,7 +1348,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 				
 					Long applicationId = proposalrequest.getApplicationId();
 					LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(applicationId);
-
+					Integer bId=loanApplicationMaster.getBusinessTypeId();
 					if(!loanApplicationMaster.getIsActive()) {
 						logger.info("Application Id is InActive while get fundprovider proposals=====>" + applicationId);
 						continue;
@@ -1340,10 +1387,16 @@ public class ProposalServiceMappingImpl implements ProposalService {
 
 					corporateProposalDetails.setAddress(address);
 
-					if (CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getOrganisationName()))
-						corporateProposalDetails.setName("NA");
-					else
-						corporateProposalDetails.setName(corporateApplicantDetail.getOrganisationName());
+					if(CommonUtils.BusinessType.NEW_TO_BUSINESS.getId().equals(bId)) {
+						
+						corporateProposalDetails.setName(getMainDirectorName(applicationId));
+						
+					} else if(CommonUtils.BusinessType.EXISTING_BUSINESS.getId().equals(bId) || bId == null) {
+						if (CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getOrganisationName()))
+							corporateProposalDetails.setName("NA");
+						else
+							corporateProposalDetails.setName(corporateApplicantDetail.getOrganisationName());		
+					}
 
 					corporateProposalDetails
 							.setFsMainType(CommonUtils.getCorporateLoanType(loanApplicationMaster.getProductId()));
