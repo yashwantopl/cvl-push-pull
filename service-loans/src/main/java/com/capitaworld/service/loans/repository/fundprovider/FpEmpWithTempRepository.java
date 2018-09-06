@@ -18,5 +18,5 @@ public interface FpEmpWithTempRepository extends JpaRepository<EmpWithMappingDet
 	public int inActiveEmpWithByFpProductId(@Param("fpProductId") Long fpProductMaster);
 	
 	@Query("select o.empTypeId from EmpWithMappingDetailTemp o where o.fpProductId = :fpProductId and o.isActive = true")
-	public List<Long> getEmpWithByFpProductId(@Param("fpProductId")Long fpProductMaster);
+	public List<Integer> getEmpWithByFpProductId(@Param("fpProductId")Long fpProductMaster);
 }
