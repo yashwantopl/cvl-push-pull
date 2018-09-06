@@ -6710,7 +6710,7 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 	
 	public LoanApplicationRequest getLoanApplicationDetails(Long userId, Long applicationId) {
 		
-		LoanApplicationMaster applicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId, userId);
+		LoanApplicationMaster applicationMaster = loanApplicationRepository.getById(applicationId);
 		
 		
 		LoanApplicationRequest applicationRequest = new LoanApplicationRequest();
@@ -7324,7 +7324,7 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 			DisbursementRequest disbursementDetailsResponse =getDisbursementDetails(disbursementRequest);
 
 			if(disbursementDetailsResponse != null){
-				BeanUtils.copyProperties(disbursementDetailsResponse,sanctioningDetailResponse);
+				BeanUtils.copyProperties(disbursementDetailsResponse,sanctioningDetailResponse,"tenure","roi","userId");
 			}
 			logger.info("End getDetailsForSanction with data application Id : "+ disbursementRequest.getApplicationId() + " ProductMapping Id :" + disbursementRequest.getProductMappingId());
 			return sanctioningDetailResponse;

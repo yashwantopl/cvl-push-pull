@@ -1502,7 +1502,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 		try {
 			GstResponse response = gstClient.detailCalculation(corporateApplicantDetail.getGstIn());
 			if (response != null) {
-				corporateFinalViewResponse.setNameAsPerGst(response);
+				corporateFinalViewResponse.setGstData(response);
 			} else {
 
 				logger.warn("----------:::::::: Gst Response is null :::::::---------");
@@ -1510,7 +1510,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 			}
 
 		} catch (Exception e) {
-			logger.warn(":::::::------Error while calling gst client for name as per gst---:::::::");
+			logger.warn(":::::::------Error while calling gstData---:::::::");
 			e.printStackTrace();
 		}
 

@@ -26,6 +26,8 @@ public interface RetailApplicantService {
 	
 	public Integer getCurrency(Long applicationId,Long userId) throws Exception;
 	
+	public boolean saveITRResponse(RetailApplicantRequest applicantRequest) throws Exception;
+	
 	public JSONObject getCoapAndGuarIds(Long userId, Long applicationId) throws Exception;
 	
 	public CibilFullFillOfferRequest getProfile(Long userId, Long applicationId) throws Exception;

@@ -19,6 +19,7 @@ public class RetailApplicantRequest implements Serializable {
 	private Long id;
 	private Long clientId;
 	private Long applicationId;
+	private Long userId;
 
 	// Primary Fields
 	private Integer titleId;
@@ -52,6 +53,7 @@ public class RetailApplicantRequest implements Serializable {
 	private Integer date;
 	private Integer month;
 	private Integer year;
+	private Date dob;
 
 	//new requirement for SB
 	private Integer modeOfReceipt;
@@ -94,6 +96,10 @@ public class RetailApplicantRequest implements Serializable {
 	private Double residingMonth;
 	private String spouseName;
 	private Boolean isSpouseEmployed;
+	
+	
+	private List<RetailApplicantIncomeRequest> incomeDetailsList;
+	
 
 	public RetailApplicantRequest() {
 	}
@@ -654,4 +660,30 @@ public class RetailApplicantRequest implements Serializable {
 	public void setModeOfReceipt(Integer modeOfReceipt) {
 		this.modeOfReceipt = modeOfReceipt;
 	}
+
+	public List<RetailApplicantIncomeRequest> getIncomeDetailsList() {
+		return incomeDetailsList;
+	}
+
+	public void setIncomeDetailsList(List<RetailApplicantIncomeRequest> incomeDetailsList) {
+		this.incomeDetailsList = incomeDetailsList;
+	}
+
+	public Date getDob() {
+		return dob;
+	}
+
+	public void setDob(Date dob) {
+		this.dob = dob;
+	}
+
+	public Long getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Long userId) {
+		this.userId = userId;
+	}
+	
+	
 }
