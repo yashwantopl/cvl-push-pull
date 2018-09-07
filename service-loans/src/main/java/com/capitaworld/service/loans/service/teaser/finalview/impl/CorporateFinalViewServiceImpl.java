@@ -1373,8 +1373,8 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 				
 				corporateFinalViewResponse.setWeightConsider(proposalScoreResponse.getWeightConsider());
 				corporateFinalViewResponse.setManagementRiskMaxTotalWeight(proposalScoreResponse.getManagementRiskMaxTotalWeight());
-				corporateFinalViewResponse.setFinancialRiskMaxTotalWeight(proposalScoreResponse.getManagementRiskMaxTotalWeight());
-				corporateFinalViewResponse.setBusinessRiskMaxTotalWeight(proposalScoreResponse.getManagementRiskMaxTotalWeight());
+				corporateFinalViewResponse.setFinancialRiskMaxTotalWeight(proposalScoreResponse.getFinancialRiskMaxTotalWeight());
+				corporateFinalViewResponse.setBusinessRiskMaxTotalWeight(proposalScoreResponse.getBusinessRiskMaxTotalWeight());
 			
 				// if ture so show two col
 				corporateFinalViewResponse.setIsProportionateScoreConsider(proposalScoreResponse.getIsProportionateScoreConsider());//Score(out of), proportionateScoreFS
