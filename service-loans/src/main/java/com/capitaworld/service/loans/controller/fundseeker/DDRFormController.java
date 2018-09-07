@@ -152,13 +152,13 @@ public class DDRFormController {
 		if (CommonDocumentUtils.isThisClientApplication(request) && !CommonUtils.isObjectNullOrEmpty(clientId)) {
 			userId = clientId;
 		}
-		/*if (CommonUtils.isObjectNullOrEmpty(userId)) {
+		if (CommonUtils.isObjectNullOrEmpty(userId)) {
 			logger.info("Invalid Request, UserId is null or Empty, COMBINED DDR Form SAVE Method");
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
-		}*/
+		}
 		try {
-			ddrRequest.setUserId(2827l);
+			ddrRequest.setUserId(userId);
 			ddrFormService.saveMergeDDR(ddrRequest);
 			logger.info("DDR COMBINED Form Saved Successfully---------------------------->");
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Data Saved", HttpStatus.OK.value()), HttpStatus.OK);
@@ -183,7 +183,6 @@ public class DDRFormController {
 		logger.info("Enter in DDR Form Get Method -------------------------->" + appId);
 
 		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-		Integer userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE));
 		if (CommonDocumentUtils.isThisClientApplication(request) && !CommonUtils.isObjectNullOrEmpty(clientId)) {
 			userId = clientId;
 		}

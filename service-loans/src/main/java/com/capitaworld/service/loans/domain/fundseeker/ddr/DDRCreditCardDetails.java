@@ -41,6 +41,9 @@ public class DDRCreditCardDetails implements Serializable {
 	@Column(name ="reference_no")
 	private String referenceNo;
 	
+	@Column(name ="comment")
+	private String comment;
+	
 	@Column(name = "created_by")
 	private Long createdBy;
 	
@@ -139,13 +142,22 @@ public class DDRCreditCardDetails implements Serializable {
 		this.modifyDate = modifyDate;
 	}
 
+	public String getComment() {
+		return comment;
+	}
+
+	public void setComment(String comment) {
+		this.comment = comment;
+	}
+
 	@Override
 	public String toString() {
 		return "DDRCreditCardDetails [id=" + id + ", ddrFormId=" + ddrFormId + ", bankName=" + bankName
-				+ ", creditCard=" + creditCard +  ", referenceNo="
-				+ referenceNo + ", createdBy=" + createdBy + ", createdDate=" + createdDate + ", modifyBy=" + modifyBy
+				+ ", creditCard=" + creditCard + ", referenceNo=" + referenceNo + ", comment=" + comment
+				+ ", createdBy=" + createdBy + ", createdDate=" + createdDate + ", modifyBy=" + modifyBy
 				+ ", modifyDate=" + modifyDate + ", isActive=" + isActive + "]";
 	}
+
 
 	
 	
