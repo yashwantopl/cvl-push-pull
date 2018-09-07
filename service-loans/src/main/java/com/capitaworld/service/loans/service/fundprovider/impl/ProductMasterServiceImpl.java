@@ -682,26 +682,11 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 		CommonDocumentUtils.startHook(logger, "saveRetail");
 		if (!CommonUtils.isObjectNullOrEmpty(retailProduct)) {
 			if (!CommonUtils.isObjectNullOrEmpty(retailProduct.getProductId())) {
-				if (retailProduct.getProductId() == CommonUtils.LoanType.CAR_LOAN.getValue()) {
-					CarLoanParameterRequest carLoanParameterRequest = new CarLoanParameterRequest();
-					BeanUtils.copyProperties(retailProduct, carLoanParameterRequest);
-					CommonDocumentUtils.endHook(logger, "saveRetail");
-					return carLoanParameterService.saveOrUpdate(carLoanParameterRequest);
-				} else if (retailProduct.getProductId() == CommonUtils.LoanType.HOME_LOAN.getValue()) {
-					HomeLoanParameterRequest homeLoanParameterRequest = new HomeLoanParameterRequest();
-					BeanUtils.copyProperties(retailProduct, homeLoanParameterRequest);
-					CommonDocumentUtils.endHook(logger, "saveRetail");
-					return homeLoanParameterService.saveOrUpdate(homeLoanParameterRequest);
-				} else if (retailProduct.getProductId() == CommonUtils.LoanType.PERSONAL_LOAN.getValue()) {
+				 if (retailProduct.getProductId() == CommonUtils.LoanType.PERSONAL_LOAN.getValue()) {
 					PersonalLoanParameterRequest personalLoanParameterRequest = new PersonalLoanParameterRequest();
 					BeanUtils.copyProperties(retailProduct, personalLoanParameterRequest);
 					CommonDocumentUtils.endHook(logger, "saveRetail");
-					return personalLoanParameterService.saveOrUpdate(personalLoanParameterRequest);
-				} else if (retailProduct.getProductId() == CommonUtils.LoanType.LAP_LOAN.getValue()) {
-					LapParameterRequest lapParameterRequest = new LapParameterRequest();
-					BeanUtils.copyProperties(retailProduct, lapParameterRequest);
-					CommonDocumentUtils.endHook(logger, "saveRetail");
-					return lapLoanParameterService.saveOrUpdate(lapParameterRequest);
+					return personalLoanParameterService.saveOrUpdate(personalLoanParameterRequest,null);
 				}
 			}
 		}
@@ -893,6 +878,10 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 					CommonDocumentUtils.endHook(logger, "saveCorporate");
 					return wcTlParameterService.saveMasterFromTempWcTl(mappingId);
 				}
+				 else if (corporateProduct.getProductId() == CommonUtils.LoanType.PERSONAL_LOAN.getValue()) {
+						CommonDocumentUtils.endHook(logger, "saveCorporate");
+						return personalLoanParameterService.saveMasterFromTempPl(mappingId);
+					}
 			}
 		}
 		CommonDocumentUtils.endHook(logger, "saveCorporate");
@@ -1038,6 +1027,24 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 			e.printStackTrace();
 			return false;
 		}
+	}
+
+	@Override
+	public Boolean saveRetailInTemp(RetailProduct retailProduct) {
+		// TODO Auto-generated method stub
+		CommonDocumentUtils.startHook(logger, "saveRetailInTemp");
+		if (!CommonUtils.isObjectNullOrEmpty(retailProduct)) {
+			if (!CommonUtils.isObjectNullOrEmpty(retailProduct.getProductId())) {
+				if (retailProduct.getProductId() == CommonUtils.LoanType.PERSONAL_LOAN.getValue()) {
+					PersonalLoanParameterRequest personalLoanParameterRequest= new PersonalLoanParameterRequest();
+					BeanUtils.copyProperties(retailProduct, personalLoanParameterRequest);
+					CommonDocumentUtils.endHook(logger, "saveRetailInTemp");
+					return personalLoanParameterService.saveOrUpdateTemp(personalLoanParameterRequest);
+				} 
+			}
+		}
+		CommonDocumentUtils.endHook(logger, "saveRetailInTemp");
+		return false;
 	}
 
 }

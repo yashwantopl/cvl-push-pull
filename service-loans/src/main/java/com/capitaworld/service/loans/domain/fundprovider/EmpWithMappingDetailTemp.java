@@ -19,7 +19,7 @@ import javax.persistence.TemporalType;
  * 
  */
 @Entity
-@Table(name = "fs_retail_emp_type_mapping_details")
+@Table(name = "fs_retail_emp_type_mapping_details_temp")
 public class EmpWithMappingDetailTemp implements Serializable {
 	private static final long serialVersionUID = 1L;
 
