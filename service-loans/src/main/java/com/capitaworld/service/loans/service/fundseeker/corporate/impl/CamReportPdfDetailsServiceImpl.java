@@ -610,7 +610,6 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 					map.put("combinedNetworthActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
 					map.put("combinedNetworthScoreActual",!CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
 					map.put("combinedNetworthScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue() : "-");
-					manufacturing++;
 					continue;
 				case ScoreParameter.CUSTOMER_ASSOCIATE_CONCERN:
 					map.put("customerAssociateConcernActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
@@ -634,7 +633,6 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 					map.put("debtEquityRatioActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
 					map.put("debtEquityRatioScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
 					map.put("debtEquityRatioScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue() : "-");
-					financial++;
 					continue;
 				case ScoreParameter.TOL_TNW:
 					map.put("tolTnwActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
@@ -688,7 +686,6 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 					map.put("noOfCustomerActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
 					map.put("noOfCustomerScoreActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getObtainedScore()) ? proposalScoreDetailResponse.getObtainedScore().intValue():"-");
 					map.put("noOfCustomerScoreOutOf", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getMaxScore()) ? proposalScoreDetailResponse.getMaxScore().intValue():"-");
-					business++;
 					continue;
 				case ScoreParameter.CONCENTRATION_CUSTOMER:
 					map.put("concentrationCustomerActual", !CommonUtils.isObjectNullOrEmpty(proposalScoreDetailResponse.getParameterOption()) ? StringEscapeUtils.escapeXml(proposalScoreDetailResponse.getParameterOption()):"-");
@@ -1334,7 +1331,8 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		assetDetailsString.setInvestmentsOrBookDebtsString(CommonUtils.convertValue(assetsDetails.getInvestmentsOrBookDebts()));
 		assetDetailsString.setDeferredReceviables(CommonUtils.convertValue(assetsDetails.getDeferredReceviables()));
 		assetDetailsString.setOthers(CommonUtils.convertValue(assetsDetails.getOthers()));
-		assetDetailsString.setOtherInvestmentsTotal(CommonUtils.convertValue(CommonUtils.addNumbers(assetsDetails.getInvestmentsOrBookDebts(), assetsDetails.getDeferredReceviables(),assetsDetails.getOthers())));
+		assetDetailsString.setOtherInvestmentsTotal(CommonUtils.convertValue(CommonUtils.addNumbers(assetsDetails.getInvestmentsOrBookDebts(), assetsDetails.getDeferredReceviables(),assetsDetails.getOthersOther())));
+		assetDetailsString.setOthersOther(CommonUtils.convertValue(assetsDetails.getOthersOther()));
 		financialInputRequestDbl.setOtherInvestment((assetsDetails.getOthersOther() + assetsDetails.getDeferredReceviables() + assetsDetails.getOthers()) * denomination);
 		financialInputRequestString.setOtherInvestment(CommonUtils.convertValue(financialInputRequestDbl.getOtherInvestment()));
 		
