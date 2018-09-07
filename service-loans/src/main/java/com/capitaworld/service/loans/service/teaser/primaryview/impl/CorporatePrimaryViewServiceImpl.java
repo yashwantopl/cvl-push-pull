@@ -879,6 +879,19 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 						.setFinancialRiskWeightOfScoring(proposalScoreResponse.getFinancialRiskWeightOfScoring());
 				corporatePrimaryViewResponse
 						.setBusinessRiskWeightOfScoring(proposalScoreResponse.getBusinessRiskWeightOfScoring());
+				
+				// if true so show 3 col
+				
+				corporatePrimaryViewResponse.setWeightConsider(proposalScoreResponse.getWeightConsider());
+				corporatePrimaryViewResponse.setManagementRiskMaxTotalWeight(proposalScoreResponse.getManagementRiskMaxTotalWeight());
+				corporatePrimaryViewResponse.setFinancialRiskMaxTotalWeight(proposalScoreResponse.getManagementRiskMaxTotalWeight());
+				corporatePrimaryViewResponse.setBusinessRiskMaxTotalWeight(proposalScoreResponse.getManagementRiskMaxTotalWeight());
+			
+				// if ture so show two col
+				corporatePrimaryViewResponse.setIsProportionateScoreConsider(proposalScoreResponse.getIsProportionateScoreConsider());//Score(out of), proportionateScoreFS
+				corporatePrimaryViewResponse.setProportionateScore(proposalScoreResponse.getProportionateScore());
+				corporatePrimaryViewResponse.setProportionateScoreFS(proposalScoreResponse.getProportionateScoreFS());
+				
 				System.out.println("complete");
 			} else {
 				logger.info("SCORING OBJECT NULL OR EMPTY -------------------->");
