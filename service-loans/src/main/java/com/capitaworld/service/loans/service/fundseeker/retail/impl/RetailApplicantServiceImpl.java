@@ -147,7 +147,16 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 			}
 
 			BeanUtils.copyProperties(applicantRequest, applicantDetail, CommonUtils.IgnorableCopy.RETAIL_FINAL);
-			copyAddressFromRequestToDomain(applicantRequest, applicantDetail);
+			Address address = applicantRequest.getFirstAddress();
+			if(!CommonUtils.isObjectNullOrEmpty(address)) {
+				applicantDetail.setAddressPremiseName(address.getPremiseNumber());
+				applicantDetail.setAddressLandmark(address.getLandMark());
+				applicantDetail.setAddressStreetName(address.getStreetName());
+				applicantDetail.setAddressCountry(address.getCountryId());
+				applicantDetail.setAddressState(!CommonUtils.isObjectNullOrEmpty(address.getStateId()) ? address.getStateId().longValue() : null);
+				applicantDetail.setAddressCity(address.getCityId());
+				applicantDetail.setAddressPincode(address.getPincode());
+			}
 			applicantDetail.setBirthDate(applicantRequest.getDob());
 			applicantDetail = applicantRepository.save(applicantDetail);
 
