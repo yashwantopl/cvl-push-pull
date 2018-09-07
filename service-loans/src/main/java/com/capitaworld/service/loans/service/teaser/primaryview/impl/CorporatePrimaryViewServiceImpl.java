@@ -884,8 +884,8 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 				
 				corporatePrimaryViewResponse.setWeightConsider(proposalScoreResponse.getWeightConsider());
 				corporatePrimaryViewResponse.setManagementRiskMaxTotalWeight(proposalScoreResponse.getManagementRiskMaxTotalWeight());
-				corporatePrimaryViewResponse.setFinancialRiskMaxTotalWeight(proposalScoreResponse.getManagementRiskMaxTotalWeight());
-				corporatePrimaryViewResponse.setBusinessRiskMaxTotalWeight(proposalScoreResponse.getManagementRiskMaxTotalWeight());
+				corporatePrimaryViewResponse.setFinancialRiskMaxTotalWeight(proposalScoreResponse.getFinancialRiskMaxTotalWeight());
+				corporatePrimaryViewResponse.setBusinessRiskMaxTotalWeight(proposalScoreResponse.getBusinessRiskMaxTotalWeight());
 			
 				// if ture so show two col
 				corporatePrimaryViewResponse.setIsProportionateScoreConsider(proposalScoreResponse.getIsProportionateScoreConsider());//Score(out of), proportionateScoreFS
