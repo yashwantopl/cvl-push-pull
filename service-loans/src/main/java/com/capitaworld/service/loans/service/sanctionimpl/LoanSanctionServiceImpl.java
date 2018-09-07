@@ -197,17 +197,17 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 						String token=null;
 						
 						try {
-							/*token = sidbiIntegrationClient.getToken(generateTokenRequest,generateTokenRequest.getBankToken());
+							token = sidbiIntegrationClient.getToken(generateTokenRequest,generateTokenRequest.getBankToken() , userOrganisationRequest.getUserOrgId());
 							generateTokenRequest.setToken(token);
 							//Getting sanction and disbursement Details from Bank 
-							SidbiIntegerationResponse sidbiIntegerationResponse = sidbiIntegrationClient.getSanctionAndDisbursmentDetailList(token, generateTokenRequest.getBankToken());
+							SidbiIntegerationResponse sidbiIntegerationResponse = sidbiIntegrationClient.getSanctionAndDisbursmentDetailList(token, generateTokenRequest.getBankToken() , userOrganisationRequest.getUserOrgId());
 							if(!CommonUtils.isObjectNullOrEmpty(sidbiIntegerationResponse)) {
 								if(!CommonUtils.isObjectNullOrEmpty(sidbiIntegerationResponse.getData())) {
 									Object res = sanctionAndDisbursementValidation((String)sidbiIntegerationResponse.getData()); 
 									if(res instanceof List){
 										List<com.capitaworld.sidbi.integration.model.sanction.LoanSanctionAndDisbursedRequest> list = (List<com.capitaworld.sidbi.integration.model.sanction.LoanSanctionAndDisbursedRequest> )res;
 										logger.info("********************************* " + list.size() +" ***********************************");
-										if(sidbiIntegrationClient.updateSavedSanctionAndDisbursmentDetailList(list , generateTokenRequest.getToken(), generateTokenRequest.getBankToken())) {
+										if(sidbiIntegrationClient.updateSavedSanctionAndDisbursmentDetailList(list , generateTokenRequest.getToken(), generateTokenRequest.getBankToken() , userOrganisationRequest.getUserOrgId())) {
 											try {
 												//wait foo 15 minute
 												logger.info("*******Sucessgfully updated sanction and disbursement details in sidbi integration********** ");
@@ -218,12 +218,12 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 												e.printStackTrace();
 											}
 										}
-										*//*}*//*
+										
 									}else {
 										logger.info("*******Unable to store sanction or disbursement detail   **********  reasion is =={}", (res != null ? res.toString() : res));
 									}
 								}
-							}*/
+							}
 						}catch(Exception e) {
 							e.printStackTrace();
 							logger.error("Error while Calling get token API");
