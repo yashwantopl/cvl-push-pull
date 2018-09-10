@@ -139,6 +139,7 @@ import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.LoanApplicationDetailsForSp;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.model.LoanEligibilityRequest;
+import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.PaymentRequest;
 import com.capitaworld.service.loans.model.PincodeDataResponse;
 import com.capitaworld.service.loans.model.ReportResponse;
@@ -6738,6 +6739,26 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 		
 		return map;
 	}
+	
+	public LoansResponse getFpDetailsByFpProductMappingId(Long fpProductMappingId) throws Exception{
+		logger.info("ENTER IN LOAN APPLICATIONSERVICEIMPL-------------FP PRODUCT MAPPING ID >>>>>>>>>>>"+fpProductMappingId);
+		try {
+		ProductMaster productMaster = productMasterRepository.findByIdAndIsActive(fpProductMappingId,true);
+		logger.info("RESPONSE------------------->>>>>>>>>>>"+productMaster);
+		if(productMaster!=null) {
+			LoansResponse loansResponse = new LoansResponse();
+			loansResponse.setData(productMaster);
+			logger.info("DATA IS FETCH SUCCESSFULLY---------------->>>");
+		}
+		}catch (Exception e) {
+			logger.error("exception is getting while getting data fp product master---------------->>>"+e.getMessage());
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	
+	
 	
 	
 	public LoanApplicationRequest getLoanApplicationDetails(Long userId, Long applicationId) {
