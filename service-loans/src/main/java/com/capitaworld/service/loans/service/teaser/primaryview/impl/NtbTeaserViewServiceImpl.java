@@ -214,15 +214,6 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService {
 						CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getPurposeOfLoanId()) ? null
 								: PurposeOfLoan.getById(primaryCorporateDetail.getPurposeOfLoanId()).getValue()
 										.toString());
-				ntbPrimaryViewRespone.setBusinessAssetAmount(primaryCorporateDetail.getBusinessAssetAmount() != null
-						? String.valueOf(primaryCorporateDetail.getBusinessAssetAmount())
-						: null);
-				ntbPrimaryViewRespone.setWcAmount(primaryCorporateDetail.getWcAmount() != null
-						? String.valueOf(primaryCorporateDetail.getWcAmount())
-						: null);
-				ntbPrimaryViewRespone.setOtherAmt(primaryCorporateDetail.getOtherAmt() != null
-						? String.valueOf(primaryCorporateDetail.getOtherAmt())
-						: null);
 
 				ntbPrimaryViewRespone
 						.setHaveCollateralSecurity(primaryCorporateDetail.getHaveCollateralSecurity() != null

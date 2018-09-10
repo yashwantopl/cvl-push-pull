@@ -20,6 +20,8 @@ public class MonthlyTurnoverDetailRequest implements Serializable {
 	private Boolean isActive = true;
 
 	private String monthName;
+	
+	private String amountString;
 
 	public MonthlyTurnoverDetailRequest() {
 
@@ -60,5 +62,15 @@ public class MonthlyTurnoverDetailRequest implements Serializable {
 	public void setMonthName(String monthName) {
 		this.monthName = monthName;
 	}
+
+	public String getAmountString() {
+		return amountString;
+	}
+
+	public void setAmountString(String amountString) {
+		this.amountString = amountString;
+	}
+
+	
 
 }

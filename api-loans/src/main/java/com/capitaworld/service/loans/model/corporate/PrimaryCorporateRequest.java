@@ -12,9 +12,6 @@ public class PrimaryCorporateRequest extends LoanApplicationRequest implements S
     private static final long serialVersionUID = 1L;
 
     private Double loanAmount;
-    private Double businessAssetAmount;
-    private Double wcAmount;
-    private Double otherAmt;
     private Boolean haveCollateralSecurity;
     private Double collateralSecurityAmount;
     private Integer purposeOfLoanId;
@@ -55,30 +52,6 @@ public class PrimaryCorporateRequest extends LoanApplicationRequest implements S
 
     public void setLoanAmount(Double loanAmount) {
         this.loanAmount = loanAmount;
-    }
-
-    public Double getBusinessAssetAmount() {
-        return businessAssetAmount;
-    }
-
-    public void setBusinessAssetAmount(Double businessAssetAmount) {
-        this.businessAssetAmount = businessAssetAmount;
-    }
-
-    public Double getWcAmount() {
-        return wcAmount;
-    }
-
-    public void setWcAmount(Double wcAmount) {
-        this.wcAmount = wcAmount;
-    }
-
-    public Double getOtherAmt() {
-        return otherAmt;
-    }
-
-    public void setOtherAmt(Double otherAmt) {
-        this.otherAmt = otherAmt;
     }
 
     public Boolean getHaveCollateralSecurity() {
