@@ -16,6 +16,7 @@ import com.capitaworld.service.loans.model.AdminPanelLoanDetailsResponse;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.LoanApplicationDetailsForSp;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
+import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.PaymentRequest;
 
 import com.capitaworld.service.loans.model.common.CGTMSECalcDataResponse;
@@ -166,6 +167,8 @@ public interface LoanApplicationService {
 	public boolean savePhese2DataToSidbi(Long applicationId,Long userId,Long organizationId,Long fpProductMappingId);
 	
 	public Map<String, Object> getFpDetailsByFpProductId(Long fpProductId) throws Exception;
+	
+	public LoansResponse getFpDetailsByFpProductMappingId(Long fpProductId) throws Exception;
 	
 	public LoanApplicationRequest getLoanApplicationDetails(Long userId, Long applicationId);
 
