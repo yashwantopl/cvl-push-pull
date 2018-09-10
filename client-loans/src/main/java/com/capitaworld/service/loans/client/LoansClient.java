@@ -191,7 +191,8 @@ public class LoansClient {
 
 	private static final String GET_ORG_PAN_DETAILS = "/fs_profile/getOrgAndPanByAppId";
 	
-	private static final String  GET_FPDETAILS_BY_FPPRODUCTID = "/loan_application/getFpDetailsByFpProductId";
+	private static final String GET_FPDETAILS_BY_FPPRODUCTID = "/loan_application/getFpDetailsByFpProductId";
+	private static final String GET_FP_DETAILS_BY_FPPRODUCT_MAPPINGID = "/loan_application/getFpDetailsByFpProductMappindId";
 	private static final String SAVE_PHASE_ONE = "/loan_application/save_phase1_sidbi";
 	private static final String SAVE_PHASE_TWO = "/loan_application/save_phase2_sidbi";
 	
@@ -1912,6 +1913,21 @@ public class LoansClient {
 			throw new ExcelException("Loans service is not available");
 		}
 	}
+	
+	public LoansResponse getFpDetailsByFpProductMappingId(Long fpProductMappingId) throws ExcelException {
+		String url = loansBaseUrl.concat(GET_FP_DETAILS_BY_FPPRODUCT_MAPPINGID).concat("/"+fpProductMappingId);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<?> entity = new HttpEntity<>(fpProductMappingId, headers);
+			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ExcelException("Loans service is not available");
+		}
+	}
+	
 	
 	public LoansResponse getCorporateScore(ScoringRequestLoans scoringRequestLoans) throws LoansException {
 		String url = loansBaseUrl.concat(GET_CORPORATE_SCORE);
