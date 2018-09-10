@@ -20,14 +20,6 @@ public class PrimaryCorporateDetail extends LoanApplicationMaster implements Ser
     @Column(name = "loan_amount")
     private Double loanAmount;
 
-    @Column(name = "business_asset_amt")
-    private Double businessAssetAmount;
-
-    @Column(name = "wc_amt")
-    private Double wcAmount;
-
-    @Column(name = "other_amt")
-    private Double otherAmt;
 
     @Column(name = "have_collateral_security")
     private Boolean haveCollateralSecurity;
@@ -147,31 +139,6 @@ public class PrimaryCorporateDetail extends LoanApplicationMaster implements Ser
     public void setLoanAmount(Double loanAmount) {
         this.loanAmount = loanAmount;
     }
-
-    public Double getBusinessAssetAmount() {
-        return businessAssetAmount;
-    }
-
-    public void setBusinessAssetAmount(Double businessAssetAmount) {
-        this.businessAssetAmount = businessAssetAmount;
-    }
-
-    public Double getWcAmount() {
-        return wcAmount;
-    }
-
-    public void setWcAmount(Double wcAmount) {
-        this.wcAmount = wcAmount;
-    }
-
-    public Double getOtherAmt() {
-        return otherAmt;
-    }
-
-    public void setOtherAmt(Double otherAmt) {
-        this.otherAmt = otherAmt;
-    }
-
 
     public Boolean getHaveCollateralSecurity() {
         return haveCollateralSecurity;
