@@ -78,6 +78,12 @@ public class AssociatedConcernDetailServiceImpl implements AssociatedConcernDeta
 
 			for (AssociatedConcernDetail detail : associatedConcernDetail) {
 				AssociatedConcernDetailRequest associatedConcernDetailRequest = new AssociatedConcernDetailRequest();
+				associatedConcernDetailRequest.setProfitPastOneYearString(CommonUtils.convertValue(detail.getProfitPastOneYear()));
+				associatedConcernDetailRequest.setProfitPastTwoYearString(CommonUtils.convertValue(detail.getProfitPastTwoYear()));
+				associatedConcernDetailRequest.setProfitPastThreeYearString(CommonUtils.convertValue(detail.getProfitPastThreeYear()));
+				associatedConcernDetailRequest.setTurnOverFirstYearString(CommonUtils.convertValue(detail.getTurnOverFirstYear()));
+				associatedConcernDetailRequest.setTurnOverSecondYearString(CommonUtils.convertValue(detail.getTurnOverSecondYear()));
+				associatedConcernDetailRequest.setTurnOverThirdYearString(CommonUtils.convertValue(detail.getTurnOverThirdYear()));
 				BeanUtils.copyProperties(detail, associatedConcernDetailRequest);
 				AssociatedConcernDetailRequest.printFields(associatedConcernDetailRequest);
 				associatedConcernDetailRequests.add(associatedConcernDetailRequest);
