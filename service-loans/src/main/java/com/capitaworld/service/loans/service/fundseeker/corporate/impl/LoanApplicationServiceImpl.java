@@ -5399,6 +5399,14 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				}catch(Exception e) {
 					logger.error("Error while Saving Financial Details to BANK");
 					e.printStackTrace();
+					if(e.getMessage() != null && e.getMessage().contains("401")) {
+						auditComponent.updateAudit(AuditComponent.FINANCIAL, applicationId, userId, "Unauthorized! in  Financial in savePhese1DataToSidbi() ==> for applicationId====>{} "+applicationId+" Msg ==> "+e.getMessage() ,saveFinancialDetails);
+						logger.error("Invalid Token Details");
+						setTokenAsExpired(generateTokenRequest , organizationId );
+						return false;						
+					}else {
+						auditComponent.updateAudit(AuditComponent.FINANCIAL, applicationId, userId, "Exception while saving financial detail savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "+applicationId+" Mgs " +e.getMessage(), saveFinancialDetails);
+					}
 				}
 			}else {
 				logger.info("Financial Details Already Saved so not Going to Save Again===>");
@@ -5424,7 +5432,15 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					}
 				}catch(Exception e) {
 					e.printStackTrace();
-					logger.error("Error while Calling CMA client in integration");
+					if(e.getMessage() != null && e.getMessage().contains("401")) {
+						auditComponent.updateAudit(AuditComponent.CMA_DETAIL, applicationId, userId, "Unauthorized! in  Cma Detail in savePhese1DataToSidbi() ==> for applicationId====>{} "+applicationId+" Msg ==> "+e.getMessage() ,saveCmaDetails);
+						logger.error("Invalid Token Details");
+						setTokenAsExpired(generateTokenRequest , organizationId );
+						return false;						
+					}else {
+						auditComponent.updateAudit(AuditComponent.CMA_DETAIL, applicationId, userId, "Exception while saving CMA detail savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "+applicationId+" Mgs " +e.getMessage() , saveCmaDetails);
+						logger.error("Error while Calling CMA client in integration");
+					}
 				}
 			}else {
 				logger.info("CMA Details Already Saved so not Going to Save Again===>");
@@ -5451,7 +5467,15 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					}
 				}catch(Exception e) {
 					e.printStackTrace();
-					logger.error("Error while calling logic client");
+					if(e.getMessage() != null && e.getMessage().contains("401")) {
+						auditComponent.updateAudit(AuditComponent.LOGIC, applicationId, userId, "Unauthorized! in  LogicDetail in savePhese1DataToSidbi() ==> for applicationId====>{} "+applicationId+" Msg ==> "+e.getMessage() ,saveLogicDetails);
+						logger.error("Invalid Token Details");
+						setTokenAsExpired(generateTokenRequest , organizationId );
+						return false;						
+					}else {
+						logger.error("Error while calling logic client");
+						auditComponent.updateAudit(AuditComponent.LOGIC, applicationId, userId, "Exception while saving LOGIC detail savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "+applicationId+" Mgs " +e.getMessage() , saveLogicDetails);
+					}
 				}
 			}else {
 				logger.info("Logic Details Already Saved so not Going to Save Again===>");
@@ -5481,7 +5505,15 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					}
 				}catch(Exception e) {
 					e.printStackTrace();
-					logger.error("Error while calling client of Commercial in SIdbi");
+					if(e.getMessage() != null && e.getMessage().contains("401")) {
+						auditComponent.updateAudit(AuditComponent.COMMERCIAL, applicationId, userId, "Unauthorized! in  Commercial Detail in savePhese1DataToSidbi() ==> for applicationId====>{} "+applicationId+" Msg ==> "+e.getMessage() ,saveCommercialDetails);
+						logger.error("Invalid Token Details");
+						setTokenAsExpired(generateTokenRequest , organizationId );
+						return false;						
+					}else {
+						logger.error("Error while calling client of Commercial in SIdbi");
+						auditComponent.updateAudit(AuditComponent.COMMERCIAL, applicationId, userId, "Exception while saving COMMERCIAL detail savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "+applicationId+" Mgs " +e.getMessage() , saveCommercialDetails);
+					}
 				}
 				
 			}else {

@@ -310,6 +310,27 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 		CommonDocumentUtils.endHook(logger, "getList");
 		return requests;
 	}
+	
+	@Override
+	public List<ProductMasterRequest> getActiveInActiveList(Long userId, Long userOrgId) {
+		// TODO Auto-generated method stub
+		CommonDocumentUtils.startHook(logger, "getActiveInActiveList");
+		List<ProductMaster> results;
+		if (!CommonUtils.isObjectNullOrEmpty(userOrgId)) {
+			results = productMasterRepository.getUserProductActiveInActiveListByOrgId(userOrgId);
+		} else {
+			results = productMasterRepository.getUserProductList(userId);
+		}
+		List<ProductMasterRequest> requests = new ArrayList<>(results.size());
+		for (ProductMaster master : results) {
+			ProductMasterRequest request = new ProductMasterRequest();
+			BeanUtils.copyProperties(master, request);
+			request.setIsMatched(productMasterRepository.getMatchedAndActiveInActiveProduct(userId).size() > 0 ? true : false);
+			requests.add(request);
+		}
+		CommonDocumentUtils.endHook(logger, "getActiveInActiveList");
+		return requests;
+	}
 
 	@Override
 	public String getUserNameByApplicationId(Long productId, Long userId) {

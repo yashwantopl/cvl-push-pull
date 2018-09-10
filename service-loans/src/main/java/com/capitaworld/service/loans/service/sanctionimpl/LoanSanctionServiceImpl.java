@@ -36,6 +36,7 @@ import com.capitaworld.sidbi.integration.SidbiIntegerationResponse;
 import com.capitaworld.sidbi.integration.client.SidbiIntegrationClient;
 import com.capitaworld.sidbi.integration.model.GenerateTokenRequest;
 import com.capitaworld.sidbi.integration.util.AESEncryptionUtility;
+import com.capitaworld.sidbi.integration.util.AESEncryptionUtilitySBI;
 /**
  * @author Ankit
  *
@@ -200,29 +201,28 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 							token = sidbiIntegrationClient.getToken(generateTokenRequest,generateTokenRequest.getBankToken() , userOrganisationRequest.getUserOrgId());
 							generateTokenRequest.setToken(token);
 							//Getting sanction and disbursement Details from Bank 
-							SidbiIntegerationResponse sidbiIntegerationResponse = sidbiIntegrationClient.getSanctionAndDisbursmentDetailList(token, generateTokenRequest.getBankToken() , userOrganisationRequest.getUserOrgId());
-							if(!CommonUtils.isObjectNullOrEmpty(sidbiIntegerationResponse)) {
-								if(!CommonUtils.isObjectNullOrEmpty(sidbiIntegerationResponse.getData())) {
-									Object res = sanctionAndDisbursementValidation((String)sidbiIntegerationResponse.getData()); 
-									if(res instanceof List){
-										List<com.capitaworld.sidbi.integration.model.sanction.LoanSanctionAndDisbursedRequest> list = (List<com.capitaworld.sidbi.integration.model.sanction.LoanSanctionAndDisbursedRequest> )res;
-										logger.info("********************************* " + list.size() +" ***********************************");
-										if(sidbiIntegrationClient.updateSavedSanctionAndDisbursmentDetailList(list , generateTokenRequest.getToken(), generateTokenRequest.getBankToken() , userOrganisationRequest.getUserOrgId())) {
-											try {
-												//wait foo 15 minute
-												logger.info("*******Sucessgfully updated sanction and disbursement details in sidbi integration********** ");
-												TimeUnit.MINUTES.sleep(1);
-												logger.info("*******Going to Call another Bank Reverse API.********** ");
-											}catch (Exception e) {
-												logger.info("Error/Exception in for 15 min wait() ----------------------->  Message "+ e.getMessage());
-												e.printStackTrace();
-											}
+							String encryptedString = sidbiIntegrationClient.getSanctionAndDisbursmentDetailList(token, generateTokenRequest.getBankToken() , userOrganisationRequest.getUserOrgId());
+							if(!CommonUtils.isObjectNullOrEmpty(encryptedString)) {
+								Object res = sanctionAndDisbursementValidation(encryptedString , userOrganisationRequest.getUserOrgId()); 
+								if(res instanceof List){
+									List<com.capitaworld.sidbi.integration.model.sanction.LoanSanctionAndDisbursedRequest> list = (List<com.capitaworld.sidbi.integration.model.sanction.LoanSanctionAndDisbursedRequest> )res;
+									logger.info("********************************* " + list.size() +" ***********************************");
+									if(sidbiIntegrationClient.updateSavedSanctionAndDisbursmentDetailList(list , generateTokenRequest.getToken(), generateTokenRequest.getBankToken() , userOrganisationRequest.getUserOrgId())) {
+										try {
+											//wait foo 15 minute
+											logger.info("*******Sucessgfully updated sanction and disbursement details in sidbi integration********** ");
+											TimeUnit.MINUTES.sleep(1);
+											logger.info("*******Going to Call another Bank Reverse API.********** ");
+										}catch (Exception e) {
+											logger.info("Error/Exception in for 15 min wait() ----------------------->  Message "+ e.getMessage());
+											e.printStackTrace();
 										}
-										
-									}else {
-										logger.info("*******Unable to store sanction or disbursement detail   **********  reasion is =={}", (res != null ? res.toString() : res));
 									}
+								}else {
+									logger.info("*******Unable to store sanction or disbursement detail   **********  reasion is =={}", (res != null ? res.toString() : res));
 								}
+							}else {
+								logger.info("*******Null in getting sanction or disbursement detail  from  bank side  **********  reasion is =={}", encryptedString +" org id ==> " + userOrganisationRequest.getUserOrgId() );
 							}
 						}catch(Exception e) {
 							e.printStackTrace();
@@ -242,7 +242,7 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public Object sanctionAndDisbursementValidation(String encryptedString) {
+	public Object sanctionAndDisbursementValidation(String encryptedString , Long userOrgId) {
 		
 		LoansResponse loansResponse = null;
 		String sanctionReason = null;
@@ -259,7 +259,12 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 			if (encryptedString != null) {
 				// Decryption of request
 				try {
-					decrypt = AESEncryptionUtility.decrypt(encryptedString);
+					if(userOrgId == 16l) {
+						decrypt = AESEncryptionUtilitySBI.decrypt(encryptedString);
+					}else {
+						decrypt = AESEncryptionUtility.decrypt(encryptedString);
+					}
+					
 					
 					loanSanctionAndDisbursedRequestList = MultipleJSONObjectHelper.getListOfObjects(decrypt,  null ,LoanSanctionAndDisbursedRequest.class);
 					
