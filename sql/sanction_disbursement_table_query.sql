@@ -56,3 +56,10 @@ ADD COLUMN `transaction_no` VARCHAR(45) NULL AFTER `account_no`;
 
 ALTER TABLE `loan_application`.`disbursement_detail` 
 CHANGE COLUMN `application_id` `application_id` BIGINT(11) UNSIGNED NULL DEFAULT NULL ;
+
+
+// add new column in bank_cw_audit_trail -- bank_primary_key 
+ALTER TABLE `loan_application`.`bank_cw_audit_trail` ADD COLUMN `bank_primary_key` BIGINT(19) NULL AFTER `is_active`; 
+
+
+
