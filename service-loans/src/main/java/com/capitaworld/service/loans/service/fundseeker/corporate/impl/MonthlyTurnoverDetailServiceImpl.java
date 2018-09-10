@@ -85,6 +85,7 @@ public class MonthlyTurnoverDetailServiceImpl implements MonthlyTurnoverDetailSe
 
 			for (MonthlyTurnoverDetail detail : monthlyTurnoverDetails) {
 				MonthlyTurnoverDetailRequest monthlyTurnoverDetailRequest = new MonthlyTurnoverDetailRequest();
+				monthlyTurnoverDetailRequest.setAmountString(CommonUtils.convertValue(detail.getAmount()));
 				BeanUtils.copyProperties(detail, monthlyTurnoverDetailRequest);
 				monthlyTurnoverDetailRequests.add(monthlyTurnoverDetailRequest);
 			}
