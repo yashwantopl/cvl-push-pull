@@ -25,9 +25,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.capitaworld.cibil.api.model.CibilRequest;
-import com.capitaworld.cibil.api.model.msme.company.Base;
-import com.capitaworld.cibil.client.CIBILClient;
 import com.capitaworld.service.gateway.model.GatewayRequest;
 import com.capitaworld.service.loans.config.AsyncComponent;
 import com.capitaworld.service.loans.config.AuditComponentBankToCW;
@@ -43,7 +40,6 @@ import com.capitaworld.service.loans.model.common.AutoFillOneFormDetailRequest;
 import com.capitaworld.service.loans.model.common.DisbursementRequest;
 import com.capitaworld.service.loans.model.common.EkycRequest;
 import com.capitaworld.service.loans.model.mobile.MobileLoanRequest;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.service.common.AutoFillOneFormDetailService;
 import com.capitaworld.service.loans.service.common.FsDetailsForPdfService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
@@ -2177,7 +2173,7 @@ public class LoanApplicationController {
 			tokenService.setTokenAsExpired(generateTokenRequest);
 			auditComponentBankToCW.saveBankToCWReqRes(decrypt != null ? decrypt : encryptedString,
 					loanSanctionRequest != null ? loanSanctionRequest.getApplicationId() : null,
-					CommonUtility.ApiType.SANCTION, loansResponse, reason, null);
+					CommonUtility.ApiType.SANCTION, loansResponse, reason, null  , null);
 		}
 	}
 
@@ -2308,7 +2304,7 @@ public class LoanApplicationController {
 			tokenService.setTokenAsExpired(generateTokenRequest);
 			auditComponentBankToCW.saveBankToCWReqRes(decrypt != null ? decrypt : encryptedString,
 					loanDisbursementRequest != null ? loanDisbursementRequest.getApplicationId() : null,
-					CommonUtility.ApiType.DISBURSEMENT, loansResponse, reason, orgId);
+					CommonUtility.ApiType.DISBURSEMENT, loansResponse, reason, orgId , null);
 		}
 	}
 
@@ -2482,7 +2478,7 @@ public class LoanApplicationController {
 			generateTokenRequest.setToken(tokenString);
 			tokenService.setTokenAsExpired(generateTokenRequest);
 			auditComponentBankToCW.saveBankToCWReqRes(decrypt != null ? decrypt : encryptedString, null,
-					CommonUtility.ApiType.DETAILED_API, loansResponse, reason, orgId);
+					CommonUtility.ApiType.DETAILED_API, loansResponse, reason, orgId , null);
 		}
 	}
 
@@ -2801,7 +2797,7 @@ public class LoanApplicationController {
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} finally {
 			auditComponentBankToCW.saveBankToCWReqRes(decrypt != null ? decrypt : encryptedString, applicationId,
-					CommonUtility.ApiType.GENERATING_TOKEN, loansResponse, reason, orgId);
+					CommonUtility.ApiType.GENERATING_TOKEN, loansResponse, reason, orgId , null);
 		}
 	}
 
@@ -2879,7 +2875,7 @@ public class LoanApplicationController {
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} finally {
 			auditComponentBankToCW.saveBankToCWReqRes(decrypt != null ? decrypt : encryptedString, applicationId,
-					CommonUtility.ApiType.GENERATING_TOKEN, loansResponse, reason, orgId);
+					CommonUtility.ApiType.GENERATING_TOKEN, loansResponse, reason, orgId , null);
 		}
 	}
 	

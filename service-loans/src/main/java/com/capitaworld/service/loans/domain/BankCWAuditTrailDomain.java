@@ -11,8 +11,8 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="bank_cw_audit_trail")
-public class BankCWAuditTrailDomain implements Serializable{
+@Table(name = "bank_cw_audit_trail")
+public class BankCWAuditTrailDomain implements Serializable {
 
 	/**
 	 * 
@@ -20,34 +20,37 @@ public class BankCWAuditTrailDomain implements Serializable{
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy= GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	
-	@Column(name="org_id")
+
+	@Column(name = "org_id")
 	private Long orgId;
-	
-	@Column(name="application_id")
+
+	@Column(name = "application_id")
 	private Long applicationId;
-	
-	@Column(name="bank_request")
+
+	@Column(name = "bank_request")
 	private String bankRequest;
-	
-	@Column(name="cw_response")
+
+	@Column(name = "cw_response")
 	private String cwResponse;
-	
+
 	private String status;
-	
-	@Column(name="api_type")
+
+	@Column(name = "api_type")
 	private Integer apiType;
-	
-	@Column(name="failure_reason")
+
+	@Column(name = "failure_reason")
 	private String failureReason;
-	
-	@Column(name="created_date")
+
+	@Column(name = "created_date")
 	private Date createdDate;
-	
-	@Column(name="is_active")
+
+	@Column(name = "is_active")
 	private Boolean isActive;
+
+	@Column(name = "bank_primary_key")
+	private Long bankPrimaryKey;
 
 	public Long getId() {
 		return id;
@@ -129,12 +132,20 @@ public class BankCWAuditTrailDomain implements Serializable{
 		this.isActive = isActive;
 	}
 
+	public Long getBankPrimaryKey() {
+		return bankPrimaryKey;
+	}
+
+	public void setBankPrimaryKey(Long bankPrimaryKey) {
+		this.bankPrimaryKey = bankPrimaryKey;
+	}
+
 	@Override
 	public String toString() {
 		return "BankCWAuditTrailDomain [id=" + id + ", orgId=" + orgId + ", applicationId=" + applicationId
 				+ ", bankRequest=" + bankRequest + ", cwResponse=" + cwResponse + ", status=" + status + ", apiType="
 				+ apiType + ", failureReason=" + failureReason + ", createdDate=" + createdDate + ", isActive="
-				+ isActive + "]";
+				+ isActive + ", bankPrimaryKey=" + bankPrimaryKey + "]";
 	}
-
+	
 }
