@@ -427,6 +427,5 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 			e.printStackTrace();
 			throw e;
 		}
-
 	}
 }
