@@ -36,15 +36,12 @@ public class FundSeekerInputRequestResponse {
 
  //   private Boolean isBusinessAssetChecked;
 
-    private Double businessAssetAmount;
 
  //   private Boolean isWorkingCapitalChecked;
 
-    private Double wcAmount;
 
 //    private Boolean isOtherGeneralChecked;
 
-    private Double otherAmt;
 
     private Integer purposeOfLoanId;
 
@@ -169,34 +166,6 @@ public class FundSeekerInputRequestResponse {
     }
 
 
-
-    public Double getBusinessAssetAmount() {
-        return businessAssetAmount;
-    }
-
-    public void setBusinessAssetAmount(Double businessAssetAmount) {
-        this.businessAssetAmount = businessAssetAmount;
-    }
-
-
-
-    public Double getWcAmount() {
-        return wcAmount;
-    }
-
-    public void setWcAmount(Double wcAmount) {
-        this.wcAmount = wcAmount;
-    }
-
-
-
-    public Double getOtherAmt() {
-        return otherAmt;
-    }
-
-    public void setOtherAmt(Double otherAmt) {
-        this.otherAmt = otherAmt;
-    }
 
     public Boolean getHaveCollateralSecurity() {
         return haveCollateralSecurity;
@@ -463,9 +432,6 @@ public class FundSeekerInputRequestResponse {
                 ", aadhar='" + aadhar + '\'' +
                 ", msmeRegistrationNumber='" + msmeRegistrationNumber + '\'' +
                 ", loanAmount=" + loanAmount +
-                ", businessAssetAmount=" + businessAssetAmount +
-                ", wcAmount=" + wcAmount +
-                ", otherAmt=" + otherAmt +
                 ", purposeOfLoanId=" + purposeOfLoanId +
                 ", haveCollateralSecurity=" + haveCollateralSecurity +
                 ", collateralSecurityAmount=" + collateralSecurityAmount +
