@@ -222,7 +222,7 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 									logger.info("*******Unable to store sanction or disbursement detail   **********  reasion is =={}", (res != null ? res.toString() : res));
 								}
 							}else {
-								logger.info("*******Null in gettting sanction or disbursement detail  from  bank side  **********  reasion is =={}", encryptedString +" org id ==> " + userOrganisationRequest.getUserOrgId() );
+								logger.info("*******Null in getting sanction or disbursement detail  from  bank side  **********  reasion is =={}", encryptedString +" org id ==> " + userOrganisationRequest.getUserOrgId() );
 							}
 						}catch(Exception e) {
 							e.printStackTrace();
