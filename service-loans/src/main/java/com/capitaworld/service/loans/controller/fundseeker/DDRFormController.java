@@ -1,7 +1,6 @@
 package com.capitaworld.service.loans.controller.fundseeker;
 
 import java.util.HashMap;
-
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -508,7 +507,7 @@ public class DDRFormController {
 			generateTokenRequest= new GenerateTokenRequest();
 			generateTokenRequest.setToken(tokenString);
 			tokenService.setTokenAsExpired(generateTokenRequest);
-			auditComponentBankToCW.saveBankToCWReqRes (decrypt !=null ? decrypt: encryptedString , ddrFormDetailsRequest !=null ? ddrFormDetailsRequest.getApplicationId() : null  ,CommonUtility.ApiType.DDR_API, loansResponse , reason, orgId);
+			auditComponentBankToCW.saveBankToCWReqRes (decrypt !=null ? decrypt: encryptedString , ddrFormDetailsRequest !=null ? ddrFormDetailsRequest.getApplicationId() : null  ,CommonUtility.ApiType.DDR_API, loansResponse , reason, orgId , null );
 		}
 	}
 	
