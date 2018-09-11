@@ -99,7 +99,7 @@ public class CorporatePrimaryViewResponse {
     private Object isProportionateScoreConsider;
     private Object proportionateScore;
     private Object proportionateScoreFS;
-    
+    private Object fraudDetectionData;
    
 	public List<Object> getCibilReport() {
 		return cibilReport;
@@ -946,6 +946,18 @@ public class CorporatePrimaryViewResponse {
 	 */
 	public void setProportionateScoreFS(Object proportionateScoreFS) {
 		this.proportionateScoreFS = proportionateScoreFS;
+	}
+	/**
+	 * @return the fraudDetectionData
+	 */
+	public Object getFraudDetectionData() {
+		return fraudDetectionData;
+	}
+	/**
+	 * @param fraudDetectionData the fraudDetectionData to set
+	 */
+	public void setFraudDetectionData(Object fraudDetectionData) {
+		this.fraudDetectionData = fraudDetectionData;
 	}
 
 	

@@ -14,7 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,6 +31,8 @@ import com.capitaworld.service.dms.exception.DocumentException;
 import com.capitaworld.service.dms.model.DocumentRequest;
 import com.capitaworld.service.dms.model.DocumentResponse;
 import com.capitaworld.service.dms.util.DocumentAlias;
+import com.capitaworld.service.fraudanalytics.client.FraudAnalyticsClient;
+import com.capitaworld.service.fraudanalytics.model.AnalyticsResponse;
 import com.capitaworld.service.gst.GstResponse;
 import com.capitaworld.service.gst.client.GstClient;
 import com.capitaworld.service.loans.domain.fundprovider.TermLoanParameter;
@@ -44,8 +45,6 @@ import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailResponse;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailResponse;
-import com.capitaworld.service.loans.model.LoansResponse;
-import com.capitaworld.service.loans.model.PincodeDataResponse;
 import com.capitaworld.service.loans.model.teaser.primaryview.CorporatePrimaryViewResponse;
 import com.capitaworld.service.loans.repository.fundprovider.TermLoanParameterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.WcTlLoanParameterRepository;
@@ -152,12 +151,15 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 
 	@Autowired
 	private McaClient mcaClient;
-	
-	@Autowired 
-	private GstClient gstClient;
-	
+
 	@Autowired
-    private PincodeDateService pincodeDateService;
+	private GstClient gstClient;
+
+	@Autowired
+	private PincodeDateService pincodeDateService;
+
+	@Autowired
+	private FraudAnalyticsClient fraudAnalyticsClient;
 
 	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 	DecimalFormat decim = new DecimalFormat("#,###.00");
@@ -169,7 +171,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 		CorporatePrimaryViewResponse corporatePrimaryViewResponse = new CorporatePrimaryViewResponse();
 		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(toApplicationId);
 		Long userId = loanApplicationMaster.getUserId();
-		
+
 		corporatePrimaryViewResponse.setProductId(loanApplicationMaster.getProductId());
 		/* ========= Matches Data ========== */
 		if (userType != null) {
@@ -506,15 +508,16 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 				directorBackgroundDetailResponse.setMobile(directorBackgroundDetailRequest.getMobile());
 				directorBackgroundDetailResponse.setDob(directorBackgroundDetailRequest.getDob());
 				directorBackgroundDetailResponse.setPincode(directorBackgroundDetailRequest.getPincode());
-				
+
 				try {
-					if(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDistrictMappingId())) {
-						directorBackgroundDetailResponse.setPinData(pincodeDateService.getById(directorBackgroundDetailRequest.getDistrictMappingId()));				
+					if (!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDistrictMappingId())) {
+						directorBackgroundDetailResponse.setPinData(
+								pincodeDateService.getById(directorBackgroundDetailRequest.getDistrictMappingId()));
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-				
+
 				directorBackgroundDetailResponse.setStateCode(directorBackgroundDetailRequest.getStateCode());
 				directorBackgroundDetailResponse.setCity(directorBackgroundDetailRequest.getCity());
 				directorBackgroundDetailResponse.setGender((directorBackgroundDetailRequest.getGender() != null
@@ -869,19 +872,25 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 						.setFinancialRiskWeightOfScoring(proposalScoreResponse.getFinancialRiskWeightOfScoring());
 				corporatePrimaryViewResponse
 						.setBusinessRiskWeightOfScoring(proposalScoreResponse.getBusinessRiskWeightOfScoring());
-				
+
 				// if true so show 3 col
-				
+
 				corporatePrimaryViewResponse.setWeightConsider(proposalScoreResponse.getWeightConsider());
-				corporatePrimaryViewResponse.setManagementRiskMaxTotalWeight(proposalScoreResponse.getManagementRiskMaxTotalWeight());
-				corporatePrimaryViewResponse.setFinancialRiskMaxTotalWeight(proposalScoreResponse.getFinancialRiskMaxTotalWeight());
-				corporatePrimaryViewResponse.setBusinessRiskMaxTotalWeight(proposalScoreResponse.getBusinessRiskMaxTotalWeight());
-			
+				corporatePrimaryViewResponse
+						.setManagementRiskMaxTotalWeight(proposalScoreResponse.getManagementRiskMaxTotalWeight());
+				corporatePrimaryViewResponse
+						.setFinancialRiskMaxTotalWeight(proposalScoreResponse.getFinancialRiskMaxTotalWeight());
+				corporatePrimaryViewResponse
+						.setBusinessRiskMaxTotalWeight(proposalScoreResponse.getBusinessRiskMaxTotalWeight());
+
 				// if ture so show two col
-				corporatePrimaryViewResponse.setIsProportionateScoreConsider(proposalScoreResponse.getIsProportionateScoreConsider());//Score(out of), proportionateScoreFS
+				corporatePrimaryViewResponse
+						.setIsProportionateScoreConsider(proposalScoreResponse.getIsProportionateScoreConsider());// Score(out
+																													// of),
+																													// proportionateScoreFS
 				corporatePrimaryViewResponse.setProportionateScore(proposalScoreResponse.getProportionateScore());
 				corporatePrimaryViewResponse.setProportionateScoreFS(proposalScoreResponse.getProportionateScoreFS());
-				
+
 				System.out.println("complete");
 			} else {
 				logger.info("SCORING OBJECT NULL OR EMPTY -------------------->");
@@ -948,11 +957,11 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 		}
 		// CGTMSE
 		try {
-			
+
 			CGTMSEDataResponse cgtmseDataResp = thirdPartyClient.getCalulation(toApplicationId);
-			
+
 			corporatePrimaryViewResponse.setCgtmseData(cgtmseDataResp);
-			
+
 		} catch (Exception e) {
 
 			e.printStackTrace();
@@ -968,20 +977,20 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 
 				McaResponse mcaResponse = mcaClient.getCompanyDetailedData(companyId);
 				McaResponse mcaStatusResponse = mcaClient.mcaStatusCheck(String.valueOf(toApplicationId), companyId);
-				if(mcaStatusResponse != null) {
-				corporatePrimaryViewResponse.setMcaCheckStatus(mcaStatusResponse.getData());
-				}else {
-					
+				if (mcaStatusResponse != null) {
+					corporatePrimaryViewResponse.setMcaCheckStatus(mcaStatusResponse.getData());
+				} else {
+
 					logger.warn("::::::=====MCA Check Status Data is Null====:::::::For:::::==>" + companyId);
 				}
-						
+
 				if (!CommonUtils.isObjectNullOrEmpty(mcaResponse.getData())) {
 
 					corporatePrimaryViewResponse.setMcaData(mcaResponse);
 
 				} else {
 
-					logger.warn("::::::=====MCA Data is Null====:::::::For:::::==>"+companyId);
+					logger.warn("::::::=====MCA Data is Null====:::::::For:::::==>" + companyId);
 				}
 			} else {
 				logger.warn("Mca Company Id is Null");
@@ -990,43 +999,59 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
-		//Name As Per
-		
+
+		// Name As Per
+
 		try {
-			ITRConnectionResponse resNameAsPerITR= itrClient.getITRBasicDetails(toApplicationId);
-			if(resNameAsPerITR != null) {
-				
-				corporatePrimaryViewResponse.setNameAsPerItr(resNameAsPerITR.getData() != null ? resNameAsPerITR.getData() : "NA");	
-			}else {
-				
+			ITRConnectionResponse resNameAsPerITR = itrClient.getITRBasicDetails(toApplicationId);
+			if (resNameAsPerITR != null) {
+
+				corporatePrimaryViewResponse
+						.setNameAsPerItr(resNameAsPerITR.getData() != null ? resNameAsPerITR.getData() : "NA");
+			} else {
+
 				logger.warn("-----------:::::::::::::: ItrResponse is null ::::::::::::---------");
 			}
-			
+
 		} catch (Exception e) {
 			logger.warn(":::::::::::---------Error while fetching name as per itr----------:::::::::::");
 			e.printStackTrace();
 		}
-		
+
 		// Gst Data
-		
+
 		try {
 			GstResponse response = gstClient.detailCalculation(corporateApplicantDetail.getGstIn());
-			if(response !=null) {
+			if (response != null) {
 				corporatePrimaryViewResponse.setGstData(response);
-			}else {
-				
+			} else {
+
 				logger.warn("----------:::::::: Gst Response is null :::::::---------");
-				
+
 			}
-			
+
 		} catch (Exception e) {
 			logger.warn(":::::::------Error while calling gstData---:::::::");
 			e.printStackTrace();
 		}
-		
-		
-		
+
+		// Fraud Detection Data
+
+		try {
+			AnalyticsResponse hunterResp = fraudAnalyticsClient.getRuleAnalysisData(toApplicationId);
+
+			if (!CommonUtils.isObjectListNull(hunterResp, hunterResp.getData())) {
+
+				corporatePrimaryViewResponse.setFraudDetectionData(hunterResp);
+
+			}
+		} catch (Exception e1) {
+
+			logger.warn("------:::::...Error while fetching Fraud Detection Details...For..::::::-----",
+					toApplicationId);
+			e1.printStackTrace();
+		}
+
 		// GET DOCUMENTS
 		DocumentRequest documentRequest = new DocumentRequest();
 		documentRequest.setApplicationId(toApplicationId);
