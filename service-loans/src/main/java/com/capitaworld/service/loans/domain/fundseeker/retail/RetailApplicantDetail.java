@@ -425,6 +425,9 @@ public class RetailApplicantDetail implements Serializable {
 	@Column(name = "permanent_district_mapping_id")
 	private Long permanentdistrictMappingId;
 
+	@Column(name = "office_district_mapping_id")
+	private Long officeDistrictMappingId;
+
 	@Column(name = "address_district_mapping_id")
 	private Long addressDistrictMappingId;
 
@@ -1513,7 +1516,15 @@ public class RetailApplicantDetail implements Serializable {
 		this.addressDistrictMappingId = addressDistrictMappingId;
 	}
 
-	public Integer getEmploymentWith() {
+    public Long getOfficeDistrictMappingId() {
+        return officeDistrictMappingId;
+    }
+
+    public void setOfficeDistrictMappingId(Long officeDistrictMappingId) {
+        this.officeDistrictMappingId = officeDistrictMappingId;
+    }
+
+    public Integer getEmploymentWith() {
 		return employmentWith;
 	}
 

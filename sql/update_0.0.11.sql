@@ -19,3 +19,5 @@ ALTER TABLE `loan_application`.`fs_retail_applicant_details` ADD COLUMN `state_g
 ALTER TABLE `loan_application`.`fs_retail_applicant_details` ADD COLUMN `psu_id` INT DEFAULT NULL;
 ALTER TABLE `loan_application`.`fs_retail_applicant_details` ADD COLUMN `corporate_id` INT DEFAULT NULL;
 ALTER TABLE `loan_application`.`fs_retail_applicant_details` ADD COLUMN `edu_inst_id` INT DEFAULT NULL;
+ALTER TABLE `loan_application`.`fs_retail_applicant_details`
+ADD COLUMN `office_district_mapping_id` BIGINT(20) NULL;
