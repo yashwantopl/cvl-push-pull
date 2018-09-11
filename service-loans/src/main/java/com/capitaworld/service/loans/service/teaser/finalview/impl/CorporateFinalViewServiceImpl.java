@@ -31,6 +31,8 @@ import com.capitaworld.service.dms.exception.DocumentException;
 import com.capitaworld.service.dms.model.DocumentRequest;
 import com.capitaworld.service.dms.model.DocumentResponse;
 import com.capitaworld.service.dms.util.DocumentAlias;
+import com.capitaworld.service.fraudanalytics.client.FraudAnalyticsClient;
+import com.capitaworld.service.fraudanalytics.model.AnalyticsResponse;
 import com.capitaworld.service.gst.GstResponse;
 import com.capitaworld.service.gst.client.GstClient;
 import com.capitaworld.service.loans.domain.fundprovider.TermLoanParameter;
@@ -283,8 +285,11 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 	private GstClient gstClient;
 
 	@Autowired
-    private PincodeDateService pincodeDateService;
-	
+	private PincodeDateService pincodeDateService;
+
+	@Autowired
+	private FraudAnalyticsClient fraudAnalyticsClient;
+
 	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 	DecimalFormat decim = new DecimalFormat("#,###.00");
 
@@ -617,15 +622,16 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 				directorBackgroundDetailResponse.setMobile(directorBackgroundDetailRequest.getMobile());
 				directorBackgroundDetailResponse.setDob(directorBackgroundDetailRequest.getDob());
 				directorBackgroundDetailResponse.setPincode(directorBackgroundDetailRequest.getPincode());
-				
+
 				try {
-					if(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDistrictMappingId())) {
-						directorBackgroundDetailResponse.setPinData(pincodeDateService.getById(directorBackgroundDetailRequest.getDistrictMappingId()));				
+					if (!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDistrictMappingId())) {
+						directorBackgroundDetailResponse.setPinData(
+								pincodeDateService.getById(directorBackgroundDetailRequest.getDistrictMappingId()));
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-				
+
 				directorBackgroundDetailResponse.setStateCode(directorBackgroundDetailRequest.getStateCode());
 				directorBackgroundDetailResponse.setCity(directorBackgroundDetailRequest.getCity());
 				directorBackgroundDetailResponse.setGender((directorBackgroundDetailRequest.getGender() != null
@@ -1361,14 +1367,20 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 						.setFinancialRiskWeightOfScoring(proposalScoreResponse.getFinancialRiskWeightOfScoring());
 				corporateFinalViewResponse
 						.setBusinessRiskWeightOfScoring(proposalScoreResponse.getBusinessRiskWeightOfScoring());
-				
+
 				corporateFinalViewResponse.setWeightConsider(proposalScoreResponse.getWeightConsider());
-				corporateFinalViewResponse.setManagementRiskMaxTotalWeight(proposalScoreResponse.getManagementRiskMaxTotalWeight());
-				corporateFinalViewResponse.setFinancialRiskMaxTotalWeight(proposalScoreResponse.getFinancialRiskMaxTotalWeight());
-				corporateFinalViewResponse.setBusinessRiskMaxTotalWeight(proposalScoreResponse.getBusinessRiskMaxTotalWeight());
-			
+				corporateFinalViewResponse
+						.setManagementRiskMaxTotalWeight(proposalScoreResponse.getManagementRiskMaxTotalWeight());
+				corporateFinalViewResponse
+						.setFinancialRiskMaxTotalWeight(proposalScoreResponse.getFinancialRiskMaxTotalWeight());
+				corporateFinalViewResponse
+						.setBusinessRiskMaxTotalWeight(proposalScoreResponse.getBusinessRiskMaxTotalWeight());
+
 				// if ture so show two col
-				corporateFinalViewResponse.setIsProportionateScoreConsider(proposalScoreResponse.getIsProportionateScoreConsider());//Score(out of), proportionateScoreFS
+				corporateFinalViewResponse
+						.setIsProportionateScoreConsider(proposalScoreResponse.getIsProportionateScoreConsider());// Score(out
+																													// of),
+																													// proportionateScoreFS
 				corporateFinalViewResponse.setProportionateScore(proposalScoreResponse.getProportionateScore());
 				corporateFinalViewResponse.setProportionateScoreFS(proposalScoreResponse.getProportionateScoreFS());
 			} else {
@@ -1513,6 +1525,23 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 		} catch (Exception e) {
 			logger.warn(":::::::------Error while calling gstData---:::::::");
 			e.printStackTrace();
+		}
+
+		// Fraud Detection Data
+
+		try {
+			AnalyticsResponse hunterResp = fraudAnalyticsClient.getRuleAnalysisData(toApplicationId);
+
+			if (!CommonUtils.isObjectListNull(hunterResp, hunterResp.getData())) {
+
+				corporateFinalViewResponse.setFraudDetectionData(hunterResp);
+
+			}
+		} catch (Exception e1) {
+
+			logger.warn("------:::::...Error while fetching Fraud Detection Details...For..::::::-----",
+					toApplicationId);
+			e1.printStackTrace();
 		}
 
 		// GET DOCUMENTS
