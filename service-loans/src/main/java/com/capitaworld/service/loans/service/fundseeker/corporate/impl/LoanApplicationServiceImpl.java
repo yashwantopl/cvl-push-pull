@@ -6743,19 +6743,18 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 	
 	public CorporateProduct getFpDetailsByFpProductMappingId(Long fpProductMappingId) throws Exception{
 		logger.info("ENTER IN LOAN APPLICATIONSERVICEIMPL-------------FP PRODUCT MAPPING ID >>>>>>>>>>>"+fpProductMappingId);
-		try {
+
 		ProductMaster productMaster = productMasterRepository.findByIdAndIsActive(fpProductMappingId,true);
 		logger.info("RESPONSE------------------->>>>>>>>>>>"+productMaster);
-		if(productMaster!=null) {
-			LoansResponse loansResponse = new LoansResponse();
-			loansResponse.setData(productMaster);
-			logger.info("DATA IS FETCH SUCCESSFULLY---------------->>>");
+		
+		CorporateProduct corporateProduct =null;
+		if(productMaster!= null) {
+		corporateProduct = new CorporateProduct();
+		
+		BeanUtils.copyProperties(productMaster, corporateProduct);
+		
 		}
-		}catch (Exception e) {
-			logger.error("exception is getting while getting data fp product master---------------->>>"+e.getMessage());
-			e.printStackTrace();
-		}
-		return null;
+		return corporateProduct;
 	}
 	
 	public LoanApplicationRequest getLoanApplicationDetails(Long userId, Long applicationId) {
