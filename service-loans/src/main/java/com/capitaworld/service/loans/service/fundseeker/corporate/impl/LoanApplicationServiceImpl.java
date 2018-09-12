@@ -151,6 +151,7 @@ import com.capitaworld.service.loans.model.common.EkycResponse;
 import com.capitaworld.service.loans.model.common.HunterRequestDataResponse;
 import com.capitaworld.service.loans.model.common.ProposalList;
 import com.capitaworld.service.loans.model.common.SanctioningDetailResponse;
+import com.capitaworld.service.loans.model.corporate.CorporateProduct;
 import com.capitaworld.service.loans.model.mobile.MLoanDetailsResponse;
 import com.capitaworld.service.loans.model.mobile.MobileLoanRequest;
 import com.capitaworld.service.loans.repository.common.LogDetailsRepository;
@@ -4301,7 +4302,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				gatewayRequest.setPaymentType(paymentRequest.getTypeOfPayment());
 				gatewayRequest.setPurposeCode(paymentRequest.getPurposeCode());
 				gatewayRequest.setRequestType(paymentRequest.getRequestType());
-				gatewayRequest.setBusinessTypeId(paymentRequest.getBusinessTypeId());
+				//gatewayRequest.setBusinessTypeId(paymentRequest.getBusinessTypeId());
 				
 				Object values = gatewayClient.payout(gatewayRequest);
 
@@ -6740,7 +6741,7 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 		return map;
 	}
 	
-	public LoansResponse getFpDetailsByFpProductMappingId(Long fpProductMappingId) throws Exception{
+	public CorporateProduct getFpDetailsByFpProductMappingId(Long fpProductMappingId) throws Exception{
 		logger.info("ENTER IN LOAN APPLICATIONSERVICEIMPL-------------FP PRODUCT MAPPING ID >>>>>>>>>>>"+fpProductMappingId);
 		try {
 		ProductMaster productMaster = productMasterRepository.findByIdAndIsActive(fpProductMappingId,true);
@@ -6756,10 +6757,6 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 		}
 		return null;
 	}
-	
-	
-	
-	
 	
 	public LoanApplicationRequest getLoanApplicationDetails(Long userId, Long applicationId) {
 		
