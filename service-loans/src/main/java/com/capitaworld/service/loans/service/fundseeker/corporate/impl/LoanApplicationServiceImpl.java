@@ -151,6 +151,7 @@ import com.capitaworld.service.loans.model.common.EkycResponse;
 import com.capitaworld.service.loans.model.common.HunterRequestDataResponse;
 import com.capitaworld.service.loans.model.common.ProposalList;
 import com.capitaworld.service.loans.model.common.SanctioningDetailResponse;
+import com.capitaworld.service.loans.model.corporate.CorporateProduct;
 import com.capitaworld.service.loans.model.mobile.MLoanDetailsResponse;
 import com.capitaworld.service.loans.model.mobile.MobileLoanRequest;
 import com.capitaworld.service.loans.repository.common.LogDetailsRepository;
@@ -6740,26 +6741,21 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 		return map;
 	}
 	
-	public LoansResponse getFpDetailsByFpProductMappingId(Long fpProductMappingId) throws Exception{
+	public CorporateProduct getFpDetailsByFpProductMappingId(Long fpProductMappingId) throws Exception{
 		logger.info("ENTER IN LOAN APPLICATIONSERVICEIMPL-------------FP PRODUCT MAPPING ID >>>>>>>>>>>"+fpProductMappingId);
-		try {
+
 		ProductMaster productMaster = productMasterRepository.findByIdAndIsActive(fpProductMappingId,true);
 		logger.info("RESPONSE------------------->>>>>>>>>>>"+productMaster);
-		if(productMaster!=null) {
-			LoansResponse loansResponse = new LoansResponse();
-			loansResponse.setData(productMaster);
-			logger.info("DATA IS FETCH SUCCESSFULLY---------------->>>");
+		
+		CorporateProduct corporateProduct =null;
+		if(productMaster!= null) {
+		corporateProduct = new CorporateProduct();
+		
+		BeanUtils.copyProperties(productMaster, corporateProduct);
+		
 		}
-		}catch (Exception e) {
-			logger.error("exception is getting while getting data fp product master---------------->>>"+e.getMessage());
-			e.printStackTrace();
-		}
-		return null;
+		return corporateProduct;
 	}
-	
-	
-	
-	
 	
 	public LoanApplicationRequest getLoanApplicationDetails(Long userId, Long applicationId) {
 		
