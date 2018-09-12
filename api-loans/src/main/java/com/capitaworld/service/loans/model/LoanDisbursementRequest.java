@@ -27,7 +27,7 @@ public class LoanDisbursementRequest extends AuditActivityRequest implements Ser
 	private Date disbursementDate;
 
 	private String disbursementAuthority;
-	private Long mode;
+	private Long paymentMode;
 	private String remark;
 	private String userName;
 	private String password;
@@ -99,12 +99,12 @@ public class LoanDisbursementRequest extends AuditActivityRequest implements Ser
 		this.disbursementAuthority = disbursementAuthority;
 	}
 
-	public Long getMode() {
-		return mode;
+	public Long getPaymentMode() {
+		return paymentMode;
 	}
 
-	public void setMode(Long mode) {
-		this.mode = mode;
+	public void setPaymentMode(Long paymentMode) {
+		this.paymentMode = paymentMode;
 	}
 
 	public String getRemark() {
@@ -152,7 +152,7 @@ public class LoanDisbursementRequest extends AuditActivityRequest implements Ser
 		return "LoanDisbursementRequest [id=" + id + ", applicationId=" + applicationId + ", referenceNo=" + referenceNo
 				+ ", transactionNo=" + transactionNo + ", accountNo=" + accountNo + ", disbursedAmount="
 				+ disbursedAmount + ", disbursementDate=" + disbursementDate + ", disbursementAuthority="
-				+ disbursementAuthority + ", mode=" + mode + ", remark=" + remark + ", userName=" + userName
+				+ disbursementAuthority + ", paymentMode=" + paymentMode + ", remark=" + remark + ", userName=" + userName
 				+ ", password=" + password + ", actionBy=" + actionBy + ", isSaved=" + isSaved + "]";
 	}
 
