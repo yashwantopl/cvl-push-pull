@@ -150,7 +150,7 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 				logger.info("-------------------------already  saving disbursement detail of reverse api---------------");
 				continue;
 			}
-			if(CommonUtils.isObjectListNull(loanDisbursementRequest.getDisbursedAmount(),loanDisbursementRequest.getDisbursementDate(),loanDisbursementRequest.getMode(),  loanDisbursementRequest.getAccountNo())){
+			if(CommonUtils.isObjectListNull(loanDisbursementRequest.getDisbursedAmount(),loanDisbursementRequest.getDisbursementDate(),loanDisbursementRequest.getPaymentMode(),  loanDisbursementRequest.getAccountNo())){
 				reason =  "Mandatory Fields Must Not be Null";
 				String jsonString = MultipleJSONObjectHelper.getStringfromObject(loanDisbursementRequest);
 				auditComponentBankToCW.saveBankToCWReqRes(jsonString , 	loanDisbursementRequest.getApplicationId() ,CommonUtility.ApiType.REVERSE_DISBURSEMENT, null , reason , orgId ,loanDisbursementRequest.getId());

@@ -2248,7 +2248,7 @@ public class LoanApplicationController {
 				}
 				if (!CommonUtils.isObjectListNull(loanDisbursementRequest, loanDisbursementRequest.getApplicationId(),
 						loanDisbursementRequest.getDisbursedAmount(), loanDisbursementRequest.getDisbursementDate(),
-						loanDisbursementRequest.getMode(), loanDisbursementRequest.getReferenceNo(),
+						loanDisbursementRequest.getPaymentMode(), loanDisbursementRequest.getReferenceNo(),
 						loanDisbursementRequest.getActionBy(), loanDisbursementRequest.getAccountNo())) {
 					orgId = auditComponentBankToCW.getOrgIdByCredential(loanDisbursementRequest.getUserName(),
 							loanDisbursementRequest.getPassword());
