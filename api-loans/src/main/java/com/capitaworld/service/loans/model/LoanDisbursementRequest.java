@@ -4,6 +4,8 @@ import java.io.Serializable;
 
 import java.util.Date;
 
+import org.codehaus.jackson.annotate.JsonProperty;
+
 import com.capitaworld.service.loans.model.common.AuditActivityRequest;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -27,7 +29,10 @@ public class LoanDisbursementRequest extends AuditActivityRequest implements Ser
 	private Date disbursementDate;
 
 	private String disbursementAuthority;
+	
+	@JsonProperty("paymentMode")
 	private Long mode;
+	
 	private String remark;
 	private String userName;
 	private String password;
