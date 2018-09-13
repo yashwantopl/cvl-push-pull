@@ -5725,7 +5725,13 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 		cibilRequest.setPan(pan);
 		CommercialRequest commercialRequest = null;
 		try {
-			Base base= cibilClient.getMsmeCommercial(cibilRequest);
+			String response = cibilClient.getMsmeCommercial(cibilRequest);
+			Base base = null;
+			if(response.contains("\"base\"")) {
+				base = (Base) com.capitaworld.cibil.api.utility.MultipleJSONObjectHelper.getObjectExtraConfig(response, "base", Base.class, null);				
+			}else {
+				base = (Base) com.capitaworld.cibil.api.utility.MultipleJSONObjectHelper.getObjectExtraConfig(response, null, Base.class, null);
+			}
 			if(!CibilUtils.isObjectNullOrEmpty(base)) {
 				commercialRequest = new CommercialRequest();
 				/*Base base = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)msmeCommercial.getData(), Base.class);*/
