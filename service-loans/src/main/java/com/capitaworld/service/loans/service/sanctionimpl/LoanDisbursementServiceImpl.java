@@ -11,12 +11,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.capitaworld.service.loans.config.AuditComponentBankToCW;
 import com.capitaworld.service.loans.domain.sanction.LoanDisbursementDomain;
 import com.capitaworld.service.loans.domain.sanction.LoanSanctionDomain;
 import com.capitaworld.service.loans.model.LoanDisbursementRequest;
+import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.repository.banktocw.BankToCWAuditTrailRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
 import com.capitaworld.service.loans.repository.sanction.LoanDisbursementRepository;
@@ -150,7 +152,7 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 				logger.info("-------------------------already  saving disbursement detail of reverse api---------------");
 				continue;
 			}
-			if(CommonUtils.isObjectListNull(loanDisbursementRequest.getDisbursedAmount(),loanDisbursementRequest.getDisbursementDate(),loanDisbursementRequest.getMode(),  loanDisbursementRequest.getAccountNo())){
+			if(CommonUtils.isObjectListNull(loanDisbursementRequest.getDisbursedAmount(),loanDisbursementRequest.getDisbursementDate(),loanDisbursementRequest.getPaymentMode(),  loanDisbursementRequest.getAccountNo())){
 				reason =  "Mandatory Fields Must Not be Null";
 				String jsonString = MultipleJSONObjectHelper.getStringfromObject(loanDisbursementRequest);
 				auditComponentBankToCW.saveBankToCWReqRes(jsonString , 	loanDisbursementRequest.getApplicationId() ,CommonUtility.ApiType.REVERSE_DISBURSEMENT, null , reason , orgId ,loanDisbursementRequest.getId());
@@ -158,6 +160,10 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 			}
 			
 			reason=disbursementRequestValidation(sanctionPrimaryId , loanDisbursementRequest ,orgId , apiType);
+			
+			//saving req in bank to  cw-audit table
+			String jsonString = null;
+			
 			if("SUCCESS".equalsIgnoreCase(reason) || "First Disbursement".equalsIgnoreCase(reason)) {
 				if(CommonUtility.ApiType.DISBURSEMENT == apiType) {
 					if(saveLoanDisbursementDetail(loanDisbursementRequest)) {
@@ -167,11 +173,11 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 					logger.info("Success msg while saveLoanDisbursementDetail() ----------------> msg " + reason) ;
 					loanDisbursementRequest.setIsSaved(true);
 				}
-			}
-			//saving req in bank to  cw-audit table
-			if(!CommonUtils.isObjectNullOrEmpty(loanDisbursementRequest)) {
-				String jsonString = MultipleJSONObjectHelper.getStringfromObject(loanDisbursementRequest);
-				auditComponentBankToCW.saveBankToCWReqRes(jsonString , 	loanDisbursementRequest.getApplicationId() ,CommonUtility.ApiType.REVERSE_DISBURSEMENT, null , reason , orgId ,loanDisbursementRequest.getId());
+				jsonString = MultipleJSONObjectHelper.getStringfromObject(loanDisbursementRequest);
+				auditComponentBankToCW.saveBankToCWReqRes(jsonString , 	loanDisbursementRequest.getApplicationId() , apiType , new LoansResponse(reason , HttpStatus.OK.value()) , null , orgId ,loanDisbursementRequest.getId());
+			}else {
+				jsonString =MultipleJSONObjectHelper.getStringfromObject(loanDisbursementRequest);
+				auditComponentBankToCW.saveBankToCWReqRes(jsonString , 	loanDisbursementRequest.getApplicationId() ,CommonUtility.ApiType.REVERSE_DISBURSEMENT, new LoansResponse(reason , HttpStatus.BAD_REQUEST.value()) , reason, orgId ,loanDisbursementRequest.getId());
 			}
 		}
 		return reason;

@@ -2055,23 +2055,24 @@ public class LoanApplicationController {
 	
 	@RequestMapping(value = "/getFpDetailsByFpProductMappindId/{fpProductMappingId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getFpDetailsByFpProductMappingId(@PathVariable("fpProductMappingId") Long fpProductMappingId) {
+		
 		try {
 			logger.info("ENTER  IN GET FP DETAILS BY PRODUCT MAPPING ID -------------FP PRODUCT MAPPING ID >>>>>>>>>>>"+fpProductMappingId);
-			LoansResponse loansResponse = new LoansResponse("Inactivated", HttpStatus.OK.value());
+			LoansResponse loansResponse = new LoansResponse("DATA FOUND", HttpStatus.OK.value());
 			loansResponse.setData(loanApplicationService.getFpDetailsByFpProductMappingId(fpProductMappingId));
 			logger.info("Exit getFpDetailsByFpProductMappingId");
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
+			
 		} catch (Exception e) {
-			logger.error("Error while getFpDetailsByFpProductMappingId==========>", e);
+			logger.error("Error while getFpDetailsByFpProductMappingId==========>", e.getMessage());
 			e.printStackTrace();
+			
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
 		}
 	}
-	
-	
 
 	@RequestMapping(value = "/saveLoanSanctionDetail", method = RequestMethod.POST, consumes = MediaType.TEXT_PLAIN_VALUE)
 	public ResponseEntity<LoansResponse> saveLoanSanctionDetail(@RequestBody String encryptedString,
@@ -2248,7 +2249,7 @@ public class LoanApplicationController {
 				}
 				if (!CommonUtils.isObjectListNull(loanDisbursementRequest, loanDisbursementRequest.getApplicationId(),
 						loanDisbursementRequest.getDisbursedAmount(), loanDisbursementRequest.getDisbursementDate(),
-						loanDisbursementRequest.getMode(), loanDisbursementRequest.getReferenceNo(),
+						loanDisbursementRequest.getPaymentMode(), loanDisbursementRequest.getReferenceNo(),
 						loanDisbursementRequest.getActionBy(), loanDisbursementRequest.getAccountNo())) {
 					orgId = auditComponentBankToCW.getOrgIdByCredential(loanDisbursementRequest.getUserName(),
 							loanDisbursementRequest.getPassword());
