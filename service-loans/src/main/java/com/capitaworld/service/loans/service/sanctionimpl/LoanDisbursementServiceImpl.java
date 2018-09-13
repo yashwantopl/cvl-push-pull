@@ -160,7 +160,7 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 			}
 			
 			reason=disbursementRequestValidation(sanctionPrimaryId , loanDisbursementRequest ,orgId , apiType);
-				
+
 			//saving req in bank to  cw-audit table
 			String jsonString = null;
 			
@@ -179,7 +179,6 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 				jsonString =MultipleJSONObjectHelper.getStringfromObject(loanDisbursementRequest);
 				auditComponentBankToCW.saveBankToCWReqRes(jsonString , 	loanDisbursementRequest.getApplicationId() ,CommonUtility.ApiType.REVERSE_DISBURSEMENT, new LoansResponse(reason , HttpStatus.BAD_REQUEST.value()) , reason, orgId ,loanDisbursementRequest.getId());
 			}
-			
 		}
 		return reason;
 	}

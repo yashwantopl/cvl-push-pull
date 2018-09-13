@@ -5,7 +5,6 @@ import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 
-
 import com.capitaworld.service.loans.model.DataRequest;
 import com.capitaworld.service.loans.model.ProductMasterRequest;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -222,6 +221,10 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	private Integer cgtmseCoverage;
 	
 	private Integer cashMargin;
+	
+	private BigDecimal dscr;
+	
+	private Integer paybackPeriod;
     /**
 	 * @return the workflowData
 	 */
@@ -1380,6 +1383,23 @@ public class TermLoanParameterRequest extends ProductMasterRequest implements Se
 	public void setCashMargin(Integer cashMargin) {
 		this.cashMargin = cashMargin;
 	}
+
+	public BigDecimal getDscr() {
+		return dscr;
+	}
+
+	public void setDscr(BigDecimal dscr) {
+		this.dscr = dscr;
+	}
+
+	public Integer getPaybackPeriod() {
+		return paybackPeriod;
+	}
+
+	public void setPaybackPeriod(Integer paybackPeriod) {
+		this.paybackPeriod = paybackPeriod;
+	}
+
 
 	
 	

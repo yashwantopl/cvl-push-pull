@@ -204,7 +204,7 @@ public class LoanDisbursementDomain implements Serializable {
 	public String toString() {
 		return "LoanDisbursementDomain [id=" + id + ", applicationId=" + applicationId + ", referenceNo=" + referenceNo
 				+ ", disbursementDate=" + disbursementDate + ", accountNo=" + accountNo + ", disbursedAmount="
-				+ disbursedAmount + ", paymentMode =" + paymentMode + ", disbursementAuthority=" + disbursementAuthority
+				+ disbursedAmount + ", paymentMode=" + paymentMode+ ", disbursementAuthority=" + disbursementAuthority
 				+ ", transactionNo=" + transactionNo + ", remark=" + remark + ", createdBy=" + createdBy
 				+ ", createdDate=" + createdDate + ", modifiedBy=" + modifiedBy + ", modifiedDate=" + modifiedDate
 				+ ", isActive=" + isActive + ", bankDisbursementPrimaryKey=" + bankDisbursementPrimaryKey + "]";
