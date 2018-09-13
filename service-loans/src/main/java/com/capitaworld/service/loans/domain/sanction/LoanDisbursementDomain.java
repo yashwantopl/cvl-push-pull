@@ -41,7 +41,8 @@ public class LoanDisbursementDomain implements Serializable {
 	@Column(name = "disbursed_amount")
 	private Double disbursedAmount;
 
-	private Long mode;
+	@Column(name = "payment_mode")
+	private Long paymentMode;
 
 	@Column(name = "disbursement_authority")
 	private String disbursementAuthority;
@@ -70,7 +71,7 @@ public class LoanDisbursementDomain implements Serializable {
 
 	@Column(name = "bank_disbursement_pk")
 	private Long bankDisbursementPrimaryKey;
-	
+
 	public Long getId() {
 		return id;
 	}
@@ -119,12 +120,12 @@ public class LoanDisbursementDomain implements Serializable {
 		this.disbursedAmount = disbursedAmount;
 	}
 
-	public Long getMode() {
-		return mode;
+	public Long getPaymentMode() {
+		return paymentMode;
 	}
 
-	public void setMode(Long mode) {
-		this.mode = mode;
+	public void setPaymentMode(Long paymentMode) {
+		this.paymentMode = paymentMode;
 	}
 
 	public String getDisbursementAuthority() {
@@ -203,7 +204,7 @@ public class LoanDisbursementDomain implements Serializable {
 	public String toString() {
 		return "LoanDisbursementDomain [id=" + id + ", applicationId=" + applicationId + ", referenceNo=" + referenceNo
 				+ ", disbursementDate=" + disbursementDate + ", accountNo=" + accountNo + ", disbursedAmount="
-				+ disbursedAmount + ", mode=" + mode + ", disbursementAuthority=" + disbursementAuthority
+				+ disbursedAmount + ", paymentMode =" + paymentMode + ", disbursementAuthority=" + disbursementAuthority
 				+ ", transactionNo=" + transactionNo + ", remark=" + remark + ", createdBy=" + createdBy
 				+ ", createdDate=" + createdDate + ", modifiedBy=" + modifiedBy + ", modifiedDate=" + modifiedDate
 				+ ", isActive=" + isActive + ", bankDisbursementPrimaryKey=" + bankDisbursementPrimaryKey + "]";
