@@ -334,6 +334,12 @@ public class TermLoanParameter extends ProductMaster implements Serializable {
 	
 	@Column(name="cash_margin")
 	private Integer cashMargin;
+	
+	@Column(name="dscr")
+	private BigDecimal dscr;
+	
+	@Column(name="payback_period")
+	private Integer paybackPeriod;
 
 
 
@@ -1181,6 +1187,25 @@ public class TermLoanParameter extends ProductMaster implements Serializable {
 		this.cashMargin = cashMargin;
 	}
 
+	public BigDecimal getDscr() {
+		return dscr;
+	}
+
+	public void setDscr(BigDecimal dscr) {
+		this.dscr = dscr;
+	}
+
+	public Integer getPaybackPeriod() {
+		return paybackPeriod;
+	}
+
+	public void setPaybackPeriod(Integer paybackPeriod) {
+		this.paybackPeriod = paybackPeriod;
+	}
+
+
+
+	
 	
 	
 

@@ -26,7 +26,7 @@ import com.capitaworld.service.loans.model.common.EkycRequest;
 import com.capitaworld.service.loans.model.common.EkycResponse;
 import com.capitaworld.service.loans.model.common.HunterRequestDataResponse;
 import com.capitaworld.service.loans.model.common.ProposalList;
-
+import com.capitaworld.service.loans.model.corporate.CorporateProduct;
 import com.capitaworld.service.loans.model.mobile.MLoanDetailsResponse;
 import com.capitaworld.service.loans.model.mobile.MobileLoanRequest;
 import com.capitaworld.service.users.model.FpProfileBasicDetailRequest;
@@ -168,7 +168,7 @@ public interface LoanApplicationService {
 	
 	public Map<String, Object> getFpDetailsByFpProductId(Long fpProductId) throws Exception;
 	
-	public LoansResponse getFpDetailsByFpProductMappingId(Long fpProductId) throws Exception;
+	public CorporateProduct getFpDetailsByFpProductMappingId(Long fpProductId) throws Exception;
 	
 	public LoanApplicationRequest getLoanApplicationDetails(Long userId, Long applicationId);
 

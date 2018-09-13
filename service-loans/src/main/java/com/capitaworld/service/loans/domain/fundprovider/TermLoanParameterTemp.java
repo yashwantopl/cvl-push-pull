@@ -338,6 +338,13 @@ public class TermLoanParameterTemp extends ProductMasterTemp implements Serializ
 	
 	@Column(name="cash_margin")
 	private Integer cashMargin;
+	
+	@Column(name="dscr")
+	private BigDecimal dscr;
+	
+	@Column(name="payback_period")
+	private Integer paybackPeriod;
+	
 
 	public Integer getIndividualCibil() {
 		return individualCibil;
@@ -1165,7 +1172,26 @@ public class TermLoanParameterTemp extends ProductMasterTemp implements Serializ
 		this.cashMargin = cashMargin;
 	}
 
+	public BigDecimal getDscr() {
+		return dscr;
+	}
+
+	public void setDscr(BigDecimal dscr) {
+		this.dscr = dscr;
+	}
+
+	public Integer getPaybackPeriod() {
+		return paybackPeriod;
+	}
+
+	public void setPaybackPeriod(Integer paybackPeriod) {
+		this.paybackPeriod = paybackPeriod;
+	}
+
+
 	
+	
+
 	
 
 }
