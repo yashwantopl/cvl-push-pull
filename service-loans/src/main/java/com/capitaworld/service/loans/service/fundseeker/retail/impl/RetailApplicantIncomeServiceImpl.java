@@ -48,6 +48,8 @@ public class RetailApplicantIncomeServiceImpl implements RetailApplicantIncomeSe
 				appIncomeDetail.setCreatedBy(appIncomeReq.getUserId());
 				appIncomeDetail.setCreatedDate(new Date());
 				appIncomeDetail.setIsActive(true);
+				appIncomeDetail.setApplicationId(appIncomeDetail.getApplicationId());
+				appIncomeDetail.setYear(appIncomeDetail.getYear());
 			} else {
 				appIncomeDetail.setModifiedBy(appIncomeReq.getUserId());
 				appIncomeDetail.setModifiedDate(new Date());
