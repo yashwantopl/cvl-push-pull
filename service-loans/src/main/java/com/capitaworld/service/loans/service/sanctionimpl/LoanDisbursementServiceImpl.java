@@ -7,11 +7,11 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
-import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.capitaworld.service.loans.config.AuditComponentBankToCW;
@@ -174,10 +174,10 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 					loanDisbursementRequest.setIsSaved(true);
 				}
 				jsonString = MultipleJSONObjectHelper.getStringfromObject(loanDisbursementRequest);
-				auditComponentBankToCW.saveBankToCWReqRes(jsonString , 	loanDisbursementRequest.getApplicationId() , apiType , new LoansResponse(reason , org.springframework.http.HttpStatus.OK.value()) , null , orgId ,loanDisbursementRequest.getId());
+				auditComponentBankToCW.saveBankToCWReqRes(jsonString , 	loanDisbursementRequest.getApplicationId() , apiType , new LoansResponse(reason , HttpStatus.OK.value()) , null , orgId ,loanDisbursementRequest.getId());
 			}else {
 				jsonString =MultipleJSONObjectHelper.getStringfromObject(loanDisbursementRequest);
-				auditComponentBankToCW.saveBankToCWReqRes(jsonString , 	loanDisbursementRequest.getApplicationId() ,CommonUtility.ApiType.REVERSE_DISBURSEMENT, new LoansResponse(reason , org.springframework.http.HttpStatus.BAD_REQUEST.value()) , reason, orgId ,loanDisbursementRequest.getId());
+				auditComponentBankToCW.saveBankToCWReqRes(jsonString , 	loanDisbursementRequest.getApplicationId() ,CommonUtility.ApiType.REVERSE_DISBURSEMENT, new LoansResponse(reason , HttpStatus.BAD_REQUEST.value()) , reason, orgId ,loanDisbursementRequest.getId());
 			}
 		}
 		return reason;
