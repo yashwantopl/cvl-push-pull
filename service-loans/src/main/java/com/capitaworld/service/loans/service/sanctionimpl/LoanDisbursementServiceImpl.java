@@ -160,7 +160,7 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 			}
 			
 			reason=disbursementRequestValidation(sanctionPrimaryId , loanDisbursementRequest ,orgId , apiType);
-			
+
 			//saving req in bank to  cw-audit table
 			String jsonString = null;
 			
