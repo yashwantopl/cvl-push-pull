@@ -39,7 +39,9 @@ public class AuditComponentBankToCW {
 		bankCWAuditTrailDomain.setCreatedDate(new Date());
 		bankCWAuditTrailDomain.setApiType(apiType);
 		bankCWAuditTrailDomain.setBankPrimaryKey(bankPrimaryKey);
-		bankCWAuditTrailDomain.setStatus(loansResponse.getStatus() == 200 ? "SUCCESS" : "FAILURE");
+		if(loansResponse != null) {
+			bankCWAuditTrailDomain.setStatus(loansResponse.getStatus() == 200 ? "SUCCESS" : "FAILURE");
+		}
 		bankCWAuditTrailDomain =bankToCWAuditTrailRepository.save(bankCWAuditTrailDomain);
 		logger.info("Exit saveLoanDisbursementDetail() -----------------------> BankCWAuditTrailDomain ==>" +bankCWAuditTrailDomain);
 		}catch (Exception e) {
