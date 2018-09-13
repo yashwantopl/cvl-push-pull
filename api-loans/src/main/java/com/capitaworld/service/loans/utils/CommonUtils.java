@@ -260,6 +260,13 @@ public class CommonUtils {
 				"poaHolderName", "presentlyIrrigated", "rainFed", "repaymentCycle", "repaymentMode",
 				"seasonalIrrigated", "shareholding", "totalLandOwned", "tradeLicenseExpiryDate", "tradeLicenseNumber",
 				"unattended", "websiteAddress", "userId" };
+		public static final String[] RETAIL_FINAL_WITH_ID = { "castId", "castOther", "religion", "religionOther", "birthPlace",
+				"fatherName", "motherName", "noChildren", "noDependent", "highestQualificationOther", "residenceType",
+				"annualRent", "noPartners", "birthDate", "currentDepartment", "currentDesignation", "currentIndustry",
+				"employmentStatus", "interestRate", "nameOfEntity", "officeType", "ownershipType", "partnersName",
+				"poaHolderName", "presentlyIrrigated", "rainFed", "repaymentCycle", "repaymentMode",
+				"seasonalIrrigated", "shareholding", "totalLandOwned", "tradeLicenseExpiryDate", "tradeLicenseNumber",
+				"unattended", "websiteAddress", "userId" , "id"};
 		public static final String[] DIRECTOR_OBJ_EXCEPT_MAIN = {"isItrCompleted", "isCibilCompleted", "isBankStatementCompleted", "isOneFormCompleted",
 				"applicationId","dob","din","panNo","directorsName","totalExperience", "isActive","pincode","stateCode","city","mobile","gender","relationshipType",
 				"firstName","lastName", "middleName","title", "shareholding","aadhar","maritalStatus","noOfDependent","residenceType","residenceSinceMonth","residenceSinceYear",
