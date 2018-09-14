@@ -144,8 +144,141 @@ public class ScoringServiceImpl implements ScoringService{
         {
             return calculateNTBScoring(scoringRequestLoans,primaryCorporateDetail);
         }
+        else if(ScoreParameter.BusinessType.RETAIL_PERSONAL_LOAN == businessTypeId)
+        {
+            return calculateRetailPersonalLoanScoring(scoringRequestLoans,primaryCorporateDetail);
+        }
 
         return null;
+    }
+
+    private ResponseEntity<LoansResponse> calculateRetailPersonalLoanScoring(ScoringRequestLoans scoringRequestLoans, PrimaryCorporateDetail primaryCorporateDetail) {
+
+        ScoreParameterRetailRequest scoreParameterRetailRequest = new ScoreParameterRetailRequest();
+
+        Long scoreModelId=scoringRequestLoans.getScoringModelId();
+        Long applicationId=scoringRequestLoans.getApplicationId();
+        Long fpProductId=scoringRequestLoans.getFpProductId();
+
+        logger.info("----------------------------START RETAIL PL ------------------------------");
+        logger.info("--------------------------------------------------------------------------");
+        logger.info("--------------------------------------------------------------------------");
+
+        logger.info("APPLICATION ID   :: "+ applicationId);
+        logger.info("FP PRODUCT ID    :: "+ fpProductId);
+        logger.info("SCORING MODEL ID :: "+ scoreModelId);
+
+        ScoringResponse scoringResponseMain=null;
+
+        // GET SCORE RETAIL PERSONAL LOAN PARAMETERS
+
+
+        if(!CommonUtils.isObjectNullOrEmpty(scoreModelId))
+        {
+            ScoringRequest scoringRequest = new ScoringRequest();
+            scoringRequest.setScoringModelId(scoreModelId);
+            scoringRequest.setFpProductId(fpProductId);
+            scoringRequest.setApplicationId(applicationId);
+            scoringRequest.setUserId(scoringRequestLoans.getUserId());
+            scoringRequest.setBusinessTypeId(ScoreParameter.BusinessType.RETAIL_PERSONAL_LOAN);
+
+            // GET ALL FIELDS FOR CALCULATE SCORE BY MODEL ID
+            ScoringResponse scoringResponse=null;
+            try {
+                scoringResponse = scoringClient.listField(scoringRequest);
+            }
+            catch (Exception e) {
+                logger.error("error while getting field list");
+                e.printStackTrace();
+            }
+
+            List<Map<String, Object>> dataList = (List<Map<String, Object>>) scoringResponse.getDataList();
+
+            List<FundSeekerInputRequest> fundSeekerInputRequestList = new ArrayList<>(dataList.size());
+
+            for (int i=0;i<dataList.size();i++){
+
+                ModelParameterResponse modelParameterResponse = null;
+                try {
+                    modelParameterResponse = MultipleJSONObjectHelper.getObjectFromMap(dataList.get(i),
+                            ModelParameterResponse.class);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                FundSeekerInputRequest fundSeekerInputRequest = new FundSeekerInputRequest();
+                fundSeekerInputRequest.setFieldId(modelParameterResponse.getFieldMasterId());
+                fundSeekerInputRequest.setName(modelParameterResponse.getName());
+
+                switch (modelParameterResponse.getName()) {
+
+                    case ScoreParameter.Retail.WORKING_EXPERIENCE_PL:
+                    {
+                        /*try
+                        {
+                            Double networthSum = directorBackgroundDetailsRepository.getSumOfDirectorsNetworth(applicationId);
+                            if (CommonUtils.isObjectNullOrEmpty(networthSum))
+                                networthSum = 0.0;
+
+                            Double termLoansTy = liabilitiesDetailsTY.getTermLoans();
+                            if (CommonUtils.isObjectNullOrEmpty(termLoansTy))
+                                termLoansTy = 0.0;
+
+                            scoringParameterRequest.setNetworthSum(networthSum);
+                            scoringParameterRequest.setTermLoanTy(termLoansTy);
+                            scoringParameterRequest.setLoanAmount(loanAmount);
+                            scoringParameterRequest.setCombinedNetworth_p(true);
+
+                        }
+                        catch (Exception e)
+                        {
+                            logger.error("error while getting COMBINED_NETWORTH parameter");
+                            e.printStackTrace();
+                            scoringParameterRequest.setCombinedNetworth_p(false);
+                        }*/
+
+                        break;
+                    }
+
+                }
+                fundSeekerInputRequestList.add(fundSeekerInputRequest);
+            }
+
+            logger.info("SCORE PARAMETER ::::::::::"+scoreParameterRetailRequest.toString());
+
+            logger.info("--------------------------------------------------------------------------");
+            logger.info("--------------------------------------------------------------------------");
+            logger.info("----------------------------END-------------------------------------------");
+
+            scoringRequest.setDataList(fundSeekerInputRequestList);
+            scoringRequest.setScoreParameterRetailRequest(scoreParameterRetailRequest);
+
+            try {
+                scoringResponseMain = scoringClient.calculateScore(scoringRequest);
+            }
+            catch (Exception e) {
+                logger.error("error while calling scoring");
+                e.printStackTrace();
+                LoansResponse loansResponse = new LoansResponse("error while calling scoring.", HttpStatus.INTERNAL_SERVER_ERROR.value());
+                return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+            }
+
+            if(scoringResponseMain.getStatus() == HttpStatus.OK.value())
+            {
+                logger.error("score is successfully calculated");
+                LoansResponse loansResponse = new LoansResponse("score is successfully calculated", HttpStatus.OK.value());
+                return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+            }
+            else
+            {
+                logger.error("error while calling scoring");
+                LoansResponse loansResponse = new LoansResponse("error while calling scoring.", HttpStatus.INTERNAL_SERVER_ERROR.value());
+                return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+            }
+        }
+
+        LoansResponse loansResponse = new LoansResponse("score is successfully calculated", HttpStatus.OK.value());
+        return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
     }
 
     @Override
@@ -156,9 +289,9 @@ public class ScoringServiceImpl implements ScoringService{
         Long applicationId=scoringRequestLoans.getApplicationId();
         Long fpProductId=scoringRequestLoans.getFpProductId();
 
-        logger.info("----------------------------START------------------------------");
-        logger.info("---------------------------------------------------------------");
-        logger.info("---------------------------------------------------------------");
+        logger.info("----------------------------START EXISTING LOAN ------------------------------");
+        logger.info("------------------------------------------------------------------------------");
+        logger.info("------------------------------------------------------------------------------");
 
         logger.info("APPLICATION ID   :: "+ applicationId);
         logger.info("FP PRODUCT ID    :: "+ fpProductId);
@@ -1301,9 +1434,9 @@ public class ScoringServiceImpl implements ScoringService{
 
             logger.info("SCORE PARAMETER ::::::::::"+scoringParameterRequest.toString());
 
-            logger.info("---------------------------------------------------------------");
-            logger.info("---------------------------------------------------------------");
-            logger.info("----------------------------END--------------------------------");
+            logger.info("------------------------------------------------------------------------------");
+            logger.info("------------------------------------------------------------------------------");
+            logger.info("----------------------------END-----------------------------------------------");
 
             scoringRequest.setDataList(fundSeekerInputRequestList);
             scoringRequest.setScoringParameterRequest(scoringParameterRequest);
@@ -1362,9 +1495,9 @@ public class ScoringServiceImpl implements ScoringService{
         Long applicationId=scoringRequestLoans.getApplicationId();
         Long fpProductId=scoringRequestLoans.getFpProductId();
 
-        logger.info("----------------------------START------------------------------");
-        logger.info("---------------------------------------------------------------");
-        logger.info("---------------------------------------------------------------");
+        logger.info("----------------------------START NTB LOAN------------------------------");
+        logger.info("------------------------------------------------------------------------");
+        logger.info("------------------------------------------------------------------------");
 
         logger.info("APPLICATION ID   :: "+ applicationId);
         logger.info("FP PRODUCT ID    :: "+ fpProductId);
@@ -1395,8 +1528,6 @@ public class ScoringServiceImpl implements ScoringService{
             }
 
             List<Map<String, Object>> dataList = (List<Map<String, Object>>) scoringResponse.getDataList();
-
-            logger.info("Field List ==============>>>>>"+dataList.size());
 
             List<FundSeekerInputRequest> fundSeekerInputRequestList = new ArrayList<>(dataList.size());
 
@@ -1624,9 +1755,9 @@ public class ScoringServiceImpl implements ScoringService{
 
             logger.info("SCORE PARAMETER ::::::::::"+scoreParameterNTBRequest.toString());
 
-            logger.info("---------------------------------------------------------------");
-            logger.info("---------------------------------------------------------------");
-            logger.info("----------------------------END--------------------------------");
+            logger.info("------------------------------------------------------------------------");
+            logger.info("------------------------------------------------------------------------");
+            logger.info("----------------------------END-----------------------------------------");
 
             scoringRequest.setDataList(fundSeekerInputRequestList);
             scoringRequest.setScoreParameterNTBRequest(scoreParameterNTBRequest);
@@ -1671,9 +1802,9 @@ public class ScoringServiceImpl implements ScoringService{
         Long applicationId=scoringRequestLoans.getApplicationId();
         Long fpProductId=scoringRequestLoans.getFpProductId();
 
-        logger.info("----------------------------START------------------------------");
-        logger.info("---------------------------------------------------------------");
-        logger.info("---------------------------------------------------------------");
+        logger.info("----------------------------START NTB DIRECTOR------------------------------");
+        logger.info("----------------------------------------------------------------------------");
+        logger.info("----------------------------------------------------------------------------");
 
         logger.info("DIRECTOR ID :: "+ directorBackgroundDetail.getId());
         logger.info("APPLICATION ID   :: "+ applicationId);
@@ -2008,9 +2139,9 @@ public class ScoringServiceImpl implements ScoringService{
 
             logger.info("SCORE PARAMETER ::::::::::"+scoreParameterNTBRequest.toString());
 
-            logger.info("---------------------------------------------------------------");
-            logger.info("---------------------------------------------------------------");
-            logger.info("----------------------------END--------------------------------");
+            logger.info("----------------------------------------------------------------------------");
+            logger.info("----------------------------------------------------------------------------");
+            logger.info("----------------------------END---------------------------------------------");
 
             scoringRequest.setDataList(fundSeekerInputRequestList);
             scoringRequest.setScoreParameterNTBRequest(scoreParameterNTBRequest);
