@@ -214,31 +214,95 @@ public class ScoringServiceImpl implements ScoringService{
 
                     case ScoreParameter.Retail.WORKING_EXPERIENCE_PL:
                     {
-                        /*try
-                        {
-                            Double networthSum = directorBackgroundDetailsRepository.getSumOfDirectorsNetworth(applicationId);
-                            if (CommonUtils.isObjectNullOrEmpty(networthSum))
-                                networthSum = 0.0;
 
-                            Double termLoansTy = liabilitiesDetailsTY.getTermLoans();
-                            if (CommonUtils.isObjectNullOrEmpty(termLoansTy))
-                                termLoansTy = 0.0;
-
-                            scoringParameterRequest.setNetworthSum(networthSum);
-                            scoringParameterRequest.setTermLoanTy(termLoansTy);
-                            scoringParameterRequest.setLoanAmount(loanAmount);
-                            scoringParameterRequest.setCombinedNetworth_p(true);
-
-                        }
-                        catch (Exception e)
-                        {
-                            logger.error("error while getting COMBINED_NETWORTH parameter");
-                            e.printStackTrace();
-                            scoringParameterRequest.setCombinedNetworth_p(false);
-                        }*/
+                        /*scoreParameterRetailRequest.setWorkingExperience();
+                        scoreParameterRetailRequest.setWorkingExperience_p();*/
 
                         break;
                     }
+                    case ScoreParameter.Retail.CIBIL_SCORE_PL:
+                    {
+                        /*scoreParameterRetailRequest.setCibilScore();
+                        scoreParameterRetailRequest.setCibilScore_p();*/
+
+                        break;
+                    }
+                    case ScoreParameter.Retail.AGE_PL:
+                    {
+
+                        /*scoreParameterRetailRequest.setAge();
+                        scoreParameterRetailRequest.setAge_p();*/
+
+                        break;
+                    }
+                    case ScoreParameter.Retail.EDUCATION_QUALI_PL: {
+
+                        /*scoreParameterRetailRequest.setEducationQualification();
+                        scoreParameterRetailRequest.setEducationQualifaction_p();*/
+                        break;
+                    }
+                    case ScoreParameter.Retail.EMPLOYEMENT_TYPE_PL: {
+
+                        /*scoreParameterRetailRequest.setEmploymentType();
+                        scoreParameterRetailRequest.setEmployementType_p();*/
+                        break;
+                    }
+                    case ScoreParameter.Retail.HOUSE_OWNERSHIP_PL: {
+
+                        /*scoreParameterRetailRequest.setHouseOwnership();
+                        scoreParameterRetailRequest.setHouseOwnership_p();*/
+
+                        break;
+                    }
+                    case ScoreParameter.Retail.MARITAL_STATUS_PL: {
+
+                        /*scoreParameterRetailRequest.setMaritalStatus();
+                        scoreParameterRetailRequest.setMaritalStatus_p();*/
+
+                        break;
+                    }
+                    case ScoreParameter.Retail.CATEGORY_INFO_PL: {
+
+                        /*scoreParameterRetailRequest.setCategoryInfo();
+                        scoreParameterRetailRequest.setCategoryInfo_p();*/
+                        break;
+                    }
+                    case ScoreParameter.Retail.FIXED_OBLI_INFO_RATIO_PL:
+                    {
+                        /*scoreParameterRetailRequest.setFixedObligationRatio();
+                        scoreParameterRetailRequest.setFixedObligationRatio_p();*/
+
+                        break;
+                    }
+                    case ScoreParameter.Retail.CHEQUE_BOUNCE_PAST_SIX_MONTH_PL:
+                    {
+                        /*scoreParameterRetailRequest.setChequeBounce();
+                        scoreParameterRetailRequest.setChequeBounce_p();*/
+
+                        break;
+                    }
+                    case ScoreParameter.Retail.DAY_PAST_DUE_PL:
+                    {
+                        /*scoreParameterRetailRequest.setDpd();
+                        scoreParameterRetailRequest.setDPD_p();*/
+
+                        break;
+                    }
+                    case ScoreParameter.Retail.NET_ANNUAL_INCOME_PL:
+                    {
+                        /*scoreParameterRetailRequest.setNetAnnualIncome();
+                        scoreParameterRetailRequest.setNetAnnualIncome_p();*/
+                        break;
+                    }
+                    case ScoreParameter.Retail.EMI_NMI_PL:
+                    {
+                        /*scoreParameterRetailRequest.setEminmi();
+                        scoreParameterRetailRequest.setEmiNmi_p();*/
+
+                        break;
+                    }
+                    default:
+                        break;
 
                 }
                 fundSeekerInputRequestList.add(fundSeekerInputRequest);
