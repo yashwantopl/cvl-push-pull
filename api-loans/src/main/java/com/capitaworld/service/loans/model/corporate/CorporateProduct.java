@@ -209,6 +209,10 @@ public class CorporateProduct  extends  ProductMasterRequest implements Serializ
 	
 	private Integer cashMargin;
 	
+	private BigDecimal dscr;
+	
+	private Integer paybackPeriod;
+	
 /*ntb*/
 	
 	private BigDecimal minAvrgAge;
@@ -1338,6 +1342,23 @@ public class CorporateProduct  extends  ProductMasterRequest implements Serializ
 	public void setCashMargin(Integer cashMargin) {
 		this.cashMargin = cashMargin;
 	}
+
+	public BigDecimal getDscr() {
+		return dscr;
+	}
+
+	public void setDscr(BigDecimal dscr) {
+		this.dscr = dscr;
+	}
+
+	public Integer getPaybackPeriod() {
+		return paybackPeriod;
+	}
+
+	public void setPaybackPeriod(Integer paybackPeriod) {
+		this.paybackPeriod = paybackPeriod;
+	}
+
 
 
 	

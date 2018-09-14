@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.service.fundseeker.retail.impl;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -145,8 +146,7 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 				applicantDetail.setIsActive(true);
 				applicantDetail.setApplicationId(new LoanApplicationMaster(applicantRequest.getApplicationId()));
 			}
-
-			BeanUtils.copyProperties(applicantRequest, applicantDetail, CommonUtils.IgnorableCopy.RETAIL_FINAL);
+			BeanUtils.copyProperties(applicantRequest, applicantDetail,CommonUtils.IgnorableCopy.RETAIL_FINAL_WITH_ID);
 			Address address = applicantRequest.getFirstAddress();
 			if(!CommonUtils.isObjectNullOrEmpty(address)) {
 				applicantDetail.setAddressPremiseName(address.getPremiseNumber());
