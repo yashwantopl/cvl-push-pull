@@ -1572,8 +1572,8 @@ public class LoansClient {
 			throw new Exception("Loans service is not available");
 		}
 	}
-	public RetailApplicantRequest getFullProfileDetail(Long applicationId,Long userId) throws Exception {
-		String url = loansBaseUrl.concat(GET_FULL_PROFILE).concat("/" + applicationId + "/" + userId);
+	public RetailApplicantRequest getFullProfileDetail(Long applicationId) throws Exception {
+		String url = loansBaseUrl.concat(GET_FULL_PROFILE).concat("/" + applicationId);
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");

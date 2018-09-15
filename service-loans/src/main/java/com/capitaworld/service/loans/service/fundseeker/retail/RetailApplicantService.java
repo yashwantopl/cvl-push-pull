@@ -14,7 +14,7 @@ import com.capitaworld.service.loans.model.teaser.primaryview.RetailProfileViewR
 public interface RetailApplicantService {
 	public boolean save(RetailApplicantRequest applicantRequest, Long userId) throws Exception;
 
-	public RetailApplicantRequest get(Long userId, Long applicationId) throws Exception;
+	public RetailApplicantRequest get(Long applicationId) throws Exception;
 
 	public boolean saveFinal(FinalCommonRetailRequest applicantRequest, Long userId) throws Exception;
 

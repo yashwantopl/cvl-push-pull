@@ -143,7 +143,7 @@ public class RetailApplicantController {
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 
-			RetailApplicantRequest response = applicantService.get(userId, applicationId);
+			RetailApplicantRequest response = applicantService.get(applicationId);
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 			loansResponse.setData(response);
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
@@ -297,12 +297,11 @@ public class RetailApplicantController {
 		}
 	}
 
-	@RequestMapping(value = "${profile}/get_profile/{applicationId}/{userId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public RetailApplicantRequest get(@PathVariable("applicationId") Long applicationId,
-			@PathVariable("userId") Long userId) {
+	@RequestMapping(value = "${profile}/get_profile/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public RetailApplicantRequest get(@PathVariable("applicationId") Long applicationId) {
 		// request must not be null
 		try {
-			return applicantService.get(userId, applicationId);
+			return applicantService.get(applicationId);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error("Error while getting Retail Applicant Profile Details==>", e);
