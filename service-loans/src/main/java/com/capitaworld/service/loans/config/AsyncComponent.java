@@ -684,7 +684,7 @@ public class AsyncComponent {
 				}
 			} else if(CommonUtils.UserMainType.RETAIL == fsType){
 				logger.info("In Retails, Find fpProd Id by userid and applicationId");
-				RetailApplicantRequest retailApplicantRequest = retailApplicantService.get(fsUserId, applicationId);
+				RetailApplicantRequest retailApplicantRequest = retailApplicantService.get(applicationId);
 				if(!CommonUtils.isObjectNullOrEmpty(retailApplicantRequest)) {
 					String fsName = (!CommonUtils.isObjectNullOrEmpty(retailApplicantRequest.getFirstName()) ? retailApplicantRequest.getFirstName() : "") 
 							+ " " + (!CommonUtils.isObjectNullOrEmpty(retailApplicantRequest.getLastName()) ? retailApplicantRequest.getLastName() : "");
