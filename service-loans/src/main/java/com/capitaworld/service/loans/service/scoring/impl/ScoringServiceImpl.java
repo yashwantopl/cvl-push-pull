@@ -24,6 +24,7 @@ import com.capitaworld.service.loans.model.score.ScoringRequestLoans;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.*;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantIncomeRepository;
 import com.capitaworld.service.loans.service.scoring.ScoringService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
@@ -66,22 +67,22 @@ public class ScoringServiceImpl implements ScoringService{
     private final Logger logger = LoggerFactory.getLogger(ScoringServiceImpl.class);
 
     @Autowired
-    OperatingStatementDetailsRepository operatingStatementDetailsRepository;
+    private OperatingStatementDetailsRepository operatingStatementDetailsRepository;
 
     @Autowired
-    LiabilitiesDetailsRepository liabilitiesDetailsRepository;
+    private LiabilitiesDetailsRepository liabilitiesDetailsRepository;
 
     @Autowired
-    AssetsDetailsRepository assetsDetailsRepository;
+    private AssetsDetailsRepository assetsDetailsRepository;
 
     @Autowired
-    BalanceSheetDetailRepository balanceSheetDetailRepository;
+    private BalanceSheetDetailRepository balanceSheetDetailRepository;
 
     @Autowired
-    ProfitibilityStatementDetailRepository profitibilityStatementDetailRepository;
+    private ProfitibilityStatementDetailRepository profitibilityStatementDetailRepository;
 
     @Autowired
-    DirectorBackgroundDetailsRepository directorBackgroundDetailsRepository;
+    private DirectorBackgroundDetailsRepository directorBackgroundDetailsRepository;
 
     @Autowired
     private ScoringClient scoringClient;
@@ -124,6 +125,9 @@ public class ScoringServiceImpl implements ScoringService{
 
     @Autowired
     private RetailApplicantDetailRepository retailApplicantDetailRepository;
+
+    @Autowired
+    private RetailApplicantIncomeRepository retailApplicantIncomeRepository;
 
 
     @Override
@@ -422,9 +426,30 @@ public class ScoringServiceImpl implements ScoringService{
                     }
                     case ScoreParameter.Retail.FIXED_OBLI_INFO_RATIO_PL:
                     {
-                        /*scoreParameterRetailRequest.setFixedObligationRatio();
-                        scoreParameterRetailRequest.setFixedObligationRatio_p();*/
 
+                        Double totalEMI = financialArrangementDetailsRepository.getTotalEmiByApplicationId(applicationId);
+                        if(CommonUtils.isObjectNullOrEmpty(totalEMI))
+                        {
+                            totalEMI=0.0;
+                        }
+                        Double totalIncomeLastYear=0.0;
+                        try {
+                            totalIncomeLastYear =retailApplicantIncomeRepository.getTotalIncomeOfMaxYearByApplicationId(applicationId);
+                            if(CommonUtils.isObjectNullOrEmpty(totalIncomeLastYear))
+                            {
+                                totalIncomeLastYear=0.0;
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            logger.error("error while getting total income from retail applicant income detail");
+                            e.printStackTrace();
+
+                        }
+
+                        scoreParameterRetailRequest.setEmiAmountFromCIBIL(totalEMI);
+                        scoreParameterRetailRequest.setLastYearTotalIncomeFromITR(totalIncomeLastYear);
+                        scoreParameterRetailRequest.setFixedObligationRatio_p(true);
                         break;
                     }
                     case ScoreParameter.Retail.CHEQUE_BOUNCE_PAST_SIX_MONTH_PL:
@@ -478,8 +503,26 @@ public class ScoringServiceImpl implements ScoringService{
                     }
                     case ScoreParameter.Retail.NET_ANNUAL_INCOME_PL:
                     {
-                        /*scoreParameterRetailRequest.setNetAnnualIncome();
-                        scoreParameterRetailRequest.setNetAnnualIncome_p();*/
+
+                        try
+                        {
+                            if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getMonthlyIncome()))
+                            {
+                                scoreParameterRetailRequest.setNetAnnualIncome(retailApplicantDetail.getMonthlyIncome()*12);
+                                scoreParameterRetailRequest.setNetAnnualIncome_p(true);
+                            }
+                            else
+                            {
+                                scoreParameterRetailRequest.setNetAnnualIncome_p(false);
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            logger.error("error while getting NET_ANNUAL_INCOME_PL parameter");
+                            e.printStackTrace();
+                            scoreParameterRetailRequest.setNetAnnualIncome_p(false);
+                        }
+
                         break;
                     }
                     case ScoreParameter.Retail.EMI_NMI_PL:
