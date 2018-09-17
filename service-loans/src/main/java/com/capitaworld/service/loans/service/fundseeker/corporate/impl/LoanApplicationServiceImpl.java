@@ -5177,7 +5177,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		UserOrganisationRequest userOrganisationRequest =null;
 		try {
 			userOrganisationRequest = getOrganizationDetails(organizationId); 
-			generateTokenRequest = setUrlAndTokenInSidbiClient(organizationId , applicationId , userOrganisationRequest);
+			if(CommonUtils.isObjectNullOrEmpty(userOrganisationRequest)) {
+				logger.warn("Something is Wrong as Organization Data not found for Organization id ==>{}",organizationId);
+				return false ;
+			}
+			generateTokenRequest = setUrlAndTokenInSidbiClient( applicationId , userOrganisationRequest);
 			if(CommonUtils.isObjectNullOrEmpty(generateTokenRequest)) {
 				logger.warn("Something went wrong while setting URL and Token in savePhese1DataToSidbi()");
 				return false;
@@ -5594,7 +5598,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		UserOrganisationRequest userOrganisationRequest =null;
 		try {
 			userOrganisationRequest = getOrganizationDetails(organizationId); 
-			generateTokenRequest = setUrlAndTokenInSidbiClient(organizationId, applicationId , userOrganisationRequest);
+			if(CommonUtils.isObjectNullOrEmpty(userOrganisationRequest)) {
+				logger.warn("Something is Wrong as Organization Data not found for Organization id ==>{}",organizationId);
+				return false ;
+			}
+			generateTokenRequest = setUrlAndTokenInSidbiClient( applicationId , userOrganisationRequest);
 			if(CommonUtils.isObjectNullOrEmpty(generateTokenRequest)) {
 				logger.warn("Something went wrong while setting URL and Token in savePhese2DataToSidbi()");
 				return false;
@@ -7002,11 +7010,7 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 		return null;
 	}
 	
-	public GenerateTokenRequest setUrlAndTokenInSidbiClient(Long organizationId, Long applicationId , UserOrganisationRequest request) throws Exception {
-		if(request == null) {
-			logger.warn("Something is Wrong as Organization Data not found for Organization id ==>{}",organizationId);
-			return null;
-		}
+	public GenerateTokenRequest setUrlAndTokenInSidbiClient( Long applicationId , UserOrganisationRequest request) throws Exception {
 		if(CommonUtils.isObjectNullOrEmpty(isProduction)) {
 			logger.warn("Please Set 'capitaworld.sidbi.integration.is_production' key value to Set URL");
 			return null;
@@ -7021,7 +7025,7 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 		generateTokenRequest.setApplicationId(applicationId);
 		generateTokenRequest.setPassword(request.getPassword());
 		
-		if(organizationId == 17l || organizationId == 16l) {
+		if(request.getUserOrgId() == 17l || request.getUserOrgId() == 16l) {
 			String reqTok = "bobc:bob12345";
 			String requestDataEnc = Base64.getEncoder().encodeToString(reqTok.getBytes());
 			generateTokenRequest.setBankToken(requestDataEnc);
