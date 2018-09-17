@@ -152,9 +152,9 @@ public class NotificationServiceImpl implements NotificationService{
 					}else if(CommonUtils.UserMainType.RETAIL == fsType){
 						RetailApplicantRequest retailApplicantRequest;
 						if(CommonUtils.UserType.FUND_SEEKER == fromUserTypeId)
-							retailApplicantRequest = retailApplicantService.get(fromUserId, applicationId);
+							retailApplicantRequest = retailApplicantService.get(applicationId);
 						else
-							retailApplicantRequest = retailApplicantService.get(Long.parseLong(toUserId), applicationId);
+							retailApplicantRequest = retailApplicantService.get(applicationId);
 						
 						parameters.put("fs_name",(!CommonUtils.isObjectNullOrEmpty(retailApplicantRequest.getFirstName()) ? retailApplicantRequest.getFirstName() : "") + " " + (!CommonUtils.isObjectNullOrEmpty(retailApplicantRequest.getLastName()) ? retailApplicantRequest.getLastName() : ""));
 					}

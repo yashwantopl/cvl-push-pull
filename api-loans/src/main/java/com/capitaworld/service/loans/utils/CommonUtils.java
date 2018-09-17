@@ -260,6 +260,13 @@ public class CommonUtils {
 				"poaHolderName", "presentlyIrrigated", "rainFed", "repaymentCycle", "repaymentMode",
 				"seasonalIrrigated", "shareholding", "totalLandOwned", "tradeLicenseExpiryDate", "tradeLicenseNumber",
 				"unattended", "websiteAddress", "userId" };
+		public static final String[] RETAIL_FINAL_WITH_ID = { "castId", "castOther", "religion", "religionOther", "birthPlace",
+				"fatherName", "motherName", "noChildren", "noDependent", "highestQualificationOther", "residenceType",
+				"annualRent", "noPartners", "birthDate", "currentDepartment", "currentDesignation", "currentIndustry",
+				"employmentStatus", "interestRate", "nameOfEntity", "officeType", "ownershipType", "partnersName",
+				"poaHolderName", "presentlyIrrigated", "rainFed", "repaymentCycle", "repaymentMode",
+				"seasonalIrrigated", "shareholding", "totalLandOwned", "tradeLicenseExpiryDate", "tradeLicenseNumber",
+				"unattended", "websiteAddress", "userId" , "id"};
 		public static final String[] DIRECTOR_OBJ_EXCEPT_MAIN = {"isItrCompleted", "isCibilCompleted", "isBankStatementCompleted", "isOneFormCompleted",
 				"applicationId","dob","din","panNo","directorsName","totalExperience", "isActive","pincode","stateCode","city","mobile","gender","relationshipType",
 				"firstName","lastName", "middleName","title", "shareholding","aadhar","maritalStatus","noOfDependent","residenceType","residenceSinceMonth","residenceSinceYear",
@@ -310,6 +317,34 @@ public class CommonUtils {
 			return "DEBT";
 		else
 			return "EQUITY";
+	}
+
+	public enum ApplicationStatusMessage {
+
+		IN_PROGRESS(1,"In Progress"),
+		DDR_IN_PROGRESS(2,"Due Diligence in Progress"),
+		DDR_APPROVED_BUT_NOT_SANCTIONED(3,"DDR Approved"),
+		DISBURSED(4,"Disbursed"),
+		HOLD(5,"On Hold"),
+		REJECT(6,"Rejected"),
+		SANCTIONED(7,"Sanctioned");
+
+		private int id;
+		private String value;
+
+		ApplicationStatusMessage(int id, String value)
+		{
+			this.id =id;
+			this.value = value;
+		}
+
+		public int getId() {
+			return id;
+		}
+
+		public String getValue() {
+			return value;
+		}
 	}
 
 	public interface ApplicationStatus {
