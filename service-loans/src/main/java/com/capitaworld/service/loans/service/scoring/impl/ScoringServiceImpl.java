@@ -383,7 +383,7 @@ public class ScoringServiceImpl implements ScoringService{
                         {
                             if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getStatusId()))
                             {
-                                scoreParameterRetailRequest.setHouseOwnership(retailApplicantDetail.getStatusId().longValue());
+                                scoreParameterRetailRequest.setMaritalStatus(retailApplicantDetail.getStatusId().longValue());
                                 scoreParameterRetailRequest.setMaritalStatus_p(true);
                             }
                             else
@@ -407,7 +407,7 @@ public class ScoringServiceImpl implements ScoringService{
                         {
                             if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getEmploymentWith()))
                             {
-                                scoreParameterRetailRequest.setHouseOwnership(retailApplicantDetail.getEmploymentWith().longValue());
+                                scoreParameterRetailRequest.setCategoryInfo(retailApplicantDetail.getEmploymentWith().longValue());
                                 scoreParameterRetailRequest.setCategoryInfo_p(true);
                             }
                             else
