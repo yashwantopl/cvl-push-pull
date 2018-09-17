@@ -31,6 +31,7 @@ public interface DirectorBackgroundDetailsRepository extends JpaRepository<Direc
 
 	@Query("from DirectorBackgroundDetail o where o.applicationId.id = :appId and o.isMainDirector = true")
 	public DirectorBackgroundDetail getByAppIdAndIsMainDirector(@Param("appId") Long appId);
+	
 
 	@Modifying
 	@Query("update DirectorBackgroundDetail pm set pm.isItrCompleted =:flag,pm.modifiedDate = NOW(),pm.modifiedBy =:userId where pm.id =:id and pm.isActive = true")

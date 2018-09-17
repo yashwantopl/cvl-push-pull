@@ -45,6 +45,7 @@ import com.capitaworld.service.loans.model.CreditRatingOrganizationDetailRequest
 import com.capitaworld.service.loans.model.CreditRatingOrganizationDetailResponse;
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailResponse;
+import com.capitaworld.service.loans.model.DirectorPersonalDetailResponse;
 import com.capitaworld.service.loans.model.FinanceMeansDetailRequest;
 import com.capitaworld.service.loans.model.FinanceMeansDetailResponse;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
@@ -98,6 +99,7 @@ import com.capitaworld.service.mca.model.McaResponse;
 import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.AbilityRaiseFunds;
 import com.capitaworld.service.oneform.enums.AccountingQuality;
+import com.capitaworld.service.oneform.enums.AssessedForITMst;
 import com.capitaworld.service.oneform.enums.BorrowerInvoked;
 import com.capitaworld.service.oneform.enums.BusinessCommitment;
 import com.capitaworld.service.oneform.enums.BusinessExperience;
@@ -116,12 +118,14 @@ import com.capitaworld.service.oneform.enums.DelayInstalments;
 import com.capitaworld.service.oneform.enums.DelaySubmission;
 import com.capitaworld.service.oneform.enums.Denomination;
 import com.capitaworld.service.oneform.enums.DirectorRelationshipType;
+import com.capitaworld.service.oneform.enums.EducationalStatusMst;
 import com.capitaworld.service.oneform.enums.EnvironmentalImpact;
 import com.capitaworld.service.oneform.enums.EstablishmentMonths;
 import com.capitaworld.service.oneform.enums.FinanceCategory;
 import com.capitaworld.service.oneform.enums.FinancialRestructuring;
 import com.capitaworld.service.oneform.enums.FinancialSupport;
 import com.capitaworld.service.oneform.enums.Gender;
+import com.capitaworld.service.oneform.enums.HaveLIMst;
 import com.capitaworld.service.oneform.enums.IndustrialRelations;
 import com.capitaworld.service.oneform.enums.InfrastructureAvailability;
 import com.capitaworld.service.oneform.enums.Integrity;
@@ -130,15 +134,19 @@ import com.capitaworld.service.oneform.enums.InternalReturn;
 import com.capitaworld.service.oneform.enums.LimitOverdrawn;
 import com.capitaworld.service.oneform.enums.LoanType;
 import com.capitaworld.service.oneform.enums.ManagementCompetence;
+import com.capitaworld.service.oneform.enums.MaritalStatusMst;
 import com.capitaworld.service.oneform.enums.OperatingMargins;
 import com.capitaworld.service.oneform.enums.OrderBook;
+import com.capitaworld.service.oneform.enums.OwningHouseMst;
 import com.capitaworld.service.oneform.enums.Particular;
 import com.capitaworld.service.oneform.enums.ProductSeasonality;
 import com.capitaworld.service.oneform.enums.ProjectedRatio;
 import com.capitaworld.service.oneform.enums.PurposeOfLoan;
 import com.capitaworld.service.oneform.enums.RatingAgency;
+import com.capitaworld.service.oneform.enums.ResidentStatusMst;
 import com.capitaworld.service.oneform.enums.SensititivityAnalysis;
 import com.capitaworld.service.oneform.enums.ShareHoldingCategory;
+import com.capitaworld.service.oneform.enums.SpouseDetailMst;
 import com.capitaworld.service.oneform.enums.StatusClearances;
 import com.capitaworld.service.oneform.enums.StatusFinancialClosure;
 import com.capitaworld.service.oneform.enums.SubmissionReports;
@@ -149,6 +157,7 @@ import com.capitaworld.service.oneform.enums.TechnologyRisk;
 import com.capitaworld.service.oneform.enums.Title;
 import com.capitaworld.service.oneform.enums.UnhedgedCurrency;
 import com.capitaworld.service.oneform.enums.VarianceSales;
+import com.capitaworld.service.oneform.enums.VisuallyImpairedMst;
 import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
 import com.capitaworld.service.oneform.model.SectorIndustryModel;
@@ -589,7 +598,11 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 						? DATE_FORMAT.format(primaryCorporateDetail.getModifiedDate())
 						: null);
 		}
+
+		
+		
 		// DIRECTORS BACKGROUND DETAILS
+		
 		try {
 			List<DirectorBackgroundDetailRequest> directorBackgroundDetailRequestList = directorBackgroundDetailsService
 					.getDirectorBackgroundDetailList(toApplicationId, userId);
@@ -622,7 +635,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 				directorBackgroundDetailResponse.setMobile(directorBackgroundDetailRequest.getMobile());
 				directorBackgroundDetailResponse.setDob(directorBackgroundDetailRequest.getDob());
 				directorBackgroundDetailResponse.setPincode(directorBackgroundDetailRequest.getPincode());
-
+				directorBackgroundDetailResponse.setPersonalId(directorBackgroundDetailRequest.getPersonalId());
 				try {
 					if (!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDistrictMappingId())) {
 						directorBackgroundDetailResponse.setPinData(
@@ -642,12 +655,85 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 								? DirectorRelationshipType
 										.getById(directorBackgroundDetailRequest.getRelationshipType()).getValue()
 								: " "));
+				
+				// additional Details added as per req
+				directorBackgroundDetailResponse.setIsMainDirector(directorBackgroundDetailRequest.getIsMainDirector());
+				directorBackgroundDetailResponse.setAadhar(directorBackgroundDetailRequest.getAadhar());
+				directorBackgroundDetailResponse.setFatherName(directorBackgroundDetailRequest.getFatherName());
+				directorBackgroundDetailResponse.setEducationalStatus(directorBackgroundDetailRequest.getEducationalStatus() != null ? EducationalStatusMst.getById(directorBackgroundDetailRequest.getEducationalStatus()).getValue().toString() : "-");
+				directorBackgroundDetailResponse.setVisuallyImpaired(directorBackgroundDetailRequest.getVisuallyImpaired() != null ? VisuallyImpairedMst.getById(directorBackgroundDetailRequest.getVisuallyImpaired()).getValue().toString() : "-");
+				directorBackgroundDetailResponse.setResidentStatus(directorBackgroundDetailRequest.getResidentStatus() != null ? ResidentStatusMst.getById(directorBackgroundDetailRequest.getResidentStatus()).getValue().toString() : "-");
+				directorBackgroundDetailResponse.setDirectorPersonalInfo(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest() != null ? directorBackgroundDetailRequest.getDirectorPersonalDetailRequest() : " " );
+				//nationality
+				
+				List<Long> countryList = new ArrayList<>();
+				if (!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getNationality()))
+					countryList.add(Long.valueOf(directorBackgroundDetailRequest.getNationality()));
+				if (!CommonUtils.isListNullOrEmpty(countryList)) {
+					try {
+						OneFormResponse oneFormResponse = oneFormClient.getCountryByCountryListId(countryList);
+						List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
+								.getListData();
+						if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+							MasterResponse masterResponse = MultipleJSONObjectHelper
+									.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+							corporateFinalViewResponse.setCountry(masterResponse.getValue());
+							corporateFinalViewResponse.setRegOfficecountry(masterResponse.getValue());
+							
+							directorBackgroundDetailResponse.setNationality(masterResponse.getValue());
+							
+						} else {
+							directorBackgroundDetailResponse.setNationality("NA");
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+				
+				
 				directorBackgroundDetailResponseList.add(directorBackgroundDetailResponse);
+				// is main director so fetch personal detail by personal id
+				try {
+					
+					if(directorBackgroundDetailRequest.getIsMainDirector() != null && directorBackgroundDetailRequest.getIsMainDirector() == true){
+
+						DirectorPersonalDetailResponse directorPersonalDetailResponse= new DirectorPersonalDetailResponse();
+						if(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest() != null)
+						{
+						directorPersonalDetailResponse.setMaritalStatus(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getMaritalStatus() != null ? MaritalStatusMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getMaritalStatus()).getValue().toString() : "-");
+						directorPersonalDetailResponse.setSpouseName(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getSpouseName());
+						directorPersonalDetailResponse.setSpouseDetail(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getSpouseDetail() != null ? SpouseDetailMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getSpouseDetail()).getValue().toString() : "-");
+						directorPersonalDetailResponse.setAssessedForIt(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getAssessedForIt() != null ? AssessedForITMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getAssessedForIt()).getValue().toString() : "-");
+						directorPersonalDetailResponse.setOwningHouse(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getOwningHouse() != null ? OwningHouseMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getOwningHouse()).getValue().toString() : "-");
+						directorPersonalDetailResponse.setNoOfChildren(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getNoOfChildren());
+						directorPersonalDetailResponse.setHaveLiPolicy(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getHaveLiPolicy()!= null ? HaveLIMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getHaveLiPolicy()).getValue().toString() : "-");
+						
+						directorBackgroundDetailResponse.setDirectorPersonalInfo(directorPersonalDetailResponse);
+						
+						
+						}
+						else {
+							
+							logger.warn("directorBackgroundDetailRequest.getDirectorPersonalDetailRequest() is null....");
+						}
+					}else {
+						logger.warn("----:::::: is main director is null ::::::-----For-----",toApplicationId);
+					}
+					
+				} catch (Exception e) {
+					e.printStackTrace();
+					logger.warn("----:::::: error while get is main dir details ::::::-----For-----",toApplicationId);
+					// TODO: handle exception
+				}
 			}
+			
 			corporateFinalViewResponse.setDirectorBackgroundDetailResponses(directorBackgroundDetailResponseList);
+		
 		} catch (Exception e) {
 			logger.error("Problem to get Data of Director's Background {}", e);
 		}
+		
+		
 		// FINANCIAL ARRANGEMENTS
 		try {
 			List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestList = financialArrangementDetailsService
@@ -668,6 +754,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 						.setFinancialInstitutionName(financialArrangementsDetailRequest.getFinancialInstitutionName());
 				// financialArrangementsDetailResponse.setFacilityNature(NatureFacility.getById(financialArrangementsDetailRequest.getFacilityNatureId()).getValue());
 				// financialArrangementsDetailResponse.setAddress(financialArrangementsDetailRequest.getAddress());
+				financialArrangementsDetailResponse.setLcbgStatus(financialArrangementsDetailRequest.getLcBgStatus());
 				financialArrangementsDetailResponseList.add(financialArrangementsDetailResponse);
 			}
 			corporateFinalViewResponse

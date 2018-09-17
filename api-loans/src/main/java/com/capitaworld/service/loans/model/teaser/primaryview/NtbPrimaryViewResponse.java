@@ -74,6 +74,7 @@ public class NtbPrimaryViewResponse {
 	    private List<Object> bankStatement;
 	    private List<Object> cibilReport;
 	    private List<Object> irtPdfReport;
+	    private List<Object> irtXMLReport;
 	    private List<Map<String,Object>> directorBackGroundDetails;
 	    private List<CorporateDirectorIncomeRequest> directorIncomeDetails;
 	    private Object monthlyDetailList;
@@ -1037,6 +1038,12 @@ public class NtbPrimaryViewResponse {
 		 */
 		public void setPromotersContributionPer(Object promotersContributionPer) {
 			this.promotersContributionPer = promotersContributionPer;
+		}
+		public List<Object> getIrtXMLReport() {
+			return irtXMLReport;
+		}
+		public void setIrtXMLReport(List<Object> irtXMLReport) {
+			this.irtXMLReport = irtXMLReport;
 		}
 
 
