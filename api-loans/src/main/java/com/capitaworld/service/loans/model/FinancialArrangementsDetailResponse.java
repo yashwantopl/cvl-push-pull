@@ -40,6 +40,7 @@ public class FinancialArrangementsDetailResponse implements Serializable{
     
     private String directorName;
     
+    private Object lcbgStatus;
     
    /* public String getFacilityNature() {
         return facilityNature;
@@ -134,6 +135,16 @@ public class FinancialArrangementsDetailResponse implements Serializable{
 
 	public void setDirectorName(String directorName) {
 		this.directorName = directorName;
+	}
+	
+	
+
+	public Object getLcbgStatus() {
+		return lcbgStatus;
+	}
+
+	public void setLcbgStatus(Object lcbgStatus) {
+		this.lcbgStatus = lcbgStatus;
 	}
 
 	public static void printFields(Object obj) throws Exception {
