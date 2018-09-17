@@ -100,6 +100,12 @@ public class CorporatePrimaryViewResponse {
     private Object proportionateScore;
     private Object proportionateScoreFS;
     private Object fraudDetectionData;
+    
+    private Object comercialOpDate;
+    private Object factoryPremise;
+    private Object knoHow;
+    private Object competition;
+    
    
 	public List<Object> getCibilReport() {
 		return cibilReport;
@@ -958,6 +964,30 @@ public class CorporatePrimaryViewResponse {
 	 */
 	public void setFraudDetectionData(Object fraudDetectionData) {
 		this.fraudDetectionData = fraudDetectionData;
+	}
+	public Object getComercialOpDate() {
+		return comercialOpDate;
+	}
+	public void setComercialOpDate(Object comercialOpDate) {
+		this.comercialOpDate = comercialOpDate;
+	}
+	public Object getFactoryPremise() {
+		return factoryPremise;
+	}
+	public void setFactoryPremise(Object factoryPremise) {
+		this.factoryPremise = factoryPremise;
+	}
+	public Object getKnoHow() {
+		return knoHow;
+	}
+	public void setKnoHow(Object knoHow) {
+		this.knoHow = knoHow;
+	}
+	public Object getCompetition() {
+		return competition;
+	}
+	public void setCompetition(Object competition) {
+		this.competition = competition;
 	}
 
 	

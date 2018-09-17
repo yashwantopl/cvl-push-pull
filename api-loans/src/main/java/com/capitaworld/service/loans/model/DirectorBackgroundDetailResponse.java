@@ -96,6 +96,17 @@ public class DirectorBackgroundDetailResponse implements Serializable{
 		
 		private Object pinData;
 		
+		private Object personalId;
+		
+		private Object directorPersonalInfo;
+		
+		private String fatherName;
+		private String educationalStatus;
+		private Object nationality;
+		private Object visuallyImpaired;
+		private Object residentStatus;
+		private Boolean isGuarantor;
+		
 		
 		
 
@@ -540,5 +551,73 @@ public class DirectorBackgroundDetailResponse implements Serializable{
 		this.pinData = pinData;
 	}
 
+	public Object getDirectorPersonalInfo() {
+		return directorPersonalInfo;
+	}
+
+	public void setDirectorPersonalInfo(Object directorPersonalInfo) {
+		this.directorPersonalInfo = directorPersonalInfo;
+	}
+
+	public Object getPersonalId() {
+		return personalId;
+	}
+
+	public void setPersonalId(Object personalId) {
+		this.personalId = personalId;
+	}
+
+	public String getFatherName() {
+		return fatherName;
+	}
+
+	public void setFatherName(String fatherName) {
+		this.fatherName = fatherName;
+	}
+
+
+	public String getEducationalStatus() {
+		return educationalStatus;
+	}
+
+	public void setEducationalStatus(String educationalStatus) {
+		this.educationalStatus = educationalStatus;
+	}
+
+	
+
+	public Object getNationality() {
+		return nationality;
+	}
+
+	public void setNationality(Object nationality) {
+		this.nationality = nationality;
+	}
+
+	public Object getVisuallyImpaired() {
+		return visuallyImpaired;
+	}
+
+	public void setVisuallyImpaired(Object visuallyImpaired) {
+		this.visuallyImpaired = visuallyImpaired;
+	}
+
+	public Object getResidentStatus() {
+		return residentStatus;
+	}
+
+	public void setResidentStatus(Object residentStatus) {
+		this.residentStatus = residentStatus;
+	}
+
+	public Boolean getIsGuarantor() {
+		return isGuarantor;
+	}
+
+	public void setIsGuarantor(Boolean isGuarantor) {
+		this.isGuarantor = isGuarantor;
+	}
+	
+	
 	
 }
