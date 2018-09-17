@@ -319,6 +319,34 @@ public class CommonUtils {
 			return "EQUITY";
 	}
 
+	public enum ApplicationStatusMessage {
+
+		IN_PROGRESS(1,"In Progress"),
+		DDR_IN_PROGRESS(2,"Due Diligence in Progress"),
+		DDR_APPROVED_BUT_NOT_SANCTIONED(3,"DDR Approved"),
+		DISBURSED(4,"Disbursed"),
+		HOLD(5,"On Hold"),
+		REJECT(6,"Rejected"),
+		SANCTIONED(7,"Sanctioned");
+
+		private int id;
+		private String value;
+
+		ApplicationStatusMessage(int id, String value)
+		{
+			this.id =id;
+			this.value = value;
+		}
+
+		public int getId() {
+			return id;
+		}
+
+		public String getValue() {
+			return value;
+		}
+	}
+
 	public interface ApplicationStatus {
 		public static final Long OPEN = 1l;
 		public static final Long ASSIGNED = 2l;

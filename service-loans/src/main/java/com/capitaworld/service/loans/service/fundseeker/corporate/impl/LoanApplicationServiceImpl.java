@@ -139,7 +139,6 @@ import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.LoanApplicationDetailsForSp;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.model.LoanEligibilityRequest;
-import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.PaymentRequest;
 import com.capitaworld.service.loans.model.PincodeDataResponse;
 import com.capitaworld.service.loans.model.ReportResponse;
@@ -939,6 +938,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				if(CommonUtils.isObjectNullOrEmpty(master.getProductId())) {
 					request.setLoanTypeMain(CommonUtils.CORPORATE);
 					request.setLoanTypeSub("DEBT");
+					request.setApplicationStatus(CommonUtils.ApplicationStatusMessage.IN_PROGRESS.getValue());
 					requests.add(request);
 					continue;
 				}
@@ -988,6 +988,48 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					e.printStackTrace();
 					// throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 				}
+				long proposalStatusId = 0l;
+				try{
+					ProposalMappingResponse response = proposalDetailsClient.getActiveProposalByApplicationID(master.getId());
+
+					if(!CommonUtils.isObjectNullOrEmpty(response) && !CommonUtils.isObjectNullOrEmpty(response.getData())){
+						ProposalMappingRequest proposalrequest = MultipleJSONObjectHelper.getObjectFromMap(
+								(LinkedHashMap<String, Object>) response.getData(), ProposalMappingRequest.class);
+						proposalStatusId = proposalrequest.getProposalStatusId().longValue();
+					}
+				}catch (Exception e){
+					logger.error(
+							"Error while calling getActiveProposalByApplicationID:-");
+					e.printStackTrace();
+				}
+
+				Integer status =request.getStatus();
+				Integer ddrStatus =request.getDdrStatusId();
+				String applicationStatus = null;
+				if (status == CommonUtils.ApplicationStatus.OPEN.intValue()) {
+					if (request.getPaymentStatus() == com.capitaworld.service.gateway.utils.CommonUtils.PaymentStatus.SUCCESS) {
+						applicationStatus = CommonUtils.ApplicationStatusMessage.DDR_IN_PROGRESS.getValue();
+					} else {
+						applicationStatus = CommonUtils.ApplicationStatusMessage.IN_PROGRESS.getValue();
+					}
+				} else if (ddrStatus == CommonUtils.DdrStatus.APPROVED.intValue()) {
+					if (proposalStatusId == MatchConstant.ProposalStatus.APPROVED) {
+						applicationStatus = CommonUtils.ApplicationStatusMessage.SANCTIONED.getValue();
+					} else if (proposalStatusId == MatchConstant.ProposalStatus.HOLD) {
+						applicationStatus = CommonUtils.ApplicationStatusMessage.HOLD.getValue();
+					} else if (proposalStatusId == MatchConstant.ProposalStatus.DECLINE) {
+						applicationStatus = CommonUtils.ApplicationStatusMessage.REJECT.getValue();
+					} else if (proposalStatusId == MatchConstant.ProposalStatus.DISBURSED) {
+						applicationStatus = CommonUtils.ApplicationStatusMessage.DISBURSED.getValue();
+					} else if (proposalStatusId == MatchConstant.ProposalStatus.ACCEPT) {
+						applicationStatus = CommonUtils.ApplicationStatusMessage.DDR_APPROVED_BUT_NOT_SANCTIONED.getValue();
+					} else {
+						applicationStatus = CommonUtils.ApplicationStatusMessage.DDR_IN_PROGRESS.getValue();
+					}
+				} else {
+					applicationStatus = CommonUtils.ApplicationStatusMessage.DDR_IN_PROGRESS.getValue();
+				}
+				request.setApplicationStatus(applicationStatus);
 			}
 			return requests;
 		} catch (Exception e) {
