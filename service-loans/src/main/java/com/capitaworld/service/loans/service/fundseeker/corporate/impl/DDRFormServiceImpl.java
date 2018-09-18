@@ -579,7 +579,6 @@ public class DDRFormServiceImpl implements DDRFormService {
 			e.printStackTrace();
 			logger.info("Error while getting user org id", e);
 		}
-		applicantDetail.getConstitutionId();
 		// ORGANIZATION NAME :- LINENO:6
 		response.setNameOfBorrower(applicantDetail.getOrganisationName());
 		response.setCurrency(getCurrency(applicationId, userId));
