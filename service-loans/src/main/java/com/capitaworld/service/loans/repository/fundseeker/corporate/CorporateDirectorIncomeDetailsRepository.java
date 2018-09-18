@@ -25,7 +25,7 @@ public interface CorporateDirectorIncomeDetailsRepository extends JpaRepository<
 	@Query("select sum(salary) from CorporateDirectorIncomeDetails cd where cd.applicationId =:applicationId and cd.directorId =:directorId and cd.isActive=true")
 	public Double getTotalSalaryByApplicationIdAndDirectorId(@Param("applicationId") Long applicationId, @Param("directorId") Long directorId);
 
-	@Query(value = "select * from fs_corporate_director_income_details cd where cd.application_id =:applicationId and cd.year IN (select max(year) from fs_corporate_director_income_details where application_id =:applicationId GROUP BY director_id )" , nativeQuery = true)
+	@Query(value = "select * from fs_corporate_director_income_details cd where cd.is_active = true and cd.application_id =:applicationId and cd.year IN (select max(year) from fs_corporate_director_income_details where application_id =:applicationId GROUP BY director_id )" , nativeQuery = true)
 	public List<CorporateDirectorIncomeDetails> getLatestYearDetails(@Param("applicationId")Long applicationId);
 	
 	
