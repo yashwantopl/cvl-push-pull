@@ -79,6 +79,7 @@ import com.capitaworld.service.oneform.enums.FactoryPremiseMst;
 import com.capitaworld.service.oneform.enums.Gender;
 import com.capitaworld.service.oneform.enums.HaveLIMst;
 import com.capitaworld.service.oneform.enums.KnowHowMst;
+import com.capitaworld.service.oneform.enums.LCBG_Status_SBI;
 import com.capitaworld.service.oneform.enums.LoanType;
 import com.capitaworld.service.oneform.enums.MaritalStatusMst;
 import com.capitaworld.service.oneform.enums.OwningHouseMst;
@@ -647,7 +648,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 				financialArrangementsDetailResponse.setLoanType(financialArrangementsDetailRequest.getLoanType());
 				financialArrangementsDetailResponse
 						.setFinancialInstitutionName(financialArrangementsDetailRequest.getFinancialInstitutionName());
-				financialArrangementsDetailResponse.setLcbgStatus(financialArrangementsDetailRequest.getLcBgStatus());
+				financialArrangementsDetailResponse.setLcbgStatus(financialArrangementsDetailRequest.getLcBgStatus() != null ? LCBG_Status_SBI.getById(financialArrangementsDetailRequest.getLcBgStatus()).getValue().toString() : "-");
 				// financialArrangementsDetailResponse.setFacilityNature(NatureFacility.getById(financialArrangementsDetailRequest.getFacilityNatureId()).getValue());
 				// financialArrangementsDetailResponse.setAddress(financialArrangementsDetailRequest.getAddress());
 				financialArrangementsDetailResponseList.add(financialArrangementsDetailResponse);
