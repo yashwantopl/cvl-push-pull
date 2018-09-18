@@ -107,6 +107,7 @@ public class DDRRequest implements Serializable {
 	private String contactNo;
 	private String regEmailId;
 	private String constitution;
+	private Integer constitutionId;
 	private String establishMentYear;
 	private String aboutMe;
 	private String orgName;
@@ -778,6 +779,12 @@ public class DDRRequest implements Serializable {
 	}
 	public void setOwnershipReqList(List<OwnershipDetailRequest> ownershipReqList) {
 		this.ownershipReqList = ownershipReqList;
+	}
+	public Integer getConstitutionId() {
+		return constitutionId;
+	}
+	public void setConstitutionId(Integer constitutionId) {
+		this.constitutionId = constitutionId;
 	}
 	
 }

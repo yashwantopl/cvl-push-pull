@@ -579,7 +579,6 @@ public class DDRFormServiceImpl implements DDRFormService {
 			e.printStackTrace();
 			logger.info("Error while getting user org id", e);
 		}
-
 		// ORGANIZATION NAME :- LINENO:6
 		response.setNameOfBorrower(applicantDetail.getOrganisationName());
 		response.setCurrency(getCurrency(applicationId, userId));
@@ -643,6 +642,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 		response.setConstitution(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getConstitutionId())
 				? Constitution.getById(applicantDetail.getConstitutionId()).getValue()
 				: "NA");
+		response.setConstitutionId(applicantDetail.getConstitutionId());
 
 		String establishMentYear = !CommonUtils.isObjectNullOrEmpty(applicantDetail.getEstablishmentMonth())
 				? EstablishmentMonths.getById(applicantDetail.getEstablishmentMonth()).getValue()

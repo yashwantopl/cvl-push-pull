@@ -496,8 +496,29 @@ public class ScoringServiceImpl implements ScoringService{
                     }
                     case ScoreParameter.Retail.DAY_PAST_DUE_PL:
                     {
-                        /*scoreParameterRetailRequest.setDpd();
-                        scoreParameterRetailRequest.setDPD_p();*/
+                        try {
+
+                            CibilResponse cibilResponse=cibilClient.getDPDLastXMonth(retailApplicantDetail.getPan());
+
+                            List<Integer> listDPD= (List<Integer>) cibilResponse.getListData();
+
+                            Integer maxDPD= Collections.max(listDPD);
+                            if(!CommonUtils.isObjectNullOrEmpty(maxDPD))
+                            {
+                                scoreParameterRetailRequest.setDpd(maxDPD.doubleValue());
+                            }
+                            else
+                            {
+                                scoreParameterRetailRequest.setDpd(0.0);
+                            }
+                            scoreParameterRetailRequest.setDPD_p(true);
+                        }
+                        catch (Exception e)
+                        {
+                            logger.error("error while getting DAY_PAST_DUE_PL parameter from CIBIL client");
+                            e.printStackTrace();
+                            scoreParameterRetailRequest.setDPD_p(false);
+                        }
 
                         break;
                     }

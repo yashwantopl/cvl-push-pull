@@ -530,25 +530,35 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService {
 		DocumentRequest documentRequestItr = new DocumentRequest();
 		documentRequestItr.setApplicationId(toApplicationId);
 		documentRequestItr.setUserType(DocumentAlias.UERT_TYPE_DIRECTOR);
+		
+		List<Object> itrPdfList=new ArrayList<>();
+		List<Object> itrXml=new ArrayList<>();
+		
 		for (int i = 0; i < dirIdListReq.size(); i++) {
 			documentRequestItr.setDirectorId(dirIdListReq.get(i));
 			documentRequestItr.setProductDocumentMappingId(DocumentAlias.CORPORATE_ITR_PDF);
 			try {
 				DocumentResponse documentResponseitr = dmsClient.listProductDocument(documentRequestItr);
-				ntbPrimaryViewRespone.setIrtPdfReport(documentResponseitr.getDataList());
+				itrPdfList.add(documentResponseitr.getDataList());
+								
 			} catch (DocumentException e) {
 				e.printStackTrace();
 			}
 			
+			
+			
 			documentRequestItr.setProductDocumentMappingId(DocumentAlias.CORPORATE_ITR_XML);
 			try {
-				DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequestItr);
-				ntbPrimaryViewRespone.setIrtXMLReport(documentResponse.getDataList());
+				DocumentResponse documentResponseitrXml = dmsClient.listProductDocument(documentRequestItr);
+				itrXml.add(documentResponseitrXml.getDataList());
+				
 			} catch (DocumentException e) {
 				e.printStackTrace();
 			}
 			
 		}
+		ntbPrimaryViewRespone.setIrtPdfReport(itrPdfList);
+		ntbPrimaryViewRespone.setIrtXMLReport(itrXml);
 
 		
 		

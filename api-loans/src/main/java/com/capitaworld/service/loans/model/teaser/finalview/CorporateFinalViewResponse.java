@@ -186,6 +186,11 @@ public class CorporateFinalViewResponse implements Serializable {
     private Object proportionateScoreFS;
     private Object fraudDetectionData;
     
+    private Object comercialOpDate;
+    private Object factoryPremise;
+    private Object knoHow;
+    private Object competition;
+    
 	public List<?> getMatchesList() {
 		return matchesList;
 	}
@@ -1825,6 +1830,38 @@ public class CorporateFinalViewResponse implements Serializable {
 	 */
 	public void setFraudDetectionData(Object fraudDetectionData) {
 		this.fraudDetectionData = fraudDetectionData;
+	}
+
+	public Object getComercialOpDate() {
+		return comercialOpDate;
+	}
+
+	public void setComercialOpDate(Object comercialOpDate) {
+		this.comercialOpDate = comercialOpDate;
+	}
+
+	public Object getFactoryPremise() {
+		return factoryPremise;
+	}
+
+	public void setFactoryPremise(Object factoryPremise) {
+		this.factoryPremise = factoryPremise;
+	}
+
+	public Object getKnoHow() {
+		return knoHow;
+	}
+
+	public void setKnoHow(Object knoHow) {
+		this.knoHow = knoHow;
+	}
+
+	public Object getCompetition() {
+		return competition;
+	}
+
+	public void setCompetition(Object competition) {
+		this.competition = competition;
 	}
 
 
