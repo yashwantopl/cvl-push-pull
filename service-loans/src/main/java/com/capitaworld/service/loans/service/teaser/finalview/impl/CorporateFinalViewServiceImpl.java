@@ -105,6 +105,7 @@ import com.capitaworld.service.oneform.enums.BusinessCommitment;
 import com.capitaworld.service.oneform.enums.BusinessExperience;
 import com.capitaworld.service.oneform.enums.ChequesReturned;
 import com.capitaworld.service.oneform.enums.CompanyConflicts;
+import com.capitaworld.service.oneform.enums.CompetitionMst_SBI;
 import com.capitaworld.service.oneform.enums.ComplianceConditions;
 import com.capitaworld.service.oneform.enums.Constitution;
 import com.capitaworld.service.oneform.enums.ConstructionContract;
@@ -121,6 +122,7 @@ import com.capitaworld.service.oneform.enums.DirectorRelationshipType;
 import com.capitaworld.service.oneform.enums.EducationalStatusMst;
 import com.capitaworld.service.oneform.enums.EnvironmentalImpact;
 import com.capitaworld.service.oneform.enums.EstablishmentMonths;
+import com.capitaworld.service.oneform.enums.FactoryPremiseMst;
 import com.capitaworld.service.oneform.enums.FinanceCategory;
 import com.capitaworld.service.oneform.enums.FinancialRestructuring;
 import com.capitaworld.service.oneform.enums.FinancialSupport;
@@ -131,6 +133,7 @@ import com.capitaworld.service.oneform.enums.InfrastructureAvailability;
 import com.capitaworld.service.oneform.enums.Integrity;
 import com.capitaworld.service.oneform.enums.InternalControl;
 import com.capitaworld.service.oneform.enums.InternalReturn;
+import com.capitaworld.service.oneform.enums.KnowHowMst;
 import com.capitaworld.service.oneform.enums.LCBG_Status_SBI;
 import com.capitaworld.service.oneform.enums.LimitOverdrawn;
 import com.capitaworld.service.oneform.enums.LoanType;
@@ -598,6 +601,13 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 				corporateFinalViewResponse.setDateOfProposal(primaryCorporateDetail.getModifiedDate() != null
 						? DATE_FORMAT.format(primaryCorporateDetail.getModifiedDate())
 						: null);
+			
+			// other Details
+			
+			corporateFinalViewResponse.setComercialOpDate(primaryCorporateDetail.getCommercialOperationDate());
+			corporateFinalViewResponse.setFactoryPremise(primaryCorporateDetail.getFactoryPremise() != null ? FactoryPremiseMst.getById(primaryCorporateDetail.getFactoryPremise()).getValue().toString() : "-");
+			corporateFinalViewResponse.setKnoHow(primaryCorporateDetail.getKnowHow() != null ? KnowHowMst.getById(primaryCorporateDetail.getKnowHow()).getValue().toString() : "-");
+			corporateFinalViewResponse.setCompetition(primaryCorporateDetail.getCompetition()  != null ? CompetitionMst_SBI.getById(primaryCorporateDetail.getCompetition()).getValue().toString() : "-");
 		}
 
 		
