@@ -878,8 +878,12 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 	private void setyear(Sheet sheet , Double temp ,int j, Double total_Column, Boolean flag  , Integer businessTypeId) {
 		Calendar  calendar =Calendar.getInstance();
  		Double tillYear =(double)calendar.get(Calendar.YEAR);
-       		
-		Double totalYear= temp+total_Column-j+1;
+ 		Double totalYear = 0.0;
+ 		if(temp.doubleValue() == tillYear && total_Column == 0.0 ) {
+ 			totalYear = temp + 2.0  ;
+ 		}else {	
+ 			totalYear = temp+total_Column-j+1;
+ 		}
 		temp++;
 		if(j==0 && BusinessType.EXISTING_BUSINESS.getId() == businessTypeId ) {
 			temp=tillYear-3;
@@ -888,6 +892,7 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 			temp= tillYear +1 ;   
 			totalYear=temp+total_Column-4;
 		}
+		
 		if(profitibilitySheet.equals(sheet.getSheetName())|| balanceSheet.equals(sheet.getSheetName())) {
 			j=1;
 		}
