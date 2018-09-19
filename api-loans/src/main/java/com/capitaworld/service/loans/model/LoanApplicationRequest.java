@@ -123,6 +123,16 @@ public class LoanApplicationRequest implements Serializable {
     
     private Integer businessTypeId;
 
+    private String applicationStatus;
+
+	public String getApplicationStatus() {
+		return applicationStatus;
+	}
+
+	public void setApplicationStatus(String applicationStatus) {
+		this.applicationStatus = applicationStatus;
+	}
+
 	public Long getFpMakerId() {
 		return fpMakerId;
 	}

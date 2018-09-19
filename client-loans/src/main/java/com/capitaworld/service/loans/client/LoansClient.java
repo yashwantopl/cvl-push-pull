@@ -1572,14 +1572,14 @@ public class LoansClient {
 			throw new Exception("Loans service is not available");
 		}
 	}
-	public RetailApplicantRequest getFullProfileDetail(Long applicationId,Long userId) throws Exception {
-		String url = loansBaseUrl.concat(GET_FULL_PROFILE).concat("/" + applicationId + "/" + userId);
+	public LoansResponse getFullProfileDetail(Long applicationId) throws Exception {
+		String url = loansBaseUrl.concat(GET_FULL_PROFILE).concat("/" + applicationId);
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
 			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<?> entity = new HttpEntity<Object>(null, headers);
-			return restTemplate.exchange(url, HttpMethod.GET, entity, RetailApplicantRequest.class).getBody();
+			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new Exception("Loans service is not available");

@@ -58,6 +58,7 @@ import com.capitaworld.service.loans.domain.fundseeker.corporate.AssetsDetails;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.LiabilitiesDetails;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.OperatingStatementDetails;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailResponseString;
 import com.capitaworld.service.loans.model.FinanceMeansDetailRequest;
@@ -87,6 +88,7 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateAp
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LiabilitiesDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.OperatingStatementDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
 import com.capitaworld.service.loans.service.common.PincodeDateService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.AchievmentDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.AssociatedConcernDetailService;
@@ -119,17 +121,23 @@ import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
 import com.capitaworld.service.mca.client.McaClient;
 import com.capitaworld.service.mca.model.McaResponse;
 import com.capitaworld.service.oneform.client.OneFormClient;
+import com.capitaworld.service.oneform.enums.CompetitionMst_SBI;
 import com.capitaworld.service.oneform.enums.Constitution;
 import com.capitaworld.service.oneform.enums.Denomination;
 import com.capitaworld.service.oneform.enums.DirectorRelationshipType;
+import com.capitaworld.service.oneform.enums.EducationalStatusMst;
 import com.capitaworld.service.oneform.enums.EstablishmentMonths;
+import com.capitaworld.service.oneform.enums.FactoryPremiseMst;
 import com.capitaworld.service.oneform.enums.FinanceCategory;
 import com.capitaworld.service.oneform.enums.Gender;
 import com.capitaworld.service.oneform.enums.Industry;
+import com.capitaworld.service.oneform.enums.KnowHowMst;
 import com.capitaworld.service.oneform.enums.Particular;
 import com.capitaworld.service.oneform.enums.PurposeOfLoan;
+import com.capitaworld.service.oneform.enums.ResidentStatusMst;
 import com.capitaworld.service.oneform.enums.ShareHoldingCategory;
 import com.capitaworld.service.oneform.enums.Title;
+import com.capitaworld.service.oneform.enums.VisuallyImpairedMst;
 import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
 import com.capitaworld.service.rating.model.RatingResponse;
@@ -278,6 +286,9 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 	@Autowired
 	private PincodeDateService pincodeDateService;
 	
+	@Autowired
+	private PrimaryCorporateDetailRepository primaryCorporateRepository;
+	
 	private static final Logger logger = LoggerFactory.getLogger(CamReportPdfDetailsServiceImpl.class);
 	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 
@@ -380,7 +391,11 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
-		
+		PrimaryCorporateDetail primaryCorporateDetail = primaryCorporateRepository.getByApplicationAndUserId(applicationId, userId);
+		map.put("comercialOpDate",!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getCommercialOperationDate())? DATE_FORMAT.format(primaryCorporateDetail.getCommercialOperationDate()):"-");
+		map.put("factoryPremise", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getFactoryPremise())? StringEscapeUtils.escapeXml(FactoryPremiseMst.getById(primaryCorporateDetail.getFactoryPremise()).getValue().toString()) : "-");
+		map.put("knowHow", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getKnowHow())? StringEscapeUtils.escapeXml(KnowHowMst.getById(primaryCorporateDetail.getKnowHow()).getValue().toString()) : "-");
+		map.put("competition", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getCompetition())? StringEscapeUtils.escapeXml(CompetitionMst_SBI.getById(primaryCorporateDetail.getCompetition()).getValue().toString()) : "-");
 		//ONE-FORM DATA
 		try {
 			//ONE-FORM DATA
@@ -457,6 +472,47 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 						}catch(Exception e) {
 							e.printStackTrace();
 							logger.info("Error while getting cibil details",e);
+						}
+					}
+					directorBackgroundDetailResponse.setPincode(directorBackgroundDetailRequest.getPincode());
+					directorBackgroundDetailResponse.setPersonalId(directorBackgroundDetailRequest.getPersonalId());
+					try {
+						if (!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDistrictMappingId())) {
+							directorBackgroundDetailResponse.setPinData(pincodeDateService.getById(directorBackgroundDetailRequest.getDistrictMappingId()));
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+					directorBackgroundDetailResponse.setStateCode(directorBackgroundDetailRequest.getStateCode());
+					directorBackgroundDetailResponse.setCity(directorBackgroundDetailRequest.getCity());
+					directorBackgroundDetailResponse.setGender((!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getGender()) ? Gender.getById(directorBackgroundDetailRequest.getGender()).getValue() : " "));
+					directorBackgroundDetailResponse.setRelationshipType((!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getRelationshipType())  ? StringEscapeUtils.escapeXml(DirectorRelationshipType.getById(directorBackgroundDetailRequest.getRelationshipType()).getValue()) : " "));
+					
+					directorBackgroundDetailResponse.setIsMainDirector(directorBackgroundDetailRequest.getIsMainDirector());
+					directorBackgroundDetailResponse.setAadhar(directorBackgroundDetailRequest.getAadhar());
+					directorBackgroundDetailResponse.setFatherName(directorBackgroundDetailRequest.getFatherName());
+					directorBackgroundDetailResponse.setEducationalStatus(directorBackgroundDetailRequest.getEducationalStatus() != null ? EducationalStatusMst.getById(directorBackgroundDetailRequest.getEducationalStatus()).getValue().toString() : "-");
+					directorBackgroundDetailResponse.setVisuallyImpaired(directorBackgroundDetailRequest.getVisuallyImpaired() != null ? VisuallyImpairedMst.getById(directorBackgroundDetailRequest.getVisuallyImpaired()).getValue().toString() : "-");
+					directorBackgroundDetailResponse.setResidentStatus(directorBackgroundDetailRequest.getResidentStatus() != null ? ResidentStatusMst.getById(directorBackgroundDetailRequest.getResidentStatus()).getValue().toString() : "-");
+					directorBackgroundDetailResponse.setDirectorPersonalInfo(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest() != null ? directorBackgroundDetailRequest.getDirectorPersonalDetailRequest() : " " );
+					//NATIONALITY
+					List<Long> countryList = new ArrayList<>();
+					if (!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getNationality()))
+						countryList.add(Long.valueOf(directorBackgroundDetailRequest.getNationality()));
+					if (!CommonUtils.isListNullOrEmpty(countryList)) {
+						try {
+							OneFormResponse oneFormResponse = oneFormClient.getCountryByCountryListId(countryList);
+							List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse.getListData();
+							if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+								MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+								map.put("dirCountry", StringEscapeUtils.escapeXml(masterResponse.getValue()));
+								map.put("dirRegOfficeCountry", StringEscapeUtils.escapeXml(masterResponse.getValue()));
+								directorBackgroundDetailResponse.setNationality(masterResponse.getValue());
+							} else {
+								directorBackgroundDetailResponse.setNationality("NA");
+							}
+						} catch (Exception e) {
+							e.printStackTrace();
 						}
 					}
 					directorBackgroundDetailResponseList.add(directorBackgroundDetailResponse);

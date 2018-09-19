@@ -130,6 +130,8 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 	private String subDistrict;
 	private String village;
 	private Long districtMappingId;
+	
+	private Long personalId;
 
 	public Boolean getIsActive() {
 		return isActive;
@@ -630,6 +632,25 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 	public void setDobString(String dobString) {
 		this.dobString = dobString;
 	}
+
+	
+	
+	public Long getPersonalId() {
+		return personalId;
+	}
+
+	public void setPersonalId(Long personalId) {
+		this.personalId = personalId;
+	}
+
+	public Boolean getIsFamilyMemberInBusiness() {
+		return isFamilyMemberInBusiness;
+	}
+
+	public void setIsFamilyMemberInBusiness(Boolean isFamilyMemberInBusiness) {
+		this.isFamilyMemberInBusiness = isFamilyMemberInBusiness;
+	}
+
 
 	@Override
 	public String toString() {

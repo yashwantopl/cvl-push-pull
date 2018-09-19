@@ -19,6 +19,16 @@ public class ScoringRequestLoans {
 
 	private ScoreParameterNTBRequest scoreParameterNTBRequest;
 
+	private ScoreParameterRetailRequest scoreParameterRetailRequest;
+
+
+	public ScoreParameterRetailRequest getScoreParameterRetailRequest() {
+		return scoreParameterRetailRequest;
+	}
+
+	public void setScoreParameterRetailRequest(ScoreParameterRetailRequest scoreParameterRetailRequest) {
+		this.scoreParameterRetailRequest = scoreParameterRetailRequest;
+	}
 
 	public Long getUserId() {
 		return userId;
