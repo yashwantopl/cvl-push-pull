@@ -1,5 +1,8 @@
 package com.capitaworld.service.loans.boot;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
@@ -21,6 +24,9 @@ import com.capitaworld.service.dms.client.DMSClient;
 import com.capitaworld.service.fraudanalytics.client.FraudAnalyticsClient;
 import com.capitaworld.service.gateway.client.GatewayClient;
 import com.capitaworld.service.gst.client.GstClient;
+import com.capitaworld.service.loans.config.AsyncComponent;
+import com.capitaworld.service.loans.config.FPAsyncComponent;
+import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
 import com.capitaworld.service.matchengine.MatchEngineClient;
 import com.capitaworld.service.matchengine.ProposalDetailsClient;
 import com.capitaworld.service.mca.client.McaClient;
@@ -103,17 +109,17 @@ public class LoansMain {
 
 	@Value("${capitaworld.service.workflow.url}")
 	private String workFlowClientUrl;
-	
+
 	@Value("${capitaworld.service.eligibility.url}")
 	private String eligibilityUrl;
-	
+
 	@Value("${capitaworld.service.fraudanalytics.url}")
 	private String fraudAnalyticsUrl;
-	
+
 	@Value("${capitaworld.service.itr.url}")
 	private String itrUrl;
-	
 
+	
 	public static void main(String[] args) throws Exception {
 		SpringApplication.run(LoansMain.class, args);
 	}
@@ -243,26 +249,26 @@ public class LoansMain {
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(workflowClient);
 		return workflowClient;
 	}
-	
+
 	@Bean
 	public EligibilityClient eligibilityClient() {
 		EligibilityClient eligibilityClient = new EligibilityClient(eligibilityUrl);
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(eligibilityClient);
 		return eligibilityClient;
 	}
-	
+
 	@Bean
 	public FraudAnalyticsClient fraudAnalyticsClient() {
 		FraudAnalyticsClient fraudAnalyticsClient = new FraudAnalyticsClient(fraudAnalyticsUrl);
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(fraudAnalyticsClient);
 		return fraudAnalyticsClient;
 	}
-	
+
 	@Bean
 	public ITRClient itrClient() {
 		ITRClient itrClient = new ITRClient(itrUrl);
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(itrClient);
 		return itrClient;
 	}
-	
+
 }
