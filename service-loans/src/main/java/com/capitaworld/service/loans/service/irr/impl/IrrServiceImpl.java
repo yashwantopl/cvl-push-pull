@@ -99,6 +99,9 @@ public class IrrServiceImpl implements IrrService{
 
 	@Autowired
 	private ScoringService scoringService;
+
+	@Autowired
+	private CreditRatingCompanyDetailsRepository creditRatingCompanyDetailsRepository;
 	
 	private final Logger log = LoggerFactory.getLogger(IrrServiceImpl.class);
 	
@@ -2618,6 +2621,10 @@ public class IrrServiceImpl implements IrrService{
 		}
 
 		return qualitativeInputSheetTradRequest;		
+	}
+
+	public List<CreditRatingCompanyDetail> getCompanyDetails(String companyName){
+		return creditRatingCompanyDetailsRepository.getCompanyDetail(companyName);
 	}
 	
 	/*public QualitativeInputSheetTradRequest setTLTradingQualitativeInput(Long aplicationId,Long userId,Long denom) throws Exception{
