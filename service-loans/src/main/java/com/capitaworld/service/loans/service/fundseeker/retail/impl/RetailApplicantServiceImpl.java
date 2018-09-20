@@ -306,8 +306,14 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 	public CibilFullFillOfferRequest getProfile(Long userId, Long applicationId) throws Exception {
 		try {
 			logger.info("start getProfile() method");
-			RetailApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId(userId,
-					applicationId);
+			RetailApplicantDetail applicantDetail = null;
+			if(userId == null || userId <= 0){
+				applicantDetail = applicantRepository.findOneByApplicationIdId(applicationId);
+			}else{
+				applicantDetail = applicantRepository.getByApplicationAndUserId(userId,applicationId);
+			}
+
+
 			if (applicantDetail == null) {
 				return null;
 			}
