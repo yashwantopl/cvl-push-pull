@@ -15,7 +15,6 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,11 +35,9 @@ import com.capitaworld.service.dms.model.DocumentResponse;
 import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
-import com.capitaworld.service.loans.domain.fundseeker.corporate.DirectorBackgroundDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailResponse;
-import com.capitaworld.service.loans.model.PincodeDataResponse;
 import com.capitaworld.service.loans.model.corporate.CorporateDirectorIncomeRequest;
 import com.capitaworld.service.loans.model.corporate.FundSeekerInputRequestResponse;
 import com.capitaworld.service.loans.model.teaser.primaryview.NtbPrimaryViewResponse;
@@ -49,7 +46,6 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateAp
 import com.capitaworld.service.loans.repository.fundseeker.corporate.DirectorBackgroundDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
-import com.capitaworld.service.loans.service.common.PincodeDateService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateDirectorIncomeService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.DirectorBackgroundDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
@@ -146,6 +142,9 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService {
 
 	@Autowired
 	private CIBILClient cibilClient;
+	
+	@Autowired
+	private DirectorBackgroundDetailsRepository dirBackgroundDetails;
 
 	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 	DecimalFormat decim = new DecimalFormat("#,###.00");
@@ -417,9 +416,9 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService {
 					// financialArrangementsDetailResponse.setAddress(financialArrangementsDetailRequest.getAddress());
 					financialArrangementsDetailResponse.setDirectorName(directorName);
 					financialArrangementsDetailResponseList.add(financialArrangementsDetailResponse);
+					ntbPrimaryViewRespone.setFinancialArrangementsDetailResponseList(financialArrangementsDetailResponseList);
 				}
-				ntbPrimaryViewRespone
-						.setFinancialArrangementsDetailResponseList(financialArrangementsDetailResponseList);
+				
 
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -509,6 +508,7 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService {
 		// GET DOCUMENTS
 		DocumentRequest documentRequest = new DocumentRequest();
 		documentRequest.setApplicationId(toApplicationId);
+
 		documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
 		documentRequest.setProductDocumentMappingId(DocumentAlias.WORKING_CAPITAL_PROFIEL_PICTURE);
 
@@ -525,13 +525,44 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService {
 		} catch (DocumentException e) {
 			e.printStackTrace();
 		}
-		documentRequest.setProductDocumentMappingId(DocumentAlias.CORPORATE_ITR_PDF);
-		try {
-			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
-			ntbPrimaryViewRespone.setIrtPdfReport(documentResponse.getDataList());
-		} catch (DocumentException e) {
-			e.printStackTrace();
+		
+		List<Long> dirIdListReq= dirBackgroundDetailsRepository.getDirectorIdFromApplicationId(toApplicationId);
+		DocumentRequest documentRequestItr = new DocumentRequest();
+		documentRequestItr.setApplicationId(toApplicationId);
+		documentRequestItr.setUserType(DocumentAlias.UERT_TYPE_DIRECTOR);
+		
+		List<Object> itrPdfList=new ArrayList<>();
+		List<Object> itrXml=new ArrayList<>();
+		
+		for (int i = 0; i < dirIdListReq.size(); i++) {
+			documentRequestItr.setDirectorId(dirIdListReq.get(i));
+			documentRequestItr.setProductDocumentMappingId(DocumentAlias.CORPORATE_ITR_PDF);
+			try {
+				DocumentResponse documentResponseitr = dmsClient.listProductDocument(documentRequestItr);
+				itrPdfList.add(documentResponseitr.getDataList());
+								
+			} catch (DocumentException e) {
+				e.printStackTrace();
+			}
+			
+			
+			
+			documentRequestItr.setProductDocumentMappingId(DocumentAlias.CORPORATE_ITR_XML);
+			try {
+				DocumentResponse documentResponseitrXml = dmsClient.listProductDocument(documentRequestItr);
+				itrXml.add(documentResponseitrXml.getDataList());
+				
+			} catch (DocumentException e) {
+				e.printStackTrace();
+			}
+			
 		}
+		ntbPrimaryViewRespone.setIrtPdfReport(itrPdfList);
+		ntbPrimaryViewRespone.setIrtXMLReport(itrXml);
+
+		
+		
+		
 
 		if (isFinal) {
 
