@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
-import com.capitaworld.service.gst.GstResponse;
 import com.capitaworld.service.gst.client.GstClient;
 import com.capitaworld.service.loans.domain.fundprovider.ProductMasterTemp;
 import com.capitaworld.service.loans.domain.sanction.LoanSanctionDomain;
@@ -26,7 +25,6 @@ import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.DirectorBackgroundDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.impl.CorporateApplicantServiceImpl;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.matchengine.ProposalDetailsClient;
@@ -933,13 +931,10 @@ public class FPAsyncComponent {
 				}
 
 			}
-//pending 
 			// ======MAAZ=========sending email to fs when maker accepted
 			// proposL==Email_FS_Accepted_By_MAKER=======================================//
 //								add mail for  Email_FS_Accepted_By_MAKER
-			// step1 get detail of fs
-//								step 2 get detail of maker
-//								step 3 send mail to fs for both product ntb and existing
+			// snd mail to fs for both product ntb and existing
 			sendMailToFsWhenMakerAcceptPorposal(parameters, applicantRequest, assignedMakerName);
 
 			// =====================================================================================================
@@ -1310,20 +1305,15 @@ public class FPAsyncComponent {
 
 		logger.info("application Id:" + parameters.get("application_id"));
 //			for geting entity name of fs from gst
-//		try {
-			CorporateApplicantRequest corporateApplicantRequest = corporateApplicantService.getCorporateApplicant(applicationId);
+		CorporateApplicantRequest corporateApplicantRequest =null;
+		try {
+			 corporateApplicantRequest = corporateApplicantService.getCorporateApplicant(applicationId);
 		 
 			logger.info("Organization name of fs:" + 	corporateApplicantRequest .getOrganisationName());
-//
-//			GstResponse response = gstClient.detailCalculation(corporateApplicantRequest.getGstIn());
-//			if (response != null) {
-//				mailParameter.put("gstDetailedResp", response.getData());
-//				logger.info("entity name of fs:" + mailParameter.get("gstDetailedResp.keyObservation.OrganizationName"));
-//			}
-//		} catch (Exception e) {
-//			logger.info("Exception in finding CorporateApplicantRequest and Gst Details in sendMailWhenMakerAcceptPorposal:" + e.getMessage());
-//			e.printStackTrace();
-//		}
+		} catch (Exception e) {
+			logger.info("Exception in finding CorporateApplicantRequest in sendMailWhenMakerAcceptPorposal:" + e.getMessage());
+			e.printStackTrace();
+		}
 
 		logger.info("entity name of fs:" +"maazSh"/* mailParameter.get("gstDetailedResp.keyObservation.OrganizationName")*/);
 
