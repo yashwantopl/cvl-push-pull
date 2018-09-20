@@ -1790,6 +1790,8 @@ public class ScoringServiceImpl implements ScoringService{
     {
 
 
+        CorporateApplicantDetail corporateApplicantDetail=corporateApplicantDetailRepository.findByApplicationIdIdAndIsActive(primaryCorporateDetail.getApplicationId().getId(),true);
+
         // Fetch Data for Calculate Director Score
 
         List<DirectorBackgroundDetail> directorBackgroundDetailsList =  directorBackgroundDetailsRepository.listPromotorBackgroundFromAppId(scoringRequestLoans.getApplicationId());
@@ -2226,7 +2228,7 @@ public class ScoringServiceImpl implements ScoringService{
                             {
                                 Double cibilScore = Double.parseDouble(cibilScoreLogRequest.getScore());
                                 scoreParameterNTBRequest.setCibilTransunionScore(cibilScore);
-                                scoreParameterNTBRequest.setIsCibilTransunionScore(false);
+                                scoreParameterNTBRequest.setIsCibilTransunionScore(true);
                             }
                             else
                             {
