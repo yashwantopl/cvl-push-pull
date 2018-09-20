@@ -33,6 +33,8 @@ public class FinancialArrangementDetailResponseString implements Serializable{
     private String address;
 
 	private Date reportedDate;
+	
+	private Object lcbgStatus;
 
 	public String getFinancialInstitutionName() {
 		return financialInstitutionName;
@@ -113,4 +115,13 @@ public class FinancialArrangementDetailResponseString implements Serializable{
 	public void setReportedDate(Date reportedDate) {
 		this.reportedDate = reportedDate;
 	}
+
+	public Object getLcbgStatus() {
+		return lcbgStatus;
+	}
+
+	public void setLcbgStatus(Object lcbgStatus) {
+		this.lcbgStatus = lcbgStatus;
+	}
+	
 }

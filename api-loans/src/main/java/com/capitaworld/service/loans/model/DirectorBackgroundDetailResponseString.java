@@ -106,6 +106,7 @@ public class DirectorBackgroundDetailResponseString implements Serializable{
 	private Object visuallyImpaired;
 	private Object residentStatus;
 	private Boolean isGuarantor;
+	private DirectorPersonalDetailRequest directorPersonalDetailRequest;
 	
 	public String getAddress() {
 		return address;
@@ -497,6 +498,13 @@ public class DirectorBackgroundDetailResponseString implements Serializable{
 
 	public void setIsGuarantor(Boolean isGuarantor) {
 		this.isGuarantor = isGuarantor;
+	}
+	public DirectorPersonalDetailRequest getDirectorPersonalDetailRequest() {
+		return directorPersonalDetailRequest;
+	}
+
+	public void setDirectorPersonalDetailRequest(DirectorPersonalDetailRequest directorPersonalDetailRequest) {
+		this.directorPersonalDetailRequest = directorPersonalDetailRequest;
 	}
 	
 	
