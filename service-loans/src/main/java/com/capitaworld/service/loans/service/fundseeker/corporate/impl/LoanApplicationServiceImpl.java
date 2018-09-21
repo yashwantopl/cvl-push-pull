@@ -9,15 +9,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.json.simple.JSONObject;
@@ -2829,12 +2821,31 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
 						.findOneByApplicationIdId(applicationId);
 				return corporateApplicantDetail.getOrganisationName();
-			}			
-		}else {
-			CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
+			}
+
+            if(applicationMaster.getBusinessTypeId().intValue() == CommonUtils.BusinessType.NEW_TO_BUSINESS.getId().intValue()){
+                List<DirectorBackgroundDetail> directorBackgroundDetails = directorBackgroundDetailsRepository.listPromotorBackgroundFromAppId(applicationId);
+                DirectorBackgroundDetail directorBackgroundDetail = directorBackgroundDetails.stream().filter(DirectorBackgroundDetail::getIsMainDirector).findAny().orElse(null);
+                if (directorBackgroundDetail != null) {
+                    return directorBackgroundDetail.getDirectorsName();
+                }
+            }
+
+        }else {
+
+            if(applicationMaster.getBusinessTypeId().intValue() == CommonUtils.BusinessType.NEW_TO_BUSINESS.getId().intValue()){
+                List<DirectorBackgroundDetail> directorBackgroundDetails = directorBackgroundDetailsRepository.listPromotorBackgroundFromAppId(applicationId);
+                DirectorBackgroundDetail directorBackgroundDetail = directorBackgroundDetails.stream().filter(DirectorBackgroundDetail::getIsMainDirector).findAny().orElse(null);
+                if (directorBackgroundDetail != null) {
+                    return directorBackgroundDetail.getDirectorsName();
+                }
+            }
+
+            CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
 					.findOneByApplicationIdId(applicationId);
 			return corporateApplicantDetail.getOrganisationName();
 		}
+
 		return null;
 	}
 
