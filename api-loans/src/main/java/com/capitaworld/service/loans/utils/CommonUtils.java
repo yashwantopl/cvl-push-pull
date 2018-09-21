@@ -518,6 +518,9 @@ public class CommonUtils {
 		urlsBrforeLogin.add("/loans/loan_application/saveLoanDisbursementDetail".toLowerCase());
 		urlsBrforeLogin.add("/loans/loan_application/saveLoanSanctionDetail".toLowerCase());
 		urlsBrforeLogin.add("/loans/loan_application/saveLoanSanctionDisbursementDetailFromBank".toLowerCase());
+		urlsBrforeLogin.add("/loans/loan_application/ddr/getCustomerNameById");
+		
+		
 	}
 
 	public static int calculateAge(Date dateOfBirth) {

@@ -546,6 +546,7 @@ public class DDRFormController {
 	public ResponseEntity<LoansResponse> saveCustomerDetail(@RequestBody DDRCustomerRequest customerRequest,
 			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
 		
+		logger.info("ENTER IN SAVE CUSTOMER DETAIL FOR BOB ");
 		if(CommonUtils.isObjectNullOrEmpty(customerRequest.getApplicationId())){
 			logger.info("SAVE CUSTOMER DETAILS FILLED (APPLCIATION ID IS NULL OR EMPTY)");
 			return new ResponseEntity<LoansResponse>( new LoansResponse("Invalid Request, ApplicationId is null or Empty", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
@@ -572,6 +573,31 @@ public class DDRFormController {
 					HttpStatus.OK);
 		}
 	}
+	
+	
+	/**
+	 * GET CUSTOMER NAME BY CUSTOMER ID
+	 * @return
+	 */
+	@RequestMapping(value = "/getCustomerNameById", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getCustomerNameById(@RequestBody DDRCustomerRequest customerRequest) {
+		
+		logger.info("ENTER IN GET CUSTOMER NAME BY CUSTOMER ID------------>");
+		if(CommonUtils.isObjectNullOrEmpty(customerRequest.getCustomerId())){
+			logger.info("SAVE CUSTOMER DETAILS FILLED (APPLCIATION ID IS NULL OR EMPTY)");
+			return new ResponseEntity<LoansResponse>( new LoansResponse("Invalid Request, CustomerId is null or Empty", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+		}
+		try {
+			return new ResponseEntity<LoansResponse>( new LoansResponse("Successfully get data", HttpStatus.OK.value(), ddrFormService.getCustomerNameById(customerRequest)), HttpStatus.OK);	
+		} catch (Exception e) {
+			logger.error("Error while GET CUSTOMER NAME BY CUSTOMER ID" +  e.getMessage());
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+	}
+	
 	
 
 }
