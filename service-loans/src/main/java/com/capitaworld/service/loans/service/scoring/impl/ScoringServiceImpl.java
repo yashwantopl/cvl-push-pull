@@ -15,6 +15,7 @@ import com.capitaworld.service.gst.GstCalculation;
 import com.capitaworld.service.gst.GstResponse;
 import com.capitaworld.service.gst.client.GstClient;
 import com.capitaworld.service.gst.yuva.request.GSTR1Request;
+import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.*;
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
 import com.capitaworld.service.loans.exceptions.LoansException;
@@ -25,11 +26,18 @@ import com.capitaworld.service.loans.repository.fundprovider.ProductMasterReposi
 import com.capitaworld.service.loans.repository.fundseeker.corporate.*;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantIncomeRepository;
+import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.service.scoring.ScoringService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.loans.utils.scoreexcel.ScoreExcelFileGenerator;
 import com.capitaworld.service.loans.utils.scoreexcel.ScoreExcelReader;
+import com.capitaworld.service.oneform.client.OneFormClient;
+import com.capitaworld.service.oneform.enums.scoring.EnvironmentCategory;
+import com.capitaworld.service.oneform.model.OneFormResponse;
+import com.capitaworld.service.rating.RatingClient;
+import com.capitaworld.service.rating.model.IndustryResponse;
+import com.capitaworld.service.rating.model.IrrRequest;
 import com.capitaworld.service.scoring.ScoringClient;
 import com.capitaworld.service.scoring.exception.ScoringException;
 import com.capitaworld.service.scoring.model.*;
@@ -128,6 +136,18 @@ public class ScoringServiceImpl implements ScoringService{
 
     @Autowired
     private RetailApplicantIncomeRepository retailApplicantIncomeRepository;
+
+    @Autowired
+    private  LoanApplicationRepository loanApplicationRepository;
+
+    @Autowired
+    private LoanApplicationService loanApplicationService;
+
+    @Autowired
+    private RatingClient ratingClient;
+
+    @Autowired
+    private OneFormClient oneFormClient;
 
 
     @Override
@@ -2014,17 +2034,90 @@ public class ScoringServiceImpl implements ScoringService{
                     }
                     case ScoreParameter.NTB.ENVIRONMENT_CATEGORY:
                     {
+
+                        // start get business type id from irr
+
+                        Integer businessTypeId=null; // get from irr-cw industry mapping
+
+                        IrrRequest irrIndustryRequest=new IrrRequest();
+
+                        LoanApplicationMaster applicationMaster = null;
+
+                        applicationMaster = loanApplicationRepository.findOne(applicationId);
+                        Long irrId=null;
                         try
                         {
-                            Long environmentCategory=null; // remaining
-                            if(!CommonUtils.isObjectNullOrEmpty(environmentCategory))
+                            irrId=loanApplicationService.getIrrByApplicationId(applicationId);
+
+                        } catch (Exception e)
+                        {
+                            // TODO: handle exception
+                            logger.error("error while getting irr id from one form");
+                            e.printStackTrace();
+
+                        }
+
+                        // start getting irr industry and business type
+                        try {
+
+                            irrIndustryRequest.setIrrIndustryId(irrId);
+                            irrIndustryRequest=ratingClient.getIrrIndustry(irrIndustryRequest);
+                            IndustryResponse industryResponse=irrIndustryRequest.getIndustryResponse();
+                            if(CommonUtils.isObjectNullOrEmpty(industryResponse))
                             {
-                                scoreParameterNTBRequest.setEnvironmentCategory(environmentCategory);
+                                logger.info("Error while getting irr id from rating");
+                            }
+
+                            businessTypeId=industryResponse.getBusinessTypeId();
+                        } catch (Exception e) {
+                            // TODO: handle exception
+                            logger.error("error while getting irr industry detail from rating");
+                            e.printStackTrace();
+                        }
+
+                        // end get business type id from irr
+
+                        try
+                        {
+
+                            if(!CommonUtils.isObjectNullOrEmpty(businessTypeId) && com.capitaworld.service.rating.utils.CommonUtils.BusinessType.MANUFACTURING == businessTypeId)
+                            {
+                                    Long envCategoryId = corporateApplicantDetail.getEnvironmentalImpactId();
+
+                                    if(!CommonUtils.isObjectNullOrEmpty(envCategoryId))
+                                    {
+                                        try {
+
+                                            OneFormResponse oneFormResponse= oneFormClient.getEnvironmentCategoryIdById(envCategoryId);
+
+                                            Long environmentCategoryId= (Long) oneFormResponse.getData();
+                                            scoreParameterNTBRequest.setEnvironmentCategory(environmentCategoryId);
+                                            scoreParameterNTBRequest.setIsEnvironmentCategory(true);
+                                        }
+                                        catch (Exception e)
+                                        {
+                                            logger.error("Error while calling one form client");
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                    else
+                                    {
+                                        scoreParameterNTBRequest.setIsEnvironmentCategory(false);
+                                    }
+
+                            }
+                            else if(!CommonUtils.isObjectNullOrEmpty(businessTypeId) && com.capitaworld.service.rating.utils.CommonUtils.BusinessType.SERVICE == businessTypeId)
+                            {
+                                scoreParameterNTBRequest.setEnvironmentCategory(EnvironmentCategory.SERVICE.getId().longValue());
+                                scoreParameterNTBRequest.setIsEnvironmentCategory(true);
+                            }
+                            else if(!CommonUtils.isObjectNullOrEmpty(businessTypeId) && com.capitaworld.service.rating.utils.CommonUtils.BusinessType.TRADING == businessTypeId)
+                            {
+                                scoreParameterNTBRequest.setEnvironmentCategory(EnvironmentCategory.TRADING.getId().longValue());
                                 scoreParameterNTBRequest.setIsEnvironmentCategory(true);
                             }
                             else
                             {
-                                scoreParameterNTBRequest.setEnvironmentCategory(environmentCategory);
                                 scoreParameterNTBRequest.setIsEnvironmentCategory(false);
                             }
                         }
