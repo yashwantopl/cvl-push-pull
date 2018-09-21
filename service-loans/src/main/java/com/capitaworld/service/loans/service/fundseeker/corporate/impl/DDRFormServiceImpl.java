@@ -541,6 +541,42 @@ public class DDRFormServiceImpl implements DDRFormService {
 		}
 	}
 
+	/**
+	 * CHECK CUSTOMER DETAILS FILLED OR NOT IN TEASER VIEW WHILE APPROVE APPLICATION FOR BOB BANK
+	 */
+	@Override
+	public DDRCustomerRequest checkCustomerDetailFilled(Long applicationId) {
+		DDRCustomerRequest customerRequest = new DDRCustomerRequest();
+		customerRequest.setApplicationId(applicationId);
+		DDRFormDetails dDRFormDetails = ddrFormDetailsRepository.getByAppIdAndIsActive(applicationId);
+		if(!CommonUtils.isObjectNullOrEmpty(dDRFormDetails)) {
+			customerRequest.setDdrFormId(dDRFormDetails.getId());
+			customerRequest.setCustomerId(dDRFormDetails.getCustomerId());
+			customerRequest.setCustomerName(dDRFormDetails.getCustomerName());
+			customerRequest.setIsFilled(CommonUtils.isObjectNullOrEmpty(dDRFormDetails.getCustomerId()));
+		} else {
+			customerRequest.setIsFilled(false);
+		}
+		return customerRequest;
+	}
+	
+	/**
+	 * SAVE CUSTOMER DETAILS IN TEASER VIEW WHILE APPROVE APPLICATION FOR BOB BANK
+	 */
+	@Override
+	public Boolean saveCustomerDetailFilled(DDRCustomerRequest customerRequest) {
+		DDRFormDetails dDRFormDetails = ddrFormDetailsRepository.getByAppIdAndIsActive(customerRequest.getApplicationId());
+		if(!CommonUtils.isObjectNullOrEmpty(dDRFormDetails)) {
+			dDRFormDetails.setCustomerId(customerRequest.getCustomerId());
+			dDRFormDetails.setCustomerName(customerRequest.getCustomerName());
+			dDRFormDetails.setModifyBy(customerRequest.getUserId());
+			dDRFormDetails.setModifyDate(new Date());
+			ddrFormDetailsRepository.save(dDRFormDetails);
+			return true;
+		}
+		return false;
+	}
+	
 	public DDRRequest getCombinedOneFormDetails(Long userId, Long applicationId) {
 
 		logger.info("Enter in get one form details service");
