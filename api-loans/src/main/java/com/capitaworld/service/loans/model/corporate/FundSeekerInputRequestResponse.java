@@ -101,6 +101,8 @@ public class FundSeekerInputRequestResponse {
     /*For Eligibility method*/
     private Double incrementalMargin;
 
+    private Long environmentalImpactId;
+
     public Long getUserId() {
         return userId;
     }
@@ -417,6 +419,14 @@ public class FundSeekerInputRequestResponse {
         this.incrementalMargin = incrementalMargin;
     }
 
+    public Long getEnvironmentalImpactId() {
+        return environmentalImpactId;
+    }
+
+    public void setEnvironmentalImpactId(Long environmentalImpactId) {
+        this.environmentalImpactId = environmentalImpactId;
+    }
+
     @Override
     public String toString() {
         return "FundSeekerInputRequestResponse{" +
@@ -459,6 +469,7 @@ public class FundSeekerInputRequestResponse {
                 ", knowHow=" + knowHow +
                 ", competition=" + competition +
                 ", incrementalMargin=" + incrementalMargin +
+                ", environmentalImpactId=" + environmentalImpactId +
                 '}';
     }
 }
