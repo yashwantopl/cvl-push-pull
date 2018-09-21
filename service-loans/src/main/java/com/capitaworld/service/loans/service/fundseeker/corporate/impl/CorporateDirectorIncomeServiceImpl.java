@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.capitaworld.service.gst.util.CommonUtils;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateDirectorIncomeDetails;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.DirectorBackgroundDetail;
 import com.capitaworld.service.loans.model.PincodeDataResponse;
@@ -23,6 +22,7 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateDi
 import com.capitaworld.service.loans.repository.fundseeker.corporate.DirectorBackgroundDetailsRepository;
 import com.capitaworld.service.loans.service.common.PincodeDateService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateDirectorIncomeService;
+import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.oneform.enums.DirectorRelationshipType;
 import com.capitaworld.service.oneform.enums.EducationQualificationNTB;
 import com.capitaworld.service.oneform.enums.EmploymentStatusNTB;
@@ -102,6 +102,8 @@ public class CorporateDirectorIncomeServiceImpl implements CorporateDirectorInco
 					for(CorporateDirectorIncomeDetails corpObj:incomeDetails) {
 						if(!CommonUtils.isObjectNullOrEmpty(corpObj)) {
 							incomeRequest = new CorporateDirectorIncomeRequest();
+							incomeRequest.setSalaryStr(CommonUtils.convertValue(corpObj.getSalary()));
+							incomeRequest.setTotalIncomeStr(CommonUtils.convertValue(corpObj.getTotalIncome()));
 							BeanUtils.copyProperties(corpObj, incomeRequest);
 							String directorName = backgroundDetailsRepository.getDirectorNamefromDirectorId(incomeRequest.getDirectorId());
 							incomeRequest.setDirectorName(directorName);
@@ -182,7 +184,7 @@ public class CorporateDirectorIncomeServiceImpl implements CorporateDirectorInco
 							map.put("stateCode", corpObj.getStateCode());
 							map.put("city", corpObj.getCity());
 							map.put("din", corpObj.getDin());
-							map.put("networth", corpObj.getNetworth());
+							map.put("networth", CommonUtils.convertValue(corpObj.getNetworth()));
 							map.put("applicationId", applicationId);
 							map.put("appointmentDate", corpObj.getAppointmentDate());
 							map.put("salutationId", corpObj.getSalutationId());
