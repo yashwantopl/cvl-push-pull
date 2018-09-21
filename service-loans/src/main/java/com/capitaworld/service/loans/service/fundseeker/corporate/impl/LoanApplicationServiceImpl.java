@@ -7191,16 +7191,18 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 
 					String state = null;
 					List<Long> stateList = new ArrayList<>();
-					Integer stateId = detail.getStateId() != null ? detail.getStateId()
-							: (detail.getStateCode() != null ? Integer.valueOf(detail.getStateCode()) : null);
-
-					if (!CommonUtils.isObjectNullOrEmpty(stateId)) {
+					
+					if (!CommonUtils.isObjectNullOrEmpty(detail.getStateCode())) {
 						ITRConnectionResponse itrConnectionResponse = itrClient
-								.getOneFormStateIdFromITRStateId(Long.valueOf(stateId));
+								.getOneFormStateIdFromITRStateId(Long.valueOf(detail.getStateCode()));
 						if (!CommonUtils.isObjectNullOrEmpty(itrConnectionResponse)) {
 
 							stateList.add(Long.valueOf(String.valueOf(itrConnectionResponse.getData())));
-
+						}
+					}
+					else {
+						stateList.add(Long.valueOf(detail.getStateId()));
+					}
 							if (!CommonUtils.isListNullOrEmpty(stateList)) {
 								try {
 
@@ -7218,9 +7220,8 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 									e.printStackTrace();
 								}
 							}
-						}
 
-					}
+					
 
 					String country = null;
 					List<Long> countryList = new ArrayList<>();
