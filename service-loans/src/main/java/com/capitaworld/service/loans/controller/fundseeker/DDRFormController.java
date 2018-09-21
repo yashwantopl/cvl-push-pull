@@ -28,6 +28,7 @@ import com.capitaworld.service.dms.model.DocumentResponse;
 import com.capitaworld.service.loans.config.AuditComponentBankToCW;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.common.DocumentUploadFlagRequest;
+import com.capitaworld.service.loans.model.ddr.DDRCustomerRequest;
 import com.capitaworld.service.loans.model.ddr.DDRFormDetailsRequest;
 import com.capitaworld.service.loans.model.ddr.DDROneFormResponse;
 import com.capitaworld.service.loans.model.ddr.DDRRequest;
@@ -508,6 +509,67 @@ public class DDRFormController {
 			generateTokenRequest.setToken(tokenString);
 			tokenService.setTokenAsExpired(generateTokenRequest);
 			auditComponentBankToCW.saveBankToCWReqRes (decrypt !=null ? decrypt: encryptedString , ddrFormDetailsRequest !=null ? ddrFormDetailsRequest.getApplicationId() : null  ,CommonUtility.ApiType.DDR_API, loansResponse , reason, orgId , null );
+		}
+	}
+	
+	
+	/**
+	 * CHECK CUSTOMER DETAILS FILLED OR NOT IN CORPORATE TEASER VIEW WHILE APPROVE PROPOSAL FOR ONLY BOB BANK
+	 * 
+	 * @param applicationId
+	 * @return
+	 */
+	@RequestMapping(value = "/checkCustomerDetailFilled/{appId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> checkCustomerDetailFilled(@PathVariable("appId") Long appId) {
+		logger.info("Enter in CHECK CUSTOMER DETAILS FILLED -------------------------->" + appId);
+		try {
+			DDRCustomerRequest resposnse = ddrFormService.checkCustomerDetailFilled(appId);
+			logger.info("SUCCESSFULLT GET CUSTOMER DETAILS FILLED ---------------------------->" + resposnse.toString());
+			return new ResponseEntity<LoansResponse>( new LoansResponse("Successfully get data", HttpStatus.OK.value(), resposnse), HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while CHECK CUSTOMER DETAILS FILLED" +  e.getMessage());
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+	}
+	
+	
+	/**
+	 * SAVE CUSTOMER DETAILS IN CORPORATE TEASER VIEW WHILE APPROVE PROPOSAL FOR ONLY BOB BANK
+	 * 
+	 * @param applicationId
+	 * @return
+	 */
+	@RequestMapping(value = "/saveCustomerDetail", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> saveCustomerDetail(@RequestBody DDRCustomerRequest customerRequest,
+			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
+		
+		if(CommonUtils.isObjectNullOrEmpty(customerRequest.getApplicationId())){
+			logger.info("SAVE CUSTOMER DETAILS FILLED (APPLCIATION ID IS NULL OR EMPTY)");
+			return new ResponseEntity<LoansResponse>( new LoansResponse("Invalid Request, ApplicationId is null or Empty", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+		}
+		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+		if (CommonDocumentUtils.isThisClientApplication(request) && !CommonUtils.isObjectNullOrEmpty(clientId)) {
+			userId = clientId;
+		}
+		customerRequest.setUserId(userId);
+		logger.info("Enter in SAVE CUSTOMER DETAILS FILLED -------------------------->" + customerRequest.getApplicationId());
+		try {
+			boolean resposnse = ddrFormService.saveCustomerDetailFilled(customerRequest);
+			if(resposnse) {
+				logger.info("STATUS OF SAVE CUSTOMER DETAILS FILLED ---------------------------->" + resposnse);
+				return new ResponseEntity<LoansResponse>( new LoansResponse("Successfully save data", HttpStatus.OK.value(), resposnse), HttpStatus.OK);	
+			}
+			logger.info("STATUS OF SAVE CUSTOMER DETAILS FILLED ---------------------------->" + resposnse);
+			return new ResponseEntity<LoansResponse>( new LoansResponse("Invalid Request, Data not saved", HttpStatus.BAD_REQUEST.value(), resposnse), HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while SAVE CUSTOMER DETAILS FILLED" +  e.getMessage());
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
 		}
 	}
 	

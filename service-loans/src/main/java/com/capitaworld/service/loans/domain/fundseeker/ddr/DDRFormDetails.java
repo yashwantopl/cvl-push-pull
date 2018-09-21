@@ -291,6 +291,12 @@ public class DDRFormDetails implements Serializable {
 	@Column(name = "remark_of_existing_banker")
 	private String remarkOfExistingBankerDetails;
 	
+	//FOR ONLY BOB BANK (21 Sep)
+	@Column(name = "customer_id")
+	private String customerId;
+	@Column(name = "customer_name")
+	private String customerName;
+	
 	@Column(name = "created_by")
 	private Long createdBy;
 	
@@ -1044,7 +1050,22 @@ public class DDRFormDetails implements Serializable {
 	public void setSiteOrPromotorsPhotos(String siteOrPromotorsPhotos) {
 		this.siteOrPromotorsPhotos = siteOrPromotorsPhotos;
 	}
-	
+
+	public String getCustomerId() {
+		return customerId;
+	}
+
+	public void setCustomerId(String customerId) {
+		this.customerId = customerId;
+	}
+
+	public String getCustomerName() {
+		return customerName;
+	}
+
+	public void setCustomerName(String customerName) {
+		this.customerName = customerName;
+	}
 
 	@Override
 	public String toString() {
@@ -1103,9 +1124,11 @@ public class DDRFormDetails implements Serializable {
 				+ remarkOfDetailOfCredCard + ", remarkOfPastPreRelationship=" + remarkOfPastPreRelationship
 				+ ", remarkOfAnyOtherBankLoan=" + remarkOfAnyOtherBankLoan + ", remarkOfDocCheckList="
 				+ remarkOfDocCheckList + ", remarkOfExistingBankerDetails=" + remarkOfExistingBankerDetails
-				+ ", createdBy=" + createdBy + ", createdDate=" + createdDate + ", modifyBy=" + modifyBy
-				+ ", modifyDate=" + modifyDate + ", isActive=" + isActive + "]";
+				+ ", customerId=" + customerId + ", customerName=" + customerName + ", createdBy=" + createdBy
+				+ ", createdDate=" + createdDate + ", modifyBy=" + modifyBy + ", modifyDate=" + modifyDate
+				+ ", isActive=" + isActive + "]";
 	}
+
 
 
 	
