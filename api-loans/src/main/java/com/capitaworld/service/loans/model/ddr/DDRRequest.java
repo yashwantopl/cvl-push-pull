@@ -4,16 +4,13 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
-
 import com.capitaworld.service.loans.model.Address;
 import com.capitaworld.service.loans.model.AssociatedConcernDetailRequest;
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
 import com.capitaworld.service.loans.model.ExistingProductDetailRequest;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.OwnershipDetailRequest;
-import com.capitaworld.service.loans.model.OwnershipDetailResponse;
 import com.capitaworld.service.loans.model.PromotorBackgroundDetailRequest;
 import com.capitaworld.service.loans.model.ProposedProductDetailRequest;
 import com.capitaworld.service.loans.model.SecurityCorporateDetailRequest;
@@ -116,6 +113,10 @@ public class DDRRequest implements Serializable {
 	private Long ddrStatusId;
 	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd-MM-yyyy")
 	private Date approvedDate;
+	
+	//FOR ONLY BOB BANK(21 Sep)
+	private String customerId;
+	private String customerName;
 	
 	//AUTO FIELD
 	private List<PromotorBackgroundDetailRequest> promoBackRespList = new ArrayList<PromotorBackgroundDetailRequest>();
@@ -786,5 +787,18 @@ public class DDRRequest implements Serializable {
 	public void setConstitutionId(Integer constitutionId) {
 		this.constitutionId = constitutionId;
 	}
+	public String getCustomerId() {
+		return customerId;
+	}
+	public void setCustomerId(String customerId) {
+		this.customerId = customerId;
+	}
+	public String getCustomerName() {
+		return customerName;
+	}
+	public void setCustomerName(String customerName) {
+		this.customerName = customerName;
+	}
+	
 	
 }
