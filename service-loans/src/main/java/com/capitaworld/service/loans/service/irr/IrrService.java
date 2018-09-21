@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.service.irr;
 
+import com.capitaworld.service.loans.domain.fundseeker.corporate.CreditRatingCompanyDetail;
 import org.springframework.http.ResponseEntity;
 
 import com.capitaworld.service.rating.model.FinancialInputRequest;
@@ -7,6 +8,8 @@ import com.capitaworld.service.rating.model.QualitativeInputSheetManuRequest;
 import com.capitaworld.service.rating.model.QualitativeInputSheetServRequest;
 import com.capitaworld.service.rating.model.QualitativeInputSheetTradRequest;
 import com.capitaworld.service.rating.model.RatingResponse;
+
+import java.util.List;
 
 public interface IrrService {
 
@@ -21,4 +24,6 @@ public interface IrrService {
 	public QualitativeInputSheetTradRequest qualitativeInputServiceTrading(Long aplicationId, Long userId, Integer productId,Boolean isCmaUploaded, Boolean isCoActUploaded, Long denom) throws Exception;
 	
 	public ResponseEntity<RatingResponse> calculateIrrRating(Long applicationId,Long userId);
+
+	public List<CreditRatingCompanyDetail> getCompanyDetails(String companyName);
 }
