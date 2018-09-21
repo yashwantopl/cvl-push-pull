@@ -39,4 +39,6 @@ public interface DDRFormService {
 	
 	public Boolean saveCustomerDetailFilled(DDRCustomerRequest customerRequest);
 	
+	public DDRCustomerRequest getCustomerNameById(DDRCustomerRequest customerRequest);
+	
 }

@@ -3,6 +3,7 @@ package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -17,10 +18,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
+import com.capitaworld.cibil.api.model.CibilRequest;
+import com.capitaworld.cibil.api.model.CibilResponse;
 import com.capitaworld.service.dms.client.DMSClient;
 import com.capitaworld.service.dms.model.DocumentResponse;
 import com.capitaworld.service.loans.domain.PincodeData;
@@ -186,13 +195,23 @@ public class DDRFormServiceImpl implements DDRFormService {
 
 	@Autowired
 	private DDRExistingBankerDetailsRepository ddrExistingBankerDetailsRepository;
-	
+
 	@Autowired
 	private DMSClient dmsClient;
 
 	@Autowired
 	private PincodeDataRepository pincodeDataRepository;
 	
+	@Value("${com.capitaworld.bob.api.url}")
+	private String bobUrl;
+	
+	@Value("${com.capitaworld.bob.api.header.name}")
+	private String headerName;
+	
+	@Value("${com.capitaworld.bob.api.header.auth.key}")
+	private String headerAuthKey;
+	
+
 	@Override
 	public DDRRequest getMergeDDR(Long appId, Long userId) {
 
@@ -243,7 +262,8 @@ public class DDRFormServiceImpl implements DDRFormService {
 		Long userId = dDRRequest.getUserId();
 
 		try {
-			DDRFormDetails dDRFormDetails = ddrFormDetailsRepository.getByAppIdAndIsActive(dDRRequest.getApplicationId());
+			DDRFormDetails dDRFormDetails = ddrFormDetailsRepository
+					.getByAppIdAndIsActive(dDRRequest.getApplicationId());
 			if (CommonUtils.isObjectNullOrEmpty(dDRFormDetails)) {
 				logger.info("DDR ===============> New DDR Form Saving ------------------------->");
 				dDRFormDetails = new DDRFormDetails();
@@ -260,7 +280,8 @@ public class DDRFormServiceImpl implements DDRFormService {
 			dDRFormDetails = ddrFormDetailsRepository.save(dDRFormDetails);
 
 			// SAVE AUTO FILEDS DATA
-			if (CommonUtils.UsersRoles.MAKER.equals(dDRRequest.getRoleId()) || CommonUtils.UsersRoles.FP_MAKER.equals(dDRRequest.getRoleId())) {
+			if (CommonUtils.UsersRoles.MAKER.equals(dDRRequest.getRoleId())
+					|| CommonUtils.UsersRoles.FP_MAKER.equals(dDRRequest.getRoleId())) {
 
 				CorporateApplicantDetail applicantDetail = corporateApplicantDetailRepository
 						.getByApplicationIdAndIsAtive(dDRRequest.getApplicationId());
@@ -316,7 +337,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 					if (!CommonUtils.isListNullOrEmpty(dDRRequest.getExistingProductDetailList())) {
 						List<ExistingProductDetailRequest> existingProductDetailList = dDRRequest
 								.getExistingProductDetailList();
-						
+
 						for (ExistingProductDetailRequest existingPro : existingProductDetailList) {
 							ExistingProductDetail existingProductDetail = null;
 							if (!CommonUtils.isObjectNullOrEmpty(existingPro.getId())) {
@@ -344,7 +365,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 					// promoBackRespList
 					if (!CommonUtils.isListNullOrEmpty(dDRRequest.getPromoBackRespList())) {
 						List<PromotorBackgroundDetailRequest> promoBackRespList = dDRRequest.getPromoBackRespList();
-						
+
 						for (PromotorBackgroundDetailRequest promoBackReq : promoBackRespList) {
 							PromotorBackgroundDetail promBack = null;
 							if (!CommonUtils.isObjectNullOrEmpty(promoBackReq.getId())) {
@@ -418,7 +439,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 					// ownershipRespList
 					if (!CommonUtils.isListNullOrEmpty(dDRRequest.getOwnershipReqList())) {
 						List<OwnershipDetailRequest> ownershipReqList = dDRRequest.getOwnershipReqList();
-						
+
 						for (OwnershipDetailRequest ownershipReq : ownershipReqList) {
 							OwnershipDetail ownership = null;
 							if (!CommonUtils.isObjectNullOrEmpty(ownershipReq.getId())) {
@@ -445,7 +466,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 					if (!CommonUtils.isListNullOrEmpty(dDRRequest.getAssociatedConcernDetailList())) {
 						List<AssociatedConcernDetailRequest> assConcernDetailList = dDRRequest
 								.getAssociatedConcernDetailList();
-						
+
 						for (AssociatedConcernDetailRequest assConcernDetailReq : assConcernDetailList) {
 							AssociatedConcernDetail assConcernDetail = null;
 							if (!CommonUtils.isObjectNullOrEmpty(assConcernDetailReq.getId())) {
@@ -484,7 +505,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 					if (!CommonUtils.isListNullOrEmpty(dDRRequest.getSecurityCorporateDetailList())) {
 						List<SecurityCorporateDetailRequest> securityCorporateDetailList = dDRRequest
 								.getSecurityCorporateDetailList();
-						
+
 						for (SecurityCorporateDetailRequest securityCorDetailReq : securityCorporateDetailList) {
 							SecurityCorporateDetail securityCorporateDetail = null;
 							if (!CommonUtils.isObjectNullOrEmpty(securityCorDetailReq.getId())) {
@@ -514,7 +535,8 @@ public class DDRFormServiceImpl implements DDRFormService {
 				}
 
 			} else {
-				logger.info("ROLE ID NOT MATCHES --------------------------------------------------------->" + dDRRequest.getRoleId());
+				logger.info("ROLE ID NOT MATCHES --------------------------------------------------------->"
+						+ dDRRequest.getRoleId());
 			}
 
 			// SAVE ALL LIST DATA
@@ -542,14 +564,15 @@ public class DDRFormServiceImpl implements DDRFormService {
 	}
 
 	/**
-	 * CHECK CUSTOMER DETAILS FILLED OR NOT IN TEASER VIEW WHILE APPROVE APPLICATION FOR BOB BANK
+	 * CHECK CUSTOMER DETAILS FILLED OR NOT IN TEASER VIEW WHILE APPROVE APPLICATION
+	 * FOR BOB BANK
 	 */
 	@Override
 	public DDRCustomerRequest checkCustomerDetailFilled(Long applicationId) {
 		DDRCustomerRequest customerRequest = new DDRCustomerRequest();
 		customerRequest.setApplicationId(applicationId);
 		DDRFormDetails dDRFormDetails = ddrFormDetailsRepository.getByAppIdAndIsActive(applicationId);
-		if(!CommonUtils.isObjectNullOrEmpty(dDRFormDetails)) {
+		if (!CommonUtils.isObjectNullOrEmpty(dDRFormDetails)) {
 			customerRequest.setDdrFormId(dDRFormDetails.getId());
 			customerRequest.setCustomerId(dDRFormDetails.getCustomerId());
 			customerRequest.setCustomerName(dDRFormDetails.getCustomerName());
@@ -559,14 +582,15 @@ public class DDRFormServiceImpl implements DDRFormService {
 		}
 		return customerRequest;
 	}
-	
+
 	/**
 	 * SAVE CUSTOMER DETAILS IN TEASER VIEW WHILE APPROVE APPLICATION FOR BOB BANK
 	 */
 	@Override
 	public Boolean saveCustomerDetailFilled(DDRCustomerRequest customerRequest) {
-		DDRFormDetails dDRFormDetails = ddrFormDetailsRepository.getByAppIdAndIsActive(customerRequest.getApplicationId());
-		if(!CommonUtils.isObjectNullOrEmpty(dDRFormDetails)) {
+		DDRFormDetails dDRFormDetails = ddrFormDetailsRepository
+				.getByAppIdAndIsActive(customerRequest.getApplicationId());
+		if (!CommonUtils.isObjectNullOrEmpty(dDRFormDetails)) {
 			dDRFormDetails.setCustomerId(customerRequest.getCustomerId());
 			dDRFormDetails.setCustomerName(customerRequest.getCustomerName());
 			dDRFormDetails.setModifyBy(customerRequest.getUserId());
@@ -576,7 +600,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 		}
 		return false;
 	}
-	
+
 	public DDRRequest getCombinedOneFormDetails(Long userId, Long applicationId) {
 
 		logger.info("Enter in get one form details service");
@@ -627,9 +651,9 @@ public class DDRFormServiceImpl implements DDRFormService {
 		address.setStateId(applicantDetail.getRegisteredStateId());
 		address.setCityId(applicantDetail.getRegisteredCityId());
 		address.setPincode(applicantDetail.getRegisteredPincode());
-		if(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredDistMappingId())) {
+		if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredDistMappingId())) {
 			PincodeData pincodeData = pincodeDataRepository.findOne(applicantDetail.getRegisteredDistMappingId());
-			if(!CommonUtils.isObjectNullOrEmpty(pincodeData)) {
+			if (!CommonUtils.isObjectNullOrEmpty(pincodeData)) {
 				address.setVillage(pincodeData.getOfficeName());
 				address.setDistrict(pincodeData.getDistrictName());
 				address.setSubDistrict(pincodeData.getTaluka());
@@ -647,9 +671,9 @@ public class DDRFormServiceImpl implements DDRFormService {
 		address.setStateId(applicantDetail.getAdministrativeStateId());
 		address.setCityId(applicantDetail.getAdministrativeCityId());
 		address.setPincode(applicantDetail.getAdministrativePincode());
-		if(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getAdministrativeDistMappingId())) {
+		if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getAdministrativeDistMappingId())) {
 			PincodeData pincodeData = pincodeDataRepository.findOne(applicantDetail.getAdministrativeDistMappingId());
-			if(!CommonUtils.isObjectNullOrEmpty(pincodeData)) {
+			if (!CommonUtils.isObjectNullOrEmpty(pincodeData)) {
 				address.setVillage(pincodeData.getOfficeName());
 				address.setDistrict(pincodeData.getDistrictName());
 				address.setSubDistrict(pincodeData.getTaluka());
@@ -1629,7 +1653,14 @@ public class DDRFormServiceImpl implements DDRFormService {
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
-						if (setExistingData && !CommonUtils.isObjectNullOrEmpty(obj.getBackgroundId())) {// SET DIRECTOR BACK DETAILS IN NEW DDR OBJECT FOR MERGE DDR
+						if (setExistingData && !CommonUtils.isObjectNullOrEmpty(obj.getBackgroundId())) {// SET DIRECTOR
+																											// BACK
+																											// DETAILS
+																											// IN NEW
+																											// DDR
+																											// OBJECT
+																											// FOR MERGE
+																											// DDR
 							try {
 								DirectorBackgroundDetail dirBackDetails = directorBackgroundDetailsRepository
 										.findByIdAndIsActive(obj.getBackgroundId(), true);
@@ -1638,9 +1669,10 @@ public class DDRFormServiceImpl implements DDRFormService {
 									BeanUtils.copyProperties(dirBackDetails, dirRes);
 									SimpleDateFormat sd = new SimpleDateFormat("dd-MM-yyyy");
 									dirRes.setDobString(sd.format(dirBackDetails.getDob()));
-									if(!CommonUtils.isObjectNullOrEmpty(dirBackDetails.getDistrictMappingId())) {
-										PincodeData pincodeData = pincodeDataRepository.findOne(dirBackDetails.getDistrictMappingId());
-										if(!CommonUtils.isObjectNullOrEmpty(pincodeData)) {
+									if (!CommonUtils.isObjectNullOrEmpty(dirBackDetails.getDistrictMappingId())) {
+										PincodeData pincodeData = pincodeDataRepository
+												.findOne(dirBackDetails.getDistrictMappingId());
+										if (!CommonUtils.isObjectNullOrEmpty(pincodeData)) {
 											dirRes.setVillage(pincodeData.getOfficeName());
 											dirRes.setDistrict(pincodeData.getDistrictName());
 											dirRes.setSubDistrict(pincodeData.getTaluka());
@@ -1674,9 +1706,9 @@ public class DDRFormServiceImpl implements DDRFormService {
 						BeanUtils.copyProperties(drDetails, dirRes);
 						SimpleDateFormat sd = new SimpleDateFormat("dd-MM-yyyy");
 						dirRes.setDobString(sd.format(dirRes.getDob()));
-						if(!CommonUtils.isObjectNullOrEmpty(drDetails.getDistrictMappingId())) {
+						if (!CommonUtils.isObjectNullOrEmpty(drDetails.getDistrictMappingId())) {
 							PincodeData pincodeData = pincodeDataRepository.findOne(drDetails.getDistrictMappingId());
-							if(!CommonUtils.isObjectNullOrEmpty(pincodeData)) {
+							if (!CommonUtils.isObjectNullOrEmpty(pincodeData)) {
 								dirRes.setVillage(pincodeData.getOfficeName());
 								dirRes.setDistrict(pincodeData.getDistrictName());
 								dirRes.setSubDistrict(pincodeData.getTaluka());
@@ -3413,147 +3445,147 @@ public class DDRFormServiceImpl implements DDRFormService {
 			case 504:// WCTL
 				dDRFormDetails.setFieldAuditReport("Yes");
 				break;
-			
+
 			case 9:// WC
 			case 36:// TL
 			case 276:// USL
 			case 375:// WCTL
 				dDRFormDetails.setAuditedFinancialsForLast3years("Yes");
 				break;
-			
+
 			case 280:// WC
 			case 13:// TL
 			case 40:// USL
 			case 379:// WCTL
 				dDRFormDetails.setProvisionalFinancialsForCurrentYear("Yes");
 				break;
-			
+
 			case 11:// WC
 			case 38:// TL
 			case 278:// USL
 			case 377:// WCTL
 				dDRFormDetails.setItrForLast3years("Yes");
 				break;
-			
+
 			case 10:// WC
 			case 37:// TL
 			case 277:// USL
 			case 376:// WCTL
 				dDRFormDetails.setSanctionLetter("Yes");
 				break;
-			
+
 			case 505:// WC
 			case 506:// TL
 			case 507:// USL
 			case 508:// WCTL
 				dDRFormDetails.setBankStatementOfLast12months("Yes");
 				break;
-			
+
 			case 308:// WC
 			case 309:// TL
 			case 310:// USL
 			case 399:// WCTL
 				dDRFormDetails.setDebtorsList("Yes");
 				break;
-			
+
 			case 509:// WC
 			case 510:// TL
 			case 511:// USL
 			case 512:// WCTL
 				dDRFormDetails.setFinancialFigures("Yes");
 				break;
-			
+
 			case 18:// WC
 			case 45:// TL
 			case 311:// USL
 			case 384:// WCTL
 				dDRFormDetails.setMoaOfTheCompany("Yes");
 				break;
-			
+
 			case 3:// WC
 			case 30:// TL
 			case 283:// USL
 			case 369:// WCTL
 				dDRFormDetails.setPanCardOfTheCompany("Yes");
 				break;
-			
+
 			case 305:// WC
 			case 306:// TL
 			case 307:// USL
 			case 398:// WCTL
 				dDRFormDetails.setResolutionAndForm32forAdditionOfDirector("Yes");
 				break;
-			
+
 			case 513:// WC
 			case 514:// TL
 			case 515:// USL
 			case 516:// WCTL
 				dDRFormDetails.setCentralSalesTaxRegistrationOfCompany("Yes");
 				break;
-			
+
 			case 517:// WC
 			case 518:// TL
 			case 519:// USL
 			case 520:// WCTL
 				dDRFormDetails.setCentralExciseRegistrationOfCompany("Yes");
 				break;
-			
+
 			case 521:// WC
 			case 522:// TL
 			case 523:// USL
 			case 524:// WCTL
 				dDRFormDetails.setVatRegistrationOfCompany("Yes");
 				break;
-			
+
 			case 315:// WC
 			case 316:// TL
 			case 317:// USL
 			case 401:// WCTL
 				dDRFormDetails.setLetterOfIntentFromFundProviders("Yes");
 				break;
-			
+
 			case 14:// WC
 			case 41:// TL
 			case 284:// USL
 			case 397:// WCTL
 				dDRFormDetails.setPanCardAndResidenceAddProofOfDirectors("Yes");
 				break;
-			
+
 			case 12:// WC
 			case 39:// TL
 			case 279:// USL
 			case 378:// WCTL
 				dDRFormDetails.setCaCertifiedNetworthStatement("Yes");
 				break;
-			
+
 			case 297:// WC
 			case 298:// TL
 			case 299:// USL
 			case 396:// WCTL
 				dDRFormDetails.setIrrOfAllDirectorsForLast2years("Yes");
 				break;
-			
+
 			case 525:// WC
 			case 526:// TL
 			case 527:// USL
 			case 528:// WCTL
 				dDRFormDetails.setListOfDirectors("Yes");
 				break;
-			
+
 			case 15:// WC
 			case 42:// TL
 			case 285:// USL
 			case 381:// WCTL
 				dDRFormDetails.setListOfShareholdersAndShareHoldingPatter("Yes");
 				break;
-			
+
 			case 535:// WC
 			case 536:// TL
 			case 537:// USL
 			case 538:// WCTL
 				dDRFormDetails.setProfilePicCompany("Yes");
 				break;
-			
+
 			case 539:// WC
 			case 540:// TL
 			case 541:// USL
@@ -3575,19 +3607,20 @@ public class DDRFormServiceImpl implements DDRFormService {
 
 		return 0L;
 	}
-	
-	
+
 	@Override
 	public boolean deleteDocument(DDRUploadRequest ddrUploadRequest) {
 		try {
 			JSONObject json = new JSONObject();
 			json.put("id", ddrUploadRequest.getDocId());
 			DocumentResponse docResponse = dmsClient.deleteProductDocument(json.toJSONString());
-			if(!CommonUtils.isObjectNullOrEmpty(docResponse) && docResponse.getStatus().equals(HttpStatus.OK.value())) {
-				
-				if(ddrUploadRequest.getTotalDocs() < 1) {
-					DDRFormDetails dDRFormDetails = ddrFormDetailsRepository.getByAppIdAndIsActive(ddrUploadRequest.getApplicationId());
-					
+			if (!CommonUtils.isObjectNullOrEmpty(docResponse)
+					&& docResponse.getStatus().equals(HttpStatus.OK.value())) {
+
+				if (ddrUploadRequest.getTotalDocs() < 1) {
+					DDRFormDetails dDRFormDetails = ddrFormDetailsRepository
+							.getByAppIdAndIsActive(ddrUploadRequest.getApplicationId());
+
 					switch (ddrUploadRequest.getModelName()) {
 					case "fieldAuditReport":
 						dDRFormDetails.setFieldAuditReport("No");
@@ -3599,7 +3632,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 						dDRFormDetails.setProvisionalFinancialsForCurrentYear("No");
 						break;
 					case "itrForLast3years":
-						dDRFormDetails.setItrForLast3years("No");	
+						dDRFormDetails.setItrForLast3years("No");
 						break;
 					case "sanctionLetter":
 						dDRFormDetails.setSanctionLetter("No");
@@ -3659,7 +3692,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 					default:
 						break;
 					}
-					ddrFormDetailsRepository.save(dDRFormDetails); 
+					ddrFormDetailsRepository.save(dDRFormDetails);
 				}
 			}
 			return true;
@@ -3700,6 +3733,29 @@ public class DDRFormServiceImpl implements DDRFormService {
 
 	public String convertDouble(Double value) {
 		return !CommonUtils.isObjectNullOrEmpty(value) ? decim.format(value) : "0";
+	}
+
+	@Override
+	public DDRCustomerRequest getCustomerNameById(DDRCustomerRequest customerRequest) {
+		String result = null;
+		try {
+			logger.info("GET CUSTOMER NAME BY CUSTOMER ID =====>  "+ customerRequest.getCustomerId() + " ---->bobUrl==========>"+ bobUrl);
+			RestTemplate restTemplate = new RestTemplate();
+			result = restTemplate.exchange(bobUrl, HttpMethod.POST, getHttpHeader(customerRequest.getCustomerId()), String.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		logger.info("Customer Name==========>{}",result);
+		customerRequest.setCustomerName(result);
+		return customerRequest;
+	}
+
+	private HttpEntity<String> getHttpHeader(String customerId) {
+		HttpHeaders headers = new HttpHeaders();
+		String requestDataEnc = Base64.getEncoder().encodeToString(headerAuthKey.getBytes());
+		headers.set(headerName, requestDataEnc);
+		headers.setContentType(MediaType.TEXT_PLAIN);
+		return new HttpEntity<String>(customerId, headers);
 	}
 
 }
