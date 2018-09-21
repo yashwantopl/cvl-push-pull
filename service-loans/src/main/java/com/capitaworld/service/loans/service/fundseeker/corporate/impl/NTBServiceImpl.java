@@ -232,6 +232,9 @@ public class NTBServiceImpl implements NTBService {
                 logger.info("Data not found for given applicationid");
                 return null;
             }
+            fundSeekerInputRequestResponse.setLoanAmt(CommonUtils.convertValue(primaryCorporateDetail.getLoanAmount()));
+            fundSeekerInputRequestResponse.setCollateralSecurityAmountStr(CommonUtils.convertValue(primaryCorporateDetail.getCollateralSecurityAmount()));
+            fundSeekerInputRequestResponse.setCostOfProjectStr(CommonUtils.convertValue(primaryCorporateDetail.getCostOfProject()));
             BeanUtils.copyProperties(primaryCorporateDetail,fundSeekerInputRequestResponse);
 
             //---industry

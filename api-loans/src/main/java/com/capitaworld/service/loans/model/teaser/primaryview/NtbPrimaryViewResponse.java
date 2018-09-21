@@ -109,6 +109,7 @@ public class NtbPrimaryViewResponse {
 	    private Object cibilOfMainDir;
 	    private Object promotersContribution;
 	    private Object promotersContributionPer;
+	    private Object fraudDetectionData;
 
 		/**
 		 * @return the matchesList
@@ -1044,6 +1045,12 @@ public class NtbPrimaryViewResponse {
 		}
 		public void setIrtXMLReport(List<Object> irtXMLReport) {
 			this.irtXMLReport = irtXMLReport;
+		}
+		public Object getFraudDetectionData() {
+			return fraudDetectionData;
+		}
+		public void setFraudDetectionData(Object fraudDetectionData) {
+			this.fraudDetectionData = fraudDetectionData;
 		}
 
 
