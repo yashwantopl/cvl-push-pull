@@ -545,6 +545,15 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	
 	public static final String EMAIL_ADDRESS_FROM = "no-reply@capitaworld.com";
 	
+	@Value("${javax.net.ssl.keyStore}")
+	private String keyStore;
+	
+	@Value("${javax.net.ssl.keyStorePassword}")
+	private String keyStorePassword;
+	
+	@Value("${javax.net.ssl.keyStoreType}")
+	private String keyStoreType;
+	
  	@Override
 	public boolean saveOrUpdate(FrameRequest commonRequest, Long userId) throws Exception {
 		try {
@@ -5204,6 +5213,13 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		Boolean saveCommercialDetails = false;
 		applicationMaster = primaryCorporateRepository.findOneByApplicationIdId(applicationId);
 		try {
+			if(userOrganisationRequest.getUserOrgId() == 22l) // for syndicate Bank only check orgid
+			{
+				System.setProperty("javax.net.ssl.keyStore",keyStore);                                    
+				System.setProperty("javax.net.ssl.keyStorePassword", keyStorePassword);              
+				System.setProperty("javax.net.ssl.keyStoreType", keyStoreType);            
+				
+			}
 			AuditMaster audit = auditComponent.getAudit(applicationId, true, AuditComponent.PRELIM_INFO);
 			ProfileReqRes prelimData =null;
 			if(audit == null) {
@@ -5619,6 +5635,14 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		Boolean saveIRRInfo = false;
 		PrimaryCorporateDetail applicationMaster = primaryCorporateRepository.findOneByApplicationIdId(applicationId);
 		try {
+			
+			if(userOrganisationRequest.getUserOrgId() == 22l) // for syndicate Bank only check orgid
+			{
+				System.setProperty("javax.net.ssl.keyStore",keyStore);                                    
+				System.setProperty("javax.net.ssl.keyStorePassword", keyStorePassword);              
+				System.setProperty("javax.net.ssl.keyStoreType", keyStoreType);            
+				
+			}
 			
 			AuditMaster audit = auditComponent.getAudit(applicationId, true, AuditComponent.DETAILED_INFO);
 			if(audit == null) {

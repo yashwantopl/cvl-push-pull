@@ -73,7 +73,7 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 		}
 	}
 
-	public String disbursementRequestValidation(Long sanctionPrimaryId , LoanDisbursementRequest loanDisbursementRequest, Long orgId ,Integer apiType) throws IOException {
+	public LoanDisbursementRequest disbursementRequestValidation(Long sanctionPrimaryId , LoanDisbursementRequest loanDisbursementRequest, Long orgId ,Integer apiType) throws IOException {
 		logger.info("Enter in requestValidation() ----------------------->  LoanDisbursementRequest ==> " + loanDisbursementRequest);  
 		try {
 			LoanSanctionDomain loanSanctionDomain =null ;
@@ -84,7 +84,11 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 			}
 			if(loanSanctionDomain == null || loanSanctionDomain.getSanctionAmount()==null) {
 				logger.info("Exit saveLoanDisbursementDetail() -----------------------> msg==>" +"Please Sanction Before Disbursement for this applicationId==>" +loanDisbursementRequest.getApplicationId() );
-				return "Please Sanction Before Disbursement for this applicationId ==>" +loanDisbursementRequest.getApplicationId();
+				 loanDisbursementRequest.setReason("Please Sanction Before Disbursement for this applicationId ==>" +loanDisbursementRequest.getApplicationId());
+				 loanDisbursementRequest.setIsSaved(false);
+				 loanDisbursementRequest.setStatusCode(CommonUtility.SanctionDisbursementAPIStatusCode.DISBURSEMENT_WITHOUT_SANCTION);
+				return loanDisbursementRequest;
+				
 			}
 			Long recCount = proposalDetailsRepository.getApplicationIdCountByOrgId(loanDisbursementRequest.getApplicationId(), orgId);
 			if (recCount != null && recCount > 0) {
@@ -92,23 +96,38 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 				if (oldDisbursedAmount != null) {
 					if (loanSanctionDomain.getSanctionAmount() == oldDisbursedAmount) {
 						logger.info("Exit saveLoanDisbursementDetail() -----------------------> msg==>"+"Alread Your Disbursement is Complete");
-						return "Alread Your Disbursement is Complete";
+						loanDisbursementRequest.setReason("Alread Your Disbursement is Complete");
+						loanDisbursementRequest.setIsSaved(true);
+						 loanDisbursementRequest.setStatusCode(CommonUtility.SanctionDisbursementAPIStatusCode.ALREADY_DONE_DISBURSEMENT);
+						return loanDisbursementRequest;
 					}
 					Double totalDisbursedAmount = oldDisbursedAmount + loanDisbursementRequest.getDisbursedAmount();
 					if (loanSanctionDomain.getSanctionAmount() >= totalDisbursedAmount) {
 						logger.info("Exit saveLoanDisbursementDetail() -----------------------> msg==>"+"SUCCESS");
-						return "SUCCESS";
+						loanDisbursementRequest.setReason("SUCCESS");
+						loanDisbursementRequest.setIsSaved(false);
+						 loanDisbursementRequest.setStatusCode(CommonUtility.SanctionDisbursementAPIStatusCode.SUCCESS);
+						return loanDisbursementRequest;
 					} else {
 						logger.info("Exit saveLoanDisbursementDetail() -----------------------> msg==>"+ "Total Disbursement Amount EXCEED Sanction Amount");
-						return "Total Disbursement Amount EXCEED Sanction Amount{} sanctionAmount ==>"+loanSanctionDomain.getSanctionAmount()+" ,  ( oldDisbursedAmount ==> "+oldDisbursedAmount+" +  newDisbursedAmount==>" +loanDisbursementRequest.getDisbursedAmount()+" ) = totalDisbursedAmount==>"+totalDisbursedAmount;
+						loanDisbursementRequest.setReason("Total Disbursement Amount EXCEED Sanction Amount{} sanctionAmount ==>"+loanSanctionDomain.getSanctionAmount()+" ,  ( oldDisbursedAmount ==> "+oldDisbursedAmount+" +  newDisbursedAmount==>" +loanDisbursementRequest.getDisbursedAmount()+" ) = totalDisbursedAmount==>"+totalDisbursedAmount);
+						loanDisbursementRequest.setIsSaved(false);
+						 loanDisbursementRequest.setStatusCode(CommonUtility.SanctionDisbursementAPIStatusCode.DISBURSEMENT_AMOUNT_EXCEED_SANCTION_AMOUNT);
+						return loanDisbursementRequest;
 					}
 				} else {
 					logger.info("Exit saveLoanDisbursementDetail() -----------------------> msg==>" +"First Disbursement");
-					return "First Disbursement";
+					loanDisbursementRequest.setReason("First Disbursement");
+					loanDisbursementRequest.setIsSaved(false);
+					loanDisbursementRequest.setStatusCode(CommonUtility.SanctionDisbursementAPIStatusCode.FIRST_DISBURSEMENT);
+					return loanDisbursementRequest;
 				}
 			} else {
 				logger.info("Exit saveLoanDisbursementDetail() -----------------------> msg==>" +"Invalid ApplicationId ");
-				return "Invalid ApplicationId ";
+				loanDisbursementRequest.setReason( "Invalid ApplicationId ");
+				loanDisbursementRequest.setIsSaved(false);
+				 loanDisbursementRequest.setStatusCode(CommonUtility.SanctionDisbursementAPIStatusCode.DISBURSEMENT_WITHOUT_SANCTION);
+				return loanDisbursementRequest;
 			}
 			
 		} catch (Exception e) {
@@ -144,43 +163,51 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 
 	//Its for list of disbursement per sanction
 	@Override
-	public String bankRequestValidationAndSave(Long sanctionPrimaryId ,List<LoanDisbursementRequest> loanDisbursementRequestsList,Long orgId , Integer apiType) throws IOException {
-		String reason ="Loan DisbursementRequestsList is not available --- size()--> 0"  ;
+	public List<LoanDisbursementRequest> bankRequestValidationAndSave(Long sanctionPrimaryId ,List<LoanDisbursementRequest> loanDisbursementRequestsList,Long orgId , Integer apiType) throws IOException {
+		
 		for(LoanDisbursementRequest  loanDisbursementRequest : loanDisbursementRequestsList) {		
 			
 			if(! CommonUtils.isObjectNullOrEmptyOrDash( bankToCWAuditTrailRepository.findByApplicationIdAndOrgIdAndApiTypeAndBankPrimaryKey(loanDisbursementRequest.getApplicationId() , orgId, CommonUtility.ApiType.REVERSE_DISBURSEMENT , loanDisbursementRequest.getId()))){
 				logger.info("-------------------------already  saving disbursement detail of reverse api---------------");
+				
+				loanDisbursementRequest.setIsSaved(true);
+				loanDisbursementRequest.setReason("already save disbursement detail of reverse api of applicaiton Id" + loanDisbursementRequest.getApplicationId() );
+				loanDisbursementRequest.setStatusCode(CommonUtility.SanctionDisbursementAPIStatusCode.ALREADY_DONE_DISBURSEMENT);
 				continue;
 			}
-			if(CommonUtils.isObjectListNull(loanDisbursementRequest.getDisbursedAmount(),loanDisbursementRequest.getDisbursementDate(),loanDisbursementRequest.getPaymentMode(),  loanDisbursementRequest.getAccountNo())){
-				reason =  "Mandatory Fields Must Not be Null";
+			if(CommonUtils.isObjectListNull(loanDisbursementRequest.getDisbursedAmount(),loanDisbursementRequest.getDisbursementDate(),loanDisbursementRequest.getPaymentMode(),  loanDisbursementRequest.getAccountNo() , loanDisbursementRequest.getTransactionNo())){
+				
+				loanDisbursementRequest.setIsSaved(false);
+				loanDisbursementRequest.setStatusCode(CommonUtility.SanctionDisbursementAPIStatusCode.MANDAROTY_FIELD_MUST_NOT_BE_NULL);
+				loanDisbursementRequest.setReason("Mandatory Fields Must Not be Null");
 				String jsonString = MultipleJSONObjectHelper.getStringfromObject(loanDisbursementRequest);
-				auditComponentBankToCW.saveBankToCWReqRes(jsonString , 	loanDisbursementRequest.getApplicationId() ,CommonUtility.ApiType.REVERSE_DISBURSEMENT, null , reason , orgId ,loanDisbursementRequest.getId());
+				auditComponentBankToCW.saveBankToCWReqRes(jsonString , 	loanDisbursementRequest.getApplicationId() ,CommonUtility.ApiType.REVERSE_DISBURSEMENT, null , "Mandatory Fields Must Not be Null" , orgId ,loanDisbursementRequest.getId());
 				continue;
 			}
 			
-			reason=disbursementRequestValidation(sanctionPrimaryId , loanDisbursementRequest ,orgId , apiType);
+			loanDisbursementRequest = disbursementRequestValidation(sanctionPrimaryId , loanDisbursementRequest ,orgId , apiType);
 			
 			//saving req in bank to  cw-audit table
 			String jsonString = null;
 			
-			if("SUCCESS".equalsIgnoreCase(reason) || "First Disbursement".equalsIgnoreCase(reason)) {
+			if("SUCCESS".equalsIgnoreCase(loanDisbursementRequest.getReason()) || "First Disbursement".equalsIgnoreCase(loanDisbursementRequest.getReason())) {
 				if(CommonUtility.ApiType.DISBURSEMENT == apiType) {
 					if(saveLoanDisbursementDetail(loanDisbursementRequest)) {
-						logger.info("Success msg while saveLoanDisbursementDetail() ----------------> msg " + reason) ;
+						logger.info("Success msg while saveLoanDisbursementDetail() ----------------> msg " + loanDisbursementRequest.getReason()) ;
 					}
 				}else if(saveLoanDisbursementDetailbyId(loanDisbursementRequest)) {
-					logger.info("Success msg while saveLoanDisbursementDetail() ----------------> msg " + reason) ;
+					logger.info("Success msg while saveLoanDisbursementDetail() ----------------> msg " + loanDisbursementRequest.getReason()) ;
 					loanDisbursementRequest.setIsSaved(true);
 				}
+				
 				jsonString = MultipleJSONObjectHelper.getStringfromObject(loanDisbursementRequest);
-				auditComponentBankToCW.saveBankToCWReqRes(jsonString , 	loanDisbursementRequest.getApplicationId() , apiType , new LoansResponse(reason , HttpStatus.OK.value()) , null , orgId ,loanDisbursementRequest.getId());
+				auditComponentBankToCW.saveBankToCWReqRes(jsonString , 	loanDisbursementRequest.getApplicationId() , apiType , new LoansResponse(loanDisbursementRequest.getReason() , HttpStatus.OK.value()) , null , orgId ,loanDisbursementRequest.getId());
 			}else {
 				jsonString =MultipleJSONObjectHelper.getStringfromObject(loanDisbursementRequest);
-				auditComponentBankToCW.saveBankToCWReqRes(jsonString , 	loanDisbursementRequest.getApplicationId() ,CommonUtility.ApiType.REVERSE_DISBURSEMENT, new LoansResponse(reason , HttpStatus.BAD_REQUEST.value()) , reason, orgId ,loanDisbursementRequest.getId());
+				auditComponentBankToCW.saveBankToCWReqRes(jsonString , 	loanDisbursementRequest.getApplicationId() ,CommonUtility.ApiType.REVERSE_DISBURSEMENT, new LoansResponse(loanDisbursementRequest.getReason() , HttpStatus.BAD_REQUEST.value()) , loanDisbursementRequest.getReason(), orgId ,loanDisbursementRequest.getId());
 			}
 		}
-		return reason;
+		return loanDisbursementRequestsList;
 	}
 	//its save , disbursement request by there primary key 'id' and isSavedFromBank
 	@Override
