@@ -97,6 +97,11 @@ public class FundSeekerInputRequestResponse {
     private Integer factoryPremise;
     private Integer knowHow;
     private Integer competition;
+    
+    /*FOR NTB CAM BY BIHAG*/
+    private String loanAmt;
+    private String costOfProjectStr;
+    private String collateralSecurityAmountStr;
 
     /*For Eligibility method*/
     private Double incrementalMargin;
@@ -427,7 +432,31 @@ public class FundSeekerInputRequestResponse {
         this.environmentalImpactId = environmentalImpactId;
     }
 
-    @Override
+    public String getLoanAmt() {
+		return loanAmt;
+	}
+
+	public void setLoanAmt(String loanAmt) {
+		this.loanAmt = loanAmt;
+	}
+
+	public String getCostOfProjectStr() {
+		return costOfProjectStr;
+	}
+
+	public void setCostOfProjectStr(String costOfProjectStr) {
+		this.costOfProjectStr = costOfProjectStr;
+	}
+
+	public String getCollateralSecurityAmountStr() {
+		return collateralSecurityAmountStr;
+	}
+
+	public void setCollateralSecurityAmountStr(String collateralSecurityAmountStr) {
+		this.collateralSecurityAmountStr = collateralSecurityAmountStr;
+	}
+
+	@Override
     public String toString() {
         return "FundSeekerInputRequestResponse{" +
                 "userId=" + userId +

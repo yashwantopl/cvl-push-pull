@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.capitaworld.api.eligibility.model.CLEligibilityRequest;
 import com.capitaworld.api.eligibility.model.EligibililityRequest;
 import com.capitaworld.api.eligibility.model.EligibilityResponse;
 import com.capitaworld.client.eligibility.EligibilityClient;
@@ -25,9 +26,12 @@ import com.capitaworld.service.analyzer.client.AnalyzerClient;
 import com.capitaworld.service.analyzer.model.common.AnalyzerResponse;
 import com.capitaworld.service.analyzer.model.common.Data;
 import com.capitaworld.service.analyzer.model.common.ReportRequest;
+import com.capitaworld.service.fraudanalytics.client.FraudAnalyticsClient;
+import com.capitaworld.service.fraudanalytics.model.AnalyticsResponse;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailResponse;
+import com.capitaworld.service.loans.model.OwnershipDetailResponse;
 import com.capitaworld.service.loans.model.corporate.CorporateDirectorIncomeRequest;
 import com.capitaworld.service.loans.model.corporate.FundSeekerInputRequestResponse;
 import com.capitaworld.service.loans.repository.fundprovider.TermLoanParameterRepository;
@@ -97,6 +101,10 @@ public class NtbCamReportServiceImpl implements NtbCamReportService{
 	
 	@Autowired
 	private ThirdPartyClient thirdPartyClient; 
+	
+	@Autowired
+	private FraudAnalyticsClient fraudAnalyticsClient;
+
 	
 	private static final Logger logger = LoggerFactory.getLogger(NtbCamReportServiceImpl.class);
 	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
@@ -236,6 +244,8 @@ public class NtbCamReportServiceImpl implements NtbCamReportService{
 				// financialArrangementsDetailResponse.setFacilityNature(NatureFacility.getById(financialArrangementsDetailRequest.getFacilityNatureId()).getValue());
 				// financialArrangementsDetailResponse.setAddress(financialArrangementsDetailRequest.getAddress());
 				financialArrangementsDetailResponse.setDirectorName(directorName);
+				financialArrangementsDetailResponse.setAmountStr(CommonUtils.convertValue(financialArrangementsDetailRequest.getAmount()));
+				financialArrangementsDetailResponse.setOutstandingAmountStr(CommonUtils.convertValue(financialArrangementsDetailRequest.getOutstandingAmount()));
 				financialArrangementsDetailResponseList.add(financialArrangementsDetailResponse);
 			}
 			Map<String, List<FinancialArrangementsDetailResponse>> financialArrangementDetails = financialArrangementsDetailResponseList.stream().collect(Collectors.groupingBy(FinancialArrangementsDetailResponse:: getDirectorName));
@@ -253,7 +263,8 @@ public class NtbCamReportServiceImpl implements NtbCamReportService{
 		eligibilityReq.setFpProductMappingId(productId);
 		try {
 			EligibilityResponse eligibilityResp = eligibilityClient.corporateLoanData(eligibilityReq);
-			map.put("assLimits",eligibilityResp);
+//			map.put("assLimits",CommonUtils.convertToDoubleForXml(MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)eligibilityResp.getData(), CLEligibilityRequest.class), new HashMap<>()));
+			map.put("assLimits",CommonUtils.printFields(eligibilityResp.getData()));
 		} catch (Exception e1) {
 			e1.printStackTrace();
 			logger.info("Error while getting Eligibility data");
@@ -318,6 +329,10 @@ public class NtbCamReportServiceImpl implements NtbCamReportService{
 					if(!CommonUtils.isListNullOrEmpty(collect)) {
 						map2.put(NTB.CHEQUE_BOUNCES, CommonUtils.printFields(collect.get(0)));
 					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(NTB.CIBIL_TRANSUNION_SCORE)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						map2.put(NTB.CIBIL_TRANSUNION_SCORE, CommonUtils.printFields(collect.get(0)));
+					}
 					scoreResponse.add(map2);
 					}
 					map.put("directorScoringData", scoreResponse);
@@ -329,7 +344,7 @@ public class NtbCamReportServiceImpl implements NtbCamReportService{
 					companyMap.put("companyDataObject", CommonUtils.printFields(proposalScoreResponse));
 					map.put("totalWeight", CommonUtils.addNumbers(proposalScoreResponse.getBusinessRiskWeight(), proposalScoreResponse.getFinancialRiskWeight(), proposalScoreResponse.getManagementRiskWeight()));
 					map.put("totalWeightActualScore", CommonUtils.addNumbers(proposalScoreResponse.getManagementRiskWeightOfScoring(), proposalScoreResponse.getFinancialRiskWeightOfScoring(), proposalScoreResponse.getBusinessRiskWeightOfScoring()));
-					map.put("totalWeightOutOfScore", CommonUtils.addNumbers(proposalScoreResponse.getManagementScoreWithRiskWeight(), proposalScoreResponse.getFinancialScoreWithRiskWeight(), proposalScoreResponse.getBusinessScoreWithRiskWeight()));
+					map.put("totalWeightOutOfScore", CommonUtils.addNumbers(proposalScoreResponse.getManagementRiskMaxTotalWeight(), proposalScoreResponse.getFinancialRiskMaxTotalWeight(), proposalScoreResponse.getBusinessRiskMaxTotalWeight()));
 					//Filter Parameters
 					List<LinkedHashMap<String, Object>> mapList = (List<LinkedHashMap<String, Object>>)scoringResponse.getDataList();
 					List<ProposalScoreDetailResponse> newMapList = new ArrayList<>(mapList.size());
@@ -425,6 +440,16 @@ public class NtbCamReportServiceImpl implements NtbCamReportService{
 			e.printStackTrace();
 			logger.info("Error while getting CGTMSE data");
 		}
+		
+		//HUNTER API ANALYSIS
+				try {
+					AnalyticsResponse hunterResp =fraudAnalyticsClient.getRuleAnalysisData(applicationId);
+					if(!CommonUtils.isObjectListNull(hunterResp,hunterResp.getData())) {
+						map.put("hunterResponse",  CommonUtils.printFields(hunterResp.getData()));
+					}
+				} catch (Exception e1) {
+					e1.printStackTrace();
+				}
 		
 		//BANK STATEMENT
 		ReportRequest reportRequest = new ReportRequest();

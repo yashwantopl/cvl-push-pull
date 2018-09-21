@@ -42,6 +42,10 @@ public class FinancialArrangementsDetailResponse implements Serializable{
     
     private Object lcbgStatus;
     
+    private String amountStr;
+    
+    private String outstandingAmountStr;
+    
    /* public String getFacilityNature() {
         return facilityNature;
     }
@@ -136,15 +140,28 @@ public class FinancialArrangementsDetailResponse implements Serializable{
 	public void setDirectorName(String directorName) {
 		this.directorName = directorName;
 	}
-	
-	
-
 	public Object getLcbgStatus() {
 		return lcbgStatus;
 	}
 
 	public void setLcbgStatus(Object lcbgStatus) {
 		this.lcbgStatus = lcbgStatus;
+	}
+	
+	public String getAmountStr() {
+		return amountStr;
+	}
+
+	public void setAmountStr(String amountStr) {
+		this.amountStr = amountStr;
+	}
+
+	public String getOutstandingAmountStr() {
+		return outstandingAmountStr;
+	}
+
+	public void setOutstandingAmountStr(String outstandingAmountStr) {
+		this.outstandingAmountStr = outstandingAmountStr;
 	}
 
 	public static void printFields(Object obj) throws Exception {
