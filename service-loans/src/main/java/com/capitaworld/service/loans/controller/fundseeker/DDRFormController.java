@@ -542,7 +542,7 @@ public class DDRFormController {
 	 * @param applicationId
 	 * @return
 	 */
-	@RequestMapping(value = "/saveCustomerDetail", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/saveCustomerDetail", method = RequestMethod.POST,consumes = MediaType.APPLICATION_JSON_VALUE ,produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> saveCustomerDetail(@RequestBody DDRCustomerRequest customerRequest,
 			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
 		
@@ -579,7 +579,7 @@ public class DDRFormController {
 	 * GET CUSTOMER NAME BY CUSTOMER ID
 	 * @return
 	 */
-	@RequestMapping(value = "/getCustomerNameById", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/getCustomerNameById", method = RequestMethod.POST,consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getCustomerNameById(@RequestBody DDRCustomerRequest customerRequest) {
 		
 		logger.info("ENTER IN GET CUSTOMER NAME BY CUSTOMER ID------------>");
