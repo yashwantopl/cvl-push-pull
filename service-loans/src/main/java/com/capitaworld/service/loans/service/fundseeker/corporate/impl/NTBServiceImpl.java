@@ -1,30 +1,47 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
-import com.capitaworld.connect.api.ConnectResponse;
-import com.capitaworld.connect.client.ConnectClient;
-import com.capitaworld.service.dms.util.CommonUtil;
-import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
-import com.capitaworld.service.loans.domain.fundseeker.corporate.*;
-import com.capitaworld.service.loans.model.*;
-import com.capitaworld.service.loans.model.corporate.FundSeekerInputRequestResponse;
-import com.capitaworld.service.loans.model.corporate.PrimaryCorporateRequest;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.*;
-import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.NTBService;
-import com.capitaworld.service.loans.utils.CommonUtils;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import com.capitaworld.connect.api.ConnectResponse;
+import com.capitaworld.connect.client.ConnectClient;
+import com.capitaworld.service.fraudanalytics.client.FraudAnalyticsClient;
+import com.capitaworld.service.fraudanalytics.model.AnalyticsRequest;
+import com.capitaworld.service.fraudanalytics.model.AnalyticsResponse;
+import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.DirectorBackgroundDetail;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.EmploymentDetail;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.FinancialArrangementsDetail;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
+import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
+import com.capitaworld.service.loans.model.EmploymentDetailRequest;
+import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
+import com.capitaworld.service.loans.model.LoansResponse;
+import com.capitaworld.service.loans.model.NTBRequest;
+import com.capitaworld.service.loans.model.common.HunterRequestDataResponse;
+import com.capitaworld.service.loans.model.corporate.FundSeekerInputRequestResponse;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.DirectorBackgroundDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.EmploymentDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.FinancialArrangementDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorRepository;
+import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.NTBService;
+import com.capitaworld.service.loans.utils.CommonUtils;
 
 @Service
 @Transactional
@@ -58,6 +75,15 @@ public class NTBServiceImpl implements NTBService {
 
     @Autowired
     private SubSectorRepository subSectorRepository;
+    
+    @Autowired
+    private LoanApplicationService loanApplicationService;
+    
+    @Autowired
+    private FraudAnalyticsClient fraudAnalyticsClient;
+    
+    @Autowired
+    private Environment environment;
 
     @Override
     public DirectorBackgroundDetailRequest getOneformDetailByDirectorId(Long directorId) throws Exception {
@@ -389,4 +415,67 @@ public class NTBServiceImpl implements NTBService {
             return new LoansResponse("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
     }
+    
+    @Override
+	public LoansResponse invokeFraudAnalytics(FundSeekerInputRequestResponse fundSeekerInputRequestResponse)
+			throws Exception {
+		
+		try {
+			logger.info("Start invokeFraudAnalytics()");
+			LoansResponse res = new LoansResponse();
+			if("Y".equals(String.valueOf(environment.getRequiredProperty("cw.call.service_fraudanalytics")))) {
+				Boolean isNTB = false;
+				HunterRequestDataResponse hunterRequestDataResponse = null;
+				if(fundSeekerInputRequestResponse.getBusinessTypeId()!=null && fundSeekerInputRequestResponse.getBusinessTypeId() == 2) {// FOR NTB ONLY
+					isNTB = true;
+					hunterRequestDataResponse = loanApplicationService
+							.getDataForHunterForNTB(fundSeekerInputRequestResponse.getApplicationId());
+				}
+				else {
+			hunterRequestDataResponse = loanApplicationService
+					.getDataForHunter(fundSeekerInputRequestResponse.getApplicationId());
+				}
+			AnalyticsRequest request = new AnalyticsRequest();
+			request.setApplicationId(fundSeekerInputRequestResponse.getApplicationId());
+			request.setUserId(fundSeekerInputRequestResponse.getUserId());
+			request.setData(hunterRequestDataResponse);
+			request.setIsNtb(isNTB);
+			res.setMessage("Oneform Saved Successfully");
+			res.setStatus(HttpStatus.OK.value());
+			AnalyticsResponse response = fraudAnalyticsClient.callHunterIIAPI(request);
+			if (response != null) {
+				
+				Boolean resp = false;
+				if(response.getData()!=null) {
+					resp = Boolean.valueOf(response.getData().toString());
+				}
+				res.setData(resp);
+				if(resp) {
+					res.setStatus(HttpStatus.OK.value());
+					res.setMessage("Oneform Saved Successfully");
+				}
+				else {
+					res.setStatus(HttpStatus.UNAVAILABLE_FOR_LEGAL_REASONS.value());
+				res.setMessage(CommonUtils.HUNTER_INELIGIBLE_MESSAGE);
+				}
+			}
+			
+			logger.info("End invokeFraudAnalytics() with resp : "+res.getData());
+			return res;
+			}
+			else {
+				logger.info("End invokeFraudAnalytics() Skiping Fraud Analytics call");
+				   logger.info("Successfully Saved");
+	                return new LoansResponse("Oneform Saved Successfully", HttpStatus.OK.value());
+	                      
+			}
+		} catch (Exception e) {
+			logger.info("End invokeFraudAnalytics() Error in Fraud Analytics call");
+			e.printStackTrace();
+			//throw new Exception();
+			logger.info("End invokeFraudAnalytics() ERROR IN FRAUD ANALYTICS CALL");
+			 return new LoansResponse("Successfully Saved", HttpStatus.OK.value());
+		}
+	}
+
 }
