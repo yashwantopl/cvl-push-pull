@@ -3737,25 +3737,33 @@ public class DDRFormServiceImpl implements DDRFormService {
 
 	@Override
 	public DDRCustomerRequest getCustomerNameById(DDRCustomerRequest customerRequest) {
-		String result = null;
 		try {
 			logger.info("GET CUSTOMER NAME BY CUSTOMER ID =====>  "+ customerRequest.getCustomerId() + " ---->bobUrl==========>"+ bobUrl);
 			RestTemplate restTemplate = new RestTemplate();
-			result = restTemplate.exchange(bobUrl, HttpMethod.POST, getHttpHeader(customerRequest.getCustomerId()), String.class).getBody();
+			String getResult = restTemplate.exchange(bobUrl, HttpMethod.POST, getHttpHeader(customerRequest.getCustomerId()), String.class).getBody();
+			logger.info("Customer Name RESPOMSE==========>{}",getResult);
+			if(!CommonUtils.isObjectNullOrEmpty(getResult)) {
+				String[] split = getResult.split("\\|");
+				if(split.length > 1) {
+					String status = split[0];
+					if("SUCCESS".equals(status)) {
+						customerRequest.setCustomerName(split[1]);
+					}
+				}
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		logger.info("Customer Name==========>{}",result);
-		customerRequest.setCustomerName(result);
 		return customerRequest;
 	}
 
 	private HttpEntity<String> getHttpHeader(String customerId) {
 		HttpHeaders headers = new HttpHeaders();
+		logger.info("FOUND HAEDER KEY --------------->" + headerAuthKey + " and Header NAme ----------->" + headerName);
 		String requestDataEnc = Base64.getEncoder().encodeToString(headerAuthKey.getBytes());
 		headers.set(headerName, requestDataEnc);
 		headers.setContentType(MediaType.TEXT_PLAIN);
-		return new HttpEntity<String>(customerId, headers);
+		return new HttpEntity<String>("NAMEINQ~" + customerId, headers);
 	}
 
 }
