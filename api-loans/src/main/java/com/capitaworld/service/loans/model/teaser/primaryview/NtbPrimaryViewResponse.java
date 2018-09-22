@@ -6,8 +6,14 @@ package com.capitaworld.service.loans.model.teaser.primaryview;
 import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.service.loans.model.AssociatedConcernDetailRequest;
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailResponse;
+import com.capitaworld.service.loans.model.ExistingProductDetailRequest;
+import com.capitaworld.service.loans.model.FinanceMeansDetailResponse;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailResponse;
+import com.capitaworld.service.loans.model.GuarantorsCorporateDetailRequest;
+import com.capitaworld.service.loans.model.SecurityCorporateDetailRequest;
+import com.capitaworld.service.loans.model.TotalCostOfProjectResponse;
 import com.capitaworld.service.loans.model.corporate.CorporateDirectorIncomeRequest;
 
 /**
@@ -112,6 +118,20 @@ public class NtbPrimaryViewResponse {
 	    private Object fraudDetectionData;
 	    private Object proposedDetailOfUnitFact;
 	    private Object proposedConstitutionOfUnit;
+	    
+	    private Object nameOfEntity;
+	    private Object pan;
+	    private Object establishDate;
+	    
+	    
+	    
+		private List<ExistingProductDetailRequest> existingProductDetailRequestList;
+		private List<TotalCostOfProjectResponse> totalCostOfProjectResponseList;
+		private List<FinanceMeansDetailResponse> financeMeansDetailResponseList;
+		private List<SecurityCorporateDetailRequest> securityCorporateDetailRequestList;
+		private List<GuarantorsCorporateDetailRequest> guarantorsCorporateDetailRequestList;
+		private List<AssociatedConcernDetailRequest> associatedConcernDetailRequests;
+	    
 
 		/**
 		 * @return the matchesList
@@ -1065,6 +1085,62 @@ public class NtbPrimaryViewResponse {
 		}
 		public void setProposedConstitutionOfUnit(Object proposedConstitutionOfUnit) {
 			this.proposedConstitutionOfUnit = proposedConstitutionOfUnit;
+		}
+		public Object getNameOfEntity() {
+			return nameOfEntity;
+		}
+		public void setNameOfEntity(Object nameOfEntity) {
+			this.nameOfEntity = nameOfEntity;
+		}
+		public Object getPan() {
+			return pan;
+		}
+		public void setPan(Object pan) {
+			this.pan = pan;
+		}
+		public Object getEstablishDate() {
+			return establishDate;
+		}
+		public void setEstablishDate(Object establishDate) {
+			this.establishDate = establishDate;
+		}
+		public List<ExistingProductDetailRequest> getExistingProductDetailRequestList() {
+			return existingProductDetailRequestList;
+		}
+		public void setExistingProductDetailRequestList(List<ExistingProductDetailRequest> existingProductDetailRequestList) {
+			this.existingProductDetailRequestList = existingProductDetailRequestList;
+		}
+		public List<TotalCostOfProjectResponse> getTotalCostOfProjectResponseList() {
+			return totalCostOfProjectResponseList;
+		}
+		public void setTotalCostOfProjectResponseList(List<TotalCostOfProjectResponse> totalCostOfProjectResponseList) {
+			this.totalCostOfProjectResponseList = totalCostOfProjectResponseList;
+		}
+		public List<FinanceMeansDetailResponse> getFinanceMeansDetailResponseList() {
+			return financeMeansDetailResponseList;
+		}
+		public void setFinanceMeansDetailResponseList(List<FinanceMeansDetailResponse> financeMeansDetailResponseList) {
+			this.financeMeansDetailResponseList = financeMeansDetailResponseList;
+		}
+		public List<SecurityCorporateDetailRequest> getSecurityCorporateDetailRequestList() {
+			return securityCorporateDetailRequestList;
+		}
+		public void setSecurityCorporateDetailRequestList(
+				List<SecurityCorporateDetailRequest> securityCorporateDetailRequestList) {
+			this.securityCorporateDetailRequestList = securityCorporateDetailRequestList;
+		}
+		public List<GuarantorsCorporateDetailRequest> getGuarantorsCorporateDetailRequestList() {
+			return guarantorsCorporateDetailRequestList;
+		}
+		public void setGuarantorsCorporateDetailRequestList(
+				List<GuarantorsCorporateDetailRequest> guarantorsCorporateDetailRequestList) {
+			this.guarantorsCorporateDetailRequestList = guarantorsCorporateDetailRequestList;
+		}
+		public List<AssociatedConcernDetailRequest> getAssociatedConcernDetailRequests() {
+			return associatedConcernDetailRequests;
+		}
+		public void setAssociatedConcernDetailRequests(List<AssociatedConcernDetailRequest> associatedConcernDetailRequests) {
+			this.associatedConcernDetailRequests = associatedConcernDetailRequests;
 		}
 		
 
