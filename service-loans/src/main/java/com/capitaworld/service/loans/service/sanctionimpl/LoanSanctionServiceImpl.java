@@ -34,6 +34,7 @@ import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.UserOrganisationRequest;
 import com.capitaworld.service.users.model.UserResponse;
+import com.capitaworld.service.users.utils.OrganisationConfiguration;
 import com.capitaworld.sidbi.integration.client.SidbiIntegrationClient;
 import com.capitaworld.sidbi.integration.model.GenerateTokenRequest;
 import com.capitaworld.sidbi.integration.util.AESEncryptionUtility;
@@ -77,15 +78,6 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 	
 	@Autowired
 	private BankToCWAuditTrailRepository bankToCWAuditTrailRepository  ;
-
-	@Value("${javax.net.ssl.keyStore}")
-	private String keyStore;
-	
-	@Value("${javax.net.ssl.keyStorePassword}")
-	private String keyStorePassword;
-	
-	@Value("${javax.net.ssl.keyStoreType}")
-	private String keyStoreType;
 
 	@Override
 	public Boolean saveLoanSanctionDetail(LoanSanctionRequest loanSanctionRequest) throws Exception {
@@ -211,12 +203,13 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 						String token=null;
 						
 						try {
-							if(userOrganisationRequest.getUserOrgId() == 22l) // for syndicate Bank only check orgid
-							{
-								System.setProperty("javax.net.ssl.keyStore",keyStore);                                    
-								System.setProperty("javax.net.ssl.keyStorePassword", keyStorePassword);              
-								System.setProperty("javax.net.ssl.keyStoreType", keyStoreType);            
-								
+							
+							// for syndicate Bank only check orgid
+							OrganisationConfiguration organisationConfiguration = MultipleJSONObjectHelper.getObjectFromString(userOrganisationRequest.getConfig(), OrganisationConfiguration.class);
+							if(!CommonUtils.isObjectNullOrEmpty(organisationConfiguration) && organisationConfiguration.getIsSSL()){
+								System.setProperty("javax.net.ssl.keyStore",  organisationConfiguration.getKeyStore());                                    
+								System.setProperty("javax.net.ssl.keyStorePassword", organisationConfiguration.getKeyStorePassword());              
+								System.setProperty("javax.net.ssl.keyStoreType",  organisationConfiguration.getKeyStoreType());            
 							}
 							token = sidbiIntegrationClient.getToken(generateTokenRequest,generateTokenRequest.getBankToken() , userOrganisationRequest.getCodeLanguage());
 							generateTokenRequest.setToken(token);

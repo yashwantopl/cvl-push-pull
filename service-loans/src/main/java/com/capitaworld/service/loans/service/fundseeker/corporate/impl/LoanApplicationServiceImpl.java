@@ -113,6 +113,7 @@ import com.capitaworld.service.loans.domain.fundseeker.corporate.PromotorBackgro
 import com.capitaworld.service.loans.domain.fundseeker.corporate.ProposedProductDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.SecurityCorporateDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.TotalCostOfProject;
+import com.capitaworld.service.loans.domain.fundseeker.ddr.DDRFormDetails;
 import com.capitaworld.service.loans.domain.fundseeker.retail.CoApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.GuarantorDetails;
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryCarLoanDetail;
@@ -249,6 +250,7 @@ import com.capitaworld.service.scoring.model.ScoringRequest;
 import com.capitaworld.service.scoring.model.ScoringResponse;
 import com.capitaworld.service.scoring.model.scoringmodel.ScoringModelReqRes;
 import com.capitaworld.service.users.client.UsersClient;
+import com.capitaworld.service.users.model.BranchBasicDetailsRequest;
 import com.capitaworld.service.users.model.FpProfileBasicDetailRequest;
 import com.capitaworld.service.users.model.FundProviderDetailsRequest;
 import com.capitaworld.service.users.model.NetworkPartnerDetailsRequest;
@@ -6624,7 +6626,7 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 	}
 	
 	
-	private LoanMasterRequest createObj(PrimaryCorporateDetail applicationMaster) {
+	private LoanMasterRequest createObj(PrimaryCorporateDetail applicationMaster ) {
 		LoanMasterRequest loanMasterRequest = new LoanMasterRequest();
 		loanMasterRequest.setTenure(applicationMaster.getTenure());
 		loanMasterRequest.setProductName(CommonUtils.LoanType.getType(applicationMaster.getProductId()).getName());
@@ -6645,6 +6647,7 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 		ProposalMappingRequest proposalMappingRequest = new ProposalMappingRequest();
 		proposalMappingRequest.setApplicationId(applicationMaster.getId());
 		Long fpProductId=null;
+		UserResponse userResponse =null ;
 		ProposalMappingResponse proposalMappingResponse = proposalService.listOfFundSeekerProposal(proposalMappingRequest);
 		if(!CommonUtils.isObjectListNull(proposalMappingResponse) && !CommonUtils.isObjectListNull(proposalMappingResponse.getDataList())) {
 			List<Map<String, Object>> proposalMappingResponseDataList = (List<Map<String, Object>>) proposalMappingResponse.getDataList();
@@ -6661,6 +6664,17 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
                 if(productMstr != null) {
                 	loanMasterRequest.setFpProductName(productMstr.getName());                	
                 }
+                
+                // set branch code  
+                if(!CommonUtils.isObjectNullOrEmpty(proposalMappingRequest1.getBranchId())){
+                	userResponse =  userClient.getBranchDetailById( proposalMappingRequest1.getBranchId());
+                	if(!CommonUtils.isObjectNullOrEmpty(userResponse)) {
+                		BranchBasicDetailsRequest branchBasicDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap( ( LinkedHashMap<String ,Object>) userResponse.getData() , BranchBasicDetailsRequest.class); 
+                		loanMasterRequest.setBranchCode(branchBasicDetailsRequest.getCode());
+                	}
+                }
+                
+                
 			} catch (IOException e) {
 				logger.error("error while setting details from proposal details");
 				e.printStackTrace();
@@ -6671,7 +6685,7 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 			if (master.getIsActive()) {
 				UsersRequest request = new UsersRequest();
 				request.setId(master.getUserId());
-				UserResponse userResponse = userClient.getFPDetails(request);
+				userResponse = userClient.getFPDetails(request);
 				FundProviderDetailsRequest fundProviderDetailsRequest = null;
 				try {
 					fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap(
@@ -6683,6 +6697,13 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 				}
 			}
 		}
+		// set customerid and customer Name  for BOB
+		DDRFormDetails dDRFormDetails = dDRFormService.getDDRDetailByApplicationId(applicationMaster.getApplicationId().getId());
+		if(!CommonUtils.isObjectNullOrEmpty(dDRFormDetails)) {
+			loanMasterRequest.setCustomerId(dDRFormDetails.getCustomerId());
+			loanMasterRequest.setCustomerName(dDRFormDetails.getCustomerName());
+		}
+		
 		return loanMasterRequest;
 	}
 	
