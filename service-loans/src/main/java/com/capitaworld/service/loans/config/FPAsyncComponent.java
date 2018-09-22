@@ -1323,7 +1323,7 @@ public class FPAsyncComponent {
 
 			String mobile = signUpUser.getMobile();
 			System.out.println("Mobile no:-" + mobile);
-			mailParameter.put("mobile_number", mobile != null ? mobile : "NA");
+			mailParameter.put("mobile_no", mobile != null ? mobile : "NA");
 		}
 
 		String emailSubject = "Maker Assigned - For Quick Business Loan Approval ";
