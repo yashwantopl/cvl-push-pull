@@ -27,14 +27,21 @@ import com.capitaworld.service.dms.model.DocumentResponse;
 import com.capitaworld.service.dms.model.StorageDetailsResponse;
 import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.loans.config.FPAsyncComponent;
+import com.capitaworld.service.loans.domain.IndustrySectorDetailTemp;
+import com.capitaworld.service.loans.domain.fundprovider.GeographicalCityDetailTemp;
+import com.capitaworld.service.loans.domain.fundprovider.GeographicalCountryDetailTemp;
+import com.capitaworld.service.loans.domain.fundprovider.GeographicalStateDetailTemp;
+import com.capitaworld.service.loans.domain.fundprovider.MsmeValueMapping;
+import com.capitaworld.service.loans.domain.fundprovider.MsmeValueMappingTemp;
+import com.capitaworld.service.loans.domain.fundprovider.NegativeIndustryTemp;
 import com.capitaworld.service.loans.domain.fundprovider.NtbTermLoanParameterTemp;
-import com.capitaworld.service.loans.domain.fundprovider.PersonalLoanParameter;
 import com.capitaworld.service.loans.domain.fundprovider.PersonalLoanParameterTemp;
 import com.capitaworld.service.loans.domain.fundprovider.ProductMaster;
 import com.capitaworld.service.loans.domain.fundprovider.ProductMasterTemp;
 import com.capitaworld.service.loans.domain.fundprovider.TermLoanParameterTemp;
 import com.capitaworld.service.loans.domain.fundprovider.WcTlParameterTemp;
 import com.capitaworld.service.loans.domain.fundprovider.WorkingCapitalParameterTemp;
+import com.capitaworld.service.loans.model.DataRequest;
 import com.capitaworld.service.loans.model.FpProductDetails;
 import com.capitaworld.service.loans.model.MultipleFpPruductRequest;
 import com.capitaworld.service.loans.model.ProductDetailsForSp;
@@ -48,21 +55,25 @@ import com.capitaworld.service.loans.model.corporate.TermLoanParameterRequest;
 import com.capitaworld.service.loans.model.corporate.UnsecuredLoanParameterRequest;
 import com.capitaworld.service.loans.model.corporate.WcTlParameterRequest;
 import com.capitaworld.service.loans.model.corporate.WorkingCapitalParameterRequest;
-import com.capitaworld.service.loans.model.retail.CarLoanParameterRequest;
-import com.capitaworld.service.loans.model.retail.HomeLoanParameterRequest;
-import com.capitaworld.service.loans.model.retail.LapParameterRequest;
 import com.capitaworld.service.loans.model.retail.PersonalLoanParameterRequest;
 import com.capitaworld.service.loans.model.retail.RetailProduct;
 import com.capitaworld.service.loans.repository.fundprovider.CarLoanParameterRepository;
+import com.capitaworld.service.loans.repository.fundprovider.GeographicalCityTempRepository;
 import com.capitaworld.service.loans.repository.fundprovider.GeographicalCountryRepository;
+import com.capitaworld.service.loans.repository.fundprovider.GeographicalCountryTempRepository;
+import com.capitaworld.service.loans.repository.fundprovider.GeographicalStateTempRepository;
 import com.capitaworld.service.loans.repository.fundprovider.HomeLoanParameterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.LapParameterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.LasParameterRepository;
+import com.capitaworld.service.loans.repository.fundprovider.MsmeValueMappingRepository;
+import com.capitaworld.service.loans.repository.fundprovider.MsmeValueMappingTempRepository;
+import com.capitaworld.service.loans.repository.fundprovider.NegativeIndustryTempRepository;
 import com.capitaworld.service.loans.repository.fundprovider.PersonalLoanParameterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterTempRepository;
 import com.capitaworld.service.loans.repository.fundprovider.TermLoanParameterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.WorkingCapitalParameterRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorTempRepository;
 import com.capitaworld.service.loans.service.common.FundProviderSequenceService;
 import com.capitaworld.service.loans.service.fundprovider.CarLoanParameterService;
 import com.capitaworld.service.loans.service.fundprovider.HomeLoanParameterService;
@@ -165,7 +176,30 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	
 	@Autowired
 	private FPAsyncComponent fpAsyncComponent;
+	
+	@Autowired
+	private IndustrySectorTempRepository industrySectorTempRepository;
+	
+	@Autowired
+	private GeographicalCountryTempRepository geographicalCountryTempRepository;
+	
+	@Autowired
+	private GeographicalStateTempRepository geographicalStateTempRepository;
+	
+	@Autowired
+	private GeographicalCityTempRepository geographicalCityTempRepository;
+	
+	@Autowired
+	private NegativeIndustryTempRepository negativeIndustryTempRepository;
 
+
+    @Autowired
+    private MsmeValueMappingRepository masterRepository;
+
+    @Autowired
+    private MsmeValueMappingTempRepository tempRepository;
+	
+	
 	@Override
 	public Boolean saveOrUpdate(AddProductRequest addProductRequest, Long userOrgId) {
 		CommonDocumentUtils.startHook(logger, "saveOrUpdate");
@@ -217,7 +251,86 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				default:
 					break;
 				}
+				List<DataRequest> industrySecIdList = null,secIdList=null,geogaphicallyCountry=null,geogaphicallyState=null,geogaphicallyCity=null,negativeIndList=null;
+				if(!CommonUtils.isObjectNullOrEmpty(addProductRequest.getLoanId()))
+				{
+					switch (loanType) {
+					case WORKING_CAPITAL:
+						WorkingCapitalParameterTemp workingCapitalParameterTemp = new WorkingCapitalParameterTemp();
+						WorkingCapitalParameterRequest workingCapitalParameterRequest=workingCapitalParameterService.getWorkingCapitalParameter(addProductRequest.getLoanId());
+						industrySecIdList=workingCapitalParameterRequest.getIndustrylist();
+						//set multiple value in temp
+						industrySecIdList=workingCapitalParameterRequest.getIndustrylist();
+						secIdList=workingCapitalParameterRequest.getSectorlist();
+						geogaphicallyCountry=workingCapitalParameterRequest.getCountryList();
+						geogaphicallyState=workingCapitalParameterRequest.getStateList();
+						geogaphicallyCity=workingCapitalParameterRequest.getCityList();
+						negativeIndList=workingCapitalParameterRequest.getUnInterestedIndustrylist();
+						//END set multiple value in temp
+						BeanUtils.copyProperties(workingCapitalParameterRequest, workingCapitalParameterTemp,"id");
+						productMaster = workingCapitalParameterTemp;
+						productMaster.setIsParameterFilled(true);
+						break;
+					case TERM_LOAN:
+						if (!CommonUtils.isObjectNullOrEmpty(termLoanParameterService.getTermLoanParameterRequest(addProductRequest.getLoanId()))) {
+							//productMaster = new NtbTermLoanParameterTemp();
+							
+							NtbTermLoanParameterTemp ntbTermLoanParameterTemp = new NtbTermLoanParameterTemp();
+							TermLoanParameterRequest termLoanParameterRequest=termLoanParameterService.getTermLoanParameterRequest(addProductRequest.getLoanId());
+							industrySecIdList=termLoanParameterRequest.getIndustrylist();
+							//set multiple value in temp
+							industrySecIdList=termLoanParameterRequest.getIndustrylist();
+							secIdList=termLoanParameterRequest.getSectorlist();
+							geogaphicallyCountry=termLoanParameterRequest.getCountryList();
+							geogaphicallyState=termLoanParameterRequest.getStateList();
+							geogaphicallyCity=termLoanParameterRequest.getCityList();
+							negativeIndList=termLoanParameterRequest.getUnInterestedIndustrylist();
+							//END set multiple value in temp
+							BeanUtils.copyProperties(termLoanParameterRequest, ntbTermLoanParameterTemp,"id");
+							productMaster = ntbTermLoanParameterTemp;
+							productMaster.setIsParameterFilled(true);
+						} else {
+							//productMaster = new TermLoanParameterTemp();
+							TermLoanParameterTemp termLoanParameterTemp = new TermLoanParameterTemp();
+							TermLoanParameterRequest termLoanParameterRequest=termLoanParameterService.getNtbTermLoanParameterRequest(addProductRequest.getLoanId());
+							industrySecIdList=termLoanParameterRequest.getIndustrylist();
+							//set multiple value in temp
+							industrySecIdList=termLoanParameterRequest.getIndustrylist();
+							secIdList=termLoanParameterRequest.getSectorlist();
+							geogaphicallyCountry=termLoanParameterRequest.getCountryList();
+							geogaphicallyState=termLoanParameterRequest.getStateList();
+							geogaphicallyCity=termLoanParameterRequest.getCityList();
+							negativeIndList=termLoanParameterRequest.getUnInterestedIndustrylist();
+							//END set multiple value in temp
+							BeanUtils.copyProperties(termLoanParameterRequest, termLoanParameterTemp,"id");
+							productMaster = termLoanParameterTemp;
+							productMaster.setIsParameterFilled(true);
+						}
+						break;
+					case WCTL_LOAN:
+						productMaster = new WcTlParameterTemp();
+						break;
+					case PERSONAL_LOAN:
+						productMaster = new PersonalLoanParameterTemp();
+						PersonalLoanParameterTemp personalLoanParameterTemp = new PersonalLoanParameterTemp();
+						PersonalLoanParameterRequest personalLoanParameterRequest=personalLoanParameterService.getPersonalLoanParameterRequest(addProductRequest.getLoanId());
+					
+						geogaphicallyCountry=personalLoanParameterRequest.getCountryList();
+						geogaphicallyState=personalLoanParameterRequest.getStateList();
+						geogaphicallyCity=personalLoanParameterRequest.getCityList();
+						//negativeIndList=personalLoanParameterRequest.getUnInterestedIndustrylist();
+						//END set multiple value in temp
+						BeanUtils.copyProperties(personalLoanParameterRequest, personalLoanParameterTemp,"id");
+						productMaster = personalLoanParameterTemp;
+						productMaster.setIsParameterFilled(true);
+						break;
 
+					default:
+						break;
+					}
+					
+					
+				}
 				// productMaster.setJobId(null);
 				jobId = Long.valueOf(workflowResponse.getData().toString());
 				productMaster.setJobId(jobId);
@@ -243,7 +356,58 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				productMaster.setStatusId(1);
 				productMaster.setProductCode(
 						fundProviderSequenceService.getFundProviderSequenceNumber(addProductRequest.getProductId()));
-				productMasterTempRepository.save(productMaster);
+				ProductMasterTemp productMaster2=productMasterTempRepository.save(productMaster);
+				industrySectorTempRepository.inActiveMappingByFpProductId(productMaster2.getId());
+				// industry data save
+				if(!CommonUtils.isListNullOrEmpty(industrySecIdList))
+				saveIndustryTemp(productMaster2.getId(),industrySecIdList,(CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
+						? addProductRequest.getUserId() : addProductRequest.getClientId()));
+				// Sector data save
+				if(!CommonUtils.isListNullOrEmpty(secIdList))
+				saveSectorTemp(productMaster2.getId(),secIdList,(CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
+						? addProductRequest.getUserId() : addProductRequest.getClientId()));
+				geographicalCountryTempRepository.inActiveMappingByFpProductId(productMaster2.getId());
+				// country data save
+				if(!CommonUtils.isListNullOrEmpty(geogaphicallyCountry))
+				saveCountryTemp(productMaster2.getId(),geogaphicallyCountry,(CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
+						? addProductRequest.getUserId() : addProductRequest.getClientId()));
+				// state data save
+				geographicalStateTempRepository.inActiveMappingByFpProductId(productMaster2.getId());
+				if(!CommonUtils.isListNullOrEmpty(geogaphicallyState))
+				saveStateTemp(productMaster2.getId(),geogaphicallyState,(CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
+						? addProductRequest.getUserId() : addProductRequest.getClientId()));
+				// city data save
+				geographicalCityTempRepository.inActiveMappingByFpProductId(productMaster2.getId());
+				if(!CommonUtils.isListNullOrEmpty(geogaphicallyCity))
+				saveCityTemp(productMaster2.getId(),geogaphicallyCity,(CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
+						? addProductRequest.getUserId() : addProductRequest.getClientId()));
+				// negative industry save
+				negativeIndustryTempRepository.inActiveMappingByFpProductMasterId(productMaster2.getId());
+				if(!CommonUtils.isListNullOrEmpty(negativeIndList))
+				saveNegativeIndustryTemp(productMaster2.getId(),negativeIndList,(CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
+						? addProductRequest.getUserId() : addProductRequest.getClientId()));
+				
+				
+				//msme value
+				tempRepository.inActiveTempByFpProductId(productMaster2.getId());
+				List<MsmeValueMapping> masterList = masterRepository.findByFpProductIdAndIsActive(addProductRequest.getLoanId(), true);
+				
+				if (!CommonUtils.isListNullOrEmpty(masterList)) {
+                    for (MsmeValueMapping master : masterList) {
+                    	MsmeValueMappingTemp temp= new MsmeValueMappingTemp();
+                        BeanUtils.copyProperties(master,temp, "id");
+                        temp.setActive(true);
+                        temp.setFpProductId(productMaster2.getId());
+                        temp.setCreatedBy(CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
+        						? addProductRequest.getUserId() : addProductRequest.getClientId());
+                        temp.setCreatedDate(new Date());
+                        temp.setModifiedBy(CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
+        						? addProductRequest.getUserId() : addProductRequest.getClientId());
+                        temp.setModifiedDate(new Date());
+                        tempRepository.save(temp);
+                    }
+                }
+				
 				return true;
 			}
 
@@ -254,6 +418,134 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 			logger.error("error while saveOrUpdate", e);
 			return false;
 		}
+	}
+
+	private void saveNegativeIndustryTemp(Long id, List<DataRequest> negativeIndList,Long userId) {
+		// TODO Auto-generated method stub
+		CommonDocumentUtils.startHook(logger, "saveNegativeIndustryTemp");
+		NegativeIndustryTemp negativeIndustry = null;
+		for (DataRequest dataRequest : negativeIndList) {
+			negativeIndustry = new NegativeIndustryTemp();
+			negativeIndustry.setFpProductMasterId(id);
+			negativeIndustry.setIndustryId(dataRequest.getId());
+			negativeIndustry.setCreatedBy(userId);
+			negativeIndustry.setModifiedBy(userId);
+			negativeIndustry.setCreatedDate(new Date());
+			negativeIndustry.setModifiedDate(new Date());
+			negativeIndustry.setIsActive(true);
+			// create by and update
+			negativeIndustryTempRepository.save(negativeIndustry);
+		}
+		CommonDocumentUtils.endHook(logger, "saveNegativeIndustryTemp");
+	}
+
+	private void saveCityTemp(Long id, List<DataRequest> geogaphicallyCity,Long userId) {
+		// TODO Auto-generated method stub
+		logger.info("start saveCity");
+		GeographicalCityDetailTemp geographicalCityDetail = null;
+		for (DataRequest dataRequest : geogaphicallyCity) {
+			geographicalCityDetail = new GeographicalCityDetailTemp();
+			geographicalCityDetail.setCityId(dataRequest.getId());
+			geographicalCityDetail.setFpProductMaster(id);
+			geographicalCityDetail.setCreatedBy(userId);
+			geographicalCityDetail.setModifiedBy(userId);
+			geographicalCityDetail.setCreatedDate(new Date());
+			geographicalCityDetail.setModifiedDate(new Date());
+			geographicalCityDetail.setIsActive(true);
+			// create by and update
+			geographicalCityTempRepository.save(geographicalCityDetail);
+		}
+		logger.info("end saveCity");
+		
+	}
+
+	private void saveStateTemp(Long id, List<DataRequest> geogaphicallyState,Long userId) {
+		 logger.info("start saveStateTemp");
+		GeographicalStateDetailTemp geographicalStateDetail = null;
+		for (DataRequest dataRequest : geogaphicallyState) {
+			geographicalStateDetail = new GeographicalStateDetailTemp();
+			geographicalStateDetail.setStateId(dataRequest.getId());
+			geographicalStateDetail.setFpProductMaster(id);
+			geographicalStateDetail.setCreatedBy(userId);
+			geographicalStateDetail.setModifiedBy(userId);
+			geographicalStateDetail.setCreatedDate(new Date());
+			geographicalStateDetail.setModifiedDate(new Date());
+			geographicalStateDetail.setIsActive(true);
+			// create by and update
+			geographicalStateTempRepository.save(geographicalStateDetail);
+		}
+		logger.info("end saveStateTemp");
+		
+	}
+
+	private void saveCountryTemp(Long id, List<DataRequest> geogaphicallyCountry,Long userId) {
+		// TODO Auto-generated method stub
+		logger.info("save saveCountryTemp");
+		GeographicalCountryDetailTemp geographicalCountryDetail = null;
+		for (DataRequest dataRequest : geogaphicallyCountry) {
+			geographicalCountryDetail = new GeographicalCountryDetailTemp();
+			geographicalCountryDetail.setCountryId(dataRequest.getId());
+			geographicalCountryDetail.setFpProductMaster(id);
+			geographicalCountryDetail.setCreatedBy(userId);
+			geographicalCountryDetail.setModifiedBy(userId);
+			geographicalCountryDetail.setCreatedDate(new Date());
+			geographicalCountryDetail.setModifiedDate(new Date());
+			geographicalCountryDetail.setIsActive(true);
+			// create by and update
+			geographicalCountryTempRepository.save(geographicalCountryDetail);
+		}
+		logger.info("end saveCountryTemp");
+		
+	}
+
+	private void saveSectorTemp(Long id, List<DataRequest> secIdList,Long userId) {
+		// TODO Auto-generated method stub
+		logger.info("start saveSectorTemp");
+		IndustrySectorDetailTemp industrySectorDetail = null;
+		for (DataRequest dataRequest : secIdList) {
+			industrySectorDetail = new IndustrySectorDetailTemp();
+			industrySectorDetail.setFpProductId(id);
+			industrySectorDetail.setSectorId(dataRequest.getId());
+			industrySectorDetail.setCreatedBy(userId);
+			industrySectorDetail.setModifiedBy(userId);
+			industrySectorDetail.setCreatedDate(new Date());
+			industrySectorDetail.setModifiedDate(new Date());
+			industrySectorDetail.setIsActive(true);
+			// create by and update
+			industrySectorTempRepository.save(industrySectorDetail);
+		}
+		logger.info("end saveSectorTemp");
+		
+	}
+
+	private void saveIndustryTemp(Long id, List<DataRequest> industrySecIdList,Long userId) {
+		// TODO Auto-generated method stub
+		logger.info("start saveIndustryTemp");
+		IndustrySectorDetailTemp industrySectorDetail = null;
+		for (DataRequest dataRequest : industrySecIdList) {
+			industrySectorDetail = new IndustrySectorDetailTemp();
+			industrySectorDetail.setFpProductId(id);
+			industrySectorDetail.setIndustryId(dataRequest.getId());
+			industrySectorDetail.setCreatedBy(userId);
+			industrySectorDetail.setModifiedBy(userId);
+			industrySectorDetail.setCreatedDate(new Date());
+			industrySectorDetail.setModifiedDate(new Date());
+			industrySectorDetail.setIsActive(true);
+			// create by and update
+			industrySectorTempRepository.save(industrySectorDetail);
+		}
+		logger.info("end saveIndustryTemp");
+		
+	}
+
+	private void saveSectorTemp(List<DataRequest> secIdList,Long userId) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void saveIndustryTemp(List<DataRequest> industrySecIdList,Long userId) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	@Override
@@ -1066,6 +1358,31 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 		}
 		CommonDocumentUtils.endHook(logger, "saveRetailInTemp");
 		return false;
+	}
+
+	@Override
+	public List<ProductMasterRequest> getApprovedListByProductType(Long userId, Integer productId,Long userOrgId) {
+		// TODO Auto-generated method stub
+		List<ProductMaster> results = null;
+		List<ProductMasterRequest> productMasterRequests = new ArrayList<>();
+		
+			if (!CommonUtils.isObjectNullOrEmpty(userOrgId)) {
+				results = productMasterRepository.getUserCorporateProductListByOrgId(userOrgId);
+			} else {
+				results = productMasterRepository.getUserCorporateProductList(userId);
+			}
+		
+		
+		for (ProductMaster productMaster : results) {
+			if(productMaster.getProductId()!=productId)
+				continue;
+				
+			ProductMasterRequest productMasterRequest = new ProductMasterRequest();
+			BeanUtils.copyProperties(productMaster, productMasterRequest);
+			productMasterRequests.add(productMasterRequest);
+		}
+		
+		return productMasterRequests;
 	}
 
 }
