@@ -3757,5 +3757,10 @@ public class DDRFormServiceImpl implements DDRFormService {
 		headers.setContentType(MediaType.TEXT_PLAIN);
 		return new HttpEntity<String>("NAMEINQ~" + customerId, headers);
 	}
+	
+	@Override
+	public DDRFormDetails getDDRDetailByApplicationId(Long applicationId) {
+		return ddrFormDetailsRepository.getByAppIdAndIsActive(applicationId);
+	}
 
 }

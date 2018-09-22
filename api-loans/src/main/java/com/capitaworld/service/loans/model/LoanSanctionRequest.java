@@ -37,6 +37,8 @@ public class LoanSanctionRequest extends AuditActivityRequest implements Seriali
 	private Long proposalId;
 	private Long proposalStatusId;
 	private Boolean isSaved = false;
+	private String reason;
+	private String statusCode;
 
 	public Long getId() {
 		return id;
@@ -198,6 +200,22 @@ public class LoanSanctionRequest extends AuditActivityRequest implements Seriali
 		this.isSaved = isSaved;
 	}
 
+	public String getReason() {
+		return reason;
+	}
+
+	public void setReason(String reason) {
+		this.reason = reason;
+	}
+
+	public String getStatusCode() {
+		return statusCode;
+	}
+
+	public void setStatusCode(String statusCode) {
+		this.statusCode = statusCode;
+	}
+
 	@Override
 	public String toString() {
 		return "LoanSanctionRequest [id=" + id + ", accountNo=" + accountNo + ", sanctionAmount=" + sanctionAmount
@@ -206,6 +224,7 @@ public class LoanSanctionRequest extends AuditActivityRequest implements Seriali
 				+ ", sanctionAuthority=" + sanctionAuthority + ", remark=" + remark + ", userName=" + userName
 				+ ", password=" + password + ", actionBy=" + actionBy + ", processingFee=" + processingFee + ", orgId="
 				+ orgId + ", proposalId=" + proposalId + ", proposalStatusId=" + proposalStatusId + ", isSaved="
-				+ isSaved + "]";
+				+ isSaved + ", reason=" + reason + ", statusCode=" + statusCode + "]";
 	}
+
 }

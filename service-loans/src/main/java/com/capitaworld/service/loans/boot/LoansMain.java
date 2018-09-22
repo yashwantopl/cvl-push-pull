@@ -1,8 +1,5 @@
 package com.capitaworld.service.loans.boot;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
@@ -24,9 +21,6 @@ import com.capitaworld.service.dms.client.DMSClient;
 import com.capitaworld.service.fraudanalytics.client.FraudAnalyticsClient;
 import com.capitaworld.service.gateway.client.GatewayClient;
 import com.capitaworld.service.gst.client.GstClient;
-import com.capitaworld.service.loans.config.AsyncComponent;
-import com.capitaworld.service.loans.config.FPAsyncComponent;
-import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
 import com.capitaworld.service.matchengine.MatchEngineClient;
 import com.capitaworld.service.matchengine.ProposalDetailsClient;
 import com.capitaworld.service.mca.client.McaClient;
