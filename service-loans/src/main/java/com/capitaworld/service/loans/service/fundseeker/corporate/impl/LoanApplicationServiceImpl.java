@@ -259,6 +259,7 @@ import com.capitaworld.service.users.model.UserOrganisationRequest;
 import com.capitaworld.service.users.model.UserResponse;
 import com.capitaworld.service.users.model.UsersRequest;
 import com.capitaworld.service.users.model.mobile.MobileUserRequest;
+import com.capitaworld.service.users.utils.OrganisationConfiguration;
 import com.capitaworld.sidbi.integration.client.SidbiIntegrationClient;
 import com.capitaworld.sidbi.integration.model.AchievementDetailRequest;
 import com.capitaworld.sidbi.integration.model.AddressRequest;
@@ -538,15 +539,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	private GstClient gstClient;
 	
 	public static final String EMAIL_ADDRESS_FROM = "no-reply@capitaworld.com";
-	
-	@Value("${javax.net.ssl.keyStore}")
-	private String keyStore;
-	
-	@Value("${javax.net.ssl.keyStorePassword}")
-	private String keyStorePassword;
-	
-	@Value("${javax.net.ssl.keyStoreType}")
-	private String keyStoreType;
 	
  	@Override
 	public boolean saveOrUpdate(FrameRequest commonRequest, Long userId) throws Exception {
@@ -5226,13 +5218,14 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		Boolean saveCommercialDetails = false;
 		applicationMaster = primaryCorporateRepository.findOneByApplicationIdId(applicationId);
 		try {
-			if(userOrganisationRequest.getUserOrgId() == 22l) // for syndicate Bank only check orgid
-			{
-				System.setProperty("javax.net.ssl.keyStore",keyStore);                                    
-				System.setProperty("javax.net.ssl.keyStorePassword", keyStorePassword);              
-				System.setProperty("javax.net.ssl.keyStoreType", keyStoreType);            
-				
+			
+			OrganisationConfiguration organisationConfiguration = MultipleJSONObjectHelper.getObjectFromString(userOrganisationRequest.getConfig(), OrganisationConfiguration.class);
+			if(!CommonUtils.isObjectNullOrEmpty(organisationConfiguration) && organisationConfiguration.getIsSSL()){
+				System.setProperty("javax.net.ssl.keyStore",  organisationConfiguration.getKeyStore());                                    
+				System.setProperty("javax.net.ssl.keyStorePassword", organisationConfiguration.getKeyStorePassword());              
+				System.setProperty("javax.net.ssl.keyStoreType",  organisationConfiguration.getKeyStoreType());            
 			}
+			
 			AuditMaster audit = auditComponent.getAudit(applicationId, true, AuditComponent.PRELIM_INFO);
 			ProfileReqRes prelimData =null;
 			if(audit == null) {
@@ -5649,12 +5642,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		PrimaryCorporateDetail applicationMaster = primaryCorporateRepository.findOneByApplicationIdId(applicationId);
 		try {
 			
-			if(userOrganisationRequest.getUserOrgId() == 22l) // for syndicate Bank only check orgid
-			{
-				System.setProperty("javax.net.ssl.keyStore",keyStore);                                    
-				System.setProperty("javax.net.ssl.keyStorePassword", keyStorePassword);              
-				System.setProperty("javax.net.ssl.keyStoreType", keyStoreType);            
-				
+			OrganisationConfiguration organisationConfiguration = MultipleJSONObjectHelper.getObjectFromString(userOrganisationRequest.getConfig(), OrganisationConfiguration.class);
+			if(!CommonUtils.isObjectNullOrEmpty(organisationConfiguration) && organisationConfiguration.getIsSSL()){
+				System.setProperty("javax.net.ssl.keyStore",  organisationConfiguration.getKeyStore());                                    
+				System.setProperty("javax.net.ssl.keyStorePassword", organisationConfiguration.getKeyStorePassword());              
+				System.setProperty("javax.net.ssl.keyStoreType",  organisationConfiguration.getKeyStoreType());            
 			}
 			
 			AuditMaster audit = auditComponent.getAudit(applicationId, true, AuditComponent.DETAILED_INFO);
