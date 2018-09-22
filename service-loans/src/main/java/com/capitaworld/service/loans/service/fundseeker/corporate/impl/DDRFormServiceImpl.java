@@ -27,9 +27,6 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
-
-import com.capitaworld.cibil.api.model.CibilRequest;
-import com.capitaworld.cibil.api.model.CibilResponse;
 import com.capitaworld.service.dms.client.DMSClient;
 import com.capitaworld.service.dms.model.DocumentResponse;
 import com.capitaworld.service.loans.domain.PincodeData;
@@ -576,7 +573,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 			customerRequest.setDdrFormId(dDRFormDetails.getId());
 			customerRequest.setCustomerId(dDRFormDetails.getCustomerId());
 			customerRequest.setCustomerName(dDRFormDetails.getCustomerName());
-			customerRequest.setIsFilled(CommonUtils.isObjectNullOrEmpty(dDRFormDetails.getCustomerId()));
+			customerRequest.setIsFilled(!CommonUtils.isObjectNullOrEmpty(dDRFormDetails.getCustomerId()));
 		} else {
 			customerRequest.setIsFilled(false);
 		}
@@ -1653,20 +1650,14 @@ public class DDRFormServiceImpl implements DDRFormService {
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
-						if (setExistingData && !CommonUtils.isObjectNullOrEmpty(obj.getBackgroundId())) {// SET DIRECTOR
-																											// BACK
-																											// DETAILS
-																											// IN NEW
-																											// DDR
-																											// OBJECT
-																											// FOR MERGE
-																											// DDR
+						if (setExistingData && !CommonUtils.isObjectNullOrEmpty(obj.getBackgroundId())) {// SET DIRECTOR BACK DETAILS IN NEW DDR OBJECT FOR MERGE DDR
 							try {
 								DirectorBackgroundDetail dirBackDetails = directorBackgroundDetailsRepository
 										.findByIdAndIsActive(obj.getBackgroundId(), true);
 								if (!CommonUtils.isObjectNullOrEmpty(dirBackDetails)) {
 									DirectorBackgroundDetailRequest dirRes = new DirectorBackgroundDetailRequest();
 									BeanUtils.copyProperties(dirBackDetails, dirRes);
+									dirRes.setDirectorsName(dirBackDetails.getFirstName() + " " + dirBackDetails.getMiddleName() + " " + dirBackDetails.getLastName());
 									SimpleDateFormat sd = new SimpleDateFormat("dd-MM-yyyy");
 									dirRes.setDobString(sd.format(dirBackDetails.getDob()));
 									if (!CommonUtils.isObjectNullOrEmpty(dirBackDetails.getDistrictMappingId())) {
@@ -1704,6 +1695,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 					if (setExistingData) {
 						dirRes = new DirectorBackgroundDetailRequest();
 						BeanUtils.copyProperties(drDetails, dirRes);
+						dirRes.setDirectorsName(drDetails.getFirstName() + " " + drDetails.getMiddleName() + " " + drDetails.getLastName());
 						SimpleDateFormat sd = new SimpleDateFormat("dd-MM-yyyy");
 						dirRes.setDobString(sd.format(dirRes.getDob()));
 						if (!CommonUtils.isObjectNullOrEmpty(drDetails.getDistrictMappingId())) {
@@ -3764,6 +3756,11 @@ public class DDRFormServiceImpl implements DDRFormService {
 		headers.set(headerName, requestDataEnc);
 		headers.setContentType(MediaType.TEXT_PLAIN);
 		return new HttpEntity<String>("NAMEINQ~" + customerId, headers);
+	}
+	
+	@Override
+	public DDRFormDetails getDDRDetailByApplicationId(Long applicationId) {
+		return ddrFormDetailsRepository.getByAppIdAndIsActive(applicationId);
 	}
 
 }

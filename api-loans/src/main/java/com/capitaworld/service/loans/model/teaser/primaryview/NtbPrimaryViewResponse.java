@@ -110,6 +110,8 @@ public class NtbPrimaryViewResponse {
 	    private Object promotersContribution;
 	    private Object promotersContributionPer;
 	    private Object fraudDetectionData;
+	    private Object proposedDetailOfUnitFact;
+	    private Object proposedConstitutionOfUnit;
 
 		/**
 		 * @return the matchesList
@@ -1052,6 +1054,19 @@ public class NtbPrimaryViewResponse {
 		public void setFraudDetectionData(Object fraudDetectionData) {
 			this.fraudDetectionData = fraudDetectionData;
 		}
+		public Object getProposedDetailOfUnitFact() {
+			return proposedDetailOfUnitFact;
+		}
+		public void setProposedDetailOfUnitFact(Object proposedDetailOfUnitFact) {
+			this.proposedDetailOfUnitFact = proposedDetailOfUnitFact;
+		}
+		public Object getProposedConstitutionOfUnit() {
+			return proposedConstitutionOfUnit;
+		}
+		public void setProposedConstitutionOfUnit(Object proposedConstitutionOfUnit) {
+			this.proposedConstitutionOfUnit = proposedConstitutionOfUnit;
+		}
+		
 
 
 

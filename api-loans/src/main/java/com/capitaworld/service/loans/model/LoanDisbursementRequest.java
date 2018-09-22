@@ -26,15 +26,14 @@ public class LoanDisbursementRequest extends AuditActivityRequest implements Ser
 	private Date disbursementDate;
 
 	private String disbursementAuthority;
-
 	private Long paymentMode;
-
 	private String remark;
 	private String userName;
 	private String password;
 	private String actionBy;
-
 	private Boolean isSaved = true;
+	private String reason;
+	private String statusCode;
 
 	public Long getId() {
 		return id;
@@ -148,13 +147,30 @@ public class LoanDisbursementRequest extends AuditActivityRequest implements Ser
 		this.isSaved = isSaved;
 	}
 
+	public String getReason() {
+		return reason;
+	}
+
+	public void setReason(String reason) {
+		this.reason = reason;
+	}
+
+	public String getStatusCode() {
+		return statusCode;
+	}
+
+	public void setStatusCode(String statusCode) {
+		this.statusCode = statusCode;
+	}
+
 	@Override
 	public String toString() {
 		return "LoanDisbursementRequest [id=" + id + ", applicationId=" + applicationId + ", referenceNo=" + referenceNo
 				+ ", transactionNo=" + transactionNo + ", accountNo=" + accountNo + ", disbursedAmount="
 				+ disbursedAmount + ", disbursementDate=" + disbursementDate + ", disbursementAuthority="
-				+ disbursementAuthority + ", paymentMode=" + paymentMode + ", remark=" + remark + ", userName=" + userName
-				+ ", password=" + password + ", actionBy=" + actionBy + ", isSaved=" + isSaved + "]";
+				+ disbursementAuthority + ", paymentMode=" + paymentMode + ", remark=" + remark + ", userName="
+				+ userName + ", password=" + password + ", actionBy=" + actionBy + ", isSaved=" + isSaved + ", reason="
+				+ reason + ", statusCode=" + statusCode + "]";
 	}
 
 }
