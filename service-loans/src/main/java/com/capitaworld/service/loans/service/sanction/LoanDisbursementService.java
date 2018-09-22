@@ -9,9 +9,9 @@ public interface LoanDisbursementService {
 	
 	public Boolean saveLoanDisbursementDetail(LoanDisbursementRequest loanDisbursementRequest)throws IOException ;
 	
-	public String disbursementRequestValidation(Long sanctionPrimaryId , LoanDisbursementRequest loanDisbursementRequest, Long orgId , Integer apiType)throws IOException ;
+	public LoanDisbursementRequest disbursementRequestValidation(Long sanctionPrimaryId , LoanDisbursementRequest loanDisbursementRequest, Long orgId , Integer apiType)throws IOException ;
 	
-	public String bankRequestValidationAndSave(Long sanctionPrimaryId , List<LoanDisbursementRequest> loanDisbursementRequestsList , Long orgId , Integer apiType)throws IOException ;
+	public List<LoanDisbursementRequest> bankRequestValidationAndSave(Long sanctionPrimaryId , List<LoanDisbursementRequest> loanDisbursementRequestsList , Long orgId , Integer apiType)throws IOException ;
 
 	public List<LoanDisbursementRequest> getDisbursedList(Long applicationId) throws Exception;
 	

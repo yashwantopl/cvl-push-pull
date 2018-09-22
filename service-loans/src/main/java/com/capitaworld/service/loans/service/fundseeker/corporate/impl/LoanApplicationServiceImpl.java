@@ -9,15 +9,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.json.simple.JSONObject;
@@ -121,6 +113,7 @@ import com.capitaworld.service.loans.domain.fundseeker.corporate.PromotorBackgro
 import com.capitaworld.service.loans.domain.fundseeker.corporate.ProposedProductDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.SecurityCorporateDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.TotalCostOfProject;
+import com.capitaworld.service.loans.domain.fundseeker.ddr.DDRFormDetails;
 import com.capitaworld.service.loans.domain.fundseeker.retail.CoApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.GuarantorDetails;
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryCarLoanDetail;
@@ -257,6 +250,7 @@ import com.capitaworld.service.scoring.model.ScoringRequest;
 import com.capitaworld.service.scoring.model.ScoringResponse;
 import com.capitaworld.service.scoring.model.scoringmodel.ScoringModelReqRes;
 import com.capitaworld.service.users.client.UsersClient;
+import com.capitaworld.service.users.model.BranchBasicDetailsRequest;
 import com.capitaworld.service.users.model.FpProfileBasicDetailRequest;
 import com.capitaworld.service.users.model.FundProviderDetailsRequest;
 import com.capitaworld.service.users.model.NetworkPartnerDetailsRequest;
@@ -265,6 +259,7 @@ import com.capitaworld.service.users.model.UserOrganisationRequest;
 import com.capitaworld.service.users.model.UserResponse;
 import com.capitaworld.service.users.model.UsersRequest;
 import com.capitaworld.service.users.model.mobile.MobileUserRequest;
+import com.capitaworld.service.users.utils.OrganisationConfiguration;
 import com.capitaworld.sidbi.integration.client.SidbiIntegrationClient;
 import com.capitaworld.sidbi.integration.model.AchievementDetailRequest;
 import com.capitaworld.sidbi.integration.model.AddressRequest;
@@ -2829,12 +2824,31 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
 						.findOneByApplicationIdId(applicationId);
 				return corporateApplicantDetail.getOrganisationName();
-			}			
-		}else {
-			CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
+			}
+
+            if(applicationMaster.getBusinessTypeId().intValue() == CommonUtils.BusinessType.NEW_TO_BUSINESS.getId().intValue()){
+                List<DirectorBackgroundDetail> directorBackgroundDetails = directorBackgroundDetailsRepository.listPromotorBackgroundFromAppId(applicationId);
+                DirectorBackgroundDetail directorBackgroundDetail = directorBackgroundDetails.stream().filter(DirectorBackgroundDetail::getIsMainDirector).findAny().orElse(null);
+                if (directorBackgroundDetail != null) {
+                    return directorBackgroundDetail.getDirectorsName();
+                }
+            }
+
+        }else {
+
+            if(applicationMaster.getBusinessTypeId().intValue() == CommonUtils.BusinessType.NEW_TO_BUSINESS.getId().intValue()){
+                List<DirectorBackgroundDetail> directorBackgroundDetails = directorBackgroundDetailsRepository.listPromotorBackgroundFromAppId(applicationId);
+                DirectorBackgroundDetail directorBackgroundDetail = directorBackgroundDetails.stream().filter(DirectorBackgroundDetail::getIsMainDirector).findAny().orElse(null);
+                if (directorBackgroundDetail != null) {
+                    return directorBackgroundDetail.getDirectorsName();
+                }
+            }
+
+            CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
 					.findOneByApplicationIdId(applicationId);
 			return corporateApplicantDetail.getOrganisationName();
 		}
+
 		return null;
 	}
 
@@ -5204,6 +5218,14 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		Boolean saveCommercialDetails = false;
 		applicationMaster = primaryCorporateRepository.findOneByApplicationIdId(applicationId);
 		try {
+			
+			OrganisationConfiguration organisationConfiguration = MultipleJSONObjectHelper.getObjectFromString(userOrganisationRequest.getConfig(), OrganisationConfiguration.class);
+			if(!CommonUtils.isObjectNullOrEmpty(organisationConfiguration) && organisationConfiguration.getIsSSL()){
+				System.setProperty("javax.net.ssl.keyStore",  organisationConfiguration.getKeyStore());                                    
+				System.setProperty("javax.net.ssl.keyStorePassword", organisationConfiguration.getKeyStorePassword());              
+				System.setProperty("javax.net.ssl.keyStoreType",  organisationConfiguration.getKeyStoreType());            
+			}
+			
 			AuditMaster audit = auditComponent.getAudit(applicationId, true, AuditComponent.PRELIM_INFO);
 			ProfileReqRes prelimData =null;
 			if(audit == null) {
@@ -5619,6 +5641,13 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		Boolean saveIRRInfo = false;
 		PrimaryCorporateDetail applicationMaster = primaryCorporateRepository.findOneByApplicationIdId(applicationId);
 		try {
+			
+			OrganisationConfiguration organisationConfiguration = MultipleJSONObjectHelper.getObjectFromString(userOrganisationRequest.getConfig(), OrganisationConfiguration.class);
+			if(!CommonUtils.isObjectNullOrEmpty(organisationConfiguration) && organisationConfiguration.getIsSSL()){
+				System.setProperty("javax.net.ssl.keyStore",  organisationConfiguration.getKeyStore());                                    
+				System.setProperty("javax.net.ssl.keyStorePassword", organisationConfiguration.getKeyStorePassword());              
+				System.setProperty("javax.net.ssl.keyStoreType",  organisationConfiguration.getKeyStoreType());            
+			}
 			
 			AuditMaster audit = auditComponent.getAudit(applicationId, true, AuditComponent.DETAILED_INFO);
 			if(audit == null) {
@@ -6589,7 +6618,7 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 	}
 	
 	
-	private LoanMasterRequest createObj(PrimaryCorporateDetail applicationMaster) {
+	private LoanMasterRequest createObj(PrimaryCorporateDetail applicationMaster ) {
 		LoanMasterRequest loanMasterRequest = new LoanMasterRequest();
 		loanMasterRequest.setTenure(applicationMaster.getTenure());
 		loanMasterRequest.setProductName(CommonUtils.LoanType.getType(applicationMaster.getProductId()).getName());
@@ -6610,6 +6639,7 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 		ProposalMappingRequest proposalMappingRequest = new ProposalMappingRequest();
 		proposalMappingRequest.setApplicationId(applicationMaster.getId());
 		Long fpProductId=null;
+		UserResponse userResponse =null ;
 		ProposalMappingResponse proposalMappingResponse = proposalService.listOfFundSeekerProposal(proposalMappingRequest);
 		if(!CommonUtils.isObjectListNull(proposalMappingResponse) && !CommonUtils.isObjectListNull(proposalMappingResponse.getDataList())) {
 			List<Map<String, Object>> proposalMappingResponseDataList = (List<Map<String, Object>>) proposalMappingResponse.getDataList();
@@ -6626,6 +6656,17 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
                 if(productMstr != null) {
                 	loanMasterRequest.setFpProductName(productMstr.getName());                	
                 }
+                
+                // set branch code  
+                if(!CommonUtils.isObjectNullOrEmpty(proposalMappingRequest1.getBranchId())){
+                	userResponse =  userClient.getBranchDetailById( proposalMappingRequest1.getBranchId());
+                	if(!CommonUtils.isObjectNullOrEmpty(userResponse)) {
+                		BranchBasicDetailsRequest branchBasicDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap( ( LinkedHashMap<String ,Object>) userResponse.getData() , BranchBasicDetailsRequest.class); 
+                		loanMasterRequest.setBranchCode(branchBasicDetailsRequest.getCode());
+                	}
+                }
+                
+                
 			} catch (IOException e) {
 				logger.error("error while setting details from proposal details");
 				e.printStackTrace();
@@ -6636,7 +6677,7 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 			if (master.getIsActive()) {
 				UsersRequest request = new UsersRequest();
 				request.setId(master.getUserId());
-				UserResponse userResponse = userClient.getFPDetails(request);
+				userResponse = userClient.getFPDetails(request);
 				FundProviderDetailsRequest fundProviderDetailsRequest = null;
 				try {
 					fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap(
@@ -6648,6 +6689,13 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 				}
 			}
 		}
+		// set customerid and customer Name  for BOB
+		DDRFormDetails dDRFormDetails = dDRFormService.getDDRDetailByApplicationId(applicationMaster.getApplicationId().getId());
+		if(!CommonUtils.isObjectNullOrEmpty(dDRFormDetails)) {
+			loanMasterRequest.setCustomerId(dDRFormDetails.getCustomerId());
+			loanMasterRequest.setCustomerName(dDRFormDetails.getCustomerName());
+		}
+		
 		return loanMasterRequest;
 	}
 	
@@ -6920,8 +6968,12 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 		}
 		
 		try {
+			
+			
+			
 			PrimaryCorporateDetail primaryCorporateDetail = primaryCorporateRepository.findOneByApplicationIdId(applicationId);
 			response.setIsPurchaseOfEqup(false);
+			
 			if(primaryCorporateDetail!=null) {
 				response.setColleteralValue(primaryCorporateDetail.getCollateralSecurityAmount());
 				if(primaryCorporateDetail.getAssessmentId()!=null) {
@@ -6930,6 +6982,10 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 						response.setCostOfMachinery(primaryCorporateDetail.getCostOfMachinery());
 					}
 				}
+			}
+			if(loan!=null && loan.getBusinessTypeId()!=null && loan.getBusinessTypeId() == 2) {
+				response.setIsPurchaseOfEqup(true);
+				response.setCostOfMachinery(primaryCorporateDetail.getProposedCost());
 			}
 		}
 		catch (Exception e) {
@@ -7048,155 +7104,22 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 	@Override
 	public HunterRequestDataResponse getDataForHunter(Long applicationId) throws Exception {
 		try {
-			
-			logger.info("In getDataForHunter with Application ID : "+applicationId);
+
+			logger.info("In getDataForHunter with Application ID : " + applicationId);
 			HunterRequestDataResponse response = new HunterRequestDataResponse();
-			logger.info("Fetching Corporate Applicant Details for application Id : "+applicationId);
-		CorporateApplicantDetail applicantDetail =	corporateApplicantDetailRepository.findByApplicationIdIdAndIsActive(applicationId, true);
-		if(applicantDetail!=null) {
-			logger.info("FetchedS Corporate Applicant Details for application Id : "+applicationId);
-			//key vertical Subsector
-			
-			String state= null;
-			List<Long> stateList = new ArrayList<>();
-			if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredStateId()))
-				stateList.add(Long.valueOf(applicantDetail.getRegisteredStateId()));
-			if (!CommonUtils.isListNullOrEmpty(stateList)) {
-				try {
-					OneFormResponse oneFormResponse = oneFormClient.getStateByStateListId(stateList);
-					List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
-							.getListData();
-					if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
-						MasterResponse masterResponse = MultipleJSONObjectHelper
-								.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
-						state = masterResponse.getValue() ;
-					} else {
+			logger.info("Fetching Corporate Applicant Details for application Id : " + applicationId);
+			CorporateApplicantDetail applicantDetail = corporateApplicantDetailRepository
+					.findByApplicationIdIdAndIsActive(applicationId, true);
+			if (applicantDetail != null) {
+				logger.info("FetchedS Corporate Applicant Details for application Id : " + applicationId);
+				// key vertical Subsector
 
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-			
-			String city= null;
-			List<Long> cityList = new ArrayList<>();
-			if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredCityId()))
-				cityList.add(Long.valueOf(applicantDetail.getRegisteredCityId()));
-			if (!CommonUtils.isListNullOrEmpty(cityList)) {
-				try {
-					OneFormResponse oneFormResponse = oneFormClient.getCityByCityListId(cityList);
-					List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
-							.getListData();
-					if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
-						MasterResponse masterResponse = MultipleJSONObjectHelper
-								.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
-						city = masterResponse.getValue();
-					} else {
-
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-			
-			String country= null;
-			List<Long> countryList = new ArrayList<>();
-			if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredCountryId()))
-				countryList.add(Long.valueOf(applicantDetail.getRegisteredCountryId()));
-			if (!CommonUtils.isListNullOrEmpty(countryList)) {
-				try {
-					OneFormResponse oneFormResponse = oneFormClient.getCountryByCountryListId(countryList);
-					List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
-							.getListData();
-					if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
-						MasterResponse masterResponse = MultipleJSONObjectHelper
-								.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
-						country = masterResponse.getValue() ;
-					} else {
-
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-			
-			response.setOrganisationName(applicantDetail.getOrganisationName());
-	        response.setCompanyCity(city);
-	        response.setCompanyState(state);
-	        response.setCompanyCountry(country);
-	        response.setCompanyPincode(applicantDetail.getRegisteredPincode()!=null ? String.valueOf(applicantDetail.getRegisteredPincode()): null);
-			response.setColleteralValue(applicantDetail.getTotalCollateralDetails());
-			response.setIndustry(getIndustryForHunter(applicantDetail.getKeyVericalFunding()));
-			response.setCompanyTelephone(applicantDetail.getLandlineNo());
-			response.setConstitution(getConstitutionryForHunter(applicantDetail.getConstitutionId()));
-			
-			response.setEstablishmentDate(applicantDetail.getEstablishmentYear()+"-"+applicantDetail.getEstablishmentMonth()+"-"+"01");
-			
-			response.setCompanyAddress(applicantDetail.getRegisteredPremiseNumber()+", "+applicantDetail.getRegisteredStreetName()+", "+applicantDetail.getRegisteredLandMark());
-			response.setCompanyEmail(applicantDetail.getEmail());
-		}
-		logger.info("Fetching Loan APplication Master for application Id : "+applicationId);
-		LoanApplicationMaster loan = loanApplicationRepository.getById(applicationId);
-		
-		if(loan!=null) {
-			logger.info("Fetched Loan APplication Master for application Id : "+applicationId);
-			response.setLoanAmount(loan.getAmount());
-			response.setLoanApplicationId(applicationId+"");
-			
-			
-			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-			response.setDateOfApplication(dateFormat.format(loan.getCreatedDate()));
-			response.setDateOfSubmission(dateFormat.format(new Date()));
-		}
-		logger.info("Fetching Corporate Primary details for application Id : "+applicationId);
-		PrimaryCorporateDetail primaryCorporate = primaryCorporateRepository.findOneByApplicationIdId(applicationId);
-		if(primaryCorporate!=null) {
-			response.setLoanType(String.valueOf(primaryCorporate.getPurposeOfLoanId()));
-			
-			logger.info("Fetching Corporate Primary details Purpose Of Loan from db: "+primaryCorporate.getPurposeOfLoanId());
-		}
-
-		logger.info("Fetching Corporate Primary details Purpose Of Loan from change : "+response.getLoanType());
-		
-		logger.info("Fetching Director's background details for application Id : "+applicationId);
-		List<DirectorBackgroundDetail> directorList = directorBackgroundDetailsRepository.listPromotorBackgroundFromAppId(applicationId);
-		
-		response.setDirectorRespo(new ArrayList<DirectorBackgroundDetailResponse>());
-		if(directorList!=null && !directorList.isEmpty()) {
-			logger.info("Fetched Director's background details for application Id : "+applicationId);
-			for(DirectorBackgroundDetail detail : directorList) {
-				DirectorBackgroundDetailResponse directorDetail = new DirectorBackgroundDetailResponse();
-				BeanUtils.copyProperties(detail, directorDetail);
-				String gender = null;
-				if(Gender.MALE.getId() == detail.getGender()) {
-					gender = "MALE";
-				}
-				else if(Gender.FEMALE.getId() == detail.getGender()) {
-					gender = "FEMALE";
-				}
-				else if(Gender.THIRD_GENDER.getId() == detail.getGender()) {
-					gender = "OTHER";
-				}
-				else {
-					gender = "OTHER";
-				}
-				directorDetail.setGender(gender);
-				directorDetail.setShareholding(detail.getShareholding());
-				directorDetail.setQualification(getQualificationForHunter(detail.getQualificationId()));
-				directorDetail.setMaritalStatus(getMaritalStatusForHunter(detail.getMaritalStatus()));
-				String state= null;
+				String state = null;
 				List<Long> stateList = new ArrayList<>();
-				if (!CommonUtils.isObjectNullOrEmpty(detail.getStateCode())) {
-					ITRConnectionResponse itrConnectionResponse = itrClient.getOneFormStateIdFromITRStateId(Long.valueOf(detail.getStateCode()));
-					if(!CommonUtils.isObjectNullOrEmpty(itrConnectionResponse)) {
-					}
-					stateList.add(Long.valueOf(String.valueOf(itrConnectionResponse.getData())));
-				}
+				if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredStateId()))
+					stateList.add(Long.valueOf(applicantDetail.getRegisteredStateId()));
 				if (!CommonUtils.isListNullOrEmpty(stateList)) {
 					try {
-						
-						
-						
 						OneFormResponse oneFormResponse = oneFormClient.getStateByStateListId(stateList);
 						List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
 								.getListData();
@@ -7211,12 +7134,32 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 						e.printStackTrace();
 					}
 				}
-				directorDetail.setStateCode(state);
-				
-				String country= null;
+
+				String city = null;
+				List<Long> cityList = new ArrayList<>();
+				if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredCityId()))
+					cityList.add(Long.valueOf(applicantDetail.getRegisteredCityId()));
+				if (!CommonUtils.isListNullOrEmpty(cityList)) {
+					try {
+						OneFormResponse oneFormResponse = oneFormClient.getCityByCityListId(cityList);
+						List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
+								.getListData();
+						if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+							MasterResponse masterResponse = MultipleJSONObjectHelper
+									.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+							city = masterResponse.getValue();
+						} else {
+
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+
+				String country = null;
 				List<Long> countryList = new ArrayList<>();
-				if (!CommonUtils.isObjectNullOrEmpty(detail.getCountryId()))
-					countryList.add(Long.valueOf(detail.getCountryId()));
+				if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredCountryId()))
+					countryList.add(Long.valueOf(applicantDetail.getRegisteredCountryId()));
 				if (!CommonUtils.isListNullOrEmpty(countryList)) {
 					try {
 						OneFormResponse oneFormResponse = oneFormClient.getCountryByCountryListId(countryList);
@@ -7233,31 +7176,174 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 						e.printStackTrace();
 					}
 				}
-				directorDetail.setCountry(country);
-				directorDetail.setPincode(detail.getPincode().toString());
-				directorDetail.setIsMainDirector(detail.getIsMainDirector());
-				response.addDirectorDetail(directorDetail);
+
+				response.setOrganisationName(applicantDetail.getOrganisationName());
+				response.setCompanyCity(city);
+				response.setCompanyState(state);
+				response.setCompanyCountry(country);
+				response.setCompanyPincode(applicantDetail.getRegisteredPincode() != null
+						? String.valueOf(applicantDetail.getRegisteredPincode())
+						: null);
+				response.setColleteralValue(applicantDetail.getTotalCollateralDetails());
+				response.setIndustry(getIndustryForHunter(applicantDetail.getKeyVericalFunding()));
+				response.setCompanyTelephone(applicantDetail.getLandlineNo());
+				response.setConstitution(getConstitutionryForHunter(applicantDetail.getConstitutionId()));
+
+				response.setEstablishmentDate(applicantDetail.getEstablishmentYear() + "-"
+						+ applicantDetail.getEstablishmentMonth() + "-" + "01");
+
+				response.setCompanyAddress(applicantDetail.getRegisteredPremiseNumber() + ", "
+						+ applicantDetail.getRegisteredStreetName() + ", " + applicantDetail.getRegisteredLandMark());
+				response.setCompanyEmail(applicantDetail.getEmail());
 			}
-		}
-		logger.info("Fetching Bank details for application Id : "+applicationId);
-		ReportRequest reportRequest = new ReportRequest();
-		reportRequest.setApplicationId(applicationId);
-		AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReport(reportRequest);
-		
-		if(analyzerResponse.getStatus() == HttpStatus.OK.value()) {
-			logger.info("Fetched Director's background details for application Id : "+applicationId);
-			Data data = MultipleJSONObjectHelper
-					.getObjectFromMap((Map<String, Object>) analyzerResponse.getData(), Data.class);
-			
-			if(data!=null && data.getSummaryInfo()!=null) {
-				response.setCompanyBankAccount(data.getSummaryInfo().getAccNo());
-				response.setCompanyBankName(data.getSummaryInfo().getInstName());
+			logger.info("Fetching Loan APplication Master for application Id : " + applicationId);
+			LoanApplicationMaster loan = loanApplicationRepository.getById(applicationId);
+
+			if (loan != null) {
+				logger.info("Fetched Loan APplication Master for application Id : " + applicationId);
+				response.setLoanAmount(loan.getAmount());
+				response.setLoanApplicationId(applicationId + "");
+
+				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+				response.setDateOfApplication(dateFormat.format(loan.getCreatedDate()));
+				response.setDateOfSubmission(dateFormat.format(new Date()));
 			}
-		}
-		logger.info("End getDataForHunter with Application ID : "+applicationId);
-		return response;
-		}
-		catch (Exception e) {
+			logger.info("Fetching Corporate Primary details for application Id : " + applicationId);
+			PrimaryCorporateDetail primaryCorporate = primaryCorporateRepository
+					.findOneByApplicationIdId(applicationId);
+			if (primaryCorporate != null) {
+				response.setLoanType(String.valueOf(primaryCorporate.getPurposeOfLoanId()));
+
+				logger.info("Fetching Corporate Primary details Purpose Of Loan from db: "
+						+ primaryCorporate.getPurposeOfLoanId());
+			}
+
+			logger.info("Fetching Corporate Primary details Purpose Of Loan from change : " + response.getLoanType());
+
+			logger.info("Fetching Director's background details for application Id : " + applicationId);
+			List<DirectorBackgroundDetail> directorList = directorBackgroundDetailsRepository
+					.listPromotorBackgroundFromAppId(applicationId);
+
+			response.setDirectorRespo(new ArrayList<DirectorBackgroundDetailResponse>());
+			if (directorList != null && !directorList.isEmpty()) {
+				logger.info("Fetched Director's background details for application Id : " + applicationId);
+				for (DirectorBackgroundDetail detail : directorList) {
+					DirectorBackgroundDetailResponse directorDetail = new DirectorBackgroundDetailResponse();
+					BeanUtils.copyProperties(detail, directorDetail);
+					String gender = null;
+					if (Gender.MALE.getId() == detail.getGender()) {
+						gender = "MALE";
+					} else if (Gender.FEMALE.getId() == detail.getGender()) {
+						gender = "FEMALE";
+					} else if (Gender.THIRD_GENDER.getId() == detail.getGender()) {
+						gender = "OTHER";
+					} else {
+						gender = "OTHER";
+					}
+					directorDetail.setGender(gender);
+					directorDetail.setShareholding(detail.getShareholding());
+					directorDetail.setQualification(getQualificationForHunter(detail.getQualificationId()));
+					directorDetail.setMaritalStatus(getMaritalStatusForHunter(detail.getMaritalStatus()));
+
+					String state = null;
+					List<Long> stateList = new ArrayList<>();
+
+					if (!CommonUtils.isObjectNullOrEmpty(detail.getStateCode())) {
+						ITRConnectionResponse itrConnectionResponse = itrClient
+								.getOneFormStateIdFromITRStateId(Long.valueOf(detail.getStateCode()));
+						if (!CommonUtils.isObjectNullOrEmpty(itrConnectionResponse)) {
+
+							stateList.add(Long.valueOf(String.valueOf(itrConnectionResponse.getData())));
+						}
+					} else {
+						stateList.add(Long.valueOf(detail.getStateId()));
+					}
+					if (!CommonUtils.isListNullOrEmpty(stateList)) {
+						try {
+
+							OneFormResponse oneFormResponse = oneFormClient.getStateByStateListId(stateList);
+							List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
+									.getListData();
+							if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+								MasterResponse masterResponse = MultipleJSONObjectHelper
+										.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+								state = masterResponse.getValue();
+							} else {
+
+							}
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+
+					String country = null;
+					List<Long> countryList = new ArrayList<>();
+					if (!CommonUtils.isObjectNullOrEmpty(detail.getCountryId()))
+						countryList.add(Long.valueOf(detail.getCountryId()));
+					if (!CommonUtils.isListNullOrEmpty(countryList)) {
+						try {
+							OneFormResponse oneFormResponse = oneFormClient.getCountryByCountryListId(countryList);
+							List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
+									.getListData();
+							if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+								MasterResponse masterResponse = MultipleJSONObjectHelper
+										.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+								country = masterResponse.getValue();
+							} else {
+
+							}
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+
+					String city = detail.getCity();
+					List<Long> cityList = new ArrayList<>();
+					if (!CommonUtils.isObjectNullOrEmpty(detail.getCityId()))
+						cityList.add(Long.valueOf(detail.getCityId()));
+					if (!CommonUtils.isListNullOrEmpty(cityList)) {
+						try {
+							OneFormResponse oneFormResponse = oneFormClient.getCityByCityListId(cityList);
+							List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
+									.getListData();
+							if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+								MasterResponse masterResponse = MultipleJSONObjectHelper
+										.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+								city = masterResponse.getValue();
+							} else {
+
+							}
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+
+					directorDetail.setCountry(country);
+					directorDetail.setStateCode(state);
+					directorDetail.setCity(city);
+					directorDetail.setPincode(detail.getPincode().toString());
+					directorDetail.setIsMainDirector(detail.getIsMainDirector());
+					response.addDirectorDetail(directorDetail);
+				}
+			}
+			logger.info("Fetching Bank details for application Id : " + applicationId);
+			ReportRequest reportRequest = new ReportRequest();
+			reportRequest.setApplicationId(applicationId);
+			AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReport(reportRequest);
+
+			if (analyzerResponse != null && analyzerResponse.getStatus() == HttpStatus.OK.value()) {
+				logger.info("Fetched Director's background details for application Id : " + applicationId);
+				Data data = MultipleJSONObjectHelper.getObjectFromMap((Map<String, Object>) analyzerResponse.getData(),
+						Data.class);
+
+				if (data != null && data.getSummaryInfo() != null) {
+					response.setCompanyBankAccount(data.getSummaryInfo().getAccNo());
+					response.setCompanyBankName(data.getSummaryInfo().getInstName());
+				}
+			}
+			logger.info("End getDataForHunter with Application ID : " + applicationId);
+			return response;
+		} catch (Exception e) {
 			e.printStackTrace();
 			throw e;
 		}
@@ -7268,141 +7354,167 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 	@Override
 	public HunterRequestDataResponse getDataForHunterForNTB(Long applicationId) throws Exception {
 		try {
-			
-			logger.info("In getDataForHunter with Application ID : "+applicationId);
+
+			logger.info("In getDataForHunter with Application ID : " + applicationId);
 			HunterRequestDataResponse response = new HunterRequestDataResponse();
-		LoanApplicationMaster loan = loanApplicationRepository.getById(applicationId);
-		CorporateApplicantDetail applicantDetail =	corporateApplicantDetailRepository.findByApplicationIdIdAndIsActive(applicationId, true);
-		if(applicantDetail!=null) {
-			response.setColleteralValue(applicantDetail.getTotalCollateralDetails());
-		}
-		if(loan!=null) {
-			logger.info("Fetched Loan APplication Master for application Id : "+applicationId);
-			response.setLoanAmount(loan.getAmount());
-			response.setLoanApplicationId(applicationId+"");
-			
-			
-			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-			response.setDateOfApplication(dateFormat.format(loan.getCreatedDate()));
-			response.setDateOfSubmission(dateFormat.format(new Date()));
-		}
-		PrimaryCorporateDetail primaryCorporate = primaryCorporateRepository.findOneByApplicationIdId(applicationId);
-		if(primaryCorporate!=null) {
-			response.setLoanType(String.valueOf(primaryCorporate.getPurposeOfLoanId()));
-		}
-		
-		logger.info("Fetching Director's background details for application Id : "+applicationId);
-		List<DirectorBackgroundDetail> directorList = directorBackgroundDetailsRepository.listPromotorBackgroundFromAppId(applicationId);
-		
-		response.setDirectorRespo(new ArrayList<DirectorBackgroundDetailResponse>());
-		if(directorList!=null && !directorList.isEmpty()) {
-			logger.info("Fetched Director's background details for application Id : "+applicationId);
-			for(DirectorBackgroundDetail detail : directorList) {
-				DirectorBackgroundDetailResponse directorDetail = new DirectorBackgroundDetailResponse();
-				BeanUtils.copyProperties(detail, directorDetail);
-				String gender = null;
-				if(Gender.MALE.getId() == detail.getGender()) {
-					gender = "MALE";
-				}
-				else if(Gender.FEMALE.getId() == detail.getGender()) {
-					gender = "FEMALE";
-				}
-				else if(Gender.THIRD_GENDER.getId() == detail.getGender()) {
-					gender = "OTHER";
-				}
-				else {
-					gender = "OTHER";
-				}
-				directorDetail.setGender(gender);
-				directorDetail.setShareholding(detail.getShareholding());
-				directorDetail.setQualification(getQualificationForHunter(detail.getQualificationId()));
-				directorDetail.setMaritalStatus(getMaritalStatusForHunter(detail.getMaritalStatus()));
-				String state= null;
-				List<Long> stateList = new ArrayList<>();
-				if (!CommonUtils.isObjectNullOrEmpty(detail.getStateCode())) {
-					ITRConnectionResponse itrConnectionResponse = itrClient.getOneFormStateIdFromITRStateId(Long.valueOf(detail.getStateCode()));
-					if(!CommonUtils.isObjectNullOrEmpty(itrConnectionResponse)) {
-					}
-					stateList.add(Long.valueOf(String.valueOf(itrConnectionResponse.getData())));
-				}
-				if (!CommonUtils.isListNullOrEmpty(stateList)) {
-					try {
-						
-						
-						
-						OneFormResponse oneFormResponse = oneFormClient.getStateByStateListId(stateList);
-						List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
-								.getListData();
-						if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
-							MasterResponse masterResponse = MultipleJSONObjectHelper
-									.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
-							state = masterResponse.getValue();
-						} else {
-
-						}
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				}
-				directorDetail.setStateCode(state);
-				
-				String country= null;
-				List<Long> countryList = new ArrayList<>();
-				if (!CommonUtils.isObjectNullOrEmpty(detail.getCountryId()))
-					countryList.add(Long.valueOf(detail.getCountryId()));
-				if (!CommonUtils.isListNullOrEmpty(countryList)) {
-					try {
-						OneFormResponse oneFormResponse = oneFormClient.getCountryByCountryListId(countryList);
-						List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
-								.getListData();
-						if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
-							MasterResponse masterResponse = MultipleJSONObjectHelper
-									.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
-							country = masterResponse.getValue();
-						} else {
-
-						}
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				}
-				directorDetail.setCountry(country);
-				directorDetail.setPincode(detail.getPincode().toString());
-				directorDetail.setIsMainDirector(detail.getIsMainDirector());
-				
-				
-				ReportRequest reportRequest = new ReportRequest();
-				reportRequest.setApplicationId(applicationId);
-				reportRequest.setDirectorId(detail.getId());
-				AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReport(reportRequest);
-				
-				if(analyzerResponse.getStatus() == HttpStatus.OK.value()) {
-					logger.info("Fetched Director's background details for application Id : "+applicationId);
-					Data data = MultipleJSONObjectHelper
-							.getObjectFromMap((Map<String, Object>) analyzerResponse.getData(), Data.class);
-					
-					if(data!=null && data.getSummaryInfo()!=null) {
-						directorDetail.setDirectorBankAccount(data.getSummaryInfo().getAccNo());
-						directorDetail.setDirectorBankName(data.getSummaryInfo().getInstName());
-					}
-				}
-				if(detail.getResidenceSinceYear()!=null && detail.getResidenceSinceMonth()!=null) {
-					Calendar a = Calendar.getInstance();
-					LocalDate now = LocalDate.now();
-					LocalDate before = LocalDate.of(detail.getResidenceSinceYear(), detail.getResidenceSinceMonth(), 1);
-					Long timeAtAddress = ChronoUnit.MONTHS.between(before, now);
-					directorDetail.setTimeAtAddress(new BigInteger(String.valueOf(timeAtAddress)));
-				}
-				
-				response.addDirectorDetail(directorDetail);
+			LoanApplicationMaster loan = loanApplicationRepository.getById(applicationId);
+			CorporateApplicantDetail applicantDetail = corporateApplicantDetailRepository
+					.findByApplicationIdIdAndIsActive(applicationId, true);
+			if (applicantDetail != null) {
+				response.setColleteralValue(applicantDetail.getTotalCollateralDetails());
 			}
-		}
-		logger.info("Fetching Bank details for application Id : "+applicationId);
+			if (loan != null) {
+				logger.info("Fetched Loan APplication Master for application Id : " + applicationId);
+				response.setLoanAmount(loan.getAmount());
+				response.setLoanApplicationId(applicationId + "");
 
-		logger.info("End getDataForHunter with Application ID : "+applicationId);
-		return response;
-		}
-		catch (Exception e) {
+				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+				response.setDateOfApplication(dateFormat.format(loan.getCreatedDate()));
+				response.setDateOfSubmission(dateFormat.format(new Date()));
+			}
+			PrimaryCorporateDetail primaryCorporate = primaryCorporateRepository
+					.findOneByApplicationIdId(applicationId);
+			if (primaryCorporate != null) {
+				response.setLoanType(String.valueOf(primaryCorporate.getPurposeOfLoanId()));
+			}
+
+			logger.info("Fetching Director's background details for application Id : " + applicationId);
+			List<DirectorBackgroundDetail> directorList = directorBackgroundDetailsRepository
+					.listPromotorBackgroundFromAppId(applicationId);
+
+			response.setDirectorRespo(new ArrayList<DirectorBackgroundDetailResponse>());
+			if (directorList != null && !directorList.isEmpty()) {
+				logger.info("Fetched Director's background details for application Id : " + applicationId);
+				for (DirectorBackgroundDetail detail : directorList) {
+					DirectorBackgroundDetailResponse directorDetail = new DirectorBackgroundDetailResponse();
+					BeanUtils.copyProperties(detail, directorDetail);
+					String gender = null;
+					if (Gender.MALE.getId() == detail.getGender()) {
+						gender = "MALE";
+					} else if (Gender.FEMALE.getId() == detail.getGender()) {
+						gender = "FEMALE";
+					} else if (Gender.THIRD_GENDER.getId() == detail.getGender()) {
+						gender = "OTHER";
+					} else {
+						gender = "OTHER";
+					}
+					directorDetail.setGender(gender);
+					directorDetail.setShareholding(detail.getShareholding());
+					directorDetail.setQualification(getQualificationForHunter(detail.getQualificationId()));
+					directorDetail.setMaritalStatus(getMaritalStatusForHunter(detail.getMaritalStatus()));
+
+					String state = null;
+					List<Long> stateList = new ArrayList<>();
+
+					if (!CommonUtils.isObjectNullOrEmpty(detail.getStateCode())) {
+						ITRConnectionResponse itrConnectionResponse = itrClient
+								.getOneFormStateIdFromITRStateId(Long.valueOf(detail.getStateCode()));
+						if (!CommonUtils.isObjectNullOrEmpty(itrConnectionResponse)) {
+
+							stateList.add(Long.valueOf(String.valueOf(itrConnectionResponse.getData())));
+						}
+					} else {
+						stateList.add(Long.valueOf(detail.getStateId()));
+					}
+					if (!CommonUtils.isListNullOrEmpty(stateList)) {
+						try {
+
+							OneFormResponse oneFormResponse = oneFormClient.getStateByStateListId(stateList);
+							List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
+									.getListData();
+							if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+								MasterResponse masterResponse = MultipleJSONObjectHelper
+										.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+								state = masterResponse.getValue();
+							} else {
+
+							}
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+
+					String country = null;
+					List<Long> countryList = new ArrayList<>();
+					if (!CommonUtils.isObjectNullOrEmpty(detail.getCountryId()))
+						countryList.add(Long.valueOf(detail.getCountryId()));
+					if (!CommonUtils.isListNullOrEmpty(countryList)) {
+						try {
+							OneFormResponse oneFormResponse = oneFormClient.getCountryByCountryListId(countryList);
+							List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
+									.getListData();
+							if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+								MasterResponse masterResponse = MultipleJSONObjectHelper
+										.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+								country = masterResponse.getValue();
+							} else {
+
+							}
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+
+					String city = detail.getCity();
+					List<Long> cityList = new ArrayList<>();
+					if (!CommonUtils.isObjectNullOrEmpty(detail.getCityId()))
+						cityList.add(Long.valueOf(detail.getCityId()));
+					if (!CommonUtils.isListNullOrEmpty(cityList)) {
+						try {
+							OneFormResponse oneFormResponse = oneFormClient.getCityByCityListId(cityList);
+							List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
+									.getListData();
+							if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+								MasterResponse masterResponse = MultipleJSONObjectHelper
+										.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+								city = masterResponse.getValue();
+							} else {
+
+							}
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+
+					directorDetail.setCountry(country);
+					directorDetail.setStateCode(state);
+					directorDetail.setCity(city);
+					directorDetail.setPincode(detail.getPincode().toString());
+
+					directorDetail.setIsMainDirector(detail.getIsMainDirector());
+
+					ReportRequest reportRequest = new ReportRequest();
+					reportRequest.setApplicationId(applicationId);
+					reportRequest.setDirectorId(detail.getId());
+					AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReport(reportRequest);
+
+					if (analyzerResponse.getStatus() == HttpStatus.OK.value()) {
+						logger.info("Fetched Director's background details for application Id : " + applicationId);
+						Data data = MultipleJSONObjectHelper
+								.getObjectFromMap((Map<String, Object>) analyzerResponse.getData(), Data.class);
+
+						if (data != null && data.getSummaryInfo() != null) {
+							directorDetail.setDirectorBankAccount(data.getSummaryInfo().getAccNo());
+							directorDetail.setDirectorBankName(data.getSummaryInfo().getInstName());
+						}
+					}
+					if (detail.getResidenceSinceYear() != null && detail.getResidenceSinceMonth() != null) {
+						Calendar a = Calendar.getInstance();
+						LocalDate now = LocalDate.now();
+						LocalDate before = LocalDate.of(detail.getResidenceSinceYear(), detail.getResidenceSinceMonth(),
+								1);
+						Long timeAtAddress = ChronoUnit.MONTHS.between(before, now);
+						directorDetail.setTimeAtAddress(new BigInteger(String.valueOf(timeAtAddress)));
+					}
+
+					response.addDirectorDetail(directorDetail);
+				}
+			}
+			logger.info("Fetching Bank details for application Id : " + applicationId);
+
+			logger.info("End getDataForHunter with Application ID : " + applicationId);
+			return response;
+		} catch (Exception e) {
 			e.printStackTrace();
 			throw e;
 		}

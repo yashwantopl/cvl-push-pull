@@ -518,6 +518,9 @@ public class CommonUtils {
 		urlsBrforeLogin.add("/loans/loan_application/saveLoanDisbursementDetail".toLowerCase());
 		urlsBrforeLogin.add("/loans/loan_application/saveLoanSanctionDetail".toLowerCase());
 		urlsBrforeLogin.add("/loans/loan_application/saveLoanSanctionDisbursementDetailFromBank".toLowerCase());
+		urlsBrforeLogin.add("/loans/ddr/getCustomerNameById".toLowerCase());
+		
+		
 	}
 
 	public static int calculateAge(Date dateOfBirth) {
@@ -1193,38 +1196,46 @@ public enum APIFlags {
 	
 	
 	/***********************************************CAM UTILS*********************************************************/
-	static DecimalFormat decim = new DecimalFormat("#,##0.00");
+	static DecimalFormat decimal = new DecimalFormat("#,##0.00");
 	static DecimalFormat decim2 = new DecimalFormat("#,###");
 	
 	public static String convertValue(Double value) {
-		return !CommonUtils.isObjectNullOrEmpty(value)? decim.format(value).toString(): "0";
+		return !CommonUtils.isObjectNullOrEmpty(value)? decimal.format(value).toString(): "0";
 	}
 	public static String convertValueWithoutDecimal(Double value) {
 		return !CommonUtils.isObjectNullOrEmpty(value)? decim2.format(value).toString(): "0";
 	}
-	public static Object convertToDoubleForXml (Object obj, Map<String, Object>data) throws Exception {
-		Field[] fields = obj.getClass().getDeclaredFields();
-		 for(Field field : fields) {
-			 field.setAccessible(true);
-             Object value = field.get(obj);
-             if(data != null) {
-            	 data.put(field.getName(), value);
-             }
-             if(!CommonUtils.isObjectNullOrEmpty(value)) {
-            	 if(value instanceof Double){
-                	 if(!Double.isNaN((Double)value)) {
-                		 DecimalFormat decim = new DecimalFormat("0.00");
-                    	 value = Double.parseDouble(decim.format(value));
-                    	 if(data != null) {
-                    		 value = decim.format(value);
-                    		 data.put(field.getName(), value);
-                    	 }else {
-                    		 field.set(obj,value);                    		 
-                    	 }
-                	 }
-                 }
-             }
-		 }
+	public static Object convertToDoubleForXml(Object obj, Map<String, Object>data) throws Exception {
+		if(obj ==  null) {
+			return null;
+		}
+		DecimalFormat decim = new DecimalFormat("0.00");
+		if(obj instanceof Double) {
+			obj = Double.parseDouble(decim.format(obj));
+			return obj;
+		}else if(obj.getClass().getName().startsWith("com.capitaworld")) {
+			Field[] fields = obj.getClass().getDeclaredFields();
+			 for(Field field : fields) {
+				 field.setAccessible(true);
+	             Object value = field.get(obj);
+	             if(data != null) {
+	            	 data.put(field.getName(), value);
+	             }
+	             if(!CommonUtils.isObjectNullOrEmpty(value)) {
+	            	 if(value instanceof Double){
+	                	 if(!Double.isNaN((Double)value)) {
+	                    	 value = Double.parseDouble(decim.format(value));
+	                    	 if(data != null) {
+	                    		 value = decimal.format(value);
+	                    		 data.put(field.getName(), value);	
+	                    	 }else {
+	                    		 field.set(obj,value);                    		 
+	                    	 }
+	                	 }
+	                 }
+	             }
+			 }			
+		}
 		 if(data != null) {
 			 return data;
 		 }
@@ -1246,16 +1257,13 @@ public enum APIFlags {
 			Map<Object, Object> map = (Map)obj;
 			for(Map.Entry<Object, Object> setEntry : map.entrySet()) {
 				setEntry.setValue(printFields(setEntry.getValue()));
-		}
+			}
 		}else if(obj instanceof String) {
 			obj = StringEscapeUtils.escapeXml((String)obj);
 			return obj;
 		}else if(obj instanceof Double) {
 			if(!Double.isNaN((Double)obj)) {
-				DecimalFormat decim = new DecimalFormat("0.00");
-				String a = decim.format(obj);
-				obj = Double.valueOf(a);
-				return obj;
+				return convertToDoubleForXml(obj, null);
 			}
 		}else {
 			if(obj.getClass().getName().startsWith("com.capitaworld")) {
@@ -1272,7 +1280,7 @@ public enum APIFlags {
 		}
 		 return obj;
 	}
-
+	
 	public enum BankName {
 		UNION_BANK_OF_INDIA(1,"Union Bank of India",""),
 		SARASWAT(2,"Saraswat",""),

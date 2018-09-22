@@ -4,7 +4,9 @@ import java.util.List;
 
 import org.json.simple.JSONObject;
 
+import com.capitaworld.service.loans.domain.fundseeker.ddr.DDRFormDetails;
 import com.capitaworld.service.loans.model.common.DocumentUploadFlagRequest;
+import com.capitaworld.service.loans.model.ddr.DDRCustomerRequest;
 import com.capitaworld.service.loans.model.ddr.DDRFormDetailsRequest;
 import com.capitaworld.service.loans.model.ddr.DDROneFormResponse;
 import com.capitaworld.service.loans.model.ddr.DDRRequest;
@@ -34,4 +36,11 @@ public interface DDRFormService {
 	
 	public boolean deleteDocument(DDRUploadRequest ddrUploadRequest);
 	
+	public DDRCustomerRequest checkCustomerDetailFilled(Long applicationId);
+	
+	public Boolean saveCustomerDetailFilled(DDRCustomerRequest customerRequest);
+	
+	public DDRCustomerRequest getCustomerNameById(DDRCustomerRequest customerRequest);
+	
+	public DDRFormDetails getDDRDetailByApplicationId(Long applicationId) ;
 }

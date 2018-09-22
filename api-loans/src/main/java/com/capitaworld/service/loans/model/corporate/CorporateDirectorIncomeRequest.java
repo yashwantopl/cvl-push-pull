@@ -34,6 +34,11 @@ public class CorporateDirectorIncomeRequest implements Serializable {
 	private Boolean isActive;
 	
 	private String directorName; 
+	
+	private String salaryStr;
+	
+	private String totalIncomeStr;
+	
 
 	public Long getId() {
 		return id;
@@ -137,6 +142,22 @@ public class CorporateDirectorIncomeRequest implements Serializable {
 	public void setTotalIncome(Double totalIncome) {
 		this.totalIncome = totalIncome;
 	}
+	public String getSalaryStr() {
+		return salaryStr;
+	}
+
+	public void setSalaryStr(String salaryStr) {
+		this.salaryStr = salaryStr;
+	}
+
+	public String getTotalIncomeStr() {
+		return totalIncomeStr;
+	}
+
+	public void setTotalIncomeStr(String totalIncomeStr) {
+		this.totalIncomeStr = totalIncomeStr;
+	}
+
 	public String getDirectorName() {
 		return directorName;
 	}
@@ -144,6 +165,8 @@ public class CorporateDirectorIncomeRequest implements Serializable {
 	public void setDirectorName(String directorName) {
 		this.directorName = directorName;
 	}
+	
+	
 
 	@Override
 	public String toString() {

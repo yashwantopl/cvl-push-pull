@@ -273,14 +273,20 @@ public class NTBController {
             }
 
             Boolean result = ntbService.saveOthersDetail(fundSeekerInputRequestResponse, fundSeekerInputRequestResponse.getApplicationId(), userId);
-            LoansResponse loansResponse = null;
-            if(result) {
-                loansResponse = new LoansResponse("Successfully Saved", HttpStatus.OK.value());
-            }else {
-                loansResponse = new LoansResponse("Something goes wrong while saving saveOtherDetails", HttpStatus.BAD_REQUEST.value());
+           
+
+        	if(result){
+        		
+        		// initiate fraudanalytics service to invoke hunter api
+        			return new ResponseEntity<LoansResponse>(
+                            ntbService.invokeFraudAnalytics(fundSeekerInputRequestResponse),
+                            HttpStatus.OK);
+            } else {
+                logger.info("FUNDSEEKER INPUT NOT SAVED");
+                return new ResponseEntity<LoansResponse>(
+                        new LoansResponse("oneform not saved", HttpStatus.BAD_REQUEST.value()),
+                        HttpStatus.OK);
             }
-            logger.info("Exit saveOtherDetails()");
-            return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
         } catch (Exception e) {
             logger.error("Error while saving data for saveOtherDetails()==>", e);

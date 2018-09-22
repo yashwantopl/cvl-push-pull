@@ -33,6 +33,8 @@ import com.capitaworld.service.dms.exception.DocumentException;
 import com.capitaworld.service.dms.model.DocumentRequest;
 import com.capitaworld.service.dms.model.DocumentResponse;
 import com.capitaworld.service.dms.util.DocumentAlias;
+import com.capitaworld.service.fraudanalytics.client.FraudAnalyticsClient;
+import com.capitaworld.service.fraudanalytics.model.AnalyticsResponse;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
@@ -146,6 +148,10 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService {
 	@Autowired
 	private DirectorBackgroundDetailsRepository dirBackgroundDetails;
 
+	@Autowired
+	private FraudAnalyticsClient fraudAnalyticsClient;
+
+	
 	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 	DecimalFormat decim = new DecimalFormat("#,###.00");
 
@@ -309,19 +315,21 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService {
 		try {
 
 			FundSeekerInputRequestResponse fundSeekerInputRequestResponse = ntbService.getOthersDetail(toApplicationId);
-			if (!CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequestResponse.getProposedConstitutionOfUnit())) {
+			/*if (!CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequestResponse.getProposedConstitutionOfUnit())) {
 				ProposedConstitutionOfUnitNTB byIdProCons = ProposedConstitutionOfUnitNTB
 						.getById(fundSeekerInputRequestResponse.getProposedConstitutionOfUnit());
-				fundSeekerInputRequestResponse.setProposedConstitutionOfUnit(
+				ntbPrimaryViewRespone.setProposedConstitutionOfUnit(
 						CommonUtils.isObjectNullOrEmpty(byIdProCons) ? Integer.valueOf(byIdProCons.getValue()) : null);
-			}
-			if (!CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequestResponse.getProposedDetailsOfUnit())) {
+			}*/
+			/*if (!CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequestResponse.getProposedDetailsOfUnit())) {
 				ProposedDetailOfUnitNTB byIdProConsDet = ProposedDetailOfUnitNTB
 						.getById(fundSeekerInputRequestResponse.getProposedDetailsOfUnit());
-				fundSeekerInputRequestResponse.setProposedDetailsOfUnit(
-						CommonUtils.isObjectNullOrEmpty(byIdProConsDet) ? Integer.valueOf(byIdProConsDet.getValue())
+				ntbPrimaryViewRespone.setProposedDetailOfUnitFact(
+						!CommonUtils.isObjectNullOrEmpty(byIdProConsDet) ? String.valueOf(byIdProConsDet.getValue().toString())
 								: null);
-			}
+			}*/
+			
+			ntbPrimaryViewRespone.setProposedDetailOfUnitFact(fundSeekerInputRequestResponse.getProposedDetailsOfUnit() != null ? ProposedDetailOfUnitNTB.getById(fundSeekerInputRequestResponse.getProposedDetailsOfUnit()).getValue().toString() : '-');
 			List<Long> keyVerticalFundingId = new ArrayList<>();
 			if (!CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequestResponse.getKeyVericalFunding()))
 				keyVerticalFundingId.add(fundSeekerInputRequestResponse.getKeyVericalFunding());
@@ -504,6 +512,23 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService {
 			e.printStackTrace();
 			logger.info("Error while getting CGTMSE data");
 		}
+		
+		// Fraud Detection Data
+
+				try {
+					AnalyticsResponse hunterResp = fraudAnalyticsClient.getRuleAnalysisData(toApplicationId);
+
+					if (!CommonUtils.isObjectListNull(hunterResp, hunterResp.getData())) {
+
+						ntbPrimaryViewRespone.setFraudDetectionData(hunterResp);
+
+					}
+				} catch (Exception e1) {
+
+					logger.warn("------:::::...Error while fetching Fraud Detection Details...For..::::::-----",
+							toApplicationId);
+					e1.printStackTrace();
+				}
 
 		// GET DOCUMENTS
 		DocumentRequest documentRequest = new DocumentRequest();
