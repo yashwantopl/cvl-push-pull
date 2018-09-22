@@ -2255,12 +2255,12 @@ public class LoanApplicationController {
 							loanDisbursementRequest.getPassword());
 					if (!CommonUtils.isObjectNullOrEmpty(orgId)) {
 
-						reason = loanDisbursementService.disbursementRequestValidation(null , loanDisbursementRequest, orgId , CommonUtility.ApiType.DISBURSEMENT);
+						loanDisbursementRequest = loanDisbursementService.disbursementRequestValidation(null , loanDisbursementRequest, orgId , CommonUtility.ApiType.DISBURSEMENT);
 
-						if ("SUCCESS".equalsIgnoreCase(reason) || "First Disbursement".equalsIgnoreCase(reason)) {
+						if ("SUCCESS".equalsIgnoreCase(loanDisbursementRequest.getReason()) || "First Disbursement".equalsIgnoreCase(loanDisbursementRequest.getReason())) {
 							logger.info(
 									"Success msg while saveLoanDisbursementDetail() ----------------> msg " + reason);
-							reason = null;
+							loanDisbursementRequest = null;
 							loansResponse = new LoansResponse("Information Successfully Stored ",
 									HttpStatus.OK.value());
 							loansResponse.setData(
@@ -2272,7 +2272,7 @@ public class LoanApplicationController {
 							logger.info(
 									"Failure msg while saveLoanDisbursementDetail in saveLoanDisbursementDetail() ----------------> msg "
 											+ reason);
-							loansResponse = new LoansResponse(reason.split("[\\{}]")[0],
+							loansResponse = new LoansResponse(loanDisbursementRequest.getReason().split("[\\{}]")[0],
 									HttpStatus.BAD_REQUEST.value());
 							loansResponse.setData(false);
 							logger.info("Exit saveLoanDisbursementDetail() ----------------> msg ==>" + reason);
