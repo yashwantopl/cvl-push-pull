@@ -100,6 +100,7 @@ public class AssetsDetailsExcelReader
         extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, assetsMappingList,CellReference.convertNumToColString(sheet.getRow(4).getCell(j).getColumnIndex()),String.valueOf(sheet.getRow(4).getCell(j).getNumericCellValue()),"Projected",assetsDetailsRepository);
         j++;
         	}
+
         /*extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, assetsMappingList,"G",String.valueOf(sheet.getRow(4).getCell(6).getNumericCellValue()),"Projected",assetsDetailsRepository);
         extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, assetsMappingList,"H",String.valueOf(sheet.getRow(4).getCell(7).getNumericCellValue()),"Projected",assetsDetailsRepository);
         extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, assetsMappingList,"I",String.valueOf(sheet.getRow(4).getCell(8).getNumericCellValue()),"Projected",assetsDetailsRepository);
@@ -120,6 +121,7 @@ public class AssetsDetailsExcelReader
         extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, assetsMappingList,"X",String.valueOf(sheet.getRow(4).getCell(12).getNumericCellValue()),"Projected",assetsDetailsRepository);
         extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, assetsMappingList,"Y",String.valueOf(sheet.getRow(4).getCell(12).getNumericCellValue()),"Projected",assetsDetailsRepository);
        */ }
+
     }
 
     public static void extractCellFromSheet(Long storageDetailsId,

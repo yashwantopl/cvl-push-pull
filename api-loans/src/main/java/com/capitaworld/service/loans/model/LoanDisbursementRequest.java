@@ -26,9 +26,7 @@ public class LoanDisbursementRequest extends AuditActivityRequest implements Ser
 	private Date disbursementDate;
 
 	private String disbursementAuthority;
-
 	private Long paymentMode;
-
 	private String remark;
 	private String userName;
 	private String password;
