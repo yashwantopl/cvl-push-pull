@@ -561,7 +561,7 @@ public class DDRFormController {
 			boolean resposnse = ddrFormService.saveCustomerDetailFilled(customerRequest);
 			if(resposnse) {
 				logger.info("STATUS OF SAVE CUSTOMER DETAILS FILLED ---------------------------->" + resposnse);
-				return new ResponseEntity<LoansResponse>( new LoansResponse("Successfully save data", HttpStatus.OK.value(), resposnse), HttpStatus.OK);	
+				return new ResponseEntity<LoansResponse>( new LoansResponse("Customer details are successfully saved in DDR", HttpStatus.OK.value(), resposnse), HttpStatus.OK);	
 			}
 			logger.info("STATUS OF SAVE CUSTOMER DETAILS FILLED ---------------------------->" + resposnse);
 			return new ResponseEntity<LoansResponse>( new LoansResponse("Invalid Request, Data not saved", HttpStatus.BAD_REQUEST.value(), resposnse), HttpStatus.OK);

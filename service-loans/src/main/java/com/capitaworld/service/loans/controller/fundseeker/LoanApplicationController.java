@@ -3068,4 +3068,20 @@ public class LoanApplicationController {
 			e.printStackTrace();
 		}
 	}
+	
+	@RequestMapping(value = "/ddr_status/{applicationId}", method = RequestMethod.GET)
+	public ResponseEntity<LoansResponse> ddrStatus(@PathVariable("applicationId") Long applicationId) {
+		try {
+			logger.info("ENTER IN GET DDR STATUS ID---------------->" + applicationId);
+			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully get data", HttpStatus.OK.value(), loanApplicationService.getDDRStatusId(applicationId)), HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while get ddr status==>");
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+	}
+	
+	
 }

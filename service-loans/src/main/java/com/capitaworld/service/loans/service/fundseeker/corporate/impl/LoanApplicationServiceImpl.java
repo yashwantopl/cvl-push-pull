@@ -6931,8 +6931,12 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 		}
 		
 		try {
+			
+			
+			
 			PrimaryCorporateDetail primaryCorporateDetail = primaryCorporateRepository.findOneByApplicationIdId(applicationId);
 			response.setIsPurchaseOfEqup(false);
+			
 			if(primaryCorporateDetail!=null) {
 				response.setColleteralValue(primaryCorporateDetail.getCollateralSecurityAmount());
 				if(primaryCorporateDetail.getAssessmentId()!=null) {
@@ -6941,6 +6945,10 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 						response.setCostOfMachinery(primaryCorporateDetail.getCostOfMachinery());
 					}
 				}
+			}
+			if(loan!=null && loan.getBusinessTypeId()!=null && loan.getBusinessTypeId() == 2) {
+				response.setIsPurchaseOfEqup(true);
+				response.setCostOfMachinery(primaryCorporateDetail.getProposedCost());
 			}
 		}
 		catch (Exception e) {
