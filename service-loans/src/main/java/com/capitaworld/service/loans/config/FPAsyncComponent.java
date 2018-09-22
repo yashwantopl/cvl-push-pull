@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.config;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -934,8 +935,7 @@ public class FPAsyncComponent {
 			// ======MAAZ=========sending email to fs when maker accepted
 			// proposL==Email_FS_Accepted_By_MAKER=======================================//
 //								add mail for  Email_FS_Accepted_By_MAKER
-			// snd mail to fs for both product ntb and existing
-			sendMailToFsWhenMakerAcceptPorposal(parameters, applicantRequest, assignedMakerName);
+			sendMailToFsWhenMakerAcceptPorposal(fsName, proposalresp, assignedMakerName,applicationRequest);
 
 			// =====================================================================================================
 
@@ -1292,41 +1292,44 @@ public class FPAsyncComponent {
 
 	// ============maaz=========================================================================================
 	@Async
-	public void sendMailToFsWhenMakerAcceptPorposal(Map<String, Object> parameters,
-			CorporateApplicantRequest applicantRequest, String assignedMakerName){
- 		Map<String, Object> mailParameter = new HashMap<String, Object>();
-		mailParameter.put("fs_name", parameters.get("fs_name") != null ? parameters.get("fs_name").toString() : "NA");
+	public void sendMailToFsWhenMakerAcceptPorposal(String fsName, Map<String, Object> proposalresp,String assignedMakerName,LoanApplicationRequest applicationRequest){
+		logger.info("Sending email to fs when maker accept proposal");
+		Map<String, Object> mailParameter = new HashMap<String, Object>();
+		mailParameter.put("fs_name", fsName != null ? fsName.toString() : "NA");
+		mailParameter.put("entity_name", fsName != null ? fsName.toString() : "NA");
 		mailParameter.put("loan_type",
-				parameters.get("product_type") != null ? parameters.get("product_type").toString() : "NA");
+				proposalresp.get("loan_type") != null ? proposalresp.get("loan_type").toString() : "NA");
 		mailParameter.put("maker_name", assignedMakerName);
-		mailParameter.put("application_id", parameters.get("application_id"));
+		mailParameter.put("application_id", applicationRequest.getId()!=null?applicationRequest.getId().toString():"NA");
+		
+		UserResponse response = null;
+		UsersRequest signUpUser = null;
 
-		long applicationId = Long.valueOf(parameters.get("application_id").toString());
-
-		logger.info("application Id:" + parameters.get("application_id"));
-//			for geting entity name of fs from gst
-		CorporateApplicantRequest corporateApplicantRequest =null;
 		try {
-			 corporateApplicantRequest = corporateApplicantService.getCorporateApplicant(applicationId);
-		 
-			logger.info("Organization name of fs:" + 	corporateApplicantRequest .getOrganisationName());
+			response = userClient.getEmailMobile(applicationRequest.getUserId());
 		} catch (Exception e) {
-			logger.info("Exception in finding CorporateApplicantRequest in sendMailWhenMakerAcceptPorposal:" + e.getMessage());
+			logger.info("Something went wrong while calling Users client from sending mail to fs===>{}");
 			e.printStackTrace();
 		}
 
-		logger.info("entity name of fs:" +"maazSh"/* mailParameter.get("gstDetailedResp.keyObservation.OrganizationName")*/);
+		if (!CommonUtils.isObjectNullOrEmpty(response)) {
+			try {
+				signUpUser = MultipleJSONObjectHelper
+						.getObjectFromMap((Map<String, Object>) response.getData(), UsersRequest.class);
+			} catch (Exception e) {
+				logger.info("Exception getting signup user at Sending email to fs when maker accept proposal");
+				e.printStackTrace();
+			}
 
-		mailParameter.put("entity_name", corporateApplicantRequest .getOrganisationName()==""?"NA":corporateApplicantRequest .getOrganisationName());
-		mailParameter.put("mobile_number",
-				parameters.get("mobile_no") != null ? parameters.get("mobile_no").toString() : "NA");
-		mailParameter.put("address", parameters.get("address") != null ? parameters.get("address").toString() : "NA");
-		logger.info("details for sending email for Email_FS_Accepted_By_MAKER :" + parameters.get("product_type"));
+			String mobile = signUpUser.getMobile();
+			System.out.println("Mobile no:-" + mobile);
+			mailParameter.put("mobile_no", mobile != null ? mobile : "NA");
+		}
 
 		String emailSubject = "Maker Assigned - For Quick Business Loan Approval ";
 
 		try {
-			createNotificationForEmail(applicantRequest.getEmail(), applicantRequest.getUserId().toString(),
+			createNotificationForEmail(signUpUser.getEmail(), applicationRequest.getUserId().toString(),
 					mailParameter, NotificationAlias.EMAIL_FS_ACCEPTED_BY_MAKER, emailSubject);
 			logger.info("Email send to fs when maker accepted porposal");
 			System.out.println("Email send to fs when maker accepted porposal");
