@@ -104,9 +104,9 @@ public class CorporateDirectorIncomeServiceImpl implements CorporateDirectorInco
 							incomeRequest = new CorporateDirectorIncomeRequest();
 							incomeRequest.setSalaryStr(CommonUtils.convertValue(corpObj.getSalary()));
 							incomeRequest.setTotalIncomeStr(CommonUtils.convertValue(corpObj.getTotalIncome()));
-							BeanUtils.copyProperties(corpObj, incomeRequest);
-							String directorName = backgroundDetailsRepository.getDirectorNamefromDirectorId(incomeRequest.getDirectorId());
+							String directorName = backgroundDetailsRepository.getDirectorNamefromDirectorId(corpObj.getDirectorId());
 							incomeRequest.setDirectorName(directorName);
+							BeanUtils.copyProperties(corpObj, incomeRequest);
 						}
 						incomeDetailsResponse.add(incomeRequest);
 				}
@@ -276,7 +276,7 @@ public class CorporateDirectorIncomeServiceImpl implements CorporateDirectorInco
 							}
 							map.put("totalExperience", corpObj.getEmploymentDetail().getTotalExperience());
 							map.put("nameOfEmployer", corpObj.getEmploymentDetail().getNameOfEmployer());
-							map.put("salary", corpObj.getEmploymentDetail().getSalary());
+							map.put("salary", CommonUtils.convertValue(corpObj.getEmploymentDetail().getSalary()));
 							}
 							 try {
 									if(!CommonUtils.isObjectNullOrEmpty(corpObj.getDistrictMappingId())) {
