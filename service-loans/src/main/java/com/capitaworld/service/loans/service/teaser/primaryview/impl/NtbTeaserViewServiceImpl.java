@@ -315,19 +315,21 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService {
 		try {
 
 			FundSeekerInputRequestResponse fundSeekerInputRequestResponse = ntbService.getOthersDetail(toApplicationId);
-			if (!CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequestResponse.getProposedConstitutionOfUnit())) {
+			/*if (!CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequestResponse.getProposedConstitutionOfUnit())) {
 				ProposedConstitutionOfUnitNTB byIdProCons = ProposedConstitutionOfUnitNTB
 						.getById(fundSeekerInputRequestResponse.getProposedConstitutionOfUnit());
-				fundSeekerInputRequestResponse.setProposedConstitutionOfUnit(
+				ntbPrimaryViewRespone.setProposedConstitutionOfUnit(
 						CommonUtils.isObjectNullOrEmpty(byIdProCons) ? Integer.valueOf(byIdProCons.getValue()) : null);
-			}
-			if (!CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequestResponse.getProposedDetailsOfUnit())) {
+			}*/
+			/*if (!CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequestResponse.getProposedDetailsOfUnit())) {
 				ProposedDetailOfUnitNTB byIdProConsDet = ProposedDetailOfUnitNTB
 						.getById(fundSeekerInputRequestResponse.getProposedDetailsOfUnit());
-				fundSeekerInputRequestResponse.setProposedDetailsOfUnit(
-						CommonUtils.isObjectNullOrEmpty(byIdProConsDet) ? Integer.valueOf(byIdProConsDet.getValue())
+				ntbPrimaryViewRespone.setProposedDetailOfUnitFact(
+						!CommonUtils.isObjectNullOrEmpty(byIdProConsDet) ? String.valueOf(byIdProConsDet.getValue().toString())
 								: null);
-			}
+			}*/
+			
+			ntbPrimaryViewRespone.setProposedDetailOfUnitFact(fundSeekerInputRequestResponse.getProposedDetailsOfUnit() != null ? ProposedDetailOfUnitNTB.getById(fundSeekerInputRequestResponse.getProposedDetailsOfUnit()).getValue().toString() : '-');
 			List<Long> keyVerticalFundingId = new ArrayList<>();
 			if (!CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequestResponse.getKeyVericalFunding()))
 				keyVerticalFundingId.add(fundSeekerInputRequestResponse.getKeyVericalFunding());
