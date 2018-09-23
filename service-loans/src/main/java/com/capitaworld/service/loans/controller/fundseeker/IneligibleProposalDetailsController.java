@@ -23,27 +23,40 @@ import javax.servlet.http.HttpServletRequest;
 @RestController
 public class IneligibleProposalDetailsController {
 
-    private static final Logger logger = LoggerFactory.getLogger(IneligibleProposalDetailsController.class);
+	private static final Logger logger = LoggerFactory.getLogger(IneligibleProposalDetailsController.class);
 
-    @Autowired
-    private IneligibleProposalDetailsService ineligibleProposalDetailsService;
+	@Autowired
+	private IneligibleProposalDetailsService ineligibleProposalDetailsService;
 
-    @RequestMapping(value = "/save/ineligible/proposal", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LoansResponse> save(@RequestBody InEligibleProposalDetailsRequest inEligibleProposalDetailsRequest, HttpServletRequest request) {
-        if(CommonUtils.isObjectNullOrEmpty(inEligibleProposalDetailsRequest) ||
-                CommonUtils.isObjectNullOrEmpty(inEligibleProposalDetailsRequest.getApplicationId())){
-            logger.warn("Requested data can not be empty.Invalid Request. ");
-            return new ResponseEntity<LoansResponse>(
-                    new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
-        }
+	@RequestMapping(value = "/save/ineligible/proposal", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> save(
+			@RequestBody InEligibleProposalDetailsRequest inEligibleProposalDetailsRequest,
+			HttpServletRequest request) {
+		if (CommonUtils.isObjectNullOrEmpty(inEligibleProposalDetailsRequest)
+				|| CommonUtils.isObjectNullOrEmpty(inEligibleProposalDetailsRequest.getApplicationId())) {
+			logger.warn("Requested data can not be empty.Invalid Request. ");
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+		}
 
-        Boolean isDetailsSaved = ineligibleProposalDetailsService.save(inEligibleProposalDetailsRequest);
-        if(isDetailsSaved){
-            return new ResponseEntity<LoansResponse>(
-                    new LoansResponse("Data saved", HttpStatus.OK.value()), HttpStatus.OK);
-        }else {
-            return new ResponseEntity<LoansResponse>(
-                    new LoansResponse("Data not saved", HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
-        }
-    }
+		Boolean isDetailsSaved = ineligibleProposalDetailsService.save(inEligibleProposalDetailsRequest);
+		if (isDetailsSaved) {
+
+//        	Trigger mail  to fs and bank branch
+			Boolean isSent = ineligibleProposalDetailsService.sendMailToFsAndBankBranch(
+					inEligibleProposalDetailsRequest.getApplicationId(),
+					inEligibleProposalDetailsRequest.getBranchId(),inEligibleProposalDetailsRequest.getUserOrgId());
+			if (isSent) {
+				logger.info("Email sent to fs and branch");
+			} else {
+				logger.info("Error in sending email to fs and branch");
+			}
+
+			return new ResponseEntity<LoansResponse>(new LoansResponse("Data saved", HttpStatus.OK.value()),
+					HttpStatus.OK);
+		} else {
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse("Data not saved", HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
+		}
+	}
 }
