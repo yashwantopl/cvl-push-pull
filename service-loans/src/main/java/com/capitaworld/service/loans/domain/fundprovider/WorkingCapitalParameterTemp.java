@@ -330,6 +330,16 @@ public class WorkingCapitalParameterTemp extends ProductMasterTemp implements Se
 	
 	@Column(name="promoter_contri")
 	private BigDecimal promotorContri;
+	
+	//by rahul
+	@Column(name="manufacturing")
+	private BigDecimal manufacturing;
+	
+	@Column(name="service")
+	private BigDecimal service;
+	
+	@Column(name="trading")
+	private BigDecimal trading;
 
 
     public Integer getIndividualCibil() {
