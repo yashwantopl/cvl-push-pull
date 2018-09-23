@@ -1551,7 +1551,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 
 		// CGTMSE
 		try {
-			CGTMSEDataResponse cgtmseDataResp = thirdPartyClient.getCalulation(toApplicationId);
+			CGTMSEDataResponse cgtmseDataResp = thirdPartyClient.getCalulation(toApplicationId,fpProductMappingId);
 			corporateFinalViewResponse.setCgtmseData(cgtmseDataResp);
 		} catch (Exception e) {
 			e.printStackTrace();
