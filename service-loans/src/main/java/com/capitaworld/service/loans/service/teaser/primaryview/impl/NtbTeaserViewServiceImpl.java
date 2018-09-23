@@ -15,6 +15,7 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,20 +39,30 @@ import com.capitaworld.service.fraudanalytics.model.AnalyticsResponse;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
+import com.capitaworld.service.loans.model.FinanceMeansDetailRequest;
+import com.capitaworld.service.loans.model.FinanceMeansDetailResponse;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailResponse;
+import com.capitaworld.service.loans.model.TotalCostOfProjectResponse;
 import com.capitaworld.service.loans.model.corporate.CorporateDirectorIncomeRequest;
 import com.capitaworld.service.loans.model.corporate.FundSeekerInputRequestResponse;
+import com.capitaworld.service.loans.model.corporate.TotalCostOfProjectRequest;
 import com.capitaworld.service.loans.model.teaser.primaryview.NtbPrimaryViewResponse;
 import com.capitaworld.service.loans.repository.fundprovider.TermLoanParameterRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.DirectorBackgroundDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
+import com.capitaworld.service.loans.service.fundseeker.corporate.AssociatedConcernDetailService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateDirectorIncomeService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.DirectorBackgroundDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.ExistingProductDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.FinanceMeansDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.GuarantorsCorporateDetailService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.NTBService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.SecurityCorporateDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.TotalCostOfProjectService;
 import com.capitaworld.service.loans.service.irr.IrrService;
 import com.capitaworld.service.loans.service.teaser.primaryview.NtbTeaserViewService;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -60,9 +71,12 @@ import com.capitaworld.service.matchengine.MatchEngineClient;
 import com.capitaworld.service.matchengine.model.MatchDisplayResponse;
 import com.capitaworld.service.matchengine.model.MatchRequest;
 import com.capitaworld.service.oneform.client.OneFormClient;
+import com.capitaworld.service.oneform.enums.Constitution;
 import com.capitaworld.service.oneform.enums.Currency;
 import com.capitaworld.service.oneform.enums.Denomination;
+import com.capitaworld.service.oneform.enums.FinanceCategory;
 import com.capitaworld.service.oneform.enums.LoanType;
+import com.capitaworld.service.oneform.enums.Particular;
 import com.capitaworld.service.oneform.enums.ProposedConstitutionOfUnitNTB;
 import com.capitaworld.service.oneform.enums.ProposedDetailOfUnitNTB;
 import com.capitaworld.service.oneform.enums.PurposeOfLoan;
@@ -135,6 +149,9 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService {
 
 	@Autowired
 	private CorporateDirectorIncomeService corporateDirectorIncomeService;
+	
+	@Autowired
+	private ExistingProductDetailsService existingProductDetailsService;
 
 	@Autowired
 	private NTBService ntbService;
@@ -150,6 +167,21 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService {
 
 	@Autowired
 	private FraudAnalyticsClient fraudAnalyticsClient;
+	
+	@Autowired
+	private TotalCostOfProjectService costOfProjectService;
+
+	@Autowired
+	private FinanceMeansDetailsService financeMeansDetailsService;
+	
+	@Autowired
+	private SecurityCorporateDetailsService securityCorporateDetailsService;
+
+	@Autowired
+	private GuarantorsCorporateDetailService guarantorsCorporateDetailService;
+	
+	@Autowired
+	private AssociatedConcernDetailService associatedConcernDetailService;
 
 	
 	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
@@ -194,6 +226,11 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService {
 		// set value of org name to response
 		if (corporateApplicantDetail != null) {
 			ntbPrimaryViewRespone.setOrganisationName(corporateApplicantDetail.getOrganisationName());
+			ntbPrimaryViewRespone.setNameOfEntity(corporateApplicantDetail.getOrganisationName());
+			ntbPrimaryViewRespone.setConsitution(corporateApplicantDetail.getConstitutionId() != null ? Constitution.getById(corporateApplicantDetail.getConstitutionId()).getValue().toString() : "-");
+			ntbPrimaryViewRespone.setPan(corporateApplicantDetail.getPanNo());
+			ntbPrimaryViewRespone.setEstablishDate(corporateApplicantDetail.getEstablishmentDate());
+			
 		}
 
 		// Primary Details of applicant
@@ -590,6 +627,80 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService {
 		
 
 		if (isFinal) {
+			
+			// EXISTING PRODUCT DETAILS
+			try {
+				ntbPrimaryViewRespone.setExistingProductDetailRequestList(
+						existingProductDetailsService.getExistingProductDetailList(toApplicationId, userId));
+			} catch (Exception e) {
+				logger.error("Problem to get Data of Existing Product {}", e);
+			}
+			
+			// cost of project
+			try {
+				List<TotalCostOfProjectRequest> costOfProjectsList = costOfProjectService
+						.getCostOfProjectDetailList(toApplicationId, userId);
+				List<TotalCostOfProjectResponse> costOfProjectResponses = new ArrayList<TotalCostOfProjectResponse>();
+				for (TotalCostOfProjectRequest costOfProjectRequest : costOfProjectsList) {
+					TotalCostOfProjectResponse costOfProjectResponse = new TotalCostOfProjectResponse();
+					BeanUtils.copyProperties(costOfProjectRequest, costOfProjectResponse);
+					if (costOfProjectRequest.getParticularsId() != null)
+						costOfProjectResponse.setParticulars(Particular
+								.getById(Integer.parseInt(costOfProjectRequest.getParticularsId().toString())).getValue());
+					costOfProjectResponses.add(costOfProjectResponse);
+				}
+				ntbPrimaryViewRespone.setTotalCostOfProjectResponseList(costOfProjectResponses);
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				logger.error("Problem to get Data of Total cost of project{}", e1);
+			}
+
+			// Means of finance
+
+			try {
+				List<FinanceMeansDetailRequest> financeMeansDetailRequestsList = financeMeansDetailsService
+						.getMeansOfFinanceList(toApplicationId, userId);
+				List<FinanceMeansDetailResponse> financeMeansDetailResponsesList = new ArrayList<FinanceMeansDetailResponse>();
+				for (FinanceMeansDetailRequest financeMeansDetailRequest : financeMeansDetailRequestsList) {
+					FinanceMeansDetailResponse detailResponse = new FinanceMeansDetailResponse();
+					BeanUtils.copyProperties(financeMeansDetailRequest, detailResponse);
+
+					if (financeMeansDetailRequest.getFinanceMeansCategoryId() != null)
+						detailResponse.setFinanceMeansCategory(FinanceCategory
+								.getById(Integer.parseInt(financeMeansDetailRequest.getFinanceMeansCategoryId().toString()))
+								.getValue());
+					financeMeansDetailResponsesList.add(detailResponse);
+				}
+				ntbPrimaryViewRespone.setFinanceMeansDetailResponseList(financeMeansDetailResponsesList);
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				logger.error("Problem to get Data of Finance Means Details {}", e1);
+			}
+			
+			// Security
+
+			try {
+				ntbPrimaryViewRespone.setSecurityCorporateDetailRequestList(
+						securityCorporateDetailsService.getsecurityCorporateDetailsList(toApplicationId, userId));
+			} catch (Exception e) {
+				logger.error("Problem to get Data of Security Details {}", e);
+			}
+
+			// get data of Details of Guarantors
+			try {
+				ntbPrimaryViewRespone.setGuarantorsCorporateDetailRequestList(
+						guarantorsCorporateDetailService.getGuarantorsCorporateDetailList(toApplicationId, userId));
+			} catch (Exception e) {
+				logger.error("Problem to get Data of Details of Guarantor {}", e);
+			}
+			
+			// get data of Associated Concern
+			try {
+				ntbPrimaryViewRespone.setAssociatedConcernDetailRequests(
+						associatedConcernDetailService.getAssociatedConcernsDetailList(toApplicationId, userId));
+			} catch (Exception e) {
+				logger.error("Problem to get Data of Associated Concerns {}", e);
+			}
 
 		}
 		return ntbPrimaryViewRespone;

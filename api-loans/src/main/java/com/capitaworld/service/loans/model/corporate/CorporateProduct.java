@@ -213,6 +213,8 @@ public class CorporateProduct  extends  ProductMasterRequest implements Serializ
 	
 	private Integer paybackPeriod;
 	
+	private BigDecimal promotorContri;
+	
 /*ntb*/
 	
 	private BigDecimal minAvrgAge;
@@ -1359,7 +1361,16 @@ public class CorporateProduct  extends  ProductMasterRequest implements Serializ
 		this.paybackPeriod = paybackPeriod;
 	}
 
+	public BigDecimal getPromotorContri() {
+		return promotorContri;
+	}
 
+	public void setPromotorContri(BigDecimal promotorContri) {
+		this.promotorContri = promotorContri;
+	}
+
+
+	
 
 	
 	
