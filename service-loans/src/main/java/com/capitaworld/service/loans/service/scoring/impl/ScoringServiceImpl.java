@@ -2092,8 +2092,8 @@ public class ScoringServiceImpl implements ScoringService{
 
                                             OneFormResponse oneFormResponse= oneFormClient.getEnvironmentCategoryIdById(envCategoryId);
 
-                                            Long environmentCategoryId= (Long) oneFormResponse.getData();
-                                            scoreParameterNTBRequest.setEnvironmentCategory(environmentCategoryId);
+                                            Integer environmentCategoryId= (Integer) oneFormResponse.getData();
+                                            scoreParameterNTBRequest.setEnvironmentCategory(environmentCategoryId.longValue());
                                             logger.info("environmentCategoryId from one form client:===============:::::::::::::=========="+environmentCategoryId);
                                             scoreParameterNTBRequest.setIsEnvironmentCategory(true);
                                         }
