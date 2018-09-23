@@ -2255,12 +2255,12 @@ public class LoanApplicationController {
 							loanDisbursementRequest.getPassword());
 					if (!CommonUtils.isObjectNullOrEmpty(orgId)) {
 
-						reason = loanDisbursementService.disbursementRequestValidation(null , loanDisbursementRequest, orgId , CommonUtility.ApiType.DISBURSEMENT);
+						loanDisbursementRequest = loanDisbursementService.disbursementRequestValidation(null , loanDisbursementRequest, orgId , CommonUtility.ApiType.DISBURSEMENT);
 
-						if ("SUCCESS".equalsIgnoreCase(reason) || "First Disbursement".equalsIgnoreCase(reason)) {
+						if ("SUCCESS".equalsIgnoreCase(loanDisbursementRequest.getReason()) || "First Disbursement".equalsIgnoreCase(loanDisbursementRequest.getReason())) {
 							logger.info(
 									"Success msg while saveLoanDisbursementDetail() ----------------> msg " + reason);
-							reason = null;
+							loanDisbursementRequest = null;
 							loansResponse = new LoansResponse("Information Successfully Stored ",
 									HttpStatus.OK.value());
 							loansResponse.setData(
@@ -2272,7 +2272,7 @@ public class LoanApplicationController {
 							logger.info(
 									"Failure msg while saveLoanDisbursementDetail in saveLoanDisbursementDetail() ----------------> msg "
 											+ reason);
-							loansResponse = new LoansResponse(reason.split("[\\{}]")[0],
+							loansResponse = new LoansResponse(loanDisbursementRequest.getReason().split("[\\{}]")[0],
 									HttpStatus.BAD_REQUEST.value());
 							loansResponse.setData(false);
 							logger.info("Exit saveLoanDisbursementDetail() ----------------> msg ==>" + reason);
@@ -2348,6 +2348,31 @@ public class LoanApplicationController {
 			return new ResponseEntity<LoansResponse>(response, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while updating Payment Status==>{}", e);
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
+		}
+	}
+	
+	@RequestMapping(value = "/update_skip_payment_whiteLabel/{appId}/{businessTypeId}/{orgId}/{fpProductId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> updateSkipPayment(@PathVariable("appId") Long appId, @PathVariable("businessTypeId") Integer businessTypeId,
+			@PathVariable("orgId") Long orgId, @PathVariable("fpProductId") Long fprProductId,
+			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
+		try {
+			logger.info("start updateSkipPaymentForWhiteLabel()");
+			Long userId = null;
+			if (CommonDocumentUtils.isThisClientApplication(request) && !CommonUtils.isObjectNullOrEmpty(clientId)) {
+				userId = clientId;
+			} else {
+				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			}
+
+			LoansResponse response = new LoansResponse("Successfully updated", HttpStatus.OK.value());
+			loanApplicationService.updateSkipPaymentWhiteLabel(userId, appId, businessTypeId, orgId, fprProductId);
+			logger.info("end updateSkipPaymentStatus()");
+			return new ResponseEntity<LoansResponse>(response, HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while updating Payment Status for WhiteLabel==>{}", e);
 			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
@@ -3068,4 +3093,20 @@ public class LoanApplicationController {
 			e.printStackTrace();
 		}
 	}
+	
+	@RequestMapping(value = "/ddr_status/{applicationId}", method = RequestMethod.GET)
+	public ResponseEntity<LoansResponse> ddrStatus(@PathVariable("applicationId") Long applicationId) {
+		try {
+			logger.info("ENTER IN GET DDR STATUS ID---------------->" + applicationId);
+			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully get data", HttpStatus.OK.value(), loanApplicationService.getDDRStatusId(applicationId)), HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while get ddr status==>");
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+	}
+	
+	
 }

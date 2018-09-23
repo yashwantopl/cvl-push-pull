@@ -880,4 +880,47 @@ public class ProductMasterController {
 		
 	}
 	
+	@RequestMapping(value = "/getApprovedProductByProductType/{productId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getApprovedProductByProductType(HttpServletRequest request,
+			@PathVariable(value = "productId") String productId,
+			@RequestParam(value = "clientId", required = false) Long clientId) {
+		// request must not be null
+		CommonDocumentUtils.startHook(logger, "getListByUserType");
+		try {
+			Long userId = null;
+			if (CommonDocumentUtils.isThisClientApplication(request) && !CommonUtils.isObjectNullOrEmpty(clientId)) {
+				userId = clientId;
+			} else {
+				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			}		
+			//get org id
+			Long userOrgId = (Long) request.getAttribute(CommonUtils.USER_ORG_ID);
+			
+			if (userId == null) {
+				logger.warn("UserId Require to get product Details ==>" + userId);
+				CommonDocumentUtils.endHook(logger, "getListByUserType");
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			if (productId == null) {
+				logger.warn("productType Require to get product Details ==>" + userId);
+				CommonDocumentUtils.endHook(logger, "getListByUserType");
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			//List<ProductMasterRequest> response = productMasterService.getListByUserType(userId, userType);
+			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			loansResponse.setListData(productMasterService.getApprovedListByProductType(userId, Integer.parseInt(CommonUtils.decode(productId)),userOrgId));
+			CommonDocumentUtils.endHook(logger, "getListByUserType");
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+
+		} catch (Exception e) {
+			logger.error("Error while getting Products Details==>", e);
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
 }

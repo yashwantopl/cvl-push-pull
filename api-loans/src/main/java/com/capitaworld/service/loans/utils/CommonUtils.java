@@ -1162,7 +1162,40 @@ public enum APIFlags {
 			return "Indian Bank";
 		}else if(x == 14L) {
 			return "BOI";
-		}else {
+		}else if(x == 15L) {
+			return "Vijaya Bank";
+		}else if(x == 16L) {
+			return "SBI";
+		}else if(x == 17L) {
+			return "BOB";
+		}else if(x == 18L) {
+			return "PNB";
+		}else if(x == 19L) {
+			return "UCO Bank";
+		}else if(x == 20L) {
+			return "PSB";
+		}else if(x == 21L) {
+			return "Oriental Bank of Commerce";
+		}else if(x == 22L) {
+			return "Syndicate Bank";
+		}else if(x == 23L) {
+			return "Allahabad bank";
+		}else if(x == 24L) {
+			return "Corporation Bank";
+		}else if(x == 25L) {
+			return "Central Bank";
+		}else if(x == 26L) {
+			return "Andhra Bank";
+		}else if(x == 27L) {
+			return "Bank of Maharashtra";
+		}else if(x == 28L) {
+			return "Indian Overseas Bank";
+		}else if(x == 29L) {
+			return "United Bank of India";
+		}else if(x == 30L) {
+			return "Kotak Bank";
+		}
+		else {
 			return null;
 		}
 	}

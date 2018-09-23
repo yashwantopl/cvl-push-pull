@@ -20,6 +20,8 @@ public class AddProductRequest {
 	private Integer stage;
 
 	private Long businessTypeId;
+	
+	private Long loanId;
 
 
 	public Integer getProductId() {
@@ -85,4 +87,14 @@ public class AddProductRequest {
 	public void setBusinessTypeId(Long businessTypeId) {
 		this.businessTypeId = businessTypeId;
 	}
+
+	public Long getLoanId() {
+		return loanId;
+	}
+
+	public void setLoanId(Long loanId) {
+		this.loanId = loanId;
+	}
+	
+	
 }
