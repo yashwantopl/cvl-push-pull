@@ -11,6 +11,7 @@ import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -119,28 +120,30 @@ public class CorporateUploadServiceImpl implements CorporateUploadService {
 	@Override
 	public DocumentResponse uploadOtherDoc(String documentRequestString, MultipartFile multipartFiles, Long userId)
 			throws Exception {
-//		DocumentResponse response = dmsClient.uploadFile(documentRequestString, multipartFiles);
+		
 		
 		try {
-//			DocumentRequest request = MultipleJSONObjectHelper.getObjectFromString(documentRequestString, DocumentRequest.class);
-//			request.setUserId(userId);
-//			try{
-//				logger.error("saving Upload FLag");
-//			Long resp = saveDocumentFLag( request);
-//			if(resp == 0L){
-//				logger.error("Error while saving Upload FLag");
-//				throw new Exception("Error while saving Upload FLag");
-//			}
-//			
-//			}
-//			catch (Exception e) {
-//				e.printStackTrace();
-//				logger.error("Error while saving Upload FLag");
-//				throw new Exception("Error while saving Upload FLag");
-//			}
-			return dmsClient.uploadFile(documentRequestString, multipartFiles);
+			DocumentResponse response = dmsClient.uploadFile(documentRequestString, multipartFiles);
+			if(!CommonUtils.isObjectNullOrEmpty(response) && response.getStatus() == HttpStatus.OK.value()) {
+				DocumentRequest request = MultipleJSONObjectHelper.getObjectFromString(documentRequestString, DocumentRequest.class);
+				request.setUserId(userId);
+				try{
+					logger.info("saving Upload FLag");
+				Long resp = saveDocumentFLag( request);
+				if(resp == 0L){
+					logger.error("Error while saving Upload FLag");
+					throw new Exception("Error while saving Upload FLag");
+				}
+				
+				}
+				catch (Exception e) {
+					e.printStackTrace();
+					logger.error("Error while saving Upload FLag");
+					throw new Exception("Error while saving Upload FLag");
+				}	
+			}
+			return response;
 		} catch (DocumentException e) {
-			// TODO Auto-generated catch block
 			logger.error("Error while uploading Corporate Other Documents");
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
@@ -350,399 +353,178 @@ public class CorporateUploadServiceImpl implements CorporateUploadService {
 		
 		final int switchCase = documentUploadFlagRequest.getProductDocumentMappingId().intValue();
 		switch (switchCase) {
-		// Working Capital 
-		
-		case 3:
-			dDRFormDetails.setPanCardOfTheCompany("Yes");
-			dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
-			dDRFormDetails.setModifyDate(new Date());
-			break;
-		case 9:
-			dDRFormDetails.setAuditedFinancialsForLast3years("Yes");
-			dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
-			dDRFormDetails.setModifyDate(new Date());
-			break;
-		case 10:
-			dDRFormDetails.setSanctionLetter("Yes");
-			dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
-			dDRFormDetails.setModifyDate(new Date());
-			break;
-			
-		case 11:
-			dDRFormDetails.setItrForLast3years("Yes");
-			dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
-			dDRFormDetails.setModifyDate(new Date());
-			break;
-			
-		case 12:
-			dDRFormDetails.setCaCertifiedNetworthStatement("Yes");
-			dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
-			dDRFormDetails.setModifyDate(new Date());
-			break;
-			
-		case 13:
-			dDRFormDetails.setProvisionalFinancialsForCurrentYear("Yes");
-			dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
-			dDRFormDetails.setModifyDate(new Date());
-			break;
-			
-		case 14:
-			dDRFormDetails.setPanCardAndResidenceAddProofOfDirectors("Yes");
-			dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
-			dDRFormDetails.setModifyDate(new Date());
-			break;
-			
-		case 15:
-			dDRFormDetails.setListOfShareholdersAndShareHoldingPatter("Yes");
-			dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
-			dDRFormDetails.setModifyDate(new Date());
-			break;
-			
-		case 18:
-			dDRFormDetails.setMoaOfTheCompany("Yes");
-			dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
-			dDRFormDetails.setModifyDate(new Date());
-			break;
-			
-		case 297:
-			dDRFormDetails.setIrrOfAllDirectorsForLast2years("Yes");
-			dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
-			dDRFormDetails.setModifyDate(new Date());
-			break;
+		// Working Capital
 
-			
-		case 305:
-			dDRFormDetails.setResolutionAndForm32forAdditionOfDirector("Yes");
-			dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
-			dDRFormDetails.setModifyDate(new Date());
-			break;
-			
-		case 308:
-			dDRFormDetails.setDebtorsList("Yes");
-			dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
-			dDRFormDetails.setModifyDate(new Date());
-			break;
-			
-		case 315:
-			dDRFormDetails.setLetterOfIntentFromFundProviders("Yes");
-			dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
-			dDRFormDetails.setModifyDate(new Date());
-			break;
-			
-		case 330:
+		case 501:// WC
+		case 502:// TL
+		case 503:// USL
+		case 504:// WCTL
 			dDRFormDetails.setFieldAuditReport("Yes");
-			dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
-			dDRFormDetails.setModifyDate(new Date());
 			break;
-			
-		case 331:
-			dDRFormDetails.setBankStatementOfLast12months("Yes");
-			dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
-			dDRFormDetails.setModifyDate(new Date());
-			break;
-			
-		case 332:
-			dDRFormDetails.setFinancialFigures("Yes");
-			dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
-			dDRFormDetails.setModifyDate(new Date());
-			break;
-			
-		case 333:
-			dDRFormDetails.setCentralSalesTaxRegistrationOfCompany("Yes");
-			dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
-			dDRFormDetails.setModifyDate(new Date());
-			break;
-			
-		case 334:
-			dDRFormDetails.setCentralExciseRegistrationOfCompany("Yes");
-			dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
-			dDRFormDetails.setModifyDate(new Date());
-			break;
-			
-		case 335:
-			dDRFormDetails.setVatRegistrationOfCompany("Yes");
-			dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
-			dDRFormDetails.setModifyDate(new Date());
-			break;
-			
-		case 336:
-			dDRFormDetails.setListOfDirectors("Yes");
-			dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
-			dDRFormDetails.setModifyDate(new Date());
-			break;
-			
-			
-			
-			// term Loan
-			
-		case 30:
-			dDRFormDetails.setPanCardOfTheCompany("Yes");
-			dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
-			dDRFormDetails.setModifyDate(new Date());
-			break;
-			
-		case 36:
+		
+		case 9:// WC
+		case 36:// TL
+		case 276:// USL
+		case 375:// WCTL
 			dDRFormDetails.setAuditedFinancialsForLast3years("Yes");
-			dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
-			dDRFormDetails.setModifyDate(new Date());
 			break;
-
-		case 37:
-			dDRFormDetails.setSanctionLetter("Yes");
-			dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
-			dDRFormDetails.setModifyDate(new Date());
-			break;
-			
-		case 39:
-			dDRFormDetails.setCaCertifiedNetworthStatement("Yes");
-			dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
-			dDRFormDetails.setModifyDate(new Date());
-			break;
-			
-		case 40:
-			dDRFormDetails.setProvisionalFinancialsForCurrentYear("Yes");
-			dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
-			dDRFormDetails.setModifyDate(new Date());
-			break;
-			
-		case 41:
-			dDRFormDetails.setPanCardAndResidenceAddProofOfDirectors("Yes");
-			dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
-			dDRFormDetails.setModifyDate(new Date());
-			break;
-			
-		case 42:
-			dDRFormDetails.setListOfShareholdersAndShareHoldingPatter("Yes");
-			dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
-			dDRFormDetails.setModifyDate(new Date());
-			break;
-			
-		case 45:
-			dDRFormDetails.setMoaOfTheCompany("Yes");
-			dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
-			dDRFormDetails.setModifyDate(new Date());
-			break;
-			
-		case 298:
-			dDRFormDetails.setIrrOfAllDirectorsForLast2years("Yes");
-			dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
-			dDRFormDetails.setModifyDate(new Date());
-			break;
-
-		case 306:
-			dDRFormDetails.setResolutionAndForm32forAdditionOfDirector("Yes");
-			dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
-			dDRFormDetails.setModifyDate(new Date());
-			break;
-
-		case 309:
-			dDRFormDetails.setDebtorsList("Yes");
-			dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
-			dDRFormDetails.setModifyDate(new Date());
-			break;
-			
-		case 316:
-			dDRFormDetails.setLetterOfIntentFromFundProviders("Yes");
-			dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
-			dDRFormDetails.setModifyDate(new Date());
-			break;
-			
 		
-			
-		case 38:
+		case 280:// WC
+		case 13:// TL
+		case 40:// USL
+		case 379:// WCTL
+			dDRFormDetails.setProvisionalFinancialsForCurrentYear("Yes");
+			break;
+		
+		case 11:// WC
+		case 38:// TL
+		case 278:// USL
+		case 377:// WCTL
 			dDRFormDetails.setItrForLast3years("Yes");
-			dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
-			dDRFormDetails.setModifyDate(new Date());
 			break;
-			
-			
-			
-		case 337:
-			dDRFormDetails.setFieldAuditReport("Yes");
-			dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
-			dDRFormDetails.setModifyDate(new Date());
+		
+		case 10:// WC
+		case 37:// TL
+		case 277:// USL
+		case 376:// WCTL
+			dDRFormDetails.setSanctionLetter("Yes");
 			break;
-			
-		case 338:
+		
+		case 505:// WC
+		case 506:// TL
+		case 507:// USL
+		case 508:// WCTL
 			dDRFormDetails.setBankStatementOfLast12months("Yes");
-			dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
-			dDRFormDetails.setModifyDate(new Date());
 			break;
-			
-		case 339:
-			dDRFormDetails.setFinancialFigures("Yes");
-			dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
-			dDRFormDetails.setModifyDate(new Date());
-			break;
-			
-		case 340:
-			dDRFormDetails.setCentralSalesTaxRegistrationOfCompany("Yes");
-			dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
-			dDRFormDetails.setModifyDate(new Date());
-			break;
-			
-		case 341:
-			dDRFormDetails.setCentralExciseRegistrationOfCompany("Yes");
-			dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
-			dDRFormDetails.setModifyDate(new Date());
-			break;
-			
-		case 342:
-			dDRFormDetails.setVatRegistrationOfCompany("Yes");
-			dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
-			dDRFormDetails.setModifyDate(new Date());
-			break;
-			
-		case 343:
-			dDRFormDetails.setListOfDirectors("Yes");
-			dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
-			dDRFormDetails.setModifyDate(new Date());
-			break;
-			
-			
-			
 		
-			
-			
-			
-			// Unsecured loan
-			
-			
-		case 276:
-			dDRFormDetails.setAuditedFinancialsForLast3years("Yes");
-			dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
-			dDRFormDetails.setModifyDate(new Date());
+		case 308:// WC
+		case 309:// TL
+		case 310:// USL
+		case 399:// WCTL
+			dDRFormDetails.setDebtorsList("Yes");
 			break;
-			
-			
-		case 277:
-			dDRFormDetails.setSanctionLetter("Yes");
-			dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
-			dDRFormDetails.setModifyDate(new Date());
+		
+		case 509:// WC
+		case 510:// TL
+		case 511:// USL
+		case 512:// WCTL
+			dDRFormDetails.setFinancialFigures("Yes");
 			break;
-			
-		case 278:
-			dDRFormDetails.setItrForLast3years("Yes");
-			dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
-			dDRFormDetails.setModifyDate(new Date());
+		
+		case 18:// WC
+		case 45:// TL
+		case 311:// USL
+		case 384:// WCTL
+			dDRFormDetails.setMoaOfTheCompany("Yes");
 			break;
-			
-		case 279:
-			dDRFormDetails.setCaCertifiedNetworthStatement("Yes");
-			dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
-			dDRFormDetails.setModifyDate(new Date());
-			break;
-			
-		case 280:
-			dDRFormDetails.setProvisionalFinancialsForCurrentYear("Yes");
-			dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
-			dDRFormDetails.setModifyDate(new Date());
-			break;
-			
-		case 283:
+		
+		case 3:// WC
+		case 30:// TL
+		case 283:// USL
+		case 369:// WCTL
 			dDRFormDetails.setPanCardOfTheCompany("Yes");
-			dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
-			dDRFormDetails.setModifyDate(new Date());
-			break;
-			
-		case 284:
-			dDRFormDetails.setPanCardAndResidenceAddProofOfDirectors("Yes");
-			dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
-			dDRFormDetails.setModifyDate(new Date());
-			break;
-			
-		case 285:
-			dDRFormDetails.setListOfShareholdersAndShareHoldingPatter("Yes");
-			dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
-			dDRFormDetails.setModifyDate(new Date());
-			break;
-			
-		case 299:
-			dDRFormDetails.setIrrOfAllDirectorsForLast2years("Yes");
-			dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
-			dDRFormDetails.setModifyDate(new Date());
 			break;
 		
-		case 307:
+		case 305:// WC
+		case 306:// TL
+		case 307:// USL
+		case 398:// WCTL
 			dDRFormDetails.setResolutionAndForm32forAdditionOfDirector("Yes");
-			dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
-			dDRFormDetails.setModifyDate(new Date());
 			break;
-			
-		case 310:
-			dDRFormDetails.setDebtorsList("Yes");
-			dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
-			dDRFormDetails.setModifyDate(new Date());
-			break;
-			
-		case 311:
-			dDRFormDetails.setMoaOfTheCompany("Yes");
-			dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
-			dDRFormDetails.setModifyDate(new Date());
-			break;
-			
-		case 317:
-			dDRFormDetails.setLetterOfIntentFromFundProviders("Yes");
-			dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
-			dDRFormDetails.setModifyDate(new Date());
-			break;
-			
-			
-			
-		case 344:
-			dDRFormDetails.setFieldAuditReport("Yes");
-			dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
-			dDRFormDetails.setModifyDate(new Date());
-			break;
-			
-		case 345:
-			dDRFormDetails.setBankStatementOfLast12months("Yes");
-			dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
-			dDRFormDetails.setModifyDate(new Date());
-			break;
-			
-		case 346:
-			dDRFormDetails.setFinancialFigures("Yes");
-			dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
-			dDRFormDetails.setModifyDate(new Date());
-			break;
-			
-		case 347:
+		
+		case 513:// WC
+		case 514:// TL
+		case 515:// USL
+		case 516:// WCTL
 			dDRFormDetails.setCentralSalesTaxRegistrationOfCompany("Yes");
-			dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
-			dDRFormDetails.setModifyDate(new Date());
 			break;
-			
-		case 348:
+		
+		case 517:// WC
+		case 518:// TL
+		case 519:// USL
+		case 520:// WCTL
 			dDRFormDetails.setCentralExciseRegistrationOfCompany("Yes");
-			dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
-			dDRFormDetails.setModifyDate(new Date());
 			break;
-			
-		case 349:
+		
+		case 521:// WC
+		case 522:// TL
+		case 523:// USL
+		case 524:// WCTL
 			dDRFormDetails.setVatRegistrationOfCompany("Yes");
-			dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
-			dDRFormDetails.setModifyDate(new Date());
 			break;
-			
-		case 350:
+		
+		case 315:// WC
+		case 316:// TL
+		case 317:// USL
+		case 401:// WCTL
+			dDRFormDetails.setLetterOfIntentFromFundProviders("Yes");
+			break;
+		
+		case 14:// WC
+		case 41:// TL
+		case 284:// USL
+		case 397:// WCTL
+			dDRFormDetails.setPanCardAndResidenceAddProofOfDirectors("Yes");
+			break;
+		
+		case 12:// WC
+		case 39:// TL
+		case 279:// USL
+		case 378:// WCTL
+			dDRFormDetails.setCaCertifiedNetworthStatement("Yes");
+			break;
+		
+		case 297:// WC
+		case 298:// TL
+		case 299:// USL
+		case 396:// WCTL
+			dDRFormDetails.setIrrOfAllDirectorsForLast2years("Yes");
+			break;
+		
+		case 525:// WC
+		case 526:// TL
+		case 527:// USL
+		case 528:// WCTL
 			dDRFormDetails.setListOfDirectors("Yes");
-			dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
-			dDRFormDetails.setModifyDate(new Date());
 			break;
-			
-			
-			
+		
+		case 15:// WC
+		case 42:// TL
+		case 285:// USL
+		case 381:// WCTL
+			dDRFormDetails.setListOfShareholdersAndShareHoldingPatter("Yes");
+			break;
+		
+		case 535:// WC
+		case 536:// TL
+		case 537:// USL
+		case 538:// WCTL
+			dDRFormDetails.setProfilePicCompany("Yes");
+			break;
+		
+		case 539:// WC
+		case 540:// TL
+		case 541:// USL
+		case 542:// WCTL
+			dDRFormDetails.setSiteOrPromotorsPhotos("Yes");
+			break;
 
 		default:
 			break;
 		}
+		dDRFormDetails.setModifyBy(documentUploadFlagRequest.getUserId());
+		dDRFormDetails.setModifyDate(new Date());
 		ddrFormDetailsRepository.save(dDRFormDetails);
 		return 1L;
 		}
 		catch (Exception e) {
 			return 0L;
 		}
+	}
+	
+	@Override
+	public DocumentResponse listOfDocumentByMultiProDocMapId(DocumentRequest documentRequest) throws DocumentException {
+		return dmsClient.listProDocByMultiProMapId(documentRequest);
 	}
 
 

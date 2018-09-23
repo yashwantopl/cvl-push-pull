@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.LiabilitiesDetails;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LiabilitiesDetailsRepository;
+import com.capitaworld.service.loans.utils.CommonUtils;
 
 public class LiabilitiesDetailsExcelReader
 {
@@ -71,13 +72,26 @@ public class LiabilitiesDetailsExcelReader
               * this method extract data from excel associate column and row wise
               * e.g. you want to extract B13,B14,... cell data for year 2014
              */
-        System.out.println("OperatingStatementDetailsExcelReader -----------> "+ sheet.getRow(4).getCell(1).getNumericCellValue());       
+        log.info("OperatingStatementDetailsExcelReader -----------> "+ sheet.getRow(4).getCell(1).getNumericCellValue());       
 //        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, liabilitiesMappingList,"B",String.valueOf(sheet.getRow(4).getCell(1).getNumericCellValue()) ,"Audited", liabilitiesDetailsRepository);
 //        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, liabilitiesMappingList,"C",String.valueOf(sheet.getRow(4).getCell(2).getNumericCellValue())  ,"Audited", liabilitiesDetailsRepository);
 //        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, liabilitiesMappingList,"D",String.valueOf(sheet.getRow(4).getCell(3).getNumericCellValue())  ,"Audited", liabilitiesDetailsRepository);
-        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, liabilitiesMappingList,"E",String.valueOf(sheet.getRow(4).getCell(4).getNumericCellValue()),"Estimated", liabilitiesDetailsRepository);
+        
+        //j== 2 for NTB 
+        int j = 2;
+        if(loanApplicationMaster.getBusinessTypeId() == CommonUtils.BusinessType.EXISTING_BUSINESS.getId()) {
+    
+        	extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, liabilitiesMappingList,"E",String.valueOf(sheet.getRow(4).getCell(4).getNumericCellValue()),"Estimated", liabilitiesDetailsRepository);
+        	j=5;
+      
+        }
         if(loanApplicationMaster.getProductId()!=15 && loanApplicationMaster.getProductId()!=1 ){
-        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, liabilitiesMappingList,"F",String.valueOf(sheet.getRow(4).getCell(5).getNumericCellValue()),"Projected", liabilitiesDetailsRepository);
+        	/*int j = 5;*/
+        	for(int i = 0; i < loanApplicationMaster.getTenure(); i++) { 
+        		extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, liabilitiesMappingList,CellReference.convertNumToColString(sheet.getRow(4).getCell(j).getColumnIndex()),String.valueOf(sheet.getRow(4).getCell(j).getNumericCellValue()),"Projected", liabilitiesDetailsRepository);
+        		j++;
+        	}
+        /*extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, liabilitiesMappingList,"F",String.valueOf(sheet.getRow(4).getCell(5).getNumericCellValue()),"Projected", liabilitiesDetailsRepository);
         extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, liabilitiesMappingList,"G",String.valueOf(sheet.getRow(4).getCell(6).getNumericCellValue()),"Projected", liabilitiesDetailsRepository);
         extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, liabilitiesMappingList,"H",String.valueOf(sheet.getRow(4).getCell(7).getNumericCellValue()),"Projected", liabilitiesDetailsRepository);
         extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, liabilitiesMappingList,"I",String.valueOf(sheet.getRow(4).getCell(8).getNumericCellValue()),"Projected", liabilitiesDetailsRepository);
@@ -97,7 +111,7 @@ public class LiabilitiesDetailsExcelReader
         extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, liabilitiesMappingList,"W",String.valueOf(sheet.getRow(4).getCell(12).getNumericCellValue()),"Projected", liabilitiesDetailsRepository);
         extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, liabilitiesMappingList,"X",String.valueOf(sheet.getRow(4).getCell(12).getNumericCellValue()),"Projected", liabilitiesDetailsRepository);
         extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, liabilitiesMappingList,"Y",String.valueOf(sheet.getRow(4).getCell(12).getNumericCellValue()),"Projected", liabilitiesDetailsRepository);
-        }
+        */}
     }
     public static void extractCellFromSheet(Long storageDetailsId,
     										XSSFSheet sheet,
@@ -123,7 +137,7 @@ public class LiabilitiesDetailsExcelReader
             cmaLiabilities.setFsLoanApplicationMaster(loanApplicationMaster);
             cmaLiabilities.setStorageDetailsId(storageDetailsId);
             
-            cmaLiabilities.setYear(year);
+            cmaLiabilities.setYear(CommonUtils.getCMAFilterYear(year));
             cmaLiabilities.setFinancialYearlyStatement(financialYearlyStatement);
             cmaLiabilities.setFromApplicationBank(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
             cmaLiabilities.setFromOtherBanks(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));

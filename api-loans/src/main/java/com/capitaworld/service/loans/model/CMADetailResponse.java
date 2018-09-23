@@ -24,7 +24,9 @@ public class CMADetailResponse implements Serializable{
 		private Double interest;  //D62
 		private Double provisionForDeferredTax; //D77
 		private Double grossBlock; //D45
-		
+		private Double totalCurrentAssets ; //D43 Assets
+		private Double subTotalA;  // D15 Liabilities
+		private Double totalCurrentLiabilities; // D37 Liabilities
 		public Double getReceivableOtherThanDefferred() {
 			return receivableOtherThanDefferred;
 		}
@@ -106,6 +108,26 @@ public class CMADetailResponse implements Serializable{
 		public void setGrossBlock(Double grossBlock) {
 			this.grossBlock = grossBlock;
 		}
+		
+		public Double getTotalCurrentAssets() {
+			return totalCurrentAssets;
+		}
+		public void setTotalCurrentAssets(Double totalCurrentAssets) {
+			this.totalCurrentAssets = totalCurrentAssets;
+		}
+		public Double getSubTotalA() {
+			return subTotalA;
+		}
+		public void setSubTotalA(Double subTotalA) {
+			this.subTotalA = subTotalA;
+		}
+		
+		public Double getTotalCurrentLiabilities() {
+			return totalCurrentLiabilities;
+		}
+		public void setTotalCurrentLiabilities(Double totalCurrentLiabilities) {
+			this.totalCurrentLiabilities = totalCurrentLiabilities;
+		}
 		@Override
 		public String toString() {
 			return "CMADetailResponse [receivableOtherThanDefferred=" + receivableOtherThanDefferred
@@ -114,6 +136,9 @@ public class CMADetailResponse implements Serializable{
 					+ sundryCreditors + ", advancePaymentsFromCustomers=" + advancePaymentsFromCustomers
 					+ ", domesticSales=" + domesticSales + ", exportSales=" + exportSales + ", netProfitOrLoss="
 					+ netProfitOrLoss + ", depreciation=" + depreciation + ", interest=" + interest
-					+ ", provisionForDeferredTax=" + provisionForDeferredTax + ", grossBlock=" + grossBlock + "]";
+					+ ", provisionForDeferredTax=" + provisionForDeferredTax + ", grossBlock=" + grossBlock
+					+ ", totalCurrentAssets=" + totalCurrentAssets + ", subTotalA=" + subTotalA
+					+ ", totalCurrentLiabilities=" + totalCurrentLiabilities + "]";
 		}
+		
 }

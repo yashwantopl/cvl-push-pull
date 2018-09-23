@@ -163,6 +163,9 @@ public interface LoanApplicationRepository extends JpaRepository<LoanApplication
 	@Query("select lm from LoanApplicationMaster lm where lm.id =:id and lm.userId =:userId and lm.isActive = true order by lm.id")
 	public LoanApplicationMaster getMCACompanyIdByIdAndUserId(@Param("id") Long id, @Param("userId") Long userId);
 	
+	@Query("select lm from LoanApplicationMaster lm where lm.id =:id and lm.isActive = true order by lm.id")
+	public LoanApplicationMaster getMCACompanyIdById(@Param("id") Long id);
+	
 	@Query("select count(lm.id) from LoanApplicationMaster lm where lm.userId =:userId and lm.isActive = true")
 	public Long getTotalUserApplication(@Param("userId") Long userId);
 	
@@ -308,11 +311,11 @@ public interface LoanApplicationRepository extends JpaRepository<LoanApplication
 	public List<BigInteger> getFPAssignedToCheckerProposalsCount(@Param("id") Long ddrStatusId,@Param("npUserId") Long npUserId, @Param("branchId") Long branchId,@Param("fpProductId") Long fpProductId);
 
     //fp - checker - for reverted applications - pagination
-    @Query(value = "select lm.application_id from fs_loan_application_master lm inner join proposal_details pd on pd.application_id=lm.application_id where pd.branch_id=:branchId and pd.fp_product_id=:fpProductId and lm.ddr_status_id =:id and lm.np_assignee_id=:npUserId and pd.is_active=true and lm.is_active = true order by lm.modified_date desc \n#pageable\n",nativeQuery = true)
+    @Query(value = "select lm.application_id from fs_loan_application_master lm inner join proposal_details pd on pd.application_id=lm.application_id where pd.branch_id=:branchId and pd.fp_product_id=:fpProductId and lm.ddr_status_id =:id and lm.np_user_id=:npUserId and pd.is_active=true and lm.is_active = true order by lm.modified_date desc \n#pageable\n",nativeQuery = true)
     public List<BigInteger> getFPAssignedToCheckerReverted(Pageable pageable, @Param("id") Long ddrStatusId,@Param("npUserId") Long npUserId, @Param("branchId") Long branchId,@Param("fpProductId") Long fpProductId);
 
 	//fp - checker - for reverted applications - count
-	@Query(value = "select lm.application_id from fs_loan_application_master lm inner join proposal_details pd on pd.application_id=lm.application_id where pd.branch_id=:branchId and pd.fp_product_id=:fpProductId and lm.ddr_status_id =:id and lm.np_assignee_id=:npUserId and pd.is_active=true and lm.is_active = true ",nativeQuery = true)
+	@Query(value = "select lm.application_id from fs_loan_application_master lm inner join proposal_details pd on pd.application_id=lm.application_id where pd.branch_id=:branchId and pd.fp_product_id=:fpProductId and lm.ddr_status_id =:id and lm.np_user_id=:npUserId and pd.is_active=true and lm.is_active = true ",nativeQuery = true)
 	public List<BigInteger> getFPAssignedToCheckerRevertedCount(@Param("id") Long ddrStatusId,@Param("npUserId") Long npUserId, @Param("branchId") Long branchId,@Param("fpProductId") Long fpProductId);
 
 	//fp - checker - for other applications - pagination
@@ -322,4 +325,12 @@ public interface LoanApplicationRepository extends JpaRepository<LoanApplication
 	//fp - checker - for other applications - count
 	@Query(value = "select lm.application_id from fs_loan_application_master lm inner join proposal_details pd on pd.application_id=lm.application_id where pd.branch_id=:branchId and pd.fp_product_id=:fpProductId and lm.status >=:id and (lm.np_assignee_id IS NULL or lm.np_assignee_id!=:npUserId) and (lm.np_user_id IS NULL or lm.np_user_id!=:npUserId) and pd.is_active=true and lm.is_active = true ",nativeQuery = true)
 	public List<BigInteger> getFPCheckerProposalsWithOthersCount(@Param("id") Long applicationStatusId,@Param("npUserId") Long npUserId, @Param("branchId") Long branchId,@Param("fpProductId") Long fpProductId);
+
+	// get list of matched fpProduct based on application id
+	@Query(value = "SELECT  score_model_id  FROM  fp_product_master WHERE  fp_product_id IN (select fp_product_id from application_product_audit where application_id=:applicationId and stage_id=:stageId and is_active = true) ",nativeQuery = true)
+	public List<BigInteger> getFpProductListByApplicationIdAndStageId(@Param("applicationId") Long applicationId,@Param("stageId") Long stageId);
+	
+	//fwt busynessTypeId by applicationId
+	@Query("select lm.businessTypeId from LoanApplicationMaster lm where lm.id =:applicationId and lm.isActive = true ")
+	public Integer findOneBusinessTypeIdByIdAndIsActive(@Param("applicationId")  Long applicationId); 
 }

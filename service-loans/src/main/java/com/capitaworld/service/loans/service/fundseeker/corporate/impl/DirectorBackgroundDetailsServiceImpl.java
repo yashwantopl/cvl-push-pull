@@ -5,7 +5,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import com.capitaworld.service.loans.model.EmploymentDetailRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -19,6 +18,8 @@ import com.capitaworld.connect.client.ConnectClient;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.DirectorBackgroundDetail;
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
+import com.capitaworld.service.loans.model.DirectorPersonalDetailRequest;
+import com.capitaworld.service.loans.model.EmploymentDetailRequest;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.DirectorBackgroundDetailsRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.DirectorBackgroundDetailsService;
@@ -105,6 +106,11 @@ public class DirectorBackgroundDetailsServiceImpl implements DirectorBackgroundD
 					BeanUtils.copyProperties(detail.getEmploymentDetail(),employmentDetailRequest);
 					directorBackgroundDetailRequest.setEmploymentDetailRequest(employmentDetailRequest);
 				}
+				if(!CommonUtils.isObjectNullOrEmpty(detail.getDirectorPersonalDetail())){
+					DirectorPersonalDetailRequest directorPersonalDetailRequest = new DirectorPersonalDetailRequest();
+					BeanUtils.copyProperties(detail.getDirectorPersonalDetail(),directorPersonalDetailRequest);
+					directorBackgroundDetailRequest.setDirectorPersonalDetailRequest(directorPersonalDetailRequest);
+				}
 				BeanUtils.copyProperties(detail, directorBackgroundDetailRequest);
 				DirectorBackgroundDetailRequest.printFields(directorBackgroundDetailRequest);
 				directorBackgroundDetailRequests.add(directorBackgroundDetailRequest);
@@ -130,7 +136,7 @@ public class DirectorBackgroundDetailsServiceImpl implements DirectorBackgroundD
 				dirBackDetailReq.setPanNo(detail.getPanNo());
 				dirBackDetailReq.setDirectorsName(detail.getDirectorsName());
 				dirBackDetailReq.setId(detail.getId());
-				dirBackDetailReq.setMainDirector(detail.getMainDirector());
+				dirBackDetailReq.setIsMainDirector(detail.getIsMainDirector());
 				dirBackDetailReq.setAmount(environment.getProperty(SIDBI_AMOUNT));
 				dirBackDetailReqList.add(dirBackDetailReq);
 			}

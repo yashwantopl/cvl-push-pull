@@ -35,6 +35,7 @@ public class DDROneFormResponse implements Serializable {
 	private String aboutMe;
 	private String currency;
 	private String orgName;
+	private Long ddrStatusId;
 	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd-MM-yyyy")
 	private Date approvedDate;
 	
@@ -234,9 +235,16 @@ public class DDROneFormResponse implements Serializable {
 		this.financialArrangementsDetailResponseList = financialArrangementsDetailResponseList;
 	}
 
+	public Long getDdrStatusId() {
+		return ddrStatusId;
+	}
+
+	public void setDdrStatusId(Long ddrStatusId) {
+		this.ddrStatusId = ddrStatusId;
+	}
+
 	public static void printFields(Object obj) throws Exception {
 	         Field[] fields = DDROneFormResponse.class.getDeclaredFields();
-	         System.out.println("length : "+fields.length);
 	         for(Field field : fields) {
 	             Object value = field.get(obj);
 	             if(value instanceof String){

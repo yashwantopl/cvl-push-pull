@@ -3,6 +3,7 @@ package com.capitaworld.service.loans.service.fundprovider.impl;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -12,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,9 +32,9 @@ import com.capitaworld.service.loans.domain.fundprovider.GeographicalStateDetail
 import com.capitaworld.service.loans.domain.fundprovider.GeographicalStateDetailTemp;
 import com.capitaworld.service.loans.domain.fundprovider.NegativeIndustry;
 import com.capitaworld.service.loans.domain.fundprovider.NegativeIndustryTemp;
-import com.capitaworld.service.loans.domain.fundprovider.TermLoanParameter;
 import com.capitaworld.service.loans.domain.fundprovider.WcTlParameter;
 import com.capitaworld.service.loans.domain.fundprovider.WcTlParameterTemp;
+import com.capitaworld.service.loans.domain.fundprovider.WorkingCapitalParameter;
 import com.capitaworld.service.loans.model.DataRequest;
 import com.capitaworld.service.loans.model.corporate.WcTlParameterRequest;
 import com.capitaworld.service.loans.repository.fundprovider.GeographicalCityRepository;
@@ -47,6 +49,7 @@ import com.capitaworld.service.loans.repository.fundprovider.WcTlLoanParameterRe
 import com.capitaworld.service.loans.repository.fundprovider.WcTlParameterTempRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorTempRepository;
+import com.capitaworld.service.loans.service.fundprovider.MsmeValueMappingService;
 import com.capitaworld.service.loans.service.fundprovider.WcTlParameterService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -99,19 +102,31 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
     @Autowired
     private WorkflowClient workflowClient;
 
+	@Autowired
+	private MsmeValueMappingService msmeValueMappingService;
+
 	@Override
 	public boolean saveOrUpdate(WcTlParameterRequest wcTlParameterRequest,Long mappingId) {
 		CommonDocumentUtils.startHook(logger, "saveOrUpdate");
 		// TODO Auto-generated method stub
 		
+		WcTlParameterTemp loanParameter =  wcTlParameterTempRepository.getWcTlParameterTempByFpProductId(mappingId);
+		
 		WcTlParameter WcTlParameter = null;
 
-		WcTlParameter = wcTlLoanParameterRepository.findOne(wcTlParameterRequest.getId());
+		if(loanParameter.getFpProductMappingId()!=null)
+		{
+			WcTlParameter = wcTlLoanParameterRepository.findOne(loanParameter.getFpProductMappingId());
+		}
 		if (WcTlParameter == null) {
 			WcTlParameter=new WcTlParameter();
+			
 		}
 		
-		WcTlParameterTemp loanParameter =  wcTlParameterTempRepository.getWcTlParameterTempByFpProductId(mappingId);
+		
+		
+		
+		
 		loanParameter.setStatusId(CommonUtils.Status.APPROVED);
         loanParameter.setIsDeleted(false);
         loanParameter.setIsEdit(false);
@@ -125,14 +140,16 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 		if (!CommonUtils.isObjectListNull(wcTlParameterRequest.getMinTenure()))
 			wcTlParameterRequest.setMinTenure(wcTlParameterRequest.getMinTenure().multiply(new BigDecimal("12")));
 		
-		BeanUtils.copyProperties(wcTlParameterRequest, WcTlParameter, CommonUtils.IgnorableCopy.FP_PRODUCT);
+		BeanUtils.copyProperties(wcTlParameterRequest, WcTlParameter,"id");
+		WcTlParameter.setUserId(wcTlParameterRequest.getUserId()!=null?wcTlParameterRequest.getUserId():null);
+		WcTlParameter.setProductId(wcTlParameterRequest.getProductId()!=null?wcTlParameterRequest.getProductId():null);
 		WcTlParameter.setModifiedBy(wcTlParameterRequest.getUserId());
 		WcTlParameter.setModifiedDate(new Date());
 		WcTlParameter.setIsActive(true);
 		WcTlParameter.setIsParameterFilled(true);
 		WcTlParameter.setJobId(wcTlParameterRequest.getJobId());
-		wcTlLoanParameterRepository.save(WcTlParameter);
-		
+		WcTlParameter wcTlParameter2=wcTlLoanParameterRepository.save(WcTlParameter);
+		wcTlParameterRequest.setId(wcTlParameter2.getId());
 		industrySectorRepository.inActiveMappingByFpProductId(wcTlParameterRequest.getId());
 		// industry data save
 		saveIndustry(wcTlParameterRequest);
@@ -150,7 +167,10 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 		//negative industry save
 		negativeIndustryRepository.inActiveMappingByFpProductMasterId(wcTlParameterRequest.getId());
 		saveNegativeIndustry(wcTlParameterRequest);
-		
+
+		//Ravina
+		boolean isUpdate = msmeValueMappingService.updateMsmeValueMapping(false, wcTlParameterRequest.getId(),wcTlParameter2.getId());
+		logger.info("updated = {}",isUpdate);
 		CommonDocumentUtils.endHook(logger, "saveOrUpdate");
 		return true;
 
@@ -262,6 +282,7 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 				e.printStackTrace();
 			}
 		}
+		wcTlParameterRequest.setMsmeFundingIds(msmeValueMappingService.getDataListFromFpProductId(2,id, wcTlParameterRequest.getUserId()));
 		CommonDocumentUtils.endHook(logger, "getTermLoanParameterRequest");
 		return wcTlParameterRequest;
 	}
@@ -339,6 +360,7 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 		CommonDocumentUtils.endHook(logger, "saveState");
 	}
 	
+	@Async
 	private void saveCity(WcTlParameterRequest wcTlParameterRequest) {
 		CommonDocumentUtils.startHook(logger, "saveCity");
 		GeographicalCityDetail geographicalCityDetail= null;
@@ -357,6 +379,7 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 		CommonDocumentUtils.endHook(logger, "saveCity");
 	}
 
+	@Async
 	private void saveNegativeIndustry(WcTlParameterRequest wcTlParameterRequest) {
 		// TODO Auto-generated method stub
 		CommonDocumentUtils.startHook(logger, "saveNegativeIndustry");
@@ -416,7 +439,13 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 		if (!industryList.isEmpty()) {
 			try {
 				OneFormResponse formResponse = oneFormClient.getIndustryById(industryList);
-				wcTlParameterRequest.setIndustrylist((List<DataRequest>)formResponse.getListData());
+				List<DataRequest> dataRequests=new ArrayList<>(formResponse.getListData().size());
+				for(Object object:formResponse.getListData())
+				{
+					DataRequest dataRequest=com.capitaworld.service.loans.utils.MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)object, DataRequest.class);
+					dataRequests.add(dataRequest);
+				}
+				wcTlParameterRequest.setIndustrylist(dataRequests);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				logger.error("error while getWcTlRequestTemp",e);
@@ -430,7 +459,13 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 		{
 		try {
 			OneFormResponse formResponse = oneFormClient.getSectorById(sectorList);
-			wcTlParameterRequest.setSectorlist((List<DataRequest>) formResponse.getListData());
+			List<DataRequest> dataRequests=new ArrayList<>(formResponse.getListData().size());
+			for(Object object:formResponse.getListData())
+			{
+				DataRequest dataRequest=com.capitaworld.service.loans.utils.MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)object, DataRequest.class);
+				dataRequests.add(dataRequest);
+			}
+			wcTlParameterRequest.setSectorlist(dataRequests);
 			 
 			
 		} catch (Exception e) {
@@ -445,7 +480,14 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 		{
 		try {
 			OneFormResponse formResponse = oneFormClient.getCountryByCountryListId(countryList);
-			wcTlParameterRequest.setCountryList((List<DataRequest>) formResponse.getListData());
+			
+			List<DataRequest> dataRequests=new ArrayList<>(formResponse.getListData().size());
+			for(Object object:formResponse.getListData())
+			{
+				DataRequest dataRequest=com.capitaworld.service.loans.utils.MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)object, DataRequest.class);
+				dataRequests.add(dataRequest);
+			}
+			wcTlParameterRequest.setCountryList(dataRequests);
 			 
 			
 		} catch (Exception e) {
@@ -461,7 +503,13 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 		{
 		try {
 			OneFormResponse formResponse = oneFormClient.getStateByStateListId(stateList);
-			wcTlParameterRequest.setStateList((List<DataRequest>) formResponse.getListData());
+			List<DataRequest> dataRequests=new ArrayList<>(formResponse.getListData().size());
+			for(Object object:formResponse.getListData())
+			{
+				DataRequest dataRequest=com.capitaworld.service.loans.utils.MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)object, DataRequest.class);
+				dataRequests.add(dataRequest);
+			}
+			wcTlParameterRequest.setStateList(dataRequests);
 			 
 			
 		} catch (Exception e) {
@@ -477,7 +525,14 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 		{
 		try {
 			OneFormResponse formResponse = oneFormClient.getCityByCityListId(cityList);
-			wcTlParameterRequest.setCityList((List<DataRequest>) formResponse.getListData());
+			List<DataRequest> dataRequests=new ArrayList<>(formResponse.getListData().size());
+			for(Object object:formResponse.getListData())
+			{
+				DataRequest dataRequest=com.capitaworld.service.loans.utils.MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)object, DataRequest.class);
+				dataRequests.add(dataRequest);
+			}
+			
+			wcTlParameterRequest.setCityList(dataRequests);
 			 
 			
 		} catch (Exception e) {
@@ -493,7 +548,15 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 		if (!negativeIndustryList.isEmpty()) {
 			try {
 				OneFormResponse formResponse = oneFormClient.getIndustryById(negativeIndustryList);
-				wcTlParameterRequest.setNegativeIndustryList((List<DataRequest>)formResponse.getListData());
+				
+				List<DataRequest> dataRequests=new ArrayList<>(formResponse.getListData().size());
+				for(Object object:formResponse.getListData())
+				{
+					DataRequest dataRequest=com.capitaworld.service.loans.utils.MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)object, DataRequest.class);
+					dataRequests.add(dataRequest);
+				}
+				
+				wcTlParameterRequest.setNegativeIndustryList(dataRequests);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				logger.error("error while getWcTlRequestTemp",e);
@@ -520,6 +583,7 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
         } else {
             logger.info("you set jobId or list of roleId NULL for calling workflow");
         }
+		wcTlParameterRequest.setMsmeFundingIds(msmeValueMappingService.getDataListFromFpProductId(1,id, userId));
 		CommonDocumentUtils.endHook(logger, "getWcTlRequestTemp");
 		return wcTlParameterRequest;
 	}
@@ -527,7 +591,7 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 	
 	@Override
 	public Boolean saveOrUpdateTemp(WcTlParameterRequest wcTlParameterRequest) {
-		CommonDocumentUtils.startHook(logger, "saveOrUpdate");
+		CommonDocumentUtils.startHook(logger, "saveOrUpdateTemp");
 		// TODO Auto-generated method stub
 		
 		WcTlParameterTemp WcTlParameter = null;
@@ -553,8 +617,14 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 		if (!CommonUtils.isObjectListNull(wcTlParameterRequest.getMinTenure()))
 			wcTlParameterRequest.setMinTenure(wcTlParameterRequest.getMinTenure().multiply(new BigDecimal("12")));
 		
-		BeanUtils.copyProperties(wcTlParameterRequest, WcTlParameter, CommonUtils.IgnorableCopy.FP_PRODUCT_TEMP);
-		WcTlParameter.setFpProductMappingId(wcTlParameterRequest.getId());
+		
+		if(wcTlParameterRequest.getAppstage()!=1)
+		{
+			WcTlParameter.setFpProductMappingId(wcTlParameterRequest.getId());
+		}
+		BeanUtils.copyProperties(wcTlParameterRequest, WcTlParameter,"id");
+		WcTlParameter.setUserId(wcTlParameterRequest.getUserId()!=null?wcTlParameterRequest.getUserId():null);
+		WcTlParameter.setProductId(wcTlParameterRequest.getProductId()!=null?wcTlParameterRequest.getProductId():null);
 		WcTlParameter.setModifiedBy(wcTlParameterRequest.getUserId());
 		WcTlParameter.setModifiedDate(new Date());
 		WcTlParameter.setIsActive(true);
@@ -577,7 +647,7 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 			WcTlParameter.setJobId(jobId);
 		}
 		
-		wcTlParameterTempRepository.save(WcTlParameter);
+		WcTlParameter=wcTlParameterTempRepository.save(WcTlParameter);
 		wcTlParameterRequest.setId(WcTlParameter.getId());
 		industrySectorTempRepository.inActiveMappingByFpProductId(WcTlParameter.getId());
 		// industry data save
@@ -596,8 +666,11 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 		//negative industry save
 		negativeIndustryTempRepository.inActiveMappingByFpProductMasterId(WcTlParameter.getId());
 		saveNegativeIndustryTemp(wcTlParameterRequest);
-		
-		CommonDocumentUtils.endHook(logger, "saveOrUpdate");
+
+		//Ravina
+		boolean isUpdate = msmeValueMappingService.updateMsmeValueMappingTemp(wcTlParameterRequest.getMsmeFundingIds(),wcTlParameterRequest.getId(), wcTlParameterRequest.getUserId());
+		logger.info("updated = {}",isUpdate);
+		CommonDocumentUtils.endHook(logger, "saveOrUpdateTemp");
 		return true;
 
 	}
@@ -675,6 +748,7 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 		logger.info("end saveStateTemp");
 	}
 	
+	@Async
 	private void saveCityTemp(WcTlParameterRequest workingCapitalParameterRequest) {
 		logger.info("start saveCityTemp");
 		GeographicalCityDetailTemp geographicalCityDetail= null;

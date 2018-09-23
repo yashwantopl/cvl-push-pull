@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.capitaworld.service.loans.model.common.*;
+import com.capitaworld.service.scoring.model.scoringmodel.ScoringModelReqRes;
 import org.json.simple.JSONObject;
 
 import com.capitaworld.service.gateway.model.GatewayRequest;
@@ -15,6 +16,7 @@ import com.capitaworld.service.loans.model.AdminPanelLoanDetailsResponse;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.LoanApplicationDetailsForSp;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
+import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.PaymentRequest;
 
 import com.capitaworld.service.loans.model.common.CGTMSECalcDataResponse;
@@ -24,7 +26,7 @@ import com.capitaworld.service.loans.model.common.EkycRequest;
 import com.capitaworld.service.loans.model.common.EkycResponse;
 import com.capitaworld.service.loans.model.common.HunterRequestDataResponse;
 import com.capitaworld.service.loans.model.common.ProposalList;
-
+import com.capitaworld.service.loans.model.corporate.CorporateProduct;
 import com.capitaworld.service.loans.model.mobile.MLoanDetailsResponse;
 import com.capitaworld.service.loans.model.mobile.MobileLoanRequest;
 import com.capitaworld.service.users.model.FpProfileBasicDetailRequest;
@@ -140,9 +142,13 @@ public interface LoanApplicationService {
 	
 	public void updateSkipPayment(Long userId, Long applicationId, Long orgId,Long fprProductId) throws Exception;
 	
+	public void updateSkipPaymentWhiteLabel(Long userId, Long applicationId, Integer businessTypeId, Long orgId,Long fprProductId) throws Exception;
+	
 	public LoanApplicationRequest updateLoanApplicationMasterPaymentStatus(PaymentRequest paymentRequest, Long userId)throws Exception;
 	
 	public GatewayRequest getPaymentStatus(PaymentRequest paymentRequest, Long userId, Long ClientId) throws Exception;
+	
+	public Long getDDRStatusId(Long applicationId);
 	
 	public Boolean updateDDRStatus(Long applicationId, Long userId , Long clientId, Long statusId) throws Exception;
 	
@@ -153,7 +159,9 @@ public interface LoanApplicationService {
 	public DisbursementRequest getDisbursementDetails(DisbursementRequest disbursementRequest);
 	
 	public Long createMsmeLoan(Long userId,Boolean isActive,Integer businessTypeId);
-	
+
+	public Long createRetailLoan(Long userId, Boolean isActive, Integer businessTypeId);
+
 	public boolean updateProductDetails(LoanApplicationRequest loanApplicationRequest);
 	
 	public boolean savePhese1DataToSidbi(Long applicationId,Long userId,Long organizationId,Long fpProductMappingId);
@@ -162,7 +170,11 @@ public interface LoanApplicationService {
 	
 	public Map<String, Object> getFpDetailsByFpProductId(Long fpProductId) throws Exception;
 	
+	public CorporateProduct getFpDetailsByFpProductMappingId(Long fpProductId) throws Exception;
+	
 	public LoanApplicationRequest getLoanApplicationDetails(Long userId, Long applicationId);
+
+	public ScoringModelReqRes getMinMaxMarginByApplicationId(Long applicationId,Integer businessTypeId);
 
 	/**
 	 * @param applicationId
@@ -188,6 +200,15 @@ public interface LoanApplicationService {
 	
 	public Boolean updatePaymentStatusForMobile(PaymentRequest paymentRequest);
 */
+	
+	public String getMCACompanyIdById(Long applicationId);
+
+	/**
+	 * @param applicationId
+	 * @return
+	 * @throws Exception
+	 */
+	public HunterRequestDataResponse getDataForHunterForNTB(Long applicationId) throws Exception;
 }
 
 

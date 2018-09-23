@@ -32,6 +32,9 @@ public interface FinancialArrangementDetailsRepository extends JpaRepository<Fin
 	
 	@Query("select sum(o.emi) from FinancialArrangementsDetail o where o.applicationId.id =:id and o.isActive = true and o.directorBackgroundDetail IS NULL")
 	public Double getTotalEmiByApplicationId(@Param("id")Long id);
+	
+	@Query("select sum(o.amount) from FinancialArrangementsDetail o where o.applicationId.id =:id and o.isActive = true and o.directorBackgroundDetail IS NULL and LOWER(o.loanType) IN (:loanType) and o.outstandingAmount IS NOT NULL and o.outstandingAmount > 0")
+	public Double getExistingLimits(@Param("id")Long id,@Param("loanType") List<String> loanType);
 
 	public FinancialArrangementsDetail findByIdAndIsActive(Long id,Boolean isActive);
 
@@ -41,8 +44,10 @@ public interface FinancialArrangementDetailsRepository extends JpaRepository<Fin
 	@Query("select o from FinancialArrangementsDetail o where o.directorBackgroundDetail.id =:id and o.isActive =:isActive")
 	public FinancialArrangementsDetail findByDirectorIdAndIsActive(@Param("id")Long id, @Param("isActive")Boolean isActive);
 
-	@Query("select o from FinancialArrangementsDetail o where o.directorBackgroundDetail.id =:directorId and o.applicationId.id =:applicationId  and o.isActive =:isActive")
-	public List<FinancialArrangementsDetail> listFinancialListForPartner(@Param("directorId")Long directorId, @Param("applicationId")Long applicationId, @Param("isActive")Boolean isActive);
+//	@Query("select o from FinancialArrangementsDetail o where o.directorBackgroundDetail.id =:directorId and o.applicationId.id =:applicationId and o.isActive =:true")
+//	public List<FinancialArrangementsDetail> listFinancialListForPartner(@Param("directorId")Long directorId, @Param("applicationId")Long applicationId, @Param("isActive")Boolean isActive);
+	
+	public List<FinancialArrangementsDetail> findByDirectorBackgroundDetailIdAndApplicationIdIdAndIsActive(Long dirId,Long appId,Boolean isActive);
 
 	@Query("select sum(o.emi) from FinancialArrangementsDetail o where o.applicationId.id =:applicationId and o.directorBackgroundDetail.id =:directorId and o.isActive = true ")
 	public Double getTotalEmiByApplicationIdAndDirectorId(@Param("applicationId")Long applicationId,@Param("directorId")Long directorId);

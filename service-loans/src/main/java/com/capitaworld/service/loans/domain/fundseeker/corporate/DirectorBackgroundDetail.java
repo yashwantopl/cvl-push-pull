@@ -155,6 +155,31 @@ public class DirectorBackgroundDetail extends AuditActivity implements Serializa
 	@Column(name="is_main_director")
 	private Boolean isMainDirector;
 
+	@Column(name="father_name")
+	private String fatherName;
+
+	@Column(name="educational_status")
+	private Integer educationalStatus;
+
+	@Column(name="nationality")
+	private Integer nationality;
+
+	@Column(name="visually_impaired")
+	private Integer visuallyImpaired;
+
+	@Column(name="resident_status")
+	private Integer residentStatus;
+
+	@Column(name="is_guarantor")
+	private Boolean isGuarantor;
+
+	@Column(name="district_mapping_id")
+	private Long districtMappingId;
+
+	@OneToOne
+	@JoinColumn(name="personal_detail_id")
+	private DirectorPersonalDetail directorPersonalDetail;
+
 	public DirectorBackgroundDetail() {
 	}
 	
@@ -512,12 +537,12 @@ public class DirectorBackgroundDetail extends AuditActivity implements Serializa
 		this.landmark = landmark;
 	}
 
-	public Boolean getMainDirector() {
+	public Boolean getIsMainDirector() {
 		return isMainDirector;
 	}
 
-	public void setMainDirector(Boolean mainDirector) {
-		isMainDirector = mainDirector;
+	public void setIsMainDirector(Boolean isMainDirector) {
+		this.isMainDirector = isMainDirector;
 	}
 
 	public Integer getQualificationId() {
@@ -554,4 +579,67 @@ public class DirectorBackgroundDetail extends AuditActivity implements Serializa
 		this.cityId = cityId;
 	}
 
+	public String getFatherName() {
+		return fatherName;
+	}
+
+	public void setFatherName(String fatherName) {
+		this.fatherName = fatherName;
+	}
+
+	public Integer getEducationalStatus() {
+		return educationalStatus;
+	}
+
+	public void setEducationalStatus(Integer educationalStatus) {
+		this.educationalStatus = educationalStatus;
+	}
+
+	public Integer getNationality() {
+		return nationality;
+	}
+
+	public void setNationality(Integer nationality) {
+		this.nationality = nationality;
+	}
+
+	public Integer getVisuallyImpaired() {
+		return visuallyImpaired;
+	}
+
+	public void setVisuallyImpaired(Integer visuallyImpaired) {
+		this.visuallyImpaired = visuallyImpaired;
+	}
+
+	public Integer getResidentStatus() {
+		return residentStatus;
+	}
+
+	public void setResidentStatus(Integer residentStatus) {
+		this.residentStatus = residentStatus;
+	}
+
+	public Boolean getIsGuarantor() {
+		return isGuarantor;
+	}
+
+	public void setIsGuarantor(Boolean isGuarantor) {
+		this.isGuarantor = isGuarantor;
+	}
+
+	public DirectorPersonalDetail getDirectorPersonalDetail() {
+		return directorPersonalDetail;
+	}
+
+	public void setDirectorPersonalDetail(DirectorPersonalDetail directorPersonalDetail) {
+		this.directorPersonalDetail = directorPersonalDetail;
+	}
+
+	public Long getDistrictMappingId() {
+		return districtMappingId;
+	}
+
+	public void setDistrictMappingId(Long districtMappingId) {
+		this.districtMappingId = districtMappingId;
+	}
 }

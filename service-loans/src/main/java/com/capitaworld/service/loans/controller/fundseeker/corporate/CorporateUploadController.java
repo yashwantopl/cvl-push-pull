@@ -57,6 +57,9 @@ public class CorporateUploadController {
 	
 	@Autowired
 	private DownLoadCMAFileService downLoadCMAFileService;
+	
+	@Autowired
+	private DMSClient dmsClient;
 
 	@RequestMapping(value = "/ping", method = RequestMethod.GET)
 	public String getPing() {
@@ -200,8 +203,6 @@ public class CorporateUploadController {
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
-			DMSClient dmsClient = new DMSClient(environment.getRequiredProperty(CommonUtils.DMS_BASE_URL_KEY));
-
 			DocumentResponse response = dmsClient.listProductDocument(documentRequest);
 			if (response != null && response.getStatus() == 200) {
 				logger.info("File Uploaded SuccessFully -->");
@@ -244,7 +245,6 @@ public class CorporateUploadController {
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
-			DMSClient dmsClient = new DMSClient(environment.getRequiredProperty(CommonUtils.DMS_BASE_URL_KEY));
 
 			Long applicationId = MultipleJSONObjectHelper.getNestedObject(documentRequestString, "applicationId",
 					Long.class);
@@ -366,7 +366,6 @@ public class CorporateUploadController {
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
-			DMSClient dmsClient = new DMSClient(environment.getRequiredProperty(CommonUtils.DMS_BASE_URL_KEY));
 
 			JSONObject json = new JSONObject();
 			json.put("id", docId);
@@ -418,9 +417,7 @@ public class CorporateUploadController {
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 
-			DMSClient dmsClient = new DMSClient(environment.getRequiredProperty(CommonUtils.DMS_BASE_URL_KEY));
 			
-			System.out.println("dms client url is====>>>>"+dmsClient);
 
 			// code for inactive CMA BS and DPR recored
 
@@ -573,7 +570,6 @@ public class CorporateUploadController {
 		try {
 			
 			ByteArrayOutputStream bos = null;
-			ObjectOutputStream oos = null;
 			byte[] cmaFile = null;
 			Workbook wb = downLoadCMAFileService.cmaFileGenerator(applicationId, productDocumentMappingId);
 			logger.info("WorkBook Object====>"+wb);
@@ -592,5 +588,50 @@ public class CorporateUploadController {
 		LoansResponse response = new LoansResponse("Mapping Id not matched", HttpStatus.OK.value(), null);
 		return new ResponseEntity<LoansResponse>(response, HttpStatus.OK);
 	}
+	
+	
+	@RequestMapping(value="/listOfDocumentByMultiProDocMapId" , method=RequestMethod.POST,consumes = MediaType.APPLICATION_JSON_VALUE,produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<DocumentResponse> listOfDocumentByMultiProDocMapId(@RequestBody DocumentRequest documentRequest) throws IOException {
+		logger.info("In getCmaFile");
+		
+		try {
+			return new ResponseEntity<DocumentResponse>(corporateUploadService.listOfDocumentByMultiProDocMapId(documentRequest), HttpStatus.OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.info("Thrown exception from getCmaFile====>"+e.getMessage());
+			return new ResponseEntity<DocumentResponse>(new DocumentResponse("Something went wrong",HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	/*@RequestMapping(value="/downloadCMAAndCoCMAExcelFile/{applicationId}/{productDocumentMappingId}" , method=RequestMethod.GET)
+	public void getCMADetail(@PathVariable("applicationId") Long applicationId , @PathVariable("productDocumentMappingId") Long productDocumentMappingId ,HttpServletResponse httpServletResponse) {
+		logger.info("In getCmaFile");
+		
+        try {
+        	  httpServletResponse.setContentType("application/csv");  
+          if(productDocumentMappingId==(long)DocumentAlias.WC_CMA) {
+            httpServletResponse.setHeader("Content-Disposition", "attachment; filename=\""+CommonUtils.CW_CMA_EXCEL+"\"");
+            downLoadCMAFileService.cmaFileGenerator(applicationId, productDocumentMappingId).write(httpServletResponse.getOutputStream());
+          }
+          
+          else if (productDocumentMappingId==(long)DocumentAlias.TL_CMA || productDocumentMappingId==(long) DocumentAlias.WCTL_CMA){
+        	  httpServletResponse.setContentType("application/csv");
+        	  httpServletResponse.setHeader("Content-Disposition", "attachment; filename=\""+CommonUtils.CW_TL_WCTL_EXCEL+"\"");
+              downLoadCMAFileService.cmaFileGenerator(applicationId, productDocumentMappingId).write(httpServletResponse.getOutputStream());
+		}
+          else if(productDocumentMappingId==(long)DocumentAlias.WC_COMPANY_ACT|| productDocumentMappingId==(long)DocumentAlias.TL_COMPANY_ACT || productDocumentMappingId==(long)DocumentAlias.USL_COMPANY_ACT|| productDocumentMappingId==(long) DocumentAlias.WCTL_COMPANY_ACT_DOC ) {
+        	  httpServletResponse.setContentType("application/csv");
+        	  httpServletResponse.setHeader("Content-Disposition", "attachment; filename=\""+CommonUtils.CO_CMA_EXCEL+"\"");
+              downLoadCMAFileService.coCMAFileGenerator(applicationId, productDocumentMappingId).write(httpServletResponse.getOutputStream());
+          }
+            logger.info("Out getCmaFile");
+         
+        } catch (NullPointerException |IOException e) {
+        	logger.info("thrown exception from getCmaFile");
+            e.printStackTrace();
+          
+        }
+     
+	}*/
 	
 }

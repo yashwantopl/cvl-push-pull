@@ -148,13 +148,13 @@ public class NotificationServiceImpl implements NotificationService{
 							corporateApplicantRequest = corporateApplicantService.getCorporateApplicant(fromUserId, applicationId);
 						else
 							corporateApplicantRequest = corporateApplicantService.getCorporateApplicant(Long.parseLong(toUserId), applicationId);
-						parameters.put("fs_name",corporateApplicantRequest.getOrganisationName());
+						parameters.put("fs_name",corporateApplicantRequest.getOrganisationName()!=null?corporateApplicantRequest.getOrganisationName():"NA");
 					}else if(CommonUtils.UserMainType.RETAIL == fsType){
 						RetailApplicantRequest retailApplicantRequest;
 						if(CommonUtils.UserType.FUND_SEEKER == fromUserTypeId)
-							retailApplicantRequest = retailApplicantService.get(fromUserId, applicationId);
+							retailApplicantRequest = retailApplicantService.get(applicationId);
 						else
-							retailApplicantRequest = retailApplicantService.get(Long.parseLong(toUserId), applicationId);
+							retailApplicantRequest = retailApplicantService.get(applicationId);
 						
 						parameters.put("fs_name",(!CommonUtils.isObjectNullOrEmpty(retailApplicantRequest.getFirstName()) ? retailApplicantRequest.getFirstName() : "") + " " + (!CommonUtils.isObjectNullOrEmpty(retailApplicantRequest.getLastName()) ? retailApplicantRequest.getLastName() : ""));
 					}

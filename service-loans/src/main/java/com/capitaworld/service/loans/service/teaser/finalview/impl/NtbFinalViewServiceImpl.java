@@ -477,15 +477,6 @@ public class NtbFinalViewServiceImpl implements NtbFinalViewService{
 			ntbFinalViewResponse.setPurposeOfLoan(
 					CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getPurposeOfLoanId()) ? null
 							: PurposeOfLoan.getById(primaryCorporateDetail.getPurposeOfLoanId()).getValue().toString());
-			ntbFinalViewResponse.setBusinessAssetAmount(primaryCorporateDetail.getBusinessAssetAmount() != null
-					? String.valueOf(primaryCorporateDetail.getBusinessAssetAmount())
-					: null);
-			ntbFinalViewResponse.setWcAmount(
-					primaryCorporateDetail.getWcAmount() != null ? String.valueOf(primaryCorporateDetail.getWcAmount())
-							: null);
-			ntbFinalViewResponse.setOtherAmt(
-					primaryCorporateDetail.getOtherAmt() != null ? String.valueOf(primaryCorporateDetail.getOtherAmt())
-							: null);
 			ntbFinalViewResponse
 					.setHaveCollateralSecurity(primaryCorporateDetail.getHaveCollateralSecurity() != null
 							? String.valueOf(primaryCorporateDetail.getHaveCollateralSecurity())

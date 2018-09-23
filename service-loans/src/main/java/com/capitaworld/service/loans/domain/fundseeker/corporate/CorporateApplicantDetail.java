@@ -182,6 +182,20 @@ public class CorporateApplicantDetail implements Serializable {
 	@Column(name= "msme_registration_number")
 	private String msmeRegistrationNumber;
 
+	@Column(name= "administrative_dist_mapping_id")
+	private Long administrativeDistMappingId;
+
+	@Column(name= "registered_dist_mapping_id")
+	private Long registeredDistMappingId;
+
+
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "establishment_date")
+	private Date establishmentDate;
+
+	@Column(name = "environmental_impact_id")
+	private Long environmentalImpactId;
+
 	public CorporateApplicantDetail() {
 	}
 
@@ -600,5 +614,37 @@ public class CorporateApplicantDetail implements Serializable {
 
 	public void setMsmeRegistrationNumber(String msmeRegistrationNumber) {
 		this.msmeRegistrationNumber = msmeRegistrationNumber;
+	}
+
+	public Long getAdministrativeDistMappingId() {
+		return administrativeDistMappingId;
+	}
+
+	public void setAdministrativeDistMappingId(Long administrativeDistMappingId) {
+		this.administrativeDistMappingId = administrativeDistMappingId;
+	}
+
+	public Long getRegisteredDistMappingId() {
+		return registeredDistMappingId;
+	}
+
+	public void setRegisteredDistMappingId(Long registeredDistMappingId) {
+		this.registeredDistMappingId = registeredDistMappingId;
+	}
+
+	public Date getEstablishmentDate() {
+		return establishmentDate;
+	}
+
+	public void setEstablishmentDate(Date establishmentDate) {
+		this.establishmentDate = establishmentDate;
+	}
+
+	public Long getEnvironmentalImpactId() {
+		return environmentalImpactId;
+	}
+
+	public void setEnvironmentalImpactId(Long environmentalImpactId) {
+		this.environmentalImpactId = environmentalImpactId;
 	}
 }

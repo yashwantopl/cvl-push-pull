@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.OperatingStatementDetails;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.OperatingStatementDetailsRepository;
+import com.capitaworld.service.loans.utils.CommonUtils;
 
 public class OperatingStatementDetailsExcelReader {
 	public static final Logger log = LoggerFactory.getLogger(OperatingStatementDetailsExcelReader.class);
@@ -22,7 +23,7 @@ public class OperatingStatementDetailsExcelReader {
     public static final DecimalFormat decimalFormat = new DecimalFormat("#.##");
 
     public static void run(Long storageDetailsId,XSSFSheet sheet,LoanApplicationMaster loanApplicationMaster,OperatingStatementDetailsRepository operatingStatementDetailsRepository) {
-            operatingStatementMappingList.clear();
+           	operatingStatementMappingList.clear();
             operatingStatementMappingList.add("8");
             operatingStatementMappingList.add("9");
             operatingStatementMappingList.add("10");
@@ -79,13 +80,27 @@ public class OperatingStatementDetailsExcelReader {
              */
             
              
-        System.out.println("OperatingStatementDetailsExcelReader -----------> "+sheet.getRow(4).getCell(1).getNumericCellValue());       
-//        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, operatingStatementMappingList,"B",String.valueOf(sheet.getRow(4).getCell(1).getNumericCellValue()),"Audited", operatingStatementDetailsRepository);
-//        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, operatingStatementMappingList,"C",String.valueOf(sheet.getRow(4).getCell(2).getNumericCellValue()),"Audited",operatingStatementDetailsRepository);
-//        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, operatingStatementMappingList,"D",String.valueOf(sheet.getRow(4).getCell(3).getNumericCellValue()),"Audited",operatingStatementDetailsRepository);
-        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, operatingStatementMappingList,"E",String.valueOf(sheet.getRow(4).getCell(4).getNumericCellValue()),"Estimated",operatingStatementDetailsRepository);
+            log.info("OperatingStatementDetailsExcelReader -----------> "+sheet.getRow(4).getCell(1).getNumericCellValue());       
+           
+            //extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, operatingStatementMappingList,"B",String.valueOf(sheet.getRow(4).getCell(1).getNumericCellValue()),"Audited", operatingStatementDetailsRepository);
+            //extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, operatingStatementMappingList,"C",String.valueOf(sheet.getRow(4).getCell(2).getNumericCellValue()),"Audited",operatingStatementDetailsRepository);
+            //extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, operatingStatementMappingList,"D",String.valueOf(sheet.getRow(4).getCell(3).getNumericCellValue()),"Audited",operatingStatementDetailsRepository);
+            //j== 2 for NTB 
+            int j = 2;
+            if(loanApplicationMaster.getBusinessTypeId() == CommonUtils.BusinessType.EXISTING_BUSINESS.getId()) {
+        
+        	  extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, operatingStatementMappingList,"E",String.valueOf(sheet.getRow(4).getCell(4).getNumericCellValue()),"Estimated",operatingStatementDetailsRepository);
+        	   j=5;
+          
+            }
         if(loanApplicationMaster.getProductId()!=15 && loanApplicationMaster.getProductId()!=1 ){
-        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, operatingStatementMappingList,"F",String.valueOf(sheet.getRow(4).getCell(5).getNumericCellValue()),"Projected", operatingStatementDetailsRepository);
+        	/*int j = 5;*/
+        	for(int i = 0; i < loanApplicationMaster.getTenure(); i++) {
+        		extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, operatingStatementMappingList, CellReference.convertNumToColString(sheet.getRow(4).getCell(j).getColumnIndex()),String.valueOf(sheet.getRow(4).getCell(j).getNumericCellValue()),"Projected", operatingStatementDetailsRepository);
+        		j++;
+        	}
+       	
+        /*  extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, operatingStatementMappingList,"F",String.valueOf(sheet.getRow(4).getCell(5).getNumericCellValue()),"Projected", operatingStatementDetailsRepository);
         extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, operatingStatementMappingList,"G",String.valueOf(sheet.getRow(4).getCell(6).getNumericCellValue()),"Projected",operatingStatementDetailsRepository);
         extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, operatingStatementMappingList,"H",String.valueOf(sheet.getRow(4).getCell(7).getNumericCellValue()),"Projected",operatingStatementDetailsRepository);
         extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, operatingStatementMappingList,"I",String.valueOf(sheet.getRow(4).getCell(8).getNumericCellValue()),"Projected",operatingStatementDetailsRepository);
@@ -105,7 +120,7 @@ public class OperatingStatementDetailsExcelReader {
         extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, operatingStatementMappingList,"W",String.valueOf(sheet.getRow(4).getCell(12).getNumericCellValue()),"Projected",operatingStatementDetailsRepository);
         extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, operatingStatementMappingList,"X",String.valueOf(sheet.getRow(4).getCell(12).getNumericCellValue()),"Projected",operatingStatementDetailsRepository);
         extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, operatingStatementMappingList,"Y",String.valueOf(sheet.getRow(4).getCell(12).getNumericCellValue()),"Projected",operatingStatementDetailsRepository);
-        }
+        */}
     }
 
     public static void extractCellFromSheet(Long storageDetailsId,XSSFSheet sheet,LoanApplicationMaster loanApplicationMaster,List<String> arrayList,String column,String year,String financialYearlyStatement,OperatingStatementDetailsRepository operatingStatementDetailsRepository)
@@ -117,14 +132,14 @@ public class OperatingStatementDetailsExcelReader {
                 ++nullCounter;
             }
         }
-        System.out.println(nullCounter);
+        log.info("nullCounter---" + nullCounter);
         if(!(nullCounter==46||nullCounter==47)) {
             OperatingStatementDetails operatingStatementDetails = new OperatingStatementDetails();
             
             operatingStatementDetails.setLoanApplicationMaster(loanApplicationMaster);
             operatingStatementDetails.setStorageDetailsId(storageDetailsId);
-     
-            operatingStatementDetails.setYear(year);
+            
+            operatingStatementDetails.setYear(CommonUtils.getCMAFilterYear(year));
             operatingStatementDetails.setFinancialYearlyStatement(financialYearlyStatement);
             operatingStatementDetails.setDomesticSales(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
             operatingStatementDetails.setExportSales(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));

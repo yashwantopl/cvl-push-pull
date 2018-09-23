@@ -80,7 +80,7 @@ public class ProposalController {
 	}
 	
 	@RequestMapping(value = "/saveDisbursementDetails", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Boolean> saveDisbursementDetails(@RequestBody DisbursementDetailsModel request, HttpServletRequest httpRequest, @RequestParam(value = "clientId", required = false) Long clientId) {
+	public ResponseEntity<ProposalMappingResponse> saveDisbursementDetails(@RequestBody DisbursementDetailsModel request, HttpServletRequest httpRequest, @RequestParam(value = "clientId", required = false) Long clientId) {
 		
 		// request must not be null
 		Long userId = null;
@@ -90,11 +90,7 @@ public class ProposalController {
 			userId = ((Long) httpRequest.getAttribute(CommonUtils.USER_ID)).longValue();
 		}
 		request.setUserId(userId);
-		Boolean status=proposalService.saveDisbursementDetails(request, userId);
-		if(status)
-		return new ResponseEntity<Boolean>(status,HttpStatus.OK);
-		else
-		return new ResponseEntity<Boolean>(status,HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<ProposalMappingResponse>(proposalService.saveDisbursementDetails(request, userId),HttpStatus.OK);
 		
 	}
 	

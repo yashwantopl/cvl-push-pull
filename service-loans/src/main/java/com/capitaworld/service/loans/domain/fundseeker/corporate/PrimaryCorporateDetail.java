@@ -20,14 +20,6 @@ public class PrimaryCorporateDetail extends LoanApplicationMaster implements Ser
     @Column(name = "loan_amount")
     private Double loanAmount;
 
-    @Column(name = "business_asset_amt")
-    private Double businessAssetAmount;
-
-    @Column(name = "wc_amt")
-    private Double wcAmount;
-
-    @Column(name = "other_amt")
-    private Double otherAmt;
 
     @Column(name = "have_collateral_security")
     private Boolean haveCollateralSecurity;
@@ -74,6 +66,31 @@ public class PrimaryCorporateDetail extends LoanApplicationMaster implements Ser
     @Column(name = "assessment_id")
     private Integer assessmentId;
 
+    /*
+     * SBI MSME Integration related fields
+     * By Ravina
+     * */
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "com_op_date")
+    private Date commercialOperationDate;
+
+    @Column(name = "factory_premise")
+    private Integer factoryPremise;
+
+    @Column(name = "know_how")
+    private Integer knowHow;
+
+    @Column(name = "competition")
+    private Integer competition;
+
+    /*
+     * Promoter Contribution Logic
+     * BY Ravina
+     * */
+
+    @Column(name = "total_amt_percentage")
+    private Double totalAmtPercentage;
+
    /* @Column(name="created_by")
     private Long createdBy;
 
@@ -90,6 +107,19 @@ public class PrimaryCorporateDetail extends LoanApplicationMaster implements Ser
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="modified_date")
     private Date modifiedDate;*/
+
+    //Dhaval
+    @Column(name = "state_id")
+    private Long stateId;
+
+    @Column(name = "city_id")
+    private Long cityId;
+
+    @Column(name = "prop_cost")
+    private Double proposedCost;
+
+    @Column(name = "incremental_margin")
+    private Double incrementalMargin;
 
     public PrimaryCorporateDetail() {
     }
@@ -109,31 +139,6 @@ public class PrimaryCorporateDetail extends LoanApplicationMaster implements Ser
     public void setLoanAmount(Double loanAmount) {
         this.loanAmount = loanAmount;
     }
-
-    public Double getBusinessAssetAmount() {
-        return businessAssetAmount;
-    }
-
-    public void setBusinessAssetAmount(Double businessAssetAmount) {
-        this.businessAssetAmount = businessAssetAmount;
-    }
-
-    public Double getWcAmount() {
-        return wcAmount;
-    }
-
-    public void setWcAmount(Double wcAmount) {
-        this.wcAmount = wcAmount;
-    }
-
-    public Double getOtherAmt() {
-        return otherAmt;
-    }
-
-    public void setOtherAmt(Double otherAmt) {
-        this.otherAmt = otherAmt;
-    }
-
 
     public Boolean getHaveCollateralSecurity() {
         return haveCollateralSecurity;
@@ -230,7 +235,82 @@ public class PrimaryCorporateDetail extends LoanApplicationMaster implements Ser
     public void setAssessmentId(Integer assessmentId) {
         this.assessmentId = assessmentId;
     }
-/* @Override
+
+    public Date getCommercialOperationDate() {
+        return commercialOperationDate;
+    }
+
+    public void setCommercialOperationDate(Date commercialOperationDate) {
+        this.commercialOperationDate = commercialOperationDate;
+    }
+
+    public Integer getFactoryPremise() {
+        return factoryPremise;
+    }
+
+    public void setFactoryPremise(Integer factoryPremise) {
+        this.factoryPremise = factoryPremise;
+    }
+
+    public Integer getKnowHow() {
+        return knowHow;
+    }
+
+    public void setKnowHow(Integer knowHow) {
+        this.knowHow = knowHow;
+    }
+
+    public Integer getCompetition() {
+        return competition;
+    }
+
+    public void setCompetition(Integer competition) {
+        this.competition = competition;
+    }
+
+    public Double getTotalAmtPercentage() {
+        return totalAmtPercentage;
+    }
+
+    public void setTotalAmtPercentage(Double totalAmtPercentage) {
+        this.totalAmtPercentage = totalAmtPercentage;
+    }
+
+    /* @Override
+
+    public Date getCommercialOperationDate() {
+        return commercialOperationDate;
+    }
+
+    public void setCommercialOperationDate(Date commercialOperationDate) {
+        this.commercialOperationDate = commercialOperationDate;
+    }
+
+    public Integer getFactoryPremise() {
+        return factoryPremise;
+    }
+
+    public void setFactoryPremise(Integer factoryPremise) {
+        this.factoryPremise = factoryPremise;
+    }
+
+    public Integer getKnowHow() {
+        return knowHow;
+    }
+
+    public void setKnowHow(Integer knowHow) {
+        this.knowHow = knowHow;
+    }
+
+    public Integer getCompetition() {
+        return competition;
+    }
+
+    public void setCompetition(Integer competition) {
+        this.competition = competition;
+    }
+
+    /* @Override
     public Long getCreatedBy() {
         return createdBy;
     }
@@ -277,4 +357,37 @@ public class PrimaryCorporateDetail extends LoanApplicationMaster implements Ser
     public void setModifiedDate(Date modifiedDate) {
         this.modifiedDate = modifiedDate;
     }*/
+
+    //Dhaval
+    public Long getStateId() {
+        return stateId;
+    }
+
+    public void setStateId(Long stateId) {
+        this.stateId = stateId;
+    }
+
+    public Long getCityId() {
+        return cityId;
+    }
+
+    public void setCityId(Long cityId) {
+        this.cityId = cityId;
+    }
+
+    public Double getProposedCost() {
+        return proposedCost;
+    }
+
+    public void setProposedCost(Double proposedCost) {
+        this.proposedCost = proposedCost;
+    }
+
+    public Double getIncrementalMargin() {
+        return incrementalMargin;
+    }
+
+    public void setIncrementalMargin(Double incrementalMargin) {
+        this.incrementalMargin = incrementalMargin;
+    }
 }

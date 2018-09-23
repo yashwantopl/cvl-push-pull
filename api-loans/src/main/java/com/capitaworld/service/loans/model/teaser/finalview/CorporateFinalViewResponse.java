@@ -79,7 +79,7 @@ public class CorporateFinalViewResponse implements Serializable {
 	private String contigentLiablitiesFy;
 	private String contigentLiablitiesSy;
 	private String contigentLiablitiesTy;
-
+;
 	// FINAL MCQ
 
 	private String technologyRiskId;
@@ -153,17 +153,44 @@ public class CorporateFinalViewResponse implements Serializable {
 	private Object dataObject;
 	private Object dataList;
 	private Object eligibilityDataObject;
-    private Object cgtmseData;
+	private Object cgtmseData;
 	private Long npOrgId;
 	private Object bankData;
-	 private Object managementRiskScore;
-	    private Object financialRiskScore;
-	    private Object buisnessRiskScore;
-	    private Object managementRiskScoreWeight;
-	    private Object financialRiskScoreWeight;
-	    private Object buisnessRiskScoreWeight;
-	    private Object scoreInterpretation;
-
+	private Object managementRiskScore;
+	private Object financialRiskScore;
+	private Object buisnessRiskScore;
+	private Object managementRiskScoreWeight;
+	private Object financialRiskScoreWeight;
+	private Object buisnessRiskScoreWeight;
+	private Object scoreInterpretation;
+	private Long assesmentId;
+	private Object itrXmlIsUploaded;
+	private Object managementRiskMaxTotalScore;
+    private Object financialRiskMaxTotalScore;
+    private Object businessRiskMaxTotalScore;
+    private Object managementRiskWeightOfScoring;
+    private Object financialRiskWeightOfScoring;
+    private Object businessRiskWeightOfScoring;
+    private Object promotersContribution;
+    private Object promotersContributionPer;
+    private Object mcaData;
+    private Object nameAsPerItr;
+    private Object mcaCheckStatus;
+    private Object gstData;
+    private Object weightConsider;
+    private Object managementRiskMaxTotalWeight;
+    private Object financialRiskMaxTotalWeight;
+    private Object businessRiskMaxTotalWeight;
+    private Object isProportionateScoreConsider;
+    private Object proportionateScore;
+    private Object proportionateScoreFS;
+    private Object fraudDetectionData;
+    
+    private Object comercialOpDate;
+    private Object factoryPremise;
+    private Object knoHow;
+    private Object competition;
+    
 	public List<?> getMatchesList() {
 		return matchesList;
 	}
@@ -1354,7 +1381,8 @@ public class CorporateFinalViewResponse implements Serializable {
 	}
 
 	/**
-	 * @param eligibilityDataObject the eligibilityDataObject to set
+	 * @param eligibilityDataObject
+	 *            the eligibilityDataObject to set
 	 */
 	public void setEligibilityDataObject(Object eligibilityDataObject) {
 		this.eligibilityDataObject = eligibilityDataObject;
@@ -1368,7 +1396,8 @@ public class CorporateFinalViewResponse implements Serializable {
 	}
 
 	/**
-	 * @param cgtmseData the cgtmseData to set
+	 * @param cgtmseData
+	 *            the cgtmseData to set
 	 */
 	public void setCgtmseData(Object cgtmseData) {
 		this.cgtmseData = cgtmseData;
@@ -1382,7 +1411,8 @@ public class CorporateFinalViewResponse implements Serializable {
 	}
 
 	/**
-	 * @param bankData the bankData to set
+	 * @param bankData
+	 *            the bankData to set
 	 */
 	public void setBankData(Object bankData) {
 		this.bankData = bankData;
@@ -1396,7 +1426,8 @@ public class CorporateFinalViewResponse implements Serializable {
 	}
 
 	/**
-	 * @param managementRiskScore the managementRiskScore to set
+	 * @param managementRiskScore
+	 *            the managementRiskScore to set
 	 */
 	public void setManagementRiskScore(Object managementRiskScore) {
 		this.managementRiskScore = managementRiskScore;
@@ -1410,7 +1441,8 @@ public class CorporateFinalViewResponse implements Serializable {
 	}
 
 	/**
-	 * @param financialRiskScore the financialRiskScore to set
+	 * @param financialRiskScore
+	 *            the financialRiskScore to set
 	 */
 	public void setFinancialRiskScore(Object financialRiskScore) {
 		this.financialRiskScore = financialRiskScore;
@@ -1424,7 +1456,8 @@ public class CorporateFinalViewResponse implements Serializable {
 	}
 
 	/**
-	 * @param buisnessRiskScore the buisnessRiskScore to set
+	 * @param buisnessRiskScore
+	 *            the buisnessRiskScore to set
 	 */
 	public void setBuisnessRiskScore(Object buisnessRiskScore) {
 		this.buisnessRiskScore = buisnessRiskScore;
@@ -1438,7 +1471,8 @@ public class CorporateFinalViewResponse implements Serializable {
 	}
 
 	/**
-	 * @param managementRiskScoreWeight the managementRiskScoreWeight to set
+	 * @param managementRiskScoreWeight
+	 *            the managementRiskScoreWeight to set
 	 */
 	public void setManagementRiskScoreWeight(Object managementRiskScoreWeight) {
 		this.managementRiskScoreWeight = managementRiskScoreWeight;
@@ -1452,7 +1486,8 @@ public class CorporateFinalViewResponse implements Serializable {
 	}
 
 	/**
-	 * @param financialRiskScoreWeight the financialRiskScoreWeight to set
+	 * @param financialRiskScoreWeight
+	 *            the financialRiskScoreWeight to set
 	 */
 	public void setFinancialRiskScoreWeight(Object financialRiskScoreWeight) {
 		this.financialRiskScoreWeight = financialRiskScoreWeight;
@@ -1466,7 +1501,8 @@ public class CorporateFinalViewResponse implements Serializable {
 	}
 
 	/**
-	 * @param buisnessRiskScoreWeight the buisnessRiskScoreWeight to set
+	 * @param buisnessRiskScoreWeight
+	 *            the buisnessRiskScoreWeight to set
 	 */
 	public void setBuisnessRiskScoreWeight(Object buisnessRiskScoreWeight) {
 		this.buisnessRiskScoreWeight = buisnessRiskScoreWeight;
@@ -1480,11 +1516,354 @@ public class CorporateFinalViewResponse implements Serializable {
 	}
 
 	/**
-	 * @param scoreInterpretation the scoreInterpretation to set
+	 * @param scoreInterpretation
+	 *            the scoreInterpretation to set
 	 */
 	public void setScoreInterpretation(Object scoreInterpretation) {
 		this.scoreInterpretation = scoreInterpretation;
 	}
-	
+
+	/**
+	 * @return the assesmentId
+	 */
+	public Long getAssesmentId() {
+		return assesmentId;
+	}
+
+	/**
+	 * @param assesmentId
+	 *            the assesmentId to set
+	 */
+	public void setAssesmentId(Long assesmentId) {
+		this.assesmentId = assesmentId;
+	}
+
+	/**
+	 * @return the itrXmlIsUploaded
+	 */
+	public Object getItrXmlIsUploaded() {
+		return itrXmlIsUploaded;
+	}
+
+	/**
+	 * @param itrXmlIsUploaded the itrXmlIsUploaded to set
+	 */
+	public void setItrXmlIsUploaded(Object itrXmlIsUploaded) {
+		this.itrXmlIsUploaded = itrXmlIsUploaded;
+	}
+
+	/**
+	 * @return the managementRiskMaxTotalScore
+	 */
+	public Object getManagementRiskMaxTotalScore() {
+		return managementRiskMaxTotalScore;
+	}
+
+	/**
+	 * @param managementRiskMaxTotalScore the managementRiskMaxTotalScore to set
+	 */
+	public void setManagementRiskMaxTotalScore(Object managementRiskMaxTotalScore) {
+		this.managementRiskMaxTotalScore = managementRiskMaxTotalScore;
+	}
+
+	/**
+	 * @return the financialRiskMaxTotalScore
+	 */
+	public Object getFinancialRiskMaxTotalScore() {
+		return financialRiskMaxTotalScore;
+	}
+
+	/**
+	 * @param financialRiskMaxTotalScore the financialRiskMaxTotalScore to set
+	 */
+	public void setFinancialRiskMaxTotalScore(Object financialRiskMaxTotalScore) {
+		this.financialRiskMaxTotalScore = financialRiskMaxTotalScore;
+	}
+
+	/**
+	 * @return the businessRiskMaxTotalScore
+	 */
+	public Object getBusinessRiskMaxTotalScore() {
+		return businessRiskMaxTotalScore;
+	}
+
+	/**
+	 * @param businessRiskMaxTotalScore the businessRiskMaxTotalScore to set
+	 */
+	public void setBusinessRiskMaxTotalScore(Object businessRiskMaxTotalScore) {
+		this.businessRiskMaxTotalScore = businessRiskMaxTotalScore;
+	}
+
+	/**
+	 * @return the managementRiskWeightOfScoring
+	 */
+	public Object getManagementRiskWeightOfScoring() {
+		return managementRiskWeightOfScoring;
+	}
+
+	/**
+	 * @param managementRiskWeightOfScoring the managementRiskWeightOfScoring to set
+	 */
+	public void setManagementRiskWeightOfScoring(Object managementRiskWeightOfScoring) {
+		this.managementRiskWeightOfScoring = managementRiskWeightOfScoring;
+	}
+
+	/**
+	 * @return the financialRiskWeightOfScoring
+	 */
+	public Object getFinancialRiskWeightOfScoring() {
+		return financialRiskWeightOfScoring;
+	}
+
+	/**
+	 * @param financialRiskWeightOfScoring the financialRiskWeightOfScoring to set
+	 */
+	public void setFinancialRiskWeightOfScoring(Object financialRiskWeightOfScoring) {
+		this.financialRiskWeightOfScoring = financialRiskWeightOfScoring;
+	}
+
+	/**
+	 * @return the businessRiskWeightOfScoring
+	 */
+	public Object getBusinessRiskWeightOfScoring() {
+		return businessRiskWeightOfScoring;
+	}
+
+	/**
+	 * @param businessRiskWeightOfScoring the businessRiskWeightOfScoring to set
+	 */
+	public void setBusinessRiskWeightOfScoring(Object businessRiskWeightOfScoring) {
+		this.businessRiskWeightOfScoring = businessRiskWeightOfScoring;
+	}
+
+	/**
+	 * @return the promotersContribution
+	 */
+	public Object getPromotersContribution() {
+		return promotersContribution;
+	}
+
+	/**
+	 * @param promotersContribution the promotersContribution to set
+	 */
+	public void setPromotersContribution(Object promotersContribution) {
+		this.promotersContribution = promotersContribution;
+	}
+
+	/**
+	 * @return the promotersContributionPer
+	 */
+	public Object getPromotersContributionPer() {
+		return promotersContributionPer;
+	}
+
+	/**
+	 * @param promotersContributionPer the promotersContributionPer to set
+	 */
+	public void setPromotersContributionPer(Object promotersContributionPer) {
+		this.promotersContributionPer = promotersContributionPer;
+	}
+
+	/**
+	 * @return the mcaData
+	 */
+	public Object getMcaData() {
+		return mcaData;
+	}
+
+	/**
+	 * @param mcaData the mcaData to set
+	 */
+	public void setMcaData(Object mcaData) {
+		this.mcaData = mcaData;
+	}
+
+	/**
+	 * @return the nameAsPerItr
+	 */
+	public Object getNameAsPerItr() {
+		return nameAsPerItr;
+	}
+
+	/**
+	 * @param nameAsPerItr the nameAsPerItr to set
+	 */
+	public void setNameAsPerItr(Object nameAsPerItr) {
+		this.nameAsPerItr = nameAsPerItr;
+	}
+
+	/**
+	 * @return the mcaCheckStatus
+	 */
+	public Object getMcaCheckStatus() {
+		return mcaCheckStatus;
+	}
+
+	/**
+	 * @param mcaCheckStatus the mcaCheckStatus to set
+	 */
+	public void setMcaCheckStatus(Object mcaCheckStatus) {
+		this.mcaCheckStatus = mcaCheckStatus;
+	}
+
+	/**
+	 * @return the gstData
+	 */
+	public Object getGstData() {
+		return gstData;
+	}
+
+	/**
+	 * @param gstData the gstData to set
+	 */
+	public void setGstData(Object gstData) {
+		this.gstData = gstData;
+	}
+
+	/**
+	 * @return the weightConsider
+	 */
+	public Object getWeightConsider() {
+		return weightConsider;
+	}
+
+	/**
+	 * @param weightConsider the weightConsider to set
+	 */
+	public void setWeightConsider(Object weightConsider) {
+		this.weightConsider = weightConsider;
+	}
+
+	/**
+	 * @return the managementRiskMaxTotalWeight
+	 */
+	public Object getManagementRiskMaxTotalWeight() {
+		return managementRiskMaxTotalWeight;
+	}
+
+	/**
+	 * @param managementRiskMaxTotalWeight the managementRiskMaxTotalWeight to set
+	 */
+	public void setManagementRiskMaxTotalWeight(Object managementRiskMaxTotalWeight) {
+		this.managementRiskMaxTotalWeight = managementRiskMaxTotalWeight;
+	}
+
+	/**
+	 * @return the financialRiskMaxTotalWeight
+	 */
+	public Object getFinancialRiskMaxTotalWeight() {
+		return financialRiskMaxTotalWeight;
+	}
+
+	/**
+	 * @param financialRiskMaxTotalWeight the financialRiskMaxTotalWeight to set
+	 */
+	public void setFinancialRiskMaxTotalWeight(Object financialRiskMaxTotalWeight) {
+		this.financialRiskMaxTotalWeight = financialRiskMaxTotalWeight;
+	}
+
+	/**
+	 * @return the businessRiskMaxTotalWeight
+	 */
+	public Object getBusinessRiskMaxTotalWeight() {
+		return businessRiskMaxTotalWeight;
+	}
+
+	/**
+	 * @param businessRiskMaxTotalWeight the businessRiskMaxTotalWeight to set
+	 */
+	public void setBusinessRiskMaxTotalWeight(Object businessRiskMaxTotalWeight) {
+		this.businessRiskMaxTotalWeight = businessRiskMaxTotalWeight;
+	}
+
+	/**
+	 * @return the isProportionateScoreConsider
+	 */
+	public Object getIsProportionateScoreConsider() {
+		return isProportionateScoreConsider;
+	}
+
+	/**
+	 * @param isProportionateScoreConsider the isProportionateScoreConsider to set
+	 */
+	public void setIsProportionateScoreConsider(Object isProportionateScoreConsider) {
+		this.isProportionateScoreConsider = isProportionateScoreConsider;
+	}
+
+	/**
+	 * @return the proportionateScore
+	 */
+	public Object getProportionateScore() {
+		return proportionateScore;
+	}
+
+	/**
+	 * @param proportionateScore the proportionateScore to set
+	 */
+	public void setProportionateScore(Object proportionateScore) {
+		this.proportionateScore = proportionateScore;
+	}
+
+	/**
+	 * @return the proportionateScoreFS
+	 */
+	public Object getProportionateScoreFS() {
+		return proportionateScoreFS;
+	}
+
+	/**
+	 * @param proportionateScoreFS the proportionateScoreFS to set
+	 */
+	public void setProportionateScoreFS(Object proportionateScoreFS) {
+		this.proportionateScoreFS = proportionateScoreFS;
+	}
+
+	/**
+	 * @return the fraudDetectionData
+	 */
+	public Object getFraudDetectionData() {
+		return fraudDetectionData;
+	}
+
+	/**
+	 * @param fraudDetectionData the fraudDetectionData to set
+	 */
+	public void setFraudDetectionData(Object fraudDetectionData) {
+		this.fraudDetectionData = fraudDetectionData;
+	}
+
+	public Object getComercialOpDate() {
+		return comercialOpDate;
+	}
+
+	public void setComercialOpDate(Object comercialOpDate) {
+		this.comercialOpDate = comercialOpDate;
+	}
+
+	public Object getFactoryPremise() {
+		return factoryPremise;
+	}
+
+	public void setFactoryPremise(Object factoryPremise) {
+		this.factoryPremise = factoryPremise;
+	}
+
+	public Object getKnoHow() {
+		return knoHow;
+	}
+
+	public void setKnoHow(Object knoHow) {
+		this.knoHow = knoHow;
+	}
+
+	public Object getCompetition() {
+		return competition;
+	}
+
+	public void setCompetition(Object competition) {
+		this.competition = competition;
+	}
+
+
 
 }

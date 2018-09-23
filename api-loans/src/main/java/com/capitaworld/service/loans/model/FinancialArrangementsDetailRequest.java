@@ -43,6 +43,13 @@ public class FinancialArrangementsDetailRequest {
 	
 	private Long directorId;
 
+	/*
+	 * SBI MSME Integration related fields
+	 * By Ravina
+	 * */
+	private Integer lcBgStatus;
+	private String othersBankName;
+
 	public Long getId() {
 		return id;
 	}
@@ -162,5 +169,20 @@ public class FinancialArrangementsDetailRequest {
 	public void setDirectorId(Long directorId) {
 		this.directorId = directorId;
 	}
-	
+
+	public Integer getLcBgStatus() {
+		return lcBgStatus;
+	}
+
+	public void setLcBgStatus(Integer lcBgStatus) {
+		this.lcBgStatus = lcBgStatus;
+	}
+
+	public String getOthersBankName() {
+		return othersBankName;
+	}
+
+	public void setOthersBankName(String othersBankName) {
+		this.othersBankName = othersBankName;
+	}
 }

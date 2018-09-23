@@ -101,7 +101,7 @@ public class DprSecondSheetExcelReader
         String category           = getDataFromCell(sheet,"B"+rowNumber);
         String currentNumber      = getDataFromCell(sheet,"C"+rowNumber);
         String proposedNumber     = getDataFromCell(sheet,"D"+rowNumber);
-        System.out.println("current : " + currentNumber + "-- Proposed :" + proposedNumber);
+        //System.out.println("current : " + currentNumber + "-- Proposed :" + proposedNumber);
 
         if (currentNumber.isEmpty())
         {

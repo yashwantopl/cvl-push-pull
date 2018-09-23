@@ -5,4 +5,5 @@ import com.capitaworld.service.loans.domain.common.AuditMaster;
 
 public interface AuditMasterRepository  extends JpaRepository<AuditMaster, Long> {
 
+	public AuditMaster findFirstByApplicationIdAndIsSuccessAndTypeOrderByIdDesc(Long applicationId,Boolean isSuccess,Integer type);
 }

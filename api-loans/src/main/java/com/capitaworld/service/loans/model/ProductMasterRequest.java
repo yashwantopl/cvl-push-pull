@@ -43,6 +43,8 @@ public class ProductMasterRequest implements Serializable {
 	private Long scoreModelId;
 
 	private Long businessTypeId;
+	
+	private Boolean isParameterFilled;
 
 
 
@@ -174,4 +176,14 @@ public class ProductMasterRequest implements Serializable {
 	public void setBusinessTypeId(Long businessTypeId) {
 		this.businessTypeId = businessTypeId;
 	}
+
+	public Boolean getIsParameterFilled() {
+		return isParameterFilled;
+	}
+
+	public void setIsParameterFilled(Boolean isParameterFilled) {
+		this.isParameterFilled = isParameterFilled;
+	}
+	
+	
 }
