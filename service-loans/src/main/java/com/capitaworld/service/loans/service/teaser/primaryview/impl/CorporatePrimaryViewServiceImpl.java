@@ -1054,7 +1054,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 		// CGTMSE
 		try {
 
-			CGTMSEDataResponse cgtmseDataResp = thirdPartyClient.getCalulation(toApplicationId);
+			CGTMSEDataResponse cgtmseDataResp = thirdPartyClient.getCalulation(toApplicationId,fpProductMappingId);
 
 			corporatePrimaryViewResponse.setCgtmseData(cgtmseDataResp);
 

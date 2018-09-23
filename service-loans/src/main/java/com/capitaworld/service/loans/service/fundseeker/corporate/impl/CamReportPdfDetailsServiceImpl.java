@@ -968,7 +968,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		
 		//CGTMSE DATA
 		try {
-			CGTMSEDataResponse cgtmseDataResponse = thirdPartyClient.getCalulation(applicationId);
+			CGTMSEDataResponse cgtmseDataResponse = thirdPartyClient.getCalulation(applicationId,productId);
 			if(!CommonUtils.isObjectNullOrEmpty(cgtmseDataResponse)) {
 				map.put("cgtmseData", CommonUtils.printFields(cgtmseDataResponse));
 				if(cgtmseDataResponse.getNatureOfEntity().equals("Manufacturer")) {
