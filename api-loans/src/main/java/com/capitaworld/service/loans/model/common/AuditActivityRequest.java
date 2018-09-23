@@ -3,6 +3,8 @@ package com.capitaworld.service.loans.model.common;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 public class AuditActivityRequest implements Serializable {
 
 	/**
@@ -12,10 +14,12 @@ public class AuditActivityRequest implements Serializable {
 
 	private String createdBy;
 
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
 	private Date createdDate;
 	
 	private String modifiedBy;
 	
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
 	private Date modifiedDate;
 	
 	private Boolean isActive;

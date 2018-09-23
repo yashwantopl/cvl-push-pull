@@ -328,6 +328,18 @@ public class TermLoanParameter extends ProductMaster implements Serializable {
 
 	@Column(name="is_msme_funding_mandatory")
 	private Boolean isMsmeFundingMandatory = false;
+	
+	@Column(name="cgtmse_coverage")
+	private Integer cgtmseCoverage;
+	
+	@Column(name="cash_margin")
+	private Integer cashMargin;
+	
+	@Column(name="dscr")
+	private BigDecimal dscr;
+	
+	@Column(name="payback_period")
+	private Integer paybackPeriod;
 
 
 
@@ -1159,5 +1171,42 @@ public class TermLoanParameter extends ProductMaster implements Serializable {
 		this.isMsmeFundingMandatory = isMsmeFundingMandatory;
 	}
 
+	public Integer getCgtmseCoverage() {
+		return cgtmseCoverage;
+	}
+
+	public void setCgtmseCoverage(Integer cgtmseCoverage) {
+		this.cgtmseCoverage = cgtmseCoverage;
+	}
+
+	public Integer getCashMargin() {
+		return cashMargin;
+	}
+
+	public void setCashMargin(Integer cashMargin) {
+		this.cashMargin = cashMargin;
+	}
+
+	public BigDecimal getDscr() {
+		return dscr;
+	}
+
+	public void setDscr(BigDecimal dscr) {
+		this.dscr = dscr;
+	}
+
+	public Integer getPaybackPeriod() {
+		return paybackPeriod;
+	}
+
+	public void setPaybackPeriod(Integer paybackPeriod) {
+		this.paybackPeriod = paybackPeriod;
+	}
+
+
+
+	
+	
+	
 
 }

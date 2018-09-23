@@ -49,7 +49,7 @@ public class FinancialArrangementsDetailRequest {
 	 * */
 	private Integer lcBgStatus;
 	private String othersBankName;
-	
+
 	public Long getId() {
 		return id;
 	}
@@ -177,7 +177,7 @@ public class FinancialArrangementsDetailRequest {
 	public void setLcBgStatus(Integer lcBgStatus) {
 		this.lcBgStatus = lcBgStatus;
 	}
-	
+
 	public String getOthersBankName() {
 		return othersBankName;
 	}

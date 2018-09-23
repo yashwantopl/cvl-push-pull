@@ -1,10 +1,12 @@
 package com.capitaworld.service.loans.model.corporate;
 
 import com.capitaworld.service.loans.model.Address;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.sun.org.apache.xpath.internal.operations.Bool;
 
 import java.io.Serializable;
+import java.util.Date;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CorporateFinalInfoRequest implements Serializable {
@@ -45,6 +47,13 @@ public class CorporateFinalInfoRequest implements Serializable {
     private Double sharePriceFace;
     private Double sharePriceMarket;
     private Double totalCollateralDetails;
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd-MM-yyyy")
+    private Date establishmentDate;
+
+    private String organisationName;
+    private Integer constitutionId;
+    private String panNo;
+    private String landlineNo;
 
     public Boolean getSameAs() {
         return sameAs;
@@ -213,5 +222,45 @@ public class CorporateFinalInfoRequest implements Serializable {
 
     public void setTotalCollateralDetails(Double totalCollateralDetails) {
         this.totalCollateralDetails = totalCollateralDetails;
+    }
+
+    public Date getEstablishmentDate() {
+        return establishmentDate;
+    }
+
+    public void setEstablishmentDate(Date establishmentDate) {
+        this.establishmentDate = establishmentDate;
+    }
+
+    public String getOrganisationName() {
+        return organisationName;
+    }
+
+    public void setOrganisationName(String organisationName) {
+        this.organisationName = organisationName;
+    }
+
+    public Integer getConstitutionId() {
+        return constitutionId;
+    }
+
+    public void setConstitutionId(Integer constitutionId) {
+        this.constitutionId = constitutionId;
+    }
+
+    public String getPanNo() {
+        return panNo;
+    }
+
+    public void setPanNo(String panNo) {
+        this.panNo = panNo;
+    }
+
+    public String getLandlineNo() {
+        return landlineNo;
+    }
+
+    public void setLandlineNo(String landlineNo) {
+        this.landlineNo = landlineNo;
     }
 }

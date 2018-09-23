@@ -31,6 +31,10 @@ import com.capitaworld.service.dms.exception.DocumentException;
 import com.capitaworld.service.dms.model.DocumentRequest;
 import com.capitaworld.service.dms.model.DocumentResponse;
 import com.capitaworld.service.dms.util.DocumentAlias;
+import com.capitaworld.service.fraudanalytics.client.FraudAnalyticsClient;
+import com.capitaworld.service.fraudanalytics.model.AnalyticsResponse;
+import com.capitaworld.service.gst.GstResponse;
+import com.capitaworld.service.gst.client.GstClient;
 import com.capitaworld.service.loans.domain.fundprovider.TermLoanParameter;
 import com.capitaworld.service.loans.domain.fundprovider.WcTlParameter;
 import com.capitaworld.service.loans.domain.fundprovider.WorkingCapitalParameter;
@@ -41,6 +45,7 @@ import com.capitaworld.service.loans.model.CreditRatingOrganizationDetailRequest
 import com.capitaworld.service.loans.model.CreditRatingOrganizationDetailResponse;
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailResponse;
+import com.capitaworld.service.loans.model.DirectorPersonalDetailResponse;
 import com.capitaworld.service.loans.model.FinanceMeansDetailRequest;
 import com.capitaworld.service.loans.model.FinanceMeansDetailResponse;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
@@ -64,6 +69,7 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorp
 import com.capitaworld.service.loans.repository.fundseeker.corporate.SectorIndustryMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorRepository;
+import com.capitaworld.service.loans.service.common.PincodeDateService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.AchievmentDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.AssociatedConcernDetailService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateFinalInfoService;
@@ -88,14 +94,18 @@ import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.matchengine.MatchEngineClient;
 import com.capitaworld.service.matchengine.model.MatchDisplayResponse;
 import com.capitaworld.service.matchengine.model.MatchRequest;
+import com.capitaworld.service.mca.client.McaClient;
+import com.capitaworld.service.mca.model.McaResponse;
 import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.AbilityRaiseFunds;
 import com.capitaworld.service.oneform.enums.AccountingQuality;
+import com.capitaworld.service.oneform.enums.AssessedForITMst;
 import com.capitaworld.service.oneform.enums.BorrowerInvoked;
 import com.capitaworld.service.oneform.enums.BusinessCommitment;
 import com.capitaworld.service.oneform.enums.BusinessExperience;
 import com.capitaworld.service.oneform.enums.ChequesReturned;
 import com.capitaworld.service.oneform.enums.CompanyConflicts;
+import com.capitaworld.service.oneform.enums.CompetitionMst_SBI;
 import com.capitaworld.service.oneform.enums.ComplianceConditions;
 import com.capitaworld.service.oneform.enums.Constitution;
 import com.capitaworld.service.oneform.enums.ConstructionContract;
@@ -109,29 +119,38 @@ import com.capitaworld.service.oneform.enums.DelayInstalments;
 import com.capitaworld.service.oneform.enums.DelaySubmission;
 import com.capitaworld.service.oneform.enums.Denomination;
 import com.capitaworld.service.oneform.enums.DirectorRelationshipType;
+import com.capitaworld.service.oneform.enums.EducationalStatusMst;
 import com.capitaworld.service.oneform.enums.EnvironmentalImpact;
 import com.capitaworld.service.oneform.enums.EstablishmentMonths;
+import com.capitaworld.service.oneform.enums.FactoryPremiseMst;
 import com.capitaworld.service.oneform.enums.FinanceCategory;
 import com.capitaworld.service.oneform.enums.FinancialRestructuring;
 import com.capitaworld.service.oneform.enums.FinancialSupport;
 import com.capitaworld.service.oneform.enums.Gender;
+import com.capitaworld.service.oneform.enums.HaveLIMst;
 import com.capitaworld.service.oneform.enums.IndustrialRelations;
 import com.capitaworld.service.oneform.enums.InfrastructureAvailability;
 import com.capitaworld.service.oneform.enums.Integrity;
 import com.capitaworld.service.oneform.enums.InternalControl;
 import com.capitaworld.service.oneform.enums.InternalReturn;
+import com.capitaworld.service.oneform.enums.KnowHowMst;
+import com.capitaworld.service.oneform.enums.LCBG_Status_SBI;
 import com.capitaworld.service.oneform.enums.LimitOverdrawn;
 import com.capitaworld.service.oneform.enums.LoanType;
 import com.capitaworld.service.oneform.enums.ManagementCompetence;
+import com.capitaworld.service.oneform.enums.MaritalStatusMst;
 import com.capitaworld.service.oneform.enums.OperatingMargins;
 import com.capitaworld.service.oneform.enums.OrderBook;
+import com.capitaworld.service.oneform.enums.OwningHouseMst;
 import com.capitaworld.service.oneform.enums.Particular;
 import com.capitaworld.service.oneform.enums.ProductSeasonality;
 import com.capitaworld.service.oneform.enums.ProjectedRatio;
 import com.capitaworld.service.oneform.enums.PurposeOfLoan;
 import com.capitaworld.service.oneform.enums.RatingAgency;
+import com.capitaworld.service.oneform.enums.ResidentStatusMst;
 import com.capitaworld.service.oneform.enums.SensititivityAnalysis;
 import com.capitaworld.service.oneform.enums.ShareHoldingCategory;
+import com.capitaworld.service.oneform.enums.SpouseDetailMst;
 import com.capitaworld.service.oneform.enums.StatusClearances;
 import com.capitaworld.service.oneform.enums.StatusFinancialClosure;
 import com.capitaworld.service.oneform.enums.SubmissionReports;
@@ -142,6 +161,7 @@ import com.capitaworld.service.oneform.enums.TechnologyRisk;
 import com.capitaworld.service.oneform.enums.Title;
 import com.capitaworld.service.oneform.enums.UnhedgedCurrency;
 import com.capitaworld.service.oneform.enums.VarianceSales;
+import com.capitaworld.service.oneform.enums.VisuallyImpairedMst;
 import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
 import com.capitaworld.service.oneform.model.SectorIndustryModel;
@@ -152,7 +172,6 @@ import com.capitaworld.service.scoring.model.ProposalScoreResponse;
 import com.capitaworld.service.scoring.model.ScoringRequest;
 import com.capitaworld.service.scoring.model.ScoringResponse;
 import com.capitaworld.service.thirdparty.model.CGTMSEDataResponse;
-import com.capitaworld.service.thirdparty.model.ThirdPartyRequest;
 import com.capitaworld.service.thirdpaty.client.ThirdPartyClient;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.UserResponse;
@@ -268,9 +287,21 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 
 	@Autowired
 	private WcTlLoanParameterRepository wctlrepo;
-	
+
 	@Autowired
 	private ITRClient itrClient;
+
+	@Autowired
+	private McaClient mcaClient;
+
+	@Autowired
+	private GstClient gstClient;
+
+	@Autowired
+	private PincodeDateService pincodeDateService;
+
+	@Autowired
+	private FraudAnalyticsClient fraudAnalyticsClient;
 
 	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 	DecimalFormat decim = new DecimalFormat("#,###.00");
@@ -550,15 +581,6 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 			corporateFinalViewResponse.setPurposeOfLoan(
 					CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getPurposeOfLoanId()) ? null
 							: PurposeOfLoan.getById(primaryCorporateDetail.getPurposeOfLoanId()).getValue().toString());
-			corporateFinalViewResponse.setBusinessAssetAmount(primaryCorporateDetail.getBusinessAssetAmount() != null
-					? String.valueOf(primaryCorporateDetail.getBusinessAssetAmount())
-					: null);
-			corporateFinalViewResponse.setWcAmount(
-					primaryCorporateDetail.getWcAmount() != null ? String.valueOf(primaryCorporateDetail.getWcAmount())
-							: null);
-			corporateFinalViewResponse.setOtherAmt(
-					primaryCorporateDetail.getOtherAmt() != null ? String.valueOf(primaryCorporateDetail.getOtherAmt())
-							: null);
 			corporateFinalViewResponse
 					.setHaveCollateralSecurity(primaryCorporateDetail.getHaveCollateralSecurity() != null
 							? String.valueOf(primaryCorporateDetail.getHaveCollateralSecurity())
@@ -567,6 +589,11 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 					.setCollateralSecurityAmount(primaryCorporateDetail.getCollateralSecurityAmount() != null
 							? String.valueOf(primaryCorporateDetail.getCollateralSecurityAmount())
 							: null);
+			corporateFinalViewResponse.setPromotersContribution(primaryCorporateDetail.getPromoterContribution());
+			corporateFinalViewResponse
+					.setPromotersContributionPer(primaryCorporateDetail.getTotalAmtPercentage() != null
+							? " (" + convertValue(primaryCorporateDetail.getTotalAmtPercentage()) + "%)"
+							: null);
 			corporateFinalViewResponse.setNpOrgId(loanApplicationMaster.getNpOrgId());
 			// workingCapitalPrimaryViewResponse.setSharePriceFace(primaryWorkingCapitalLoanDetail.getSharePriceFace());
 			// workingCapitalPrimaryViewResponse.setSharePriceMarket(primaryWorkingCapitalLoanDetail.getSharePriceMarket());
@@ -574,8 +601,19 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 				corporateFinalViewResponse.setDateOfProposal(primaryCorporateDetail.getModifiedDate() != null
 						? DATE_FORMAT.format(primaryCorporateDetail.getModifiedDate())
 						: null);
+			
+			// other Details
+			
+			corporateFinalViewResponse.setComercialOpDate(primaryCorporateDetail.getCommercialOperationDate());
+			corporateFinalViewResponse.setFactoryPremise(primaryCorporateDetail.getFactoryPremise() != null ? FactoryPremiseMst.getById(primaryCorporateDetail.getFactoryPremise()).getValue().toString() : "-");
+			corporateFinalViewResponse.setKnoHow(primaryCorporateDetail.getKnowHow() != null ? KnowHowMst.getById(primaryCorporateDetail.getKnowHow()).getValue().toString() : "-");
+			corporateFinalViewResponse.setCompetition(primaryCorporateDetail.getCompetition()  != null ? CompetitionMst_SBI.getById(primaryCorporateDetail.getCompetition()).getValue().toString() : "-");
 		}
+
+		
+		
 		// DIRECTORS BACKGROUND DETAILS
+		
 		try {
 			List<DirectorBackgroundDetailRequest> directorBackgroundDetailRequestList = directorBackgroundDetailsService
 					.getDirectorBackgroundDetailList(toApplicationId, userId);
@@ -608,6 +646,16 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 				directorBackgroundDetailResponse.setMobile(directorBackgroundDetailRequest.getMobile());
 				directorBackgroundDetailResponse.setDob(directorBackgroundDetailRequest.getDob());
 				directorBackgroundDetailResponse.setPincode(directorBackgroundDetailRequest.getPincode());
+				directorBackgroundDetailResponse.setPersonalId(directorBackgroundDetailRequest.getPersonalId());
+				try {
+					if (!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDistrictMappingId())) {
+						directorBackgroundDetailResponse.setPinData(
+								pincodeDateService.getById(directorBackgroundDetailRequest.getDistrictMappingId()));
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+
 				directorBackgroundDetailResponse.setStateCode(directorBackgroundDetailRequest.getStateCode());
 				directorBackgroundDetailResponse.setCity(directorBackgroundDetailRequest.getCity());
 				directorBackgroundDetailResponse.setGender((directorBackgroundDetailRequest.getGender() != null
@@ -618,12 +666,85 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 								? DirectorRelationshipType
 										.getById(directorBackgroundDetailRequest.getRelationshipType()).getValue()
 								: " "));
+				
+				// additional Details added as per req
+				directorBackgroundDetailResponse.setIsMainDirector(directorBackgroundDetailRequest.getIsMainDirector());
+				directorBackgroundDetailResponse.setAadhar(directorBackgroundDetailRequest.getAadhar());
+				directorBackgroundDetailResponse.setFatherName(directorBackgroundDetailRequest.getFatherName());
+				directorBackgroundDetailResponse.setEducationalStatus(directorBackgroundDetailRequest.getEducationalStatus() != null ? EducationalStatusMst.getById(directorBackgroundDetailRequest.getEducationalStatus()).getValue().toString() : "-");
+				directorBackgroundDetailResponse.setVisuallyImpaired(directorBackgroundDetailRequest.getVisuallyImpaired() != null ? VisuallyImpairedMst.getById(directorBackgroundDetailRequest.getVisuallyImpaired()).getValue().toString() : "-");
+				directorBackgroundDetailResponse.setResidentStatus(directorBackgroundDetailRequest.getResidentStatus() != null ? ResidentStatusMst.getById(directorBackgroundDetailRequest.getResidentStatus()).getValue().toString() : "-");
+				directorBackgroundDetailResponse.setDirectorPersonalInfo(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest() != null ? directorBackgroundDetailRequest.getDirectorPersonalDetailRequest() : " " );
+				//nationality
+				
+				List<Long> countryList = new ArrayList<>();
+				if (!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getNationality()))
+					countryList.add(Long.valueOf(directorBackgroundDetailRequest.getNationality()));
+				if (!CommonUtils.isListNullOrEmpty(countryList)) {
+					try {
+						OneFormResponse oneFormResponse = oneFormClient.getCountryByCountryListId(countryList);
+						List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
+								.getListData();
+						if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+							MasterResponse masterResponse = MultipleJSONObjectHelper
+									.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+							corporateFinalViewResponse.setCountry(masterResponse.getValue());
+							corporateFinalViewResponse.setRegOfficecountry(masterResponse.getValue());
+							
+							directorBackgroundDetailResponse.setNationality(masterResponse.getValue());
+							
+						} else {
+							directorBackgroundDetailResponse.setNationality("NA");
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+				
+				
 				directorBackgroundDetailResponseList.add(directorBackgroundDetailResponse);
+				// is main director so fetch personal detail by personal id
+				try {
+					
+					if(directorBackgroundDetailRequest.getIsMainDirector() != null && directorBackgroundDetailRequest.getIsMainDirector() == true){
+
+						DirectorPersonalDetailResponse directorPersonalDetailResponse= new DirectorPersonalDetailResponse();
+						if(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest() != null)
+						{
+						directorPersonalDetailResponse.setMaritalStatus(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getMaritalStatus() != null ? MaritalStatusMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getMaritalStatus()).getValue().toString() : "-");
+						directorPersonalDetailResponse.setSpouseName(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getSpouseName());
+						directorPersonalDetailResponse.setSpouseDetail(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getSpouseDetail() != null ? SpouseDetailMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getSpouseDetail()).getValue().toString() : "-");
+						directorPersonalDetailResponse.setAssessedForIt(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getAssessedForIt() != null ? AssessedForITMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getAssessedForIt()).getValue().toString() : "-");
+						directorPersonalDetailResponse.setOwningHouse(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getOwningHouse() != null ? OwningHouseMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getOwningHouse()).getValue().toString() : "-");
+						directorPersonalDetailResponse.setNoOfChildren(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getNoOfChildren());
+						directorPersonalDetailResponse.setHaveLiPolicy(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getHaveLiPolicy()!= null ? HaveLIMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getHaveLiPolicy()).getValue().toString() : "-");
+						
+						directorBackgroundDetailResponse.setDirectorPersonalInfo(directorPersonalDetailResponse);
+						
+						
+						}
+						else {
+							
+							logger.warn("directorBackgroundDetailRequest.getDirectorPersonalDetailRequest() is null....");
+						}
+					}else {
+						logger.warn("----:::::: is main director is null ::::::-----For-----",toApplicationId);
+					}
+					
+				} catch (Exception e) {
+					e.printStackTrace();
+					logger.warn("----:::::: error while get is main dir details ::::::-----For-----",toApplicationId);
+					// TODO: handle exception
+				}
 			}
+			
 			corporateFinalViewResponse.setDirectorBackgroundDetailResponses(directorBackgroundDetailResponseList);
+		
 		} catch (Exception e) {
 			logger.error("Problem to get Data of Director's Background {}", e);
 		}
+		
+		
 		// FINANCIAL ARRANGEMENTS
 		try {
 			List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestList = financialArrangementDetailsService
@@ -644,6 +765,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 						.setFinancialInstitutionName(financialArrangementsDetailRequest.getFinancialInstitutionName());
 				// financialArrangementsDetailResponse.setFacilityNature(NatureFacility.getById(financialArrangementsDetailRequest.getFacilityNatureId()).getValue());
 				// financialArrangementsDetailResponse.setAddress(financialArrangementsDetailRequest.getAddress());
+				financialArrangementsDetailResponse.setLcbgStatus(financialArrangementsDetailRequest.getLcBgStatus() != null ? LCBG_Status_SBI.getById(financialArrangementsDetailRequest.getLcBgStatus()).getValue().toString() : "-");
 				financialArrangementsDetailResponseList.add(financialArrangementsDetailResponse);
 			}
 			corporateFinalViewResponse
@@ -659,6 +781,8 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 		try {
 			FinancialInputRequest financialInputRequest = irrService.cmaIrrMappingService(userId, toApplicationId, null,
 					denomination);
+
+			System.out.println("financialInputRequest.getYear()===>>>" + financialInputRequest.getYear());
 			// Profit & Loss Statement
 			financialInputRequest.setNetSaleFy(CommonUtils.substractNumbers(financialInputRequest.getGrossSalesFy(),
 					financialInputRequest.getLessExciseDuityFy()));
@@ -959,21 +1083,21 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 		} catch (Exception e) {
 			logger.error("Problem to get Data of Credit Rating {}", e);
 		}
-		//itr xml isUpload or Online check
+		// itr xml isUpload or Online check
 		try {
-			ITRConnectionResponse itrConnectionResponse= itrClient.getIsUploadAndYearDetails(toApplicationId);
-			if(itrConnectionResponse!= null) {
+			ITRConnectionResponse itrConnectionResponse = itrClient.getIsUploadAndYearDetails(toApplicationId);
+			if (itrConnectionResponse != null) {
 				corporateFinalViewResponse.setItrXmlIsUploaded(itrConnectionResponse.getData());
-			}else {
+			} else {
 				System.out.println("itr Response is null");
-				
+
 			}
-			
+
 		} catch (Exception e) {
 			System.out.println("error while itr xml is uploaded or not check.");
 			e.printStackTrace();
 		}
-				
+
 		// EXISTING PRODUCT DETAILS
 		try {
 			corporateFinalViewResponse.setExistingProductDetailRequestList(
@@ -1329,6 +1453,34 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 				corporateFinalViewResponse.setBuisnessRiskScoreWeight(
 						CommonUtils.checkDoubleNull(proposalScoreResponse.getBusinessRiskWeight()));
 				corporateFinalViewResponse.setScoreInterpretation(proposalScoreResponse.getInterpretation());
+				corporateFinalViewResponse
+						.setManagementRiskMaxTotalScore(proposalScoreResponse.getManagementRiskMaxTotalScore());
+				corporateFinalViewResponse
+						.setFinancialRiskMaxTotalScore(proposalScoreResponse.getFinancialRiskMaxTotalScore());
+				corporateFinalViewResponse
+						.setBusinessRiskMaxTotalScore(proposalScoreResponse.getBusinessRiskMaxTotalScore());
+				corporateFinalViewResponse
+						.setManagementRiskWeightOfScoring(proposalScoreResponse.getManagementRiskWeightOfScoring());
+				corporateFinalViewResponse
+						.setFinancialRiskWeightOfScoring(proposalScoreResponse.getFinancialRiskWeightOfScoring());
+				corporateFinalViewResponse
+						.setBusinessRiskWeightOfScoring(proposalScoreResponse.getBusinessRiskWeightOfScoring());
+
+				corporateFinalViewResponse.setWeightConsider(proposalScoreResponse.getWeightConsider());
+				corporateFinalViewResponse
+						.setManagementRiskMaxTotalWeight(proposalScoreResponse.getManagementRiskMaxTotalWeight());
+				corporateFinalViewResponse
+						.setFinancialRiskMaxTotalWeight(proposalScoreResponse.getFinancialRiskMaxTotalWeight());
+				corporateFinalViewResponse
+						.setBusinessRiskMaxTotalWeight(proposalScoreResponse.getBusinessRiskMaxTotalWeight());
+
+				// if ture so show two col
+				corporateFinalViewResponse
+						.setIsProportionateScoreConsider(proposalScoreResponse.getIsProportionateScoreConsider());// Score(out
+																													// of),
+																													// proportionateScoreFS
+				corporateFinalViewResponse.setProportionateScore(proposalScoreResponse.getProportionateScore());
+				corporateFinalViewResponse.setProportionateScoreFS(proposalScoreResponse.getProportionateScoreFS());
 			} else {
 				logger.info("SCORING OBJECT NULL OR EMPTY -------------------->");
 			}
@@ -1399,11 +1551,95 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 
 		// CGTMSE
 		try {
-			CGTMSEDataResponse cgtmseDataResp = thirdPartyClient.getCalulation(toApplicationId);
+			CGTMSEDataResponse cgtmseDataResp = thirdPartyClient.getCalulation(toApplicationId,fpProductMappingId);
 			corporateFinalViewResponse.setCgtmseData(cgtmseDataResp);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.info("Error CGTMSE data");
+		}
+
+		// MCA DATA
+		try {
+			String companyId = loanApplicationMaster.getMcaCompanyId();
+			System.out.println("mca comp id==>>" + companyId);
+
+			if (companyId != null) {
+
+				McaResponse mcaResponse = mcaClient.getCompanyDetailedData(companyId);
+				McaResponse mcaStatusResponse = mcaClient.mcaStatusCheck(String.valueOf(toApplicationId), companyId);
+				if (mcaStatusResponse != null) {
+					corporateFinalViewResponse.setMcaCheckStatus(mcaStatusResponse.getData());
+				} else {
+
+					logger.warn("::::::=====MCA Check Status Data is Null====:::::::For:::::==>" + companyId);
+				}
+
+				if (!CommonUtils.isObjectNullOrEmpty(mcaResponse.getData())) {
+
+					corporateFinalViewResponse.setMcaData(mcaResponse);
+
+				} else {
+
+					logger.warn("::::::=====MCA Data is Null====:::::::For:::::==>" + companyId);
+				}
+			} else {
+				logger.warn("Mca Company Id is Null");
+
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		// Name As Per
+
+		try {
+			ITRConnectionResponse resNameAsPerITR = itrClient.getITRBasicDetails(toApplicationId);
+			if (resNameAsPerITR != null) {
+
+				corporateFinalViewResponse
+						.setNameAsPerItr(resNameAsPerITR.getData() != null ? resNameAsPerITR.getData() : "NA");
+			} else {
+
+				logger.warn("-----------:::::::::::::: ItrResponse is null ::::::::::::---------");
+			}
+
+		} catch (Exception e) {
+			logger.warn(":::::::::::---------Error while fetching name as per itr----------:::::::::::");
+			e.printStackTrace();
+		}
+
+		// Name as per Gst
+
+		try {
+			GstResponse response = gstClient.detailCalculation(corporateApplicantDetail.getGstIn());
+			if (response != null) {
+				corporateFinalViewResponse.setGstData(response);
+			} else {
+
+				logger.warn("----------:::::::: Gst Response is null :::::::---------");
+
+			}
+
+		} catch (Exception e) {
+			logger.warn(":::::::------Error while calling gstData---:::::::");
+			e.printStackTrace();
+		}
+
+		// Fraud Detection Data
+
+		try {
+			AnalyticsResponse hunterResp = fraudAnalyticsClient.getRuleAnalysisData(toApplicationId);
+
+			if (!CommonUtils.isObjectListNull(hunterResp, hunterResp.getData())) {
+
+				corporateFinalViewResponse.setFraudDetectionData(hunterResp);
+
+			}
+		} catch (Exception e1) {
+
+			logger.warn("------:::::...Error while fetching Fraud Detection Details...For..::::::-----",
+					toApplicationId);
+			e1.printStackTrace();
 		}
 
 		// GET DOCUMENTS

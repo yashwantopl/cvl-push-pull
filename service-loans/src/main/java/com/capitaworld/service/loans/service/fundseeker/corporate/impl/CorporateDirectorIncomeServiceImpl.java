@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -13,13 +14,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.capitaworld.service.gst.util.CommonUtils;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateDirectorIncomeDetails;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.DirectorBackgroundDetail;
+import com.capitaworld.service.loans.model.PincodeDataResponse;
 import com.capitaworld.service.loans.model.corporate.CorporateDirectorIncomeRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateDirectorIncomeDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.DirectorBackgroundDetailsRepository;
+import com.capitaworld.service.loans.service.common.PincodeDateService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateDirectorIncomeService;
+import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.oneform.enums.DirectorRelationshipType;
 import com.capitaworld.service.oneform.enums.EducationQualificationNTB;
 import com.capitaworld.service.oneform.enums.EmploymentStatusNTB;
@@ -40,8 +43,11 @@ public class CorporateDirectorIncomeServiceImpl implements CorporateDirectorInco
 	@Autowired
 	private DirectorBackgroundDetailsRepository backgroundDetailsRepository;
 	
-	private static final Logger logger = LoggerFactory.getLogger(CorporateDirectorIncomeServiceImpl.class.getName());
+	@Autowired
+    private PincodeDateService pincodeDateService;
 	
+	private static final Logger logger = LoggerFactory.getLogger(CorporateDirectorIncomeServiceImpl.class.getName());
+	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 	@Override
 	public Boolean saveOrUpdateIncomeDetails(List<CorporateDirectorIncomeRequest> corporateRequest) throws Exception {
 
@@ -96,6 +102,10 @@ public class CorporateDirectorIncomeServiceImpl implements CorporateDirectorInco
 					for(CorporateDirectorIncomeDetails corpObj:incomeDetails) {
 						if(!CommonUtils.isObjectNullOrEmpty(corpObj)) {
 							incomeRequest = new CorporateDirectorIncomeRequest();
+							incomeRequest.setSalaryStr(CommonUtils.convertValue(corpObj.getSalary()));
+							incomeRequest.setTotalIncomeStr(CommonUtils.convertValue(corpObj.getTotalIncome()));
+							String directorName = backgroundDetailsRepository.getDirectorNamefromDirectorId(corpObj.getDirectorId());
+							incomeRequest.setDirectorName(directorName);
 							BeanUtils.copyProperties(corpObj, incomeRequest);
 						}
 						incomeDetailsResponse.add(incomeRequest);
@@ -112,6 +122,44 @@ public class CorporateDirectorIncomeServiceImpl implements CorporateDirectorInco
 		}
 		  return null;
 	}
+	
+	@Override
+	public List<CorporateDirectorIncomeRequest> getDirectorIncomeLatestYearDetails(Long applicationId)
+			throws Exception {
+		try {
+			CorporateDirectorIncomeRequest incomeRequest = null;
+			List<CorporateDirectorIncomeDetails> incomeDetails = null;
+			List<CorporateDirectorIncomeRequest> incomeDetailsResponse = null;
+			logger.info("ENTER IN getDirectorIncomeLatestYearDetails---------->>>>");
+			
+			if(!(CommonUtils.isObjectNullOrEmpty(applicationId))){
+				incomeDetails = incomeDetailsRepository.getLatestYearDetails(applicationId);
+				incomeDetailsResponse = new ArrayList<CorporateDirectorIncomeRequest>();
+				if(!CommonUtils.isObjectNullOrEmpty(incomeDetails)){
+					for(CorporateDirectorIncomeDetails corpObj:incomeDetails) {
+						if(!CommonUtils.isObjectNullOrEmpty(corpObj)) {
+							incomeRequest = new CorporateDirectorIncomeRequest();
+							BeanUtils.copyProperties(corpObj, incomeRequest);
+							String directorName = backgroundDetailsRepository.getDirectorNamefromDirectorId(incomeRequest.getDirectorId());
+							incomeRequest.setDirectorName(directorName);
+						}
+						incomeDetailsResponse.add(incomeRequest);
+				}
+					logger.info("Successfully get DirectorIncomeLatestYearDetails------------>"+incomeDetailsResponse);
+					return incomeDetailsResponse;	
+			}
+				
+		}
+		  return null;
+		} catch (Exception e) {
+			logger.info("Exception Occured in gettingDirectorLatestYearIncomeDetails------------->");
+			e.printStackTrace();
+		}
+		  return null;
+	}
+	
+	
+	
 
 	@Override
 	public List<Map<String, Object>> getDirectorBackGroundDetails(Long applicationId) throws Exception {
@@ -136,23 +184,30 @@ public class CorporateDirectorIncomeServiceImpl implements CorporateDirectorInco
 							map.put("stateCode", corpObj.getStateCode());
 							map.put("city", corpObj.getCity());
 							map.put("din", corpObj.getDin());
-							map.put("networth", corpObj.getNetworth());
+							map.put("networth", CommonUtils.convertValue(corpObj.getNetworth()));
 							map.put("applicationId", applicationId);
 							map.put("appointmentDate", corpObj.getAppointmentDate());
 							map.put("salutationId", corpObj.getSalutationId());
 							map.put("panNo", corpObj.getPanNo());
+							map.put("districtMappingId", corpObj.getDistrictMappingId());
 							map.put("designation", corpObj.getDesignation());
 							map.put("directorsName", corpObj.getDirectorsName());
 							map.put("totalExperience", corpObj.getTotalExperience());
-							map.put("dob", corpObj.getDob());
+							map.put("dob", DATE_FORMAT.format(corpObj.getDob()));
 							map.put("mobile", corpObj.getMobile());
 							if(!CommonUtils.isObjectNullOrEmpty(corpObj.getGender())) {
 								Gender byIdGndr = Gender.getById(corpObj.getGender());
 								map.put("gender", !CommonUtils.isObjectNullOrEmpty(byIdGndr) ? byIdGndr.getValue() : "");	
 							}
+							if(!CommonUtils.isObjectNullOrEmpty(corpObj.getGender())) {
+								map.put("genderInt", corpObj.getGender());	
+							}
 							if(!CommonUtils.isObjectNullOrEmpty(corpObj.getRelationshipType())) {
 								DirectorRelationshipType byIdRelation = DirectorRelationshipType.getById(corpObj.getRelationshipType());
 								map.put("relationshipType", !CommonUtils.isObjectNullOrEmpty(byIdRelation) ? byIdRelation.getValue() : "");	
+							}
+							if(!CommonUtils.isObjectNullOrEmpty(corpObj.getRelationshipType())) {
+								map.put("relationshipTypeInt", corpObj.getRelationshipType());	
 							}
 							map.put("firstName", corpObj.getFirstName());
 							map.put("lastName", corpObj.getLastName());
@@ -168,11 +223,16 @@ public class CorporateDirectorIncomeServiceImpl implements CorporateDirectorInco
 								MaritalStatus byIdMarital = MaritalStatus.getById(corpObj.getMaritalStatus());
 								map.put("maritalStatus", !CommonUtils.isObjectNullOrEmpty(byIdMarital) ? byIdMarital.getValue() : "");	
 							}
-							
+							if(!CommonUtils.isObjectNullOrEmpty(corpObj.getMaritalStatus())) {
+								map.put("maritalStatusInt", corpObj.getMaritalStatus());	
+							}
 							map.put("noOfDependent", corpObj.getNoOfDependent());
 							if(!CommonUtils.isObjectNullOrEmpty(corpObj.getResidenceType())) {
 								ResidenceStatusRetailMst byIdResidentType = ResidenceStatusRetailMst.getById(corpObj.getResidenceType());
 								map.put("residenceType", !CommonUtils.isObjectNullOrEmpty(byIdResidentType) ? byIdResidentType.getValue() : "");	
+							}
+							if(!CommonUtils.isObjectNullOrEmpty(corpObj.getResidenceType())) {
+								map.put("residenceTypeInt", corpObj.getResidenceType());	
 							}
 							
 							map.put("residenceSinceMonth", corpObj.getResidenceSinceMonth());
@@ -188,6 +248,9 @@ public class CorporateDirectorIncomeServiceImpl implements CorporateDirectorInco
 								EducationQualificationNTB byIdEduNtb = EducationQualificationNTB.getById(corpObj.getQualificationId());
 								map.put("qualificationId", !CommonUtils.isObjectNullOrEmpty(byIdEduNtb) ? byIdEduNtb.getValue() : "");	
 							}
+							if(!CommonUtils.isObjectNullOrEmpty(corpObj.getQualificationId())) {
+								map.put("qualificationIdInt", corpObj.getQualificationId());	
+							}
 							
 							map.put("isMainDirector", corpObj.getIsMainDirector());
 						
@@ -199,6 +262,10 @@ public class CorporateDirectorIncomeServiceImpl implements CorporateDirectorInco
 								OccupationNatureNTB byIdOccupation = OccupationNatureNTB.getById(Integer.parseInt(corpObj.getEmploymentDetail().getTypeOfEmployment().toString()));
 								map.put("typeOfEmployment", !CommonUtils.isObjectNullOrEmpty(byIdOccupation) ? byIdOccupation.getValue() : "");	
 							}
+							if(!CommonUtils.isObjectNullOrEmpty(corpObj.getEmploymentDetail().getTypeOfEmployment())) {
+								OccupationNatureNTB byIdOccupation = OccupationNatureNTB.getById(Integer.parseInt(corpObj.getEmploymentDetail().getTypeOfEmployment().toString()));
+								map.put("typeOfEmploymentInt", !CommonUtils.isObjectNullOrEmpty(byIdOccupation) ? byIdOccupation.getValue() : "");	
+							}
 							if(!CommonUtils.isObjectNullOrEmpty(corpObj.getEmploymentDetail().getEmploymentWith())) {
 								EmploymentWithNTB byIdEmpWith = EmploymentWithNTB.getById(Integer.parseInt(corpObj.getEmploymentDetail().getEmploymentWith().toString()));
 								map.put("employmentWith", !CommonUtils.isObjectNullOrEmpty(byIdEmpWith) ? byIdEmpWith.getValue() : "");	
@@ -208,8 +275,19 @@ public class CorporateDirectorIncomeServiceImpl implements CorporateDirectorInco
 								map.put("employmentStatus", !CommonUtils.isObjectNullOrEmpty(byIdEmpStatus) ? byIdEmpStatus.getValue() : "");	
 							}
 							map.put("totalExperience", corpObj.getEmploymentDetail().getTotalExperience());
+							map.put("nameOfEmployer", corpObj.getEmploymentDetail().getNameOfEmployer());
+							map.put("salary", CommonUtils.convertValue(corpObj.getEmploymentDetail().getSalary()));
 							}
-							
+							 try {
+									if(!CommonUtils.isObjectNullOrEmpty(corpObj.getDistrictMappingId())) {
+										PincodeDataResponse pinRes=(pincodeDateService.getById(Long.valueOf(String.valueOf(corpObj.getDistrictMappingId()))));
+										map.put("pindata", pinRes);
+										
+									}
+								} catch (Exception e) {
+									e.printStackTrace();
+								}
+							 
 							directorBackgroundlist.add(map);
 						}
 						

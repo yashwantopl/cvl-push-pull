@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.service.fundseeker.retail.impl;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -9,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +27,7 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplica
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
 import com.capitaworld.service.loans.service.fundseeker.retail.CoApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.retail.GuarantorService;
+import com.capitaworld.service.loans.service.fundseeker.retail.RetailApplicantIncomeService;
 import com.capitaworld.service.loans.service.fundseeker.retail.RetailApplicantService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -44,6 +47,10 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 
 	@Autowired
 	private RetailApplicantDetailRepository applicantRepository;
+	
+	
+	@Autowired
+	private RetailApplicantIncomeService applicantIncomeService;
 
 	@Autowired
 	private CoApplicantService coApplicantService;
@@ -59,6 +66,11 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 
 	@Autowired
 	private UsersClient usersClient;
+	
+	@Autowired
+	private Environment environment;
+	
+	private static final String SIDBI_AMOUNT = "com.capitaworld.sidbi.amount";
 
 	@Override
 	public boolean save(RetailApplicantRequest applicantRequest, Long userId) throws Exception {
@@ -119,6 +131,44 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
+	
+	@Override
+	public boolean saveITRResponse(RetailApplicantRequest applicantRequest) throws Exception {
+		try {
+			RetailApplicantDetail applicantDetail = applicantRepository.findOneByApplicationIdIdAndIsActive(applicantRequest.getApplicationId(), true);
+			if (applicantDetail != null) {
+				applicantDetail.setModifiedBy(applicantRequest.getUserId());
+				applicantDetail.setModifiedDate(new Date());
+			} else {
+				applicantDetail = new RetailApplicantDetail();
+				applicantDetail.setCreatedBy(applicantRequest.getUserId());
+				applicantDetail.setCreatedDate(new Date());
+				applicantDetail.setIsActive(true);
+				applicantDetail.setApplicationId(new LoanApplicationMaster(applicantRequest.getApplicationId()));
+			}
+			BeanUtils.copyProperties(applicantRequest, applicantDetail,CommonUtils.IgnorableCopy.RETAIL_FINAL_WITH_ID);
+			Address address = applicantRequest.getFirstAddress();
+			if(!CommonUtils.isObjectNullOrEmpty(address)) {
+				applicantDetail.setAddressPremiseName(address.getPremiseNumber());
+				applicantDetail.setAddressLandmark(address.getLandMark());
+				applicantDetail.setAddressStreetName(address.getStreetName());
+				applicantDetail.setAddressCountry(address.getCountryId());
+				applicantDetail.setAddressState(!CommonUtils.isObjectNullOrEmpty(address.getStateId()) ? address.getStateId().longValue() : null);
+				applicantDetail.setAddressCity(address.getCityId());
+				applicantDetail.setAddressPincode(address.getPincode());
+			}
+			applicantDetail.setBirthDate(applicantRequest.getDob());
+			applicantDetail = applicantRepository.save(applicantDetail);
+
+			//SAVE INCOME DETAILS 
+			applicantIncomeService.saveAll(applicantRequest.getIncomeDetailsList());
+			return true;
+		} catch (Exception e) {
+			logger.error("Error while Saving Retail Profile:-");
+			e.printStackTrace();
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+	}
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -138,22 +188,21 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 	}
 
 	@Override
-	public RetailApplicantRequest get(Long userId, Long applicationId) throws Exception {
+	public RetailApplicantRequest get(Long applicationId) throws Exception {
 		try {
-			RetailApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId(userId,
-					applicationId);
-			if (applicantDetail == null) {
+			RetailApplicantDetail applicantDetail = applicantRepository.findOneByApplicationIdIdAndIsActive(applicationId,true);
+			/*if (applicantDetail == null) {
 				RetailApplicantRequest request = new RetailApplicantRequest();
 				LoanApplicationMaster applicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId,
 						userId);
 				request.setDetailsFilledCount(applicationMaster.getDetailsFilledCount());
 				return request;
-			}
+			}*/
 			RetailApplicantRequest applicantRequest = new RetailApplicantRequest();
 			BeanUtils.copyProperties(applicantDetail, applicantRequest);
 			copyAddressFromDomainToRequest(applicantDetail, applicantRequest);
-			applicantRequest.setCoApplicants(coApplicantService.getList(applicationId, userId));
-			applicantRequest.setGuarantors(guarantorService.getList(applicationId, userId));
+			/*applicantRequest.setCoApplicants(coApplicantService.getList(applicationId, userId));
+			applicantRequest.setGuarantors(guarantorService.getList(applicationId, userId));*/
 			Integer[] saperatedTime = CommonUtils.saperateDayMonthYearFromDate(applicantDetail.getBirthDate());
 			applicantRequest.setDate(saperatedTime[0]);
 			applicantRequest.setMonth(saperatedTime[1]);
@@ -171,7 +220,7 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 			applicantRequest.setDetailsFilledCount(applicantDetail.getApplicationId().getDetailsFilledCount());
 			return applicantRequest;
 		} catch (Exception e) {
-			logger.error("Error while Saving Retail Profile:-");
+			logger.error("Error while Getting Retail applicant details:-");
 			e.printStackTrace();
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
@@ -257,8 +306,14 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 	public CibilFullFillOfferRequest getProfile(Long userId, Long applicationId) throws Exception {
 		try {
 			logger.info("start getProfile() method");
-			RetailApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId(userId,
-					applicationId);
+			RetailApplicantDetail applicantDetail = null;
+			if(userId == null || userId <= 0){
+				applicantDetail = applicantRepository.findOneByApplicationIdId(applicationId);
+			}else{
+				applicantDetail = applicantRepository.getByApplicationAndUserId(userId,applicationId);
+			}
+
+
 			if (applicantDetail == null) {
 				return null;
 			}
@@ -368,6 +423,18 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 				to.setSecondAddress(address);
 			}
 		}
+	}
+	
+	@Override
+	public JSONObject getNameAndPanByAppId(Long applicationId) {
+		JSONObject obj = new JSONObject();
+		RetailApplicantDetail applicantDetail = applicantRepository.findOneByApplicationIdId(applicationId);
+		if(!CommonUtils.isObjectNullOrEmpty(applicantDetail)) {
+			obj.put("name", applicantDetail.getFirstName() + " " + applicantDetail.getMiddleName() + " " + applicantDetail.getLastName());
+			obj.put("pan", applicantDetail.getPan());
+			obj.put("amount", environment.getProperty(SIDBI_AMOUNT));
+		}
+		return obj;
 	}
 
 }

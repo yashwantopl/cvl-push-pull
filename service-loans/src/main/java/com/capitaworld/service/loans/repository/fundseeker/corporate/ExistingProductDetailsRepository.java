@@ -24,5 +24,7 @@ public interface ExistingProductDetailsRepository extends JpaRepository<Existing
 	@Modifying
 	@Query("update ExistingProductDetail pm set pm.isActive = false , pm.modifiedDate = NOW(),pm.modifiedBy =:userId where pm.applicationId.id =:applicationId and pm.isActive = true")
 	public int inActive(@Param("userId") Long userId, @Param("applicationId") Long applicationId);
+	
+	public ExistingProductDetail findByIdAndIsActive(Long id, Boolean isActive);
 
 }

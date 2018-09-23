@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,6 +74,27 @@ public class RetailApplicantController {
 		}
 
 	}
+	
+	@RequestMapping(value = "${profile}/saveITRRes", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> saveITRRes(@RequestBody RetailApplicantRequest applicantRequest) {
+		logger.info("Enter in Save Profile Retail Applicant Details From ITR Repsonse");
+		try {
+			if (applicantRequest.getApplicationId() == null) {
+				logger.warn("Application Id can not be empty ==>" + applicantRequest.getApplicationId());
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			applicantService.saveITRResponse(applicantRequest);
+			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
+					HttpStatus.OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+	}
 
 	@RequestMapping(value = "${profile}/getCoapAndGuarIds/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getCoapAndGuarIds(@PathVariable("applicationId") Long applicationId,
@@ -121,7 +143,7 @@ public class RetailApplicantController {
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 
-			RetailApplicantRequest response = applicantService.get(userId, applicationId);
+			RetailApplicantRequest response = applicantService.get(applicationId);
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 			loansResponse.setData(response);
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
@@ -275,16 +297,39 @@ public class RetailApplicantController {
 		}
 	}
 
-	@RequestMapping(value = "${profile}/get_profile/{applicationId}/{userId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public RetailApplicantRequest get(@PathVariable("applicationId") Long applicationId,
-			@PathVariable("userId") Long userId) {
+	@RequestMapping(value = "${profile}/get_profile/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public RetailApplicantRequest get(@PathVariable("applicationId") Long applicationId) {
 		// request must not be null
 		try {
-			return applicantService.get(userId, applicationId);
+			return applicantService.get(applicationId);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error("Error while getting Retail Applicant Profile Details==>", e);
 			return null;
+		}
+	}
+	
+	@RequestMapping(value = "/getNameAndPanByAppId/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getNameAndPanByAppId(@PathVariable("applicationId") Long applicationId) {
+		logger.info("Enter in getNameAndPanByAppId method----------------->" + applicationId);
+		try {
+			CommonDocumentUtils.startHook(logger, "get");
+			if (applicationId == null) {
+				logger.warn("ApplicationId Require to get Retail Profile Details for CLient Application Id ==>" + applicationId);
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+
+			JSONObject response = applicantService.getNameAndPanByAppId(applicationId);
+			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			loansResponse.setData(response);
+			CommonDocumentUtils.endHook(logger, "get");
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while getting NameAndPanByAppId Details==>", e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
 		}
 	}
 

@@ -322,7 +322,24 @@ public class WorkingCapitalParameter extends ProductMaster implements Serializab
 
 	@Column(name="is_msme_funding_mandatory")
 	private Boolean isMsmeFundingMandatory = false;
+	
+	@Column(name="cgtmse_coverage")
+	private Integer cgtmseCoverage;
 
+	@Column(name="promoter_contri")
+	private BigDecimal promotorContri;
+	
+	// by rahul
+	@Column(name="manufacturing")
+	private BigDecimal manufacturing;
+	
+	@Column(name="service")
+	private BigDecimal service;
+	
+	@Column(name="trading")
+	private BigDecimal trading;
+	
+	
 	/**
 	 * @return the jobId
 	 */
@@ -1152,5 +1169,47 @@ public class WorkingCapitalParameter extends ProductMaster implements Serializab
     public void setIsMsmeFundingMandatory(Boolean isMsmeFundingMandatory) {
         this.isMsmeFundingMandatory = isMsmeFundingMandatory;
     }
+
+	public Integer getCgtmseCoverage() {
+		return cgtmseCoverage;
+	}
+
+	public void setCgtmseCoverage(Integer cgtmseCoverage) {
+		this.cgtmseCoverage = cgtmseCoverage;
+	}
+
+	public BigDecimal getPromotorContri() {
+		return promotorContri;
+	}
+
+	public void setPromotorContri(BigDecimal promotorContri) {
+		this.promotorContri = promotorContri;
+	}
+
+	public BigDecimal getManufacturing() {
+		return manufacturing;
+	}
+
+	public void setManufacturing(BigDecimal manufacturing) {
+		this.manufacturing = manufacturing;
+	}
+
+	public BigDecimal getService() {
+		return service;
+	}
+
+	public void setService(BigDecimal service) {
+		this.service = service;
+	}
+
+	public BigDecimal getTrading() {
+		return trading;
+	}
+
+	public void setTrading(BigDecimal trading) {
+		this.trading = trading;
+	}
+ 
+	
 
 }

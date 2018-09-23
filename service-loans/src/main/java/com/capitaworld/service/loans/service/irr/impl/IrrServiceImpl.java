@@ -7,6 +7,8 @@ import com.capitaworld.service.loans.domain.fundseeker.corporate.*;
 import com.capitaworld.service.loans.model.corporate.CorporateFinalInfoRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.*;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateFinalInfoService;
+import com.capitaworld.service.loans.service.scoring.ScoringService;
+import com.capitaworld.service.loans.service.scoring.impl.ScoringServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -94,6 +96,12 @@ public class IrrServiceImpl implements IrrService{
 	
 	@Autowired
 	private LoanApplicationService loanApplicationService;
+
+	@Autowired
+	private ScoringService scoringService;
+
+	@Autowired
+	private CreditRatingCompanyDetailsRepository creditRatingCompanyDetailsRepository;
 	
 	private final Logger log = LoggerFactory.getLogger(IrrServiceImpl.class);
 	
@@ -358,7 +366,10 @@ public class IrrServiceImpl implements IrrService{
 		financialInputRequest.setNoOfMonthFy(12.0);
 		// -------------------------------------------------------THIRD year data-------------------------------------------------------------------------
 		//========= ==========================================OPERATINGSTATEMENT DETAIL 3 YR========================================================
-		int currentYear = Calendar.getInstance().get(Calendar.YEAR);
+		int currentYear = scoringService.getFinYear(aplicationId);
+
+		financialInputRequest.setYear(currentYear-1);
+
 		financialInputRequest.setRatioAnalysisFyFullDate("31-March-"+(currentYear-1));
 		operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStatementDetails(aplicationId, currentYear-1+"");
 
@@ -1251,7 +1262,7 @@ public class IrrServiceImpl implements IrrService{
 		FinancialInputRequest financialInputRequest = new FinancialInputRequest();
 		ProfitibilityStatementDetail profitibilityStatementDetail = new ProfitibilityStatementDetail();
 		BalanceSheetDetail balanceSheetDetail = new BalanceSheetDetail();
-		int currentYear = Calendar.getInstance().get(Calendar.YEAR);
+		int currentYear = scoringService.getFinYear(aplicationId);
 		financialInputRequest.setRatioAnalysisFyFullDate("31-March-"+(currentYear-1));
 		CorporateFinalInfoRequest corporateFinalInfoRequest = new CorporateFinalInfoRequest();
 		corporateFinalInfoRequest = corporateFinalInfoService.get(userId, aplicationId);
@@ -2091,8 +2102,6 @@ public class IrrServiceImpl implements IrrService{
 		corporateMcqDetail = corporateMcqDetailRepository.getByApplicationAndUserId(aplicationId,userId);
 
 		qualitativeInputSheetManuRequest.setAccountingQuality(corporateMcqDetail.getAccountingQuality().longValue());
-		System.out.println("corporateMcqDetail.getUnhedgedForeignCurrency():::::::::::::::::::::"+corporateMcqDetail.getUnhedgedForeignCurrency());
-		System.out.println("corporateMcqDetail.getConstructionContract():::::::::::::::::::::"+corporateMcqDetail.getConstructionContract());
 		qualitativeInputSheetManuRequest.setUnhedgedForeignCurrencyExposure(corporateMcqDetail.getUnhedgedForeignCurrency().longValue());
 		qualitativeInputSheetManuRequest.setFinancialRestructuringHistory(corporateMcqDetail.getFinancialRestructuringHistory().longValue());
 		qualitativeInputSheetManuRequest.setIndustryRiskScore(industryRiskScore); //-----Industry mapping -- Remaining
@@ -2115,6 +2124,7 @@ public class IrrServiceImpl implements IrrService{
 		qualitativeInputSheetManuRequest.setSensititivityAnalysis(corporateMcqDetail.getSensititivityAnalysis().longValue());
 		qualitativeInputSheetManuRequest.setInfrastructureAvailability(corporateMcqDetail.getInfrastructureAvailability().longValue());
 		qualitativeInputSheetManuRequest.setConstructionContract(corporateMcqDetail.getConstructionContract().longValue());
+		System.out.println("corporateMcqDetail.getConstructionContract():::::::::::::::::::::"+corporateMcqDetail.getConstructionContract());
 		qualitativeInputSheetManuRequest.setDesignTechnologyRisk(corporateMcqDetail.getTechnologyRiskId().longValue());
 		qualitativeInputSheetManuRequest.setNumberCheckReturned(corporateMcqDetail.getNumberOfCheques().longValue());
 		qualitativeInputSheetManuRequest.setNumberTimesDpLimits(corporateMcqDetail.getNumberOfTimesDp().longValue());
@@ -2129,7 +2139,7 @@ public class IrrServiceImpl implements IrrService{
 		//---Contigent Liabilities set
 		CorporateFinalInfoRequest  corporateFinalInfoRequest = new CorporateFinalInfoRequest();
 		corporateFinalInfoRequest = corporateFinalInfoService.get(userId ,aplicationId);
-		int currentYear = Calendar.getInstance().get(Calendar.YEAR);
+		int currentYear = scoringService.getFinYear(aplicationId);
 		if(isCmaUploaded) {
 			AssetsDetails assetsDetails = new AssetsDetails();
 			assetsDetails = assetsDetailsRepository.getAssetsDetails(aplicationId, currentYear-1+"");
@@ -2298,7 +2308,7 @@ public class IrrServiceImpl implements IrrService{
 		//---project size TL
 			PrimaryTermLoanDetail primaryTermLoanDetail = null;
 			primaryTermLoanDetail = primaryTermLoanDetailRepository.findOne(aplicationId);			
-			int currentYear = Calendar.getInstance().get(Calendar.YEAR);
+			int currentYear = scoringService.getFinYear(aplicationId);
 
 			
 			if(isCmaUploaded){
@@ -2436,7 +2446,7 @@ public class IrrServiceImpl implements IrrService{
 		//---Contigent Liabilities set
 		CorporateFinalInfoRequest  corporateFinalInfoRequest = new CorporateFinalInfoRequest();
 		corporateFinalInfoRequest = corporateFinalInfoService.get(userId ,aplicationId);
-		int currentYear = Calendar.getInstance().get(Calendar.YEAR);
+		int currentYear = scoringService.getFinYear(aplicationId);
 		if(isCmaUploaded) {
 			AssetsDetails assetsDetails = new AssetsDetails();
 			assetsDetails = assetsDetailsRepository.getAssetsDetails(aplicationId, currentYear-1+"");
@@ -2598,7 +2608,7 @@ public class IrrServiceImpl implements IrrService{
 		//---Contigent Liabilities set
 		CorporateFinalInfoRequest  corporateFinalInfoRequest = new CorporateFinalInfoRequest();
 		corporateFinalInfoRequest = corporateFinalInfoService.get(userId ,aplicationId);
-		int currentYear = Calendar.getInstance().get(Calendar.YEAR);
+		int currentYear = scoringService.getFinYear(aplicationId);
 		if(isCmaUploaded) {
 			AssetsDetails assetsDetails = new AssetsDetails();
 			assetsDetails = assetsDetailsRepository.getAssetsDetails(aplicationId, currentYear-1+"");
@@ -2611,6 +2621,10 @@ public class IrrServiceImpl implements IrrService{
 		}
 
 		return qualitativeInputSheetTradRequest;		
+	}
+
+	public List<CreditRatingCompanyDetail> getCompanyDetails(String companyName){
+		return creditRatingCompanyDetailsRepository.getCompanyDetail(companyName);
 	}
 	
 	/*public QualitativeInputSheetTradRequest setTLTradingQualitativeInput(Long aplicationId,Long userId,Long denom) throws Exception{

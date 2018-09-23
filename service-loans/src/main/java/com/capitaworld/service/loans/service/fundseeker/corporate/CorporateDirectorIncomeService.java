@@ -14,4 +14,6 @@ public interface CorporateDirectorIncomeService {
 
 	public List<CorporateDirectorIncomeRequest> getDirectorIncomeDetails(Long applicationId) throws Exception; 
 	
+	public List<CorporateDirectorIncomeRequest> getDirectorIncomeLatestYearDetails(Long applicationId) throws Exception; 
+	
 }

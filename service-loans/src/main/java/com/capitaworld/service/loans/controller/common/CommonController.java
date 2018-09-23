@@ -251,6 +251,13 @@ public class CommonController {
 				if (!CommonUtils.isObjectNullOrEmpty(response.getId())) {
 					obj.put("campaignCode", applicationService.getCampaignCodeByApplicationId(response.getId()));
 					obj.put("isProfileAndPrimaryLocked", applicationService.isPrimaryLocked(response.getId(), userId));
+					
+					
+					//SET DDR STATUS ID 
+					if (userType == CommonUtils.UserType.FUND_SEEKER) {
+						obj.put("ddrStatusId", applicationService.getDDRStatusId(response.getId()));	
+					}
+					
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -345,6 +352,37 @@ public class CommonController {
 
 		} catch (Exception e) {
 			logger.error("Error while getting getDataForHunter==>", e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+	}
+	
+	
+	@RequestMapping(value = "/getDataForHunterForNTB/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getDataForHunterForNTB(@PathVariable("applicationId") Long applicationId,
+			HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
+		// request must not be null
+		try {
+			logger.info("In getDataForHunterForNTB with Application ID : "+applicationId);
+			if (applicationId == null) {
+				logger.warn("ID Require to getDataForHunter ==>" + applicationId);
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+
+//			RecentProfileViewDetailResponse response = recentViewService.getLatestRecentViewDetailListByAppId(applicationId,
+//					userId);
+			
+			HunterRequestDataResponse response = applicationService.getDataForHunterForNTB(applicationId);
+			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			loansResponse.setData(response);
+			logger.info("End getDataForHunterForNTB with Application ID : "+applicationId);
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+
+		} catch (Exception e) {
+			logger.error("Error while getting getDataForHunterForNTB==>", e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);

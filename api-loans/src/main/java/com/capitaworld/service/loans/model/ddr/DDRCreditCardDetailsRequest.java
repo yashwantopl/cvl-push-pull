@@ -20,6 +20,8 @@ public class DDRCreditCardDetailsRequest implements Serializable {
 
 	private String referenceNo;
 	
+	private String comment;
+	
 	private Boolean isActive;
 
 	public Long getId() {
@@ -69,17 +71,25 @@ public class DDRCreditCardDetailsRequest implements Serializable {
 	public void setIsActive(Boolean isActive) {
 		this.isActive = isActive;
 	}
+	
+	public String getComment() {
+		return comment;
+	}
 
+	public void setComment(String comment) {
+		this.comment = comment;
+	}
+
+	
 	@Override
 	public String toString() {
 		return "DDRCreditCardDetailsRequest [id=" + id + ", ddrFormId=" + ddrFormId + ", bankName=" + bankName
-				+ ", creditCard=" + creditCard  + ", referenceNo="
-				+ referenceNo + ", isActive=" + isActive + "]";
+				+ ", creditCard=" + creditCard + ", referenceNo=" + referenceNo + ", comment=" + comment + ", isActive="
+				+ isActive + "]";
 	}
-	
+
 	public static void printFields(Object obj) throws Exception {
         Field[] fields = DDRCreditCardDetailsRequest.class.getDeclaredFields();
-        System.out.println("length : "+fields.length);
         for(Field field : fields) {
             Object value = field.get(obj);
             if(value instanceof String){

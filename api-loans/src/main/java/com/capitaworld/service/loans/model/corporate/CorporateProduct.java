@@ -205,6 +205,20 @@ public class CorporateProduct  extends  ProductMasterRequest implements Serializ
 	private Boolean isMsmeFundingMandatory = false;
 	private List<Integer> msmeFundingIds;
 	
+	private Integer cgtmseCoverage;
+	
+	private Integer cashMargin;
+	
+	private BigDecimal dscr;
+	
+	private Integer paybackPeriod;
+	
+	private BigDecimal promotorContri;
+	
+	private BigDecimal manufacturing;
+	private BigDecimal service;
+	private BigDecimal trading;
+	
 /*ntb*/
 	
 	private BigDecimal minAvrgAge;
@@ -1319,7 +1333,69 @@ public class CorporateProduct  extends  ProductMasterRequest implements Serializ
 		this.maxTenureNtb = maxTenureNtb;
 	}
 
-	
+	public Integer getCgtmseCoverage() {
+		return cgtmseCoverage;
+	}
+
+	public void setCgtmseCoverage(Integer cgtmseCoverage) {
+		this.cgtmseCoverage = cgtmseCoverage;
+	}
+
+	public Integer getCashMargin() {
+		return cashMargin;
+	}
+
+	public void setCashMargin(Integer cashMargin) {
+		this.cashMargin = cashMargin;
+	}
+
+	public BigDecimal getDscr() {
+		return dscr;
+	}
+
+	public void setDscr(BigDecimal dscr) {
+		this.dscr = dscr;
+	}
+
+	public Integer getPaybackPeriod() {
+		return paybackPeriod;
+	}
+
+	public void setPaybackPeriod(Integer paybackPeriod) {
+		this.paybackPeriod = paybackPeriod;
+	}
+
+	public BigDecimal getPromotorContri() {
+		return promotorContri;
+	}
+
+	public void setPromotorContri(BigDecimal promotorContri) {
+		this.promotorContri = promotorContri;
+	}
+
+	public BigDecimal getManufacturing() {
+		return manufacturing;
+	}
+
+	public void setManufacturing(BigDecimal manufacturing) {
+		this.manufacturing = manufacturing;
+	}
+
+	public BigDecimal getService() {
+		return service;
+	}
+
+	public void setService(BigDecimal service) {
+		this.service = service;
+	}
+
+	public BigDecimal getTrading() {
+		return trading;
+	}
+
+	public void setTrading(BigDecimal trading) {
+		this.trading = trading;
+	}
 	
 	
 }

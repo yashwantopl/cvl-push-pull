@@ -22,10 +22,22 @@ public class NTBParameter extends ProductMaster implements Serializable {
     private Integer denomination;
 
     @Column(name="min_tenure")
-    private BigDecimal minTenure;
+    private BigDecimal minTenureNtb;
+    
+    @Column(name="min_cgtmse")
+	private BigDecimal mincgtmse;
+
+	@Column(name="max_cgtmse")
+	private BigDecimal maxcgtmse;
+
+	@Column(name="is_cgtmse_display")
+	private Boolean iscgtmseDisplay = false;
+
+	@Column(name="is_cgtmse_mandatory")
+	private Boolean iscgtmseMandatory = false;
 
     @Column(name="max_tenure")
-    private BigDecimal maxTenure;
+    private BigDecimal maxTenureNtb;
 
     @Column(name="is_tenure_display")
     private Boolean isTenureDisplay=false;
@@ -84,27 +96,16 @@ public class NTBParameter extends ProductMaster implements Serializable {
 
 
     @Column(name="min_loan_asset_value")
-    private BigDecimal minLoanAssetValue;
+    private BigDecimal minLoanToAsset;
 
     @Column(name="max_loan_asset_value")
-    private BigDecimal maxLoanAssetValue;
+    private BigDecimal maxLoanToAsset;
 
     @Column(name="is_loan_to_asset_val_display")
-    private Boolean isLoanToAssetValDisplay=false;
+    private Boolean isLoanToAssetDisplay=false;
 
     @Column(name="is_loan_to_asset_val_mandatory")
-    private Boolean isLoanToAsset_val_mandatory=false;
-
-
-    @Column(name="avrg_cibil_score")
-    private Integer avrgCibilScore;
-
-    @Column(name="is_avrg_cibil_score_display")
-    private Boolean isAvrgCibilScoreDisplay=false;
-
-    @Column(name="is_avrg_cibil_score_mandatory")
-    private Boolean isAvrgCibilScoreMandatory=false;
-
+    private Boolean isLoanToAssetMandatory=false;
 
     @Column(name="min_current_foir")
     private BigDecimal minCurrentFoir;
@@ -120,29 +121,29 @@ public class NTBParameter extends ProductMaster implements Serializable {
 
 
     @Column(name="min_risk_score_model")
-    private Integer minRiskScoreModel;
+    private Integer minRiskModelScore;
 
     @Column(name="max_risk_score_model")
-    private Integer maxRiskScoreModel;
+    private Integer maxRiskModelScore;
 
     @Column(name="is_risk_score_model_display")
-    private Boolean isRiskScoreModelDisplay=false;
+    private Boolean isRiskModelScoreDisplay=false;
 
     @Column(name="is_risk_score_model_mandatory")
-    private Boolean isRiskScoreModelMandatory=false;
+    private Boolean isRiskModelScoreMandatory=false;
 
 
     @Column(name="min_avrg_work_exp")
-    private BigDecimal minAvrgWorkExp;
+    private BigDecimal minAvgWorkExp;
 
     @Column(name="max_avrg_work_exp")
-    private BigDecimal maxAvrgWorkExp;
+    private BigDecimal maxAvgWorkExp;
 
     @Column(name="is_avrg_work_exp_display")
-    private Boolean isAvrgWorkExpDisplay=false;
+    private Boolean isAvgWorkExpDisplay=false;
 
     @Column(name="is_avrg_work_exp_mandatory")
-    private Boolean isAvrgWorkExpMandatory=false;
+    private Boolean isAvgWorkExpMandatory=false;
 
 
     @Column(name="created_by")
@@ -166,7 +167,21 @@ public class NTBParameter extends ProductMaster implements Serializable {
     @Column(name ="job_id")
 	private Long jobId;
 
+    @Column(name="avrg_cibil_score")
+	private Integer individualCibil;
+    
+    @Column(name="is_avrg_cibil_score_display")
+	private Boolean isIndividualCibilDisplay = false;
 
+	@Column(name="is_avrg_cibil_score_mandatory")
+	private Boolean isIndividualCibilMandatory = false;
+
+	@Column(name="assessment_method_id")
+	private Integer assessmentMethodId;
+	
+	@Column(name="ddr_flow")
+	private Integer ddrFlow;
+	
 	public ProductMaster getFpProductId() {
 		return fpProductId;
 	}
@@ -196,25 +211,6 @@ public class NTBParameter extends ProductMaster implements Serializable {
 		this.denomination = denomination;
 	}
 
-
-	public BigDecimal getMinTenure() {
-		return minTenure;
-	}
-
-
-	public void setMinTenure(BigDecimal minTenure) {
-		this.minTenure = minTenure;
-	}
-
-
-	public BigDecimal getMaxTenure() {
-		return maxTenure;
-	}
-
-
-	public void setMaxTenure(BigDecimal maxTenure) {
-		this.maxTenure = maxTenure;
-	}
 
 
 	public Boolean getIsTenureDisplay() {
@@ -397,73 +393,178 @@ public class NTBParameter extends ProductMaster implements Serializable {
 	}
 
 
-	public BigDecimal getMinLoanAssetValue() {
-		return minLoanAssetValue;
+	
+
+	
+	public BigDecimal getMinTenureNtb() {
+		return minTenureNtb;
 	}
 
 
-	public void setMinLoanAssetValue(BigDecimal minLoanAssetValue) {
-		this.minLoanAssetValue = minLoanAssetValue;
+	public void setMinTenureNtb(BigDecimal minTenureNtb) {
+		this.minTenureNtb = minTenureNtb;
 	}
 
 
-	public BigDecimal getMaxLoanAssetValue() {
-		return maxLoanAssetValue;
+	
+
+	public BigDecimal getMincgtmse() {
+		return mincgtmse;
 	}
 
 
-	public void setMaxLoanAssetValue(BigDecimal maxLoanAssetValue) {
-		this.maxLoanAssetValue = maxLoanAssetValue;
+	public void setMincgtmse(BigDecimal mincgtmse) {
+		this.mincgtmse = mincgtmse;
 	}
 
 
-	public Boolean getIsLoanToAssetValDisplay() {
-		return isLoanToAssetValDisplay;
+	public BigDecimal getMaxcgtmse() {
+		return maxcgtmse;
 	}
 
 
-	public void setIsLoanToAssetValDisplay(Boolean isLoanToAssetValDisplay) {
-		this.isLoanToAssetValDisplay = isLoanToAssetValDisplay;
+	public void setMaxcgtmse(BigDecimal maxcgtmse) {
+		this.maxcgtmse = maxcgtmse;
 	}
 
 
-	public Boolean getIsLoanToAsset_val_mandatory() {
-		return isLoanToAsset_val_mandatory;
+	public Boolean getIscgtmseDisplay() {
+		return iscgtmseDisplay;
 	}
 
 
-	public void setIsLoanToAsset_val_mandatory(Boolean isLoanToAsset_val_mandatory) {
-		this.isLoanToAsset_val_mandatory = isLoanToAsset_val_mandatory;
+	public void setIscgtmseDisplay(Boolean iscgtmseDisplay) {
+		this.iscgtmseDisplay = iscgtmseDisplay;
 	}
 
 
-	public Integer getAvrgCibilScore() {
-		return avrgCibilScore;
+	public Boolean getIscgtmseMandatory() {
+		return iscgtmseMandatory;
 	}
 
 
-	public void setAvrgCibilScore(Integer avrgCibilScore) {
-		this.avrgCibilScore = avrgCibilScore;
+	public void setIscgtmseMandatory(Boolean iscgtmseMandatory) {
+		this.iscgtmseMandatory = iscgtmseMandatory;
 	}
 
 
-	public Boolean getIsAvrgCibilScoreDisplay() {
-		return isAvrgCibilScoreDisplay;
+	public BigDecimal getMaxTenureNtb() {
+		return maxTenureNtb;
 	}
 
 
-	public void setIsAvrgCibilScoreDisplay(Boolean isAvrgCibilScoreDisplay) {
-		this.isAvrgCibilScoreDisplay = isAvrgCibilScoreDisplay;
+	public void setMaxTenureNtb(BigDecimal maxTenureNtb) {
+		this.maxTenureNtb = maxTenureNtb;
 	}
 
 
-	public Boolean getIsAvrgCibilScoreMandatory() {
-		return isAvrgCibilScoreMandatory;
+	public BigDecimal getMinLoanToAsset() {
+		return minLoanToAsset;
 	}
 
 
-	public void setIsAvrgCibilScoreMandatory(Boolean isAvrgCibilScoreMandatory) {
-		this.isAvrgCibilScoreMandatory = isAvrgCibilScoreMandatory;
+	public void setMinLoanToAsset(BigDecimal minLoanToAsset) {
+		this.minLoanToAsset = minLoanToAsset;
+	}
+
+
+	public BigDecimal getMaxLoanToAsset() {
+		return maxLoanToAsset;
+	}
+
+
+	public void setMaxLoanToAsset(BigDecimal maxLoanToAsset) {
+		this.maxLoanToAsset = maxLoanToAsset;
+	}
+
+
+	public Boolean getIsLoanToAssetDisplay() {
+		return isLoanToAssetDisplay;
+	}
+
+
+	public void setIsLoanToAssetDisplay(Boolean isLoanToAssetDisplay) {
+		this.isLoanToAssetDisplay = isLoanToAssetDisplay;
+	}
+
+
+	public Boolean getIsLoanToAssetMandatory() {
+		return isLoanToAssetMandatory;
+	}
+
+
+	public void setIsLoanToAssetMandatory(Boolean isLoanToAssetMandatory) {
+		this.isLoanToAssetMandatory = isLoanToAssetMandatory;
+	}
+
+
+	public BigDecimal getMinAvgWorkExp() {
+		return minAvgWorkExp;
+	}
+
+
+	public void setMinAvgWorkExp(BigDecimal minAvgWorkExp) {
+		this.minAvgWorkExp = minAvgWorkExp;
+	}
+
+
+	public BigDecimal getMaxAvgWorkExp() {
+		return maxAvgWorkExp;
+	}
+
+
+	public void setMaxAvgWorkExp(BigDecimal maxAvgWorkExp) {
+		this.maxAvgWorkExp = maxAvgWorkExp;
+	}
+
+
+	public Boolean getIsAvgWorkExpDisplay() {
+		return isAvgWorkExpDisplay;
+	}
+
+
+	public void setIsAvgWorkExpDisplay(Boolean isAvgWorkExpDisplay) {
+		this.isAvgWorkExpDisplay = isAvgWorkExpDisplay;
+	}
+
+
+	public Boolean getIsAvgWorkExpMandatory() {
+		return isAvgWorkExpMandatory;
+	}
+
+
+	public void setIsAvgWorkExpMandatory(Boolean isAvgWorkExpMandatory) {
+		this.isAvgWorkExpMandatory = isAvgWorkExpMandatory;
+	}
+
+
+	public Integer getIndividualCibil() {
+		return individualCibil;
+	}
+
+
+	public void setIndividualCibil(Integer individualCibil) {
+		this.individualCibil = individualCibil;
+	}
+
+
+	public Boolean getIsIndividualCibilDisplay() {
+		return isIndividualCibilDisplay;
+	}
+
+
+	public void setIsIndividualCibilDisplay(Boolean isIndividualCibilDisplay) {
+		this.isIndividualCibilDisplay = isIndividualCibilDisplay;
+	}
+
+
+	public Boolean getIsIndividualCibilMandatory() {
+		return isIndividualCibilMandatory;
+	}
+
+
+	public void setIsIndividualCibilMandatory(Boolean isIndividualCibilMandatory) {
+		this.isIndividualCibilMandatory = isIndividualCibilMandatory;
 	}
 
 
@@ -507,83 +608,48 @@ public class NTBParameter extends ProductMaster implements Serializable {
 	}
 
 
-	public Integer getMinRiskScoreModel() {
-		return minRiskScoreModel;
+
+
+	
+
+
+	public Integer getMinRiskModelScore() {
+		return minRiskModelScore;
 	}
 
 
-	public void setMinRiskScoreModel(Integer minRiskScoreModel) {
-		this.minRiskScoreModel = minRiskScoreModel;
+	public void setMinRiskModelScore(Integer minRiskModelScore) {
+		this.minRiskModelScore = minRiskModelScore;
 	}
 
 
-	public Integer getMaxRiskScoreModel() {
-		return maxRiskScoreModel;
+	public Integer getMaxRiskModelScore() {
+		return maxRiskModelScore;
 	}
 
 
-	public void setMaxRiskScoreModel(Integer maxRiskScoreModel) {
-		this.maxRiskScoreModel = maxRiskScoreModel;
+	public void setMaxRiskModelScore(Integer maxRiskModelScore) {
+		this.maxRiskModelScore = maxRiskModelScore;
 	}
 
 
-	public Boolean getIsRiskScoreModelDisplay() {
-		return isRiskScoreModelDisplay;
+	public Boolean getIsRiskModelScoreDisplay() {
+		return isRiskModelScoreDisplay;
 	}
 
 
-	public void setIsRiskScoreModelDisplay(Boolean isRiskScoreModelDisplay) {
-		this.isRiskScoreModelDisplay = isRiskScoreModelDisplay;
+	public void setIsRiskModelScoreDisplay(Boolean isRiskModelScoreDisplay) {
+		this.isRiskModelScoreDisplay = isRiskModelScoreDisplay;
 	}
 
 
-	public Boolean getIsRiskScoreModelMandatory() {
-		return isRiskScoreModelMandatory;
+	public Boolean getIsRiskModelScoreMandatory() {
+		return isRiskModelScoreMandatory;
 	}
 
 
-	public void setIsRiskScoreModelMandatory(Boolean isRiskScoreModelMandatory) {
-		this.isRiskScoreModelMandatory = isRiskScoreModelMandatory;
-	}
-
-
-	public BigDecimal getMinAvrgWorkExp() {
-		return minAvrgWorkExp;
-	}
-
-
-	public void setMinAvrgWorkExp(BigDecimal minAvrgWorkExp) {
-		this.minAvrgWorkExp = minAvrgWorkExp;
-	}
-
-
-	public BigDecimal getMaxAvrgWorkExp() {
-		return maxAvrgWorkExp;
-	}
-
-
-	public void setMaxAvrgWorkExp(BigDecimal maxAvrgWorkExp) {
-		this.maxAvrgWorkExp = maxAvrgWorkExp;
-	}
-
-
-	public Boolean getIsAvrgWorkExpDisplay() {
-		return isAvrgWorkExpDisplay;
-	}
-
-
-	public void setIsAvrgWorkExpDisplay(Boolean isAvrgWorkExpDisplay) {
-		this.isAvrgWorkExpDisplay = isAvrgWorkExpDisplay;
-	}
-
-
-	public Boolean getIsAvrgWorkExpMandatory() {
-		return isAvrgWorkExpMandatory;
-	}
-
-
-	public void setIsAvrgWorkExpMandatory(Boolean isAvrgWorkExpMandatory) {
-		this.isAvrgWorkExpMandatory = isAvrgWorkExpMandatory;
+	public void setIsRiskModelScoreMandatory(Boolean isRiskModelScoreMandatory) {
+		this.isRiskModelScoreMandatory = isRiskModelScoreMandatory;
 	}
 
 
@@ -645,7 +711,28 @@ public class NTBParameter extends ProductMaster implements Serializable {
 	public void setJobId(Long jobId) {
 		this.jobId = jobId;
 	}
+
+
+	public Integer getAssessmentMethodId() {
+		return assessmentMethodId;
+	}
+
+
+	public void setAssessmentMethodId(Integer assessmentMethodId) {
+		this.assessmentMethodId = assessmentMethodId;
+	}
+
+
+	public Integer getDdrFlow() {
+		return ddrFlow;
+	}
+
+
+	public void setDdrFlow(Integer ddrFlow) {
+		this.ddrFlow = ddrFlow;
+	}
     
-    
+
+	
 
 }

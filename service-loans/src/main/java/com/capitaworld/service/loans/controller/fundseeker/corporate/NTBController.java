@@ -1,5 +1,9 @@
 package com.capitaworld.service.loans.controller.fundseeker.corporate;
 
+import com.capitaworld.connect.api.ConnectAuditErrorCode;
+import com.capitaworld.connect.api.ConnectLogAuditRequest;
+import com.capitaworld.connect.api.ConnectStage;
+import com.capitaworld.connect.client.ConnectClient;
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
@@ -30,6 +34,9 @@ public class NTBController {
     private NTBService ntbService;
     @Autowired
     private DirectorBackgroundDetailsService directorBackgroundDetailsService;
+
+    @Autowired
+    private ConnectClient connectClient;
 
     @RequestMapping(value = "/ping", method = RequestMethod.GET)
     public String getPing() {
@@ -150,6 +157,8 @@ public class NTBController {
                 loansResponse = new LoansResponse("Something goes wrong while saving saveOneformDetailForDirector", HttpStatus.BAD_REQUEST.value());
             }
             logger.info("Exit saveOneformDetailForDirector()");
+            String jsonData = "{ \"directorId\" : " + directorBackgroundDetailRequest.getId() + ", \"directorName\" : " + directorBackgroundDetailRequest.getDirectorsName() + " }";
+            connectClient.saveAuditLog(new ConnectLogAuditRequest(directorBackgroundDetailRequest.getApplicationId(), ConnectStage.DIRECTOR_BACKGROUND.getId(),userId,loansResponse.getMessage(), ConnectAuditErrorCode.DIRECTOR_SUBMIT.toString(),CommonUtils.BusinessType.NEW_TO_BUSINESS.getId(), jsonData));
             return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
         } catch (Exception e) {
@@ -178,10 +187,10 @@ public class NTBController {
 
         // request must not be null
         try {
-            if (CommonUtils.isListNullOrEmpty(financialArrangementsDetailRequestList)) {
+            /*if (CommonUtils.isListNullOrEmpty(financialArrangementsDetailRequestList)) {
                 logger.warn("Object can not be empty ==>" + financialArrangementsDetailRequestList);
                 return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
-            }
+            }*/
 
             Boolean result = ntbService.saveFinancialDetails(financialArrangementsDetailRequestList, applicationId, userId, directorId);
             LoansResponse loansResponse = null;
@@ -273,14 +282,21 @@ public class NTBController {
             }
 
             Boolean result = ntbService.saveOthersDetail(fundSeekerInputRequestResponse, fundSeekerInputRequestResponse.getApplicationId(), userId);
-            LoansResponse loansResponse = null;
-            if(result) {
-                loansResponse = new LoansResponse("Successfully Saved", HttpStatus.OK.value());
-            }else {
-                loansResponse = new LoansResponse("Something goes wrong while saving saveOtherDetails", HttpStatus.BAD_REQUEST.value());
+           
+
+        	if(result){
+        	    LoansResponse response = ntbService.invokeFraudAnalytics(fundSeekerInputRequestResponse);
+                connectClient.saveAuditLog(new ConnectLogAuditRequest(fundSeekerInputRequestResponse.getApplicationId(), ConnectStage.ONE_FORM.getId(),fundSeekerInputRequestResponse.getUserId(),response.getMessage(), ConnectAuditErrorCode.ONFORM_SUBMIT.toString(),CommonUtils.BusinessType.NEW_TO_BUSINESS.getId()));
+        		// initiate fraudanalytics service to invoke hunter api
+        			return new ResponseEntity<LoansResponse>(
+                            response,
+                            HttpStatus.OK);
+            } else {
+                logger.info("FUNDSEEKER INPUT NOT SAVED");
+                return new ResponseEntity<LoansResponse>(
+                        new LoansResponse("oneform not saved", HttpStatus.BAD_REQUEST.value()),
+                        HttpStatus.OK);
             }
-            logger.info("Exit saveOtherDetails()");
-            return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
         } catch (Exception e) {
             logger.error("Error while saving data for saveOtherDetails()==>", e);

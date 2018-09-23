@@ -40,7 +40,6 @@ import com.capitaworld.service.loans.model.common.AutoFillOneFormDetailRequest;
 import com.capitaworld.service.loans.model.common.DisbursementRequest;
 import com.capitaworld.service.loans.model.common.EkycRequest;
 import com.capitaworld.service.loans.model.mobile.MobileLoanRequest;
-import com.capitaworld.service.loans.model.sanction.LoanSanctionAndDisbursedRequest;
 import com.capitaworld.service.loans.service.common.AutoFillOneFormDetailService;
 import com.capitaworld.service.loans.service.common.FsDetailsForPdfService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
@@ -1214,7 +1213,14 @@ public class LoanApplicationController {
 					logger.info("codeExist====>{}", isMsmeUserFromGeneric);
 					if (isMsmeUserFromGeneric) {
 						// In this case
-						Long createdId = loanApplicationService.createMsmeLoan(clientId, isActive, busineeTypeId);
+						Long createdId =null;
+						if (CommonUtils.BusinessType.NEW_TO_BUSINESS.getId() == busineeTypeId ||
+								CommonUtils.BusinessType.EXISTING_BUSINESS.getId() == busineeTypeId) {
+							createdId = loanApplicationService.createMsmeLoan(clientId, isActive, busineeTypeId);
+						}else if(CommonUtils.BusinessType.RETAIL_PERSONAL_LOAN.getId() == busineeTypeId){
+							createdId = loanApplicationService.createRetailLoan(clientId, isActive, busineeTypeId);
+						}
+
 						return new ResponseEntity<LoansResponse>(
 								new LoansResponse(createdId, "Successfully New Loan Created", HttpStatus.OK.value()),
 								HttpStatus.OK);
@@ -2046,6 +2052,27 @@ public class LoanApplicationController {
 					HttpStatus.OK);
 		}
 	}
+	
+	@RequestMapping(value = "/getFpDetailsByFpProductMappindId/{fpProductMappingId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getFpDetailsByFpProductMappingId(@PathVariable("fpProductMappingId") Long fpProductMappingId) {
+		
+		try {
+			logger.info("ENTER  IN GET FP DETAILS BY PRODUCT MAPPING ID -------------FP PRODUCT MAPPING ID >>>>>>>>>>>"+fpProductMappingId);
+			LoansResponse loansResponse = new LoansResponse("DATA FOUND", HttpStatus.OK.value());
+			loansResponse.setData(loanApplicationService.getFpDetailsByFpProductMappingId(fpProductMappingId));
+			logger.info("Exit getFpDetailsByFpProductMappingId");
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+
+			
+		} catch (Exception e) {
+			logger.error("Error while getFpDetailsByFpProductMappingId==========>", e.getMessage());
+			e.printStackTrace();
+			
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+	}
 
 	@RequestMapping(value = "/saveLoanSanctionDetail", method = RequestMethod.POST, consumes = MediaType.TEXT_PLAIN_VALUE)
 	public ResponseEntity<LoansResponse> saveLoanSanctionDetail(@RequestBody String encryptedString,
@@ -2103,7 +2130,7 @@ public class LoanApplicationController {
 					orgId = auditComponentBankToCW.getOrgIdByCredential(loanSanctionRequest.getUserName(),
 							loanSanctionRequest.getPassword());
 					if (!CommonUtils.isObjectNullOrEmpty(orgId)) {
-						reason = loanSanctionService.requestValidation(loanSanctionRequest.getApplicationId(), orgId);
+						reason = loanSanctionService.sanctionRequestValidation(loanSanctionRequest.getApplicationId(), orgId);
 						if ("SUCCESS".equalsIgnoreCase(reason)) {
 							logger.info("Success msg while saveLoanSanctionDetail() ----------------> msg " + reason);
 							reason = null;
@@ -2167,7 +2194,7 @@ public class LoanApplicationController {
 			tokenService.setTokenAsExpired(generateTokenRequest);
 			auditComponentBankToCW.saveBankToCWReqRes(decrypt != null ? decrypt : encryptedString,
 					loanSanctionRequest != null ? loanSanctionRequest.getApplicationId() : null,
-					CommonUtility.ApiType.SANCTION, loansResponse, reason, null);
+					CommonUtility.ApiType.SANCTION, loansResponse, reason, null  , null);
 		}
 	}
 
@@ -2222,18 +2249,18 @@ public class LoanApplicationController {
 				}
 				if (!CommonUtils.isObjectListNull(loanDisbursementRequest, loanDisbursementRequest.getApplicationId(),
 						loanDisbursementRequest.getDisbursedAmount(), loanDisbursementRequest.getDisbursementDate(),
-						loanDisbursementRequest.getMode(), loanDisbursementRequest.getReferenceNo(),
+						loanDisbursementRequest.getPaymentMode(), loanDisbursementRequest.getReferenceNo(),
 						loanDisbursementRequest.getActionBy(), loanDisbursementRequest.getAccountNo())) {
 					orgId = auditComponentBankToCW.getOrgIdByCredential(loanDisbursementRequest.getUserName(),
 							loanDisbursementRequest.getPassword());
 					if (!CommonUtils.isObjectNullOrEmpty(orgId)) {
 
-						reason = loanDisbursementService.requestValidation(loanDisbursementRequest, orgId);
+						loanDisbursementRequest = loanDisbursementService.disbursementRequestValidation(null , loanDisbursementRequest, orgId , CommonUtility.ApiType.DISBURSEMENT);
 
-						if ("SUCCESS".equalsIgnoreCase(reason) || "First Disbursement".equalsIgnoreCase(reason)) {
+						if ("SUCCESS".equalsIgnoreCase(loanDisbursementRequest.getReason()) || "First Disbursement".equalsIgnoreCase(loanDisbursementRequest.getReason())) {
 							logger.info(
 									"Success msg while saveLoanDisbursementDetail() ----------------> msg " + reason);
-							reason = null;
+							loanDisbursementRequest = null;
 							loansResponse = new LoansResponse("Information Successfully Stored ",
 									HttpStatus.OK.value());
 							loansResponse.setData(
@@ -2245,7 +2272,7 @@ public class LoanApplicationController {
 							logger.info(
 									"Failure msg while saveLoanDisbursementDetail in saveLoanDisbursementDetail() ----------------> msg "
 											+ reason);
-							loansResponse = new LoansResponse(reason.split("[\\{}]")[0],
+							loansResponse = new LoansResponse(loanDisbursementRequest.getReason().split("[\\{}]")[0],
 									HttpStatus.BAD_REQUEST.value());
 							loansResponse.setData(false);
 							logger.info("Exit saveLoanDisbursementDetail() ----------------> msg ==>" + reason);
@@ -2298,7 +2325,7 @@ public class LoanApplicationController {
 			tokenService.setTokenAsExpired(generateTokenRequest);
 			auditComponentBankToCW.saveBankToCWReqRes(decrypt != null ? decrypt : encryptedString,
 					loanDisbursementRequest != null ? loanDisbursementRequest.getApplicationId() : null,
-					CommonUtility.ApiType.DISBURSEMENT, loansResponse, reason, orgId);
+					CommonUtility.ApiType.DISBURSEMENT, loansResponse, reason, orgId , null);
 		}
 	}
 
@@ -2321,6 +2348,31 @@ public class LoanApplicationController {
 			return new ResponseEntity<LoansResponse>(response, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while updating Payment Status==>{}", e);
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
+		}
+	}
+	
+	@RequestMapping(value = "/update_skip_payment_whiteLabel/{appId}/{businessTypeId}/{orgId}/{fpProductId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> updateSkipPayment(@PathVariable("appId") Long appId, @PathVariable("businessTypeId") Integer businessTypeId,
+			@PathVariable("orgId") Long orgId, @PathVariable("fpProductId") Long fprProductId,
+			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
+		try {
+			logger.info("start updateSkipPaymentForWhiteLabel()");
+			Long userId = null;
+			if (CommonDocumentUtils.isThisClientApplication(request) && !CommonUtils.isObjectNullOrEmpty(clientId)) {
+				userId = clientId;
+			} else {
+				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			}
+
+			LoansResponse response = new LoansResponse("Successfully updated", HttpStatus.OK.value());
+			loanApplicationService.updateSkipPaymentWhiteLabel(userId, appId, businessTypeId, orgId, fprProductId);
+			logger.info("end updateSkipPaymentStatus()");
+			return new ResponseEntity<LoansResponse>(response, HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while updating Payment Status for WhiteLabel==>{}", e);
 			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
@@ -2472,7 +2524,7 @@ public class LoanApplicationController {
 			generateTokenRequest.setToken(tokenString);
 			tokenService.setTokenAsExpired(generateTokenRequest);
 			auditComponentBankToCW.saveBankToCWReqRes(decrypt != null ? decrypt : encryptedString, null,
-					CommonUtility.ApiType.DETAILED_API, loansResponse, reason, orgId);
+					CommonUtility.ApiType.DETAILED_API, loansResponse, reason, orgId , null);
 		}
 	}
 
@@ -2572,12 +2624,13 @@ public class LoanApplicationController {
 				paymentRequest.setUserId(Long.valueOf(String.valueOf(map.get("AdditionalInfo2"))));
 				paymentRequest.setPurposeCode(map.get("productinfo").toString());
 				paymentRequest.setResponseParams(responseParams);
+				paymentRequest.setNameOfEntity(map.get("firstname").toString());
 				
-				if ("0399".toString().equals(map.get("statusCode"))) {
-					paymentRequest.setStatus("Failed");
+				if ("0300".toString().equals(map.get("statusCode"))) {
+					paymentRequest.setStatus("Success");
 				}
 				else {
-					paymentRequest.setStatus("Success");
+					paymentRequest.setStatus("Failed");
 				}
 			}
 
@@ -2614,6 +2667,7 @@ public class LoanApplicationController {
 				paymentRequest.setUserId(Long.valueOf(String.valueOf(map.get("udf2"))));
 				paymentRequest.setPurposeCode(map.get("productinfo").toString());
 				paymentRequest.setResponseParams(responseParams);
+				paymentRequest.setNameOfEntity(map.get("firstname").toString());
 				
 				if ("success".equals(map.get("status").toString())) {
 					paymentRequest.setStatus("Success");
@@ -2789,7 +2843,7 @@ public class LoanApplicationController {
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} finally {
 			auditComponentBankToCW.saveBankToCWReqRes(decrypt != null ? decrypt : encryptedString, applicationId,
-					CommonUtility.ApiType.GENERATING_TOKEN, loansResponse, reason, orgId);
+					CommonUtility.ApiType.GENERATING_TOKEN, loansResponse, reason, orgId , null);
 		}
 	}
 
@@ -2867,11 +2921,13 @@ public class LoanApplicationController {
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} finally {
 			auditComponentBankToCW.saveBankToCWReqRes(decrypt != null ? decrypt : encryptedString, applicationId,
-					CommonUtility.ApiType.GENERATING_TOKEN, loansResponse, reason, orgId);
+					CommonUtility.ApiType.GENERATING_TOKEN, loansResponse, reason, orgId , null);
 		}
 	}
+	
+//	loanSanctionService.saveSanctionAndDisbursementDetailsFromBank();
 
-	@RequestMapping(value = "/saveLoanSanctionDisbursementDetailFromBank", method = RequestMethod.POST, consumes = MediaType.TEXT_PLAIN_VALUE)
+	/*@RequestMapping(value = "/saveLoanSanctionDisbursementDetailFromBank", method = RequestMethod.POST, consumes = MediaType.TEXT_PLAIN_VALUE)
 	public ResponseEntity<LoansResponse> saveLoanSanctionDisbursementDetailFromBank(@RequestBody String encryptedString) {
 		LoansResponse loansResponse = null;
 		String sanctionReason = null;
@@ -2885,7 +2941,7 @@ public class LoanApplicationController {
 			logger.info(
 					"=============================Entry saveLoanSanctionDisbursementDetailFromBank(){} ============================= ");
 			
-			/*
+			
 			 * if(CommonUtils.isObjectNullOrEmpty(tokenString)) { reason = "Token is null";
 			 * loansResponse = new LoansResponse(reason, HttpStatus.UNAUTHORIZED .value());
 			 * return new ResponseEntity<LoansResponse>(loansResponse,
@@ -2895,7 +2951,7 @@ public class LoanApplicationController {
 			 * "Token is Expired "; loansResponse = new LoansResponse(reason,
 			 * HttpStatus.UNAUTHORIZED .value()); return new
 			 * ResponseEntity<LoansResponse>(loansResponse, HttpStatus.UNAUTHORIZED); } }
-			 */
+			 
 			// logger.info("-----------------------------Entry
 			// saveLoanSanctionDisbursementDetailFromBank(){} --------------------");
 			if (encryptedString != null) {
@@ -2945,7 +3001,7 @@ public class LoanApplicationController {
 								.saveLoanSanctionDetail(loanSanctionAndDisbursedRequest.getLoanSanctionRequest())) {
 							if(! CommonUtils.isListNullOrEmpty(loanSanctionAndDisbursedRequest.getLoanDisbursementRequestsList())) {
 								disbursementReason = loanDisbursementService.bankRequestValidationAndSave(
-									loanSanctionAndDisbursedRequest.getLoanDisbursementRequestsList(), orgId);
+									loanSanctionAndDisbursedRequest.getLoanDisbursementRequestsList(), orgId , CommonUtility.ApiType.SANCTION_AND_DISBURSEMENT);
 							}
 						}
 
@@ -3024,6 +3080,33 @@ public class LoanApplicationController {
 					loanSanctionAndDisbursedRequest != null ? loanSanctionAndDisbursedRequest.getApplicationId() : null,
 					CommonUtility.ApiType.SANCTION_AND_DISBURSEMENT, loansResponse, sanctionReason, orgId);
 		}
-	}
+	}*/
 
+	
+	@RequestMapping(value = "/reverse_api", method = RequestMethod.GET)
+	public void reverseAPI() {
+		try {
+			logger.info("start reverseAPI()");
+			loanSanctionService.saveSanctionAndDisbursementDetailsFromBank();
+		} catch (Exception e) {
+			logger.error("Error while reverseAPI ==>{}", e);
+			e.printStackTrace();
+		}
+	}
+	
+	@RequestMapping(value = "/ddr_status/{applicationId}", method = RequestMethod.GET)
+	public ResponseEntity<LoansResponse> ddrStatus(@PathVariable("applicationId") Long applicationId) {
+		try {
+			logger.info("ENTER IN GET DDR STATUS ID---------------->" + applicationId);
+			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully get data", HttpStatus.OK.value(), loanApplicationService.getDDRStatusId(applicationId)), HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while get ddr status==>");
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+	}
+	
+	
 }

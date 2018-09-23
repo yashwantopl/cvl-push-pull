@@ -76,9 +76,19 @@ public class LiabilitiesDetailsExcelReader
 //        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, liabilitiesMappingList,"B",String.valueOf(sheet.getRow(4).getCell(1).getNumericCellValue()) ,"Audited", liabilitiesDetailsRepository);
 //        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, liabilitiesMappingList,"C",String.valueOf(sheet.getRow(4).getCell(2).getNumericCellValue())  ,"Audited", liabilitiesDetailsRepository);
 //        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, liabilitiesMappingList,"D",String.valueOf(sheet.getRow(4).getCell(3).getNumericCellValue())  ,"Audited", liabilitiesDetailsRepository);
-        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, liabilitiesMappingList,"E",String.valueOf(sheet.getRow(4).getCell(4).getNumericCellValue()),"Estimated", liabilitiesDetailsRepository);
+        
+        //j== 2 for NTB 
+        int j = 2;
+        if(loanApplicationMaster.getBusinessTypeId() == CommonUtils.BusinessType.EXISTING_BUSINESS.getId()) {
+    
+        	extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, liabilitiesMappingList,"E",String.valueOf(sheet.getRow(4).getCell(4).getNumericCellValue()),"Estimated", liabilitiesDetailsRepository);
+        	j=5;
+      
+        }
         if(loanApplicationMaster.getProductId()!=15 && loanApplicationMaster.getProductId()!=1 ){
-        	int j = 5;
+
+        	/*int j = 5;*/
+
         	for(int i = 0; i < loanApplicationMaster.getTenure(); i++) { 
         		extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, liabilitiesMappingList,CellReference.convertNumToColString(sheet.getRow(4).getCell(j).getColumnIndex()),String.valueOf(sheet.getRow(4).getCell(j).getNumericCellValue()),"Projected", liabilitiesDetailsRepository);
         		j++;

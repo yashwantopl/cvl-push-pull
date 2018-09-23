@@ -14,7 +14,7 @@ import com.capitaworld.service.loans.model.teaser.primaryview.RetailProfileViewR
 public interface RetailApplicantService {
 	public boolean save(RetailApplicantRequest applicantRequest, Long userId) throws Exception;
 
-	public RetailApplicantRequest get(Long userId, Long applicationId) throws Exception;
+	public RetailApplicantRequest get(Long applicationId) throws Exception;
 
 	public boolean saveFinal(FinalCommonRetailRequest applicantRequest, Long userId) throws Exception;
 
@@ -26,7 +26,11 @@ public interface RetailApplicantService {
 	
 	public Integer getCurrency(Long applicationId,Long userId) throws Exception;
 	
+	public boolean saveITRResponse(RetailApplicantRequest applicantRequest) throws Exception;
+	
 	public JSONObject getCoapAndGuarIds(Long userId, Long applicationId) throws Exception;
 	
 	public CibilFullFillOfferRequest getProfile(Long userId, Long applicationId) throws Exception;
+	
+	public JSONObject getNameAndPanByAppId(Long applicationId);
 }

@@ -21,6 +21,9 @@ public interface OwnershipDetailsRepository extends JpaRepository<OwnershipDetai
 	@Query("from OwnershipDetail o where o.applicationId.id =:id and o.isActive = true")
 	public List<OwnershipDetail> listOwnershipFromAppId(@Param("id") Long id);
 	
+	
+	public OwnershipDetail findByIdAndIsActive(Long id,Boolean isActive);
+	
 	@Modifying
 	@Query("update OwnershipDetail pm set pm.isActive = false,pm.modifiedDate = NOW(),pm.modifiedBy =:userId where pm.applicationId.id =:applicationId and pm.isActive = true")
 	public int inActive(@Param("userId") Long userId,@Param("applicationId") Long applicationId);

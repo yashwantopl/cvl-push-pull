@@ -28,10 +28,11 @@ public interface DirectorBackgroundDetailsRepository extends JpaRepository<Direc
 	public List<DirectorBackgroundDetail> listPromotorBackgroundFromAppId(@Param("id") Long id);
 
 	public DirectorBackgroundDetail findByIdAndIsActive(Long id,Boolean isActive);
-	
+
 	@Query("from DirectorBackgroundDetail o where o.applicationId.id = :appId and o.isMainDirector = true")
 	public DirectorBackgroundDetail getByAppIdAndIsMainDirector(@Param("appId") Long appId);
 	
+
 	@Modifying
 	@Query("update DirectorBackgroundDetail pm set pm.isItrCompleted =:flag,pm.modifiedDate = NOW(),pm.modifiedBy =:userId where pm.id =:id and pm.isActive = true")
 	public int updateITRFlag(@Param("userId") Long userId,@Param("id") Long directorId,@Param("flag") boolean flag);
@@ -48,4 +49,15 @@ public interface DirectorBackgroundDetailsRepository extends JpaRepository<Direc
 	@Query("update DirectorBackgroundDetail pm set pm.isOneFormCompleted =:flag,pm.modifiedDate = NOW(),pm.modifiedBy =:userId where pm.id =:id and pm.isActive = true")
 	public int updateOneFormFlag(@Param("userId") Long userId,@Param("id") Long directorId,@Param("flag") boolean flag);
 
+	@Query("select count(o) from DirectorBackgroundDetail o where o.applicationId.id = :applicationId and isActive = true")
+	public Integer getTotalNoOfDirector(@Param("applicationId") Long applicationId);
+
+	@Query("from DirectorBackgroundDetail o where o.applicationId.id = :applicationId and o.isMainDirector = true and isActive = true")
+	public DirectorBackgroundDetail getMainDirectorByApplicationId(@Param("applicationId") Long applicationId);
+	
+	@Query("select o.directorsName from DirectorBackgroundDetail o where o.id =:directorId and o.isActive = true")
+	public String getDirectorNamefromDirectorId(@Param("directorId") Long directorId);
+	
+	@Query("select o.id from DirectorBackgroundDetail o where o.applicationId.id = :id and o.isActive = true")
+	public List<Long> getDirectorIdFromApplicationId(@Param("id") Long id);
 }

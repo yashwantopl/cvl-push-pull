@@ -94,6 +94,9 @@ public class FinancialArrangementsDetail implements Serializable {
 	@Column(name = "others_bank_name")
 	private String othersBankName;
 
+	@Column(name = "others_bank_name")
+	private String othersBankName;
+
 	public FinancialArrangementsDetail() {
 	}
 	
@@ -256,7 +259,7 @@ public class FinancialArrangementsDetail implements Serializable {
 	public void setLcBgStatus(Integer lcBgStatus) {
 		this.lcBgStatus = lcBgStatus;
 	}
-	
+
 	public String getOthersBankName() {
 		return othersBankName;
 	}
@@ -264,4 +267,6 @@ public class FinancialArrangementsDetail implements Serializable {
 	public void setOthersBankName(String othersBankName) {
 		this.othersBankName = othersBankName;
 	}
+
 }
+

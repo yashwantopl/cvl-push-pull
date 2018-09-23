@@ -1,7 +1,9 @@
 package com.capitaworld.service.loans.utils;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
+import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.Format;
 import java.text.SimpleDateFormat;
@@ -36,6 +38,8 @@ public class CommonUtils {
 	public static final String APPLICATION_LOCKED_MESSAGE = "Your Application is locked. Please Contact Administrator to update the Details.";
 	public static final String MAXIMUM = "maximum";
 	public static final String MINIMUM = "minimum";
+	
+	public static final String HUNTER_INELIGIBLE_MESSAGE= "You do not Qualify for Contactless Process, Kindly visit Bank Branch or get your Due Diligence process completed in www.capitaworld.com to connect to Banks";
 
 	public static final Long RETAIL_APPLICANT = 1L;
 	public static final Long RETAIL_COAPPLICANT = 2L;
@@ -52,7 +56,13 @@ public class CommonUtils {
 	public static final String CW_TL_WCTL_EXCEL="cw_cma_tl_wctl.xlsx";
 	public static final String CO_CMA_EXCEL = "co_cma.xlsx";
    
-	public static final String SCORING_EXCEL ="score_result.xlsx"; 
+	public static final String SCORING_EXCEL ="score_result.xlsx";
+	
+	public static final  DateFormat formatter = new SimpleDateFormat("dd-mm-yyyy");
+	
+	public static final String IN_PROGRESS = "In Progress";
+	public static final String COMPLETED = "Completed";
+	public static final String NA = "NA";
 	
 	public interface UsersRoles {
 		public static final Long MAKER = 1l;
@@ -61,6 +71,11 @@ public class CommonUtils {
 		public static final Long ADMIN_HO = 4l;
 		public static final Long HO = 5l;
 		public static final Long BO = 6l;
+		public static final Long DEFAULT_FS = 7l;
+		public static final Long FP_MAKER = 8l;
+		public static final Long FP_CHECKER = 9l;
+		public static final Long ADMIN_MAKER = 10l;
+		public static final Long ADMIN_CHECKER = 11l;
 	}
 
 	public interface DenominationInAmount {
@@ -113,8 +128,6 @@ public class CommonUtils {
 		calendar.set(Calendar.DAY_OF_MONTH, date);
 		calendar.set(Calendar.MONTH, (month - 1));
 		calendar.set(Calendar.YEAR, year);
-
-		System.out.println("calendar.getTime()=======>" + calendar.getTime().toString());
 		return calendar.getTime();
 	}
 
@@ -129,9 +142,6 @@ public class CommonUtils {
 		result[0] = calendar.get(Calendar.DAY_OF_MONTH);
 		result[1] = calendar.get(Calendar.MONTH) + 1;
 		result[2] = calendar.get(Calendar.YEAR);
-		System.out.println("result[0] day Of Month=======>" + result[0]);
-		System.out.println("result[1] Month=======>" + result[1]);
-		System.out.println("result[2] Year=======>" + result[2]);
 		return result;
 	}
 
@@ -240,7 +250,9 @@ public class CommonUtils {
 				"depreciationCurrentYear", "remunerationPreviousYear", "remunerationCurrentYear",
 				"highestQualification", "qualifyingYear", "institute", "residingYear", "residingMonth", "spouseName",
 				"isSpouseEmployed" };
-
+		public static final String[] NTB_FINAL_EXCLUSION = {"id","userId", "clientId", "applicationId","establishmentMonth","establishmentYear","groupName","keyVericalFunding"
+				,"latitude","longitude","websiteAddress","gstIn","email","keyVerticalSector","keyVerticalSubsector","aadhar","creditRatingId"
+				,"contLiabilityFyAmt","contLiabilitySyAmt" ,"contLiabilityTyAmt","notApplicable","msmeRegistrationNumber"} ;
 		public static final String[] RETAIL_FINAL = { "castId", "castOther", "religion", "religionOther", "birthPlace",
 				"fatherName", "motherName", "noChildren", "noDependent", "highestQualificationOther", "residenceType",
 				"annualRent", "noPartners", "birthDate", "currentDepartment", "currentDesignation", "currentIndustry",
@@ -248,11 +260,24 @@ public class CommonUtils {
 				"poaHolderName", "presentlyIrrigated", "rainFed", "repaymentCycle", "repaymentMode",
 				"seasonalIrrigated", "shareholding", "totalLandOwned", "tradeLicenseExpiryDate", "tradeLicenseNumber",
 				"unattended", "websiteAddress", "userId" };
+		public static final String[] RETAIL_FINAL_WITH_ID = { "castId", "castOther", "religion", "religionOther", "birthPlace",
+				"fatherName", "motherName", "noChildren", "noDependent", "highestQualificationOther", "residenceType",
+				"annualRent", "noPartners", "birthDate", "currentDepartment", "currentDesignation", "currentIndustry",
+				"employmentStatus", "interestRate", "nameOfEntity", "officeType", "ownershipType", "partnersName",
+				"poaHolderName", "presentlyIrrigated", "rainFed", "repaymentCycle", "repaymentMode",
+				"seasonalIrrigated", "shareholding", "totalLandOwned", "tradeLicenseExpiryDate", "tradeLicenseNumber",
+				"unattended", "websiteAddress", "userId" , "id"};
 		public static final String[] DIRECTOR_OBJ_EXCEPT_MAIN = {"isItrCompleted", "isCibilCompleted", "isBankStatementCompleted", "isOneFormCompleted",
 				"applicationId","dob","din","panNo","directorsName","totalExperience", "isActive","pincode","stateCode","city","mobile","gender","relationshipType",
 				"firstName","lastName", "middleName","title", "shareholding","aadhar","maritalStatus","noOfDependent","residenceType","residenceSinceMonth","residenceSinceYear",
 				"isFamilyMemberInBusiness","employmentDetailRequest","countryId","premiseNumber","streetName","landmark"
 		};
+		public static final String[] PL_RETAIL_PROFILE = {"titleId","firstName","middleName","lastName","genderId","pan","aadharNumber",
+                "mobile","educationQualification","statusId","residenceType","birthDate","employmentType","employmentWith","centralGovId",
+                "stateGovId","psuId","corporateId","eduInstId","nameOfEmployer","employmentStatus","currentJobMonth","currentJobYear",
+                "totalExperienceMonth","totalExperienceYear","keyVerticalFunding","keyVerticalSector","keyVerticalSubSector","contactNo","email"};
+		public static final String[] PL_RETAIL_PRIMARY = {"loanAmountRequired","loanPurpose","tenureRequired","repayment","monthlyIncome"};
+		public static final String[] PL_RETAIL_FINAL = {"addressSameAs"};
 	}
 
 	public interface ApplicantType {
@@ -292,6 +317,34 @@ public class CommonUtils {
 			return "DEBT";
 		else
 			return "EQUITY";
+	}
+
+	public enum ApplicationStatusMessage {
+
+		IN_PROGRESS(1,"In Progress"),
+		DDR_IN_PROGRESS(2,"Due Diligence in Progress"),
+		DDR_APPROVED_BUT_NOT_SANCTIONED(3,"DDR Approved"),
+		DISBURSED(4,"Disbursed"),
+		HOLD(5,"On Hold"),
+		REJECT(6,"Rejected"),
+		SANCTIONED(7,"Sanctioned");
+
+		private int id;
+		private String value;
+
+		ApplicationStatusMessage(int id, String value)
+		{
+			this.id =id;
+			this.value = value;
+		}
+
+		public int getId() {
+			return id;
+		}
+
+		public String getValue() {
+			return value;
+		}
 	}
 
 	public interface ApplicationStatus {
@@ -394,7 +447,6 @@ public class CommonUtils {
 			monthsDiff = monthsDiff + today.get(Calendar.MONTH) - birthDay.get(Calendar.MONTH);
 			Integer ageInMonths = yearsInBetween * 12 + monthsDiff;
 			years = ageInMonths / 12;
-			System.out.println("Age :===" + years);
 			return years;
 		} else {
 			return null;
@@ -422,7 +474,7 @@ public class CommonUtils {
 		for (Object object : args) {
 			boolean flag = false;
 			if (object instanceof List) {
-				flag = isListNullOrEmpty((List) object);
+				flag = isListNullOrEmpty((List<?>) object);
 				if (flag)
 					return true;
 				else
@@ -456,12 +508,18 @@ public class CommonUtils {
 
 	public static List<String> urlsBrforeLogin = null;
 	static {
-		urlsBrforeLogin = new ArrayList<String>(3);
-		urlsBrforeLogin.add("/loans/loan_application/getUsersRegisteredLoanDetails");
-		urlsBrforeLogin.add("/loans/loan_application/getLoanDetailsForAdminPanel");
-		urlsBrforeLogin.add("/loans/corporate_upload/downloadCMAAndCoCMAExcelFile/**");
-		urlsBrforeLogin.add("/loans/loan_application/save_payment_info_for_mobile");
-		urlsBrforeLogin.add("/loans/loan_application/mobile/successUrl");
+		urlsBrforeLogin = new ArrayList<String>(8);
+		urlsBrforeLogin.add("/loans/loan_application/getUsersRegisteredLoanDetails".toLowerCase());
+		urlsBrforeLogin.add("/loans/loan_application/getLoanDetailsForAdminPanel".toLowerCase());
+		urlsBrforeLogin.add("/loans/corporate_upload/downloadCMAAndCoCMAExcelFile/**".toLowerCase());
+		urlsBrforeLogin.add("/loans/loan_application/save_payment_info_for_mobile".toLowerCase());
+		urlsBrforeLogin.add("/loans/loan_application/mobile/successUrl".toLowerCase());
+		urlsBrforeLogin.add("/loans/loan_application/getToken".toLowerCase());
+		urlsBrforeLogin.add("/loans/loan_application/saveLoanDisbursementDetail".toLowerCase());
+		urlsBrforeLogin.add("/loans/loan_application/saveLoanSanctionDetail".toLowerCase());
+		urlsBrforeLogin.add("/loans/loan_application/saveLoanSanctionDisbursementDetailFromBank".toLowerCase());
+		urlsBrforeLogin.add("/loans/ddr/getCustomerNameById".toLowerCase());
+		
 		
 	}
 
@@ -910,7 +968,6 @@ public class CommonUtils {
 	public static String checkString(Double value) {
 		try {
 			DecimalFormat decimalFormat1 = new DecimalFormat("0.00");
-			System.out.println(decimalFormat1.format(value));
 			return decimalFormat1.format(value);
 		} catch (Exception e) {
 			return "0.00";
@@ -953,7 +1010,9 @@ public class CommonUtils {
 	
 	public enum BusinessType {
 		
-		NEW_TO_BUSINESS(2, "New to Business"),EXISTING_BUSINESS(1, "Existing Business");
+		NEW_TO_BUSINESS(2, "New to Business"),
+		EXISTING_BUSINESS(1, "Existing Business"),
+		RETAIL_PERSONAL_LOAN(3, "Retail Personal Loan");
 
 		private Integer id;
 		private String value;
@@ -1103,7 +1162,40 @@ public enum APIFlags {
 			return "Indian Bank";
 		}else if(x == 14L) {
 			return "BOI";
-		}else {
+		}else if(x == 15L) {
+			return "Vijaya Bank";
+		}else if(x == 16L) {
+			return "SBI";
+		}else if(x == 17L) {
+			return "BOB";
+		}else if(x == 18L) {
+			return "PNB";
+		}else if(x == 19L) {
+			return "UCO Bank";
+		}else if(x == 20L) {
+			return "PSB";
+		}else if(x == 21L) {
+			return "Oriental Bank of Commerce";
+		}else if(x == 22L) {
+			return "Syndicate Bank";
+		}else if(x == 23L) {
+			return "Allahabad bank";
+		}else if(x == 24L) {
+			return "Corporation Bank";
+		}else if(x == 25L) {
+			return "Central Bank";
+		}else if(x == 26L) {
+			return "Andhra Bank";
+		}else if(x == 27L) {
+			return "Bank of Maharashtra";
+		}else if(x == 28L) {
+			return "Indian Overseas Bank";
+		}else if(x == 29L) {
+			return "United Bank of India";
+		}else if(x == 30L) {
+			return "Kotak Bank";
+		}
+		else {
 			return null;
 		}
 	}
@@ -1113,9 +1205,7 @@ public enum APIFlags {
 	
 	public static String getEncodedUserNamePassword(String userName,String password) {
 		String keyToEncode = userName + ":" + password;
-		System.out.println("keyToEncode UPdated===============>" + keyToEncode);
 		String encodedString = "Basic " + Base64.getEncoder().encodeToString(keyToEncode.getBytes());
-		System.out.println("encodedString UPdated===============>" + encodedString);
 		return encodedString;
 	}
 	
@@ -1139,85 +1229,156 @@ public enum APIFlags {
 	
 	
 	/***********************************************CAM UTILS*********************************************************/
-	static DecimalFormat decim = new DecimalFormat("#,##0.00");
-	static DecimalFormat decim2 = new DecimalFormat("#,###.00");
+	static DecimalFormat decimal = new DecimalFormat("#,##0.00");
+	static DecimalFormat decim2 = new DecimalFormat("#,###");
 	
 	public static String convertValue(Double value) {
-		return !CommonUtils.isObjectNullOrEmpty(value)? decim.format(value).toString(): "0";
+		return !CommonUtils.isObjectNullOrEmpty(value)? decimal.format(value).toString(): "0";
 	}
 	public static String convertValueWithoutDecimal(Double value) {
 		return !CommonUtils.isObjectNullOrEmpty(value)? decim2.format(value).toString(): "0";
 	}
-	public static Object convertToDoubleForXml (Object obj, Map<String, Object>data) throws Exception {
-		Field[] fields = obj.getClass().getDeclaredFields();
-		 for(Field field : fields) {
-			 field.setAccessible(true);
-             Object value = field.get(obj);
-             if(data != null) {
-            	 data.put(field.getName(), value);
-             }
-             if(!CommonUtils.isObjectNullOrEmpty(value)) {
-            	 if(value instanceof Double){
-                	 if(!Double.isNaN((Double)value)) {
-                		 DecimalFormat decim = new DecimalFormat("0.00");
-                    	 value = Double.parseDouble(decim.format(value));
-                    	 if(data != null) {
-                    		 value = decim.format(value);
-                    		 data.put(field.getName(), value);
-                    	 }else {
-                    		 field.set(obj,value);                    		 
-                    	 }
-                	 }
-                 }
-             }
-		 }
+	public static Object convertToDoubleForXml(Object obj, Map<String, Object>data) throws Exception {
+		if(obj ==  null) {
+			return null;
+		}
+		DecimalFormat decim = new DecimalFormat("0.00");
+		if(obj instanceof Double) {
+			obj = Double.parseDouble(decim.format(obj));
+			return obj;
+		}else if(obj.getClass().getName().startsWith("com.capitaworld")) {
+			Field[] fields = obj.getClass().getDeclaredFields();
+			 for(Field field : fields) {
+				 field.setAccessible(true);
+	             Object value = field.get(obj);
+	             if(data != null) {
+	            	 data.put(field.getName(), value);
+	             }
+	             if(!CommonUtils.isObjectNullOrEmpty(value)) {
+	            	 if(value instanceof Double){
+	                	 if(!Double.isNaN((Double)value)) {
+	                    	 value = Double.parseDouble(decim.format(value));
+	                    	 if(data != null) {
+	                    		 value = decimal.format(value);
+	                    		 data.put(field.getName(), value);	
+	                    	 }else {
+	                    		 field.set(obj,value);                    		 
+	                    	 }
+	                	 }
+	                 }
+	             }
+			 }			
+		}
 		 if(data != null) {
 			 return data;
 		 }
 		return obj;
 	}
 	public static Object printFields(Object obj) throws Exception {
+		if(obj != null) {
+			if(obj.getClass().isArray()) {
+		}
+		}else {
+			return obj;
+		}
 		if(obj instanceof List) {
 			List<?> lst = (List)obj;
 			for(Object o : lst) {
-				escapeXml(o);
+				o = printFields(o);
 			}
 		}else if(obj instanceof Map) {
 			Map<Object, Object> map = (Map)obj;
 			for(Map.Entry<Object, Object> setEntry : map.entrySet()) {
-				escapeXml(setEntry.getValue());
+				setEntry.setValue(printFields(setEntry.getValue()));
+			}
+		}else if(obj instanceof String) {
+			obj = StringEscapeUtils.escapeXml((String)obj);
+			return obj;
+		}else if(obj instanceof Double) {
+			if(!Double.isNaN((Double)obj)) {
+				return convertToDoubleForXml(obj, null);
 			}
 		}else {
-			escapeXml(obj);
+			if(obj.getClass().getName().startsWith("com.capitaworld")) {
+				Field[] fields = obj.getClass().getDeclaredFields();
+				for (Field field : fields) {
+					if((field.getModifiers()& Modifier.STATIC) == Modifier.STATIC){
+					}else {
+						field.setAccessible(true);
+						Object value = field.get(obj);
+						field.set(obj, printFields(value));	
+					}
+				}
+			}
 		}
 		 return obj;
 	}
-	public static Object escapeXml(Object obj) throws Exception{
-		if(obj instanceof List) {
-			List<?> lst = (List)obj;
-			for(Object o : lst) {
-				escapeXml(o);
-			}
-		}else if(obj instanceof Map) {
-			Map<Object, Object> map = (Map)obj;
-			for(Map.Entry<Object, Object> setEntry : map.entrySet()) {
-				escapeXml(setEntry.getValue());
-			}
+	
+	public enum BankName {
+		UNION_BANK_OF_INDIA(1,"Union Bank of India",""),
+		SARASWAT(2,"Saraswat",""),
+		AXIS(3,"Axis",""),
+		ICICI(4,"ICICI",""),
+		IDBI(5,"IDBI","https://s3.ap-south-1.amazonaws.com/qa-sidbi-data/images/IDBI.jpg"),
+		RBL(6,"RBL",""),
+		TATA_CAPITAL(7,"Tata Capital",""),
+		IDFC(8,"IDFC",""),
+		DENA_BANK(9,"Dena Bank",""),
+		SIDBI(10,"SIDBI","https://s3.ap-south-1.amazonaws.com/qa-sidbi-data/images/Sidbi.jpg"),
+		NHBS(11,"NHBS",""),
+		CANARA_BANK(12,"CANARA BANK","https://s3.ap-south-1.amazonaws.com/qa-sidbi-data/images/Canara-Bank.jpg"),
+		INDIAN_BANK(13,"Indian Bank","https://s3.ap-south-1.amazonaws.com/qa-sidbi-data/images/Indian-Bank.jpg"),
+		BOI(14,"BOI","https://s3.ap-south-1.amazonaws.com/qa-sidbi-data/images/BOI.jpg"),
+		VIJAYA_BANK(15,"Vijaya Bank","https://s3.ap-south-1.amazonaws.com/uat-sidbi-data/images/vijya.png"),
+		SBI(16,"SBI","https://s3.ap-south-1.amazonaws.com/uat-sidbi-data/images/sbi.png"),
+		BOB(17,"BOB","https://s3.ap-south-1.amazonaws.com/uat-sidbi-data/images/BOB.png"),
+		PNB(18,"PNB","https://s3.ap-south-1.amazonaws.com/qa-sidbi-data/images/PNB.jpg"),
+		UCO_BANK(19,"UCO Bank",""),
+		PSB(20,"PSB",""),
+		ORIENTAL_BANK_OF_COMMERCE(21,"Oriental Bank of Commerce",""),
+		SYNDICATE_BANK(22,"Syndicate Bank",""),
+		ALLAHABAD_BANK(23,"Allahabad bank",""),
+		CORPORATION_BANK(24,"Corporation Bank",""),
+		CENTRAL_BANK(25,"Central Bank",""),
+		ANDHRA_BANK(26,"Andhra Bank",""),
+		BANK_OF_MAHARASHTRA(27,"Bank of Maharashtra",""),
+		INDIAN_OVERSEAS_BANK(28,"Indian Overseas Bank",""),
+		UNITED_BANK_OF_INDIA(29,"United Bank of India","");
+
+		private Integer id;
+		private String value;
+		private String imageUrl;
+
+		private BankName(Integer id) {
+			this.id = id;
 		}
-		Field[] fields = obj.getClass().getDeclaredFields();
-		for (Field field : fields) {
-			field.setAccessible(true);
-			Object value = field.get(obj);
-			if (value instanceof String) {
-				String value1 = (String) field.get(obj);
-				String a = StringEscapeUtils.escapeXml(value1.toString());
-				value = a;
-				field.set(obj, value);
-			}else {
-				continue;
-			}
+
+		private BankName(Integer id, String value,String imageUrl) {
+			this.id = id;
+			this.value = value;
+			this.imageUrl = imageUrl;
 		}
-		return obj;
-    }
+
+		public String getValue() {
+			return value;
+		}
+
+		public Integer getId() {
+			return id;
+		}
+
+		public String getImageUrl() {
+			return imageUrl;
+		}
+
+		public static BankName getDataFormBankId(Integer id){
+			for (BankName bankName:BankName.values()) {
+				if (bankName.id == id) {
+					return bankName;
+				}
+			}
+			return null;
+		}
+	}
 	
 }

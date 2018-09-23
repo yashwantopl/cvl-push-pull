@@ -24,13 +24,17 @@ public class DirectorPersonalDetail extends AuditActivity implements Serializabl
     private Integer noOfChildren;
 
     @Column(name="owning_house")
-    private Boolean owningHouse;
+    private Integer owningHouse;
 
     @Column(name="assessed_for_it")
-    private Boolean assessedForIt;
+    private Integer assessedForIt;
 
     @Column(name="have_li_policy")
-    private Boolean haveLiPolicy;
+    private Integer haveLiPolicy;
+
+
+    @Column(name="spouse_name")
+    private String spouseName;
 
     public DirectorPersonalDetail(){
     }
@@ -67,27 +71,35 @@ public class DirectorPersonalDetail extends AuditActivity implements Serializabl
         this.noOfChildren = noOfChildren;
     }
 
-    public Boolean getOwningHouse() {
+    public Integer getOwningHouse() {
         return owningHouse;
     }
 
-    public void setOwningHouse(Boolean owningHouse) {
+    public void setOwningHouse(Integer owningHouse) {
         this.owningHouse = owningHouse;
     }
 
-    public Boolean getAssessedForIt() {
+    public Integer getAssessedForIt() {
         return assessedForIt;
     }
 
-    public void setAssessedForIt(Boolean assessedForIt) {
+    public void setAssessedForIt(Integer assessedForIt) {
         this.assessedForIt = assessedForIt;
     }
 
-    public Boolean getHaveLiPolicy() {
+    public Integer getHaveLiPolicy() {
         return haveLiPolicy;
     }
 
-    public void setHaveLiPolicy(Boolean haveLiPolicy) {
+    public void setHaveLiPolicy(Integer haveLiPolicy) {
         this.haveLiPolicy = haveLiPolicy;
+    }
+
+    public String getSpouseName() {
+        return spouseName;
+    }
+
+    public void setSpouseName(String spouseName) {
+        this.spouseName = spouseName;
     }
 }

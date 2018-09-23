@@ -20,11 +20,13 @@ import com.capitaworld.itr.api.model.ITRConnectionResponse;
 import com.capitaworld.itr.client.ITRClient;
 import com.capitaworld.service.gateway.model.GatewayResponse;
 import com.capitaworld.service.gateway.model.PaymentTypeRequest;
+import com.capitaworld.service.loans.config.FPAsyncComponent;
 import com.capitaworld.service.loans.domain.fundprovider.FpNpMapping;
 import com.capitaworld.service.loans.model.FpNpMappingRequest;
 import com.capitaworld.service.loans.repository.fundprovider.FpNpMappingRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
 import com.capitaworld.service.loans.service.fundprovider.FpNpMappingService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.users.model.*;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
@@ -59,6 +61,8 @@ import com.capitaworld.service.loans.service.networkpartner.NetworkPartnerServic
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
+import com.capitaworld.service.mca.client.McaClient;
+import com.capitaworld.service.mca.model.McaResponse;
 import com.capitaworld.service.notification.client.NotificationClient;
 import com.capitaworld.service.notification.model.Notification;
 import com.capitaworld.service.notification.model.NotificationRequest;
@@ -116,6 +120,15 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 	
 	@Autowired
 	private DirectorBackgroundDetailsRepository directorBackgroundDetailsRepository;
+	
+	@Autowired
+	private LoanApplicationService loanApplicationService;
+	
+	@Autowired
+	private McaClient mcaClient;
+	
+	@Autowired
+	private FPAsyncComponent fpAsyncComponent;
 	
 	
 	private static String isPaymentBypass="cw.is_payment_bypass";
@@ -675,6 +688,8 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 	public List<NhbsApplicationsResponse> getListOfProposalsFP(NhbsApplicationRequest request,Long npOrgId,Long userId) {
 		logger.info("entry in getListOfProposalsFP()");
 		Long branchId = null;
+		String mcaCompanyId = null;
+		McaResponse mcaResponse;
 		UsersRequest usersRequestForBranch = new UsersRequest();
 		usersRequestForBranch.setId(userId);
 		try {
@@ -716,6 +731,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 				nhbsApplicationsResponse.setUserId(loanApplicationMaster.getUserId());
 				nhbsApplicationsResponse.setApplicationId(loanApplicationMaster.getId());
 				nhbsApplicationsResponse.setApplicationType(loanApplicationMaster.getProductId());
+				nhbsApplicationsResponse.setBusinessTypeId(loanApplicationMaster.getBusinessTypeId());
 				if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getNpUserId())){
 					UsersRequest usersRequest = new UsersRequest();
 					usersRequest.setId(loanApplicationMaster.getNpUserId());
@@ -724,6 +740,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 						FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<Object,Object>)userResponseForName.getData(),
 								FundProviderDetailsRequest.class);
 						nhbsApplicationsResponse.setCheckerName(fundProviderDetailsRequest.getFirstName() + " " + (fundProviderDetailsRequest.getLastName() == null ? "": fundProviderDetailsRequest.getLastName()));
+						
 					} catch (Exception e) {
 						logger.error("error while fetching FP details");
 						e.printStackTrace();
@@ -736,6 +753,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 					
 					DirectorBackgroundDetail directorBackgroundDetail = directorBackgroundDetailsRepository.getByAppIdAndIsMainDirector(loanApplicationMaster.getId());
 					if(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetail)) {
+					    nhbsApplicationsResponse.setClientId(directorBackgroundDetail.getId());
 						nhbsApplicationsResponse.setClientName(directorBackgroundDetail.getDirectorsName());
 						nhbsApplicationsResponse.setCity(directorBackgroundDetail.getCity());
 						try {
@@ -820,6 +838,29 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 				}
 
 				nhbsApplicationsResponse.setApplicationDate(loanApplicationMaster.getCreatedDate());
+				
+					
+				try {
+					mcaCompanyId = loanApplicationService.getMCACompanyIdById(applicationId.longValue());
+					if(mcaCompanyId != null) {
+						mcaResponse = mcaClient.mcaStatusCheck(applicationId.toString(), mcaCompanyId.toString());
+						System.out.println("MCA Response"+mcaResponse);
+						System.out.println("MCA Response---===+++>>"+mcaResponse!=null?mcaResponse.getData():null);
+						if("true".equalsIgnoreCase(String.valueOf(mcaResponse.getData()))) {
+							nhbsApplicationsResponse.setMcaStatus(CommonUtils.COMPLETED);
+						}else {
+							nhbsApplicationsResponse.setMcaStatus(CommonUtils.IN_PROGRESS);
+						}
+					}else {
+						nhbsApplicationsResponse.setMcaStatus(CommonUtils.NA);
+					}
+				} catch (Exception e) {
+					logger.error("error while getting MCA Status");
+					e.printStackTrace();
+				}
+					
+				
+				
 				if(loanApplicationMaster.getApplicationStatusMaster().getId()>=CommonUtils.ApplicationStatus.ASSIGNED){
 					if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getDdrStatusId())){
 						nhbsApplicationsResponse.setDdrStatus(CommonUtils.getDdrStatusString(loanApplicationMaster.getDdrStatusId().intValue()));
@@ -831,12 +872,12 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 					if(!CommonUtils.isListNullOrEmpty(applicationStatusAuditList)){
 						nhbsApplicationsResponse.setProposalTakenDate(applicationStatusAuditList.get(0).getModifiedDate());
 					}
-					List<ApplicationStatusAudit> applicationStatusAuditListForAssignedToCheckerDate = appStatusRepository.getApplicationByUserIdBasedOnStatusForFPMaker(loanApplicationMaster.getId(), CommonUtils.ApplicationStatus.ASSIGNED);
-					if(!CommonUtils.isListNullOrEmpty(applicationStatusAuditList)){
+					List<ApplicationStatusAudit> applicationStatusAuditListForAssignedToCheckerDate = appStatusRepository.getApplicationByUserIdBasedOnStatusForFPMaker(loanApplicationMaster.getId(), CommonUtils.ApplicationStatus.ASSIGNED_TO_CHECKER);
+					if(!CommonUtils.isListNullOrEmpty(applicationStatusAuditListForAssignedToCheckerDate)){
 						if(applicationStatusAuditListForAssignedToCheckerDate.size()>1){
-							nhbsApplicationsResponse.setAssignedToCheckerDate(applicationStatusAuditList.get(applicationStatusAuditListForAssignedToCheckerDate.size()-1).getModifiedDate());
-						}else{
-							nhbsApplicationsResponse.setAssignedToCheckerDate(applicationStatusAuditList.get(0).getModifiedDate());
+							nhbsApplicationsResponse.setAssignedToCheckerDate(applicationStatusAuditListForAssignedToCheckerDate.get(applicationStatusAuditListForAssignedToCheckerDate.size()-1).getModifiedDate());
+						}else {
+							nhbsApplicationsResponse.setAssignedToCheckerDate(applicationStatusAuditListForAssignedToCheckerDate.get(0).getModifiedDate());
 						}
 					}
 					if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getIsFinalLocked())){
@@ -1070,6 +1111,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 				nhbsApplicationsResponse.setApplicationType(loanApplicationMaster.getProductId());
 				nhbsApplicationsResponse.setUserId(loanApplicationMaster.getUserId());
 				nhbsApplicationsResponse.setApplicationId(loanApplicationMaster.getId());
+				nhbsApplicationsResponse.setBusinessTypeId(loanApplicationMaster.getBusinessTypeId());
 				if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getDdrStatusId())){
 					nhbsApplicationsResponse.setDdrStatus(CommonUtils.getDdrStatusString(loanApplicationMaster.getDdrStatusId().intValue()));
 					nhbsApplicationsResponse.setDdrStatusId(loanApplicationMaster.getDdrStatusId().intValue());
@@ -1195,7 +1237,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 							e.printStackTrace();
 						}
 					}
-					List<ApplicationStatusAudit> applicationStatusAuditList = appStatusRepository.getApplicationByUserIdBasedOnStatusForFPMaker(loanApplicationMaster.getId(), CommonUtils.ApplicationStatus.ASSIGNED);
+					List<ApplicationStatusAudit> applicationStatusAuditList = appStatusRepository.getApplicationByUserIdBasedOnStatusForFPMaker(loanApplicationMaster.getId(), CommonUtils.ApplicationStatus.ASSIGNED_TO_CHECKER);
 					if(!CommonUtils.isListNullOrEmpty(applicationStatusAuditList)){
 						nhbsApplicationsResponse.setReceivedDate(applicationStatusAuditList.get(0).getModifiedDate());
 					}
@@ -1312,6 +1354,12 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 				logger.error("Error while Creating Process ==>{}", e);
 			}
 
+			//=====================Sending Mail to all Makers/Checkers/HO/BO when maker accept to fill the Proposal===================
+			
+			    fpAsyncComponent.sendMailToMakerandAllMakersWhenMakerAcceptProposal(request);
+			
+			//========================================================================================================================
+			 
 			logger.info("exit from setFPMaker()");
 			return true;
 		}
@@ -1323,7 +1371,19 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 	public boolean setFPChecker(NhbsApplicationRequest request) {
 		logger.info("entry in setFPChecker()");
 		LoanApplicationMaster applicationMaster = loanApplicationRepository.findOne(request.getApplicationId());
-		if(!CommonUtils.isObjectNullOrEmpty(applicationMaster)){
+        
+		Long applicationStatus = null;
+		Date lastModifiedDate = null;
+		if(!CommonUtils.isObjectNullOrEmpty(applicationMaster)) {
+			if(!CommonUtils.isObjectNullOrEmpty(applicationMaster.getApplicationStatusMaster()) 
+			   && !CommonUtils.isObjectNullOrEmpty(applicationMaster.getApplicationStatusMaster().getId())) {
+				applicationStatus = applicationMaster.getApplicationStatusMaster().getId();
+				if(!CommonUtils.isObjectNullOrEmpty(applicationMaster.getModifiedDate())) {
+					lastModifiedDate = applicationMaster.getModifiedDate();	
+				}
+			}
+		}
+			if(!CommonUtils.isObjectNullOrEmpty(applicationMaster)){
 			ApplicationStatusMaster applicationStatusMaster = new ApplicationStatusMaster();
 			applicationStatusMaster.setId(CommonUtils.ApplicationStatus.ASSIGNED_TO_CHECKER);
 			applicationMaster.setApplicationStatusMaster(applicationStatusMaster);
@@ -1332,6 +1392,19 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 			applicationMaster.setModifiedBy(request.getUserId());
 			applicationMaster.setModifiedDate(new Date());
 			loanApplicationRepository.save(applicationMaster);
+			
+			//=====================Sending Mail to all Checker/HO/BO when Maker assign/Re-assign DDR to Checker===================
+	
+			if(!CommonUtils.isObjectNullOrEmpty(applicationStatus) && CommonUtils.ApplicationStatus.REVERTED.equals(applicationStatus)) {
+				fpAsyncComponent.sendMailWhenMakerReAssignDDRToChecker(request, lastModifiedDate);	
+			}
+			else {
+				fpAsyncComponent.sendMailWhenMakerAssignDDRToChecker(request);	
+			} 
+		
+     		//========================================================================================================================
+
+			
 			logger.info("exit from setFPChecker()");
 			return true;
 		}

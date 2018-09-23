@@ -175,7 +175,7 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		saveNegativeIndustry(termLoanParameterRequest);
 
 		//Ravina
-		boolean isUpdate = msmeValueMappingService.updateMsmeValueMapping(false, termLoanParameterRequest.getId());
+		boolean isUpdate = msmeValueMappingService.updateMsmeValueMapping(false, termLoanParameterRequest.getId(),termLoanParameter2.getId());
 		logger.info("updated = {}",isUpdate);
 		CommonDocumentUtils.endHook(logger, "saveOrUpdate");
 		return true;
@@ -852,10 +852,10 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 			return null;
 		BeanUtils.copyProperties(loanParameter, termLoanParameterRequest);
 		
-		if (!CommonUtils.isObjectListNull(termLoanParameterRequest.getMaxTenure()))
-			termLoanParameterRequest.setMaxTenure(termLoanParameterRequest.getMaxTenure().divide(new BigDecimal("12"), 2, RoundingMode.HALF_UP));
-		if (!CommonUtils.isObjectListNull(termLoanParameterRequest.getMinTenure()))
-			termLoanParameterRequest.setMinTenure(termLoanParameterRequest.getMinTenure().divide(new BigDecimal("12"), 2, RoundingMode.HALF_UP));
+		if (!CommonUtils.isObjectListNull(termLoanParameterRequest.getMaxTenureNtb()))
+			termLoanParameterRequest.setMaxTenureNtb(termLoanParameterRequest.getMaxTenureNtb().divide(new BigDecimal("12"), 2, RoundingMode.HALF_UP));
+		if (!CommonUtils.isObjectListNull(termLoanParameterRequest.getMinTenureNtb()))
+			termLoanParameterRequest.setMinTenureNtb(termLoanParameterRequest.getMinTenureNtb().divide(new BigDecimal("12"), 2, RoundingMode.HALF_UP));
 		
 		List<Long> industryList = industrySectorTempRepository
 				.getIndustryByProductId(termLoanParameterRequest.getId());
@@ -1035,10 +1035,10 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 			
 		}
 		
-		if (!CommonUtils.isObjectListNull(termLoanParameterRequest.getMaxTenure()))
-			termLoanParameterRequest.setMaxTenure(termLoanParameterRequest.getMaxTenure().multiply(new BigDecimal("12")));
-		if (!CommonUtils.isObjectListNull(termLoanParameterRequest.getMinTenure()))
-			termLoanParameterRequest.setMinTenure(termLoanParameterRequest.getMinTenure().multiply(new BigDecimal("12")));
+		if (!CommonUtils.isObjectListNull(termLoanParameterRequest.getMaxTenureNtb()))
+			termLoanParameterRequest.setMaxTenureNtb(termLoanParameterRequest.getMaxTenureNtb().multiply(new BigDecimal("12")));
+		if (!CommonUtils.isObjectListNull(termLoanParameterRequest.getMinTenureNtb()))
+			termLoanParameterRequest.setMinTenureNtb(termLoanParameterRequest.getMinTenureNtb().multiply(new BigDecimal("12")));
 		
 		BeanUtils.copyProperties(termLoanParameterRequest, termLoanParameter,"id");
 		termLoanParameter.setUserId(termLoanParameterRequest.getUserId()!=null?termLoanParameterRequest.getUserId():null);
@@ -1147,10 +1147,10 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
         loanParameter.setApprovalDate(new Date());
         ntbTermLoanParameterTempRepository.save(loanParameter);
 		
-		if (!CommonUtils.isObjectListNull(termLoanParameterRequest.getMaxTenure()))
-			termLoanParameterRequest.setMaxTenure(termLoanParameterRequest.getMaxTenure().multiply(new BigDecimal("12")));
-		if (!CommonUtils.isObjectListNull(termLoanParameterRequest.getMinTenure()))
-			termLoanParameterRequest.setMinTenure(termLoanParameterRequest.getMinTenure().multiply(new BigDecimal("12")));
+		if (!CommonUtils.isObjectListNull(termLoanParameterRequest.getMaxTenureNtb()))
+			termLoanParameterRequest.setMaxTenureNtb(termLoanParameterRequest.getMaxTenureNtb().multiply(new BigDecimal("12")));
+		if (!CommonUtils.isObjectListNull(termLoanParameterRequest.getMinTenureNtb()))
+			termLoanParameterRequest.setMinTenureNtb(termLoanParameterRequest.getMinTenureNtb().multiply(new BigDecimal("12")));
 		
 		BeanUtils.copyProperties(termLoanParameterRequest, termLoanParameter,"id");
 		termLoanParameter.setUserId(termLoanParameterRequest.getUserId()!=null?termLoanParameterRequest.getUserId():null);
@@ -1183,7 +1183,7 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		saveNegativeIndustry(termLoanParameterRequest);
 
 		//Ravina
-		boolean isUpdate = msmeValueMappingService.updateMsmeValueMapping(false, termLoanParameterRequest.getId());
+		boolean isUpdate = msmeValueMappingService.updateMsmeValueMapping(false, termLoanParameterRequest.getId(),ntbParameter.getId());
 		logger.info("updated = {}",isUpdate);
 		CommonDocumentUtils.endHook(logger, "saveOrUpdate");
 		return true;
@@ -1202,10 +1202,10 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 			return null;
 		BeanUtils.copyProperties(loanParameter, termLoanParameterRequest);
 		
-		if (!CommonUtils.isObjectListNull(termLoanParameterRequest.getMaxTenure()))
-			termLoanParameterRequest.setMaxTenure(termLoanParameterRequest.getMaxTenure().divide(new BigDecimal("12"), 2, RoundingMode.HALF_UP));
-		if (!CommonUtils.isObjectListNull(termLoanParameterRequest.getMinTenure()))
-			termLoanParameterRequest.setMinTenure(termLoanParameterRequest.getMinTenure().divide(new BigDecimal("12"), 2, RoundingMode.HALF_UP));
+		if (!CommonUtils.isObjectListNull(termLoanParameterRequest.getMaxTenureNtb()))
+			termLoanParameterRequest.setMaxTenureNtb(termLoanParameterRequest.getMaxTenureNtb().divide(new BigDecimal("12"), 2, RoundingMode.HALF_UP));
+		if (!CommonUtils.isObjectListNull(termLoanParameterRequest.getMinTenureNtb()))
+			termLoanParameterRequest.setMinTenureNtb(termLoanParameterRequest.getMinTenureNtb().divide(new BigDecimal("12"), 2, RoundingMode.HALF_UP));
 		
 		List<Long> industryList = industrySectorRepository
 				.getIndustryByProductId(termLoanParameterRequest.getId());

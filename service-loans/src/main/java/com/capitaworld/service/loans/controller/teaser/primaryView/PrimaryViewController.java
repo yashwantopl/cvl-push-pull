@@ -639,10 +639,10 @@ public class PrimaryViewController {
 	}
 	
 	//NTB PRIMARY VIEW
-		@GetMapping(value = "/NtbPrimaryTeaserView/{toApplicationId}/{productMappingId}")
-		public @ResponseBody ResponseEntity<LoansResponse> ntbPrimaryViewOfCorporateCommon(@PathVariable(value = "toApplicationId") Long toApplicationId,@PathVariable(value = "productMappingId") Long productMappingId,@RequestParam(value = "clientId", required = false) Long clientId,HttpServletRequest request) {
+		@GetMapping(value = "/NtbTeaserView/{toApplicationId}/{productMappingId}/{isFinalView}")
+		public @ResponseBody ResponseEntity<LoansResponse> ntbViewOfCorporateCommon(@PathVariable(value = "toApplicationId") Long toApplicationId,@PathVariable(value = "productMappingId") Long productMappingId,@RequestParam(value = "clientId", required = false) Long clientId,HttpServletRequest request,@PathVariable(value = "isFinalView")Boolean isFinalView) {
 			
-			logger.info("In NTB Primary View Ctrl of applicationId"+toApplicationId+"productMappingId"+productMappingId);
+			logger.info("In NTB View Ctrl of applicationId"+toApplicationId+"productMappingId"+productMappingId);
 
 			//GET USER ID AND USER TYPE
 			Long userId = null;
@@ -688,7 +688,7 @@ public class PrimaryViewController {
 				NtbPrimaryViewResponse ntbPrimaryViewResponse = null;
 				try {
 					logger.info("GET NTB PRIMARY TEASER VIEW OF USER OF APPLICATION ID"+toApplicationId+"PRODUCT MAPPING ID"+productMappingId+"USER TYPE"+userType+"USER ID"+userId);
-					 ntbPrimaryViewResponse = ntbTeaserViewService.getNtbTeaserViewDetails(toApplicationId, userType, userId, productMappingId, false);
+					 ntbPrimaryViewResponse = ntbTeaserViewService.getNtbTeaserViewDetails(toApplicationId, userType, userId, productMappingId, isFinalView);
 					if(!CommonUtils.isObjectNullOrEmpty(ntbPrimaryViewResponse)){
 						logger.info("Response of Teaser View"+ntbPrimaryViewResponse.toString());
 						loansResponse.setData(ntbPrimaryViewResponse);

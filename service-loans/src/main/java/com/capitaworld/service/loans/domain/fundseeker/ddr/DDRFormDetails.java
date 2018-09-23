@@ -25,6 +25,8 @@ import javax.persistence.TemporalType;
 @NamedQuery(name="DDRFormDetails.findAll", query="SELECT a FROM DDRFormDetails a")
 public class DDRFormDetails implements Serializable {
 
+
+
 	private static final long serialVersionUID = 1L;
 
 	@Id
@@ -223,6 +225,12 @@ public class DDRFormDetails implements Serializable {
 	@Column(name = "ca_certified_networth_Statement")
 	private String caCertifiedNetworthStatement;
 	
+	@Column(name = "profile_pic_company")
+	private String profilePicCompany;
+	
+	@Column(name = "site_or_promotors_photos")
+	private String siteOrPromotorsPhotos;
+	
 	@Column(name = "irr_of_all_directors_for_last_2years")
 	private String irrOfAllDirectorsForLast2years;
 	
@@ -282,6 +290,12 @@ public class DDRFormDetails implements Serializable {
 
 	@Column(name = "remark_of_existing_banker")
 	private String remarkOfExistingBankerDetails;
+	
+	//FOR ONLY BOB BANK (21 Sep)
+	@Column(name = "customer_id")
+	private String customerId;
+	@Column(name = "customer_name")
+	private String customerName;
 	
 	@Column(name = "created_by")
 	private Long createdBy;
@@ -1021,18 +1035,50 @@ public class DDRFormDetails implements Serializable {
 	public void setRemarkOfExistingBankerDetails(String remarkOfExistingBankerDetails) {
 		this.remarkOfExistingBankerDetails = remarkOfExistingBankerDetails;
 	}
+	public String getProfilePicCompany() {
+		return profilePicCompany;
+	}
+
+	public void setProfilePicCompany(String profilePicCompany) {
+		this.profilePicCompany = profilePicCompany;
+	}
+
+	public String getSiteOrPromotorsPhotos() {
+		return siteOrPromotorsPhotos;
+	}
+
+	public void setSiteOrPromotorsPhotos(String siteOrPromotorsPhotos) {
+		this.siteOrPromotorsPhotos = siteOrPromotorsPhotos;
+	}
+
+	public String getCustomerId() {
+		return customerId;
+	}
+
+	public void setCustomerId(String customerId) {
+		this.customerId = customerId;
+	}
+
+	public String getCustomerName() {
+		return customerName;
+	}
+
+	public void setCustomerName(String customerName) {
+		this.customerName = customerName;
+	}
 
 	@Override
 	public String toString() {
-		return "DDRFormDetails [id=" + id + ", applicationId=" + applicationId + ", referenceNo=" + referenceNo + ", userId=" + userId
-				+ ", godownStockyard=" + godownStockyard + ", companySuccessPlan=" + companySuccessPlan
-				+ ", detailsOfBankingArrangement=" + detailsOfBankingArrangement + ", salesOfAutomobileDivision="
-				+ salesOfAutomobileDivision + ", othersSales=" + othersSales + ", totalConsolidatedSales="
-				+ totalConsolidatedSales + ", corporateSale=" + corporateSale + ", corporateSaleToTotalSale="
-				+ corporateSaleToTotalSale + ", corporateSaleToAutomobileDivSale=" + corporateSaleToAutomobileDivSale
-				+ ", outsideLoans=" + outsideLoans + ", loansFromFamilyMembersRelative="
-				+ loansFromFamilyMembersRelative + ", fallInSales=" + fallInSales + ", reasonForSalesDecline="
-				+ reasonForSalesDecline + ", negativeProfit=" + negativeProfit + ", fallInProfit=" + fallInProfit
+		return "DDRFormDetails [id=" + id + ", applicationId=" + applicationId + ", referenceNo=" + referenceNo
+				+ ", userId=" + userId + ", godownStockyard=" + godownStockyard + ", companySuccessPlan="
+				+ companySuccessPlan + ", detailsOfBankingArrangement=" + detailsOfBankingArrangement
+				+ ", salesOfAutomobileDivision=" + salesOfAutomobileDivision + ", othersSales=" + othersSales
+				+ ", totalConsolidatedSales=" + totalConsolidatedSales + ", corporateSale=" + corporateSale
+				+ ", corporateSaleToTotalSale=" + corporateSaleToTotalSale + ", corporateSaleToAutomobileDivSale="
+				+ corporateSaleToAutomobileDivSale + ", outsideLoans=" + outsideLoans
+				+ ", loansFromFamilyMembersRelative=" + loansFromFamilyMembersRelative + ", fallInSales=" + fallInSales
+				+ ", reasonForSalesDecline=" + reasonForSalesDecline + ", negativeProfit=" + negativeProfit
+				+ ", businessDetailsComment=" + businessDetailsComment + ", fallInProfit=" + fallInProfit
 				+ ", reasonForProfitDecline=" + reasonForProfitDecline + ", provisionalSalesFigure="
 				+ provisionalSalesFigure + ", salesBreakupByProduct=" + salesBreakupByProduct
 				+ ", isAnySeasonalPatternInSales=" + isAnySeasonalPatternInSales + ", outstandingDuesAmount="
@@ -1063,13 +1109,26 @@ public class DDRFormDetails implements Serializable {
 				+ centralExciseRegistrationOfCompany + ", vatRegistrationOfCompany=" + vatRegistrationOfCompany
 				+ ", letterOfIntentFromFundProviders=" + letterOfIntentFromFundProviders
 				+ ", panCardAndResidenceAddProofOfDirectors=" + panCardAndResidenceAddProofOfDirectors
-				+ ", caCertifiedNetworthStatement=" + caCertifiedNetworthStatement + ", irrOfAllDirectorsForLast2years="
-				+ irrOfAllDirectorsForLast2years + ", listOfDirectors=" + listOfDirectors
-				+ ", listOfShareholdersAndShareHoldingPatter=" + listOfShareholdersAndShareHoldingPatter
-				+ ", summaryOfBservations=" + summaryOfBservations + ", createdBy=" + createdBy + ", createdDate="
-				+ createdDate + ", modifyBy=" + modifyBy + ", modifyDate=" + modifyDate + ", isActive=" + isActive
-				+ "]";
+				+ ", caCertifiedNetworthStatement=" + caCertifiedNetworthStatement + ", profilePicCompany="
+				+ profilePicCompany + ", siteOrPromotorsPhotos=" + siteOrPromotorsPhotos
+				+ ", irrOfAllDirectorsForLast2years=" + irrOfAllDirectorsForLast2years + ", listOfDirectors="
+				+ listOfDirectors + ", listOfShareholdersAndShareHoldingPatter="
+				+ listOfShareholdersAndShareHoldingPatter + ", summaryOfBservations=" + summaryOfBservations
+				+ ", remarkOfCompanyInfo=" + remarkOfCompanyInfo + ", remarkOfDetailBankArrangement="
+				+ remarkOfDetailBankArrangement + ", remarkOfFinSummary=" + remarkOfFinSummary + ", remarkOfTotalSales="
+				+ remarkOfTotalSales + ", remarkOfTotalDebt=" + remarkOfTotalDebt + ", remarkOfLatestDebtList="
+				+ remarkOfLatestDebtList + ", remarkOfLatestCredList=" + remarkOfLatestCredList
+				+ ", remarkOfBusinessDetails=" + remarkOfBusinessDetails + ", remarkOfPersonalDetails="
+				+ remarkOfPersonalDetails + ", remarkOfNameOfAuthSignatory=" + remarkOfNameOfAuthSignatory
+				+ ", remarkOfOtherDetail=" + remarkOfOtherDetail + ", remarkOfDetailOfCredCard="
+				+ remarkOfDetailOfCredCard + ", remarkOfPastPreRelationship=" + remarkOfPastPreRelationship
+				+ ", remarkOfAnyOtherBankLoan=" + remarkOfAnyOtherBankLoan + ", remarkOfDocCheckList="
+				+ remarkOfDocCheckList + ", remarkOfExistingBankerDetails=" + remarkOfExistingBankerDetails
+				+ ", customerId=" + customerId + ", customerName=" + customerName + ", createdBy=" + createdBy
+				+ ", createdDate=" + createdDate + ", modifyBy=" + modifyBy + ", modifyDate=" + modifyDate
+				+ ", isActive=" + isActive + "]";
 	}
+
 
 
 	

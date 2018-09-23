@@ -1,7 +1,6 @@
 package com.capitaworld.service.loans.controller.fundseeker;
 
 import java.util.HashMap;
-
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -29,8 +28,11 @@ import com.capitaworld.service.dms.model.DocumentResponse;
 import com.capitaworld.service.loans.config.AuditComponentBankToCW;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.common.DocumentUploadFlagRequest;
+import com.capitaworld.service.loans.model.ddr.DDRCustomerRequest;
 import com.capitaworld.service.loans.model.ddr.DDRFormDetailsRequest;
 import com.capitaworld.service.loans.model.ddr.DDROneFormResponse;
+import com.capitaworld.service.loans.model.ddr.DDRRequest;
+import com.capitaworld.service.loans.model.ddr.DDRUploadRequest;
 import com.capitaworld.service.loans.service.fundseeker.corporate.DDRFormService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.service.token.TokenService;
@@ -106,6 +108,68 @@ public class DDRFormController {
 					HttpStatus.OK);
 		}
 	}
+	
+	/**
+	 * GET DDR MERGE FORM DETAILS BY DDR FORM ID
+	 * 
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping(value = "/getCombinedDDR/{appId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getCombinedDDR(@PathVariable("appId") Long appId, HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
+		logger.info("Enter in COMBINED DDR Form Get Method -------------------------->" + appId);
+
+		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+		if (CommonDocumentUtils.isThisClientApplication(request) && !CommonUtils.isObjectNullOrEmpty(clientId)) {
+			userId = clientId;
+		}
+		try {
+			DDRRequest ddrRequest = ddrFormService.getMergeDDR(appId, userId);
+			logger.info("DDR Form Get Successfully---------------------------->");
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse("Successfully get data", HttpStatus.OK.value(), ddrRequest),
+					HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while getting DDR Form Details ==>", e);
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+	}
+	
+	/**
+	 * SAVE DDR MERGE FORM DETAILS BY DDR FORM ID
+	 * 
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping(value = "/saveCombinedDDR", method = RequestMethod.POST,consumes = MediaType.APPLICATION_JSON_VALUE , produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> saveCombinedDDR(@RequestBody DDRRequest ddrRequest, HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
+		logger.info("Enter in COMBINED DDR Form SAVE Method -------------------------->");
+
+		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+		if (CommonDocumentUtils.isThisClientApplication(request) && !CommonUtils.isObjectNullOrEmpty(clientId)) {
+			userId = clientId;
+		}
+		if (CommonUtils.isObjectNullOrEmpty(userId)) {
+			logger.info("Invalid Request, UserId is null or Empty, COMBINED DDR Form SAVE Method");
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+		}
+		try {
+			ddrRequest.setUserId(userId);
+			ddrFormService.saveMergeDDR(ddrRequest);
+			logger.info("DDR COMBINED Form Saved Successfully---------------------------->");
+			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Data Saved", HttpStatus.OK.value()), HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while saving COMBINED DDR Form Details ==>", e);
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+	}
 
 	/**
 	 * GET DDR FORM DETAILS BY DDR FORM ID
@@ -119,7 +183,6 @@ public class DDRFormController {
 		logger.info("Enter in DDR Form Get Method -------------------------->" + appId);
 
 		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-		Integer userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE));
 		if (CommonDocumentUtils.isThisClientApplication(request) && !CommonUtils.isObjectNullOrEmpty(clientId)) {
 			userId = clientId;
 		}
@@ -156,7 +219,7 @@ public class DDRFormController {
 					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}
 		try {
-			DDROneFormResponse oneFormDetails = ddrFormService.getOneFormDetails(userId, appId);
+			DDROneFormResponse oneFormDetails = ddrFormService.getOneFormDetails(userId, appId,true);
 			logger.info("DDR AutoFilled Form Get Successfully---------------------------->");
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse("Successfully get data", HttpStatus.OK.value(), oneFormDetails), HttpStatus.OK);
@@ -211,6 +274,20 @@ public class DDRFormController {
 					HttpStatus.OK);
 		}
 	}
+	
+	@RequestMapping(value = "/deleteDocs", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> deleteDocuments(@RequestBody DDRUploadRequest ddrUploadRequest) {
+		try {
+			boolean deleteDocument = ddrFormService.deleteDocument(ddrUploadRequest);
+			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Deleted", HttpStatus.OK.value(), deleteDocument), HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while DDR Delete Documents ==>", e);	
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+	}
 
 	@RequestMapping(value = "/generateDDRPDF/{appId}", method = RequestMethod.GET)
 	public ResponseEntity<LoansResponse> generateDDRPDF(@PathVariable(value = "appId") Long appId,
@@ -238,7 +315,7 @@ public class DDRFormController {
 
 		try {
 			DDRFormDetailsRequest dDRFormDetailsRequest = ddrFormService.get(appId, userId);
-			DDROneFormResponse oneFormDetails = ddrFormService.getOneFormDetails(userId, appId);
+			DDROneFormResponse oneFormDetails = ddrFormService.getOneFormDetails(userId, appId,true);
 			DDRFormDetailsRequest.printFields(dDRFormDetailsRequest);
 			DDROneFormResponse.printFields(oneFormDetails);
 			Map<String, Object> obj = new HashMap<String, Object>();
@@ -431,9 +508,96 @@ public class DDRFormController {
 			generateTokenRequest= new GenerateTokenRequest();
 			generateTokenRequest.setToken(tokenString);
 			tokenService.setTokenAsExpired(generateTokenRequest);
-			auditComponentBankToCW.saveBankToCWReqRes (decrypt !=null ? decrypt: encryptedString , ddrFormDetailsRequest !=null ? ddrFormDetailsRequest.getApplicationId() : null  ,CommonUtility.ApiType.DDR_API, loansResponse , reason, orgId);
+			auditComponentBankToCW.saveBankToCWReqRes (decrypt !=null ? decrypt: encryptedString , ddrFormDetailsRequest !=null ? ddrFormDetailsRequest.getApplicationId() : null  ,CommonUtility.ApiType.DDR_API, loansResponse , reason, orgId , null );
 		}
 	}
+	
+	
+	/**
+	 * CHECK CUSTOMER DETAILS FILLED OR NOT IN CORPORATE TEASER VIEW WHILE APPROVE PROPOSAL FOR ONLY BOB BANK
+	 * 
+	 * @param applicationId
+	 * @return
+	 */
+	@RequestMapping(value = "/checkCustomerDetailFilled/{appId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> checkCustomerDetailFilled(@PathVariable("appId") Long appId) {
+		logger.info("Enter in CHECK CUSTOMER DETAILS FILLED -------------------------->" + appId);
+		try {
+			DDRCustomerRequest resposnse = ddrFormService.checkCustomerDetailFilled(appId);
+			logger.info("SUCCESSFULLT GET CUSTOMER DETAILS FILLED ---------------------------->" + resposnse.toString());
+			return new ResponseEntity<LoansResponse>( new LoansResponse("Successfully get data", HttpStatus.OK.value(), resposnse), HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while CHECK CUSTOMER DETAILS FILLED" +  e.getMessage());
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+	}
+	
+	
+	/**
+	 * SAVE CUSTOMER DETAILS IN CORPORATE TEASER VIEW WHILE APPROVE PROPOSAL FOR ONLY BOB BANK
+	 * 
+	 * @param applicationId
+	 * @return
+	 */
+	@RequestMapping(value = "/saveCustomerDetail", method = RequestMethod.POST,consumes = MediaType.APPLICATION_JSON_VALUE ,produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> saveCustomerDetail(@RequestBody DDRCustomerRequest customerRequest,
+			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
+		
+		logger.info("ENTER IN SAVE CUSTOMER DETAIL FOR BOB ");
+		if(CommonUtils.isObjectNullOrEmpty(customerRequest.getApplicationId())){
+			logger.info("SAVE CUSTOMER DETAILS FILLED (APPLCIATION ID IS NULL OR EMPTY)");
+			return new ResponseEntity<LoansResponse>( new LoansResponse("Invalid Request, ApplicationId is null or Empty", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+		}
+		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+		if (CommonDocumentUtils.isThisClientApplication(request) && !CommonUtils.isObjectNullOrEmpty(clientId)) {
+			userId = clientId;
+		}
+		customerRequest.setUserId(userId);
+		logger.info("Enter in SAVE CUSTOMER DETAILS FILLED -------------------------->" + customerRequest.getApplicationId());
+		try {
+			boolean resposnse = ddrFormService.saveCustomerDetailFilled(customerRequest);
+			if(resposnse) {
+				logger.info("STATUS OF SAVE CUSTOMER DETAILS FILLED ---------------------------->" + resposnse);
+				return new ResponseEntity<LoansResponse>( new LoansResponse("Customer details are successfully saved in DDR", HttpStatus.OK.value(), resposnse), HttpStatus.OK);	
+			}
+			logger.info("STATUS OF SAVE CUSTOMER DETAILS FILLED ---------------------------->" + resposnse);
+			return new ResponseEntity<LoansResponse>( new LoansResponse("Invalid Request, Data not saved", HttpStatus.BAD_REQUEST.value(), resposnse), HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while SAVE CUSTOMER DETAILS FILLED" +  e.getMessage());
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+	}
+	
+	
+	/**
+	 * GET CUSTOMER NAME BY CUSTOMER ID
+	 * @return
+	 */
+	@RequestMapping(value = "/getCustomerNameById", method = RequestMethod.POST,consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getCustomerNameById(@RequestBody DDRCustomerRequest customerRequest) {
+		
+		logger.info("ENTER IN GET CUSTOMER NAME BY CUSTOMER ID------------>");
+		if(CommonUtils.isObjectNullOrEmpty(customerRequest.getCustomerId())){
+			logger.info("SAVE CUSTOMER DETAILS FILLED (APPLCIATION ID IS NULL OR EMPTY)");
+			return new ResponseEntity<LoansResponse>( new LoansResponse("Invalid Request, CustomerId is null or Empty", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+		}
+		try {
+			return new ResponseEntity<LoansResponse>( new LoansResponse("Successfully get data", HttpStatus.OK.value(), ddrFormService.getCustomerNameById(customerRequest)), HttpStatus.OK);	
+		} catch (Exception e) {
+			logger.error("Error while GET CUSTOMER NAME BY CUSTOMER ID" +  e.getMessage());
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+	}
+	
 	
 
 }

@@ -32,6 +32,8 @@ public class PaymentRequest implements Serializable {
     private String gatewayType;
     private Long userId;
     private String requestType;
+    private Integer businessTypeId;
+    
     
     
     
@@ -188,6 +190,14 @@ public class PaymentRequest implements Serializable {
 		this.gatewayType = gatewayType;
 	}
 
+	public Integer getBusinessTypeId() {
+		return businessTypeId;
+	}
+
+	public void setBusinessTypeId(Integer businessTypeId) {
+		this.businessTypeId = businessTypeId;
+	}
+
 	@Override
 	public String toString() {
 		return "PaymentRequest [applicationId=" + applicationId + ", trxnId=" + trxnId + ", nameOfEntity="
@@ -195,8 +205,11 @@ public class PaymentRequest implements Serializable {
 				+ appointmentDate + ", appointmentTime=" + appointmentTime + ", emailAddress=" + emailAddress
 				+ ", mobileNumber=" + mobileNumber + ", paymentAmount=" + paymentAmount + ", purposeCode=" + purposeCode
 				+ ", responseParams=" + responseParams + ", status=" + status + ", panNo=" + panNo
-				+ ", isAcceptConsent=" + isAcceptConsent + "]";
+				+ ", isAcceptConsent=" + isAcceptConsent + ", gatewayType=" + gatewayType + ", userId=" + userId
+				+ ", requestType=" + requestType + ", businessTypeId=" + businessTypeId + "]";
 	}
+
+	
 
 	
 }

@@ -107,6 +107,10 @@ public class DDRFormDetailsRequest implements Serializable {
 	private String outsideLoansString;
 	private String loansFromFamilyMembersRelativeString;
 	
+	//FOR ONLY BOB BANK(21 Sep)
+	private String customerId;
+	private String customerName;
+	
 	
 	List<DDRAuthorizedSignDetailsRequest> dDRAuthSignDetailsList = new ArrayList<DDRAuthorizedSignDetailsRequest>();
 	List<DDRCreditCardDetailsRequest> dDRCreditCardDetailsList = new ArrayList<DDRCreditCardDetailsRequest>();
@@ -1205,7 +1209,6 @@ public class DDRFormDetailsRequest implements Serializable {
 
 	public static void printFields(Object obj) throws Exception {
          Field[] fields = DDRFormDetailsRequest.class.getDeclaredFields();
-         System.out.println("length : "+fields.length);
          for(Field field : fields) {
              Object value = field.get(obj);
              if(value instanceof String){

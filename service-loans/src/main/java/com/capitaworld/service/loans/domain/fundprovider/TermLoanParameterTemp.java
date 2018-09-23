@@ -327,11 +327,24 @@ public class TermLoanParameterTemp extends ProductMasterTemp implements Serializ
 
 	@Column(name="is_msme_funding_mandatory")
 	private Boolean isMsmeFundingMandatory = false;
+	
+	@Column(name="cgtmse_coverage")
+	private Integer cgtmseCoverage;
 
 
 	//-----------------------added eligibility method for product
 	@Column(name="assessment_method_id")
 	private Integer assessmentMethodId;
+	
+	@Column(name="cash_margin")
+	private Integer cashMargin;
+	
+	@Column(name="dscr")
+	private BigDecimal dscr;
+	
+	@Column(name="payback_period")
+	private Integer paybackPeriod;
+	
 
 	public Integer getIndividualCibil() {
 		return individualCibil;
@@ -1142,5 +1155,43 @@ public class TermLoanParameterTemp extends ProductMasterTemp implements Serializ
 	public void setIsMsmeFundingMandatory(Boolean isMsmeFundingMandatory) {
 		this.isMsmeFundingMandatory = isMsmeFundingMandatory;
 	}
+
+	public Integer getCgtmseCoverage() {
+		return cgtmseCoverage;
+	}
+
+	public void setCgtmseCoverage(Integer cgtmseCoverage) {
+		this.cgtmseCoverage = cgtmseCoverage;
+	}
+
+	public Integer getCashMargin() {
+		return cashMargin;
+	}
+
+	public void setCashMargin(Integer cashMargin) {
+		this.cashMargin = cashMargin;
+	}
+
+	public BigDecimal getDscr() {
+		return dscr;
+	}
+
+	public void setDscr(BigDecimal dscr) {
+		this.dscr = dscr;
+	}
+
+	public Integer getPaybackPeriod() {
+		return paybackPeriod;
+	}
+
+	public void setPaybackPeriod(Integer paybackPeriod) {
+		this.paybackPeriod = paybackPeriod;
+	}
+
+
+	
+	
+
+	
 
 }

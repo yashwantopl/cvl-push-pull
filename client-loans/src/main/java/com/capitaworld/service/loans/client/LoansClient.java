@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-import com.capitaworld.service.loans.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ByteArrayResource;
@@ -19,6 +18,18 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.capitaworld.service.loans.exceptions.ExcelException;
 import com.capitaworld.service.loans.exceptions.LoansException;
+import com.capitaworld.service.loans.model.CMADetailResponse;
+import com.capitaworld.service.loans.model.CreditRatingOrganizationDetailRequest;
+import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
+import com.capitaworld.service.loans.model.ExcelRequest;
+import com.capitaworld.service.loans.model.ExcelResponse;
+import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
+import com.capitaworld.service.loans.model.FrameRequest;
+import com.capitaworld.service.loans.model.GenerateTokenRequest;
+import com.capitaworld.service.loans.model.LoanApplicationRequest;
+import com.capitaworld.service.loans.model.LoansResponse;
+import com.capitaworld.service.loans.model.NTBRequest;
+import com.capitaworld.service.loans.model.PaymentRequest;
 import com.capitaworld.service.loans.model.common.EkycRequest;
 import com.capitaworld.service.loans.model.common.HomeLoanEligibilityRequest;
 import com.capitaworld.service.loans.model.common.LAPEligibilityRequest;
@@ -41,6 +52,7 @@ import com.capitaworld.service.loans.model.mobile.MobileFrameRequest;
 import com.capitaworld.service.loans.model.mobile.MobileLoanRequest;
 import com.capitaworld.service.loans.model.retail.CreditCardsDetailRequest;
 import com.capitaworld.service.loans.model.retail.ExistingLoanDetailRequest;
+import com.capitaworld.service.loans.model.retail.RetailApplicantIncomeRequest;
 import com.capitaworld.service.loans.model.retail.RetailApplicantRequest;
 import com.capitaworld.service.loans.model.score.ScoringRequestLoans;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -83,7 +95,7 @@ public class LoansClient {
 	private static final String EXISTING_PRODUCT_DETAILS = "/existing_product_details/save";
 	private static final String MEANS_OF_FINANCE = "/means_of_finance/save";
 	private static final String FINANCIAL_ARRANGEMENT_DETAILS = "/financial_arrangement_details/save";
-	private static final String FINANCIAL_ARRANGEMENT_DETAILS_TOTAL_EMI = "/financial_arrangement_details/get_total_emi";
+	private static final String FINANCIAL_ARRANGEMENT_DETAILS_TOTAL_EMI = "/financial_arrangement_details/get_total_emi_sanction_amount";
 	private static final String FINANCIAL_ARRANGEMENT_DETAILS_TOTAL_EMI_FROM_DIRECTOR_ID = "/financial_arrangement_details/getTotalEmiFromDirectorId";
 	private static final String FUTURE_FINANCIAL_ESTIMATE_DETAILS = "/future_financial_estimate_details/save";
 	private static final String GUARANTORS_CORPORATE_DETAILS = "/guarantors_corporate_details/save";
@@ -145,6 +157,7 @@ public class LoansClient {
 	private static final String GET_FULL_PRIMARY_PL = "/personal/primary/get_primary_info";
 	private static final String GET_FULL_PRIMARY_LAP = "/lap/primary/get_primary_info";
 	private static final String GET_FULL_PROFILE = "/fs_retail_profile/profile/get_profile";
+	private static final String SAVE_ITR_RETAIL_APPLICANT_DETAILS= "/fs_retail_profile/profile/saveITRRes";
 	
 	private static final String IS_TERM_LOAN_LESS_THAN_LIMIT = "/loan_application/isTermLoanLessThanLimit";
 	
@@ -152,6 +165,7 @@ public class LoansClient {
 	
 	private static final String SAVE_DIRECTOR_BACKGROUND_DETAILS = "/director_background_details/save";
 	private static final String GET_DIRECTOR_BACKGROUND_DETAILS = "/director_background_details/getList_client";
+	private static final String GET_DIRECTOR_BACKGROUND_DETAILS_FOR_NTB = "/director_background_details/getDirectorBasicDetailsListForNTB";
 	private static final String GET_DIRECTOR_BACKGROUND_DETAIL = "/director_background_details/get";
 	private static final String UPDATE_DIRECTOR_BACKGROUND_API_FLAG = "/director_background_details/update_api_flag";
 
@@ -177,7 +191,8 @@ public class LoansClient {
 
 	private static final String GET_ORG_PAN_DETAILS = "/fs_profile/getOrgAndPanByAppId";
 	
-	private static final String  GET_FPDETAILS_BY_FPPRODUCTID = "/loan_application/getFpDetailsByFpProductId";
+	private static final String GET_FPDETAILS_BY_FPPRODUCTID = "/loan_application/getFpDetailsByFpProductId";
+	private static final String GET_FP_DETAILS_BY_FPPRODUCT_MAPPINGID = "/loan_application/getFpDetailsByFpProductMappindId";
 	private static final String SAVE_PHASE_ONE = "/loan_application/save_phase1_sidbi";
 	private static final String SAVE_PHASE_TWO = "/loan_application/save_phase2_sidbi";
 	
@@ -198,15 +213,19 @@ public class LoansClient {
     private static final String GET_BY_USERID_AND_PRODUCTID = "/user_amount_mapping/get_by_user_and_product";
     
     private static final String GET_DATA_FOR_HUNTER="/common/getDataForHunter";
-    
+    private static final String GET_DATA_FOR_HUNTER_NTB="/common/getDataForHunterForNTB";
     
     //For Gateway
     private static final String GET_CMA_BY_APPLICATIONID_PRODUCTDOCUMENTMAPPINGID = "/corporate_upload/get_CMA_by_applicationId_productDocumentMappingId";
     private static final String UPDATE_PAYMENT_STATUS = "/loan_application/update_payment_status_sidbi";
     
     private static final String SAVE_UPDATE_DIRECTOR_INCOME_DETAILS = "/corporate_director_income_details/save_income_details";
+ 
       
     private static final String GET_DIRECTOR_INCOME_DETAILS = "/corporate_director_income_details/get_income_details";
+    private static final String GET_DIRECTOR_INCOME_LATEST_YEAR_DETAILS = "/corporate_director_income_details/get_income_details_latest_year";
+    private static final String GET_RETAIL_APPLICANT_INCOME_DETAILS = "/retail_applicant_income/get";
+    private static final String SAVE_RETAIL_APPLICANT_INCOME_DETAILS = "/retail_applicant_income/saveAll";
     
     
     private static final String GET_TOKEN ="/loan_application/getToken";
@@ -818,7 +837,7 @@ public class LoansClient {
 		}
 	}
 	
-	public LoansResponse getTotalEMI(Long applicationId) throws Exception{
+	public FinancialArrangementsDetailRequest getTotalEMIAndSanctionAmount(Long applicationId) throws Exception{
 		String url = loansBaseUrl.concat(FINANCIAL_ARRANGEMENT_DETAILS_TOTAL_EMI).concat("/" + applicationId);
 		System.out.println("url for Getting TotalEMI From Client=================>" + url + " and For Application Id====>" + applicationId);
 		try {
@@ -826,7 +845,7 @@ public class LoansClient {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
 			HttpEntity<?> entity = new HttpEntity<>(null, headers);
-			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
+			return restTemplate.exchange(url, HttpMethod.GET, entity, FinancialArrangementsDetailRequest.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new Exception("Loans service is not available");
@@ -1553,14 +1572,14 @@ public class LoansClient {
 			throw new Exception("Loans service is not available");
 		}
 	}
-	public RetailApplicantRequest getFullProfileDetail(Long applicationId,Long userId) throws Exception {
-		String url = loansBaseUrl.concat(GET_FULL_PROFILE).concat("/" + applicationId + "/" + userId);
+	public LoansResponse getFullProfileDetail(Long applicationId) throws Exception {
+		String url = loansBaseUrl.concat(GET_FULL_PROFILE).concat("/" + applicationId);
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
 			headers.setContentType(MediaType.APPLICATION_JSON);
 			HttpEntity<?> entity = new HttpEntity<Object>(null, headers);
-			return restTemplate.exchange(url, HttpMethod.GET, entity, RetailApplicantRequest.class).getBody();
+			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new Exception("Loans service is not available");
@@ -1642,6 +1661,20 @@ public class LoansClient {
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new ExcelException("Loans service is not available");
+		}
+	}
+	
+	public LoansResponse getDirectorBackgroundDetailsForNTB(Long applicationId) throws Exception {
+		String url = loansBaseUrl.concat(GET_DIRECTOR_BACKGROUND_DETAILS_FOR_NTB).concat("/" + applicationId);
+		System.out.println("url for Getting DirectorBackgroundDetails for NTB From Client=================>" + url + " and For Application Id====>" + applicationId);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			HttpEntity<?> entity = new HttpEntity<>(null, headers);
+			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new Exception("Loans service is not available");
 		}
 	}
 	
@@ -1881,6 +1914,21 @@ public class LoansClient {
 		}
 	}
 	
+	public LoansResponse getFpDetailsByFpProductMappingId(Long fpProductMappingId) throws ExcelException {
+		String url = loansBaseUrl.concat(GET_FP_DETAILS_BY_FPPRODUCT_MAPPINGID).concat("/"+fpProductMappingId);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<?> entity = new HttpEntity<>(fpProductMappingId, headers);
+			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ExcelException("Loans service is not available");
+		}
+	}
+	
+	
 	public LoansResponse getCorporateScore(ScoringRequestLoans scoringRequestLoans) throws LoansException {
 		String url = loansBaseUrl.concat(GET_CORPORATE_SCORE);
 		System.out.println("url to get Corporate Score Calculation ==>" + url);
@@ -2100,7 +2148,19 @@ public class LoansClient {
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
-			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<?> entity = new HttpEntity<>(null, headers);
+			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available");
+		}
+	}
+	
+	public LoansResponse getDataForHunterForNTB(Long applicationId) throws LoansException {
+		String url = loansBaseUrl.concat(GET_DATA_FOR_HUNTER_NTB).concat("/"+applicationId);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
 			HttpEntity<?> entity = new HttpEntity<>(null, headers);
 			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
@@ -2165,6 +2225,20 @@ public class LoansClient {
 		}
 	}
 	
+	public LoansResponse getDirectorIncomeLatestYearDetails(Long applicationId) throws LoansException {
+		String url = loansBaseUrl.concat(GET_DIRECTOR_INCOME_LATEST_YEAR_DETAILS).concat("/"+applicationId);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<?> entity = new HttpEntity<>(null, headers);
+			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available");
+		}
+	}
+	
 	public String getToken(GenerateTokenRequest generateTokenRequest) throws LoansException {
 
 		String url = loansBaseUrl.concat(GET_TOKEN);
@@ -2202,6 +2276,51 @@ public class LoansClient {
 			System.out.println("Exception while setting  token as expired Loan Client!!");
 			e.printStackTrace();
 			throw new LoansException("Loans service is not available");
+		}
+	}
+	
+	public LoansResponse getRetailApplicantIncomeDetails(Long applicationId) throws LoansException {
+		String url = loansBaseUrl.concat(GET_RETAIL_APPLICANT_INCOME_DETAILS).concat("/" + applicationId);
+		try {
+			System.out.println("Enter in Get Retail Applicant Income Details---------->" + url);
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<?> entity = new HttpEntity<>(null, headers);
+			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available While Get Retail Applicant Income Details");
+		}
+	}
+	
+	public LoansResponse saveOrUpdateRetailApplicantIncomeDetails(List<RetailApplicantIncomeRequest> request) throws LoansException {
+		String url = loansBaseUrl.concat(SAVE_RETAIL_APPLICANT_INCOME_DETAILS);
+		try {
+			System.out.println("Enter in save Retail Applicant Income Details---------->" + url);
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<List<RetailApplicantIncomeRequest>> entity = new HttpEntity<List<RetailApplicantIncomeRequest>>(request, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available while save retail applicant income details");
+		}
+	}
+	
+	public LoansResponse saveITRResRetailApplicantDetails(RetailApplicantRequest request) throws LoansException {
+		String url = loansBaseUrl.concat(SAVE_ITR_RETAIL_APPLICANT_DETAILS);
+		try {
+			System.out.println("Enter in save ITR Response Retail Applicant Details---------->" + url);
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<RetailApplicantRequest> entity = new HttpEntity<RetailApplicantRequest>(request, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available while save ITR res retail applicant details");
 		}
 	}
 }

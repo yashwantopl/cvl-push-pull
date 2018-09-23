@@ -6,8 +6,14 @@ package com.capitaworld.service.loans.model.teaser.primaryview;
 import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.service.loans.model.AssociatedConcernDetailRequest;
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailResponse;
+import com.capitaworld.service.loans.model.ExistingProductDetailRequest;
+import com.capitaworld.service.loans.model.FinanceMeansDetailResponse;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailResponse;
+import com.capitaworld.service.loans.model.GuarantorsCorporateDetailRequest;
+import com.capitaworld.service.loans.model.SecurityCorporateDetailRequest;
+import com.capitaworld.service.loans.model.TotalCostOfProjectResponse;
 import com.capitaworld.service.loans.model.corporate.CorporateDirectorIncomeRequest;
 
 /**
@@ -74,6 +80,7 @@ public class NtbPrimaryViewResponse {
 	    private List<Object> bankStatement;
 	    private List<Object> cibilReport;
 	    private List<Object> irtPdfReport;
+	    private List<Object> irtXMLReport;
 	    private List<Map<String,Object>> directorBackGroundDetails;
 	    private List<CorporateDirectorIncomeRequest> directorIncomeDetails;
 	    private Object monthlyDetailList;
@@ -101,7 +108,30 @@ public class NtbPrimaryViewResponse {
 	    private Integer businessTypeId;
 	    private Object dataObject;
 	    private Object scoringResponseList;
-
+	    private Boolean isMultipleUser;
+	    private Boolean isMainDir;
+	    private Long appId;
+	    private String dirPan;
+	    private Object cibilOfMainDir;
+	    private Object promotersContribution;
+	    private Object promotersContributionPer;
+	    private Object fraudDetectionData;
+	    private Object proposedDetailOfUnitFact;
+	    private Object proposedConstitutionOfUnit;
+	    
+	    private Object nameOfEntity;
+	    private Object pan;
+	    private Object establishDate;
+	    
+	    
+	    
+		private List<ExistingProductDetailRequest> existingProductDetailRequestList;
+		private List<TotalCostOfProjectResponse> totalCostOfProjectResponseList;
+		private List<FinanceMeansDetailResponse> financeMeansDetailResponseList;
+		private List<SecurityCorporateDetailRequest> securityCorporateDetailRequestList;
+		private List<GuarantorsCorporateDetailRequest> guarantorsCorporateDetailRequestList;
+		private List<AssociatedConcernDetailRequest> associatedConcernDetailRequests;
+	    
 
 		/**
 		 * @return the matchesList
@@ -945,6 +975,178 @@ public class NtbPrimaryViewResponse {
 		public void setScoringResponseList(Object scoringResponseList) {
 			this.scoringResponseList = scoringResponseList;
 		}
+		/**
+		 * @return the isMultipleUser
+		 */
+		public Boolean getIsMultipleUser() {
+			return isMultipleUser;
+		}
+		/**
+		 * @param isMultipleUser the isMultipleUser to set
+		 */
+		public void setIsMultipleUser(Boolean isMultipleUser) {
+			this.isMultipleUser = isMultipleUser;
+		}
+		/**
+		 * @return the isMainDir
+		 */
+		public Boolean getIsMainDir() {
+			return isMainDir;
+		}
+		/**
+		 * @param isMainDir the isMainDir to set
+		 */
+		public void setIsMainDir(Boolean isMainDir) {
+			this.isMainDir = isMainDir;
+		}
+		/**
+		 * @return the appId
+		 */
+		public Long getAppId() {
+			return appId;
+		}
+		/**
+		 * @param appId the appId to set
+		 */
+		public void setAppId(Long appId) {
+			this.appId = appId;
+		}
+		/**
+		 * @return the dirPan
+		 */
+		/**
+		 * @return the dirPan
+		 */
+		public String getDirPan() {
+			return dirPan;
+		}
+		/**
+		 * @param dirPan the dirPan to set
+		 */
+		public void setDirPan(String dirPan) {
+			this.dirPan = dirPan;
+		}
+		/**
+		 * @return the cibilOfMainDir
+		 */
+		public Object getCibilOfMainDir() {
+			return cibilOfMainDir;
+		}
+		/**
+		 * @param cibilOfMainDir the cibilOfMainDir to set
+		 */
+		public void setCibilOfMainDir(Object cibilOfMainDir) {
+			this.cibilOfMainDir = cibilOfMainDir;
+		}
+		/**
+		 * @return the promotersContribution
+		 */
+		public Object getPromotersContribution() {
+			return promotersContribution;
+		}
+		/**
+		 * @param promotersContribution the promotersContribution to set
+		 */
+		public void setPromotersContribution(Object promotersContribution) {
+			this.promotersContribution = promotersContribution;
+		}
+		/**
+		 * @return the promotersContributionPer
+		 */
+		public Object getPromotersContributionPer() {
+			return promotersContributionPer;
+		}
+		/**
+		 * @param promotersContributionPer the promotersContributionPer to set
+		 */
+		public void setPromotersContributionPer(Object promotersContributionPer) {
+			this.promotersContributionPer = promotersContributionPer;
+		}
+		public List<Object> getIrtXMLReport() {
+			return irtXMLReport;
+		}
+		public void setIrtXMLReport(List<Object> irtXMLReport) {
+			this.irtXMLReport = irtXMLReport;
+		}
+		public Object getFraudDetectionData() {
+			return fraudDetectionData;
+		}
+		public void setFraudDetectionData(Object fraudDetectionData) {
+			this.fraudDetectionData = fraudDetectionData;
+		}
+		public Object getProposedDetailOfUnitFact() {
+			return proposedDetailOfUnitFact;
+		}
+		public void setProposedDetailOfUnitFact(Object proposedDetailOfUnitFact) {
+			this.proposedDetailOfUnitFact = proposedDetailOfUnitFact;
+		}
+		public Object getProposedConstitutionOfUnit() {
+			return proposedConstitutionOfUnit;
+		}
+		public void setProposedConstitutionOfUnit(Object proposedConstitutionOfUnit) {
+			this.proposedConstitutionOfUnit = proposedConstitutionOfUnit;
+		}
+		public Object getNameOfEntity() {
+			return nameOfEntity;
+		}
+		public void setNameOfEntity(Object nameOfEntity) {
+			this.nameOfEntity = nameOfEntity;
+		}
+		public Object getPan() {
+			return pan;
+		}
+		public void setPan(Object pan) {
+			this.pan = pan;
+		}
+		public Object getEstablishDate() {
+			return establishDate;
+		}
+		public void setEstablishDate(Object establishDate) {
+			this.establishDate = establishDate;
+		}
+		public List<ExistingProductDetailRequest> getExistingProductDetailRequestList() {
+			return existingProductDetailRequestList;
+		}
+		public void setExistingProductDetailRequestList(List<ExistingProductDetailRequest> existingProductDetailRequestList) {
+			this.existingProductDetailRequestList = existingProductDetailRequestList;
+		}
+		public List<TotalCostOfProjectResponse> getTotalCostOfProjectResponseList() {
+			return totalCostOfProjectResponseList;
+		}
+		public void setTotalCostOfProjectResponseList(List<TotalCostOfProjectResponse> totalCostOfProjectResponseList) {
+			this.totalCostOfProjectResponseList = totalCostOfProjectResponseList;
+		}
+		public List<FinanceMeansDetailResponse> getFinanceMeansDetailResponseList() {
+			return financeMeansDetailResponseList;
+		}
+		public void setFinanceMeansDetailResponseList(List<FinanceMeansDetailResponse> financeMeansDetailResponseList) {
+			this.financeMeansDetailResponseList = financeMeansDetailResponseList;
+		}
+		public List<SecurityCorporateDetailRequest> getSecurityCorporateDetailRequestList() {
+			return securityCorporateDetailRequestList;
+		}
+		public void setSecurityCorporateDetailRequestList(
+				List<SecurityCorporateDetailRequest> securityCorporateDetailRequestList) {
+			this.securityCorporateDetailRequestList = securityCorporateDetailRequestList;
+		}
+		public List<GuarantorsCorporateDetailRequest> getGuarantorsCorporateDetailRequestList() {
+			return guarantorsCorporateDetailRequestList;
+		}
+		public void setGuarantorsCorporateDetailRequestList(
+				List<GuarantorsCorporateDetailRequest> guarantorsCorporateDetailRequestList) {
+			this.guarantorsCorporateDetailRequestList = guarantorsCorporateDetailRequestList;
+		}
+		public List<AssociatedConcernDetailRequest> getAssociatedConcernDetailRequests() {
+			return associatedConcernDetailRequests;
+		}
+		public void setAssociatedConcernDetailRequests(List<AssociatedConcernDetailRequest> associatedConcernDetailRequests) {
+			this.associatedConcernDetailRequests = associatedConcernDetailRequests;
+		}
+		
+
+
+
+
 
 
 }

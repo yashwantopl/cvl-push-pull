@@ -38,7 +38,13 @@ public class FinancialArrangementsDetailResponse implements Serializable{
     
     private String address;
     
+    private String directorName;
     
+    private Object lcbgStatus;
+    
+    private String amountStr;
+    
+    private String outstandingAmountStr;
     
    /* public String getFacilityNature() {
         return facilityNature;
@@ -127,11 +133,40 @@ public class FinancialArrangementsDetailResponse implements Serializable{
 	public void setAddress(String address) {
 		this.address = address;
 	}
+	public String getDirectorName() {
+		return directorName;
+	}
 
+	public void setDirectorName(String directorName) {
+		this.directorName = directorName;
+	}
+	public Object getLcbgStatus() {
+		return lcbgStatus;
+	}
+
+	public void setLcbgStatus(Object lcbgStatus) {
+		this.lcbgStatus = lcbgStatus;
+	}
 	
+	public String getAmountStr() {
+		return amountStr;
+	}
+
+	public void setAmountStr(String amountStr) {
+		this.amountStr = amountStr;
+	}
+
+	public String getOutstandingAmountStr() {
+		return outstandingAmountStr;
+	}
+
+	public void setOutstandingAmountStr(String outstandingAmountStr) {
+		this.outstandingAmountStr = outstandingAmountStr;
+	}
+
 	public static void printFields(Object obj) throws Exception {
         Field[] fields = FinancialArrangementsDetailResponse.class.getDeclaredFields();
-        System.out.println("length : "+fields.length);
+        
         for(Field field : fields) {
             Object value = field.get(obj);
             if(value instanceof String){

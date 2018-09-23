@@ -15,12 +15,15 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.capitaworld.api.eligibility.model.EligibililityRequest;
 import com.capitaworld.api.eligibility.model.EligibilityResponse;
+import com.capitaworld.cibil.api.model.CibilResponse;
+import com.capitaworld.cibil.client.CIBILClient;
 import com.capitaworld.client.eligibility.EligibilityClient;
 import com.capitaworld.service.analyzer.client.AnalyzerClient;
 import com.capitaworld.service.analyzer.model.common.AnalyzerResponse;
@@ -31,21 +34,35 @@ import com.capitaworld.service.dms.exception.DocumentException;
 import com.capitaworld.service.dms.model.DocumentRequest;
 import com.capitaworld.service.dms.model.DocumentResponse;
 import com.capitaworld.service.dms.util.DocumentAlias;
-import com.capitaworld.service.loans.domain.fundprovider.TermLoanParameter;
+import com.capitaworld.service.fraudanalytics.client.FraudAnalyticsClient;
+import com.capitaworld.service.fraudanalytics.model.AnalyticsResponse;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
+import com.capitaworld.service.loans.model.FinanceMeansDetailRequest;
+import com.capitaworld.service.loans.model.FinanceMeansDetailResponse;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailResponse;
+import com.capitaworld.service.loans.model.TotalCostOfProjectResponse;
 import com.capitaworld.service.loans.model.corporate.CorporateDirectorIncomeRequest;
 import com.capitaworld.service.loans.model.corporate.FundSeekerInputRequestResponse;
+import com.capitaworld.service.loans.model.corporate.TotalCostOfProjectRequest;
 import com.capitaworld.service.loans.model.teaser.primaryview.NtbPrimaryViewResponse;
 import com.capitaworld.service.loans.repository.fundprovider.TermLoanParameterRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.DirectorBackgroundDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
+import com.capitaworld.service.loans.service.fundseeker.corporate.AssociatedConcernDetailService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateDirectorIncomeService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.DirectorBackgroundDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.ExistingProductDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.FinanceMeansDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.GuarantorsCorporateDetailService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.NTBService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.SecurityCorporateDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.TotalCostOfProjectService;
 import com.capitaworld.service.loans.service.irr.IrrService;
 import com.capitaworld.service.loans.service.teaser.primaryview.NtbTeaserViewService;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -54,9 +71,15 @@ import com.capitaworld.service.matchengine.MatchEngineClient;
 import com.capitaworld.service.matchengine.model.MatchDisplayResponse;
 import com.capitaworld.service.matchengine.model.MatchRequest;
 import com.capitaworld.service.oneform.client.OneFormClient;
+import com.capitaworld.service.oneform.enums.Constitution;
+import com.capitaworld.service.oneform.enums.Currency;
+import com.capitaworld.service.oneform.enums.Denomination;
+import com.capitaworld.service.oneform.enums.FinanceCategory;
+import com.capitaworld.service.oneform.enums.LoanType;
+import com.capitaworld.service.oneform.enums.Particular;
 import com.capitaworld.service.oneform.enums.ProposedConstitutionOfUnitNTB;
 import com.capitaworld.service.oneform.enums.ProposedDetailOfUnitNTB;
-import com.capitaworld.service.oneform.enums.ResidenceStatusRetailMst;
+import com.capitaworld.service.oneform.enums.PurposeOfLoan;
 import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
 import com.capitaworld.service.oneform.model.SectorIndustryModel;
@@ -126,10 +149,41 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService {
 
 	@Autowired
 	private CorporateDirectorIncomeService corporateDirectorIncomeService;
+	
+	@Autowired
+	private ExistingProductDetailsService existingProductDetailsService;
 
 	@Autowired
 	private NTBService ntbService;
 
+	@Autowired
+	private DirectorBackgroundDetailsRepository dirBackgroundDetailsRepository;
+
+	@Autowired
+	private CIBILClient cibilClient;
+	
+	@Autowired
+	private DirectorBackgroundDetailsRepository dirBackgroundDetails;
+
+	@Autowired
+	private FraudAnalyticsClient fraudAnalyticsClient;
+	
+	@Autowired
+	private TotalCostOfProjectService costOfProjectService;
+
+	@Autowired
+	private FinanceMeansDetailsService financeMeansDetailsService;
+	
+	@Autowired
+	private SecurityCorporateDetailsService securityCorporateDetailsService;
+
+	@Autowired
+	private GuarantorsCorporateDetailService guarantorsCorporateDetailService;
+	
+	@Autowired
+	private AssociatedConcernDetailService associatedConcernDetailService;
+
+	
 	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 	DecimalFormat decim = new DecimalFormat("#,###.00");
 
@@ -166,15 +220,120 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService {
 				}
 			}
 		}
+
+		CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
+				.findOneByApplicationIdId(toApplicationId);
+		// set value of org name to response
+		if (corporateApplicantDetail != null) {
+			ntbPrimaryViewRespone.setOrganisationName(corporateApplicantDetail.getOrganisationName());
+			ntbPrimaryViewRespone.setNameOfEntity(corporateApplicantDetail.getOrganisationName());
+			ntbPrimaryViewRespone.setConsitution(corporateApplicantDetail.getConstitutionId() != null ? Constitution.getById(corporateApplicantDetail.getConstitutionId()).getValue().toString() : "-");
+			ntbPrimaryViewRespone.setPan(corporateApplicantDetail.getPanNo());
+			ntbPrimaryViewRespone.setEstablishDate(corporateApplicantDetail.getEstablishmentDate());
+			
+		}
+
+		// Primary Details of applicant
+		try {
+			PrimaryCorporateDetail primaryCorporateDetail = primaryCorporateRepository
+					.findOneByApplicationIdId(toApplicationId);
+			if (primaryCorporateDetail != null) {
+
+				if (!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getCurrencyId())
+						&& !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getDenominationId())) {
+					ntbPrimaryViewRespone.setCurrencyDenomination(
+							Currency.getById(primaryCorporateDetail.getCurrencyId()).getValue() + " in "
+									+ Denomination.getById(primaryCorporateDetail.getDenominationId()).getValue());
+				}
+				ntbPrimaryViewRespone.setLoanType(primaryCorporateDetail.getProductId() != null
+						? LoanType.getById(primaryCorporateDetail.getProductId()).getValue()
+						: null);
+				ntbPrimaryViewRespone.setLoanAmount(
+						primaryCorporateDetail.getAmount() != null ? String.valueOf(primaryCorporateDetail.getAmount())
+								: null);
+
+				ntbPrimaryViewRespone.setPurposeOfLoan(
+						CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getPurposeOfLoanId()) ? null
+								: PurposeOfLoan.getById(primaryCorporateDetail.getPurposeOfLoanId()).getValue()
+										.toString());
+
+				ntbPrimaryViewRespone
+						.setHaveCollateralSecurity(primaryCorporateDetail.getHaveCollateralSecurity() != null
+								? String.valueOf(primaryCorporateDetail.getHaveCollateralSecurity())
+								: null);
+				ntbPrimaryViewRespone
+						.setCollateralSecurityAmount(primaryCorporateDetail.getCollateralSecurityAmount() != null
+								? String.valueOf(primaryCorporateDetail.getCollateralSecurityAmount())
+								: null);
+
+				ntbPrimaryViewRespone.setPromotersContribution(primaryCorporateDetail.getPromoterContribution());
+				ntbPrimaryViewRespone.setPromotersContributionPer(primaryCorporateDetail.getTotalAmtPercentage() != null
+						? " (" + convertValue(primaryCorporateDetail.getTotalAmtPercentage()) + "%)"
+						: null);
+
+				ntbPrimaryViewRespone.setNpOrgId(loanApplicationMaster.getNpOrgId());
+				if (!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getModifiedDate()))
+					ntbPrimaryViewRespone.setDateOfProposal(primaryCorporateDetail.getModifiedDate() != null
+							? DATE_FORMAT.format(primaryCorporateDetail.getModifiedDate())
+							: null);
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
 		// DIRECTOR BACKGROUND DETAILS
 
 		try {
 			List<Map<String, Object>> directorBackgroundDetails = corporateDirectorIncomeService
 					.getDirectorBackGroundDetails(toApplicationId);
 			ntbPrimaryViewRespone.setDirectorBackGroundDetails(directorBackgroundDetails);
+			if (directorBackgroundDetails.size() == 1) {
+				System.out.println("director list size====>>>>" + directorBackgroundDetails.size());
+				ntbPrimaryViewRespone.setIsMultipleUser(false);
+			} else {
+				ntbPrimaryViewRespone.setIsMultipleUser(true);
+			}
+			
+			 /* for (int i = 0; i < directorBackgroundDetails.size(); i++) {
+			  DirectorBackgroundDetail dir = new DirectorBackgroundDetail();
+			  
+			  // DirectorBackgroundDetail.class);
+			  
+			  BeanUtils.copyProperties(directorBackgroundDetails.get(i), dir); 
+			  dir.setPincode(String.valueOf(directorBackgroundDetails.get(i).get("pincode"))); 
+			  
+			  try {
+					if(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetails.get(i).get("districtMappingId"))) {
+						PincodeDataResponse pinRes=(pincodeDateService.getById(Long.valueOf(String.valueOf(directorBackgroundDetails.get(i).get("districtMappingId")))));
+						ntbPrimaryViewRespone.setPindata(pinRes);
+						
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+
+			  
+			   }*/
+			 
 
 		} catch (Exception e) {
+			e.printStackTrace();
 			logger.error("Problem to get Data of Director's Background=========> {}", e);
+		}
+
+		// Cibil Client Call
+		/*
+		 * CibilRequest cibilRequest = new CibilRequest();
+		 * cibilRequest.setApplicationId(toApplicationId);
+		 * cibilRequest.setPan(ntbPrimaryViewRespone.getDirPan());
+		 */
+		try {
+			CibilResponse cibilRes = cibilClient.getDirectorAverageScore(toApplicationId);
+			ntbPrimaryViewRespone.setCibilOfMainDir(cibilRes);
+		} catch (Exception e) {
+			logger.info("Error While calling Cibil Score By PanCard");
+			e.printStackTrace();
 		}
 
 		// get Director Income Details
@@ -193,19 +352,21 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService {
 		try {
 
 			FundSeekerInputRequestResponse fundSeekerInputRequestResponse = ntbService.getOthersDetail(toApplicationId);
-			if (!CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequestResponse.getProposedConstitutionOfUnit())) {
+			/*if (!CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequestResponse.getProposedConstitutionOfUnit())) {
 				ProposedConstitutionOfUnitNTB byIdProCons = ProposedConstitutionOfUnitNTB
 						.getById(fundSeekerInputRequestResponse.getProposedConstitutionOfUnit());
-				fundSeekerInputRequestResponse.setProposedConstitutionOfUnit(
+				ntbPrimaryViewRespone.setProposedConstitutionOfUnit(
 						CommonUtils.isObjectNullOrEmpty(byIdProCons) ? Integer.valueOf(byIdProCons.getValue()) : null);
-			}
-			if (!CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequestResponse.getProposedDetailsOfUnit())) {
+			}*/
+			/*if (!CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequestResponse.getProposedDetailsOfUnit())) {
 				ProposedDetailOfUnitNTB byIdProConsDet = ProposedDetailOfUnitNTB
 						.getById(fundSeekerInputRequestResponse.getProposedDetailsOfUnit());
-				fundSeekerInputRequestResponse.setProposedDetailsOfUnit(
-						CommonUtils.isObjectNullOrEmpty(byIdProConsDet) ? Integer.valueOf(byIdProConsDet.getValue())
+				ntbPrimaryViewRespone.setProposedDetailOfUnitFact(
+						!CommonUtils.isObjectNullOrEmpty(byIdProConsDet) ? String.valueOf(byIdProConsDet.getValue().toString())
 								: null);
-			}
+			}*/
+			
+			ntbPrimaryViewRespone.setProposedDetailOfUnitFact(fundSeekerInputRequestResponse.getProposedDetailsOfUnit() != null ? ProposedDetailOfUnitNTB.getById(fundSeekerInputRequestResponse.getProposedDetailsOfUnit()).getValue().toString() : '-');
 			List<Long> keyVerticalFundingId = new ArrayList<>();
 			if (!CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequestResponse.getKeyVericalFunding()))
 				keyVerticalFundingId.add(fundSeekerInputRequestResponse.getKeyVericalFunding());
@@ -236,9 +397,6 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService {
 			try {
 				OneFormResponse formResponse = oneFormClient
 						.getIndustrySecByMappingId(fundSeekerInputRequestResponse.getKeyVerticalSector());
-				// SectorIndustryModel oneResponseDataList = (SectorIndustryModel) formResponse
-				// .getData();
-
 				SectorIndustryModel sectorIndustryModel = MultipleJSONObjectHelper
 						.getObjectFromMap((Map) formResponse.getData(), SectorIndustryModel.class);
 
@@ -255,7 +413,6 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService {
 					ntbPrimaryViewRespone.setKeyVericalSector("NA");
 				}
 			} catch (Exception e) {
-				// System.o
 				e.printStackTrace();
 			}
 
@@ -267,7 +424,7 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService {
 					ntbPrimaryViewRespone.setKeyVericalSubsector((String) oneFormResponse.getData());
 				}
 			} catch (Exception e) {
-				// TODO: handle exception
+
 				logger.warn("error while getting key vertical sub-sector");
 			}
 
@@ -277,99 +434,41 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService {
 			logger.error("Problem to get Other Details===========> {}", e);
 		}
 
-		/*
-		 * try { List<DirectorBackgroundDetailRequest>
-		 * directorBackgroundDetailRequestList =
-		 * directorBackgroundDetailsService.getDirectorBackgroundDetailList(
-		 * toApplicationId, userId); List<DirectorBackgroundDetailResponse>
-		 * directorBackgroundDetailResponseList = new ArrayList<>(); for
-		 * (DirectorBackgroundDetailRequest directorBackgroundDetailRequest :
-		 * directorBackgroundDetailRequestList) { DirectorBackgroundDetailResponse
-		 * directorBackgroundDetailResponse = new DirectorBackgroundDetailResponse();
-		 * directorBackgroundDetailResponse.setAddress(directorBackgroundDetailRequest.
-		 * getAddress()); directorBackgroundDetailResponse.setDirectorsName((
-		 * directorBackgroundDetailRequest.getSalutationId() != null ?
-		 * Title.getById(directorBackgroundDetailRequest.getSalutationId()).getValue() :
-		 * null )+ " " + directorBackgroundDetailRequest.getDirectorsName());
-		 * directorBackgroundDetailResponse.setPanNo(directorBackgroundDetailRequest.
-		 * getPanNo().toUpperCase());
-		 * directorBackgroundDetailResponse.setAadhar(directorBackgroundDetailRequest.
-		 * getAadhar()); String directorName = ""; if
-		 * (directorBackgroundDetailRequest.getSalutationId() != null){ directorName =
-		 * Title.getById(directorBackgroundDetailRequest.getSalutationId()).getValue();
-		 * } directorName += " "+directorBackgroundDetailRequest.getDirectorsName();
-		 * directorBackgroundDetailResponse.setDirectorsName(directorName);
-		 * directorBackgroundDetailResponse.setQualification(
-		 * directorBackgroundDetailRequest.getQualificationId()!= null ?
-		 * EducationQualificationNTB.getById(directorBackgroundDetailRequest.
-		 * getQualificationId()).getValue() : null);
-		 * directorBackgroundDetailResponse.setMaritalStatus(
-		 * directorBackgroundDetailRequest.getMaritalStatus()!= null ?
-		 * MaritalStatus.getById(directorBackgroundDetailRequest.getMaritalStatus()).
-		 * getValue() : null); directorBackgroundDetailResponse.setNoOfDependent(
-		 * directorBackgroundDetailRequest.getNoOfDependent().toString());
-		 * //directorBackgroundDetailResponse.setResidenceType(
-		 * directorBackgroundDetailRequest.getResidenceType());
-		 * //directorBackgroundDetailResponse.setResidenceSince(
-		 * directorBackgroundDetailRequest.getResidenceSinceYear()!= null ? reside);
-		 * directorBackgroundDetailResponse.setTotalExperience(
-		 * directorBackgroundDetailRequest.getTotalExperience().toString()+" Years");
-		 * directorBackgroundDetailResponse.setNetworth(directorBackgroundDetailRequest.
-		 * getNetworth().toString()); directorBackgroundDetailResponse.setDesignation(
-		 * directorBackgroundDetailRequest.getDesignation());
-		 * directorBackgroundDetailResponse.setAppointmentDate(
-		 * directorBackgroundDetailRequest.getAppointmentDate());
-		 * directorBackgroundDetailResponse.setDin(directorBackgroundDetailRequest.
-		 * getDin());
-		 * directorBackgroundDetailResponse.setMobile(directorBackgroundDetailRequest.
-		 * getMobile());
-		 * directorBackgroundDetailResponse.setDob(directorBackgroundDetailRequest.
-		 * getDob());
-		 * directorBackgroundDetailResponse.setPincode(directorBackgroundDetailRequest.
-		 * getPincode());
-		 * directorBackgroundDetailResponse.setStateCode(directorBackgroundDetailRequest
-		 * .getStateCode());
-		 * directorBackgroundDetailResponse.setCity(directorBackgroundDetailRequest.
-		 * getCity());
-		 * directorBackgroundDetailResponse.setGender((directorBackgroundDetailRequest.
-		 * getGender() != null ?
-		 * Gender.getById(directorBackgroundDetailRequest.getGender()).getValue() : " "
-		 * )); directorBackgroundDetailResponse.setRelationshipType((
-		 * directorBackgroundDetailRequest.getRelationshipType() != null ?
-		 * DirectorRelationshipType.getById(directorBackgroundDetailRequest.
-		 * getRelationshipType()).getValue() : " " ));
-		 * directorBackgroundDetailResponseList.add(directorBackgroundDetailResponse); }
-		 * ntbPrimaryViewRespone.setDirectorBackgroundDetailResponses(
-		 * directorBackgroundDetailResponseList); } catch (Exception e) {
-		 * logger.error("Problem to get Data of Director's Background {}", e); }
-		 */
+		// GET EXISTING FINANCIAL DETAILS
+		List<Long> dirIdList = dirBackgroundDetailsRepository.getDirectorIdFromApplicationId(toApplicationId);
+		for (Long dirId : dirIdList) {
+			try {
+				List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestList = financialArrangementDetailsService
+						.getFinancialArrangementDetailsListDirId(dirId, toApplicationId);
+				List<FinancialArrangementsDetailResponse> financialArrangementsDetailResponseList = new ArrayList<>(
+						financialArrangementsDetailRequestList.size());
+				String directorName = dirBackgroundDetailsRepository.getDirectorNamefromDirectorId(dirId);
+				FinancialArrangementsDetailResponse financialArrangementsDetailResponse = null;
+				for (FinancialArrangementsDetailRequest financialArrangementsDetailRequest : financialArrangementsDetailRequestList) {
+					financialArrangementsDetailResponse = new FinancialArrangementsDetailResponse();
+					// financialArrangementsDetailResponse.setRelationshipSince(financialArrangementsDetailRequest.getRelationshipSince());
+					financialArrangementsDetailResponse
+							.setOutstandingAmount(financialArrangementsDetailRequest.getOutstandingAmount());
+					financialArrangementsDetailResponse
+							.setSecurityDetails(financialArrangementsDetailRequest.getSecurityDetails());
+					financialArrangementsDetailResponse.setAmount(financialArrangementsDetailRequest.getAmount());
+					// financialArrangementsDetailResponse.setLenderType(LenderType.getById(financialArrangementsDetailRequest.getLenderType()).getValue());
+					financialArrangementsDetailResponse.setLoanDate(financialArrangementsDetailRequest.getLoanDate());
+					financialArrangementsDetailResponse.setLoanType(financialArrangementsDetailRequest.getLoanType());
+					financialArrangementsDetailResponse.setFinancialInstitutionName(
+							financialArrangementsDetailRequest.getFinancialInstitutionName());
+					// financialArrangementsDetailResponse.setFacilityNature(NatureFacility.getById(financialArrangementsDetailRequest.getFacilityNatureId()).getValue());
+					// financialArrangementsDetailResponse.setAddress(financialArrangementsDetailRequest.getAddress());
+					financialArrangementsDetailResponse.setDirectorName(directorName);
+					financialArrangementsDetailResponseList.add(financialArrangementsDetailResponse);
+					ntbPrimaryViewRespone.setFinancialArrangementsDetailResponseList(financialArrangementsDetailResponseList);
+				}
+				
 
-		// get value of Financial Arrangements and set in response
-		try {
-			List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestList = financialArrangementDetailsService
-					.getFinancialArrangementDetailsList(toApplicationId, userId);
-			List<FinancialArrangementsDetailResponse> financialArrangementsDetailResponseList = new ArrayList<>();
-			for (FinancialArrangementsDetailRequest financialArrangementsDetailRequest : financialArrangementsDetailRequestList) {
-				FinancialArrangementsDetailResponse financialArrangementsDetailResponse = new FinancialArrangementsDetailResponse();
-				// financialArrangementsDetailResponse.setRelationshipSince(financialArrangementsDetailRequest.getRelationshipSince());
-				financialArrangementsDetailResponse
-						.setOutstandingAmount(financialArrangementsDetailRequest.getOutstandingAmount());
-				financialArrangementsDetailResponse
-						.setSecurityDetails(financialArrangementsDetailRequest.getSecurityDetails());
-				financialArrangementsDetailResponse.setAmount(financialArrangementsDetailRequest.getAmount());
-				// financialArrangementsDetailResponse.setLenderType(LenderType.getById(financialArrangementsDetailRequest.getLenderType()).getValue());
-				financialArrangementsDetailResponse.setLoanDate(financialArrangementsDetailRequest.getLoanDate());
-				financialArrangementsDetailResponse.setLoanType(financialArrangementsDetailRequest.getLoanType());
-				financialArrangementsDetailResponse
-						.setFinancialInstitutionName(financialArrangementsDetailRequest.getFinancialInstitutionName());
-				// financialArrangementsDetailResponse.setFacilityNature(NatureFacility.getById(financialArrangementsDetailRequest.getFacilityNatureId()).getValue());
-				// financialArrangementsDetailResponse.setAddress(financialArrangementsDetailRequest.getAddress());
-				financialArrangementsDetailResponseList.add(financialArrangementsDetailResponse);
+			} catch (Exception e) {
+				e.printStackTrace();
+				logger.error("Problem to get Data of Financial Arrangements Details {}", e);
 			}
-			ntbPrimaryViewRespone.setFinancialArrangementsDetailResponseList(financialArrangementsDetailResponseList);
-
-		} catch (Exception e) {
-			logger.error("Problem to get Data of Financial Arrangements Details {}", e);
 		}
 
 		// BANK STATEMENT
@@ -379,63 +478,48 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService {
 		List<Data> datas = new ArrayList<>();
 		try {
 			AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReportForCam(reportRequest);
+
 			List<HashMap<String, Object>> hashMaps = (List<HashMap<String, Object>>) analyzerResponse.getData();
+
 			if (!CommonUtils.isListNullOrEmpty(hashMaps)) {
+
 				for (HashMap<String, Object> hashMap : hashMaps) {
+
 					Data data = MultipleJSONObjectHelper.getObjectFromMap(hashMap, Data.class);
 					datas.add(data);
 				}
 			}
 			ntbPrimaryViewRespone.setBankData(datas);
-			// Data data = MultipleJSONObjectHelper.getObjectFromMap((HashMap<String,
-			// Object>) analyzerResponse.getData(), Data.class);
-			// ntbPrimaryViewRespone.setMonthlyDetailList(data.getMonthlyDetailList());
-			// ntbPrimaryViewRespone.setTop5FundReceivedList(data.getTop5FundReceivedList());
-			// ntbPrimaryViewRespone.setTop5FundTransferedList(data.getTop5FundTransferedList());
+
 		} catch (Exception e) {
+
 			e.printStackTrace();
 			logger.info("Error while getting perfios data");
+
 		}
 
 		// SCORING DATA
 		ScoringRequest scoringRequest = new ScoringRequest();
 		scoringRequest.setApplicationId(toApplicationId);
 		scoringRequest.setFpProductId(productMappingId);
+
 		try {
+
 			ScoringResponse scoringResponse = scoringClient.getScore(scoringRequest);
 			ProposalScoreResponse proposalScoreResponse = MultipleJSONObjectHelper.getObjectFromMap(
 					(LinkedHashMap<String, Object>) scoringResponse.getDataObject(), ProposalScoreResponse.class);
+
 			ntbPrimaryViewRespone.setDataList(scoringResponse.getDataList());
 			ntbPrimaryViewRespone.setDataObject(scoringResponse.getDataObject());
 			ntbPrimaryViewRespone.setScoringResponseList(scoringResponse.getScoringResponseList());
 
-			/*
-			 * ntbPrimaryViewRespone.setManagementRiskScore(proposalScoreResponse.
-			 * getManagementRiskScore());
-			 * ntbPrimaryViewRespone.setFinancialRiskScore(proposalScoreResponse.
-			 * getFinancialRiskScore());
-			 * ntbPrimaryViewRespone.setBuisnessRiskScore(proposalScoreResponse.
-			 * getBusinessRiskScore());
-			 * ntbPrimaryViewRespone.setManagementRiskScoreWeight(proposalScoreResponse.
-			 * getManagementRiskWeight());
-			 * ntbPrimaryViewRespone.setFinancialRiskScoreWeight(proposalScoreResponse.
-			 * getFinancialRiskWeight());
-			 * ntbPrimaryViewRespone.setBuisnessRiskScoreWeight(proposalScoreResponse.
-			 * getBusinessRiskWeight());
-			 * ntbPrimaryViewRespone.setScoreInterpretation(proposalScoreResponse.
-			 * getInterpretation());
-			 */
 		} catch (ScoringException | IOException e1) {
-			// TODO Auto-generated catch block
+
 			e1.printStackTrace();
 		}
 
 		// Eligibility Data
-		TermLoanParameter termLoanParameter = termLoanParameterRepository.getById(productMappingId);
-		// Long assessmentId = termLoanParameter.getAssessmentMethodId().longValue();
-		// if(!CommonUtils.isObjectNullOrEmpty(assessmentId)) {
-		// ntbPrimaryViewRespone.setAssesmentId(assessmentId);
-		// }
+
 		EligibililityRequest eligibilityReq = new EligibililityRequest();
 		eligibilityReq.setApplicationId(toApplicationId);
 		eligibilityReq.setFpProductMappingId(productMappingId);
@@ -444,9 +528,7 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService {
 		try {
 
 			EligibilityResponse eligibilityResp = eligibilityClient.corporateLoanData(eligibilityReq);
-			// CLEligibilityRequest cLEligibilityRequest=
-			// MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>),
-			// CLEligibilityRequest.class);
+
 			ntbPrimaryViewRespone.setEligibilityDataObject(eligibilityResp.getData());
 
 		} catch (Exception e1) {
@@ -456,18 +538,42 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService {
 
 		// CGTMSE
 		try {
-			CGTMSEDataResponse cgtmseDataResp = thirdPartyClient.getCalulation(toApplicationId);
+			boolean isMultipleUserForCgtmse = ntbPrimaryViewRespone.getIsMultipleUser();
+			System.out.println("is multiple user...??" + isMultipleUserForCgtmse);
+
+			CGTMSEDataResponse cgtmseDataResp = thirdPartyClient.getCalulation(toApplicationId,productMappingId);
+
 			ntbPrimaryViewRespone.setCgtmseData(cgtmseDataResp);
 		} catch (Exception e) {
+
 			e.printStackTrace();
 			logger.info("Error while getting CGTMSE data");
 		}
+		
+		// Fraud Detection Data
+
+				try {
+					AnalyticsResponse hunterResp = fraudAnalyticsClient.getRuleAnalysisData(toApplicationId);
+
+					if (!CommonUtils.isObjectListNull(hunterResp, hunterResp.getData())) {
+
+						ntbPrimaryViewRespone.setFraudDetectionData(hunterResp);
+
+					}
+				} catch (Exception e1) {
+
+					logger.warn("------:::::...Error while fetching Fraud Detection Details...For..::::::-----",
+							toApplicationId);
+					e1.printStackTrace();
+				}
 
 		// GET DOCUMENTS
 		DocumentRequest documentRequest = new DocumentRequest();
 		documentRequest.setApplicationId(toApplicationId);
+
 		documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
 		documentRequest.setProductDocumentMappingId(DocumentAlias.WORKING_CAPITAL_PROFIEL_PICTURE);
+
 		try {
 			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 			ntbPrimaryViewRespone.setProfilePic(documentResponse.getDataList());
@@ -481,11 +587,126 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService {
 		} catch (DocumentException e) {
 			e.printStackTrace();
 		}
+		
+		List<Long> dirIdListReq= dirBackgroundDetailsRepository.getDirectorIdFromApplicationId(toApplicationId);
+		DocumentRequest documentRequestItr = new DocumentRequest();
+		documentRequestItr.setApplicationId(toApplicationId);
+		documentRequestItr.setUserType(DocumentAlias.UERT_TYPE_DIRECTOR);
+		
+		List<Object> itrPdfList=new ArrayList<>();
+		List<Object> itrXml=new ArrayList<>();
+		
+		for (int i = 0; i < dirIdListReq.size(); i++) {
+			documentRequestItr.setDirectorId(dirIdListReq.get(i));
+			documentRequestItr.setProductDocumentMappingId(DocumentAlias.CORPORATE_ITR_PDF);
+			try {
+				DocumentResponse documentResponseitr = dmsClient.listProductDocument(documentRequestItr);
+				itrPdfList.add(documentResponseitr.getDataList());
+								
+			} catch (DocumentException e) {
+				e.printStackTrace();
+			}
+			
+			
+			
+			documentRequestItr.setProductDocumentMappingId(DocumentAlias.CORPORATE_ITR_XML);
+			try {
+				DocumentResponse documentResponseitrXml = dmsClient.listProductDocument(documentRequestItr);
+				itrXml.add(documentResponseitrXml.getDataList());
+				
+			} catch (DocumentException e) {
+				e.printStackTrace();
+			}
+			
+		}
+		ntbPrimaryViewRespone.setIrtPdfReport(itrPdfList);
+		ntbPrimaryViewRespone.setIrtXMLReport(itrXml);
+
+		
+		
+		
 
 		if (isFinal) {
+			
+			// EXISTING PRODUCT DETAILS
+			try {
+				ntbPrimaryViewRespone.setExistingProductDetailRequestList(
+						existingProductDetailsService.getExistingProductDetailList(toApplicationId, userId));
+			} catch (Exception e) {
+				logger.error("Problem to get Data of Existing Product {}", e);
+			}
+			
+			// cost of project
+			try {
+				List<TotalCostOfProjectRequest> costOfProjectsList = costOfProjectService
+						.getCostOfProjectDetailList(toApplicationId, userId);
+				List<TotalCostOfProjectResponse> costOfProjectResponses = new ArrayList<TotalCostOfProjectResponse>();
+				for (TotalCostOfProjectRequest costOfProjectRequest : costOfProjectsList) {
+					TotalCostOfProjectResponse costOfProjectResponse = new TotalCostOfProjectResponse();
+					BeanUtils.copyProperties(costOfProjectRequest, costOfProjectResponse);
+					if (costOfProjectRequest.getParticularsId() != null)
+						costOfProjectResponse.setParticulars(Particular
+								.getById(Integer.parseInt(costOfProjectRequest.getParticularsId().toString())).getValue());
+					costOfProjectResponses.add(costOfProjectResponse);
+				}
+				ntbPrimaryViewRespone.setTotalCostOfProjectResponseList(costOfProjectResponses);
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				logger.error("Problem to get Data of Total cost of project{}", e1);
+			}
+
+			// Means of finance
+
+			try {
+				List<FinanceMeansDetailRequest> financeMeansDetailRequestsList = financeMeansDetailsService
+						.getMeansOfFinanceList(toApplicationId, userId);
+				List<FinanceMeansDetailResponse> financeMeansDetailResponsesList = new ArrayList<FinanceMeansDetailResponse>();
+				for (FinanceMeansDetailRequest financeMeansDetailRequest : financeMeansDetailRequestsList) {
+					FinanceMeansDetailResponse detailResponse = new FinanceMeansDetailResponse();
+					BeanUtils.copyProperties(financeMeansDetailRequest, detailResponse);
+
+					if (financeMeansDetailRequest.getFinanceMeansCategoryId() != null)
+						detailResponse.setFinanceMeansCategory(FinanceCategory
+								.getById(Integer.parseInt(financeMeansDetailRequest.getFinanceMeansCategoryId().toString()))
+								.getValue());
+					financeMeansDetailResponsesList.add(detailResponse);
+				}
+				ntbPrimaryViewRespone.setFinanceMeansDetailResponseList(financeMeansDetailResponsesList);
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				logger.error("Problem to get Data of Finance Means Details {}", e1);
+			}
+			
+			// Security
+
+			try {
+				ntbPrimaryViewRespone.setSecurityCorporateDetailRequestList(
+						securityCorporateDetailsService.getsecurityCorporateDetailsList(toApplicationId, userId));
+			} catch (Exception e) {
+				logger.error("Problem to get Data of Security Details {}", e);
+			}
+
+			// get data of Details of Guarantors
+			try {
+				ntbPrimaryViewRespone.setGuarantorsCorporateDetailRequestList(
+						guarantorsCorporateDetailService.getGuarantorsCorporateDetailList(toApplicationId, userId));
+			} catch (Exception e) {
+				logger.error("Problem to get Data of Details of Guarantor {}", e);
+			}
+			
+			// get data of Associated Concern
+			try {
+				ntbPrimaryViewRespone.setAssociatedConcernDetailRequests(
+						associatedConcernDetailService.getAssociatedConcernsDetailList(toApplicationId, userId));
+			} catch (Exception e) {
+				logger.error("Problem to get Data of Associated Concerns {}", e);
+			}
 
 		}
 		return ntbPrimaryViewRespone;
 	}
 
+	public String convertValue(Double value) {
+		return !CommonUtils.isObjectNullOrEmpty(value) ? decim.format(value).toString() : "0";
+	}
 }

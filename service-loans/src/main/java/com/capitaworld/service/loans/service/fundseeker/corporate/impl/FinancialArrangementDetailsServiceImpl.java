@@ -1,6 +1,7 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -123,10 +124,16 @@ public class FinancialArrangementDetailsServiceImpl implements FinancialArrangem
 	}
 
 	@Override
-	public Double getTotalOfEmiByApplicationId(Long applicationId) {
+	public FinancialArrangementsDetailRequest getTotalEmiAndSanctionAmountByApplicationId(Long applicationId) {
 		Double totalEmi = financialArrangementDetailsRepository.getTotalEmiByApplicationId(applicationId);
-		logger.info("getTotalOfEmiByApplicationId=====>" + totalEmi + " For Application Id=====>{}", applicationId);
-		return totalEmi;
+		logger.info("getTotalOfEmiByApplicationId=====>" + totalEmi + " For Application Id=====>{}", applicationId);		
+		List<String> loanTypes = Arrays.asList(new String[]{"cash credit","overdraft"});
+		Double existingLimits = financialArrangementDetailsRepository.getExistingLimits(applicationId, loanTypes);
+		logger.info("existingLimits=====>" + existingLimits + " For Application Id=====>{}", applicationId);
+		FinancialArrangementsDetailRequest arrangementsDetailRequest = new FinancialArrangementsDetailRequest();
+		arrangementsDetailRequest.setAmount(existingLimits);
+		arrangementsDetailRequest.setEmi(totalEmi);
+		return arrangementsDetailRequest;
 	}
 
 	@Override
@@ -134,5 +141,31 @@ public class FinancialArrangementDetailsServiceImpl implements FinancialArrangem
 		Double totalEmi = financialArrangementDetailsRepository.getTotalEmiByApplicationIdAndDirectorId(applicationId,directorId);
 		logger.info("getTotalOfEmiByApplicationIdAndDirectorId {} For Application Id = {} DirectorId = {}", totalEmi ,applicationId,directorId);
 		return totalEmi;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService#getFinancialArrangementDetailsListDirId(java.lang.Long, java.lang.Long)
+	 */
+	@Override
+	public List<FinancialArrangementsDetailRequest> getFinancialArrangementDetailsListDirId(Long dirId, Long id)
+			throws Exception {
+		try {
+			List<FinancialArrangementsDetail> financialArrangementDetails = financialArrangementDetailsRepository
+					.findByDirectorBackgroundDetailIdAndApplicationIdIdAndIsActive(dirId,id,true);
+			List<FinancialArrangementsDetailRequest> financialArrangementDetailRequests = new ArrayList<FinancialArrangementsDetailRequest>();
+
+			for (FinancialArrangementsDetail detail : financialArrangementDetails) {
+				FinancialArrangementsDetailRequest financialArrangementDetailsRequest = new FinancialArrangementsDetailRequest();
+				BeanUtils.copyProperties(detail, financialArrangementDetailsRequest);
+				financialArrangementDetailRequests.add(financialArrangementDetailsRequest);
+			}
+			return financialArrangementDetailRequests;
+		}
+
+		catch (Exception e) {
+			logger.info("Exception  in save financialArrangementsDetail  :-");
+			e.printStackTrace();
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+		}
 	}
 }

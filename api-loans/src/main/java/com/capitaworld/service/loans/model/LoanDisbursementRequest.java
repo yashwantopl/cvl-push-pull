@@ -1,7 +1,6 @@
 package com.capitaworld.service.loans.model;
 
 import java.io.Serializable;
-
 import java.util.Date;
 
 import com.capitaworld.service.loans.model.common.AuditActivityRequest;
@@ -16,6 +15,7 @@ public class LoanDisbursementRequest extends AuditActivityRequest implements Ser
 	 */
 	private static final long serialVersionUID = 1L;
 
+	private Long id;
 	private Long applicationId;
 	private String referenceNo;
 	private String transactionNo;
@@ -26,11 +26,22 @@ public class LoanDisbursementRequest extends AuditActivityRequest implements Ser
 	private Date disbursementDate;
 
 	private String disbursementAuthority;
-	private Long mode;
+	private Long paymentMode;
 	private String remark;
 	private String userName;
 	private String password;
 	private String actionBy;
+	private Boolean isSaved = true;
+	private String reason;
+	private String statusCode;
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
 
 	public Long getApplicationId() {
 		return applicationId;
@@ -88,12 +99,12 @@ public class LoanDisbursementRequest extends AuditActivityRequest implements Ser
 		this.disbursementAuthority = disbursementAuthority;
 	}
 
-	public Long getMode() {
-		return mode;
+	public Long getPaymentMode() {
+		return paymentMode;
 	}
 
-	public void setMode(Long mode) {
-		this.mode = mode;
+	public void setPaymentMode(Long paymentMode) {
+		this.paymentMode = paymentMode;
 	}
 
 	public String getRemark() {
@@ -128,14 +139,38 @@ public class LoanDisbursementRequest extends AuditActivityRequest implements Ser
 		this.actionBy = actionBy;
 	}
 
-	@Override
-	public String toString() {
-		return "LoanDisbursementRequest [applicationId=" + applicationId + ", referenceNo=" + referenceNo
-				+ ", transactionNo=" + transactionNo + ", accountNo=" + accountNo + ", disbursedAmount="
-				+ disbursedAmount + ", disbursementDate=" + disbursementDate + ", disbursementAuthority="
-				+ disbursementAuthority + ", mode=" + mode + ", remark=" + remark + ", userName=" + userName
-				+ ", password=" + password + ", actionBy=" + actionBy + "]";
+	public Boolean getIsSaved() {
+		return isSaved;
 	}
 
+	public void setIsSaved(Boolean isSaved) {
+		this.isSaved = isSaved;
+	}
+
+	public String getReason() {
+		return reason;
+	}
+
+	public void setReason(String reason) {
+		this.reason = reason;
+	}
+
+	public String getStatusCode() {
+		return statusCode;
+	}
+
+	public void setStatusCode(String statusCode) {
+		this.statusCode = statusCode;
+	}
+
+	@Override
+	public String toString() {
+		return "LoanDisbursementRequest [id=" + id + ", applicationId=" + applicationId + ", referenceNo=" + referenceNo
+				+ ", transactionNo=" + transactionNo + ", accountNo=" + accountNo + ", disbursedAmount="
+				+ disbursedAmount + ", disbursementDate=" + disbursementDate + ", disbursementAuthority="
+				+ disbursementAuthority + ", paymentMode=" + paymentMode + ", remark=" + remark + ", userName="
+				+ userName + ", password=" + password + ", actionBy=" + actionBy + ", isSaved=" + isSaved + ", reason="
+				+ reason + ", statusCode=" + statusCode + "]";
+	}
 
 }

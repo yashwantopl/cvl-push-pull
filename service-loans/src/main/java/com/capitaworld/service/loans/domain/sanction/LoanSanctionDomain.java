@@ -13,7 +13,6 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-
 @Entity
 @Table(name = "sanction_detail")
 public class LoanSanctionDomain implements Serializable {
@@ -75,6 +74,9 @@ public class LoanSanctionDomain implements Serializable {
 
 	@Column(name = "processing_fee")
 	private Double processingFee;
+
+	@Column(name = "bank_sanction_pk")
+	private Long bankSanctionPrimaryKey;
 
 	public Long getId() {
 		return id;
@@ -220,27 +222,22 @@ public class LoanSanctionDomain implements Serializable {
 		this.processingFee = processingFee;
 	}
 
+	public Long getBankSanctionPrimaryKey() {
+		return bankSanctionPrimaryKey;
+	}
+
+	public void setBankSanctionPrimaryKey(Long bankSanctionPrimaryKey) {
+		this.bankSanctionPrimaryKey = bankSanctionPrimaryKey;
+	}
+
 	@Override
 	public String toString() {
-		return "LoanSanctionDomain{" +
-				"id=" + id +
-				", accountNo='" + accountNo + '\'' +
-				", sanctionAmount=" + sanctionAmount +
-				", roi=" + roi +
-				", transactionNo='" + transactionNo + '\'' +
-				", sanctionDate=" + sanctionDate +
-				", branch=" + branch +
-				", applicationId=" + applicationId +
-				", referenceNo=" + referenceNo +
-				", tenure=" + tenure +
-				", sanctionAuthority='" + sanctionAuthority + '\'' +
-				", remark='" + remark + '\'' +
-				", createdBy='" + createdBy + '\'' +
-				", createdDate=" + createdDate +
-				", modifiedBy='" + modifiedBy + '\'' +
-				", modifiedDate=" + modifiedDate +
-				", isActive=" + isActive +
-				", processingFee=" + processingFee +
-				'}';
+		return "LoanSanctionDomain [id=" + id + ", accountNo=" + accountNo + ", sanctionAmount=" + sanctionAmount
+				+ ", roi=" + roi + ", transactionNo=" + transactionNo + ", sanctionDate=" + sanctionDate + ", branch="
+				+ branch + ", applicationId=" + applicationId + ", referenceNo=" + referenceNo + ", tenure=" + tenure
+				+ ", sanctionAuthority=" + sanctionAuthority + ", remark=" + remark + ", createdBy=" + createdBy
+				+ ", createdDate=" + createdDate + ", modifiedBy=" + modifiedBy + ", modifiedDate=" + modifiedDate
+				+ ", isActive=" + isActive + ", processingFee=" + processingFee + ", bankSanctionPrimaryKey="
+				+ bankSanctionPrimaryKey + "]";
 	}
 }

@@ -1,30 +1,47 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
-import com.capitaworld.connect.api.ConnectResponse;
-import com.capitaworld.connect.client.ConnectClient;
-import com.capitaworld.service.dms.util.CommonUtil;
-import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
-import com.capitaworld.service.loans.domain.fundseeker.corporate.*;
-import com.capitaworld.service.loans.model.*;
-import com.capitaworld.service.loans.model.corporate.FundSeekerInputRequestResponse;
-import com.capitaworld.service.loans.model.corporate.PrimaryCorporateRequest;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.*;
-import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.NTBService;
-import com.capitaworld.service.loans.utils.CommonUtils;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import com.capitaworld.connect.api.ConnectResponse;
+import com.capitaworld.connect.client.ConnectClient;
+import com.capitaworld.service.fraudanalytics.client.FraudAnalyticsClient;
+import com.capitaworld.service.fraudanalytics.model.AnalyticsRequest;
+import com.capitaworld.service.fraudanalytics.model.AnalyticsResponse;
+import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.DirectorBackgroundDetail;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.EmploymentDetail;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.FinancialArrangementsDetail;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
+import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
+import com.capitaworld.service.loans.model.EmploymentDetailRequest;
+import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
+import com.capitaworld.service.loans.model.LoansResponse;
+import com.capitaworld.service.loans.model.NTBRequest;
+import com.capitaworld.service.loans.model.common.HunterRequestDataResponse;
+import com.capitaworld.service.loans.model.corporate.FundSeekerInputRequestResponse;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.DirectorBackgroundDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.EmploymentDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.FinancialArrangementDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorRepository;
+import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.NTBService;
+import com.capitaworld.service.loans.utils.CommonUtils;
 
 @Service
 @Transactional
@@ -52,6 +69,21 @@ public class NTBServiceImpl implements NTBService {
 
     @Autowired
     private ConnectClient connectClient;
+
+    @Autowired
+    private IndustrySectorRepository industrySectorRepository;
+
+    @Autowired
+    private SubSectorRepository subSectorRepository;
+    
+    @Autowired
+    private LoanApplicationService loanApplicationService;
+    
+    @Autowired
+    private FraudAnalyticsClient fraudAnalyticsClient;
+    
+    @Autowired
+    private Environment environment;
 
     @Override
     public DirectorBackgroundDetailRequest getOneformDetailByDirectorId(Long directorId) throws Exception {
@@ -127,7 +159,7 @@ public class NTBServiceImpl implements NTBService {
     public List<FinancialArrangementsDetailRequest> getFinancialDetails(Long applicationId, Long directorId) throws Exception {
         logger.info("Entry in getFinancialDetails() for applicationId : " + applicationId + " directorId : " + directorId);
         try{
-            List<FinancialArrangementsDetail> finArngDetailList = financialArrangementDetailsRepository.listFinancialListForPartner(directorId, applicationId, true);
+            List<FinancialArrangementsDetail> finArngDetailList = financialArrangementDetailsRepository.findByDirectorBackgroundDetailIdAndApplicationIdIdAndIsActive(directorId, applicationId, true);
             List<FinancialArrangementsDetailRequest> finArrngDetailResList = new ArrayList<FinancialArrangementsDetailRequest>(finArngDetailList.size());
 
             FinancialArrangementsDetailRequest finArrngDetailReq = null;
@@ -150,29 +182,30 @@ public class NTBServiceImpl implements NTBService {
     public Boolean saveFinancialDetails(List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestList, Long applicationId, Long userId, Long directorId) throws Exception {
         logger.info("Entry in saveFinancialDetails() for applicationId : " + applicationId + " userId:" + userId);
         try {
-            for (FinancialArrangementsDetailRequest reqObj : financialArrangementsDetailRequestList) {
-                FinancialArrangementsDetail saveFinObj = null;
-                if (!CommonUtils.isObjectNullOrEmpty(reqObj.getId())) {
-                    saveFinObj = financialArrangementDetailsRepository.findByIdAndIsActive(reqObj.getId(), true);
-                }
-                if (CommonUtils.isObjectNullOrEmpty(saveFinObj)) {
-                    saveFinObj = new FinancialArrangementsDetail();
-                    BeanUtils.copyProperties(reqObj, saveFinObj, "id", "createdBy", "createdDate", "modifiedBy", "modifiedDate", "isActive");
+            if (!CommonUtils.isListNullOrEmpty(financialArrangementsDetailRequestList)) {
+                for (FinancialArrangementsDetailRequest reqObj : financialArrangementsDetailRequestList) {
+                    FinancialArrangementsDetail saveFinObj = null;
+                    if (!CommonUtils.isObjectNullOrEmpty(reqObj.getId())) {
+                        saveFinObj = financialArrangementDetailsRepository.findByIdAndIsActive(reqObj.getId(), true);
+                    }
+                    if (CommonUtils.isObjectNullOrEmpty(saveFinObj)) {
+                        saveFinObj = new FinancialArrangementsDetail();
+                        BeanUtils.copyProperties(reqObj, saveFinObj, "id", "createdBy", "createdDate", "modifiedBy", "modifiedDate", "isActive");
 
-                    saveFinObj.setDirectorBackgroundDetail(directorBackgroundDetailsRepository.findOne(directorId));
-                    saveFinObj.setApplicationId(new LoanApplicationMaster(applicationId));
-                    saveFinObj.setCreatedBy(userId);
-                    saveFinObj.setCreatedDate(new Date());
-                    saveFinObj.setIsActive(true);
-                } else {
-                    BeanUtils.copyProperties(reqObj, saveFinObj, "id", "createdBy", "createdDate", "modifiedBy", "modifiedDate");
-                    saveFinObj.setModifiedBy(userId);
-                    saveFinObj.setModifiedDate(new Date());
+                        saveFinObj.setDirectorBackgroundDetail(directorBackgroundDetailsRepository.findOne(directorId));
+                        saveFinObj.setApplicationId(new LoanApplicationMaster(applicationId));
+                        saveFinObj.setCreatedBy(userId);
+                        saveFinObj.setCreatedDate(new Date());
+                        saveFinObj.setIsActive(true);
+                    } else {
+                        BeanUtils.copyProperties(reqObj, saveFinObj, "id", "createdBy", "createdDate", "modifiedBy", "modifiedDate");
+                        saveFinObj.setModifiedBy(userId);
+                        saveFinObj.setModifiedDate(new Date());
+                    }
+                    financialArrangementDetailsRepository.save(saveFinObj);
                 }
-                financialArrangementDetailsRepository.save(saveFinObj);
+                logger.info("successfully saved data for saveFinancialDetails() applicationId :" + applicationId+ " userId:" + userId);
             }
-            logger.info("successfully saved data for saveFinancialDetails() applicationId :" + applicationId+ " userId:" + userId);
-
             DirectorBackgroundDetail directorBackgroundDetail = directorBackgroundDetailsRepository.findByIdAndIsActive(directorId, true);
             directorBackgroundDetail.setOneFormCompleted(true);
             directorBackgroundDetailsRepository.save(directorBackgroundDetail);
@@ -199,8 +232,25 @@ public class NTBServiceImpl implements NTBService {
                 logger.info("Data not found for given applicationid");
                 return null;
             }
+            fundSeekerInputRequestResponse.setLoanAmt(CommonUtils.convertValue(primaryCorporateDetail.getLoanAmount()));
+            fundSeekerInputRequestResponse.setCollateralSecurityAmountStr(CommonUtils.convertValue(primaryCorporateDetail.getCollateralSecurityAmount()));
+            fundSeekerInputRequestResponse.setCostOfProjectStr(CommonUtils.convertValue(primaryCorporateDetail.getCostOfProject()));
             BeanUtils.copyProperties(primaryCorporateDetail,fundSeekerInputRequestResponse);
 
+            //---industry
+            List<Long> industryList = industrySectorRepository.getIndustryByApplicationId(applicationId);
+            logger.info("TOTAL INDUSTRY FOUND ------------->" + industryList.size() + "------------By APP Id -----------> " + applicationId);
+            fundSeekerInputRequestResponse.setIndustrylist(industryList);
+
+            List<Long> sectorList = industrySectorRepository.getSectorByApplicationId(applicationId);
+            logger.info("TOTAL SECTOR FOUND ------------->" + sectorList.size() + "------------By APP Id -----------> " + applicationId);
+            fundSeekerInputRequestResponse.setSectorlist(sectorList);
+
+            List<Long> subSectorList = subSectorRepository.getSubSectorByApplicationId(applicationId);
+            logger.info("TOTAL SUB SECTOR FOUND ------------->" + subSectorList.size() + "fundSeekerInputRequestResponse " + applicationId);
+            fundSeekerInputRequestResponse.setSubsectors(subSectorList);
+
+            logger.info("Data found for given applicationid ==>"+applicationId + " response Data {}===>"+fundSeekerInputRequestResponse.toString());
             return fundSeekerInputRequestResponse;
         }catch (Exception e){
             logger.info("Exception  in getOthersDetail  :-");
@@ -257,17 +307,37 @@ public class NTBServiceImpl implements NTBService {
             primaryCorporateDetail.setApplicationId(new LoanApplicationMaster(applicationId));
             primaryCorporateDetail.setModifiedBy(userId);
             primaryCorporateDetail.setModifiedDate(new Date());
-
+            primaryCorporateDetail.setIsActive(true);
             primaryCorporateDetailRepository.saveAndFlush(primaryCorporateDetail);
 
+            // =========================== Director details save=======================================================================
+            List<DirectorBackgroundDetailRequest> directorBackgroundDetailRequestList = fundSeekerInputRequestResponse.getDirectorBackgroundDetailRequestsList();
 
-            DirectorBackgroundDetail directorBackgroundDetail = directorBackgroundDetailsRepository.findByIdAndIsActive(fundSeekerInputRequestResponse.getDirectorBackgroundDetailRequestsList().get(0).getId(), true);
+            try {
+                for (DirectorBackgroundDetailRequest reqObj : directorBackgroundDetailRequestList) {
+                    DirectorBackgroundDetail saveDirObj = null;
+                    if (!CommonUtils.isObjectNullOrEmpty(reqObj.getId())) {
+                        saveDirObj = directorBackgroundDetailsRepository.findByIdAndIsActive(reqObj.getId(), true);
+                        logger.info("Old Object Retrived For Director saveDirObj.getId()==========================>{}",saveDirObj.getId());
+                        BeanUtils.copyProperties(reqObj, saveDirObj, "id", "createdBy", "createdDate", "modifiedBy","modifiedDate");
+                        saveDirObj.setModifiedBy(userId);
+                        saveDirObj.setModifiedDate(new Date());
+                    }
+                    directorBackgroundDetailsRepository.save(saveDirObj);
+                }
+            } catch (Exception e) {
+                logger.info("Directors ===============> Throw Exception While Save Director Details -------->");
+                e.printStackTrace();
+            }
+            logger.info("director detail saved successfully");
+            return true;
+
+            //=========================================================================================================================================
+            /*DirectorBackgroundDetail directorBackgroundDetail = directorBackgroundDetailsRepository.findByIdAndIsActive(fundSeekerInputRequestResponse.getDirectorBackgroundDetailRequestsList().get(0).getId(), true);
             directorBackgroundDetail.setIsMainDirector(true);
             directorBackgroundDetail.setModifiedBy(userId);
             directorBackgroundDetail.setModifiedDate(new Date());
-            directorBackgroundDetailsRepository.save(directorBackgroundDetail);
-            logger.info("director detail saved successfully");
-            return true;
+            directorBackgroundDetailsRepository.save(directorBackgroundDetail);*/
 
         }catch (Exception e){
             logger.info("Throw Exception while save and update Others Detail !!");
@@ -293,6 +363,11 @@ public class NTBServiceImpl implements NTBService {
             } else {
                 DirectorBackgroundDetail directorBackgroundDetail = directorBackgroundDetailsRepository.findByIdAndIsActive(ntbRequest.getDirectorId(), true);
                 DirectorBackgroundDetailRequest directorBackgroundDetailRequest = new DirectorBackgroundDetailRequest();
+                if(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetail.getEmploymentDetail())){
+                    EmploymentDetailRequest employmentDetailRequest = new EmploymentDetailRequest();
+                    BeanUtils.copyProperties(directorBackgroundDetail.getEmploymentDetail(), employmentDetailRequest);
+                    directorBackgroundDetailRequest.setEmploymentDetailRequest(employmentDetailRequest);
+                }
                 BeanUtils.copyProperties(directorBackgroundDetail, directorBackgroundDetailRequest);
                 return new LoansResponse("Success", HttpStatus.OK.value(), directorBackgroundDetailRequest);
             }
@@ -343,4 +418,67 @@ public class NTBServiceImpl implements NTBService {
             return new LoansResponse("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
     }
+    
+    @Override
+	public LoansResponse invokeFraudAnalytics(FundSeekerInputRequestResponse fundSeekerInputRequestResponse)
+			throws Exception {
+		
+		try {
+			logger.info("Start invokeFraudAnalytics()");
+			LoansResponse res = new LoansResponse();
+			if("Y".equals(String.valueOf(environment.getRequiredProperty("cw.call.service_fraudanalytics")))) {
+				Boolean isNTB = false;
+				HunterRequestDataResponse hunterRequestDataResponse = null;
+				if(fundSeekerInputRequestResponse.getBusinessTypeId()!=null && fundSeekerInputRequestResponse.getBusinessTypeId() == 2) {// FOR NTB ONLY
+					isNTB = true;
+					hunterRequestDataResponse = loanApplicationService
+							.getDataForHunterForNTB(fundSeekerInputRequestResponse.getApplicationId());
+				}
+				else {
+			hunterRequestDataResponse = loanApplicationService
+					.getDataForHunter(fundSeekerInputRequestResponse.getApplicationId());
+				}
+			AnalyticsRequest request = new AnalyticsRequest();
+			request.setApplicationId(fundSeekerInputRequestResponse.getApplicationId());
+			request.setUserId(fundSeekerInputRequestResponse.getUserId());
+			request.setData(hunterRequestDataResponse);
+			request.setIsNtb(isNTB);
+			res.setMessage("Oneform Saved Successfully");
+			res.setStatus(HttpStatus.OK.value());
+			AnalyticsResponse response = fraudAnalyticsClient.callHunterIIAPI(request);
+			if (response != null) {
+				
+				Boolean resp = false;
+				if(response.getData()!=null) {
+					resp = Boolean.valueOf(response.getData().toString());
+				}
+				res.setData(resp);
+				if(resp) {
+					res.setStatus(HttpStatus.OK.value());
+					res.setMessage("Oneform Saved Successfully");
+				}
+				else {
+					res.setStatus(HttpStatus.UNAVAILABLE_FOR_LEGAL_REASONS.value());
+				res.setMessage(CommonUtils.HUNTER_INELIGIBLE_MESSAGE);
+				}
+			}
+			
+			logger.info("End invokeFraudAnalytics() with resp : "+res.getData());
+			return res;
+			}
+			else {
+				logger.info("End invokeFraudAnalytics() Skiping Fraud Analytics call");
+				   logger.info("Successfully Saved");
+	                return new LoansResponse("Oneform Saved Successfully", HttpStatus.OK.value());
+	                      
+			}
+		} catch (Exception e) {
+			logger.info("End invokeFraudAnalytics() Error in Fraud Analytics call");
+			e.printStackTrace();
+			//throw new Exception();
+			logger.info("End invokeFraudAnalytics() ERROR IN FRAUD ANALYTICS CALL");
+			 return new LoansResponse("Successfully Saved", HttpStatus.OK.value());
+		}
+	}
+
 }

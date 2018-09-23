@@ -42,6 +42,18 @@ public class AssociatedConcernDetailRequest implements Serializable{
 
 	private Double turnOverThirdYear;
 	
+	private String profitPastOneYearString;
+
+	private String profitPastThreeYearString;
+
+	private String profitPastTwoYearString;
+
+	private String turnOverFirstYearString;
+
+	private String turnOverSecondYearString;
+
+	private String turnOverThirdYearString;
+	
 	private String nameOfDirector;
 
 	public Long getId() {
@@ -165,9 +177,57 @@ public class AssociatedConcernDetailRequest implements Serializable{
 		this.nameOfDirector = nameOfDirector;
 	}
 	
+	public String getProfitPastOneYearString() {
+		return profitPastOneYearString;
+	}
+
+	public void setProfitPastOneYearString(String profitPastOneYearString) {
+		this.profitPastOneYearString = profitPastOneYearString;
+	}
+
+	public String getProfitPastThreeYearString() {
+		return profitPastThreeYearString;
+	}
+
+	public void setProfitPastThreeYearString(String profitPastThreeYearString) {
+		this.profitPastThreeYearString = profitPastThreeYearString;
+	}
+
+	public String getProfitPastTwoYearString() {
+		return profitPastTwoYearString;
+	}
+
+	public void setProfitPastTwoYearString(String profitPastTwoYearString) {
+		this.profitPastTwoYearString = profitPastTwoYearString;
+	}
+
+	public String getTurnOverFirstYearString() {
+		return turnOverFirstYearString;
+	}
+
+	public void setTurnOverFirstYearString(String turnOverFirstYearString) {
+		this.turnOverFirstYearString = turnOverFirstYearString;
+	}
+
+	public String getTurnOverSecondYearString() {
+		return turnOverSecondYearString;
+	}
+
+	public void setTurnOverSecondYearString(String turnOverSecondYearString) {
+		this.turnOverSecondYearString = turnOverSecondYearString;
+	}
+
+	public String getTurnOverThirdYearString() {
+		return turnOverThirdYearString;
+	}
+
+	public void setTurnOverThirdYearString(String turnOverThirdYearString) {
+		this.turnOverThirdYearString = turnOverThirdYearString;
+	}
+
 	public static void printFields(Object obj) throws Exception {
         Field[] fields = AssociatedConcernDetailRequest.class.getDeclaredFields();
-        System.out.println("length : "+fields.length);
+        
         for(Field field : fields) {
             Object value = field.get(obj);
             if(value instanceof String){

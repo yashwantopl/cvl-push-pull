@@ -103,17 +103,17 @@ public class LoansMain {
 
 	@Value("${capitaworld.service.workflow.url}")
 	private String workFlowClientUrl;
-	
+
 	@Value("${capitaworld.service.eligibility.url}")
 	private String eligibilityUrl;
-	
+
 	@Value("${capitaworld.service.fraudanalytics.url}")
 	private String fraudAnalyticsUrl;
-	
+
 	@Value("${capitaworld.service.itr.url}")
 	private String itrUrl;
-	
 
+	
 	public static void main(String[] args) throws Exception {
 		SpringApplication.run(LoansMain.class, args);
 	}
@@ -243,26 +243,26 @@ public class LoansMain {
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(workflowClient);
 		return workflowClient;
 	}
-	
+
 	@Bean
 	public EligibilityClient eligibilityClient() {
 		EligibilityClient eligibilityClient = new EligibilityClient(eligibilityUrl);
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(eligibilityClient);
 		return eligibilityClient;
 	}
-	
+
 	@Bean
 	public FraudAnalyticsClient fraudAnalyticsClient() {
 		FraudAnalyticsClient fraudAnalyticsClient = new FraudAnalyticsClient(fraudAnalyticsUrl);
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(fraudAnalyticsClient);
 		return fraudAnalyticsClient;
 	}
-	
+
 	@Bean
 	public ITRClient itrClient() {
 		ITRClient itrClient = new ITRClient(itrUrl);
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(itrClient);
 		return itrClient;
 	}
-	
+
 }
