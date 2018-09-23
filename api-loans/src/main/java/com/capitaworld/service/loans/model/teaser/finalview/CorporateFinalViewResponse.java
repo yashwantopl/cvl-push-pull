@@ -177,7 +177,20 @@ public class CorporateFinalViewResponse implements Serializable {
     private Object nameAsPerItr;
     private Object mcaCheckStatus;
     private Object gstData;
-
+    private Object weightConsider;
+    private Object managementRiskMaxTotalWeight;
+    private Object financialRiskMaxTotalWeight;
+    private Object businessRiskMaxTotalWeight;
+    private Object isProportionateScoreConsider;
+    private Object proportionateScore;
+    private Object proportionateScoreFS;
+    private Object fraudDetectionData;
+    
+    private Object comercialOpDate;
+    private Object factoryPremise;
+    private Object knoHow;
+    private Object competition;
+    
 	public List<?> getMatchesList() {
 		return matchesList;
 	}
@@ -1705,6 +1718,150 @@ public class CorporateFinalViewResponse implements Serializable {
 	 */
 	public void setGstData(Object gstData) {
 		this.gstData = gstData;
+	}
+
+	/**
+	 * @return the weightConsider
+	 */
+	public Object getWeightConsider() {
+		return weightConsider;
+	}
+
+	/**
+	 * @param weightConsider the weightConsider to set
+	 */
+	public void setWeightConsider(Object weightConsider) {
+		this.weightConsider = weightConsider;
+	}
+
+	/**
+	 * @return the managementRiskMaxTotalWeight
+	 */
+	public Object getManagementRiskMaxTotalWeight() {
+		return managementRiskMaxTotalWeight;
+	}
+
+	/**
+	 * @param managementRiskMaxTotalWeight the managementRiskMaxTotalWeight to set
+	 */
+	public void setManagementRiskMaxTotalWeight(Object managementRiskMaxTotalWeight) {
+		this.managementRiskMaxTotalWeight = managementRiskMaxTotalWeight;
+	}
+
+	/**
+	 * @return the financialRiskMaxTotalWeight
+	 */
+	public Object getFinancialRiskMaxTotalWeight() {
+		return financialRiskMaxTotalWeight;
+	}
+
+	/**
+	 * @param financialRiskMaxTotalWeight the financialRiskMaxTotalWeight to set
+	 */
+	public void setFinancialRiskMaxTotalWeight(Object financialRiskMaxTotalWeight) {
+		this.financialRiskMaxTotalWeight = financialRiskMaxTotalWeight;
+	}
+
+	/**
+	 * @return the businessRiskMaxTotalWeight
+	 */
+	public Object getBusinessRiskMaxTotalWeight() {
+		return businessRiskMaxTotalWeight;
+	}
+
+	/**
+	 * @param businessRiskMaxTotalWeight the businessRiskMaxTotalWeight to set
+	 */
+	public void setBusinessRiskMaxTotalWeight(Object businessRiskMaxTotalWeight) {
+		this.businessRiskMaxTotalWeight = businessRiskMaxTotalWeight;
+	}
+
+	/**
+	 * @return the isProportionateScoreConsider
+	 */
+	public Object getIsProportionateScoreConsider() {
+		return isProportionateScoreConsider;
+	}
+
+	/**
+	 * @param isProportionateScoreConsider the isProportionateScoreConsider to set
+	 */
+	public void setIsProportionateScoreConsider(Object isProportionateScoreConsider) {
+		this.isProportionateScoreConsider = isProportionateScoreConsider;
+	}
+
+	/**
+	 * @return the proportionateScore
+	 */
+	public Object getProportionateScore() {
+		return proportionateScore;
+	}
+
+	/**
+	 * @param proportionateScore the proportionateScore to set
+	 */
+	public void setProportionateScore(Object proportionateScore) {
+		this.proportionateScore = proportionateScore;
+	}
+
+	/**
+	 * @return the proportionateScoreFS
+	 */
+	public Object getProportionateScoreFS() {
+		return proportionateScoreFS;
+	}
+
+	/**
+	 * @param proportionateScoreFS the proportionateScoreFS to set
+	 */
+	public void setProportionateScoreFS(Object proportionateScoreFS) {
+		this.proportionateScoreFS = proportionateScoreFS;
+	}
+
+	/**
+	 * @return the fraudDetectionData
+	 */
+	public Object getFraudDetectionData() {
+		return fraudDetectionData;
+	}
+
+	/**
+	 * @param fraudDetectionData the fraudDetectionData to set
+	 */
+	public void setFraudDetectionData(Object fraudDetectionData) {
+		this.fraudDetectionData = fraudDetectionData;
+	}
+
+	public Object getComercialOpDate() {
+		return comercialOpDate;
+	}
+
+	public void setComercialOpDate(Object comercialOpDate) {
+		this.comercialOpDate = comercialOpDate;
+	}
+
+	public Object getFactoryPremise() {
+		return factoryPremise;
+	}
+
+	public void setFactoryPremise(Object factoryPremise) {
+		this.factoryPremise = factoryPremise;
+	}
+
+	public Object getKnoHow() {
+		return knoHow;
+	}
+
+	public void setKnoHow(Object knoHow) {
+		this.knoHow = knoHow;
+	}
+
+	public Object getCompetition() {
+		return competition;
+	}
+
+	public void setCompetition(Object competition) {
+		this.competition = competition;
 	}
 
 

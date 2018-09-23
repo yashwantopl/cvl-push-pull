@@ -67,7 +67,7 @@ public class PersonalLoanParameterController {
 		}
 		personalLoanParameterRequest.setUserId(userId);
 		
-		boolean response = personalLoanParameterService.saveOrUpdate(personalLoanParameterRequest);
+		boolean response = personalLoanParameterService.saveOrUpdate(personalLoanParameterRequest,null);
 		if (response) {
 			CommonDocumentUtils.endHook(logger, "save");
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),

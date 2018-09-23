@@ -872,12 +872,12 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 					if(!CommonUtils.isListNullOrEmpty(applicationStatusAuditList)){
 						nhbsApplicationsResponse.setProposalTakenDate(applicationStatusAuditList.get(0).getModifiedDate());
 					}
-					List<ApplicationStatusAudit> applicationStatusAuditListForAssignedToCheckerDate = appStatusRepository.getApplicationByUserIdBasedOnStatusForFPMaker(loanApplicationMaster.getId(), CommonUtils.ApplicationStatus.ASSIGNED);
-					if(!CommonUtils.isListNullOrEmpty(applicationStatusAuditList)){
+					List<ApplicationStatusAudit> applicationStatusAuditListForAssignedToCheckerDate = appStatusRepository.getApplicationByUserIdBasedOnStatusForFPMaker(loanApplicationMaster.getId(), CommonUtils.ApplicationStatus.ASSIGNED_TO_CHECKER);
+					if(!CommonUtils.isListNullOrEmpty(applicationStatusAuditListForAssignedToCheckerDate)){
 						if(applicationStatusAuditListForAssignedToCheckerDate.size()>1){
-							nhbsApplicationsResponse.setAssignedToCheckerDate(applicationStatusAuditList.get(applicationStatusAuditListForAssignedToCheckerDate.size()-1).getModifiedDate());
-						}else{
-							nhbsApplicationsResponse.setAssignedToCheckerDate(applicationStatusAuditList.get(0).getModifiedDate());
+							nhbsApplicationsResponse.setAssignedToCheckerDate(applicationStatusAuditListForAssignedToCheckerDate.get(applicationStatusAuditListForAssignedToCheckerDate.size()-1).getModifiedDate());
+						}else {
+							nhbsApplicationsResponse.setAssignedToCheckerDate(applicationStatusAuditListForAssignedToCheckerDate.get(0).getModifiedDate());
 						}
 					}
 					if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getIsFinalLocked())){
@@ -1111,6 +1111,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 				nhbsApplicationsResponse.setApplicationType(loanApplicationMaster.getProductId());
 				nhbsApplicationsResponse.setUserId(loanApplicationMaster.getUserId());
 				nhbsApplicationsResponse.setApplicationId(loanApplicationMaster.getId());
+				nhbsApplicationsResponse.setBusinessTypeId(loanApplicationMaster.getBusinessTypeId());
 				if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getDdrStatusId())){
 					nhbsApplicationsResponse.setDdrStatus(CommonUtils.getDdrStatusString(loanApplicationMaster.getDdrStatusId().intValue()));
 					nhbsApplicationsResponse.setDdrStatusId(loanApplicationMaster.getDdrStatusId().intValue());
@@ -1236,7 +1237,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 							e.printStackTrace();
 						}
 					}
-					List<ApplicationStatusAudit> applicationStatusAuditList = appStatusRepository.getApplicationByUserIdBasedOnStatusForFPMaker(loanApplicationMaster.getId(), CommonUtils.ApplicationStatus.ASSIGNED);
+					List<ApplicationStatusAudit> applicationStatusAuditList = appStatusRepository.getApplicationByUserIdBasedOnStatusForFPMaker(loanApplicationMaster.getId(), CommonUtils.ApplicationStatus.ASSIGNED_TO_CHECKER);
 					if(!CommonUtils.isListNullOrEmpty(applicationStatusAuditList)){
 						nhbsApplicationsResponse.setReceivedDate(applicationStatusAuditList.get(0).getModifiedDate());
 					}

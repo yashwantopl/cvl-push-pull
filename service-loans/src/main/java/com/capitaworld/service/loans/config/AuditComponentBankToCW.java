@@ -26,7 +26,7 @@ public class AuditComponentBankToCW {
 	
 	@Async
 	public void saveBankToCWReqRes(String request, Long applicationId,Integer apiType , LoansResponse loansResponse, String failureReason,
-			Long orgId) {
+			Long orgId , Long  bankPrimaryKey) {
 		logger.info("Enter in saveBankReqRes() ----------------------->  "+ request);
 		try {
 		BankCWAuditTrailDomain bankCWAuditTrailDomain = new BankCWAuditTrailDomain();
@@ -38,7 +38,10 @@ public class AuditComponentBankToCW {
 		bankCWAuditTrailDomain.setIsActive(true);
 		bankCWAuditTrailDomain.setCreatedDate(new Date());
 		bankCWAuditTrailDomain.setApiType(apiType);
-		bankCWAuditTrailDomain.setStatus(loansResponse.getStatus() == 200 ? "SUCCESS" : "FAILURE");
+		bankCWAuditTrailDomain.setBankPrimaryKey(bankPrimaryKey);
+		if(loansResponse != null) {
+			bankCWAuditTrailDomain.setStatus(loansResponse.getStatus() == 200 ? "SUCCESS" : "FAILURE");
+		}
 		bankCWAuditTrailDomain =bankToCWAuditTrailRepository.save(bankCWAuditTrailDomain);
 		logger.info("Exit saveLoanDisbursementDetail() -----------------------> BankCWAuditTrailDomain ==>" +bankCWAuditTrailDomain);
 		}catch (Exception e) {

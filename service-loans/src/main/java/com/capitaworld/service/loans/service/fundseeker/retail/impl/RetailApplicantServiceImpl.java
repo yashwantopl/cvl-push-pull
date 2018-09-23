@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.service.fundseeker.retail.impl;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -145,9 +146,17 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 				applicantDetail.setIsActive(true);
 				applicantDetail.setApplicationId(new LoanApplicationMaster(applicantRequest.getApplicationId()));
 			}
-
-			BeanUtils.copyProperties(applicantRequest, applicantDetail, CommonUtils.IgnorableCopy.RETAIL_FINAL);
-			copyAddressFromRequestToDomain(applicantRequest, applicantDetail);
+			BeanUtils.copyProperties(applicantRequest, applicantDetail,CommonUtils.IgnorableCopy.RETAIL_FINAL_WITH_ID);
+			Address address = applicantRequest.getFirstAddress();
+			if(!CommonUtils.isObjectNullOrEmpty(address)) {
+				applicantDetail.setAddressPremiseName(address.getPremiseNumber());
+				applicantDetail.setAddressLandmark(address.getLandMark());
+				applicantDetail.setAddressStreetName(address.getStreetName());
+				applicantDetail.setAddressCountry(address.getCountryId());
+				applicantDetail.setAddressState(!CommonUtils.isObjectNullOrEmpty(address.getStateId()) ? address.getStateId().longValue() : null);
+				applicantDetail.setAddressCity(address.getCityId());
+				applicantDetail.setAddressPincode(address.getPincode());
+			}
 			applicantDetail.setBirthDate(applicantRequest.getDob());
 			applicantDetail = applicantRepository.save(applicantDetail);
 
@@ -179,22 +188,21 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 	}
 
 	@Override
-	public RetailApplicantRequest get(Long userId, Long applicationId) throws Exception {
+	public RetailApplicantRequest get(Long applicationId) throws Exception {
 		try {
-			RetailApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId(userId,
-					applicationId);
-			if (applicantDetail == null) {
+			RetailApplicantDetail applicantDetail = applicantRepository.findOneByApplicationIdIdAndIsActive(applicationId,true);
+			/*if (applicantDetail == null) {
 				RetailApplicantRequest request = new RetailApplicantRequest();
 				LoanApplicationMaster applicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId,
 						userId);
 				request.setDetailsFilledCount(applicationMaster.getDetailsFilledCount());
 				return request;
-			}
+			}*/
 			RetailApplicantRequest applicantRequest = new RetailApplicantRequest();
 			BeanUtils.copyProperties(applicantDetail, applicantRequest);
 			copyAddressFromDomainToRequest(applicantDetail, applicantRequest);
-			applicantRequest.setCoApplicants(coApplicantService.getList(applicationId, userId));
-			applicantRequest.setGuarantors(guarantorService.getList(applicationId, userId));
+			/*applicantRequest.setCoApplicants(coApplicantService.getList(applicationId, userId));
+			applicantRequest.setGuarantors(guarantorService.getList(applicationId, userId));*/
 			Integer[] saperatedTime = CommonUtils.saperateDayMonthYearFromDate(applicantDetail.getBirthDate());
 			applicantRequest.setDate(saperatedTime[0]);
 			applicantRequest.setMonth(saperatedTime[1]);
@@ -212,7 +220,7 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 			applicantRequest.setDetailsFilledCount(applicantDetail.getApplicationId().getDetailsFilledCount());
 			return applicantRequest;
 		} catch (Exception e) {
-			logger.error("Error while Saving Retail Profile:-");
+			logger.error("Error while Getting Retail applicant details:-");
 			e.printStackTrace();
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
@@ -298,8 +306,14 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 	public CibilFullFillOfferRequest getProfile(Long userId, Long applicationId) throws Exception {
 		try {
 			logger.info("start getProfile() method");
-			RetailApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId(userId,
-					applicationId);
+			RetailApplicantDetail applicantDetail = null;
+			if(userId == null || userId <= 0){
+				applicantDetail = applicantRepository.findOneByApplicationIdId(applicationId);
+			}else{
+				applicantDetail = applicantRepository.getByApplicationAndUserId(userId,applicationId);
+			}
+
+
 			if (applicantDetail == null) {
 				return null;
 			}

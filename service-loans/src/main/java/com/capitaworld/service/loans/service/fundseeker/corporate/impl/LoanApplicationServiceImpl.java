@@ -9,15 +9,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.json.simple.JSONObject;
@@ -121,6 +113,7 @@ import com.capitaworld.service.loans.domain.fundseeker.corporate.PromotorBackgro
 import com.capitaworld.service.loans.domain.fundseeker.corporate.ProposedProductDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.SecurityCorporateDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.TotalCostOfProject;
+import com.capitaworld.service.loans.domain.fundseeker.ddr.DDRFormDetails;
 import com.capitaworld.service.loans.domain.fundseeker.retail.CoApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.GuarantorDetails;
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryCarLoanDetail;
@@ -150,6 +143,7 @@ import com.capitaworld.service.loans.model.common.EkycResponse;
 import com.capitaworld.service.loans.model.common.HunterRequestDataResponse;
 import com.capitaworld.service.loans.model.common.ProposalList;
 import com.capitaworld.service.loans.model.common.SanctioningDetailResponse;
+import com.capitaworld.service.loans.model.corporate.CorporateProduct;
 import com.capitaworld.service.loans.model.mobile.MLoanDetailsResponse;
 import com.capitaworld.service.loans.model.mobile.MobileLoanRequest;
 import com.capitaworld.service.loans.repository.common.LogDetailsRepository;
@@ -256,6 +250,7 @@ import com.capitaworld.service.scoring.model.ScoringRequest;
 import com.capitaworld.service.scoring.model.ScoringResponse;
 import com.capitaworld.service.scoring.model.scoringmodel.ScoringModelReqRes;
 import com.capitaworld.service.users.client.UsersClient;
+import com.capitaworld.service.users.model.BranchBasicDetailsRequest;
 import com.capitaworld.service.users.model.FpProfileBasicDetailRequest;
 import com.capitaworld.service.users.model.FundProviderDetailsRequest;
 import com.capitaworld.service.users.model.NetworkPartnerDetailsRequest;
@@ -264,6 +259,7 @@ import com.capitaworld.service.users.model.UserOrganisationRequest;
 import com.capitaworld.service.users.model.UserResponse;
 import com.capitaworld.service.users.model.UsersRequest;
 import com.capitaworld.service.users.model.mobile.MobileUserRequest;
+import com.capitaworld.service.users.utils.OrganisationConfiguration;
 import com.capitaworld.sidbi.integration.client.SidbiIntegrationClient;
 import com.capitaworld.sidbi.integration.model.AchievementDetailRequest;
 import com.capitaworld.sidbi.integration.model.AddressRequest;
@@ -534,10 +530,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	private LoanDisbursementService loanDisbursementService;
 
 	@Autowired
-	LiabilitiesDetailsRepository liabilitiesDetailsRepository;
+	private LiabilitiesDetailsRepository liabilitiesDetailsRepository;
 
 	@Autowired
-	OperatingStatementDetailsRepository operatingStatementDetailsRepository;
+	private OperatingStatementDetailsRepository operatingStatementDetailsRepository;
 	
 	@Autowired
 	private GstClient gstClient;
@@ -937,6 +933,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				if(CommonUtils.isObjectNullOrEmpty(master.getProductId())) {
 					request.setLoanTypeMain(CommonUtils.CORPORATE);
 					request.setLoanTypeSub("DEBT");
+					request.setApplicationStatus(CommonUtils.ApplicationStatusMessage.IN_PROGRESS.getValue());
 					requests.add(request);
 					continue;
 				}
@@ -986,6 +983,48 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					e.printStackTrace();
 					// throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 				}
+				long proposalStatusId = 0l;
+				try{
+					ProposalMappingResponse response = proposalDetailsClient.getActiveProposalByApplicationID(master.getId());
+
+					if(!CommonUtils.isObjectNullOrEmpty(response) && !CommonUtils.isObjectNullOrEmpty(response.getData())){
+						ProposalMappingRequest proposalrequest = MultipleJSONObjectHelper.getObjectFromMap(
+								(LinkedHashMap<String, Object>) response.getData(), ProposalMappingRequest.class);
+						proposalStatusId = proposalrequest.getProposalStatusId().longValue();
+					}
+				}catch (Exception e){
+					logger.error(
+							"Error while calling getActiveProposalByApplicationID:-");
+					e.printStackTrace();
+				}
+
+				Integer status =request.getStatus();
+				Integer ddrStatus =request.getDdrStatusId();
+				String applicationStatus = null;
+				if (status == CommonUtils.ApplicationStatus.OPEN.intValue()) {
+					if (request.getPaymentStatus() == com.capitaworld.service.gateway.utils.CommonUtils.PaymentStatus.SUCCESS) {
+						applicationStatus = CommonUtils.ApplicationStatusMessage.DDR_IN_PROGRESS.getValue();
+					} else {
+						applicationStatus = CommonUtils.ApplicationStatusMessage.IN_PROGRESS.getValue();
+					}
+				} else if (ddrStatus == CommonUtils.DdrStatus.APPROVED.intValue()) {
+					if (proposalStatusId == MatchConstant.ProposalStatus.APPROVED) {
+						applicationStatus = CommonUtils.ApplicationStatusMessage.SANCTIONED.getValue();
+					} else if (proposalStatusId == MatchConstant.ProposalStatus.HOLD) {
+						applicationStatus = CommonUtils.ApplicationStatusMessage.HOLD.getValue();
+					} else if (proposalStatusId == MatchConstant.ProposalStatus.DECLINE) {
+						applicationStatus = CommonUtils.ApplicationStatusMessage.REJECT.getValue();
+					} else if (proposalStatusId == MatchConstant.ProposalStatus.DISBURSED) {
+						applicationStatus = CommonUtils.ApplicationStatusMessage.DISBURSED.getValue();
+					} else if (proposalStatusId == MatchConstant.ProposalStatus.ACCEPT) {
+						applicationStatus = CommonUtils.ApplicationStatusMessage.DDR_APPROVED_BUT_NOT_SANCTIONED.getValue();
+					} else {
+						applicationStatus = CommonUtils.ApplicationStatusMessage.DDR_IN_PROGRESS.getValue();
+					}
+				} else {
+					applicationStatus = CommonUtils.ApplicationStatusMessage.DDR_IN_PROGRESS.getValue();
+				}
+				request.setApplicationStatus(applicationStatus);
 			}
 			return requests;
 		} catch (Exception e) {
@@ -2785,12 +2824,31 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
 						.findOneByApplicationIdId(applicationId);
 				return corporateApplicantDetail.getOrganisationName();
-			}			
-		}else {
-			CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
+			}
+
+            if(applicationMaster.getBusinessTypeId().intValue() == CommonUtils.BusinessType.NEW_TO_BUSINESS.getId().intValue()){
+                List<DirectorBackgroundDetail> directorBackgroundDetails = directorBackgroundDetailsRepository.listPromotorBackgroundFromAppId(applicationId);
+                DirectorBackgroundDetail directorBackgroundDetail = directorBackgroundDetails.stream().filter(DirectorBackgroundDetail::getIsMainDirector).findAny().orElse(null);
+                if (directorBackgroundDetail != null) {
+                    return directorBackgroundDetail.getDirectorsName();
+                }
+            }
+
+        }else {
+
+            if(applicationMaster.getBusinessTypeId().intValue() == CommonUtils.BusinessType.NEW_TO_BUSINESS.getId().intValue()){
+                List<DirectorBackgroundDetail> directorBackgroundDetails = directorBackgroundDetailsRepository.listPromotorBackgroundFromAppId(applicationId);
+                DirectorBackgroundDetail directorBackgroundDetail = directorBackgroundDetails.stream().filter(DirectorBackgroundDetail::getIsMainDirector).findAny().orElse(null);
+                if (directorBackgroundDetail != null) {
+                    return directorBackgroundDetail.getDirectorsName();
+                }
+            }
+
+            CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
 					.findOneByApplicationIdId(applicationId);
 			return corporateApplicantDetail.getOrganisationName();
 		}
+
 		return null;
 	}
 
@@ -5130,8 +5188,14 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	public boolean savePhese1DataToSidbi(Long applicationId, Long userId,Long organizationId,Long fpProductMappingId) {
 		GenerateTokenRequest generateTokenRequest =null;
 		PrimaryCorporateDetail applicationMaster = null;
+		UserOrganisationRequest userOrganisationRequest =null;
 		try {
-			generateTokenRequest = setUrlAndTokenInSidbiClient(organizationId , applicationId);
+			userOrganisationRequest = getOrganizationDetails(organizationId); 
+			if(CommonUtils.isObjectNullOrEmpty(userOrganisationRequest)) {
+				logger.warn("Something is Wrong as Organization Data not found for Organization id ==>{}",organizationId);
+				return false ;
+			}
+			generateTokenRequest = setUrlAndTokenInSidbiClient( applicationId , userOrganisationRequest);
 			if(CommonUtils.isObjectNullOrEmpty(generateTokenRequest)) {
 				logger.warn("Something went wrong while setting URL and Token in savePhese1DataToSidbi()");
 				return false;
@@ -5154,6 +5218,14 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		Boolean saveCommercialDetails = false;
 		applicationMaster = primaryCorporateRepository.findOneByApplicationIdId(applicationId);
 		try {
+			
+			OrganisationConfiguration organisationConfiguration = MultipleJSONObjectHelper.getObjectFromString(userOrganisationRequest.getConfig(), OrganisationConfiguration.class);
+			if(!CommonUtils.isObjectNullOrEmpty(organisationConfiguration) && organisationConfiguration.getIsSSL()){
+				System.setProperty("javax.net.ssl.keyStore",  organisationConfiguration.getKeyStore());                                    
+				System.setProperty("javax.net.ssl.keyStorePassword", organisationConfiguration.getKeyStorePassword());              
+				System.setProperty("javax.net.ssl.keyStoreType",  organisationConfiguration.getKeyStoreType());            
+			}
+			
 			AuditMaster audit = auditComponent.getAudit(applicationId, true, AuditComponent.PRELIM_INFO);
 			ProfileReqRes prelimData =null;
 			if(audit == null) {
@@ -5172,7 +5244,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				}else {
 					try {
 						logger.info("Start Saving ProfileReqRes in savePhese1DataToSidbi() ");
-						savePrelimInfo = sidbiIntegrationClient.savePrelimInfo(prelimData,generateTokenRequest.getToken(),generateTokenRequest.getBankToken());
+						savePrelimInfo = sidbiIntegrationClient.savePrelimInfo(prelimData,generateTokenRequest.getToken(),generateTokenRequest.getBankToken() , userOrganisationRequest.getCodeLanguage());
 						logger.info("Sucessfull Saved ProfileReqRes in savePhese1DataToSidbi() ");
 						auditComponent.updateAudit(AuditComponent.PRELIM_INFO, applicationId, userId, null,  savePrelimInfo);					
 				}catch(Exception e) {
@@ -5181,7 +5253,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					if(e.getMessage() != null && e.getMessage().contains("401")) {
 						auditComponent.updateAudit(AuditComponent.PRELIM_INFO, applicationId, userId,  "Unauthorized! while saving ProfileReqRes in savePhese1DataToSidbi() ==> for ApplicationId  ====>{}}"+applicationId +" Mgs " +e.getMessage() ,savePrelimInfo);
 						logger.error("Invalid Token Details");
-						setTokenAsExpired(generateTokenRequest);
+						setTokenAsExpired(generateTokenRequest, userOrganisationRequest.getCodeLanguage() );
 						return false;						
 					}else {
 						auditComponent.updateAudit(AuditComponent.PRELIM_INFO, applicationId, userId,  "Exceptions while saving ProfileReqRes in savePhese1DataToSidbi() ==> for ApplicationId  ====>{}}"+applicationId +" Mgs " +e.getMessage() ,savePrelimInfo);
@@ -5208,7 +5280,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 //						return false;
 					}else {
 							logger.error("Start Saving MatchesParameterRequest in savePhese1DataToSidbi() ");
-							matchesParameters = sidbiIntegrationClient.saveMatchesParameter(parameterRequest,generateTokenRequest.getToken(),generateTokenRequest.getBankToken());
+							matchesParameters = sidbiIntegrationClient.saveMatchesParameter(parameterRequest,generateTokenRequest.getToken(),generateTokenRequest.getBankToken() , userOrganisationRequest.getCodeLanguage());
 							logger.info("Sucessfully save MatchesParameterRequest in savePhese1DataToSidbi()  ====>{}FpProductId====>{}",applicationId,fpProductMappingId);
 							auditComponent.updateAudit(AuditComponent.MATCHES_PARAMETER, applicationId, userId,null , matchesParameters);
 					}
@@ -5218,7 +5290,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					if(e.getMessage() != null && e.getMessage().contains("401")) {
 						auditComponent.updateAudit(AuditComponent.MATCHES_PARAMETER, applicationId, userId, "Unauthorized! in  MatchesParameterRequest in savePhese1DataToSidbi()  ====>{}applicationId "+applicationId+" Msg ==> "+e.getMessage(),  matchesParameters);
 						logger.error("Invalid Token Details");
-						setTokenAsExpired(generateTokenRequest);
+						setTokenAsExpired(generateTokenRequest, userOrganisationRequest.getCodeLanguage());
 						return false;						
 					}else {
 					auditComponent.updateAudit(AuditComponent.MATCHES_PARAMETER, applicationId, userId, "Exceptions in  MatchesParameterRequest in savePhese1DataToSidbi()  ====>{}applicationId "+applicationId+" Msg ==> "+e.getMessage(),  matchesParameters);
@@ -5243,7 +5315,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 //						return false;
 					}else {
 						logger.info("Start Saving BankStatemetnRequest in savePhese1DataToSidbi() ");
-						bankStatement = sidbiIntegrationClient.saveBankStatement(data,generateTokenRequest.getToken(),generateTokenRequest.getBankToken());
+						bankStatement = sidbiIntegrationClient.saveBankStatement(data,generateTokenRequest.getToken(),generateTokenRequest.getBankToken() , userOrganisationRequest.getCodeLanguage());
 						logger.info("Sucessfully save BankStatemetnRequest in savePhese1DataToSidbi()  ====>{}FpProductId====>{}",applicationId,fpProductMappingId);
 						auditComponent.updateAudit(AuditComponent.BANK_STATEMENT, applicationId, userId, null, bankStatement);					
 					}
@@ -5253,7 +5325,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					if(e.getMessage() != null && e.getMessage().contains("401")) {
 						auditComponent.updateAudit(AuditComponent.BANK_STATEMENT, applicationId, userId, "Unauthorized! in  BankStatementRequest in savePhese1DataToSidbi() ==> for applicationId====>{} "+applicationId+" Msg ==> "+e.getMessage() ,bankStatement);
 						logger.error("Invalid Token Details");
-						setTokenAsExpired(generateTokenRequest);
+						setTokenAsExpired(generateTokenRequest , userOrganisationRequest.getCodeLanguage() );
 						return false;						
 					}else {
 						auditComponent.updateAudit(AuditComponent.BANK_STATEMENT, applicationId, userId, "Exceptions! in  BankStatementRequest in savePhese1DataToSidbi() ==> for applicationId====>{} "+applicationId+" Msg ==> "+e.getMessage() ,bankStatement);
@@ -5279,7 +5351,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 //						return false;
 					}else {
 						logger.info("Start Saving EligibilityDetailRequest in savePhese1DataToSidbi() ");
-						eligibilityParameters = sidbiIntegrationClient.saveEligibilityDetails(eligibilityRequest,generateTokenRequest.getToken(),generateTokenRequest.getBankToken());
+						eligibilityParameters = sidbiIntegrationClient.saveEligibilityDetails(eligibilityRequest,generateTokenRequest.getToken(),generateTokenRequest.getBankToken()  ,userOrganisationRequest.getCodeLanguage());
 						logger.info("Sucessfully save EligibilityDetailRequest in savePhese1DataToSidbi() for  ApplicationId ====>{}FpProductId====>{}",applicationId,fpProductMappingId);
 						auditComponent.updateAudit(AuditComponent.ELIGIBILITY, applicationId, userId, null, eligibilityParameters);
 					}
@@ -5289,7 +5361,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					if(e.getMessage() != null && e.getMessage().contains("401")) {
 						auditComponent.updateAudit(AuditComponent.ELIGIBILITY, applicationId, userId, "Unauthorized! in  EligibilityDetailRequest in savePhese1DataToSidbi() ==> for ApplicationId  ====>{} " +applicationId +" Msg ==> "+ e.getMessage() , eligibilityParameters);
 						logger.error("Invalid Token Details");
-						setTokenAsExpired(generateTokenRequest);
+						setTokenAsExpired(generateTokenRequest ,userOrganisationRequest.getCodeLanguage());
 						return false;						
 					}else {
 						auditComponent.updateAudit(AuditComponent.ELIGIBILITY, applicationId, userId, "Exception in  EligibilityDetailRequest in savePhese1DataToSidbi() ==> for ApplicationId  ====>{} " +applicationId +" Msg ==> "+ e.getMessage() , eligibilityParameters);
@@ -5341,7 +5413,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 									BeanUtils.copyProperties(scoreParameterResult,scoreParameterDetailsRequest);
 									try {
 										logger.info("Start Saving ScoreParameterDetailsRequest in savePhese1DataToSidbi() ");
-										scoringDetails = sidbiIntegrationClient.saveScoringDetails(scoreParameterDetailsRequest,generateTokenRequest.getToken(),generateTokenRequest.getBankToken());
+										scoringDetails = sidbiIntegrationClient.saveScoringDetails(scoreParameterDetailsRequest,generateTokenRequest.getToken(),generateTokenRequest.getBankToken() , userOrganisationRequest.getCodeLanguage());
 										logger.info("Sucessfully save ScoreParameterDetailsRequest in savePhese1DataToSidbi() for  ApplicationId ====>{}FpProductId====>{}",applicationId,fpProductMappingId);
 										auditComponent.updateAudit(AuditComponent.SCORING_DETAILS, applicationId, userId,null , scoringDetails);
 									} catch (Exception e) {
@@ -5350,7 +5422,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 										if(e.getMessage() != null && e.getMessage().contains("401")) {
 											auditComponent.updateAudit(AuditComponent.SCORING_DETAILS, applicationId, userId,"Unauthorized! in  EligibilityDetailRequest in savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "+applicationId+" Mgs " +e.getMessage() ,scoringDetails);
 											logger.error("Invalid Token Details");
-											setTokenAsExpired(generateTokenRequest);
+											setTokenAsExpired(generateTokenRequest ,userOrganisationRequest.getCodeLanguage());
 											return false;						
 										}else {
 											auditComponent.updateAudit(AuditComponent.SCORING_DETAILS, applicationId, userId,"Exception in  EligibilityDetailRequest in savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "+applicationId+" Mgs " +e.getMessage() ,scoringDetails);
@@ -5392,13 +5464,21 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 //						return false;
 					}else {
 						logger.info("Start Saving FinancialRequest in savePhese1DataToSidbi() ");
-						saveFinancialDetails = sidbiIntegrationClient.saveFinancialDetails(financialDetails, generateTokenRequest.getToken(),generateTokenRequest.getBankToken());
+						saveFinancialDetails = sidbiIntegrationClient.saveFinancialDetails(financialDetails, generateTokenRequest.getToken(),generateTokenRequest.getBankToken() , userOrganisationRequest.getCodeLanguage());
 						logger.info("Sucessfully save FinancialRequest in savePhese1DataToSidbi() for  ApplicationId ====>{}FpProductId====>{}Flag==>{}",applicationId,fpProductMappingId,saveFinancialDetails);
 						auditComponent.updateAudit(AuditComponent.FINANCIAL, applicationId, userId, null, saveFinancialDetails);
 					}
 				}catch(Exception e) {
 					logger.error("Error while Saving Financial Details to BANK");
 					e.printStackTrace();
+					if(e.getMessage() != null && e.getMessage().contains("401")) {
+						auditComponent.updateAudit(AuditComponent.FINANCIAL, applicationId, userId, "Unauthorized! in  Financial in savePhese1DataToSidbi() ==> for applicationId====>{} "+applicationId+" Msg ==> "+e.getMessage() ,saveFinancialDetails);
+						logger.error("Invalid Token Details");
+						setTokenAsExpired(generateTokenRequest , userOrganisationRequest.getCodeLanguage() );
+						return false;						
+					}else {
+						auditComponent.updateAudit(AuditComponent.FINANCIAL, applicationId, userId, "Exception while saving financial detail savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "+applicationId+" Mgs " +e.getMessage(), saveFinancialDetails);
+					}
 				}
 			}else {
 				logger.info("Financial Details Already Saved so not Going to Save Again===>");
@@ -5418,13 +5498,21 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 //						return false;
 					}else {
 						logger.info("Start Saving CMA Details in savePhese1DataToSidbi() ");
-						saveCmaDetails = sidbiIntegrationClient.saveCMADetailsOfAuditYears(cmaRequest, generateTokenRequest.getToken(),generateTokenRequest.getBankToken());
+						saveCmaDetails = sidbiIntegrationClient.saveCMADetailsOfAuditYears(cmaRequest, generateTokenRequest.getToken(),generateTokenRequest.getBankToken() , userOrganisationRequest.getCodeLanguage());
 						logger.info("Sucessfully save CMA Details in savePhese1DataToSidbi() for  ApplicationId ====>{}FpProductId====>{}Flag==>{}",applicationId,fpProductMappingId,saveCmaDetails);
 						auditComponent.updateAudit(AuditComponent.CMA_DETAIL, applicationId, userId, null, saveCmaDetails);
 					}
 				}catch(Exception e) {
 					e.printStackTrace();
-					logger.error("Error while Calling CMA client in integration");
+					if(e.getMessage() != null && e.getMessage().contains("401")) {
+						auditComponent.updateAudit(AuditComponent.CMA_DETAIL, applicationId, userId, "Unauthorized! in  Cma Detail in savePhese1DataToSidbi() ==> for applicationId====>{} "+applicationId+" Msg ==> "+e.getMessage() ,saveCmaDetails);
+						logger.error("Invalid Token Details");
+						setTokenAsExpired(generateTokenRequest , userOrganisationRequest.getCodeLanguage() );
+						return false;						
+					}else {
+						auditComponent.updateAudit(AuditComponent.CMA_DETAIL, applicationId, userId, "Exception while saving CMA detail savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "+applicationId+" Mgs " +e.getMessage() , saveCmaDetails);
+						logger.error("Error while Calling CMA client in integration");
+					}
 				}
 			}else {
 				logger.info("CMA Details Already Saved so not Going to Save Again===>");
@@ -5445,13 +5533,21 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 //						return false;
 					}else {
 						logger.info("Start Saving LOGIC Details in savePhese1DataToSidbi() ");
-						saveLogicDetails = sidbiIntegrationClient.saveLogic(clientLogicCalculationRequest, generateTokenRequest.getToken(),generateTokenRequest.getBankToken());
+						saveLogicDetails = sidbiIntegrationClient.saveLogic(clientLogicCalculationRequest, generateTokenRequest.getToken(),generateTokenRequest.getBankToken() , userOrganisationRequest.getCodeLanguage());
 						logger.info("Sucessfully save LOGIC Details in savePhese1DataToSidbi() for  ApplicationId ====>{}FpProductId====>{}Flag==>{}",applicationId,fpProductMappingId,saveLogicDetails);
 						auditComponent.updateAudit(AuditComponent.LOGIC, applicationId, userId, null, saveLogicDetails);
 					}
 				}catch(Exception e) {
 					e.printStackTrace();
-					logger.error("Error while calling logic client");
+					if(e.getMessage() != null && e.getMessage().contains("401")) {
+						auditComponent.updateAudit(AuditComponent.LOGIC, applicationId, userId, "Unauthorized! in  LogicDetail in savePhese1DataToSidbi() ==> for applicationId====>{} "+applicationId+" Msg ==> "+e.getMessage() ,saveLogicDetails);
+						logger.error("Invalid Token Details");
+						setTokenAsExpired(generateTokenRequest , userOrganisationRequest.getCodeLanguage() );
+						return false;						
+					}else {
+						logger.error("Error while calling logic client");
+						auditComponent.updateAudit(AuditComponent.LOGIC, applicationId, userId, "Exception while saving LOGIC detail savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "+applicationId+" Mgs " +e.getMessage() , saveLogicDetails);
+					}
 				}
 			}else {
 				logger.info("Logic Details Already Saved so not Going to Save Again===>");
@@ -5475,13 +5571,21 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 //						return false;
 					}else {
 						logger.info("Start Saving Commercial Details in savePhese1DataToSidbi() ");
-						saveCommercialDetails = sidbiIntegrationClient.saveCommercialDetails(commercialRequest, generateTokenRequest.getToken(), generateTokenRequest.getBankToken());
+						saveCommercialDetails = sidbiIntegrationClient.saveCommercialDetails(commercialRequest, generateTokenRequest.getToken(), generateTokenRequest.getBankToken() , userOrganisationRequest.getCodeLanguage());
 						logger.info("Sucessfully save COMMERCIAL Details in savePhese1DataToSidbi() for  ApplicationId ====>{}FpProductId====>{}Flag==>{}",applicationId,fpProductMappingId,saveCommercialDetails);
 						auditComponent.updateAudit(AuditComponent.COMMERCIAL, applicationId, userId, null, saveCommercialDetails);
 					}
 				}catch(Exception e) {
 					e.printStackTrace();
-					logger.error("Error while calling client of Commercial in SIdbi");
+					if(e.getMessage() != null && e.getMessage().contains("401")) {
+						auditComponent.updateAudit(AuditComponent.COMMERCIAL, applicationId, userId, "Unauthorized! in  Commercial Detail in savePhese1DataToSidbi() ==> for applicationId====>{} "+applicationId+" Msg ==> "+e.getMessage() ,saveCommercialDetails);
+						logger.error("Invalid Token Details");
+						setTokenAsExpired(generateTokenRequest , userOrganisationRequest.getCodeLanguage() );
+						return false;						
+					}else {
+						logger.error("Error while calling client of Commercial in SIdbi");
+						auditComponent.updateAudit(AuditComponent.COMMERCIAL, applicationId, userId, "Exception while saving COMMERCIAL detail savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "+applicationId+" Mgs " +e.getMessage() , saveCommercialDetails);
+					}
 				}
 				
 			}else {
@@ -5502,10 +5606,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			auditComponent.updateAudit(AuditComponent.COMMERCIAL, applicationId, userId, "Exception while Saving  COMMERCIAL Details by sidbiIntegrationClient   in savePhese2DataToSidbi() ==> for ApplicationId  ====>{} "+applicationId+" Mgs " +e.getMessage() , false);
 			logger.info("Throw Exception While Saving Phase one For SIDBI");
 			e.printStackTrace();
-			setTokenAsExpired(generateTokenRequest);
+			setTokenAsExpired(generateTokenRequest, userOrganisationRequest.getCodeLanguage());
 			return false;
 		}
-		setTokenAsExpired(generateTokenRequest);
+		setTokenAsExpired(generateTokenRequest ,userOrganisationRequest.getCodeLanguage());
 		return (savePrelimInfo && scoringDetails && matchesParameters && bankStatement && eligibilityParameters && saveFinancialDetails && saveCmaDetails && saveLogicDetails && saveCommercialDetails);
 	}
 		
@@ -5513,8 +5617,14 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	@Override
 	public boolean savePhese2DataToSidbi(Long applicationId, Long userId,Long organizationId,Long fpProductMappingId) {
 		GenerateTokenRequest generateTokenRequest=null;
+		UserOrganisationRequest userOrganisationRequest =null;
 		try {
-			generateTokenRequest = setUrlAndTokenInSidbiClient(organizationId, applicationId);
+			userOrganisationRequest = getOrganizationDetails(organizationId); 
+			if(CommonUtils.isObjectNullOrEmpty(userOrganisationRequest)) {
+				logger.warn("Something is Wrong as Organization Data not found for Organization id ==>{}",organizationId);
+				return false ;
+			}
+			generateTokenRequest = setUrlAndTokenInSidbiClient( applicationId , userOrganisationRequest);
 			if(CommonUtils.isObjectNullOrEmpty(generateTokenRequest)) {
 				logger.warn("Something went wrong while setting URL and Token in savePhese2DataToSidbi()");
 				return false;
@@ -5532,13 +5642,20 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		PrimaryCorporateDetail applicationMaster = primaryCorporateRepository.findOneByApplicationIdId(applicationId);
 		try {
 			
+			OrganisationConfiguration organisationConfiguration = MultipleJSONObjectHelper.getObjectFromString(userOrganisationRequest.getConfig(), OrganisationConfiguration.class);
+			if(!CommonUtils.isObjectNullOrEmpty(organisationConfiguration) && organisationConfiguration.getIsSSL()){
+				System.setProperty("javax.net.ssl.keyStore",  organisationConfiguration.getKeyStore());                                    
+				System.setProperty("javax.net.ssl.keyStorePassword", organisationConfiguration.getKeyStorePassword());              
+				System.setProperty("javax.net.ssl.keyStoreType",  organisationConfiguration.getKeyStoreType());            
+			}
+			
 			AuditMaster audit = auditComponent.getAudit(applicationId, true, AuditComponent.DETAILED_INFO);
 			if(audit == null) {
 				logger.info("Start savePhese2DataToSidbi()==>");
 				if(applicationMaster == null) {
 					logger.info("Loan Application Found Null====>{}",applicationId);
 					auditComponent.updateAudit(AuditComponent.DETAILED_INFO, applicationId, applicationMaster !=null ? applicationMaster.getUserId() : null,"Loan Application Found Null====>{} " +applicationId  , saveDetailsInfo);
-					setTokenAsExpired(generateTokenRequest);
+					setTokenAsExpired(generateTokenRequest , userOrganisationRequest.getCodeLanguage());
 					return false;
 				}
 				userId = applicationMaster.getUserId();
@@ -5563,7 +5680,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					profileReqRes.setSecurityCorporateDetailRequestsList(getSecurityCorporateDetailRequestList(applicationId, userId));
 					try {
 						logger.info("Going to Save Detailed Infor==>");
-						saveDetailsInfo = sidbiIntegrationClient.saveDetailedInfo(profileReqRes,generateTokenRequest.getToken(),generateTokenRequest.getBankToken());	
+						saveDetailsInfo = sidbiIntegrationClient.saveDetailedInfo(profileReqRes,generateTokenRequest.getToken(),generateTokenRequest.getBankToken() , userOrganisationRequest.getCodeLanguage());	
 						auditComponent.updateAudit(AuditComponent.DETAILED_INFO, applicationId, applicationMaster.getUserId(), null, saveDetailsInfo);
 					}catch(Exception e) {
 						logger.info("Exception while Saving profileReqRes by sidbiIntegrationClient   in savePhese2DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",applicationId,fpProductMappingId +" Mgs " +e.getMessage());
@@ -5571,7 +5688,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 						if(e.getMessage() != null && e.getMessage().contains("401")) {
 							auditComponent.updateAudit(AuditComponent.DETAILED_INFO, applicationId, userId,"Unauthorized! in  profileReqRes from SidbiIntegrationClient in savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "+applicationId+" Mgs " +e.getMessage() ,false);
 							logger.error("Invalid Token Details");
-							setTokenAsExpired(generateTokenRequest);
+							setTokenAsExpired(generateTokenRequest ,userOrganisationRequest.getCodeLanguage());
 							return false;						
 						}else {
 							auditComponent.updateAudit(AuditComponent.DETAILED_INFO, applicationId, applicationMaster.getUserId(),"Exception while Saving profileReqRes from SidbiIntegrationClient  in savePhese2DataToSidbi() ==> for ApplicationId  ====>{} "+applicationId +" Msg ==> "+e.getMessage() ,  false);
@@ -5589,7 +5706,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				
 				DDRFormDetailsRequest sidbiDetails = dDRFormService.getSIDBIDetails(applicationId,applicationMaster.getUserId());
 				try {
-					saveDDRInfo = sidbiIntegrationClient.saveDDRFormDetails(sidbiDetails,generateTokenRequest.getToken(),generateTokenRequest.getBankToken());
+					saveDDRInfo = sidbiIntegrationClient.saveDDRFormDetails(sidbiDetails,generateTokenRequest.getToken(),generateTokenRequest.getBankToken() , userOrganisationRequest.getCodeLanguage());
 					auditComponent.updateAudit(AuditComponent.DDR_DETAILS, applicationId, applicationMaster.getUserId(), null ,saveDDRInfo);
 					logger.info("ddr saved==========>{}",saveDDRInfo);
 				}catch(Exception e) {
@@ -5598,7 +5715,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					if(e.getMessage() != null && e.getMessage().contains("401")) {
 						auditComponent.updateAudit(AuditComponent.DDR_DETAILS, applicationId, userId,"Unauthorized! in  DDRFormDetailsRequest from SidbiIntegrationClient in savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "+applicationId+" Mgs " +e.getMessage() ,false);
 						logger.error("Invalid Token Details");
-						setTokenAsExpired(generateTokenRequest);
+						setTokenAsExpired(generateTokenRequest ,userOrganisationRequest.getCodeLanguage());
 						return false;						
 					}else {
 						auditComponent.updateAudit(AuditComponent.DDR_DETAILS , applicationId, applicationMaster.getUserId(), "Exception while Saving DDRFormDetailsRequest by sidbiIntegrationClient   in savePhese2DataToSidbi() ==> for ApplicationId  ====>{}"+ applicationId+" Mgs " +e.getMessage(),  false);
@@ -5647,7 +5764,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	            irrRequest.setApplicationId(applicationId.intValue());
 				irrRequest.setBusinessTypeId(ratingResponse.getBusinessTypeId());
 				try {
-					saveIRRInfo = sidbiIntegrationClient.saveIrrDetails(irrRequest,generateTokenRequest.getToken(),generateTokenRequest.getBankToken());
+					saveIRRInfo = sidbiIntegrationClient.saveIrrDetails(irrRequest,generateTokenRequest.getToken(),generateTokenRequest.getBankToken(), userOrganisationRequest.getCodeLanguage());
 					auditComponent.updateAudit(AuditComponent.IRR_DETAILS, applicationId, applicationMaster.getUserId(), null ,saveIRRInfo);
 				} catch (Exception e) {
 					logger.info("Exception while Saving saveIRRInfo   by sidbiIntegrationClient   in savePhese2DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",applicationId,fpProductMappingId +" Mgs " +e.getMessage());
@@ -5655,7 +5772,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					if(e.getMessage() != null && e.getMessage().contains("401")) {
 						auditComponent.updateAudit(AuditComponent.IRR_DETAILS, applicationId, userId,"Unauthorized! in  saveIRRInfo from SidbiIntegrationClient in savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "+applicationId+" Mgs " +e.getMessage() ,false);
 						logger.error("Invalid Token Details");
-						setTokenAsExpired(generateTokenRequest);
+						setTokenAsExpired(generateTokenRequest , userOrganisationRequest.getCodeLanguage());
 						return false;						
 					}else {
 						auditComponent.updateAudit(AuditComponent.IRR_DETAILS, applicationId, applicationMaster.getUserId(),"Exception while Saving saveIRRInfo   by sidbiIntegrationClient   in savePhese2DataToSidbi() ==> for ApplicationId  ====>{} "+applicationId+" Mgs " +e.getMessage()  ,false);
@@ -5671,9 +5788,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			auditComponent.updateAudit(AuditComponent.DDR_DETAILS , applicationId, userId, "Exception while Saving DDR_DETAILS by sidbiIntegrationClient   in savePhese2DataToSidbi() ==> for ApplicationId  ====>{} " +applicationId+" Mgs " +e.getMessage(), false);
 			auditComponent.updateAudit(AuditComponent.IRR_DETAILS, applicationId, userId, "Exception while Saving  IRR_DETAILS by sidbiIntegrationClient   in savePhese2DataToSidbi() ==> for ApplicationId  ====>{} "+applicationId+" Mgs " +e.getMessage() , false);
 			e.printStackTrace();
-			setTokenAsExpired(generateTokenRequest);
+			setTokenAsExpired(generateTokenRequest , userOrganisationRequest.getCodeLanguage());
 		}
-		setTokenAsExpired(generateTokenRequest);
+		setTokenAsExpired(generateTokenRequest ,userOrganisationRequest.getCodeLanguage());
 		if(saveDetailsInfo && saveDDRInfo && saveIRRInfo) {
 			return true;
 		}
@@ -5691,7 +5808,15 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 		cibilRequest.setPan(pan);
 		CommercialRequest commercialRequest = null;
 		try {
-			Base base= cibilClient.getMsmeCommercial(cibilRequest);
+			String response = cibilClient.getMsmeCommercial(cibilRequest);
+			Base base = null;
+			if(! CommonUtils.isObjectNullOrEmpty(response)) {
+				if(response.contains("\"base\"")) {
+					base = (Base) com.capitaworld.cibil.api.utility.MultipleJSONObjectHelper.getObjectExtraConfig(response, "base", Base.class, null);				
+				}else {
+					base = (Base) com.capitaworld.cibil.api.utility.MultipleJSONObjectHelper.getObjectExtraConfig(response, null, Base.class, null);
+				}
+			}
 			if(!CibilUtils.isObjectNullOrEmpty(base)) {
 				commercialRequest = new CommercialRequest();
 				/*Base base = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)msmeCommercial.getData(), Base.class);*/
@@ -6493,7 +6618,7 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 	}
 	
 	
-	private LoanMasterRequest createObj(PrimaryCorporateDetail applicationMaster) {
+	private LoanMasterRequest createObj(PrimaryCorporateDetail applicationMaster ) {
 		LoanMasterRequest loanMasterRequest = new LoanMasterRequest();
 		loanMasterRequest.setTenure(applicationMaster.getTenure());
 		loanMasterRequest.setProductName(CommonUtils.LoanType.getType(applicationMaster.getProductId()).getName());
@@ -6514,6 +6639,7 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 		ProposalMappingRequest proposalMappingRequest = new ProposalMappingRequest();
 		proposalMappingRequest.setApplicationId(applicationMaster.getId());
 		Long fpProductId=null;
+		UserResponse userResponse =null ;
 		ProposalMappingResponse proposalMappingResponse = proposalService.listOfFundSeekerProposal(proposalMappingRequest);
 		if(!CommonUtils.isObjectListNull(proposalMappingResponse) && !CommonUtils.isObjectListNull(proposalMappingResponse.getDataList())) {
 			List<Map<String, Object>> proposalMappingResponseDataList = (List<Map<String, Object>>) proposalMappingResponse.getDataList();
@@ -6530,6 +6656,17 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
                 if(productMstr != null) {
                 	loanMasterRequest.setFpProductName(productMstr.getName());                	
                 }
+                
+                // set branch code  
+                if(!CommonUtils.isObjectNullOrEmpty(proposalMappingRequest1.getBranchId())){
+                	userResponse =  userClient.getBranchDetailById( proposalMappingRequest1.getBranchId());
+                	if(!CommonUtils.isObjectNullOrEmpty(userResponse)) {
+                		BranchBasicDetailsRequest branchBasicDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap( ( LinkedHashMap<String ,Object>) userResponse.getData() , BranchBasicDetailsRequest.class); 
+                		loanMasterRequest.setBranchCode(branchBasicDetailsRequest.getCode());
+                	}
+                }
+                
+                
 			} catch (IOException e) {
 				logger.error("error while setting details from proposal details");
 				e.printStackTrace();
@@ -6540,7 +6677,7 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 			if (master.getIsActive()) {
 				UsersRequest request = new UsersRequest();
 				request.setId(master.getUserId());
-				UserResponse userResponse = userClient.getFPDetails(request);
+				userResponse = userClient.getFPDetails(request);
 				FundProviderDetailsRequest fundProviderDetailsRequest = null;
 				try {
 					fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap(
@@ -6552,6 +6689,13 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 				}
 			}
 		}
+		// set customerid and customer Name  for BOB
+		DDRFormDetails dDRFormDetails = dDRFormService.getDDRDetailByApplicationId(applicationMaster.getApplicationId().getId());
+		if(!CommonUtils.isObjectNullOrEmpty(dDRFormDetails)) {
+			loanMasterRequest.setCustomerId(dDRFormDetails.getCustomerId());
+			loanMasterRequest.setCustomerName(dDRFormDetails.getCustomerName());
+		}
+		
 		return loanMasterRequest;
 	}
 	
@@ -6707,10 +6851,25 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 		return map;
 	}
 	
+	public CorporateProduct getFpDetailsByFpProductMappingId(Long fpProductMappingId) throws Exception{
+		logger.info("ENTER IN LOAN APPLICATIONSERVICEIMPL-------------FP PRODUCT MAPPING ID >>>>>>>>>>>"+fpProductMappingId);
+
+		ProductMaster productMaster = productMasterRepository.findByIdAndIsActive(fpProductMappingId,true);
+		logger.info("RESPONSE------------------->>>>>>>>>>>"+productMaster);
+		
+		CorporateProduct corporateProduct =null;
+		if(productMaster!= null) {
+		corporateProduct = new CorporateProduct();
+		
+		BeanUtils.copyProperties(productMaster, corporateProduct);
+		
+		}
+		return corporateProduct;
+	}
 	
 	public LoanApplicationRequest getLoanApplicationDetails(Long userId, Long applicationId) {
 		
-		LoanApplicationMaster applicationMaster = loanApplicationRepository.getById(applicationId);
+		LoanApplicationMaster applicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId, userId);
 		
 		
 		LoanApplicationRequest applicationRequest = new LoanApplicationRequest();
@@ -6809,8 +6968,12 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 		}
 		
 		try {
+			
+			
+			
 			PrimaryCorporateDetail primaryCorporateDetail = primaryCorporateRepository.findOneByApplicationIdId(applicationId);
 			response.setIsPurchaseOfEqup(false);
+			
 			if(primaryCorporateDetail!=null) {
 				response.setColleteralValue(primaryCorporateDetail.getCollateralSecurityAmount());
 				if(primaryCorporateDetail.getAssessmentId()!=null) {
@@ -6819,6 +6982,10 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 						response.setCostOfMachinery(primaryCorporateDetail.getCostOfMachinery());
 					}
 				}
+			}
+			if(loan!=null && loan.getBusinessTypeId()!=null && loan.getBusinessTypeId() == 2) {
+				response.setIsPurchaseOfEqup(true);
+				response.setCostOfMachinery(primaryCorporateDetail.getProposedCost());
 			}
 		}
 		catch (Exception e) {
@@ -6899,12 +7066,7 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 		return null;
 	}
 	
-	public GenerateTokenRequest setUrlAndTokenInSidbiClient(Long organizationId, Long applicationId) throws Exception {
-		UserOrganisationRequest request = getOrganizationDetails(organizationId);
-		if(request == null) {
-			logger.warn("Something is Wrong as Organization Data not found for Organization id ==>{}",organizationId);
-			return null;
-		}
+	public GenerateTokenRequest setUrlAndTokenInSidbiClient( Long applicationId , UserOrganisationRequest request) throws Exception {
 		if(CommonUtils.isObjectNullOrEmpty(isProduction)) {
 			logger.warn("Please Set 'capitaworld.sidbi.integration.is_production' key value to Set URL");
 			return null;
@@ -6919,13 +7081,13 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 		generateTokenRequest.setApplicationId(applicationId);
 		generateTokenRequest.setPassword(request.getPassword());
 		
-		if(organizationId == 17l || organizationId == 16l) {
+		if(request.getUserOrgId() == 17l || request.getUserOrgId() == 16l) {
 			String reqTok = "bobc:bob12345";
 			String requestDataEnc = Base64.getEncoder().encodeToString(reqTok.getBytes());
 			generateTokenRequest.setBankToken(requestDataEnc);
 		}
 			String token=null;
-			token = sidbiIntegrationClient.getToken(generateTokenRequest,generateTokenRequest.getBankToken());
+			token = sidbiIntegrationClient.getToken(generateTokenRequest,generateTokenRequest.getBankToken() , request.getCodeLanguage());
 			generateTokenRequest.setToken(token);
 			logger.info("Successfully  set token from SidbiIntegrationClient -------------- applicationId=={} and Token==> {}",applicationId,token);
 			/*Start Save Token in loan DB */
@@ -6942,155 +7104,22 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 	@Override
 	public HunterRequestDataResponse getDataForHunter(Long applicationId) throws Exception {
 		try {
-			
-			logger.info("In getDataForHunter with Application ID : "+applicationId);
+
+			logger.info("In getDataForHunter with Application ID : " + applicationId);
 			HunterRequestDataResponse response = new HunterRequestDataResponse();
-			logger.info("Fetching Corporate Applicant Details for application Id : "+applicationId);
-		CorporateApplicantDetail applicantDetail =	corporateApplicantDetailRepository.findByApplicationIdIdAndIsActive(applicationId, true);
-		if(applicantDetail!=null) {
-			logger.info("FetchedS Corporate Applicant Details for application Id : "+applicationId);
-			//key vertical Subsector
-			
-			String state= null;
-			List<Long> stateList = new ArrayList<>();
-			if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredStateId()))
-				stateList.add(Long.valueOf(applicantDetail.getRegisteredStateId()));
-			if (!CommonUtils.isListNullOrEmpty(stateList)) {
-				try {
-					OneFormResponse oneFormResponse = oneFormClient.getStateByStateListId(stateList);
-					List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
-							.getListData();
-					if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
-						MasterResponse masterResponse = MultipleJSONObjectHelper
-								.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
-						state = masterResponse.getValue() ;
-					} else {
+			logger.info("Fetching Corporate Applicant Details for application Id : " + applicationId);
+			CorporateApplicantDetail applicantDetail = corporateApplicantDetailRepository
+					.findByApplicationIdIdAndIsActive(applicationId, true);
+			if (applicantDetail != null) {
+				logger.info("FetchedS Corporate Applicant Details for application Id : " + applicationId);
+				// key vertical Subsector
 
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-			
-			String city= null;
-			List<Long> cityList = new ArrayList<>();
-			if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredCityId()))
-				cityList.add(Long.valueOf(applicantDetail.getRegisteredCityId()));
-			if (!CommonUtils.isListNullOrEmpty(cityList)) {
-				try {
-					OneFormResponse oneFormResponse = oneFormClient.getCityByCityListId(cityList);
-					List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
-							.getListData();
-					if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
-						MasterResponse masterResponse = MultipleJSONObjectHelper
-								.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
-						city = masterResponse.getValue();
-					} else {
-
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-			
-			String country= null;
-			List<Long> countryList = new ArrayList<>();
-			if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredCountryId()))
-				countryList.add(Long.valueOf(applicantDetail.getRegisteredCountryId()));
-			if (!CommonUtils.isListNullOrEmpty(countryList)) {
-				try {
-					OneFormResponse oneFormResponse = oneFormClient.getCountryByCountryListId(countryList);
-					List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
-							.getListData();
-					if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
-						MasterResponse masterResponse = MultipleJSONObjectHelper
-								.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
-						country = masterResponse.getValue() ;
-					} else {
-
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-			
-			response.setOrganisationName(applicantDetail.getOrganisationName());
-	        response.setCompanyCity(city);
-	        response.setCompanyState(state);
-	        response.setCompanyCountry(country);
-	        response.setCompanyPincode(applicantDetail.getRegisteredPincode()!=null ? String.valueOf(applicantDetail.getRegisteredPincode()): null);
-			response.setColleteralValue(applicantDetail.getTotalCollateralDetails());
-			response.setIndustry(getIndustryForHunter(applicantDetail.getKeyVericalFunding()));
-			response.setCompanyTelephone(applicantDetail.getLandlineNo());
-			response.setConstitution(getConstitutionryForHunter(applicantDetail.getConstitutionId()));
-			
-			response.setEstablishmentDate(applicantDetail.getEstablishmentYear()+"-"+applicantDetail.getEstablishmentMonth()+"-"+"01");
-			
-			response.setCompanyAddress(applicantDetail.getRegisteredPremiseNumber()+", "+applicantDetail.getRegisteredStreetName()+", "+applicantDetail.getRegisteredLandMark());
-			response.setCompanyEmail(applicantDetail.getEmail());
-		}
-		logger.info("Fetching Loan APplication Master for application Id : "+applicationId);
-		LoanApplicationMaster loan = loanApplicationRepository.getById(applicationId);
-		
-		if(loan!=null) {
-			logger.info("Fetched Loan APplication Master for application Id : "+applicationId);
-			response.setLoanAmount(loan.getAmount());
-			response.setLoanApplicationId(applicationId+"");
-			
-			
-			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-			response.setDateOfApplication(dateFormat.format(loan.getCreatedDate()));
-			response.setDateOfSubmission(dateFormat.format(new Date()));
-		}
-		logger.info("Fetching Corporate Primary details for application Id : "+applicationId);
-		PrimaryCorporateDetail primaryCorporate = primaryCorporateRepository.findOneByApplicationIdId(applicationId);
-		if(primaryCorporate!=null) {
-			response.setLoanType(String.valueOf(primaryCorporate.getPurposeOfLoanId()));
-			
-			logger.info("Fetching Corporate Primary details Purpose Of Loan from db: "+primaryCorporate.getPurposeOfLoanId());
-		}
-
-		logger.info("Fetching Corporate Primary details Purpose Of Loan from change : "+response.getLoanType());
-		
-		logger.info("Fetching Director's background details for application Id : "+applicationId);
-		List<DirectorBackgroundDetail> directorList = directorBackgroundDetailsRepository.listPromotorBackgroundFromAppId(applicationId);
-		
-		response.setDirectorRespo(new ArrayList<DirectorBackgroundDetailResponse>());
-		if(directorList!=null && !directorList.isEmpty()) {
-			logger.info("Fetched Director's background details for application Id : "+applicationId);
-			for(DirectorBackgroundDetail detail : directorList) {
-				DirectorBackgroundDetailResponse directorDetail = new DirectorBackgroundDetailResponse();
-				BeanUtils.copyProperties(detail, directorDetail);
-				String gender = null;
-				if(Gender.MALE.getId() == detail.getGender()) {
-					gender = "MALE";
-				}
-				else if(Gender.FEMALE.getId() == detail.getGender()) {
-					gender = "FEMALE";
-				}
-				else if(Gender.THIRD_GENDER.getId() == detail.getGender()) {
-					gender = "OTHER";
-				}
-				else {
-					gender = "OTHER";
-				}
-				directorDetail.setGender(gender);
-				directorDetail.setShareholding(detail.getShareholding());
-				directorDetail.setQualification(getQualificationForHunter(detail.getQualificationId()));
-				directorDetail.setMaritalStatus(getMaritalStatusForHunter(detail.getMaritalStatus()));
-				String state= null;
+				String state = null;
 				List<Long> stateList = new ArrayList<>();
-				if (!CommonUtils.isObjectNullOrEmpty(detail.getStateCode())) {
-					ITRConnectionResponse itrConnectionResponse = itrClient.getOneFormStateIdFromITRStateId(Long.valueOf(detail.getStateCode()));
-					if(!CommonUtils.isObjectNullOrEmpty(itrConnectionResponse)) {
-					}
-					stateList.add(Long.valueOf(String.valueOf(itrConnectionResponse.getData())));
-				}
+				if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredStateId()))
+					stateList.add(Long.valueOf(applicantDetail.getRegisteredStateId()));
 				if (!CommonUtils.isListNullOrEmpty(stateList)) {
 					try {
-						
-						
-						
 						OneFormResponse oneFormResponse = oneFormClient.getStateByStateListId(stateList);
 						List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
 								.getListData();
@@ -7105,12 +7134,32 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 						e.printStackTrace();
 					}
 				}
-				directorDetail.setStateCode(state);
-				
-				String country= null;
+
+				String city = null;
+				List<Long> cityList = new ArrayList<>();
+				if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredCityId()))
+					cityList.add(Long.valueOf(applicantDetail.getRegisteredCityId()));
+				if (!CommonUtils.isListNullOrEmpty(cityList)) {
+					try {
+						OneFormResponse oneFormResponse = oneFormClient.getCityByCityListId(cityList);
+						List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
+								.getListData();
+						if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+							MasterResponse masterResponse = MultipleJSONObjectHelper
+									.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+							city = masterResponse.getValue();
+						} else {
+
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+
+				String country = null;
 				List<Long> countryList = new ArrayList<>();
-				if (!CommonUtils.isObjectNullOrEmpty(detail.getCountryId()))
-					countryList.add(Long.valueOf(detail.getCountryId()));
+				if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredCountryId()))
+					countryList.add(Long.valueOf(applicantDetail.getRegisteredCountryId()));
 				if (!CommonUtils.isListNullOrEmpty(countryList)) {
 					try {
 						OneFormResponse oneFormResponse = oneFormClient.getCountryByCountryListId(countryList);
@@ -7127,31 +7176,174 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 						e.printStackTrace();
 					}
 				}
-				directorDetail.setCountry(country);
-				directorDetail.setPincode(detail.getPincode().toString());
-				directorDetail.setIsMainDirector(detail.getIsMainDirector());
-				response.addDirectorDetail(directorDetail);
+
+				response.setOrganisationName(applicantDetail.getOrganisationName());
+				response.setCompanyCity(city);
+				response.setCompanyState(state);
+				response.setCompanyCountry(country);
+				response.setCompanyPincode(applicantDetail.getRegisteredPincode() != null
+						? String.valueOf(applicantDetail.getRegisteredPincode())
+						: null);
+				response.setColleteralValue(applicantDetail.getTotalCollateralDetails());
+				response.setIndustry(getIndustryForHunter(applicantDetail.getKeyVericalFunding()));
+				response.setCompanyTelephone(applicantDetail.getLandlineNo());
+				response.setConstitution(getConstitutionryForHunter(applicantDetail.getConstitutionId()));
+
+				response.setEstablishmentDate(applicantDetail.getEstablishmentYear() + "-"
+						+ applicantDetail.getEstablishmentMonth() + "-" + "01");
+
+				response.setCompanyAddress(applicantDetail.getRegisteredPremiseNumber() + ", "
+						+ applicantDetail.getRegisteredStreetName() + ", " + applicantDetail.getRegisteredLandMark());
+				response.setCompanyEmail(applicantDetail.getEmail());
 			}
-		}
-		logger.info("Fetching Bank details for application Id : "+applicationId);
-		ReportRequest reportRequest = new ReportRequest();
-		reportRequest.setApplicationId(applicationId);
-		AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReport(reportRequest);
-		
-		if(analyzerResponse.getStatus() == HttpStatus.OK.value()) {
-			logger.info("Fetched Director's background details for application Id : "+applicationId);
-			Data data = MultipleJSONObjectHelper
-					.getObjectFromMap((Map<String, Object>) analyzerResponse.getData(), Data.class);
-			
-			if(data!=null && data.getSummaryInfo()!=null) {
-				response.setCompanyBankAccount(data.getSummaryInfo().getAccNo());
-				response.setCompanyBankName(data.getSummaryInfo().getInstName());
+			logger.info("Fetching Loan APplication Master for application Id : " + applicationId);
+			LoanApplicationMaster loan = loanApplicationRepository.getById(applicationId);
+
+			if (loan != null) {
+				logger.info("Fetched Loan APplication Master for application Id : " + applicationId);
+				response.setLoanAmount(loan.getAmount());
+				response.setLoanApplicationId(applicationId + "");
+
+				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+				response.setDateOfApplication(dateFormat.format(loan.getCreatedDate()));
+				response.setDateOfSubmission(dateFormat.format(new Date()));
 			}
-		}
-		logger.info("End getDataForHunter with Application ID : "+applicationId);
-		return response;
-		}
-		catch (Exception e) {
+			logger.info("Fetching Corporate Primary details for application Id : " + applicationId);
+			PrimaryCorporateDetail primaryCorporate = primaryCorporateRepository
+					.findOneByApplicationIdId(applicationId);
+			if (primaryCorporate != null) {
+				response.setLoanType(String.valueOf(primaryCorporate.getPurposeOfLoanId()));
+
+				logger.info("Fetching Corporate Primary details Purpose Of Loan from db: "
+						+ primaryCorporate.getPurposeOfLoanId());
+			}
+
+			logger.info("Fetching Corporate Primary details Purpose Of Loan from change : " + response.getLoanType());
+
+			logger.info("Fetching Director's background details for application Id : " + applicationId);
+			List<DirectorBackgroundDetail> directorList = directorBackgroundDetailsRepository
+					.listPromotorBackgroundFromAppId(applicationId);
+
+			response.setDirectorRespo(new ArrayList<DirectorBackgroundDetailResponse>());
+			if (directorList != null && !directorList.isEmpty()) {
+				logger.info("Fetched Director's background details for application Id : " + applicationId);
+				for (DirectorBackgroundDetail detail : directorList) {
+					DirectorBackgroundDetailResponse directorDetail = new DirectorBackgroundDetailResponse();
+					BeanUtils.copyProperties(detail, directorDetail);
+					String gender = null;
+					if (Gender.MALE.getId() == detail.getGender()) {
+						gender = "MALE";
+					} else if (Gender.FEMALE.getId() == detail.getGender()) {
+						gender = "FEMALE";
+					} else if (Gender.THIRD_GENDER.getId() == detail.getGender()) {
+						gender = "OTHER";
+					} else {
+						gender = "OTHER";
+					}
+					directorDetail.setGender(gender);
+					directorDetail.setShareholding(detail.getShareholding());
+					directorDetail.setQualification(getQualificationForHunter(detail.getQualificationId()));
+					directorDetail.setMaritalStatus(getMaritalStatusForHunter(detail.getMaritalStatus()));
+
+					String state = null;
+					List<Long> stateList = new ArrayList<>();
+
+					if (!CommonUtils.isObjectNullOrEmpty(detail.getStateCode())) {
+						ITRConnectionResponse itrConnectionResponse = itrClient
+								.getOneFormStateIdFromITRStateId(Long.valueOf(detail.getStateCode()));
+						if (!CommonUtils.isObjectNullOrEmpty(itrConnectionResponse)) {
+
+							stateList.add(Long.valueOf(String.valueOf(itrConnectionResponse.getData())));
+						}
+					} else {
+						stateList.add(Long.valueOf(detail.getStateId()));
+					}
+					if (!CommonUtils.isListNullOrEmpty(stateList)) {
+						try {
+
+							OneFormResponse oneFormResponse = oneFormClient.getStateByStateListId(stateList);
+							List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
+									.getListData();
+							if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+								MasterResponse masterResponse = MultipleJSONObjectHelper
+										.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+								state = masterResponse.getValue();
+							} else {
+
+							}
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+
+					String country = null;
+					List<Long> countryList = new ArrayList<>();
+					if (!CommonUtils.isObjectNullOrEmpty(detail.getCountryId()))
+						countryList.add(Long.valueOf(detail.getCountryId()));
+					if (!CommonUtils.isListNullOrEmpty(countryList)) {
+						try {
+							OneFormResponse oneFormResponse = oneFormClient.getCountryByCountryListId(countryList);
+							List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
+									.getListData();
+							if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+								MasterResponse masterResponse = MultipleJSONObjectHelper
+										.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+								country = masterResponse.getValue();
+							} else {
+
+							}
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+
+					String city = detail.getCity();
+					List<Long> cityList = new ArrayList<>();
+					if (!CommonUtils.isObjectNullOrEmpty(detail.getCityId()))
+						cityList.add(Long.valueOf(detail.getCityId()));
+					if (!CommonUtils.isListNullOrEmpty(cityList)) {
+						try {
+							OneFormResponse oneFormResponse = oneFormClient.getCityByCityListId(cityList);
+							List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
+									.getListData();
+							if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+								MasterResponse masterResponse = MultipleJSONObjectHelper
+										.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+								city = masterResponse.getValue();
+							} else {
+
+							}
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+
+					directorDetail.setCountry(country);
+					directorDetail.setStateCode(state);
+					directorDetail.setCity(city);
+					directorDetail.setPincode(detail.getPincode().toString());
+					directorDetail.setIsMainDirector(detail.getIsMainDirector());
+					response.addDirectorDetail(directorDetail);
+				}
+			}
+			logger.info("Fetching Bank details for application Id : " + applicationId);
+			ReportRequest reportRequest = new ReportRequest();
+			reportRequest.setApplicationId(applicationId);
+			AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReport(reportRequest);
+
+			if (analyzerResponse != null && analyzerResponse.getStatus() == HttpStatus.OK.value()) {
+				logger.info("Fetched Director's background details for application Id : " + applicationId);
+				Data data = MultipleJSONObjectHelper.getObjectFromMap((Map<String, Object>) analyzerResponse.getData(),
+						Data.class);
+
+				if (data != null && data.getSummaryInfo() != null) {
+					response.setCompanyBankAccount(data.getSummaryInfo().getAccNo());
+					response.setCompanyBankName(data.getSummaryInfo().getInstName());
+				}
+			}
+			logger.info("End getDataForHunter with Application ID : " + applicationId);
+			return response;
+		} catch (Exception e) {
 			e.printStackTrace();
 			throw e;
 		}
@@ -7162,141 +7354,167 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 	@Override
 	public HunterRequestDataResponse getDataForHunterForNTB(Long applicationId) throws Exception {
 		try {
-			
-			logger.info("In getDataForHunter with Application ID : "+applicationId);
+
+			logger.info("In getDataForHunter with Application ID : " + applicationId);
 			HunterRequestDataResponse response = new HunterRequestDataResponse();
-		LoanApplicationMaster loan = loanApplicationRepository.getById(applicationId);
-		CorporateApplicantDetail applicantDetail =	corporateApplicantDetailRepository.findByApplicationIdIdAndIsActive(applicationId, true);
-		if(applicantDetail!=null) {
-			response.setColleteralValue(applicantDetail.getTotalCollateralDetails());
-		}
-		if(loan!=null) {
-			logger.info("Fetched Loan APplication Master for application Id : "+applicationId);
-			response.setLoanAmount(loan.getAmount());
-			response.setLoanApplicationId(applicationId+"");
-			
-			
-			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-			response.setDateOfApplication(dateFormat.format(loan.getCreatedDate()));
-			response.setDateOfSubmission(dateFormat.format(new Date()));
-		}
-		PrimaryCorporateDetail primaryCorporate = primaryCorporateRepository.findOneByApplicationIdId(applicationId);
-		if(primaryCorporate!=null) {
-			response.setLoanType(String.valueOf(primaryCorporate.getPurposeOfLoanId()));
-		}
-		
-		logger.info("Fetching Director's background details for application Id : "+applicationId);
-		List<DirectorBackgroundDetail> directorList = directorBackgroundDetailsRepository.listPromotorBackgroundFromAppId(applicationId);
-		
-		response.setDirectorRespo(new ArrayList<DirectorBackgroundDetailResponse>());
-		if(directorList!=null && !directorList.isEmpty()) {
-			logger.info("Fetched Director's background details for application Id : "+applicationId);
-			for(DirectorBackgroundDetail detail : directorList) {
-				DirectorBackgroundDetailResponse directorDetail = new DirectorBackgroundDetailResponse();
-				BeanUtils.copyProperties(detail, directorDetail);
-				String gender = null;
-				if(Gender.MALE.getId() == detail.getGender()) {
-					gender = "MALE";
-				}
-				else if(Gender.FEMALE.getId() == detail.getGender()) {
-					gender = "FEMALE";
-				}
-				else if(Gender.THIRD_GENDER.getId() == detail.getGender()) {
-					gender = "OTHER";
-				}
-				else {
-					gender = "OTHER";
-				}
-				directorDetail.setGender(gender);
-				directorDetail.setShareholding(detail.getShareholding());
-				directorDetail.setQualification(getQualificationForHunter(detail.getQualificationId()));
-				directorDetail.setMaritalStatus(getMaritalStatusForHunter(detail.getMaritalStatus()));
-				String state= null;
-				List<Long> stateList = new ArrayList<>();
-				if (!CommonUtils.isObjectNullOrEmpty(detail.getStateCode())) {
-					ITRConnectionResponse itrConnectionResponse = itrClient.getOneFormStateIdFromITRStateId(Long.valueOf(detail.getStateCode()));
-					if(!CommonUtils.isObjectNullOrEmpty(itrConnectionResponse)) {
-					}
-					stateList.add(Long.valueOf(String.valueOf(itrConnectionResponse.getData())));
-				}
-				if (!CommonUtils.isListNullOrEmpty(stateList)) {
-					try {
-						
-						
-						
-						OneFormResponse oneFormResponse = oneFormClient.getStateByStateListId(stateList);
-						List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
-								.getListData();
-						if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
-							MasterResponse masterResponse = MultipleJSONObjectHelper
-									.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
-							state = masterResponse.getValue();
-						} else {
-
-						}
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				}
-				directorDetail.setStateCode(state);
-				
-				String country= null;
-				List<Long> countryList = new ArrayList<>();
-				if (!CommonUtils.isObjectNullOrEmpty(detail.getCountryId()))
-					countryList.add(Long.valueOf(detail.getCountryId()));
-				if (!CommonUtils.isListNullOrEmpty(countryList)) {
-					try {
-						OneFormResponse oneFormResponse = oneFormClient.getCountryByCountryListId(countryList);
-						List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
-								.getListData();
-						if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
-							MasterResponse masterResponse = MultipleJSONObjectHelper
-									.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
-							country = masterResponse.getValue();
-						} else {
-
-						}
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				}
-				directorDetail.setCountry(country);
-				directorDetail.setPincode(detail.getPincode().toString());
-				directorDetail.setIsMainDirector(detail.getIsMainDirector());
-				
-				
-				ReportRequest reportRequest = new ReportRequest();
-				reportRequest.setApplicationId(applicationId);
-				reportRequest.setDirectorId(detail.getId());
-				AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReport(reportRequest);
-				
-				if(analyzerResponse.getStatus() == HttpStatus.OK.value()) {
-					logger.info("Fetched Director's background details for application Id : "+applicationId);
-					Data data = MultipleJSONObjectHelper
-							.getObjectFromMap((Map<String, Object>) analyzerResponse.getData(), Data.class);
-					
-					if(data!=null && data.getSummaryInfo()!=null) {
-						directorDetail.setDirectorBankAccount(data.getSummaryInfo().getAccNo());
-						directorDetail.setDirectorBankName(data.getSummaryInfo().getInstName());
-					}
-				}
-				if(detail.getResidenceSinceYear()!=null && detail.getResidenceSinceMonth()!=null) {
-					Calendar a = Calendar.getInstance();
-					LocalDate now = LocalDate.now();
-					LocalDate before = LocalDate.of(detail.getResidenceSinceYear(), detail.getResidenceSinceMonth(), 1);
-					Long timeAtAddress = ChronoUnit.MONTHS.between(before, now);
-					directorDetail.setTimeAtAddress(new BigInteger(String.valueOf(timeAtAddress)));
-				}
-				
-				response.addDirectorDetail(directorDetail);
+			LoanApplicationMaster loan = loanApplicationRepository.getById(applicationId);
+			CorporateApplicantDetail applicantDetail = corporateApplicantDetailRepository
+					.findByApplicationIdIdAndIsActive(applicationId, true);
+			if (applicantDetail != null) {
+				response.setColleteralValue(applicantDetail.getTotalCollateralDetails());
 			}
-		}
-		logger.info("Fetching Bank details for application Id : "+applicationId);
+			if (loan != null) {
+				logger.info("Fetched Loan APplication Master for application Id : " + applicationId);
+				response.setLoanAmount(loan.getAmount());
+				response.setLoanApplicationId(applicationId + "");
 
-		logger.info("End getDataForHunter with Application ID : "+applicationId);
-		return response;
-		}
-		catch (Exception e) {
+				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+				response.setDateOfApplication(dateFormat.format(loan.getCreatedDate()));
+				response.setDateOfSubmission(dateFormat.format(new Date()));
+			}
+			PrimaryCorporateDetail primaryCorporate = primaryCorporateRepository
+					.findOneByApplicationIdId(applicationId);
+			if (primaryCorporate != null) {
+				response.setLoanType(String.valueOf(primaryCorporate.getPurposeOfLoanId()));
+			}
+
+			logger.info("Fetching Director's background details for application Id : " + applicationId);
+			List<DirectorBackgroundDetail> directorList = directorBackgroundDetailsRepository
+					.listPromotorBackgroundFromAppId(applicationId);
+
+			response.setDirectorRespo(new ArrayList<DirectorBackgroundDetailResponse>());
+			if (directorList != null && !directorList.isEmpty()) {
+				logger.info("Fetched Director's background details for application Id : " + applicationId);
+				for (DirectorBackgroundDetail detail : directorList) {
+					DirectorBackgroundDetailResponse directorDetail = new DirectorBackgroundDetailResponse();
+					BeanUtils.copyProperties(detail, directorDetail);
+					String gender = null;
+					if (Gender.MALE.getId() == detail.getGender()) {
+						gender = "MALE";
+					} else if (Gender.FEMALE.getId() == detail.getGender()) {
+						gender = "FEMALE";
+					} else if (Gender.THIRD_GENDER.getId() == detail.getGender()) {
+						gender = "OTHER";
+					} else {
+						gender = "OTHER";
+					}
+					directorDetail.setGender(gender);
+					directorDetail.setShareholding(detail.getShareholding());
+					directorDetail.setQualification(getQualificationForHunter(detail.getQualificationId()));
+					directorDetail.setMaritalStatus(getMaritalStatusForHunter(detail.getMaritalStatus()));
+
+					String state = null;
+					List<Long> stateList = new ArrayList<>();
+
+					if (!CommonUtils.isObjectNullOrEmpty(detail.getStateCode())) {
+						ITRConnectionResponse itrConnectionResponse = itrClient
+								.getOneFormStateIdFromITRStateId(Long.valueOf(detail.getStateCode()));
+						if (!CommonUtils.isObjectNullOrEmpty(itrConnectionResponse)) {
+
+							stateList.add(Long.valueOf(String.valueOf(itrConnectionResponse.getData())));
+						}
+					} else {
+						stateList.add(Long.valueOf(detail.getStateId()));
+					}
+					if (!CommonUtils.isListNullOrEmpty(stateList)) {
+						try {
+
+							OneFormResponse oneFormResponse = oneFormClient.getStateByStateListId(stateList);
+							List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
+									.getListData();
+							if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+								MasterResponse masterResponse = MultipleJSONObjectHelper
+										.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+								state = masterResponse.getValue();
+							} else {
+
+							}
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+
+					String country = null;
+					List<Long> countryList = new ArrayList<>();
+					if (!CommonUtils.isObjectNullOrEmpty(detail.getCountryId()))
+						countryList.add(Long.valueOf(detail.getCountryId()));
+					if (!CommonUtils.isListNullOrEmpty(countryList)) {
+						try {
+							OneFormResponse oneFormResponse = oneFormClient.getCountryByCountryListId(countryList);
+							List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
+									.getListData();
+							if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+								MasterResponse masterResponse = MultipleJSONObjectHelper
+										.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+								country = masterResponse.getValue();
+							} else {
+
+							}
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+
+					String city = detail.getCity();
+					List<Long> cityList = new ArrayList<>();
+					if (!CommonUtils.isObjectNullOrEmpty(detail.getCityId()))
+						cityList.add(Long.valueOf(detail.getCityId()));
+					if (!CommonUtils.isListNullOrEmpty(cityList)) {
+						try {
+							OneFormResponse oneFormResponse = oneFormClient.getCityByCityListId(cityList);
+							List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
+									.getListData();
+							if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+								MasterResponse masterResponse = MultipleJSONObjectHelper
+										.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+								city = masterResponse.getValue();
+							} else {
+
+							}
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+
+					directorDetail.setCountry(country);
+					directorDetail.setStateCode(state);
+					directorDetail.setCity(city);
+					directorDetail.setPincode(detail.getPincode().toString());
+
+					directorDetail.setIsMainDirector(detail.getIsMainDirector());
+
+					ReportRequest reportRequest = new ReportRequest();
+					reportRequest.setApplicationId(applicationId);
+					reportRequest.setDirectorId(detail.getId());
+					AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReport(reportRequest);
+
+					if (analyzerResponse.getStatus() == HttpStatus.OK.value()) {
+						logger.info("Fetched Director's background details for application Id : " + applicationId);
+						Data data = MultipleJSONObjectHelper
+								.getObjectFromMap((Map<String, Object>) analyzerResponse.getData(), Data.class);
+
+						if (data != null && data.getSummaryInfo() != null) {
+							directorDetail.setDirectorBankAccount(data.getSummaryInfo().getAccNo());
+							directorDetail.setDirectorBankName(data.getSummaryInfo().getInstName());
+						}
+					}
+					if (detail.getResidenceSinceYear() != null && detail.getResidenceSinceMonth() != null) {
+						Calendar a = Calendar.getInstance();
+						LocalDate now = LocalDate.now();
+						LocalDate before = LocalDate.of(detail.getResidenceSinceYear(), detail.getResidenceSinceMonth(),
+								1);
+						Long timeAtAddress = ChronoUnit.MONTHS.between(before, now);
+						directorDetail.setTimeAtAddress(new BigInteger(String.valueOf(timeAtAddress)));
+					}
+
+					response.addDirectorDetail(directorDetail);
+				}
+			}
+			logger.info("Fetching Bank details for application Id : " + applicationId);
+
+			logger.info("End getDataForHunter with Application ID : " + applicationId);
+			return response;
+		} catch (Exception e) {
 			e.printStackTrace();
 			throw e;
 		}
@@ -7919,10 +8137,10 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 		return updatePayment;
 	}*/
 
-	public void setTokenAsExpired(GenerateTokenRequest generateTokenRequest) {
+	public void setTokenAsExpired(GenerateTokenRequest generateTokenRequest , Integer codeLanguage) {
 		logger.info("Start expiring Token in setTokenAsExpired(){} ------------- generateTokenRequest "+ generateTokenRequest ); 
 		try {
-			sidbiIntegrationClient.setTokenAsExpired(generateTokenRequest,generateTokenRequest.getBankToken());
+			sidbiIntegrationClient.setTokenAsExpired(generateTokenRequest,generateTokenRequest.getBankToken() , codeLanguage);
 		} catch (Exception e) {
 			logger.info("Exception while set token as  expiring Token ------------- Msg "+e.getMessage());
 			e.printStackTrace();

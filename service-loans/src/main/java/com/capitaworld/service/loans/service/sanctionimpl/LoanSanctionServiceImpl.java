@@ -18,10 +18,12 @@ import org.springframework.stereotype.Service;
 
 import com.capitaworld.service.loans.config.AuditComponentBankToCW;
 import com.capitaworld.service.loans.config.FPAsyncComponent;
+import com.capitaworld.service.loans.domain.BankCWAuditTrailDomain;
 import com.capitaworld.service.loans.domain.sanction.LoanSanctionDomain;
 import com.capitaworld.service.loans.model.LoanSanctionRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.sanction.LoanSanctionAndDisbursedRequest;
+import com.capitaworld.service.loans.repository.banktocw.BankToCWAuditTrailRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
 import com.capitaworld.service.loans.repository.sanction.LoanSanctionRepository;
 import com.capitaworld.service.loans.service.sanction.LoanDisbursementService;
@@ -32,10 +34,11 @@ import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.UserOrganisationRequest;
 import com.capitaworld.service.users.model.UserResponse;
-import com.capitaworld.sidbi.integration.SidbiIntegerationResponse;
+import com.capitaworld.service.users.utils.OrganisationConfiguration;
 import com.capitaworld.sidbi.integration.client.SidbiIntegrationClient;
 import com.capitaworld.sidbi.integration.model.GenerateTokenRequest;
 import com.capitaworld.sidbi.integration.util.AESEncryptionUtility;
+import com.capitaworld.sidbi.integration.util.AESEncryptionUtilitySBI;
 /**
  * @author Ankit
  *
@@ -72,6 +75,9 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 
 	@Autowired
 	private FPAsyncComponent fpAsyncComponent;
+	
+	@Autowired
+	private BankToCWAuditTrailRepository bankToCWAuditTrailRepository  ;
 
 	@Override
 	public Boolean saveLoanSanctionDetail(LoanSanctionRequest loanSanctionRequest) throws Exception {
@@ -197,33 +203,40 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 						String token=null;
 						
 						try {
-							/*token = sidbiIntegrationClient.getToken(generateTokenRequest,generateTokenRequest.getBankToken());
+							
+							// for syndicate Bank only check orgid
+							OrganisationConfiguration organisationConfiguration = MultipleJSONObjectHelper.getObjectFromString(userOrganisationRequest.getConfig(), OrganisationConfiguration.class);
+							if(!CommonUtils.isObjectNullOrEmpty(organisationConfiguration) && organisationConfiguration.getIsSSL()){
+								System.setProperty("javax.net.ssl.keyStore",  organisationConfiguration.getKeyStore());                                    
+								System.setProperty("javax.net.ssl.keyStorePassword", organisationConfiguration.getKeyStorePassword());              
+								System.setProperty("javax.net.ssl.keyStoreType",  organisationConfiguration.getKeyStoreType());            
+							}
+							token = sidbiIntegrationClient.getToken(generateTokenRequest,generateTokenRequest.getBankToken() , userOrganisationRequest.getCodeLanguage());
 							generateTokenRequest.setToken(token);
 							//Getting sanction and disbursement Details from Bank 
-							SidbiIntegerationResponse sidbiIntegerationResponse = sidbiIntegrationClient.getSanctionAndDisbursmentDetailList(token, generateTokenRequest.getBankToken());
-							if(!CommonUtils.isObjectNullOrEmpty(sidbiIntegerationResponse)) {
-								if(!CommonUtils.isObjectNullOrEmpty(sidbiIntegerationResponse.getData())) {
-									Object res = sanctionAndDisbursementValidation((String)sidbiIntegerationResponse.getData()); 
-									if(res instanceof List){
-										List<com.capitaworld.sidbi.integration.model.sanction.LoanSanctionAndDisbursedRequest> list = (List<com.capitaworld.sidbi.integration.model.sanction.LoanSanctionAndDisbursedRequest> )res;
-										logger.info("********************************* " + list.size() +" ***********************************");
-										if(sidbiIntegrationClient.updateSavedSanctionAndDisbursmentDetailList(list , generateTokenRequest.getToken(), generateTokenRequest.getBankToken())) {
-											try {
-												//wait foo 15 minute
-												logger.info("*******Sucessgfully updated sanction and disbursement details in sidbi integration********** ");
-												TimeUnit.MINUTES.sleep(1);
-												logger.info("*******Going to Call another Bank Reverse API.********** ");
-											}catch (Exception e) {
-												logger.info("Error/Exception in for 15 min wait() ----------------------->  Message "+ e.getMessage());
-												e.printStackTrace();
-											}
+							String encryptedString = sidbiIntegrationClient.getSanctionAndDisbursmentDetailList(token, generateTokenRequest.getBankToken() , userOrganisationRequest.getCodeLanguage());
+							if(!CommonUtils.isObjectNullOrEmpty(encryptedString)) {
+								Object res = sanctionAndDisbursementValidation(encryptedString , userOrganisationRequest.getCodeLanguage()); 
+								if(res instanceof List){
+									List<com.capitaworld.sidbi.integration.model.sanction.LoanSanctionAndDisbursedRequest> list = (List<com.capitaworld.sidbi.integration.model.sanction.LoanSanctionAndDisbursedRequest> )res;
+									logger.info("********************************* " + list.size() +" ***********************************");
+									if(sidbiIntegrationClient.updateSavedSanctionAndDisbursmentDetailList(list , generateTokenRequest.getToken(), generateTokenRequest.getBankToken() , userOrganisationRequest.getCodeLanguage())) {
+										try {
+											//wait foo 15 minute
+											logger.info("*******Sucessgfully updated sanction and disbursement details in sidbi integration********** ");
+											TimeUnit.MINUTES.sleep(1);
+											logger.info("*******Going to Call another Bank Reverse API.********** ");
+										}catch (Exception e) {
+											logger.info("Error/Exception in for 15 min wait() ----------------------->  Message "+ e.getMessage());
+											e.printStackTrace();
 										}
-										*//*}*//*
-									}else {
-										logger.info("*******Unable to store sanction or disbursement detail   **********  reasion is =={}", (res != null ? res.toString() : res));
 									}
+								}else {
+									logger.info("*******Unable to store sanction or disbursement detail   **********  reasion is =={}", (res != null ? res.toString() : res));
 								}
-							}*/
+							}else {
+								logger.info("*******Null in getting sanction or disbursement detail  from  bank side  **********  reasion is =={}", encryptedString +" org id ==> " + userOrganisationRequest.getUserOrgId() );
+							}
 						}catch(Exception e) {
 							e.printStackTrace();
 							logger.error("Error while Calling get token API");
@@ -241,8 +254,8 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 
 	}
 	
-	@SuppressWarnings("unchecked")
-	public Object sanctionAndDisbursementValidation(String encryptedString) {
+	@SuppressWarnings({ "unchecked", "null" })
+	public Object sanctionAndDisbursementValidation(String encryptedString , Integer codeLonguage) {
 		
 		LoansResponse loansResponse = null;
 		String sanctionReason = null;
@@ -253,14 +266,18 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 		GenerateTokenRequest generateTokenRequest = null;
 		String tokenString = null;
 		Long applicationId =null;
+		Boolean isSanctionSuccess = false; 
 		try {
 			logger.info("=============================Entry saveLoanSanctionDisbursementDetailFromBank(){} ============================= ");
 			
 			if (encryptedString != null) {
 				// Decryption of request
 				try {
-					decrypt = AESEncryptionUtility.decrypt(encryptedString);
-					
+					if(codeLonguage == com.capitaworld.sidbi.integration.util.CommonUtils.CodeLangType.JAVA) {
+						decrypt = AESEncryptionUtilitySBI.decrypt(encryptedString);
+					}else if(codeLonguage == com.capitaworld.sidbi.integration.util.CommonUtils.CodeLangType.DOT_NET ) {
+						decrypt = AESEncryptionUtility.decrypt(encryptedString);
+					}
 					loanSanctionAndDisbursedRequestList = MultipleJSONObjectHelper.getListOfObjects(decrypt,  null ,LoanSanctionAndDisbursedRequest.class);
 					
 				} catch (Exception e) {
@@ -300,23 +317,49 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 							applicationId = loanSanctionAndDisbursedRequest.getApplicationId();
 							//	checking validation for right organization
 							orgId = auditComponentBankToCW.getOrgIdByCredential(loanSanctionAndDisbursedRequest.getUserName(),loanSanctionAndDisbursedRequest.getPassword());
+							
 							if (!CommonUtils.isObjectNullOrEmpty(orgId)) {
 								//		saving sanction with validation
 								sanctionReason = sanctionRequestValidation(loanSanctionAndDisbursedRequest.getApplicationId(), orgId);
-								if ("SUCCESS".equalsIgnoreCase(sanctionReason) && saveLoanSanctionDetailById(loanSanctionAndDisbursedRequest.getLoanSanctionRequest())) {
-									loanSanctionAndDisbursedRequest.getLoanSanctionRequest().setIsSaved(true);
-									if(! CommonUtils.isListNullOrEmpty(loanSanctionAndDisbursedRequest.getLoanDisbursementRequestsList())) {
-										//	saving disbursement with validation
-										disbursementReason = loanDisbursementService.bankRequestValidationAndSave(loanSanctionAndDisbursedRequest.getLoanSanctionRequest().getId() , loanSanctionAndDisbursedRequest.getLoanDisbursementRequestsList(), orgId , CommonUtility.ApiType.SANCTION_AND_DISBURSEMENT);
+								BankCWAuditTrailDomain bankCWAuditTrailDomain = null; 
+								if("SUCCESS".equalsIgnoreCase(sanctionReason) ) {
+									bankCWAuditTrailDomain = bankToCWAuditTrailRepository.findByApplicationIdAndOrgIdAndApiTypeAndBankPrimaryKey(loanSanctionAndDisbursedRequest.getApplicationId(), orgId, CommonUtility.ApiType.REVERSE_SANCTION , loanSanctionAndDisbursedRequest.getLoanSanctionRequest().getId());
+									if(CommonUtils.isObjectNullOrEmpty(bankCWAuditTrailDomain)) {
+										isSanctionSuccess = saveLoanSanctionDetailById(loanSanctionAndDisbursedRequest.getLoanSanctionRequest());
+										loanSanctionAndDisbursedRequest.getLoanSanctionRequest().setStatusCode(CommonUtility.SanctionDisbursementAPIStatusCode.SUCCESS);	
+										logger.info("------------------------- saving sanction detail of reverse api--------------- isSuccess ==> " + isSanctionSuccess);
+									}else {
+										loanSanctionAndDisbursedRequest.getLoanSanctionRequest().setStatusCode(CommonUtility.SanctionDisbursementAPIStatusCode.ALREADY_DONE_SANCTION);
+										logger.info("------------------------- already save sanction detail of reverse api---------------");
 									}
+									loanSanctionAndDisbursedRequest.getLoanSanctionRequest().setIsSaved(true);
+									loanSanctionAndDisbursedRequest.getLoanSanctionRequest().setReason(sanctionReason);
+									
+								
+									//	saving disbursement with validation
+									if(! CommonUtils.isListNullOrEmpty(loanSanctionAndDisbursedRequest.getLoanDisbursementRequestsList())) {
+										loanSanctionAndDisbursedRequest.setLoanDisbursementRequestsList( loanDisbursementService.bankRequestValidationAndSave(loanSanctionAndDisbursedRequest.getLoanSanctionRequest().getId() , loanSanctionAndDisbursedRequest.getLoanDisbursementRequestsList(), orgId , CommonUtility.ApiType.REVERSE_DISBURSEMENT)) ;
+									}else {
+										disbursementReason = "No Disbursement has done for that aplicaiotnId "+ loanSanctionAndDisbursedRequest.getLoanSanctionRequest().getApplicationId() +" from bank Side and this sanction detail loanSanctionDetail => " + loanSanctionAndDisbursedRequest.getLoanSanctionRequest().toString() ;
+									}
+								
+								}else {
+									loanSanctionAndDisbursedRequest.getLoanSanctionRequest().setIsSaved(false);
+									loanSanctionAndDisbursedRequest.getLoanSanctionRequest().setStatusCode(CommonUtility.SanctionDisbursementAPIStatusCode.INVALID_APPLICATION_ID);
+									loanSanctionAndDisbursedRequest.getLoanSanctionRequest().setReason(sanctionReason);
+									logger.info("------------------------- unable to save reverse sanction details reason ==> "+ sanctionReason);
 								}
+								
 							} else {
 								sanctionReason = "Invalid Credentials";
 								logger.info(	"Invalid Credentials while saveLoanSanctionDisbursementDetailFromBank() ----------------> orgId "+ orgId + " reason  " + sanctionReason);
 								loansResponse = new LoansResponse(sanctionReason, HttpStatus.UNAUTHORIZED.value());
 								loansResponse.setData(false);
+								loanSanctionAndDisbursedRequest.getLoanSanctionRequest().setIsSaved(false);
+								loanSanctionAndDisbursedRequest.getLoanSanctionRequest().setStatusCode(CommonUtility.SanctionDisbursementAPIStatusCode.INVALID_CREDENTIAL);
+								loanSanctionAndDisbursedRequest.getLoanSanctionRequest().setReason(sanctionReason);
 								logger.info("================== Exit saveLoanDisbursementDetail() =================");
-								return sanctionReason;
+								//return sanctionReason;
 							}	
 //						} else {
 //							logger.info("Null in LoanSanctionAndDisbursedRequest while saveLoanSanctionDisbursementDetailFromBank() ----------------> LoanDisbursementRequest"+ loanSanctionAndDisbursedRequest);
@@ -326,32 +369,51 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 //							return sanctionReason;
 //						}
 					}else {
-						logger.info("SOME of Values from  LoanSanctionAndDisbursedRequest while saveLoanSanctionDisbursementDetailFromBank() ----------------> LoanDisbursementRequest"+ loanSanctionAndDisbursedRequest);
+						
+						logger.info("SOME of Values from  LoanSanctionAndDisbursedRequest while saveLoanSanctionDisbursementDetailFromBank() ----------------> LoanDisbursementRequest"+ loanSanctionAndDisbursedRequest.getLoanSanctionRequest());
 						loansResponse = new LoansResponse("Mandatory Fields Must Not be Null",HttpStatus.BAD_REQUEST.value(), HttpStatus.OK);
 						loansResponse.setData(false);
-						sanctionReason = "Mandatory Fields Must Not be Null while saveLoanSanctionDisbursementDetailFromBank() ===> LoanDisbursementRequest ====> "+ loanSanctionAndDisbursedRequest;
-						return sanctionReason;
+						sanctionReason = "Mandatory Fields Must Not be Null while saveLoanSanctionDisbursementDetailFromBank() ===> LoanDisbursementRequest ====> "+ loanSanctionAndDisbursedRequest.getLoanSanctionRequest();
+						loanSanctionAndDisbursedRequest.getLoanSanctionRequest().setStatusCode(CommonUtility.SanctionDisbursementAPIStatusCode.MANDAROTY_FIELD_MUST_NOT_BE_NULL);
+						loanSanctionAndDisbursedRequest.getLoanSanctionRequest().setReason(sanctionReason);
+						loanSanctionAndDisbursedRequest.getLoanSanctionRequest().setIsSaved(false);
+						//return sanctionReason;
 					}
+					
+					//saving req in bank to  cw-audit table
+					if(!CommonUtils.isObjectNullOrEmpty(loanSanctionAndDisbursedRequest.getLoanSanctionRequest()) && isSanctionSuccess && CommonUtils.isObjectNullOrEmpty(bankToCWAuditTrailRepository)) {
+						String jsonString = MultipleJSONObjectHelper.getStringfromObject(loanSanctionAndDisbursedRequest.getLoanSanctionRequest());
+						auditComponentBankToCW.saveBankToCWReqRes(jsonString , 	applicationId,CommonUtility.ApiType.REVERSE_SANCTION, loansResponse, sanctionReason, orgId  , loanSanctionAndDisbursedRequest.getLoanSanctionRequest().getId());
+					}
+					
 				}	
-				if ("SUCCESS".equalsIgnoreCase(sanctionReason) || "First Disbursement".equalsIgnoreCase(sanctionReason)) {
-					logger.info("Success msg while saveLoanSanctionDisbursementDetailFromBank() ----------------> msg "+ sanctionReason);
+				logger.info("Msg while saveLoanSanctionDisbursementDetailFromBank() ----------------> Sanction Reason => "+ sanctionReason +"  Disbursement reason =>" +  disbursementReason) ;
+					
+				if( "SUCCESS".equalsIgnoreCase(sanctionReason) && "SUCCESS".equalsIgnoreCase(disbursementReason) || "First Disbursement".equalsIgnoreCase(disbursementReason)){
 					sanctionReason = null;
 					loansResponse = new LoansResponse("Information Successfully Stored ",HttpStatus.OK.value());
-					if("SUCCESS".equalsIgnoreCase(disbursementReason) || "First Disbursement".equalsIgnoreCase(disbursementReason)){
-						loansResponse.setData(CommonUtility.ApiType.SANCTION_AND_DISBURSEMENT);
-					}else {
-						loansResponse.setData(CommonUtility.ApiType.SANCTION);
-					}
-					logger.info("Exit saveLoanSanctionDisbursementDetailFromBank() ---------------->  msg ==>"+ "Information Successfully Stored ");
-					/*return disbursementReason != null ? CommonUtility.ApiType.SANCTION_AND_DISBURSEMENT.toString() : CommonUtility.ApiType.SANCTION.toString() ;*/
-					return loanSanctionAndDisbursedRequestList;
+					loansResponse.setData(CommonUtility.ApiType.REVERSE_SANCTION_AND_DISBURSEMENT);
+					logger.info("------------------- reverse sanction and disbursement  is saved--------------");
+					//return loanSanctionAndDisbursedRequestList;
+				}
+				else if( "SUCCESS".equalsIgnoreCase(sanctionReason) ){
+					loansResponse = new LoansResponse("Information Successfully Stored ",HttpStatus.OK.value());
+					loansResponse.setData(CommonUtility.ApiType.REVERSE_SANCTION);
+					logger.info("-------------------only  reverse sanction is saved--------------");
+					//return loanSanctionAndDisbursedRequestList;
+				}else if("SUCCESS".equalsIgnoreCase(disbursementReason) || "First Disbursement".equalsIgnoreCase(disbursementReason)){
+					loansResponse = new LoansResponse("Information Successfully Stored ",HttpStatus.OK.value());
+					loansResponse.setData(CommonUtility.ApiType.REVERSE_DISBURSEMENT);
+					logger.info("-------------------onluy  reverse disbursement is saved--------------");
+					//return loanSanctionAndDisbursedRequestList;
 				} else {
 					logger.info("Failure msg while save LoanSanctionAndDisbursedRequest in saveLoanSanctionDisbursementDetailFromBank() to CW ----------------> msg "+ sanctionReason);
 					loansResponse = new LoansResponse(sanctionReason.split("[\\{}]")[0],HttpStatus.BAD_REQUEST.value());
 					loansResponse.setData(false);
-					logger.info("Exit saveLoanDisbursementDetail() ----------------> msg ==>" + sanctionReason);
-					return sanctionReason;
+					logger.info("Exit saveLoanDisbursementDetail() ----------------> Sanction Reason => "+ sanctionReason +"  Disbursement reason =>" +  disbursementReason);
+					//return loanSanctionAndDisbursedRequestList;
 				}
+				return loanSanctionAndDisbursedRequestList;
 			} else {
 				logger.info("Null in encryptedString while saveLoanSanctionDisbursementDetailFromBank() ----------------> encryptedString "+ encryptedString);
 				loansResponse = new LoansResponse("Mandatory Fields Must Not be Null", HttpStatus.BAD_REQUEST.value(),HttpStatus.OK);
@@ -371,7 +433,7 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 			logger.info("Saving Request to DB ===> ");
 			generateTokenRequest = new GenerateTokenRequest();
 			generateTokenRequest.setToken(tokenString);
-			auditComponentBankToCW.saveBankToCWReqRes(decrypt != null ? decrypt : encryptedString, 	applicationId,CommonUtility.ApiType.SANCTION_AND_DISBURSEMENT, loansResponse, sanctionReason, orgId);
+			auditComponentBankToCW.saveBankToCWReqRes(decrypt != null ? decrypt : encryptedString, 	applicationId,CommonUtility.ApiType.REVERSE_SANCTION_AND_DISBURSEMENT, loansResponse, sanctionReason, orgId , null);
 		}
 	}
 
@@ -404,6 +466,5 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 			e.printStackTrace();
 			throw e;
 		}
-
 	}
 }

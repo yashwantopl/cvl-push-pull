@@ -63,7 +63,75 @@ public class PersonalLoanParameterRequest extends ProductMasterRequest implement
 
 	private List<DataRequest> cityList = Collections.emptyList();
 	
+	private Double minMonthlyIncomeRange;
+
+	private Double maxMonthlyIncomeRange;
+
+	private Boolean isMonthlyIncomeRangeDisplay;
+
+	private Boolean isMonthlyIncomeRangeMandatory;
+
+	private Double minBureauScore;
+
+	private Double maxBureauScore;
+
+	private Boolean isBureauScoreDisplay;
+
+	private Boolean isBureauScoreMandatory;
+
+	private Double minBureauScoreDays;
+
+	private Double maxBureauScoreDays;
+
+	private Boolean isBureauScoreDaysDisplay;
+
+	private Boolean isBureauScoreDaysMandatory;
+
+	private Double minRiskScoreRetail;
+
+	private Double maxRiskScoreRetail;
+
+	private Boolean isRiskScoreRetailDisplay;
+
+	private Boolean isRiskScoreRetailMandatory;
+
+	private List<Integer> empWithIds;
+	
+	private Boolean isEmpWithDisplay;
+
+	private Boolean isEmpWithMandatory;
+	
+	private Boolean isEmpRatingDisplay;
+
+	private Boolean isEmpRatingMandatory;
+
+	private Double minTotalJobExp;
+
+	private Double maxTotalJobExp;
+
+	private Boolean isTotalJobExpDisplay;
+
+	private Boolean isTotalJobExpMandatory;
+	
+	private Double minTotalCurrentJobExp;
+
+	private Double maxTotalCurrentJobExp;
+
+	private Boolean isTotalCurrentJobExpDisplay;
+
+	private Boolean isTotalCurrentJobExpMandatory;
+	
+	private List<Integer> empStatusIds;
+	
+	private Boolean isEmpStatusDisplay;
+
+	private Boolean isEmpStatusMandatory;
+	
+	private List<CreditRatingPlParameter> creditRatingSelectedList;
+	
 	private Object workflowData;
+	
+	private Long userOrgId;
 	
 	/*//FP NEW REQUIREMENT
 	private Integer employmentId;
@@ -293,6 +361,278 @@ public class PersonalLoanParameterRequest extends ProductMasterRequest implement
 		this.workflowData = workflowData;
 	}
 
+	public Double getMinMonthlyIncomeRange() {
+		return minMonthlyIncomeRange;
+	}
+
+	public void setMinMonthlyIncomeRange(Double minMonthlyIncomeRange) {
+		this.minMonthlyIncomeRange = minMonthlyIncomeRange;
+	}
+
+	public Double getMaxMonthlyIncomeRange() {
+		return maxMonthlyIncomeRange;
+	}
+
+	public void setMaxMonthlyIncomeRange(Double maxMonthlyIncomeRange) {
+		this.maxMonthlyIncomeRange = maxMonthlyIncomeRange;
+	}
+
+	public Boolean getIsMonthlyIncomeRangeDisplay() {
+		return isMonthlyIncomeRangeDisplay;
+	}
+
+	public void setIsMonthlyIncomeRangeDisplay(Boolean isMonthlyIncomeRangeDisplay) {
+		this.isMonthlyIncomeRangeDisplay = isMonthlyIncomeRangeDisplay;
+	}
+
+	public Boolean getIsMonthlyIncomeRangeMandatory() {
+		return isMonthlyIncomeRangeMandatory;
+	}
+
+	public void setIsMonthlyIncomeRangeMandatory(Boolean isMonthlyIncomeRangeMandatory) {
+		this.isMonthlyIncomeRangeMandatory = isMonthlyIncomeRangeMandatory;
+	}
+
+	public Double getMinBureauScore() {
+		return minBureauScore;
+	}
+
+	public void setMinBureauScore(Double minBureauScore) {
+		this.minBureauScore = minBureauScore;
+	}
+
+	public Double getMaxBureauScore() {
+		return maxBureauScore;
+	}
+
+	public void setMaxBureauScore(Double maxBureauScore) {
+		this.maxBureauScore = maxBureauScore;
+	}
+
+	public Boolean getIsBureauScoreDisplay() {
+		return isBureauScoreDisplay;
+	}
+
+	public void setIsBureauScoreDisplay(Boolean isBureauScoreDisplay) {
+		this.isBureauScoreDisplay = isBureauScoreDisplay;
+	}
+
+	public Double getMinBureauScoreDays() {
+		return minBureauScoreDays;
+	}
+
+	public void setMinBureauScoreDays(Double minBureauScoreDays) {
+		this.minBureauScoreDays = minBureauScoreDays;
+	}
+
+	public Double getMaxBureauScoreDays() {
+		return maxBureauScoreDays;
+	}
+
+	public void setMaxBureauScoreDays(Double maxBureauScoreDays) {
+		this.maxBureauScoreDays = maxBureauScoreDays;
+	}
+
+	public Boolean getIsBureauScoreDaysDisplay() {
+		return isBureauScoreDaysDisplay;
+	}
+
+	public void setIsBureauScoreDaysDisplay(Boolean isBureauScoreDaysDisplay) {
+		this.isBureauScoreDaysDisplay = isBureauScoreDaysDisplay;
+	}
+
+	public Boolean getIsBureauScoreDaysMandatory() {
+		return isBureauScoreDaysMandatory;
+	}
+
+	public void setIsBureauScoreDaysMandatory(Boolean isBureauScoreDaysMandatory) {
+		this.isBureauScoreDaysMandatory = isBureauScoreDaysMandatory;
+	}
+
+	public Double getMinRiskScoreRetail() {
+		return minRiskScoreRetail;
+	}
+
+	public void setMinRiskScoreRetail(Double minRiskScoreRetail) {
+		this.minRiskScoreRetail = minRiskScoreRetail;
+	}
+
+	public Double getMaxRiskScoreRetail() {
+		return maxRiskScoreRetail;
+	}
+
+	public void setMaxRiskScoreRetail(Double maxRiskScoreRetail) {
+		this.maxRiskScoreRetail = maxRiskScoreRetail;
+	}
+
+	public Boolean getIsRiskScoreRetailDisplay() {
+		return isRiskScoreRetailDisplay;
+	}
+
+	public void setIsRiskScoreRetailDisplay(Boolean isRiskScoreRetailDisplay) {
+		this.isRiskScoreRetailDisplay = isRiskScoreRetailDisplay;
+	}
+
+	public Boolean getIsRiskScoreRetailMandatory() {
+		return isRiskScoreRetailMandatory;
+	}
+
+	public void setIsRiskScoreRetailMandatory(Boolean isRiskScoreRetailMandatory) {
+		this.isRiskScoreRetailMandatory = isRiskScoreRetailMandatory;
+	}
+
+	public List<Integer> getEmpWithIds() {
+		return empWithIds;
+	}
+
+	public void setEmpWithIds(List<Integer> empWithIds) {
+		this.empWithIds = empWithIds;
+	}
+
+	public Boolean getIsEmpWithDisplay() {
+		return isEmpWithDisplay;
+	}
+
+	public void setIsEmpWithDisplay(Boolean isEmpWithDisplay) {
+		this.isEmpWithDisplay = isEmpWithDisplay;
+	}
+
+	public Boolean getIsEmpWithMandatory() {
+		return isEmpWithMandatory;
+	}
+
+	public void setIsEmpWithMandatory(Boolean isEmpWithMandatory) {
+		this.isEmpWithMandatory = isEmpWithMandatory;
+	}
+
+	public Boolean getIsEmpRatingDisplay() {
+		return isEmpRatingDisplay;
+	}
+
+	public void setIsEmpRatingDisplay(Boolean isEmpRatingDisplay) {
+		this.isEmpRatingDisplay = isEmpRatingDisplay;
+	}
+
+	public Boolean getIsEmpRatingMandatory() {
+		return isEmpRatingMandatory;
+	}
+
+	public void setIsEmpRatingMandatory(Boolean isEmpRatingMandatory) {
+		this.isEmpRatingMandatory = isEmpRatingMandatory;
+	}
+
+	public Double getMinTotalJobExp() {
+		return minTotalJobExp;
+	}
+
+	public void setMinTotalJobExp(Double minTotalJobExp) {
+		this.minTotalJobExp = minTotalJobExp;
+	}
+
+	public Double getMaxTotalJobExp() {
+		return maxTotalJobExp;
+	}
+
+	public void setMaxTotalJobExp(Double maxTotalJobExp) {
+		this.maxTotalJobExp = maxTotalJobExp;
+	}
+
+	public Boolean getIsTotalJobExpDisplay() {
+		return isTotalJobExpDisplay;
+	}
+
+	public void setIsTotalJobExpDisplay(Boolean isTotalJobExpDisplay) {
+		this.isTotalJobExpDisplay = isTotalJobExpDisplay;
+	}
+
+	public Boolean getIsTotalJobExpMandatory() {
+		return isTotalJobExpMandatory;
+	}
+
+	public void setIsTotalJobExpMandatory(Boolean isTotalJobExpMandatory) {
+		this.isTotalJobExpMandatory = isTotalJobExpMandatory;
+	}
+
+	public Double getMinTotalCurrentJobExp() {
+		return minTotalCurrentJobExp;
+	}
+
+	public void setMinTotalCurrentJobExp(Double minTotalCurrentJobExp) {
+		this.minTotalCurrentJobExp = minTotalCurrentJobExp;
+	}
+
+	public Double getMaxTotalCurrentJobExp() {
+		return maxTotalCurrentJobExp;
+	}
+
+	public void setMaxTotalCurrentJobExp(Double maxTotalCurrentJobExp) {
+		this.maxTotalCurrentJobExp = maxTotalCurrentJobExp;
+	}
+
+	public Boolean getIsTotalCurrentJobExpDisplay() {
+		return isTotalCurrentJobExpDisplay;
+	}
+
+	public void setIsTotalCurrentJobExpDisplay(Boolean isTotalCurrentJobExpDisplay) {
+		this.isTotalCurrentJobExpDisplay = isTotalCurrentJobExpDisplay;
+	}
+
+	public Boolean getIsTotalCurrentJobExpMandatory() {
+		return isTotalCurrentJobExpMandatory;
+	}
+
+	public void setIsTotalCurrentJobExpMandatory(Boolean isTotalCurrentJobExpMandatory) {
+		this.isTotalCurrentJobExpMandatory = isTotalCurrentJobExpMandatory;
+	}
+
+	public List<Integer> getEmpStatusIds() {
+		return empStatusIds;
+	}
+
+	public void setEmpStatusIds(List<Integer> empStatusIds) {
+		this.empStatusIds = empStatusIds;
+	}
+
+	public Boolean getIsEmpStatusDisplay() {
+		return isEmpStatusDisplay;
+	}
+
+	public void setIsEmpStatusDisplay(Boolean isEmpStatusDisplay) {
+		this.isEmpStatusDisplay = isEmpStatusDisplay;
+	}
+
+	public Boolean getIsEmpStatusMandatory() {
+		return isEmpStatusMandatory;
+	}
+
+	public void setIsEmpStatusMandatory(Boolean isEmpStatusMandatory) {
+		this.isEmpStatusMandatory = isEmpStatusMandatory;
+	}
+
+	public List<CreditRatingPlParameter> getCreditRatingSelectedList() {
+		return creditRatingSelectedList;
+	}
+
+	public void setCreditRatingSelectedList(List<CreditRatingPlParameter> creditRatingSelectedList) {
+		this.creditRatingSelectedList = creditRatingSelectedList;
+	}
+
+	public Boolean getIsBureauScoreMandatory() {
+		return isBureauScoreMandatory;
+	}
+
+	public void setIsBureauScoreMandatory(Boolean isBureauScoreMandatory) {
+		this.isBureauScoreMandatory = isBureauScoreMandatory;
+	}
+
+	public Long getUserOrgId() {
+		return userOrgId;
+	}
+
+	public void setUserOrgId(Long userOrgId) {
+		this.userOrgId = userOrgId;
+	}
+
 	/*public Integer getEmploymentId() {
 		return employmentId;
 	}
@@ -420,6 +760,9 @@ public class PersonalLoanParameterRequest extends ProductMasterRequest implement
 	public void setIsTotalJobExperienceMandatory(Boolean isTotalJobExperienceMandatory) {
 		this.isTotalJobExperienceMandatory = isTotalJobExperienceMandatory;
 	}*/
+
+	
+	
 	
 	
 	

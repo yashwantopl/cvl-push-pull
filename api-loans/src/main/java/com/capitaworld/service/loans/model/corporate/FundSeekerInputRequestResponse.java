@@ -36,15 +36,12 @@ public class FundSeekerInputRequestResponse {
 
  //   private Boolean isBusinessAssetChecked;
 
-    private Double businessAssetAmount;
 
  //   private Boolean isWorkingCapitalChecked;
 
-    private Double wcAmount;
 
 //    private Boolean isOtherGeneralChecked;
 
-    private Double otherAmt;
 
     private Integer purposeOfLoanId;
 
@@ -100,9 +97,16 @@ public class FundSeekerInputRequestResponse {
     private Integer factoryPremise;
     private Integer knowHow;
     private Integer competition;
+    
+    /*FOR NTB CAM BY BIHAG*/
+    private String loanAmt;
+    private String costOfProjectStr;
+    private String collateralSecurityAmountStr;
 
     /*For Eligibility method*/
     private Double incrementalMargin;
+
+    private Long environmentalImpactId;
 
     public Long getUserId() {
         return userId;
@@ -169,34 +173,6 @@ public class FundSeekerInputRequestResponse {
     }
 
 
-
-    public Double getBusinessAssetAmount() {
-        return businessAssetAmount;
-    }
-
-    public void setBusinessAssetAmount(Double businessAssetAmount) {
-        this.businessAssetAmount = businessAssetAmount;
-    }
-
-
-
-    public Double getWcAmount() {
-        return wcAmount;
-    }
-
-    public void setWcAmount(Double wcAmount) {
-        this.wcAmount = wcAmount;
-    }
-
-
-
-    public Double getOtherAmt() {
-        return otherAmt;
-    }
-
-    public void setOtherAmt(Double otherAmt) {
-        this.otherAmt = otherAmt;
-    }
 
     public Boolean getHaveCollateralSecurity() {
         return haveCollateralSecurity;
@@ -448,7 +424,39 @@ public class FundSeekerInputRequestResponse {
         this.incrementalMargin = incrementalMargin;
     }
 
-    @Override
+    public Long getEnvironmentalImpactId() {
+        return environmentalImpactId;
+    }
+
+    public void setEnvironmentalImpactId(Long environmentalImpactId) {
+        this.environmentalImpactId = environmentalImpactId;
+    }
+
+    public String getLoanAmt() {
+		return loanAmt;
+	}
+
+	public void setLoanAmt(String loanAmt) {
+		this.loanAmt = loanAmt;
+	}
+
+	public String getCostOfProjectStr() {
+		return costOfProjectStr;
+	}
+
+	public void setCostOfProjectStr(String costOfProjectStr) {
+		this.costOfProjectStr = costOfProjectStr;
+	}
+
+	public String getCollateralSecurityAmountStr() {
+		return collateralSecurityAmountStr;
+	}
+
+	public void setCollateralSecurityAmountStr(String collateralSecurityAmountStr) {
+		this.collateralSecurityAmountStr = collateralSecurityAmountStr;
+	}
+
+	@Override
     public String toString() {
         return "FundSeekerInputRequestResponse{" +
                 "userId=" + userId +
@@ -463,9 +471,6 @@ public class FundSeekerInputRequestResponse {
                 ", aadhar='" + aadhar + '\'' +
                 ", msmeRegistrationNumber='" + msmeRegistrationNumber + '\'' +
                 ", loanAmount=" + loanAmount +
-                ", businessAssetAmount=" + businessAssetAmount +
-                ", wcAmount=" + wcAmount +
-                ", otherAmt=" + otherAmt +
                 ", purposeOfLoanId=" + purposeOfLoanId +
                 ", haveCollateralSecurity=" + haveCollateralSecurity +
                 ", collateralSecurityAmount=" + collateralSecurityAmount +
@@ -493,6 +498,7 @@ public class FundSeekerInputRequestResponse {
                 ", knowHow=" + knowHow +
                 ", competition=" + competition +
                 ", incrementalMargin=" + incrementalMargin +
+                ", environmentalImpactId=" + environmentalImpactId +
                 '}';
     }
 }

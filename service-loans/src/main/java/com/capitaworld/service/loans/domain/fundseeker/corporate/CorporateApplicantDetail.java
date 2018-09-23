@@ -193,6 +193,9 @@ public class CorporateApplicantDetail implements Serializable {
 	@Column(name = "establishment_date")
 	private Date establishmentDate;
 
+	@Column(name = "environmental_impact_id")
+	private Long environmentalImpactId;
+
 	public CorporateApplicantDetail() {
 	}
 
@@ -635,5 +638,13 @@ public class CorporateApplicantDetail implements Serializable {
 
 	public void setEstablishmentDate(Date establishmentDate) {
 		this.establishmentDate = establishmentDate;
+	}
+
+	public Long getEnvironmentalImpactId() {
+		return environmentalImpactId;
+	}
+
+	public void setEnvironmentalImpactId(Long environmentalImpactId) {
+		this.environmentalImpactId = environmentalImpactId;
 	}
 }

@@ -15,34 +15,60 @@ import javax.transaction.Transactional;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.capitaworld.api.eligibility.model.CLEligibilityRequest;
 import com.capitaworld.api.eligibility.model.EligibililityRequest;
 import com.capitaworld.api.eligibility.model.EligibilityResponse;
 import com.capitaworld.client.eligibility.EligibilityClient;
+import com.capitaworld.connect.api.ConnectResponse;
+import com.capitaworld.connect.api.ConnectStage;
+import com.capitaworld.connect.client.ConnectClient;
 import com.capitaworld.service.analyzer.client.AnalyzerClient;
 import com.capitaworld.service.analyzer.model.common.AnalyzerResponse;
 import com.capitaworld.service.analyzer.model.common.Data;
 import com.capitaworld.service.analyzer.model.common.ReportRequest;
+import com.capitaworld.service.fraudanalytics.client.FraudAnalyticsClient;
+import com.capitaworld.service.fraudanalytics.model.AnalyticsResponse;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
+import com.capitaworld.service.loans.model.FinanceMeansDetailRequest;
+import com.capitaworld.service.loans.model.FinanceMeansDetailResponse;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailResponse;
+import com.capitaworld.service.loans.model.OwnershipDetailResponse;
+import com.capitaworld.service.loans.model.TotalCostOfProjectResponse;
 import com.capitaworld.service.loans.model.corporate.CorporateDirectorIncomeRequest;
 import com.capitaworld.service.loans.model.corporate.FundSeekerInputRequestResponse;
+import com.capitaworld.service.loans.model.corporate.TotalCostOfProjectRequest;
 import com.capitaworld.service.loans.repository.fundprovider.TermLoanParameterRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.DirectorBackgroundDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
+import com.capitaworld.service.loans.service.fundseeker.corporate.AchievmentDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.AssociatedConcernDetailService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateDirectorIncomeService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.ExistingProductDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.FinanceMeansDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.GuarantorsCorporateDetailService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.MonthlyTurnoverDetailService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.NTBService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.NtbCamReportService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.ProposedProductDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.SecurityCorporateDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.TotalCostOfProjectService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.matchengine.MatchEngineClient;
 import com.capitaworld.service.matchengine.model.MatchDisplayResponse;
 import com.capitaworld.service.matchengine.model.MatchRequest;
 import com.capitaworld.service.oneform.client.OneFormClient;
+import com.capitaworld.service.oneform.enums.FinanceCategory;
+import com.capitaworld.service.oneform.enums.Particular;
 import com.capitaworld.service.oneform.enums.ProposedConstitutionOfUnitNTB;
 import com.capitaworld.service.oneform.enums.ProposedDetailOfUnitNTB;
 import com.capitaworld.service.oneform.model.MasterResponse;
@@ -98,6 +124,39 @@ public class NtbCamReportServiceImpl implements NtbCamReportService{
 	@Autowired
 	private ThirdPartyClient thirdPartyClient; 
 	
+	@Autowired
+	private FraudAnalyticsClient fraudAnalyticsClient;
+	
+	@Autowired
+	private PrimaryCorporateDetailRepository primaryCorporateRepository;
+	
+	@Autowired
+	private GuarantorsCorporateDetailService guarantorsCorporateDetailService;
+
+	@Autowired
+	private MonthlyTurnoverDetailService monthlyTurnoverDetailService;
+	
+	@Autowired
+	private TotalCostOfProjectService costOfProjectService; 
+	
+	@Autowired
+	private FinanceMeansDetailsService financeMeansDetailsService;
+	
+	@Autowired
+	private AssociatedConcernDetailService associatedConcernDetailService;
+	
+	@Autowired
+	private ProposedProductDetailsService proposedProductDetailsService; 
+	
+	@Autowired
+	private ExistingProductDetailsService existingProductDetailsService;
+	
+	@Autowired
+	private AchievmentDetailsService achievmentDetailsService;
+	
+	@Autowired
+	private SecurityCorporateDetailsService securityCorporateDetailsService;
+	
 	private static final Logger logger = LoggerFactory.getLogger(NtbCamReportServiceImpl.class);
 	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 	
@@ -106,6 +165,10 @@ public class NtbCamReportServiceImpl implements NtbCamReportService{
 		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(applicationId);
 		logger.info("Entering into NTB CAM REPORT service=========> {}" +applicationId+" "+productId+" "+isFinalView + loanApplicationMaster.getBusinessTypeId());
 		Map<String, Object> map = new HashMap<String, Object>();
+		PrimaryCorporateDetail primaryCorporateDetail = primaryCorporateRepository.findOneByApplicationIdId(applicationId);
+		if (!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getModifiedDate())) {
+			map.put("dateOfProposal",!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getModifiedDate()) ? DATE_FORMAT.format(primaryCorporateDetail.getModifiedDate()) : null);
+		}
 		//MATCHES RESPONSE
 		try {
 			MatchRequest matchRequest = new MatchRequest();
@@ -191,8 +254,7 @@ public class NtbCamReportServiceImpl implements NtbCamReportService{
 			//KEY VERTICAL SUBSECTOR
 			try {
 				if (!CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequestResponse.getKeyVerticalSubsector())) {
-					OneFormResponse oneFormResponse = oneFormClient
-							.getSubSecNameByMappingId(fundSeekerInputRequestResponse.getKeyVerticalSubsector());
+					OneFormResponse oneFormResponse = oneFormClient.getSubSecNameByMappingId(fundSeekerInputRequestResponse.getKeyVerticalSubsector());
 					map.put("keyVerticalSubSector",(String) oneFormResponse.getData());
 				}
 			} catch (Exception e) {
@@ -203,14 +265,16 @@ public class NtbCamReportServiceImpl implements NtbCamReportService{
 			map.put("proposedOperationDate",DATE_FORMAT.format(fundSeekerInputRequestResponse.getProposedOperationDate()));
 
 		} catch (Exception e) {
-			logger.error("Problem to get Other Details===========> {}", e);
+			logger.error("Problem to get Other Details=========> {}", e);
 		}
-		
+			
 		// GET DIRECTOR INCOME DETAILS
 		try {
 			List<CorporateDirectorIncomeRequest> directorIncomeDetails = corporateDirectorIncomeService.getDirectorIncomeDetails(applicationId);
 			Map<String, List<CorporateDirectorIncomeRequest>> dirIncomeDetail = directorIncomeDetails.stream().collect(Collectors.groupingBy(CorporateDirectorIncomeRequest:: getDirectorName));
-			map.put("directorIncomeDetails", dirIncomeDetail);
+			if(!CommonUtils.isObjectNullOrEmpty(dirIncomeDetail)) {
+				map.put("directorIncomeDetails", dirIncomeDetail);
+			}
 		} catch (Exception e) {
 			logger.error("Problem to get Director's Income Details===========> {}", e);
 		}
@@ -236,6 +300,8 @@ public class NtbCamReportServiceImpl implements NtbCamReportService{
 				// financialArrangementsDetailResponse.setFacilityNature(NatureFacility.getById(financialArrangementsDetailRequest.getFacilityNatureId()).getValue());
 				// financialArrangementsDetailResponse.setAddress(financialArrangementsDetailRequest.getAddress());
 				financialArrangementsDetailResponse.setDirectorName(directorName);
+				financialArrangementsDetailResponse.setAmountStr(CommonUtils.convertValue(financialArrangementsDetailRequest.getAmount()));
+				financialArrangementsDetailResponse.setOutstandingAmountStr(CommonUtils.convertValue(financialArrangementsDetailRequest.getOutstandingAmount()));
 				financialArrangementsDetailResponseList.add(financialArrangementsDetailResponse);
 			}
 			Map<String, List<FinancialArrangementsDetailResponse>> financialArrangementDetails = financialArrangementsDetailResponseList.stream().collect(Collectors.groupingBy(FinancialArrangementsDetailResponse:: getDirectorName));
@@ -253,7 +319,8 @@ public class NtbCamReportServiceImpl implements NtbCamReportService{
 		eligibilityReq.setFpProductMappingId(productId);
 		try {
 			EligibilityResponse eligibilityResp = eligibilityClient.corporateLoanData(eligibilityReq);
-			map.put("assLimits",eligibilityResp);
+//			map.put("assLimits",CommonUtils.convertToDoubleForXml(MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)eligibilityResp.getData(), CLEligibilityRequest.class), new HashMap<>()));
+			map.put("assLimits",CommonUtils.printFields(eligibilityResp.getData()));
 		} catch (Exception e1) {
 			e1.printStackTrace();
 			logger.info("Error while getting Eligibility data");
@@ -318,6 +385,10 @@ public class NtbCamReportServiceImpl implements NtbCamReportService{
 					if(!CommonUtils.isListNullOrEmpty(collect)) {
 						map2.put(NTB.CHEQUE_BOUNCES, CommonUtils.printFields(collect.get(0)));
 					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(NTB.CIBIL_TRANSUNION_SCORE)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						map2.put(NTB.CIBIL_TRANSUNION_SCORE, CommonUtils.printFields(collect.get(0)));
+					}
 					scoreResponse.add(map2);
 					}
 					map.put("directorScoringData", scoreResponse);
@@ -329,7 +400,7 @@ public class NtbCamReportServiceImpl implements NtbCamReportService{
 					companyMap.put("companyDataObject", CommonUtils.printFields(proposalScoreResponse));
 					map.put("totalWeight", CommonUtils.addNumbers(proposalScoreResponse.getBusinessRiskWeight(), proposalScoreResponse.getFinancialRiskWeight(), proposalScoreResponse.getManagementRiskWeight()));
 					map.put("totalWeightActualScore", CommonUtils.addNumbers(proposalScoreResponse.getManagementRiskWeightOfScoring(), proposalScoreResponse.getFinancialRiskWeightOfScoring(), proposalScoreResponse.getBusinessRiskWeightOfScoring()));
-					map.put("totalWeightOutOfScore", CommonUtils.addNumbers(proposalScoreResponse.getManagementScoreWithRiskWeight(), proposalScoreResponse.getFinancialScoreWithRiskWeight(), proposalScoreResponse.getBusinessScoreWithRiskWeight()));
+					map.put("totalWeightOutOfScore", CommonUtils.addNumbers(proposalScoreResponse.getManagementRiskMaxTotalWeight(), proposalScoreResponse.getFinancialRiskMaxTotalWeight(), proposalScoreResponse.getBusinessRiskMaxTotalWeight()));
 					//Filter Parameters
 					List<LinkedHashMap<String, Object>> mapList = (List<LinkedHashMap<String, Object>>)scoringResponse.getDataList();
 					List<ProposalScoreDetailResponse> newMapList = new ArrayList<>(mapList.size());
@@ -418,59 +489,100 @@ public class NtbCamReportServiceImpl implements NtbCamReportService{
 		
 		//CGTMSE 
 		try {
-			CGTMSEDataResponse cgtmseDataResp = thirdPartyClient.getCalulation(applicationId);
-			map.put("cgtmseData", CommonUtils.printFields(cgtmseDataResp));
+			CGTMSEDataResponse cgtmseDataResponse = thirdPartyClient.getCalulation(applicationId);
+			map.put("cgtmseData", CommonUtils.printFields(cgtmseDataResponse));
+			map.put("maxCgtmseCoverageAmount", CommonUtils.convertValueWithoutDecimal(cgtmseDataResponse.getMaxCgtmseCoverageAmount()));
+			map.put("identityAmount", CommonUtils.convertValueWithoutDecimal(cgtmseDataResponse.getIdentityAmount()));
+			map.put("gutAmt", CommonUtils.convertValueWithoutDecimal(cgtmseDataResponse.getGutAmt()));
+			map.put("cgtmseLoanAmount", CommonUtils.convertValueWithoutDecimal(cgtmseDataResponse.getLoanAmount()));
+			map.put("cgtmseCoverageAmount", CommonUtils.convertValueWithoutDecimal(cgtmseDataResponse.getCgtmseCoverageAmount()));
+			map.put("amountOfColleteral", CommonUtils.convertValueWithoutDecimal(cgtmseDataResponse.getAmountOfColleteral()));
+			map.put("totalColleteralAmount", CommonUtils.convertValueWithoutDecimal(cgtmseDataResponse.getTotalColleteralAmount()));
+			map.put("gurAmtCarld", CommonUtils.convertValueWithoutDecimal(cgtmseDataResponse.getGurAmtCarld()));
+			map.put("colleteralCoverage", CommonUtils.convertValue(cgtmseDataResponse.getColleteralCoverage()));
+			map.put("percTerms", CommonUtils.convertValue(cgtmseDataResponse.getPercTerms()));
+			map.put("assetAqu", CommonUtils.convertValueWithoutDecimal(cgtmseDataResponse.getAssetAqusition()));
+			if(!CommonUtils.isObjectNullOrEmpty(cgtmseDataResponse.getCgtmseResponse()) && !CommonUtils.isObjectNullOrEmpty(cgtmseDataResponse.getCgtmseResponse().getDetails())) {
+				map.put("cgtmseBankWise", CommonUtils.printFields(cgtmseDataResponse.getCgtmseResponse().getDetails()));
+			}
 		} catch (Exception e) {
 		
 			e.printStackTrace();
 			logger.info("Error while getting CGTMSE data");
 		}
 		
-		//BANK STATEMENT
-		ReportRequest reportRequest = new ReportRequest();
-		reportRequest.setApplicationId(applicationId);
-		reportRequest.setUserId(userId);
-		List<Data> datas = new ArrayList<>();
-		try {
-			AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReportForCam(reportRequest);
-			List<HashMap<String, Object>> hashMap=(List<HashMap<String, Object>>) analyzerResponse.getData();
-			if(!CommonUtils.isListNullOrEmpty(hashMap))
-			{
-				for(HashMap<String,Object> rec:hashMap)
-				{
-					Data data = MultipleJSONObjectHelper.getObjectFromMap(rec, Data.class);
-					datas.add(data);
-					List<Object> bankStatement = new ArrayList<Object>();
-					List<Object> monthlyDetails = new ArrayList<Object>();
-					List<Object> top5FundReceived = new ArrayList<Object>();
-					List<Object> top5FundTransfered = new ArrayList<Object>();
-					List<Object> bouncedChequeList = new ArrayList<Object>();
-					List<Object> customerInfo = new ArrayList<Object>();
-					List<Object> summaryInfo = new ArrayList<Object>();
-					for(int i =0; i<hashMap.size(); i++) {
-						bankStatement.add(!CommonUtils.isObjectNullOrEmpty(data.getXns()) ? CommonUtils.printFields(data.getXns().getXn()) : " ");
-						monthlyDetails.add(!CommonUtils.isObjectNullOrEmpty(data.getMonthlyDetailList()) ? CommonUtils.printFields(data.getMonthlyDetailList()) : "");
-						top5FundReceived.add(!CommonUtils.isObjectNullOrEmpty(data.getTop5FundReceivedList().getItem()) ? CommonUtils.printFields(data.getTop5FundReceivedList().getItem()) : "");
-						top5FundTransfered.add(!CommonUtils.isObjectNullOrEmpty(data.getTop5FundTransferedList().getItem()) ? CommonUtils.printFields(data.getTop5FundTransferedList().getItem()) : "");
-						bouncedChequeList.add(!CommonUtils.isObjectNullOrEmpty(data.getBouncedOrPenalXnList()) ? CommonUtils.printFields(data.getBouncedOrPenalXnList().getBouncedOrPenalXns()) : " ");
-						customerInfo.add(!CommonUtils.isObjectNullOrEmpty(data.getCustomerInfo()) ? CommonUtils.printFields(data.getCustomerInfo()) : " ");
-						summaryInfo.add(!CommonUtils.isObjectNullOrEmpty(data.getSummaryInfo()) ?CommonUtils.printFields(data.getSummaryInfo()) : " ");
+		//HUNTER API ANALYSIS
+				try {
+					AnalyticsResponse hunterResp =fraudAnalyticsClient.getRuleAnalysisData(applicationId);
+					if(!CommonUtils.isObjectListNull(hunterResp,hunterResp.getData())) {
+						map.put("hunterResponse",  CommonUtils.printFields(hunterResp.getData()));
 					}
-					map.put("bankStatement" , bankStatement);
-					map.put("monthlyDetails" , monthlyDetails);
-					map.put("top5FundReceived" , top5FundReceived);
-					map.put("top5FundTransfered" , top5FundTransfered);
-					map.put("bouncedChequeList" , bouncedChequeList);
-					map.put("customerInfo" , customerInfo);
-					map.put("summaryInfo" , summaryInfo);
-					map.put("bankStatementAnalysis", CommonUtils.printFields(datas));
-				}
-			}
-		}catch (Exception e) {
-			e.printStackTrace();
-			logger.info("Error while getting perfios data");
+				} catch (Exception e1) {
+					e1.printStackTrace();
 		}
 		
+		/**********************************************FINAL DETAILS*****************************************************/
+				if(isFinalView) {
+					//ASSOCIATE ENTITY
+					try {
+						map.put("associatedConcerns",CommonUtils.printFields(associatedConcernDetailService.getAssociatedConcernsDetailList(applicationId, userId)));
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+					
+					//DETAILS OF GUARANTER
+					try {
+							map.put("guaDetails", CommonUtils.printFields(guarantorsCorporateDetailService.getGuarantorsCorporateDetailList(applicationId, userId)));
+					} catch (Exception e) {
+							logger.error("Problem to get Data of Details of Guarantor {}", e);
+					}
+				    //MONTHLY TURNOVER
+					try {
+						map.put("monthlyTurnOver", CommonUtils.printFields(monthlyTurnoverDetailService.getMonthlyTurnoverDetailList(applicationId, userId)));
+					} catch (Exception e) {
+						logger.error("Problem to get Data of Monthly Turnover {}", e);
+					}
+					
+					//COST ESTIMATES
+					try {
+						List<TotalCostOfProjectRequest> costOfProjectsList = costOfProjectService.getCostOfProjectDetailList(applicationId, userId);
+						List<TotalCostOfProjectResponse> costOfProjectResponses = new ArrayList<TotalCostOfProjectResponse>();
+						for (TotalCostOfProjectRequest costOfProjectRequest : costOfProjectsList) {
+						TotalCostOfProjectResponse costOfProjectResponse = new TotalCostOfProjectResponse();
+						BeanUtils.copyProperties(costOfProjectRequest, costOfProjectResponse);
+							if (costOfProjectRequest.getParticularsId() != null)
+								costOfProjectResponse.setParticulars(Particular.getById(Integer.parseInt(costOfProjectRequest.getParticularsId().toString())).getValue());
+							    costOfProjectResponses.add(costOfProjectResponse);
+						}
+						map.put("costEstimate", CommonUtils.printFields(costOfProjectResponses));
+					} catch (Exception e1) {
+						logger.error("Problem to get Data of Total cost of project{}", e1);
+					}
+					
+					//MEANS OF FINANCE
+					try {
+						List<FinanceMeansDetailRequest> financeMeansDetailRequestsList = financeMeansDetailsService.getMeansOfFinanceList(applicationId, userId);
+						List<FinanceMeansDetailResponse> financeMeansDetailResponsesList = new ArrayList<FinanceMeansDetailResponse>();
+						for (FinanceMeansDetailRequest financeMeansDetailRequest : financeMeansDetailRequestsList) {
+							FinanceMeansDetailResponse detailResponse = new FinanceMeansDetailResponse();
+							BeanUtils.copyProperties(financeMeansDetailRequest, detailResponse);
+							if (financeMeansDetailRequest.getFinanceMeansCategoryId() != null)
+								detailResponse.setFinanceMeansCategory(FinanceCategory.getById(Integer.parseInt(financeMeansDetailRequest.getFinanceMeansCategoryId().toString())).getValue());
+							financeMeansDetailResponsesList.add(detailResponse);
+						}
+						map.put("meansOfFinance", CommonUtils.printFields(financeMeansDetailResponsesList));
+					} catch (Exception e1) {
+						logger.error("Problem to get Data of Finance Means Details {}", e1);
+					}
+					
+					//COLLATERAL SECURITY			
+					try {
+						map.put("collateralSecurity", CommonUtils.printFields(securityCorporateDetailsService.getsecurityCorporateDetailsList(applicationId, userId)));
+					} catch (Exception e) {
+						logger.error("Problem to get Data of Security Details {}", e);
+					}
+					
+				}
 		return map;
 	}
 	

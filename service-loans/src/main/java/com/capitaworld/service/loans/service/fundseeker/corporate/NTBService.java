@@ -32,4 +32,6 @@ public interface NTBService {
     public LoansResponse postDirectorBackground(NTBRequest ntbRequest);
     public LoansResponse postDirectorsChangeStage(NTBRequest ntbRequest);
     public LoansResponse postOthersChangeStage(NTBRequest ntbRequest);
+
+	public LoansResponse invokeFraudAnalytics(FundSeekerInputRequestResponse fundSeekerInputRequestResponse) throws Exception;
 }

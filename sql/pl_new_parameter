@@ -231,3 +231,81 @@ CREATE TABLE `one_form`.`rating_agency_parameter_mapping` (
   KEY `rating_agency_id` (`rating_agency_id`),
   CONSTRAINT `rating_agency_parameter_mapping_ibfk_1` FOREIGN KEY (`rating_agency_id`) REFERENCES `one_form`.`rating_agency_parameter` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=102 DEFAULT CHARSET=latin1;
+
+
+
+
+DROP TABLE IF EXISTS `loan_application`.`fp_retail_rating_mapping_details`;
+
+CREATE TABLE `loan_application`.`fp_retail_rating_mapping_details` (
+  `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `rating_id` INT(2) UNSIGNED DEFAULT NULL,
+  `agency_id` INT(2) UNSIGNED DEFAULT NULL,
+  `fp_product_id` BIGINT(20) UNSIGNED DEFAULT NULL,
+  `created_date` DATETIME DEFAULT NULL,
+  `modified_date` DATETIME DEFAULT NULL,
+  `created_by` BIGINT(20) DEFAULT NULL,
+  `modified_by` BIGINT(20) DEFAULT NULL,
+  `is_active` BIT(1) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  
+  KEY `FKBD855AD4549B531` (`fp_product_id`)
+) ENGINE=INNODB AUTO_INCREMENT=927 DEFAULT CHARSET=utf8;
+
+
+
+
+
+
+
+
+
+
+
+DROP TABLE IF EXISTS `loan_application`.`fp_retail_rating_mapping_details_temp`;
+
+CREATE TABLE `loan_application`.`fp_retail_rating_mapping_details_temp` (
+  `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `rating_id` INT(2) UNSIGNED DEFAULT NULL,
+  `agency_id` INT(2) UNSIGNED DEFAULT NULL,
+  `fp_product_id` BIGINT(20) UNSIGNED DEFAULT NULL,
+  `created_date` DATETIME DEFAULT NULL,
+  `modified_date` DATETIME DEFAULT NULL,
+  `created_by` BIGINT(20) DEFAULT NULL,
+  `modified_by` BIGINT(20) DEFAULT NULL,
+  `is_active` BIT(1) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  
+  KEY `FKBD855AD4549B531` (`fp_product_id`)
+) ENGINE=INNODB AUTO_INCREMENT=927 DEFAULT CHARSET=utf8;
+
+
+
+
+
+
+ALTER TABLE `loan_application`.`fp_personal_loan_details_temp`  
+
+
+ADD COLUMN `is_approved` BIT(1) DEFAULT b'0',
+ADD COLUMN `is_deleted` BIT(1) DEFAULT b'0',
+ADD COLUMN `is_copied` BIT(1) DEFAULT b'0',
+ADD COLUMN `approval_date` DATETIME DEFAULT NULL,
+ADD COLUMN `status_id` DATETIME DEFAULT NULL,
+ADD COLUMN `job_id` BIGINT(20) DEFAULT NULL,
+ADD COLUMN `is_edit` BIGINT(20) DEFAULT b'0';
+
+
+
+
+ALTER TABLE `loan_application`.`fp_personal_loan_details`  
+
+
+ADD COLUMN `job_id` BIGINT(20) DEFAULT NULL;
+
+
+ALTER TABLE `loan_application`.`fs_retail_emp_type_mapping_details`
+CHANGE COLUMN `application_id` `fp_product_id` BIGINT(20);
+
+ALTER TABLE `loan_application`.`fs_retail_emp_status_mapping_details`
+CHANGE COLUMN `application_id` `fp_product_id` BIGINT(20);

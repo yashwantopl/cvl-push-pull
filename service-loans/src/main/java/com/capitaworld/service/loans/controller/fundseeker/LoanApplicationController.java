@@ -25,9 +25,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.capitaworld.cibil.api.model.CibilRequest;
-import com.capitaworld.cibil.api.model.msme.company.Base;
-import com.capitaworld.cibil.client.CIBILClient;
 import com.capitaworld.service.gateway.model.GatewayRequest;
 import com.capitaworld.service.loans.config.AsyncComponent;
 import com.capitaworld.service.loans.config.AuditComponentBankToCW;
@@ -43,7 +40,6 @@ import com.capitaworld.service.loans.model.common.AutoFillOneFormDetailRequest;
 import com.capitaworld.service.loans.model.common.DisbursementRequest;
 import com.capitaworld.service.loans.model.common.EkycRequest;
 import com.capitaworld.service.loans.model.mobile.MobileLoanRequest;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.service.common.AutoFillOneFormDetailService;
 import com.capitaworld.service.loans.service.common.FsDetailsForPdfService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
@@ -2056,6 +2052,27 @@ public class LoanApplicationController {
 					HttpStatus.OK);
 		}
 	}
+	
+	@RequestMapping(value = "/getFpDetailsByFpProductMappindId/{fpProductMappingId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getFpDetailsByFpProductMappingId(@PathVariable("fpProductMappingId") Long fpProductMappingId) {
+		
+		try {
+			logger.info("ENTER  IN GET FP DETAILS BY PRODUCT MAPPING ID -------------FP PRODUCT MAPPING ID >>>>>>>>>>>"+fpProductMappingId);
+			LoansResponse loansResponse = new LoansResponse("DATA FOUND", HttpStatus.OK.value());
+			loansResponse.setData(loanApplicationService.getFpDetailsByFpProductMappingId(fpProductMappingId));
+			logger.info("Exit getFpDetailsByFpProductMappingId");
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+
+			
+		} catch (Exception e) {
+			logger.error("Error while getFpDetailsByFpProductMappingId==========>", e.getMessage());
+			e.printStackTrace();
+			
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+	}
 
 	@RequestMapping(value = "/saveLoanSanctionDetail", method = RequestMethod.POST, consumes = MediaType.TEXT_PLAIN_VALUE)
 	public ResponseEntity<LoansResponse> saveLoanSanctionDetail(@RequestBody String encryptedString,
@@ -2177,7 +2194,7 @@ public class LoanApplicationController {
 			tokenService.setTokenAsExpired(generateTokenRequest);
 			auditComponentBankToCW.saveBankToCWReqRes(decrypt != null ? decrypt : encryptedString,
 					loanSanctionRequest != null ? loanSanctionRequest.getApplicationId() : null,
-					CommonUtility.ApiType.SANCTION, loansResponse, reason, null);
+					CommonUtility.ApiType.SANCTION, loansResponse, reason, null  , null);
 		}
 	}
 
@@ -2232,18 +2249,18 @@ public class LoanApplicationController {
 				}
 				if (!CommonUtils.isObjectListNull(loanDisbursementRequest, loanDisbursementRequest.getApplicationId(),
 						loanDisbursementRequest.getDisbursedAmount(), loanDisbursementRequest.getDisbursementDate(),
-						loanDisbursementRequest.getMode(), loanDisbursementRequest.getReferenceNo(),
+						loanDisbursementRequest.getPaymentMode(), loanDisbursementRequest.getReferenceNo(),
 						loanDisbursementRequest.getActionBy(), loanDisbursementRequest.getAccountNo())) {
 					orgId = auditComponentBankToCW.getOrgIdByCredential(loanDisbursementRequest.getUserName(),
 							loanDisbursementRequest.getPassword());
 					if (!CommonUtils.isObjectNullOrEmpty(orgId)) {
 
-						reason = loanDisbursementService.disbursementRequestValidation(null , loanDisbursementRequest, orgId , CommonUtility.ApiType.DISBURSEMENT);
+						loanDisbursementRequest = loanDisbursementService.disbursementRequestValidation(null , loanDisbursementRequest, orgId , CommonUtility.ApiType.DISBURSEMENT);
 
-						if ("SUCCESS".equalsIgnoreCase(reason) || "First Disbursement".equalsIgnoreCase(reason)) {
+						if ("SUCCESS".equalsIgnoreCase(loanDisbursementRequest.getReason()) || "First Disbursement".equalsIgnoreCase(loanDisbursementRequest.getReason())) {
 							logger.info(
 									"Success msg while saveLoanDisbursementDetail() ----------------> msg " + reason);
-							reason = null;
+							loanDisbursementRequest = null;
 							loansResponse = new LoansResponse("Information Successfully Stored ",
 									HttpStatus.OK.value());
 							loansResponse.setData(
@@ -2255,7 +2272,7 @@ public class LoanApplicationController {
 							logger.info(
 									"Failure msg while saveLoanDisbursementDetail in saveLoanDisbursementDetail() ----------------> msg "
 											+ reason);
-							loansResponse = new LoansResponse(reason.split("[\\{}]")[0],
+							loansResponse = new LoansResponse(loanDisbursementRequest.getReason().split("[\\{}]")[0],
 									HttpStatus.BAD_REQUEST.value());
 							loansResponse.setData(false);
 							logger.info("Exit saveLoanDisbursementDetail() ----------------> msg ==>" + reason);
@@ -2308,7 +2325,7 @@ public class LoanApplicationController {
 			tokenService.setTokenAsExpired(generateTokenRequest);
 			auditComponentBankToCW.saveBankToCWReqRes(decrypt != null ? decrypt : encryptedString,
 					loanDisbursementRequest != null ? loanDisbursementRequest.getApplicationId() : null,
-					CommonUtility.ApiType.DISBURSEMENT, loansResponse, reason, orgId);
+					CommonUtility.ApiType.DISBURSEMENT, loansResponse, reason, orgId , null);
 		}
 	}
 
@@ -2482,7 +2499,7 @@ public class LoanApplicationController {
 			generateTokenRequest.setToken(tokenString);
 			tokenService.setTokenAsExpired(generateTokenRequest);
 			auditComponentBankToCW.saveBankToCWReqRes(decrypt != null ? decrypt : encryptedString, null,
-					CommonUtility.ApiType.DETAILED_API, loansResponse, reason, orgId);
+					CommonUtility.ApiType.DETAILED_API, loansResponse, reason, orgId , null);
 		}
 	}
 
@@ -2801,7 +2818,7 @@ public class LoanApplicationController {
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} finally {
 			auditComponentBankToCW.saveBankToCWReqRes(decrypt != null ? decrypt : encryptedString, applicationId,
-					CommonUtility.ApiType.GENERATING_TOKEN, loansResponse, reason, orgId);
+					CommonUtility.ApiType.GENERATING_TOKEN, loansResponse, reason, orgId , null);
 		}
 	}
 
@@ -2879,7 +2896,7 @@ public class LoanApplicationController {
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} finally {
 			auditComponentBankToCW.saveBankToCWReqRes(decrypt != null ? decrypt : encryptedString, applicationId,
-					CommonUtility.ApiType.GENERATING_TOKEN, loansResponse, reason, orgId);
+					CommonUtility.ApiType.GENERATING_TOKEN, loansResponse, reason, orgId , null);
 		}
 	}
 	
@@ -3051,4 +3068,20 @@ public class LoanApplicationController {
 			e.printStackTrace();
 		}
 	}
+	
+	@RequestMapping(value = "/ddr_status/{applicationId}", method = RequestMethod.GET)
+	public ResponseEntity<LoansResponse> ddrStatus(@PathVariable("applicationId") Long applicationId) {
+		try {
+			logger.info("ENTER IN GET DDR STATUS ID---------------->" + applicationId);
+			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully get data", HttpStatus.OK.value(), loanApplicationService.getDDRStatusId(applicationId)), HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while get ddr status==>");
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+	}
+	
+	
 }

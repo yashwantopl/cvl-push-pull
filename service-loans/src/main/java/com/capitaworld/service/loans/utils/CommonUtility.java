@@ -5,13 +5,15 @@ import com.capitaworld.cibil.api.utility.CibilUtils;
 public class CommonUtility {
 
 	public interface ApiType{
-		public static final Integer SANCTION= 1; 
-		public static final Integer DISBURSEMENT= 2;
-		public static final Integer DDR_API= 3; 
-		public static final Integer DETAILED_API= 4;
-		public static final Integer GENERATING_TOKEN= 5;
-		public static final Integer TOKEN_AS_EXPIRED= 6;
-		public static final Integer SANCTION_AND_DISBURSEMENT= 7;
+		public static final Integer SANCTION = 1; 
+		public static final Integer DISBURSEMENT = 2;
+		public static final Integer DDR_API = 3; 
+		public static final Integer DETAILED_API = 4;
+		public static final Integer GENERATING_TOKEN = 5;
+		public static final Integer TOKEN_AS_EXPIRED = 6;
+		public static final Integer REVERSE_SANCTION = 7  ;
+		public static final Integer REVERSE_DISBURSEMENT = 8 ;
+		public static final Integer REVERSE_SANCTION_AND_DISBURSEMENT = 9;
 	}
 	
 	public static Boolean getCashCredit(CibilUtils.CreditTypeEnum name) {
@@ -72,5 +74,19 @@ public class CommonUtility {
 			case CONTRACTS_ON_PAST_PERFORMANCE_IMPORTS:return true;
 			default : return false;
 		}
+	}
+	
+	public interface SanctionDisbursementAPIStatusCode{
+		public static final String SUCCESS = "100";
+		public static final String INVALID_APPLICATION_ID = "101"; 
+		public static final String  DISBURSEMENT_WITHOUT_SANCTION = "102";
+		public static final String  DISBURSEMENT_AMOUNT_EXCEED_SANCTION_AMOUNT  = "103";
+		public static final String ALREADY_DONE_SANCTION = "104";
+		public static final String ALREADY_DONE_DISBURSEMENT = "105"; 
+		public static final String SANCTION_IS_LESS_THEN_DISBURSEMENT = "106"; 
+		public static final String FIRST_DISBURSEMENT= "107";
+		public static final String MANDAROTY_FIELD_MUST_NOT_BE_NULL = "108";
+		public static final String INVALID_CREDENTIAL = "109" ;
+		public static final String INVALID_ENCRYPTED_STRING = "110";
 	}
 }

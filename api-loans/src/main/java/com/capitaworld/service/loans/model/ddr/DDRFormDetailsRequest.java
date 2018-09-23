@@ -107,6 +107,10 @@ public class DDRFormDetailsRequest implements Serializable {
 	private String outsideLoansString;
 	private String loansFromFamilyMembersRelativeString;
 	
+	//FOR ONLY BOB BANK(21 Sep)
+	private String customerId;
+	private String customerName;
+	
 	
 	List<DDRAuthorizedSignDetailsRequest> dDRAuthSignDetailsList = new ArrayList<DDRAuthorizedSignDetailsRequest>();
 	List<DDRCreditCardDetailsRequest> dDRCreditCardDetailsList = new ArrayList<DDRCreditCardDetailsRequest>();

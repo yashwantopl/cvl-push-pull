@@ -30,6 +30,9 @@ public interface ProductMasterRepository extends JpaRepository<ProductMaster, Lo
 	@Query("from ProductMaster pm where pm.userOrgId =:userOrgId and pm.isActive = true")
 	public List<ProductMaster> getUserProductListByOrgId(@Param("userOrgId") Long userOrgId);
 	
+	@Query("from ProductMaster pm where pm.userOrgId =:userOrgId")
+	public List<ProductMaster> getUserProductActiveInActiveListByOrgId(@Param("userOrgId") Long userOrgId);
+	
 	@Query("from ProductMaster pm where pm.userId =:userId  and productId in (1,2,15,16)")
 	public List<ProductMaster> getUserCorporateProductList(@Param("userId") Long userId);
 	
@@ -65,6 +68,9 @@ public interface ProductMasterRepository extends JpaRepository<ProductMaster, Lo
 	@Query("select new com.capitaworld.service.loans.model.ProductDetailsForSp(pm.id,pm.productId,pm.name)  from ProductMaster pm where pm.userId=:userId and pm.isActive = true and pm.isMatched=true")
 	public List<ProductDetailsForSp> getMatchedAndActiveProduct(@Param("userId") Long userId);
 
+	@Query("select new com.capitaworld.service.loans.model.ProductDetailsForSp(pm.id,pm.productId,pm.name)  from ProductMaster pm where pm.userId=:userId and pm.isMatched=true")
+	public List<ProductDetailsForSp> getMatchedAndActiveInActiveProduct(@Param("userId") Long userId);
+	
 	//get userid list by productid
 	@Query("select DISTINCT  userId  from ProductMaster pm where pm.productId=:productId and pm.isActive = true")
 	public List<Long> getUserIdListByProductId(@Param("productId") Integer productId);
