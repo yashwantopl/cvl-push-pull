@@ -207,6 +207,8 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
     private List<Integer> msmeFundingIds;
     
     private Integer cgtmseCoverage;
+    
+	private BigDecimal promotorContri;
 
 	public Integer getIndividualCibil() {
 		return individualCibil;
@@ -1086,6 +1088,16 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 	public void setCgtmseCoverage(Integer cgtmseCoverage) {
 		this.cgtmseCoverage = cgtmseCoverage;
 	}
+
+	public BigDecimal getPromotorContri() {
+		return promotorContri;
+	}
+
+	public void setPromotorContri(BigDecimal promotorContri) {
+		this.promotorContri = promotorContri;
+	}
+	
+	
 	
 	
 }

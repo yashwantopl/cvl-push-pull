@@ -4442,6 +4442,84 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		logger.info("Exit on Update Skip Payment Details ");		
 	}
 	
+	@Override
+	public void updateSkipPaymentWhiteLabel(Long userId, Long applicationId, Integer businessTypeId, Long orgId, Long fpProductId) throws Exception {
+		
+		logger.info("Enter in Update Skip Payment Details for WhiteLabel!!");
+		
+		//UPDATE PAYMENT STATE IN LOAN MASTER
+		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(applicationId);
+		
+		if (loanApplicationMaster == null) {
+			throw new NullPointerException("Invalid Loan Application ID==>" + applicationId);
+		}
+		/*LoanApplicationRequest applicationRequest = new LoanApplicationRequest();
+		BeanUtils.copyProperties(loanApplicationMaster, applicationRequest);*/
+		loanApplicationMaster.setPaymentStatus(com.capitaworld.service.gateway.utils.CommonUtils.PaymentStatus.BYPASS);
+		loanApplicationRepository.save(loanApplicationMaster);
+		
+		// Sending In-Principle for WhiteLabel
+		//====================================================================
+		GatewayRequest gatewayRequest = new GatewayRequest();
+		
+		gatewayRequest.setUserId(userId);
+		gatewayRequest.setApplicationId(applicationId);
+		gatewayRequest.setBusinessTypeId(businessTypeId);
+		
+		Boolean status = gatewayClient.skipPayment(gatewayRequest);
+		//====================================================================
+		
+		//UPDATE CONNECT POST PAYMENT
+		try {
+			ConnectResponse connectResponse = connectClient.postPayment(applicationId, userId,loanApplicationMaster.getBusinessTypeId());
+			
+			if (!CommonUtils.isObjectListNull(connectResponse)) {
+				logger.info("Connector Response ----------------------------->" + connectResponse.toString());
+				logger.info("Before Start Saving Phase 1 Sidbi API ------------------->" + orgId);
+				if(orgId==10L) {
+					logger.info("Start Saving Phase 1 sidbi API -------------------->" + loanApplicationMaster.getId());
+					Long fpMappingId = null;
+					try {
+					}catch(Exception e) {
+						e.printStackTrace();
+					}
+					savePhese1DataToSidbi(loanApplicationMaster.getId(), userId,orgId,fpProductId);
+				}
+
+				if(connectResponse.getProceed()) {
+					if(loanApplicationMaster.getCompanyCinNumber()!=null) {
+						mcaAsyncComponent.callMCAForData(loanApplicationMaster.getCompanyCinNumber(),loanApplicationMaster.getId(),loanApplicationMaster.getUserId());
+					}
+				}
+			} else {
+				logger.info("Connector Response null or empty");
+				throw new Exception("Something went wrong while call connect client for " + applicationId);
+			}	
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new Exception("Something went wrong while call connect client for " + applicationId);
+		}
+		
+		//TRUE MATCHES PROPOSAL
+		try {
+			ProposalMappingResponse proposalMappingResponse = proposalDetailsClient.activateProposalOnPayment(applicationId);
+			if(!CommonUtils.isObjectNullOrEmpty(proposalMappingResponse)) {
+				logger.info("Proposal Mapping Response---------------> "+proposalMappingResponse.toString());
+				if(proposalMappingResponse.getStatus() != HttpStatus.OK.value()) {
+					throw new Exception(proposalMappingResponse.getMessage());	
+				}
+			} else {
+				logger.info("Proposal Mapping Response Null or Empty---------------> ");
+				throw new Exception("Something went wrong while call proposal client for " + applicationId);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new Exception("Something went wrong while call proposal client for " + applicationId);
+		}
+		
+		logger.info("Exit on Update Skip Payment Details ");		
+	}
+	
 	
 	@Override
 	public LoanApplicationRequest updateLoanApplicationMasterPaymentStatus(PaymentRequest paymentRequest, Long userId) throws Exception {

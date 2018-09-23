@@ -326,6 +326,9 @@ public class WorkingCapitalParameter extends ProductMaster implements Serializab
 	@Column(name="cgtmse_coverage")
 	private Integer cgtmseCoverage;
 
+	@Column(name="promoter_contri")
+	private BigDecimal promotorContri;
+	
 	/**
 	 * @return the jobId
 	 */
@@ -1163,7 +1166,16 @@ public class WorkingCapitalParameter extends ProductMaster implements Serializab
 	public void setCgtmseCoverage(Integer cgtmseCoverage) {
 		this.cgtmseCoverage = cgtmseCoverage;
 	}
-    
+
+	public BigDecimal getPromotorContri() {
+		return promotorContri;
+	}
+
+	public void setPromotorContri(BigDecimal promotorContri) {
+		this.promotorContri = promotorContri;
+	}
+ 
+	
     
 
 }
