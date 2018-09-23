@@ -94,9 +94,6 @@ public class FinancialArrangementsDetail implements Serializable {
 	@Column(name = "others_bank_name")
 	private String othersBankName;
 
-	@Column(name = "others_bank_name")
-	private String othersBankName;
-
 	public FinancialArrangementsDetail() {
 	}
 	
