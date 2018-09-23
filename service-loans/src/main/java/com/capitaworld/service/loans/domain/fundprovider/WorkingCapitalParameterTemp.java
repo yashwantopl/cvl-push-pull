@@ -327,6 +327,10 @@ public class WorkingCapitalParameterTemp extends ProductMasterTemp implements Se
 	
 	@Column(name="cgtmse_coverage")
 	private Integer cgtmseCoverage;
+	
+	@Column(name="promoter_contri")
+	private BigDecimal promotorContri;
+
 
     public Integer getIndividualCibil() {
         return individualCibil;
@@ -1148,6 +1152,15 @@ public class WorkingCapitalParameterTemp extends ProductMasterTemp implements Se
 	public void setCgtmseCoverage(Integer cgtmseCoverage) {
 		this.cgtmseCoverage = cgtmseCoverage;
 	}
+
+	public BigDecimal getPromotorContri() {
+		return promotorContri;
+	}
+
+	public void setPromotorContri(BigDecimal promotorContri) {
+		this.promotorContri = promotorContri;
+	}
+
 	
 	
 }
