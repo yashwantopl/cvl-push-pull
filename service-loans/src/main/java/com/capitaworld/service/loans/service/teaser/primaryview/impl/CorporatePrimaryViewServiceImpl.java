@@ -990,7 +990,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 				System.out.println("complete");
 			} else {
 				logger.info("SCORING OBJECT NULL OR EMPTY -------------------->");
-			}
+			} 
 		} catch (ScoringException | IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
