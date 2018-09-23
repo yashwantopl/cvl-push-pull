@@ -1,5 +1,9 @@
 package com.capitaworld.service.loans.controller.fundseeker.corporate;
 
+import com.capitaworld.connect.api.ConnectAuditErrorCode;
+import com.capitaworld.connect.api.ConnectLogAuditRequest;
+import com.capitaworld.connect.api.ConnectStage;
+import com.capitaworld.connect.client.ConnectClient;
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
@@ -30,6 +34,9 @@ public class NTBController {
     private NTBService ntbService;
     @Autowired
     private DirectorBackgroundDetailsService directorBackgroundDetailsService;
+
+    @Autowired
+    private ConnectClient connectClient;
 
     @RequestMapping(value = "/ping", method = RequestMethod.GET)
     public String getPing() {
@@ -150,6 +157,8 @@ public class NTBController {
                 loansResponse = new LoansResponse("Something goes wrong while saving saveOneformDetailForDirector", HttpStatus.BAD_REQUEST.value());
             }
             logger.info("Exit saveOneformDetailForDirector()");
+            String jsonData = "{ directorId : " + directorBackgroundDetailRequest.getId() + ", directorName : " + directorBackgroundDetailRequest.getDirectorsName() + " }";
+            connectClient.saveAuditLog(new ConnectLogAuditRequest(directorBackgroundDetailRequest.getApplicationId(), ConnectStage.DIRECTOR_BACKGROUND.getId(),userId,loansResponse.getMessage(), ConnectAuditErrorCode.DIRECTOR_SUBMIT.toString(),CommonUtils.BusinessType.NEW_TO_BUSINESS.getId(), jsonData));
             return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
         } catch (Exception e) {
@@ -276,10 +285,11 @@ public class NTBController {
            
 
         	if(result){
-        		
+        	    LoansResponse response = ntbService.invokeFraudAnalytics(fundSeekerInputRequestResponse);
+                connectClient.saveAuditLog(new ConnectLogAuditRequest(fundSeekerInputRequestResponse.getApplicationId(), ConnectStage.ONE_FORM.getId(),fundSeekerInputRequestResponse.getUserId(),response.getMessage(), ConnectAuditErrorCode.ONFORM_SUBMIT.toString(),CommonUtils.BusinessType.NEW_TO_BUSINESS.getId()));
         		// initiate fraudanalytics service to invoke hunter api
         			return new ResponseEntity<LoansResponse>(
-                            ntbService.invokeFraudAnalytics(fundSeekerInputRequestResponse),
+                            response,
                             HttpStatus.OK);
             } else {
                 logger.info("FUNDSEEKER INPUT NOT SAVED");
