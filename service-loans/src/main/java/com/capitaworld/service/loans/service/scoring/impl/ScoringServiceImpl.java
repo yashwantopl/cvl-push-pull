@@ -2080,10 +2080,12 @@ public class ScoringServiceImpl implements ScoringService{
                         try
                         {
 
+                            logger.info("businessTypeId:===============:::::::::::::=========="+businessTypeId);
                             if(!CommonUtils.isObjectNullOrEmpty(businessTypeId) && com.capitaworld.service.rating.utils.CommonUtils.BusinessType.MANUFACTURING == businessTypeId)
                             {
                                     Long envCategoryId = corporateApplicantDetail.getEnvironmentalImpactId();
 
+                                logger.info("envCategoryId:===============:::::::::::::=========="+envCategoryId);
                                     if(!CommonUtils.isObjectNullOrEmpty(envCategoryId))
                                     {
                                         try {
@@ -2092,6 +2094,7 @@ public class ScoringServiceImpl implements ScoringService{
 
                                             Long environmentCategoryId= (Long) oneFormResponse.getData();
                                             scoreParameterNTBRequest.setEnvironmentCategory(environmentCategoryId);
+                                            logger.info("environmentCategoryId from one form client:===============:::::::::::::=========="+environmentCategoryId);
                                             scoreParameterNTBRequest.setIsEnvironmentCategory(true);
                                         }
                                         catch (Exception e)
