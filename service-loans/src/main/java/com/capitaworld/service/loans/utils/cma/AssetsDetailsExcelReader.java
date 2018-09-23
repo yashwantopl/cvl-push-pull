@@ -104,11 +104,13 @@ public class AssetsDetailsExcelReader
         }
         
         if(loanApplicationMaster.getProductId()!=15 && loanApplicationMaster.getProductId()!=1 ){
+
         	/*int j = 5;*/
         	for(int i = 0; i < loanApplicationMaster.getTenure(); i++) { 
         		extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, assetsMappingList,CellReference.convertNumToColString(sheet.getRow(4).getCell(j).getColumnIndex()),String.valueOf(sheet.getRow(4).getCell(j).getNumericCellValue()),"Projected",assetsDetailsRepository);
         		j++;
         	}
+
 
         /*extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, assetsMappingList,"G",String.valueOf(sheet.getRow(4).getCell(6).getNumericCellValue()),"Projected",assetsDetailsRepository);
         extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, assetsMappingList,"H",String.valueOf(sheet.getRow(4).getCell(7).getNumericCellValue()),"Projected",assetsDetailsRepository);
@@ -247,3 +249,4 @@ public class AssetsDetailsExcelReader
 
     }
 }
+
