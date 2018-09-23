@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 
+
 import com.capitaworld.service.loans.model.DataRequest;
 import com.capitaworld.service.loans.model.ProductMasterRequest;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -207,6 +208,13 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
     private List<Integer> msmeFundingIds;
     
     private Integer cgtmseCoverage;
+    
+	private BigDecimal promotorContri;
+	
+	//by rahul
+	private BigDecimal manufacturing;
+	private BigDecimal service;
+	private BigDecimal trading;
 
 	public Integer getIndividualCibil() {
 		return individualCibil;
@@ -1086,6 +1094,37 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 	public void setCgtmseCoverage(Integer cgtmseCoverage) {
 		this.cgtmseCoverage = cgtmseCoverage;
 	}
-	
+
+	public BigDecimal getPromotorContri() {
+		return promotorContri;
+	}
+
+	public void setPromotorContri(BigDecimal promotorContri) {
+		this.promotorContri = promotorContri;
+	}
+
+	public BigDecimal getManufacturing() {
+		return manufacturing;
+	}
+
+	public void setManufacturing(BigDecimal manufacturing) {
+		this.manufacturing = manufacturing;
+	}
+
+	public BigDecimal getService() {
+		return service;
+	}
+
+	public void setService(BigDecimal service) {
+		this.service = service;
+	}
+
+	public BigDecimal getTrading() {
+		return trading;
+	}
+
+	public void setTrading(BigDecimal trading) {
+		this.trading = trading;
+	}
 	
 }

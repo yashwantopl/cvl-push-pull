@@ -2,6 +2,10 @@ package com.capitaworld.service.loans.controller.fundseeker.corporate;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.capitaworld.connect.api.ConnectAuditErrorCode;
+import com.capitaworld.connect.api.ConnectLogAuditRequest;
+import com.capitaworld.connect.api.ConnectStage;
+import com.capitaworld.connect.client.ConnectClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +37,9 @@ public class FundSeekerInputRequestController {
     private FundSeekerInputRequestService fundSeekerInputRequestService;
 
     @Autowired
+    private ConnectClient connectClient;
+
+    @Autowired
     private LoanApplicationService loanApplicationService;
 
     @RequestMapping(value = "/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -57,10 +64,15 @@ public class FundSeekerInputRequestController {
             boolean result = fundSeekerInputRequestService.saveOrUpdate(fundSeekerInputRequestResponse);
 
         	if(result){
-        		
+        		LoansResponse response = fundSeekerInputRequestService.invokeFraudAnalytics(fundSeekerInputRequestResponse);
+        		//harshit's client
+                connectClient.saveAuditLog(new ConnectLogAuditRequest(fundSeekerInputRequestResponse.getApplicationId(),
+                        ConnectStage.ONE_FORM.getId(),fundSeekerInputRequestResponse.getUserId(),response.getMessage(), ConnectAuditErrorCode.ONFORM_SUBMIT.toString(),CommonUtils.BusinessType.EXISTING_BUSINESS.getId()));
+
+
         		// initiate fraudanalytics service to invoke hunter api
         			return new ResponseEntity<LoansResponse>(
-                            fundSeekerInputRequestService.invokeFraudAnalytics(fundSeekerInputRequestResponse),
+                            response,
                             HttpStatus.OK);
             } else {
                 logger.info("FUNDSEEKER INPUT NOT SAVED");
@@ -151,6 +163,7 @@ public class FundSeekerInputRequestController {
                 return new ResponseEntity<LoansResponse>(
                         new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
             }
+
 
             return fundSeekerInputRequestService.saveOrUpdateDirectorDetail(fundSeekerInputRequestResponse);
 
