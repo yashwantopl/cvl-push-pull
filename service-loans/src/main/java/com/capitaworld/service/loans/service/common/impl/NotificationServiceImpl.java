@@ -2,6 +2,7 @@ package com.capitaworld.service.loans.service.common.impl;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -11,12 +12,14 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
 import com.capitaworld.service.loans.model.retail.RetailApplicantRequest;
 import com.capitaworld.service.loans.service.common.NotificationService;
 import com.capitaworld.service.loans.service.fundprovider.ProductMasterService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.DirectorBackgroundDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.service.fundseeker.retail.RetailApplicantService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
@@ -60,6 +63,9 @@ public class NotificationServiceImpl implements NotificationService{
 	
 	@Autowired
 	private Environment environment; 
+	
+	@Autowired
+	private DirectorBackgroundDetailsService directorBackgroundDetailsService;
 	
 	private static final String EMAIL_ADDRESS_FROM = "com.capitaworld.mail.url";
 
@@ -143,12 +149,50 @@ public class NotificationServiceImpl implements NotificationService{
 					
 					int fsType = CommonUtils.getUserMainType(fsProdId);
 					if(CommonUtils.UserMainType.CORPORATE == fsType){
-						CorporateApplicantRequest corporateApplicantRequest;
-						if(CommonUtils.UserType.FUND_SEEKER == fromUserTypeId)
-							corporateApplicantRequest = corporateApplicantService.getCorporateApplicant(fromUserId, applicationId);
-						else
-							corporateApplicantRequest = corporateApplicantService.getCorporateApplicant(Long.parseLong(toUserId), applicationId);
-						parameters.put("fs_name",corporateApplicantRequest.getOrganisationName()!=null?corporateApplicantRequest.getOrganisationName():"NA");
+						
+						LoanApplicationRequest applicationRequest = loanApplicationService
+								.getFromClient(request.getApplicationId());
+						if(!CommonUtils.isObjectNullOrEmpty(applicationRequest) 
+						   && !CommonUtils.isObjectNullOrEmpty(applicationRequest.getBusinessTypeId())
+						   && applicationRequest.getBusinessTypeId() == 2){
+							
+							// For getting Primary Director's Name
+							// =========================================================================================================
+							String fsName = null;
+							List<DirectorBackgroundDetailRequest> NTBResponse = null;
+							if (applicationRequest.getBusinessTypeId() == 2) {
+								NTBResponse = directorBackgroundDetailsService
+										.getDirectorBasicDetailsListForNTB(request.getApplicationId());
+								if (!CommonUtils.isObjectNullOrEmpty(NTBResponse)) {
+									int isMainDirector = 0;
+									for (DirectorBackgroundDetailRequest director : NTBResponse) {
+										if (!CommonUtils.isObjectNullOrEmpty(director) && director.getIsMainDirector()) {
+											fsName = director.getDirectorsName() != null ? director.getDirectorsName() : "NA";
+											isMainDirector = 1;
+										}
+									}
+									if (isMainDirector == 0) {
+										fsName = NTBResponse.get(0).getDirectorsName() != null ? NTBResponse.get(0).getDirectorsName()
+												: "NA";
+									}
+								} else {
+									fsName = "NA";
+								}
+							} else {
+								fsName = applicationRequest.getUserName() != null ? applicationRequest.getUserName() : "NA";
+							}
+							parameters.put("fs_name", fsName != null ? fsName : "NA");
+							// =========================================================================================================
+						}
+						else{
+							CorporateApplicantRequest corporateApplicantRequest;
+							if(CommonUtils.UserType.FUND_SEEKER == fromUserTypeId)
+								corporateApplicantRequest = corporateApplicantService.getCorporateApplicant(fromUserId, applicationId);
+							else
+								corporateApplicantRequest = corporateApplicantService.getCorporateApplicant(Long.parseLong(toUserId), applicationId);
+							parameters.put("fs_name",corporateApplicantRequest.getOrganisationName()!=null?corporateApplicantRequest.getOrganisationName():"NA");	
+						}
+						
 					}else if(CommonUtils.UserMainType.RETAIL == fsType){
 						RetailApplicantRequest retailApplicantRequest;
 						if(CommonUtils.UserType.FUND_SEEKER == fromUserTypeId)
