@@ -215,6 +215,10 @@ public class CorporateProduct  extends  ProductMasterRequest implements Serializ
 	
 	private BigDecimal promotorContri;
 	
+	private BigDecimal manufacturing;
+	private BigDecimal service;
+	private BigDecimal trading;
+	
 /*ntb*/
 	
 	private BigDecimal minAvrgAge;
@@ -1369,12 +1373,29 @@ public class CorporateProduct  extends  ProductMasterRequest implements Serializ
 		this.promotorContri = promotorContri;
 	}
 
+	public BigDecimal getManufacturing() {
+		return manufacturing;
+	}
 
-	
+	public void setManufacturing(BigDecimal manufacturing) {
+		this.manufacturing = manufacturing;
+	}
 
-	
-	
-	
+	public BigDecimal getService() {
+		return service;
+	}
+
+	public void setService(BigDecimal service) {
+		this.service = service;
+	}
+
+	public BigDecimal getTrading() {
+		return trading;
+	}
+
+	public void setTrading(BigDecimal trading) {
+		this.trading = trading;
+	}
 	
 	
 }
