@@ -990,7 +990,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 				System.out.println("complete");
 			} else {
 				logger.info("SCORING OBJECT NULL OR EMPTY -------------------->");
-			}
+			} 
 		} catch (ScoringException | IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -1054,7 +1054,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 		// CGTMSE
 		try {
 
-			CGTMSEDataResponse cgtmseDataResp = thirdPartyClient.getCalulation(toApplicationId);
+			CGTMSEDataResponse cgtmseDataResp = thirdPartyClient.getCalulation(toApplicationId,fpProductMappingId);
 
 			corporatePrimaryViewResponse.setCgtmseData(cgtmseDataResp);
 

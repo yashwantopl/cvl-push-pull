@@ -8,4 +8,6 @@ import com.capitaworld.service.loans.model.InEligibleProposalDetailsRequest;
 public interface IneligibleProposalDetailsService {
 
     public Boolean save(InEligibleProposalDetailsRequest inEligibleProposalDetailsRequest);
+    
+    public Boolean sendMailToFsAndBankBranch(Long applicationId,Long branchId,Long userOrgId);
 }
