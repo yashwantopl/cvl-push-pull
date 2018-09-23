@@ -142,6 +142,8 @@ public interface LoanApplicationService {
 	
 	public void updateSkipPayment(Long userId, Long applicationId, Long orgId,Long fprProductId) throws Exception;
 	
+	public void updateSkipPaymentWhiteLabel(Long userId, Long applicationId, Integer businessTypeId, Long orgId,Long fprProductId) throws Exception;
+	
 	public LoanApplicationRequest updateLoanApplicationMasterPaymentStatus(PaymentRequest paymentRequest, Long userId)throws Exception;
 	
 	public GatewayRequest getPaymentStatus(PaymentRequest paymentRequest, Long userId, Long ClientId) throws Exception;
