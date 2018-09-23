@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.config;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -25,6 +26,7 @@ import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.DirectorBackgroundDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
+import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.matchengine.ProposalDetailsClient;
@@ -132,21 +134,54 @@ public class FPAsyncComponent {
 
 				}
 
-				CorporateApplicantRequest applicantRequest = corporateapplicantService
-						.getCorporateApplicant(paymentRequest.getApplicationId());
+				LoanApplicationRequest applicationRequest = loanApplicationService
+						.getFromClient(paymentRequest.getApplicationId());
 				String address = null;
-				if (!CommonUtils.isObjectNullOrEmpty(applicantRequest)
-						&& !CommonUtils.isObjectNullOrEmpty(applicantRequest.getFirstAddress())) {
-					address = applicantRequest.getFirstAddress().getPremiseNumber() != null
-							? applicantRequest.getFirstAddress().getPremiseNumber()
-							: "" + " " + applicantRequest.getFirstAddress().getStreetName() != null
-									? applicantRequest.getFirstAddress().getStreetName()
-									: "" + " " + applicantRequest.getFirstAddress().getLandMark() != null
-											? applicantRequest.getFirstAddress().getLandMark()
-											: "";
+				if(!CommonUtils.isObjectNullOrEmpty(applicationRequest)
+						&& applicationRequest.getBusinessTypeId() == 1){
+					CorporateApplicantRequest applicantRequest = corporateapplicantService
+							.getCorporateApplicant(paymentRequest.getApplicationId());
+					if (!CommonUtils.isObjectNullOrEmpty(applicantRequest)
+							&& !CommonUtils.isObjectNullOrEmpty(applicantRequest.getFirstAddress())) {
+						address = applicantRequest.getFirstAddress().getPremiseNumber() != null
+								? applicantRequest.getFirstAddress().getPremiseNumber()
+								: "" + " " + applicantRequest.getFirstAddress().getStreetName() != null
+										? applicantRequest.getFirstAddress().getStreetName()
+										: "" + " " + applicantRequest.getFirstAddress().getLandMark() != null
+												? applicantRequest.getFirstAddress().getLandMark()
+												: "";
+
+					}	
+				}
+				else{
+					
+					// For getting Address of Primary Director
+					// =========================================================================================================
+					List<DirectorBackgroundDetailRequest> NTBResponse = null;
+					if (applicationRequest.getBusinessTypeId() == 2) {
+						NTBResponse = directorBackgroundDetailsService
+								.getDirectorBasicDetailsListForNTB(paymentRequest.getApplicationId());
+						if (!CommonUtils.isObjectNullOrEmpty(NTBResponse)) {
+							int isMainDirector = 0;
+							for (DirectorBackgroundDetailRequest director : NTBResponse) {
+								if (!CommonUtils.isObjectNullOrEmpty(director) && director.getIsMainDirector()) {
+									address = director.getAddress() != null ? director.getAddress() : "NA";
+									isMainDirector = 1;
+								}
+							}
+							if (isMainDirector == 0) {
+								address = "NA";
+							}
+						} else {
+							address = "NA";
+						}
+					} else {
+						address = "NA";
+					}
+					// =========================================================================================================
 
 				}
-				System.out.println("Address:-" + address);
+				
 				mailParameters.put("address", address != null ? address : "NA");
 
 				Long branchId = null;
@@ -288,21 +323,53 @@ public class FPAsyncComponent {
 
 				}
 
-				CorporateApplicantRequest applicantRequest = corporateapplicantService
-						.getCorporateApplicant(paymentRequest.getApplicationId());
+				LoanApplicationRequest applicationRequest = loanApplicationService
+						.getFromClient(paymentRequest.getApplicationId());
 				String address = null;
-				if (!CommonUtils.isObjectNullOrEmpty(applicantRequest)
-						&& !CommonUtils.isObjectNullOrEmpty(applicantRequest.getFirstAddress())) {
-					address = applicantRequest.getFirstAddress().getPremiseNumber() != null
-							? applicantRequest.getFirstAddress().getPremiseNumber()
-							: "" + " " + applicantRequest.getFirstAddress().getStreetName() != null
-									? applicantRequest.getFirstAddress().getStreetName()
-									: "" + " " + applicantRequest.getFirstAddress().getLandMark() != null
-											? applicantRequest.getFirstAddress().getLandMark()
-											: "";
+				if(!CommonUtils.isObjectNullOrEmpty(applicationRequest)
+						&& applicationRequest.getBusinessTypeId() == 1){
+					CorporateApplicantRequest applicantRequest = corporateapplicantService
+							.getCorporateApplicant(paymentRequest.getApplicationId());
+					if (!CommonUtils.isObjectNullOrEmpty(applicantRequest)
+							&& !CommonUtils.isObjectNullOrEmpty(applicantRequest.getFirstAddress())) {
+						address = applicantRequest.getFirstAddress().getPremiseNumber() != null
+								? applicantRequest.getFirstAddress().getPremiseNumber()
+								: "" + " " + applicantRequest.getFirstAddress().getStreetName() != null
+										? applicantRequest.getFirstAddress().getStreetName()
+										: "" + " " + applicantRequest.getFirstAddress().getLandMark() != null
+												? applicantRequest.getFirstAddress().getLandMark()
+												: "";
+
+					}	
+				}
+				else{
+					
+					// For getting Address of Primary Director
+					// =========================================================================================================
+					List<DirectorBackgroundDetailRequest> NTBResponse = null;
+					if (applicationRequest.getBusinessTypeId() == 2) {
+						NTBResponse = directorBackgroundDetailsService
+								.getDirectorBasicDetailsListForNTB(paymentRequest.getApplicationId());
+						if (!CommonUtils.isObjectNullOrEmpty(NTBResponse)) {
+							int isMainDirector = 0;
+							for (DirectorBackgroundDetailRequest director : NTBResponse) {
+								if (!CommonUtils.isObjectNullOrEmpty(director) && director.getIsMainDirector()) {
+									address = director.getAddress() != null ? director.getAddress() : "NA";
+									isMainDirector = 1;
+								}
+							}
+							if (isMainDirector == 0) {
+								address = "NA";
+							}
+						} else {
+							address = "NA";
+						}
+					} else {
+						address = "NA";
+					}
+					// =========================================================================================================
 
 				}
-				System.out.println("Address:-" + address);
 				mailParameters.put("address", address != null ? address : "NA");
 
 				Long branchId = null;
@@ -449,21 +516,53 @@ public class FPAsyncComponent {
 
 				}
 
-				CorporateApplicantRequest applicantRequest = corporateapplicantService
-						.getCorporateApplicant(paymentRequest.getApplicationId());
+				LoanApplicationRequest applicationRequest = loanApplicationService
+						.getFromClient(paymentRequest.getApplicationId());
 				String address = null;
-				if (!CommonUtils.isObjectNullOrEmpty(applicantRequest)
-						&& !CommonUtils.isObjectNullOrEmpty(applicantRequest.getFirstAddress())) {
-					address = applicantRequest.getFirstAddress().getPremiseNumber() != null
-							? applicantRequest.getFirstAddress().getPremiseNumber()
-							: "" + " " + applicantRequest.getFirstAddress().getStreetName() != null
-									? applicantRequest.getFirstAddress().getStreetName()
-									: "" + " " + applicantRequest.getFirstAddress().getLandMark() != null
-											? applicantRequest.getFirstAddress().getLandMark()
-											: "";
+				if(!CommonUtils.isObjectNullOrEmpty(applicationRequest)
+						&& applicationRequest.getBusinessTypeId() == 1){
+					CorporateApplicantRequest applicantRequest = corporateapplicantService
+							.getCorporateApplicant(paymentRequest.getApplicationId());
+					if (!CommonUtils.isObjectNullOrEmpty(applicantRequest)
+							&& !CommonUtils.isObjectNullOrEmpty(applicantRequest.getFirstAddress())) {
+						address = applicantRequest.getFirstAddress().getPremiseNumber() != null
+								? applicantRequest.getFirstAddress().getPremiseNumber()
+								: "" + " " + applicantRequest.getFirstAddress().getStreetName() != null
+										? applicantRequest.getFirstAddress().getStreetName()
+										: "" + " " + applicantRequest.getFirstAddress().getLandMark() != null
+												? applicantRequest.getFirstAddress().getLandMark()
+												: "";
+
+					}	
+				}
+				else{
+					
+					// For getting Address of Primary Director
+					// =========================================================================================================
+					List<DirectorBackgroundDetailRequest> NTBResponse = null;
+					if (applicationRequest.getBusinessTypeId() == 2) {
+						NTBResponse = directorBackgroundDetailsService
+								.getDirectorBasicDetailsListForNTB(paymentRequest.getApplicationId());
+						if (!CommonUtils.isObjectNullOrEmpty(NTBResponse)) {
+							int isMainDirector = 0;
+							for (DirectorBackgroundDetailRequest director : NTBResponse) {
+								if (!CommonUtils.isObjectNullOrEmpty(director) && director.getIsMainDirector()) {
+									address = director.getAddress() != null ? director.getAddress() : "NA";
+									isMainDirector = 1;
+								}
+							}
+							if (isMainDirector == 0) {
+								address = "NA";
+							}
+						} else {
+							address = "NA";
+						}
+					} else {
+						address = "NA";
+					}
+					// =========================================================================================================
 
 				}
-				System.out.println("Address:-" + address);
 				mailParameters.put("address", address != null ? address : "NA");
 
 				Long branchId = null;
@@ -609,21 +708,53 @@ public class FPAsyncComponent {
 
 				}
 
-				CorporateApplicantRequest applicantRequest = corporateapplicantService
-						.getCorporateApplicant(paymentRequest.getApplicationId());
+				LoanApplicationRequest applicationRequest = loanApplicationService
+						.getFromClient(paymentRequest.getApplicationId());
 				String address = null;
-				if (!CommonUtils.isObjectNullOrEmpty(applicantRequest)
-						&& !CommonUtils.isObjectNullOrEmpty(applicantRequest.getFirstAddress())) {
-					address = applicantRequest.getFirstAddress().getPremiseNumber() != null
-							? applicantRequest.getFirstAddress().getPremiseNumber()
-							: "" + " " + applicantRequest.getFirstAddress().getStreetName() != null
-									? applicantRequest.getFirstAddress().getStreetName()
-									: "" + " " + applicantRequest.getFirstAddress().getLandMark() != null
-											? applicantRequest.getFirstAddress().getLandMark()
-											: "";
+				if(!CommonUtils.isObjectNullOrEmpty(applicationRequest)
+						&& applicationRequest.getBusinessTypeId() == 1){
+					CorporateApplicantRequest applicantRequest = corporateapplicantService
+							.getCorporateApplicant(paymentRequest.getApplicationId());
+					if (!CommonUtils.isObjectNullOrEmpty(applicantRequest)
+							&& !CommonUtils.isObjectNullOrEmpty(applicantRequest.getFirstAddress())) {
+						address = applicantRequest.getFirstAddress().getPremiseNumber() != null
+								? applicantRequest.getFirstAddress().getPremiseNumber()
+								: "" + " " + applicantRequest.getFirstAddress().getStreetName() != null
+										? applicantRequest.getFirstAddress().getStreetName()
+										: "" + " " + applicantRequest.getFirstAddress().getLandMark() != null
+												? applicantRequest.getFirstAddress().getLandMark()
+												: "";
+
+					}	
+				}
+				else{
+					
+					// For getting Address of Primary Director
+					// =========================================================================================================
+					List<DirectorBackgroundDetailRequest> NTBResponse = null;
+					if (applicationRequest.getBusinessTypeId() == 2) {
+						NTBResponse = directorBackgroundDetailsService
+								.getDirectorBasicDetailsListForNTB(paymentRequest.getApplicationId());
+						if (!CommonUtils.isObjectNullOrEmpty(NTBResponse)) {
+							int isMainDirector = 0;
+							for (DirectorBackgroundDetailRequest director : NTBResponse) {
+								if (!CommonUtils.isObjectNullOrEmpty(director) && director.getIsMainDirector()) {
+									address = director.getAddress() != null ? director.getAddress() : "NA";
+									isMainDirector = 1;
+								}
+							}
+							if (isMainDirector == 0) {
+								address = "NA";
+							}
+						} else {
+							address = "NA";
+						}
+					} else {
+						address = "NA";
+					}
+					// =========================================================================================================
 
 				}
-				System.out.println("Address:-" + address);
 				mailParameters.put("address", address != null ? address : "NA");
 
 				Long branchId = null;
@@ -729,49 +860,98 @@ public class FPAsyncComponent {
 			LoanApplicationRequest applicationRequest = loanApplicationService
 					.getFromClient(request.getApplicationId());
 			Map<String, Object> parameters = new HashMap<String, Object>();
-			CorporateApplicantRequest applicantRequest = corporateapplicantService
-					.getCorporateApplicant(request.getApplicationId());
+			
 			String address = null;
 			String state = null;
-			if (!CommonUtils.isObjectNullOrEmpty(applicantRequest)
-					&& !CommonUtils.isObjectNullOrEmpty(applicantRequest.getFirstAddress())) {
-				address = applicantRequest.getFirstAddress().getPremiseNumber() != null
-						? applicantRequest.getFirstAddress().getPremiseNumber()
-						: "" + " " + applicantRequest.getFirstAddress().getStreetName() != null
-								? applicantRequest.getFirstAddress().getStreetName()
-								: "" + " " + applicantRequest.getFirstAddress().getLandMark() != null
-										? applicantRequest.getFirstAddress().getLandMark()
-										: "";
-
-				List<Long> stateList = new ArrayList<Long>();
-
-				Long stateId = null;
-				if (!CommonUtils.isObjectNullOrEmpty(applicantRequest.getFirstAddress().getStateId())) {
-					stateId = Long.valueOf(applicantRequest.getFirstAddress().getStateId());
-					stateList.add(stateId);
-				}
-
-				if (!CommonUtils.isListNullOrEmpty(stateList)) {
-					try {
-						logger.info("Calling One form client for getting state by state list Id");
-						OneFormResponse oneFormResponse = oneFormClient.getStateByStateListId(stateList);
-						List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
-								.getListData();
-						if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
-							MasterResponse masterResponse = MultipleJSONObjectHelper
-									.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
-							state = masterResponse.getValue();
-						} else {
-							state = "";
+			String city = null;
+			
+			// For getting Fund Seeker's Name
+			// =========================================================================================================
+			String fsName = null;
+			List<DirectorBackgroundDetailRequest> NTBResponse = null;
+			if (applicationRequest.getBusinessTypeId() == 2) {
+				NTBResponse = directorBackgroundDetailsService
+						.getDirectorBasicDetailsListForNTB(request.getApplicationId());
+				if (!CommonUtils.isObjectNullOrEmpty(NTBResponse)) {
+					int isMainDirector = 0;
+					for (DirectorBackgroundDetailRequest director : NTBResponse) {
+						if (!CommonUtils.isObjectNullOrEmpty(director) && director.getIsMainDirector()) {
+							fsName = director.getDirectorsName() != null ? director.getDirectorsName() : "NA";
+							address = director.getAddress();
+							if(!CommonUtils.isObjectNullOrEmpty(director.getStateId())){
+								state = CommonDocumentUtils.getState(Long.valueOf(director.getStateId().toString()), oneFormClient);	
+							}
+							
+							if(!CommonUtils.isObjectNullOrEmpty(director.getCityId())){
+								city = CommonDocumentUtils.getState(Long.valueOf(director.getCityId().toString()), oneFormClient);	
+							}							
+							isMainDirector = 1;
 						}
-					} catch (Exception e) {
-						logger.info("Error Calling One form client for getting state by state list Id");
+					}
+					if (isMainDirector == 0) {
+						fsName = NTBResponse.get(0).getDirectorsName() != null ? NTBResponse.get(0).getDirectorsName()
+								: "NA";
+					}
+				} else {
+					fsName = "NA";
+				}
+			} else {
+				fsName = applicationRequest.getUserName() != null ? applicationRequest.getUserName() : "NA";
+			}
+			parameters.put("fs_name", fsName != null ? fsName : "NA");
+			// =========================================================================================================
+			
+			if(!CommonUtils.isObjectNullOrEmpty(applicationRequest)
+					&& applicationRequest.getBusinessTypeId() == 1){
+				CorporateApplicantRequest applicantRequest = corporateapplicantService
+						.getCorporateApplicant(request.getApplicationId());
+				if (!CommonUtils.isObjectNullOrEmpty(applicantRequest)
+						&& !CommonUtils.isObjectNullOrEmpty(applicantRequest.getFirstAddress())) {
+					address = applicantRequest.getFirstAddress().getPremiseNumber() != null
+							? applicantRequest.getFirstAddress().getPremiseNumber()
+							: "" + " " + applicantRequest.getFirstAddress().getStreetName() != null
+									? applicantRequest.getFirstAddress().getStreetName()
+									: "" + " " + applicantRequest.getFirstAddress().getLandMark() != null
+											? applicantRequest.getFirstAddress().getLandMark()
+											: "";
 
-						e.printStackTrace();
+					List<Long> stateList = new ArrayList<Long>();
+
+					Long stateId = null;
+					if (!CommonUtils.isObjectNullOrEmpty(applicantRequest.getFirstAddress().getStateId())) {
+						stateId = Long.valueOf(applicantRequest.getFirstAddress().getStateId());
+						stateList.add(stateId);
+					}
+
+					if (!CommonUtils.isListNullOrEmpty(stateList)) {
+						try {
+							logger.info("Calling One form client for getting state by state list Id");
+							OneFormResponse oneFormResponse = oneFormClient.getStateByStateListId(stateList);
+							List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
+									.getListData();
+							if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+								MasterResponse masterResponse = MultipleJSONObjectHelper
+										.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+								state = masterResponse.getValue();
+								city = CommonDocumentUtils.getState(applicantRequest.getFirstAddress().getCityId(), oneFormClient);
+							} else {
+								state = "NA";
+								city = "NA";
+							}
+							
+						} catch (Exception e) {
+							logger.info("Error Calling One form client for getting state by state list Id");
+
+							e.printStackTrace();
+						}
 					}
 				}
 			}
-
+			
+			parameters.put("address", address != null ? address : "NA");
+			parameters.put("state", state != null ? state : "NA");
+			parameters.put("city", city !=null ? city : "NA");
+			
 			ProposalMappingResponse proposalResponse = null;
 			Map<String, Object> proposalresp = null;
 			try {
@@ -792,8 +972,6 @@ public class FPAsyncComponent {
 			if (!CommonUtils.isObjectNullOrEmpty(proposalresp.get("branch_id"))) {
 				branchId = Long.valueOf(proposalresp.get("branch_id").toString());
 			}
-
-			parameters.put("address", address != null ? address : "NA");
 
 			// ===========Getting emailId and Name of Maker who accepted the
 			// Proposal================
@@ -842,33 +1020,7 @@ public class FPAsyncComponent {
 			}
 			parameters.put("maker_name", assignedMakerName);
 
-			// For getting Fund Seeker's Name
-			// =========================================================================================================
-			String fsName = null;
-			List<DirectorBackgroundDetailRequest> NTBResponse = null;
-			if (applicationRequest.getBusinessTypeId() == 2) {
-				NTBResponse = directorBackgroundDetailsService
-						.getDirectorBasicDetailsListForNTB(request.getApplicationId());
-				if (!CommonUtils.isObjectNullOrEmpty(NTBResponse)) {
-					int isMainDirector = 0;
-					for (DirectorBackgroundDetailRequest director : NTBResponse) {
-						if (!CommonUtils.isObjectNullOrEmpty(director) && director.getIsMainDirector()) {
-							fsName = director.getDirectorsName() != null ? director.getDirectorsName() : "NA";
-							isMainDirector = 1;
-						}
-					}
-					if (isMainDirector == 0) {
-						fsName = NTBResponse.get(0).getDirectorsName() != null ? NTBResponse.get(0).getDirectorsName()
-								: "NA";
-					}
-				} else {
-					fsName = "NA";
-				}
-			} else {
-				fsName = applicationRequest.getUserName() != null ? applicationRequest.getUserName() : "NA";
-			}
-			parameters.put("fs_name", fsName != null ? fsName : "NA");
-			// =========================================================================================================
+			
 
 			if (!CommonUtils.isObjectNullOrEmpty(proposalresp.get("loan_type"))) {
 				parameters.put("product_type",
@@ -880,9 +1032,28 @@ public class FPAsyncComponent {
 			parameters.put("loan_amount",
 					applicationRequest.getLoanAmount() != null ? applicationRequest.getLoanAmount() : "NA");
 			parameters.put("application_id", request.getApplicationId().toString());
-			parameters.put("mobile_no", "NA");
-			parameters.put("state", state != null ? state : "NA");
-			parameters.put("city", "NA");
+			
+			UserResponse response = null;
+			UsersRequest signUpUser = null;
+
+			try {
+				response = userClient.getEmailMobile(applicationRequest.getUserId());
+			} catch (Exception e) {
+				logger.info("Something went wrong while calling Users client from sending mail to fs===>{}");
+				e.printStackTrace();
+			}
+
+			if (!CommonUtils.isObjectNullOrEmpty(response)) {
+				try {
+					signUpUser = MultipleJSONObjectHelper.getObjectFromMap((Map<String, Object>) response.getData(),
+							UsersRequest.class);
+				} catch (Exception e) {
+					logger.info("Exception getting signup user at Sending email to fs when maker accept proposal");
+					e.printStackTrace();
+				}
+
+			String mobile = signUpUser.getMobile();
+			parameters.put("mobile_no", mobile!=null?mobile:"NA");
 
 			// ====================Sending Mail to Maker who accepts
 			// Proposal=====================
@@ -934,8 +1105,7 @@ public class FPAsyncComponent {
 			// ======MAAZ=========sending email to fs when maker accepted
 			// proposL==Email_FS_Accepted_By_MAKER=======================================//
 //								add mail for  Email_FS_Accepted_By_MAKER
-			// snd mail to fs for both product ntb and existing
-			sendMailToFsWhenMakerAcceptPorposal(parameters, applicantRequest, assignedMakerName);
+			sendMailToFsWhenMakerAcceptPorposal(fsName, proposalresp, assignedMakerName,applicationRequest,signUpUser,address);
 
 			// =====================================================================================================
 
@@ -1284,7 +1454,8 @@ public class FPAsyncComponent {
 
 			// =======================================================================================================
 
-		} catch (Exception e) {
+		} 
+			}catch (Exception e) {
 			logger.info("Throw exception while sending mail to Maker and all Makers when Maker accepts Proposal");
 			e.printStackTrace();
 		}
@@ -1292,41 +1463,23 @@ public class FPAsyncComponent {
 
 	// ============maaz=========================================================================================
 	@Async
-	public void sendMailToFsWhenMakerAcceptPorposal(Map<String, Object> parameters,
-			CorporateApplicantRequest applicantRequest, String assignedMakerName){
- 		Map<String, Object> mailParameter = new HashMap<String, Object>();
-		mailParameter.put("fs_name", parameters.get("fs_name") != null ? parameters.get("fs_name").toString() : "NA");
+	public void sendMailToFsWhenMakerAcceptPorposal(String fsName, Map<String, Object> proposalresp,String assignedMakerName,LoanApplicationRequest applicationRequest, UsersRequest signUpUser, String address){
+		logger.info("Sending email to fs when maker accept proposal");
+		Map<String, Object> mailParameter = new HashMap<String, Object>();
+		mailParameter.put("fs_name", fsName != null ? fsName.toString() : "NA");
+		mailParameter.put("entity_name", fsName != null ? fsName.toString() : "NA");
 		mailParameter.put("loan_type",
-				parameters.get("product_type") != null ? parameters.get("product_type").toString() : "NA");
+				proposalresp.get("loan_type") != null ? proposalresp.get("loan_type").toString() : "NA");
 		mailParameter.put("maker_name", assignedMakerName);
-		mailParameter.put("application_id", parameters.get("application_id"));
-
-		long applicationId = Long.valueOf(parameters.get("application_id").toString());
-
-		logger.info("application Id:" + parameters.get("application_id"));
-//			for geting entity name of fs from gst
-		CorporateApplicantRequest corporateApplicantRequest =null;
-		try {
-			 corporateApplicantRequest = corporateApplicantService.getCorporateApplicant(applicationId);
-		 
-			logger.info("Organization name of fs:" + 	corporateApplicantRequest .getOrganisationName());
-		} catch (Exception e) {
-			logger.info("Exception in finding CorporateApplicantRequest in sendMailWhenMakerAcceptPorposal:" + e.getMessage());
-			e.printStackTrace();
-		}
-
-		logger.info("entity name of fs:" +"maazSh"/* mailParameter.get("gstDetailedResp.keyObservation.OrganizationName")*/);
-
-		mailParameter.put("entity_name", corporateApplicantRequest .getOrganisationName()==""?"NA":corporateApplicantRequest .getOrganisationName());
-		mailParameter.put("mobile_number",
-				parameters.get("mobile_no") != null ? parameters.get("mobile_no").toString() : "NA");
-		mailParameter.put("address", parameters.get("address") != null ? parameters.get("address").toString() : "NA");
-		logger.info("details for sending email for Email_FS_Accepted_By_MAKER :" + parameters.get("product_type"));
-
+		mailParameter.put("application_id", applicationRequest.getId()!=null?applicationRequest.getId().toString():"NA");
+		
+		String mobile = signUpUser.getMobile();
+		mailParameter.put("mobile_number", mobile != null ? mobile : "NA");
+		
 		String emailSubject = "Maker Assigned - For Quick Business Loan Approval ";
 
 		try {
-			createNotificationForEmail(applicantRequest.getEmail(), applicantRequest.getUserId().toString(),
+			createNotificationForEmail(signUpUser.getEmail(), applicationRequest.getUserId().toString(),
 					mailParameter, NotificationAlias.EMAIL_FS_ACCEPTED_BY_MAKER, emailSubject);
 			logger.info("Email send to fs when maker accepted porposal");
 			System.out.println("Email send to fs when maker accepted porposal");
@@ -1442,7 +1595,9 @@ public class FPAsyncComponent {
 			parameters.put("maker_name", makerName != null ? makerName : "NA");
 			parameters.put("checker_name", checkerName != null ? checkerName : "NA");
 			parameters.put("application_id", request.getApplicationId().toString());
-
+			
+			String address = null;
+			
 			// For getting Fund Seeker's Name
 			// =========================================================================================================
 			String fsName = null;
@@ -1455,6 +1610,7 @@ public class FPAsyncComponent {
 					for (DirectorBackgroundDetailRequest director : NTBResponse) {
 						if (!CommonUtils.isObjectNullOrEmpty(director) && director.getIsMainDirector()) {
 							fsName = director.getDirectorsName() != null ? director.getDirectorsName() : "NA";
+							address = director.getAddress();
 							isMainDirector = 1;
 						}
 					}
@@ -1470,7 +1626,27 @@ public class FPAsyncComponent {
 			}
 			parameters.put("fs_name", fsName != null ? fsName : "NA");
 			// =========================================================================================================
+			
+			if(!CommonUtils.isObjectNullOrEmpty(applicationRequest)
+					&& applicationRequest.getBusinessTypeId() == 1){
+				CorporateApplicantRequest applicantRequest = corporateapplicantService
+						.getCorporateApplicant(request.getApplicationId());
+				if (!CommonUtils.isObjectNullOrEmpty(applicantRequest)
+						&& !CommonUtils.isObjectNullOrEmpty(applicantRequest.getFirstAddress())) {
+					address = applicantRequest.getFirstAddress().getPremiseNumber() != null
+							? applicantRequest.getFirstAddress().getPremiseNumber()
+							: "" + " " + applicantRequest.getFirstAddress().getStreetName() != null
+									? applicantRequest.getFirstAddress().getStreetName()
+									: "" + " " + applicantRequest.getFirstAddress().getLandMark() != null
+											? applicantRequest.getFirstAddress().getLandMark()
+											: "";
 
+				}
+			}
+			
+			parameters.put("address", address != null ? address : "NA");
+
+			
 			if (!CommonUtils.isObjectNullOrEmpty(proposalresp.get("loan_type"))) {
 
 				parameters.put("product_type",
@@ -1499,22 +1675,6 @@ public class FPAsyncComponent {
 				parameters.put("mobile_no", mobile != null ? mobile : "NA");
 
 			}
-
-			CorporateApplicantRequest applicantRequest = corporateapplicantService
-					.getCorporateApplicant(request.getApplicationId());
-			String address = null;
-			if (!CommonUtils.isObjectNullOrEmpty(applicantRequest)
-					&& !CommonUtils.isObjectNullOrEmpty(applicantRequest.getFirstAddress())) {
-				address = applicantRequest.getFirstAddress().getPremiseNumber() != null
-						? applicantRequest.getFirstAddress().getPremiseNumber()
-						: "" + " " + applicantRequest.getFirstAddress().getStreetName() != null
-								? applicantRequest.getFirstAddress().getStreetName()
-								: "" + " " + applicantRequest.getFirstAddress().getLandMark() != null
-										? applicantRequest.getFirstAddress().getLandMark()
-										: "";
-
-			}
-			parameters.put("address", address != null ? address : "NA");
 
 			String subjcet = "Intimation: Assigned - Application ID " + request.getApplicationId();
 			if (!CommonUtils.isObjectNullOrEmpty(assignedChecker)
@@ -1846,6 +2006,7 @@ public class FPAsyncComponent {
 			// For getting Fund Seeker's Name
 			// =========================================================================================================
 			String fsName = null;
+			String address = null;
 			List<DirectorBackgroundDetailRequest> NTBResponse = null;
 			if (applicationRequest.getBusinessTypeId() == 2) {
 				NTBResponse = directorBackgroundDetailsService
@@ -1855,6 +2016,7 @@ public class FPAsyncComponent {
 					for (DirectorBackgroundDetailRequest director : NTBResponse) {
 						if (!CommonUtils.isObjectNullOrEmpty(director) && director.getIsMainDirector()) {
 							fsName = director.getDirectorsName() != null ? director.getDirectorsName() : "NA";
+							address = director.getAddress();
 							isMainDirector = 1;
 						}
 					}
@@ -1889,20 +2051,23 @@ public class FPAsyncComponent {
 
 			}
 
-			CorporateApplicantRequest applicantRequest = corporateapplicantService
-					.getCorporateApplicant(request.getApplicationId());
-			String address = null;
-			if (!CommonUtils.isObjectNullOrEmpty(applicantRequest)
-					&& !CommonUtils.isObjectNullOrEmpty(applicantRequest.getFirstAddress())) {
-				address = applicantRequest.getFirstAddress().getPremiseNumber() != null
-						? applicantRequest.getFirstAddress().getPremiseNumber()
-						: "" + " " + applicantRequest.getFirstAddress().getStreetName() != null
-								? applicantRequest.getFirstAddress().getStreetName()
-								: "" + " " + applicantRequest.getFirstAddress().getLandMark() != null
-										? applicantRequest.getFirstAddress().getLandMark()
-										: "";
+			if(!CommonUtils.isObjectNullOrEmpty(applicationRequest)
+					&& applicationRequest.getBusinessTypeId() == 1){
+				CorporateApplicantRequest applicantRequest = corporateapplicantService
+						.getCorporateApplicant(request.getApplicationId());
+				if (!CommonUtils.isObjectNullOrEmpty(applicantRequest)
+						&& !CommonUtils.isObjectNullOrEmpty(applicantRequest.getFirstAddress())) {
+					address = applicantRequest.getFirstAddress().getPremiseNumber() != null
+							? applicantRequest.getFirstAddress().getPremiseNumber()
+							: "" + " " + applicantRequest.getFirstAddress().getStreetName() != null
+									? applicantRequest.getFirstAddress().getStreetName()
+									: "" + " " + applicantRequest.getFirstAddress().getLandMark() != null
+											? applicantRequest.getFirstAddress().getLandMark()
+											: "";
 
+				}
 			}
+			
 			parameters.put("address", address != null ? address : "NA");
 
 			String subjcet = "Intimation : Sent Back - Application ID " + request.getApplicationId();
