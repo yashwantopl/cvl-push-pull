@@ -4458,17 +4458,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		loanApplicationMaster.setPaymentStatus(com.capitaworld.service.gateway.utils.CommonUtils.PaymentStatus.BYPASS);
 		loanApplicationRepository.save(loanApplicationMaster);
 		
-		// Sending In-Principle for WhiteLabel
-		//====================================================================
-		GatewayRequest gatewayRequest = new GatewayRequest();
-		
-		gatewayRequest.setUserId(userId);
-		gatewayRequest.setApplicationId(applicationId);
-		gatewayRequest.setBusinessTypeId(businessTypeId);
-		
-		Boolean status = gatewayClient.skipPayment(gatewayRequest);
-		//====================================================================
-		
 		//UPDATE CONNECT POST PAYMENT
 		try {
 			ConnectResponse connectResponse = connectClient.postPayment(applicationId, userId,loanApplicationMaster.getBusinessTypeId());
@@ -4516,6 +4505,18 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			e.printStackTrace();
 			throw new Exception("Something went wrong while call proposal client for " + applicationId);
 		}
+		
+		// Sending In-Principle for WhiteLabel
+		// ====================================================================
+		GatewayRequest gatewayRequest = new GatewayRequest();
+
+		gatewayRequest.setUserId(userId);
+		gatewayRequest.setApplicationId(applicationId);
+		gatewayRequest.setBusinessTypeId(businessTypeId);
+
+		Boolean status = gatewayClient.skipPayment(gatewayRequest);
+		logger.info("In-Principle send for WhiteLabel Status=====>"+status);
+		// ====================================================================
 		
 		logger.info("Exit on Update Skip Payment Details ");		
 	}

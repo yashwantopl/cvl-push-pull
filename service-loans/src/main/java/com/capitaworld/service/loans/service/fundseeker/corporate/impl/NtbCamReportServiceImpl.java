@@ -489,7 +489,7 @@ public class NtbCamReportServiceImpl implements NtbCamReportService{
 		
 		//CGTMSE 
 		try {
-			CGTMSEDataResponse cgtmseDataResponse = thirdPartyClient.getCalulation(applicationId);
+			CGTMSEDataResponse cgtmseDataResponse = thirdPartyClient.getCalulation(applicationId,productId);
 			map.put("cgtmseData", CommonUtils.printFields(cgtmseDataResponse));
 			map.put("maxCgtmseCoverageAmount", CommonUtils.convertValueWithoutDecimal(cgtmseDataResponse.getMaxCgtmseCoverageAmount()));
 			map.put("identityAmount", CommonUtils.convertValueWithoutDecimal(cgtmseDataResponse.getIdentityAmount()));
