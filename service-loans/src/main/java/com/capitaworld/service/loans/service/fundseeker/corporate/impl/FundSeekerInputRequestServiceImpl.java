@@ -5,6 +5,9 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import com.capitaworld.connect.api.ConnectAuditErrorCode;
+import com.capitaworld.connect.api.ConnectLogAuditRequest;
+import com.capitaworld.connect.api.ConnectStage;
 import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -195,6 +198,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 	@Override
 	public ResponseEntity<LoansResponse> saveOrUpdateDirectorDetail(
 			FundSeekerInputRequestResponse fundSeekerInputRequest) {
+		String msg = null;
 		try {
 			// ==== Applicant Address
 
@@ -313,14 +317,23 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			LoansResponse res = new LoansResponse("director detail successfully saved", HttpStatus.OK.value());
 			res.setFlag(true);
 			logger.info("director detail successfully saved");
+			msg = "director detail successfully saved";
 			return new ResponseEntity<LoansResponse>(res, HttpStatus.OK);
 
 		} catch (Exception e) {
 			LoansResponse res = new LoansResponse("error while saving director detail",
 					HttpStatus.INTERNAL_SERVER_ERROR.value());
+			msg="";
 			logger.error("error while saving director detail");
 			e.printStackTrace();
+
 			return new ResponseEntity<LoansResponse>(res, HttpStatus.OK);
+		}finally {
+			try {
+				connectClient.saveAuditLog(new ConnectLogAuditRequest(fundSeekerInputRequest.getApplicationId(), ConnectStage.DIRECTOR_BACKGROUND.getId(),fundSeekerInputRequest.getUserId(),msg, ConnectAuditErrorCode.DIRECTOR_SUBMIT.toString(),CommonUtils.BusinessType.EXISTING_BUSINESS.getId()));
+			} catch (Exception e){
+				e.printStackTrace();
+			}
 		}
 	}
 
