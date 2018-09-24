@@ -84,6 +84,9 @@ public class GuarantorsCorporateDetail implements Serializable {
 	@Column(name = "contact_number")
 	private String contactNumber;
 
+	@Column(name="sub_sector_list")
+	private Integer subsectorlist;
+
 	public GuarantorsCorporateDetail() {
 	}
 
@@ -231,6 +234,11 @@ public class GuarantorsCorporateDetail implements Serializable {
 		this.contactNumber = contactNumber;
 	}
 
-	
-	
+	public Integer getSubsectorlist() {
+		return subsectorlist;
+	}
+
+	public void setSubsectorlist(Integer subsectorlist) {
+		this.subsectorlist = subsectorlist;
+	}
 }
