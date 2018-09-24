@@ -272,11 +272,11 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 						productMaster.setIsParameterFilled(true);
 						break;
 					case TERM_LOAN:
-						if (!CommonUtils.isObjectNullOrEmpty(termLoanParameterService.getTermLoanParameterRequest(addProductRequest.getLoanId()))) {
+						if (addProductRequest.getBusinessTypeId()==2) {
 							//productMaster = new NtbTermLoanParameterTemp();
 							
 							NtbTermLoanParameterTemp ntbTermLoanParameterTemp = new NtbTermLoanParameterTemp();
-							TermLoanParameterRequest termLoanParameterRequest=termLoanParameterService.getTermLoanParameterRequest(addProductRequest.getLoanId());
+							TermLoanParameterRequest termLoanParameterRequest=termLoanParameterService.getNtbTermLoanParameterRequest(addProductRequest.getLoanId());
 							industrySecIdList=termLoanParameterRequest.getIndustrylist();
 							//set multiple value in temp
 							industrySecIdList=termLoanParameterRequest.getIndustrylist();
@@ -292,7 +292,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 						} else {
 							//productMaster = new TermLoanParameterTemp();
 							TermLoanParameterTemp termLoanParameterTemp = new TermLoanParameterTemp();
-							TermLoanParameterRequest termLoanParameterRequest=termLoanParameterService.getNtbTermLoanParameterRequest(addProductRequest.getLoanId());
+							TermLoanParameterRequest termLoanParameterRequest=termLoanParameterService.getTermLoanParameterRequest(addProductRequest.getLoanId());
 							industrySecIdList=termLoanParameterRequest.getIndustrylist();
 							//set multiple value in temp
 							industrySecIdList=termLoanParameterRequest.getIndustrylist();
