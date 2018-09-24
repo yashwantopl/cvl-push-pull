@@ -880,9 +880,9 @@ public class ProductMasterController {
 		
 	}
 	
-	@RequestMapping(value = "/getApprovedProductByProductType/{productId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/getApprovedProductByProductType/{productId}/{businessId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getApprovedProductByProductType(HttpServletRequest request,
-			@PathVariable(value = "productId") String productId,
+			@PathVariable(value = "productId") String productId,@PathVariable(value = "businessId") String businessId,
 			@RequestParam(value = "clientId", required = false) Long clientId) {
 		// request must not be null
 		CommonDocumentUtils.startHook(logger, "getListByUserType");
@@ -910,7 +910,7 @@ public class ProductMasterController {
 			}
 			//List<ProductMasterRequest> response = productMasterService.getListByUserType(userId, userType);
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
-			loansResponse.setListData(productMasterService.getApprovedListByProductType(userId, Integer.parseInt(CommonUtils.decode(productId)),userOrgId));
+			loansResponse.setListData(productMasterService.getApprovedListByProductType(userId, Integer.parseInt(CommonUtils.decode(productId)), Integer.parseInt(CommonUtils.decode(businessId)),userOrgId));
 			CommonDocumentUtils.endHook(logger, "getListByUserType");
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
