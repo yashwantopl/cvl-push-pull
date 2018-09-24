@@ -73,7 +73,7 @@ public interface ProductMasterService {
 
 	public Boolean clickOnWorkFlowButton(WorkflowData workflowData);
 
-	public List<ProductMasterRequest> getApprovedListByProductType(Long userId, Integer parseInt,Long userOrgId);
+	public List<ProductMasterRequest> getApprovedListByProductType(Long userId, Integer parseInt, Integer businessId,Long userOrgId);
 
 	
 }
