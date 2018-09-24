@@ -1361,7 +1361,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	}
 
 	@Override
-	public List<ProductMasterRequest> getApprovedListByProductType(Long userId, Integer productId,Long userOrgId) {
+	public List<ProductMasterRequest> getApprovedListByProductType(Long userId, Integer productId, Integer businessId,Long userOrgId) {
 		// TODO Auto-generated method stub
 		List<ProductMaster> results = null;
 		List<ProductMasterRequest> productMasterRequests = new ArrayList<>();
@@ -1377,6 +1377,13 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 			if(productMaster.getProductId()!=productId)
 				continue;
 				
+			
+			if (!CommonUtils.isObjectNullOrEmpty(businessId) && productMaster.getProductId()==2) {
+				if(!businessId.toString().equals(productMaster.getBusinessTypeId().toString()))
+						{
+							continue;
+						}
+			}
 			ProductMasterRequest productMasterRequest = new ProductMasterRequest();
 			BeanUtils.copyProperties(productMaster, productMasterRequest);
 			productMasterRequests.add(productMasterRequest);
