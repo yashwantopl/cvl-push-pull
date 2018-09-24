@@ -158,7 +158,7 @@ public class NTBController {
             }
             logger.info("Exit saveOneformDetailForDirector()");
             String jsonData = "{ 'directorId' : " + directorBackgroundDetailRequest.getId() + ", 'directorName' : " + directorBackgroundDetailRequest.getDirectorsName() + " }";
-            connectClient.saveAuditLog(new ConnectLogAuditRequest(directorBackgroundDetailRequest.getApplicationId(), ConnectStage.DIRECTOR_BACKGROUND.getId(),userId,loansResponse.getMessage(), ConnectAuditErrorCode.DIRECTOR_SUBMIT.toString(),CommonUtils.BusinessType.NEW_TO_BUSINESS.getId()));
+            connectClient.saveAuditLog(new ConnectLogAuditRequest(directorBackgroundDetailRequest.getApplicationId(), ConnectStage.DIRECTOR_BACKGROUND.getId(),userId,loansResponse.getMessage(), ConnectAuditErrorCode.DIRECTOR_SUBMIT.toString(),CommonUtils.BusinessType.NEW_TO_BUSINESS.getId(), jsonData));
             return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
         } catch (Exception e) {
