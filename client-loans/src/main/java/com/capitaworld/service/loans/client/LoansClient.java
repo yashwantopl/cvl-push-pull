@@ -168,6 +168,7 @@ public class LoansClient {
 	private static final String GET_DIRECTOR_BACKGROUND_DETAILS_FOR_NTB = "/director_background_details/getDirectorBasicDetailsListForNTB";
 	private static final String GET_DIRECTOR_BACKGROUND_DETAIL = "/director_background_details/get";
 	private static final String UPDATE_DIRECTOR_BACKGROUND_API_FLAG = "/director_background_details/update_api_flag";
+	private static final String GET_PINCODE_DATA = "/pincodeData/";
 
 	private static final String GET_LOAN_DETAILS = "/loan_application/get_client";
 	
@@ -2321,6 +2322,21 @@ public class LoansClient {
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new LoansException("Loans service is not available while save ITR res retail applicant details");
+		}
+	}
+	
+	public LoansResponse getPincodeData(String request) throws LoansException {
+		String url = loansBaseUrl.concat(GET_PINCODE_DATA).concat(request);
+		try {
+			System.out.println("Entering in GET_PINCODE_DATA -----> " + url);
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<String> entity = new HttpEntity<String>(request, headers);
+			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available while getting GET_PINCODE_DATA details");
 		}
 	}
 }
