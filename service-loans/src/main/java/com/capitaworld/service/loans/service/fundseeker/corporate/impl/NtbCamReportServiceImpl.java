@@ -319,8 +319,11 @@ public class NtbCamReportServiceImpl implements NtbCamReportService{
 		eligibilityReq.setFpProductMappingId(productId);
 		try {
 			EligibilityResponse eligibilityResp = eligibilityClient.corporateLoanData(eligibilityReq);
+			if(!CommonUtils.isObjectNullOrEmpty(eligibilityResp)) {
+				map.put("assLimits",CommonUtils.printFields(eligibilityResp.getData()));
+			}
 //			map.put("assLimits",CommonUtils.convertToDoubleForXml(MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)eligibilityResp.getData(), CLEligibilityRequest.class), new HashMap<>()));
-			map.put("assLimits",CommonUtils.printFields(eligibilityResp.getData()));
+		
 		} catch (Exception e1) {
 			e1.printStackTrace();
 			logger.info("Error while getting Eligibility data");
@@ -490,20 +493,22 @@ public class NtbCamReportServiceImpl implements NtbCamReportService{
 		//CGTMSE 
 		try {
 			CGTMSEDataResponse cgtmseDataResponse = thirdPartyClient.getCalulation(applicationId,productId);
-			map.put("cgtmseData", CommonUtils.printFields(cgtmseDataResponse));
-			map.put("maxCgtmseCoverageAmount", CommonUtils.convertValueWithoutDecimal(cgtmseDataResponse.getMaxCgtmseCoverageAmount()));
-			map.put("identityAmount", CommonUtils.convertValueWithoutDecimal(cgtmseDataResponse.getIdentityAmount()));
-			map.put("gutAmt", CommonUtils.convertValueWithoutDecimal(cgtmseDataResponse.getGutAmt()));
-			map.put("cgtmseLoanAmount", CommonUtils.convertValueWithoutDecimal(cgtmseDataResponse.getLoanAmount()));
-			map.put("cgtmseCoverageAmount", CommonUtils.convertValueWithoutDecimal(cgtmseDataResponse.getCgtmseCoverageAmount()));
-			map.put("amountOfColleteral", CommonUtils.convertValueWithoutDecimal(cgtmseDataResponse.getAmountOfColleteral()));
-			map.put("totalColleteralAmount", CommonUtils.convertValueWithoutDecimal(cgtmseDataResponse.getTotalColleteralAmount()));
-			map.put("gurAmtCarld", CommonUtils.convertValueWithoutDecimal(cgtmseDataResponse.getGurAmtCarld()));
-			map.put("colleteralCoverage", CommonUtils.convertValue(cgtmseDataResponse.getColleteralCoverage()));
-			map.put("percTerms", CommonUtils.convertValue(cgtmseDataResponse.getPercTerms()));
-			map.put("assetAqu", CommonUtils.convertValueWithoutDecimal(cgtmseDataResponse.getAssetAqusition()));
-			if(!CommonUtils.isObjectNullOrEmpty(cgtmseDataResponse.getCgtmseResponse()) && !CommonUtils.isObjectNullOrEmpty(cgtmseDataResponse.getCgtmseResponse().getDetails())) {
-				map.put("cgtmseBankWise", CommonUtils.printFields(cgtmseDataResponse.getCgtmseResponse().getDetails()));
+			if(!CommonUtils.isObjectNullOrEmpty(cgtmseDataResponse)) {
+				map.put("cgtmseData", CommonUtils.printFields(cgtmseDataResponse));
+				map.put("maxCgtmseCoverageAmount", !CommonUtils.isObjectNullOrEmpty(cgtmseDataResponse.getMaxCgtmseCoverageAmount()) ? CommonUtils.convertValueWithoutDecimal(cgtmseDataResponse.getMaxCgtmseCoverageAmount()): "-");
+				map.put("identityAmount",  !CommonUtils.isObjectNullOrEmpty(cgtmseDataResponse.getIdentityAmount()) ? CommonUtils.convertValueWithoutDecimal(cgtmseDataResponse.getIdentityAmount()):"-");
+				map.put("gutAmt",!CommonUtils.isObjectNullOrEmpty(cgtmseDataResponse.getGutAmt()) ? CommonUtils.convertValueWithoutDecimal(cgtmseDataResponse.getGutAmt()):"-");
+				map.put("cgtmseLoanAmount",!CommonUtils.isObjectNullOrEmpty(cgtmseDataResponse.getLoanAmount()) ? CommonUtils.convertValueWithoutDecimal(cgtmseDataResponse.getLoanAmount()):"-");
+				map.put("cgtmseCoverageAmount",!CommonUtils.isObjectNullOrEmpty(cgtmseDataResponse.getCgtmseCoverageAmount()) ? CommonUtils.convertValueWithoutDecimal(cgtmseDataResponse.getCgtmseCoverageAmount()):"-");
+				map.put("amountOfColleteral",!CommonUtils.isObjectNullOrEmpty(cgtmseDataResponse.getAmountOfColleteral()) ? CommonUtils.convertValueWithoutDecimal(cgtmseDataResponse.getAmountOfColleteral()):"-");
+				map.put("totalColleteralAmount",!CommonUtils.isObjectNullOrEmpty(cgtmseDataResponse.getTotalColleteralAmount()) ? CommonUtils.convertValueWithoutDecimal(cgtmseDataResponse.getTotalColleteralAmount()):"-");
+				map.put("gurAmtCarld",!CommonUtils.isObjectNullOrEmpty(cgtmseDataResponse.getGurAmtCarld()) ? CommonUtils.convertValueWithoutDecimal(cgtmseDataResponse.getGurAmtCarld()):"-");
+				map.put("colleteralCoverage",!CommonUtils.isObjectNullOrEmpty(cgtmseDataResponse.getColleteralCoverage()) ? CommonUtils.convertValue(cgtmseDataResponse.getColleteralCoverage()):"-");
+				map.put("percTerms",!CommonUtils.isObjectNullOrEmpty(cgtmseDataResponse.getPercTerms()) ? CommonUtils.convertValue(cgtmseDataResponse.getPercTerms()):"-");
+				map.put("assetAqu",!CommonUtils.isObjectNullOrEmpty(cgtmseDataResponse.getAssetAqusition()) ? CommonUtils.convertValueWithoutDecimal(cgtmseDataResponse.getAssetAqusition()):"-");
+				if(!CommonUtils.isObjectNullOrEmpty(cgtmseDataResponse.getCgtmseResponse()) && !CommonUtils.isObjectNullOrEmpty(cgtmseDataResponse.getCgtmseResponse().getDetails())) {
+					map.put("cgtmseBankWise", CommonUtils.printFields(cgtmseDataResponse.getCgtmseResponse().getDetails()));
+				}
 			}
 		} catch (Exception e) {
 		
