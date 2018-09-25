@@ -4,8 +4,11 @@ package com.capitaworld.service.loans.model;
  *
  */
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.io.Serializable;
 import java.lang.reflect.Field;
+import java.util.Date;
 
 public class AssociatedConcernDetailRequest implements Serializable{
 
@@ -55,6 +58,9 @@ public class AssociatedConcernDetailRequest implements Serializable{
 	private String turnOverThirdYearString;
 	
 	private String nameOfDirector;
+
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd-MM-yyyy")
+	private Date dateOfIncorporation;
 
 	public Long getId() {
 		return id;
@@ -223,6 +229,14 @@ public class AssociatedConcernDetailRequest implements Serializable{
 
 	public void setTurnOverThirdYearString(String turnOverThirdYearString) {
 		this.turnOverThirdYearString = turnOverThirdYearString;
+	}
+
+	public Date getDateOfIncorporation() {
+		return dateOfIncorporation;
+	}
+
+	public void setDateOfIncorporation(Date dateOfIncorporation) {
+		this.dateOfIncorporation = dateOfIncorporation;
 	}
 
 	public static void printFields(Object obj) throws Exception {
