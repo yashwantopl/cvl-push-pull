@@ -492,7 +492,7 @@ public class NtbCamReportServiceImpl implements NtbCamReportService{
 		
 		//CGTMSE 
 		try {
-			CGTMSEDataResponse cgtmseDataResponse = thirdPartyClient.getCalulation(applicationId,productId);
+			CGTMSEDataResponse cgtmseDataResponse = thirdPartyClient.getCalulation(applicationId);
 			if(!CommonUtils.isObjectNullOrEmpty(cgtmseDataResponse)) {
 				map.put("cgtmseData", CommonUtils.printFields(cgtmseDataResponse));
 				map.put("maxCgtmseCoverageAmount", !CommonUtils.isObjectNullOrEmpty(cgtmseDataResponse.getMaxCgtmseCoverageAmount()) ? CommonUtils.convertValueWithoutDecimal(cgtmseDataResponse.getMaxCgtmseCoverageAmount()): "-");
