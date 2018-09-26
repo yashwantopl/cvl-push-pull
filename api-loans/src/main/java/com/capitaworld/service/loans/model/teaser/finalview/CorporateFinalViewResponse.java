@@ -191,6 +191,10 @@ public class CorporateFinalViewResponse implements Serializable {
     private Object knoHow;
     private Object competition;
     
+    private Object costOfMachinery;
+    private Object incrementalTurnover;
+    private Object incrementalMargin;
+    
 	public List<?> getMatchesList() {
 		return matchesList;
 	}
@@ -1862,6 +1866,30 @@ public class CorporateFinalViewResponse implements Serializable {
 
 	public void setCompetition(Object competition) {
 		this.competition = competition;
+	}
+
+	public Object getCostOfMachinery() {
+		return costOfMachinery;
+	}
+
+	public void setCostOfMachinery(Object costOfMachinery) {
+		this.costOfMachinery = costOfMachinery;
+	}
+
+	public Object getIncrementalTurnover() {
+		return incrementalTurnover;
+	}
+
+	public void setIncrementalTurnover(Object incrementalTurnover) {
+		this.incrementalTurnover = incrementalTurnover;
+	}
+
+	public Object getIncrementalMargin() {
+		return incrementalMargin;
+	}
+
+	public void setIncrementalMargin(Object incrementalMargin) {
+		this.incrementalMargin = incrementalMargin;
 	}
 
 
