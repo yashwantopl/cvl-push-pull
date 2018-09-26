@@ -68,6 +68,7 @@ import com.capitaworld.service.mca.client.McaClient;
 import com.capitaworld.service.mca.model.McaResponse;
 import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.AssessedForITMst;
+import com.capitaworld.service.oneform.enums.AssessmentOptionForFS;
 import com.capitaworld.service.oneform.enums.CompetitionMst_SBI;
 import com.capitaworld.service.oneform.enums.Constitution;
 import com.capitaworld.service.oneform.enums.Currency;
@@ -467,9 +468,20 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 					corporateApplicantDetail.getGstIn() != null ? String.valueOf(corporateApplicantDetail.getGstIn())
 							: null);
 
-			corporatePrimaryViewResponse.setPurposeOfLoan(
-					CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getPurposeOfLoanId()) ? null
-							: PurposeOfLoan.getById(primaryCorporateDetail.getPurposeOfLoanId()).getValue().toString());
+			
+			if(primaryCorporateDetail.getAssessmentId()!=null) {
+				corporatePrimaryViewResponse.setPurposeOfLoan(primaryCorporateDetail.getPurposeOfLoanId() != null && primaryCorporateDetail.getPurposeOfLoanId()==1 ? AssessmentOptionForFS.getById(primaryCorporateDetail.getAssessmentId()).getValue().toString() : PurposeOfLoan.getById(primaryCorporateDetail.getPurposeOfLoanId()).getValue().toString());	
+			}else {
+				
+				logger.warn("assesment id is null so considered PurposeOfLoan enum.....");
+				corporatePrimaryViewResponse.setPurposeOfLoan(
+						CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getPurposeOfLoanId()) ? null
+								: PurposeOfLoan.getById(primaryCorporateDetail.getPurposeOfLoanId()).getValue().toString());
+			}
+			
+			
+			
+			
 			corporatePrimaryViewResponse
 					.setHaveCollateralSecurity(primaryCorporateDetail.getHaveCollateralSecurity() != null
 							? String.valueOf(primaryCorporateDetail.getHaveCollateralSecurity())
@@ -479,6 +491,13 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 							? String.valueOf(primaryCorporateDetail.getCollateralSecurityAmount())
 							: null);
 			corporatePrimaryViewResponse.setPromotersContribution(primaryCorporateDetail.getPromoterContribution());
+			
+			// add additional Details 
+			
+			corporatePrimaryViewResponse.setCostOfMachinery(primaryCorporateDetail.getCostOfMachinery());
+			corporatePrimaryViewResponse.setIncrementalTurnover(primaryCorporateDetail.getIncrementalTurnover());
+			corporatePrimaryViewResponse.setIncrementalMargin(primaryCorporateDetail.getIncrementalMargin());
+			
 			corporatePrimaryViewResponse
 					.setPromotersContributionPer(primaryCorporateDetail.getTotalAmtPercentage() != null
 							? " (" + convertValue(primaryCorporateDetail.getTotalAmtPercentage()) + "%)"
