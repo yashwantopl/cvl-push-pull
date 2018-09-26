@@ -100,6 +100,7 @@ import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.AbilityRaiseFunds;
 import com.capitaworld.service.oneform.enums.AccountingQuality;
 import com.capitaworld.service.oneform.enums.AssessedForITMst;
+import com.capitaworld.service.oneform.enums.AssessmentOptionForFS;
 import com.capitaworld.service.oneform.enums.BorrowerInvoked;
 import com.capitaworld.service.oneform.enums.BusinessCommitment;
 import com.capitaworld.service.oneform.enums.BusinessExperience;
@@ -578,9 +579,16 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 			corporateFinalViewResponse.setGstIn(
 					corporateApplicantDetail.getGstIn() != null ? String.valueOf(corporateApplicantDetail.getGstIn())
 							: null);
-			corporateFinalViewResponse.setPurposeOfLoan(
-					CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getPurposeOfLoanId()) ? null
-							: PurposeOfLoan.getById(primaryCorporateDetail.getPurposeOfLoanId()).getValue().toString());
+			if(primaryCorporateDetail.getAssessmentId()!=null) {
+				corporateFinalViewResponse.setPurposeOfLoan(primaryCorporateDetail.getPurposeOfLoanId() != null && primaryCorporateDetail.getPurposeOfLoanId()==1 ? AssessmentOptionForFS.getById(primaryCorporateDetail.getAssessmentId()).getValue().toString() : PurposeOfLoan.getById(primaryCorporateDetail.getPurposeOfLoanId()).getValue().toString());	
+			}else {
+				
+				logger.warn("assesment id is null so considered PurposeOfLoan enum.....");
+				corporateFinalViewResponse.setPurposeOfLoan(
+						CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getPurposeOfLoanId()) ? null
+								: PurposeOfLoan.getById(primaryCorporateDetail.getPurposeOfLoanId()).getValue().toString());
+			}
+			
 			corporateFinalViewResponse
 					.setHaveCollateralSecurity(primaryCorporateDetail.getHaveCollateralSecurity() != null
 							? String.valueOf(primaryCorporateDetail.getHaveCollateralSecurity())
@@ -608,6 +616,14 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 			corporateFinalViewResponse.setFactoryPremise(primaryCorporateDetail.getFactoryPremise() != null ? FactoryPremiseMst.getById(primaryCorporateDetail.getFactoryPremise()).getValue().toString() : "-");
 			corporateFinalViewResponse.setKnoHow(primaryCorporateDetail.getKnowHow() != null ? KnowHowMst.getById(primaryCorporateDetail.getKnowHow()).getValue().toString() : "-");
 			corporateFinalViewResponse.setCompetition(primaryCorporateDetail.getCompetition()  != null ? CompetitionMst_SBI.getById(primaryCorporateDetail.getCompetition()).getValue().toString() : "-");
+		
+			// add additional Details 
+			
+			corporateFinalViewResponse.setCostOfMachinery(primaryCorporateDetail.getCostOfMachinery());
+			corporateFinalViewResponse.setIncrementalTurnover(primaryCorporateDetail.getIncrementalTurnover());
+			corporateFinalViewResponse.setIncrementalMargin(primaryCorporateDetail.getIncrementalMargin());
+						
+		
 		}
 
 		
