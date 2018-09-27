@@ -541,7 +541,7 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService {
 			boolean isMultipleUserForCgtmse = ntbPrimaryViewRespone.getIsMultipleUser();
 			System.out.println("is multiple user...??" + isMultipleUserForCgtmse);
 
-			CGTMSEDataResponse cgtmseDataResp = thirdPartyClient.getCalulation(toApplicationId,productMappingId);
+			CGTMSEDataResponse cgtmseDataResp = thirdPartyClient.getCalulation(toApplicationId);
 
 			ntbPrimaryViewRespone.setCgtmseData(cgtmseDataResp);
 		} catch (Exception e) {

@@ -162,7 +162,7 @@ public class NotificationServiceImpl implements NotificationService{
 							List<DirectorBackgroundDetailRequest> NTBResponse = null;
 							if (applicationRequest.getBusinessTypeId() == 2) {
 								NTBResponse = directorBackgroundDetailsService
-										.getDirectorBasicDetailsListForNTB(request.getApplicationId());
+										.getDirectorBasicDetailsListForNTB(applicationId);
 								if (!CommonUtils.isObjectNullOrEmpty(NTBResponse)) {
 									int isMainDirector = 0;
 									for (DirectorBackgroundDetailRequest director : NTBResponse) {
