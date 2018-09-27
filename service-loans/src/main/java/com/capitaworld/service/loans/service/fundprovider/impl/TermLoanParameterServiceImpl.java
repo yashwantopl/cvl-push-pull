@@ -175,7 +175,7 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		saveNegativeIndustry(termLoanParameterRequest);
 
 		//Ravina
-		boolean isUpdate = msmeValueMappingService.updateMsmeValueMapping(false, termLoanParameterRequest.getId(),termLoanParameter2.getId());
+		boolean isUpdate = msmeValueMappingService.updateMsmeValueMapping(false, mappingId,termLoanParameter2.getId());
 		logger.info("updated = {}",isUpdate);
 		CommonDocumentUtils.endHook(logger, "saveOrUpdate");
 		return true;
@@ -1183,7 +1183,7 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		saveNegativeIndustry(termLoanParameterRequest);
 
 		//Ravina
-		boolean isUpdate = msmeValueMappingService.updateMsmeValueMapping(false, termLoanParameterRequest.getId(),ntbParameter.getId());
+		boolean isUpdate = msmeValueMappingService.updateMsmeValueMapping(false, mappingId,ntbParameter.getId());
 		logger.info("updated = {}",isUpdate);
 		CommonDocumentUtils.endHook(logger, "saveOrUpdate");
 		return true;
