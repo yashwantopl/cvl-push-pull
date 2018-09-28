@@ -372,13 +372,16 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 						.getCorporateApplicant(applicationId);
 				if (!CommonUtils.isObjectNullOrEmpty(applicantRequest)
 						&& !CommonUtils.isObjectNullOrEmpty(applicantRequest.getFirstAddress())) {
-					address = applicantRequest.getFirstAddress().getPremiseNumber() != null
-							? applicantRequest.getFirstAddress().getPremiseNumber()
-							: "" + " " + applicantRequest.getFirstAddress().getStreetName() != null
-									? applicantRequest.getFirstAddress().getStreetName()
-									: "" + " " + applicantRequest.getFirstAddress().getLandMark() != null
-											? applicantRequest.getFirstAddress().getLandMark()
-											: "";
+			
+					String premiseNumber = null;
+					String streetName = null;
+					String landMark = null;
+					premiseNumber = applicantRequest.getFirstAddress().getPremiseNumber()!=null?applicantRequest.getFirstAddress().getPremiseNumber():"";
+					streetName = applicantRequest.getFirstAddress().getStreetName()!=null?applicantRequest.getFirstAddress().getStreetName():"";
+					landMark = applicantRequest.getFirstAddress().getLandMark()!=null?applicantRequest.getFirstAddress().getLandMark():"";
+					address = premiseNumber.toString()+" "+streetName.toString()+" "+landMark.toString();
+					
+					
 					notificationParams.put("address", address != null ? address : "NA");
 				}
 			}
