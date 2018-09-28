@@ -207,12 +207,10 @@ public class NtbCamReportServiceImpl implements NtbCamReportService{
 
 			FundSeekerInputRequestResponse fundSeekerInputRequestResponse = ntbService.getOthersDetail(applicationId);
 			if (!CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequestResponse.getProposedConstitutionOfUnit())) {
-				ProposedConstitutionOfUnitNTB byIdProCons = ProposedConstitutionOfUnitNTB.getById(fundSeekerInputRequestResponse.getProposedConstitutionOfUnit());
-				fundSeekerInputRequestResponse.setProposedConstitutionOfUnit(CommonUtils.isObjectNullOrEmpty(byIdProCons) ? Integer.valueOf(byIdProCons.getValue()) : null);
+				map.put("proposedConsitutionOfUnit",!CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequestResponse.getProposedConstitutionOfUnit()) ? ProposedConstitutionOfUnitNTB.getById(fundSeekerInputRequestResponse.getProposedDetailsOfUnit()).getValue().toString() : "-");
 			}
 			if (!CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequestResponse.getProposedDetailsOfUnit())) {
-				ProposedDetailOfUnitNTB byIdProConsDet = ProposedDetailOfUnitNTB.getById(fundSeekerInputRequestResponse.getProposedDetailsOfUnit());
-				fundSeekerInputRequestResponse.setProposedDetailsOfUnit(CommonUtils.isObjectNullOrEmpty(byIdProConsDet) ? Integer.valueOf(byIdProConsDet.getValue()) : null);
+				map.put("proposedDetailsOfUnit",!CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequestResponse.getProposedDetailsOfUnit()) ? ProposedDetailOfUnitNTB.getById(fundSeekerInputRequestResponse.getProposedDetailsOfUnit()).getValue().toString() : "-");
 			}
 			//KEY VERTICAL FUNDING
 			List<Long> keyVerticalFundingId = new ArrayList<>();
@@ -280,38 +278,40 @@ public class NtbCamReportServiceImpl implements NtbCamReportService{
 		}
 		
 		//GET EXISTING FINANCIAL DETAILS 
-		List<Long> dirIdList = dirBackgroundDetailsRepository.getDirectorIdFromApplicationId(applicationId);
-		for(Long dirId : dirIdList) {
-		try {
-			List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestList = financialArrangementDetailsService.getFinancialArrangementDetailsListDirId(dirId,applicationId);
-			List<FinancialArrangementsDetailResponse> financialArrangementsDetailResponseList = new ArrayList<>(financialArrangementsDetailRequestList.size());
-			String directorName = dirBackgroundDetailsRepository.getDirectorNamefromDirectorId(dirId);
-			FinancialArrangementsDetailResponse financialArrangementsDetailResponse = null;
-			for (FinancialArrangementsDetailRequest financialArrangementsDetailRequest : financialArrangementsDetailRequestList) {
-				financialArrangementsDetailResponse = new FinancialArrangementsDetailResponse();
-				// financialArrangementsDetailResponse.setRelationshipSince(financialArrangementsDetailRequest.getRelationshipSince());
-				financialArrangementsDetailResponse.setOutstandingAmount(financialArrangementsDetailRequest.getOutstandingAmount());
-				financialArrangementsDetailResponse.setSecurityDetails(financialArrangementsDetailRequest.getSecurityDetails());
-				financialArrangementsDetailResponse.setAmount(financialArrangementsDetailRequest.getAmount());
-				// financialArrangementsDetailResponse.setLenderType(LenderType.getById(financialArrangementsDetailRequest.getLenderType()).getValue());
-				financialArrangementsDetailResponse.setLoanDate(financialArrangementsDetailRequest.getLoanDate());
-				financialArrangementsDetailResponse.setLoanType(financialArrangementsDetailRequest.getLoanType());
-				financialArrangementsDetailResponse.setFinancialInstitutionName(financialArrangementsDetailRequest.getFinancialInstitutionName());
-				// financialArrangementsDetailResponse.setFacilityNature(NatureFacility.getById(financialArrangementsDetailRequest.getFacilityNatureId()).getValue());
-				// financialArrangementsDetailResponse.setAddress(financialArrangementsDetailRequest.getAddress());
-				financialArrangementsDetailResponse.setDirectorName(directorName);
-				financialArrangementsDetailResponse.setAmountStr(CommonUtils.convertValue(financialArrangementsDetailRequest.getAmount()));
-				financialArrangementsDetailResponse.setOutstandingAmountStr(CommonUtils.convertValue(financialArrangementsDetailRequest.getOutstandingAmount()));
-				financialArrangementsDetailResponseList.add(financialArrangementsDetailResponse);
+				List<Long> dirIdList = dirBackgroundDetailsRepository.getDirectorIdFromApplicationId(applicationId);
+				List<FinancialArrangementsDetailResponse> financialArrangementsDetailResponseList = new ArrayList<>(dirIdList.size());
+				for(Long dirId : dirIdList) {
+				try {
+					List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestList = financialArrangementDetailsService.getFinancialArrangementDetailsListDirId(dirId,applicationId);
+					String directorName = dirBackgroundDetailsRepository.getDirectorNamefromDirectorId(dirId);
+					FinancialArrangementsDetailResponse financialArrangementsDetailResponse = null;
+					for (FinancialArrangementsDetailRequest financialArrangementsDetailRequest : financialArrangementsDetailRequestList) {
+						financialArrangementsDetailResponse = new FinancialArrangementsDetailResponse();
+						// financialArrangementsDetailResponse.setRelationshipSince(financialArrangementsDetailRequest.getRelationshipSince());
+						financialArrangementsDetailResponse.setOutstandingAmount(financialArrangementsDetailRequest.getOutstandingAmount());
+						financialArrangementsDetailResponse.setSecurityDetails(financialArrangementsDetailRequest.getSecurityDetails());
+						financialArrangementsDetailResponse.setAmount(financialArrangementsDetailRequest.getAmount());
+						// financialArrangementsDetailResponse.setLenderType(LenderType.getById(financialArrangementsDetailRequest.getLenderType()).getValue());
+						financialArrangementsDetailResponse.setLoanDate(financialArrangementsDetailRequest.getLoanDate());
+						financialArrangementsDetailResponse.setLoanType(financialArrangementsDetailRequest.getLoanType());
+						financialArrangementsDetailResponse.setFinancialInstitutionName(financialArrangementsDetailRequest.getFinancialInstitutionName());
+						// financialArrangementsDetailResponse.setFacilityNature(NatureFacility.getById(financialArrangementsDetailRequest.getFacilityNatureId()).getValue());
+						// financialArrangementsDetailResponse.setAddress(financialArrangementsDetailRequest.getAddress());
+						financialArrangementsDetailResponse.setDirectorName(directorName);
+						financialArrangementsDetailResponse.setAmountStr(CommonUtils.convertValue(financialArrangementsDetailRequest.getAmount()));
+						financialArrangementsDetailResponse.setOutstandingAmountStr(CommonUtils.convertValue(financialArrangementsDetailRequest.getOutstandingAmount()));
+						financialArrangementsDetailResponseList.add(financialArrangementsDetailResponse);
+					}
+
+				}catch (Exception e) {
+					e.printStackTrace();
+					logger.error("Problem to get Data of Financial Arrangements Details {}", e);
+				}
 			}
 			Map<String, List<FinancialArrangementsDetailResponse>> financialArrangementDetails = financialArrangementsDetailResponseList.stream().collect(Collectors.groupingBy(FinancialArrangementsDetailResponse:: getDirectorName));
-			map.put("existingFinancialArrangement",financialArrangementDetails);
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("Problem to get Data of Financial Arrangements Details {}", e);
-		}
-	}
+			if(!CommonUtils.isObjectNullOrEmpty(financialArrangementDetails)) {
+				map.put("existingFinancialArrangement",financialArrangementDetails);
+			}
 		
 		//ELIGIBILITY DATA (ASSESSMENT TO LIMITS)
 		EligibililityRequest eligibilityReq = new EligibililityRequest();
@@ -400,10 +400,10 @@ public class NtbCamReportServiceImpl implements NtbCamReportService{
 					List<Map<String,Object>> scoreResponse = new ArrayList<>(scoringResponse.getDataList().size());
 					Map<String,Object> companyMap =new HashMap<>();
 					ProposalScoreResponse proposalScoreResponse =  (ProposalScoreResponse)MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)scoringResponse.getDataObject(),ProposalScoreResponse.class);
-					companyMap.put("companyDataObject", CommonUtils.printFields(proposalScoreResponse));
-					map.put("totalWeight", CommonUtils.addNumbers(proposalScoreResponse.getBusinessRiskWeight(), proposalScoreResponse.getFinancialRiskWeight(), proposalScoreResponse.getManagementRiskWeight()));
-					map.put("totalWeightActualScore", CommonUtils.addNumbers(proposalScoreResponse.getManagementRiskWeightOfScoring(), proposalScoreResponse.getFinancialRiskWeightOfScoring(), proposalScoreResponse.getBusinessRiskWeightOfScoring()));
-					map.put("totalWeightOutOfScore", CommonUtils.addNumbers(proposalScoreResponse.getManagementRiskMaxTotalWeight(), proposalScoreResponse.getFinancialRiskMaxTotalWeight(), proposalScoreResponse.getBusinessRiskMaxTotalWeight()));
+					companyMap.put("companyDataObject",CommonUtils.printFields(proposalScoreResponse));
+					map.put("totalWeight",CommonUtils.convertValue(CommonUtils.addNumbers(proposalScoreResponse.getBusinessRiskWeight(), proposalScoreResponse.getFinancialRiskWeight(), proposalScoreResponse.getManagementRiskWeight())));
+					map.put("totalWeightActualScore",CommonUtils.convertValue(CommonUtils.addNumbers(proposalScoreResponse.getManagementRiskWeightOfScoring(), proposalScoreResponse.getFinancialRiskWeightOfScoring(), proposalScoreResponse.getBusinessRiskWeightOfScoring())));
+					map.put("totalWeightOutOfScore",CommonUtils.convertValue(CommonUtils.addNumbers(proposalScoreResponse.getManagementRiskMaxTotalWeight(), proposalScoreResponse.getFinancialRiskMaxTotalWeight(), proposalScoreResponse.getBusinessRiskMaxTotalWeight())));
 					//Filter Parameters
 					List<LinkedHashMap<String, Object>> mapList = (List<LinkedHashMap<String, Object>>)scoringResponse.getDataList();
 					List<ProposalScoreDetailResponse> newMapList = new ArrayList<>(mapList.size());
