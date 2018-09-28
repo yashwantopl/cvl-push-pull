@@ -2822,37 +2822,43 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		if (CommonUtils.isObjectNullOrEmpty(applicationMaster))
 			return null;
 
-		if(applicationMaster.getProductId() != null) {
-			if (CommonUtils.getUserMainType(applicationMaster.getProductId()) == CommonUtils.UserMainType.RETAIL) {
-				RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository
-						.findOneByApplicationIdId(applicationId);
-				return retailApplicantDetail.getFirstName() + " " + retailApplicantDetail.getLastName();
-			} else if (CommonUtils
-					.getUserMainType(applicationMaster.getProductId()) == CommonUtils.UserMainType.CORPORATE) {
-				CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
-						.findOneByApplicationIdId(applicationId);
-				return corporateApplicantDetail.getOrganisationName();
+		if (applicationMaster.getProductId() != null) {
+			if (applicationMaster.getBusinessTypeId().intValue() == CommonUtils.BusinessType.NEW_TO_BUSINESS.getId()
+					.intValue()) {
+				List<DirectorBackgroundDetail> directorBackgroundDetails = directorBackgroundDetailsRepository
+						.listPromotorBackgroundFromAppId(applicationId);
+				DirectorBackgroundDetail directorBackgroundDetail = directorBackgroundDetails.stream()
+						.filter(DirectorBackgroundDetail::getIsMainDirector).findAny().orElse(null);
+				if (directorBackgroundDetail != null) {
+					return directorBackgroundDetail.getDirectorsName();
+				}
+			} else {
+				if (CommonUtils.getUserMainType(applicationMaster.getProductId()) == CommonUtils.UserMainType.RETAIL) {
+					RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository
+							.findOneByApplicationIdId(applicationId);
+					return retailApplicantDetail.getFirstName() + " " + retailApplicantDetail.getLastName();
+				} else if (CommonUtils
+						.getUserMainType(applicationMaster.getProductId()) == CommonUtils.UserMainType.CORPORATE) {
+					CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
+							.findOneByApplicationIdId(applicationId);
+					return corporateApplicantDetail.getOrganisationName();
+				}
 			}
 
-            if(applicationMaster.getBusinessTypeId().intValue() == CommonUtils.BusinessType.NEW_TO_BUSINESS.getId().intValue()){
-                List<DirectorBackgroundDetail> directorBackgroundDetails = directorBackgroundDetailsRepository.listPromotorBackgroundFromAppId(applicationId);
-                DirectorBackgroundDetail directorBackgroundDetail = directorBackgroundDetails.stream().filter(DirectorBackgroundDetail::getIsMainDirector).findAny().orElse(null);
-                if (directorBackgroundDetail != null) {
-                    return directorBackgroundDetail.getDirectorsName();
-                }
-            }
+		} else {
 
-        }else {
+			if (applicationMaster.getBusinessTypeId().intValue() == CommonUtils.BusinessType.NEW_TO_BUSINESS.getId()
+					.intValue()) {
+				List<DirectorBackgroundDetail> directorBackgroundDetails = directorBackgroundDetailsRepository
+						.listPromotorBackgroundFromAppId(applicationId);
+				DirectorBackgroundDetail directorBackgroundDetail = directorBackgroundDetails.stream()
+						.filter(DirectorBackgroundDetail::getIsMainDirector).findAny().orElse(null);
+				if (directorBackgroundDetail != null) {
+					return directorBackgroundDetail.getDirectorsName();
+				}
+			}
 
-            if(applicationMaster.getBusinessTypeId().intValue() == CommonUtils.BusinessType.NEW_TO_BUSINESS.getId().intValue()){
-                List<DirectorBackgroundDetail> directorBackgroundDetails = directorBackgroundDetailsRepository.listPromotorBackgroundFromAppId(applicationId);
-                DirectorBackgroundDetail directorBackgroundDetail = directorBackgroundDetails.stream().filter(DirectorBackgroundDetail::getIsMainDirector).findAny().orElse(null);
-                if (directorBackgroundDetail != null) {
-                    return directorBackgroundDetail.getDirectorsName();
-                }
-            }
-
-            CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
+			CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
 					.findOneByApplicationIdId(applicationId);
 			return corporateApplicantDetail.getOrganisationName();
 		}
