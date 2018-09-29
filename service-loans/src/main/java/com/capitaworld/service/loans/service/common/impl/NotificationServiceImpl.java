@@ -148,62 +148,11 @@ public class NotificationServiceImpl implements NotificationService{
 						fsProdId =loanApplicationService.getProductIdByApplicationId(applicationId, Long.parseLong(toUserId));
 					
 					int fsType = CommonUtils.getUserMainType(fsProdId);
-					if(CommonUtils.UserMainType.CORPORATE == fsType){
-						
-						LoanApplicationRequest applicationRequest = loanApplicationService
-								.getFromClient(applicationId);
-						if(!CommonUtils.isObjectNullOrEmpty(applicationRequest) 
-						   && !CommonUtils.isObjectNullOrEmpty(applicationRequest.getBusinessTypeId())
-						   && applicationRequest.getBusinessTypeId() == 2){
-							
-							// For getting Primary Director's Name
-							// =========================================================================================================
-							String fsName = null;
-							List<DirectorBackgroundDetailRequest> NTBResponse = null;
-							if (applicationRequest.getBusinessTypeId() == 2) {
-								NTBResponse = directorBackgroundDetailsService
-										.getDirectorBasicDetailsListForNTB(request.getApplicationId());
-								if (!CommonUtils.isObjectNullOrEmpty(NTBResponse)) {
-									int isMainDirector = 0;
-									for (DirectorBackgroundDetailRequest director : NTBResponse) {
-										if (!CommonUtils.isObjectNullOrEmpty(director) && director.getIsMainDirector()) {
-											fsName = director.getDirectorsName() != null ? director.getDirectorsName() : "NA";
-											isMainDirector = 1;
-										}
-									}
-									if (isMainDirector == 0) {
-										fsName = NTBResponse.get(0).getDirectorsName() != null ? NTBResponse.get(0).getDirectorsName()
-												: "NA";
-									}
-								} else {
-									fsName = "NA";
-								}
-							} else {
-								fsName = applicationRequest.getUserName() != null ? applicationRequest.getUserName() : "NA";
-							}
-							parameters.put("fs_name", fsName != null ? fsName : "NA");
-							// =========================================================================================================
-						}
-						else{
-							CorporateApplicantRequest corporateApplicantRequest;
-							if(CommonUtils.UserType.FUND_SEEKER == fromUserTypeId)
-								corporateApplicantRequest = corporateApplicantService.getCorporateApplicant(fromUserId, applicationId);
-							else
-								corporateApplicantRequest = corporateApplicantService.getCorporateApplicant(Long.parseLong(toUserId), applicationId);
-							parameters.put("fs_name",corporateApplicantRequest.getOrganisationName()!=null?corporateApplicantRequest.getOrganisationName():"NA");	
-						}
-						
-					}else if(CommonUtils.UserMainType.RETAIL == fsType){
-						RetailApplicantRequest retailApplicantRequest;
-						if(CommonUtils.UserType.FUND_SEEKER == fromUserTypeId)
-							retailApplicantRequest = retailApplicantService.get(applicationId);
-						else
-							retailApplicantRequest = retailApplicantService.get(applicationId);
-						
-						parameters.put("fs_name",(!CommonUtils.isObjectNullOrEmpty(retailApplicantRequest.getFirstName()) ? retailApplicantRequest.getFirstName() : "") + " " + (!CommonUtils.isObjectNullOrEmpty(retailApplicantRequest.getLastName()) ? retailApplicantRequest.getLastName() : ""));
-					}
+					String fsName = loanApplicationService.getFsApplicantName(applicationId);
+					parameters.put("fs_name", fsName != null ? fsName : "NA");
 				} catch (Exception e) {
 					// TODO: handle exception
+					logger.info("Exception in getting name of fs:"+e);
 					e.printStackTrace();
 					parameters.put("fs_name", "NA");
 				}
@@ -237,38 +186,6 @@ public class NotificationServiceImpl implements NotificationService{
 					parameters.put("fp_pname", "NA");
 				}
 				request.addNotification(createEmailNotification(a, fromUserId, fromUserTypeId,notificationId, parameters, applicationId, fpProductId,notificationTemplate,fpName));
-//				if(!CommonUtils.isObjectNullOrEmpty(notificationTemplate)) {
-//					if(CommonUtils.UserType.FUND_PROVIDER == loginUserType.intValue()) {
-//						try {
-//							logger.info("Starting sending mail for fs primary and final view");
-//							UserResponse response = usersClient.checkUserUnderSp(Long.valueOf(toUserId));
-//							if(!CommonUtils.isObjectNullOrEmpty(response)) {
-//								if(!(Boolean)response.getData()) {
-//									if(NotificationTemplate.FINAL_VIEW.getValue() == notificationTemplate.getValue()) {
-//										LoanApplicationRequest loanDetails = loanApplicationService.getLoanBasicDetails(applicationId, Long.valueOf(toUserId));
-//										if(!CommonUtils.isObjectNullOrEmpty(loanDetails)) {
-//											parameters.put("application_id", loanDetails.getApplicationCode());
-//											parameters.put("loan",LoanType.getType(loanDetails.getProductId()).getName());
-//										} else {
-//											parameters.put("application_id", "NA");
-//											parameters.put("loan", "NA");
-//										}
-//									}
-//									request.addNotification(createSysNotification(a, fromUserId, fromUserTypeId,notificationId, parameters, applicationId, fpProductId));
-//								
-//									logger.info("Ending sending mail for fs primary and final view, OBJECT CREATE SUCCESSFULLY");
-//								} else {
-//									logger.info("Ending sending mail for fs primary and final view, FS USER IS UNDER SERVICE PROVIDER");		
-//								}
-//							} else {
-//								logger.info("Ending sending mail for fs primary and final view, USER CLIENT RESPONSE IS NULL OR EMPTY");
-//							}
-//						} catch (Exception e) {
-//							logger.info("Throw Exception While Sending Mail For FS Primary And Final View");
-//							e.printStackTrace();
-//						}
-//					}	
-//				}
 			try {
 				notificationClient.send(request);
 				logger.info("Successfully sent notification and email for primary or final view");

@@ -290,9 +290,7 @@ public class DDRFormController {
 	}
 
 	@RequestMapping(value = "/generateDDRPDF/{appId}", method = RequestMethod.GET)
-	public ResponseEntity<LoansResponse> generateDDRPDF(@PathVariable(value = "appId") Long appId,
-			HttpServletRequest request, HttpServletResponse response,
-			@RequestParam(value = "clientId", required = false) Long clientId) {
+	public ResponseEntity<LoansResponse> generateDDRPDF(@PathVariable(value = "appId") Long appId, HttpServletRequest request, HttpServletResponse response, @RequestParam(value = "clientId", required = false) Long clientId) {
 		logger.info("In generateDDRPDF");
 		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 		Integer userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE));
@@ -328,13 +326,6 @@ public class DDRFormController {
 			reportRequest.setType("NHBSDDR");
 			byte[] byteArr = reportsClient.generatePDFFile(reportRequest);
 
-			// File file = new File("Nhbs"+".pdf");
-			// System.out.println(file.getAbsolutePath());
-			// FileOutputStream fos = new FileOutputStream(file);
-			// fos.write(byteArr);
-			// fos.flush();
-			// fos.close();
-			//
 			MultipartFile multipartFile = new DDRMultipart(byteArr);
 			JSONObject jsonObj = new JSONObject();
 
@@ -346,18 +337,11 @@ public class DDRFormController {
 			DocumentResponse documentResponse = dmsClient.uploadFile(jsonObj.toString(), multipartFile);
 			if (documentResponse.getStatus() == 200) {
 				System.out.println(documentResponse.getData());
-				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Successfull", HttpStatus.OK.value(), documentResponse.getData()),
-						HttpStatus.OK);
+				return new ResponseEntity<LoansResponse>(new LoansResponse(HttpStatus.OK.value(), "success", documentResponse.getData(), obj),HttpStatus.OK);
+				//return new ResponseEntity<LoansResponse>(new LoansResponse("Successfull", HttpStatus.OK.value(), documentResponse.getData()),HttpStatus.OK);
 			} else {
-				return new ResponseEntity<LoansResponse>(
-						new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
-						HttpStatus.OK);
+				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
 			}
-			// response.getOutputStream().write(byteArr);
-			// response.setContentType("application/pdf");
-			// response.setHeader("Content-Disposition", "attachment;
-			// filename=\""+"test.pdf"+"\"");
 		} catch (Exception e) {
 			logger.info("thrown exception from generateDDRPDF");
 			e.printStackTrace();

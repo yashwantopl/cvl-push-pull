@@ -80,6 +80,10 @@ public class AssociatedConcernDetail implements Serializable {
 	@Column(name="name_of_director")
 	private String nameOfDirector;
 
+	@Column(name="date_of_incorporation")
+	private Date dateOfIncorporation;
+
+
 	public AssociatedConcernDetail() {
 	}
 
@@ -242,6 +246,12 @@ public class AssociatedConcernDetail implements Serializable {
 	public void setNameOfDirector(String nameOfDirector) {
 		this.nameOfDirector = nameOfDirector;
 	}
-	
 
+	public Date getDateOfIncorporation() {
+		return dateOfIncorporation;
+	}
+
+	public void setDateOfIncorporation(Date dateOfIncorporation) {
+		this.dateOfIncorporation = dateOfIncorporation;
+	}
 }

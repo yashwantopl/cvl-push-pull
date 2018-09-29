@@ -1860,11 +1860,13 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			// response.put("result", false);
 			// return response;
 			// }
-			if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsFinalMcqFilled())
-					|| !applicationMaster.getIsFinalMcqFilled().booleanValue()) {
-				response.put("message", "Please Fill FINAL MCQ details to Move Next !");
-				response.put("result", false);
-				return response;
+			if(CommonUtils.BusinessType.EXISTING_BUSINESS.getId().equals(applicationMaster.getBusinessTypeId())) {
+				if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsFinalMcqFilled())
+						|| !applicationMaster.getIsFinalMcqFilled().booleanValue()) {
+					response.put("message", "Please Fill FINAL MCQ details to Move Next !");
+					response.put("result", false);
+					return response;
+				}	
 			}
 			break;
 		case CommonUtils.TabType.FINAL_DPR_UPLOAD:
@@ -1896,12 +1898,15 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			 * "Please Fill PRIMARY INFORMATION details to Move Next !");
 			 * response.put("result", false); return response; }
 			 */
-			if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsFinalMcqFilled())
-					|| !applicationMaster.getIsFinalMcqFilled().booleanValue()) {
-				response.put("message", "Please Fill FINAL MCQ details to Move Next !");
-				response.put("result", false);
-				return response;
+			if(CommonUtils.BusinessType.EXISTING_BUSINESS.getId().equals(applicationMaster.getBusinessTypeId())) {
+				if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsFinalMcqFilled())
+						|| !applicationMaster.getIsFinalMcqFilled().booleanValue()) {
+					response.put("message", "Please Fill FINAL MCQ details to Move Next !");
+					response.put("result", false);
+					return response;
+				}	
 			}
+			
 			if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsApplicantFinalFilled())
 					|| !applicationMaster.getIsApplicantFinalFilled().booleanValue()) {
 				response.put("message", "Please Fill FINAL INFORMATION details to Move Next !");
@@ -1937,12 +1942,15 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			 * "Please Fill PRIMARY INFORMATION details to Move Next !");
 			 * response.put("result", false); return response; }
 			 */
-			if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsFinalMcqFilled())
-					|| !applicationMaster.getIsFinalMcqFilled().booleanValue()) {
-				response.put("message", "Please Fill FINAL MCQ details to Move Next !");
-				response.put("result", false);
-				return response;
+			if(CommonUtils.BusinessType.EXISTING_BUSINESS.getId().equals(applicationMaster.getBusinessTypeId())) {
+				if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsFinalMcqFilled())
+						|| !applicationMaster.getIsFinalMcqFilled().booleanValue()) {
+					response.put("message", "Please Fill FINAL MCQ details to Move Next !");
+					response.put("result", false);
+					return response;
+				}	
 			}
+			
 			if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsApplicantFinalFilled())
 					|| !applicationMaster.getIsApplicantFinalFilled().booleanValue()) {
 				response.put("message", "Please Fill FINAL INFORMATION details to Move Next !");
@@ -2814,37 +2822,43 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		if (CommonUtils.isObjectNullOrEmpty(applicationMaster))
 			return null;
 
-		if(applicationMaster.getProductId() != null) {
-			if (CommonUtils.getUserMainType(applicationMaster.getProductId()) == CommonUtils.UserMainType.RETAIL) {
-				RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository
-						.findOneByApplicationIdId(applicationId);
-				return retailApplicantDetail.getFirstName() + " " + retailApplicantDetail.getLastName();
-			} else if (CommonUtils
-					.getUserMainType(applicationMaster.getProductId()) == CommonUtils.UserMainType.CORPORATE) {
-				CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
-						.findOneByApplicationIdId(applicationId);
-				return corporateApplicantDetail.getOrganisationName();
+		if (applicationMaster.getProductId() != null) {
+			if (applicationMaster.getBusinessTypeId().intValue() == CommonUtils.BusinessType.NEW_TO_BUSINESS.getId()
+					.intValue()) {
+				List<DirectorBackgroundDetail> directorBackgroundDetails = directorBackgroundDetailsRepository
+						.listPromotorBackgroundFromAppId(applicationId);
+				DirectorBackgroundDetail directorBackgroundDetail = directorBackgroundDetails.stream()
+						.filter(DirectorBackgroundDetail::getIsMainDirector).findAny().orElse(null);
+				if (directorBackgroundDetail != null) {
+					return directorBackgroundDetail.getDirectorsName();
+				}
+			} else {
+				if (CommonUtils.getUserMainType(applicationMaster.getProductId()) == CommonUtils.UserMainType.RETAIL) {
+					RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository
+							.findOneByApplicationIdId(applicationId);
+					return retailApplicantDetail.getFirstName() + " " + retailApplicantDetail.getLastName();
+				} else if (CommonUtils
+						.getUserMainType(applicationMaster.getProductId()) == CommonUtils.UserMainType.CORPORATE) {
+					CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
+							.findOneByApplicationIdId(applicationId);
+					return corporateApplicantDetail.getOrganisationName();
+				}
 			}
 
-            if(applicationMaster.getBusinessTypeId().intValue() == CommonUtils.BusinessType.NEW_TO_BUSINESS.getId().intValue()){
-                List<DirectorBackgroundDetail> directorBackgroundDetails = directorBackgroundDetailsRepository.listPromotorBackgroundFromAppId(applicationId);
-                DirectorBackgroundDetail directorBackgroundDetail = directorBackgroundDetails.stream().filter(DirectorBackgroundDetail::getIsMainDirector).findAny().orElse(null);
-                if (directorBackgroundDetail != null) {
-                    return directorBackgroundDetail.getDirectorsName();
-                }
-            }
+		} else {
 
-        }else {
+			if (applicationMaster.getBusinessTypeId().intValue() == CommonUtils.BusinessType.NEW_TO_BUSINESS.getId()
+					.intValue()) {
+				List<DirectorBackgroundDetail> directorBackgroundDetails = directorBackgroundDetailsRepository
+						.listPromotorBackgroundFromAppId(applicationId);
+				DirectorBackgroundDetail directorBackgroundDetail = directorBackgroundDetails.stream()
+						.filter(DirectorBackgroundDetail::getIsMainDirector).findAny().orElse(null);
+				if (directorBackgroundDetail != null) {
+					return directorBackgroundDetail.getDirectorsName();
+				}
+			}
 
-            if(applicationMaster.getBusinessTypeId().intValue() == CommonUtils.BusinessType.NEW_TO_BUSINESS.getId().intValue()){
-                List<DirectorBackgroundDetail> directorBackgroundDetails = directorBackgroundDetailsRepository.listPromotorBackgroundFromAppId(applicationId);
-                DirectorBackgroundDetail directorBackgroundDetail = directorBackgroundDetails.stream().filter(DirectorBackgroundDetail::getIsMainDirector).findAny().orElse(null);
-                if (directorBackgroundDetail != null) {
-                    return directorBackgroundDetail.getDirectorsName();
-                }
-            }
-
-            CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
+			CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
 					.findOneByApplicationIdId(applicationId);
 			return corporateApplicantDetail.getOrganisationName();
 		}
