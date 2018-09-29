@@ -23,6 +23,8 @@ public class DDRCreditorsDetailsRequest  implements Serializable{
 	private String comment;
 
 	private Boolean isActive;
+	
+	private String amountStr;
 
 	public Long getId() {
 		return id;
@@ -78,6 +80,13 @@ public class DDRCreditorsDetailsRequest  implements Serializable{
 
 	public void setComment(String comment) {
 		this.comment = comment;
+	}
+	public String getAmountStr() {
+		return amountStr;
+	}
+
+	public void setAmountStr(String amountStr) {
+		this.amountStr = amountStr;
 	}
 
 	@Override

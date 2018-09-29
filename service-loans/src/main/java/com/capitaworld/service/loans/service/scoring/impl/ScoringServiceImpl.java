@@ -872,14 +872,26 @@ public class ScoringServiceImpl implements ScoringService{
 
                         try
                         {
-                            Double debt = liabilitiesDetailsTY.getSubTotalA() +
+                            /*Double debt = liabilitiesDetailsTY.getSubTotalA() +
                                     liabilitiesDetailsTY.getShortTermBorrowingFromOthers() +
                                     liabilitiesDetailsTY.getTotalTermLiabilities() -
                                     liabilitiesDetailsTY.getPreferencesShares() +
                                     liabilitiesDetailsTY.getOtherNclUnsecuredLoansFromOther() +
                                     liabilitiesDetailsTY.getOtherNclOthers() +
                                     liabilitiesDetailsTY.getMinorityInterest() +
+                                    liabilitiesDetailsTY.getDeferredTaxLiability();*/
+
+                            // 27-9-2018 9:19 PM Rahul Khudai Removed iabilitiesDetailsTY.getSubTotalA()
+                            // + liabilitiesDetailsTY.getShortTermBorrowingFromOthers()  from Debt calculation
+
+                            Double debt = liabilitiesDetailsTY.getTotalTermLiabilities() -
+                                    liabilitiesDetailsTY.getPreferencesShares() +
+                                    liabilitiesDetailsTY.getOtherNclUnsecuredLoansFromOther() +
+                                    liabilitiesDetailsTY.getOtherNclOthers() +
+                                    liabilitiesDetailsTY.getMinorityInterest() +
                                     liabilitiesDetailsTY.getDeferredTaxLiability();
+
+
                             if (CommonUtils.isObjectNullOrEmpty(debt))
                                 debt = 0.0;
 

@@ -922,7 +922,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		}
 		
 		//PERFIOS API DATA (BANK STATEMENT ANALYSIS)
-		ReportRequest reportRequest = new ReportRequest();
+		/*ReportRequest reportRequest = new ReportRequest();
 		reportRequest.setApplicationId(applicationId);
 		reportRequest.setUserId(userId);
 		List<Data> datas=new ArrayList<>();
@@ -964,7 +964,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		}catch (Exception e) {
 			e.printStackTrace();
 			logger.info("Error while getting perfios data");
-		}
+		}*/
 		
 		//CGTMSE DATA
 		try {
