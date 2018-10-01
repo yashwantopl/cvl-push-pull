@@ -9,7 +9,15 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.json.simple.JSONObject;
@@ -320,10 +328,6 @@ import com.capitaworld.sidbi.integration.model.logic.Amount;
 import com.capitaworld.sidbi.integration.model.logic.ClientLogicCalculationRequest;
 import com.capitaworld.sidbi.integration.model.matches.MatchesParameterRequest;
 import com.capitaworld.sidbi.integration.model.scoring.ScoreParameterDetailsRequest;
-
-
-
-
 
 @Service
 @Transactional
@@ -8698,10 +8702,10 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 				borrowersDetailsRequest.setBusinessCategory(borrwerDetails.getBusinessCategory());
 				borrowersDetailsRequest.setInsdustryType(borrwerDetails.getBusinessIndustryType());
 				if(!CibilUtils.isObjectNullOrEmpty(borrwerDetails.getSalesFigure())) {
-					borrowersDetailsRequest.setSales(Double.parseDouble(borrwerDetails.getSalesFigure()));						
+					borrowersDetailsRequest.setSales(getInDouble(borrwerDetails.getSalesFigure()));						
 				}
 				if(!CibilUtils.isObjectNullOrEmpty(borrwerDetails.getNumberOfEmployees())) {
-					borrowersDetailsRequest.setNoOfEmployee(Long.parseLong(borrwerDetails.getNumberOfEmployees()));
+					borrowersDetailsRequest.setNoOfEmployee(getInLong(borrwerDetails.getNumberOfEmployees()));
 				}
 				
 				borrowersDetailsRequest.setDateOfIncorporation(getInDate(borrwerDetails.getDateOfIncorporation()));
@@ -8721,7 +8725,7 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 					String[] split = borrwerAddressContactDetails.getAddress().split(",");
 					logger.info("Length of Address Array ====================>{}",split.length);
 					if(split != null && split.length == 5) {
-						registeredOfficeAddress.setPinCode(Long.parseLong(split[split.length - 1]));
+						registeredOfficeAddress.setPinCode(getInLong(split[split.length - 1]));
 						registeredOfficeAddress.setPincode(split[split.length - 1]);
 						registeredOfficeAddress.setState(split[split.length - 2]);
 						registeredOfficeAddress.setCity(split[split.length - 3]);
@@ -8783,7 +8787,7 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 			 	creditProfileSummaryDetailRequest.setLatestCFOpenedDate(getInDate(yourInstitution.getLatestCFOpenedDate()));
 				
 				creditProfileSummaryDetailRequest.setOpenCF(yourInstitution.getOpenCF());
-			  	creditProfileSummaryDetailRequest.setTotalLenders(CommonUtils.isObjectNullOrEmpty(yourInstitution.getTotalLenders()) ? null : Integer.parseInt(yourInstitution.getTotalLenders()));
+			  	creditProfileSummaryDetailRequest.setTotalLenders(CommonUtils.isObjectNullOrEmpty(yourInstitution.getTotalLenders()) ? null : getInInteger(yourInstitution.getTotalLenders()));
 				
 				if(!CommonUtils.isObjectNullOrEmpty(yourInstitution.getDelinquentOutstanding().getBorrower())) {
 					creditProfileSummaryDetailRequest.setDeliquentOutstandingBorrower(getInDouble(yourInstitution.getDelinquentOutstanding().getBorrower()));
@@ -8851,7 +8855,7 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 						creditProfileSummaryDetailRequest.setLatestCFOpenedDate(getInDate(otherPublicSectorBanks.getLatestCFOpenedDate()));
 						
 						creditProfileSummaryDetailRequest.setOpenCF(otherPublicSectorBanks.getOpenCF());
-						creditProfileSummaryDetailRequest.setTotalLenders(CommonUtils.isObjectNullOrEmpty(otherPublicSectorBanks.getTotalLenders()) ? null : Integer.parseInt(yourInstitution.getTotalLenders()));
+						creditProfileSummaryDetailRequest.setTotalLenders(CommonUtils.isObjectNullOrEmpty(otherPublicSectorBanks.getTotalLenders()) ? null : getInInteger(yourInstitution.getTotalLenders()));
 						
 						if(!CommonUtils.isObjectNullOrEmpty(otherPublicSectorBanks.getDelinquentOutstanding().getBorrower())) {
 							creditProfileSummaryDetailRequest.setDeliquentOutstandingBorrower(getInDouble(otherPublicSectorBanks.getDelinquentOutstanding().getBorrower()));
@@ -8918,7 +8922,7 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 						creditProfileSummaryDetailRequest.setLatestCFOpenedDate(getInDate(otherPrivateForeignBanks.getLatestCFOpenedDate()));
 						
 						creditProfileSummaryDetailRequest.setOpenCF(otherPrivateForeignBanks.getOpenCF());
-						creditProfileSummaryDetailRequest.setTotalLenders(CommonUtils.isObjectNullOrEmpty(otherPrivateForeignBanks.getTotalLenders()) ? null : Integer.parseInt(yourInstitution.getTotalLenders()));
+						creditProfileSummaryDetailRequest.setTotalLenders(CommonUtils.isObjectNullOrEmpty(otherPrivateForeignBanks.getTotalLenders()) ? null : getInInteger(yourInstitution.getTotalLenders()));
 						
 						if(!CommonUtils.isObjectNullOrEmpty(otherPrivateForeignBanks.getDelinquentOutstanding().getBorrower())) {
 							creditProfileSummaryDetailRequest.setDeliquentOutstandingBorrower(getInDouble(otherPrivateForeignBanks.getDelinquentOutstanding().getBorrower()));
@@ -8986,7 +8990,7 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 						creditProfileSummaryDetailRequest.setLatestCFOpenedDate(getInDate(nbfcOthers.getLatestCFOpenedDate()));
 						
 						creditProfileSummaryDetailRequest.setOpenCF(nbfcOthers.getOpenCF());
-						creditProfileSummaryDetailRequest.setTotalLenders(CommonUtils.isObjectNullOrEmpty(nbfcOthers.getTotalLenders()) ? null : Integer.parseInt(nbfcOthers.getTotalLenders()));
+						creditProfileSummaryDetailRequest.setTotalLenders(CommonUtils.isObjectNullOrEmpty(nbfcOthers.getTotalLenders()) ? null : getInInteger(nbfcOthers.getTotalLenders()));
 						
 						if(!CommonUtils.isObjectNullOrEmpty(nbfcOthers.getDelinquentOutstanding().getBorrower())) {
 							creditProfileSummaryDetailRequest.setDeliquentOutstandingBorrower(getInDouble(nbfcOthers.getDelinquentOutstanding().getBorrower()));
@@ -9055,7 +9059,7 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 							creditProfileSummaryDetailRequest.setLatestCFOpenedDate(getInDate(outsideTotal.getLatestCFOpenedDate()));
 						}
 						creditProfileSummaryDetailRequest.setOpenCF(outsideTotal.getOpenCF());
-						creditProfileSummaryDetailRequest.setTotalLenders(CommonUtils.isObjectNullOrEmpty(outsideTotal.getTotalLenders()) ? null : Integer.parseInt(outsideTotal.getTotalLenders()));
+						creditProfileSummaryDetailRequest.setTotalLenders(CommonUtils.isObjectNullOrEmpty(outsideTotal.getTotalLenders()) ? null : getInInteger(outsideTotal.getTotalLenders()));
 						
 						if(!CommonUtils.isObjectNullOrEmpty(outsideTotal.getDelinquentOutstanding().getBorrower())) {
 							creditProfileSummaryDetailRequest.setDeliquentOutstandingBorrower(getInDouble(outsideTotal.getDelinquentOutstanding().getBorrower()));
@@ -9128,7 +9132,7 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 					
 					creditProfileSummaryDetailRequest.setOpenCF(total.getOpenCF());
 					creditProfileSummaryDetailRequest.setTotalCFs(getInDouble(total.getTotalCF()));
-					creditProfileSummaryDetailRequest.setTotalLenders(CommonUtils.isObjectNullOrEmpty(total.getTotalLenders()) ? null : Integer.parseInt(total.getTotalLenders()));
+					creditProfileSummaryDetailRequest.setTotalLenders(CommonUtils.isObjectNullOrEmpty(total.getTotalLenders()) ? null : getInInteger(total.getTotalLenders()));
 					creditProfileSummaryDetailRequest.setTotalOutstanding(getInDouble(total.getTotalOutstanding()));
 					
 					creditProfileSummaryMasterRequest.setTotal(creditProfileSummaryDetailRequest);
@@ -9159,7 +9163,7 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 					enquirySummaryRequest.setMostRecentDate(getInDate(enquiryYourInstitution.getNoOfEnquiries().getMostRecentDate()));
 					
 					enquirySummaryRequest.setGreateMonth(enquiryYourInstitution.getNoOfEnquiries().getGreaterthan24Month());
-					enquirySummaryRequest.setTotal(CommonUtils.isObjectNullOrEmpty(enquiryYourInstitution.getNoOfEnquiries().getTotal())?null:Double.parseDouble(enquiryYourInstitution.getNoOfEnquiries().getTotal()));
+					enquirySummaryRequest.setTotal(CommonUtils.isObjectNullOrEmpty(enquiryYourInstitution.getNoOfEnquiries().getTotal())?null: getInDouble(enquiryYourInstitution.getNoOfEnquiries().getTotal()));
 				}
 				enquirySummaryMasterRequest.setYourInstitution(enquirySummaryRequest);
 				
@@ -9178,7 +9182,7 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 					enquirySummaryRequest.setMostRecentDate(getInDate(enquiryOutsideInstitution.getNoOfEnquiries().getMostRecentDate()));
 					
 					enquirySummaryRequest.setGreateMonth(enquiryOutsideInstitution.getNoOfEnquiries().getGreaterthan24Month());
-					enquirySummaryRequest.setTotal(CommonUtils.isObjectNullOrEmpty(enquiryOutsideInstitution.getNoOfEnquiries().getTotal())?null:Double.parseDouble(enquiryOutsideInstitution.getNoOfEnquiries().getTotal()));
+					enquirySummaryRequest.setTotal(CommonUtils.isObjectNullOrEmpty(enquiryOutsideInstitution.getNoOfEnquiries().getTotal())?null:getInDouble(enquiryOutsideInstitution.getNoOfEnquiries().getTotal()));
 				}
 				enquirySummaryMasterRequest.setOutside(enquirySummaryRequest);
 			}
@@ -9524,7 +9528,7 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 					String[] split = locationInformation.getAddress().split(",");
 					logger.info("Length of Address Array ====================>{}",split.length);
 					if(split != null && split.length == 5) {
-						registeredOfficeAddress.setPinCode(Long.parseLong(split[split.length - 1]));
+						registeredOfficeAddress.setPinCode(getInLong(split[split.length - 1]));
 						registeredOfficeAddress.setPincode(split[split.length - 1]);
 						registeredOfficeAddress.setState(split[split.length - 2]);
 						registeredOfficeAddress.setCity(split[split.length - 3]);
@@ -9616,7 +9620,7 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 						String[] split = borrwerAddressContactDetails.getAddress().split(",");
 						logger.info("Length of Address Array ====================>{}",split.length);
 						if(split != null && split.length == 5) {
-							registeredOfficeAddress.setPinCode(Long.parseLong(split[split.length - 1]));
+							registeredOfficeAddress.setPinCode(getInLong(split[split.length - 1]));
 							registeredOfficeAddress.setPincode(split[split.length - 1]);
 							registeredOfficeAddress.setState(split[split.length - 2]);
 							registeredOfficeAddress.setCity(split[split.length - 3]);
@@ -9733,7 +9737,7 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 							String[] split = creditFacilityGuarantorDetails.getGuarantorAddressContactDetails().getAddress().split(",");
 							logger.info("Length of Address Array ====================>{}",split.length);
 							if(split != null && split.length == 5) {
-								registeredOfficeAddress.setPinCode(Long.parseLong(split[split.length - 1]));
+								registeredOfficeAddress.setPinCode(getInLong(split[split.length - 1]));
 								registeredOfficeAddress.setPincode(split[split.length - 1]);
 								registeredOfficeAddress.setState(split[split.length - 2]);
 								registeredOfficeAddress.setCity(split[split.length - 3]);
@@ -9921,6 +9925,7 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 	public Double getInDouble(String data) {
 		
 		if (! CommonUtils.isObjectNullOrEmpty(data)){
+			data = data.replace("\\s", "");
 			if(data.contains("%")) {
 				return Double.valueOf(data.replaceAll("%", ""));
 			}
@@ -9950,7 +9955,25 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 			return data;
 		}
 		return null;
-	} 
+	}
+	
+	public Long getInLong(String data) {
+		
+		if (! CommonUtils.isObjectNullOrEmpty(data)){
+			return Long.valueOf(data.replace("\\s", ""));
+		}
+		return 0l;
+		
+	}
+	
+	public Integer getInInteger(String data) {
+		
+		if (! CommonUtils.isObjectNullOrEmpty(data)){
+			return Integer.valueOf(data.replace("\\s", ""));
+		}
+		return 0;
+		
+	}
 }
 
 
