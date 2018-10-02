@@ -143,14 +143,13 @@ public class FPAsyncComponent {
 							.getCorporateApplicant(paymentRequest.getApplicationId());
 					if (!CommonUtils.isObjectNullOrEmpty(applicantRequest)
 							&& !CommonUtils.isObjectNullOrEmpty(applicantRequest.getFirstAddress())) {
-						address = applicantRequest.getFirstAddress().getPremiseNumber() != null
-								? applicantRequest.getFirstAddress().getPremiseNumber()
-								: "" + " " + applicantRequest.getFirstAddress().getStreetName() != null
-										? applicantRequest.getFirstAddress().getStreetName()
-										: "" + " " + applicantRequest.getFirstAddress().getLandMark() != null
-												? applicantRequest.getFirstAddress().getLandMark()
-												: "";
-
+						String premiseNumber = null;
+						String streetName = null;
+						String landMark = null;
+						premiseNumber = applicantRequest.getFirstAddress().getPremiseNumber()!=null?applicantRequest.getFirstAddress().getPremiseNumber():"";
+						streetName = applicantRequest.getFirstAddress().getStreetName()!=null?applicantRequest.getFirstAddress().getStreetName():"";
+						landMark = applicantRequest.getFirstAddress().getLandMark()!=null?applicantRequest.getFirstAddress().getLandMark():"";
+						address = premiseNumber.toString()+" "+streetName.toString()+" "+landMark.toString();
 					}	
 				}
 				else{
@@ -332,14 +331,13 @@ public class FPAsyncComponent {
 							.getCorporateApplicant(paymentRequest.getApplicationId());
 					if (!CommonUtils.isObjectNullOrEmpty(applicantRequest)
 							&& !CommonUtils.isObjectNullOrEmpty(applicantRequest.getFirstAddress())) {
-						address = applicantRequest.getFirstAddress().getPremiseNumber() != null
-								? applicantRequest.getFirstAddress().getPremiseNumber()
-								: "" + " " + applicantRequest.getFirstAddress().getStreetName() != null
-										? applicantRequest.getFirstAddress().getStreetName()
-										: "" + " " + applicantRequest.getFirstAddress().getLandMark() != null
-												? applicantRequest.getFirstAddress().getLandMark()
-												: "";
-
+						String premiseNumber = null;
+						String streetName = null;
+						String landMark = null;
+						premiseNumber = applicantRequest.getFirstAddress().getPremiseNumber()!=null?applicantRequest.getFirstAddress().getPremiseNumber():"";
+						streetName = applicantRequest.getFirstAddress().getStreetName()!=null?applicantRequest.getFirstAddress().getStreetName():"";
+						landMark = applicantRequest.getFirstAddress().getLandMark()!=null?applicantRequest.getFirstAddress().getLandMark():"";
+						address = premiseNumber.toString()+" "+streetName.toString()+" "+landMark.toString();
 					}	
 				}
 				else{
@@ -525,14 +523,13 @@ public class FPAsyncComponent {
 							.getCorporateApplicant(paymentRequest.getApplicationId());
 					if (!CommonUtils.isObjectNullOrEmpty(applicantRequest)
 							&& !CommonUtils.isObjectNullOrEmpty(applicantRequest.getFirstAddress())) {
-						address = applicantRequest.getFirstAddress().getPremiseNumber() != null
-								? applicantRequest.getFirstAddress().getPremiseNumber()
-								: "" + " " + applicantRequest.getFirstAddress().getStreetName() != null
-										? applicantRequest.getFirstAddress().getStreetName()
-										: "" + " " + applicantRequest.getFirstAddress().getLandMark() != null
-												? applicantRequest.getFirstAddress().getLandMark()
-												: "";
-
+						String premiseNumber = null;
+						String streetName = null;
+						String landMark = null;
+						premiseNumber = applicantRequest.getFirstAddress().getPremiseNumber()!=null?applicantRequest.getFirstAddress().getPremiseNumber():"";
+						streetName = applicantRequest.getFirstAddress().getStreetName()!=null?applicantRequest.getFirstAddress().getStreetName():"";
+						landMark = applicantRequest.getFirstAddress().getLandMark()!=null?applicantRequest.getFirstAddress().getLandMark():"";
+						address = premiseNumber.toString()+" "+streetName.toString()+" "+landMark.toString();
 					}	
 				}
 				else{
@@ -717,14 +714,13 @@ public class FPAsyncComponent {
 							.getCorporateApplicant(paymentRequest.getApplicationId());
 					if (!CommonUtils.isObjectNullOrEmpty(applicantRequest)
 							&& !CommonUtils.isObjectNullOrEmpty(applicantRequest.getFirstAddress())) {
-						address = applicantRequest.getFirstAddress().getPremiseNumber() != null
-								? applicantRequest.getFirstAddress().getPremiseNumber()
-								: "" + " " + applicantRequest.getFirstAddress().getStreetName() != null
-										? applicantRequest.getFirstAddress().getStreetName()
-										: "" + " " + applicantRequest.getFirstAddress().getLandMark() != null
-												? applicantRequest.getFirstAddress().getLandMark()
-												: "";
-
+						String premiseNumber = null;
+						String streetName = null;
+						String landMark = null;
+						premiseNumber = applicantRequest.getFirstAddress().getPremiseNumber()!=null?applicantRequest.getFirstAddress().getPremiseNumber():"";
+						streetName = applicantRequest.getFirstAddress().getStreetName()!=null?applicantRequest.getFirstAddress().getStreetName():"";
+						landMark = applicantRequest.getFirstAddress().getLandMark()!=null?applicantRequest.getFirstAddress().getLandMark():"";
+						address = premiseNumber.toString()+" "+streetName.toString()+" "+landMark.toString();
 					}	
 				}
 				else{
@@ -907,13 +903,13 @@ public class FPAsyncComponent {
 						.getCorporateApplicant(request.getApplicationId());
 				if (!CommonUtils.isObjectNullOrEmpty(applicantRequest)
 						&& !CommonUtils.isObjectNullOrEmpty(applicantRequest.getFirstAddress())) {
-					address = applicantRequest.getFirstAddress().getPremiseNumber() != null
-							? applicantRequest.getFirstAddress().getPremiseNumber()
-							: "" + " " + applicantRequest.getFirstAddress().getStreetName() != null
-									? applicantRequest.getFirstAddress().getStreetName()
-									: "" + " " + applicantRequest.getFirstAddress().getLandMark() != null
-											? applicantRequest.getFirstAddress().getLandMark()
-											: "";
+					String premiseNumber = null;
+					String streetName = null;
+					String landMark = null;
+					premiseNumber = applicantRequest.getFirstAddress().getPremiseNumber()!=null?applicantRequest.getFirstAddress().getPremiseNumber():"";
+					streetName = applicantRequest.getFirstAddress().getStreetName()!=null?applicantRequest.getFirstAddress().getStreetName():"";
+					landMark = applicantRequest.getFirstAddress().getLandMark()!=null?applicantRequest.getFirstAddress().getLandMark():"";
+					address = premiseNumber.toString()+" "+streetName.toString()+" "+landMark.toString();
 
 					List<Long> stateList = new ArrayList<Long>();
 
@@ -1633,14 +1629,13 @@ public class FPAsyncComponent {
 						.getCorporateApplicant(request.getApplicationId());
 				if (!CommonUtils.isObjectNullOrEmpty(applicantRequest)
 						&& !CommonUtils.isObjectNullOrEmpty(applicantRequest.getFirstAddress())) {
-					address = applicantRequest.getFirstAddress().getPremiseNumber() != null
-							? applicantRequest.getFirstAddress().getPremiseNumber()
-							: "" + " " + applicantRequest.getFirstAddress().getStreetName() != null
-									? applicantRequest.getFirstAddress().getStreetName()
-									: "" + " " + applicantRequest.getFirstAddress().getLandMark() != null
-											? applicantRequest.getFirstAddress().getLandMark()
-											: "";
-
+					String premiseNumber = null;
+					String streetName = null;
+					String landMark = null;
+					premiseNumber = applicantRequest.getFirstAddress().getPremiseNumber()!=null?applicantRequest.getFirstAddress().getPremiseNumber():"";
+					streetName = applicantRequest.getFirstAddress().getStreetName()!=null?applicantRequest.getFirstAddress().getStreetName():"";
+					landMark = applicantRequest.getFirstAddress().getLandMark()!=null?applicantRequest.getFirstAddress().getLandMark():"";
+					address = premiseNumber.toString()+" "+streetName.toString()+" "+landMark.toString();
 				}
 			}
 			
@@ -2057,14 +2052,13 @@ public class FPAsyncComponent {
 						.getCorporateApplicant(request.getApplicationId());
 				if (!CommonUtils.isObjectNullOrEmpty(applicantRequest)
 						&& !CommonUtils.isObjectNullOrEmpty(applicantRequest.getFirstAddress())) {
-					address = applicantRequest.getFirstAddress().getPremiseNumber() != null
-							? applicantRequest.getFirstAddress().getPremiseNumber()
-							: "" + " " + applicantRequest.getFirstAddress().getStreetName() != null
-									? applicantRequest.getFirstAddress().getStreetName()
-									: "" + " " + applicantRequest.getFirstAddress().getLandMark() != null
-											? applicantRequest.getFirstAddress().getLandMark()
-											: "";
-
+					String premiseNumber = null;
+					String streetName = null;
+					String landMark = null;
+					premiseNumber = applicantRequest.getFirstAddress().getPremiseNumber()!=null?applicantRequest.getFirstAddress().getPremiseNumber():"";
+					streetName = applicantRequest.getFirstAddress().getStreetName()!=null?applicantRequest.getFirstAddress().getStreetName():"";
+					landMark = applicantRequest.getFirstAddress().getLandMark()!=null?applicantRequest.getFirstAddress().getLandMark():"";
+					address = premiseNumber.toString()+" "+streetName.toString()+" "+landMark.toString();
 				}
 			}
 			
