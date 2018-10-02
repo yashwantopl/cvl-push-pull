@@ -44,34 +44,9 @@ public class CorporateProposalDetails {
 	
 	private String ntbMainDirName;
 	
-	public String branchLocationName;
-	public String branchCity;
-	public String branchState;
-	
-	 
-	public String getBranchLocationName() {
-		return branchLocationName;
-	}
-
-	public void setBranchLocationName(String branchLocationName) {
-		this.branchLocationName = branchLocationName;
-	}
-
-	public String getBranchCity() {
-		return branchCity;
-	}
-
-	public void setBranchCity(String branchCity) {
-		this.branchCity = branchCity;
-	}
-
-	public String getBranchState() {
-		return branchState;
-	}
-
-	public void setBranchState(String branchState) {
-		this.branchState = branchState;
-	}
+//	public String branchLocationName;
+//	public String branchCity;
+//	public String branchState;
 
 	public String getAddress() {
 		return address;
