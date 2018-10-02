@@ -12,11 +12,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.capitaworld.service.loans.domain.fundseeker.IneligibleProposalDetails;
+import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
 import com.capitaworld.service.loans.model.InEligibleProposalDetailsRequest;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
 import com.capitaworld.service.loans.repository.fundseeker.IneligibleProposalDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
 import com.capitaworld.service.loans.service.common.IneligibleProposalDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.DirectorBackgroundDetailsService;
@@ -34,8 +36,10 @@ import com.capitaworld.service.notification.utils.ContentType;
 import com.capitaworld.service.notification.utils.NotificationAlias;
 import com.capitaworld.service.notification.utils.NotificationType;
 import com.capitaworld.service.oneform.client.OneFormClient;
+import com.capitaworld.service.oneform.enums.PurposeOfLoan;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.BranchBasicDetailsRequest;
+import com.capitaworld.service.users.model.UserOrganisationRequest;
 import com.capitaworld.service.users.model.UserResponse;
 import com.capitaworld.service.users.model.UsersRequest;
 
@@ -72,6 +76,9 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 
 	@Autowired
 	private CorporateApplicantService corporateApplicantService;
+	
+	@Autowired
+	private PrimaryCorporateDetailRepository primaryCorporateDetailRepository;
 
 	private static final String EMAIL_ADDRESS_FROM = "no-reply@capitaworld.com";
 
@@ -108,7 +115,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 				if (applicationRequest != null) {
 					notificationParams = getFsNameFromDirectorBeckgroundDetailsForNTBandExisting(applicationId,
 							applicationRequest);
-					notificationParams = getBankAndBranchDetails(userOrgId, branchId);
+					notificationParams = getBankAndBranchDetails(userOrgId, branchId, notificationParams);
 
 					UserResponse response = null;
 					UsersRequest signUpUser = null;
@@ -127,21 +134,37 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 							e.printStackTrace();
 						}
 					}
-					ProposalMappingResponse proposalResponse = null;
-					Map<String, Object> proposalresp = null;
+					//==================For getting Organisation Name================================= 
+					
+					UserResponse userResponse = null;
+					Map<String, Object> usersResp = null;
+					UserOrganisationRequest organisationRequest = null;
+					String organisationName = null;
 					try {
-						logger.info("Calling Proposal details client for getting Branch Id:-" + applicationId);
-						proposalResponse = proposalDetailsClient.getInPricipleById(applicationId);
-						logger.info("Got Inprinciple response from Proposal Details Client" + proposalResponse);
-						proposalresp = MultipleJSONObjectHelper
-								.getObjectFromMap((Map<String, Object>) proposalResponse.getData(), Map.class);
-					} catch (Exception e) {
-						logger.info("Error calling Proposal Details Client for getting Branch Id:-" + applicationId);
+						userResponse = userClient.getOrgNameByOrgId(Long.valueOf(userOrgId.toString()));	
+					}
+					catch(Exception e) {
+						logger.info("Exception occured while getting Organisation details by orgId");
 						e.printStackTrace();
 					}
-
-					notificationParams.put("bank_name",
-							proposalresp.get("organisationName") != null ? proposalresp.get("organisationName") : "NA");
+                    
+					try {
+						if(!CommonUtils.isObjectNullOrEmpty(userResponse)) {
+							usersResp = (Map<String, Object>) userResponse.getData();
+							organisationRequest = MultipleJSONObjectHelper.getObjectFromMap(usersResp,
+									UserOrganisationRequest.class);
+							organisationName = organisationRequest.getOrganisationName(); 
+						}
+						
+					}
+					catch(Exception e) {
+						logger.info("Exception occured while getting Organisation details by orgId");
+						e.printStackTrace();
+						
+					}
+					
+					//================================================================================
+					notificationParams.put("bank_name", organisationName != null ? organisationName : "NA");
 
 					String subject = "Manual Application : " + applicationId.toString();
 					createNotificationForEmail(signUpUser.getEmail(), applicationRequest.getUserId().toString(),
@@ -159,10 +182,23 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 					mailParameters.put("mobile_no", signUpUser.getMobile() != null ? signUpUser.getMobile() : "NA");
 					mailParameters.put("address",
 							notificationParams.get("address") != null ? notificationParams.get("address") : "NA");
-					mailParameters.put("loan_type",
-							proposalresp.get("loan_type") != null ? proposalresp.get("loan_type") : "NA");
+				
+					//=========================For getting Loan Type===================================
+					PrimaryCorporateDetail primaryCorporateDetail = primaryCorporateDetailRepository.findOneByApplicationIdId(applicationId);
+					if(!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail)){
+						String loanType = PurposeOfLoan.getById(primaryCorporateDetail.getPurposeOfLoanId()).getValue();
+						if("Asset Acquisition".equals(loanType)){
+							mailParameters.put("loan_type","Term Loan");	
+						}
+						else{
+							mailParameters.put("loan_type",loanType!=null?loanType:"NA");
+						}
+					}
+					else{
+						mailParameters.put("loan_type","NA");
+					}
+					//=================================================================================
 
-					UserResponse userResponse = null;
 					List<Map<String, Object>> usersRespList = null;
 					String to = null;
 					userResponse = userClient.getUserDetailByOrgRoleBranchId(userOrgId,
@@ -235,8 +271,8 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 		}
 	}
 
-	private Map<String, Object> getBankAndBranchDetails(Long userOrgId, Long branchId) {
-		Map<String, Object> notificationParams = new HashMap<>();
+	private Map<String, Object> getBankAndBranchDetails(Long userOrgId, Long branchId, Map<String, Object> notificationParams) {
+		
 		UserResponse userResponse = null;
 		String address = null;
 		String premiseNo = null;
