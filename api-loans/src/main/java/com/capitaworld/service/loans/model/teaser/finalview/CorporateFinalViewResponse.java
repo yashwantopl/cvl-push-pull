@@ -18,6 +18,10 @@ import com.capitaworld.service.loans.model.ProposedProductDetailRequest;
 import com.capitaworld.service.loans.model.SecurityCorporateDetailRequest;
 import com.capitaworld.service.loans.model.TotalCostOfProjectResponse;
 
+/**
+ * @author nilay.darji
+ *
+ */
 public class CorporateFinalViewResponse implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -194,6 +198,16 @@ public class CorporateFinalViewResponse implements Serializable {
     private Object costOfMachinery;
     private Object incrementalTurnover;
     private Object incrementalMargin;
+    
+    private Object adminAddPremise;
+    private Object adminAddStreetName;
+    private Object adminAddLandmark;
+    private Object adminAddCountry;
+    private Object adminAddState;
+    private Object adminAddCity;
+    private Object adminAddPincode;
+    private Object adminAddressData;
+    			
     
 	public List<?> getMatchesList() {
 		return matchesList;
@@ -1892,6 +1906,70 @@ public class CorporateFinalViewResponse implements Serializable {
 		this.incrementalMargin = incrementalMargin;
 	}
 
+	public Object getAdminAddPremise() {
+		return adminAddPremise;
+	}
 
+	public void setAdminAddPremise(Object adminAddPremise) {
+		this.adminAddPremise = adminAddPremise;
+	}
+
+	public Object getAdminAddStreetName() {
+		return adminAddStreetName;
+	}
+
+	public void setAdminAddStreetName(Object adminAddStreetName) {
+		this.adminAddStreetName = adminAddStreetName;
+	}
+
+	public Object getAdminAddLandmark() {
+		return adminAddLandmark;
+	}
+
+	public void setAdminAddLandmark(Object adminAddLandmark) {
+		this.adminAddLandmark = adminAddLandmark;
+	}
+
+	public Object getAdminAddCountry() {
+		return adminAddCountry;
+	}
+
+	public void setAdminAddCountry(Object adminAddCountry) {
+		this.adminAddCountry = adminAddCountry;
+	}
+
+	public Object getAdminAddState() {
+		return adminAddState;
+	}
+
+	public void setAdminAddState(Object adminAddState) {
+		this.adminAddState = adminAddState;
+	}
+
+	public Object getAdminAddCity() {
+		return adminAddCity;
+	}
+
+	public void setAdminAddCity(Object adminAddCity) {
+		this.adminAddCity = adminAddCity;
+	}
+
+	public Object getAdminAddPincode() {
+		return adminAddPincode;
+	}
+
+	public void setAdminAddPincode(Object adminAddPincode) {
+		this.adminAddPincode = adminAddPincode;
+	}
+
+	public Object getAdminAddressData() {
+		return adminAddressData;
+	}
+
+	public void setAdminAddressData(Object adminAddressData) {
+		this.adminAddressData = adminAddressData;
+	}
+
+	
 
 }
