@@ -186,16 +186,23 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 					//=========================For getting Loan Type===================================
 					PrimaryCorporateDetail primaryCorporateDetail = primaryCorporateDetailRepository.findOneByApplicationIdId(applicationId);
 					if(!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail)){
-						String loanType = PurposeOfLoan.getById(primaryCorporateDetail.getPurposeOfLoanId()).getValue();
-						if("Asset Acquisition".equals(loanType)){
-							mailParameters.put("loan_type","Term Loan");	
+						if(!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getPurposeOfLoanId())){
+							String loanType = PurposeOfLoan.getById(primaryCorporateDetail.getPurposeOfLoanId()).getValue();
+							if("Asset Acquisition".equals(loanType)){
+								mailParameters.put("loan_type","Term Loan");	
+							}
+							else{
+								mailParameters.put("loan_type",loanType!=null?loanType:"NA");
+							}	
 						}
 						else{
-							mailParameters.put("loan_type",loanType!=null?loanType:"NA");
+							mailParameters.put("loan_type","NA");
 						}
+						mailParameters.put("loan_amount",primaryCorporateDetail.getLoanAmount()!=null?primaryCorporateDetail.getLoanAmount().toString():"NA");
 					}
 					else{
 						mailParameters.put("loan_type","NA");
+						mailParameters.put("loan_amount","NA");
 					}
 					//=================================================================================
 
