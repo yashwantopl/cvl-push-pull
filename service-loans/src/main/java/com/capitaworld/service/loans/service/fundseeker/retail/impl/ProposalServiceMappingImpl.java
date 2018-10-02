@@ -71,6 +71,7 @@ import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.BranchBasicDetailsRequest;
 import com.capitaworld.service.users.model.CheckerDetailRequest;
 import com.capitaworld.service.users.model.FundProviderDetailsRequest;
+import com.capitaworld.service.users.model.LocationMasterResponse;
 import com.capitaworld.service.users.model.UserResponse;
 import com.capitaworld.service.users.model.UsersRequest;
 
@@ -128,6 +129,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 
 	@Autowired
 	private DirectorBackgroundDetailsRepository directorBackgroundDetailsRepository;
+	
 
 	DecimalFormat df = new DecimalFormat("#");
 
@@ -186,7 +188,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 				ProposalMappingRequest proposalrequest = MultipleJSONObjectHelper.getObjectFromMap(
 						(LinkedHashMap<String, Object>) proposalDetailsResponse.getDataList().get(i),
 						ProposalMappingRequest.class);
-
+			
 				Long applicationId = proposalrequest.getApplicationId();
 				LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(applicationId);
 				Integer bId = loanApplicationMaster.getBusinessTypeId();
@@ -201,47 +203,9 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					logger.info("Application Id is InActive while get fundprovider proposals=====>" + applicationId);
 					continue;
 				}
-
-//				getting the value of proposal's branch address city state based on proposal applicationID 
 				UsersRequest usersRequestData = new UsersRequest();
 				usersRequestData.setId(request.getUserId());
-
 				BranchBasicDetailsRequest basicDetailsRequest = null;
-
-				logger.info("application Id:" + proposalrequest.getApplicationId());
-				if (!CommonUtils.isObjectNullOrEmpty(proposalrequest.getApplicationId())) {
-					Object[] loanDeatils = loanApplicationService
-							.getApplicationDetailsById(proposalrequest.getApplicationId());
-					logger.info("user id based on application Id:" + loanDeatils.toString());
-
-					long userId = loanDeatils[0] != null ? (long) loanDeatils[0] : 0;
-
-					try {
-						logger.info("userID:" + usersRequestData.getId());
-						UserResponse userResponse = usersClient.getBranchDetailsBYUserId(new UsersRequest(userId));
-						basicDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap(
-								(LinkedHashMap<String, Object>) userResponse.getData(),
-								BranchBasicDetailsRequest.class);
-
-						if (basicDetailsRequest.getBranchId() != null) {
-							logger.info("location added in list" + applicationId);
-
-						}
-
-						if (!CommonUtils.isObjectNullOrEmpty(basicDetailsRequest.getLocationMasterResponse())) {
-							logger.info("get the details of user and its branches -----------> " + basicDetailsRequest
-									+ "---------city ------------------>"
-									+ basicDetailsRequest.getLocationMasterResponse().getCity());
-
-						} else {
-							logger.info("Branch Id Can't found");
-						}
-
-					} catch (Exception e) {
-						// TODO: handle exception
-						logger.info("Exception in getting value of branch :" + e);
-					}
-				}
 
 				if (CommonUtils.UserMainType.CORPORATE == CommonUtils
 						.getUserMainType(loanApplicationMaster.getProductId())) {
@@ -278,18 +242,18 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					corporateProposalDetails.setAddress(address);
 
 //					set Branch State and city and name
-					try {
-					if (basicDetailsRequest.getBranchId() != null) {
-						corporateProposalDetails.setBranchLocationName(basicDetailsRequest.getName());
-						corporateProposalDetails
-								.setBranchCity(basicDetailsRequest.getLocationMasterResponse().getCity().getName());
-						corporateProposalDetails
-								.setBranchState(basicDetailsRequest.getLocationMasterResponse().getState().getName());
-						corporateProposalDetails.setBranchLocationName(basicDetailsRequest.getName());
-						}
-					} catch (Exception e) {
-						logger.info("Branch Id is null:");
-					}
+//					try {
+//					if (basicDetailsRequest.getBranchId() != null) {
+//						corporateProposalDetails.setBranchLocationName(basicDetailsRequest.getName());
+//						corporateProposalDetails
+//								.setBranchCity(basicDetailsRequest.getLocationMasterResponse().getCity().getName());
+//						corporateProposalDetails
+//								.setBranchState(basicDetailsRequest.getLocationMasterResponse().getState().getName());
+//						corporateProposalDetails.setBranchLocationName(basicDetailsRequest.getName());
+//						}
+//					} catch (Exception e) {
+//						logger.info("Branch Id is null:");
+//					}
 					if (CommonUtils.BusinessType.NEW_TO_BUSINESS.getId().equals(bId)) {
 
 						corporateProposalDetails.setName(getMainDirectorName(applicationId));
