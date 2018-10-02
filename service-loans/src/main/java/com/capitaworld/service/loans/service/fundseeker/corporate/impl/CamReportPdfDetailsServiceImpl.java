@@ -921,51 +921,6 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			e.printStackTrace();
 		}
 		
-		//PERFIOS API DATA (BANK STATEMENT ANALYSIS)
-		/*ReportRequest reportRequest = new ReportRequest();
-		reportRequest.setApplicationId(applicationId);
-		reportRequest.setUserId(userId);
-		List<Data> datas=new ArrayList<>();
-		try {
-			AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReportForCam(reportRequest);
-			List<HashMap<String, Object>> hashMap=(List<HashMap<String, Object>>) analyzerResponse.getData();
-			if(!CommonUtils.isListNullOrEmpty(hashMap))
-			{
-				for(HashMap<String,Object> rec:hashMap)
-				{
-					Data data = MultipleJSONObjectHelper.getObjectFromMap(rec, Data.class);
-					datas.add(data);
-					List<Object> bankStatement = new ArrayList<Object>();
-					List<Object> monthlyDetails = new ArrayList<Object>();
-					List<Object> top5FundReceived = new ArrayList<Object>();
-					List<Object> top5FundTransfered = new ArrayList<Object>();
-					List<Object> bouncedChequeList = new ArrayList<Object>();
-					List<Object> customerInfo = new ArrayList<Object>();
-					List<Object> summaryInfo = new ArrayList<Object>();
-					for(int i =0; i<hashMap.size(); i++) {
-						bankStatement.add(!CommonUtils.isObjectNullOrEmpty(data.getXns()) ? CommonUtils.printFields(data.getXns().getXn()) : " ");
-						monthlyDetails.add(!CommonUtils.isObjectNullOrEmpty(data.getMonthlyDetailList()) ? CommonUtils.printFields(data.getMonthlyDetailList()) : "");
-						top5FundReceived.add(!CommonUtils.isObjectNullOrEmpty(data.getTop5FundReceivedList().getItem()) ? CommonUtils.printFields(data.getTop5FundReceivedList().getItem()) : "");
-						top5FundTransfered.add(!CommonUtils.isObjectNullOrEmpty(data.getTop5FundTransferedList().getItem()) ? CommonUtils.printFields(data.getTop5FundTransferedList().getItem()) : "");
-						bouncedChequeList.add(!CommonUtils.isObjectNullOrEmpty(data.getBouncedOrPenalXnList()) ? CommonUtils.printFields(data.getBouncedOrPenalXnList().getBouncedOrPenalXns()) : " ");
-						customerInfo.add(!CommonUtils.isObjectNullOrEmpty(data.getCustomerInfo()) ? CommonUtils.printFields(data.getCustomerInfo()) : " ");
-						summaryInfo.add(!CommonUtils.isObjectNullOrEmpty(data.getSummaryInfo()) ?CommonUtils.printFields(data.getSummaryInfo()) : " ");
-					}
-					map.put("bankStatement" , bankStatement);
-					map.put("monthlyDetails" , monthlyDetails);
-					map.put("top5FundReceived" , top5FundReceived);
-					map.put("top5FundTransfered" , top5FundTransfered);
-					map.put("bouncedChequeList" , bouncedChequeList);
-					map.put("customerInfo" , customerInfo);
-					map.put("summaryInfo" , summaryInfo);
-					map.put("bankStatementAnalysis", CommonUtils.printFields(datas));
-				}
-			}
-		}catch (Exception e) {
-			e.printStackTrace();
-			logger.info("Error while getting perfios data");
-		}*/
-		
 		//CGTMSE DATA
 		try {
 			CGTMSEDataResponse cgtmseDataResponse = thirdPartyClient.getCalulation(applicationId,productId);
@@ -1241,6 +1196,65 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			}
 			
 		}
+		return map;
+	}
+	
+	@Override
+	public Map<String, Object> getBankStatementAnalysisReport(Long applicationId, Long productId) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		Long userId = loanApplicationRepository.getUserIdByApplicationId(applicationId);
+		CorporateApplicantRequest corporateApplicantRequest =corporateApplicantService.getCorporateApplicant(applicationId);
+		try {
+			map.put("orgName", CommonUtils.printFields(corporateApplicantRequest.getOrganisationName()));
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		//PERFIOS API DATA (BANK STATEMENT ANALYSIS)
+			ReportRequest reportRequest = new ReportRequest();
+				reportRequest.setApplicationId(applicationId);
+				reportRequest.setUserId(userId);
+				List<Data> datas=new ArrayList<>();
+				try {
+					AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReportForCam(reportRequest);
+					List<HashMap<String, Object>> hashMap=(List<HashMap<String, Object>>) analyzerResponse.getData();
+					if(!CommonUtils.isListNullOrEmpty(hashMap))
+					{
+						for(HashMap<String,Object> rec:hashMap)
+						{
+							Data data = MultipleJSONObjectHelper.getObjectFromMap(rec, Data.class);
+							datas.add(data);
+							List<Object> bankStatement = new ArrayList<Object>();
+							List<Object> monthlyDetails = new ArrayList<Object>();
+							List<Object> top5FundReceived = new ArrayList<Object>();
+							List<Object> top5FundTransfered = new ArrayList<Object>();
+							List<Object> bouncedChequeList = new ArrayList<Object>();
+							List<Object> customerInfo = new ArrayList<Object>();
+							List<Object> summaryInfo = new ArrayList<Object>();
+							for(int i =0; i<hashMap.size(); i++) {
+								bankStatement.add(!CommonUtils.isObjectNullOrEmpty(data.getXns()) ? CommonUtils.printFields(data.getXns().getXn()) : " ");
+								monthlyDetails.add(!CommonUtils.isObjectNullOrEmpty(data.getMonthlyDetailList()) ? CommonUtils.printFields(data.getMonthlyDetailList()) : "");
+								top5FundReceived.add(!CommonUtils.isObjectNullOrEmpty(data.getTop5FundReceivedList().getItem()) ? CommonUtils.printFields(data.getTop5FundReceivedList().getItem()) : "");
+								top5FundTransfered.add(!CommonUtils.isObjectNullOrEmpty(data.getTop5FundTransferedList().getItem()) ? CommonUtils.printFields(data.getTop5FundTransferedList().getItem()) : "");
+								bouncedChequeList.add(!CommonUtils.isObjectNullOrEmpty(data.getBouncedOrPenalXnList()) ? CommonUtils.printFields(data.getBouncedOrPenalXnList().getBouncedOrPenalXns()) : " ");
+								customerInfo.add(!CommonUtils.isObjectNullOrEmpty(data.getCustomerInfo()) ? CommonUtils.printFields(data.getCustomerInfo()) : " ");
+								summaryInfo.add(!CommonUtils.isObjectNullOrEmpty(data.getSummaryInfo()) ?CommonUtils.printFields(data.getSummaryInfo()) : " ");
+							}
+							map.put("bankStatement" , bankStatement);
+							map.put("monthlyDetails" , monthlyDetails);
+							map.put("top5FundReceived" , top5FundReceived);
+							map.put("top5FundTransfered" , top5FundTransfered);
+							map.put("bouncedChequeList" , bouncedChequeList);
+							map.put("customerInfo" , customerInfo);
+							map.put("summaryInfo" , summaryInfo);
+							map.put("bankStatementAnalysis", CommonUtils.printFields(datas));
+						}
+					}
+				}catch (Exception e) {
+					e.printStackTrace();
+					logger.info("Error while getting perfios data");
+				}
+				
 		return map;
 	}
 	
@@ -1753,4 +1767,5 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		}
 		return null;
 	}
+
 }
