@@ -278,6 +278,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					corporateProposalDetails.setAddress(address);
 
 //					set Branch State and city and name
+					try {
 					if (basicDetailsRequest.getBranchId() != null) {
 						corporateProposalDetails.setBranchLocationName(basicDetailsRequest.getName());
 						corporateProposalDetails
@@ -285,6 +286,9 @@ public class ProposalServiceMappingImpl implements ProposalService {
 						corporateProposalDetails
 								.setBranchState(basicDetailsRequest.getLocationMasterResponse().getState().getName());
 						corporateProposalDetails.setBranchLocationName(basicDetailsRequest.getName());
+						}
+					} catch (Exception e) {
+						logger.info("Branch Id is null:");
 					}
 					if (CommonUtils.BusinessType.NEW_TO_BUSINESS.getId().equals(bId)) {
 
