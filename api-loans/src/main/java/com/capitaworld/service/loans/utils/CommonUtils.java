@@ -1442,5 +1442,18 @@ public enum APIFlags {
 		return null;
 	}
 	
+	// commaReplace method teaser and final view...
+	
+	public static String commaReplace(String value) {
+		
+		//System.out.println("comma Replace called :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
+		
+		
+		if(value.charAt(value.length()-1) != ',') {
+			return value+", ";
+		}
+		return value;
+	}
+	
 	
 }

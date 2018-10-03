@@ -1193,7 +1193,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 			}
 			if(!CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getSecondAddress())){
 				
-				corporatePrimaryViewResponse.setAdminAdd( (corporateFinalInfoRequest.getSecondAddress().getPremiseNumber()!=null ? (commaReplace(corporateFinalInfoRequest.getSecondAddress().getPremiseNumber())) :"") + (corporateFinalInfoRequest.getSecondAddress().getStreetName() != null ? (commaReplace(corporateFinalInfoRequest.getSecondAddress().getStreetName())) : "") + (corporateFinalInfoRequest.getSecondAddress().getLandMark() != null ? (commaReplace(corporateFinalInfoRequest.getSecondAddress().getLandMark())) : "")+ (corporatePrimaryViewResponse.getAdminAddDist() != null ?(commaReplace(corporatePrimaryViewResponse.getAdminAddDist())) :"")+ (corporatePrimaryViewResponse.getAdminAddTaluko() != null ? (commaReplace(corporatePrimaryViewResponse.getAdminAddTaluko())) : "") + (corporateFinalInfoRequest.getSecondAddress().getPincode() != null ? (corporateFinalInfoRequest.getSecondAddress().getPincode()) : ""));
+				corporatePrimaryViewResponse.setAdminAdd( (corporateFinalInfoRequest.getSecondAddress().getPremiseNumber()!=null ? (CommonUtils.commaReplace(corporateFinalInfoRequest.getSecondAddress().getPremiseNumber())) :"") + (corporateFinalInfoRequest.getSecondAddress().getStreetName() != null ? (CommonUtils.commaReplace(corporateFinalInfoRequest.getSecondAddress().getStreetName())) : "") + (corporateFinalInfoRequest.getSecondAddress().getLandMark() != null ? (CommonUtils.commaReplace(corporateFinalInfoRequest.getSecondAddress().getLandMark())) : "")+ (corporatePrimaryViewResponse.getAdminAddDist() != null ?(CommonUtils.commaReplace(corporatePrimaryViewResponse.getAdminAddDist())) :"")+ (corporatePrimaryViewResponse.getAdminAddTaluko() != null ? (CommonUtils.commaReplace(corporatePrimaryViewResponse.getAdminAddTaluko())) : "") + (corporateFinalInfoRequest.getSecondAddress().getPincode() != null ? (corporateFinalInfoRequest.getSecondAddress().getPincode()) : ""));
 			}
 		}
 		catch (Exception e) {
@@ -1223,7 +1223,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 					}
 					if(!CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getFirstAddress())){
 						
-						corporatePrimaryViewResponse.setRegAdd( (corporateFinalInfoRequest.getFirstAddress().getPremiseNumber()!=null ? (commaReplace(corporateFinalInfoRequest.getFirstAddress().getPremiseNumber())) :"") + (corporateFinalInfoRequest.getFirstAddress().getStreetName() != null ? (commaReplace(corporateFinalInfoRequest.getFirstAddress().getStreetName())) : "") + (corporateFinalInfoRequest.getFirstAddress().getLandMark() != null ? (commaReplace(corporateFinalInfoRequest.getFirstAddress().getLandMark())) : "")+ (corporatePrimaryViewResponse.getRegAddDist() != null ?(commaReplace(corporatePrimaryViewResponse.getRegAddDist())) :"")+ (corporatePrimaryViewResponse.getRegAddTaluko() != null ? (commaReplace(corporatePrimaryViewResponse.getRegAddTaluko())) : "") + (corporateFinalInfoRequest.getFirstAddress().getPincode() != null ? (corporateFinalInfoRequest.getFirstAddress().getPincode()) : ""));
+						corporatePrimaryViewResponse.setRegAdd( (corporateFinalInfoRequest.getFirstAddress().getPremiseNumber()!=null ? (CommonUtils.commaReplace(corporateFinalInfoRequest.getFirstAddress().getPremiseNumber())) :"") + (corporateFinalInfoRequest.getFirstAddress().getStreetName() != null ? (CommonUtils.commaReplace(corporateFinalInfoRequest.getFirstAddress().getStreetName())) : "") + (corporateFinalInfoRequest.getFirstAddress().getLandMark() != null ? (CommonUtils.commaReplace(corporateFinalInfoRequest.getFirstAddress().getLandMark())) : "")+ (corporatePrimaryViewResponse.getRegAddDist() != null ?(CommonUtils.commaReplace(corporatePrimaryViewResponse.getRegAddDist())) :"")+ (corporatePrimaryViewResponse.getRegAddTaluko() != null ? (CommonUtils.commaReplace(corporatePrimaryViewResponse.getRegAddTaluko())) : "") + (corporateFinalInfoRequest.getFirstAddress().getPincode() != null ? (corporateFinalInfoRequest.getFirstAddress().getPincode()) : ""));
 					}
 				}
 				catch (Exception e) {
@@ -1300,14 +1300,5 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 	public String convertValue(Double value) {
 		return !CommonUtils.isObjectNullOrEmpty(value) ? decim.format(value).toString() : "0";
 	}
-	public String commaReplace(String value) {
-		
-		//System.out.println("comma Replace called :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
-		
-		
-		if(value.charAt(value.length()-1) != ',') {
-			return value+", ";
-		}
-		return value;
-	}
+	
 }

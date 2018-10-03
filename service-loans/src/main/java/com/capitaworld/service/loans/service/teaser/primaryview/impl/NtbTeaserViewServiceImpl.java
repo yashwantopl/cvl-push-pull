@@ -43,8 +43,10 @@ import com.capitaworld.service.loans.model.FinanceMeansDetailRequest;
 import com.capitaworld.service.loans.model.FinanceMeansDetailResponse;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailResponse;
+import com.capitaworld.service.loans.model.PincodeDataResponse;
 import com.capitaworld.service.loans.model.TotalCostOfProjectResponse;
 import com.capitaworld.service.loans.model.corporate.CorporateDirectorIncomeRequest;
+import com.capitaworld.service.loans.model.corporate.CorporateFinalInfoRequest;
 import com.capitaworld.service.loans.model.corporate.FundSeekerInputRequestResponse;
 import com.capitaworld.service.loans.model.corporate.TotalCostOfProjectRequest;
 import com.capitaworld.service.loans.model.teaser.primaryview.NtbPrimaryViewResponse;
@@ -53,8 +55,10 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateAp
 import com.capitaworld.service.loans.repository.fundseeker.corporate.DirectorBackgroundDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
+import com.capitaworld.service.loans.service.common.PincodeDateService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.AssociatedConcernDetailService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateDirectorIncomeService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateFinalInfoService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.DirectorBackgroundDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.ExistingProductDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FinanceMeansDetailsService;
@@ -182,6 +186,12 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService {
 
 	@Autowired
 	private AssociatedConcernDetailService associatedConcernDetailService;
+	
+	@Autowired
+	private CorporateFinalInfoService corporateFinalInfoService;
+	
+	@Autowired
+	private PincodeDateService pincodeDateService;
 
 	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 	DecimalFormat decim = new DecimalFormat("#,###.00");
@@ -632,6 +642,63 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService {
 		ntbPrimaryViewRespone.setIrtXMLReport(itrXml);
 
 		if (isFinal) {
+			
+			/*// address
+			
+			CorporateFinalInfoRequest corporateFinalInfoRequest;
+			try {
+				corporateFinalInfoRequest = corporateFinalInfoService.get(userId,toApplicationId);
+				//ADMIN OFFICE ADDRESS
+				try {
+					if(corporateFinalInfoRequest.getSecondAddress().getDistrictMappingId() != null) {
+						
+						PincodeDataResponse pindata=pincodeDateService.getById(corporateFinalInfoRequest.getSecondAddress().getDistrictMappingId());
+						ntbPrimaryViewRespone.setAdminAddDist(pindata.getDistrictName());
+						ntbPrimaryViewRespone.setAdminAddTaluko(pindata.getTaluka());
+						pindata.getTaluka();
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+					// TODO: handle exception
+				}
+				if(!CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getSecondAddress())){
+					
+					ntbPrimaryViewRespone.setAdminAdd( (corporateFinalInfoRequest.getSecondAddress().getPremiseNumber()!=null ? (CommonUtils.commaReplace(corporateFinalInfoRequest.getSecondAddress().getPremiseNumber())) :"") + (corporateFinalInfoRequest.getSecondAddress().getStreetName() != null ? (CommonUtils.commaReplace(corporateFinalInfoRequest.getSecondAddress().getStreetName())) : "") + (corporateFinalInfoRequest.getSecondAddress().getLandMark() != null ? (CommonUtils.commaReplace(corporateFinalInfoRequest.getSecondAddress().getLandMark())) : "")+ (ntbPrimaryViewRespone.getAdminAddDist() != null ?(CommonUtils.commaReplace(ntbPrimaryViewRespone.getAdminAddDist())) :"")+ (ntbPrimaryViewRespone.getAdminAddTaluko() != null ? (CommonUtils.commaReplace(ntbPrimaryViewRespone.getAdminAddTaluko())) : "") + (corporateFinalInfoRequest.getSecondAddress().getPincode() != null ? (corporateFinalInfoRequest.getSecondAddress().getPincode()) : ""));
+				}
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+					// TODO: handle exception
+				}	
+			
+			//address
+			
+			
+			try {
+				corporateFinalInfoRequest = corporateFinalInfoService.get(userId,toApplicationId);
+				//Reg OFFICE ADDRESS
+				try {
+					if(corporateFinalInfoRequest.getSecondAddress().getDistrictMappingId() != null) {
+						
+						PincodeDataResponse pindata=pincodeDateService.getById(corporateFinalInfoRequest.getFirstAddress().getDistrictMappingId());
+						ntbPrimaryViewRespone.setRegAddDist(pindata.getDistrictName());
+						ntbPrimaryViewRespone.setRegAddTaluko(pindata.getTaluka());
+						pindata.getTaluka();
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+					// TODO: handle exception
+				}
+				if(!CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getFirstAddress())){
+					
+					ntbPrimaryViewRespone.setRegAdd( (corporateFinalInfoRequest.getFirstAddress().getPremiseNumber()!=null ? (CommonUtils.commaReplace(corporateFinalInfoRequest.getFirstAddress().getPremiseNumber())) :"") + (corporateFinalInfoRequest.getFirstAddress().getStreetName() != null ? (CommonUtils.commaReplace(corporateFinalInfoRequest.getFirstAddress().getStreetName())) : "") + (corporateFinalInfoRequest.getFirstAddress().getLandMark() != null ? (CommonUtils.commaReplace(corporateFinalInfoRequest.getFirstAddress().getLandMark())) : "")+ (ntbPrimaryViewRespone.getRegAddDist() != null ?(CommonUtils.commaReplace(ntbPrimaryViewRespone.getRegAddDist())) :"")+ (ntbPrimaryViewRespone.getRegAddTaluko() != null ? (CommonUtils.commaReplace(ntbPrimaryViewRespone.getRegAddTaluko())) : "") + (corporateFinalInfoRequest.getFirstAddress().getPincode() != null ? (corporateFinalInfoRequest.getFirstAddress().getPincode()) : ""));
+				}
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+					// TODO: handle exception
+				}	*/
+			
 
 			// EXISTING PRODUCT DETAILS
 			try {

@@ -199,6 +199,7 @@ public class CorporateFinalViewResponse implements Serializable {
     private Object incrementalTurnover;
     private Object incrementalMargin;
     
+    private Object adminAdd;
     private Object adminAddPremise;
     private Object adminAddStreetName;
     private Object adminAddLandmark;
@@ -206,7 +207,21 @@ public class CorporateFinalViewResponse implements Serializable {
     private Object adminAddState;
     private Object adminAddCity;
     private Object adminAddPincode;
-    private Object adminAddressData;
+    private Object adminPinData;
+    private String adminAddDist;
+    private String adminAddTaluko;
+    
+    private Object regAdd;
+    private Object regAddPremise;
+    private Object regAddStreetName;
+    private Object regAddLandmark;
+    private Object regAddCountry;
+    private Object regAddState;
+    private Object regAddCity;
+    private Object regAddPincode;
+    private Object regPinData;
+    private String regAddDist;
+    private String regAddTaluko;
     			
     
 	public List<?> getMatchesList() {
@@ -1906,6 +1921,14 @@ public class CorporateFinalViewResponse implements Serializable {
 		this.incrementalMargin = incrementalMargin;
 	}
 
+	public Object getAdminAdd() {
+		return adminAdd;
+	}
+
+	public void setAdminAdd(Object adminAdd) {
+		this.adminAdd = adminAdd;
+	}
+
 	public Object getAdminAddPremise() {
 		return adminAddPremise;
 	}
@@ -1962,13 +1985,119 @@ public class CorporateFinalViewResponse implements Serializable {
 		this.adminAddPincode = adminAddPincode;
 	}
 
-	public Object getAdminAddressData() {
-		return adminAddressData;
+	public Object getAdminPinData() {
+		return adminPinData;
 	}
 
-	public void setAdminAddressData(Object adminAddressData) {
-		this.adminAddressData = adminAddressData;
+	public void setAdminPinData(Object adminPinData) {
+		this.adminPinData = adminPinData;
 	}
+
+	public String getAdminAddDist() {
+		return adminAddDist;
+	}
+
+	public void setAdminAddDist(String adminAddDist) {
+		this.adminAddDist = adminAddDist;
+	}
+
+	public String getAdminAddTaluko() {
+		return adminAddTaluko;
+	}
+
+	public void setAdminAddTaluko(String adminAddTaluko) {
+		this.adminAddTaluko = adminAddTaluko;
+	}
+
+	public Object getRegAdd() {
+		return regAdd;
+	}
+
+	public void setRegAdd(Object regAdd) {
+		this.regAdd = regAdd;
+	}
+
+	public Object getRegAddPremise() {
+		return regAddPremise;
+	}
+
+	public void setRegAddPremise(Object regAddPremise) {
+		this.regAddPremise = regAddPremise;
+	}
+
+	public Object getRegAddStreetName() {
+		return regAddStreetName;
+	}
+
+	public void setRegAddStreetName(Object regAddStreetName) {
+		this.regAddStreetName = regAddStreetName;
+	}
+
+	public Object getRegAddLandmark() {
+		return regAddLandmark;
+	}
+
+	public void setRegAddLandmark(Object regAddLandmark) {
+		this.regAddLandmark = regAddLandmark;
+	}
+
+	public Object getRegAddCountry() {
+		return regAddCountry;
+	}
+
+	public void setRegAddCountry(Object regAddCountry) {
+		this.regAddCountry = regAddCountry;
+	}
+
+	public Object getRegAddState() {
+		return regAddState;
+	}
+
+	public void setRegAddState(Object regAddState) {
+		this.regAddState = regAddState;
+	}
+
+	public Object getRegAddCity() {
+		return regAddCity;
+	}
+
+	public void setRegAddCity(Object regAddCity) {
+		this.regAddCity = regAddCity;
+	}
+
+	public Object getRegAddPincode() {
+		return regAddPincode;
+	}
+
+	public void setRegAddPincode(Object regAddPincode) {
+		this.regAddPincode = regAddPincode;
+	}
+
+	public Object getRegPinData() {
+		return regPinData;
+	}
+
+	public void setRegPinData(Object regPinData) {
+		this.regPinData = regPinData;
+	}
+
+	public String getRegAddDist() {
+		return regAddDist;
+	}
+
+	public void setRegAddDist(String regAddDist) {
+		this.regAddDist = regAddDist;
+	}
+
+	public String getRegAddTaluko() {
+		return regAddTaluko;
+	}
+
+	public void setRegAddTaluko(String regAddTaluko) {
+		this.regAddTaluko = regAddTaluko;
+	}
+
+	
 
 	
 
