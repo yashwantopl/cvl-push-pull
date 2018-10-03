@@ -4637,19 +4637,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 //					ProposalMappingResponse resp = proposalDetailsClient.getActivateProposalById(Long.valueOf(proposalresp.get("fp_product_id").toString()), paymentRequest.getApplicationId());
 //					ProposalMappingRequest proposalMappingRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<String, Object>) resp.getData(), ProposalMappingRequest.class);
 					
-					if(proposalresp!=null) {
-					applicationRequest.setLoanAmount(proposalresp.get("amount")!=null?Double.valueOf(proposalresp.get("amount").toString() ):0.0 );
-					applicationRequest.setTenure(proposalresp.get("tenure")!=null?Double.valueOf(proposalresp.get("tenure").toString() ):0.0 );
-					applicationRequest.setEmiAmount(proposalresp.get("emi_amount")!=null?Double.valueOf(proposalresp.get("emi_amount").toString() ):0.0 );
-					applicationRequest.setTypeOfLoan(CommonUtils.LoanType.getType(applicationRequest.getProductId()).toString());
-					applicationRequest.setInterestRate(proposalresp.get("rate_interest")!=null?Double.valueOf(proposalresp.get("rate_interest").toString() ):0.0 );
-					applicationRequest.setOnlinePaymentSuccess(updatePayment);
-					applicationRequest.setNameOfEntity(paymentRequest.getNameOfEntity());
-					orgId =proposalresp.get("org_id")!=null ? Long.valueOf(proposalresp.get("org_id").toString()): null;
-					
-					applicationRequest.setFundProvider(orgId!=null ? CommonUtils.getOrganizationName(orgId) : null);
-					
-                 // ==================Sending Mail to all Checker's & Maker's & HO & BO of that branch after FS recieves In-principle Approval==================	
+                  // ==================Sending Mail to all Checker's & Maker's & HO & BO of that branch after FS recieves In-principle Approval==================	
 					
 					try {
 						logger.info("Inside sending mail to Maker after In-principle Approval");
@@ -4696,8 +4684,17 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					}
 							
 				//=======================================================================================================================================
-      
-			  }
+
+					
+					if(proposalresp!=null) {
+					applicationRequest.setLoanAmount(proposalresp.get("amount")!=null?Double.valueOf(proposalresp.get("amount").toString() ):0.0 );
+					applicationRequest.setTypeOfLoan(CommonUtils.LoanType.getType(applicationRequest.getProductId()).toString());
+					applicationRequest.setInterestRate(proposalresp.get("rate_interest")!=null?Double.valueOf(proposalresp.get("rate_interest").toString() ):0.0 );
+					applicationRequest.setOnlinePaymentSuccess(updatePayment);
+					applicationRequest.setNameOfEntity(paymentRequest.getNameOfEntity());
+					orgId =proposalresp.get("org_id")!=null ? Long.valueOf(proposalresp.get("org_id").toString()): null;
+					applicationRequest.setFundProvider(orgId!=null ? CommonUtils.getOrganizationName(orgId) : null);
+			        }
 					
 				}else {
 						throw new NullPointerException("Invalid user");
