@@ -34,9 +34,11 @@ import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDet
 import com.capitaworld.service.loans.model.CorporateProposalDetails;
 import com.capitaworld.service.loans.model.FundProviderProposalDetails;
 import com.capitaworld.service.loans.model.LoansResponse;
+import com.capitaworld.service.loans.model.ProposalDetailsAdminRequest;
 import com.capitaworld.service.loans.model.ProposalResponse;
 import com.capitaworld.service.loans.model.RetailProposalDetails;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
+import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.DirectorBackgroundDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
@@ -71,7 +73,6 @@ import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.BranchBasicDetailsRequest;
 import com.capitaworld.service.users.model.CheckerDetailRequest;
 import com.capitaworld.service.users.model.FundProviderDetailsRequest;
-import com.capitaworld.service.users.model.LocationMasterResponse;
 import com.capitaworld.service.users.model.UserResponse;
 import com.capitaworld.service.users.model.UsersRequest;
 
@@ -129,6 +130,9 @@ public class ProposalServiceMappingImpl implements ProposalService {
 
 	@Autowired
 	private DirectorBackgroundDetailsRepository directorBackgroundDetailsRepository;
+	
+	@Autowired
+	private ProposalDetailsRepository proposalDetailRepository;
 	
 
 	DecimalFormat df = new DecimalFormat("#");
@@ -1689,5 +1693,35 @@ public class ProposalServiceMappingImpl implements ProposalService {
 		}
 		return loansResponse;
 	}
+	
+	@Override
+    public List<ProposalDetailsAdminRequest> getProposalsByOrgId(Long userOrgId, ProposalDetailsAdminRequest request) {
+    	
+    	List<Object[]> result = proposalDetailRepository.getProposalDetailsByOrgId(userOrgId, request.getFromDate(), request.getToDate());
+    	
+    	List<ProposalDetailsAdminRequest> responseList = new ArrayList<>(result.size());
+    	
+    	for(Object[] obj : result) {
+    		
+    		ProposalDetailsAdminRequest proposal = new ProposalDetailsAdminRequest();
+    		proposal.setApplicationId(CommonUtils.convertLong(obj[0]));
+    		proposal.setUserId(CommonUtils.convertLong(obj[1]));
+    		proposal.setUserName((String) obj[2]);
+    		proposal.setEmail((String) obj[3]);
+    		proposal.setMobile((String) obj[4]);
+    		proposal.setCreatedDate(CommonUtils.convertDate(obj[5]));
+    		proposal.setBranchId(CommonUtils.convertLong(obj[6]));
+    		proposal.setLoanAmount(String.valueOf(obj[7]));
+    		proposal.setTenure(String.valueOf(obj[8]));
+    		proposal.setRate(String.valueOf(obj[9]));
+    		proposal.setEmi(CommonUtils.convertDouble(obj[10]));
+    		proposal.setProcessingFee(CommonUtils.convertDouble(obj[11]));
+    		proposal.setBranchName(String.valueOf(obj[12]));
+    		
+    		responseList.add(proposal);
+    	}
+    	
+    	return responseList;
+    }
 
 }
