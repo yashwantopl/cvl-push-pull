@@ -303,6 +303,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 
 	@Autowired
 	private FraudAnalyticsClient fraudAnalyticsClient;
+	
 
 	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 	DecimalFormat decim = new DecimalFormat("#,###.00");
@@ -760,6 +761,10 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 			logger.error("Problem to get Data of Director's Background {}", e);
 		}
 		
+		// address
+		
+		
+		
 		
 		// FINANCIAL ARRANGEMENTS
 		try {
@@ -1022,6 +1027,35 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 					.setAboutUs(!CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getAboutUs())
 							? corporateFinalInfoRequest.getAboutUs()
 							: null);
+			
+			
+			// admin address
+			if(corporateFinalInfoRequest.getSecondAddress() != null) {
+				
+				corporateFinalViewResponse.setAdminAddPremise(corporateFinalInfoRequest.getSecondAddress().getPremiseNumber());
+				corporateFinalViewResponse.setAdminAddStreetName(corporateFinalInfoRequest.getSecondAddress().getStreetName());
+				corporateFinalViewResponse.setAdminAddLandmark(corporateFinalInfoRequest.getSecondAddress().getLandMark());
+				corporateFinalViewResponse.setAdminAddCountry( corporateFinalInfoRequest.getSecondAddress().getCountryId());
+				corporateFinalViewResponse.setAdminAddState(corporateFinalInfoRequest.getSecondAddress().getStateId());
+				corporateFinalViewResponse.setAdminAddCity(corporateFinalInfoRequest.getSecondAddress().getCityId());
+				corporateFinalViewResponse.setAdminAddPincode(corporateFinalInfoRequest.getSecondAddress().getPincode());
+				try {
+					if(corporateFinalInfoRequest.getSecondAddress().getDistrictMappingId() != null) {
+						
+						corporateFinalViewResponse.setAdminAddressData(pincodeDateService.getById(corporateFinalInfoRequest.getSecondAddress().getDistrictMappingId()));
+						
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+					// TODO: handle exception
+				}
+			}
+			
+			
+			
+			
+			
+			
 			corporateFinalViewResponse
 					.setUdhyogAadharNo(!CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getAadhar())
 							? corporateFinalInfoRequest.getAadhar()

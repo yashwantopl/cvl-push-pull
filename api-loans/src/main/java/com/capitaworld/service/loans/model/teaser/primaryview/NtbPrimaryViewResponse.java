@@ -132,6 +132,19 @@ public class NtbPrimaryViewResponse {
 		private List<GuarantorsCorporateDetailRequest> guarantorsCorporateDetailRequestList;
 		private List<AssociatedConcernDetailRequest> associatedConcernDetailRequests;
 	    
+		
+		private List<Object> itr;
+		private List<Object> bankStatementFinalView;
+		private List<Object> sanctionLetter;
+		private List<Object> netWorthStatements;
+		private List<Object> momAndAoa;
+		private List<Object> copyOfPanCard;
+		private List<Object> panOfAllDirectors;
+		private List<Object> photosOfDirectors;
+		private List<Object> residenceAddOfDirectors;
+		private List<Object> cmaList;
+		private List<Object> aadhar;
+		private List<Object> brochure;
 
 		/**
 		 * @return the matchesList
@@ -1141,6 +1154,78 @@ public class NtbPrimaryViewResponse {
 		}
 		public void setAssociatedConcernDetailRequests(List<AssociatedConcernDetailRequest> associatedConcernDetailRequests) {
 			this.associatedConcernDetailRequests = associatedConcernDetailRequests;
+		}
+		public List<Object> getItr() {
+			return itr;
+		}
+		public void setItr(List<Object> itr) {
+			this.itr = itr;
+		}
+		public List<Object> getBankStatementFinalView() {
+			return bankStatementFinalView;
+		}
+		public void setBankStatementFinalView(List<Object> bankStatementFinalView) {
+			this.bankStatementFinalView = bankStatementFinalView;
+		}
+		public List<Object> getSanctionLetter() {
+			return sanctionLetter;
+		}
+		public void setSanctionLetter(List<Object> sanctionLetter) {
+			this.sanctionLetter = sanctionLetter;
+		}
+		public List<Object> getNetWorthStatements() {
+			return netWorthStatements;
+		}
+		public void setNetWorthStatements(List<Object> netWorthStatements) {
+			this.netWorthStatements = netWorthStatements;
+		}
+		public List<Object> getMomAndAoa() {
+			return momAndAoa;
+		}
+		public void setMomAndAoa(List<Object> momAndAoa) {
+			this.momAndAoa = momAndAoa;
+		}
+		public List<Object> getCopyOfPanCard() {
+			return copyOfPanCard;
+		}
+		public void setCopyOfPanCard(List<Object> copyOfPanCard) {
+			this.copyOfPanCard = copyOfPanCard;
+		}
+		public List<Object> getPanOfAllDirectors() {
+			return panOfAllDirectors;
+		}
+		public void setPanOfAllDirectors(List<Object> panOfAllDirectors) {
+			this.panOfAllDirectors = panOfAllDirectors;
+		}
+		public List<Object> getPhotosOfDirectors() {
+			return photosOfDirectors;
+		}
+		public void setPhotosOfDirectors(List<Object> photosOfDirectors) {
+			this.photosOfDirectors = photosOfDirectors;
+		}
+		public List<Object> getResidenceAddOfDirectors() {
+			return residenceAddOfDirectors;
+		}
+		public void setResidenceAddOfDirectors(List<Object> residenceAddOfDirectors) {
+			this.residenceAddOfDirectors = residenceAddOfDirectors;
+		}
+		public List<Object> getCmaList() {
+			return cmaList;
+		}
+		public void setCmaList(List<Object> cmaList) {
+			this.cmaList = cmaList;
+		}
+		public List<Object> getAadhar() {
+			return aadhar;
+		}
+		public void setAadhar(List<Object> aadhar) {
+			this.aadhar = aadhar;
+		}
+		public List<Object> getBrochure() {
+			return brochure;
+		}
+		public void setBrochure(List<Object> brochure) {
+			this.brochure = brochure;
 		}
 		
 
