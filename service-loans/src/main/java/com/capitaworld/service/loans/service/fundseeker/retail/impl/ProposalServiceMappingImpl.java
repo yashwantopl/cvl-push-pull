@@ -34,9 +34,11 @@ import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDet
 import com.capitaworld.service.loans.model.CorporateProposalDetails;
 import com.capitaworld.service.loans.model.FundProviderProposalDetails;
 import com.capitaworld.service.loans.model.LoansResponse;
+import com.capitaworld.service.loans.model.ProposalDetailsAdminRequest;
 import com.capitaworld.service.loans.model.ProposalResponse;
 import com.capitaworld.service.loans.model.RetailProposalDetails;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
+import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.DirectorBackgroundDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
@@ -129,6 +131,10 @@ public class ProposalServiceMappingImpl implements ProposalService {
 
 	@Autowired
 	private DirectorBackgroundDetailsRepository directorBackgroundDetailsRepository;
+
+	
+	@Autowired
+	private ProposalDetailsRepository proposalDetailRepository;
 	
 
 	DecimalFormat df = new DecimalFormat("#");
@@ -188,11 +194,59 @@ public class ProposalServiceMappingImpl implements ProposalService {
 				ProposalMappingRequest proposalrequest = MultipleJSONObjectHelper.getObjectFromMap(
 						(LinkedHashMap<String, Object>) proposalDetailsResponse.getDataList().get(i),
 						ProposalMappingRequest.class);
-			
+
 				Long applicationId = proposalrequest.getApplicationId();
 				LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(applicationId);
 				Integer bId = loanApplicationMaster.getBusinessTypeId();
 
+//				getting the value of proposal's branch address city state based on proposal applicationID 
+//				step 1  get proposal details by applicationID and user details
+//				step2 get branch details by branch id available in proposalDetails
+//				step3 get branch state by state id available in location Master
+//				step4 get branch city by city id available in location Master
+
+				UsersRequest usersRequestData = new UsersRequest();
+				usersRequestData.setId(request.getUserId());
+				BranchBasicDetailsRequest basicDetailsRequest = null;
+
+				// step 1
+				logger.info("application Id:" + proposalrequest.getApplicationId());
+				if (!CommonUtils.isObjectNullOrEmpty(proposalrequest.getApplicationId())) {
+					Object[] loanDeatils = loanApplicationService
+							.getApplicationDetailsById(proposalrequest.getApplicationId());
+					logger.info("user id based on application Id:" + loanDeatils.toString());
+					long userId = loanDeatils[0] != null ? (long) loanDeatils[0] : 0;
+
+					try {
+//						step 2	get branch details by branch id available in proposalDetails	BRANCH-MASTER
+						if (proposalrequest.getBranchId() != null) {
+//						getlocation id available in branch then find city state location name based on location id
+							UserResponse userResponse = usersClient.getBranchDetailById(proposalrequest.getBranchId());
+							basicDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap(
+									(LinkedHashMap<String, Object>) userResponse.getData(),
+									BranchBasicDetailsRequest.class);
+							logger.info(
+									"--------------------------------------------------------------------------------");
+							logger.info("Get BranchDetails By ID:" + userResponse.getData());
+							logger.info("branch id By proposal:" + basicDetailsRequest.getBranchId());
+							if (basicDetailsRequest.getLocationId() != null) {
+								logger.info("location id by branchId:" + basicDetailsRequest.getLocationId());
+								try {
+								LocationMasterResponse locationDetails = usersClient
+										.getLocationDetailByLocationId(basicDetailsRequest.getLocationId());
+								logger.info("locationName:====>" + locationDetails.getLocationName());
+								logger.info("cityName:====>" + locationDetails.getCity().getName());
+								basicDetailsRequest.setLocationMasterResponse(locationDetails);
+									logger.info("stateName:====>" + locationDetails.getState().getName());
+								} catch (Exception e) {
+									logger.info("Exception in getting location by id:"+e);
+								}
+							}
+						}
+					} catch (Exception e) {
+						logger.info("Exception in getting value from location based on branch id:" + e);
+					}
+				}
 				if (CommonUtils.isObjectNullOrEmpty(loanApplicationMaster)) {
 					logger.info("loanApplicationMaster null ot empty !!");
 					continue;
@@ -203,10 +257,6 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					logger.info("Application Id is InActive while get fundprovider proposals=====>" + applicationId);
 					continue;
 				}
-				UsersRequest usersRequestData = new UsersRequest();
-				usersRequestData.setId(request.getUserId());
-				BranchBasicDetailsRequest basicDetailsRequest = null;
-
 				if (CommonUtils.UserMainType.CORPORATE == CommonUtils
 						.getUserMainType(loanApplicationMaster.getProductId())) {
 
@@ -242,18 +292,18 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					corporateProposalDetails.setAddress(address);
 
 //					set Branch State and city and name
-//					try {
-//					if (basicDetailsRequest.getBranchId() != null) {
-//						corporateProposalDetails.setBranchLocationName(basicDetailsRequest.getName());
-//						corporateProposalDetails
-//								.setBranchCity(basicDetailsRequest.getLocationMasterResponse().getCity().getName());
-//						corporateProposalDetails
-//								.setBranchState(basicDetailsRequest.getLocationMasterResponse().getState().getName());
-//						corporateProposalDetails.setBranchLocationName(basicDetailsRequest.getName());
-//						}
-//					} catch (Exception e) {
-//						logger.info("Branch Id is null:");
-//					}
+					try {
+						if (basicDetailsRequest.getLocationId() != null) {
+							corporateProposalDetails.setBranchLocationName(basicDetailsRequest.getName());
+							corporateProposalDetails
+									.setBranchCity(basicDetailsRequest.getLocationMasterResponse().getCity().getName());
+							corporateProposalDetails.setBranchState(
+									basicDetailsRequest.getLocationMasterResponse().getState().getName());
+							corporateProposalDetails.setBranchLocationName(basicDetailsRequest.getName());
+						}
+					} catch (Exception e) {
+						logger.info("Branch Id is null:");
+					}
 					if (CommonUtils.BusinessType.NEW_TO_BUSINESS.getId().equals(bId)) {
 
 						corporateProposalDetails.setName(getMainDirectorName(applicationId));
@@ -497,13 +547,17 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					retailProposalDetails.setName(name);
 
 //					set Branch State and city and name
-					if (basicDetailsRequest.getBranchId() != null) {
-						retailProposalDetails.setBranchLocationName(basicDetailsRequest.getName());
-						retailProposalDetails
-								.setBranchCity(basicDetailsRequest.getLocationMasterResponse().getCity().getName());
-						retailProposalDetails
-								.setBranchState(basicDetailsRequest.getLocationMasterResponse().getState().getName());
-						retailProposalDetails.setBranchLocationName(basicDetailsRequest.getName());
+					try {
+						if (basicDetailsRequest.getLocationId() != null) {
+							retailProposalDetails.setBranchLocationName(basicDetailsRequest.getName());
+							retailProposalDetails
+									.setBranchCity(basicDetailsRequest.getLocationMasterResponse().getCity().getName());
+							retailProposalDetails.setBranchState(
+									basicDetailsRequest.getLocationMasterResponse().getState().getName());
+							retailProposalDetails.setBranchLocationName(basicDetailsRequest.getName());
+						}
+					} catch (Exception e) {
+						logger.info("location id is null for this application:" + applicationId + "::" + e);
 					}
 
 					// calling DMS for getting fs retail profile image path
@@ -1689,5 +1743,35 @@ public class ProposalServiceMappingImpl implements ProposalService {
 		}
 		return loansResponse;
 	}
+	
+	@Override
+    public List<ProposalDetailsAdminRequest> getProposalsByOrgId(Long userOrgId, ProposalDetailsAdminRequest request) {
+    	
+    	List<Object[]> result = proposalDetailRepository.getProposalDetailsByOrgId(userOrgId, request.getFromDate(), request.getToDate());
+    	
+    	List<ProposalDetailsAdminRequest> responseList = new ArrayList<>(result.size());
+    	
+    	for(Object[] obj : result) {
+    		
+    		ProposalDetailsAdminRequest proposal = new ProposalDetailsAdminRequest();
+    		proposal.setApplicationId(CommonUtils.convertLong(obj[0]));
+    		proposal.setUserId(CommonUtils.convertLong(obj[1]));
+    		proposal.setUserName((String) obj[2]);
+    		proposal.setEmail((String) obj[3]);
+    		proposal.setMobile((String) obj[4]);
+    		proposal.setCreatedDate(CommonUtils.convertDate(obj[5]));
+    		proposal.setBranchId(CommonUtils.convertLong(obj[6]));
+    		proposal.setLoanAmount(String.valueOf(obj[7]));
+    		proposal.setTenure(String.valueOf(obj[8]));
+    		proposal.setRate(String.valueOf(obj[9]));
+    		proposal.setEmi(CommonUtils.convertDouble(obj[10]));
+    		proposal.setProcessingFee(CommonUtils.convertDouble(obj[11]));
+    		proposal.setBranchName(String.valueOf(obj[12]));
+    		
+    		responseList.add(proposal);
+    	}
+    	
+    	return responseList;
+    }
 
 }
