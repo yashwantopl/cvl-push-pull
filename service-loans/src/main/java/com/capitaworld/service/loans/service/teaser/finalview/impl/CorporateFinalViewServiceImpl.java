@@ -52,6 +52,7 @@ import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailResponse;
 import com.capitaworld.service.loans.model.OwnershipDetailRequest;
 import com.capitaworld.service.loans.model.OwnershipDetailResponse;
+import com.capitaworld.service.loans.model.PincodeDataResponse;
 import com.capitaworld.service.loans.model.PromotorBackgroundDetailRequest;
 import com.capitaworld.service.loans.model.PromotorBackgroundDetailResponse;
 import com.capitaworld.service.loans.model.TotalCostOfProjectResponse;
@@ -1028,34 +1029,6 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 							? corporateFinalInfoRequest.getAboutUs()
 							: null);
 			
-			
-			// admin address
-			if(corporateFinalInfoRequest.getSecondAddress() != null) {
-				
-				corporateFinalViewResponse.setAdminAddPremise(corporateFinalInfoRequest.getSecondAddress().getPremiseNumber());
-				corporateFinalViewResponse.setAdminAddStreetName(corporateFinalInfoRequest.getSecondAddress().getStreetName());
-				corporateFinalViewResponse.setAdminAddLandmark(corporateFinalInfoRequest.getSecondAddress().getLandMark());
-				corporateFinalViewResponse.setAdminAddCountry( corporateFinalInfoRequest.getSecondAddress().getCountryId());
-				corporateFinalViewResponse.setAdminAddState(corporateFinalInfoRequest.getSecondAddress().getStateId());
-				corporateFinalViewResponse.setAdminAddCity(corporateFinalInfoRequest.getSecondAddress().getCityId());
-				corporateFinalViewResponse.setAdminAddPincode(corporateFinalInfoRequest.getSecondAddress().getPincode());
-				try {
-					if(corporateFinalInfoRequest.getSecondAddress().getDistrictMappingId() != null) {
-						
-						corporateFinalViewResponse.setAdminAddressData(pincodeDateService.getById(corporateFinalInfoRequest.getSecondAddress().getDistrictMappingId()));
-						
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-					// TODO: handle exception
-				}
-			}
-			
-			
-			
-			
-			
-			
 			corporateFinalViewResponse
 					.setUdhyogAadharNo(!CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getAadhar())
 							? corporateFinalInfoRequest.getAadhar()
@@ -1691,6 +1664,67 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 					toApplicationId);
 			e1.printStackTrace();
 		}
+		
+		
+		
+		// address
+		
+		CorporateFinalInfoRequest corporateFinalInfoRequest;
+		try {
+			corporateFinalInfoRequest = corporateFinalInfoService.get(userId,toApplicationId);
+			//ADMIN OFFICE ADDRESS
+			try {
+				if(corporateFinalInfoRequest.getSecondAddress().getDistrictMappingId() != null) {
+					
+					PincodeDataResponse pindata=pincodeDateService.getById(corporateFinalInfoRequest.getSecondAddress().getDistrictMappingId());
+					corporateFinalViewResponse.setAdminAddDist(pindata.getDistrictName());
+					corporateFinalViewResponse.setAdminAddTaluko(pindata.getTaluka());
+					pindata.getTaluka();
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				// TODO: handle exception
+			}
+			if(!CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getSecondAddress())){
+				
+				corporateFinalViewResponse.setAdminAdd( (corporateFinalInfoRequest.getSecondAddress().getPremiseNumber()!=null ? (CommonUtils.commaReplace(corporateFinalInfoRequest.getSecondAddress().getPremiseNumber())) :"") + (corporateFinalInfoRequest.getSecondAddress().getStreetName() != null ? (CommonUtils.commaReplace(corporateFinalInfoRequest.getSecondAddress().getStreetName())) : "") + (corporateFinalInfoRequest.getSecondAddress().getLandMark() != null ? (CommonUtils.commaReplace(corporateFinalInfoRequest.getSecondAddress().getLandMark())) : "")+ (corporateFinalViewResponse.getAdminAddDist() != null ?(CommonUtils.commaReplace(corporateFinalViewResponse.getAdminAddDist())) :"")+ (corporateFinalViewResponse.getAdminAddTaluko() != null ? (CommonUtils.commaReplace(corporateFinalViewResponse.getAdminAddTaluko())) : "") + (corporateFinalInfoRequest.getSecondAddress().getPincode() != null ? (corporateFinalInfoRequest.getSecondAddress().getPincode()) : ""));
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+				// TODO: handle exception
+			}	
+		
+		//address
+		
+		
+		try {
+			corporateFinalInfoRequest = corporateFinalInfoService.get(userId,toApplicationId);
+			//Reg OFFICE ADDRESS
+			try {
+				if(corporateFinalInfoRequest.getSecondAddress().getDistrictMappingId() != null) {
+					
+					PincodeDataResponse pindata=pincodeDateService.getById(corporateFinalInfoRequest.getFirstAddress().getDistrictMappingId());
+					corporateFinalViewResponse.setRegAddDist(pindata.getDistrictName());
+					corporateFinalViewResponse.setRegAddTaluko(pindata.getTaluka());
+					pindata.getTaluka();
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				// TODO: handle exception
+			}
+			if(!CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getFirstAddress())){
+				
+				corporateFinalViewResponse.setRegAdd( (corporateFinalInfoRequest.getFirstAddress().getPremiseNumber()!=null ? (CommonUtils.commaReplace(corporateFinalInfoRequest.getFirstAddress().getPremiseNumber())) :"") + (corporateFinalInfoRequest.getFirstAddress().getStreetName() != null ? (CommonUtils.commaReplace(corporateFinalInfoRequest.getFirstAddress().getStreetName())) : "") + (corporateFinalInfoRequest.getFirstAddress().getLandMark() != null ? (CommonUtils.commaReplace(corporateFinalInfoRequest.getFirstAddress().getLandMark())) : "")+ (corporateFinalViewResponse.getRegAddDist() != null ?(CommonUtils.commaReplace(corporateFinalViewResponse.getRegAddDist())) :"")+ (corporateFinalViewResponse.getRegAddTaluko() != null ? (CommonUtils.commaReplace(corporateFinalViewResponse.getRegAddTaluko())) : "") + (corporateFinalInfoRequest.getFirstAddress().getPincode() != null ? (corporateFinalInfoRequest.getFirstAddress().getPincode()) : ""));
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+				// TODO: handle exception
+			}	
+		
+		
+		
 
 		// GET DOCUMENTS
 		DocumentRequest documentRequest = new DocumentRequest();
