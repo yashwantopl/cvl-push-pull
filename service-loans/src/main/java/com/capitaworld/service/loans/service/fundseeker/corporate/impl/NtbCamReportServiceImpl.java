@@ -5,7 +5,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -82,6 +84,7 @@ import com.capitaworld.service.scoring.model.ScoringResponse;
 import com.capitaworld.service.scoring.utils.ScoreParameter.NTB;
 import com.capitaworld.service.thirdparty.model.CGTMSEDataResponse;
 import com.capitaworld.service.thirdpaty.client.ThirdPartyClient;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 
 @Service
@@ -176,7 +179,7 @@ public class NtbCamReportServiceImpl implements NtbCamReportService{
 			matchRequest.setProductId(productId);
 			matchRequest.setBusinessTypeId(loanApplicationMaster.getBusinessTypeId());
 			MatchDisplayResponse matchResponse= matchEngineClient.displayMatchesOfCorporate(matchRequest);
-			map.put("matchesResponse", !CommonUtils.isListNullOrEmpty(matchResponse.getMatchDisplayObjectList()) ? CommonUtils.printFields(matchResponse.getMatchDisplayObjectList()) : " ");
+			map.put("matchesResponse", !CommonUtils.isListNullOrEmpty(matchResponse.getMatchDisplayObjectList()) ? CommonUtils.printFields(matchResponse.getMatchDisplayObjectList(),null) : " ");
 		}catch (Exception e) {
 			logger.info("Error while getting Match Engine data");
 			e.printStackTrace();
@@ -320,10 +323,14 @@ public class NtbCamReportServiceImpl implements NtbCamReportService{
 		try {
 			EligibilityResponse eligibilityResp = eligibilityClient.corporateLoanData(eligibilityReq);
 			if(!CommonUtils.isObjectNullOrEmpty(eligibilityResp)) {
-				map.put("assLimits",CommonUtils.printFields(eligibilityResp.getData()));
+				map.put("assLimits",CommonUtils.convertToDoubleForXml(MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)eligibilityResp.getData(), CLEligibilityRequest.class), new HashMap<>()));
+				CLEligibilityRequest clRequestList = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)eligibilityResp.getData(), CLEligibilityRequest.class);
+				Map<Long, List<CLEligibilityRequest>> dirEl = new HashMap<>();
+				for(CLEligibilityRequest clEligibilityRequest : clRequestList.getDirectorsCalculations()) {
+					dirEl = clRequestList.getDirectorsCalculations().stream().collect(Collectors.groupingBy(CLEligibilityRequest:: getDirectorId));
+				}
+				map.put("dirEligibility", CommonUtils.printFields(dirEl, new HashMap<>()));
 			}
-//			map.put("assLimits",CommonUtils.convertToDoubleForXml(MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)eligibilityResp.getData(), CLEligibilityRequest.class), new HashMap<>()));
-		
 		} catch (Exception e1) {
 			e1.printStackTrace();
 			logger.info("Error while getting Eligibility data");
@@ -341,7 +348,7 @@ public class NtbCamReportServiceImpl implements NtbCamReportService{
 				for(ScoringResponse o : scoringResponse.getScoringResponseList()) {
 					map2 = new HashMap<>();
 					ProposalScoreResponse proposalScoreResponse =  (ProposalScoreResponse)MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)o.getDataObject(),ProposalScoreResponse.class);
-					map2.put("dataObject", CommonUtils.printFields(proposalScoreResponse));
+					map2.put("dataObject", CommonUtils.printFields(proposalScoreResponse,null));
 					//Filter Parameters
 					List<LinkedHashMap<String, Object>> mapList = (List<LinkedHashMap<String, Object>>)o.getDataList();
 					List<ProposalScoreDetailResponse> newMapList = new ArrayList<>(mapList.size());
@@ -350,47 +357,47 @@ public class NtbCamReportServiceImpl implements NtbCamReportService{
 					}
 					List<ProposalScoreDetailResponse> collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(NTB.WORKING_EXPERIENCE)).collect(Collectors.toList());
 					if(!CommonUtils.isListNullOrEmpty(collect)) {
-						map2.put(NTB.WORKING_EXPERIENCE, CommonUtils.printFields(collect.get(0)));
+						map2.put(NTB.WORKING_EXPERIENCE, CommonUtils.printFields(collect.get(0),null));
 					}
 					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(NTB.IS_FAMILY_MEMBER_IN_LINE_OF_BUSINESS)).collect(Collectors.toList());
 					if(!CommonUtils.isListNullOrEmpty(collect)) {
-						map2.put(NTB.IS_FAMILY_MEMBER_IN_LINE_OF_BUSINESS, CommonUtils.printFields(collect.get(0)));
+						map2.put(NTB.IS_FAMILY_MEMBER_IN_LINE_OF_BUSINESS, CommonUtils.printFields(collect.get(0),null));
 					}
 					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(NTB.AGE_OF_PROMOTOR)).collect(Collectors.toList());
 					if(!CommonUtils.isListNullOrEmpty(collect)) {
-						map2.put(NTB.AGE_OF_PROMOTOR, CommonUtils.printFields(collect.get(0)));
+						map2.put(NTB.AGE_OF_PROMOTOR, CommonUtils.printFields(collect.get(0),null));
 					}
 					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(NTB.EDUCATION_QUALIFICATION)).collect(Collectors.toList());
 					if(!CommonUtils.isListNullOrEmpty(collect)) {
-						map2.put(NTB.EDUCATION_QUALIFICATION, CommonUtils.printFields(collect.get(0)));
+						map2.put(NTB.EDUCATION_QUALIFICATION, CommonUtils.printFields(collect.get(0),null));
 					}
 					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(NTB.EMPLOYMENT_TYPE)).collect(Collectors.toList());
 					if(!CommonUtils.isListNullOrEmpty(collect)) {
-						map2.put(NTB.EMPLOYMENT_TYPE, CommonUtils.printFields(collect.get(0)));
+						map2.put(NTB.EMPLOYMENT_TYPE, CommonUtils.printFields(collect.get(0),null));
 					}
 					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(NTB.HOUSE_OWNERSHIP)).collect(Collectors.toList());
 					if(!CommonUtils.isListNullOrEmpty(collect)) {
-						map2.put(NTB.HOUSE_OWNERSHIP, CommonUtils.printFields(collect.get(0)));
+						map2.put(NTB.HOUSE_OWNERSHIP, CommonUtils.printFields(collect.get(0),null));
 					}
 					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(NTB.MARITIAL_STATUS)).collect(Collectors.toList());
 					if(!CommonUtils.isListNullOrEmpty(collect)) {
-						map2.put(NTB.MARITIAL_STATUS, CommonUtils.printFields(collect.get(0)));
+						map2.put(NTB.MARITIAL_STATUS, CommonUtils.printFields(collect.get(0),null));
 					}
 					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(NTB.ITR_SALARY_INCOME)).collect(Collectors.toList());
 					if(!CommonUtils.isListNullOrEmpty(collect)) {
-						map2.put(NTB.ITR_SALARY_INCOME, CommonUtils.printFields(collect.get(0)));
+						map2.put(NTB.ITR_SALARY_INCOME, CommonUtils.printFields(collect.get(0),null));
 					}
 					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(NTB.FIXED_OBLIGATION_RATIO)).collect(Collectors.toList());
 					if(!CommonUtils.isListNullOrEmpty(collect)) {
-						map2.put(NTB.FIXED_OBLIGATION_RATIO, CommonUtils.printFields(collect.get(0)));
+						map2.put(NTB.FIXED_OBLIGATION_RATIO, CommonUtils.printFields(collect.get(0),null));
 					}
 					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(NTB.CHEQUE_BOUNCES)).collect(Collectors.toList());
 					if(!CommonUtils.isListNullOrEmpty(collect)) {
-						map2.put(NTB.CHEQUE_BOUNCES, CommonUtils.printFields(collect.get(0)));
+						map2.put(NTB.CHEQUE_BOUNCES, CommonUtils.printFields(collect.get(0),null));
 					}
 					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(NTB.CIBIL_TRANSUNION_SCORE)).collect(Collectors.toList());
 					if(!CommonUtils.isListNullOrEmpty(collect)) {
-						map2.put(NTB.CIBIL_TRANSUNION_SCORE, CommonUtils.printFields(collect.get(0)));
+						map2.put(NTB.CIBIL_TRANSUNION_SCORE, CommonUtils.printFields(collect.get(0),null));
 					}
 					scoreResponse.add(map2);
 					}
@@ -400,7 +407,7 @@ public class NtbCamReportServiceImpl implements NtbCamReportService{
 					List<Map<String,Object>> scoreResponse = new ArrayList<>(scoringResponse.getDataList().size());
 					Map<String,Object> companyMap =new HashMap<>();
 					ProposalScoreResponse proposalScoreResponse =  (ProposalScoreResponse)MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)scoringResponse.getDataObject(),ProposalScoreResponse.class);
-					companyMap.put("companyDataObject",CommonUtils.printFields(proposalScoreResponse));
+					companyMap.put("companyDataObject",CommonUtils.printFields(proposalScoreResponse,null));
 					map.put("totalWeight",CommonUtils.convertValue(CommonUtils.addNumbers(proposalScoreResponse.getBusinessRiskWeight(), proposalScoreResponse.getFinancialRiskWeight(), proposalScoreResponse.getManagementRiskWeight())));
 					map.put("totalWeightActualScore",CommonUtils.convertValue(CommonUtils.addNumbers(proposalScoreResponse.getManagementRiskWeightOfScoring(), proposalScoreResponse.getFinancialRiskWeightOfScoring(), proposalScoreResponse.getBusinessRiskWeightOfScoring())));
 					map.put("totalWeightOutOfScore",CommonUtils.convertValue(CommonUtils.addNumbers(proposalScoreResponse.getManagementRiskMaxTotalWeight(), proposalScoreResponse.getFinancialRiskMaxTotalWeight(), proposalScoreResponse.getBusinessRiskMaxTotalWeight())));
@@ -412,75 +419,75 @@ public class NtbCamReportServiceImpl implements NtbCamReportService{
 					}
 					List<ProposalScoreDetailResponse> collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(NTB.WORKING_EXPERIENCE)).collect(Collectors.toList());
 					if(!CommonUtils.isListNullOrEmpty(collect)) {
-						companyMap.put(NTB.WORKING_EXPERIENCE, CommonUtils.printFields(collect.get(0)));
+						companyMap.put(NTB.WORKING_EXPERIENCE, CommonUtils.printFields(collect.get(0),null));
 					}
 					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(NTB.IS_FAMILY_MEMBER_IN_LINE_OF_BUSINESS)).collect(Collectors.toList());
 					if(!CommonUtils.isListNullOrEmpty(collect)) {
-						companyMap.put(NTB.IS_FAMILY_MEMBER_IN_LINE_OF_BUSINESS, CommonUtils.printFields(collect.get(0)));
+						companyMap.put(NTB.IS_FAMILY_MEMBER_IN_LINE_OF_BUSINESS, CommonUtils.printFields(collect.get(0),null));
 					}
 					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(NTB.AGE_OF_PROMOTOR)).collect(Collectors.toList());
 					if(!CommonUtils.isListNullOrEmpty(collect)) {
-						companyMap.put(NTB.AGE_OF_PROMOTOR, CommonUtils.printFields(collect.get(0)));
+						companyMap.put(NTB.AGE_OF_PROMOTOR, CommonUtils.printFields(collect.get(0),null));
 					}
 					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(NTB.EDUCATION_QUALIFICATION)).collect(Collectors.toList());
 					if(!CommonUtils.isListNullOrEmpty(collect)) {
-						companyMap.put(NTB.EDUCATION_QUALIFICATION, CommonUtils.printFields(collect.get(0)));
+						companyMap.put(NTB.EDUCATION_QUALIFICATION, CommonUtils.printFields(collect.get(0),null));
 					}
 					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(NTB.EMPLOYMENT_TYPE)).collect(Collectors.toList());
 					if(!CommonUtils.isListNullOrEmpty(collect)) {
-						companyMap.put(NTB.EMPLOYMENT_TYPE, CommonUtils.printFields(collect.get(0)));
+						companyMap.put(NTB.EMPLOYMENT_TYPE, CommonUtils.printFields(collect.get(0),null));
 					}
 					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(NTB.HOUSE_OWNERSHIP)).collect(Collectors.toList());
 					if(!CommonUtils.isListNullOrEmpty(collect)) {
-						companyMap.put(NTB.HOUSE_OWNERSHIP, CommonUtils.printFields(collect.get(0)));
+						companyMap.put(NTB.HOUSE_OWNERSHIP, CommonUtils.printFields(collect.get(0),null));
 					}
 					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(NTB.MARITIAL_STATUS)).collect(Collectors.toList());
 					if(!CommonUtils.isListNullOrEmpty(collect)) {
-						companyMap.put(NTB.MARITIAL_STATUS, CommonUtils.printFields(collect.get(0)));
+						companyMap.put(NTB.MARITIAL_STATUS, CommonUtils.printFields(collect.get(0),null));
 					}
 					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(NTB.ITR_SALARY_INCOME)).collect(Collectors.toList());
 					if(!CommonUtils.isListNullOrEmpty(collect)) {
-						companyMap.put(NTB.ITR_SALARY_INCOME, CommonUtils.printFields(collect.get(0)));
+						companyMap.put(NTB.ITR_SALARY_INCOME, CommonUtils.printFields(collect.get(0),null));
 					}
 					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(NTB.FIXED_OBLIGATION_RATIO)).collect(Collectors.toList());
 					if(!CommonUtils.isListNullOrEmpty(collect)) {
-						companyMap.put(NTB.FIXED_OBLIGATION_RATIO, CommonUtils.printFields(collect.get(0)));
+						companyMap.put(NTB.FIXED_OBLIGATION_RATIO, CommonUtils.printFields(collect.get(0),null));
 					}
 					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(NTB.CHEQUE_BOUNCES)).collect(Collectors.toList());
 					if(!CommonUtils.isListNullOrEmpty(collect)) {
-						companyMap.put(NTB.CHEQUE_BOUNCES, CommonUtils.printFields(collect.get(0)));
+						companyMap.put(NTB.CHEQUE_BOUNCES, CommonUtils.printFields(collect.get(0),null));
 					}
 					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(NTB.CIBIL_TRANSUNION_SCORE)).collect(Collectors.toList());
 					if(!CommonUtils.isListNullOrEmpty(collect)) {
-						companyMap.put(NTB.CIBIL_TRANSUNION_SCORE, CommonUtils.printFields(collect.get(0)));
+						companyMap.put(NTB.CIBIL_TRANSUNION_SCORE, CommonUtils.printFields(collect.get(0),null));
 					}
 					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(NTB.CNW)).collect(Collectors.toList());
 					if(!CommonUtils.isListNullOrEmpty(collect)) {
-						companyMap.put(NTB.CNW, CommonUtils.printFields(collect.get(0)));
+						companyMap.put(NTB.CNW, CommonUtils.printFields(collect.get(0),null));
 					}
 					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(NTB.CONSTITUTION_OF_BORROWER)).collect(Collectors.toList());
 					if(!CommonUtils.isListNullOrEmpty(collect)) {
-						companyMap.put(NTB.CONSTITUTION_OF_BORROWER, CommonUtils.printFields(collect.get(0)));
+						companyMap.put(NTB.CONSTITUTION_OF_BORROWER, CommonUtils.printFields(collect.get(0),null));
 					}
 					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(NTB.DPD)).collect(Collectors.toList());
 					if(!CommonUtils.isListNullOrEmpty(collect)) {
-						companyMap.put(NTB.DPD, CommonUtils.printFields(collect.get(0)));
+						companyMap.put(NTB.DPD, CommonUtils.printFields(collect.get(0),null));
 					}
 					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(NTB.ASSET_COVERAGE_RATIO)).collect(Collectors.toList());
 					if(!CommonUtils.isListNullOrEmpty(collect)) {
-						companyMap.put(NTB.ASSET_COVERAGE_RATIO, CommonUtils.printFields(collect.get(0)));
+						companyMap.put(NTB.ASSET_COVERAGE_RATIO, CommonUtils.printFields(collect.get(0),null));
 					}
 					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(NTB.UNIT_FACTORY_PREMISES)).collect(Collectors.toList());
 					if(!CommonUtils.isListNullOrEmpty(collect)) {
-						companyMap.put(NTB.UNIT_FACTORY_PREMISES, CommonUtils.printFields(collect.get(0)));
+						companyMap.put(NTB.UNIT_FACTORY_PREMISES, CommonUtils.printFields(collect.get(0),null));
 					}
 					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(NTB.BALANCE_GESTATION_PERIOD)).collect(Collectors.toList());
 					if(!CommonUtils.isListNullOrEmpty(collect)) {
-						companyMap.put(NTB.BALANCE_GESTATION_PERIOD, CommonUtils.printFields(collect.get(0)));
+						companyMap.put(NTB.BALANCE_GESTATION_PERIOD, CommonUtils.printFields(collect.get(0),null));
 					}
 					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(NTB.ENVIRONMENT_CATEGORY)).collect(Collectors.toList());
 					if(!CommonUtils.isListNullOrEmpty(collect)) {
-						companyMap.put(NTB.ENVIRONMENT_CATEGORY, CommonUtils.printFields(collect.get(0)));
+						companyMap.put(NTB.ENVIRONMENT_CATEGORY, CommonUtils.printFields(collect.get(0),null));
 					}
 					scoreResponse.add(companyMap);
 					map.put("companyScoreResponse", scoreResponse);
@@ -494,7 +501,7 @@ public class NtbCamReportServiceImpl implements NtbCamReportService{
 		try {
 			CGTMSEDataResponse cgtmseDataResponse = thirdPartyClient.getCalulation(applicationId);
 			if(!CommonUtils.isObjectNullOrEmpty(cgtmseDataResponse)) {
-				map.put("cgtmseData", CommonUtils.printFields(cgtmseDataResponse));
+				map.put("cgtmseData", CommonUtils.printFields(cgtmseDataResponse,null));
 				map.put("maxCgtmseCoverageAmount", !CommonUtils.isObjectNullOrEmpty(cgtmseDataResponse.getMaxCgtmseCoverageAmount()) ? CommonUtils.convertValueWithoutDecimal(cgtmseDataResponse.getMaxCgtmseCoverageAmount()): "-");
 				map.put("identityAmount",  !CommonUtils.isObjectNullOrEmpty(cgtmseDataResponse.getIdentityAmount()) ? CommonUtils.convertValueWithoutDecimal(cgtmseDataResponse.getIdentityAmount()):"-");
 				map.put("gutAmt",!CommonUtils.isObjectNullOrEmpty(cgtmseDataResponse.getGutAmt()) ? CommonUtils.convertValueWithoutDecimal(cgtmseDataResponse.getGutAmt()):"-");
@@ -507,7 +514,7 @@ public class NtbCamReportServiceImpl implements NtbCamReportService{
 				map.put("percTerms",!CommonUtils.isObjectNullOrEmpty(cgtmseDataResponse.getPercTerms()) ? CommonUtils.convertValue(cgtmseDataResponse.getPercTerms()):"-");
 				map.put("assetAqu",!CommonUtils.isObjectNullOrEmpty(cgtmseDataResponse.getAssetAqusition()) ? CommonUtils.convertValueWithoutDecimal(cgtmseDataResponse.getAssetAqusition()):"-");
 				if(!CommonUtils.isObjectNullOrEmpty(cgtmseDataResponse.getCgtmseResponse()) && !CommonUtils.isObjectNullOrEmpty(cgtmseDataResponse.getCgtmseResponse().getDetails())) {
-					map.put("cgtmseBankWise", CommonUtils.printFields(cgtmseDataResponse.getCgtmseResponse().getDetails()));
+					map.put("cgtmseBankWise", CommonUtils.printFields(cgtmseDataResponse.getCgtmseResponse().getDetails(),null));
 				}
 			}
 		} catch (Exception e) {
@@ -520,7 +527,7 @@ public class NtbCamReportServiceImpl implements NtbCamReportService{
 				try {
 					AnalyticsResponse hunterResp =fraudAnalyticsClient.getRuleAnalysisData(applicationId);
 					if(!CommonUtils.isObjectListNull(hunterResp,hunterResp.getData())) {
-						map.put("hunterResponse",  CommonUtils.printFields(hunterResp.getData()));
+						map.put("hunterResponse",  CommonUtils.printFields(hunterResp.getData(),null));
 					}
 				} catch (Exception e1) {
 					e1.printStackTrace();
@@ -530,20 +537,20 @@ public class NtbCamReportServiceImpl implements NtbCamReportService{
 				if(isFinalView) {
 					//ASSOCIATE ENTITY
 					try {
-						map.put("associatedConcerns",CommonUtils.printFields(associatedConcernDetailService.getAssociatedConcernsDetailList(applicationId, userId)));
+						map.put("associatedConcerns",CommonUtils.printFields(associatedConcernDetailService.getAssociatedConcernsDetailList(applicationId, userId),null));
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
 					
 					//DETAILS OF GUARANTER
 					try {
-							map.put("guaDetails", CommonUtils.printFields(guarantorsCorporateDetailService.getGuarantorsCorporateDetailList(applicationId, userId)));
+							map.put("guaDetails", CommonUtils.printFields(guarantorsCorporateDetailService.getGuarantorsCorporateDetailList(applicationId, userId),null));
 					} catch (Exception e) {
 							logger.error("Problem to get Data of Details of Guarantor {}", e);
 					}
 				    //MONTHLY TURNOVER
 					try {
-						map.put("monthlyTurnOver", CommonUtils.printFields(monthlyTurnoverDetailService.getMonthlyTurnoverDetailList(applicationId, userId)));
+						map.put("monthlyTurnOver", CommonUtils.printFields(monthlyTurnoverDetailService.getMonthlyTurnoverDetailList(applicationId, userId),null));
 					} catch (Exception e) {
 						logger.error("Problem to get Data of Monthly Turnover {}", e);
 					}
@@ -559,7 +566,7 @@ public class NtbCamReportServiceImpl implements NtbCamReportService{
 								costOfProjectResponse.setParticulars(Particular.getById(Integer.parseInt(costOfProjectRequest.getParticularsId().toString())).getValue());
 							    costOfProjectResponses.add(costOfProjectResponse);
 						}
-						map.put("costEstimate", CommonUtils.printFields(costOfProjectResponses));
+						map.put("costEstimate", CommonUtils.printFields(costOfProjectResponses,null));
 					} catch (Exception e1) {
 						logger.error("Problem to get Data of Total cost of project{}", e1);
 					}
@@ -575,14 +582,14 @@ public class NtbCamReportServiceImpl implements NtbCamReportService{
 								detailResponse.setFinanceMeansCategory(FinanceCategory.getById(Integer.parseInt(financeMeansDetailRequest.getFinanceMeansCategoryId().toString())).getValue());
 							financeMeansDetailResponsesList.add(detailResponse);
 						}
-						map.put("meansOfFinance", CommonUtils.printFields(financeMeansDetailResponsesList));
+						map.put("meansOfFinance", CommonUtils.printFields(financeMeansDetailResponsesList,null));
 					} catch (Exception e1) {
 						logger.error("Problem to get Data of Finance Means Details {}", e1);
 					}
 					
 					//COLLATERAL SECURITY			
 					try {
-						map.put("collateralSecurity", CommonUtils.printFields(securityCorporateDetailsService.getsecurityCorporateDetailsList(applicationId, userId)));
+						map.put("collateralSecurity", CommonUtils.printFields(securityCorporateDetailsService.getsecurityCorporateDetailsList(applicationId, userId),null));
 					} catch (Exception e) {
 						logger.error("Problem to get Data of Security Details {}", e);
 					}
