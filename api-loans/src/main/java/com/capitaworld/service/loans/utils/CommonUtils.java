@@ -1441,6 +1441,22 @@ public enum APIFlags {
 		}
 		return null;
 	}
+    
+    public static String convertString(Object obj){
+    	try {
+    		if(!CommonUtils.isObjectNullOrEmpty(obj)) {
+    			if(obj instanceof String) {
+    				String value = (String) obj;
+        			return value;	
+    			} else {
+    				return String.valueOf(obj);
+    			}
+    		}	
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 	
 	// commaReplace method teaser and final view...
 	
