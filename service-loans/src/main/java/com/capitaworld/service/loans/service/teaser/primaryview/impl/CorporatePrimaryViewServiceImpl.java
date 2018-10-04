@@ -46,6 +46,8 @@ import com.capitaworld.service.loans.model.DirectorBackgroundDetailResponse;
 import com.capitaworld.service.loans.model.DirectorPersonalDetailResponse;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailResponse;
+import com.capitaworld.service.loans.model.PincodeDataResponse;
+import com.capitaworld.service.loans.model.corporate.CorporateFinalInfoRequest;
 import com.capitaworld.service.loans.model.teaser.primaryview.CorporatePrimaryViewResponse;
 import com.capitaworld.service.loans.repository.fundprovider.TermLoanParameterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.WcTlLoanParameterRepository;
@@ -55,6 +57,7 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.DirectorPer
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
 import com.capitaworld.service.loans.service.common.PincodeDateService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateFinalInfoService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.DirectorBackgroundDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
 import com.capitaworld.service.loans.service.irr.IrrService;
@@ -178,6 +181,9 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 
 	@Autowired
 	private FraudAnalyticsClient fraudAnalyticsClient;
+	
+	@Autowired
+	private CorporateFinalInfoService corporateFinalInfoService;
 
 	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 	DecimalFormat decim = new DecimalFormat("#,###.00");
@@ -1166,6 +1172,65 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 					toApplicationId);
 			e1.printStackTrace();
 		}
+		
+		// address
+		
+		CorporateFinalInfoRequest corporateFinalInfoRequest;
+		try {
+			corporateFinalInfoRequest = corporateFinalInfoService.get(userId,toApplicationId);
+			//ADMIN OFFICE ADDRESS
+			try {
+				if(corporateFinalInfoRequest.getSecondAddress().getDistrictMappingId() != null) {
+					
+					PincodeDataResponse pindata=pincodeDateService.getById(corporateFinalInfoRequest.getSecondAddress().getDistrictMappingId());
+					corporatePrimaryViewResponse.setAdminAddDist(pindata.getDistrictName());
+					corporatePrimaryViewResponse.setAdminAddTaluko(pindata.getTaluka());
+					pindata.getTaluka();
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				// TODO: handle exception
+			}
+			if(!CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getSecondAddress())){
+				
+				corporatePrimaryViewResponse.setAdminAdd( (corporateFinalInfoRequest.getSecondAddress().getPremiseNumber()!=null ? (CommonUtils.commaReplace(corporateFinalInfoRequest.getSecondAddress().getPremiseNumber())) :"") + (corporateFinalInfoRequest.getSecondAddress().getStreetName() != null ? (CommonUtils.commaReplace(corporateFinalInfoRequest.getSecondAddress().getStreetName())) : "") + (corporateFinalInfoRequest.getSecondAddress().getLandMark() != null ? (CommonUtils.commaReplace(corporateFinalInfoRequest.getSecondAddress().getLandMark())) : "")+ (corporatePrimaryViewResponse.getAdminAddDist() != null ?(CommonUtils.commaReplace(corporatePrimaryViewResponse.getAdminAddDist())) :"")+ (corporatePrimaryViewResponse.getAdminAddTaluko() != null ? (CommonUtils.commaReplace(corporatePrimaryViewResponse.getAdminAddTaluko())) : "") + (corporateFinalInfoRequest.getSecondAddress().getPincode() != null ? (corporateFinalInfoRequest.getSecondAddress().getPincode()) : ""));
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+				// TODO: handle exception
+			}	
+			
+		
+		
+		// address
+		
+				
+				try {
+					corporateFinalInfoRequest = corporateFinalInfoService.get(userId,toApplicationId);
+					//Reg OFFICE ADDRESS
+					try {
+						if(corporateFinalInfoRequest.getSecondAddress().getDistrictMappingId() != null) {
+							
+							PincodeDataResponse pindata=pincodeDateService.getById(corporateFinalInfoRequest.getFirstAddress().getDistrictMappingId());
+							corporatePrimaryViewResponse.setRegAddDist(pindata.getDistrictName());
+							corporatePrimaryViewResponse.setRegAddTaluko(pindata.getTaluka());
+							pindata.getTaluka();
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+						// TODO: handle exception
+					}
+					if(!CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getFirstAddress())){
+						
+						corporatePrimaryViewResponse.setRegAdd( (corporateFinalInfoRequest.getFirstAddress().getPremiseNumber()!=null ? (CommonUtils.commaReplace(corporateFinalInfoRequest.getFirstAddress().getPremiseNumber())) :"") + (corporateFinalInfoRequest.getFirstAddress().getStreetName() != null ? (CommonUtils.commaReplace(corporateFinalInfoRequest.getFirstAddress().getStreetName())) : "") + (corporateFinalInfoRequest.getFirstAddress().getLandMark() != null ? (CommonUtils.commaReplace(corporateFinalInfoRequest.getFirstAddress().getLandMark())) : "")+ (corporatePrimaryViewResponse.getRegAddDist() != null ?(CommonUtils.commaReplace(corporatePrimaryViewResponse.getRegAddDist())) :"")+ (corporatePrimaryViewResponse.getRegAddTaluko() != null ? (CommonUtils.commaReplace(corporatePrimaryViewResponse.getRegAddTaluko())) : "") + (corporateFinalInfoRequest.getFirstAddress().getPincode() != null ? (corporateFinalInfoRequest.getFirstAddress().getPincode()) : ""));
+					}
+				}
+				catch (Exception e) {
+					e.printStackTrace();
+						// TODO: handle exception
+					}	
+		
 
 		// GET DOCUMENTS
 		DocumentRequest documentRequest = new DocumentRequest();
@@ -1235,4 +1300,5 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 	public String convertValue(Double value) {
 		return !CommonUtils.isObjectNullOrEmpty(value) ? decim.format(value).toString() : "0";
 	}
+	
 }
