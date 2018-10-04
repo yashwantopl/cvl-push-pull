@@ -35,6 +35,16 @@ public class ProposalDetailsAdminRequest implements Serializable {
     private Double emi;
     private Double processingFee;
     private Date fromDate;
+    private String contactPersonName;
+    private String telephoneNo;
+    private String contactPersonNumber;
+    private String applicationCode;
+    private String code;
+    private String streetName;
+    private String premisesNo;
+    private String contactPersonEmail;
+    
+    
     private Date toDate;
     
 	public Long getApplicationId() {
@@ -260,6 +270,69 @@ public class ProposalDetailsAdminRequest implements Serializable {
 	public void setToDate(Date toDate) {
 		this.toDate = toDate;
 	}
-	
+
+	public String getContactPersonName() {
+		return contactPersonName;
+	}
+
+	public void setContactPersonName(String cantactPersonName) {
+		this.contactPersonName = cantactPersonName;
+	}
+
+	public String getTelephoneNo() {
+		return telephoneNo;
+	}
+
+	public void setTelephoneNo(String telephoneNo) {
+		this.telephoneNo = telephoneNo;
+	}
+
+	public String getContactPersonNumber() {
+		return contactPersonNumber;
+	}
+
+	public void setContactPersonNumber(String contactPersonNumber) {
+		this.contactPersonNumber = contactPersonNumber;
+	}
+
+	public String getApplicationCode() {
+		return applicationCode;
+	}
+
+	public void setApplicationCode(String applicationCode) {
+		this.applicationCode = applicationCode;
+	}
+
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
+	}
+
+	public String getStreetName() {
+		return streetName;
+	}
+
+	public void setStreetName(String streetName) {
+		this.streetName = streetName;
+	}
+
+	public String getPremisesNo() {
+		return premisesNo;
+	}
+
+	public void setPremisesNo(String premisesNo) {
+		this.premisesNo = premisesNo;
+	}
+
+	public String getContactPersonEmail() {
+		return contactPersonEmail;
+	}
+
+	public void setContactPersonEmail(String contactPersonEmail) {
+		this.contactPersonEmail = contactPersonEmail;
+	}
 }
 

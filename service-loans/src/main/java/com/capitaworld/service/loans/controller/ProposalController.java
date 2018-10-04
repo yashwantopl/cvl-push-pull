@@ -27,6 +27,7 @@ import com.capitaworld.service.matchengine.model.DisbursementDetailsModel;
 import com.capitaworld.service.matchengine.model.ProposalCountResponse;
 import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
 import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
+import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.UsersRequest;
 
 
@@ -41,6 +42,9 @@ public class ProposalController {
 	
 	@Autowired
 	private AsyncComponent asyncComponent;
+	
+//	@Autowired
+//	private UsersClient userClient;
 	
 	@RequestMapping(value = "/fundproviderProposal", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> fundproviderProposal(@RequestBody ProposalMappingRequest request,HttpServletRequest httpRequest,@RequestParam(value = "clientId", required = false) Long clientId) {
@@ -322,13 +326,14 @@ public class ProposalController {
 	public ResponseEntity<LoansResponse> getProposalByOrgId(@RequestBody ProposalDetailsAdminRequest request, HttpServletRequest httpServletRequest) {
 		
 		Long userOrgId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ORG_ID);
-
-		if(CommonUtils.isObjectNullOrEmpty(userOrgId) || CommonUtils.isObjectNullOrEmpty(request.getFromDate()) || CommonUtils.isObjectNullOrEmpty(request.getToDate())) {
+		Long userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
+		
+		if(CommonUtils.isObjectNullOrEmpty(userOrgId) || CommonUtils.isObjectNullOrEmpty(request.getFromDate()) || CommonUtils.isObjectNullOrEmpty(request.getToDate()) || CommonUtils.isObjectNullOrEmpty(userId)) {
 			logger.info("Bad Request !!");
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Request parameter null or empty !!", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}
 		
-		List<ProposalDetailsAdminRequest> dataList = proposalService.getProposalsByOrgId(userOrgId, request);
+		List<ProposalDetailsAdminRequest> dataList = proposalService.getProposalsByOrgId(userOrgId, request, userId);
 		
 		LoansResponse response = new LoansResponse("Data Found.", HttpStatus.OK.value());
 		response.setData(dataList);
