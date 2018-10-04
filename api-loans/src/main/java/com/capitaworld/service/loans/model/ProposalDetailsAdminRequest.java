@@ -1,8 +1,9 @@
 package com.capitaworld.service.loans.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import java.io.Serializable;
+import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ProposalDetailsAdminRequest implements Serializable {
@@ -28,8 +29,15 @@ public class ProposalDetailsAdminRequest implements Serializable {
     private String state;
     private String branchName;
     private String bankImageUrl;
-
-    public Long getApplicationId() {
+    private String userName;
+    private String mobile;
+    private Date createdDate;
+    private Double emi;
+    private Double processingFee;
+    private Date fromDate;
+    private Date toDate;
+    
+	public Long getApplicationId() {
         return applicationId;
     }
 
@@ -196,4 +204,62 @@ public class ProposalDetailsAdminRequest implements Serializable {
     public void setBankImageUrl(String bankImageUrl) {
         this.bankImageUrl = bankImageUrl;
     }
+
+	public String getUserName() {
+		return userName;
+	}
+
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
+
+	public String getMobile() {
+		return mobile;
+	}
+
+	public void setMobile(String mobile) {
+		this.mobile = mobile;
+	}
+
+	public Date getCreatedDate() {
+		return createdDate;
+	}
+
+	public void setCreatedDate(Date createdDate) {
+		this.createdDate = createdDate;
+	}
+ 
+	public Double getEmi() {
+		return emi;
+	}
+
+	public void setEmi(Double emi) {
+		this.emi = emi;
+	}
+
+	public Double getProcessingFee() {
+		return processingFee;
+	}
+
+	public void setProcessingFee(Double processingFee) {
+		this.processingFee = processingFee;
+	}
+
+	public Date getFromDate() {
+		return fromDate;
+	}
+
+	public void setFromDate(Date fromDate) {
+		this.fromDate = fromDate;
+	}
+
+	public Date getToDate() {
+		return toDate;
+	}
+
+	public void setToDate(Date toDate) {
+		this.toDate = toDate;
+	}
+	
 }
+

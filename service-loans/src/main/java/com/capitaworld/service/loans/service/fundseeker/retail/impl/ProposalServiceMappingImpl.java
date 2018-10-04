@@ -34,9 +34,11 @@ import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDet
 import com.capitaworld.service.loans.model.CorporateProposalDetails;
 import com.capitaworld.service.loans.model.FundProviderProposalDetails;
 import com.capitaworld.service.loans.model.LoansResponse;
+import com.capitaworld.service.loans.model.ProposalDetailsAdminRequest;
 import com.capitaworld.service.loans.model.ProposalResponse;
 import com.capitaworld.service.loans.model.RetailProposalDetails;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
+import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.DirectorBackgroundDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
@@ -71,6 +73,7 @@ import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.BranchBasicDetailsRequest;
 import com.capitaworld.service.users.model.CheckerDetailRequest;
 import com.capitaworld.service.users.model.FundProviderDetailsRequest;
+import com.capitaworld.service.users.model.LocationMasterResponse;
 import com.capitaworld.service.users.model.UserResponse;
 import com.capitaworld.service.users.model.UsersRequest;
 
@@ -104,44 +107,50 @@ public class ProposalServiceMappingImpl implements ProposalService {
 
 	@Autowired
 	private ProposalDetailsClient proposalDetailsClient;
-	
+
 	@Autowired
-	private UsersClient usersClient; 
-	
+	private UsersClient usersClient;
+
 	@Autowired
 	private CIBILClient cibilClient;
-	
+
 	@Autowired
 	private NotificationService notificationService;
-	
+
 	@Autowired
 	private LoanApplicationService loanApplicationService;
-	
+
 	@Autowired
 	private NotificationClient notificationClient;
-	
+
 	@Autowired
 	private LogService logService;
-	
+
 	@Autowired
 	private CorporateDirectorIncomeService corporateDirectorIncomeService;
-	
+
 	@Autowired
 	private DirectorBackgroundDetailsRepository directorBackgroundDetailsRepository;
 
-	DecimalFormat df = new DecimalFormat("#");
 	
+	@Autowired
+	private ProposalDetailsRepository proposalDetailRepository;
+	
+
+	DecimalFormat df = new DecimalFormat("#");
+
 	private static final Logger logger = LoggerFactory.getLogger(ProposalServiceMappingImpl.class.getName());
 
 	private String getMainDirectorName(Long appId) {
-		DirectorBackgroundDetail dirBackDetails = directorBackgroundDetailsRepository.getMainDirectorByApplicationId(appId);
-		if(!CommonUtils.isObjectNullOrEmpty(dirBackDetails)) {
-			return dirBackDetails.getDirectorsName();	
+		DirectorBackgroundDetail dirBackDetails = directorBackgroundDetailsRepository
+				.getMainDirectorByApplicationId(appId);
+		if (!CommonUtils.isObjectNullOrEmpty(dirBackDetails)) {
+			return dirBackDetails.getDirectorsName();
 		}
 		return "NA";
-		
+
 	}
-	
+
 	@Override
 	public List fundproviderProposal(ProposalMappingRequest request) {
 		// TODO Auto-generated method stub
@@ -149,20 +158,22 @@ public class ProposalServiceMappingImpl implements ProposalService {
 		List proposalDetailsList = new ArrayList();
 
 		try {
-			
+
 			try {
-				//set branch id to proposal request
-				UsersRequest usersRequest=new UsersRequest();
+				// set branch id to proposal request
+				UsersRequest usersRequest = new UsersRequest();
 				usersRequest.setId(request.getUserId());
-				logger.info("Current user id ---------------------------------------------------> "+request.getUserId());
-				UserResponse userResponse=usersClient.getBranchDetailsBYUserId(usersRequest);
-				BranchBasicDetailsRequest basicDetailsRequest=MultipleJSONObjectHelper.getObjectFromMap(
-						(LinkedHashMap<String, Object>)userResponse.getData(),BranchBasicDetailsRequest.class);
-				if(!CommonUtils.isObjectNullOrEmpty(basicDetailsRequest)) {
-					logger.info("Found Branch Id -----------> " + basicDetailsRequest.getId() + "---------Role Id ------------------>" + basicDetailsRequest.getRoleId());
-					if(basicDetailsRequest.getRoleId() == CommonUtils.UsersRoles.BO) {
+				logger.info(
+						"Current user id ---------------------------------------------------> " + request.getUserId());
+				UserResponse userResponse = usersClient.getBranchDetailsBYUserId(usersRequest);
+				BranchBasicDetailsRequest basicDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap(
+						(LinkedHashMap<String, Object>) userResponse.getData(), BranchBasicDetailsRequest.class);
+				if (!CommonUtils.isObjectNullOrEmpty(basicDetailsRequest)) {
+					logger.info("Found Branch Id -----------> " + basicDetailsRequest.getId()
+							+ "---------Role Id ------------------>" + basicDetailsRequest.getRoleId());
+					if (basicDetailsRequest.getRoleId() == CommonUtils.UsersRoles.BO) {
 						logger.info("Current user is Branch officer");
-						request.setBranchId(basicDetailsRequest.getId());	
+						request.setBranchId(basicDetailsRequest.getId());
 					}
 				} else {
 					logger.info("Branch Id Can't found");
@@ -171,11 +182,10 @@ public class ProposalServiceMappingImpl implements ProposalService {
 				logger.info("Throw Exception While Get Branch Id from UserId");
 				e.printStackTrace();
 			}
-			
 
-			//END set branch id to proposal request
+			// END set branch id to proposal request
 			// calling MATCHENGINE for getting proposal list
-			
+
 			ProposalMappingResponse proposalDetailsResponse = proposalDetailsClient.proposalListOfFundProvider(request);
 
 			MatchEngineClient matchEngineClient = new MatchEngineClient(environment.getRequiredProperty("matchesURL"));
@@ -187,18 +197,66 @@ public class ProposalServiceMappingImpl implements ProposalService {
 
 				Long applicationId = proposalrequest.getApplicationId();
 				LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(applicationId);
-				Integer bId= loanApplicationMaster.getBusinessTypeId();
-				
-				if(CommonUtils.isObjectNullOrEmpty(loanApplicationMaster)) {
+				Integer bId = loanApplicationMaster.getBusinessTypeId();
+
+//				getting the value of proposal's branch address city state based on proposal applicationID 
+//				step 1  get proposal details by applicationID and user details
+//				step2 get branch details by branch id available in proposalDetails
+//				step3 get branch state by state id available in location Master
+//				step4 get branch city by city id available in location Master
+
+				UsersRequest usersRequestData = new UsersRequest();
+				usersRequestData.setId(request.getUserId());
+				BranchBasicDetailsRequest basicDetailsRequest = null;
+
+				// step 1
+				logger.info("application Id:" + proposalrequest.getApplicationId());
+				if (!CommonUtils.isObjectNullOrEmpty(proposalrequest.getApplicationId())) {
+					Object[] loanDeatils = loanApplicationService
+							.getApplicationDetailsById(proposalrequest.getApplicationId());
+					logger.info("user id based on application Id:" + loanDeatils.toString());
+					long userId = loanDeatils[0] != null ? (long) loanDeatils[0] : 0;
+
+					try {
+//						step 2	get branch details by branch id available in proposalDetails	BRANCH-MASTER
+						if (proposalrequest.getBranchId() != null) {
+//						getlocation id available in branch then find city state location name based on location id
+							UserResponse userResponse = usersClient.getBranchDetailById(proposalrequest.getBranchId());
+							basicDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap(
+									(LinkedHashMap<String, Object>) userResponse.getData(),
+									BranchBasicDetailsRequest.class);
+							logger.info(
+									"--------------------------------------------------------------------------------");
+							logger.info("Get BranchDetails By ID:" + userResponse.getData());
+							logger.info("branch id By proposal:" + basicDetailsRequest.getBranchId());
+							if (basicDetailsRequest.getLocationId() != null) {
+								logger.info("location id by branchId:" + basicDetailsRequest.getLocationId());
+								try {
+								LocationMasterResponse locationDetails = usersClient
+										.getLocationDetailByLocationId(basicDetailsRequest.getLocationId());
+								logger.info("locationName:====>" + locationDetails.getLocationName());
+								logger.info("cityName:====>" + locationDetails.getCity().getName());
+								basicDetailsRequest.setLocationMasterResponse(locationDetails);
+									logger.info("stateName:====>" + locationDetails.getState().getName());
+								} catch (Exception e) {
+									logger.info("Exception in getting location by id:"+e);
+								}
+							}
+						}
+					} catch (Exception e) {
+						logger.info("Exception in getting value from location based on branch id:" + e);
+					}
+				}
+				if (CommonUtils.isObjectNullOrEmpty(loanApplicationMaster)) {
 					logger.info("loanApplicationMaster null ot empty !!");
 					continue;
 				}
 
-				if(CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getIsActive()) || !loanApplicationMaster.getIsActive()) {
+				if (CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getIsActive())
+						|| !loanApplicationMaster.getIsActive()) {
 					logger.info("Application Id is InActive while get fundprovider proposals=====>" + applicationId);
 					continue;
 				}
-				
 				if (CommonUtils.UserMainType.CORPORATE == CommonUtils
 						.getUserMainType(loanApplicationMaster.getProductId())) {
 
@@ -233,17 +291,29 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					corporateProposalDetails.setBusinessTypeId(loanApplicationMaster.getBusinessTypeId());
 					corporateProposalDetails.setAddress(address);
 
-					if(CommonUtils.BusinessType.NEW_TO_BUSINESS.getId().equals(bId)) {
-						
+//					set Branch State and city and name
+					try {
+						if (basicDetailsRequest.getLocationId() != null) {
+							corporateProposalDetails.setBranchLocationName(basicDetailsRequest.getName());
+							corporateProposalDetails
+									.setBranchCity(basicDetailsRequest.getLocationMasterResponse().getCity().getName());
+							corporateProposalDetails.setBranchState(
+									basicDetailsRequest.getLocationMasterResponse().getState().getName());
+							corporateProposalDetails.setBranchLocationName(basicDetailsRequest.getName());
+						}
+					} catch (Exception e) {
+						logger.info("Branch Id is null:");
+					}
+					if (CommonUtils.BusinessType.NEW_TO_BUSINESS.getId().equals(bId)) {
+
 						corporateProposalDetails.setName(getMainDirectorName(applicationId));
-						
-					} else if(CommonUtils.BusinessType.EXISTING_BUSINESS.getId().equals(bId) || bId == null) {
+					} else if (CommonUtils.BusinessType.EXISTING_BUSINESS.getId().equals(bId) || bId == null) {
 						if (CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getOrganisationName()))
 							corporateProposalDetails.setName("NA");
 						else
-							corporateProposalDetails.setName(corporateApplicantDetail.getOrganisationName());		
+							corporateProposalDetails.setName(corporateApplicantDetail.getOrganisationName());
 					}
-					
+
 					corporateProposalDetails
 							.setFsMainType(CommonUtils.getCorporateLoanType(loanApplicationMaster.getProductId()));
 
@@ -268,60 +338,63 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					} else {
 						corporateProposalDetails.setIndustry("NA");
 					}
-					
+
 					List<Long> keyVerticalFundingId = new ArrayList<>();
-		            if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getKeyVericalFunding()))
-		                keyVerticalFundingId.add(corporateApplicantDetail.getKeyVericalFunding());
-		            if (!CommonUtils.isListNullOrEmpty(keyVerticalFundingId)) {
-		                try {
-		                    OneFormResponse oneFormResponse = oneFormClient.getIndustryById(keyVerticalFundingId);
-		                    List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse.getListData();
-		                    if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
-		                        MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
-		                        corporateProposalDetails.setKeyVertical(masterResponse.getValue());
-		                    } else {
-		                    	corporateProposalDetails.setKeyVertical("NA");
-		                    }
-		                } catch (Exception e) {
-		                    e.printStackTrace();
-		                }
-		            }
-					
-					//key vertical sector
-		           	List<Long> keyVerticalSectorId = new ArrayList<>();
-		            //getting sector id from mapping
-		            if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getKeyVerticalSector()))
-		                keyVerticalSectorId.add(corporateApplicantDetail.getKeyVerticalSector());
-		            try
-		            {
-		            OneFormResponse formResponse=oneFormClient.getIndustrySecByMappingId(corporateApplicantDetail.getKeyVerticalSector());
-		            SectorIndustryModel sectorIndustryModel= MultipleJSONObjectHelper.getObjectFromMap((Map)formResponse.getData(), SectorIndustryModel.class);
-		            
-		            //get key vertical sector value
-		            OneFormResponse oneFormResponse = oneFormClient.getSectorById(Arrays.asList(sectorIndustryModel.getSectorId()));
-		            List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse.getListData();
-		            if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
-		                MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
-		                corporateProposalDetails.setSector(masterResponse.getValue());
-		            } else {
-		            	corporateProposalDetails.setSector("NA");
-		            }
-		            }
-		            catch (Exception e) {
-		            	e.printStackTrace();
+					if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getKeyVericalFunding()))
+						keyVerticalFundingId.add(corporateApplicantDetail.getKeyVericalFunding());
+					if (!CommonUtils.isListNullOrEmpty(keyVerticalFundingId)) {
+						try {
+							OneFormResponse oneFormResponse = oneFormClient.getIndustryById(keyVerticalFundingId);
+							List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
+									.getListData();
+							if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+								MasterResponse masterResponse = MultipleJSONObjectHelper
+										.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+								corporateProposalDetails.setKeyVertical(masterResponse.getValue());
+							} else {
+								corporateProposalDetails.setKeyVertical("NA");
+							}
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
 					}
-		            //key vertical Subsector
-		            try
-		            {
-		            if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getKeyVerticalSubsector()))
-		            {
-		            	OneFormResponse oneFormResponse=oneFormClient.getSubSecNameByMappingId(corporateApplicantDetail.getKeyVerticalSubsector());
-		            	corporateProposalDetails.setSubSector((String)oneFormResponse.getData());
-		            }
-		            }
-		            catch (Exception e) {
+
+					// key vertical sector
+					List<Long> keyVerticalSectorId = new ArrayList<>();
+					// getting sector id from mapping
+					if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getKeyVerticalSector()))
+						keyVerticalSectorId.add(corporateApplicantDetail.getKeyVerticalSector());
+					try {
+						OneFormResponse formResponse = oneFormClient
+								.getIndustrySecByMappingId(corporateApplicantDetail.getKeyVerticalSector());
+						SectorIndustryModel sectorIndustryModel = MultipleJSONObjectHelper
+								.getObjectFromMap((Map) formResponse.getData(), SectorIndustryModel.class);
+
+						// get key vertical sector value
+						OneFormResponse oneFormResponse = oneFormClient
+								.getSectorById(Arrays.asList(sectorIndustryModel.getSectorId()));
+						List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
+								.getListData();
+						if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+							MasterResponse masterResponse = MultipleJSONObjectHelper
+									.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+							corporateProposalDetails.setSector(masterResponse.getValue());
+						} else {
+							corporateProposalDetails.setSector("NA");
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+					// key vertical Subsector
+					try {
+						if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getKeyVerticalSubsector())) {
+							OneFormResponse oneFormResponse = oneFormClient
+									.getSubSecNameByMappingId(corporateApplicantDetail.getKeyVerticalSubsector());
+							corporateProposalDetails.setSubSector((String) oneFormResponse.getData());
+						}
+					} catch (Exception e) {
 						// TODO: handle exception
-		            	logger.warn("error while getting key vertical sub-sector");
+						logger.warn("error while getting key vertical sub-sector");
 					}
 
 					String amount = "";
@@ -363,66 +436,68 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					}
 					corporateProposalDetails.setAssignDate(proposalrequest.getAssignDate());
 					corporateProposalDetails.setImagePath(imagePath);
-					corporateProposalDetails.setLastStatusActionDate(logService.getDateByLogType(proposalrequest.getApplicationId(), proposalrequest.getDateTypeMasterId()));
+					corporateProposalDetails.setLastStatusActionDate(logService.getDateByLogType(
+							proposalrequest.getApplicationId(), proposalrequest.getDateTypeMasterId()));
 					corporateProposalDetails.setApplicationId(applicationId);
 					corporateProposalDetails.setProposalMappingId(proposalrequest.getId());
 					corporateProposalDetails.setFsType(CommonUtils.UserMainType.CORPORATE);
 					corporateProposalDetails.setModifiedDate(loanApplicationMaster.getModifiedDate());
-					if(!CommonUtils.isObjectNullOrEmpty(proposalrequest.getModifiedBy())) {
+					if (!CommonUtils.isObjectNullOrEmpty(proposalrequest.getModifiedBy())) {
 						UsersRequest usersRequest = getUserNameAndEmail(proposalrequest.getModifiedBy());
-						if(!CommonUtils.isObjectNullOrEmpty(usersRequest)) {
+						if (!CommonUtils.isObjectNullOrEmpty(usersRequest)) {
 							corporateProposalDetails.setModifiedBy(usersRequest.getName());
 						}
 					}
-					
-					/*if(!CommonUtils.isObjectNullOrEmpty(proposalrequest.getAssignBy())) {
-						UsersRequest usersRequest = getUserNameAndEmail(proposalrequest.getAssignBy());
-						if(!CommonUtils.isObjectNullOrEmpty(usersRequest)) {
-							corporateProposalDetails.setAssignBy(usersRequest.getName());
-						}
-					}*/
-					
-					UsersRequest usersRequest=new UsersRequest();
-					usersRequest.setId(request.getUserId());
-					UserResponse usrResponse=usersClient.getFPDetails(usersRequest);
-					if(!CommonUtils.isObjectNullOrEmpty(usrResponse)) {
+
+					/*
+					 * if(!CommonUtils.isObjectNullOrEmpty(proposalrequest.getAssignBy())) {
+					 * UsersRequest usersRequest =
+					 * getUserNameAndEmail(proposalrequest.getAssignBy());
+					 * if(!CommonUtils.isObjectNullOrEmpty(usersRequest)) {
+					 * corporateProposalDetails.setAssignBy(usersRequest.getName()); } }
+					 */
+
+					// city for fp
+					UserResponse usrResponse = usersClient.getFPDetails(usersRequestData);
+					if (!CommonUtils.isObjectNullOrEmpty(usrResponse)) {
 						try {
-							FundProviderDetailsRequest fundProviderDetailsRequest=MultipleJSONObjectHelper.getObjectFromMap(
-									(LinkedHashMap<String, Object>)usrResponse.getData(),FundProviderDetailsRequest.class);
+							FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper
+									.getObjectFromMap((LinkedHashMap<String, Object>) usrResponse.getData(),
+											FundProviderDetailsRequest.class);
 							if (!CommonUtils.isObjectNullOrEmpty(fundProviderDetailsRequest)) {
 								if (!CommonUtils.isObjectNullOrEmpty(fundProviderDetailsRequest.getCityId())) {
 									if (!CommonUtils.isObjectNullOrEmpty(fundProviderDetailsRequest.getCityId())) {
-										corporateProposalDetails.setCity(CommonDocumentUtils.getCity(fundProviderDetailsRequest.getCityId().longValue(),
-												oneFormClient));
+										corporateProposalDetails.setCity(CommonDocumentUtils.getCity(
+												fundProviderDetailsRequest.getCityId().longValue(), oneFormClient));
 									}
 								}
-								if(!CommonUtils.isObjectNullOrEmpty(fundProviderDetailsRequest.getPincode())) {
+								if (!CommonUtils.isObjectNullOrEmpty(fundProviderDetailsRequest.getPincode())) {
 									corporateProposalDetails.setPincode(fundProviderDetailsRequest.getPincode());
-								}	
+								}
 							}
-								
+
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
-							
+
 					}
-					
-					
-					if(!CommonUtils.isObjectNullOrEmpty(proposalrequest.getAssignBranchTo())) {
+
+					if (!CommonUtils.isObjectNullOrEmpty(proposalrequest.getAssignBranchTo())) {
 						try {
-							UserResponse userResponse = usersClient.getBranchNameById(proposalrequest.getAssignBranchTo());
-							if(!CommonUtils.isObjectNullOrEmpty(userResponse)) {
-								corporateProposalDetails.setAssignbranch((String)userResponse.getData());
-							}	
+							UserResponse userResponse = usersClient
+									.getBranchNameById(proposalrequest.getAssignBranchTo());
+							if (!CommonUtils.isObjectNullOrEmpty(userResponse)) {
+								corporateProposalDetails.setAssignbranch((String) userResponse.getData());
+							}
 						} catch (Exception e) {
-							logger.info("Throw Exception while get branch name by branch id--------->" +proposalrequest.getAssignBranchTo());
+							logger.info("Throw Exception while get branch name by branch id--------->"
+									+ proposalrequest.getAssignBranchTo());
 							e.printStackTrace();
 						}
 						corporateProposalDetails.setIsAssignedToBranch(true);
 					} else {
 						corporateProposalDetails.setIsAssignedToBranch(false);
 					}
-					
 					proposalDetailsList.add(corporateProposalDetails);
 				} else {
 					Long fpProductId = request.getFpProductId();
@@ -470,6 +545,20 @@ public class ProposalServiceMappingImpl implements ProposalService {
 						name += " " + retailApplicantDetail.getLastName();
 
 					retailProposalDetails.setName(name);
+
+//					set Branch State and city and name
+					try {
+						if (basicDetailsRequest.getLocationId() != null) {
+							retailProposalDetails.setBranchLocationName(basicDetailsRequest.getName());
+							retailProposalDetails
+									.setBranchCity(basicDetailsRequest.getLocationMasterResponse().getCity().getName());
+							retailProposalDetails.setBranchState(
+									basicDetailsRequest.getLocationMasterResponse().getState().getName());
+							retailProposalDetails.setBranchLocationName(basicDetailsRequest.getName());
+						}
+					} catch (Exception e) {
+						logger.info("location id is null for this application:" + applicationId + "::" + e);
+					}
 
 					// calling DMS for getting fs retail profile image path
 
@@ -533,37 +622,40 @@ public class ProposalServiceMappingImpl implements ProposalService {
 						cibilRequest.setUserId(request.getUserId());
 						cibilRequest.setPan(retailApplicantDetail.getPan());
 						CibilResponse cibilResponse = cibilClient.getCibilScore(cibilRequest);
-						if(!CibilUtils.isObjectNullOrEmpty(cibilResponse)) {
-							String response = (String)cibilResponse.getData();
-							if(!CibilUtils.isObjectNullOrEmpty(response)) {
-							    JSONObject jsonObject = new JSONObject(response);
-							    JSONObject asset = jsonObject.getJSONObject("Asset");
-							    if(!CibilUtils.isObjectNullOrEmpty(asset)) {
-							    	JSONObject trueLinkCreditReport = asset.getJSONObject("ns4:TrueLinkCreditReport");
-							    	if(!CibilUtils.isObjectNullOrEmpty(trueLinkCreditReport)) {
-							    		JSONObject creditScore = trueLinkCreditReport.getJSONObject("ns4:Borrower").getJSONObject("ns4:CreditScore");
-							    		if(!CibilUtils.isObjectNullOrEmpty(creditScore)) {
-							    			String score  = creditScore.get("riskScore").toString();
-							    			logger.info("Pan===>" + cibilRequest.getPan() + " ==> Score===>" + score);
-							    			retailProposalDetails.setCibilSCore(score);;
-							    		}else {
-							    			logger.info("no data Found from key ns4:CreditScore");
-							    		}
-							    		
-							    	}else {
-							    		logger.info("no data Found from key ns4:TrueLinkCreditReport");    		
-							    	}
-							    	
-							    }else {
-						    		logger.info("no data Found from key ns4:Asset");    		
-						    	}
-							}else {
-					    		logger.info("Cibil Actual data Response Found NULL from Loans for PAN ==>" + cibilRequest.getPan());    		
-					    	}	
-						}else {
+						if (!CibilUtils.isObjectNullOrEmpty(cibilResponse)) {
+							String response = (String) cibilResponse.getData();
+							if (!CibilUtils.isObjectNullOrEmpty(response)) {
+								JSONObject jsonObject = new JSONObject(response);
+								JSONObject asset = jsonObject.getJSONObject("Asset");
+								if (!CibilUtils.isObjectNullOrEmpty(asset)) {
+									JSONObject trueLinkCreditReport = asset.getJSONObject("ns4:TrueLinkCreditReport");
+									if (!CibilUtils.isObjectNullOrEmpty(trueLinkCreditReport)) {
+										JSONObject creditScore = trueLinkCreditReport.getJSONObject("ns4:Borrower")
+												.getJSONObject("ns4:CreditScore");
+										if (!CibilUtils.isObjectNullOrEmpty(creditScore)) {
+											String score = creditScore.get("riskScore").toString();
+											logger.info("Pan===>" + cibilRequest.getPan() + " ==> Score===>" + score);
+											retailProposalDetails.setCibilSCore(score);
+											;
+										} else {
+											logger.info("no data Found from key ns4:CreditScore");
+										}
+
+									} else {
+										logger.info("no data Found from key ns4:TrueLinkCreditReport");
+									}
+
+								} else {
+									logger.info("no data Found from key ns4:Asset");
+								}
+							} else {
+								logger.info("Cibil Actual data Response Found NULL from Loans for PAN ==>"
+										+ cibilRequest.getPan());
+							}
+						} else {
 							logger.info("CibilResponse Found NULL from Loans for PAN ==>" + cibilRequest.getPan());
 						}
-					}catch(Exception e) {
+					} catch (Exception e) {
 						e.printStackTrace();
 						logger.error("Error while getting CIbilScore of User");
 					}
@@ -578,24 +670,23 @@ public class ProposalServiceMappingImpl implements ProposalService {
 		}
 		return proposalDetailsList;
 	}
-	
-	private UsersRequest getUserNameAndEmail(Long userId){
+
+	private UsersRequest getUserNameAndEmail(Long userId) {
 		try {
 			UserResponse userResponse = usersClient.getEmailAndNameByUserId(userId);
 			if (!CommonUtils.isObjectNullOrEmpty(userResponse.getData())) {
 				UsersRequest request = MultipleJSONObjectHelper
-    					.getObjectFromMap((LinkedHashMap<String, Object>) userResponse.getData(), UsersRequest.class);
-    			if(!CommonUtils.isObjectNullOrEmpty(request)) {
-    				return request;
-    			}
-    		}
-		} catch(Exception e) {
+						.getObjectFromMap((LinkedHashMap<String, Object>) userResponse.getData(), UsersRequest.class);
+				if (!CommonUtils.isObjectNullOrEmpty(request)) {
+					return request;
+				}
+			}
+		} catch (Exception e) {
 			logger.info("Throw exception while get name and email by userid");
 			e.printStackTrace();
 		}
 		return null;
 	}
-	
 
 	@Override
 	public List<FundProviderProposalDetails> fundseekerProposal(ProposalMappingRequest request, Long userId) {
@@ -617,8 +708,9 @@ public class ProposalServiceMappingImpl implements ProposalService {
 						ProposalMappingRequest.class);
 
 				ProductMaster master = productMasterRepository.findOne(proposalrequest.getFpProductId());
-				if(!master.getIsActive()) {
-					logger.info("Product Id is InActive while get fundSeeker proposals=====>" + proposalrequest.getFpProductId());
+				if (!master.getIsActive()) {
+					logger.info("Product Id is InActive while get fundSeeker proposals=====>"
+							+ proposalrequest.getFpProductId());
 					continue;
 				}
 				UsersRequest userRequest = new UsersRequest();
@@ -637,8 +729,9 @@ public class ProposalServiceMappingImpl implements ProposalService {
 				fundProviderProposalDetails.setWhoAreYou(
 						FundproviderType.getById(fundProviderDetailsRequest.getBusinessTypeMaster()).getValue());
 				fundProviderProposalDetails.setFpType("DEBT");
-				
-				fundProviderProposalDetails.setFpProductName(CommonUtils.isObjectNullOrEmpty(master.getName())?" ":master.getName());
+
+				fundProviderProposalDetails
+						.setFpProductName(CommonUtils.isObjectNullOrEmpty(master.getName()) ? " " : master.getName());
 
 				// calling DMS for getting fp profile image path
 
@@ -717,7 +810,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 	public ProposalMappingResponse changeStatus(ProposalMappingRequest request) {
 		// TODO Auto-generated method stub
 		ProposalMappingResponse response = new ProposalMappingResponse();
-		
+
 		ProposalDetailsClient client = new ProposalDetailsClient(
 				environment.getRequiredProperty(CommonUtils.MATCHES_URL));
 		try {
@@ -751,14 +844,13 @@ public class ProposalServiceMappingImpl implements ProposalService {
 		// calling MATCHENGINE for getting connection list
 
 		try {
-			
-			ProposalMappingResponse proposalDetailsResponse = proposalDetailsClient.connections(proposalMappingRequest);
-			ConnectionResponse connectionResponse=	(ConnectionResponse) MultipleJSONObjectHelper
-			.getObjectFromMap((Map<String, Object>)proposalDetailsResponse.getData(),ConnectionResponse.class);
-			
 
-			if (!(CommonUtils.UserType.FUND_SEEKER == proposalMappingRequest.getUserType())) {	
-				//for get suggetionListby matches (10)
+			ProposalMappingResponse proposalDetailsResponse = proposalDetailsClient.connections(proposalMappingRequest);
+			ConnectionResponse connectionResponse = (ConnectionResponse) MultipleJSONObjectHelper.getObjectFromMap(
+					(Map<String, Object>) proposalDetailsResponse.getData(), ConnectionResponse.class);
+
+			if (!(CommonUtils.UserType.FUND_SEEKER == proposalMappingRequest.getUserType())) {
+				// for get suggetionListby matches (10)
 				for (int i = 0; i < connectionResponse.getSuggetionByMatchesList().size(); i++) {
 					try {
 						BigInteger applicationId = (BigInteger) connectionResponse.getSuggetionByMatchesList().get(i);
@@ -800,15 +892,15 @@ public class ProposalServiceMappingImpl implements ProposalService {
 
 							corporateProposalDetails.setAddress(address);
 
-							if(CommonUtils.BusinessType.NEW_TO_BUSINESS.getId().equals(bId)) {
-								
+							if (CommonUtils.BusinessType.NEW_TO_BUSINESS.getId().equals(bId)) {
+
 								corporateProposalDetails.setName(getMainDirectorName(applicationId.longValue()));
-								
-							} else if(CommonUtils.BusinessType.EXISTING_BUSINESS.getId().equals(bId) || bId == null) {
+
+							} else if (CommonUtils.BusinessType.EXISTING_BUSINESS.getId().equals(bId) || bId == null) {
 								if (CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getOrganisationName()))
 									corporateProposalDetails.setName("NA");
 								else
-									corporateProposalDetails.setName(corporateApplicantDetail.getOrganisationName());		
+									corporateProposalDetails.setName(corporateApplicantDetail.getOrganisationName());
 							}
 
 							corporateProposalDetails.setFsMainType(
@@ -934,14 +1026,14 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					}
 
 				}
-				//for set connection without proposal 10
-				
+				// for set connection without proposal 10
+
 				for (int i = 0; i < connectionResponse.getSuggetionList().size(); i++) {
 					try {
 						BigInteger applicationId = (BigInteger) connectionResponse.getSuggetionList().get(i);
 						LoanApplicationMaster loanApplicationMaster = loanApplicationRepository
 								.findOne(applicationId.longValue());
-						Integer bId=loanApplicationMaster.getBusinessTypeId();
+						Integer bId = loanApplicationMaster.getBusinessTypeId();
 						if (CommonUtils.UserMainType.CORPORATE == CommonUtils
 								.getUserMainType(loanApplicationMaster.getProductId())) {
 
@@ -977,15 +1069,15 @@ public class ProposalServiceMappingImpl implements ProposalService {
 
 							corporateProposalDetails.setAddress(address);
 
-							if(CommonUtils.BusinessType.NEW_TO_BUSINESS.getId().equals(bId)) {
-								
+							if (CommonUtils.BusinessType.NEW_TO_BUSINESS.getId().equals(bId)) {
+
 								corporateProposalDetails.setName(getMainDirectorName(applicationId.longValue()));
-								
-							} else if(CommonUtils.BusinessType.EXISTING_BUSINESS.getId().equals(bId) || bId == null) {
+
+							} else if (CommonUtils.BusinessType.EXISTING_BUSINESS.getId().equals(bId) || bId == null) {
 								if (CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getOrganisationName()))
 									corporateProposalDetails.setName("NA");
 								else
-									corporateProposalDetails.setName(corporateApplicantDetail.getOrganisationName());		
+									corporateProposalDetails.setName(corporateApplicantDetail.getOrganisationName());
 							}
 
 							corporateProposalDetails.setFsMainType(
@@ -1111,30 +1203,33 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					}
 
 				}
-				
+
 			} else {
 
 				List<Long> userOrgSuggetionByMatchesList = new ArrayList<>();
-				logger.info("Total FP found for fs connection Suggetion By Matches list ---------------------> "+connectionResponse.getSuggetionByMatchesList().size());
+				logger.info("Total FP found for fs connection Suggetion By Matches list ---------------------> "
+						+ connectionResponse.getSuggetionByMatchesList().size());
 				for (int i = 0; i < connectionResponse.getSuggetionByMatchesList().size(); i++) {
 					try {
 						UsersClient usersClient = new UsersClient(environment.getRequiredProperty("userURL"));
 
-						BigInteger fpProductId = BigInteger.class.cast(connectionResponse.getSuggetionByMatchesList().get(i));
+						BigInteger fpProductId = BigInteger.class
+								.cast(connectionResponse.getSuggetionByMatchesList().get(i));
 						ProductMaster master = productMasterRepository.findOne(fpProductId.longValue());
-						
-						if(!CommonUtils.isObjectNullOrEmpty(master)) {
-							if(!CommonUtils.isObjectNullOrEmpty(master.getUserOrgId())) {
-								if(userOrgSuggetionByMatchesList.contains(master.getUserOrgId())) {
-									logger.info("Found same user org id in connection suggestion by matches list ---------------"+ master.getId() + "--------------->" +master.getUserOrgId());
+
+						if (!CommonUtils.isObjectNullOrEmpty(master)) {
+							if (!CommonUtils.isObjectNullOrEmpty(master.getUserOrgId())) {
+								if (userOrgSuggetionByMatchesList.contains(master.getUserOrgId())) {
+									logger.info(
+											"Found same user org id in connection suggestion by matches list ---------------"
+													+ master.getId() + "--------------->" + master.getUserOrgId());
 									continue;
 								}
-								userOrgSuggetionByMatchesList.add(master.getUserOrgId());	
+								userOrgSuggetionByMatchesList.add(master.getUserOrgId());
 							}
-							
+
 						}
-						
-						
+
 						UsersRequest userRequest = new UsersRequest();
 						userRequest.setId(master.getUserId());
 
@@ -1150,8 +1245,9 @@ public class ProposalServiceMappingImpl implements ProposalService {
 						fundProviderProposalDetails.setWhoAreYou(FundproviderType
 								.getById(fundProviderDetailsRequest.getBusinessTypeMaster()).getValue());
 						fundProviderProposalDetails.setFpType("DEBT");
-						
-						fundProviderProposalDetails.setFpProductName(CommonUtils.isObjectNullOrEmpty(master.getName())?" ":master.getName());
+
+						fundProviderProposalDetails.setFpProductName(
+								CommonUtils.isObjectNullOrEmpty(master.getName()) ? " " : master.getName());
 
 						// calling DMS for getting fp profile image path
 
@@ -1183,25 +1279,27 @@ public class ProposalServiceMappingImpl implements ProposalService {
 						e.printStackTrace();
 					}
 				}
-				
-				//set connection without matches
+
+				// set connection without matches
 				List<Long> userOgList = new ArrayList<>();
-				logger.info("Total FP found for fs connection Suggetion List ---------------------> "+connectionResponse.getSuggetionList().size());
+				logger.info("Total FP found for fs connection Suggetion List ---------------------> "
+						+ connectionResponse.getSuggetionList().size());
 				for (int i = 0; i < connectionResponse.getSuggetionList().size(); i++) {
 					try {
 						UsersClient usersClient = new UsersClient(environment.getRequiredProperty("userURL"));
 
 						BigInteger fpProductId = BigInteger.class.cast(connectionResponse.getSuggetionList().get(i));
 						ProductMaster master = productMasterRepository.findOne(fpProductId.longValue());
-						if(!CommonUtils.isObjectNullOrEmpty(master)) {
-							if(!CommonUtils.isObjectNullOrEmpty(master.getUserOrgId())) {
-								if(userOgList.contains(master.getUserOrgId())) {
-									logger.info("Found same user org id in connection suggestion list ---------------"+ master.getId() + "--------------->" +master.getUserOrgId());
+						if (!CommonUtils.isObjectNullOrEmpty(master)) {
+							if (!CommonUtils.isObjectNullOrEmpty(master.getUserOrgId())) {
+								if (userOgList.contains(master.getUserOrgId())) {
+									logger.info("Found same user org id in connection suggestion list ---------------"
+											+ master.getId() + "--------------->" + master.getUserOrgId());
 									continue;
 								}
-								userOgList.add(master.getUserOrgId());	
+								userOgList.add(master.getUserOrgId());
 							}
-							
+
 						}
 						UsersRequest userRequest = new UsersRequest();
 						userRequest.setId(master.getUserId());
@@ -1218,8 +1316,9 @@ public class ProposalServiceMappingImpl implements ProposalService {
 						fundProviderProposalDetails.setWhoAreYou(FundproviderType
 								.getById(fundProviderDetailsRequest.getBusinessTypeMaster()).getValue());
 						fundProviderProposalDetails.setFpType("DEBT");
-						
-						fundProviderProposalDetails.setFpProductName(CommonUtils.isObjectNullOrEmpty(master.getName())?" ":master.getName());
+
+						fundProviderProposalDetails.setFpProductName(
+								CommonUtils.isObjectNullOrEmpty(master.getName()) ? " " : master.getName());
 
 						// calling DMS for getting fp profile image path
 
@@ -1252,7 +1351,6 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					}
 				}
 			}
-			
 
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -1285,14 +1383,14 @@ public class ProposalServiceMappingImpl implements ProposalService {
 		ProposalMappingResponse response = new ProposalMappingResponse();
 		try {
 			response = proposalDetailsClient.getPendingProposalCount(applicationId);
-			return (Integer)response.getData();
+			return (Integer) response.getData();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
 		return null;
 	}
-	
+
 	@Override
 	public ProposalMappingResponse updateAssignDetails(ProposalMappingRequest request) throws Exception {
 		try {
@@ -1307,20 +1405,21 @@ public class ProposalServiceMappingImpl implements ProposalService {
 	@Override
 	public List<?> fundproviderProposalByAssignBy(ProposalMappingRequest request) {
 		// TODO Auto-generated method stub
-		
+
 		try {
-			//set branch id to proposal request
-			UsersRequest usersRequest=new UsersRequest();
+			// set branch id to proposal request
+			UsersRequest usersRequest = new UsersRequest();
 			usersRequest.setId(request.getUserId());
-			logger.info("Current user id ---------------------------------------------------> "+request.getUserId());
-			UserResponse userResponse=usersClient.getBranchDetailsBYUserId(usersRequest);
-			BranchBasicDetailsRequest basicDetailsRequest=MultipleJSONObjectHelper.getObjectFromMap(
-					(LinkedHashMap<String, Object>)userResponse.getData(),BranchBasicDetailsRequest.class);
-			if(!CommonUtils.isObjectNullOrEmpty(basicDetailsRequest)) {
-				logger.info("Found Branch Id -----------> " + basicDetailsRequest.getId() + "---------Role Id ------------------>" + basicDetailsRequest.getRoleId());
-				if(basicDetailsRequest.getRoleId() == CommonUtils.UsersRoles.BO) {
+			logger.info("Current user id ---------------------------------------------------> " + request.getUserId());
+			UserResponse userResponse = usersClient.getBranchDetailsBYUserId(usersRequest);
+			BranchBasicDetailsRequest basicDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap(
+					(LinkedHashMap<String, Object>) userResponse.getData(), BranchBasicDetailsRequest.class);
+			if (!CommonUtils.isObjectNullOrEmpty(basicDetailsRequest)) {
+				logger.info("Found Branch Id -----------> " + basicDetailsRequest.getId()
+						+ "---------Role Id ------------------>" + basicDetailsRequest.getRoleId());
+				if (basicDetailsRequest.getRoleId() == CommonUtils.UsersRoles.BO) {
 					logger.info("Current user is Branch officer");
-					request.setBranchId(basicDetailsRequest.getId());	
+					request.setBranchId(basicDetailsRequest.getId());
 				}
 			} else {
 				logger.info("Branch Id Can't found");
@@ -1329,31 +1428,31 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			logger.info("Throw Exception While Get Branch Id from UserId");
 			e.printStackTrace();
 		}
-		
+
 		List proposalByMatches = new ArrayList();
 		try {
 			ProposalMappingResponse response = proposalDetailsClient.proposalListByAssignee(request);
 			logger.info("Found total assigned proposal -------------------------->" + response.getDataList().size());
-			//mappingRequests =response.getDataList();
-			if(!CommonUtils.isListNullOrEmpty(response.getDataList()))
-			{
-				for(int i=0;i<response.getDataList().size();i++)
-				{
-					ProposalMappingRequest proposalrequest = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)response.getDataList().get(i),ProposalMappingRequest.class);
-					
-					if(CommonUtils.isObjectNullOrEmpty(proposalrequest)) {
+			// mappingRequests =response.getDataList();
+			if (!CommonUtils.isListNullOrEmpty(response.getDataList())) {
+				for (int i = 0; i < response.getDataList().size(); i++) {
+					ProposalMappingRequest proposalrequest = MultipleJSONObjectHelper.getObjectFromMap(
+							(LinkedHashMap<String, Object>) response.getDataList().get(i),
+							ProposalMappingRequest.class);
+
+					if (CommonUtils.isObjectNullOrEmpty(proposalrequest)) {
 						logger.info("proposalrequest is null or empty");
 						continue;
 					}
-				
+
 					Long applicationId = proposalrequest.getApplicationId();
 					LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(applicationId);
-					Integer bId=loanApplicationMaster.getBusinessTypeId();
-					if(!loanApplicationMaster.getIsActive()) {
-						logger.info("Application Id is InActive while get fundprovider proposals=====>" + applicationId);
+					Integer bId = loanApplicationMaster.getBusinessTypeId();
+					if (!loanApplicationMaster.getIsActive()) {
+						logger.info(
+								"Application Id is InActive while get fundprovider proposals=====>" + applicationId);
 						continue;
 					}
-					
 
 					CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
 							.findOneByApplicationIdId(applicationId);
@@ -1381,21 +1480,20 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					} else {
 						address += "NA";
 					}
-					
-					
+
 					CorporateProposalDetails corporateProposalDetails = new CorporateProposalDetails();
 
 					corporateProposalDetails.setAddress(address);
 
-					if(CommonUtils.BusinessType.NEW_TO_BUSINESS.getId().equals(bId)) {
-						
+					if (CommonUtils.BusinessType.NEW_TO_BUSINESS.getId().equals(bId)) {
+
 						corporateProposalDetails.setName(getMainDirectorName(applicationId));
-						
-					} else if(CommonUtils.BusinessType.EXISTING_BUSINESS.getId().equals(bId) || bId == null) {
+
+					} else if (CommonUtils.BusinessType.EXISTING_BUSINESS.getId().equals(bId) || bId == null) {
 						if (CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getOrganisationName()))
 							corporateProposalDetails.setName("NA");
 						else
-							corporateProposalDetails.setName(corporateApplicantDetail.getOrganisationName());		
+							corporateProposalDetails.setName(corporateApplicantDetail.getOrganisationName());
 					}
 
 					corporateProposalDetails
@@ -1422,62 +1520,64 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					} else {
 						corporateProposalDetails.setIndustry("NA");
 					}
-					
+
 					List<Long> keyVerticalFundingId = new ArrayList<>();
-		            if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getKeyVericalFunding()))
-		                keyVerticalFundingId.add(corporateApplicantDetail.getKeyVericalFunding());
-		            if (!CommonUtils.isListNullOrEmpty(keyVerticalFundingId)) {
-		                try {
-		                    OneFormResponse oneFormResponse = oneFormClient.getIndustryById(keyVerticalFundingId);
-		                    List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse.getListData();
-		                    if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
-		                        MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
-		                        corporateProposalDetails.setKeyVertical(masterResponse.getValue());
-		                    } else {
-		                    	corporateProposalDetails.setKeyVertical("NA");
-		                    }
-		                } catch (Exception e) {
-		                    e.printStackTrace();
-		                }
-		            }
-					
-					//key vertical sector
-		           	List<Long> keyVerticalSectorId = new ArrayList<>();
-		            //getting sector id from mapping
-		            if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getKeyVerticalSector()))
-		                keyVerticalSectorId.add(corporateApplicantDetail.getKeyVerticalSector());
-		            try
-		            {
-		            OneFormResponse formResponse=oneFormClient.getIndustrySecByMappingId(corporateApplicantDetail.getKeyVerticalSector());
-		            SectorIndustryModel sectorIndustryModel= MultipleJSONObjectHelper.getObjectFromMap((Map)formResponse.getData(), SectorIndustryModel.class);
-		            
-		            //get key vertical sector value
-		            OneFormResponse oneFormResponse = oneFormClient.getSectorById(Arrays.asList(sectorIndustryModel.getSectorId()));
-		            List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse.getListData();
-		            if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
-		                MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
-		                corporateProposalDetails.setSector(masterResponse.getValue());
-		            } else {
-		            	corporateProposalDetails.setSector("NA");
-		            }
-		            }
-		            catch (Exception e) {
-		            	e.printStackTrace();
+					if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getKeyVericalFunding()))
+						keyVerticalFundingId.add(corporateApplicantDetail.getKeyVericalFunding());
+					if (!CommonUtils.isListNullOrEmpty(keyVerticalFundingId)) {
+						try {
+							OneFormResponse oneFormResponse = oneFormClient.getIndustryById(keyVerticalFundingId);
+							List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
+									.getListData();
+							if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+								MasterResponse masterResponse = MultipleJSONObjectHelper
+										.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+								corporateProposalDetails.setKeyVertical(masterResponse.getValue());
+							} else {
+								corporateProposalDetails.setKeyVertical("NA");
+							}
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
 					}
-		            //key vertical Subsector
-		            try
-		            {
-		            if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getKeyVerticalSubsector()))
-		            {
-		            	OneFormResponse oneFormResponse=oneFormClient.getSubSecNameByMappingId(corporateApplicantDetail.getKeyVerticalSubsector());
-		            	corporateProposalDetails.setSubSector((String)oneFormResponse.getData());
-		            }
-		            }
-		            catch (Exception e) {
+
+					// key vertical sector
+					List<Long> keyVerticalSectorId = new ArrayList<>();
+					// getting sector id from mapping
+					if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getKeyVerticalSector()))
+						keyVerticalSectorId.add(corporateApplicantDetail.getKeyVerticalSector());
+					try {
+						OneFormResponse formResponse = oneFormClient
+								.getIndustrySecByMappingId(corporateApplicantDetail.getKeyVerticalSector());
+						SectorIndustryModel sectorIndustryModel = MultipleJSONObjectHelper
+								.getObjectFromMap((Map) formResponse.getData(), SectorIndustryModel.class);
+
+						// get key vertical sector value
+						OneFormResponse oneFormResponse = oneFormClient
+								.getSectorById(Arrays.asList(sectorIndustryModel.getSectorId()));
+						List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
+								.getListData();
+						if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+							MasterResponse masterResponse = MultipleJSONObjectHelper
+									.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+							corporateProposalDetails.setSector(masterResponse.getValue());
+						} else {
+							corporateProposalDetails.setSector("NA");
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+					// key vertical Subsector
+					try {
+						if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getKeyVerticalSubsector())) {
+							OneFormResponse oneFormResponse = oneFormClient
+									.getSubSecNameByMappingId(corporateApplicantDetail.getKeyVerticalSubsector());
+							corporateProposalDetails.setSubSector((String) oneFormResponse.getData());
+						}
+					} catch (Exception e) {
 						// TODO: handle exception
-		            	logger.warn("error while getting key vertical sub-sector");
+						logger.warn("error while getting key vertical sub-sector");
 					}
-					
 
 					String amount = "";
 					if (CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getAmount()))
@@ -1523,43 +1623,46 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					corporateProposalDetails.setFsType(CommonUtils.UserMainType.CORPORATE);
 					corporateProposalDetails.setModifiedDate(loanApplicationMaster.getModifiedDate());
 					corporateProposalDetails.setAssignDate(proposalrequest.getAssignDate());
-					
-					UsersRequest usersRequest=new UsersRequest();
+
+					UsersRequest usersRequest = new UsersRequest();
 					usersRequest.setId(request.getUserId());
-					UserResponse usrResponse=usersClient.getFPDetails(usersRequest);
-					FundProviderDetailsRequest fundProviderDetailsRequest=MultipleJSONObjectHelper.getObjectFromMap(
-							(LinkedHashMap<String, Object>)usrResponse.getData(),FundProviderDetailsRequest.class);
+					UserResponse usrResponse = usersClient.getFPDetails(usersRequest);
+					FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap(
+							(LinkedHashMap<String, Object>) usrResponse.getData(), FundProviderDetailsRequest.class);
 					if (!CommonUtils.isObjectNullOrEmpty(fundProviderDetailsRequest.getCityId())) {
 						if (!CommonUtils.isObjectNullOrEmpty(fundProviderDetailsRequest.getCityId())) {
-							corporateProposalDetails.setCity(CommonDocumentUtils.getCity(fundProviderDetailsRequest.getCityId().longValue(),
-									oneFormClient));
+							corporateProposalDetails.setCity(CommonDocumentUtils
+									.getCity(fundProviderDetailsRequest.getCityId().longValue(), oneFormClient));
 						}
 					}
-					if(!CommonUtils.isObjectNullOrEmpty(fundProviderDetailsRequest.getPincode())) {
+					if (!CommonUtils.isObjectNullOrEmpty(fundProviderDetailsRequest.getPincode())) {
 						corporateProposalDetails.setPincode(fundProviderDetailsRequest.getPincode());
 					}
-					
-					/*if(!CommonUtils.isObjectNullOrEmpty(proposalrequest.getAssignBy())) {
-						UsersRequest usersRequest = getUserNameAndEmail(proposalrequest.getAssignBy());
-						if(!CommonUtils.isObjectNullOrEmpty(usersRequest)) {
-							corporateProposalDetails.setAssignBy(usersRequest.getName());
-						}
-					}*/
-					if(!CommonUtils.isObjectNullOrEmpty(proposalrequest.getAssignBranchTo())) {
+
+					/*
+					 * if(!CommonUtils.isObjectNullOrEmpty(proposalrequest.getAssignBy())) {
+					 * UsersRequest usersRequest =
+					 * getUserNameAndEmail(proposalrequest.getAssignBy());
+					 * if(!CommonUtils.isObjectNullOrEmpty(usersRequest)) {
+					 * corporateProposalDetails.setAssignBy(usersRequest.getName()); } }
+					 */
+					if (!CommonUtils.isObjectNullOrEmpty(proposalrequest.getAssignBranchTo())) {
 						try {
-							UserResponse userResponse = usersClient.getBranchNameById(proposalrequest.getAssignBranchTo());
-							if(!CommonUtils.isObjectNullOrEmpty(userResponse)) {
-								corporateProposalDetails.setAssignbranch((String)userResponse.getData());
-							}	
+							UserResponse userResponse = usersClient
+									.getBranchNameById(proposalrequest.getAssignBranchTo());
+							if (!CommonUtils.isObjectNullOrEmpty(userResponse)) {
+								corporateProposalDetails.setAssignbranch((String) userResponse.getData());
+							}
 						} catch (Exception e) {
-							logger.info("Throw Exception while get branch name by branch id--------->" +proposalrequest.getAssignBranchTo());
+							logger.info("Throw Exception while get branch name by branch id--------->"
+									+ proposalrequest.getAssignBranchTo());
 							e.printStackTrace();
 						}
 						corporateProposalDetails.setIsAssignedToBranch(true);
 					} else {
 						corporateProposalDetails.setIsAssignedToBranch(false);
 					}
-					
+
 					proposalByMatches.add(corporateProposalDetails);
 				}
 			}
@@ -1568,76 +1671,70 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			e.printStackTrace();
 		}
 		return proposalByMatches;
-		
+
 	}
 
 	@Override
 	public ProposalMappingResponse saveDisbursementDetails(DisbursementDetailsModel request, Long userId) {
 		// TODO Auto-generated method stub
 		try {
-			//set branch id to proposal request
-			logger.info("DISBURSEMENT DETAILS IS ---------------------------------------------------> "+request.toString());
-			ProposalMappingResponse mappingResponse=proposalDetailsClient.saveDisbursementDetails(request);
-		
-			
-			
-		
+			// set branch id to proposal request
+			logger.info("DISBURSEMENT DETAILS IS ---------------------------------------------------> "
+					+ request.toString());
+			ProposalMappingResponse mappingResponse = proposalDetailsClient.saveDisbursementDetails(request);
+
 			return mappingResponse;
-			
+
 		} catch (Exception e) {
 			logger.info("Throw Exception While saveDisbursementDetails");
 			e.printStackTrace();
-			new ProposalMappingResponse("error while saving disbursement details", HttpStatus.INTERNAL_SERVER_ERROR.value());
+			new ProposalMappingResponse("error while saving disbursement details",
+					HttpStatus.INTERNAL_SERVER_ERROR.value());
 		}
 		return null;
 	}
 
 	@Override
 	public LoansResponse checkMinMaxAmount(UsersRequest userRequest) {
-		LoansResponse loansResponse=new LoansResponse();
+		LoansResponse loansResponse = new LoansResponse();
 
 		try {
 
 			loansResponse.setFlag(true);
 
-			LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(userRequest.getApplicationId());
+			LoanApplicationMaster loanApplicationMaster = loanApplicationRepository
+					.findOne(userRequest.getApplicationId());
 
-			// Check If Requested Application is assigned to Currunt Fp Cheker  or not
-			if(loanApplicationMaster.getNpUserId().toString().equals(userRequest.getId().toString()))
-			{
-				UserResponse userResponse=usersClient.getMinMaxAmount(userRequest);
+			// Check If Requested Application is assigned to Currunt Fp Cheker or not
+			if (loanApplicationMaster.getNpUserId().toString().equals(userRequest.getId().toString())) {
+				UserResponse userResponse = usersClient.getMinMaxAmount(userRequest);
 
-				CheckerDetailRequest checkerDetailRequest=null;
-				if(!CommonUtils.isObjectListNull(userResponse) || !(CommonUtils.isObjectNullOrEmpty(userResponse.getData())))
-				{
-					checkerDetailRequest= MultipleJSONObjectHelper
-							.getObjectFromMap((LinkedHashMap<String, Object>) userResponse.getData(), CheckerDetailRequest.class);
+				CheckerDetailRequest checkerDetailRequest = null;
+				if (!CommonUtils.isObjectListNull(userResponse)
+						|| !(CommonUtils.isObjectNullOrEmpty(userResponse.getData()))) {
+					checkerDetailRequest = MultipleJSONObjectHelper.getObjectFromMap(
+							(LinkedHashMap<String, Object>) userResponse.getData(), CheckerDetailRequest.class);
 				}
 
-				if(!CommonUtils.isObjectNullOrEmpty(checkerDetailRequest))
-				{
-					if(!(userRequest.getLoanAmount() >= checkerDetailRequest.getMinAmount() && userRequest.getLoanAmount() <= checkerDetailRequest.getMaxAmount()))
-					{
+				if (!CommonUtils.isObjectNullOrEmpty(checkerDetailRequest)) {
+					if (!(userRequest.getLoanAmount() >= checkerDetailRequest.getMinAmount()
+							&& userRequest.getLoanAmount() <= checkerDetailRequest.getMaxAmount())) {
 						loansResponse.setFlag(false);
-						loansResponse.setMessage("You do not have rights to take action for this proposal. Kindly assign the proposal to your upper level checker.");
+						loansResponse.setMessage(
+								"You do not have rights to take action for this proposal. Kindly assign the proposal to your upper level checker.");
 					}
-				}
-				else
-				{
+				} else {
 					// You dont have Authorised for this Action
 					loansResponse.setFlag(false);
 					loansResponse.setMessage("You do not have rights to take action for this proposal.");
 				}
-			}
-			else
-			{
+			} else {
 				// You dont have Authorised for this Action
 				logger.error("Not getting min max loan amount for this user");
 				loansResponse.setFlag(false);
 				loansResponse.setMessage("You do not have rights to take action for this proposal.");
 			}
-		}
-		catch (Exception e){
+		} catch (Exception e) {
 
 			e.printStackTrace();
 			logger.error("Error while Getting Min Max Loan Amount");
@@ -1646,6 +1743,35 @@ public class ProposalServiceMappingImpl implements ProposalService {
 		}
 		return loansResponse;
 	}
-
+	
+	@Override
+    public List<ProposalDetailsAdminRequest> getProposalsByOrgId(Long userOrgId, ProposalDetailsAdminRequest request) {
+    	
+    	List<Object[]> result = proposalDetailRepository.getProposalDetailsByOrgId(userOrgId, request.getFromDate(), request.getToDate());
+    	
+    	List<ProposalDetailsAdminRequest> responseList = new ArrayList<>(result.size());
+    	
+    	for(Object[] obj : result) {
+    		
+    		ProposalDetailsAdminRequest proposal = new ProposalDetailsAdminRequest();
+    		proposal.setApplicationId(CommonUtils.convertLong(obj[0]));
+    		proposal.setUserId(CommonUtils.convertLong(obj[1]));
+    		proposal.setUserName((String) obj[2]);
+    		proposal.setEmail((String) obj[3]);
+    		proposal.setMobile((String) obj[4]);
+    		proposal.setCreatedDate(CommonUtils.convertDate(obj[5]));
+    		proposal.setBranchId(CommonUtils.convertLong(obj[6]));
+    		proposal.setLoanAmount(String.valueOf(obj[7]));
+    		proposal.setTenure(String.valueOf(obj[8]));
+    		proposal.setRate(String.valueOf(obj[9]));
+    		proposal.setEmi(CommonUtils.convertDouble(obj[10]));
+    		proposal.setProcessingFee(CommonUtils.convertDouble(obj[11]));
+    		proposal.setBranchName(String.valueOf(obj[12]));
+    		
+    		responseList.add(proposal);
+    	}
+    	
+    	return responseList;
+    }
 
 }

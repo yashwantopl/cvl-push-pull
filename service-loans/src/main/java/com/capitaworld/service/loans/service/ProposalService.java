@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.capitaworld.service.loans.model.FundProviderProposalDetails;
 import com.capitaworld.service.loans.model.LoansResponse;
+import com.capitaworld.service.loans.model.ProposalDetailsAdminRequest;
 import com.capitaworld.service.loans.model.ProposalResponse;
 import com.capitaworld.service.matchengine.model.DisbursementDetailsModel;
 import com.capitaworld.service.matchengine.model.ProposalCountResponse;
@@ -40,5 +41,7 @@ public interface ProposalService {
 	public ProposalMappingResponse saveDisbursementDetails(DisbursementDetailsModel request, Long userId);
 
 	public LoansResponse checkMinMaxAmount(UsersRequest userRequest);
+	
+	public List<ProposalDetailsAdminRequest> getProposalsByOrgId(Long userOrgId, ProposalDetailsAdminRequest request);
 	
 }

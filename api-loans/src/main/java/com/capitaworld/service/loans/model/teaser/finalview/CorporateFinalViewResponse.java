@@ -18,6 +18,10 @@ import com.capitaworld.service.loans.model.ProposedProductDetailRequest;
 import com.capitaworld.service.loans.model.SecurityCorporateDetailRequest;
 import com.capitaworld.service.loans.model.TotalCostOfProjectResponse;
 
+/**
+ * @author nilay.darji
+ *
+ */
 public class CorporateFinalViewResponse implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -194,6 +198,31 @@ public class CorporateFinalViewResponse implements Serializable {
     private Object costOfMachinery;
     private Object incrementalTurnover;
     private Object incrementalMargin;
+    
+    private Object adminAdd;
+    private Object adminAddPremise;
+    private Object adminAddStreetName;
+    private Object adminAddLandmark;
+    private Object adminAddCountry;
+    private Object adminAddState;
+    private Object adminAddCity;
+    private Object adminAddPincode;
+    private Object adminPinData;
+    private String adminAddDist;
+    private String adminAddTaluko;
+    
+    private Object regAdd;
+    private Object regAddPremise;
+    private Object regAddStreetName;
+    private Object regAddLandmark;
+    private Object regAddCountry;
+    private Object regAddState;
+    private Object regAddCity;
+    private Object regAddPincode;
+    private Object regPinData;
+    private String regAddDist;
+    private String regAddTaluko;
+    			
     
 	public List<?> getMatchesList() {
 		return matchesList;
@@ -1892,6 +1921,184 @@ public class CorporateFinalViewResponse implements Serializable {
 		this.incrementalMargin = incrementalMargin;
 	}
 
+	public Object getAdminAdd() {
+		return adminAdd;
+	}
 
+	public void setAdminAdd(Object adminAdd) {
+		this.adminAdd = adminAdd;
+	}
+
+	public Object getAdminAddPremise() {
+		return adminAddPremise;
+	}
+
+	public void setAdminAddPremise(Object adminAddPremise) {
+		this.adminAddPremise = adminAddPremise;
+	}
+
+	public Object getAdminAddStreetName() {
+		return adminAddStreetName;
+	}
+
+	public void setAdminAddStreetName(Object adminAddStreetName) {
+		this.adminAddStreetName = adminAddStreetName;
+	}
+
+	public Object getAdminAddLandmark() {
+		return adminAddLandmark;
+	}
+
+	public void setAdminAddLandmark(Object adminAddLandmark) {
+		this.adminAddLandmark = adminAddLandmark;
+	}
+
+	public Object getAdminAddCountry() {
+		return adminAddCountry;
+	}
+
+	public void setAdminAddCountry(Object adminAddCountry) {
+		this.adminAddCountry = adminAddCountry;
+	}
+
+	public Object getAdminAddState() {
+		return adminAddState;
+	}
+
+	public void setAdminAddState(Object adminAddState) {
+		this.adminAddState = adminAddState;
+	}
+
+	public Object getAdminAddCity() {
+		return adminAddCity;
+	}
+
+	public void setAdminAddCity(Object adminAddCity) {
+		this.adminAddCity = adminAddCity;
+	}
+
+	public Object getAdminAddPincode() {
+		return adminAddPincode;
+	}
+
+	public void setAdminAddPincode(Object adminAddPincode) {
+		this.adminAddPincode = adminAddPincode;
+	}
+
+	public Object getAdminPinData() {
+		return adminPinData;
+	}
+
+	public void setAdminPinData(Object adminPinData) {
+		this.adminPinData = adminPinData;
+	}
+
+	public String getAdminAddDist() {
+		return adminAddDist;
+	}
+
+	public void setAdminAddDist(String adminAddDist) {
+		this.adminAddDist = adminAddDist;
+	}
+
+	public String getAdminAddTaluko() {
+		return adminAddTaluko;
+	}
+
+	public void setAdminAddTaluko(String adminAddTaluko) {
+		this.adminAddTaluko = adminAddTaluko;
+	}
+
+	public Object getRegAdd() {
+		return regAdd;
+	}
+
+	public void setRegAdd(Object regAdd) {
+		this.regAdd = regAdd;
+	}
+
+	public Object getRegAddPremise() {
+		return regAddPremise;
+	}
+
+	public void setRegAddPremise(Object regAddPremise) {
+		this.regAddPremise = regAddPremise;
+	}
+
+	public Object getRegAddStreetName() {
+		return regAddStreetName;
+	}
+
+	public void setRegAddStreetName(Object regAddStreetName) {
+		this.regAddStreetName = regAddStreetName;
+	}
+
+	public Object getRegAddLandmark() {
+		return regAddLandmark;
+	}
+
+	public void setRegAddLandmark(Object regAddLandmark) {
+		this.regAddLandmark = regAddLandmark;
+	}
+
+	public Object getRegAddCountry() {
+		return regAddCountry;
+	}
+
+	public void setRegAddCountry(Object regAddCountry) {
+		this.regAddCountry = regAddCountry;
+	}
+
+	public Object getRegAddState() {
+		return regAddState;
+	}
+
+	public void setRegAddState(Object regAddState) {
+		this.regAddState = regAddState;
+	}
+
+	public Object getRegAddCity() {
+		return regAddCity;
+	}
+
+	public void setRegAddCity(Object regAddCity) {
+		this.regAddCity = regAddCity;
+	}
+
+	public Object getRegAddPincode() {
+		return regAddPincode;
+	}
+
+	public void setRegAddPincode(Object regAddPincode) {
+		this.regAddPincode = regAddPincode;
+	}
+
+	public Object getRegPinData() {
+		return regPinData;
+	}
+
+	public void setRegPinData(Object regPinData) {
+		this.regPinData = regPinData;
+	}
+
+	public String getRegAddDist() {
+		return regAddDist;
+	}
+
+	public void setRegAddDist(String regAddDist) {
+		this.regAddDist = regAddDist;
+	}
+
+	public String getRegAddTaluko() {
+		return regAddTaluko;
+	}
+
+	public void setRegAddTaluko(String regAddTaluko) {
+		this.regAddTaluko = regAddTaluko;
+	}
+
+	
+
+	
 
 }
