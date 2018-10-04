@@ -52,6 +52,7 @@ import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicatio
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
+import com.capitaworld.service.loans.utils.CommonUtils.UsersRoles;
 import com.capitaworld.service.matchengine.MatchEngineClient;
 import com.capitaworld.service.matchengine.ProposalDetailsClient;
 import com.capitaworld.service.matchengine.model.ConnectionResponse;
@@ -1695,28 +1696,55 @@ public class ProposalServiceMappingImpl implements ProposalService {
 	}
 	
 	@Override
-    public List<ProposalDetailsAdminRequest> getProposalsByOrgId(Long userOrgId, ProposalDetailsAdminRequest request) {
+    public List<ProposalDetailsAdminRequest> getProposalsByOrgId(Long userOrgId, ProposalDetailsAdminRequest request, Long userId) {
     	
-    	List<Object[]> result = proposalDetailRepository.getProposalDetailsByOrgId(userOrgId, request.getFromDate(), request.getToDate());
+		
+//		UserResponse userData = usersClient.getUserDetailsById(userId);
+		
+//		UsersRequest data = (UsersRequest) userData.getData();
+		
+//		System.out.println("-----------------> data : "+ userData.toString());
+		
+		
+//		Long roleId = (Long) userData.get("roleId");
+		List<Object[]> result = new ArrayList<Object[]>();
+		
+//		if(UsersRoles.HO.equals(roleId)) {
+//			result = proposalDetailRepository.getProposalDetailsByOrgId(userOrgId, request.getFromDate(), request.getToDate());
+//		} else if(UsersRoles.BO.equals(roleId)) {
+			result = proposalDetailRepository.getProposalDetailsByOrgId(userOrgId, request.getFromDate(), request.getToDate());
+//		}
+		
     	
     	List<ProposalDetailsAdminRequest> responseList = new ArrayList<>(result.size());
     	
     	for(Object[] obj : result) {
-    		
     		ProposalDetailsAdminRequest proposal = new ProposalDetailsAdminRequest();
     		proposal.setApplicationId(CommonUtils.convertLong(obj[0]));
     		proposal.setUserId(CommonUtils.convertLong(obj[1]));
-    		proposal.setUserName((String) obj[2]);
-    		proposal.setEmail((String) obj[3]);
-    		proposal.setMobile((String) obj[4]);
+    		proposal.setUserName(CommonUtils.convertString(obj[2]));
+    		proposal.setEmail(CommonUtils.convertString(obj[3]));
+    		proposal.setMobile(CommonUtils.convertString(obj[4]));
     		proposal.setCreatedDate(CommonUtils.convertDate(obj[5]));
     		proposal.setBranchId(CommonUtils.convertLong(obj[6]));
-    		proposal.setLoanAmount(String.valueOf(obj[7]));
-    		proposal.setTenure(String.valueOf(obj[8]));
-    		proposal.setRate(String.valueOf(obj[9]));
+    		proposal.setLoanAmount(CommonUtils.convertString(obj[7]));
+    		proposal.setTenure(CommonUtils.convertString(obj[8]));
+    		proposal.setRate(CommonUtils.convertString(obj[9]));
     		proposal.setEmi(CommonUtils.convertDouble(obj[10]));
     		proposal.setProcessingFee(CommonUtils.convertDouble(obj[11]));
-    		proposal.setBranchName(String.valueOf(obj[12]));
+    		proposal.setBranchName(CommonUtils.convertString(obj[12]));
+    		proposal.setContactPersonName(CommonUtils.convertString(obj[13]));
+    		proposal.setTelephoneNo(CommonUtils.convertString(obj[14]));
+    		proposal.setContactPersonNumber(CommonUtils.convertString(obj[15]));
+    		proposal.setOrganizationName(CommonUtils.convertString(obj[16]));
+    		proposal.setApplicationCode(CommonUtils.convertString(obj[17]));
+    		proposal.setCode(CommonUtils.convertString(obj[18]));
+    		proposal.setStreetName(CommonUtils.convertString(obj[19]));
+    		proposal.setState(CommonUtils.convertString(obj[20]));
+    		proposal.setCity(CommonUtils.convertString(obj[21]));
+    		proposal.setPremisesNo(CommonUtils.convertString(obj[22]));
+    		proposal.setFpProductId(CommonUtils.convertLong(obj[23]));
+    		proposal.setContactPersonEmail(CommonUtils.convertString(obj[24]));
     		
     		responseList.add(proposal);
     	}
