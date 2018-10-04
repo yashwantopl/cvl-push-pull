@@ -47,8 +47,8 @@ public class CorporateProposalDetails {
 	public String branchLocationName;
 	public String branchCity;
 	public String branchState;
+
 	
-	 
 	public String getBranchLocationName() {
 		return branchLocationName;
 	}

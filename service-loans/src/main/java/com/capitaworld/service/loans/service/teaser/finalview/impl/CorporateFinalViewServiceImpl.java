@@ -52,6 +52,7 @@ import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailResponse;
 import com.capitaworld.service.loans.model.OwnershipDetailRequest;
 import com.capitaworld.service.loans.model.OwnershipDetailResponse;
+import com.capitaworld.service.loans.model.PincodeDataResponse;
 import com.capitaworld.service.loans.model.PromotorBackgroundDetailRequest;
 import com.capitaworld.service.loans.model.PromotorBackgroundDetailResponse;
 import com.capitaworld.service.loans.model.TotalCostOfProjectResponse;
@@ -303,6 +304,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 
 	@Autowired
 	private FraudAnalyticsClient fraudAnalyticsClient;
+	
 
 	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 	DecimalFormat decim = new DecimalFormat("#,###.00");
@@ -760,6 +762,10 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 			logger.error("Problem to get Data of Director's Background {}", e);
 		}
 		
+		// address
+		
+		
+		
 		
 		// FINANCIAL ARRANGEMENTS
 		try {
@@ -1022,6 +1028,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 					.setAboutUs(!CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getAboutUs())
 							? corporateFinalInfoRequest.getAboutUs()
 							: null);
+			
 			corporateFinalViewResponse
 					.setUdhyogAadharNo(!CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getAadhar())
 							? corporateFinalInfoRequest.getAadhar()
@@ -1657,6 +1664,67 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 					toApplicationId);
 			e1.printStackTrace();
 		}
+		
+		
+		
+		// address
+		
+		CorporateFinalInfoRequest corporateFinalInfoRequest;
+		try {
+			corporateFinalInfoRequest = corporateFinalInfoService.get(userId,toApplicationId);
+			//ADMIN OFFICE ADDRESS
+			try {
+				if(corporateFinalInfoRequest.getSecondAddress().getDistrictMappingId() != null) {
+					
+					PincodeDataResponse pindata=pincodeDateService.getById(corporateFinalInfoRequest.getSecondAddress().getDistrictMappingId());
+					corporateFinalViewResponse.setAdminAddDist(pindata.getDistrictName());
+					corporateFinalViewResponse.setAdminAddTaluko(pindata.getTaluka());
+					pindata.getTaluka();
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				// TODO: handle exception
+			}
+			if(!CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getSecondAddress())){
+				
+				corporateFinalViewResponse.setAdminAdd( (corporateFinalInfoRequest.getSecondAddress().getPremiseNumber()!=null ? (CommonUtils.commaReplace(corporateFinalInfoRequest.getSecondAddress().getPremiseNumber())) :"") + (corporateFinalInfoRequest.getSecondAddress().getStreetName() != null ? (CommonUtils.commaReplace(corporateFinalInfoRequest.getSecondAddress().getStreetName())) : "") + (corporateFinalInfoRequest.getSecondAddress().getLandMark() != null ? (CommonUtils.commaReplace(corporateFinalInfoRequest.getSecondAddress().getLandMark())) : "")+ (corporateFinalViewResponse.getAdminAddDist() != null ?(CommonUtils.commaReplace(corporateFinalViewResponse.getAdminAddDist())) :"")+ (corporateFinalViewResponse.getAdminAddTaluko() != null ? (CommonUtils.commaReplace(corporateFinalViewResponse.getAdminAddTaluko())) : "") + (corporateFinalInfoRequest.getSecondAddress().getPincode() != null ? (corporateFinalInfoRequest.getSecondAddress().getPincode()) : ""));
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+				// TODO: handle exception
+			}	
+		
+		//address
+		
+		
+		try {
+			corporateFinalInfoRequest = corporateFinalInfoService.get(userId,toApplicationId);
+			//Reg OFFICE ADDRESS
+			try {
+				if(corporateFinalInfoRequest.getSecondAddress().getDistrictMappingId() != null) {
+					
+					PincodeDataResponse pindata=pincodeDateService.getById(corporateFinalInfoRequest.getFirstAddress().getDistrictMappingId());
+					corporateFinalViewResponse.setRegAddDist(pindata.getDistrictName());
+					corporateFinalViewResponse.setRegAddTaluko(pindata.getTaluka());
+					pindata.getTaluka();
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				// TODO: handle exception
+			}
+			if(!CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getFirstAddress())){
+				
+				corporateFinalViewResponse.setRegAdd( (corporateFinalInfoRequest.getFirstAddress().getPremiseNumber()!=null ? (CommonUtils.commaReplace(corporateFinalInfoRequest.getFirstAddress().getPremiseNumber())) :"") + (corporateFinalInfoRequest.getFirstAddress().getStreetName() != null ? (CommonUtils.commaReplace(corporateFinalInfoRequest.getFirstAddress().getStreetName())) : "") + (corporateFinalInfoRequest.getFirstAddress().getLandMark() != null ? (CommonUtils.commaReplace(corporateFinalInfoRequest.getFirstAddress().getLandMark())) : "")+ (corporateFinalViewResponse.getRegAddDist() != null ?(CommonUtils.commaReplace(corporateFinalViewResponse.getRegAddDist())) :"")+ (corporateFinalViewResponse.getRegAddTaluko() != null ? (CommonUtils.commaReplace(corporateFinalViewResponse.getRegAddTaluko())) : "") + (corporateFinalInfoRequest.getFirstAddress().getPincode() != null ? (corporateFinalInfoRequest.getFirstAddress().getPincode()) : ""));
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+				// TODO: handle exception
+			}	
+		
+		
+		
 
 		// GET DOCUMENTS
 		DocumentRequest documentRequest = new DocumentRequest();

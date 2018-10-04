@@ -3,6 +3,7 @@ package com.capitaworld.service.loans.utils;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.Format;
@@ -519,8 +520,6 @@ public class CommonUtils {
 		urlsBrforeLogin.add("/loans/loan_application/saveLoanSanctionDetail".toLowerCase());
 		urlsBrforeLogin.add("/loans/loan_application/saveLoanSanctionDisbursementDetailFromBank".toLowerCase());
 		urlsBrforeLogin.add("/loans/ddr/getCustomerNameById".toLowerCase());
-		
-		
 	}
 
 	public static int calculateAge(Date dateOfBirth) {
@@ -1274,7 +1273,7 @@ public enum APIFlags {
 		 }
 		return obj;
 	}
-	public static Object printFields(Object obj) throws Exception {
+	public static Object printFields(Object obj, Map<String, Object>data) throws Exception {
 		if(obj != null) {
 			if(obj.getClass().isArray()) {
 		}
@@ -1284,12 +1283,12 @@ public enum APIFlags {
 		if(obj instanceof List) {
 			List<?> lst = (List)obj;
 			for(Object o : lst) {
-				o = printFields(o);
+				o = printFields(o,data);
 			}
 		}else if(obj instanceof Map) {
 			Map<Object, Object> map = (Map)obj;
 			for(Map.Entry<Object, Object> setEntry : map.entrySet()) {
-				setEntry.setValue(printFields(setEntry.getValue()));
+				setEntry.setValue(printFields(setEntry.getValue(),data));
 			}
 		}else if(obj instanceof String) {
 			obj = StringEscapeUtils.escapeXml((String)obj);
@@ -1306,7 +1305,7 @@ public enum APIFlags {
 					}else {
 						field.setAccessible(true);
 						Object value = field.get(obj);
-						field.set(obj, printFields(value));	
+						field.set(obj, printFields(value,data));	
 					}
 				}
 			}
@@ -1380,5 +1379,81 @@ public enum APIFlags {
 			return null;
 		}
 	}
+	
+	public static Boolean convertBoolean(Object obj){
+    	try {
+    		if(!CommonUtils.isObjectNullOrEmpty(obj)) {
+    			return (Boolean) obj;
+    		}	
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+    
+    public static Long convertLong(Object obj){
+    	try {
+    		if(!CommonUtils.isObjectNullOrEmpty(obj)) {
+    			BigInteger value =  (BigInteger) obj;
+    			return value.longValue();
+    		}	
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+    
+    public static Integer convertInteger(Object obj){
+    	try {
+    		if(!CommonUtils.isObjectNullOrEmpty(obj)) {
+    			BigInteger value =  (BigInteger) obj;
+    			return value.intValue();
+    		}	
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+    
+    public static Date convertDate(Object obj){
+    	try {
+    		if(!CommonUtils.isObjectNullOrEmpty(obj)) {
+    			return (Date) obj;
+    		}	
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+    
+    public static Double convertDouble(Object obj){
+    	try {
+    		if(!CommonUtils.isObjectNullOrEmpty(obj)) {
+    			if(obj instanceof BigDecimal) {
+    				BigDecimal value = (BigDecimal) obj;
+        			return value.doubleValue();	
+    			} else {
+    				return (Double) obj;
+    			}
+    		}	
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	// commaReplace method teaser and final view...
+	
+	public static String commaReplace(String value) {
+		
+		//System.out.println("comma Replace called :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
+		
+		
+		if(value.charAt(value.length()-1) != ',') {
+			return value+", ";
+		}
+		return value;
+	}
+	
 	
 }
