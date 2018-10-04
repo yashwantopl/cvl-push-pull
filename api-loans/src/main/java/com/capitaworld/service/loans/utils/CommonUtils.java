@@ -1273,7 +1273,7 @@ public enum APIFlags {
 		 }
 		return obj;
 	}
-	public static Object printFields(Object obj) throws Exception {
+	public static Object printFields(Object obj, Map<String, Object>data) throws Exception {
 		if(obj != null) {
 			if(obj.getClass().isArray()) {
 		}
@@ -1283,12 +1283,12 @@ public enum APIFlags {
 		if(obj instanceof List) {
 			List<?> lst = (List)obj;
 			for(Object o : lst) {
-				o = printFields(o);
+				o = printFields(o,data);
 			}
 		}else if(obj instanceof Map) {
 			Map<Object, Object> map = (Map)obj;
 			for(Map.Entry<Object, Object> setEntry : map.entrySet()) {
-				setEntry.setValue(printFields(setEntry.getValue()));
+				setEntry.setValue(printFields(setEntry.getValue(),data));
 			}
 		}else if(obj instanceof String) {
 			obj = StringEscapeUtils.escapeXml((String)obj);
@@ -1305,7 +1305,7 @@ public enum APIFlags {
 					}else {
 						field.setAccessible(true);
 						Object value = field.get(obj);
-						field.set(obj, printFields(value));	
+						field.set(obj, printFields(value,data));	
 					}
 				}
 			}
@@ -1456,6 +1456,19 @@ public enum APIFlags {
 			e.printStackTrace();
 		}
 		return null;
+	}
+	
+	// commaReplace method teaser and final view...
+	
+	public static String commaReplace(String value) {
+		
+		//System.out.println("comma Replace called :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
+		
+		
+		if(value.charAt(value.length()-1) != ',') {
+			return value+", ";
+		}
+		return value;
 	}
 	
 	
