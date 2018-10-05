@@ -42,6 +42,6 @@ public interface ProposalService {
 
 	public LoansResponse checkMinMaxAmount(UsersRequest userRequest);
 	
-	public List<ProposalDetailsAdminRequest> getProposalsByOrgId(Long userOrgId, ProposalDetailsAdminRequest request);
+	public List<ProposalDetailsAdminRequest> getProposalsByOrgId(Long userOrgId, ProposalDetailsAdminRequest request, Long userId);
 	
 }
