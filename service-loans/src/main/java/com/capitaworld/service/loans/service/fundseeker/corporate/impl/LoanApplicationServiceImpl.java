@@ -9922,7 +9922,7 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 	public Double getInDouble(String data) {
 		
 		if (! CommonUtils.isObjectNullOrEmpty(data)){
-			data = data.replace("\\s", "");
+			data = data.replace("\\s", "").trim();
 			if(data.contains("%")) {
 				return Double.valueOf(data.replaceAll("%", ""));
 			}
@@ -9957,7 +9957,7 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 	public Long getInLong(String data) {
 		
 		if (! CommonUtils.isObjectNullOrEmpty(data)){
-			return Long.valueOf(data.replace("\\s", ""));
+			return Long.valueOf(data.replace("\\s", "").trim());
 		}
 		return 0l;
 		
@@ -9966,7 +9966,7 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 	public Integer getInInteger(String data) {
 		
 		if (! CommonUtils.isObjectNullOrEmpty(data)){
-			return Integer.valueOf(data.replace("\\s", ""));
+			return Integer.valueOf(data.replace("\\s", "").trim());
 		}
 		return 0;
 		
