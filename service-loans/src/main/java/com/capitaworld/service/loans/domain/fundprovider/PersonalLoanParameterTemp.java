@@ -213,6 +213,9 @@ public class PersonalLoanParameterTemp extends ProductMasterTemp implements Seri
 
 	@Column(name="is_total_job_experience_mandatory")
 	private Boolean isTotalJobExpMandatory=false;
+	
+	@Column(name="user_credit_rating")
+	private Integer userCreditRating;
 
 	public PersonalLoanParameterTemp() {
 	}
@@ -765,7 +768,20 @@ public class PersonalLoanParameterTemp extends ProductMasterTemp implements Seri
 		this.isTotalJobExpMandatory = isTotalJobExpMandatory;
 	}
 
-		
+
+
+	public Integer getUserCreditRating() {
+		return userCreditRating;
+	}
+
+
+
+	public void setUserCreditRating(Integer userCreditRating) {
+		this.userCreditRating = userCreditRating;
+	}
+
+
+	
 	
 
 	

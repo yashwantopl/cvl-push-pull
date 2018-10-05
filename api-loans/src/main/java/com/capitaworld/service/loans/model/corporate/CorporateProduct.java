@@ -268,6 +268,8 @@ public class CorporateProduct  extends  ProductMasterRequest implements Serializ
 	private Boolean isCurrentFoirDisplay = false;
 
 	private Boolean isCurrentFoirMandatory = false;
+	
+	private Integer userCreditRating;
 
 	public Integer getIndividualCibil() {
 		return individualCibil;
@@ -1396,6 +1398,18 @@ public class CorporateProduct  extends  ProductMasterRequest implements Serializ
 	public void setTrading(BigDecimal trading) {
 		this.trading = trading;
 	}
+
+	public Integer getUserCreditRating() {
+		return userCreditRating;
+	}
+
+	public void setUserCreditRating(Integer userCreditRating) {
+		this.userCreditRating = userCreditRating;
+	}
+	
+	
+
+	
 	
 	
 }
