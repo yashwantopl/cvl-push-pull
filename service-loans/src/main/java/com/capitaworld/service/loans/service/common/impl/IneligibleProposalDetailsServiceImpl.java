@@ -326,7 +326,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 							}
 							if (!CommonUtils.isObjectNullOrEmpty(resp.getCityId())) {
 								try {
-									city = CommonDocumentUtils.getState(Long.valueOf(resp.getCityId().toString()),
+									city = CommonDocumentUtils.getCity(Long.valueOf(resp.getCityId().toString()),
 											oneFormClient);
 								} catch (Exception e) {
 									logger.info("Error while calling One form client for getting City");
