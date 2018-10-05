@@ -215,7 +215,7 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 	public Boolean saveLoanDisbursementDetailbyId(LoanDisbursementRequest loanDisbursementRequest ) throws IOException {
 		logger.info("Enter in saveLoanDisbursementDetail() ----------------------->  LoanDisbursementRequest "+ loanDisbursementRequest);
 		try { 
-			LoanDisbursementDomain loanDisbursementDomain =  loanDisbursementRepository.findByBankDisbursementPrimaryKeyAndIsActive(loanDisbursementRequest.getId() ,   true);
+			LoanDisbursementDomain loanDisbursementDomain =  loanDisbursementRepository.findByBankDisbursementPrimaryKeyAndApplicationIdAndIsActive(loanDisbursementRequest.getId() , loanDisbursementRequest.getApplicationId() ,    true);
 			if(CommonUtils.isObjectNullOrEmpty(loanDisbursementDomain)) {
 				loanDisbursementDomain = new LoanDisbursementDomain();
 				loanDisbursementDomain.setIsActive(true);

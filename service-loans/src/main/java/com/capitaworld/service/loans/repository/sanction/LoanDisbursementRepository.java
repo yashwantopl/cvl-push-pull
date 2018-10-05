@@ -20,5 +20,5 @@ public interface LoanDisbursementRepository extends JpaRepository<LoanDisburseme
 	@Query("select obj from LoanDisbursementDomain obj where obj.applicationId=:applicationId and obj.isActive =true")
 	public List<LoanDisbursementDomain> getDisbursedListByApplicationId(@Param("applicationId") Long applicationId);
 	
-	public LoanDisbursementDomain findByBankDisbursementPrimaryKeyAndIsActive(Long id , Boolean IsActive);
+	public LoanDisbursementDomain findByBankDisbursementPrimaryKeyAndApplicationIdAndIsActive(Long id , Long applicationId ,  Boolean IsActive);
 }
