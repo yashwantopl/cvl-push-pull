@@ -470,4 +470,14 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 		}
 	}
 
+	@Override
+	public String getToken(String url , GenerateTokenRequest generateTokenRequest , Integer langCode  ) throws Exception {
+		sidbiIntegrationClient.setIntegrationBaseUrl(url);
+		String reqTok = "bobc:bob12345";
+		String requestDataEnc = Base64.getEncoder().encodeToString(reqTok.getBytes());
+		generateTokenRequest.setBankToken(requestDataEnc);
+		
+		return sidbiIntegrationClient.getToken(generateTokenRequest, generateTokenRequest.getBankToken(), langCode); 
+	}
+
 }
