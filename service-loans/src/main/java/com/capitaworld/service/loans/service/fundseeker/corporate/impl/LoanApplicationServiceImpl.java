@@ -4532,7 +4532,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		gatewayRequest.setApplicationId(applicationId);
 		gatewayRequest.setBusinessTypeId(businessTypeId);
 
-		Boolean status = gatewayClient.skipPayment(gatewayRequest);
+		Boolean status = null;
 		logger.info("In-Principle send for WhiteLabel Status=====>"+status);
 		// ====================================================================
 		
