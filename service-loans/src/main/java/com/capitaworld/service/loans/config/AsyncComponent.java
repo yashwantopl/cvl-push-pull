@@ -55,6 +55,10 @@ import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.UserResponse;
 import com.capitaworld.service.users.model.UsersRequest;
 import com.ibm.icu.text.SimpleDateFormat;
+import com.capitaworld.service.matchengine.MatchEngineClient;
+import com.capitaworld.service.matchengine.model.MatchDisplayResponse;
+import com.capitaworld.service.matchengine.model.MatchRequest;
+
 
 @Component
 public class AsyncComponent {
@@ -71,6 +75,9 @@ public class AsyncComponent {
 
 	@Autowired
 	private NotificationClient notificationClient;
+	
+	@Autowired
+	private MatchEngineClient matchEngineClient;
 
 	@Autowired
 	private ProposalDetailsClient proposalDetailsClient;
@@ -994,6 +1001,26 @@ public class AsyncComponent {
 			e.printStackTrace();
 		}
 		return null;
+	}
+	
+	@Async
+	public void saveOneformMapping(Long applicationId) {
+		try {
+			logger.info("ENTER IN SAVE MATCHES JSON WHILE SUBMIT ONEFROM DETAILS");
+			MatchRequest req = new MatchRequest();
+			req.setApplicationId(applicationId);
+			req.setProductId(1l);
+			MatchDisplayResponse response = matchEngineClient.displayMatchesOfCorporate(req);
+			if(!CommonUtils.isObjectNullOrEmpty(response)) {
+				logger.info("RESPONSE WHILE SAVE MATCHES JSON WHILE ONEFORM SUBMIT-----------> " +response.getStatus() + "-----> "+ response.getMessage());
+			} else {
+				logger.info("RESPONSE WHILE SAVE MATCHES JSON WHILE ONEFORM SUBMIT --------------> NULL");
+			}
+		} catch (Exception e) {
+			logger.info("EXCEPTION THROW WHILE SAVE MATCHES JSON WHILE SUBMIT ONEFORM DETAILS");
+			e.printStackTrace();
+		}
+		
 	}
 
 }

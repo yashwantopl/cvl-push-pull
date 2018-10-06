@@ -51,6 +51,7 @@ import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateAppli
 import com.capitaworld.service.loans.service.fundseeker.corporate.FundSeekerInputRequestService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.utils.CommonUtils;
+import com.capitaworld.service.loans.config.AsyncComponent;
 
 @Service
 @Transactional
@@ -93,6 +94,9 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 	
 	@Autowired
 	private Environment environment;
+	
+	@Autowired
+	private AsyncComponent asyncComponent;
 
 	@Autowired
 	private DirectorPersonalDetailRepository directorPersonalDetailRepository;
@@ -186,6 +190,13 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 				}
 			}
 
+			//SAVE MATCHE JSON 
+			try {
+				asyncComponent.saveOneformMapping(fundSeekerInputRequest.getApplicationId());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
 			return true;
 
 		} catch (Exception e) {
