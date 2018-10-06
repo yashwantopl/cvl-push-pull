@@ -3108,5 +3108,18 @@ public class LoanApplicationController {
 		}
 	}
 	
+	@RequestMapping(value = "/getToken/{url}/{langCode}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+	public String getToken(@PathVariable("url") String url , @RequestBody GenerateTokenRequest generateTokenRequest , @PathVariable("langCode") Integer  langCode ) {
+		try {
+			logger.info("start getToken()");
+			String res = loanSanctionService.getToken(url, generateTokenRequest, langCode);
+			return res;
+		} catch (Exception e) {
+			logger.error("Error while reverseAPI ==>{}", e);
+			e.printStackTrace();
+			return null;
+			
+		}
+	}
 	
 }
