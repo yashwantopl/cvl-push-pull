@@ -50,7 +50,37 @@ public class RetailApplicantIncomeDetail extends AuditActivity implements Serial
 	@Column(name = "other_source")
 	private Double otherSource;
 	
-	
+	@Column(name = "salary_income_gross")
+	private Double salaryIncomeGross;
+
+	@Column(name = "house_property_gross")
+	private Double housePropertyGross;
+
+	@Column(name = "pgbp_gross")
+	private Double pgbpGross;
+
+	@Column(name = "capital_gain_gross")
+	private Double capitalGainGross;
+
+	@Column(name = "other_source_gross")
+	private Double otherSourceGross;
+
+	@Column(name = "salary_mode")
+	private String salaryMode;
+
+	@Column(name = "house_property_mode")
+	private String housePropertyMode;
+
+	@Column(name = "pgbp_mode")
+	private String pgbpMode;
+
+	@Column(name = "capital_gain_mode")
+	private String capitalGainMode;
+
+	@Column(name = "other_source_mode")
+	private String otherSourceMode;
+
+
 	public Long getId() {
 		return id;
 	}
@@ -123,5 +153,83 @@ public class RetailApplicantIncomeDetail extends AuditActivity implements Serial
 		this.otherSource = otherSource;
 	}
 
+	public Double getSalaryIncomeGross() {
+		return salaryIncomeGross;
+	}
 
+	public void setSalaryIncomeGross(Double salaryIncomeGross) {
+		this.salaryIncomeGross = salaryIncomeGross;
+	}
+
+	public Double getHousePropertyGross() {
+		return housePropertyGross;
+	}
+
+	public void setHousePropertyGross(Double housePropertyGross) {
+		this.housePropertyGross = housePropertyGross;
+	}
+
+	public Double getPgbpGross() {
+		return pgbpGross;
+	}
+
+	public void setPgbpGross(Double pgbpGross) {
+		this.pgbpGross = pgbpGross;
+	}
+
+	public Double getCapitalGainGross() {
+		return capitalGainGross;
+	}
+
+	public void setCapitalGainGross(Double capitalGainGross) {
+		this.capitalGainGross = capitalGainGross;
+	}
+
+	public Double getOtherSourceGross() {
+		return otherSourceGross;
+	}
+
+	public void setOtherSourceGross(Double otherSourceGross) {
+		this.otherSourceGross = otherSourceGross;
+	}
+
+	public String getSalaryMode() {
+		return salaryMode;
+	}
+
+	public void setSalaryMode(String salaryMode) {
+		this.salaryMode = salaryMode;
+	}
+
+	public String getHousePropertyMode() {
+		return housePropertyMode;
+	}
+
+	public void setHousePropertyMode(String housePropertyMode) {
+		this.housePropertyMode = housePropertyMode;
+	}
+
+	public String getPgbpMode() {
+		return pgbpMode;
+	}
+
+	public void setPgbpMode(String pgbpMode) {
+		this.pgbpMode = pgbpMode;
+	}
+
+	public String getCapitalGainMode() {
+		return capitalGainMode;
+	}
+
+	public void setCapitalGainMode(String capitalGainMode) {
+		this.capitalGainMode = capitalGainMode;
+	}
+
+	public String getOtherSourceMode() {
+		return otherSourceMode;
+	}
+
+	public void setOtherSourceMode(String otherSourceMode) {
+		this.otherSourceMode = otherSourceMode;
+	}
 }

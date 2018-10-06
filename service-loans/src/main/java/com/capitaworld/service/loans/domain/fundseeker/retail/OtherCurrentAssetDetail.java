@@ -70,6 +70,12 @@ public class OtherCurrentAssetDetail implements Serializable {
 	@Column(name="modified_date")
 	private Date modifiedDate;
 
+	@Column(name="asset_number")
+	private String assetNumber;
+
+	@Column(name="remark")
+	private String remark;
+
 	public OtherCurrentAssetDetail() {
 	}
 
@@ -169,4 +175,19 @@ public class OtherCurrentAssetDetail implements Serializable {
 		this.modifiedDate = modifiedDate;
 	}
 
+	public String getAssetNumber() {
+		return assetNumber;
+	}
+
+	public void setAssetNumber(String assetNumber) {
+		this.assetNumber = assetNumber;
+	}
+
+	public String getRemark() {
+		return remark;
+	}
+
+	public void setRemark(String remark) {
+		this.remark = remark;
+	}
 }

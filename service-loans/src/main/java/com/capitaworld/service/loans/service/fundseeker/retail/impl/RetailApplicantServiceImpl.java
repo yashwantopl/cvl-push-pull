@@ -1,10 +1,10 @@
 package com.capitaworld.service.loans.service.fundseeker.retail.impl;
 
-import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import com.capitaworld.service.loans.model.retail.FinalCommonRetailRequestOld;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +20,6 @@ import com.capitaworld.service.loans.model.Address;
 import com.capitaworld.service.loans.model.common.AddressRequest;
 import com.capitaworld.service.loans.model.common.CibilFullFillOfferRequest;
 import com.capitaworld.service.loans.model.retail.CoApplicantRequest;
-import com.capitaworld.service.loans.model.retail.FinalCommonRetailRequest;
 import com.capitaworld.service.loans.model.retail.GuarantorRequest;
 import com.capitaworld.service.loans.model.retail.RetailApplicantRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
@@ -227,14 +226,14 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 	}
 
 	@Override
-	public FinalCommonRetailRequest getFinal(Long id, Long applicationId) throws Exception {
+	public FinalCommonRetailRequestOld getFinal(Long id, Long applicationId) throws Exception {
 		try {
 			RetailApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId(id, applicationId);
 			if (applicantDetail == null) {
 				throw new NullPointerException("RetailApplicantDetail Record of Final Portion not exists in DB of ID : "
 						+ id + "  ApplicationId==>" + applicationId);
 			}
-			FinalCommonRetailRequest applicantRequest = new FinalCommonRetailRequest();
+			FinalCommonRetailRequestOld applicantRequest = new FinalCommonRetailRequestOld();
 			BeanUtils.copyProperties(applicantDetail, applicantRequest, CommonUtils.IgnorableCopy.RETAIL_PROFILE);
 			applicantRequest.setCurrencyValue(CommonDocumentUtils.getCurrency(applicantDetail.getCurrencyId()));
 			applicantRequest.setFinalFilledCount(applicantDetail.getApplicationId().getFinalFilledCount());
@@ -247,7 +246,7 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 	}
 
 	@Override
-	public boolean saveFinal(FinalCommonRetailRequest applicantRequest, Long userId) throws Exception {
+	public boolean saveFinal(FinalCommonRetailRequestOld applicantRequest, Long userId) throws Exception {
 		try {
 			if (applicantRequest.getApplicationId() == null) {
 				throw new NullPointerException("Application Id and ID(Primary Key) must not be null=>Application ID==>"
