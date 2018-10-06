@@ -26,6 +26,7 @@ import com.capitaworld.service.analyzer.model.common.ReportRequest;
 import com.capitaworld.service.fraudanalytics.client.FraudAnalyticsClient;
 import com.capitaworld.service.fraudanalytics.model.AnalyticsRequest;
 import com.capitaworld.service.fraudanalytics.model.AnalyticsResponse;
+import com.capitaworld.service.loans.config.AsyncComponent;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.DirectorBackgroundDetail;
@@ -96,6 +97,9 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 
 	@Autowired
 	private DirectorPersonalDetailRepository directorPersonalDetailRepository;
+	
+	@Autowired
+	private AsyncComponent asyncComponent; 
 
 	@Override
 	public boolean saveOrUpdate(FundSeekerInputRequestResponse fundSeekerInputRequest) throws Exception {
@@ -184,6 +188,13 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 					}
 					financialArrangementDetailsRepository.save(saveFinObj);
 				}
+			}
+			
+			//SAVE MATCHE JSON 
+			try {
+				asyncComponent.saveOneformMapping(fundSeekerInputRequest.getApplicationId());
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
 
 			return true;
