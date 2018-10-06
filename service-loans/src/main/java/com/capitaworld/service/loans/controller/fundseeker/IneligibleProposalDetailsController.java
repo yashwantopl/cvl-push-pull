@@ -3,6 +3,7 @@ package com.capitaworld.service.loans.controller.fundseeker;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.InEligibleProposalDetailsRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
+import com.capitaworld.service.loans.model.ProposalDetailsAdminRequest;
 import com.capitaworld.service.loans.service.common.IneligibleProposalDetailsService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -13,6 +14,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -58,5 +61,24 @@ public class IneligibleProposalDetailsController {
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse("Data not saved", HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
 		}
+	}
+	
+	@RequestMapping(value = "/getOfflineProposalByOrgId", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getOfflineProposalByOrgId(@RequestBody ProposalDetailsAdminRequest request, HttpServletRequest httpServletRequest) {
+		
+		Long userOrgId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ORG_ID);
+		Long userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
+		
+		if(CommonUtils.isObjectNullOrEmpty(userOrgId) || CommonUtils.isObjectNullOrEmpty(request.getFromDate()) || CommonUtils.isObjectNullOrEmpty(request.getToDate()) || CommonUtils.isObjectNullOrEmpty(userId)) {
+			logger.info("Bad Request !!");
+			return new ResponseEntity<LoansResponse>(new LoansResponse("Request parameter null or empty !!", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+		}
+		
+		List<ProposalDetailsAdminRequest> dataList = ineligibleProposalDetailsService.getOfflineProposals(userOrgId, userId, request);
+		
+		LoansResponse response = new LoansResponse("Data Found.", HttpStatus.OK.value());
+		response.setData(dataList);
+		
+		return new ResponseEntity<LoansResponse>(response, HttpStatus.OK);
 	}
 }

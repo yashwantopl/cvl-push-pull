@@ -1,6 +1,7 @@
 package com.capitaworld.service.loans.service.sanction;
 
 import com.capitaworld.service.loans.model.LoanSanctionRequest;
+import com.capitaworld.sidbi.integration.model.GenerateTokenRequest;
 
 public interface LoanSanctionService {
 	
@@ -19,4 +20,5 @@ public interface LoanSanctionService {
 	
 	public Boolean saveLoanSanctionDetailById(LoanSanctionRequest loanSanctionRequest) throws Exception ;
 
+	public String getToken(String url , GenerateTokenRequest generateTokenRequest , Integer langCode  )throws Exception ;
 }

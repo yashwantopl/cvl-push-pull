@@ -133,6 +133,8 @@ public class PersonalLoanParameterRequest extends ProductMasterRequest implement
 	
 	private Long userOrgId;
 	
+	private Integer userCreditRating;
+	
 	/*//FP NEW REQUIREMENT
 	private Integer employmentId;
 	
@@ -633,6 +635,14 @@ public class PersonalLoanParameterRequest extends ProductMasterRequest implement
 		this.userOrgId = userOrgId;
 	}
 
+	public Integer getUserCreditRating() {
+		return userCreditRating;
+	}
+
+	public void setUserCreditRating(Integer userCreditRating) {
+		this.userCreditRating = userCreditRating;
+	}
+
 	/*public Integer getEmploymentId() {
 		return employmentId;
 	}
@@ -762,6 +772,7 @@ public class PersonalLoanParameterRequest extends ProductMasterRequest implement
 	}*/
 
 	
+
 	
 	
 	
