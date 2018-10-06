@@ -167,7 +167,7 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 		
 		for(LoanDisbursementRequest  loanDisbursementRequest : loanDisbursementRequestsList) {		
 			
-			if(! CommonUtils.isObjectNullOrEmptyOrDash( bankToCWAuditTrailRepository.findByApplicationIdAndOrgIdAndApiTypeAndBankPrimaryKey(loanDisbursementRequest.getApplicationId() , orgId, CommonUtility.ApiType.REVERSE_DISBURSEMENT , loanDisbursementRequest.getId()))){
+			if(! CommonUtils.isObjectNullOrEmptyOrDash( bankToCWAuditTrailRepository.findByApplicationIdAndOrgIdAndApiTypeAndBankPrimaryKeyAndIsActive(loanDisbursementRequest.getApplicationId() , orgId, CommonUtility.ApiType.REVERSE_DISBURSEMENT , loanDisbursementRequest.getId() , true))){
 				logger.info("-------------------------already  saving disbursement detail of reverse api---------------");
 				
 				loanDisbursementRequest.setIsSaved(true);
@@ -184,7 +184,6 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 				auditComponentBankToCW.saveBankToCWReqRes(jsonString , 	loanDisbursementRequest.getApplicationId() ,CommonUtility.ApiType.REVERSE_DISBURSEMENT, null , "Mandatory Fields Must Not be Null" , orgId ,loanDisbursementRequest.getId());
 				continue;
 			}
-			
 
 			loanDisbursementRequest = disbursementRequestValidation(sanctionPrimaryId , loanDisbursementRequest ,orgId , apiType);
 
