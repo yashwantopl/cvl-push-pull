@@ -3108,7 +3108,7 @@ public class LoanApplicationController {
 		}
 	}
 	
-	@RequestMapping(value = "/getToken/{url}/{langCode}", method = RequestMethod.POST, consumes = MediaType.TEXT_PLAIN_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/getToken/{url}/{langCode}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public String getToken(@PathVariable("url") String url , @RequestBody GenerateTokenRequest generateTokenRequest , @PathVariable("langCode") Integer  langCode ) {
 		try {
 			logger.info("start getToken()");
