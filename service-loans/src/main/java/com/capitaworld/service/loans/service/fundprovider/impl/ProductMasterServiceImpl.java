@@ -1378,7 +1378,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				continue;
 				
 			
-			if (!CommonUtils.isObjectNullOrEmpty(businessId) && productMaster.getProductId()==2) {
+			if (!CommonUtils.isObjectNullOrEmpty(businessId) && productMaster.getProductId()==2 && !CommonUtils.isObjectNullOrEmpty(productMaster.getBusinessTypeId())) {
 				if(!businessId.toString().equals(productMaster.getBusinessTypeId().toString()))
 						{
 							continue;
