@@ -202,7 +202,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 						else{
 							mailParameters.put("loan_type","NA");
 						}
-						mailParameters.put("loan_amount",primaryCorporateDetail.getLoanAmount()!=null?primaryCorporateDetail.getLoanAmount().toString():"NA");
+						mailParameters.put("loan_amount",primaryCorporateDetail.getLoanAmount()!=null?String.format("%.0f",primaryCorporateDetail.getLoanAmount()):"NA");
 					}
 					else{
 						mailParameters.put("loan_type","NA");
