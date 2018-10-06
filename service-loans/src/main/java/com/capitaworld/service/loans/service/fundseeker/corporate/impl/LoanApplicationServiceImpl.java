@@ -5613,38 +5613,40 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			}
 			//Saving CMA Details Ends
 			
-			//Saving Logic Detail Starts
-			audit = auditComponent.getAudit(applicationId, true, AuditComponent.LOGIC);
-			if(audit == null) {
+			if(!CommonUtils.isObjectNullOrEmpty(organisationConfiguration) && organisationConfiguration.getIsLogic()) {
+				//	Saving Logic Detail Starts
+				audit = auditComponent.getAudit(applicationId, true, AuditComponent.LOGIC);
+				if(audit == null) {
 				
-				//FinancialRequest financialDetails = cmaService.getFinancialDetailsForBankIntegration(applicationId);
-				ClientLogicCalculationRequest clientLogicCalculationRequest= getClientLogicCalculationDetail(applicationId, userId,  prelimData !=null ? prelimData.getCorporateProfileRequest() : null , data , cmaRequest , organizationId); 
-				try {
-					if(clientLogicCalculationRequest == null) {
-						logger.info("LOGIC Details Request Not Found  in savePhese1DataToSidbi()  for ApplicationId ====>{}FpProductId====>{}",applicationId,fpProductMappingId);
-						auditComponent.updateAudit(AuditComponent.LOGIC, applicationId, userId, "LOGIC Details data Request Not Found for ApplicationId ====>{} "+applicationId+"FpProductId====>{}"+fpProductMappingId, false);
-//						setTokenAsExpired(generateTokenRequest);
-//						return false;
-					}else {
-						logger.info("Start Saving LOGIC Details in savePhese1DataToSidbi() ");
-						saveLogicDetails = sidbiIntegrationClient.saveLogic(clientLogicCalculationRequest, generateTokenRequest.getToken(),generateTokenRequest.getBankToken() , userOrganisationRequest.getCodeLanguage());
-						logger.info("Sucessfully save LOGIC Details in savePhese1DataToSidbi() for  ApplicationId ====>{}FpProductId====>{}Flag==>{}",applicationId,fpProductMappingId,saveLogicDetails);
-						auditComponent.updateAudit(AuditComponent.LOGIC, applicationId, userId, null, saveLogicDetails);
+				//	FinancialRequest financialDetails = cmaService.getFinancialDetailsForBankIntegration(applicationId);
+					ClientLogicCalculationRequest clientLogicCalculationRequest= getClientLogicCalculationDetail(applicationId, userId,  prelimData !=null ? prelimData.getCorporateProfileRequest() : null , data , cmaRequest , organizationId); 
+					try {
+						if(clientLogicCalculationRequest == null) {
+							logger.info("LOGIC Details Request Not Found  in savePhese1DataToSidbi()  for ApplicationId ====>{}FpProductId====>{}",applicationId,fpProductMappingId);
+							auditComponent.updateAudit(AuditComponent.LOGIC, applicationId, userId, "LOGIC Details data Request Not Found for ApplicationId ====>{} "+applicationId+"FpProductId====>{}"+fpProductMappingId, false);
+							//	setTokenAsExpired(generateTokenRequest);
+							//	return false;
+						}else {
+							logger.info("Start Saving LOGIC Details in savePhese1DataToSidbi() ");
+							saveLogicDetails = sidbiIntegrationClient.saveLogic(clientLogicCalculationRequest, generateTokenRequest.getToken(),generateTokenRequest.getBankToken() , userOrganisationRequest.getCodeLanguage());
+							logger.info("Sucessfully save LOGIC Details in savePhese1DataToSidbi() for  ApplicationId ====>{}FpProductId====>{}Flag==>{}",applicationId,fpProductMappingId,saveLogicDetails);
+							auditComponent.updateAudit(AuditComponent.LOGIC, applicationId, userId, null, saveLogicDetails);
+						}
+					}catch(Exception e) {
+						e.printStackTrace();
+						if(e.getMessage() != null && e.getMessage().contains("401")) {
+							auditComponent.updateAudit(AuditComponent.LOGIC, applicationId, userId, "Unauthorized! in  LogicDetail in savePhese1DataToSidbi() ==> for applicationId====>{} "+applicationId+" Msg ==> "+e.getMessage() ,saveLogicDetails);
+							logger.error("Invalid Token Details");
+							setTokenAsExpired(generateTokenRequest , userOrganisationRequest.getCodeLanguage() );
+							return false;						
+						}else {
+							logger.error("Error while calling logic client");
+							auditComponent.updateAudit(AuditComponent.LOGIC, applicationId, userId, "Exception while saving LOGIC detail savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "+applicationId+" Mgs " +e.getMessage() , saveLogicDetails);
+						}
 					}
-				}catch(Exception e) {
-					e.printStackTrace();
-					if(e.getMessage() != null && e.getMessage().contains("401")) {
-						auditComponent.updateAudit(AuditComponent.LOGIC, applicationId, userId, "Unauthorized! in  LogicDetail in savePhese1DataToSidbi() ==> for applicationId====>{} "+applicationId+" Msg ==> "+e.getMessage() ,saveLogicDetails);
-						logger.error("Invalid Token Details");
-						setTokenAsExpired(generateTokenRequest , userOrganisationRequest.getCodeLanguage() );
-						return false;						
-					}else {
-						logger.error("Error while calling logic client");
-						auditComponent.updateAudit(AuditComponent.LOGIC, applicationId, userId, "Exception while saving LOGIC detail savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "+applicationId+" Mgs " +e.getMessage() , saveLogicDetails);
-					}
+				}else {
+					logger.info("Logic Details Already Saved so not Going to Save Again===>");
 				}
-			}else {
-				logger.info("Logic Details Already Saved so not Going to Save Again===>");
 			}
 			//Saving Logic Details Ends
 		
