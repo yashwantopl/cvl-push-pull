@@ -1,5 +1,7 @@
 package com.capitaworld.service.loans.service.common.impl;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +18,7 @@ import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporat
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
 import com.capitaworld.service.loans.model.InEligibleProposalDetailsRequest;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
+import com.capitaworld.service.loans.model.ProposalDetailsAdminRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
 import com.capitaworld.service.loans.repository.fundseeker.IneligibleProposalDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
@@ -27,7 +30,6 @@ import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.matchengine.ProposalDetailsClient;
-import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
 import com.capitaworld.service.notification.client.NotificationClient;
 import com.capitaworld.service.notification.exceptions.NotificationException;
 import com.capitaworld.service.notification.model.Notification;
@@ -87,6 +89,8 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 		try {
 			IneligibleProposalDetails ineligibleProposalDetails = new IneligibleProposalDetails();
 			BeanUtils.copyProperties(inEligibleProposalDetailsRequest, ineligibleProposalDetails);
+			//Set Created Date.
+			ineligibleProposalDetails.setCreatedDate(new Date());
 			ineligibleProposalDetailsRepository.save(ineligibleProposalDetails);
 			return true;
 		} catch (Exception e) {
@@ -198,7 +202,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 						else{
 							mailParameters.put("loan_type","NA");
 						}
-						mailParameters.put("loan_amount",primaryCorporateDetail.getLoanAmount()!=null?primaryCorporateDetail.getLoanAmount().toString():"NA");
+						mailParameters.put("loan_amount",primaryCorporateDetail.getLoanAmount()!=null?String.format("%.0f",primaryCorporateDetail.getLoanAmount()):"NA");
 					}
 					else{
 						mailParameters.put("loan_type","NA");
@@ -326,7 +330,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 							}
 							if (!CommonUtils.isObjectNullOrEmpty(resp.getCityId())) {
 								try {
-									city = CommonDocumentUtils.getState(Long.valueOf(resp.getCityId().toString()),
+									city = CommonDocumentUtils.getCity(Long.valueOf(resp.getCityId().toString()),
 											oneFormClient);
 								} catch (Exception e) {
 									logger.info("Error while calling One form client for getting City");
@@ -456,4 +460,41 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 		notificationClient.send(notificationRequest);
 		logger.info("Outside send Email===>{}");
 	}
+	
+	@Override
+    public List<ProposalDetailsAdminRequest> getOfflineProposals(Long userOrgId, Long userId, ProposalDetailsAdminRequest request) {
+    	
+		List<Object[]> result = new ArrayList<Object[]>();
+		
+		result = ineligibleProposalDetailsRepository.getOfflineProposalDetailsByOrgId(userOrgId, request.getFromDate(), request.getToDate());
+		
+    	List<ProposalDetailsAdminRequest> responseList = new ArrayList<>(result.size());
+    	
+    	for(Object[] obj : result) {
+    		ProposalDetailsAdminRequest proposal = new ProposalDetailsAdminRequest();
+    		proposal.setApplicationId(CommonUtils.convertLong(obj[0]));
+    		proposal.setUserId(CommonUtils.convertLong(obj[1]));
+    		proposal.setUserName(CommonUtils.convertString(obj[2]));
+    		proposal.setEmail(CommonUtils.convertString(obj[3]));
+    		proposal.setMobile(CommonUtils.convertString(obj[4]));
+    		proposal.setCreatedDate(CommonUtils.convertDate(obj[5]));
+    		proposal.setBranchId(CommonUtils.convertLong(obj[6]));
+    		proposal.setBranchName(CommonUtils.convertString(obj[7]));
+    		proposal.setContactPersonName(CommonUtils.convertString(obj[8]));
+    		proposal.setTelephoneNo(CommonUtils.convertString(obj[9]));
+    		proposal.setContactPersonNumber(CommonUtils.convertString(obj[10]));
+    		proposal.setOrganizationName(CommonUtils.convertString(obj[11]));
+    		proposal.setApplicationCode(CommonUtils.convertString(obj[12]));
+    		proposal.setCode(CommonUtils.convertString(obj[13]));
+    		proposal.setStreetName(CommonUtils.convertString(obj[14]));
+    		proposal.setState(CommonUtils.convertString(obj[15]));
+    		proposal.setCity(CommonUtils.convertString(obj[16]));
+    		proposal.setPremisesNo(CommonUtils.convertString(obj[17]));
+    		proposal.setContactPersonEmail(CommonUtils.convertString(obj[18]));
+    		
+    		responseList.add(proposal);
+    	}
+    	
+    	return responseList;
+    }
 }
