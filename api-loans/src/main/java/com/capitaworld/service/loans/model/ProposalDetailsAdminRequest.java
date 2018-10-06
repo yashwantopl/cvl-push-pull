@@ -43,6 +43,7 @@ public class ProposalDetailsAdminRequest implements Serializable {
     private String streetName;
     private String premisesNo;
     private String contactPersonEmail;
+    private Boolean isCampaignCustomer;
     
     
     private Date toDate;
@@ -334,5 +335,14 @@ public class ProposalDetailsAdminRequest implements Serializable {
 	public void setContactPersonEmail(String contactPersonEmail) {
 		this.contactPersonEmail = contactPersonEmail;
 	}
+
+	public Boolean getIsCampaignCustomer() {
+		return isCampaignCustomer;
+	}
+
+	public void setIsCampaignCustomer(Boolean isCampaignCustomer) {
+		this.isCampaignCustomer = isCampaignCustomer;
+	}
+
 }
 
