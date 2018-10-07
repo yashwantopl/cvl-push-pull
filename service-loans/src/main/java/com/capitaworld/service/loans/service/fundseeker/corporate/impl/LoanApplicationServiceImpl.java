@@ -10054,6 +10054,18 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 		return 0;
 		
 	}
+	
+	@Override
+	public Boolean saveLoanWCRenewalType(Long applicationId,Boolean wcRenewalType) {
+		LoanApplicationMaster loanMaster = loanApplicationRepository.getById(applicationId);
+		if(!CommonUtils.isObjectNullOrEmpty(loanMaster)) {
+			loanMaster.setWcRenewalStatus(wcRenewalStatus);
+			loanApplicationRepository.save(loanMaster);
+			return true;
+		}
+		return false;
+	}
+
 }
 
 

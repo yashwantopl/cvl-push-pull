@@ -212,6 +212,9 @@ public class LoanApplicationMaster implements Serializable {
 	
 	@Column(name = "company_cin_number")
 	private String companyCinNumber;
+	
+	@Column(name = "wc_renewal_status")
+	private Boolean wcRenewalStatus;
 
 	public Long getFpMakerId() {
 		return fpMakerId;
@@ -701,6 +704,16 @@ public class LoanApplicationMaster implements Serializable {
 	 */
 	public void setCompanyCinNumber(String companyCinNumber) {
 		this.companyCinNumber = companyCinNumber;
+	}
+
+	
+	
+	public Boolean getWcRenewalStatus() {
+		return wcRenewalStatus;
+	}
+
+	public void setWcRenewalStatus(Boolean wcRenewalStatus) {
+		this.wcRenewalStatus = wcRenewalStatus;
 	}
 
 	@Override
