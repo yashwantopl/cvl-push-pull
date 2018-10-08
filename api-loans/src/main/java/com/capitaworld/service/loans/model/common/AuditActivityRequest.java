@@ -14,14 +14,14 @@ public class AuditActivityRequest implements Serializable {
 
 	private String createdBy;
 
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
 	private Date createdDate;
-	
+
 	private String modifiedBy;
-	
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
+
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
 	private Date modifiedDate;
-	
+
 	private Boolean isActive;
 
 	public String getCreatedBy() {
@@ -48,6 +48,14 @@ public class AuditActivityRequest implements Serializable {
 		this.modifiedBy = modifiedBy;
 	}
 
+	public Date getModifiedDate() {
+		return modifiedDate;
+	}
+
+	public void setModifiedDate(Date modifiedDate) {
+		this.modifiedDate = modifiedDate;
+	}
+
 	public Boolean getIsActive() {
 		return isActive;
 	}
@@ -58,10 +66,8 @@ public class AuditActivityRequest implements Serializable {
 
 	@Override
 	public String toString() {
-		return "AuditActivityRequest [createdBy=" + createdBy + ", createdDate=" + createdDate + ", modifiedBy=" + modifiedBy
-				+ ", modifiedDate=" + modifiedDate + ", isActive=" + isActive + "]";
+		return "AuditActivityRequest [createdBy=" + createdBy + ", createdDate=" + createdDate + ", modifiedBy="
+				+ modifiedBy + ", modifiedDate=" + modifiedDate + ", isActive=" + isActive + "]";
 	}
-	
-	
 
 }
