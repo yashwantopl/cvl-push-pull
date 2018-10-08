@@ -102,9 +102,6 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 	@Autowired
 	private DirectorPersonalDetailRepository directorPersonalDetailRepository;
 	
-	@Autowired
-	private AsyncComponent asyncComponent; 
-
 	@Override
 	public boolean saveOrUpdate(FundSeekerInputRequestResponse fundSeekerInputRequest) throws Exception {
 		try {
