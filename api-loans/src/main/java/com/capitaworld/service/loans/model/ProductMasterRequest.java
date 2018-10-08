@@ -46,6 +46,7 @@ public class ProductMasterRequest implements Serializable {
 	
 	private Boolean isParameterFilled;
 
+	private Integer wcRenewalStatus;
 
 
 	/**
@@ -184,6 +185,12 @@ public class ProductMasterRequest implements Serializable {
 	public void setIsParameterFilled(Boolean isParameterFilled) {
 		this.isParameterFilled = isParameterFilled;
 	}
-	
-	
+
+	public Integer getWcRenewalStatus() {
+		return wcRenewalStatus;
+	}
+
+	public void setWcRenewalStatus(Integer wcRenewalStatus) {
+		this.wcRenewalStatus = wcRenewalStatus;
+	}
 }
