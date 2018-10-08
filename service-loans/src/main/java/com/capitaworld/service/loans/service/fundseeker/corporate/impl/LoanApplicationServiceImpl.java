@@ -10065,6 +10065,16 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 		}
 		return false;
 	}
+	
+	@Override
+	public Boolean getLoanWCRenewalType(Long applicationId) {
+		LoanApplicationMaster loanMaster = loanApplicationRepository.getById(applicationId);
+		if(!CommonUtils.isObjectNullOrEmpty(loanMaster)) {
+			return loanMaster.getWcRenewalStatus();
+		}
+		logger.info("IN GET LOAN WC RENEWAL TYPE NOT FOUND BY APPLICATION ID ---------->" + applicationId);
+		return false;
+	}
 
 }
 

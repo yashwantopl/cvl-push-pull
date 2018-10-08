@@ -213,6 +213,7 @@ public interface LoanApplicationService {
 	public HunterRequestDataResponse getDataForHunterForNTB(Long applicationId) throws Exception;
 	
 	public Boolean saveLoanWCRenewalType(Long applicationId,Boolean wcRenewalType);
+	public Boolean getLoanWCRenewalType(Long applicationId);
 }
 
 

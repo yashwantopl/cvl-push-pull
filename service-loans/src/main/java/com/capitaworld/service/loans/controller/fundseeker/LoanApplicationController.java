@@ -3163,4 +3163,20 @@ public class LoanApplicationController {
 		
 	}
 	
+	@RequestMapping(value = "/getLoanWCRenewalType/{applicationId}", method = RequestMethod.GET)
+	public ResponseEntity<LoansResponse> getLoanWCRenewalType(@PathVariable("applicationId") Long applicationId) {
+		try {
+			logger.info("ENTER IN getLoanWCRenewalType---------------->" + applicationId);
+			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully get data", HttpStatus.OK.value(), 
+					loanApplicationService.getLoanWCRenewalType(applicationId)), HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while getLoanWCRenewalType==>");
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+		
+	}
+	
 }

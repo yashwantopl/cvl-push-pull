@@ -232,6 +232,7 @@ public class LoansClient {
     private static final String GET_TOKEN ="/loan_application/getToken";
     private static final String SET_TOKEN_AS_EXPIRED ="/loan_application/setTokenAsExpired";
     private static final String SAVE_LOAN_WC_RENEWAL_TYPE ="/loan_application/saveLoanWCRenewalType";
+    private static final String GET_LOAN_WC_RENEWAL_TYPE ="/loan_application/getLoanWCRenewalType";
     
 	private static final Logger logger = LoggerFactory.getLogger(LoansClient.class);
 	
@@ -2358,6 +2359,21 @@ public class LoansClient {
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new LoansException("Loans service is not available while saveLoanWCRenewalType");
+		}
+	}
+	
+	public LoansResponse getLoanWCRenewalType(Long applicationId) throws LoansException {
+		String url = loansBaseUrl.concat(GET_LOAN_WC_RENEWAL_TYPE);
+		try {
+			System.out.println("Enter in Get WC Renewal Type Status---------->" + url);
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<?> entity = new HttpEntity<>(null, headers);
+			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available While Get Loan WC Renewal Type");
 		}
 	}
 }
