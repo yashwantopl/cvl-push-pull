@@ -4613,7 +4613,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		gatewayRequest.setBusinessTypeId(businessTypeId);
 
 		Boolean status = null;
-		status = gatewayClient.personalLoanInPrinciple(gatewayRequest);
+		//status = gatewayClient.personalLoanInPrinciple(gatewayRequest);
 		logger.info("In-Principle send for Personal Loan Status=====>"+status);
 		// ====================================================================
 		
@@ -10073,6 +10073,28 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 		
 		return registeredOfficeAddress;
 	}
+	
+	@Override
+	public Boolean saveLoanWCRenewalType(Long applicationId,Integer wcRenewalType) {
+		LoanApplicationMaster loanMaster = loanApplicationRepository.getById(applicationId);
+		if(!CommonUtils.isObjectNullOrEmpty(loanMaster)) {
+			loanMaster.setWcRenewalStatus(wcRenewalType);
+			loanApplicationRepository.save(loanMaster);
+			return true;
+		}
+		return false;
+	}
+	
+	@Override
+	public Integer getLoanWCRenewalType(Long applicationId) {
+		LoanApplicationMaster loanMaster = loanApplicationRepository.getById(applicationId);
+		if(!CommonUtils.isObjectNullOrEmpty(loanMaster)) {
+			return loanMaster.getWcRenewalStatus();
+		}
+		logger.info("IN GET LOAN WC RENEWAL TYPE NOT FOUND BY APPLICATION ID ---------->" + applicationId);
+		return null;
+	}
+
 }
 
 

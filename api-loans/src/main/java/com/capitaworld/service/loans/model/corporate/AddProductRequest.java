@@ -23,7 +23,7 @@ public class AddProductRequest {
 	
 	private Long loanId;
 
-
+	private Integer wcRenewalStatus;
 	public Integer getProductId() {
 		return productId;
 	}
@@ -95,6 +95,12 @@ public class AddProductRequest {
 	public void setLoanId(Long loanId) {
 		this.loanId = loanId;
 	}
-	
-	
+
+	public Integer getWcRenewalStatus() {
+		return wcRenewalStatus;
+	}
+
+	public void setWcRenewalStatus(Integer wcRenewalStatus) {
+		this.wcRenewalStatus = wcRenewalStatus;
+	}
 }

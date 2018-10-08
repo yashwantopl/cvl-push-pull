@@ -3144,5 +3144,39 @@ public class LoanApplicationController {
 			
 		}
 	}
+	@RequestMapping(value = "/saveLoanWCRenewalType", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE,consumes = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> saveLoanWCRenewalType(@RequestBody LoanApplicationRequest loanRequest) {
+		if(CommonUtils.isObjectNullOrEmpty(loanRequest.getId()) || CommonUtils.isObjectNullOrEmpty(loanRequest.getWcRenewalStatus())) {
+			return new ResponseEntity<LoansResponse>(new LoansResponse("Request Parameter Null Or Empty !!", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+		}
+		try {
+			logger.info("ENTER IN saveLoanWCRenewalType---------------->" + loanRequest.getId());
+			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully save data", HttpStatus.OK.value(), 
+					loanApplicationService.saveLoanWCRenewalType(loanRequest.getId(), loanRequest.getWcRenewalStatus())), HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while saveLoanWCRenewalType==>");
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+		
+	}
+	
+	@RequestMapping(value = "/getLoanWCRenewalType/{applicationId}", method = RequestMethod.GET)
+	public ResponseEntity<LoansResponse> getLoanWCRenewalType(@PathVariable("applicationId") Long applicationId) {
+		try {
+			logger.info("ENTER IN getLoanWCRenewalType---------------->" + applicationId);
+			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully get data", HttpStatus.OK.value(), 
+					loanApplicationService.getLoanWCRenewalType(applicationId)), HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while getLoanWCRenewalType==>");
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+		
+	}
 	
 }

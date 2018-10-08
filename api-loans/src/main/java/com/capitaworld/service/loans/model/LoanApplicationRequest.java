@@ -124,6 +124,7 @@ public class LoanApplicationRequest implements Serializable {
     private Integer businessTypeId;
 
     private String applicationStatus;
+    private Integer wcRenewalStatus;
 
 	public String getApplicationStatus() {
 		return applicationStatus;
@@ -619,6 +620,16 @@ public class LoanApplicationRequest implements Serializable {
 
 	public void setFpProductId(Long fpProductId) {
 		this.fpProductId = fpProductId;
+	}
+	
+	
+
+	public Integer getWcRenewalStatus() {
+		return wcRenewalStatus;
+	}
+
+	public void setWcRenewalStatus(Integer wcRenewalStatus) {
+		this.wcRenewalStatus = wcRenewalStatus;
 	}
 
 	/* (non-Javadoc)

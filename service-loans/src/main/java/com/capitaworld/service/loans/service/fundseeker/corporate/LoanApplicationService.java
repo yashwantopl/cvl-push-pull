@@ -211,6 +211,9 @@ public interface LoanApplicationService {
 	 * @throws Exception
 	 */
 	public HunterRequestDataResponse getDataForHunterForNTB(Long applicationId) throws Exception;
+	
+	public Boolean saveLoanWCRenewalType(Long applicationId,Integer wcRenewalType);
+	public Integer getLoanWCRenewalType(Long applicationId);
 }
 
 
