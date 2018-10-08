@@ -2836,7 +2836,14 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				if (directorBackgroundDetail != null) {
 					return directorBackgroundDetail.getDirectorsName();
 				}
-			} else {
+			
+			}else if (applicationMaster.getBusinessTypeId().intValue()== CommonUtils.BusinessType.RETAIL_PERSONAL_LOAN.getId()) {
+				RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository
+						.findOneByApplicationIdId(applicationId);
+				return retailApplicantDetail.getFirstName() + " " + retailApplicantDetail.getLastName();
+			}
+			
+			else {
 				if (CommonUtils.getUserMainType(applicationMaster.getProductId()) == CommonUtils.UserMainType.RETAIL) {
 					RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository
 							.findOneByApplicationIdId(applicationId);
@@ -4483,14 +4490,14 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			if (!CommonUtils.isObjectListNull(connectResponse)) {
 				logger.info("Connector Response ----------------------------->" + connectResponse.toString());
 				logger.info("Before Start Saving Phase 1 Sidbi API ------------------->" + orgId);
-				//if(orgId==10L) {
+			//	if(orgId==10L) {
 					logger.info("Start Saving Phase 1 sidbi API -------------------->" + loanApplicationMaster.getId());
 					Long fpMappingId = null;
 					try {
+						savePhese1DataToSidbi(loanApplicationMaster.getId(), userId,orgId,fpProductId);
 					}catch(Exception e) {
 						e.printStackTrace();
 					}
-					savePhese1DataToSidbi(loanApplicationMaster.getId(), userId,orgId,fpProductId);
 			//	}
 
 				if(connectResponse.getProceed()) {
@@ -4567,10 +4574,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					logger.info("Start Saving Phase 1 sidbi API -------------------->" + loanApplicationMaster.getId());
 					Long fpMappingId = null;
 					try {
+						savePhese1DataToSidbi(loanApplicationMaster.getId(), userId,orgId,fpProductId);
 					}catch(Exception e) {
 						e.printStackTrace();
 					}
-					savePhese1DataToSidbi(loanApplicationMaster.getId(), userId,orgId,fpProductId);
 			//	}
 
 				if(connectResponse.getProceed()) {
@@ -4613,7 +4620,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		gatewayRequest.setBusinessTypeId(businessTypeId);
 
 		Boolean status = null;
-		status = gatewayClient.personalLoanInPrinciple(gatewayRequest);
+		//status = gatewayClient.personalLoanInPrinciple(gatewayRequest);
 		logger.info("In-Principle send for Personal Loan Status=====>"+status);
 		// ====================================================================
 		
@@ -9604,18 +9611,10 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 				{
 					addressAndContactDetailsRequest = new AddressAndContactDetailsRequest();
 					
-					registeredOfficeAddress = new AddressRequest();
-					String[] split = locationInformation.getAddress().split(",");
-					logger.info("Length of Address Array ====================>{}",split.length);
-					if(split != null && split.length == 5) {
-						registeredOfficeAddress.setPinCode(getInLong(split[split.length - 1]));
-						registeredOfficeAddress.setPincode(split[split.length - 1]);
-						registeredOfficeAddress.setState(split[split.length - 2]);
-						registeredOfficeAddress.setCity(split[split.length - 3]);
-						registeredOfficeAddress.setStreetName(split[0]);
-						registeredOfficeAddress.setLandMark(split[0]);
-						registeredOfficeAddress.setPremiseNumber(split[0]);
-					}
+					//set Address
+					registeredOfficeAddress = setAddress(locationInformation.getAddress());
+					//set Address in string form 
+					addressAndContactDetailsRequest.setFullAddress(locationInformation.getAddress());
 					
 					addressAndContactDetailsRequest.setRegisteredOfficeAddress(registeredOfficeAddress);
 					
@@ -9695,19 +9694,15 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 					com.capitaworld.cibil.api.model.msme.company.Base.ResponseReport.ProductSec.RelationshipDetailsVec.RelationshipDetails.BorrwerAddressContactDetails borrwerAddressContactDetails=relationshipDetails.getBorrwerAddressContactDetails();
 					
 					if(!CommonUtils.isObjectListNull(borrwerAddressContactDetails , borrwerAddressContactDetails.getAddress())) {
+						
+						
 						AddressAndContactDetailsRequest addressAndContactDetailsRequest=new AddressAndContactDetailsRequest();
-						AddressRequest registeredOfficeAddress = new AddressRequest();
-						String[] split = borrwerAddressContactDetails.getAddress().split(",");
-						logger.info("Length of Address Array ====================>{}",split.length);
-						if(split != null && split.length == 5) {
-							registeredOfficeAddress.setPinCode(getInLong(split[split.length - 1]));
-							registeredOfficeAddress.setPincode(split[split.length - 1]);
-							registeredOfficeAddress.setState(split[split.length - 2]);
-							registeredOfficeAddress.setCity(split[split.length - 3]);
-							registeredOfficeAddress.setStreetName(split[0]);
-							registeredOfficeAddress.setLandMark(split[0]);
-							registeredOfficeAddress.setPremiseNumber(split[0]);
-						}
+						
+						// set address
+						AddressRequest registeredOfficeAddress  = setAddress(borrwerAddressContactDetails.getAddress());
+						//set address in String form 
+						addressAndContactDetailsRequest.setFullAddress(borrwerAddressContactDetails.getAddress());
+						
 						addressAndContactDetailsRequest.setRegisteredOfficeAddress(registeredOfficeAddress);
 						addressAndContactDetailsRequest.setFaxNo(borrwerAddressContactDetails.getFaxNumber());
 						addressAndContactDetailsRequest.setMobileNo(borrwerAddressContactDetails.getMobileNumber());
@@ -9812,19 +9807,14 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 						//GuarantorAddressContactDetails to AddressAndContactDetailsRequest 
 						if(!CommonUtils.isObjectListNull(creditFacilityGuarantorDetails.getGuarantorAddressContactDetails())) {
 							guarantorDetailsRequest= new GuarantorDetailsRequest();
+							
 							AddressAndContactDetailsRequest addressAndContactDetailsRequest=new AddressAndContactDetailsRequest();
-							AddressRequest registeredOfficeAddress = new AddressRequest();
-							String[] split = creditFacilityGuarantorDetails.getGuarantorAddressContactDetails().getAddress().split(",");
-							logger.info("Length of Address Array ====================>{}",split.length);
-							if(split != null && split.length == 5) {
-								registeredOfficeAddress.setPinCode(getInLong(split[split.length - 1]));
-								registeredOfficeAddress.setPincode(split[split.length - 1]);
-								registeredOfficeAddress.setState(split[split.length - 2]);
-								registeredOfficeAddress.setCity(split[split.length - 3]);
-								registeredOfficeAddress.setStreetName(split[0]);
-								registeredOfficeAddress.setLandMark(split[0]);
-								registeredOfficeAddress.setPremiseNumber(split[0]);
-							}
+							
+							// set Address
+							AddressRequest registeredOfficeAddress = setAddress(creditFacilityGuarantorDetails.getGuarantorAddressContactDetails().getAddress());
+							//set Address in string form
+							addressAndContactDetailsRequest.setFullAddress(creditFacilityGuarantorDetails.getGuarantorAddressContactDetails().getAddress());
+							
 							addressAndContactDetailsRequest.setRegisteredOfficeAddress(registeredOfficeAddress);
 							addressAndContactDetailsRequest.setFaxNo(creditFacilityGuarantorDetails.getGuarantorAddressContactDetails().getFaxNumber());
 							addressAndContactDetailsRequest.setMobileNo(creditFacilityGuarantorDetails.getGuarantorAddressContactDetails().getMobileNumber());
@@ -10003,30 +9993,38 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 	
 	
 	public Double getInDouble(String data) {
-		
-		if (! CommonUtils.isObjectNullOrEmpty(data)){
-			data = data.replace("\\s", "").trim();
-			if(data.contains("%")) {
+		try {
+			if (! CommonUtils.isObjectNullOrEmpty(data)){
+				data = data.replace("\\s", "").trim();
+				if(data.contains("%")) {
 				return Double.valueOf(data.replaceAll("%", ""));
+				}
+				return Double.valueOf(data);
 			}
-			return Double.valueOf(data);
+		}
+		catch (Exception e) {
+			logger.info("----- Error Msg " + e.getMessage());
 		}
 		return 0.0;
 		
 	}
 	
 	public Date getInDate(String data) {
-		if(!CibilUtils.isObjectNullOrEmpty(data)) {
-			if( "-".equals(data.trim())){
-				return null;
+		try {
+			if(!CibilUtils.isObjectNullOrEmpty(data)) {
+				if( "-".equals(data.trim())){
+					return null;
+				}
+				DateFormat dateFormat = new SimpleDateFormat("dd-MMM-yyyy");
+				try {
+					return dateFormat.parse(data);
+				} catch (ParseException e) {
+					
+					e.printStackTrace();
+				}
 			}
-			DateFormat dateFormat = new SimpleDateFormat("dd-MMM-yyyy");
-			try {
-				return dateFormat.parse(data);
-			} catch (ParseException e) {
-				
-				e.printStackTrace();
-			}
+		}catch (Exception e) {
+			logger.info("----- Error Msg " + e.getMessage());
 		}
 		return null;
 	}
@@ -10038,22 +10036,72 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 	}
 	
 	public Long getInLong(String data) {
+		try {
+			
+			if (! CommonUtils.isObjectNullOrEmpty(data)){
+				return Long.valueOf(data.replace("\\s", "").trim());
+			}
 		
-		if (! CommonUtils.isObjectNullOrEmpty(data)){
-			return Long.valueOf(data.replace("\\s", "").trim());
+		} catch (Exception e) {
+			logger.info("----- Error Msg " + e.getMessage());
 		}
 		return 0l;
-		
 	}
 	
 	public Integer getInInteger(String data) {
-		
+		try {
 		if (! CommonUtils.isObjectNullOrEmpty(data)){
 			return Integer.valueOf(data.replace("\\s", "").trim());
+		}
+		}catch (Exception e) {
+			logger.info("----- Error Msg " + e.getMessage());
 		}
 		return 0;
 		
 	}
+	
+	public AddressRequest setAddress(String cibilAddress ) {
+		AddressRequest registeredOfficeAddress = new AddressRequest();
+		try {
+			String[] split = cibilAddress.split(",");
+			logger.info("Length of Address Array ====================>{}",split.length);
+			if(split != null && split.length == 6 || split.length == 5 || split.length == 4 || split.length == 3) {
+				registeredOfficeAddress.setPinCode(getInLong(split[split.length ]));
+				registeredOfficeAddress.setPincode(split[split.length ]);
+				registeredOfficeAddress.setState(split[split.length - 1]);
+				registeredOfficeAddress.setCity(split[split.length - 2]);
+				registeredOfficeAddress.setStreetName(split[2]);
+				registeredOfficeAddress.setLandMark(split[1]);
+				registeredOfficeAddress.setPremiseNumber(split[0]);
+			}
+		}catch (Exception e) {
+			logger.info("------   Error : -  Msg " +e.getMessage() );		
+		}
+		
+		return registeredOfficeAddress;
+	}
+	
+	@Override
+	public Boolean saveLoanWCRenewalType(Long applicationId,Integer wcRenewalType) {
+		LoanApplicationMaster loanMaster = loanApplicationRepository.getById(applicationId);
+		if(!CommonUtils.isObjectNullOrEmpty(loanMaster)) {
+			loanMaster.setWcRenewalStatus(wcRenewalType);
+			loanApplicationRepository.save(loanMaster);
+			return true;
+		}
+		return false;
+	}
+	
+	@Override
+	public Integer getLoanWCRenewalType(Long applicationId) {
+		LoanApplicationMaster loanMaster = loanApplicationRepository.getById(applicationId);
+		if(!CommonUtils.isObjectNullOrEmpty(loanMaster)) {
+			return loanMaster.getWcRenewalStatus();
+		}
+		logger.info("IN GET LOAN WC RENEWAL TYPE NOT FOUND BY APPLICATION ID ---------->" + applicationId);
+		return null;
+	}
+
 }
 
 
