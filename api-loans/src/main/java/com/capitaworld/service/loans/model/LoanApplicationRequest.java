@@ -124,7 +124,7 @@ public class LoanApplicationRequest implements Serializable {
     private Integer businessTypeId;
 
     private String applicationStatus;
-    private Boolean wcRenewalStatus;
+    private Integer wcRenewalStatus;
 
 	public String getApplicationStatus() {
 		return applicationStatus;
@@ -624,11 +624,11 @@ public class LoanApplicationRequest implements Serializable {
 	
 	
 
-	public Boolean getWcRenewalStatus() {
+	public Integer getWcRenewalStatus() {
 		return wcRenewalStatus;
 	}
 
-	public void setWcRenewalStatus(Boolean wcRenewalStatus) {
+	public void setWcRenewalStatus(Integer wcRenewalStatus) {
 		this.wcRenewalStatus = wcRenewalStatus;
 	}
 

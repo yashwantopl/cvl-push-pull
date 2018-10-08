@@ -10056,7 +10056,7 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 	}
 	
 	@Override
-	public Boolean saveLoanWCRenewalType(Long applicationId,Boolean wcRenewalType) {
+	public Boolean saveLoanWCRenewalType(Long applicationId,LoanApplicationService wcRenewalType) {
 		LoanApplicationMaster loanMaster = loanApplicationRepository.getById(applicationId);
 		if(!CommonUtils.isObjectNullOrEmpty(loanMaster)) {
 			loanMaster.setWcRenewalStatus(wcRenewalStatus);
@@ -10067,13 +10067,13 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 	}
 	
 	@Override
-	public Boolean getLoanWCRenewalType(Long applicationId) {
+	public Integer getLoanWCRenewalType(Long applicationId) {
 		LoanApplicationMaster loanMaster = loanApplicationRepository.getById(applicationId);
 		if(!CommonUtils.isObjectNullOrEmpty(loanMaster)) {
 			return loanMaster.getWcRenewalStatus();
 		}
 		logger.info("IN GET LOAN WC RENEWAL TYPE NOT FOUND BY APPLICATION ID ---------->" + applicationId);
-		return false;
+		return null;
 	}
 
 }

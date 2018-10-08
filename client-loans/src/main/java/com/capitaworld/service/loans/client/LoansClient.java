@@ -2343,7 +2343,7 @@ public class LoansClient {
 	}
 	
 	/**
-	 * @param id : applicationId and wcRenewalStatus :- true or false 
+	 * @param id : applicationId(Long) and wcRenewalStatus(Integer) :- Oneform WcRenewalType Enum 
 	 * @return
 	 * @throws LoansException
 	 */
