@@ -1032,6 +1032,31 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		}catch(Exception e) {
 			logger.info("Error while getting ITR data");
 		}
+		//PERFIOS API DATA (BANK STATEMENT ANALYSIS)
+		ReportRequest reportRequest = new ReportRequest();
+			reportRequest.setApplicationId(applicationId);
+			reportRequest.setUserId(userId);
+			List<Data> datas=new ArrayList<>();
+			try {
+				AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReportForCam(reportRequest);
+				List<HashMap<String, Object>> hashMap=(List<HashMap<String, Object>>) analyzerResponse.getData();
+				if(!CommonUtils.isListNullOrEmpty(hashMap))
+				{
+					for(HashMap<String,Object> rec:hashMap)
+					{
+						Data data = MultipleJSONObjectHelper.getObjectFromMap(rec, Data.class);
+						datas.add(data);
+						List<Object> customerInfo = new ArrayList<Object>();
+						for(int i =0; i<hashMap.size(); i++) {
+							customerInfo.add(!CommonUtils.isObjectNullOrEmpty(data.getCustomerInfo()) ? CommonUtils.printFields(data.getCustomerInfo(),null) : " ");
+						}
+						map.put("customerInfo" , customerInfo);
+					}
+				}
+			}catch (Exception e) {
+				e.printStackTrace();
+				logger.info("Error while getting perfios data");
+			}
 /**********************************************FINAL DETAILS*****************************************************/
 		
 		if(isFinalView) {
