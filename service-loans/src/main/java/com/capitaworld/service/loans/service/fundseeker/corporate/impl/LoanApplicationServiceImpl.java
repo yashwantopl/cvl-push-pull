@@ -4471,8 +4471,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		if (loanApplicationMaster == null) {
 			throw new NullPointerException("Invalid Loan Application ID==>" + applicationId);
 		}
-		/*LoanApplicationRequest applicationRequest = new LoanApplicationRequest();
-		BeanUtils.copyProperties(loanApplicationMaster, applicationRequest);*/
+		LoanApplicationRequest applicationRequest = new LoanApplicationRequest();
+		BeanUtils.copyProperties(loanApplicationMaster, applicationRequest);
 		loanApplicationMaster.setPaymentStatus(com.capitaworld.service.gateway.utils.CommonUtils.PaymentStatus.BYPASS);
 		loanApplicationRepository.save(loanApplicationMaster);
 		
@@ -4483,15 +4483,15 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			if (!CommonUtils.isObjectListNull(connectResponse)) {
 				logger.info("Connector Response ----------------------------->" + connectResponse.toString());
 				logger.info("Before Start Saving Phase 1 Sidbi API ------------------->" + orgId);
-				if(orgId==10L) {
+			//	if(orgId==10L) {
 					logger.info("Start Saving Phase 1 sidbi API -------------------->" + loanApplicationMaster.getId());
 					Long fpMappingId = null;
 					try {
+						savePhese1DataToSidbi(loanApplicationMaster.getId(), userId,orgId,fpProductId);
 					}catch(Exception e) {
 						e.printStackTrace();
 					}
-					savePhese1DataToSidbi(loanApplicationMaster.getId(), userId,orgId,fpProductId);
-				}
+			//	}
 
 				if(connectResponse.getProceed()) {
 					if(loanApplicationMaster.getCompanyCinNumber()!=null) {
@@ -4533,10 +4533,91 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		gatewayRequest.setBusinessTypeId(businessTypeId);
 
 		Boolean status = null;
+		status = gatewayClient.skipPayment(gatewayRequest);
 		logger.info("In-Principle send for WhiteLabel Status=====>"+status);
 		// ====================================================================
 		
-		logger.info("Exit on Update Skip Payment Details ");		
+		logger.info("Exit on Update Skip Payment WhiteLabel");		
+	}
+	
+	@Override
+	public void sendInPrincipleForPersonalLoan(Long userId, Long applicationId, Integer businessTypeId, Long orgId, Long fpProductId) throws Exception {
+		
+		logger.info("Enter in sendInPrincipleForPersonalLoan!!");
+		
+		//UPDATE PAYMENT STATE IN LOAN MASTER
+		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(applicationId);
+		
+		if (loanApplicationMaster == null) {
+			throw new NullPointerException("Invalid Loan Application ID==>" + applicationId);
+		}
+		LoanApplicationRequest applicationRequest = new LoanApplicationRequest();
+		BeanUtils.copyProperties(loanApplicationMaster, applicationRequest);
+		loanApplicationMaster.setPaymentStatus(com.capitaworld.service.gateway.utils.CommonUtils.PaymentStatus.BYPASS);
+		loanApplicationRepository.save(loanApplicationMaster);
+		
+		//UPDATE CONNECT POST PAYMENT
+		try {
+			ConnectResponse connectResponse = connectClient.postPayment(applicationId, userId,loanApplicationMaster.getBusinessTypeId());
+			
+			if (!CommonUtils.isObjectListNull(connectResponse)) {
+				logger.info("Connector Response ----------------------------->" + connectResponse.toString());
+				logger.info("Before Start Saving Phase 1 Sidbi API ------------------->" + orgId);
+			//	if(orgId==10L) {
+					logger.info("Start Saving Phase 1 sidbi API -------------------->" + loanApplicationMaster.getId());
+					Long fpMappingId = null;
+					try {
+						savePhese1DataToSidbi(loanApplicationMaster.getId(), userId,orgId,fpProductId);
+					}catch(Exception e) {
+						e.printStackTrace();
+					}
+			//	}
+
+				if(connectResponse.getProceed()) {
+					if(loanApplicationMaster.getCompanyCinNumber()!=null) {
+						mcaAsyncComponent.callMCAForData(loanApplicationMaster.getCompanyCinNumber(),loanApplicationMaster.getId(),loanApplicationMaster.getUserId());
+					}
+				}
+			} else {
+				logger.info("Connector Response null or empty");
+				throw new Exception("Something went wrong while call connect client for " + applicationId);
+			}	
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new Exception("Something went wrong while call connect client for " + applicationId);
+		}
+		
+		//TRUE MATCHES PROPOSAL
+		try {
+			ProposalMappingResponse proposalMappingResponse = proposalDetailsClient.activateProposalOnPayment(applicationId);
+			if(!CommonUtils.isObjectNullOrEmpty(proposalMappingResponse)) {
+				logger.info("Proposal Mapping Response---------------> "+proposalMappingResponse.toString());
+				if(proposalMappingResponse.getStatus() != HttpStatus.OK.value()) {
+					throw new Exception(proposalMappingResponse.getMessage());	
+				}
+			} else {
+				logger.info("Proposal Mapping Response Null or Empty---------------> ");
+				throw new Exception("Something went wrong while call proposal client for " + applicationId);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new Exception("Something went wrong while call proposal client for " + applicationId);
+		}
+		
+		// Sending In-Principle for Personal Loan
+		// ====================================================================
+		GatewayRequest gatewayRequest = new GatewayRequest();
+
+		gatewayRequest.setUserId(userId);
+		gatewayRequest.setApplicationId(applicationId);
+		gatewayRequest.setBusinessTypeId(businessTypeId);
+
+		Boolean status = null;
+		status = gatewayClient.personalLoanInPrinciple(gatewayRequest);
+		logger.info("In-Principle send for Personal Loan Status=====>"+status);
+		// ====================================================================
+		
+		logger.info("Exit on sendInPrincipleForPersonalLoan");		
 	}
 	
 	

@@ -37,14 +37,17 @@ public class BankAccountHeldDetail implements Serializable {
 	private String accountNumber;
 
 	@Column(name="account_type")
-	private String accountType;
+	private Integer accountType;
 
 	@ManyToOne
 	@JoinColumn(name="applicant_id")
 	private LoanApplicationMaster applicantId;
 
-	@Column(name="bank_name_and_branch")
-	private String bankNameAndBranch;
+	@Column(name="bank_name")
+	private String bankName;
+
+	@Column(name="branch_name")
+	private String branchName;
 
 	@ManyToOne
 	@JoinColumn(name="co_applicant_detail_id")
@@ -98,13 +101,7 @@ public class BankAccountHeldDetail implements Serializable {
 		this.accountNumber = accountNumber;
 	}
 
-	public String getAccountType() {
-		return this.accountType;
-	}
 
-	public void setAccountType(String accountType) {
-		this.accountType = accountType;
-	}
 
 	public LoanApplicationMaster getApplicantId() {
 		return this.applicantId;
@@ -114,13 +111,7 @@ public class BankAccountHeldDetail implements Serializable {
 		this.applicantId = applicantId;
 	}
 
-	public String getBankNameAndBranch() {
-		return this.bankNameAndBranch;
-	}
 
-	public void setBankNameAndBranch(String bankNameAndBranch) {
-		this.bankNameAndBranch = bankNameAndBranch;
-	}
 
 	public CoApplicantDetail getCoApplicantDetailId() {
 		return this.coApplicantDetailId;
@@ -178,4 +169,27 @@ public class BankAccountHeldDetail implements Serializable {
 		this.modifiedDate = modifiedDate;
 	}
 
+	public Integer getAccountType() {
+		return accountType;
+	}
+
+	public void setAccountType(Integer accountType) {
+		this.accountType = accountType;
+	}
+
+	public String getBankName() {
+		return bankName;
+	}
+
+	public void setBankName(String bankName) {
+		this.bankName = bankName;
+	}
+
+	public String getBranchName() {
+		return branchName;
+	}
+
+	public void setBranchName(String branchName) {
+		this.branchName = branchName;
+	}
 }

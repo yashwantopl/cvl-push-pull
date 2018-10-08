@@ -2,6 +2,7 @@ package com.capitaworld.service.loans.controller.fundseeker.retail;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.capitaworld.service.loans.model.retail.FinalCommonRetailRequestOld;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.capitaworld.service.loans.model.LoansResponse;
-import com.capitaworld.service.loans.model.retail.FinalCommonRetailRequest;
 import com.capitaworld.service.loans.model.retail.GuarantorRequest;
 import com.capitaworld.service.loans.service.fundseeker.retail.GuarantorService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
@@ -105,7 +105,7 @@ public class GuarantorController {
 
 	// Final Portion
 	@RequestMapping(value = "${final}/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> saveFinal(@RequestBody FinalCommonRetailRequest applicantRequest,
+	public ResponseEntity<LoansResponse> saveFinal(@RequestBody FinalCommonRetailRequestOld applicantRequest,
 			HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
 		// request must not be null
 		try {
@@ -156,7 +156,7 @@ public class GuarantorController {
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 
-			FinalCommonRetailRequest response = guarantorService.getFinal(userId, applicationId, id);
+			FinalCommonRetailRequestOld response = guarantorService.getFinal(userId, applicationId, id);
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 			loansResponse.setData(response);
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
