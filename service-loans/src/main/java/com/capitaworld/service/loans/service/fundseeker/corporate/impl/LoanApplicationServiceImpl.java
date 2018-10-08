@@ -10059,7 +10059,7 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
 	public Boolean saveLoanWCRenewalType(Long applicationId,Integer wcRenewalType) {
 		LoanApplicationMaster loanMaster = loanApplicationRepository.getById(applicationId);
 		if(!CommonUtils.isObjectNullOrEmpty(loanMaster)) {
-			loanMaster.setWcRenewalStatus(wcRenewalStatus);
+			loanMaster.setWcRenewalStatus(wcRenewalType);
 			loanApplicationRepository.save(loanMaster);
 			return true;
 		}
