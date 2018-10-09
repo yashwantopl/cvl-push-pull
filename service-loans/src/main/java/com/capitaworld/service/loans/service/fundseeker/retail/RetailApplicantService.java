@@ -2,23 +2,22 @@ package com.capitaworld.service.loans.service.fundseeker.retail;
 
 import java.util.List;
 
+import com.capitaworld.service.loans.model.retail.FinalCommonRetailRequestOld;
 import org.json.simple.JSONObject;
 
 import com.capitaworld.service.loans.model.common.CibilFullFillOfferRequest;
 import com.capitaworld.service.loans.model.retail.CoApplicantRequest;
-import com.capitaworld.service.loans.model.retail.FinalCommonRetailRequest;
 import com.capitaworld.service.loans.model.retail.GuarantorRequest;
 import com.capitaworld.service.loans.model.retail.RetailApplicantRequest;
-import com.capitaworld.service.loans.model.teaser.primaryview.RetailProfileViewResponse;
 
 public interface RetailApplicantService {
 	public boolean save(RetailApplicantRequest applicantRequest, Long userId) throws Exception;
 
 	public RetailApplicantRequest get(Long applicationId) throws Exception;
 
-	public boolean saveFinal(FinalCommonRetailRequest applicantRequest, Long userId) throws Exception;
+	public boolean saveFinal(FinalCommonRetailRequestOld applicantRequest, Long userId) throws Exception;
 
-	public FinalCommonRetailRequest getFinal(Long userId, Long applicationId) throws Exception;
+	public FinalCommonRetailRequestOld getFinal(Long userId, Long applicationId) throws Exception;
 	
 	public List<CoApplicantRequest> getCoApplicants(Long userId, Long applicationId) throws Exception;
 	

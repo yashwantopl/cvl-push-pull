@@ -86,7 +86,9 @@ public class LiabilitiesDetailsExcelReader
       
         }
         if(loanApplicationMaster.getProductId()!=15 && loanApplicationMaster.getProductId()!=1 ){
+
         	/*int j = 5;*/
+
         	for(int i = 0; i < loanApplicationMaster.getTenure(); i++) { 
         		extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, liabilitiesMappingList,CellReference.convertNumToColString(sheet.getRow(4).getCell(j).getColumnIndex()),String.valueOf(sheet.getRow(4).getCell(j).getNumericCellValue()),"Projected", liabilitiesDetailsRepository);
         		j++;
@@ -222,3 +224,4 @@ public class LiabilitiesDetailsExcelReader
 
     }
 }
+

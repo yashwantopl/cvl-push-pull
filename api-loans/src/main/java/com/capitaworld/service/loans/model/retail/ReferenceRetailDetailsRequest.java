@@ -34,6 +34,8 @@ public class ReferenceRetailDetailsRequest implements Serializable{
 	
 	private String relationshipWithApplicant;
 
+	private Long pincode;
+
 	public Long getId() {
 		return id;
 	}
@@ -105,7 +107,15 @@ public class ReferenceRetailDetailsRequest implements Serializable{
 	public void setRelationshipWithApplicant(String relationshipWithApplicant) {
 		this.relationshipWithApplicant = relationshipWithApplicant;
 	}
-	
+
+	public Long getPincode() {
+		return pincode;
+	}
+
+	public void setPincode(Long pincode) {
+		this.pincode = pincode;
+	}
+
 	public static void printFields(Object obj) throws Exception {
         Field[] fields = ReferenceRetailDetailsRequest.class.getDeclaredFields();
         
