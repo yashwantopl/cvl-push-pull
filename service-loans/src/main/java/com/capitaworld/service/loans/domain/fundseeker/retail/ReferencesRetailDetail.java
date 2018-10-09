@@ -77,6 +77,8 @@ public class ReferencesRetailDetail implements Serializable {
 
 	private String telephone;
 
+	private Long pincode;
+
 	public ReferencesRetailDetail() {
 	}
 
@@ -207,6 +209,12 @@ public class ReferencesRetailDetail implements Serializable {
 	public void setRelationshipWithApplicant(String relationshipWithApplicant) {
 		this.relationshipWithApplicant = relationshipWithApplicant;
 	}
-	
-	
+
+	public Long getPincode() {
+		return pincode;
+	}
+
+	public void setPincode(Long pincode) {
+		this.pincode = pincode;
+	}
 }

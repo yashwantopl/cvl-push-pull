@@ -20,8 +20,10 @@ public class LoanSanctionRequest extends AuditActivityRequest implements Seriali
 	private Double sanctionAmount;
 	private String transactionNo;
 	private Double roi;
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
+	
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
 	private Date sanctionDate;
+	
 	private Long branch;
 	private Long applicationId;
 	private Long referenceNo;

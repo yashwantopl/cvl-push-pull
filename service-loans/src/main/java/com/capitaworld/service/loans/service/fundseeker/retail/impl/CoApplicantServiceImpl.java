@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import com.capitaworld.service.loans.model.retail.*;
 import com.capitaworld.service.oneform.enums.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,18 +22,7 @@ import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.retail.CoApplicantDetail;
 import com.capitaworld.service.loans.model.Address;
 import com.capitaworld.service.loans.model.AddressResponse;
-import com.capitaworld.service.loans.model.retail.BankAccountHeldDetailsRequest;
-import com.capitaworld.service.loans.model.retail.CoApplicantRequest;
-import com.capitaworld.service.loans.model.retail.CreditCardsDetailRequest;
-import com.capitaworld.service.loans.model.retail.CreditCardsDetailResponse;
-import com.capitaworld.service.loans.model.retail.ExistingLoanDetailRequest;
-import com.capitaworld.service.loans.model.retail.FinalCommonRetailRequest;
-import com.capitaworld.service.loans.model.retail.FixedDepositsDetailsRequest;
-import com.capitaworld.service.loans.model.retail.OtherCurrentAssetDetailRequest;
-import com.capitaworld.service.loans.model.retail.OtherCurrentAssetDetailResponse;
-import com.capitaworld.service.loans.model.retail.OtherIncomeDetailRequest;
-import com.capitaworld.service.loans.model.retail.OtherIncomeDetailResponse;
-import com.capitaworld.service.loans.model.retail.ReferenceRetailDetailsRequest;
+import com.capitaworld.service.loans.model.retail.FinalCommonRetailRequestOld;
 import com.capitaworld.service.loans.model.teaser.finalview.RetailFinalViewCommonResponse;
 import com.capitaworld.service.loans.model.teaser.primaryview.RetailProfileViewResponse;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
@@ -242,7 +232,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 	}
 
 	@Override
-	public boolean saveFinal(FinalCommonRetailRequest applicantRequest, Long userId) throws Exception {
+	public boolean saveFinal(FinalCommonRetailRequestOld applicantRequest, Long userId) throws Exception {
 		try {
 			Long finalUserId = (CommonUtils.isObjectNullOrEmpty(applicantRequest.getClientId()) ? userId
 					: applicantRequest.getClientId());
@@ -285,14 +275,14 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 	}
 
 	@Override
-	public FinalCommonRetailRequest getFinal(Long userId, Long applicationId, Long id) throws Exception {
+	public FinalCommonRetailRequestOld getFinal(Long userId, Long applicationId, Long id) throws Exception {
 		try {
 			CoApplicantDetail applicantDetail = coApplicantDetailRepository.get(applicationId, userId, id);
 			if (applicantDetail == null) {
 				throw new NullPointerException("CoApplicantDetail Record of Final Portion not exists in DB of ID : "
 						+ userId + " and Application Id ==>" + applicationId);
 			}
-			FinalCommonRetailRequest applicantRequest = new FinalCommonRetailRequest();
+			FinalCommonRetailRequestOld applicantRequest = new FinalCommonRetailRequestOld();
 			BeanUtils.copyProperties(applicantDetail, applicantRequest, CommonUtils.IgnorableCopy.RETAIL_PROFILE);
 			Integer currencyId = retailApplicantDetailRepository.getCurrency(userId, applicationId);
 			applicantRequest.setCurrencyValue(CommonDocumentUtils.getCurrency(currencyId));

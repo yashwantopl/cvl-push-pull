@@ -2286,7 +2286,7 @@ public class FPAsyncComponent {
 		try {
 
 			logger.info("Into sending Mail to Checker when Admin Maker send product for Approval===>{}");
-			String subject = "Intimation: New Product - " + productMasterTemp.getName();
+			String subject = "Intimation: New Product - " + productMasterTemp.getName()+" for "+productType;
 			Map<String, Object> mailParameters = new HashMap<String, Object>();
 
 			mailParameters.put("product_name",
@@ -2410,7 +2410,7 @@ public class FPAsyncComponent {
 		try {
 
 			logger.info("Into sending Mail to Checker when Admin Maker resend product for Approval===>{}");
-			String subject = "Intimation: Re-sent Product - " + productMasterTemp.getName();
+			String subject = "Intimation: Re-sent Product - " + productMasterTemp.getName()+" for "+productType;
 			Map<String, Object> mailParameters = new HashMap<String, Object>();
 
 			mailParameters.put("product_name",
@@ -2541,11 +2541,10 @@ public class FPAsyncComponent {
 			mailParameters.put("product_name",
 					productMasterTemp.getName() != null ? productMasterTemp.getName() : "NA");
 			mailParameters.put("product_type", productType != null ? productType : "NA");
-			String subject = "Intimation : " + productType + " - " + productMasterTemp.getName() + " Approved";
-
+			//String subject = "Intimation : " + productType + " - " + productMasterTemp.getName() + " Approved";
+			String subject = "Intimation " + "New Product: "+ productMasterTemp.getName() + " Approved - "+"Product ID: "+productMasterTemp.getProductCode();
 			UsersRequest adminForChecker = new UsersRequest();
 			adminForChecker.setId(userId);
-
 			String adminCheckerName = null;
 			try {
 				logger.error("Into getting FP Name======>" + adminForChecker);

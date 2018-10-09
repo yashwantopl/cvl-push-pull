@@ -273,12 +273,22 @@ public class CommonUtils {
 				"firstName","lastName", "middleName","title", "shareholding","aadhar","maritalStatus","noOfDependent","residenceType","residenceSinceMonth","residenceSinceYear",
 				"isFamilyMemberInBusiness","employmentDetailRequest","countryId","premiseNumber","streetName","landmark"
 		};
-		public static final String[] PL_RETAIL_PROFILE = {"titleId","firstName","middleName","lastName","genderId","pan","aadharNumber",
-                "mobile","educationQualification","statusId","residenceType","birthDate","employmentType","employmentWith","centralGovId",
-                "stateGovId","psuId","corporateId","eduInstId","nameOfEmployer","employmentStatus","currentJobMonth","currentJobYear",
-                "totalExperienceMonth","totalExperienceYear","keyVerticalFunding","keyVerticalSector","keyVerticalSubSector","contactNo","email"};
-		public static final String[] PL_RETAIL_PRIMARY = {"loanAmountRequired","loanPurpose","tenureRequired","repayment","monthlyIncome"};
-		public static final String[] PL_RETAIL_FINAL = {"addressSameAs"};
+		public static final String[] PL_RETAIL_PROFILE = {"titleId", "firstName", "middleName", "lastName", "genderId", "pan", "aadharNumber",
+				"mobile", "educationQualification", "statusId", "residenceType", "birthDate", "employmentType", "employmentWith", "centralGovId",
+				"stateGovId", "psuId", "corporateId", "eduInstId", "nameOfEmployer", "employmentStatus", "currentJobMonth", "currentJobYear",
+				"totalExperienceMonth", "totalExperienceYear", "keyVerticalFunding", "keyVerticalSector", "keyVerticalSubSector", "contactNo", "email" };
+		public static final String[] PL_RETAIL_PRIMARY = {"loanAmountRequired", "loanPurpose", "tenureRequired", "repayment", "monthlyIncome" };
+		public static final String[] PL_RETAIL_FINAL = {"addressSameAs","religion","qualifyingYear","noChildren","fatherName","motherName","spouseName","noDependent",
+				"residingMonth","residingYear","nationality","residentialStatus","castId","birthPlace","disabilityType","tradeLicenseNumber","tradeLicenseExpiryDate",
+				"passport","passportValidity","voterId","residentialProofNo","addressSameAs","permanentAddress","officeAddress","officeNameOfOrg","officeEmail","previousJobYear",
+				"previousJobMonth","previousEmployersName","previousEmployersAddress","previousEmployersContact","ddoWebsite","ddoRemainingSerYrs","ddoRemainingSerMonths","ddoEmployeeNo",
+				"ddoDesignation","ddoDepartment","ddoOrganizationType","isApplicantFinalFilled"};
+		public static final String[] RETAIL_PL_PROFILE = {
+				"titleId", "firstName", "middleName", "lastName", "genderId", "pan", "aadharNumber", "mobile", "educationQualification",
+				"statusId", "residenceType", "birthDate", "employmentType", "employmentWith", "centralGovId", "stateGovId", "psuId",
+				"corporateId", "eduInstId", "nameOfEmployer", "employmentStatus", "currentJobMonth", "currentJobYear", "totalExperienceMonth",
+				"totalExperienceYear", "keyVerticalFunding", "keyVerticalSector", "keyVerticalSubSector", "contactAddress", "contactNo", "email",
+				"loanAmountRequired", "loanPurpose", "tenureRequired", "repayment", "monthlyIncome","isApplicantDetailsFilled" };
 	}
 
 	public interface ApplicantType {
