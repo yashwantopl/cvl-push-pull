@@ -28,7 +28,18 @@ public class RetailApplicantIncomeRequest implements Serializable{
     private Date createdDate;
     private Boolean isActive;
     private Long userId;
-	
+	private Double salaryIncomeGross;
+	private Double housePropertyGross;
+	private Double pgbpGross;
+	private Double capitalGainGross;
+	private Double otherSourceGross;
+	private String salaryMode;
+	private String housePropertyMode;
+	private String pgbpMode;
+	private String capitalGainMode;
+	private String otherSourceMode;
+
+
 	public Long getId() {
 		return id;
 	}
@@ -108,7 +119,83 @@ public class RetailApplicantIncomeRequest implements Serializable{
 		this.userId = userId;
 	}
 
+	public Double getSalaryIncomeGross() {
+		return salaryIncomeGross;
+	}
 
-    
-	
+	public void setSalaryIncomeGross(Double salaryIncomeGross) {
+		this.salaryIncomeGross = salaryIncomeGross;
+	}
+
+	public Double getHousePropertyGross() {
+		return housePropertyGross;
+	}
+
+	public void setHousePropertyGross(Double housePropertyGross) {
+		this.housePropertyGross = housePropertyGross;
+	}
+
+	public Double getPgbpGross() {
+		return pgbpGross;
+	}
+
+	public void setPgbpGross(Double pgbpGross) {
+		this.pgbpGross = pgbpGross;
+	}
+
+	public Double getCapitalGainGross() {
+		return capitalGainGross;
+	}
+
+	public void setCapitalGainGross(Double capitalGainGross) {
+		this.capitalGainGross = capitalGainGross;
+	}
+
+	public Double getOtherSourceGross() {
+		return otherSourceGross;
+	}
+
+	public void setOtherSourceGross(Double otherSourceGross) {
+		this.otherSourceGross = otherSourceGross;
+	}
+
+	public String getSalaryMode() {
+		return salaryMode;
+	}
+
+	public void setSalaryMode(String salaryMode) {
+		this.salaryMode = salaryMode;
+	}
+
+	public String getHousePropertyMode() {
+		return housePropertyMode;
+	}
+
+	public void setHousePropertyMode(String housePropertyMode) {
+		this.housePropertyMode = housePropertyMode;
+	}
+
+	public String getPgbpMode() {
+		return pgbpMode;
+	}
+
+	public void setPgbpMode(String pgbpMode) {
+		this.pgbpMode = pgbpMode;
+	}
+
+	public String getCapitalGainMode() {
+		return capitalGainMode;
+	}
+
+	public void setCapitalGainMode(String capitalGainMode) {
+		this.capitalGainMode = capitalGainMode;
+	}
+
+	public String getOtherSourceMode() {
+		return otherSourceMode;
+	}
+
+	public void setOtherSourceMode(String otherSourceMode) {
+		this.otherSourceMode = otherSourceMode;
+	}
 }

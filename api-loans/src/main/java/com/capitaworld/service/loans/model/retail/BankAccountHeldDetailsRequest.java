@@ -19,9 +19,10 @@ public class BankAccountHeldDetailsRequest implements Serializable{
 
 	private String accountNumber;
 
-	private String accountType;
+	private Integer accountType;
 
-	private String bankNameAndBranch;
+	private String bankName;
+	private String branchName;
 
 	private Boolean isActive = true;
 	
@@ -61,22 +62,6 @@ public class BankAccountHeldDetailsRequest implements Serializable{
 		this.accountNumber = accountNumber;
 	}
 
-	public String getAccountType() {
-		return accountType;
-	}
-
-	public void setAccountType(String accountType) {
-		this.accountType = accountType;
-	}
-
-	public String getBankNameAndBranch() {
-		return bankNameAndBranch;
-	}
-
-	public void setBankNameAndBranch(String bankNameAndBranch) {
-		this.bankNameAndBranch = bankNameAndBranch;
-	}
-
 	public Boolean getIsActive() {
 		return isActive;
 	}
@@ -85,6 +70,27 @@ public class BankAccountHeldDetailsRequest implements Serializable{
 		this.isActive = isActive;
 	}
 
+	public Integer getAccountType() {
+		return accountType;
+	}
 
+	public void setAccountType(Integer accountType) {
+		this.accountType = accountType;
+	}
 
+	public String getBankName() {
+		return bankName;
+	}
+
+	public void setBankName(String bankName) {
+		this.bankName = bankName;
+	}
+
+	public String getBranchName() {
+		return branchName;
+	}
+
+	public void setBranchName(String branchName) {
+		this.branchName = branchName;
+	}
 }

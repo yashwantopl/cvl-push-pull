@@ -440,7 +440,6 @@ public class FsDetailsForPdfServiceImpl implements FsDetailsForPdfService {
 		for (int i = 0; i < finalViewResponse.getFinalViewResponse().getApplicantCommonDetails().getBankAccountHeldDetailsRequest().size(); i++) {
 			int j=i+1;
 			bankAccountHeldMap.put("acno" + j, finalViewResponse.getFinalViewResponse().getApplicantCommonDetails().getBankAccountHeldDetailsRequest().get(i).getAccountNumber());
-			bankAccountHeldMap.put("acBankName" + j, finalViewResponse.getFinalViewResponse().getApplicantCommonDetails().getBankAccountHeldDetailsRequest().get(i).getBankNameAndBranch());
 			bankAccountHeldMap.put("acType" + j, finalViewResponse.getFinalViewResponse().getApplicantCommonDetails().getBankAccountHeldDetailsRequest().get(i).getAccountType());
 			bankAccountHeldMap.put("acHeldFor" + j, finalViewResponse.getFinalViewResponse().getApplicantCommonDetails().getBankAccountHeldDetailsRequest().get(i).getAccountHeldFor());
 		}
@@ -496,7 +495,6 @@ public class FsDetailsForPdfServiceImpl implements FsDetailsForPdfService {
 				for (int k = 0; k < finalViewResponse.getFinalViewResponse().getCoApplicantCommonDetails().get(i).getBankAccountHeldDetailsRequest().size(); k++) {
 					int l=k+1;
 					coappBankAccountHeldMap.put("coppAcno" + j + l, finalViewResponse.getFinalViewResponse().getCoApplicantCommonDetails().get(i).getBankAccountHeldDetailsRequest().get(k).getAccountNumber());
-					coappBankAccountHeldMap.put("coappAcBankName" + j + l, finalViewResponse.getFinalViewResponse().getCoApplicantCommonDetails().get(i).getBankAccountHeldDetailsRequest().get(k).getBankNameAndBranch());
 					coappBankAccountHeldMap.put("coappAcType" + j + l, finalViewResponse.getFinalViewResponse().getCoApplicantCommonDetails().get(i).getBankAccountHeldDetailsRequest().get(k).getAccountType());
 					coappBankAccountHeldMap.put("coappAcHeldFor" + j + l, finalViewResponse.getFinalViewResponse().getCoApplicantCommonDetails().get(i).getBankAccountHeldDetailsRequest().get(k).getAccountHeldFor());
 				}
@@ -569,7 +567,6 @@ public class FsDetailsForPdfServiceImpl implements FsDetailsForPdfService {
 				for (int k = 0; k < finalViewResponse.getFinalViewResponse().getGuarantorCommonDetails().get(i).getBankAccountHeldDetailsRequest().size(); k++) {
 					int l=k+1;
 					guaBankAccountHeldMap.put("guaAcno" + j + l, finalViewResponse.getFinalViewResponse().getGuarantorCommonDetails().get(i).getBankAccountHeldDetailsRequest().get(k).getAccountNumber());
-					guaBankAccountHeldMap.put("guaAcBankName" + j + l, finalViewResponse.getFinalViewResponse().getGuarantorCommonDetails().get(i).getBankAccountHeldDetailsRequest().get(k).getBankNameAndBranch());
 					guaBankAccountHeldMap.put("guaAcType" + j + l, finalViewResponse.getFinalViewResponse().getGuarantorCommonDetails().get(i).getBankAccountHeldDetailsRequest().get(k).getAccountType());
 					guaBankAccountHeldMap.put("guaAcHeldFor" + j + l, finalViewResponse.getFinalViewResponse().getGuarantorCommonDetails().get(i).getBankAccountHeldDetailsRequest().get(k).getAccountHeldFor());
 				}

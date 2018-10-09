@@ -3,7 +3,11 @@ package com.capitaworld.service.loans.service.fundseeker.retail.impl;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
+import com.capitaworld.service.loans.model.FrameRequest;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
+import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -27,6 +31,9 @@ public class RetailApplicantIncomeServiceImpl implements RetailApplicantIncomeSe
 	@Autowired
 	private RetailApplicantIncomeRepository appIncomeRepository;
 	
+	@Autowired
+	private LoanApplicationRepository loanApplicationRepository;
+
 	@Override
 	public boolean save(RetailApplicantIncomeRequest appIncomeReq) throws Exception  {
 		if(CommonUtils.isObjectNullOrEmpty(appIncomeReq.getApplicationId()) || CommonUtils.isObjectNullOrEmpty(appIncomeReq.getYear())) {
@@ -93,5 +100,35 @@ public class RetailApplicantIncomeServiceImpl implements RetailApplicantIncomeSe
 			appIncomeReqList.add(appIncomeReq);
 		}
 		return appIncomeReqList;
+	}
+
+
+
+	@Override
+	public Boolean saveOrUpdateIncomeDetailForGrossIncome(FrameRequest frameRequest) throws Exception {
+		try {
+			for (Map<String, Object> obj : frameRequest.getDataList()) {
+				RetailApplicantIncomeRequest retailApplicantIncomeRequest = (RetailApplicantIncomeRequest) MultipleJSONObjectHelper
+						.getObjectFromMap(obj, RetailApplicantIncomeRequest.class);
+				RetailApplicantIncomeDetail incomeDetail = new RetailApplicantIncomeDetail();
+				BeanUtils.copyProperties(retailApplicantIncomeRequest, incomeDetail);
+				if (retailApplicantIncomeRequest.getId() == null) {
+					incomeDetail.setCreatedBy(frameRequest.getUserId());
+					incomeDetail.setCreatedDate(new Date());
+				}
+				incomeDetail.setApplicationId(frameRequest.getApplicationId());
+
+				incomeDetail.setModifiedBy(frameRequest.getUserId());
+				incomeDetail.setModifiedDate(new Date());
+				appIncomeRepository.save(incomeDetail);
+			}
+			return true;
+		}
+
+		catch (Exception e) {
+			logger.info("Exception  in save Gross Income Detail  :-");
+			e.printStackTrace();
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+		}
 	}
 }

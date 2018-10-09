@@ -10,12 +10,14 @@ import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.retail.CreditCardsDetailRequest;
 import com.capitaworld.service.loans.model.retail.PLRetailApplicantRequest;
 import com.capitaworld.service.loans.model.retail.RetailApplicantIncomeRequest;
+import com.capitaworld.service.loans.model.retail.RetailFinalInfoRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.FinancialArrangementDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.CreditCardsDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantIncomeRepository;
 import com.capitaworld.service.loans.service.fundseeker.retail.PlRetailApplicantService;
+import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -246,6 +248,62 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
         }
     }
 
+    @Override
+    public boolean saveFinal(RetailFinalInfoRequest applicantRequest, Long userId) throws Exception {
+        try {
+            if (applicantRequest.getApplicationId() == null) {
+                throw new NullPointerException("Application Id and ID(Primary Key) must not be null=>Application ID==>"
+                        + applicantRequest.getApplicationId() + " User Id (Primary Key)==>" + userId);
+            }
+            Long finaluserId = (CommonUtils.isObjectNullOrEmpty(applicantRequest.getClientId()) ? userId
+                    : applicantRequest.getClientId());
+            RetailApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId(finaluserId,
+                    applicantRequest.getApplicationId());
+            if (applicantDetail == null) {
+                throw new NullPointerException(
+                        "Applicant ID and ID(Primary Key) does not match with the database==> Applicant ID==>"
+                                + applicantRequest.getApplicationId() + "User ID==>" + userId);
+            }
+            applicantDetail.setModifiedBy(userId);
+            applicantDetail.setModifiedDate(new Date());
+            BeanUtils.copyProperties(applicantRequest, applicantDetail, CommonUtils.IgnorableCopy.RETAIL_PL_PROFILE);
+            copyAddressFromRequestToDomainForFinal(applicantRequest, applicantDetail, "permanent");
+            copyAddressFromRequestToDomainForFinal(applicantRequest, applicantDetail, "office");
+            applicantRepository.save(applicantDetail);
+            // Updating Final Flag
+            loanApplicationRepository.setIsApplicantFinalMandatoryFilled(applicantRequest.getApplicationId(),
+                    finaluserId, applicantRequest.getIsApplicantFinalFilled());
+            // Updating Final Count
+
+            return true;
+        } catch (Exception e) {
+            logger.error("Error while Saving Retail Final:-");
+            e.printStackTrace();
+            throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+        }
+    }
+
+    @Override
+    public RetailFinalInfoRequest getFinal(Long userId, Long applicationId) throws Exception {
+        try {
+            RetailApplicantDetail applicantDetail = applicantRepository.findOneByApplicationIdIdAndIsActive(applicationId, true);
+            if (applicantDetail == null) {
+                throw new NullPointerException("RetailApplicantDetail Record of Final Portion not exists in DB of ID : "
+                        + userId + "  ApplicationId==>" + applicationId);
+            }
+            RetailFinalInfoRequest applicantRequest = new RetailFinalInfoRequest();
+            BeanUtils.copyProperties(applicantDetail, applicantRequest, CommonUtils.IgnorableCopy.RETAIL_PL_PROFILE);
+            copyAddressFromDomainToRequestForFinal(applicantDetail, applicantRequest, "contact");
+            copyAddressFromDomainToRequestForFinal(applicantDetail, applicantRequest, "permanent");
+            copyAddressFromDomainToRequestForFinal(applicantDetail, applicantRequest, "office");
+            return applicantRequest;
+        } catch (Exception e) {
+            logger.error("Error while getting Retail Final:-");
+            e.printStackTrace();
+            throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+        }
+    }
+
 
     public static void copyAddressFromRequestToDomain(PLRetailApplicantRequest from, RetailApplicantDetail to) {
         if (from.getContactAddress() != null) {
@@ -272,5 +330,71 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
         address.setDistrictMappingId(from.getAddressDistrictMappingId());
         to.setContactAddress(address);
 
+    }
+
+    public static void copyAddressFromDomainToRequestForFinal(RetailApplicantDetail from, RetailFinalInfoRequest to, String type){
+        if(type.equalsIgnoreCase("contact")){
+            Address address = new Address();
+            address.setPremiseNumber(from.getAddressPremiseName());
+            address.setLandMark(from.getAddressLandmark());
+            address.setStreetName(from.getAddressStreetName());
+            address.setCityId(from.getAddressCity());
+            address.setStateId(from.getAddressState().intValue());
+            address.setCountryId(from.getAddressCountry());
+            address.setPincode(from.getAddressPincode());
+            address.setDistrictMappingId(from.getAddressDistrictMappingId());
+            to.setContactAddress(address);
+        }
+        if(type.equalsIgnoreCase("permanent")){
+            Address address = new Address();
+            address.setPremiseNumber(from.getPermanentPremiseNumberName());
+            address.setLandMark(from.getPermanentLandMark());
+            address.setStreetName(from.getPermanentStreetName());
+            address.setCityId(from.getPermanentCityId());
+            address.setStateId(from.getPermanentStateId());
+            address.setCountryId(from.getPermanentCountryId());
+            address.setPincode(from.getPermanentPincode());
+            address.setDistrictMappingId(from.getPermanentdistrictMappingId());
+            to.setPermanentAddress(address);
+        }
+        if(type.equalsIgnoreCase("office")){
+            Address address = new Address();
+            address.setPremiseNumber(from.getOfficePremiseNumberName());
+            address.setLandMark(from.getOfficeLandMark());
+            address.setStreetName(from.getOfficeStreetName());
+            address.setCityId(from.getOfficeCityId());
+            address.setStateId(from.getOfficeStateId());
+            address.setCountryId(from.getOfficeCountryId());
+            address.setPincode(from.getOfficePincode());
+            address.setDistrictMappingId(from.getOfficeDistrictMappingId());
+            to.setOfficeAddress(address);
+        }
+    }
+
+    public static void copyAddressFromRequestToDomainForFinal(RetailFinalInfoRequest from, RetailApplicantDetail to, String type){
+        if(type.equalsIgnoreCase("permanent")){
+            if (from.getPermanentAddress() != null) {
+                to.setPermanentPremiseNumberName(from.getPermanentAddress().getPremiseNumber());
+                to.setPermanentStreetName(from.getPermanentAddress().getStreetName());
+                to.setPermanentLandMark(from.getPermanentAddress().getLandMark());
+                to.setPermanentCityId(from.getPermanentAddress().getCityId());
+                to.setPermanentStateId(from.getPermanentAddress().getStateId());
+                to.setPermanentCountryId(from.getPermanentAddress().getCountryId());
+                to.setPermanentdistrictMappingId(from.getPermanentAddress().getDistrictMappingId());
+                to.setPermanentPincode(from.getPermanentAddress().getPincode());
+            }
+        }
+        if(type.equalsIgnoreCase("office")){
+            if (from.getOfficeAddress() != null) {
+                to.setOfficePremiseNumberName(from.getOfficeAddress().getPremiseNumber());
+                to.setOfficeStreetName(from.getOfficeAddress().getStreetName());
+                to.setOfficeLandMark(from.getOfficeAddress().getLandMark());
+                to.setOfficeCityId(from.getOfficeAddress().getCityId());
+                to.setOfficeStateId(from.getOfficeAddress().getStateId());
+                to.setOfficeCountryId(from.getOfficeAddress().getCountryId());
+                to.setOfficeDistrictMappingId(from.getOfficeAddress().getDistrictMappingId());
+                to.setOfficePincode(from.getOfficeAddress().getPincode());
+            }
+        }
     }
 }
