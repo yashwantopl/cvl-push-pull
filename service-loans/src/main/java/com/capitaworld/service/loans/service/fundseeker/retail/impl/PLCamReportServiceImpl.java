@@ -24,7 +24,10 @@ import com.capitaworld.service.loans.model.FinancialArrangementDetailResponseStr
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.retail.PLRetailApplicantRequest;
 import com.capitaworld.service.loans.model.retail.RetailApplicantIncomeRequest;
+import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
+import com.capitaworld.service.loans.repository.sanction.LoanDisbursementRepository;
+import com.capitaworld.service.loans.repository.sanction.LoanSanctionRepository;
 import com.capitaworld.service.loans.service.common.PincodeDateService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.impl.CamReportPdfDetailsServiceImpl;
@@ -89,6 +92,15 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 	
 	@Autowired
 	private ScoringClient scoringClient;
+	
+	@Autowired
+	private LoanDisbursementRepository loanDisbursementRepository;
+	
+	@Autowired
+	private LoanSanctionRepository loanSanctionRepository;
+	
+	@Autowired
+	private ProposalDetailsRepository proposalDetailsRepository;
 	
 	private static final Logger logger = LoggerFactory.getLogger(CamReportPdfDetailsServiceImpl.class);
 	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
@@ -313,6 +325,35 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 				e.printStackTrace();
 				logger.info("Error while getting scoring data");
 			}
+			
+			//PROPOSAL DATES
+			try {
+				List<Object[]> data = null;
+				data = loanDisbursementRepository.findDisbursementDateByApplicationId(applicationId);
+				if(data != null && !data.isEmpty()) {
+					map.put("disbursmentDate", data.get(0));
+				}
+				
+				data = loanSanctionRepository.findSanctionDateByApplicationId(applicationId);
+				if(data != null && !data.isEmpty()) {
+					map.put("sanctionDate", data.get(0));
+				}
+				
+				data = proposalDetailsRepository.findProposalDetailByApplicationId(applicationId);
+				if(data != null && !data.isEmpty()) {
+					String status = data.get(0) != null ? data.get(0)[1].toString() : "";
+					if(status.equals("3")) {
+						map.put("onHoldDate", data.get(0)[0]);
+					}else if(status.equals("4")) {
+						map.put("rejectedDate", data.get(0)[0]);
+					}
+				}
+				
+			} catch (Exception e) {
+				logger.info("Error while getting PROPOSAL DATES data");
+			}
+		
+		
 		return map;
 	}
 	
