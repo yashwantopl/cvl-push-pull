@@ -6841,12 +6841,15 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
                 	loanMasterRequest.setFpProductName(productMstr.getName());                	
                 }
                 
-                // set branch code  
+                // set branch code
+		logger.info("----------------------------branch Id -------------------- >  " +proposalMappingRequest1.getBranchId());
                 if(!CommonUtils.isObjectNullOrEmpty(proposalMappingRequest1.getBranchId())){
+			logger.info("---------------------------- getting branch Id -------------------- >  " +proposalMappingRequest1.getBranchId());
                 	userResponse =  userClient.getBranchDetailById( proposalMappingRequest1.getBranchId());
                 	if(!CommonUtils.isObjectNullOrEmpty(userResponse)) {
                 		BranchBasicDetailsRequest branchBasicDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap( ( LinkedHashMap<String ,Object>) userResponse.getData() , BranchBasicDetailsRequest.class); 
                 		loanMasterRequest.setBranchCode(branchBasicDetailsRequest.getCode());
+				logger.info("----------------------------setting the branch Code -------------------- >  " + branchBasicDetailsRequest.getCode()  + " ---- on behalf of branch Id  ----- " + branchBasicDetailsRequest.getBranchId());
                 	}
                 }
                 
