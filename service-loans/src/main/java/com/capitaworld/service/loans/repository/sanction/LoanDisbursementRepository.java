@@ -21,4 +21,7 @@ public interface LoanDisbursementRepository extends JpaRepository<LoanDisburseme
 	public List<LoanDisbursementDomain> getDisbursedListByApplicationId(@Param("applicationId") Long applicationId);
 	
 	public LoanDisbursementDomain findByBankDisbursementPrimaryKeyAndApplicationIdAndIsActive(Long id , Long applicationId ,  Boolean IsActive);
+	
+	@Query(value="SELECT disbursement_date FROM disbursement_detail WHERE application_id =:applicationId ORDER BY id DESC", nativeQuery = true)
+	public List<Object[]> findDisbursementDateByApplicationId(@Param("applicationId") Long applicationId);
 }

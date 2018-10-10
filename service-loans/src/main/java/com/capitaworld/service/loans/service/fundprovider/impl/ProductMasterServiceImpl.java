@@ -350,6 +350,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				productMaster.setModifiedDate(new Date());
 				// set business type id
 				productMaster.setBusinessTypeId(addProductRequest.getBusinessTypeId());
+				productMaster.setWcRenewalStatus(addProductRequest.getWcRenewalStatus());
 				productMaster.setIsCopied(false);
 				productMaster.setIsActive(true);
 				productMaster.setUserOrgId(userOrgId);

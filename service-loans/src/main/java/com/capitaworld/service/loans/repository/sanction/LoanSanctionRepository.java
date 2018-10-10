@@ -1,5 +1,7 @@
 package com.capitaworld.service.loans.repository.sanction;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -16,4 +18,8 @@ public interface LoanSanctionRepository extends JpaRepository<LoanSanctionDomain
 	public LoanSanctionDomain  findByAppliationId(@Param("applicationId") Long applicationId);
 	
 	public LoanSanctionDomain  findByBankSanctionPrimaryKeyAndIsActiveAndApplicationId(Long id , Boolean isActive,Long applicationId);
+	
+	@Query(value="SELECT sanction_date FROM sanction_detail WHERE application_id =:applicationId ORDER BY id DESC", nativeQuery = true)
+	public List<Object[]> findSanctionDateByApplicationId(@Param("applicationId") Long applicationId);
+	
 }
