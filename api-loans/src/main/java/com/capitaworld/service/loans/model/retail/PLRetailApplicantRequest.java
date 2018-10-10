@@ -62,6 +62,10 @@ public class PLRetailApplicantRequest implements Serializable {
     private List<CreditCardsDetailRequest> creditCardsDetailRequestList;
 
     private Boolean isApplicantDetailsFilled;
+    
+    //FOR PL CAM REPORT
+    private String loanAmountRequiredString;
+    private String monthlyIncomeString;
 
     /*
     * Final
@@ -416,4 +420,21 @@ public class PLRetailApplicantRequest implements Serializable {
     public void setCreditCardsDetailRequestList(List<CreditCardsDetailRequest> creditCardsDetailRequestList) {
         this.creditCardsDetailRequestList = creditCardsDetailRequestList;
     }
+
+	public String getLoanAmountRequiredString() {
+		return loanAmountRequiredString;
+	}
+
+	public void setLoanAmountRequiredString(String loanAmountRequiredString) {
+		this.loanAmountRequiredString = loanAmountRequiredString;
+	}
+
+	public String getMonthlyIncomeString() {
+		return monthlyIncomeString;
+	}
+
+	public void setMonthlyIncomeString(String monthlyIncomeString) {
+		this.monthlyIncomeString = monthlyIncomeString;
+	}
+    
 }

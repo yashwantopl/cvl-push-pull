@@ -35,6 +35,8 @@ public class FinancialArrangementDetailResponseString implements Serializable{
 	private Date reportedDate;
 	
 	private Object lcbgStatus;
+	
+	private String emi;
 
 	public String getFinancialInstitutionName() {
 		return financialInstitutionName;
@@ -123,5 +125,15 @@ public class FinancialArrangementDetailResponseString implements Serializable{
 	public void setLcbgStatus(Object lcbgStatus) {
 		this.lcbgStatus = lcbgStatus;
 	}
+
+	public String getEmi() {
+		return emi;
+	}
+
+	public void setEmi(String emi) {
+		this.emi = emi;
+	}
+	
+	
 	
 }

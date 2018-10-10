@@ -26,6 +26,9 @@ public class CreditCardsDetailRequest implements Serializable {
 
 	private Double outstandingBalance;
 	
+	//FOR CAM
+	private String outstandingBalanceString;
+	
 	//UNSECURED LOAN	
 	private String issuingBank;
 	
@@ -34,7 +37,8 @@ public class CreditCardsDetailRequest implements Serializable {
 	private Integer yearOfExpiry;
 	
 	private Long cardLimit;
-
+	
+	private String cardTypeString;
 
 	public Long getId() {
 		return id;
@@ -115,7 +119,21 @@ public class CreditCardsDetailRequest implements Serializable {
 	public void setCardLimit(Long cardLimit) {
 		this.cardLimit = cardLimit;
 	}
-	
-	
 
+	public String getOutstandingBalanceString() {
+		return outstandingBalanceString;
+	}
+
+	public void setOutstandingBalanceString(String outstandingBalanceString) {
+		this.outstandingBalanceString = outstandingBalanceString;
+	}
+
+	public String getCardTypeString() {
+		return cardTypeString;
+	}
+
+	public void setCardTypeString(String cardTypeString) {
+		this.cardTypeString = cardTypeString;
+	}
+	
 }

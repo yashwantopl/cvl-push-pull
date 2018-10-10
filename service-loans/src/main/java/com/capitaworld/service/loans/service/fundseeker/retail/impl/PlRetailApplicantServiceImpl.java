@@ -19,6 +19,8 @@ import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplican
 import com.capitaworld.service.loans.service.fundseeker.retail.PlRetailApplicantService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
+import com.capitaworld.service.oneform.enums.CreditCardTypesRetail;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -215,6 +217,8 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
                 return request;
             }
             PLRetailApplicantRequest applicantRequest = new PLRetailApplicantRequest();
+            applicantRequest.setLoanAmountRequiredString(CommonUtils.convertValue(applicantDetail.getLoanAmountRequired()));
+            applicantRequest.setMonthlyIncomeString(CommonUtils.convertValue(applicantDetail.getMonthlyIncome()));
             BeanUtils.copyProperties(applicantDetail, applicantRequest);
 
             List<FinancialArrangementsDetail> financialArrangementsDetailList= financialArrangementDetailsRepository.listSecurityCorporateDetailByAppId(applicationId);
@@ -235,6 +239,8 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             CreditCardsDetailRequest creditCardRequest = null;
             for(CreditCardsDetail creditCardsDetail: creditCardsDetailList){
                 creditCardRequest = new CreditCardsDetailRequest();
+                creditCardRequest.setOutstandingBalanceString(CommonUtils.convertValue(creditCardsDetail.getOutstandingBalance()));
+                creditCardRequest.setCardTypeString(!CommonUtils.isObjectNullOrEmpty(creditCardsDetail.getCreditCardTypesId()) ? CreditCardTypesRetail.getById(creditCardsDetail.getCreditCardTypesId()).getValue() : "");
                 BeanUtils.copyProperties(creditCardsDetail, creditCardRequest);
                 creditCardsDetailRequestList.add(creditCardRequest);
             }

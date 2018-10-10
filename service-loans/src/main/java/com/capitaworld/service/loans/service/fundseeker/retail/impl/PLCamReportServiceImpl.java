@@ -2,9 +2,12 @@ package com.capitaworld.service.loans.service.fundseeker.retail.impl;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.slf4j.Logger;
@@ -17,23 +20,41 @@ import com.capitaworld.connect.api.ConnectResponse;
 import com.capitaworld.connect.api.ConnectStage;
 import com.capitaworld.connect.client.ConnectClient;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
+import com.capitaworld.service.loans.model.FinancialArrangementDetailResponseString;
+import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.retail.PLRetailApplicantRequest;
+import com.capitaworld.service.loans.model.retail.RetailApplicantIncomeRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.service.common.PincodeDateService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.impl.CamReportPdfDetailsServiceImpl;
 import com.capitaworld.service.loans.service.fundseeker.retail.PLCamReportService;
 import com.capitaworld.service.loans.service.fundseeker.retail.PlRetailApplicantService;
+import com.capitaworld.service.loans.service.fundseeker.retail.RetailApplicantIncomeService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.matchengine.MatchEngineClient;
+import com.capitaworld.service.matchengine.ProposalDetailsClient;
 import com.capitaworld.service.matchengine.model.MatchDisplayResponse;
 import com.capitaworld.service.matchengine.model.MatchRequest;
 import com.capitaworld.service.oneform.client.OneFormClient;
+import com.capitaworld.service.oneform.enums.EmploymentStatusRetailMst;
+import com.capitaworld.service.oneform.enums.EmploymentWithPL;
 import com.capitaworld.service.oneform.enums.Gender;
 import com.capitaworld.service.oneform.enums.OccupationNatureNTB;
+import com.capitaworld.service.oneform.enums.PersonalLoanPurpose;
 import com.capitaworld.service.oneform.enums.Title;
 import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
+import com.capitaworld.service.oneform.model.SectorIndustryModel;
+import com.capitaworld.service.scoring.ScoringClient;
+import com.capitaworld.service.scoring.model.ProposalScoreDetailResponse;
+import com.capitaworld.service.scoring.model.ProposalScoreResponse;
+import com.capitaworld.service.scoring.model.ScoringRequest;
+import com.capitaworld.service.scoring.model.ScoringResponse;
+import com.capitaworld.service.scoring.utils.ScoreParameter;
+import com.capitaworld.service.scoring.utils.ScoreParameter.NTB;
+import com.capitaworld.service.scoring.utils.ScoreParameter.Retail;
 
 @Service
 @Transactional
@@ -56,6 +77,18 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 	
 	@Autowired
 	private MatchEngineClient matchEngineClient;
+	
+	@Autowired
+	private ProposalDetailsClient proposalDetailsClient;
+	
+	@Autowired 
+	private RetailApplicantIncomeService retailApplicantIncomeService;
+	
+	@Autowired
+	private FinancialArrangementDetailsService financialArrangementDetailsService;
+	
+	@Autowired
+	private ScoringClient scoringClient;
 	
 	private static final Logger logger = LoggerFactory.getLogger(CamReportPdfDetailsServiceImpl.class);
 	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
@@ -88,7 +121,57 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 			map.put("gender", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getGenderId()) ? Gender.getById(plRetailApplicantRequest.getGenderId()).getValue(): "");
 			map.put("birthDate",!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getBirthDate())? DATE_FORMAT.format(plRetailApplicantRequest.getBirthDate()):"-");
 			map.put("employmentType", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getEmploymentType()) ? OccupationNatureNTB.getById(plRetailApplicantRequest.getEmploymentType()).getValue() : "");
+			map.put("employmentWith", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getEmploymentWith()) ? EmploymentWithPL.getById(plRetailApplicantRequest.getEmploymentWith()).getValue() : "");
+			map.put("employmentStatus", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getEmploymentStatus()) ? EmploymentStatusRetailMst.getById(plRetailApplicantRequest.getEmploymentStatus()).getValue() : "");
 			map.put("retailApplicantProfile", CommonUtils.printFields(plRetailApplicantRequest, null));
+			
+			//KEY VERTICAL FUNDING
+			List<Long> keyVerticalFundingId = new ArrayList<>();
+			if (!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getKeyVerticalFunding()))
+				keyVerticalFundingId.add(plRetailApplicantRequest.getKeyVerticalFunding());
+			if (!CommonUtils.isListNullOrEmpty(keyVerticalFundingId)) {
+				try {
+					OneFormResponse oneFormResponse = oneFormClient.getIndustryById(keyVerticalFundingId);
+					List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse.getListData();
+					if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+						MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+						map.put("keyVerticalFunding", StringEscapeUtils.escapeXml(masterResponse.getValue()));
+					} else {
+						map.put("keyVerticalFunding", "-");
+					}
+
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+			//KEY VERTICAL SECTOR
+			List<Long> keyVerticalSectorId = new ArrayList<>();
+			if (!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getKeyVerticalSector()))
+				keyVerticalSectorId.add(plRetailApplicantRequest.getKeyVerticalSector());
+			try {
+				OneFormResponse formResponse = oneFormClient.getIndustrySecByMappingId(plRetailApplicantRequest.getKeyVerticalSector());
+				SectorIndustryModel sectorIndustryModel = MultipleJSONObjectHelper.getObjectFromMap((Map) formResponse.getData(), SectorIndustryModel.class);
+				OneFormResponse oneFormResponse = oneFormClient.getSectorById(Arrays.asList(sectorIndustryModel.getSectorId()));
+				List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse.getListData();
+				if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+					MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+					map.put("keyVerticalSector", StringEscapeUtils.escapeXml(masterResponse.getValue()));
+				} else {
+					map.put("keyVerticalSector", "-");
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			//KEY VERTICAL SUBSECTOR
+			try {
+				if (!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getKeyVerticalSubSector())) {
+					OneFormResponse oneFormResponse = oneFormClient.getSubSecNameByMappingId(plRetailApplicantRequest.getKeyVerticalSubSector());
+					map.put("keyVerticalSubSector",StringEscapeUtils.escapeXml(oneFormResponse.getData().toString()));
+				}
+			} catch (Exception e) {
+				logger.warn("error while getting key vertical sub-sector");
+			}
+			
 		} catch (Exception e) {
 			logger.info("Error while getting profile Details");
 			e.printStackTrace();
@@ -115,10 +198,125 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 			logger.info("Error while getting matches data");
 			e.printStackTrace();
 		}
+		//PRIMARY DATA (LOAN DETAILS)
+		try {
+			PLRetailApplicantRequest plRetailApplicantRequest = plRetailApplicantService.getPrimary(userId, applicationId);
+			map.put("loanPurpose", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getLoanPurpose()) ? PersonalLoanPurpose.getById(plRetailApplicantRequest.getLoanPurpose()).getValue(): "");
+			map.put("retailApplicantPrimaryDetails", plRetailApplicantRequest);
+		} catch (Exception e) {
+			logger.info("Error while getting primary Details");
+			e.printStackTrace();
+		}
+		
+		//INCOME DETAILS
+		try {
+			List<RetailApplicantIncomeRequest> retailApplicantIncomeDetail = retailApplicantIncomeService.getAll(applicationId);
+			if(!CommonUtils.isObjectNullOrEmpty(retailApplicantIncomeDetail)) {
+				map.put("incomeDetails", retailApplicantIncomeDetail);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.info("Error while getting income details");
+		}
+		
+		//FINANCIAL ARRANGEMENTS
+		try {
+            List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestList = financialArrangementDetailsService.getFinancialArrangementDetailsList(applicationId, userId);
+            List<FinancialArrangementDetailResponseString> financialArrangementsDetailResponseList = new ArrayList<>();
+            for (FinancialArrangementsDetailRequest financialArrangementsDetailRequest : financialArrangementsDetailRequestList) {
+            	FinancialArrangementDetailResponseString financialArrangementsDetailResponse = new FinancialArrangementDetailResponseString();
+                financialArrangementsDetailResponse.setOutstandingAmount(CommonUtils.convertValue(financialArrangementsDetailRequest.getOutstandingAmount()));
+                financialArrangementsDetailResponse.setSecurityDetails(financialArrangementsDetailRequest.getSecurityDetails());
+                financialArrangementsDetailResponse.setAmount(CommonUtils.convertValue(financialArrangementsDetailRequest.getAmount()));
+                financialArrangementsDetailResponse.setLoanDate(financialArrangementsDetailRequest.getLoanDate());
+                financialArrangementsDetailResponse.setLoanType(financialArrangementsDetailRequest.getLoanType());
+                financialArrangementsDetailResponse.setFinancialInstitutionName(financialArrangementsDetailRequest.getFinancialInstitutionName());
+                financialArrangementsDetailResponse.setEmi(CommonUtils.convertValue(financialArrangementsDetailRequest.getEmi()));
+                //financialArrangementsDetailResponse.setLcbgStatus(!CommonUtils.isObjectNullOrEmpty(financialArrangementsDetailRequest.getLcBgStatus()) ? LCBG_Status_SBI.getById(financialArrangementsDetailRequest.getLcBgStatus()).getValue().toString() : "-");
+                financialArrangementsDetailResponseList.add(financialArrangementsDetailResponse);
+            }
+            	map.put("financialArrangments",!CommonUtils.isListNullOrEmpty(financialArrangementsDetailResponseList) ? CommonUtils.printFields(financialArrangementsDetailResponseList,null) : " ");
+        } catch (Exception e) {
+            logger.error("Problem to get Data of Financial Arrangements Details {}", e);
+        }	
+		//SCORING
+		try {
+			ScoringRequest scoringRequest = new ScoringRequest();
+			scoringRequest.setApplicationId(applicationId);
+			scoringRequest.setFpProductId(productId);
+			ScoringResponse scoringResponse = scoringClient.getScore(scoringRequest);
+			List<Map<String,Object>> scoreResponse = new ArrayList<>(scoringResponse.getDataList().size());
+			Map<String,Object> companyMap =new HashMap<>();
+			ProposalScoreResponse proposalScoreResponse =  (ProposalScoreResponse)MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)scoringResponse.getDataObject(),ProposalScoreResponse.class);
+			companyMap.put("companyDataObject",CommonUtils.printFields(proposalScoreResponse,null));
+			//Filter Parameters
+			List<LinkedHashMap<String, Object>> mapList = (List<LinkedHashMap<String, Object>>)scoringResponse.getDataList();
+			List<ProposalScoreDetailResponse> newMapList = new ArrayList<>(mapList.size());
+			for(LinkedHashMap<String, Object> mp : mapList) {
+				newMapList.add(MultipleJSONObjectHelper.getObjectFromMap(mp,ProposalScoreDetailResponse.class));
+			}
+			List<ProposalScoreDetailResponse> collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.WORKING_EXPERIENCE_PL)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(Retail.WORKING_EXPERIENCE_PL, CommonUtils.printFields(collect.get(0),null));
+					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.CIBIL_SCORE_PL)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(Retail.CIBIL_SCORE_PL, CommonUtils.printFields(collect.get(0),null));
+					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.AGE_PL)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(Retail.AGE_PL, CommonUtils.printFields(collect.get(0),null));
+					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.EDUCATION_QUALI_PL)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(Retail.EDUCATION_QUALI_PL, CommonUtils.printFields(collect.get(0),null));
+					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.EMPLOYEMENT_TYPE_PL)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(Retail.EMPLOYEMENT_TYPE_PL, CommonUtils.printFields(collect.get(0),null));
+					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.HOUSE_OWNERSHIP_PL)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(Retail.HOUSE_OWNERSHIP_PL, CommonUtils.printFields(collect.get(0),null));
+					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.MARITAL_STATUS_PL)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(Retail.MARITAL_STATUS_PL, CommonUtils.printFields(collect.get(0),null));
+					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.CATEGORY_INFO_PL)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(Retail.CATEGORY_INFO_PL, CommonUtils.printFields(collect.get(0),null));
+					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.FIXED_OBLI_INFO_RATIO_PL)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(Retail.FIXED_OBLI_INFO_RATIO_PL, CommonUtils.printFields(collect.get(0),null));
+					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.CHEQUE_BOUNCE_PAST_SIX_MONTH_PL)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(Retail.CHEQUE_BOUNCE_PAST_SIX_MONTH_PL, CommonUtils.printFields(collect.get(0),null));
+					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.DAY_PAST_DUE_PL)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(Retail.DAY_PAST_DUE_PL, CommonUtils.printFields(collect.get(0),null));
+					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.NET_ANNUAL_INCOME_PL)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(Retail.NET_ANNUAL_INCOME_PL, CommonUtils.printFields(collect.get(0),null));
+					}
+					collect = newMapList.stream().filter(m -> m.getParameterName().equalsIgnoreCase(Retail.EMI_NMI_PL)).collect(Collectors.toList());
+					if(!CommonUtils.isListNullOrEmpty(collect)) {
+						companyMap.put(Retail.EMI_NMI_PL, CommonUtils.printFields(collect.get(0),null));
+					}
+					scoreResponse.add(companyMap);
+					map.put("scoringResp", scoreResponse);
+			}catch (Exception e) {
+				e.printStackTrace();
+				logger.info("Error while getting scoring data");
+			}
 		return map;
 	}
 	
-/*********************************************************CAM UTILS****************************************************************/
+			/*********************************************************CAM UTILS****************************************************************/
 	@SuppressWarnings("unchecked")
 	private String getCityName(Long cityId) {
 		try {
