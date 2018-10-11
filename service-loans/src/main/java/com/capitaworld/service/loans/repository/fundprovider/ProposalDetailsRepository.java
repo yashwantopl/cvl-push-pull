@@ -45,7 +45,7 @@ public interface ProposalDetailsRepository extends JpaRepository<ProposalDetails
     public List<Object[]> getProposalDetailsByOrgId(@Param("userOrgId")Long userOrgId,@Param("fromDate") Date fromDate,@Param("toDate") Date toDate);
     
     
-    @Query(value="SELECT pd.modified_date, proposal_status_id, psm.code FROM proposal_details AS pd JOIN proposal_status_master AS psm ON psm.id = pd.proposal_status_id WHERE application_id = :applicationId",nativeQuery=true)
+    @Query(value="SELECT pd.modified_date, proposal_status_id, psm.code FROM proposal_details AS pd JOIN proposal_status_master AS psm ON psm.id = pd.proposal_status_id WHERE application_id = :applicationId AND pd.is_active = TRUE",nativeQuery=true)
     public List<Object[]> findProposalDetailByApplicationId(@Param("applicationId") Long applicationId);
 
 }

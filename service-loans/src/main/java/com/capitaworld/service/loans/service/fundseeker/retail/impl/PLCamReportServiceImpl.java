@@ -55,8 +55,6 @@ import com.capitaworld.service.scoring.model.ProposalScoreDetailResponse;
 import com.capitaworld.service.scoring.model.ProposalScoreResponse;
 import com.capitaworld.service.scoring.model.ScoringRequest;
 import com.capitaworld.service.scoring.model.ScoringResponse;
-import com.capitaworld.service.scoring.utils.ScoreParameter;
-import com.capitaworld.service.scoring.utils.ScoreParameter.NTB;
 import com.capitaworld.service.scoring.utils.ScoreParameter.Retail;
 
 @Service
@@ -108,6 +106,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 	@Override
 	public Map<String, Object> getCamReportDetails(Long applicationId, Long productId, boolean isFinalView) {
 		Map<String, Object> map = new HashMap<String, Object>();
+		
 		Long userId = loanApplicationRepository.getUserIdByApplicationId(applicationId);
 		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId, userId);
 		map.put("dateOfProposal", !CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getCreatedDate())? DATE_FORMAT.format(loanApplicationMaster.getCreatedDate()):"-");
@@ -326,32 +325,33 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 				logger.info("Error while getting scoring data");
 			}
 			
-			//PROPOSAL DATES
-			try {
-				List<Object[]> data = null;
-				data = loanDisbursementRepository.findDisbursementDateByApplicationId(applicationId);
-				if(data != null && !data.isEmpty()) {
-					map.put("disbursmentDate", data.get(0));
-				}
-				
-				data = loanSanctionRepository.findSanctionDateByApplicationId(applicationId);
-				if(data != null && !data.isEmpty()) {
-					map.put("sanctionDate", data.get(0));
-				}
-				
-				data = proposalDetailsRepository.findProposalDetailByApplicationId(applicationId);
-				if(data != null && !data.isEmpty()) {
-					String status = data.get(0) != null ? data.get(0)[1].toString() : "";
-					if(status.equals("3")) {
-						map.put("onHoldDate", data.get(0)[0]);
-					}else if(status.equals("4")) {
-						map.put("rejectedDate", data.get(0)[0]);
-					}
-				}
-				
-			} catch (Exception e) {
-				logger.info("Error while getting PROPOSAL DATES data");
+		//PROPOSAL DATES
+		try {
+			List<Object[]> data = null;
+			data = loanDisbursementRepository.findDisbursementDateByApplicationId(applicationId);
+			if(data != null && !data.isEmpty()) {
+				map.put("disbursmentDate", data.get(0));
 			}
+			
+			data = loanSanctionRepository.findSanctionDateByApplicationId(applicationId);
+			if(data != null && !data.isEmpty()) {
+				map.put("sanctionDate", data.get(0));
+			}
+			
+			data = proposalDetailsRepository.findProposalDetailByApplicationId(applicationId);
+			if(data != null && !data.isEmpty()) {
+				String status = data.get(0) != null ? data.get(0)[1].toString() : "";
+				if(status.equals("3")) {
+					map.put("onHoldDate", data.get(0)[0]);
+				}else if(status.equals("4")) {
+					map.put("rejectedDate", data.get(0)[0]);
+				}
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.info("Error while getting PROPOSAL DATES data");
+		}
 		
 		
 		return map;
