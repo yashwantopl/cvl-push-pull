@@ -3,6 +3,7 @@ package com.capitaworld.service.loans.service.fundseeker.retail.impl;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -328,14 +329,15 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 		//PROPOSAL DATES
 		try {
 			List<Object[]> data = null;
-			data = loanDisbursementRepository.findDisbursementDateByApplicationId(applicationId);
-			if(data != null && !data.isEmpty()) {
-				map.put("disbursmentDate", data.get(0));
+			List<Date[]> data1 = null;
+			data1 = loanDisbursementRepository.findDisbursementDateByApplicationId(applicationId);
+			if(data1 != null && !data1.isEmpty()) {
+				map.put("disbursmentDate", DATE_FORMAT.format(data1.get(0)));
 			}
 			
-			data = loanSanctionRepository.findSanctionDateByApplicationId(applicationId);
-			if(data != null && !data.isEmpty()) {
-				map.put("sanctionDate", data.get(0));
+			data1 = loanSanctionRepository.findSanctionDateByApplicationId(applicationId);
+			if(data1 != null && !data1.isEmpty()) {
+				map.put("sanctionDate", DATE_FORMAT.format(data1.get(0)));
 			}
 			
 			data = proposalDetailsRepository.findProposalDetailByApplicationId(applicationId);
@@ -347,12 +349,10 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 					map.put("rejectedDate", data.get(0)[0]);
 				}
 			}
-			
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.info("Error while getting PROPOSAL DATES data");
 		}
-		
 		
 		return map;
 	}

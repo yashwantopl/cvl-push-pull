@@ -1,12 +1,13 @@
 package com.capitaworld.service.loans.repository.sanction;
 
+import java.util.Date;
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.capitaworld.service.loans.domain.sanction.LoanDisbursementDomain;
-
-import java.util.List;
 
 /**
  * @author Ankit
@@ -23,5 +24,5 @@ public interface LoanDisbursementRepository extends JpaRepository<LoanDisburseme
 	public LoanDisbursementDomain findByBankDisbursementPrimaryKeyAndApplicationIdAndIsActive(Long id , Long applicationId ,  Boolean IsActive);
 	
 	@Query(value="SELECT disbursement_date FROM disbursement_detail WHERE application_id =:applicationId AND is_active = TRUE ORDER BY id DESC", nativeQuery = true)
-	public List<Object[]> findDisbursementDateByApplicationId(@Param("applicationId") Long applicationId);
+	public List<Date[]> findDisbursementDateByApplicationId(@Param("applicationId") Long applicationId);
 }
