@@ -319,7 +319,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 						geogaphicallyCity=wcTlParameterRequest.getCityList();
 						negativeIndList=wcTlParameterRequest.getUnInterestedIndustrylist();
 						//END set multiple value in temp
-						BeanUtils.copyProperties(wcTlParameterRequest, wcTlParameterRequest,"id");
+						BeanUtils.copyProperties(wcTlParameterRequest, wcTlParameterTemp,"id");
 						productMaster = wcTlParameterTemp;
 						productMaster.setIsParameterFilled(true);
 						break;
