@@ -542,6 +542,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	@Autowired
 	private GstClient gstClient;
 	
+	@Autowired
+	private LoanApplicationService loanApplicationService;
+	
 	public static final String EMAIL_ADDRESS_FROM = "no-reply@capitaworld.com";
 	
  	@Override
@@ -4542,7 +4545,75 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		Boolean status = null;
 		status = gatewayClient.skipPayment(gatewayRequest);
 		logger.info("In-Principle send for WhiteLabel Status=====>"+status);
+		
 		// ====================================================================
+		
+		ProposalMappingResponse response = null;
+		Map<String, Object> proposalresp = null;
+		try {
+			logger.info("Calling Proposal details client for getting In-principle response for applicationId:-"+applicationId);
+			response = proposalDetailsClient.getInPricipleById(applicationId);
+			logger.info("Got Inprinciple response from Proposal Details Client"+response);
+			proposalresp = MultipleJSONObjectHelper
+					.getObjectFromMap((Map<String, Object>) response.getData(), Map.class);
+		} catch (Exception e) {
+            logger.info("Error calling Proposal Details Client for getting In-principle response for applicationId:-"+applicationId);
+            e.printStackTrace();
+		}
+		
+		LoanApplicationRequest loansRequest = loanApplicationService.getFromClient(applicationId);
+	
+		PaymentRequest paymentRequest = new PaymentRequest();
+		paymentRequest.setApplicationId(applicationId);
+		paymentRequest.setNameOfEntity(loansRequest.getUserName());
+		
+		 // ==================Sending Mail to all Checker's & Maker's & HO & BO of that branch after FS recieves In-principle Approval==================	
+		
+		try {
+			logger.info("Inside sending mail to Maker after In-principle Approval");
+			fpasyncComponent.sendEmailToAllMakersWhenFSRecievesInPrinciple(proposalresp, paymentRequest, userId, orgId);	
+		}
+		catch(Exception e) {
+			
+			logger.info("Exception occured while Sending Mail to All Makers");
+			e.printStackTrace();
+			
+		}
+		
+		try {
+			logger.info("Inside sending mail to Checker after In-principle Approval");
+			fpasyncComponent.sendEmailToAllCheckersWhenFSRecievesInPrinciple(proposalresp, paymentRequest, userId, orgId);	
+		}
+		catch(Exception e) {
+			
+			logger.info("Exception occured while Sending Mail to All Checkers");
+			e.printStackTrace();
+			
+		}
+		
+		try {
+			logger.info("Inside sending mail to HO after In-principle Approval");
+			fpasyncComponent.sendEmailToHOWhenFSRecievesInPrinciple(proposalresp, paymentRequest, userId, orgId);	
+		}
+		catch(Exception e) {
+			
+			logger.info("Exception occured while Sending Mail to HO");
+			e.printStackTrace();
+			
+		}
+		
+		try {
+			logger.info("Inside sending mail to BO after In-principle Approval");
+			fpasyncComponent.sendEmailToAllBOWhenFSRecievesInPrinciple(proposalresp, paymentRequest, userId, orgId);	
+		}
+		catch(Exception e) {
+			
+			logger.info("Exception occured while Sending Mail to All BO");
+			e.printStackTrace();
+			
+		}
+				
+	//=======================================================================================================================================
 		
 		logger.info("Exit on Update Skip Payment WhiteLabel");		
 	}
@@ -4571,13 +4642,13 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				logger.info("Connector Response ----------------------------->" + connectResponse.toString());
 				logger.info("Before Start Saving Phase 1 Sidbi API ------------------->" + orgId);
 			//	if(orgId==10L) {
-					logger.info("Start Saving Phase 1 sidbi API -------------------->" + loanApplicationMaster.getId());
+					/*logger.info("Start Saving Phase 1 sidbi API -------------------->" + loanApplicationMaster.getId());
 					Long fpMappingId = null;
 					try {
 						savePhese1DataToSidbi(loanApplicationMaster.getId(), userId,orgId,fpProductId);
 					}catch(Exception e) {
 						e.printStackTrace();
-					}
+					}*/
 			//	}
 
 				if(connectResponse.getProceed()) {
@@ -4623,6 +4694,74 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		//status = gatewayClient.personalLoanInPrinciple(gatewayRequest);
 		logger.info("In-Principle send for Personal Loan Status=====>"+status);
 		// ====================================================================
+		
+		ProposalMappingResponse response = null;
+		Map<String, Object> proposalresp = null;
+		try {
+			logger.info("Calling Proposal details client for getting In-principle response for applicationId:-"+applicationId);
+			response = proposalDetailsClient.getInPricipleById(applicationId);
+			logger.info("Got Inprinciple response from Proposal Details Client"+response);
+			proposalresp = MultipleJSONObjectHelper
+					.getObjectFromMap((Map<String, Object>) response.getData(), Map.class);
+		} catch (Exception e) {
+            logger.info("Error calling Proposal Details Client for getting In-principle response for applicationId:-"+applicationId);
+            e.printStackTrace();
+		}
+		
+		LoanApplicationRequest loansRequest = loanApplicationService.getFromClient(applicationId);
+	
+		PaymentRequest paymentRequest = new PaymentRequest();
+		paymentRequest.setApplicationId(applicationId);
+		paymentRequest.setNameOfEntity(loansRequest.getUserName());
+		
+		 // ==================Sending Mail to all Checker's & Maker's & HO & BO of that branch after FS recieves In-principle Approval==================	
+		
+		try {
+			logger.info("Inside sending mail to Maker after In-principle Approval");
+			fpasyncComponent.sendEmailToAllMakersWhenFSRecievesInPrinciple(proposalresp, paymentRequest, userId, orgId);	
+		}
+		catch(Exception e) {
+			
+			logger.info("Exception occured while Sending Mail to All Makers");
+			e.printStackTrace();
+			
+		}
+		
+		try {
+			logger.info("Inside sending mail to Checker after In-principle Approval");
+			fpasyncComponent.sendEmailToAllCheckersWhenFSRecievesInPrinciple(proposalresp, paymentRequest, userId, orgId);	
+		}
+		catch(Exception e) {
+			
+			logger.info("Exception occured while Sending Mail to All Checkers");
+			e.printStackTrace();
+			
+		}
+		
+		try {
+			logger.info("Inside sending mail to HO after In-principle Approval");
+			fpasyncComponent.sendEmailToHOWhenFSRecievesInPrinciple(proposalresp, paymentRequest, userId, orgId);	
+		}
+		catch(Exception e) {
+			
+			logger.info("Exception occured while Sending Mail to HO");
+			e.printStackTrace();
+			
+		}
+		
+		try {
+			logger.info("Inside sending mail to BO after In-principle Approval");
+			fpasyncComponent.sendEmailToAllBOWhenFSRecievesInPrinciple(proposalresp, paymentRequest, userId, orgId);	
+		}
+		catch(Exception e) {
+			
+			logger.info("Exception occured while Sending Mail to All BO");
+			e.printStackTrace();
+			
+		}
+				
+	//=======================================================================================================================================
+
 		
 		logger.info("Exit on sendInPrincipleForPersonalLoan");		
 	}
@@ -6841,14 +6980,18 @@ public CommercialRequest createCommercialRequest(Long applicationId,String pan) 
                 	loanMasterRequest.setFpProductName(productMstr.getName());                	
                 }
                 
-                // set branch code  
+                // set branch code
+                logger.info("----------------------------branch Id -------------------- >  " +proposalMappingRequest1.getBranchId() );
                 if(!CommonUtils.isObjectNullOrEmpty(proposalMappingRequest1.getBranchId())){
+                	logger.info("---------------------------- getting branch Id -------------------- >  " +proposalMappingRequest1.getBranchId()  );
                 	userResponse =  userClient.getBranchDetailById( proposalMappingRequest1.getBranchId());
                 	if(!CommonUtils.isObjectNullOrEmpty(userResponse)) {
                 		BranchBasicDetailsRequest branchBasicDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap( ( LinkedHashMap<String ,Object>) userResponse.getData() , BranchBasicDetailsRequest.class); 
                 		loanMasterRequest.setBranchCode(branchBasicDetailsRequest.getCode());
+                		logger.info("----------------------------setting the branch Code -------------------- >  " + branchBasicDetailsRequest.getCode()  + " ---- on behalf of branch Id  ----- " + branchBasicDetailsRequest.getBranchId()   );
                 	}
                 }
+                
                 
                 
 			} catch (IOException e) {
