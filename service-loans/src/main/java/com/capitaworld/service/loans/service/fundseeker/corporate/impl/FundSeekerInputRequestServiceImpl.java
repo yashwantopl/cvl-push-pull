@@ -601,62 +601,59 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 	@Override
 	public LoansResponse invokeFraudAnalytics(FundSeekerInputRequestResponse fundSeekerInputRequestResponse)
 			throws Exception {
-		
+
 		try {
 			logger.info("Start invokeFraudAnalytics()");
 			LoansResponse res = new LoansResponse();
-			if("Y".equals(String.valueOf(environment.getRequiredProperty("cw.call.service_fraudanalytics")))) {
+			if ("Y".equals(String.valueOf(environment.getRequiredProperty("cw.call.service_fraudanalytics")))) {
 				Boolean isNTB = false;
 				HunterRequestDataResponse hunterRequestDataResponse = null;
-				if(fundSeekerInputRequestResponse.getBusinessTypeId()!=null && fundSeekerInputRequestResponse.getBusinessTypeId() == 2) {// FOR NTB ONLY
+				if (fundSeekerInputRequestResponse.getBusinessTypeId() != null
+						&& fundSeekerInputRequestResponse.getBusinessTypeId() == 2) {// FOR NTB ONLY
 					isNTB = true;
 					hunterRequestDataResponse = loanApplicationService
 							.getDataForHunterForNTB(fundSeekerInputRequestResponse.getApplicationId());
+				} else {
+					hunterRequestDataResponse = loanApplicationService
+							.getDataForHunter(fundSeekerInputRequestResponse.getApplicationId());
 				}
-				else {
-			hunterRequestDataResponse = loanApplicationService
-					.getDataForHunter(fundSeekerInputRequestResponse.getApplicationId());
+				AnalyticsRequest request = new AnalyticsRequest();
+				request.setApplicationId(fundSeekerInputRequestResponse.getApplicationId());
+				request.setUserId(fundSeekerInputRequestResponse.getUserId());
+				request.setData(hunterRequestDataResponse);
+				request.setIsNtb(isNTB);
+				res.setMessage("Oneform Saved Successfully");
+				res.setStatus(HttpStatus.OK.value());
+
+				try {
+					AnalyticsResponse response = fraudAnalyticsClient.callHunterIIAPI(request);
 				}
-			AnalyticsRequest request = new AnalyticsRequest();
-			request.setApplicationId(fundSeekerInputRequestResponse.getApplicationId());
-			request.setUserId(fundSeekerInputRequestResponse.getUserId());
-			request.setData(hunterRequestDataResponse);
-			request.setIsNtb(isNTB);
-			res.setMessage("Oneform Saved Successfully");
-			res.setStatus(HttpStatus.OK.value());
-			AnalyticsResponse response = fraudAnalyticsClient.callHunterIIAPI(request);
-			if (response != null && response.getStatus() == HttpStatus.OK.value()) {
-				
-				Boolean resp = false;
-				if(response.getData()!=null) {
-					resp = Boolean.valueOf(response.getData().toString());
+				catch (Exception e) {
+					logger.info("End invokeFraudAnalytics() with Error : "+e.getMessage());
+					e.printStackTrace();
+					return new LoansResponse("Oneform Saved Successfully", HttpStatus.OK.value());
 				}
-				res.setData(resp);
-				if(resp) {
-					res.setStatus(HttpStatus.OK.value());
-					res.setMessage("Oneform Saved Successfully");
-				}
-				else {
-					res.setStatus(HttpStatus.UNAVAILABLE_FOR_LEGAL_REASONS.value());
-				res.setMessage(CommonUtils.HUNTER_INELIGIBLE_MESSAGE);
-				}
-			}
-			
-			logger.info("End invokeFraudAnalytics() with resp : "+res.getData());
-			return res;
-			}
-			else {
+			/*	if (response != null && response.getData() != null) {
+					Boolean resp = Boolean.valueOf(response.getData().toString());
+					res.setData(resp);
+					if (resp == false) {
+						res.setStatus(HttpStatus.UNAVAILABLE_FOR_LEGAL_REASONS.value());
+						res.setMessage(CommonUtils.HUNTER_INELIGIBLE_MESSAGE);
+					}
+				} */
+
+				logger.info("End invokeFraudAnalytics() with resp : " + res.getData());
+				return new LoansResponse("Oneform Saved Successfully", HttpStatus.OK.value());
+			} else {
 				logger.info("End invokeFraudAnalytics() Skiping Fraud Analytics call");
-				   logger.info("FUNDSEEKER INPUT SAVED SUCCESSFULLY");
-	                return new LoansResponse("Oneform Saved Successfully", HttpStatus.OK.value());
-	                      
+				logger.info("FUNDSEEKER INPUT SAVED SUCCESSFULLY");
+				return new LoansResponse("Oneform Saved Successfully", HttpStatus.OK.value());
+
 			}
 		} catch (Exception e) {
 			logger.info("End invokeFraudAnalytics() Error in Fraud Analytics call");
 			e.printStackTrace();
-			//throw new Exception();
-			logger.info("End invokeFraudAnalytics() ERROR IN FRAUD ANALYTICS CALL");
-			 return new LoansResponse("Oneform Saved Successfully", HttpStatus.OK.value());
+			return new LoansResponse("Oneform Saved Successfully", HttpStatus.OK.value());
 		}
 	}
 
