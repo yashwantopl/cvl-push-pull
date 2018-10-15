@@ -624,26 +624,26 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			request.setIsNtb(isNTB);
 			res.setMessage("Oneform Saved Successfully");
 			res.setStatus(HttpStatus.OK.value());
-			AnalyticsResponse response = fraudAnalyticsClient.callHunterIIAPI(request);
-			if (response != null) {
-				
-				Boolean resp = false;
-				if(response.getData()!=null) {
-					resp = Boolean.valueOf(response.getData().toString());
+			try {
+					AnalyticsResponse response = fraudAnalyticsClient.callHunterIIAPI(request);
 				}
-				res.setData(resp);
-				if(resp) {
-					res.setStatus(HttpStatus.OK.value());
-					res.setMessage("Oneform Saved Successfully");
+				catch (Exception e) {
+					logger.info("End invokeFraudAnalytics() with Error : "+e.getMessage());
+					e.printStackTrace();
+					return new LoansResponse("Oneform Saved Successfully", HttpStatus.OK.value());
 				}
-				else {
-					res.setStatus(HttpStatus.UNAVAILABLE_FOR_LEGAL_REASONS.value());
-				res.setMessage(CommonUtils.HUNTER_INELIGIBLE_MESSAGE);
-				}
-			}
-			
-			logger.info("End invokeFraudAnalytics() with resp : "+res.getData());
-			return res;
+			/*	if (response != null && response.getData() != null) {
+					Boolean resp = Boolean.valueOf(response.getData().toString());
+					res.setData(resp);
+					if (resp == false) {
+						res.setStatus(HttpStatus.UNAVAILABLE_FOR_LEGAL_REASONS.value());
+						res.setMessage(CommonUtils.HUNTER_INELIGIBLE_MESSAGE);
+					}
+				} */
+
+				logger.info("End invokeFraudAnalytics() with resp : " + res.getData());
+				return new LoansResponse("Oneform Saved Successfully", HttpStatus.OK.value());
+
 			}
 			else {
 				logger.info("End invokeFraudAnalytics() Skiping Fraud Analytics call");
