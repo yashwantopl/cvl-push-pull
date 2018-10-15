@@ -625,7 +625,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			res.setMessage("Oneform Saved Successfully");
 			res.setStatus(HttpStatus.OK.value());
 			AnalyticsResponse response = fraudAnalyticsClient.callHunterIIAPI(request);
-			if (response != null) {
+			if (response != null && response.getStatus() == HttpStatus.OK.value()) {
 				
 				Boolean resp = false;
 				if(response.getData()!=null) {
