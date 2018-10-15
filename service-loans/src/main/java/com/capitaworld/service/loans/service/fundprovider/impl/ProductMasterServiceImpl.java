@@ -308,7 +308,21 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 						}
 						break;
 					case WCTL_LOAN:
-						productMaster = new WcTlParameterTemp();
+						WcTlParameterTemp wcTlParameterTemp= new WcTlParameterTemp();
+						WcTlParameterRequest wcTlParameterRequest=wcTlParameterService.getWcTlRequest(addProductRequest.getLoanId());
+						industrySecIdList=wcTlParameterRequest.getIndustrylist();
+						//set multiple value in temp
+						industrySecIdList=wcTlParameterRequest.getIndustrylist();
+						secIdList=wcTlParameterRequest.getSectorlist();
+						geogaphicallyCountry=wcTlParameterRequest.getCountryList();
+						geogaphicallyState=wcTlParameterRequest.getStateList();
+						geogaphicallyCity=wcTlParameterRequest.getCityList();
+						negativeIndList=wcTlParameterRequest.getUnInterestedIndustrylist();
+						//END set multiple value in temp
+						BeanUtils.copyProperties(wcTlParameterRequest, wcTlParameterTemp,"id");
+						productMaster = wcTlParameterTemp;
+						productMaster.setIsParameterFilled(true);
+
 						break;
 					case PERSONAL_LOAN:
 						productMaster = new PersonalLoanParameterTemp();
