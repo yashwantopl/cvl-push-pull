@@ -34,6 +34,11 @@ public class FixedDepositsDetailsRequest implements Serializable {
 	private String maturityDateInString;
 
 	private Double rate;
+	
+	//For cam
+	
+	private String amountString;
+	private String rateString;
 
 	public Long getId() {
 		return id;
@@ -99,6 +104,21 @@ public class FixedDepositsDetailsRequest implements Serializable {
 		this.maturityDateInString = maturityDateInString;
 	}
 
+	public String getAmountString() {
+		return amountString;
+	}
+
+	public void setAmountString(String amountString) {
+		this.amountString = amountString;
+	}
+
+	public String getRateString() {
+		return rateString;
+	}
+
+	public void setRateString(String rateString) {
+		this.rateString = rateString;
+	}
 	
 
 }
