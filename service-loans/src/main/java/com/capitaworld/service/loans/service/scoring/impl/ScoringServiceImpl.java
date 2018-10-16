@@ -627,6 +627,8 @@ public class ScoringServiceImpl implements ScoringService{
     @Override
     public ResponseEntity<LoansResponse> calculateExistingBusinessScoring(ScoringRequestLoans scoringRequestLoans) {
 
+        logger.info(":::::::::::::::::::::::::::::::::::::::::::::::::START:::::::::::::::::::::::::::::::::::::::::::::::::::::");
+
         ScoringParameterRequest scoringParameterRequest=new ScoringParameterRequest();
 
         Long scoreModelId=scoringRequestLoans.getScoringModelId();
