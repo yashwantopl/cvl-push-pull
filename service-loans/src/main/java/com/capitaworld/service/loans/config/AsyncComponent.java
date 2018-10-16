@@ -498,7 +498,7 @@ public class AsyncComponent {
 						if (!CommonUtils.isObjectNullOrEmpty(request)) {
 							Map<String, Object> parameters = new HashMap<String, Object>();
 							String fsName = loanApplicationService.getFsApplicantName(applicationId);
-							parameters.put("fs_name", !CommonUtils.isObjectNullOrEmpty(fsName) ? fsName : "NA");
+							parameters.put("fs_name", !CommonUtils.isObjectNullOrEmpty(fsName) ? fsName : "Sir/Madam");
 							LoanApplicationRequest loanBasicDetails = loanApplicationService
 									.getLoanBasicDetails(applicationId, userId);
 							if (loanBasicDetails != null) {
@@ -511,14 +511,19 @@ public class AsyncComponent {
 								parameters.put("application_id", "NA");
 								parameters.put("loan", "NA");
 							}
-							String fpName = "NA";
+							String fpName = "Fund Provider";
 							try {
+//								here generating error 415
 								logger.info("Start Getting Fp Name By Fp Product Id =======>" + lastFpProductId);
 								ProposalMappingResponse activeProposal = proposalDetailsClient
 										.getActiveProposalByApplicationID(applicationId);
+								logger.info("Active Proposal:" + activeProposal.getData());
 								ProposalMappingRequest active = MultipleJSONObjectHelper.getObjectFromMap(
-										(LinkedHashMap<String, Object>) userResponse.getData(), ProposalMappingRequest.class);
-								
+										(LinkedHashMap<String, Object>) activeProposal.getData(),
+										ProposalMappingRequest.class);
+								logger.info("active proposal:" + active);
+								fpName = active.getFpProductName();
+								logger.info("FP name is:===" + fpName);
 								logger.info("active proposal:" + active.getFpProductId());
 								Object o[] = productMasterService.getUserDetailsByPrductId(active.getFpProductId());
 								if (o != null) {
@@ -531,7 +536,7 @@ public class AsyncComponent {
 							} catch (Exception e) {
 								logger.warn("Error while get fund provider name");
 								e.printStackTrace();
-								parameters.put("fp_name", "NA");
+								parameters.put("fp_name", fpName);
 							}
 
 							try {
@@ -557,19 +562,25 @@ public class AsyncComponent {
 								parameters.put("total_matches", 0);
 							}
 							String[] toIds = { request.getEmail() };
-							sendNotification(toIds, userId.toString(), parameters,
-									NotificationTemplate.FP_VIEW_MORE_DETAILS, fpName, false, null);
-							// SMS
-							LoanApplicationRequest respLoans = loanApplicationService.getLoanApplicationDetails(userId,
-									applicationId);
-							UsersRequest resp = getEmailMobile(respLoans.getNpUserId());
+							if (request.getEmail() != null && fpName != null && fsName != null) {
+								sendNotification(toIds, userId.toString(), parameters,
+										NotificationTemplate.FP_VIEW_MORE_DETAILS, fpName, false, null);
+							} else {
+								logger.info("Email id is null when sending email from AsynchComponent.");
+							}
 
-							sendSMSNotification(respLoans.getNpUserId().toString(), parameters,
-									NotificationAlias.SMS_VIEW_MORE_DETAILS, resp.getMobile());
-
-							logger.info(
-									"Exits, Successfully sent mail when fp view more details but fs not filled final details ---->"
-											+ request.getEmail());
+							try {
+								// SMS
+								UsersRequest resp = getEmailMobile(userId);
+								if (resp.getMobile() != null) {
+									sendSMSNotification(String.valueOf(userId), parameters,
+											NotificationAlias.SMS_VIEW_MORE_DETAILS, resp.getMobile());
+									logger.info("Sms Sent for fp view more details request:" + resp.getMobile());
+								}
+							} catch (Exception e) {
+								// TODO: handle exception
+								logger.info("mobile number is null when sending sms from AsynchComponent.:" + e);
+							}
 						}
 					}
 				}
