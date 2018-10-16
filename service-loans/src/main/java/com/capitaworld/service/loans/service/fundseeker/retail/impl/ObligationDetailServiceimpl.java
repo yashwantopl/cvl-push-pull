@@ -86,6 +86,9 @@ public class ObligationDetailServiceimpl implements ObligationDetailService {
 
         for (ObligationDetail detail : otherCurrentAssetDetails) {
             ObligationDetailRequest obligationDetailRequest = new ObligationDetailRequest();
+            obligationDetailRequest.setGrossAmountString(CommonUtils.convertValue(detail.getGrossAmount()));
+            obligationDetailRequest.setNetAmountString(CommonUtils.convertValue(detail.getNetAmount()));
+            obligationDetailRequest.setPeriodicityString(CommonUtils.convertValue(detail.getPeriodicity()));
             BeanUtils.copyProperties(detail, obligationDetailRequest);
             obligationDetailRequests.add(obligationDetailRequest);
         }
