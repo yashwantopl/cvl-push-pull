@@ -641,6 +641,7 @@ public class ScoringServiceImpl implements ScoringService{
 
         if(scoringRequestDetailList.size() > 0)
         {
+            logger.info("Getting Data for  =====> "+applicationId);
             scoringRequestDetail=scoringRequestDetailList.get(0);
             Gson gson = new Gson();
             scoringParameterRequest = gson.fromJson(scoringRequestDetail.getRequest(), ScoringParameterRequest.class);
@@ -658,6 +659,9 @@ public class ScoringServiceImpl implements ScoringService{
 
         if(CommonUtils.isObjectNullOrEmpty(scoringParameterRequest))
         {
+
+            logger.info("Data Fetched First Time  =====> "+applicationId);
+
             logger.info("----------------------------START EXISTING LOAN ------------------------------");
             logger.info("------------------------------------------------------------------------------");
             logger.info("------------------------------------------------------------------------------");
@@ -1818,6 +1822,8 @@ public class ScoringServiceImpl implements ScoringService{
             scoringRequestDetail.setCreatedDate(new Date());
             scoringRequestDetail.setIsActive(true);
             scoringRequestDetailRepository.save(scoringRequestDetail);
+
+            logger.info("Saving Data for  =====> "+applicationId);
         }
 
         scoringRequest.setScoringParameterRequest(scoringParameterRequest);
