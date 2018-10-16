@@ -17,14 +17,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.capitaworld.api.eligibility.model.CLEligibilityRequest;
+import com.capitaworld.api.eligibility.model.EligibililityRequest;
+import com.capitaworld.api.eligibility.model.EligibilityResponse;
+import com.capitaworld.client.eligibility.EligibilityClient;
 import com.capitaworld.connect.api.ConnectResponse;
 import com.capitaworld.connect.api.ConnectStage;
 import com.capitaworld.connect.client.ConnectClient;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.model.FinancialArrangementDetailResponseString;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
+import com.capitaworld.service.loans.model.retail.BankAccountHeldDetailsRequest;
+import com.capitaworld.service.loans.model.retail.FixedDepositsDetailsRequest;
+import com.capitaworld.service.loans.model.retail.ObligationDetailRequest;
+import com.capitaworld.service.loans.model.retail.OtherCurrentAssetDetailRequest;
 import com.capitaworld.service.loans.model.retail.PLRetailApplicantRequest;
+import com.capitaworld.service.loans.model.retail.ReferenceRetailDetailsRequest;
 import com.capitaworld.service.loans.model.retail.RetailApplicantIncomeRequest;
+import com.capitaworld.service.loans.model.retail.RetailFinalInfoRequest;
 import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.sanction.LoanDisbursementRepository;
@@ -32,8 +42,13 @@ import com.capitaworld.service.loans.repository.sanction.LoanSanctionRepository;
 import com.capitaworld.service.loans.service.common.PincodeDateService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.impl.CamReportPdfDetailsServiceImpl;
+import com.capitaworld.service.loans.service.fundseeker.retail.BankAccountHeldDetailService;
+import com.capitaworld.service.loans.service.fundseeker.retail.FixedDepositsDetailService;
+import com.capitaworld.service.loans.service.fundseeker.retail.ObligationDetailService;
+import com.capitaworld.service.loans.service.fundseeker.retail.OtherCurrentAssetDetailService;
 import com.capitaworld.service.loans.service.fundseeker.retail.PLCamReportService;
 import com.capitaworld.service.loans.service.fundseeker.retail.PlRetailApplicantService;
+import com.capitaworld.service.loans.service.fundseeker.retail.ReferenceRetailDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.retail.RetailApplicantIncomeService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
@@ -42,11 +57,18 @@ import com.capitaworld.service.matchengine.ProposalDetailsClient;
 import com.capitaworld.service.matchengine.model.MatchDisplayResponse;
 import com.capitaworld.service.matchengine.model.MatchRequest;
 import com.capitaworld.service.oneform.client.OneFormClient;
+import com.capitaworld.service.oneform.enums.CastCategory;
+import com.capitaworld.service.oneform.enums.DisabilityType;
+import com.capitaworld.service.oneform.enums.EducationStatusRetailMst;
 import com.capitaworld.service.oneform.enums.EmploymentStatusRetailMst;
 import com.capitaworld.service.oneform.enums.EmploymentWithPL;
 import com.capitaworld.service.oneform.enums.Gender;
+import com.capitaworld.service.oneform.enums.MaritalStatus;
 import com.capitaworld.service.oneform.enums.OccupationNatureNTB;
 import com.capitaworld.service.oneform.enums.PersonalLoanPurpose;
+import com.capitaworld.service.oneform.enums.ReligionRetailMst;
+import com.capitaworld.service.oneform.enums.ResidenceStatusRetailMst;
+import com.capitaworld.service.oneform.enums.ResidentialStatus;
 import com.capitaworld.service.oneform.enums.Title;
 import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
@@ -101,6 +123,24 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 	@Autowired
 	private ProposalDetailsRepository proposalDetailsRepository;
 	
+	@Autowired
+	private EligibilityClient eligibilityClient;
+	
+	@Autowired
+	private BankAccountHeldDetailService bankAccountHeldDetailsService;
+	
+	@Autowired
+	private FixedDepositsDetailService fixedDepositsDetailService;
+	
+	@Autowired
+	private OtherCurrentAssetDetailService otherCurrentAssetDetailsService;
+	
+	@Autowired
+	private ObligationDetailService obligationDetailService;
+	
+	@Autowired
+	private ReferenceRetailDetailsService referenceRetailDetailService;
+	
 	private static final Logger logger = LoggerFactory.getLogger(CamReportPdfDetailsServiceImpl.class);
 	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 	
@@ -136,7 +176,9 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 			map.put("employmentWith", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getEmploymentWith()) ? EmploymentWithPL.getById(plRetailApplicantRequest.getEmploymentWith()).getValue() : "");
 			map.put("employmentStatus", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getEmploymentStatus()) ? EmploymentStatusRetailMst.getById(plRetailApplicantRequest.getEmploymentStatus()).getValue() : "");
 			map.put("retailApplicantProfile", CommonUtils.printFields(plRetailApplicantRequest, null));
-			
+			map.put("educationQualification", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getEducationQualification()) ? EducationStatusRetailMst.getById(plRetailApplicantRequest.getEducationQualification()).getValue() : "");
+			map.put("maritalStatus", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getStatusId()) ? MaritalStatus.getById(plRetailApplicantRequest.getStatusId()).getValue() : "");
+			map.put("residenceType", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getResidenceType()) ? ResidenceStatusRetailMst.getById(plRetailApplicantRequest.getResidenceType()).getValue() : "");
 			//KEY VERTICAL FUNDING
 			List<Long> keyVerticalFundingId = new ArrayList<>();
 			if (!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getKeyVerticalFunding()))
@@ -220,7 +262,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 			e.printStackTrace();
 		}
 		
-		//INCOME DETAILS
+		//INCOME DETAILS - NET INCOME
 		try {
 			List<RetailApplicantIncomeRequest> retailApplicantIncomeDetail = retailApplicantIncomeService.getAll(applicationId);
 			if(!CommonUtils.isObjectNullOrEmpty(retailApplicantIncomeDetail)) {
@@ -325,33 +367,131 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 				e.printStackTrace();
 				logger.info("Error while getting scoring data");
 			}
-			
-		//PROPOSAL DATES
-		try {
-			List<Object[]> data = null;
-			List<Date[]> data1 = null;
-			data1 = loanDisbursementRepository.findDisbursementDateByApplicationId(applicationId);
-			if(data1 != null && !data1.isEmpty()) {
-				map.put("disbursmentDate", DATE_FORMAT.format(data1.get(0)));
-			}
-			
-			data1 = loanSanctionRepository.findSanctionDateByApplicationId(applicationId);
-			if(data1 != null && !data1.isEmpty()) {
-				map.put("sanctionDate", DATE_FORMAT.format(data1.get(0)));
-			}
-			
-			data = proposalDetailsRepository.findProposalDetailByApplicationId(applicationId);
-			if(data != null && !data.isEmpty()) {
-				String status = data.get(0) != null ? data.get(0)[1].toString() : "";
-				if(status.equals("3")) {
-					map.put("onHoldDate", data.get(0)[0]);
-				}else if(status.equals("4")) {
-					map.put("rejectedDate", data.get(0)[0]);
+		
+			//ELIGIBILITY DATA (ASSESSMENT TO LIMITS)
+			try{
+				EligibililityRequest eligibilityReq=new EligibililityRequest();
+				eligibilityReq.setApplicationId(applicationId);
+				eligibilityReq.setFpProductMappingId(productId);
+				EligibilityResponse eligibilityResp= eligibilityClient.corporateLoanData(eligibilityReq);
+				if(!CommonUtils.isObjectListNull(eligibilityResp,eligibilityResp.getData())){
+				map.put("assLimits",CommonUtils.convertToDoubleForXml(MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)eligibilityResp.getData(), CLEligibilityRequest.class), new HashMap<>()));
 				}
+			}catch (Exception e) {
+				e.printStackTrace();
+				logger.info("Error while getting Eligibility data");
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.info("Error while getting PROPOSAL DATES data");
+		/*************************************************************FINAL DETAILS***********************************************************/
+		
+		if(isFinalView) {
+			//PROPOSAL DATES
+			try {
+				List<Object[]> data = null;
+				List<Date[]> data1 = null;
+				data1 = loanDisbursementRepository.findDisbursementDateByApplicationId(applicationId);
+				if(data1 != null && !data1.isEmpty()) {
+					map.put("disbursmentDate", DATE_FORMAT.format(data1.get(0)));
+				}
+				data1 = loanSanctionRepository.findSanctionDateByApplicationId(applicationId);
+				if(data1 != null && !data1.isEmpty()) {
+					map.put("sanctionDate", DATE_FORMAT.format(data1.get(0)));
+				}
+				data = proposalDetailsRepository.findProposalDetailByApplicationId(applicationId);
+				if(data != null && !data.isEmpty()) {
+					String status = data.get(0) != null ? data.get(0)[1].toString() : "";
+					if(status.equals("3")) {
+						map.put("onHoldDate", data.get(0)[0]);
+					}else if(status.equals("4")) {
+						map.put("rejectedDate", data.get(0)[0]);
+					}
+				}
+				} catch (Exception e) {
+				e.printStackTrace();
+				logger.info("Error while getting PROPOSAL DATES data");
+			}
+			//RETAIL FINAL DETAILS
+			try {
+				RetailFinalInfoRequest retailFinalInfo = plRetailApplicantService.getFinal(userId, applicationId);
+				if(!CommonUtils.isObjectNullOrEmpty(retailFinalInfo)) {
+					map.put("religion", !CommonUtils.isObjectNullOrEmpty(retailFinalInfo.getReligion()) ? ReligionRetailMst.getById(retailFinalInfo.getReligion()).getValue() : "");
+					map.put("residentialStatus", !CommonUtils.isObjectNullOrEmpty(retailFinalInfo.getResidentialStatus()) ? ResidentialStatus.getById(retailFinalInfo.getResidentialStatus()).getValue() : "");
+					map.put("castCategory", !CommonUtils.isObjectNullOrEmpty(retailFinalInfo.getCastId()) ? CastCategory.getById(retailFinalInfo.getCastId()).getValue() : "");
+					map.put("diasablityType", !CommonUtils.isObjectNullOrEmpty(retailFinalInfo.getDisabilityType()) ? DisabilityType.getById(retailFinalInfo.getDisabilityType()) : "");
+					map.put("ddoOrganizationType", !CommonUtils.isObjectNullOrEmpty(retailFinalInfo.getDdoOrganizationType()) ? EmploymentWithPL.getById(retailFinalInfo.getDdoOrganizationType()) : "");
+					map.put("retailFinalDetails", retailFinalInfo);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				logger.info("Error while getting Final Information");
+			}
+			
+			//INCOME DETAILS - GROSS INCOME
+			try {
+				List<RetailApplicantIncomeRequest> retailApplicantIncomeDetail = retailApplicantIncomeService.getAll(applicationId);
+				if(!CommonUtils.isObjectNullOrEmpty(retailApplicantIncomeDetail)) {
+					map.put("grossIncomeDetails", retailApplicantIncomeDetail);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				logger.info("Error while getting income details");
+			}
+			
+			//BANK ACCOUNT HELD DETAILS
+			try {
+				List<BankAccountHeldDetailsRequest> bankAccountHeldDetails = bankAccountHeldDetailsService.getExistingLoanDetailList(applicationId, 1);
+				if(!CommonUtils.isObjectNullOrEmpty(bankAccountHeldDetails)) {
+					map.put("bankAccountHeld", bankAccountHeldDetails);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				logger.info("Error while getting bank account held details");
+			}
+			
+			//FIXED DEPOSITS DETAILS
+			try {
+				List<FixedDepositsDetailsRequest> fixedDepositeDetails = fixedDepositsDetailService.getFixedDepositsDetailList(applicationId, 1);
+				if(!CommonUtils.isObjectNullOrEmpty(fixedDepositeDetails)) {
+					map.put("fixedDepositeDetails", fixedDepositeDetails);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				logger.info("Error while getting fixed deposite details");
+			}
+			
+			//OTHER CURRENT ASSEST DETAILS
+			try {
+				List<OtherCurrentAssetDetailRequest> otherCurrentAssetDetails = otherCurrentAssetDetailsService.getOtherCurrentAssetDetailList(applicationId,1);
+				if(!CommonUtils.isObjectNullOrEmpty(otherCurrentAssetDetails)) {
+					map.put("otherCurrentAssetDetails", otherCurrentAssetDetails);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				logger.info("Error while getting other current asset details");
+			}
+			
+			//OBLIGATION DETAILS
+			try {
+				List<ObligationDetailRequest> obligationRequest = obligationDetailService.getObligationDetailList(applicationId,1);
+				if(!CommonUtils.isObjectNullOrEmpty(obligationRequest)) {
+					map.put("obligationDetails", obligationRequest);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				logger.info("Error while getting obligation details");
+			}
+			
+			//REFERENCES DETAILS
+			try {
+				List<ReferenceRetailDetailsRequest> referenceDetails = referenceRetailDetailService.getReferenceRetailDetailList(applicationId,1);
+				if(!CommonUtils.isObjectNullOrEmpty(referenceDetails)) {
+					map.put("referenceDetails", referenceDetails);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				logger.info("Error while getting reference details");
+			}
+			
+			
 		}
 		
 		return map;
