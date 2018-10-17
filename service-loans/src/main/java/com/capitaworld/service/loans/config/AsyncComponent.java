@@ -116,7 +116,7 @@ public class AsyncComponent {
 			if (totalApplication > 0) {
 				if (totalApplication == 1) {
 					logger.info("Call method for sent mail if profile details filled or not ====>" + totalApplication);
-					sentMailWhenUserLogoutWithoutFillingFirstProfileOrPrimaryData(userId);
+					/*sentMailWhenUserLogoutWithoutFillingFirstProfileOrPrimaryData(userId);*/
 					return;
 				} else {
 					logger.info("Exits,User has more then one application ====>" + totalApplication);
