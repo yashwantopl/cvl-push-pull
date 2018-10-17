@@ -10,6 +10,6 @@ import java.util.List;
 
 public interface ScoringRequestDetailRepository extends JpaRepository<ScoringRequestDetail, Long> {
 
-    @Query("from ScoringRequestDetail where id=:applicationId and isActive = true ")
-    public List<ScoringRequestDetail> getScoringRequestDetailByIdAndIsActive(@Param("applicationId")Long applicationId);
+    @Query("from ScoringRequestDetail where applicationId=:applicationId and isActive = true ")
+    public List<ScoringRequestDetail> getScoringRequestDetailByApplicationIdAndIsActive(@Param("applicationId")Long applicationId);
 }
