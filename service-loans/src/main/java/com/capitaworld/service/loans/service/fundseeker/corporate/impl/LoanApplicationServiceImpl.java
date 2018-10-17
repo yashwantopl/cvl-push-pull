@@ -4715,7 +4715,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		gatewayRequest.setBusinessTypeId(businessTypeId);
 
 		Boolean status = null;
-		// status = gatewayClient.personalLoanInPrinciple(gatewayRequest);
+		status = gatewayClient.personalLoanInPrinciple(gatewayRequest);
 		logger.info("In-Principle send for Personal Loan Status=====>" + status);
 		// ====================================================================
 
