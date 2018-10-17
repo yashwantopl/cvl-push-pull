@@ -113,9 +113,9 @@ public class AsyncComponent {
 			Long totalApplication = loanApplicationService.getTotalUserApplication(userId);
 			if (totalApplication > 0) {
 				if (totalApplication == 1) {
-					logger.info("Call method for sent mail if profile details filled or not ====>" + totalApplication);
+//					logger.info("Call method for sent mail if profile details filled or not ====>" + totalApplication);
 					sentMailWhenUserLogoutWithoutFillingFirstProfileOrPrimaryData(userId);
-					return;
+//					return;
 				} else {
 					logger.info("Exits,User has more then one application ====>" + totalApplication);
 					return;
@@ -153,7 +153,7 @@ public class AsyncComponent {
 	 *               sendMailWhenUserHasNoApplication method
 	 */
 	@Async
-	private void sentMailWhenUserLogoutWithoutFillingFirstProfileOrPrimaryData(Long userId) {
+	public void sentMailWhenUserLogoutWithoutFillingFirstProfileOrPrimaryData(Long userId) {
 		logger.info(
 				"Start sent mail process for user logout withour filled first application profile or primary details");
 		try {
