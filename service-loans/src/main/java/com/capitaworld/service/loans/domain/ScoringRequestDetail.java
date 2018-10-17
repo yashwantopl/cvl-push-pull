@@ -14,6 +14,9 @@ public class ScoringRequestDetail implements Serializable {
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name="application_id")
+    private Long applicationId;
+
     @Column(name="request")
     private String request;
 
@@ -34,6 +37,14 @@ public class ScoringRequestDetail implements Serializable {
     @Column(name = "modified_date")
     private Date modifiedDate;
 
+
+    public Long getApplicationId() {
+        return applicationId;
+    }
+
+    public void setApplicationId(Long applicationId) {
+        this.applicationId = applicationId;
+    }
 
     public Long getId() {
         return id;

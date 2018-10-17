@@ -627,9 +627,7 @@ public class ScoringServiceImpl implements ScoringService{
     @Override
     public ResponseEntity<LoansResponse> calculateExistingBusinessScoring(ScoringRequestLoans scoringRequestLoans) {
 
-        logger.info(":::::::::::::::::::::::::::::::::::::::::::::::::START:::::::::::::::::::::::::::::::::::::::::::::::::::::");
-
-        ScoringParameterRequest scoringParameterRequest=new ScoringParameterRequest();
+        ScoringParameterRequest scoringParameterRequest=new ScoringParameterRequest();;
 
         Long scoreModelId=scoringRequestLoans.getScoringModelId();
         Long applicationId=scoringRequestLoans.getApplicationId();
@@ -637,16 +635,17 @@ public class ScoringServiceImpl implements ScoringService{
 
         ////
 
-        List<ScoringRequestDetail> scoringRequestDetailList = scoringRequestDetailRepository.getScoringRequestDetailByIdAndIsActive(applicationId);
+        List<ScoringRequestDetail> scoringRequestDetailList = scoringRequestDetailRepository.getScoringRequestDetailByApplicationIdAndIsActive(applicationId);
 
-        ScoringRequestDetail scoringRequestDetail=null;
+
+        ScoringRequestDetail scoringRequestDetailSaved=new ScoringRequestDetail();
 
         if(scoringRequestDetailList.size() > 0)
         {
-            logger.info("Getting Data for  =====> "+applicationId);
-            scoringRequestDetail=scoringRequestDetailList.get(0);
+            logger.info("Getting Old Scoring request Data for  =====> "+applicationId);
+            scoringRequestDetailSaved=scoringRequestDetailList.get(0);
             Gson gson = new Gson();
-            scoringParameterRequest = gson.fromJson(scoringRequestDetail.getRequest(), ScoringParameterRequest.class);
+            scoringParameterRequest = gson.fromJson(scoringRequestDetailSaved.getRequest(), ScoringParameterRequest.class);
         }
 
 
@@ -659,10 +658,10 @@ public class ScoringServiceImpl implements ScoringService{
         scoringRequest.setUserId(scoringRequestLoans.getUserId());
         scoringRequest.setBusinessTypeId(ScoreParameter.BusinessType.EXISTING_BUSINESS);
 
-        if(CommonUtils.isObjectNullOrEmpty(scoringParameterRequest))
+        if(!(scoringRequestDetailList.size() > 0))
         {
 
-            logger.info("Data Fetched First Time  =====> "+applicationId);
+            logger.info("Scoring Data Fetched First Time  =====> "+applicationId);
 
             logger.info("----------------------------START EXISTING LOAN ------------------------------");
             logger.info("------------------------------------------------------------------------------");
@@ -1818,14 +1817,22 @@ public class ScoringServiceImpl implements ScoringService{
                 logger.info("----------------------------END-----------------------------------------------");
             }
             Gson g = new Gson();
-            ScoringRequestDetail scoringRequestDetail1=new ScoringRequestDetail();
-            scoringRequestDetail.setId(applicationId);
-            scoringRequestDetail.setRequest(g.toJson(scoringParameterRequest));
-            scoringRequestDetail.setCreatedDate(new Date());
-            scoringRequestDetail.setIsActive(true);
-            scoringRequestDetailRepository.save(scoringRequestDetail);
+            ScoringRequestDetail scoringRequestDetail=new ScoringRequestDetail();
 
-            logger.info("Saving Data for  =====> "+applicationId);
+            try
+            {
+                scoringRequestDetail.setApplicationId(applicationId);
+                scoringRequestDetail.setRequest(g.toJson(scoringParameterRequest));
+                scoringRequestDetail.setCreatedDate(new Date());
+                scoringRequestDetail.setIsActive(true);
+                scoringRequestDetailRepository.save(scoringRequestDetail);
+
+                logger.info("Saving Scoring Request Data for  =====> "+applicationId);
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
         }
 
         scoringRequest.setScoringParameterRequest(scoringParameterRequest);
