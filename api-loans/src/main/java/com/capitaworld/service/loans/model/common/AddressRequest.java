@@ -76,4 +76,10 @@ public class AddressRequest implements Serializable {
 		this.landMark = landMark;
 	}
 
+	@Override
+	public String toString() {
+		return "AddressRequest [streetAddress=" + streetAddress + ", premiseNo=" + premiseNo + ", landMark=" + landMark
+				+ ", region=" + region + ", addressType=" + addressType + ", city=" + city + ", postalCode="
+				+ postalCode + "]";
+	}
 }
