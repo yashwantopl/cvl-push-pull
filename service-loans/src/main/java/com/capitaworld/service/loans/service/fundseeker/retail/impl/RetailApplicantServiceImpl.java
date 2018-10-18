@@ -321,17 +321,32 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 			cibilFullFillOfferRequest.setAdhaar(applicantDetail.getAadharNumber());
 			AddressRequest address = new AddressRequest();
 			address.setAddressType("01"); // PermenantType
-			address.setStreetAddress(applicantDetail.getPermanentStreetName());
-			address.setPremiseNo(applicantDetail.getPermanentPremiseNumberName());
-			address.setLandMark(applicantDetail.getPermanentLandMark());
-			address.setCity(CommonDocumentUtils.getCity(applicantDetail.getPermanentCityId(), oneFormClient));
-			if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getPermanentPincode())) {
-				address.setPostalCode(applicantDetail.getPermanentPincode().toString());
+			if(CommonUtils.isObjectNullOrEmpty(applicantDetail.getPermanentStateId())){
+				address.setStreetAddress(applicantDetail.getAddressStreetName());
+				address.setPremiseNo(applicantDetail.getAddressPremiseName());
+				address.setLandMark(applicantDetail.getAddressLandmark());
+				address.setCity(CommonDocumentUtils.getCity(applicantDetail.getAddressCity(), oneFormClient));
+				if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getAddressPincode())) {
+					address.setPostalCode(applicantDetail.getAddressPincode().toString());
+				}
+				if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getAddressState())) {
+					address.setRegion(CommonDocumentUtils.getStateCode(applicantDetail.getAddressState().longValue(),
+							oneFormClient));
+				}
+			}else{
+				address.setStreetAddress(applicantDetail.getPermanentStreetName());
+				address.setPremiseNo(applicantDetail.getPermanentPremiseNumberName());
+				address.setLandMark(applicantDetail.getPermanentLandMark());
+				address.setCity(CommonDocumentUtils.getCity(applicantDetail.getPermanentCityId(), oneFormClient));
+				if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getPermanentPincode())) {
+					address.setPostalCode(applicantDetail.getPermanentPincode().toString());
+				}
+				if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getPermanentStateId())) {
+					address.setRegion(CommonDocumentUtils.getStateCode(applicantDetail.getPermanentStateId().longValue(),
+							oneFormClient));
+				}	
 			}
-			if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getPermanentStateId())) {
-				address.setRegion(CommonDocumentUtils.getStateCode(applicantDetail.getPermanentStateId().longValue(),
-						oneFormClient));
-			}
+			
 			cibilFullFillOfferRequest.setAddress(address);
 			cibilFullFillOfferRequest.setDateOfBirth(applicantDetail.getBirthDate());
 			cibilFullFillOfferRequest.setForName(applicantDetail.getFirstName());
