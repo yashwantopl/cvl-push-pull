@@ -271,11 +271,11 @@ public interface LoanApplicationRepository extends JpaRepository<LoanApplication
 	public Double getTenure(@Param("id") Long applicationId);
 
 	//fp-maker - new proposal - pagination
-	@Query(value = "select lm.application_id from fs_loan_application_master lm inner join proposal_details pd on pd.application_id=lm.application_id where pd.branch_id=:branchId and lm.status =:id and lm.np_org_id=:npOrgId and lm.payment_status=:paymentStatus and pd.is_active=true and lm.is_active = true order by lm.modified_date desc \n#pageable\n",nativeQuery = true)
+	@Query(value = "select lm.application_id from fs_loan_application_master lm inner join proposal_details pd on pd.application_id=lm.application_id where pd.branch_id=:branchId and lm.status =:id and lm.np_org_id=:npOrgId and (lm.payment_status=:paymentStatus or lm.payment_status='ByPass') and pd.is_active=true and lm.is_active = true order by lm.modified_date desc \n#pageable\n",nativeQuery = true)
 	public List<BigInteger> getFPProposalsByApplicationStatusAndNpOrgIdForPagination(Pageable pageable, @Param("id") Long applicationStatusId, @Param("npOrgId")Long npOrgId, @Param("paymentStatus")String paymentStatus, @Param("branchId") Long branchId);
 
 	//fp-maker - new proposal - count
-	@Query(value = "select lm.application_id from fs_loan_application_master lm inner join proposal_details pd on pd.application_id=lm.application_id where pd.branch_id=:branchId and lm.status =:id and lm.np_org_id=:npOrgId and lm.payment_status=:paymentStatus and pd.is_active=true and lm.is_active = true",nativeQuery = true)
+	@Query(value = "select lm.application_id from fs_loan_application_master lm inner join proposal_details pd on pd.application_id=lm.application_id where pd.branch_id=:branchId and lm.status =:id and lm.np_org_id=:npOrgId and (lm.payment_status=:paymentStatus or lm.payment_status='ByPass') and pd.is_active=true and lm.is_active = true",nativeQuery = true)
 	public List<BigInteger> getFPMakerNewProposalCount(@Param("id") Long applicationStatusId, @Param("npOrgId")Long npOrgId, @Param("paymentStatus")String paymentStatus, @Param("branchId") Long branchId);
 
 	//fp-maker-assigned to checker - pagination
