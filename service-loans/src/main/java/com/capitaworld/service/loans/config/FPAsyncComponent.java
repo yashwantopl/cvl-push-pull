@@ -1471,14 +1471,18 @@ public class FPAsyncComponent {
 		
 		String mobile = signUpUser.getMobile();
 		mailParameter.put("mobile_number", mobile != null ? mobile : "NA");
-		
+		mailParameter.put("address", address);
 		String emailSubject = "Maker Assigned - For Quick Business Loan Approval ";
 
 		try {
-			createNotificationForEmail(signUpUser.getEmail(), applicationRequest.getUserId().toString(),
-					mailParameter, NotificationAlias.EMAIL_FS_ACCEPTED_BY_MAKER, emailSubject);
-			logger.info("Email send to fs when maker accepted porposal");
-			System.out.println("Email send to fs when maker accepted porposal");
+			if(fsName!=null&& address!=null&&mobile!=null&&assignedMakerName!=null&&applicationRequest.getId()!=null) {
+				createNotificationForEmail(signUpUser.getEmail(), applicationRequest.getUserId().toString(),
+						mailParameter, NotificationAlias.EMAIL_FS_ACCEPTED_BY_MAKER, emailSubject);
+				logger.info("Email send to fs when maker accepted porposal");
+				System.out.println("Email send to fs when maker accepted porposal");
+			}else {
+				logger.error("Email is not sent becouse of required values are null");
+			}
 		} catch (Exception e) {
 			logger.info("Error in sending email to fs when porposal asigned to maker :" + e);
 			e.printStackTrace();
