@@ -62,7 +62,6 @@ import com.capitaworld.service.matchengine.MatchEngineClient;
 import com.capitaworld.service.matchengine.model.MatchDisplayResponse;
 import com.capitaworld.service.matchengine.model.MatchRequest;
 
-
 @Component
 public class AsyncComponent {
 	private static final Logger logger = LoggerFactory.getLogger(AsyncComponent.class.getName());
@@ -78,7 +77,7 @@ public class AsyncComponent {
 
 	@Autowired
 	private NotificationClient notificationClient;
-	
+
 	@Autowired
 	private MatchEngineClient matchEngineClient;
 
@@ -96,7 +95,6 @@ public class AsyncComponent {
 
 	@Autowired
 	private OneFormClient oneFormClient;
-	
 
 	private static final String EMAIL_ADDRESS_FROM = "com.capitaworld.mail.url";
 
@@ -115,9 +113,9 @@ public class AsyncComponent {
 			Long totalApplication = loanApplicationService.getTotalUserApplication(userId);
 			if (totalApplication > 0) {
 				if (totalApplication == 1) {
-					logger.info("Call method for sent mail if profile details filled or not ====>" + totalApplication);
+//					logger.info("Call method for sent mail if profile details filled or not ====>" + totalApplication);
 					sentMailWhenUserLogoutWithoutFillingFirstProfileOrPrimaryData(userId);
-					return;
+//					return;
 				} else {
 					logger.info("Exits,User has more then one application ====>" + totalApplication);
 					return;
@@ -155,7 +153,7 @@ public class AsyncComponent {
 	 *               sendMailWhenUserHasNoApplication method
 	 */
 	@Async
-	private void sentMailWhenUserLogoutWithoutFillingFirstProfileOrPrimaryData(Long userId) {
+	public void sentMailWhenUserLogoutWithoutFillingFirstProfileOrPrimaryData(Long userId) {
 		logger.info(
 				"Start sent mail process for user logout withour filled first application profile or primary details");
 		try {
@@ -498,7 +496,7 @@ public class AsyncComponent {
 						if (!CommonUtils.isObjectNullOrEmpty(request)) {
 							Map<String, Object> parameters = new HashMap<String, Object>();
 							String fsName = loanApplicationService.getFsApplicantName(applicationId);
-							parameters.put("fs_name", !CommonUtils.isObjectNullOrEmpty(fsName) ? fsName : "NA");
+							parameters.put("fs_name", !CommonUtils.isObjectNullOrEmpty(fsName) ? fsName : "Sir/Madam");
 							LoanApplicationRequest loanBasicDetails = loanApplicationService
 									.getLoanBasicDetails(applicationId, userId);
 							if (loanBasicDetails != null) {
@@ -511,14 +509,19 @@ public class AsyncComponent {
 								parameters.put("application_id", "NA");
 								parameters.put("loan", "NA");
 							}
-							String fpName = "NA";
+							String fpName = "Fund Provider";
 							try {
+//								here generating error 415
 								logger.info("Start Getting Fp Name By Fp Product Id =======>" + lastFpProductId);
 								ProposalMappingResponse activeProposal = proposalDetailsClient
 										.getActiveProposalByApplicationID(applicationId);
+								logger.info("Active Proposal:" + activeProposal.getData());
 								ProposalMappingRequest active = MultipleJSONObjectHelper.getObjectFromMap(
-										(LinkedHashMap<String, Object>) userResponse.getData(), ProposalMappingRequest.class);
-								
+										(LinkedHashMap<String, Object>) activeProposal.getData(),
+										ProposalMappingRequest.class);
+								logger.info("active proposal:" + active);
+								fpName = active.getFpProductName();
+								logger.info("FP name is:===" + fpName);
 								logger.info("active proposal:" + active.getFpProductId());
 								Object o[] = productMasterService.getUserDetailsByPrductId(active.getFpProductId());
 								if (o != null) {
@@ -531,7 +534,7 @@ public class AsyncComponent {
 							} catch (Exception e) {
 								logger.warn("Error while get fund provider name");
 								e.printStackTrace();
-								parameters.put("fp_name", "NA");
+								parameters.put("fp_name", fpName);
 							}
 
 							try {
@@ -557,19 +560,25 @@ public class AsyncComponent {
 								parameters.put("total_matches", 0);
 							}
 							String[] toIds = { request.getEmail() };
-							sendNotification(toIds, userId.toString(), parameters,
-									NotificationTemplate.FP_VIEW_MORE_DETAILS, fpName, false, null);
-							// SMS
-							LoanApplicationRequest respLoans = loanApplicationService.getLoanApplicationDetails(userId,
-									applicationId);
-							UsersRequest resp = getEmailMobile(respLoans.getNpUserId());
+							if (request.getEmail() != null && fpName != null && fsName != null) {
+								sendNotification(toIds, userId.toString(), parameters,
+										NotificationTemplate.FP_VIEW_MORE_DETAILS, fpName, false, null);
+							} else {
+								logger.info("Email id is null when sending email from AsynchComponent.");
+							}
 
-							sendSMSNotification(respLoans.getNpUserId().toString(), parameters,
-									NotificationAlias.SMS_VIEW_MORE_DETAILS, resp.getMobile());
-
-							logger.info(
-									"Exits, Successfully sent mail when fp view more details but fs not filled final details ---->"
-											+ request.getEmail());
+							try {
+								// SMS
+								UsersRequest resp = getEmailMobile(userId);
+								if (resp.getMobile() != null) {
+									sendSMSNotification(String.valueOf(userId), parameters,
+											NotificationAlias.SMS_VIEW_MORE_DETAILS, resp.getMobile());
+									logger.info("Sms Sent for fp view more details request:" + resp.getMobile());
+								}
+							} catch (Exception e) {
+								// TODO: handle exception
+								logger.info("mobile number is null when sending sms from AsynchComponent.:" + e);
+							}
 						}
 					}
 				}
@@ -1006,7 +1015,7 @@ public class AsyncComponent {
 		}
 		return null;
 	}
-	
+
 	@Async
 	public void saveOneformMapping(Long applicationId) {
 		try {
@@ -1015,8 +1024,9 @@ public class AsyncComponent {
 			req.setApplicationId(applicationId);
 			req.setProductId(1l);
 			MatchDisplayResponse response = matchEngineClient.displayMatchesOfCorporate(req);
-			if(!CommonUtils.isObjectNullOrEmpty(response)) {
-				logger.info("RESPONSE WHILE SAVE MATCHES JSON WHILE ONEFORM SUBMIT-----------> " +response.getStatus() + "-----> "+ response.getMessage());
+			if (!CommonUtils.isObjectNullOrEmpty(response)) {
+				logger.info("RESPONSE WHILE SAVE MATCHES JSON WHILE ONEFORM SUBMIT-----------> " + response.getStatus()
+						+ "-----> " + response.getMessage());
 			} else {
 				logger.info("RESPONSE WHILE SAVE MATCHES JSON WHILE ONEFORM SUBMIT --------------> NULL");
 			}
@@ -1024,8 +1034,7 @@ public class AsyncComponent {
 			logger.info("EXCEPTION THROW WHILE SAVE MATCHES JSON WHILE SUBMIT ONEFORM DETAILS");
 			e.printStackTrace();
 		}
-		
+
 	}
 
-	
 }

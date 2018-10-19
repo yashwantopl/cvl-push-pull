@@ -112,6 +112,8 @@ public class FixedDepositsDetailServiceImpl implements FixedDepositsDetailServic
 
 			for (FixedDepositsDetail detail : fixedDepositsDetails) {
 				FixedDepositsDetailsRequest fixedDepositsDetailRequest = new FixedDepositsDetailsRequest();
+				fixedDepositsDetailRequest.setAmountString(CommonUtils.convertValue(detail.getAmount()));
+				fixedDepositsDetailRequest.setRateString(CommonUtils.convertValue(detail.getRate()));
 				BeanUtils.copyProperties(detail, fixedDepositsDetailRequest);
 				if(!CommonUtils.isObjectNullOrEmpty(detail.getMaturityDate()))
 				{
