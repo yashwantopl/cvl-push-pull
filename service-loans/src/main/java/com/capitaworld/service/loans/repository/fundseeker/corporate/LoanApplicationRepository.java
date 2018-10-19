@@ -328,11 +328,11 @@ public interface LoanApplicationRepository extends JpaRepository<LoanApplication
 
 	// get list of matched fpProduct based on application id
 	@Query(value = "SELECT  score_model_id  FROM  fp_product_master WHERE  fp_product_id IN (select fp_product_id from application_product_audit where application_id=:applicationId and stage_id=:stageId and is_active = true) ",nativeQuery = true)
-	public List<BigInteger> getFpProductListByApplicationIdAndStageId(@Param("applicationId") Long applicationId,@Param("stageId") Long stageId);
+	public List<BigInteger> getScoringIdListByApplicationIdAndStageId(@Param("applicationId") Long applicationId,@Param("stageId") Long stageId);
 
 	// get list of matched fpProduct based on application id on one form
-	@Query(value = "SELECT fp_product_id FROM fp_product_master WHERE is_active=1 AND is_parameter_filled=1 AND (product_id =1  or product_id =2 or product_id =16 ) AND (business_type_id IS NULL OR business_type_id=1)",nativeQuery = true)
-	public List<BigInteger> getFpProductListByApplicationIdOnOneForm();
+	@Query(value = "SELECT score_model_id FROM fp_product_master WHERE is_active=1 AND is_parameter_filled=1 AND (product_id =1  or product_id =2 or product_id =16 ) AND (business_type_id IS NULL OR business_type_id=1)",nativeQuery = true)
+	public List<BigInteger> getScoringIdListByApplicationIdOnOneForm();
 	
 	//fwt busynessTypeId by applicationId
 	@Query("select lm.businessTypeId from LoanApplicationMaster lm where lm.id =:applicationId and lm.isActive = true ")
