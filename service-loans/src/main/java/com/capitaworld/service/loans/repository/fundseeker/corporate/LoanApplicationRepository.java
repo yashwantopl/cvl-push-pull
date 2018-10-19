@@ -332,7 +332,7 @@ public interface LoanApplicationRepository extends JpaRepository<LoanApplication
 
 	// get list of matched fpProduct based on application id on one form
 	@Query(value = "SELECT fp_product_id FROM fp_product_master WHERE is_active=1 AND is_parameter_filled=1 AND (product_id =1  or product_id =2 or product_id =16 ) AND (business_type_id IS NULL OR business_type_id=1))",nativeQuery = true)
-	public List<BigInteger> getFpProductListByApplicationIdOnOneForm(@Param("applicationId") Long applicationId);
+	public List<BigInteger> getFpProductListByApplicationIdOnOneForm();
 	
 	//fwt busynessTypeId by applicationId
 	@Query("select lm.businessTypeId from LoanApplicationMaster lm where lm.id =:applicationId and lm.isActive = true ")
