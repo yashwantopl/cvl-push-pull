@@ -62,7 +62,6 @@ import com.capitaworld.service.matchengine.MatchEngineClient;
 import com.capitaworld.service.matchengine.model.MatchDisplayResponse;
 import com.capitaworld.service.matchengine.model.MatchRequest;
 
-
 @Component
 public class AsyncComponent {
 	private static final Logger logger = LoggerFactory.getLogger(AsyncComponent.class.getName());
@@ -78,7 +77,7 @@ public class AsyncComponent {
 
 	@Autowired
 	private NotificationClient notificationClient;
-	
+
 	@Autowired
 	private MatchEngineClient matchEngineClient;
 
@@ -96,7 +95,6 @@ public class AsyncComponent {
 
 	@Autowired
 	private OneFormClient oneFormClient;
-	
 
 	private static final String EMAIL_ADDRESS_FROM = "com.capitaworld.mail.url";
 
@@ -116,7 +114,7 @@ public class AsyncComponent {
 			if (totalApplication > 0) {
 				if (totalApplication == 1) {
 					logger.info("Call method for sent mail if profile details filled or not ====>" + totalApplication);
-					sentMailWhenUserLogoutWithoutFillingFirstProfileOrPrimaryData(userId);
+					/*sentMailWhenUserLogoutWithoutFillingFirstProfileOrPrimaryData(userId);*/
 					return;
 				} else {
 					logger.info("Exits,User has more then one application ====>" + totalApplication);
@@ -155,7 +153,7 @@ public class AsyncComponent {
 	 *               sendMailWhenUserHasNoApplication method
 	 */
 	@Async
-	private void sentMailWhenUserLogoutWithoutFillingFirstProfileOrPrimaryData(Long userId) {
+	public void sentMailWhenUserLogoutWithoutFillingFirstProfileOrPrimaryData(Long userId) {
 		logger.info(
 				"Start sent mail process for user logout withour filled first application profile or primary details");
 		try {
@@ -1017,7 +1015,7 @@ public class AsyncComponent {
 		}
 		return null;
 	}
-	
+
 	@Async
 	public void saveOneformMapping(Long applicationId) {
 		try {
@@ -1026,8 +1024,9 @@ public class AsyncComponent {
 			req.setApplicationId(applicationId);
 			req.setProductId(1l);
 			MatchDisplayResponse response = matchEngineClient.displayMatchesOfCorporate(req);
-			if(!CommonUtils.isObjectNullOrEmpty(response)) {
-				logger.info("RESPONSE WHILE SAVE MATCHES JSON WHILE ONEFORM SUBMIT-----------> " +response.getStatus() + "-----> "+ response.getMessage());
+			if (!CommonUtils.isObjectNullOrEmpty(response)) {
+				logger.info("RESPONSE WHILE SAVE MATCHES JSON WHILE ONEFORM SUBMIT-----------> " + response.getStatus()
+						+ "-----> " + response.getMessage());
 			} else {
 				logger.info("RESPONSE WHILE SAVE MATCHES JSON WHILE ONEFORM SUBMIT --------------> NULL");
 			}
@@ -1035,8 +1034,7 @@ public class AsyncComponent {
 			logger.info("EXCEPTION THROW WHILE SAVE MATCHES JSON WHILE SUBMIT ONEFORM DETAILS");
 			e.printStackTrace();
 		}
-		
+
 	}
 
-	
 }

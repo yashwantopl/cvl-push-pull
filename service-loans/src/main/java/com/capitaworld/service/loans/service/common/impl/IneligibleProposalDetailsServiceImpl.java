@@ -15,17 +15,20 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.capitaworld.service.loans.domain.fundseeker.IneligibleProposalDetails;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
+import com.capitaworld.service.loans.model.Address;
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
 import com.capitaworld.service.loans.model.InEligibleProposalDetailsRequest;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.model.ProposalDetailsAdminRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
+import com.capitaworld.service.loans.model.retail.RetailApplicantRequest;
 import com.capitaworld.service.loans.repository.fundseeker.IneligibleProposalDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
 import com.capitaworld.service.loans.service.common.IneligibleProposalDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.DirectorBackgroundDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
+import com.capitaworld.service.loans.service.fundseeker.retail.RetailApplicantService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
@@ -78,7 +81,10 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 
 	@Autowired
 	private CorporateApplicantService corporateApplicantService;
-	
+
+	@Autowired
+	private RetailApplicantService retailApplicantSercive;
+
 	@Autowired
 	private PrimaryCorporateDetailRepository primaryCorporateDetailRepository;
 
@@ -89,7 +95,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 		try {
 			IneligibleProposalDetails ineligibleProposalDetails = new IneligibleProposalDetails();
 			BeanUtils.copyProperties(inEligibleProposalDetailsRequest, ineligibleProposalDetails);
-			//Set Created Date.
+			// Set Created Date.
 			ineligibleProposalDetails.setCreatedDate(new Date());
 			ineligibleProposalDetailsRepository.save(ineligibleProposalDetails);
 			return true;
@@ -107,7 +113,8 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 			try {
 				Map<String, Object> notificationParams = new HashMap<>();
 				// Sending mail to FS who become Ineligible
-//			 1 Get Details of FS_NAME,Bank name, Branch name and Address based on application Id
+				// 1 Get Details of FS_NAME,Bank name, Branch name and Address based on
+				// application Id
 				LoanApplicationRequest applicationRequest = null;
 				try {
 					applicationRequest = loanApplicationService.getFromClient(applicationId);
@@ -117,8 +124,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 				}
 				// For getting Fund Seeker's Name
 				if (applicationRequest != null) {
-					notificationParams = getFsNameFromDirectorBeckgroundDetailsForNTBandExisting(applicationId,
-							applicationRequest);
+					notificationParams = getFsNameAndDetailsForAllProduct(applicationId, applicationRequest);
 					notificationParams = getBankAndBranchDetails(userOrgId, branchId, notificationParams);
 
 					UserResponse response = null;
@@ -138,42 +144,37 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 							e.printStackTrace();
 						}
 					}
-					//==================For getting Organisation Name================================= 
-					
+					// ==================For getting Organisation========Name
 					UserResponse userResponse = null;
 					Map<String, Object> usersResp = null;
 					UserOrganisationRequest organisationRequest = null;
 					String organisationName = null;
 					try {
-						userResponse = userClient.getOrgNameByOrgId(Long.valueOf(userOrgId.toString()));	
-					}
-					catch(Exception e) {
+						userResponse = userClient.getOrgNameByOrgId(Long.valueOf(userOrgId.toString()));
+					} catch (Exception e) {
 						logger.info("Exception occured while getting Organisation details by orgId");
 						e.printStackTrace();
 					}
-                    
 					try {
-						if(!CommonUtils.isObjectNullOrEmpty(userResponse)) {
+						if (!CommonUtils.isObjectNullOrEmpty(userResponse)) {
 							usersResp = (Map<String, Object>) userResponse.getData();
 							organisationRequest = MultipleJSONObjectHelper.getObjectFromMap(usersResp,
 									UserOrganisationRequest.class);
-							organisationName = organisationRequest.getOrganisationName(); 
+							organisationName = organisationRequest.getOrganisationName();
 						}
-						
-					}
-					catch(Exception e) {
+					} catch (Exception e) {
 						logger.info("Exception occured while getting Organisation details by orgId");
 						e.printStackTrace();
-						
+
 					}
-					
-					//================================================================================
-					notificationParams.put("bank_name", organisationName != null ? organisationName : "NA");
 
+					// ===FS=============================================================================
+					notificationParams.put("bank_name", organisationName);
 					String subject = "Manual Application : " + applicationId.toString();
-					createNotificationForEmail(signUpUser.getEmail(), applicationRequest.getUserId().toString(),
-							notificationParams, NotificationAlias.EMAIL_FS_WHEN_IN_ELIGIBLE, subject);
-
+					if (organisationName != null) {
+						createNotificationForEmail(signUpUser.getEmail(), applicationRequest.getUserId().toString(),
+								notificationParams, NotificationAlias.EMAIL_FS_WHEN_IN_ELIGIBLE, subject);
+					}
 					// ===========================================================================================
 					// 2nd email Step2 Get Details of Bank branch --- Sending mail to Branch
 					// Checker/Maker/BO
@@ -186,30 +187,39 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 					mailParameters.put("mobile_no", signUpUser.getMobile() != null ? signUpUser.getMobile() : "NA");
 					mailParameters.put("address",
 							notificationParams.get("address") != null ? notificationParams.get("address") : "NA");
-				
-					//=========================For getting Loan Type===================================
-					PrimaryCorporateDetail primaryCorporateDetail = primaryCorporateDetailRepository.findOneByApplicationIdId(applicationId);
-					if(!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail)){
-						if(!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getPurposeOfLoanId())){
-							String loanType = PurposeOfLoan.getById(primaryCorporateDetail.getPurposeOfLoanId()).getValue();
-							if("Asset Acquisition".equals(loanType)){
-								mailParameters.put("loan_type","Term Loan");	
+					if (applicationRequest.getBusinessTypeId() == CommonUtils.BusinessType.RETAIL_PERSONAL_LOAN
+							.getId()) {
+						//get loan amount and  loan type from loan applicationMaster
+//						get loan_amount from retail applicant details
+						mailParameters.put("loan_type", "Personal Loan");
+						mailParameters.put("loan_amount", notificationParams.get("loan_amount"));
+					} else {
+						// Type ==For getting Loan=====For Existing and NTB====================
+						PrimaryCorporateDetail primaryCorporateDetail = primaryCorporateDetailRepository
+								.findOneByApplicationIdId(applicationId);
+						if (!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail)) {
+							if (!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getPurposeOfLoanId())) {
+								String loanType = PurposeOfLoan.getById(primaryCorporateDetail.getPurposeOfLoanId())
+										.getValue();
+								if ("Asset Acquisition".equals(loanType)) {
+									mailParameters.put("loan_type", "Term Loan");
+								} else {
+									mailParameters.put("loan_type", loanType != null ? loanType : "NA");
+								}
+							} else {
+								mailParameters.put("loan_type", "NA");
 							}
-							else{
-								mailParameters.put("loan_type",loanType!=null?loanType:"NA");
-							}	
+							mailParameters.put("loan_amount",
+									primaryCorporateDetail.getLoanAmount() != null
+											? String.format("%.0f", primaryCorporateDetail.getLoanAmount())
+											: "NA");
+						} else {
+							mailParameters.put("loan_type", "NA");
+							mailParameters.put("loan_amount", "NA");
 						}
-						else{
-							mailParameters.put("loan_type","NA");
-						}
-						mailParameters.put("loan_amount",primaryCorporateDetail.getLoanAmount()!=null?String.format("%.0f",primaryCorporateDetail.getLoanAmount()):"NA");
 					}
-					else{
-						mailParameters.put("loan_type","NA");
-						mailParameters.put("loan_amount","NA");
-					}
-					//=================================================================================
-
+					// ======send email to maker bo checker===========================
+					if(branchId!=null && userOrgId!=null) {
 					List<Map<String, Object>> usersRespList = null;
 					String to = null;
 					userResponse = userClient.getUserDetailByOrgRoleBranchId(userOrgId,
@@ -231,7 +241,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 					} else {
 						logger.info("No Maker found=================>");
 					}
-
+					//add condition on branch id and orgId 
 					userResponse = userClient.getUserDetailByOrgRoleBranchId(userOrgId,
 							com.capitaworld.service.users.utils.CommonUtils.UserRoles.FP_CHECKER, branchId);
 					usersRespList = (List<Map<String, Object>>) userResponse.getListData();
@@ -268,8 +278,11 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 					} else {
 						logger.info("No BO found=================>");
 					}
+					}
+					
+					isSent = true;
 				}
-				isSent = true;
+
 			} catch (Exception e) {
 				logger.info(
 						"Exception in sending email to fs and bank branch when ineligible from IneligibleProposalDetailsServiceImpl : "
@@ -282,8 +295,9 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 		}
 	}
 
-	private Map<String, Object> getBankAndBranchDetails(Long userOrgId, Long branchId, Map<String, Object> notificationParams) {
-		
+	private Map<String, Object> getBankAndBranchDetails(Long userOrgId, Long branchId,
+			Map<String, Object> notificationParams) {
+
 		UserResponse userResponse = null;
 		String address = null;
 		String premiseNo = null;
@@ -298,7 +312,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 				List<Map<String, Object>> usersRespList = null;
 				if (!CommonUtils.isObjectNullOrEmpty(userResponse))
 					usersRespList = (List<Map<String, Object>>) userResponse.getListData();
-				if (!CommonUtils.isObjectNullOrEmpty(usersRespList)) {
+				if (!CommonUtils.isObjectListNull(usersRespList)) {
 					for (int i = 0; i < usersRespList.size(); i++) {
 						BranchBasicDetailsRequest resp = MultipleJSONObjectHelper.getObjectFromMap(usersRespList.get(i),
 								BranchBasicDetailsRequest.class);
@@ -376,7 +390,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 		}
 	}
 
-	private Map<String, Object> getFsNameFromDirectorBeckgroundDetailsForNTBandExisting(Long applicationId,
+	private Map<String, Object> getFsNameAndDetailsForAllProduct(Long applicationId,
 			LoanApplicationRequest applicationRequest) {
 		Map<String, Object> notificationParams = new HashMap();
 		String fsName = null;
@@ -411,6 +425,55 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 				notificationParams.put("address", "NA");
 			}
 			return notificationParams;
+		} else if (applicationRequest.getBusinessTypeId() == CommonUtils.BusinessType.RETAIL_PERSONAL_LOAN.getId()) {
+			try {
+				// for fs name and address only
+				RetailApplicantRequest plRequest = retailApplicantSercive.get(applicationId);
+				notificationParams.put("loan_amount", plRequest.getLoanAmountRequired()!=null?plRequest.getLoanAmountRequired():" - ");
+				
+				if (plRequest != null) {
+					notificationParams.put("fs_name", plRequest.getFirstName());
+					String primiseName = plRequest.getAddressPremiseName() != "" ? plRequest.getAddressPremiseName()
+							: "";
+					String streetName = plRequest.getAddressStreetName() != "" ? plRequest.getAddressStreetName() : "";
+					String landMark = plRequest.getAddressLandmark() != "" ? plRequest.getAddressLandmark() : "";
+					address = "";
+					if (primiseName != "" && primiseName != null)
+						address = primiseName;
+					if (streetName != "" && streetName != null && primiseName != "")
+						address = address + "," + streetName;
+					else
+						address=streetName;
+					if (landMark != "" && landMark != null && streetName != "")
+						address = address + "," + landMark;
+					else
+						address = address + "," + landMark;	
+					String city = "";
+					try {
+						city = CommonDocumentUtils.getCity(Long.valueOf(plRequest.getAddressCity().toString()),
+								oneFormClient);
+						if (city != "")
+							address = address + "," + city;
+					} catch (Exception e) {
+						logger.error("Error in getting city from city id" + e);
+					}
+					String state = "";
+					try {
+						state = CommonDocumentUtils.getState(Long.valueOf(plRequest.getAddressState().toString()),
+								oneFormClient);
+						if (state != "")
+							address = address + "," + state;
+					} catch (Exception e) {
+						logger.error("Error in getting state from state id" + e);
+					}
+					logger.info("address is:" + address);
+
+					notificationParams.put("address", address);
+				}
+			} catch (Exception e) {
+				logger.error("Exception in Getting Fund seeker details for PL ineligible proposal details: " + e);
+			}
+			return notificationParams;
 		} else {
 			fsName = applicationRequest.getUserName() != null ? applicationRequest.getUserName() : "NA";
 			notificationParams.put("fs_name", fsName);
@@ -419,16 +482,21 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 						.getCorporateApplicant(applicationId);
 				if (!CommonUtils.isObjectNullOrEmpty(applicantRequest)
 						&& !CommonUtils.isObjectNullOrEmpty(applicantRequest.getFirstAddress())) {
-			
+
 					String premiseNumber = null;
 					String streetName = null;
 					String landMark = null;
-					premiseNumber = applicantRequest.getFirstAddress().getPremiseNumber()!=null?applicantRequest.getFirstAddress().getPremiseNumber():"";
-					streetName = applicantRequest.getFirstAddress().getStreetName()!=null?applicantRequest.getFirstAddress().getStreetName():"";
-					landMark = applicantRequest.getFirstAddress().getLandMark()!=null?applicantRequest.getFirstAddress().getLandMark():"";
-					address = premiseNumber.toString()+" "+streetName.toString()+" "+landMark.toString();
-					
-					
+					premiseNumber = applicantRequest.getFirstAddress().getPremiseNumber() != null
+							? applicantRequest.getFirstAddress().getPremiseNumber()
+							: "";
+					streetName = applicantRequest.getFirstAddress().getStreetName() != null
+							? applicantRequest.getFirstAddress().getStreetName()
+							: "";
+					landMark = applicantRequest.getFirstAddress().getLandMark() != null
+							? applicantRequest.getFirstAddress().getLandMark()
+							: "";
+					address = premiseNumber.toString() + " " + streetName.toString() + " " + landMark.toString();
+
 					notificationParams.put("address", address != null ? address : "NA");
 				}
 			}
@@ -460,41 +528,43 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 		notificationClient.send(notificationRequest);
 		logger.info("Outside send Email===>{}");
 	}
-	
+
 	@Override
-    public List<ProposalDetailsAdminRequest> getOfflineProposals(Long userOrgId, Long userId, ProposalDetailsAdminRequest request) {
-    	
+	public List<ProposalDetailsAdminRequest> getOfflineProposals(Long userOrgId, Long userId,
+			ProposalDetailsAdminRequest request) {
+
 		List<Object[]> result = new ArrayList<Object[]>();
-		
-		result = ineligibleProposalDetailsRepository.getOfflineProposalDetailsByOrgId(userOrgId, request.getFromDate(), request.getToDate());
-		
-    	List<ProposalDetailsAdminRequest> responseList = new ArrayList<>(result.size());
-    	
-    	for(Object[] obj : result) {
-    		ProposalDetailsAdminRequest proposal = new ProposalDetailsAdminRequest();
-    		proposal.setApplicationId(CommonUtils.convertLong(obj[0]));
-    		proposal.setUserId(CommonUtils.convertLong(obj[1]));
-    		proposal.setUserName(CommonUtils.convertString(obj[2]));
-    		proposal.setEmail(CommonUtils.convertString(obj[3]));
-    		proposal.setMobile(CommonUtils.convertString(obj[4]));
-    		proposal.setCreatedDate(CommonUtils.convertDate(obj[5]));
-    		proposal.setBranchId(CommonUtils.convertLong(obj[6]));
-    		proposal.setBranchName(CommonUtils.convertString(obj[7]));
-    		proposal.setContactPersonName(CommonUtils.convertString(obj[8]));
-    		proposal.setTelephoneNo(CommonUtils.convertString(obj[9]));
-    		proposal.setContactPersonNumber(CommonUtils.convertString(obj[10]));
-    		proposal.setOrganizationName(CommonUtils.convertString(obj[11]));
-    		proposal.setApplicationCode(CommonUtils.convertString(obj[12]));
-    		proposal.setCode(CommonUtils.convertString(obj[13]));
-    		proposal.setStreetName(CommonUtils.convertString(obj[14]));
-    		proposal.setState(CommonUtils.convertString(obj[15]));
-    		proposal.setCity(CommonUtils.convertString(obj[16]));
-    		proposal.setPremisesNo(CommonUtils.convertString(obj[17]));
-    		proposal.setContactPersonEmail(CommonUtils.convertString(obj[18]));
-    		
-    		responseList.add(proposal);
-    	}
-    	
-    	return responseList;
-    }
+
+		result = ineligibleProposalDetailsRepository.getOfflineProposalDetailsByOrgId(userOrgId, request.getFromDate(),
+				request.getToDate());
+
+		List<ProposalDetailsAdminRequest> responseList = new ArrayList<>(result.size());
+
+		for (Object[] obj : result) {
+			ProposalDetailsAdminRequest proposal = new ProposalDetailsAdminRequest();
+			proposal.setApplicationId(CommonUtils.convertLong(obj[0]));
+			proposal.setUserId(CommonUtils.convertLong(obj[1]));
+			proposal.setUserName(CommonUtils.convertString(obj[2]));
+			proposal.setEmail(CommonUtils.convertString(obj[3]));
+			proposal.setMobile(CommonUtils.convertString(obj[4]));
+			proposal.setCreatedDate(CommonUtils.convertDate(obj[5]));
+			proposal.setBranchId(CommonUtils.convertLong(obj[6]));
+			proposal.setBranchName(CommonUtils.convertString(obj[7]));
+			proposal.setContactPersonName(CommonUtils.convertString(obj[8]));
+			proposal.setTelephoneNo(CommonUtils.convertString(obj[9]));
+			proposal.setContactPersonNumber(CommonUtils.convertString(obj[10]));
+			proposal.setOrganizationName(CommonUtils.convertString(obj[11]));
+			proposal.setApplicationCode(CommonUtils.convertString(obj[12]));
+			proposal.setCode(CommonUtils.convertString(obj[13]));
+			proposal.setStreetName(CommonUtils.convertString(obj[14]));
+			proposal.setState(CommonUtils.convertString(obj[15]));
+			proposal.setCity(CommonUtils.convertString(obj[16]));
+			proposal.setPremisesNo(CommonUtils.convertString(obj[17]));
+			proposal.setContactPersonEmail(CommonUtils.convertString(obj[18]));
+
+			responseList.add(proposal);
+		}
+
+		return responseList;
+	}
 }

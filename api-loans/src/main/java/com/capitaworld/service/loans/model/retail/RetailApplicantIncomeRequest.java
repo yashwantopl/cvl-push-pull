@@ -39,7 +39,20 @@ public class RetailApplicantIncomeRequest implements Serializable{
 	private String capitalGainMode;
 	private String otherSourceMode;
 
-
+	//FOR PL CAM REPORT
+	private String salaryIncomeString;
+	private String incomeRatioString;
+	private String housePropertyString;
+	private String pgbpString;
+	private String capitalGainString;
+	private String otherSourceString;
+	
+	private String salaryIncomeGrossString;
+	private String housePropertyGrossString;
+	private String pgbpGrossString;
+	private String capitalGainGrossString;
+	private String otherSourceGrossString;
+	
 	public Long getId() {
 		return id;
 	}
@@ -198,4 +211,72 @@ public class RetailApplicantIncomeRequest implements Serializable{
 	public void setOtherSourceMode(String otherSourceMode) {
 		this.otherSourceMode = otherSourceMode;
 	}
+	public String getSalaryIncomeString() {
+		return salaryIncomeString;
+	}
+	public void setSalaryIncomeString(String salaryIncomeString) {
+		this.salaryIncomeString = salaryIncomeString;
+	}
+	public String getIncomeRatioString() {
+		return incomeRatioString;
+	}
+	public void setIncomeRatioString(String incomeRatioString) {
+		this.incomeRatioString = incomeRatioString;
+	}
+	public String getHousePropertyString() {
+		return housePropertyString;
+	}
+	public void setHousePropertyString(String housePropertyString) {
+		this.housePropertyString = housePropertyString;
+	}
+	public String getPgbpString() {
+		return pgbpString;
+	}
+	public void setPgbpString(String pgbpString) {
+		this.pgbpString = pgbpString;
+	}
+	public String getCapitalGainString() {
+		return capitalGainString;
+	}
+	public void setCapitalGainString(String capitalGainString) {
+		this.capitalGainString = capitalGainString;
+	}
+	public String getOtherSourceString() {
+		return otherSourceString;
+	}
+	public void setOtherSourceString(String otherSourceString) {
+		this.otherSourceString = otherSourceString;
+	}
+	public String getSalaryIncomeGrossString() {
+		return salaryIncomeGrossString;
+	}
+	public void setSalaryIncomeGrossString(String salaryIncomeGrossString) {
+		this.salaryIncomeGrossString = salaryIncomeGrossString;
+	}
+	public String getHousePropertyGrossString() {
+		return housePropertyGrossString;
+	}
+	public void setHousePropertyGrossString(String housePropertyGrossString) {
+		this.housePropertyGrossString = housePropertyGrossString;
+	}
+	public String getPgbpGrossString() {
+		return pgbpGrossString;
+	}
+	public void setPgbpGrossString(String pgbpGrossString) {
+		this.pgbpGrossString = pgbpGrossString;
+	}
+	public String getCapitalGainGrossString() {
+		return capitalGainGrossString;
+	}
+	public void setCapitalGainGrossString(String capitalGainGrossString) {
+		this.capitalGainGrossString = capitalGainGrossString;
+	}
+	public String getOtherSourceGrossString() {
+		return otherSourceGrossString;
+	}
+	public void setOtherSourceGrossString(String otherSourceGrossString) {
+		this.otherSourceGrossString = otherSourceGrossString;
+	}
+	
+	
 }

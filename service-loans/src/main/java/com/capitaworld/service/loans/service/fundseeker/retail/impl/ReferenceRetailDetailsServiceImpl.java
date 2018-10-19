@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -22,6 +23,7 @@ import com.capitaworld.service.loans.repository.fundseeker.retail.ReferenceRetai
 import com.capitaworld.service.loans.service.fundseeker.retail.ReferenceRetailDetailsService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
+import com.capitaworld.service.oneform.enums.ReferencesList;
 
 /**
  * @author Sanket
@@ -108,6 +110,7 @@ public class ReferenceRetailDetailsServiceImpl implements ReferenceRetailDetails
 
 		for (ReferencesRetailDetail detail : referencesRetailDetails) {
 			ReferenceRetailDetailsRequest referencesRetailRequest = new ReferenceRetailDetailsRequest();
+			referencesRetailRequest.setReferncesList(!CommonUtils.isObjectNullOrEmpty(detail.getReferencesListId()) ? StringEscapeUtils.escapeXml(ReferencesList.getById(detail.getReferencesListId()).getValue()) :"");
 			BeanUtils.copyProperties(detail, referencesRetailRequest);
 			referencesRetailRequests.add(referencesRetailRequest);
 		}

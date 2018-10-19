@@ -26,6 +26,11 @@ public class ObligationDetailRequest implements Serializable {
     private Double periodicity;
 
     private String remark;
+    
+    //FOR CAM
+    private String grossAmountString;
+    private String netAmountString;
+    private String periodicityString;
 
     public Long getId() {
         return id;
@@ -83,7 +88,31 @@ public class ObligationDetailRequest implements Serializable {
         this.remark = remark;
     }
 
-    public static void printFields(Object obj) throws Exception {
+    public String getGrossAmountString() {
+		return grossAmountString;
+	}
+
+	public void setGrossAmountString(String grossAmountString) {
+		this.grossAmountString = grossAmountString;
+	}
+
+	public String getNetAmountString() {
+		return netAmountString;
+	}
+
+	public void setNetAmountString(String netAmountString) {
+		this.netAmountString = netAmountString;
+	}
+
+	public String getPeriodicityString() {
+		return periodicityString;
+	}
+
+	public void setPeriodicityString(String periodicityString) {
+		this.periodicityString = periodicityString;
+	}
+
+	public static void printFields(Object obj) throws Exception {
         Field[] fields = ObligationDetailRequest.class.getDeclaredFields();
 
         for(Field field : fields) {

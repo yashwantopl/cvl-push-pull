@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -22,6 +23,7 @@ import com.capitaworld.service.loans.repository.fundseeker.retail.OtherCurrentAs
 import com.capitaworld.service.loans.service.fundseeker.retail.OtherCurrentAssetDetailService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
+import com.capitaworld.service.oneform.enums.Assets;
 
 /**
  * @author Sanket
@@ -108,6 +110,8 @@ public class OtherCurrentAssetDetailServiceImpl implements OtherCurrentAssetDeta
 
 		for (OtherCurrentAssetDetail detail : otherCurrentAssetDetails) {
 			OtherCurrentAssetDetailRequest otherCurrentAssetRequest = new OtherCurrentAssetDetailRequest();
+			otherCurrentAssetRequest.setAssetValueString(CommonUtils.convertValue(detail.getAssetValue()));
+			otherCurrentAssetRequest.setAssetType(!CommonUtils.isObjectNullOrEmpty(detail.getAssetTypesId()) ? StringEscapeUtils.escapeXml(Assets.getById(detail.getAssetTypesId()).getValue()) : "");
 			BeanUtils.copyProperties(detail, otherCurrentAssetRequest);
 			otherCurrentAssetRequests.add(otherCurrentAssetRequest);
 		}
