@@ -9043,7 +9043,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 			List<BigInteger> fpProductList = null;
 			if (CommonUtils.BusinessType.EXISTING_BUSINESS.getId() == businessTypeId) {
-				fpProductList = loanApplicationRepository.getFpProductListByApplicationIdOnOneForm(applicationId);
+				fpProductList = loanApplicationRepository.getFpProductListByApplicationIdOnOneForm();
 			} else if (CommonUtils.BusinessType.NEW_TO_BUSINESS.getId() == businessTypeId) {
 				fpProductList = loanApplicationRepository.getFpProductListByApplicationIdAndStageId(applicationId, 105l);
 			}
