@@ -1471,14 +1471,18 @@ public class FPAsyncComponent {
 		
 		String mobile = signUpUser.getMobile();
 		mailParameter.put("mobile_number", mobile != null ? mobile : "NA");
-		
+		mailParameter.put("address", address);
 		String emailSubject = "Maker Assigned - For Quick Business Loan Approval ";
 
 		try {
-			createNotificationForEmail(signUpUser.getEmail(), applicationRequest.getUserId().toString(),
-					mailParameter, NotificationAlias.EMAIL_FS_ACCEPTED_BY_MAKER, emailSubject);
-			logger.info("Email send to fs when maker accepted porposal");
-			System.out.println("Email send to fs when maker accepted porposal");
+			if(fsName!=null&& address!=null&&mobile!=null&&assignedMakerName!=null&&applicationRequest.getId()!=null) {
+				createNotificationForEmail(signUpUser.getEmail(), applicationRequest.getUserId().toString(),
+						mailParameter, NotificationAlias.EMAIL_FS_ACCEPTED_BY_MAKER, emailSubject);
+				logger.info("Email send to fs when maker accepted porposal");
+				System.out.println("Email send to fs when maker accepted porposal");
+			}else {
+				logger.error("Email is not sent becouse of required values are null");
+			}
 		} catch (Exception e) {
 			logger.info("Error in sending email to fs when porposal asigned to maker :" + e);
 			e.printStackTrace();
@@ -2566,7 +2570,86 @@ public class FPAsyncComponent {
 			}
 
 			mailParameters.put("admin_checker", adminCheckerName);
-			UserResponse userResponse = userClient.getUserDetailByOrgRoleId(productMasterTemp.getUserOrgId(),
+			//==============================================================================================
+			
+			UserResponse assignedMakerResponse = null;
+			try {
+				assignedMakerResponse = userClient.getEmailMobile(productMasterTemp.getCreatedBy());
+			} catch (Exception e) {
+				logger.info("Something went wrong while calling Users client===>{}");
+				e.printStackTrace();
+			}
+			UsersRequest assignedMaker = null;
+			if (!CommonUtils.isObjectNullOrEmpty(assignedMakerResponse)) {
+				assignedMaker = MultipleJSONObjectHelper
+						.getObjectFromMap((Map<String, Object>) assignedMakerResponse.getData(), UsersRequest.class);
+			}
+
+			UsersRequest assignedMakerForName = new UsersRequest();
+			assignedMakerForName.setId(productMasterTemp.getCreatedBy());
+
+			String makerName = null;
+			if (!CommonUtils.isObjectNullOrEmpty(assignedMakerForName)) {
+
+				try {
+					logger.error("Into getting FP Name======>" + assignedMakerForName);
+					UserResponse userResponseForName = userClient.getFPDetails(assignedMakerForName);
+					FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap(
+							(Map<Object, Object>) userResponseForName.getData(), FundProviderDetailsRequest.class);
+					makerName = fundProviderDetailsRequest.getFirstName() + " "
+							+ (fundProviderDetailsRequest.getLastName() == null ? ""
+									: fundProviderDetailsRequest.getLastName());
+				} catch (Exception e) {
+					logger.error("error while fetching FP name");
+					e.printStackTrace();
+				}
+			}
+
+			// =======================================================================================
+			
+			String to = null;
+			if (!CommonUtils.isObjectNullOrEmpty(assignedMaker.getEmail())) {
+				// System.out.println("Maker ID:---"+userObj.getEmail());
+				to = assignedMaker.getEmail();
+				if ("null ".equals(makerName)) {
+					mailParameters.put("admin_maker", "Sir/Madam");
+				} else {
+					mailParameters.put("admin_maker", makerName != null ? makerName : "Sir/Madam");
+				}
+
+				createNotificationForEmail(to, userId.toString(), mailParameters,
+						NotificationAlias.EMAIL_ADMIN_MAKER_PRODUCT_APPROVED_BY_CHECKER, subject);
+			}
+
+			if (!CommonUtils.isObjectNullOrEmpty(assignedMaker.getMobile())) {
+				// System.out.println("Maker ID:---"+userObj.getEmail());
+				Map<String, Object> smsParameters = new HashMap<String, Object>();
+				to = "91" + assignedMaker.getMobile();
+				smsParameters.put("admin_checker", adminCheckerName != null ? adminCheckerName : "Checker");
+				smsParameters.put("product_name",
+						productMasterTemp.getName() != null ? productMasterTemp.getName() : "NA");
+				smsParameters.put("product_type", productType != null ? productType : "NA");
+				smsParameters.put("url", "www.bitly.com");
+
+				sendSMSNotification(userId.toString(), smsParameters,
+						NotificationAlias.SMS_ADMIN_MAKER_PRODUCT_APPROVED_BY_CHECKER, to);
+			}
+
+			if (!CommonUtils.isObjectNullOrEmpty(assignedMaker.getId())) {
+				// System.out.println("Maker ID:---"+userObj.getEmail());
+				Map<String, Object> sysParameters = new HashMap<String, Object>();
+				sysParameters.put("admin_checker", adminCheckerName != null ? adminCheckerName : "Checker");
+				sysParameters.put("product_name",
+						productMasterTemp.getName() != null ? productMasterTemp.getName() : "NA");
+				sysParameters.put("product_type", productType != null ? productType : "NA");
+
+				sendSYSNotification(userId, assignedMaker.getId().toString(), sysParameters,
+						NotificationAlias.SYS_ADMIN_MAKER_PRODUCT_APPROVED_BY_CHECKER,
+						assignedMaker.getId().toString(), assignedMaker.getId().toString());
+			}
+			
+			
+			/*UserResponse userResponse = userClient.getUserDetailByOrgRoleId(productMasterTemp.getUserOrgId(),
 					com.capitaworld.service.users.utils.CommonUtils.UserRoles.ADMIN_MAKER);
 			List<Map<String, Object>> usersRespList = (List<Map<String, Object>>) userResponse.getListData();
 
@@ -2636,7 +2719,7 @@ public class FPAsyncComponent {
 
 			} else {
 				logger.info("No Admin Maker found=================>");
-			}
+			}*/
 
 		} catch (Exception e) {
 
@@ -2686,7 +2769,83 @@ public class FPAsyncComponent {
 			}
 
 			mailParameters.put("admin_checker", adminCheckerName);
-			UserResponse userResponse = userClient.getUserDetailByOrgRoleId(productMasterTemp.getUserOrgId(),
+           //=========================================================================================================
+			
+			UserResponse assignedMakerResponse = null;
+			try {
+				assignedMakerResponse = userClient.getEmailMobile(productMasterTemp.getCreatedBy());
+			} catch (Exception e) {
+				logger.info("Something went wrong while calling Users client===>{}");
+				e.printStackTrace();
+			}
+			UsersRequest assignedMaker = null;
+			if (!CommonUtils.isObjectNullOrEmpty(assignedMakerResponse)) {
+				assignedMaker = MultipleJSONObjectHelper
+						.getObjectFromMap((Map<String, Object>) assignedMakerResponse.getData(), UsersRequest.class);
+			}
+
+			UsersRequest assignedMakerForName = new UsersRequest();
+			assignedMakerForName.setId(productMasterTemp.getCreatedBy());
+
+			String makerName = null;
+			if (!CommonUtils.isObjectNullOrEmpty(assignedMakerForName)) {
+
+				try {
+					logger.error("Into getting FP Name======>" + assignedMakerForName);
+					UserResponse userResponseForName = userClient.getFPDetails(assignedMakerForName);
+					FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap(
+							(Map<Object, Object>) userResponseForName.getData(), FundProviderDetailsRequest.class);
+					makerName = fundProviderDetailsRequest.getFirstName() + " "
+							+ (fundProviderDetailsRequest.getLastName() == null ? ""
+									: fundProviderDetailsRequest.getLastName());
+				} catch (Exception e) {
+					logger.error("error while fetching FP name");
+					e.printStackTrace();
+				}
+			}
+
+			// =======================================================================================
+			String to = null;
+			if (!CommonUtils.isObjectNullOrEmpty(assignedMaker.getEmail())) {
+				// System.out.println("Maker ID:---"+userObj.getEmail());
+				to = assignedMaker.getEmail();
+				if ("null ".equals(makerName)) {
+					mailParameters.put("admin_maker", "Sir/Madam");
+				} else {
+					mailParameters.put("admin_maker", makerName != null ? makerName : "Sir/Madam");
+				}
+				createNotificationForEmail(to, userId.toString(), mailParameters,
+						NotificationAlias.EMAIL_ADMIN_MAKER_PRODUCT_REVERTED_BY_CHECKER, subject);
+			}
+
+			if (!CommonUtils.isObjectNullOrEmpty(assignedMaker.getMobile())) {
+				// System.out.println("Maker ID:---"+userObj.getEmail());
+				Map<String, Object> smsParameters = new HashMap<String, Object>();
+				to = "91" + assignedMaker.getMobile();
+				smsParameters.put("admin_checker", adminCheckerName != null ? adminCheckerName : "Checker");
+				smsParameters.put("product_name",
+						productMasterTemp.getName() != null ? productMasterTemp.getName() : "NA");
+				smsParameters.put("product_type", productType != null ? productType : "NA");
+				smsParameters.put("url", "www.bitly.com");
+
+				sendSMSNotification(userId.toString(), smsParameters,
+						NotificationAlias.SMS_ADMIN_MAKER_PRODUCT_REVERTED_BY_CHECKER, to);
+			}
+
+			if (!CommonUtils.isObjectNullOrEmpty(assignedMaker.getId())) {
+				// System.out.println("Maker ID:---"+userObj.getEmail());
+				Map<String, Object> sysParameters = new HashMap<String, Object>();
+				sysParameters.put("admin_checker", adminCheckerName != null ? adminCheckerName : "Checker");
+				sysParameters.put("product_name",
+						productMasterTemp.getName() != null ? productMasterTemp.getName() : "NA");
+				sysParameters.put("product_type", productType != null ? productType : "NA");
+
+				sendSYSNotification(userId, assignedMaker.getId().toString(), sysParameters,
+						NotificationAlias.SYS_ADMIN_MAKER_PRODUCT_REVERTED_BY_CHECKER,
+						assignedMaker.getId().toString(), assignedMaker.getId().toString());
+			}
+			
+			/*UserResponse userResponse = userClient.getUserDetailByOrgRoleId(productMasterTemp.getUserOrgId(),
 					com.capitaworld.service.users.utils.CommonUtils.UserRoles.ADMIN_MAKER);
 			List<Map<String, Object>> usersRespList = (List<Map<String, Object>>) userResponse.getListData();
 
@@ -2755,12 +2914,11 @@ public class FPAsyncComponent {
 
 			} else {
 				logger.info("No Admin Maker found=================>");
-			}
+			}*/
 
 		} catch (Exception e) {
 
-			logger.info(
-					"An exception getting while sending Mail to Maker when Admin Checker reverted product=============>{}");
+			logger.info("An exception getting while sending Mail to Maker when Admin Checker reverted product=============>{}");
 
 			e.printStackTrace();
 		}

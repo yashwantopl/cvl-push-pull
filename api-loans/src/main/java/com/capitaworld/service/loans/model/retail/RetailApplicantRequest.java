@@ -97,6 +97,14 @@ public class RetailApplicantRequest implements Serializable {
 	private String spouseName;
 	private Boolean isSpouseEmployed;
 	
+	private String addressPremiseName;
+	private String addressStreetName;
+	private String addressLandmark;
+	private Long addressCity;
+	private Long addressState;
+	private Integer addressCountry;
+	private Double loanAmountRequired;
+	
 	
 	private List<RetailApplicantIncomeRequest> incomeDetailsList;
 	
@@ -104,11 +112,13 @@ public class RetailApplicantRequest implements Serializable {
 	public RetailApplicantRequest() {
 	}
 
+	
 	public RetailApplicantRequest(Long id) {
 		super();
 		this.id = id;
 	}
 
+	
 	public Long getId() {
 		return id;
 	}
@@ -683,6 +693,81 @@ public class RetailApplicantRequest implements Serializable {
 
 	public void setUserId(Long userId) {
 		this.userId = userId;
+	}
+
+
+	public String getAddressPremiseName() {
+		return addressPremiseName;
+	}
+
+
+	public void setAddressPremiseName(String addressPremiseName) {
+		this.addressPremiseName = addressPremiseName;
+	}
+
+
+	public String getAddressStreetName() {
+		return addressStreetName;
+	}
+
+
+	public void setAddressStreetName(String addressStreetName) {
+		this.addressStreetName = addressStreetName;
+	}
+
+
+	public String getAddressLandmark() {
+		return addressLandmark;
+	}
+
+
+	public void setAddressLandmark(String addressLandmark) {
+		this.addressLandmark = addressLandmark;
+	}
+
+
+	public Long getAddressCity() {
+		return addressCity;
+	}
+
+
+	public void setAddressCity(Long addressCity) {
+		this.addressCity = addressCity;
+	}
+
+
+	public Long getAddressState() {
+		return addressState;
+	}
+
+
+	public void setAddressState(Long addressState) {
+		this.addressState = addressState;
+	}
+
+
+	public Integer getAddressCountry() {
+		return addressCountry;
+	}
+
+
+	public void setAddressCountry(Integer addressCountry) {
+		this.addressCountry = addressCountry;
+	}
+
+
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
+
+
+	public Double getLoanAmountRequired() {
+		return loanAmountRequired;
+	}
+
+
+	public void setLoanAmountRequired(Double loanAmountRequired) {
+		this.loanAmountRequired = loanAmountRequired;
 	}
 	
 	
