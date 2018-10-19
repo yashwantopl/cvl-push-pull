@@ -442,8 +442,12 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 						address = primiseName;
 					if (streetName != "" && streetName != null && primiseName != "")
 						address = address + "," + streetName;
+					else
+						address=streetName;
 					if (landMark != "" && landMark != null && streetName != "")
 						address = address + "," + landMark;
+					else
+						address = address + "," + landMark;	
 					String city = "";
 					try {
 						city = CommonDocumentUtils.getCity(Long.valueOf(plRequest.getAddressCity().toString()),
