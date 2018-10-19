@@ -4448,7 +4448,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
-					savePhese1DataToSidbi(loanApplicationMaster.getId(), userId, orgId, fpProductId);
+					//savePhese1DataToSidbi(loanApplicationMaster.getId(), userId, orgId, fpProductId);
 				}
 
 				if (connectResponse.getProceed()) {
@@ -4515,11 +4515,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				// if(orgId==10L) {
 				logger.info("Start Saving Phase 1 sidbi API -------------------->" + loanApplicationMaster.getId());
 				Long fpMappingId = null;
-				try {
+				/*try {
 					savePhese1DataToSidbi(loanApplicationMaster.getId(), userId, orgId, fpProductId);
 				} catch (Exception e) {
 					e.printStackTrace();
-				}
+				}*/
 				// }
 
 				if (connectResponse.getProceed()) {
@@ -4862,12 +4862,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 //						if(orgId==10L) {
 							logger.info("Start Saving Phase 1 sidbi API -------------------->"
 									+ loanApplicationMaster.getId());
-							try {
+							/*try {
 								savePhese1DataToSidbi(loanApplicationMaster.getId(), userId, orgId, fpProductId);
 							} catch (Exception e) {
 								e.printStackTrace();
 								logger.error("Error while Saving Phase1 data to Organization Id====>{}", orgId);
-							}
+							}*/
 //						}
 							logger.info("connectResponse.getProceed()==============>>>" + connectResponse.getProceed());
 							if (connectResponse.getProceed()) {
