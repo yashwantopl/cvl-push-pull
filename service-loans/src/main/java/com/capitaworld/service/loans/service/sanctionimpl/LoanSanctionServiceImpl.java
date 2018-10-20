@@ -219,10 +219,14 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 								Object res = sanctionAndDisbursementValidation(encryptedString , userOrganisationRequest.getCodeLanguage()); 
 								if(res instanceof List){
 									List<com.capitaworld.sidbi.integration.model.sanction.LoanSanctionAndDisbursedRequest> list = (List<com.capitaworld.sidbi.integration.model.sanction.LoanSanctionAndDisbursedRequest> )res;
-									if(!CommonUtils.isObjectListNull(list)) {
-										generateTokenRequest.setApplicationId(list.get(0).getApplicationId());
-										token = sidbiIntegrationClient.getToken(generateTokenRequest,generateTokenRequest.getBankToken() , userOrganisationRequest.getCodeLanguage());
-										logger.info("********************************* " + list.size() +" ***********************************");
+									try {
+										if(!CommonUtils.isObjectListNull(list)&& !CommonUtils.isObjectNullOrEmpty(list.get(0))) {
+											generateTokenRequest.setApplicationId(list.get(0).getApplicationId());
+											token = sidbiIntegrationClient.getToken(generateTokenRequest,generateTokenRequest.getBankToken() , userOrganisationRequest.getCodeLanguage());
+											logger.info("********************************* " + list.size() +" ***********************************");
+										}
+									}catch (Exception e) {
+										logger.info("------------------ Error/Exception while getting appication from getSanctionAndDisbursmentDetailList ------------ MSG =>" + e.getMessage());	
 									}
 									if(sidbiIntegrationClient.updateSavedSanctionAndDisbursmentDetailList(list , token, generateTokenRequest.getBankToken() , userOrganisationRequest.getCodeLanguage())) {
 										try {
