@@ -1395,6 +1395,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 			else
 			{
 
+
 		if(CommonUtils.getUserMainType(productId)== CommonUtils.UserMainType.RETAIL)
 		{
 			if (!CommonUtils.isObjectNullOrEmpty(userOrgId)) {
@@ -1406,13 +1407,17 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 
 		else
 		{
+
 			if (!CommonUtils.isObjectNullOrEmpty(userOrgId)) {
 				results = productMasterRepository.getUserCorporateProductListByOrgId(userOrgId);
 			} else {
 				results = productMasterRepository.getUserCorporateProductList(userId);
 			}
+
 			}
+
 		}
+
 		
 		
 		for (ProductMaster productMaster : results) {
