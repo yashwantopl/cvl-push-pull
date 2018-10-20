@@ -219,8 +219,12 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 								Object res = sanctionAndDisbursementValidation(encryptedString , userOrganisationRequest.getCodeLanguage()); 
 								if(res instanceof List){
 									List<com.capitaworld.sidbi.integration.model.sanction.LoanSanctionAndDisbursedRequest> list = (List<com.capitaworld.sidbi.integration.model.sanction.LoanSanctionAndDisbursedRequest> )res;
-									logger.info("********************************* " + list.size() +" ***********************************");
-									if(sidbiIntegrationClient.updateSavedSanctionAndDisbursmentDetailList(list , generateTokenRequest.getToken(), generateTokenRequest.getBankToken() , userOrganisationRequest.getCodeLanguage())) {
+									if(!CommonUtils.isObjectListNull(list)) {
+										generateTokenRequest.setApplicationId(list.get(0).getApplicationId());
+										token = sidbiIntegrationClient.getToken(generateTokenRequest,generateTokenRequest.getBankToken() , userOrganisationRequest.getCodeLanguage());
+										logger.info("********************************* " + list.size() +" ***********************************");
+									}
+									if(sidbiIntegrationClient.updateSavedSanctionAndDisbursmentDetailList(list , token, generateTokenRequest.getBankToken() , userOrganisationRequest.getCodeLanguage())) {
 										try {
 											//wait foo 15 minute
 											logger.info("*******Sucessgfully updated sanction and disbursement details in sidbi integration********** ");
