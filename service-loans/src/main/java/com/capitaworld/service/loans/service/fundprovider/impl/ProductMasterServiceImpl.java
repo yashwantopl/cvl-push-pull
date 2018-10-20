@@ -1382,24 +1382,30 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 		// TODO Auto-generated method stub
 		List<ProductMaster> results = null;
 		List<ProductMasterRequest> productMasterRequests = new ArrayList<>();
-		
-			if(CommonUtils.getUserMainType(productId)==UserMainType.RETAIL)
-			{
-				if (!CommonUtils.isObjectNullOrEmpty(userOrgId)) {
-					results = productMasterRepository.getUserRetailProductListByOrgId(userOrgId);
-				} else {
-					results = productMasterRepository.getUserRetailProductList(userId);
-				}
+
+
+		if(CommonUtils.getUserMainType(productId)== CommonUtils.UserMainType.RETAIL)
+		{
+			if (!CommonUtils.isObjectNullOrEmpty(userOrgId)) {
+				results = productMasterRepository.getUserRetailProductListByOrgId(userOrgId);
+			} else {
+				results = productMasterRepository.getUserRetailProductList(userId);
 			}
-		
-			else
-			{
+		}
+
+		else
+		{
+
 			if (!CommonUtils.isObjectNullOrEmpty(userOrgId)) {
 				results = productMasterRepository.getUserCorporateProductListByOrgId(userOrgId);
 			} else {
 				results = productMasterRepository.getUserCorporateProductList(userId);
 			}
+
 			}
+
+		}
+
 		
 		
 		for (ProductMaster productMaster : results) {
