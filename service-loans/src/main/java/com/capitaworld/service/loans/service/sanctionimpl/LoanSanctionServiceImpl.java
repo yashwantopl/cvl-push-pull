@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.service.sanctionimpl;
 
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
@@ -218,7 +219,7 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 							if(!CommonUtils.isObjectNullOrEmpty(encryptedString)) {
 								Object res = sanctionAndDisbursementValidation(encryptedString , userOrganisationRequest.getCodeLanguage()); 
 								if(res instanceof List){
-									List<com.capitaworld.sidbi.integration.model.sanction.LoanSanctionAndDisbursedRequest> list = (List<com.capitaworld.sidbi.integration.model.sanction.LoanSanctionAndDisbursedRequest> )res;
+									List<LoanSanctionAndDisbursedRequest> list = (List<LoanSanctionAndDisbursedRequest> )res;
 									try {
 										if(!CommonUtils.isObjectListNull(list)&& !CommonUtils.isObjectNullOrEmpty(list.get(0))) {
 											generateTokenRequest.setApplicationId(list.get(0).getApplicationId());
@@ -228,7 +229,10 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 									}catch (Exception e) {
 										logger.info("------------------ Error/Exception while getting appication from getSanctionAndDisbursmentDetailList ------------ MSG =>" + e.getMessage());	
 									}
-									if(sidbiIntegrationClient.updateSavedSanctionAndDisbursmentDetailList(list , token, generateTokenRequest.getBankToken() , userOrganisationRequest.getCodeLanguage())) {
+									List<com.capitaworld.sidbi.integration.model.sanction.LoanSanctionAndDisbursedRequest> list1 = new ArrayList<>();
+ 									BeanUtils.copyProperties(list, list1);
+ 									System.out.println(list1);
+									if(sidbiIntegrationClient.updateSavedSanctionAndDisbursmentDetailList(list1 , token, generateTokenRequest.getBankToken() , userOrganisationRequest.getCodeLanguage())) {
 										try {
 											//wait foo 15 minute
 											logger.info("*******Sucessgfully updated sanction and disbursement details in sidbi integration********** ");
