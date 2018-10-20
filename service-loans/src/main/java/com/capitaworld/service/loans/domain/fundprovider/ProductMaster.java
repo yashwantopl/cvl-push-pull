@@ -85,6 +85,9 @@ public abstract class ProductMaster implements Serializable {
 
 	@Column(name = "wc_renewal_status")
 	private Integer wcRenewalStatus;
+	
+	@Column(name="fin_type_id")
+	private Integer finId;
 
 	public ProductMaster() {
 	}
@@ -240,4 +243,14 @@ public abstract class ProductMaster implements Serializable {
 	public void setWcRenewalStatus(Integer wcRenewalStatus) {
 		this.wcRenewalStatus = wcRenewalStatus;
 	}
+
+	public Integer getFinId() {
+		return finId;
+	}
+
+	public void setFinId(Integer finId) {
+		this.finId = finId;
+	}
+	
+	
 }
