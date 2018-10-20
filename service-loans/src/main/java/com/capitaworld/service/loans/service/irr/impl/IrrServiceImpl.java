@@ -2626,7 +2626,11 @@ public class IrrServiceImpl implements IrrService{
 	public List<CreditRatingCompanyDetail> getCompanyDetails(String companyName){
 		return creditRatingCompanyDetailsRepository.getCompanyDetail(companyName);
 	}
-	
+
+	public List<CreditRatingCompanyDetail> getAllCompanyDetail(){
+		return creditRatingCompanyDetailsRepository.findAll();
+	}
+
 	/*public QualitativeInputSheetTradRequest setTLTradingQualitativeInput(Long aplicationId,Long userId,Long denom) throws Exception{
 		QualitativeInputSheetTradRequest qualitativeInputSheetTradRequest = new QualitativeInputSheetTradRequest();
 		List<PastFinancialEstimatesDetailRequest> pastFinancialEstimatesDetailRequest = new ArrayList<PastFinancialEstimatesDetailRequest>();
