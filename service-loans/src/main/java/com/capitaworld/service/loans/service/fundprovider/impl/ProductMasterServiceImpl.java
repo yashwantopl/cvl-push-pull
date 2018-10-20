@@ -1394,12 +1394,25 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 		
 			else
 			{
+
+		if(CommonUtils.getUserMainType(productId)== CommonUtils.UserMainType.RETAIL)
+		{
+			if (!CommonUtils.isObjectNullOrEmpty(userOrgId)) {
+				results = productMasterRepository.getUserRetailProductListByOrgId(userOrgId);
+			} else {
+				results = productMasterRepository.getUserRetailProductList(userId);
+			}
+		}
+
+		else
+		{
 			if (!CommonUtils.isObjectNullOrEmpty(userOrgId)) {
 				results = productMasterRepository.getUserCorporateProductListByOrgId(userOrgId);
 			} else {
 				results = productMasterRepository.getUserCorporateProductList(userId);
 			}
 			}
+		}
 		
 		
 		for (ProductMaster productMaster : results) {

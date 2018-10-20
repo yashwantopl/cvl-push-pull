@@ -633,7 +633,32 @@ public class ScoringServiceImpl implements ScoringService{
         Long applicationId=scoringRequestLoans.getApplicationId();
         Long fpProductId=scoringRequestLoans.getFpProductId();
 
-        ////
+        ///////// Get Financial Type Id from ITR////////
+
+        Integer financialTypeId=3;
+
+        ITRConnectionResponse itrConnectionResponse = null;
+        try
+        {
+            itrConnectionResponse = itrClient.getIsUploadAndYearDetails(applicationId);
+
+            if(!CommonUtils.isObjectNullOrEmpty(itrConnectionResponse) && !CommonUtils.isObjectNullOrEmpty(itrConnectionResponse.getData()))
+            {
+                Map<String,Object> map = (Map<String,Object>)itrConnectionResponse.getData();
+                ITRBasicDetailsResponse res = MultipleJSONObjectHelper.getObjectFromMap(map, ITRBasicDetailsResponse.class);
+                if(!CommonUtils.isObjectNullOrEmpty(res) && !CommonUtils.isObjectNullOrEmpty(res.getItrFinancialType()))
+                {
+                    financialTypeId = Integer.valueOf(res.getItrFinancialType());
+                }
+            }
+        }
+        catch (IOException e)
+        {
+            logger.error("error while getting Financial Type Id from itr response"); e.printStackTrace();
+        }
+
+        /////////
+
 
         List<ScoringRequestDetail> scoringRequestDetailList = scoringRequestDetailRepository.getScoringRequestDetailByApplicationIdAndIsActive(applicationId);
 
@@ -657,6 +682,7 @@ public class ScoringServiceImpl implements ScoringService{
         scoringRequest.setApplicationId(applicationId);
         scoringRequest.setUserId(scoringRequestLoans.getUserId());
         scoringRequest.setBusinessTypeId(ScoreParameter.BusinessType.EXISTING_BUSINESS);
+        scoringRequest.setFinancialTypeId(scoringRequestLoans.getFinancialTypeIdProduct());
 
         if(!(scoringRequestDetailList.size() > 0))
         {
@@ -731,26 +757,41 @@ public class ScoringServiceImpl implements ScoringService{
             OperatingStatementDetails operatingStatementDetailsSY = new OperatingStatementDetails();
             OperatingStatementDetails operatingStatementDetailsTY = new OperatingStatementDetails();
 
-            operatingStatementDetailsTY = operatingStatementDetailsRepository.getOperatingStatementDetails(applicationId, currentYear-1+"");
-            operatingStatementDetailsSY = operatingStatementDetailsRepository.getOperatingStatementDetails(applicationId, currentYear-2+"");
-            operatingStatementDetailsFY = operatingStatementDetailsRepository.getOperatingStatementDetails(applicationId, currentYear-3+"");
 
             LiabilitiesDetails liabilitiesDetailsFY = new LiabilitiesDetails();
             LiabilitiesDetails liabilitiesDetailsSY = new LiabilitiesDetails();
             LiabilitiesDetails liabilitiesDetailsTY = new LiabilitiesDetails();
 
-            liabilitiesDetailsTY = liabilitiesDetailsRepository.getLiabilitiesDetails(applicationId, currentYear-1+"");
-            liabilitiesDetailsSY = liabilitiesDetailsRepository.getLiabilitiesDetails(applicationId, currentYear-2+"");
-            liabilitiesDetailsFY = liabilitiesDetailsRepository.getLiabilitiesDetails(applicationId, currentYear-3+"");
-
             AssetsDetails assetsDetailsFY = new AssetsDetails();
             AssetsDetails assetsDetailsSY = new AssetsDetails();
             AssetsDetails assetsDetailsTY = new AssetsDetails();
 
-            assetsDetailsTY = assetsDetailsRepository.getAssetsDetails(applicationId, currentYear-1+"");
-            assetsDetailsSY = assetsDetailsRepository.getAssetsDetails(applicationId, currentYear-2+"");
-            assetsDetailsFY = assetsDetailsRepository.getAssetsDetails(applicationId, currentYear-3+"");
+            if(ScoreParameter.FinancialTypeForITR.THREE_YEAR_ITR == financialTypeId)
+            {
+                operatingStatementDetailsTY = operatingStatementDetailsRepository.getOperatingStatementDetails(applicationId, currentYear-1+"");
+                operatingStatementDetailsSY = operatingStatementDetailsRepository.getOperatingStatementDetails(applicationId, currentYear-2+"");
+                operatingStatementDetailsFY = operatingStatementDetailsRepository.getOperatingStatementDetails(applicationId, currentYear-3+"");
 
+                liabilitiesDetailsTY = liabilitiesDetailsRepository.getLiabilitiesDetails(applicationId, currentYear-1+"");
+                liabilitiesDetailsSY = liabilitiesDetailsRepository.getLiabilitiesDetails(applicationId, currentYear-2+"");
+                liabilitiesDetailsFY = liabilitiesDetailsRepository.getLiabilitiesDetails(applicationId, currentYear-3+"");
+
+                assetsDetailsTY = assetsDetailsRepository.getAssetsDetails(applicationId, currentYear-1+"");
+                assetsDetailsSY = assetsDetailsRepository.getAssetsDetails(applicationId, currentYear-2+"");
+                assetsDetailsFY = assetsDetailsRepository.getAssetsDetails(applicationId, currentYear-3+"");
+            }
+            else if(ScoreParameter.FinancialTypeForITR.ONE_YEAR_ITR == financialTypeId)
+            {
+                operatingStatementDetailsTY = operatingStatementDetailsRepository.getOperatingStatementDetails(applicationId, currentYear-1+"");
+                liabilitiesDetailsTY = liabilitiesDetailsRepository.getLiabilitiesDetails(applicationId, currentYear-1+"");
+                assetsDetailsTY = assetsDetailsRepository.getAssetsDetails(applicationId, currentYear-1+"");
+            }
+            else if(ScoreParameter.FinancialTypeForITR.PRESUMPTIVE == financialTypeId)
+            {
+                operatingStatementDetailsTY = operatingStatementDetailsRepository.getOperatingStatementDetails(applicationId, currentYear-1+"");
+                liabilitiesDetailsTY = liabilitiesDetailsRepository.getLiabilitiesDetails(applicationId, currentYear-1+"");
+                assetsDetailsTY = assetsDetailsRepository.getAssetsDetails(applicationId, currentYear-1+"");
+            }
 
             ///////////////
 

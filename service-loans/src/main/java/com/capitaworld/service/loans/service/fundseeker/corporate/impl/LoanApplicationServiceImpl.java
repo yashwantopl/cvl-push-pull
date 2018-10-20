@@ -9043,9 +9043,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 			List<BigInteger> fpProductList = null;
 			if (CommonUtils.BusinessType.EXISTING_BUSINESS.getId() == businessTypeId) {
-				fpProductList = loanApplicationRepository.getFpProductListByApplicationIdOnOneForm();
+				fpProductList = loanApplicationRepository.getScoringIdListByApplicationIdOnOneForm();
 			} else if (CommonUtils.BusinessType.NEW_TO_BUSINESS.getId() == businessTypeId) {
-				fpProductList = loanApplicationRepository.getFpProductListByApplicationIdAndStageId(applicationId, 105l);
+				fpProductList = loanApplicationRepository.getScoringIdListByApplicationIdAndStageId(applicationId, 105l);
 			}
 
 			List<Long> scoringLongList = new ArrayList<Long>();

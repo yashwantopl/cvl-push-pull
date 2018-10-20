@@ -26,4 +26,6 @@ public interface IrrService {
 	public ResponseEntity<RatingResponse> calculateIrrRating(Long applicationId,Long userId);
 
 	public List<CreditRatingCompanyDetail> getCompanyDetails(String companyName);
+
+	public List<CreditRatingCompanyDetail> getAllCompanyDetail();
 }
