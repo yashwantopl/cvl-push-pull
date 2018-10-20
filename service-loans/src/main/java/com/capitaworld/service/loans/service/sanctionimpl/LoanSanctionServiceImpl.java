@@ -229,8 +229,8 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 									}catch (Exception e) {
 										logger.info("------------------ Error/Exception while getting appication from getSanctionAndDisbursmentDetailList ------------ MSG =>" + e.getMessage());	
 									}
-									List<com.capitaworld.sidbi.integration.model.sanction.LoanSanctionAndDisbursedRequest> list1 = new ArrayList<>();
- 									BeanUtils.copyProperties(list, list1);
+									String json = MultipleJSONObjectHelper.getStringfromObject(list);
+ 									List<com.capitaworld.sidbi.integration.model.sanction.LoanSanctionAndDisbursedRequest> list1  = MultipleJSONObjectHelper.getListOfObjects(json, null, com.capitaworld.sidbi.integration.model.sanction.LoanSanctionAndDisbursedRequest.class);
  									System.out.println(list1);
 									if(sidbiIntegrationClient.updateSavedSanctionAndDisbursmentDetailList(list1 , token, generateTokenRequest.getBankToken() , userOrganisationRequest.getCodeLanguage())) {
 										try {
