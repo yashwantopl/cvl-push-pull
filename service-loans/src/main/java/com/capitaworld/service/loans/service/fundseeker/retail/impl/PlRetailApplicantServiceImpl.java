@@ -239,8 +239,8 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             CreditCardsDetailRequest creditCardRequest = null;
             for(CreditCardsDetail creditCardsDetail: creditCardsDetailList){
                 creditCardRequest = new CreditCardsDetailRequest();
-                creditCardRequest.setOutstandingBalanceString(CommonUtils.convertValue(creditCardsDetail.getOutstandingBalance()));
-                creditCardRequest.setCardTypeString(!CommonUtils.isObjectNullOrEmpty(creditCardsDetail.getCreditCardTypesId()) ? CreditCardTypesRetail.getById(creditCardsDetail.getCreditCardTypesId()).getValue() : "");
+                //creditCardRequest.setOutstandingBalanceString(CommonUtils.convertValue(creditCardsDetail.getOutstandingBalance()));
+                //creditCardRequest.setCardTypeString(!CommonUtils.isObjectNullOrEmpty(creditCardsDetail.getCreditCardTypesId()) ? CreditCardTypesRetail.getById(creditCardsDetail.getCreditCardTypesId()).getValue() : "");
                 BeanUtils.copyProperties(creditCardsDetail, creditCardRequest);
                 creditCardsDetailRequestList.add(creditCardRequest);
             }
