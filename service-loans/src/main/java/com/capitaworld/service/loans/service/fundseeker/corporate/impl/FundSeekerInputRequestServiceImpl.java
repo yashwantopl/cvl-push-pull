@@ -199,11 +199,11 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			}
 
 			//SAVE MATCHE JSON 
-			try {
+			/*try {
 				asyncComponent.saveOneformMapping(fundSeekerInputRequest.getApplicationId());
 			} catch (Exception e) {
 				e.printStackTrace();
-			}
+			}*/
 			
 			return true;
 
@@ -617,6 +617,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 					hunterRequestDataResponse = loanApplicationService
 							.getDataForHunter(fundSeekerInputRequestResponse.getApplicationId());
 				}
+
 				AnalyticsRequest request = new AnalyticsRequest();
 				request.setApplicationId(fundSeekerInputRequestResponse.getApplicationId());
 				request.setUserId(fundSeekerInputRequestResponse.getUserId());
