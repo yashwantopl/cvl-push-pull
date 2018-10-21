@@ -177,7 +177,7 @@ public class ScoringServiceImpl implements ScoringService{
             }
         }
         if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail)){
-            return calculateRetailPersonalLoanScoring(scoringRequestLoans,primaryCorporateDetail);
+            return calculateRetailPersonalLoanScoring(scoringRequestLoans);
         }
         Long businessTypeId=primaryCorporateDetail.getBusinessTypeId().longValue();
 
@@ -191,13 +191,13 @@ public class ScoringServiceImpl implements ScoringService{
         }
         else if(ScoreParameter.BusinessType.RETAIL_PERSONAL_LOAN == businessTypeId)
         {
-            return calculateRetailPersonalLoanScoring(scoringRequestLoans,primaryCorporateDetail);
+            return calculateRetailPersonalLoanScoring(scoringRequestLoans);
         }
 
         return null;
     }
 
-    private ResponseEntity<LoansResponse> calculateRetailPersonalLoanScoring(ScoringRequestLoans scoringRequestLoans, PrimaryCorporateDetail primaryCorporateDetail) {
+    private ResponseEntity<LoansResponse> calculateRetailPersonalLoanScoring(ScoringRequestLoans scoringRequestLoans) {
 
         ScoreParameterRetailRequest scoreParameterRetailRequest = new ScoreParameterRetailRequest();
 
