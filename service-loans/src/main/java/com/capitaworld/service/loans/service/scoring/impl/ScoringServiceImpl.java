@@ -162,14 +162,23 @@ public class ScoringServiceImpl implements ScoringService{
 
         PrimaryCorporateDetail primaryCorporateDetail=primaryCorporateDetailRepository.findOneByApplicationIdId(scoringRequestLoans.getApplicationId());
 
+        /*if(CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail)){
+            RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.findOneByApplicationIdId(scoringRequestLoans.getApplicationId());
+        }*/
+        RetailApplicantDetail retailApplicantDetail = null;
         if(CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail) || CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getBusinessTypeId()))
         {
-            logger.warn("Business type id is null or empty");
-            return new ResponseEntity<LoansResponse>(
-                    new LoansResponse("Business type id is null or empty.", HttpStatus.BAD_REQUEST.value()),
-                    HttpStatus.OK);
+            retailApplicantDetail = retailApplicantDetailRepository.findOneByApplicationIdId(scoringRequestLoans.getApplicationId());
+            if(CommonUtils.isObjectNullOrEmpty(retailApplicantDetail)) {
+                logger.warn("Business type id is null or empty");
+                return new ResponseEntity<LoansResponse>(
+                        new LoansResponse("Business type id is null or empty.", HttpStatus.BAD_REQUEST.value()),
+                        HttpStatus.OK);
+            }
         }
-
+        if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail)){
+            return calculateRetailPersonalLoanScoring(scoringRequestLoans,primaryCorporateDetail);
+        }
         Long businessTypeId=primaryCorporateDetail.getBusinessTypeId().longValue();
 
         if(ScoreParameter.BusinessType.EXISTING_BUSINESS == businessTypeId)
