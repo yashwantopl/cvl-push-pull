@@ -697,6 +697,12 @@ public class ScoringServiceImpl implements ScoringService{
         {
             scoringRequest.setFinancialTypeId(ScoreParameter.FinancialType.THREE_YEAR_ITR);
         }
+        else {
+            scoringRequest.setFinancialTypeId(scoringRequestLoans.getFinancialTypeIdProduct());
+        }
+        
+        logger.info("Financial Type Id ::::::::::::::::================>" + scoringRequest.getFinancialTypeId());
+        
         if(!(scoringRequestDetailList.size() > 0))
         {
 
@@ -835,6 +841,8 @@ public class ScoringServiceImpl implements ScoringService{
 
                 //List<FundSeekerInputRequest> fundSeekerInputRequestList = new ArrayList<>(dataList.size());
 
+                logger.info("dataList=====================================>>>>>>>>>>>>>>>>>>>>>>" + dataList.size());
+                
                 for (int i=0;i<dataList.size();i++){
 
                     ModelParameterResponse modelParameterResponse = null;
