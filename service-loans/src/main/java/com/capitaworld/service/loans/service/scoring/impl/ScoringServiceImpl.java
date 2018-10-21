@@ -501,7 +501,7 @@ public class ScoringServiceImpl implements ScoringService{
 
                             Data data = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)analyzerResponse.getData(),
                                     Data.class);
-                            if(!CommonUtils.isObjectNullOrEmpty(data.getCheckBounceForLast6Month())){
+                            if(!CommonUtils.isObjectNullOrEmpty(data) && !CommonUtils.isObjectNullOrEmpty(data.getCheckBounceForLast6Month())){
                                 {
                                     if(!CommonUtils.isObjectNullOrEmpty(data.getCheckBounceForLast6Month().doubleValue()))
                                     {
@@ -535,19 +535,20 @@ public class ScoringServiceImpl implements ScoringService{
                         try {
 
                             CibilResponse cibilResponse=cibilClient.getDPDLastXMonth(retailApplicantDetail.getPan());
-
-                            List<Integer> listDPD= (List<Integer>) cibilResponse.getListData();
-
-                            Integer maxDPD= Collections.max(listDPD);
-                            if(!CommonUtils.isObjectNullOrEmpty(maxDPD))
+                            if(!CommonUtils.isObjectNullOrEmpty(cibilResponse) && !CommonUtils.isListNullOrEmpty(cibilResponse.getListData()))
                             {
-                                scoreParameterRetailRequest.setDpd(maxDPD.doubleValue());
+                                List<Integer> listDPD = (List<Integer>) cibilResponse.getListData();
+
+                                Integer maxDPD = Collections.max(listDPD);
+                                if (!CommonUtils.isObjectNullOrEmpty(maxDPD)) {
+                                    scoreParameterRetailRequest.setDpd(maxDPD.doubleValue());
+                                } else {
+                                    scoreParameterRetailRequest.setDpd(0.0);
+                                }
+                                scoreParameterRetailRequest.setDPD_p(true);
+                            }else{
+                                scoreParameterRetailRequest.setDPD_p(false);
                             }
-                            else
-                            {
-                                scoreParameterRetailRequest.setDpd(0.0);
-                            }
-                            scoreParameterRetailRequest.setDPD_p(true);
                         }
                         catch (Exception e)
                         {
