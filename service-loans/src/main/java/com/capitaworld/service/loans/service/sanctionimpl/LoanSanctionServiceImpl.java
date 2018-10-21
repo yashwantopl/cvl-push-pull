@@ -96,15 +96,13 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 			BeanUtils.copyProperties(loanSanctionRequest, loanSanctionDomainOld,"id");
 			loanSanctionDomainOld.setModifiedBy(loanSanctionRequest.getActionBy());
 			loanSanctionDomainOld.setModifiedDate(new Date());
-			
-			//==================Sending Mail notification to Maker=============================
-			
-			//fpAsyncComponent.sendEmailToFSWhenCheckerSanctionLoan(loanSanctionDomainOld);
-			fpAsyncComponent.sendEmailToMakerHOBOWhenCheckerSanctionLoan(loanSanctionDomainOld);
-			
-			//=================================================================================
-			
 		}
+		//==================Sending Mail notification to Maker=============================
+		
+		fpAsyncComponent.sendEmailToFSWhenCheckerSanctionLoan(loanSanctionDomainOld);
+		fpAsyncComponent.sendEmailToMakerHOBOWhenCheckerSanctionLoan(loanSanctionDomainOld);
+		
+		//=================================================================================
 		logger.info("Exit saveLoanSanctionDetail() -----------------------> LoanSanctionDomain "+ loanSanctionDomainOld);
 		return loanSanctionRepository.save(loanSanctionDomainOld) != null;
 		}catch (Exception e) {

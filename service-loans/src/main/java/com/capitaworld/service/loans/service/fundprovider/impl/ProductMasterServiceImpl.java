@@ -87,6 +87,7 @@ import com.capitaworld.service.loans.service.fundprovider.WorkingCapitalParamete
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
+import com.capitaworld.service.loans.utils.CommonUtils.UserMainType;
 import com.capitaworld.service.matchengine.ProposalDetailsClient;
 import com.capitaworld.service.matchengine.exception.MatchException;
 import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
@@ -364,6 +365,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				// set business type id
 				productMaster.setBusinessTypeId(addProductRequest.getBusinessTypeId());
 				productMaster.setWcRenewalStatus(addProductRequest.getWcRenewalStatus());
+				productMaster.setFinId(addProductRequest.getFinId());
 				productMaster.setIsCopied(false);
 				productMaster.setIsActive(true);
 				productMaster.setUserOrgId(userOrgId);
@@ -1380,11 +1382,41 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 		List<ProductMaster> results = null;
 		List<ProductMasterRequest> productMasterRequests = new ArrayList<>();
 		
+			if(CommonUtils.getUserMainType(productId)==UserMainType.RETAIL)
+			{
+				if (!CommonUtils.isObjectNullOrEmpty(userOrgId)) {
+					results = productMasterRepository.getUserRetailProductListByOrgId(userOrgId);
+				} else {
+					results = productMasterRepository.getUserRetailProductList(userId);
+				}
+			}
+		
+			else
+			{
+
+
+		if(CommonUtils.getUserMainType(productId)== CommonUtils.UserMainType.RETAIL)
+		{
+			if (!CommonUtils.isObjectNullOrEmpty(userOrgId)) {
+				results = productMasterRepository.getUserRetailProductListByOrgId(userOrgId);
+			} else {
+				results = productMasterRepository.getUserRetailProductList(userId);
+			}
+		}
+
+		else
+		{
+
 			if (!CommonUtils.isObjectNullOrEmpty(userOrgId)) {
 				results = productMasterRepository.getUserCorporateProductListByOrgId(userOrgId);
 			} else {
 				results = productMasterRepository.getUserCorporateProductList(userId);
 			}
+
+			}
+
+		}
+
 		
 		
 		for (ProductMaster productMaster : results) {

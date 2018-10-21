@@ -169,7 +169,7 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 		saveNegativeIndustry(wcTlParameterRequest);
 
 		//Ravina
-		boolean isUpdate = msmeValueMappingService.updateMsmeValueMapping(false, wcTlParameterRequest.getId(),wcTlParameter2.getId());
+		boolean isUpdate = msmeValueMappingService.updateMsmeValueMapping(false, mappingId,wcTlParameter2.getId());
 		logger.info("updated = {}",isUpdate);
 		CommonDocumentUtils.endHook(logger, "saveOrUpdate");
 		return true;
@@ -324,6 +324,7 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 				e.printStackTrace();
 			}
 		}
+		
 		wcTlParameterRequest.setMsmeFundingIds(msmeValueMappingService.getDataListFromFpProductId(2,id, wcTlParameterRequest.getUserId()));
 		CommonDocumentUtils.endHook(logger, "getTermLoanParameterRequest");
 		return wcTlParameterRequest;
