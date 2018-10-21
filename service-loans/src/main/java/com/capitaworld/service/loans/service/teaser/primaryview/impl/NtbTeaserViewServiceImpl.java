@@ -43,8 +43,10 @@ import com.capitaworld.service.loans.model.FinanceMeansDetailRequest;
 import com.capitaworld.service.loans.model.FinanceMeansDetailResponse;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailResponse;
+import com.capitaworld.service.loans.model.PincodeDataResponse;
 import com.capitaworld.service.loans.model.TotalCostOfProjectResponse;
 import com.capitaworld.service.loans.model.corporate.CorporateDirectorIncomeRequest;
+import com.capitaworld.service.loans.model.corporate.CorporateFinalInfoRequest;
 import com.capitaworld.service.loans.model.corporate.FundSeekerInputRequestResponse;
 import com.capitaworld.service.loans.model.corporate.TotalCostOfProjectRequest;
 import com.capitaworld.service.loans.model.teaser.primaryview.NtbPrimaryViewResponse;
@@ -53,8 +55,10 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateAp
 import com.capitaworld.service.loans.repository.fundseeker.corporate.DirectorBackgroundDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
+import com.capitaworld.service.loans.service.common.PincodeDateService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.AssociatedConcernDetailService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateDirectorIncomeService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateFinalInfoService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.DirectorBackgroundDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.ExistingProductDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FinanceMeansDetailsService;
@@ -149,7 +153,7 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService {
 
 	@Autowired
 	private CorporateDirectorIncomeService corporateDirectorIncomeService;
-	
+
 	@Autowired
 	private ExistingProductDetailsService existingProductDetailsService;
 
@@ -161,29 +165,34 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService {
 
 	@Autowired
 	private CIBILClient cibilClient;
-	
+
 	@Autowired
 	private DirectorBackgroundDetailsRepository dirBackgroundDetails;
 
 	@Autowired
 	private FraudAnalyticsClient fraudAnalyticsClient;
-	
+
 	@Autowired
 	private TotalCostOfProjectService costOfProjectService;
 
 	@Autowired
 	private FinanceMeansDetailsService financeMeansDetailsService;
-	
+
 	@Autowired
 	private SecurityCorporateDetailsService securityCorporateDetailsService;
 
 	@Autowired
 	private GuarantorsCorporateDetailService guarantorsCorporateDetailService;
-	
+
 	@Autowired
 	private AssociatedConcernDetailService associatedConcernDetailService;
-
 	
+	@Autowired
+	private CorporateFinalInfoService corporateFinalInfoService;
+	
+	@Autowired
+	private PincodeDateService pincodeDateService;
+
 	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 	DecimalFormat decim = new DecimalFormat("#,###.00");
 
@@ -227,10 +236,12 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService {
 		if (corporateApplicantDetail != null) {
 			ntbPrimaryViewRespone.setOrganisationName(corporateApplicantDetail.getOrganisationName());
 			ntbPrimaryViewRespone.setNameOfEntity(corporateApplicantDetail.getOrganisationName());
-			ntbPrimaryViewRespone.setConsitution(corporateApplicantDetail.getConstitutionId() != null ? Constitution.getById(corporateApplicantDetail.getConstitutionId()).getValue().toString() : "-");
+			ntbPrimaryViewRespone.setConsitution(corporateApplicantDetail.getConstitutionId() != null
+					? Constitution.getById(corporateApplicantDetail.getConstitutionId()).getValue().toString()
+					: "-");
 			ntbPrimaryViewRespone.setPan(corporateApplicantDetail.getPanNo());
 			ntbPrimaryViewRespone.setEstablishDate(corporateApplicantDetail.getEstablishmentDate());
-			
+
 		}
 
 		// Primary Details of applicant
@@ -294,28 +305,29 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService {
 			} else {
 				ntbPrimaryViewRespone.setIsMultipleUser(true);
 			}
-			
-			 /* for (int i = 0; i < directorBackgroundDetails.size(); i++) {
-			  DirectorBackgroundDetail dir = new DirectorBackgroundDetail();
-			  
-			  // DirectorBackgroundDetail.class);
-			  
-			  BeanUtils.copyProperties(directorBackgroundDetails.get(i), dir); 
-			  dir.setPincode(String.valueOf(directorBackgroundDetails.get(i).get("pincode"))); 
-			  
-			  try {
-					if(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetails.get(i).get("districtMappingId"))) {
-						PincodeDataResponse pinRes=(pincodeDateService.getById(Long.valueOf(String.valueOf(directorBackgroundDetails.get(i).get("districtMappingId")))));
-						ntbPrimaryViewRespone.setPindata(pinRes);
-						
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
 
-			  
-			   }*/
-			 
+			/*
+			 * for (int i = 0; i < directorBackgroundDetails.size(); i++) {
+			 * DirectorBackgroundDetail dir = new DirectorBackgroundDetail();
+			 * 
+			 * // DirectorBackgroundDetail.class);
+			 * 
+			 * BeanUtils.copyProperties(directorBackgroundDetails.get(i), dir);
+			 * dir.setPincode(String.valueOf(directorBackgroundDetails.get(i).get("pincode")
+			 * ));
+			 * 
+			 * try {
+			 * if(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetails.get(i).get(
+			 * "districtMappingId"))) { PincodeDataResponse
+			 * pinRes=(pincodeDateService.getById(Long.valueOf(String.valueOf(
+			 * directorBackgroundDetails.get(i).get("districtMappingId")))));
+			 * ntbPrimaryViewRespone.setPindata(pinRes);
+			 * 
+			 * } } catch (Exception e) { e.printStackTrace(); }
+			 * 
+			 * 
+			 * }
+			 */
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -352,21 +364,30 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService {
 		try {
 
 			FundSeekerInputRequestResponse fundSeekerInputRequestResponse = ntbService.getOthersDetail(toApplicationId);
-			/*if (!CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequestResponse.getProposedConstitutionOfUnit())) {
-				ProposedConstitutionOfUnitNTB byIdProCons = ProposedConstitutionOfUnitNTB
-						.getById(fundSeekerInputRequestResponse.getProposedConstitutionOfUnit());
-				ntbPrimaryViewRespone.setProposedConstitutionOfUnit(
-						CommonUtils.isObjectNullOrEmpty(byIdProCons) ? Integer.valueOf(byIdProCons.getValue()) : null);
-			}*/
-			/*if (!CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequestResponse.getProposedDetailsOfUnit())) {
-				ProposedDetailOfUnitNTB byIdProConsDet = ProposedDetailOfUnitNTB
-						.getById(fundSeekerInputRequestResponse.getProposedDetailsOfUnit());
-				ntbPrimaryViewRespone.setProposedDetailOfUnitFact(
-						!CommonUtils.isObjectNullOrEmpty(byIdProConsDet) ? String.valueOf(byIdProConsDet.getValue().toString())
-								: null);
-			}*/
-			
-			ntbPrimaryViewRespone.setProposedDetailOfUnitFact(fundSeekerInputRequestResponse.getProposedDetailsOfUnit() != null ? ProposedDetailOfUnitNTB.getById(fundSeekerInputRequestResponse.getProposedDetailsOfUnit()).getValue().toString() : '-');
+			/*
+			 * if (!CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequestResponse.
+			 * getProposedConstitutionOfUnit())) { ProposedConstitutionOfUnitNTB byIdProCons
+			 * = ProposedConstitutionOfUnitNTB
+			 * .getById(fundSeekerInputRequestResponse.getProposedConstitutionOfUnit());
+			 * ntbPrimaryViewRespone.setProposedConstitutionOfUnit(
+			 * CommonUtils.isObjectNullOrEmpty(byIdProCons) ?
+			 * Integer.valueOf(byIdProCons.getValue()) : null); }
+			 */
+			/*
+			 * if (!CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequestResponse.
+			 * getProposedDetailsOfUnit())) { ProposedDetailOfUnitNTB byIdProConsDet =
+			 * ProposedDetailOfUnitNTB
+			 * .getById(fundSeekerInputRequestResponse.getProposedDetailsOfUnit());
+			 * ntbPrimaryViewRespone.setProposedDetailOfUnitFact(
+			 * !CommonUtils.isObjectNullOrEmpty(byIdProConsDet) ?
+			 * String.valueOf(byIdProConsDet.getValue().toString()) : null); }
+			 */
+
+			ntbPrimaryViewRespone
+					.setProposedDetailOfUnitFact(fundSeekerInputRequestResponse.getProposedDetailsOfUnit() != null
+							? ProposedDetailOfUnitNTB.getById(fundSeekerInputRequestResponse.getProposedDetailsOfUnit())
+									.getValue().toString()
+							: '-');
 			List<Long> keyVerticalFundingId = new ArrayList<>();
 			if (!CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequestResponse.getKeyVericalFunding()))
 				keyVerticalFundingId.add(fundSeekerInputRequestResponse.getKeyVericalFunding());
@@ -461,9 +482,9 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService {
 					// financialArrangementsDetailResponse.setAddress(financialArrangementsDetailRequest.getAddress());
 					financialArrangementsDetailResponse.setDirectorName(directorName);
 					financialArrangementsDetailResponseList.add(financialArrangementsDetailResponse);
-					ntbPrimaryViewRespone.setFinancialArrangementsDetailResponseList(financialArrangementsDetailResponseList);
+					ntbPrimaryViewRespone
+							.setFinancialArrangementsDetailResponseList(financialArrangementsDetailResponseList);
 				}
-				
 
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -549,23 +570,23 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService {
 			e.printStackTrace();
 			logger.info("Error while getting CGTMSE data");
 		}
-		
+
 		// Fraud Detection Data
 
-				try {
-					AnalyticsResponse hunterResp = fraudAnalyticsClient.getRuleAnalysisData(toApplicationId);
+		try {
+			AnalyticsResponse hunterResp = fraudAnalyticsClient.getRuleAnalysisData(toApplicationId);
 
-					if (!CommonUtils.isObjectListNull(hunterResp, hunterResp.getData())) {
+			if (!CommonUtils.isObjectListNull(hunterResp, hunterResp.getData())) {
 
-						ntbPrimaryViewRespone.setFraudDetectionData(hunterResp);
+				ntbPrimaryViewRespone.setFraudDetectionData(hunterResp);
 
-					}
-				} catch (Exception e1) {
+			}
+		} catch (Exception e1) {
 
-					logger.warn("------:::::...Error while fetching Fraud Detection Details...For..::::::-----",
-							toApplicationId);
-					e1.printStackTrace();
-				}
+			logger.warn("------:::::...Error while fetching Fraud Detection Details...For..::::::-----",
+					toApplicationId);
+			e1.printStackTrace();
+		}
 
 		// GET DOCUMENTS
 		DocumentRequest documentRequest = new DocumentRequest();
@@ -587,47 +608,98 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService {
 		} catch (DocumentException e) {
 			e.printStackTrace();
 		}
-		
-		List<Long> dirIdListReq= dirBackgroundDetailsRepository.getDirectorIdFromApplicationId(toApplicationId);
+
+		List<Long> dirIdListReq = dirBackgroundDetailsRepository.getDirectorIdFromApplicationId(toApplicationId);
 		DocumentRequest documentRequestItr = new DocumentRequest();
 		documentRequestItr.setApplicationId(toApplicationId);
 		documentRequestItr.setUserType(DocumentAlias.UERT_TYPE_DIRECTOR);
-		
-		List<Object> itrPdfList=new ArrayList<>();
-		List<Object> itrXml=new ArrayList<>();
-		
+
+		List<Object> itrPdfList = new ArrayList<>();
+		List<Object> itrXml = new ArrayList<>();
+
 		for (int i = 0; i < dirIdListReq.size(); i++) {
 			documentRequestItr.setDirectorId(dirIdListReq.get(i));
 			documentRequestItr.setProductDocumentMappingId(DocumentAlias.CORPORATE_ITR_PDF);
 			try {
 				DocumentResponse documentResponseitr = dmsClient.listProductDocument(documentRequestItr);
 				itrPdfList.add(documentResponseitr.getDataList());
-								
+
 			} catch (DocumentException e) {
 				e.printStackTrace();
 			}
-			
-			
-			
+
 			documentRequestItr.setProductDocumentMappingId(DocumentAlias.CORPORATE_ITR_XML);
 			try {
 				DocumentResponse documentResponseitrXml = dmsClient.listProductDocument(documentRequestItr);
 				itrXml.add(documentResponseitrXml.getDataList());
-				
+
 			} catch (DocumentException e) {
 				e.printStackTrace();
 			}
-			
+
 		}
 		ntbPrimaryViewRespone.setIrtPdfReport(itrPdfList);
 		ntbPrimaryViewRespone.setIrtXMLReport(itrXml);
 
-		
-		
-		
-
 		if (isFinal) {
 			
+			/*// address
+			
+			CorporateFinalInfoRequest corporateFinalInfoRequest;
+			try {
+				corporateFinalInfoRequest = corporateFinalInfoService.get(userId,toApplicationId);
+				//ADMIN OFFICE ADDRESS
+				try {
+					if(corporateFinalInfoRequest.getSecondAddress().getDistrictMappingId() != null) {
+						
+						PincodeDataResponse pindata=pincodeDateService.getById(corporateFinalInfoRequest.getSecondAddress().getDistrictMappingId());
+						ntbPrimaryViewRespone.setAdminAddDist(pindata.getDistrictName());
+						ntbPrimaryViewRespone.setAdminAddTaluko(pindata.getTaluka());
+						pindata.getTaluka();
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+					// TODO: handle exception
+				}
+				if(!CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getSecondAddress())){
+					
+					ntbPrimaryViewRespone.setAdminAdd( (corporateFinalInfoRequest.getSecondAddress().getPremiseNumber()!=null ? (CommonUtils.commaReplace(corporateFinalInfoRequest.getSecondAddress().getPremiseNumber())) :"") + (corporateFinalInfoRequest.getSecondAddress().getStreetName() != null ? (CommonUtils.commaReplace(corporateFinalInfoRequest.getSecondAddress().getStreetName())) : "") + (corporateFinalInfoRequest.getSecondAddress().getLandMark() != null ? (CommonUtils.commaReplace(corporateFinalInfoRequest.getSecondAddress().getLandMark())) : "")+ (ntbPrimaryViewRespone.getAdminAddDist() != null ?(CommonUtils.commaReplace(ntbPrimaryViewRespone.getAdminAddDist())) :"")+ (ntbPrimaryViewRespone.getAdminAddTaluko() != null ? (CommonUtils.commaReplace(ntbPrimaryViewRespone.getAdminAddTaluko())) : "") + (corporateFinalInfoRequest.getSecondAddress().getPincode() != null ? (corporateFinalInfoRequest.getSecondAddress().getPincode()) : ""));
+				}
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+					// TODO: handle exception
+				}	
+			
+			//address
+			
+			
+			try {
+				corporateFinalInfoRequest = corporateFinalInfoService.get(userId,toApplicationId);
+				//Reg OFFICE ADDRESS
+				try {
+					if(corporateFinalInfoRequest.getSecondAddress().getDistrictMappingId() != null) {
+						
+						PincodeDataResponse pindata=pincodeDateService.getById(corporateFinalInfoRequest.getFirstAddress().getDistrictMappingId());
+						ntbPrimaryViewRespone.setRegAddDist(pindata.getDistrictName());
+						ntbPrimaryViewRespone.setRegAddTaluko(pindata.getTaluka());
+						pindata.getTaluka();
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+					// TODO: handle exception
+				}
+				if(!CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getFirstAddress())){
+					
+					ntbPrimaryViewRespone.setRegAdd( (corporateFinalInfoRequest.getFirstAddress().getPremiseNumber()!=null ? (CommonUtils.commaReplace(corporateFinalInfoRequest.getFirstAddress().getPremiseNumber())) :"") + (corporateFinalInfoRequest.getFirstAddress().getStreetName() != null ? (CommonUtils.commaReplace(corporateFinalInfoRequest.getFirstAddress().getStreetName())) : "") + (corporateFinalInfoRequest.getFirstAddress().getLandMark() != null ? (CommonUtils.commaReplace(corporateFinalInfoRequest.getFirstAddress().getLandMark())) : "")+ (ntbPrimaryViewRespone.getRegAddDist() != null ?(CommonUtils.commaReplace(ntbPrimaryViewRespone.getRegAddDist())) :"")+ (ntbPrimaryViewRespone.getRegAddTaluko() != null ? (CommonUtils.commaReplace(ntbPrimaryViewRespone.getRegAddTaluko())) : "") + (corporateFinalInfoRequest.getFirstAddress().getPincode() != null ? (corporateFinalInfoRequest.getFirstAddress().getPincode()) : ""));
+				}
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+					// TODO: handle exception
+				}	*/
+			
+
 			// EXISTING PRODUCT DETAILS
 			try {
 				ntbPrimaryViewRespone.setExistingProductDetailRequestList(
@@ -635,7 +707,7 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService {
 			} catch (Exception e) {
 				logger.error("Problem to get Data of Existing Product {}", e);
 			}
-			
+
 			// cost of project
 			try {
 				List<TotalCostOfProjectRequest> costOfProjectsList = costOfProjectService
@@ -645,13 +717,15 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService {
 					TotalCostOfProjectResponse costOfProjectResponse = new TotalCostOfProjectResponse();
 					BeanUtils.copyProperties(costOfProjectRequest, costOfProjectResponse);
 					if (costOfProjectRequest.getParticularsId() != null)
-						costOfProjectResponse.setParticulars(Particular
-								.getById(Integer.parseInt(costOfProjectRequest.getParticularsId().toString())).getValue());
+						costOfProjectResponse.setParticulars(
+								Particular.getById(Integer.parseInt(costOfProjectRequest.getParticularsId().toString()))
+										.getValue());
 					costOfProjectResponses.add(costOfProjectResponse);
 				}
 				ntbPrimaryViewRespone.setTotalCostOfProjectResponseList(costOfProjectResponses);
 			} catch (Exception e1) {
 				// TODO Auto-generated catch block
+				e1.printStackTrace();
 				logger.error("Problem to get Data of Total cost of project{}", e1);
 			}
 
@@ -667,7 +741,8 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService {
 
 					if (financeMeansDetailRequest.getFinanceMeansCategoryId() != null)
 						detailResponse.setFinanceMeansCategory(FinanceCategory
-								.getById(Integer.parseInt(financeMeansDetailRequest.getFinanceMeansCategoryId().toString()))
+								.getById(Integer
+										.parseInt(financeMeansDetailRequest.getFinanceMeansCategoryId().toString()))
 								.getValue());
 					financeMeansDetailResponsesList.add(detailResponse);
 				}
@@ -676,7 +751,7 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService {
 				// TODO Auto-generated catch block
 				logger.error("Problem to get Data of Finance Means Details {}", e1);
 			}
-			
+
 			// Security
 
 			try {
@@ -693,13 +768,97 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService {
 			} catch (Exception e) {
 				logger.error("Problem to get Data of Details of Guarantor {}", e);
 			}
-			
+
 			// get data of Associated Concern
 			try {
 				ntbPrimaryViewRespone.setAssociatedConcernDetailRequests(
 						associatedConcernDetailService.getAssociatedConcernsDetailList(toApplicationId, userId));
 			} catch (Exception e) {
 				logger.error("Problem to get Data of Associated Concerns {}", e);
+			}
+
+			// final uploads Documents
+
+			documentRequest.setProductDocumentMappingId(DocumentAlias.TERM_LOAN_LAST_IT_RETURN);
+			try {
+				DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+				ntbPrimaryViewRespone.setItr(documentResponse.getDataList());
+			} catch (DocumentException e) {
+				e.printStackTrace();
+			}
+			documentRequest.setProductDocumentMappingId(DocumentAlias.TERM_LOAN_BANK_STATEMENT);
+			try {
+				DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+				ntbPrimaryViewRespone.setBankStatementFinalView(documentResponse.getDataList());
+			} catch (DocumentException e) {
+				e.printStackTrace();
+			}
+			documentRequest.setProductDocumentMappingId(DocumentAlias.TERM_LOAN_SANCTION_LETTER_COPY);
+			try {
+				DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+				ntbPrimaryViewRespone.setSanctionLetter(documentResponse.getDataList());
+			} catch (DocumentException e) {
+				e.printStackTrace();
+			}
+
+			documentRequest.setProductDocumentMappingId(DocumentAlias.TERM_LOAN_NET_WORTH_STATEMENT_OF_DIRECTORS);
+			try {
+				DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+				ntbPrimaryViewRespone.setNetWorthStatements(documentResponse.getDataList());
+			} catch (DocumentException e) {
+				e.printStackTrace();
+			}
+
+			documentRequest.setProductDocumentMappingId(DocumentAlias.TL_MOM_AOA);
+			try {
+				DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+				ntbPrimaryViewRespone.setMomAndAoa(documentResponse.getDataList());
+			} catch (DocumentException e) {
+				e.printStackTrace();
+			}
+
+			documentRequest.setProductDocumentMappingId(DocumentAlias.TERM_LOAN_COPY_OF_PAN_CARD);
+			try {
+				DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+				ntbPrimaryViewRespone.setCopyOfPanCard(documentResponse.getDataList());
+			} catch (DocumentException e) {
+				e.printStackTrace();
+			}
+			documentRequest.setProductDocumentMappingId(DocumentAlias.TERM_LOAN_DIRECTOR_ADDRESS);
+			try {
+				DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+				ntbPrimaryViewRespone.setResidenceAddOfDirectors(documentResponse.getDataList());
+			} catch (DocumentException e) {
+				e.printStackTrace();
+			}
+			documentRequest.setProductDocumentMappingId(DocumentAlias.TERM_LOAN_PHOTO_OF_DIRECTORS);
+			try {
+				DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+				ntbPrimaryViewRespone.setPhotosOfDirectors(documentResponse.getDataList());
+			} catch (DocumentException e) {
+				e.printStackTrace();
+			}
+
+			documentRequest.setProductDocumentMappingId((long) DocumentAlias.TL_CMA);
+			try {
+				DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+				ntbPrimaryViewRespone.setCmaList(documentResponse.getDataList());
+			} catch (DocumentException e) {
+				e.printStackTrace();
+			}
+			documentRequest.setProductDocumentMappingId(DocumentAlias.TERM_LOAN_AADHAR_CARD);
+			try {
+				DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+				ntbPrimaryViewRespone.setAadhar(documentResponse.getDataList());
+			} catch (DocumentException e) {
+				e.printStackTrace();
+			}
+			documentRequest.setProductDocumentMappingId(DocumentAlias.TERM_LOAN_BROCHURE_OF_PROPOSED_ACTIVITY);
+			try {
+				DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+				ntbPrimaryViewRespone.setBrochure(documentResponse.getDataList());
+			} catch (DocumentException e) {
+				e.printStackTrace();
 			}
 
 		}

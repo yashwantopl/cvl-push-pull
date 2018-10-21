@@ -449,6 +449,64 @@ public class RetailApplicantDetail implements Serializable {
 	@Column(name="edu_inst_id")
 	private Integer eduInstId;
 
+    @Column(name="nationality")
+    private String nationality;
+
+    @Column(name="residential_status")
+    private Integer residentialStatus;
+
+    @Column(name="disability_type")
+    private Integer disabilityType;
+
+    @Column(name="passport")
+    private String passport;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="passport_validity")
+    private Date passportValidity;
+
+    @Column(name="voter_id")
+    private String voterId;
+
+    @Column(name="residential_proof_no")
+    private String residentialProofNo;
+
+    @Column(name="office_name_of_org")
+    private String officeNameOfOrg;
+
+    @Column(name="office_email")
+    private String officeEmail;
+
+    @Column(name="previous_employers_contact")
+    private String previousEmployersContact;
+
+    @Column(name="ddo_website")
+    private String ddoWebsite;
+
+
+    @Column(name="ddo_remaining_ser_yrs")
+    private Integer ddoRemainingSerYrs;
+
+
+    @Column(name="ddo_remaining_ser_months")
+    private Integer ddoRemainingSerMonths;
+
+
+    @Column(name="ddo_employee_no")
+    private String ddoEmployeeNo;
+
+
+    @Column(name="ddo_designation")
+    private String ddoDesignation;
+
+
+    @Column(name="ddo_department")
+    private String ddoDepartment;
+
+
+    @Column(name="ddo_organization_type")
+    private Integer ddoOrganizationType;
+
 	public RetailApplicantDetail() {
 	}
 
@@ -1570,5 +1628,141 @@ public class RetailApplicantDetail implements Serializable {
 
 	public void setEduInstId(Integer eduInstId) {
 		this.eduInstId = eduInstId;
+	}
+
+    public String getNationality() {
+        return nationality;
+    }
+
+    public void setNationality(String nationality) {
+        this.nationality = nationality;
+    }
+
+    public Integer getResidentialStatus() {
+        return residentialStatus;
+    }
+
+    public void setResidentialStatus(Integer residentialStatus) {
+        this.residentialStatus = residentialStatus;
+    }
+
+    public Integer getDisabilityType() {
+        return disabilityType;
+    }
+
+    public void setDisabilityType(Integer disabilityType) {
+        this.disabilityType = disabilityType;
+    }
+
+    public String getPassport() {
+        return passport;
+    }
+
+    public void setPassport(String passport) {
+        this.passport = passport;
+    }
+
+    public Date getPassportValidity() {
+        return passportValidity;
+    }
+
+    public void setPassportValidity(Date passportValidity) {
+        this.passportValidity = passportValidity;
+    }
+
+    public String getVoterId() {
+        return voterId;
+    }
+
+    public void setVoterId(String voterId) {
+        this.voterId = voterId;
+    }
+
+    public String getResidentialProofNo() {
+        return residentialProofNo;
+    }
+
+    public void setResidentialProofNo(String residentialProofNo) {
+        this.residentialProofNo = residentialProofNo;
+    }
+
+    public String getOfficeNameOfOrg() {
+        return officeNameOfOrg;
+    }
+
+    public void setOfficeNameOfOrg(String officeNameOfOrg) {
+        this.officeNameOfOrg = officeNameOfOrg;
+    }
+
+    public String getOfficeEmail() {
+        return officeEmail;
+    }
+
+    public void setOfficeEmail(String officeEmail) {
+        this.officeEmail = officeEmail;
+    }
+
+	public String getPreviousEmployersContact() {
+		return previousEmployersContact;
+	}
+
+	public void setPreviousEmployersContact(String previousEmployersContact) {
+		this.previousEmployersContact = previousEmployersContact;
+	}
+
+	public String getDdoWebsite() {
+		return ddoWebsite;
+	}
+
+	public void setDdoWebsite(String ddoWebsite) {
+		this.ddoWebsite = ddoWebsite;
+	}
+
+	public Integer getDdoRemainingSerYrs() {
+		return ddoRemainingSerYrs;
+	}
+
+	public void setDdoRemainingSerYrs(Integer ddoRemainingSerYrs) {
+		this.ddoRemainingSerYrs = ddoRemainingSerYrs;
+	}
+
+	public Integer getDdoRemainingSerMonths() {
+		return ddoRemainingSerMonths;
+	}
+
+	public void setDdoRemainingSerMonths(Integer ddoRemainingSerMonths) {
+		this.ddoRemainingSerMonths = ddoRemainingSerMonths;
+	}
+
+	public String getDdoEmployeeNo() {
+		return ddoEmployeeNo;
+	}
+
+	public void setDdoEmployeeNo(String ddoEmployeeNo) {
+		this.ddoEmployeeNo = ddoEmployeeNo;
+	}
+
+	public String getDdoDesignation() {
+		return ddoDesignation;
+	}
+
+	public void setDdoDesignation(String ddoDesignation) {
+		this.ddoDesignation = ddoDesignation;
+	}
+
+	public String getDdoDepartment() {
+		return ddoDepartment;
+	}
+
+	public void setDdoDepartment(String ddoDepartment) {
+		this.ddoDepartment = ddoDepartment;
+	}
+
+	public Integer getDdoOrganizationType() {
+		return ddoOrganizationType;
+	}
+
+	public void setDdoOrganizationType(Integer ddoOrganizationType) {
+		this.ddoOrganizationType = ddoOrganizationType;
 	}
 }

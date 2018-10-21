@@ -1,8 +1,9 @@
 package com.capitaworld.service.loans.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import java.io.Serializable;
+import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ProposalDetailsAdminRequest implements Serializable {
@@ -28,8 +29,26 @@ public class ProposalDetailsAdminRequest implements Serializable {
     private String state;
     private String branchName;
     private String bankImageUrl;
-
-    public Long getApplicationId() {
+    private String userName;
+    private String mobile;
+    private Date createdDate;
+    private Double emi;
+    private Double processingFee;
+    private Date fromDate;
+    private String contactPersonName;
+    private String telephoneNo;
+    private String contactPersonNumber;
+    private String applicationCode;
+    private String code;
+    private String streetName;
+    private String premisesNo;
+    private String contactPersonEmail;
+    private Boolean isCampaignCustomer;
+    
+    
+    private Date toDate;
+    
+	public Long getApplicationId() {
         return applicationId;
     }
 
@@ -196,4 +215,134 @@ public class ProposalDetailsAdminRequest implements Serializable {
     public void setBankImageUrl(String bankImageUrl) {
         this.bankImageUrl = bankImageUrl;
     }
+
+	public String getUserName() {
+		return userName;
+	}
+
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
+
+	public String getMobile() {
+		return mobile;
+	}
+
+	public void setMobile(String mobile) {
+		this.mobile = mobile;
+	}
+
+	public Date getCreatedDate() {
+		return createdDate;
+	}
+
+	public void setCreatedDate(Date createdDate) {
+		this.createdDate = createdDate;
+	}
+ 
+	public Double getEmi() {
+		return emi;
+	}
+
+	public void setEmi(Double emi) {
+		this.emi = emi;
+	}
+
+	public Double getProcessingFee() {
+		return processingFee;
+	}
+
+	public void setProcessingFee(Double processingFee) {
+		this.processingFee = processingFee;
+	}
+
+	public Date getFromDate() {
+		return fromDate;
+	}
+
+	public void setFromDate(Date fromDate) {
+		this.fromDate = fromDate;
+	}
+
+	public Date getToDate() {
+		return toDate;
+	}
+
+	public void setToDate(Date toDate) {
+		this.toDate = toDate;
+	}
+
+	public String getContactPersonName() {
+		return contactPersonName;
+	}
+
+	public void setContactPersonName(String cantactPersonName) {
+		this.contactPersonName = cantactPersonName;
+	}
+
+	public String getTelephoneNo() {
+		return telephoneNo;
+	}
+
+	public void setTelephoneNo(String telephoneNo) {
+		this.telephoneNo = telephoneNo;
+	}
+
+	public String getContactPersonNumber() {
+		return contactPersonNumber;
+	}
+
+	public void setContactPersonNumber(String contactPersonNumber) {
+		this.contactPersonNumber = contactPersonNumber;
+	}
+
+	public String getApplicationCode() {
+		return applicationCode;
+	}
+
+	public void setApplicationCode(String applicationCode) {
+		this.applicationCode = applicationCode;
+	}
+
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
+	}
+
+	public String getStreetName() {
+		return streetName;
+	}
+
+	public void setStreetName(String streetName) {
+		this.streetName = streetName;
+	}
+
+	public String getPremisesNo() {
+		return premisesNo;
+	}
+
+	public void setPremisesNo(String premisesNo) {
+		this.premisesNo = premisesNo;
+	}
+
+	public String getContactPersonEmail() {
+		return contactPersonEmail;
+	}
+
+	public void setContactPersonEmail(String contactPersonEmail) {
+		this.contactPersonEmail = contactPersonEmail;
+	}
+
+	public Boolean getIsCampaignCustomer() {
+		return isCampaignCustomer;
+	}
+
+	public void setIsCampaignCustomer(Boolean isCampaignCustomer) {
+		this.isCampaignCustomer = isCampaignCustomer;
+	}
+
 }
+

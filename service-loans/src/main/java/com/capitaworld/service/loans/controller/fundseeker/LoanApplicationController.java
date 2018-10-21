@@ -2366,13 +2366,36 @@ public class LoanApplicationController {
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 			}
-
-			LoansResponse response = new LoansResponse("Successfully updated", HttpStatus.OK.value());
+			LoansResponse response = new LoansResponse("Successfully send In-Principle for WhiteLabel", HttpStatus.OK.value());
 			loanApplicationService.updateSkipPaymentWhiteLabel(userId, appId, businessTypeId, orgId, fprProductId);
 			logger.info("end updateSkipPaymentStatus()");
 			return new ResponseEntity<LoansResponse>(response, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while updating Payment Status for WhiteLabel==>{}", e);
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
+		}
+	}
+	
+	@RequestMapping(value = "/send_inPrinciple_personalLoan/{appId}/{businessTypeId}/{orgId}/{fpProductId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> sendInPrincipleForPersonalLoan(@PathVariable("appId") Long appId, @PathVariable("businessTypeId") Integer businessTypeId,
+			@PathVariable("orgId") Long orgId, @PathVariable("fpProductId") Long fprProductId,
+			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
+		try {
+			logger.info("start inPrincipleForPersonalLoan()");
+			Long userId = null;
+			if (CommonDocumentUtils.isThisClientApplication(request) && !CommonUtils.isObjectNullOrEmpty(clientId)) {
+				userId = clientId;
+			} else {
+				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			}
+			LoansResponse response = new LoansResponse("Successfully send In-Principle for Personal Loan", HttpStatus.OK.value());
+			loanApplicationService.sendInPrincipleForPersonalLoan(userId, appId, businessTypeId, orgId, fprProductId);
+			logger.info("end inPrincipleForPersonalLoan()");
+			return new ResponseEntity<LoansResponse>(response, HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while sending In-Principle for Personal Loan==>{}", e);
 			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
@@ -3108,5 +3131,52 @@ public class LoanApplicationController {
 		}
 	}
 	
+	@RequestMapping(value = "/getToken/{url}/{langCode}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+	public String getToken(@PathVariable("url") String url , @RequestBody GenerateTokenRequest generateTokenRequest , @PathVariable("langCode") Integer  langCode ) {
+		try {
+			logger.info("start getToken()");
+			String res = loanSanctionService.getToken(url, generateTokenRequest, langCode);
+			return res;
+		} catch (Exception e) {
+			logger.error("Error while reverseAPI ==>{}", e);
+			e.printStackTrace();
+			return null;
+			
+		}
+	}
+	@RequestMapping(value = "/saveLoanWCRenewalType", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE,consumes = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> saveLoanWCRenewalType(@RequestBody LoanApplicationRequest loanRequest) {
+		if(CommonUtils.isObjectNullOrEmpty(loanRequest.getId()) || CommonUtils.isObjectNullOrEmpty(loanRequest.getWcRenewalStatus())) {
+			return new ResponseEntity<LoansResponse>(new LoansResponse("Request Parameter Null Or Empty !!", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+		}
+		try {
+			logger.info("ENTER IN saveLoanWCRenewalType---------------->" + loanRequest.getId());
+			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully save data", HttpStatus.OK.value(), 
+					loanApplicationService.saveLoanWCRenewalType(loanRequest.getId(), loanRequest.getWcRenewalStatus())), HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while saveLoanWCRenewalType==>");
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+		
+	}
+	
+	@RequestMapping(value = "/getLoanWCRenewalType/{applicationId}", method = RequestMethod.GET)
+	public ResponseEntity<LoansResponse> getLoanWCRenewalType(@PathVariable("applicationId") Long applicationId) {
+		try {
+			logger.info("ENTER IN getLoanWCRenewalType---------------->" + applicationId);
+			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully get data", HttpStatus.OK.value(), 
+					loanApplicationService.getLoanWCRenewalType(applicationId)), HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while getLoanWCRenewalType==>");
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+		
+	}
 	
 }

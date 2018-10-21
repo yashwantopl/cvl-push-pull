@@ -15,6 +15,7 @@ import com.capitaworld.service.gst.GstCalculation;
 import com.capitaworld.service.gst.GstResponse;
 import com.capitaworld.service.gst.client.GstClient;
 import com.capitaworld.service.gst.yuva.request.GSTR1Request;
+import com.capitaworld.service.loans.domain.ScoringRequestDetail;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.*;
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
@@ -23,6 +24,7 @@ import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.score.ScoreParameterRequestLoans;
 import com.capitaworld.service.loans.model.score.ScoringRequestLoans;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
+import com.capitaworld.service.loans.repository.fundseeker.ScoringRequestDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.*;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantIncomeRepository;
@@ -47,6 +49,8 @@ import com.capitaworld.service.thirdparty.model.CGTMSEDataResponse;
 import com.capitaworld.service.thirdpaty.client.ThirdPartyClient;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.UserResponse;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -149,20 +153,32 @@ public class ScoringServiceImpl implements ScoringService{
     @Autowired
     private OneFormClient oneFormClient;
 
+    @Autowired
+    private ScoringRequestDetailRepository scoringRequestDetailRepository;
+
 
     @Override
     public ResponseEntity<LoansResponse> calculateScoring(ScoringRequestLoans scoringRequestLoans) {
 
         PrimaryCorporateDetail primaryCorporateDetail=primaryCorporateDetailRepository.findOneByApplicationIdId(scoringRequestLoans.getApplicationId());
 
+        /*if(CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail)){
+            RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.findOneByApplicationIdId(scoringRequestLoans.getApplicationId());
+        }*/
+        RetailApplicantDetail retailApplicantDetail = null;
         if(CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail) || CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getBusinessTypeId()))
         {
-            logger.warn("Business type id is null or empty");
-            return new ResponseEntity<LoansResponse>(
-                    new LoansResponse("Business type id is null or empty.", HttpStatus.BAD_REQUEST.value()),
-                    HttpStatus.OK);
+            retailApplicantDetail = retailApplicantDetailRepository.findOneByApplicationIdId(scoringRequestLoans.getApplicationId());
+            if(CommonUtils.isObjectNullOrEmpty(retailApplicantDetail)) {
+                logger.warn("Business type id is null or empty");
+                return new ResponseEntity<LoansResponse>(
+                        new LoansResponse("Business type id is null or empty.", HttpStatus.BAD_REQUEST.value()),
+                        HttpStatus.OK);
+            }
         }
-
+        if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail)){
+            return calculateRetailPersonalLoanScoring(scoringRequestLoans);
+        }
         Long businessTypeId=primaryCorporateDetail.getBusinessTypeId().longValue();
 
         if(ScoreParameter.BusinessType.EXISTING_BUSINESS == businessTypeId)
@@ -175,13 +191,13 @@ public class ScoringServiceImpl implements ScoringService{
         }
         else if(ScoreParameter.BusinessType.RETAIL_PERSONAL_LOAN == businessTypeId)
         {
-            return calculateRetailPersonalLoanScoring(scoringRequestLoans,primaryCorporateDetail);
+            return calculateRetailPersonalLoanScoring(scoringRequestLoans);
         }
 
         return null;
     }
 
-    private ResponseEntity<LoansResponse> calculateRetailPersonalLoanScoring(ScoringRequestLoans scoringRequestLoans, PrimaryCorporateDetail primaryCorporateDetail) {
+    private ResponseEntity<LoansResponse> calculateRetailPersonalLoanScoring(ScoringRequestLoans scoringRequestLoans) {
 
         ScoreParameterRetailRequest scoreParameterRetailRequest = new ScoreParameterRetailRequest();
 
@@ -485,7 +501,7 @@ public class ScoringServiceImpl implements ScoringService{
 
                             Data data = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)analyzerResponse.getData(),
                                     Data.class);
-                            if(!CommonUtils.isObjectNullOrEmpty(data.getCheckBounceForLast6Month())){
+                            if(!CommonUtils.isObjectNullOrEmpty(data) && !CommonUtils.isObjectNullOrEmpty(data.getCheckBounceForLast6Month())){
                                 {
                                     if(!CommonUtils.isObjectNullOrEmpty(data.getCheckBounceForLast6Month().doubleValue()))
                                     {
@@ -519,19 +535,20 @@ public class ScoringServiceImpl implements ScoringService{
                         try {
 
                             CibilResponse cibilResponse=cibilClient.getDPDLastXMonth(retailApplicantDetail.getPan());
-
-                            List<Integer> listDPD= (List<Integer>) cibilResponse.getListData();
-
-                            Integer maxDPD= Collections.max(listDPD);
-                            if(!CommonUtils.isObjectNullOrEmpty(maxDPD))
+                            if(!CommonUtils.isObjectNullOrEmpty(cibilResponse) && !CommonUtils.isListNullOrEmpty(cibilResponse.getListData()))
                             {
-                                scoreParameterRetailRequest.setDpd(maxDPD.doubleValue());
+                                List<Integer> listDPD = (List<Integer>) cibilResponse.getListData();
+
+                                Integer maxDPD = Collections.max(listDPD);
+                                if (!CommonUtils.isObjectNullOrEmpty(maxDPD)) {
+                                    scoreParameterRetailRequest.setDpd(maxDPD.doubleValue());
+                                } else {
+                                    scoreParameterRetailRequest.setDpd(0.0);
+                                }
+                                scoreParameterRetailRequest.setDPD_p(true);
+                            }else{
+                                scoreParameterRetailRequest.setDPD_p(false);
                             }
-                            else
-                            {
-                                scoreParameterRetailRequest.setDpd(0.0);
-                            }
-                            scoreParameterRetailRequest.setDPD_p(true);
                         }
                         catch (Exception e)
                         {
@@ -619,259 +636,326 @@ public class ScoringServiceImpl implements ScoringService{
 
     @Override
     public ResponseEntity<LoansResponse> calculateExistingBusinessScoring(ScoringRequestLoans scoringRequestLoans) {
-        ScoringParameterRequest scoringParameterRequest=new ScoringParameterRequest();
+
+        ScoringParameterRequest scoringParameterRequest=new ScoringParameterRequest();;
 
         Long scoreModelId=scoringRequestLoans.getScoringModelId();
         Long applicationId=scoringRequestLoans.getApplicationId();
         Long fpProductId=scoringRequestLoans.getFpProductId();
 
-        logger.info("----------------------------START EXISTING LOAN ------------------------------");
-        logger.info("------------------------------------------------------------------------------");
-        logger.info("------------------------------------------------------------------------------");
+        ///////// Get Financial Type Id from ITR////////
 
-        logger.info("APPLICATION ID   :: "+ applicationId);
-        logger.info("FP PRODUCT ID    :: "+ fpProductId);
-        logger.info("SCORING MODEL ID :: "+ scoreModelId);
+        Integer financialTypeId=3;
+
+        ITRConnectionResponse itrConnectionResponse = null;
+        try
+        {
+            itrConnectionResponse = itrClient.getIsUploadAndYearDetails(applicationId);
+
+            if(!CommonUtils.isObjectNullOrEmpty(itrConnectionResponse) && !CommonUtils.isObjectNullOrEmpty(itrConnectionResponse.getData()))
+            {
+                Map<String,Object> map = (Map<String,Object>)itrConnectionResponse.getData();
+                ITRBasicDetailsResponse res = MultipleJSONObjectHelper.getObjectFromMap(map, ITRBasicDetailsResponse.class);
+                if(!CommonUtils.isObjectNullOrEmpty(res) && !CommonUtils.isObjectNullOrEmpty(res.getItrFinancialType()))
+                {
+                    financialTypeId = Integer.valueOf(res.getItrFinancialType());
+                }
+            }
+        }
+        catch (IOException e)
+        {
+            logger.error("error while getting Financial Type Id from itr response"); e.printStackTrace();
+        }
+
+        /////////
+
+
+        List<ScoringRequestDetail> scoringRequestDetailList = scoringRequestDetailRepository.getScoringRequestDetailByApplicationIdAndIsActive(applicationId);
+
+
+        ScoringRequestDetail scoringRequestDetailSaved=new ScoringRequestDetail();
+
+        if(scoringRequestDetailList.size() > 0)
+        {
+            logger.info("Getting Old Scoring request Data for  =====> "+applicationId);
+            scoringRequestDetailSaved=scoringRequestDetailList.get(0);
+            Gson gson = new Gson();
+            scoringParameterRequest = gson.fromJson(scoringRequestDetailSaved.getRequest(), ScoringParameterRequest.class);
+        }
+
 
         ScoringResponse scoringResponseMain=null;
 
-        // start Get GST Parameter
+        ScoringRequest scoringRequest = new ScoringRequest();
+        scoringRequest.setScoringModelId(scoreModelId);
+        scoringRequest.setFpProductId(fpProductId);
+        scoringRequest.setApplicationId(applicationId);
+        scoringRequest.setUserId(scoringRequestLoans.getUserId());
+        scoringRequest.setBusinessTypeId(ScoreParameter.BusinessType.EXISTING_BUSINESS);
 
-        String gstNumber=corporateApplicantDetailRepository.getGstInByApplicationId(applicationId);
-        Double loanAmount=primaryCorporateDetailRepository.getLoanAmountByApplication(applicationId);
-
-        CorporateApplicantDetail corporateApplicantDetail=corporateApplicantDetailRepository.findOneByApplicationIdId(applicationId);
-
-
-        GstResponse gstResponse=null;
-        GstResponse gstResponseScoring=null;
-        GstCalculation gstCalculation=new GstCalculation();
-
-        try
+        if(CommonUtils.isObjectNullOrEmpty(scoringRequestLoans.getFinancialTypeIdProduct()))
         {
-            GSTR1Request gstr1Request=new GSTR1Request();
-            gstr1Request.setGstin(gstNumber);
-            gstResponse=gstClient.getCalculations(gstr1Request);
+            scoringRequest.setFinancialTypeId(ScoreParameter.FinancialType.THREE_YEAR_ITR);
+        }
+        if(!(scoringRequestDetailList.size() > 0))
+        {
 
-            if(!CommonUtils.isObjectNullOrEmpty(gstResponse) && !CommonUtils.isObjectNullOrEmpty(gstResponse.getData()))
+            logger.info("Scoring Data Fetched First Time  =====> "+applicationId);
+
+            logger.info("----------------------------START EXISTING LOAN ------------------------------");
+            logger.info("------------------------------------------------------------------------------");
+            logger.info("------------------------------------------------------------------------------");
+
+            logger.info("APPLICATION ID   :: "+ applicationId);
+            logger.info("FP PRODUCT ID    :: "+ fpProductId);
+            logger.info("SCORING MODEL ID :: "+ scoreModelId);
+
+
+            // start Get GST Parameter
+
+            String gstNumber=corporateApplicantDetailRepository.getGstInByApplicationId(applicationId);
+            Double loanAmount=primaryCorporateDetailRepository.getLoanAmountByApplication(applicationId);
+
+            CorporateApplicantDetail corporateApplicantDetail=corporateApplicantDetailRepository.findOneByApplicationIdId(applicationId);
+
+
+            GstResponse gstResponse=null;
+            GstResponse gstResponseScoring=null;
+            GstCalculation gstCalculation=new GstCalculation();
+
+            try
             {
-                gstCalculation = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)gstResponse.getData(),
-                        GstCalculation.class);
+                GSTR1Request gstr1Request=new GSTR1Request();
+                gstr1Request.setGstin(gstNumber);
+                gstResponse=gstClient.getCalculations(gstr1Request);
+
+                if(!CommonUtils.isObjectNullOrEmpty(gstResponse) && !CommonUtils.isObjectNullOrEmpty(gstResponse.getData()))
+                {
+                    gstCalculation = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)gstResponse.getData(),
+                            GstCalculation.class);
+                }
+
             }
-
-        }
-        catch (Exception e)
-        {
-            logger.error("error while getting GST parameter");
-            e.printStackTrace();
-        }
-
-
-        // get GST Data for Sales Show A Rising Trend
-
-        try
-        {
-            gstResponseScoring=gstClient.getCalculationForScoring(gstNumber);
-        }
-        catch (Exception e)
-        {
-            logger.error("error while getting GST parameter for GST Sales Show A Rising Trend");
-            e.printStackTrace();
-        }
-
-        // end Get GST Parameter
-
-        int currentYear = getFinYear(applicationId);
-        if(CommonUtils.isObjectNullOrEmpty(currentYear))
-        {
-            logger.error("error while getting current year from itr");
-            LoansResponse loansResponse = new LoansResponse("error while getting current year from itr.", HttpStatus.INTERNAL_SERVER_ERROR.value());
-            return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
-        }
-
-        // CMA
-        OperatingStatementDetails operatingStatementDetailsFY = new OperatingStatementDetails();
-        OperatingStatementDetails operatingStatementDetailsSY = new OperatingStatementDetails();
-        OperatingStatementDetails operatingStatementDetailsTY = new OperatingStatementDetails();
-
-        operatingStatementDetailsTY = operatingStatementDetailsRepository.getOperatingStatementDetails(applicationId, currentYear-1+"");
-        operatingStatementDetailsSY = operatingStatementDetailsRepository.getOperatingStatementDetails(applicationId, currentYear-2+"");
-        operatingStatementDetailsFY = operatingStatementDetailsRepository.getOperatingStatementDetails(applicationId, currentYear-3+"");
-
-        LiabilitiesDetails liabilitiesDetailsFY = new LiabilitiesDetails();
-        LiabilitiesDetails liabilitiesDetailsSY = new LiabilitiesDetails();
-        LiabilitiesDetails liabilitiesDetailsTY = new LiabilitiesDetails();
-
-        liabilitiesDetailsTY = liabilitiesDetailsRepository.getLiabilitiesDetails(applicationId, currentYear-1+"");
-        liabilitiesDetailsSY = liabilitiesDetailsRepository.getLiabilitiesDetails(applicationId, currentYear-2+"");
-        liabilitiesDetailsFY = liabilitiesDetailsRepository.getLiabilitiesDetails(applicationId, currentYear-3+"");
-
-        AssetsDetails assetsDetailsFY = new AssetsDetails();
-        AssetsDetails assetsDetailsSY = new AssetsDetails();
-        AssetsDetails assetsDetailsTY = new AssetsDetails();
-
-        assetsDetailsTY = assetsDetailsRepository.getAssetsDetails(applicationId, currentYear-1+"");
-        assetsDetailsSY = assetsDetailsRepository.getAssetsDetails(applicationId, currentYear-2+"");
-        assetsDetailsFY = assetsDetailsRepository.getAssetsDetails(applicationId, currentYear-3+"");
-
-
-        ///////////////
-
-        // Get Director Background detail
-
-        DirectorBackgroundDetail mainDirectorBackgroundDetail=directorBackgroundDetailsRepository.getMainDirectorByApplicationId(applicationId);
-
-        // get Primary Corporate Detail
-
-        PrimaryCorporateDetail primaryCorporateDetail=primaryCorporateDetailRepository.findOneByApplicationIdId(applicationId);
-
-        // GET SCORE CORPORATE LOAN PARAMETERS
-
-
-        if(!CommonUtils.isObjectNullOrEmpty(scoreModelId))
-        {
-            ScoringRequest scoringRequest = new ScoringRequest();
-            scoringRequest.setScoringModelId(scoreModelId);
-            scoringRequest.setFpProductId(fpProductId);
-            scoringRequest.setApplicationId(applicationId);
-            scoringRequest.setUserId(scoringRequestLoans.getUserId());
-            scoringRequest.setBusinessTypeId(ScoreParameter.BusinessType.EXISTING_BUSINESS);
-
-            // GET ALL FIELDS FOR CALCULATE SCORE BY MODEL ID
-            ScoringResponse scoringResponse=null;
-            try {
-                scoringResponse = scoringClient.listField(scoringRequest);
-            }
-            catch (Exception e) {
-                logger.error("error while getting field list");
+            catch (Exception e)
+            {
+                logger.error("error while getting GST parameter");
                 e.printStackTrace();
             }
 
-            List<Map<String, Object>> dataList = (List<Map<String, Object>>) scoringResponse.getDataList();
 
-            List<FundSeekerInputRequest> fundSeekerInputRequestList = new ArrayList<>(dataList.size());
+            // get GST Data for Sales Show A Rising Trend
 
-            for (int i=0;i<dataList.size();i++){
+            try
+            {
+                gstResponseScoring=gstClient.getCalculationForScoring(gstNumber);
+            }
+            catch (Exception e)
+            {
+                logger.error("error while getting GST parameter for GST Sales Show A Rising Trend");
+                e.printStackTrace();
+            }
 
-                ModelParameterResponse modelParameterResponse = null;
+            // end Get GST Parameter
+
+            int currentYear = getFinYear(applicationId);
+            if(CommonUtils.isObjectNullOrEmpty(currentYear))
+            {
+                logger.error("error while getting current year from itr");
+                LoansResponse loansResponse = new LoansResponse("error while getting current year from itr.", HttpStatus.INTERNAL_SERVER_ERROR.value());
+                return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+            }
+
+            // CMA
+            OperatingStatementDetails operatingStatementDetailsFY = new OperatingStatementDetails();
+            OperatingStatementDetails operatingStatementDetailsSY = new OperatingStatementDetails();
+            OperatingStatementDetails operatingStatementDetailsTY = new OperatingStatementDetails();
+
+
+            LiabilitiesDetails liabilitiesDetailsFY = new LiabilitiesDetails();
+            LiabilitiesDetails liabilitiesDetailsSY = new LiabilitiesDetails();
+            LiabilitiesDetails liabilitiesDetailsTY = new LiabilitiesDetails();
+
+            AssetsDetails assetsDetailsFY = new AssetsDetails();
+            AssetsDetails assetsDetailsSY = new AssetsDetails();
+            AssetsDetails assetsDetailsTY = new AssetsDetails();
+
+            if(ScoreParameter.FinancialTypeForITR.THREE_YEAR_ITR == financialTypeId)
+            {
+                operatingStatementDetailsTY = operatingStatementDetailsRepository.getOperatingStatementDetails(applicationId, currentYear-1+"");
+                operatingStatementDetailsSY = operatingStatementDetailsRepository.getOperatingStatementDetails(applicationId, currentYear-2+"");
+                operatingStatementDetailsFY = operatingStatementDetailsRepository.getOperatingStatementDetails(applicationId, currentYear-3+"");
+
+                liabilitiesDetailsTY = liabilitiesDetailsRepository.getLiabilitiesDetails(applicationId, currentYear-1+"");
+                liabilitiesDetailsSY = liabilitiesDetailsRepository.getLiabilitiesDetails(applicationId, currentYear-2+"");
+                liabilitiesDetailsFY = liabilitiesDetailsRepository.getLiabilitiesDetails(applicationId, currentYear-3+"");
+
+                assetsDetailsTY = assetsDetailsRepository.getAssetsDetails(applicationId, currentYear-1+"");
+                assetsDetailsSY = assetsDetailsRepository.getAssetsDetails(applicationId, currentYear-2+"");
+                assetsDetailsFY = assetsDetailsRepository.getAssetsDetails(applicationId, currentYear-3+"");
+            }
+            else if(ScoreParameter.FinancialTypeForITR.ONE_YEAR_ITR == financialTypeId)
+            {
+                operatingStatementDetailsTY = operatingStatementDetailsRepository.getOperatingStatementDetails(applicationId, currentYear-1+"");
+                liabilitiesDetailsTY = liabilitiesDetailsRepository.getLiabilitiesDetails(applicationId, currentYear-1+"");
+                assetsDetailsTY = assetsDetailsRepository.getAssetsDetails(applicationId, currentYear-1+"");
+            }
+            else if(ScoreParameter.FinancialTypeForITR.PRESUMPTIVE == financialTypeId)
+            {
+                operatingStatementDetailsTY = operatingStatementDetailsRepository.getOperatingStatementDetails(applicationId, currentYear-1+"");
+                liabilitiesDetailsTY = liabilitiesDetailsRepository.getLiabilitiesDetails(applicationId, currentYear-1+"");
+                assetsDetailsTY = assetsDetailsRepository.getAssetsDetails(applicationId, currentYear-1+"");
+            }
+
+            ///////////////
+
+            // Get Director Background detail
+
+            DirectorBackgroundDetail mainDirectorBackgroundDetail=directorBackgroundDetailsRepository.getMainDirectorByApplicationId(applicationId);
+
+            // get Primary Corporate Detail
+
+            PrimaryCorporateDetail primaryCorporateDetail=primaryCorporateDetailRepository.findOneByApplicationIdId(applicationId);
+
+            // GET SCORE CORPORATE LOAN PARAMETERS
+
+
+            if(!CommonUtils.isObjectNullOrEmpty(scoreModelId))
+            {
+                // GET ALL FIELDS FOR CALCULATE SCORE BY MODEL ID
+                ScoringResponse scoringResponse=null;
                 try {
-                    modelParameterResponse = MultipleJSONObjectHelper.getObjectFromMap(dataList.get(i),
-                            ModelParameterResponse.class);
-                } catch (IOException e) {
+                    scoringResponse = scoringClient.listFieldByBusinessTypeId(scoringRequest);
+                }
+                catch (Exception e) {
+                    logger.error("error while getting field list");
                     e.printStackTrace();
                 }
 
-                FundSeekerInputRequest fundSeekerInputRequest = new FundSeekerInputRequest();
-                fundSeekerInputRequest.setFieldId(modelParameterResponse.getFieldMasterId());
-                fundSeekerInputRequest.setName(modelParameterResponse.getName());
+                List<Map<String, Object>> dataList = (List<Map<String, Object>>) scoringResponse.getDataList();
 
-                switch (modelParameterResponse.getName()) {
+                //List<FundSeekerInputRequest> fundSeekerInputRequestList = new ArrayList<>(dataList.size());
 
-                    case ScoreParameter.COMBINED_NETWORTH:
-                    {
-                        try
-                        {
-                            Double networthSum = directorBackgroundDetailsRepository.getSumOfDirectorsNetworth(applicationId);
-                            if (CommonUtils.isObjectNullOrEmpty(networthSum))
-                                networthSum = 0.0;
+                for (int i=0;i<dataList.size();i++){
 
-                            Double termLoansTy = liabilitiesDetailsTY.getTermLoans();
-                            if (CommonUtils.isObjectNullOrEmpty(termLoansTy))
-                                termLoansTy = 0.0;
-
-                            scoringParameterRequest.setNetworthSum(networthSum);
-                            scoringParameterRequest.setTermLoanTy(termLoansTy);
-                            scoringParameterRequest.setLoanAmount(loanAmount);
-                            scoringParameterRequest.setCombinedNetworth_p(true);
-
-                        }
-                        catch (Exception e)
-                        {
-                            logger.error("error while getting COMBINED_NETWORTH parameter");
-                            e.printStackTrace();
-                            scoringParameterRequest.setCombinedNetworth_p(false);
-                        }
-
-                        break;
+                    ModelParameterResponse modelParameterResponse = null;
+                    try {
+                        modelParameterResponse = MultipleJSONObjectHelper.getObjectFromMap(dataList.get(i),
+                                ModelParameterResponse.class);
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
-                    case ScoreParameter.CUSTOMER_ASSOCIATE_CONCERN:
-                    {
-                        Double customer_ass_concern_year=null;
-                        try {
 
-                            CibilResponse cibilResponse=cibilClient.getDPDYears(applicationId);
-                            if(!CommonUtils.isObjectNullOrEmpty(cibilResponse) && !CommonUtils.isObjectNullOrEmpty(cibilResponse.getData()))
+                /*FundSeekerInputRequest fundSeekerInputRequest = new FundSeekerInputRequest();
+                fundSeekerInputRequest.setFieldId(modelParameterResponse.getFieldMasterId());
+                fundSeekerInputRequest.setName(modelParameterResponse.getName());*/
+
+                    switch (modelParameterResponse.getName()) {
+
+                        case ScoreParameter.COMBINED_NETWORTH:
+                        {
+                            try
                             {
-                                customer_ass_concern_year = (Double)cibilResponse.getData();
+                                Double networthSum = directorBackgroundDetailsRepository.getSumOfDirectorsNetworth(applicationId);
+                                if (CommonUtils.isObjectNullOrEmpty(networthSum))
+                                    networthSum = 0.0;
 
-                                scoringParameterRequest.setCustomerAssociateConcern(customer_ass_concern_year);
-                                scoringParameterRequest.setCustomerAsscociateConcern_p(true);
+                                Double termLoansTy = liabilitiesDetailsTY.getTermLoans();
+                                if (CommonUtils.isObjectNullOrEmpty(termLoansTy))
+                                    termLoansTy = 0.0;
+
+                                scoringParameterRequest.setNetworthSum(networthSum);
+                                scoringParameterRequest.setTermLoanTy(termLoansTy);
+                                scoringParameterRequest.setLoanAmount(loanAmount);
+                                scoringParameterRequest.setCombinedNetworth_p(true);
+
                             }
-                            else
+                            catch (Exception e)
                             {
+                                logger.error("error while getting COMBINED_NETWORTH parameter");
+                                e.printStackTrace();
+                                scoringParameterRequest.setCombinedNetworth_p(false);
+                            }
+
+                            break;
+                        }
+                        case ScoreParameter.CUSTOMER_ASSOCIATE_CONCERN:
+                        {
+                            Double customer_ass_concern_year=null;
+                            try {
+
+                                CibilResponse cibilResponse=cibilClient.getDPDYears(applicationId);
+                                if(!CommonUtils.isObjectNullOrEmpty(cibilResponse) && !CommonUtils.isObjectNullOrEmpty(cibilResponse.getData()))
+                                {
+                                    customer_ass_concern_year = (Double)cibilResponse.getData();
+
+                                    scoringParameterRequest.setCustomerAssociateConcern(customer_ass_concern_year);
+                                    scoringParameterRequest.setCustomerAsscociateConcern_p(true);
+                                }
+                                else
+                                {
+                                    scoringParameterRequest.setCustomerAsscociateConcern_p(false);
+                                }
+
+                            }
+                            catch (Exception e)
+                            {
+                                logger.error("error while getting CUSTOMER_ASSOCIATE_CONCERN parameter from CIBIL client");
+                                e.printStackTrace();
                                 scoringParameterRequest.setCustomerAsscociateConcern_p(false);
                             }
+                            break;
 
                         }
-                        catch (Exception e)
+                        case ScoreParameter.CIBIL_TRANSUNION_SCORE:
                         {
-                            logger.error("error while getting CUSTOMER_ASSOCIATE_CONCERN parameter from CIBIL client");
-                            e.printStackTrace();
-                            scoringParameterRequest.setCustomerAsscociateConcern_p(false);
-                        }
-                        break;
+                            Double cibil_score_avg_promotor=null;
+                            try {
 
-                    }
-                    case ScoreParameter.CIBIL_TRANSUNION_SCORE:
-                    {
-                        Double cibil_score_avg_promotor=null;
-                        try {
+                                CibilRequest cibilRequest=new CibilRequest();
+                                cibilRequest.setApplicationId(applicationId);
 
-                            CibilRequest cibilRequest=new CibilRequest();
-                            cibilRequest.setApplicationId(applicationId);
-
-                            CibilResponse cibilResponse=cibilClient.getCibilScore(cibilRequest);
-                            if(!CommonUtils.isObjectNullOrEmpty(cibilResponse.getData()))
+                                CibilResponse cibilResponse=cibilClient.getCibilScore(cibilRequest);
+                                if(!CommonUtils.isObjectNullOrEmpty(cibilResponse.getData()))
+                                {
+                                    cibil_score_avg_promotor = (Double)cibilResponse.getData();
+                                    scoringParameterRequest.setCibilTransuniunScore(cibil_score_avg_promotor);
+                                    scoringParameterRequest.setCibilTransunionScore_p(true);
+                                }
+                                else
+                                {
+                                    scoringParameterRequest.setCibilTransunionScore_p(false);
+                                }
+                            }
+                            catch (Exception e)
                             {
-                                cibil_score_avg_promotor = (Double)cibilResponse.getData();
-                                scoringParameterRequest.setCibilTransuniunScore(cibil_score_avg_promotor);
-                                scoringParameterRequest.setCibilTransunionScore_p(true);
+                                logger.error("error while getting CIBIL_TRANSUNION_SCORE parameter from CIBIL client");
+                                e.printStackTrace();
+                                scoringParameterRequest.setCibilTransunionScore_p(false);
+                            }
+
+                            break;
+                        }
+
+                        case ScoreParameter.EXPERIENCE_IN_THE_BUSINESS:
+                        {
+                            Double directorExperience=directorBackgroundDetailsRepository.getMaxOfDirectorsExperience(applicationId);
+
+                            if(!CommonUtils.isObjectNullOrEmpty(directorExperience))
+                            {
+                                scoringParameterRequest.setExperienceInTheBusiness(directorExperience);
+                                scoringParameterRequest.setExperienceInTheBusiness_p(true);
                             }
                             else
                             {
-                                scoringParameterRequest.setCibilTransunionScore_p(false);
+                                scoringParameterRequest.setExperienceInTheBusiness_p(false);
                             }
+
+                            break;
                         }
-                        catch (Exception e)
-                        {
-                            logger.error("error while getting CIBIL_TRANSUNION_SCORE parameter from CIBIL client");
-                            e.printStackTrace();
-                            scoringParameterRequest.setCibilTransunionScore_p(false);
-                        }
+                        case ScoreParameter.DEBT_EQUITY_RATIO: {
 
-                        break;
-                    }
-
-                    case ScoreParameter.EXPERIENCE_IN_THE_BUSINESS:
-                    {
-                        Double directorExperience=directorBackgroundDetailsRepository.getMaxOfDirectorsExperience(applicationId);
-
-                        if(!CommonUtils.isObjectNullOrEmpty(directorExperience))
-                        {
-                            scoringParameterRequest.setExperienceInTheBusiness(directorExperience);
-                            scoringParameterRequest.setExperienceInTheBusiness_p(true);
-                        }
-                        else
-                        {
-                            scoringParameterRequest.setExperienceInTheBusiness_p(false);
-                        }
-
-                        break;
-                    }
-                    case ScoreParameter.DEBT_EQUITY_RATIO: {
-
-                        try
-                        {
+                            try
+                            {
                             /*Double debt = liabilitiesDetailsTY.getSubTotalA() +
                                     liabilitiesDetailsTY.getShortTermBorrowingFromOthers() +
                                     liabilitiesDetailsTY.getTotalTermLiabilities() -
@@ -881,940 +965,954 @@ public class ScoringServiceImpl implements ScoringService{
                                     liabilitiesDetailsTY.getMinorityInterest() +
                                     liabilitiesDetailsTY.getDeferredTaxLiability();*/
 
-                            // 27-9-2018 9:19 PM Rahul Khudai Removed iabilitiesDetailsTY.getSubTotalA()
-                            // + liabilitiesDetailsTY.getShortTermBorrowingFromOthers()  from Debt calculation
+                                // 27-9-2018 9:19 PM Rahul Khudai Removed iabilitiesDetailsTY.getSubTotalA()
+                                // + liabilitiesDetailsTY.getShortTermBorrowingFromOthers()  from Debt calculation
 
-                            Double debt = liabilitiesDetailsTY.getTotalTermLiabilities() -
-                                    liabilitiesDetailsTY.getPreferencesShares() +
-                                    liabilitiesDetailsTY.getOtherNclUnsecuredLoansFromOther() +
-                                    liabilitiesDetailsTY.getOtherNclOthers() +
-                                    liabilitiesDetailsTY.getMinorityInterest() +
-                                    liabilitiesDetailsTY.getDeferredTaxLiability();
-
-
-                            if (CommonUtils.isObjectNullOrEmpty(debt))
-                                debt = 0.0;
+                                Double debt = liabilitiesDetailsTY.getTotalTermLiabilities() -
+                                        liabilitiesDetailsTY.getPreferencesShares() +
+                                        liabilitiesDetailsTY.getOtherNclUnsecuredLoansFromOther() +
+                                        liabilitiesDetailsTY.getOtherNclOthers() +
+                                        liabilitiesDetailsTY.getMinorityInterest() +
+                                        liabilitiesDetailsTY.getDeferredTaxLiability();
 
 
-                            Double equity = liabilitiesDetailsTY.getPreferencesShares() +
-                                    liabilitiesDetailsTY.getNetWorth() -
-                                    liabilitiesDetailsTY.getMinorityInterest() -
-                                    liabilitiesDetailsTY.getDeferredTaxLiability();
-                            if (CommonUtils.isObjectNullOrEmpty(debt))
-                                equity = 0.0;
+                                if (CommonUtils.isObjectNullOrEmpty(debt))
+                                    debt = 0.0;
 
-                            scoringParameterRequest.setDebt(debt);
-                            scoringParameterRequest.setEquity(equity);
-                            scoringParameterRequest.setDebtEquityRatio_p(true);
 
-                        }
-                        catch (Exception e)
-                        {
-                            logger.error("error while getting DEBT_EQUITY_RATIO parameter");
-                            e.printStackTrace();
-                            scoringParameterRequest.setDebtEquityRatio_p(false);
-                        }
+                                Double equity = liabilitiesDetailsTY.getPreferencesShares() +
+                                        liabilitiesDetailsTY.getNetWorth() -
+                                        liabilitiesDetailsTY.getMinorityInterest() -
+                                        liabilitiesDetailsTY.getDeferredTaxLiability();
+                                if (CommonUtils.isObjectNullOrEmpty(debt))
+                                    equity = 0.0;
 
-                        break;
-                    }
-                    case ScoreParameter.TOL_TNW : {
+                                scoringParameterRequest.setDebt(debt);
+                                scoringParameterRequest.setEquity(equity);
+                                scoringParameterRequest.setDebtEquityRatio_p(true);
 
-                        try
-                        {
-                            Double tol = liabilitiesDetailsTY.getTotalOutsideLiabilities();
-                            if (CommonUtils.isObjectNullOrEmpty(tol))
-                                tol = 0.0;
-
-                            Double tnw = assetsDetailsTY.getTangibleNetWorth();
-                            if (CommonUtils.isObjectNullOrEmpty(tnw))
-                                tnw = 0.0;
-
-                            scoringParameterRequest.setTol(tol);
-                            scoringParameterRequest.setTnw(tnw);
-                            scoringParameterRequest.setTolTnw_p(true);
-                            scoringParameterRequest.setLoanAmount(loanAmount);
-
-                        }
-                        catch (Exception e)
-                        {
-                            logger.error("error while getting TOL_TNW parameter");
-                            e.printStackTrace();
-                            scoringParameterRequest.setTolTnw_p(false);
-                        }
-
-                        break;
-                    }
-                    case ScoreParameter.AVERAGE_CURRENT_RATIO:
-                    {
-                        try
-                        {
-
-                            Double currentRatio = (assetsDetailsTY.getCurrentRatio() + assetsDetailsSY.getCurrentRatio())/2;
-                            if (CommonUtils.isObjectNullOrEmpty(currentRatio))
-                                currentRatio = 0.0;
-
-                            scoringParameterRequest.setAvgCurrentRatio(currentRatio);
-                            scoringParameterRequest.setAvgCurrentRatio_p(true);
-
-                        }
-                        catch (Exception e)
-                        {
-                            logger.error("error while getting AVERAGE_CURRENT_RATIO parameter");
-                            e.printStackTrace();
-                            scoringParameterRequest.setAvgCurrentRatio_p(false);
-                        }
-
-                        break;
-                    }
-                    case ScoreParameter.WORKING_CAPITAL_CYCLE: {
-
-                        try
-                        {
-                            Double debtorsDays=null;
-                            if((operatingStatementDetailsTY.getTotalGrossSales() - operatingStatementDetailsTY.getAddOtherRevenueIncome())!=0.0)
-                            {
-                                debtorsDays= ((assetsDetailsTY.getReceivableOtherThanDefferred() + assetsDetailsTY.getExportReceivables()) / (operatingStatementDetailsTY.getTotalGrossSales() - operatingStatementDetailsTY.getAddOtherRevenueIncome())) * 365;
                             }
-                            if (CommonUtils.isObjectNullOrEmpty(debtorsDays))
-                                debtorsDays = 0.0;
-
-
-
-                            /////////////
-
-                            Double averageInventory = (operatingStatementDetailsTY.getAddOperatingStockFg() + operatingStatementDetailsTY.getDeductClStockFg()) / 2;
-                            if (CommonUtils.isObjectNullOrEmpty(averageInventory))
-                                averageInventory = 0.0;
-
-                            Double cogs = operatingStatementDetailsTY.getRawMaterials() + operatingStatementDetailsTY.getAddOperatingStockFg() - operatingStatementDetailsTY.getDeductClStockFg();
-                            if (CommonUtils.isObjectNullOrEmpty(cogs))
-                                cogs = 0.0;
-
-
-                            /////////////
-
-                            Double creditorsDays=null;
-                            if((operatingStatementDetailsTY.getTotalGrossSales() - operatingStatementDetailsTY.getAddOtherRevenueIncome())!=0)
+                            catch (Exception e)
                             {
-                                creditorsDays = (liabilitiesDetailsTY.getSundryCreditors() / (operatingStatementDetailsTY.getTotalGrossSales() - operatingStatementDetailsTY.getAddOtherRevenueIncome())) * 365;
-                            }
-                            if (CommonUtils.isObjectNullOrEmpty(creditorsDays))
-                                creditorsDays = 0.0;
-
-
-                            scoringParameterRequest.setDebtorsDays(debtorsDays);
-                            scoringParameterRequest.setAvgInventory(averageInventory);
-                            scoringParameterRequest.setCogs(cogs);
-                            scoringParameterRequest.setCreditorsDays(creditorsDays);
-                            scoringParameterRequest.setWorkingCapitalCycle_p(true);
-                        }
-                        catch (Exception e)
-                        {
-                            logger.error("error while getting WORKING_CAPITAL_CYCLE parameter");
-                            e.printStackTrace();
-                            scoringParameterRequest.setWorkingCapitalCycle_p(false);
-                        }
-
-                        break;
-                    }
-                    case ScoreParameter.AVERAGE_ANNUAL_GROWTH_GROSS_CASH:
-                    {
-                        try
-                        {
-                            Double netProfitOrLossTY = operatingStatementDetailsTY.getNetProfitOrLoss();
-                            if (CommonUtils.isObjectNullOrEmpty(netProfitOrLossTY))
-                                netProfitOrLossTY = 0.0;
-                            Double depreciationTy = operatingStatementDetailsTY.getDepreciation();
-                            if (CommonUtils.isObjectNullOrEmpty(depreciationTy))
-                                depreciationTy = 0.0;
-                            Double interestTy = operatingStatementDetailsTY.getInterest();
-                            if (CommonUtils.isObjectNullOrEmpty(interestTy))
-                                interestTy = 0.0;
-
-                            Double netProfitOrLossSY = operatingStatementDetailsSY.getNetProfitOrLoss();
-                            if (CommonUtils.isObjectNullOrEmpty(netProfitOrLossSY))
-                                netProfitOrLossSY = 0.0;
-                            Double depreciationSy = operatingStatementDetailsSY.getDepreciation();
-                            if (CommonUtils.isObjectNullOrEmpty(depreciationSy))
-                                depreciationSy = 0.0;
-                            Double interestSy = operatingStatementDetailsSY.getInterest();
-                            if (CommonUtils.isObjectNullOrEmpty(interestSy))
-                                interestSy = 0.0;
-
-                            Double netProfitOrLossFY = operatingStatementDetailsFY.getNetProfitOrLoss();
-                            if (CommonUtils.isObjectNullOrEmpty(netProfitOrLossFY))
-                                netProfitOrLossFY = 0.0;
-                            Double depreciationFy = operatingStatementDetailsFY.getDepreciation();
-                            if (CommonUtils.isObjectNullOrEmpty(depreciationFy))
-                                depreciationFy = 0.0;
-                            Double interestFy = operatingStatementDetailsFY.getInterest();
-                            if (CommonUtils.isObjectNullOrEmpty(interestFy))
-                                interestFy = 0.0;
-
-                            scoringParameterRequest.setNetProfitOrLossFY(netProfitOrLossFY);
-                            scoringParameterRequest.setNetProfitOrLossSY(netProfitOrLossSY);
-                            scoringParameterRequest.setNetProfitOrLossTY(netProfitOrLossTY);
-
-                            scoringParameterRequest.setDepriciationFy(depreciationFy);
-                            scoringParameterRequest.setDepriciationSy(depreciationSy);
-                            scoringParameterRequest.setDepriciationTy(depreciationTy);
-
-                            scoringParameterRequest.setInterestFy(interestFy);
-                            scoringParameterRequest.setInterestSy(interestSy);
-                            scoringParameterRequest.setInterestTy(interestTy);
-
-                            scoringParameterRequest.setAvgAnnualGrowthGrossCash_p(true);
-
-                        }
-                        catch (Exception e)
-                        {
-                            logger.error("error while getting AVERAGE_ANNUAL_GROWTH_GROSS_CASH parameter");
-                            e.printStackTrace();
-                            scoringParameterRequest.setAvgAnnualGrowthGrossCash_p(false);
-                        }
-                        break;
-                    }
-                    case ScoreParameter.AVERAGE_ANNUAL_GROWTH_NET_SALE: {
-
-                        try
-                        {
-                            Double domesticSalesTy = operatingStatementDetailsTY.getDomesticSales();
-                            if (CommonUtils.isObjectNullOrEmpty(domesticSalesTy))
-                                domesticSalesTy = 0.0;
-                            Double exportSalesTy = operatingStatementDetailsTY.getExportSales();
-                            if (CommonUtils.isObjectNullOrEmpty(exportSalesTy))
-                                exportSalesTy = 0.0;
-
-                            Double domesticSalesSy = operatingStatementDetailsSY.getDomesticSales();
-                            if (CommonUtils.isObjectNullOrEmpty(domesticSalesSy))
-                                domesticSalesSy = 0.0;
-
-                            Double exportSalesSy = operatingStatementDetailsSY.getExportSales();
-                            if (CommonUtils.isObjectNullOrEmpty(exportSalesSy))
-                                exportSalesSy = 0.0;
-
-
-                            Double domesticSalesFy = operatingStatementDetailsFY.getDomesticSales();
-                            if (CommonUtils.isObjectNullOrEmpty(domesticSalesFy))
-                                domesticSalesFy = 0.0;
-
-                            Double exportSalesFy = operatingStatementDetailsFY.getExportSales();
-                            if (CommonUtils.isObjectNullOrEmpty(exportSalesFy))
-                                exportSalesFy = 0.0;
-
-                            Double totalSale_FY=0.0;
-                            if(domesticSalesFy + exportSalesFy == 0.0)
-                            {
-                                totalSale_FY=1.0;
-                            }
-                            else
-                            {
-                                totalSale_FY=domesticSalesFy + exportSalesFy;
+                                logger.error("error while getting DEBT_EQUITY_RATIO parameter");
+                                e.printStackTrace();
+                                scoringParameterRequest.setDebtEquityRatio_p(false);
                             }
 
-                            Double totalSale_SY=0.0;
-                            if(domesticSalesSy + exportSalesSy == 0.0)
+                            break;
+                        }
+                        case ScoreParameter.TOL_TNW : {
+
+                            try
                             {
-                                totalSale_SY=1.0;
+                                Double tol = liabilitiesDetailsTY.getTotalOutsideLiabilities();
+                                if (CommonUtils.isObjectNullOrEmpty(tol))
+                                    tol = 0.0;
+
+                                Double tnw = assetsDetailsTY.getTangibleNetWorth();
+                                if (CommonUtils.isObjectNullOrEmpty(tnw))
+                                    tnw = 0.0;
+
+                                scoringParameterRequest.setTol(tol);
+                                scoringParameterRequest.setTnw(tnw);
+                                scoringParameterRequest.setTolTnw_p(true);
+                                scoringParameterRequest.setLoanAmount(loanAmount);
+
                             }
-                            else
+                            catch (Exception e)
                             {
-                                totalSale_SY=domesticSalesSy + exportSalesSy;
+                                logger.error("error while getting TOL_TNW parameter");
+                                e.printStackTrace();
+                                scoringParameterRequest.setTolTnw_p(false);
                             }
 
-                            Double totalSale_TY=0.0;
-                            if(domesticSalesTy + exportSalesTy == 0.0)
+                            break;
+                        }
+                        case ScoreParameter.AVERAGE_CURRENT_RATIO:
+                        {
+                            try
                             {
-                                totalSale_TY=1.0;
+
+                                Double currentRatio = (assetsDetailsTY.getCurrentRatio() + assetsDetailsSY.getCurrentRatio())/2;
+                                if (CommonUtils.isObjectNullOrEmpty(currentRatio))
+                                    currentRatio = 0.0;
+
+                                scoringParameterRequest.setAvgCurrentRatio(currentRatio);
+                                scoringParameterRequest.setAvgCurrentRatio_p(true);
+
                             }
-                            else
+                            catch (Exception e)
                             {
-                                totalSale_TY=domesticSalesTy + exportSalesTy;
+                                logger.error("error while getting AVERAGE_CURRENT_RATIO parameter");
+                                e.printStackTrace();
+                                scoringParameterRequest.setAvgCurrentRatio_p(false);
                             }
 
-                            scoringParameterRequest.setTotalSaleFy(totalSale_FY);
-                            scoringParameterRequest.setTotalSaleSy(totalSale_SY);
-                            scoringParameterRequest.setTotalSaleTy(totalSale_TY);
-                            scoringParameterRequest.setAvgAnnualGrowthNetSale_p(true);
+                            break;
                         }
-                        catch (Exception e)
-                        {
-                            logger.error("error while getting AVERAGE_ANNUAL_GROWTH_NET_SALE parameter");
-                            e.printStackTrace();
-                            scoringParameterRequest.setAvgAnnualGrowthNetSale_p(false);
-                        }
+                        case ScoreParameter.WORKING_CAPITAL_CYCLE: {
 
-                        break;
-                    }
-                    case ScoreParameter.AVERAGE_EBIDTA: {
-
-                        try
-                        {
-                            Double profitBeforeTaxOrLossTy = operatingStatementDetailsTY.getProfitBeforeTaxOrLoss();
-                            if (CommonUtils.isObjectNullOrEmpty(profitBeforeTaxOrLossTy))
-                                profitBeforeTaxOrLossTy = 0.0;
-
-
-                            Double interestTy = operatingStatementDetailsTY.getInterest();
-                            if (CommonUtils.isObjectNullOrEmpty(interestTy))
-                                interestTy = 0.0;
-
-
-                            Double profitBeforeTaxOrLossSy = operatingStatementDetailsSY.getProfitBeforeTaxOrLoss();
-                            if (CommonUtils.isObjectNullOrEmpty(profitBeforeTaxOrLossSy))
-                                profitBeforeTaxOrLossSy = 0.0;
-
-
-                            Double interestSy = operatingStatementDetailsSY.getInterest();
-                            if (CommonUtils.isObjectNullOrEmpty(interestSy))
-                                interestSy = 0.0;
-
-
-                            Double depreciationTy = operatingStatementDetailsTY.getDepreciation();
-                            if (CommonUtils.isObjectNullOrEmpty(depreciationTy))
-                                depreciationTy = 0.0;
-
-
-                            Double depreciationSy = operatingStatementDetailsSY.getDepreciation();
-                            if (CommonUtils.isObjectNullOrEmpty(depreciationSy))
-                                depreciationSy = 0.0;
-
-
-                            Double termLoansTy = liabilitiesDetailsTY.getTermLoans();
-                            if (CommonUtils.isObjectNullOrEmpty(termLoansTy))
-                                termLoansTy = 0.0;
-
-
-                            scoringParameterRequest.setProfitBeforeTaxOrLossTy(profitBeforeTaxOrLossTy);
-                            scoringParameterRequest.setProfitBeforeTaxOrLossSy(profitBeforeTaxOrLossSy);
-                            scoringParameterRequest.setInterestTy(interestTy);
-                            scoringParameterRequest.setInterestSy(interestSy);
-                            scoringParameterRequest.setDepriciationTy(depreciationTy);
-                            scoringParameterRequest.setDepriciationSy(depreciationSy);
-                            scoringParameterRequest.setTermLoanTy(termLoansTy);
-                            scoringParameterRequest.setLoanAmount(loanAmount);
-
-                            scoringParameterRequest.setAvgEBIDTA_p(true);
-
-                        }
-                        catch (Exception e)
-                        {
-                            logger.error("error while getting AVERAGE_EBIDTA parameter");
-                            e.printStackTrace();
-                            scoringParameterRequest.setAvgEBIDTA_p(false);
-                        }
-
-                        break;
-                    }
-                    case ScoreParameter.AVERAGE_ANNUAL_GROSS_CASH_ACCRUALS: {
-
-                        try
-                        {
-
-                            Double netProfitOrLossTY = operatingStatementDetailsTY.getNetProfitOrLoss();
-                            if (CommonUtils.isObjectNullOrEmpty(netProfitOrLossTY))
-                                netProfitOrLossTY = 0.0;
-
-                            Double netProfitOrLossSY = operatingStatementDetailsSY.getNetProfitOrLoss();
-                            if (CommonUtils.isObjectNullOrEmpty(netProfitOrLossSY))
-                                netProfitOrLossSY = 0.0;
-
-                            Double interestTy = operatingStatementDetailsTY.getInterest();
-                            if (CommonUtils.isObjectNullOrEmpty(interestTy))
-                                interestTy = 0.0;
-
-                            Double interestSy = operatingStatementDetailsSY.getInterest();
-                            if (CommonUtils.isObjectNullOrEmpty(interestSy))
-                                interestSy = 0.0;
-
-                            Double depreciationTy = operatingStatementDetailsTY.getDepreciation();
-                            if (CommonUtils.isObjectNullOrEmpty(depreciationTy))
-                                depreciationTy = 0.0;
-
-                            Double depreciationSy = operatingStatementDetailsSY.getDepreciation();
-                            if (CommonUtils.isObjectNullOrEmpty(depreciationSy))
-                                depreciationSy = 0.0;
-
-                            Double totalAsset = assetsDetailsTY.getTotalAssets();
-                            if (CommonUtils.isObjectNullOrEmpty(totalAsset))
-                                totalAsset = 0.0;
-
-                            scoringParameterRequest.setNetProfitOrLossSY(netProfitOrLossSY);
-                            scoringParameterRequest.setNetProfitOrLossTY(netProfitOrLossTY);
-                            scoringParameterRequest.setInterestSy(interestSy);
-                            scoringParameterRequest.setInterestTy(interestTy);
-                            scoringParameterRequest.setDepriciationSy(depreciationSy);
-                            scoringParameterRequest.setDepriciationTy(depreciationTy);
-                            scoringParameterRequest.setTotalAsset(totalAsset);
-
-                            scoringParameterRequest.setAvgAnnualGrossCashAccuruals_p(true);
-
-                        }
-                        catch (Exception e)
-                        {
-                            logger.error("error while getting AVERAGE_ANNUAL_GROSS_CASH_ACCRUALS parameter");
-                            e.printStackTrace();
-                            scoringParameterRequest.setAvgAnnualGrossCashAccuruals_p(false);
-                        }
-
-                        break;
-                    }
-                    case ScoreParameter.AVERAGE_INTEREST_COV_RATIO:
-                    {
-                        try
-                        {
-                            Double opProfitBeforeIntrestTy = operatingStatementDetailsTY.getOpProfitBeforeIntrest();
-                            if (CommonUtils.isObjectNullOrEmpty(opProfitBeforeIntrestTy))
-                                opProfitBeforeIntrestTy = 0.0;
-
-
-                            Double opProfitBeforeIntrestSy = operatingStatementDetailsSY.getOpProfitBeforeIntrest();
-                            if (CommonUtils.isObjectNullOrEmpty(opProfitBeforeIntrestSy))
-                                opProfitBeforeIntrestSy = 0.0;
-
-                            Double interestTy = operatingStatementDetailsTY.getInterest();
-                            if (CommonUtils.isObjectNullOrEmpty(interestTy))
-                                interestTy = 0.0;
-
-                            Double interestSy = operatingStatementDetailsSY.getInterest();
-                            if (CommonUtils.isObjectNullOrEmpty(interestSy))
-                                interestSy = 0.0;
-
-                            scoringParameterRequest.setOpProfitBeforeInterestTy(opProfitBeforeIntrestTy);
-                            scoringParameterRequest.setOpProfitBeforeInterestSy(opProfitBeforeIntrestSy);
-                            scoringParameterRequest.setInterestTy(interestTy);
-                            scoringParameterRequest.setInterestSy(interestSy);
-
-                            scoringParameterRequest.setAvgInterestCovRatio_p(true);
-                        }
-                        catch (Exception e)
-                        {
-                            logger.error("error while getting AVERAGE_INTEREST_COV_RATIO parameter");
-                            e.printStackTrace();
-                            scoringParameterRequest.setAvgInterestCovRatio_p(false);
-                        }
-
-                        break;
-                    }
-                    case ScoreParameter.NO_OF_CUSTOMER:
-                    {
-                        try {
-                            if(!CommonUtils.isObjectNullOrEmpty(gstCalculation) && !CommonUtils.isObjectNullOrEmpty(gstCalculation.getNoOfCustomer()))
+                            try
                             {
-                                scoringParameterRequest.setNoOfCustomenr(gstCalculation.getNoOfCustomer());
-                                scoringParameterRequest.setNoOfCustomer_p(true);
+                                Double debtorsDays=null;
+                                if((operatingStatementDetailsTY.getTotalGrossSales() - operatingStatementDetailsTY.getAddOtherRevenueIncome())!=0.0)
+                                {
+                                    debtorsDays= ((assetsDetailsTY.getReceivableOtherThanDefferred() + assetsDetailsTY.getExportReceivables()) / (operatingStatementDetailsTY.getTotalGrossSales() - operatingStatementDetailsTY.getAddOtherRevenueIncome())) * 365;
+                                }
+                                if (CommonUtils.isObjectNullOrEmpty(debtorsDays))
+                                    debtorsDays = 0.0;
+
+
+
+                                /////////////
+
+                                Double averageInventory = (operatingStatementDetailsTY.getAddOperatingStockFg() + operatingStatementDetailsTY.getDeductClStockFg()) / 2;
+                                if (CommonUtils.isObjectNullOrEmpty(averageInventory))
+                                    averageInventory = 0.0;
+
+                                Double cogs = operatingStatementDetailsTY.getRawMaterials() + operatingStatementDetailsTY.getAddOperatingStockFg() - operatingStatementDetailsTY.getDeductClStockFg();
+                                if (CommonUtils.isObjectNullOrEmpty(cogs))
+                                    cogs = 0.0;
+
+
+                                /////////////
+
+                                Double creditorsDays=null;
+                                if((operatingStatementDetailsTY.getTotalGrossSales() - operatingStatementDetailsTY.getAddOtherRevenueIncome())!=0)
+                                {
+                                    creditorsDays = (liabilitiesDetailsTY.getSundryCreditors() / (operatingStatementDetailsTY.getTotalGrossSales() - operatingStatementDetailsTY.getAddOtherRevenueIncome())) * 365;
+                                }
+                                if (CommonUtils.isObjectNullOrEmpty(creditorsDays))
+                                    creditorsDays = 0.0;
+
+
+                                scoringParameterRequest.setDebtorsDays(debtorsDays);
+                                scoringParameterRequest.setAvgInventory(averageInventory);
+                                scoringParameterRequest.setCogs(cogs);
+                                scoringParameterRequest.setCreditorsDays(creditorsDays);
+                                scoringParameterRequest.setWorkingCapitalCycle_p(true);
                             }
-                            else
+                            catch (Exception e)
                             {
+                                logger.error("error while getting WORKING_CAPITAL_CYCLE parameter");
+                                e.printStackTrace();
+                                scoringParameterRequest.setWorkingCapitalCycle_p(false);
+                            }
+
+                            break;
+                        }
+                        case ScoreParameter.AVERAGE_ANNUAL_GROWTH_GROSS_CASH:
+                        {
+                            try
+                            {
+                                Double netProfitOrLossTY = operatingStatementDetailsTY.getNetProfitOrLoss();
+                                if (CommonUtils.isObjectNullOrEmpty(netProfitOrLossTY))
+                                    netProfitOrLossTY = 0.0;
+                                Double depreciationTy = operatingStatementDetailsTY.getDepreciation();
+                                if (CommonUtils.isObjectNullOrEmpty(depreciationTy))
+                                    depreciationTy = 0.0;
+                                Double interestTy = operatingStatementDetailsTY.getInterest();
+                                if (CommonUtils.isObjectNullOrEmpty(interestTy))
+                                    interestTy = 0.0;
+
+                                Double netProfitOrLossSY = operatingStatementDetailsSY.getNetProfitOrLoss();
+                                if (CommonUtils.isObjectNullOrEmpty(netProfitOrLossSY))
+                                    netProfitOrLossSY = 0.0;
+                                Double depreciationSy = operatingStatementDetailsSY.getDepreciation();
+                                if (CommonUtils.isObjectNullOrEmpty(depreciationSy))
+                                    depreciationSy = 0.0;
+                                Double interestSy = operatingStatementDetailsSY.getInterest();
+                                if (CommonUtils.isObjectNullOrEmpty(interestSy))
+                                    interestSy = 0.0;
+
+                                Double netProfitOrLossFY = operatingStatementDetailsFY.getNetProfitOrLoss();
+                                if (CommonUtils.isObjectNullOrEmpty(netProfitOrLossFY))
+                                    netProfitOrLossFY = 0.0;
+                                Double depreciationFy = operatingStatementDetailsFY.getDepreciation();
+                                if (CommonUtils.isObjectNullOrEmpty(depreciationFy))
+                                    depreciationFy = 0.0;
+                                Double interestFy = operatingStatementDetailsFY.getInterest();
+                                if (CommonUtils.isObjectNullOrEmpty(interestFy))
+                                    interestFy = 0.0;
+
+                                scoringParameterRequest.setNetProfitOrLossFY(netProfitOrLossFY);
+                                scoringParameterRequest.setNetProfitOrLossSY(netProfitOrLossSY);
+                                scoringParameterRequest.setNetProfitOrLossTY(netProfitOrLossTY);
+
+                                scoringParameterRequest.setDepriciationFy(depreciationFy);
+                                scoringParameterRequest.setDepriciationSy(depreciationSy);
+                                scoringParameterRequest.setDepriciationTy(depreciationTy);
+
+                                scoringParameterRequest.setInterestFy(interestFy);
+                                scoringParameterRequest.setInterestSy(interestSy);
+                                scoringParameterRequest.setInterestTy(interestTy);
+
+                                scoringParameterRequest.setAvgAnnualGrowthGrossCash_p(true);
+
+                            }
+                            catch (Exception e)
+                            {
+                                logger.error("error while getting AVERAGE_ANNUAL_GROWTH_GROSS_CASH parameter");
+                                e.printStackTrace();
+                                scoringParameterRequest.setAvgAnnualGrowthGrossCash_p(false);
+                            }
+                            break;
+                        }
+                        case ScoreParameter.AVERAGE_ANNUAL_GROWTH_NET_SALE: {
+
+                            try
+                            {
+                                Double domesticSalesTy = operatingStatementDetailsTY.getDomesticSales();
+                                if (CommonUtils.isObjectNullOrEmpty(domesticSalesTy))
+                                    domesticSalesTy = 0.0;
+                                Double exportSalesTy = operatingStatementDetailsTY.getExportSales();
+                                if (CommonUtils.isObjectNullOrEmpty(exportSalesTy))
+                                    exportSalesTy = 0.0;
+
+                                Double domesticSalesSy = operatingStatementDetailsSY.getDomesticSales();
+                                if (CommonUtils.isObjectNullOrEmpty(domesticSalesSy))
+                                    domesticSalesSy = 0.0;
+
+                                Double exportSalesSy = operatingStatementDetailsSY.getExportSales();
+                                if (CommonUtils.isObjectNullOrEmpty(exportSalesSy))
+                                    exportSalesSy = 0.0;
+
+
+                                Double domesticSalesFy = operatingStatementDetailsFY.getDomesticSales();
+                                if (CommonUtils.isObjectNullOrEmpty(domesticSalesFy))
+                                    domesticSalesFy = 0.0;
+
+                                Double exportSalesFy = operatingStatementDetailsFY.getExportSales();
+                                if (CommonUtils.isObjectNullOrEmpty(exportSalesFy))
+                                    exportSalesFy = 0.0;
+
+                                Double totalSale_FY=0.0;
+                                if(domesticSalesFy + exportSalesFy == 0.0)
+                                {
+                                    totalSale_FY=1.0;
+                                }
+                                else
+                                {
+                                    totalSale_FY=domesticSalesFy + exportSalesFy;
+                                }
+
+                                Double totalSale_SY=0.0;
+                                if(domesticSalesSy + exportSalesSy == 0.0)
+                                {
+                                    totalSale_SY=1.0;
+                                }
+                                else
+                                {
+                                    totalSale_SY=domesticSalesSy + exportSalesSy;
+                                }
+
+                                Double totalSale_TY=0.0;
+                                if(domesticSalesTy + exportSalesTy == 0.0)
+                                {
+                                    totalSale_TY=1.0;
+                                }
+                                else
+                                {
+                                    totalSale_TY=domesticSalesTy + exportSalesTy;
+                                }
+
+                                scoringParameterRequest.setTotalSaleFy(totalSale_FY);
+                                scoringParameterRequest.setTotalSaleSy(totalSale_SY);
+                                scoringParameterRequest.setTotalSaleTy(totalSale_TY);
+                                scoringParameterRequest.setAvgAnnualGrowthNetSale_p(true);
+                            }
+                            catch (Exception e)
+                            {
+                                logger.error("error while getting AVERAGE_ANNUAL_GROWTH_NET_SALE parameter");
+                                e.printStackTrace();
+                                scoringParameterRequest.setAvgAnnualGrowthNetSale_p(false);
+                            }
+
+                            break;
+                        }
+                        case ScoreParameter.AVERAGE_EBIDTA: {
+
+                            try
+                            {
+                                Double profitBeforeTaxOrLossTy = operatingStatementDetailsTY.getProfitBeforeTaxOrLoss();
+                                if (CommonUtils.isObjectNullOrEmpty(profitBeforeTaxOrLossTy))
+                                    profitBeforeTaxOrLossTy = 0.0;
+
+
+                                Double interestTy = operatingStatementDetailsTY.getInterest();
+                                if (CommonUtils.isObjectNullOrEmpty(interestTy))
+                                    interestTy = 0.0;
+
+
+                                Double profitBeforeTaxOrLossSy = operatingStatementDetailsSY.getProfitBeforeTaxOrLoss();
+                                if (CommonUtils.isObjectNullOrEmpty(profitBeforeTaxOrLossSy))
+                                    profitBeforeTaxOrLossSy = 0.0;
+
+
+                                Double interestSy = operatingStatementDetailsSY.getInterest();
+                                if (CommonUtils.isObjectNullOrEmpty(interestSy))
+                                    interestSy = 0.0;
+
+
+                                Double depreciationTy = operatingStatementDetailsTY.getDepreciation();
+                                if (CommonUtils.isObjectNullOrEmpty(depreciationTy))
+                                    depreciationTy = 0.0;
+
+
+                                Double depreciationSy = operatingStatementDetailsSY.getDepreciation();
+                                if (CommonUtils.isObjectNullOrEmpty(depreciationSy))
+                                    depreciationSy = 0.0;
+
+
+                                Double termLoansTy = liabilitiesDetailsTY.getTermLoans();
+                                if (CommonUtils.isObjectNullOrEmpty(termLoansTy))
+                                    termLoansTy = 0.0;
+
+
+                                scoringParameterRequest.setProfitBeforeTaxOrLossTy(profitBeforeTaxOrLossTy);
+                                scoringParameterRequest.setProfitBeforeTaxOrLossSy(profitBeforeTaxOrLossSy);
+                                scoringParameterRequest.setInterestTy(interestTy);
+                                scoringParameterRequest.setInterestSy(interestSy);
+                                scoringParameterRequest.setDepriciationTy(depreciationTy);
+                                scoringParameterRequest.setDepriciationSy(depreciationSy);
+                                scoringParameterRequest.setTermLoanTy(termLoansTy);
+                                scoringParameterRequest.setLoanAmount(loanAmount);
+
+                                scoringParameterRequest.setAvgEBIDTA_p(true);
+
+                            }
+                            catch (Exception e)
+                            {
+                                logger.error("error while getting AVERAGE_EBIDTA parameter");
+                                e.printStackTrace();
+                                scoringParameterRequest.setAvgEBIDTA_p(false);
+                            }
+
+                            break;
+                        }
+                        case ScoreParameter.AVERAGE_ANNUAL_GROSS_CASH_ACCRUALS: {
+
+                            try
+                            {
+
+                                Double netProfitOrLossTY = operatingStatementDetailsTY.getNetProfitOrLoss();
+                                if (CommonUtils.isObjectNullOrEmpty(netProfitOrLossTY))
+                                    netProfitOrLossTY = 0.0;
+
+                                Double netProfitOrLossSY = operatingStatementDetailsSY.getNetProfitOrLoss();
+                                if (CommonUtils.isObjectNullOrEmpty(netProfitOrLossSY))
+                                    netProfitOrLossSY = 0.0;
+
+                                Double interestTy = operatingStatementDetailsTY.getInterest();
+                                if (CommonUtils.isObjectNullOrEmpty(interestTy))
+                                    interestTy = 0.0;
+
+                                Double interestSy = operatingStatementDetailsSY.getInterest();
+                                if (CommonUtils.isObjectNullOrEmpty(interestSy))
+                                    interestSy = 0.0;
+
+                                Double depreciationTy = operatingStatementDetailsTY.getDepreciation();
+                                if (CommonUtils.isObjectNullOrEmpty(depreciationTy))
+                                    depreciationTy = 0.0;
+
+                                Double depreciationSy = operatingStatementDetailsSY.getDepreciation();
+                                if (CommonUtils.isObjectNullOrEmpty(depreciationSy))
+                                    depreciationSy = 0.0;
+
+                                Double totalAsset = assetsDetailsTY.getTotalAssets();
+                                if (CommonUtils.isObjectNullOrEmpty(totalAsset))
+                                    totalAsset = 0.0;
+
+                                scoringParameterRequest.setNetProfitOrLossSY(netProfitOrLossSY);
+                                scoringParameterRequest.setNetProfitOrLossTY(netProfitOrLossTY);
+                                scoringParameterRequest.setInterestSy(interestSy);
+                                scoringParameterRequest.setInterestTy(interestTy);
+                                scoringParameterRequest.setDepriciationSy(depreciationSy);
+                                scoringParameterRequest.setDepriciationTy(depreciationTy);
+                                scoringParameterRequest.setTotalAsset(totalAsset);
+
+                                scoringParameterRequest.setAvgAnnualGrossCashAccuruals_p(true);
+
+                            }
+                            catch (Exception e)
+                            {
+                                logger.error("error while getting AVERAGE_ANNUAL_GROSS_CASH_ACCRUALS parameter");
+                                e.printStackTrace();
+                                scoringParameterRequest.setAvgAnnualGrossCashAccuruals_p(false);
+                            }
+
+                            break;
+                        }
+                        case ScoreParameter.AVERAGE_INTEREST_COV_RATIO:
+                        {
+                            try
+                            {
+                                Double opProfitBeforeIntrestTy = operatingStatementDetailsTY.getOpProfitBeforeIntrest();
+                                if (CommonUtils.isObjectNullOrEmpty(opProfitBeforeIntrestTy))
+                                    opProfitBeforeIntrestTy = 0.0;
+
+
+                                Double opProfitBeforeIntrestSy = operatingStatementDetailsSY.getOpProfitBeforeIntrest();
+                                if (CommonUtils.isObjectNullOrEmpty(opProfitBeforeIntrestSy))
+                                    opProfitBeforeIntrestSy = 0.0;
+
+                                Double interestTy = operatingStatementDetailsTY.getInterest();
+                                if (CommonUtils.isObjectNullOrEmpty(interestTy))
+                                    interestTy = 0.0;
+
+                                Double interestSy = operatingStatementDetailsSY.getInterest();
+                                if (CommonUtils.isObjectNullOrEmpty(interestSy))
+                                    interestSy = 0.0;
+
+                                scoringParameterRequest.setOpProfitBeforeInterestTy(opProfitBeforeIntrestTy);
+                                scoringParameterRequest.setOpProfitBeforeInterestSy(opProfitBeforeIntrestSy);
+                                scoringParameterRequest.setInterestTy(interestTy);
+                                scoringParameterRequest.setInterestSy(interestSy);
+
+                                scoringParameterRequest.setAvgInterestCovRatio_p(true);
+                            }
+                            catch (Exception e)
+                            {
+                                logger.error("error while getting AVERAGE_INTEREST_COV_RATIO parameter");
+                                e.printStackTrace();
+                                scoringParameterRequest.setAvgInterestCovRatio_p(false);
+                            }
+
+                            break;
+                        }
+                        case ScoreParameter.NO_OF_CUSTOMER:
+                        {
+                            try {
+                                if(!CommonUtils.isObjectNullOrEmpty(gstCalculation) && !CommonUtils.isObjectNullOrEmpty(gstCalculation.getNoOfCustomer()))
+                                {
+                                    scoringParameterRequest.setNoOfCustomenr(gstCalculation.getNoOfCustomer());
+                                    scoringParameterRequest.setNoOfCustomer_p(true);
+                                }
+                                else
+                                {
+                                    scoringParameterRequest.setNoOfCustomer_p(false);
+                                }
+                            }
+                            catch (Exception e)
+                            {
+                                logger.error("error while getting NO_OF_CUSTOMER parameter");
+                                e.printStackTrace();
                                 scoringParameterRequest.setNoOfCustomer_p(false);
+                                /*map.put("NO_OF_CUSTOMER",null);*/
                             }
+                            break;
                         }
-                        catch (Exception e)
+                        case ScoreParameter.CONCENTRATION_CUSTOMER:
                         {
-                            logger.error("error while getting NO_OF_CUSTOMER parameter");
-                            e.printStackTrace();
-                            scoringParameterRequest.setNoOfCustomer_p(false);
-                            /*map.put("NO_OF_CUSTOMER",null);*/
-                        }
-                        break;
-                    }
-                    case ScoreParameter.CONCENTRATION_CUSTOMER:
-                    {
-                        try {
-                            if(!CommonUtils.isObjectNullOrEmpty(gstCalculation) && !CommonUtils.isObjectNullOrEmpty(gstCalculation.getConcentration()))
-                            {
-                                scoringParameterRequest.setConcentrationCustomer(gstCalculation.getConcentration());
-                                scoringParameterRequest.setConcentrationCustomer_p(true);
+                            try {
+                                if(!CommonUtils.isObjectNullOrEmpty(gstCalculation) && !CommonUtils.isObjectNullOrEmpty(gstCalculation.getConcentration()))
+                                {
+                                    scoringParameterRequest.setConcentrationCustomer(gstCalculation.getConcentration());
+                                    scoringParameterRequest.setConcentrationCustomer_p(true);
+                                }
+                                else
+                                {
+                                    scoringParameterRequest.setConcentrationCustomer_p(false);
+                                }
                             }
-                            else
+                            catch (Exception e)
                             {
+                                logger.error("error while getting CONCENTRATION_CUSTOMER parameter");
+                                e.printStackTrace();
                                 scoringParameterRequest.setConcentrationCustomer_p(false);
                             }
+                            break;
                         }
-                        catch (Exception e)
+                        case ScoreParameter.CREDIT_SUMMATION:
                         {
-                            logger.error("error while getting CONCENTRATION_CUSTOMER parameter");
-                            e.printStackTrace();
-                            scoringParameterRequest.setConcentrationCustomer_p(false);
-                        }
-                        break;
-                    }
-                    case ScoreParameter.CREDIT_SUMMATION:
-                    {
 
-                        Double totalCredit=null;
-                        Double projctedSales=null;
+                            Double totalCredit=null;
+                            Double projctedSales=null;
 
-                        // start get total credit from Analyser
-                        ReportRequest reportRequest = new ReportRequest();
-                        reportRequest.setApplicationId(applicationId);
-                        try {
-                            AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReport(reportRequest);
-                            Data data = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)analyzerResponse.getData(),
-                                    Data.class);
-                            if(!CommonUtils.isObjectNullOrEmpty(analyzerResponse.getData())){
-                                {
-                                    if(!CommonUtils.isObjectNullOrEmpty(data.getTotalCredit()))
+                            // start get total credit from Analyser
+                            ReportRequest reportRequest = new ReportRequest();
+                            reportRequest.setApplicationId(applicationId);
+                            try {
+                                AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReport(reportRequest);
+                                Data data = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)analyzerResponse.getData(),
+                                        Data.class);
+                                if(!CommonUtils.isObjectNullOrEmpty(analyzerResponse.getData())){
                                     {
-                                        totalCredit=data.getTotalCredit();
-                                    }
-                                    else
-                                    {
-                                        totalCredit=0.0;
+                                        if(!CommonUtils.isObjectNullOrEmpty(data.getTotalCredit()))
+                                        {
+                                            totalCredit=data.getTotalCredit();
+                                        }
+                                        else
+                                        {
+                                            totalCredit=0.0;
+                                        }
+
                                     }
 
                                 }
-
+                            } catch (Exception e) {
+                                totalCredit=0.0;
+                                e.printStackTrace();
+                                logger.error("error while calling analyzer client");
                             }
-                        } catch (Exception e) {
-                            totalCredit=0.0;
-                            e.printStackTrace();
-                            logger.error("error while calling analyzer client");
+
+                            // get get total credit from Analyser
+
+                            // start get projected sales from GST client
+
+                            projctedSales=gstCalculation.getProjectedSales();
+
+                            // end get projected sales from GST client
+
+
+                            scoringParameterRequest.setTotalCredit(totalCredit);
+                            scoringParameterRequest.setProjectedSale(projctedSales);
+                            scoringParameterRequest.setCreditSummation_p(true);
+
+                            break;
                         }
+                        case ScoreParameter.AGE:
+                        {
+                            try {
 
-                        // get get total credit from Analyser
-
-                        // start get projected sales from GST client
-
-                        projctedSales=gstCalculation.getProjectedSales();
-
-                        // end get projected sales from GST client
-
-
-                        scoringParameterRequest.setTotalCredit(totalCredit);
-                        scoringParameterRequest.setProjectedSale(projctedSales);
-                        scoringParameterRequest.setCreditSummation_p(true);
-
-                        break;
-                    }
-                    case ScoreParameter.AGE:
-                    {
-                        try {
-
-                            if(!CommonUtils.isObjectNullOrEmpty(mainDirectorBackgroundDetail.getDob()))
-                            {
-                                scoringParameterRequest.setAge(Math.ceil(CommonUtils.getAgeFromBirthDate(mainDirectorBackgroundDetail.getDob()).doubleValue()));
-                                scoringParameterRequest.setAge_p(true);
+                                if(!CommonUtils.isObjectNullOrEmpty(mainDirectorBackgroundDetail.getDob()))
+                                {
+                                    scoringParameterRequest.setAge(Math.ceil(CommonUtils.getAgeFromBirthDate(mainDirectorBackgroundDetail.getDob()).doubleValue()));
+                                    scoringParameterRequest.setAge_p(true);
+                                }
+                                else {
+                                    scoringParameterRequest.setAge_p(false);
+                                }
                             }
-                            else {
+                            catch (Exception e)
+                            {
+                                logger.error("error while getting AGE parameter");
+                                e.printStackTrace();
                                 scoringParameterRequest.setAge_p(false);
                             }
+                            break;
                         }
-                        catch (Exception e)
+                        case ScoreParameter.NO_OF_CHILDREN:
                         {
-                            logger.error("error while getting AGE parameter");
-                            e.printStackTrace();
-                            scoringParameterRequest.setAge_p(false);
-                        }
-                        break;
-                    }
-                    case ScoreParameter.NO_OF_CHILDREN:
-                    {
 
-                        try {
+                            try {
 
-                            if(!CommonUtils.isObjectNullOrEmpty(mainDirectorBackgroundDetail.getDirectorPersonalDetail().getNoOfChildren()))
-                            {
-                                scoringParameterRequest.setNoOfChildren(mainDirectorBackgroundDetail.getDirectorPersonalDetail().getNoOfChildren().doubleValue());
-                                scoringParameterRequest.setNoOfChildren_p(true);
+                                if(!CommonUtils.isObjectNullOrEmpty(mainDirectorBackgroundDetail.getDirectorPersonalDetail().getNoOfChildren()))
+                                {
+                                    scoringParameterRequest.setNoOfChildren(mainDirectorBackgroundDetail.getDirectorPersonalDetail().getNoOfChildren().doubleValue());
+                                    scoringParameterRequest.setNoOfChildren_p(true);
+                                }
+                                else {
+                                    scoringParameterRequest.setNoOfChildren_p(false);
+                                }
                             }
-                            else {
+                            catch (Exception e)
+                            {
+                                logger.error("error while getting NO_OF_CHILDREN parameter");
+                                e.printStackTrace();
                                 scoringParameterRequest.setNoOfChildren_p(false);
                             }
+                            break;
                         }
-                        catch (Exception e)
+                        case ScoreParameter.OWNING_HOUSE:
                         {
-                            logger.error("error while getting NO_OF_CHILDREN parameter");
-                            e.printStackTrace();
-                            scoringParameterRequest.setNoOfChildren_p(false);
-                        }
-                        break;
-                    }
-                    case ScoreParameter.OWNING_HOUSE:
-                    {
 
-                        try {
+                            try {
 
-                            if(!CommonUtils.isObjectNullOrEmpty(mainDirectorBackgroundDetail.getDirectorPersonalDetail().getOwningHouse()))
-                            {
-                                scoringParameterRequest.setOwningHouse(mainDirectorBackgroundDetail.getDirectorPersonalDetail().getOwningHouse().longValue());
-                                scoringParameterRequest.setOwningHouse_p(true);
+                                if(!CommonUtils.isObjectNullOrEmpty(mainDirectorBackgroundDetail.getDirectorPersonalDetail().getOwningHouse()))
+                                {
+                                    scoringParameterRequest.setOwningHouse(mainDirectorBackgroundDetail.getDirectorPersonalDetail().getOwningHouse().longValue());
+                                    scoringParameterRequest.setOwningHouse_p(true);
+                                }
+                                else {
+                                    scoringParameterRequest.setOwningHouse_p(false);
+                                }
                             }
-                            else {
+                            catch (Exception e)
+                            {
+                                logger.error("error while getting OWNING_HOUSE parameter");
+                                e.printStackTrace();
                                 scoringParameterRequest.setOwningHouse_p(false);
                             }
+                            break;
                         }
-                        catch (Exception e)
+                        case ScoreParameter.ACADEMIC_QUALIFICATION:
                         {
-                            logger.error("error while getting OWNING_HOUSE parameter");
-                            e.printStackTrace();
-                            scoringParameterRequest.setOwningHouse_p(false);
-                        }
-                        break;
-                    }
-                    case ScoreParameter.ACADEMIC_QUALIFICATION:
-                    {
 
-                        try {
+                            try {
 
-                            if(!CommonUtils.isObjectNullOrEmpty(mainDirectorBackgroundDetail.getEducationalStatus()))
-                            {
-                                scoringParameterRequest.setAcadamicQualification(mainDirectorBackgroundDetail.getEducationalStatus().longValue());
-                                scoringParameterRequest.setAcadamicQualification_p(true);
+                                if(!CommonUtils.isObjectNullOrEmpty(mainDirectorBackgroundDetail.getEducationalStatus()))
+                                {
+                                    scoringParameterRequest.setAcadamicQualification(mainDirectorBackgroundDetail.getEducationalStatus().longValue());
+                                    scoringParameterRequest.setAcadamicQualification_p(true);
+                                }
+                                else {
+                                    scoringParameterRequest.setAcadamicQualification_p(false);
+                                }
                             }
-                            else {
+                            catch (Exception e)
+                            {
+                                logger.error("error while getting ACADEMIC_QUALIFICATION parameter");
+                                e.printStackTrace();
                                 scoringParameterRequest.setAcadamicQualification_p(false);
                             }
+                            break;
                         }
-                        catch (Exception e)
+                        case ScoreParameter.EXPERIENCE_IN_THE_LINE_OF_TRADE:
                         {
-                            logger.error("error while getting ACADEMIC_QUALIFICATION parameter");
-                            e.printStackTrace();
-                            scoringParameterRequest.setAcadamicQualification_p(false);
-                        }
-                        break;
-                    }
-                    case ScoreParameter.EXPERIENCE_IN_THE_LINE_OF_TRADE:
-                    {
 
-                        try {
+                            try {
 
-                            if(!CommonUtils.isObjectNullOrEmpty(mainDirectorBackgroundDetail.getTotalExperience()))
-                            {
-                                scoringParameterRequest.setExperienceInLineOfBusiness(mainDirectorBackgroundDetail.getTotalExperience());
-                                scoringParameterRequest.setExpLineOfTrade_p(true);
+                                if(!CommonUtils.isObjectNullOrEmpty(mainDirectorBackgroundDetail.getTotalExperience()))
+                                {
+                                    scoringParameterRequest.setExperienceInLineOfBusiness(mainDirectorBackgroundDetail.getTotalExperience());
+                                    scoringParameterRequest.setExpLineOfTrade_p(true);
+                                }
+                                else {
+                                    scoringParameterRequest.setExpLineOfTrade_p(false);
+                                }
                             }
-                            else {
+                            catch (Exception e)
+                            {
+                                logger.error("error while getting EXPERIENCE_IN_THE_LINE_OF_TRADE parameter");
+                                e.printStackTrace();
                                 scoringParameterRequest.setExpLineOfTrade_p(false);
                             }
+                            break;
                         }
-                        catch (Exception e)
+                        case ScoreParameter.SPOUSE_DETAILS:
                         {
-                            logger.error("error while getting EXPERIENCE_IN_THE_LINE_OF_TRADE parameter");
-                            e.printStackTrace();
-                            scoringParameterRequest.setExpLineOfTrade_p(false);
-                        }
-                        break;
-                    }
-                    case ScoreParameter.SPOUSE_DETAILS:
-                    {
 
-                        try {
+                            try {
 
-                            if(!CommonUtils.isObjectNullOrEmpty(mainDirectorBackgroundDetail.getDirectorPersonalDetail().getSpouseDetail()))
-                            {
-                                scoringParameterRequest.setSpouceDetails(mainDirectorBackgroundDetail.getDirectorPersonalDetail().getSpouseDetail().longValue());
-                                scoringParameterRequest.setSpouseDetails_p(true);
+                                if(!CommonUtils.isObjectNullOrEmpty(mainDirectorBackgroundDetail.getDirectorPersonalDetail().getSpouseDetail()))
+                                {
+                                    scoringParameterRequest.setSpouceDetails(mainDirectorBackgroundDetail.getDirectorPersonalDetail().getSpouseDetail().longValue());
+                                    scoringParameterRequest.setSpouseDetails_p(true);
+                                }
+                                else {
+                                    scoringParameterRequest.setSpouseDetails_p(false);
+                                }
                             }
-                            else {
+                            catch (Exception e)
+                            {
+                                logger.error("error while getting SPOUSE_DETAILS parameter");
+                                e.printStackTrace();
                                 scoringParameterRequest.setSpouseDetails_p(false);
                             }
+                            break;
                         }
-                        catch (Exception e)
+                        case ScoreParameter.ASSESSED_FOR_INCOME_TAX:
                         {
-                            logger.error("error while getting SPOUSE_DETAILS parameter");
-                            e.printStackTrace();
-                            scoringParameterRequest.setSpouseDetails_p(false);
-                        }
-                        break;
-                    }
-                    case ScoreParameter.ASSESSED_FOR_INCOME_TAX:
-                    {
 
-                        try {
+                            try {
 
-                            if(!CommonUtils.isObjectNullOrEmpty(mainDirectorBackgroundDetail.getDirectorPersonalDetail().getAssessedForIt()))
-                            {
-                                scoringParameterRequest.setAssessedFOrIT(mainDirectorBackgroundDetail.getDirectorPersonalDetail().getAssessedForIt().longValue());
-                                scoringParameterRequest.setAssessedForIncomeTax_p(true);
+                                if(!CommonUtils.isObjectNullOrEmpty(mainDirectorBackgroundDetail.getDirectorPersonalDetail().getAssessedForIt()))
+                                {
+                                    scoringParameterRequest.setAssessedFOrIT(mainDirectorBackgroundDetail.getDirectorPersonalDetail().getAssessedForIt().longValue());
+                                    scoringParameterRequest.setAssessedForIncomeTax_p(true);
+                                }
+                                else {
+                                    scoringParameterRequest.setAssessedForIncomeTax_p(false);
+                                }
                             }
-                            else {
+                            catch (Exception e)
+                            {
+                                logger.error("error while getting ASSESSED_FOR_INCOME_TAX parameter");
+                                e.printStackTrace();
                                 scoringParameterRequest.setAssessedForIncomeTax_p(false);
                             }
+                            break;
                         }
-                        catch (Exception e)
+                        case ScoreParameter.HAVE_LIFE_INSURANCE_POLICY:
                         {
-                            logger.error("error while getting ASSESSED_FOR_INCOME_TAX parameter");
-                            e.printStackTrace();
-                            scoringParameterRequest.setAssessedForIncomeTax_p(false);
-                        }
-                        break;
-                    }
-                    case ScoreParameter.HAVE_LIFE_INSURANCE_POLICY:
-                    {
 
-                        try {
+                            try {
 
-                            if(!CommonUtils.isObjectNullOrEmpty(mainDirectorBackgroundDetail.getDirectorPersonalDetail().getHaveLiPolicy()))
-                            {
-                                scoringParameterRequest.setHaveLIPolicy(mainDirectorBackgroundDetail.getDirectorPersonalDetail().getHaveLiPolicy().longValue());
-                                scoringParameterRequest.setHaveLifeIncPolicy_p(true);
+                                if(!CommonUtils.isObjectNullOrEmpty(mainDirectorBackgroundDetail.getDirectorPersonalDetail().getHaveLiPolicy()))
+                                {
+                                    scoringParameterRequest.setHaveLIPolicy(mainDirectorBackgroundDetail.getDirectorPersonalDetail().getHaveLiPolicy().longValue());
+                                    scoringParameterRequest.setHaveLifeIncPolicy_p(true);
+                                }
+                                else {
+                                    scoringParameterRequest.setHaveLifeIncPolicy_p(false);
+                                }
                             }
-                            else {
+                            catch (Exception e)
+                            {
+                                logger.error("error while getting HAVE_LIFE_INSURANCE_POLICY parameter");
+                                e.printStackTrace();
                                 scoringParameterRequest.setHaveLifeIncPolicy_p(false);
                             }
+                            break;
                         }
-                        catch (Exception e)
+                        case ScoreParameter.YEARS_IN_BUSINESS:
                         {
-                            logger.error("error while getting HAVE_LIFE_INSURANCE_POLICY parameter");
-                            e.printStackTrace();
-                            scoringParameterRequest.setHaveLifeIncPolicy_p(false);
+                            try {
+
+                                java.util.Calendar todayDate = java.util.Calendar.getInstance();
+                                todayDate.setTime(new Date());
+
+                                Integer yearsInBetween = todayDate.get(java.util.Calendar.YEAR) - corporateApplicantDetail.getEstablishmentYear();
+                                Integer monthsDiff = 0;
+
+                                monthsDiff = todayDate.get(java.util.Calendar.MONTH) - corporateApplicantDetail.getEstablishmentMonth();
+
+                                Double yearsInBusiness = Double.valueOf((yearsInBetween * 12 + monthsDiff)/12);
+
+                                scoringParameterRequest.setYearsInBusiness(yearsInBusiness);
+                                scoringParameterRequest.setYearsInBusiness_p(true);
+                            }
+                            catch (Exception e)
+                            {
+                                logger.error("error while getting YEARS_IN_BUSINESS parameter");
+                                e.printStackTrace();
+                                scoringParameterRequest.setYearsInBusiness_p(false);
+                            }
+                            break;
                         }
-                        break;
-                    }
-                    case ScoreParameter.YEARS_IN_BUSINESS:
-                    {
-                        try {
-
-                            java.util.Calendar todayDate = java.util.Calendar.getInstance();
-                            todayDate.setTime(new Date());
-
-                            Integer yearsInBetween = todayDate.get(java.util.Calendar.YEAR) - corporateApplicantDetail.getEstablishmentYear();
-                            Integer monthsDiff = 0;
-
-                            monthsDiff = todayDate.get(java.util.Calendar.MONTH) - corporateApplicantDetail.getEstablishmentMonth();
-
-                            Double yearsInBusiness = Double.valueOf((yearsInBetween * 12 + monthsDiff)/12);
-
-                            scoringParameterRequest.setYearsInBusiness(yearsInBusiness);
-                            scoringParameterRequest.setYearsInBusiness_p(true);
-                        }
-                        catch (Exception e)
+                        case ScoreParameter.REPAYMENT_PERIOD:
                         {
-                            logger.error("error while getting YEARS_IN_BUSINESS parameter");
-                            e.printStackTrace();
-                            scoringParameterRequest.setYearsInBusiness_p(false);
-                        }
-                        break;
-                    }
-                    case ScoreParameter.REPAYMENT_PERIOD:
-                    {
 
-                        try {
+                            try {
 
                                 // get repayment period from one form // remaining
                                 scoringParameterRequest.setRepaymentPeriod(5.0);
                                 scoringParameterRequest.setRepaymentPeriod_p(true);
-                        }
-                        catch (Exception e)
-                        {
-                            logger.error("error while getting REPAYMENT_PERIOD parameter");
-                            e.printStackTrace();
-                            scoringParameterRequest.setRepaymentPeriod_p(false);
-                        }
-                        break;
-                    }
-                    case ScoreParameter.CONTINUOUS_NET_PROFIT:
-                    {
-
-                        try {
-
-                            Double netProfitOrLossFY = operatingStatementDetailsFY.getProfitBeforeTaxOrLoss();
-                            Double netProfitOrLossSY = operatingStatementDetailsSY.getProfitBeforeTaxOrLoss();
-                            Double netProfitOrLossTY = operatingStatementDetailsTY.getProfitBeforeTaxOrLoss();
-
-                            scoringParameterRequest.setContinuousNetProfitOrLossFY(netProfitOrLossFY);
-                            scoringParameterRequest.setContinuousNetProfitOrLossSY(netProfitOrLossSY);
-                            scoringParameterRequest.setContinuousNetProfitOrLossTY(netProfitOrLossTY);
-
-                            scoringParameterRequest.setContinousNetProfit_p(true);
-
-                        }
-                        catch (Exception e)
-                        {
-                            logger.error("error while getting CONTINUOUS_NET_PROFIT parameter");
-                            e.printStackTrace();
-                            scoringParameterRequest.setContinousNetProfit_p(false);
-                        }
-                        break;
-                    }
-                    case ScoreParameter.QUALITY_OF_RECEIVABLES:
-                    {
-
-                        try {
-
-                            Double totalSaleTY = operatingStatementDetailsTY.getDomesticSales()+operatingStatementDetailsTY.getExportSales();
-                            Double grossSaleTy = operatingStatementDetailsTY.getTotalGrossSales();
-
-                            scoringParameterRequest.setTotalSaleTy(totalSaleTY);
-                            scoringParameterRequest.setGrossSaleTy(grossSaleTy);
-
-                            scoringParameterRequest.setQualityOfReceivable_p(true);
-
-                        }
-                        catch (Exception e)
-                        {
-                            logger.error("error while getting QUALITY_OF_RECEIVABLES parameter");
-                            e.printStackTrace();
-                            scoringParameterRequest.setQualityOfReceivable_p(false);
-                        }
-                        break;
-                    }
-                    case ScoreParameter.QUALITY_OF_FINISHED_GOODS_INVENTORY:
-                    {
-
-                        try {
-
-                            Double totalCostSaleTy = operatingStatementDetailsTY.getTotalCostSales();
-                            Double finishedGoodTy = assetsDetailsTY.getFinishedGoods();
-
-                            scoringParameterRequest.setTotalCostSaleTy(totalCostSaleTy);
-                            scoringParameterRequest.setFinishedGoodTy(finishedGoodTy);
-
-                            scoringParameterRequest.setQualityOfFinishedGood_p(true);
-
-                        }
-                        catch (Exception e)
-                        {
-                            logger.error("error while getting QUALITY_OF_FINISHED_GOODS_INVENTORY parameter");
-                            e.printStackTrace();
-                            scoringParameterRequest.setQualityOfFinishedGood_p(false);
-                        }
-                        break;
-                    }
-                    case ScoreParameter.KNOW_HOW:
-                    {
-
-                        try {
-
-                            if(!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getKnowHow()))
-                            {
-                                scoringParameterRequest.setKnowHow(primaryCorporateDetail.getKnowHow().longValue());
-                                scoringParameterRequest.setKnowHow_p(true);
                             }
-                            else {
+                            catch (Exception e)
+                            {
+                                logger.error("error while getting REPAYMENT_PERIOD parameter");
+                                e.printStackTrace();
+                                scoringParameterRequest.setRepaymentPeriod_p(false);
+                            }
+                            break;
+                        }
+                        case ScoreParameter.CONTINUOUS_NET_PROFIT:
+                        {
+
+                            try {
+
+                                Double netProfitOrLossFY = operatingStatementDetailsFY.getProfitBeforeTaxOrLoss();
+                                Double netProfitOrLossSY = operatingStatementDetailsSY.getProfitBeforeTaxOrLoss();
+                                Double netProfitOrLossTY = operatingStatementDetailsTY.getProfitBeforeTaxOrLoss();
+
+                                scoringParameterRequest.setContinuousNetProfitOrLossFY(netProfitOrLossFY);
+                                scoringParameterRequest.setContinuousNetProfitOrLossSY(netProfitOrLossSY);
+                                scoringParameterRequest.setContinuousNetProfitOrLossTY(netProfitOrLossTY);
+
+                                scoringParameterRequest.setContinousNetProfit_p(true);
+
+                            }
+                            catch (Exception e)
+                            {
+                                logger.error("error while getting CONTINUOUS_NET_PROFIT parameter");
+                                e.printStackTrace();
+                                scoringParameterRequest.setContinousNetProfit_p(false);
+                            }
+                            break;
+                        }
+                        case ScoreParameter.QUALITY_OF_RECEIVABLES:
+                        {
+
+                            try {
+
+                                Double totalSaleTY = operatingStatementDetailsTY.getDomesticSales()+operatingStatementDetailsTY.getExportSales();
+                                Double grossSaleTy = operatingStatementDetailsTY.getTotalGrossSales();
+
+                                scoringParameterRequest.setTotalSaleTy(totalSaleTY);
+                                scoringParameterRequest.setGrossSaleTy(grossSaleTy);
+
+                                scoringParameterRequest.setQualityOfReceivable_p(true);
+
+                            }
+                            catch (Exception e)
+                            {
+                                logger.error("error while getting QUALITY_OF_RECEIVABLES parameter");
+                                e.printStackTrace();
+                                scoringParameterRequest.setQualityOfReceivable_p(false);
+                            }
+                            break;
+                        }
+                        case ScoreParameter.QUALITY_OF_FINISHED_GOODS_INVENTORY:
+                        {
+
+                            try {
+
+                                Double totalCostSaleTy = operatingStatementDetailsTY.getTotalCostSales();
+                                Double finishedGoodTy = assetsDetailsTY.getFinishedGoods();
+
+                                scoringParameterRequest.setTotalCostSaleTy(totalCostSaleTy);
+                                scoringParameterRequest.setFinishedGoodTy(finishedGoodTy);
+
+                                scoringParameterRequest.setQualityOfFinishedGood_p(true);
+
+                            }
+                            catch (Exception e)
+                            {
+                                logger.error("error while getting QUALITY_OF_FINISHED_GOODS_INVENTORY parameter");
+                                e.printStackTrace();
+                                scoringParameterRequest.setQualityOfFinishedGood_p(false);
+                            }
+                            break;
+                        }
+                        case ScoreParameter.KNOW_HOW:
+                        {
+
+                            try {
+
+                                if(!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getKnowHow()))
+                                {
+                                    scoringParameterRequest.setKnowHow(primaryCorporateDetail.getKnowHow().longValue());
+                                    scoringParameterRequest.setKnowHow_p(true);
+                                }
+                                else {
+                                    scoringParameterRequest.setKnowHow_p(false);
+                                }
+                            }
+                            catch (Exception e)
+                            {
+                                logger.error("error while getting KNOW_HOW parameter");
+                                e.printStackTrace();
                                 scoringParameterRequest.setKnowHow_p(false);
                             }
+                            break;
                         }
-                        catch (Exception e)
+                        case ScoreParameter.LINE_OF_ACTIVITY:
                         {
-                            logger.error("error while getting KNOW_HOW parameter");
-                            e.printStackTrace();
-                            scoringParameterRequest.setKnowHow_p(false);
+                            scoringParameterRequest.setLineOfActivity(1l);
+                            scoringParameterRequest.setLineOfActivity_p(true);
+
+                            break;
                         }
-                        break;
-                    }
-                    case ScoreParameter.LINE_OF_ACTIVITY:
-                    {
-                        scoringParameterRequest.setLineOfActivity(1l);
-                        scoringParameterRequest.setLineOfActivity_p(true);
+                        case ScoreParameter.COMPETITION:
+                        {
 
-                        break;
-                    }
-                    case ScoreParameter.COMPETITION:
-                    {
+                            try {
 
-                        try {
-
-                            if(!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getCompetition()))
-                            {
-                                scoringParameterRequest.setCompetition(primaryCorporateDetail.getCompetition().longValue());
-                                scoringParameterRequest.setCompetition_p(true);
+                                if(!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getCompetition()))
+                                {
+                                    scoringParameterRequest.setCompetition(primaryCorporateDetail.getCompetition().longValue());
+                                    scoringParameterRequest.setCompetition_p(true);
+                                }
+                                else {
+                                    scoringParameterRequest.setCompetition_p(false);
+                                }
                             }
-                            else {
+                            catch (Exception e)
+                            {
+                                logger.error("error while getting COMPETITION parameter");
+                                e.printStackTrace();
                                 scoringParameterRequest.setCompetition_p(false);
                             }
+                            break;
                         }
-                        catch (Exception e)
+                        case ScoreParameter.FACTORY_PREMISES:
                         {
-                            logger.error("error while getting COMPETITION parameter");
-                            e.printStackTrace();
-                            scoringParameterRequest.setCompetition_p(false);
-                        }
-                        break;
-                    }
-                    case ScoreParameter.FACTORY_PREMISES:
-                    {
-                        try {
+                            try {
 
-                            if(!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getFactoryPremise()))
-                            {
-                                scoringParameterRequest.setFactoryPremises(primaryCorporateDetail.getFactoryPremise().longValue());
-                                scoringParameterRequest.setFactoryPremises_p(true);
+                                if(!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getFactoryPremise()))
+                                {
+                                    scoringParameterRequest.setFactoryPremises(primaryCorporateDetail.getFactoryPremise().longValue());
+                                    scoringParameterRequest.setFactoryPremises_p(true);
+                                }
+                                else {
+                                    scoringParameterRequest.setFactoryPremises_p(false);
+                                }
                             }
-                            else {
+                            catch (Exception e)
+                            {
+                                logger.error("error while getting FACTORY_PREMISES parameter");
+                                e.printStackTrace();
                                 scoringParameterRequest.setFactoryPremises_p(false);
                             }
+                            break;
                         }
-                        catch (Exception e)
+                        case ScoreParameter.SALES_SHOW_A_RISING_TREND:
                         {
-                            logger.error("error while getting FACTORY_PREMISES parameter");
-                            e.printStackTrace();
-                            scoringParameterRequest.setFactoryPremises_p(false);
-                        }
-                        break;
-                    }
-                    case ScoreParameter.SALES_SHOW_A_RISING_TREND:
-                    {
 
-                        try {
+                            try {
 
-                            // getting Gst Current Year Sale from GST Client
+                                // getting Gst Current Year Sale from GST Client
 
-                            if(!CommonUtils.isObjectNullOrEmpty(gstResponseScoring) && !CommonUtils.isObjectNullOrEmpty(gstResponseScoring.getData()))
-                            {
-                                scoringParameterRequest.setGstSaleCurrentYear((Double) gstResponseScoring.getData());
+                                if(!CommonUtils.isObjectNullOrEmpty(gstResponseScoring) && !CommonUtils.isObjectNullOrEmpty(gstResponseScoring.getData()))
+                                {
+                                    scoringParameterRequest.setGstSaleCurrentYear((Double) gstResponseScoring.getData());
+                                }
+                                else
+                                {
+                                    scoringParameterRequest.setGstSaleCurrentYear(0.0);
+                                    logger.error("Error while getting Gst data for Scoring from GST client");
+                                }
+
+                                scoringParameterRequest.setNetSaleFy(operatingStatementDetailsFY.getNetSales());
+                                scoringParameterRequest.setNetSaleSy(operatingStatementDetailsSY.getNetSales());
+                                scoringParameterRequest.setNetSaleTy(operatingStatementDetailsTY.getNetSales());
+
+                                scoringParameterRequest.setSalesShowArisingTrend_p(true);
+
                             }
-                            else
+                            catch (Exception e)
                             {
-                                scoringParameterRequest.setGstSaleCurrentYear(0.0);
-                                logger.error("Error while getting Gst data for Scoring from GST client");
+                                logger.error("error while getting SALES_SHOW_A_RISING_TREND parameter");
+                                e.printStackTrace();
+                                scoringParameterRequest.setSalesShowArisingTrend_p(false);
                             }
-
-                            scoringParameterRequest.setNetSaleFy(operatingStatementDetailsFY.getNetSales());
-                            scoringParameterRequest.setNetSaleSy(operatingStatementDetailsSY.getNetSales());
-                            scoringParameterRequest.setNetSaleTy(operatingStatementDetailsTY.getNetSales());
-
-                            scoringParameterRequest.setSalesShowArisingTrend_p(true);
-
+                            break;
                         }
-                        catch (Exception e)
-                        {
-                            logger.error("error while getting SALES_SHOW_A_RISING_TREND parameter");
-                            e.printStackTrace();
-                            scoringParameterRequest.setSalesShowArisingTrend_p(false);
-                        }
-                        break;
                     }
+                    //fundSeekerInputRequestList.add(fundSeekerInputRequest);
                 }
-                fundSeekerInputRequestList.add(fundSeekerInputRequest);
+
+                logger.info("SCORE PARAMETER ::::::::::"+scoringParameterRequest.toString());
+
+                logger.info("------------------------------------------------------------------------------");
+                logger.info("------------------------------------------------------------------------------");
+                logger.info("----------------------------END-----------------------------------------------");
             }
+            Gson g = new Gson();
+            ScoringRequestDetail scoringRequestDetail=new ScoringRequestDetail();
 
-            logger.info("SCORE PARAMETER ::::::::::"+scoringParameterRequest.toString());
+            try
+            {
+                scoringRequestDetail.setApplicationId(applicationId);
+                scoringRequestDetail.setRequest(g.toJson(scoringParameterRequest));
+                scoringRequestDetail.setCreatedDate(new Date());
+                scoringRequestDetail.setIsActive(true);
+                scoringRequestDetailRepository.save(scoringRequestDetail);
 
-            logger.info("------------------------------------------------------------------------------");
-            logger.info("------------------------------------------------------------------------------");
-            logger.info("----------------------------END-----------------------------------------------");
-
-            scoringRequest.setDataList(fundSeekerInputRequestList);
-            scoringRequest.setScoringParameterRequest(scoringParameterRequest);
-
-            try {
-                scoringResponseMain = scoringClient.calculateScore(scoringRequest);
+                logger.info("Saving Scoring Request Data for  =====> "+applicationId);
             }
-            catch (Exception e) {
-                logger.error("error while calling scoring");
+            catch (Exception e)
+            {
                 e.printStackTrace();
-                LoansResponse loansResponse = new LoansResponse("error while calling scoring.", HttpStatus.INTERNAL_SERVER_ERROR.value());
-                return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
-            }
-
-            if(scoringResponseMain.getStatus() == HttpStatus.OK.value())
-            {
-                logger.error("score is successfully calculated");
-                LoansResponse loansResponse = new LoansResponse("score is successfully calculated", HttpStatus.OK.value());
-                return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
-            }
-            else
-            {
-                logger.error("error while calling scoring");
-                LoansResponse loansResponse = new LoansResponse("error while calling scoring.", HttpStatus.INTERNAL_SERVER_ERROR.value());
-                return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
             }
         }
 
-        LoansResponse loansResponse = new LoansResponse("score is successfully calculated", HttpStatus.OK.value());
-        return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+        scoringRequest.setScoringParameterRequest(scoringParameterRequest);
+
+        try {
+            scoringResponseMain = scoringClient.calculateScore(scoringRequest);
+        }
+        catch (Exception e) {
+            logger.error("error while calling scoring");
+            e.printStackTrace();
+            LoansResponse loansResponse = new LoansResponse("error while calling scoring.", HttpStatus.INTERNAL_SERVER_ERROR.value());
+            return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+        }
+
+        if(scoringResponseMain.getStatus() == HttpStatus.OK.value())
+        {
+            logger.error("score is successfully calculated");
+            LoansResponse loansResponse = new LoansResponse("score is successfully calculated", HttpStatus.OK.value());
+            return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+        }
+        else
+        {
+            logger.error("error while calling scoring");
+            LoansResponse loansResponse = new LoansResponse("error while calling scoring.", HttpStatus.INTERNAL_SERVER_ERROR.value());
+            return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+        }
     }
 
     @Override

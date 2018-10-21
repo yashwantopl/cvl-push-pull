@@ -29,7 +29,6 @@ public class PLRetailApplicantRequest implements Serializable {
     private Integer statusId;
     private Integer residenceType;
     private Date birthDate;
-
     private Integer employmentType;
     private Integer employmentWith;
     private Integer centralGovId;
@@ -46,7 +45,6 @@ public class PLRetailApplicantRequest implements Serializable {
     private Long keyVerticalFunding;
     private Long keyVerticalSector;
     private Long keyVerticalSubSector;
-
     private Address contactAddress;
     private String contactNo;
     private String email;
@@ -64,13 +62,14 @@ public class PLRetailApplicantRequest implements Serializable {
     private List<CreditCardsDetailRequest> creditCardsDetailRequestList;
 
     private Boolean isApplicantDetailsFilled;
+    
+    //FOR PL CAM REPORT
+    private String loanAmountRequiredString;
+    private String monthlyIncomeString;
 
     /*
     * Final
     * */
-    private Address permanentAddress;
-    private Address officeAddress;
-    private Boolean addressSameAs;
 
     public PLRetailApplicantRequest() {
 
@@ -164,29 +163,7 @@ public class PLRetailApplicantRequest implements Serializable {
         this.monthlyIncome = monthlyIncome;
     }
 
-    public Address getPermanentAddress() {
-        return permanentAddress;
-    }
 
-    public void setPermanentAddress(Address permanentAddress) {
-        this.permanentAddress = permanentAddress;
-    }
-
-    public Address getOfficeAddress() {
-        return officeAddress;
-    }
-
-    public void setOfficeAddress(Address officeAddress) {
-        this.officeAddress = officeAddress;
-    }
-
-    public Boolean getAddressSameAs() {
-        return addressSameAs;
-    }
-
-    public void setAddressSameAs(Boolean addressSameAs) {
-        this.addressSameAs = addressSameAs;
-    }
 
     public String getContactNo() {
         return contactNo;
@@ -443,4 +420,21 @@ public class PLRetailApplicantRequest implements Serializable {
     public void setCreditCardsDetailRequestList(List<CreditCardsDetailRequest> creditCardsDetailRequestList) {
         this.creditCardsDetailRequestList = creditCardsDetailRequestList;
     }
+
+	public String getLoanAmountRequiredString() {
+		return loanAmountRequiredString;
+	}
+
+	public void setLoanAmountRequiredString(String loanAmountRequiredString) {
+		this.loanAmountRequiredString = loanAmountRequiredString;
+	}
+
+	public String getMonthlyIncomeString() {
+		return monthlyIncomeString;
+	}
+
+	public void setMonthlyIncomeString(String monthlyIncomeString) {
+		this.monthlyIncomeString = monthlyIncomeString;
+	}
+    
 }

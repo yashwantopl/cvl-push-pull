@@ -132,6 +132,43 @@ public class NtbPrimaryViewResponse {
 		private List<GuarantorsCorporateDetailRequest> guarantorsCorporateDetailRequestList;
 		private List<AssociatedConcernDetailRequest> associatedConcernDetailRequests;
 	    
+		
+		private List<Object> itr;
+		private List<Object> bankStatementFinalView;
+		private List<Object> sanctionLetter;
+		private List<Object> netWorthStatements;
+		private List<Object> momAndAoa;
+		private List<Object> copyOfPanCard;
+		private List<Object> panOfAllDirectors;
+		private List<Object> photosOfDirectors;
+		private List<Object> residenceAddOfDirectors;
+		private List<Object> cmaList;
+		private List<Object> aadhar;
+		private List<Object> brochure;
+		
+		private Object adminAdd;
+	    private Object adminAddPremise;
+	    private Object adminAddStreetName;
+	    private Object adminAddLandmark;
+	    private Object adminAddCountry;
+	    private Object adminAddState;
+	    private Object adminAddCity;
+	    private Object adminAddPincode;
+	    private Object adminPinData;
+	    private String adminAddDist;
+	    private String adminAddTaluko;
+	    
+	    private Object regAdd;
+	    private Object regAddPremise;
+	    private Object regAddStreetName;
+	    private Object regAddLandmark;
+	    private Object regAddCountry;
+	    private Object regAddState;
+	    private Object regAddCity;
+	    private Object regAddPincode;
+	    private Object regPinData;
+	    private String regAddDist;
+	    private String regAddTaluko;
 
 		/**
 		 * @return the matchesList
@@ -1141,6 +1178,210 @@ public class NtbPrimaryViewResponse {
 		}
 		public void setAssociatedConcernDetailRequests(List<AssociatedConcernDetailRequest> associatedConcernDetailRequests) {
 			this.associatedConcernDetailRequests = associatedConcernDetailRequests;
+		}
+		public List<Object> getItr() {
+			return itr;
+		}
+		public void setItr(List<Object> itr) {
+			this.itr = itr;
+		}
+		public List<Object> getBankStatementFinalView() {
+			return bankStatementFinalView;
+		}
+		public void setBankStatementFinalView(List<Object> bankStatementFinalView) {
+			this.bankStatementFinalView = bankStatementFinalView;
+		}
+		public List<Object> getSanctionLetter() {
+			return sanctionLetter;
+		}
+		public void setSanctionLetter(List<Object> sanctionLetter) {
+			this.sanctionLetter = sanctionLetter;
+		}
+		public List<Object> getNetWorthStatements() {
+			return netWorthStatements;
+		}
+		public void setNetWorthStatements(List<Object> netWorthStatements) {
+			this.netWorthStatements = netWorthStatements;
+		}
+		public List<Object> getMomAndAoa() {
+			return momAndAoa;
+		}
+		public void setMomAndAoa(List<Object> momAndAoa) {
+			this.momAndAoa = momAndAoa;
+		}
+		public List<Object> getCopyOfPanCard() {
+			return copyOfPanCard;
+		}
+		public void setCopyOfPanCard(List<Object> copyOfPanCard) {
+			this.copyOfPanCard = copyOfPanCard;
+		}
+		public List<Object> getPanOfAllDirectors() {
+			return panOfAllDirectors;
+		}
+		public void setPanOfAllDirectors(List<Object> panOfAllDirectors) {
+			this.panOfAllDirectors = panOfAllDirectors;
+		}
+		public List<Object> getPhotosOfDirectors() {
+			return photosOfDirectors;
+		}
+		public void setPhotosOfDirectors(List<Object> photosOfDirectors) {
+			this.photosOfDirectors = photosOfDirectors;
+		}
+		public List<Object> getResidenceAddOfDirectors() {
+			return residenceAddOfDirectors;
+		}
+		public void setResidenceAddOfDirectors(List<Object> residenceAddOfDirectors) {
+			this.residenceAddOfDirectors = residenceAddOfDirectors;
+		}
+		public List<Object> getCmaList() {
+			return cmaList;
+		}
+		public void setCmaList(List<Object> cmaList) {
+			this.cmaList = cmaList;
+		}
+		public List<Object> getAadhar() {
+			return aadhar;
+		}
+		public void setAadhar(List<Object> aadhar) {
+			this.aadhar = aadhar;
+		}
+		public List<Object> getBrochure() {
+			return brochure;
+		}
+		public void setBrochure(List<Object> brochure) {
+			this.brochure = brochure;
+		}
+		public Object getAdminAdd() {
+			return adminAdd;
+		}
+		public void setAdminAdd(Object adminAdd) {
+			this.adminAdd = adminAdd;
+		}
+		public Object getAdminAddPremise() {
+			return adminAddPremise;
+		}
+		public void setAdminAddPremise(Object adminAddPremise) {
+			this.adminAddPremise = adminAddPremise;
+		}
+		public Object getAdminAddStreetName() {
+			return adminAddStreetName;
+		}
+		public void setAdminAddStreetName(Object adminAddStreetName) {
+			this.adminAddStreetName = adminAddStreetName;
+		}
+		public Object getAdminAddLandmark() {
+			return adminAddLandmark;
+		}
+		public void setAdminAddLandmark(Object adminAddLandmark) {
+			this.adminAddLandmark = adminAddLandmark;
+		}
+		public Object getAdminAddCountry() {
+			return adminAddCountry;
+		}
+		public void setAdminAddCountry(Object adminAddCountry) {
+			this.adminAddCountry = adminAddCountry;
+		}
+		public Object getAdminAddState() {
+			return adminAddState;
+		}
+		public void setAdminAddState(Object adminAddState) {
+			this.adminAddState = adminAddState;
+		}
+		public Object getAdminAddCity() {
+			return adminAddCity;
+		}
+		public void setAdminAddCity(Object adminAddCity) {
+			this.adminAddCity = adminAddCity;
+		}
+		public Object getAdminAddPincode() {
+			return adminAddPincode;
+		}
+		public void setAdminAddPincode(Object adminAddPincode) {
+			this.adminAddPincode = adminAddPincode;
+		}
+		public Object getAdminPinData() {
+			return adminPinData;
+		}
+		public void setAdminPinData(Object adminPinData) {
+			this.adminPinData = adminPinData;
+		}
+		public String getAdminAddDist() {
+			return adminAddDist;
+		}
+		public void setAdminAddDist(String adminAddDist) {
+			this.adminAddDist = adminAddDist;
+		}
+		public String getAdminAddTaluko() {
+			return adminAddTaluko;
+		}
+		public void setAdminAddTaluko(String adminAddTaluko) {
+			this.adminAddTaluko = adminAddTaluko;
+		}
+		public Object getRegAdd() {
+			return regAdd;
+		}
+		public void setRegAdd(Object regAdd) {
+			this.regAdd = regAdd;
+		}
+		public Object getRegAddPremise() {
+			return regAddPremise;
+		}
+		public void setRegAddPremise(Object regAddPremise) {
+			this.regAddPremise = regAddPremise;
+		}
+		public Object getRegAddStreetName() {
+			return regAddStreetName;
+		}
+		public void setRegAddStreetName(Object regAddStreetName) {
+			this.regAddStreetName = regAddStreetName;
+		}
+		public Object getRegAddLandmark() {
+			return regAddLandmark;
+		}
+		public void setRegAddLandmark(Object regAddLandmark) {
+			this.regAddLandmark = regAddLandmark;
+		}
+		public Object getRegAddCountry() {
+			return regAddCountry;
+		}
+		public void setRegAddCountry(Object regAddCountry) {
+			this.regAddCountry = regAddCountry;
+		}
+		public Object getRegAddState() {
+			return regAddState;
+		}
+		public void setRegAddState(Object regAddState) {
+			this.regAddState = regAddState;
+		}
+		public Object getRegAddCity() {
+			return regAddCity;
+		}
+		public void setRegAddCity(Object regAddCity) {
+			this.regAddCity = regAddCity;
+		}
+		public Object getRegAddPincode() {
+			return regAddPincode;
+		}
+		public void setRegAddPincode(Object regAddPincode) {
+			this.regAddPincode = regAddPincode;
+		}
+		public Object getRegPinData() {
+			return regPinData;
+		}
+		public void setRegPinData(Object regPinData) {
+			this.regPinData = regPinData;
+		}
+		public String getRegAddDist() {
+			return regAddDist;
+		}
+		public void setRegAddDist(String regAddDist) {
+			this.regAddDist = regAddDist;
+		}
+		public String getRegAddTaluko() {
+			return regAddTaluko;
+		}
+		public void setRegAddTaluko(String regAddTaluko) {
+			this.regAddTaluko = regAddTaluko;
 		}
 		
 

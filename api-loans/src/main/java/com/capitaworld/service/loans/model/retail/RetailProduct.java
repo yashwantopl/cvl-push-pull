@@ -129,6 +129,8 @@ public class RetailProduct extends ProductMasterRequest {
 	private List<CreditRatingPlParameter> creditRatingSelectedList;
 	
 	private Long userOrgId;
+	
+	private Integer userCreditRating;
 
 	public Long getFpProductId() {
 		return fpProductId;
@@ -618,6 +620,16 @@ public class RetailProduct extends ProductMasterRequest {
 		this.userOrgId = userOrgId;
 	}
 
+	public Integer getUserCreditRating() {
+		return userCreditRating;
+	}
+
+	public void setUserCreditRating(Integer userCreditRating) {
+		this.userCreditRating = userCreditRating;
+	}
+
+	
+	
 	
 	
 

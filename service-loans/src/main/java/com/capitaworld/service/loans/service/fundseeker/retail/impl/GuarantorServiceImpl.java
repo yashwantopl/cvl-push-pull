@@ -222,7 +222,7 @@ public class GuarantorServiceImpl implements GuarantorService {
 	}
 
 	@Override
-	public boolean saveFinal(FinalCommonRetailRequest applicantRequest, Long userId) throws Exception {
+	public boolean saveFinal(FinalCommonRetailRequestOld applicantRequest, Long userId) throws Exception {
 		try {
 			Long finalUserId = (CommonUtils.isObjectNullOrEmpty(applicantRequest.getClientId()) ? userId
 					: applicantRequest.getClientId());
@@ -267,14 +267,14 @@ public class GuarantorServiceImpl implements GuarantorService {
 	}
 
 	@Override
-	public FinalCommonRetailRequest getFinal(Long userId, Long applicationId, Long id) throws Exception {
+	public FinalCommonRetailRequestOld getFinal(Long userId, Long applicationId, Long id) throws Exception {
 		try {
 			GuarantorDetails guaDetail = guarantorDetailsRepository.get(applicationId, userId, id);
 			if (guaDetail == null) {
 				throw new NullPointerException("GuarantorDetails Record of Final Portion not exists in DB of User ID : "
 						+ userId + " and Application Id ==>" + applicationId);
 			}
-			FinalCommonRetailRequest applicantRequest = new FinalCommonRetailRequest();
+			FinalCommonRetailRequestOld applicantRequest = new FinalCommonRetailRequestOld();
 			BeanUtils.copyProperties(guaDetail, applicantRequest, CommonUtils.IgnorableCopy.RETAIL_PROFILE);
 			Integer currencyId = retailApplicantDetailRepository.getCurrency(userId, applicationId);
 			applicantRequest.setCurrencyValue(CommonDocumentUtils.getCurrency(currencyId));

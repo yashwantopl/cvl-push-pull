@@ -144,6 +144,8 @@ public interface LoanApplicationService {
 	
 	public void updateSkipPaymentWhiteLabel(Long userId, Long applicationId, Integer businessTypeId, Long orgId,Long fprProductId) throws Exception;
 	
+	public void sendInPrincipleForPersonalLoan(Long userId, Long applicationId, Integer businessTypeId, Long orgId,Long fprProductId) throws Exception;
+	
 	public LoanApplicationRequest updateLoanApplicationMasterPaymentStatus(PaymentRequest paymentRequest, Long userId)throws Exception;
 	
 	public GatewayRequest getPaymentStatus(PaymentRequest paymentRequest, Long userId, Long ClientId) throws Exception;
@@ -209,6 +211,9 @@ public interface LoanApplicationService {
 	 * @throws Exception
 	 */
 	public HunterRequestDataResponse getDataForHunterForNTB(Long applicationId) throws Exception;
+	
+	public Boolean saveLoanWCRenewalType(Long applicationId,Integer wcRenewalType);
+	public Integer getLoanWCRenewalType(Long applicationId);
 }
 
 

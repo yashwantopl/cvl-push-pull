@@ -110,6 +110,12 @@ public class ProductMasterTemp implements Serializable {
 	@Column(name = "business_type_id")
 	private Long businessTypeId;
 	
+	@Column(name = "wc_renewal_status")
+	private Integer wcRenewalStatus;
+	
+	@Column(name="fin_type_id")
+	private Integer finId;
+
 	public ProductMasterTemp() {
 	}
 
@@ -328,4 +334,22 @@ public class ProductMasterTemp implements Serializable {
 	public void setBusinessTypeId(Long businessTypeId) {
 		this.businessTypeId = businessTypeId;
 	}
+
+	public Integer getWcRenewalStatus() {
+		return wcRenewalStatus;
+	}
+
+	public void setWcRenewalStatus(Integer wcRenewalStatus) {
+		this.wcRenewalStatus = wcRenewalStatus;
+	}
+
+	public Integer getFinId() {
+		return finId;
+	}
+
+	public void setFinId(Integer finId) {
+		this.finId = finId;
+	}
+	
+	
 }

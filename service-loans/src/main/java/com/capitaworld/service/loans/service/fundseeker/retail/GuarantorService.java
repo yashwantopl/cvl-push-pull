@@ -1,6 +1,6 @@
 package com.capitaworld.service.loans.service.fundseeker.retail;
 
-import com.capitaworld.service.loans.model.retail.FinalCommonRetailRequest;
+import com.capitaworld.service.loans.model.retail.FinalCommonRetailRequestOld;
 import com.capitaworld.service.loans.model.retail.GuarantorRequest;
 import com.capitaworld.service.loans.model.teaser.finalview.RetailFinalViewCommonResponse;
 import com.capitaworld.service.loans.model.teaser.primaryview.RetailProfileViewResponse;
@@ -14,9 +14,9 @@ public interface GuarantorService {
 	
 	public List<GuarantorRequest> getList(Long applicationId,Long userId) throws Exception;
 	
-	public boolean saveFinal(FinalCommonRetailRequest applicantRequest,Long userId) throws Exception;
+	public boolean saveFinal(FinalCommonRetailRequestOld applicantRequest, Long userId) throws Exception;
 
-	public FinalCommonRetailRequest getFinal(Long userId, Long applicationId, Long id) throws Exception;
+	public FinalCommonRetailRequestOld getFinal(Long userId, Long applicationId, Long id) throws Exception;
 
 	public List<RetailProfileViewResponse> getGuarantorServiceResponse(Long applicantId, Long userId,int productId) throws Exception;
 	

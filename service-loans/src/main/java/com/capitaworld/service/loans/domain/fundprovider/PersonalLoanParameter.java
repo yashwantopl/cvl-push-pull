@@ -179,6 +179,9 @@ public class PersonalLoanParameter extends ProductMaster implements Serializable
 	@Column(name="is_credit_rating_mandatory")
 	private Boolean isEmpRatingMandatory=false;
 	
+	@Column(name="user_credit_rating")
+	private Integer userCreditRating;
+	
 	
 	
 	/*//FP NEW REQUIREMENT
@@ -664,6 +667,15 @@ public class PersonalLoanParameter extends ProductMaster implements Serializable
 	public void setJobId(Long jobId) {
 		this.jobId = jobId;
 	}
+
+	public Integer getUserCreditRating() {
+		return userCreditRating;
+	}
+
+	public void setUserCreditRating(Integer userCreditRating) {
+		this.userCreditRating = userCreditRating;
+	}
+
 
 	
 	

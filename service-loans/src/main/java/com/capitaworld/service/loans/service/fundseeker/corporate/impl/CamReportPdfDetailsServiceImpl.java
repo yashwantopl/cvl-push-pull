@@ -322,16 +322,16 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			corporateFinalInfoRequest = corporateFinalInfoService.get(userId, applicationId);
 			//ADMIN OFFICE ADDRESS
 			if(!CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getSecondAddress())){
-				map.put("adminAddPremise", !CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getSecondAddress().getPremiseNumber()) ? CommonUtils.printFields(corporateFinalInfoRequest.getSecondAddress().getPremiseNumber()) + "," : "");
-				map.put("adminAddStreetName", !CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getSecondAddress().getStreetName()) ? CommonUtils.printFields(corporateFinalInfoRequest.getSecondAddress().getStreetName()) + " " : "");
-				map.put("adminAddLandmark", !CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getSecondAddress().getLandMark()) ? CommonUtils.printFields(corporateFinalInfoRequest.getSecondAddress().getLandMark()) + " " : "");
+				map.put("adminAddPremise", !CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getSecondAddress().getPremiseNumber()) ? CommonUtils.printFields(corporateFinalInfoRequest.getSecondAddress().getPremiseNumber(),null) + "," : "");
+				map.put("adminAddStreetName", !CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getSecondAddress().getStreetName()) ? CommonUtils.printFields(corporateFinalInfoRequest.getSecondAddress().getStreetName(),null) + " " : "");
+				map.put("adminAddLandmark", !CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getSecondAddress().getLandMark()) ? CommonUtils.printFields(corporateFinalInfoRequest.getSecondAddress().getLandMark(),null) + " " : "");
 				map.put("adminAddCountry", StringEscapeUtils.escapeXml(getCountryName(corporateFinalInfoRequest.getSecondAddress().getCountryId())));
 				map.put("adminAddState", StringEscapeUtils.escapeXml(getStateName(corporateFinalInfoRequest.getSecondAddress().getStateId())));
 				map.put("adminAddCity", StringEscapeUtils.escapeXml(getCityName(corporateFinalInfoRequest.getSecondAddress().getCityId())));
 				map.put("adminAddPincode", !CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getSecondAddress().getPincode())?corporateFinalInfoRequest.getSecondAddress().getPincode() : "");
 				try {
 					if(!CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getSecondAddress().getDistrictMappingId())) {
-						map.put("adminAddressData",CommonUtils.printFields(pincodeDateService.getById(corporateFinalInfoRequest.getSecondAddress().getDistrictMappingId())));				
+						map.put("adminAddressData",CommonUtils.printFields(pincodeDateService.getById(corporateFinalInfoRequest.getSecondAddress().getDistrictMappingId()),null));				
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -339,16 +339,16 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			}
 			//REGISTERED OFFICE ADDRESS
 			if(!CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getFirstAddress())) {
-				map.put("registeredAddPremise", !CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getFirstAddress().getPremiseNumber()) ? CommonUtils.printFields(corporateFinalInfoRequest.getFirstAddress().getPremiseNumber()) + "," : "");
-				map.put("registeredAddStreetName", !CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getFirstAddress().getStreetName()) ? CommonUtils.printFields(corporateFinalInfoRequest.getFirstAddress().getStreetName()) + " " : "");
-				map.put("registeredAddLandmark", !CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getFirstAddress().getLandMark()) ? CommonUtils.printFields(corporateFinalInfoRequest.getFirstAddress().getLandMark()) + " " : "");
+				map.put("registeredAddPremise", !CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getFirstAddress().getPremiseNumber()) ? CommonUtils.printFields(corporateFinalInfoRequest.getFirstAddress().getPremiseNumber(),null) + "," : "");
+				map.put("registeredAddStreetName", !CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getFirstAddress().getStreetName()) ? CommonUtils.printFields(corporateFinalInfoRequest.getFirstAddress().getStreetName(),null) + " " : "");
+				map.put("registeredAddLandmark", !CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getFirstAddress().getLandMark()) ? CommonUtils.printFields(corporateFinalInfoRequest.getFirstAddress().getLandMark(),null) + " " : "");
 				map.put("registeredAddCountry", StringEscapeUtils.escapeXml(getCountryName(corporateFinalInfoRequest.getFirstAddress().getCountryId())));
 				map.put("registeredAddState", StringEscapeUtils.escapeXml(getStateName(corporateFinalInfoRequest.getFirstAddress().getStateId())));
 				map.put("registeredAddCity", StringEscapeUtils.escapeXml(getCityName(corporateFinalInfoRequest.getFirstAddress().getCityId())));
 				map.put("registeredAddPincode", !CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getFirstAddress().getPincode())?corporateFinalInfoRequest.getFirstAddress().getPincode() : "");
 				try {
 					if(!CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getFirstAddress().getDistrictMappingId())) {
-						map.put("registeredAddressData",CommonUtils.printFields(pincodeDateService.getById(corporateFinalInfoRequest.getFirstAddress().getDistrictMappingId())));				
+						map.put("registeredAddressData",CommonUtils.printFields(pincodeDateService.getById(corporateFinalInfoRequest.getFirstAddress().getDistrictMappingId()),null));				
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -416,7 +416,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		try {
 			//ONE-FORM DATA
     		map.put("corporateApplicant", corporateApplicantRequest);
-			map.put("orgName", CommonUtils.printFields(corporateApplicantRequest.getOrganisationName()));
+			map.put("orgName", CommonUtils.printFields(corporateApplicantRequest.getOrganisationName(),null));
 			map.put("constitution", !CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getConstitutionId()) ? StringEscapeUtils.escapeXml(Constitution.getById(corporateApplicantRequest.getConstitutionId()).getValue()) : " ");
 			
 			String establishMentYear = !CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getEstablishmentMonth()) ? EstablishmentMonths.getById(corporateApplicantRequest.getEstablishmentMonth()).getValue() : "";
@@ -433,10 +433,10 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 					logger.info("Error in getting establishment year");
 				}
 			}
-			map.put("establishmentYr",!CommonUtils.isObjectNullOrEmpty(establishMentYear) ? CommonUtils.printFields(establishMentYear) : " ");
+			map.put("establishmentYr",!CommonUtils.isObjectNullOrEmpty(establishMentYear) ? CommonUtils.printFields(establishMentYear,null) : " ");
 			//INDUSTRY DATA
 			Integer industry = corporateApplicantRequest.getKeyVericalFunding().intValue();
-			map.put("keyVerticalFunding", !CommonUtils.isObjectNullOrEmpty(industry) ? CommonUtils.printFields(Industry.getById(industry).getValue()) : " ");
+			map.put("keyVerticalFunding", !CommonUtils.isObjectNullOrEmpty(industry) ? CommonUtils.printFields(Industry.getById(industry).getValue(),null) : " ");
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -552,7 +552,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 					}
 					directorBackgroundDetailResponseList.add(directorBackgroundDetailResponse);
 				}
-				map.put("dirBackground", !CommonUtils.isListNullOrEmpty(directorBackgroundDetailResponseList) ? CommonUtils.printFields(directorBackgroundDetailResponseList) : " ");
+				map.put("dirBackground", !CommonUtils.isListNullOrEmpty(directorBackgroundDetailResponseList) ? CommonUtils.printFields(directorBackgroundDetailResponseList,null) : " ");
 	        }
 				catch (Exception e) {
 					e.printStackTrace();
@@ -578,7 +578,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
                     financialArrangementsDetailResponse.setLcbgStatus(!CommonUtils.isObjectNullOrEmpty(financialArrangementsDetailRequest.getLcBgStatus()) ? LCBG_Status_SBI.getById(financialArrangementsDetailRequest.getLcBgStatus()).getValue().toString() : "-");
                     financialArrangementsDetailResponseList.add(financialArrangementsDetailResponse);
                 }
-                	map.put("financialArrangments",!CommonUtils.isListNullOrEmpty(financialArrangementsDetailResponseList) ? CommonUtils.printFields(financialArrangementsDetailResponseList) : " ");
+                	map.put("financialArrangments",!CommonUtils.isListNullOrEmpty(financialArrangementsDetailResponseList) ? CommonUtils.printFields(financialArrangementsDetailResponseList,null) : " ");
 
             } catch (Exception e) {
                 logger.error("Problem to get Data of Financial Arrangements Details {}", e);
@@ -637,7 +637,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			matchRequest.setApplicationId(applicationId);
 			matchRequest.setProductId(productId);
 			MatchDisplayResponse matchResponse= matchEngineClient.displayMatchesOfCorporate(matchRequest);
-			map.put("matchesResponse", !CommonUtils.isListNullOrEmpty(matchResponse.getMatchDisplayObjectList()) ? CommonUtils.printFields(matchResponse.getMatchDisplayObjectList()) : " ");
+			map.put("matchesResponse", !CommonUtils.isListNullOrEmpty(matchResponse.getMatchDisplayObjectList()) ? CommonUtils.printFields(matchResponse.getMatchDisplayObjectList(),null) : " ");
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -916,61 +916,16 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		try{
 			ITRConnectionResponse itrResponse = itrClient.getITRBasicDetails(applicationId);
 			System.out.println("ITR RESPONSE===========>"+itrResponse);
-			map.put("nameAsPerItr", CommonUtils.printFields(itrResponse.getData()));
+			map.put("nameAsPerItr", CommonUtils.printFields(itrResponse.getData(),null));
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
-		
-		//PERFIOS API DATA (BANK STATEMENT ANALYSIS)
-		/*ReportRequest reportRequest = new ReportRequest();
-		reportRequest.setApplicationId(applicationId);
-		reportRequest.setUserId(userId);
-		List<Data> datas=new ArrayList<>();
-		try {
-			AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReportForCam(reportRequest);
-			List<HashMap<String, Object>> hashMap=(List<HashMap<String, Object>>) analyzerResponse.getData();
-			if(!CommonUtils.isListNullOrEmpty(hashMap))
-			{
-				for(HashMap<String,Object> rec:hashMap)
-				{
-					Data data = MultipleJSONObjectHelper.getObjectFromMap(rec, Data.class);
-					datas.add(data);
-					List<Object> bankStatement = new ArrayList<Object>();
-					List<Object> monthlyDetails = new ArrayList<Object>();
-					List<Object> top5FundReceived = new ArrayList<Object>();
-					List<Object> top5FundTransfered = new ArrayList<Object>();
-					List<Object> bouncedChequeList = new ArrayList<Object>();
-					List<Object> customerInfo = new ArrayList<Object>();
-					List<Object> summaryInfo = new ArrayList<Object>();
-					for(int i =0; i<hashMap.size(); i++) {
-						bankStatement.add(!CommonUtils.isObjectNullOrEmpty(data.getXns()) ? CommonUtils.printFields(data.getXns().getXn()) : " ");
-						monthlyDetails.add(!CommonUtils.isObjectNullOrEmpty(data.getMonthlyDetailList()) ? CommonUtils.printFields(data.getMonthlyDetailList()) : "");
-						top5FundReceived.add(!CommonUtils.isObjectNullOrEmpty(data.getTop5FundReceivedList().getItem()) ? CommonUtils.printFields(data.getTop5FundReceivedList().getItem()) : "");
-						top5FundTransfered.add(!CommonUtils.isObjectNullOrEmpty(data.getTop5FundTransferedList().getItem()) ? CommonUtils.printFields(data.getTop5FundTransferedList().getItem()) : "");
-						bouncedChequeList.add(!CommonUtils.isObjectNullOrEmpty(data.getBouncedOrPenalXnList()) ? CommonUtils.printFields(data.getBouncedOrPenalXnList().getBouncedOrPenalXns()) : " ");
-						customerInfo.add(!CommonUtils.isObjectNullOrEmpty(data.getCustomerInfo()) ? CommonUtils.printFields(data.getCustomerInfo()) : " ");
-						summaryInfo.add(!CommonUtils.isObjectNullOrEmpty(data.getSummaryInfo()) ?CommonUtils.printFields(data.getSummaryInfo()) : " ");
-					}
-					map.put("bankStatement" , bankStatement);
-					map.put("monthlyDetails" , monthlyDetails);
-					map.put("top5FundReceived" , top5FundReceived);
-					map.put("top5FundTransfered" , top5FundTransfered);
-					map.put("bouncedChequeList" , bouncedChequeList);
-					map.put("customerInfo" , customerInfo);
-					map.put("summaryInfo" , summaryInfo);
-					map.put("bankStatementAnalysis", CommonUtils.printFields(datas));
-				}
-			}
-		}catch (Exception e) {
-			e.printStackTrace();
-			logger.info("Error while getting perfios data");
-		}*/
 		
 		//CGTMSE DATA
 		try {
 			CGTMSEDataResponse cgtmseDataResponse = thirdPartyClient.getCalulation(applicationId,productId);
 			if(!CommonUtils.isObjectNullOrEmpty(cgtmseDataResponse)) {
-				map.put("cgtmseData", CommonUtils.printFields(cgtmseDataResponse));
+				map.put("cgtmseData", CommonUtils.printFields(cgtmseDataResponse,null));
 				if(cgtmseDataResponse.getNatureOfEntity().equals("Manufacturer")) {
 					map.put("industryType", "MANUFACTURING");
 				}else {
@@ -988,7 +943,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				map.put("percTerms", CommonUtils.convertValue(cgtmseDataResponse.getPercTerms()));
 				map.put("assetAqu", CommonUtils.convertValueWithoutDecimal(cgtmseDataResponse.getAssetAqusition()));
 				if(!CommonUtils.isObjectNullOrEmpty(cgtmseDataResponse.getCgtmseResponse()) && !CommonUtils.isObjectNullOrEmpty(cgtmseDataResponse.getCgtmseResponse().getDetails())) {
-					map.put("cgtmseBankWise", CommonUtils.printFields(cgtmseDataResponse.getCgtmseResponse().getDetails()));
+					map.put("cgtmseBankWise", CommonUtils.printFields(cgtmseDataResponse.getCgtmseResponse().getDetails(),null));
 				}
 			}
 		} catch (Exception e) {
@@ -1052,7 +1007,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			String companyId = loanApplicationMaster.getMcaCompanyId();
 			McaResponse mcaResponse = mcaClient.getCompanyDetailedData(companyId);
 			if(!CommonUtils.isObjectNullOrEmpty(mcaResponse.getData())) {
-				map.put("mcaData", CommonUtils.printFields(mcaResponse.getData()));
+				map.put("mcaData", CommonUtils.printFields(mcaResponse.getData(),null));
 			}
 		}catch(Exception e) {
 			e.printStackTrace();
@@ -1062,7 +1017,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		try {
 			AnalyticsResponse hunterResp =fraudAnalyticsClient.getRuleAnalysisData(applicationId);
 			if(!CommonUtils.isObjectListNull(hunterResp,hunterResp.getData())) {
-				map.put("hunterResponse",  CommonUtils.printFields(hunterResp.getData()));
+				map.put("hunterResponse",  CommonUtils.printFields(hunterResp.getData(),null));
 			}
 		} catch (Exception e1) {
 			e1.printStackTrace();
@@ -1077,6 +1032,31 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		}catch(Exception e) {
 			logger.info("Error while getting ITR data");
 		}
+		//PERFIOS API DATA (BANK STATEMENT ANALYSIS)
+		ReportRequest reportRequest = new ReportRequest();
+			reportRequest.setApplicationId(applicationId);
+			reportRequest.setUserId(userId);
+			List<Data> datas=new ArrayList<>();
+			try {
+				AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReportForCam(reportRequest);
+				List<HashMap<String, Object>> hashMap=(List<HashMap<String, Object>>) analyzerResponse.getData();
+				if(!CommonUtils.isListNullOrEmpty(hashMap))
+				{
+					for(HashMap<String,Object> rec:hashMap)
+					{
+						Data data = MultipleJSONObjectHelper.getObjectFromMap(rec, Data.class);
+						datas.add(data);
+						List<Object> customerInfo = new ArrayList<Object>();
+						for(int i =0; i<hashMap.size(); i++) {
+							customerInfo.add(!CommonUtils.isObjectNullOrEmpty(data.getCustomerInfo()) ? CommonUtils.printFields(data.getCustomerInfo(),null) : " ");
+						}
+						map.put("customerInfo" , customerInfo);
+					}
+				}
+			}catch (Exception e) {
+				e.printStackTrace();
+				logger.info("Error while getting perfios data");
+			}
 /**********************************************FINAL DETAILS*****************************************************/
 		
 		if(isFinalView) {
@@ -1132,7 +1112,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 					ownershipDetailResponse.setShareHoldingCategory(ShareHoldingCategory.getById(ownershipDetailRequest.getShareHoldingCategoryId()).getValue());
 					ownershipDetailResponseList.add(ownershipDetailResponse);
 				}
-				map.put("ownership", CommonUtils.printFields(ownershipDetailResponseList));
+				map.put("ownership", CommonUtils.printFields(ownershipDetailResponseList,null));
 
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -1162,21 +1142,21 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 					promotorBackgroundDetailResponse.setMobile(promotorBackgroundDetailRequest.getMobile());
 					promotorBackgroundDetailResponseList.add(promotorBackgroundDetailResponse);
 				}
-				map.put("promotorsbckgrnd", CommonUtils.printFields(promotorBackgroundDetailResponseList));
+				map.put("promotorsbckgrnd", CommonUtils.printFields(promotorBackgroundDetailResponseList,null));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 			
 			//ASSOCIATE ENTITY
 			try {
-				map.put("associatedConcerns",CommonUtils.printFields(associatedConcernDetailService.getAssociatedConcernsDetailList(applicationId, userId)));
+				map.put("associatedConcerns",CommonUtils.printFields(associatedConcernDetailService.getAssociatedConcernsDetailList(applicationId, userId),null));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 			try {
-				map.put("proposedProduct",CommonUtils.printFields(proposedProductDetailsService.getProposedProductDetailList(applicationId, userId)));
-				map.put("existingProduct",CommonUtils.printFields(existingProductDetailsService.getExistingProductDetailList(applicationId, userId)));
-				map.put("achievementDetails",CommonUtils.printFields(achievmentDetailsService.getAchievementDetailList(applicationId, userId)));
+				map.put("proposedProduct",CommonUtils.printFields(proposedProductDetailsService.getProposedProductDetailList(applicationId, userId),null));
+				map.put("existingProduct",CommonUtils.printFields(existingProductDetailsService.getExistingProductDetailList(applicationId, userId),null));
+				map.put("achievementDetails",CommonUtils.printFields(achievmentDetailsService.getAchievementDetailList(applicationId, userId),null));
 			}catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -1188,13 +1168,13 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			
 			//DETAILS OF GUARANTER
 			try {
-					map.put("guaDetails", CommonUtils.printFields(guarantorsCorporateDetailService.getGuarantorsCorporateDetailList(applicationId, userId)));
+					map.put("guaDetails", CommonUtils.printFields(guarantorsCorporateDetailService.getGuarantorsCorporateDetailList(applicationId, userId),null));
 			} catch (Exception e) {
 					logger.error("Problem to get Data of Details of Guarantor {}", e);
 			}
 		    //MONTHLY TURNOVER
 			try {
-				map.put("monthlyTurnOver", CommonUtils.printFields(monthlyTurnoverDetailService.getMonthlyTurnoverDetailList(applicationId, userId)));
+				map.put("monthlyTurnOver", CommonUtils.printFields(monthlyTurnoverDetailService.getMonthlyTurnoverDetailList(applicationId, userId),null));
 			} catch (Exception e) {
 				logger.error("Problem to get Data of Monthly Turnover {}", e);
 			}
@@ -1210,7 +1190,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 						costOfProjectResponse.setParticulars(Particular.getById(Integer.parseInt(costOfProjectRequest.getParticularsId().toString())).getValue());
 					    costOfProjectResponses.add(costOfProjectResponse);
 				}
-				map.put("costEstimate", CommonUtils.printFields(costOfProjectResponses));
+				map.put("costEstimate", CommonUtils.printFields(costOfProjectResponses,null));
 			} catch (Exception e1) {
 				// TODO Auto-generated catch block
 				logger.error("Problem to get Data of Total cost of project{}", e1);
@@ -1227,7 +1207,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 						detailResponse.setFinanceMeansCategory(FinanceCategory.getById(Integer.parseInt(financeMeansDetailRequest.getFinanceMeansCategoryId().toString())).getValue());
 					financeMeansDetailResponsesList.add(detailResponse);
 				}
-				map.put("meansOfFinance", CommonUtils.printFields(financeMeansDetailResponsesList));
+				map.put("meansOfFinance", CommonUtils.printFields(financeMeansDetailResponsesList,null));
 			} catch (Exception e1) {
 				// TODO Auto-generated catch block
 				logger.error("Problem to get Data of Finance Means Details {}", e1);
@@ -1235,12 +1215,71 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			
 			//COLLATERAL SECURITY			
 			try {
-				map.put("collateralSecurity", CommonUtils.printFields(securityCorporateDetailsService.getsecurityCorporateDetailsList(applicationId, userId)));
+				map.put("collateralSecurity", CommonUtils.printFields(securityCorporateDetailsService.getsecurityCorporateDetailsList(applicationId, userId),null));
 			} catch (Exception e) {
 				logger.error("Problem to get Data of Security Details {}", e);
 			}
 			
 		}
+		return map;
+	}
+	
+	@Override
+	public Map<String, Object> getBankStatementAnalysisReport(Long applicationId, Long productId) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		Long userId = loanApplicationRepository.getUserIdByApplicationId(applicationId);
+		CorporateApplicantRequest corporateApplicantRequest =corporateApplicantService.getCorporateApplicant(applicationId);
+		try {
+			map.put("orgName", CommonUtils.printFields(corporateApplicantRequest.getOrganisationName(),null));
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		//PERFIOS API DATA (BANK STATEMENT ANALYSIS)
+			ReportRequest reportRequest = new ReportRequest();
+				reportRequest.setApplicationId(applicationId);
+				reportRequest.setUserId(userId);
+				List<Data> datas=new ArrayList<>();
+				try {
+					AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReportForCam(reportRequest);
+					List<HashMap<String, Object>> hashMap=(List<HashMap<String, Object>>) analyzerResponse.getData();
+					if(!CommonUtils.isListNullOrEmpty(hashMap))
+					{
+						for(HashMap<String,Object> rec:hashMap)
+						{
+							Data data = MultipleJSONObjectHelper.getObjectFromMap(rec, Data.class);
+							datas.add(data);
+							List<Object> bankStatement = new ArrayList<Object>();
+							List<Object> monthlyDetails = new ArrayList<Object>();
+							List<Object> top5FundReceived = new ArrayList<Object>();
+							List<Object> top5FundTransfered = new ArrayList<Object>();
+							List<Object> bouncedChequeList = new ArrayList<Object>();
+							List<Object> customerInfo = new ArrayList<Object>();
+							List<Object> summaryInfo = new ArrayList<Object>();
+							for(int i =0; i<hashMap.size(); i++) {
+								bankStatement.add(!CommonUtils.isObjectNullOrEmpty(data.getXns()) ? CommonUtils.printFields(data.getXns().getXn(),null) : " ");
+								monthlyDetails.add(!CommonUtils.isObjectNullOrEmpty(data.getMonthlyDetailList()) ? CommonUtils.printFields(data.getMonthlyDetailList(),null) : "");
+								top5FundReceived.add(!CommonUtils.isObjectNullOrEmpty(data.getTop5FundReceivedList().getItem()) ? CommonUtils.printFields(data.getTop5FundReceivedList().getItem(),null) : "");
+								top5FundTransfered.add(!CommonUtils.isObjectNullOrEmpty(data.getTop5FundTransferedList().getItem()) ? CommonUtils.printFields(data.getTop5FundTransferedList().getItem(),null) : "");
+								bouncedChequeList.add(!CommonUtils.isObjectNullOrEmpty(data.getBouncedOrPenalXnList()) ? CommonUtils.printFields(data.getBouncedOrPenalXnList().getBouncedOrPenalXns(),null) : " ");
+								customerInfo.add(!CommonUtils.isObjectNullOrEmpty(data.getCustomerInfo()) ? CommonUtils.printFields(data.getCustomerInfo(),null) : " ");
+								summaryInfo.add(!CommonUtils.isObjectNullOrEmpty(data.getSummaryInfo()) ?CommonUtils.printFields(data.getSummaryInfo(),null) : " ");
+							}
+							map.put("bankStatement" , bankStatement);
+							map.put("monthlyDetails" , monthlyDetails);
+							map.put("top5FundReceived" , top5FundReceived);
+							map.put("top5FundTransfered" , top5FundTransfered);
+							map.put("bouncedChequeList" , bouncedChequeList);
+							map.put("customerInfo" , customerInfo);
+							map.put("summaryInfo" , summaryInfo);
+							map.put("bankStatementAnalysis", CommonUtils.printFields(datas,null));
+						}
+					}
+				}catch (Exception e) {
+					e.printStackTrace();
+					logger.info("Error while getting perfios data");
+				}
+				
 		return map;
 	}
 	
@@ -1753,4 +1792,5 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		}
 		return null;
 	}
+
 }

@@ -1920,16 +1920,16 @@ public class DDRFormServiceImpl implements DDRFormService {
 		// GET REGISTERED ADDRESS :- LINENO:7
 		try {
 			String regOfficeAdd = "";
-			regOfficeAdd = !CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredPremiseNumber()) ? CommonUtils.printFields(applicantDetail.getRegisteredPremiseNumber()) + ", " : "";
-			regOfficeAdd += !CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredStreetName()) ? CommonUtils.printFields(applicantDetail.getRegisteredStreetName()) + ", " : "";
-			regOfficeAdd += !CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredLandMark()) ? CommonUtils.printFields(applicantDetail.getRegisteredLandMark()) + ", " : "";
+			regOfficeAdd = !CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredPremiseNumber()) ? CommonUtils.printFields(applicantDetail.getRegisteredPremiseNumber(),null) + ", " : "";
+			regOfficeAdd += !CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredStreetName()) ? CommonUtils.printFields(applicantDetail.getRegisteredStreetName(),null) + ", " : "";
+			regOfficeAdd += !CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredLandMark()) ? CommonUtils.printFields(applicantDetail.getRegisteredLandMark(),null) + ", " : "";
 			String countryName = getCountryName(applicantDetail.getRegisteredCountryId());
-			regOfficeAdd += !CommonUtils.isObjectNullOrEmpty(countryName) ? CommonUtils.printFields(countryName) + ", " : "";
+			regOfficeAdd += !CommonUtils.isObjectNullOrEmpty(countryName) ? CommonUtils.printFields(countryName,null) + ", " : "";
 			String stateName = getStateName(applicantDetail.getRegisteredStateId());
-			regOfficeAdd += !CommonUtils.isObjectNullOrEmpty(stateName) ? CommonUtils.printFields(stateName) + ", " : "";
+			regOfficeAdd += !CommonUtils.isObjectNullOrEmpty(stateName) ? CommonUtils.printFields(stateName,null) + ", " : "";
 			String cityName = getCityName(applicantDetail.getRegisteredCityId());
-			regOfficeAdd += !CommonUtils.isObjectNullOrEmpty(cityName) ? CommonUtils.printFields(cityName) : "";
-			regOfficeAdd += !CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredPincode()) ? CommonUtils.printFields(applicantDetail.getRegisteredPincode()) : "";
+			regOfficeAdd += !CommonUtils.isObjectNullOrEmpty(cityName) ? CommonUtils.printFields(cityName,null) : "";
+			regOfficeAdd += !CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredPincode()) ? CommonUtils.printFields(applicantDetail.getRegisteredPincode(),null) : "";
 			response.setRegOfficeAddress(!CommonUtils.isObjectNullOrEmpty(regOfficeAdd) ? regOfficeAdd : "NA");
 		}catch(Exception e) {
 			logger.info("Error while getting registered address details");
@@ -1938,16 +1938,16 @@ public class DDRFormServiceImpl implements DDRFormService {
 		// GET ADMINISRATIVE (Corporate Office) ADDRESS :- LINENO:9
 		try {
 			String admntOfficeAdd = "";
-			admntOfficeAdd = !CommonUtils.isObjectNullOrEmpty(applicantDetail.getAdministrativePremiseNumber()) ? CommonUtils.printFields(applicantDetail.getAdministrativePremiseNumber()) + ", " : "";
-			admntOfficeAdd += !CommonUtils.isObjectNullOrEmpty(applicantDetail.getAdministrativeStreetName()) ? CommonUtils.printFields(applicantDetail.getAdministrativeStreetName()) + ", " : "";
-			admntOfficeAdd += !CommonUtils.isObjectNullOrEmpty(applicantDetail.getAdministrativeLandMark()) ? CommonUtils.printFields(applicantDetail.getAdministrativeLandMark()) + ", " : "";
+			admntOfficeAdd = !CommonUtils.isObjectNullOrEmpty(applicantDetail.getAdministrativePremiseNumber()) ? CommonUtils.printFields(applicantDetail.getAdministrativePremiseNumber(),null) + ", " : "";
+			admntOfficeAdd += !CommonUtils.isObjectNullOrEmpty(applicantDetail.getAdministrativeStreetName()) ? CommonUtils.printFields(applicantDetail.getAdministrativeStreetName(),null) + ", " : "";
+			admntOfficeAdd += !CommonUtils.isObjectNullOrEmpty(applicantDetail.getAdministrativeLandMark()) ? CommonUtils.printFields(applicantDetail.getAdministrativeLandMark(),null) + ", " : "";
 			String admntCountryName = getCountryName(applicantDetail.getAdministrativeCountryId());
-			admntOfficeAdd += !CommonUtils.isObjectNullOrEmpty(admntCountryName) ? CommonUtils.printFields(admntCountryName) + ", " : "";
+			admntOfficeAdd += !CommonUtils.isObjectNullOrEmpty(admntCountryName) ? CommonUtils.printFields(admntCountryName,null) + ", " : "";
 			String admntStateName = getStateName(applicantDetail.getAdministrativeStateId());
-			admntOfficeAdd += !CommonUtils.isObjectNullOrEmpty(admntStateName) ? CommonUtils.printFields(admntStateName) + ", " : "";
+			admntOfficeAdd += !CommonUtils.isObjectNullOrEmpty(admntStateName) ? CommonUtils.printFields(admntStateName,null) + ", " : "";
 			String admntCityName = getCityName(applicantDetail.getAdministrativeCityId());
-			admntOfficeAdd += !CommonUtils.isObjectNullOrEmpty(admntCityName) ? CommonUtils.printFields(admntCityName) : "";
-			admntOfficeAdd += !CommonUtils.isObjectNullOrEmpty(applicantDetail.getAdministrativePincode()) ? CommonUtils.printFields(applicantDetail.getAdministrativePincode()) : "";
+			admntOfficeAdd += !CommonUtils.isObjectNullOrEmpty(admntCityName) ? CommonUtils.printFields(admntCityName,null) : "";
+			admntOfficeAdd += !CommonUtils.isObjectNullOrEmpty(applicantDetail.getAdministrativePincode()) ? CommonUtils.printFields(applicantDetail.getAdministrativePincode(),null) : "";
 			response.setCorpOfficeAddress(!CommonUtils.isObjectNullOrEmpty(admntOfficeAdd) ? admntOfficeAdd : "NA");
 		}catch(Exception e) {
 			logger.info("Error while getting administrative address details");
