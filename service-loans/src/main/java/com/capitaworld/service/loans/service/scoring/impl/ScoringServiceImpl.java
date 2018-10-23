@@ -551,7 +551,6 @@ public class ScoringServiceImpl implements ScoringService {
     public ResponseEntity<LoansResponse> calculateExistingBusinessScoring(ScoringRequestLoans scoringRequestLoans) {
 
         ScoringParameterRequest scoringParameterRequest = new ScoringParameterRequest();
-        ;
 
         Long scoreModelId = scoringRequestLoans.getScoringModelId();
         Long applicationId = scoringRequestLoans.getApplicationId();
