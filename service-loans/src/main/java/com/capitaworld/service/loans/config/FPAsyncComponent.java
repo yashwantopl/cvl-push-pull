@@ -3330,7 +3330,9 @@ public class FPAsyncComponent {
 					form.format(loanSanctionDomainOld.getSanctionDate()) != null
 							? form.format(loanSanctionDomainOld.getSanctionDate())
 							: "NA");
-
+			mailParameters.put("remarks",
+					loanSanctionDomainOld.getRemark() != null ? loanSanctionDomainOld.getRemark() : "NA");
+			
 			// For getting Fund Seeker's Name
 			// =========================================================================================================
 			String fsName = null;

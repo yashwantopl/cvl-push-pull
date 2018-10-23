@@ -1705,38 +1705,36 @@ public class ProposalServiceMappingImpl implements ProposalService {
 
 			LoanApplicationMaster loanApplicationMaster = loanApplicationRepository
 					.findOne(userRequest.getApplicationId());
-
 			
 			if(loanApplicationMaster != null && userRequest != null) {
 				// Check If Requested Application is assigned to Currunt Fp Cheker or not
-				if (loanApplicationMaster.getNpUserId() != null && userRequest.getId() != null && loanApplicationMaster.getNpUserId().toString().equals(userRequest.getId().toString())) {
-					UserResponse userResponse = usersClient.getMinMaxAmount(userRequest);
-
-					CheckerDetailRequest checkerDetailRequest = null;
-					if (!CommonUtils.isObjectListNull(userResponse)
-							|| !(CommonUtils.isObjectNullOrEmpty(userResponse.getData()))) {
-						checkerDetailRequest = MultipleJSONObjectHelper.getObjectFromMap(
-								(LinkedHashMap<String, Object>) userResponse.getData(), CheckerDetailRequest.class);
-					}
-
-					if (!CommonUtils.isObjectNullOrEmpty(checkerDetailRequest)) {
-						if (!(userRequest.getLoanAmount() >= checkerDetailRequest.getMinAmount()
-								&& userRequest.getLoanAmount() <= checkerDetailRequest.getMaxAmount())) {
-							loansResponse.setFlag(false);
-							loansResponse.setMessage(
-									"You do not have rights to take action for this proposal. Kindly assign the proposal to your upper level checker.");
-						}
-					} else {
-						// You dont have Authorised for this Action
-						loansResponse.setFlag(false);
-						loansResponse.setMessage("You do not have rights to take action for this proposal.");
-					}
+				UserResponse userResponse = null;
+				if(loanApplicationMaster.getNpUserId() == null) {
+					userResponse = usersClient.getMinMaxAmount(userRequest);
+				}else if((loanApplicationMaster.getNpUserId()).equals(userRequest.getId())) {
+					userResponse = usersClient.getMinMaxAmount(userRequest);
 				}
-				else {
-					logger.error("loanApplicationMaster.getNpUserId() or userRequest.getId() may be null");
+				
+				CheckerDetailRequest checkerDetailRequest = null;
+				if (!CommonUtils.isObjectListNull(userResponse)
+						&& !(CommonUtils.isObjectNullOrEmpty(userResponse.getData()))) {
+					checkerDetailRequest = MultipleJSONObjectHelper.getObjectFromMap(
+							(LinkedHashMap<String, Object>) userResponse.getData(), CheckerDetailRequest.class);
+				}
+
+				if (!CommonUtils.isObjectNullOrEmpty(checkerDetailRequest)) {
+					if (userRequest.getLoanAmount() != null && !(userRequest.getLoanAmount() >= checkerDetailRequest.getMinAmount()
+							&& userRequest.getLoanAmount() <= checkerDetailRequest.getMaxAmount())) {
+						loansResponse.setFlag(false);
+						loansResponse.setMessage(
+								"You do not have rights to take action for this proposal. Kindly assign the proposal to your upper level checker.");
+					}
+				} else {
+					// You dont have Authorised for this Action
 					loansResponse.setFlag(false);
 					loansResponse.setMessage("You do not have rights to take action for this proposal.");
 				}
+				
 			} else {
 				// You dont have Authorised for this Action
 				logger.error("Not getting min max loan amount for this user");
