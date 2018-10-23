@@ -2845,7 +2845,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		if (CommonUtils.isObjectNullOrEmpty(applicationMaster))
 			return null;
 
-		if (applicationMaster.getProductId() != null) {
+		if (applicationMaster.getProductId() != null && applicationMaster.getBusinessTypeId() != null) {
 			if (applicationMaster.getBusinessTypeId().intValue() == CommonUtils.BusinessType.NEW_TO_BUSINESS.getId()
 					.intValue()) {
 				List<DirectorBackgroundDetail> directorBackgroundDetails = directorBackgroundDetailsRepository
@@ -2878,7 +2878,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 		} else {
 
-			if (applicationMaster.getBusinessTypeId().intValue() == CommonUtils.BusinessType.NEW_TO_BUSINESS.getId()
+			if (applicationMaster.getBusinessTypeId() != null && applicationMaster.getBusinessTypeId().intValue() == CommonUtils.BusinessType.NEW_TO_BUSINESS.getId()
 					.intValue()) {
 				List<DirectorBackgroundDetail> directorBackgroundDetails = directorBackgroundDetailsRepository
 						.listPromotorBackgroundFromAppId(applicationId);
