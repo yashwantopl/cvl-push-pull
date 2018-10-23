@@ -13,6 +13,8 @@ public class ScoringRequestLoans {
     private Long scoringModelId;
 	private Long applicationId;
 
+	private Integer financialTypeIdProduct;
+
 	private Long userId;
 
 	private ScoreParameterRequestLoans scoreParameterRequestLoans;
@@ -28,6 +30,14 @@ public class ScoringRequestLoans {
 
 	public void setScoreParameterRetailRequest(ScoreParameterRetailRequest scoreParameterRetailRequest) {
 		this.scoreParameterRetailRequest = scoreParameterRetailRequest;
+	}
+
+	public Integer getFinancialTypeIdProduct() {
+		return financialTypeIdProduct;
+	}
+
+	public void setFinancialTypeIdProduct(Integer financialTypeIdProduct) {
+		this.financialTypeIdProduct = financialTypeIdProduct;
 	}
 
 	public Long getUserId() {

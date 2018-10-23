@@ -48,6 +48,7 @@ public class PLRetailApplicantRequest implements Serializable {
     private Address contactAddress;
     private String contactNo;
     private String email;
+    private String companyName;
 
     private List<RetailApplicantIncomeRequest> retailApplicantIncomeRequestList;
     /*
@@ -436,5 +437,12 @@ public class PLRetailApplicantRequest implements Serializable {
 	public void setMonthlyIncomeString(String monthlyIncomeString) {
 		this.monthlyIncomeString = monthlyIncomeString;
 	}
-    
+
+    public String getCompanyName() {
+        return companyName;
+    }
+
+    public void setCompanyName(String companyName) {
+        this.companyName = companyName;
+    }
 }

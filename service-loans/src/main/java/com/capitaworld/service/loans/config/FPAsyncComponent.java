@@ -843,16 +843,12 @@ public class FPAsyncComponent {
 		}
 	}
 
-	// ==========================================================================================================
-
-	// ====================Sending Mail to Maker and all Makers and Checkers when
-	// maker accepts Proposal=====================
-
+	// ====================Sending Mail to Maker and all Makers and Checkers when maker accepts Proposal==========
 	@Async
 	public void sendMailToMakerandAllMakersWhenMakerAcceptProposal(NhbsApplicationRequest request) {
 		logger.info("Enter in sending mail to Maker and all Makers When Maker accepts Proposal");
 		try {
-
+			Long NotificationAliasId=null;
 			LoanApplicationRequest applicationRequest = loanApplicationService
 					.getFromClient(request.getApplicationId());
 			Map<String, Object> parameters = new HashMap<String, Object>();
@@ -943,7 +939,16 @@ public class FPAsyncComponent {
 					}
 				}
 			}
-			
+
+			//	when proposal belongs to PL			
+			if(!CommonUtils.isObjectNullOrEmpty(applicationRequest)
+					&& applicationRequest.getBusinessTypeId() == CommonUtils.BusinessType.RETAIL_PERSONAL_LOAN.getId()){
+				fsName=applicationRequest.getUserName();
+				address=applicationRequest.getAddress();
+				NotificationAliasId= NotificationAlias.PL_EMAIL_TO_FS_WHEN_MAKKER_ACCEPT_PROPOSAL;
+			}else {
+					NotificationAliasId=NotificationAlias.EMAIL_FS_ACCEPTED_BY_MAKER;
+			}
 			parameters.put("address", address != null ? address : "NA");
 			parameters.put("state", state != null ? state : "NA");
 			parameters.put("city", city !=null ? city : "NA");
@@ -959,9 +964,7 @@ public class FPAsyncComponent {
 			} catch (Exception e) {
 				logger.info(
 						"Error calling Proposal Details Client for getting Branch Id:-" + request.getApplicationId());
-
 				e.printStackTrace();
-
 			}
 
 			Long branchId = null;
@@ -1015,9 +1018,6 @@ public class FPAsyncComponent {
 				assignedMakerName = makerName != null ? makerName : "Maker";
 			}
 			parameters.put("maker_name", assignedMakerName);
-
-			
-
 			if (!CommonUtils.isObjectNullOrEmpty(proposalresp.get("loan_type"))) {
 				parameters.put("product_type",
 						proposalresp.get("loan_type").toString() != null ? proposalresp.get("loan_type").toString()
@@ -1051,9 +1051,7 @@ public class FPAsyncComponent {
 			String mobile = signUpUser.getMobile();
 			parameters.put("mobile_no", mobile!=null?mobile:"NA");
 
-			// ====================Sending Mail to Maker who accepts
-			// Proposal=====================
-//						////		
+			// ====================Sending Mail to Maker who accepts Proposal=====================
 			String subject = "Intimation: Proposal Accepted - " + assignedMakerName + "-Application ID "
 					+ request.getApplicationId();
 
@@ -1099,14 +1097,10 @@ public class FPAsyncComponent {
 
 			}
 			// ======MAAZ=========sending email to fs when maker accepted
-			// proposL==Email_FS_Accepted_By_MAKER=======================================//
-//								add mail for  Email_FS_Accepted_By_MAKER
-			sendMailToFsWhenMakerAcceptPorposal(fsName, proposalresp, assignedMakerName,applicationRequest,signUpUser,address);
+			// proposL==Email_FS_Accepted_By_MAKER====== add mail for  Email_FS_Accepted_By_MAKER
+			sendMailToFsWhenMakerAcceptPorposal(fsName, proposalresp, assignedMakerName,applicationRequest,signUpUser,address,NotificationAliasId);
 
-			// =====================================================================================================
-
-			// ====================Sending Mail to other Makers that maker has accepted
-			// Proposal=====================
+			// ====================Sending Mail to other Makers that maker has accepted Proposal==============
 
 			UserResponse makerResponse = userClient.getUserDetailByOrgRoleBranchId(applicationRequest.getNpOrgId(),
 					com.capitaworld.service.users.utils.CommonUtils.UserRoles.FP_MAKER, branchId);
@@ -1459,7 +1453,7 @@ public class FPAsyncComponent {
 
 	// ============maaz=========================================================================================
 	@Async
-	public void sendMailToFsWhenMakerAcceptPorposal(String fsName, Map<String, Object> proposalresp,String assignedMakerName,LoanApplicationRequest applicationRequest, UsersRequest signUpUser, String address){
+	public void sendMailToFsWhenMakerAcceptPorposal(String fsName, Map<String, Object> proposalresp,String assignedMakerName,LoanApplicationRequest applicationRequest, UsersRequest signUpUser, String address,Long NotificationAliasId){
 		logger.info("Sending email to fs when maker accept proposal");
 		Map<String, Object> mailParameter = new HashMap<String, Object>();
 		mailParameter.put("fs_name", fsName != null ? fsName.toString() : "NA");
@@ -1471,14 +1465,19 @@ public class FPAsyncComponent {
 		
 		String mobile = signUpUser.getMobile();
 		mailParameter.put("mobile_number", mobile != null ? mobile : "NA");
-		
+		mailParameter.put("address", address);
 		String emailSubject = "Maker Assigned - For Quick Business Loan Approval ";
 
 		try {
-			createNotificationForEmail(signUpUser.getEmail(), applicationRequest.getUserId().toString(),
-					mailParameter, NotificationAlias.EMAIL_FS_ACCEPTED_BY_MAKER, emailSubject);
-			logger.info("Email send to fs when maker accepted porposal");
-			System.out.println("Email send to fs when maker accepted porposal");
+			if(fsName!=null&& address!=null&&mobile!=null&&assignedMakerName!=null&&applicationRequest.getId()!=null) {
+				createNotificationForEmail(signUpUser.getEmail(), applicationRequest.getUserId().toString(),
+						mailParameter, NotificationAliasId, emailSubject);
+				logger.info("Email send to fs when maker accepted porposal");
+				System.out.println("Email send to fs when maker accepted porposal");
+			}else {
+				logger.error("Email is not sent becouse of required values are null:"+  "signUpUser.getEmail:"+signUpUser.getEmail()+"applicationRequest.getUserId:"+applicationRequest.getUserId()
+				+" mailParameter:"+mailParameter+"  NotificationAliasId"+NotificationAliasId.toString()+"emailSubject:"+emailSubject);
+			}
 		} catch (Exception e) {
 			logger.info("Error in sending email to fs when porposal asigned to maker :" + e);
 			e.printStackTrace();

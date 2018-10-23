@@ -239,8 +239,8 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             CreditCardsDetailRequest creditCardRequest = null;
             for(CreditCardsDetail creditCardsDetail: creditCardsDetailList){
                 creditCardRequest = new CreditCardsDetailRequest();
-                creditCardRequest.setOutstandingBalanceString(CommonUtils.convertValue(creditCardsDetail.getOutstandingBalance()));
-                creditCardRequest.setCardTypeString(!CommonUtils.isObjectNullOrEmpty(creditCardsDetail.getCreditCardTypesId()) ? CreditCardTypesRetail.getById(creditCardsDetail.getCreditCardTypesId()).getValue() : "");
+                //creditCardRequest.setOutstandingBalanceString(CommonUtils.convertValue(creditCardsDetail.getOutstandingBalance()));
+                //creditCardRequest.setCardTypeString(!CommonUtils.isObjectNullOrEmpty(creditCardsDetail.getCreditCardTypesId()) ? CreditCardTypesRetail.getById(creditCardsDetail.getCreditCardTypesId()).getValue() : "");
                 BeanUtils.copyProperties(creditCardsDetail, creditCardRequest);
                 creditCardsDetailRequestList.add(creditCardRequest);
             }
@@ -317,7 +317,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             to.setAddressStreetName(from.getContactAddress().getStreetName());
             to.setAddressLandmark(from.getContactAddress().getLandMark());
             to.setAddressCity(from.getContactAddress().getCityId());
-            to.setAddressState(from.getContactAddress().getStateId().longValue());
+            to.setAddressState(CommonUtils.isObjectNullOrEmpty(from.getContactAddress().getStateId()) ? null : from.getContactAddress().getStateId().longValue());
             to.setAddressCountry(from.getContactAddress().getCountryId());
             to.setAddressDistrictMappingId(from.getContactAddress().getDistrictMappingId());
             to.setAddressPincode(from.getContactAddress().getPincode());
@@ -330,7 +330,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
         address.setLandMark(from.getAddressLandmark());
         address.setStreetName(from.getAddressStreetName());
         address.setCityId(from.getAddressCity());
-        address.setStateId(from.getAddressState().intValue());
+        address.setStateId(CommonUtils.isObjectNullOrEmpty(from.getAddressState()) ? null : from.getAddressState().intValue());
         address.setCountryId(from.getAddressCountry());
         address.setPincode(from.getAddressPincode());
         address.setDistrictMappingId(from.getAddressDistrictMappingId());
@@ -345,7 +345,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             address.setLandMark(from.getAddressLandmark());
             address.setStreetName(from.getAddressStreetName());
             address.setCityId(from.getAddressCity());
-            address.setStateId(from.getAddressState().intValue());
+            address.setStateId(CommonUtils.isObjectNullOrEmpty(from.getAddressState()) ? null : from.getAddressState().intValue());
             address.setCountryId(from.getAddressCountry());
             address.setPincode(from.getAddressPincode());
             address.setDistrictMappingId(from.getAddressDistrictMappingId());
