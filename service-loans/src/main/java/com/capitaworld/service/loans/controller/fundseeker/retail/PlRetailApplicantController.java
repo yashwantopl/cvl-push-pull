@@ -119,9 +119,9 @@ public class PlRetailApplicantController {
                 return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
             }
 
-            PLRetailApplicantRequest plRetailApplicantRequest = plRetailApplicantService.getPrimary(userId,applicationId);
+            //PLRetailApplicantRequest plRetailApplicantRequest = ;
             LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
-            loansResponse.setData(plRetailApplicantRequest);
+            loansResponse.setData(plRetailApplicantService.getPrimary(userId,applicationId));
             return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
         } catch (Exception e) {

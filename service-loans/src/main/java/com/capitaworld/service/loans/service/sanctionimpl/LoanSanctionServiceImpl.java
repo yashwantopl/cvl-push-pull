@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.service.sanctionimpl;
 
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
@@ -95,15 +96,13 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 			BeanUtils.copyProperties(loanSanctionRequest, loanSanctionDomainOld,"id");
 			loanSanctionDomainOld.setModifiedBy(loanSanctionRequest.getActionBy());
 			loanSanctionDomainOld.setModifiedDate(new Date());
-			
-			//==================Sending Mail notification to Maker=============================
-			
-			//fpAsyncComponent.sendEmailToFSWhenCheckerSanctionLoan(loanSanctionDomainOld);
-			fpAsyncComponent.sendEmailToMakerHOBOWhenCheckerSanctionLoan(loanSanctionDomainOld);
-			
-			//=================================================================================
-			
 		}
+		//==================Sending Mail notification to Maker=============================
+		
+		fpAsyncComponent.sendEmailToFSWhenCheckerSanctionLoan(loanSanctionDomainOld);
+		fpAsyncComponent.sendEmailToMakerHOBOWhenCheckerSanctionLoan(loanSanctionDomainOld);
+		
+		//=================================================================================
 		logger.info("Exit saveLoanSanctionDetail() -----------------------> LoanSanctionDomain "+ loanSanctionDomainOld);
 		return loanSanctionRepository.save(loanSanctionDomainOld) != null;
 		}catch (Exception e) {
@@ -218,9 +217,22 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 							if(!CommonUtils.isObjectNullOrEmpty(encryptedString)) {
 								Object res = sanctionAndDisbursementValidation(encryptedString , userOrganisationRequest.getCodeLanguage()); 
 								if(res instanceof List){
-									List<com.capitaworld.sidbi.integration.model.sanction.LoanSanctionAndDisbursedRequest> list = (List<com.capitaworld.sidbi.integration.model.sanction.LoanSanctionAndDisbursedRequest> )res;
-									logger.info("********************************* " + list.size() +" ***********************************");
-									if(sidbiIntegrationClient.updateSavedSanctionAndDisbursmentDetailList(list , generateTokenRequest.getToken(), generateTokenRequest.getBankToken() , userOrganisationRequest.getCodeLanguage())) {
+									List<LoanSanctionAndDisbursedRequest> list = (List<LoanSanctionAndDisbursedRequest> )res;
+									List<com.capitaworld.sidbi.integration.model.sanction.LoanSanctionAndDisbursedRequest> list1   = null ;
+									try {
+										if(!CommonUtils.isObjectListNull(list)&& !CommonUtils.isObjectNullOrEmpty(list.get(0))) {
+											generateTokenRequest.setApplicationId(list.get(0).getApplicationId());
+											token = sidbiIntegrationClient.getToken(generateTokenRequest,generateTokenRequest.getBankToken() , userOrganisationRequest.getCodeLanguage());
+											logger.info("********************************* " + list.size() +" ***********************************");
+											String json = MultipleJSONObjectHelper.getStringfromObject(list);
+											list1 = MultipleJSONObjectHelper.getListOfObjects(json, null, com.capitaworld.sidbi.integration.model.sanction.LoanSanctionAndDisbursedRequest.class);
+										}
+									}catch (Exception e) {
+										logger.info("------------------ Error/Exception while getting appication from getSanctionAndDisbursmentDetailList ------------ MSG =>" + e.getMessage());	
+									}
+									
+ 									System.out.println(list1);
+									if(sidbiIntegrationClient.updateSavedSanctionAndDisbursmentDetailList(list1 , token, generateTokenRequest.getBankToken() , userOrganisationRequest.getCodeLanguage())) {
 										try {
 											//wait foo 15 minute
 											logger.info("*******Sucessgfully updated sanction and disbursement details in sidbi integration********** ");
