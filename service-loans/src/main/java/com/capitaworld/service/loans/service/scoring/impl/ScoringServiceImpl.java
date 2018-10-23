@@ -733,7 +733,7 @@ public class ScoringServiceImpl implements ScoringService {
 
                 logger.info("dataList=====================================>>>>>>>>>>>>>>>>>>>>>>" + dataList.size());
 
-                for (int i = 0; i < dataList.size(); i++) {
+                for (int i=0;i<dataList.size();i++){
 
                     ModelParameterResponse modelParameterResponse = null;
                     try {
