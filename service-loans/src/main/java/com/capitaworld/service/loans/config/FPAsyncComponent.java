@@ -3193,8 +3193,8 @@ public class FPAsyncComponent {
 
 			to = null;
 			if (!CommonUtils.isObjectNullOrEmpty(boRespList)) {
-				for (int i = 0; i < usersRespList.size(); i++) {
-					UsersRequest userObj = MultipleJSONObjectHelper.getObjectFromMap(usersRespList.get(i),
+				for (int i = 0; i < boRespList.size(); i++) {
+					UsersRequest userObj = MultipleJSONObjectHelper.getObjectFromMap(boRespList.get(i),
 							UsersRequest.class);
 
 					String name = null;
