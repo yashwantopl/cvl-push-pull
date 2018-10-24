@@ -77,6 +77,15 @@ public class LoanSanctionDomain implements Serializable {
 
 	@Column(name = "bank_sanction_pk")
 	private Long bankSanctionPrimaryKey;
+	
+	@Column(name = "is_sanctioned_from")
+	private Long isSanctionedFrom;
+	
+	@Column(name = "org_id")
+	private Long orgId;
+	
+	@Column(name = "is_partially_disbursed_offline")
+	private Boolean isPartiallyDisbursedOffline;
 
 	public Long getId() {
 		return id;
@@ -229,6 +238,29 @@ public class LoanSanctionDomain implements Serializable {
 	public void setBankSanctionPrimaryKey(Long bankSanctionPrimaryKey) {
 		this.bankSanctionPrimaryKey = bankSanctionPrimaryKey;
 	}
+	public Long getIsSanctionedFrom() {
+		return isSanctionedFrom;
+	}
+
+	public void setIsSanctionedFrom(Long isSanctionedFrom) {
+		this.isSanctionedFrom = isSanctionedFrom;
+	}
+	
+	public Long getOrgId() {
+		return orgId;
+	}
+
+	public void setOrgId(Long orgId) {
+		this.orgId = orgId;
+	}
+	
+	public Boolean getIsPartiallyDisbursedOffline() {
+		return isPartiallyDisbursedOffline;
+	}
+
+	public void setIsPartiallyDisbursedOffline(Boolean isPartiallyDisbursedOffline) {
+		this.isPartiallyDisbursedOffline = isPartiallyDisbursedOffline;
+	}
 
 	@Override
 	public String toString() {
@@ -238,6 +270,8 @@ public class LoanSanctionDomain implements Serializable {
 				+ ", sanctionAuthority=" + sanctionAuthority + ", remark=" + remark + ", createdBy=" + createdBy
 				+ ", createdDate=" + createdDate + ", modifiedBy=" + modifiedBy + ", modifiedDate=" + modifiedDate
 				+ ", isActive=" + isActive + ", processingFee=" + processingFee + ", bankSanctionPrimaryKey="
-				+ bankSanctionPrimaryKey + "]";
+				+ bankSanctionPrimaryKey + ", isSanctionedFrom=" + isSanctionedFrom + "]";
 	}
+	
+
 }
