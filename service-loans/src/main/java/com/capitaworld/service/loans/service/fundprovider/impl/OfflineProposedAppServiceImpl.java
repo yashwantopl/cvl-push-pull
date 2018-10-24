@@ -89,8 +89,8 @@ public class OfflineProposedAppServiceImpl implements OfflineProcessedAppService
 				applicationRequests = new ArrayList<OfflineProcessedApplicationRequest>(lst.size());
 				for(Object[] obj : lst) {
 					OfflineProcessedApplicationRequest request = new OfflineProcessedApplicationRequest();
-					request.setOrganisationName(((String)obj[4]).toString());
-					request.setApplicationId(((BigInteger)obj[5]).longValue());
+					request.setOrganisationName(((String)obj[3]).toString());
+					request.setApplicationId(((BigInteger)obj[4]).longValue());
 					applicationRequests.add(request);
 				}
 			}
