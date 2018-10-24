@@ -57,6 +57,12 @@ public class DisbursementDetails {
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name="modified_date")
 	private Date modifiedDate;
+	
+	@Column(name="is_disbursed_from")
+	private Long isDisbursedFrom;
+	
+	@Column(name="org_id")
+	private Long orgId;
 
 	public Long getId() {
 		return id;
