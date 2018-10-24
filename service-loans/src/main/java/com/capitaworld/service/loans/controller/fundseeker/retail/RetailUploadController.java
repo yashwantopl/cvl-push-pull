@@ -40,11 +40,11 @@ public class RetailUploadController {
 	@Autowired
 	private ExcelExtractionService excelExtractionService;
 
-	@RequestMapping(value = "/ping", method = RequestMethod.GET)
+	/*@RequestMapping(value = "/ping", method = RequestMethod.GET)
 	public String getPing() {
 		logger.info("Ping success");
 		return "Ping Succeed";
-	}
+	}*/
 
 	@RequestMapping(value = "/profile/{applicationId}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> uploadProfileImage(@RequestPart("fileName") String fileName,
