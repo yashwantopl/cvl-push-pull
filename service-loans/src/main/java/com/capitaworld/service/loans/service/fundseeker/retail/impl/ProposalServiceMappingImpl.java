@@ -172,8 +172,8 @@ public class ProposalServiceMappingImpl implements ProposalService {
 				if (!CommonUtils.isObjectNullOrEmpty(basicDetailsRequest)) {
 					logger.info("Found Branch Id -----------> " + basicDetailsRequest.getId()
 							+ "---------Role Id ------------------>" + basicDetailsRequest.getRoleId());
-					if (basicDetailsRequest.getRoleId() == CommonUtils.UsersRoles.BO) {
-						logger.info("Current user is Branch officer");
+					if (basicDetailsRequest.getRoleId() == CommonUtils.UsersRoles.BO || basicDetailsRequest.getRoleId() == CommonUtils.UsersRoles.FP_CHECKER) {
+						logger.info("Current user is Branch officer or FP_CHECKER");
 						request.setBranchId(basicDetailsRequest.getId());
 					}
 				} else {
