@@ -97,11 +97,11 @@ public class LoanApplicationController {
 	@Autowired
 	private TokenService tokenService;
 
-	@RequestMapping(value = "/ping", method = RequestMethod.GET)
+	/*@RequestMapping(value = "/ping", method = RequestMethod.GET)
 	public String getPing() {
 		logger.info("Ping success");
 		return "Ping Succeed";
-	}
+	}*/
 
 	@RequestMapping(value = "/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> save(@RequestBody FrameRequest commonRequest, HttpServletRequest request,
