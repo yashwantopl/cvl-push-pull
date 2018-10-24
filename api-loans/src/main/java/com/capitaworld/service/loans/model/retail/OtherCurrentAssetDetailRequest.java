@@ -25,6 +25,10 @@ public class OtherCurrentAssetDetailRequest implements Serializable {
 	private String remark;
 
 	private Boolean isActive = true;
+	
+	//For Cam
+	private String assetValueString;
+	private String assetType;
 
 	public Long getId() {
 		return id;
@@ -81,4 +85,21 @@ public class OtherCurrentAssetDetailRequest implements Serializable {
 	public void setRemark(String remark) {
 		this.remark = remark;
 	}
+
+	public String getAssetValueString() {
+		return assetValueString;
+	}
+
+	public void setAssetValueString(String assetValueString) {
+		this.assetValueString = assetValueString;
+	}
+
+	public String getAssetType() {
+		return assetType;
+	}
+
+	public void setAssetType(String assetType) {
+		this.assetType = assetType;
+	}
+	
 }

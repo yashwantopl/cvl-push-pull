@@ -271,19 +271,19 @@ public interface LoanApplicationRepository extends JpaRepository<LoanApplication
 	public Double getTenure(@Param("id") Long applicationId);
 
 	//fp-maker - new proposal - pagination
-	@Query(value = "select lm.application_id from fs_loan_application_master lm inner join proposal_details pd on pd.application_id=lm.application_id where pd.branch_id=:branchId and lm.status =:id and lm.np_org_id=:npOrgId and lm.payment_status=:paymentStatus and pd.is_active=true and lm.is_active = true order by lm.modified_date desc \n#pageable\n",nativeQuery = true)
+	@Query(value = "select lm.application_id from fs_loan_application_master lm inner join proposal_details pd on pd.application_id=lm.application_id where pd.branch_id=:branchId and lm.status =:id and lm.np_org_id=:npOrgId and (lm.payment_status=:paymentStatus or lm.payment_status='ByPass') and pd.is_active=true and lm.is_active = true order by lm.modified_date desc \n#pageable\n",nativeQuery = true)
 	public List<BigInteger> getFPProposalsByApplicationStatusAndNpOrgIdForPagination(Pageable pageable, @Param("id") Long applicationStatusId, @Param("npOrgId")Long npOrgId, @Param("paymentStatus")String paymentStatus, @Param("branchId") Long branchId);
 
 	//fp-maker - new proposal - count
-	@Query(value = "select lm.application_id from fs_loan_application_master lm inner join proposal_details pd on pd.application_id=lm.application_id where pd.branch_id=:branchId and lm.status =:id and lm.np_org_id=:npOrgId and lm.payment_status=:paymentStatus and pd.is_active=true and lm.is_active = true",nativeQuery = true)
+	@Query(value = "select lm.application_id from fs_loan_application_master lm inner join proposal_details pd on pd.application_id=lm.application_id where pd.branch_id=:branchId and lm.status =:id and lm.np_org_id=:npOrgId and (lm.payment_status=:paymentStatus or lm.payment_status='ByPass') and pd.is_active=true and lm.is_active = true",nativeQuery = true)
 	public List<BigInteger> getFPMakerNewProposalCount(@Param("id") Long applicationStatusId, @Param("npOrgId")Long npOrgId, @Param("paymentStatus")String paymentStatus, @Param("branchId") Long branchId);
 
 	//fp-maker-assigned to checker - pagination
-	@Query(value = "select lm.application_id from fs_loan_application_master lm inner join proposal_details pd on pd.application_id=lm.application_id where pd.branch_id=:branchId and lm.status =:id and lm.fp_maker_id=:npUserId and pd.is_active=true and lm.is_active = true order by lm.modified_date desc \n#pageable\n",nativeQuery = true)
+	@Query(value = "select lm.application_id from fs_loan_application_master lm inner join proposal_details pd on pd.application_id=lm.application_id where pd.branch_id=:branchId and (lm.status >=:id or lm.status=5) and lm.fp_maker_id=:npUserId and pd.is_active=true and lm.is_active = true order by lm.modified_date desc \n#pageable\n",nativeQuery = true)
 	public List<BigInteger> getFPAssignedProposalsByNPUserIdForPagination(Pageable pageable, @Param("id") Long applicationStatusId,@Param("npUserId") Long npUserId, @Param("branchId") Long branchId);
 
 	//fp - maker-assigned to checker - count
-	@Query(value = "select lm.application_id from fs_loan_application_master lm inner join proposal_details pd on pd.application_id=lm.application_id where pd.branch_id=:branchId and lm.status =:id and lm.fp_maker_id=:npUserId and pd.is_active=true and lm.is_active = true ",nativeQuery = true)
+	@Query(value = "select lm.application_id from fs_loan_application_master lm inner join proposal_details pd on pd.application_id=lm.application_id where pd.branch_id=:branchId and (lm.status >=:id or lm.status=5) and lm.fp_maker_id=:npUserId and pd.is_active=true and lm.is_active = true ",nativeQuery = true)
 	public List<BigInteger> getFPMakerAssignedAndAssginedToCheckerCount(@Param("id") Long applicationStatusId,@Param("npUserId") Long npUserId, @Param("branchId") Long branchId);
 
 	//fp-maker-pending tab - pagination
@@ -328,7 +328,11 @@ public interface LoanApplicationRepository extends JpaRepository<LoanApplication
 
 	// get list of matched fpProduct based on application id
 	@Query(value = "SELECT  score_model_id  FROM  fp_product_master WHERE  fp_product_id IN (select fp_product_id from application_product_audit where application_id=:applicationId and stage_id=:stageId and is_active = true) ",nativeQuery = true)
-	public List<BigInteger> getFpProductListByApplicationIdAndStageId(@Param("applicationId") Long applicationId,@Param("stageId") Long stageId);
+	public List<BigInteger> getScoringIdListByApplicationIdAndStageId(@Param("applicationId") Long applicationId,@Param("stageId") Long stageId);
+
+	// get list of matched fpProduct based on application id on one form
+	@Query(value = "SELECT score_model_id FROM fp_product_master WHERE is_active=1 AND is_parameter_filled=1 AND (product_id =1  or product_id =2 or product_id =16 ) AND (business_type_id IS NULL OR business_type_id=1)",nativeQuery = true)
+	public List<BigInteger> getScoringIdListByApplicationIdOnOneForm();
 	
 	//fwt busynessTypeId by applicationId
 	@Query("select lm.businessTypeId from LoanApplicationMaster lm where lm.id =:applicationId and lm.isActive = true ")
