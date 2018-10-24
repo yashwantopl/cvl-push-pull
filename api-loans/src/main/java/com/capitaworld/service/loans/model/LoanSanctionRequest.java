@@ -41,7 +41,10 @@ public class LoanSanctionRequest extends AuditActivityRequest implements Seriali
 	private Boolean isSaved = false;
 	private String reason;
 	private String statusCode;
-
+	private Boolean isIneligibleProposal;
+	private Long isSanctionedFrom;
+	private Boolean isPartiallyDisbursedOffline;
+	
 	public Long getId() {
 		return id;
 	}
@@ -217,6 +220,30 @@ public class LoanSanctionRequest extends AuditActivityRequest implements Seriali
 	public void setStatusCode(String statusCode) {
 		this.statusCode = statusCode;
 	}
+	
+	public Boolean getIsIneligibleProposal() {
+		return isIneligibleProposal;
+	}
+
+	public void setIsIneligibleProposal(Boolean isIneligibleProposal) {
+		this.isIneligibleProposal = isIneligibleProposal;
+	}
+	
+	public Long getIsSanctionedFrom() {
+		return isSanctionedFrom;
+	}
+
+	public void setIsSanctionedFrom(Long isSanctionedFrom) {
+		this.isSanctionedFrom = isSanctionedFrom;
+	}
+	
+	public Boolean getIsPartiallyDisbursedOffline() {
+		return isPartiallyDisbursedOffline;
+	}
+
+	public void setIsPartiallyDisbursedOffline(Boolean isPartiallyDisbursedOffline) {
+		this.isPartiallyDisbursedOffline = isPartiallyDisbursedOffline;
+	}
 
 	@Override
 	public String toString() {
@@ -226,7 +253,10 @@ public class LoanSanctionRequest extends AuditActivityRequest implements Seriali
 				+ ", sanctionAuthority=" + sanctionAuthority + ", remark=" + remark + ", userName=" + userName
 				+ ", password=" + password + ", actionBy=" + actionBy + ", processingFee=" + processingFee + ", orgId="
 				+ orgId + ", proposalId=" + proposalId + ", proposalStatusId=" + proposalStatusId + ", isSaved="
-				+ isSaved + ", reason=" + reason + ", statusCode=" + statusCode + "]";
+				+ isSaved + ", reason=" + reason + ", statusCode=" + statusCode + ", isIneligibleProposal="
+				+ isIneligibleProposal + ", isSanctionedFrom=" + isSanctionedFrom + "]";
 	}
 
+	
+	
 }

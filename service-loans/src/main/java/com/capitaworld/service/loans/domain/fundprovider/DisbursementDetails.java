@@ -57,6 +57,12 @@ public class DisbursementDetails {
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name="modified_date")
 	private Date modifiedDate;
+	
+	@Column(name="is_disbursed_from")
+	private Long isDisbursedFrom;
+	
+	@Column(name="org_id")
+	private Long orgId;
 
 	public Long getId() {
 		return id;
@@ -160,6 +166,22 @@ public class DisbursementDetails {
 
 	public void setModifiedDate(Date modifiedDate) {
 		this.modifiedDate = modifiedDate;
+	}
+
+	public Long getIsDisbursedFrom() {
+		return isDisbursedFrom;
+	}
+
+	public void setIsDisbursedFrom(Long isDisbursedFrom) {
+		this.isDisbursedFrom = isDisbursedFrom;
+	}
+
+	public Long getOrgId() {
+		return orgId;
+	}
+
+	public void setOrgId(Long orgId) {
+		this.orgId = orgId;
 	}
 	
 	

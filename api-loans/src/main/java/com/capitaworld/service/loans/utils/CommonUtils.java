@@ -1480,6 +1480,11 @@ public enum APIFlags {
 		}
 		return value;
 	}
+	public interface sanctionedFrom {
+		public static final long ELIGIBLE_USERS = 1;
+		public static final long INELIGIBLE_USERS_OFFLINE_APPLICATION = 2;
+		public static final long FROM_API = 3;
+	}
 	
 	
 }
