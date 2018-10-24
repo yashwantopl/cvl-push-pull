@@ -1047,6 +1047,7 @@ public class FPAsyncComponent {
 					logger.info("Exception getting signup user at Sending email to fs when maker accept proposal");
 					e.printStackTrace();
 				}
+			}
 
 			String mobile = signUpUser.getMobile();
 			parameters.put("mobile_no", mobile!=null?mobile:"NA");
@@ -1443,8 +1444,7 @@ public class FPAsyncComponent {
 			}
 
 			// =======================================================================================================
-
-		} 
+		
 			}catch (Exception e) {
 			logger.info("Throw exception while sending mail to Maker and all Makers when Maker accepts Proposal");
 			e.printStackTrace();
