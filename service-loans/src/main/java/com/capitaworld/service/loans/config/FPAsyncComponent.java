@@ -3193,8 +3193,8 @@ public class FPAsyncComponent {
 
 			to = null;
 			if (!CommonUtils.isObjectNullOrEmpty(boRespList)) {
-				for (int i = 0; i < usersRespList.size(); i++) {
-					UsersRequest userObj = MultipleJSONObjectHelper.getObjectFromMap(usersRespList.get(i),
+				for (int i = 0; i < boRespList.size(); i++) {
+					UsersRequest userObj = MultipleJSONObjectHelper.getObjectFromMap(boRespList.get(i),
 							UsersRequest.class);
 
 					String name = null;
@@ -3303,34 +3303,36 @@ public class FPAsyncComponent {
 				if (!CommonUtils.isObjectNullOrEmpty(applicationRequest.getProductId())) {
 					productType = CommonUtils.LoanType.getType(applicationRequest.getProductId()).getName();
 				} else {
-					productType = "NA";
+					productType = "";
 				}
 			} else {
-				productType = "NA";
+				productType = "";
 			}
 
 			SimpleDateFormat form = new SimpleDateFormat("dd/MM/yyyy");
-			String fpName = proposalresp.get("fp_name") != null ? proposalresp.get("fp_name").toString() : "NA";
-			mailParameters.put("fp_name", fpName != null ? fpName : "NA");
-			mailParameters.put("product_type", productType != null ? productType : "NA");
+			String fpName = proposalresp.get("organisationName") != null ? proposalresp.get("organisationName").toString() : "";
+			mailParameters.put("fp_name", fpName != null ? fpName : "");
+			mailParameters.put("product_type", productType != null ? productType : "");
 			mailParameters.put("loan_amount",
 					applicationRequest.getLoanAmount() != null
 							? Double.valueOf(applicationRequest.getLoanAmount().toString())
 							: "NA");
 			mailParameters.put("processing_fees",
-					loanSanctionDomainOld.getProcessingFee() != null ? loanSanctionDomainOld.getProcessingFee() : "NA");
+					loanSanctionDomainOld.getProcessingFee() != null ? loanSanctionDomainOld.getProcessingFee() : "");
 			mailParameters.put("amount",
 					loanSanctionDomainOld.getSanctionAmount() != null ? loanSanctionDomainOld.getSanctionAmount()
 							: "NA");
 			mailParameters.put("interest_rate",
-					loanSanctionDomainOld.getRoi() != null ? loanSanctionDomainOld.getRoi() : "NA");
+					loanSanctionDomainOld.getRoi() != null ? loanSanctionDomainOld.getRoi() : "");
 			mailParameters.put("tenure",
-					loanSanctionDomainOld.getTenure() != null ? loanSanctionDomainOld.getTenure() : "NA");
+					loanSanctionDomainOld.getTenure() != null ? loanSanctionDomainOld.getTenure() : "");
 			mailParameters.put("date",
 					form.format(loanSanctionDomainOld.getSanctionDate()) != null
 							? form.format(loanSanctionDomainOld.getSanctionDate())
-							: "NA");
-
+							: "");
+			mailParameters.put("remarks",
+					loanSanctionDomainOld.getRemark() != null ? loanSanctionDomainOld.getRemark() : "");
+			
 			// For getting Fund Seeker's Name
 			// =========================================================================================================
 			String fsName = null;
@@ -3342,21 +3344,21 @@ public class FPAsyncComponent {
 					int isMainDirector = 0;
 					for (DirectorBackgroundDetailRequest director : NTBResponse) {
 						if (!CommonUtils.isObjectNullOrEmpty(director) && director.getIsMainDirector()) {
-							fsName = director.getDirectorsName() != null ? director.getDirectorsName() : "NA";
+							fsName = director.getDirectorsName() != null ? director.getDirectorsName() : "Sir/Madam";
 							isMainDirector = 1;
 						}
 					}
 					if (isMainDirector == 0) {
 						fsName = NTBResponse.get(0).getDirectorsName() != null ? NTBResponse.get(0).getDirectorsName()
-								: "NA";
+								: "Sir/Madam";
 					}
 				} else {
-					fsName = "NA";
+					fsName = "Sir/Madam";
 				}
 			} else {
-				fsName = applicationRequest.getUserName() != null ? applicationRequest.getUserName() : "NA";
+				fsName = applicationRequest.getUserName() != null ? applicationRequest.getUserName() : "Sir/Madam";
 			}
-			mailParameters.put("fs_name", fsName != null ? fsName : "NA");
+			mailParameters.put("fs_name", fsName != null ? fsName : "Sir/Madam");
 			// =========================================================================================================
 
 			UserResponse fsResponse = null;
@@ -3396,8 +3398,8 @@ public class FPAsyncComponent {
 				Map<String, Object> smsParameters = new HashMap<String, Object>();
 				String to = "91" + fs.getMobile();
 				smsParameters.put("fs_name", fsName != null ? fsName : "Sir/Madam");
-				smsParameters.put("fp_name", fpName != null ? fpName : "Checker");
-				smsParameters.put("product_type", productType != null ? productType : "NA");
+				smsParameters.put("fp_name", fpName != null ? fpName : "");
+				smsParameters.put("product_type", productType != null ? productType : "");
 				smsParameters.put("url", "www.bitly.com");
 
 				sendSMSNotification(applicationRequest.getUserId().toString(), smsParameters,
@@ -3408,8 +3410,8 @@ public class FPAsyncComponent {
 				Map<String, Object> sysParameters = new HashMap<String, Object>();
 
 				sysParameters.put("fs_name", fsName != null ? fsName : "Sir/Madam");
-				sysParameters.put("fp_name", fpName != null ? fpName : "Checker");
-				sysParameters.put("product_type", productType != null ? productType : "NA");
+				sysParameters.put("fp_name", fpName != null ? fpName : "");
+				sysParameters.put("product_type", productType != null ? productType : "");
 
 				sendSYSNotification(loanSanctionDomainOld.getApplicationId(), applicationRequest.getUserId().toString(),
 						sysParameters, NotificationAlias.SYS_FS_CHECKER_SANCTIONED,

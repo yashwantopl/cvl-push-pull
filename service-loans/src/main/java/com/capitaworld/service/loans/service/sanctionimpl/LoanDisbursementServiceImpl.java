@@ -15,10 +15,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.capitaworld.service.loans.config.AuditComponentBankToCW;
+import com.capitaworld.service.loans.domain.fundseeker.IneligibleProposalDetails;
 import com.capitaworld.service.loans.domain.sanction.LoanDisbursementDomain;
 import com.capitaworld.service.loans.domain.sanction.LoanSanctionDomain;
 import com.capitaworld.service.loans.model.LoanDisbursementRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
+import com.capitaworld.service.loans.repository.OfflineProcessedAppRepository;
 import com.capitaworld.service.loans.repository.banktocw.BankToCWAuditTrailRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
 import com.capitaworld.service.loans.repository.sanction.LoanDisbursementRepository;
@@ -53,6 +55,9 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 	
 	@Autowired
 	private BankToCWAuditTrailRepository bankToCWAuditTrailRepository;
+	
+	@Autowired
+	private OfflineProcessedAppRepository offlineProcessedAppRepository;
 	@Override
 	public Boolean saveLoanDisbursementDetail(LoanDisbursementRequest loanDisbursementRequest) throws IOException {
 		logger.info("Enter in saveLoanDisbursementDetail() ----------------------->  LoanDisbursementRequest "+ loanDisbursementRequest);
@@ -64,6 +69,12 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 			loanDisbursementDomain.setCreatedDate(new Date());
 			loanDisbursementDomain.setModifiedBy(loanDisbursementRequest.getActionBy());
 			loanDisbursementDomain.setModifiedDate(new Date());
+			if(loanDisbursementRequest.getIsIneligibleProposal() == true) {
+				loanDisbursementDomain.setIsDisbursedFrom(2L);
+				loanDisbursementDomain.setOrgId(loanDisbursementRequest.getOrgId());
+			}
+			
+			
 			logger.info("Exit saveLoanDisbursementDetail() -----------------------> ");
 			return loanDisbursementRepository.save(loanDisbursementDomain) != null;
 		} catch (Exception e) {
@@ -90,15 +101,22 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 				return loanDisbursementRequest;
 				
 			}
-			Long recCount = proposalDetailsRepository.getApplicationIdCountByOrgId(loanDisbursementRequest.getApplicationId(), orgId);
-			if (recCount != null && recCount > 0) {
+			Long recCount = 0L;
+			if(CommonUtils.isObjectNullOrEmpty(loanDisbursementRequest.getIsIneligibleProposal()) || !loanDisbursementRequest.getIsIneligibleProposal()) {
+				recCount = proposalDetailsRepository.getApplicationIdCountByOrgId(loanDisbursementRequest.getApplicationId(), orgId);
+			}
+			if ( ( recCount != null && recCount > 0 ) || loanDisbursementRequest.getIsIneligibleProposal()) {
 				Double oldDisbursedAmount = loanDisbursementRepository.getTotalDisbursedAmount(loanDisbursementRequest.getApplicationId());
 				if (oldDisbursedAmount != null) {
 					if (loanSanctionDomain.getSanctionAmount() == oldDisbursedAmount) {
 						logger.info("Exit saveLoanDisbursementDetail() -----------------------> msg==>"+"Alread Your Disbursement is Complete");
 						loanDisbursementRequest.setReason("Alread Your Disbursement is Complete");
 						loanDisbursementRequest.setIsSaved(true);
-						 loanDisbursementRequest.setStatusCode(CommonUtility.SanctionDisbursementAPIStatusCode.ALREADY_DONE_DISBURSEMENT);
+						loanDisbursementRequest.setStatusCode(CommonUtility.SanctionDisbursementAPIStatusCode.ALREADY_DONE_DISBURSEMENT);
+						if(loanDisbursementRequest.getIsIneligibleProposal() == true) {
+						loanDisbursementRequest.setIsDisbursedFrom(2L);
+						loanDisbursementRequest.setOrgId(orgId);
+						}
 						return loanDisbursementRequest;
 					}
 					Double totalDisbursedAmount = oldDisbursedAmount + loanDisbursementRequest.getDisbursedAmount();
@@ -106,13 +124,21 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 						logger.info("Exit saveLoanDisbursementDetail() -----------------------> msg==>"+"SUCCESS");
 						loanDisbursementRequest.setReason("SUCCESS");
 						loanDisbursementRequest.setIsSaved(false);
-						 loanDisbursementRequest.setStatusCode(CommonUtility.SanctionDisbursementAPIStatusCode.SUCCESS);
+						loanDisbursementRequest.setStatusCode(CommonUtility.SanctionDisbursementAPIStatusCode.SUCCESS);
+						if(loanDisbursementRequest.getIsIneligibleProposal() == true) {
+						loanDisbursementRequest.setIsDisbursedFrom(2L);
+						loanDisbursementRequest.setOrgId(orgId);
+						}
 						return loanDisbursementRequest;
 					} else {
 						logger.info("Exit saveLoanDisbursementDetail() -----------------------> msg==>"+ "Total Disbursement Amount EXCEED Sanction Amount");
 						loanDisbursementRequest.setReason("Total Disbursement Amount EXCEED Sanction Amount{} sanctionAmount ==>"+loanSanctionDomain.getSanctionAmount()+" ,  ( oldDisbursedAmount ==> "+oldDisbursedAmount+" +  newDisbursedAmount==>" +loanDisbursementRequest.getDisbursedAmount()+" ) = totalDisbursedAmount==>"+totalDisbursedAmount);
 						loanDisbursementRequest.setIsSaved(false);
-						 loanDisbursementRequest.setStatusCode(CommonUtility.SanctionDisbursementAPIStatusCode.DISBURSEMENT_AMOUNT_EXCEED_SANCTION_AMOUNT);
+						loanDisbursementRequest.setStatusCode(CommonUtility.SanctionDisbursementAPIStatusCode.DISBURSEMENT_AMOUNT_EXCEED_SANCTION_AMOUNT);
+						if(loanDisbursementRequest.getIsIneligibleProposal() == true) {
+							loanDisbursementRequest.setIsDisbursedFrom(2L);
+							loanDisbursementRequest.setOrgId(orgId);
+						}
 						return loanDisbursementRequest;
 					}
 				} else {
@@ -120,13 +146,21 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 					loanDisbursementRequest.setReason("First Disbursement");
 					loanDisbursementRequest.setIsSaved(false);
 					loanDisbursementRequest.setStatusCode(CommonUtility.SanctionDisbursementAPIStatusCode.FIRST_DISBURSEMENT);
+					if(loanDisbursementRequest.getIsIneligibleProposal() == true) {
+						loanDisbursementRequest.setIsDisbursedFrom(2L);
+						loanDisbursementRequest.setOrgId(orgId);
+						IneligibleProposalDetails ineligibleProposalDetails = (IneligibleProposalDetails) offlineProcessedAppRepository.findByAppliationId(loanDisbursementRequest.getApplicationId());
+						ineligibleProposalDetails.setIsDisbursed(true);
+						LoanSanctionDomain loanSanctionDomainOld =loanSanctionRepository.findByAppliationId(loanDisbursementRequest.getApplicationId());
+						loanSanctionDomainOld.setIsPartiallyDisbursedOffline(true);
+					}
 					return loanDisbursementRequest;
 				}
 			} else {
 				logger.info("Exit saveLoanDisbursementDetail() -----------------------> msg==>" +"Invalid ApplicationId ");
 				loanDisbursementRequest.setReason( "Invalid ApplicationId ");
 				loanDisbursementRequest.setIsSaved(false);
-				 loanDisbursementRequest.setStatusCode(CommonUtility.SanctionDisbursementAPIStatusCode.DISBURSEMENT_WITHOUT_SANCTION);
+				loanDisbursementRequest.setStatusCode(CommonUtility.SanctionDisbursementAPIStatusCode.DISBURSEMENT_WITHOUT_SANCTION);
 				return loanDisbursementRequest;
 			}
 			
@@ -240,4 +274,6 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 			throw e;
 		}
 	}
+
+	
 }

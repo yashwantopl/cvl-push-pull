@@ -34,7 +34,10 @@ public class LoanDisbursementRequest extends AuditActivityRequest implements Ser
 	private Boolean isSaved = true;
 	private String reason;
 	private String statusCode;
-
+	private Boolean isIneligibleProposal;
+	private Long isDisbursedFrom;
+	private Long orgId;
+	
 	public Long getId() {
 		return id;
 	}
@@ -162,6 +165,31 @@ public class LoanDisbursementRequest extends AuditActivityRequest implements Ser
 	public void setStatusCode(String statusCode) {
 		this.statusCode = statusCode;
 	}
+	
+	public Boolean getIsIneligibleProposal() {
+		return isIneligibleProposal;
+	}
+
+	public void setIsIneligibleProposal(Boolean isIneligibleProposal) {
+		this.isIneligibleProposal = isIneligibleProposal;
+	}
+
+	public Long getIsDisbursedFrom() {
+		return isDisbursedFrom;
+	}
+
+	public void setIsDisbursedFrom(Long isDisbursedFrom) {
+		this.isDisbursedFrom = isDisbursedFrom;
+	}
+
+	public Long getOrgId() {
+		return orgId;
+	}
+
+	public void setOrgId(Long orgId) {
+		this.orgId = orgId;
+	}
+	
 
 	@Override
 	public String toString() {

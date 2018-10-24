@@ -170,7 +170,8 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 
 					// ===FS=============================================================================
 					notificationParams.put("bank_name", organisationName);
-					String subject = "Manual Application : " + applicationRequest.getId();
+ 
+					String subject = "Manual Application : " + applicationId;
 					if (organisationName != null) {
 						createNotificationForEmail(signUpUser.getEmail(), applicationRequest.getUserId().toString(),
 								notificationParams, NotificationAlias.EMAIL_FS_WHEN_IN_ELIGIBLE, subject);
@@ -180,8 +181,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 					// Checker/Maker/BO
 					// ============================================================================================
 					Map<String, Object> mailParameters = new HashMap<String, Object>();
-					subject = "Manual Application : " + applicationRequest.getId();
-
+					subject = "Manual Application : " + applicationId;
 					mailParameters.put("fs_name",
 							notificationParams.get("fs_name") != null ? notificationParams.get("fs_name") : "NA");
 					mailParameters.put("mobile_no", signUpUser.getMobile() != null ? signUpUser.getMobile() : "NA");
