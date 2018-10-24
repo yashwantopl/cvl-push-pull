@@ -25,4 +25,7 @@ public interface LoanDisbursementRepository extends JpaRepository<LoanDisburseme
 	
 	@Query(value="SELECT disbursement_date FROM disbursement_detail WHERE application_id =:applicationId AND is_active = TRUE ORDER BY id DESC", nativeQuery = true)
 	public List<Date[]> findDisbursementDateByApplicationId(@Param("applicationId") Long applicationId);
+	
+	@Query("SELECT count(ld)  FROM LoanDisbursementDomain ld WHERE ld.orgId =:orgId and ld.applicationId =:applicationId  and ld.isDisbursedFrom = 2")
+    public Long getApplicationIdCountByOrgId(@Param("applicationId") Long applicationId,@Param("orgId") Long orgId);
 }
