@@ -5218,7 +5218,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					disbursementRequest.setFsName(getFsApplicantName(disbursementRequest.getApplicationId()));
 					disbursementRequest.setFsAddress(getAddressByApplicationId(disbursementRequest.getApplicationId()));
 					// fs image
-					if(!disbursementRequest.getIsIneligibleProposal()) {
+					if(CommonUtils.isObjectNullOrEmpty(disbursementRequest.getIsIneligibleProposal()) || disbursementRequest.getIsIneligibleProposal() == false) {
 						DocumentRequest documentRequest = new DocumentRequest();
 						documentRequest.setApplicationId(disbursementRequest.getApplicationId());
 						documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
