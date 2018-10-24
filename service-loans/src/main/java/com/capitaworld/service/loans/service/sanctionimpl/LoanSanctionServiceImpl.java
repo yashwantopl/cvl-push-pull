@@ -97,7 +97,7 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 				loanSanctionDomainOld.setIsSanctionedFrom(loanSanctionRequest.getIsSanctionedFrom());
 				IneligibleProposalDetails ineligibleProposalDetails = (IneligibleProposalDetails) offlineProcessedAppRepository.findByAppliationId(loanSanctionRequest.getApplicationId());
 				ineligibleProposalDetails.setIsSanctioned(true);
-			}else {
+			}else if(CommonUtils.isObjectNullOrEmpty(loanSanctionRequest.getIsIneligibleProposal())) {
 				loanSanctionDomainOld.setIsSanctionedFrom(CommonUtils.sanctionedFrom.ELIGIBLE_USERS);
 			}
 			BeanUtils.copyProperties(loanSanctionRequest, loanSanctionDomainOld,"id");
