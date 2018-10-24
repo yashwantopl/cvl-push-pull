@@ -167,6 +167,22 @@ public class DisbursementDetails {
 	public void setModifiedDate(Date modifiedDate) {
 		this.modifiedDate = modifiedDate;
 	}
+
+	public Long getIsDisbursedFrom() {
+		return isDisbursedFrom;
+	}
+
+	public void setIsDisbursedFrom(Long isDisbursedFrom) {
+		this.isDisbursedFrom = isDisbursedFrom;
+	}
+
+	public Long getOrgId() {
+		return orgId;
+	}
+
+	public void setOrgId(Long orgId) {
+		this.orgId = orgId;
+	}
 	
 	
 }
