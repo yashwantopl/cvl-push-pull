@@ -20,10 +20,12 @@ import org.springframework.stereotype.Service;
 import com.capitaworld.service.loans.config.AuditComponentBankToCW;
 import com.capitaworld.service.loans.config.FPAsyncComponent;
 import com.capitaworld.service.loans.domain.BankCWAuditTrailDomain;
+import com.capitaworld.service.loans.domain.fundseeker.IneligibleProposalDetails;
 import com.capitaworld.service.loans.domain.sanction.LoanSanctionDomain;
 import com.capitaworld.service.loans.model.LoanSanctionRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.sanction.LoanSanctionAndDisbursedRequest;
+import com.capitaworld.service.loans.repository.OfflineProcessedAppRepository;
 import com.capitaworld.service.loans.repository.banktocw.BankToCWAuditTrailRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
 import com.capitaworld.service.loans.repository.sanction.LoanSanctionRepository;
@@ -78,7 +80,10 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 	private FPAsyncComponent fpAsyncComponent;
 	
 	@Autowired
-	private BankToCWAuditTrailRepository bankToCWAuditTrailRepository  ;
+	private BankToCWAuditTrailRepository bankToCWAuditTrailRepository;
+	
+	@Autowired
+	private OfflineProcessedAppRepository offlineProcessedAppRepository;
 
 	@Override
 	public Boolean saveLoanSanctionDetail(LoanSanctionRequest loanSanctionRequest) throws Exception {
@@ -88,14 +93,27 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 		LoanSanctionDomain loanSanctionDomainOld =loanSanctionRepository.findByAppliationId(loanSanctionRequest.getApplicationId());
 		if(CommonUtils.isObjectNullOrEmpty(loanSanctionDomainOld) ) {
 			loanSanctionDomainOld = new LoanSanctionDomain();
+			loanSanctionDomainOld.setOrgId(!CommonUtils.isObjectNullOrEmpty(loanSanctionRequest.getOrgId()) ? loanSanctionRequest.getOrgId() : null);
+			if(!CommonUtils.isObjectNullOrEmpty(loanSanctionRequest.getIsIneligibleProposal()) || loanSanctionRequest.getIsIneligibleProposal() == true) {
+				loanSanctionDomainOld.setIsSanctionedFrom(loanSanctionRequest.getIsSanctionedFrom());
+				IneligibleProposalDetails ineligibleProposalDetails = (IneligibleProposalDetails) offlineProcessedAppRepository.findByAppliationId(loanSanctionRequest.getApplicationId());
+				ineligibleProposalDetails.setIsSanctioned(true);
+			}else if(CommonUtils.isObjectNullOrEmpty(loanSanctionRequest.getIsIneligibleProposal())) {
+				loanSanctionDomainOld.setIsSanctionedFrom(CommonUtils.sanctionedFrom.ELIGIBLE_USERS);
+			}
 			BeanUtils.copyProperties(loanSanctionRequest, loanSanctionDomainOld,"id");
 			loanSanctionDomainOld.setCreatedBy(loanSanctionRequest.getActionBy());
 			loanSanctionDomainOld.setCreatedDate(new Date());
 			loanSanctionDomainOld.setIsActive(true);
 		}else{
 			BeanUtils.copyProperties(loanSanctionRequest, loanSanctionDomainOld,"id");
-			loanSanctionDomainOld.setModifiedBy(loanSanctionRequest.getActionBy());
-			loanSanctionDomainOld.setModifiedDate(new Date());
+			if(loanSanctionRequest.getIsIneligibleProposal()) {
+				loanSanctionDomainOld.setIsSanctionedFrom(loanSanctionRequest.getIsSanctionedFrom());
+				IneligibleProposalDetails ineligibleProposalDetails = (IneligibleProposalDetails) offlineProcessedAppRepository.findByAppliationId(loanSanctionRequest.getApplicationId());
+				ineligibleProposalDetails.setIsSanctioned(true);
+			}else {
+				loanSanctionDomainOld.setIsSanctionedFrom(CommonUtils.sanctionedFrom.ELIGIBLE_USERS);
+			}
 		}
 		//==================Sending Mail notification to Maker=============================
 		
@@ -464,6 +482,7 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 			loanSanctionDomainOld.setIsActive(true);
 			BeanUtils.copyProperties(loanSanctionRequest, loanSanctionDomainOld, "id" , "createdBy" , "createdDate" , "isActive" , "modifiedBy" , "modifiedDate");
 			loanSanctionDomainOld.setBankSanctionPrimaryKey(loanSanctionRequest.getId());
+			loanSanctionDomainOld.setIsSanctionedFrom(CommonUtils.sanctionedFrom.FROM_API);
 			logger.info("Exit saveLoanSanctionDetail() -----------------------> LoanSanctionDomain "+ loanSanctionDomainOld);
 			return loanSanctionRepository.save(loanSanctionDomainOld) != null;
 		}/*else{

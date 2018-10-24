@@ -23,6 +23,7 @@ private Double senctionedAmount;
 List<LoanDisbursementRequest> loanDisbursementRequestList;
 private Double tenure;
 private Double roi;
+private Boolean isIneligibleProposal;
 
 
 
@@ -130,4 +131,11 @@ public void setFpOrganisationName(String fpOrganisationName) {
 	public void setRoi(Double roi) {
 		this.roi = roi;
 	}
+	public Boolean getIsIneligibleProposal() {
+		return isIneligibleProposal;
+	}
+	public void setIsIneligibleProposal(Boolean isIneligibleProposal) {
+		this.isIneligibleProposal = isIneligibleProposal;
+	}
+	
 }

@@ -71,6 +71,12 @@ public class LoanDisbursementDomain implements Serializable {
 
 	@Column(name = "bank_disbursement_pk")
 	private Long bankDisbursementPrimaryKey;
+	
+	@Column(name = "is_disbursed_from")
+	private Long isDisbursedFrom;
+	
+	@Column(name = "org_id")
+	private Long orgId;
 
 	public Long getId() {
 		return id;
@@ -199,14 +205,33 @@ public class LoanDisbursementDomain implements Serializable {
 	public void setBankDisbursementPrimaryKey(Long bankDisbursementPrimaryKey) {
 		this.bankDisbursementPrimaryKey = bankDisbursementPrimaryKey;
 	}
+	
+	public Long getIsDisbursedFrom() {
+		return isDisbursedFrom;
+	}
+
+	public void setIsDisbursedFrom(Long isDisbursedFrom) {
+		this.isDisbursedFrom = isDisbursedFrom;
+	}
+
+	public Long getOrgId() {
+		return orgId;
+	}
+
+	public void setOrgId(Long orgId) {
+		this.orgId = orgId;
+	}
 
 	@Override
 	public String toString() {
 		return "LoanDisbursementDomain [id=" + id + ", applicationId=" + applicationId + ", referenceNo=" + referenceNo
 				+ ", disbursementDate=" + disbursementDate + ", accountNo=" + accountNo + ", disbursedAmount="
-				+ disbursedAmount + ", paymentMode=" + paymentMode+ ", disbursementAuthority=" + disbursementAuthority
+				+ disbursedAmount + ", paymentMode=" + paymentMode + ", disbursementAuthority=" + disbursementAuthority
 				+ ", transactionNo=" + transactionNo + ", remark=" + remark + ", createdBy=" + createdBy
 				+ ", createdDate=" + createdDate + ", modifiedBy=" + modifiedBy + ", modifiedDate=" + modifiedDate
-				+ ", isActive=" + isActive + ", bankDisbursementPrimaryKey=" + bankDisbursementPrimaryKey + "]";
+				+ ", isActive=" + isActive + ", bankDisbursementPrimaryKey=" + bankDisbursementPrimaryKey
+				+ ", isDisbursedFrom=" + isDisbursedFrom + ", orgId=" + orgId + "]";
 	}
+
+	
 }

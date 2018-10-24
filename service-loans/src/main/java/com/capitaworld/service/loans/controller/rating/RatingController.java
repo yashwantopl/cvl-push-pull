@@ -81,7 +81,8 @@ private static final Logger logger = LoggerFactory.getLogger(RatingController.cl
 	}
 
 	@RequestMapping(value = "/getCompanyInfo", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<RatingResponse> getCompanyInfo(@RequestParam(value = "companyName", required = false) String companyName) throws RatingException {
+	public ResponseEntity<RatingResponse> getCompanyInfo(@RequestBody String companyName) throws RatingException {
+		logger.info("Request String----"+companyName);
 		RatingResponse ratingResponse =  new RatingResponse();
 		ratingResponse.setData(irrService.getCompanyDetails(companyName));
 		return new ResponseEntity<>(ratingResponse, HttpStatus.OK);
