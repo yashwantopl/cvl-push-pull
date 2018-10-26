@@ -4441,7 +4441,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			if (!CommonUtils.isObjectListNull(connectResponse)) {
 				logger.info("Connector Response ----------------------------->" + connectResponse.toString());
 				logger.info("Before Start Saving Phase 1 Sidbi API ------------------->" + orgId);
-				if (orgId == 10L) {
+				/*if (orgId == 10L) {
 					logger.info("Start Saving Phase 1 sidbi API -------------------->" + loanApplicationMaster.getId());
 					Long fpMappingId = null;
 					try {
@@ -4449,7 +4449,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 						e.printStackTrace();
 					}
 					savePhese1DataToSidbi(loanApplicationMaster.getId(), userId, orgId, fpProductId);
-				}
+				}*/
 
 				if (connectResponse.getProceed()) {
 					if (loanApplicationMaster.getCompanyCinNumber() != null) {
@@ -4512,15 +4512,15 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			if (!CommonUtils.isObjectListNull(connectResponse)) {
 				logger.info("Connector Response ----------------------------->" + connectResponse.toString());
 				logger.info("Before Start Saving Phase 1 Sidbi API ------------------->" + orgId);
-				// if(orgId==10L) {
-				logger.info("Start Saving Phase 1 sidbi API -------------------->" + loanApplicationMaster.getId());
-				Long fpMappingId = null;
-				try {
-					savePhese1DataToSidbi(loanApplicationMaster.getId(), userId, orgId, fpProductId);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				// }
+				/*if (orgId == 10L) {
+					logger.info("Start Saving Phase 1 sidbi API -------------------->" + loanApplicationMaster.getId());
+					Long fpMappingId = null;
+					try {
+						savePhese1DataToSidbi(loanApplicationMaster.getId(), userId, orgId, fpProductId);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}*/
 
 				if (connectResponse.getProceed()) {
 					if (loanApplicationMaster.getCompanyCinNumber() != null) {
