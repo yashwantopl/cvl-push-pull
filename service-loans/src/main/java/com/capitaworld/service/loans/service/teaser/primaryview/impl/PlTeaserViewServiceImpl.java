@@ -330,7 +330,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 				try {
 					CibilRequest cibilReq=new CibilRequest();
 					cibilReq.setPan(plRetailApplicantResponse.getPan());
-					
+					cibilReq.setApplicationId(toApplicationId);
 					CibilScoreLogRequest cibilScoreByPanCard = cibilClient.getCibilScoreByPanCard(cibilReq);
 					plTeaserViewResponse.setCibilScore(cibilScoreByPanCard);
 				} catch (Exception e) {
