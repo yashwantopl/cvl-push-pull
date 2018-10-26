@@ -17,7 +17,7 @@ public class FinancialArrangementsDetailResponse implements Serializable{
 
     private Double amount;
 
-    /*private String facilityNature;*/
+    private String facilityNature;
 
     private String financialInstitutionName;
     
@@ -45,6 +45,8 @@ public class FinancialArrangementsDetailResponse implements Serializable{
     private String amountStr;
     
     private String outstandingAmountStr;
+    
+    private Double emi;
     
    /* public String getFacilityNature() {
         return facilityNature;
@@ -176,6 +178,24 @@ public class FinancialArrangementsDetailResponse implements Serializable{
             }
         }
     }
+
+	public Double getEmi() {
+		return emi;
+	}
+
+	public void setEmi(Double emi) {
+		this.emi = emi;
+	}
+
+	public String getFacilityNature() {
+		return facilityNature;
+	}
+
+	public void setFacilityNature(String facilityNature) {
+		this.facilityNature = facilityNature;
+	}
+
+	
 	
     
 }
