@@ -2845,7 +2845,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		if (CommonUtils.isObjectNullOrEmpty(applicationMaster))
 			return null;
 
-		if (applicationMaster.getProductId() != null) {
+		if (applicationMaster.getProductId() != null && applicationMaster.getBusinessTypeId() != null) {
 			if (applicationMaster.getBusinessTypeId().intValue() == CommonUtils.BusinessType.NEW_TO_BUSINESS.getId()
 					.intValue()) {
 				List<DirectorBackgroundDetail> directorBackgroundDetails = directorBackgroundDetailsRepository
@@ -2878,7 +2878,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 		} else {
 
-			if (applicationMaster.getBusinessTypeId().intValue() == CommonUtils.BusinessType.NEW_TO_BUSINESS.getId()
+			if (applicationMaster.getBusinessTypeId() != null && applicationMaster.getBusinessTypeId().intValue() == CommonUtils.BusinessType.NEW_TO_BUSINESS.getId()
 					.intValue()) {
 				List<DirectorBackgroundDetail> directorBackgroundDetails = directorBackgroundDetailsRepository
 						.listPromotorBackgroundFromAppId(applicationId);
@@ -4441,7 +4441,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			if (!CommonUtils.isObjectListNull(connectResponse)) {
 				logger.info("Connector Response ----------------------------->" + connectResponse.toString());
 				logger.info("Before Start Saving Phase 1 Sidbi API ------------------->" + orgId);
-				if (orgId == 10L) {
+				/*if (orgId == 10L) {
 					logger.info("Start Saving Phase 1 sidbi API -------------------->" + loanApplicationMaster.getId());
 					Long fpMappingId = null;
 					try {
@@ -4449,7 +4449,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 						e.printStackTrace();
 					}
 					savePhese1DataToSidbi(loanApplicationMaster.getId(), userId, orgId, fpProductId);
-				}
+				}*/
 
 				if (connectResponse.getProceed()) {
 					if (loanApplicationMaster.getCompanyCinNumber() != null) {
@@ -4512,15 +4512,15 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			if (!CommonUtils.isObjectListNull(connectResponse)) {
 				logger.info("Connector Response ----------------------------->" + connectResponse.toString());
 				logger.info("Before Start Saving Phase 1 Sidbi API ------------------->" + orgId);
-				// if(orgId==10L) {
-				logger.info("Start Saving Phase 1 sidbi API -------------------->" + loanApplicationMaster.getId());
-				Long fpMappingId = null;
-				try {
-					savePhese1DataToSidbi(loanApplicationMaster.getId(), userId, orgId, fpProductId);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				// }
+				/*if (orgId == 10L) {
+					logger.info("Start Saving Phase 1 sidbi API -------------------->" + loanApplicationMaster.getId());
+					Long fpMappingId = null;
+					try {
+						savePhese1DataToSidbi(loanApplicationMaster.getId(), userId, orgId, fpProductId);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}*/
 
 				if (connectResponse.getProceed()) {
 					if (loanApplicationMaster.getCompanyCinNumber() != null) {
@@ -5212,134 +5212,112 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	public DisbursementRequest getDisbursementDetails(DisbursementRequest disbursementRequest) {
 		// TODO Auto-generated method stub
 
-		try {
-			// set fs details
-			LoanApplicationMaster loanApplicationMaster = loanApplicationRepository
-					.findOne(disbursementRequest.getApplicationId());
-			disbursementRequest.setFsName(getFsApplicantName(disbursementRequest.getApplicationId()));
-			disbursementRequest.setFsAddress(getAddressByApplicationId(disbursementRequest.getApplicationId()));
-			// fs image
-			DocumentRequest documentRequest = new DocumentRequest();
-			documentRequest.setApplicationId(disbursementRequest.getApplicationId());
-			documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
-			documentRequest.setProductDocumentMappingId(
-					CommonDocumentUtils.getProductDocumentId(loanApplicationMaster.getProductId()));
-
-			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
-			String imagePath = null;
-			if (documentResponse != null && documentResponse.getStatus() == 200) {
-				List<Map<String, Object>> list = documentResponse.getDataList();
-				if (!CommonUtils.isListNullOrEmpty(list)) {
-					StorageDetailsResponse response = null;
-
-					response = MultipleJSONObjectHelper.getObjectFromMap(list.get(0), StorageDetailsResponse.class);
-
-					if (!CommonUtils.isObjectNullOrEmpty(response.getFilePath()))
-						imagePath = response.getFilePath();
-					else
-						imagePath = null;
-				}
-			}
-			disbursementRequest.setFsImage(imagePath);
-
-			// set fp details
-			disbursementRequest
-					.setFpName(productMasterRepository.findOne(disbursementRequest.getProductMappingId()).getName());
-			ProductMaster productMaster = productMasterRepository.findOne(disbursementRequest.getProductMappingId());
-
-			UsersRequest request = new UsersRequest();
-			request.setId(productMaster.getUserId());
-			UserResponse userResponse = userClient.getFPDetails(request);
-
-			FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap(
-					(LinkedHashMap<String, Object>) userResponse.getData(), FundProviderDetailsRequest.class);
-
-			// disbursementRequest.setFpName(fundProviderDetailsRequest.getOrganizationName());
-			String fpAddress = "";
-
-			List<Long> stateList = new ArrayList<>();
-			if (!CommonUtils.isObjectNullOrEmpty(fundProviderDetailsRequest.getStateId()))
-				stateList.add(Long.valueOf(fundProviderDetailsRequest.getStateId()));
-			if (!CommonUtils.isListNullOrEmpty(stateList)) {
 				try {
-					OneFormResponse oneFormResponse = oneFormClient.getStateByStateListId(stateList);
-					List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
-							.getListData();
-					if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
-						MasterResponse masterResponse = MultipleJSONObjectHelper
-								.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
-						fpAddress = masterResponse.getValue() + ",";
-					} else {
+					// set fs details
+					LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(disbursementRequest.getApplicationId());
+					disbursementRequest.setFsName(getFsApplicantName(disbursementRequest.getApplicationId()));
+					disbursementRequest.setFsAddress(getAddressByApplicationId(disbursementRequest.getApplicationId()));
+					// fs image
+					if(CommonUtils.isObjectNullOrEmpty(disbursementRequest.getIsIneligibleProposal()) || disbursementRequest.getIsIneligibleProposal() == false) {
+						DocumentRequest documentRequest = new DocumentRequest();
+						documentRequest.setApplicationId(disbursementRequest.getApplicationId());
+						documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
+						documentRequest.setProductDocumentMappingId(CommonDocumentUtils.getProductDocumentId(loanApplicationMaster.getProductId()));
+						DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+						String imagePath = null;
+						if (documentResponse != null && documentResponse.getStatus() == 200) {
+							List<Map<String, Object>> list = documentResponse.getDataList();
+							if (!CommonUtils.isListNullOrEmpty(list)) {
+								StorageDetailsResponse response = null;
+								response = MultipleJSONObjectHelper.getObjectFromMap(list.get(0), StorageDetailsResponse.class);
+								if (!CommonUtils.isObjectNullOrEmpty(response.getFilePath()))
+									imagePath = response.getFilePath();
+								else
+									imagePath = null;
+							}
+						}
+						disbursementRequest.setFsImage(imagePath);
 
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-			disbursementRequest.setFpOrganisationName(fundProviderDetailsRequest.getOrganizationName());
+						// set fp details
+						disbursementRequest.setFpName(productMasterRepository.findOne(disbursementRequest.getProductMappingId()).getName());
+						ProductMaster productMaster = productMasterRepository.findOne(disbursementRequest.getProductMappingId());
 
-			List<Long> countryList = new ArrayList<>();
-			if (!CommonUtils.isObjectNullOrEmpty(fundProviderDetailsRequest.getCountryId()))
-				countryList.add(Long.valueOf(fundProviderDetailsRequest.getCountryId()));
-			if (!CommonUtils.isListNullOrEmpty(countryList)) {
-				try {
-					OneFormResponse oneFormResponse = oneFormClient.getCountryByCountryListId(countryList);
-					List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
-							.getListData();
-					if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
-						MasterResponse masterResponse = MultipleJSONObjectHelper
-								.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
-						fpAddress += masterResponse.getValue();
-					} else {
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
+						UsersRequest request = new UsersRequest();
+						request.setId(productMaster.getUserId());
+						UserResponse userResponse = userClient.getFPDetails(request);
 
-			disbursementRequest.setFpAddress(fpAddress);
+						FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) userResponse.getData(), FundProviderDetailsRequest.class);
+						//disbursementRequest.setFpName(fundProviderDetailsRequest.getOrganizationName());
+						String fpAddress = "";
+						List<Long> stateList = new ArrayList<>();
+						if (!CommonUtils.isObjectNullOrEmpty(fundProviderDetailsRequest.getStateId()))
+							stateList.add(Long.valueOf(fundProviderDetailsRequest.getStateId()));
+						if (!CommonUtils.isListNullOrEmpty(stateList)) {
+							try {
+								OneFormResponse oneFormResponse = oneFormClient.getStateByStateListId(stateList);
+								List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse.getListData();
+								if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+									MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+									fpAddress = masterResponse.getValue() + ",";
+								} else {
+								}
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+						}
+						disbursementRequest.setFpOrganisationName(fundProviderDetailsRequest.getOrganizationName());
 
-			disbursementRequest.setLoanName(LoanType.getType(loanApplicationMaster.getProductId()).getName());
-			// set fp image
-
-			documentRequest.setUserId(productMaster.getUserId());
-			documentRequest.setUserType("user");
-			documentRequest.setUserDocumentMappingId(1L);
-
-			documentResponse = dmsClient.listUserDocument(documentRequest);
-			imagePath = "";
-			if (documentResponse != null && documentResponse.getStatus() == 200) {
-				List<Map<String, Object>> list = documentResponse.getDataList();
-				if (!CommonUtils.isListNullOrEmpty(list)) {
-					StorageDetailsResponse response = null;
-
-					response = MultipleJSONObjectHelper.getObjectFromMap(list.get(0), StorageDetailsResponse.class);
-					if (!CommonUtils.isObjectNullOrEmpty(response.getFilePath()))
-						imagePath = response.getFilePath();
-					else
+						List<Long> countryList = new ArrayList<>();
+						if (!CommonUtils.isObjectNullOrEmpty(fundProviderDetailsRequest.getCountryId()))
+							countryList.add(Long.valueOf(fundProviderDetailsRequest.getCountryId()));
+						if (!CommonUtils.isListNullOrEmpty(countryList)) {
+							try {
+								OneFormResponse oneFormResponse = oneFormClient.getCountryByCountryListId(countryList);
+								List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse.getListData();
+								if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+									MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+									fpAddress += masterResponse.getValue();
+								} else {
+								}
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+						}
+						disbursementRequest.setFpAddress(fpAddress);
+						disbursementRequest.setLoanName(LoanType.getType(loanApplicationMaster.getProductId()).getName());
+						// set fp image
+						documentRequest.setUserId(productMaster.getUserId());
+						documentRequest.setUserType("user");
+						documentRequest.setUserDocumentMappingId(1L);
+						documentResponse = dmsClient.listUserDocument(documentRequest);
 						imagePath = "";
+						if (documentResponse != null && documentResponse.getStatus() == 200) {
+							List<Map<String, Object>> list = documentResponse.getDataList();
+							if (!CommonUtils.isListNullOrEmpty(list)) {
+								StorageDetailsResponse response = null;
+								response = MultipleJSONObjectHelper.getObjectFromMap(list.get(0), StorageDetailsResponse.class);
+								if (!CommonUtils.isObjectNullOrEmpty(response.getFilePath()))
+									imagePath = response.getFilePath();
+								else
+									imagePath = "";
+							}
+						}
+						disbursementRequest.setFpImage(imagePath);
+					}
+					//For Fetching Sanctioned amount
+					LoanSanctionDomain loanSanctionDomain =loanSanctionRepository.findByAppliationId(disbursementRequest.getApplicationId());
+					if(!CommonUtils.isObjectNullOrEmpty(loanSanctionDomain) ){
+						disbursementRequest.setSenctionedAmount(loanSanctionDomain.getSanctionAmount());
+						disbursementRequest.setTenure(loanSanctionDomain.getTenure());
+						disbursementRequest.setRoi(loanSanctionDomain.getRoi());
+					}
+					//For List of disbursed amount
+					disbursementRequest.setLoanDisbursementRequestList(loanDisbursementService.getDisbursedList(disbursementRequest.getApplicationId()));
+
+				} catch (Exception e) {
+					logger.warn("error while getting details of disbursement", e);
 				}
-			}
-			disbursementRequest.setFpImage(imagePath);
-
-			// For Fetching Sanctioned amount
-			LoanSanctionDomain loanSanctionDomain = loanSanctionRepository
-					.findByAppliationId(disbursementRequest.getApplicationId());
-			if (!CommonUtils.isObjectNullOrEmpty(loanSanctionDomain)) {
-				disbursementRequest.setSenctionedAmount(loanSanctionDomain.getSanctionAmount());
-				disbursementRequest.setTenure(loanSanctionDomain.getTenure());
-				disbursementRequest.setRoi(loanSanctionDomain.getRoi());
-			}
-
-			// For List of disbursed amount
-			disbursementRequest.setLoanDisbursementRequestList(
-					loanDisbursementService.getDisbursedList(disbursementRequest.getApplicationId()));
-
-		} catch (Exception e) {
-			logger.warn("error while getting details of disbursement", e);
-		}
-
-		return disbursementRequest;
+				return disbursementRequest;
 	}
 
 	private String getAddressByApplicationId(Long applicationId) {

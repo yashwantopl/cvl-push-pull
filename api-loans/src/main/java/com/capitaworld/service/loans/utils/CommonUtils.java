@@ -1475,10 +1475,15 @@ public enum APIFlags {
 		//System.out.println("comma Replace called :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
 		
 		
-		if(value.charAt(value.length()-1) != ',') {
+		if(value != null && !value.equals("") && value.charAt(value.length()-1) != ',') {
 			return value+", ";
 		}
 		return value;
+	}
+	public interface sanctionedFrom {
+		public static final long ELIGIBLE_USERS = 1;
+		public static final long INELIGIBLE_USERS_OFFLINE_APPLICATION = 2;
+		public static final long FROM_API = 3;
 	}
 	
 	

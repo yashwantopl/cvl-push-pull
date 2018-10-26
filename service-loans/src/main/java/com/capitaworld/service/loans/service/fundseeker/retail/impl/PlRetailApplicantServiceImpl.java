@@ -1,5 +1,16 @@
 package com.capitaworld.service.loans.service.fundseeker.retail.impl;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.FinancialArrangementsDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.CreditCardsDetail;
@@ -17,20 +28,8 @@ import com.capitaworld.service.loans.repository.fundseeker.retail.CreditCardsDet
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantIncomeRepository;
 import com.capitaworld.service.loans.service.fundseeker.retail.PlRetailApplicantService;
-import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.oneform.enums.CreditCardTypesRetail;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 @Service
 @Transactional
@@ -110,6 +109,67 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
                 retailApplicantIncomeRequestList.add(incomeRequest);
             }
             applicantRequest.setRetailApplicantIncomeRequestList(retailApplicantIncomeRequestList);
+            
+            
+            // financialArrangement data fetched and copy in beanUtil 
+
+            try {
+            	
+            	List<FinancialArrangementsDetail> retailFinancialDetailsList = financialArrangementDetailsRepository.listSecurityCorporateDetailFromAppId(applicationId);
+                
+                if(retailFinancialDetailsList != null) {
+                
+                	List<FinancialArrangementsDetailRequest> retailFinancialDetailsReq= new ArrayList<FinancialArrangementsDetailRequest>(retailFinancialDetailsList.size());
+                    
+                    FinancialArrangementsDetailRequest retailFinReq=null;
+                    
+                    for(FinancialArrangementsDetail finArDetails : retailFinancialDetailsList) {
+                    	 
+                    	retailFinReq =new FinancialArrangementsDetailRequest();
+                    	BeanUtils.copyProperties(finArDetails, retailFinReq);
+                    	retailFinancialDetailsReq.add(retailFinReq);
+                    }
+                    applicantRequest.setFinancialArrangementsDetailRequestsList(retailFinancialDetailsReq);
+                	
+                }else {
+					logger.warn("FinancialArrangementData is Null");
+				}
+                
+			} catch (Exception e) {
+				
+				logger.error("=======>>>>> Error while fetching FinancialArrangementDetails <<<<<<<=========");
+				e.printStackTrace();
+			}
+            
+            
+            //CraditCard Details Fetching
+            
+            try {
+            	
+            	List<CreditCardsDetail> creditCardDetails= creditCardsDetailRepository.listCreditCardsFromAppId(applicationId);
+            	
+            	if(creditCardDetails != null) {
+            	
+            		List<CreditCardsDetailRequest> creditCardDetailsRequest=new ArrayList<CreditCardsDetailRequest>(creditCardDetails.size());
+                    
+                    CreditCardsDetailRequest creditCardDetailReq=null;
+
+                    for(CreditCardsDetail creditCard :creditCardDetails) {
+                    	creditCardDetailReq= new CreditCardsDetailRequest();
+                    	creditCardDetailReq.setCardTypeString(creditCard.getCreditCardTypesId() != 0 ? CreditCardTypesRetail.getById(creditCard.getCreditCardTypesId()).getValue().toString() : "");
+                    	BeanUtils.copyProperties(creditCard, creditCardDetailReq);
+                    	creditCardDetailsRequest.add(creditCardDetailReq);
+                    }
+                    applicantRequest.setCreditCardsDetailRequestList(creditCardDetailsRequest);
+            	}else {
+					logger.warn("CreditCard Details is Null");
+				}
+			} catch (Exception e) {
+				logger.error("==========>>>>>>> Error while Fetching CreditCardDetails <<<<<<<============");
+				e.printStackTrace();
+			}
+            
+            
 
             return applicantRequest;
         } catch (Exception e) {

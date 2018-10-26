@@ -40,6 +40,12 @@ public class IneligibleProposalDetails implements Serializable{
 
     @Column(name="is_active")
     private Boolean isActive;
+    
+    @Column(name="is_sanctioned")
+    private Boolean isSanctioned;
+    
+    @Column(name="is_Disbursed")
+    private Boolean isDisbursed;
 
     public Long getId() {
         return id;
@@ -104,4 +110,21 @@ public class IneligibleProposalDetails implements Serializable{
     public void setIsActive(Boolean active) {
         isActive = active;
     }
+
+	public Boolean getIsSanctioned() {
+		return isSanctioned;
+	}
+
+	public void setIsSanctioned(Boolean isSanctioned) {
+		this.isSanctioned = isSanctioned;
+	}
+
+	public Boolean getIsDisbursed() {
+		return isDisbursed;
+	}
+
+	public void setIsDisbursed(Boolean isDisbursed) {
+		this.isDisbursed = isDisbursed;
+	}
+    
 }
