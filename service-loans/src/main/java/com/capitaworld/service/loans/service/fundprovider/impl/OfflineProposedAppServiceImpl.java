@@ -39,7 +39,7 @@ public class OfflineProposedAppServiceImpl implements OfflineProcessedAppService
 					request.setApplicationId(((BigInteger)obj[0]).longValue());
 					request.setUserId(((BigInteger)obj[1]).longValue());
 					request.setLoanAmount(((BigDecimal)obj[2]).doubleValue());
-					request.setIsCampaignUser(!CommonUtils.isObjectNullOrEmpty(obj[3])?((String)obj[3]).toString() : null);
+					request.setIsCampaignUser(!CommonUtils.isObjectNullOrEmpty(obj[3])?((String)obj[3]).toString() : "Market Place");
 					request.setBranchName(((String)obj[4]).toString());
 					request.setOrganisationName(((String)obj[5]).toString());
 					request.setIsSanctioned(!CommonUtils.isObjectNullOrEmpty(obj[6])?((Boolean)obj[6]).booleanValue():null);
@@ -47,6 +47,8 @@ public class OfflineProposedAppServiceImpl implements OfflineProcessedAppService
 					request.setBranchId(!CommonUtils.isObjectNullOrEmpty(obj[8])?((BigInteger)obj[8]).longValue():null);
 					request.setPan(!CommonUtils.isObjectNullOrEmpty(obj[9])? ((String)obj[9]).toString() : null);
 					request.setGstin(!CommonUtils.isObjectNullOrEmpty(obj[10])? ((String)obj[10]).toString() : null);
+					request.setBranchCode(!CommonUtils.isObjectNullOrEmpty(obj[11])? ((String)obj[11]).toString() : null);
+					request.setBranchAddress(!CommonUtils.isObjectNullOrEmpty(obj[12])? ((String)obj[12]).toString() : null);
 					applicationRequests.add(request);
 				}
 			}

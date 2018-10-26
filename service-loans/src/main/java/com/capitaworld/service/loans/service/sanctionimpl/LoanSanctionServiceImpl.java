@@ -93,11 +93,11 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 		if(CommonUtils.isObjectNullOrEmpty(loanSanctionDomainOld) ) {
 			loanSanctionDomainOld = new LoanSanctionDomain();
 			loanSanctionDomainOld.setOrgId(!CommonUtils.isObjectNullOrEmpty(loanSanctionRequest.getOrgId()) ? loanSanctionRequest.getOrgId() : null);
-			if(!CommonUtils.isObjectNullOrEmpty(loanSanctionRequest.getIsIneligibleProposal()) || loanSanctionRequest.getIsIneligibleProposal() == true) {
+			if(loanSanctionRequest.getIsIneligibleProposal() == true) {
 				loanSanctionDomainOld.setIsSanctionedFrom(loanSanctionRequest.getIsSanctionedFrom());
 				IneligibleProposalDetails ineligibleProposalDetails = (IneligibleProposalDetails) offlineProcessedAppRepository.findByAppliationId(loanSanctionRequest.getApplicationId());
 				ineligibleProposalDetails.setIsSanctioned(true);
-			}else if(CommonUtils.isObjectNullOrEmpty(loanSanctionRequest.getIsIneligibleProposal())) {
+			}else if(CommonUtils.isObjectNullOrEmpty(loanSanctionRequest.getIsIneligibleProposal()) || loanSanctionRequest.getIsIneligibleProposal() == false) {
 				loanSanctionDomainOld.setIsSanctionedFrom(CommonUtils.sanctionedFrom.ELIGIBLE_USERS);
 			}
 			BeanUtils.copyProperties(loanSanctionRequest, loanSanctionDomainOld,"id");

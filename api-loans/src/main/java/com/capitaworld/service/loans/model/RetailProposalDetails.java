@@ -24,7 +24,9 @@ public class RetailProposalDetails {
 	public String branchLocationName;
 	public String branchCity;
 	public String branchState;
+	private Integer businessTypeId;
 	
+	private Long fpProductid;
 	 
 
 	public String getBranchLocationName() {
@@ -123,6 +125,22 @@ public class RetailProposalDetails {
 
 	public void setCibilSCore(String cibilSCore) {
 		this.cibilSCore = cibilSCore;
+	}
+
+	public Integer getBusinessTypeId() {
+		return businessTypeId;
+	}
+
+	public void setBusinessTypeId(Integer businessTypeId) {
+		this.businessTypeId = businessTypeId;
+	}
+
+	public Long getFpProductid() {
+		return fpProductid;
+	}
+
+	public void setFpProductid(Long fpProductid) {
+		this.fpProductid = fpProductid;
 	}
 	
 }

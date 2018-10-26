@@ -11,6 +11,7 @@ import com.capitaworld.service.analyzer.client.AnalyzerClient;
 import com.capitaworld.service.analyzer.model.common.AnalyzerResponse;
 import com.capitaworld.service.analyzer.model.common.Data;
 import com.capitaworld.service.analyzer.model.common.ReportRequest;
+import com.capitaworld.service.analyzer.model.common.Xn;
 import com.capitaworld.service.gst.GstCalculation;
 import com.capitaworld.service.gst.GstResponse;
 import com.capitaworld.service.gst.client.GstClient;
@@ -51,7 +52,7 @@ import com.capitaworld.service.thirdparty.model.CGTMSEDataResponse;
 import com.capitaworld.service.thirdpaty.client.ThirdPartyClient;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.UserResponse;
-import com.capitaworld.sidbi.integration.model.bankstatement.Xn;
+
 import com.google.gson.Gson;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -310,6 +311,7 @@ public class ScoringServiceImpl implements ScoringService {
 
                                 CibilRequest cibilRequest = new CibilRequest();
                                 cibilRequest.setPan(retailApplicantDetail.getPan());
+                                cibilRequest.setApplicationId(applicationId);
 
                                 CibilScoreLogRequest cibilResponse = cibilClient.getCibilScoreByPanCard(cibilRequest);
                                 if (!CommonUtils.isObjectNullOrEmpty(cibilResponse.getScore())) {
@@ -542,6 +544,7 @@ public class ScoringServiceImpl implements ScoringService {
                                     scoreParameterRetailRequest.setDPD_p(true);
                                 } else {
                                     scoreParameterRetailRequest.setDPD_p(false);
+                                    scoreParameterRetailRequest.setDpd(null);
                                 }
                             } catch (Exception e) {
                                 logger.error("error while getting DAY_PAST_DUE_PL parameter from CIBIL client");
@@ -600,25 +603,23 @@ public class ScoringServiceImpl implements ScoringService {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-
         }
+
+        logger.info("Application Id ::"+applicationId);
+        logger.info("FpProductId Id ::"+fpProductId);
+
             scoringRequest.setScoreParameterRetailRequest(scoreParameterRetailRequest);
 
             try {
                 scoringResponseMain = scoringClient.calculateScore(scoringRequest);
-            } catch (Exception e) {
-                logger.error("error while calling scoring");
-                e.printStackTrace();
-                LoansResponse loansResponse = new LoansResponse("error while calling scoring.", HttpStatus.INTERNAL_SERVER_ERROR.value());
-                return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
-            }
 
-            if (scoringResponseMain.getStatus() == HttpStatus.OK.value()) {
                 logger.error("score is successfully calculated");
                 LoansResponse loansResponse = new LoansResponse("score is successfully calculated", HttpStatus.OK.value());
                 return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
-            } else {
+
+            } catch (Exception e) {
                 logger.error("error while calling scoring");
+                e.printStackTrace();
                 LoansResponse loansResponse = new LoansResponse("error while calling scoring.", HttpStatus.INTERNAL_SERVER_ERROR.value());
                 return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
             }
@@ -633,13 +634,14 @@ public class ScoringServiceImpl implements ScoringService {
         Boolean salaryWithBank=false;
 
         AnalyzerResponse analyzerResponse=null;
+        Data data=null;
 
         try {
             ReportRequest reportRequest = new ReportRequest();
             reportRequest.setApplicationId(applicationId);
             analyzerResponse = analyzerClient.getDetailsFromReport(reportRequest);
             if (!CommonUtils.isObjectNullOrEmpty(analyzerResponse)) {
-                Data analyserReportData = MultipleJSONObjectHelper
+                     data = MultipleJSONObjectHelper
                         .getObjectFromMap((LinkedHashMap<String, Object>) analyzerResponse.getData(), Data.class);
             }
         } catch (Exception e) {
@@ -650,12 +652,13 @@ public class ScoringServiceImpl implements ScoringService {
 
         //Check BankStatement Last 6 Month Transaction
         try {
-            if (analyzerResponse != null) {
-                List<Xn> xns = analyzerResponse.getXns().getXn();
+            if (data != null) {
+                List<Xn> xns = data.getXns().getXn();
                 List<Double> al = new ArrayList<Double>();
                 for (Xn xn : xns) {
                     if (xn.getCategory().equalsIgnoreCase("Salary")) {
                         salaryWithBank=true;
+                        break;
                     }
                 }
             }
