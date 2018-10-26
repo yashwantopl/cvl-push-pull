@@ -17,15 +17,18 @@ import org.springframework.stereotype.Component;
 
 import com.capitaworld.service.gst.client.GstClient;
 import com.capitaworld.service.loans.domain.fundprovider.ProductMasterTemp;
+import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
 import com.capitaworld.service.loans.domain.sanction.LoanSanctionDomain;
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.model.NhbsApplicationRequest;
 import com.capitaworld.service.loans.model.PaymentRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
+import com.capitaworld.service.loans.model.retail.RetailApplicantRequest;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.DirectorBackgroundDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
+import com.capitaworld.service.loans.service.fundseeker.retail.RetailApplicantService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
@@ -59,6 +62,9 @@ public class FPAsyncComponent {
 
 	@Autowired
 	private CorporateApplicantService corporateapplicantService;
+	
+	@Autowired
+	private RetailApplicantService retailapplicantService;
 
 	@Autowired
 	private LoanApplicationService loanApplicationService;
@@ -151,6 +157,10 @@ public class FPAsyncComponent {
 						landMark = applicantRequest.getFirstAddress().getLandMark()!=null?applicantRequest.getFirstAddress().getLandMark():"";
 						address = premiseNumber.toString()+" "+streetName.toString()+" "+landMark.toString();
 					}	
+				}
+				else if(!CommonUtils.isObjectNullOrEmpty(applicationRequest)
+						&& applicationRequest.getBusinessTypeId() == 3){
+					address = applicationRequest.getAddress();
 				}
 				else{
 					
@@ -339,6 +349,10 @@ public class FPAsyncComponent {
 						landMark = applicantRequest.getFirstAddress().getLandMark()!=null?applicantRequest.getFirstAddress().getLandMark():"";
 						address = premiseNumber.toString()+" "+streetName.toString()+" "+landMark.toString();
 					}	
+				}
+				else if(!CommonUtils.isObjectNullOrEmpty(applicationRequest)
+						&& applicationRequest.getBusinessTypeId() == 3){
+					address = applicationRequest.getAddress();
 				}
 				else{
 					
@@ -532,6 +546,10 @@ public class FPAsyncComponent {
 						address = premiseNumber.toString()+" "+streetName.toString()+" "+landMark.toString();
 					}	
 				}
+				else if(!CommonUtils.isObjectNullOrEmpty(applicationRequest)
+						&& applicationRequest.getBusinessTypeId() == 3){
+					address = applicationRequest.getAddress();
+				}
 				else{
 					
 					// For getting Address of Primary Director
@@ -723,6 +741,10 @@ public class FPAsyncComponent {
 						address = premiseNumber.toString()+" "+streetName.toString()+" "+landMark.toString();
 					}	
 				}
+				else if(!CommonUtils.isObjectNullOrEmpty(applicationRequest)
+						&& applicationRequest.getBusinessTypeId() == 3){
+					address = applicationRequest.getAddress();
+				}
 				else{
 					
 					// For getting Address of Primary Director
@@ -890,7 +912,6 @@ public class FPAsyncComponent {
 			} else {
 				fsName = applicationRequest.getUserName() != null ? applicationRequest.getUserName() : "NA";
 			}
-			parameters.put("fs_name", fsName != null ? fsName : "NA");
 			// =========================================================================================================
 			
 			if(!CommonUtils.isObjectNullOrEmpty(applicationRequest)
@@ -945,10 +966,22 @@ public class FPAsyncComponent {
 					&& applicationRequest.getBusinessTypeId() == CommonUtils.BusinessType.RETAIL_PERSONAL_LOAN.getId()){
 				fsName=applicationRequest.getUserName();
 				address=applicationRequest.getAddress();
+				RetailApplicantRequest retailApplicantRequest = retailapplicantService.get(request.getApplicationId());
+				if (!CommonUtils.isObjectNullOrEmpty(retailApplicantRequest)) {
+					if (!CommonUtils.isObjectNullOrEmpty(retailApplicantRequest.getAddressState())) {
+						state = CommonDocumentUtils.getState(retailApplicantRequest.getAddressState(), oneFormClient);
+					}
+				}
+				if (!CommonUtils.isObjectNullOrEmpty(retailApplicantRequest)) {
+					if (!CommonUtils.isObjectNullOrEmpty(retailApplicantRequest.getAddressCity())) {
+						city = CommonDocumentUtils.getState(retailApplicantRequest.getAddressCity(), oneFormClient);
+					}
+				}
 				NotificationAliasId= NotificationAlias.PL_EMAIL_TO_FS_WHEN_MAKKER_ACCEPT_PROPOSAL;
 			}else {
 					NotificationAliasId=NotificationAlias.EMAIL_FS_ACCEPTED_BY_MAKER;
 			}
+			parameters.put("fs_name", fsName != null ? fsName : "NA");
 			parameters.put("address", address != null ? address : "NA");
 			parameters.put("state", state != null ? state : "NA");
 			parameters.put("city", city !=null ? city : "NA");
@@ -1637,7 +1670,10 @@ public class FPAsyncComponent {
 					address = premiseNumber.toString()+" "+streetName.toString()+" "+landMark.toString();
 				}
 			}
-			
+			else if(!CommonUtils.isObjectNullOrEmpty(applicationRequest)
+					&& applicationRequest.getBusinessTypeId() == 3){
+				address = applicationRequest.getAddress();
+			}
 			parameters.put("address", address != null ? address : "NA");
 
 			
@@ -2059,6 +2095,10 @@ public class FPAsyncComponent {
 					landMark = applicantRequest.getFirstAddress().getLandMark()!=null?applicantRequest.getFirstAddress().getLandMark():"";
 					address = premiseNumber.toString()+" "+streetName.toString()+" "+landMark.toString();
 				}
+			}
+			else if(!CommonUtils.isObjectNullOrEmpty(applicationRequest)
+					&& applicationRequest.getBusinessTypeId() == 3){
+				address = applicationRequest.getAddress();
 			}
 			
 			parameters.put("address", address != null ? address : "NA");
