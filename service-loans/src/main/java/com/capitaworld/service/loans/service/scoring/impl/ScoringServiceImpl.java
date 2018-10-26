@@ -603,30 +603,24 @@ public class ScoringServiceImpl implements ScoringService {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-        }
-
-        logger.info("Application Id ::"+applicationId);
-        logger.info("FpProductId Id ::"+fpProductId);
-
-            scoringRequest.setScoreParameterRetailRequest(scoreParameterRetailRequest);
-
-            try {
-                scoringResponseMain = scoringClient.calculateScore(scoringRequest);
-
-                logger.error("score is successfully calculated");
-                LoansResponse loansResponse = new LoansResponse("score is successfully calculated", HttpStatus.OK.value());
-                return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
-
-            } catch (Exception e) {
-                logger.error("error while calling scoring");
-                e.printStackTrace();
-                LoansResponse loansResponse = new LoansResponse("error while calling scoring.", HttpStatus.INTERNAL_SERVER_ERROR.value());
-                return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
             }
         }
 
-        LoansResponse loansResponse = new LoansResponse("score is successfully calculated", HttpStatus.OK.value());
-        return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+        scoringRequest.setScoreParameterRetailRequest(scoreParameterRetailRequest);
+
+        try {
+            scoringResponseMain = scoringClient.calculateScore(scoringRequest);
+
+            logger.info("score is successfully calculated");
+            LoansResponse loansResponse = new LoansResponse("score is successfully calculated", HttpStatus.OK.value());
+            return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+
+        } catch (Exception e) {
+            logger.error("error while calling scoring");
+            e.printStackTrace();
+            LoansResponse loansResponse = new LoansResponse("error while calling scoring.", HttpStatus.INTERNAL_SERVER_ERROR.value());
+            return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+        }
     }
 
     private Boolean isSalaryAccountWithBank(Long applicationId) {
@@ -1761,7 +1755,7 @@ public class ScoringServiceImpl implements ScoringService {
         }
 
         if (scoringResponseMain.getStatus() == HttpStatus.OK.value()) {
-            logger.error("score is successfully calculated");
+            logger.info("score is successfully calculated");
             LoansResponse loansResponse = new LoansResponse("score is successfully calculated", HttpStatus.OK.value());
             return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
         } else {
@@ -2102,7 +2096,7 @@ public class ScoringServiceImpl implements ScoringService {
             }
 
             if (scoringResponseMain.getStatus() == HttpStatus.OK.value()) {
-                logger.error("score is successfully calculated");
+                logger.info("score is successfully calculated");
                 LoansResponse loansResponse = new LoansResponse("score is successfully calculated", HttpStatus.OK.value());
                 return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
             } else {
@@ -2422,7 +2416,7 @@ public class ScoringServiceImpl implements ScoringService {
             }
 
             if (scoringResponseMain.getStatus() == HttpStatus.OK.value()) {
-                logger.error("score is successfully calculated");
+                logger.info("score is successfully calculated");
                 LoansResponse loansResponse = new LoansResponse("score is successfully calculated", HttpStatus.OK.value());
                 return true;
                 //return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
