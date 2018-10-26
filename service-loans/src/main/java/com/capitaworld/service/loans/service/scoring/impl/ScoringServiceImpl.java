@@ -605,6 +605,9 @@ public class ScoringServiceImpl implements ScoringService {
                 }
         }
 
+        logger.info("Application Id ::"+applicationId);
+        logger.info("FpProductId Id ::"+fpProductId);
+
             scoringRequest.setScoreParameterRetailRequest(scoreParameterRetailRequest);
 
             try {
