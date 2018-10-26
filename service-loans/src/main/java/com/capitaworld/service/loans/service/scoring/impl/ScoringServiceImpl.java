@@ -311,6 +311,7 @@ public class ScoringServiceImpl implements ScoringService {
 
                                 CibilRequest cibilRequest = new CibilRequest();
                                 cibilRequest.setPan(retailApplicantDetail.getPan());
+                                cibilRequest.setApplicationId(applicationId);
 
                                 CibilScoreLogRequest cibilResponse = cibilClient.getCibilScoreByPanCard(cibilRequest);
                                 if (!CommonUtils.isObjectNullOrEmpty(cibilResponse.getScore())) {
@@ -543,6 +544,7 @@ public class ScoringServiceImpl implements ScoringService {
                                     scoreParameterRetailRequest.setDPD_p(true);
                                 } else {
                                     scoreParameterRetailRequest.setDPD_p(false);
+                                    scoreParameterRetailRequest.setDpd(null);
                                 }
                             } catch (Exception e) {
                                 logger.error("error while getting DAY_PAST_DUE_PL parameter from CIBIL client");
@@ -601,25 +603,20 @@ public class ScoringServiceImpl implements ScoringService {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-
         }
+
             scoringRequest.setScoreParameterRetailRequest(scoreParameterRetailRequest);
 
             try {
                 scoringResponseMain = scoringClient.calculateScore(scoringRequest);
-            } catch (Exception e) {
-                logger.error("error while calling scoring");
-                e.printStackTrace();
-                LoansResponse loansResponse = new LoansResponse("error while calling scoring.", HttpStatus.INTERNAL_SERVER_ERROR.value());
-                return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
-            }
 
-            if (scoringResponseMain.getStatus() == HttpStatus.OK.value()) {
                 logger.error("score is successfully calculated");
                 LoansResponse loansResponse = new LoansResponse("score is successfully calculated", HttpStatus.OK.value());
                 return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
-            } else {
+
+            } catch (Exception e) {
                 logger.error("error while calling scoring");
+                e.printStackTrace();
                 LoansResponse loansResponse = new LoansResponse("error while calling scoring.", HttpStatus.INTERNAL_SERVER_ERROR.value());
                 return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
             }
