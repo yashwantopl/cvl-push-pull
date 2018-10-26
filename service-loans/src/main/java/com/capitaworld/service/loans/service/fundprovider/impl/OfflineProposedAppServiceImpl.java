@@ -39,7 +39,7 @@ public class OfflineProposedAppServiceImpl implements OfflineProcessedAppService
 					request.setApplicationId(((BigInteger)obj[0]).longValue());
 					request.setUserId(((BigInteger)obj[1]).longValue());
 					request.setLoanAmount(((BigDecimal)obj[2]).doubleValue());
-					request.setIsCampaignUser(!CommonUtils.isObjectNullOrEmpty(obj[3])?((String)obj[3]).toString() : null);
+					request.setIsCampaignUser(!CommonUtils.isObjectNullOrEmpty(obj[3])?((String)obj[3]).toString() : "Market Place");
 					request.setBranchName(((String)obj[4]).toString());
 					request.setOrganisationName(((String)obj[5]).toString());
 					request.setIsSanctioned(!CommonUtils.isObjectNullOrEmpty(obj[6])?((Boolean)obj[6]).booleanValue():null);
