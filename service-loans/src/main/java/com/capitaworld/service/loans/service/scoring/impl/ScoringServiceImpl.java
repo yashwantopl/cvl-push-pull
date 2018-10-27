@@ -531,7 +531,7 @@ public class ScoringServiceImpl implements ScoringService {
                         case ScoreParameter.Retail.DAY_PAST_DUE_PL: {
                             try {
 
-                                CibilResponse cibilResponse = cibilClient.getDPDLastXMonth(retailApplicantDetail.getPan());
+                                CibilResponse cibilResponse = cibilClient.getDPDLastXMonth(applicationId,retailApplicantDetail.getPan());
                                 if (!CommonUtils.isObjectNullOrEmpty(cibilResponse) && !CommonUtils.isListNullOrEmpty(cibilResponse.getListData())) {
                                     List<Integer> listDPD = (List<Integer>) cibilResponse.getListData();
 
@@ -541,11 +541,10 @@ public class ScoringServiceImpl implements ScoringService {
                                     } else {
                                         scoreParameterRetailRequest.setDpd(0.0);
                                     }
-                                    scoreParameterRetailRequest.setDPD_p(true);
                                 } else {
-                                    scoreParameterRetailRequest.setDPD_p(false);
-                                    scoreParameterRetailRequest.setDpd(null);
+                                    scoreParameterRetailRequest.setDpd(0.0);
                                 }
+                                scoreParameterRetailRequest.setDPD_p(true);
                             } catch (Exception e) {
                                 logger.error("error while getting DAY_PAST_DUE_PL parameter from CIBIL client");
                                 e.printStackTrace();
