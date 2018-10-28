@@ -129,7 +129,7 @@ public class PlTeaserViewResponse {
 	private Object	referenceDetails;
 	
 	private String tenure;
-    
+    private Object nameAsPerItr;
     
     
 	private List<ExistingProductDetailRequest> existingProductDetailRequestList;
@@ -1006,6 +1006,13 @@ public class PlTeaserViewResponse {
 	public void setTenure(String tenure) {
 		this.tenure = tenure;
 	}
+	public Object getNameAsPerItr() {
+		return nameAsPerItr;
+	}
+	public void setNameAsPerItr(Object nameAsPerItr) {
+		this.nameAsPerItr = nameAsPerItr;
+	}
+
 
     
     
