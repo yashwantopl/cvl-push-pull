@@ -546,6 +546,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	private LoanApplicationService loanApplicationService;
 
 	public static final String EMAIL_ADDRESS_FROM = "no-reply@capitaworld.com";
+	
+    @Value("${cw.gst.unit.test}")
+    private String IS_UNIT_TEST;
 
 	@Override
 	public boolean saveOrUpdate(FrameRequest commonRequest, Long userId) throws Exception {
@@ -934,8 +937,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	@Override
 	public List<LoanApplicationRequest> getList(Long userId) throws Exception {
 		try {
+			
+			logger.info("In GetList");
 			List<LoanApplicationMaster> results = loanApplicationRepository.getUserLoans(userId);
 			List<LoanApplicationRequest> requests = new ArrayList<>(results.size());
+			if("N".equals(IS_UNIT_TEST)) {
 			for (LoanApplicationMaster master : results) {
 				LoanApplicationRequest request = new LoanApplicationRequest();
 				BeanUtils.copyProperties(master, request, "name");
@@ -1038,6 +1044,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				}
 				request.setApplicationStatus(applicationStatus);
 			}
+		}
 			return requests;
 		} catch (Exception e) {
 			logger.error("Error while Getting Loan Details:-");
