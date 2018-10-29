@@ -1084,9 +1084,10 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 			corporatePrimaryViewResponse.setCgtmseData(cgtmseDataResp);
 
 		} catch (Exception e) {
-
+			
+			logger.error("Error while calling CGTMSE data");
 			e.printStackTrace();
-			logger.info("Error while getting CGTMSE data");
+			
 		}
 
 		// MCA DATA

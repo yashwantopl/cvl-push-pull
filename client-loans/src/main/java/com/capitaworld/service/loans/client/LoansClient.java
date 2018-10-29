@@ -176,7 +176,11 @@ public class LoansClient {
 	
 	private static final String GET_FINANCIAL_AUTO_FILLED_MASTER = "/ddr/getAutoFilledDetails";
 
-	private static final String CALCULATE_SCORING_CORPORATE = "/score/calculate_score/corporate";
+	private static final String CALCULATE_SCORING = "/score/calculate_score";
+
+	private static final String CALCULATE_SCORING_EXISTING_LIST = "/score/calculate_score/corporate_existing_list";
+
+	private static final String CALCULATE_SCORING_RETAIL_PL_LIST = "/score/calculate_score/retail_pl_list";
 
 	private static final String GET_CMA_DETAIL = "/loan_eligibility/getCMADetailForEligibility/";
 	
@@ -1750,8 +1754,8 @@ public class LoansClient {
 
 
 
-	public LoansResponse calculateScoringCorporate(ScoringRequestLoans scoringRequestLoans) throws Exception {
-		String url = loansBaseUrl.concat(CALCULATE_SCORING_CORPORATE);
+	public LoansResponse calculateScoring(ScoringRequestLoans scoringRequestLoans) throws Exception {
+		String url = loansBaseUrl.concat(CALCULATE_SCORING);
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
@@ -1763,6 +1767,35 @@ public class LoansClient {
 			throw new Exception("Loans service is not available");
 		}
 	}
+
+	public LoansResponse calculateScoringCorporateExistingList(List<ScoringRequestLoans> scoringRequestLoansList) throws Exception {
+		String url = loansBaseUrl.concat(CALCULATE_SCORING_EXISTING_LIST);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<List<ScoringRequestLoans>> entity = new HttpEntity<List<ScoringRequestLoans>>(scoringRequestLoansList,headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new Exception("Loans service is not available");
+		}
+	}
+
+	public LoansResponse calculateScoringRetailPLList(List<ScoringRequestLoans> scoringRequestLoansList) throws Exception {
+		String url = loansBaseUrl.concat(CALCULATE_SCORING_RETAIL_PL_LIST);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<List<ScoringRequestLoans>> entity = new HttpEntity<List<ScoringRequestLoans>>(scoringRequestLoansList,headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new Exception("Loans service is not available");
+		}
+	}
+
 	public CMADetailResponse getCMADetils(Long appId) throws ExcelException {
 		String url = loansBaseUrl.concat(GET_CMA_DETAIL).concat("/"+appId);
 		try {

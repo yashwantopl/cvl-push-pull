@@ -1,5 +1,21 @@
 package com.capitaworld.service.loans.service.fundseeker.retail.impl;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.List;
+
+import com.capitaworld.cibil.api.utility.MultipleJSONObjectHelper;
+import com.capitaworld.service.users.client.UsersClient;
+import com.capitaworld.service.users.model.UserResponse;
+import com.capitaworld.service.users.model.UsersRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.FinancialArrangementsDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.CreditCardsDetail;
@@ -17,20 +33,8 @@ import com.capitaworld.service.loans.repository.fundseeker.retail.CreditCardsDet
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantIncomeRepository;
 import com.capitaworld.service.loans.service.fundseeker.retail.PlRetailApplicantService;
-import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.oneform.enums.CreditCardTypesRetail;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 @Service
 @Transactional
@@ -39,6 +43,9 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
 
     @Autowired
     private RetailApplicantDetailRepository applicantRepository;
+
+    @Autowired
+    private UsersClient usersClient;
 
     @Autowired
     private LoanApplicationRepository loanApplicationRepository;
@@ -100,6 +107,11 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             BeanUtils.copyProperties(applicantDetail, applicantRequest);
             copyAddressFromDomainToRequest(applicantDetail, applicantRequest);
 
+            UserResponse userResponse = usersClient.getEmailMobile(userId);
+            LinkedHashMap<String, Object> lm = (LinkedHashMap<String, Object>)userResponse.getData();
+            UsersRequest request = MultipleJSONObjectHelper.getObjectFromMap(lm,UsersRequest.class);
+            applicantRequest.setMobile(request.getMobile());
+
             List<RetailApplicantIncomeDetail> retailApplicantIncomeDetailList= retailApplicantIncomeRepository.findByApplicationIdAndIsActive(applicationId, true);
             List<RetailApplicantIncomeRequest> retailApplicantIncomeRequestList = new ArrayList<RetailApplicantIncomeRequest>(retailApplicantIncomeDetailList.size());
 
@@ -110,6 +122,68 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
                 retailApplicantIncomeRequestList.add(incomeRequest);
             }
             applicantRequest.setRetailApplicantIncomeRequestList(retailApplicantIncomeRequestList);
+            
+            
+            // financialArrangement data fetched and copy in beanUtil 
+
+            try {
+            	
+            	List<FinancialArrangementsDetail> retailFinancialDetailsList = financialArrangementDetailsRepository.listSecurityCorporateDetailFromAppId(applicationId);
+                
+                if(retailFinancialDetailsList != null) {
+                
+                	List<FinancialArrangementsDetailRequest> retailFinancialDetailsReq= new ArrayList<FinancialArrangementsDetailRequest>(retailFinancialDetailsList.size());
+                    
+                    FinancialArrangementsDetailRequest retailFinReq=null;
+                    
+                    for(FinancialArrangementsDetail finArDetails : retailFinancialDetailsList) {
+                    	 
+                    	retailFinReq =new FinancialArrangementsDetailRequest();
+                    	BeanUtils.copyProperties(finArDetails, retailFinReq);
+                    	retailFinancialDetailsReq.add(retailFinReq);
+                    }
+                    applicantRequest.setFinancialArrangementsDetailRequestsList(retailFinancialDetailsReq);
+                	
+                }else {
+					logger.warn("FinancialArrangementData is Null");
+				}
+                
+			} catch (Exception e) {
+				
+				logger.error("=======>>>>> Error while fetching FinancialArrangementDetails <<<<<<<=========");
+				e.printStackTrace();
+			}
+            
+            
+            //CraditCard Details Fetching
+            
+            try {
+            	
+            	List<CreditCardsDetail> creditCardDetails= creditCardsDetailRepository.listCreditCardsFromAppId(applicationId);
+            	
+            	if(creditCardDetails != null) {
+            	
+            		List<CreditCardsDetailRequest> creditCardDetailsRequest=new ArrayList<CreditCardsDetailRequest>(creditCardDetails.size());
+                    
+                    CreditCardsDetailRequest creditCardDetailReq=null;
+
+                    for(CreditCardsDetail creditCard :creditCardDetails) {
+                    	creditCardDetailReq= new CreditCardsDetailRequest();
+                    	BeanUtils.copyProperties(creditCard, creditCardDetailReq);
+                    	creditCardDetailReq.setCardTypeString(!CommonUtils.isObjectNullOrEmpty(creditCard.getCreditCardTypesId()) ? CreditCardTypesRetail.getById(creditCard.getCreditCardTypesId()).getValue() : "");
+                    	creditCardDetailReq.setOutstandingBalanceString(!CommonUtils.isObjectNullOrEmpty(creditCard.getOutstandingBalance()) ? CommonUtils.convertValue(creditCard.getOutstandingBalance()) : "");
+                    	creditCardDetailsRequest.add(creditCardDetailReq);
+                    }
+                    applicantRequest.setCreditCardsDetailRequestList(creditCardDetailsRequest);
+            	}else {
+					logger.warn("CreditCard Details is Null");
+				}
+			} catch (Exception e) {
+				logger.error("==========>>>>>>> Error while Fetching CreditCardDetails <<<<<<<============");
+				e.printStackTrace();
+			}
+            
+            
 
             return applicantRequest;
         } catch (Exception e) {

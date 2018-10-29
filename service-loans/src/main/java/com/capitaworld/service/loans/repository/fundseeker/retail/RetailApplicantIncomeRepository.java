@@ -21,4 +21,5 @@ public interface RetailApplicantIncomeRepository extends JpaRepository<RetailApp
 
 	@Query("select i.incomeRatio from RetailApplicantIncomeDetail i where i.applicationId.id =:id and i.isActive = true and i.year IN(select MAX(o.year) from RetailApplicantIncomeDetail o where o.applicationId.id =:id and o.isActive = true)")
 	public Double getTotalIncomeOfMaxYearByApplicationId(@Param("id")Long id);
+	
 }
