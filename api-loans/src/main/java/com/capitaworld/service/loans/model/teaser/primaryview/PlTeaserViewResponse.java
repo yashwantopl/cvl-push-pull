@@ -169,17 +169,30 @@ public class PlTeaserViewResponse {
     private String presentAddDist;
     private String presentAddTaluko;
     
-    private Object regAdd;
-    private Object regAddPremise;
-    private Object regAddStreetName;
-    private Object regAddLandmark;
-    private Object regAddCountry;
-    private Object regAddState;
-    private Object regAddCity;
-    private Object regAddPincode;
-    private Object regPinData;
-    private String regAddDist;
-    private String regAddTaluko;
+    private Object permAdd;
+    private Object permAddPremise;
+    private Object permAddStreetName;
+    private Object permAddLandmark;
+    private Object permAddCountry;
+    private Object permAddState;
+    private Object permAddCity;
+    private Object permAddPincode;
+    private Object permAddPinData;
+    private String permAddDist;
+    private String permAddTaluko;
+    
+    private Object offAdd;
+    private Object offAddPremise;
+    private Object offAddStreetName;
+    private Object offAddLandmark;
+    private Object offAddCountry;
+    private Object offAddState;
+    private Object offAddCity;
+    private Object offAddPincode;
+    private Object offPinData;
+    private String offAddDist;
+    private String offAddTaluko;
+    
     
 	public List<?> getMatchesList() {
 		return matchesList;
@@ -850,71 +863,138 @@ public class PlTeaserViewResponse {
 	public void setPresentAddTaluko(String presentAddTaluko) {
 		this.presentAddTaluko = presentAddTaluko;
 	}
-	public Object getRegAdd() {
-		return regAdd;
+	
+	public Object getPermAdd() {
+		return permAdd;
 	}
-	public void setRegAdd(Object regAdd) {
-		this.regAdd = regAdd;
+	public void setPermAdd(Object permAdd) {
+		this.permAdd = permAdd;
 	}
-	public Object getRegAddPremise() {
-		return regAddPremise;
+	public Object getPermAddPremise() {
+		return permAddPremise;
 	}
-	public void setRegAddPremise(Object regAddPremise) {
-		this.regAddPremise = regAddPremise;
+	public void setPermAddPremise(Object permAddPremise) {
+		this.permAddPremise = permAddPremise;
 	}
-	public Object getRegAddStreetName() {
-		return regAddStreetName;
+	public Object getPermAddStreetName() {
+		return permAddStreetName;
 	}
-	public void setRegAddStreetName(Object regAddStreetName) {
-		this.regAddStreetName = regAddStreetName;
+	public void setPermAddStreetName(Object permAddStreetName) {
+		this.permAddStreetName = permAddStreetName;
 	}
-	public Object getRegAddLandmark() {
-		return regAddLandmark;
+	public Object getPermAddLandmark() {
+		return permAddLandmark;
 	}
-	public void setRegAddLandmark(Object regAddLandmark) {
-		this.regAddLandmark = regAddLandmark;
+	public void setPermAddLandmark(Object permAddLandmark) {
+		this.permAddLandmark = permAddLandmark;
 	}
-	public Object getRegAddCountry() {
-		return regAddCountry;
+	public Object getPermAddCountry() {
+		return permAddCountry;
 	}
-	public void setRegAddCountry(Object regAddCountry) {
-		this.regAddCountry = regAddCountry;
+	public void setPermAddCountry(Object permAddCountry) {
+		this.permAddCountry = permAddCountry;
 	}
-	public Object getRegAddState() {
-		return regAddState;
+	public Object getPermAddState() {
+		return permAddState;
 	}
-	public void setRegAddState(Object regAddState) {
-		this.regAddState = regAddState;
+	public void setPermAddState(Object permAddState) {
+		this.permAddState = permAddState;
 	}
-	public Object getRegAddCity() {
-		return regAddCity;
+	public Object getPermAddCity() {
+		return permAddCity;
 	}
-	public void setRegAddCity(Object regAddCity) {
-		this.regAddCity = regAddCity;
+	public void setPermAddCity(Object permAddCity) {
+		this.permAddCity = permAddCity;
 	}
-	public Object getRegAddPincode() {
-		return regAddPincode;
+	public Object getPermAddPincode() {
+		return permAddPincode;
 	}
-	public void setRegAddPincode(Object regAddPincode) {
-		this.regAddPincode = regAddPincode;
+	public void setPermAddPincode(Object permAddPincode) {
+		this.permAddPincode = permAddPincode;
 	}
-	public Object getRegPinData() {
-		return regPinData;
+	public Object getPermAddPinData() {
+		return permAddPinData;
 	}
-	public void setRegPinData(Object regPinData) {
-		this.regPinData = regPinData;
+	public void setPermAddPinData(Object permAddPinData) {
+		this.permAddPinData = permAddPinData;
 	}
-	public String getRegAddDist() {
-		return regAddDist;
+	public String getPermAddDist() {
+		return permAddDist;
 	}
-	public void setRegAddDist(String regAddDist) {
-		this.regAddDist = regAddDist;
+	public void setPermAddDist(String permAddDist) {
+		this.permAddDist = permAddDist;
 	}
-	public String getRegAddTaluko() {
-		return regAddTaluko;
+	public String getPermAddTaluko() {
+		return permAddTaluko;
 	}
-	public void setRegAddTaluko(String regAddTaluko) {
-		this.regAddTaluko = regAddTaluko;
+	public void setPermAddTaluko(String permAddTaluko) {
+		this.permAddTaluko = permAddTaluko;
+	}
+	public Object getOffAdd() {
+		return offAdd;
+	}
+	public void setOffAdd(Object offAdd) {
+		this.offAdd = offAdd;
+	}
+	public Object getOffAddPremise() {
+		return offAddPremise;
+	}
+	public void setOffAddPremise(Object offAddPremise) {
+		this.offAddPremise = offAddPremise;
+	}
+	public Object getOffAddStreetName() {
+		return offAddStreetName;
+	}
+	public void setOffAddStreetName(Object offAddStreetName) {
+		this.offAddStreetName = offAddStreetName;
+	}
+	public Object getOffAddLandmark() {
+		return offAddLandmark;
+	}
+	public void setOffAddLandmark(Object offAddLandmark) {
+		this.offAddLandmark = offAddLandmark;
+	}
+	public Object getOffAddCountry() {
+		return offAddCountry;
+	}
+	public void setOffAddCountry(Object offAddCountry) {
+		this.offAddCountry = offAddCountry;
+	}
+	public Object getOffAddState() {
+		return offAddState;
+	}
+	public void setOffAddState(Object offAddState) {
+		this.offAddState = offAddState;
+	}
+	public Object getOffAddCity() {
+		return offAddCity;
+	}
+	public void setOffAddCity(Object offAddCity) {
+		this.offAddCity = offAddCity;
+	}
+	public Object getOffAddPincode() {
+		return offAddPincode;
+	}
+	public void setOffAddPincode(Object offAddPincode) {
+		this.offAddPincode = offAddPincode;
+	}
+	public Object getOffPinData() {
+		return offPinData;
+	}
+	public void setOffPinData(Object offPinData) {
+		this.offPinData = offPinData;
+	}
+	public String getOffAddDist() {
+		return offAddDist;
+	}
+	public void setOffAddDist(String offAddDist) {
+		this.offAddDist = offAddDist;
+	}
+	public String getOffAddTaluko() {
+		return offAddTaluko;
+	}
+	public void setOffAddTaluko(String offAddTaluko) {
+		this.offAddTaluko = offAddTaluko;
 	}
 	public Object getRetailApplicantDetail() {
 		return retailApplicantDetail;
