@@ -46,6 +46,7 @@ import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.FundProviderDetailsRequest;
+import com.capitaworld.service.users.model.UserOrganisationRequest;
 import com.capitaworld.service.users.model.UserResponse;
 import com.capitaworld.service.users.model.UsersRequest;
 
@@ -3351,6 +3352,40 @@ public class FPAsyncComponent {
 
 			SimpleDateFormat form = new SimpleDateFormat("dd/MM/yyyy");
 			String fpName = proposalresp.get("organisationName") != null ? proposalresp.get("organisationName").toString() : "";
+            if(!CommonUtils.isObjectNullOrEmpty(loanSanctionDomainOld.getIsSanctionedFrom())){
+            	if(loanSanctionDomainOld.getIsSanctionedFrom().equals(CommonUtils.sanctionedFrom.INELIGIBLE_USERS_OFFLINE_APPLICATION)){
+            		
+            		subject = "Congratulations - Your Loan for Manual Application Has Been Sanctioned!!!";
+            		//==================For getting Organisation Name================== 
+        			
+					UserResponse userResponse = null;
+					Map<String, Object> usersResp = null;
+					UserOrganisationRequest organisationRequest = null;
+					String organisationName = null;
+					try {
+						userResponse = userClient.getOrgNameByOrgId(loanSanctionDomainOld.getOrgId());	
+					}
+					catch(Exception e) {
+						logger.info("Exception occured while getting Organisation details by orgId");
+						e.printStackTrace();
+					}
+                    
+					try {
+						if(!CommonUtils.isObjectNullOrEmpty(userResponse)) {
+							usersResp = (Map<String, Object>) userResponse.getData();
+							organisationRequest = MultipleJSONObjectHelper.getObjectFromMap(usersResp,
+									UserOrganisationRequest.class);
+							organisationName = organisationRequest.getOrganisationName(); 
+							fpName = organisationName;
+						}
+					}
+					catch(Exception e) {
+						logger.info("Exception occured while getting Organisation details by orgId");
+						e.printStackTrace();
+					}
+					//============================================================
+    			}
+			}
 			mailParameters.put("fp_name", fpName != null ? fpName : "");
 			mailParameters.put("product_type", productType != null ? productType : "");
 			mailParameters.put("loan_amount",
