@@ -24,7 +24,6 @@ import com.capitaworld.client.eligibility.EligibilityClient;
 import com.capitaworld.connect.api.ConnectResponse;
 import com.capitaworld.connect.api.ConnectStage;
 import com.capitaworld.connect.client.ConnectClient;
-import com.capitaworld.itr.api.model.ITRConnectionResponse;
 import com.capitaworld.itr.client.ITRClient;
 import com.capitaworld.service.analyzer.client.AnalyzerClient;
 import com.capitaworld.service.analyzer.model.common.AnalyzerResponse;
@@ -384,11 +383,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 				}
 			}
 			plTeaserViewResponse.setBankData(datas);
-			// Data data = MultipleJSONObjectHelper.getObjectFromMap((HashMap<String,
-			// Object>) analyzerResponse.getData(), Data.class);
-			// corporatePrimaryViewResponse.setMonthlyDetailList(data.getMonthlyDetailList());
-			// corporatePrimaryViewResponse.setTop5FundReceivedList(data.getTop5FundReceivedList());
-			// corporatePrimaryViewResponse.setTop5FundTransferedList(data.getTop5FundTransferedList());
+		
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.info("Error while getting perfios data");
@@ -490,11 +485,60 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 					plTeaserViewResponse.setDiasablityType(retailFinalInfo.getDisabilityType() != null ? DisabilityType.getById(retailFinalInfo.getDisabilityType()).getValue().toString() : "-");
 					plTeaserViewResponse.setDdoOrganizationType(retailFinalInfo.getDdoOrganizationType() != null ? EmploymentWithPL.getById(retailFinalInfo.getDdoOrganizationType()).getValue().toString() : "-");
 					
+					//permanent address
+					
+					try {
+						if(retailFinalInfo.getPermanentAddress() != null) {
+							
+							PincodeDataResponse pindata=pincodeDateService.getById(retailFinalInfo.getPermanentAddress().getDistrictMappingId());
+							plTeaserViewResponse.setPermAddDist(pindata.getDistrictName());
+							plTeaserViewResponse.setPermAddTaluko(pindata.getTaluka());
+							pindata.getTaluka();
+						}else {
+							logger.warn("District id is null");
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+						// TODO: handle exception
+					}
+					
+					if(retailFinalInfo.getPermanentAddress() != null){
+						
+						plTeaserViewResponse.setPermAdd( (retailFinalInfo.getPermanentAddress().getPremiseNumber()!=null ? (CommonUtils.commaReplace(retailFinalInfo.getPermanentAddress().getPremiseNumber())) :"") + (retailFinalInfo.getPermanentAddress().getStreetName() != null ? (CommonUtils.commaReplace(retailFinalInfo.getPermanentAddress().getStreetName())) : "") + (retailFinalInfo.getPermanentAddress().getLandMark() != null ? (CommonUtils.commaReplace(retailFinalInfo.getPermanentAddress().getLandMark())) : "")+ (plTeaserViewResponse.getPermAddDist() != null ?(CommonUtils.commaReplace(plTeaserViewResponse.getPermAddDist())) :"")+ (plTeaserViewResponse.getPermAddTaluko() != null ? (CommonUtils.commaReplace(plTeaserViewResponse.getPermAddTaluko())) : "") + (retailFinalInfo.getPermanentAddress().getPincode() != null ? (retailFinalInfo.getPermanentAddress().getPincode()) : ""));
+					}
+					
+					
+					//Office address
+					
+					try {
+						if(retailFinalInfo.getOfficeAddress() != null) {
+							
+							PincodeDataResponse pindata=pincodeDateService.getById(retailFinalInfo.getOfficeAddress().getDistrictMappingId());
+							plTeaserViewResponse.setOffAddDist(pindata.getDistrictName());
+							plTeaserViewResponse.setOffAddTaluko(pindata.getTaluka());
+							pindata.getTaluka();
+						}else {
+							logger.warn("District id is null");
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+						// TODO: handle exception
+					}
+					
+					if(retailFinalInfo.getOfficeAddress() != null){
+						
+						plTeaserViewResponse.setOffAdd( (retailFinalInfo.getOfficeAddress().getPremiseNumber()!=null ? (CommonUtils.commaReplace(retailFinalInfo.getOfficeAddress().getPremiseNumber())) :"") + (retailFinalInfo.getOfficeAddress().getStreetName() != null ? (CommonUtils.commaReplace(retailFinalInfo.getOfficeAddress().getStreetName())) : "") + (retailFinalInfo.getOfficeAddress().getLandMark() != null ? (CommonUtils.commaReplace(retailFinalInfo.getOfficeAddress().getLandMark())) : "")+ (plTeaserViewResponse.getOffAddDist() != null ?(CommonUtils.commaReplace(plTeaserViewResponse.getOffAddDist())) :"")+ (plTeaserViewResponse.getOffAddTaluko() != null ? (CommonUtils.commaReplace(plTeaserViewResponse.getOffAddTaluko())) : "") + (retailFinalInfo.getOfficeAddress().getPincode() != null ? (retailFinalInfo.getOfficeAddress().getPincode()) : ""));
+					}
+					
+					
+					
 					plTeaserViewResponse.setFinalDetails(retailFinalInfo);
 					
 				}else {
 					logger.warn("Retail Final Info is Null....");
 				}
+				
+				
 				
 				
 			} catch (Exception e) {
