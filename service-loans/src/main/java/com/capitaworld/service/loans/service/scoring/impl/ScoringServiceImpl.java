@@ -2217,26 +2217,7 @@ public class ScoringServiceImpl implements ScoringService {
 
             ///////// Get Financial Type Id from ITR////////
 
-            Integer financialTypeId = 3;
-
-            ITRConnectionResponse itrConnectionResponse = null;
-            try {
-                itrConnectionResponse = itrClient.getIsUploadAndYearDetails(applicationId);
-
-                if (!CommonUtils.isObjectNullOrEmpty(itrConnectionResponse) && !CommonUtils.isObjectNullOrEmpty(itrConnectionResponse.getData())) {
-                    Map<String, Object> map = (Map<String, Object>) itrConnectionResponse.getData();
-                    ITRBasicDetailsResponse res = MultipleJSONObjectHelper.getObjectFromMap(map, ITRBasicDetailsResponse.class);
-                    if (!CommonUtils.isObjectNullOrEmpty(res) && !CommonUtils.isObjectNullOrEmpty(res.getItrFinancialType())) {
-                        financialTypeId = Integer.valueOf(res.getItrFinancialType());
-                    }
-                }
-            } catch (IOException e) {
-                logger.error("error while getting Financial Type Id from itr response");
-                e.printStackTrace();
-            }
-
-            /////////
-
+            //Integer financialTypeId = 3;
 
           /*  List<ScoringRequestDetail> scoringRequestDetailList = scoringRequestDetailRepository.getScoringRequestDetailByApplicationIdAndIsActive(applicationId);
 
@@ -2258,14 +2239,35 @@ public class ScoringServiceImpl implements ScoringService {
             scoringRequest.setUserId(scoringRequestLoans.getUserId());
             scoringRequest.setBusinessTypeId(ScoreParameter.BusinessType.EXISTING_BUSINESS);
 
-            if (CommonUtils.isObjectNullOrEmpty(scoringRequestLoans.getFinancialTypeIdProduct())) {
-                scoringRequest.setFinancialTypeId(ScoreParameter.FinancialType.THREE_YEAR_ITR);
-            } else {
-                scoringRequest.setFinancialTypeId(scoringRequestLoans.getFinancialTypeIdProduct());
-            }
 
-            logger.info("Financial Type Id ::::::::::::::::================>" + scoringRequest.getFinancialTypeId());
+
             if (CommonUtils.isObjectNullOrEmpty(scoringParameterRequest)) {
+
+
+               /* ITRConnectionResponse itrConnectionResponse = null;
+                try {
+                    itrConnectionResponse = itrClient.getIsUploadAndYearDetails(applicationId);
+
+                    if (!CommonUtils.isObjectNullOrEmpty(itrConnectionResponse) && !CommonUtils.isObjectNullOrEmpty(itrConnectionResponse.getData())) {
+                        Map<String, Object> map = (Map<String, Object>) itrConnectionResponse.getData();
+                        ITRBasicDetailsResponse res = MultipleJSONObjectHelper.getObjectFromMap(map, ITRBasicDetailsResponse.class);
+                        if (!CommonUtils.isObjectNullOrEmpty(res) && !CommonUtils.isObjectNullOrEmpty(res.getItrFinancialType())) {
+                            financialTypeId = Integer.valueOf(res.getItrFinancialType());
+                        }
+                    }
+                } catch (IOException e) {
+                    logger.error("error while getting Financial Type Id from itr response");
+                    e.printStackTrace();
+                }*/
+
+                if (CommonUtils.isObjectNullOrEmpty(scoringRequestLoans.getFinancialTypeIdProduct())) {
+                    scoringRequest.setFinancialTypeId(ScoreParameter.FinancialType.THREE_YEAR_ITR);
+                } else {
+                    scoringRequest.setFinancialTypeId(scoringRequestLoans.getFinancialTypeIdProduct());
+                }
+
+
+                logger.info("Financial Type Id ::::::::::::::::================>" + scoringRequest.getFinancialTypeId());
 
                 scoringParameterRequest=new ScoringParameterRequest();
 
@@ -2340,7 +2342,7 @@ public class ScoringServiceImpl implements ScoringService {
                 AssetsDetails assetsDetailsSY = new AssetsDetails();
                 AssetsDetails assetsDetailsTY = new AssetsDetails();
 
-                if (ScoreParameter.FinancialTypeForITR.THREE_YEAR_ITR == financialTypeId) {
+                if (ScoreParameter.FinancialTypeForITR.THREE_YEAR_ITR == scoringRequest.getFinancialTypeId()) {
                     operatingStatementDetailsTY = operatingStatementDetailsRepository.getOperatingStatementDetails(applicationId, currentYear - 1 + "");
                     operatingStatementDetailsSY = operatingStatementDetailsRepository.getOperatingStatementDetails(applicationId, currentYear - 2 + "");
                     operatingStatementDetailsFY = operatingStatementDetailsRepository.getOperatingStatementDetails(applicationId, currentYear - 3 + "");
@@ -2352,11 +2354,11 @@ public class ScoringServiceImpl implements ScoringService {
                     assetsDetailsTY = assetsDetailsRepository.getAssetsDetails(applicationId, currentYear - 1 + "");
                     assetsDetailsSY = assetsDetailsRepository.getAssetsDetails(applicationId, currentYear - 2 + "");
                     assetsDetailsFY = assetsDetailsRepository.getAssetsDetails(applicationId, currentYear - 3 + "");
-                } else if (ScoreParameter.FinancialTypeForITR.ONE_YEAR_ITR == financialTypeId) {
+                } else if (ScoreParameter.FinancialTypeForITR.ONE_YEAR_ITR == scoringRequest.getFinancialTypeId()) {
                     operatingStatementDetailsTY = operatingStatementDetailsRepository.getOperatingStatementDetails(applicationId, currentYear - 1 + "");
                     liabilitiesDetailsTY = liabilitiesDetailsRepository.getLiabilitiesDetails(applicationId, currentYear - 1 + "");
                     assetsDetailsTY = assetsDetailsRepository.getAssetsDetails(applicationId, currentYear - 1 + "");
-                } else if (ScoreParameter.FinancialTypeForITR.PRESUMPTIVE == financialTypeId) {
+                } else if (ScoreParameter.FinancialTypeForITR.PRESUMPTIVE == scoringRequest.getFinancialTypeId()) {
                     operatingStatementDetailsTY = operatingStatementDetailsRepository.getOperatingStatementDetails(applicationId, currentYear - 1 + "");
                     liabilitiesDetailsTY = liabilitiesDetailsRepository.getLiabilitiesDetails(applicationId, currentYear - 1 + "");
                     assetsDetailsTY = assetsDetailsRepository.getAssetsDetails(applicationId, currentYear - 1 + "");
