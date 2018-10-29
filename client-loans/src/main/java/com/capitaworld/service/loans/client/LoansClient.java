@@ -176,7 +176,7 @@ public class LoansClient {
 	
 	private static final String GET_FINANCIAL_AUTO_FILLED_MASTER = "/ddr/getAutoFilledDetails";
 
-	private static final String CALCULATE_SCORING_CORPORATE = "/calculate_score/corporate_existing";
+	private static final String CALCULATE_SCORING = "/score/calculate_score";
 
 	private static final String CALCULATE_SCORING_EXISTING_LIST = "/score/calculate_score/corporate_existing_list";
 
@@ -1754,8 +1754,8 @@ public class LoansClient {
 
 
 
-	public LoansResponse calculateScoringCorporate(ScoringRequestLoans scoringRequestLoans) throws Exception {
-		String url = loansBaseUrl.concat(CALCULATE_SCORING_CORPORATE);
+	public LoansResponse calculateScoring(ScoringRequestLoans scoringRequestLoans) throws Exception {
+		String url = loansBaseUrl.concat(CALCULATE_SCORING);
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("req_auth", "true");
