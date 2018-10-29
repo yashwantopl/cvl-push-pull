@@ -5,9 +5,11 @@ package com.capitaworld.service.loans.service.teaser.primaryview.impl;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,6 +81,9 @@ import com.capitaworld.service.oneform.enums.PersonalLoanPurpose;
 import com.capitaworld.service.oneform.enums.ReligionRetailMst;
 import com.capitaworld.service.oneform.enums.ResidenceStatusRetailMst;
 import com.capitaworld.service.oneform.enums.ResidentialStatus;
+import com.capitaworld.service.oneform.model.MasterResponse;
+import com.capitaworld.service.oneform.model.OneFormResponse;
+import com.capitaworld.service.oneform.model.SectorIndustryModel;
 import com.capitaworld.service.scoring.ScoringClient;
 import com.capitaworld.service.scoring.exception.ScoringException;
 import com.capitaworld.service.scoring.model.ProposalScoreResponse;
@@ -318,6 +323,55 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 					plRetailApplicantResponse.setCreditCardsDetailRequestList(plRetailApplicantRequest.getCreditCardsDetailRequestList());	
 				}else {
 					logger.warn("CreditCardDetails is null...");
+				}
+				
+				//KEY VERTICAL FUNDING
+				List<Long> keyVerticalFundingId = new ArrayList<>();
+				if (!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getKeyVerticalFunding()))
+					keyVerticalFundingId.add(plRetailApplicantRequest.getKeyVerticalFunding());
+				if (!CommonUtils.isListNullOrEmpty(keyVerticalFundingId)) {
+					try {
+						OneFormResponse oneFormResponse = oneFormClient.getIndustryById(keyVerticalFundingId);
+						List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse.getListData();
+						if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+							MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+						    plTeaserViewResponse.setKeyVericalFunding(masterResponse.getValue());
+						} else {
+							logger.warn("key vertical funding is null");
+						}
+
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+				//KEY VERTICAL SECTOR
+				List<Long> keyVerticalSectorId = new ArrayList<>();
+				if (!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getKeyVerticalSector()))
+					keyVerticalSectorId.add(plRetailApplicantRequest.getKeyVerticalSector());
+				try {
+					OneFormResponse formResponse = oneFormClient.getIndustrySecByMappingId(plRetailApplicantRequest.getKeyVerticalSector());
+					SectorIndustryModel sectorIndustryModel = MultipleJSONObjectHelper.getObjectFromMap((Map) formResponse.getData(), SectorIndustryModel.class);
+					OneFormResponse oneFormResponse = oneFormClient.getSectorById(Arrays.asList(sectorIndustryModel.getSectorId()));
+					List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse.getListData();
+					if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+						MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+						plTeaserViewResponse.setKeyVericalSector(masterResponse.getValue());
+						//map.put("keyVerticalSector", StringEscapeUtils.escapeXml(masterResponse.getValue()));
+					} else {
+						logger.warn("key vertical sector is null");
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				//KEY VERTICAL SUBSECTOR
+				try {
+					if (!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getKeyVerticalSubSector())) {
+						OneFormResponse oneFormResponse = oneFormClient.getSubSecNameByMappingId(plRetailApplicantRequest.getKeyVerticalSubSector());
+						plTeaserViewResponse.setKeyVericalSubsector(oneFormResponse.getData().toString());
+						//map.put("keyVerticalSubSector",StringEscapeUtils.escapeXml());
+					}
+				} catch (Exception e) {
+					logger.warn("key vertical subSector is null ");
 				}
 				
 				
