@@ -678,7 +678,15 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
                 RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.findOneByApplicationIdId(applicationId);
                 if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail)) {
 
-                    paymentRequest.setNameOfEntity(retailApplicantDetail.getNameOfEntity());
+                    String firstName = retailApplicantDetail.getFirstName();
+                    String lastName =retailApplicantDetail.getLastName();
+                    String middleName =retailApplicantDetail.getMiddleName();
+
+                    String fullName = firstName==null?"":firstName;
+                    fullName += middleName==null?"":" "+ middleName;
+                    fullName += lastName==null?"":" "+lastName;
+
+                    paymentRequest.setNameOfEntity(fullName);
                     Address address = new Address();
                     address.setPremiseNumber(retailApplicantDetail.getAddressPremiseName());
                     address.setStreetName(retailApplicantDetail.getAddressStreetName());
