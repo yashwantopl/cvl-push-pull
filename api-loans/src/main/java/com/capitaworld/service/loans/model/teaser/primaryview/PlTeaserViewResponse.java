@@ -193,6 +193,8 @@ public class PlTeaserViewResponse {
     private String offAddDist;
     private String offAddTaluko;
     
+    private Object proposalData;
+    
     
 	public List<?> getMatchesList() {
 		return matchesList;
@@ -1091,6 +1093,12 @@ public class PlTeaserViewResponse {
 	}
 	public void setNameAsPerItr(Object nameAsPerItr) {
 		this.nameAsPerItr = nameAsPerItr;
+	}
+	public Object getProposalData() {
+		return proposalData;
+	}
+	public void setProposalData(Object proposalData) {
+		this.proposalData = proposalData;
 	}
 
 
