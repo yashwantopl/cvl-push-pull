@@ -66,8 +66,11 @@ import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.matchengine.MatchEngineClient;
+import com.capitaworld.service.matchengine.ProposalDetailsClient;
 import com.capitaworld.service.matchengine.model.MatchDisplayResponse;
 import com.capitaworld.service.matchengine.model.MatchRequest;
+import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
+import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
 import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.CastCategory;
 import com.capitaworld.service.oneform.enums.DisabilityType;
@@ -171,6 +174,9 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 	
 	@Autowired
 	private ITRClient itrClient;
+	
+	@Autowired
+	private ProposalDetailsClient proposalDetailsClient;
 	
 
 	@Override
@@ -388,7 +394,25 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 			e.printStackTrace();
 		}
 		
-		
+		//PROPOSAL RESPONSE
+				try {
+					ProposalMappingRequest proposalMappingRequest = new ProposalMappingRequest();
+					proposalMappingRequest.setApplicationId(toApplicationId);
+					proposalMappingRequest.setFpProductId(productMappingId);
+					ProposalMappingResponse proposalMappingResponse= proposalDetailsClient.getActiveProposalDetails(proposalMappingRequest);
+					if(proposalMappingResponse.getData() != null) {
+					
+						plTeaserViewResponse.setProposalData(proposalMappingResponse.getData());
+						
+					}else {
+						logger.info("proposal data is null");
+					}
+					
+					//map.put("proposalResponse", !CommonUtils.isObjectNullOrEmpty(proposalMappingResponse.getData()) ? proposalMappingResponse.getData() : " ");
+				}catch (Exception e) {
+					// TODO: handle exception
+				}
+				
 		//cibil score
 		
 				try {
