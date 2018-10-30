@@ -268,8 +268,12 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             }
 
             // Updating Flag
+            LoanApplicationMaster applicationMaster = loanApplicationRepository.getByIdAndUserId(plRetailApplicantRequest.getApplicationId(), userId);
+
             loanApplicationRepository.setIsApplicantProfileMandatoryFilled(plRetailApplicantRequest.getApplicationId(),
                     finalUserId, plRetailApplicantRequest.getIsApplicantDetailsFilled());
+            applicationMaster.setIsPrimaryLocked(true);
+            loanApplicationRepository.save(applicationMaster);
 
             return true;
 
