@@ -6,6 +6,8 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
+import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,7 +79,10 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 
 	@Autowired
 	private CorporateApplicantDetailRepository corporateApplicantDetailRepository;
-	
+
+    @Autowired
+    private RetailApplicantDetailRepository retailApplicantDetailRepository;
+
 	@Autowired
 	private UsersClient usersClient;
 	
@@ -668,20 +673,39 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 			paymentRequest.setAppointmentDate(loanApplicationMaster.getAppointmentDate());
 			paymentRequest.setAppointmentTime(loanApplicationMaster.getAppointmentTime());
 			paymentRequest.setIsAcceptConsent(loanApplicationMaster.getIsAcceptConsent());
-			CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
-					.findOneByApplicationIdId(applicationId);
-			if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail)) {
-				paymentRequest.setNameOfEntity(corporateApplicantDetail.getOrganisationName());
-				Address address = new Address();
-                address.setPremiseNumber(corporateApplicantDetail.getRegisteredPremiseNumber());
-                address.setStreetName(corporateApplicantDetail.getRegisteredStreetName());
-                address.setLandMark(corporateApplicantDetail.getRegisteredLandMark());
-                address.setCountryId(corporateApplicantDetail.getRegisteredCountryId());
-                address.setStateId(corporateApplicantDetail.getRegisteredStateId());
-                address.setCityId(corporateApplicantDetail.getRegisteredCityId());
-                address.setPincode(corporateApplicantDetail.getRegisteredPincode());
-				paymentRequest.setAddress(address);
-			}
+            if (CommonUtils.BusinessType.RETAIL_PERSONAL_LOAN.getId().equals(loanApplicationMaster.getBusinessTypeId())) {
+
+                RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.findOneByApplicationIdId(applicationId);
+                if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail)) {
+
+                    paymentRequest.setNameOfEntity(retailApplicantDetail.getNameOfEntity());
+                    Address address = new Address();
+                    address.setPremiseNumber(retailApplicantDetail.getAddressPremiseName());
+                    address.setStreetName(retailApplicantDetail.getAddressStreetName());
+                    address.setLandMark(retailApplicantDetail.getAddressLandmark());
+                    address.setCountryId(retailApplicantDetail.getAddressCountry());
+                    address.setStateId(retailApplicantDetail.getAddressState().intValue());
+                    address.setCityId(retailApplicantDetail.getAddressCity());
+                    address.setPincode(retailApplicantDetail.getAddressPincode());
+                    paymentRequest.setAddress(address);
+                }
+            } else {
+
+                CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
+                        .findOneByApplicationIdId(applicationId);
+                if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail)) {
+                    paymentRequest.setNameOfEntity(corporateApplicantDetail.getOrganisationName());
+                    Address address = new Address();
+                    address.setPremiseNumber(corporateApplicantDetail.getRegisteredPremiseNumber());
+                    address.setStreetName(corporateApplicantDetail.getRegisteredStreetName());
+                    address.setLandMark(corporateApplicantDetail.getRegisteredLandMark());
+                    address.setCountryId(corporateApplicantDetail.getRegisteredCountryId());
+                    address.setStateId(corporateApplicantDetail.getRegisteredStateId());
+                    address.setCityId(corporateApplicantDetail.getRegisteredCityId());
+                    address.setPincode(corporateApplicantDetail.getRegisteredPincode());
+                    paymentRequest.setAddress(address);
+                }
+            }
 			try {
 				UserResponse userResponse = usersClient.getEmailMobile(loanApplicationMaster.getUserId());
 				if (!CommonUtils.isObjectNullOrEmpty(userResponse.getData())) {
