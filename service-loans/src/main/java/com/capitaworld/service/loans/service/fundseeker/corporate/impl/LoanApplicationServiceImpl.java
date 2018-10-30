@@ -5427,6 +5427,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		logger.info("Successfully get result");
 		retailLoanObj = new PrimaryPersonalLoanDetail();
 		retailLoanObj.setApplicationStatusMaster(new ApplicationStatusMaster(CommonUtils.ApplicationStatus.OPEN));
+		retailLoanObj.setDdrStatusId(CommonUtils.DdrStatus.OPEN);
 		retailLoanObj.setCreatedBy(userId);
 		retailLoanObj.setCreatedDate(new Date());
 		retailLoanObj.setUserId(userId);
