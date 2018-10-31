@@ -837,9 +837,9 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 							}
 
 							// Country State Value
-							if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getOfficeCountryId())) {
+							if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getAddressCountry())) {
 								nhbsApplicationsResponse.setCountry(CommonDocumentUtils
-										.getCountry(retailApplicantDetail.getOfficeCountryId().longValue(), oneFormClient));
+										.getCountry(retailApplicantDetail.getAddressCountry().longValue(), oneFormClient));
 							}
 						} catch (Exception e) {
 							// TODO: handle exception
