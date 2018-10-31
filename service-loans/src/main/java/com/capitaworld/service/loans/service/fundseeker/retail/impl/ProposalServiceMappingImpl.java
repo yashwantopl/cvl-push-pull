@@ -589,7 +589,8 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					retailProposalDetails.setApplicationId(applicationId);
 					retailProposalDetails.setProposalMappingId(proposalrequest.getId());
 					retailProposalDetails.setFsType(CommonUtils.UserMainType.RETAIL);
-
+					retailProposalDetails.setBusinessTypeId(loanApplicationMaster.getBusinessTypeId());
+					retailProposalDetails.setFpProductid(fpProductId);
 					// get retail loan amount
 
 					String loanAmount = "";
