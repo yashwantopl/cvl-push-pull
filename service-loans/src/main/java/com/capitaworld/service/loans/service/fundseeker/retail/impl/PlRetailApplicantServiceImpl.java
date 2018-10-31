@@ -2,8 +2,13 @@ package com.capitaworld.service.loans.service.fundseeker.retail.impl;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 
+import com.capitaworld.cibil.api.utility.MultipleJSONObjectHelper;
+import com.capitaworld.service.users.client.UsersClient;
+import com.capitaworld.service.users.model.UserResponse;
+import com.capitaworld.service.users.model.UsersRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -38,6 +43,9 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
 
     @Autowired
     private RetailApplicantDetailRepository applicantRepository;
+
+    @Autowired
+    private UsersClient usersClient;
 
     @Autowired
     private LoanApplicationRepository loanApplicationRepository;
@@ -98,6 +106,11 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             PLRetailApplicantRequest applicantRequest = new PLRetailApplicantRequest();
             BeanUtils.copyProperties(applicantDetail, applicantRequest);
             copyAddressFromDomainToRequest(applicantDetail, applicantRequest);
+
+            UserResponse userResponse = usersClient.getEmailMobile(userId);
+            LinkedHashMap<String, Object> lm = (LinkedHashMap<String, Object>)userResponse.getData();
+            UsersRequest request = MultipleJSONObjectHelper.getObjectFromMap(lm,UsersRequest.class);
+            applicantRequest.setMobile(request.getMobile());
 
             List<RetailApplicantIncomeDetail> retailApplicantIncomeDetailList= retailApplicantIncomeRepository.findByApplicationIdAndIsActive(applicationId, true);
             List<RetailApplicantIncomeRequest> retailApplicantIncomeRequestList = new ArrayList<RetailApplicantIncomeRequest>(retailApplicantIncomeDetailList.size());
@@ -255,8 +268,12 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             }
 
             // Updating Flag
+            LoanApplicationMaster applicationMaster = loanApplicationRepository.getByIdAndUserId(plRetailApplicantRequest.getApplicationId(), userId);
+
             loanApplicationRepository.setIsApplicantProfileMandatoryFilled(plRetailApplicantRequest.getApplicationId(),
                     finalUserId, plRetailApplicantRequest.getIsApplicantDetailsFilled());
+            applicationMaster.setIsPrimaryLocked(true);
+            loanApplicationRepository.save(applicationMaster);
 
             return true;
 

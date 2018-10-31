@@ -5,9 +5,11 @@ package com.capitaworld.service.loans.service.teaser.primaryview.impl;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +26,6 @@ import com.capitaworld.client.eligibility.EligibilityClient;
 import com.capitaworld.connect.api.ConnectResponse;
 import com.capitaworld.connect.api.ConnectStage;
 import com.capitaworld.connect.client.ConnectClient;
-import com.capitaworld.itr.api.model.ITRConnectionResponse;
 import com.capitaworld.itr.client.ITRClient;
 import com.capitaworld.service.analyzer.client.AnalyzerClient;
 import com.capitaworld.service.analyzer.model.common.AnalyzerResponse;
@@ -65,11 +66,15 @@ import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.matchengine.MatchEngineClient;
+import com.capitaworld.service.matchengine.ProposalDetailsClient;
 import com.capitaworld.service.matchengine.model.MatchDisplayResponse;
 import com.capitaworld.service.matchengine.model.MatchRequest;
+import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
+import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
 import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.CastCategory;
 import com.capitaworld.service.oneform.enums.DisabilityType;
+import com.capitaworld.service.oneform.enums.EducationStatusRetailMst;
 import com.capitaworld.service.oneform.enums.EmploymentStatusRetailMst;
 import com.capitaworld.service.oneform.enums.EmploymentWithPL;
 import com.capitaworld.service.oneform.enums.Gender;
@@ -80,6 +85,9 @@ import com.capitaworld.service.oneform.enums.PersonalLoanPurpose;
 import com.capitaworld.service.oneform.enums.ReligionRetailMst;
 import com.capitaworld.service.oneform.enums.ResidenceStatusRetailMst;
 import com.capitaworld.service.oneform.enums.ResidentialStatus;
+import com.capitaworld.service.oneform.model.MasterResponse;
+import com.capitaworld.service.oneform.model.OneFormResponse;
+import com.capitaworld.service.oneform.model.SectorIndustryModel;
 import com.capitaworld.service.scoring.ScoringClient;
 import com.capitaworld.service.scoring.exception.ScoringException;
 import com.capitaworld.service.scoring.model.ProposalScoreResponse;
@@ -166,6 +174,9 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 	
 	@Autowired
 	private ITRClient itrClient;
+	
+	@Autowired
+	private ProposalDetailsClient proposalDetailsClient;
 	
 
 	@Override
@@ -266,7 +277,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 				plRetailApplicantResponse.setTotalExperienceYear((plRetailApplicantRequest.getTotalExperienceYear() !=null ? (plRetailApplicantRequest.getTotalExperienceYear() +" year") : "") + " " + (plRetailApplicantRequest.getTotalExperienceMonth() != null ? (plRetailApplicantRequest.getTotalExperienceMonth() +" months") :  "" ));
 				plRetailApplicantResponse.setResidenceType(plRetailApplicantRequest.getResidenceType() != null ? ResidenceStatusRetailMst.getById(plRetailApplicantRequest.getResidenceType()).getValue().toString() : "-");
 				plRetailApplicantResponse.setMaritalStatus(plRetailApplicantRequest.getStatusId() != null ? MaritalStatusMst.getById(plRetailApplicantRequest.getStatusId()).getValue().toString() : "-");
-				
+				plRetailApplicantResponse.setEducationQualificationString(plRetailApplicantRequest.getEducationQualification() != null ? EducationStatusRetailMst.getById(plRetailApplicantRequest.getEducationQualification()).getValue().toString() : "-");
 				//city,State,country
 				
 				plTeaserViewResponse.setCity(CommonDocumentUtils.getCity(plRetailApplicantRequest.getAddressCity(), oneFormClient));
@@ -321,6 +332,55 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 					logger.warn("CreditCardDetails is null...");
 				}
 				
+				//KEY VERTICAL FUNDING
+				List<Long> keyVerticalFundingId = new ArrayList<>();
+				if (!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getKeyVerticalFunding()))
+					keyVerticalFundingId.add(plRetailApplicantRequest.getKeyVerticalFunding());
+				if (!CommonUtils.isListNullOrEmpty(keyVerticalFundingId)) {
+					try {
+						OneFormResponse oneFormResponse = oneFormClient.getIndustryById(keyVerticalFundingId);
+						List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse.getListData();
+						if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+							MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+						    plTeaserViewResponse.setKeyVericalFunding(masterResponse.getValue());
+						} else {
+							logger.warn("key vertical funding is null");
+						}
+
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+				//KEY VERTICAL SECTOR
+				List<Long> keyVerticalSectorId = new ArrayList<>();
+				if (!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getKeyVerticalSector()))
+					keyVerticalSectorId.add(plRetailApplicantRequest.getKeyVerticalSector());
+				try {
+					OneFormResponse formResponse = oneFormClient.getIndustrySecByMappingId(plRetailApplicantRequest.getKeyVerticalSector());
+					SectorIndustryModel sectorIndustryModel = MultipleJSONObjectHelper.getObjectFromMap((Map) formResponse.getData(), SectorIndustryModel.class);
+					OneFormResponse oneFormResponse = oneFormClient.getSectorById(Arrays.asList(sectorIndustryModel.getSectorId()));
+					List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse.getListData();
+					if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+						MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+						plTeaserViewResponse.setKeyVericalSector(masterResponse.getValue());
+						//map.put("keyVerticalSector", StringEscapeUtils.escapeXml(masterResponse.getValue()));
+					} else {
+						logger.warn("key vertical sector is null");
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				//KEY VERTICAL SUBSECTOR
+				try {
+					if (!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getKeyVerticalSubSector())) {
+						OneFormResponse oneFormResponse = oneFormClient.getSubSecNameByMappingId(plRetailApplicantRequest.getKeyVerticalSubSector());
+						plTeaserViewResponse.setKeyVericalSubsector(oneFormResponse.getData().toString());
+						//map.put("keyVerticalSubSector",StringEscapeUtils.escapeXml());
+					}
+				} catch (Exception e) {
+					logger.warn("key vertical subSector is null ");
+				}
+				
 				
 				plTeaserViewResponse.setRetailApplicantDetail(plRetailApplicantResponse);
 				
@@ -334,7 +394,25 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 			e.printStackTrace();
 		}
 		
-		
+		//PROPOSAL RESPONSE
+				try {
+					ProposalMappingRequest proposalMappingRequest = new ProposalMappingRequest();
+					proposalMappingRequest.setApplicationId(toApplicationId);
+					proposalMappingRequest.setFpProductId(productMappingId);
+					ProposalMappingResponse proposalMappingResponse= proposalDetailsClient.getActiveProposalDetails(proposalMappingRequest);
+					if(proposalMappingResponse.getData() != null) {
+					
+						plTeaserViewResponse.setProposalData(proposalMappingResponse.getData());
+						
+					}else {
+						logger.info("proposal data is null");
+					}
+					
+					//map.put("proposalResponse", !CommonUtils.isObjectNullOrEmpty(proposalMappingResponse.getData()) ? proposalMappingResponse.getData() : " ");
+				}catch (Exception e) {
+					// TODO: handle exception
+				}
+				
 		//cibil score
 		
 				try {
@@ -384,11 +462,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 				}
 			}
 			plTeaserViewResponse.setBankData(datas);
-			// Data data = MultipleJSONObjectHelper.getObjectFromMap((HashMap<String,
-			// Object>) analyzerResponse.getData(), Data.class);
-			// corporatePrimaryViewResponse.setMonthlyDetailList(data.getMonthlyDetailList());
-			// corporatePrimaryViewResponse.setTop5FundReceivedList(data.getTop5FundReceivedList());
-			// corporatePrimaryViewResponse.setTop5FundTransferedList(data.getTop5FundTransferedList());
+		
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.info("Error while getting perfios data");
@@ -490,11 +564,60 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 					plTeaserViewResponse.setDiasablityType(retailFinalInfo.getDisabilityType() != null ? DisabilityType.getById(retailFinalInfo.getDisabilityType()).getValue().toString() : "-");
 					plTeaserViewResponse.setDdoOrganizationType(retailFinalInfo.getDdoOrganizationType() != null ? EmploymentWithPL.getById(retailFinalInfo.getDdoOrganizationType()).getValue().toString() : "-");
 					
+					//permanent address
+					
+					try {
+						if(retailFinalInfo.getPermanentAddress() != null) {
+							
+							PincodeDataResponse pindata=pincodeDateService.getById(retailFinalInfo.getPermanentAddress().getDistrictMappingId());
+							plTeaserViewResponse.setPermAddDist(pindata.getDistrictName());
+							plTeaserViewResponse.setPermAddTaluko(pindata.getTaluka());
+							pindata.getTaluka();
+						}else {
+							logger.warn("District id is null");
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+						// TODO: handle exception
+					}
+					
+					if(retailFinalInfo.getPermanentAddress() != null){
+						
+						plTeaserViewResponse.setPermAdd( (retailFinalInfo.getPermanentAddress().getPremiseNumber()!=null ? (CommonUtils.commaReplace(retailFinalInfo.getPermanentAddress().getPremiseNumber())) :"") + (retailFinalInfo.getPermanentAddress().getStreetName() != null ? (CommonUtils.commaReplace(retailFinalInfo.getPermanentAddress().getStreetName())) : "") + (retailFinalInfo.getPermanentAddress().getLandMark() != null ? (CommonUtils.commaReplace(retailFinalInfo.getPermanentAddress().getLandMark())) : "")+ (plTeaserViewResponse.getPermAddDist() != null ?(CommonUtils.commaReplace(plTeaserViewResponse.getPermAddDist())) :"")+ (plTeaserViewResponse.getPermAddTaluko() != null ? (CommonUtils.commaReplace(plTeaserViewResponse.getPermAddTaluko())) : "") + (retailFinalInfo.getPermanentAddress().getPincode() != null ? (retailFinalInfo.getPermanentAddress().getPincode()) : ""));
+					}
+					
+					
+					//Office address
+					
+					try {
+						if(retailFinalInfo.getOfficeAddress() != null) {
+							
+							PincodeDataResponse pindata=pincodeDateService.getById(retailFinalInfo.getOfficeAddress().getDistrictMappingId());
+							plTeaserViewResponse.setOffAddDist(pindata.getDistrictName());
+							plTeaserViewResponse.setOffAddTaluko(pindata.getTaluka());
+							pindata.getTaluka();
+						}else {
+							logger.warn("District id is null");
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+						// TODO: handle exception
+					}
+					
+					if(retailFinalInfo.getOfficeAddress() != null){
+						
+						plTeaserViewResponse.setOffAdd( (retailFinalInfo.getOfficeAddress().getPremiseNumber()!=null ? (CommonUtils.commaReplace(retailFinalInfo.getOfficeAddress().getPremiseNumber())) :"") + (retailFinalInfo.getOfficeAddress().getStreetName() != null ? (CommonUtils.commaReplace(retailFinalInfo.getOfficeAddress().getStreetName())) : "") + (retailFinalInfo.getOfficeAddress().getLandMark() != null ? (CommonUtils.commaReplace(retailFinalInfo.getOfficeAddress().getLandMark())) : "")+ (plTeaserViewResponse.getOffAddDist() != null ?(CommonUtils.commaReplace(plTeaserViewResponse.getOffAddDist())) :"")+ (plTeaserViewResponse.getOffAddTaluko() != null ? (CommonUtils.commaReplace(plTeaserViewResponse.getOffAddTaluko())) : "") + (retailFinalInfo.getOfficeAddress().getPincode() != null ? (retailFinalInfo.getOfficeAddress().getPincode()) : ""));
+					}
+					
+					
+					
 					plTeaserViewResponse.setFinalDetails(retailFinalInfo);
 					
 				}else {
 					logger.warn("Retail Final Info is Null....");
 				}
+				
+				
 				
 				
 			} catch (Exception e) {

@@ -42,7 +42,7 @@ public class ScoringController {
     private ScoringService scoringService;
 
 
-    @RequestMapping(value = "/calculate_score/corporate", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/calculate_score", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LoansResponse> calculateScore(@RequestBody ScoringRequestLoans scoringRequestLoans) {
 
         if (CommonUtils.isObjectNullOrEmpty(scoringRequestLoans)
@@ -57,6 +57,19 @@ public class ScoringController {
                     HttpStatus.OK);
         }
         return scoringService.calculateScoring(scoringRequestLoans);
+    }
+
+
+    @RequestMapping(value = "/calculate_score/corporate_existing_list", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LoansResponse> calculateScoreExisting(@RequestBody List<ScoringRequestLoans> scoringRequestLoansList) {
+
+        return scoringService.calculateExistingBusinessScoringList(scoringRequestLoansList);
+    }
+
+    @RequestMapping(value = "/calculate_score/retail_pl_list", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LoansResponse> calculateScoreRetailPL(@RequestBody List<ScoringRequestLoans> scoringRequestLoansList) {
+
+        return scoringService.calculateRetailPersonalLoanScoringList(scoringRequestLoansList);
     }
 
     @RequestMapping(value = "/calculate_score/corporate/test", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
