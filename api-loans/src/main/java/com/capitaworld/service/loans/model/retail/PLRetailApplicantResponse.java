@@ -8,7 +8,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
-public class PLRetailApplicantRequest implements Serializable {
+public class PLRetailApplicantResponse implements Serializable {
     // Common Fields
     private Long id;
     private Long clientId;
@@ -18,37 +18,37 @@ public class PLRetailApplicantRequest implements Serializable {
     * Profile Fields
     * */
     private Integer titleId;
-    private String firstName;
-    private String middleName;
-    private String lastName;
-    private Integer genderId;
+    private String fullName;
+    private String gender;
     private String pan;
     private String aadharNumber;
     private String mobile;
     private Integer educationQualification;
-    private Integer statusId;
-    private Integer residenceType;
+    private String educationQualificationString;
+    private Object statusId;
+    private String residenceType;
     private Date birthDate;
-    private Integer employmentType;
-    private Integer employmentWith;
-    private Integer centralGovId;
-    private Integer stateGovId;
-    private Integer psuId;
-    private Integer corporateId;
-    private Integer eduInstId;
+    private String employmentType;
+    private String employmentWith;
+    private String centralGov;
+    private String stateGov;
+    private String psu;
+    private String corporate;
+    private String eduInst;
     private String nameOfEmployer;
-    private Integer employmentStatus;
+    private String employmentStatus;
     private Integer currentJobMonth;
-    private Integer currentJobYear;
+    private String currentJobYear;
     private Integer totalExperienceMonth;
-    private Integer totalExperienceYear;
-    private Long keyVerticalFunding;
-    private Long keyVerticalSector;
-    private Long keyVerticalSubSector;
+    private String totalExperienceYear;
+    private String keyVerticalFunding;
+    private String keyVerticalSector;
+    private String keyVerticalSubSector;
     private Address contactAddress;
     private String contactNo;
     private String email;
-    private String companyName;
+    
+    private String maritalStatus;
 
     private List<RetailApplicantIncomeRequest> retailApplicantIncomeRequestList;
     /*
@@ -71,12 +71,8 @@ public class PLRetailApplicantRequest implements Serializable {
     /*
     * Final
     * */
-    
-    private Long addressCity;
-    private Long addressCountry;
-    private Long addressState;
 
-    public PLRetailApplicantRequest() {
+    public PLRetailApplicantResponse() {
 
     }
 
@@ -112,39 +108,18 @@ public class PLRetailApplicantRequest implements Serializable {
         this.titleId = titleId;
     }
 
-    public String getFirstName() {
-        return firstName;
-    }
+   
+   
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
+    public String getFullName() {
+		return fullName;
+	}
 
-    public String getMiddleName() {
-        return middleName;
-    }
+	public void setFullName(String fullName) {
+		this.fullName = fullName;
+	}
 
-    public void setMiddleName(String middleName) {
-        this.middleName = middleName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public Integer getStatusId() {
-        return statusId;
-    }
-
-    public void setStatusId(Integer statusId) {
-        this.statusId = statusId;
-    }
-
-    public String getPan() {
+	public String getPan() {
         return pan;
     }
 
@@ -178,14 +153,7 @@ public class PLRetailApplicantRequest implements Serializable {
         this.contactNo = contactNo;
     }
 
-    public Integer getGenderId() {
-        return genderId;
-    }
-
-    public void setGenderId(Integer genderId) {
-        this.genderId = genderId;
-    }
-
+   
     public String getMobile() {
         return mobile;
     }
@@ -202,13 +170,7 @@ public class PLRetailApplicantRequest implements Serializable {
         this.educationQualification = educationQualification;
     }
 
-    public Integer getResidenceType() {
-        return residenceType;
-    }
-
-    public void setResidenceType(Integer residenceType) {
-        this.residenceType = residenceType;
-    }
+  
 
     public Date getBirthDate() {
         return birthDate;
@@ -218,61 +180,7 @@ public class PLRetailApplicantRequest implements Serializable {
         this.birthDate = birthDate;
     }
 
-    public Integer getEmploymentType() {
-        return employmentType;
-    }
-
-    public void setEmploymentType(Integer employmentType) {
-        this.employmentType = employmentType;
-    }
-
-    public Integer getEmploymentWith() {
-        return employmentWith;
-    }
-
-    public void setEmploymentWith(Integer employmentWith) {
-        this.employmentWith = employmentWith;
-    }
-
-    public Integer getCentralGovId() {
-        return centralGovId;
-    }
-
-    public void setCentralGovId(Integer centralGovId) {
-        this.centralGovId = centralGovId;
-    }
-
-    public Integer getStateGovId() {
-        return stateGovId;
-    }
-
-    public void setStateGovId(Integer stateGovId) {
-        this.stateGovId = stateGovId;
-    }
-
-    public Integer getPsuId() {
-        return psuId;
-    }
-
-    public void setPsuId(Integer psuId) {
-        this.psuId = psuId;
-    }
-
-    public Integer getCorporateId() {
-        return corporateId;
-    }
-
-    public void setCorporateId(Integer corporateId) {
-        this.corporateId = corporateId;
-    }
-
-    public Integer getEduInstId() {
-        return eduInstId;
-    }
-
-    public void setEduInstId(Integer eduInstId) {
-        this.eduInstId = eduInstId;
-    }
+   
 
     public String getNameOfEmployer() {
         return nameOfEmployer;
@@ -282,14 +190,7 @@ public class PLRetailApplicantRequest implements Serializable {
         this.nameOfEmployer = nameOfEmployer;
     }
 
-    public Integer getEmploymentStatus() {
-        return employmentStatus;
-    }
-
-    public void setEmploymentStatus(Integer employmentStatus) {
-        this.employmentStatus = employmentStatus;
-    }
-
+  
     public Integer getCurrentJobMonth() {
         return currentJobMonth;
     }
@@ -298,15 +199,17 @@ public class PLRetailApplicantRequest implements Serializable {
         this.currentJobMonth = currentJobMonth;
     }
 
-    public Integer getCurrentJobYear() {
-        return currentJobYear;
-    }
+    
 
-    public void setCurrentJobYear(Integer currentJobYear) {
-        this.currentJobYear = currentJobYear;
-    }
+    public String getCurrentJobYear() {
+		return currentJobYear;
+	}
 
-    public Integer getTotalExperienceMonth() {
+	public void setCurrentJobYear(String currentJobYear) {
+		this.currentJobYear = currentJobYear;
+	}
+
+	public Integer getTotalExperienceMonth() {
         return totalExperienceMonth;
     }
 
@@ -314,39 +217,18 @@ public class PLRetailApplicantRequest implements Serializable {
         this.totalExperienceMonth = totalExperienceMonth;
     }
 
-    public Integer getTotalExperienceYear() {
-        return totalExperienceYear;
-    }
+   
 
-    public void setTotalExperienceYear(Integer totalExperienceYear) {
-        this.totalExperienceYear = totalExperienceYear;
-    }
+   
+    public String getTotalExperienceYear() {
+		return totalExperienceYear;
+	}
 
-    public Long getKeyVerticalFunding() {
-        return keyVerticalFunding;
-    }
+	public void setTotalExperienceYear(String totalExperienceYear) {
+		this.totalExperienceYear = totalExperienceYear;
+	}
 
-    public void setKeyVerticalFunding(Long keyVerticalFunding) {
-        this.keyVerticalFunding = keyVerticalFunding;
-    }
-
-    public Long getKeyVerticalSector() {
-        return keyVerticalSector;
-    }
-
-    public void setKeyVerticalSector(Long keyVerticalSector) {
-        this.keyVerticalSector = keyVerticalSector;
-    }
-
-    public Long getKeyVerticalSubSector() {
-        return keyVerticalSubSector;
-    }
-
-    public void setKeyVerticalSubSector(Long keyVerticalSubSector) {
-        this.keyVerticalSubSector = keyVerticalSubSector;
-    }
-
-    public String getEmail() {
+	public String getEmail() {
         return email;
     }
 
@@ -442,37 +324,135 @@ public class PLRetailApplicantRequest implements Serializable {
 		this.monthlyIncomeString = monthlyIncomeString;
 	}
 
-    public String getCompanyName() {
-        return companyName;
-    }
+	
 
-    public void setCompanyName(String companyName) {
-        this.companyName = companyName;
-    }
-
-	public Long getAddressCity() {
-		return addressCity;
+	public String getGender() {
+		return gender;
 	}
 
-	public void setAddressCity(Long addressCity) {
-		this.addressCity = addressCity;
+	public void setGender(String gender) {
+		this.gender = gender;
 	}
 
-	public Long getAddressCountry() {
-		return addressCountry;
+	public Object getStatusId() {
+		return statusId;
 	}
 
-	public void setAddressCountry(Long addressCountry) {
-		this.addressCountry = addressCountry;
+	public void setStatusId(Object statusId) {
+		this.statusId = statusId;
 	}
 
-	public Long getAddressState() {
-		return addressState;
+	public String getResidenceType() {
+		return residenceType;
 	}
 
-	public void setAddressState(Long addressState) {
-		this.addressState = addressState;
+	public void setResidenceType(String residenceType) {
+		this.residenceType = residenceType;
+	}
+
+	public String getEmploymentType() {
+		return employmentType;
+	}
+
+	public void setEmploymentType(String employmentType) {
+		this.employmentType = employmentType;
+	}
+
+	public String getEmploymentWith() {
+		return employmentWith;
+	}
+
+	public void setEmploymentWith(String employmentWith) {
+		this.employmentWith = employmentWith;
+	}
+
+	public String getCentralGov() {
+		return centralGov;
+	}
+
+	public void setCentralGov(String centralGov) {
+		this.centralGov = centralGov;
+	}
+
+	public String getStateGov() {
+		return stateGov;
+	}
+
+	public void setStateGov(String stateGov) {
+		this.stateGov = stateGov;
+	}
+
+	public String getPsu() {
+		return psu;
+	}
+
+	public void setPsu(String psu) {
+		this.psu = psu;
+	}
+
+	public String getCorporate() {
+		return corporate;
+	}
+
+	public void setCorporate(String corporate) {
+		this.corporate = corporate;
+	}
+
+	public String getEduInst() {
+		return eduInst;
+	}
+
+	public void setEduInst(String eduInst) {
+		this.eduInst = eduInst;
+	}
+
+	public String getEmploymentStatus() {
+		return employmentStatus;
+	}
+
+	public void setEmploymentStatus(String employmentStatus) {
+		this.employmentStatus = employmentStatus;
+	}
+
+	public String getKeyVerticalFunding() {
+		return keyVerticalFunding;
+	}
+
+	public void setKeyVerticalFunding(String keyVerticalFunding) {
+		this.keyVerticalFunding = keyVerticalFunding;
+	}
+
+	public String getKeyVerticalSector() {
+		return keyVerticalSector;
+	}
+
+	public void setKeyVerticalSector(String keyVerticalSector) {
+		this.keyVerticalSector = keyVerticalSector;
+	}
+
+	public String getKeyVerticalSubSector() {
+		return keyVerticalSubSector;
+	}
+
+	public void setKeyVerticalSubSector(String keyVerticalSubSector) {
+		this.keyVerticalSubSector = keyVerticalSubSector;
+	}
+
+	public String getMaritalStatus() {
+		return maritalStatus;
+	}
+
+	public void setMaritalStatus(String maritalStatus) {
+		this.maritalStatus = maritalStatus;
+	}
+
+	public String getEducationQualificationString() {
+		return educationQualificationString;
+	}
+
+	public void setEducationQualificationString(String educationQualificationString) {
+		this.educationQualificationString = educationQualificationString;
 	}
     
-    
+	
 }
