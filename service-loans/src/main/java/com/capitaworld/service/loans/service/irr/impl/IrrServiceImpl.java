@@ -371,681 +371,125 @@ public class IrrServiceImpl implements IrrService{
 		financialInputRequest.setYear(currentYear-1);
 
 		financialInputRequest.setRatioAnalysisFyFullDate("31-March-"+(currentYear-1));
-		operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStatementDetails(aplicationId, currentYear-1+"");
+		
+		try {
+			
+			operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStatementDetails(aplicationId, currentYear-1+"");
+			if(operatingStatementDetails != null) {
+				
+				log.info("App Id::"+aplicationId);
+				log.info("currentYear-1::"+(currentYear-1));
+				log.info("operatingStatementDetails.getDepreciation()::"+operatingStatementDetails.getDepreciation());
 
-		log.info("App Id::"+aplicationId);
-		log.info("currentYear-1::"+(currentYear-1));
-		log.info("operatingStatementDetails.getDepreciation()::"+operatingStatementDetails.getDepreciation());
 
 
+				if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails)){
+					operatingStatementDetails = new OperatingStatementDetails();
+				}
+				if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getDomesticSales()))
+					operatingStatementDetails.setDomesticSales(0.0);
+				if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getDomesticSales()))
+					operatingStatementDetails.setExportSales(0.0);		
+				financialInputRequest.setGrossSalesFy((operatingStatementDetails.getDomesticSales()+operatingStatementDetails.getExportSales()) * denom);
+				
+				if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getLessExciseDuty()))
+					operatingStatementDetails.setLessExciseDuty(0.0);
+				if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getDeductOtherItems()))
+					operatingStatementDetails.setDeductOtherItems(0.0);	
+				financialInputRequest.setLessExciseDuityFy((operatingStatementDetails.getLessExciseDuty()+operatingStatementDetails.getDeductOtherItems()) * denom);
+				
+				if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getAddOperatingStock()))
+					operatingStatementDetails.setAddOperatingStock(0.0);
+				if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getDeductStockInProcess()))
+					operatingStatementDetails.setDeductStockInProcess(0.0);	
+				if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getAddOperatingStockFg()))
+					operatingStatementDetails.setAddOperatingStockFg(0.0);
+				if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getDeductClStockFg()))
+					operatingStatementDetails.setDeductClStockFg(0.0);	
+				financialInputRequest.setIncreaseDecreaseStockFy(((operatingStatementDetails.getAddOperatingStock()-operatingStatementDetails.getDeductStockInProcess()) + (operatingStatementDetails.getAddOperatingStockFg()-operatingStatementDetails.getDeductClStockFg())) * denom);
+				
+				
+				if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getRawMaterials()))
+					operatingStatementDetails.setRawMaterials(0.0);
+				if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getOtherSpares()))
+					operatingStatementDetails.setOtherSpares(0.0);	
+				financialInputRequest.setRawMaterialConsumedFy((operatingStatementDetails.getRawMaterials()+operatingStatementDetails.getOtherSpares()) * denom);
+				
+				
+				if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getPowerAndFuel()))
+					operatingStatementDetails.setPowerAndFuel(0.0);
+				financialInputRequest.setPowerAndFuelCostFy(operatingStatementDetails.getPowerAndFuel()  * denom);
+				
+				if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getDirectLabour()))
+					operatingStatementDetails.setDirectLabour(0.0);
+				financialInputRequest.setEmployeeCostFy(operatingStatementDetails.getDirectLabour() * denom);
 
-		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails)){
-			operatingStatementDetails = new OperatingStatementDetails();
+				if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getSellingGenlAdmnExpenses()))
+					operatingStatementDetails.setSellingGenlAdmnExpenses(0.0);
+				financialInputRequest.setGeneralAndAdminExpeFy(operatingStatementDetails.getSellingGenlAdmnExpenses() * denom);
+				
+				if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getSellingAndDistributionExpenses()))
+					operatingStatementDetails.setSellingAndDistributionExpenses(0.0);
+				financialInputRequest.setSellingAndDistriExpeFy(operatingStatementDetails.getSellingAndDistributionExpenses() * denom);
+				
+				if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getExpensesAmortised()))
+					operatingStatementDetails.setExpensesAmortised(0.0);
+				financialInputRequest.setLessExpeCapitaFy(operatingStatementDetails.getExpensesAmortised() * denom);
+				
+				if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getOtherMfgExpenses()))
+					operatingStatementDetails.setOtherMfgExpenses(0.0);
+				financialInputRequest.setMiscelExpeFy(operatingStatementDetails.getOtherMfgExpenses() * denom);
+				
+				if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getAddOtherRevenueIncome()))
+					operatingStatementDetails.setAddOtherRevenueIncome(0.0);
+				financialInputRequest.setOtherIncomeFy(operatingStatementDetails.getAddOtherRevenueIncome() * denom);
+				
+				if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getInterest()))
+					operatingStatementDetails.setInterest(0.0);
+				financialInputRequest.setInterestFy(operatingStatementDetails.getInterest() * denom);
+				
+				if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getDepreciation()))
+					operatingStatementDetails.setDepreciation(0.0);
+				financialInputRequest.setDepriciationFy(operatingStatementDetails.getDepreciation() * denom);
+				
+				if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getNetofNonOpIncomeOrExpenses()))
+					operatingStatementDetails.setNetofNonOpIncomeOrExpenses(0.0);
+				financialInputRequest.setExceptionalIncomeFy(operatingStatementDetails.getNetofNonOpIncomeOrExpenses() * denom);
+				
+				if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getProvisionForTaxes()))
+					operatingStatementDetails.setProvisionForTaxes(0.0);
+				if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getProvisionForDeferredTax()))
+					operatingStatementDetails.setProvisionForDeferredTax(0.0);
+				financialInputRequest.setProvisionForTaxFy((operatingStatementDetails.getProvisionForTaxes() + operatingStatementDetails.getProvisionForDeferredTax()) * denom);
+		        
+				if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getOtherIncomeNeedTocCheckOp()))
+					operatingStatementDetails.setOtherIncomeNeedTocCheckOp(0.0);
+				financialInputRequest.setOtherIncomeNeedTocCheckOpFy(operatingStatementDetails.getOtherIncomeNeedTocCheckOp() * denom);
+				
+				if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getEquityDeividendPaidAmt()))
+					operatingStatementDetails.setEquityDeividendPaidAmt(0.0);
+				financialInputRequest.setDividendPayOutFy(operatingStatementDetails.getEquityDeividendPaidAmt() * denom);
+				
+			}else {
+				log.error("first year os is null ");
+			}
+			
+			
+		} catch (Exception e) {
+			
+			log.error("error while calculate first year financial data OS");
+			e.printStackTrace();
+			
 		}
-		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getDomesticSales()))
-			operatingStatementDetails.setDomesticSales(0.0);
-		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getDomesticSales()))
-			operatingStatementDetails.setExportSales(0.0);		
-		financialInputRequest.setGrossSalesFy((operatingStatementDetails.getDomesticSales()+operatingStatementDetails.getExportSales()) * denom);
 		
-		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getLessExciseDuty()))
-			operatingStatementDetails.setLessExciseDuty(0.0);
-		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getDeductOtherItems()))
-			operatingStatementDetails.setDeductOtherItems(0.0);	
-		financialInputRequest.setLessExciseDuityFy((operatingStatementDetails.getLessExciseDuty()+operatingStatementDetails.getDeductOtherItems()) * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getAddOperatingStock()))
-			operatingStatementDetails.setAddOperatingStock(0.0);
-		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getDeductStockInProcess()))
-			operatingStatementDetails.setDeductStockInProcess(0.0);	
-		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getAddOperatingStockFg()))
-			operatingStatementDetails.setAddOperatingStockFg(0.0);
-		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getDeductClStockFg()))
-			operatingStatementDetails.setDeductClStockFg(0.0);	
-		financialInputRequest.setIncreaseDecreaseStockFy(((operatingStatementDetails.getAddOperatingStock()-operatingStatementDetails.getDeductStockInProcess()) + (operatingStatementDetails.getAddOperatingStockFg()-operatingStatementDetails.getDeductClStockFg())) * denom);
-		
-		
-		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getRawMaterials()))
-			operatingStatementDetails.setRawMaterials(0.0);
-		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getOtherSpares()))
-			operatingStatementDetails.setOtherSpares(0.0);	
-		financialInputRequest.setRawMaterialConsumedFy((operatingStatementDetails.getRawMaterials()+operatingStatementDetails.getOtherSpares()) * denom);
-		
-		
-		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getPowerAndFuel()))
-			operatingStatementDetails.setPowerAndFuel(0.0);
-		financialInputRequest.setPowerAndFuelCostFy(operatingStatementDetails.getPowerAndFuel()  * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getDirectLabour()))
-			operatingStatementDetails.setDirectLabour(0.0);
-		financialInputRequest.setEmployeeCostFy(operatingStatementDetails.getDirectLabour() * denom);
 
-		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getSellingGenlAdmnExpenses()))
-			operatingStatementDetails.setSellingGenlAdmnExpenses(0.0);
-		financialInputRequest.setGeneralAndAdminExpeFy(operatingStatementDetails.getSellingGenlAdmnExpenses() * denom);
 		
-		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getSellingAndDistributionExpenses()))
-			operatingStatementDetails.setSellingAndDistributionExpenses(0.0);
-		financialInputRequest.setSellingAndDistriExpeFy(operatingStatementDetails.getSellingAndDistributionExpenses() * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getExpensesAmortised()))
-			operatingStatementDetails.setExpensesAmortised(0.0);
-		financialInputRequest.setLessExpeCapitaFy(operatingStatementDetails.getExpensesAmortised() * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getOtherMfgExpenses()))
-			operatingStatementDetails.setOtherMfgExpenses(0.0);
-		financialInputRequest.setMiscelExpeFy(operatingStatementDetails.getOtherMfgExpenses() * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getAddOtherRevenueIncome()))
-			operatingStatementDetails.setAddOtherRevenueIncome(0.0);
-		financialInputRequest.setOtherIncomeFy(operatingStatementDetails.getAddOtherRevenueIncome() * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getInterest()))
-			operatingStatementDetails.setInterest(0.0);
-		financialInputRequest.setInterestFy(operatingStatementDetails.getInterest() * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getDepreciation()))
-			operatingStatementDetails.setDepreciation(0.0);
-		financialInputRequest.setDepriciationFy(operatingStatementDetails.getDepreciation() * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getNetofNonOpIncomeOrExpenses()))
-			operatingStatementDetails.setNetofNonOpIncomeOrExpenses(0.0);
-		financialInputRequest.setExceptionalIncomeFy(operatingStatementDetails.getNetofNonOpIncomeOrExpenses() * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getProvisionForTaxes()))
-			operatingStatementDetails.setProvisionForTaxes(0.0);
-		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getProvisionForDeferredTax()))
-			operatingStatementDetails.setProvisionForDeferredTax(0.0);
-		financialInputRequest.setProvisionForTaxFy((operatingStatementDetails.getProvisionForTaxes() + operatingStatementDetails.getProvisionForDeferredTax()) * denom);
-        
-		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getOtherIncomeNeedTocCheckOp()))
-			operatingStatementDetails.setOtherIncomeNeedTocCheckOp(0.0);
-		financialInputRequest.setOtherIncomeNeedTocCheckOpFy(operatingStatementDetails.getOtherIncomeNeedTocCheckOp() * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getEquityDeividendPaidAmt()))
-			operatingStatementDetails.setEquityDeividendPaidAmt(0.0);
-		financialInputRequest.setDividendPayOutFy(operatingStatementDetails.getEquityDeividendPaidAmt() * denom);
 		
 		//========= ===============================================LIABILITIES DETAIL 3 YR==================================================================
-		liabilitiesDetails = liabilitiesDetailsRepository.getLiabilitiesDetails(aplicationId, currentYear-1+"");
 		
-		if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails)){
-			liabilitiesDetails = new LiabilitiesDetails();
-		}
-		if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getPreferencesShares()))
-			liabilitiesDetails.setPreferencesShares(0.0);
-		if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getOrdinarySharesCapital()))
-			liabilitiesDetails.setOrdinarySharesCapital(0.0);
-		financialInputRequest.setShareCapitalFy((liabilitiesDetails.getPreferencesShares() + liabilitiesDetails.getOrdinarySharesCapital()) * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getShareWarrentsOutstanding()))
-			liabilitiesDetails.setShareWarrentsOutstanding(0.0);
-		financialInputRequest.setShareWarrantOutstandingsFy((liabilitiesDetails.getShareWarrentsOutstanding()) * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getRevaluationReservse()))
-			liabilitiesDetails.setRevaluationReservse(0.0);
-		financialInputRequest.setRevalationReserveFy((liabilitiesDetails.getRevaluationReservse()) * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getGeneralReserve()))
-			liabilitiesDetails.setGeneralReserve(0.0);
-		if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getOtherReservse()))
-			liabilitiesDetails.setOtherReservse(0.0);
-		if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getSurplusOrDeficit()))
-			liabilitiesDetails.setSurplusOrDeficit(0.0);
-		if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getOthers()))
-			liabilitiesDetails.setOthers(0.0);
-		financialInputRequest.setOtherReserveAndSurplusFy((liabilitiesDetails.getGeneralReserve() + liabilitiesDetails.getOtherReservse() + liabilitiesDetails.getSurplusOrDeficit() + liabilitiesDetails.getOthers()) * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getMinorityInterest()))
-			liabilitiesDetails.setMinorityInterest(0.0);
-		financialInputRequest.setMinorityInterestFy(liabilitiesDetails.getMinorityInterest() * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getTermLiabilitiesSecured()))
-			liabilitiesDetails.setTermLiabilitiesSecured(0.0);
-		financialInputRequest.setSecuredLoansFy(liabilitiesDetails.getTermLiabilitiesSecured() * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getOtherNclUnsecuredLoansFromPromoters()))
-			liabilitiesDetails.setOtherNclUnsecuredLoansFromPromoters(0.0);
-		financialInputRequest.setUnsecuredLoansPromotersFy(liabilitiesDetails.getOtherNclUnsecuredLoansFromPromoters() * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getOtherNclUnsecuredLoansFromOther()))
-			liabilitiesDetails.setOtherNclUnsecuredLoansFromOther(0.0);
-		if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getTermLiabilitiesUnsecured()))
-			liabilitiesDetails.setTermLiabilitiesUnsecured(0.0);
-		financialInputRequest.setUnsecuredLoansOthersFy((liabilitiesDetails.getOtherNclUnsecuredLoansFromOther() + liabilitiesDetails.getTermLiabilitiesUnsecured()) * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getSubTotalA()))
-			liabilitiesDetails.setSubTotalA(0.0);
-		if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getShortTermBorrowingFromOthers()))
-			liabilitiesDetails.setShortTermBorrowingFromOthers(0.0);
-		financialInputRequest.setOtherBorrowingFy((liabilitiesDetails.getSubTotalA() + liabilitiesDetails.getShortTermBorrowingFromOthers()) * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getDeferredTaxLiability()))
-			liabilitiesDetails.setDeferredTaxLiability(0.0);
-		financialInputRequest.setDeferredTaxLiablitiesFy(liabilitiesDetails.getDeferredTaxLiability() * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getOtherNclOthers()))
-			liabilitiesDetails.setOtherNclOthers(0.0);
-		if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getDeferredPaymentsCredits()))
-			liabilitiesDetails.setDeferredPaymentsCredits(0.0);
-		if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getTermDeposits()))
-			liabilitiesDetails.setTermDeposits(0.0);
-		if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getDebentures()))
-			liabilitiesDetails.setDebentures(0.0);
-		if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getOtherTermLiabilies()))
-			liabilitiesDetails.setOtherTermLiabilies(0.0);
-		financialInputRequest.setOtherLongTermLiablitiesFy((liabilitiesDetails.getOtherNclOthers() + liabilitiesDetails.getDeferredPaymentsCredits() + liabilitiesDetails.getTermDeposits() + liabilitiesDetails.getDebentures() + liabilitiesDetails.getOtherTermLiabilies()) * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getOtherNclLongTermProvisions()))
-			liabilitiesDetails.setOtherNclLongTermProvisions(0.0);
-		financialInputRequest.setLongTermProvisionFy(liabilitiesDetails.getOtherNclLongTermProvisions() * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getSundryCreditors()))
-			liabilitiesDetails.setSundryCreditors(0.0);
-		financialInputRequest.setTradePayablesFy(liabilitiesDetails.getSundryCreditors() * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getAdvancePaymentsFromCustomers()))
-			liabilitiesDetails.setAdvancePaymentsFromCustomers(0.0);
-		if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getDividendPayable()))
-			liabilitiesDetails.setDividendPayable(0.0);
-		if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getOtherStatutoryLiability()))
-			liabilitiesDetails.setOtherStatutoryLiability(0.0);
-		if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getOtherCurrentLiability()))
-			liabilitiesDetails.setOtherCurrentLiability(0.0);
-		if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getDepositsOrInstalmentsOfTermLoans()))
-			liabilitiesDetails.setDepositsOrInstalmentsOfTermLoans(0.0);
-		financialInputRequest.setOtherCurruntLiablitiesFy((liabilitiesDetails.getAdvancePaymentsFromCustomers() + liabilitiesDetails.getDividendPayable() + liabilitiesDetails.getOtherStatutoryLiability() + liabilitiesDetails.getOtherCurrentLiability() + liabilitiesDetails.getDepositsOrInstalmentsOfTermLoans()) * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getOtherIncomeNeedTocCheckLia()))
-				liabilitiesDetails.setOtherIncomeNeedTocCheckLia(0.0);
-		financialInputRequest.setOtherIncomeNeedTocCheckLiaFy(liabilitiesDetails.getOtherIncomeNeedTocCheckLia() * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getProvisionalForTaxation()))
-			liabilitiesDetails.setProvisionalForTaxation(0.0);
-		financialInputRequest.setShortTermProvisionFy(liabilitiesDetails.getProvisionalForTaxation() * denom);
-		
-		//========= ===============================================ASSET DETAIL 3 YR==================================================================
-		assetsDetails = assetsDetailsRepository.getAssetsDetails(aplicationId, currentYear-1+"");
-		
-		if(CommonUtils.isObjectNullOrEmpty(assetsDetails)){
-			assetsDetails = new AssetsDetails();
-		}
-		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getGrossBlock()))
-			assetsDetails.setGrossBlock(0.0);
-		financialInputRequest.setGrossBlockFy(assetsDetails.getGrossBlock() * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getDepreciationToDate()))
-			assetsDetails.setDepreciationToDate(0.0);
-		financialInputRequest.setLessAccumulatedDepreFy(assetsDetails.getDepreciationToDate() * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getImpairmentAsset()))
-			assetsDetails.setImpairmentAsset(0.0);
-		financialInputRequest.setImpairmentofAssetFy(assetsDetails.getImpairmentAsset() * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getOtherNcaOtherCapitalWorkInprogress()))
-			assetsDetails.setOtherNcaOtherCapitalWorkInprogress(0.0);
-		financialInputRequest.setCapitalWorkInProgressFy(assetsDetails.getOtherNcaOtherCapitalWorkInprogress() * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getIntangibleAssets()))
-			assetsDetails.setIntangibleAssets(0.0);
-		financialInputRequest.setIntengibleAssetsFy(assetsDetails.getIntangibleAssets() * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getOthersPreOperativeExpensesPending()))
-			assetsDetails.setOthersPreOperativeExpensesPending(0.0);
-		financialInputRequest.setPreOperativeExpeFy(assetsDetails.getOthersPreOperativeExpensesPending() * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getOthersAssetsInTransit()))
-			assetsDetails.setOthersAssetsInTransit(0.0);
-		financialInputRequest.setAssetInTransitFy(assetsDetails.getOthersAssetsInTransit() * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getInvestmentsInSubsidiary()))
-			assetsDetails.setInvestmentsInSubsidiary(0.0);
-		financialInputRequest.setInvestmentInSubsidiariesFy(assetsDetails.getInvestmentsInSubsidiary() * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getOthersOther()))
-			assetsDetails.setOthersOther(0.0);
-		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getDeferredReceviables()))
-			assetsDetails.setDeferredReceviables(0.0);
-		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getOthers()))
-			assetsDetails.setOthers(0.0);
-		financialInputRequest.setOtherInvestmentFy((assetsDetails.getOthersOther() + assetsDetails.getDeferredReceviables() + assetsDetails.getOthers()) * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getAdvanceToSuppliersCapitalGoods()))
-			assetsDetails.setAdvanceToSuppliersCapitalGoods(0.0);
-		financialInputRequest.setLongTermLoansAndAdvaFy(assetsDetails.getAdvanceToSuppliersCapitalGoods() * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getNonConsumableStoreAndSpares()))
-			assetsDetails.setNonConsumableStoreAndSpares(0.0);
-		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getOtherNonCurrentAssets()))
-			assetsDetails.setOtherNonCurrentAssets(0.0);
-		financialInputRequest.setOtheNonCurruntAssetFy((assetsDetails.getNonConsumableStoreAndSpares() + assetsDetails.getOtherNonCurrentAssets()) * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getInventory()))
-			assetsDetails.setInventory(0.0);
-		financialInputRequest.setInventoriesFy(assetsDetails.getInventory() * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getReceivableOtherThanDefferred()))
-			assetsDetails.setReceivableOtherThanDefferred(0.0);
-		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getExportReceivables()))
-			assetsDetails.setExportReceivables(0.0);
-		financialInputRequest.setSundryDebtorsFy((assetsDetails.getReceivableOtherThanDefferred() + assetsDetails.getExportReceivables()) * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getCashAndBankBalance()))
-			assetsDetails.setCashAndBankBalance(0.0);
-		financialInputRequest.setCashAndBankFy(assetsDetails.getCashAndBankBalance() * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getInvestments()))
-			assetsDetails.setInvestments(0.0);
-		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getInstalmentsDeferred()))
-			assetsDetails.setInstalmentsDeferred(0.0);
-		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getOtherCurrentAssets()))
-			assetsDetails.setOtherCurrentAssets(0.0);
-		financialInputRequest.setOtherCurruntAssetFy((assetsDetails.getInvestments() + assetsDetails.getInstalmentsDeferred() + assetsDetails.getOtherCurrentAssets()) * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getAdvanceToSupplierRawMaterials()))
-			assetsDetails.setAdvanceToSupplierRawMaterials(0.0);
-		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getAdvancePaymentTaxes()))
-			assetsDetails.setAdvancePaymentTaxes(0.0);
-		financialInputRequest.setShortTermLoansAdvancesFy((assetsDetails.getAdvanceToSupplierRawMaterials() + assetsDetails.getAdvancePaymentTaxes()) * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getOtherIncomeNeedTocCheckAsset()))
-			assetsDetails.setOtherIncomeNeedTocCheckAsset(0.0);
-		financialInputRequest.setOtherIncomeNeedTocCheckAssetFy(assetsDetails.getOtherIncomeNeedTocCheckAsset() * denom);
-		
-		// -----CONTIGENT LIABILITIES
-		if(corporateFinalInfoRequest == null)
-			financialInputRequest.setContingentLiablitiesFy(null);
-		else
-			financialInputRequest.setContingentLiablitiesFy(CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getContLiabilityFyAmt()) ? 0.0 : (corporateFinalInfoRequest.getContLiabilityFyAmt()* denom));
-		//----------------------------------------------------------------SECOND YEAR DATA---------------------------------------------------------------------
-		//========= ================================================OPERATINGSTATEMENT DETAIL 2 YR=========================================================
-		operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStatementDetails(aplicationId, currentYear-2+"");
-
-		log.info("App Id::"+aplicationId);
-		log.info("currentYear-1::"+(currentYear-1));
-		log.info("operatingStatementDetails.getDepreciation()::"+operatingStatementDetails.getDepreciation());
-		
-		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails)){
-			operatingStatementDetails = new OperatingStatementDetails();
-		}
-		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getDomesticSales()))
-			operatingStatementDetails.setDomesticSales(0.0);
-		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getDomesticSales()))
-			operatingStatementDetails.setExportSales(0.0);		
-		financialInputRequest.setGrossSalesSy((operatingStatementDetails.getDomesticSales()+operatingStatementDetails.getExportSales()) * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getLessExciseDuty()))
-			operatingStatementDetails.setLessExciseDuty(0.0);
-		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getDeductOtherItems()))
-			operatingStatementDetails.setDeductOtherItems(0.0);	
-		financialInputRequest.setLessExciseDuitySy((operatingStatementDetails.getLessExciseDuty()+operatingStatementDetails.getDeductOtherItems()) * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getAddOperatingStock()))
-			operatingStatementDetails.setAddOperatingStock(0.0);
-		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getDeductStockInProcess()))
-			operatingStatementDetails.setDeductStockInProcess(0.0);	
-		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getAddOperatingStockFg()))
-			operatingStatementDetails.setAddOperatingStockFg(0.0);
-		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getDeductClStockFg()))
-			operatingStatementDetails.setDeductClStockFg(0.0);	
-		financialInputRequest.setIncreaseDecreaseStockSy(((operatingStatementDetails.getAddOperatingStock()-operatingStatementDetails.getDeductStockInProcess()) + (operatingStatementDetails.getAddOperatingStockFg()-operatingStatementDetails.getDeductClStockFg())) * denom);
-		
-		
-		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getRawMaterials()))
-			operatingStatementDetails.setRawMaterials(0.0);
-		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getOtherSpares()))
-			operatingStatementDetails.setOtherSpares(0.0);	
-		financialInputRequest.setRawMaterialConsumedSy((operatingStatementDetails.getRawMaterials()+operatingStatementDetails.getOtherSpares()) * denom);
-		
-		
-		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getPowerAndFuel()))
-			operatingStatementDetails.setPowerAndFuel(0.0);
-		financialInputRequest.setPowerAndFuelCostSy(operatingStatementDetails.getPowerAndFuel() * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getDirectLabour()))
-			operatingStatementDetails.setDirectLabour(0.0);
-		financialInputRequest.setEmployeeCostSy(operatingStatementDetails.getDirectLabour() * denom);
-
-		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getSellingGenlAdmnExpenses()))
-			operatingStatementDetails.setSellingGenlAdmnExpenses(0.0);
-		financialInputRequest.setGeneralAndAdminExpeSy(operatingStatementDetails.getSellingGenlAdmnExpenses() * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getSellingAndDistributionExpenses()))
-			operatingStatementDetails.setSellingAndDistributionExpenses(0.0);
-		financialInputRequest.setSellingAndDistriExpeSy(operatingStatementDetails.getSellingAndDistributionExpenses() * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getExpensesAmortised()))
-			operatingStatementDetails.setExpensesAmortised(0.0);
-		financialInputRequest.setLessExpeCapitaSy(operatingStatementDetails.getExpensesAmortised() * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getOtherMfgExpenses()))
-			operatingStatementDetails.setOtherMfgExpenses(0.0);
-		financialInputRequest.setMiscelExpeSy(operatingStatementDetails.getOtherMfgExpenses() * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getAddOtherRevenueIncome()))
-			operatingStatementDetails.setAddOtherRevenueIncome(0.0);
-		financialInputRequest.setOtherIncomeSy(operatingStatementDetails.getAddOtherRevenueIncome() * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getInterest()))
-			operatingStatementDetails.setInterest(0.0);
-		financialInputRequest.setInterestSy(operatingStatementDetails.getInterest() * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getDepreciation()))
-			operatingStatementDetails.setDepreciation(0.0);
-		financialInputRequest.setDepriciationSy(operatingStatementDetails.getDepreciation() * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getNetofNonOpIncomeOrExpenses()))
-			operatingStatementDetails.setNetofNonOpIncomeOrExpenses(0.0);
-		financialInputRequest.setExceptionalIncomeSy(operatingStatementDetails.getNetofNonOpIncomeOrExpenses() * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getProvisionForTaxes()))
-			operatingStatementDetails.setProvisionForTaxes(0.0);
-		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getProvisionForDeferredTax()))
-			operatingStatementDetails.setProvisionForDeferredTax(0.0);
-		financialInputRequest.setProvisionForTaxSy((operatingStatementDetails.getProvisionForTaxes() + operatingStatementDetails.getProvisionForDeferredTax()) * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getOtherIncomeNeedTocCheckOp()))
-			operatingStatementDetails.setOtherIncomeNeedTocCheckOp(0.0);
-		financialInputRequest.setOtherIncomeNeedTocCheckOpSy(operatingStatementDetails.getOtherIncomeNeedTocCheckOp() * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getEquityDeividendPaidAmt()))
-			operatingStatementDetails.setEquityDeividendPaidAmt(0.0);
-		financialInputRequest.setDividendPayOutSy(operatingStatementDetails.getEquityDeividendPaidAmt() * denom);
-
-		//========= ===============================================LIABILITIES DETAIL 2 YR==================================================================
-		liabilitiesDetails = liabilitiesDetailsRepository.getLiabilitiesDetails(aplicationId, currentYear-2+"");
-		
-		if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails)){
-			liabilitiesDetails = new LiabilitiesDetails();
-		}
-		if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getPreferencesShares()))
-			liabilitiesDetails.setPreferencesShares(0.0);
-		if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getOrdinarySharesCapital()))
-			liabilitiesDetails.setOrdinarySharesCapital(0.0);
-		financialInputRequest.setShareCapitalSy((liabilitiesDetails.getPreferencesShares() + liabilitiesDetails.getOrdinarySharesCapital()) * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getShareWarrentsOutstanding()))
-			liabilitiesDetails.setShareWarrentsOutstanding(0.0);
-		financialInputRequest.setShareWarrantOutstandingsSy(liabilitiesDetails.getShareWarrentsOutstanding() * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getRevaluationReservse()))
-			liabilitiesDetails.setRevaluationReservse(0.0);
-		financialInputRequest.setRevalationReserveSy(liabilitiesDetails.getRevaluationReservse() * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getGeneralReserve()))
-			liabilitiesDetails.setGeneralReserve(0.0);
-		if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getOtherReservse()))
-			liabilitiesDetails.setOtherReservse(0.0);
-		if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getSurplusOrDeficit()))
-			liabilitiesDetails.setSurplusOrDeficit(0.0);
-		if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getOthers()))
-			liabilitiesDetails.setOthers(0.0);
-		financialInputRequest.setOtherReserveAndSurplusSy((liabilitiesDetails.getGeneralReserve() + liabilitiesDetails.getOtherReservse() + liabilitiesDetails.getSurplusOrDeficit() + liabilitiesDetails.getOthers()) * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getMinorityInterest()))
-			liabilitiesDetails.setMinorityInterest(0.0);
-		financialInputRequest.setMinorityInterestSy(liabilitiesDetails.getMinorityInterest() * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getTermLiabilitiesSecured()))
-			liabilitiesDetails.setTermLiabilitiesSecured(0.0);
-		financialInputRequest.setSecuredLoansSy(liabilitiesDetails.getTermLiabilitiesSecured() * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getOtherNclUnsecuredLoansFromPromoters()))
-			liabilitiesDetails.setOtherNclUnsecuredLoansFromPromoters(0.0);
-		financialInputRequest.setUnsecuredLoansPromotersSy(liabilitiesDetails.getOtherNclUnsecuredLoansFromPromoters() * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getOtherNclUnsecuredLoansFromOther()))
-			liabilitiesDetails.setOtherNclUnsecuredLoansFromOther(0.0);
-		if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getTermLiabilitiesUnsecured()))
-			liabilitiesDetails.setTermLiabilitiesUnsecured(0.0);
-		financialInputRequest.setUnsecuredLoansOthersSy((liabilitiesDetails.getOtherNclUnsecuredLoansFromOther() + liabilitiesDetails.getTermLiabilitiesUnsecured()) * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getSubTotalA()))
-			liabilitiesDetails.setSubTotalA(0.0);
-		if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getShortTermBorrowingFromOthers()))
-			liabilitiesDetails.setShortTermBorrowingFromOthers(0.0);
-		financialInputRequest.setOtherBorrowingSy((liabilitiesDetails.getSubTotalA() + liabilitiesDetails.getShortTermBorrowingFromOthers()) * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getDeferredTaxLiability()))
-			liabilitiesDetails.setDeferredTaxLiability(0.0);
-		financialInputRequest.setDeferredTaxLiablitiesSy(liabilitiesDetails.getDeferredTaxLiability() * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getOtherNclOthers()))
-			liabilitiesDetails.setOtherNclOthers(0.0);
-		if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getDeferredPaymentsCredits()))
-			liabilitiesDetails.setDeferredPaymentsCredits(0.0);
-		if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getTermDeposits()))
-			liabilitiesDetails.setTermDeposits(0.0);
-		if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getDebentures()))
-			liabilitiesDetails.setDebentures(0.0);
-		if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getOtherTermLiabilies()))
-			liabilitiesDetails.setOtherTermLiabilies(0.0);
-		financialInputRequest.setOtherLongTermLiablitiesSy((liabilitiesDetails.getOtherNclOthers() + liabilitiesDetails.getDeferredPaymentsCredits() + liabilitiesDetails.getTermDeposits() + liabilitiesDetails.getDebentures() + liabilitiesDetails.getOtherTermLiabilies()) * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getOtherNclLongTermProvisions()))
-			liabilitiesDetails.setOtherNclLongTermProvisions(0.0);
-		financialInputRequest.setLongTermProvisionSy(liabilitiesDetails.getOtherNclLongTermProvisions() * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getSundryCreditors()))
-			liabilitiesDetails.setSundryCreditors(0.0);
-		financialInputRequest.setTradePayablesSy(liabilitiesDetails.getSundryCreditors() * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getAdvancePaymentsFromCustomers()))
-			liabilitiesDetails.setAdvancePaymentsFromCustomers(0.0);
-		if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getDividendPayable()))
-			liabilitiesDetails.setDividendPayable(0.0);
-		if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getOtherStatutoryLiability()))
-			liabilitiesDetails.setOtherStatutoryLiability(0.0);
-		if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getOtherCurrentLiability()))
-			liabilitiesDetails.setOtherCurrentLiability(0.0);
-		if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getDepositsOrInstalmentsOfTermLoans()))
-			liabilitiesDetails.setDepositsOrInstalmentsOfTermLoans(0.0);
-		financialInputRequest.setOtherCurruntLiablitiesSy((liabilitiesDetails.getAdvancePaymentsFromCustomers() + liabilitiesDetails.getDividendPayable() + liabilitiesDetails.getOtherStatutoryLiability() + liabilitiesDetails.getOtherCurrentLiability() + liabilitiesDetails.getDepositsOrInstalmentsOfTermLoans()) * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getOtherIncomeNeedTocCheckLia()))
-			liabilitiesDetails.setOtherIncomeNeedTocCheckLia(0.0);
-		financialInputRequest.setOtherIncomeNeedTocCheckLiaSy(liabilitiesDetails.getOtherIncomeNeedTocCheckLia() * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getProvisionalForTaxation()))
-			liabilitiesDetails.setProvisionalForTaxation(0.0);
-		financialInputRequest.setShortTermProvisionSy(liabilitiesDetails.getProvisionalForTaxation() * denom);
-		
-		//========= ===============================================ASSET DETAIL 2 YR==================================================================
-		assetsDetails = assetsDetailsRepository.getAssetsDetails(aplicationId, currentYear-2+"");
-		
-		if(CommonUtils.isObjectNullOrEmpty(assetsDetails)){
-			assetsDetails = new AssetsDetails();
-		}
-		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getGrossBlock()))
-			assetsDetails.setGrossBlock(0.0);
-		financialInputRequest.setGrossBlockSy(assetsDetails.getGrossBlock() * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getDepreciationToDate()))
-			assetsDetails.setDepreciationToDate(0.0);
-		financialInputRequest.setLessAccumulatedDepreSy(assetsDetails.getDepreciationToDate() * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getImpairmentAsset()))
-			assetsDetails.setImpairmentAsset(0.0);
-		financialInputRequest.setImpairmentofAssetSy(assetsDetails.getImpairmentAsset() * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getOtherNcaOtherCapitalWorkInprogress()))
-			assetsDetails.setOtherNcaOtherCapitalWorkInprogress(0.0);
-		financialInputRequest.setCapitalWorkInProgressSy(assetsDetails.getOtherNcaOtherCapitalWorkInprogress() * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getIntangibleAssets()))
-			assetsDetails.setIntangibleAssets(0.0);
-		financialInputRequest.setIntengibleAssetsSy(assetsDetails.getIntangibleAssets() * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getOthersPreOperativeExpensesPending()))
-			assetsDetails.setOthersPreOperativeExpensesPending(0.0);
-		financialInputRequest.setPreOperativeExpeSy(assetsDetails.getOthersPreOperativeExpensesPending() * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getOthersAssetsInTransit()))
-			assetsDetails.setOthersAssetsInTransit(0.0);
-		financialInputRequest.setAssetInTransitSy(assetsDetails.getOthersAssetsInTransit() * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getInvestmentsInSubsidiary()))
-			assetsDetails.setInvestmentsInSubsidiary(0.0);
-		financialInputRequest.setInvestmentInSubsidiariesSy(assetsDetails.getInvestmentsInSubsidiary() * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getOthersOther()))
-			assetsDetails.setOthersOther(0.0);
-		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getDeferredReceviables()))
-			assetsDetails.setDeferredReceviables(0.0);
-		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getOthers()))
-			assetsDetails.setOthers(0.0);
-		financialInputRequest.setOtherInvestmentSy((assetsDetails.getOthersOther() + assetsDetails.getDeferredReceviables() + assetsDetails.getOthers()) * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getAdvanceToSuppliersCapitalGoods()))
-			assetsDetails.setAdvanceToSuppliersCapitalGoods(0.0);
-		financialInputRequest.setLongTermLoansAndAdvaSy(assetsDetails.getAdvanceToSuppliersCapitalGoods() * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getNonConsumableStoreAndSpares()))
-			assetsDetails.setNonConsumableStoreAndSpares(0.0);
-		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getOtherNonCurrentAssets()))
-			assetsDetails.setOtherNonCurrentAssets(0.0);
-		financialInputRequest.setOtheNonCurruntAssetSy((assetsDetails.getNonConsumableStoreAndSpares() + assetsDetails.getOtherNonCurrentAssets()) * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getInventory()))
-			assetsDetails.setInventory(0.0);
-		financialInputRequest.setInventoriesSy(assetsDetails.getInventory() * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getReceivableOtherThanDefferred()))
-			assetsDetails.setReceivableOtherThanDefferred(0.0);
-		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getExportReceivables()))
-			assetsDetails.setExportReceivables(0.0);
-		financialInputRequest.setSundryDebtorsSy((assetsDetails.getReceivableOtherThanDefferred() + assetsDetails.getExportReceivables()) * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getCashAndBankBalance()))
-			assetsDetails.setCashAndBankBalance(0.0);
-		financialInputRequest.setCashAndBankSy(assetsDetails.getCashAndBankBalance() * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getInvestments()))
-			assetsDetails.setInvestments(0.0);
-		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getInstalmentsDeferred()))
-			assetsDetails.setInstalmentsDeferred(0.0);
-		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getOtherCurrentAssets()))
-			assetsDetails.setOtherCurrentAssets(0.0);
-		financialInputRequest.setOtherCurruntAssetSy((assetsDetails.getInvestments() + assetsDetails.getInstalmentsDeferred() + assetsDetails.getOtherCurrentAssets()) * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getAdvanceToSupplierRawMaterials()))
-			assetsDetails.setAdvanceToSupplierRawMaterials(0.0);
-		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getAdvancePaymentTaxes()))
-			assetsDetails.setAdvancePaymentTaxes(0.0);
-		financialInputRequest.setShortTermLoansAdvancesSy((assetsDetails.getAdvanceToSupplierRawMaterials() + assetsDetails.getAdvancePaymentTaxes()) * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getOtherIncomeNeedTocCheckAsset()))
-			assetsDetails.setOtherIncomeNeedTocCheckAsset(0.0);
-		financialInputRequest.setOtherIncomeNeedTocCheckAssetSy(assetsDetails.getOtherIncomeNeedTocCheckAsset() * denom);
-		// -----CONTIGENT LIABILITIES
-		if(corporateFinalInfoRequest == null)
-			financialInputRequest.setContingentLiablitiesSy(null);
-		else
-		financialInputRequest.setContingentLiablitiesSy(CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getContLiabilitySyAmt()) ? 0.0 : (corporateFinalInfoRequest.getContLiabilitySyAmt() * denom));
-		
-		
-		// ----------------------------------------FIRST YEAR DATA---------------------------------------------------------------------------------------
-		//========= ==========================================OPERATINGSTATEMENT DETAIL 1 YR========================================================
-		operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStatementDetails(aplicationId, currentYear-3+"");
-
-		log.info("App Id::"+aplicationId);
-		log.info("currentYear-1::"+(currentYear-1));
-		if(operatingStatementDetails!=null) {
-		log.info("operatingStatementDetails.getDepreciation()::"+operatingStatementDetails.getDepreciation());
-		}else {
-			log.info("operatingStatementDetails is:: NULL");
-		}
-		
-		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails)){
-			operatingStatementDetails = new OperatingStatementDetails();
-			operatingStatementDetails.setDepreciation(0.0);
-		}
-		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getDomesticSales()))
-			operatingStatementDetails.setDomesticSales(0.0);
-		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getDomesticSales()))
-			operatingStatementDetails.setExportSales(0.0);		
-		financialInputRequest.setGrossSalesTy((operatingStatementDetails.getDomesticSales()+operatingStatementDetails.getExportSales()) * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getLessExciseDuty()))
-			operatingStatementDetails.setLessExciseDuty(0.0);
-		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getDeductOtherItems()))
-			operatingStatementDetails.setDeductOtherItems(0.0);	
-		financialInputRequest.setLessExciseDuityTy((operatingStatementDetails.getLessExciseDuty()+operatingStatementDetails.getDeductOtherItems()) * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getAddOperatingStock()))
-			operatingStatementDetails.setAddOperatingStock(0.0);
-		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getDeductStockInProcess()))
-			operatingStatementDetails.setDeductStockInProcess(0.0);	
-		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getAddOperatingStockFg()))
-			operatingStatementDetails.setAddOperatingStockFg(0.0);
-		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getDeductClStockFg()))
-			operatingStatementDetails.setDeductClStockFg(0.0);	
-		financialInputRequest.setIncreaseDecreaseStockTy(((operatingStatementDetails.getAddOperatingStock()-operatingStatementDetails.getDeductStockInProcess()) + (operatingStatementDetails.getAddOperatingStockFg()-operatingStatementDetails.getDeductClStockFg())) * denom);
-		
-		
-		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getRawMaterials()))
-			operatingStatementDetails.setRawMaterials(0.0);
-		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getOtherSpares()))
-			operatingStatementDetails.setOtherSpares(0.0);	
-		financialInputRequest.setRawMaterialConsumedTy((operatingStatementDetails.getRawMaterials()+operatingStatementDetails.getOtherSpares()) * denom);
-		
-		
-		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getPowerAndFuel()))
-			operatingStatementDetails.setPowerAndFuel(0.0);
-		financialInputRequest.setPowerAndFuelCostTy(operatingStatementDetails.getPowerAndFuel() * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getDirectLabour()))
-			operatingStatementDetails.setDirectLabour(0.0);
-		financialInputRequest.setEmployeeCostTy(operatingStatementDetails.getDirectLabour() * denom);
-
-		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getSellingGenlAdmnExpenses()))
-			operatingStatementDetails.setSellingGenlAdmnExpenses(0.0);
-		financialInputRequest.setGeneralAndAdminExpeTy(operatingStatementDetails.getSellingGenlAdmnExpenses() * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getSellingAndDistributionExpenses()))
-			operatingStatementDetails.setSellingAndDistributionExpenses(0.0);
-		financialInputRequest.setSellingAndDistriExpeTy(operatingStatementDetails.getSellingAndDistributionExpenses() * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getExpensesAmortised()))
-			operatingStatementDetails.setExpensesAmortised(0.0);
-		financialInputRequest.setLessExpeCapitaTy(operatingStatementDetails.getExpensesAmortised() * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getOtherMfgExpenses()))
-			operatingStatementDetails.setOtherMfgExpenses(0.0);
-		financialInputRequest.setMiscelExpeTy(operatingStatementDetails.getOtherMfgExpenses() * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getAddOtherRevenueIncome()))
-			operatingStatementDetails.setAddOtherRevenueIncome(0.0);
-		financialInputRequest.setOtherIncomeTy(operatingStatementDetails.getAddOtherRevenueIncome() * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getInterest()))
-			operatingStatementDetails.setInterest(0.0);
-		financialInputRequest.setInterestTy(operatingStatementDetails.getInterest() * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getDepreciation()))
-			operatingStatementDetails.setDepreciation(0.0);
-		financialInputRequest.setDepriciationTy(operatingStatementDetails.getDepreciation() * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getNetofNonOpIncomeOrExpenses()))
-			operatingStatementDetails.setNetofNonOpIncomeOrExpenses(0.0);
-		financialInputRequest.setExceptionalIncomeTy(operatingStatementDetails.getNetofNonOpIncomeOrExpenses() * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getProvisionForTaxes()))
-			operatingStatementDetails.setProvisionForTaxes(0.0);
-		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getProvisionForDeferredTax()))
-			operatingStatementDetails.setProvisionForDeferredTax(0.0);
-		financialInputRequest.setProvisionForTaxTy((operatingStatementDetails.getProvisionForTaxes() + operatingStatementDetails.getProvisionForDeferredTax()) * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getOtherIncomeNeedTocCheckOp()))
-			operatingStatementDetails.setOtherIncomeNeedTocCheckOp(0.0);
-		financialInputRequest.setOtherIncomeNeedTocCheckOpTy(operatingStatementDetails.getOtherIncomeNeedTocCheckOp() * denom);
-		
-		if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getEquityDeividendPaidAmt()))
-			operatingStatementDetails.setEquityDeividendPaidAmt(0.0);
-		financialInputRequest.setDividendPayOutTy(operatingStatementDetails.getEquityDeividendPaidAmt() * denom);
-		
-		//========= ===============================================LIABILITIES DETAIL 1 YR==================================================================
-				liabilitiesDetails = liabilitiesDetailsRepository.getLiabilitiesDetails(aplicationId, currentYear-3+"");
+		try {
+			liabilitiesDetails = liabilitiesDetailsRepository.getLiabilitiesDetails(aplicationId, currentYear-1+"");
+			if(liabilitiesDetails != null) {
 				
 				if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails)){
 					liabilitiesDetails = new LiabilitiesDetails();
@@ -1054,15 +498,15 @@ public class IrrServiceImpl implements IrrService{
 					liabilitiesDetails.setPreferencesShares(0.0);
 				if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getOrdinarySharesCapital()))
 					liabilitiesDetails.setOrdinarySharesCapital(0.0);
-				financialInputRequest.setShareCapitalTy((liabilitiesDetails.getPreferencesShares() + liabilitiesDetails.getOrdinarySharesCapital()) * denom);
+				financialInputRequest.setShareCapitalFy((liabilitiesDetails.getPreferencesShares() + liabilitiesDetails.getOrdinarySharesCapital()) * denom);
 				
 				if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getShareWarrentsOutstanding()))
 					liabilitiesDetails.setShareWarrentsOutstanding(0.0);
-				financialInputRequest.setShareWarrantOutstandingsTy(liabilitiesDetails.getShareWarrentsOutstanding() * denom);
+				financialInputRequest.setShareWarrantOutstandingsFy((liabilitiesDetails.getShareWarrentsOutstanding()) * denom);
 				
 				if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getRevaluationReservse()))
 					liabilitiesDetails.setRevaluationReservse(0.0);
-				financialInputRequest.setRevalationReserveTy(liabilitiesDetails.getRevaluationReservse() * denom);
+				financialInputRequest.setRevalationReserveFy((liabilitiesDetails.getRevaluationReservse()) * denom);
 				
 				if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getGeneralReserve()))
 					liabilitiesDetails.setGeneralReserve(0.0);
@@ -1072,35 +516,35 @@ public class IrrServiceImpl implements IrrService{
 					liabilitiesDetails.setSurplusOrDeficit(0.0);
 				if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getOthers()))
 					liabilitiesDetails.setOthers(0.0);
-				financialInputRequest.setOtherReserveAndSurplusTy((liabilitiesDetails.getGeneralReserve() + liabilitiesDetails.getOtherReservse() + liabilitiesDetails.getSurplusOrDeficit() + liabilitiesDetails.getOthers()) * denom);
+				financialInputRequest.setOtherReserveAndSurplusFy((liabilitiesDetails.getGeneralReserve() + liabilitiesDetails.getOtherReservse() + liabilitiesDetails.getSurplusOrDeficit() + liabilitiesDetails.getOthers()) * denom);
 				
 				if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getMinorityInterest()))
 					liabilitiesDetails.setMinorityInterest(0.0);
-				financialInputRequest.setMinorityInterestTy(liabilitiesDetails.getMinorityInterest() * denom);
+				financialInputRequest.setMinorityInterestFy(liabilitiesDetails.getMinorityInterest() * denom);
 				
 				if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getTermLiabilitiesSecured()))
 					liabilitiesDetails.setTermLiabilitiesSecured(0.0);
-				financialInputRequest.setSecuredLoansTy(liabilitiesDetails.getTermLiabilitiesSecured() * denom);
+				financialInputRequest.setSecuredLoansFy(liabilitiesDetails.getTermLiabilitiesSecured() * denom);
 				
 				if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getOtherNclUnsecuredLoansFromPromoters()))
 					liabilitiesDetails.setOtherNclUnsecuredLoansFromPromoters(0.0);
-				financialInputRequest.setUnsecuredLoansPromotersTy(liabilitiesDetails.getOtherNclUnsecuredLoansFromPromoters() * denom);
+				financialInputRequest.setUnsecuredLoansPromotersFy(liabilitiesDetails.getOtherNclUnsecuredLoansFromPromoters() * denom);
 				
 				if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getOtherNclUnsecuredLoansFromOther()))
 					liabilitiesDetails.setOtherNclUnsecuredLoansFromOther(0.0);
 				if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getTermLiabilitiesUnsecured()))
 					liabilitiesDetails.setTermLiabilitiesUnsecured(0.0);
-				financialInputRequest.setUnsecuredLoansOthersTy((liabilitiesDetails.getOtherNclUnsecuredLoansFromOther() + liabilitiesDetails.getTermLiabilitiesUnsecured()) * denom);
+				financialInputRequest.setUnsecuredLoansOthersFy((liabilitiesDetails.getOtherNclUnsecuredLoansFromOther() + liabilitiesDetails.getTermLiabilitiesUnsecured()) * denom);
 				
 				if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getSubTotalA()))
 					liabilitiesDetails.setSubTotalA(0.0);
 				if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getShortTermBorrowingFromOthers()))
 					liabilitiesDetails.setShortTermBorrowingFromOthers(0.0);
-				financialInputRequest.setOtherBorrowingTy((liabilitiesDetails.getSubTotalA() + liabilitiesDetails.getShortTermBorrowingFromOthers()) * denom);
+				financialInputRequest.setOtherBorrowingFy((liabilitiesDetails.getSubTotalA() + liabilitiesDetails.getShortTermBorrowingFromOthers()) * denom);
 				
 				if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getDeferredTaxLiability()))
 					liabilitiesDetails.setDeferredTaxLiability(0.0);
-				financialInputRequest.setDeferredTaxLiablitiesTy(liabilitiesDetails.getDeferredTaxLiability() * denom);
+				financialInputRequest.setDeferredTaxLiablitiesFy(liabilitiesDetails.getDeferredTaxLiability() * denom);
 				
 				if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getOtherNclOthers()))
 					liabilitiesDetails.setOtherNclOthers(0.0);
@@ -1112,15 +556,15 @@ public class IrrServiceImpl implements IrrService{
 					liabilitiesDetails.setDebentures(0.0);
 				if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getOtherTermLiabilies()))
 					liabilitiesDetails.setOtherTermLiabilies(0.0);
-				financialInputRequest.setOtherLongTermLiablitiesTy((liabilitiesDetails.getOtherNclOthers() + liabilitiesDetails.getDeferredPaymentsCredits() + liabilitiesDetails.getTermDeposits() + liabilitiesDetails.getDebentures() + liabilitiesDetails.getOtherTermLiabilies()) * denom);
+				financialInputRequest.setOtherLongTermLiablitiesFy((liabilitiesDetails.getOtherNclOthers() + liabilitiesDetails.getDeferredPaymentsCredits() + liabilitiesDetails.getTermDeposits() + liabilitiesDetails.getDebentures() + liabilitiesDetails.getOtherTermLiabilies()) * denom);
 				
 				if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getOtherNclLongTermProvisions()))
 					liabilitiesDetails.setOtherNclLongTermProvisions(0.0);
-				financialInputRequest.setLongTermProvisionTy(liabilitiesDetails.getOtherNclLongTermProvisions() * denom);
+				financialInputRequest.setLongTermProvisionFy(liabilitiesDetails.getOtherNclLongTermProvisions() * denom);
 				
 				if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getSundryCreditors()))
 					liabilitiesDetails.setSundryCreditors(0.0);
-				financialInputRequest.setTradePayablesTy(liabilitiesDetails.getSundryCreditors() * denom);
+				financialInputRequest.setTradePayablesFy(liabilitiesDetails.getSundryCreditors() * denom);
 				
 				if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getAdvancePaymentsFromCustomers()))
 					liabilitiesDetails.setAdvancePaymentsFromCustomers(0.0);
@@ -1132,53 +576,71 @@ public class IrrServiceImpl implements IrrService{
 					liabilitiesDetails.setOtherCurrentLiability(0.0);
 				if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getDepositsOrInstalmentsOfTermLoans()))
 					liabilitiesDetails.setDepositsOrInstalmentsOfTermLoans(0.0);
-				financialInputRequest.setOtherCurruntLiablitiesTy((liabilitiesDetails.getAdvancePaymentsFromCustomers() + liabilitiesDetails.getDividendPayable() + liabilitiesDetails.getOtherStatutoryLiability() + liabilitiesDetails.getOtherCurrentLiability() + liabilitiesDetails.getDepositsOrInstalmentsOfTermLoans()) * denom);
+				financialInputRequest.setOtherCurruntLiablitiesFy((liabilitiesDetails.getAdvancePaymentsFromCustomers() + liabilitiesDetails.getDividendPayable() + liabilitiesDetails.getOtherStatutoryLiability() + liabilitiesDetails.getOtherCurrentLiability() + liabilitiesDetails.getDepositsOrInstalmentsOfTermLoans()) * denom);
 				
 				if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getOtherIncomeNeedTocCheckLia()))
-					liabilitiesDetails.setOtherIncomeNeedTocCheckLia(0.0);
-				financialInputRequest.setOtherIncomeNeedTocCheckLiaTy(liabilitiesDetails.getOtherIncomeNeedTocCheckLia() * denom);
+						liabilitiesDetails.setOtherIncomeNeedTocCheckLia(0.0);
+				financialInputRequest.setOtherIncomeNeedTocCheckLiaFy(liabilitiesDetails.getOtherIncomeNeedTocCheckLia() * denom);
 				
 				if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getProvisionalForTaxation()))
 					liabilitiesDetails.setProvisionalForTaxation(0.0);
-				financialInputRequest.setShortTermProvisionTy(liabilitiesDetails.getProvisionalForTaxation() * denom);
+				financialInputRequest.setShortTermProvisionFy(liabilitiesDetails.getProvisionalForTaxation() * denom);
 				
-				//========= ===============================================ASSET DETAIL 1 YR==================================================================
-				assetsDetails = assetsDetailsRepository.getAssetsDetails(aplicationId, currentYear-3+"");
+				
+			}else {
+				
+				log.error("first year liability data is null");
+				
+			}
+		} catch (Exception e) {
+				log.error("Error while calculate data of first year liability data");
+		}
+		
+		
+		
+		//========= ===============================================ASSET DETAIL 3 YR==================================================================
+		
+		
+		try {
+			
+			assetsDetails = assetsDetailsRepository.getAssetsDetails(aplicationId, currentYear-1+"");
+			
+			if(assetsDetails != null ) {
 				
 				if(CommonUtils.isObjectNullOrEmpty(assetsDetails)){
 					assetsDetails = new AssetsDetails();
 				}
 				if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getGrossBlock()))
 					assetsDetails.setGrossBlock(0.0);
-				financialInputRequest.setGrossBlockTy(assetsDetails.getGrossBlock() * denom);
+				financialInputRequest.setGrossBlockFy(assetsDetails.getGrossBlock() * denom);
 				
 				if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getDepreciationToDate()))
 					assetsDetails.setDepreciationToDate(0.0);
-				financialInputRequest.setLessAccumulatedDepreTy(assetsDetails.getDepreciationToDate() * denom);
+				financialInputRequest.setLessAccumulatedDepreFy(assetsDetails.getDepreciationToDate() * denom);
 				
 				if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getImpairmentAsset()))
 					assetsDetails.setImpairmentAsset(0.0);
-				financialInputRequest.setImpairmentofAssetTy(assetsDetails.getImpairmentAsset() * denom);
+				financialInputRequest.setImpairmentofAssetFy(assetsDetails.getImpairmentAsset() * denom);
 				
 				if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getOtherNcaOtherCapitalWorkInprogress()))
 					assetsDetails.setOtherNcaOtherCapitalWorkInprogress(0.0);
-				financialInputRequest.setCapitalWorkInProgressTy(assetsDetails.getOtherNcaOtherCapitalWorkInprogress() * denom);
+				financialInputRequest.setCapitalWorkInProgressFy(assetsDetails.getOtherNcaOtherCapitalWorkInprogress() * denom);
 				
 				if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getIntangibleAssets()))
 					assetsDetails.setIntangibleAssets(0.0);
-				financialInputRequest.setIntengibleAssetsTy(assetsDetails.getIntangibleAssets() * denom);
+				financialInputRequest.setIntengibleAssetsFy(assetsDetails.getIntangibleAssets() * denom);
 				
 				if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getOthersPreOperativeExpensesPending()))
 					assetsDetails.setOthersPreOperativeExpensesPending(0.0);
-				financialInputRequest.setPreOperativeExpeTy(assetsDetails.getOthersPreOperativeExpensesPending() * denom);
+				financialInputRequest.setPreOperativeExpeFy(assetsDetails.getOthersPreOperativeExpensesPending() * denom);
 				
 				if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getOthersAssetsInTransit()))
 					assetsDetails.setOthersAssetsInTransit(0.0);
-				financialInputRequest.setAssetInTransitTy(assetsDetails.getOthersAssetsInTransit() * denom);
+				financialInputRequest.setAssetInTransitFy(assetsDetails.getOthersAssetsInTransit() * denom);
 				
 				if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getInvestmentsInSubsidiary()))
 					assetsDetails.setInvestmentsInSubsidiary(0.0);
-				financialInputRequest.setInvestmentInSubsidiariesTy(assetsDetails.getInvestmentsInSubsidiary() * denom);
+				financialInputRequest.setInvestmentInSubsidiariesFy(assetsDetails.getInvestmentsInSubsidiary() * denom);
 				
 				if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getOthersOther()))
 					assetsDetails.setOthersOther(0.0);
@@ -1186,31 +648,31 @@ public class IrrServiceImpl implements IrrService{
 					assetsDetails.setDeferredReceviables(0.0);
 				if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getOthers()))
 					assetsDetails.setOthers(0.0);
-				financialInputRequest.setOtherInvestmentTy((assetsDetails.getOthersOther() + assetsDetails.getDeferredReceviables() + assetsDetails.getOthers()) * denom);
+				financialInputRequest.setOtherInvestmentFy((assetsDetails.getOthersOther() + assetsDetails.getDeferredReceviables() + assetsDetails.getOthers()) * denom);
 				
 				if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getAdvanceToSuppliersCapitalGoods()))
 					assetsDetails.setAdvanceToSuppliersCapitalGoods(0.0);
-				financialInputRequest.setLongTermLoansAndAdvaTy(assetsDetails.getAdvanceToSuppliersCapitalGoods() * denom);
+				financialInputRequest.setLongTermLoansAndAdvaFy(assetsDetails.getAdvanceToSuppliersCapitalGoods() * denom);
 				
 				if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getNonConsumableStoreAndSpares()))
 					assetsDetails.setNonConsumableStoreAndSpares(0.0);
 				if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getOtherNonCurrentAssets()))
 					assetsDetails.setOtherNonCurrentAssets(0.0);
-				financialInputRequest.setOtheNonCurruntAssetTy((assetsDetails.getNonConsumableStoreAndSpares() + assetsDetails.getOtherNonCurrentAssets()) * denom);
+				financialInputRequest.setOtheNonCurruntAssetFy((assetsDetails.getNonConsumableStoreAndSpares() + assetsDetails.getOtherNonCurrentAssets()) * denom);
 				
 				if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getInventory()))
 					assetsDetails.setInventory(0.0);
-				financialInputRequest.setInventoriesTy(assetsDetails.getInventory() * denom);
+				financialInputRequest.setInventoriesFy(assetsDetails.getInventory() * denom);
 				
 				if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getReceivableOtherThanDefferred()))
 					assetsDetails.setReceivableOtherThanDefferred(0.0);
 				if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getExportReceivables()))
 					assetsDetails.setExportReceivables(0.0);
-				financialInputRequest.setSundryDebtorsTy((assetsDetails.getReceivableOtherThanDefferred() + assetsDetails.getExportReceivables()) * denom);
+				financialInputRequest.setSundryDebtorsFy((assetsDetails.getReceivableOtherThanDefferred() + assetsDetails.getExportReceivables()) * denom);
 				
 				if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getCashAndBankBalance()))
 					assetsDetails.setCashAndBankBalance(0.0);
-				financialInputRequest.setCashAndBankTy(assetsDetails.getCashAndBankBalance() * denom);
+				financialInputRequest.setCashAndBankFy(assetsDetails.getCashAndBankBalance() * denom);
 				
 				if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getInvestments()))
 					assetsDetails.setInvestments(0.0);
@@ -1218,27 +680,735 @@ public class IrrServiceImpl implements IrrService{
 					assetsDetails.setInstalmentsDeferred(0.0);
 				if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getOtherCurrentAssets()))
 					assetsDetails.setOtherCurrentAssets(0.0);
-				financialInputRequest.setOtherCurruntAssetTy((assetsDetails.getInvestments() + assetsDetails.getInstalmentsDeferred() + assetsDetails.getOtherCurrentAssets()) * denom);
+				financialInputRequest.setOtherCurruntAssetFy((assetsDetails.getInvestments() + assetsDetails.getInstalmentsDeferred() + assetsDetails.getOtherCurrentAssets()) * denom);
 				
 				if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getAdvanceToSupplierRawMaterials()))
 					assetsDetails.setAdvanceToSupplierRawMaterials(0.0);
 				if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getAdvancePaymentTaxes()))
 					assetsDetails.setAdvancePaymentTaxes(0.0);
-				financialInputRequest.setShortTermLoansAdvancesTy((assetsDetails.getAdvanceToSupplierRawMaterials() + assetsDetails.getAdvancePaymentTaxes()) * denom);
+				financialInputRequest.setShortTermLoansAdvancesFy((assetsDetails.getAdvanceToSupplierRawMaterials() + assetsDetails.getAdvancePaymentTaxes()) * denom);
 				
 				if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getOtherIncomeNeedTocCheckAsset()))
 					assetsDetails.setOtherIncomeNeedTocCheckAsset(0.0);
-				financialInputRequest.setOtherIncomeNeedTocCheckAssetTy(assetsDetails.getOtherIncomeNeedTocCheckAsset() * denom);
+				financialInputRequest.setOtherIncomeNeedTocCheckAssetFy(assetsDetails.getOtherIncomeNeedTocCheckAsset() * denom);
 				
 				// -----CONTIGENT LIABILITIES
-		if(corporateFinalInfoRequest == null)
-			financialInputRequest.setContingentLiablitiestTy(null);
-		else
-			financialInputRequest.setContingentLiablitiestTy(CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getContLiabilityTyAmt()) ? 0.0 : (corporateFinalInfoRequest.getContLiabilityTyAmt() * denom));
+				if(corporateFinalInfoRequest == null)
+					financialInputRequest.setContingentLiablitiesFy(null);
+				else
+					financialInputRequest.setContingentLiablitiesFy(CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getContLiabilityFyAmt()) ? 0.0 : (corporateFinalInfoRequest.getContLiabilityFyAmt()* denom));
+				
+				
+			}else {
+				
+				log.error("first year asset details is null");
+				
+			}
+			
+		} catch (Exception e) {
+				
+			log.error("error while getting first year asset details");
+			e.printStackTrace();
+			
+		}
+		
+		
+		//----------------------------------------------------------------SECOND YEAR DATA---------------------------------------------------------------------
+		//========= ================================================OPERATINGSTATEMENT DETAIL 2 YR=========================================================
+		operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStatementDetails(aplicationId, currentYear-2+"");
+			
+		
+		try {
+			
+			if(operatingStatementDetails != null) {
+				
+				log.info("App Id::"+aplicationId);
+				log.info("currentYear-1::"+(currentYear-1));
+				log.info("operatingStatementDetails.getDepreciation()::"+operatingStatementDetails.getDepreciation());
+				
+				if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails)){
+					operatingStatementDetails = new OperatingStatementDetails();
+				}
+				if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getDomesticSales()))
+					operatingStatementDetails.setDomesticSales(0.0);
+				if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getDomesticSales()))
+					operatingStatementDetails.setExportSales(0.0);		
+				financialInputRequest.setGrossSalesSy((operatingStatementDetails.getDomesticSales()+operatingStatementDetails.getExportSales()) * denom);
+				
+				if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getLessExciseDuty()))
+					operatingStatementDetails.setLessExciseDuty(0.0);
+				if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getDeductOtherItems()))
+					operatingStatementDetails.setDeductOtherItems(0.0);	
+				financialInputRequest.setLessExciseDuitySy((operatingStatementDetails.getLessExciseDuty()+operatingStatementDetails.getDeductOtherItems()) * denom);
+				
+				if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getAddOperatingStock()))
+					operatingStatementDetails.setAddOperatingStock(0.0);
+				if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getDeductStockInProcess()))
+					operatingStatementDetails.setDeductStockInProcess(0.0);	
+				if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getAddOperatingStockFg()))
+					operatingStatementDetails.setAddOperatingStockFg(0.0);
+				if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getDeductClStockFg()))
+					operatingStatementDetails.setDeductClStockFg(0.0);	
+				financialInputRequest.setIncreaseDecreaseStockSy(((operatingStatementDetails.getAddOperatingStock()-operatingStatementDetails.getDeductStockInProcess()) + (operatingStatementDetails.getAddOperatingStockFg()-operatingStatementDetails.getDeductClStockFg())) * denom);
+				
+				
+				if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getRawMaterials()))
+					operatingStatementDetails.setRawMaterials(0.0);
+				if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getOtherSpares()))
+					operatingStatementDetails.setOtherSpares(0.0);	
+				financialInputRequest.setRawMaterialConsumedSy((operatingStatementDetails.getRawMaterials()+operatingStatementDetails.getOtherSpares()) * denom);
+				
+				
+				if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getPowerAndFuel()))
+					operatingStatementDetails.setPowerAndFuel(0.0);
+				financialInputRequest.setPowerAndFuelCostSy(operatingStatementDetails.getPowerAndFuel() * denom);
+				
+				if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getDirectLabour()))
+					operatingStatementDetails.setDirectLabour(0.0);
+				financialInputRequest.setEmployeeCostSy(operatingStatementDetails.getDirectLabour() * denom);
+
+				if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getSellingGenlAdmnExpenses()))
+					operatingStatementDetails.setSellingGenlAdmnExpenses(0.0);
+				financialInputRequest.setGeneralAndAdminExpeSy(operatingStatementDetails.getSellingGenlAdmnExpenses() * denom);
+				
+				if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getSellingAndDistributionExpenses()))
+					operatingStatementDetails.setSellingAndDistributionExpenses(0.0);
+				financialInputRequest.setSellingAndDistriExpeSy(operatingStatementDetails.getSellingAndDistributionExpenses() * denom);
+				
+				if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getExpensesAmortised()))
+					operatingStatementDetails.setExpensesAmortised(0.0);
+				financialInputRequest.setLessExpeCapitaSy(operatingStatementDetails.getExpensesAmortised() * denom);
+				
+				if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getOtherMfgExpenses()))
+					operatingStatementDetails.setOtherMfgExpenses(0.0);
+				financialInputRequest.setMiscelExpeSy(operatingStatementDetails.getOtherMfgExpenses() * denom);
+				
+				if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getAddOtherRevenueIncome()))
+					operatingStatementDetails.setAddOtherRevenueIncome(0.0);
+				financialInputRequest.setOtherIncomeSy(operatingStatementDetails.getAddOtherRevenueIncome() * denom);
+				
+				if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getInterest()))
+					operatingStatementDetails.setInterest(0.0);
+				financialInputRequest.setInterestSy(operatingStatementDetails.getInterest() * denom);
+				
+				if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getDepreciation()))
+					operatingStatementDetails.setDepreciation(0.0);
+				financialInputRequest.setDepriciationSy(operatingStatementDetails.getDepreciation() * denom);
+				
+				if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getNetofNonOpIncomeOrExpenses()))
+					operatingStatementDetails.setNetofNonOpIncomeOrExpenses(0.0);
+				financialInputRequest.setExceptionalIncomeSy(operatingStatementDetails.getNetofNonOpIncomeOrExpenses() * denom);
+				
+				if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getProvisionForTaxes()))
+					operatingStatementDetails.setProvisionForTaxes(0.0);
+				if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getProvisionForDeferredTax()))
+					operatingStatementDetails.setProvisionForDeferredTax(0.0);
+				financialInputRequest.setProvisionForTaxSy((operatingStatementDetails.getProvisionForTaxes() + operatingStatementDetails.getProvisionForDeferredTax()) * denom);
+				
+				if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getOtherIncomeNeedTocCheckOp()))
+					operatingStatementDetails.setOtherIncomeNeedTocCheckOp(0.0);
+				financialInputRequest.setOtherIncomeNeedTocCheckOpSy(operatingStatementDetails.getOtherIncomeNeedTocCheckOp() * denom);
+				
+				if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getEquityDeividendPaidAmt()))
+					operatingStatementDetails.setEquityDeividendPaidAmt(0.0);
+				financialInputRequest.setDividendPayOutSy(operatingStatementDetails.getEquityDeividendPaidAmt() * denom);		
+				
+			}else {
+				
+				log.error("second year data is null of operating Statement");
+				
+			}
+			
+		} catch (Exception e) {
+				log.error("error while fetching second year operating data");
+				e.printStackTrace();
+		}
+		
+		
+
+		//========= ===============================================LIABILITIES DETAIL 2 YR==================================================================
+		
+		
+		try {
+			
+			liabilitiesDetails = liabilitiesDetailsRepository.getLiabilitiesDetails(aplicationId, currentYear-2+"");
+			
+			if(liabilitiesDetails != null) {
+				
+				if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails)){
+					liabilitiesDetails = new LiabilitiesDetails();
+				}
+				if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getPreferencesShares()))
+					liabilitiesDetails.setPreferencesShares(0.0);
+				if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getOrdinarySharesCapital()))
+					liabilitiesDetails.setOrdinarySharesCapital(0.0);
+				financialInputRequest.setShareCapitalSy((liabilitiesDetails.getPreferencesShares() + liabilitiesDetails.getOrdinarySharesCapital()) * denom);
+				
+				if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getShareWarrentsOutstanding()))
+					liabilitiesDetails.setShareWarrentsOutstanding(0.0);
+				financialInputRequest.setShareWarrantOutstandingsSy(liabilitiesDetails.getShareWarrentsOutstanding() * denom);
+				
+				if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getRevaluationReservse()))
+					liabilitiesDetails.setRevaluationReservse(0.0);
+				financialInputRequest.setRevalationReserveSy(liabilitiesDetails.getRevaluationReservse() * denom);
+				
+				if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getGeneralReserve()))
+					liabilitiesDetails.setGeneralReserve(0.0);
+				if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getOtherReservse()))
+					liabilitiesDetails.setOtherReservse(0.0);
+				if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getSurplusOrDeficit()))
+					liabilitiesDetails.setSurplusOrDeficit(0.0);
+				if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getOthers()))
+					liabilitiesDetails.setOthers(0.0);
+				financialInputRequest.setOtherReserveAndSurplusSy((liabilitiesDetails.getGeneralReserve() + liabilitiesDetails.getOtherReservse() + liabilitiesDetails.getSurplusOrDeficit() + liabilitiesDetails.getOthers()) * denom);
+				
+				if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getMinorityInterest()))
+					liabilitiesDetails.setMinorityInterest(0.0);
+				financialInputRequest.setMinorityInterestSy(liabilitiesDetails.getMinorityInterest() * denom);
+				
+				if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getTermLiabilitiesSecured()))
+					liabilitiesDetails.setTermLiabilitiesSecured(0.0);
+				financialInputRequest.setSecuredLoansSy(liabilitiesDetails.getTermLiabilitiesSecured() * denom);
+				
+				if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getOtherNclUnsecuredLoansFromPromoters()))
+					liabilitiesDetails.setOtherNclUnsecuredLoansFromPromoters(0.0);
+				financialInputRequest.setUnsecuredLoansPromotersSy(liabilitiesDetails.getOtherNclUnsecuredLoansFromPromoters() * denom);
+				
+				if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getOtherNclUnsecuredLoansFromOther()))
+					liabilitiesDetails.setOtherNclUnsecuredLoansFromOther(0.0);
+				if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getTermLiabilitiesUnsecured()))
+					liabilitiesDetails.setTermLiabilitiesUnsecured(0.0);
+				financialInputRequest.setUnsecuredLoansOthersSy((liabilitiesDetails.getOtherNclUnsecuredLoansFromOther() + liabilitiesDetails.getTermLiabilitiesUnsecured()) * denom);
+				
+				if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getSubTotalA()))
+					liabilitiesDetails.setSubTotalA(0.0);
+				if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getShortTermBorrowingFromOthers()))
+					liabilitiesDetails.setShortTermBorrowingFromOthers(0.0);
+				financialInputRequest.setOtherBorrowingSy((liabilitiesDetails.getSubTotalA() + liabilitiesDetails.getShortTermBorrowingFromOthers()) * denom);
+				
+				if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getDeferredTaxLiability()))
+					liabilitiesDetails.setDeferredTaxLiability(0.0);
+				financialInputRequest.setDeferredTaxLiablitiesSy(liabilitiesDetails.getDeferredTaxLiability() * denom);
+				
+				if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getOtherNclOthers()))
+					liabilitiesDetails.setOtherNclOthers(0.0);
+				if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getDeferredPaymentsCredits()))
+					liabilitiesDetails.setDeferredPaymentsCredits(0.0);
+				if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getTermDeposits()))
+					liabilitiesDetails.setTermDeposits(0.0);
+				if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getDebentures()))
+					liabilitiesDetails.setDebentures(0.0);
+				if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getOtherTermLiabilies()))
+					liabilitiesDetails.setOtherTermLiabilies(0.0);
+				financialInputRequest.setOtherLongTermLiablitiesSy((liabilitiesDetails.getOtherNclOthers() + liabilitiesDetails.getDeferredPaymentsCredits() + liabilitiesDetails.getTermDeposits() + liabilitiesDetails.getDebentures() + liabilitiesDetails.getOtherTermLiabilies()) * denom);
+				
+				if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getOtherNclLongTermProvisions()))
+					liabilitiesDetails.setOtherNclLongTermProvisions(0.0);
+				financialInputRequest.setLongTermProvisionSy(liabilitiesDetails.getOtherNclLongTermProvisions() * denom);
+				
+				if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getSundryCreditors()))
+					liabilitiesDetails.setSundryCreditors(0.0);
+				financialInputRequest.setTradePayablesSy(liabilitiesDetails.getSundryCreditors() * denom);
+				
+				if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getAdvancePaymentsFromCustomers()))
+					liabilitiesDetails.setAdvancePaymentsFromCustomers(0.0);
+				if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getDividendPayable()))
+					liabilitiesDetails.setDividendPayable(0.0);
+				if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getOtherStatutoryLiability()))
+					liabilitiesDetails.setOtherStatutoryLiability(0.0);
+				if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getOtherCurrentLiability()))
+					liabilitiesDetails.setOtherCurrentLiability(0.0);
+				if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getDepositsOrInstalmentsOfTermLoans()))
+					liabilitiesDetails.setDepositsOrInstalmentsOfTermLoans(0.0);
+				financialInputRequest.setOtherCurruntLiablitiesSy((liabilitiesDetails.getAdvancePaymentsFromCustomers() + liabilitiesDetails.getDividendPayable() + liabilitiesDetails.getOtherStatutoryLiability() + liabilitiesDetails.getOtherCurrentLiability() + liabilitiesDetails.getDepositsOrInstalmentsOfTermLoans()) * denom);
+				
+				if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getOtherIncomeNeedTocCheckLia()))
+					liabilitiesDetails.setOtherIncomeNeedTocCheckLia(0.0);
+				financialInputRequest.setOtherIncomeNeedTocCheckLiaSy(liabilitiesDetails.getOtherIncomeNeedTocCheckLia() * denom);
+				
+				if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getProvisionalForTaxation()))
+					liabilitiesDetails.setProvisionalForTaxation(0.0);
+				financialInputRequest.setShortTermProvisionSy(liabilitiesDetails.getProvisionalForTaxation() * denom);
+				
+			}else {
+				
+				log.error("2nd year liability data is null");
+				
+			}
+			
+		} catch (Exception e) {
+			log.error("error while fetching 2nd year liability data ");
+			e.printStackTrace();
+		}
+		
+		
+		
+		//========= ===============================================ASSET DETAIL 2 YR==================================================================
+		
+		
+		try {
+			
+			assetsDetails = assetsDetailsRepository.getAssetsDetails(aplicationId, currentYear-2+"");
+			
+			if(assetsDetails != null) {
+				if(CommonUtils.isObjectNullOrEmpty(assetsDetails)){
+					assetsDetails = new AssetsDetails();
+				}
+				if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getGrossBlock()))
+					assetsDetails.setGrossBlock(0.0);
+				financialInputRequest.setGrossBlockSy(assetsDetails.getGrossBlock() * denom);
+				
+				if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getDepreciationToDate()))
+					assetsDetails.setDepreciationToDate(0.0);
+				financialInputRequest.setLessAccumulatedDepreSy(assetsDetails.getDepreciationToDate() * denom);
+				
+				if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getImpairmentAsset()))
+					assetsDetails.setImpairmentAsset(0.0);
+				financialInputRequest.setImpairmentofAssetSy(assetsDetails.getImpairmentAsset() * denom);
+				
+				if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getOtherNcaOtherCapitalWorkInprogress()))
+					assetsDetails.setOtherNcaOtherCapitalWorkInprogress(0.0);
+				financialInputRequest.setCapitalWorkInProgressSy(assetsDetails.getOtherNcaOtherCapitalWorkInprogress() * denom);
+				
+				if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getIntangibleAssets()))
+					assetsDetails.setIntangibleAssets(0.0);
+				financialInputRequest.setIntengibleAssetsSy(assetsDetails.getIntangibleAssets() * denom);
+				
+				if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getOthersPreOperativeExpensesPending()))
+					assetsDetails.setOthersPreOperativeExpensesPending(0.0);
+				financialInputRequest.setPreOperativeExpeSy(assetsDetails.getOthersPreOperativeExpensesPending() * denom);
+				
+				if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getOthersAssetsInTransit()))
+					assetsDetails.setOthersAssetsInTransit(0.0);
+				financialInputRequest.setAssetInTransitSy(assetsDetails.getOthersAssetsInTransit() * denom);
+				
+				if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getInvestmentsInSubsidiary()))
+					assetsDetails.setInvestmentsInSubsidiary(0.0);
+				financialInputRequest.setInvestmentInSubsidiariesSy(assetsDetails.getInvestmentsInSubsidiary() * denom);
+				
+				if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getOthersOther()))
+					assetsDetails.setOthersOther(0.0);
+				if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getDeferredReceviables()))
+					assetsDetails.setDeferredReceviables(0.0);
+				if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getOthers()))
+					assetsDetails.setOthers(0.0);
+				financialInputRequest.setOtherInvestmentSy((assetsDetails.getOthersOther() + assetsDetails.getDeferredReceviables() + assetsDetails.getOthers()) * denom);
+				
+				if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getAdvanceToSuppliersCapitalGoods()))
+					assetsDetails.setAdvanceToSuppliersCapitalGoods(0.0);
+				financialInputRequest.setLongTermLoansAndAdvaSy(assetsDetails.getAdvanceToSuppliersCapitalGoods() * denom);
+				
+				if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getNonConsumableStoreAndSpares()))
+					assetsDetails.setNonConsumableStoreAndSpares(0.0);
+				if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getOtherNonCurrentAssets()))
+					assetsDetails.setOtherNonCurrentAssets(0.0);
+				financialInputRequest.setOtheNonCurruntAssetSy((assetsDetails.getNonConsumableStoreAndSpares() + assetsDetails.getOtherNonCurrentAssets()) * denom);
+				
+				if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getInventory()))
+					assetsDetails.setInventory(0.0);
+				financialInputRequest.setInventoriesSy(assetsDetails.getInventory() * denom);
+				
+				if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getReceivableOtherThanDefferred()))
+					assetsDetails.setReceivableOtherThanDefferred(0.0);
+				if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getExportReceivables()))
+					assetsDetails.setExportReceivables(0.0);
+				financialInputRequest.setSundryDebtorsSy((assetsDetails.getReceivableOtherThanDefferred() + assetsDetails.getExportReceivables()) * denom);
+				
+				if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getCashAndBankBalance()))
+					assetsDetails.setCashAndBankBalance(0.0);
+				financialInputRequest.setCashAndBankSy(assetsDetails.getCashAndBankBalance() * denom);
+				
+				if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getInvestments()))
+					assetsDetails.setInvestments(0.0);
+				if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getInstalmentsDeferred()))
+					assetsDetails.setInstalmentsDeferred(0.0);
+				if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getOtherCurrentAssets()))
+					assetsDetails.setOtherCurrentAssets(0.0);
+				financialInputRequest.setOtherCurruntAssetSy((assetsDetails.getInvestments() + assetsDetails.getInstalmentsDeferred() + assetsDetails.getOtherCurrentAssets()) * denom);
+				
+				if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getAdvanceToSupplierRawMaterials()))
+					assetsDetails.setAdvanceToSupplierRawMaterials(0.0);
+				if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getAdvancePaymentTaxes()))
+					assetsDetails.setAdvancePaymentTaxes(0.0);
+				financialInputRequest.setShortTermLoansAdvancesSy((assetsDetails.getAdvanceToSupplierRawMaterials() + assetsDetails.getAdvancePaymentTaxes()) * denom);
+				
+				if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getOtherIncomeNeedTocCheckAsset()))
+					assetsDetails.setOtherIncomeNeedTocCheckAsset(0.0);
+				financialInputRequest.setOtherIncomeNeedTocCheckAssetSy(assetsDetails.getOtherIncomeNeedTocCheckAsset() * denom);
+				// -----CONTIGENT LIABILITIES
+				if(corporateFinalInfoRequest == null)
+					financialInputRequest.setContingentLiablitiesSy(null);
+				else
+				financialInputRequest.setContingentLiablitiesSy(CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getContLiabilitySyAmt()) ? 0.0 : (corporateFinalInfoRequest.getContLiabilitySyAmt() * denom));
+				
+				
+			}else {
+				log.error("2nd year asset data is null");
+			}
+			
+		} catch (Exception e) {
+			log.error("error while fetching 2nd year data asset");
+			e.printStackTrace();
+		}
+		
+		
+		
+		
+		// ----------------------------------------FIRST YEAR DATA---------------------------------------------------------------------------------------
+		//========= ==========================================OPERATINGSTATEMENT DETAIL 1 YR========================================================
+		
+		
+		
+		try {
+			
+			operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStatementDetails(aplicationId, currentYear-3+"");
+			
+			if(operatingStatementDetails != null) {
+				
+				log.info("App Id::"+aplicationId);
+				log.info("currentYear-1::"+(currentYear-1));
+				if(operatingStatementDetails!=null) {
+				log.info("operatingStatementDetails.getDepreciation()::"+operatingStatementDetails.getDepreciation());
+				}else {
+					log.info("operatingStatementDetails is:: NULL");
+				}
+				
+				if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails)){
+					operatingStatementDetails = new OperatingStatementDetails();
+					operatingStatementDetails.setDepreciation(0.0);
+				}
+				if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getDomesticSales()))
+					operatingStatementDetails.setDomesticSales(0.0);
+				if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getDomesticSales()))
+					operatingStatementDetails.setExportSales(0.0);		
+				financialInputRequest.setGrossSalesTy((operatingStatementDetails.getDomesticSales()+operatingStatementDetails.getExportSales()) * denom);
+				
+				if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getLessExciseDuty()))
+					operatingStatementDetails.setLessExciseDuty(0.0);
+				if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getDeductOtherItems()))
+					operatingStatementDetails.setDeductOtherItems(0.0);	
+				financialInputRequest.setLessExciseDuityTy((operatingStatementDetails.getLessExciseDuty()+operatingStatementDetails.getDeductOtherItems()) * denom);
+				
+				if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getAddOperatingStock()))
+					operatingStatementDetails.setAddOperatingStock(0.0);
+				if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getDeductStockInProcess()))
+					operatingStatementDetails.setDeductStockInProcess(0.0);	
+				if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getAddOperatingStockFg()))
+					operatingStatementDetails.setAddOperatingStockFg(0.0);
+				if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getDeductClStockFg()))
+					operatingStatementDetails.setDeductClStockFg(0.0);	
+				financialInputRequest.setIncreaseDecreaseStockTy(((operatingStatementDetails.getAddOperatingStock()-operatingStatementDetails.getDeductStockInProcess()) + (operatingStatementDetails.getAddOperatingStockFg()-operatingStatementDetails.getDeductClStockFg())) * denom);
+				
+				
+				if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getRawMaterials()))
+					operatingStatementDetails.setRawMaterials(0.0);
+				if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getOtherSpares()))
+					operatingStatementDetails.setOtherSpares(0.0);	
+				financialInputRequest.setRawMaterialConsumedTy((operatingStatementDetails.getRawMaterials()+operatingStatementDetails.getOtherSpares()) * denom);
+				
+				
+				if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getPowerAndFuel()))
+					operatingStatementDetails.setPowerAndFuel(0.0);
+				financialInputRequest.setPowerAndFuelCostTy(operatingStatementDetails.getPowerAndFuel() * denom);
+				
+				if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getDirectLabour()))
+					operatingStatementDetails.setDirectLabour(0.0);
+				financialInputRequest.setEmployeeCostTy(operatingStatementDetails.getDirectLabour() * denom);
+
+				if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getSellingGenlAdmnExpenses()))
+					operatingStatementDetails.setSellingGenlAdmnExpenses(0.0);
+				financialInputRequest.setGeneralAndAdminExpeTy(operatingStatementDetails.getSellingGenlAdmnExpenses() * denom);
+				
+				if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getSellingAndDistributionExpenses()))
+					operatingStatementDetails.setSellingAndDistributionExpenses(0.0);
+				financialInputRequest.setSellingAndDistriExpeTy(operatingStatementDetails.getSellingAndDistributionExpenses() * denom);
+				
+				if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getExpensesAmortised()))
+					operatingStatementDetails.setExpensesAmortised(0.0);
+				financialInputRequest.setLessExpeCapitaTy(operatingStatementDetails.getExpensesAmortised() * denom);
+				
+				if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getOtherMfgExpenses()))
+					operatingStatementDetails.setOtherMfgExpenses(0.0);
+				financialInputRequest.setMiscelExpeTy(operatingStatementDetails.getOtherMfgExpenses() * denom);
+				
+				if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getAddOtherRevenueIncome()))
+					operatingStatementDetails.setAddOtherRevenueIncome(0.0);
+				financialInputRequest.setOtherIncomeTy(operatingStatementDetails.getAddOtherRevenueIncome() * denom);
+				
+				if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getInterest()))
+					operatingStatementDetails.setInterest(0.0);
+				financialInputRequest.setInterestTy(operatingStatementDetails.getInterest() * denom);
+				
+				if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getDepreciation()))
+					operatingStatementDetails.setDepreciation(0.0);
+				financialInputRequest.setDepriciationTy(operatingStatementDetails.getDepreciation() * denom);
+				
+				if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getNetofNonOpIncomeOrExpenses()))
+					operatingStatementDetails.setNetofNonOpIncomeOrExpenses(0.0);
+				financialInputRequest.setExceptionalIncomeTy(operatingStatementDetails.getNetofNonOpIncomeOrExpenses() * denom);
+				
+				if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getProvisionForTaxes()))
+					operatingStatementDetails.setProvisionForTaxes(0.0);
+				if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getProvisionForDeferredTax()))
+					operatingStatementDetails.setProvisionForDeferredTax(0.0);
+				financialInputRequest.setProvisionForTaxTy((operatingStatementDetails.getProvisionForTaxes() + operatingStatementDetails.getProvisionForDeferredTax()) * denom);
+				
+				if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getOtherIncomeNeedTocCheckOp()))
+					operatingStatementDetails.setOtherIncomeNeedTocCheckOp(0.0);
+				financialInputRequest.setOtherIncomeNeedTocCheckOpTy(operatingStatementDetails.getOtherIncomeNeedTocCheckOp() * denom);
+				
+				if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails.getEquityDeividendPaidAmt()))
+					operatingStatementDetails.setEquityDeividendPaidAmt(0.0);
+				financialInputRequest.setDividendPayOutTy(operatingStatementDetails.getEquityDeividendPaidAmt() * denom);
+				
+				
+			}else {
+				
+				log.error("os data is null");
+				
+			}
+			
+			
+		} catch (Exception e) {
+			log.error("error while fetching os data");
+			e.printStackTrace();
+		}
+		
+		
+		//========= ===============================================LIABILITIES DETAIL 1 YR==================================================================
+				
+				
+				try {
+					
+					liabilitiesDetails = liabilitiesDetailsRepository.getLiabilitiesDetails(aplicationId, currentYear-3+"");
+					
+					if(liabilitiesDetails != null) {
+						
+						if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails)){
+							liabilitiesDetails = new LiabilitiesDetails();
+						}
+						if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getPreferencesShares()))
+							liabilitiesDetails.setPreferencesShares(0.0);
+						if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getOrdinarySharesCapital()))
+							liabilitiesDetails.setOrdinarySharesCapital(0.0);
+						financialInputRequest.setShareCapitalTy((liabilitiesDetails.getPreferencesShares() + liabilitiesDetails.getOrdinarySharesCapital()) * denom);
+						
+						if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getShareWarrentsOutstanding()))
+							liabilitiesDetails.setShareWarrentsOutstanding(0.0);
+						financialInputRequest.setShareWarrantOutstandingsTy(liabilitiesDetails.getShareWarrentsOutstanding() * denom);
+						
+						if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getRevaluationReservse()))
+							liabilitiesDetails.setRevaluationReservse(0.0);
+						financialInputRequest.setRevalationReserveTy(liabilitiesDetails.getRevaluationReservse() * denom);
+						
+						if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getGeneralReserve()))
+							liabilitiesDetails.setGeneralReserve(0.0);
+						if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getOtherReservse()))
+							liabilitiesDetails.setOtherReservse(0.0);
+						if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getSurplusOrDeficit()))
+							liabilitiesDetails.setSurplusOrDeficit(0.0);
+						if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getOthers()))
+							liabilitiesDetails.setOthers(0.0);
+						financialInputRequest.setOtherReserveAndSurplusTy((liabilitiesDetails.getGeneralReserve() + liabilitiesDetails.getOtherReservse() + liabilitiesDetails.getSurplusOrDeficit() + liabilitiesDetails.getOthers()) * denom);
+						
+						if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getMinorityInterest()))
+							liabilitiesDetails.setMinorityInterest(0.0);
+						financialInputRequest.setMinorityInterestTy(liabilitiesDetails.getMinorityInterest() * denom);
+						
+						if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getTermLiabilitiesSecured()))
+							liabilitiesDetails.setTermLiabilitiesSecured(0.0);
+						financialInputRequest.setSecuredLoansTy(liabilitiesDetails.getTermLiabilitiesSecured() * denom);
+						
+						if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getOtherNclUnsecuredLoansFromPromoters()))
+							liabilitiesDetails.setOtherNclUnsecuredLoansFromPromoters(0.0);
+						financialInputRequest.setUnsecuredLoansPromotersTy(liabilitiesDetails.getOtherNclUnsecuredLoansFromPromoters() * denom);
+						
+						if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getOtherNclUnsecuredLoansFromOther()))
+							liabilitiesDetails.setOtherNclUnsecuredLoansFromOther(0.0);
+						if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getTermLiabilitiesUnsecured()))
+							liabilitiesDetails.setTermLiabilitiesUnsecured(0.0);
+						financialInputRequest.setUnsecuredLoansOthersTy((liabilitiesDetails.getOtherNclUnsecuredLoansFromOther() + liabilitiesDetails.getTermLiabilitiesUnsecured()) * denom);
+						
+						if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getSubTotalA()))
+							liabilitiesDetails.setSubTotalA(0.0);
+						if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getShortTermBorrowingFromOthers()))
+							liabilitiesDetails.setShortTermBorrowingFromOthers(0.0);
+						financialInputRequest.setOtherBorrowingTy((liabilitiesDetails.getSubTotalA() + liabilitiesDetails.getShortTermBorrowingFromOthers()) * denom);
+						
+						if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getDeferredTaxLiability()))
+							liabilitiesDetails.setDeferredTaxLiability(0.0);
+						financialInputRequest.setDeferredTaxLiablitiesTy(liabilitiesDetails.getDeferredTaxLiability() * denom);
+						
+						if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getOtherNclOthers()))
+							liabilitiesDetails.setOtherNclOthers(0.0);
+						if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getDeferredPaymentsCredits()))
+							liabilitiesDetails.setDeferredPaymentsCredits(0.0);
+						if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getTermDeposits()))
+							liabilitiesDetails.setTermDeposits(0.0);
+						if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getDebentures()))
+							liabilitiesDetails.setDebentures(0.0);
+						if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getOtherTermLiabilies()))
+							liabilitiesDetails.setOtherTermLiabilies(0.0);
+						financialInputRequest.setOtherLongTermLiablitiesTy((liabilitiesDetails.getOtherNclOthers() + liabilitiesDetails.getDeferredPaymentsCredits() + liabilitiesDetails.getTermDeposits() + liabilitiesDetails.getDebentures() + liabilitiesDetails.getOtherTermLiabilies()) * denom);
+						
+						if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getOtherNclLongTermProvisions()))
+							liabilitiesDetails.setOtherNclLongTermProvisions(0.0);
+						financialInputRequest.setLongTermProvisionTy(liabilitiesDetails.getOtherNclLongTermProvisions() * denom);
+						
+						if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getSundryCreditors()))
+							liabilitiesDetails.setSundryCreditors(0.0);
+						financialInputRequest.setTradePayablesTy(liabilitiesDetails.getSundryCreditors() * denom);
+						
+						if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getAdvancePaymentsFromCustomers()))
+							liabilitiesDetails.setAdvancePaymentsFromCustomers(0.0);
+						if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getDividendPayable()))
+							liabilitiesDetails.setDividendPayable(0.0);
+						if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getOtherStatutoryLiability()))
+							liabilitiesDetails.setOtherStatutoryLiability(0.0);
+						if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getOtherCurrentLiability()))
+							liabilitiesDetails.setOtherCurrentLiability(0.0);
+						if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getDepositsOrInstalmentsOfTermLoans()))
+							liabilitiesDetails.setDepositsOrInstalmentsOfTermLoans(0.0);
+						financialInputRequest.setOtherCurruntLiablitiesTy((liabilitiesDetails.getAdvancePaymentsFromCustomers() + liabilitiesDetails.getDividendPayable() + liabilitiesDetails.getOtherStatutoryLiability() + liabilitiesDetails.getOtherCurrentLiability() + liabilitiesDetails.getDepositsOrInstalmentsOfTermLoans()) * denom);
+						
+						if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getOtherIncomeNeedTocCheckLia()))
+							liabilitiesDetails.setOtherIncomeNeedTocCheckLia(0.0);
+						financialInputRequest.setOtherIncomeNeedTocCheckLiaTy(liabilitiesDetails.getOtherIncomeNeedTocCheckLia() * denom);
+						
+						if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails.getProvisionalForTaxation()))
+							liabilitiesDetails.setProvisionalForTaxation(0.0);
+						financialInputRequest.setShortTermProvisionTy(liabilitiesDetails.getProvisionalForTaxation() * denom);
+						
+					}else {
+						log.error("liability data is null");
+					}
+					
+				} catch (Exception e) {
+					log.error("error while fetching liability data");
+					e.printStackTrace();
+				}
+				
+				
+				
+				
+				//========= ===============================================ASSET DETAIL 1 YR==================================================================
+				
+				
+				try {
+					
+					assetsDetails = assetsDetailsRepository.getAssetsDetails(aplicationId, currentYear-3+"");
+					
+					if(assetsDetails != null) {
+						if(CommonUtils.isObjectNullOrEmpty(assetsDetails)){
+							assetsDetails = new AssetsDetails();
+						}
+						if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getGrossBlock()))
+							assetsDetails.setGrossBlock(0.0);
+						financialInputRequest.setGrossBlockTy(assetsDetails.getGrossBlock() * denom);
+						
+						if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getDepreciationToDate()))
+							assetsDetails.setDepreciationToDate(0.0);
+						financialInputRequest.setLessAccumulatedDepreTy(assetsDetails.getDepreciationToDate() * denom);
+						
+						if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getImpairmentAsset()))
+							assetsDetails.setImpairmentAsset(0.0);
+						financialInputRequest.setImpairmentofAssetTy(assetsDetails.getImpairmentAsset() * denom);
+						
+						if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getOtherNcaOtherCapitalWorkInprogress()))
+							assetsDetails.setOtherNcaOtherCapitalWorkInprogress(0.0);
+						financialInputRequest.setCapitalWorkInProgressTy(assetsDetails.getOtherNcaOtherCapitalWorkInprogress() * denom);
+						
+						if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getIntangibleAssets()))
+							assetsDetails.setIntangibleAssets(0.0);
+						financialInputRequest.setIntengibleAssetsTy(assetsDetails.getIntangibleAssets() * denom);
+						
+						if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getOthersPreOperativeExpensesPending()))
+							assetsDetails.setOthersPreOperativeExpensesPending(0.0);
+						financialInputRequest.setPreOperativeExpeTy(assetsDetails.getOthersPreOperativeExpensesPending() * denom);
+						
+						if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getOthersAssetsInTransit()))
+							assetsDetails.setOthersAssetsInTransit(0.0);
+						financialInputRequest.setAssetInTransitTy(assetsDetails.getOthersAssetsInTransit() * denom);
+						
+						if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getInvestmentsInSubsidiary()))
+							assetsDetails.setInvestmentsInSubsidiary(0.0);
+						financialInputRequest.setInvestmentInSubsidiariesTy(assetsDetails.getInvestmentsInSubsidiary() * denom);
+						
+						if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getOthersOther()))
+							assetsDetails.setOthersOther(0.0);
+						if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getDeferredReceviables()))
+							assetsDetails.setDeferredReceviables(0.0);
+						if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getOthers()))
+							assetsDetails.setOthers(0.0);
+						financialInputRequest.setOtherInvestmentTy((assetsDetails.getOthersOther() + assetsDetails.getDeferredReceviables() + assetsDetails.getOthers()) * denom);
+						
+						if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getAdvanceToSuppliersCapitalGoods()))
+							assetsDetails.setAdvanceToSuppliersCapitalGoods(0.0);
+						financialInputRequest.setLongTermLoansAndAdvaTy(assetsDetails.getAdvanceToSuppliersCapitalGoods() * denom);
+						
+						if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getNonConsumableStoreAndSpares()))
+							assetsDetails.setNonConsumableStoreAndSpares(0.0);
+						if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getOtherNonCurrentAssets()))
+							assetsDetails.setOtherNonCurrentAssets(0.0);
+						financialInputRequest.setOtheNonCurruntAssetTy((assetsDetails.getNonConsumableStoreAndSpares() + assetsDetails.getOtherNonCurrentAssets()) * denom);
+						
+						if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getInventory()))
+							assetsDetails.setInventory(0.0);
+						financialInputRequest.setInventoriesTy(assetsDetails.getInventory() * denom);
+						
+						if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getReceivableOtherThanDefferred()))
+							assetsDetails.setReceivableOtherThanDefferred(0.0);
+						if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getExportReceivables()))
+							assetsDetails.setExportReceivables(0.0);
+						financialInputRequest.setSundryDebtorsTy((assetsDetails.getReceivableOtherThanDefferred() + assetsDetails.getExportReceivables()) * denom);
+						
+						if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getCashAndBankBalance()))
+							assetsDetails.setCashAndBankBalance(0.0);
+						financialInputRequest.setCashAndBankTy(assetsDetails.getCashAndBankBalance() * denom);
+						
+						if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getInvestments()))
+							assetsDetails.setInvestments(0.0);
+						if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getInstalmentsDeferred()))
+							assetsDetails.setInstalmentsDeferred(0.0);
+						if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getOtherCurrentAssets()))
+							assetsDetails.setOtherCurrentAssets(0.0);
+						financialInputRequest.setOtherCurruntAssetTy((assetsDetails.getInvestments() + assetsDetails.getInstalmentsDeferred() + assetsDetails.getOtherCurrentAssets()) * denom);
+						
+						if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getAdvanceToSupplierRawMaterials()))
+							assetsDetails.setAdvanceToSupplierRawMaterials(0.0);
+						if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getAdvancePaymentTaxes()))
+							assetsDetails.setAdvancePaymentTaxes(0.0);
+						financialInputRequest.setShortTermLoansAdvancesTy((assetsDetails.getAdvanceToSupplierRawMaterials() + assetsDetails.getAdvancePaymentTaxes()) * denom);
+						
+						if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getOtherIncomeNeedTocCheckAsset()))
+							assetsDetails.setOtherIncomeNeedTocCheckAsset(0.0);
+						financialInputRequest.setOtherIncomeNeedTocCheckAssetTy(assetsDetails.getOtherIncomeNeedTocCheckAsset() * denom);
+						
+						// -----CONTIGENT LIABILITIES
+				if(corporateFinalInfoRequest == null)
+					financialInputRequest.setContingentLiablitiestTy(null);
+				else
+					financialInputRequest.setContingentLiablitiestTy(CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getContLiabilityTyAmt()) ? 0.0 : (corporateFinalInfoRequest.getContLiabilityTyAmt() * denom));
+						
+					}else {
+						log.error("asset details is null");
+					}
+					
+				} catch (Exception e) {
+					log.error("error while fetching asset data");
+					e.printStackTrace();
+				}
+				
+				
 				
 				
 		// FinancialInput Object Set
-		irrRequest.setFinancialInputRequest(financialInputRequest);
+				if(financialInputRequest != null) {
+					
+					irrRequest.setFinancialInputRequest(financialInputRequest);
+					
+				}
+		
 		//jSONObject.put("irrRequest",irrRequest);
 
 		log.info("financialInputRequest.getDepriciationFy()::"+financialInputRequest.getDepriciationFy());
