@@ -35,11 +35,11 @@ public class CarLoanController {
 	@Autowired
 	private FinalCarLoanService finalCarLoanService;
 
-	@RequestMapping(value = "${primary}/ping", method = RequestMethod.GET)
+	/*@RequestMapping(value = "${primary}/ping", method = RequestMethod.GET)
 	public String getPing() {
 		logger.info("Ping success");
 		return "Ping Succeed";
-	}
+	}*/
 
 	@RequestMapping(value = "${primary}/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> saveFinal(@RequestBody PrimaryCarLoanDetailRequest carLoanDetailRequest,

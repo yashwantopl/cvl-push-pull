@@ -35,11 +35,11 @@ public class HomeLoanController {
 	@Autowired
 	private FinalHomeLoanService finalHomeLoanService;
 
-	@RequestMapping(value = "${primary}/ping", method = RequestMethod.GET)
+	/*@RequestMapping(value = "${primary}/ping", method = RequestMethod.GET)
 	public String getPing() {
 		logger.info("Ping success");
 		return "Ping Succeed";
-	}
+	}*/
 
 	@RequestMapping(value = "${primary}/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> saveFinal(
