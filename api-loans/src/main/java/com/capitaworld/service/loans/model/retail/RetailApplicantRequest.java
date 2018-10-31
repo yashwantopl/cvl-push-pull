@@ -105,6 +105,8 @@ public class RetailApplicantRequest implements Serializable {
 	private Integer addressCountry;
 	private Double loanAmountRequired;
 	
+	private String email;
+	private String lanLineNo;
 	
 	private List<RetailApplicantIncomeRequest> incomeDetailsList;
 	
@@ -768,6 +770,26 @@ public class RetailApplicantRequest implements Serializable {
 
 	public void setLoanAmountRequired(Double loanAmountRequired) {
 		this.loanAmountRequired = loanAmountRequired;
+	}
+
+
+	public String getEmail() {
+		return email;
+	}
+
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+
+	public String getLanLineNo() {
+		return lanLineNo;
+	}
+
+
+	public void setLanLineNo(String lanLineNo) {
+		this.lanLineNo = lanLineNo;
 	}
 	
 	
