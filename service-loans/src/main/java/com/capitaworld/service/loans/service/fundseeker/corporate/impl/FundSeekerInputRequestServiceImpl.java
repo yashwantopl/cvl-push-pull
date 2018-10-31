@@ -509,8 +509,12 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			if (postOneForm != null) {
 				logger.info("postOneForm=======================>Client Connect Response=============>{}",
 						postOneForm.toString());
-				if (!postOneForm.getProceed().booleanValue()) {
+				if(!postOneForm.getProceed().booleanValue() && postOneForm.getStatus() == 4){
+					return new LoansResponse("Your request could not be processed now, please try again after sometime.", HttpStatus.METHOD_FAILURE.value());
+				}else if (!postOneForm.getProceed().booleanValue() && postOneForm.getStatus() == 6) {
 					return new LoansResponse("Not Eligibile from Matchengine", HttpStatus.BAD_REQUEST.value());
+				}else if (!postOneForm.getProceed().booleanValue() && postOneForm.getStatus() == 500) {
+					return new LoansResponse("Your request could not be refined now, please try again after sometime!", HttpStatus.INTERNAL_SERVER_ERROR.value());
 				} else {
 					return new LoansResponse("Successfully Matched", HttpStatus.OK.value());
 				}

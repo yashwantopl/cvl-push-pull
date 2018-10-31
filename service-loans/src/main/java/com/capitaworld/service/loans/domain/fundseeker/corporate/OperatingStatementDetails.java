@@ -202,6 +202,9 @@ public class OperatingStatementDetails implements Serializable {
 	@Column(name = "other_income_need_to_chek_op")
 	private Double otherIncomeNeedTocCheckOp;
 	
+//	@Column(name="version")
+//	private Integer version;
+	
 
 	public OperatingStatementDetails() {
 		super();
@@ -744,6 +747,17 @@ public class OperatingStatementDetails implements Serializable {
 	public void setOtherIncomeNeedTocCheckOp(Double otherIncomeNeedTocCheckOp) {
 		this.otherIncomeNeedTocCheckOp = otherIncomeNeedTocCheckOp;
 	}
+
+	/*public Integer getVersion() {
+		return version;
+	}
+
+	public void setVersion(Integer version) {
+		this.version = version;
+	}*/
+
+	
+	
 
 	
 }

@@ -7,7 +7,7 @@ import java.io.Serializable;
  */
 public class InEligibleProposalDetailsRequest implements Serializable {
 
-
+	private static final long serialVersionUID = 1L;
     private Long applicationId;
 
     private Double loanAmount;
@@ -15,6 +15,10 @@ public class InEligibleProposalDetailsRequest implements Serializable {
     private Long userOrgId;
 
     private Long branchId;
+    
+    private Boolean isSanctioned;
+    
+    private Boolean isDisbursed;
 
     public Long getApplicationId() {
         return applicationId;
@@ -47,4 +51,22 @@ public class InEligibleProposalDetailsRequest implements Serializable {
     public void setBranchId(Long branchId) {
         this.branchId = branchId;
     }
+
+	public Boolean getIsSanctioned() {
+		return isSanctioned;
+	}
+
+	public void setIsSanctioned(Boolean isSanctioned) {
+		this.isSanctioned = isSanctioned;
+	}
+
+	public Boolean getIsDisbursed() {
+		return isDisbursed;
+	}
+
+	public void setIsDisbursed(Boolean isDisbursed) {
+		this.isDisbursed = isDisbursed;
+	}
+    
+    
 }

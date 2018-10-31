@@ -172,8 +172,8 @@ public class ProposalServiceMappingImpl implements ProposalService {
 				if (!CommonUtils.isObjectNullOrEmpty(basicDetailsRequest)) {
 					logger.info("Found Branch Id -----------> " + basicDetailsRequest.getId()
 							+ "---------Role Id ------------------>" + basicDetailsRequest.getRoleId());
-					if (basicDetailsRequest.getRoleId() == CommonUtils.UsersRoles.BO) {
-						logger.info("Current user is Branch officer");
+					if (basicDetailsRequest.getRoleId() == CommonUtils.UsersRoles.BO || basicDetailsRequest.getRoleId() == CommonUtils.UsersRoles.FP_CHECKER) {
+						logger.info("Current user is Branch officer or FP_CHECKER");
 						request.setBranchId(basicDetailsRequest.getId());
 					}
 				} else {
@@ -589,7 +589,8 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					retailProposalDetails.setApplicationId(applicationId);
 					retailProposalDetails.setProposalMappingId(proposalrequest.getId());
 					retailProposalDetails.setFsType(CommonUtils.UserMainType.RETAIL);
-
+					retailProposalDetails.setBusinessTypeId(loanApplicationMaster.getBusinessTypeId());
+					retailProposalDetails.setFpProductid(fpProductId);
 					// get retail loan amount
 
 					String loanAmount = "";
@@ -1698,27 +1699,32 @@ public class ProposalServiceMappingImpl implements ProposalService {
 	@Override
 	public LoansResponse checkMinMaxAmount(UsersRequest userRequest) {
 		LoansResponse loansResponse = new LoansResponse();
-
+		
 		try {
-
+//			System.out.println("getApplicationId : "+userRequest.getApplicationId() + "userRequest.getId() : "+userRequest.getId());
 			loansResponse.setFlag(true);
 
 			LoanApplicationMaster loanApplicationMaster = loanApplicationRepository
 					.findOne(userRequest.getApplicationId());
-
-			// Check If Requested Application is assigned to Currunt Fp Cheker or not
-			if (loanApplicationMaster.getNpUserId().toString().equals(userRequest.getId().toString())) {
-				UserResponse userResponse = usersClient.getMinMaxAmount(userRequest);
-
+			
+			if(loanApplicationMaster != null && userRequest != null) {
+				// Check If Requested Application is assigned to Currunt Fp Cheker or not
+				UserResponse userResponse = null;
+				if(loanApplicationMaster.getNpUserId() == null) {
+					userResponse = usersClient.getMinMaxAmount(userRequest);
+				}else if((loanApplicationMaster.getNpUserId()).equals(userRequest.getId())) {
+					userResponse = usersClient.getMinMaxAmount(userRequest);
+				}
+				
 				CheckerDetailRequest checkerDetailRequest = null;
 				if (!CommonUtils.isObjectListNull(userResponse)
-						|| !(CommonUtils.isObjectNullOrEmpty(userResponse.getData()))) {
+						&& !(CommonUtils.isObjectNullOrEmpty(userResponse.getData()))) {
 					checkerDetailRequest = MultipleJSONObjectHelper.getObjectFromMap(
 							(LinkedHashMap<String, Object>) userResponse.getData(), CheckerDetailRequest.class);
 				}
 
 				if (!CommonUtils.isObjectNullOrEmpty(checkerDetailRequest)) {
-					if (!(userRequest.getLoanAmount() >= checkerDetailRequest.getMinAmount()
+					if (userRequest.getLoanAmount() != null && !(userRequest.getLoanAmount() >= checkerDetailRequest.getMinAmount()
 							&& userRequest.getLoanAmount() <= checkerDetailRequest.getMaxAmount())) {
 						loansResponse.setFlag(false);
 						loansResponse.setMessage(
@@ -1729,6 +1735,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					loansResponse.setFlag(false);
 					loansResponse.setMessage("You do not have rights to take action for this proposal.");
 				}
+				
 			} else {
 				// You dont have Authorised for this Action
 				logger.error("Not getting min max loan amount for this user");
