@@ -1,5 +1,7 @@
 package com.capitaworld.service.loans.utils;
 
+import java.util.Base64;
+
 import com.capitaworld.cibil.api.utility.CibilUtils;
 
 public class CommonUtility {
@@ -88,5 +90,14 @@ public class CommonUtility {
 		public static final String MANDAROTY_FIELD_MUST_NOT_BE_NULL = "108";
 		public static final String INVALID_CREDENTIAL = "109" ;
 		public static final String INVALID_ENCRYPTED_STRING = "110";
+	}
+	
+	public static String encode(String normalString) {
+		if(normalString != null && !normalString.equals("")) {
+			return new String(Base64.getEncoder().encode(normalString.getBytes()));
+		}else {
+			return "";
+		}
+		
 	}
 }
