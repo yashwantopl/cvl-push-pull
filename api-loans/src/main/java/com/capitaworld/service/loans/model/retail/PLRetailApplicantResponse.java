@@ -24,6 +24,7 @@ public class PLRetailApplicantResponse implements Serializable {
     private String aadharNumber;
     private String mobile;
     private Integer educationQualification;
+    private String educationQualificationString;
     private Object statusId;
     private String residenceType;
     private Date birthDate;
@@ -46,6 +47,8 @@ public class PLRetailApplicantResponse implements Serializable {
     private Address contactAddress;
     private String contactNo;
     private String email;
+    
+    private String maritalStatus;
 
     private List<RetailApplicantIncomeRequest> retailApplicantIncomeRequestList;
     /*
@@ -433,6 +436,22 @@ public class PLRetailApplicantResponse implements Serializable {
 
 	public void setKeyVerticalSubSector(String keyVerticalSubSector) {
 		this.keyVerticalSubSector = keyVerticalSubSector;
+	}
+
+	public String getMaritalStatus() {
+		return maritalStatus;
+	}
+
+	public void setMaritalStatus(String maritalStatus) {
+		this.maritalStatus = maritalStatus;
+	}
+
+	public String getEducationQualificationString() {
+		return educationQualificationString;
+	}
+
+	public void setEducationQualificationString(String educationQualificationString) {
+		this.educationQualificationString = educationQualificationString;
 	}
     
 	

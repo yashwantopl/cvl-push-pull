@@ -46,6 +46,7 @@ import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.FundProviderDetailsRequest;
+import com.capitaworld.service.users.model.UserOrganisationRequest;
 import com.capitaworld.service.users.model.UserResponse;
 import com.capitaworld.service.users.model.UsersRequest;
 
@@ -1060,7 +1061,7 @@ public class FPAsyncComponent {
 			}
 			parameters.put("loan_amount",
 					applicationRequest.getLoanAmount() != null ? applicationRequest.getLoanAmount() : "NA");
-			parameters.put("application_id", request.getApplicationId().toString());
+			parameters.put("application_id", applicationRequest.getApplicationCode()!=null?applicationRequest.getApplicationCode():"");
 			
 			UserResponse response = null;
 			UsersRequest signUpUser = null;
@@ -1087,7 +1088,7 @@ public class FPAsyncComponent {
 
 			// ====================Sending Mail to Maker who accepts Proposal=====================
 			String subject = "Intimation: Proposal Accepted - " + assignedMakerName + "-Application ID "
-					+ request.getApplicationId();
+					+ applicationRequest.getApplicationCode();
 
 			if (!CommonUtils.isObjectNullOrEmpty(assignedMaker)) {
 				if (!CommonUtils.isObjectNullOrEmpty(assignedMaker.getEmail())) {
@@ -1494,13 +1495,15 @@ public class FPAsyncComponent {
 		mailParameter.put("loan_type",
 				proposalresp.get("loan_type") != null ? proposalresp.get("loan_type").toString() : "NA");
 		mailParameter.put("maker_name", assignedMakerName);
-		mailParameter.put("application_id", applicationRequest.getId()!=null?applicationRequest.getId().toString():"NA");
+		mailParameter.put("application_id", applicationRequest.getApplicationCode()!=null?applicationRequest.getApplicationCode().toString():"NA");
 		
 		String mobile = signUpUser.getMobile();
 		mailParameter.put("mobile_number", mobile != null ? mobile : "NA");
 		mailParameter.put("address", address);
 		String emailSubject = "Maker Assigned - For Quick Business Loan Approval ";
-
+		if("Personal Loan".equals(proposalresp.get("loan_type").toString())){
+			emailSubject = "Maker Assigned - For Quick Personal Loan Approval ";
+		}
 		try {
 			if(fsName!=null&& address!=null&&mobile!=null&&assignedMakerName!=null&&applicationRequest.getId()!=null) {
 				createNotificationForEmail(signUpUser.getEmail(), applicationRequest.getUserId().toString(),
@@ -3351,6 +3354,40 @@ public class FPAsyncComponent {
 
 			SimpleDateFormat form = new SimpleDateFormat("dd/MM/yyyy");
 			String fpName = proposalresp.get("organisationName") != null ? proposalresp.get("organisationName").toString() : "";
+            if(!CommonUtils.isObjectNullOrEmpty(loanSanctionDomainOld.getIsSanctionedFrom())){
+            	if(loanSanctionDomainOld.getIsSanctionedFrom().equals(CommonUtils.sanctionedFrom.INELIGIBLE_USERS_OFFLINE_APPLICATION)){
+            		
+            		subject = "Congratulations - Your Loan for Manual Application Has Been Sanctioned!!!";
+            		//==================For getting Organisation Name================== 
+        			
+					UserResponse userResponse = null;
+					Map<String, Object> usersResp = null;
+					UserOrganisationRequest organisationRequest = null;
+					String organisationName = null;
+					try {
+						userResponse = userClient.getOrgNameByOrgId(loanSanctionDomainOld.getOrgId());	
+					}
+					catch(Exception e) {
+						logger.info("Exception occured while getting Organisation details by orgId");
+						e.printStackTrace();
+					}
+                    
+					try {
+						if(!CommonUtils.isObjectNullOrEmpty(userResponse)) {
+							usersResp = (Map<String, Object>) userResponse.getData();
+							organisationRequest = MultipleJSONObjectHelper.getObjectFromMap(usersResp,
+									UserOrganisationRequest.class);
+							organisationName = organisationRequest.getOrganisationName(); 
+							fpName = organisationName;
+						}
+					}
+					catch(Exception e) {
+						logger.info("Exception occured while getting Organisation details by orgId");
+						e.printStackTrace();
+					}
+					//============================================================
+    			}
+			}
 			mailParameters.put("fp_name", fpName != null ? fpName : "");
 			mailParameters.put("product_type", productType != null ? productType : "");
 			mailParameters.put("loan_amount",
