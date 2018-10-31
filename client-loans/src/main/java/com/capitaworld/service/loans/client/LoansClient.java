@@ -26,6 +26,7 @@ import com.capitaworld.service.loans.model.ExcelResponse;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.GenerateTokenRequest;
+import com.capitaworld.service.loans.model.InEligibleProposalDetailsRequest;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.NTBRequest;
@@ -237,6 +238,7 @@ public class LoansClient {
     private static final String SET_TOKEN_AS_EXPIRED ="/loan_application/setTokenAsExpired";
     private static final String SAVE_LOAN_WC_RENEWAL_TYPE ="/loan_application/saveLoanWCRenewalType";
     private static final String GET_LOAN_WC_RENEWAL_TYPE ="/loan_application/getLoanWCRenewalType";
+    private static final String SAVE_INELIGIBALE_PROPOSAL ="/save/ineligible/proposal";
     
 	private static final Logger logger = LoggerFactory.getLogger(LoansClient.class);
 	
@@ -2409,6 +2411,21 @@ public class LoansClient {
 			throw new LoansException("Loans service is not available While Get Loan WC Renewal Type");
 		}
 	}
+	
+	public LoansResponse saveIneligibleProposal(InEligibleProposalDetailsRequest loanRequest) throws LoansException {
+		String url = loansBaseUrl.concat(SAVE_INELIGIBALE_PROPOSAL);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("req_auth", "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<InEligibleProposalDetailsRequest> entity = new HttpEntity<InEligibleProposalDetailsRequest>(loanRequest, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new LoansException("Loans service is not available while saveIneligibleProposal");
+		}
+	}
+	
 }
 
 
