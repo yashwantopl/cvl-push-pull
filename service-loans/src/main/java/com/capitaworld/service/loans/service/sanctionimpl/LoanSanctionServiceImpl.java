@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.service.sanctionimpl;
 
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
@@ -250,7 +251,6 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 									logger.info("---------- Error/Exception while expirim token ------------ " +e.getMessage());
 								}
 								if(res instanceof List){
-									
 									List<LoanSanctionAndDisbursedRequest> list = (List<LoanSanctionAndDisbursedRequest> )res;
 									List<com.capitaworld.sidbi.integration.model.sanction.LoanSanctionAndDisbursedRequest> list1   = null ;
 									try {
@@ -264,8 +264,7 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 									}catch (Exception e) {
 										logger.info("------------------ Error/Exception while getting appication from getSanctionAndDisbursmentDetailList ------------ MSG =>" + e.getMessage());	
 									}
-									
-									
+																
 									if(sidbiIntegrationClient.updateSavedSanctionAndDisbursmentDetailList(list1 , generateTokenRequest.getToken(), generateTokenRequest.getBankToken() , userOrganisationRequest.getCodeLanguage())) {
 										try {
 											//wait foo 15 minute
