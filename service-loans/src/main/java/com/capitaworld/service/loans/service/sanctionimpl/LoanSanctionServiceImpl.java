@@ -202,7 +202,7 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 							continue;
 						}
 						
-						if(CommonUtils.isObjectNullOrEmpty(isProduction)){
+						if(!CommonUtils.isObjectNullOrEmpty(isProduction)){
 							if(CommonUtils.isObjectNullOrEmpty(userOrganisationRequest.getProductionUrl())) {
 								logger.info("Production URL is NULL for Bank==========>{}",userOrganisationRequest.getOrganisationName());
 								continue;
@@ -241,11 +241,32 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 							//Getting sanction and disbursement Details from Bank 
 							String encryptedString = sidbiIntegrationClient.getSanctionAndDisbursmentDetailList(token, generateTokenRequest.getBankToken() , userOrganisationRequest.getCodeLanguage());
 							if(!CommonUtils.isObjectNullOrEmpty(encryptedString)) {
-								Object res = sanctionAndDisbursementValidation(encryptedString , userOrganisationRequest.getCodeLanguage()); 
+								Object res = sanctionAndDisbursementValidation(encryptedString , userOrganisationRequest.getCodeLanguage());
+								try {
+									
+									sidbiIntegrationClient.setTokenAsExpired(generateTokenRequest, generateTokenRequest.getBankToken(), userOrganisationRequest.getCodeLanguage());
+
+								} catch (Exception e) {
+									logger.info("---------- Error/Exception while expirim token ------------ " +e.getMessage());
+								}
 								if(res instanceof List){
-									List<com.capitaworld.sidbi.integration.model.sanction.LoanSanctionAndDisbursedRequest> list = (List<com.capitaworld.sidbi.integration.model.sanction.LoanSanctionAndDisbursedRequest> )res;
-									logger.info("********************************* " + list.size() +" ***********************************");
-									if(sidbiIntegrationClient.updateSavedSanctionAndDisbursmentDetailList(list , generateTokenRequest.getToken(), generateTokenRequest.getBankToken() , userOrganisationRequest.getCodeLanguage())) {
+									
+									List<LoanSanctionAndDisbursedRequest> list = (List<LoanSanctionAndDisbursedRequest> )res;
+									List<com.capitaworld.sidbi.integration.model.sanction.LoanSanctionAndDisbursedRequest> list1   = null ;
+									try {
+										if(!CommonUtils.isObjectListNull(list)&& !CommonUtils.isObjectNullOrEmpty(list.get(0))) {
+											generateTokenRequest.setApplicationId(list.get(0).getApplicationId());
+											token = sidbiIntegrationClient.getToken(generateTokenRequest,generateTokenRequest.getBankToken() , userOrganisationRequest.getCodeLanguage());
+											logger.info("********************************* " + list.size() +" ***********************************");
+											String json = MultipleJSONObjectHelper.getStringfromObject(list);
+											list1 = MultipleJSONObjectHelper.getListOfObjects(json, null, com.capitaworld.sidbi.integration.model.sanction.LoanSanctionAndDisbursedRequest.class);
+										}
+									}catch (Exception e) {
+										logger.info("------------------ Error/Exception while getting appication from getSanctionAndDisbursmentDetailList ------------ MSG =>" + e.getMessage());	
+									}
+									
+									
+									if(sidbiIntegrationClient.updateSavedSanctionAndDisbursmentDetailList(list1 , generateTokenRequest.getToken(), generateTokenRequest.getBankToken() , userOrganisationRequest.getCodeLanguage())) {
 										try {
 											//wait foo 15 minute
 											logger.info("*******Sucessgfully updated sanction and disbursement details in sidbi integration********** ");
