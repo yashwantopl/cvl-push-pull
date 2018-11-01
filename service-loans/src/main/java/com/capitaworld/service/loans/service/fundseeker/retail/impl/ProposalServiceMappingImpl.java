@@ -37,6 +37,7 @@ import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.ProposalDetailsAdminRequest;
 import com.capitaworld.service.loans.model.ProposalResponse;
 import com.capitaworld.service.loans.model.RetailProposalDetails;
+import com.capitaworld.service.loans.repository.OfflineProcessedAppRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
@@ -47,6 +48,7 @@ import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplican
 import com.capitaworld.service.loans.service.ProposalService;
 import com.capitaworld.service.loans.service.common.LogService;
 import com.capitaworld.service.loans.service.common.NotificationService;
+import com.capitaworld.service.loans.service.fundprovider.OfflineProcessedAppService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateDirectorIncomeService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
@@ -1814,4 +1816,13 @@ public class ProposalServiceMappingImpl implements ProposalService {
     	return responseList;
     }
 
+	@Autowired
+	private OfflineProcessedAppRepository offlineProcessedAppRepository;
+	@Override
+	public  List<Object[]> getHomeCounterDetail() {
+		logger.info("========== Enter in getHomeCounter()  gettting no of fp , fs and total inprinciple and inprinciple amount======== "); 
+		 List<Object[]> object =  offlineProcessedAppRepository.getHomeCounterDetail();
+		logger.info("========== Exit from  getHomeCounter() ======== " + object);
+		return object  ;
+	}
 }
