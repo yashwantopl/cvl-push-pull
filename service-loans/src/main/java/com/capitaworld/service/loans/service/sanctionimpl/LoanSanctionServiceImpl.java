@@ -93,7 +93,7 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 		if(CommonUtils.isObjectNullOrEmpty(loanSanctionDomainOld) ) {
 			loanSanctionDomainOld = new LoanSanctionDomain();
 			loanSanctionDomainOld.setOrgId(!CommonUtils.isObjectNullOrEmpty(loanSanctionRequest.getOrgId()) ? loanSanctionRequest.getOrgId() : null);
-			if(loanSanctionRequest.getIsIneligibleProposal() == true) {
+			if(loanSanctionRequest.getIsIneligibleProposal() != null && loanSanctionRequest.getIsIneligibleProposal() == true) {
 				loanSanctionDomainOld.setIsSanctionedFrom(loanSanctionRequest.getIsSanctionedFrom());
 				IneligibleProposalDetails ineligibleProposalDetails = (IneligibleProposalDetails) offlineProcessedAppRepository.findByAppliationId(loanSanctionRequest.getApplicationId());
 				ineligibleProposalDetails.setIsSanctioned(true);
