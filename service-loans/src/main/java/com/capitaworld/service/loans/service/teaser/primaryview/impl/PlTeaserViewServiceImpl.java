@@ -26,6 +26,7 @@ import com.capitaworld.client.eligibility.EligibilityClient;
 import com.capitaworld.connect.api.ConnectResponse;
 import com.capitaworld.connect.api.ConnectStage;
 import com.capitaworld.connect.client.ConnectClient;
+import com.capitaworld.itr.api.model.ITRConnectionResponse;
 import com.capitaworld.itr.client.ITRClient;
 import com.capitaworld.service.analyzer.client.AnalyzerClient;
 import com.capitaworld.service.analyzer.model.common.AnalyzerResponse;
@@ -506,8 +507,8 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 			e1.printStackTrace();
 		}
 		
-		/*try {
-			ITRConnectionResponse resNameAsPerITR = itrClient.getITRBasicDetails(toApplicationId);
+		try {
+			ITRConnectionResponse resNameAsPerITR = itrClient.getIsUploadAndYearDetails(toApplicationId);
 			if (resNameAsPerITR != null) {
 
 				plTeaserViewResponse.setNameAsPerItr(resNameAsPerITR.getData() != null ? resNameAsPerITR.getData() : "NA");
@@ -519,7 +520,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 		} catch (Exception e) {
 			logger.warn(":::::::::::---------Error while fetching name as per itr----------:::::::::::");
 			e.printStackTrace();
-		}*/
+		}
 		
 		
 		// GET DOCUMENTS
