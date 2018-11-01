@@ -105,14 +105,23 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 			loanSanctionDomainOld.setCreatedDate(new Date());
 			loanSanctionDomainOld.setIsActive(true);
 		}else{
-			BeanUtils.copyProperties(loanSanctionRequest, loanSanctionDomainOld,"id");
-			if(loanSanctionRequest.getIsIneligibleProposal()) {
+			//BeanUtils.copyProperties(loanSanctionRequest, loanSanctionDomainOld,"id");
+			if(loanSanctionRequest.getIsIneligibleProposal() != null && loanSanctionRequest.getIsIneligibleProposal()) {
 				loanSanctionDomainOld.setIsSanctionedFrom(loanSanctionRequest.getIsSanctionedFrom());
 				IneligibleProposalDetails ineligibleProposalDetails = (IneligibleProposalDetails) offlineProcessedAppRepository.findByAppliationId(loanSanctionRequest.getApplicationId());
 				ineligibleProposalDetails.setIsSanctioned(true);
 			}else {
 				loanSanctionDomainOld.setIsSanctionedFrom(CommonUtils.sanctionedFrom.ELIGIBLE_USERS);
 			}
+			
+			loanSanctionDomainOld.setSanctionAmount(loanSanctionRequest.getSanctionAmount());
+			loanSanctionDomainOld.setSanctionDate(new Date());
+			loanSanctionDomainOld.setTenure(loanSanctionRequest.getTenure());
+			loanSanctionDomainOld.setRoi(loanSanctionRequest.getRoi());
+			loanSanctionDomainOld.setProcessingFee(loanSanctionRequest.getProcessingFee());
+			loanSanctionDomainOld.setRemark(loanSanctionRequest.getRemark());
+			loanSanctionDomainOld.setModifiedBy(loanSanctionRequest.getActionBy());
+			loanSanctionDomainOld.setModifiedDate(new Date());
 		}
 		//==================Sending Mail notification to Maker=============================
 		
