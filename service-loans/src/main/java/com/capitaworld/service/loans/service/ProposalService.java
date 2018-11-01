@@ -44,4 +44,5 @@ public interface ProposalService {
 	
 	public List<ProposalDetailsAdminRequest> getProposalsByOrgId(Long userOrgId, ProposalDetailsAdminRequest request, Long userId);
 	
+	public Object getHomeCounterDetail();
 }
