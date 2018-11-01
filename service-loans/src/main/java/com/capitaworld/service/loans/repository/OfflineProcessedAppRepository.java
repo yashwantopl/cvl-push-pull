@@ -14,5 +14,6 @@ public interface OfflineProcessedAppRepository{
 	public List<Object []> getSanctionedApplicationList(Long orgId);
 	
 	public List<Object []> getDisbursedApplicationList(Long orgId);
-	
+
+	public List<Object[]> getHomeCounterDetail();
 }

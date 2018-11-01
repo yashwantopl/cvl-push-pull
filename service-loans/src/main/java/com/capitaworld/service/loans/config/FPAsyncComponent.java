@@ -3050,28 +3050,31 @@ public class FPAsyncComponent {
 			// =========================================================================================================
 
 			UsersRequest checkerForName = new UsersRequest();
-			checkerForName.setId(Long.valueOf(loanSanctionDomainOld.getModifiedBy()));
-
 			String checkerName = null;
-			try {
-				logger.error("Into getting FP Name======>" + checkerForName);
-				UserResponse userResponseForName = userClient.getFPDetails(checkerForName);
-				FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap(
-						(Map<Object, Object>) userResponseForName.getData(), FundProviderDetailsRequest.class);
-				checkerName = fundProviderDetailsRequest.getFirstName() + " "
-						+ (fundProviderDetailsRequest.getLastName() == null ? ""
-								: fundProviderDetailsRequest.getLastName());
-				if ("null ".equals(checkerName)) {
-					checkerName = "Checker";
-				} else {
-					checkerName = checkerName != null ? checkerName : "Checker";
+			if(loanSanctionDomainOld.getModifiedBy() != null) {
+				checkerForName.setId(Long.valueOf(loanSanctionDomainOld.getModifiedBy()));
+				
+				try {
+					logger.error("Into getting FP Name======>" + checkerForName);
+					UserResponse userResponseForName = userClient.getFPDetails(checkerForName);
+					FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap(
+							(Map<Object, Object>) userResponseForName.getData(), FundProviderDetailsRequest.class);
+					checkerName = fundProviderDetailsRequest.getFirstName() + " "
+							+ (fundProviderDetailsRequest.getLastName() == null ? ""
+									: fundProviderDetailsRequest.getLastName());
+					if ("null ".equals(checkerName)) {
+						checkerName = "Checker";
+					} else {
+						checkerName = checkerName != null ? checkerName : "Checker";
+					}
+					mailParameters.put("checker_name", checkerName);
+				} catch (Exception e) {
+					logger.error("error while fetching FP name");
+					e.printStackTrace();
 				}
-				mailParameters.put("checker_name", checkerName);
-			} catch (Exception e) {
-				logger.error("error while fetching FP name");
-				e.printStackTrace();
 			}
-
+			
+			
 			UserResponse makerResponse = null;
 			try {
 				makerResponse = userClient.getEmailMobile(applicationRequest.getFpMakerId());
