@@ -341,5 +341,19 @@ public class ProposalController {
 		return new ResponseEntity<LoansResponse>(response, HttpStatus.OK);
 	}
 	
-	
+	@RequestMapping(value = "/getHomeCounterDetail", method = RequestMethod.GET)
+	public ResponseEntity<LoansResponse> getHomeCounter() {
+		
+		try {
+		
+		LoansResponse response = new LoansResponse("Data Found.", HttpStatus.OK.value());
+		Object obj = proposalService.getHomeCounterDetail();
+		response.setData(obj);
+		return new ResponseEntity<LoansResponse>(response, HttpStatus.OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(new LoansResponse(e.getMessage()) , HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		
+	}
 }
