@@ -341,7 +341,7 @@ public class ProposalController {
 		return new ResponseEntity<LoansResponse>(response, HttpStatus.OK);
 	}
 	
-	@RequestMapping(value = "/getHomeCounterDetail", method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/getHomeCounterDetail", method = RequestMethod.GET)
 	public ResponseEntity<LoansResponse> getHomeCounter() {
 		
 		try {
