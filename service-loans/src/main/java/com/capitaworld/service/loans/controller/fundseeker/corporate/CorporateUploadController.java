@@ -61,11 +61,11 @@ public class CorporateUploadController {
 	@Autowired
 	private DMSClient dmsClient;
 
-	@RequestMapping(value = "/ping", method = RequestMethod.GET)
+	/*@RequestMapping(value = "/ping", method = RequestMethod.GET)
 	public String getPing() {
 		logger.info("Ping success");
 		return "Ping Succeed";
-	}
+	}*/
 
 	@RequestMapping(value = "/profile/{applicationId}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> uploadProfileImage(@RequestPart("fileName") String fileName,

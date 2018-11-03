@@ -31,11 +31,11 @@ public class LoanEligibilityCalculatorController {
 	@Autowired
 	private LoanEligibilityCalculatorService loanEligibilityCalculatorService;
 
-	@RequestMapping(value = "/ping", method = RequestMethod.GET)
+	/*@RequestMapping(value = "/ping", method = RequestMethod.GET)
 	public String getPing() {
 		logger.info("Ping success");
 		return "Ping Succeed";
-	}
+	}*/
 
 	// Home Loan Calculation Starts
 	@RequestMapping(value = "${hl}/calc_min_max", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
