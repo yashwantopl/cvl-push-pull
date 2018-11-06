@@ -49,6 +49,8 @@ public class ProductMasterRequest implements Serializable {
 	private Integer wcRenewalStatus;
 	
 	private Integer finId;
+	
+	private Integer campaignCode;
 
 
 	/**
@@ -203,6 +205,16 @@ public class ProductMasterRequest implements Serializable {
 	public void setFinId(Integer finId) {
 		this.finId = finId;
 	}
+
+	public Integer getCampaignCode() {
+		return campaignCode;
+	}
+
+	public void setCampaignCode(Integer campaignCode) {
+		this.campaignCode = campaignCode;
+	}
+
+
 	
 	
 }
