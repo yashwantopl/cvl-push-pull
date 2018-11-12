@@ -339,7 +339,6 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 						BeanUtils.copyProperties(wcTlParameterRequest, wcTlParameterTemp,"id");
 						productMaster = wcTlParameterTemp;
 						productMaster.setIsParameterFilled(true);
-
 						break;
 					case PERSONAL_LOAN:
 						productMaster = new PersonalLoanParameterTemp();
