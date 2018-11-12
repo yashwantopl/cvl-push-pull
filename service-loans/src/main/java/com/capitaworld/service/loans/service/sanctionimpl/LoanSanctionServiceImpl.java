@@ -266,7 +266,7 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 									}
 									
 									
-									if(sidbiIntegrationClient.updateSavedSanctionAndDisbursmentDetailList(list1 , generateTokenRequest.getToken(), generateTokenRequest.getBankToken() , userOrganisationRequest.getCodeLanguage())) {
+									if(sidbiIntegrationClient.updateSavedSanctionAndDisbursmentDetailList(list1 , token, generateTokenRequest.getBankToken() , userOrganisationRequest.getCodeLanguage())) {
 										try {
 											//wait foo 15 minute
 											logger.info("*******Sucessgfully updated sanction and disbursement details in sidbi integration********** ");
