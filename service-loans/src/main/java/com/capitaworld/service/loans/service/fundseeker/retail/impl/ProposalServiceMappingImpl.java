@@ -31,6 +31,7 @@ import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.DirectorBackgroundDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
+import com.capitaworld.service.loans.domain.sanction.LoanDisbursementDomain;
 import com.capitaworld.service.loans.model.CorporateProposalDetails;
 import com.capitaworld.service.loans.model.FundProviderProposalDetails;
 import com.capitaworld.service.loans.model.LoansResponse;
@@ -45,6 +46,7 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.DirectorBac
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
+import com.capitaworld.service.loans.repository.sanction.LoanDisbursementRepository;
 import com.capitaworld.service.loans.service.ProposalService;
 import com.capitaworld.service.loans.service.common.LogService;
 import com.capitaworld.service.loans.service.common.NotificationService;
@@ -139,6 +141,9 @@ public class ProposalServiceMappingImpl implements ProposalService {
 	
 	@Autowired
 	private ProposalDetailsRepository proposalDetailRepository;
+	
+	@Autowired
+	private LoanDisbursementRepository loanDisbursementRepository;
 	
 
 	DecimalFormat df = new DecimalFormat("#");
@@ -704,8 +709,10 @@ public class ProposalServiceMappingImpl implements ProposalService {
 
 			ProposalMappingResponse proposalDetailsResponse = proposalDetailsClient.proposalListOfFundSeeker(request);
 
+			List<Object[]> disbursmentData = loanDisbursementRepository.getDisbursmentData(request.getApplicationId());
+			
 			List<ProposalMappingRequest> proposalMappingList = new ArrayList<ProposalMappingRequest>();
-
+			
 			for (int i = 0; i < proposalDetailsResponse.getDataList().size(); i++) {
 				UsersClient usersClient = new UsersClient(environment.getRequiredProperty("userURL"));
 				ProposalMappingRequest proposalrequest = MultipleJSONObjectHelper.getObjectFromMap(
@@ -766,6 +773,11 @@ public class ProposalServiceMappingImpl implements ProposalService {
 				fundProviderProposalDetails.setElAmount(proposalrequest.getElAmount());
 				fundProviderProposalDetails.setElRoi(proposalrequest.getElRoi());
 				fundProviderProposalDetails.setElTenure(proposalrequest.getElTenure());
+				//add disbursed amount logic
+				
+				fundProviderProposalDetails.setPartiallyDisburseAmt(disbursmentData != null ? (Double)(disbursmentData.get(0)[0]) : null);
+				fundProviderProposalDetails.setLastDisbursmentDate(disbursmentData != null ? String.valueOf(disbursmentData.get(0)[1]) : null);
+				
 				proposalDetailsList.add(fundProviderProposalDetails);
 			}
 		} catch (Exception e) {

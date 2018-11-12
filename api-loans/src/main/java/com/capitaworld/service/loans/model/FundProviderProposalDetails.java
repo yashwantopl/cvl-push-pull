@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.model;
 
+import java.util.Date;
 
 public class FundProviderProposalDetails {
 
@@ -26,7 +27,9 @@ public class FundProviderProposalDetails {
 	
 	private Double elRoi;
 	
-
+	private Double partiallyDisburseAmt;
+	
+	private String lastDisbursmentDate;
 	
 	
 	public String getFpProductName() {
@@ -115,6 +118,22 @@ public class FundProviderProposalDetails {
 
 	public void setElRoi(Double elRoi) {
 		this.elRoi = elRoi;
+	}
+
+	public Double getPartiallyDisburseAmt() {
+		return partiallyDisburseAmt;
+	}
+
+	public void setPartiallyDisburseAmt(Double partiallyDisburseAmt) {
+		this.partiallyDisburseAmt = partiallyDisburseAmt;
+	}
+
+	public String getLastDisbursmentDate() {
+		return lastDisbursmentDate;
+	}
+
+	public void setLastDisbursmentDate(String lastDisbursmentDate) {
+		this.lastDisbursmentDate = lastDisbursmentDate;
 	}
 	
 	
