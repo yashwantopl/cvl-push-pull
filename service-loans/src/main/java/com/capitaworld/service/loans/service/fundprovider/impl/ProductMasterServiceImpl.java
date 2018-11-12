@@ -8,6 +8,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
@@ -472,7 +473,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 		// TODO Auto-generated method stub
 		logger.info("start saveCity");
 		GeographicalCityDetailTemp geographicalCityDetail = null;
-		List<GeographicalCityDetailTemp> geographicalCityDetailTemps=new ArrayList<>(geogaphicallyCity.size()); 
+		//List<GeographicalCityDetailTemp> geographicalCityDetailTemps=new ArrayList<>(geogaphicallyCity.size()); 
 		for (DataRequest dataRequest : geogaphicallyCity) {
 			geographicalCityDetail = new GeographicalCityDetailTemp();
 			geographicalCityDetail.setCityId(dataRequest.getId());
@@ -483,13 +484,13 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 			geographicalCityDetail.setModifiedDate(new Date());
 			geographicalCityDetail.setIsActive(true);
 			// create by and update
-			//geographicalCityTempRepository.save(geographicalCityDetail);
+			geographicalCityTempRepository.save(geographicalCityDetail);
 		}
 		
 		 
 		
 		     
-		EntityManagerFactory emf = Persistence.createEntityManagerFactory("TDEMSPU");
+		/*EntityManagerFactory emf = Persistence.createEntityManagerFactory("TDEMSPU");
         entityManager = emf.createEntityManager();
 
 
@@ -504,7 +505,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
         	entityManager.clear();
         }
 
-        entityManager.getTransaction().commit();
+        entityManager.getTransaction().commit();*/
 		logger.info("end saveCity");
 		
 	}
