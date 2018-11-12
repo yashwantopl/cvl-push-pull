@@ -192,7 +192,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			}
 			
 			//SAVE MATCHE JSON 
-			try {
+			/*try {
 				asyncComponent.saveOneformMapping(fundSeekerInputRequest.getApplicationId());
 			} catch (Exception e) {
 				e.printStackTrace();
