@@ -78,6 +78,7 @@ import com.capitaworld.service.loans.repository.fundprovider.NegativeIndustryTem
 import com.capitaworld.service.loans.repository.fundprovider.PersonalLoanParameterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterTempRepository;
+import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
 import com.capitaworld.service.loans.repository.fundprovider.TermLoanParameterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.WorkingCapitalParameterRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorTempRepository;
@@ -207,7 +208,9 @@ public class ProductMasterServiceImpl implements ProductMasterService {
     @Autowired
     private MsmeValueMappingTempRepository tempRepository;
 
-   
+    @Autowired
+    private ProposalDetailsRepository proposalDetailsRepository;
+    
     
     @Autowired
     private EntityManager entityManager; 
@@ -664,10 +667,15 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 			results = productMasterRepository.getUserProductList(userId);
 		}
 		List<ProductMasterRequest> requests = new ArrayList<>(results.size());
+		
+		Long matchCount = productMasterRepository.countByUserIdAndIsMatched(userId, true);
+		
 		for (ProductMaster master : results) {
 			ProductMasterRequest request = new ProductMasterRequest();
 			BeanUtils.copyProperties(master, request);
-			request.setIsMatched(productMasterRepository.getMatchedAndActiveInActiveProduct(userId).size() > 0 ? true : false);
+//			request.setIsMatched(productMasterRepository.getMatchedAndActiveInActiveProduct(userId).size() > 0 ? true : false);
+			request.setIsMatched(matchCount > 0 ? true : false);
+			request.setProposalCount(proposalDetailsRepository.getProposalCountByUserIdAndFpProductId(master.getId(), userId));
 			requests.add(request);
 		}
 		CommonDocumentUtils.endHook(logger, "getActiveInActiveList");
