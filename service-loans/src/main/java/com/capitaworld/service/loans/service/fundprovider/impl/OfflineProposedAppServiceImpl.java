@@ -17,6 +17,9 @@ import com.capitaworld.service.loans.model.OfflineProcessedApplicationRequest;
 import com.capitaworld.service.loans.repository.OfflineProcessedAppRepository;
 import com.capitaworld.service.loans.service.fundprovider.OfflineProcessedAppService;
 import com.capitaworld.service.loans.utils.CommonUtils;
+import com.capitaworld.service.users.client.UsersClient;
+import com.capitaworld.service.users.model.UserResponse;
+import com.capitaworld.service.users.model.UsersRequest;
 
 @Transactional
 @Service
@@ -27,8 +30,11 @@ public class OfflineProposedAppServiceImpl implements OfflineProcessedAppService
 	@Autowired
 	private OfflineProcessedAppRepository offlineProcessedAppRepository;
 	
+	@Autowired
+	private UsersClient usersClient; 
+	
 	@Override
-	public List<OfflineProcessedApplicationRequest> getApplicationList(Long orgId) {
+	public List<OfflineProcessedApplicationRequest> getApplicationList(Long orgId, Long userId) {
 		List<OfflineProcessedApplicationRequest> applicationRequests = Collections.emptyList();
 		if(!CommonUtils.isObjectNullOrEmpty(orgId)) {
 			List<Object []> lst = offlineProcessedAppRepository.getInEligibleRecordList(orgId);
@@ -49,6 +55,7 @@ public class OfflineProposedAppServiceImpl implements OfflineProcessedAppService
 					request.setGstin(!CommonUtils.isObjectNullOrEmpty(obj[10])? ((String)obj[10]).toString() : null);
 					request.setBranchCode(!CommonUtils.isObjectNullOrEmpty(obj[11])? ((String)obj[11]).toString() : null);
 					request.setBranchAddress(!CommonUtils.isObjectNullOrEmpty(obj[12])? ((String)obj[12]).toString() : null);
+					request.setLocationData(!CommonUtils.isObjectNullOrEmpty(getLocationCode(userId)) ? getLocationCode(userId) : " ");
 					applicationRequests.add(request);
 				}
 			}
@@ -57,7 +64,7 @@ public class OfflineProposedAppServiceImpl implements OfflineProcessedAppService
 	}
 
 	@Override
-	public List<OfflineProcessedApplicationRequest> getSanctionedApplicationList(Long orgId) {
+	public List<OfflineProcessedApplicationRequest> getSanctionedApplicationList(Long orgId, Long userId) {
 		List<OfflineProcessedApplicationRequest> applicationRequests = Collections.emptyList();
 		if(!CommonUtils.isObjectNullOrEmpty(orgId)) {
 			List<Object []> lst = offlineProcessedAppRepository.getSanctionedApplicationList(orgId);
@@ -74,6 +81,20 @@ public class OfflineProposedAppServiceImpl implements OfflineProcessedAppService
 					request.setApplicationId(((BigInteger)obj[6]).longValue());
 					request.setIsPartiallyDisbursedOffline(!CommonUtils.isObjectNullOrEmpty(obj[7])?((Boolean)obj[7]).booleanValue():null);
 					request.setOrganisationName(((String)obj[8]).toString());
+					request.setBranchId(!CommonUtils.isObjectNullOrEmpty(obj[9])?((BigInteger)obj[9]).longValue():null);
+					try {
+						if(!CommonUtils.isObjectNullOrEmpty(obj[9])) {
+							UserResponse resp = usersClient.getBranchNameById(((BigInteger)obj[9]).longValue());
+							if(!CommonUtils.isObjectNullOrEmpty(resp.getData())) {
+								String branchName = resp.getData().toString();
+								request.setBranchName(branchName);
+							}
+						}
+					} catch (Exception e) {
+						logger.info("Error while getting Branch name");
+						e.printStackTrace();
+					}
+					request.setLocationData(!CommonUtils.isObjectNullOrEmpty(getLocationCode(userId)) ? getLocationCode(userId) : " ");
 					applicationRequests.add(request);
 				}
 			}
@@ -82,22 +103,51 @@ public class OfflineProposedAppServiceImpl implements OfflineProcessedAppService
 	}
 
 	@Override
-	public List<OfflineProcessedApplicationRequest> getDisbursedApplicationList(Long orgId) {
+	public List<OfflineProcessedApplicationRequest> getDisbursedApplicationList(Long orgId, Long userId) {
 		List<OfflineProcessedApplicationRequest> applicationRequests = Collections.emptyList();
 		if(!CommonUtils.isObjectNullOrEmpty(orgId)) {
 			List<Object []> lst = offlineProcessedAppRepository.getDisbursedApplicationList(orgId);
-			System.out.println("lst"+lst);
 			if(!CommonUtils.isObjectListNull(lst)) {
 				applicationRequests = new ArrayList<OfflineProcessedApplicationRequest>(lst.size());
 				for(Object[] obj : lst) {
 					OfflineProcessedApplicationRequest request = new OfflineProcessedApplicationRequest();
 					request.setOrganisationName(((String)obj[3]).toString());
 					request.setApplicationId(((BigInteger)obj[4]).longValue());
+					request.setBranchId(!CommonUtils.isObjectNullOrEmpty(obj[6])?((BigInteger)obj[6]).longValue():null);
+					try {
+						if(!CommonUtils.isObjectNullOrEmpty(obj[6])) {
+							UserResponse resp = usersClient.getBranchNameById(((BigInteger)obj[6]).longValue());
+							if(!CommonUtils.isObjectNullOrEmpty(resp.getData())) {
+								String branchName = resp.getData().toString();
+								request.setBranchName(branchName);
+							}
+						}
+					} catch (Exception e) {
+						logger.info("Error while getting Branch name");
+						e.printStackTrace();
+					}
+					request.setLocationData(!CommonUtils.isObjectNullOrEmpty(getLocationCode(userId)) ? getLocationCode(userId) : " ");
 					applicationRequests.add(request);
 				}
 			}
 		}
 		return applicationRequests;	
+	}
+	
+	private Object getLocationCode(Long userId) {
+		UsersRequest req = new UsersRequest();
+		req.setId(userId);
+		try {
+			UserResponse resp = usersClient.getBranchDetailsBYUserId(req);
+			logger.info("resp===>"+resp.getData());
+			if(!CommonUtils.isObjectNullOrEmpty(resp.getData())) {
+				return resp.getData();
+			}
+		} catch (Exception e) {
+			logger.info("Error while getting Branch and location details from User Id");
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 }
