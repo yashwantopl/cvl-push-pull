@@ -49,8 +49,11 @@ public class ProductMasterRequest implements Serializable {
 	private Integer wcRenewalStatus;
 	
 	private Integer finId;
+	
+	private Integer campaignCode;
 
-
+	private Long proposalCount;
+	
 	/**
 	 * @return the jobId
 	 */
@@ -147,7 +150,7 @@ public class ProductMasterRequest implements Serializable {
 	public void setFpName(String fpName) {
 		this.fpName = fpName;
 	}
-
+	
 	public Boolean getIsActive() {
 		return isActive;
 	}
@@ -203,6 +206,24 @@ public class ProductMasterRequest implements Serializable {
 	public void setFinId(Integer finId) {
 		this.finId = finId;
 	}
+
+	public Integer getCampaignCode() {
+		return campaignCode;
+	}
+
+	public void setCampaignCode(Integer campaignCode) {
+		this.campaignCode = campaignCode;
+	}
+
+	public Long getProposalCount() {
+		return proposalCount;
+	}
+
+	public void setProposalCount(Long proposalCount) {
+		this.proposalCount = proposalCount;
+	}
+
+
 	
 	
 }

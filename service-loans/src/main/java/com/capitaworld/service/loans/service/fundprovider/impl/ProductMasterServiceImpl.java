@@ -3,9 +3,17 @@ package com.capitaworld.service.loans.service.fundprovider.impl;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
+import javax.persistence.Persistence;
+import javax.persistence.PersistenceContext;
 
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
@@ -71,6 +79,7 @@ import com.capitaworld.service.loans.repository.fundprovider.NegativeIndustryTem
 import com.capitaworld.service.loans.repository.fundprovider.PersonalLoanParameterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterTempRepository;
+import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
 import com.capitaworld.service.loans.repository.fundprovider.TermLoanParameterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.WorkingCapitalParameterRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorTempRepository;
@@ -199,7 +208,14 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 
     @Autowired
     private MsmeValueMappingTempRepository tempRepository;
-	
+
+    @Autowired
+    private ProposalDetailsRepository proposalDetailsRepository;
+    
+    
+    @Autowired
+    private EntityManager entityManager; 
+   
 	
 	@Override
 	public Boolean saveOrUpdate(AddProductRequest addProductRequest, Long userOrgId) {
@@ -459,6 +475,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 		// TODO Auto-generated method stub
 		logger.info("start saveCity");
 		GeographicalCityDetailTemp geographicalCityDetail = null;
+		//List<GeographicalCityDetailTemp> geographicalCityDetailTemps=new ArrayList<>(geogaphicallyCity.size()); 
 		for (DataRequest dataRequest : geogaphicallyCity) {
 			geographicalCityDetail = new GeographicalCityDetailTemp();
 			geographicalCityDetail.setCityId(dataRequest.getId());
@@ -471,6 +488,26 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 			// create by and update
 			geographicalCityTempRepository.save(geographicalCityDetail);
 		}
+		
+		 
+		
+		     
+		/*EntityManagerFactory emf = Persistence.createEntityManagerFactory("TDEMSPU");
+        entityManager = emf.createEntityManager();
+
+
+        entityManager.getTransaction().begin(); 
+
+      //  List<Enquiry> tempEnqList = tempEnqList();
+        for (Iterator<GeographicalCityDetailTemp> it = geographicalCityDetailTemps.iterator(); it.hasNext();) {
+        	GeographicalCityDetailTemp geographicalCityDetailTemp = it.next();
+
+        	entityManager.persist(geographicalCityDetailTemp);
+        	entityManager.flush();
+        	entityManager.clear();
+        }
+
+        entityManager.getTransaction().commit();*/
 		logger.info("end saveCity");
 		
 	}
@@ -630,10 +667,15 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 			results = productMasterRepository.getUserProductList(userId);
 		}
 		List<ProductMasterRequest> requests = new ArrayList<>(results.size());
+		
+		Long matchCount = productMasterRepository.countByUserIdAndIsMatched(userId, true);
+		
 		for (ProductMaster master : results) {
 			ProductMasterRequest request = new ProductMasterRequest();
 			BeanUtils.copyProperties(master, request);
-			request.setIsMatched(productMasterRepository.getMatchedAndActiveInActiveProduct(userId).size() > 0 ? true : false);
+//			request.setIsMatched(productMasterRepository.getMatchedAndActiveInActiveProduct(userId).size() > 0 ? true : false);
+			request.setIsMatched(matchCount > 0 ? true : false);
+			request.setProposalCount(proposalDetailsRepository.getProposalCountByUserIdAndFpProductId(master.getId(), userId));
 			requests.add(request);
 		}
 		CommonDocumentUtils.endHook(logger, "getActiveInActiveList");

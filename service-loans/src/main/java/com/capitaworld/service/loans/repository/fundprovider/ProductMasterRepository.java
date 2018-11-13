@@ -6,10 +6,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import com.capitaworld.service.loans.domain.fundprovider.ProductMaster;
 import com.capitaworld.service.loans.model.ProductDetailsForSp;
 
+@Repository
 public interface ProductMasterRepository extends JpaRepository<ProductMaster, Long>{
 
 	@Modifying
@@ -70,6 +72,8 @@ public interface ProductMasterRepository extends JpaRepository<ProductMaster, Lo
 
 	@Query("select new com.capitaworld.service.loans.model.ProductDetailsForSp(pm.id,pm.productId,pm.name)  from ProductMaster pm where pm.userId=:userId and pm.isMatched=true")
 	public List<ProductDetailsForSp> getMatchedAndActiveInActiveProduct(@Param("userId") Long userId);
+	
+	public Long countByUserIdAndIsMatched(Long userId, Boolean isMatched);
 	
 	//get userid list by productid
 	@Query("select DISTINCT  userId  from ProductMaster pm where pm.productId=:productId and pm.isActive = true")
