@@ -17,7 +17,7 @@ public class OfflineProcessedApplicationRequest {
 	private String gstin;
 	private String branchCode;
 	private String branchAddress;
-	
+	private Object locationData;
 	//SANCTIONED APPLICATION LIST
 	private Double sanctionedAmount;
 	private Date sanctionDate;
@@ -154,6 +154,12 @@ public class OfflineProcessedApplicationRequest {
 	}
 	public void setBranchAddress(String branchAddress) {
 		this.branchAddress = branchAddress;
+	}
+	public Object getLocationData() {
+		return locationData;
+	}
+	public void setLocationData(Object locationData) {
+		this.locationData = locationData;
 	}
 	
 	

@@ -115,6 +115,9 @@ public class ProductMasterTemp implements Serializable {
 	
 	@Column(name="fin_type_id")
 	private Integer finId;
+	
+	@Column(name="campaign_type")
+	private Integer campaignCode;
 
 	public ProductMasterTemp() {
 	}
@@ -350,6 +353,16 @@ public class ProductMasterTemp implements Serializable {
 	public void setFinId(Integer finId) {
 		this.finId = finId;
 	}
+
+	public Integer getCampaignCode() {
+		return campaignCode;
+	}
+
+	public void setCampaignCode(Integer campaignCode) {
+		this.campaignCode = campaignCode;
+	}
+
+
 	
 	
 }
