@@ -53,6 +53,6 @@ public interface ProposalDetailsRepository extends JpaRepository<ProposalDetails
     public List<Object[]> findProposalDetailByApplicationId(@Param("applicationId") Long applicationId);
 
     @Modifying 
-    @Query("UPDATE ProposalDetails set proposalStatusId =:statuId WHERE  applicationId =: applicatinoId AND isActive = true  " )
+    @Query("UPDATE ProposalDetails set proposalStatusId =:statuId , modifiedDate = now()  WHERE  applicationId =: applicatinoId AND isActive = true " )
     public Integer updateSanctionStatus(@Param("statuId") Long statuId  , @Param("applicatinoId") Long applicationId);  
 }
