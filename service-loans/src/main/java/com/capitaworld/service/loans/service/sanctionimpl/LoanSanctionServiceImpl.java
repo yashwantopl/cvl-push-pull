@@ -340,6 +340,7 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 					sanctionReason += e.getMessage();
 					return sanctionReason;
 				}
+				int rowUpdated = 0 ;
 				//checking validation 
 				for(LoanSanctionAndDisbursedRequest loanSanctionAndDisbursedRequest : loanSanctionAndDisbursedRequestList) {
 					BankCWAuditTrailDomain bankCWAuditTrailDomain = null; 
@@ -370,8 +371,10 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 									bankCWAuditTrailDomain = bankToCWAuditTrailRepository.findByApplicationIdAndOrgIdAndApiTypeAndBankPrimaryKeyAndIsActive(loanSanctionAndDisbursedRequest.getApplicationId(), orgId, CommonUtility.ApiType.REVERSE_SANCTION , loanSanctionAndDisbursedRequest.getLoanSanctionRequest().getId() , true);
 									if(CommonUtils.isObjectNullOrEmpty(bankCWAuditTrailDomain)) {
 										isSanctionSuccess = saveLoanSanctionDetailById(loanSanctionAndDisbursedRequest.getLoanSanctionRequest());
+										rowUpdated =  proposalDetailsRepository.updateSanctionStatus(13l, loanSanctionAndDisbursedRequest.getLoanSanctionRequest().getApplicationId());
+										auditComponentBankToCW.saveBankToCWReqRes(null, loanSanctionAndDisbursedRequest.getLoanSanctionRequest().getApplicationId() , null , null, "updating the proposal detail table status ", orgId, null);
 										loanSanctionAndDisbursedRequest.getLoanSanctionRequest().setStatusCode(CommonUtility.SanctionDisbursementAPIStatusCode.SUCCESS);	
-										logger.info("------------------------- saving sanction detail of reverse api--------------- isSuccess ==> " + isSanctionSuccess);
+										logger.info("------------------------- saving sanction detail of reverse api--------------- isSuccess ==> " + isSanctionSuccess +" ----------- updating the proposal detail table row " + rowUpdated);
 									}else {
 										loanSanctionAndDisbursedRequest.getLoanSanctionRequest().setStatusCode(CommonUtility.SanctionDisbursementAPIStatusCode.ALREADY_DONE_SANCTION);
 										logger.info("------------------------- already save sanction detail of reverse api---------------");
