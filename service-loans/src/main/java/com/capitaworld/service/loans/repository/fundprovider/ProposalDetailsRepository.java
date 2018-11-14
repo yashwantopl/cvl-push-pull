@@ -3,6 +3,7 @@ package com.capitaworld.service.loans.repository.fundprovider;
 import com.capitaworld.service.loans.domain.fundprovider.ProposalDetails;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -51,4 +52,7 @@ public interface ProposalDetailsRepository extends JpaRepository<ProposalDetails
     @Query(value="SELECT DATE_FORMAT(pd.modified_date, '%d/%m/%Y') AS modified_date, proposal_status_id, psm.code FROM proposal_details AS pd JOIN proposal_status_master AS psm ON psm.id = pd.proposal_status_id WHERE application_id = :applicationId AND pd.is_active = TRUE",nativeQuery=true)
     public List<Object[]> findProposalDetailByApplicationId(@Param("applicationId") Long applicationId);
 
+    @Modifying 
+    @Query("UPDATE ProposalDetails set proposalStatusId =:statuId , modifiedDate = now()  WHERE  applicationId =: applicatinoId AND isActive = true " )
+    public Integer updateSanctionStatus(@Param("statuId") Long statuId  , @Param("applicatinoId") Long applicationId);  
 }
