@@ -495,7 +495,7 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 			return  sanctionReason;
 		} finally {
 			logger.info("Saving Request to DB ===> ");
-			auditComponentBankToCW.saveBankToCWReqRes(decrypt != null ? decrypt : encryptedString, 	null ,CommonUtility.ApiType.REVERSE_SANCTION_AND_DISBURSEMENT, loansResponse, " ** Whole Request with reason** "+sanctionReason, orgId , null);
+			auditComponentBankToCW.saveBankToCWReqRes(decrypt != null ? decrypt : encryptedString, 	null ,CommonUtility.ApiType.REVERSE_SANCTION_AND_DISBURSEMENT, loansResponse, " ** Whole Request with reason ** sanctionReason => "+sanctionReason +" disbursementReason =>" + disbursementReason, orgId , null);
 		}
 	}
 
