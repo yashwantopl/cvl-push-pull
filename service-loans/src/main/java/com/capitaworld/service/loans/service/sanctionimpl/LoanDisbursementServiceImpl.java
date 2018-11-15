@@ -241,8 +241,12 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 					}
 				}else if(saveLoanDisbursementDetailbyId(loanDisbursementRequest)) {
 					if("SUCCESS".equalsIgnoreCase(loanDisbursementRequest.getReason())){
-						rowUpdated = proposalDetailsRepository.updateSanctionStatus(11l, loanDisbursementRequest.getApplicationId());
-						auditComponentBankToCW.saveBankToCWReqRes(null, loanDisbursementRequest.getApplicationId(), null, null , "updating the proposal detail table sanction status ", orgId, null);
+						try {
+							rowUpdated = proposalDetailsRepository.updateSanctionStatus(11l, loanDisbursementRequest.getApplicationId());
+						}catch (Exception e) {
+							auditComponentBankToCW.saveBankToCWReqRes(null , loanDisbursementRequest.getApplicationId() , CommonUtility.ApiType.REVERSE_DISBURSEMENT   , null, "Exception while updating the proposal detail table sanction status= > MSG "+e.getMessage() , orgId, null);	
+						}
+						//auditComponentBankToCW.saveBankToCWReqRes(null, loanDisbursementRequest.getApplicationId(), null, null , "updating the proposal detail table sanction status ", orgId, null);
 					}
 					logger.info("Success msg while saveLoanDisbursementDetail() ----------------> msg " + loanDisbursementRequest.getReason() +"  -------updating the proposal detail table detail status rowUpdated ---------" +rowUpdated) ;
 					loanDisbursementRequest.setIsSaved(true);
