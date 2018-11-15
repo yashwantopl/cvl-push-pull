@@ -400,7 +400,7 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 											auditComponentBankToCW.saveBankToCWReqRes(jsonString, loanSanctionAndDisbursedRequest.getLoanSanctionRequest().getApplicationId() , CommonUtility.ApiType.REVERSE_DISBURSEMENT , null, disbursementReason , orgId, null);
 										}
 									}else {
-										disbursementReason = "No Disbursement has done for that aplicaiotnId "+ loanSanctionAndDisbursedRequest.getLoanSanctionRequest().getApplicationId() +" from bank Side and this sanction detail loanSanctionDetail => " + loanSanctionAndDisbursedRequest.getLoanSanctionRequest().toString() ;
+										disbursementReason = "No Disbursement has done for that aplicaiotnId from bank side"+ loanSanctionAndDisbursedRequest.getLoanSanctionRequest().getApplicationId() +" from bank Side and this sanction detail loanSanctionDetail => " + loanSanctionAndDisbursedRequest.getLoanSanctionRequest().toString() ;
 										auditComponentBankToCW.saveBankToCWReqRes(jsonString, loanSanctionAndDisbursedRequest.getLoanSanctionRequest().getApplicationId() , CommonUtility.ApiType.REVERSE_DISBURSEMENT , null, disbursementReason , orgId, null);
 									} 
 								
