@@ -687,7 +687,6 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 				
 				// additional Details added as per req
 				directorBackgroundDetailResponse.setIsMainDirector(directorBackgroundDetailRequest.getIsMainDirector());
-				directorBackgroundDetailResponse.setAadhar(directorBackgroundDetailRequest.getAadhar());
 				directorBackgroundDetailResponse.setFatherName(directorBackgroundDetailRequest.getFatherName());
 				directorBackgroundDetailResponse.setEducationalStatus(directorBackgroundDetailRequest.getEducationalStatus() != null ? EducationalStatusMst.getById(directorBackgroundDetailRequest.getEducationalStatus()).getValue().toString() : "-");
 				directorBackgroundDetailResponse.setVisuallyImpaired(directorBackgroundDetailRequest.getVisuallyImpaired() != null ? VisuallyImpairedMst.getById(directorBackgroundDetailRequest.getVisuallyImpaired()).getValue().toString() : "-");
