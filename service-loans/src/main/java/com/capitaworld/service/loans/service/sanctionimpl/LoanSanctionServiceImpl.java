@@ -190,6 +190,7 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 		logger.info("================= Enter in saveSanctionAndDisbursementDetailsFromBank() ============================== ");
 		try {
 			String failureReason = null ; 
+			Boolean isReverseAPI = false ; 
 			//Getting userOrgDetail List
 			UserResponse userResponse = userClient.getOrgList();
 			if(!CommonUtils.isObjectNullOrEmpty(userResponse) && !CommonUtils.isObjectNullOrEmpty(userResponse.getData())) {
@@ -248,7 +249,7 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 									sidbiIntegrationClient.setTokenAsExpired(generateTokenRequest, generateTokenRequest.getBankToken(), userOrganisationRequest.getCodeLanguage());
 
 								} catch (Exception e) {
-									logger.info("---------- Error/Exception while expirim token ------------ " +e.getMessage());
+									logger.info("---------- Error/Exception while expiring token ------------ " +e.getMessage());
 								}
 								if(res instanceof List){
 									List<LoanSanctionAndDisbursedRequest> list = (List<LoanSanctionAndDisbursedRequest> )res;
@@ -262,25 +263,28 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 											list1 = MultipleJSONObjectHelper.getListOfObjects(json, null, com.capitaworld.sidbi.integration.model.sanction.LoanSanctionAndDisbursedRequest.class);
 										}
 									}catch (Exception e) {
-										logger.info("------------------ Error/Exception while getting appication from getSanctionAndDisbursmentDetailList ------------ MSG =>" + e.getMessage());	
+										failureReason = "Error/Exception while getting appication from getSanctionAndDisbursmentDetailList ------------ orgId "+userOrganisationRequest.getUserOrgId()+" MSG =>" + e.getMessage();
+										//logger.info("------------------ Error/Exception while getting appication from getSanctionAndDisbursmentDetailList ------------ MSG =>" + e.getMessage());	
 									}
 									if(sidbiIntegrationClient.updateSavedSanctionAndDisbursmentDetailList(list1 , token, generateTokenRequest.getBankToken() , userOrganisationRequest.getCodeLanguage())) {
 										try {
 											//wait for 20 Second
+											isReverseAPI = true ;
 											logger.info("*******Sucessgfully updated sanction and disbursement details in sidbi integration********** ");
 											TimeUnit.SECONDS.sleep(20);
 											logger.info("*******Going to Call another Bank Reverse API.********** ");
 										}catch (Exception e) {
-											logger.info("Error/Exception in for 20 second wait() ----------------------->  Message "+ e.getMessage());
-											e.printStackTrace();
+											//logger.info("Error/Exception in for 20 second wait() ----------------------->  Message "+ e.getMessage());
+											failureReason = "Error/Exception while getting appication from getSanctionAndDisbursmentDetailList ------------ orgId "+userOrganisationRequest.getUserOrgId()+" MSG =>" + e.getMessage();
+											//e.printStackTrace();
 										}
 									}
 								}else {
-									logger.info("*******Unable to store sanction or disbursement detail   **********  reasion is =={}", (res != null ? res.toString() : res));
+									//logger.info("*******Unable to store sanction or disbursement detail   **********  reasion is =={}", (res != null ? res.toString() : res));
 									 failureReason = "*******Unable to store sanction or disbursement detail   **********  reasion is =={}" + res != null ? res.toString() :  res+"" ;
 								}
 							}else {
-								logger.info("*******Null in getting sanction or disbursement detail  from  bank side  **********  reasion is ==> ", encryptedString +" org id ==> " + userOrganisationRequest.getUserOrgId() );
+								//logger.info("*******Null in getting sanction or disbursement detail  from  bank side  **********  reasion is ==> ", encryptedString +" org id ==> " + userOrganisationRequest.getUserOrgId() );
 								 failureReason ="*******Null in getting sanction or disbursement detail  from  bank side  **********  org id ==> " + userOrganisationRequest.getUserOrgId();
 								
 							}
@@ -291,9 +295,10 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 						}
 					}
 				}
+				
 			}
 			logger.info("going to fetch username/password");
-			return false;
+			return isReverseAPI;
 		}catch (Exception e) {
 			logger.info("Error/Exception in saveSanctionAndDisbursementDetailsFromBank() ----------------------->  Message "+ e.getMessage());
 			e.printStackTrace();
@@ -374,8 +379,11 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 									bankCWAuditTrailDomain = bankToCWAuditTrailRepository.findByApplicationIdAndOrgIdAndApiTypeAndBankPrimaryKeyAndIsActive(loanSanctionAndDisbursedRequest.getApplicationId(), orgId, CommonUtility.ApiType.REVERSE_SANCTION , loanSanctionAndDisbursedRequest.getLoanSanctionRequest().getId() , true);
 									if(CommonUtils.isObjectNullOrEmpty(bankCWAuditTrailDomain)) {
 										isSanctionSuccess = saveLoanSanctionDetailById(loanSanctionAndDisbursedRequest.getLoanSanctionRequest());
-										rowUpdated =  proposalDetailsRepository.updateSanctionStatus(13l, loanSanctionAndDisbursedRequest.getLoanSanctionRequest().getApplicationId());
-										
+										try {
+										rowUpdated = proposalDetailsRepository.updateSanctionStatus(13l, loanSanctionAndDisbursedRequest.getLoanSanctionRequest().getApplicationId());
+										}catch (Exception e) {
+											auditComponentBankToCW.saveBankToCWReqRes(jsonString, loanSanctionAndDisbursedRequest.getLoanSanctionRequest().getApplicationId() , CommonUtility.ApiType.REVERSE_SANCTION  , null, "Exception while updating the proposal status as partial disbursement = > MSG "+e.getMessage() , orgId, null);
+										}
 										loanSanctionAndDisbursedRequest.getLoanSanctionRequest().setStatusCode(CommonUtility.SanctionDisbursementAPIStatusCode.SUCCESS);	
 										logger.info("------------------------- saving sanction detail of reverse api--------------- isSuccess ==> " + isSanctionSuccess +" ----------- updating the proposal detail table row " + rowUpdated);
 									}else {
@@ -386,21 +394,22 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 									loanSanctionAndDisbursedRequest.getLoanSanctionRequest().setReason(sanctionReason);
 								
 									//	saving disbursement with validation
-									try {
-									
-										jsonString = MultipleJSONObjectHelper.getStringfromObject(loanSanctionAndDisbursedRequest.getLoanDisbursementRequestsList());
-									
-									} catch (Exception e) {
-										logger.error("--------------Error/Eception while converting object to String  ------------ MSG => "+ e.getMessage());
-									}
 									if(! CommonUtils.isListNullOrEmpty(loanSanctionAndDisbursedRequest.getLoanDisbursementRequestsList())) {
+										try {
+											
+											jsonString = MultipleJSONObjectHelper.getStringfromObject(loanSanctionAndDisbursedRequest.getLoanDisbursementRequestsList());
+										
+										} catch (Exception e) {
+											auditComponentBankToCW.saveBankToCWReqRes(jsonString, loanSanctionAndDisbursedRequest.getLoanSanctionRequest().getApplicationId() , null  , null, "Exception while converting the object in String = > MSG "+e.getMessage() , orgId, null);
+											logger.error("--------------Error/Eception while converting object to String  ------------ MSG => "+ e.getMessage());
+										}
 										loanSanctionAndDisbursedRequest.setLoanDisbursementRequestsList( loanDisbursementService.bankRequestValidationAndSave(loanSanctionAndDisbursedRequest.getLoanSanctionRequest().getId() , loanSanctionAndDisbursedRequest.getLoanDisbursementRequestsList(), orgId , CommonUtility.ApiType.REVERSE_DISBURSEMENT)) ;
 										if(!CommonUtils.isListNullOrEmpty(loanSanctionAndDisbursedRequest.getLoanDisbursementRequestsList())){
 											disbursementReason = "SUCCESS";
 											auditComponentBankToCW.saveBankToCWReqRes(jsonString, loanSanctionAndDisbursedRequest.getLoanSanctionRequest().getApplicationId() , CommonUtility.ApiType.REVERSE_DISBURSEMENT , null, disbursementReason , orgId, null);
 										}
 									}else {
-										disbursementReason = "No Disbursement has done for that aplicaiotnId "+ loanSanctionAndDisbursedRequest.getLoanSanctionRequest().getApplicationId() +" from bank Side and this sanction detail loanSanctionDetail => " + loanSanctionAndDisbursedRequest.getLoanSanctionRequest().toString() ;
+										disbursementReason = "No Disbursement has done for that aplicaiotnId from bank side"+ loanSanctionAndDisbursedRequest.getLoanSanctionRequest().getApplicationId() +" from bank Side and this sanction detail loanSanctionDetail => " + loanSanctionAndDisbursedRequest.getLoanSanctionRequest().toString() ;
 										auditComponentBankToCW.saveBankToCWReqRes(jsonString, loanSanctionAndDisbursedRequest.getLoanSanctionRequest().getApplicationId() , CommonUtility.ApiType.REVERSE_DISBURSEMENT , null, disbursementReason , orgId, null);
 									} 
 								
@@ -447,8 +456,12 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 						String 
 						auditComponentBankToCW.saveBankToCWReqRes(jsonString , 	applicationId,CommonUtility.ApiType.REVERSE_SANCTION, loansResponse, sanctionReason, orgId  , loanSanctionAndDisbursedRequest.getLoanSanctionRequest().getId());
 					}*/
-					jsonString = MultipleJSONObjectHelper.getStringfromObject(loanSanctionAndDisbursedRequest.getLoanSanctionRequest());
-					auditComponentBankToCW.saveBankToCWReqRes(jsonString , 	applicationId,CommonUtility.ApiType.REVERSE_SANCTION, loansResponse, sanctionReason, orgId  , loanSanctionAndDisbursedRequest.getLoanSanctionRequest().getId());
+					try {
+						jsonString = MultipleJSONObjectHelper.getStringfromObject(loanSanctionAndDisbursedRequest.getLoanSanctionRequest());
+						auditComponentBankToCW.saveBankToCWReqRes(jsonString , 	applicationId,CommonUtility.ApiType.REVERSE_SANCTION, loansResponse, sanctionReason, orgId  , loanSanctionAndDisbursedRequest.getLoanSanctionRequest().getId());
+					}catch (Exception e) {
+						auditComponentBankToCW.saveBankToCWReqRes(jsonString, loanSanctionAndDisbursedRequest.getLoanSanctionRequest().getApplicationId() , null  , null, "Exception while converting the object in String = > MSG "+e.getMessage() , orgId, null);
+					}
 					
 				}	
 				logger.info("Msg while saveLoanSanctionDisbursementDetailFromBank() ----------------> Sanction Reason => "+ sanctionReason +"  Disbursement reason =>" +  disbursementReason) ;
