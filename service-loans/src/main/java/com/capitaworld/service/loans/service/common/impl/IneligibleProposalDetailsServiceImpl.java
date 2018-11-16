@@ -113,8 +113,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 			try {
 				Map<String, Object> notificationParams = new HashMap<>();
 				// Sending mail to FS who become Ineligible
-				// 1 Get Details of FS_NAME,Bank name, Branch name and Address based on
-				// application Id
+				// 1 Get Details of FS_NAME,Bank name, Branch name and Address based on application Id
 				LoanApplicationRequest applicationRequest = null;
 				try {
 					applicationRequest = loanApplicationService.getFromClient(applicationId);
@@ -171,8 +170,9 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 					// ===FS=============================================================================
 					notificationParams.put("bank_name", organisationName);
  
-					String subject = "Manual Application : " + applicationId;
+					String subject = "Manual Application :#appId= " + applicationId;
 					if (organisationName != null) {
+						notificationParams.put("isDynamic", true);
 						createNotificationForEmail(signUpUser.getEmail(), applicationRequest.getUserId().toString(),
 								notificationParams, NotificationAlias.EMAIL_FS_WHEN_IN_ELIGIBLE, subject);
 					}
@@ -181,7 +181,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 					// Checker/Maker/BO
 					// ============================================================================================
 					Map<String, Object> mailParameters = new HashMap<String, Object>();
-					subject = "Manual Application : " + applicationId;
+					subject = "Manual Application : #appId=" + applicationId;
 					mailParameters.put("fs_name",
 							notificationParams.get("fs_name") != null ? notificationParams.get("fs_name") : "NA");
 					mailParameters.put("mobile_no", signUpUser.getMobile() != null ? signUpUser.getMobile() : "NA");
@@ -232,7 +232,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 							if (!CommonUtils.isObjectNullOrEmpty(userObj.getEmail())) {
 								// System.out.println("Checker ID:---"+userObj.getEmail());
 								to = userObj.getEmail();
-
+								mailParameters.put("isDynamic", true);
 								createNotificationForEmail(to, applicationRequest.getUserId().toString(),
 										mailParameters, NotificationAlias.EMAIL_BRANCH_FS_WHEN_IN_ELIGIBLE, subject);
 							}
@@ -252,6 +252,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 							if (!CommonUtils.isObjectNullOrEmpty(userObj.getEmail())) {
 								// System.out.println("Checker ID:---"+userObj.getEmail());
 								to = userObj.getEmail();
+								mailParameters.put("isDynamic", true);
 								createNotificationForEmail(to, applicationRequest.getUserId().toString(),
 										mailParameters, NotificationAlias.EMAIL_BRANCH_FS_WHEN_IN_ELIGIBLE, subject);
 							}
@@ -270,6 +271,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 							if (!CommonUtils.isObjectNullOrEmpty(userObj.getEmail())) {
 								// System.out.println("Checker ID:---"+userObj.getEmail());
 								to = userObj.getEmail();
+								mailParameters.put("isDynamic", true);
 								createNotificationForEmail(to, applicationRequest.getUserId().toString(),
 										mailParameters, NotificationAlias.EMAIL_BRANCH_FS_WHEN_IN_ELIGIBLE, subject);
 							}
@@ -509,6 +511,13 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 		logger.info("Inside send notification===>{}" + toNo);
 		NotificationRequest notificationRequest = new NotificationRequest();
 		notificationRequest.setClientRefId(userId);
+		
+		try{
+			notificationRequest.setIsDynamic(((Boolean) mailParameters.get("isDynamic")).booleanValue());
+		}catch (Exception e) {
+			notificationRequest.setIsDynamic(false);
+		}
+		
 		String to[] = { toNo };
 		Notification notification = new Notification();
 		notification.setContentType(ContentType.TEMPLATE);
@@ -518,6 +527,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 		notification.setType(NotificationType.EMAIL);
 		notification.setFrom(EMAIL_ADDRESS_FROM);
 		notification.setParameters(mailParameters);
+		notification.setIsDynamic(((Boolean) mailParameters.get("isDynamic")).booleanValue());
 		notificationRequest.addNotification(notification);
 		sendEmail(notificationRequest);
 		logger.info("Outside send notification===>{}" + toNo);
