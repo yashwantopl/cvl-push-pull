@@ -237,7 +237,6 @@ public class FPAsyncComponent {
 							mailParameters.put("isDynamic", true);
 							createNotificationForEmail(to, userId.toString(), mailParameters,
 									NotificationAlias.EMAIL_ALL_MAKERS_AFTER_INPRINCIPLE_TO_FS, subject);
-							mailParameters.put("isDynamic", false);
 						}
 
 						if (!CommonUtils.isObjectNullOrEmpty(userObj.getMobile())) {
@@ -428,7 +427,6 @@ public class FPAsyncComponent {
 							mailParameters.put("isDynamic", true);
 							createNotificationForEmail(to, userId.toString(), mailParameters,
 									NotificationAlias.EMAIL_ALL_CHECKERS_AFTER_INPRINCIPLE_TO_FS, subject);
-							mailParameters.put("isDynamic", false);
 						}
 
 						if (!CommonUtils.isObjectNullOrEmpty(userObj.getMobile())) {
@@ -626,7 +624,6 @@ public class FPAsyncComponent {
 							mailParameters.put("isDynamic", true);
 							createNotificationForEmail(to, userId.toString(), mailParameters,
 									NotificationAlias.EMAIL_HO_INPRINCIPLE_TO_FS, subject);
-							mailParameters.put("isDynamic", false);
 						}
 
 						if (!CommonUtils.isObjectNullOrEmpty(userObj.getMobile())) {
@@ -822,7 +819,6 @@ public class FPAsyncComponent {
 							mailParameters.put("isDynamic", true);
 							createNotificationForEmail(to, userId.toString(), mailParameters,
 									NotificationAlias.EMAIL_ALL_BO_INPRINCIPLE_TO_FS, subject);
-							mailParameters.put("isDynamic", false);
 						}
 
 						if (!CommonUtils.isObjectNullOrEmpty(userObj.getMobile())) {
@@ -1103,7 +1099,6 @@ public class FPAsyncComponent {
 					parameters.put("isDynamic", true);
 					createNotificationForEmail(toIds, request.getUserId().toString(), parameters,
 							NotificationAlias.EMAIL_MAKER_ACCEPT_PROPOSAL_OF_FS, subject);
-					parameters.put("isDynamic", false);
 				}
 
 				if (!CommonUtils.isObjectNullOrEmpty(assignedMaker.getMobile())) {
@@ -1757,7 +1752,7 @@ public class FPAsyncComponent {
 			// ====================Sending Mail to HO when Maker Assigns DDR to
 			// Checker=====================
 
-			String subject = "Intimation: Assigned DDR- Application ID " + request.getApplicationId();
+			String subject = "Intimation: Assigned DDR- #ApplicationId=" + request.getApplicationId();
 
 			UserResponse hoResponse = userClient.getUserDetailByOrgRoleBranchId(applicationRequest.getNpOrgId(),
 					com.capitaworld.service.users.utils.CommonUtils.UserRoles.HEAD_OFFICER, branchId);
@@ -3521,6 +3516,12 @@ public class FPAsyncComponent {
 		
 		NotificationRequest notificationRequest = new NotificationRequest();
 		notificationRequest.setClientRefId(userId);
+		try{
+			notificationRequest.setIsDynamic(((Boolean) mailParameters.get("isDynamic")).booleanValue());
+		}catch (Exception e) {
+			notificationRequest.setIsDynamic(false);
+		}
+		
 		String to[] = { toNo };
 		Notification notification = new Notification();
 		notification.setContentType(ContentType.TEMPLATE);
@@ -3530,12 +3531,8 @@ public class FPAsyncComponent {
 		notification.setType(NotificationType.EMAIL);
 		notification.setFrom(EMAIL_ADDRESS_FROM);
 		notification.setParameters(mailParameters);
+		notification.setIsDynamic(notificationRequest.getIsDynamic());
 		
-		try{
-			notification.setIsDynamic(((Boolean) mailParameters.get("isDynamic")).booleanValue());
-		}catch (Exception e) {
-			notification.setIsDynamic(false);
-		}
 		notificationRequest.addNotification(notification);
 		sendEmail(notificationRequest);
 		logger.info("Outside send notification===>{}" + toNo);
