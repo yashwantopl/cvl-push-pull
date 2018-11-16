@@ -31,12 +31,14 @@ import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.DirectorBackgroundDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
+import com.capitaworld.service.loans.domain.sanction.LoanDisbursementDomain;
 import com.capitaworld.service.loans.model.CorporateProposalDetails;
 import com.capitaworld.service.loans.model.FundProviderProposalDetails;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.ProposalDetailsAdminRequest;
 import com.capitaworld.service.loans.model.ProposalResponse;
 import com.capitaworld.service.loans.model.RetailProposalDetails;
+import com.capitaworld.service.loans.repository.OfflineProcessedAppRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
@@ -44,12 +46,15 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.DirectorBac
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
+import com.capitaworld.service.loans.repository.sanction.LoanDisbursementRepository;
 import com.capitaworld.service.loans.service.ProposalService;
 import com.capitaworld.service.loans.service.common.LogService;
 import com.capitaworld.service.loans.service.common.NotificationService;
+import com.capitaworld.service.loans.service.fundprovider.OfflineProcessedAppService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateDirectorIncomeService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
+import com.capitaworld.service.loans.utils.CommonUtility;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.loans.utils.CommonUtils.UsersRoles;
@@ -137,6 +142,9 @@ public class ProposalServiceMappingImpl implements ProposalService {
 	@Autowired
 	private ProposalDetailsRepository proposalDetailRepository;
 	
+	@Autowired
+	private LoanDisbursementRepository loanDisbursementRepository;
+	
 
 	DecimalFormat df = new DecimalFormat("#");
 
@@ -172,8 +180,8 @@ public class ProposalServiceMappingImpl implements ProposalService {
 				if (!CommonUtils.isObjectNullOrEmpty(basicDetailsRequest)) {
 					logger.info("Found Branch Id -----------> " + basicDetailsRequest.getId()
 							+ "---------Role Id ------------------>" + basicDetailsRequest.getRoleId());
-					if (basicDetailsRequest.getRoleId() == CommonUtils.UsersRoles.BO) {
-						logger.info("Current user is Branch officer");
+					if (basicDetailsRequest.getRoleId() == CommonUtils.UsersRoles.BO || basicDetailsRequest.getRoleId() == CommonUtils.UsersRoles.FP_CHECKER) {
+						logger.info("Current user is Branch officer or FP_CHECKER");
 						request.setBranchId(basicDetailsRequest.getId());
 					}
 				} else {
@@ -589,7 +597,8 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					retailProposalDetails.setApplicationId(applicationId);
 					retailProposalDetails.setProposalMappingId(proposalrequest.getId());
 					retailProposalDetails.setFsType(CommonUtils.UserMainType.RETAIL);
-
+					retailProposalDetails.setBusinessTypeId(loanApplicationMaster.getBusinessTypeId());
+					retailProposalDetails.setFpProductid(fpProductId);
 					// get retail loan amount
 
 					String loanAmount = "";
@@ -700,8 +709,10 @@ public class ProposalServiceMappingImpl implements ProposalService {
 
 			ProposalMappingResponse proposalDetailsResponse = proposalDetailsClient.proposalListOfFundSeeker(request);
 
+			List<Object[]> disbursmentData = loanDisbursementRepository.getDisbursmentData(request.getApplicationId());
+			
 			List<ProposalMappingRequest> proposalMappingList = new ArrayList<ProposalMappingRequest>();
-
+			
 			for (int i = 0; i < proposalDetailsResponse.getDataList().size(); i++) {
 				UsersClient usersClient = new UsersClient(environment.getRequiredProperty("userURL"));
 				ProposalMappingRequest proposalrequest = MultipleJSONObjectHelper.getObjectFromMap(
@@ -762,6 +773,11 @@ public class ProposalServiceMappingImpl implements ProposalService {
 				fundProviderProposalDetails.setElAmount(proposalrequest.getElAmount());
 				fundProviderProposalDetails.setElRoi(proposalrequest.getElRoi());
 				fundProviderProposalDetails.setElTenure(proposalrequest.getElTenure());
+				//add disbursed amount logic
+				
+				fundProviderProposalDetails.setPartiallyDisburseAmt(disbursmentData != null ? (Double)(disbursmentData.get(0)[0]) : null);
+				fundProviderProposalDetails.setLastDisbursmentDate(disbursmentData != null ? String.valueOf(disbursmentData.get(0)[1]) : null);
+				
 				proposalDetailsList.add(fundProviderProposalDetails);
 			}
 		} catch (Exception e) {
@@ -1700,7 +1716,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 		LoansResponse loansResponse = new LoansResponse();
 		
 		try {
-//			System.out.println("getApplicationId : "+userRequest.getApplicationId() + "userRequest.getId() : "+userRequest.getId());
+//			System.out.println("getApplicationId : "+userRequest.getApplicationId() + "userRequest.getId() : "+userRequest.getId()+" getLoanAmount() : "+userRequest.getLoanAmount());
 			loansResponse.setFlag(true);
 
 			LoanApplicationMaster loanApplicationMaster = loanApplicationRepository
@@ -1709,6 +1725,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			if(loanApplicationMaster != null && userRequest != null) {
 				// Check If Requested Application is assigned to Currunt Fp Cheker or not
 				UserResponse userResponse = null;
+				userRequest.setProductIdString(CommonUtility.encode(""+loanApplicationMaster.getProductId()));
 				if(loanApplicationMaster.getNpUserId() == null) {
 					userResponse = usersClient.getMinMaxAmount(userRequest);
 				}else if((loanApplicationMaster.getNpUserId()).equals(userRequest.getId())) {
@@ -1723,8 +1740,9 @@ public class ProposalServiceMappingImpl implements ProposalService {
 				}
 
 				if (!CommonUtils.isObjectNullOrEmpty(checkerDetailRequest)) {
-					if (userRequest.getLoanAmount() != null && !(userRequest.getLoanAmount() >= checkerDetailRequest.getMinAmount()
-							&& userRequest.getLoanAmount() <= checkerDetailRequest.getMaxAmount())) {
+//					System.out.println("getMinAmount : "+checkerDetailRequest.getMinAmount() + " getMaxAmount : "+checkerDetailRequest.getMaxAmount());
+					if (userRequest.getLoanAmount() != null && checkerDetailRequest.getMinAmount() != null && checkerDetailRequest.getMaxAmount()!= null 
+							&& !(userRequest.getLoanAmount() >= checkerDetailRequest.getMinAmount() && userRequest.getLoanAmount() <= checkerDetailRequest.getMaxAmount())) {
 						loansResponse.setFlag(false);
 						loansResponse.setMessage(
 								"You do not have rights to take action for this proposal. Kindly assign the proposal to your upper level checker.");
@@ -1748,6 +1766,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			loansResponse.setFlag(false);
 			loansResponse.setMessage("You do not have rights to take action for this proposal.");
 		}
+//		System.out.println("loansResponse : "+loansResponse.toString());
 		return loansResponse;
 	}
 	
@@ -1809,4 +1828,13 @@ public class ProposalServiceMappingImpl implements ProposalService {
     	return responseList;
     }
 
+	@Autowired
+	private OfflineProcessedAppRepository offlineProcessedAppRepository;
+	@Override
+	public  List<Object[]> getHomeCounterDetail() {
+		logger.info("========== Enter in getHomeCounter()  gettting no of fp , fs and total inprinciple and inprinciple amount======== "); 
+		 List<Object[]> object =  offlineProcessedAppRepository.getHomeCounterDetail();
+		logger.info("========== Exit from  getHomeCounter() ======== " + object);
+		return object  ;
+	}
 }

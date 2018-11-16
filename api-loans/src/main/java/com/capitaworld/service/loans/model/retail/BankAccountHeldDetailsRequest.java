@@ -28,7 +28,7 @@ public class BankAccountHeldDetailsRequest implements Serializable{
 	
 	private Long applicantId;
 	
-	
+	private String accountTypeString;
 
 	public Long getApplicantId() {
 		return applicantId;
@@ -93,4 +93,13 @@ public class BankAccountHeldDetailsRequest implements Serializable{
 	public void setBranchName(String branchName) {
 		this.branchName = branchName;
 	}
+
+	public String getAccountTypeString() {
+		return accountTypeString;
+	}
+
+	public void setAccountTypeString(String accountTypeString) {
+		this.accountTypeString = accountTypeString;
+	}
+	
 }

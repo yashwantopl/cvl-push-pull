@@ -120,9 +120,19 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 						return loanDisbursementRequest;
 					}
 					Double totalDisbursedAmount = oldDisbursedAmount + loanDisbursementRequest.getDisbursedAmount();
-					if (loanSanctionDomain.getSanctionAmount() >= totalDisbursedAmount) {
+					if (loanSanctionDomain.getSanctionAmount() == totalDisbursedAmount) {
 						logger.info("Exit saveLoanDisbursementDetail() -----------------------> msg==>"+"SUCCESS");
 						loanDisbursementRequest.setReason("SUCCESS");
+						loanDisbursementRequest.setIsSaved(false);
+						loanDisbursementRequest.setStatusCode(CommonUtility.SanctionDisbursementAPIStatusCode.SUCCESS);
+						if(loanDisbursementRequest.getIsIneligibleProposal() == true) {
+						loanDisbursementRequest.setIsDisbursedFrom(2L);
+						loanDisbursementRequest.setOrgId(orgId);
+						}
+						return loanDisbursementRequest;
+					}else if (loanSanctionDomain.getSanctionAmount() > totalDisbursedAmount) {
+						logger.info("Exit saveLoanDisbursementDetail() -----------------------> msg==>"+"SUCCESS");
+						loanDisbursementRequest.setReason("Remaining");
 						loanDisbursementRequest.setIsSaved(false);
 						loanDisbursementRequest.setStatusCode(CommonUtility.SanctionDisbursementAPIStatusCode.SUCCESS);
 						if(loanDisbursementRequest.getIsIneligibleProposal() == true) {
@@ -198,7 +208,7 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 	//Its for list of disbursement per sanction
 	@Override
 	public List<LoanDisbursementRequest> bankRequestValidationAndSave(Long sanctionPrimaryId ,List<LoanDisbursementRequest> loanDisbursementRequestsList,Long orgId , Integer apiType) throws IOException {
-		
+		int rowUpdated = 0;
 		for(LoanDisbursementRequest  loanDisbursementRequest : loanDisbursementRequestsList) {		
 			
 			if(! CommonUtils.isObjectNullOrEmptyOrDash( bankToCWAuditTrailRepository.findByApplicationIdAndOrgIdAndApiTypeAndBankPrimaryKeyAndIsActive(loanDisbursementRequest.getApplicationId() , orgId, CommonUtility.ApiType.REVERSE_DISBURSEMENT , loanDisbursementRequest.getId() , true))){
@@ -224,13 +234,21 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 			//saving req in bank to  cw-audit table
 			String jsonString = null;
 			
-			if("SUCCESS".equalsIgnoreCase(loanDisbursementRequest.getReason()) || "First Disbursement".equalsIgnoreCase(loanDisbursementRequest.getReason())) {
+			if("SUCCESS".equalsIgnoreCase(loanDisbursementRequest.getReason()) || "First Disbursement".equalsIgnoreCase(loanDisbursementRequest.getReason()) || "Remaining".equalsIgnoreCase(loanDisbursementRequest.getReason())) {
 				if(CommonUtility.ApiType.DISBURSEMENT == apiType) {
 					if(saveLoanDisbursementDetail(loanDisbursementRequest)) {
 						logger.info("Success msg while saveLoanDisbursementDetail() ----------------> msg " + loanDisbursementRequest.getReason()) ;
 					}
 				}else if(saveLoanDisbursementDetailbyId(loanDisbursementRequest)) {
-					logger.info("Success msg while saveLoanDisbursementDetail() ----------------> msg " + loanDisbursementRequest.getReason()) ;
+					if("SUCCESS".equalsIgnoreCase(loanDisbursementRequest.getReason())){
+						try {
+							rowUpdated = proposalDetailsRepository.updateSanctionStatus(11l, loanDisbursementRequest.getApplicationId());
+						}catch (Exception e) {
+							auditComponentBankToCW.saveBankToCWReqRes(null , loanDisbursementRequest.getApplicationId() , CommonUtility.ApiType.REVERSE_DISBURSEMENT   , null, "Exception while updating the proposal detail table sanction status= > MSG "+e.getMessage() , orgId, null);	
+						}
+						//auditComponentBankToCW.saveBankToCWReqRes(null, loanDisbursementRequest.getApplicationId(), null, null , "updating the proposal detail table sanction status ", orgId, null);
+					}
+					logger.info("Success msg while saveLoanDisbursementDetail() ----------------> msg " + loanDisbursementRequest.getReason() +"  -------updating the proposal detail table detail status rowUpdated ---------" +rowUpdated) ;
 					loanDisbursementRequest.setIsSaved(true);
 				}
 				

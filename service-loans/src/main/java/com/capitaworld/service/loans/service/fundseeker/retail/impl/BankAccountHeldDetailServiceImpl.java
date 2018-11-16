@@ -22,6 +22,7 @@ import com.capitaworld.service.loans.repository.fundseeker.retail.GuarantorDetai
 import com.capitaworld.service.loans.service.fundseeker.retail.BankAccountHeldDetailService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
+import com.capitaworld.service.oneform.enums.AccountType;
 
 /**
  * @author Sanket
@@ -112,6 +113,7 @@ public class BankAccountHeldDetailServiceImpl implements BankAccountHeldDetailSe
 
 			for (BankAccountHeldDetail detail : existingLoanDetails) {
 				BankAccountHeldDetailsRequest existingLoanDetailRequest = new BankAccountHeldDetailsRequest();
+				existingLoanDetailRequest.setAccountTypeString(!CommonUtils.isObjectNullOrEmpty(detail.getAccountType()) ? AccountType.getById(detail.getAccountType()).getValue() : "");
 				BeanUtils.copyProperties(detail, existingLoanDetailRequest);
 				existingLoanDetailRequests.add(existingLoanDetailRequest);
 			}

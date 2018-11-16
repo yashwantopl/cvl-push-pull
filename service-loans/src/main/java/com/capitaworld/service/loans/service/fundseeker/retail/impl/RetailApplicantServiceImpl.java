@@ -146,6 +146,8 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 				applicantDetail.setApplicationId(new LoanApplicationMaster(applicantRequest.getApplicationId()));
 			}
 			BeanUtils.copyProperties(applicantRequest, applicantDetail,CommonUtils.IgnorableCopy.RETAIL_FINAL_WITH_ID);
+			applicantDetail.setEmail(applicantRequest.getEmail());
+			applicantDetail.setMobile(applicantRequest.getLanLineNo());
 			Address address = applicantRequest.getFirstAddress();
 			if(!CommonUtils.isObjectNullOrEmpty(address)) {
 				applicantDetail.setAddressPremiseName(address.getPremiseNumber());
@@ -155,6 +157,7 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 				applicantDetail.setAddressState(!CommonUtils.isObjectNullOrEmpty(address.getStateId()) ? address.getStateId().longValue() : null);
 				applicantDetail.setAddressCity(address.getCityId());
 				applicantDetail.setAddressPincode(address.getPincode());
+				applicantDetail.setAddressDistrictMappingId(address.getDistrictMappingId());
 			}
 			applicantDetail.setBirthDate(applicantRequest.getDob());
 			applicantDetail = applicantRepository.save(applicantDetail);

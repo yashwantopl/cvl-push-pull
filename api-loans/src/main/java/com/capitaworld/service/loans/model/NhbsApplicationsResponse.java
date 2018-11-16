@@ -17,6 +17,10 @@ public class NhbsApplicationsResponse implements Serializable{
 	
 	private Integer applicationType;
 	
+	private String applicationCode;
+	
+	private String productName;
+	
 	private String makerName;
 
 	private String checkerName;
@@ -281,4 +285,23 @@ public class NhbsApplicationsResponse implements Serializable{
 	public void setClientId(Long clientId) {
 		this.clientId = clientId;
 	}
+
+	public String getApplicationCode() {
+		return applicationCode;
+	}
+
+	public void setApplicationCode(String applicationCode) {
+		this.applicationCode = applicationCode;
+	}
+
+	public String getProductName() {
+		return productName;
+	}
+
+	public void setProductName(String productName) {
+		this.productName = productName;
+	}
+
+	
+
 }

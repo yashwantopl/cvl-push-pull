@@ -580,7 +580,6 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 				
 				// additional Details added as per req
 				directorBackgroundDetailResponse.setIsMainDirector(directorBackgroundDetailRequest.getIsMainDirector());
-				directorBackgroundDetailResponse.setAadhar(directorBackgroundDetailRequest.getAadhar());
 				directorBackgroundDetailResponse.setFatherName(directorBackgroundDetailRequest.getFatherName());
 				directorBackgroundDetailResponse.setEducationalStatus(directorBackgroundDetailRequest.getEducationalStatus() != null ? EducationalStatusMst.getById(directorBackgroundDetailRequest.getEducationalStatus()).getValue().toString() : "-");
 				directorBackgroundDetailResponse.setVisuallyImpaired(directorBackgroundDetailRequest.getVisuallyImpaired() != null ? VisuallyImpairedMst.getById(directorBackgroundDetailRequest.getVisuallyImpaired()).getValue().toString() : "-");
@@ -757,28 +756,38 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 			financialInputRequest
 					.setProfitAfterTaxSy(CommonUtils.substractNumbers(financialInputRequest.getProfitBeforeTaxSy(),
 							financialInputRequest.getProvisionForTaxSy())
-							+ financialInputRequest.getOtherIncomeNeedTocCheckOpSy());
+							+ (financialInputRequest.getOtherIncomeNeedTocCheckOpSy() != null ? financialInputRequest.getOtherIncomeNeedTocCheckOpSy() :0.0));
 			financialInputRequest
 					.setProfitAfterTaxTy(CommonUtils.substractNumbers(financialInputRequest.getProfitBeforeTaxTy(),
 							financialInputRequest.getProvisionForTaxTy())
-							+ financialInputRequest.getOtherIncomeNeedTocCheckOpTy());
+							+ (financialInputRequest.getOtherIncomeNeedTocCheckOpTy() != null ? financialInputRequest.getOtherIncomeNeedTocCheckOpTy() :0.0));
 			if (financialInputRequest.getDividendPayOutFy() == 0)
 				financialInputRequest.setEquityDividendFy(0.0);
 			else
 				financialInputRequest.setEquityDividendFy(financialInputRequest.getDividendPayOutFy()
 						* financialInputRequest.getShareFaceValue() / financialInputRequest.getShareCapitalFy());
-
-			if (financialInputRequest.getDividendPayOutSy() == 0)
+			if(financialInputRequest.getDividendPayOutSy()!=null) {
+				if (financialInputRequest.getDividendPayOutSy() == 0)
+					financialInputRequest.setEquityDividendSy(0.0);
+				else
+					financialInputRequest.setEquityDividendSy(financialInputRequest.getDividendPayOutSy()
+							* financialInputRequest.getShareFaceValue() / financialInputRequest.getShareCapitalSy());	
+			}else {
 				financialInputRequest.setEquityDividendSy(0.0);
-			else
-				financialInputRequest.setEquityDividendSy(financialInputRequest.getDividendPayOutSy()
-						* financialInputRequest.getShareFaceValue() / financialInputRequest.getShareCapitalSy());
-
-			if (financialInputRequest.getDividendPayOutTy() == 0)
-				financialInputRequest.setEquityDividendTy(0.0);
-			else
-				financialInputRequest.setEquityDividendTy(financialInputRequest.getDividendPayOutTy()
-						* financialInputRequest.getShareFaceValue() / financialInputRequest.getShareCapitalTy());
+			}
+			
+			if( financialInputRequest.getDividendPayOutTy() !=null) {
+			
+				if (financialInputRequest.getDividendPayOutTy() == 0)
+					financialInputRequest.setEquityDividendTy(0.0);
+				else
+					financialInputRequest.setEquityDividendTy(financialInputRequest.getDividendPayOutTy()
+							* financialInputRequest.getShareFaceValue() / financialInputRequest.getShareCapitalTy());
+				
+			}else {
+				financialInputRequest.setEquityDividendTy(0.0);	
+			}
+			
 
 			financialInputRequest.setEarningPerShareFy((financialInputRequest.getProfitAfterTaxFy())
 					* financialInputRequest.getShareFaceValue() / financialInputRequest.getShareCapitalFy());
@@ -904,7 +913,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 			corporatePrimaryViewResponse.setFinancialInputRequest(financialInputRequest);
 
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
+			logger.error("Error From Irr Side While Calculate Financial data .....");
 			e.printStackTrace();
 		}
 
@@ -1084,9 +1093,10 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 			corporatePrimaryViewResponse.setCgtmseData(cgtmseDataResp);
 
 		} catch (Exception e) {
-
+			
+			logger.error("Error while calling CGTMSE data");
 			e.printStackTrace();
-			logger.info("Error while getting CGTMSE data");
+			
 		}
 
 		// MCA DATA

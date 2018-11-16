@@ -546,6 +546,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	private LoanApplicationService loanApplicationService;
 
 	public static final String EMAIL_ADDRESS_FROM = "no-reply@capitaworld.com";
+	
+    @Value("${cw.gst.unit.test}")
+    private String IS_UNIT_TEST;
 
 	@Override
 	public boolean saveOrUpdate(FrameRequest commonRequest, Long userId) throws Exception {
@@ -934,8 +937,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	@Override
 	public List<LoanApplicationRequest> getList(Long userId) throws Exception {
 		try {
+			
+			logger.info("In GetList");
 			List<LoanApplicationMaster> results = loanApplicationRepository.getUserLoans(userId);
 			List<LoanApplicationRequest> requests = new ArrayList<>(results.size());
+			if("N".equals(IS_UNIT_TEST)) {
 			for (LoanApplicationMaster master : results) {
 				LoanApplicationRequest request = new LoanApplicationRequest();
 				BeanUtils.copyProperties(master, request, "name");
@@ -1038,6 +1044,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				}
 				request.setApplicationStatus(applicationStatus);
 			}
+		}
 			return requests;
 		} catch (Exception e) {
 			logger.error("Error while Getting Loan Details:-");
@@ -4441,7 +4448,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			if (!CommonUtils.isObjectListNull(connectResponse)) {
 				logger.info("Connector Response ----------------------------->" + connectResponse.toString());
 				logger.info("Before Start Saving Phase 1 Sidbi API ------------------->" + orgId);
-				if (orgId == 10L) {
+				/*if (orgId == 10L) {
 					logger.info("Start Saving Phase 1 sidbi API -------------------->" + loanApplicationMaster.getId());
 					Long fpMappingId = null;
 					try {
@@ -4449,7 +4456,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 						e.printStackTrace();
 					}
 					savePhese1DataToSidbi(loanApplicationMaster.getId(), userId, orgId, fpProductId);
-				}
+				}*/
 
 				if (connectResponse.getProceed()) {
 					if (loanApplicationMaster.getCompanyCinNumber() != null) {
@@ -4512,15 +4519,15 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			if (!CommonUtils.isObjectListNull(connectResponse)) {
 				logger.info("Connector Response ----------------------------->" + connectResponse.toString());
 				logger.info("Before Start Saving Phase 1 Sidbi API ------------------->" + orgId);
-				// if(orgId==10L) {
-				logger.info("Start Saving Phase 1 sidbi API -------------------->" + loanApplicationMaster.getId());
-				Long fpMappingId = null;
-				try {
-					savePhese1DataToSidbi(loanApplicationMaster.getId(), userId, orgId, fpProductId);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				// }
+				/*if (orgId == 10L) {
+					logger.info("Start Saving Phase 1 sidbi API -------------------->" + loanApplicationMaster.getId());
+					Long fpMappingId = null;
+					try {
+						savePhese1DataToSidbi(loanApplicationMaster.getId(), userId, orgId, fpProductId);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}*/
 
 				if (connectResponse.getProceed()) {
 					if (loanApplicationMaster.getCompanyCinNumber() != null) {
@@ -5218,7 +5225,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					disbursementRequest.setFsName(getFsApplicantName(disbursementRequest.getApplicationId()));
 					disbursementRequest.setFsAddress(getAddressByApplicationId(disbursementRequest.getApplicationId()));
 					// fs image
-					if(!disbursementRequest.getIsIneligibleProposal()) {
+					if(CommonUtils.isObjectNullOrEmpty(disbursementRequest.getIsIneligibleProposal()) || disbursementRequest.getIsIneligibleProposal() == false) {
 						DocumentRequest documentRequest = new DocumentRequest();
 						documentRequest.setApplicationId(disbursementRequest.getApplicationId());
 						documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
@@ -5420,6 +5427,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		logger.info("Successfully get result");
 		retailLoanObj = new PrimaryPersonalLoanDetail();
 		retailLoanObj.setApplicationStatusMaster(new ApplicationStatusMaster(CommonUtils.ApplicationStatus.OPEN));
+		retailLoanObj.setDdrStatusId(CommonUtils.DdrStatus.OPEN);
 		retailLoanObj.setCreatedBy(userId);
 		retailLoanObj.setCreatedDate(new Date());
 		retailLoanObj.setUserId(userId);

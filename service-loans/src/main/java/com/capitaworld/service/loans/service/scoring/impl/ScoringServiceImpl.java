@@ -11,6 +11,7 @@ import com.capitaworld.service.analyzer.client.AnalyzerClient;
 import com.capitaworld.service.analyzer.model.common.AnalyzerResponse;
 import com.capitaworld.service.analyzer.model.common.Data;
 import com.capitaworld.service.analyzer.model.common.ReportRequest;
+import com.capitaworld.service.analyzer.model.common.Xn;
 import com.capitaworld.service.gst.GstCalculation;
 import com.capitaworld.service.gst.GstResponse;
 import com.capitaworld.service.gst.client.GstClient;
@@ -35,6 +36,8 @@ import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.loans.utils.scoreexcel.ScoreExcelFileGenerator;
 import com.capitaworld.service.loans.utils.scoreexcel.ScoreExcelReader;
 import com.capitaworld.service.oneform.client.OneFormClient;
+import com.capitaworld.service.oneform.enums.EmploymentWithPL;
+import com.capitaworld.service.oneform.enums.EmploymentWithPLScoring;
 import com.capitaworld.service.oneform.enums.scoring.EnvironmentCategory;
 import com.capitaworld.service.oneform.model.OneFormResponse;
 import com.capitaworld.service.rating.RatingClient;
@@ -49,6 +52,7 @@ import com.capitaworld.service.thirdparty.model.CGTMSEDataResponse;
 import com.capitaworld.service.thirdpaty.client.ThirdPartyClient;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.UserResponse;
+
 import com.google.gson.Gson;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -198,28 +202,456 @@ public class ScoringServiceImpl implements ScoringService {
         Long applicationId = scoringRequestLoans.getApplicationId();
         Long fpProductId = scoringRequestLoans.getFpProductId();
 
-        logger.info("----------------------------START RETAIL PL ------------------------------");
-        logger.info("--------------------------------------------------------------------------");
-        logger.info("--------------------------------------------------------------------------");
 
-        logger.info("APPLICATION ID   :: " + applicationId);
-        logger.info("FP PRODUCT ID    :: " + fpProductId);
-        logger.info("SCORING MODEL ID :: " + scoreModelId);
+        ///////// Start Getting Old Request ///////
 
-        ScoringResponse scoringResponseMain = null;
 
-        // GET SCORE RETAIL PERSONAL LOAN PARAMETERS
+        List<ScoringRequestDetail> scoringRequestDetailList = scoringRequestDetailRepository.getScoringRequestDetailByApplicationIdAndIsActive(applicationId);
 
-        RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.findOneByApplicationIdId(applicationId);
+        ScoringRequestDetail scoringRequestDetailSaved = new ScoringRequestDetail();
 
-        if (CommonUtils.isObjectNullOrEmpty(retailApplicantDetail)) {
-            logger.error("Error while getting retail applicant detail for personal loan scoring");
-            LoansResponse loansResponse = new LoansResponse("Error while getting retail applicant detail for personal loan scoring", HttpStatus.INTERNAL_SERVER_ERROR.value());
-            return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+        if (scoringRequestDetailList.size() > 0) {
+            logger.info("Getting Old Scoring request Data for  =====> " + applicationId);
+            scoringRequestDetailSaved = scoringRequestDetailList.get(0);
+            Gson gson = new Gson();
+            scoreParameterRetailRequest = gson.fromJson(scoringRequestDetailSaved.getRequest(), ScoreParameterRetailRequest.class);
         }
 
 
-        if (!CommonUtils.isObjectNullOrEmpty(scoreModelId)) {
+        ScoringResponse scoringResponseMain = null;
+
+        ScoringRequest scoringRequest = new ScoringRequest();
+        scoringRequest.setScoringModelId(scoreModelId);
+        scoringRequest.setFpProductId(fpProductId);
+        scoringRequest.setApplicationId(applicationId);
+        scoringRequest.setUserId(scoringRequestLoans.getUserId());
+        scoringRequest.setBusinessTypeId(ScoreParameter.BusinessType.RETAIL_PERSONAL_LOAN);
+
+        if (CommonUtils.isObjectNullOrEmpty(scoringRequestLoans.getFinancialTypeIdProduct())) {
+            scoringRequest.setFinancialTypeId(ScoreParameter.FinancialType.THREE_YEAR_ITR);
+        } else {
+            scoringRequest.setFinancialTypeId(scoringRequestLoans.getFinancialTypeIdProduct());
+        }
+
+        ///////// End  Getting Old Request ///////
+
+        if (!(scoringRequestDetailList.size() > 0)) {
+            logger.info("----------------------------START RETAIL PL ------------------------------");
+            logger.info("--------------------------------------------------------------------------");
+            logger.info("--------------------------------------------------------------------------");
+
+            logger.info("APPLICATION ID   :: " + applicationId);
+            logger.info("FP PRODUCT ID    :: " + fpProductId);
+            logger.info("SCORING MODEL ID :: " + scoreModelId);
+
+            // GET SCORE RETAIL PERSONAL LOAN PARAMETERS
+
+            RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.findOneByApplicationIdId(applicationId);
+
+            if (CommonUtils.isObjectNullOrEmpty(retailApplicantDetail)) {
+                logger.error("Error while getting retail applicant detail for personal loan scoring");
+                LoansResponse loansResponse = new LoansResponse("Error while getting retail applicant detail for personal loan scoring", HttpStatus.INTERNAL_SERVER_ERROR.value());
+                return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+            }
+
+
+            if (!CommonUtils.isObjectNullOrEmpty(scoreModelId)) {
+                // GET ALL FIELDS FOR CALCULATE SCORE BY MODEL ID
+                ScoringResponse scoringResponse = null;
+                try {
+                    scoringResponse = scoringClient.listFieldByBusinessTypeId(scoringRequest);
+                } catch (Exception e) {
+                    logger.error("error while getting field list");
+                    e.printStackTrace();
+                }
+
+                List<Map<String, Object>> dataList = (List<Map<String, Object>>) scoringResponse.getDataList();
+
+
+                for (int i = 0; i < dataList.size(); i++) {
+
+                    ModelParameterResponse modelParameterResponse = null;
+                    try {
+                        modelParameterResponse = MultipleJSONObjectHelper.getObjectFromMap(dataList.get(i),
+                                ModelParameterResponse.class);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                    FundSeekerInputRequest fundSeekerInputRequest = new FundSeekerInputRequest();
+                    fundSeekerInputRequest.setFieldId(modelParameterResponse.getFieldMasterId());
+                    fundSeekerInputRequest.setName(modelParameterResponse.getName());
+
+                    switch (modelParameterResponse.getName()) {
+
+                        case ScoreParameter.Retail.WORKING_EXPERIENCE_PL: {
+
+                            try {
+                                Double totalExperience = 0.0;
+                                if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getTotalExperienceYear()))
+                                    totalExperience += Double.valueOf(retailApplicantDetail.getTotalExperienceYear());
+
+                                if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getTotalExperienceMonth()))
+                                    totalExperience += Double.valueOf(retailApplicantDetail.getTotalExperienceMonth() / 10);
+
+                                scoreParameterRetailRequest.setWorkingExperience(totalExperience);
+                                scoreParameterRetailRequest.setWorkingExperience_p(true);
+                            } catch (Exception e) {
+                                logger.error("error while getting WORKING_EXPERIENCE_PL parameter");
+                                e.printStackTrace();
+                                scoreParameterRetailRequest.setWorkingExperience_p(false);
+                            }
+
+                            break;
+                        }
+                        case ScoreParameter.Retail.CIBIL_SCORE_PL: {
+
+                            Double cibil_score = null;
+                            try {
+
+                                CibilRequest cibilRequest = new CibilRequest();
+                                cibilRequest.setPan(retailApplicantDetail.getPan());
+                                cibilRequest.setApplicationId(applicationId);
+
+                                CibilScoreLogRequest cibilResponse = cibilClient.getCibilScoreByPanCard(cibilRequest);
+                                if (!CommonUtils.isObjectNullOrEmpty(cibilResponse.getScore())) {
+                                    cibil_score = Double.parseDouble(cibilResponse.getScore());
+                                    scoreParameterRetailRequest.setCibilScore(cibil_score);
+                                    scoreParameterRetailRequest.setCibilScore_p(true);
+                                } else {
+                                    scoreParameterRetailRequest.setCibilScore_p(false);
+                                }
+                            } catch (Exception e) {
+                                logger.error("error while getting CIBIL_SCORE_PL parameter from CIBIL client");
+                                e.printStackTrace();
+                                scoreParameterRetailRequest.setCibilScore_p(false);
+                            }
+
+                            break;
+                        }
+                        case ScoreParameter.Retail.AGE_PL: {
+
+                            try {
+                                if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getBirthDate())) {
+                                    scoreParameterRetailRequest.setAge(Math.ceil(CommonUtils.getAgeFromBirthDate(retailApplicantDetail.getBirthDate()).doubleValue()));
+                                    scoreParameterRetailRequest.setAge_p(true);
+                                } else {
+                                    scoreParameterRetailRequest.setAge_p(false);
+                                }
+                            } catch (Exception e) {
+                                logger.error("error while getting AGE_PL parameter");
+                                e.printStackTrace();
+                                scoreParameterRetailRequest.setAge_p(false);
+                            }
+
+                            break;
+                        }
+                        case ScoreParameter.Retail.EDUCATION_QUALI_PL: {
+
+                            try {
+                                if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getEducationQualification())) {
+                                    scoreParameterRetailRequest.setEducationQualification(retailApplicantDetail.getEducationQualification().longValue());
+                                    scoreParameterRetailRequest.setEducationQualifaction_p(true);
+                                } else {
+                                    scoreParameterRetailRequest.setEducationQualifaction_p(false);
+                                }
+                            } catch (Exception e) {
+                                logger.error("error while getting EDUCATION_QUALI_PL parameter");
+                                e.printStackTrace();
+                                scoreParameterRetailRequest.setEducationQualifaction_p(false);
+                            }
+
+                            break;
+                        }
+                        case ScoreParameter.Retail.EMPLOYEMENT_TYPE_PL: {
+
+                            try {
+                                if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getEmploymentStatus())) {
+                                    scoreParameterRetailRequest.setEmploymentType(retailApplicantDetail.getEmploymentStatus().longValue());
+                                    scoreParameterRetailRequest.setEmployementType_p(true);
+                                } else {
+                                    scoreParameterRetailRequest.setEmployementType_p(false);
+                                }
+                            } catch (Exception e) {
+                                logger.error("error while getting EMPLOYEMENT_TYPE_PL parameter");
+                                e.printStackTrace();
+                                scoreParameterRetailRequest.setEmployementType_p(false);
+                            }
+
+                            break;
+                        }
+                        case ScoreParameter.Retail.HOUSE_OWNERSHIP_PL: {
+
+                            try {
+                                if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getResidenceType())) {
+                                    scoreParameterRetailRequest.setHouseOwnership(retailApplicantDetail.getResidenceType().longValue());
+                                    scoreParameterRetailRequest.setHouseOwnership_p(true);
+                                } else {
+                                    scoreParameterRetailRequest.setHouseOwnership_p(false);
+                                }
+                            } catch (Exception e) {
+                                logger.error("error while getting HOUSE_OWNERSHIP_PL parameter");
+                                e.printStackTrace();
+                                scoreParameterRetailRequest.setHouseOwnership_p(false);
+                            }
+
+                            break;
+                        }
+                        case ScoreParameter.Retail.MARITAL_STATUS_PL: {
+
+                            try {
+                                if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getStatusId())) {
+                                    scoreParameterRetailRequest.setMaritalStatus(retailApplicantDetail.getStatusId().longValue());
+                                    scoreParameterRetailRequest.setMaritalStatus_p(true);
+                                } else {
+                                    scoreParameterRetailRequest.setMaritalStatus_p(false);
+                                }
+                            } catch (Exception e) {
+                                logger.error("error while getting MARITAL_STATUS_PL parameter");
+                                e.printStackTrace();
+                                scoreParameterRetailRequest.setMaritalStatus_p(false);
+                            }
+
+                            break;
+                        }
+                        case ScoreParameter.Retail.CATEGORY_INFO_PL: {
+
+                            try {
+                                if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getEmploymentWith())) {
+
+                                    Boolean salaryWithBank=isSalaryAccountWithBank(applicationId);
+                                    Long employmentWithPlValue=null;
+
+                                    if(EmploymentWithPL.CENTRAL_GOVERNMENT.getId() == retailApplicantDetail.getEmploymentWith())
+                                    {
+                                        if(true == salaryWithBank)
+                                            employmentWithPlValue= EmploymentWithPLScoring.CENTRAL_GOVERNMENT_SALARY_ACCOUNT_WITH_BANK.getId().longValue();
+                                        else
+                                            employmentWithPlValue= EmploymentWithPLScoring.CENTRAL_GOVERNMENT_SALARY_ACCOUNT_NOT_WITH_BANK.getId().longValue();
+
+                                    }
+                                    else if(EmploymentWithPL.STATE_GOVERNMENT.getId() == retailApplicantDetail.getEmploymentWith())
+                                    {
+                                        if(true == salaryWithBank)
+                                            employmentWithPlValue= EmploymentWithPLScoring.STATE_GOVERNMENT_SALARY_ACCOUNT_WITH_BANK.getId().longValue();
+                                        else
+                                            employmentWithPlValue= EmploymentWithPLScoring.STATE_GOVERNMENT_SALARY_ACCOUNT_NOT_WITH_BANK.getId().longValue();
+                                    }
+                                    else if(EmploymentWithPL.PSU.getId() == retailApplicantDetail.getEmploymentWith())
+                                    {
+                                        if(true == salaryWithBank)
+                                            employmentWithPlValue= EmploymentWithPLScoring.PSU_SALARY_ACCOUNT_WITH_BANK.getId().longValue();
+                                        else
+                                            employmentWithPlValue= EmploymentWithPLScoring.PSU_SALARY_ACCOUNT_NOT_WITH_BANK.getId().longValue();
+                                    }
+                                    else if(EmploymentWithPL.CORPORATE.getId() == retailApplicantDetail.getEmploymentWith())
+                                    {
+                                        if(true == salaryWithBank)
+                                            employmentWithPlValue= EmploymentWithPLScoring.CORPORATE_SALARY_ACCOUNT_WITH_BANK.getId().longValue();
+                                        else
+                                            employmentWithPlValue= EmploymentWithPLScoring.CORPORATE_SALARY_ACCOUNT_NOT_WITH_BANK.getId().longValue();
+                                    }
+                                    else if(EmploymentWithPL.EDUCATIONAL_INSTITUTE.getId() == retailApplicantDetail.getEmploymentWith())
+                                    {
+                                        employmentWithPlValue= EmploymentWithPLScoring.EDUCATIONAL_INSTITUTE.getId().longValue();
+                                    }
+                                    else if(EmploymentWithPL.OTHERS.getId() == retailApplicantDetail.getEmploymentWith())
+                                    {
+                                        employmentWithPlValue= EmploymentWithPLScoring.OTHERS.getId().longValue();
+                                    }
+                                    scoreParameterRetailRequest.setCategoryInfo(employmentWithPlValue);
+                                    scoreParameterRetailRequest.setCategoryInfo_p(true);
+                                } else {
+                                    scoreParameterRetailRequest.setCategoryInfo_p(false);
+                                }
+                            } catch (Exception e) {
+                                logger.error("error while getting CATEGORY_INFO_PL parameter");
+                                e.printStackTrace();
+                                scoreParameterRetailRequest.setCategoryInfo_p(false);
+                            }
+
+                            break;
+                        }
+                        case ScoreParameter.Retail.FIXED_OBLI_INFO_RATIO_PL: {
+
+                            Double totalEMI = financialArrangementDetailsRepository.getTotalEmiByApplicationId(applicationId);
+                            if (CommonUtils.isObjectNullOrEmpty(totalEMI)) {
+                                totalEMI = 0.0;
+                            }
+                            Double totalIncomeLastYear = 0.0;
+                            try {
+                                totalIncomeLastYear = retailApplicantIncomeRepository.getTotalIncomeOfMaxYearByApplicationId(applicationId);
+                                if (CommonUtils.isObjectNullOrEmpty(totalIncomeLastYear)) {
+                                    totalIncomeLastYear = 0.0;
+                                }
+                            } catch (Exception e) {
+                                logger.error("error while getting total income from retail applicant income detail");
+                                e.printStackTrace();
+
+                            }
+
+                            scoreParameterRetailRequest.setEmiAmountFromCIBIL(totalEMI);
+                            scoreParameterRetailRequest.setLastYearTotalIncomeFromITR(totalIncomeLastYear);
+                            scoreParameterRetailRequest.setFixedObligationRatio_p(true);
+                            break;
+                        }
+                        case ScoreParameter.Retail.CHEQUE_BOUNCE_PAST_SIX_MONTH_PL: {
+
+                            try {
+                                Double noOfChequeBounce = null;
+                                ReportRequest reportRequest = new ReportRequest();
+                                reportRequest.setApplicationId(applicationId);
+
+                                AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReportByDirector(reportRequest);
+
+                                Data data = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) analyzerResponse.getData(),
+                                        Data.class);
+                                if (!CommonUtils.isObjectNullOrEmpty(data) && !CommonUtils.isObjectNullOrEmpty(data.getCheckBounceForLast6Month())) {
+                                    {
+                                        if (!CommonUtils.isObjectNullOrEmpty(data.getCheckBounceForLast6Month().doubleValue())) {
+                                            noOfChequeBounce = data.getCheckBounceForLast6Month().doubleValue();
+                                        } else {
+                                            noOfChequeBounce = 0.0;
+                                        }
+
+                                    }
+                                } else {
+                                    noOfChequeBounce = 0.0;
+                                }
+
+                                scoreParameterRetailRequest.setChequeBounce(noOfChequeBounce);
+                                scoreParameterRetailRequest.setChequeBounce_p(true);
+                            } catch (Exception e) {
+                                logger.error("error while getting CHEQUE_BOUNCE_PAST_SIX_MONTH_PL parameter");
+                                e.printStackTrace();
+                                scoreParameterRetailRequest.setChequeBounce_p(false);
+                            }
+                            break;
+                        }
+                        case ScoreParameter.Retail.DAY_PAST_DUE_PL: {
+                            try {
+
+                                CibilResponse cibilResponse = cibilClient.getDPDLastXMonth(applicationId,retailApplicantDetail.getPan());
+                                if (!CommonUtils.isObjectNullOrEmpty(cibilResponse) && !CommonUtils.isListNullOrEmpty(cibilResponse.getListData())) {
+                                    List<Integer> listDPD = (List<Integer>) cibilResponse.getListData();
+
+                                    Integer maxDPD = Collections.max(listDPD);
+                                    if (!CommonUtils.isObjectNullOrEmpty(maxDPD)) {
+                                        scoreParameterRetailRequest.setDpd(maxDPD.doubleValue());
+                                    } else {
+                                        scoreParameterRetailRequest.setDpd(0.0);
+                                    }
+                                } else {
+                                    scoreParameterRetailRequest.setDpd(0.0);
+                                }
+                                scoreParameterRetailRequest.setDPD_p(true);
+                            } catch (Exception e) {
+                                logger.error("error while getting DAY_PAST_DUE_PL parameter from CIBIL client");
+                                e.printStackTrace();
+                                scoreParameterRetailRequest.setDPD_p(false);
+                            }
+
+                            break;
+                        }
+                        case ScoreParameter.Retail.NET_ANNUAL_INCOME_PL: {
+
+                            try {
+                                if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getMonthlyIncome())) {
+                                    scoreParameterRetailRequest.setNetAnnualIncome(retailApplicantDetail.getMonthlyIncome() * 12);
+                                    scoreParameterRetailRequest.setNetAnnualIncome_p(true);
+                                } else {
+                                    scoreParameterRetailRequest.setNetAnnualIncome_p(false);
+                                }
+                            } catch (Exception e) {
+                                logger.error("error while getting NET_ANNUAL_INCOME_PL parameter");
+                                e.printStackTrace();
+                                scoreParameterRetailRequest.setNetAnnualIncome_p(false);
+                            }
+
+                            break;
+                        }
+                        case ScoreParameter.Retail.EMI_NMI_PL: {
+                        /*scoreParameterRetailRequest.setEminmi();
+                        scoreParameterRetailRequest.setEmiNmi_p();*/
+
+                            break;
+                        }
+                        default:
+                            break;
+
+                    }
+                }
+
+                logger.info("SCORE PARAMETER ::::::::::" + scoreParameterRetailRequest.toString());
+
+                logger.info("--------------------------------------------------------------------------");
+                logger.info("--------------------------------------------------------------------------");
+                logger.info("----------------------------END-------------------------------------------");
+
+                Gson g = new Gson();
+                ScoringRequestDetail scoringRequestDetail = new ScoringRequestDetail();
+
+                try {
+                    scoringRequestDetail.setApplicationId(applicationId);
+                    scoringRequestDetail.setRequest(g.toJson(scoreParameterRetailRequest));
+                    scoringRequestDetail.setCreatedDate(new Date());
+                    scoringRequestDetail.setIsActive(true);
+                    scoringRequestDetailRepository.save(scoringRequestDetail);
+
+                    logger.info("Saving Scoring Request Data for  =====> " + applicationId);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        scoringRequest.setScoreParameterRetailRequest(scoreParameterRetailRequest);
+
+        try {
+            scoringResponseMain = scoringClient.calculateScore(scoringRequest);
+
+            logger.info("score is successfully calculated");
+            LoansResponse loansResponse = new LoansResponse("score is successfully calculated", HttpStatus.OK.value());
+            return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+
+        } catch (Exception e) {
+            logger.error("error while calling scoring");
+            e.printStackTrace();
+            LoansResponse loansResponse = new LoansResponse("error while calling scoring.", HttpStatus.INTERNAL_SERVER_ERROR.value());
+            return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+        }
+    }
+
+    public ResponseEntity<LoansResponse> calculateRetailPersonalLoanScoringList(List<ScoringRequestLoans> scoringRequestLoansList) {
+
+        ScoringResponse scoringResponseMain = null;
+
+        List<ScoringRequest> scoringRequestList=new ArrayList<ScoringRequest>();
+
+        ScoreParameterRetailRequest scoreParameterRetailRequest = null;
+
+        for(ScoringRequestLoans scoringRequestLoans:scoringRequestLoansList)
+        {
+
+            Long scoreModelId = scoringRequestLoans.getScoringModelId();
+            Long applicationId = scoringRequestLoans.getApplicationId();
+            Long fpProductId = scoringRequestLoans.getFpProductId();
+
+
+            ///////// Start Getting Old Request ///////
+
+
+            /*List<ScoringRequestDetail> scoringRequestDetailList = scoringRequestDetailRepository.getScoringRequestDetailByApplicationIdAndIsActive(applicationId);
+
+            ScoringRequestDetail scoringRequestDetailSaved = new ScoringRequestDetail();
+
+            if (scoringRequestDetailList.size() > 0) {
+                logger.info("Getting Old Scoring request Data for  =====> " + applicationId);
+                scoringRequestDetailSaved = scoringRequestDetailList.get(0);
+                Gson gson = new Gson();
+                scoreParameterRetailRequest = gson.fromJson(scoringRequestDetailSaved.getRequest(), ScoreParameterRetailRequest.class);
+            }*/
+
             ScoringRequest scoringRequest = new ScoringRequest();
             scoringRequest.setScoringModelId(scoreModelId);
             scoringRequest.setFpProductId(fpProductId);
@@ -227,331 +659,448 @@ public class ScoringServiceImpl implements ScoringService {
             scoringRequest.setUserId(scoringRequestLoans.getUserId());
             scoringRequest.setBusinessTypeId(ScoreParameter.BusinessType.RETAIL_PERSONAL_LOAN);
 
-            // GET ALL FIELDS FOR CALCULATE SCORE BY MODEL ID
-            ScoringResponse scoringResponse = null;
-            try {
-                scoringResponse = scoringClient.listField(scoringRequest);
-            } catch (Exception e) {
-                logger.error("error while getting field list");
-                e.printStackTrace();
+            if (CommonUtils.isObjectNullOrEmpty(scoringRequestLoans.getFinancialTypeIdProduct())) {
+                scoringRequest.setFinancialTypeId(ScoreParameter.FinancialType.THREE_YEAR_ITR);
+            } else {
+                scoringRequest.setFinancialTypeId(scoringRequestLoans.getFinancialTypeIdProduct());
             }
 
-            List<Map<String, Object>> dataList = (List<Map<String, Object>>) scoringResponse.getDataList();
+            ///////// End  Getting Old Request ///////
 
-            List<FundSeekerInputRequest> fundSeekerInputRequestList = new ArrayList<>(dataList.size());
+            if (CommonUtils.isObjectNullOrEmpty(scoreParameterRetailRequest)) {
+                scoreParameterRetailRequest= new ScoreParameterRetailRequest();
+                logger.info("----------------------------START RETAIL PL ------------------------------");
+                logger.info("--------------------------------------------------------------------------");
+                logger.info("--------------------------------------------------------------------------");
 
-            for (int i = 0; i < dataList.size(); i++) {
+                logger.info("APPLICATION ID   :: " + applicationId);
+                logger.info("FP PRODUCT ID    :: " + fpProductId);
+                logger.info("SCORING MODEL ID :: " + scoreModelId);
 
-                ModelParameterResponse modelParameterResponse = null;
-                try {
-                    modelParameterResponse = MultipleJSONObjectHelper.getObjectFromMap(dataList.get(i),
-                            ModelParameterResponse.class);
-                } catch (IOException e) {
-                    e.printStackTrace();
+                // GET SCORE RETAIL PERSONAL LOAN PARAMETERS
+
+                RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.findOneByApplicationIdId(applicationId);
+
+                if (CommonUtils.isObjectNullOrEmpty(retailApplicantDetail)) {
+                    logger.error("Error while getting retail applicant detail for personal loan scoring");
+                    LoansResponse loansResponse = new LoansResponse("Error while getting retail applicant detail for personal loan scoring", HttpStatus.INTERNAL_SERVER_ERROR.value());
+                    //return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+                    break;
                 }
 
-                FundSeekerInputRequest fundSeekerInputRequest = new FundSeekerInputRequest();
-                fundSeekerInputRequest.setFieldId(modelParameterResponse.getFieldMasterId());
-                fundSeekerInputRequest.setName(modelParameterResponse.getName());
 
-                switch (modelParameterResponse.getName()) {
+                if (!CommonUtils.isObjectNullOrEmpty(scoreModelId)) {
+                    // GET ALL FIELDS FOR CALCULATE SCORE BY MODEL ID
+                    ScoringResponse scoringResponse = null;
+                    try {
+                        scoringResponse = scoringClient.listFieldByBusinessTypeId(scoringRequest);
+                    } catch (Exception e) {
+                        logger.error("error while getting field list");
+                        e.printStackTrace();
+                    }
 
-                    case ScoreParameter.Retail.WORKING_EXPERIENCE_PL: {
+                    List<Map<String, Object>> dataList = (List<Map<String, Object>>) scoringResponse.getDataList();
 
+
+                    for (int i = 0; i < dataList.size(); i++) {
+
+                        ModelParameterResponse modelParameterResponse = null;
                         try {
-                            Double totalExperience = 0.0;
-                            if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getTotalExperienceYear()))
-                                totalExperience += Double.valueOf(retailApplicantDetail.getTotalExperienceYear());
-
-                            if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getTotalExperienceMonth()))
-                                totalExperience += Double.valueOf(retailApplicantDetail.getTotalExperienceMonth() / 10);
-
-                            scoreParameterRetailRequest.setWorkingExperience(totalExperience);
-                            scoreParameterRetailRequest.setWorkingExperience_p(true);
-                        } catch (Exception e) {
-                            logger.error("error while getting WORKING_EXPERIENCE_PL parameter");
+                            modelParameterResponse = MultipleJSONObjectHelper.getObjectFromMap(dataList.get(i),
+                                    ModelParameterResponse.class);
+                        } catch (IOException e) {
                             e.printStackTrace();
-                            scoreParameterRetailRequest.setWorkingExperience_p(false);
                         }
 
-                        break;
-                    }
-                    case ScoreParameter.Retail.CIBIL_SCORE_PL: {
+                        FundSeekerInputRequest fundSeekerInputRequest = new FundSeekerInputRequest();
+                        fundSeekerInputRequest.setFieldId(modelParameterResponse.getFieldMasterId());
+                        fundSeekerInputRequest.setName(modelParameterResponse.getName());
 
-                        Double cibil_score = null;
-                        try {
+                        switch (modelParameterResponse.getName()) {
 
-                            CibilRequest cibilRequest = new CibilRequest();
-                            cibilRequest.setPan(retailApplicantDetail.getPan());
+                            case ScoreParameter.Retail.WORKING_EXPERIENCE_PL: {
 
-                            CibilScoreLogRequest cibilResponse = cibilClient.getCibilScoreByPanCard(cibilRequest);
-                            if (!CommonUtils.isObjectNullOrEmpty(cibilResponse.getScore())) {
-                                cibil_score = Double.parseDouble(cibilResponse.getScore());
-                                scoreParameterRetailRequest.setCibilScore(cibil_score);
-                                scoreParameterRetailRequest.setCibilScore_p(true);
-                            } else {
-                                scoreParameterRetailRequest.setCibilScore_p(false);
+                                try {
+                                    Double totalExperience = 0.0;
+                                    if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getTotalExperienceYear()))
+                                        totalExperience += Double.valueOf(retailApplicantDetail.getTotalExperienceYear());
+
+                                    if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getTotalExperienceMonth()))
+                                        totalExperience += Double.valueOf(retailApplicantDetail.getTotalExperienceMonth() / 10);
+
+                                    scoreParameterRetailRequest.setWorkingExperience(totalExperience);
+                                    scoreParameterRetailRequest.setWorkingExperience_p(true);
+                                } catch (Exception e) {
+                                    logger.error("error while getting WORKING_EXPERIENCE_PL parameter");
+                                    e.printStackTrace();
+                                    scoreParameterRetailRequest.setWorkingExperience_p(false);
+                                }
+
+                                break;
                             }
-                        } catch (Exception e) {
-                            logger.error("error while getting CIBIL_SCORE_PL parameter from CIBIL client");
-                            e.printStackTrace();
-                            scoreParameterRetailRequest.setCibilScore_p(false);
-                        }
+                            case ScoreParameter.Retail.CIBIL_SCORE_PL: {
 
-                        break;
-                    }
-                    case ScoreParameter.Retail.AGE_PL: {
+                                Double cibil_score = null;
+                                try {
 
-                        try {
-                            if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getBirthDate())) {
-                                scoreParameterRetailRequest.setAge(Math.ceil(CommonUtils.getAgeFromBirthDate(retailApplicantDetail.getBirthDate()).doubleValue()));
-                                scoreParameterRetailRequest.setAge_p(true);
-                            } else {
-                                scoreParameterRetailRequest.setAge_p(false);
+                                    CibilRequest cibilRequest = new CibilRequest();
+                                    cibilRequest.setPan(retailApplicantDetail.getPan());
+                                    cibilRequest.setApplicationId(applicationId);
+
+                                    CibilScoreLogRequest cibilResponse = cibilClient.getCibilScoreByPanCard(cibilRequest);
+                                    if (!CommonUtils.isObjectNullOrEmpty(cibilResponse.getScore())) {
+                                        cibil_score = Double.parseDouble(cibilResponse.getScore());
+                                        scoreParameterRetailRequest.setCibilScore(cibil_score);
+                                        scoreParameterRetailRequest.setCibilScore_p(true);
+                                    } else {
+                                        scoreParameterRetailRequest.setCibilScore_p(false);
+                                    }
+                                } catch (Exception e) {
+                                    logger.error("error while getting CIBIL_SCORE_PL parameter from CIBIL client");
+                                    e.printStackTrace();
+                                    scoreParameterRetailRequest.setCibilScore_p(false);
+                                }
+
+                                break;
                             }
-                        } catch (Exception e) {
-                            logger.error("error while getting AGE_PL parameter");
-                            e.printStackTrace();
-                            scoreParameterRetailRequest.setAge_p(false);
-                        }
+                            case ScoreParameter.Retail.AGE_PL: {
 
-                        break;
-                    }
-                    case ScoreParameter.Retail.EDUCATION_QUALI_PL: {
+                                try {
+                                    if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getBirthDate())) {
+                                        scoreParameterRetailRequest.setAge(Math.ceil(CommonUtils.getAgeFromBirthDate(retailApplicantDetail.getBirthDate()).doubleValue()));
+                                        scoreParameterRetailRequest.setAge_p(true);
+                                    } else {
+                                        scoreParameterRetailRequest.setAge_p(false);
+                                    }
+                                } catch (Exception e) {
+                                    logger.error("error while getting AGE_PL parameter");
+                                    e.printStackTrace();
+                                    scoreParameterRetailRequest.setAge_p(false);
+                                }
 
-                        try {
-                            if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getEducationQualification())) {
-                                scoreParameterRetailRequest.setEducationQualification(retailApplicantDetail.getEducationQualification().longValue());
-                                scoreParameterRetailRequest.setEducationQualifaction_p(true);
-                            } else {
-                                scoreParameterRetailRequest.setEducationQualifaction_p(false);
+                                break;
                             }
-                        } catch (Exception e) {
-                            logger.error("error while getting EDUCATION_QUALI_PL parameter");
-                            e.printStackTrace();
-                            scoreParameterRetailRequest.setEducationQualifaction_p(false);
-                        }
+                            case ScoreParameter.Retail.EDUCATION_QUALI_PL: {
 
-                        break;
-                    }
-                    case ScoreParameter.Retail.EMPLOYEMENT_TYPE_PL: {
+                                try {
+                                    if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getEducationQualification())) {
+                                        scoreParameterRetailRequest.setEducationQualification(retailApplicantDetail.getEducationQualification().longValue());
+                                        scoreParameterRetailRequest.setEducationQualifaction_p(true);
+                                    } else {
+                                        scoreParameterRetailRequest.setEducationQualifaction_p(false);
+                                    }
+                                } catch (Exception e) {
+                                    logger.error("error while getting EDUCATION_QUALI_PL parameter");
+                                    e.printStackTrace();
+                                    scoreParameterRetailRequest.setEducationQualifaction_p(false);
+                                }
 
-                        try {
-                            if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getEmploymentStatus())) {
-                                scoreParameterRetailRequest.setEmploymentType(retailApplicantDetail.getEmploymentStatus().longValue());
-                                scoreParameterRetailRequest.setEmployementType_p(true);
-                            } else {
-                                scoreParameterRetailRequest.setEmployementType_p(false);
+                                break;
                             }
-                        } catch (Exception e) {
-                            logger.error("error while getting EMPLOYEMENT_TYPE_PL parameter");
-                            e.printStackTrace();
-                            scoreParameterRetailRequest.setEmployementType_p(false);
-                        }
+                            case ScoreParameter.Retail.EMPLOYEMENT_TYPE_PL: {
 
-                        break;
-                    }
-                    case ScoreParameter.Retail.HOUSE_OWNERSHIP_PL: {
+                                try {
+                                    if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getEmploymentStatus())) {
+                                        scoreParameterRetailRequest.setEmploymentType(retailApplicantDetail.getEmploymentStatus().longValue());
+                                        scoreParameterRetailRequest.setEmployementType_p(true);
+                                    } else {
+                                        scoreParameterRetailRequest.setEmployementType_p(false);
+                                    }
+                                } catch (Exception e) {
+                                    logger.error("error while getting EMPLOYEMENT_TYPE_PL parameter");
+                                    e.printStackTrace();
+                                    scoreParameterRetailRequest.setEmployementType_p(false);
+                                }
 
-                        try {
-                            if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getResidenceType())) {
-                                scoreParameterRetailRequest.setHouseOwnership(retailApplicantDetail.getResidenceType().longValue());
-                                scoreParameterRetailRequest.setHouseOwnership_p(true);
-                            } else {
-                                scoreParameterRetailRequest.setHouseOwnership_p(false);
+                                break;
                             }
-                        } catch (Exception e) {
-                            logger.error("error while getting HOUSE_OWNERSHIP_PL parameter");
-                            e.printStackTrace();
-                            scoreParameterRetailRequest.setHouseOwnership_p(false);
-                        }
+                            case ScoreParameter.Retail.HOUSE_OWNERSHIP_PL: {
 
-                        break;
-                    }
-                    case ScoreParameter.Retail.MARITAL_STATUS_PL: {
+                                try {
+                                    if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getResidenceType())) {
+                                        scoreParameterRetailRequest.setHouseOwnership(retailApplicantDetail.getResidenceType().longValue());
+                                        scoreParameterRetailRequest.setHouseOwnership_p(true);
+                                    } else {
+                                        scoreParameterRetailRequest.setHouseOwnership_p(false);
+                                    }
+                                } catch (Exception e) {
+                                    logger.error("error while getting HOUSE_OWNERSHIP_PL parameter");
+                                    e.printStackTrace();
+                                    scoreParameterRetailRequest.setHouseOwnership_p(false);
+                                }
 
-                        try {
-                            if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getStatusId())) {
-                                scoreParameterRetailRequest.setMaritalStatus(retailApplicantDetail.getStatusId().longValue());
-                                scoreParameterRetailRequest.setMaritalStatus_p(true);
-                            } else {
-                                scoreParameterRetailRequest.setMaritalStatus_p(false);
+                                break;
                             }
-                        } catch (Exception e) {
-                            logger.error("error while getting MARITAL_STATUS_PL parameter");
-                            e.printStackTrace();
-                            scoreParameterRetailRequest.setMaritalStatus_p(false);
-                        }
+                            case ScoreParameter.Retail.MARITAL_STATUS_PL: {
 
-                        break;
-                    }
-                    case ScoreParameter.Retail.CATEGORY_INFO_PL: {
+                                try {
+                                    if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getStatusId())) {
+                                        scoreParameterRetailRequest.setMaritalStatus(retailApplicantDetail.getStatusId().longValue());
+                                        scoreParameterRetailRequest.setMaritalStatus_p(true);
+                                    } else {
+                                        scoreParameterRetailRequest.setMaritalStatus_p(false);
+                                    }
+                                } catch (Exception e) {
+                                    logger.error("error while getting MARITAL_STATUS_PL parameter");
+                                    e.printStackTrace();
+                                    scoreParameterRetailRequest.setMaritalStatus_p(false);
+                                }
 
-
-                        try {
-                            if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getEmploymentWith())) {
-                                scoreParameterRetailRequest.setCategoryInfo(retailApplicantDetail.getEmploymentWith().longValue());
-                                scoreParameterRetailRequest.setCategoryInfo_p(true);
-                            } else {
-                                scoreParameterRetailRequest.setCategoryInfo_p(false);
+                                break;
                             }
-                        } catch (Exception e) {
-                            logger.error("error while getting CATEGORY_INFO_PL parameter");
-                            e.printStackTrace();
-                            scoreParameterRetailRequest.setCategoryInfo_p(false);
-                        }
+                            case ScoreParameter.Retail.CATEGORY_INFO_PL: {
 
-                        break;
-                    }
-                    case ScoreParameter.Retail.FIXED_OBLI_INFO_RATIO_PL: {
+                                try {
+                                    if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getEmploymentWith())) {
 
-                        Double totalEMI = financialArrangementDetailsRepository.getTotalEmiByApplicationId(applicationId);
-                        if (CommonUtils.isObjectNullOrEmpty(totalEMI)) {
-                            totalEMI = 0.0;
-                        }
-                        Double totalIncomeLastYear = 0.0;
-                        try {
-                            totalIncomeLastYear = retailApplicantIncomeRepository.getTotalIncomeOfMaxYearByApplicationId(applicationId);
-                            if (CommonUtils.isObjectNullOrEmpty(totalIncomeLastYear)) {
-                                totalIncomeLastYear = 0.0;
+                                        Boolean salaryWithBank=isSalaryAccountWithBank(applicationId);
+                                        Long employmentWithPlValue=null;
+
+                                        if(EmploymentWithPL.CENTRAL_GOVERNMENT.getId() == retailApplicantDetail.getEmploymentWith())
+                                        {
+                                            if(true == salaryWithBank)
+                                                employmentWithPlValue= EmploymentWithPLScoring.CENTRAL_GOVERNMENT_SALARY_ACCOUNT_WITH_BANK.getId().longValue();
+                                            else
+                                                employmentWithPlValue= EmploymentWithPLScoring.CENTRAL_GOVERNMENT_SALARY_ACCOUNT_NOT_WITH_BANK.getId().longValue();
+
+                                        }
+                                        else if(EmploymentWithPL.STATE_GOVERNMENT.getId() == retailApplicantDetail.getEmploymentWith())
+                                        {
+                                            if(true == salaryWithBank)
+                                                employmentWithPlValue= EmploymentWithPLScoring.STATE_GOVERNMENT_SALARY_ACCOUNT_WITH_BANK.getId().longValue();
+                                            else
+                                                employmentWithPlValue= EmploymentWithPLScoring.STATE_GOVERNMENT_SALARY_ACCOUNT_NOT_WITH_BANK.getId().longValue();
+                                        }
+                                        else if(EmploymentWithPL.PSU.getId() == retailApplicantDetail.getEmploymentWith())
+                                        {
+                                            if(true == salaryWithBank)
+                                                employmentWithPlValue= EmploymentWithPLScoring.PSU_SALARY_ACCOUNT_WITH_BANK.getId().longValue();
+                                            else
+                                                employmentWithPlValue= EmploymentWithPLScoring.PSU_SALARY_ACCOUNT_NOT_WITH_BANK.getId().longValue();
+                                        }
+                                        else if(EmploymentWithPL.CORPORATE.getId() == retailApplicantDetail.getEmploymentWith())
+                                        {
+                                            if(true == salaryWithBank)
+                                                employmentWithPlValue= EmploymentWithPLScoring.CORPORATE_SALARY_ACCOUNT_WITH_BANK.getId().longValue();
+                                            else
+                                                employmentWithPlValue= EmploymentWithPLScoring.CORPORATE_SALARY_ACCOUNT_NOT_WITH_BANK.getId().longValue();
+                                        }
+                                        else if(EmploymentWithPL.EDUCATIONAL_INSTITUTE.getId() == retailApplicantDetail.getEmploymentWith())
+                                        {
+                                            employmentWithPlValue= EmploymentWithPLScoring.EDUCATIONAL_INSTITUTE.getId().longValue();
+                                        }
+                                        else if(EmploymentWithPL.OTHERS.getId() == retailApplicantDetail.getEmploymentWith())
+                                        {
+                                            employmentWithPlValue= EmploymentWithPLScoring.OTHERS.getId().longValue();
+                                        }
+                                        scoreParameterRetailRequest.setCategoryInfo(employmentWithPlValue);
+                                        scoreParameterRetailRequest.setCategoryInfo_p(true);
+                                    } else {
+                                        scoreParameterRetailRequest.setCategoryInfo_p(false);
+                                    }
+                                } catch (Exception e) {
+                                    logger.error("error while getting CATEGORY_INFO_PL parameter");
+                                    e.printStackTrace();
+                                    scoreParameterRetailRequest.setCategoryInfo_p(false);
+                                }
+
+                                break;
                             }
-                        } catch (Exception e) {
-                            logger.error("error while getting total income from retail applicant income detail");
-                            e.printStackTrace();
+                            case ScoreParameter.Retail.FIXED_OBLI_INFO_RATIO_PL: {
 
-                        }
+                                Double totalEMI = financialArrangementDetailsRepository.getTotalEmiByApplicationId(applicationId);
+                                if (CommonUtils.isObjectNullOrEmpty(totalEMI)) {
+                                    totalEMI = 0.0;
+                                }
+                                Double totalIncomeLastYear = 0.0;
+                                try {
+                                    totalIncomeLastYear = retailApplicantIncomeRepository.getTotalIncomeOfMaxYearByApplicationId(applicationId);
+                                    if (CommonUtils.isObjectNullOrEmpty(totalIncomeLastYear)) {
+                                        totalIncomeLastYear = 0.0;
+                                    }
+                                } catch (Exception e) {
+                                    logger.error("error while getting total income from retail applicant income detail");
+                                    e.printStackTrace();
 
-                        scoreParameterRetailRequest.setEmiAmountFromCIBIL(totalEMI);
-                        scoreParameterRetailRequest.setLastYearTotalIncomeFromITR(totalIncomeLastYear);
-                        scoreParameterRetailRequest.setFixedObligationRatio_p(true);
-                        break;
-                    }
-                    case ScoreParameter.Retail.CHEQUE_BOUNCE_PAST_SIX_MONTH_PL: {
+                                }
 
-                        try {
-                            Double noOfChequeBounce = null;
-                            ReportRequest reportRequest = new ReportRequest();
-                            reportRequest.setApplicationId(applicationId);
+                                scoreParameterRetailRequest.setEmiAmountFromCIBIL(totalEMI);
+                                scoreParameterRetailRequest.setLastYearTotalIncomeFromITR(totalIncomeLastYear);
+                                scoreParameterRetailRequest.setFixedObligationRatio_p(true);
+                                break;
+                            }
+                            case ScoreParameter.Retail.CHEQUE_BOUNCE_PAST_SIX_MONTH_PL: {
 
-                            AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReportByDirector(reportRequest);
+                                try {
+                                    Double noOfChequeBounce = null;
+                                    ReportRequest reportRequest = new ReportRequest();
+                                    reportRequest.setApplicationId(applicationId);
 
-                            Data data = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) analyzerResponse.getData(),
-                                    Data.class);
-                            if (!CommonUtils.isObjectNullOrEmpty(data) && !CommonUtils.isObjectNullOrEmpty(data.getCheckBounceForLast6Month())) {
-                                {
-                                    if (!CommonUtils.isObjectNullOrEmpty(data.getCheckBounceForLast6Month().doubleValue())) {
-                                        noOfChequeBounce = data.getCheckBounceForLast6Month().doubleValue();
+                                    AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReportByDirector(reportRequest);
+
+                                    Data data = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) analyzerResponse.getData(),
+                                            Data.class);
+                                    if (!CommonUtils.isObjectNullOrEmpty(data) && !CommonUtils.isObjectNullOrEmpty(data.getCheckBounceForLast6Month())) {
+                                        {
+                                            if (!CommonUtils.isObjectNullOrEmpty(data.getCheckBounceForLast6Month().doubleValue())) {
+                                                noOfChequeBounce = data.getCheckBounceForLast6Month().doubleValue();
+                                            } else {
+                                                noOfChequeBounce = 0.0;
+                                            }
+
+                                        }
                                     } else {
                                         noOfChequeBounce = 0.0;
                                     }
 
+                                    scoreParameterRetailRequest.setChequeBounce(noOfChequeBounce);
+                                    scoreParameterRetailRequest.setChequeBounce_p(true);
+                                } catch (Exception e) {
+                                    logger.error("error while getting CHEQUE_BOUNCE_PAST_SIX_MONTH_PL parameter");
+                                    e.printStackTrace();
+                                    scoreParameterRetailRequest.setChequeBounce_p(false);
                                 }
-                            } else {
-                                noOfChequeBounce = 0.0;
+                                break;
                             }
+                            case ScoreParameter.Retail.DAY_PAST_DUE_PL: {
+                                try {
 
-                            scoreParameterRetailRequest.setChequeBounce(noOfChequeBounce);
-                            scoreParameterRetailRequest.setChequeBounce_p(true);
-                        } catch (Exception e) {
-                            logger.error("error while getting CHEQUE_BOUNCE_PAST_SIX_MONTH_PL parameter");
-                            e.printStackTrace();
-                            scoreParameterRetailRequest.setChequeBounce_p(false);
-                        }
-                        break;
-                    }
-                    case ScoreParameter.Retail.DAY_PAST_DUE_PL: {
-                        try {
+                                    CibilResponse cibilResponse = cibilClient.getDPDLastXMonth(applicationId,retailApplicantDetail.getPan());
+                                    if (!CommonUtils.isObjectNullOrEmpty(cibilResponse) && !CommonUtils.isListNullOrEmpty(cibilResponse.getListData())) {
+                                        List<Integer> listDPD = (List<Integer>) cibilResponse.getListData();
 
-                            CibilResponse cibilResponse = cibilClient.getDPDLastXMonth(retailApplicantDetail.getPan());
-                            if (!CommonUtils.isObjectNullOrEmpty(cibilResponse) && !CommonUtils.isListNullOrEmpty(cibilResponse.getListData())) {
-                                List<Integer> listDPD = (List<Integer>) cibilResponse.getListData();
-
-                                Integer maxDPD = Collections.max(listDPD);
-                                if (!CommonUtils.isObjectNullOrEmpty(maxDPD)) {
-                                    scoreParameterRetailRequest.setDpd(maxDPD.doubleValue());
-                                } else {
-                                    scoreParameterRetailRequest.setDpd(0.0);
+                                        Integer maxDPD = Collections.max(listDPD);
+                                        if (!CommonUtils.isObjectNullOrEmpty(maxDPD)) {
+                                            scoreParameterRetailRequest.setDpd(maxDPD.doubleValue());
+                                        } else {
+                                            scoreParameterRetailRequest.setDpd(0.0);
+                                        }
+                                    } else {
+                                        scoreParameterRetailRequest.setDpd(0.0);
+                                    }
+                                    scoreParameterRetailRequest.setDPD_p(true);
+                                } catch (Exception e) {
+                                    logger.error("error while getting DAY_PAST_DUE_PL parameter from CIBIL client");
+                                    e.printStackTrace();
+                                    scoreParameterRetailRequest.setDPD_p(false);
                                 }
-                                scoreParameterRetailRequest.setDPD_p(true);
-                            } else {
-                                scoreParameterRetailRequest.setDPD_p(false);
+
+                                break;
                             }
-                        } catch (Exception e) {
-                            logger.error("error while getting DAY_PAST_DUE_PL parameter from CIBIL client");
-                            e.printStackTrace();
-                            scoreParameterRetailRequest.setDPD_p(false);
-                        }
+                            case ScoreParameter.Retail.NET_ANNUAL_INCOME_PL: {
 
-                        break;
-                    }
-                    case ScoreParameter.Retail.NET_ANNUAL_INCOME_PL: {
+                                try {
+                                    if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getMonthlyIncome())) {
+                                        scoreParameterRetailRequest.setNetAnnualIncome(retailApplicantDetail.getMonthlyIncome() * 12);
+                                        scoreParameterRetailRequest.setNetAnnualIncome_p(true);
+                                    } else {
+                                        scoreParameterRetailRequest.setNetAnnualIncome_p(false);
+                                    }
+                                } catch (Exception e) {
+                                    logger.error("error while getting NET_ANNUAL_INCOME_PL parameter");
+                                    e.printStackTrace();
+                                    scoreParameterRetailRequest.setNetAnnualIncome_p(false);
+                                }
 
-                        try {
-                            if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getMonthlyIncome())) {
-                                scoreParameterRetailRequest.setNetAnnualIncome(retailApplicantDetail.getMonthlyIncome() * 12);
-                                scoreParameterRetailRequest.setNetAnnualIncome_p(true);
-                            } else {
-                                scoreParameterRetailRequest.setNetAnnualIncome_p(false);
+                                break;
                             }
-                        } catch (Exception e) {
-                            logger.error("error while getting NET_ANNUAL_INCOME_PL parameter");
-                            e.printStackTrace();
-                            scoreParameterRetailRequest.setNetAnnualIncome_p(false);
-                        }
-
-                        break;
-                    }
-                    case ScoreParameter.Retail.EMI_NMI_PL: {
+                            case ScoreParameter.Retail.EMI_NMI_PL: {
                         /*scoreParameterRetailRequest.setEminmi();
                         scoreParameterRetailRequest.setEmiNmi_p();*/
 
-                        break;
+                                break;
+                            }
+                            default:
+                                break;
+
+                        }
                     }
-                    default:
-                        break;
 
+                    logger.info("SCORE PARAMETER ::::::::::" + scoreParameterRetailRequest.toString());
+
+                    logger.info("--------------------------------------------------------------------------");
+                    logger.info("--------------------------------------------------------------------------");
+                    logger.info("----------------------------END-------------------------------------------");
+
+                    Gson g = new Gson();
+                    ScoringRequestDetail scoringRequestDetail = new ScoringRequestDetail();
+
+                    try {
+                        scoringRequestDetail.setApplicationId(applicationId);
+                        scoringRequestDetail.setRequest(g.toJson(scoreParameterRetailRequest));
+                        scoringRequestDetail.setCreatedDate(new Date());
+                        scoringRequestDetail.setIsActive(true);
+                        scoringRequestDetailRepository.save(scoringRequestDetail);
+
+                        logger.info("Saving Scoring Request Data for  =====> " + applicationId);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
-                fundSeekerInputRequestList.add(fundSeekerInputRequest);
             }
 
-            logger.info("SCORE PARAMETER ::::::::::" + scoreParameterRetailRequest.toString());
-
-            logger.info("--------------------------------------------------------------------------");
-            logger.info("--------------------------------------------------------------------------");
-            logger.info("----------------------------END-------------------------------------------");
-
-            scoringRequest.setDataList(fundSeekerInputRequestList);
             scoringRequest.setScoreParameterRetailRequest(scoreParameterRetailRequest);
-
-            try {
-                scoringResponseMain = scoringClient.calculateScore(scoringRequest);
-            } catch (Exception e) {
-                logger.error("error while calling scoring");
-                e.printStackTrace();
-                LoansResponse loansResponse = new LoansResponse("error while calling scoring.", HttpStatus.INTERNAL_SERVER_ERROR.value());
-                return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
-            }
-
-            if (scoringResponseMain.getStatus() == HttpStatus.OK.value()) {
-                logger.error("score is successfully calculated");
-                LoansResponse loansResponse = new LoansResponse("score is successfully calculated", HttpStatus.OK.value());
-                return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
-            } else {
-                logger.error("error while calling scoring");
-                LoansResponse loansResponse = new LoansResponse("error while calling scoring.", HttpStatus.INTERNAL_SERVER_ERROR.value());
-                return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
-            }
+            scoringRequestList.add(scoringRequest);
         }
 
-        LoansResponse loansResponse = new LoansResponse("score is successfully calculated", HttpStatus.OK.value());
-        return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+        try {
+            scoringResponseMain = scoringClient.calculateScoreList(scoringRequestList);
+
+            logger.info("score is successfully calculated");
+            LoansResponse loansResponse = new LoansResponse("score is successfully calculated", HttpStatus.OK.value());
+            return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+
+        } catch (Exception e) {
+            logger.error("error while calling scoring");
+            e.printStackTrace();
+            LoansResponse loansResponse = new LoansResponse("error while calling scoring.", HttpStatus.INTERNAL_SERVER_ERROR.value());
+            return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+        }
+    }
+
+    private Boolean isSalaryAccountWithBank(Long applicationId) {
+
+        Boolean salaryWithBank=false;
+
+        AnalyzerResponse analyzerResponse=null;
+        Data data=null;
+
+        try {
+            ReportRequest reportRequest = new ReportRequest();
+            reportRequest.setApplicationId(applicationId);
+            analyzerResponse = analyzerClient.getDetailsFromReport(reportRequest);
+            if (!CommonUtils.isObjectNullOrEmpty(analyzerResponse)) {
+                     data = MultipleJSONObjectHelper
+                        .getObjectFromMap((LinkedHashMap<String, Object>) analyzerResponse.getData(), Data.class);
+            }
+        } catch (Exception e) {
+            logger.error("Exception while getting perfios data======={}", e.getMessage());
+            e.printStackTrace();
+        }
+
+
+        //Check BankStatement Last 6 Month Transaction
+        try {
+            if (data != null) {
+                List<Xn> xns = data.getXns().getXn();
+                List<Double> al = new ArrayList<Double>();
+                for (Xn xn : xns) {
+                    if (xn.getCategory().equalsIgnoreCase("Salary")) {
+                        salaryWithBank=true;
+                        break;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            logger.info("EXCEPTION IS GETTING WHILE GETTING BANK STATEMENT DATA------------>>>>>>" + e.getMessage());
+        }
+        return salaryWithBank;
     }
 
     @Override
     public ResponseEntity<LoansResponse> calculateExistingBusinessScoring(ScoringRequestLoans scoringRequestLoans) {
 
         ScoringParameterRequest scoringParameterRequest = new ScoringParameterRequest();
-        ;
 
         Long scoreModelId = scoringRequestLoans.getScoringModelId();
         Long applicationId = scoringRequestLoans.getApplicationId();
@@ -1641,7 +2190,1120 @@ public class ScoringServiceImpl implements ScoringService {
         }
 
         if (scoringResponseMain.getStatus() == HttpStatus.OK.value()) {
-            logger.error("score is successfully calculated");
+            logger.info("score is successfully calculated");
+            LoansResponse loansResponse = new LoansResponse("score is successfully calculated", HttpStatus.OK.value());
+            return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+        } else {
+            logger.error("error while calling scoring");
+            LoansResponse loansResponse = new LoansResponse("error while calling scoring.", HttpStatus.INTERNAL_SERVER_ERROR.value());
+            return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+        }
+    }
+
+    @Override
+    public ResponseEntity<LoansResponse> calculateExistingBusinessScoringList(List<ScoringRequestLoans> scoringRequestLoansList) {
+
+        ScoringResponse scoringResponseMain = null;
+
+        List<ScoringRequest> scoringRequestList=new ArrayList<ScoringRequest>();
+
+        ScoringParameterRequest scoringParameterRequest = null;
+
+        for(ScoringRequestLoans scoringRequestLoans:scoringRequestLoansList)
+        {
+            Long scoreModelId = scoringRequestLoans.getScoringModelId();
+            Long applicationId = scoringRequestLoans.getApplicationId();
+            Long fpProductId = scoringRequestLoans.getFpProductId();
+
+            ///////// Get Financial Type Id from ITR////////
+
+            //Integer financialTypeId = 3;
+
+          /*  List<ScoringRequestDetail> scoringRequestDetailList = scoringRequestDetailRepository.getScoringRequestDetailByApplicationIdAndIsActive(applicationId);
+
+
+            ScoringRequestDetail scoringRequestDetailSaved = new ScoringRequestDetail();
+
+            if (scoringRequestDetailList.size() > 0) {
+                logger.info("Getting Old Scoring request Data for  =====> " + applicationId);
+                scoringRequestDetailSaved = scoringRequestDetailList.get(0);
+                Gson gson = new Gson();
+                scoringParameterRequest = gson.fromJson(scoringRequestDetailSaved.getRequest(), ScoringParameterRequest.class);
+            }*/
+
+
+            ScoringRequest scoringRequest = new ScoringRequest();
+            scoringRequest.setScoringModelId(scoreModelId);
+            scoringRequest.setFpProductId(fpProductId);
+            scoringRequest.setApplicationId(applicationId);
+            scoringRequest.setUserId(scoringRequestLoans.getUserId());
+            scoringRequest.setBusinessTypeId(ScoreParameter.BusinessType.EXISTING_BUSINESS);
+
+
+
+            if (CommonUtils.isObjectNullOrEmpty(scoringParameterRequest)) {
+
+
+               /* ITRConnectionResponse itrConnectionResponse = null;
+                try {
+                    itrConnectionResponse = itrClient.getIsUploadAndYearDetails(applicationId);
+
+                    if (!CommonUtils.isObjectNullOrEmpty(itrConnectionResponse) && !CommonUtils.isObjectNullOrEmpty(itrConnectionResponse.getData())) {
+                        Map<String, Object> map = (Map<String, Object>) itrConnectionResponse.getData();
+                        ITRBasicDetailsResponse res = MultipleJSONObjectHelper.getObjectFromMap(map, ITRBasicDetailsResponse.class);
+                        if (!CommonUtils.isObjectNullOrEmpty(res) && !CommonUtils.isObjectNullOrEmpty(res.getItrFinancialType())) {
+                            financialTypeId = Integer.valueOf(res.getItrFinancialType());
+                        }
+                    }
+                } catch (IOException e) {
+                    logger.error("error while getting Financial Type Id from itr response");
+                    e.printStackTrace();
+                }*/
+
+                if (CommonUtils.isObjectNullOrEmpty(scoringRequestLoans.getFinancialTypeIdProduct())) {
+                    scoringRequest.setFinancialTypeId(ScoreParameter.FinancialType.THREE_YEAR_ITR);
+                } else {
+                    scoringRequest.setFinancialTypeId(scoringRequestLoans.getFinancialTypeIdProduct());
+                }
+
+
+                logger.info("Financial Type Id ::::::::::::::::================>" + scoringRequest.getFinancialTypeId());
+
+                scoringParameterRequest=new ScoringParameterRequest();
+
+                logger.info("Scoring Data Fetched First Time  =====> " + applicationId);
+
+                logger.info("----------------------------START EXISTING LOAN ------------------------------");
+                logger.info("------------------------------------------------------------------------------");
+                logger.info("------------------------------------------------------------------------------");
+
+                logger.info("APPLICATION ID   :: " + applicationId);
+                logger.info("FP PRODUCT ID    :: " + fpProductId);
+                logger.info("SCORING MODEL ID :: " + scoreModelId);
+
+
+                // start Get GST Parameter
+
+                String gstNumber = corporateApplicantDetailRepository.getGstInByApplicationId(applicationId);
+                Double loanAmount = primaryCorporateDetailRepository.getLoanAmountByApplication(applicationId);
+
+                CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository.findOneByApplicationIdId(applicationId);
+
+
+                GstResponse gstResponse = null;
+                GstResponse gstResponseScoring = null;
+                GstCalculation gstCalculation = new GstCalculation();
+
+                try {
+                    GSTR1Request gstr1Request = new GSTR1Request();
+                    gstr1Request.setGstin(gstNumber);
+                    gstResponse = gstClient.getCalculations(gstr1Request);
+
+                    if (!CommonUtils.isObjectNullOrEmpty(gstResponse) && !CommonUtils.isObjectNullOrEmpty(gstResponse.getData())) {
+                        gstCalculation = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) gstResponse.getData(),
+                                GstCalculation.class);
+                    }
+
+                } catch (Exception e) {
+                    logger.error("error while getting GST parameter");
+                    e.printStackTrace();
+                }
+
+
+                // get GST Data for Sales Show A Rising Trend
+
+                try {
+                    gstResponseScoring = gstClient.getCalculationForScoring(gstNumber);
+                } catch (Exception e) {
+                    logger.error("error while getting GST parameter for GST Sales Show A Rising Trend");
+                    e.printStackTrace();
+                }
+
+                // end Get GST Parameter
+
+                int currentYear = getFinYear(applicationId);
+                if (CommonUtils.isObjectNullOrEmpty(currentYear)) {
+                    logger.error("error while getting current year from itr");
+                    LoansResponse loansResponse = new LoansResponse("error while getting current year from itr.", HttpStatus.INTERNAL_SERVER_ERROR.value());
+                    return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+                }
+
+                // CMA
+                OperatingStatementDetails operatingStatementDetailsFY = new OperatingStatementDetails();
+                OperatingStatementDetails operatingStatementDetailsSY = new OperatingStatementDetails();
+                OperatingStatementDetails operatingStatementDetailsTY = new OperatingStatementDetails();
+
+
+                LiabilitiesDetails liabilitiesDetailsFY = new LiabilitiesDetails();
+                LiabilitiesDetails liabilitiesDetailsSY = new LiabilitiesDetails();
+                LiabilitiesDetails liabilitiesDetailsTY = new LiabilitiesDetails();
+
+                AssetsDetails assetsDetailsFY = new AssetsDetails();
+                AssetsDetails assetsDetailsSY = new AssetsDetails();
+                AssetsDetails assetsDetailsTY = new AssetsDetails();
+
+                if (ScoreParameter.FinancialTypeForITR.THREE_YEAR_ITR == scoringRequest.getFinancialTypeId()) {
+                    operatingStatementDetailsTY = operatingStatementDetailsRepository.getOperatingStatementDetails(applicationId, currentYear - 1 + "");
+                    operatingStatementDetailsSY = operatingStatementDetailsRepository.getOperatingStatementDetails(applicationId, currentYear - 2 + "");
+                    operatingStatementDetailsFY = operatingStatementDetailsRepository.getOperatingStatementDetails(applicationId, currentYear - 3 + "");
+
+                    liabilitiesDetailsTY = liabilitiesDetailsRepository.getLiabilitiesDetails(applicationId, currentYear - 1 + "");
+                    liabilitiesDetailsSY = liabilitiesDetailsRepository.getLiabilitiesDetails(applicationId, currentYear - 2 + "");
+                    liabilitiesDetailsFY = liabilitiesDetailsRepository.getLiabilitiesDetails(applicationId, currentYear - 3 + "");
+
+                    assetsDetailsTY = assetsDetailsRepository.getAssetsDetails(applicationId, currentYear - 1 + "");
+                    assetsDetailsSY = assetsDetailsRepository.getAssetsDetails(applicationId, currentYear - 2 + "");
+                    assetsDetailsFY = assetsDetailsRepository.getAssetsDetails(applicationId, currentYear - 3 + "");
+                } else if (ScoreParameter.FinancialTypeForITR.ONE_YEAR_ITR == scoringRequest.getFinancialTypeId()) {
+                    operatingStatementDetailsTY = operatingStatementDetailsRepository.getOperatingStatementDetails(applicationId, currentYear - 1 + "");
+                    liabilitiesDetailsTY = liabilitiesDetailsRepository.getLiabilitiesDetails(applicationId, currentYear - 1 + "");
+                    assetsDetailsTY = assetsDetailsRepository.getAssetsDetails(applicationId, currentYear - 1 + "");
+                } else if (ScoreParameter.FinancialTypeForITR.PRESUMPTIVE == scoringRequest.getFinancialTypeId()) {
+                    operatingStatementDetailsTY = operatingStatementDetailsRepository.getOperatingStatementDetails(applicationId, currentYear - 1 + "");
+                    liabilitiesDetailsTY = liabilitiesDetailsRepository.getLiabilitiesDetails(applicationId, currentYear - 1 + "");
+                    assetsDetailsTY = assetsDetailsRepository.getAssetsDetails(applicationId, currentYear - 1 + "");
+                }
+
+                ///////////////
+
+                // Get Director Background detail
+
+                DirectorBackgroundDetail mainDirectorBackgroundDetail = directorBackgroundDetailsRepository.getMainDirectorByApplicationId(applicationId);
+
+                // get Primary Corporate Detail
+
+                PrimaryCorporateDetail primaryCorporateDetail = primaryCorporateDetailRepository.findOneByApplicationIdId(applicationId);
+
+                // GET SCORE CORPORATE LOAN PARAMETERS
+
+
+                if (!CommonUtils.isObjectNullOrEmpty(scoreModelId)) {
+                    // GET ALL FIELDS FOR CALCULATE SCORE BY MODEL ID
+                    ScoringResponse scoringResponse = null;
+                    try {
+                        scoringResponse = scoringClient.listFieldByBusinessTypeId(scoringRequest);
+                    } catch (Exception e) {
+                        logger.error("error while getting field list");
+                        e.printStackTrace();
+                    }
+
+                    List<Map<String, Object>> dataList = (List<Map<String, Object>>) scoringResponse.getDataList();
+
+                    //List<FundSeekerInputRequest> fundSeekerInputRequestList = new ArrayList<>(dataList.size());
+
+                    logger.info("dataList=====================================>>>>>>>>>>>>>>>>>>>>>>" + dataList.size());
+
+                    for (int i=0;i<dataList.size();i++){
+
+                        ModelParameterResponse modelParameterResponse = null;
+                        try {
+                            modelParameterResponse = MultipleJSONObjectHelper.getObjectFromMap(dataList.get(i),
+                                    ModelParameterResponse.class);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+                /*FundSeekerInputRequest fundSeekerInputRequest = new FundSeekerInputRequest();
+                fundSeekerInputRequest.setFieldId(modelParameterResponse.getFieldMasterId());
+                fundSeekerInputRequest.setName(modelParameterResponse.getName());*/
+
+                        switch (modelParameterResponse.getName()) {
+
+                            case ScoreParameter.COMBINED_NETWORTH: {
+                                try {
+                                    Double networthSum = directorBackgroundDetailsRepository.getSumOfDirectorsNetworth(applicationId);
+                                    if (CommonUtils.isObjectNullOrEmpty(networthSum))
+                                        networthSum = 0.0;
+
+                                    Double termLoansTy = liabilitiesDetailsTY.getTermLoans();
+                                    if (CommonUtils.isObjectNullOrEmpty(termLoansTy))
+                                        termLoansTy = 0.0;
+
+                                    scoringParameterRequest.setNetworthSum(networthSum);
+                                    scoringParameterRequest.setTermLoanTy(termLoansTy);
+                                    scoringParameterRequest.setLoanAmount(loanAmount);
+                                    scoringParameterRequest.setCombinedNetworth_p(true);
+
+                                } catch (Exception e) {
+                                    logger.error("error while getting COMBINED_NETWORTH parameter");
+                                    e.printStackTrace();
+                                    scoringParameterRequest.setCombinedNetworth_p(false);
+                                }
+
+                                break;
+                            }
+                            case ScoreParameter.CUSTOMER_ASSOCIATE_CONCERN: {
+                                Double customer_ass_concern_year = null;
+                                try {
+
+                                    CibilResponse cibilResponse = cibilClient.getDPDYears(applicationId);
+                                    if (!CommonUtils.isObjectNullOrEmpty(cibilResponse) && !CommonUtils.isObjectNullOrEmpty(cibilResponse.getData())) {
+                                        customer_ass_concern_year = (Double) cibilResponse.getData();
+
+                                        scoringParameterRequest.setCustomerAssociateConcern(customer_ass_concern_year);
+                                        scoringParameterRequest.setCustomerAsscociateConcern_p(true);
+                                    } else {
+                                        scoringParameterRequest.setCustomerAsscociateConcern_p(false);
+                                    }
+
+                                } catch (Exception e) {
+                                    logger.error("error while getting CUSTOMER_ASSOCIATE_CONCERN parameter from CIBIL client");
+                                    e.printStackTrace();
+                                    scoringParameterRequest.setCustomerAsscociateConcern_p(false);
+                                }
+                                break;
+
+                            }
+                            case ScoreParameter.CIBIL_TRANSUNION_SCORE: {
+                                Double cibil_score_avg_promotor = null;
+                                try {
+
+                                    CibilRequest cibilRequest = new CibilRequest();
+                                    cibilRequest.setApplicationId(applicationId);
+
+                                    CibilResponse cibilResponse = cibilClient.getCibilScore(cibilRequest);
+                                    if (!CommonUtils.isObjectNullOrEmpty(cibilResponse.getData())) {
+                                        cibil_score_avg_promotor = (Double) cibilResponse.getData();
+                                        scoringParameterRequest.setCibilTransuniunScore(cibil_score_avg_promotor);
+                                        scoringParameterRequest.setCibilTransunionScore_p(true);
+                                    } else {
+                                        scoringParameterRequest.setCibilTransunionScore_p(false);
+                                    }
+                                } catch (Exception e) {
+                                    logger.error("error while getting CIBIL_TRANSUNION_SCORE parameter from CIBIL client");
+                                    e.printStackTrace();
+                                    scoringParameterRequest.setCibilTransunionScore_p(false);
+                                }
+
+                                break;
+                            }
+
+                            case ScoreParameter.EXPERIENCE_IN_THE_BUSINESS: {
+                                Double directorExperience = directorBackgroundDetailsRepository.getMaxOfDirectorsExperience(applicationId);
+
+                                if (!CommonUtils.isObjectNullOrEmpty(directorExperience)) {
+                                    scoringParameterRequest.setExperienceInTheBusiness(directorExperience);
+                                    scoringParameterRequest.setExperienceInTheBusiness_p(true);
+                                } else {
+                                    scoringParameterRequest.setExperienceInTheBusiness_p(false);
+                                }
+
+                                break;
+                            }
+                            case ScoreParameter.DEBT_EQUITY_RATIO: {
+
+                                try {
+                            /*Double debt = liabilitiesDetailsTY.getSubTotalA() +
+                                    liabilitiesDetailsTY.getShortTermBorrowingFromOthers() +
+                                    liabilitiesDetailsTY.getTotalTermLiabilities() -
+                                    liabilitiesDetailsTY.getPreferencesShares() +
+                                    liabilitiesDetailsTY.getOtherNclUnsecuredLoansFromOther() +
+                                    liabilitiesDetailsTY.getOtherNclOthers() +
+                                    liabilitiesDetailsTY.getMinorityInterest() +
+                                    liabilitiesDetailsTY.getDeferredTaxLiability();*/
+
+                                    // 27-9-2018 9:19 PM Rahul Khudai Removed iabilitiesDetailsTY.getSubTotalA()
+                                    // + liabilitiesDetailsTY.getShortTermBorrowingFromOthers()  from Debt calculation
+
+                                    Double debt = liabilitiesDetailsTY.getTotalTermLiabilities() -
+                                            liabilitiesDetailsTY.getPreferencesShares() +
+                                            liabilitiesDetailsTY.getOtherNclUnsecuredLoansFromOther() +
+                                            liabilitiesDetailsTY.getOtherNclOthers() +
+                                            liabilitiesDetailsTY.getMinorityInterest() +
+                                            liabilitiesDetailsTY.getDeferredTaxLiability();
+
+
+                                    if (CommonUtils.isObjectNullOrEmpty(debt))
+                                        debt = 0.0;
+
+
+                                    Double equity = liabilitiesDetailsTY.getPreferencesShares() +
+                                            liabilitiesDetailsTY.getNetWorth() -
+                                            liabilitiesDetailsTY.getMinorityInterest() -
+                                            liabilitiesDetailsTY.getDeferredTaxLiability();
+                                    if (CommonUtils.isObjectNullOrEmpty(debt))
+                                        equity = 0.0;
+
+                                    scoringParameterRequest.setDebt(debt);
+                                    scoringParameterRequest.setEquity(equity);
+                                    scoringParameterRequest.setDebtEquityRatio_p(true);
+
+                                } catch (Exception e) {
+                                    logger.error("error while getting DEBT_EQUITY_RATIO parameter");
+                                    e.printStackTrace();
+                                    scoringParameterRequest.setDebtEquityRatio_p(false);
+                                }
+
+                                break;
+                            }
+                            case ScoreParameter.TOL_TNW: {
+
+                                try {
+                                    Double tol = liabilitiesDetailsTY.getTotalOutsideLiabilities();
+                                    if (CommonUtils.isObjectNullOrEmpty(tol))
+                                        tol = 0.0;
+
+                                    Double tnw = assetsDetailsTY.getTangibleNetWorth();
+                                    if (CommonUtils.isObjectNullOrEmpty(tnw))
+                                        tnw = 0.0;
+
+                                    scoringParameterRequest.setTol(tol);
+                                    scoringParameterRequest.setTnw(tnw);
+                                    scoringParameterRequest.setTolTnw_p(true);
+                                    scoringParameterRequest.setLoanAmount(loanAmount);
+
+                                } catch (Exception e) {
+                                    logger.error("error while getting TOL_TNW parameter");
+                                    e.printStackTrace();
+                                    scoringParameterRequest.setTolTnw_p(false);
+                                }
+
+                                break;
+                            }
+                            case ScoreParameter.AVERAGE_CURRENT_RATIO: {
+                                try {
+
+                                    Double currentRatio = (assetsDetailsTY.getCurrentRatio() + assetsDetailsSY.getCurrentRatio()) / 2;
+                                    if (CommonUtils.isObjectNullOrEmpty(currentRatio))
+                                        currentRatio = 0.0;
+
+                                    scoringParameterRequest.setAvgCurrentRatio(currentRatio);
+                                    scoringParameterRequest.setAvgCurrentRatio_p(true);
+
+                                } catch (Exception e) {
+                                    logger.error("error while getting AVERAGE_CURRENT_RATIO parameter");
+                                    e.printStackTrace();
+                                    scoringParameterRequest.setAvgCurrentRatio_p(false);
+                                }
+
+                                break;
+                            }
+                            case ScoreParameter.WORKING_CAPITAL_CYCLE: {
+
+                                try {
+                                    Double debtorsDays = null;
+                                    if ((operatingStatementDetailsTY.getTotalGrossSales() - operatingStatementDetailsTY.getAddOtherRevenueIncome()) != 0.0) {
+                                        debtorsDays = ((assetsDetailsTY.getReceivableOtherThanDefferred() + assetsDetailsTY.getExportReceivables()) / (operatingStatementDetailsTY.getTotalGrossSales() - operatingStatementDetailsTY.getAddOtherRevenueIncome())) * 365;
+                                    }
+                                    if (CommonUtils.isObjectNullOrEmpty(debtorsDays))
+                                        debtorsDays = 0.0;
+
+
+                                    /////////////
+
+                                    Double averageInventory = (operatingStatementDetailsTY.getAddOperatingStockFg() + operatingStatementDetailsTY.getDeductClStockFg()) / 2;
+                                    if (CommonUtils.isObjectNullOrEmpty(averageInventory))
+                                        averageInventory = 0.0;
+
+                                    Double cogs = operatingStatementDetailsTY.getRawMaterials() + operatingStatementDetailsTY.getAddOperatingStockFg() - operatingStatementDetailsTY.getDeductClStockFg();
+                                    if (CommonUtils.isObjectNullOrEmpty(cogs))
+                                        cogs = 0.0;
+
+
+                                    /////////////
+
+                                    Double creditorsDays = null;
+                                    if ((operatingStatementDetailsTY.getTotalGrossSales() - operatingStatementDetailsTY.getAddOtherRevenueIncome()) != 0) {
+                                        creditorsDays = (liabilitiesDetailsTY.getSundryCreditors() / (operatingStatementDetailsTY.getTotalGrossSales() - operatingStatementDetailsTY.getAddOtherRevenueIncome())) * 365;
+                                    }
+                                    if (CommonUtils.isObjectNullOrEmpty(creditorsDays))
+                                        creditorsDays = 0.0;
+
+
+                                    scoringParameterRequest.setDebtorsDays(debtorsDays);
+                                    scoringParameterRequest.setAvgInventory(averageInventory);
+                                    scoringParameterRequest.setCogs(cogs);
+                                    scoringParameterRequest.setCreditorsDays(creditorsDays);
+                                    scoringParameterRequest.setWorkingCapitalCycle_p(true);
+                                } catch (Exception e) {
+                                    logger.error("error while getting WORKING_CAPITAL_CYCLE parameter");
+                                    e.printStackTrace();
+                                    scoringParameterRequest.setWorkingCapitalCycle_p(false);
+                                }
+
+                                break;
+                            }
+                            case ScoreParameter.AVERAGE_ANNUAL_GROWTH_GROSS_CASH: {
+                                try {
+                                    Double netProfitOrLossTY = operatingStatementDetailsTY.getNetProfitOrLoss();
+                                    if (CommonUtils.isObjectNullOrEmpty(netProfitOrLossTY))
+                                        netProfitOrLossTY = 0.0;
+                                    Double depreciationTy = operatingStatementDetailsTY.getDepreciation();
+                                    if (CommonUtils.isObjectNullOrEmpty(depreciationTy))
+                                        depreciationTy = 0.0;
+                                    Double interestTy = operatingStatementDetailsTY.getInterest();
+                                    if (CommonUtils.isObjectNullOrEmpty(interestTy))
+                                        interestTy = 0.0;
+
+                                    Double netProfitOrLossSY = operatingStatementDetailsSY.getNetProfitOrLoss();
+                                    if (CommonUtils.isObjectNullOrEmpty(netProfitOrLossSY))
+                                        netProfitOrLossSY = 0.0;
+                                    Double depreciationSy = operatingStatementDetailsSY.getDepreciation();
+                                    if (CommonUtils.isObjectNullOrEmpty(depreciationSy))
+                                        depreciationSy = 0.0;
+                                    Double interestSy = operatingStatementDetailsSY.getInterest();
+                                    if (CommonUtils.isObjectNullOrEmpty(interestSy))
+                                        interestSy = 0.0;
+
+                                    Double netProfitOrLossFY = operatingStatementDetailsFY.getNetProfitOrLoss();
+                                    if (CommonUtils.isObjectNullOrEmpty(netProfitOrLossFY))
+                                        netProfitOrLossFY = 0.0;
+                                    Double depreciationFy = operatingStatementDetailsFY.getDepreciation();
+                                    if (CommonUtils.isObjectNullOrEmpty(depreciationFy))
+                                        depreciationFy = 0.0;
+                                    Double interestFy = operatingStatementDetailsFY.getInterest();
+                                    if (CommonUtils.isObjectNullOrEmpty(interestFy))
+                                        interestFy = 0.0;
+
+                                    scoringParameterRequest.setNetProfitOrLossFY(netProfitOrLossFY);
+                                    scoringParameterRequest.setNetProfitOrLossSY(netProfitOrLossSY);
+                                    scoringParameterRequest.setNetProfitOrLossTY(netProfitOrLossTY);
+
+                                    scoringParameterRequest.setDepriciationFy(depreciationFy);
+                                    scoringParameterRequest.setDepriciationSy(depreciationSy);
+                                    scoringParameterRequest.setDepriciationTy(depreciationTy);
+
+                                    scoringParameterRequest.setInterestFy(interestFy);
+                                    scoringParameterRequest.setInterestSy(interestSy);
+                                    scoringParameterRequest.setInterestTy(interestTy);
+
+                                    scoringParameterRequest.setAvgAnnualGrowthGrossCash_p(true);
+
+                                } catch (Exception e) {
+                                    logger.error("error while getting AVERAGE_ANNUAL_GROWTH_GROSS_CASH parameter");
+                                    e.printStackTrace();
+                                    scoringParameterRequest.setAvgAnnualGrowthGrossCash_p(false);
+                                }
+                                break;
+                            }
+                            case ScoreParameter.AVERAGE_ANNUAL_GROWTH_NET_SALE: {
+
+                                try {
+                                    Double domesticSalesTy = operatingStatementDetailsTY.getDomesticSales();
+                                    if (CommonUtils.isObjectNullOrEmpty(domesticSalesTy))
+                                        domesticSalesTy = 0.0;
+                                    Double exportSalesTy = operatingStatementDetailsTY.getExportSales();
+                                    if (CommonUtils.isObjectNullOrEmpty(exportSalesTy))
+                                        exportSalesTy = 0.0;
+
+                                    Double domesticSalesSy = operatingStatementDetailsSY.getDomesticSales();
+                                    if (CommonUtils.isObjectNullOrEmpty(domesticSalesSy))
+                                        domesticSalesSy = 0.0;
+
+                                    Double exportSalesSy = operatingStatementDetailsSY.getExportSales();
+                                    if (CommonUtils.isObjectNullOrEmpty(exportSalesSy))
+                                        exportSalesSy = 0.0;
+
+
+                                    Double domesticSalesFy = operatingStatementDetailsFY.getDomesticSales();
+                                    if (CommonUtils.isObjectNullOrEmpty(domesticSalesFy))
+                                        domesticSalesFy = 0.0;
+
+                                    Double exportSalesFy = operatingStatementDetailsFY.getExportSales();
+                                    if (CommonUtils.isObjectNullOrEmpty(exportSalesFy))
+                                        exportSalesFy = 0.0;
+
+                                    Double totalSale_FY = 0.0;
+                                    if (domesticSalesFy + exportSalesFy == 0.0) {
+                                        totalSale_FY = 1.0;
+                                    } else {
+                                        totalSale_FY = domesticSalesFy + exportSalesFy;
+                                    }
+
+                                    Double totalSale_SY = 0.0;
+                                    if (domesticSalesSy + exportSalesSy == 0.0) {
+                                        totalSale_SY = 1.0;
+                                    } else {
+                                        totalSale_SY = domesticSalesSy + exportSalesSy;
+                                    }
+
+                                    Double totalSale_TY = 0.0;
+                                    if (domesticSalesTy + exportSalesTy == 0.0) {
+                                        totalSale_TY = 1.0;
+                                    } else {
+                                        totalSale_TY = domesticSalesTy + exportSalesTy;
+                                    }
+
+                                    scoringParameterRequest.setTotalSaleFy(totalSale_FY);
+                                    scoringParameterRequest.setTotalSaleSy(totalSale_SY);
+                                    scoringParameterRequest.setTotalSaleTy(totalSale_TY);
+                                    scoringParameterRequest.setAvgAnnualGrowthNetSale_p(true);
+                                } catch (Exception e) {
+                                    logger.error("error while getting AVERAGE_ANNUAL_GROWTH_NET_SALE parameter");
+                                    e.printStackTrace();
+                                    scoringParameterRequest.setAvgAnnualGrowthNetSale_p(false);
+                                }
+
+                                break;
+                            }
+                            case ScoreParameter.AVERAGE_EBIDTA: {
+
+                                try {
+                                    Double profitBeforeTaxOrLossTy = operatingStatementDetailsTY.getProfitBeforeTaxOrLoss();
+                                    if (CommonUtils.isObjectNullOrEmpty(profitBeforeTaxOrLossTy))
+                                        profitBeforeTaxOrLossTy = 0.0;
+
+
+                                    Double interestTy = operatingStatementDetailsTY.getInterest();
+                                    if (CommonUtils.isObjectNullOrEmpty(interestTy))
+                                        interestTy = 0.0;
+
+
+                                    Double profitBeforeTaxOrLossSy = operatingStatementDetailsSY.getProfitBeforeTaxOrLoss();
+                                    if (CommonUtils.isObjectNullOrEmpty(profitBeforeTaxOrLossSy))
+                                        profitBeforeTaxOrLossSy = 0.0;
+
+
+                                    Double interestSy = operatingStatementDetailsSY.getInterest();
+                                    if (CommonUtils.isObjectNullOrEmpty(interestSy))
+                                        interestSy = 0.0;
+
+
+                                    Double depreciationTy = operatingStatementDetailsTY.getDepreciation();
+                                    if (CommonUtils.isObjectNullOrEmpty(depreciationTy))
+                                        depreciationTy = 0.0;
+
+
+                                    Double depreciationSy = operatingStatementDetailsSY.getDepreciation();
+                                    if (CommonUtils.isObjectNullOrEmpty(depreciationSy))
+                                        depreciationSy = 0.0;
+
+
+                                    Double termLoansTy = liabilitiesDetailsTY.getTermLoans();
+                                    if (CommonUtils.isObjectNullOrEmpty(termLoansTy))
+                                        termLoansTy = 0.0;
+
+
+                                    scoringParameterRequest.setProfitBeforeTaxOrLossTy(profitBeforeTaxOrLossTy);
+                                    scoringParameterRequest.setProfitBeforeTaxOrLossSy(profitBeforeTaxOrLossSy);
+                                    scoringParameterRequest.setInterestTy(interestTy);
+                                    scoringParameterRequest.setInterestSy(interestSy);
+                                    scoringParameterRequest.setDepriciationTy(depreciationTy);
+                                    scoringParameterRequest.setDepriciationSy(depreciationSy);
+                                    scoringParameterRequest.setTermLoanTy(termLoansTy);
+                                    scoringParameterRequest.setLoanAmount(loanAmount);
+
+                                    scoringParameterRequest.setAvgEBIDTA_p(true);
+
+                                } catch (Exception e) {
+                                    logger.error("error while getting AVERAGE_EBIDTA parameter");
+                                    e.printStackTrace();
+                                    scoringParameterRequest.setAvgEBIDTA_p(false);
+                                }
+
+                                break;
+                            }
+                            case ScoreParameter.AVERAGE_ANNUAL_GROSS_CASH_ACCRUALS: {
+
+                                try {
+
+                                    Double netProfitOrLossTY = operatingStatementDetailsTY.getNetProfitOrLoss();
+                                    if (CommonUtils.isObjectNullOrEmpty(netProfitOrLossTY))
+                                        netProfitOrLossTY = 0.0;
+
+                                    Double netProfitOrLossSY = operatingStatementDetailsSY.getNetProfitOrLoss();
+                                    if (CommonUtils.isObjectNullOrEmpty(netProfitOrLossSY))
+                                        netProfitOrLossSY = 0.0;
+
+                                    Double interestTy = operatingStatementDetailsTY.getInterest();
+                                    if (CommonUtils.isObjectNullOrEmpty(interestTy))
+                                        interestTy = 0.0;
+
+                                    Double interestSy = operatingStatementDetailsSY.getInterest();
+                                    if (CommonUtils.isObjectNullOrEmpty(interestSy))
+                                        interestSy = 0.0;
+
+                                    Double depreciationTy = operatingStatementDetailsTY.getDepreciation();
+                                    if (CommonUtils.isObjectNullOrEmpty(depreciationTy))
+                                        depreciationTy = 0.0;
+
+                                    Double depreciationSy = operatingStatementDetailsSY.getDepreciation();
+                                    if (CommonUtils.isObjectNullOrEmpty(depreciationSy))
+                                        depreciationSy = 0.0;
+
+                                    Double totalAsset = assetsDetailsTY.getTotalAssets();
+                                    if (CommonUtils.isObjectNullOrEmpty(totalAsset))
+                                        totalAsset = 0.0;
+
+                                    scoringParameterRequest.setNetProfitOrLossSY(netProfitOrLossSY);
+                                    scoringParameterRequest.setNetProfitOrLossTY(netProfitOrLossTY);
+                                    scoringParameterRequest.setInterestSy(interestSy);
+                                    scoringParameterRequest.setInterestTy(interestTy);
+                                    scoringParameterRequest.setDepriciationSy(depreciationSy);
+                                    scoringParameterRequest.setDepriciationTy(depreciationTy);
+                                    scoringParameterRequest.setTotalAsset(totalAsset);
+
+                                    scoringParameterRequest.setAvgAnnualGrossCashAccuruals_p(true);
+
+                                } catch (Exception e) {
+                                    logger.error("error while getting AVERAGE_ANNUAL_GROSS_CASH_ACCRUALS parameter");
+                                    e.printStackTrace();
+                                    scoringParameterRequest.setAvgAnnualGrossCashAccuruals_p(false);
+                                }
+
+                                break;
+                            }
+                            case ScoreParameter.AVERAGE_INTEREST_COV_RATIO: {
+                                try {
+                                    Double opProfitBeforeIntrestTy = operatingStatementDetailsTY.getOpProfitBeforeIntrest();
+                                    if (CommonUtils.isObjectNullOrEmpty(opProfitBeforeIntrestTy))
+                                        opProfitBeforeIntrestTy = 0.0;
+
+
+                                    Double opProfitBeforeIntrestSy = operatingStatementDetailsSY.getOpProfitBeforeIntrest();
+                                    if (CommonUtils.isObjectNullOrEmpty(opProfitBeforeIntrestSy))
+                                        opProfitBeforeIntrestSy = 0.0;
+
+                                    Double interestTy = operatingStatementDetailsTY.getInterest();
+                                    if (CommonUtils.isObjectNullOrEmpty(interestTy))
+                                        interestTy = 0.0;
+
+                                    Double interestSy = operatingStatementDetailsSY.getInterest();
+                                    if (CommonUtils.isObjectNullOrEmpty(interestSy))
+                                        interestSy = 0.0;
+
+                                    scoringParameterRequest.setOpProfitBeforeInterestTy(opProfitBeforeIntrestTy);
+                                    scoringParameterRequest.setOpProfitBeforeInterestSy(opProfitBeforeIntrestSy);
+                                    scoringParameterRequest.setInterestTy(interestTy);
+                                    scoringParameterRequest.setInterestSy(interestSy);
+
+                                    scoringParameterRequest.setAvgInterestCovRatio_p(true);
+                                } catch (Exception e) {
+                                    logger.error("error while getting AVERAGE_INTEREST_COV_RATIO parameter");
+                                    e.printStackTrace();
+                                    scoringParameterRequest.setAvgInterestCovRatio_p(false);
+                                }
+
+                                break;
+                            }
+                            case ScoreParameter.NO_OF_CUSTOMER: {
+                                try {
+                                    if (!CommonUtils.isObjectNullOrEmpty(gstCalculation) && !CommonUtils.isObjectNullOrEmpty(gstCalculation.getNoOfCustomer())) {
+                                        scoringParameterRequest.setNoOfCustomenr(gstCalculation.getNoOfCustomer());
+                                        scoringParameterRequest.setNoOfCustomer_p(true);
+                                    } else {
+                                        scoringParameterRequest.setNoOfCustomer_p(false);
+                                    }
+                                } catch (Exception e) {
+                                    logger.error("error while getting NO_OF_CUSTOMER parameter");
+                                    e.printStackTrace();
+                                    scoringParameterRequest.setNoOfCustomer_p(false);
+                                    /*map.put("NO_OF_CUSTOMER",null);*/
+                                }
+                                break;
+                            }
+                            case ScoreParameter.CONCENTRATION_CUSTOMER: {
+                                try {
+                                    if (!CommonUtils.isObjectNullOrEmpty(gstCalculation) && !CommonUtils.isObjectNullOrEmpty(gstCalculation.getConcentration())) {
+                                        scoringParameterRequest.setConcentrationCustomer(gstCalculation.getConcentration());
+                                        scoringParameterRequest.setConcentrationCustomer_p(true);
+                                    } else {
+                                        scoringParameterRequest.setConcentrationCustomer_p(false);
+                                    }
+                                } catch (Exception e) {
+                                    logger.error("error while getting CONCENTRATION_CUSTOMER parameter");
+                                    e.printStackTrace();
+                                    scoringParameterRequest.setConcentrationCustomer_p(false);
+                                }
+                                break;
+                            }
+                            case ScoreParameter.CREDIT_SUMMATION: {
+
+                                Double totalCredit = null;
+                                Double projctedSales = null;
+
+                                // start get total credit from Analyser
+                                ReportRequest reportRequest = new ReportRequest();
+                                reportRequest.setApplicationId(applicationId);
+                                try {
+                                    AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReport(reportRequest);
+                                    Data data = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) analyzerResponse.getData(),
+                                            Data.class);
+                                    if (!CommonUtils.isObjectNullOrEmpty(analyzerResponse.getData())) {
+                                        {
+                                            if (!CommonUtils.isObjectNullOrEmpty(data.getTotalCredit())) {
+                                                totalCredit = data.getTotalCredit();
+                                            } else {
+                                                totalCredit = 0.0;
+                                            }
+
+                                        }
+
+                                    }
+                                } catch (Exception e) {
+                                    totalCredit = 0.0;
+                                    e.printStackTrace();
+                                    logger.error("error while calling analyzer client");
+                                }
+
+                                // get get total credit from Analyser
+
+                                // start get projected sales from GST client
+
+                                projctedSales = gstCalculation.getProjectedSales();
+
+                                // end get projected sales from GST client
+
+
+                                scoringParameterRequest.setTotalCredit(totalCredit);
+                                scoringParameterRequest.setProjectedSale(projctedSales);
+                                scoringParameterRequest.setCreditSummation_p(true);
+
+                                break;
+                            }
+                            case ScoreParameter.AGE: {
+                                try {
+
+                                    if (!CommonUtils.isObjectNullOrEmpty(mainDirectorBackgroundDetail.getDob())) {
+                                        scoringParameterRequest.setAge(Math.ceil(CommonUtils.getAgeFromBirthDate(mainDirectorBackgroundDetail.getDob()).doubleValue()));
+                                        scoringParameterRequest.setAge_p(true);
+                                    } else {
+                                        scoringParameterRequest.setAge_p(false);
+                                    }
+                                } catch (Exception e) {
+                                    logger.error("error while getting AGE parameter");
+                                    e.printStackTrace();
+                                    scoringParameterRequest.setAge_p(false);
+                                }
+                                break;
+                            }
+                            case ScoreParameter.NO_OF_CHILDREN: {
+
+                                try {
+
+                                    if (!CommonUtils.isObjectNullOrEmpty(mainDirectorBackgroundDetail.getDirectorPersonalDetail().getNoOfChildren())) {
+                                        scoringParameterRequest.setNoOfChildren(mainDirectorBackgroundDetail.getDirectorPersonalDetail().getNoOfChildren().doubleValue());
+                                        scoringParameterRequest.setNoOfChildren_p(true);
+                                    } else {
+                                        scoringParameterRequest.setNoOfChildren_p(false);
+                                    }
+                                } catch (Exception e) {
+                                    logger.error("error while getting NO_OF_CHILDREN parameter");
+                                    e.printStackTrace();
+                                    scoringParameterRequest.setNoOfChildren_p(false);
+                                }
+                                break;
+                            }
+                            case ScoreParameter.OWNING_HOUSE: {
+
+                                try {
+
+                                    if (!CommonUtils.isObjectNullOrEmpty(mainDirectorBackgroundDetail.getDirectorPersonalDetail().getOwningHouse())) {
+                                        scoringParameterRequest.setOwningHouse(mainDirectorBackgroundDetail.getDirectorPersonalDetail().getOwningHouse().longValue());
+                                        scoringParameterRequest.setOwningHouse_p(true);
+                                    } else {
+                                        scoringParameterRequest.setOwningHouse_p(false);
+                                    }
+                                } catch (Exception e) {
+                                    logger.error("error while getting OWNING_HOUSE parameter");
+                                    e.printStackTrace();
+                                    scoringParameterRequest.setOwningHouse_p(false);
+                                }
+                                break;
+                            }
+                            case ScoreParameter.ACADEMIC_QUALIFICATION: {
+
+                                try {
+
+                                    if (!CommonUtils.isObjectNullOrEmpty(mainDirectorBackgroundDetail.getEducationalStatus())) {
+                                        scoringParameterRequest.setAcadamicQualification(mainDirectorBackgroundDetail.getEducationalStatus().longValue());
+                                        scoringParameterRequest.setAcadamicQualification_p(true);
+                                    } else {
+                                        scoringParameterRequest.setAcadamicQualification_p(false);
+                                    }
+                                } catch (Exception e) {
+                                    logger.error("error while getting ACADEMIC_QUALIFICATION parameter");
+                                    e.printStackTrace();
+                                    scoringParameterRequest.setAcadamicQualification_p(false);
+                                }
+                                break;
+                            }
+                            case ScoreParameter.EXPERIENCE_IN_THE_LINE_OF_TRADE: {
+
+                                try {
+
+                                    if (!CommonUtils.isObjectNullOrEmpty(mainDirectorBackgroundDetail.getTotalExperience())) {
+                                        scoringParameterRequest.setExperienceInLineOfBusiness(mainDirectorBackgroundDetail.getTotalExperience());
+                                        scoringParameterRequest.setExpLineOfTrade_p(true);
+                                    } else {
+                                        scoringParameterRequest.setExpLineOfTrade_p(false);
+                                    }
+                                } catch (Exception e) {
+                                    logger.error("error while getting EXPERIENCE_IN_THE_LINE_OF_TRADE parameter");
+                                    e.printStackTrace();
+                                    scoringParameterRequest.setExpLineOfTrade_p(false);
+                                }
+                                break;
+                            }
+                            case ScoreParameter.SPOUSE_DETAILS: {
+
+                                try {
+
+                                    if (!CommonUtils.isObjectNullOrEmpty(mainDirectorBackgroundDetail.getDirectorPersonalDetail().getSpouseDetail())) {
+                                        scoringParameterRequest.setSpouceDetails(mainDirectorBackgroundDetail.getDirectorPersonalDetail().getSpouseDetail().longValue());
+                                        scoringParameterRequest.setSpouseDetails_p(true);
+                                    } else {
+                                        scoringParameterRequest.setSpouseDetails_p(false);
+                                    }
+                                } catch (Exception e) {
+                                    logger.error("error while getting SPOUSE_DETAILS parameter");
+                                    e.printStackTrace();
+                                    scoringParameterRequest.setSpouseDetails_p(false);
+                                }
+                                break;
+                            }
+                            case ScoreParameter.ASSESSED_FOR_INCOME_TAX: {
+
+                                try {
+
+                                    if (!CommonUtils.isObjectNullOrEmpty(mainDirectorBackgroundDetail.getDirectorPersonalDetail().getAssessedForIt())) {
+                                        scoringParameterRequest.setAssessedFOrIT(mainDirectorBackgroundDetail.getDirectorPersonalDetail().getAssessedForIt().longValue());
+                                        scoringParameterRequest.setAssessedForIncomeTax_p(true);
+                                    } else {
+                                        scoringParameterRequest.setAssessedForIncomeTax_p(false);
+                                    }
+                                } catch (Exception e) {
+                                    logger.error("error while getting ASSESSED_FOR_INCOME_TAX parameter");
+                                    e.printStackTrace();
+                                    scoringParameterRequest.setAssessedForIncomeTax_p(false);
+                                }
+                                break;
+                            }
+                            case ScoreParameter.HAVE_LIFE_INSURANCE_POLICY: {
+
+                                try {
+
+                                    if (!CommonUtils.isObjectNullOrEmpty(mainDirectorBackgroundDetail.getDirectorPersonalDetail().getHaveLiPolicy())) {
+                                        scoringParameterRequest.setHaveLIPolicy(mainDirectorBackgroundDetail.getDirectorPersonalDetail().getHaveLiPolicy().longValue());
+                                        scoringParameterRequest.setHaveLifeIncPolicy_p(true);
+                                    } else {
+                                        scoringParameterRequest.setHaveLifeIncPolicy_p(false);
+                                    }
+                                } catch (Exception e) {
+                                    logger.error("error while getting HAVE_LIFE_INSURANCE_POLICY parameter");
+                                    e.printStackTrace();
+                                    scoringParameterRequest.setHaveLifeIncPolicy_p(false);
+                                }
+                                break;
+                            }
+                            case ScoreParameter.YEARS_IN_BUSINESS: {
+                                try {
+
+                                    java.util.Calendar todayDate = java.util.Calendar.getInstance();
+                                    todayDate.setTime(new Date());
+
+                                    Integer yearsInBetween = todayDate.get(java.util.Calendar.YEAR) - corporateApplicantDetail.getEstablishmentYear();
+                                    Integer monthsDiff = 0;
+
+                                    monthsDiff = todayDate.get(java.util.Calendar.MONTH) - corporateApplicantDetail.getEstablishmentMonth();
+
+                                    Double yearsInBusiness = Double.valueOf((yearsInBetween * 12 + monthsDiff) / 12);
+
+                                    scoringParameterRequest.setYearsInBusiness(yearsInBusiness);
+                                    scoringParameterRequest.setYearsInBusiness_p(true);
+                                } catch (Exception e) {
+                                    logger.error("error while getting YEARS_IN_BUSINESS parameter");
+                                    e.printStackTrace();
+                                    scoringParameterRequest.setYearsInBusiness_p(false);
+                                }
+                                break;
+                            }
+                            case ScoreParameter.REPAYMENT_PERIOD: {
+
+                                try {
+
+                                    // get repayment period from one form // remaining
+                                    scoringParameterRequest.setRepaymentPeriod(5.0);
+                                    scoringParameterRequest.setRepaymentPeriod_p(true);
+                                } catch (Exception e) {
+                                    logger.error("error while getting REPAYMENT_PERIOD parameter");
+                                    e.printStackTrace();
+                                    scoringParameterRequest.setRepaymentPeriod_p(false);
+                                }
+                                break;
+                            }
+                            case ScoreParameter.CONTINUOUS_NET_PROFIT: {
+
+                                try {
+
+                                    Double netProfitOrLossFY = operatingStatementDetailsFY.getProfitBeforeTaxOrLoss();
+                                    Double netProfitOrLossSY = operatingStatementDetailsSY.getProfitBeforeTaxOrLoss();
+                                    Double netProfitOrLossTY = operatingStatementDetailsTY.getProfitBeforeTaxOrLoss();
+
+                                    scoringParameterRequest.setContinuousNetProfitOrLossFY(netProfitOrLossFY);
+                                    scoringParameterRequest.setContinuousNetProfitOrLossSY(netProfitOrLossSY);
+                                    scoringParameterRequest.setContinuousNetProfitOrLossTY(netProfitOrLossTY);
+
+                                    scoringParameterRequest.setContinousNetProfit_p(true);
+
+                                } catch (Exception e) {
+                                    logger.error("error while getting CONTINUOUS_NET_PROFIT parameter");
+                                    e.printStackTrace();
+                                    scoringParameterRequest.setContinousNetProfit_p(false);
+                                }
+                                break;
+                            }
+                            case ScoreParameter.QUALITY_OF_RECEIVABLES: {
+
+                                try {
+
+                                    Double totalSaleTY = operatingStatementDetailsTY.getDomesticSales() + operatingStatementDetailsTY.getExportSales();
+                                    Double grossSaleTy = operatingStatementDetailsTY.getTotalGrossSales();
+
+                                    scoringParameterRequest.setTotalSaleTy(totalSaleTY);
+                                    scoringParameterRequest.setGrossSaleTy(grossSaleTy);
+
+                                    scoringParameterRequest.setQualityOfReceivable_p(true);
+
+                                } catch (Exception e) {
+                                    logger.error("error while getting QUALITY_OF_RECEIVABLES parameter");
+                                    e.printStackTrace();
+                                    scoringParameterRequest.setQualityOfReceivable_p(false);
+                                }
+                                break;
+                            }
+                            case ScoreParameter.QUALITY_OF_FINISHED_GOODS_INVENTORY: {
+
+                                try {
+
+                                    Double totalCostSaleTy = operatingStatementDetailsTY.getTotalCostSales();
+                                    Double finishedGoodTy = assetsDetailsTY.getFinishedGoods();
+
+                                    scoringParameterRequest.setTotalCostSaleTy(totalCostSaleTy);
+                                    scoringParameterRequest.setFinishedGoodTy(finishedGoodTy);
+
+                                    scoringParameterRequest.setQualityOfFinishedGood_p(true);
+
+                                } catch (Exception e) {
+                                    logger.error("error while getting QUALITY_OF_FINISHED_GOODS_INVENTORY parameter");
+                                    e.printStackTrace();
+                                    scoringParameterRequest.setQualityOfFinishedGood_p(false);
+                                }
+                                break;
+                            }
+                            case ScoreParameter.KNOW_HOW: {
+
+                                try {
+
+                                    if (!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getKnowHow())) {
+                                        scoringParameterRequest.setKnowHow(primaryCorporateDetail.getKnowHow().longValue());
+                                        scoringParameterRequest.setKnowHow_p(true);
+                                    } else {
+                                        scoringParameterRequest.setKnowHow_p(false);
+                                    }
+                                } catch (Exception e) {
+                                    logger.error("error while getting KNOW_HOW parameter");
+                                    e.printStackTrace();
+                                    scoringParameterRequest.setKnowHow_p(false);
+                                }
+                                break;
+                            }
+                            case ScoreParameter.LINE_OF_ACTIVITY: {
+                                scoringParameterRequest.setLineOfActivity(1l);
+                                scoringParameterRequest.setLineOfActivity_p(true);
+
+                                break;
+                            }
+                            case ScoreParameter.COMPETITION: {
+
+                                try {
+
+                                    if (!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getCompetition())) {
+                                        scoringParameterRequest.setCompetition(primaryCorporateDetail.getCompetition().longValue());
+                                        scoringParameterRequest.setCompetition_p(true);
+                                    } else {
+                                        scoringParameterRequest.setCompetition_p(false);
+                                    }
+                                } catch (Exception e) {
+                                    logger.error("error while getting COMPETITION parameter");
+                                    e.printStackTrace();
+                                    scoringParameterRequest.setCompetition_p(false);
+                                }
+                                break;
+                            }
+                            case ScoreParameter.FACTORY_PREMISES: {
+                                try {
+
+                                    if (!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getFactoryPremise())) {
+                                        scoringParameterRequest.setFactoryPremises(primaryCorporateDetail.getFactoryPremise().longValue());
+                                        scoringParameterRequest.setFactoryPremises_p(true);
+                                    } else {
+                                        scoringParameterRequest.setFactoryPremises_p(false);
+                                    }
+                                } catch (Exception e) {
+                                    logger.error("error while getting FACTORY_PREMISES parameter");
+                                    e.printStackTrace();
+                                    scoringParameterRequest.setFactoryPremises_p(false);
+                                }
+                                break;
+                            }
+                            case ScoreParameter.SALES_SHOW_A_RISING_TREND: {
+
+                                try {
+
+                                    // getting Gst Current Year Sale from GST Client
+
+                                    if (!CommonUtils.isObjectNullOrEmpty(gstResponseScoring) && !CommonUtils.isObjectNullOrEmpty(gstResponseScoring.getData())) {
+                                        scoringParameterRequest.setGstSaleCurrentYear((Double) gstResponseScoring.getData());
+                                    } else {
+                                        scoringParameterRequest.setGstSaleCurrentYear(0.0);
+                                        logger.error("Error while getting Gst data for Scoring from GST client");
+                                    }
+
+                                    scoringParameterRequest.setNetSaleFy(operatingStatementDetailsFY.getNetSales());
+                                    scoringParameterRequest.setNetSaleSy(operatingStatementDetailsSY.getNetSales());
+                                    scoringParameterRequest.setNetSaleTy(operatingStatementDetailsTY.getNetSales());
+
+                                    scoringParameterRequest.setSalesShowArisingTrend_p(true);
+
+                                } catch (Exception e) {
+                                    logger.error("error while getting SALES_SHOW_A_RISING_TREND parameter");
+                                    e.printStackTrace();
+                                    scoringParameterRequest.setSalesShowArisingTrend_p(false);
+                                }
+                                break;
+                            }
+                        }
+                        //fundSeekerInputRequestList.add(fundSeekerInputRequest);
+                    }
+
+                    logger.info("SCORE PARAMETER ::::::::::" + scoringParameterRequest.toString());
+
+                    logger.info("------------------------------------------------------------------------------");
+                    logger.info("------------------------------------------------------------------------------");
+                    logger.info("----------------------------END-----------------------------------------------");
+                }
+                Gson g = new Gson();
+                ScoringRequestDetail scoringRequestDetail = new ScoringRequestDetail();
+
+                try {
+                    scoringRequestDetail.setApplicationId(applicationId);
+                    scoringRequestDetail.setRequest(g.toJson(scoringParameterRequest));
+                    scoringRequestDetail.setCreatedDate(new Date());
+                    scoringRequestDetail.setIsActive(true);
+                    scoringRequestDetailRepository.save(scoringRequestDetail);
+
+                    logger.info("Saving Scoring Request Data for  =====> " + applicationId);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            scoringRequest.setScoringParameterRequest(scoringParameterRequest);
+            scoringRequestList.add(scoringRequest);
+        }
+
+        try {
+            scoringResponseMain = scoringClient.calculateScoreList(scoringRequestList);
+        } catch (Exception e) {
+            logger.error("error while calling scoring");
+            e.printStackTrace();
+            LoansResponse loansResponse = new LoansResponse("error while calling scoring.", HttpStatus.INTERNAL_SERVER_ERROR.value());
+            return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+        }
+
+        if (scoringResponseMain.getStatus() == HttpStatus.OK.value()) {
+            logger.info("score is successfully calculated");
             LoansResponse loansResponse = new LoansResponse("score is successfully calculated", HttpStatus.OK.value());
             return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
         } else {
@@ -1982,7 +3644,7 @@ public class ScoringServiceImpl implements ScoringService {
             }
 
             if (scoringResponseMain.getStatus() == HttpStatus.OK.value()) {
-                logger.error("score is successfully calculated");
+                logger.info("score is successfully calculated");
                 LoansResponse loansResponse = new LoansResponse("score is successfully calculated", HttpStatus.OK.value());
                 return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
             } else {
@@ -2302,7 +3964,7 @@ public class ScoringServiceImpl implements ScoringService {
             }
 
             if (scoringResponseMain.getStatus() == HttpStatus.OK.value()) {
-                logger.error("score is successfully calculated");
+                logger.info("score is successfully calculated");
                 LoansResponse loansResponse = new LoansResponse("score is successfully calculated", HttpStatus.OK.value());
                 return true;
                 //return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);

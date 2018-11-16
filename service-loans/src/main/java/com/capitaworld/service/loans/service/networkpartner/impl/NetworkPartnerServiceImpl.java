@@ -22,9 +22,11 @@ import com.capitaworld.service.gateway.model.GatewayResponse;
 import com.capitaworld.service.gateway.model.PaymentTypeRequest;
 import com.capitaworld.service.loans.config.FPAsyncComponent;
 import com.capitaworld.service.loans.domain.fundprovider.FpNpMapping;
+import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
 import com.capitaworld.service.loans.model.FpNpMappingRequest;
 import com.capitaworld.service.loans.repository.fundprovider.FpNpMappingRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
 import com.capitaworld.service.loans.service.fundprovider.FpNpMappingService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.users.model.*;
@@ -84,6 +86,9 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 	
 	@Autowired
 	private CorporateApplicantDetailRepository corpApplicantRepository;
+
+	@Autowired
+	private RetailApplicantDetailRepository retailApplicantDetailRepository;
 	
 	@Autowired
 	private ApplicationStatusAuditRepository appStatusRepository;
@@ -732,6 +737,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 				nhbsApplicationsResponse.setApplicationId(loanApplicationMaster.getId());
 				nhbsApplicationsResponse.setApplicationType(loanApplicationMaster.getProductId());
 				nhbsApplicationsResponse.setBusinessTypeId(loanApplicationMaster.getBusinessTypeId());
+				nhbsApplicationsResponse.setApplicationCode(loanApplicationMaster.getApplicationCode());
 				if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getNpUserId())){
 					UsersRequest usersRequest = new UsersRequest();
 					usersRequest.setId(loanApplicationMaster.getNpUserId());
@@ -778,7 +784,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 						}
 					}
 					
-				} else {
+				} else if(CommonUtils.BusinessType.EXISTING_BUSINESS.getId().equals(loanApplicationMaster.getBusinessTypeId())){
 					CorporateApplicantDetail applicantDetail = corpApplicantRepository.getByApplicationAndUserId(loanApplicationMaster.getUserId(), loanApplicationMaster.getId());
 					if(applicantDetail != null){
 						nhbsApplicationsResponse.setClientName(applicantDetail.getOrganisationName());
@@ -806,8 +812,43 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 							e.printStackTrace();
 						}
 					}	
+				} else if(CommonUtils.BusinessType.RETAIL_PERSONAL_LOAN.getId().equals(loanApplicationMaster.getBusinessTypeId())){
+					RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.getByApplicationAndUserId(loanApplicationMaster.getUserId(), loanApplicationMaster.getId());
+					if(retailApplicantDetail != null){
+						try {
+							String firstName = retailApplicantDetail.getFirstName();
+							String lastName =retailApplicantDetail.getLastName();
+							String middleName =retailApplicantDetail.getMiddleName();
+
+							String fullName = firstName==null?"":firstName;
+							fullName += middleName==null?"":" "+ middleName;
+							fullName += lastName==null?"":" "+lastName;
+
+							nhbsApplicationsResponse.setClientName(fullName);
+							// Setting City Value
+							if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getAddressCity())) {
+								nhbsApplicationsResponse.setCity(
+										CommonDocumentUtils.getCity(retailApplicantDetail.getAddressCity(), oneFormClient));
+							}
+
+							// Setting State Value
+							if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getAddressState())) {
+								nhbsApplicationsResponse.setState(CommonDocumentUtils
+										.getState(retailApplicantDetail.getAddressState().longValue(), oneFormClient));
+							}
+
+							// Country State Value
+							if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getAddressCountry())) {
+								nhbsApplicationsResponse.setCountry(CommonDocumentUtils
+										.getCountry(retailApplicantDetail.getAddressCountry().longValue(), oneFormClient));
+							}
+						} catch (Exception e) {
+							// TODO: handle exception
+							logger.error("error while fetching details from oneform client for city/state/country");
+							e.printStackTrace();
+						}
+					}
 				}
-				
 
 				// get profile pic
 				DocumentRequest documentRequest = new DocumentRequest();
@@ -838,28 +879,27 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 				}
 
 				nhbsApplicationsResponse.setApplicationDate(loanApplicationMaster.getCreatedDate());
-				
-					
-				try {
-					mcaCompanyId = loanApplicationService.getMCACompanyIdById(applicationId.longValue());
-					if(mcaCompanyId != null) {
-						mcaResponse = mcaClient.mcaStatusCheck(applicationId.toString(), mcaCompanyId.toString());
-						System.out.println("MCA Response"+mcaResponse);
-						System.out.println("MCA Response---===+++>>"+mcaResponse!=null?mcaResponse.getData():null);
-						if("true".equalsIgnoreCase(String.valueOf(mcaResponse.getData()))) {
-							nhbsApplicationsResponse.setMcaStatus(CommonUtils.COMPLETED);
-						}else {
-							nhbsApplicationsResponse.setMcaStatus(CommonUtils.IN_PROGRESS);
+
+				if (!CommonUtils.BusinessType.RETAIL_PERSONAL_LOAN.getId().equals(loanApplicationMaster.getBusinessTypeId())) {
+					try {
+						mcaCompanyId = loanApplicationService.getMCACompanyIdById(applicationId.longValue());
+						if (mcaCompanyId != null) {
+							mcaResponse = mcaClient.mcaStatusCheck(applicationId.toString(), mcaCompanyId.toString());
+							System.out.println("MCA Response" + mcaResponse);
+							System.out.println("MCA Response---===+++>>" + mcaResponse != null ? mcaResponse.getData() : null);
+							if ("true".equalsIgnoreCase(String.valueOf(mcaResponse.getData()))) {
+								nhbsApplicationsResponse.setMcaStatus(CommonUtils.COMPLETED);
+							} else {
+								nhbsApplicationsResponse.setMcaStatus(CommonUtils.IN_PROGRESS);
+							}
+						} else {
+							nhbsApplicationsResponse.setMcaStatus(CommonUtils.NA);
 						}
-					}else {
-						nhbsApplicationsResponse.setMcaStatus(CommonUtils.NA);
+					} catch (Exception e) {
+						logger.error("error while getting MCA Status");
+						e.printStackTrace();
 					}
-				} catch (Exception e) {
-					logger.error("error while getting MCA Status");
-					e.printStackTrace();
 				}
-					
-				
 				
 				if(loanApplicationMaster.getApplicationStatusMaster().getId()>=CommonUtils.ApplicationStatus.ASSIGNED){
 					if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getDdrStatusId())){
@@ -1119,32 +1159,74 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 					nhbsApplicationsResponse.setDdrStatus("-");
 				}
 
-				CorporateApplicantDetail applicantDetail = corpApplicantRepository.getByApplicationAndUserId(loanApplicationMaster.getUserId(), loanApplicationMaster.getId());
-				if(applicantDetail != null){
-					nhbsApplicationsResponse.setClientName(applicantDetail.getOrganisationName());
-					try {
-						// Setting City Value
-						if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredCityId())) {
-							nhbsApplicationsResponse.setCity(
-									CommonDocumentUtils.getCity(applicantDetail.getRegisteredCityId(), oneFormClient));
-						}
+				if (CommonUtils.BusinessType.EXISTING_BUSINESS.getId().equals(loanApplicationMaster.getBusinessTypeId()) ||
+						CommonUtils.BusinessType.NEW_TO_BUSINESS.getId().equals(loanApplicationMaster.getBusinessTypeId())) {
 
-						// Setting State Value
-						if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredStateId())) {
-							nhbsApplicationsResponse.setState(CommonDocumentUtils
-									.getState(applicantDetail.getRegisteredStateId().longValue(), oneFormClient));
-						}
+					CorporateApplicantDetail applicantDetail = corpApplicantRepository.getByApplicationAndUserId(loanApplicationMaster.getUserId(), loanApplicationMaster.getId());
+					if (applicantDetail != null) {
+						nhbsApplicationsResponse.setClientName(applicantDetail.getOrganisationName());
+						try {
+							// Setting City Value
+							if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredCityId())) {
+								nhbsApplicationsResponse.setCity(
+										CommonDocumentUtils.getCity(applicantDetail.getRegisteredCityId(), oneFormClient));
+							}
 
-						// Country State Value
-						if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredCountryId())) {
-							nhbsApplicationsResponse.setCountry(CommonDocumentUtils
-									.getCountry(applicantDetail.getRegisteredCountryId().longValue(), oneFormClient));
+							// Setting State Value
+							if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredStateId())) {
+								nhbsApplicationsResponse.setState(CommonDocumentUtils
+										.getState(applicantDetail.getRegisteredStateId().longValue(), oneFormClient));
+							}
+
+							// Country State Value
+							if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getRegisteredCountryId())) {
+								nhbsApplicationsResponse.setCountry(CommonDocumentUtils
+										.getCountry(applicantDetail.getRegisteredCountryId().longValue(), oneFormClient));
+							}
+						} catch (Exception e) {
+							// TODO: handle exception
+							logger.error("error while fetching details from oneform client for city/state/country");
+							e.printStackTrace();
 						}
-					} catch (Exception e) {
-						// TODO: handle exception
-						logger.error("error while fetching details from oneform client for city/state/country");
-						e.printStackTrace();
 					}
+				}else if(loanApplicationMaster.getBusinessTypeId().equals(CommonUtils.BusinessType.RETAIL_PERSONAL_LOAN.getId())){
+
+					RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.getByApplicationAndUserId(loanApplicationMaster.getUserId(), loanApplicationMaster.getId());
+					if(retailApplicantDetail != null){
+						try {
+							String firstName = retailApplicantDetail.getFirstName();
+							String lastName =retailApplicantDetail.getLastName();
+							String middleName =retailApplicantDetail.getMiddleName();
+
+							String fullName = firstName==null?"":firstName;
+							fullName += middleName==null?"":" "+ middleName;
+							fullName += lastName==null?"":" "+lastName;
+
+							nhbsApplicationsResponse.setClientName(fullName);
+							// Setting City Value
+							if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getAddressCity())) {
+								nhbsApplicationsResponse.setCity(
+										CommonDocumentUtils.getCity(retailApplicantDetail.getAddressCity(), oneFormClient));
+							}
+
+							// Setting State Value
+							if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getAddressState())) {
+								nhbsApplicationsResponse.setState(CommonDocumentUtils
+										.getState(retailApplicantDetail.getAddressState().longValue(), oneFormClient));
+							}
+
+							// Country State Value
+							if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getOfficeCountryId())) {
+								nhbsApplicationsResponse.setCountry(CommonDocumentUtils
+										.getCountry(retailApplicantDetail.getOfficeCountryId().longValue(), oneFormClient));
+							}
+						} catch (Exception e) {
+							// TODO: handle exception
+							logger.error("error while fetching details from oneform client for city/state/country");
+							e.printStackTrace();
+						}
+					}
+
 				}
 				// get profile pic
 				DocumentRequest documentRequest = new DocumentRequest();
