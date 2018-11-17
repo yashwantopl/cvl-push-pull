@@ -118,6 +118,13 @@ public class ProductMasterTemp implements Serializable {
 	
 	@Column(name="campaign_type")
 	private Integer campaignCode;
+	
+	@Column(name="active_inactive_job_id")
+    private Long activeInactiveJobId;
+	
+	@Column(name="action_for")
+	private String actionFor;
+	
 
 	public ProductMasterTemp() {
 	}
@@ -360,6 +367,22 @@ public class ProductMasterTemp implements Serializable {
 
 	public void setCampaignCode(Integer campaignCode) {
 		this.campaignCode = campaignCode;
+	}
+
+	public Long getActiveInactiveJobId() {
+		return activeInactiveJobId;
+	}
+
+	public void setActiveInactiveJobId(Long activeInactiveJobId) {
+		this.activeInactiveJobId = activeInactiveJobId;
+	}
+
+	public String getActionFor() {
+		return actionFor;
+	}
+
+	public void setActionFor(String actionFor) {
+		this.actionFor = actionFor;
 	}
 
 
