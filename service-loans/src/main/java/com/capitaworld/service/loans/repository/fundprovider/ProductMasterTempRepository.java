@@ -36,6 +36,10 @@ public interface ProductMasterTempRepository extends JpaRepository<ProductMaster
 	@Query("update ProductMasterTemp pm set pm.isActive = :status,pm.modifiedDate = NOW(),pm.modifiedBy =:userId  where  pm.id=:productId")
 	public int changeStatus(@Param("userId") Long userId,@Param("productId") Long productId,@Param("status") Boolean status);
 	
+	@Modifying
+	@Query("update ProductMasterTemp pm set pm.isActive = :status, pm.activeInactiveJobId = NULL, pm.modifiedDate = NOW(),pm.modifiedBy =:userId  where  pm.id=:productId")
+	public int changeStatusAndActiveInactiveJobId(@Param("userId") Long userId,@Param("productId") Long productId,@Param("status") Boolean status);
+	
 	@Query("from ProductMasterTemp pm where pm.userId =:userId and pm.isActive = true")
 	public List<ProductMasterTemp> getUserProductList(@Param("userId") Long userId);
 	
