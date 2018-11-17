@@ -30,7 +30,7 @@ public interface ProposalDetailsRepository extends JpaRepository<ProposalDetails
     		"lam.application_code, branch.code, branch.street_name, (SELECT state_name FROM `one_form`.`state` s \n" + 
     		"WHERE s.id = branch.state_id), (SELECT city_name FROM `one_form`.`city` c WHERE c.id = branch.city_id), branch.premises_no, \n" + 
     		"(SELECT product_id FROM `loan_application`.`fp_product_master` pm WHERE pm.fp_product_id = pd.fp_product_id), branch.contact_person_email, \n" + 
-    		"(SELECT COUNT(id) FROM `users`.`campaign_details` cd WHERE cd.user_id = cl.user_id) \n" + 
+    		"(SELECT COUNT(id) FROM `users`.`campaign_details` cd WHERE cd.user_id = cl.user_id),cl.`gstin` \n" + 
     		"FROM  `loan_application`.`proposal_details` pd \n" + 
     		"LEFT JOIN `connect`.`connect_log` cl \n" + 
     		"ON cl.application_id = pd.application_id \n" + 

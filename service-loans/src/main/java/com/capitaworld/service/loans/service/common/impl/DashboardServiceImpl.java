@@ -121,21 +121,21 @@ public class DashboardServiceImpl implements DashboardService {
 			dashboardProfileResponse.setId(retailApplicantDetail.getId());
 			dashboardProfileResponse.setApplicationId(retailApplicantDetail.getApplicationId().getId());
 			// Setting City Value
-			if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getPermanentCityId())) {
+			if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getAddressCity())) {
 				dashboardProfileResponse
-						.setCity(CommonDocumentUtils.getCity(retailApplicantDetail.getPermanentCityId(), oneFormClient));
+						.setCity(CommonDocumentUtils.getCity(retailApplicantDetail.getAddressCity(), oneFormClient));
 			}
 
 			// Setting State Value
-			if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getPermanentStateId())) {
+			if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getAddressState())) {
 				dashboardProfileResponse.setState(CommonDocumentUtils
-						.getState(retailApplicantDetail.getPermanentStateId().longValue(), oneFormClient));
+						.getState(retailApplicantDetail.getAddressState().longValue(), oneFormClient));
 			}
 
 			// Country State Value
-			if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getPermanentCountryId())) {
+			if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getAddressCountry())) {
 				dashboardProfileResponse.setCountry(CommonDocumentUtils
-						.getCountry(retailApplicantDetail.getPermanentCountryId().longValue(), oneFormClient));
+						.getCountry(retailApplicantDetail.getAddressCountry().longValue(), oneFormClient));
 			}
 
 			String name = !CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getFirstName())
