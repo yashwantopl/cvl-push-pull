@@ -7,6 +7,9 @@ public class WorkflowData {
 	private Long fpProductId;
 	private Long jobId;
 	private Long userId;
+	private String actionFor;
+	private Integer stage;  // 1 = Pending, 2 = Approved
+	
 	public Long getNextworkflowStep() {
 		return nextworkflowStep;
 	}
@@ -42,6 +45,18 @@ public class WorkflowData {
 	}
 	public void setUserId(Long userId) {
 		this.userId = userId;
+	}
+	public String getActionFor() {
+		return actionFor;
+	}
+	public void setActionFor(String actionFor) {
+		this.actionFor = actionFor;
+	}
+	public Integer getStage() {
+		return stage;
+	}
+	public void setStage(Integer stage) {
+		this.stage = stage;
 	}
 	
 	

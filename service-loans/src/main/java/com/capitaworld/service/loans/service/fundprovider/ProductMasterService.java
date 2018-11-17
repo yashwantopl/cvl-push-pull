@@ -75,5 +75,7 @@ public interface ProductMasterService {
 
 	public List<ProductMasterRequest> getApprovedListByProductType(Long userId, Integer parseInt, Integer businessId,Long userOrgId);
 
+	public Long createJobId(Long userId);
 	
+	public Boolean changeStatusWithWorkFlow(WorkflowData workflowData);
 }

@@ -54,6 +54,10 @@ public class ProductMasterRequest implements Serializable {
 
 	private Long proposalCount;
 	
+	private Long activeInactiveJobId;
+	
+	private String actionFor;
+	
 	/**
 	 * @return the jobId
 	 */
@@ -221,6 +225,22 @@ public class ProductMasterRequest implements Serializable {
 
 	public void setProposalCount(Long proposalCount) {
 		this.proposalCount = proposalCount;
+	}
+
+	public Long getActiveInactiveJobId() {
+		return activeInactiveJobId;
+	}
+
+	public String getActionFor() {
+		return actionFor;
+	}
+
+	public void setActiveInactiveJobId(Long activeInactiveJobId) {
+		this.activeInactiveJobId = activeInactiveJobId;
+	}
+
+	public void setActionFor(String actionFor) {
+		this.actionFor = actionFor;
 	}
 
 
