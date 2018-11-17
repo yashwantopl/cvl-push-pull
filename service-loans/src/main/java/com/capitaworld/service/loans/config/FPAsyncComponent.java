@@ -101,7 +101,7 @@ public class FPAsyncComponent {
 			try {
 
 				logger.info("Into sending Mail to all Makers after FS gets In-Principle Approval===>{}");
-				String subject = "Intimation : New Proposal -  Application ID " + paymentRequest.getApplicationId();
+				String subject = "Intimation : New Proposal -  #ApplicationId=" + paymentRequest.getApplicationId();
 				Map<String, Object> mailParameters = new HashMap<String, Object>();
 				mailParameters.put("fs_name",
 						paymentRequest.getNameOfEntity() != null ? paymentRequest.getNameOfEntity() : "NA");
@@ -234,6 +234,7 @@ public class FPAsyncComponent {
 							} else {
 								mailParameters.put("maker_name", name != null ? name : "Sir/Madam");
 							}
+							mailParameters.put("isDynamic", true);
 							createNotificationForEmail(to, userId.toString(), mailParameters,
 									NotificationAlias.EMAIL_ALL_MAKERS_AFTER_INPRINCIPLE_TO_FS, subject);
 						}
@@ -295,8 +296,9 @@ public class FPAsyncComponent {
 			try {
 
 				logger.info("Into sending Mail to all Checkers after FS gets In-Principle Approval===>{}");
-				String subject = "Intimation : New Proposal -  Application ID " + paymentRequest.getApplicationId();
+				String subject = "Intimation : New Proposal -  #Application Id=" + paymentRequest.getApplicationId();
 				Map<String, Object> mailParameters = new HashMap<String, Object>();
+				
 				mailParameters.put("fs_name",
 						paymentRequest.getNameOfEntity() != null ? paymentRequest.getNameOfEntity() : "NA");
 				mailParameters.put("product_type",
@@ -422,7 +424,7 @@ public class FPAsyncComponent {
 							} else {
 								mailParameters.put("checker_name", name != null ? name : "Sir/Madam");
 							}
-
+							mailParameters.put("isDynamic", true);
 							createNotificationForEmail(to, userId.toString(), mailParameters,
 									NotificationAlias.EMAIL_ALL_CHECKERS_AFTER_INPRINCIPLE_TO_FS, subject);
 						}
@@ -489,7 +491,7 @@ public class FPAsyncComponent {
 			try {
 
 				logger.info("Into sending Mail to all Checkers after FS gets In-Principle Approval===>{}");
-				String subject = "Intimation : New Proposal -  Application ID " + paymentRequest.getApplicationId();
+				String subject = "Intimation : New Proposal -  #Application Id=" + paymentRequest.getApplicationId();
 				Map<String, Object> mailParameters = new HashMap<String, Object>();
 				mailParameters.put("fs_name",
 						paymentRequest.getNameOfEntity() != null ? paymentRequest.getNameOfEntity() : "NA");
@@ -619,7 +621,7 @@ public class FPAsyncComponent {
 							} else {
 								mailParameters.put("ho_name", name != null ? name : "Sir/Madam");
 							}
-
+							mailParameters.put("isDynamic", true);
 							createNotificationForEmail(to, userId.toString(), mailParameters,
 									NotificationAlias.EMAIL_HO_INPRINCIPLE_TO_FS, subject);
 						}
@@ -684,7 +686,7 @@ public class FPAsyncComponent {
 			try {
 
 				logger.info("Into sending Mail to all BO after FS gets In-Principle Approval===>{}");
-				String subject = "Intimation : New Proposal -  Application ID " + paymentRequest.getApplicationId();
+				String subject = "Intimation : New Proposal -  #Application Id=" + paymentRequest.getApplicationId();
 				Map<String, Object> mailParameters = new HashMap<String, Object>();
 				mailParameters.put("fs_name",
 						paymentRequest.getNameOfEntity() != null ? paymentRequest.getNameOfEntity() : "NA");
@@ -814,7 +816,7 @@ public class FPAsyncComponent {
 							} else {
 								mailParameters.put("bo_name", name != null ? name : "Sir/Madam");
 							}
-
+							mailParameters.put("isDynamic", true);
 							createNotificationForEmail(to, userId.toString(), mailParameters,
 									NotificationAlias.EMAIL_ALL_BO_INPRINCIPLE_TO_FS, subject);
 						}
@@ -1087,15 +1089,14 @@ public class FPAsyncComponent {
 			parameters.put("mobile_no", mobile!=null?mobile:"NA");
 
 			// ====================Sending Mail to Maker who accepts Proposal=====================
-			String subject = "Intimation: Proposal Accepted - " + assignedMakerName + "-Application ID "
-					+ applicationRequest.getApplicationCode();
+			String subject = "Intimation: Proposal #Accepted=" + assignedMakerName + "#ApplicationId ="+ request.getApplicationId();
 
 			if (!CommonUtils.isObjectNullOrEmpty(assignedMaker)) {
 				if (!CommonUtils.isObjectNullOrEmpty(assignedMaker.getEmail())) {
 
 					String toIds = assignedMaker.getEmail();
 					logger.info("Email Sending TO MAKER when Maker accepts Proposal===to==>{}" + toIds);
-
+					parameters.put("isDynamic", true);
 					createNotificationForEmail(toIds, request.getUserId().toString(), parameters,
 							NotificationAlias.EMAIL_MAKER_ACCEPT_PROPOSAL_OF_FS, subject);
 				}
@@ -1751,7 +1752,7 @@ public class FPAsyncComponent {
 			// ====================Sending Mail to HO when Maker Assigns DDR to
 			// Checker=====================
 
-			String subject = "Intimation: Assigned DDR- Application ID " + request.getApplicationId();
+			String subject = "Intimation: Assigned DDR- #ApplicationId=" + request.getApplicationId();
 
 			UserResponse hoResponse = userClient.getUserDetailByOrgRoleBranchId(applicationRequest.getNpOrgId(),
 					com.capitaworld.service.users.utils.CommonUtils.UserRoles.HEAD_OFFICER, branchId);
@@ -2112,10 +2113,11 @@ public class FPAsyncComponent {
 
 				String toIds = assignedChecker.getEmail();
 				logger.info("Email Sending TO CHECKER on sendMailWhenMakerAssignDDRToChecker===to==>{}", toIds);
+				parameters.put("isDynamic", true);
 				// ====================== MAIL TO CHECKER ======================
 				createNotificationForEmail(toIds, request.getNpUserId().toString(), parameters,
 						NotificationAlias.EMAIL_CHECKER_MAKER_REASSIGN_TO_CHECKER, subjcet);
-
+				parameters.put("isDynamic", false);
 			}
 
 			if (!CommonUtils.isObjectNullOrEmpty(assignedChecker.getMobile())) {
@@ -3511,8 +3513,15 @@ public class FPAsyncComponent {
 	private void createNotificationForEmail(String toNo, String userId, Map<String, Object> mailParameters,
 			Long templateId, String emailSubject) throws NotificationException {
 		logger.info("Inside send notification===>{}" + toNo);
+		
 		NotificationRequest notificationRequest = new NotificationRequest();
 		notificationRequest.setClientRefId(userId);
+		try{
+			notificationRequest.setIsDynamic(((Boolean) mailParameters.get("isDynamic")).booleanValue());
+		}catch (Exception e) {
+			notificationRequest.setIsDynamic(false);
+		}
+		
 		String to[] = { toNo };
 		Notification notification = new Notification();
 		notification.setContentType(ContentType.TEMPLATE);
@@ -3522,6 +3531,8 @@ public class FPAsyncComponent {
 		notification.setType(NotificationType.EMAIL);
 		notification.setFrom(EMAIL_ADDRESS_FROM);
 		notification.setParameters(mailParameters);
+		notification.setIsDynamic(notificationRequest.getIsDynamic());
+		
 		notificationRequest.addNotification(notification);
 		sendEmail(notificationRequest);
 		logger.info("Outside send notification===>{}" + toNo);

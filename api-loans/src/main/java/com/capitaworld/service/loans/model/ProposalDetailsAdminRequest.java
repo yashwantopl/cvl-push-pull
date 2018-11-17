@@ -44,6 +44,7 @@ public class ProposalDetailsAdminRequest implements Serializable {
     private String premisesNo;
     private String contactPersonEmail;
     private Boolean isCampaignCustomer;
+    private String gstin;
     
     
     private Date toDate;
@@ -342,6 +343,14 @@ public class ProposalDetailsAdminRequest implements Serializable {
 
 	public void setIsCampaignCustomer(Boolean isCampaignCustomer) {
 		this.isCampaignCustomer = isCampaignCustomer;
+	}
+
+	public String getGstin() {
+		return gstin;
+	}
+
+	public void setGstin(String gstin) {
+		this.gstin = gstin;
 	}
 
 }
