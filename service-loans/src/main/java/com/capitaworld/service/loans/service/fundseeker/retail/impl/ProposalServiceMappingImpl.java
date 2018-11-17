@@ -1821,6 +1821,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
     		proposal.setFpProductId(CommonUtils.convertLong(obj[23]));
     		proposal.setContactPersonEmail(CommonUtils.convertString(obj[24]));
     		proposal.setIsCampaignCustomer(CommonUtils.convertLong(obj[25]) > 0);
+    		proposal.setGstin(CommonUtils.convertString(obj[26]));
     		
     		responseList.add(proposal);
     	}

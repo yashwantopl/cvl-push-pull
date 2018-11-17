@@ -737,6 +737,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 				nhbsApplicationsResponse.setApplicationId(loanApplicationMaster.getId());
 				nhbsApplicationsResponse.setApplicationType(loanApplicationMaster.getProductId());
 				nhbsApplicationsResponse.setBusinessTypeId(loanApplicationMaster.getBusinessTypeId());
+				nhbsApplicationsResponse.setApplicationCode(loanApplicationMaster.getApplicationCode());
 				if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getNpUserId())){
 					UsersRequest usersRequest = new UsersRequest();
 					usersRequest.setId(loanApplicationMaster.getNpUserId());

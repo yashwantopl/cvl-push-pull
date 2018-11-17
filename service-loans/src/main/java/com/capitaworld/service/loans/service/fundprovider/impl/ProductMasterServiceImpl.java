@@ -362,7 +362,10 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 					
 				}
 				// productMaster.setJobId(null);
-				jobId = Long.valueOf(workflowResponse.getData().toString());
+				if(workflowResponse != null){
+					jobId = workflowResponse.getData() != null ? Long.valueOf(workflowResponse.getData().toString()) : null;
+				}
+				
 				productMaster.setJobId(jobId);
 
 				productMaster.setProductId(addProductRequest.getProductId());
@@ -924,7 +927,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				 * ())); } } }
 				 */
 				for (ProductMasterTemp productMaster : results) {
-					System.out.println("is copied is" + productMaster.getIsCopied());
+					//System.out.println("ProductMasterTemp id: "+productMaster.getId()+" jobid : " + productMaster.getActiveInactiveJobId());
 					ProductMasterRequest productMasterRequest = new ProductMasterRequest();
 					BeanUtils.copyProperties(productMaster, productMasterRequest);
 					productMasterRequests.add(productMasterRequest);
@@ -976,6 +979,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				 */
 			}
 			for (ProductMaster productMaster : results) {
+				//System.out.println("ProductMaster is copied is" + productMaster.getActiveInactiveJobId());
 				ProductMasterRequest productMasterRequest = new ProductMasterRequest();
 				BeanUtils.copyProperties(productMaster, productMasterRequest);
 				productMasterRequests.add(productMasterRequest);
@@ -1478,6 +1482,92 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 		}
 		
 		return productMasterRequests;
+	}
+
+	@Override
+	public Long createJobId(Long userId) {
+		
+		WorkflowResponse workflowResponse = workflowClient.createJobForMasters(
+				WorkflowUtils.Workflow.MASTER_DATA_APPROVAL_PROCESS, WorkflowUtils.Action.SEND_FOR_APPROVAL, userId);
+		Long jobId = workflowResponse != null ? Long.valueOf(workflowResponse.getData().toString()) : null;
+		
+		return jobId;
+	}
+
+	@Override
+	public Boolean changeStatusWithWorkFlow(WorkflowData workflowData) {
+		try {
+
+			WorkflowRequest request = new WorkflowRequest();
+			request.setActionId(workflowData.getActionId());
+			request.setCurrentStep(workflowData.getWorkflowStep());
+			request.setToStep(workflowData.getNextworkflowStep());
+			request.setJobId(workflowData.getJobId());
+			request.setUserId(workflowData.getUserId());
+			
+			ProductMasterTemp productMasterTemp = null;
+			ProductMaster productMaster = null;
+			Boolean status = null;
+			
+			if(workflowData.getStage() == 2) {
+				productMaster = productMasterRepository.findOne(workflowData.getFpProductId());
+			}else {
+				productMasterTemp = productMasterTempRepository.findOne(workflowData.getFpProductId());
+			}
+			
+			WorkflowResponse workflowResponse = workflowClient.updateJob(request);
+			
+			if (workflowData.getActionId() == WorkflowUtils.Action.SEND_FOR_APPROVAL && workflowResponse != null) {
+//				System.out.println("fp_product_id : "+workflowData.getFpProductId()+" stage :"+workflowData.getStage()+" send for approval :" + workflowData.getJobId());
+				
+				if(workflowData.getActionFor() == null) {
+					return false;
+				}
+				
+				if (workflowData.getStage() == 2) {
+					productMaster.setActiveInactiveJobId(workflowData.getJobId());
+					productMaster.setActionFor(workflowData.getActionFor());
+					productMasterRepository.save(productMaster);
+				} else {
+					productMasterTemp.setActiveInactiveJobId(workflowData.getJobId());
+					productMasterTemp.setActionFor(workflowData.getActionFor());
+					productMasterTempRepository.save(productMasterTemp);
+				}
+				
+				return true;
+				
+			} else if (workflowData.getActionId() == WorkflowUtils.Action.APPROVED  && workflowResponse != null) {
+								
+				if (workflowData.getStage() == 2) {
+					if(productMaster.getActionFor() == null) {
+						return false;
+					}
+					status = productMaster.getActionFor().equals("Active") ? true : false;
+					productMasterRepository.changeStatusAndActiveInactiveJobId(workflowData.getUserId(), workflowData.getFpProductId(), status);
+				} else {
+					if(productMasterTemp.getActionFor() == null) {
+						return false;
+					}
+					status = productMasterTemp.getActionFor().equals("Active") ? true : false;
+					productMasterTempRepository.changeStatusAndActiveInactiveJobId(workflowData.getUserId(), workflowData.getFpProductId(), status);
+				}
+				return true;
+				
+			} else if (workflowData.getActionId() == WorkflowUtils.Action.SEND_BACK  && workflowResponse != null) {
+				if (workflowData.getStage() == 2) {
+					productMaster.setActiveInactiveJobId(null);
+					productMasterRepository.save(productMaster);
+				} else {
+					productMasterTemp.setActiveInactiveJobId(null);
+					productMasterTempRepository.save(productMasterTemp);
+				}
+				return true;
+			}
+			return false;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
 	}
 
 }
