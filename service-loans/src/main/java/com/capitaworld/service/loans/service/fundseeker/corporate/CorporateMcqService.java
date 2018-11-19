@@ -6,5 +6,7 @@ public interface CorporateMcqService {
 
     public boolean saveOrUpdate(CorporateMcqRequest termLoanRequest, Long userId) throws Exception;
 
-    public CorporateMcqRequest get(Long userId, Long applicationId) throws Exception;
+    //public CorporateMcqRequest get(Long userId, Long applicationId) throws Exception;
+
+    public CorporateMcqRequest get(Long proposalId) throws Exception;
 }

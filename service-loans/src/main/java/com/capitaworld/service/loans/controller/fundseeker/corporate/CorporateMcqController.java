@@ -31,47 +31,36 @@ public class CorporateMcqController {
     }*/
 
     @RequestMapping(value = "/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LoansResponse> save(@RequestBody CorporateMcqRequest corporateMcqRequest,
-                                              HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId)
-            throws Exception {
+    public ResponseEntity<LoansResponse> save(@RequestBody CorporateMcqRequest corporateMcqRequest, HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) throws Exception {
         try {
             CommonDocumentUtils.startHook(logger, "save");
             // request must not be null
-
             Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-
             if (userId == null) {
                 logger.warn("userId can not be empty ==>" + corporateMcqRequest);
-                return new ResponseEntity<LoansResponse>(
-                        new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+                return new ResponseEntity<LoansResponse>(new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
             }
 
-            if (corporateMcqRequest.getApplicationId() == null) {
-                logger.warn("Application ID can not be empty ==>" + corporateMcqRequest.getId());
-                return new ResponseEntity<LoansResponse>(
-                        new LoansResponse("Application ID can not be empty.", HttpStatus.BAD_REQUEST.value()),
-                        HttpStatus.OK);
+            if (corporateMcqRequest.getProposalId() == null) {
+                logger.warn("Proposal ID can not be empty ==>" + corporateMcqRequest.getProposalId());
+                return new ResponseEntity<LoansResponse>(new LoansResponse("Proposal ID can not be empty.", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
             }
             if (CommonDocumentUtils.isThisClientApplication(request)) {
                 corporateMcqRequest.setClientId(clientId);
             }
             corporateMcqService.saveOrUpdate(corporateMcqRequest, userId);
             CommonDocumentUtils.endHook(logger, "save");
-            return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
-                    HttpStatus.OK);
+            return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()), HttpStatus.OK);
         } catch (Exception e) {
             logger.error("Error while saving final corporate mcq");
             e.printStackTrace();
-            return new ResponseEntity<LoansResponse>(
-                    new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
-                    HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
     }
 
-    @RequestMapping(value = "/get/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LoansResponse> get(@PathVariable("applicationId") Long applicationId,
-                                                  HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
+    @RequestMapping(value = "/get/{proposalId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LoansResponse> get(@PathVariable("proposalId") Long proposalId, HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
         try {
             try {
                 CommonDocumentUtils.startHook(logger, "get");
@@ -81,13 +70,11 @@ public class CorporateMcqController {
                 } else {
                     userId = (Long) request.getAttribute(CommonUtils.USER_ID);
                 }
-                if (userId == null || applicationId == null) {
-                    logger.warn("ID and ApplicationId Require to get Final  corporate mcq. ID==>" + userId
-                            + " and ApplicationId==>" + applicationId);
-                    return new ResponseEntity<LoansResponse>(
-                            new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+                if (userId == null || proposalId == null) {
+                    logger.warn("ID and ApplicationId Require to get Final  corporate mcq. ID==>" + userId + " and proposalId==>" + proposalId);
+                    return new ResponseEntity<LoansResponse>(new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
                 }
-                CorporateMcqRequest response = corporateMcqService.get(userId, applicationId);
+                CorporateMcqRequest response = corporateMcqService.get(proposalId);
                 LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
                 loansResponse.setData(response);
                 CommonDocumentUtils.endHook(logger, "get");
@@ -95,16 +82,12 @@ public class CorporateMcqController {
             } catch (Exception e) {
                 logger.error("Error while getting Final corporate mcq==>", e);
                 e.printStackTrace();
-                return new ResponseEntity<LoansResponse>(
-                        new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
-                        HttpStatus.OK);
+                return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
             }
         } catch (Exception e) {
             logger.error("Error while getting  final corporate mcq");
             e.printStackTrace();
-            return new ResponseEntity<LoansResponse>(
-                    new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
-                    HttpStatus.OK);
+            return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
         }
     }
 }
