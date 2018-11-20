@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -35,8 +36,7 @@ public class AchievementDetailServiceImpl implements AchievmentDetailsService {
 		CommonDocumentUtils.startHook(logger, "saveOrUpdate");
 		try {
 			for (Map<String, Object> obj : frameRequest.getDataList()) {
-				AchievementDetailRequest achievementDetailRequest = (AchievementDetailRequest) MultipleJSONObjectHelper
-						.getObjectFromMap(obj, AchievementDetailRequest.class);
+				AchievementDetailRequest achievementDetailRequest = MultipleJSONObjectHelper.getObjectFromMap(obj, AchievementDetailRequest.class);
 				AchievementDetail achievementDetail = new AchievementDetail();
 				BeanUtils.copyProperties(achievementDetailRequest, achievementDetail);
 				if (achievementDetailRequest.getId() == null) {
@@ -44,6 +44,7 @@ public class AchievementDetailServiceImpl implements AchievmentDetailsService {
 					achievementDetail.setCreatedDate(new Date());
 				}
 				achievementDetail.setApplicationId(new LoanApplicationMaster(frameRequest.getApplicationId()));
+				achievementDetail.setApplicationProposalMapping(new ApplicationProposalMapping(frameRequest.getProposalId()));
 				achievementDetail.setModifiedBy(frameRequest.getUserId());
 				achievementDetail.setModifiedDate(new Date());
 				achievementDetailsRepository.save(achievementDetail);
@@ -64,16 +65,15 @@ public class AchievementDetailServiceImpl implements AchievmentDetailsService {
 	public List<AchievementDetailRequest> getAchievementDetailList(Long applicationId, Long userId) throws Exception {
 		try {
 			CommonDocumentUtils.startHook(logger, "getAchievementDetailList");
-			List<AchievementDetail> achievementDetails = achievementDetailsRepository
-					.listAchievementFromAppId(applicationId,userId);
-			List<AchievementDetailRequest> achievementDetailRequests = new ArrayList<AchievementDetailRequest>(
-					achievementDetails.size());
+			List<AchievementDetail> achievementDetails = achievementDetailsRepository.listAchievementFromAppId(applicationId,userId);
+			List<AchievementDetailRequest> achievementDetailRequests = new ArrayList<>(achievementDetails.size());
 
 			for (AchievementDetail detail : achievementDetails) {
 				AchievementDetailRequest achievementDetailRequest = new AchievementDetailRequest();
 				BeanUtils.copyProperties(detail, achievementDetailRequest);
 				achievementDetailRequests.add(achievementDetailRequest);
 			}
+
 			CommonDocumentUtils.endHook(logger, "getAchievementDetailList");
 			return achievementDetailRequests;
 		} catch (Exception e) {
@@ -82,5 +82,26 @@ public class AchievementDetailServiceImpl implements AchievmentDetailsService {
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
+	/*multiple bank*/
+	@Override
+	public List<AchievementDetailRequest> getAchievementDetailListForMultipleBank(Long proposalId) throws Exception {
+		try {
+			CommonDocumentUtils.startHook(logger, "getAchievementDetailList");
+			List<AchievementDetail> achievementDetails = achievementDetailsRepository.listAchievementFromProposalId(proposalId);
+			List<AchievementDetailRequest> achievementDetailRequests = new ArrayList<>(achievementDetails.size());
 
+			for (AchievementDetail detail : achievementDetails) {
+				AchievementDetailRequest achievementDetailRequest = new AchievementDetailRequest();
+				BeanUtils.copyProperties(detail, achievementDetailRequest);
+				achievementDetailRequests.add(achievementDetailRequest);
+			}
+
+			CommonDocumentUtils.endHook(logger, "getAchievementDetailList");
+			return achievementDetailRequests;
+		} catch (Exception e) {
+			logger.error("Exception getting achievementDetail  :-");
+			e.printStackTrace();
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+	}
 }

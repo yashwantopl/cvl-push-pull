@@ -28,7 +28,8 @@ public class FrameRequest implements Serializable{
 	private List<String> campaignCodes;
 	
 	private Boolean isFromClient;
-	
+
+	private Long proposalId;
 
 	public int getApplicantType() {
 		return applicantType;
@@ -93,7 +94,12 @@ public class FrameRequest implements Serializable{
 	public void setIsFromClient(Boolean isFromClient) {
 		this.isFromClient = isFromClient;
 	}
-	
-	
 
+	public Long getProposalId() {
+		return proposalId;
+	}
+
+	public void setProposalId(Long proposalId) {
+		this.proposalId = proposalId;
+	}
 }
