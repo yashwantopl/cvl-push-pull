@@ -69,7 +69,9 @@ public interface LoanApplicationService {
 	public Boolean isProfileAndPrimaryDetailFilled(Long applicationId,Long userId) throws Exception;
 	
 	public Boolean isPrimaryLocked(Long applicationId, Long userId) throws Exception;
-	
+
+	public Boolean isPrimaryLockedByProposalId(Long proposalId, Long userId) throws Exception;
+
 	public Boolean isApplicationIdActive(Long applicationId) throws Exception;
 	
 	public Boolean isFinalDetailFilled(Long applicationId, Long userId) throws Exception;
@@ -84,7 +86,7 @@ public interface LoanApplicationService {
 	
 	public JSONObject isAllowToMoveAhead(Long applicationId, Long userId, Integer nextTabType,Long coAppllicantOrGuarantorId) throws Exception;
 	
-	public boolean hasAlreadyApplied(Long userId, Long applicationId, Integer productId);
+	public boolean hasAlreadyApplied(Long userId, Long applicationId,Integer productId,  Long proposalMappingId);
 	
 	public JSONObject getBowlCount(Long applicationId, Long userId);
 	

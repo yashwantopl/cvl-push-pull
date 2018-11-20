@@ -22,10 +22,12 @@ import com.capitaworld.service.gateway.model.GatewayResponse;
 import com.capitaworld.service.gateway.model.PaymentTypeRequest;
 import com.capitaworld.service.loans.config.FPAsyncComponent;
 import com.capitaworld.service.loans.domain.fundprovider.FpNpMapping;
+import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
 import com.capitaworld.service.loans.model.FpNpMappingRequest;
 import com.capitaworld.service.loans.repository.fundprovider.FpNpMappingRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
 import com.capitaworld.service.loans.service.fundprovider.FpNpMappingService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
@@ -83,6 +85,9 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 	
 	@Autowired
 	private LoanApplicationRepository loanApplicationRepository;
+
+	@Autowired
+	private ApplicationProposalMappingRepository  applicationProposalMappingRepository;
 	
 	@Autowired
 	private CorporateApplicantDetailRepository corpApplicantRepository;
@@ -1403,7 +1408,8 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 	@Override
 	public boolean setFPMaker(NhbsApplicationRequest request) {
 		logger.info("entry in setFPMaker()");
-		LoanApplicationMaster applicationMaster = loanApplicationRepository.findOne(request.getApplicationId());
+		//LoanApplicationMaster applicationMaster = loanApplicationRepository.findOne(request.getApplicationId());
+		ApplicationProposalMapping  applicationMaster = applicationProposalMappingRepository.findOne(request.getFpProductId());
 		if(!CommonUtils.isObjectNullOrEmpty(applicationMaster)){
 			ApplicationStatusMaster applicationStatusMaster = new ApplicationStatusMaster();
 			applicationStatusMaster.setId(CommonUtils.ApplicationStatus.ASSIGNED);
@@ -1412,11 +1418,11 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 			applicationMaster.setNpAssigneeId(request.getUserId());
 			applicationMaster.setModifiedBy(request.getUserId());
 			applicationMaster.setModifiedDate(new Date());
-			loanApplicationRepository.save(applicationMaster);
+			applicationProposalMappingRepository.save(applicationMaster);
 
 			try {
 				WorkflowRequest workflowRequest = new WorkflowRequest();
-				workflowRequest.setApplicationId(applicationMaster.getId());
+				workflowRequest.setApplicationId(applicationMaster.getApplicationId());
 				workflowRequest.setUserId(request.getUserId());
 				workflowRequest.setActionId(WorkflowUtils.Action.ASSIGN_TO_MAKER_ON_SAVE);
 				workflowRequest.setWorkflowId(WorkflowUtils.Workflow.DDR);
@@ -1425,10 +1431,10 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 						|| workflowResponse.getStatus() != HttpStatus.OK.value()) {
 					logger.error(
 							"Something goes wrong with Creating Process when Generating Matches for Application Id===>{} ===>>{}",
-							applicationMaster.getId(), request.getUserId());
+							applicationMaster.getApplicationId(), request.getUserId());
 				} else {
 					logger.info("Status of Creating Proess for Application Id===>{} ===>>{}",
-							applicationMaster.getId(), request.getUserId());
+							applicationMaster.getApplicationId(), request.getUserId());
 				}
 
 			} catch (Exception e) {

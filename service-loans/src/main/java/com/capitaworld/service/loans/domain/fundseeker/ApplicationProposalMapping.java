@@ -12,27 +12,22 @@ public class ApplicationProposalMapping implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "proposal_id")
+    @Column(name = "proposal_mapping_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long proposalId;
 
-    @Id
     @Column(name = "application_id")
     private Long applicationId;
 
-    @Id
     @Column(name = "org_id")
     private Long orgId;
 
-    @Id
     @Column(name = "fp_maker_id")
     private Long fpMakerId;
 
-    @Id
     @Column(name = "np_user_id")
     private Long npUserId;
 
-    @Id
     @Column(name = "np_assignee_id")
     private Long npAssigneeId;
 
@@ -53,6 +48,10 @@ public class ApplicationProposalMapping implements Serializable {
 
     @Column(name = "is_active")
     private Boolean isActive = true;
+
+    @ManyToOne
+    @JoinColumn(name = "status")
+    private ApplicationStatusMaster applicationStatusMaster;
 
     public Long getProposalId() {
         return proposalId;
@@ -140,5 +139,13 @@ public class ApplicationProposalMapping implements Serializable {
 
     public void setIsActive(Boolean active) {
         isActive = active;
+    }
+
+    public ApplicationStatusMaster getApplicationStatusMaster() {
+        return applicationStatusMaster;
+    }
+
+    public void setApplicationStatusMaster(ApplicationStatusMaster applicationStatusMaster) {
+        this.applicationStatusMaster = applicationStatusMaster;
     }
 }

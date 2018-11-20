@@ -22,6 +22,7 @@ import org.apache.commons.lang.StringEscapeUtils;
 public class CommonUtils {
 
 	public static final String USER_ID = "userId";
+	public static final String PROPOSAL_MAPPING_ID = "proposalMappingId";
 	public static final String USER_TYPE = "userType";
 	public static final String USER_ORG_ID = "userOrgId";
 	public static final int USER_TYPE_SERVICEPROVIDER = 3;

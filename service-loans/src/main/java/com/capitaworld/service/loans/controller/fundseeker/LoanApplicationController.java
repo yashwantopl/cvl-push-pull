@@ -747,7 +747,7 @@ public class LoanApplicationController {
 						HttpStatus.OK);
 			}
 			JSONObject json = new JSONObject();
-			json.put("isPrimaryLock", loanApplicationService.isPrimaryLocked(applicationId, userId));
+			json.put("isPrimaryLock", loanApplicationService.isPrimaryLockedByProposalId(applicationId, userId));
 			json.put("isFinalLock", loanApplicationService.isFinalLocked(applicationId, userId));
 			LoansResponse loansResponse = new LoansResponse("Success Result", HttpStatus.OK.value());
 			loansResponse.setData(json);
@@ -1241,6 +1241,7 @@ public class LoanApplicationController {
 			JSONObject json = new JSONObject();
 			CommonDocumentUtils.startHook(logger, "createLoanFromCampaign");
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			Long proposalMappingId = (Long) request.getAttribute(CommonUtils.PROPOSAL_MAPPING_ID);
 			LoansResponse loansResponse = new LoansResponse("Success", HttpStatus.OK.value());
 			Long finalUserId = CommonUtils.isObjectNullOrEmpty(clientId) ? userId : clientId;
 			for (String campaignCode : campaignCodes) {
@@ -1255,7 +1256,7 @@ public class LoanApplicationController {
 						json.put("id", request2.getId());
 						json.put("productId", request2.getProductId());
 						json.put("hasAlreadyApplied", loanApplicationService.hasAlreadyApplied(finalUserId,
-								request2.getId(), request2.getProductId()));
+								request2.getId(), request2.getProductId(),request2.getProposalMappingId()));
 						json.put("isNew", true);
 					}
 				}
@@ -1270,7 +1271,7 @@ public class LoanApplicationController {
 					json.put("id", response.getId());
 					json.put("productId", productId);
 					json.put("hasAlreadyApplied",
-							loanApplicationService.hasAlreadyApplied(finalUserId, response.getId(), productId));
+							loanApplicationService.hasAlreadyApplied(finalUserId, response.getId(), productId,proposalMappingId));
 					json.put("isNew", false);
 				}
 			}

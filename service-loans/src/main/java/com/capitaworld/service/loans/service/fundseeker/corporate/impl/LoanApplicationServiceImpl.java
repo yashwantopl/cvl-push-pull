@@ -856,7 +856,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				return applicationRequest;
 			}
 			applicationRequest.setHasAlreadyApplied(
-					hasAlreadyApplied(userId, applicationMaster.getId(), applicationMaster.getProductId()));
+					hasAlreadyApplied(userId, applicationMaster.getId(), applicationMaster.getProductId(),applicationMaster.getProposalMappingId()));
 
 			int userMainType = CommonUtils.getUserMainType(applicationMaster.getProductId());
 			if (userMainType == CommonUtils.UserMainType.CORPORATE) {
@@ -952,7 +952,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					requests.add(request);
 					continue;
 				}
-				request.setHasAlreadyApplied(hasAlreadyApplied(userId, master.getId(), master.getProductId()));
+				request.setHasAlreadyApplied(hasAlreadyApplied(userId, master.getId(), master.getProductId(),master.getProposalMappingId()));
 				int userMainType = CommonUtils.getUserMainType(master.getProductId());
 				if (userMainType == CommonUtils.UserMainType.CORPORATE) {
 					request.setLoanTypeMain(CommonUtils.CORPORATE);
@@ -1378,11 +1378,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 
 	@Override
-	public boolean hasAlreadyApplied(Long userId, Long applicationId, Integer productId) {
+	public boolean hasAlreadyApplied(Long userId, Long applicationId,Integer productId, Long proposalMappingId) {
 		if (CommonUtils.UserMainType.CORPORATE == CommonUtils.getUserMainType(productId)) {
-			return (corporateApplicantDetailRepository.hasAlreadyApplied(userId, applicationId) > 0 ? true : false);
+			return (corporateApplicantDetailRepository.hasAlreadyApplied(userId,proposalMappingId) > 0 ? true : false);
 		} else {
-			return (retailApplicantDetailRepository.hasAlreadyApplied(userId, applicationId) > 0 ? true : false);
+			return (retailApplicantDetailRepository.hasAlreadyApplied(userId, proposalMappingId) > 0 ? true : false);
 		}
 	}
 
@@ -1487,6 +1487,18 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Override
 	public Boolean isPrimaryLocked(Long applicationId, Long userId) throws Exception {
+		try {
+			Long count = loanApplicationRepository.checkPrimaryDetailIsLocked(applicationId);
+			return (count != null ? count > 0 : false);
+		} catch (Exception e) {
+			logger.error("Error while getting isPrimaryLocked ?");
+			e.printStackTrace();
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+	}
+
+	@Override
+	public Boolean isPrimaryLockedByProposalId(Long proposalId, Long userId) throws Exception {
 		try {
 			Long count = loanApplicationRepository.checkPrimaryDetailIsLocked(applicationId);
 			return (count != null ? count > 0 : false);
