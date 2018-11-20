@@ -42,7 +42,7 @@ public class GenerateTokenRequest implements Serializable{
 
 	@Override
 	public String toString() {
-		return "GenerateTokenRequest [applicationId=" + applicationId + ", password=" + password + ", token=" + token
+		return "GenerateTokenRequest [applicationId=" + applicationId + ", token=" + token
 				+ "]";
 	}
 	
