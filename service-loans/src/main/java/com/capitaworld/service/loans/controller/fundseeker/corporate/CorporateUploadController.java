@@ -103,6 +103,34 @@ public class CorporateUploadController {
 		}
 	}
 
+	@RequestMapping(value = "/profile/get/{applicationId}/proposalMappingId/{mappingId}/{userType}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getProfileImage(@PathVariable("applicationId") Long applicationId,
+														 @PathVariable("proposalMappingId") Long proposalMappingId,
+														 @PathVariable("mappingId") Long mappingId,
+														 @PathVariable("userType") String userType,
+														 HttpServletRequest request) {
+		try {
+			CommonDocumentUtils.startHook(logger, "getProfileImage");
+			if (CommonUtils.isObjectNullOrEmpty(applicationId) || CommonUtils.isObjectNullOrEmpty(mappingId)) {
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+
+			DocumentResponse profilePic = corporateUploadService.getProfilePic(applicationId, mappingId, userType);
+			LoansResponse loansResponse = new LoansResponse(profilePic.getMessage(), HttpStatus.OK.value());
+			loansResponse.setData(profilePic);
+			CommonDocumentUtils.endHook(logger, "getProfileImage");
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error while Getting Profile Images==>" + e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
 	@RequestMapping(value = "/profile/get/{applicationId}/{mappingId}/{userType}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getProfileImage(@PathVariable("applicationId") Long applicationId,
 			@PathVariable("mappingId") Long mappingId, @PathVariable("userType") String userType,

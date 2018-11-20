@@ -49,6 +49,12 @@ public class ApplicationProposalMapping implements Serializable {
     @Column(name = "is_active")
     private Boolean isActive = true;
 
+    @Column(name = "isFinalLocked")
+    private Boolean isFinalLocked = true;
+
+    @Column(name = "isPrimaryLocked")
+    private Boolean isPrimaryLocked = true;
+
     @ManyToOne
     @JoinColumn(name = "status")
     private ApplicationStatusMaster applicationStatusMaster;
@@ -147,5 +153,21 @@ public class ApplicationProposalMapping implements Serializable {
 
     public void setApplicationStatusMaster(ApplicationStatusMaster applicationStatusMaster) {
         this.applicationStatusMaster = applicationStatusMaster;
+    }
+
+    public Boolean getIsFinalLocked() {
+        return isFinalLocked;
+    }
+
+    public void setIsFinalLocked(Boolean finalLocked) {
+        isFinalLocked = finalLocked;
+    }
+
+    public Boolean getIsPrimaryLocked() {
+        return isPrimaryLocked;
+    }
+
+    public void setIsPrimaryLocked(Boolean primaryLocked) {
+        isPrimaryLocked = primaryLocked;
     }
 }
