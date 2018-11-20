@@ -77,7 +77,9 @@ public interface LoanApplicationService {
 	public Boolean isFinalDetailFilled(Long applicationId, Long userId) throws Exception;
 	
 	public Boolean isFinalLocked(Long applicationId, Long userId) throws Exception;
-	
+
+	public Boolean isFinalLockedByProposalId(Long proposalId, Long userId) throws Exception;
+
 	public JSONObject getSelfViewAndPrimaryLocked(Long applicationId, Long userId) throws Exception;
 	
 	public Integer getCurrencyId(Long applicationId, Long userId) throws Exception;
