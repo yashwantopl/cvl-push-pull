@@ -30,8 +30,8 @@ public interface RetailApplicantDetailRepository extends JpaRepository<RetailApp
 	
 	public RetailApplicantDetail findOneByApplicationIdIdAndIsActive(Long applicationId,Boolean isActive);
 	
-	@Query("select count(rt.applicationId.id) from RetailApplicantDetail rt where rt.applicationId.id =:applicationId and rt.applicationId.userId =:userId and rt.isActive = true and (rt.firstName != NULL and rt.firstName != '') ")
+	@Query("select count(rt.applicationProposalMapping.proposalId) from RetailApplicantDetail rt where rt.applicationProposalMapping.proposalId =:proposalMappingId and rt.applicationId.userId =:userId and rt.isActive = true and (rt.firstName != NULL and rt.firstName != '') ")
 	public Long hasAlreadyApplied(@Param("userId") Long userId,
-			@Param("applicationId") Long applicationId);
+			@Param("proposalMappingId") Long proposalMappingId);
 
 }

@@ -14,6 +14,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 
 /**
@@ -32,6 +33,10 @@ public class RetailApplicantDetail implements Serializable {
 	@OneToOne
 	@JoinColumn(name = "application_id")
 	private LoanApplicationMaster applicationId;
+
+	@OneToOne
+	@JoinColumn(name = "proposal_mapping_id")
+	private ApplicationProposalMapping applicationProposalMapping;
 
 	@Column(name = "aadhar_number")
 	private String aadharNumber;
@@ -1764,5 +1769,13 @@ public class RetailApplicantDetail implements Serializable {
 
 	public void setDdoOrganizationType(Integer ddoOrganizationType) {
 		this.ddoOrganizationType = ddoOrganizationType;
+	}
+
+	public ApplicationProposalMapping getApplicationProposalMapping() {
+		return applicationProposalMapping;
+	}
+
+	public void setApplicationProposalMapping(ApplicationProposalMapping applicationProposalMapping) {
+		this.applicationProposalMapping = applicationProposalMapping;
 	}
 }

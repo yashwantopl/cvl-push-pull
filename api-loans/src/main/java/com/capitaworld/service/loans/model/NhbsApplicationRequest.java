@@ -10,7 +10,7 @@ public class NhbsApplicationRequest implements Serializable{
 	private static final long serialVersionUID = 1L;
 
 	private Long applicationStatusId;
-	
+
 	private Long userId;
 	
 	private Long userRoleId;
@@ -20,7 +20,9 @@ public class NhbsApplicationRequest implements Serializable{
 	private Long assignedUserId;
 	
 	private Long applicationId;
-	
+
+	private Long proposalMappingId;
+
 	private Long ddrStatusId;
 
 	private int pageIndex;
@@ -129,4 +131,12 @@ public class NhbsApplicationRequest implements Serializable{
 	public void setNpUserId(Long npUserId) {
 		this.npUserId = npUserId;
 	}
+
+    public Long getProposalMappingId() {
+        return proposalMappingId;
+    }
+
+    public void setProposalMappingId(Long proposalMappingId) {
+        this.proposalMappingId = proposalMappingId;
+    }
 }
