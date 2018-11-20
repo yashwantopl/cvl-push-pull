@@ -49,15 +49,18 @@ public class ApplicationProposalMapping implements Serializable {
     @Column(name = "is_active")
     private Boolean isActive = true;
 
-    @Column(name = "isFinalLocked")
+    @Column(name = "is_final_locked")
     private Boolean isFinalLocked = true;
 
-    @Column(name = "isPrimaryLocked")
+    @Column(name = "is_primary_locked")
     private Boolean isPrimaryLocked = true;
 
     @ManyToOne
     @JoinColumn(name = "status")
     private ApplicationStatusMaster applicationStatusMaster;
+
+    @Column(name = "loan_amount")
+    private Long loanAmount;
 
     public Long getProposalId() {
         return proposalId;
@@ -169,5 +172,13 @@ public class ApplicationProposalMapping implements Serializable {
 
     public void setIsPrimaryLocked(Boolean primaryLocked) {
         isPrimaryLocked = primaryLocked;
+    }
+
+    public Long getLoanAmount() {
+        return loanAmount;
+    }
+
+    public void setLoanAmount(Long loanAmount) {
+        this.loanAmount = loanAmount;
     }
 }
