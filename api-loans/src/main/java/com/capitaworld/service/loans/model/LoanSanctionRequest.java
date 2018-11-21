@@ -251,7 +251,7 @@ public class LoanSanctionRequest extends AuditActivityRequest implements Seriali
 				+ ", transactionNo=" + transactionNo + ", roi=" + roi + ", sanctionDate=" + sanctionDate + ", branch="
 				+ branch + ", applicationId=" + applicationId + ", referenceNo=" + referenceNo + ", tenure=" + tenure
 				+ ", sanctionAuthority=" + sanctionAuthority + ", remark=" + remark + ", userName=" + userName
-				+ ", password=" + password + ", actionBy=" + actionBy + ", processingFee=" + processingFee + ", orgId="
+				+ ", actionBy=" + actionBy + ", processingFee=" + processingFee + ", orgId="
 				+ orgId + ", proposalId=" + proposalId + ", proposalStatusId=" + proposalStatusId + ", isSaved="
 				+ isSaved + ", reason=" + reason + ", statusCode=" + statusCode + ", isIneligibleProposal="
 				+ isIneligibleProposal + ", isSanctionedFrom=" + isSanctionedFrom + "]";
