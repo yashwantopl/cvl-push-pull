@@ -698,9 +698,9 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 					logger.info("SOME of Values from  LoanSanctionAndDisbursedRequest while saveLoanSanctionDisbursementDetailFromBank() ----------------> LoanDisbursementRequest"+ loanSanctionAndDisbursedRequest.getLoanSanctionRequest());
 					loansResponse = new LoansResponse("Mandatory Fields Must Not be Null",HttpStatus.BAD_REQUEST.value(), HttpStatus.OK);
 					loansResponse.setData(false);
-					sanctionReason = "Mandatory Fields Must Not be Null while saveLoanSanctionDisbursementDetailFromBank() ===> LoanDisbursementRequest ====> "+ loanSanctionAndDisbursedRequest.getLoanSanctionRequest();
+					sanctionReason = "Mandatory Fields Must Not be Null while saveLoanSanctionDisbursementDetailFromBank() ";
 					loanSanctionAndDisbursedRequest.getLoanSanctionRequest().setStatusCode(CommonUtility.SanctionDisbursementAPIStatusCode.MANDAROTY_FIELD_MUST_NOT_BE_NULL);
-					loanSanctionAndDisbursedRequest.getLoanSanctionRequest().setReason(sanctionReason);
+					loanSanctionAndDisbursedRequest.getLoanSanctionRequest().setReason("Mandatory Fields Must Not be Null while save loan sanction details");
 					loanSanctionAndDisbursedRequest.getLoanSanctionRequest().setIsSaved(false);
 					reason = sanctionReason ; 
 					//return sanctionReason;
