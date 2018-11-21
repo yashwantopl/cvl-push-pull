@@ -239,7 +239,7 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 					if(saveLoanDisbursementDetail(loanDisbursementRequest)) {
 						logger.info("Success msg while saveLoanDisbursementDetail() ----------------> msg " + loanDisbursementRequest.getReason()) ;
 					}
-				}else if(saveLoanDisbursementDetailbyId(loanDisbursementRequest)) {
+				}else if(saveLoanDisbursementDetailbyId(orgId , loanDisbursementRequest)) {
 					if("SUCCESS".equalsIgnoreCase(loanDisbursementRequest.getReason())){
 						try {
 							rowUpdated = proposalDetailsRepository.updateSanctionStatus(11l, loanDisbursementRequest.getApplicationId());
@@ -263,7 +263,7 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 	}
 	//its save , disbursement request by there primary key 'id' and isSavedFromBank
 	@Override
-	public Boolean saveLoanDisbursementDetailbyId(LoanDisbursementRequest loanDisbursementRequest ) throws IOException {
+	public Boolean saveLoanDisbursementDetailbyId(Long orgId , LoanDisbursementRequest loanDisbursementRequest ) throws IOException {
 		logger.info("Enter in saveLoanDisbursementDetail() ----------------------->  LoanDisbursementRequest "+ loanDisbursementRequest);
 		try { 
 			LoanDisbursementDomain loanDisbursementDomain =  loanDisbursementRepository.findByBankDisbursementPrimaryKeyAndApplicationIdAndIsActive(loanDisbursementRequest.getId() , loanDisbursementRequest.getApplicationId() ,    true);
@@ -274,7 +274,8 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 				loanDisbursementDomain.setCreatedDate(new Date());
 				BeanUtils.copyProperties(loanDisbursementRequest, loanDisbursementDomain , "id","createdBy" , "createdDate" , "isActive" , "modifiedBy" , "modifiedDate");
 				loanDisbursementDomain.setBankDisbursementPrimaryKey(loanDisbursementRequest.getId());
-				
+				loanDisbursementDomain.setApplicationId(loanDisbursementRequest.getApplicationId());
+				loanDisbursementDomain.setOrgId(orgId);
 				return loanDisbursementRepository.save(loanDisbursementDomain) != null;
 			}/*else {
 				loanDisbursementDomain.setModifiedBy(loanDisbursementRequest.getActionBy());
