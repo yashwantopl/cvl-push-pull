@@ -46,7 +46,7 @@ public class LoanSanctionDomain implements Serializable {
 	private Long applicationId;
 
 	@Column(name = "reference_no")
-	private Long referenceNo;
+	private String referenceNo;
 
 	private Double tenure;
 
@@ -151,11 +151,11 @@ public class LoanSanctionDomain implements Serializable {
 		this.applicationId = applicationId;
 	}
 
-	public Long getReferenceNo() {
+	public String getReferenceNo() {
 		return referenceNo;
 	}
 
-	public void setReferenceNo(Long referenceNo) {
+	public void setReferenceNo(String referenceNo) {
 		this.referenceNo = referenceNo;
 	}
 
