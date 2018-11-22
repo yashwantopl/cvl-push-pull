@@ -25,7 +25,8 @@ public interface LiabilitiesDetailsRepository  extends JpaRepository<Liabilities
 	@Query("from LiabilitiesDetails l where l.fsLoanApplicationMaster.id = :appId and l.year = :yr and l.isActive = true")
 	public LiabilitiesDetails getLiabilitiesDetails(@Param("appId") Long applicationId, @Param("yr") String year);
 	
-	@Query("select o from LiabilitiesDetails o where o.fsLoanApplicationMaster.id = :applicationId and o.isActive = true")
+	//@Query("select o from LiabilitiesDetails o where o.fsLoanApplicationMaster.id = :applicationId and o.isActive = true")   fs_corporate_cma_liabilities_details
+	@Query(value=" SELECT * FROM ( SELECT * FROM fs_corporate_cma_liabilities_details o WHERE o.application_id = :applicationId  AND o.financial_yearly_statement = 'Audited'  AND o.is_active = TRUE ORDER BY o.year DESC LIMIT 3 ) AS t ORDER BY t.year " , nativeQuery = true )
 	public List<LiabilitiesDetails> getByApplicationId(@Param("applicationId") Long applicationId);
 	
 	public LiabilitiesDetails findByIdAndIsActive(Long id, Boolean isActive);

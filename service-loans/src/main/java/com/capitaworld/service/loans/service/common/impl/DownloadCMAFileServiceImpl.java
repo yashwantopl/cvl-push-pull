@@ -230,11 +230,11 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 				sheet1.getRow(81).getCell(j).setCellValue(evaluateCellValue(sheet1.getRow(81).getCell(j)));
 				sheet1.getRow(83).getCell(j).setCellValue(evaluateCellValue(sheet1.getRow(83).getCell(j)));
 				sheet1.getRow(85).getCell(j).setCellValue(evaluateCellValue(sheet1.getRow(85).getCell(j)));
-				j++;
+				++j;
                 
 			}
 			//Hide rows dynamically as per tenure in operating statement.
-			int k = 1;
+			/*int k = 1;
 			for(;j<=24;j++) {
 				if(k<=tenure) {
 	
@@ -243,15 +243,15 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 					 sheet1.setColumnHidden(j,true);
 				}
 				k++;
-			}
+			}*/
 			// Operating Stmt. ends              
-			setyear(sheet1, temp, operatingStatementDetailsList.size() , total_Column, true , businessTypeId);
+			setyear(sheet1, temp, j , tenure, true , businessTypeId);
 			
 			
 			// Liabilities Starts
 			List<LiabilitiesDetails> liabilitiesDetailsList = liabilitiesDetailsRepository
 					.getByApplicationId(applicationId);
-			j = 1;
+			j = 1 ;
 			for (LiabilitiesDetails liabilitiesDetails : liabilitiesDetailsList) {
 				// save in db
                   temp=Double.parseDouble(liabilitiesDetails.getYear());
@@ -326,11 +326,11 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 				sheet2.getRow(84).getCell(j).setCellValue(evaluateCellValue(sheet2.getRow(84).getCell(j)));
 				sheet2.getRow(86).getCell(j).setCellValue(evaluateCellValue(sheet2.getRow(86).getCell(j)));
 				
-				j++;
+				++j;
 
 			}
 			//Hide rows dynamically as per tenure in liabilities.
-			int o = 1;
+			/*int o = 1;
 			for(;j<=24;j++) {
 				if(o<=tenure) {
 				}
@@ -338,9 +338,9 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 					 sheet2.setColumnHidden(j,true);
 				}
 				o++;
-			}
+			}*/
 			// Liabilities Ends
-			setyear(sheet2, temp, liabilitiesDetailsList.size(),total_Column, true , businessTypeId);
+			setyear(sheet2, temp, j ,total_Column, true , businessTypeId);
 
 			
 			
@@ -460,11 +460,11 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 				sheet3.getRow(96).getCell(j).setCellValue(evaluateCellValue(sheet3.getRow(96).getCell(j)));
 				sheet3.getRow(98).getCell(j).setCellValue(evaluateCellValue(sheet3.getRow(98).getCell(j)));
 				
-				j++;
+				++j;
 
 			}
 			//Hide rows dynamically as per tenure in asset.
-			int p = 1;
+			/*int p = 1;
 			for(;j<=24;j++) {
 				if(p<=tenure) {
 				}
@@ -472,9 +472,9 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 					 sheet3.setColumnHidden(j,true);
 				}
 				p++;
-			}
+			}*/
 			// Asset Ends
-			setyear(sheet3, temp, assetsDetailsList.size(),total_Column, true, businessTypeId);
+			setyear(sheet3, temp, j ,total_Column, true, businessTypeId);
 			//documentResponse =fileUpload(wb, applicationId, productDocumentMappingId);
 			logger.info("Exit with cmaFileGenerator() {} ", documentResponse);
 
@@ -875,28 +875,28 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 
 	}
 	
-	private void setyear(Sheet sheet , Double temp ,int j, Double total_Column, Boolean flag  , Integer businessTypeId) {
-		Calendar  calendar =Calendar.getInstance();
- 		Double tillYear =(double)calendar.get(Calendar.YEAR);
- 		Double totalYear = 0.0;
- 		if(temp.doubleValue() == tillYear && total_Column == 0.0 ) {
+	private void setyear(Sheet sheet, Double temp, int j,  Double tenure, Boolean flag, Integer businessTypeId) {
+		/*Calendar  calendar =Calendar.getInstance();
+ 		Double tillYear =(double)calendar.get(Calendar.YEAR);*/
+ 		Double totalYear = temp + tenure;
+ 		/*if(temp.doubleValue() == tillYear && total_Column == 0.0 ) {
  			totalYear = temp + 2.0  ;
  		}else {	
  			totalYear = temp+total_Column-j+1;
- 		}
-		temp++;
-		if(j==0 && BusinessType.EXISTING_BUSINESS.getId() == businessTypeId ) {
+ 		}*/
+		++temp;
+		/*if(j==0 && BusinessType.EXISTING_BUSINESS.getId() == businessTypeId ) {
 			temp=tillYear-3;
 			totalYear=temp+total_Column-1;  
 		}else if (j==0 && BusinessType.NEW_TO_BUSINESS.getId() == businessTypeId ) {
 			temp= tillYear +1 ;   
 			totalYear=temp+total_Column-4;
-		}
+		}*/
 		
-		if(profitibilitySheet.equals(sheet.getSheetName())|| balanceSheet.equals(sheet.getSheetName())) {
+		/*if(profitibilitySheet.equals(sheet.getSheetName())|| balanceSheet.equals(sheet.getSheetName())) {
 			j=1;
-		}
-		for (int i = j; temp <totalYear;++temp) {
+		}*/
+		for (int i = j ; temp <totalYear; ++temp) {
 			if(flag) {
 //				System.out.println(i+" cell "+sheet.getRow(4).getCell(i).getNumericCellValue());
 				//System.out.println(i+" " + temp);
