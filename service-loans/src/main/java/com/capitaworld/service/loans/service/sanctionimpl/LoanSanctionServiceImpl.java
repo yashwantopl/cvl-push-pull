@@ -245,7 +245,7 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 							String encryptedString = sidbiIntegrationClient.getSanctionAndDisbursmentDetailList(token, generateTokenRequest.getBankToken() , userOrganisationRequest.getCodeLanguage());
 							String resJosn = null ;
 							if(!CommonUtils.isObjectNullOrEmpty(encryptedString)) {
-								 resJosn = sanctionAndDisbursementValidation(encryptedString , userOrganisationRequest.getCodeLanguage());
+								 resJosn = sanctionAndDisbursementValidation(encryptedString , userOrganisationRequest.getCodeLanguage() , userOrganisationRequest.getUserOrgId());
 								try {
 									
 									sidbiIntegrationClient.setTokenAsExpired(generateTokenRequest, generateTokenRequest.getBankToken(), userOrganisationRequest.getCodeLanguage());
@@ -324,7 +324,7 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 	}
 	
 	@SuppressWarnings({ "unchecked", "null" })
-	public String sanctionAndDisbursementValidation(String encryptedString , Integer codeLonguage) {
+	public String sanctionAndDisbursementValidation(String encryptedString , Integer codeLonguage , Long mainOrgId) {
 		
 		LoansResponse loansResponse = null;
 		Long orgId = null;
@@ -536,7 +536,8 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 			return  "error";
 		} finally {
 			logger.info("Saving Request to DB ===> ");
-			auditComponentBankToCW.saveBankToCWReqRes(decrypt != null ? decrypt : encryptedString, 	null ,CommonUtility.ApiType.REVERSE_SANCTION_AND_DISBURSEMENT, loansResponse, " ** Whole Request with reason ** => "+reason , orgId , null);
+			
+			auditComponentBankToCW.saveBankToCWReqRes(decrypt != null ? decrypt : encryptedString, 	null ,CommonUtility.ApiType.REVERSE_SANCTION_AND_DISBURSEMENT, loansResponse, " ** Whole Request with reason ** => "+reason +" getting by username and password orgId => "+orgId , mainOrgId , null);
 		}
 	}
 
