@@ -119,7 +119,7 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 
 			List<OperatingStatementDetails> operatingStatementDetailsList = operatingStatementDetailsRepository
 					.getByApplicationId(applicationId);
-			int j = 0;
+			int j = 1;
 			Double temp=0.0;
 			
 			for (OperatingStatementDetails operatingStatementDetails : operatingStatementDetailsList) {
@@ -251,7 +251,7 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 			// Liabilities Starts
 			List<LiabilitiesDetails> liabilitiesDetailsList = liabilitiesDetailsRepository
 					.getByApplicationId(applicationId);
-			j = 0 ;
+			j = 1 ;
 			for (LiabilitiesDetails liabilitiesDetails : liabilitiesDetailsList) {
 				// save in db
                   temp=Double.parseDouble(liabilitiesDetails.getYear());
@@ -347,7 +347,7 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 			// Asset Starts
 
 			List<AssetsDetails> assetsDetailsList = assetsDetailsRepository.getByApplicationId(applicationId);
-			j = 0;
+			j = 1;
 			for (AssetsDetails assetsDetails : assetsDetailsList) {
 				      temp=Double.parseDouble(assetsDetails.getYear());
 				// save in excel
