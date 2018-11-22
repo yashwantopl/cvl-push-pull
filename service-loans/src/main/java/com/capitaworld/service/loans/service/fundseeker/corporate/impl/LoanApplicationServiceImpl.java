@@ -5246,8 +5246,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 						disbursementRequest.setFsImage(imagePath);
 
 						// set fp details
-						disbursementRequest.setFpName(productMasterRepository.findOne(disbursementRequest.getProductMappingId()).getName());
 						ProductMaster productMaster = productMasterRepository.findOne(disbursementRequest.getProductMappingId());
+						disbursementRequest.setFpName(productMaster.getName());
+						disbursementRequest.setOrgId(productMaster.getUserOrgId());
 
 						UsersRequest request = new UsersRequest();
 						request.setId(productMaster.getUserId());
