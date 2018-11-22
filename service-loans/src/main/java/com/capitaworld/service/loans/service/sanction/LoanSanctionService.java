@@ -18,7 +18,7 @@ public interface LoanSanctionService {
 	
 	public Boolean saveSanctionAndDisbursementDetailsFromBank() throws Exception ;
 	
-	public Boolean saveLoanSanctionDetailById(LoanSanctionRequest loanSanctionRequest) throws Exception ;
+	public Boolean saveLoanSanctionDetailById(Long orgId ,LoanSanctionRequest loanSanctionRequest) throws Exception ;
 
 	public String getToken(String url , GenerateTokenRequest generateTokenRequest , Integer langCode  )throws Exception ;
 }
