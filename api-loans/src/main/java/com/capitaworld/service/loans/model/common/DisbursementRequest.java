@@ -7,6 +7,7 @@ import java.util.List;
 public class DisbursementRequest {
 private Long  applicationId;
 private Long productMappingId;
+private Long orgId;
 
 private String fsName;
 private String fpName;
@@ -136,6 +137,12 @@ public void setFpOrganisationName(String fpOrganisationName) {
 	}
 	public void setIsIneligibleProposal(Boolean isIneligibleProposal) {
 		this.isIneligibleProposal = isIneligibleProposal;
+	}
+	public Long getOrgId() {
+		return orgId;
+	}
+	public void setOrgId(Long orgId) {
+		this.orgId = orgId;
 	}
 	
 }
