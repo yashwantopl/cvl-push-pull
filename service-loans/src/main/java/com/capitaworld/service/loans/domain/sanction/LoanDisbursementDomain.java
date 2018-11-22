@@ -30,7 +30,7 @@ public class LoanDisbursementDomain implements Serializable {
 	private Long applicationId;
 
 	@Column(name = "reference_no")
-	private Long referenceNo;
+	private String referenceNo;
 
 	@Column(name = "disbursement_date")
 	private Date disbursementDate;
@@ -94,11 +94,11 @@ public class LoanDisbursementDomain implements Serializable {
 		this.applicationId = applicationId;
 	}
 
-	public Long getReferenceNo() {
+	public String getReferenceNo() {
 		return referenceNo;
 	}
 
-	public void setReferenceNo(Long referenceNo) {
+	public void setReferenceNo(String referenceNo) {
 		this.referenceNo = referenceNo;
 	}
 

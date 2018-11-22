@@ -26,7 +26,7 @@ public class LoanSanctionRequest extends AuditActivityRequest implements Seriali
 	
 	private Long branch;
 	private Long applicationId;
-	private Long referenceNo;
+	private String referenceNo;
 	private Double tenure;
 	private String sanctionAuthority;
 	private String remark;
@@ -109,11 +109,11 @@ public class LoanSanctionRequest extends AuditActivityRequest implements Seriali
 		this.applicationId = applicationId;
 	}
 
-	public Long getReferenceNo() {
+	public String getReferenceNo() {
 		return referenceNo;
 	}
 
-	public void setReferenceNo(Long referenceNo) {
+	public void setReferenceNo(String referenceNo) {
 		this.referenceNo = referenceNo;
 	}
 
