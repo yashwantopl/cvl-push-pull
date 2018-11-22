@@ -25,7 +25,8 @@ public interface AssetsDetailsRepository extends JpaRepository<AssetsDetails, Lo
 	@Query("from AssetsDetails a where a.loanApplicationMaster.id = :appId and a.year = :yr and a.isActive = true")
 	public AssetsDetails getAssetsDetails(@Param("appId") Long applicationId, @Param("yr") String year);
 	
-	@Query("select o from AssetsDetails o where o.loanApplicationMaster.id = :applicationId and o.isActive = true")
+	//@Query("select o from AssetsDetails o where o.loanApplicationMaster.id = :applicationId and o.isActive = true")
+	@Query(value=" SELECT * FROM ( SELECT * FROM fs_corporate_cma_assets_details o WHERE o.application_id = :applicationId  AND o.financial_yearly_statement = 'Audited'  AND o.is_active = TRUE ORDER BY o.year DESC LIMIT 3 ) AS t ORDER BY t.year " , nativeQuery = true )
 	public List<AssetsDetails> getByApplicationId(@Param("applicationId") Long applicationId);
 	
 	public AssetsDetails findByIdAndIsActive(Long id, Boolean isActive);
