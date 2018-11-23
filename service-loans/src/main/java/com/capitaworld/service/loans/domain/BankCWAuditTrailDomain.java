@@ -11,6 +11,8 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import org.hibernate.annotations.ColumnTransformer;
 
+import org.hibernate.annotations.ColumnTransformer;
+
 @Entity
 @Table(name = "bank_cw_audit_trail")
 public class BankCWAuditTrailDomain implements Serializable {

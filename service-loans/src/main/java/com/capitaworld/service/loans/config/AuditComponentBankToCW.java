@@ -7,10 +7,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+
 import com.capitaworld.service.loans.domain.BankCWAuditTrailDomain;
-import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.repository.banktocw.BankToCWAuditTrailRepository;
-import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.users.client.UsersClient;
 
 @Component
@@ -25,7 +24,7 @@ public class AuditComponentBankToCW {
 	private BankToCWAuditTrailRepository bankToCWAuditTrailRepository;
 	
 	@Async
-	public void saveBankToCWReqRes(String request, Long applicationId,Integer apiType , LoansResponse loansResponse, String failureReason,
+	public void saveBankToCWReqRes(String request, Long applicationId,Integer apiType , String status, String failureReason,
 			Long orgId , Long  bankPrimaryKey) {
 		logger.info("Enter in saveBankReqRes() ----------------------->  "+ request);
 		try {
@@ -33,15 +32,13 @@ public class AuditComponentBankToCW {
 		bankCWAuditTrailDomain.setApplicationId(applicationId);
 		bankCWAuditTrailDomain.setOrgId(orgId);
 		bankCWAuditTrailDomain.setBankRequest(request);
-		bankCWAuditTrailDomain.setCwResponse(MultipleJSONObjectHelper.getStringfromObject(loansResponse));
+		//bankCWAuditTrailDomain.setCwResponse(MultipleJSONObjectHelper.getStringfromObject(loansResponse));
 		bankCWAuditTrailDomain.setFailureReason(failureReason);
 		bankCWAuditTrailDomain.setIsActive(true);
 		bankCWAuditTrailDomain.setCreatedDate(new Date());
 		bankCWAuditTrailDomain.setApiType(apiType);
 		bankCWAuditTrailDomain.setBankPrimaryKey(bankPrimaryKey);
-		if(loansResponse != null) {
-			bankCWAuditTrailDomain.setStatus(loansResponse.getStatus() == 200 ? "SUCCESS" : "FAILURE");
-		}
+		bankCWAuditTrailDomain.setStatus(status);
 		bankCWAuditTrailDomain =bankToCWAuditTrailRepository.save(bankCWAuditTrailDomain);
 		logger.info("Exit saveLoanDisbursementDetail() -----------------------> BankCWAuditTrailDomain ==>" +bankCWAuditTrailDomain);
 		}catch (Exception e) {
