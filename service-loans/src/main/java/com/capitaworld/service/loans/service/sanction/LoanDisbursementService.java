@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.util.List;
 
 import com.capitaworld.service.loans.model.LoanDisbursementRequest;
-import com.capitaworld.service.loans.model.LoansResponse;
-import com.capitaworld.service.loans.model.common.DisbursementRequest;
 
 public interface LoanDisbursementService {
 	

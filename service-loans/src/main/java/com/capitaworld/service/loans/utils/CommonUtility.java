@@ -16,6 +16,10 @@ public class CommonUtility {
 		public static final Integer REVERSE_SANCTION = 7  ;
 		public static final Integer REVERSE_DISBURSEMENT = 8 ;
 		public static final Integer REVERSE_SANCTION_AND_DISBURSEMENT = 9;
+		public static final Integer PROPOSAL_UPDATE_STATUS_SUCCESS_REVERSE_SANCTION = 10;
+		public static final Integer PROPOSAL_UPDATE_STATUS_FAILED_REVERSE_SANCTION = 11;
+		public static final Integer PROPOSAL_UPDATE_STATUS_SUCCESS_REVERSE_DISBURSEMENT = 12; 
+		public static final Integer PROPOSAL_UPDATE_STATUS_FAILED_REVERSE_DISBURSEMENT = 13; 
 	}
 	
 	public static Boolean getCashCredit(CibilUtils.CreditTypeEnum name) {
