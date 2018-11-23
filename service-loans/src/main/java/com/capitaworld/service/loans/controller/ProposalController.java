@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.capitaworld.connect.api.ConnectRequest;
 import com.capitaworld.service.loans.config.AsyncComponent;
 import com.capitaworld.service.loans.model.FundProviderProposalDetails;
 import com.capitaworld.service.loans.model.LoansResponse;
@@ -27,7 +28,6 @@ import com.capitaworld.service.matchengine.model.DisbursementDetailsModel;
 import com.capitaworld.service.matchengine.model.ProposalCountResponse;
 import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
 import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
-import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.UsersRequest;
 
 
@@ -308,6 +308,18 @@ public class ProposalController {
 		CommonDocumentUtils.endHook(logger, "fundproviderProposalByAssignBy");
 		return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		
+	}
+	
+	@RequestMapping(value = "/checkAvailabilityForBankSelection", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> checkAvailabilityForBankSelection(@RequestBody ConnectRequest request) {
+		
+		if(CommonUtils.isObjectNullOrEmpty(request.getApplicationId())) {
+			logger.info("Bad Request !!");
+			return new ResponseEntity<LoansResponse>(new LoansResponse("Request parameter null or empty !!", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+		}
+		
+		LoansResponse response = new LoansResponse("Data Found.", HttpStatus.OK.value(), proposalService.checkAvailabilityForBankSelection(request.getApplicationId(), request.getBusinessTypeId()));
+		return new ResponseEntity<LoansResponse>(response, HttpStatus.OK);
 	}
 
 	@RequestMapping(value = "/checkFpMakerAccess", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)

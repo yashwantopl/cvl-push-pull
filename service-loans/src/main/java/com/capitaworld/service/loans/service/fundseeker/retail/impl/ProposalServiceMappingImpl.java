@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.service.fundseeker.retail.impl;
 
+import java.io.IOException;
 import java.math.BigInteger;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -21,6 +22,8 @@ import com.capitaworld.cibil.api.model.CibilRequest;
 import com.capitaworld.cibil.api.model.CibilResponse;
 import com.capitaworld.cibil.api.utility.CibilUtils;
 import com.capitaworld.cibil.client.CIBILClient;
+import com.capitaworld.connect.api.ConnectRequest;
+import com.capitaworld.connect.client.ConnectClient;
 import com.capitaworld.service.dms.client.DMSClient;
 import com.capitaworld.service.dms.model.DocumentRequest;
 import com.capitaworld.service.dms.model.DocumentResponse;
@@ -60,6 +63,7 @@ import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.loans.utils.CommonUtils.UsersRoles;
 import com.capitaworld.service.matchengine.MatchEngineClient;
 import com.capitaworld.service.matchengine.ProposalDetailsClient;
+import com.capitaworld.service.matchengine.exception.MatchException;
 import com.capitaworld.service.matchengine.model.ConnectionResponse;
 import com.capitaworld.service.matchengine.model.DisbursementDetailsModel;
 import com.capitaworld.service.matchengine.model.MatchDisplayResponse;
@@ -145,6 +149,8 @@ public class ProposalServiceMappingImpl implements ProposalService {
 	@Autowired
 	private LoanDisbursementRepository loanDisbursementRepository;
 	
+	@Autowired
+	private ConnectClient connectClient;
 
 	DecimalFormat df = new DecimalFormat("#");
 
@@ -1768,6 +1774,47 @@ public class ProposalServiceMappingImpl implements ProposalService {
 		}
 //		System.out.println("loansResponse : "+loansResponse.toString());
 		return loansResponse;
+	}
+	
+	
+	@Override
+	public Boolean checkAvailabilityForBankSelection(Long applicationId, Integer businessTypeId) {
+
+		try {
+
+			ConnectRequest connectRequest = new ConnectRequest();
+
+			connectRequest.setApplicationId(applicationId);
+			connectRequest.setBusinessTypeId(businessTypeId);
+
+			ProposalMappingResponse proposalDetailsResponse = proposalDetailsClient.getProposalsByApplicationId(applicationId);
+			connectClient.createForMultipleBank(connectRequest);
+			logger.info("=============> <=============");
+
+			for (int i = 0; i < proposalDetailsResponse.getDataList().size(); i++) {
+
+				ProposalMappingRequest proposalrequest = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) proposalDetailsResponse.getDataList().get(i),ProposalMappingRequest.class);
+				//				proposalrequest.getProposalStageId() 5
+				logger.info("=============> getApplicationId() : " + proposalrequest.getApplicationId());
+				logger.info("=============> Data : " + proposalrequest.getElAmount());
+			}
+
+			return Boolean.TRUE;
+		} catch (MatchException e) {
+			// TODO Auto-generated catch block
+			logger.error("Error while checking availability for bank selection...!");
+			e.printStackTrace();
+		} catch (IOException io) {
+			// TODO Auto-generated catch block
+			logger.error("Error while checking availability for bank selection...!");
+			io.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			logger.error("Error while checking availability for bank selection...!");
+			e.printStackTrace();
+		}
+
+		return Boolean.FALSE;
 	}
 	
 	@Override
