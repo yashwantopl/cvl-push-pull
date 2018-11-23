@@ -2196,7 +2196,7 @@ public class LoanApplicationController {
 			tokenService.setTokenAsExpired(generateTokenRequest);
 			auditComponentBankToCW.saveBankToCWReqRes(decrypt != null ? decrypt : encryptedString,
 					loanSanctionRequest != null ? loanSanctionRequest.getApplicationId() : null,
-					CommonUtility.ApiType.SANCTION, loansResponse, reason, null  , null);
+					CommonUtility.ApiType.SANCTION, null, reason, null  , null);
 		}
 	}
 
@@ -2327,7 +2327,7 @@ public class LoanApplicationController {
 			tokenService.setTokenAsExpired(generateTokenRequest);
 			auditComponentBankToCW.saveBankToCWReqRes(decrypt != null ? decrypt : encryptedString,
 					loanDisbursementRequest != null ? loanDisbursementRequest.getApplicationId() : null,
-					CommonUtility.ApiType.DISBURSEMENT, loansResponse, reason, orgId , null);
+					CommonUtility.ApiType.DISBURSEMENT, null, reason, orgId , null);
 		}
 	}
 
@@ -2549,7 +2549,7 @@ public class LoanApplicationController {
 			generateTokenRequest.setToken(tokenString);
 			tokenService.setTokenAsExpired(generateTokenRequest);
 			auditComponentBankToCW.saveBankToCWReqRes(decrypt != null ? decrypt : encryptedString, null,
-					CommonUtility.ApiType.DETAILED_API, loansResponse, reason, orgId , null);
+					CommonUtility.ApiType.DETAILED_API, null, reason, orgId , null);
 		}
 	}
 
@@ -2868,7 +2868,7 @@ public class LoanApplicationController {
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} finally {
 			auditComponentBankToCW.saveBankToCWReqRes(decrypt != null ? decrypt : encryptedString, applicationId,
-					CommonUtility.ApiType.GENERATING_TOKEN, loansResponse, reason, orgId , null);
+					CommonUtility.ApiType.GENERATING_TOKEN, null, reason, orgId , null);
 		}
 	}
 
@@ -2946,7 +2946,7 @@ public class LoanApplicationController {
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} finally {
 			auditComponentBankToCW.saveBankToCWReqRes(decrypt != null ? decrypt : encryptedString, applicationId,
-					CommonUtility.ApiType.GENERATING_TOKEN, loansResponse, reason, orgId , null);
+					CommonUtility.ApiType.GENERATING_TOKEN, null , reason, orgId , null);
 		}
 	}
 	
