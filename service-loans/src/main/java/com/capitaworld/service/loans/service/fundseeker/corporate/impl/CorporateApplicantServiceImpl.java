@@ -607,6 +607,17 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 	}
 
 	@Override
+	public Integer getCorporateEstablishmentYearFromProposalId(Long proposalId) throws Exception {
+		try {
+			return applicantDetailRepository.getApplicantEstablishmentYearFromProposalId(proposalId);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error while getting Establishment Year");
+		}
+		return null;
+	}
+
+	@Override
 	public List<CorporateCoApplicantRequest> getCoApplicants(Long userId, Long applicationId) throws Exception {
 		// TODO Auto-generated method stub
 		return coApplicantService.getList(applicationId, userId);

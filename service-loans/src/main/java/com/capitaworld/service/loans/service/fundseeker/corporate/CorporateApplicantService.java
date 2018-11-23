@@ -31,7 +31,9 @@ public interface CorporateApplicantService {
 	public LongitudeLatitudeRequest getLatLonByApplicationAndUserId(Long applicationId,Long userId) throws Exception;
 	
 	public Integer getCorporateEstablishmentYear(Long applicationId,Long userId) throws Exception;
-	
+
+	public Integer getCorporateEstablishmentYearFromProposalId(Long proposalId) throws Exception;
+
 	public List<CorporateCoApplicantRequest> getCoApplicants(Long userId, Long applicationId) throws Exception;
 //	public boolean updateIsMsmeScoreRequired(MsmeScoreRequest msmeScoreRequest)throws Exception;
 	
