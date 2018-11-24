@@ -449,7 +449,7 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 		//checking validation 
 		for(LoanSanctionAndDisbursedRequest loanSanctionAndDisbursedRequest : loanSanctionAndDisbursedRequestList) {
 			BankCWAuditTrailDomain bankCWAuditTrailDomain = null;
-			
+			applicationId = loanSanctionAndDisbursedRequest.getApplicationId();
 			//checking validation for right organization
 			orgId = auditComponentBankToCW.getOrgIdByCredential(loanSanctionAndDisbursedRequest.getUserName(),loanSanctionAndDisbursedRequest.getPassword());
 			if (!CommonUtils.isObjectNullOrEmpty(orgId)) {
@@ -526,10 +526,6 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 						loanSanctionAndDisbursedRequest.getLoanSanctionRequest().setReason("Mandatory Fields Must Not be Null while save loan sanction details");
 						loanSanctionAndDisbursedRequest.getLoanSanctionRequest().setIsSaved(false);
 					}
-					
-				}else if (loanSanctionAndDisbursedRequest.getLoanDisbursementRequestsList() !=null ) {
-					// without sanctionPrimaryId 
-					disbursementReason =  saveDisbursementDetail(orgId , null ,  loanSanctionAndDisbursedRequest);
 				}
 				
 			} else {
@@ -546,7 +542,11 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 				jsonString = MultipleJSONObjectHelper.getStringfromObject(loanSanctionAndDisbursedRequest.getLoanSanctionRequest());
 				auditComponentBankToCW.saveBankToCWReqRes(jsonString , 	applicationId,CommonUtility.ApiType.REVERSE_SANCTION, status ,  "sanctionReason==>" + sanctionReason + "disbursementReason ==> "+disbursementReason, orgId  , loanSanctionAndDisbursedRequest.getLoanSanctionRequest().getId());
 			}catch (Exception e) {
-				auditComponentBankToCW.saveBankToCWReqRes(jsonString, loanSanctionAndDisbursedRequest.getLoanSanctionRequest().getApplicationId() , null , status, "Exception while converting the object in String = > MSG "+e.getMessage() , orgId, null);
+				auditComponentBankToCW.saveBankToCWReqRes(jsonString, applicationId , null , status, "Exception while converting the object in String = > MSG "+e.getMessage() , orgId, null);
+			}
+			if (loanSanctionAndDisbursedRequest.getLoanDisbursementRequestsList() !=null ) {
+				// without sanctionPrimaryId 
+				disbursementReason =  saveDisbursementDetail(orgId , null ,  loanSanctionAndDisbursedRequest);
 			}
 		}	
 		
