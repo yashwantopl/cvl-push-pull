@@ -473,7 +473,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 						try {
 							CibilRequest cibilRequest = new CibilRequest();
 							cibilRequest.setPan(directorBackgroundDetailRequest.getPanNo());
-							cibilRequest.setApplicationId(applicationId);
+							
 							CibilScoreLogRequest cibilScoreByPanCard = cibilClient.getCibilScoreByPanCard(cibilRequest);
 							if(!CommonUtils.isObjectNullOrEmpty(cibilScoreByPanCard)) {
 								if("000-1".equalsIgnoreCase(cibilScoreByPanCard.getActualScore())) {
