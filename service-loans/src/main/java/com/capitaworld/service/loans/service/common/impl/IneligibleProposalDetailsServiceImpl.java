@@ -527,7 +527,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 		notification.setType(NotificationType.EMAIL);
 		notification.setFrom(EMAIL_ADDRESS_FROM);
 		notification.setParameters(mailParameters);
-		notification.setIsDynamic(((Boolean) mailParameters.get("isDynamic")).booleanValue());
+		notification.setIsDynamic(notificationRequest.getIsDynamic());
 		notificationRequest.addNotification(notification);
 		sendEmail(notificationRequest);
 		logger.info("Outside send notification===>{}" + toNo);
