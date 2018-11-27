@@ -4,6 +4,7 @@ import java.math.BigInteger;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +22,7 @@ import com.capitaworld.cibil.api.model.CibilRequest;
 import com.capitaworld.cibil.api.model.CibilResponse;
 import com.capitaworld.cibil.api.utility.CibilUtils;
 import com.capitaworld.cibil.client.CIBILClient;
+import com.capitaworld.connect.client.ConnectClient;
 import com.capitaworld.service.dms.client.DMSClient;
 import com.capitaworld.service.dms.model.DocumentRequest;
 import com.capitaworld.service.dms.model.DocumentResponse;
@@ -138,13 +140,14 @@ public class ProposalServiceMappingImpl implements ProposalService {
 	@Autowired
 	private DirectorBackgroundDetailsRepository directorBackgroundDetailsRepository;
 
-	
 	@Autowired
 	private ProposalDetailsRepository proposalDetailRepository;
-	
+
 	@Autowired
 	private LoanDisbursementRepository loanDisbursementRepository;
-	
+
+	@Autowired
+	private ConnectClient connectClient;
 
 	DecimalFormat df = new DecimalFormat("#");
 
@@ -180,7 +183,8 @@ public class ProposalServiceMappingImpl implements ProposalService {
 				if (!CommonUtils.isObjectNullOrEmpty(basicDetailsRequest)) {
 					logger.info("Found Branch Id -----------> " + basicDetailsRequest.getId()
 							+ "---------Role Id ------------------>" + basicDetailsRequest.getRoleId());
-					if (basicDetailsRequest.getRoleId() == CommonUtils.UsersRoles.BO || basicDetailsRequest.getRoleId() == CommonUtils.UsersRoles.FP_CHECKER) {
+					if (basicDetailsRequest.getRoleId() == CommonUtils.UsersRoles.BO
+							|| basicDetailsRequest.getRoleId() == CommonUtils.UsersRoles.FP_CHECKER) {
 						logger.info("Current user is Branch officer or FP_CHECKER");
 						request.setBranchId(basicDetailsRequest.getId());
 					}
@@ -208,11 +212,14 @@ public class ProposalServiceMappingImpl implements ProposalService {
 				LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(applicationId);
 				Integer bId = loanApplicationMaster.getBusinessTypeId();
 
-//				getting the value of proposal's branch address city state based on proposal applicationID 
-//				step 1  get proposal details by applicationID and user details
-//				step2 get branch details by branch id available in proposalDetails
-//				step3 get branch state by state id available in location Master
-//				step4 get branch city by city id available in location Master
+				// getting the value of proposal's branch address city state
+				// based on proposal applicationID
+				// step 1 get proposal details by applicationID and user details
+				// step2 get branch details by branch id available in
+				// proposalDetails
+				// step3 get branch state by state id available in location
+				// Master
+				// step4 get branch city by city id available in location Master
 
 				UsersRequest usersRequestData = new UsersRequest();
 				usersRequestData.setId(request.getUserId());
@@ -227,9 +234,11 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					long userId = loanDeatils[0] != null ? (long) loanDeatils[0] : 0;
 
 					try {
-//						step 2	get branch details by branch id available in proposalDetails	BRANCH-MASTER
+						// step 2 get branch details by branch id available in
+						// proposalDetails BRANCH-MASTER
 						if (proposalrequest.getBranchId() != null) {
-//						getlocation id available in branch then find city state location name based on location id
+							// getlocation id available in branch then find city
+							// state location name based on location id
 							UserResponse userResponse = usersClient.getBranchDetailById(proposalrequest.getBranchId());
 							basicDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap(
 									(LinkedHashMap<String, Object>) userResponse.getData(),
@@ -241,14 +250,14 @@ public class ProposalServiceMappingImpl implements ProposalService {
 							if (basicDetailsRequest.getLocationId() != null) {
 								logger.info("location id by branchId:" + basicDetailsRequest.getLocationId());
 								try {
-								LocationMasterResponse locationDetails = usersClient
-										.getLocationDetailByLocationId(basicDetailsRequest.getLocationId());
-								logger.info("locationName:====>" + locationDetails.getLocationName());
-								logger.info("cityName:====>" + locationDetails.getCity().getName());
-								basicDetailsRequest.setLocationMasterResponse(locationDetails);
+									LocationMasterResponse locationDetails = usersClient
+											.getLocationDetailByLocationId(basicDetailsRequest.getLocationId());
+									logger.info("locationName:====>" + locationDetails.getLocationName());
+									logger.info("cityName:====>" + locationDetails.getCity().getName());
+									basicDetailsRequest.setLocationMasterResponse(locationDetails);
 									logger.info("stateName:====>" + locationDetails.getState().getName());
 								} catch (Exception e) {
-									logger.info("Exception in getting location by id:"+e);
+									logger.info("Exception in getting location by id:" + e);
 								}
 							}
 						}
@@ -300,7 +309,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					corporateProposalDetails.setBusinessTypeId(loanApplicationMaster.getBusinessTypeId());
 					corporateProposalDetails.setAddress(address);
 
-//					set Branch State and city and name
+					// set Branch State and city and name
 					try {
 						if (basicDetailsRequest.getLocationId() != null) {
 							corporateProposalDetails.setBranchLocationName(basicDetailsRequest.getName());
@@ -459,11 +468,12 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					}
 
 					/*
-					 * if(!CommonUtils.isObjectNullOrEmpty(proposalrequest.getAssignBy())) {
-					 * UsersRequest usersRequest =
+					 * if(!CommonUtils.isObjectNullOrEmpty(proposalrequest.
+					 * getAssignBy())) { UsersRequest usersRequest =
 					 * getUserNameAndEmail(proposalrequest.getAssignBy());
 					 * if(!CommonUtils.isObjectNullOrEmpty(usersRequest)) {
-					 * corporateProposalDetails.setAssignBy(usersRequest.getName()); } }
+					 * corporateProposalDetails.setAssignBy(usersRequest.getName
+					 * ()); } }
 					 */
 
 					// city for fp
@@ -555,7 +565,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 
 					retailProposalDetails.setName(name);
 
-//					set Branch State and city and name
+					// set Branch State and city and name
 					try {
 						if (basicDetailsRequest.getLocationId() != null) {
 							retailProposalDetails.setBranchLocationName(basicDetailsRequest.getName());
@@ -710,9 +720,9 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			ProposalMappingResponse proposalDetailsResponse = proposalDetailsClient.proposalListOfFundSeeker(request);
 
 			List<Object[]> disbursmentData = loanDisbursementRepository.getDisbursmentData(request.getApplicationId());
-			
+
 			List<ProposalMappingRequest> proposalMappingList = new ArrayList<ProposalMappingRequest>();
-			
+
 			for (int i = 0; i < proposalDetailsResponse.getDataList().size(); i++) {
 				UsersClient usersClient = new UsersClient(environment.getRequiredProperty("userURL"));
 				ProposalMappingRequest proposalrequest = MultipleJSONObjectHelper.getObjectFromMap(
@@ -773,11 +783,13 @@ public class ProposalServiceMappingImpl implements ProposalService {
 				fundProviderProposalDetails.setElAmount(proposalrequest.getElAmount());
 				fundProviderProposalDetails.setElRoi(proposalrequest.getElRoi());
 				fundProviderProposalDetails.setElTenure(proposalrequest.getElTenure());
-				//add disbursed amount logic
-				
-				fundProviderProposalDetails.setPartiallyDisburseAmt(disbursmentData != null ? (Double)(disbursmentData.get(0)[0]) : null);
-				fundProviderProposalDetails.setLastDisbursmentDate(disbursmentData != null ? String.valueOf(disbursmentData.get(0)[1]) : null);
-				
+				// add disbursed amount logic
+
+				fundProviderProposalDetails
+						.setPartiallyDisburseAmt(disbursmentData != null ? (Double) (disbursmentData.get(0)[0]) : null);
+				fundProviderProposalDetails.setLastDisbursmentDate(
+						disbursmentData != null ? String.valueOf(disbursmentData.get(0)[1]) : null);
+
 				proposalDetailsList.add(fundProviderProposalDetails);
 			}
 		} catch (Exception e) {
@@ -1657,11 +1669,12 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					}
 
 					/*
-					 * if(!CommonUtils.isObjectNullOrEmpty(proposalrequest.getAssignBy())) {
-					 * UsersRequest usersRequest =
+					 * if(!CommonUtils.isObjectNullOrEmpty(proposalrequest.
+					 * getAssignBy())) { UsersRequest usersRequest =
 					 * getUserNameAndEmail(proposalrequest.getAssignBy());
 					 * if(!CommonUtils.isObjectNullOrEmpty(usersRequest)) {
-					 * corporateProposalDetails.setAssignBy(usersRequest.getName()); } }
+					 * corporateProposalDetails.setAssignBy(usersRequest.getName
+					 * ()); } }
 					 */
 					if (!CommonUtils.isObjectNullOrEmpty(proposalrequest.getAssignBranchTo())) {
 						try {
@@ -1698,8 +1711,16 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			// set branch id to proposal request
 			logger.info("DISBURSEMENT DETAILS IS ---------------------------------------------------> "
 					+ request.toString());
-			ProposalMappingResponse mappingResponse = proposalDetailsClient.saveDisbursementDetails(request);
+			
 
+			Date connectlogModifiedDate = connectClient.getInprincipleDateByAppId(request.getApplicationId());
+			if (!CommonUtils.isObjectNullOrEmpty(connectlogModifiedDate)) {
+				if (request.getDisbursementDate().compareTo(connectlogModifiedDate)<0 || request.getDisbursementDate().compareTo(new Date())>0) {
+				return	new ProposalMappingResponse("Please insert valid disbursement date",
+							HttpStatus.INTERNAL_SERVER_ERROR.value());
+				}
+			}
+			ProposalMappingResponse mappingResponse = proposalDetailsClient.saveDisbursementDetails(request);
 			return mappingResponse;
 
 		} catch (Exception e) {
@@ -1714,24 +1735,28 @@ public class ProposalServiceMappingImpl implements ProposalService {
 	@Override
 	public LoansResponse checkMinMaxAmount(UsersRequest userRequest) {
 		LoansResponse loansResponse = new LoansResponse();
-		
+
 		try {
-//			System.out.println("getApplicationId : "+userRequest.getApplicationId() + "userRequest.getId() : "+userRequest.getId()+" getLoanAmount() : "+userRequest.getLoanAmount());
+			// System.out.println("getApplicationId :
+			// "+userRequest.getApplicationId() + "userRequest.getId() :
+			// "+userRequest.getId()+" getLoanAmount() :
+			// "+userRequest.getLoanAmount());
 			loansResponse.setFlag(true);
 
 			LoanApplicationMaster loanApplicationMaster = loanApplicationRepository
 					.findOne(userRequest.getApplicationId());
-			
-			if(loanApplicationMaster != null && userRequest != null) {
-				// Check If Requested Application is assigned to Currunt Fp Cheker or not
+
+			if (loanApplicationMaster != null && userRequest != null) {
+				// Check If Requested Application is assigned to Currunt Fp
+				// Cheker or not
 				UserResponse userResponse = null;
-				userRequest.setProductIdString(CommonUtility.encode(""+loanApplicationMaster.getProductId()));
-				if(loanApplicationMaster.getNpUserId() == null) {
+				userRequest.setProductIdString(CommonUtility.encode("" + loanApplicationMaster.getProductId()));
+				if (loanApplicationMaster.getNpUserId() == null) {
 					userResponse = usersClient.getMinMaxAmount(userRequest);
-				}else if((loanApplicationMaster.getNpUserId()).equals(userRequest.getId())) {
+				} else if ((loanApplicationMaster.getNpUserId()).equals(userRequest.getId())) {
 					userResponse = usersClient.getMinMaxAmount(userRequest);
 				}
-				
+
 				CheckerDetailRequest checkerDetailRequest = null;
 				if (!CommonUtils.isObjectListNull(userResponse)
 						&& !(CommonUtils.isObjectNullOrEmpty(userResponse.getData()))) {
@@ -1740,9 +1765,13 @@ public class ProposalServiceMappingImpl implements ProposalService {
 				}
 
 				if (!CommonUtils.isObjectNullOrEmpty(checkerDetailRequest)) {
-//					System.out.println("getMinAmount : "+checkerDetailRequest.getMinAmount() + " getMaxAmount : "+checkerDetailRequest.getMaxAmount());
-					if (userRequest.getLoanAmount() != null && checkerDetailRequest.getMinAmount() != null && checkerDetailRequest.getMaxAmount()!= null 
-							&& !(userRequest.getLoanAmount() >= checkerDetailRequest.getMinAmount() && userRequest.getLoanAmount() <= checkerDetailRequest.getMaxAmount())) {
+					// System.out.println("getMinAmount :
+					// "+checkerDetailRequest.getMinAmount() + " getMaxAmount :
+					// "+checkerDetailRequest.getMaxAmount());
+					if (userRequest.getLoanAmount() != null && checkerDetailRequest.getMinAmount() != null
+							&& checkerDetailRequest.getMaxAmount() != null
+							&& !(userRequest.getLoanAmount() >= checkerDetailRequest.getMinAmount()
+									&& userRequest.getLoanAmount() <= checkerDetailRequest.getMaxAmount())) {
 						loansResponse.setFlag(false);
 						loansResponse.setMessage(
 								"You do not have rights to take action for this proposal. Kindly assign the proposal to your upper level checker.");
@@ -1752,7 +1781,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					loansResponse.setFlag(false);
 					loansResponse.setMessage("You do not have rights to take action for this proposal.");
 				}
-				
+
 			} else {
 				// You dont have Authorised for this Action
 				logger.error("Not getting min max loan amount for this user");
@@ -1766,76 +1795,80 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			loansResponse.setFlag(false);
 			loansResponse.setMessage("You do not have rights to take action for this proposal.");
 		}
-//		System.out.println("loansResponse : "+loansResponse.toString());
+		// System.out.println("loansResponse : "+loansResponse.toString());
 		return loansResponse;
 	}
-	
+
 	@Override
-    public List<ProposalDetailsAdminRequest> getProposalsByOrgId(Long userOrgId, ProposalDetailsAdminRequest request, Long userId) {
-    	
-		
-//		UserResponse userData = usersClient.getUserDetailsById(userId);
-		
-//		UsersRequest data = (UsersRequest) userData.getData();
-		
-//		System.out.println("-----------------> data : "+ userData.toString());
-		
-		
-//		Long roleId = (Long) userData.get("roleId");
+	public List<ProposalDetailsAdminRequest> getProposalsByOrgId(Long userOrgId, ProposalDetailsAdminRequest request,
+			Long userId) {
+
+		// UserResponse userData = usersClient.getUserDetailsById(userId);
+
+		// UsersRequest data = (UsersRequest) userData.getData();
+
+		// System.out.println("-----------------> data : "+
+		// userData.toString());
+
+		// Long roleId = (Long) userData.get("roleId");
 		List<Object[]> result = new ArrayList<Object[]>();
-		
-//		if(UsersRoles.HO.equals(roleId)) {
-//			result = proposalDetailRepository.getProposalDetailsByOrgId(userOrgId, request.getFromDate(), request.getToDate());
-//		} else if(UsersRoles.BO.equals(roleId)) {
-			result = proposalDetailRepository.getProposalDetailsByOrgId(userOrgId, request.getFromDate(), request.getToDate());
-//		}
-		
-    	
-    	List<ProposalDetailsAdminRequest> responseList = new ArrayList<>(result.size());
-    	
-    	for(Object[] obj : result) {
-    		ProposalDetailsAdminRequest proposal = new ProposalDetailsAdminRequest();
-    		proposal.setApplicationId(CommonUtils.convertLong(obj[0]));
-    		proposal.setUserId(CommonUtils.convertLong(obj[1]));
-    		proposal.setUserName(CommonUtils.convertString(obj[2]));
-    		proposal.setEmail(CommonUtils.convertString(obj[3]));
-    		proposal.setMobile(CommonUtils.convertString(obj[4]));
-    		proposal.setCreatedDate(CommonUtils.convertDate(obj[5]));
-    		proposal.setBranchId(CommonUtils.convertLong(obj[6]));
-    		proposal.setLoanAmount(CommonUtils.convertString(obj[7]));
-    		proposal.setTenure(CommonUtils.convertString(obj[8]));
-    		proposal.setRate(CommonUtils.convertString(obj[9]));
-    		proposal.setEmi(CommonUtils.convertDouble(obj[10]));
-    		proposal.setProcessingFee(CommonUtils.convertDouble(obj[11]));
-    		proposal.setBranchName(CommonUtils.convertString(obj[12]));
-    		proposal.setContactPersonName(CommonUtils.convertString(obj[13]));
-    		proposal.setTelephoneNo(CommonUtils.convertString(obj[14]));
-    		proposal.setContactPersonNumber(CommonUtils.convertString(obj[15]));
-    		proposal.setOrganizationName(CommonUtils.convertString(obj[16]));
-    		proposal.setApplicationCode(CommonUtils.convertString(obj[17]));
-    		proposal.setCode(CommonUtils.convertString(obj[18]));
-    		proposal.setStreetName(CommonUtils.convertString(obj[19]));
-    		proposal.setState(CommonUtils.convertString(obj[20]));
-    		proposal.setCity(CommonUtils.convertString(obj[21]));
-    		proposal.setPremisesNo(CommonUtils.convertString(obj[22]));
-    		proposal.setFpProductId(CommonUtils.convertLong(obj[23]));
-    		proposal.setContactPersonEmail(CommonUtils.convertString(obj[24]));
-    		proposal.setIsCampaignCustomer(CommonUtils.convertLong(obj[25]) > 0);
-    		proposal.setGstin(CommonUtils.convertString(obj[26]));
-    		
-    		responseList.add(proposal);
-    	}
-    	
-    	return responseList;
-    }
+
+		// if(UsersRoles.HO.equals(roleId)) {
+		// result =
+		// proposalDetailRepository.getProposalDetailsByOrgId(userOrgId,
+		// request.getFromDate(), request.getToDate());
+		// } else if(UsersRoles.BO.equals(roleId)) {
+		result = proposalDetailRepository.getProposalDetailsByOrgId(userOrgId, request.getFromDate(),
+				request.getToDate());
+		// }
+
+		List<ProposalDetailsAdminRequest> responseList = new ArrayList<>(result.size());
+
+		for (Object[] obj : result) {
+			ProposalDetailsAdminRequest proposal = new ProposalDetailsAdminRequest();
+			proposal.setApplicationId(CommonUtils.convertLong(obj[0]));
+			proposal.setUserId(CommonUtils.convertLong(obj[1]));
+			proposal.setUserName(CommonUtils.convertString(obj[2]));
+			proposal.setEmail(CommonUtils.convertString(obj[3]));
+			proposal.setMobile(CommonUtils.convertString(obj[4]));
+			proposal.setCreatedDate(CommonUtils.convertDate(obj[5]));
+			proposal.setBranchId(CommonUtils.convertLong(obj[6]));
+			proposal.setLoanAmount(CommonUtils.convertString(obj[7]));
+			proposal.setTenure(CommonUtils.convertString(obj[8]));
+			proposal.setRate(CommonUtils.convertString(obj[9]));
+			proposal.setEmi(CommonUtils.convertDouble(obj[10]));
+			proposal.setProcessingFee(CommonUtils.convertDouble(obj[11]));
+			proposal.setBranchName(CommonUtils.convertString(obj[12]));
+			proposal.setContactPersonName(CommonUtils.convertString(obj[13]));
+			proposal.setTelephoneNo(CommonUtils.convertString(obj[14]));
+			proposal.setContactPersonNumber(CommonUtils.convertString(obj[15]));
+			proposal.setOrganizationName(CommonUtils.convertString(obj[16]));
+			proposal.setApplicationCode(CommonUtils.convertString(obj[17]));
+			proposal.setCode(CommonUtils.convertString(obj[18]));
+			proposal.setStreetName(CommonUtils.convertString(obj[19]));
+			proposal.setState(CommonUtils.convertString(obj[20]));
+			proposal.setCity(CommonUtils.convertString(obj[21]));
+			proposal.setPremisesNo(CommonUtils.convertString(obj[22]));
+			proposal.setFpProductId(CommonUtils.convertLong(obj[23]));
+			proposal.setContactPersonEmail(CommonUtils.convertString(obj[24]));
+			proposal.setIsCampaignCustomer(CommonUtils.convertLong(obj[25]) > 0);
+			proposal.setGstin(CommonUtils.convertString(obj[26]));
+
+			responseList.add(proposal);
+		}
+
+		return responseList;
+	}
 
 	@Autowired
 	private OfflineProcessedAppRepository offlineProcessedAppRepository;
+
 	@Override
-	public  List<Object[]> getHomeCounterDetail() {
-		logger.info("========== Enter in getHomeCounter()  gettting no of fp , fs and total inprinciple and inprinciple amount======== "); 
-		 List<Object[]> object =  offlineProcessedAppRepository.getHomeCounterDetail();
+	public List<Object[]> getHomeCounterDetail() {
+		logger.info(
+				"========== Enter in getHomeCounter()  gettting no of fp , fs and total inprinciple and inprinciple amount======== ");
+		List<Object[]> object = offlineProcessedAppRepository.getHomeCounterDetail();
 		logger.info("========== Exit from  getHomeCounter() ======== " + object);
-		return object  ;
+		return object;
 	}
 }
