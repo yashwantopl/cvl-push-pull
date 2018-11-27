@@ -17,6 +17,7 @@ import com.capitaworld.client.workflow.WorkflowClient;
 import com.capitaworld.connect.client.ConnectClient;
 import com.capitaworld.itr.client.ITRClient;
 import com.capitaworld.service.analyzer.client.AnalyzerClient;
+import com.capitaworld.service.auth.client.AuthClient;
 import com.capitaworld.service.dms.client.DMSClient;
 import com.capitaworld.service.fraudanalytics.client.FraudAnalyticsClient;
 import com.capitaworld.service.gateway.client.GatewayClient;
@@ -58,6 +59,9 @@ public class LoansMain {
 
 	@Value("${dmsURL}")
 	String dmsUrl;
+	
+	@Value("${capitaworld.service.auth.url}")
+	String authUrl;
 
 	@Value("${notificationURL}")
 	String notificationURL;
@@ -263,6 +267,13 @@ public class LoansMain {
 		ITRClient itrClient = new ITRClient(itrUrl);
 		applicationContext.getAutowireCapableBeanFactory().autowireBean(itrClient);
 		return itrClient;
+	}
+	
+	@Bean
+	public AuthClient authClient() {
+		AuthClient authClient = new AuthClient(authUrl);
+		applicationContext.getAutowireCapableBeanFactory().autowireBean(authClient);
+		return authClient;
 	}
 
 }
