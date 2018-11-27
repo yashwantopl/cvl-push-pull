@@ -285,7 +285,7 @@ public class FPAsyncComponent {
 			try {
 
 				logger.info("Into sending Mail to all Checkers after FS gets In-Principle Approval===>{}");
-				String subject = "Intimation : New Proposal -  #Application Id=" + paymentRequest.getApplicationId();
+				String subject = "Intimation : New Proposal -  #ApplicationId=" + paymentRequest.getApplicationId();
 				Map<String, Object> mailParameters = new HashMap<String, Object>();
 				
 				mailParameters.put("fs_name",
@@ -476,7 +476,7 @@ public class FPAsyncComponent {
 			try {
 
 				logger.info("Into sending Mail to all Checkers after FS gets In-Principle Approval===>{}");
-				String subject = "Intimation : New Proposal -  #Application Id=" + paymentRequest.getApplicationId();
+				String subject = "Intimation : New Proposal -  #ApplicationId=" + paymentRequest.getApplicationId();
 				Map<String, Object> mailParameters = new HashMap<String, Object>();
 				mailParameters.put("fs_name",
 						paymentRequest.getNameOfEntity() != null ? paymentRequest.getNameOfEntity() : "NA");
@@ -667,7 +667,7 @@ public class FPAsyncComponent {
 			try {
 
 				logger.info("Into sending Mail to all BO after FS gets In-Principle Approval===>{}");
-				String subject = "Intimation : New Proposal -  #Application Id=" + paymentRequest.getApplicationId();
+				String subject = "Intimation : New Proposal -  #ApplicationId=" + paymentRequest.getApplicationId();
 				Map<String, Object> mailParameters = new HashMap<String, Object>();
 				mailParameters.put("fs_name",
 						paymentRequest.getNameOfEntity() != null ? paymentRequest.getNameOfEntity() : "NA");
