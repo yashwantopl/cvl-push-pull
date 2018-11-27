@@ -123,6 +123,7 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 			loanSanctionDomainOld.setRemark(loanSanctionRequest.getRemark());
 			loanSanctionDomainOld.setModifiedBy(loanSanctionRequest.getActionBy());
 			loanSanctionDomainOld.setModifiedDate(new Date());
+			loanSanctionDomainOld.setIsSanctionedFrom(1l);
 		}
 		//==================Sending Mail notification to Maker=============================
 		
