@@ -102,7 +102,7 @@ public interface LoanApplicationRepository extends JpaRepository<LoanApplication
 	
 	@Query("from LoanApplicationMaster lm where lm.id =:id and lm.isActive = true order by lm.id")
 	public LoanApplicationMaster getById(@Param("id") Long id);
-
+	
 	@Query("select new com.capitaworld.service.loans.model.LoanApplicationDetailsForSp(lm.id,lm.productId,lm.amount,lm.currencyId,lm.denominationId)  from LoanApplicationMaster lm where lm.userId=:userId and lm.isActive = true")
 	public List<LoanApplicationDetailsForSp> getListByUserId(@Param("userId") Long userId);
 

@@ -18,7 +18,11 @@ public interface DDRFormService {
 	
 	public DDRRequest getMergeDDR(Long appId,Long userId) ;
 	
+	public DDRRequest getMergeDDRNew(Long appId,Long userId, Long orgId);
+	
 	public void saveMergeDDR(DDRRequest dDRRequest) throws Exception;
+	
+	public void saveMergeDDRNew(DDRRequest dDRRequest) throws Exception;
 	
 	public DDRFormDetailsRequest get(Long id,Long userId);
 	
