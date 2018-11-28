@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
+import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateMcqDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.OverseasNetworkMappingDetail;
@@ -50,6 +51,7 @@ public class CorporateMcqServiceImpl implements CorporateMcqService {
                 corporateMcqDetail.setCreatedDate(new Date());
                 corporateMcqDetail.setActive(true);
                 corporateMcqDetail.setApplicationId(new LoanApplicationMaster(corporateMcqRequest.getApplicationId()));
+                corporateMcqDetail.setApplicationProposalMapping(new ApplicationProposalMapping(corporateMcqRequest.getProposalId()));
             }
             BeanUtils.copyProperties(corporateMcqRequest, corporateMcqDetail, CommonUtils.IgnorableCopy.CORPORATE);
             corporateMcqDetail = corporateMcqDetailRepository.save(corporateMcqDetail);

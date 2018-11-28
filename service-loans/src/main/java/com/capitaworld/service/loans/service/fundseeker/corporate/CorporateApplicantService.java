@@ -19,7 +19,9 @@ public interface CorporateApplicantService {
 	public boolean save(CorporateApplicantRequest applicantRequest,Long userId) throws Exception;
 
 	public CorporateApplicantRequest getCorporateApplicant(Long userId, Long applicationId) throws Exception;
-	
+
+	public CorporateApplicantRequest getCorporateApplicantByProposalId(Long userId, Long proposalId) throws Exception;
+
 	public List<Long> getSectorListByIndustryId(List<Long> industryList) throws Exception;
 	
 	public List<SubSectorListRequest> getSubSectorList(List<Long> list);

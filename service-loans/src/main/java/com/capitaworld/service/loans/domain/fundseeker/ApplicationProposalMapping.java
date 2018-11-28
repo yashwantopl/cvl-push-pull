@@ -69,6 +69,19 @@ public class ApplicationProposalMapping implements Serializable {
 	private Long ddrStatusId;
     
 
+    // Upload Fields
+    @Column(name = "is_primary_upload_filled")
+    private Boolean isPrimaryUploadFilled;
+
+    @Column(name = "is_final_dpr_upload_filled")
+    private Boolean isFinalDprUploadFilled;
+
+    @Column(name = "is_final_upload_filled")
+    private Boolean isFinalUploadFilled;
+
+    @Column(name = "is_final_mcq_filled")
+    private Boolean isFinalMcqFilled;
+
     public Long getProposalId() {
         return proposalId;
     }
@@ -204,6 +217,66 @@ public class ApplicationProposalMapping implements Serializable {
 	public void setApprovedDate(Date approvedDate) {
 		this.approvedDate = approvedDate;
 	}
-    
+
+    public ApplicationProposalMapping(Long proposalId) {
+        this.proposalId = proposalId;
+    }
+
+    public Boolean getActive() {
+        return isActive;
+    }
+
+    public void setActive(Boolean active) {
+        isActive = active;
+    }
+
+    public Boolean getFinalLocked() {
+        return isFinalLocked;
+    }
+
+    public void setFinalLocked(Boolean finalLocked) {
+        isFinalLocked = finalLocked;
+    }
+
+    public Boolean getPrimaryLocked() {
+        return isPrimaryLocked;
+    }
+
+    public void setPrimaryLocked(Boolean primaryLocked) {
+        isPrimaryLocked = primaryLocked;
+    }
+
+    public Boolean getIsPrimaryUploadFilled() {
+        return isPrimaryUploadFilled;
+    }
+
+    public void setIsPrimaryUploadFilled(Boolean primaryUploadFilled) {
+        isPrimaryUploadFilled = primaryUploadFilled;
+    }
+
+    public Boolean getIsFinalDprUploadFilled() {
+        return isFinalDprUploadFilled;
+    }
+
+    public void setIsFinalDprUploadFilled(Boolean finalDprUploadFilled) {
+        isFinalDprUploadFilled = finalDprUploadFilled;
+    }
+
+    public Boolean getIsFinalUploadFilled() {
+        return isFinalUploadFilled;
+    }
+
+    public void setIsFinalUploadFilled(Boolean finalUploadFilled) {
+        isFinalUploadFilled = finalUploadFilled;
+    }
+
+    public Boolean getIsFinalMcqFilled() {
+        return isFinalMcqFilled;
+    }
+
+    public void setIsFinalMcqFilled(Boolean finalMcqFilled) {
+        isFinalMcqFilled = finalMcqFilled;
+    }
+
     
 }

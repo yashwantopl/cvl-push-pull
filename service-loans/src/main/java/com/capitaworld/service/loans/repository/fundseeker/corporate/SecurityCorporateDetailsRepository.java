@@ -20,6 +20,9 @@ public interface SecurityCorporateDetailsRepository extends JpaRepository<Securi
 	
 	@Query("select o from SecurityCorporateDetail o where o.applicationId.id = :id and o.isActive = true")
 	public List<SecurityCorporateDetail> getSecurityCorporateDetailFromAppId(@Param("id") Long id);
+
+	@Query("select o from SecurityCorporateDetail o where o.proposalId.proposalId = :proposalId and o.isActive = true")
+	public List<SecurityCorporateDetail> getSecurityCorporateDetailFromProposalId(@Param("proposalId") Long proposalId);
 	
 	public SecurityCorporateDetail findByIdAndIsActive(Long id,Boolean isActive);
 	

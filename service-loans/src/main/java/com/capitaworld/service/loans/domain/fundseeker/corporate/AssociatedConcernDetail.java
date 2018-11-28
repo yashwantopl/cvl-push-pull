@@ -3,6 +3,7 @@ package com.capitaworld.service.loans.domain.fundseeker.corporate;
 import java.io.Serializable;
 import javax.persistence.*;
 
+import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 
 import java.util.Date;
@@ -24,6 +25,11 @@ public class AssociatedConcernDetail implements Serializable {
 	@ManyToOne
 	@JoinColumn(name="application_id")
 	private LoanApplicationMaster applicationId;
+
+
+	@ManyToOne
+	@JoinColumn(name="proposal_mapping_id")
+	private ApplicationProposalMapping applicationProposalMapping;
 
 	@Lob
 	@Column(name="brief_description")
@@ -253,5 +259,13 @@ public class AssociatedConcernDetail implements Serializable {
 
 	public void setDateOfIncorporation(Date dateOfIncorporation) {
 		this.dateOfIncorporation = dateOfIncorporation;
+	}
+
+	public ApplicationProposalMapping getApplicationProposalMapping() {
+		return applicationProposalMapping;
+	}
+
+	public void setApplicationProposalMapping(ApplicationProposalMapping applicationProposalMapping) {
+		this.applicationProposalMapping = applicationProposalMapping;
 	}
 }

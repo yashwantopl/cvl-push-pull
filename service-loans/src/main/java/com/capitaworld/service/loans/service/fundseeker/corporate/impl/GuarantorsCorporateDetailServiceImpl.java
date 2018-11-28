@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -51,6 +52,7 @@ public class GuarantorsCorporateDetailServiceImpl implements GuarantorsCorporate
 				}
 				BeanUtils.copyProperties(guarantorsCorporateDetailRequest, guarantorsCorporateDetail);
 				guarantorsCorporateDetail.setApplicationId(new LoanApplicationMaster(frameRequest.getApplicationId()));
+				guarantorsCorporateDetail.setApplicationProposalMapping(new ApplicationProposalMapping(frameRequest.getProposalId()));
 				guarantorsCorporateDetail.setModifiedBy(frameRequest.getUserId());
 				guarantorsCorporateDetail.setModifiedDate(new Date());
 				guarantorsCorporateDetailRepository.save(guarantorsCorporateDetail);
@@ -60,6 +62,29 @@ public class GuarantorsCorporateDetailServiceImpl implements GuarantorsCorporate
 
 		catch (Exception e) {
 			logger.info("Exception  in save GuarantorDetails  :-");
+			e.printStackTrace();
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+
+	}
+
+	@Override
+	public List<GuarantorsCorporateDetailRequest> getGuarantorsCorporateDetailListByProposalId(Long proposalId,Long userId) throws Exception {
+		try {
+			List<GuarantorsCorporateDetail> guarantorsCorporateDetail = guarantorsCorporateDetailRepository
+					.listGuarantorsCorporateFromProposalId(proposalId);
+			List<GuarantorsCorporateDetailRequest> guarantorsCorporateDetailRequests = new ArrayList<GuarantorsCorporateDetailRequest>();
+
+			for (GuarantorsCorporateDetail detail : guarantorsCorporateDetail) {
+				GuarantorsCorporateDetailRequest guarantorsCorporateDetailRequest = new GuarantorsCorporateDetailRequest();
+				BeanUtils.copyProperties(detail, guarantorsCorporateDetailRequest);
+				guarantorsCorporateDetailRequests.add(guarantorsCorporateDetailRequest);
+			}
+			return guarantorsCorporateDetailRequests;
+		}
+
+		catch (Exception e) {
+			logger.info("Exception  in get Guarantor Details :-");
 			e.printStackTrace();
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}

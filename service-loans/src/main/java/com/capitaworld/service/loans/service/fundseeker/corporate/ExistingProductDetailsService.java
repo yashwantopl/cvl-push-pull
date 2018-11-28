@@ -15,4 +15,6 @@ public interface ExistingProductDetailsService {
 	
 	List<ExistingProductDetailRequest> getExistingProductDetailList(Long applicationId, Long userId) throws Exception;
 
+	List<ExistingProductDetailRequest> getExistingProductDetailListByProposalId(Long proposalId, Long userId) throws Exception;
+
 }

@@ -15,8 +15,6 @@ public class LoanApplicationRequest implements Serializable {
 
 	private Long id;
 
-	private Long proposalMappingId;
-
 	private Long clientId;
 
 	private Double amount;
@@ -635,20 +633,12 @@ public class LoanApplicationRequest implements Serializable {
 		this.wcRenewalStatus = wcRenewalStatus;
 	}
 
-	public Long getProposalMappingId() {
-		return proposalMappingId;
-	}
-
-	public void setProposalMappingId(Long proposalMappingId) {
-		this.proposalMappingId = proposalMappingId;
-	}
-
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
 	public String toString() {
-		return "LoanApplicationRequest [id=" + id + ",proposalMappingId="+ proposalMappingId +", clientId=" + clientId + ", amount=" + amount + ", categoryCode="
+		return "LoanApplicationRequest [id=" + id + ", clientId=" + clientId + ", amount=" + amount + ", categoryCode="
 				+ categoryCode + ", name=" + name + ", productId=" + productId + ", tenure=" + tenure + ", typeOfLoan="
 				+ typeOfLoan + ", loanAmount=" + loanAmount + ", interestRate=" + interestRate + ", emiAmount="
 				+ emiAmount + ", nameOfEntity=" + nameOfEntity + ", fundProvider=" + fundProvider + ", userId=" + userId

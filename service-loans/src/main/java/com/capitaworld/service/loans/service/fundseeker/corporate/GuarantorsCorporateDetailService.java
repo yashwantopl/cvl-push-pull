@@ -15,4 +15,6 @@ public interface GuarantorsCorporateDetailService {
 
 	public List<GuarantorsCorporateDetailRequest> getGuarantorsCorporateDetailList(Long id,Long userId) throws Exception;
 
+	public List<GuarantorsCorporateDetailRequest> getGuarantorsCorporateDetailListByProposalId(Long proposalId,Long userId) throws Exception;
+
 }

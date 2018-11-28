@@ -22,6 +22,9 @@ public class IndustrySectorDetail implements Serializable {
 	@Column(name="application_id")
 	private Long applicationId;
 
+	@Column(name="proposal_mapping_id")
+	private Long proposalMappingId;
+
 	@Column(name="created_by")
 	private Long createdBy;
 
@@ -135,4 +138,11 @@ public class IndustrySectorDetail implements Serializable {
 		this.sectorId = sectorId;
 	}
 
+	public Long getProposalMappingId() {
+		return proposalMappingId;
+	}
+
+	public void setProposalMappingId(Long proposalMappingId) {
+		this.proposalMappingId = proposalMappingId;
+	}
 }

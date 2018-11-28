@@ -27,4 +27,5 @@ public interface ProposedProductDetailsRepository extends JpaRepository<Proposed
     
     public ProposedProductDetail findByIdAndIsActive(Long id, Boolean isActive);
 
+	public List<ProposedProductDetail> findByProposalIdAndIsActive(Long proposalId, Boolean isActive);
 }

@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -46,6 +47,7 @@ public class FinanceMeansDetailServiceImpl implements FinanceMeansDetailsService
 
 				BeanUtils.copyProperties(financeMeansRequest, financeMeansDetail);
 				financeMeansDetail.setApplicationId(new LoanApplicationMaster(frameRequest.getApplicationId()));
+				financeMeansDetail.setProposalId(new ApplicationProposalMapping(frameRequest.getProposalId()));
 				financeMeansDetail.setModifiedBy(frameRequest.getUserId());
 				financeMeansDetail.setModifiedDate(new Date());
 				financeMeansDetailRepository.save(financeMeansDetail);
@@ -59,6 +61,27 @@ public class FinanceMeansDetailServiceImpl implements FinanceMeansDetailsService
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 		
+	}
+
+	@Override
+	public List<FinanceMeansDetailRequest> getMeansOfFinanceListByProposalId(Long proposalId, Long userId) throws Exception {
+		try {
+			List<FinanceMeansDetail> financeMeansDetails = financeMeansDetailRepository
+					.listFinanceMeansFromProposalId(proposalId);
+			List<FinanceMeansDetailRequest> financeMeansRequests = new ArrayList<FinanceMeansDetailRequest>(
+					financeMeansDetails.size());
+
+			for (FinanceMeansDetail detail : financeMeansDetails) {
+				FinanceMeansDetailRequest financeMeansDetailRequest = new FinanceMeansDetailRequest();
+				BeanUtils.copyProperties(detail, financeMeansDetailRequest);
+				financeMeansRequests.add(financeMeansDetailRequest);
+			}
+			return financeMeansRequests;
+		} catch (Exception e) {
+			logger.info("Exception getting financeMeansDetail  :-");
+			e.printStackTrace();
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+		}
 	}
 
 	@Override
