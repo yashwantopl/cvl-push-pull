@@ -42,6 +42,9 @@ public class ApplicationProposalMapping implements Serializable {
 
     @Column(name = "created_by")
     private Long createdBy;
+    
+    @Column(name = "approved_date")
+	private Date approvedDate;
 
     @Column(name = "modified_by")
     private Long modifiedBy;
@@ -61,6 +64,10 @@ public class ApplicationProposalMapping implements Serializable {
 
     @Column(name = "loan_amount")
     private Long loanAmount;
+    
+    @Column(name = "ddr_status_id")
+	private Long ddrStatusId;
+    
 
     public Long getProposalId() {
         return proposalId;
@@ -181,4 +188,22 @@ public class ApplicationProposalMapping implements Serializable {
     public void setLoanAmount(Long loanAmount) {
         this.loanAmount = loanAmount;
     }
+
+	public Long getDdrStatusId() {
+		return ddrStatusId;
+	}
+
+	public void setDdrStatusId(Long ddrStatusId) {
+		this.ddrStatusId = ddrStatusId;
+	}
+
+	public Date getApprovedDate() {
+		return approvedDate;
+	}
+
+	public void setApprovedDate(Date approvedDate) {
+		this.approvedDate = approvedDate;
+	}
+    
+    
 }

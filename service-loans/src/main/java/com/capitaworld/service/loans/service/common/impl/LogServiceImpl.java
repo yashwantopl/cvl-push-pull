@@ -66,6 +66,27 @@ public class LogServiceImpl implements LogService {
 	}
 
 	@Override
+	public Boolean saveFsLog(Long applicationId, Integer logType, Long proposalMapId) {
+		// TODO Auto-generated method stub
+		CommonDocumentUtils.startHook(logger, "saveFsLog");
+		try {
+			LogDetails logDetails = new LogDetails();
+			logDetails.setLoanApplicationMasterId(applicationId);
+			logDetails.setProductMappingId(proposalMapId);
+			logDetails.setDateTypeMasterId(logType);
+			logDetails.setCreatedDate(new Date());
+			logDetailsRepository.save(logDetails);
+			CommonDocumentUtils.endHook(logger, "saveFsLog");
+			return true;
+		} catch (Exception e) {
+			// TODO: handle exception
+			logger.error(e.toString());
+		}
+		CommonDocumentUtils.endHook(logger, "saveFsLog");
+		return false;
+	}
+	
+	@Override
 	public Date getDateByLogType(Long applicationId, Integer logType) {
 		// TODO Auto-generated method stub
 		CommonDocumentUtils.startHook(logger, "getDateByLogType");

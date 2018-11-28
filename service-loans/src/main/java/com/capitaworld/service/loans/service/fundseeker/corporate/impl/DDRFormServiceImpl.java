@@ -262,6 +262,48 @@ public class DDRFormServiceImpl implements DDRFormService {
 		return dDRRequest;
 	}
 
+	public DDRRequest getMergeDDRNew(Long appId, Long userId, Long orgId) {
+
+		// SET DDR AUTO FIELD DATA
+		DDRRequest dDRRequest = getCombinedOneFormDetails(userId, appId);
+		if (CommonUtils.isObjectNullOrEmpty(dDRRequest)) {
+			logger.info("ONEFORM DETAILS NULL OR EMPTY ---->" + appId + "---------AND USERID ------------------>" + userId);
+			return dDRRequest;
+		}
+
+		DDRFormDetails dDRFormDetails = ddrFormDetailsRepository.getByAppIdAndOrgIdAndIsActive(appId,orgId);
+		if (!CommonUtils.isObjectNullOrEmpty(dDRFormDetails)) {
+			Long ddrFormId = dDRFormDetails.getId();
+			BeanUtils.copyProperties(dDRFormDetails, dDRRequest);
+
+			// SET TO BE FILED DATA
+			dDRRequest.setOutsideLoansString(CommonUtils.checkString(dDRFormDetails.getOutsideLoans()));
+			dDRRequest.setLoansFromFamilyMembersRelativeString(CommonUtils.checkString(dDRFormDetails.getLoansFromFamilyMembersRelative()));
+			dDRRequest.setdDRAuthSignDetailsList(getAuthorizedSignDetails(ddrFormId));
+			dDRRequest.setdDRCreditCardDetailsList(getCreditCardDetails(ddrFormId));
+			dDRRequest.setdDRCreditorsDetailsList(getCreaditorsDetails(ddrFormId));
+			dDRRequest.setdDROperatingOfficeList(getOfficeDetails(ddrFormId, DDRFrames.OPERATING_OFFICE.getValue()));
+			dDRRequest.setdDRRegisteredOfficeList(getOfficeDetails(ddrFormId, DDRFrames.REGISTERED_OFFICE.getValue()));
+			dDRRequest.setdDROtherBankLoanDetailsList(getOtherBankLoanDetails(ddrFormId));
+			// dDRFormDetailsRequest.setdDRRelWithDbsDetailsList(getRelWithDBSDetails(ddrFormId));
+			dDRRequest.setdDRVehiclesOwnedDetailsList(getVehiclesOwnedDetails(ddrFormId));
+			dDRRequest.setdDRFinancialSummaryList(getFinancialSummary(ddrFormId));
+			dDRRequest.setdDRFamilyDirectorsList(getFamilyDirectorsDetails(ddrFormId, appId, userId, true));
+			dDRRequest.setExistingBankerDetailList(getExistingBankerDetails(ddrFormId, appId, userId, true));
+
+			dDRRequest.setProvisionalTotalSales(getCMATotalSalesByAppIdAndYear(appId, "2018"));
+			dDRRequest.setLastYearTotalSales(getCMATotalSalesByAppIdAndYear(appId, "2017"));
+			dDRRequest.setLastToLastYearTotalSales(getCMATotalSalesByAppIdAndYear(appId, "2016"));
+			dDRRequest.setCurrency(getCurrency(appId, userId));
+		} else {
+			dDRRequest.setdDRFamilyDirectorsList(getFamilyDirectorsDetails(null, appId, userId, true));
+			dDRRequest.setExistingBankerDetailList(getExistingBankerDetails(null, appId, userId, true));
+			dDRRequest.setdDRFinancialSummaryList(getFinancialSummary(null));
+			dDRRequest.setCurrency(getCurrency(appId, userId));
+		}
+		return dDRRequest;
+	}
+	
 	@Override
 	public void saveMergeDDR(DDRRequest dDRRequest) throws Exception {
 		Long userId = dDRRequest.getUserId();
@@ -3659,6 +3701,308 @@ public class DDRFormServiceImpl implements DDRFormService {
 	@Override
 	public DDRFormDetails getDDRDetailByApplicationId(Long applicationId) {
 		return ddrFormDetailsRepository.getByAppIdAndIsActive(applicationId);
+	}
+	
+	@Override
+	public void saveMergeDDRNew(DDRRequest dDRRequest) throws Exception {
+		Long userId = dDRRequest.getUserId();
+		try {
+			DDRFormDetails dDRFormDetails = ddrFormDetailsRepository.getByAppIdAndOrgIdAndIsActive(dDRRequest.getApplicationId(), dDRRequest.getOrgId());
+			if (CommonUtils.isObjectNullOrEmpty(dDRFormDetails)) {
+				logger.info("DDR ===============> New DDR Form Saving ------------------------->");
+				dDRFormDetails = new DDRFormDetails();
+				BeanUtils.copyProperties(dDRRequest, dDRFormDetails, "id");
+				dDRFormDetails.setIsActive(true);
+				dDRFormDetails.setCreatedBy(userId);
+				dDRFormDetails.setCreatedDate(new Date());
+			} else {
+				logger.info("DDR ===============> DDR Form Updating ------------------------->" + dDRRequest.getId());
+				BeanUtils.copyProperties(dDRRequest, dDRFormDetails, "id", "applicationId", "userId", "isActive");
+				dDRFormDetails.setModifyBy(userId);
+				dDRFormDetails.setModifyDate(new Date());
+			}
+			dDRFormDetails = ddrFormDetailsRepository.save(dDRFormDetails);
+
+			// SAVE AUTO FILEDS DATA
+			if (CommonUtils.UsersRoles.MAKER.equals(dDRRequest.getRoleId()) || CommonUtils.UsersRoles.FP_MAKER.equals(dDRRequest.getRoleId())) {
+
+				CorporateApplicantDetail applicantDetail = corporateApplicantDetailRepository.getByApplicationIdAndIsAtive(dDRRequest.getApplicationId());
+				if (!CommonUtils.isObjectNullOrEmpty(applicantDetail) && !CommonUtils.isObjectNullOrEmpty(dDRRequest)) {
+					if (!CommonUtils.isObjectNullOrEmpty(dDRRequest.getRegOfficeAddress())) {
+						// regOfficeAddress
+						Address regOfficeAdd = dDRRequest.getRegOfficeAddress();
+						applicantDetail.setRegisteredPremiseNumber(regOfficeAdd.getPremiseNumber());
+						applicantDetail.setRegisteredLandMark(regOfficeAdd.getLandMark());
+						applicantDetail.setRegisteredStreetName(regOfficeAdd.getStreetName());
+						applicantDetail.setRegisteredCountryId(regOfficeAdd.getCountryId());
+						applicantDetail.setRegisteredStateId(regOfficeAdd.getStateId());
+						applicantDetail.setRegisteredCityId(regOfficeAdd.getCityId());
+						// corpOfficeAddress
+						Address corpOfficeAdd = dDRRequest.getCorpOfficeAddress();
+						applicantDetail.setAdministrativePremiseNumber(corpOfficeAdd.getPremiseNumber());
+						applicantDetail.setAdministrativeLandMark(corpOfficeAdd.getLandMark());
+						applicantDetail.setAdministrativeStreetName(corpOfficeAdd.getStreetName());
+						applicantDetail.setAdministrativeCountryId(corpOfficeAdd.getCountryId());
+						applicantDetail.setAdministrativeStateId(corpOfficeAdd.getStateId());
+						applicantDetail.setAdministrativeCityId(corpOfficeAdd.getCityId());
+						// aboutMe
+						applicantDetail.setAboutUs(dDRRequest.getAboutMe());
+						corporateApplicantDetailRepository.save(applicantDetail);
+					}
+
+					// Existing - Application proposedProductDetailList and
+					// existingProductDetailList
+					List<ProposedProductDetailRequest> proProductList = dDRRequest.getProposedProductDetailList();
+					for (ProposedProductDetailRequest proProduct : proProductList) {
+						ProposedProductDetail proposedProductDetail = null;
+						if (!CommonUtils.isObjectNullOrEmpty(proProduct.getId())) {
+							proposedProductDetail = proposedProductDetailsRepository
+									.findByIdAndIsActive(proProduct.getId(), true);
+						}
+						if (CommonUtils.isObjectNullOrEmpty(proposedProductDetail)) {
+							proposedProductDetail = new ProposedProductDetail();
+							proposedProductDetail.setCreatedBy(userId);
+							proposedProductDetail.setCreatedDate(new Date());
+							proposedProductDetail.setIsActive(true);
+							proposedProductDetail
+									.setApplicationId(new LoanApplicationMaster(dDRRequest.getApplicationId()));
+						} else {
+							proposedProductDetail.setIsActive(proProduct.getIsActive());
+							proposedProductDetail.setModifiedBy(userId);
+							proposedProductDetail.setModifiedDate(new Date());
+						}
+						proposedProductDetail.setApplication(proProduct.getApplication());
+						proposedProductDetail.setProduct(proProduct.getProduct());
+						proposedProductDetailsRepository.save(proposedProductDetail);
+					}
+
+					if (!CommonUtils.isListNullOrEmpty(dDRRequest.getExistingProductDetailList())) {
+						List<ExistingProductDetailRequest> existingProductDetailList = dDRRequest
+								.getExistingProductDetailList();
+
+						for (ExistingProductDetailRequest existingPro : existingProductDetailList) {
+							ExistingProductDetail existingProductDetail = null;
+							if (!CommonUtils.isObjectNullOrEmpty(existingPro.getId())) {
+								existingProductDetail = existingProductDetailsRepository
+										.findByIdAndIsActive(existingPro.getId(), true);
+							}
+							if (CommonUtils.isObjectNullOrEmpty(existingProductDetail)) {
+								existingProductDetail = new ExistingProductDetail();
+								existingProductDetail.setCreatedBy(userId);
+								existingProductDetail.setCreatedDate(new Date());
+								existingProductDetail.setIsActive(true);
+								existingProductDetail
+										.setApplicationId(new LoanApplicationMaster(dDRRequest.getApplicationId()));
+							} else {
+								existingProductDetail.setIsActive(existingPro.getIsActive());
+								existingProductDetail.setModifiedBy(userId);
+								existingProductDetail.setModifiedDate(new Date());
+							}
+							existingProductDetail.setApplication(existingPro.getApplication());
+							existingProductDetail.setProduct(existingPro.getProduct());
+							existingProductDetailsRepository.save(existingProductDetail);
+						}
+					}
+
+					// promoBackRespList
+					if (!CommonUtils.isListNullOrEmpty(dDRRequest.getPromoBackRespList())) {
+						List<PromotorBackgroundDetailRequest> promoBackRespList = dDRRequest.getPromoBackRespList();
+
+						for (PromotorBackgroundDetailRequest promoBackReq : promoBackRespList) {
+							PromotorBackgroundDetail promBack = null;
+							if (!CommonUtils.isObjectNullOrEmpty(promoBackReq.getId())) {
+								promBack = promotorBackgroundDetailsRepository.findByIdAndIsActive(promoBackReq.getId(),
+										true);
+							}
+
+							if (CommonUtils.isObjectNullOrEmpty(promBack)) {
+								promBack = new PromotorBackgroundDetail();
+								promBack.setCreatedBy(userId);
+								promBack.setCreatedDate(new Date());
+								promBack.setApplicationId(new LoanApplicationMaster(dDRRequest.getApplicationId()));
+								promBack.setIsActive(true);
+							} else {
+								promBack.setIsActive(promoBackReq.getIsActive());
+								promBack.setModifiedBy(userId);
+								promBack.setModifiedDate(new Date());
+							}
+							promBack.setRelationshipType(promoBackReq.getRelationshipType());
+							promBack.setAddress(promoBackReq.getAddress());
+							promBack.setMobile(promoBackReq.getMobile());
+							promBack.setDesignation(promoBackReq.getDesignation());
+							promBack.setTotalExperience(promoBackReq.getTotalExperience());
+							promBack.setNetworth(promoBackReq.getNetworth());
+							promBack.setAppointmentDate(promoBackReq.getAppointmentDate());
+							promotorBackgroundDetailsRepository.save(promBack);
+						}
+					}
+					// dDRFamilyDirectorsList ---> directorBackReq
+					if (!CommonUtils.isListNullOrEmpty(dDRRequest.getdDRFamilyDirectorsList())) {
+						List<DDRFamilyDirectorsDetailsRequest> ddrFamilyDirReqList = dDRRequest
+								.getdDRFamilyDirectorsList();
+						for (DDRFamilyDirectorsDetailsRequest ddrFamilyDirReq : ddrFamilyDirReqList) {
+							if (!CommonUtils.isObjectNullOrEmpty(ddrFamilyDirReq.getDirectorBackReq())) {
+								DirectorBackgroundDetailRequest directorBackReq = ddrFamilyDirReq.getDirectorBackReq();// FIND
+																														// DIRECTOR
+																														// OBJECT
+
+								DirectorBackgroundDetail dirBack = null;
+								if (!CommonUtils.isObjectNullOrEmpty(directorBackReq.getId())) {
+									dirBack = directorBackgroundDetailsRepository
+											.findByIdAndIsActive(directorBackReq.getId(), true);
+								}
+
+								if (CommonUtils.isObjectNullOrEmpty(dirBack)) {
+									dirBack = new DirectorBackgroundDetail();
+									dirBack.setCreatedBy(userId);
+									dirBack.setCreatedDate(new Date());
+									dirBack.setApplicationId(new LoanApplicationMaster(dDRRequest.getApplicationId()));
+									dirBack.setIsActive(true);
+								} else {
+									dirBack.setIsActive(directorBackReq.getIsActive());
+									dirBack.setModifiedBy(userId);
+									dirBack.setModifiedDate(new Date());
+								}
+								dirBack.setRelationshipType(directorBackReq.getRelationshipType());
+								dirBack.setDesignation(directorBackReq.getDesignation());
+								dirBack.setAddress(directorBackReq.getAddress());
+								dirBack.setMobile(directorBackReq.getMobile());
+								dirBack.setTotalExperience(directorBackReq.getTotalExperience());
+								dirBack.setNetworth(directorBackReq.getNetworth());
+								dirBack.setAppointmentDate(directorBackReq.getAppointmentDate());
+								dirBack.setPremiseNumber(directorBackReq.getPremiseNumber());
+								dirBack.setStreetName(directorBackReq.getStreetName());
+								dirBack.setLandmark(directorBackReq.getLandmark());
+								directorBackgroundDetailsRepository.save(dirBack);
+							}
+						}
+					}
+
+					// ownershipRespList
+					if (!CommonUtils.isListNullOrEmpty(dDRRequest.getOwnershipReqList())) {
+						List<OwnershipDetailRequest> ownershipReqList = dDRRequest.getOwnershipReqList();
+
+						for (OwnershipDetailRequest ownershipReq : ownershipReqList) {
+							OwnershipDetail ownership = null;
+							if (!CommonUtils.isObjectNullOrEmpty(ownershipReq.getId())) {
+								ownership = ownershipDetailsRepository.findByIdAndIsActive(ownershipReq.getId(), true);
+							}
+
+							if (CommonUtils.isObjectNullOrEmpty(ownership)) {
+								ownership = new OwnershipDetail();
+								ownership.setCreatedBy(userId);
+								ownership.setCreatedDate(new Date());
+								ownership.setApplicationId(new LoanApplicationMaster(dDRRequest.getApplicationId()));
+								ownership.setIsActive(true);
+							} else {
+								ownership.setIsActive(ownershipReq.getIsActive());
+								ownership.setModifiedBy(userId);
+								ownership.setModifiedDate(new Date());
+							}
+							ownership.setStackPercentage(ownershipReq.getStackPercentage());
+							ownershipDetailsRepository.save(ownership);
+						}
+					}
+
+					// associatedConcernDetailList
+					if (!CommonUtils.isListNullOrEmpty(dDRRequest.getAssociatedConcernDetailList())) {
+						List<AssociatedConcernDetailRequest> assConcernDetailList = dDRRequest
+								.getAssociatedConcernDetailList();
+
+						for (AssociatedConcernDetailRequest assConcernDetailReq : assConcernDetailList) {
+							AssociatedConcernDetail assConcernDetail = null;
+							if (!CommonUtils.isObjectNullOrEmpty(assConcernDetailReq.getId())) {
+								assConcernDetail = associatedConcernDetailRepository
+										.findByIdAndIsActive(assConcernDetailReq.getId(), true);
+							}
+
+							if (CommonUtils.isObjectNullOrEmpty(assConcernDetail)) {
+								assConcernDetail = new AssociatedConcernDetail();
+								assConcernDetail.setCreatedBy(userId);
+								assConcernDetail.setCreatedDate(new Date());
+								assConcernDetail
+										.setApplicationId(new LoanApplicationMaster(dDRRequest.getApplicationId()));
+								assConcernDetail.setIsActive(true);
+							} else {
+								assConcernDetail.setIsActive(assConcernDetailReq.getIsActive());
+								assConcernDetail.setModifiedBy(userId);
+								assConcernDetail.setModifiedDate(new Date());
+							}
+							assConcernDetail.setNatureActivity(assConcernDetailReq.getNatureActivity());
+							assConcernDetail.setInvestedAmount(assConcernDetailReq.getInvestedAmount());
+							assConcernDetail.setNatureActivity(assConcernDetailReq.getNatureActivity());
+							assConcernDetail.setNameOfDirector(assConcernDetailReq.getNameOfDirector());
+							assConcernDetail.setBriefDescription(assConcernDetailReq.getBriefDescription());
+							assConcernDetail.setTurnOverFirstYear(assConcernDetailReq.getTurnOverFirstYear());
+							assConcernDetail.setTurnOverSecondYear(assConcernDetailReq.getTurnOverSecondYear());
+							assConcernDetail.setTurnOverThirdYear(assConcernDetailReq.getTurnOverThirdYear());
+							assConcernDetail.setProfitPastOneYear(assConcernDetailReq.getProfitPastOneYear());
+							assConcernDetail.setProfitPastTwoYear(assConcernDetailReq.getProfitPastTwoYear());
+							assConcernDetail.setProfitPastThreeYear(assConcernDetailReq.getProfitPastThreeYear());
+							associatedConcernDetailRepository.save(assConcernDetail);
+						}
+					}
+
+					// securityCorporateDetailList securityCorporateDetailsRepository
+					if (!CommonUtils.isListNullOrEmpty(dDRRequest.getSecurityCorporateDetailList())) {
+						List<SecurityCorporateDetailRequest> securityCorporateDetailList = dDRRequest
+								.getSecurityCorporateDetailList();
+
+						for (SecurityCorporateDetailRequest securityCorDetailReq : securityCorporateDetailList) {
+							SecurityCorporateDetail securityCorporateDetail = null;
+							if (!CommonUtils.isObjectNullOrEmpty(securityCorDetailReq.getId())) {
+								securityCorporateDetail = securityCorporateDetailsRepository
+										.findByIdAndIsActive(securityCorDetailReq.getId(), true);
+							}
+
+							if (CommonUtils.isObjectNullOrEmpty(securityCorporateDetail)) {
+								securityCorporateDetail = new SecurityCorporateDetail();
+								securityCorporateDetail.setCreatedBy(userId);
+								securityCorporateDetail.setCreatedDate(new Date());
+								securityCorporateDetail
+										.setApplicationId(new LoanApplicationMaster(dDRRequest.getApplicationId()));
+								securityCorporateDetail.setIsActive(true);
+							} else {
+								securityCorporateDetail.setIsActive(securityCorDetailReq.getIsActive());
+								securityCorporateDetail.setModifiedBy(userId);
+								securityCorporateDetail.setModifiedDate(new Date());
+							}
+							securityCorporateDetail.setAmount(securityCorDetailReq.getAmount());
+							securityCorporateDetail
+									.setPrimarySecurityName(securityCorDetailReq.getPrimarySecurityName());
+							securityCorporateDetailsRepository.save(securityCorporateDetail);
+						}
+					}
+
+				}
+
+			} else {
+				logger.info("ROLE ID NOT MATCHES --------------------------------------------------------->"
+						+ dDRRequest.getRoleId());
+			}
+
+			// SAVE ALL LIST DATA
+			saveAuthorizedSignDetails(dDRRequest.getdDRAuthSignDetailsList(), userId, dDRFormDetails.getId());
+			saveCreaditorsDetails(dDRRequest.getdDRCreditorsDetailsList(), userId, dDRFormDetails.getId());
+			saveCreditCardDetails(dDRRequest.getdDRCreditCardDetailsList(), userId, dDRFormDetails.getId());
+			saveOfficeDetails(dDRRequest.getdDROperatingOfficeList(), userId, DDRFrames.OPERATING_OFFICE.getValue(),
+					dDRFormDetails.getId());
+			saveOfficeDetails(dDRRequest.getdDRRegisteredOfficeList(), userId, DDRFrames.REGISTERED_OFFICE.getValue(),
+					dDRFormDetails.getId());
+			saveOtherBankLoanDetails(dDRRequest.getdDROtherBankLoanDetailsList(), userId, dDRFormDetails.getId());
+			// saveRelWithDBSDetails(ddrFormDetailsRequest.getdDRRelWithDbsDetailsList(),
+			// userId,dDRFormDetails.getId());
+			saveVehiclesOwnedDetails(dDRRequest.getdDRVehiclesOwnedDetailsList(), userId, dDRFormDetails.getId());
+			saveFinancialSummary(dDRRequest.getdDRFinancialSummaryList(), userId, dDRFormDetails.getId());
+			saveFamilyDirectorsDetails(dDRRequest.getdDRFamilyDirectorsList(), userId, dDRFormDetails.getId());
+			saveExistingBankerDetails(dDRRequest.getExistingBankerDetailList(), userId, dDRFormDetails.getId());
+			logger.info("DDR ===============> DDR Form Saved Successfully in Service-----------------> "
+					+ dDRFormDetails.getId());
+		} catch (Exception e) {
+			logger.info("DDR ===============> Throw Exception while saving ddr form");
+			e.printStackTrace();
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+		}
 	}
 
 }

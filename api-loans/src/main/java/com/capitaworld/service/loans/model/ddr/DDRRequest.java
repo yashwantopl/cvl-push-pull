@@ -118,6 +118,8 @@ public class DDRRequest implements Serializable {
 	private String customerId;
 	private String customerName;
 	
+	private Long orgId;
+	
 	//AUTO FIELD
 	private List<PromotorBackgroundDetailRequest> promoBackRespList = new ArrayList<PromotorBackgroundDetailRequest>();
 	private List<OwnershipDetailRequest> ownershipReqList = new ArrayList<OwnershipDetailRequest>();
@@ -798,6 +800,12 @@ public class DDRRequest implements Serializable {
 	}
 	public void setCustomerName(String customerName) {
 		this.customerName = customerName;
+	}
+	public Long getOrgId() {
+		return orgId;
+	}
+	public void setOrgId(Long orgId) {
+		this.orgId = orgId;
 	}
 	
 	
