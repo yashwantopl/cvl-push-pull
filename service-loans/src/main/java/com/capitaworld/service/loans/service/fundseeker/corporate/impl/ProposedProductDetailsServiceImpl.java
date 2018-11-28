@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -37,6 +38,9 @@ public class ProposedProductDetailsServiceImpl implements ProposedProductDetails
 	@Autowired
 	private LoanApplicationRepository loanApplicationRepository;
 
+	@Autowired
+	private ApplicationProposalMappingRepository applicationProposalMappingRepository;
+
 	@Override
 	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception {
 		try {
@@ -51,6 +55,8 @@ public class ProposedProductDetailsServiceImpl implements ProposedProductDetails
 				}
 				proposedProductDetail
 						.setApplicationId(loanApplicationRepository.findOne(frameRequest.getApplicationId()));
+				proposedProductDetail
+						.setProposalId(applicationProposalMappingRepository.findOne(frameRequest.getProposalId()));
 				proposedProductDetail.setModifiedBy(frameRequest.getUserId());
 				proposedProductDetail.setModifiedDate(new Date());
 				proposedProductDetailsRepository.save(proposedProductDetail);
@@ -64,6 +70,30 @@ public class ProposedProductDetailsServiceImpl implements ProposedProductDetails
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 
+	}
+
+
+	@Override
+	public List<ProposedProductDetailRequest> getProposedProductDetailListFromProposalId(Long proposalId,Long userId) throws Exception {
+		try {
+			List<ProposedProductDetail> proposedProductDetails = proposedProductDetailsRepository
+					.findByProposalIdAndIsActive(proposalId,true);
+			List<ProposedProductDetailRequest> proposedProductDetailRequests = new ArrayList<>();
+
+			for (ProposedProductDetail detail : proposedProductDetails) {
+				ProposedProductDetailRequest proposedProductDetailRequest = new ProposedProductDetailRequest();
+				BeanUtils.copyProperties(detail, proposedProductDetailRequest);
+				ProposedProductDetailRequest.printFields(proposedProductDetailRequest);
+				proposedProductDetailRequests.add(proposedProductDetailRequest);
+			}
+			return proposedProductDetailRequests;
+		}
+
+		catch (Exception e) {
+			logger.info("Exception  in save proposedProductDetail  :-");
+			e.printStackTrace();
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+		}
 	}
 
 	@Override

@@ -13,6 +13,9 @@ public interface CorporateApplicantDetailRepository extends JpaRepository<Corpor
 
 	@Query("from CorporateApplicantDetail cr where cr.applicationId.id =:applicationId and cr.applicationId.userId =:userId and cr.isActive=true")
 	public CorporateApplicantDetail getByApplicationAndUserId(@Param("userId") Long userId, @Param("applicationId") Long applicationId);
+
+	@Query("from CorporateApplicantDetail cr where cr.applicationProposalMapping.id =:proposalId and cr.isActive=true")
+	public CorporateApplicantDetail getByProposalId(@Param("proposalId") Long proposalId);
 	
 	@Query("from CorporateApplicantDetail cr where cr.applicationId.id =:applicationId and cr.applicationId.userId =:userId")
 	public CorporateApplicantDetail getByApplicationAndUserIdForSP(@Param("userId") Long userId,
@@ -31,9 +34,9 @@ public interface CorporateApplicantDetailRepository extends JpaRepository<Corpor
 	
 	public CorporateApplicantDetail findByApplicationIdIdAndIsActive(Long applicationId,Boolean isActive);
 
-	@Query("select count(cr.applicationProposalMapping.proposalId) from CorporateApplicantDetail cr where cr.applicationProposalMapping.proposalId =:proposalMappingId and cr.applicationId.userId =:userId and cr.isActive=true and (cr.organisationName != NULL and cr.organisationName != '')")
+	@Query("select count(cr.applicationId.id) from CorporateApplicantDetail cr where cr.applicationId.id =:applicationId and cr.applicationId.userId =:userId and cr.isActive=true and (cr.organisationName != NULL and cr.organisationName != '')")
 	public Long hasAlreadyApplied(@Param("userId") Long userId,
-								  @Param("proposalMappingId") Long proposalMappingId);
+								  @Param("applicationId") Long applicationId);
 	
 	@Modifying
 	@Query(value="update fs_corporate_applicant_details set latitude =:lat,longitude =:lon where application_id =:applicationId and is_active = 1",nativeQuery = true)

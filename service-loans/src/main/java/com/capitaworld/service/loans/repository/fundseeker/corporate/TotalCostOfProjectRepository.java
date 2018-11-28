@@ -13,6 +13,9 @@ public interface TotalCostOfProjectRepository extends JpaRepository<TotalCostOfP
 
 	@Query("from TotalCostOfProject  a where a.applicationId.id=:id and a.applicationId.userId =:userId AND a.isActive=true")
 	public List<TotalCostOfProject> listCostOfProjectFromAppId(@Param("id") Long id, @Param("userId") Long userId);
+
+	@Query("from TotalCostOfProject  a where a.proposalId.proposalId=:proposalId AND a.isActive=true")
+	public List<TotalCostOfProject> listCostOfProjectFromProposalId(@Param("proposalId") Long id);
 	
 	@Modifying
 	@Query("update TotalCostOfProject pm set pm.isActive = false,pm.modifiedDate = NOW(),pm.modifiedBy =:userId where pm.applicationId.id =:applicationId and pm.isActive = true")

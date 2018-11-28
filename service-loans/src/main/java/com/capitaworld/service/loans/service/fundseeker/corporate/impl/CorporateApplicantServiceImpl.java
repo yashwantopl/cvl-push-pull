@@ -191,6 +191,44 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 	}
 
 	@Override
+	public CorporateApplicantRequest getCorporateApplicantByProposalId(Long userId, Long proposalId) throws Exception {
+		try {
+			// TODO Auto-generated method stub
+			CorporateApplicantDetail applicantDetail = applicantRepository.getByProposalId(proposalId);
+
+			if (applicantDetail == null) {
+				return null;
+			}
+			CorporateApplicantRequest applicantRequest = new CorporateApplicantRequest();
+			BeanUtils.copyProperties(applicantDetail, applicantRequest);
+			copyAddressFromDomainToRequest(applicantDetail, applicantRequest);
+			applicantRequest.setIndustrylist(industrySectorRepository.getIndustryByPorposalId(proposalId));
+			applicantRequest.setSectorlist(industrySectorRepository.getSectorByProposalId(proposalId));
+			applicantRequest.setSubsectors(subSectorRepository.getSubSectorByProposalId(proposalId));
+			applicantRequest.setDetailsFilledCount(applicantDetail.getApplicationId().getDetailsFilledCount());
+			try {
+
+				UserResponse userResponse= usersClient.getEmailMobile(userId);
+				@SuppressWarnings("unchecked")
+				UsersRequest userRequest= MultipleJSONObjectHelper
+						.getObjectFromMap((LinkedHashMap<String, Object>) userResponse.getData(), UsersRequest.class);
+				applicantRequest.setEmail(userRequest.getEmail());
+				applicantRequest.setLandlineNo(userRequest.getMobile());
+			}
+			catch (Exception e){
+				logger.warn("error while get user data");
+				e.printStackTrace();
+			}
+			//applicantRequest.setCoApplicants(coApplicantService.getList(applicationId, userId));
+			return applicantRequest;
+		} catch (Exception e) {
+			logger.error("Error while getting Corporate Profile:-");
+			e.printStackTrace();
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+	}
+
+	@Override
 	public CorporateApplicantRequest getCorporateApplicant(Long userId, Long applicationId) throws Exception {
 		try {
 			// TODO Auto-generated method stub

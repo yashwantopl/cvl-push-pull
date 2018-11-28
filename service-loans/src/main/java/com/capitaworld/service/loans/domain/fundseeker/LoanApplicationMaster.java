@@ -34,9 +34,6 @@ public class LoanApplicationMaster implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-    @Column(name = "proposal_mapping_id")
-	private Long proposalMappingId;
-
 	private Double amount;
 
 	@Column(name = "category_code")
@@ -724,11 +721,4 @@ public class LoanApplicationMaster implements Serializable {
 		return "LoanApplicationMaster [id=" + id + "]";
 	}
 
-    public Long getProposalMappingId() {
-        return proposalMappingId;
-    }
-
-    public void setProposalMappingId(Long proposalMappingId) {
-        this.proposalMappingId = proposalMappingId;
-    }
 }

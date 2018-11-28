@@ -3,7 +3,6 @@ package com.capitaworld.service.loans.model.corporate;
 import com.capitaworld.service.loans.model.Address;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -20,6 +19,8 @@ public class CorporateFinalInfoRequest implements Serializable {
     private Long clientId;
 
     private Long applicationId;
+
+    private Long proposalMappingId;
 
     private Address firstAddress;
 
@@ -262,5 +263,17 @@ public class CorporateFinalInfoRequest implements Serializable {
 
     public void setLandlineNo(String landlineNo) {
         this.landlineNo = landlineNo;
+    }
+
+    public static long getSerialVersionUID() {
+        return serialVersionUID;
+    }
+
+    public Long getProposalId() {
+        return proposalMappingId;
+    }
+
+    public void setProposalId(Long proposalMappingId) {
+        this.proposalMappingId = proposalMappingId;
     }
 }

@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +42,9 @@ public class ExistingProductDetailsController {
 	@Autowired
 	private LoanApplicationService loanApplicationService;
 
+	@Autowired
+	private ApplicationProposalMappingRepository applicationProposalMappingRepository;
+
 	/*@RequestMapping(value = "/ping", method = RequestMethod.GET)
 	public String getPing() {
 		logger.info("Ping success");
@@ -61,8 +65,8 @@ public class ExistingProductDetailsController {
 					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}
 		// application id must not be null
-		if (frameRequest.getApplicationId() == null) {
-			logger.warn("application id and user id must not be null ==>" + frameRequest);
+		if (frameRequest.getProposalId() == null) {
+			logger.warn("proposal id and user id must not be null ==>" + frameRequest);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -76,8 +80,7 @@ public class ExistingProductDetailsController {
 
 			Long finalUserId = (CommonUtils.isObjectNullOrEmpty(frameRequest.getClientId()) ? userId
 					: frameRequest.getClientId());
-			Boolean finalLocked = loanApplicationService.isFinalLocked(frameRequest.getApplicationId(),
-					finalUserId);
+			Boolean finalLocked = loanApplicationService.isFinalLockedByProposalId(frameRequest.getProposalId(),finalUserId);
 			if (!CommonUtils.isObjectNullOrEmpty(finalLocked) && finalLocked.booleanValue()) {
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.APPLICATION_LOCKED_MESSAGE, HttpStatus.BAD_REQUEST.value()),
@@ -119,6 +122,41 @@ public class ExistingProductDetailsController {
 			}
 
 			List<ExistingProductDetailRequest> response = existingProductDetailsService.getExistingProductDetailList(id,
+					userId);
+			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			loansResponse.setListData(response);
+			CommonDocumentUtils.endHook(logger, "getList");
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while getting Existing Product Details==>", e);
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+	}
+
+	@RequestMapping(value = "/getList/{proposalId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getListByProposalId(@PathVariable Long proposalId, HttpServletRequest request,
+												 @RequestParam(value = "clientId", required = false) Long clientId) {
+
+		CommonDocumentUtils.startHook(logger, "getList");
+		Long userId = null;
+		if (CommonDocumentUtils.isThisClientApplication(request)) {
+			userId = clientId;
+		} else {
+			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+		}
+		// request must not be null
+		try {
+			if (proposalId == null) {
+				logger.warn("ID Require to get Existing Product Details ==>" + proposalId);
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+
+			List<ExistingProductDetailRequest> response = existingProductDetailsService.getExistingProductDetailListByProposalId(proposalId,
 					userId);
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 			loansResponse.setListData(response);

@@ -15,4 +15,6 @@ public interface AssociatedConcernDetailService {
 
 	public List<AssociatedConcernDetailRequest> getAssociatedConcernsDetailList(Long id,Long userId) throws Exception;
 
+	public List<AssociatedConcernDetailRequest> getAssociatedConcernsDetailListByProposalId(Long id,Long userId) throws Exception;
+
 }

@@ -109,6 +109,29 @@ public class CorporateFinalInfoServiceImpl implements CorporateFinalInfoService 
 			}
 		}
     }
+
+    @Override
+    public CorporateFinalInfoRequest getByProposalId(Long userId, Long proposalId) throws Exception {
+        try {
+            // TODO Auto-generated method stub
+            CorporateApplicantDetail applicantDetail = applicantRepository.getByProposalId(proposalId);
+            if (applicantDetail == null) {
+                return null;
+            }
+            CorporateFinalInfoRequest corporateFinalInfoRequest = new CorporateFinalInfoRequest();
+            BeanUtils.copyProperties(applicantDetail, corporateFinalInfoRequest, CommonUtils.IgnorableCopy.CORPORATE_PROFILE);
+            copyAddressFromDomainToRequest(applicantDetail, corporateFinalInfoRequest);
+
+            //applicantRequest.setDetailsFilledCount(applicantDetail.getApplicationId().getDetailsFilledCount());
+
+            return corporateFinalInfoRequest;
+        } catch (Exception e) {
+            logger.error("Error while getting Corporate Profile:-");
+            e.printStackTrace();
+            throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+        }
+    }
+
     @Override
     public CorporateFinalInfoRequest get(Long userId, Long applicationId) throws Exception {
         try {

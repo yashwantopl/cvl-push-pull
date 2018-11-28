@@ -6,6 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -61,6 +62,8 @@ public class CreditRatingOrganizationDetailsServiceImpl implements CreditRatingO
 				BeanUtils.copyProperties(creditRatingOrganizationsDetailRequest, creditRatingOrganizationDetail);
 				creditRatingOrganizationDetail
 						.setApplicationId(new LoanApplicationMaster(frameRequest.getApplicationId()));
+				creditRatingOrganizationDetail
+						.setProposalId(new ApplicationProposalMapping(frameRequest.getProposalId()));
 				creditRatingOrganizationDetail.setModifiedBy(frameRequest.getUserId());
 				creditRatingOrganizationDetail.setModifiedDate(new Date());
 				creditRatingOrganizationDetailsRepository.save(creditRatingOrganizationDetail);
@@ -69,6 +72,34 @@ public class CreditRatingOrganizationDetailsServiceImpl implements CreditRatingO
 		}
 
 		catch (Exception e) {
+			logger.info("Exception  in save creditRatingOrganizationDetail  :-");
+			e.printStackTrace();
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+	}
+
+
+	@Override
+	public List<CreditRatingOrganizationDetailRequest> getCreditRatingOrganizationDetailsListFromProposalId(Long proposalId, Long userId)
+			throws Exception {
+		try {
+			List<CreditRatingOrganizationDetail> creditRatingOrganizationDetails = creditRatingOrganizationDetailsRepository
+					.listCreditRatingOrganizationDetailsFromProposalId(proposalId);
+			List<CreditRatingOrganizationDetailRequest> creditRatingOrganizationDetailRequests = new ArrayList<CreditRatingOrganizationDetailRequest>();
+
+			for (CreditRatingOrganizationDetail detail : creditRatingOrganizationDetails) {
+				CreditRatingOrganizationDetailRequest creditRatingOrganizationDetailsRequest = new CreditRatingOrganizationDetailRequest();
+				BeanUtils.copyProperties(detail, creditRatingOrganizationDetailsRequest);
+				if (!CommonUtils.isObjectNullOrEmpty(detail.getCreditRatingOptionId())) {
+					OneFormResponse ratings = oneFormClient.getRatingById(detail.getCreditRatingOptionId().longValue());
+					MasterResponse masterResponse = MultipleJSONObjectHelper
+							.getObjectFromMap((LinkedHashMap<String, Object>) ratings.getData(), MasterResponse.class);
+					creditRatingOrganizationDetailsRequest.setRatingValue(masterResponse.getValue());
+				}
+				creditRatingOrganizationDetailRequests.add(creditRatingOrganizationDetailsRequest);
+			}
+			return creditRatingOrganizationDetailRequests;
+		} catch (Exception e) {
 			logger.info("Exception  in save creditRatingOrganizationDetail  :-");
 			e.printStackTrace();
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);

@@ -20,4 +20,7 @@ public interface SubSectorRepository extends JpaRepository<SubsectorDetail, Long
 	@Query("select sd.sectorSubsectorTransactionId from SubsectorDetail sd where sd.applicationId =:applicationId and sd.isActive = true")
 	public List<Long> getSubSectorByApplicationId(@Param("applicationId") Long applicationId);
 
+	@Query("select sd.sectorSubsectorTransactionId from SubsectorDetail sd where sd.proposalMappingId =:proposalMappingId and sd.isActive = true")
+	public List<Long> getSubSectorByProposalId(@Param("proposalMappingId") Long proposalMappingId);
+
 }
