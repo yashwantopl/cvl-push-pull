@@ -475,7 +475,7 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 							}
 							
 							if("SUCCESS".equalsIgnoreCase(sanctionReason) ) {
-								bankCWAuditTrailDomain = bankToCWAuditTrailRepository.findByApplicationIdAndOrgIdAndApiTypeAndBankPrimaryKeyAndIsActive(loanSanctionAndDisbursedRequest.getApplicationId(), orgId, CommonUtility.ApiType.REVERSE_SANCTION , loanSanctionAndDisbursedRequest.getLoanSanctionRequest().getId() , true);
+								bankCWAuditTrailDomain = bankToCWAuditTrailRepository.findFirstByApplicationIdAndOrgIdAndApiTypeAndBankPrimaryKeyAndIsActiveOrderByIdDesc(loanSanctionAndDisbursedRequest.getApplicationId(), orgId, CommonUtility.ApiType.REVERSE_SANCTION , loanSanctionAndDisbursedRequest.getLoanSanctionRequest().getId() , true);
 								if(CommonUtils.isObjectNullOrEmpty(bankCWAuditTrailDomain)) {
 									try {
 										isSanctionSuccess = saveLoanSanctionDetailById(orgId ,  loanSanctionAndDisbursedRequest.getLoanSanctionRequest());
