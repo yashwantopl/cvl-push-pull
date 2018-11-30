@@ -64,6 +64,26 @@ public class ExistingProductDetailsServiceImpl implements ExistingProductDetails
 	}
 
 	@Override
+	public List<ExistingProductDetailRequest> getExistingProductDetailListByProposalId(Long proposalId, Long userId) throws Exception {
+		try {
+			List<ExistingProductDetail> existingProductDetails = existingProductDetailsRepository.listExistingProductFromProposalId(proposalId);
+			List<ExistingProductDetailRequest> existingProductDetailRequests = new ArrayList<>();
+			for (ExistingProductDetail detail : existingProductDetails) {
+				ExistingProductDetailRequest existingProductDetailRequest = new ExistingProductDetailRequest();
+				BeanUtils.copyProperties(detail, existingProductDetailRequest);
+				ExistingProductDetailRequest.printFields(existingProductDetailRequest);
+				existingProductDetailRequests.add(existingProductDetailRequest);
+			}
+			return existingProductDetailRequests;
+		} catch (Exception e) {
+			logger.info("Exception  in save existingProductDetail  :-");
+			e.printStackTrace();
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+
+	}
+
+	@Override
 	public List<ExistingProductDetailRequest> getExistingProductDetailList(Long applicationId, Long userId) throws Exception {
 		try {
 			List<ExistingProductDetail> existingProductDetails = existingProductDetailsRepository.listExistingProductFromAppId(applicationId);

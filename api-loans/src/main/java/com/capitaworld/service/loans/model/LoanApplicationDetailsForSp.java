@@ -7,7 +7,6 @@ import com.capitaworld.service.loans.model.common.RecentProfileViewResponse;
 public class LoanApplicationDetailsForSp {
 
 	private Long id;
-	private Long proposalMappingId;
 	private Integer applicationType;
 	private Integer productId;
 	private String productName;
@@ -146,13 +145,5 @@ public class LoanApplicationDetailsForSp {
 
 	public void setCurrencyValue(String currencyValue) {
 		this.currencyValue = currencyValue;
-	}
-
-	public Long getProposalMappingId() {
-		return proposalMappingId;
-	}
-
-	public void setProposalMappingId(Long proposalMappingId) {
-		this.proposalMappingId = proposalMappingId;
 	}
 }

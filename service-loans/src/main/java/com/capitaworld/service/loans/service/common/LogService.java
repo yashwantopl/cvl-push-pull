@@ -7,6 +7,7 @@ import com.capitaworld.service.loans.model.common.LogDetailsModel;
 public interface LogService {
 public Boolean save(LogDetailsModel logDetailsModel);
 public Boolean saveFsLog(Long applicationId,Integer logType);
+public Boolean saveFsLog(Long applicationId,Integer logType, Long proposalMapId);
 public Date getDateByLogType(Long applicationId,Integer logType);
 
 }

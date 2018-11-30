@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.*;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
@@ -97,6 +98,7 @@ import com.capitaworld.service.loans.config.FPAsyncComponent;
 import com.capitaworld.service.loans.config.MCAAsyncComponent;
 import com.capitaworld.service.loans.domain.common.AuditMaster;
 import com.capitaworld.service.loans.domain.fundprovider.ProductMaster;
+import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.capitaworld.service.loans.domain.fundseeker.ApplicationStatusMaster;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.AchievementDetail;
@@ -443,6 +445,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Autowired
 	private PincodeDateService pincodeDateService;
+
+	@Autowired
+	private ProposalDetailsRepository proposalDetailsRepository;
 
 	@Value("${capitaworld.service.gateway.product}")
 	private String product;
@@ -836,7 +841,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				return applicationRequest;
 			}
 			applicationRequest.setHasAlreadyApplied(
-					hasAlreadyApplied(userId, applicationMaster.getId(), applicationMaster.getProductId(),applicationMaster.getProposalMappingId()));
+					hasAlreadyApplied(userId, applicationMaster.getId(), applicationMaster.getProductId()));
 
 			int userMainType = CommonUtils.getUserMainType(applicationMaster.getProductId());
 			if (userMainType == CommonUtils.UserMainType.CORPORATE) {
@@ -932,7 +937,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					requests.add(request);
 					continue;
 				}
-				request.setHasAlreadyApplied(hasAlreadyApplied(userId, master.getId(), master.getProductId(),master.getProposalMappingId()));
+				request.setHasAlreadyApplied(hasAlreadyApplied(userId, master.getId(), master.getProductId()));
 				int userMainType = CommonUtils.getUserMainType(master.getProductId());
 				if (userMainType == CommonUtils.UserMainType.CORPORATE) {
 					request.setLoanTypeMain(CommonUtils.CORPORATE);
@@ -1358,11 +1363,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 
 	@Override
-	public boolean hasAlreadyApplied(Long userId, Long applicationId,Integer productId, Long proposalMappingId) {
+	public boolean hasAlreadyApplied(Long userId, Long applicationId,Integer productId) {
 		if (CommonUtils.UserMainType.CORPORATE == CommonUtils.getUserMainType(productId)) {
-			return (corporateApplicantDetailRepository.hasAlreadyApplied(userId,proposalMappingId) > 0 ? true : false);
+			return (corporateApplicantDetailRepository.hasAlreadyApplied(userId,applicationId) > 0 ? true : false);
 		} else {
-			return (retailApplicantDetailRepository.hasAlreadyApplied(userId, proposalMappingId) > 0 ? true : false);
+			return (retailApplicantDetailRepository.hasAlreadyApplied(userId, applicationId) > 0 ? true : false);
 		}
 	}
 
@@ -5119,6 +5124,48 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			applicationMaster.setModifiedBy(userId);
 			applicationMaster.setModifiedDate(new Date());
 			loanApplicationRepository.save(applicationMaster);
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error while Updating DDR Status");
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+
+	}
+	
+	@Override
+	public Boolean updateDDRStatusNew(Long applicationId, Long userId, Long orgId, Long statusId) throws Exception {
+		logger.info("start updateDDRStatusNew()");
+		try {
+			ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.getByApplicationIdAndOrgId(applicationId, orgId);
+			
+			if (applicationProposalMapping == null) {
+				throw new Exception("LoanapplicationMaster object Must not be null while Updating DDR Status==>"
+						+ applicationProposalMapping);
+			}
+
+			if (statusId.equals(CommonUtils.DdrStatus.APPROVED)) {
+				applicationProposalMapping.setApprovedDate(new Date());
+			}
+
+			Long appStatusId = null;
+			if (CommonUtils.DdrStatus.APPROVED.equals(statusId)) {
+				appStatusId = CommonUtils.ApplicationStatus.APPROVED;
+			} else if (CommonUtils.DdrStatus.REVERTED.equals(statusId)) {
+				appStatusId = CommonUtils.ApplicationStatus.REVERTED;
+			} else if (CommonUtils.DdrStatus.SUBMITTED.equals(statusId)) {
+				appStatusId = CommonUtils.ApplicationStatus.ASSIGNED_TO_CHECKER;
+			} else if (CommonUtils.DdrStatus.SUBMITTED_TO_APPROVER.equals(statusId)) {
+				appStatusId = CommonUtils.ApplicationStatus.SUBMITTED_TO_APPROVER;
+			}
+			if (!CommonUtils.isObjectNullOrEmpty(appStatusId)) {
+				applicationProposalMapping.setApplicationStatusMaster(new ApplicationStatusMaster(appStatusId));
+			}
+
+			applicationProposalMapping.setDdrStatusId(statusId);
+			applicationProposalMapping.setModifiedBy(userId);
+			applicationProposalMapping.setModifiedDate(new Date());
+			applicationProposalMappingRepository.save(applicationProposalMapping);
 			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -11344,4 +11391,352 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		return null;
 	}
 
+	@Override
+	public JSONObject isAllowToMoveAheadForMultiProposal(Long applicationId, Long proposalId, Long userId, Integer nextTabType,
+														 Long coAppllicantOrGuarantorId) throws Exception {
+		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId, userId);
+		int userMainType = CommonUtils.getUserMainType(loanApplicationMaster.getProductId());
+		if (CommonUtils.UserMainType.CORPORATE == userMainType) {
+			return corporateValidatingForMultiProposal(loanApplicationMaster, nextTabType, coAppllicantOrGuarantorId,proposalId);
+		} else {
+			return retailValidating(loanApplicationMaster, nextTabType, coAppllicantOrGuarantorId);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private JSONObject corporateValidatingForMultiProposal(LoanApplicationMaster applicationMaster, Integer toTabType,
+														   Long coAppllicantOrGuarantorId, Long proposalId) throws Exception {
+		List<Long> coAppIds = null;
+
+		ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.getOne(proposalId);
+
+		Long coAppCount;
+
+		int index = 0;
+		final String INVALID_MSG = "Requested data is Invalid.";
+		JSONObject response = new JSONObject();
+		response.put("message", "NA");
+		response.put("result", true);
+
+		switch (toTabType) {
+
+			case CommonUtils.TabType.PROFILE_CO_APPLICANT:
+				if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsApplicantDetailsFilled())
+						|| !applicationMaster.getIsApplicantDetailsFilled().booleanValue()) {
+					response.put("message", "Please Fill PROFILE details to Move Next !");
+					response.put("result", false);
+					return response;
+				}
+
+				coAppIds = corporateCoApplicantService.getCoAppIds(applicationMaster.getId(),
+						applicationMaster.getUserId());
+				if (CommonUtils.isListNullOrEmpty(coAppIds)) {
+					response.put("message", INVALID_MSG);
+					response.put("result", false);
+					return response;
+				}
+
+				index = coAppIds.indexOf(coAppllicantOrGuarantorId);
+				if (index == -1) {
+					response.put("message", INVALID_MSG);
+					response.put("result", false);
+					return response;
+				}
+
+				if (index == 1) {
+					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsCoApp1DetailsFilled())
+							|| !applicationMaster.getIsCoApp1DetailsFilled().booleanValue()) {
+						response.put("message", "Please CO-APPLICANT-1 details to Move Next !");
+						response.put("result", false);
+						return response;
+					}
+				}
+				break;
+
+			case CommonUtils.TabType.MATCHES:
+				boolean isPrimaryLocked = isPrimaryLocked(applicationMaster.getId(), applicationMaster.getUserId());
+				if (!isPrimaryLocked) {
+					response.put("message", "Please LOCK PRIMARY DETAILS to See the matches !");
+					response.put("result", false);
+					return response;
+				}
+				break;
+
+			case CommonUtils.TabType.CONNECTIONS:
+				isPrimaryLocked = isPrimaryLocked(applicationMaster.getId(), applicationMaster.getUserId());
+				if (!isPrimaryLocked) {
+					response.put("message", "Please LOCK PRIMARY DETAILS to See the connections !");
+					response.put("result", false);
+					return response;
+				}
+				break;
+			case CommonUtils.TabType.PRIMARY_INFORMATION:
+				if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsApplicantDetailsFilled())
+						|| !applicationMaster.getIsApplicantDetailsFilled().booleanValue()) {
+					response.put("message", "Please Fill PROFILE details to Move Next !");
+					response.put("result", false);
+					return response;
+				}
+
+				// Co-Applicant Profile Checking
+
+				coAppCount = null;
+
+				coAppCount = corporateCoApplicantRepository.getCoAppCountByApplicationAndUserId(applicationMaster.getId(),
+						applicationMaster.getUserId());
+				if (!CommonUtils.isObjectNullOrEmpty(coAppCount) || coAppCount > 0) {
+					if (coAppCount == 1) {
+						if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsCoApp1DetailsFilled())
+								|| !applicationMaster.getIsCoApp1DetailsFilled().booleanValue()) {
+							response.put("message", "Please Fill CO-APPLICANT-1 details to Move Next !");
+							response.put("result", false);
+							return response;
+						}
+					}
+
+					if (coAppCount == 2) {
+						if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsCoApp1DetailsFilled())
+								|| !applicationMaster.getIsCoApp1DetailsFilled().booleanValue()) {
+							response.put("message", "Please Fill CO-APPLICANT-1 details to Move Next !");
+							response.put("result", false);
+							return response;
+						}
+						if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsCoApp2DetailsFilled())
+								|| !applicationMaster.getIsCoApp2DetailsFilled().booleanValue()) {
+							response.put("message", "Please Fill CO-APPLICANT-2 details to Move Next !");
+							response.put("result", false);
+							return response;
+						}
+
+					}
+				}
+
+				break;
+			case CommonUtils.TabType.PRIMARY_UPLOAD:
+				if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsApplicantDetailsFilled())
+						|| !applicationMaster.getIsApplicantDetailsFilled().booleanValue()) {
+					response.put("message", "Please Fill PROFILE details to Move Next !");
+					response.put("result", false);
+					return response;
+				}
+				if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsApplicantPrimaryFilled())
+						|| !applicationMaster.getIsApplicantPrimaryFilled().booleanValue()) {
+					response.put("message", "Please Fill PRIMARY INFORMATION details to Move Next !");
+					response.put("result", false);
+					return response;
+				}
+				break;
+			case CommonUtils.TabType.FINAL_MCQ:
+
+				// Co-Applicant Profile Checking
+				coAppCount = null;
+				coAppCount = corporateCoApplicantRepository.getCoAppCountByApplicationAndUserId(applicationMaster.getId(),
+						applicationMaster.getUserId());
+				if (!CommonUtils.isObjectNullOrEmpty(coAppCount) || coAppCount > 0) {
+					if (coAppCount == 1) {
+						if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsCoApp1DetailsFilled())
+								|| !applicationMaster.getIsCoApp1DetailsFilled().booleanValue()) {
+							response.put("message", "Please Fill CO-APPLICANT-1 details to Move Next !");
+							response.put("result", false);
+							return response;
+						}
+					}
+
+					if (coAppCount == 2) {
+						if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsCoApp1DetailsFilled())
+								|| !applicationMaster.getIsCoApp1DetailsFilled().booleanValue()) {
+							response.put("message", "Please Fill CO-APPLICANT-1 details to Move Next !");
+							response.put("result", false);
+							return response;
+						}
+						if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsCoApp2DetailsFilled())
+								|| !applicationMaster.getIsCoApp2DetailsFilled().booleanValue()) {
+							response.put("message", "Please Fill CO-APPLICANT-2 details to Move Next !");
+							response.put("result", false);
+							return response;
+						}
+
+					}
+				}
+				isPrimaryLocked = isPrimaryLockedByProposalId(proposalId, applicationMaster.getUserId());
+				if (!isPrimaryLocked) {
+					response.put("message", "Please LOCK PRIMARY DETAILS to Move next !");
+					response.put("result", false);
+					return response;
+				}
+				if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsApplicantDetailsFilled())
+						|| !applicationMaster.getIsApplicantDetailsFilled().booleanValue()) {
+					response.put("message", "Please Fill PROFILE details to Move Next !");
+					response.put("result", false);
+					return response;
+				}
+				if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsApplicantPrimaryFilled())
+						|| !applicationMaster.getIsApplicantPrimaryFilled().booleanValue()) {
+					response.put("message", "Please Fill PRIMARY INFORMATION details to Move Next !");
+					response.put("result", false);
+					return response;
+				}
+				/*
+				 * if
+				 * (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsPrimaryUploadFilled()
+				 * ) || !applicationMaster.getIsPrimaryUploadFilled().booleanValue()) {
+				 * response.put("message",
+				 * "Please Fill PRIMARY INFORMATION details to Move Next !");
+				 * response.put("result", false); return response; }
+				 */
+				break;
+			case CommonUtils.TabType.FINAL_INFORMATION:
+				isPrimaryLocked = isPrimaryLockedByProposalId(proposalId, applicationMaster.getUserId());
+				if (!isPrimaryLocked) {
+					response.put("message", "Please LOCK PRIMARY DETAILS to Move next !");
+					response.put("result", false);
+					return response;
+				}
+				/*
+				 * if (CommonUtils.isObjectNullOrEmpty(applicationMaster.
+				 * getIsApplicantDetailsFilled()) ||
+				 * !applicationMaster.getIsApplicantDetailsFilled().booleanValue()) {
+				 * response.put("message", "Please Fill PROFILE details to Move Next !");
+				 * response.put("result", false); return response; } if
+				 * (CommonUtils.isObjectNullOrEmpty(applicationMaster.
+				 * getIsApplicantPrimaryFilled()) ||
+				 * !applicationMaster.getIsApplicantPrimaryFilled().booleanValue()) {
+				 * response.put("message",
+				 * "Please Fill PRIMARY INFORMATION details to Move Next !");
+				 * response.put("result", false); return response; }
+				 */
+				// if
+				// (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsPrimaryUploadFilled())
+				// || !applicationMaster.getIsPrimaryUploadFilled().booleanValue()) {
+				// response.put("message", "Please Fill PRIMARY INFORMATION details to Move Next
+				// !");
+				// response.put("result", false);
+				// return response;
+				// }
+				if (CommonUtils.BusinessType.EXISTING_BUSINESS.getId().equals(applicationMaster.getBusinessTypeId())) {
+					if (CommonUtils.isObjectNullOrEmpty(applicationProposalMapping.getIsFinalMcqFilled())
+							|| !applicationProposalMapping.getIsFinalMcqFilled().booleanValue()) {
+						response.put("message", "Please Fill FINAL MCQ details to Move Next !");
+						response.put("result", false);
+						return response;
+					}
+				}
+				break;
+			case CommonUtils.TabType.FINAL_DPR_UPLOAD:
+				isPrimaryLocked = isPrimaryLockedByProposalId(proposalId, applicationMaster.getUserId());
+				/*
+				 * if (!isPrimaryLocked) { response.put("message",
+				 * "Please LOCK PRIMARY DETAILS to Move next !"); response.put("result", false);
+				 * return response; } if (CommonUtils.isObjectNullOrEmpty(applicationMaster.
+				 * getIsApplicantDetailsFilled()) ||
+				 * !applicationMaster.getIsApplicantDetailsFilled().booleanValue()) {
+				 * response.put("message", "Please Fill PROFILE details to Move Next !");
+				 * response.put("result", false); return response; }
+				 */
+				// if
+				// (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsApplicantPrimaryFilled())
+				// || !applicationMaster.getIsApplicantPrimaryFilled().booleanValue()) {
+				// response.put("message", "Please Fill PRIMARY INFORMATION details to Move Next
+				// !");
+				// response.put("result", false);
+				// return response;
+				// }
+				/*
+				 * if
+				 * (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsPrimaryUploadFilled()
+				 * ) || !applicationMaster.getIsPrimaryUploadFilled().booleanValue()) {
+				 * response.put("message",
+				 * "Please Fill PRIMARY INFORMATION details to Move Next !");
+				 * response.put("result", false); return response; }
+				 */
+				if (CommonUtils.BusinessType.EXISTING_BUSINESS.getId().equals(applicationMaster.getBusinessTypeId())) {
+					if (CommonUtils.isObjectNullOrEmpty(applicationProposalMapping.getIsFinalMcqFilled())
+							|| !applicationProposalMapping.getIsFinalMcqFilled().booleanValue()) {
+						response.put("message", "Please Fill FINAL MCQ details to Move Next !");
+						response.put("result", false);
+						return response;
+					}
+				}
+
+				if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsApplicantFinalFilled())
+						|| !applicationMaster.getIsApplicantFinalFilled().booleanValue()) {
+					response.put("message", "Please Fill FINAL INFORMATION details to Move Next !");
+					response.put("result", false);
+					return response;
+				}
+				break;
+			case CommonUtils.TabType.FINAL_UPLOAD:
+				isPrimaryLocked = isPrimaryLockedByProposalId(applicationMaster.getId(), applicationMaster.getUserId());
+				if (!isPrimaryLocked) {
+					response.put("message", "Please LOCK PRIMARY DETAILS to Move next !");
+					response.put("result", false);
+					return response;
+				}
+
+				/*
+				 * if (CommonUtils.isObjectNullOrEmpty(applicationMaster.
+				 * getIsApplicantDetailsFilled()) ||
+				 * !applicationMaster.getIsApplicantDetailsFilled().booleanValue()) {
+				 * response.put("message", "Please Fill PROFILE details to Move Next !");
+				 * response.put("result", false); return response; } if
+				 * (CommonUtils.isObjectNullOrEmpty(applicationMaster.
+				 * getIsApplicantPrimaryFilled()) ||
+				 * !applicationMaster.getIsApplicantPrimaryFilled().booleanValue()) {
+				 * response.put("message",
+				 * "Please Fill PRIMARY INFORMATION details to Move Next !");
+				 * response.put("result", false); return response; }
+				 */
+				/*
+				 * if
+				 * (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsPrimaryUploadFilled()
+				 * ) || !applicationMaster.getIsPrimaryUploadFilled().booleanValue()) {
+				 * response.put("message",
+				 * "Please Fill PRIMARY INFORMATION details to Move Next !");
+				 * response.put("result", false); return response; }
+				 */
+				if (CommonUtils.BusinessType.EXISTING_BUSINESS.getId().equals(applicationMaster.getBusinessTypeId())) {
+					if (CommonUtils.isObjectNullOrEmpty(applicationProposalMapping.getIsFinalMcqFilled())
+							|| !applicationProposalMapping.getIsFinalMcqFilled().booleanValue()) {
+						response.put("message", "Please Fill FINAL MCQ details to Move Next !");
+						response.put("result", false);
+						return response;
+					}
+				}
+
+				if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsApplicantFinalFilled())
+						|| !applicationMaster.getIsApplicantFinalFilled().booleanValue()) {
+					response.put("message", "Please Fill FINAL INFORMATION details to Move Next !");
+					response.put("result", false);
+					return response;
+				}
+				if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsFinalDprUploadFilled())
+						|| !applicationMaster.getIsFinalDprUploadFilled().booleanValue()) {
+					response.put("message", "Please Fill Financial Model details to Move Next !");
+					response.put("result", false);
+					return response;
+				}
+
+				/*
+				 * if (applicationMaster.getProductId() == LoanType.TERM_LOAN.getValue()) { if
+				 * (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsFinalDprUploadFilled(
+				 * )) || !applicationMaster.getIsFinalDprUploadFilled().booleanValue()) {
+				 * response.put("message", "Please Fill DPR details to Move Next !");
+				 * response.put("result", false); return response; } }
+				 */
+				break;
+			default:
+				break;
+		}
+		return response;
+	}
+
+	@Override
+	public Long getProposalId(Long applicationId, Long userOrgId){
+
+		Long proposalId = proposalDetailsRepository.findByApplicationIdAndUserOrgId(userOrgId,applicationId);
+		if (CommonUtils.isObjectNullOrEmpty(proposalId)) {
+			logger.error("Failed to get proposal id from application id and user org id" + applicationId);
+		}
+		return proposalId;
+	}
 }

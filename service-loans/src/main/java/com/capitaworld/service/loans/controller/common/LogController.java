@@ -15,11 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.capitaworld.service.loans.controller.fundseeker.LoanApplicationController;
-import com.capitaworld.service.loans.domain.common.LogDetails;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.common.LogDetailsModel;
-import com.capitaworld.service.loans.model.corporate.CorporateProduct;
 import com.capitaworld.service.loans.service.common.LogService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -58,6 +55,51 @@ public class LogController {
 			}
 			LoansResponse loansResponse = new LoansResponse("Success Result", HttpStatus.OK.value());
 			loansResponse.setData(logService.saveFsLog(applicationId, logType));
+			CommonDocumentUtils.endHook(logger, "createFsLog");
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+
+		} catch (Exception e) {
+			logger.error("Error while createLog==>", e);
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	@RequestMapping(value = "/createFsLog/{applicationId}/{logType}/{proposalMapId}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> createFsLog(@PathVariable("applicationId") Long applicationId,@PathVariable("logType") Integer logType,
+			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId,
+			@PathVariable("proposalMapId") Long proposalMapId) {
+		try {
+			CommonDocumentUtils.startHook(logger, "createFsLog");
+			Long userId = null;
+			if (CommonDocumentUtils.isThisClientApplication(request)) {
+				userId = clientId;
+			} else {
+				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			}
+
+			if (CommonUtils.isObjectNullOrEmpty(proposalMapId)) {
+				logger.error("Proposal mapping id must not be null.");
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse("Invalid data or Requested data not found.", HttpStatus.BAD_REQUEST.value()),
+						HttpStatus.OK);
+			}
+			if (CommonUtils.isObjectNullOrEmpty(applicationId)) {
+				logger.error("Application id must not be null.");
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse("Invalid data or Requested data not found.", HttpStatus.BAD_REQUEST.value()),
+						HttpStatus.OK);
+			}
+			if (CommonUtils.isObjectNullOrEmpty(logType)) {
+				logger.error("logType  must not be null.");
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse("Invalid data or Requested data not found.", HttpStatus.BAD_REQUEST.value()),
+						HttpStatus.OK);
+			}
+			LoansResponse loansResponse = new LoansResponse("Success Result", HttpStatus.OK.value());
+			loansResponse.setData(logService.saveFsLog(applicationId, logType, proposalMapId));
 			CommonDocumentUtils.endHook(logger, "createFsLog");
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
