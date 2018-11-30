@@ -39,6 +39,7 @@ import com.capitaworld.itr.client.ITRClient;
 import com.capitaworld.service.analyzer.client.AnalyzerClient;
 import com.capitaworld.service.analyzer.model.common.AnalyzerResponse;
 import com.capitaworld.service.analyzer.model.common.Data;
+import com.capitaworld.service.analyzer.model.common.MonthlyDetailList;
 import com.capitaworld.service.analyzer.model.common.ReportRequest;
 import com.capitaworld.service.fitchengine.model.manufacturing.FitchOutputManu;
 import com.capitaworld.service.fitchengine.model.service.FitchOutputServ;
@@ -1224,7 +1225,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		return map;
 	}
 	
-	@Override
+	/*@Override
 	public Map<String, Object> getBankStatementAnalysisReport(Long applicationId, Long productId) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		Long userId = loanApplicationRepository.getUserIdByApplicationId(applicationId);
@@ -1280,6 +1281,75 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 					logger.info("Error while getting perfios data");
 				}
 				
+		return map;
+	}*/
+	
+	@Override
+	public Map<String, Object> getBankStatementAnalysisReport(Long applicationId, Long productId) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		Long userId = loanApplicationRepository.getUserIdByApplicationId(applicationId);
+		CorporateApplicantRequest corporateApplicantRequest = corporateApplicantService
+				.getCorporateApplicant(applicationId);
+		try {
+			map.put("orgName", CommonUtils.printFields(corporateApplicantRequest.getOrganisationName(), null));
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		// PERFIOS API DATA (BANK STATEMENT ANALYSIS)
+		ReportRequest reportRequest = new ReportRequest();
+		reportRequest.setApplicationId(applicationId);
+		reportRequest.setUserId(userId);
+		
+		List<Data> datas = new ArrayList<>();
+		List<Object> bankStatement = new ArrayList<Object>();
+		List<Object> monthlyDetails = new ArrayList<Object>();
+		List<Object> top5FundReceived = new ArrayList<Object>();
+		List<Object> top5FundTransfered = new ArrayList<Object>();
+		List<Object> bouncedChequeList = new ArrayList<Object>();
+		List<Object> customerInfo = new ArrayList<Object>();
+		List<Object> summaryInfo = new ArrayList<Object>();
+		
+		try {
+			AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReportForCam(reportRequest);
+			List<HashMap<String, Object>> hashMap = (List<HashMap<String, Object>>) analyzerResponse.getData();
+			
+			int index = 0;
+			if (!CommonUtils.isListNullOrEmpty(hashMap)) {
+				for (HashMap<String, Object> rec : hashMap) {
+					Data data = MultipleJSONObjectHelper.getObjectFromMap(rec, Data.class);
+					datas.add(data);
+					
+					bankStatement.add(!CommonUtils.isObjectNullOrEmpty(data.getXns()) ? CommonUtils.printFields(data.getXns().getXn(),null) : " ");
+					monthlyDetails.add(!CommonUtils.isObjectNullOrEmpty(data.getMonthlyDetailList()) ? CommonUtils.printFields(data.getMonthlyDetailList(),null) : "");
+					top5FundReceived.add(!CommonUtils.isObjectNullOrEmpty(data.getTop5FundReceivedList().getItem()) ? CommonUtils.printFields(data.getTop5FundReceivedList().getItem(),null) : "");
+					top5FundTransfered.add(!CommonUtils.isObjectNullOrEmpty(data.getTop5FundTransferedList().getItem()) ? CommonUtils.printFields(data.getTop5FundTransferedList().getItem(),null) : "");
+					bouncedChequeList.add(!CommonUtils.isObjectNullOrEmpty(data.getBouncedOrPenalXnList()) ? CommonUtils.printFields(data.getBouncedOrPenalXnList().getBouncedOrPenalXns(),null) : " ");
+					customerInfo.add(!CommonUtils.isObjectNullOrEmpty(data.getCustomerInfo()) ? CommonUtils.printFields(data.getCustomerInfo(),null) : " ");
+					summaryInfo.add(!CommonUtils.isObjectNullOrEmpty(data.getSummaryInfo()) ?CommonUtils.printFields(data.getSummaryInfo(),null) : " ");
+					
+					index++;
+				}
+				
+				//System.out.println("bankStatement : "+bankStatement.size()+" monthlyDetails :"+monthlyDetails.size()+" top5FundReceived :"+top5FundReceived.size());
+				//System.out.println("top5FundTransfered : "+top5FundTransfered.size()+" bouncedChequeList :"+bouncedChequeList.size()+" customerInfo :"+customerInfo.size());
+				//System.out.println("summaryInfo : "+summaryInfo.size()+" bankStatementAnalysis :"+datas.size());
+				
+				map.put("bankStatement", bankStatement);
+				map.put("monthlyDetails", monthlyDetails);
+				map.put("top5FundReceived", top5FundReceived);
+				map.put("top5FundTransfered", top5FundTransfered);
+				map.put("bouncedChequeList", bouncedChequeList);
+				map.put("customerInfo", customerInfo);
+				map.put("summaryInfo", summaryInfo);
+				map.put("bankStatementAnalysis", CommonUtils.printFields(datas, null));
+				
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.info("Error while getting perfios data");
+		}
+
 		return map;
 	}
 	

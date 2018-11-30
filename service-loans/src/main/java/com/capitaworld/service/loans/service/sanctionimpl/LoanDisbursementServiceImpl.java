@@ -209,7 +209,7 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 		String status = null;
 		for(LoanDisbursementRequest  loanDisbursementRequest : loanDisbursementRequestsList) {		
 			
-			if(! CommonUtils.isObjectNullOrEmptyOrDash( bankToCWAuditTrailRepository.findByApplicationIdAndOrgIdAndApiTypeAndBankPrimaryKeyAndIsActive(loanDisbursementRequest.getApplicationId() , orgId, CommonUtility.ApiType.REVERSE_DISBURSEMENT , loanDisbursementRequest.getId() , true))){
+			if(! CommonUtils.isObjectNullOrEmptyOrDash( bankToCWAuditTrailRepository.findFirstByApplicationIdAndOrgIdAndApiTypeAndBankPrimaryKeyAndIsActiveOrderByIdDesc(loanDisbursementRequest.getApplicationId() , orgId, CommonUtility.ApiType.REVERSE_DISBURSEMENT , loanDisbursementRequest.getId() , true))){
 				logger.info("-------------------------already  saving disbursement detail of reverse api---------------");
 				status ="Already save the disbursement detail applicationId ==> "+loanDisbursementRequest.getApplicationId() ;
 				loanDisbursementRequest.setIsSaved(true);
