@@ -3,16 +3,18 @@ package com.capitaworld.service.loans.service.fundseeker.retail.impl;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+import com.capitaworld.connect.api.ConnectResponse;
+import com.capitaworld.service.matchengine.utils.MatchConstant;
+import org.joda.time.Days;
+import org.joda.time.LocalDate;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -151,6 +153,12 @@ public class ProposalServiceMappingImpl implements ProposalService {
 	
 	@Autowired
 	private ConnectClient connectClient;
+
+	@Value("${cw.maxdays.recalculation}")
+	private String mxaDays;
+
+	@Value("${cw.daysdiff.recalculation}")
+	private String daysDiff;
 
 	DecimalFormat df = new DecimalFormat("#");
 
@@ -1779,27 +1787,55 @@ public class ProposalServiceMappingImpl implements ProposalService {
 	
 	@Override
 	public Boolean checkAvailabilityForBankSelection(Long applicationId, Integer businessTypeId) {
-
 		try {
-
 			ConnectRequest connectRequest = new ConnectRequest();
-
 			connectRequest.setApplicationId(applicationId);
 			connectRequest.setBusinessTypeId(businessTypeId);
-
 			ProposalMappingResponse proposalDetailsResponse = proposalDetailsClient.getProposalsByApplicationId(applicationId);
-			connectClient.createForMultipleBank(connectRequest);
-			logger.info("=============> <=============");
-
+			List<ProposalMappingRequest> inActivityProposalList = new ArrayList<ProposalMappingRequest>();
 			for (int i = 0; i < proposalDetailsResponse.getDataList().size(); i++) {
-
 				ProposalMappingRequest proposalrequest = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) proposalDetailsResponse.getDataList().get(i),ProposalMappingRequest.class);
-				//				proposalrequest.getProposalStageId() 5
-				logger.info("=============> getApplicationId() : " + proposalrequest.getApplicationId());
-				logger.info("=============> Data : " + proposalrequest.getElAmount());
+				if(proposalrequest.getProposalStatusId()== MatchConstant.ProposalStatus.ACCEPT || proposalrequest.getProposalStatusId()==MatchConstant.ProposalStatus.HOLD || proposalrequest.getProposalStatusId()==MatchConstant.ProposalStatus.DECLINE || proposalrequest.getProposalStatusId()==MatchConstant.ProposalStatus.CANCElED){
+					ProposalMappingRequest proposalMappingRequest = new ProposalMappingRequest();
+					BeanUtils.copyProperties(proposalrequest,proposalMappingRequest);
+					inActivityProposalList.add(proposalMappingRequest);
+				}else {
+					inActivityProposalList = null;
+					break;
+				}
 			}
-
-			return Boolean.TRUE;
+			if(!CommonUtils.isListNullOrEmpty(inActivityProposalList) && inActivityProposalList.size()>0){
+				int days = 0;
+				ConnectResponse connectResponse = connectClient.getApplicationList(applicationId);
+				if(!CommonUtils.isObjectNullOrEmpty(connectResponse) && !CommonUtils.isListNullOrEmpty(connectResponse.getDataList())){
+					ConnectRequest connectRequest1 = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) connectResponse.getDataList().get(0),ConnectRequest.class);
+					days = Days.daysBetween(new LocalDate(connectRequest1.getModifiedDate()),
+							new LocalDate(new Date())).getDays();
+					if(days> Integer.parseInt(mxaDays)){//take 22 from application.properties file
+						return Boolean.FALSE;
+					}else{
+						if(inActivityProposalList.size()<3 && connectResponse.getDataList().size() ==1) {
+							if(days >= Integer.parseInt(daysDiff)) {//take 7 from application.properties file
+								return Boolean.TRUE;
+							}
+						}else if(inActivityProposalList.size()<3 && connectResponse.getDataList().size() > 1){
+							ConnectRequest connectReqObj = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) connectResponse.getDataList().get(connectResponse.getDataList().size()-1),ConnectRequest.class);
+							days = Days.daysBetween(new LocalDate(connectReqObj.getModifiedDate()),
+									new LocalDate(new Date())).getDays();
+							if(days >= Integer.parseInt(daysDiff)){//take 7 from application.properties file
+								return Boolean.TRUE;
+							}else {
+								return Boolean.FALSE;
+							}
+						}else {
+							return Boolean.FALSE;
+						}
+					}
+				}
+			}
+			//connectClient.createForMultipleBank(connectRequest);
+			//logger.info("=============> <=============");
+			return Boolean.FALSE;
 		} catch (MatchException e) {
 			// TODO Auto-generated catch block
 			logger.error("Error while checking availability for bank selection...!");
@@ -1816,7 +1852,32 @@ public class ProposalServiceMappingImpl implements ProposalService {
 
 		return Boolean.FALSE;
 	}
-	
+
+	public Boolean calculateAndGetNewMatches(Long applicationId, Integer businessTypeId){
+		try {
+			ConnectRequest connectRequest = new ConnectRequest();
+			connectRequest.setApplicationId(applicationId);
+			connectRequest.setBusinessTypeId(businessTypeId);
+			connectClient.createForMultipleBank(connectRequest);
+
+			//logger.info("=============> <=============");
+			return Boolean.FALSE;
+		} catch (MatchException e) {
+			// TODO Auto-generated catch block
+			logger.error("Error while checking availability for bank selection...!");
+			e.printStackTrace();
+		} catch (IOException io) {
+			// TODO Auto-generated catch block
+			logger.error("Error while checking availability for bank selection...!");
+			io.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			logger.error("Error while checking availability for bank selection...!");
+			e.printStackTrace();
+		}
+		return Boolean.FALSE;
+	}
+
 	@Override
     public List<ProposalDetailsAdminRequest> getProposalsByOrgId(Long userOrgId, ProposalDetailsAdminRequest request, Long userId) {
     	
