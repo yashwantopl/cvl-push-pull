@@ -19,7 +19,9 @@ public interface CorporateUploadService {
 	public DocumentResponse getOtherDoc(DocumentRequest documentRequest) throws Exception;
 	
 	public void updateLoanApplicationFlag(Long applicantId, Long userId, int tabType,Boolean isFilled,String filledCount) throws Exception;
-	
+
+	public void updateLoanApplicationFlagByProposalId(Long proposalId,Long applicantId, Long userId, int tabType,Boolean isFilled,String filledCount) throws Exception;
+
 	public Map<String, Map<String, Object>> getOtherDocReport(Long applicationId) throws Exception ;
 	
 	public DocumentResponse listOfDocumentByMultiProDocMapId(DocumentRequest documentRequest) throws DocumentException;

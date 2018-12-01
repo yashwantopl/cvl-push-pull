@@ -15,6 +15,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 
 
@@ -38,6 +39,10 @@ public class BalanceSheetDetail implements Serializable {
 	@ManyToOne
 	@JoinColumn(name="application_id")
 	private LoanApplicationMaster applicationId;
+
+	@ManyToOne
+	@JoinColumn(name="proposal_id")
+	private ApplicationProposalMapping applicationProposalMapping;
 
 	@Column(name="capital_advance")
 	private double capitalAdvance;
@@ -1606,10 +1611,12 @@ public class BalanceSheetDetail implements Serializable {
 	public void setOtherTermLiability(double otherTermLiability) {
 		OtherTermLiability = otherTermLiability;
 	}
-	
-	
-	
 
-	
+	public ApplicationProposalMapping getApplicationProposalMapping() {
+		return applicationProposalMapping;
+	}
 
+	public void setApplicationProposalMapping(ApplicationProposalMapping applicationProposalMapping) {
+		this.applicationProposalMapping = applicationProposalMapping;
+	}
 }

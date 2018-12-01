@@ -109,7 +109,7 @@ public class CorporateFinalInfoController {
     }
 
 
-    @RequestMapping(value = "/get/{proposalId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/getByProposalId/{proposalId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LoansResponse> getByProposalId(@PathVariable("proposalId") Long proposalId,
                                              HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
         // request must not be null

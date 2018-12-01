@@ -28,6 +28,9 @@ public interface ProfitibilityStatementDetailRepository extends JpaRepository<Pr
 	
 	@Query("select o from ProfitibilityStatementDetail o where o.applicationId.id = :applicationId and o.isActive = true")
 	public List<ProfitibilityStatementDetail> getByApplicationId(@Param("applicationId") Long applicationId);
+
+	@Query("select o from ProfitibilityStatementDetail o where o.applicationProposalMapping.proposalId = :proposalId and o.isActive = true")
+	public List<ProfitibilityStatementDetail> getByProposalId(@Param("proposalId") Long proposalId);
 	
 	@Query("select o from ProfitibilityStatementDetail o where o.applicationId.id = :applicationId and o.isActive = true and o.year IN :yearList and o.financialYearlyStatement =:financialYearlyStatement  ORDER BY o.year ASC")
 	public List<ProfitibilityStatementDetail> getProfitibilityStatementDetailByApplicationId(@Param("applicationId") Long applicationId,@Param("yearList") List<String> yearList, @Param("financialYearlyStatement") String financialYearlyStatement);

@@ -12,7 +12,7 @@ public class ApplicationProposalMapping implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @Column(name = "proposal_mapping_id")
+    @Column(name = "proposal_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long proposalId;
 
@@ -81,6 +81,18 @@ public class ApplicationProposalMapping implements Serializable {
 
     @Column(name = "is_final_mcq_filled")
     private Boolean isFinalMcqFilled;
+
+    @Column(name = "tenure")
+    private Long tenure;
+
+    @Column(name = "final_filled_count")
+    private String finalFilledCount;
+
+    @Column(name = "details_filled_count")
+    private String detailsFilledCount;
+
+    @Column(name = "primary_filled_count")
+    private String primaryFilledCount;
 
     public Long getProposalId() {
         return proposalId;
@@ -278,5 +290,36 @@ public class ApplicationProposalMapping implements Serializable {
         isFinalMcqFilled = finalMcqFilled;
     }
 
-    
+
+    public Long getTenure() {
+        return tenure;
+    }
+
+    public void setTenure(Long tenure) {
+        this.tenure = tenure;
+    }
+
+    public String getFinalFilledCount() {
+        return finalFilledCount;
+    }
+
+    public void setFinalFilledCount(String finalFilledCount) {
+        this.finalFilledCount = finalFilledCount;
+    }
+
+    public String getDetailsFilledCount() {
+        return detailsFilledCount;
+    }
+
+    public void setDetailsFilledCount(String detailsFilledCount) {
+        this.detailsFilledCount = detailsFilledCount;
+    }
+
+    public String getPrimaryFilledCount() {
+        return primaryFilledCount;
+    }
+
+    public void setPrimaryFilledCount(String primaryFilledCount) {
+        this.primaryFilledCount = primaryFilledCount;
+    }
 }
