@@ -727,7 +727,7 @@ public class LoanApplicationController {
 	}
 
 	@SuppressWarnings("unchecked")
-	@RequestMapping(value = "/primary_final_locked/{proposalId}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/primary_final_locked_proposalId/{proposalId}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> isPrimaryAndFinalLockedByProposalId(@PathVariable("proposalId") Long proposalId,
 																 HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
 		// request must not be null
