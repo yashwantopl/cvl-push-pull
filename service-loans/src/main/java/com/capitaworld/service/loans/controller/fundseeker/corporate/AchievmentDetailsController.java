@@ -95,7 +95,7 @@ public class AchievmentDetailsController {
 
 	}
 
-	@RequestMapping(value = "/getList/{proposalId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/getListByProposalId/{proposalId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getList(@PathVariable("proposalId") Long proposalId,
 			HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
 		// request must not be null

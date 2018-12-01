@@ -1682,6 +1682,19 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@SuppressWarnings("unchecked")
 	@Override
+	public JSONObject getBowlCountByProposalId(Long applicationId, Long propsoalId) {
+		ApplicationProposalMapping loanApplicationMaster = applicationProposalMappingRepository.getByProposalIdAndApplicationId(propsoalId,applicationId);
+		JSONObject response = new JSONObject();
+		if (!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster)) {
+			response.put("primaryFilledCount", loanApplicationMaster.getPrimaryFilledCount());
+			response.put("profileFilledCount", loanApplicationMaster.getDetailsFilledCount());
+			response.put("finalFilledCount", loanApplicationMaster.getFinalFilledCount());
+		}
+		return response;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
 	public JSONObject getBowlCount(Long applicationId, Long userId) {
 		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId, userId);
 		JSONObject response = new JSONObject();

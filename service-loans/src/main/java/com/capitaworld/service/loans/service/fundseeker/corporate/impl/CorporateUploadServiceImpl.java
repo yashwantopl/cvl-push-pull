@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,6 +48,9 @@ public class CorporateUploadServiceImpl implements CorporateUploadService {
 
 	@Autowired
 	private LoanApplicationRepository loanApplicationRepository;
+
+	@Autowired
+	private ApplicationProposalMappingRepository applicationProposalMappingRepository;
 
 	@Autowired
 	CoApplicantService coApplicantService;
@@ -300,7 +305,42 @@ public class CorporateUploadServiceImpl implements CorporateUploadService {
 
 		}
 		// end New UBI Requirement
-		
+
+	@Override
+	public void updateLoanApplicationFlagByProposalId(Long proposalId,Long applicantId, Long userId, int tabType, Boolean isFilled,
+										  String filledCount) throws Exception {
+		logger.info("In updateLoanApplicationFlag service method");
+		logger.info("appId----------->" + applicantId + "-----------Proposal Id---------->"+ proposalId + "------userId------->" + userId +
+				"---------tabtype------->"+tabType + "--------isFilled------->" + isFilled +
+				"----------FileCount----------"+filledCount);
+		try {
+			switch (tabType) {
+				case CommonUtils.TabType.PRIMARY_UPLOAD:
+					loanApplicationRepository.setIsPrimaryUploadMandatoryFilled(applicantId, userId, isFilled);
+					loanApplicationRepository.setPrimaryFilledCount(applicantId, userId, filledCount);
+					break;
+				case CommonUtils.TabType.FINAL_UPLOAD:
+					logger.info("Before setIsFinalUploadMandatoryFilled");
+					applicationProposalMappingRepository.setIsFinalUploadMandatoryFilled(proposalId,applicantId,isFilled);
+					logger.info("After setIsFinalUploadMandatoryFilled");
+					logger.info("Before setFinalFilledCount");
+					applicationProposalMappingRepository.setFinalFilledCount(proposalId,applicantId,filledCount);
+					logger.info("After setFinalFilledCount");
+					break;
+				case CommonUtils.TabType.FINAL_DPR_UPLOAD:
+					applicationProposalMappingRepository.setIsFinalDprMandatoryFilled(proposalId,applicantId,isFilled);
+					applicationProposalMappingRepository.setFinalFilledCount(applicantId, userId, filledCount);
+					break;
+				default:
+					break;
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			logger.error("Error while updating Flag to loan_application_master for upload");
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+	}
+
 	@Override
 	public void updateLoanApplicationFlag(Long applicantId, Long userId, int tabType, Boolean isFilled,
 			String filledCount) throws Exception {

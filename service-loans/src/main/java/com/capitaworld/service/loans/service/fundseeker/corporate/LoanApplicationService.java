@@ -93,6 +93,8 @@ public interface LoanApplicationService {
 	public boolean hasAlreadyApplied(Long userId, Long applicationId,Integer productId);
 	
 	public JSONObject getBowlCount(Long applicationId, Long userId);
+
+	public JSONObject getBowlCountByProposalId(Long applicationId, Long proposalId);
 	
 	public List<RegisteredUserResponse> getUsersRegisteredLoanDetails(MobileLoanRequest loanRequest);
 	

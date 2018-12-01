@@ -504,6 +504,37 @@ public class CorporateUploadController {
 		}
 	}
 
+	@RequestMapping(value = "/update_flag/{isFilled}/{applicationId}/{proposalId}/{tabType}/{filledCount}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> uploadFlagByProposalId(@PathVariable("isFilled") Boolean isFilled, @PathVariable("applicationId") Long applicationId,@PathVariable("proposalId") Long proposalId,
+													@PathVariable("tabType") Integer tabType,@PathVariable(value = "filledCount",required = false) String filledCount,
+													@RequestParam(value = "clientId", required = false) Long clientId, HttpServletRequest request) {
+		try {
+			CommonDocumentUtils.startHook(logger, "uploadFlag");
+			Long userId = null;
+			if (CommonDocumentUtils.isThisClientApplication(request)) {
+				userId = clientId;
+			} else {
+				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			}
+			if (CommonUtils.isObjectNullOrEmpty(applicationId) || CommonUtils.isObjectNullOrEmpty(tabType)) {
+				logger.warn("applicationId or tabType Must not be null");
+				return new ResponseEntity<LoansResponse>(
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			corporateUploadService.updateLoanApplicationFlagByProposalId(proposalId,applicationId, userId, tabType, isFilled,filledCount);
+			CommonDocumentUtils.endHook(logger, "uploadFlag");
+			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully updated", HttpStatus.OK.value()),
+					HttpStatus.OK);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error while Saving Profile Images==>" + e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
 	@RequestMapping(value = "/update_flag/{isFilled}/{applicationId}/{tabType}/{filledCount}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> uploadFlag(@PathVariable("isFilled") Boolean isFilled, @PathVariable("applicationId") Long applicationId,
 			@PathVariable("tabType") Integer tabType,@PathVariable(value = "filledCount",required = false) String filledCount, 
@@ -558,7 +589,39 @@ public class CorporateUploadController {
 			return null;
 		}
 	}
-	
+
+
+	@RequestMapping(value="/downloadCMAAndCoCMAExcelFile/{applicationId}/{proposalId}/{productDocumentMappingId}" , method=RequestMethod.GET)
+	public void downloadExcelFile(@PathVariable("applicationId") Long applicationId ,@PathVariable("proposalId") Long proposalId, @PathVariable("productDocumentMappingId") Long productDocumentMappingId ,HttpServletResponse httpServletResponse) {
+		logger.info("In getCmaFile");
+
+		try {
+			httpServletResponse.setContentType("application/csv");
+			if(productDocumentMappingId==(long)DocumentAlias.WC_CMA) {
+				httpServletResponse.setHeader("Content-Disposition", "attachment; filename=\""+CommonUtils.CW_CMA_EXCEL+"\"");
+				downLoadCMAFileService.cmaFileGeneratorByProposalId(applicationId,proposalId, productDocumentMappingId).write(httpServletResponse.getOutputStream());
+			}
+
+			else if (productDocumentMappingId==(long)DocumentAlias.TL_CMA || productDocumentMappingId==(long) DocumentAlias.WCTL_CMA){
+				httpServletResponse.setContentType("application/csv");
+				httpServletResponse.setHeader("Content-Disposition", "attachment; filename=\""+CommonUtils.CW_TL_WCTL_EXCEL+"\"");
+				downLoadCMAFileService.cmaFileGeneratorByProposalId(applicationId, proposalId,productDocumentMappingId).write(httpServletResponse.getOutputStream());
+			}
+			else if(productDocumentMappingId==(long)DocumentAlias.WC_COMPANY_ACT|| productDocumentMappingId==(long)DocumentAlias.TL_COMPANY_ACT || productDocumentMappingId==(long)DocumentAlias.USL_COMPANY_ACT|| productDocumentMappingId==(long) DocumentAlias.WCTL_COMPANY_ACT_DOC ) {
+				httpServletResponse.setContentType("application/csv");
+				httpServletResponse.setHeader("Content-Disposition", "attachment; filename=\""+CommonUtils.CO_CMA_EXCEL+"\"");
+				downLoadCMAFileService.coCMAFileGeneratorByProposalId(applicationId,proposalId, productDocumentMappingId).write(httpServletResponse.getOutputStream());
+			}
+			logger.info("Out getCmaFile");
+
+		} catch (NullPointerException |IOException e) {
+			logger.info("thrown exception from getCmaFile");
+			e.printStackTrace();
+
+		}
+
+	}
+
 	@RequestMapping(value="/downloadCMAAndCoCMAExcelFile/{applicationId}/{productDocumentMappingId}" , method=RequestMethod.GET)
 	public void downloadExcelFile(@PathVariable("applicationId") Long applicationId , @PathVariable("productDocumentMappingId") Long productDocumentMappingId ,HttpServletResponse httpServletResponse) {
 		logger.info("In getCmaFile");
