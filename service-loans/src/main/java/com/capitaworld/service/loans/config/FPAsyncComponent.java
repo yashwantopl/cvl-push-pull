@@ -8,6 +8,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.api.reports.ReportRequest;
+import com.capitaworld.client.reports.ReportsClient;
+import com.capitaworld.service.loans.service.fundseeker.corporate.InEligibleProposalCamReportService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,6 +87,12 @@ public class FPAsyncComponent {
 
 	@Autowired
 	public GstClient gstClient;
+
+	@Autowired
+	private ReportsClient reportsClient;
+
+	@Autowired
+	private InEligibleProposalCamReportService inEligibleProposalCamReportService;
 
 	private static final String EMAIL_ADDRESS_FROM = "no-reply@capitaworld.com";
 
@@ -235,8 +244,8 @@ public class FPAsyncComponent {
 								mailParameters.put("maker_name", name != null ? name : "Sir/Madam");
 							}
 							mailParameters.put("isDynamic", true);
-							createNotificationForEmail(to, userId.toString(), mailParameters,
-									NotificationAlias.EMAIL_ALL_MAKERS_AFTER_INPRINCIPLE_TO_FS, subject);
+							createNotificationForEmailForFundProvider(to, userId.toString(), mailParameters,
+									NotificationAlias.EMAIL_ALL_MAKERS_AFTER_INPRINCIPLE_TO_FS, subject,applicationRequest.getId());
 						}
 
 						if (!CommonUtils.isObjectNullOrEmpty(userObj.getMobile())) {
@@ -425,8 +434,8 @@ public class FPAsyncComponent {
 								mailParameters.put("checker_name", name != null ? name : "Sir/Madam");
 							}
 							mailParameters.put("isDynamic", true);
-							createNotificationForEmail(to, userId.toString(), mailParameters,
-									NotificationAlias.EMAIL_ALL_CHECKERS_AFTER_INPRINCIPLE_TO_FS, subject);
+							createNotificationForEmailForFundProvider(to, userId.toString(), mailParameters,
+									NotificationAlias.EMAIL_ALL_CHECKERS_AFTER_INPRINCIPLE_TO_FS, subject,applicationRequest.getId());
 						}
 
 						if (!CommonUtils.isObjectNullOrEmpty(userObj.getMobile())) {
@@ -622,8 +631,8 @@ public class FPAsyncComponent {
 								mailParameters.put("ho_name", name != null ? name : "Sir/Madam");
 							}
 							mailParameters.put("isDynamic", true);
-							createNotificationForEmail(to, userId.toString(), mailParameters,
-									NotificationAlias.EMAIL_HO_INPRINCIPLE_TO_FS, subject);
+							createNotificationForEmailForFundProvider(to, userId.toString(), mailParameters,
+									NotificationAlias.EMAIL_HO_INPRINCIPLE_TO_FS, subject,applicationRequest.getId());
 						}
 
 						if (!CommonUtils.isObjectNullOrEmpty(userObj.getMobile())) {
@@ -817,8 +826,8 @@ public class FPAsyncComponent {
 								mailParameters.put("bo_name", name != null ? name : "Sir/Madam");
 							}
 							mailParameters.put("isDynamic", true);
-							createNotificationForEmail(to, userId.toString(), mailParameters,
-									NotificationAlias.EMAIL_ALL_BO_INPRINCIPLE_TO_FS, subject);
+							createNotificationForEmailForFundProvider(to, userId.toString(), mailParameters,
+									NotificationAlias.EMAIL_ALL_BO_INPRINCIPLE_TO_FS, subject,applicationRequest.getId());
 						}
 
 						if (!CommonUtils.isObjectNullOrEmpty(userObj.getMobile())) {
@@ -3545,6 +3554,51 @@ public class FPAsyncComponent {
 		sendEmail(notificationRequest);
 		logger.info("Outside send notification===>{}" + toNo);
 	}
+
+
+	private void createNotificationForEmailForFundProvider(String toNo, String userId, Map<String, Object> mailParameters,
+											Long templateId, String emailSubject,Long applicationId) throws NotificationException {
+		logger.info("Inside send notification===>{}" + toNo);
+
+		NotificationRequest notificationRequest = new NotificationRequest();
+		notificationRequest.setClientRefId(userId);
+		try{
+			notificationRequest.setIsDynamic(((Boolean) mailParameters.get("isDynamic")).booleanValue());
+		}catch (Exception e) {
+			notificationRequest.setIsDynamic(false);
+		}
+
+		String to[] = { toNo };
+		Notification notification = new Notification();
+		notification.setContentType(ContentType.TEMPLATE);
+		notification.setTemplateId(templateId);
+		notification.setSubject(emailSubject);
+		notification.setTo(to);
+		notification.setType(NotificationType.EMAIL);
+		notification.setFrom(EMAIL_ADDRESS_FROM);
+		notification.setParameters(mailParameters);
+		notification.setIsDynamic(notificationRequest.getIsDynamic());
+
+
+		// start attach CAM to Mail
+
+		Map<String,Object> response = inEligibleProposalCamReportService.getInEligibleCamReport(applicationId);
+		ReportRequest reportRequest = new ReportRequest();
+		reportRequest.setParams(response);
+		reportRequest.setTemplate("INELIGIBLECAMREPORT");
+		reportRequest.setType("INELIGIBLECAMREPORT");
+		byte[] byteArr = reportsClient.generatePDFFile(reportRequest);
+		notification.setFileName("CAM.pdf");
+		notification.setContentInBytes(byteArr);
+
+		// end attach CAM to Mail
+
+
+		notificationRequest.addNotification(notification);
+		sendEmail(notificationRequest);
+		logger.info("Outside send notification===>{}" + toNo);
+	}
+
 
 	private void sendSMSNotification(String userId, Map<String, Object> parameters, Long templateId, String... to)
 			throws NotificationException {
