@@ -21,7 +21,7 @@ public class NhbsApplicationRequest implements Serializable{
 	
 	private Long applicationId;
 
-	private Long proposalMappingId;
+	private Long proposalId;
 
 	private Long ddrStatusId;
 
@@ -132,11 +132,11 @@ public class NhbsApplicationRequest implements Serializable{
 		this.npUserId = npUserId;
 	}
 
-    public Long getProposalMappingId() {
-        return proposalMappingId;
+    public Long getProposalId() {
+        return proposalId;
     }
 
-    public void setProposalMappingId(Long proposalMappingId) {
-        this.proposalMappingId = proposalMappingId;
+    public void setProposalId(Long proposalId) {
+        this.proposalId = proposalId;
     }
 }
