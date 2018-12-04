@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.capitaworld.service.loans.domain.fundprovider.ProposalDetails;
+import com.capitaworld.service.loans.model.*;
 import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.*;
 import org.json.simple.JSONObject;
@@ -135,17 +137,6 @@ import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryPersonalLoa
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
 import com.capitaworld.service.loans.domain.sanction.LoanSanctionDomain;
 import com.capitaworld.service.loans.exceptions.LoansException;
-import com.capitaworld.service.loans.model.AdminPanelLoanDetailsResponse;
-import com.capitaworld.service.loans.model.CommonResponse;
-import com.capitaworld.service.loans.model.DashboardProfileResponse;
-import com.capitaworld.service.loans.model.DirectorBackgroundDetailResponse;
-import com.capitaworld.service.loans.model.FrameRequest;
-import com.capitaworld.service.loans.model.LoanApplicationDetailsForSp;
-import com.capitaworld.service.loans.model.LoanApplicationRequest;
-import com.capitaworld.service.loans.model.LoanEligibilityRequest;
-import com.capitaworld.service.loans.model.PaymentRequest;
-import com.capitaworld.service.loans.model.PincodeDataResponse;
-import com.capitaworld.service.loans.model.ReportResponse;
 import com.capitaworld.service.loans.model.common.CGTMSECalcDataResponse;
 import com.capitaworld.service.loans.model.common.ChatDetails;
 import com.capitaworld.service.loans.model.common.DisbursementRequest;
@@ -5519,22 +5510,63 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			logger.info("Loan master no found-------------------------------->" + loanApplicationRequest.getId());
 			return false;
 		}
-		loanApplicationMaster.setAmount(loanApplicationRequest.getAmount());
-		loanApplicationMaster.setTenure(loanApplicationRequest.getTenure());
-		loanApplicationMaster.setProductId(loanApplicationRequest.getProductId());
-		loanApplicationMaster.setIsApplicantDetailsFilled(true);
-		loanApplicationMaster.setIsApplicantPrimaryFilled(true);
-		loanApplicationMaster.setIsPrimaryLocked(true);
-		if (!CommonUtils.isObjectNullOrEmpty(loanApplicationRequest.getNpOrgId())) {
-			loanApplicationMaster.setNpOrgId(loanApplicationRequest.getNpOrgId());
+		ProposalDetails proposalDetails = proposalDetailsRepository.getLastProposalByApplicationId(loanApplicationMaster.getId());
+		ProductMaster productDetails = null;
+		if(!CommonUtils.isObjectNullOrEmpty(proposalDetails)){
+			productDetails = productMasterRepository.findByIdAndIsActive(proposalDetails.getFpProductId(),true);
 		}
 
-		LoanType type = CommonUtils.LoanType.getType(loanApplicationRequest.getProductId());
-		if (!CommonUtils.isObjectNullOrEmpty(type)) {
-			loanApplicationMaster
-					.setApplicationCode(applicationSequenceService.getApplicationSequenceNumber(type.getValue()));
+		if(!CommonUtils.isObjectNullOrEmpty(productDetails) &&
+				(LoanType.WORKING_CAPITAL.getValue() ==productDetails.getProductId() ||
+				LoanType.TERM_LOAN.getValue() ==productDetails.getProductId() ||
+				LoanType.WCTL_LOAN.getValue() ==productDetails.getProductId())){
+			ApplicationProposalMapping applicationProposalMapping = new ApplicationProposalMapping();
+			applicationProposalMapping.setProposalId(proposalDetails.getId());
+			applicationProposalMapping.setApplicationId(proposalDetails.getApplicationId());
+			applicationProposalMapping.setLoanAmount(loanApplicationRequest.getAmount());
+			applicationProposalMapping.setTenure(loanApplicationRequest.getTenure());
+			applicationProposalMapping.setProductId(loanApplicationRequest.getProductId());
+			//set application stage
+			ApplicationStatusMaster applicationStatusMaster = new ApplicationStatusMaster();
+			applicationStatusMaster.setId(CommonUtils.ApplicationStatus.OPEN);
+			applicationProposalMapping.setApplicationStatusMaster(applicationStatusMaster);
+			//set application ddr stage
+			applicationProposalMapping.setDdrStatusId(CommonUtils.DdrStatus.OPEN);
+
+			applicationProposalMapping.setIsApplicantDetailsFilled(true);
+			applicationProposalMapping.setIsApplicantPrimaryFilled(true);
+			applicationProposalMapping.setIsPrimaryLocked(true);
+			if (!CommonUtils.isObjectNullOrEmpty(loanApplicationRequest.getNpOrgId())) {
+				applicationProposalMapping.setOrgId(loanApplicationRequest.getNpOrgId());
+			}
+			ApplicationProposalMapping existingDetails = applicationProposalMappingRepository.getByApplicationId(proposalDetails.getApplicationId());
+			if (!CommonUtils.isObjectNullOrEmpty(existingDetails)) {
+				applicationProposalMapping
+						.setApplicationCode(existingDetails.getApplicationCode());
+			}
+			applicationProposalMapping.setCreatedBy(proposalDetails.getApplicationId());
+			applicationProposalMapping.setCreatedDate(new Date());
+			applicationProposalMapping.setIsActive(true);
+			applicationProposalMappingRepository.save(applicationProposalMapping);
+		}else{
+			LoanType type = CommonUtils.LoanType.getType(loanApplicationRequest.getProductId());
+			loanApplicationMaster.setAmount(loanApplicationRequest.getAmount());
+			loanApplicationMaster.setTenure(loanApplicationRequest.getTenure());
+			loanApplicationMaster.setProductId(loanApplicationRequest.getProductId());
+			loanApplicationMaster.setIsApplicantDetailsFilled(true);
+			loanApplicationMaster.setIsApplicantPrimaryFilled(true);
+			loanApplicationMaster.setIsPrimaryLocked(true);
+			if (!CommonUtils.isObjectNullOrEmpty(loanApplicationRequest.getNpOrgId())) {
+				loanApplicationMaster.setNpOrgId(loanApplicationRequest.getNpOrgId());
+			}
+
+
+			if (!CommonUtils.isObjectNullOrEmpty(type)) {
+				loanApplicationMaster
+						.setApplicationCode(applicationSequenceService.getApplicationSequenceNumber(type.getValue()));
+			}
+			loanApplicationRepository.save(loanApplicationMaster);
 		}
-		loanApplicationRepository.save(loanApplicationMaster);
 
 		if (CommonUtils.LoanType.WORKING_CAPITAL.getValue() == loanApplicationRequest.getProductId()) {
 			PrimaryWorkingCapitalLoanDetail wcLoan = primaryWorkingCapitalLoanDetailRepository
@@ -5566,14 +5598,14 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		}
 
 		try {
-			logger.info("Call Post Matche -------------------------------------->");
+			logger.info("Call Post Matches -------------------------------------->");
 			ConnectResponse postMatches = connectClient.postMatches(loanApplicationMaster.getId(),
 					loanApplicationMaster.getUserId(),
 					!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getBusinessTypeId())
 							? loanApplicationMaster.getBusinessTypeId()
 							: CommonUtils.BusinessType.EXISTING_BUSINESS.getId());
 			if (!CommonUtils.isObjectNullOrEmpty(postMatches)) {
-				logger.info("Response form Connect lient ---------------->" + postMatches.toString());
+				logger.info("Response form Connect client ---------------->" + postMatches.toString());
 				logger.info("Successfully update loan data-------------------------------->"
 						+ loanApplicationRequest.getId());
 				return postMatches.getProceed();

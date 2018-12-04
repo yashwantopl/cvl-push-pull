@@ -43,4 +43,7 @@ public interface ApplicationProposalMappingRepository extends JpaRepository<Appl
 
     @Query("from ApplicationProposalMapping apm where apm.proposalId=:proposalId and apm.applicationId=:applicationId and apm.isActive = true order by apm.proposalId")
     public ApplicationProposalMapping getByProposalIdAndApplicationId(@Param("proposalId") Long proposalId, @Param("applicationId") Long applicationId);
+
+    @Query(value = "select * from ApplicationProposalMapping lm where lm.applicationId =:applicationId and lm.isActive = true order by apm.proposalId desc limit 1",nativeQuery = true)
+    public ApplicationProposalMapping getByApplicationId(@Param("applicationId") Long applicationId);
 }
