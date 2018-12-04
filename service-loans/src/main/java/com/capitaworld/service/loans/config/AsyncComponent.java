@@ -560,12 +560,12 @@ public class AsyncComponent {
 								parameters.put("total_matches", 0);
 							}
 							String[] toIds = { request.getEmail() };
-							if (request.getEmail() != null && fpName != null && fsName != null) {
-								sendNotification(toIds, userId.toString(), parameters,
-										NotificationTemplate.FP_VIEW_MORE_DETAILS, fpName, false, null);
-							} else {
-								logger.info("Email id is null when sending email from AsynchComponent.");
-							}
+//							if (request.getEmail() != null && fpName != null && fsName != null) {
+//								sendNotification(toIds, userId.toString(), parameters,
+//										NotificationTemplate.FP_VIEW_MORE_DETAILS, fpName, false, null);
+//							} else {
+//								logger.info("Email id is null when sending email from AsynchComponent.");
+//							}
 
 							try {
 								// SMS
