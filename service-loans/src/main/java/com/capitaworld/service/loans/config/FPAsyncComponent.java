@@ -3580,14 +3580,14 @@ public class FPAsyncComponent {
 		// start attach CAM to Mail
 
 
-		/*Map<String,Object> response = camReportPdfDetailsService.getCamReportPrimaryDetails(applicationId,productId,false);
+		Map<String,Object> response = camReportPdfDetailsService.getCamReportPrimaryDetails(applicationId,productId,false);
 		ReportRequest reportRequest = new ReportRequest();
 		reportRequest.setParams(response);
 		reportRequest.setTemplate("CAMREPORTPRIMARYSIDBI");
 		reportRequest.setType("CAMREPORTPRIMARYSIDBI");
 		byte[] byteArr = reportsClient.generatePDFFile(reportRequest);
-		notification.setFileName("CAM.pdf");
-		notification.setContentInBytes(byteArr);*/
+		notification.setFileName(productId.toString()+"-CAM.pdf");
+		notification.setContentInBytes(byteArr);
 
 		// end attach CAM to Mail
 
