@@ -33,7 +33,6 @@ import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.DirectorBackgroundDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
-import com.capitaworld.service.loans.domain.sanction.LoanDisbursementDomain;
 import com.capitaworld.service.loans.model.CorporateProposalDetails;
 import com.capitaworld.service.loans.model.FundProviderProposalDetails;
 import com.capitaworld.service.loans.model.LoansResponse;
@@ -52,14 +51,12 @@ import com.capitaworld.service.loans.repository.sanction.LoanDisbursementReposit
 import com.capitaworld.service.loans.service.ProposalService;
 import com.capitaworld.service.loans.service.common.LogService;
 import com.capitaworld.service.loans.service.common.NotificationService;
-import com.capitaworld.service.loans.service.fundprovider.OfflineProcessedAppService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateDirectorIncomeService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtility;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
-import com.capitaworld.service.loans.utils.CommonUtils.UsersRoles;
 import com.capitaworld.service.matchengine.MatchEngineClient;
 import com.capitaworld.service.matchengine.ProposalDetailsClient;
 import com.capitaworld.service.matchengine.model.ConnectionResponse;
@@ -74,6 +71,7 @@ import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.Currency;
 import com.capitaworld.service.oneform.enums.Denomination;
 import com.capitaworld.service.oneform.enums.FundproviderType;
+import com.capitaworld.service.oneform.enums.WcRenewalType;
 import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
 import com.capitaworld.service.oneform.model.SectorIndustryModel;
@@ -334,6 +332,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 
 					corporateProposalDetails
 							.setFsMainType(CommonUtils.getCorporateLoanType(loanApplicationMaster.getProductId()));
+					corporateProposalDetails.setWcRenualNew(loanApplicationMaster.getWcRenewalStatus()!= null ? WcRenewalType.getById(loanApplicationMaster.getWcRenewalStatus()).getValue().toString() : "New");
 
 					// for get industry id
 					List<Long> listIndustryIds = industrySectorRepository.getIndustryByApplicationId(applicationId);
@@ -934,6 +933,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 
 							corporateProposalDetails.setFsMainType(
 									CommonUtils.getCorporateLoanType(loanApplicationMaster.getProductId()));
+							corporateProposalDetails.setWcRenualNew(loanApplicationMaster.getWcRenewalStatus()!= null ? WcRenewalType.getById(loanApplicationMaster.getWcRenewalStatus()).getValue().toString() : "New");
 
 							String amount = "";
 							if (CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getAmount()))
@@ -1111,6 +1111,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 
 							corporateProposalDetails.setFsMainType(
 									CommonUtils.getCorporateLoanType(loanApplicationMaster.getProductId()));
+							corporateProposalDetails.setWcRenualNew(loanApplicationMaster.getWcRenewalStatus()!= null ? WcRenewalType.getById(loanApplicationMaster.getWcRenewalStatus()).getValue().toString() : "New");
 
 							String amount = "";
 							if (CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getAmount()))
@@ -1527,6 +1528,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 
 					corporateProposalDetails
 							.setFsMainType(CommonUtils.getCorporateLoanType(loanApplicationMaster.getProductId()));
+					corporateProposalDetails.setWcRenualNew(loanApplicationMaster.getWcRenewalStatus()!= null ? WcRenewalType.getById(loanApplicationMaster.getWcRenewalStatus()).getValue().toString() : "New");
 
 					// for get industry id
 					List<Long> listIndustryIds = industrySectorRepository.getIndustryByApplicationId(applicationId);
