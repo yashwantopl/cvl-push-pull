@@ -1,7 +1,9 @@
 package com.capitaworld.service.loans.service.common.impl;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -19,7 +21,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
-
 import com.capitaworld.service.dms.model.DocumentResponse;
 import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.AssetsDetails;
@@ -36,6 +37,9 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.Profitibili
 import com.capitaworld.service.loans.service.common.DownLoadCMAFileService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.CommonUtils.BusinessType;
+import com.capitaworld.service.loans.utils.cma.AssetComparator;
+import com.capitaworld.service.loans.utils.cma.LiabilityComparator;
+import com.capitaworld.service.loans.utils.cma.OperatingStatementComparator;
 
 @Service
 @Transactional
@@ -113,7 +117,7 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
  				}
  			}
  			logger.warn("tenure==>>"+tenure);
-	 		
+	 		logger.info("FILE PATH ------------------------------->" + environment.getRequiredProperty(EXCEL_FILE_LOCATION));
 			wb = new XSSFWorkbook(OPCPackage.open(environment.getRequiredProperty(EXCEL_FILE_LOCATION)));
 			
 			Sheet sheet1 = wb.getSheetAt(0);
@@ -124,8 +128,36 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 
 			evaluator = wb.getCreationHelper().createFormulaEvaluator();
 
-			List<OperatingStatementDetails> operatingStatementDetailsList = operatingStatementDetailsRepository
-					.getByApplicationId(applicationId);
+			List<OperatingStatementDetails> operatingStatementDetailsList = operatingStatementDetailsRepository.getByApplicationId(applicationId);
+			//------------------------------- START FOR FIX FIRST THREE ROW IN EXCEL SHEET
+			List<Integer> yearList = new ArrayList<>(operatingStatementDetailsList.size());
+			for (OperatingStatementDetails operatingStatementDetails : operatingStatementDetailsList) {
+				String year = operatingStatementDetails.getYear();
+				if(!CommonUtils.isObjectNullOrEmpty(year)) {
+					yearList.add(Integer.parseInt(year));
+				}
+			}
+			if(yearList.size() < 3) {
+				OperatingStatementDetails operatingStatementDetails = null;
+				if(yearList.size() == 2) {//IF USER UPLOAD 3 YEAR ITR
+					Integer minValue = Math.min(yearList.get(0), yearList.get(1));
+					operatingStatementDetails = new OperatingStatementDetails();
+					operatingStatementDetails.setYear(String.valueOf(minValue-1));
+					operatingStatementDetailsList.add(operatingStatementDetails);
+				} else {//IF USER UPLOAD 1 YEAR ITR
+					operatingStatementDetails = new OperatingStatementDetails();
+					operatingStatementDetails.setYear(String.valueOf(yearList.get(0)-1));
+					operatingStatementDetailsList.add(operatingStatementDetails);
+					
+					operatingStatementDetails = new OperatingStatementDetails();
+					operatingStatementDetails.setYear(String.valueOf(yearList.get(0)-2));
+					operatingStatementDetailsList.add(operatingStatementDetails);
+				}
+			}
+			Collections.sort(operatingStatementDetailsList, new OperatingStatementComparator());
+			//------------------------------- END FOR FIX FIRST THREE ROW IN EXCEL SHEET
+			
+			
 			int j = 1;
 			Double temp=0.0;
 			
@@ -256,8 +288,38 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 			
 			// Liabilities Starts
 			temp = 0.0 ;
-			List<LiabilitiesDetails> liabilitiesDetailsList = liabilitiesDetailsRepository
-					.getByApplicationId(applicationId);
+			List<LiabilitiesDetails> liabilitiesDetailsList = liabilitiesDetailsRepository.getByApplicationId(applicationId);
+			
+			//------------------------------- START FOR FIX FIRST THREE ROW IN EXCEL SHEET
+			List<Integer> libYearList = new ArrayList<>(liabilitiesDetailsList.size());
+			for (LiabilitiesDetails liabilitiesDetails : liabilitiesDetailsList) {
+				String year = liabilitiesDetails.getYear();
+				if(!CommonUtils.isObjectNullOrEmpty(year)) {
+					libYearList.add(Integer.parseInt(year));
+				}
+			}
+			if(libYearList.size() < 3) {
+				LiabilitiesDetails liabilitiesDetails = null;
+				if(libYearList.size() == 2) {//IF USER UPLOAD 3 YEAR ITR
+					Integer minValue = Math.min(libYearList.get(0), libYearList.get(1));
+					liabilitiesDetails = new LiabilitiesDetails();
+					liabilitiesDetails.setYear(String.valueOf(minValue-1));
+					liabilitiesDetailsList.add(liabilitiesDetails);
+				} else {//IF USER UPLOAD 1 YEAR ITR
+					liabilitiesDetails = new LiabilitiesDetails();
+					liabilitiesDetails.setYear(String.valueOf(libYearList.get(0)-1));
+					liabilitiesDetailsList.add(liabilitiesDetails);
+					
+					liabilitiesDetails = new LiabilitiesDetails();
+					liabilitiesDetails.setYear(String.valueOf(libYearList.get(0)-2));
+					liabilitiesDetailsList.add(liabilitiesDetails);
+				}
+			}
+			Collections.sort(liabilitiesDetailsList, new LiabilityComparator());
+			//------------------------------- END FOR FIX FIRST THREE ROW IN EXCEL SHEET
+			
+			
+			
 			j = 1 ;
 			for (LiabilitiesDetails liabilitiesDetails : liabilitiesDetailsList) {
 				// save in db
@@ -354,6 +416,35 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 			// Asset Starts
 
 			List<AssetsDetails> assetsDetailsList = assetsDetailsRepository.getByApplicationId(applicationId);
+			//------------------------------- START FOR FIX FIRST THREE ROW IN EXCEL SHEET
+			List<Integer> assetYearList = new ArrayList<>(assetsDetailsList.size());
+			for (AssetsDetails assetsDetails : assetsDetailsList) {
+				String year = assetsDetails.getYear();
+				if(!CommonUtils.isObjectNullOrEmpty(year)) {
+					assetYearList.add(Integer.parseInt(year));
+				}
+			}
+			if(assetYearList.size() < 3) {
+				AssetsDetails assetsDetails = null;
+				if(assetYearList.size() == 2) {//IF USER UPLOAD 3 YEAR ITR
+					Integer minValue = Math.min(assetYearList.get(0), assetYearList.get(1));
+					assetsDetails = new AssetsDetails();
+					assetsDetails.setYear(String.valueOf(minValue-1));
+					assetsDetailsList.add(assetsDetails);
+				} else {//IF USER UPLOAD 1 YEAR ITR
+					assetsDetails = new AssetsDetails();
+					assetsDetails.setYear(String.valueOf(assetYearList.get(0)-1));
+					assetsDetailsList.add(assetsDetails);
+					
+					assetsDetails = new AssetsDetails();
+					assetsDetails.setYear(String.valueOf(assetYearList.get(0)-2));
+					assetsDetailsList.add(assetsDetails);
+				}
+			}
+			Collections.sort(assetsDetailsList, new AssetComparator());
+			//------------------------------- END FOR FIX FIRST THREE ROW IN EXCEL SHEET
+			
+			
 			j = 1;
 			for (AssetsDetails assetsDetails : assetsDetailsList) {
 				
