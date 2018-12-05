@@ -144,7 +144,7 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 					operatingStatementDetails = new OperatingStatementDetails();
 					operatingStatementDetails.setYear(String.valueOf(minValue-1));
 					operatingStatementDetailsList.add(operatingStatementDetails);
-				} else {//IF USER UPLOAD 1 YEAR ITR
+				} else if(yearList.size() == 1)  {//IF USER UPLOAD 1 YEAR ITR
 					operatingStatementDetails = new OperatingStatementDetails();
 					operatingStatementDetails.setYear(String.valueOf(yearList.get(0)-1));
 					operatingStatementDetailsList.add(operatingStatementDetails);
