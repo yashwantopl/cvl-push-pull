@@ -21,7 +21,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
-
 import com.capitaworld.service.dms.model.DocumentResponse;
 import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.AssetsDetails;
@@ -118,7 +117,7 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
  				}
  			}
  			logger.warn("tenure==>>"+tenure);
-	 		
+	 		logger.info("FILE PATH ------------------------------->" + environment.getRequiredProperty(EXCEL_FILE_LOCATION));
 			wb = new XSSFWorkbook(OPCPackage.open(environment.getRequiredProperty(EXCEL_FILE_LOCATION)));
 			
 			Sheet sheet1 = wb.getSheetAt(0);
@@ -158,8 +157,8 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 			Collections.sort(operatingStatementDetailsList, new OperatingStatementComparator());
 			//------------------------------- END FOR FIX FIRST THREE ROW IN EXCEL SHEET
 			
-			int j = 0;
 
+			int j = 1;
 			Double temp=0.0;
 			
 			for (OperatingStatementDetails operatingStatementDetails : operatingStatementDetailsList) {
@@ -288,7 +287,7 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 			setyear(sheet1, temp, j , tenure, true , businessTypeId);
 			
 			// Liabilities Starts
-
+			temp = 0.0 ;
 			List<LiabilitiesDetails> liabilitiesDetailsList = liabilitiesDetailsRepository.getByApplicationId(applicationId);
 			
 			//------------------------------- START FOR FIX FIRST THREE ROW IN EXCEL SHEET
@@ -318,8 +317,10 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 			}
 			Collections.sort(liabilitiesDetailsList, new LiabilityComparator());
 			//------------------------------- END FOR FIX FIRST THREE ROW IN EXCEL SHEET
-			j = 0 ;
 
+
+
+			j = 1 ;
 			for (LiabilitiesDetails liabilitiesDetails : liabilitiesDetailsList) {
 				// save in db
                  temp=Double.parseDouble(liabilitiesDetails.getYear());
@@ -415,7 +416,6 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 			// Asset Starts
 
 			List<AssetsDetails> assetsDetailsList = assetsDetailsRepository.getByApplicationId(applicationId);
-			
 			//------------------------------- START FOR FIX FIRST THREE ROW IN EXCEL SHEET
 			List<Integer> assetYearList = new ArrayList<>(assetsDetailsList.size());
 			for (AssetsDetails assetsDetails : assetsDetailsList) {
@@ -443,7 +443,9 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 			}
 			Collections.sort(assetsDetailsList, new AssetComparator());
 			//------------------------------- END FOR FIX FIRST THREE ROW IN EXCEL SHEET
-			j = 0;
+
+
+			j = 1;
 			for (AssetsDetails assetsDetails : assetsDetailsList) {
 				
 				temp=Double.parseDouble(assetsDetails.getYear());
