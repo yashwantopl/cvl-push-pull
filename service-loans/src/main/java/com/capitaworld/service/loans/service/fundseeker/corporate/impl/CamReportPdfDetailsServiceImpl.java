@@ -81,6 +81,7 @@ import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateFinalInfoRequest;
 import com.capitaworld.service.loans.model.corporate.PrimaryCorporateRequest;
 import com.capitaworld.service.loans.model.corporate.TotalCostOfProjectRequest;
+import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.TermLoanParameterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.WcTlLoanParameterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.WorkingCapitalParameterRepository;
@@ -145,6 +146,7 @@ import com.capitaworld.service.oneform.enums.ShareHoldingCategory;
 import com.capitaworld.service.oneform.enums.SpouseDetailMst;
 import com.capitaworld.service.oneform.enums.Title;
 import com.capitaworld.service.oneform.enums.VisuallyImpairedMst;
+import com.capitaworld.service.oneform.enums.WcRenewalType;
 import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
 import com.capitaworld.service.rating.model.RatingResponse;
@@ -296,6 +298,9 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 	@Autowired
 	private PrimaryCorporateDetailRepository primaryCorporateRepository;
 	
+	@Autowired
+	private ProductMasterRepository productMasterRepository;
+	
 	private static final Logger logger = LoggerFactory.getLogger(CamReportPdfDetailsServiceImpl.class);
 	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 
@@ -361,6 +366,21 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			e1.printStackTrace();
 		}
 		
+		// Product Name
+		
+				if(productId != null) {
+					String productName = productMasterRepository.getFpProductName(productId);
+					if(productName != null) {
+						map.put("fpProductName", productName);	
+					}else {
+						logger.info("product name is null..");
+					}
+				}else {
+					logger.info("fpProductMapping id is null..");
+				}
+		// application type
+				map.put("applicationType", (loanApplicationMaster.getWcRenewalStatus() != null ? WcRenewalType.getById(loanApplicationMaster.getWcRenewalStatus()).getValue().toString() : "New" ));
+				
 		//TIMELINE DATES
 		map.put("dateOfProposal", !CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getCreatedDate())? DATE_FORMAT.format(loanApplicationMaster.getCreatedDate()):"-");
 		try {
