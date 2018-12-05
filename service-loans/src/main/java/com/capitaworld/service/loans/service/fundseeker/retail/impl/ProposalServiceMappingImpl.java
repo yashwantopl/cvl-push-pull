@@ -5,6 +5,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -59,7 +60,7 @@ import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtility;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
-import com.capitaworld.service.loans.utils.CommonUtils.UsersRoles;
+import com.capitaworld.service.loans.utils.CommonUtils.BusinessType;
 import com.capitaworld.service.matchengine.MatchEngineClient;
 import com.capitaworld.service.matchengine.ProposalDetailsClient;
 import com.capitaworld.service.matchengine.model.ConnectionResponse;
@@ -1870,5 +1871,53 @@ public class ProposalServiceMappingImpl implements ProposalService {
 		List<Object[]> object = offlineProcessedAppRepository.getHomeCounterDetail();
 		logger.info("========== Exit from  getHomeCounter() ======== " + object);
 		return object;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<?> basicInfoForSearch(ProposalMappingRequest request) {
+		try {
+			// set branch id to proposal request
+			UsersRequest usersRequest = new UsersRequest();
+			usersRequest.setId(request.getUserId());
+			logger.info(
+					"Current user id ---------------------------------------------------> " + request.getUserId());
+			UserResponse userResponse = usersClient.getBranchDetailsBYUserId(usersRequest);
+			BranchBasicDetailsRequest basicDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap(
+					(LinkedHashMap<String, Object>) userResponse.getData(), BranchBasicDetailsRequest.class);
+			if (!CommonUtils.isObjectNullOrEmpty(basicDetailsRequest)) {
+				logger.info("Found Branch Id -----------> " + basicDetailsRequest.getId()
+						+ "---------Role Id ------------------>" + basicDetailsRequest.getRoleId());
+				if (basicDetailsRequest.getRoleId() == CommonUtils.UsersRoles.BO
+						|| basicDetailsRequest.getRoleId() == CommonUtils.UsersRoles.FP_CHECKER) {
+					logger.info("Current user is Branch officer or FP_CHECKER");
+					request.setBranchId(basicDetailsRequest.getId());
+				}
+			} else {
+				logger.info("Branch Id Can't found");
+			}
+		} catch (Exception e) {
+			logger.info("Throw Exception While Get Branch Id from UserId");
+			e.printStackTrace();
+		}
+		List<Object[]> result = null;
+		if(request.getBranchId() != null){
+			result = proposalDetailRepository.getAllProposalsForSearchWithBranch(request.getFpProductId(), request.getProposalStatusId(), request.getBranchId());
+		}else{
+			result = proposalDetailRepository.getAllProposalsForSearch(request.getFpProductId(), request.getProposalStatusId());
+		}
+		
+		List<Map<String, Object>> finalList = new ArrayList<>(result.size());
+		
+		for(Object[] arr : result ){
+			Map<String, Object> data = new HashMap<>();
+			data.put("applicationId", arr[0]);
+			data.put("organizationName", arr[1]);
+			data.put("applicationCode", arr[2]);
+			data.put("businessTypeId", CommonUtils.isObjectNullOrEmpty(arr[3]) ? BusinessType.EXISTING_BUSINESS.getId() : arr[3]);
+			finalList.add(data);
+		}
+		result.clear();
+		return finalList;
 	}
 }
