@@ -49,6 +49,7 @@ import com.capitaworld.service.loans.model.FinancialArrangementsDetailResponse;
 import com.capitaworld.service.loans.model.PincodeDataResponse;
 import com.capitaworld.service.loans.model.corporate.CorporateFinalInfoRequest;
 import com.capitaworld.service.loans.model.teaser.primaryview.CorporatePrimaryViewResponse;
+import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.TermLoanParameterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.WcTlLoanParameterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.WorkingCapitalParameterRepository;
@@ -92,6 +93,7 @@ import com.capitaworld.service.oneform.enums.ResidentStatusMst;
 import com.capitaworld.service.oneform.enums.SpouseDetailMst;
 import com.capitaworld.service.oneform.enums.Title;
 import com.capitaworld.service.oneform.enums.VisuallyImpairedMst;
+import com.capitaworld.service.oneform.enums.WcRenewalType;
 import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
 import com.capitaworld.service.oneform.model.SectorIndustryModel;
@@ -184,6 +186,9 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 	
 	@Autowired
 	private CorporateFinalInfoService corporateFinalInfoService;
+	
+	@Autowired
+	private ProductMasterRepository productMasterRepository;
 
 	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 	DecimalFormat decim = new DecimalFormat("#,###.00");
@@ -197,6 +202,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 		Long userId = loanApplicationMaster.getUserId();
 
 		corporatePrimaryViewResponse.setProductId(loanApplicationMaster.getProductId());
+		corporatePrimaryViewResponse.setApplicationType(loanApplicationMaster.getWcRenewalStatus() != null ? WcRenewalType.getById(loanApplicationMaster.getWcRenewalStatus()).getValue().toString() : "New" );
 		/* ========= Matches Data ========== */
 		if (userType != null) {
 			if (!(CommonUtils.UserType.FUND_SEEKER == userType)) { // teaser
@@ -1182,6 +1188,21 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 					toApplicationId);
 			e1.printStackTrace();
 		}
+		
+		
+		// Product Name
+		
+		if(fpProductMappingId != null) {
+			String productName = productMasterRepository.getFpProductName(fpProductMappingId);
+			if(productName != null) {
+				corporatePrimaryViewResponse.setFpProductName(productName);	
+			}else {
+				logger.info("product name is null..");
+			}
+		}else {
+			logger.info("fpProductMapping id is null..");
+		}
+
 		
 		// address
 		

@@ -72,6 +72,7 @@ import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.Currency;
 import com.capitaworld.service.oneform.enums.Denomination;
 import com.capitaworld.service.oneform.enums.FundproviderType;
+import com.capitaworld.service.oneform.enums.WcRenewalType;
 import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
 import com.capitaworld.service.oneform.model.SectorIndustryModel;
@@ -325,6 +326,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 
 					corporateProposalDetails
 							.setFsMainType(CommonUtils.getCorporateLoanType(loanApplicationMaster.getProductId()));
+					corporateProposalDetails.setWcRenualNew(loanApplicationMaster.getWcRenewalStatus()!= null ? WcRenewalType.getById(loanApplicationMaster.getWcRenewalStatus()).getValue().toString() : "New"); 
 
 					// for get industry id
 					List<Long> listIndustryIds = industrySectorRepository.getIndustryByApplicationId(applicationId);
@@ -922,6 +924,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 
 							corporateProposalDetails.setFsMainType(
 									CommonUtils.getCorporateLoanType(loanApplicationMaster.getProductId()));
+							corporateProposalDetails.setWcRenualNew(loanApplicationMaster.getWcRenewalStatus()!= null ? WcRenewalType.getById(loanApplicationMaster.getWcRenewalStatus()).getValue().toString() : "New");
 
 							String amount = "";
 							if (CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getAmount()))
@@ -1099,6 +1102,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 
 							corporateProposalDetails.setFsMainType(
 									CommonUtils.getCorporateLoanType(loanApplicationMaster.getProductId()));
+							corporateProposalDetails.setWcRenualNew(loanApplicationMaster.getWcRenewalStatus()!= null ? WcRenewalType.getById(loanApplicationMaster.getWcRenewalStatus()).getValue().toString() : "New");
 
 							String amount = "";
 							if (CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getAmount()))
@@ -1515,6 +1519,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 
 					corporateProposalDetails
 							.setFsMainType(CommonUtils.getCorporateLoanType(loanApplicationMaster.getProductId()));
+					corporateProposalDetails.setWcRenualNew(loanApplicationMaster.getWcRenewalStatus()!= null ? WcRenewalType.getById(loanApplicationMaster.getWcRenewalStatus()).getValue().toString() : "New");
 
 					// for get industry id
 					List<Long> listIndustryIds = industrySectorRepository.getIndustryByApplicationId(applicationId);
