@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.service.irr.impl;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,6 +38,7 @@ import com.capitaworld.service.rating.model.QualitativeInputSheetManuRequest;
 import com.capitaworld.service.rating.model.QualitativeInputSheetServRequest;
 import com.capitaworld.service.rating.model.QualitativeInputSheetTradRequest;
 import com.capitaworld.service.rating.model.RatingResponse;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ibm.icu.util.Calendar;
 
 @Service
@@ -252,7 +254,10 @@ public class IrrServiceImpl implements IrrService{
 		
 		RatingResponse ratingResponse=new RatingResponse();
 		try {
-			 
+			
+			/*ObjectMapper mapper = new ObjectMapper();
+			mapper.writeValue(new File("e:\\file.json"), irrRequest); */
+			
 			 ratingResponse=ratingClient.calculateIrrRating(irrRequest);
 			 log.info("rating respo->"+ratingResponse.toString());
 			 //ratingResponse.setData(irrRequest);
