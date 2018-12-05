@@ -26,7 +26,7 @@ public class AuditComponentBankToCW {
 	@Async
 	public void saveBankToCWReqRes(String request, Long applicationId,Integer apiType , String status, String failureReason,
 			Long orgId , Long  bankPrimaryKey) {
-		logger.info("Enter in saveBankReqRes() ----------------------->  "+ request);
+		logger.info("Enter in saveBankReqRes() ----------------------->{}===>{}===>{}===>{}===>{}===>{}",applicationId,apiType,status,failureReason,orgId,bankPrimaryKey);
 		try {
 		BankCWAuditTrailDomain bankCWAuditTrailDomain = new BankCWAuditTrailDomain();
 		bankCWAuditTrailDomain.setApplicationId(applicationId);

@@ -60,6 +60,10 @@ public class PersistenceContext {
 		dataSource.setMaxLifetime(Long.parseLong(environment.getProperty(PROPERTY_NAME_DATABASE_MAX_LIFETIME)));
 		dataSource.setConnectionTimeout(
 				Long.parseLong(environment.getProperty(PROPERTY_NAME_DATABASE_CONNECTION_TIMEOUT)));
+		
+		//Added after suggested by Satyam Bhai
+		dataSource.setMinimumIdle(Integer.parseInt(environment.getProperty(PROPERTY_NAME_DATABASE_MAX_CONNECTIONS)));
+		dataSource.setIdleTimeout(Long.parseLong(environment.getProperty(PROPERTY_NAME_DATABASE_CONNECTION_TIMEOUT)));
 		return dataSource;
 	}
 
