@@ -305,7 +305,7 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 					liabilitiesDetails = new LiabilitiesDetails();
 					liabilitiesDetails.setYear(String.valueOf(minValue-1));
 					liabilitiesDetailsList.add(liabilitiesDetails);
-				} else {//IF USER UPLOAD 1 YEAR ITR
+				} else if(libYearList.size() == 1){//IF USER UPLOAD 1 YEAR ITR
 					liabilitiesDetails = new LiabilitiesDetails();
 					liabilitiesDetails.setYear(String.valueOf(libYearList.get(0)-1));
 					liabilitiesDetailsList.add(liabilitiesDetails);
@@ -431,7 +431,7 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 					assetsDetails = new AssetsDetails();
 					assetsDetails.setYear(String.valueOf(minValue-1));
 					assetsDetailsList.add(assetsDetails);
-				} else {//IF USER UPLOAD 1 YEAR ITR
+				} else if(assetYearList.size() == 1) {//IF USER UPLOAD 1 YEAR ITR
 					assetsDetails = new AssetsDetails();
 					assetsDetails.setYear(String.valueOf(assetYearList.get(0)-1));
 					assetsDetailsList.add(assetsDetails);
