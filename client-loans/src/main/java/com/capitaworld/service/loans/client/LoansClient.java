@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -243,11 +244,12 @@ public class LoansClient {
 	private static final Logger logger = LoggerFactory.getLogger(LoansClient.class);
 	
 	private String loansBaseUrl;
+	
+	@Autowired
 	private RestTemplate restTemplate;
 
 	public LoansClient(String loansBaseUrl) {
 		this.loansBaseUrl = loansBaseUrl;
-		restTemplate = new RestTemplate();
 	}
 
 	public ExcelResponse readCMA(ExcelRequest request) throws ExcelException {
@@ -257,7 +259,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.POST, setHttpHeader(request), ExcelResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new ExcelException("Excel Extration service is not available");
+			throw new ExcelException(e.getCause().getMessage());
 		}
 	}
 
@@ -268,7 +270,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.POST, setHttpHeader(request), ExcelResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new ExcelException("Excel Extration service is not available");
+			throw new ExcelException(e.getCause().getMessage());
 		}
 	}
 
@@ -279,7 +281,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.POST, setHttpHeader(request), ExcelResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new ExcelException("Excel Extration service is not available");
+			throw new ExcelException(e.getCause().getMessage());
 		}
 	}
 
@@ -290,7 +292,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.POST, setHttpHeader(request), ExcelResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new ExcelException("Excel Extration service is not available");
+			throw new ExcelException(e.getCause().getMessage());
 		}
 	}
 
@@ -301,7 +303,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.POST, setHttpHeader(request), ExcelResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new ExcelException("Excel Extration service is not available");
+			throw new ExcelException(e.getCause().getMessage());
 		}
 	}
 
@@ -312,7 +314,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.POST, setHttpHeader(request), ExcelResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new ExcelException("Excel Extration service is not available");
+			throw new ExcelException(e.getCause().getMessage());
 		}
 	}
 
@@ -335,7 +337,7 @@ public class LoansClient {
 			 */
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new LoansException("Loans service is not available");
+			throw new LoansException(e.getCause().getMessage());
 		}
 	}
 
@@ -353,7 +355,7 @@ public class LoansClient {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new LoansException("Loans service is not available");
+			throw new LoansException(e.getCause().getMessage());
 		}
 	}
 
@@ -371,7 +373,7 @@ public class LoansClient {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new LoansException("Loans service is not available");
+			throw new LoansException(e.getCause().getMessage());
 		}
 	}
 
@@ -389,7 +391,7 @@ public class LoansClient {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new LoansException("Loans service is not available");
+			throw new LoansException(e.getCause().getMessage());
 		}
 	}
 
@@ -403,7 +405,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new LoansException("Loans service is not available");
+			throw new LoansException(e.getCause().getMessage());
 		}
 	}
 
@@ -423,7 +425,7 @@ public class LoansClient {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new LoansException("Loans service is not available");
+			throw new LoansException(e.getCause().getMessage());
 		}
 	}
 
@@ -437,7 +439,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new LoansException("Loans service is not available");
+			throw new LoansException(e.getCause().getMessage());
 		}
 	}
 
@@ -452,7 +454,7 @@ public class LoansClient {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new LoansException("Loans service is not available");
+			throw new LoansException(e.getCause().getMessage());
 		}
 	}
 
@@ -482,7 +484,7 @@ public class LoansClient {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new LoansException("Loans service is not available while call getLoanDetailsForAdminPanel");
+			throw new LoansException(e.getCause().getMessage());
 		}
 	}
 	public LoansResponse getUbiReport1ForAdminPanel(MobileLoanRequest loanRequest) throws LoansException {
@@ -496,7 +498,7 @@ public class LoansClient {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new LoansException("Loans service is not available while call getLoanDetailsForAdminPanel");
+			throw new LoansException(e.getCause().getMessage());
 		}
 	}
 	public LoansResponse getUbiReport2ForAdminPanel(MobileLoanRequest loanRequest) throws LoansException {
@@ -510,7 +512,7 @@ public class LoansClient {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new LoansException("Loans service is not available while call getLoanDetailsForAdminPanel");
+			throw new LoansException(e.getCause().getMessage());
 		}
 	}
 	public LoansResponse getUbiReport3ForAdminPanel(MobileLoanRequest loanRequest) throws LoansException {
@@ -524,7 +526,7 @@ public class LoansClient {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new LoansException("Loans service is not available while call getLoanDetailsForAdminPanel");
+			throw new LoansException(e.getCause().getMessage());
 		}
 	}
 	public LoansResponse getUbiReport4ForAdminPanel(MobileLoanRequest loanRequest) throws LoansException {
@@ -538,7 +540,7 @@ public class LoansClient {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new LoansException("Loans service is not available while call getLoanDetailsForAdminPanel");
+			throw new LoansException(e.getCause().getMessage());
 		}
 	}
 	public LoansResponse getUbiReport5ForAdminPanel(MobileLoanRequest loanRequest) throws LoansException {
@@ -552,7 +554,7 @@ public class LoansClient {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new LoansException("Loans service is not available while call getLoanDetailsForAdminPanel");
+			throw new LoansException(e.getCause().getMessage());
 		}
 	}
 
@@ -567,7 +569,7 @@ public class LoansClient {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new LoansException("Loans service is not available while call getFilledLoanDetailsForAdminPanel");
+			throw new LoansException(e.getCause().getMessage());
 		}
 	}
 
@@ -582,12 +584,12 @@ public class LoansClient {
 			if (response != null) {
 				return response.getData().toString();
 			} else {
-				throw new LoansException("something went wrong");
+				throw new LoansException("Loan Response Found Null While Getting UserId by Product Id");
 			}
 			/* return restTemplate.postForObject(url, request, LoansResponse.class); */
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new LoansException("product master is not available");
+			throw new LoansException(e.getCause().getMessage());
 		}
 	}
 
@@ -602,7 +604,7 @@ public class LoansClient {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new LoansException("Loans service is not available while call getChatListByApplicationId");
+			throw new LoansException(e.getCause().getMessage());
 		}
 	}
 
@@ -617,7 +619,7 @@ public class LoansClient {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new LoansException("Loans service is not available while call getChatListByProductMappingId");
+			throw new LoansException(e.getCause().getMessage());
 		}
 	}
 
@@ -632,7 +634,7 @@ public class LoansClient {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new LoansException("Loans service is not available while call create log");
+			throw new LoansException(e.getCause().getMessage());
 		}
 	}
 
@@ -647,7 +649,7 @@ public class LoansClient {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new LoansException("Loans service is not available while call loan list for mobile app");
+			throw new LoansException(e.getCause().getMessage());
 		}
 	}
 
@@ -662,7 +664,7 @@ public class LoansClient {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new LoansException("Loans service is not available while call loan list for mobile app");
+			throw new LoansException(e.getCause().getMessage());
 		}
 	}
 
@@ -677,7 +679,7 @@ public class LoansClient {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new LoansException("Loans service is not available while call get applicant details for mobile app");
+			throw new LoansException(e.getCause().getMessage());
 		}
 	}
 
@@ -692,7 +694,7 @@ public class LoansClient {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new LoansException("Loans service is not available while call save applicant details for mobile app");
+			throw new LoansException(e.getCause().getMessage());
 		}
 	}
 
@@ -707,7 +709,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new ExcelException("Loans service is not available");
+			throw new ExcelException(e.getCause().getMessage());
 		}
 	}
 
@@ -722,7 +724,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new ExcelException("Loans service is not available");
+			throw new ExcelException(e.getCause().getMessage());
 		}
 	}
 
@@ -738,7 +740,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new ExcelException("Loans service is not available");
+			throw new ExcelException(e.getCause().getMessage());
 		}
 	}
 	
@@ -754,7 +756,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new ExcelException("Loans service is not available");
+			throw new ExcelException(e.getCause().getMessage());
 		}
 	}
 	
@@ -769,7 +771,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new ExcelException("Loans service is not available");
+			throw new ExcelException(e.getCause().getMessage());
 		}
 	}
 	
@@ -784,7 +786,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new ExcelException("Loans service is not available");
+			throw new ExcelException(e.getCause().getMessage());
 		}
 	}
 	public LoansResponse saveCreditRatingOrganizationDetails(FrameRequest request) throws ExcelException {
@@ -797,7 +799,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new ExcelException("Loans service is not available");
+			throw new ExcelException(e.getCause().getMessage());
 		}
 	}
 
@@ -812,7 +814,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new ExcelException("Loans service is not available");
+			throw new ExcelException(e.getCause().getMessage());
 		}
 	}
 
@@ -827,7 +829,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new ExcelException("Loans service is not available");
+			throw new ExcelException(e.getCause().getMessage());
 		}
 	}
 
@@ -842,7 +844,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new ExcelException("Loans service is not available");
+			throw new ExcelException(e.getCause().getMessage());
 		}
 	}
 	
@@ -857,7 +859,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.GET, entity, FinancialArrangementsDetailRequest.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new Exception("Loans service is not available");
+			throw new Exception(e.getCause().getMessage());
 		}
 	}
 
@@ -874,7 +876,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new Exception("Loans service is not available");
+			throw new Exception(e.getCause().getMessage());
 		}
 	}
 
@@ -889,7 +891,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new ExcelException("Loans service is not available");
+			throw new ExcelException(e.getCause().getMessage());
 		}
 	}
 
@@ -904,7 +906,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new ExcelException("Loans service is not available");
+			throw new ExcelException(e.getCause().getMessage());
 		}
 	}
 
@@ -919,7 +921,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new ExcelException("Loans service is not available");
+			throw new ExcelException(e.getCause().getMessage());
 		}
 	}
 
@@ -934,7 +936,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new ExcelException("Loans service is not available");
+			throw new ExcelException(e.getCause().getMessage());
 		}
 	}
 
@@ -949,7 +951,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new ExcelException("Loans service is not available");
+			throw new ExcelException(e.getCause().getMessage());
 		}
 	}
 
@@ -964,7 +966,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new ExcelException("Loans service is not available");
+			throw new ExcelException(e.getCause().getMessage());
 		}
 	}
 
@@ -979,7 +981,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new ExcelException("Loans service is not available");
+			throw new ExcelException(e.getCause().getMessage());
 		}
 	}
 
@@ -994,7 +996,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new ExcelException("Loans service is not available");
+			throw new ExcelException(e.getCause().getMessage());
 		}
 	}
 
@@ -1009,7 +1011,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new ExcelException("Loans service is not available");
+			throw new ExcelException(e.getCause().getMessage());
 		}
 	}
 
@@ -1024,7 +1026,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new ExcelException("Loans service is not available");
+			throw new ExcelException(e.getCause().getMessage());
 		}
 	}
 
@@ -1039,7 +1041,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new ExcelException("Loans service is not available");
+			throw new ExcelException(e.getCause().getMessage());
 		}
 	}
 
@@ -1055,7 +1057,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new ExcelException("Loans service is not available");
+			throw new ExcelException(e.getCause().getMessage());
 		}
 	}
 	
@@ -1070,7 +1072,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new ExcelException("Loans service is not available");
+			throw new ExcelException(e.getCause().getMessage());
 		}
 	}
 
@@ -1086,7 +1088,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new ExcelException("Loans service is not available");
+			throw new ExcelException(e.getCause().getMessage());
 		}
 	}
 
@@ -1101,7 +1103,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new ExcelException("Loans service is not available");
+			throw new ExcelException(e.getCause().getMessage());
 		}
 	}
 
@@ -1116,7 +1118,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new ExcelException("Loans service is not available");
+			throw new ExcelException(e.getCause().getMessage());
 		}
 	}
 
@@ -1145,7 +1147,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new ExcelException("Loans service is not available");
+			throw new ExcelException(e.getCause().getMessage());
 		}
 	}
 
@@ -1160,8 +1162,7 @@ public class LoansClient {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new LoansException(
-					"Loans service is not available while call get co-applicant details for mobile app");
+			throw new LoansException(e.getCause().getMessage());
 		}
 	}
 
@@ -1177,8 +1178,7 @@ public class LoansClient {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new LoansException(
-					"Loans service is not available while call save co-applicant details for mobile app");
+			throw new LoansException(e.getCause().getMessage());
 		}
 	}
 
@@ -1193,7 +1193,7 @@ public class LoansClient {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new LoansException("Loans service is not available while call get guarantor details for mobile app");
+			throw new LoansException(e.getCause().getMessage());
 		}
 	}
 
@@ -1209,7 +1209,7 @@ public class LoansClient {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new LoansException("Loans service is not available while call save guarantor details for mobile app");
+			throw new LoansException(e.getCause().getMessage());
 		}
 	}
 
@@ -1226,8 +1226,7 @@ public class LoansClient {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new LoansException(
-					"Loans service is not available while call Mobile Loan Eligibility HomeLoan Calc Min Max for mobile app");
+			throw new LoansException(e.getCause().getMessage());
 		}
 	}
 
@@ -1242,8 +1241,7 @@ public class LoansClient {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new LoansException(
-					"Loans service is not available while call Mobile Loan Eligibility HomeLoan get eligible tenure for mobile app");
+			throw new LoansException(e.getCause().getMessage());
 		}
 	}
 
@@ -1259,8 +1257,7 @@ public class LoansClient {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new LoansException(
-					"Loans service is not available while call Mobile Loan Eligibility HomeLoan calc loan amount for mobile app");
+			throw new LoansException(e.getCause().getMessage());
 		}
 	}
 
@@ -1277,8 +1274,7 @@ public class LoansClient {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new LoansException(
-					"Loans service is not available while call Mobile Loan Eligibility PersonalLoan get eligible amount for mobile app");
+			throw new LoansException(e.getCause().getMessage());
 		}
 	}
 
@@ -1294,8 +1290,7 @@ public class LoansClient {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new LoansException(
-					"Loans service is not available while call Mobile Loan Eligibility PersonalLoan calc min max for mobile app");
+			throw new LoansException(e.getCause().getMessage());
 		}
 	}
 
@@ -1311,8 +1306,7 @@ public class LoansClient {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new LoansException(
-					"Loans service is not available while call Mobile Loan Eligibility LAP get eligible tenure for mobile app");
+			throw new LoansException(e.getCause().getMessage());
 		}
 	}
 
@@ -1328,8 +1322,7 @@ public class LoansClient {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new LoansException(
-					"Loans service is not available while call Mobile Loan Eligibility LAP Calc Min max for mobile app");
+			throw new LoansException(e.getCause().getMessage());
 		}
 	}
 
@@ -1345,8 +1338,7 @@ public class LoansClient {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new LoansException(
-					"Loans service is not available while call Mobile Loan Eligibility LAP calc lap amount for mobile app");
+			throw new LoansException(e.getCause().getMessage());
 		}
 	}
 
@@ -1363,7 +1355,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new ExcelException("Loans service is not available");
+			throw new ExcelException(e.getCause().getMessage());
 		}
 	}
 
@@ -1380,7 +1372,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new ExcelException("Loans service is not available");
+			throw new ExcelException(e.getCause().getMessage());
 		}
 	}
 	
@@ -1397,7 +1389,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new ExcelException(url + " in Loans service is not available");
+			throw new ExcelException(url + " " + e.getCause().getMessage());
 		}
 	}
 	
@@ -1414,7 +1406,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new Exception(url + " in Loans service is not available");
+			throw new Exception(url + " " + e.getCause().getMessage());
 		}
 	}
 
@@ -1429,8 +1421,7 @@ public class LoansClient {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new LoansException(
-					"Loans service is not available while call save loan application details for mobile app");
+			throw new LoansException(e.getCause().getMessage());
 		}
 	}
 
@@ -1444,7 +1435,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new LoansException("Loans service is not available while get fp product list for mobile app");
+			throw new LoansException(e.getCause().getMessage());
 		}
 	}
 
@@ -1458,7 +1449,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new LoansException("Loans service is not available while get fp matches list for mobile app");
+			throw new LoansException(e.getCause().getMessage());
 		}
 	}
 
@@ -1472,7 +1463,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new LoansException("Loans service is not available while get fp matches list for mobile app");
+			throw new LoansException(e.getCause().getMessage());
 		}
 	}
 	
@@ -1486,7 +1477,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new LoansException("Loans service is not available while get fp matches list for mobile app");
+			throw new LoansException(e.getCause().getMessage());
 		}
 	}
 
@@ -1502,7 +1493,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new ExcelException("Loans service is not availables");
+			throw new ExcelException(e.getCause().getMessage());
 		}
 	}
 
@@ -1520,7 +1511,7 @@ public class LoansClient {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new LoansException("Loans service is not available");
+			throw new LoansException(e.getCause().getMessage());
 		}
 	}
 	
@@ -1535,7 +1526,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new ExcelException("Loans service is not availables");
+			throw new ExcelException(e.getCause().getMessage());
 		}
 	}
 	
@@ -1550,7 +1541,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new ExcelException("Loans service is not availables");
+			throw new ExcelException(e.getCause().getMessage());
 		}
 		}
 	public LoansResponse getFullPrimaryDetails(Long applicationId,Long userId,Integer productId) throws Exception {
@@ -1578,7 +1569,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new Exception("Loans service is not available");
+			throw new Exception(e.getCause().getMessage());
 		}
 	}
 	public RetailApplicantRequest getFullProfileDetail(Long applicationId) throws Exception {
@@ -1591,7 +1582,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.GET, entity, RetailApplicantRequest.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new Exception("Loans service is not available");
+			throw new Exception(e.getCause().getMessage());
 		}
 	}
 	
@@ -1605,7 +1596,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new ExcelException("Loans service is not availables");
+			throw new ExcelException(e.getCause().getMessage());
 		}
 		}
 	
@@ -1620,7 +1611,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.POST, entity, Integer.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new Exception("Loans service is not available");
+			throw new Exception(e.getCause().getMessage());
 		}
 	}
 	
@@ -1635,7 +1626,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new ExcelException("Loans service is not available");
+			throw new ExcelException(e.getCause().getMessage());
 		}
 	}
 	
@@ -1653,7 +1644,7 @@ public class LoansClient {
 			}else if(e.getMessage().contains("400")) {
 				throw new Exception(url + " is Not Valid Request");				
 			}else {
-				throw new ExcelException("Loans service is not available");
+				throw new ExcelException(e.getCause().getMessage());
 			}
 		}
 	}
@@ -1669,7 +1660,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.GET, entity, List.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new ExcelException("Loans service is not available");
+			throw new ExcelException(e.getCause().getMessage());
 		}
 	}
 	
@@ -1683,7 +1674,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new Exception("Loans service is not available");
+			throw new Exception(e.getCause().getMessage());
 		}
 	}
 	
@@ -1700,9 +1691,9 @@ public class LoansClient {
 			if(e.getMessage().contains("404")) {
 				throw new Exception(url + " is Not Found");				
 			}else if(e.getMessage().contains("400")) {
-				throw new Exception(url + " is Not Valid Request");				
+				throw new Exception(url + " " + e.getCause().getMessage());				
 			}else {
-				throw new ExcelException("Loans service is not available");
+				throw new ExcelException(e.getCause().getMessage());
 			}
 		}
 	}
@@ -1720,7 +1711,7 @@ public class LoansClient {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new LoansException("Loans service is not available while call getLoanMasterInfo");
+			throw new LoansException(e.getCause().getMessage());
 		}
 	}
 	
@@ -1735,7 +1726,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new ExcelException("Loans service is not available");
+			throw new ExcelException(e.getCause().getMessage());
 		}
 	}
 	
@@ -1750,7 +1741,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new ExcelException("Loans service is not available");
+			throw new ExcelException(e.getCause().getMessage());
 		}
 	}
 
@@ -1766,7 +1757,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new Exception("Loans service is not available");
+			throw new Exception(e.getCause().getMessage());
 		}
 	}
 
@@ -1780,7 +1771,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new Exception("Loans service is not available");
+			throw new Exception(e.getCause().getMessage());
 		}
 	}
 
@@ -1794,7 +1785,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new Exception("Loans service is not available");
+			throw new Exception(e.getCause().getMessage());
 		}
 	}
 
@@ -1809,7 +1800,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.GET, entity, CMADetailResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new ExcelException("Loans service is not available");
+			throw new ExcelException(e.getCause().getMessage());
 		}
 		
 	}
@@ -1825,7 +1816,7 @@ public class LoansClient {
 		} catch (Exception e) {
 			logger.info("Throw Exception While Get CMA Details Using Loan CLient");
 			e.printStackTrace();
-			throw new Exception("Loans service is not available");
+			throw new Exception(e.getCause().getMessage());
 		}
 	}
 	
@@ -1841,7 +1832,7 @@ public class LoansClient {
 		} catch (Exception e) {
 			logger.info("Throw Exception while call save CMA details");
 			e.printStackTrace();
-			throw new Exception("Loans service is not available");
+			throw new Exception(e.getCause().getMessage());
 		}
 	}
 
@@ -1856,7 +1847,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new ExcelException("Loans service is not available");
+			throw new ExcelException(e.getCause().getMessage());
 		}
 	}
 
@@ -1871,7 +1862,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new ExcelException("Loans service is not available");
+			throw new ExcelException(e.getCause().getMessage());
 		}
 	}
 	
@@ -1884,7 +1875,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new LoansException("Loans service is not available");
+			throw new LoansException(e.getCause().getMessage());
 		}
 	}
 	public LoansResponse inactiveApplication(Long applicationId,Long userId) throws LoansException {
@@ -1902,7 +1893,7 @@ public class LoansClient {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new LoansException("Loans service is not available");
+			throw new LoansException(e.getCause().getMessage());
 		}
 	}
 	
@@ -1948,7 +1939,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new ExcelException("Loans service is not available");
+			throw new ExcelException(e.getCause().getMessage());
 		}
 	}
 	
@@ -1962,7 +1953,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new ExcelException("Loans service is not available");
+			throw new ExcelException(e.getCause().getMessage());
 		}
 	}
 	
@@ -1983,7 +1974,7 @@ public class LoansClient {
 		} catch (Exception e) {
 			e.printStackTrace();
 			
-			throw e;//("Loans service is not available");
+			throw e;//(e.getCause().getMessage());
 		}
 	}
 		
@@ -1997,7 +1988,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.POST, entity, MobileApiResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new ExcelException("Loans service is not available");
+			throw new ExcelException(e.getCause().getMessage());
 		}
 	}
 	
@@ -2011,7 +2002,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.POST, entity, MobileApiResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new ExcelException("Loans service is not available");
+			throw new ExcelException(e.getCause().getMessage());
 		}
 	}
 	
@@ -2025,7 +2016,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new ExcelException("Loans service is not available");
+			throw new ExcelException(e.getCause().getMessage());
 		}
 	}
 
@@ -2040,7 +2031,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.POST, entity, MobileApiResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new ExcelException("Loans service is not available");
+			throw new ExcelException(e.getCause().getMessage());
 		}
 	}
 
@@ -2055,7 +2046,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.POST, entity, MobileApiResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new ExcelException("Loans service is not available");
+			throw new ExcelException(e.getCause().getMessage());
 		}
 	}
 	
@@ -2070,7 +2061,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.POST, entity, MobileApiResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new ExcelException("Loans service is not available");
+			throw new ExcelException(e.getCause().getMessage());
 		}
 	}
 	
@@ -2098,8 +2089,8 @@ public class LoansClient {
 		} catch (IOException e) {
 			e.printStackTrace();
 			
-			throw new ExcelException("Loans service is not available");
-			//throw e;//("Loans service is not available");
+			throw new ExcelException(e.getCause().getMessage());
+			//throw e;//(e.getCause().getMessage());
 		}
 	}
 	
@@ -2113,7 +2104,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new LoansException("Loans service is not available");
+			throw new LoansException(e.getCause().getMessage());
 		}
 	}
 
@@ -2127,7 +2118,7 @@ public class LoansClient {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new LoansException("Loans service is not available while call getDirectorsListByApplicationId");
+			throw new LoansException(e.getCause().getMessage());
 		}
 	}
 	
@@ -2152,7 +2143,7 @@ public class LoansClient {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new LoansException("Loans service is not available while call checkAmountByUserIdAndProductId");
+			throw new LoansException(e.getCause().getMessage());
 		}
 	}
 	
@@ -2176,7 +2167,7 @@ public class LoansClient {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new LoansException("Loans service is not available while call getUserAmountMapByUserAndProduct");
+			throw new LoansException(e.getCause().getMessage());
 		}
 	}
 	
@@ -2190,7 +2181,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new LoansException("Loans service is not available");
+			throw new LoansException(e.getCause().getMessage());
 		}
 	}
 	
@@ -2203,7 +2194,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new LoansException("Loans service is not available");
+			throw new LoansException(e.getCause().getMessage());
 		}
 	}
 	
@@ -2218,7 +2209,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new LoansException("Loans service is not available");
+			throw new LoansException(e.getCause().getMessage());
 		}
 	}
 	
@@ -2231,7 +2222,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.POST, new HttpEntity<PaymentRequest>(paymentRequest, headers), LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new LoansException("Loans service is not available");
+			throw new LoansException(e.getCause().getMessage());
 		}
 	}
 	
@@ -2245,7 +2236,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new LoansException("Loans service is not available");
+			throw new LoansException(e.getCause().getMessage());
 		}
 	}
 	
@@ -2259,7 +2250,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new LoansException("Loans service is not available");
+			throw new LoansException(e.getCause().getMessage());
 		}
 	}
 	
@@ -2273,7 +2264,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new LoansException("Loans service is not available");
+			throw new LoansException(e.getCause().getMessage());
 		}
 	}
 	
@@ -2295,7 +2286,7 @@ public class LoansClient {
 			System.out.println("Exception while getting token in  Loan Client!!");
 			
 			e.printStackTrace();
-			throw new LoansException("Loans service is not available");
+			throw new LoansException(e.getCause().getMessage());
 		}
 	}
 	public String setTokenAsExpired(GenerateTokenRequest generateTokenRequest) throws LoansException {
@@ -2313,7 +2304,7 @@ public class LoansClient {
 		} catch (Exception e) {
 			System.out.println("Exception while setting  token as expired Loan Client!!");
 			e.printStackTrace();
-			throw new LoansException("Loans service is not available");
+			throw new LoansException(e.getCause().getMessage());
 		}
 	}
 	
@@ -2328,7 +2319,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new LoansException("Loans service is not available While Get Retail Applicant Income Details");
+			throw new LoansException(e.getCause().getMessage());
 		}
 	}
 	
@@ -2343,7 +2334,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new LoansException("Loans service is not available while save retail applicant income details");
+			throw new LoansException(e.getCause().getMessage());
 		}
 	}
 	
@@ -2358,7 +2349,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new LoansException("Loans service is not available while save ITR res retail applicant details");
+			throw new LoansException(e.getCause().getMessage());
 		}
 	}
 	
@@ -2373,7 +2364,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new LoansException("Loans service is not available while getting GET_PINCODE_DATA details");
+			throw new LoansException(e.getCause().getMessage());
 		}
 	}
 	
@@ -2393,7 +2384,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new LoansException("Loans service is not available while saveLoanWCRenewalType");
+			throw new LoansException(e.getCause().getMessage());
 		}
 	}
 	
@@ -2408,7 +2399,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new LoansException("Loans service is not available While Get Loan WC Renewal Type");
+			throw new LoansException(e.getCause().getMessage());
 		}
 	}
 	
@@ -2422,7 +2413,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new LoansException("Loans service is not available while saveIneligibleProposal");
+			throw new LoansException(e.getCause().getMessage());
 		}
 	}
 	

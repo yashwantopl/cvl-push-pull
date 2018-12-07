@@ -67,7 +67,7 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 			loanDisbursementDomain.setCreatedDate(new Date());
 			loanDisbursementDomain.setModifiedBy(loanDisbursementRequest.getActionBy());
 			loanDisbursementDomain.setModifiedDate(new Date());
-			if(loanDisbursementRequest.getIsIneligibleProposal() == true) {
+			if(loanDisbursementRequest.getIsIneligibleProposal()!= null &&  loanDisbursementRequest.getIsIneligibleProposal()) {
 				loanDisbursementDomain.setIsDisbursedFrom(2L);
 				loanDisbursementDomain.setOrgId(loanDisbursementRequest.getOrgId());
 			}
@@ -102,7 +102,7 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 			if(CommonUtils.isObjectNullOrEmpty(loanDisbursementRequest.getIsIneligibleProposal()) || !loanDisbursementRequest.getIsIneligibleProposal()) {
 				recCount = proposalDetailsRepository.getApplicationIdCountByOrgId(loanDisbursementRequest.getApplicationId(), orgId);
 			}
-			if (( recCount != null && recCount > 0 ) || loanDisbursementRequest.getIsIneligibleProposal()) {
+			if (( recCount != null && recCount > 0 ) || (loanDisbursementRequest.getIsIneligibleProposal()!= null &&  loanDisbursementRequest.getIsIneligibleProposal())) {
 				Double oldDisbursedAmount = loanDisbursementRepository.getTotalDisbursedAmount(loanDisbursementRequest.getApplicationId());
 				if (oldDisbursedAmount != null) {
 					if (loanSanctionDomain.getSanctionAmount() == oldDisbursedAmount) {
@@ -110,7 +110,7 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 						loanDisbursementRequest.setReason("Alread Your Disbursement is Complete");
 						loanDisbursementRequest.setIsSaved(true);
 						loanDisbursementRequest.setStatusCode(CommonUtility.SanctionDisbursementAPIStatusCode.ALREADY_DONE_DISBURSEMENT);
-						if(loanDisbursementRequest.getIsIneligibleProposal() == true) {
+						if(loanDisbursementRequest.getIsIneligibleProposal()!= null &&  loanDisbursementRequest.getIsIneligibleProposal()) {
 						loanDisbursementRequest.setIsDisbursedFrom(2L);
 						loanDisbursementRequest.setOrgId(orgId);
 						}
@@ -122,7 +122,7 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 						loanDisbursementRequest.setReason("SUCCESS");
 						loanDisbursementRequest.setIsSaved(false);
 						loanDisbursementRequest.setStatusCode(CommonUtility.SanctionDisbursementAPIStatusCode.SUCCESS);
-						if(loanDisbursementRequest.getIsIneligibleProposal() == true) {
+						if(loanDisbursementRequest.getIsIneligibleProposal()!= null &&  loanDisbursementRequest.getIsIneligibleProposal()) {
 						loanDisbursementRequest.setIsDisbursedFrom(2L);
 						loanDisbursementRequest.setOrgId(orgId);
 						}
@@ -132,7 +132,7 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 						loanDisbursementRequest.setReason("Remaining");
 						loanDisbursementRequest.setIsSaved(false);
 						loanDisbursementRequest.setStatusCode(CommonUtility.SanctionDisbursementAPIStatusCode.SUCCESS);
-						if(loanDisbursementRequest.getIsIneligibleProposal() == true) {
+						if(loanDisbursementRequest.getIsIneligibleProposal()!= null &&  loanDisbursementRequest.getIsIneligibleProposal()) {
 						loanDisbursementRequest.setIsDisbursedFrom(2L);
 						loanDisbursementRequest.setOrgId(orgId);
 						}
@@ -142,7 +142,7 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 						loanDisbursementRequest.setReason("Total Disbursement Amount EXCEED Sanction Amount{} sanctionAmount ==>"+loanSanctionDomain.getSanctionAmount()+" ,  ( oldDisbursedAmount ==> "+oldDisbursedAmount+" +  newDisbursedAmount==>" +loanDisbursementRequest.getDisbursedAmount()+" ) = totalDisbursedAmount==>"+totalDisbursedAmount);
 						loanDisbursementRequest.setIsSaved(false);
 						loanDisbursementRequest.setStatusCode(CommonUtility.SanctionDisbursementAPIStatusCode.DISBURSEMENT_AMOUNT_EXCEED_SANCTION_AMOUNT);
-						if(loanDisbursementRequest.getIsIneligibleProposal() == true) {
+						if(loanDisbursementRequest.getIsIneligibleProposal()!= null &&  loanDisbursementRequest.getIsIneligibleProposal()) {
 							loanDisbursementRequest.setIsDisbursedFrom(2L);
 							loanDisbursementRequest.setOrgId(orgId);
 						}
@@ -153,7 +153,7 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 					loanDisbursementRequest.setReason("First Disbursement");
 					loanDisbursementRequest.setIsSaved(false);
 					loanDisbursementRequest.setStatusCode(CommonUtility.SanctionDisbursementAPIStatusCode.FIRST_DISBURSEMENT);
-					if(loanDisbursementRequest.getIsIneligibleProposal() == true) {
+					if(loanDisbursementRequest.getIsIneligibleProposal()!= null &&  loanDisbursementRequest.getIsIneligibleProposal()) {
 						loanDisbursementRequest.setIsDisbursedFrom(2L);
 						loanDisbursementRequest.setOrgId(orgId);
 						IneligibleProposalDetails ineligibleProposalDetails = (IneligibleProposalDetails) offlineProcessedAppRepository.findByAppliationId(loanDisbursementRequest.getApplicationId());

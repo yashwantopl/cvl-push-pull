@@ -1,25 +1,27 @@
 package com.capitaworld.service.loans.service.common.impl;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.api.reports.ReportRequest;
+import com.capitaworld.client.reports.ReportsClient;
+import com.capitaworld.service.loans.model.*;
+import com.capitaworld.service.loans.service.fundseeker.corporate.InEligibleProposalCamReportService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.capitaworld.service.loans.domain.fundseeker.IneligibleProposalDetails;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
-import com.capitaworld.service.loans.model.Address;
-import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
-import com.capitaworld.service.loans.model.InEligibleProposalDetailsRequest;
-import com.capitaworld.service.loans.model.LoanApplicationRequest;
-import com.capitaworld.service.loans.model.ProposalDetailsAdminRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
 import com.capitaworld.service.loans.model.retail.RetailApplicantRequest;
 import com.capitaworld.service.loans.repository.fundseeker.IneligibleProposalDetailsRepository;
@@ -87,6 +89,12 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 
 	@Autowired
 	private PrimaryCorporateDetailRepository primaryCorporateDetailRepository;
+
+	@Autowired
+	private ReportsClient reportsClient;
+
+	@Autowired
+	private InEligibleProposalCamReportService inEligibleProposalCamReportService;
 
 	private static final String EMAIL_ADDRESS_FROM = "no-reply@capitaworld.com";
 
@@ -174,7 +182,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 					if (organisationName != null) {
 						notificationParams.put("isDynamic", true);
 						createNotificationForEmail(signUpUser.getEmail(), applicationRequest.getUserId().toString(),
-								notificationParams, NotificationAlias.EMAIL_FS_WHEN_IN_ELIGIBLE, subject);
+								notificationParams, NotificationAlias.EMAIL_FS_WHEN_IN_ELIGIBLE, subject,applicationId,true);
 					}
 					// ===========================================================================================
 					// 2nd email Step2 Get Details of Bank branch --- Sending mail to Branch
@@ -234,7 +242,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 								to = userObj.getEmail();
 								mailParameters.put("isDynamic", true);
 								createNotificationForEmail(to, applicationRequest.getUserId().toString(),
-										mailParameters, NotificationAlias.EMAIL_BRANCH_FS_WHEN_IN_ELIGIBLE, subject);
+										mailParameters, NotificationAlias.EMAIL_BRANCH_FS_WHEN_IN_ELIGIBLE, subject,applicationId,false);
 							}
 						}
 
@@ -254,7 +262,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 								to = userObj.getEmail();
 								mailParameters.put("isDynamic", true);
 								createNotificationForEmail(to, applicationRequest.getUserId().toString(),
-										mailParameters, NotificationAlias.EMAIL_BRANCH_FS_WHEN_IN_ELIGIBLE, subject);
+										mailParameters, NotificationAlias.EMAIL_BRANCH_FS_WHEN_IN_ELIGIBLE, subject,applicationId,false);
 							}
 						}
 
@@ -273,7 +281,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 								to = userObj.getEmail();
 								mailParameters.put("isDynamic", true);
 								createNotificationForEmail(to, applicationRequest.getUserId().toString(),
-										mailParameters, NotificationAlias.EMAIL_BRANCH_FS_WHEN_IN_ELIGIBLE, subject);
+										mailParameters, NotificationAlias.EMAIL_BRANCH_FS_WHEN_IN_ELIGIBLE, subject,applicationId,false);
 							}
 						}
 
@@ -507,7 +515,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 	}
 
 	private void createNotificationForEmail(String toNo, String userId, Map<String, Object> mailParameters,
-			Long templateId, String emailSubject) throws NotificationException {
+			Long templateId, String emailSubject,Long applicationId,Boolean isFundSeeker) throws NotificationException {
 		logger.info("Inside send notification===>{}" + toNo);
 		NotificationRequest notificationRequest = new NotificationRequest();
 		notificationRequest.setClientRefId(userId);
@@ -528,6 +536,23 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 		notification.setFrom(EMAIL_ADDRESS_FROM);
 		notification.setParameters(mailParameters);
 		notification.setIsDynamic(notificationRequest.getIsDynamic());
+
+		// start attach CAM to Mail
+
+		if(!isFundSeeker)
+		{
+			Map<String,Object> response = inEligibleProposalCamReportService.getInEligibleCamReport(applicationId);
+			ReportRequest reportRequest = new ReportRequest();
+			reportRequest.setParams(response);
+			reportRequest.setTemplate("INELIGIBLECAMREPORT");
+			reportRequest.setType("INELIGIBLECAMREPORT");
+			byte[] byteArr = reportsClient.generatePDFFile(reportRequest);
+			notification.setFileName("CAM.pdf");
+			notification.setContentInBytes(byteArr);
+		}
+
+		// end attach CAM to Mail
+
 		notificationRequest.addNotification(notification);
 		sendEmail(notificationRequest);
 		logger.info("Outside send notification===>{}" + toNo);
