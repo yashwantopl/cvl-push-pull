@@ -492,7 +492,7 @@ public class DDRFormController {
 			generateTokenRequest= new GenerateTokenRequest();
 			generateTokenRequest.setToken(tokenString);
 			tokenService.setTokenAsExpired(generateTokenRequest);
-			auditComponentBankToCW.saveBankToCWReqRes (decrypt !=null ? decrypt: encryptedString , ddrFormDetailsRequest !=null ? ddrFormDetailsRequest.getApplicationId() : null  ,CommonUtility.ApiType.DDR_API, loansResponse , reason, orgId , null );
+			auditComponentBankToCW.saveBankToCWReqRes (decrypt !=null ? decrypt: encryptedString , ddrFormDetailsRequest !=null ? ddrFormDetailsRequest.getApplicationId() : null  ,CommonUtility.ApiType.DDR_API, null , reason, orgId , null );
 		}
 	}
 	
