@@ -60,6 +60,7 @@ import com.capitaworld.service.loans.model.corporate.CorporateFinalInfoRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateMcqRequest;
 import com.capitaworld.service.loans.model.corporate.TotalCostOfProjectRequest;
 import com.capitaworld.service.loans.model.teaser.finalview.CorporateFinalViewResponse;
+import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.TermLoanParameterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.WcTlLoanParameterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.WorkingCapitalParameterRepository;
@@ -164,6 +165,7 @@ import com.capitaworld.service.oneform.enums.Title;
 import com.capitaworld.service.oneform.enums.UnhedgedCurrency;
 import com.capitaworld.service.oneform.enums.VarianceSales;
 import com.capitaworld.service.oneform.enums.VisuallyImpairedMst;
+import com.capitaworld.service.oneform.enums.WcRenewalType;
 import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
 import com.capitaworld.service.oneform.model.SectorIndustryModel;
@@ -305,6 +307,8 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 	@Autowired
 	private FraudAnalyticsClient fraudAnalyticsClient;
 	
+	@Autowired
+	private ProductMasterRepository productMasterRepository;
 
 	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 	DecimalFormat decim = new DecimalFormat("#,###.00");
@@ -318,6 +322,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 		Long userId = loanApplicationMaster.getUserId();
 
 		corporateFinalViewResponse.setProductId(loanApplicationMaster.getProductId());
+		corporateFinalViewResponse.setApplicationType(loanApplicationMaster.getWcRenewalStatus() != null ? WcRenewalType.getById(loanApplicationMaster.getWcRenewalStatus()).getValue().toString() : "New" );
 		// ===================== MATCHES DATA ======================//
 		if (userType != null) {
 			if (!(CommonUtils.UserType.FUND_SEEKER == userType)) { // TEASER VIEW FROM FP
@@ -1509,6 +1514,19 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 		} catch (ScoringException | IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
+		}
+		
+		// Product Name
+		
+		if(fpProductMappingId != null) {
+			String productName = productMasterRepository.getFpProductName(fpProductMappingId);
+			if(productName != null) {
+				corporateFinalViewResponse.setFpProductName(productName);	
+			}else {
+				logger.info("product name is null..");
+			}
+		}else {
+			logger.info("fpProductMapping id is null..");
 		}
 
 		// Eligibility Data
