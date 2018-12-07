@@ -707,9 +707,6 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 			}else{
 				count = proposalDetailsRepository.getProposalCountByFpProductId(master.getId());
 			}
-			if(master.getId() == 428l){
-				logger.info("Count of 428 FP Product Id=====>{}",count);
-			}
 			request.setProposalCount(count);
 			requests.add(request);
 		}
