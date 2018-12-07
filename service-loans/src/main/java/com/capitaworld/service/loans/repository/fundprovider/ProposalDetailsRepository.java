@@ -21,6 +21,12 @@ public interface ProposalDetailsRepository extends JpaRepository<ProposalDetails
     @Query("SELECT count(pd)  FROM ProposalDetails pd WHERE pd.userOrgId =:userOrgId and pd.applicationId =:applicationId  and isActive = 1")
     public Long getApplicationIdCountByOrgId(@Param("applicationId") Long applicationId,@Param("userOrgId") Long userOrgId);
     
+    @Query(value = "select count(id) from loan_application.proposal_details pd where pd.fp_product_id=:fp_product_id and pd.is_active=1 and pd.application_id in (select application_id from fs_loan_application_master where is_active=1)", nativeQuery = true)
+    public Long getProposalCountByFpProductId(@Param("fp_product_id") Long fpProductId);
+
+    @Query(value = "select count(id) from loan_application.proposal_details pd where pd.fp_product_id=:fp_product_id and pd.branch_id=:branchId and pd.is_active=1 and pd.application_id in (select application_id from fs_loan_application_master where is_active=1)", nativeQuery = true)
+    public Long getProposalCountByFpProductIdAndBranchId(@Param("fp_product_id") Long fpProductId,@Param("branchId") Long branchId);
+    
     @Query(value = "SELECT COUNT(pd.id) FROM loan_application.proposal_details AS pd JOIN loan_application.fs_loan_application_master AS la ON la.application_id = pd.application_id AND la.is_active = TRUE JOIN users.users AS u ON u.branch_id = pd.branch_id WHERE pd.fp_product_id =:fp_product_id AND pd.is_active=TRUE AND u.user_id =:user_id", nativeQuery = true)
     public Long getProposalCountByUserIdAndFpProductId(@Param("fp_product_id") Long fpProductId,@Param("user_id") Long userId);
     

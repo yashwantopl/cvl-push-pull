@@ -3,17 +3,11 @@ package com.capitaworld.service.loans.service.fundprovider.impl;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
-import javax.persistence.Persistence;
-import javax.persistence.PersistenceContext;
 
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
@@ -95,8 +89,8 @@ import com.capitaworld.service.loans.service.fundprovider.WcTlParameterService;
 import com.capitaworld.service.loans.service.fundprovider.WorkingCapitalParameterService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
-import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.loans.utils.CommonUtils.UserMainType;
+import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.matchengine.ProposalDetailsClient;
 import com.capitaworld.service.matchengine.exception.MatchException;
 import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
@@ -105,6 +99,7 @@ import com.capitaworld.service.oneform.enums.LoanType;
 import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
 import com.capitaworld.service.users.client.UsersClient;
+import com.capitaworld.service.users.model.BranchBasicDetailsRequest;
 import com.capitaworld.service.users.model.UserResponse;
 import com.capitaworld.service.users.model.UsersRequest;
 
@@ -663,6 +658,18 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	public List<ProductMasterRequest> getActiveInActiveList(Long userId, Long userOrgId) {
 		// TODO Auto-generated method stub
 		CommonDocumentUtils.startHook(logger, "getActiveInActiveList");
+		BranchBasicDetailsRequest basicDetailsRequest = null;
+		try {
+			UsersRequest usersRequest = new UsersRequest();
+			usersRequest.setId(userId);
+			logger.info("Current user id ---------------------------------------------------> " + userId);
+			UserResponse userResponse = usersClient.getBranchDetailsBYUserId(usersRequest);
+			basicDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap(
+					(LinkedHashMap<String, Object>) userResponse.getData(), BranchBasicDetailsRequest.class);
+		} catch (Exception e) {
+			logger.info("Throw Exception While Get Branch Id from UserId");
+			e.printStackTrace();
+		}
 		List<ProductMaster> results;
 		if (!CommonUtils.isObjectNullOrEmpty(userOrgId)) {
 			results = productMasterRepository.getUserProductActiveInActiveListByOrgId(userOrgId);
@@ -678,7 +685,20 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 			BeanUtils.copyProperties(master, request);
 //			request.setIsMatched(productMasterRepository.getMatchedAndActiveInActiveProduct(userId).size() > 0 ? true : false);
 			request.setIsMatched(matchCount > 0 ? true : false);
-			request.setProposalCount(proposalDetailsRepository.getProposalCountByUserIdAndFpProductId(master.getId(), userId));
+			Long count = null;
+			if(basicDetailsRequest != null && basicDetailsRequest.getId() != null){
+				if (basicDetailsRequest.getRoleId() == CommonUtils.UsersRoles.BO || basicDetailsRequest.getRoleId() == CommonUtils.UsersRoles.FP_CHECKER) {
+					count = proposalDetailsRepository.getProposalCountByFpProductIdAndBranchId(master.getId(), basicDetailsRequest.getId());
+				}else if (basicDetailsRequest.getRoleId() == CommonUtils.UsersRoles.HO) {
+					count = proposalDetailsRepository.getProposalCountByFpProductId(master.getId());
+				} /*else {
+					logger.info("Branch Id Can't found,set by assignee");
+					count = proposalDetailsRepository.countProposalListOfFundProviderByAssignId(master.getId(), userId);
+				}*/
+			}else{
+				count = proposalDetailsRepository.getProposalCountByFpProductId(master.getId());
+			}
+			request.setProposalCount(count);
 			requests.add(request);
 		}
 		CommonDocumentUtils.endHook(logger, "getActiveInActiveList");
