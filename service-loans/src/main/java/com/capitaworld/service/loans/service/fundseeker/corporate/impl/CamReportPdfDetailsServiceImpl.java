@@ -1067,7 +1067,8 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		if(isFinalView) {
 			//FITCH DATA
 			try {
-			RatingResponse ratingResponse = (RatingResponse) irrService.calculateIrrRating(proposalMappingRequestString.getId(), userId).getBody().getData();
+				//proposalMappingRequestString.getId()
+			RatingResponse ratingResponse = (RatingResponse) irrService.calculateIrrRating(applicationId, userId).getBody().getData();
 			if(!CommonUtils.isObjectNullOrEmpty(ratingResponse.getBusinessTypeId())) {
 				if(BusinessType.MANUFACTURING == ratingResponse.getBusinessTypeId())
 				{
