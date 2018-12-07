@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -99,7 +100,12 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 	@Autowired
 	private InEligibleProposalCamReportService inEligibleProposalCamReportService;
 
+	@Autowired
+	private Environment environment;
+
 	private static final String EMAIL_ADDRESS_FROM = "no-reply@capitaworld.com";
+
+
 
 	@Override
 	public Boolean save(InEligibleProposalDetailsRequest inEligibleProposalDetailsRequest) {
@@ -552,6 +558,8 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 			byte[] byteArr = reportsClient.generatePDFFile(reportRequest);
 			notification.setFileName("CAM.pdf");
 			notification.setContentInBytes(byteArr);
+			String[] bcc = {environment.getRequiredProperty("bccforcam")};
+			notification.setBcc(bcc);
 		}
 
 		// end attach CAM to Mail
