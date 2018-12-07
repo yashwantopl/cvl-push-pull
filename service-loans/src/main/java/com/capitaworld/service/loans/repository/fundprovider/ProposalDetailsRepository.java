@@ -24,8 +24,8 @@ public interface ProposalDetailsRepository extends JpaRepository<ProposalDetails
     @Query(value = "select count(id) from loan_application.proposal_details pd where pd.fp_product_id=:fp_product_id and pd.is_active=1 and pd.application_id in (select application_id from fs_loan_application_master where is_active=1)", nativeQuery = true)
     public Long getProposalCountByFpProductId(@Param("fp_product_id") Long fpProductId);
     
-    @Query(value = "select count(id) from loan_application.proposal_details pd where pd.fp_product_id=:fp_product_id and pd.assign_by IS NULL and pd.is_active=1 and pd.application_id in (select application_id from fs_loan_application_master where is_active=1)", nativeQuery = true)
-    public Long getProposalCountByFpProductIdAndAssignIsNull(@Param("fp_product_id") Long fpProductId);
+    @Query(value = "select count(id) from loan_application.proposal_details pd where pd.fp_product_id =:fp_product_id and pd.assign_by=:assignId and pd.is_active = true", nativeQuery = true)
+    public Long countProposalListOfFundProviderByAssignId(@Param("fp_product_id") Long fpProductId,@Param("assignId") Long userId);
     
     @Query(value = "select count(id) from loan_application.proposal_details pd where pd.fp_product_id=:fp_product_id and pd.branch_id=:branchId and pd.is_active=1 and pd.application_id in (select application_id from fs_loan_application_master where is_active=1)", nativeQuery = true)
     public Long getProposalCountByFpProductIdAndBranchId(@Param("fp_product_id") Long fpProductId,@Param("branchId") Long branchId);

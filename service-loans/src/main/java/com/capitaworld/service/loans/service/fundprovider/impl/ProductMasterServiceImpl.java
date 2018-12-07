@@ -703,6 +703,10 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 					count = proposalDetailsRepository.getProposalCountByFpProductIdAndBranchId(master.getId(), basicDetailsRequest.getId());
 				}else if (basicDetailsRequest.getRoleId() == CommonUtils.UsersRoles.HO) {
 					count = proposalDetailsRepository.getProposalCountByFpProductId(master.getId());
+				}else{
+						logger.info("Branch Id Can't found,set by assignee");
+						count = proposalDetailsRepository.countProposalListOfFundProviderByAssignId(master.getId(), userId);
+
 				}
 			}else{
 				count = proposalDetailsRepository.getProposalCountByFpProductId(master.getId());
