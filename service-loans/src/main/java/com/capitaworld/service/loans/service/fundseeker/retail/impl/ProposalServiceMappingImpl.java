@@ -34,7 +34,6 @@ import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.DirectorBackgroundDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
-import com.capitaworld.service.loans.domain.sanction.LoanDisbursementDomain;
 import com.capitaworld.service.loans.model.CorporateProposalDetails;
 import com.capitaworld.service.loans.model.FundProviderProposalDetails;
 import com.capitaworld.service.loans.model.LoansResponse;
@@ -53,7 +52,6 @@ import com.capitaworld.service.loans.repository.sanction.LoanDisbursementReposit
 import com.capitaworld.service.loans.service.ProposalService;
 import com.capitaworld.service.loans.service.common.LogService;
 import com.capitaworld.service.loans.service.common.NotificationService;
-import com.capitaworld.service.loans.service.fundprovider.OfflineProcessedAppService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateDirectorIncomeService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
@@ -70,6 +68,7 @@ import com.capitaworld.service.matchengine.model.MatchRequest;
 import com.capitaworld.service.matchengine.model.ProposalCountResponse;
 import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
 import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
+import com.capitaworld.service.matchengine.utils.MatchConstant.ProposalStatus;
 import com.capitaworld.service.notification.client.NotificationClient;
 import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.Currency;
@@ -461,6 +460,12 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					corporateProposalDetails.setProposalMappingId(proposalrequest.getId());
 					corporateProposalDetails.setFsType(CommonUtils.UserMainType.CORPORATE);
 					corporateProposalDetails.setModifiedDate(loanApplicationMaster.getModifiedDate());
+					
+					corporateProposalDetails.setProposalStatus(proposalrequest.getProposalStatusId());
+					if(proposalrequest.getProposalStatusId() == ProposalStatus.HOLD || proposalrequest.getProposalStatusId() == ProposalStatus.DECLINE) {
+						corporateProposalDetails.setLastStatusActionDate(proposalrequest.getModifiedDate());
+					}
+					
 					if (!CommonUtils.isObjectNullOrEmpty(proposalrequest.getModifiedBy())) {
 						UsersRequest usersRequest = getUserNameAndEmail(proposalrequest.getModifiedBy());
 						if (!CommonUtils.isObjectNullOrEmpty(usersRequest)) {
@@ -610,6 +615,11 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					retailProposalDetails.setFsType(CommonUtils.UserMainType.RETAIL);
 					retailProposalDetails.setBusinessTypeId(loanApplicationMaster.getBusinessTypeId());
 					retailProposalDetails.setFpProductid(fpProductId);
+					
+					retailProposalDetails.setProposalStatus(proposalrequest.getProposalStatusId());
+					if(proposalrequest.getProposalStatusId() == ProposalStatus.HOLD || proposalrequest.getProposalStatusId() == ProposalStatus.DECLINE) {
+						retailProposalDetails.setLastStatusActionDate(proposalrequest.getModifiedDate());
+					}
 					// get retail loan amount
 
 					String loanAmount = "";
