@@ -702,7 +702,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				if (basicDetailsRequest.getRoleId() == CommonUtils.UsersRoles.BO || basicDetailsRequest.getRoleId() == CommonUtils.UsersRoles.FP_CHECKER) {
 					count = proposalDetailsRepository.getProposalCountByFpProductIdAndBranchId(master.getId(), basicDetailsRequest.getId());
 				}else if (basicDetailsRequest.getRoleId() == CommonUtils.UsersRoles.HO) {
-					count = proposalDetailsRepository.getProposalCountByFpProductIdAndAssignIsNull(master.getId());
+					count = proposalDetailsRepository.getProposalCountByFpProductId(master.getId());
 				}
 			}else{
 				count = proposalDetailsRepository.getProposalCountByFpProductId(master.getId());
