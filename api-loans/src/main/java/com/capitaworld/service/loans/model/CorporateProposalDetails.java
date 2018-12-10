@@ -51,8 +51,6 @@ public class CorporateProposalDetails {
 	public String branchState;
 	
 	private String wcRenualNew;
-
-	private String wcRenualNew;
 	
 	public String getBranchLocationName() {
 		return branchLocationName;
