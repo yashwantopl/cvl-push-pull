@@ -21,8 +21,14 @@ public interface ProposalDetailsRepository extends JpaRepository<ProposalDetails
     @Query("SELECT count(pd)  FROM ProposalDetails pd WHERE pd.userOrgId =:userOrgId and pd.applicationId =:applicationId  and isActive = 1")
     public Long getApplicationIdCountByOrgId(@Param("applicationId") Long applicationId,@Param("userOrgId") Long userOrgId);
     
-    @Query(value = "SELECT COUNT(pd.id) FROM loan_application.proposal_details AS pd JOIN loan_application.fs_loan_application_master AS la ON la.application_id = pd.application_id AND la.is_active = TRUE JOIN users.users AS u ON u.branch_id = pd.branch_id WHERE pd.fp_product_id =:fp_product_id AND pd.is_active=TRUE AND u.user_id =:user_id", nativeQuery = true)
-    public Long getProposalCountByUserIdAndFpProductId(@Param("fp_product_id") Long fpProductId,@Param("user_id") Long userId);
+    @Query(value = "select count(id) from loan_application.proposal_details pd where pd.fp_product_id=:fp_product_id and pd.is_active=1 and pd.application_id in (select application_id from fs_loan_application_master where is_active=1)", nativeQuery = true)
+    public Long getProposalCountByFpProductId(@Param("fp_product_id") Long fpProductId);
+    
+    @Query(value = "select count(id) from loan_application.proposal_details pd where pd.fp_product_id=:fp_product_id and pd.assign_by IS NULL and pd.is_active=1 and pd.application_id in (select application_id from fs_loan_application_master where is_active=1)", nativeQuery = true)
+    public Long getProposalCountByFpProductIdAndAssignIsNull(@Param("fp_product_id") Long fpProductId);
+    
+    @Query(value = "select count(id) from loan_application.proposal_details pd where pd.fp_product_id=:fp_product_id and pd.branch_id=:branchId and pd.is_active=1 and pd.application_id in (select application_id from fs_loan_application_master where is_active=1)", nativeQuery = true)
+    public Long getProposalCountByFpProductIdAndBranchId(@Param("fp_product_id") Long fpProductId,@Param("branchId") Long branchId);
     
     @Query(value = "SELECT pd.application_id, cl.user_id, fs.name, usr.email, usr.mobile, pd.created_date, pd.branch_id, \n" + 
     		"pd.el_amount, pd.el_tenure, pd.el_roi, pd.emi, pd.processing_fee, branch.name AS branchname, \n" + 
@@ -54,5 +60,11 @@ public interface ProposalDetailsRepository extends JpaRepository<ProposalDetails
 
     @Modifying 
     @Query("UPDATE ProposalDetails set proposalStatusId.id =:statuId , modifiedDate = now()  WHERE  applicationId =:applicationId AND isActive = true " )
-    public Integer updateSanctionStatus(@Param("statuId") Long statuId  , @Param("applicationId") Long applicationId);  
+    public Integer updateSanctionStatus(@Param("statuId") Long statuId  , @Param("applicationId") Long applicationId);
+    
+    @Query(value = "SELECT lm.id,cap.organisationName,lm.applicationCode,lm.businessTypeId from ProposalDetails pd,CorporateApplicantDetail cap,LoanApplicationMaster lm where pd.fpProductId =:fpProductId and pd.proposalStatusId.id =:proposalStatusId and pd.isActive = true and pd.branchId =:branchId and cap.applicationId.id = pd.applicationId and cap.applicationId.id = pd.applicationId and cap.applicationId.id = lm.id")
+    public List<Object[]> getAllProposalsForSearchWithBranch(@Param("fpProductId") Long fpProductId,@Param("proposalStatusId") Long proposalStatusId,@Param("branchId") Long branchId);
+    
+    @Query(value = "SELECT lm.id,cap.organisationName,lm.applicationCode,lm.businessTypeId from ProposalDetails pd,CorporateApplicantDetail cap,LoanApplicationMaster lm where pd.fpProductId =:fpProductId and pd.proposalStatusId.id =:proposalStatusId and pd.isActive = true and cap.applicationId.id = pd.applicationId and lm.id = pd.applicationId and cap.applicationId.id = lm.id")
+    public List<Object[]> getAllProposalsForSearch(@Param("fpProductId") Long fpProductId,@Param("proposalStatusId") Long proposalStatusId);
 }

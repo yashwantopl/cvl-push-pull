@@ -64,7 +64,27 @@ public class ProposalController {
 		LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
 		loansResponse.setListData(proposalDetailsList);
 		return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+	}
+	
+	
+	@RequestMapping(value = "/basicInfoToSearch", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> basicInfoToSearch(@RequestBody ProposalMappingRequest request,HttpServletRequest httpRequest,@RequestParam(value = "clientId", required = false) Long clientId) {
 		
+		// request must not be null
+		logger.info("request.getPageIndex()::"+request.getPageIndex());
+		logger.info("request.getSize()::"+request.getSize());
+		
+		Long userId = null;
+		if (CommonDocumentUtils.isThisClientApplication(httpRequest) && !CommonUtils.isObjectNullOrEmpty(clientId)) {
+			userId = clientId;
+		} else {
+			userId = ((Long) httpRequest.getAttribute(CommonUtils.USER_ID)).longValue();
+		}
+		request.setUserId(userId);
+		List proposalDetailsList=proposalService.basicInfoForSearch(request);
+		LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+		loansResponse.setListData(proposalDetailsList);
+		return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 	}
 	
 	

@@ -8,10 +8,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.api.reports.ReportRequest;
+import com.capitaworld.client.reports.ReportsClient;
+import com.capitaworld.service.loans.domain.fundprovider.ProposalDetails;
+import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
+import com.capitaworld.service.loans.service.fundseeker.corporate.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
@@ -25,9 +31,6 @@ import com.capitaworld.service.loans.model.NhbsApplicationRequest;
 import com.capitaworld.service.loans.model.PaymentRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
 import com.capitaworld.service.loans.model.retail.RetailApplicantRequest;
-import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.DirectorBackgroundDetailsService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.service.fundseeker.retail.RetailApplicantService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -63,7 +66,7 @@ public class FPAsyncComponent {
 
 	@Autowired
 	private CorporateApplicantService corporateapplicantService;
-	
+
 	@Autowired
 	private RetailApplicantService retailapplicantService;
 
@@ -85,6 +88,18 @@ public class FPAsyncComponent {
 	@Autowired
 	public GstClient gstClient;
 
+	@Autowired
+	private ReportsClient reportsClient;
+
+	@Autowired
+	private CamReportPdfDetailsService camReportPdfDetailsService;
+
+	@Autowired
+	private ProposalDetailsRepository proposalDetailsRepository;
+
+	@Autowired
+	private Environment environment;
+
 	private static final String EMAIL_ADDRESS_FROM = "no-reply@capitaworld.com";
 
 	@Value("${capitaworld.sidbi.mail.to.maker.checker}")
@@ -95,7 +110,7 @@ public class FPAsyncComponent {
 
 	@Async
 	public void sendEmailToAllMakersWhenFSRecievesInPrinciple(Map<String, Object> proposalresp,
-			PaymentRequest paymentRequest, Long userId, Long orgId) {
+															  PaymentRequest paymentRequest, Long userId, Long orgId) {
 		if (mailToMakerChecker) {
 
 			try {
@@ -157,14 +172,14 @@ public class FPAsyncComponent {
 						streetName = applicantRequest.getFirstAddress().getStreetName()!=null?applicantRequest.getFirstAddress().getStreetName():"";
 						landMark = applicantRequest.getFirstAddress().getLandMark()!=null?applicantRequest.getFirstAddress().getLandMark():"";
 						address = premiseNumber.toString()+" "+streetName.toString()+" "+landMark.toString();
-					}	
+					}
 				}
 				else if(!CommonUtils.isObjectNullOrEmpty(applicationRequest)
 						&& applicationRequest.getBusinessTypeId() == 3){
 					address = applicationRequest.getAddress();
 				}
 				else{
-					
+
 					// For getting Address of Primary Director
 					// =========================================================================================================
 					List<DirectorBackgroundDetailRequest> NTBResponse = null;
@@ -191,7 +206,7 @@ public class FPAsyncComponent {
 					// =========================================================================================================
 
 				}
-				
+
 				mailParameters.put("address", address != null ? address : "NA");
 
 				Long branchId = null;
@@ -219,7 +234,7 @@ public class FPAsyncComponent {
 											FundProviderDetailsRequest.class);
 							name = fundProviderDetailsRequest.getFirstName() + " "
 									+ (fundProviderDetailsRequest.getLastName() == null ? ""
-											: fundProviderDetailsRequest.getLastName());
+									: fundProviderDetailsRequest.getLastName());
 						} catch (Exception e) {
 							logger.error("error while fetching FP name");
 							e.printStackTrace();
@@ -235,8 +250,9 @@ public class FPAsyncComponent {
 								mailParameters.put("maker_name", name != null ? name : "Sir/Madam");
 							}
 							mailParameters.put("isDynamic", true);
-							createNotificationForEmail(to, userId.toString(), mailParameters,
-									NotificationAlias.EMAIL_ALL_MAKERS_AFTER_INPRINCIPLE_TO_FS, subject);
+							String[] bcc = {environment.getRequiredProperty("bccforcam")};
+							createNotificationForEmailForFundProvider(to, userId.toString(), mailParameters,
+									NotificationAlias.EMAIL_ALL_MAKERS_AFTER_INPRINCIPLE_TO_FS, subject,applicationRequest.getId(),proposalresp,bcc);
 						}
 
 						if (!CommonUtils.isObjectNullOrEmpty(userObj.getMobile())) {
@@ -290,15 +306,15 @@ public class FPAsyncComponent {
 
 	@Async
 	public void sendEmailToAllCheckersWhenFSRecievesInPrinciple(Map<String, Object> proposalresp,
-			PaymentRequest paymentRequest, Long userId, Long orgId) {
+																PaymentRequest paymentRequest, Long userId, Long orgId) {
 		if (mailToMakerChecker) {
 
 			try {
 
 				logger.info("Into sending Mail to all Checkers after FS gets In-Principle Approval===>{}");
-				String subject = "Intimation : New Proposal -  #Application Id=" + paymentRequest.getApplicationId();
+				String subject = "Intimation : New Proposal -  #ApplicationId=" + paymentRequest.getApplicationId();
 				Map<String, Object> mailParameters = new HashMap<String, Object>();
-				
+
 				mailParameters.put("fs_name",
 						paymentRequest.getNameOfEntity() != null ? paymentRequest.getNameOfEntity() : "NA");
 				mailParameters.put("product_type",
@@ -351,14 +367,14 @@ public class FPAsyncComponent {
 						streetName = applicantRequest.getFirstAddress().getStreetName()!=null?applicantRequest.getFirstAddress().getStreetName():"";
 						landMark = applicantRequest.getFirstAddress().getLandMark()!=null?applicantRequest.getFirstAddress().getLandMark():"";
 						address = premiseNumber.toString()+" "+streetName.toString()+" "+landMark.toString();
-					}	
+					}
 				}
 				else if(!CommonUtils.isObjectNullOrEmpty(applicationRequest)
 						&& applicationRequest.getBusinessTypeId() == 3){
 					address = applicationRequest.getAddress();
 				}
 				else{
-					
+
 					// For getting Address of Primary Director
 					// =========================================================================================================
 					List<DirectorBackgroundDetailRequest> NTBResponse = null;
@@ -411,7 +427,7 @@ public class FPAsyncComponent {
 											FundProviderDetailsRequest.class);
 							name = fundProviderDetailsRequest.getFirstName() + " "
 									+ (fundProviderDetailsRequest.getLastName() == null ? ""
-											: fundProviderDetailsRequest.getLastName());
+									: fundProviderDetailsRequest.getLastName());
 						} catch (Exception e) {
 							logger.error("error while fetching FP name");
 							e.printStackTrace();
@@ -425,8 +441,8 @@ public class FPAsyncComponent {
 								mailParameters.put("checker_name", name != null ? name : "Sir/Madam");
 							}
 							mailParameters.put("isDynamic", true);
-							createNotificationForEmail(to, userId.toString(), mailParameters,
-									NotificationAlias.EMAIL_ALL_CHECKERS_AFTER_INPRINCIPLE_TO_FS, subject);
+							createNotificationForEmailForFundProvider(to, userId.toString(), mailParameters,
+									NotificationAlias.EMAIL_ALL_CHECKERS_AFTER_INPRINCIPLE_TO_FS, subject,applicationRequest.getId(),proposalresp,null);
 						}
 
 						if (!CommonUtils.isObjectNullOrEmpty(userObj.getMobile())) {
@@ -485,13 +501,13 @@ public class FPAsyncComponent {
 
 	@Async
 	public void sendEmailToHOWhenFSRecievesInPrinciple(Map<String, Object> proposalresp, PaymentRequest paymentRequest,
-			Long userId, Long orgId) {
+													   Long userId, Long orgId) {
 		if (mailToMakerChecker) {
 
 			try {
 
 				logger.info("Into sending Mail to all Checkers after FS gets In-Principle Approval===>{}");
-				String subject = "Intimation : New Proposal -  #Application Id=" + paymentRequest.getApplicationId();
+				String subject = "Intimation : New Proposal -  #ApplicationId=" + paymentRequest.getApplicationId();
 				Map<String, Object> mailParameters = new HashMap<String, Object>();
 				mailParameters.put("fs_name",
 						paymentRequest.getNameOfEntity() != null ? paymentRequest.getNameOfEntity() : "NA");
@@ -547,14 +563,14 @@ public class FPAsyncComponent {
 						streetName = applicantRequest.getFirstAddress().getStreetName()!=null?applicantRequest.getFirstAddress().getStreetName():"";
 						landMark = applicantRequest.getFirstAddress().getLandMark()!=null?applicantRequest.getFirstAddress().getLandMark():"";
 						address = premiseNumber.toString()+" "+streetName.toString()+" "+landMark.toString();
-					}	
+					}
 				}
 				else if(!CommonUtils.isObjectNullOrEmpty(applicationRequest)
 						&& applicationRequest.getBusinessTypeId() == 3){
 					address = applicationRequest.getAddress();
 				}
 				else{
-					
+
 					// For getting Address of Primary Director
 					// =========================================================================================================
 					List<DirectorBackgroundDetailRequest> NTBResponse = null;
@@ -607,7 +623,7 @@ public class FPAsyncComponent {
 											FundProviderDetailsRequest.class);
 							name = fundProviderDetailsRequest.getFirstName() + " "
 									+ (fundProviderDetailsRequest.getLastName() == null ? ""
-											: fundProviderDetailsRequest.getLastName());
+									: fundProviderDetailsRequest.getLastName());
 						} catch (Exception e) {
 							logger.error("error while fetching FP name");
 							e.printStackTrace();
@@ -622,8 +638,8 @@ public class FPAsyncComponent {
 								mailParameters.put("ho_name", name != null ? name : "Sir/Madam");
 							}
 							mailParameters.put("isDynamic", true);
-							createNotificationForEmail(to, userId.toString(), mailParameters,
-									NotificationAlias.EMAIL_HO_INPRINCIPLE_TO_FS, subject);
+							createNotificationForEmailForFundProvider(to, userId.toString(), mailParameters,
+									NotificationAlias.EMAIL_HO_INPRINCIPLE_TO_FS, subject,applicationRequest.getId(),proposalresp,null);
 						}
 
 						if (!CommonUtils.isObjectNullOrEmpty(userObj.getMobile())) {
@@ -680,13 +696,13 @@ public class FPAsyncComponent {
 
 	@Async
 	public void sendEmailToAllBOWhenFSRecievesInPrinciple(Map<String, Object> proposalresp,
-			PaymentRequest paymentRequest, Long userId, Long orgId) {
+														  PaymentRequest paymentRequest, Long userId, Long orgId) {
 		if (mailToMakerChecker) {
 
 			try {
 
 				logger.info("Into sending Mail to all BO after FS gets In-Principle Approval===>{}");
-				String subject = "Intimation : New Proposal -  #Application Id=" + paymentRequest.getApplicationId();
+				String subject = "Intimation : New Proposal -  #ApplicationId=" + paymentRequest.getApplicationId();
 				Map<String, Object> mailParameters = new HashMap<String, Object>();
 				mailParameters.put("fs_name",
 						paymentRequest.getNameOfEntity() != null ? paymentRequest.getNameOfEntity() : "NA");
@@ -742,14 +758,14 @@ public class FPAsyncComponent {
 						streetName = applicantRequest.getFirstAddress().getStreetName()!=null?applicantRequest.getFirstAddress().getStreetName():"";
 						landMark = applicantRequest.getFirstAddress().getLandMark()!=null?applicantRequest.getFirstAddress().getLandMark():"";
 						address = premiseNumber.toString()+" "+streetName.toString()+" "+landMark.toString();
-					}	
+					}
 				}
 				else if(!CommonUtils.isObjectNullOrEmpty(applicationRequest)
 						&& applicationRequest.getBusinessTypeId() == 3){
 					address = applicationRequest.getAddress();
 				}
 				else{
-					
+
 					// For getting Address of Primary Director
 					// =========================================================================================================
 					List<DirectorBackgroundDetailRequest> NTBResponse = null;
@@ -802,7 +818,7 @@ public class FPAsyncComponent {
 											FundProviderDetailsRequest.class);
 							name = fundProviderDetailsRequest.getFirstName() + " "
 									+ (fundProviderDetailsRequest.getLastName() == null ? ""
-											: fundProviderDetailsRequest.getLastName());
+									: fundProviderDetailsRequest.getLastName());
 						} catch (Exception e) {
 							logger.error("error while fetching FP name");
 							e.printStackTrace();
@@ -817,8 +833,8 @@ public class FPAsyncComponent {
 								mailParameters.put("bo_name", name != null ? name : "Sir/Madam");
 							}
 							mailParameters.put("isDynamic", true);
-							createNotificationForEmail(to, userId.toString(), mailParameters,
-									NotificationAlias.EMAIL_ALL_BO_INPRINCIPLE_TO_FS, subject);
+							createNotificationForEmailForFundProvider(to, userId.toString(), mailParameters,
+									NotificationAlias.EMAIL_ALL_BO_INPRINCIPLE_TO_FS, subject,applicationRequest.getId(),proposalresp,null);
 						}
 
 						if (!CommonUtils.isObjectNullOrEmpty(userObj.getMobile())) {
@@ -877,11 +893,11 @@ public class FPAsyncComponent {
 			LoanApplicationRequest applicationRequest = loanApplicationService
 					.getFromClient(request.getApplicationId());
 			Map<String, Object> parameters = new HashMap<String, Object>();
-			
+
 			String address = null;
 			String state = null;
 			String city = null;
-			
+
 			// For getting Fund Seeker's Name
 			// =========================================================================================================
 			String fsName = null;
@@ -896,12 +912,12 @@ public class FPAsyncComponent {
 							fsName = director.getDirectorsName() != null ? director.getDirectorsName() : "NA";
 							address = director.getAddress();
 							if(!CommonUtils.isObjectNullOrEmpty(director.getStateId())){
-								state = CommonDocumentUtils.getState(Long.valueOf(director.getStateId().toString()), oneFormClient);	
+								state = CommonDocumentUtils.getState(Long.valueOf(director.getStateId().toString()), oneFormClient);
 							}
-							
+
 							if(!CommonUtils.isObjectNullOrEmpty(director.getCityId())){
-								city = CommonDocumentUtils.getState(Long.valueOf(director.getCityId().toString()), oneFormClient);	
-							}							
+								city = CommonDocumentUtils.getState(Long.valueOf(director.getCityId().toString()), oneFormClient);
+							}
 							isMainDirector = 1;
 						}
 					}
@@ -916,7 +932,7 @@ public class FPAsyncComponent {
 				fsName = applicationRequest.getUserName() != null ? applicationRequest.getUserName() : "NA";
 			}
 			// =========================================================================================================
-			
+
 			if(!CommonUtils.isObjectNullOrEmpty(applicationRequest)
 					&& applicationRequest.getBusinessTypeId() == 1){
 				CorporateApplicantRequest applicantRequest = corporateapplicantService
@@ -954,7 +970,7 @@ public class FPAsyncComponent {
 								state = "NA";
 								city = "NA";
 							}
-							
+
 						} catch (Exception e) {
 							logger.info("Error Calling One form client for getting state by state list Id");
 
@@ -964,7 +980,7 @@ public class FPAsyncComponent {
 				}
 			}
 
-			//	when proposal belongs to PL			
+			//	when proposal belongs to PL
 			if(!CommonUtils.isObjectNullOrEmpty(applicationRequest)
 					&& applicationRequest.getBusinessTypeId() == CommonUtils.BusinessType.RETAIL_PERSONAL_LOAN.getId()){
 				fsName=applicationRequest.getUserName();
@@ -982,13 +998,13 @@ public class FPAsyncComponent {
 				}
 				NotificationAliasId= NotificationAlias.PL_EMAIL_TO_FS_WHEN_MAKKER_ACCEPT_PROPOSAL;
 			}else {
-					NotificationAliasId=NotificationAlias.EMAIL_FS_ACCEPTED_BY_MAKER;
+				NotificationAliasId=NotificationAlias.EMAIL_FS_ACCEPTED_BY_MAKER;
 			}
 			parameters.put("fs_name", fsName != null ? fsName : "NA");
 			parameters.put("address", address != null ? address : "NA");
 			parameters.put("state", state != null ? state : "NA");
 			parameters.put("city", city !=null ? city : "NA");
-			
+
 			ProposalMappingResponse proposalResponse = null;
 			Map<String, Object> proposalresp = null;
 			try {
@@ -1037,7 +1053,7 @@ public class FPAsyncComponent {
 							(Map<Object, Object>) userResponseForName.getData(), FundProviderDetailsRequest.class);
 					makerName = fundProviderDetailsRequest.getFirstName() + " "
 							+ (fundProviderDetailsRequest.getLastName() == null ? ""
-									: fundProviderDetailsRequest.getLastName());
+							: fundProviderDetailsRequest.getLastName());
 				} catch (Exception e) {
 					logger.error("error while fetching FP name");
 					e.printStackTrace();
@@ -1064,7 +1080,7 @@ public class FPAsyncComponent {
 			parameters.put("loan_amount",
 					applicationRequest.getLoanAmount() != null ? applicationRequest.getLoanAmount() : "NA");
 			parameters.put("application_id", applicationRequest.getApplicationCode()!=null?applicationRequest.getApplicationCode():"");
-			
+
 			UserResponse response = null;
 			UsersRequest signUpUser = null;
 
@@ -1089,7 +1105,7 @@ public class FPAsyncComponent {
 			parameters.put("mobile_no", mobile!=null?mobile:"NA");
 
 			// ====================Sending Mail to Maker who accepts Proposal=====================
-			String subject = "Intimation: Proposal #Accepted=" + assignedMakerName + "#ApplicationId ="+ request.getApplicationId();
+			String subject = "Intimation: Proposal #Accepted=" + assignedMakerName + "#ApplicationId="+ request.getApplicationId();
 
 			if (!CommonUtils.isObjectNullOrEmpty(assignedMaker)) {
 				if (!CommonUtils.isObjectNullOrEmpty(assignedMaker.getEmail())) {
@@ -1156,7 +1172,7 @@ public class FPAsyncComponent {
 										FundProviderDetailsRequest.class);
 						name = fundProviderDetailsRequest.getFirstName() + " "
 								+ (fundProviderDetailsRequest.getLastName() == null ? ""
-										: fundProviderDetailsRequest.getLastName());
+								: fundProviderDetailsRequest.getLastName());
 					} catch (Exception e) {
 						logger.error("error while fetching FP name");
 						e.printStackTrace();
@@ -1172,6 +1188,7 @@ public class FPAsyncComponent {
 						} else {
 							parameters.put("maker_name", name != null ? name : "Sir/Madam");
 						}
+						parameters.put("isDynamic", true);
 						createNotificationForEmail(to, makerObj.getId().toString(), parameters,
 								NotificationAlias.EMAIL_ALL_MAKERS_AFTER_MAKER_ACCEPT_PROPOSAL_OF_FS, subject);
 					}
@@ -1238,7 +1255,7 @@ public class FPAsyncComponent {
 										FundProviderDetailsRequest.class);
 						name = fundProviderDetailsRequest.getFirstName() + " "
 								+ (fundProviderDetailsRequest.getLastName() == null ? ""
-										: fundProviderDetailsRequest.getLastName());
+								: fundProviderDetailsRequest.getLastName());
 					} catch (Exception e) {
 						logger.error("error while fetching FP name");
 						e.printStackTrace();
@@ -1253,6 +1270,7 @@ public class FPAsyncComponent {
 						} else {
 							parameters.put("checker_name", name != null ? name : "Sir/Madam");
 						}
+						parameters.put("isDynamic", true);
 						createNotificationForEmail(to, checkerObj.getId().toString(), parameters,
 								NotificationAlias.EMAIL_ALL_CHECKERS_AFTER_MAKER_ACCEPT_PROPOSAL, subject);
 					}
@@ -1329,7 +1347,7 @@ public class FPAsyncComponent {
 										FundProviderDetailsRequest.class);
 						name = fundProviderDetailsRequest.getFirstName() + " "
 								+ (fundProviderDetailsRequest.getLastName() == null ? ""
-										: fundProviderDetailsRequest.getLastName());
+								: fundProviderDetailsRequest.getLastName());
 					} catch (Exception e) {
 						logger.error("error while fetching FP name");
 						e.printStackTrace();
@@ -1344,6 +1362,7 @@ public class FPAsyncComponent {
 						} else {
 							parameters.put("ho_name", name != null ? name : "Sir/Madam");
 						}
+						parameters.put("isDynamic", true);
 						createNotificationForEmail(to, hoObj.getId().toString(), parameters,
 								NotificationAlias.EMAIL_HO_MAKER_ACCEPT_PROPOSAL_OF_FS, subject);
 					}
@@ -1415,7 +1434,7 @@ public class FPAsyncComponent {
 										FundProviderDetailsRequest.class);
 						name = fundProviderDetailsRequest.getFirstName() + " "
 								+ (fundProviderDetailsRequest.getLastName() == null ? ""
-										: fundProviderDetailsRequest.getLastName());
+								: fundProviderDetailsRequest.getLastName());
 					} catch (Exception e) {
 						logger.error("error while fetching FP name");
 						e.printStackTrace();
@@ -1430,6 +1449,7 @@ public class FPAsyncComponent {
 						} else {
 							parameters.put("bo_name", name != null ? name : "Sir/Madam");
 						}
+						parameters.put("isDynamic", true);
 						createNotificationForEmail(to, boObj.getId().toString(), parameters,
 								NotificationAlias.EMAIL_ALL_BO_MAKER_ACCEPT_PROPOSAL_OF_FS, subject);
 					}
@@ -1479,8 +1499,8 @@ public class FPAsyncComponent {
 			}
 
 			// =======================================================================================================
-		
-			}catch (Exception e) {
+
+		}catch (Exception e) {
 			logger.info("Throw exception while sending mail to Maker and all Makers when Maker accepts Proposal");
 			e.printStackTrace();
 		}
@@ -1497,7 +1517,7 @@ public class FPAsyncComponent {
 				proposalresp.get("loan_type") != null ? proposalresp.get("loan_type").toString() : "NA");
 		mailParameter.put("maker_name", assignedMakerName);
 		mailParameter.put("application_id", applicationRequest.getApplicationCode()!=null?applicationRequest.getApplicationCode().toString():"NA");
-		
+
 		String mobile = signUpUser.getMobile();
 		mailParameter.put("mobile_number", mobile != null ? mobile : "NA");
 		mailParameter.put("address", address);
@@ -1507,13 +1527,14 @@ public class FPAsyncComponent {
 		}
 		try {
 			if(fsName!=null&& address!=null&&mobile!=null&&assignedMakerName!=null&&applicationRequest.getId()!=null) {
+				mailParameter.put("isDynamic", false);
 				createNotificationForEmail(signUpUser.getEmail(), applicationRequest.getUserId().toString(),
 						mailParameter, NotificationAliasId, emailSubject);
 				logger.info("Email send to fs when maker accepted porposal");
 				System.out.println("Email send to fs when maker accepted porposal");
 			}else {
 				logger.error("Email is not sent becouse of required values are null:"+  "signUpUser.getEmail:"+signUpUser.getEmail()+"applicationRequest.getUserId:"+applicationRequest.getUserId()
-				+" mailParameter:"+mailParameter+"  NotificationAliasId"+NotificationAliasId.toString()+"emailSubject:"+emailSubject);
+						+" mailParameter:"+mailParameter+"  NotificationAliasId"+NotificationAliasId.toString()+"emailSubject:"+emailSubject);
 			}
 		} catch (Exception e) {
 			logger.info("Error in sending email to fs when porposal asigned to maker :" + e);
@@ -1565,7 +1586,7 @@ public class FPAsyncComponent {
 							(Map<Object, Object>) userResponseForName.getData(), FundProviderDetailsRequest.class);
 					makerName = fundProviderDetailsRequest.getFirstName() + " "
 							+ (fundProviderDetailsRequest.getLastName() == null ? ""
-									: fundProviderDetailsRequest.getLastName());
+							: fundProviderDetailsRequest.getLastName());
 				} catch (Exception e) {
 					logger.error("error while fetching FP name");
 					e.printStackTrace();
@@ -1609,7 +1630,7 @@ public class FPAsyncComponent {
 							(Map<Object, Object>) userResponseForName.getData(), FundProviderDetailsRequest.class);
 					checkerName = fundProviderDetailsRequest.getFirstName() + " "
 							+ (fundProviderDetailsRequest.getLastName() == null ? ""
-									: fundProviderDetailsRequest.getLastName());
+							: fundProviderDetailsRequest.getLastName());
 				} catch (Exception e) {
 					logger.error("error while fetching FP name");
 					e.printStackTrace();
@@ -1627,9 +1648,9 @@ public class FPAsyncComponent {
 			parameters.put("maker_name", makerName != null ? makerName : "NA");
 			parameters.put("checker_name", checkerName != null ? checkerName : "NA");
 			parameters.put("application_id", request.getApplicationId().toString());
-			
+
 			String address = null;
-			
+
 			// For getting Fund Seeker's Name
 			// =========================================================================================================
 			String fsName = null;
@@ -1658,7 +1679,7 @@ public class FPAsyncComponent {
 			}
 			parameters.put("fs_name", fsName != null ? fsName : "NA");
 			// =========================================================================================================
-			
+
 			if(!CommonUtils.isObjectNullOrEmpty(applicationRequest)
 					&& applicationRequest.getBusinessTypeId() == 1){
 				CorporateApplicantRequest applicantRequest = corporateapplicantService
@@ -1680,7 +1701,7 @@ public class FPAsyncComponent {
 			}
 			parameters.put("address", address != null ? address : "NA");
 
-			
+
 			if (!CommonUtils.isObjectNullOrEmpty(proposalresp.get("loan_type"))) {
 
 				parameters.put("product_type",
@@ -1710,13 +1731,14 @@ public class FPAsyncComponent {
 
 			}
 
-			String subjcet = "Intimation: Assigned - Application ID " + request.getApplicationId();
+			String subjcet = "Intimation: Assigned - #ApplicationId=" + request.getApplicationId();
 			if (!CommonUtils.isObjectNullOrEmpty(assignedChecker)
 					&& !CommonUtils.isObjectNullOrEmpty(assignedChecker.getEmail())) {
 
 				String toIds = assignedChecker.getEmail();
 				logger.info("Email Sending TO CHECKER on sendMailWhenMakerAssignDDRToChecker===to==>{}", toIds);
 				// ====================== MAIL TO CHECKER ======================
+				parameters.put("isDynamic", true);
 				createNotificationForEmail(toIds, request.getNpUserId().toString(), parameters,
 						NotificationAlias.EMAIL_CHECKER_MAKER_ASSIGN_APPLICATION_TO_CHECKER, subjcet);
 
@@ -1772,7 +1794,7 @@ public class FPAsyncComponent {
 										FundProviderDetailsRequest.class);
 						name = fundProviderDetailsRequest.getFirstName() + " "
 								+ (fundProviderDetailsRequest.getLastName() == null ? ""
-										: fundProviderDetailsRequest.getLastName());
+								: fundProviderDetailsRequest.getLastName());
 					} catch (Exception e) {
 						logger.error("error while fetching FP name");
 						e.printStackTrace();
@@ -1851,7 +1873,7 @@ public class FPAsyncComponent {
 										FundProviderDetailsRequest.class);
 						name = fundProviderDetailsRequest.getFirstName() + " "
 								+ (fundProviderDetailsRequest.getLastName() == null ? ""
-										: fundProviderDetailsRequest.getLastName());
+								: fundProviderDetailsRequest.getLastName());
 					} catch (Exception e) {
 						logger.error("error while fetching FP name");
 						e.printStackTrace();
@@ -1957,7 +1979,7 @@ public class FPAsyncComponent {
 							(Map<Object, Object>) userResponseForName.getData(), FundProviderDetailsRequest.class);
 					makerName = fundProviderDetailsRequest.getFirstName() + " "
 							+ (fundProviderDetailsRequest.getLastName() == null ? ""
-									: fundProviderDetailsRequest.getLastName());
+							: fundProviderDetailsRequest.getLastName());
 				} catch (Exception e) {
 					logger.error("error while fetching FP name");
 					e.printStackTrace();
@@ -2001,7 +2023,7 @@ public class FPAsyncComponent {
 							(Map<Object, Object>) userResponseForName.getData(), FundProviderDetailsRequest.class);
 					checkerName = fundProviderDetailsRequest.getFirstName() + " "
 							+ (fundProviderDetailsRequest.getLastName() == null ? ""
-									: fundProviderDetailsRequest.getLastName());
+							: fundProviderDetailsRequest.getLastName());
 				} catch (Exception e) {
 					logger.error("error while fetching FP name");
 					e.printStackTrace();
@@ -2104,10 +2126,10 @@ public class FPAsyncComponent {
 					&& applicationRequest.getBusinessTypeId() == 3){
 				address = applicationRequest.getAddress();
 			}
-			
+
 			parameters.put("address", address != null ? address : "NA");
 
-			String subjcet = "Intimation : Sent Back - Application ID " + request.getApplicationId();
+			String subjcet = "Intimation : Sent Back - #ApplicationId=" + request.getApplicationId();
 			if (!CommonUtils.isObjectNullOrEmpty(assignedChecker)
 					&& !CommonUtils.isObjectNullOrEmpty(assignedChecker.getEmail())) {
 
@@ -2172,7 +2194,7 @@ public class FPAsyncComponent {
 										FundProviderDetailsRequest.class);
 						name = fundProviderDetailsRequest.getFirstName() + " "
 								+ (fundProviderDetailsRequest.getLastName() == null ? ""
-										: fundProviderDetailsRequest.getLastName());
+								: fundProviderDetailsRequest.getLastName());
 					} catch (Exception e) {
 						logger.error("error while fetching FP name");
 						e.printStackTrace();
@@ -2256,7 +2278,7 @@ public class FPAsyncComponent {
 										FundProviderDetailsRequest.class);
 						name = fundProviderDetailsRequest.getFirstName() + " "
 								+ (fundProviderDetailsRequest.getLastName() == null ? ""
-										: fundProviderDetailsRequest.getLastName());
+								: fundProviderDetailsRequest.getLastName());
 					} catch (Exception e) {
 						logger.error("error while fetching FP name");
 						e.printStackTrace();
@@ -2325,7 +2347,7 @@ public class FPAsyncComponent {
 
 	@Async
 	public void sendEmailToCheckerWhenAdminMakerSendProductForApproval(ProductMasterTemp productMasterTemp, Long userId,
-			String productType) {
+																	   String productType) {
 
 		try {
 
@@ -2348,7 +2370,7 @@ public class FPAsyncComponent {
 						(Map<Object, Object>) userResponseForName.getData(), FundProviderDetailsRequest.class);
 				adminMakerName = fundProviderDetailsRequest.getFirstName() + " "
 						+ (fundProviderDetailsRequest.getLastName() == null ? ""
-								: fundProviderDetailsRequest.getLastName());
+						: fundProviderDetailsRequest.getLastName());
 			} catch (Exception e) {
 				logger.error("error while fetching FP name");
 				e.printStackTrace();
@@ -2380,7 +2402,7 @@ public class FPAsyncComponent {
 										FundProviderDetailsRequest.class);
 						name = fundProviderDetailsRequest.getFirstName() + " "
 								+ (fundProviderDetailsRequest.getLastName() == null ? ""
-										: fundProviderDetailsRequest.getLastName());
+								: fundProviderDetailsRequest.getLastName());
 					} catch (Exception e) {
 						logger.error("error while fetching FP name");
 						e.printStackTrace();
@@ -2449,7 +2471,7 @@ public class FPAsyncComponent {
 
 	@Async
 	public void sendEmailToCheckerWhenAdminMakerResendProductForApproval(ProductMasterTemp productMasterTemp,
-			Long userId, String productType) {
+																		 Long userId, String productType) {
 
 		try {
 
@@ -2473,7 +2495,7 @@ public class FPAsyncComponent {
 						(Map<Object, Object>) userResponseForName.getData(), FundProviderDetailsRequest.class);
 				adminMakerName = fundProviderDetailsRequest.getFirstName() + " "
 						+ (fundProviderDetailsRequest.getLastName() == null ? ""
-								: fundProviderDetailsRequest.getLastName());
+						: fundProviderDetailsRequest.getLastName());
 			} catch (Exception e) {
 				logger.error("error while fetching FP name");
 				e.printStackTrace();
@@ -2506,7 +2528,7 @@ public class FPAsyncComponent {
 										FundProviderDetailsRequest.class);
 						name = fundProviderDetailsRequest.getFirstName() + " "
 								+ (fundProviderDetailsRequest.getLastName() == null ? ""
-										: fundProviderDetailsRequest.getLastName());
+								: fundProviderDetailsRequest.getLastName());
 					} catch (Exception e) {
 						logger.error("error while fetching FP name");
 						e.printStackTrace();
@@ -2574,7 +2596,7 @@ public class FPAsyncComponent {
 
 	@Async
 	public void sendEmailToMakerWhenAdminCheckerApprovedProduct(ProductMasterTemp productMasterTemp, Long userId,
-			String productType) {
+																String productType) {
 
 		try {
 
@@ -2597,7 +2619,7 @@ public class FPAsyncComponent {
 						(Map<Object, Object>) userResponseForName.getData(), FundProviderDetailsRequest.class);
 				adminCheckerName = fundProviderDetailsRequest.getFirstName() + " "
 						+ (fundProviderDetailsRequest.getLastName() == null ? ""
-								: fundProviderDetailsRequest.getLastName());
+						: fundProviderDetailsRequest.getLastName());
 			} catch (Exception e) {
 				logger.error("error while fetching FP name");
 				e.printStackTrace();
@@ -2611,7 +2633,7 @@ public class FPAsyncComponent {
 
 			mailParameters.put("admin_checker", adminCheckerName);
 			//==============================================================================================
-			
+
 			UserResponse assignedMakerResponse = null;
 			try {
 				assignedMakerResponse = userClient.getEmailMobile(productMasterTemp.getCreatedBy());
@@ -2638,7 +2660,7 @@ public class FPAsyncComponent {
 							(Map<Object, Object>) userResponseForName.getData(), FundProviderDetailsRequest.class);
 					makerName = fundProviderDetailsRequest.getFirstName() + " "
 							+ (fundProviderDetailsRequest.getLastName() == null ? ""
-									: fundProviderDetailsRequest.getLastName());
+							: fundProviderDetailsRequest.getLastName());
 				} catch (Exception e) {
 					logger.error("error while fetching FP name");
 					e.printStackTrace();
@@ -2646,7 +2668,7 @@ public class FPAsyncComponent {
 			}
 
 			// =======================================================================================
-			
+
 			String to = null;
 			if (!CommonUtils.isObjectNullOrEmpty(assignedMaker.getEmail())) {
 				// System.out.println("Maker ID:---"+userObj.getEmail());
@@ -2687,8 +2709,8 @@ public class FPAsyncComponent {
 						NotificationAlias.SYS_ADMIN_MAKER_PRODUCT_APPROVED_BY_CHECKER,
 						assignedMaker.getId().toString(), assignedMaker.getId().toString());
 			}
-			
-			
+
+
 			/*UserResponse userResponse = userClient.getUserDetailByOrgRoleId(productMasterTemp.getUserOrgId(),
 					com.capitaworld.service.users.utils.CommonUtils.UserRoles.ADMIN_MAKER);
 			List<Map<String, Object>> usersRespList = (List<Map<String, Object>>) userResponse.getListData();
@@ -2773,7 +2795,7 @@ public class FPAsyncComponent {
 
 	@Async
 	public void sendEmailToMakerWhenAdminCheckerRevertedProduct(ProductMasterTemp productMasterTemp, Long userId,
-			String productType) {
+																String productType) {
 
 		try {
 
@@ -2796,7 +2818,7 @@ public class FPAsyncComponent {
 						(Map<Object, Object>) userResponseForName.getData(), FundProviderDetailsRequest.class);
 				adminCheckerName = fundProviderDetailsRequest.getFirstName() + " "
 						+ (fundProviderDetailsRequest.getLastName() == null ? ""
-								: fundProviderDetailsRequest.getLastName());
+						: fundProviderDetailsRequest.getLastName());
 			} catch (Exception e) {
 				logger.error("error while fetching FP name");
 				e.printStackTrace();
@@ -2809,8 +2831,8 @@ public class FPAsyncComponent {
 			}
 
 			mailParameters.put("admin_checker", adminCheckerName);
-           //=========================================================================================================
-			
+			//=========================================================================================================
+
 			UserResponse assignedMakerResponse = null;
 			try {
 				assignedMakerResponse = userClient.getEmailMobile(productMasterTemp.getCreatedBy());
@@ -2837,7 +2859,7 @@ public class FPAsyncComponent {
 							(Map<Object, Object>) userResponseForName.getData(), FundProviderDetailsRequest.class);
 					makerName = fundProviderDetailsRequest.getFirstName() + " "
 							+ (fundProviderDetailsRequest.getLastName() == null ? ""
-									: fundProviderDetailsRequest.getLastName());
+							: fundProviderDetailsRequest.getLastName());
 				} catch (Exception e) {
 					logger.error("error while fetching FP name");
 					e.printStackTrace();
@@ -2884,7 +2906,7 @@ public class FPAsyncComponent {
 						NotificationAlias.SYS_ADMIN_MAKER_PRODUCT_REVERTED_BY_CHECKER,
 						assignedMaker.getId().toString(), assignedMaker.getId().toString());
 			}
-			
+
 			/*UserResponse userResponse = userClient.getUserDetailByOrgRoleId(productMasterTemp.getUserOrgId(),
 					com.capitaworld.service.users.utils.CommonUtils.UserRoles.ADMIN_MAKER);
 			List<Map<String, Object>> usersRespList = (List<Map<String, Object>>) userResponse.getListData();
@@ -2970,7 +2992,7 @@ public class FPAsyncComponent {
 		try {
 
 			logger.info("Into sending Mail to Maker/HO/BO when Checker sanction loan===>{}");
-			String subject = "Intimation: Sanction - Application ID " + loanSanctionDomainOld.getApplicationId();
+			String subject = "Intimation: Sanction - #ApplicationId=" + loanSanctionDomainOld.getApplicationId();
 			Map<String, Object> mailParameters = new HashMap<String, Object>();
 			LoanApplicationRequest applicationRequest = loanApplicationService
 					.getFromClient(loanSanctionDomainOld.getApplicationId());
@@ -3055,7 +3077,7 @@ public class FPAsyncComponent {
 			String checkerName = null;
 			if(loanSanctionDomainOld.getModifiedBy() != null) {
 				checkerForName.setId(Long.valueOf(loanSanctionDomainOld.getModifiedBy()));
-				
+
 				try {
 					logger.error("Into getting FP Name======>" + checkerForName);
 					UserResponse userResponseForName = userClient.getFPDetails(checkerForName);
@@ -3063,7 +3085,7 @@ public class FPAsyncComponent {
 							(Map<Object, Object>) userResponseForName.getData(), FundProviderDetailsRequest.class);
 					checkerName = fundProviderDetailsRequest.getFirstName() + " "
 							+ (fundProviderDetailsRequest.getLastName() == null ? ""
-									: fundProviderDetailsRequest.getLastName());
+							: fundProviderDetailsRequest.getLastName());
 					if ("null ".equals(checkerName)) {
 						checkerName = "Checker";
 					} else {
@@ -3075,8 +3097,8 @@ public class FPAsyncComponent {
 					e.printStackTrace();
 				}
 			}
-			
-			
+
+
 			UserResponse makerResponse = null;
 			try {
 				makerResponse = userClient.getEmailMobile(applicationRequest.getFpMakerId());
@@ -3103,7 +3125,7 @@ public class FPAsyncComponent {
 						(Map<Object, Object>) userResponseForName.getData(), FundProviderDetailsRequest.class);
 				makerName = fundProviderDetailsRequest.getFirstName() + " "
 						+ (fundProviderDetailsRequest.getLastName() == null ? ""
-								: fundProviderDetailsRequest.getLastName());
+						: fundProviderDetailsRequest.getLastName());
 				if ("null ".equals(makerName)) {
 					makerName = "Sir/Madam";
 				} else {
@@ -3129,6 +3151,7 @@ public class FPAsyncComponent {
 				 * subjcet);
 				 */
 				// ====================== MAIL TO MAKER by new code ======================
+				mailParameters.put("isDynamic", true);
 				createNotificationForEmail(toIds, applicationRequest.getFpMakerId().toString(), mailParameters,
 						NotificationAlias.EMAIL_MAKER_AFTER_CHECKER_SUBMIT_SANCTION_POPUP, subject);
 
@@ -3177,7 +3200,7 @@ public class FPAsyncComponent {
 										FundProviderDetailsRequest.class);
 						name = fundProviderDetailsRequest.getFirstName() + " "
 								+ (fundProviderDetailsRequest.getLastName() == null ? ""
-										: fundProviderDetailsRequest.getLastName());
+								: fundProviderDetailsRequest.getLastName());
 					} catch (Exception e) {
 						logger.error("error while fetching FP name");
 						e.printStackTrace();
@@ -3191,7 +3214,7 @@ public class FPAsyncComponent {
 						} else {
 							mailParameters.put("ho_name", name != null ? name : "Sir/Madam");
 						}
-
+						mailParameters.put("isDynamic", true);
 						createNotificationForEmail(to, userObj.getId().toString(), mailParameters,
 								NotificationAlias.EMAIL_HO_CHECKER_SANCTIONED, subject);
 					}
@@ -3255,7 +3278,7 @@ public class FPAsyncComponent {
 										FundProviderDetailsRequest.class);
 						name = fundProviderDetailsRequest.getFirstName() + " "
 								+ (fundProviderDetailsRequest.getLastName() == null ? ""
-										: fundProviderDetailsRequest.getLastName());
+								: fundProviderDetailsRequest.getLastName());
 					} catch (Exception e) {
 						logger.error("error while fetching FP name");
 						e.printStackTrace();
@@ -3269,7 +3292,7 @@ public class FPAsyncComponent {
 						} else {
 							mailParameters.put("bo_name", name != null ? name : "Sir/Madam");
 						}
-
+						mailParameters.put("isDynamic", true);
 						createNotificationForEmail(to, userObj.getId().toString(), mailParameters,
 								NotificationAlias.EMAIL_ALL_BO_CHECKER_SANCTIONED, subject);
 					}
@@ -3359,30 +3382,30 @@ public class FPAsyncComponent {
 
 			SimpleDateFormat form = new SimpleDateFormat("dd/MM/yyyy");
 			String fpName = proposalresp.get("organisationName") != null ? proposalresp.get("organisationName").toString() : "";
-            if(!CommonUtils.isObjectNullOrEmpty(loanSanctionDomainOld.getIsSanctionedFrom())){
-            	if(loanSanctionDomainOld.getIsSanctionedFrom().equals(CommonUtils.sanctionedFrom.INELIGIBLE_USERS_OFFLINE_APPLICATION)){
-            		
-            		subject = "Congratulations - Your Loan for Manual Application Has Been Sanctioned!!!";
-            		//==================For getting Organisation Name================== 
-        			
+			if(!CommonUtils.isObjectNullOrEmpty(loanSanctionDomainOld.getIsSanctionedFrom())){
+				if(loanSanctionDomainOld.getIsSanctionedFrom().equals(CommonUtils.sanctionedFrom.INELIGIBLE_USERS_OFFLINE_APPLICATION)){
+
+					subject = "Congratulations - Your Loan for Manual Application Has Been Sanctioned!!!";
+					//==================For getting Organisation Name==================
+
 					UserResponse userResponse = null;
 					Map<String, Object> usersResp = null;
 					UserOrganisationRequest organisationRequest = null;
 					String organisationName = null;
 					try {
-						userResponse = userClient.getOrgNameByOrgId(loanSanctionDomainOld.getOrgId());	
+						userResponse = userClient.getOrgNameByOrgId(loanSanctionDomainOld.getOrgId());
 					}
 					catch(Exception e) {
 						logger.info("Exception occured while getting Organisation details by orgId");
 						e.printStackTrace();
 					}
-                    
+
 					try {
 						if(!CommonUtils.isObjectNullOrEmpty(userResponse)) {
 							usersResp = (Map<String, Object>) userResponse.getData();
 							organisationRequest = MultipleJSONObjectHelper.getObjectFromMap(usersResp,
 									UserOrganisationRequest.class);
-							organisationName = organisationRequest.getOrganisationName(); 
+							organisationName = organisationRequest.getOrganisationName();
 							fpName = organisationName;
 						}
 					}
@@ -3391,7 +3414,7 @@ public class FPAsyncComponent {
 						e.printStackTrace();
 					}
 					//============================================================
-    			}
+				}
 			}
 			mailParameters.put("fp_name", fpName != null ? fpName : "");
 			mailParameters.put("product_type", productType != null ? productType : "");
@@ -3414,7 +3437,7 @@ public class FPAsyncComponent {
 							: "");
 			mailParameters.put("remarks",
 					loanSanctionDomainOld.getRemark() != null ? loanSanctionDomainOld.getRemark() : "");
-			
+
 			// For getting Fund Seeker's Name
 			// =========================================================================================================
 			String fsName = null;
@@ -3471,6 +3494,7 @@ public class FPAsyncComponent {
 				 * subjcet);
 				 */
 				// ====================== MAIL TO MAKER by new code ======================
+				mailParameters.put("isDynamic", true);
 				createNotificationForEmail(toIds, applicationRequest.getUserId().toString(), mailParameters,
 						NotificationAlias.EMAIL_FS_CHECKER_SANCTIONED, subject);
 
@@ -3511,9 +3535,9 @@ public class FPAsyncComponent {
 	}
 
 	private void createNotificationForEmail(String toNo, String userId, Map<String, Object> mailParameters,
-			Long templateId, String emailSubject) throws NotificationException {
+											Long templateId, String emailSubject) throws NotificationException {
 		logger.info("Inside send notification===>{}" + toNo);
-		
+
 		NotificationRequest notificationRequest = new NotificationRequest();
 		notificationRequest.setClientRefId(userId);
 		try{
@@ -3521,7 +3545,7 @@ public class FPAsyncComponent {
 		}catch (Exception e) {
 			notificationRequest.setIsDynamic(false);
 		}
-		
+
 		String to[] = { toNo };
 		Notification notification = new Notification();
 		notification.setContentType(ContentType.TEMPLATE);
@@ -3532,11 +3556,71 @@ public class FPAsyncComponent {
 		notification.setFrom(EMAIL_ADDRESS_FROM);
 		notification.setParameters(mailParameters);
 		notification.setIsDynamic(notificationRequest.getIsDynamic());
-		
+
 		notificationRequest.addNotification(notification);
 		sendEmail(notificationRequest);
 		logger.info("Outside send notification===>{}" + toNo);
 	}
+
+
+	private void createNotificationForEmailForFundProvider(String toNo, String userId, Map<String, Object> mailParameters,
+														   Long templateId, String emailSubject,Long applicationId,Map<String, Object> proposalresp,String bcc[]) throws NotificationException {
+		logger.info("Inside send notification===>{}" + toNo);
+
+		NotificationRequest notificationRequest = new NotificationRequest();
+		notificationRequest.setClientRefId(userId);
+		try{
+			notificationRequest.setIsDynamic(((Boolean) mailParameters.get("isDynamic")).booleanValue());
+		}catch (Exception e) {
+			notificationRequest.setIsDynamic(false);
+		}
+
+		String to[] = { toNo };
+		Notification notification = new Notification();
+		notification.setContentType(ContentType.TEMPLATE);
+		notification.setTemplateId(templateId);
+		notification.setSubject(emailSubject);
+		notification.setTo(to);
+		notification.setType(NotificationType.EMAIL);
+		notification.setFrom(EMAIL_ADDRESS_FROM);
+		notification.setParameters(mailParameters);
+		notification.setIsDynamic(notificationRequest.getIsDynamic());
+		if(!CommonUtils.isObjectNullOrEmpty(bcc))
+			notification.setBcc(bcc);
+
+
+
+		// start attach CAM to Mail
+
+		Long fpProductId = Long.parseLong(proposalresp.get("fp_product_id").toString());
+		Map<String,Object> response = camReportPdfDetailsService.getCamReportPrimaryDetails(applicationId,fpProductId,false);
+		ReportRequest reportRequest = new ReportRequest();
+		reportRequest.setParams(response);
+		reportRequest.setTemplate("CAMREPORTPRIMARYSIDBI");
+		reportRequest.setType("CAMREPORTPRIMARYSIDBI");
+
+        try
+        {
+            byte[] byteArr = reportsClient.generatePDFFile(reportRequest);
+            notification.setFileName("CAM.pdf");
+            notification.setContentInBytes(byteArr);
+        }
+        catch (Exception e)
+        {
+            logger.error("error while attaching cam report");
+            e.printStackTrace();
+        }
+
+
+
+		// end attach CAM to Mail
+
+
+		notificationRequest.addNotification(notification);
+		sendEmail(notificationRequest);
+		logger.info("Outside send notification===>{}" + toNo);
+	}
+
 
 	private void sendSMSNotification(String userId, Map<String, Object> parameters, Long templateId, String... to)
 			throws NotificationException {
@@ -3558,7 +3642,7 @@ public class FPAsyncComponent {
 	}
 
 	private void sendSYSNotification(Long applicationId, String toUserId, Map<String, Object> parameters,
-			Long templateId, String fromId, String... to) throws NotificationException {
+									 Long templateId, String fromId, String... to) throws NotificationException {
 		// String to[] = {toNo};
 		logger.info("Inside send SYSTEM notification===>{}");
 		NotificationRequest req = new NotificationRequest();

@@ -6,5 +6,5 @@ import com.capitaworld.service.loans.domain.BankCWAuditTrailDomain;
 
 public interface BankToCWAuditTrailRepository extends JpaRepository<BankCWAuditTrailDomain, Long>{
 
-		public BankCWAuditTrailDomain findByApplicationIdAndOrgIdAndApiTypeAndBankPrimaryKeyAndIsActive(Long applicationId , Long orgId , Integer apiType  ,Long  bankPrimaryKey , Boolean isActive);	
+		public BankCWAuditTrailDomain findFirstByApplicationIdAndOrgIdAndApiTypeAndBankPrimaryKeyAndIsActiveOrderByIdDesc(Long applicationId , Long orgId , Integer apiType  ,Long  bankPrimaryKey , Boolean isActive);	
 }

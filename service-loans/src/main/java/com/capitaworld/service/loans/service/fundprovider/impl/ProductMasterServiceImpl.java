@@ -100,11 +100,14 @@ import com.capitaworld.service.loans.utils.CommonUtils.UserMainType;
 import com.capitaworld.service.matchengine.ProposalDetailsClient;
 import com.capitaworld.service.matchengine.exception.MatchException;
 import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
+import com.capitaworld.service.matchengine.utils.MatchConstant;
+import com.capitaworld.service.matchengine.utils.MatchConstant.ProposalStatus;
 import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.LoanType;
 import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
 import com.capitaworld.service.users.client.UsersClient;
+import com.capitaworld.service.users.model.BranchBasicDetailsRequest;
 import com.capitaworld.service.users.model.UserResponse;
 import com.capitaworld.service.users.model.UsersRequest;
 
@@ -662,6 +665,22 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	@Override
 	public List<ProductMasterRequest> getActiveInActiveList(Long userId, Long userOrgId) {
 		// TODO Auto-generated method stub
+		
+		//Getting BranchId
+		// set branch id to proposal request
+		BranchBasicDetailsRequest basicDetailsRequest = null;
+		try {
+			UsersRequest usersRequest = new UsersRequest();
+			usersRequest.setId(userId);
+			logger.info("Current user id ---------------------------------------------------> " + userId);
+			UserResponse userResponse = usersClient.getBranchDetailsBYUserId(usersRequest);
+			basicDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap(
+					(LinkedHashMap<String, Object>) userResponse.getData(), BranchBasicDetailsRequest.class);
+		} catch (Exception e) {
+			logger.info("Throw Exception While Get Branch Id from UserId");
+			e.printStackTrace();
+		}
+		
 		CommonDocumentUtils.startHook(logger, "getActiveInActiveList");
 		List<ProductMaster> results;
 		if (!CommonUtils.isObjectNullOrEmpty(userOrgId)) {
@@ -678,7 +697,17 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 			BeanUtils.copyProperties(master, request);
 //			request.setIsMatched(productMasterRepository.getMatchedAndActiveInActiveProduct(userId).size() > 0 ? true : false);
 			request.setIsMatched(matchCount > 0 ? true : false);
-			request.setProposalCount(proposalDetailsRepository.getProposalCountByUserIdAndFpProductId(master.getId(), userId));
+			Long count = null;
+			if(basicDetailsRequest != null && basicDetailsRequest.getId() != null){
+				if (basicDetailsRequest.getRoleId() == CommonUtils.UsersRoles.BO || basicDetailsRequest.getRoleId() == CommonUtils.UsersRoles.FP_CHECKER) {
+					count = proposalDetailsRepository.getProposalCountByFpProductIdAndBranchId(master.getId(), basicDetailsRequest.getId());
+				}else if (basicDetailsRequest.getRoleId() == CommonUtils.UsersRoles.HO) {
+					count = proposalDetailsRepository.getProposalCountByFpProductId(master.getId());
+				}
+			}else{
+				count = proposalDetailsRepository.getProposalCountByFpProductId(master.getId());
+			}
+			request.setProposalCount(count);
 			requests.add(request);
 		}
 		CommonDocumentUtils.endHook(logger, "getActiveInActiveList");

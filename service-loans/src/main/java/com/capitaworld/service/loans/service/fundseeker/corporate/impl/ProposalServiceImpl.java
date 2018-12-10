@@ -57,5 +57,7 @@ public class ProposalServiceImpl implements ProposalService {
 		
 		
 	}
+	
+	
 
 }
