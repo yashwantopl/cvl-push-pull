@@ -119,6 +119,7 @@ import com.capitaworld.service.matchengine.ProposalDetailsClient;
 import com.capitaworld.service.matchengine.model.MatchDisplayResponse;
 import com.capitaworld.service.matchengine.model.MatchRequest;
 import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
+import com.capitaworld.service.matchengine.model.ProposalMappingRequestString;
 import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
 import com.capitaworld.service.mca.client.McaClient;
 import com.capitaworld.service.mca.model.McaResponse;
@@ -307,6 +308,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 	@Override
 	public Map<String, Object> getCamReportPrimaryDetails(Long applicationId, Long productId, boolean isFinalView) {
 		Map<String, Object> map = new HashMap<String, Object>();
+		ProposalMappingRequestString proposalMappingRequestString = null;
 		DecimalFormat decim = new DecimalFormat("####");
 		Long userId = loanApplicationRepository.getUserIdByApplicationId(applicationId);
 		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId, userId);
@@ -381,6 +383,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		// application type
 				map.put("applicationType", (loanApplicationMaster.getWcRenewalStatus() != null ? WcRenewalType.getById(loanApplicationMaster.getWcRenewalStatus()).getValue().toString() : "New" ));
 				
+
 		//TIMELINE DATES
 		map.put("dateOfProposal", !CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getCreatedDate())? DATE_FORMAT.format(loanApplicationMaster.getCreatedDate()):"-");
 		try {
@@ -493,7 +496,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 						try {
 							CibilRequest cibilRequest = new CibilRequest();
 							cibilRequest.setPan(directorBackgroundDetailRequest.getPanNo());
-							cibilRequest.setApplicationId(applicationId);
+							
 							CibilScoreLogRequest cibilScoreByPanCard = cibilClient.getCibilScoreByPanCard(cibilRequest);
 							if(!CommonUtils.isObjectNullOrEmpty(cibilScoreByPanCard)) {
 								if("000-1".equalsIgnoreCase(cibilScoreByPanCard.getActualScore())) {
@@ -668,6 +671,8 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				proposalMappingRequest.setApplicationId(applicationId);
 				proposalMappingRequest.setFpProductId(productId);
 				ProposalMappingResponse proposalMappingResponse= proposalDetailsClient.getActiveProposalDetails(proposalMappingRequest);
+				proposalMappingRequestString = new ProposalMappingRequestString();
+				BeanUtils.copyProperties(proposalMappingResponse.getData(), proposalMappingRequestString);
 				map.put("proposalResponse", !CommonUtils.isObjectNullOrEmpty(proposalMappingResponse.getData()) ? proposalMappingResponse.getData() : " ");
 		}
 		catch (Exception e) {
@@ -1052,36 +1057,95 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		}catch(Exception e) {
 			logger.info("Error while getting ITR data");
 		}
+		
+		
 		//PERFIOS API DATA (BANK STATEMENT ANALYSIS)
 		ReportRequest reportRequest = new ReportRequest();
-			reportRequest.setApplicationId(applicationId);
-			reportRequest.setUserId(userId);
-			List<Data> datas=new ArrayList<>();
-			try {
-				AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReportForCam(reportRequest);
-				List<HashMap<String, Object>> hashMap=(List<HashMap<String, Object>>) analyzerResponse.getData();
-				if(!CommonUtils.isListNullOrEmpty(hashMap))
-				{
-					for(HashMap<String,Object> rec:hashMap)
-					{
-						Data data = MultipleJSONObjectHelper.getObjectFromMap(rec, Data.class);
-						datas.add(data);
-						List<Object> customerInfo = new ArrayList<Object>();
-						for(int i =0; i<hashMap.size(); i++) {
-							customerInfo.add(!CommonUtils.isObjectNullOrEmpty(data.getCustomerInfo()) ? CommonUtils.printFields(data.getCustomerInfo(),null) : " ");
-						}
-						map.put("customerInfo" , customerInfo);
-					}
+		reportRequest.setApplicationId(applicationId);
+		reportRequest.setUserId(userId);
+		
+		List<Data> datas = new ArrayList<>();
+		List<Object> bankStatement = new ArrayList<Object>();
+		List<Object> monthlyDetails = new ArrayList<Object>();
+		List<Object> top5FundReceived = new ArrayList<Object>();
+		List<Object> top5FundTransfered = new ArrayList<Object>();
+		List<Object> bouncedChequeList = new ArrayList<Object>();
+		List<Object> customerInfo = new ArrayList<Object>();
+		List<Object> summaryInfo = new ArrayList<Object>();
+		
+		try {
+			AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReportForCam(reportRequest);
+			List<HashMap<String, Object>> hashMap = (List<HashMap<String, Object>>) analyzerResponse.getData();
+			
+			int index = 0;
+			if (!CommonUtils.isListNullOrEmpty(hashMap)) {
+				for (HashMap<String, Object> rec : hashMap) {
+					Data data = MultipleJSONObjectHelper.getObjectFromMap(rec, Data.class);
+					datas.add(data);
+					
+					bankStatement.add(!CommonUtils.isObjectNullOrEmpty(data.getXns()) ? CommonUtils.printFields(data.getXns().getXn(),null) : " ");
+					monthlyDetails.add(!CommonUtils.isObjectNullOrEmpty(data.getMonthlyDetailList()) ? CommonUtils.printFields(data.getMonthlyDetailList(),null) : "");
+					top5FundReceived.add(!CommonUtils.isObjectNullOrEmpty(data.getTop5FundReceivedList().getItem()) ? CommonUtils.printFields(data.getTop5FundReceivedList().getItem(),null) : "");
+					top5FundTransfered.add(!CommonUtils.isObjectNullOrEmpty(data.getTop5FundTransferedList().getItem()) ? CommonUtils.printFields(data.getTop5FundTransferedList().getItem(),null) : "");
+					bouncedChequeList.add(!CommonUtils.isObjectNullOrEmpty(data.getBouncedOrPenalXnList()) ? CommonUtils.printFields(data.getBouncedOrPenalXnList().getBouncedOrPenalXns(),null) : " ");
+					customerInfo.add(!CommonUtils.isObjectNullOrEmpty(data.getCustomerInfo()) ? CommonUtils.printFields(data.getCustomerInfo(),null) : " ");
+					summaryInfo.add(!CommonUtils.isObjectNullOrEmpty(data.getSummaryInfo()) ?CommonUtils.printFields(data.getSummaryInfo(),null) : " ");
+					
+					index++;
 				}
-			}catch (Exception e) {
-				e.printStackTrace();
-				logger.info("Error while getting perfios data");
+				
+				//System.out.println("bankStatement : "+bankStatement.size()+" monthlyDetails :"+monthlyDetails.size()+" top5FundReceived :"+top5FundReceived.size());
+				//System.out.println("top5FundTransfered : "+top5FundTransfered.size()+" bouncedChequeList :"+bouncedChequeList.size()+" customerInfo :"+customerInfo.size());
+				//System.out.println("summaryInfo : "+summaryInfo.size()+" bankStatementAnalysis :"+datas.size());
+				
+				map.put("bankStatement", bankStatement);
+				map.put("monthlyDetails", monthlyDetails);
+				map.put("top5FundReceived", top5FundReceived);
+				map.put("top5FundTransfered", top5FundTransfered);
+				map.put("bouncedChequeList", bouncedChequeList);
+				map.put("customerInfo", customerInfo);
+				map.put("summaryInfo", summaryInfo);
+				map.put("bankStatementAnalysis", CommonUtils.printFields(datas, null));
+				
 			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.info("Error while getting perfios data");
+		}
+		
+		/*ReportRequest reportRequest = new ReportRequest();
+		reportRequest.setApplicationId(applicationId);
+		reportRequest.setUserId(userId);
+		List<Data> datas=new ArrayList<>();
+		try {
+			AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReportForCam(reportRequest);
+			List<HashMap<String, Object>> hashMap=(List<HashMap<String, Object>>) analyzerResponse.getData();
+			if(!CommonUtils.isListNullOrEmpty(hashMap))
+			{
+				for(HashMap<String,Object> rec:hashMap)
+				{
+					Data data = MultipleJSONObjectHelper.getObjectFromMap(rec, Data.class);
+					datas.add(data);
+					List<Object> customerInfo = new ArrayList<Object>();
+					for(int i =0; i<hashMap.size(); i++) {
+						customerInfo.add(!CommonUtils.isObjectNullOrEmpty(data.getCustomerInfo()) ? CommonUtils.printFields(data.getCustomerInfo(),null) : " ");
+					}
+					map.put("customerInfo" , customerInfo);
+				}
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+			logger.info("Error while getting perfios data");
+		}*/
+		
+		
+		
 /**********************************************FINAL DETAILS*****************************************************/
 		
 		if(isFinalView) {
 			//FITCH DATA
 			try {
+				//proposalMappingRequestString.getId()
 			RatingResponse ratingResponse = (RatingResponse) irrService.calculateIrrRating(applicationId, userId).getBody().getData();
 			if(!CommonUtils.isObjectNullOrEmpty(ratingResponse.getBusinessTypeId())) {
 				if(BusinessType.MANUFACTURING == ratingResponse.getBusinessTypeId())
@@ -1244,7 +1308,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		return map;
 	}
 	
-	@Override
+	/*@Override
 	public Map<String, Object> getBankStatementAnalysisReport(Long applicationId, Long productId) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		Long userId = loanApplicationRepository.getUserIdByApplicationId(applicationId);
@@ -1300,6 +1364,75 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 					logger.info("Error while getting perfios data");
 				}
 				
+		return map;
+	}*/
+	
+	@Override
+	public Map<String, Object> getBankStatementAnalysisReport(Long applicationId, Long productId) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		Long userId = loanApplicationRepository.getUserIdByApplicationId(applicationId);
+		CorporateApplicantRequest corporateApplicantRequest = corporateApplicantService
+				.getCorporateApplicant(applicationId);
+		try {
+			map.put("orgName", CommonUtils.printFields(corporateApplicantRequest.getOrganisationName(), null));
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		// PERFIOS API DATA (BANK STATEMENT ANALYSIS)
+		ReportRequest reportRequest = new ReportRequest();
+		reportRequest.setApplicationId(applicationId);
+		reportRequest.setUserId(userId);
+		
+		List<Data> datas = new ArrayList<>();
+		List<Object> bankStatement = new ArrayList<Object>();
+		List<Object> monthlyDetails = new ArrayList<Object>();
+		List<Object> top5FundReceived = new ArrayList<Object>();
+		List<Object> top5FundTransfered = new ArrayList<Object>();
+		List<Object> bouncedChequeList = new ArrayList<Object>();
+		List<Object> customerInfo = new ArrayList<Object>();
+		List<Object> summaryInfo = new ArrayList<Object>();
+		
+		try {
+			AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReportForCam(reportRequest);
+			List<HashMap<String, Object>> hashMap = (List<HashMap<String, Object>>) analyzerResponse.getData();
+			
+			int index = 0;
+			if (!CommonUtils.isListNullOrEmpty(hashMap)) {
+				for (HashMap<String, Object> rec : hashMap) {
+					Data data = MultipleJSONObjectHelper.getObjectFromMap(rec, Data.class);
+					datas.add(data);
+					
+					bankStatement.add(!CommonUtils.isObjectNullOrEmpty(data.getXns()) ? CommonUtils.printFields(data.getXns().getXn(),null) : " ");
+					monthlyDetails.add(!CommonUtils.isObjectNullOrEmpty(data.getMonthlyDetailList()) ? CommonUtils.printFields(data.getMonthlyDetailList(),null) : "");
+					top5FundReceived.add(!CommonUtils.isObjectNullOrEmpty(data.getTop5FundReceivedList().getItem()) ? CommonUtils.printFields(data.getTop5FundReceivedList().getItem(),null) : "");
+					top5FundTransfered.add(!CommonUtils.isObjectNullOrEmpty(data.getTop5FundTransferedList().getItem()) ? CommonUtils.printFields(data.getTop5FundTransferedList().getItem(),null) : "");
+					bouncedChequeList.add(!CommonUtils.isObjectNullOrEmpty(data.getBouncedOrPenalXnList()) ? CommonUtils.printFields(data.getBouncedOrPenalXnList().getBouncedOrPenalXns(),null) : " ");
+					customerInfo.add(!CommonUtils.isObjectNullOrEmpty(data.getCustomerInfo()) ? CommonUtils.printFields(data.getCustomerInfo(),null) : " ");
+					summaryInfo.add(!CommonUtils.isObjectNullOrEmpty(data.getSummaryInfo()) ?CommonUtils.printFields(data.getSummaryInfo(),null) : " ");
+					
+					index++;
+				}
+				
+				//System.out.println("bankStatement : "+bankStatement.size()+" monthlyDetails :"+monthlyDetails.size()+" top5FundReceived :"+top5FundReceived.size());
+				//System.out.println("top5FundTransfered : "+top5FundTransfered.size()+" bouncedChequeList :"+bouncedChequeList.size()+" customerInfo :"+customerInfo.size());
+				//System.out.println("summaryInfo : "+summaryInfo.size()+" bankStatementAnalysis :"+datas.size());
+				
+				map.put("bankStatement", bankStatement);
+				map.put("monthlyDetails", monthlyDetails);
+				map.put("top5FundReceived", top5FundReceived);
+				map.put("top5FundTransfered", top5FundTransfered);
+				map.put("bouncedChequeList", bouncedChequeList);
+				map.put("customerInfo", customerInfo);
+				map.put("summaryInfo", summaryInfo);
+				map.put("bankStatementAnalysis", CommonUtils.printFields(datas, null));
+				
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.info("Error while getting perfios data");
+		}
+
 		return map;
 	}
 	
@@ -1702,7 +1835,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		try {
 			CGTMSECalcDataResponse response = loanApplicationService.getDataForCGTMSE(applicationId);
 			if(!CommonUtils.isObjectNullOrEmpty(response)) {
-				if(response.getSubSector().equals("Manufacturer")) {
+				if(response.getSubSector() != null && response.getSubSector().equals("Manufacturer")) {
 					curFinYearString.setCashInterestCover(CommonUtils.convertValue(CommonUtils.divideNumbers((CommonUtils.addNumbers(curFinYearDouble.getCashFromOperating(),curFinYearDouble.getInterestPaid())), curFinYearDouble.getInterestPaid())));
 					prevFinYearString.setCashInterestCover(CommonUtils.convertValue(CommonUtils.divideNumbers((CommonUtils.addNumbers(prevFinYearDouble.getCashFromOperating(),prevFinYearDouble.getInterestPaid())), prevFinYearDouble.getInterestPaid())));
 					yrBeforePrevFinYearString.setCashInterestCover("-");

@@ -21,11 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.capitaworld.service.loans.domain.fundseeker.IneligibleProposalDetails;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
-import com.capitaworld.service.loans.model.Address;
-import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
-import com.capitaworld.service.loans.model.InEligibleProposalDetailsRequest;
-import com.capitaworld.service.loans.model.LoanApplicationRequest;
-import com.capitaworld.service.loans.model.ProposalDetailsAdminRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
 import com.capitaworld.service.loans.model.retail.RetailApplicantRequest;
 import com.capitaworld.service.loans.repository.fundseeker.IneligibleProposalDetailsRepository;

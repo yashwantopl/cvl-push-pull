@@ -309,7 +309,6 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 	
 	@Autowired
 	private ProductMasterRepository productMasterRepository;
-	
 
 	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 	DecimalFormat decim = new DecimalFormat("#,###.00");
@@ -324,6 +323,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 		corporateFinalViewResponse.setApplicationType(loanApplicationMaster.getWcRenewalStatus() != null ? WcRenewalType.getById(loanApplicationMaster.getWcRenewalStatus()).getValue().toString() : "New" );
 
 		corporateFinalViewResponse.setProductId(loanApplicationMaster.getProductId());
+		corporateFinalViewResponse.setApplicationType(loanApplicationMaster.getWcRenewalStatus() != null ? WcRenewalType.getById(loanApplicationMaster.getWcRenewalStatus()).getValue().toString() : "New" );
 		// ===================== MATCHES DATA ======================//
 		if (userType != null) {
 			if (!(CommonUtils.UserType.FUND_SEEKER == userType)) { // TEASER VIEW FROM FP
@@ -1530,6 +1530,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 				}else {
 					logger.info("fpProductMapping id is null..");
 				}
+
 
 		// Eligibility Data
 

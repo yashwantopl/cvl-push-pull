@@ -100,7 +100,6 @@ public interface LoanApplicationRepository extends JpaRepository<LoanApplication
 	@Query("from LoanApplicationMaster lm where lm.id =:id and lm.userId =:userId and lm.isActive = true order by lm.id")
 	public LoanApplicationMaster getByIdAndUserId(@Param("id") Long id, @Param("userId") Long userId);
 	
-	
 	@Query("from LoanApplicationMaster lm where lm.id =:id and lm.userId =:userId order by lm.id")
 	public LoanApplicationMaster getByIdAndUserIdForInEligibleCam(@Param("id") Long id, @Param("userId") Long userId);
 	

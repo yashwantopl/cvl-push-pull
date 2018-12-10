@@ -6,11 +6,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
-
 import com.capitaworld.service.auth.client.AuthClient;
 import com.capitaworld.service.auth.model.AuthClientResponse;
 import com.capitaworld.service.auth.model.AuthRequest;
@@ -20,9 +18,8 @@ import com.capitaworld.service.loans.utils.CommonUtils;
 public class AuthenticationInterceptor implements HandlerInterceptor {
 
 	@Autowired
-	private Environment environment;
+	private AuthClient authClient;
 
-	public static final String AUTH_URL = "capitaworld.service.auth.url";
 	private static final Logger logger = LoggerFactory.getLogger(AuthenticationInterceptor.class);
 
 	@Override
@@ -63,10 +60,9 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
 			return false;
 		}
 
-		AuthClient client = new AuthClient(environment.getRequiredProperty(AUTH_URL));
 		AuthRequest authRequest = new AuthRequest(username, accessToken, refreshToken);
 		authRequest.setLoginToken(Integer.valueOf(loginToken));
-		AuthClientResponse authResponse = client.isAccessTokenValidOrNot(authRequest);
+		AuthClientResponse authResponse = authClient.isAccessTokenValidOrNot(authRequest);
 		if (!authResponse.isAuthenticate()) {
 			logger.warn("Unauthorized Request, Access token expire or invalid");
 			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

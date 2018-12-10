@@ -1,3 +1,4 @@
+
 package com.capitaworld.service.loans.repository.fundprovider;
 
 import com.capitaworld.service.loans.domain.fundprovider.ProposalDetails;
@@ -68,3 +69,4 @@ public interface ProposalDetailsRepository extends JpaRepository<ProposalDetails
     @Query(value = "SELECT lm.id,cap.organisationName,lm.applicationCode,lm.businessTypeId from ProposalDetails pd,CorporateApplicantDetail cap,LoanApplicationMaster lm where pd.fpProductId =:fpProductId and pd.proposalStatusId.id =:proposalStatusId and pd.isActive = true and cap.applicationId.id = pd.applicationId and lm.id = pd.applicationId and cap.applicationId.id = lm.id")
     public List<Object[]> getAllProposalsForSearch(@Param("fpProductId") Long fpProductId,@Param("proposalStatusId") Long proposalStatusId);
 }
+

@@ -200,7 +200,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 		CorporatePrimaryViewResponse corporatePrimaryViewResponse = new CorporatePrimaryViewResponse();
 		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(toApplicationId);
 		Long userId = loanApplicationMaster.getUserId();
-
+		
 		corporatePrimaryViewResponse.setProductId(loanApplicationMaster.getProductId());
 		corporatePrimaryViewResponse.setApplicationType(loanApplicationMaster.getWcRenewalStatus() != null ? WcRenewalType.getById(loanApplicationMaster.getWcRenewalStatus()).getValue().toString() : "New" );
 		/* ========= Matches Data ========== */
@@ -217,6 +217,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 					usersRequest.setId(fundProviderUserId);
 					UserResponse userResponse = usersClient.getLastAccessApplicant(usersRequest);
 					fpProductMappingId = userResponse.getId();
+					
 				} catch (Exception e) {
 					logger.error(
 							"error while fetching last access fp rpduct id for fund provider while fetching matches in teaser view");
@@ -233,6 +234,8 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 				}
 			}
 		}
+		
+	
 
 		// get details of CorporateApplicantDetail
 		CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
@@ -636,11 +639,8 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 						directorPersonalDetailResponse.setHaveLiPolicy(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getHaveLiPolicy()!= null ? HaveLIMst.getById(directorBackgroundDetailRequest.getDirectorPersonalDetailRequest().getHaveLiPolicy()).getValue().toString() : "-");
 						
 						directorBackgroundDetailResponse.setDirectorPersonalInfo(directorPersonalDetailResponse);
-						
-						
 						}
 						else {
-							
 							logger.warn("directorBackgroundDetailRequest.getDirectorPersonalDetailRequest() is null....");
 						}
 					}else {
@@ -970,7 +970,15 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 			UsersRequest usersRequest = new UsersRequest();
 			usersRequest.setId(fundProviderUserId);
 			UserResponse userResponse = usersClient.getLastAccessApplicant(usersRequest);
-			fpProductMappingId = userResponse.getId();
+			if(userResponse != null && userResponse.getId() != null) {
+			
+				fpProductMappingId = userResponse.getId();
+				
+			}else {
+				
+				logger.info("fpProduuct MappingId is Null..");
+			}
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -1037,73 +1045,84 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 		}
 
 		// Eligibility Data
-
-		int loanId = primaryCorporateDetail.getProductId();
-		switch (loanId) {
-		case 1:
-
-			WorkingCapitalParameter workingCapitalPara = workingCapitalRepository.getByID(fpProductMappingId);
-			if (workingCapitalPara.getAssessmentMethodId() != null) {
-				Long assessmentId = workingCapitalPara.getAssessmentMethodId().longValue();
-				corporatePrimaryViewResponse.setAssesmentId(assessmentId);
-			} else {
-				System.out.println("assesment id is null in wc");
-			}
-			break;
-		case 2:
-
-			TermLoanParameter termLoanParameter = termLoanParameterRepository.getById(fpProductMappingId);
-			if (termLoanParameter.getAssessmentMethodId() != null) {
-				Long assessmentId = termLoanParameter.getAssessmentMethodId().longValue();
-				corporatePrimaryViewResponse.setAssesmentId(assessmentId);
-			} else {
-				System.out.println("assesment id is null tl");
-			}
-			break;
-
-		case 16:
-
-			WcTlParameter wctlPara = wctlrepo.getById(fpProductMappingId);
-			if (wctlPara.getAssessmentMethodId() != null) {
-				Long assessmentId = wctlPara.getAssessmentMethodId().longValue();
-				corporatePrimaryViewResponse.setAssesmentId(assessmentId);
-			} else {
-				System.out.println("assesment id is null in wctl");
-			}
-			break;
-		default:
-			System.out.println("invalid loan id");
-			break;
-		}
-
-		EligibililityRequest eligibilityReq = new EligibililityRequest();
-		eligibilityReq.setApplicationId(toApplicationId);
-		// eligibilityReq.set
-		eligibilityReq.setFpProductMappingId(fpProductMappingId);
-		System.out.println(" for eligibility appid============>>" + toApplicationId);
-
+		
+		
 		try {
+		
+			int loanId = primaryCorporateDetail.getProductId();
+			switch (loanId) {
+			case 1:
 
-			EligibilityResponse eligibilityResp = eligibilityClient.corporateLoanData(eligibilityReq);
-			corporatePrimaryViewResponse.setEligibilityDataObject(eligibilityResp.getData());
+				WorkingCapitalParameter workingCapitalPara = workingCapitalRepository.getByID(fpProductMappingId);
+				if (workingCapitalPara.getAssessmentMethodId() != null) {
+					Long assessmentId = workingCapitalPara.getAssessmentMethodId().longValue();
+					corporatePrimaryViewResponse.setAssesmentId(assessmentId);
+				} else {
+					System.out.println("assesment id is null in wc");
+				}
+				break;
+			case 2:
 
-		} catch (Exception e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		// CGTMSE
-		try {
+				TermLoanParameter termLoanParameter = termLoanParameterRepository.getById(fpProductMappingId);
+				if (termLoanParameter.getAssessmentMethodId() != null) {
+					Long assessmentId = termLoanParameter.getAssessmentMethodId().longValue();
+					corporatePrimaryViewResponse.setAssesmentId(assessmentId);
+				} else {
+					System.out.println("assesment id is null tl");
+				}
+				break;
 
-			CGTMSEDataResponse cgtmseDataResp = thirdPartyClient.getCalulation(toApplicationId,fpProductMappingId);
+			case 16:
 
-			corporatePrimaryViewResponse.setCgtmseData(cgtmseDataResp);
+				WcTlParameter wctlPara = wctlrepo.getById(fpProductMappingId);
+				if (wctlPara.getAssessmentMethodId() != null) {
+					Long assessmentId = wctlPara.getAssessmentMethodId().longValue();
+					corporatePrimaryViewResponse.setAssesmentId(assessmentId);
+				} else {
+					System.out.println("assesment id is null in wctl");
+				}
+				break;
+			default:
+				System.out.println("invalid loan id");
+				break;
+			}
 
+			EligibililityRequest eligibilityReq = new EligibililityRequest();
+			eligibilityReq.setApplicationId(toApplicationId);
+			// eligibilityReq.set
+			eligibilityReq.setFpProductMappingId(fpProductMappingId);
+			System.out.println(" for eligibility appid============>>" + toApplicationId);
+
+			try {
+
+				EligibilityResponse eligibilityResp = eligibilityClient.corporateLoanData(eligibilityReq);
+				corporatePrimaryViewResponse.setEligibilityDataObject(eligibilityResp.getData());
+
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			// CGTMSE
+			try {
+
+				CGTMSEDataResponse cgtmseDataResp = thirdPartyClient.getCalulation(toApplicationId,fpProductMappingId);
+
+				corporatePrimaryViewResponse.setCgtmseData(cgtmseDataResp);
+
+			} catch (Exception e) {
+				
+				logger.error("Error while calling CGTMSE data");
+				e.printStackTrace();
+				
+			}
+			
 		} catch (Exception e) {
 			
-			logger.error("Error while calling CGTMSE data");
-			e.printStackTrace();
-			
+			logger.error("FpProductId is null");
+			// TODO: handle exception
 		}
+
+		
 
 		// MCA DATA
 		try {
@@ -1202,6 +1221,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 		}else {
 			logger.info("fpProductMapping id is null..");
 		}
+
 
 		
 		// address
