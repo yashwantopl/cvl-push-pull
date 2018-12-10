@@ -133,6 +133,9 @@ public class CorporatePrimaryViewResponse {
     private Object regPinData;
     private String regAddDist;
     private String regAddTaluko;
+    
+    private String applicationType;
+    private String fpProductName;
      
      
     
@@ -1168,6 +1171,18 @@ public class CorporatePrimaryViewResponse {
 	}
 	public void setRegAddTaluko(String regAddTaluko) {
 		this.regAddTaluko = regAddTaluko;
+	}
+	public String getApplicationType() {
+		return applicationType;
+	}
+	public void setApplicationType(String applicationType) {
+		this.applicationType = applicationType;
+	}
+	public String getFpProductName() {
+		return fpProductName;
+	}
+	public void setFpProductName(String fpProductName) {
+		this.fpProductName = fpProductName;
 	}
 	
 	
