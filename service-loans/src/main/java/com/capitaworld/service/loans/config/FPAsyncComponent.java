@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
@@ -95,6 +96,9 @@ public class FPAsyncComponent {
 
 	@Autowired
 	private ProposalDetailsRepository proposalDetailsRepository;
+
+	@Autowired
+	private Environment environment;
 
 	private static final String EMAIL_ADDRESS_FROM = "no-reply@capitaworld.com";
 
@@ -246,8 +250,9 @@ public class FPAsyncComponent {
 								mailParameters.put("maker_name", name != null ? name : "Sir/Madam");
 							}
 							mailParameters.put("isDynamic", true);
+							String[] bcc = {environment.getRequiredProperty("bccforcam")};
 							createNotificationForEmailForFundProvider(to, userId.toString(), mailParameters,
-									NotificationAlias.EMAIL_ALL_MAKERS_AFTER_INPRINCIPLE_TO_FS, subject,applicationRequest.getId(),proposalresp);
+									NotificationAlias.EMAIL_ALL_MAKERS_AFTER_INPRINCIPLE_TO_FS, subject,applicationRequest.getId(),proposalresp,bcc);
 						}
 
 						if (!CommonUtils.isObjectNullOrEmpty(userObj.getMobile())) {
@@ -437,7 +442,7 @@ public class FPAsyncComponent {
 							}
 							mailParameters.put("isDynamic", true);
 							createNotificationForEmailForFundProvider(to, userId.toString(), mailParameters,
-									NotificationAlias.EMAIL_ALL_CHECKERS_AFTER_INPRINCIPLE_TO_FS, subject,applicationRequest.getId(),proposalresp);
+									NotificationAlias.EMAIL_ALL_CHECKERS_AFTER_INPRINCIPLE_TO_FS, subject,applicationRequest.getId(),proposalresp,null);
 						}
 
 						if (!CommonUtils.isObjectNullOrEmpty(userObj.getMobile())) {
@@ -634,7 +639,7 @@ public class FPAsyncComponent {
 							}
 							mailParameters.put("isDynamic", true);
 							createNotificationForEmailForFundProvider(to, userId.toString(), mailParameters,
-									NotificationAlias.EMAIL_HO_INPRINCIPLE_TO_FS, subject,applicationRequest.getId(),proposalresp);
+									NotificationAlias.EMAIL_HO_INPRINCIPLE_TO_FS, subject,applicationRequest.getId(),proposalresp,null);
 						}
 
 						if (!CommonUtils.isObjectNullOrEmpty(userObj.getMobile())) {
@@ -829,7 +834,7 @@ public class FPAsyncComponent {
 							}
 							mailParameters.put("isDynamic", true);
 							createNotificationForEmailForFundProvider(to, userId.toString(), mailParameters,
-									NotificationAlias.EMAIL_ALL_BO_INPRINCIPLE_TO_FS, subject,applicationRequest.getId(),proposalresp);
+									NotificationAlias.EMAIL_ALL_BO_INPRINCIPLE_TO_FS, subject,applicationRequest.getId(),proposalresp,null);
 						}
 
 						if (!CommonUtils.isObjectNullOrEmpty(userObj.getMobile())) {
@@ -3559,7 +3564,7 @@ public class FPAsyncComponent {
 
 
 	private void createNotificationForEmailForFundProvider(String toNo, String userId, Map<String, Object> mailParameters,
-														   Long templateId, String emailSubject,Long applicationId,Map<String, Object> proposalresp) throws NotificationException {
+														   Long templateId, String emailSubject,Long applicationId,Map<String, Object> proposalresp,String bcc[]) throws NotificationException {
 		logger.info("Inside send notification===>{}" + toNo);
 
 		NotificationRequest notificationRequest = new NotificationRequest();
@@ -3580,6 +3585,9 @@ public class FPAsyncComponent {
 		notification.setFrom(EMAIL_ADDRESS_FROM);
 		notification.setParameters(mailParameters);
 		notification.setIsDynamic(notificationRequest.getIsDynamic());
+		if(!CommonUtils.isObjectNullOrEmpty(bcc))
+			notification.setBcc(bcc);
+
 
 
 		// start attach CAM to Mail
@@ -3590,9 +3598,20 @@ public class FPAsyncComponent {
 		reportRequest.setParams(response);
 		reportRequest.setTemplate("CAMREPORTPRIMARYSIDBI");
 		reportRequest.setType("CAMREPORTPRIMARYSIDBI");
-		byte[] byteArr = reportsClient.generatePDFFile(reportRequest);
-		notification.setFileName("CAM.pdf");
-		notification.setContentInBytes(byteArr);
+
+        try
+        {
+            byte[] byteArr = reportsClient.generatePDFFile(reportRequest);
+            notification.setFileName("CAM.pdf");
+            notification.setContentInBytes(byteArr);
+        }
+        catch (Exception e)
+        {
+            logger.error("error while attaching cam report");
+            e.printStackTrace();
+        }
+
+
 
 		// end attach CAM to Mail
 
