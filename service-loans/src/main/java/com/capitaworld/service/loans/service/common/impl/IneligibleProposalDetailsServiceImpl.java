@@ -556,9 +556,21 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 			reportRequest.setParams(response);
 			reportRequest.setTemplate("INELIGIBLECAMREPORT");
 			reportRequest.setType("INELIGIBLECAMREPORT");
-			byte[] byteArr = reportsClient.generatePDFFile(reportRequest);
-			notification.setFileName("CAM.pdf");
-			notification.setContentInBytes(byteArr);
+
+			try
+			{
+				byte[] byteArr = reportsClient.generatePDFFile(reportRequest);
+				notification.setFileName("CAM.pdf");
+				notification.setContentInBytes(byteArr);
+			}
+			catch (Exception e)
+			{
+				logger.error("error while attaching cam report");
+				e.printStackTrace();
+			}
+
+
+
 			if(!CommonUtils.isObjectNullOrEmpty(bcc))
 			{
 				notification.setBcc(bcc);
