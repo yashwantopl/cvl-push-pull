@@ -1,6 +1,7 @@
 package com.capitaworld.service.loans.model;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 public class RetailProposalDetails {
@@ -27,6 +28,10 @@ public class RetailProposalDetails {
 	private Integer businessTypeId;
 	
 	private Long fpProductid;
+	
+	private Date lastStatusActionDate;
+	
+	private Long proposalStatus;
 	 
 
 	public String getBranchLocationName() {
@@ -142,5 +147,23 @@ public class RetailProposalDetails {
 	public void setFpProductid(Long fpProductid) {
 		this.fpProductid = fpProductid;
 	}
+
+	public Date getLastStatusActionDate() {
+		return lastStatusActionDate;
+	}
+
+	public void setLastStatusActionDate(Date lastStatusActionDate) {
+		this.lastStatusActionDate = lastStatusActionDate;
+	}
+
+	public Long getProposalStatus() {
+		return proposalStatus;
+	}
+
+	public void setProposalStatus(Long proposalStatus) {
+		this.proposalStatus = proposalStatus;
+	}
+	
+	
 	
 }

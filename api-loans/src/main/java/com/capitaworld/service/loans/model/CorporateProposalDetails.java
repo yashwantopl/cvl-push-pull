@@ -30,6 +30,8 @@ public class CorporateProposalDetails {
 	
 	private Date lastStatusActionDate;
 	
+	private Long proposalStatus;
+	
 	private Boolean isAssignedToBranch;
 	
 	private Date modifiedDate;
@@ -201,6 +203,14 @@ public class CorporateProposalDetails {
 	public void setModifiedBy(String modifiedBy) {
 		this.modifiedBy = modifiedBy;
 	}
+	
+	public Long getProposalStatus() {
+		return proposalStatus;
+	}
+
+	public void setProposalStatus(Long proposalStatus) {
+		this.proposalStatus = proposalStatus;
+	}
 
 	/**
 	 * @return the keyVertical
@@ -299,6 +309,7 @@ public class CorporateProposalDetails {
 	public void setNtbMainDirName(String ntbMainDirName) {
 		this.ntbMainDirName = ntbMainDirName;
 	}
+
 
 	public String getWcRenualNew() {
 		return wcRenualNew;
