@@ -246,7 +246,10 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 
 								String[] bcc=null;
 								if(i==0)
-									 bcc = new String[]{environment.getRequiredProperty("bccforcam")};
+								{
+									bcc = new String[]{environment.getRequiredProperty("bccforcam")};
+								}
+
 
 								createNotificationForEmail(to, applicationRequest.getUserId().toString(),
 										mailParameters, NotificationAlias.EMAIL_BRANCH_FS_WHEN_IN_ELIGIBLE, subject,applicationId,false,bcc);
