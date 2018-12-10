@@ -557,7 +557,11 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 			notification.setFileName("CAM.pdf");
 			notification.setContentInBytes(byteArr);
 			if(!CommonUtils.isObjectNullOrEmpty(bcc))
+			{
 				notification.setBcc(bcc);
+				System.out.println("BCC::"+bcc);
+			}
+
 		}
 
 		// end attach CAM to Mail
