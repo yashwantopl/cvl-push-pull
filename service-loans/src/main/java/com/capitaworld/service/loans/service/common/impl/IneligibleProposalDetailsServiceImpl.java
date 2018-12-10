@@ -243,7 +243,11 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 								// System.out.println("Checker ID:---"+userObj.getEmail());
 								to = userObj.getEmail();
 								mailParameters.put("isDynamic", true);
-								String[] bcc = {environment.getRequiredProperty("bccforcam")};
+
+								String[] bcc=null;
+								if(i==0)
+									 bcc = new String[]{environment.getRequiredProperty("bccforcam")};
+
 								createNotificationForEmail(to, applicationRequest.getUserId().toString(),
 										mailParameters, NotificationAlias.EMAIL_BRANCH_FS_WHEN_IN_ELIGIBLE, subject,applicationId,false,bcc);
 							}
