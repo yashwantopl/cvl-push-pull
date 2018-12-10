@@ -184,7 +184,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 					if (organisationName != null) {
 						notificationParams.put("isDynamic", true);
 						createNotificationForEmail(signUpUser.getEmail(), applicationRequest.getUserId().toString(),
-								notificationParams, NotificationAlias.EMAIL_FS_WHEN_IN_ELIGIBLE, subject,applicationId,true);
+								notificationParams, NotificationAlias.EMAIL_FS_WHEN_IN_ELIGIBLE, subject,applicationId,true,null);
 					}
 					// ===========================================================================================
 					// 2nd email Step2 Get Details of Bank branch --- Sending mail to Branch
@@ -243,8 +243,9 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 								// System.out.println("Checker ID:---"+userObj.getEmail());
 								to = userObj.getEmail();
 								mailParameters.put("isDynamic", true);
+								String[] bcc = {environment.getRequiredProperty("bccforcam")};
 								createNotificationForEmail(to, applicationRequest.getUserId().toString(),
-										mailParameters, NotificationAlias.EMAIL_BRANCH_FS_WHEN_IN_ELIGIBLE, subject,applicationId,false);
+										mailParameters, NotificationAlias.EMAIL_BRANCH_FS_WHEN_IN_ELIGIBLE, subject,applicationId,false,bcc);
 							}
 						}
 
@@ -264,7 +265,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 								to = userObj.getEmail();
 								mailParameters.put("isDynamic", true);
 								createNotificationForEmail(to, applicationRequest.getUserId().toString(),
-										mailParameters, NotificationAlias.EMAIL_BRANCH_FS_WHEN_IN_ELIGIBLE, subject,applicationId,false);
+										mailParameters, NotificationAlias.EMAIL_BRANCH_FS_WHEN_IN_ELIGIBLE, subject,applicationId,false,null);
 							}
 						}
 
@@ -283,7 +284,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 								to = userObj.getEmail();
 								mailParameters.put("isDynamic", true);
 								createNotificationForEmail(to, applicationRequest.getUserId().toString(),
-										mailParameters, NotificationAlias.EMAIL_BRANCH_FS_WHEN_IN_ELIGIBLE, subject,applicationId,false);
+										mailParameters, NotificationAlias.EMAIL_BRANCH_FS_WHEN_IN_ELIGIBLE, subject,applicationId,false,null);
 							}
 						}
 
@@ -517,7 +518,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 	}
 
 	private void createNotificationForEmail(String toNo, String userId, Map<String, Object> mailParameters,
-			Long templateId, String emailSubject,Long applicationId,Boolean isFundSeeker) throws NotificationException {
+			Long templateId, String emailSubject,Long applicationId,Boolean isFundSeeker,String bcc[]) throws NotificationException {
 		logger.info("Inside send notification===>{}" + toNo);
 		NotificationRequest notificationRequest = new NotificationRequest();
 		notificationRequest.setClientRefId(userId);
@@ -551,8 +552,8 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 			byte[] byteArr = reportsClient.generatePDFFile(reportRequest);
 			notification.setFileName("CAM.pdf");
 			notification.setContentInBytes(byteArr);
-			String[] bcc = {environment.getRequiredProperty("bccforcam")};
-			notification.setBcc(bcc);
+			if(!CommonUtils.isObjectNullOrEmpty(bcc))
+				notification.setBcc(bcc);
 		}
 
 		// end attach CAM to Mail
