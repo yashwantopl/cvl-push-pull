@@ -125,9 +125,6 @@ public class ProposalServiceMappingImpl implements ProposalService {
 	private UsersClient usersClient;
 
 	@Autowired
-	private CIBILClient cibilClient;
-
-	@Autowired
 	private NotificationService notificationService;
 
 	@Autowired
