@@ -100,6 +100,8 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 
 	private static final String EMAIL_ADDRESS_FROM = "no-reply@capitaworld.com";
 
+
+
 	@Override
 	public Boolean save(InEligibleProposalDetailsRequest inEligibleProposalDetailsRequest) {
 		try {

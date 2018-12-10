@@ -44,6 +44,11 @@ public class CamReportPdfDetailsController {
 	@Autowired
 	private DMSClient dmsClient;
 	
+
+	@Autowired
+	private InEligibleProposalCamReportService inEligibleProposalCamReportService;
+	
+	
 	private static final Logger logger = LoggerFactory.getLogger(CamReportPdfDetailsController.class);
 	
 	@RequestMapping(value = "/getPrimaryDataMap/{applicationId}/{productMappingId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)

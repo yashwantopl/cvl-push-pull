@@ -153,7 +153,8 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 					loanDisbursementRequest.setReason("First Disbursement");
 					loanDisbursementRequest.setIsSaved(false);
 					loanDisbursementRequest.setStatusCode(CommonUtility.SanctionDisbursementAPIStatusCode.FIRST_DISBURSEMENT);
-					if(loanDisbursementRequest.getIsIneligibleProposal()!= null &&  loanDisbursementRequest.getIsIneligibleProposal()) {
+					if(loanDisbursementRequest.getIsIneligibleProposal() != null &&  loanDisbursementRequest.getIsIneligibleProposal()) {
+
 						loanDisbursementRequest.setIsDisbursedFrom(2L);
 						loanDisbursementRequest.setOrgId(orgId);
 						IneligibleProposalDetails ineligibleProposalDetails = (IneligibleProposalDetails) offlineProcessedAppRepository.findByAppliationId(loanDisbursementRequest.getApplicationId());
