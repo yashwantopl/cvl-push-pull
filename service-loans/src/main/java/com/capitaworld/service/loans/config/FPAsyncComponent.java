@@ -3598,9 +3598,20 @@ public class FPAsyncComponent {
 		reportRequest.setParams(response);
 		reportRequest.setTemplate("CAMREPORTPRIMARYSIDBI");
 		reportRequest.setType("CAMREPORTPRIMARYSIDBI");
-		byte[] byteArr = reportsClient.generatePDFFile(reportRequest);
-		notification.setFileName("CAM.pdf");
-		notification.setContentInBytes(byteArr);
+
+        try
+        {
+            byte[] byteArr = reportsClient.generatePDFFile(reportRequest);
+            notification.setFileName("CAM.pdf");
+            notification.setContentInBytes(byteArr);
+        }
+        catch (Exception e)
+        {
+            logger.error("error while attaching cam report");
+            e.printStackTrace();
+        }
+
+
 
 		// end attach CAM to Mail
 

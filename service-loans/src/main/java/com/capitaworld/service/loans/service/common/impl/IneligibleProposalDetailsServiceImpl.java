@@ -247,7 +247,10 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 								mailParameters.put("app_id", applicationId);
 								String[] bcc=null;
 								if(i==0)
-									 bcc = new String[]{environment.getRequiredProperty("bccforcam")};
+								{
+									bcc = new String[]{environment.getRequiredProperty("bccforcam")};
+								}
+
 
 								createNotificationForEmail(to, applicationRequest.getUserId().toString(),
 										mailParameters, NotificationAlias.EMAIL_BRANCH_FS_WHEN_IN_ELIGIBLE, subject,applicationId,false,bcc);
@@ -554,9 +557,19 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 			reportRequest.setParams(response);
 			reportRequest.setTemplate("INELIGIBLECAMREPORT");
 			reportRequest.setType("INELIGIBLECAMREPORT");
-//			byte[] byteArr = reportsClient.generatePDFFile(reportRequest);
-			notification.setFileName("CAM.pdf");
-//			notification.setContentInBytes(byteArr);
+
+			try
+			{
+				byte[] byteArr = reportsClient.generatePDFFile(reportRequest);
+				notification.setFileName("CAM.pdf");
+				notification.setContentInBytes(byteArr);
+			}
+			catch (Exception e)
+			{
+				logger.error("error while attaching cam report");
+				e.printStackTrace();
+			}
+
 			if(!CommonUtils.isObjectNullOrEmpty(bcc))
 			{
 				notification.setBcc(bcc);
