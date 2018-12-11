@@ -182,9 +182,10 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 					// ===FS=============================================================================
 					notificationParams.put("bank_name", organisationName);
  
-					String subject = "Manual Application :#appId= " + applicationId;
-					if (organisationName != null) {
-						notificationParams.put("isDynamic", true);
+					 String subject = "Manual Application";
+	                    notificationParams.put("app_id", applicationId);
+	                    if (organisationName != null && applicationId!=null) {
+	                        notificationParams.put("isDynamic", false);
 						createNotificationForEmail(signUpUser.getEmail(), applicationRequest.getUserId().toString(),
 								notificationParams, NotificationAlias.EMAIL_FS_WHEN_IN_ELIGIBLE, subject,applicationId,true,null);
 					}
@@ -193,7 +194,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 					// Checker/Maker/BO
 					// ============================================================================================
 					Map<String, Object> mailParameters = new HashMap<String, Object>();
-					subject = "Manual Application : #appId=" + applicationId;
+					subject = "Manual Application";
 					mailParameters.put("fs_name",
 							notificationParams.get("fs_name") != null ? notificationParams.get("fs_name") : "NA");
 					mailParameters.put("mobile_no", signUpUser.getMobile() != null ? signUpUser.getMobile() : "NA");
@@ -244,7 +245,8 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 							if (!CommonUtils.isObjectNullOrEmpty(userObj.getEmail())) {
 								// System.out.println("Checker ID:---"+userObj.getEmail());
 								to = userObj.getEmail();
-								mailParameters.put("isDynamic", true);
+								 mailParameters.put("isDynamic", false);
+	                                mailParameters.put("app_id", applicationId);
 
 								String[] bcc=null;
 								if(i==0)

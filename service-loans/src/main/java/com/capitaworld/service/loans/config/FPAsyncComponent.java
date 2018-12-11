@@ -116,7 +116,7 @@ public class FPAsyncComponent {
 			try {
 
 				logger.info("Into sending Mail to all Makers after FS gets In-Principle Approval===>{}");
-				String subject = "Intimation : New Proposal -  #ApplicationId=" + paymentRequest.getApplicationId();
+				 String subject = "Intimation : New Proposal ";
 				Map<String, Object> mailParameters = new HashMap<String, Object>();
 				mailParameters.put("fs_name",
 						paymentRequest.getNameOfEntity() != null ? paymentRequest.getNameOfEntity() : "NA");
@@ -249,7 +249,7 @@ public class FPAsyncComponent {
 							} else {
 								mailParameters.put("maker_name", name != null ? name : "Sir/Madam");
 							}
-							mailParameters.put("isDynamic", true);
+							mailParameters.put("isDynamic", false);
 							String[] bcc = {environment.getRequiredProperty("bccforcam")};
 							createNotificationForEmailForFundProvider(to, userId.toString(), mailParameters,
 									NotificationAlias.EMAIL_ALL_MAKERS_AFTER_INPRINCIPLE_TO_FS, subject,applicationRequest.getId(),proposalresp,bcc);
@@ -312,7 +312,7 @@ public class FPAsyncComponent {
 			try {
 
 				logger.info("Into sending Mail to all Checkers after FS gets In-Principle Approval===>{}");
-				String subject = "Intimation : New Proposal -  #ApplicationId=" + paymentRequest.getApplicationId();
+				String subject = "Intimation : New Proposal ";
 				Map<String, Object> mailParameters = new HashMap<String, Object>();
 
 				mailParameters.put("fs_name",
@@ -507,7 +507,7 @@ public class FPAsyncComponent {
 			try {
 
 				logger.info("Into sending Mail to all Checkers after FS gets In-Principle Approval===>{}");
-				String subject = "Intimation : New Proposal -  #ApplicationId=" + paymentRequest.getApplicationId();
+				String subject = "Intimation : New Proposal ";
 				Map<String, Object> mailParameters = new HashMap<String, Object>();
 				mailParameters.put("fs_name",
 						paymentRequest.getNameOfEntity() != null ? paymentRequest.getNameOfEntity() : "NA");
@@ -702,7 +702,7 @@ public class FPAsyncComponent {
 			try {
 
 				logger.info("Into sending Mail to all BO after FS gets In-Principle Approval===>{}");
-				String subject = "Intimation : New Proposal -  #ApplicationId=" + paymentRequest.getApplicationId();
+				String subject = "Intimation : New Proposal ";
 				Map<String, Object> mailParameters = new HashMap<String, Object>();
 				mailParameters.put("fs_name",
 						paymentRequest.getNameOfEntity() != null ? paymentRequest.getNameOfEntity() : "NA");
