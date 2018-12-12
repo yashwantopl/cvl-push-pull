@@ -39,7 +39,7 @@ public class CorporateMcqServiceImpl implements CorporateMcqService {
     public boolean saveOrUpdate(CorporateMcqRequest corporateMcqRequest, Long userId) throws Exception {
         try {
             Long finalUserId = (CommonUtils.isObjectNullOrEmpty(corporateMcqRequest.getClientId()) ? userId : corporateMcqRequest.getClientId());
-            CorporateMcqDetail corporateMcqDetail = corporateMcqDetailRepository.getByProposalIdAndUserId(corporateMcqRequest.getProposalId());
+            CorporateMcqDetail corporateMcqDetail = corporateMcqDetailRepository.getByProposalIdAndUserId(corporateMcqRequest.getProposalMappingId());
             if (corporateMcqDetail != null) {
                 // Inactive Previous Mapping
                 //networkRepository.inActiveMappingByApplicationId(corporateMcqRequest.getApplicationId());
@@ -51,7 +51,7 @@ public class CorporateMcqServiceImpl implements CorporateMcqService {
                 corporateMcqDetail.setCreatedDate(new Date());
                 corporateMcqDetail.setActive(true);
                 corporateMcqDetail.setApplicationId(new LoanApplicationMaster(corporateMcqRequest.getApplicationId()));
-                corporateMcqDetail.setApplicationProposalMapping(new ApplicationProposalMapping(corporateMcqRequest.getProposalId()));
+                corporateMcqDetail.setApplicationProposalMapping(new ApplicationProposalMapping(corporateMcqRequest.getProposalMappingId()));
             }
             BeanUtils.copyProperties(corporateMcqRequest, corporateMcqDetail, CommonUtils.IgnorableCopy.CORPORATE);
             corporateMcqDetail = corporateMcqDetailRepository.save(corporateMcqDetail);
