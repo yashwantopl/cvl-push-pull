@@ -39,7 +39,6 @@ import com.capitaworld.itr.client.ITRClient;
 import com.capitaworld.service.analyzer.client.AnalyzerClient;
 import com.capitaworld.service.analyzer.model.common.AnalyzerResponse;
 import com.capitaworld.service.analyzer.model.common.Data;
-import com.capitaworld.service.analyzer.model.common.MonthlyDetailList;
 import com.capitaworld.service.analyzer.model.common.ReportRequest;
 import com.capitaworld.service.fitchengine.model.manufacturing.FitchOutputManu;
 import com.capitaworld.service.fitchengine.model.service.FitchOutputServ;
@@ -82,6 +81,7 @@ import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateFinalInfoRequest;
 import com.capitaworld.service.loans.model.corporate.PrimaryCorporateRequest;
 import com.capitaworld.service.loans.model.corporate.TotalCostOfProjectRequest;
+import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.TermLoanParameterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.WcTlLoanParameterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.WorkingCapitalParameterRepository;
@@ -119,6 +119,7 @@ import com.capitaworld.service.matchengine.ProposalDetailsClient;
 import com.capitaworld.service.matchengine.model.MatchDisplayResponse;
 import com.capitaworld.service.matchengine.model.MatchRequest;
 import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
+import com.capitaworld.service.matchengine.model.ProposalMappingRequestString;
 import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
 import com.capitaworld.service.mca.client.McaClient;
 import com.capitaworld.service.mca.model.McaResponse;
@@ -146,6 +147,7 @@ import com.capitaworld.service.oneform.enums.ShareHoldingCategory;
 import com.capitaworld.service.oneform.enums.SpouseDetailMst;
 import com.capitaworld.service.oneform.enums.Title;
 import com.capitaworld.service.oneform.enums.VisuallyImpairedMst;
+import com.capitaworld.service.oneform.enums.WcRenewalType;
 import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
 import com.capitaworld.service.rating.model.RatingResponse;
@@ -160,6 +162,8 @@ import com.capitaworld.service.thirdpaty.client.ThirdPartyClient;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.UserResponse;
 import com.capitaworld.service.users.model.UsersRequest;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 
 @Service
 @Transactional
@@ -297,27 +301,34 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 	@Autowired
 	private PrimaryCorporateDetailRepository primaryCorporateRepository;
 	
+	@Autowired
+	private ProductMasterRepository productMasterRepository;
+	
 	private static final Logger logger = LoggerFactory.getLogger(CamReportPdfDetailsServiceImpl.class);
 	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 
 	@Override
 	public Map<String, Object> getCamReportPrimaryDetails(Long applicationId, Long productId, boolean isFinalView) {
 		Map<String, Object> map = new HashMap<String, Object>();
+		ProposalMappingRequestString proposalMappingRequestString = null;
 		DecimalFormat decim = new DecimalFormat("####");
 		Long userId = loanApplicationRepository.getUserIdByApplicationId(applicationId);
 		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId, userId);
 		map.put("date",!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getApprovedDate())? DATE_FORMAT.format(loanApplicationMaster.getApprovedDate()):"-");
 		CorporateApplicantRequest corporateApplicantRequest =corporateApplicantService.getCorporateApplicant(applicationId);
 		UserResponse userResponse = usersClient.getEmailMobile(userId);
-		LinkedHashMap<String, Object> lm = (LinkedHashMap<String, Object>)userResponse.getData();
-		try {
-			UsersRequest request = MultipleJSONObjectHelper.getObjectFromMap(lm,UsersRequest.class);
-			map.put("mobile", request.getMobile());
-			map.put("email", StringEscapeUtils.escapeXml(request.getEmail()));
-		} catch (IOException e1) {
-			logger.info("Error while getting registration details");
-			e1.printStackTrace();
+		if(userResponse!= null) {
+			LinkedHashMap<String, Object> lm = (LinkedHashMap<String, Object>)userResponse.getData();
+			try {
+				UsersRequest request = MultipleJSONObjectHelper.getObjectFromMap(lm,UsersRequest.class);
+				map.put("mobile", request.getMobile());
+				map.put("email", StringEscapeUtils.escapeXml(request.getEmail()));
+			} catch (IOException e1) {
+				logger.info("Error while getting registration details");
+				e1.printStackTrace();
+			}	
 		}
+		
 		CorporateFinalInfoRequest corporateFinalInfoRequest;
 		try {
 			corporateFinalInfoRequest = corporateFinalInfoService.get(userId, applicationId);
@@ -361,6 +372,21 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
+		
+		// Product Name
+		
+		if(productId != null) {
+			String productName = productMasterRepository.getFpProductName(productId);
+			if(productName != null) {
+				map.put("fpProductName", productName);	
+			}else {
+				logger.info("product name is null..");
+			}
+		}else {
+			logger.info("fpProductMapping id is null..");
+		}
+		// application type
+		map.put("applicationType", (loanApplicationMaster.getWcRenewalStatus() != null ? WcRenewalType.getById(loanApplicationMaster.getWcRenewalStatus()).getValue().toString() : "New" ));
 		
 		//TIMELINE DATES
 		map.put("dateOfProposal", !CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getCreatedDate())? DATE_FORMAT.format(loanApplicationMaster.getCreatedDate()):"-");
@@ -649,6 +675,8 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				proposalMappingRequest.setApplicationId(applicationId);
 				proposalMappingRequest.setFpProductId(productId);
 				ProposalMappingResponse proposalMappingResponse= proposalDetailsClient.getActiveProposalDetails(proposalMappingRequest);
+				proposalMappingRequestString = new ProposalMappingRequestString();
+				BeanUtils.copyProperties(proposalMappingResponse.getData(), proposalMappingRequestString);
 				map.put("proposalResponse", !CommonUtils.isObjectNullOrEmpty(proposalMappingResponse.getData()) ? proposalMappingResponse.getData() : " ");
 		}
 		catch (Exception e) {
@@ -1033,36 +1061,93 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		}catch(Exception e) {
 			logger.info("Error while getting ITR data");
 		}
+		
+		
 		//PERFIOS API DATA (BANK STATEMENT ANALYSIS)
 		ReportRequest reportRequest = new ReportRequest();
-			reportRequest.setApplicationId(applicationId);
-			reportRequest.setUserId(userId);
-			List<Data> datas=new ArrayList<>();
-			try {
-				AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReportForCam(reportRequest);
-				List<HashMap<String, Object>> hashMap=(List<HashMap<String, Object>>) analyzerResponse.getData();
-				if(!CommonUtils.isListNullOrEmpty(hashMap))
-				{
-					for(HashMap<String,Object> rec:hashMap)
-					{
-						Data data = MultipleJSONObjectHelper.getObjectFromMap(rec, Data.class);
-						datas.add(data);
-						List<Object> customerInfo = new ArrayList<Object>();
-						for(int i =0; i<hashMap.size(); i++) {
-							customerInfo.add(!CommonUtils.isObjectNullOrEmpty(data.getCustomerInfo()) ? CommonUtils.printFields(data.getCustomerInfo(),null) : " ");
-						}
-						map.put("customerInfo" , customerInfo);
-					}
+		reportRequest.setApplicationId(applicationId);
+		reportRequest.setUserId(userId);
+		
+		List<Data> datas = new ArrayList<>();
+		List<Object> bankStatement = new ArrayList<Object>();
+		List<Object> monthlyDetails = new ArrayList<Object>();
+		List<Object> top5FundReceived = new ArrayList<Object>();
+		List<Object> top5FundTransfered = new ArrayList<Object>();
+		List<Object> bouncedChequeList = new ArrayList<Object>();
+		List<Object> customerInfo = new ArrayList<Object>();
+		List<Object> summaryInfo = new ArrayList<Object>();
+		
+		try {
+			AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReportForCam(reportRequest);
+			List<HashMap<String, Object>> hashMap = (List<HashMap<String, Object>>) analyzerResponse.getData();
+			
+			if (!CommonUtils.isListNullOrEmpty(hashMap)) {
+				for (HashMap<String, Object> rec : hashMap) {
+					Data data = MultipleJSONObjectHelper.getObjectFromMap(rec, Data.class);
+					datas.add(data);
+					
+					//bankStatement.add(!CommonUtils.isObjectNullOrEmpty(data.getXns()) ? CommonUtils.printFields(data.getXns().getXn(),null) : " ");
+					monthlyDetails.add(!CommonUtils.isObjectNullOrEmpty(data.getMonthlyDetailList()) ? CommonUtils.printFields(data.getMonthlyDetailList(),null) : "");
+					top5FundReceived.add(!CommonUtils.isObjectNullOrEmpty(data.getTop5FundReceivedList().getItem()) ? CommonUtils.printFields(data.getTop5FundReceivedList().getItem(),null) : "");
+					top5FundTransfered.add(!CommonUtils.isObjectNullOrEmpty(data.getTop5FundTransferedList().getItem()) ? CommonUtils.printFields(data.getTop5FundTransferedList().getItem(),null) : "");
+					bouncedChequeList.add(!CommonUtils.isObjectNullOrEmpty(data.getBouncedOrPenalXnList()) ? CommonUtils.printFields(data.getBouncedOrPenalXnList().getBouncedOrPenalXns(),null) : " ");
+					customerInfo.add(!CommonUtils.isObjectNullOrEmpty(data.getCustomerInfo()) ? CommonUtils.printFields(data.getCustomerInfo(),null) : " ");
+					summaryInfo.add(!CommonUtils.isObjectNullOrEmpty(data.getSummaryInfo()) ?CommonUtils.printFields(data.getSummaryInfo(),null) : " ");
+					
 				}
-			}catch (Exception e) {
-				e.printStackTrace();
-				logger.info("Error while getting perfios data");
+				
+				//System.out.println("bankStatement : "+bankStatement.size()+" monthlyDetails :"+monthlyDetails.size()+" top5FundReceived :"+top5FundReceived.size());
+				//System.out.println("top5FundTransfered : "+top5FundTransfered.size()+" bouncedChequeList :"+bouncedChequeList.size()+" customerInfo :"+customerInfo.size());
+				//System.out.println("summaryInfo : "+summaryInfo.size()+" bankStatementAnalysis :"+datas.size());
+				
+				//map.put("bankStatement", bankStatement);
+				map.put("monthlyDetails", monthlyDetails);
+				map.put("top5FundReceived", top5FundReceived);
+				map.put("top5FundTransfered", top5FundTransfered);
+				map.put("bouncedChequeList", bouncedChequeList);
+				map.put("customerInfo", customerInfo);
+				map.put("summaryInfo", summaryInfo);
+				map.put("bankStatementAnalysis", CommonUtils.printFields(datas, null));
+				
 			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.info("Error while getting perfios data");
+		}
+		
+		/*ReportRequest reportRequest = new ReportRequest();
+		reportRequest.setApplicationId(applicationId);
+		reportRequest.setUserId(userId);
+		List<Data> datas=new ArrayList<>();
+		try {
+			AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReportForCam(reportRequest);
+			List<HashMap<String, Object>> hashMap=(List<HashMap<String, Object>>) analyzerResponse.getData();
+			if(!CommonUtils.isListNullOrEmpty(hashMap))
+			{
+				for(HashMap<String,Object> rec:hashMap)
+				{
+					Data data = MultipleJSONObjectHelper.getObjectFromMap(rec, Data.class);
+					datas.add(data);
+					List<Object> customerInfo = new ArrayList<Object>();
+					for(int i =0; i<hashMap.size(); i++) {
+						customerInfo.add(!CommonUtils.isObjectNullOrEmpty(data.getCustomerInfo()) ? CommonUtils.printFields(data.getCustomerInfo(),null) : " ");
+					}
+					map.put("customerInfo" , customerInfo);
+				}
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+			logger.info("Error while getting perfios data");
+		}*/
+		
+		
+		
 /**********************************************FINAL DETAILS*****************************************************/
 		
 		if(isFinalView) {
 			//FITCH DATA
 			try {
+				//proposalMappingRequestString.getId()
 			RatingResponse ratingResponse = (RatingResponse) irrService.calculateIrrRating(applicationId, userId).getBody().getData();
 			if(!CommonUtils.isObjectNullOrEmpty(ratingResponse.getBusinessTypeId())) {
 				if(BusinessType.MANUFACTURING == ratingResponse.getBusinessTypeId())
@@ -1314,7 +1399,6 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReportForCam(reportRequest);
 			List<HashMap<String, Object>> hashMap = (List<HashMap<String, Object>>) analyzerResponse.getData();
 			
-			int index = 0;
 			if (!CommonUtils.isListNullOrEmpty(hashMap)) {
 				for (HashMap<String, Object> rec : hashMap) {
 					Data data = MultipleJSONObjectHelper.getObjectFromMap(rec, Data.class);
@@ -1328,7 +1412,6 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 					customerInfo.add(!CommonUtils.isObjectNullOrEmpty(data.getCustomerInfo()) ? CommonUtils.printFields(data.getCustomerInfo(),null) : " ");
 					summaryInfo.add(!CommonUtils.isObjectNullOrEmpty(data.getSummaryInfo()) ?CommonUtils.printFields(data.getSummaryInfo(),null) : " ");
 					
-					index++;
 				}
 				
 				//System.out.println("bankStatement : "+bankStatement.size()+" monthlyDetails :"+monthlyDetails.size()+" top5FundReceived :"+top5FundReceived.size());
@@ -1344,6 +1427,10 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				map.put("summaryInfo", summaryInfo);
 				map.put("bankStatementAnalysis", CommonUtils.printFields(datas, null));
 				
+				ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+				String json = ow.writeValueAsString(monthlyDetails);
+				
+//				System.out.println("monthlyDetails : "+json);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1752,7 +1839,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		try {
 			CGTMSECalcDataResponse response = loanApplicationService.getDataForCGTMSE(applicationId);
 			if(!CommonUtils.isObjectNullOrEmpty(response)) {
-				if(response.getSubSector().equals("Manufacturer")) {
+				if(response.getSubSector() != null && response.getSubSector().equals("Manufacturer")) {
 					curFinYearString.setCashInterestCover(CommonUtils.convertValue(CommonUtils.divideNumbers((CommonUtils.addNumbers(curFinYearDouble.getCashFromOperating(),curFinYearDouble.getInterestPaid())), curFinYearDouble.getInterestPaid())));
 					prevFinYearString.setCashInterestCover(CommonUtils.convertValue(CommonUtils.divideNumbers((CommonUtils.addNumbers(prevFinYearDouble.getCashFromOperating(),prevFinYearDouble.getInterestPaid())), prevFinYearDouble.getInterestPaid())));
 					yrBeforePrevFinYearString.setCashInterestCover("-");
