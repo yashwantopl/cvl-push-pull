@@ -64,6 +64,9 @@ public class CommonUtils {
 	public static final String IN_PROGRESS = "In Progress";
 	public static final String COMPLETED = "Completed";
 	public static final String NA = "NA";
+
+	public static final String CLIENT_ID_IS_NOT_VALID = "Client Id is not valid";
+	public static final String INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND = "Invalid data or Requested data not found.";
 	
 	public interface UsersRoles {
 		public static final Long MAKER = 1l;
