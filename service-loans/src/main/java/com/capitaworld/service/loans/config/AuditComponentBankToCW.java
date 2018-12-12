@@ -42,8 +42,7 @@ public class AuditComponentBankToCW {
 		bankCWAuditTrailDomain =bankToCWAuditTrailRepository.save(bankCWAuditTrailDomain);
 		logger.info("Exit saveLoanDisbursementDetail() -----------------------> BankCWAuditTrailDomain ==>" +bankCWAuditTrailDomain);
 		}catch (Exception e) {
-			logger.info("Error/Exception in saveBankReqRes() -----------------------> Message "+e.getMessage());
-			e.printStackTrace();
+			logger.error("Error/Exception in saveBankReqRes() -----------------------> Message "+e);
 			/*throw e;*/
 		}
 	}
