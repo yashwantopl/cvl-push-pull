@@ -49,6 +49,8 @@ public class FinancialArrangementsDetailRequest {
 	 * */
 	private Integer lcBgStatus;
 	private String othersBankName;
+	
+	private Boolean isManuallyAdded;
 
 	public Long getId() {
 		return id;
@@ -184,5 +186,13 @@ public class FinancialArrangementsDetailRequest {
 
 	public void setOthersBankName(String othersBankName) {
 		this.othersBankName = othersBankName;
+	}
+
+	public Boolean getIsManuallyAdded() {
+		return isManuallyAdded;
+	}
+
+	public void setIsManuallyAdded(Boolean isManuallyAdded) {
+		this.isManuallyAdded = isManuallyAdded;
 	}
 }
