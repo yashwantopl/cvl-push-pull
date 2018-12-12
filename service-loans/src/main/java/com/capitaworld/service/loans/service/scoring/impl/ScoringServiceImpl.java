@@ -159,6 +159,18 @@ public class ScoringServiceImpl implements ScoringService {
     @Autowired
     private ScoringRequestDetailRepository scoringRequestDetailRepository;
 
+    private static final String ERROR_WHILE_GETTING_RETAIL_APPLICANT_DETAIL_FOR_PERSONAL_LOAN_SCORING = "Error while getting retail applicant detail for personal loan scoring";
+    private static final String ERROR_WHILE_GETTING_FIELD_LIST = "error while getting field list";
+    private static final String ERROR_WHILE_CALLING_SCORING = "error while calling scoring";
+
+    private static final String SAVING_SCORING_REQUEST_DATA_FOR = "Saving Scoring Request Data for  =====> ";
+    private static final String SCORE_IS_SUCCESSFULLY_CALCULATED = "score is successfully calculated";
+    private static final String MSG_APPLICATION_ID = " APPLICATION ID   :: ";
+    private static final String MSG_FP_PRODUCT_ID = " FP PRODUCT ID    :: ";
+    private static final String MSG_SCORING_MODEL_ID = " SCORING MODEL ID :: ";
+    private static final String MSG_SCORE_PARAMETER = "SCORE PARAMETER ::::::::::";
+    private static final String ORG_ID_IS_NULL_OR_EMPTY  = "org id is null or empty";
+
 
     @Override
     public ResponseEntity<LoansResponse> calculateScoring(ScoringRequestLoans scoringRequestLoans) {
@@ -237,20 +249,15 @@ public class ScoringServiceImpl implements ScoringService {
 
         if (!(scoringRequestDetailList.size() > 0)) {
             logger.info("----------------------------START RETAIL PL ------------------------------");
-            logger.info("--------------------------------------------------------------------------");
-            logger.info("--------------------------------------------------------------------------");
-
-            logger.info("APPLICATION ID   :: " + applicationId);
-            logger.info("FP PRODUCT ID    :: " + fpProductId);
-            logger.info("SCORING MODEL ID :: " + scoreModelId);
+            logger.info(MSG_APPLICATION_ID + applicationId + MSG_FP_PRODUCT_ID + fpProductId + MSG_SCORING_MODEL_ID + scoreModelId);
 
             // GET SCORE RETAIL PERSONAL LOAN PARAMETERS
 
             RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.findOneByApplicationIdId(applicationId);
 
             if (CommonUtils.isObjectNullOrEmpty(retailApplicantDetail)) {
-                logger.error("Error while getting retail applicant detail for personal loan scoring");
-                LoansResponse loansResponse = new LoansResponse("Error while getting retail applicant detail for personal loan scoring", HttpStatus.INTERNAL_SERVER_ERROR.value());
+                logger.error(ERROR_WHILE_GETTING_RETAIL_APPLICANT_DETAIL_FOR_PERSONAL_LOAN_SCORING);
+                LoansResponse loansResponse = new LoansResponse(ERROR_WHILE_GETTING_RETAIL_APPLICANT_DETAIL_FOR_PERSONAL_LOAN_SCORING, HttpStatus.INTERNAL_SERVER_ERROR.value());
                 return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
             }
 
@@ -261,7 +268,7 @@ public class ScoringServiceImpl implements ScoringService {
                 try {
                     scoringResponse = scoringClient.listFieldByBusinessTypeId(scoringRequest);
                 } catch (Exception e) {
-                    logger.error("error while getting field list");
+                    logger.error(ERROR_WHILE_GETTING_FIELD_LIST);
                     e.printStackTrace();
                 }
 
@@ -582,10 +589,8 @@ public class ScoringServiceImpl implements ScoringService {
                     }
                 }
 
-                logger.info("SCORE PARAMETER ::::::::::" + scoreParameterRetailRequest.toString());
+                logger.info(MSG_SCORE_PARAMETER + scoreParameterRetailRequest.toString());
 
-                logger.info("--------------------------------------------------------------------------");
-                logger.info("--------------------------------------------------------------------------");
                 logger.info("----------------------------END-------------------------------------------");
 
                 Gson g = new Gson();
@@ -598,7 +603,7 @@ public class ScoringServiceImpl implements ScoringService {
                     scoringRequestDetail.setIsActive(true);
                     scoringRequestDetailRepository.save(scoringRequestDetail);
 
-                    logger.info("Saving Scoring Request Data for  =====> " + applicationId);
+                    logger.info(SAVING_SCORING_REQUEST_DATA_FOR + applicationId);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -610,14 +615,14 @@ public class ScoringServiceImpl implements ScoringService {
         try {
             scoringResponseMain = scoringClient.calculateScore(scoringRequest);
 
-            logger.info("score is successfully calculated");
-            LoansResponse loansResponse = new LoansResponse("score is successfully calculated", HttpStatus.OK.value());
+            logger.info(SCORE_IS_SUCCESSFULLY_CALCULATED);
+            LoansResponse loansResponse = new LoansResponse(SCORE_IS_SUCCESSFULLY_CALCULATED, HttpStatus.OK.value());
             return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
         } catch (Exception e) {
-            logger.error("error while calling scoring");
+            logger.error(ERROR_WHILE_CALLING_SCORING);
             e.printStackTrace();
-            LoansResponse loansResponse = new LoansResponse("error while calling scoring.", HttpStatus.INTERNAL_SERVER_ERROR.value());
+            LoansResponse loansResponse = new LoansResponse(ERROR_WHILE_CALLING_SCORING, HttpStatus.INTERNAL_SERVER_ERROR.value());
             return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
         }
     }
@@ -670,20 +675,16 @@ public class ScoringServiceImpl implements ScoringService {
             if (CommonUtils.isObjectNullOrEmpty(scoreParameterRetailRequest)) {
                 scoreParameterRetailRequest= new ScoreParameterRetailRequest();
                 logger.info("----------------------------START RETAIL PL ------------------------------");
-                logger.info("--------------------------------------------------------------------------");
-                logger.info("--------------------------------------------------------------------------");
 
-                logger.info("APPLICATION ID   :: " + applicationId);
-                logger.info("FP PRODUCT ID    :: " + fpProductId);
-                logger.info("SCORING MODEL ID :: " + scoreModelId);
+                logger.info(MSG_APPLICATION_ID + applicationId + MSG_FP_PRODUCT_ID + fpProductId + MSG_SCORING_MODEL_ID + scoreModelId);
 
                 // GET SCORE RETAIL PERSONAL LOAN PARAMETERS
 
                 RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.findOneByApplicationIdId(applicationId);
 
                 if (CommonUtils.isObjectNullOrEmpty(retailApplicantDetail)) {
-                    logger.error("Error while getting retail applicant detail for personal loan scoring");
-                    LoansResponse loansResponse = new LoansResponse("Error while getting retail applicant detail for personal loan scoring", HttpStatus.INTERNAL_SERVER_ERROR.value());
+                    logger.error(ERROR_WHILE_GETTING_RETAIL_APPLICANT_DETAIL_FOR_PERSONAL_LOAN_SCORING);
+                    LoansResponse loansResponse = new LoansResponse(ERROR_WHILE_GETTING_RETAIL_APPLICANT_DETAIL_FOR_PERSONAL_LOAN_SCORING, HttpStatus.INTERNAL_SERVER_ERROR.value());
                     //return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
                     break;
                 }
@@ -695,7 +696,7 @@ public class ScoringServiceImpl implements ScoringService {
                     try {
                         scoringResponse = scoringClient.listFieldByBusinessTypeId(scoringRequest);
                     } catch (Exception e) {
-                        logger.error("error while getting field list");
+                        logger.error(ERROR_WHILE_GETTING_FIELD_LIST);
                         e.printStackTrace();
                     }
 
@@ -708,7 +709,7 @@ public class ScoringServiceImpl implements ScoringService {
                         try {
                             modelParameterResponse = MultipleJSONObjectHelper.getObjectFromMap(dataList.get(i),
                                     ModelParameterResponse.class);
-                        } catch (IOException e) {
+                        } catch (IOException | NullPointerException e) {
                             e.printStackTrace();
                         }
 
@@ -1016,10 +1017,8 @@ public class ScoringServiceImpl implements ScoringService {
                         }
                     }
 
-                    logger.info("SCORE PARAMETER ::::::::::" + scoreParameterRetailRequest.toString());
+                    logger.info(MSG_SCORE_PARAMETER + scoreParameterRetailRequest.toString());
 
-                    logger.info("--------------------------------------------------------------------------");
-                    logger.info("--------------------------------------------------------------------------");
                     logger.info("----------------------------END-------------------------------------------");
 
                     Gson g = new Gson();
@@ -1032,7 +1031,7 @@ public class ScoringServiceImpl implements ScoringService {
                         scoringRequestDetail.setIsActive(true);
                         scoringRequestDetailRepository.save(scoringRequestDetail);
 
-                        logger.info("Saving Scoring Request Data for  =====> " + applicationId);
+                        logger.info(SAVING_SCORING_REQUEST_DATA_FOR + applicationId);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -1046,14 +1045,14 @@ public class ScoringServiceImpl implements ScoringService {
         try {
             scoringResponseMain = scoringClient.calculateScoreList(scoringRequestList);
 
-            logger.info("score is successfully calculated");
-            LoansResponse loansResponse = new LoansResponse("score is successfully calculated", HttpStatus.OK.value());
+            logger.info(SCORE_IS_SUCCESSFULLY_CALCULATED);
+            LoansResponse loansResponse = new LoansResponse(SCORE_IS_SUCCESSFULLY_CALCULATED, HttpStatus.OK.value());
             return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
         } catch (Exception e) {
-            logger.error("error while calling scoring");
+            logger.error(ERROR_WHILE_CALLING_SCORING);
             e.printStackTrace();
-            LoansResponse loansResponse = new LoansResponse("error while calling scoring.", HttpStatus.INTERNAL_SERVER_ERROR.value());
+            LoansResponse loansResponse = new LoansResponse(ERROR_WHILE_CALLING_SCORING, HttpStatus.INTERNAL_SERVER_ERROR.value());
             return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
         }
     }
@@ -1163,13 +1162,8 @@ public class ScoringServiceImpl implements ScoringService {
             logger.info("Scoring Data Fetched First Time  =====> " + applicationId);
 
             logger.info("----------------------------START EXISTING LOAN ------------------------------");
-            logger.info("------------------------------------------------------------------------------");
-            logger.info("------------------------------------------------------------------------------");
 
-            logger.info("APPLICATION ID   :: " + applicationId);
-            logger.info("FP PRODUCT ID    :: " + fpProductId);
-            logger.info("SCORING MODEL ID :: " + scoreModelId);
-
+            logger.info(MSG_APPLICATION_ID + applicationId + MSG_FP_PRODUCT_ID + fpProductId + MSG_SCORING_MODEL_ID + scoreModelId);
 
             // start Get GST Parameter
 
@@ -1272,7 +1266,7 @@ public class ScoringServiceImpl implements ScoringService {
                 try {
                     scoringResponse = scoringClient.listFieldByBusinessTypeId(scoringRequest);
                 } catch (Exception e) {
-                    logger.error("error while getting field list");
+                    logger.error(ERROR_WHILE_GETTING_FIELD_LIST);
                     e.printStackTrace();
                 }
 
@@ -2152,14 +2146,13 @@ public class ScoringServiceImpl implements ScoringService {
                             }
                             break;
                         }
+                        default : break;
                     }
                     //fundSeekerInputRequestList.add(fundSeekerInputRequest);
                 }
 
-                logger.info("SCORE PARAMETER ::::::::::" + scoringParameterRequest.toString());
+                logger.info(MSG_SCORE_PARAMETER + scoringParameterRequest.toString());
 
-                logger.info("------------------------------------------------------------------------------");
-                logger.info("------------------------------------------------------------------------------");
                 logger.info("----------------------------END-----------------------------------------------");
             }
             Gson g = new Gson();
@@ -2172,7 +2165,7 @@ public class ScoringServiceImpl implements ScoringService {
                 scoringRequestDetail.setIsActive(true);
                 scoringRequestDetailRepository.save(scoringRequestDetail);
 
-                logger.info("Saving Scoring Request Data for  =====> " + applicationId);
+                logger.info(SAVING_SCORING_REQUEST_DATA_FOR + applicationId);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -2183,19 +2176,19 @@ public class ScoringServiceImpl implements ScoringService {
         try {
             scoringResponseMain = scoringClient.calculateScore(scoringRequest);
         } catch (Exception e) {
-            logger.error("error while calling scoring");
+            logger.error(ERROR_WHILE_CALLING_SCORING);
             e.printStackTrace();
-            LoansResponse loansResponse = new LoansResponse("error while calling scoring.", HttpStatus.INTERNAL_SERVER_ERROR.value());
+            LoansResponse loansResponse = new LoansResponse(ERROR_WHILE_CALLING_SCORING, HttpStatus.INTERNAL_SERVER_ERROR.value());
             return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
         }
 
         if (scoringResponseMain.getStatus() == HttpStatus.OK.value()) {
-            logger.info("score is successfully calculated");
-            LoansResponse loansResponse = new LoansResponse("score is successfully calculated", HttpStatus.OK.value());
+            logger.info(SCORE_IS_SUCCESSFULLY_CALCULATED);
+            LoansResponse loansResponse = new LoansResponse(SCORE_IS_SUCCESSFULLY_CALCULATED, HttpStatus.OK.value());
             return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
         } else {
-            logger.error("error while calling scoring");
-            LoansResponse loansResponse = new LoansResponse("error while calling scoring.", HttpStatus.INTERNAL_SERVER_ERROR.value());
+            logger.error(ERROR_WHILE_CALLING_SCORING);
+            LoansResponse loansResponse = new LoansResponse(ERROR_WHILE_CALLING_SCORING, HttpStatus.INTERNAL_SERVER_ERROR.value());
             return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
         }
     }
@@ -2274,13 +2267,8 @@ public class ScoringServiceImpl implements ScoringService {
                 logger.info("Scoring Data Fetched First Time  =====> " + applicationId);
 
                 logger.info("----------------------------START EXISTING LOAN ------------------------------");
-                logger.info("------------------------------------------------------------------------------");
-                logger.info("------------------------------------------------------------------------------");
 
-                logger.info("APPLICATION ID   :: " + applicationId);
-                logger.info("FP PRODUCT ID    :: " + fpProductId);
-                logger.info("SCORING MODEL ID :: " + scoreModelId);
-
+                logger.info(MSG_APPLICATION_ID + applicationId + MSG_FP_PRODUCT_ID + fpProductId + MSG_SCORING_MODEL_ID + scoreModelId);
 
                 // start Get GST Parameter
 
@@ -2383,7 +2371,7 @@ public class ScoringServiceImpl implements ScoringService {
                     try {
                         scoringResponse = scoringClient.listFieldByBusinessTypeId(scoringRequest);
                     } catch (Exception e) {
-                        logger.error("error while getting field list");
+                        logger.error(ERROR_WHILE_GETTING_FIELD_LIST);
                         e.printStackTrace();
                     }
 
@@ -3263,14 +3251,15 @@ public class ScoringServiceImpl implements ScoringService {
                                 }
                                 break;
                             }
+
+                            default: break;
                         }
+
                         //fundSeekerInputRequestList.add(fundSeekerInputRequest);
                     }
 
-                    logger.info("SCORE PARAMETER ::::::::::" + scoringParameterRequest.toString());
+                    logger.info(MSG_SCORE_PARAMETER + scoringParameterRequest.toString());
 
-                    logger.info("------------------------------------------------------------------------------");
-                    logger.info("------------------------------------------------------------------------------");
                     logger.info("----------------------------END-----------------------------------------------");
                 }
                 Gson g = new Gson();
@@ -3283,7 +3272,7 @@ public class ScoringServiceImpl implements ScoringService {
                     scoringRequestDetail.setIsActive(true);
                     scoringRequestDetailRepository.save(scoringRequestDetail);
 
-                    logger.info("Saving Scoring Request Data for  =====> " + applicationId);
+                    logger.info(SAVING_SCORING_REQUEST_DATA_FOR + applicationId);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -3296,19 +3285,19 @@ public class ScoringServiceImpl implements ScoringService {
         try {
             scoringResponseMain = scoringClient.calculateScoreList(scoringRequestList);
         } catch (Exception e) {
-            logger.error("error while calling scoring");
+            logger.error(ERROR_WHILE_CALLING_SCORING);
             e.printStackTrace();
-            LoansResponse loansResponse = new LoansResponse("error while calling scoring.", HttpStatus.INTERNAL_SERVER_ERROR.value());
+            LoansResponse loansResponse = new LoansResponse(ERROR_WHILE_CALLING_SCORING, HttpStatus.INTERNAL_SERVER_ERROR.value());
             return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
         }
 
         if (scoringResponseMain.getStatus() == HttpStatus.OK.value()) {
-            logger.info("score is successfully calculated");
-            LoansResponse loansResponse = new LoansResponse("score is successfully calculated", HttpStatus.OK.value());
+            logger.info(SCORE_IS_SUCCESSFULLY_CALCULATED);
+            LoansResponse loansResponse = new LoansResponse(SCORE_IS_SUCCESSFULLY_CALCULATED, HttpStatus.OK.value());
             return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
         } else {
-            logger.error("error while calling scoring");
-            LoansResponse loansResponse = new LoansResponse("error while calling scoring.", HttpStatus.INTERNAL_SERVER_ERROR.value());
+            logger.error(ERROR_WHILE_CALLING_SCORING);
+            LoansResponse loansResponse = new LoansResponse(ERROR_WHILE_CALLING_SCORING, HttpStatus.INTERNAL_SERVER_ERROR.value());
             return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
         }
     }
@@ -3340,12 +3329,8 @@ public class ScoringServiceImpl implements ScoringService {
         Long fpProductId = scoringRequestLoans.getFpProductId();
 
         logger.info("----------------------------START NTB LOAN------------------------------");
-        logger.info("------------------------------------------------------------------------");
-        logger.info("------------------------------------------------------------------------");
 
-        logger.info("APPLICATION ID   :: " + applicationId);
-        logger.info("FP PRODUCT ID    :: " + fpProductId);
-        logger.info("SCORING MODEL ID :: " + scoreModelId);
+        logger.info(MSG_APPLICATION_ID + applicationId + MSG_FP_PRODUCT_ID + fpProductId + MSG_SCORING_MODEL_ID + scoreModelId);
 
         ScoringResponse scoringResponseMain = null;
 
@@ -3365,7 +3350,7 @@ public class ScoringServiceImpl implements ScoringService {
             try {
                 scoringResponse = scoringClient.listField(scoringRequest);
             } catch (Exception e) {
-                logger.error("error while getting field list");
+                logger.error(ERROR_WHILE_GETTING_FIELD_LIST);
                 e.printStackTrace();
             }
 
@@ -3532,7 +3517,6 @@ public class ScoringServiceImpl implements ScoringService {
                             irrId = loanApplicationService.getIrrByApplicationId(applicationId);
 
                         } catch (Exception e) {
-                            // TODO: handle exception
                             logger.error("error while getting irr id from one form");
                             e.printStackTrace();
 
@@ -3550,7 +3534,6 @@ public class ScoringServiceImpl implements ScoringService {
 
                             businessTypeId = industryResponse.getBusinessTypeId();
                         } catch (Exception e) {
-                            // TODO: handle exception
                             logger.error("error while getting irr industry detail from rating");
                             e.printStackTrace();
                         }
@@ -3621,14 +3604,13 @@ public class ScoringServiceImpl implements ScoringService {
                         }
                         break;
                     }
+                        default : break;
                 }
                 fundSeekerInputRequestList.add(fundSeekerInputRequest);
             }
 
-            logger.info("SCORE PARAMETER ::::::::::" + scoreParameterNTBRequest.toString());
+            logger.info(MSG_SCORE_PARAMETER + scoreParameterNTBRequest.toString());
 
-            logger.info("------------------------------------------------------------------------");
-            logger.info("------------------------------------------------------------------------");
             logger.info("----------------------------END-----------------------------------------");
 
             scoringRequest.setDataList(fundSeekerInputRequestList);
@@ -3637,24 +3619,24 @@ public class ScoringServiceImpl implements ScoringService {
             try {
                 scoringResponseMain = scoringClient.calculateScore(scoringRequest);
             } catch (Exception e) {
-                logger.error("error while calling scoring");
+                logger.error(ERROR_WHILE_CALLING_SCORING);
                 e.printStackTrace();
-                LoansResponse loansResponse = new LoansResponse("error while calling scoring.", HttpStatus.INTERNAL_SERVER_ERROR.value());
+                LoansResponse loansResponse = new LoansResponse(ERROR_WHILE_CALLING_SCORING, HttpStatus.INTERNAL_SERVER_ERROR.value());
                 return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
             }
 
             if (scoringResponseMain.getStatus() == HttpStatus.OK.value()) {
-                logger.info("score is successfully calculated");
-                LoansResponse loansResponse = new LoansResponse("score is successfully calculated", HttpStatus.OK.value());
+                logger.info(SCORE_IS_SUCCESSFULLY_CALCULATED);
+                LoansResponse loansResponse = new LoansResponse(SCORE_IS_SUCCESSFULLY_CALCULATED, HttpStatus.OK.value());
                 return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
             } else {
-                logger.error("error while calling scoring");
-                LoansResponse loansResponse = new LoansResponse("error while calling scoring.", HttpStatus.INTERNAL_SERVER_ERROR.value());
+                logger.error(ERROR_WHILE_CALLING_SCORING);
+                LoansResponse loansResponse = new LoansResponse(ERROR_WHILE_CALLING_SCORING, HttpStatus.INTERNAL_SERVER_ERROR.value());
                 return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
             }
         }
 
-        LoansResponse loansResponse = new LoansResponse("score is successfully calculated", HttpStatus.OK.value());
+        LoansResponse loansResponse = new LoansResponse(SCORE_IS_SUCCESSFULLY_CALCULATED, HttpStatus.OK.value());
         return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
     }
 
@@ -3670,13 +3652,8 @@ public class ScoringServiceImpl implements ScoringService {
         Long fpProductId = scoringRequestLoans.getFpProductId();
 
         logger.info("----------------------------START NTB DIRECTOR------------------------------");
-        logger.info("----------------------------------------------------------------------------");
-        logger.info("----------------------------------------------------------------------------");
 
-        logger.info("DIRECTOR ID :: " + directorBackgroundDetail.getId());
-        logger.info("APPLICATION ID   :: " + applicationId);
-        logger.info("FP PRODUCT ID    :: " + fpProductId);
-        logger.info("SCORING MODEL ID :: " + scoreModelId);
+        logger.info("DIRECTOR ID :: " + directorBackgroundDetail.getId() + MSG_APPLICATION_ID + applicationId + MSG_FP_PRODUCT_ID + fpProductId + MSG_SCORING_MODEL_ID + scoreModelId );
 
         ScoringResponse scoringResponseMain = null;
 
@@ -3697,7 +3674,7 @@ public class ScoringServiceImpl implements ScoringService {
             try {
                 scoringResponse = scoringClient.listField(scoringRequest);
             } catch (Exception e) {
-                logger.error("error while getting field list");
+                logger.error(ERROR_WHILE_GETTING_FIELD_LIST);
                 e.printStackTrace();
             }
 
@@ -3940,14 +3917,13 @@ public class ScoringServiceImpl implements ScoringService {
                         }
                         break;
                     }
+                        default : break;
                 }
                 fundSeekerInputRequestList.add(fundSeekerInputRequest);
             }
 
-            logger.info("SCORE PARAMETER ::::::::::" + scoreParameterNTBRequest.toString());
+            logger.info(MSG_SCORE_PARAMETER + scoreParameterNTBRequest.toString());
 
-            logger.info("----------------------------------------------------------------------------");
-            logger.info("----------------------------------------------------------------------------");
             logger.info("----------------------------END---------------------------------------------");
 
             scoringRequest.setDataList(fundSeekerInputRequestList);
@@ -3956,21 +3932,21 @@ public class ScoringServiceImpl implements ScoringService {
             try {
                 scoringResponseMain = scoringClient.calculateScore(scoringRequest);
             } catch (Exception e) {
-                logger.error("error while calling scoring");
+                logger.error(ERROR_WHILE_CALLING_SCORING);
                 e.printStackTrace();
-                LoansResponse loansResponse = new LoansResponse("error while calling scoring.", HttpStatus.INTERNAL_SERVER_ERROR.value());
+                LoansResponse loansResponse = new LoansResponse(ERROR_WHILE_CALLING_SCORING, HttpStatus.INTERNAL_SERVER_ERROR.value());
                 return false;
                 //return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
             }
 
             if (scoringResponseMain.getStatus() == HttpStatus.OK.value()) {
-                logger.info("score is successfully calculated");
-                LoansResponse loansResponse = new LoansResponse("score is successfully calculated", HttpStatus.OK.value());
+                logger.info(SCORE_IS_SUCCESSFULLY_CALCULATED);
+                LoansResponse loansResponse = new LoansResponse(SCORE_IS_SUCCESSFULLY_CALCULATED, HttpStatus.OK.value());
                 return true;
                 //return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
             } else {
-                logger.error("error while calling scoring");
-                LoansResponse loansResponse = new LoansResponse("error while calling scoring.", HttpStatus.INTERNAL_SERVER_ERROR.value());
+                logger.error(ERROR_WHILE_CALLING_SCORING);
+                LoansResponse loansResponse = new LoansResponse(ERROR_WHILE_CALLING_SCORING, HttpStatus.INTERNAL_SERVER_ERROR.value());
                 return false;
                 //return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
             }
@@ -3993,10 +3969,8 @@ public class ScoringServiceImpl implements ScoringService {
         Long applicationId = scoringRequestLoans.getApplicationId();
 
         logger.info("----------------------------START------------------------------");
-        logger.info("---------------------------------------------------------------");
-        logger.info("---------------------------------------------------------------");
 
-        logger.info("SCORING MODEL ID :: " + scoreModelId);
+        logger.info(MSG_SCORING_MODEL_ID + scoreModelId);
 
         ScoringResponse scoringResponseMain = null;
 
@@ -4015,7 +3989,7 @@ public class ScoringServiceImpl implements ScoringService {
             try {
                 scoringResponse = scoringClient.listField(scoringRequest);
             } catch (Exception e) {
-                logger.error("error while getting field list");
+                logger.error(ERROR_WHILE_GETTING_FIELD_LIST);
                 e.printStackTrace();
             }
 
@@ -4029,7 +4003,7 @@ public class ScoringServiceImpl implements ScoringService {
                 try {
                     modelParameterResponse = MultipleJSONObjectHelper.getObjectFromMap(dataList.get(i),
                             ModelParameterResponse.class);
-                } catch (IOException e) {
+                } catch (IOException | NullPointerException e) {
                     e.printStackTrace();
                 }
 
@@ -4039,10 +4013,8 @@ public class ScoringServiceImpl implements ScoringService {
                 fundSeekerInputRequestList.add(fundSeekerInputRequest);
             }
 
-            logger.info("SCORE PARAMETER ::::::::::" + scoringParameterRequest.toString());
+            logger.info(MSG_SCORE_PARAMETER + scoringParameterRequest.toString());
 
-            logger.info("---------------------------------------------------------------");
-            logger.info("---------------------------------------------------------------");
             logger.info("----------------------------END--------------------------------");
 
             scoringRequest.setDataList(fundSeekerInputRequestList);
@@ -4052,26 +4024,26 @@ public class ScoringServiceImpl implements ScoringService {
             try {
                 scoringResponseMain = scoringClient.calculateScore(scoringRequest);
             } catch (Exception e) {
-                logger.error("error while calling scoring");
+                logger.error(ERROR_WHILE_CALLING_SCORING);
                 e.printStackTrace();
-                LoansResponse loansResponse = new LoansResponse("error while calling scoring.", HttpStatus.INTERNAL_SERVER_ERROR.value());
+                LoansResponse loansResponse = new LoansResponse(ERROR_WHILE_CALLING_SCORING, HttpStatus.INTERNAL_SERVER_ERROR.value());
                 return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
             }
 
             if (scoringResponseMain.getStatus() == HttpStatus.OK.value()) {
-                logger.info("score is successfully calculated");
-                LoansResponse loansResponse = new LoansResponse("score is successfully calculated", HttpStatus.OK.value());
+                logger.info(SCORE_IS_SUCCESSFULLY_CALCULATED);
+                LoansResponse loansResponse = new LoansResponse(SCORE_IS_SUCCESSFULLY_CALCULATED, HttpStatus.OK.value());
                 loansResponse.setData(scoringResponseMain.getDataObject());
                 loansResponse.setListData(scoringResponseMain.getDataList());
                 return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
             } else {
-                logger.error("error while calling scoring");
-                LoansResponse loansResponse = new LoansResponse("error while calling scoring.", HttpStatus.INTERNAL_SERVER_ERROR.value());
+                logger.error(ERROR_WHILE_CALLING_SCORING);
+                LoansResponse loansResponse = new LoansResponse(ERROR_WHILE_CALLING_SCORING, HttpStatus.INTERNAL_SERVER_ERROR.value());
                 return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
             }
         }
 
-        LoansResponse loansResponse = new LoansResponse("score is successfully calculated", HttpStatus.OK.value());
+        LoansResponse loansResponse = new LoansResponse(SCORE_IS_SUCCESSFULLY_CALCULATED, HttpStatus.OK.value());
         return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
     }
 
@@ -4134,7 +4106,7 @@ public class ScoringServiceImpl implements ScoringService {
                 throw new Exception();
             }
         } catch (Exception e) {
-            logger.error("org id is null or empty");
+            logger.error(ORG_ID_IS_NULL_OR_EMPTY);
             e.printStackTrace();
             return new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
         }
@@ -4164,7 +4136,7 @@ public class ScoringServiceImpl implements ScoringService {
                 throw new Exception();
             }
         } catch (Exception e) {
-            logger.error("org id is null or empty");
+            logger.error(ORG_ID_IS_NULL_OR_EMPTY);
             e.printStackTrace();
             return new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
         }
@@ -4228,7 +4200,7 @@ public class ScoringServiceImpl implements ScoringService {
                 throw new Exception();
             }
         } catch (Exception e) {
-            logger.error("org id is null or empty");
+            logger.error(ORG_ID_IS_NULL_OR_EMPTY);
             e.printStackTrace();
             return new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
         }
@@ -4281,7 +4253,7 @@ public class ScoringServiceImpl implements ScoringService {
                     year = Integer.valueOf(res.getYear());
                 }
             }
-        } catch (IOException e) {
+        } catch (IOException | NullPointerException e) {
             logger.error("error while getting year from itr response");
             e.printStackTrace();
         }
