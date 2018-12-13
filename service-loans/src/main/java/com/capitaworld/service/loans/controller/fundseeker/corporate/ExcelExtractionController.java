@@ -14,7 +14,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.capitaworld.service.loans.model.ExcelRequest;
 import com.capitaworld.service.loans.model.ExcelResponse;
-import com.capitaworld.service.loans.service.common.impl.DownloadCMAFileServiceImpl;
 import com.capitaworld.service.loans.service.fundseeker.corporate.AssetsDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.BalanceSheetDetailService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.EntityInformationDetailService;
@@ -81,12 +80,19 @@ public class ExcelExtractionController {
 		
 		MultipartFile file=null;
 		
-		if(!(excelExtractionService.readCMA(applicationId,storageDetailsId,file)))
-		{
+		try {
+			if(!(excelExtractionService.readCMA(applicationId,storageDetailsId,file)))
+			{
+				ExcelResponse res= new ExcelResponse("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR.value());
+				log.error("Error while reading CMA");
+				return new ResponseEntity<ExcelResponse>(res,HttpStatus.OK);
+			}
+		}catch (Exception e) {
 			ExcelResponse res= new ExcelResponse("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR.value());
+			res.setData(e.getMessage());
 			log.error("Error while reading CMA");
 			return new ResponseEntity<ExcelResponse>(res,HttpStatus.OK);
-		}
+		}	
 		
 		ExcelResponse res= new ExcelResponse("CMA successfully read", HttpStatus.OK.value());
 		return new ResponseEntity<ExcelResponse>(res,HttpStatus.OK);

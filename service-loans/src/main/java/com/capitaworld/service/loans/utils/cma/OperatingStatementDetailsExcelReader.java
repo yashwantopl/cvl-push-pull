@@ -22,7 +22,7 @@ public class OperatingStatementDetailsExcelReader {
     public static List<String> operatingStatementMappingList = new ArrayList<String>();
     public static final DecimalFormat decimalFormat = new DecimalFormat("#.##");
 
-    public static void run(Long storageDetailsId,XSSFSheet sheet,LoanApplicationMaster loanApplicationMaster,OperatingStatementDetailsRepository operatingStatementDetailsRepository) {
+    public static void run(Long storageDetailsId,XSSFSheet sheet,LoanApplicationMaster loanApplicationMaster,OperatingStatementDetailsRepository operatingStatementDetailsRepository) throws Exception {
            	operatingStatementMappingList.clear();
             operatingStatementMappingList.add("8");
             operatingStatementMappingList.add("9");
@@ -88,12 +88,22 @@ public class OperatingStatementDetailsExcelReader {
             //extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, operatingStatementMappingList,"D",String.valueOf(sheet.getRow(4).getCell(3).getNumericCellValue()),"Audited",operatingStatementDetailsRepository);
             //j== 2 for NTB 
             int j = 2;
-            if(loanApplicationMaster.getBusinessTypeId() == CommonUtils.BusinessType.EXISTING_BUSINESS.getId()) {
-        
-        	  extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, operatingStatementMappingList,"E",String.valueOf(sheet.getRow(4).getCell(4).getNumericCellValue()),"Estimated",operatingStatementDetailsRepository);
-        	   j=5;
-          
-            }
+         if(loanApplicationMaster.getBusinessTypeId() == CommonUtils.BusinessType.EXISTING_BUSINESS.getId()) {
+           	
+           	Double yearFromSheet  = sheet.getRow(4).getCell(4).getNumericCellValue() ; 
+           	OperatingStatementDetails operatingStatementDetails = operatingStatementDetailsRepository.findByLoanApplicationMasterIdAndYearAndFinancialYearlyStatementAndIsActive(loanApplicationMaster.getId(), String.valueOf(yearFromSheet.longValue()) ,  "Audited" , true );
+           	
+           	if(operatingStatementDetails !=null &&  "Audited".equalsIgnoreCase(operatingStatementDetails.getFinancialYearlyStatement()) && yearFromSheet <= Double.valueOf(operatingStatementDetails.getYear()) ) {
+           		
+           		throw new  Exception("Invalid cma details"); 
+         
+           	}else {
+           		int updateRow = operatingStatementDetailsRepository.inActiveByAppIdAndFinancialYearlyStatementAndIsActive(loanApplicationMaster.getId());
+           		log.info("---------------- inactive old estimate and project data ------- updated row "+ updateRow);
+           		extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, operatingStatementMappingList,"E",String.valueOf(sheet.getRow(4).getCell(4).getNumericCellValue()),"Estimated",operatingStatementDetailsRepository);
+               	j=5; 
+           	} 
+        }
         if(loanApplicationMaster.getProductId()!=15 && loanApplicationMaster.getProductId()!=1 ){
         	/*int j = 5;*/
 
@@ -138,8 +148,11 @@ public class OperatingStatementDetailsExcelReader {
         }
         log.info("nullCounter---" + nullCounter);
         if(!(nullCounter==46||nullCounter==47)) {
-            OperatingStatementDetails operatingStatementDetails = new OperatingStatementDetails();
-            
+        	
+        	
+        	OperatingStatementDetails operatingStatementDetails = new OperatingStatementDetails() ;
+        	operatingStatementDetails.setCreatedDate(new Date());
+        	operatingStatementDetails.setModifiedDate(new Date());
             operatingStatementDetails.setLoanApplicationMaster(loanApplicationMaster);
             operatingStatementDetails.setStorageDetailsId(storageDetailsId);
             
@@ -196,8 +209,7 @@ public class OperatingStatementDetailsExcelReader {
             operatingStatementDetails.setRetainedProfitOrNetProfit(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
 
             operatingStatementDetails.setIsActive(true);
-            operatingStatementDetails.setCreatedDate(new Date());
-            operatingStatementDetails.setModifiedDate(new Date());
+            
 //          operatingStatementDetails.setCreatedBy(createdBy);
 //          operatingStatementDetails.setModifiedBy(modifiedBy);
             

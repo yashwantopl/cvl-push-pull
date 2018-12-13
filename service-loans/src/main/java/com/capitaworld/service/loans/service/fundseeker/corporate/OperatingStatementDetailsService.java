@@ -8,7 +8,7 @@ public interface OperatingStatementDetailsService {
 
 	public void saveOrUpdate(OperatingStatementDetails operatingStatementDetails);
 	
-	public void readOperatingStatementDetails(Long applicationId,Long storageDetailsId,XSSFSheet sheet);
+	public void readOperatingStatementDetails(Long applicationId,Long storageDetailsId,XSSFSheet sheet)  throws Exception;
 	
 	public void inActiveAssetsDetails(Long storageDetailsId);
 }
