@@ -63,8 +63,7 @@ public class ScoreExcelReader {
 		    scoreParameterRequestLoansList.add(scoreParameterRequestLoans);
 		}
            }catch (NullPointerException  e ) {
-			  e.printStackTrace();
-			  logger.error("Exception in extractCellFromSheet() --------------------   Error message'----------> "+ e.getMessage());
+			  logger.error("Exception in extractCellFromSheet() --------------------   Error message'----------> "+ e);
 			  throw new NullPointerException("Your file formate is not valid  while calculationg scoring.");
 		}
 		logger.info("Exist from extractCellFromSheet() --------------------Complete excel reading and put in list  'ScoreParameterRequestLoansList'----------> " + scoreParameterRequestLoansList.size());

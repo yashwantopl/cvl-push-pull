@@ -5,6 +5,7 @@ package com.capitaworld.service.loans.config;
 
 import java.util.Map;
 
+import com.capitaworld.service.loans.utils.CommonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -98,8 +99,7 @@ public class MCAAsyncComponent {
 		try {
 			callMCA(cin, applicationId, userId);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 	}
 

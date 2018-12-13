@@ -86,8 +86,8 @@ public class CommonController {
 				return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully saved", HttpStatus.OK.value()),
 						HttpStatus.OK);
 			} catch (Exception e) {
-				logger.warn("error while save fs long and lat, applicationId==>" + longLatrequest.getId());
-				e.printStackTrace();
+				logger.error("error while save fs long and lat, applicationId==>" + longLatrequest.getId());
+				logger.error(CommonUtils.EXCEPTION,e);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 						HttpStatus.OK);
@@ -156,8 +156,8 @@ public class CommonController {
 				logger.warn("successfully get fs long and lat value");
 				return new ResponseEntity<LoansResponse>(response, HttpStatus.OK);
 			} catch (Exception e) {
-				logger.warn("error while get fs long and lat, applicationId==>" + longLatrequest.getId());
-				e.printStackTrace();
+				logger.error("error while get fs long and lat, applicationId==>" + longLatrequest.getId());
+				logger.error(CommonUtils.EXCEPTION,e);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 						HttpStatus.OK);
@@ -224,8 +224,7 @@ public class CommonController {
 								HttpStatus.OK);
 					}
 				} catch (Exception e) {
-					logger.warn("user_verification, Invalid Request... Something went wrong");
-					e.printStackTrace();
+					logger.error("user_verification, Invalid Request... Something went wrong : ",e);
 					return new ResponseEntity<UserResponse>(
 							new UserResponse("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR.value()),
 							HttpStatus.OK);
@@ -260,8 +259,7 @@ public class CommonController {
 					
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
-				logger.warn("Error While Get Last access application id");
+				logger.error("Error While Get Last access application id : ",e);
 				return new ResponseEntity<UserResponse>(
 						new UserResponse("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR.value()),
 						HttpStatus.OK);
@@ -288,8 +286,7 @@ public class CommonController {
 					}
 				}
 			} catch(Exception e){
-				logger.info("Throw exception while check email verified or not");
-				e.printStackTrace();
+				logger.error("Throw exception while check email verified or not : ",e);
 			}
 		}
 		
