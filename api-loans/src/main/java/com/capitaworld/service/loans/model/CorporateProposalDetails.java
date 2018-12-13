@@ -49,6 +49,8 @@ public class CorporateProposalDetails {
 	public String branchLocationName;
 	public String branchCity;
 	public String branchState;
+	
+	private String wcRenualNew;
 
 	private String wcRenualNew;
 	
@@ -309,7 +311,6 @@ public class CorporateProposalDetails {
 	public void setNtbMainDirName(String ntbMainDirName) {
 		this.ntbMainDirName = ntbMainDirName;
 	}
-
 
 	public String getWcRenualNew() {
 		return wcRenualNew;

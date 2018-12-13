@@ -1,19 +1,14 @@
+
 package com.capitaworld.service.loans.service.fundprovider.impl;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
-import javax.persistence.Persistence;
-import javax.persistence.PersistenceContext;
 
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
@@ -95,13 +90,11 @@ import com.capitaworld.service.loans.service.fundprovider.WcTlParameterService;
 import com.capitaworld.service.loans.service.fundprovider.WorkingCapitalParameterService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
-import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.loans.utils.CommonUtils.UserMainType;
+import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.matchengine.ProposalDetailsClient;
 import com.capitaworld.service.matchengine.exception.MatchException;
 import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
-import com.capitaworld.service.matchengine.utils.MatchConstant;
-import com.capitaworld.service.matchengine.utils.MatchConstant.ProposalStatus;
 import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.LoanType;
 import com.capitaworld.service.oneform.model.MasterResponse;
@@ -665,9 +658,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	@Override
 	public List<ProductMasterRequest> getActiveInActiveList(Long userId, Long userOrgId) {
 		// TODO Auto-generated method stub
-		
-		//Getting BranchId
-		// set branch id to proposal request
+		CommonDocumentUtils.startHook(logger, "getActiveInActiveList");
 		BranchBasicDetailsRequest basicDetailsRequest = null;
 		try {
 			UsersRequest usersRequest = new UsersRequest();
@@ -680,8 +671,6 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 			logger.info("Throw Exception While Get Branch Id from UserId");
 			e.printStackTrace();
 		}
-		
-		CommonDocumentUtils.startHook(logger, "getActiveInActiveList");
 		List<ProductMaster> results;
 		if (!CommonUtils.isObjectNullOrEmpty(userOrgId)) {
 			results = productMasterRepository.getUserProductActiveInActiveListByOrgId(userOrgId);
@@ -1603,3 +1592,4 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	}
 
 }
+

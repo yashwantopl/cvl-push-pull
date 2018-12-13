@@ -137,7 +137,6 @@ public class CorporatePrimaryViewResponse {
     private String applicationType;
     private String fpProductName;
      
-     
     
    
 	public List<Object> getCibilReport() {
