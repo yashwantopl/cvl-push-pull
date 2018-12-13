@@ -28,7 +28,6 @@ import com.capitaworld.api.workflow.utility.WorkflowUtils;
 import com.capitaworld.cibil.api.model.CibilRequest;
 import com.capitaworld.cibil.api.model.CibilScoreLogRequest;
 import com.capitaworld.cibil.client.CIBILClient;
-import com.capitaworld.client.eligibility.EligibilityClient;
 import com.capitaworld.client.workflow.WorkflowClient;
 import com.capitaworld.connect.api.ConnectResponse;
 import com.capitaworld.connect.api.ConnectStage;
@@ -39,7 +38,6 @@ import com.capitaworld.service.analyzer.client.AnalyzerClient;
 import com.capitaworld.service.analyzer.model.common.AnalyzerResponse;
 import com.capitaworld.service.analyzer.model.common.Data;
 import com.capitaworld.service.analyzer.model.common.ReportRequest;
-import com.capitaworld.service.fraudanalytics.client.FraudAnalyticsClient;
 import com.capitaworld.service.gst.GstCalculation;
 import com.capitaworld.service.gst.GstResponse;
 import com.capitaworld.service.gst.client.GstClient;
@@ -63,9 +61,6 @@ import com.capitaworld.service.loans.model.CAM.OperatingStatementDetailsString;
 import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateFinalInfoRequest;
 import com.capitaworld.service.loans.model.corporate.PrimaryCorporateRequest;
-import com.capitaworld.service.loans.repository.fundprovider.TermLoanParameterRepository;
-import com.capitaworld.service.loans.repository.fundprovider.WcTlLoanParameterRepository;
-import com.capitaworld.service.loans.repository.fundprovider.WorkingCapitalParameterRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.AssetsDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LiabilitiesDetailsRepository;
@@ -73,33 +68,18 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplica
 import com.capitaworld.service.loans.repository.fundseeker.corporate.OperatingStatementDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
 import com.capitaworld.service.loans.service.common.PincodeDateService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.AchievmentDetailsService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.AssociatedConcernDetailService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateFinalInfoService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.DirectorBackgroundDetailsService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.ExistingProductDetailsService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.FinanceMeansDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.GuarantorsCorporateDetailService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.InEligibleProposalCamReportService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.MonthlyTurnoverDetailService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.OwnershipDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.PrimaryCorporateService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.PromotorBackgroundDetailsService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.ProposedProductDetailsService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.SecurityCorporateDetailsService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.TotalCostOfProjectService;
-import com.capitaworld.service.loans.service.irr.IrrService;
 import com.capitaworld.service.loans.service.scoring.ScoringService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.matchengine.MatchEngineClient;
-import com.capitaworld.service.matchengine.ProposalDetailsClient;
 import com.capitaworld.service.matchengine.model.MatchDisplayResponse;
 import com.capitaworld.service.matchengine.model.MatchRequest;
-import com.capitaworld.service.mca.client.McaClient;
 import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.oneform.enums.AssessedForITMst;
 import com.capitaworld.service.oneform.enums.CompetitionMst_SBI;
@@ -123,8 +103,6 @@ import com.capitaworld.service.oneform.enums.Title;
 import com.capitaworld.service.oneform.enums.VisuallyImpairedMst;
 import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
-import com.capitaworld.service.scoring.ScoringClient;
-import com.capitaworld.service.thirdpaty.client.ThirdPartyClient;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.UserResponse;
 import com.capitaworld.service.users.model.UsersRequest;
@@ -141,13 +119,7 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 	private LoanApplicationRepository loanApplicationRepository;
 	
 	@Autowired
-	private IrrService irrService; 
-	
-	@Autowired
 	private MatchEngineClient matchEngineClient; 
-	
-	@Autowired
-	private ScoringClient scoringClient;
 	
 	@Autowired
 	private AnalyzerClient analyzerClient;
@@ -162,37 +134,13 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 	private CorporateFinalInfoService corporateFinalInfoService;
 	
 	@Autowired
-	private LoanApplicationService loanApplicationService;
-	
-	@Autowired
 	private OneFormClient oneFormClient;
-	
-	@Autowired 
-	private PromotorBackgroundDetailsService promotorBackgroundDetailsService;
-	
-	@Autowired
-	private OwnershipDetailsService ownershipDetailsService;
-	
-	@Autowired
-	private ProposedProductDetailsService proposedProductDetailsService; 
-	
-	@Autowired
-	private ExistingProductDetailsService existingProductDetailsService;
-	
-	@Autowired
-	private AssociatedConcernDetailService associatedConcernDetailService;
 	
 	@Autowired
 	private FinancialArrangementDetailsService financialArrangementDetailsService;
 	
 	@Autowired
-	private AchievmentDetailsService achievmentDetailsService;
-	
-	@Autowired
 	private DirectorBackgroundDetailsService backgroundDetailsService;
-	
-	@Autowired
-	private ProposalDetailsClient proposalDetailsClient;
 	
 	@Autowired
 	private UsersClient usersClient;
@@ -207,24 +155,6 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 	private CorporateApplicantDetailRepository corporateApplicantDetailRepository;
 	
 	@Autowired
-	private GuarantorsCorporateDetailService guarantorsCorporateDetailService;
-
-	@Autowired
-	private MonthlyTurnoverDetailService monthlyTurnoverDetailService;
-	
-	@Autowired
-	private TotalCostOfProjectService costOfProjectService; 
-	
-	@Autowired
-	private FinanceMeansDetailsService financeMeansDetailsService;
-	
-	@Autowired
-	private SecurityCorporateDetailsService securityCorporateDetailsService;
-	
-	@Autowired
-	private ThirdPartyClient thirdPartyClient;
-	
-	@Autowired
 	private OperatingStatementDetailsRepository operatingStatementDetailsRepository;
 	
 	@Autowired
@@ -234,28 +164,10 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 	private AssetsDetailsRepository assetsDetailsRepository;
 	
 	@Autowired
-	private EligibilityClient eligibilityClient;
-	
-	@Autowired
 	private WorkflowClient workflowClient;
 	
 	@Autowired
 	private ConnectClient connectClient;
-	
-	@Autowired
-	private McaClient mcaClient;
-	
-	@Autowired
-	private FraudAnalyticsClient fraudAnalyticsClient;
-	
-	@Autowired
-	private TermLoanParameterRepository termLoanParameterRepository;
-	
-	@Autowired
-	private WorkingCapitalParameterRepository workingCapitalParameterRepository;
-	
-	@Autowired
-	private WcTlLoanParameterRepository wcTlLoanParameterRepository;
 	
 	@Autowired
 	private ITRClient itrClient;
@@ -655,29 +567,55 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 		
 		//PERFIOS API DATA (BANK STATEMENT ANALYSIS)
 		ReportRequest reportRequest = new ReportRequest();
-			reportRequest.setApplicationId(applicationId);
-			reportRequest.setUserId(userId);
-			List<Data> datas=new ArrayList<>();
-			try {
-				AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReportForCam(reportRequest);
-				List<HashMap<String, Object>> hashMap=(List<HashMap<String, Object>>) analyzerResponse.getData();
-				if(!CommonUtils.isListNullOrEmpty(hashMap))
-				{
-					for(HashMap<String,Object> rec:hashMap)
-					{
-						Data data = MultipleJSONObjectHelper.getObjectFromMap(rec, Data.class);
-						datas.add(data);
-						List<Object> customerInfo = new ArrayList<Object>();
-						for(int i =0; i<hashMap.size(); i++) {
-							customerInfo.add(!CommonUtils.isObjectNullOrEmpty(data.getCustomerInfo()) ? CommonUtils.printFields(data.getCustomerInfo(),null) : " ");
-						}
-						map.put("customerInfo" , customerInfo);
-					}
+		reportRequest.setApplicationId(applicationId);
+		reportRequest.setUserId(userId);
+		
+		List<Data> datas = new ArrayList<>();
+		List<Object> bankStatement = new ArrayList<Object>();
+		List<Object> monthlyDetails = new ArrayList<Object>();
+		List<Object> top5FundReceived = new ArrayList<Object>();
+		List<Object> top5FundTransfered = new ArrayList<Object>();
+		List<Object> bouncedChequeList = new ArrayList<Object>();
+		List<Object> customerInfo = new ArrayList<Object>();
+		List<Object> summaryInfo = new ArrayList<Object>();
+		
+		try {
+			AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReportForCam(reportRequest);
+			List<HashMap<String, Object>> hashMap = (List<HashMap<String, Object>>) analyzerResponse.getData();
+			
+			if (!CommonUtils.isListNullOrEmpty(hashMap)) {
+				for (HashMap<String, Object> rec : hashMap) {
+					Data data = MultipleJSONObjectHelper.getObjectFromMap(rec, Data.class);
+					datas.add(data);
+					
+					//bankStatement.add(!CommonUtils.isObjectNullOrEmpty(data.getXns()) ? CommonUtils.printFields(data.getXns().getXn(),null) : " ");
+					monthlyDetails.add(!CommonUtils.isObjectNullOrEmpty(data.getMonthlyDetailList()) ? CommonUtils.printFields(data.getMonthlyDetailList(),null) : "");
+					top5FundReceived.add(!CommonUtils.isObjectNullOrEmpty(data.getTop5FundReceivedList().getItem()) ? CommonUtils.printFields(data.getTop5FundReceivedList().getItem(),null) : "");
+					top5FundTransfered.add(!CommonUtils.isObjectNullOrEmpty(data.getTop5FundTransferedList().getItem()) ? CommonUtils.printFields(data.getTop5FundTransferedList().getItem(),null) : "");
+					bouncedChequeList.add(!CommonUtils.isObjectNullOrEmpty(data.getBouncedOrPenalXnList()) ? CommonUtils.printFields(data.getBouncedOrPenalXnList().getBouncedOrPenalXns(),null) : " ");
+					customerInfo.add(!CommonUtils.isObjectNullOrEmpty(data.getCustomerInfo()) ? CommonUtils.printFields(data.getCustomerInfo(),null) : " ");
+					summaryInfo.add(!CommonUtils.isObjectNullOrEmpty(data.getSummaryInfo()) ?CommonUtils.printFields(data.getSummaryInfo(),null) : " ");
+					
 				}
-			}catch (Exception e) {
-				e.printStackTrace();
-				logger.info("Error while getting perfios data");
+				
+				//System.out.println("bankStatement : "+bankStatement.size()+" monthlyDetails :"+monthlyDetails.size()+" top5FundReceived :"+top5FundReceived.size());
+				//System.out.println("top5FundTransfered : "+top5FundTransfered.size()+" bouncedChequeList :"+bouncedChequeList.size()+" customerInfo :"+customerInfo.size());
+				//System.out.println("summaryInfo : "+summaryInfo.size()+" bankStatementAnalysis :"+datas.size());
+				
+				//map.put("bankStatement", bankStatement);
+				map.put("monthlyDetails", monthlyDetails);
+				map.put("top5FundReceived", top5FundReceived);
+				map.put("top5FundTransfered", top5FundTransfered);
+				map.put("bouncedChequeList", bouncedChequeList);
+				map.put("customerInfo", customerInfo);
+				map.put("summaryInfo", summaryInfo);
+				map.put("bankStatementAnalysis", CommonUtils.printFields(datas, null));
+				
 			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.info("Error while getting perfios data");
+		}
 
 		
 		
