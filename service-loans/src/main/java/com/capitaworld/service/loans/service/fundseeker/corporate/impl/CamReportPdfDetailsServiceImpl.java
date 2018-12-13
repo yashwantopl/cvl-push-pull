@@ -375,19 +375,20 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		
 		// Product Name
 		
-		if(productId != null) {
-			String productName = productMasterRepository.getFpProductName(productId);
-			if(productName != null) {
-				map.put("fpProductName", productName);	
-			}else {
-				logger.info("product name is null..");
-			}
-		}else {
-			logger.info("fpProductMapping id is null..");
-		}
+				if(productId != null) {
+					String productName = productMasterRepository.getFpProductName(productId);
+					if(productName != null) {
+						map.put("fpProductName", productName);	
+					}else {
+						logger.info("product name is null..");
+					}
+				}else {
+					logger.info("fpProductMapping id is null..");
+				}
 		// application type
-		map.put("applicationType", (loanApplicationMaster.getWcRenewalStatus() != null ? WcRenewalType.getById(loanApplicationMaster.getWcRenewalStatus()).getValue().toString() : "New" ));
-		
+				map.put("applicationType", (loanApplicationMaster.getWcRenewalStatus() != null ? WcRenewalType.getById(loanApplicationMaster.getWcRenewalStatus()).getValue().toString() : "New" ));
+				
+
 		//TIMELINE DATES
 		map.put("dateOfProposal", !CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getCreatedDate())? DATE_FORMAT.format(loanApplicationMaster.getCreatedDate()):"-");
 		try {

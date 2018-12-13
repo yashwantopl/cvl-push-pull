@@ -1,3 +1,4 @@
+
 package com.capitaworld.service.loans.service.fundseeker.retail.impl;
 
 import java.math.BigInteger;
@@ -1935,3 +1936,4 @@ public class ProposalServiceMappingImpl implements ProposalService {
 		return finalList;
 	}
 }
+

@@ -1208,8 +1208,21 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 			e1.printStackTrace();
 		}
 		
+		
 		// Product Name
-		corporatePrimaryViewResponse.setFpProductName(fpProductMappingId != null ? productMasterRepository.getFpProductName(fpProductMappingId) : "");
+		
+		if(fpProductMappingId != null) {
+			String productName = productMasterRepository.getFpProductName(fpProductMappingId);
+			if(productName != null) {
+				corporatePrimaryViewResponse.setFpProductName(productName);	
+			}else {
+				logger.info("product name is null..");
+			}
+		}else {
+			logger.info("fpProductMapping id is null..");
+		}
+
+
 		
 		// address
 		
