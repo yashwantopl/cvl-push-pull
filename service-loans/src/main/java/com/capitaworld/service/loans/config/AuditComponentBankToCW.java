@@ -52,7 +52,7 @@ public class AuditComponentBankToCW {
 		
 	}
 	public static void main(String[] args) {
-		System.out.println(new AuditComponentBankToCW().getOrgIdByCredential("sidbi@contactles", "contactless#$1SIDBI"));
+		logger.info(""+new AuditComponentBankToCW().getOrgIdByCredential("sidbi@contactles", "contactless#$1SIDBI"));
 	} 
 
 	/*@Override
