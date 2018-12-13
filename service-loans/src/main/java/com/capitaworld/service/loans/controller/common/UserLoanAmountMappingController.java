@@ -57,7 +57,6 @@ public class UserLoanAmountMappingController {
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Checked !!", HttpStatus.OK.value(),result),HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while check amount by userid and product id==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -96,7 +95,6 @@ public class UserLoanAmountMappingController {
 			return new ResponseEntity<LoansResponse>(new LoansResponse("No data found !!", HttpStatus.BAD_REQUEST.value()),HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while get by user id and product id==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);

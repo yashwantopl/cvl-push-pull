@@ -88,12 +88,13 @@ public class ScoringController {
 	public LoansResponse  uploadExcel( @RequestPart("file") MultipartFile multipartFiles) {
 		// Code for read Score Excel
 			logger.info("-----------------In uploadExcel() ----------------multipartfile size---"+multipartFiles.getSize());
+            FileOutputStream fileOutputStream = null;
 			LoansResponse loansResponse= null;
 	        try {
 	        	
 	        	File file=new File(CommonUtils.SCORING_EXCEL);
-	        	
-	        	FileOutputStream fileOutputStream =new FileOutputStream(file);
+
+	        	fileOutputStream =new FileOutputStream(file);
 				logger.info("-----------------In reading excel file() ----------------");
 	        	scoringService.readScoringExcel(multipartFiles).write(fileOutputStream);
 	        	
@@ -108,6 +109,15 @@ public class ScoringController {
 	        	 return   loansResponse = new LoansResponse(e.getMessage(),
 							HttpStatus.INTERNAL_SERVER_ERROR.value());
 	        }
+	        finally {
+                    try {
+                        if(fileOutputStream != null){
+                            fileOutputStream.close();
+                        }
+                    }catch (IOException e){
+                        logger.error(CommonUtils.EXCEPTION,e);
+                    }
+            }
 	}
 
 
@@ -128,10 +138,8 @@ public class ScoringController {
         }
         catch (Exception e)
         {
-            // TODO: handle exception
             ScoringModelReqRes res=new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG,HttpStatus.BAD_REQUEST.value());
-            logger.error("Error while getting scoring model list");
-            e.printStackTrace();
+            logger.error("Error while getting scoring model list :  ",e);
             return new ResponseEntity<ScoringModelReqRes>(res,HttpStatus.OK);
         }
     }
@@ -149,10 +157,8 @@ public class ScoringController {
         }
         catch (Exception e)
         {
-            // TODO: handle exception
             ScoringModelReqRes res=new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG,HttpStatus.BAD_REQUEST.value());
-            logger.error("Error while saving scoring model");
-            e.printStackTrace();
+            logger.error("Error while saving scoring model : ",e);
             return new ResponseEntity<ScoringModelReqRes>(res,HttpStatus.OK);
         }
     }
@@ -169,10 +175,8 @@ public class ScoringController {
         }
         catch (Exception e)
         {
-            // TODO: handle exception
             ScoringModelReqRes res=new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG,HttpStatus.BAD_REQUEST.value());
-            logger.error("Error while getting scoring model detail");
-            e.printStackTrace();
+            logger.error("Error while getting scoring model detail :  ",e);
             return new ResponseEntity<ScoringModelReqRes>(res,HttpStatus.OK);
         }
     }
@@ -190,10 +194,8 @@ public class ScoringController {
         }
         catch (Exception e)
         {
-            // TODO: handle exception
             ScoringModelReqRes res=new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG,HttpStatus.BAD_REQUEST.value());
-            logger.error("Error while saving scoring model detail");
-            e.printStackTrace();
+            logger.error("Error while saving scoring model detail : ",e);
             return new ResponseEntity<ScoringModelReqRes>(res,HttpStatus.OK);
         }
     }
@@ -215,8 +217,7 @@ public class ScoringController {
         	GenericCheckerReqRes reqres= new GenericCheckerReqRes();
         	reqres.setActionFlag(false);
         	res.add(reqres);
-            logger.error("Error while saving scoring model detail");
-            e.printStackTrace();
+            logger.error("Error while saving scoring model detail : ",e);
             return new ResponseEntity<List<GenericCheckerReqRes> >(res,HttpStatus.OK);
         }
     }
@@ -235,10 +236,8 @@ public class ScoringController {
         }
         catch (Exception e)
         {
-            // TODO: handle exception
             ScoringModelReqRes res=new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG,HttpStatus.BAD_REQUEST.value());
-            logger.error("Error while getting scoring model list");
-            e.printStackTrace();
+            logger.error("Error while getting scoring model list : ",e);
             return new ResponseEntity<ScoringModelReqRes>(res,HttpStatus.OK);
         }
     }
@@ -255,10 +254,8 @@ public class ScoringController {
         }
         catch (Exception e)
         {
-            // TODO: handle exception
             ScoringModelReqRes res=new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG,HttpStatus.BAD_REQUEST.value());
-            logger.error("Error while getting scoring model detail");
-            e.printStackTrace();
+            logger.error("Error while getting scoring model detail : ",e);
             return new ResponseEntity<ScoringModelReqRes>(res,HttpStatus.OK);
         }
     }

@@ -2,7 +2,6 @@ package com.capitaworld.service.loans.service.common.impl;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 
@@ -21,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
+
 import com.capitaworld.service.dms.model.DocumentResponse;
 import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.AssetsDetails;
@@ -153,8 +153,9 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 					operatingStatementDetails.setYear(String.valueOf(yearList.get(0)-2));
 					operatingStatementDetailsList.add(operatingStatementDetails);
 				}
+				Collections.sort(operatingStatementDetailsList, new OperatingStatementComparator());
 			}
-			Collections.sort(operatingStatementDetailsList, new OperatingStatementComparator());
+			
 			//------------------------------- END FOR FIX FIRST THREE ROW IN EXCEL SHEET
 		
 			
@@ -316,6 +317,7 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 					liabilitiesDetails.setYear(String.valueOf(libYearList.get(0)-2));
 					liabilitiesDetailsList.add(liabilitiesDetails);
 				}
+// 				Collections.sort(liabilitiesDetailsList, new LiabilityComparator());
 			}
 			Collections.sort(liabilitiesDetailsList, new LiabilityComparator());
 			//------------------------------- END FOR FIX FIRST THREE ROW IN EXCEL SHEET
@@ -442,8 +444,9 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 					assetsDetails.setYear(String.valueOf(assetYearList.get(0)-2));
 					assetsDetailsList.add(assetsDetails);
 				}
+				Collections.sort(assetsDetailsList, new AssetComparator());
 			}
-			Collections.sort(assetsDetailsList, new AssetComparator());
+			
 			//------------------------------- END FOR FIX FIRST THREE ROW IN EXCEL SHEET
 
 			j = 1;
@@ -998,8 +1001,8 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 		/*if(profitibilitySheet.equals(sheet.getSheetName())|| balanceSheet.equals(sheet.getSheetName())) {
 			j=1;
 		}*/
-		
-		for (int i = j ; temp <= totalYear; ++temp , i++) {
+		int i = 0 ;
+		for (i = j ; temp <= totalYear; ++temp , i++) {
 			if(flag) {
 				//System.out.println(i+" cell "+sheet.getRow(4));
 				//System.out.println(i+" " + temp);
@@ -1010,6 +1013,11 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 			else {
 				sheet.getRow(3).getCell(i).setCellValue(temp);
 			}
+		}
+		for(  ; sheet.getRow(4).getCell(i) != null   ;  i++) {
+			 
+			sheet.setColumnHidden(i, true ) ;
+			
 		}
 		
 	}

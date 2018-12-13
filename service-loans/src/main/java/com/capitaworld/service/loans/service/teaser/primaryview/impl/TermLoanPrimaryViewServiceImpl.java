@@ -110,9 +110,6 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 	private FinancialArrangementDetailsService financialArrangementDetailsService;
 
 	@Autowired
-	private DirectorBackgroundDetailsService DirectorBackgroundDetailsService;
-
-	@Autowired
 	private OneFormClient oneFormClient;
 
 	@Autowired

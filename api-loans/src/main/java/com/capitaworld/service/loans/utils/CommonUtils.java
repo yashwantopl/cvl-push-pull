@@ -64,6 +64,22 @@ public class CommonUtils {
 	public static final String IN_PROGRESS = "In Progress";
 	public static final String COMPLETED = "Completed";
 	public static final String NA = "NA";
+
+	public static final String CLIENT_ID_IS_NOT_VALID = "Client Id is not valid";
+	public static final String INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND = "Invalid data or Requested data not found.";
+	public static final String EXCEPTION = "EXCEPTION :: ";
+
+	public static final String PARAMETERS_FP_NAME = "fp_name";
+	public static final String PARAMETERS_FS_NAME = "fs_name";
+	public static final String PARAMETERS_LOAN_TYPE = "loan_type";
+	public static final String PARAMETERS_LOAN_AMOUNT = "loan_amount";
+	public static final String PARAMETERS_APPLICATION_ID = "application_id";
+	public static final String PARAMETERS_EMI_AMOUNT = "emi_amount";
+	public static final String PARAMETERS_ADDRESS = "address";
+	public static final String PARAMETERS_IS_DYNAMIC = "isDynamic";
+
+	public static final String RATE_INTEREST = "rate_interest";
+	public static final String LITERAL_AMOUNT = "amount";
 	
 	public interface UsersRoles {
 		public static final Long MAKER = 1l;
@@ -1301,7 +1317,7 @@ public enum APIFlags {
 				setEntry.setValue(printFields(setEntry.getValue(),data));
 			}
 		}else if(obj instanceof String) {
-			obj = StringEscapeUtils.escapeXml((String)obj);
+			obj = StringEscapeUtils.escapeXml(((String)obj).replaceAll("--", ""));
 			return obj;
 		}else if(obj instanceof Double) {
 			if(!Double.isNaN((Double)obj)) {

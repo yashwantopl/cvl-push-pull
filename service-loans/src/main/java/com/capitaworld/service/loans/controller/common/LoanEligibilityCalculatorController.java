@@ -63,8 +63,7 @@ public class LoanEligibilityCalculatorController {
 			CommonDocumentUtils.endHook(logger, "calcMinMax");
 			return new ResponseEntity<LoansResponse>(response, HttpStatus.OK);
 		} catch (Exception e) {
-			logger.error("Error while calculating Loan eligibility for Home Loans");
-			e.printStackTrace();
+			logger.error("Error while calculating Loan eligibility for Home Loans : ",e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -95,8 +94,7 @@ public class LoanEligibilityCalculatorController {
 
 		} catch (Exception e) {
 			CommonDocumentUtils.endHook(logger, "getEligibleTenure");
-			logger.error("Error while calculating Eligible Tenure for Home Loans");
-			e.printStackTrace();
+			logger.error("Error while calculating Eligible Tenure for Home Loans : ",e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -124,8 +122,7 @@ public class LoanEligibilityCalculatorController {
 			CommonDocumentUtils.endHook(logger, "calcHomeLoanAmount");
 			return new ResponseEntity<LoansResponse>(response, HttpStatus.OK);
 		} catch (Exception e) {
-			logger.error("Error while calculating Loan eligibility for Home Loans");
-			e.printStackTrace();
+			logger.error("Error while calculating Loan eligibility for Home Loans : ",e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -159,8 +156,7 @@ public class LoanEligibilityCalculatorController {
 
 		} catch (Exception e) {
 			CommonDocumentUtils.endHook(logger, "getEligibleTenurePL");
-			logger.error("Error while calculating Eligible Tenure for Personal Loans");
-			e.printStackTrace();
+			logger.error("Error while calculating Eligible Tenure for Personal Loans : ",e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -190,8 +186,7 @@ public class LoanEligibilityCalculatorController {
 			CommonDocumentUtils.endHook(logger, "calcMinMaxPL");
 			return new ResponseEntity<LoansResponse>(response, HttpStatus.OK);
 		} catch (Exception e) {
-			logger.error("Error while calculating Loan eligibility for Personal Loans");
-			e.printStackTrace();
+			logger.error("Error while calculating Loan eligibility for Personal Loans : ",e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -226,8 +221,7 @@ public class LoanEligibilityCalculatorController {
 
 		} catch (Exception e) {
 			CommonDocumentUtils.endHook(logger, "getEligibleTenureLAP");
-			logger.error("Error while calculating Eligible Tenure for Loan Against Properties.");
-			e.printStackTrace();
+			logger.error("Error while calculating Eligible Tenure for Loan Against Properties. : ",e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -256,8 +250,7 @@ public class LoanEligibilityCalculatorController {
 			CommonDocumentUtils.endHook(logger, "calcMinMaxLAP");
 			return new ResponseEntity<LoansResponse>(response, HttpStatus.OK);
 		} catch (Exception e) {
-			logger.error("Error while calculating Loan eligibility for LAP");
-			e.printStackTrace();
+			logger.error("Error while calculating Loan eligibility for LAP : ",e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -285,8 +278,7 @@ public class LoanEligibilityCalculatorController {
 			CommonDocumentUtils.endHook(logger, "calcLAP");
 			return new ResponseEntity<LoansResponse>(response, HttpStatus.OK);
 		} catch (Exception e) {
-			logger.error("Error while calculating Loan eligibility for LAP");
-			e.printStackTrace();
+			logger.error("Error while calculating Loan eligibility for LAP : ",e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -448,8 +440,7 @@ public class LoanEligibilityCalculatorController {
 		try {
 		cmaDetailResponse =loanEligibilityCalculatorService.getCMADetail(applicationId);
 		} catch (NullPointerException e) {
-			e.printStackTrace();
-			logger.info("Exception in getCmaDetail()========>");
+			logger.error("Exception in getCmaDetail()========>",e);
 		}
 		logger.info("Exit from getCmaDetail()========>");
 		return cmaDetailResponse;
@@ -464,8 +455,7 @@ public class LoanEligibilityCalculatorController {
 		cmaDetailResponse =loanEligibilityCalculatorService.getCMADetail(applicationId);
 		logger.info("cmaDetailResponse==================================>1 in Controlle=={}",cmaDetailResponse.toString());
 		} catch (NullPointerException e) {
-			e.printStackTrace();
-			logger.info("Exception in getCmaDetail()========>");
+			logger.error("Exception in getCmaDetail()========>",e);
 		}
 		logger.info("Exit from getCmaDetail()========>");
 		return cmaDetailResponse;

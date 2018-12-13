@@ -162,6 +162,8 @@ import com.capitaworld.service.thirdpaty.client.ThirdPartyClient;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.UserResponse;
 import com.capitaworld.service.users.model.UsersRequest;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 
 @Service
 @Transactional
@@ -315,15 +317,18 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		map.put("date",!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getApprovedDate())? DATE_FORMAT.format(loanApplicationMaster.getApprovedDate()):"-");
 		CorporateApplicantRequest corporateApplicantRequest =corporateApplicantService.getCorporateApplicant(applicationId);
 		UserResponse userResponse = usersClient.getEmailMobile(userId);
-		LinkedHashMap<String, Object> lm = (LinkedHashMap<String, Object>)userResponse.getData();
-		try {
-			UsersRequest request = MultipleJSONObjectHelper.getObjectFromMap(lm,UsersRequest.class);
-			map.put("mobile", request.getMobile());
-			map.put("email", StringEscapeUtils.escapeXml(request.getEmail()));
-		} catch (IOException e1) {
-			logger.info("Error while getting registration details");
-			e1.printStackTrace();
+		if(userResponse!= null) {
+			LinkedHashMap<String, Object> lm = (LinkedHashMap<String, Object>)userResponse.getData();
+			try {
+				UsersRequest request = MultipleJSONObjectHelper.getObjectFromMap(lm,UsersRequest.class);
+				map.put("mobile", request.getMobile());
+				map.put("email", StringEscapeUtils.escapeXml(request.getEmail()));
+			} catch (IOException e1) {
+				logger.info("Error while getting registration details");
+				e1.printStackTrace();
+			}	
 		}
+		
 		CorporateFinalInfoRequest corporateFinalInfoRequest;
 		try {
 			corporateFinalInfoRequest = corporateFinalInfoService.get(userId, applicationId);
@@ -1077,13 +1082,12 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReportForCam(reportRequest);
 			List<HashMap<String, Object>> hashMap = (List<HashMap<String, Object>>) analyzerResponse.getData();
 			
-			int index = 0;
 			if (!CommonUtils.isListNullOrEmpty(hashMap)) {
 				for (HashMap<String, Object> rec : hashMap) {
 					Data data = MultipleJSONObjectHelper.getObjectFromMap(rec, Data.class);
 					datas.add(data);
 					
-					bankStatement.add(!CommonUtils.isObjectNullOrEmpty(data.getXns()) ? CommonUtils.printFields(data.getXns().getXn(),null) : " ");
+					//bankStatement.add(!CommonUtils.isObjectNullOrEmpty(data.getXns()) ? CommonUtils.printFields(data.getXns().getXn(),null) : " ");
 					monthlyDetails.add(!CommonUtils.isObjectNullOrEmpty(data.getMonthlyDetailList()) ? CommonUtils.printFields(data.getMonthlyDetailList(),null) : "");
 					top5FundReceived.add(!CommonUtils.isObjectNullOrEmpty(data.getTop5FundReceivedList().getItem()) ? CommonUtils.printFields(data.getTop5FundReceivedList().getItem(),null) : "");
 					top5FundTransfered.add(!CommonUtils.isObjectNullOrEmpty(data.getTop5FundTransferedList().getItem()) ? CommonUtils.printFields(data.getTop5FundTransferedList().getItem(),null) : "");
@@ -1091,14 +1095,13 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 					customerInfo.add(!CommonUtils.isObjectNullOrEmpty(data.getCustomerInfo()) ? CommonUtils.printFields(data.getCustomerInfo(),null) : " ");
 					summaryInfo.add(!CommonUtils.isObjectNullOrEmpty(data.getSummaryInfo()) ?CommonUtils.printFields(data.getSummaryInfo(),null) : " ");
 					
-					index++;
 				}
 				
 				//System.out.println("bankStatement : "+bankStatement.size()+" monthlyDetails :"+monthlyDetails.size()+" top5FundReceived :"+top5FundReceived.size());
 				//System.out.println("top5FundTransfered : "+top5FundTransfered.size()+" bouncedChequeList :"+bouncedChequeList.size()+" customerInfo :"+customerInfo.size());
 				//System.out.println("summaryInfo : "+summaryInfo.size()+" bankStatementAnalysis :"+datas.size());
 				
-				map.put("bankStatement", bankStatement);
+				//map.put("bankStatement", bankStatement);
 				map.put("monthlyDetails", monthlyDetails);
 				map.put("top5FundReceived", top5FundReceived);
 				map.put("top5FundTransfered", top5FundTransfered);
@@ -1397,7 +1400,6 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReportForCam(reportRequest);
 			List<HashMap<String, Object>> hashMap = (List<HashMap<String, Object>>) analyzerResponse.getData();
 			
-			int index = 0;
 			if (!CommonUtils.isListNullOrEmpty(hashMap)) {
 				for (HashMap<String, Object> rec : hashMap) {
 					Data data = MultipleJSONObjectHelper.getObjectFromMap(rec, Data.class);
@@ -1411,7 +1413,6 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 					customerInfo.add(!CommonUtils.isObjectNullOrEmpty(data.getCustomerInfo()) ? CommonUtils.printFields(data.getCustomerInfo(),null) : " ");
 					summaryInfo.add(!CommonUtils.isObjectNullOrEmpty(data.getSummaryInfo()) ?CommonUtils.printFields(data.getSummaryInfo(),null) : " ");
 					
-					index++;
 				}
 				
 				//System.out.println("bankStatement : "+bankStatement.size()+" monthlyDetails :"+monthlyDetails.size()+" top5FundReceived :"+top5FundReceived.size());
@@ -1427,6 +1428,10 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				map.put("summaryInfo", summaryInfo);
 				map.put("bankStatementAnalysis", CommonUtils.printFields(datas, null));
 				
+				ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+				String json = ow.writeValueAsString(monthlyDetails);
+				
+//				System.out.println("monthlyDetails : "+json);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

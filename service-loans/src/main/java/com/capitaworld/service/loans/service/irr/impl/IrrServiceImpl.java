@@ -106,10 +106,16 @@ public class IrrServiceImpl implements IrrService{
 	private CreditRatingCompanyDetailsRepository creditRatingCompanyDetailsRepository;
 	
 	private final Logger log = LoggerFactory.getLogger(IrrServiceImpl.class);
+
+	private static final String ERROR_WHILE_GETTING_IRR_ID_FROM_ONE_FORM = "error while getting irr id from one form : ";
+	private static final String SOMETHING_WENT_WRONG_PLEASE_TRY_AGAIN_AFTER_SOME_TIMES = "Something went wrong please try again after some times";
+	private static final String OPERATING_STATEMENT_DETAILS_GET_DEPRECIATION = "operatingStatementDetails.getDepreciation()::";
+	private static final String MSG_APP_ID = "App Id::";
+	private static final String MSG_CURRENT_YEAR_1 = " currentYear-1::";
 	
 	@Override
 	public ResponseEntity<RatingResponse> calculateIrrRating(Long appId, Long userId) {
-		// TODO Auto-generated method stub
+
 		Integer businessTypeId=null; // get from irr-cw industry mapping
 		//businessTypeId=3;   // temp
 		Double industryRiskScore=0.0;
@@ -156,18 +162,17 @@ public class IrrServiceImpl implements IrrService{
 				
 				if(irrId==null)
 				{
-					log.error("error while getting irr id from one form");
+					log.error(ERROR_WHILE_GETTING_IRR_ID_FROM_ONE_FORM);
 					return new ResponseEntity<RatingResponse>(
-							new RatingResponse("error while getting irr id from one form", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+							new RatingResponse(ERROR_WHILE_GETTING_IRR_ID_FROM_ONE_FORM, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 				}
 				
 			} catch (Exception e) {
-				// TODO: handle exception
-				log.error("error while getting irr id from one form");
-				e.printStackTrace();
+
+				log.error(ERROR_WHILE_GETTING_IRR_ID_FROM_ONE_FORM,e);
 				
 				return new ResponseEntity<RatingResponse>(
-						new RatingResponse("error while getting irr id from one form", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+						new RatingResponse(ERROR_WHILE_GETTING_IRR_ID_FROM_ONE_FORM, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 				
 			}
 			
@@ -182,16 +187,14 @@ public class IrrServiceImpl implements IrrService{
 								{
 									log.info("Error while getting irr id from rating");	
 									return new ResponseEntity<RatingResponse>(
-											new RatingResponse("Something went wrong please try again after some times", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+											new RatingResponse(SOMETHING_WENT_WRONG_PLEASE_TRY_AGAIN_AFTER_SOME_TIMES, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 								}
 										
 								businessTypeId=industryResponse.getBusinessTypeId();
 								industryRiskScore=industryResponse.getScore();
 								industry=industryResponse.getIndustry();
 							} catch (Exception e) {
-									// TODO: handle exception
-								log.error("error while getting irr industry detail from rating");
-								e.printStackTrace();
+								log.error("error while getting irr industry detail from rating : ",e);
 								
 								return new ResponseEntity<RatingResponse>(
 										new RatingResponse("error while getting irr industry detail from rating", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
@@ -231,12 +234,11 @@ public class IrrServiceImpl implements IrrService{
 				//---- Trading
 				irrRequest.setQualitativeInputSheetTradRequest(qualitativeInputServiceTrading(appId, userId, applicationMaster.getProductId(),isCmaUploaded, isCoActUploaded, denom));
 			}
-			
-		
-			
+
 			// if CMA filled
-			if(isCmaUploaded)			
-			irrRequest.setFinancialInputRequest(cmaIrrMappingService(userId,appId,industry,denom));
+			if(isCmaUploaded) {
+				irrRequest.setFinancialInputRequest(cmaIrrMappingService(userId, appId, industry, denom));
+			}
 			
 			/*// if coAct filled
 			if(isCoActUploaded)
@@ -245,11 +247,9 @@ public class IrrServiceImpl implements IrrService{
 			
 			
 		} catch (Exception e) {
-			e.printStackTrace();
-			
-			log.info("Error while mapping irr request and qualitative input from db");	
+			log.error("Error while mapping irr request and qualitative input from db : ",e);
 			return new ResponseEntity<RatingResponse>(
-					new RatingResponse("Something went wrong please try again after some times", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+					new RatingResponse(SOMETHING_WENT_WRONG_PLEASE_TRY_AGAIN_AFTER_SOME_TIMES, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}
 		
 		RatingResponse ratingResponse=new RatingResponse();
@@ -266,17 +266,13 @@ public class IrrServiceImpl implements IrrService{
 			return new ResponseEntity<RatingResponse>(
 					new RatingResponse(ratingResponse,"Irr rating generated", HttpStatus.OK.value()), HttpStatus.OK);
 		} catch (Exception e) {
-			// TODO: handle exception
-			e.printStackTrace();
-			
-			log.info("Error while callling rating client");	
+			log.error("Error while callling rating client : ",e);
 			return new ResponseEntity<RatingResponse>(
-					new RatingResponse("Something went wrong please try again after some times", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+					new RatingResponse(SOMETHING_WENT_WRONG_PLEASE_TRY_AGAIN_AFTER_SOME_TIMES, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}
 	}
 	
 	private Boolean isCMAUploaded(Long appId, Integer productId) {
-		// TODO Auto-generated method stub
 		
 		try{
 			
@@ -288,16 +284,16 @@ public class IrrServiceImpl implements IrrService{
 				return  (documentManagementService.getDocumentDetails(appId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.TL_CMA)).size()>0?true:false);
 			case UNSECURED_LOAN :
 				return  (documentManagementService.getDocumentDetails(appId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.USL_CMA)).size()>0?true:false);
+			default : break;
 			}
 		}catch(DocumentException e){
-			e.printStackTrace();
+			log.error("Exception in isCMAUploaded : ",e);
 			return false;
 		}
 		return false;
 	}
 	
 	private Boolean isCoActUploaded(Long appId, Integer productId) {
-		// TODO Auto-generated method stub
 		
 		try{
 			
@@ -309,9 +305,10 @@ public class IrrServiceImpl implements IrrService{
 				return  (documentManagementService.getDocumentDetails(appId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.TL_COMPANY_ACT)).size()>0?true:false);
 			case UNSECURED_LOAN :
 				return  (documentManagementService.getDocumentDetails(appId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.USL_COMPANY_ACT)).size()>0?true:false);
+			default : break;
 			}
 		}catch(DocumentException e){
-			e.printStackTrace();
+			log.error("Exception in isCoActUploaded : ",e);
 			return false;
 		}
 		return false;
@@ -321,7 +318,7 @@ public class IrrServiceImpl implements IrrService{
 	
 	@Override
 	public FinancialInputRequest cmaIrrMappingService(Long userId, Long aplicationId,String industry,Long denom) throws Exception {
-		// TODO Auto-generated method stub
+
 		//JSONObject jSONObject = new JSONObject();
 		log.info("APPLICATION ID:::"+aplicationId);
 		log.info("DENO::"+denom);
@@ -382,11 +379,7 @@ public class IrrServiceImpl implements IrrService{
 			operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStatementDetails(aplicationId, currentYear-1+"");
 			if(operatingStatementDetails != null) {
 				
-				log.info("App Id::"+aplicationId);
-				log.info("currentYear-1::"+(currentYear-1));
-				log.info("operatingStatementDetails.getDepreciation()::"+operatingStatementDetails.getDepreciation());
-
-
+				log.info(MSG_APP_ID + aplicationId + MSG_CURRENT_YEAR_1 + (currentYear-1) + OPERATING_STATEMENT_DETAILS_GET_DEPRECIATION+operatingStatementDetails.getDepreciation());
 
 				if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails)){
 					operatingStatementDetails = new OperatingStatementDetails();
@@ -481,10 +474,7 @@ public class IrrServiceImpl implements IrrService{
 			
 			
 		} catch (Exception e) {
-			
-			log.error("error while calculate first year financial data OS");
-			e.printStackTrace();
-			
+			log.error("error while calculate first year financial data OS : ",e);
 		}
 		
 
@@ -711,10 +701,7 @@ public class IrrServiceImpl implements IrrService{
 			}
 			
 		} catch (Exception e) {
-				
-			log.error("error while getting first year asset details");
-			e.printStackTrace();
-			
+			log.error("error while getting first year asset details : ",e);
 		}
 		
 		
@@ -727,9 +714,7 @@ public class IrrServiceImpl implements IrrService{
 			
 			if(operatingStatementDetails != null) {
 				
-				log.info("App Id::"+aplicationId);
-				log.info("currentYear-1::"+(currentYear-1));
-				log.info("operatingStatementDetails.getDepreciation()::"+operatingStatementDetails.getDepreciation());
+				log.info(MSG_APP_ID+aplicationId + MSG_CURRENT_YEAR_1+(currentYear-1) + OPERATING_STATEMENT_DETAILS_GET_DEPRECIATION+operatingStatementDetails.getDepreciation() );
 				
 				if(CommonUtils.isObjectNullOrEmpty(operatingStatementDetails)){
 					operatingStatementDetails = new OperatingStatementDetails();
@@ -825,8 +810,7 @@ public class IrrServiceImpl implements IrrService{
 			}
 			
 		} catch (Exception e) {
-				log.error("error while fetching second year operating data");
-				e.printStackTrace();
+				log.error("error while fetching second year operating data : ",e);
 		}
 		
 		
@@ -942,8 +926,7 @@ public class IrrServiceImpl implements IrrService{
 			}
 			
 		} catch (Exception e) {
-			log.error("error while fetching 2nd year liability data ");
-			e.printStackTrace();
+			log.error("error while fetching 2nd year liability data : ",e);
 		}
 		
 		
@@ -1042,18 +1025,19 @@ public class IrrServiceImpl implements IrrService{
 				financialInputRequest.setOtherIncomeNeedTocCheckAssetSy(assetsDetails.getOtherIncomeNeedTocCheckAsset() * denom);
 				// -----CONTIGENT LIABILITIES
 				if(corporateFinalInfoRequest == null)
+				{
 					financialInputRequest.setContingentLiablitiesSy(null);
-				else
-				financialInputRequest.setContingentLiablitiesSy(CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getContLiabilitySyAmt()) ? 0.0 : (corporateFinalInfoRequest.getContLiabilitySyAmt() * denom));
-				
+				}
+				else {
+					financialInputRequest.setContingentLiablitiesSy(CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getContLiabilitySyAmt()) ? 0.0 : (corporateFinalInfoRequest.getContLiabilitySyAmt() * denom));
+				}
 				
 			}else {
 				log.error("2nd year asset data is null");
 			}
 			
 		} catch (Exception e) {
-			log.error("error while fetching 2nd year data asset");
-			e.printStackTrace();
+			log.error("error while fetching 2nd year data asset : ",e);
 		}
 		
 		
@@ -1070,10 +1054,9 @@ public class IrrServiceImpl implements IrrService{
 			
 			if(operatingStatementDetails != null) {
 				
-				log.info("App Id::"+aplicationId);
-				log.info("currentYear-1::"+(currentYear-1));
+				log.info(MSG_APP_ID+ aplicationId + MSG_CURRENT_YEAR_1 +(currentYear-1));
 				if(operatingStatementDetails!=null) {
-				log.info("operatingStatementDetails.getDepreciation()::"+operatingStatementDetails.getDepreciation());
+				log.info(OPERATING_STATEMENT_DETAILS_GET_DEPRECIATION+operatingStatementDetails.getDepreciation());
 				}else {
 					log.info("operatingStatementDetails is:: NULL");
 				}
@@ -1175,8 +1158,7 @@ public class IrrServiceImpl implements IrrService{
 			
 			
 		} catch (Exception e) {
-			log.error("error while fetching os data");
-			e.printStackTrace();
+			log.error("error while fetching os data : ",e);
 		}
 		
 		
@@ -1289,8 +1271,7 @@ public class IrrServiceImpl implements IrrService{
 					}
 					
 				} catch (Exception e) {
-					log.error("error while fetching liability data");
-					e.printStackTrace();
+					log.error("error while fetching liability data : ",e);
 				}
 				
 				
@@ -1400,8 +1381,7 @@ public class IrrServiceImpl implements IrrService{
 					}
 					
 				} catch (Exception e) {
-					log.error("error while fetching asset data");
-					e.printStackTrace();
+					log.error("error while fetching asset data : ",e);
 				}
 				
 				
@@ -1424,14 +1404,12 @@ public class IrrServiceImpl implements IrrService{
 		log.info("financialInputRequest.getPowerAndFuelCostSy()::"+financialInputRequest.getPowerAndFuelCostSy());
 		log.info("financialInputRequest.getPowerAndFuelCostTy()::"+financialInputRequest.getPowerAndFuelCostTy());
 
-		log.info("");
-
 		return financialInputRequest;
 	}
 
 	@Override
 	public FinancialInputRequest coActIrrMappingService(Long userId, Long aplicationId,String industry,Long denom) throws Exception {
-		// TODO Auto-generated method stub
+
 		//JSONObject jSONObject = new JSONObject();
 		IrrRequest irrRequest = new IrrRequest();
 		FinancialInputRequest financialInputRequest = new FinancialInputRequest();
@@ -2250,7 +2228,7 @@ public class IrrServiceImpl implements IrrService{
 	@Override
 	public QualitativeInputSheetManuRequest qualitativeInputServiceManu(Long aplicationId, Long userId, Integer productId, Boolean isCmaUploaded, Boolean isCoActUploaded,Double industryRiskScore,Long denom)
 			throws Exception {
-		// TODO Auto-generated method stub
+
 		QualitativeInputSheetManuRequest qualitativeInputSheetManuRequest = null;
 
 		return setQualitativeInputManu(aplicationId,productId, userId,isCmaUploaded,isCoActUploaded, industryRiskScore, denom);
@@ -2299,7 +2277,7 @@ public class IrrServiceImpl implements IrrService{
 		qualitativeInputSheetManuRequest.setSensititivityAnalysis(corporateMcqDetail.getSensititivityAnalysis().longValue());
 		qualitativeInputSheetManuRequest.setInfrastructureAvailability(corporateMcqDetail.getInfrastructureAvailability().longValue());
 		qualitativeInputSheetManuRequest.setConstructionContract(corporateMcqDetail.getConstructionContract().longValue());
-		System.out.println("corporateMcqDetail.getConstructionContract():::::::::::::::::::::"+corporateMcqDetail.getConstructionContract());
+		log.info("corporateMcqDetail.getConstructionContract():::::::::::::::::::::"+corporateMcqDetail.getConstructionContract());
 		qualitativeInputSheetManuRequest.setDesignTechnologyRisk(corporateMcqDetail.getTechnologyRiskId().longValue());
 		qualitativeInputSheetManuRequest.setNumberCheckReturned(corporateMcqDetail.getNumberOfCheques().longValue());
 		qualitativeInputSheetManuRequest.setNumberTimesDpLimits(corporateMcqDetail.getNumberOfTimesDp().longValue());
@@ -2572,7 +2550,7 @@ public class IrrServiceImpl implements IrrService{
 	@Override
 	public QualitativeInputSheetServRequest qualitativeInputServiceService(Long aplicationId,Long userId , Integer productId,Boolean isCmaUploaded, Boolean isCoActUploaded,Long denom)
 			throws Exception {
-		// TODO Auto-generated method stub
+
 		QualitativeInputSheetServRequest qualitativeInputSheetServRequest = new QualitativeInputSheetServRequest();
 
 		return setServiceQualitativeInput(aplicationId,userId ,isCmaUploaded, isCoActUploaded, denom);
@@ -2734,7 +2712,7 @@ public class IrrServiceImpl implements IrrService{
 	@Override
 	public QualitativeInputSheetTradRequest qualitativeInputServiceTrading(Long aplicationId, Long userId, Integer productId,Boolean isCmaUploaded, Boolean isCoActUploaded,Long denom)
 			throws Exception {
-		// TODO Auto-generated method stub
+
 		QualitativeInputSheetTradRequest qualitativeInputSheetTradRequest = new QualitativeInputSheetTradRequest();
 
 		return setTradingQualitativeInput(aplicationId,userId ,isCmaUploaded, isCoActUploaded, denom);

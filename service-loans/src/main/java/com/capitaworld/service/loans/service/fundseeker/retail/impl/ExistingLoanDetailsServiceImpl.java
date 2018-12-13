@@ -82,8 +82,7 @@ public class ExistingLoanDetailsServiceImpl implements ExistingLoanDetailsServic
 		}
 
 		catch (Exception e) {
-			logger.info("Exception  in save existingLoanDetail  :-");
-			e.printStackTrace();
+			logger.error("Exception  in save existingLoanDetail  :-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 
@@ -158,8 +157,7 @@ public class ExistingLoanDetailsServiceImpl implements ExistingLoanDetailsServic
 		}
 
 		catch (Exception e) {
-			logger.info("Exception  in save existingLoanDetail from CIBIL :-");
-			e.printStackTrace();
+			logger.error("Exception  in save existingLoanDetail from CIBIL :-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 

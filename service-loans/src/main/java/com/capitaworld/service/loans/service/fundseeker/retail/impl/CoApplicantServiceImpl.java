@@ -150,8 +150,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 			return true;
 
 		} catch (Exception e) {
-			logger.error("Error while Saving Retail Profile:-");
-			e.printStackTrace();
+			logger.error("Error while Saving Retail Profile :- ",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
@@ -161,8 +160,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 		try {
 			return coApplicantDetailRepository.getCoAppIds(applicationId, userId);
 		} catch (Exception e) {
-			logger.error("Error while getCoAppIds:-");
-			e.printStackTrace();
+			logger.error("Error while getCoAppIds :- ",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
@@ -196,8 +194,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 			applicantRequest.setDetailsFilledCount(applicantDetail.getApplicationId().getDetailsFilledCount());
 			return applicantRequest;
 		} catch (Exception e) {
-			logger.error("Error while getting CoApplicant Retail Profile:-");
-			e.printStackTrace();
+			logger.error("Error while getting CoApplicant Retail Profile :- ",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 
@@ -225,8 +222,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 			}
 			return requests;
 		} catch (Exception e) {
-			logger.error("Error while getting List of CoApplicant Retail Profile:-");
-			e.printStackTrace();
+			logger.error("Error while getting List of CoApplicant Retail Profile :- ",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
@@ -268,8 +264,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 			return true;
 
 		} catch (Exception e) {
-			logger.error("Error while Saving Final CoApplicant Retail Profile:-");
-			e.printStackTrace();
+			logger.error("Error while Saving Final CoApplicant Retail Profile :- ",e);
 			throw new Exception("Something went Wrong !");
 		}
 	}
@@ -289,8 +284,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 			applicantRequest.setFinalFilledCount(applicantDetail.getApplicationId().getFinalFilledCount());
 			return applicantRequest;
 		} catch (Exception e) {
-			logger.error("Error while getting Final CoApplicant Retail Profile:-");
-			e.printStackTrace();
+			logger.error("Error while getting Final CoApplicant Retail Profile :- ",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
@@ -513,7 +507,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 							officeAddress.setCity("-");
 						}
 					} catch (Exception e) {
-						e.printStackTrace();
+						logger.error(CommonUtils.EXCEPTION,e);
 					}
 					try {
 						List<Long> officeCountry = new ArrayList<Long>(1);
@@ -534,8 +528,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 							officeAddress.setCountry("-");
 						}
 					} catch (Exception e) {
-						e.printStackTrace();
-
+						logger.error(CommonUtils.EXCEPTION,e);
 					}
 					try {
 						List<Long> officeState = new ArrayList<Long>(1);
@@ -556,7 +549,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 							officeAddress.setState("-");
 						}
 					} catch (Exception e) {
-						e.printStackTrace();
+						logger.error(CommonUtils.EXCEPTION,e);
 					}
 					officeAddress.setLandMark(coApplicantDetail.getOfficeLandMark() !=null ? coApplicantDetail.getOfficeLandMark() : "");
 					officeAddress.setPincode(coApplicantDetail.getOfficePincode() != null? coApplicantDetail.getOfficePincode().toString() : "");
@@ -1178,8 +1171,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 		try {
 			return coApplicantDetailRepository.getApplicantIdById(id);
 		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("Error While getting Applicant Id by CoApplicant ID");
+			logger.error("Error While getting Applicant Id by CoApplicant ID : ",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
