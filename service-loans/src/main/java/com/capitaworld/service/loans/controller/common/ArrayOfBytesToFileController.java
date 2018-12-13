@@ -43,9 +43,7 @@ public class ArrayOfBytesToFileController {
 			loansResponse.setContentInBytes(stringToBytes);
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);	
 		} catch (Exception e) {
-			// TODO: handle exception
-			logger.error("Error while converting string into bytes", e);
-			e.printStackTrace();
+			logger.error("Error while converting string into bytes : ",e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);

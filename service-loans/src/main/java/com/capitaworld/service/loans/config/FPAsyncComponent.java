@@ -263,7 +263,7 @@ public class FPAsyncComponent {
 						}
 
 						if (!CommonUtils.isObjectNullOrEmpty(userObj.getEmail())) {
-							// System.out.println("Maker ID:---"+userObj.getEmail());
+							logger.info("Maker ID:---"+userObj.getEmail());
 							to = userObj.getEmail();
 
 							if ("null ".equals(name)) {
@@ -278,7 +278,7 @@ public class FPAsyncComponent {
 						}
 
 						if (!CommonUtils.isObjectNullOrEmpty(userObj.getMobile())) {
-							// System.out.println("Maker ID:---"+userObj.getEmail());
+							logger.info("Maker ID:---"+userObj.getEmail());
 							Map<String, Object> smsParameters = new HashMap<String, Object>();
 							to = "91" + userObj.getMobile();
 							smsParameters.put(CommonUtils.PARAMETERS_FS_NAME,
@@ -293,7 +293,7 @@ public class FPAsyncComponent {
 						}
 
 						if (!CommonUtils.isObjectNullOrEmpty(userObj.getId())) {
-							// System.out.println("Maker ID:---"+userObj.getEmail());
+							logger.info("Maker ID:---"+userObj.getEmail());
 							Map<String, Object> sysParameters = new HashMap<String, Object>();
 							sysParameters.put(CommonUtils.PARAMETERS_FS_NAME,
 									paymentRequest.getNameOfEntity() != null ? paymentRequest.getNameOfEntity() : "NA");
@@ -451,7 +451,7 @@ public class FPAsyncComponent {
 							logger.error("error while fetching FP name : ",e);
 						}
 						if (!CommonUtils.isObjectNullOrEmpty(userObj.getEmail())) {
-							// System.out.println("Checker ID:---"+userObj.getEmail());
+							logger.info("Checker ID:---"+userObj.getEmail());
 							to = userObj.getEmail();
 							if ("null ".equals(name)) {
 								mailParameters.put(PARAMETERS_CHECKER_NAME, PARAMETERS_SIR_MADAM);
@@ -464,7 +464,7 @@ public class FPAsyncComponent {
 						}
 
 						if (!CommonUtils.isObjectNullOrEmpty(userObj.getMobile())) {
-							// System.out.println("Maker ID:---"+userObj.getEmail());
+							logger.info("Maker ID:---"+userObj.getEmail());
 							Map<String, Object> smsParameters = new HashMap<String, Object>();
 							to = "91" + userObj.getMobile();
 							if ("null ".equals(name)) {
@@ -484,7 +484,7 @@ public class FPAsyncComponent {
 						}
 
 						if (!CommonUtils.isObjectNullOrEmpty(userObj.getId())) {
-							// System.out.println("Maker ID:---"+userObj.getEmail());
+							logger.info("Maker ID:---"+userObj.getEmail());
 							Map<String, Object> sysParameters = new HashMap<String, Object>();
 							sysParameters.put(CommonUtils.PARAMETERS_FS_NAME,
 									paymentRequest.getNameOfEntity() != null ? paymentRequest.getNameOfEntity() : "NA");
@@ -644,7 +644,7 @@ public class FPAsyncComponent {
 						}
 
 						if (!CommonUtils.isObjectNullOrEmpty(userObj.getEmail())) {
-							// System.out.println("Checker ID:---"+userObj.getEmail());
+							logger.info("Checker ID:---"+userObj.getEmail());
 							to = userObj.getEmail();
 							if ("null ".equals(name)) {
 								mailParameters.put(PARAMETERS_HO_NAME, PARAMETERS_SIR_MADAM);
@@ -657,7 +657,7 @@ public class FPAsyncComponent {
 						}
 
 						if (!CommonUtils.isObjectNullOrEmpty(userObj.getMobile())) {
-							// System.out.println("Maker ID:---"+userObj.getEmail());
+							logger.info("Maker ID:---"+userObj.getEmail());
 							Map<String, Object> smsParameters = new HashMap<String, Object>();
 							to = "91" + userObj.getMobile();
 							smsParameters.put(CommonUtils.PARAMETERS_FS_NAME,
@@ -672,7 +672,7 @@ public class FPAsyncComponent {
 						}
 
 						if (!CommonUtils.isObjectNullOrEmpty(userObj.getId())) {
-							// System.out.println("Maker ID:---"+userObj.getEmail());
+							logger.info("Maker ID:---"+userObj.getEmail());
 							Map<String, Object> sysParameters = new HashMap<String, Object>();
 							sysParameters.put(CommonUtils.PARAMETERS_FS_NAME,
 									paymentRequest.getNameOfEntity() != null ? paymentRequest.getNameOfEntity() : "NA");
@@ -835,7 +835,7 @@ public class FPAsyncComponent {
 						}
 
 						if (!CommonUtils.isObjectNullOrEmpty(userObj.getEmail())) {
-							// System.out.println("Checker ID:---"+userObj.getEmail());
+							logger.info("Checker ID:---"+userObj.getEmail());
 							to = userObj.getEmail();
 							if ("null ".equals(name)) {
 								mailParameters.put(PARAMETERS_BO_NAME, PARAMETERS_SIR_MADAM);
@@ -848,7 +848,7 @@ public class FPAsyncComponent {
 						}
 
 						if (!CommonUtils.isObjectNullOrEmpty(userObj.getMobile())) {
-							// System.out.println("Maker ID:---"+userObj.getEmail());
+							logger.info("Maker ID:---"+userObj.getEmail());
 							Map<String, Object> smsParameters = new HashMap<String, Object>();
 							to = "91" + userObj.getMobile();
 							smsParameters.put(CommonUtils.PARAMETERS_FS_NAME,
@@ -863,7 +863,7 @@ public class FPAsyncComponent {
 						}
 
 						if (!CommonUtils.isObjectNullOrEmpty(userObj.getId())) {
-							// System.out.println("Maker ID:---"+userObj.getEmail());
+							logger.info("Maker ID:---"+userObj.getEmail());
 							Map<String, Object> sysParameters = new HashMap<String, Object>();
 							sysParameters.put(CommonUtils.PARAMETERS_FS_NAME,
 									paymentRequest.getNameOfEntity() != null ? paymentRequest.getNameOfEntity() : "NA");
@@ -1119,7 +1119,7 @@ public class FPAsyncComponent {
 				}
 
 				if (!CommonUtils.isObjectNullOrEmpty(assignedMaker.getMobile())) {
-					// System.out.println("Maker ID:---"+userObj.getEmail());
+//					logger.info("Maker ID:---"+userObj.getEmail());
 					Map<String, Object> smsParameters = new HashMap<String, Object>();
 					String to = "91" + assignedMaker.getMobile();
 					smsParameters.put(PARAMETERS_MAKER_NAME, assignedMakerName);
@@ -1139,7 +1139,7 @@ public class FPAsyncComponent {
 				}
 
 				if (!CommonUtils.isObjectNullOrEmpty(assignedMaker.getId())) {
-					// System.out.println("Maker ID:---"+userObj.getEmail());
+//					logger.info("Maker ID:---"+userObj.getEmail());
 					Map<String, Object> sysParameters = new HashMap<String, Object>();
 					sysParameters.put(CommonUtils.PARAMETERS_FS_NAME, fsName != null ? fsName : "NA");
 
@@ -1180,7 +1180,7 @@ public class FPAsyncComponent {
 
 					if (!CommonUtils.isObjectNullOrEmpty(makerObj.getEmail())
 							&& !(makerObj.getEmail().equals(assignedMaker.getEmail()))) {
-						// System.out.println("Checker ID:---"+userObj.getEmail());
+//						logger.info("Checker ID:---"+userObj.getEmail());
 						String to = makerObj.getEmail();
 						parameters.put("assigned_maker_name", assignedMakerName);
 						if ("null ".equals(name)) {
@@ -1195,7 +1195,7 @@ public class FPAsyncComponent {
 
 					if (!CommonUtils.isObjectNullOrEmpty(makerObj.getMobile())
 							&& !(makerObj.getMobile().equals(assignedMaker.getMobile()))) {
-						// System.out.println("Maker ID:---"+userObj.getEmail());
+//						logger.info("Maker ID:---"+userObj.getEmail());
 						Map<String, Object> smsParameters = new HashMap<String, Object>();
 						String to = "91" + makerObj.getMobile();
 						smsParameters.put(PARAMETERS_MAKER_NAME, assignedMakerName);
@@ -1216,7 +1216,7 @@ public class FPAsyncComponent {
 
 					if (!CommonUtils.isObjectNullOrEmpty(makerObj.getId())
 							&& !(makerObj.getId().equals(assignedMaker.getId()))) {
-						// System.out.println("Maker ID:---"+userObj.getEmail());
+//						logger.info("Maker ID:---"+userObj.getEmail());
 						Map<String, Object> sysParameters = new HashMap<String, Object>();
 						sysParameters.put(PARAMETERS_MAKER_NAME, assignedMakerName);
 						sysParameters.put(CommonUtils.PARAMETERS_FS_NAME, fsName != null ? fsName : "NA");
@@ -1261,7 +1261,7 @@ public class FPAsyncComponent {
 					}
 
 					if (!CommonUtils.isObjectNullOrEmpty(checkerObj.getEmail())) {
-						// System.out.println("Checker ID:---"+userObj.getEmail());
+//						logger.info("Checker ID:---"+userObj.getEmail());
 						String to = checkerObj.getEmail();
 						parameters.put(PARAMETERS_MAKER_NAME, assignedMakerName);
 						if ("null ".equals(name)) {
@@ -1275,7 +1275,7 @@ public class FPAsyncComponent {
 					}
 
 					if (!CommonUtils.isObjectNullOrEmpty(checkerObj.getMobile())) {
-						// System.out.println("Maker ID:---"+userObj.getEmail());
+//						logger.info("Maker ID:---"+userObj.getEmail());
 						Map<String, Object> smsParameters = new HashMap<String, Object>();
 						String to = "91" + checkerObj.getMobile();
 						if ("null ".equals(name)) {
@@ -1300,7 +1300,7 @@ public class FPAsyncComponent {
 					}
 
 					if (!CommonUtils.isObjectNullOrEmpty(checkerObj.getId())) {
-						// System.out.println("Maker ID:---"+userObj.getEmail());
+//						logger.info("Maker ID:---"+userObj.getEmail());
 						Map<String, Object> sysParameters = new HashMap<String, Object>();
 						sysParameters.put(PARAMETERS_MAKER_NAME, assignedMakerName);
 						sysParameters.put(CommonUtils.PARAMETERS_FS_NAME, fsName != null ? fsName : "NA");
@@ -1352,7 +1352,7 @@ public class FPAsyncComponent {
 					}
 
 					if (!CommonUtils.isObjectNullOrEmpty(hoObj.getEmail())) {
-						// System.out.println("Checker ID:---"+userObj.getEmail());
+//						logger.info("Checker ID:---"+userObj.getEmail());
 						String to = hoObj.getEmail();
 						parameters.put(PARAMETERS_MAKER_NAME, assignedMakerName);
 						if ("null ".equals(name)) {
@@ -1366,7 +1366,7 @@ public class FPAsyncComponent {
 					}
 
 					if (!CommonUtils.isObjectNullOrEmpty(hoObj.getMobile())) {
-						// System.out.println("Maker ID:---"+userObj.getEmail());
+//						logger.info("Maker ID:---"+userObj.getEmail());
 						Map<String, Object> smsParameters = new HashMap<String, Object>();
 						String to = "91" + hoObj.getMobile();
 						smsParameters.put(PARAMETERS_MAKER_NAME, assignedMakerName);
@@ -1386,7 +1386,7 @@ public class FPAsyncComponent {
 					}
 
 					if (!CommonUtils.isObjectNullOrEmpty(hoObj.getId())) {
-						// System.out.println("Maker ID:---"+userObj.getEmail());
+//						logger.info("Maker ID:---"+userObj.getEmail());
 						Map<String, Object> sysParameters = new HashMap<String, Object>();
 						sysParameters.put(PARAMETERS_MAKER_NAME, assignedMakerName);
 						sysParameters.put(CommonUtils.PARAMETERS_FS_NAME, fsName != null ? fsName : "NA");
@@ -1438,7 +1438,7 @@ public class FPAsyncComponent {
 					}
 
 					if (!CommonUtils.isObjectNullOrEmpty(boObj.getEmail())) {
-						// System.out.println("Checker ID:---"+userObj.getEmail());
+//						logger.info("Checker ID:---"+userObj.getEmail());
 						String to = boObj.getEmail();
 						parameters.put(PARAMETERS_MAKER_NAME, assignedMakerName);
 						if ("null ".equals(name)) {
@@ -1452,7 +1452,7 @@ public class FPAsyncComponent {
 					}
 
 					if (!CommonUtils.isObjectNullOrEmpty(boObj.getMobile())) {
-						// System.out.println("Maker ID:---"+userObj.getEmail());
+//						logger.info("Maker ID:---"+userObj.getEmail());
 						Map<String, Object> smsParameters = new HashMap<String, Object>();
 						String to = "91" + boObj.getMobile();
 						smsParameters.put(PARAMETERS_MAKER_NAME, assignedMakerName);
@@ -1472,7 +1472,7 @@ public class FPAsyncComponent {
 					}
 
 					if (!CommonUtils.isObjectNullOrEmpty(boObj.getId())) {
-						// System.out.println("Maker ID:---"+userObj.getEmail());
+//						logger.info("Maker ID:---"+userObj.getEmail());
 						Map<String, Object> sysParameters = new HashMap<String, Object>();
 						sysParameters.put(PARAMETERS_MAKER_NAME, assignedMakerName);
 						sysParameters.put(CommonUtils.PARAMETERS_FS_NAME, fsName != null ? fsName : "NA");
@@ -1731,7 +1731,7 @@ public class FPAsyncComponent {
 			}
 
 			if (!CommonUtils.isObjectNullOrEmpty(assignedChecker.getMobile())) {
-				// System.out.println("Maker ID:---"+userObj.getEmail());
+//				logger.info("Maker ID:---"+userObj.getEmail());
 				Map<String, Object> smsParameters = new HashMap<String, Object>();
 				String to = "91" + assignedChecker.getMobile();
 				smsParameters.put(PARAMETERS_MAKER_NAME, makerName != null ? makerName : LITERAL_MAKER);
@@ -1744,7 +1744,7 @@ public class FPAsyncComponent {
 			}
 
 			if (!CommonUtils.isObjectNullOrEmpty(request.getNpUserId())) {
-				// System.out.println("Maker ID:---"+userObj.getEmail());
+//				logger.info("Maker ID:---"+userObj.getEmail());
 				Map<String, Object> sysParameters = new HashMap<String, Object>();
 				sysParameters.put(PARAMETERS_MAKER_NAME, makerName != null ? makerName : LITERAL_MAKER);
 				sysParameters.put(CommonUtils.PARAMETERS_FS_NAME, fsName != null ? fsName : "NA");
@@ -1786,7 +1786,7 @@ public class FPAsyncComponent {
 					}
 
 					if (!CommonUtils.isObjectNullOrEmpty(hoObj.getEmail())) {
-						// System.out.println("Checker ID:---"+userObj.getEmail());
+//						logger.info("Checker ID:---"+userObj.getEmail());
 						String to = hoObj.getEmail();
 						if ("null ".equals(name)) {
 							name = PARAMETERS_SIR_MADAM;
@@ -1799,7 +1799,7 @@ public class FPAsyncComponent {
 					}
 
 					if (!CommonUtils.isObjectNullOrEmpty(hoObj.getMobile())) {
-						// System.out.println("Maker ID:---"+userObj.getEmail());
+//						logger.info("Maker ID:---"+userObj.getEmail());
 						Map<String, Object> smsParameters = new HashMap<String, Object>();
 						String to = "91" + hoObj.getMobile();
 						smsParameters.put(PARAMETERS_MAKER_NAME, makerName != null ? makerName : LITERAL_MAKER);
@@ -1812,7 +1812,7 @@ public class FPAsyncComponent {
 					}
 
 					if (!CommonUtils.isObjectNullOrEmpty(hoObj.getId())) {
-						// System.out.println("Maker ID:---"+userObj.getEmail());
+//						logger.info("Maker ID:---"+userObj.getEmail());
 						Map<String, Object> sysParameters = new HashMap<String, Object>();
 						sysParameters.put(PARAMETERS_MAKER_NAME, makerName != null ? makerName : LITERAL_MAKER);
 						sysParameters.put(PARAMETERS_CHECKER_NAME, checkerName != null ? checkerName : LITERAL_CHECKER);
@@ -1864,7 +1864,7 @@ public class FPAsyncComponent {
 					}
 
 					if (!CommonUtils.isObjectNullOrEmpty(boObj.getEmail())) {
-						// System.out.println("Checker ID:---"+userObj.getEmail());
+//						logger.info("Checker ID:---"+userObj.getEmail());
 						String to = boObj.getEmail();
 						if ("null ".equals(name)) {
 							name = PARAMETERS_SIR_MADAM;
@@ -1877,7 +1877,7 @@ public class FPAsyncComponent {
 					}
 
 					if (!CommonUtils.isObjectNullOrEmpty(boObj.getMobile())) {
-						// System.out.println("Maker ID:---"+userObj.getEmail());
+//						logger.info("Maker ID:---"+userObj.getEmail());
 						Map<String, Object> smsParameters = new HashMap<String, Object>();
 						String to = "91" + boObj.getMobile();
 						smsParameters.put(PARAMETERS_MAKER_NAME, makerName != null ? makerName : LITERAL_MAKER);
@@ -1890,7 +1890,7 @@ public class FPAsyncComponent {
 					}
 
 					if (!CommonUtils.isObjectNullOrEmpty(boObj.getId())) {
-						// System.out.println("Maker ID:---"+userObj.getEmail());
+//						logger.info("Maker ID:---"+userObj.getEmail());
 						Map<String, Object> sysParameters = new HashMap<String, Object>();
 						sysParameters.put(PARAMETERS_MAKER_NAME, makerName != null ? makerName : LITERAL_MAKER);
 						sysParameters.put(PARAMETERS_CHECKER_NAME, checkerName != null ? checkerName : LITERAL_CHECKER);
@@ -2119,7 +2119,7 @@ public class FPAsyncComponent {
 			}
 
 			if (!CommonUtils.isObjectNullOrEmpty(assignedChecker.getMobile())) {
-				// System.out.println("Maker ID:---"+userObj.getEmail());
+//				logger.info("Maker ID:---"+userObj.getEmail());
 				Map<String, Object> smsParameters = new HashMap<String, Object>();
 				String to = "91" + assignedChecker.getMobile();
 				smsParameters.put(PARAMETERS_MAKER_NAME, makerName != null ? makerName : LITERAL_MAKER);
@@ -2137,7 +2137,7 @@ public class FPAsyncComponent {
 			}
 
 			if (!CommonUtils.isObjectNullOrEmpty(request.getNpUserId())) {
-				// System.out.println("Maker ID:---"+userObj.getEmail());
+//				logger.info("Maker ID:---"+userObj.getEmail());
 				Map<String, Object> sysParameters = new HashMap<String, Object>();
 				sysParameters.put(PARAMETERS_MAKER_NAME, makerName != null ? makerName : LITERAL_MAKER);
 				sysParameters.put(CommonUtils.PARAMETERS_FS_NAME, fsName != null ? fsName : "NA");
@@ -2176,7 +2176,7 @@ public class FPAsyncComponent {
 					}
 
 					if (!CommonUtils.isObjectNullOrEmpty(hoObj.getEmail())) {
-						// System.out.println("Checker ID:---"+userObj.getEmail());
+//						logger.info("Checker ID:---"+userObj.getEmail());
 						String to = hoObj.getEmail();
 						if ("null ".equals(name)) {
 							name = PARAMETERS_SIR_MADAM;
@@ -2189,7 +2189,7 @@ public class FPAsyncComponent {
 					}
 
 					if (!CommonUtils.isObjectNullOrEmpty(hoObj.getMobile())) {
-						// System.out.println("Maker ID:---"+userObj.getEmail());
+//						logger.info("Maker ID:---"+userObj.getEmail());
 						Map<String, Object> smsParameters = new HashMap<String, Object>();
 						String to = "91" + hoObj.getMobile();
 						smsParameters.put(PARAMETERS_MAKER_NAME, makerName != null ? makerName : LITERAL_MAKER);
@@ -2207,7 +2207,7 @@ public class FPAsyncComponent {
 					}
 
 					if (!CommonUtils.isObjectNullOrEmpty(hoObj.getId())) {
-						// System.out.println("Maker ID:---"+userObj.getEmail());
+//						logger.info("Maker ID:---"+userObj.getEmail());
 						Map<String, Object> sysParameters = new HashMap<String, Object>();
 						sysParameters.put(PARAMETERS_MAKER_NAME, makerName != null ? makerName : LITERAL_MAKER);
 						sysParameters.put(PARAMETERS_CHECKER_NAME, checkerName != null ? checkerName : LITERAL_CHECKER);
@@ -2259,7 +2259,7 @@ public class FPAsyncComponent {
 					}
 
 					if (!CommonUtils.isObjectNullOrEmpty(boObj.getEmail())) {
-						// System.out.println("Checker ID:---"+userObj.getEmail());
+//						logger.info("Checker ID:---"+userObj.getEmail());
 						String to = boObj.getEmail();
 						if ("null ".equals(name)) {
 							name = PARAMETERS_SIR_MADAM;
@@ -2272,7 +2272,7 @@ public class FPAsyncComponent {
 					}
 
 					if (!CommonUtils.isObjectNullOrEmpty(boObj.getMobile())) {
-						// System.out.println("Maker ID:---"+userObj.getEmail());
+//						logger.info("Maker ID:---"+userObj.getEmail());
 						Map<String, Object> smsParameters = new HashMap<String, Object>();
 						String to = "91" + boObj.getMobile();
 						smsParameters.put(PARAMETERS_MAKER_NAME, makerName != null ? makerName : LITERAL_MAKER);
@@ -2290,7 +2290,7 @@ public class FPAsyncComponent {
 					}
 
 					if (!CommonUtils.isObjectNullOrEmpty(boObj.getId())) {
-						// System.out.println("Maker ID:---"+userObj.getEmail());
+//						logger.info("Maker ID:---"+userObj.getEmail());
 						Map<String, Object> sysParameters = new HashMap<String, Object>();
 						sysParameters.put(PARAMETERS_MAKER_NAME, makerName != null ? makerName : LITERAL_MAKER);
 						sysParameters.put(PARAMETERS_CHECKER_NAME, checkerName != null ? checkerName : LITERAL_CHECKER);
@@ -2380,7 +2380,7 @@ public class FPAsyncComponent {
 					}
 
 					if (!CommonUtils.isObjectNullOrEmpty(userObj.getEmail())) {
-						// System.out.println("Maker ID:---"+userObj.getEmail());
+						logger.info("Maker ID:---"+userObj.getEmail());
 						to = userObj.getEmail();
 						if ("null ".equals(name)) {
 							mailParameters.put(PARAMETERS_ADMIN_CHECKER, PARAMETERS_SIR_MADAM);
@@ -2393,7 +2393,7 @@ public class FPAsyncComponent {
 					}
 
 					if (!CommonUtils.isObjectNullOrEmpty(userObj.getMobile())) {
-						// System.out.println("Maker ID:---"+userObj.getEmail());
+						logger.info("Maker ID:---"+userObj.getEmail());
 						Map<String, Object> smsParameters = new HashMap<String, Object>();
 						to = "91" + userObj.getMobile();
 						if ("null ".equals(name)) {
@@ -2412,7 +2412,7 @@ public class FPAsyncComponent {
 					}
 
 					if (!CommonUtils.isObjectNullOrEmpty(userObj.getId())) {
-						// System.out.println("Maker ID:---"+userObj.getEmail());
+						logger.info("Maker ID:---"+userObj.getEmail());
 						Map<String, Object> sysParameters = new HashMap<String, Object>();
 						sysParameters.put(PARAMETERS_ADMIN_MAKER, adminMakerName != null ? adminMakerName : LITERAL_MAKER);
 						sysParameters.put(PARAMETERS_PRODUCT_NAME,
@@ -2502,7 +2502,7 @@ public class FPAsyncComponent {
 					}
 
 					if (!CommonUtils.isObjectNullOrEmpty(userObj.getEmail())) {
-						// System.out.println("Maker ID:---"+userObj.getEmail());
+						logger.info("Maker ID:---"+userObj.getEmail());
 						to = userObj.getEmail();
 						if ("null ".equals(name)) {
 							mailParameters.put(PARAMETERS_ADMIN_CHECKER, PARAMETERS_SIR_MADAM);
@@ -2514,7 +2514,7 @@ public class FPAsyncComponent {
 					}
 
 					if (!CommonUtils.isObjectNullOrEmpty(userObj.getMobile())) {
-						// System.out.println("Maker ID:---"+userObj.getEmail());
+						logger.info("Maker ID:---"+userObj.getEmail());
 						Map<String, Object> smsParameters = new HashMap<String, Object>();
 						to = "91" + userObj.getMobile();
 						if ("null ".equals(name)) {
@@ -2533,7 +2533,7 @@ public class FPAsyncComponent {
 					}
 
 					if (!CommonUtils.isObjectNullOrEmpty(userObj.getId())) {
-						// System.out.println("Maker ID:---"+userObj.getEmail());
+						logger.info("Maker ID:---"+userObj.getEmail());
 						Map<String, Object> sysParameters = new HashMap<String, Object>();
 						sysParameters.put(PARAMETERS_ADMIN_MAKER, adminMakerName != null ? adminMakerName : LITERAL_MAKER);
 						sysParameters.put(PARAMETERS_PRODUCT_NAME,
@@ -2633,7 +2633,7 @@ public class FPAsyncComponent {
 
 			String to = null;
 			if (!CommonUtils.isObjectNullOrEmpty(assignedMaker.getEmail())) {
-				// System.out.println("Maker ID:---"+userObj.getEmail());
+//				logger.info("Maker ID:---"+userObj.getEmail());
 				to = assignedMaker.getEmail();
 				if ("null ".equals(makerName)) {
 					mailParameters.put(PARAMETERS_ADMIN_MAKER, PARAMETERS_SIR_MADAM);
@@ -2646,7 +2646,7 @@ public class FPAsyncComponent {
 			}
 
 			if (!CommonUtils.isObjectNullOrEmpty(assignedMaker.getMobile())) {
-				// System.out.println("Maker ID:---"+userObj.getEmail());
+//				logger.info("Maker ID:---"+userObj.getEmail());
 				Map<String, Object> smsParameters = new HashMap<String, Object>();
 				to = "91" + assignedMaker.getMobile();
 				smsParameters.put(PARAMETERS_ADMIN_CHECKER, adminCheckerName != null ? adminCheckerName : LITERAL_CHECKER);
@@ -2660,7 +2660,7 @@ public class FPAsyncComponent {
 			}
 
 			if (!CommonUtils.isObjectNullOrEmpty(assignedMaker.getId())) {
-				// System.out.println("Maker ID:---"+userObj.getEmail());
+//				logger.info("Maker ID:---"+userObj.getEmail());
 				Map<String, Object> sysParameters = new HashMap<String, Object>();
 				sysParameters.put(PARAMETERS_ADMIN_CHECKER, adminCheckerName != null ? adminCheckerName : LITERAL_CHECKER);
 				sysParameters.put(PARAMETERS_PRODUCT_NAME,
@@ -2699,7 +2699,7 @@ public class FPAsyncComponent {
 					}
 
 					if (!CommonUtils.isObjectNullOrEmpty(userObj.getEmail())) {
-						// System.out.println("Maker ID:---"+userObj.getEmail());
+						logger.info("Maker ID:---"+userObj.getEmail());
 						to = userObj.getEmail();
 						if ("null ".equals(name)) {
 							mailParameters.put(PARAMETERS_ADMIN_MAKER, PARAMETERS_SIR_MADAM);
@@ -2712,7 +2712,7 @@ public class FPAsyncComponent {
 					}
 
 					if (!CommonUtils.isObjectNullOrEmpty(userObj.getMobile())) {
-						// System.out.println("Maker ID:---"+userObj.getEmail());
+						logger.info("Maker ID:---"+userObj.getEmail());
 						Map<String, Object> smsParameters = new HashMap<String, Object>();
 						to = "91" + userObj.getMobile();
 						smsParameters.put(PARAMETERS_ADMIN_CHECKER, adminCheckerName != null ? adminCheckerName : LITERAL_CHECKER);
@@ -2726,7 +2726,7 @@ public class FPAsyncComponent {
 					}
 
 					if (!CommonUtils.isObjectNullOrEmpty(userObj.getId())) {
-						// System.out.println("Maker ID:---"+userObj.getEmail());
+						logger.info("Maker ID:---"+userObj.getEmail());
 						Map<String, Object> sysParameters = new HashMap<String, Object>();
 						sysParameters.put(PARAMETERS_ADMIN_CHECKER, adminCheckerName != null ? adminCheckerName : LITERAL_CHECKER);
 						sysParameters.put(PARAMETERS_PRODUCT_NAME,
@@ -2824,7 +2824,7 @@ public class FPAsyncComponent {
 			// =======================================================================================
 			String to = null;
 			if (!CommonUtils.isObjectNullOrEmpty(assignedMaker.getEmail())) {
-				// System.out.println("Maker ID:---"+userObj.getEmail());
+//				logger.info("Maker ID:---"+userObj.getEmail());
 				to = assignedMaker.getEmail();
 				if ("null ".equals(makerName)) {
 					mailParameters.put(PARAMETERS_ADMIN_MAKER, PARAMETERS_SIR_MADAM);
@@ -2836,7 +2836,7 @@ public class FPAsyncComponent {
 			}
 
 			if (!CommonUtils.isObjectNullOrEmpty(assignedMaker.getMobile())) {
-				// System.out.println("Maker ID:---"+userObj.getEmail());
+//				logger.info("Maker ID:---"+userObj.getEmail());
 				Map<String, Object> smsParameters = new HashMap<String, Object>();
 				to = "91" + assignedMaker.getMobile();
 				smsParameters.put(PARAMETERS_ADMIN_CHECKER, adminCheckerName != null ? adminCheckerName : LITERAL_CHECKER);
@@ -2850,7 +2850,7 @@ public class FPAsyncComponent {
 			}
 
 			if (!CommonUtils.isObjectNullOrEmpty(assignedMaker.getId())) {
-				// System.out.println("Maker ID:---"+userObj.getEmail());
+//				logger.info("Maker ID:---"+userObj.getEmail());
 				Map<String, Object> sysParameters = new HashMap<String, Object>();
 				sysParameters.put(PARAMETERS_ADMIN_CHECKER, adminCheckerName != null ? adminCheckerName : LITERAL_CHECKER);
 				sysParameters.put(PARAMETERS_PRODUCT_NAME,
@@ -2888,7 +2888,7 @@ public class FPAsyncComponent {
 					}
 
 					if (!CommonUtils.isObjectNullOrEmpty(userObj.getEmail())) {
-						// System.out.println("Maker ID:---"+userObj.getEmail());
+						logger.info("Maker ID:---"+userObj.getEmail());
 						to = userObj.getEmail();
 						if ("null ".equals(name)) {
 							mailParameters.put(PARAMETERS_ADMIN_MAKER, PARAMETERS_SIR_MADAM);
@@ -2900,7 +2900,7 @@ public class FPAsyncComponent {
 					}
 
 					if (!CommonUtils.isObjectNullOrEmpty(userObj.getMobile())) {
-						// System.out.println("Maker ID:---"+userObj.getEmail());
+						logger.info("Maker ID:---"+userObj.getEmail());
 						Map<String, Object> smsParameters = new HashMap<String, Object>();
 						to = "91" + userObj.getMobile();
 						smsParameters.put(PARAMETERS_ADMIN_CHECKER, adminCheckerName != null ? adminCheckerName : LITERAL_CHECKER);
@@ -2914,7 +2914,7 @@ public class FPAsyncComponent {
 					}
 
 					if (!CommonUtils.isObjectNullOrEmpty(userObj.getId())) {
-						// System.out.println("Maker ID:---"+userObj.getEmail());
+						logger.info("Maker ID:---"+userObj.getEmail());
 						Map<String, Object> sysParameters = new HashMap<String, Object>();
 						sysParameters.put(PARAMETERS_ADMIN_CHECKER, adminCheckerName != null ? adminCheckerName : LITERAL_CHECKER);
 						sysParameters.put(PARAMETERS_PRODUCT_NAME,
@@ -3104,7 +3104,7 @@ public class FPAsyncComponent {
 			}
 
 			if (!CommonUtils.isObjectNullOrEmpty(applicationRequest.getFpMakerId())) {
-				// System.out.println("Maker ID:---"+userObj.getEmail());
+//				logger.info("Maker ID:---"+userObj.getEmail());
 				Map<String, Object> sysParameters = new HashMap<String, Object>();
 
 				sysParameters.put(PARAMETERS_CHECKER_NAME, checkerName != null ? checkerName : LITERAL_CHECKER);
@@ -3152,7 +3152,7 @@ public class FPAsyncComponent {
 					}
 
 					if (!CommonUtils.isObjectNullOrEmpty(userObj.getEmail())) {
-						// System.out.println("Maker ID:---"+userObj.getEmail());
+						logger.info("Maker ID:---"+userObj.getEmail());
 						to = userObj.getEmail();
 						if ("null ".equals(name)) {
 							mailParameters.put(PARAMETERS_HO_NAME, PARAMETERS_SIR_MADAM);
@@ -3165,7 +3165,7 @@ public class FPAsyncComponent {
 					}
 
 					if (!CommonUtils.isObjectNullOrEmpty(userObj.getMobile())) {
-						// System.out.println("Maker ID:---"+userObj.getEmail());
+						logger.info("Maker ID:---"+userObj.getEmail());
 						Map<String, Object> smsParameters = new HashMap<String, Object>();
 						to = "91" + userObj.getMobile();
 						smsParameters.put(PARAMETERS_CHECKER_NAME, checkerName != null ? checkerName : LITERAL_CHECKER);
@@ -3183,7 +3183,7 @@ public class FPAsyncComponent {
 					}
 
 					if (!CommonUtils.isObjectNullOrEmpty(userObj.getId())) {
-						// System.out.println("Maker ID:---"+userObj.getEmail());
+						logger.info("Maker ID:---"+userObj.getEmail());
 						Map<String, Object> sysParameters = new HashMap<String, Object>();
 						sysParameters.put(PARAMETERS_CHECKER_NAME, checkerName != null ? checkerName : LITERAL_CHECKER);
 						sysParameters.put(CommonUtils.PARAMETERS_FS_NAME, fsName != null ? fsName : "NA");
@@ -3229,7 +3229,7 @@ public class FPAsyncComponent {
 					}
 
 					if (!CommonUtils.isObjectNullOrEmpty(userObj.getEmail())) {
-						// System.out.println("Maker ID:---"+userObj.getEmail());
+						logger.info("Maker ID:---"+userObj.getEmail());
 						to = userObj.getEmail();
 						if ("null ".equals(name)) {
 							mailParameters.put(PARAMETERS_BO_NAME, PARAMETERS_SIR_MADAM);
@@ -3242,7 +3242,7 @@ public class FPAsyncComponent {
 					}
 
 					if (!CommonUtils.isObjectNullOrEmpty(userObj.getMobile())) {
-						// System.out.println("Maker ID:---"+userObj.getEmail());
+						logger.info("Maker ID:---"+userObj.getEmail());
 						Map<String, Object> smsParameters = new HashMap<String, Object>();
 						to = "91" + userObj.getMobile();
 						smsParameters.put(PARAMETERS_CHECKER_NAME, checkerName != null ? checkerName : LITERAL_CHECKER);
@@ -3260,7 +3260,7 @@ public class FPAsyncComponent {
 					}
 
 					if (!CommonUtils.isObjectNullOrEmpty(userObj.getId())) {
-						// System.out.println("Maker ID:---"+userObj.getEmail());
+						logger.info("Maker ID:---"+userObj.getEmail());
 						Map<String, Object> sysParameters = new HashMap<String, Object>();
 						sysParameters.put(PARAMETERS_CHECKER_NAME, checkerName != null ? checkerName : LITERAL_CHECKER);
 						sysParameters.put(CommonUtils.PARAMETERS_FS_NAME, fsName != null ? fsName : "NA");
@@ -3436,7 +3436,7 @@ public class FPAsyncComponent {
 
 			}
 			if (!CommonUtils.isObjectNullOrEmpty(fs.getMobile())) {
-				// System.out.println("Maker ID:---"+userObj.getEmail());
+//				logger.info("Maker ID:---"+userObj.getEmail());
 				Map<String, Object> smsParameters = new HashMap<String, Object>();
 				String to = "91" + fs.getMobile();
 				smsParameters.put(CommonUtils.PARAMETERS_FS_NAME, fsName != null ? fsName : PARAMETERS_SIR_MADAM);
@@ -3448,7 +3448,7 @@ public class FPAsyncComponent {
 						NotificationAlias.SMS_FS_CHECKER_SANCTIONED, to);
 			}
 			if (!CommonUtils.isObjectNullOrEmpty(applicationRequest.getUserId())) {
-				// System.out.println("Maker ID:---"+userObj.getEmail());
+//				logger.info("Maker ID:---"+userObj.getEmail());
 				Map<String, Object> sysParameters = new HashMap<String, Object>();
 
 				sysParameters.put(CommonUtils.PARAMETERS_FS_NAME, fsName != null ? fsName : PARAMETERS_SIR_MADAM);

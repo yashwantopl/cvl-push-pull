@@ -42,8 +42,7 @@ public class AuditComponentBankToCW {
 		bankCWAuditTrailDomain =bankToCWAuditTrailRepository.save(bankCWAuditTrailDomain);
 		logger.info("Exit saveLoanDisbursementDetail() -----------------------> BankCWAuditTrailDomain ==>" +bankCWAuditTrailDomain);
 		}catch (Exception e) {
-			logger.info("Error/Exception in saveBankReqRes() -----------------------> Message "+e.getMessage());
-			e.printStackTrace();
+			logger.error("Error/Exception in saveBankReqRes() -----------------------> Message "+e);
 			/*throw e;*/
 		}
 	}
@@ -53,7 +52,7 @@ public class AuditComponentBankToCW {
 		
 	}
 	public static void main(String[] args) {
-		System.out.println(new AuditComponentBankToCW().getOrgIdByCredential("sidbi@contactles", "contactless#$1SIDBI"));
+		logger.info(""+new AuditComponentBankToCW().getOrgIdByCredential("sidbi@contactles", "contactless#$1SIDBI"));
 	} 
 
 	/*@Override
