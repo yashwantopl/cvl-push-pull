@@ -107,9 +107,6 @@ public class FPAsyncComponent {
 	private DirectorBackgroundDetailsService directorBackgroundDetailsService;
 
 	@Autowired
-	public CorporateApplicantService corporateApplicantService;
-
-	@Autowired
 	public GstClient gstClient;
 
 	@Autowired

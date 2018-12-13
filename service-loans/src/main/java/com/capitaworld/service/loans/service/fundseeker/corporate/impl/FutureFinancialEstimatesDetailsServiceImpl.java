@@ -66,8 +66,7 @@ public class FutureFinancialEstimatesDetailsServiceImpl implements FutureFinanci
 		}
 
 		catch (Exception e) {
-			logger.info("Exception  in save futureFinancialEstimateDetail  :-");
-			e.printStackTrace();
+			logger.error("Exception  in save futureFinancialEstimateDetail :- ",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
@@ -88,8 +87,7 @@ public class FutureFinancialEstimatesDetailsServiceImpl implements FutureFinanci
 		}
 
 		catch (Exception e) {
-			logger.info("Exception  in save futureFinancialEstimateDetail  :-");
-			e.printStackTrace();
+			logger.error("Exception  in save futureFinancialEstimateDetail  :- ",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
@@ -147,7 +145,7 @@ public class FutureFinancialEstimatesDetailsServiceImpl implements FutureFinanci
 							(currentYearForBeforeDate + 2) + " - " + (currentYearForBeforeDate + 3)));
 				}
 			} catch (ParseException e) {
-				e.printStackTrace();
+				logger.error("Exception in calucateWCFinancialYear : ",e);
 			}
 			return yearList;
 		} else {
@@ -194,7 +192,7 @@ public class FutureFinancialEstimatesDetailsServiceImpl implements FutureFinanci
 				}
 
 			} catch (ParseException e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 
 		} else {
@@ -234,7 +232,7 @@ public class FutureFinancialEstimatesDetailsServiceImpl implements FutureFinanci
 				}
 
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error("Exception in calucateTLFinancialYear : ",e);
 			}
 		}
 		return Collections.emptyList();

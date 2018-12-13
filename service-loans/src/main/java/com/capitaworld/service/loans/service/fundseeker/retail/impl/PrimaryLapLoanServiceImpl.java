@@ -58,14 +58,12 @@ public class PrimaryLapLoanServiceImpl implements PrimaryLapLoanService {
 			saveNegativeList(primaryLapLoanDetail.getApplicationId().getId(), lapLoanDetailRequest.getNegativeList());
 			return true;
 		} catch (Exception e) {
-			logger.error("Error while saving Primary Lap laon Details Profile:-");
-			e.printStackTrace();
+			logger.error("Error while saving Primary Lap laon Details Profile:-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	private void saveNegativeList(Long id, List<Long> negativeList) {
-		// TODO Auto-generated method stub
 		FsNegativeFpList fsNegativeFpList= null;
 		for (Long fpId : negativeList) {
 			fsNegativeFpList = new FsNegativeFpList();
@@ -101,8 +99,7 @@ public class PrimaryLapLoanServiceImpl implements PrimaryLapLoanService {
 			lapLoanDetailRequest.setCurrencyValue(CommonDocumentUtils.getCurrency(currencyId));
 			return lapLoanDetailRequest;
 		} catch (Exception e) {
-			logger.error("Error while getting Primary Lap laon Details Profile:-");
-			e.printStackTrace();
+			logger.error("Error while getting Primary Lap laon Details Profile:-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
