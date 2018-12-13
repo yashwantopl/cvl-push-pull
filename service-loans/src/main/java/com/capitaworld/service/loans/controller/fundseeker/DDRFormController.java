@@ -102,7 +102,6 @@ public class DDRFormController {
 					new LoansResponse("Successfully Data Saved", HttpStatus.OK.value()), HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while saving DDR Form Details ==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -131,7 +130,6 @@ public class DDRFormController {
 					HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getting DDR Form Details ==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -164,7 +162,6 @@ public class DDRFormController {
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Data Saved", HttpStatus.OK.value()), HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while saving COMBINED DDR Form Details ==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -195,7 +192,6 @@ public class DDRFormController {
 					HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getting DDR Form Details ==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -225,7 +221,6 @@ public class DDRFormController {
 					new LoansResponse("Successfully get data", HttpStatus.OK.value(), oneFormDetails), HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getting DDR AutoFilled Form Details ==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -239,7 +234,6 @@ public class DDRFormController {
 					ddrFormService.getFinancialSummaryToBeFieldsList()), HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getting DDR Financial To Be Filled Details ==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -254,7 +248,6 @@ public class DDRFormController {
 					ddrFormService.getSIDBIDetails(appId, userId)), HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getting DDR Financial To Be Filled Details ==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -268,7 +261,6 @@ public class DDRFormController {
 					ddrFormService.getFinancialSummaryFieldsList()), HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getting DDR Financial Auto Filled Details ==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -281,8 +273,7 @@ public class DDRFormController {
 			boolean deleteDocument = ddrFormService.deleteDocument(ddrUploadRequest);
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Deleted", HttpStatus.OK.value(), deleteDocument), HttpStatus.OK);
 		} catch (Exception e) {
-			logger.error("Error while DDR Delete Documents ==>", e);	
-			e.printStackTrace();
+			logger.error("Error while DDR Delete Documents ==>", e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -303,8 +294,7 @@ public class DDRFormController {
 		try {
 			isDDRApproved = ddrFormService.isDDRApproved(userId, appId);
 		} catch (Exception e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e1);
 		}
 		if (!isDDRApproved) {
 			return new ResponseEntity<LoansResponse>(
@@ -319,7 +309,7 @@ public class DDRFormController {
 			Map<String, Object> obj = new HashMap<String, Object>();
 			obj.put("autoFilled", oneFormDetails);
 			obj.put("toBeFilled", dDRFormDetailsRequest);
-			System.out.println(obj);
+			logger.info(""+obj);
 			ReportRequest reportRequest = new ReportRequest();
 			reportRequest.setParams(obj);
 			reportRequest.setTemplate("NHBSDDR");
@@ -336,15 +326,14 @@ public class DDRFormController {
 
 			DocumentResponse documentResponse = dmsClient.uploadFile(jsonObj.toString(), multipartFile);
 			if (documentResponse.getStatus() == 200) {
-				System.out.println(documentResponse.getData());
+				logger.info(""+documentResponse.getData());
 				return new ResponseEntity<LoansResponse>(new LoansResponse(HttpStatus.OK.value(), "success", documentResponse.getData(), obj),HttpStatus.OK);
 				//return new ResponseEntity<LoansResponse>(new LoansResponse("Successfull", HttpStatus.OK.value(), documentResponse.getData()),HttpStatus.OK);
 			} else {
 				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
 			}
 		} catch (Exception e) {
-			logger.info("thrown exception from generateDDRPDF");
-			e.printStackTrace();
+			logger.error("thrown exception from generateDDRPDF : ",e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -388,7 +377,6 @@ public class DDRFormController {
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
 			logger.error("Error While Updating Document Flag==>" + e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
@@ -429,8 +417,7 @@ public class DDRFormController {
 					ddrFormDetailsRequest= MultipleJSONObjectHelper.getObjectFromString(decrypt,DDRFormDetailsRequest.class);
 					
 				}catch (Exception e) {
-					e.printStackTrace();
-					logger.info("Error while Converting Encrypted Object to   saveDDRInfo(){} -------------------------> ", e.getMessage());
+					logger.error("Error while Converting Encrypted Object to   saveDDRInfo(){} -------------------------> ", e);
 					loansResponse =new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value(),HttpStatus.OK);
 					loansResponse.setData(false);
 					if(CommonUtils.isObjectNullOrEmpty(decrypt)) {
@@ -449,17 +436,15 @@ public class DDRFormController {
 						isSuccess = true;
 						loansResponse = new LoansResponse("Information Successfully Stored ", HttpStatus.OK.value());
 						loansResponse.setData(isSuccess);
-					
-						logger.info("Saving Request to DB ===> ");
-						logger.info("Exit saveDDRInfo()() ---------------->  msg ==>" + "Information Successfully Stored " );
+
+						logger.info("Saving Request to DB ===> " + "Exit saveDDRInfo()() ---------------->  msg ==>" + "Information Successfully Stored " );
 						return new ResponseEntity<LoansResponse>(loansResponse ,HttpStatus.OK );
 					}else {
 						reason ="Invalid Credentials";
 						logger.info("Invalid Credentials while saveDDRInfo() ----------------> orgId "+ orgId ) ;
 						loansResponse = new LoansResponse(reason, HttpStatus.OK.value());
 						loansResponse.setData(isSuccess);
-						logger.info("Saving Request to DB ===> ");
-						logger.info("Exit saveDDRInfo()() ---------------->  msg ==>" + reason );
+						logger.info("Saving Request to DB ===> " + "Exit saveDDRInfo()() ---------------->  msg ==>" + reason );
 						return new ResponseEntity<LoansResponse>(loansResponse ,HttpStatus.OK );
 					}
 					
@@ -482,7 +467,6 @@ public class DDRFormController {
 
 		} catch (Exception e) {
 			logger.error("Error while saveDDRInfo()----------------------> ", e);
-			e.printStackTrace();
 			loansResponse =new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value(),HttpStatus.OK);
 			loansResponse.setData(isSuccess);
 			reason="Error while save ddrFormDetailsRequest ===> Msg "+ e.getMessage(); 
@@ -512,7 +496,6 @@ public class DDRFormController {
 			return new ResponseEntity<LoansResponse>( new LoansResponse("Successfully get data", HttpStatus.OK.value(), resposnse), HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while CHECK CUSTOMER DETAILS FILLED" +  e.getMessage());
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -551,7 +534,6 @@ public class DDRFormController {
 			return new ResponseEntity<LoansResponse>( new LoansResponse("Invalid Request, Data not saved", HttpStatus.BAD_REQUEST.value(), resposnse), HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while SAVE CUSTOMER DETAILS FILLED" +  e.getMessage());
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -575,7 +557,6 @@ public class DDRFormController {
 			return new ResponseEntity<LoansResponse>( new LoansResponse("Successfully get data", HttpStatus.OK.value(), ddrFormService.getCustomerNameById(customerRequest)), HttpStatus.OK);	
 		} catch (Exception e) {
 			logger.error("Error while GET CUSTOMER NAME BY CUSTOMER ID" +  e.getMessage());
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
