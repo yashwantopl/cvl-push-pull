@@ -36,4 +36,6 @@ public interface LiabilitiesDetailsRepository  extends JpaRepository<Liabilities
 	
 	@Query("select a.sundryCreditors , a.advancePaymentsFromCustomers , a.subTotalA , a.totalCurrentLiabilities from LiabilitiesDetails a where a.fsLoanApplicationMaster.id =:applicationId  AND year = (SELECT  max(a.year) FROM LiabilitiesDetails a WHERE a.fsLoanApplicationMaster.id =:applicationId AND a.isActive=true AND a.financialYearlyStatement =:financialYearlyStatement)")
 	public List<Object[]> getCMADetail(@Param("applicationId") Long applicationId, @Param("financialYearlyStatement") String financialYearlyStatement);
+	
+	public LiabilitiesDetails findByFsLoanApplicationMasterIdAndYearAndFinancialYearlyStatementAndIsActive(Long applicationId , String year , String financialYearlyStatement , Boolean isActive);
 }

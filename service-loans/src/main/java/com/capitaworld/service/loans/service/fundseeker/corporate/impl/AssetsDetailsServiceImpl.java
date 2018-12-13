@@ -26,7 +26,7 @@ public class AssetsDetailsServiceImpl implements AssetsDetailsService {
 	}
 
 	@Override
-	public void readAssetsDetails(Long applicationId, Long storageDetailsId, XSSFSheet sheet) {
+	public void readAssetsDetails(Long applicationId, Long storageDetailsId, XSSFSheet sheet) throws Exception{
 		// TODO Auto-generated method stub
 		AssetsDetailsExcelReader.run(storageDetailsId, sheet, loanApplicationRepository.findOne(applicationId),
 				assetsDetailsRepository);

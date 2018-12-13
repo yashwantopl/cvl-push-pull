@@ -28,7 +28,7 @@ public class OperatingStatementDetailsServiceImpl implements OperatingStatementD
 
 	@Override
 	public void readOperatingStatementDetails(Long applicationId, Long storageDetailsId,
-			XSSFSheet sheet) {
+			XSSFSheet sheet) throws Exception {
 
 		OperatingStatementDetailsExcelReader.run(storageDetailsId, sheet,
 				loanApplicationRepository.findOne(applicationId), operatingStatementDetailsRepository);

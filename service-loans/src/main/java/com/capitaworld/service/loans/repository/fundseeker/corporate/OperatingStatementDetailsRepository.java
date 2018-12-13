@@ -37,4 +37,6 @@ public interface OperatingStatementDetailsRepository  extends JpaRepository<Oper
 	
 	@Query("select a.domesticSales ,a.interest , a.exportSales ,a.netProfitOrLoss, a.depreciation , a.provisionForDeferredTax from OperatingStatementDetails a where a.loanApplicationMaster.id= :applicationId  AND a.year=(SELECT  max(a.year) FROM OperatingStatementDetails a WHERE a.loanApplicationMaster.id =:applicationId AND a.isActive=true AND a.financialYearlyStatement =:financialYearlyStatement)")
 	public List<Object[]> getCMADetail(@Param("applicationId") Long applicationId, @Param("financialYearlyStatement") String financialYearlyStatement );
+	
+	public OperatingStatementDetails findByLoanApplicationMasterIdAndYearAndFinancialYearlyStatementAndIsActive(Long applicationId , String year , String financialYearlyStatement , Boolean isActive);
 }

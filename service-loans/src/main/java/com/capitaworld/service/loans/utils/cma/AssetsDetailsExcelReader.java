@@ -25,7 +25,7 @@ public class AssetsDetailsExcelReader
 	public static final Logger log = LoggerFactory.getLogger(AssetsDetailsExcelReader.class);
     public static List<String> assetsMappingList = new ArrayList<String>();
     public static final DecimalFormat decimalFormat = new DecimalFormat("#.##");
-    public static void run(Long storageDetailsId,XSSFSheet sheet,LoanApplicationMaster loanApplicationMaster,AssetsDetailsRepository assetsDetailsRepository) {
+    public static void run(Long storageDetailsId,XSSFSheet sheet,LoanApplicationMaster loanApplicationMaster,AssetsDetailsRepository assetsDetailsRepository) throws Exception {
         assetsMappingList.clear();
         
         assetsMappingList.add("9");
@@ -98,8 +98,18 @@ public class AssetsDetailsExcelReader
         int j = 2;
         if(loanApplicationMaster.getBusinessTypeId() == CommonUtils.BusinessType.EXISTING_BUSINESS.getId()) {
     
-        	extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, assetsMappingList,"E",String.valueOf(sheet.getRow(4).getCell(4).getNumericCellValue()),"Estimated",assetsDetailsRepository);
-        	j=5;
+        	Double yearFromSheet  = sheet.getRow(4).getCell(4).getNumericCellValue() ; 
+        	AssetsDetails assetsDetails = assetsDetailsRepository.findByLoanApplicationMasterIdAndYearAndFinancialYearlyStatementAndIsActive(loanApplicationMaster.getId() , String.valueOf(yearFromSheet.longValue()) , "Audited" , true );
+           	Double yearFromTable = Double.valueOf(assetsDetails.getYear()); 
+
+           	if(assetsDetails !=null && "Audited".equalsIgnoreCase(assetsDetails.getFinancialYearlyStatement()) && yearFromSheet <= yearFromTable ) {
+           		
+           		throw new  Exception("Invalid cma details"); 
+         
+           	}else {
+           		extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, assetsMappingList,"E",String.valueOf(sheet.getRow(4).getCell(4).getNumericCellValue()),"Estimated",assetsDetailsRepository);
+           		j=5;
+           	}
       
         }
         
@@ -153,8 +163,11 @@ public class AssetsDetailsExcelReader
         }
         
         if(!(nullCounter==54)) {
-            
-        	AssetsDetails cmaAssets = new AssetsDetails();
+        	
+        	
+        	AssetsDetails  cmaAssets = new AssetsDetails();
+    		cmaAssets.setCreatedDate(new Date());
+    		cmaAssets.setModifiedDate(new Date());
         	log.info("calledd===============");
         	cmaAssets.setLoanApplicationMaster(loanApplicationMaster);
         	cmaAssets.setStorageDetailsId(storageDetailsId);
@@ -219,8 +232,7 @@ public class AssetsDetailsExcelReader
 
             
             cmaAssets.setIsActive(true);
-            cmaAssets.setCreatedDate(new Date());
-            cmaAssets.setModifiedDate(new Date());
+            
 //          cmaAssets.setCreatedBy(createdBy);
 //          cmaAssets.setModifiedBy(modifiedBy);
             
