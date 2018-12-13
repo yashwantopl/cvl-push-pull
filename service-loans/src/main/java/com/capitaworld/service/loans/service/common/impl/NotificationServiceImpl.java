@@ -107,8 +107,7 @@ public class NotificationServiceImpl implements NotificationService{
         		}	
         	}
         } catch(Exception e) {
-        	logger.info("Throw exception while get users details for send mail in send notification");
-        	e.printStackTrace();
+        	logger.error("Throw exception while get users details for send mail in send notification : ",e);
         }
         if(CommonUtils.isObjectNullOrEmpty(toEmail)) {
         	logger.info("ToEmail Null Or Empty");
@@ -132,7 +131,7 @@ public class NotificationServiceImpl implements NotificationService{
 	@Override
 	public void sendViewNotification(String toUserId, Long fromUserId, Long fromUserTypeId, Long notificationId,
 			Long applicationId, Long fpProductId,NotificationTemplate notificationTemplate,Long loginUserType) {
-		// TODO Auto-generated method stub
+
 		CommonDocumentUtils.startHook(logger, "sendViewNotification");
 		
 		if (toUserId != null && fromUserId != null) {
@@ -151,9 +150,7 @@ public class NotificationServiceImpl implements NotificationService{
 					String fsName = loanApplicationService.getFsApplicantName(applicationId);
 					parameters.put("fs_name", fsName != null ? fsName : "NA");
 				} catch (Exception e) {
-					// TODO: handle exception
-					logger.info("Exception in getting name of fs:"+e);
-					e.printStackTrace();
+					logger.error("Exception in getting name of fs : ",e);
 					parameters.put("fs_name", "NA");
 				}
 				
@@ -171,8 +168,7 @@ public class NotificationServiceImpl implements NotificationService{
 					}
 
 				} catch (Exception e) {
-					// TODO: handle exception
-					e.printStackTrace(); 
+					logger.error(CommonUtils.EXCEPTION,e);
 					parameters.put("fp_name", "NA");
 				}
 				try {
@@ -181,8 +177,7 @@ public class NotificationServiceImpl implements NotificationService{
 					else
 						parameters.put("fp_pname", "NA");
 				} catch (Exception e) {
-					// TODO: handle exception
-					logger.info("Exception :"+e);
+					logger.error(CommonUtils.EXCEPTION,e);
 					parameters.put("fp_pname", "NA");
 				}
 				request.addNotification(createEmailNotification(a, fromUserId, fromUserTypeId,notificationId, parameters, applicationId, fpProductId,notificationTemplate,fpName));
@@ -190,7 +185,7 @@ public class NotificationServiceImpl implements NotificationService{
 				notificationClient.send(request);
 				logger.info("Successfully sent notification and email for primary or final view");
 			} catch (NotificationException e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 			CommonDocumentUtils.endHook(logger, "sendViewNotification");
 		}
@@ -207,7 +202,7 @@ public class NotificationServiceImpl implements NotificationService{
 			notificationClient.send(request);
 			logger.info("Successfully sent notification and email for primary or final view");
 		} catch (NotificationException e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		CommonDocumentUtils.endHook(logger, "sendViewNotification");
 	} 

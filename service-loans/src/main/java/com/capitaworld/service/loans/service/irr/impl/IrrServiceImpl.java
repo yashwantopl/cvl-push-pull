@@ -107,7 +107,7 @@ public class IrrServiceImpl implements IrrService{
 	
 	private final Logger log = LoggerFactory.getLogger(IrrServiceImpl.class);
 
-	private static final String ERROR_WHILE_GETTING_IRR_ID_FROM_ONE_FORM = "error while getting irr id from one form";
+	private static final String ERROR_WHILE_GETTING_IRR_ID_FROM_ONE_FORM = "error while getting irr id from one form : ";
 	private static final String SOMETHING_WENT_WRONG_PLEASE_TRY_AGAIN_AFTER_SOME_TIMES = "Something went wrong please try again after some times";
 	private static final String OPERATING_STATEMENT_DETAILS_GET_DEPRECIATION = "operatingStatementDetails.getDepreciation()::";
 	private static final String MSG_APP_ID = "App Id::";
@@ -169,8 +169,7 @@ public class IrrServiceImpl implements IrrService{
 				
 			} catch (Exception e) {
 
-				log.error(ERROR_WHILE_GETTING_IRR_ID_FROM_ONE_FORM);
-				e.printStackTrace();
+				log.error(ERROR_WHILE_GETTING_IRR_ID_FROM_ONE_FORM,e);
 				
 				return new ResponseEntity<RatingResponse>(
 						new RatingResponse(ERROR_WHILE_GETTING_IRR_ID_FROM_ONE_FORM, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
@@ -195,8 +194,7 @@ public class IrrServiceImpl implements IrrService{
 								industryRiskScore=industryResponse.getScore();
 								industry=industryResponse.getIndustry();
 							} catch (Exception e) {
-								log.error("error while getting irr industry detail from rating");
-								e.printStackTrace();
+								log.error("error while getting irr industry detail from rating : ",e);
 								
 								return new ResponseEntity<RatingResponse>(
 										new RatingResponse("error while getting irr industry detail from rating", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
@@ -249,9 +247,7 @@ public class IrrServiceImpl implements IrrService{
 			
 			
 		} catch (Exception e) {
-			e.printStackTrace();
-			
-			log.info("Error while mapping irr request and qualitative input from db");	
+			log.error("Error while mapping irr request and qualitative input from db : ",e);
 			return new ResponseEntity<RatingResponse>(
 					new RatingResponse(SOMETHING_WENT_WRONG_PLEASE_TRY_AGAIN_AFTER_SOME_TIMES, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}
@@ -270,9 +266,7 @@ public class IrrServiceImpl implements IrrService{
 			return new ResponseEntity<RatingResponse>(
 					new RatingResponse(ratingResponse,"Irr rating generated", HttpStatus.OK.value()), HttpStatus.OK);
 		} catch (Exception e) {
-			e.printStackTrace();
-			
-			log.info("Error while callling rating client");	
+			log.error("Error while callling rating client : ",e);
 			return new ResponseEntity<RatingResponse>(
 					new RatingResponse(SOMETHING_WENT_WRONG_PLEASE_TRY_AGAIN_AFTER_SOME_TIMES, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}
@@ -293,7 +287,7 @@ public class IrrServiceImpl implements IrrService{
 			default : break;
 			}
 		}catch(DocumentException e){
-			e.printStackTrace();
+			log.error("Exception in isCMAUploaded : ",e);
 			return false;
 		}
 		return false;
@@ -314,7 +308,7 @@ public class IrrServiceImpl implements IrrService{
 			default : break;
 			}
 		}catch(DocumentException e){
-			e.printStackTrace();
+			log.error("Exception in isCoActUploaded : ",e);
 			return false;
 		}
 		return false;
@@ -480,10 +474,7 @@ public class IrrServiceImpl implements IrrService{
 			
 			
 		} catch (Exception e) {
-			
-			log.error("error while calculate first year financial data OS");
-			e.printStackTrace();
-			
+			log.error("error while calculate first year financial data OS : ",e);
 		}
 		
 
@@ -710,10 +701,7 @@ public class IrrServiceImpl implements IrrService{
 			}
 			
 		} catch (Exception e) {
-				
-			log.error("error while getting first year asset details");
-			e.printStackTrace();
-			
+			log.error("error while getting first year asset details : ",e);
 		}
 		
 		
@@ -822,8 +810,7 @@ public class IrrServiceImpl implements IrrService{
 			}
 			
 		} catch (Exception e) {
-				log.error("error while fetching second year operating data");
-				e.printStackTrace();
+				log.error("error while fetching second year operating data : ",e);
 		}
 		
 		
@@ -939,8 +926,7 @@ public class IrrServiceImpl implements IrrService{
 			}
 			
 		} catch (Exception e) {
-			log.error("error while fetching 2nd year liability data ");
-			e.printStackTrace();
+			log.error("error while fetching 2nd year liability data : ",e);
 		}
 		
 		
@@ -1051,8 +1037,7 @@ public class IrrServiceImpl implements IrrService{
 			}
 			
 		} catch (Exception e) {
-			log.error("error while fetching 2nd year data asset");
-			e.printStackTrace();
+			log.error("error while fetching 2nd year data asset : ",e);
 		}
 		
 		
@@ -1173,8 +1158,7 @@ public class IrrServiceImpl implements IrrService{
 			
 			
 		} catch (Exception e) {
-			log.error("error while fetching os data");
-			e.printStackTrace();
+			log.error("error while fetching os data : ",e);
 		}
 		
 		
@@ -1287,8 +1271,7 @@ public class IrrServiceImpl implements IrrService{
 					}
 					
 				} catch (Exception e) {
-					log.error("error while fetching liability data");
-					e.printStackTrace();
+					log.error("error while fetching liability data : ",e);
 				}
 				
 				
@@ -1398,8 +1381,7 @@ public class IrrServiceImpl implements IrrService{
 					}
 					
 				} catch (Exception e) {
-					log.error("error while fetching asset data");
-					e.printStackTrace();
+					log.error("error while fetching asset data : ",e);
 				}
 				
 				
@@ -1421,8 +1403,6 @@ public class IrrServiceImpl implements IrrService{
 		log.info("financialInputRequest.getPowerAndFuelCostFy()::"+financialInputRequest.getPowerAndFuelCostFy());
 		log.info("financialInputRequest.getPowerAndFuelCostSy()::"+financialInputRequest.getPowerAndFuelCostSy());
 		log.info("financialInputRequest.getPowerAndFuelCostTy()::"+financialInputRequest.getPowerAndFuelCostTy());
-
-		log.info("");
 
 		return financialInputRequest;
 	}

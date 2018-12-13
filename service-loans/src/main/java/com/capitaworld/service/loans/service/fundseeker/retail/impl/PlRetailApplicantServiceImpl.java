@@ -87,8 +87,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             return true;
 
         } catch (Exception e) {
-            logger.error("Error while Saving Retail Profile:-");
-            e.printStackTrace();
+            logger.error("Error while Saving Retail Profile :- ",e);
             throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
         }
     }
@@ -149,9 +148,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
 				}
                 
 			} catch (Exception e) {
-				
-				logger.error("=======>>>>> Error while fetching FinancialArrangementDetails <<<<<<<=========");
-				e.printStackTrace();
+				logger.error("=======>>>>> Error while fetching FinancialArrangementDetails <<<<<<<=========",e);
 			}
             
             
@@ -179,16 +176,14 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
 					logger.warn("CreditCard Details is Null");
 				}
 			} catch (Exception e) {
-				logger.error("==========>>>>>>> Error while Fetching CreditCardDetails <<<<<<<============");
-				e.printStackTrace();
+				logger.error("==========>>>>>>> Error while Fetching CreditCardDetails <<<<<<<============",e);
 			}
             
             
 
             return applicantRequest;
         } catch (Exception e) {
-            logger.error("Error while getting Retail Profile:-");
-            e.printStackTrace();
+            logger.error("Error while getting Retail Profile :- ",e);
             throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
         }
     }
@@ -278,8 +273,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             return true;
 
         } catch (Exception e) {
-            logger.error("Error while Saving Retail Primary:-");
-            e.printStackTrace();
+            logger.error("Error while Saving Retail Primary :- ",e);
             throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
         }
     }
@@ -326,8 +320,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
 
             return applicantRequest;
         } catch (Exception e) {
-            logger.error("Error while getting Retail Primary:-");
-            e.printStackTrace();
+            logger.error("Error while getting Retail Primary :- ",e);
             throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
         }
     }
@@ -361,8 +354,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
 
             return true;
         } catch (Exception e) {
-            logger.error("Error while Saving Retail Final:-");
-            e.printStackTrace();
+            logger.error("Error while Saving Retail Final :- ",e);
             throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
         }
     }
@@ -382,8 +374,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             copyAddressFromDomainToRequestForFinal(applicantDetail, applicantRequest, "office");
             return applicantRequest;
         } catch (Exception e) {
-            logger.error("Error while getting Retail Final:-");
-            e.printStackTrace();
+            logger.error("Error while getting Retail Final :- ",e);
             throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
         }
     }

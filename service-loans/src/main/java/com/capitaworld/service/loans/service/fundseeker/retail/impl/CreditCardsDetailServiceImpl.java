@@ -82,8 +82,7 @@ public class CreditCardsDetailServiceImpl implements CreditCardsDetailService {
 		}
 
 		catch (Exception e) {
-			logger.info("Exception  in save crediCardsDetail  :-");
-			e.printStackTrace();
+			logger.error("Exception  in save crediCardsDetail  :- ",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 
@@ -153,8 +152,7 @@ public class CreditCardsDetailServiceImpl implements CreditCardsDetailService {
 		}
 
 		catch (Exception e) {
-			logger.info("Exception  in save CreditCard from CIBIL :-");
-			e.printStackTrace();
+			logger.error("Exception  in save CreditCard from CIBIL :- ",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 
