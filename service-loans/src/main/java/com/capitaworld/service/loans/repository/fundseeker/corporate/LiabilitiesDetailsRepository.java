@@ -38,4 +38,9 @@ public interface LiabilitiesDetailsRepository  extends JpaRepository<Liabilities
 	public List<Object[]> getCMADetail(@Param("applicationId") Long applicationId, @Param("financialYearlyStatement") String financialYearlyStatement);
 	
 	public LiabilitiesDetails findByFsLoanApplicationMasterIdAndYearAndFinancialYearlyStatementAndIsActive(Long applicationId , String year , String financialYearlyStatement , Boolean isActive);
+	
+	@Modifying
+	@Transactional
+	@Query("update LiabilitiesDetails o set o.isActive = false where o.fsLoanApplicationMaster.id = :applicationId and o.financialYearlyStatement IN ('Estimated', 'Projected' ) and o.isActive = true")
+	public int inActiveByAppIdAndFinancialYearlyStatementAndIsActive(@Param("applicationId") Long applicationId);
 }

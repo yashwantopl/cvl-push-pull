@@ -83,14 +83,14 @@ public class LiabilitiesDetailsExcelReader
         	
         	Double yearFromSheet  = sheet.getRow(4).getCell(4).getNumericCellValue() ; 
            	LiabilitiesDetails liabilitiesDetails  = liabilitiesDetailsRepository.findByFsLoanApplicationMasterIdAndYearAndFinancialYearlyStatementAndIsActive(loanApplicationMaster.getId(), String.valueOf(yearFromSheet.longValue()) , "Audited" , true);
-           	Double yearFromTable = Double.valueOf(liabilitiesDetails.getYear()); 
 
-           	if(liabilitiesDetails !=null &&  "Audited".equalsIgnoreCase(liabilitiesDetails.getFinancialYearlyStatement()) && yearFromSheet <= yearFromTable ) {
+           	if(liabilitiesDetails !=null &&  "Audited".equalsIgnoreCase(liabilitiesDetails.getFinancialYearlyStatement()) && yearFromSheet <= Double.valueOf(liabilitiesDetails.getYear()) ) {
            		
            		throw new  Exception("Invalid cma details"); 
          
            	}else {
-           	
+           		int updateRow = liabilitiesDetailsRepository.inActiveByAppIdAndFinancialYearlyStatementAndIsActive(loanApplicationMaster.getId());
+           		log.info("---------------- inactive old estimate and project data ------- updated row "+ updateRow);
            		extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, liabilitiesMappingList,"E",String.valueOf(sheet.getRow(4).getCell(4).getNumericCellValue()),"Estimated", liabilitiesDetailsRepository);
            		j=5;
            	}

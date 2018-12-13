@@ -92,13 +92,14 @@ public class OperatingStatementDetailsExcelReader {
            	
            	Double yearFromSheet  = sheet.getRow(4).getCell(4).getNumericCellValue() ; 
            	OperatingStatementDetails operatingStatementDetails = operatingStatementDetailsRepository.findByLoanApplicationMasterIdAndYearAndFinancialYearlyStatementAndIsActive(loanApplicationMaster.getId(), String.valueOf(yearFromSheet.longValue()) ,  "Audited" , true );
-           	Double yearFromTable = Double.valueOf(operatingStatementDetails.getYear()); 
            	
-           	if(operatingStatementDetails !=null &&  "Audited".equalsIgnoreCase(operatingStatementDetails.getFinancialYearlyStatement()) && yearFromSheet <= yearFromTable ) {
+           	if(operatingStatementDetails !=null &&  "Audited".equalsIgnoreCase(operatingStatementDetails.getFinancialYearlyStatement()) && yearFromSheet <= Double.valueOf(operatingStatementDetails.getYear()) ) {
            		
            		throw new  Exception("Invalid cma details"); 
          
            	}else {
+           		int updateRow = operatingStatementDetailsRepository.inActiveByAppIdAndFinancialYearlyStatementAndIsActive(loanApplicationMaster.getId());
+           		log.info("---------------- inactive old estimate and project data ------- updated row "+ updateRow);
            		extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, operatingStatementMappingList,"E",String.valueOf(sheet.getRow(4).getCell(4).getNumericCellValue()),"Estimated",operatingStatementDetailsRepository);
                	j=5; 
            	} 
