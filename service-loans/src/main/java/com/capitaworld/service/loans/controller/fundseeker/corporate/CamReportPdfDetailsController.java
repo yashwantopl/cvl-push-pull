@@ -34,9 +34,6 @@ public class CamReportPdfDetailsController {
 	@Autowired
 	private CamReportPdfDetailsService camReportPdfDetailsService;
 	
-	@Autowired
-	private InEligibleProposalCamReportService inEligibleProposalCamReportService;
-	
 	
 	@Autowired
 	private ReportsClient reportsClient;
