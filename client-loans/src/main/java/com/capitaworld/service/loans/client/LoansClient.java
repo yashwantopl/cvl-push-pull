@@ -764,7 +764,7 @@ public class LoansClient {
 	
 	public LoansResponse getCorporateApplicant(Long applicationId) throws ExcelException {
 		String url = loansBaseUrl.concat(CORPORATE_APPLICATION_DETAILS_GET).concat("/" + applicationId);
-//		System.out.println("url for Getting Corporate Details From Client=================>" + url + " and For Application Id====>" + applicationId);
+		logger.info("url for Getting Corporate Details From Client=================>" + url + " and For Application Id====>" + applicationId);
 		try {
 			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
 			HttpHeaders headers = new HttpHeaders();
@@ -779,7 +779,7 @@ public class LoansClient {
 	
 	public LoansResponse getCorporateApplicantNew(Long applicationId) throws ExcelException {
 		String url = loansBaseUrl.concat(CORPORATE_APPLICATION_DETAILS_GET_NEW).concat("/" + applicationId);
-//		System.out.println("url for Getting Corporate Details From Client=================>" + url + " and For Application Id====>" + applicationId);
+		logger.info("url for Getting Corporate Details From Client=================>" + url + " and For Application Id====>" + applicationId);
 		try {
 			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
 			HttpHeaders headers = new HttpHeaders();
@@ -852,7 +852,7 @@ public class LoansClient {
 	
 	public FinancialArrangementsDetailRequest getTotalEMIAndSanctionAmount(Long applicationId) throws Exception{
 		String url = loansBaseUrl.concat(FINANCIAL_ARRANGEMENT_DETAILS_TOTAL_EMI).concat("/" + applicationId);
-//		System.out.println("url for Getting TotalEMI From Client=================>" + url + " and For Application Id====>" + applicationId);
+		logger.info("url for Getting TotalEMI From Client=================>" + url + " and For Application Id====>" + applicationId);
 		try {
 			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
 			HttpHeaders headers = new HttpHeaders();
@@ -868,7 +868,7 @@ public class LoansClient {
 	//Dhaval
 	public LoansResponse getTotalEMIFromDirectorId(NTBRequest request) throws Exception{
 		String url = loansBaseUrl.concat(FINANCIAL_ARRANGEMENT_DETAILS_TOTAL_EMI_FROM_DIRECTOR_ID);
-//		System.out.println("url for Getting TotalEMIDirector From Client=================>" + url);
+		logger.info("url for Getting TotalEMIDirector From Client=================>" + url);
 		try {
 			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
 			HttpHeaders headers = new HttpHeaders();
@@ -1065,7 +1065,7 @@ public class LoansClient {
 	
 	public LoansResponse getWorkingCapitalPrimary(Long applicationId) throws ExcelException {
 		String url = loansBaseUrl.concat(WORKING_CAPITAL_PRIMARY_GET).concat("/" + applicationId);
-//		System.out.println("url for Getting Working Capital Primary From Client=================>" + url + " and For Application Id====>" + applicationId);
+		logger.info("url for Getting Working Capital Primary From Client=================>" + url + " and For Application Id====>" + applicationId);
 		try {
 			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
 			HttpHeaders headers = new HttpHeaders();
@@ -1604,7 +1604,7 @@ public class LoansClient {
 	
 	public Integer setEligibilityAmount(LoanApplicationRequest applicationRequest) throws Exception {
 		String url = loansBaseUrl.concat(SET_ELIGIBILITY_AMOUNT);
-//		System.out.println("Eligibility update client URL==>"  + url);
+		logger.info("Eligibility update client URL==>"  + url);
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set(REQ_AUTH, "true");
@@ -1654,7 +1654,7 @@ public class LoansClient {
 	@SuppressWarnings("unchecked")
 	public List<DirectorBackgroundDetailRequest> getDirectorBackgroundDetails(Long applicationId) throws ExcelException {
 		String url = loansBaseUrl.concat(GET_DIRECTOR_BACKGROUND_DETAILS).concat("/" + applicationId);
-//		System.out.println("url for Getting DirectorBackgroundDetails From Client=================>" + url + " and For Application Id====>" + applicationId);
+		logger.info("url for Getting DirectorBackgroundDetails From Client=================>" + url + " and For Application Id====>" + applicationId);
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set(REQ_AUTH, "true");
@@ -1668,7 +1668,7 @@ public class LoansClient {
 	
 	public LoansResponse getDirectorBackgroundDetailsForNTB(Long applicationId) throws Exception {
 		String url = loansBaseUrl.concat(GET_DIRECTOR_BACKGROUND_DETAILS_FOR_NTB).concat("/" + applicationId);
-//		System.out.println("url for Getting DirectorBackgroundDetails for NTB From Client=================>" + url + " and For Application Id====>" + applicationId);
+		logger.info("url for Getting DirectorBackgroundDetails for NTB From Client=================>" + url + " and For Application Id====>" + applicationId);
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set(REQ_AUTH, "true");
@@ -1682,7 +1682,7 @@ public class LoansClient {
 	
 	public LoansResponse getDirectorBackgroundDetail(Long id) throws Exception {
 		String url = loansBaseUrl.concat(GET_DIRECTOR_BACKGROUND_DETAIL).concat("/" + id);
-//		System.out.println("url for Getting DirectorBackgroundDetail From Client=================>" + url + " and For Id====>" + id);
+		logger.info("url for Getting DirectorBackgroundDetail From Client=================>" + url + " and For Id====>" + id);
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set(REQ_AUTH, "true");
@@ -1704,7 +1704,7 @@ public class LoansClient {
 	public LoanApplicationRequest getLoanMasterInfo(Long applicationId) throws LoansException {
 		String url = loansBaseUrl.concat(GET_LOAN_DETAILS).concat("/" + applicationId);
 		try {
-//			System.out.println("url====================>" + url);
+			logger.info("url====================>" + url);
 			HttpHeaders headers = new HttpHeaders();
 			headers.set(REQ_AUTH, "true");
 			headers.setContentType(MediaType.APPLICATION_JSON);
@@ -1880,7 +1880,7 @@ public class LoansClient {
 	}
 	public LoansResponse inactiveApplication(Long applicationId,Long userId) throws LoansException {
 		String url = loansBaseUrl.concat(INACTIVE_APPLICATION_BY_APPLICATION_ID).concat("/" + applicationId).concat("/" + userId);
-//		System.out.println("url to Inactive Application==>" + url);
+		logger.info("url to Inactive Application==>" + url);
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set(REQ_AUTH, "true");
@@ -1899,7 +1899,7 @@ public class LoansClient {
 	
 	public LoansResponse savePhase1Sidbi(LoanApplicationRequest loanApplicationRequest) throws LoansException {
 		String url = loansBaseUrl.concat(SAVE_PHASE_ONE);
-//		System.out.println("Enter in " + SAVE_PHASE_ONE + " -------- URL ---------->" + url);
+		logger.info("Enter in " + SAVE_PHASE_ONE + " -------- URL ---------->" + url);
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set(REQ_AUTH, "true");
@@ -1915,7 +1915,7 @@ public class LoansClient {
 	
 	public LoansResponse savePhase2Sidbi(LoanApplicationRequest loanApplicationRequest) throws LoansException {
 		String url = loansBaseUrl.concat(SAVE_PHASE_TWO);
-//		System.out.println("Enter in " + SAVE_PHASE_TWO + " -------- URL ---------->" + url);
+		logger.info("Enter in " + SAVE_PHASE_TWO + " -------- URL ---------->" + url);
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set(REQ_AUTH, "true");
@@ -1960,7 +1960,7 @@ public class LoansClient {
 	
 	public LoansResponse getCorporateScore(ScoringRequestLoans scoringRequestLoans) throws LoansException {
 		String url = loansBaseUrl.concat(GET_CORPORATE_SCORE);
-//		System.out.println("url to get Corporate Score Calculation ==>" + url);
+		logger.info("url to get Corporate Score Calculation ==>" + url);
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set(REQ_AUTH, "true");
@@ -2036,7 +2036,7 @@ public class LoansClient {
 
 	public MobileApiResponse getOneFormForMobile(FundSeekerInputRequestResponse fundSeekerInputRequestResponse) throws ExcelException {
 		String url = loansBaseUrl.concat(FUNDSEEKER_INPUT_REQUEST_GET_MOBILE);
-//		System.out.println("url for Getting Oneform details From Client=================>" + url);
+		logger.info("url for Getting Oneform details From Client=================>" + url);
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set(REQ_AUTH, "true");
@@ -2051,7 +2051,7 @@ public class LoansClient {
 	
 	public MobileApiResponse matchesForMobile(MobileLoanRequest mobileLoanRequest) throws ExcelException {
 		String url = loansBaseUrl.concat(FUNDSEEKER_INPUT_REQUEST_MATCHES_MOBILE);
-//		System.out.println("Url for MATCHES details From Client=================>" + url);
+		logger.info("Url for MATCHES details From Client=================>" + url);
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set(REQ_AUTH, "true");
@@ -2067,7 +2067,7 @@ public class LoansClient {
 	
 	public LoansResponse getScoringExcel(MultipartFile multipartFile) throws LoansException, ExcelException {
 		String url = loansBaseUrl.concat(GET_SCORING_EXCEL);
-//		System.out.println("url to get Corporate Score Calculation ==>" + url);
+		logger.info("url to get Corporate Score Calculation ==>" + url);
 		try {
 			HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.MULTIPART_FORM_DATA);
@@ -2270,7 +2270,7 @@ public class LoansClient {
 	public String getToken(GenerateTokenRequest generateTokenRequest) throws LoansException {
 
 		String url = loansBaseUrl.concat(GET_TOKEN);
-//		System.out.println("Sidbi Integration get token URL===>" + url);
+		logger.info("Sidbi Integration get token URL===>" + url);
 		try {
 			
 			HttpHeaders headers = new HttpHeaders();
@@ -2289,7 +2289,7 @@ public class LoansClient {
 	public String setTokenAsExpired(GenerateTokenRequest generateTokenRequest) throws LoansException {
 
 		String url = loansBaseUrl.concat(SET_TOKEN_AS_EXPIRED);
-//		System.out.println("Sidbi Integration set token as expire URL===>" + url);
+		logger.info("Sidbi Integration set token as expire URL===>" + url);
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set(REQ_AUTH, "true");
@@ -2307,7 +2307,7 @@ public class LoansClient {
 	public LoansResponse getRetailApplicantIncomeDetails(Long applicationId) throws LoansException {
 		String url = loansBaseUrl.concat(GET_RETAIL_APPLICANT_INCOME_DETAILS).concat("/" + applicationId);
 		try {
-//			System.out.println("Enter in Get Retail Applicant Income Details---------->" + url);
+			logger.info("Enter in Get Retail Applicant Income Details---------->" + url);
 			HttpHeaders headers = new HttpHeaders();
 			headers.set(REQ_AUTH, "true");
 			headers.setContentType(MediaType.APPLICATION_JSON);
@@ -2322,7 +2322,7 @@ public class LoansClient {
 	public LoansResponse saveOrUpdateRetailApplicantIncomeDetails(List<RetailApplicantIncomeRequest> request) throws LoansException {
 		String url = loansBaseUrl.concat(SAVE_RETAIL_APPLICANT_INCOME_DETAILS);
 		try {
-//			System.out.println("Enter in save Retail Applicant Income Details---------->" + url);
+			logger.info("Enter in save Retail Applicant Income Details---------->" + url);
 			HttpHeaders headers = new HttpHeaders();
 			headers.set(REQ_AUTH, "true");
 			headers.setContentType(MediaType.APPLICATION_JSON);
@@ -2337,7 +2337,7 @@ public class LoansClient {
 	public LoansResponse saveITRResRetailApplicantDetails(RetailApplicantRequest request) throws LoansException {
 		String url = loansBaseUrl.concat(SAVE_ITR_RETAIL_APPLICANT_DETAILS);
 		try {
-//			System.out.println("Enter in save ITR Response Retail Applicant Details---------->" + url);
+			logger.info("Enter in save ITR Response Retail Applicant Details---------->" + url);
 			HttpHeaders headers = new HttpHeaders();
 			headers.set(REQ_AUTH, "true");
 			headers.setContentType(MediaType.APPLICATION_JSON);
@@ -2352,7 +2352,7 @@ public class LoansClient {
 	public LoansResponse getPincodeData(String request) throws LoansException {
 		String url = loansBaseUrl.concat(GET_PINCODE_DATA).concat(request);
 		try {
-//			System.out.println("Entering in GET_PINCODE_DATA -----> " + url);
+			logger.info("Entering in GET_PINCODE_DATA -----> " + url);
 			HttpHeaders headers = new HttpHeaders();
 			headers.set(REQ_AUTH, "true");
 			headers.setContentType(MediaType.APPLICATION_JSON);
@@ -2372,7 +2372,7 @@ public class LoansClient {
 	public LoansResponse saveLoanWCRenewalType(LoanApplicationRequest loanRequest) throws LoansException {
 		String url = loansBaseUrl.concat(SAVE_LOAN_WC_RENEWAL_TYPE);
 		try {
-//			System.out.println("Enter in saveLoanWCRenewalType---------->" + url);
+			logger.info("Enter in saveLoanWCRenewalType---------->" + url);
 			HttpHeaders headers = new HttpHeaders();
 			headers.set(REQ_AUTH, "true");
 			headers.setContentType(MediaType.APPLICATION_JSON);
@@ -2387,7 +2387,7 @@ public class LoansClient {
 	public LoansResponse getLoanWCRenewalType(Long applicationId) throws LoansException {
 		String url = loansBaseUrl.concat(GET_LOAN_WC_RENEWAL_TYPE);
 		try {
-//			System.out.println("Enter in Get WC Renewal Type Status---------->" + url);
+			logger.info("Enter in Get WC Renewal Type Status---------->" + url);
 			HttpHeaders headers = new HttpHeaders();
 			headers.set(REQ_AUTH, "true");
 			headers.setContentType(MediaType.APPLICATION_JSON);
