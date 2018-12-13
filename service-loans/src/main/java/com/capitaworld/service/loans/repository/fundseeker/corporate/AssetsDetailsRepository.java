@@ -36,4 +36,11 @@ public interface AssetsDetailsRepository extends JpaRepository<AssetsDetails, Lo
 	
 	@Query("select a.receivableOtherThanDefferred, a.exportReceivables, a.inventory ,a.advanceToSupplierRawMaterials , a.grossBlock , a.totalCurrentAssets from AssetsDetails a where a.loanApplicationMaster.id =:applicationId  AND year = (SELECT  max(a.year) FROM AssetsDetails a WHERE a.loanApplicationMaster.id =:applicationId AND a.isActive=true AND a.financialYearlyStatement =:financialYearlyStatement)")
 	public List<Object[]> getCMADetail(@Param("applicationId") Long applicationId,@Param("financialYearlyStatement") String financialYearlyStatement);
+	
+	public AssetsDetails findByLoanApplicationMasterIdAndYearAndFinancialYearlyStatementAndIsActive(Long applicationId , String year , String financialYearlyStatement , Boolean isActive);
+	
+	@Modifying
+	@Transactional
+	@Query("update AssetsDetails o set o.isActive = false where o.loanApplicationMaster.id = :applicationId and o.financialYearlyStatement IN ('Estimated', 'Projected' ) and o.isActive = true")
+	public int inActiveByAppIdAndFinancialYearlyStatementAndIsActive(@Param("applicationId") Long applicationId);
 }

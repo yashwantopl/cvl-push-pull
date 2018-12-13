@@ -105,7 +105,7 @@ public class ExcelExtractionServiceImpl implements ExcelExtractionService{
 	OperatingStatementDetailsService operatingStatementDetailsService; 
 	
 	
-	public Boolean readCMA(Long applicationId,Long storageDetailsId,MultipartFile multipartFile) {
+	public Boolean readCMA(Long applicationId,Long storageDetailsId,MultipartFile multipartFile) throws Exception {
 		// TODO Auto-generated method stub
 		
 		InputStream file;
@@ -125,6 +125,7 @@ public class ExcelExtractionServiceImpl implements ExcelExtractionService{
 	         OperatingStatementDetailsService.readOperatingStatementDetails(applicationId,storageDetailsId,operatingStatementSheet);
 	         liabilitiesDetailsService.readLiabilitiesDetails(applicationId,storageDetailsId, liabilitiesSheet);
 	         assetsDetailsService.readAssetsDetails(applicationId,storageDetailsId, assetsSheet);
+	         workbook.close(); 
 		}
 		catch (Exception e) {
 			// TODO: handle exception
@@ -134,7 +135,8 @@ public class ExcelExtractionServiceImpl implements ExcelExtractionService{
 			operatingStatementDetailsRepository.inActiveAssetsDetails(storageDetailsId);
 			log.error("Error while reading CMA");
 			e.printStackTrace();
-			return false;
+			throw e ;
+			/*return false;*/
 		}
 		
 		return true;
@@ -177,6 +179,7 @@ public class ExcelExtractionServiceImpl implements ExcelExtractionService{
 			 feasibilityService.readFeasibilityDetails(applicationId,storageDetailsId,feasibilitySheet, dprUserDataDetail);
 			 scotService.readScotDetails(applicationId,storageDetailsId,scotSheet);
 			 dprUserDataDetailService.save(storageDetailsId,dprUserDataDetail,applicationId);
+			 workbook.close();
 		}
 		catch (Exception e) {
 			
@@ -214,6 +217,7 @@ public class ExcelExtractionServiceImpl implements ExcelExtractionService{
 	         
 			 balanceSheetDetailService.readBalanceSheetDetails(applicationId, storageDetailsId, balanceSheet);
 			 profitibilityStatementDetailService.readProfitibilityStatementDetail(applicationId, storageDetailsId, profitibilityStatementSheet);
+			 workbook.close();
 		}
 		catch (Exception e) {
 			// TODO: handle exception

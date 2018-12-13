@@ -289,9 +289,8 @@ public class RetailUploadController {
 					// code for inactive CMA BS and DPR recored
 
 					logger.error("Error While Uploading Document==>");
-					return new ResponseEntity<LoansResponse>(
-							new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()),
-							HttpStatus.OK);
+					LoansResponse loansResponse = new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value(), e.getMessage());
+					return new ResponseEntity<LoansResponse>( loansResponse,HttpStatus.OK);
 				}
 
 				if (flag) {
