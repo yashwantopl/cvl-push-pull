@@ -102,8 +102,8 @@ public class PrimaryViewController {
 	@Autowired
 	private PlTeaserViewService plTeaserViewService;
 
-	private static final String WARN_MSG_USER_VERIFICATION_INVALID_REQUEST_CLIENT_ID_IS_NOT_VALID = "user_verification, Invalid Request... Client Id is not valid";
-	private static final String WARN_MSG_USER_VERIFICATION_INVALID_REQUEST_SOMETHING_WENT_WRONG = "user_verification, Invalid Request... Something went wrong";
+	private static final String WARN_MSG_USER_VERIFICATION_INVALID_REQUEST_CLIENT_ID_IS_NOT_VALID = "user_verification, Invalid Request... Client Id is not valid : ";
+	private static final String ERROR_MSG_USER_VERIFICATION_INVALID_REQUEST_SOMETHING_WENT_WRONG = "user_verification, Invalid Request... Something went wrong : ";
 	private static final String WORKING_CAPITAL_PRIMARY_DETAILS = "Working Capital Primary Details";
 
 	@GetMapping(value = "/HomeLoan/{toApplicationId}")
@@ -132,8 +132,7 @@ public class PrimaryViewController {
 								HttpStatus.OK);
 					}
 				} catch (Exception e) {
-					logger.warn(WARN_MSG_USER_VERIFICATION_INVALID_REQUEST_SOMETHING_WENT_WRONG);
-					e.printStackTrace();
+					logger.error(ERROR_MSG_USER_VERIFICATION_INVALID_REQUEST_SOMETHING_WENT_WRONG,e);
 					return new ResponseEntity<LoansResponse>(
 							new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 							HttpStatus.OK);
@@ -203,8 +202,7 @@ public class PrimaryViewController {
 								HttpStatus.OK);
 					}
 				} catch (Exception e) {
-					logger.warn(WARN_MSG_USER_VERIFICATION_INVALID_REQUEST_SOMETHING_WENT_WRONG);
-					e.printStackTrace();
+					logger.warn(ERROR_MSG_USER_VERIFICATION_INVALID_REQUEST_SOMETHING_WENT_WRONG,e);
 					return new ResponseEntity<LoansResponse>(
 							new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 							HttpStatus.OK);
@@ -277,8 +275,7 @@ public class PrimaryViewController {
 								HttpStatus.OK);
 					}
 				} catch (Exception e) {
-					logger.warn(WARN_MSG_USER_VERIFICATION_INVALID_REQUEST_SOMETHING_WENT_WRONG);
-					e.printStackTrace();
+					logger.error(ERROR_MSG_USER_VERIFICATION_INVALID_REQUEST_SOMETHING_WENT_WRONG,e);
 					return new ResponseEntity<LoansResponse>(
 							new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 							HttpStatus.OK);
@@ -350,8 +347,7 @@ public class PrimaryViewController {
 								HttpStatus.OK);
 					}
 				} catch (Exception e) {
-					logger.warn(WARN_MSG_USER_VERIFICATION_INVALID_REQUEST_SOMETHING_WENT_WRONG);
-					e.printStackTrace();
+					logger.error(ERROR_MSG_USER_VERIFICATION_INVALID_REQUEST_SOMETHING_WENT_WRONG,e);
 					return new ResponseEntity<LoansResponse>(
 							new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 							HttpStatus.OK);
@@ -388,7 +384,6 @@ public class PrimaryViewController {
 				}
 				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 			} catch (Exception e) {
-				e.printStackTrace();
 				loansResponse.setData(lapPrimaryViewResponse);
 				loansResponse.setMessage(CommonUtils.SOMETHING_WENT_WRONG);
 				loansResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
@@ -424,8 +419,7 @@ public class PrimaryViewController {
 								HttpStatus.OK);
 					}
 				} catch (Exception e) {
-					logger.warn(WARN_MSG_USER_VERIFICATION_INVALID_REQUEST_SOMETHING_WENT_WRONG);
-					e.printStackTrace();
+					logger.error(ERROR_MSG_USER_VERIFICATION_INVALID_REQUEST_SOMETHING_WENT_WRONG,e);
 					return new ResponseEntity<LoansResponse>(
 							new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 							HttpStatus.OK);
@@ -498,8 +492,7 @@ public class PrimaryViewController {
 								HttpStatus.OK);
 					}
 				} catch (Exception e) {
-					logger.warn(WARN_MSG_USER_VERIFICATION_INVALID_REQUEST_SOMETHING_WENT_WRONG);
-					e.printStackTrace();
+					logger.error(ERROR_MSG_USER_VERIFICATION_INVALID_REQUEST_SOMETHING_WENT_WRONG,e);
 					return new ResponseEntity<LoansResponse>(
 							new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 							HttpStatus.OK);
@@ -574,8 +567,7 @@ public class PrimaryViewController {
 								HttpStatus.OK);
 					}
 				} catch (Exception e) {
-					logger.warn(WARN_MSG_USER_VERIFICATION_INVALID_REQUEST_SOMETHING_WENT_WRONG);
-					e.printStackTrace();
+					logger.error(ERROR_MSG_USER_VERIFICATION_INVALID_REQUEST_SOMETHING_WENT_WRONG,e);
 					return new ResponseEntity<LoansResponse>(
 							new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 							HttpStatus.OK);
@@ -654,8 +646,7 @@ public class PrimaryViewController {
 								HttpStatus.OK);
 					}
 				} catch (Exception e) {
-					logger.warn(WARN_MSG_USER_VERIFICATION_INVALID_REQUEST_SOMETHING_WENT_WRONG);
-					e.printStackTrace();
+					logger.error(ERROR_MSG_USER_VERIFICATION_INVALID_REQUEST_SOMETHING_WENT_WRONG,e);
 					return new ResponseEntity<LoansResponse>(
 							new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 							HttpStatus.OK);
@@ -742,8 +733,7 @@ public class PrimaryViewController {
 								HttpStatus.OK);
 					}
 				} catch (Exception e) {
-					logger.warn(WARN_MSG_USER_VERIFICATION_INVALID_REQUEST_SOMETHING_WENT_WRONG);
-					e.printStackTrace();
+					logger.error(ERROR_MSG_USER_VERIFICATION_INVALID_REQUEST_SOMETHING_WENT_WRONG,e);
 					return new ResponseEntity<LoansResponse>(
 							new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 							HttpStatus.OK);
@@ -956,8 +946,7 @@ public class PrimaryViewController {
 								HttpStatus.OK);
 					}
 				} catch (Exception e) {
-					logger.warn(WARN_MSG_USER_VERIFICATION_INVALID_REQUEST_SOMETHING_WENT_WRONG);
-					e.printStackTrace();
+					logger.error(ERROR_MSG_USER_VERIFICATION_INVALID_REQUEST_SOMETHING_WENT_WRONG,e);
 					return new ResponseEntity<LoansResponse>(
 							new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 							HttpStatus.OK);

@@ -159,9 +159,9 @@ public class ScoringServiceImpl implements ScoringService {
     @Autowired
     private ScoringRequestDetailRepository scoringRequestDetailRepository;
 
-    private static final String ERROR_WHILE_GETTING_RETAIL_APPLICANT_DETAIL_FOR_PERSONAL_LOAN_SCORING = "Error while getting retail applicant detail for personal loan scoring";
-    private static final String ERROR_WHILE_GETTING_FIELD_LIST = "error while getting field list";
-    private static final String ERROR_WHILE_CALLING_SCORING = "error while calling scoring";
+    private static final String ERROR_WHILE_GETTING_RETAIL_APPLICANT_DETAIL_FOR_PERSONAL_LOAN_SCORING = "Error while getting retail applicant detail for personal loan scoring : ";
+    private static final String ERROR_WHILE_GETTING_FIELD_LIST = "error while getting field list : ";
+    private static final String ERROR_WHILE_CALLING_SCORING = "error while calling scoring : ";
 
     private static final String SAVING_SCORING_REQUEST_DATA_FOR = "Saving Scoring Request Data for  =====> ";
     private static final String SCORE_IS_SUCCESSFULLY_CALCULATED = "score is successfully calculated";
@@ -169,7 +169,7 @@ public class ScoringServiceImpl implements ScoringService {
     private static final String MSG_FP_PRODUCT_ID = " FP PRODUCT ID    :: ";
     private static final String MSG_SCORING_MODEL_ID = " SCORING MODEL ID :: ";
     private static final String MSG_SCORE_PARAMETER = "SCORE PARAMETER ::::::::::";
-    private static final String ORG_ID_IS_NULL_OR_EMPTY  = "org id is null or empty";
+    private static final String ORG_ID_IS_NULL_OR_EMPTY  = "org id is null or empty : ";
 
 
     @Override
@@ -268,8 +268,7 @@ public class ScoringServiceImpl implements ScoringService {
                 try {
                     scoringResponse = scoringClient.listFieldByBusinessTypeId(scoringRequest);
                 } catch (Exception e) {
-                    logger.error(ERROR_WHILE_GETTING_FIELD_LIST);
-                    e.printStackTrace();
+                    logger.error(ERROR_WHILE_GETTING_FIELD_LIST,e);
                 }
 
                 List<Map<String, Object>> dataList = (List<Map<String, Object>>) scoringResponse.getDataList();
@@ -282,7 +281,7 @@ public class ScoringServiceImpl implements ScoringService {
                         modelParameterResponse = MultipleJSONObjectHelper.getObjectFromMap(dataList.get(i),
                                 ModelParameterResponse.class);
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        logger.error(CommonUtils.EXCEPTION,e);
                     }
 
                     FundSeekerInputRequest fundSeekerInputRequest = new FundSeekerInputRequest();
@@ -304,8 +303,7 @@ public class ScoringServiceImpl implements ScoringService {
                                 scoreParameterRetailRequest.setWorkingExperience(totalExperience);
                                 scoreParameterRetailRequest.setWorkingExperience_p(true);
                             } catch (Exception e) {
-                                logger.error("error while getting WORKING_EXPERIENCE_PL parameter");
-                                e.printStackTrace();
+                                logger.error("error while getting WORKING_EXPERIENCE_PL parameter : ",e);
                                 scoreParameterRetailRequest.setWorkingExperience_p(false);
                             }
 
@@ -329,8 +327,7 @@ public class ScoringServiceImpl implements ScoringService {
                                     scoreParameterRetailRequest.setCibilScore_p(false);
                                 }
                             } catch (Exception e) {
-                                logger.error("error while getting CIBIL_SCORE_PL parameter from CIBIL client");
-                                e.printStackTrace();
+                                logger.error("error while getting CIBIL_SCORE_PL parameter from CIBIL client : ",e);
                                 scoreParameterRetailRequest.setCibilScore_p(false);
                             }
 
@@ -346,8 +343,7 @@ public class ScoringServiceImpl implements ScoringService {
                                     scoreParameterRetailRequest.setAge_p(false);
                                 }
                             } catch (Exception e) {
-                                logger.error("error while getting AGE_PL parameter");
-                                e.printStackTrace();
+                                logger.error("error while getting AGE_PL parameter : ",e);
                                 scoreParameterRetailRequest.setAge_p(false);
                             }
 
@@ -363,8 +359,7 @@ public class ScoringServiceImpl implements ScoringService {
                                     scoreParameterRetailRequest.setEducationQualifaction_p(false);
                                 }
                             } catch (Exception e) {
-                                logger.error("error while getting EDUCATION_QUALI_PL parameter");
-                                e.printStackTrace();
+                                logger.error("error while getting EDUCATION_QUALI_PL parameter : ",e);
                                 scoreParameterRetailRequest.setEducationQualifaction_p(false);
                             }
 
@@ -380,8 +375,7 @@ public class ScoringServiceImpl implements ScoringService {
                                     scoreParameterRetailRequest.setEmployementType_p(false);
                                 }
                             } catch (Exception e) {
-                                logger.error("error while getting EMPLOYEMENT_TYPE_PL parameter");
-                                e.printStackTrace();
+                                logger.error("error while getting EMPLOYEMENT_TYPE_PL parameter : ",e);
                                 scoreParameterRetailRequest.setEmployementType_p(false);
                             }
 
@@ -397,8 +391,7 @@ public class ScoringServiceImpl implements ScoringService {
                                     scoreParameterRetailRequest.setHouseOwnership_p(false);
                                 }
                             } catch (Exception e) {
-                                logger.error("error while getting HOUSE_OWNERSHIP_PL parameter");
-                                e.printStackTrace();
+                                logger.error("error while getting HOUSE_OWNERSHIP_PL parameter : ",e);
                                 scoreParameterRetailRequest.setHouseOwnership_p(false);
                             }
 
@@ -414,8 +407,7 @@ public class ScoringServiceImpl implements ScoringService {
                                     scoreParameterRetailRequest.setMaritalStatus_p(false);
                                 }
                             } catch (Exception e) {
-                                logger.error("error while getting MARITAL_STATUS_PL parameter");
-                                e.printStackTrace();
+                                logger.error("error while getting MARITAL_STATUS_PL parameter : ",e);
                                 scoreParameterRetailRequest.setMaritalStatus_p(false);
                             }
 
@@ -472,8 +464,7 @@ public class ScoringServiceImpl implements ScoringService {
                                     scoreParameterRetailRequest.setCategoryInfo_p(false);
                                 }
                             } catch (Exception e) {
-                                logger.error("error while getting CATEGORY_INFO_PL parameter");
-                                e.printStackTrace();
+                                logger.error("error while getting CATEGORY_INFO_PL parameter : ",e);
                                 scoreParameterRetailRequest.setCategoryInfo_p(false);
                             }
 
@@ -492,9 +483,7 @@ public class ScoringServiceImpl implements ScoringService {
                                     totalIncomeLastYear = 0.0;
                                 }
                             } catch (Exception e) {
-                                logger.error("error while getting total income from retail applicant income detail");
-                                e.printStackTrace();
-
+                                logger.error("error while getting total income from retail applicant income detail : ",e);
                             }
 
                             scoreParameterRetailRequest.setEmiAmountFromCIBIL(totalEMI);
@@ -529,8 +518,7 @@ public class ScoringServiceImpl implements ScoringService {
                                 scoreParameterRetailRequest.setChequeBounce(noOfChequeBounce);
                                 scoreParameterRetailRequest.setChequeBounce_p(true);
                             } catch (Exception e) {
-                                logger.error("error while getting CHEQUE_BOUNCE_PAST_SIX_MONTH_PL parameter");
-                                e.printStackTrace();
+                                logger.error("error while getting CHEQUE_BOUNCE_PAST_SIX_MONTH_PL parameter : ",e);
                                 scoreParameterRetailRequest.setChequeBounce_p(false);
                             }
                             break;
@@ -553,8 +541,7 @@ public class ScoringServiceImpl implements ScoringService {
                                 }
                                 scoreParameterRetailRequest.setDPD_p(true);
                             } catch (Exception e) {
-                                logger.error("error while getting DAY_PAST_DUE_PL parameter from CIBIL client");
-                                e.printStackTrace();
+                                logger.error("error while getting DAY_PAST_DUE_PL parameter from CIBIL client : ",e);
                                 scoreParameterRetailRequest.setDPD_p(false);
                             }
 
@@ -570,8 +557,7 @@ public class ScoringServiceImpl implements ScoringService {
                                     scoreParameterRetailRequest.setNetAnnualIncome_p(false);
                                 }
                             } catch (Exception e) {
-                                logger.error("error while getting NET_ANNUAL_INCOME_PL parameter");
-                                e.printStackTrace();
+                                logger.error("error while getting NET_ANNUAL_INCOME_PL parameter : ",e);
                                 scoreParameterRetailRequest.setNetAnnualIncome_p(false);
                             }
 
@@ -605,7 +591,7 @@ public class ScoringServiceImpl implements ScoringService {
 
                     logger.info(SAVING_SCORING_REQUEST_DATA_FOR + applicationId);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    logger.error(CommonUtils.EXCEPTION,e);
                 }
             }
         }
@@ -620,8 +606,7 @@ public class ScoringServiceImpl implements ScoringService {
             return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
         } catch (Exception e) {
-            logger.error(ERROR_WHILE_CALLING_SCORING);
-            e.printStackTrace();
+            logger.error(ERROR_WHILE_CALLING_SCORING,e);
             LoansResponse loansResponse = new LoansResponse(ERROR_WHILE_CALLING_SCORING, HttpStatus.INTERNAL_SERVER_ERROR.value());
             return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
         }
@@ -696,8 +681,7 @@ public class ScoringServiceImpl implements ScoringService {
                     try {
                         scoringResponse = scoringClient.listFieldByBusinessTypeId(scoringRequest);
                     } catch (Exception e) {
-                        logger.error(ERROR_WHILE_GETTING_FIELD_LIST);
-                        e.printStackTrace();
+                        logger.error(ERROR_WHILE_GETTING_FIELD_LIST,e);
                     }
 
                     List<Map<String, Object>> dataList = (List<Map<String, Object>>) scoringResponse.getDataList();
@@ -710,7 +694,7 @@ public class ScoringServiceImpl implements ScoringService {
                             modelParameterResponse = MultipleJSONObjectHelper.getObjectFromMap(dataList.get(i),
                                     ModelParameterResponse.class);
                         } catch (IOException | NullPointerException e) {
-                            e.printStackTrace();
+                            logger.error(CommonUtils.EXCEPTION,e);
                         }
 
                         FundSeekerInputRequest fundSeekerInputRequest = new FundSeekerInputRequest();
@@ -732,8 +716,7 @@ public class ScoringServiceImpl implements ScoringService {
                                     scoreParameterRetailRequest.setWorkingExperience(totalExperience);
                                     scoreParameterRetailRequest.setWorkingExperience_p(true);
                                 } catch (Exception e) {
-                                    logger.error("error while getting WORKING_EXPERIENCE_PL parameter");
-                                    e.printStackTrace();
+                                    logger.error("error while getting WORKING_EXPERIENCE_PL parameter : ",e);
                                     scoreParameterRetailRequest.setWorkingExperience_p(false);
                                 }
 
@@ -757,8 +740,7 @@ public class ScoringServiceImpl implements ScoringService {
                                         scoreParameterRetailRequest.setCibilScore_p(false);
                                     }
                                 } catch (Exception e) {
-                                    logger.error("error while getting CIBIL_SCORE_PL parameter from CIBIL client");
-                                    e.printStackTrace();
+                                    logger.error("error while getting CIBIL_SCORE_PL parameter from CIBIL client : ",e);
                                     scoreParameterRetailRequest.setCibilScore_p(false);
                                 }
 
@@ -774,8 +756,7 @@ public class ScoringServiceImpl implements ScoringService {
                                         scoreParameterRetailRequest.setAge_p(false);
                                     }
                                 } catch (Exception e) {
-                                    logger.error("error while getting AGE_PL parameter");
-                                    e.printStackTrace();
+                                    logger.error("error while getting AGE_PL parameter : ",e);
                                     scoreParameterRetailRequest.setAge_p(false);
                                 }
 
@@ -791,8 +772,7 @@ public class ScoringServiceImpl implements ScoringService {
                                         scoreParameterRetailRequest.setEducationQualifaction_p(false);
                                     }
                                 } catch (Exception e) {
-                                    logger.error("error while getting EDUCATION_QUALI_PL parameter");
-                                    e.printStackTrace();
+                                    logger.error("error while getting EDUCATION_QUALI_PL parameter : ",e);
                                     scoreParameterRetailRequest.setEducationQualifaction_p(false);
                                 }
 
@@ -808,8 +788,7 @@ public class ScoringServiceImpl implements ScoringService {
                                         scoreParameterRetailRequest.setEmployementType_p(false);
                                     }
                                 } catch (Exception e) {
-                                    logger.error("error while getting EMPLOYEMENT_TYPE_PL parameter");
-                                    e.printStackTrace();
+                                    logger.error("error while getting EMPLOYEMENT_TYPE_PL parameter : ",e);
                                     scoreParameterRetailRequest.setEmployementType_p(false);
                                 }
 
@@ -825,8 +804,7 @@ public class ScoringServiceImpl implements ScoringService {
                                         scoreParameterRetailRequest.setHouseOwnership_p(false);
                                     }
                                 } catch (Exception e) {
-                                    logger.error("error while getting HOUSE_OWNERSHIP_PL parameter");
-                                    e.printStackTrace();
+                                    logger.error("error while getting HOUSE_OWNERSHIP_PL parameter : ",e);
                                     scoreParameterRetailRequest.setHouseOwnership_p(false);
                                 }
 
@@ -842,8 +820,7 @@ public class ScoringServiceImpl implements ScoringService {
                                         scoreParameterRetailRequest.setMaritalStatus_p(false);
                                     }
                                 } catch (Exception e) {
-                                    logger.error("error while getting MARITAL_STATUS_PL parameter");
-                                    e.printStackTrace();
+                                    logger.error("error while getting MARITAL_STATUS_PL parameter : ",e);
                                     scoreParameterRetailRequest.setMaritalStatus_p(false);
                                 }
 
@@ -900,8 +877,7 @@ public class ScoringServiceImpl implements ScoringService {
                                         scoreParameterRetailRequest.setCategoryInfo_p(false);
                                     }
                                 } catch (Exception e) {
-                                    logger.error("error while getting CATEGORY_INFO_PL parameter");
-                                    e.printStackTrace();
+                                    logger.error("error while getting CATEGORY_INFO_PL parameter : ",e);
                                     scoreParameterRetailRequest.setCategoryInfo_p(false);
                                 }
 
@@ -920,9 +896,7 @@ public class ScoringServiceImpl implements ScoringService {
                                         totalIncomeLastYear = 0.0;
                                     }
                                 } catch (Exception e) {
-                                    logger.error("error while getting total income from retail applicant income detail");
-                                    e.printStackTrace();
-
+                                    logger.error("error while getting total income from retail applicant income detail : ",e);
                                 }
 
                                 scoreParameterRetailRequest.setEmiAmountFromCIBIL(totalEMI);
@@ -957,8 +931,7 @@ public class ScoringServiceImpl implements ScoringService {
                                     scoreParameterRetailRequest.setChequeBounce(noOfChequeBounce);
                                     scoreParameterRetailRequest.setChequeBounce_p(true);
                                 } catch (Exception e) {
-                                    logger.error("error while getting CHEQUE_BOUNCE_PAST_SIX_MONTH_PL parameter");
-                                    e.printStackTrace();
+                                    logger.error("error while getting CHEQUE_BOUNCE_PAST_SIX_MONTH_PL parameter : ",e);
                                     scoreParameterRetailRequest.setChequeBounce_p(false);
                                 }
                                 break;
@@ -981,8 +954,7 @@ public class ScoringServiceImpl implements ScoringService {
                                     }
                                     scoreParameterRetailRequest.setDPD_p(true);
                                 } catch (Exception e) {
-                                    logger.error("error while getting DAY_PAST_DUE_PL parameter from CIBIL client");
-                                    e.printStackTrace();
+                                    logger.error("error while getting DAY_PAST_DUE_PL parameter from CIBIL client : ",e);
                                     scoreParameterRetailRequest.setDPD_p(false);
                                 }
 
@@ -998,8 +970,7 @@ public class ScoringServiceImpl implements ScoringService {
                                         scoreParameterRetailRequest.setNetAnnualIncome_p(false);
                                     }
                                 } catch (Exception e) {
-                                    logger.error("error while getting NET_ANNUAL_INCOME_PL parameter");
-                                    e.printStackTrace();
+                                    logger.error("error while getting NET_ANNUAL_INCOME_PL parameter : ",e);
                                     scoreParameterRetailRequest.setNetAnnualIncome_p(false);
                                 }
 
@@ -1033,7 +1004,7 @@ public class ScoringServiceImpl implements ScoringService {
 
                         logger.info(SAVING_SCORING_REQUEST_DATA_FOR + applicationId);
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        logger.error(CommonUtils.EXCEPTION,e);
                     }
                 }
             }
@@ -1050,8 +1021,7 @@ public class ScoringServiceImpl implements ScoringService {
             return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
         } catch (Exception e) {
-            logger.error(ERROR_WHILE_CALLING_SCORING);
-            e.printStackTrace();
+            logger.error(ERROR_WHILE_CALLING_SCORING,e);
             LoansResponse loansResponse = new LoansResponse(ERROR_WHILE_CALLING_SCORING, HttpStatus.INTERNAL_SERVER_ERROR.value());
             return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
         }
@@ -1074,7 +1044,6 @@ public class ScoringServiceImpl implements ScoringService {
             }
         } catch (Exception e) {
             logger.error("Exception while getting perfios data======={}", e.getMessage());
-            e.printStackTrace();
         }
 
 
@@ -1121,8 +1090,7 @@ public class ScoringServiceImpl implements ScoringService {
                 }
             }
         } catch (IOException e) {
-            logger.error("error while getting Financial Type Id from itr response");
-            e.printStackTrace();
+            logger.error("error while getting Financial Type Id from itr response : ",e);
         }
 
         /////////
@@ -1188,8 +1156,7 @@ public class ScoringServiceImpl implements ScoringService {
                 }
 
             } catch (Exception e) {
-                logger.error("error while getting GST parameter");
-                e.printStackTrace();
+                logger.error("error while getting GST parameter : ",e);
             }
 
 
@@ -1198,8 +1165,7 @@ public class ScoringServiceImpl implements ScoringService {
             try {
                 gstResponseScoring = gstClient.getCalculationForScoring(gstNumber);
             } catch (Exception e) {
-                logger.error("error while getting GST parameter for GST Sales Show A Rising Trend");
-                e.printStackTrace();
+                logger.error("error while getting GST parameter for GST Sales Show A Rising Trend : ",e);
             }
 
             // end Get GST Parameter
@@ -1266,8 +1232,7 @@ public class ScoringServiceImpl implements ScoringService {
                 try {
                     scoringResponse = scoringClient.listFieldByBusinessTypeId(scoringRequest);
                 } catch (Exception e) {
-                    logger.error(ERROR_WHILE_GETTING_FIELD_LIST);
-                    e.printStackTrace();
+                    logger.error(ERROR_WHILE_GETTING_FIELD_LIST,e);
                 }
 
                 List<Map<String, Object>> dataList = (List<Map<String, Object>>) scoringResponse.getDataList();
@@ -1283,7 +1248,7 @@ public class ScoringServiceImpl implements ScoringService {
                         modelParameterResponse = MultipleJSONObjectHelper.getObjectFromMap(dataList.get(i),
                                 ModelParameterResponse.class);
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        logger.error(CommonUtils.EXCEPTION,e);
                     }
 
                 /*FundSeekerInputRequest fundSeekerInputRequest = new FundSeekerInputRequest();
@@ -1308,8 +1273,7 @@ public class ScoringServiceImpl implements ScoringService {
                                 scoringParameterRequest.setCombinedNetworth_p(true);
 
                             } catch (Exception e) {
-                                logger.error("error while getting COMBINED_NETWORTH parameter");
-                                e.printStackTrace();
+                                logger.error("error while getting COMBINED_NETWORTH parameter : ",e);
                                 scoringParameterRequest.setCombinedNetworth_p(false);
                             }
 
@@ -1330,8 +1294,7 @@ public class ScoringServiceImpl implements ScoringService {
                                 }
 
                             } catch (Exception e) {
-                                logger.error("error while getting CUSTOMER_ASSOCIATE_CONCERN parameter from CIBIL client");
-                                e.printStackTrace();
+                                logger.error("error while getting CUSTOMER_ASSOCIATE_CONCERN parameter from CIBIL client : ",e);
                                 scoringParameterRequest.setCustomerAsscociateConcern_p(false);
                             }
                             break;
@@ -1353,8 +1316,7 @@ public class ScoringServiceImpl implements ScoringService {
                                     scoringParameterRequest.setCibilTransunionScore_p(false);
                                 }
                             } catch (Exception e) {
-                                logger.error("error while getting CIBIL_TRANSUNION_SCORE parameter from CIBIL client");
-                                e.printStackTrace();
+                                logger.error("error while getting CIBIL_TRANSUNION_SCORE parameter from CIBIL client : ",e);
                                 scoringParameterRequest.setCibilTransunionScore_p(false);
                             }
 
@@ -1412,8 +1374,7 @@ public class ScoringServiceImpl implements ScoringService {
                                 scoringParameterRequest.setDebtEquityRatio_p(true);
 
                             } catch (Exception e) {
-                                logger.error("error while getting DEBT_EQUITY_RATIO parameter");
-                                e.printStackTrace();
+                                logger.error("error while getting DEBT_EQUITY_RATIO parameter : ",e);
                                 scoringParameterRequest.setDebtEquityRatio_p(false);
                             }
 
@@ -1436,8 +1397,7 @@ public class ScoringServiceImpl implements ScoringService {
                                 scoringParameterRequest.setLoanAmount(loanAmount);
 
                             } catch (Exception e) {
-                                logger.error("error while getting TOL_TNW parameter");
-                                e.printStackTrace();
+                                logger.error("error while getting TOL_TNW parameter : ",e);
                                 scoringParameterRequest.setTolTnw_p(false);
                             }
 
@@ -1454,8 +1414,7 @@ public class ScoringServiceImpl implements ScoringService {
                                 scoringParameterRequest.setAvgCurrentRatio_p(true);
 
                             } catch (Exception e) {
-                                logger.error("error while getting AVERAGE_CURRENT_RATIO parameter");
-                                e.printStackTrace();
+                                logger.error("error while getting AVERAGE_CURRENT_RATIO parameter : ",e);
                                 scoringParameterRequest.setAvgCurrentRatio_p(false);
                             }
 
@@ -1499,8 +1458,7 @@ public class ScoringServiceImpl implements ScoringService {
                                 scoringParameterRequest.setCreditorsDays(creditorsDays);
                                 scoringParameterRequest.setWorkingCapitalCycle_p(true);
                             } catch (Exception e) {
-                                logger.error("error while getting WORKING_CAPITAL_CYCLE parameter");
-                                e.printStackTrace();
+                                logger.error("error while getting WORKING_CAPITAL_CYCLE parameter : ",e);
                                 scoringParameterRequest.setWorkingCapitalCycle_p(false);
                             }
 
@@ -1553,8 +1511,7 @@ public class ScoringServiceImpl implements ScoringService {
                                 scoringParameterRequest.setAvgAnnualGrowthGrossCash_p(true);
 
                             } catch (Exception e) {
-                                logger.error("error while getting AVERAGE_ANNUAL_GROWTH_GROSS_CASH parameter");
-                                e.printStackTrace();
+                                logger.error("error while getting AVERAGE_ANNUAL_GROWTH_GROSS_CASH parameter : ",e);
                                 scoringParameterRequest.setAvgAnnualGrowthGrossCash_p(false);
                             }
                             break;
@@ -1612,8 +1569,7 @@ public class ScoringServiceImpl implements ScoringService {
                                 scoringParameterRequest.setTotalSaleTy(totalSale_TY);
                                 scoringParameterRequest.setAvgAnnualGrowthNetSale_p(true);
                             } catch (Exception e) {
-                                logger.error("error while getting AVERAGE_ANNUAL_GROWTH_NET_SALE parameter");
-                                e.printStackTrace();
+                                logger.error("error while getting AVERAGE_ANNUAL_GROWTH_NET_SALE parameter : ",e);
                                 scoringParameterRequest.setAvgAnnualGrowthNetSale_p(false);
                             }
 
@@ -1669,8 +1625,7 @@ public class ScoringServiceImpl implements ScoringService {
                                 scoringParameterRequest.setAvgEBIDTA_p(true);
 
                             } catch (Exception e) {
-                                logger.error("error while getting AVERAGE_EBIDTA parameter");
-                                e.printStackTrace();
+                                logger.error("error while getting AVERAGE_EBIDTA parameter : ",e);
                                 scoringParameterRequest.setAvgEBIDTA_p(false);
                             }
 
@@ -1719,8 +1674,7 @@ public class ScoringServiceImpl implements ScoringService {
                                 scoringParameterRequest.setAvgAnnualGrossCashAccuruals_p(true);
 
                             } catch (Exception e) {
-                                logger.error("error while getting AVERAGE_ANNUAL_GROSS_CASH_ACCRUALS parameter");
-                                e.printStackTrace();
+                                logger.error("error while getting AVERAGE_ANNUAL_GROSS_CASH_ACCRUALS parameter : ",e);
                                 scoringParameterRequest.setAvgAnnualGrossCashAccuruals_p(false);
                             }
 
@@ -1752,8 +1706,7 @@ public class ScoringServiceImpl implements ScoringService {
 
                                 scoringParameterRequest.setAvgInterestCovRatio_p(true);
                             } catch (Exception e) {
-                                logger.error("error while getting AVERAGE_INTEREST_COV_RATIO parameter");
-                                e.printStackTrace();
+                                logger.error("error while getting AVERAGE_INTEREST_COV_RATIO parameter : ",e);
                                 scoringParameterRequest.setAvgInterestCovRatio_p(false);
                             }
 
@@ -1768,8 +1721,7 @@ public class ScoringServiceImpl implements ScoringService {
                                     scoringParameterRequest.setNoOfCustomer_p(false);
                                 }
                             } catch (Exception e) {
-                                logger.error("error while getting NO_OF_CUSTOMER parameter");
-                                e.printStackTrace();
+                                logger.error("error while getting NO_OF_CUSTOMER parameter : ",e);
                                 scoringParameterRequest.setNoOfCustomer_p(false);
                                 /*map.put("NO_OF_CUSTOMER",null);*/
                             }
@@ -1784,8 +1736,7 @@ public class ScoringServiceImpl implements ScoringService {
                                     scoringParameterRequest.setConcentrationCustomer_p(false);
                                 }
                             } catch (Exception e) {
-                                logger.error("error while getting CONCENTRATION_CUSTOMER parameter");
-                                e.printStackTrace();
+                                logger.error("error while getting CONCENTRATION_CUSTOMER parameter : ",e);
                                 scoringParameterRequest.setConcentrationCustomer_p(false);
                             }
                             break;
@@ -1815,8 +1766,7 @@ public class ScoringServiceImpl implements ScoringService {
                                 }
                             } catch (Exception e) {
                                 totalCredit = 0.0;
-                                e.printStackTrace();
-                                logger.error("error while calling analyzer client");
+                                logger.error("error while calling analyzer client : ",e);
                             }
 
                             // get get total credit from Analyser
@@ -1844,8 +1794,7 @@ public class ScoringServiceImpl implements ScoringService {
                                     scoringParameterRequest.setAge_p(false);
                                 }
                             } catch (Exception e) {
-                                logger.error("error while getting AGE parameter");
-                                e.printStackTrace();
+                                logger.error("error while getting AGE parameter",e);
                                 scoringParameterRequest.setAge_p(false);
                             }
                             break;
@@ -1861,8 +1810,7 @@ public class ScoringServiceImpl implements ScoringService {
                                     scoringParameterRequest.setNoOfChildren_p(false);
                                 }
                             } catch (Exception e) {
-                                logger.error("error while getting NO_OF_CHILDREN parameter");
-                                e.printStackTrace();
+                                logger.error("error while getting NO_OF_CHILDREN parameter",e);
                                 scoringParameterRequest.setNoOfChildren_p(false);
                             }
                             break;
@@ -1878,8 +1826,7 @@ public class ScoringServiceImpl implements ScoringService {
                                     scoringParameterRequest.setOwningHouse_p(false);
                                 }
                             } catch (Exception e) {
-                                logger.error("error while getting OWNING_HOUSE parameter");
-                                e.printStackTrace();
+                                logger.error("error while getting OWNING_HOUSE parameter : ",e);
                                 scoringParameterRequest.setOwningHouse_p(false);
                             }
                             break;
@@ -1895,8 +1842,7 @@ public class ScoringServiceImpl implements ScoringService {
                                     scoringParameterRequest.setAcadamicQualification_p(false);
                                 }
                             } catch (Exception e) {
-                                logger.error("error while getting ACADEMIC_QUALIFICATION parameter");
-                                e.printStackTrace();
+                                logger.error("error while getting ACADEMIC_QUALIFICATION parameter : ",e);
                                 scoringParameterRequest.setAcadamicQualification_p(false);
                             }
                             break;
@@ -1912,8 +1858,7 @@ public class ScoringServiceImpl implements ScoringService {
                                     scoringParameterRequest.setExpLineOfTrade_p(false);
                                 }
                             } catch (Exception e) {
-                                logger.error("error while getting EXPERIENCE_IN_THE_LINE_OF_TRADE parameter");
-                                e.printStackTrace();
+                                logger.error("error while getting EXPERIENCE_IN_THE_LINE_OF_TRADE parameter : ",e);
                                 scoringParameterRequest.setExpLineOfTrade_p(false);
                             }
                             break;
@@ -1929,8 +1874,7 @@ public class ScoringServiceImpl implements ScoringService {
                                     scoringParameterRequest.setSpouseDetails_p(false);
                                 }
                             } catch (Exception e) {
-                                logger.error("error while getting SPOUSE_DETAILS parameter");
-                                e.printStackTrace();
+                                logger.error("error while getting SPOUSE_DETAILS parameter : ",e);
                                 scoringParameterRequest.setSpouseDetails_p(false);
                             }
                             break;
@@ -1946,8 +1890,7 @@ public class ScoringServiceImpl implements ScoringService {
                                     scoringParameterRequest.setAssessedForIncomeTax_p(false);
                                 }
                             } catch (Exception e) {
-                                logger.error("error while getting ASSESSED_FOR_INCOME_TAX parameter");
-                                e.printStackTrace();
+                                logger.error("error while getting ASSESSED_FOR_INCOME_TAX parameter : ",e);
                                 scoringParameterRequest.setAssessedForIncomeTax_p(false);
                             }
                             break;
@@ -1963,8 +1906,7 @@ public class ScoringServiceImpl implements ScoringService {
                                     scoringParameterRequest.setHaveLifeIncPolicy_p(false);
                                 }
                             } catch (Exception e) {
-                                logger.error("error while getting HAVE_LIFE_INSURANCE_POLICY parameter");
-                                e.printStackTrace();
+                                logger.error("error while getting HAVE_LIFE_INSURANCE_POLICY parameter : ",e);
                                 scoringParameterRequest.setHaveLifeIncPolicy_p(false);
                             }
                             break;
@@ -1985,8 +1927,7 @@ public class ScoringServiceImpl implements ScoringService {
                                 scoringParameterRequest.setYearsInBusiness(yearsInBusiness);
                                 scoringParameterRequest.setYearsInBusiness_p(true);
                             } catch (Exception e) {
-                                logger.error("error while getting YEARS_IN_BUSINESS parameter");
-                                e.printStackTrace();
+                                logger.error("error while getting YEARS_IN_BUSINESS parameter : ",e);
                                 scoringParameterRequest.setYearsInBusiness_p(false);
                             }
                             break;
@@ -1999,8 +1940,7 @@ public class ScoringServiceImpl implements ScoringService {
                                 scoringParameterRequest.setRepaymentPeriod(5.0);
                                 scoringParameterRequest.setRepaymentPeriod_p(true);
                             } catch (Exception e) {
-                                logger.error("error while getting REPAYMENT_PERIOD parameter");
-                                e.printStackTrace();
+                                logger.error("error while getting REPAYMENT_PERIOD parameter : ",e);
                                 scoringParameterRequest.setRepaymentPeriod_p(false);
                             }
                             break;
@@ -2020,8 +1960,7 @@ public class ScoringServiceImpl implements ScoringService {
                                 scoringParameterRequest.setContinousNetProfit_p(true);
 
                             } catch (Exception e) {
-                                logger.error("error while getting CONTINUOUS_NET_PROFIT parameter");
-                                e.printStackTrace();
+                                logger.error("error while getting CONTINUOUS_NET_PROFIT parameter : ",e);
                                 scoringParameterRequest.setContinousNetProfit_p(false);
                             }
                             break;
@@ -2039,8 +1978,7 @@ public class ScoringServiceImpl implements ScoringService {
                                 scoringParameterRequest.setQualityOfReceivable_p(true);
 
                             } catch (Exception e) {
-                                logger.error("error while getting QUALITY_OF_RECEIVABLES parameter");
-                                e.printStackTrace();
+                                logger.error("error while getting QUALITY_OF_RECEIVABLES parameter : ",e);
                                 scoringParameterRequest.setQualityOfReceivable_p(false);
                             }
                             break;
@@ -2058,8 +1996,7 @@ public class ScoringServiceImpl implements ScoringService {
                                 scoringParameterRequest.setQualityOfFinishedGood_p(true);
 
                             } catch (Exception e) {
-                                logger.error("error while getting QUALITY_OF_FINISHED_GOODS_INVENTORY parameter");
-                                e.printStackTrace();
+                                logger.error("error while getting QUALITY_OF_FINISHED_GOODS_INVENTORY parameter : ",e);
                                 scoringParameterRequest.setQualityOfFinishedGood_p(false);
                             }
                             break;
@@ -2075,8 +2012,7 @@ public class ScoringServiceImpl implements ScoringService {
                                     scoringParameterRequest.setKnowHow_p(false);
                                 }
                             } catch (Exception e) {
-                                logger.error("error while getting KNOW_HOW parameter");
-                                e.printStackTrace();
+                                logger.error("error while getting KNOW_HOW parameter : ",e);
                                 scoringParameterRequest.setKnowHow_p(false);
                             }
                             break;
@@ -2098,8 +2034,7 @@ public class ScoringServiceImpl implements ScoringService {
                                     scoringParameterRequest.setCompetition_p(false);
                                 }
                             } catch (Exception e) {
-                                logger.error("error while getting COMPETITION parameter");
-                                e.printStackTrace();
+                                logger.error("error while getting COMPETITION parameter : ",e);
                                 scoringParameterRequest.setCompetition_p(false);
                             }
                             break;
@@ -2114,8 +2049,7 @@ public class ScoringServiceImpl implements ScoringService {
                                     scoringParameterRequest.setFactoryPremises_p(false);
                                 }
                             } catch (Exception e) {
-                                logger.error("error while getting FACTORY_PREMISES parameter");
-                                e.printStackTrace();
+                                logger.error("error while getting FACTORY_PREMISES parameter : ",e);
                                 scoringParameterRequest.setFactoryPremises_p(false);
                             }
                             break;
@@ -2140,8 +2074,7 @@ public class ScoringServiceImpl implements ScoringService {
                                 scoringParameterRequest.setSalesShowArisingTrend_p(true);
 
                             } catch (Exception e) {
-                                logger.error("error while getting SALES_SHOW_A_RISING_TREND parameter");
-                                e.printStackTrace();
+                                logger.error("error while getting SALES_SHOW_A_RISING_TREND parameter : ",e);
                                 scoringParameterRequest.setSalesShowArisingTrend_p(false);
                             }
                             break;
@@ -2167,7 +2100,7 @@ public class ScoringServiceImpl implements ScoringService {
 
                 logger.info(SAVING_SCORING_REQUEST_DATA_FOR + applicationId);
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error(CommonUtils.EXCEPTION,e);
             }
         }
 
@@ -2176,8 +2109,7 @@ public class ScoringServiceImpl implements ScoringService {
         try {
             scoringResponseMain = scoringClient.calculateScore(scoringRequest);
         } catch (Exception e) {
-            logger.error(ERROR_WHILE_CALLING_SCORING);
-            e.printStackTrace();
+            logger.error(ERROR_WHILE_CALLING_SCORING,e);
             LoansResponse loansResponse = new LoansResponse(ERROR_WHILE_CALLING_SCORING, HttpStatus.INTERNAL_SERVER_ERROR.value());
             return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
         }
@@ -2249,8 +2181,7 @@ public class ScoringServiceImpl implements ScoringService {
                         }
                     }
                 } catch (IOException e) {
-                    logger.error("error while getting Financial Type Id from itr response");
-                    e.printStackTrace();
+                    logger.error("error while getting Financial Type Id from itr response : ",e);
                 }*/
 
                 if (CommonUtils.isObjectNullOrEmpty(scoringRequestLoans.getFinancialTypeIdProduct())) {
@@ -2293,8 +2224,7 @@ public class ScoringServiceImpl implements ScoringService {
                     }
 
                 } catch (Exception e) {
-                    logger.error("error while getting GST parameter");
-                    e.printStackTrace();
+                    logger.error("error while getting GST parameter : ",e);
                 }
 
 
@@ -2303,8 +2233,7 @@ public class ScoringServiceImpl implements ScoringService {
                 try {
                     gstResponseScoring = gstClient.getCalculationForScoring(gstNumber);
                 } catch (Exception e) {
-                    logger.error("error while getting GST parameter for GST Sales Show A Rising Trend");
-                    e.printStackTrace();
+                    logger.error("error while getting GST parameter for GST Sales Show A Rising Trend : ",e);
                 }
 
                 // end Get GST Parameter
@@ -2371,8 +2300,7 @@ public class ScoringServiceImpl implements ScoringService {
                     try {
                         scoringResponse = scoringClient.listFieldByBusinessTypeId(scoringRequest);
                     } catch (Exception e) {
-                        logger.error(ERROR_WHILE_GETTING_FIELD_LIST);
-                        e.printStackTrace();
+                        logger.error(ERROR_WHILE_GETTING_FIELD_LIST,e);
                     }
 
                     List<Map<String, Object>> dataList = (List<Map<String, Object>>) scoringResponse.getDataList();
@@ -2388,7 +2316,7 @@ public class ScoringServiceImpl implements ScoringService {
                             modelParameterResponse = MultipleJSONObjectHelper.getObjectFromMap(dataList.get(i),
                                     ModelParameterResponse.class);
                         } catch (IOException e) {
-                            e.printStackTrace();
+                            logger.error(CommonUtils.EXCEPTION,e);
                         }
 
                 /*FundSeekerInputRequest fundSeekerInputRequest = new FundSeekerInputRequest();
@@ -2413,8 +2341,7 @@ public class ScoringServiceImpl implements ScoringService {
                                     scoringParameterRequest.setCombinedNetworth_p(true);
 
                                 } catch (Exception e) {
-                                    logger.error("error while getting COMBINED_NETWORTH parameter");
-                                    e.printStackTrace();
+                                    logger.error("error while getting COMBINED_NETWORTH parameter : ",e);
                                     scoringParameterRequest.setCombinedNetworth_p(false);
                                 }
 
@@ -2435,8 +2362,7 @@ public class ScoringServiceImpl implements ScoringService {
                                     }
 
                                 } catch (Exception e) {
-                                    logger.error("error while getting CUSTOMER_ASSOCIATE_CONCERN parameter from CIBIL client");
-                                    e.printStackTrace();
+                                    logger.error("error while getting CUSTOMER_ASSOCIATE_CONCERN parameter from CIBIL client : ",e);
                                     scoringParameterRequest.setCustomerAsscociateConcern_p(false);
                                 }
                                 break;
@@ -2458,8 +2384,7 @@ public class ScoringServiceImpl implements ScoringService {
                                         scoringParameterRequest.setCibilTransunionScore_p(false);
                                     }
                                 } catch (Exception e) {
-                                    logger.error("error while getting CIBIL_TRANSUNION_SCORE parameter from CIBIL client");
-                                    e.printStackTrace();
+                                    logger.error("error while getting CIBIL_TRANSUNION_SCORE parameter from CIBIL client : ",e);
                                     scoringParameterRequest.setCibilTransunionScore_p(false);
                                 }
 
@@ -2517,8 +2442,7 @@ public class ScoringServiceImpl implements ScoringService {
                                     scoringParameterRequest.setDebtEquityRatio_p(true);
 
                                 } catch (Exception e) {
-                                    logger.error("error while getting DEBT_EQUITY_RATIO parameter");
-                                    e.printStackTrace();
+                                    logger.error("error while getting DEBT_EQUITY_RATIO parameter : ",e);
                                     scoringParameterRequest.setDebtEquityRatio_p(false);
                                 }
 
@@ -2541,8 +2465,7 @@ public class ScoringServiceImpl implements ScoringService {
                                     scoringParameterRequest.setLoanAmount(loanAmount);
 
                                 } catch (Exception e) {
-                                    logger.error("error while getting TOL_TNW parameter");
-                                    e.printStackTrace();
+                                    logger.error("error while getting TOL_TNW parameter : ",e);
                                     scoringParameterRequest.setTolTnw_p(false);
                                 }
 
@@ -2559,8 +2482,7 @@ public class ScoringServiceImpl implements ScoringService {
                                     scoringParameterRequest.setAvgCurrentRatio_p(true);
 
                                 } catch (Exception e) {
-                                    logger.error("error while getting AVERAGE_CURRENT_RATIO parameter");
-                                    e.printStackTrace();
+                                    logger.error("error while getting AVERAGE_CURRENT_RATIO parameter : ",e);
                                     scoringParameterRequest.setAvgCurrentRatio_p(false);
                                 }
 
@@ -2604,8 +2526,7 @@ public class ScoringServiceImpl implements ScoringService {
                                     scoringParameterRequest.setCreditorsDays(creditorsDays);
                                     scoringParameterRequest.setWorkingCapitalCycle_p(true);
                                 } catch (Exception e) {
-                                    logger.error("error while getting WORKING_CAPITAL_CYCLE parameter");
-                                    e.printStackTrace();
+                                    logger.error("error while getting WORKING_CAPITAL_CYCLE parameter : ",e);
                                     scoringParameterRequest.setWorkingCapitalCycle_p(false);
                                 }
 
@@ -2658,8 +2579,7 @@ public class ScoringServiceImpl implements ScoringService {
                                     scoringParameterRequest.setAvgAnnualGrowthGrossCash_p(true);
 
                                 } catch (Exception e) {
-                                    logger.error("error while getting AVERAGE_ANNUAL_GROWTH_GROSS_CASH parameter");
-                                    e.printStackTrace();
+                                    logger.error("error while getting AVERAGE_ANNUAL_GROWTH_GROSS_CASH parameter : ",e);
                                     scoringParameterRequest.setAvgAnnualGrowthGrossCash_p(false);
                                 }
                                 break;
@@ -2717,8 +2637,7 @@ public class ScoringServiceImpl implements ScoringService {
                                     scoringParameterRequest.setTotalSaleTy(totalSale_TY);
                                     scoringParameterRequest.setAvgAnnualGrowthNetSale_p(true);
                                 } catch (Exception e) {
-                                    logger.error("error while getting AVERAGE_ANNUAL_GROWTH_NET_SALE parameter");
-                                    e.printStackTrace();
+                                    logger.error("error while getting AVERAGE_ANNUAL_GROWTH_NET_SALE parameter : ",e);
                                     scoringParameterRequest.setAvgAnnualGrowthNetSale_p(false);
                                 }
 
@@ -2774,8 +2693,7 @@ public class ScoringServiceImpl implements ScoringService {
                                     scoringParameterRequest.setAvgEBIDTA_p(true);
 
                                 } catch (Exception e) {
-                                    logger.error("error while getting AVERAGE_EBIDTA parameter");
-                                    e.printStackTrace();
+                                    logger.error("error while getting AVERAGE_EBIDTA parameter : ",e);
                                     scoringParameterRequest.setAvgEBIDTA_p(false);
                                 }
 
@@ -2824,8 +2742,7 @@ public class ScoringServiceImpl implements ScoringService {
                                     scoringParameterRequest.setAvgAnnualGrossCashAccuruals_p(true);
 
                                 } catch (Exception e) {
-                                    logger.error("error while getting AVERAGE_ANNUAL_GROSS_CASH_ACCRUALS parameter");
-                                    e.printStackTrace();
+                                    logger.error("error while getting AVERAGE_ANNUAL_GROSS_CASH_ACCRUALS parameter : ",e);
                                     scoringParameterRequest.setAvgAnnualGrossCashAccuruals_p(false);
                                 }
 
@@ -2857,8 +2774,7 @@ public class ScoringServiceImpl implements ScoringService {
 
                                     scoringParameterRequest.setAvgInterestCovRatio_p(true);
                                 } catch (Exception e) {
-                                    logger.error("error while getting AVERAGE_INTEREST_COV_RATIO parameter");
-                                    e.printStackTrace();
+                                    logger.error("error while getting AVERAGE_INTEREST_COV_RATIO parameter : ",e);
                                     scoringParameterRequest.setAvgInterestCovRatio_p(false);
                                 }
 
@@ -2873,8 +2789,7 @@ public class ScoringServiceImpl implements ScoringService {
                                         scoringParameterRequest.setNoOfCustomer_p(false);
                                     }
                                 } catch (Exception e) {
-                                    logger.error("error while getting NO_OF_CUSTOMER parameter");
-                                    e.printStackTrace();
+                                    logger.error("error while getting NO_OF_CUSTOMER parameter : ",e);
                                     scoringParameterRequest.setNoOfCustomer_p(false);
                                     /*map.put("NO_OF_CUSTOMER",null);*/
                                 }
@@ -2889,8 +2804,7 @@ public class ScoringServiceImpl implements ScoringService {
                                         scoringParameterRequest.setConcentrationCustomer_p(false);
                                     }
                                 } catch (Exception e) {
-                                    logger.error("error while getting CONCENTRATION_CUSTOMER parameter");
-                                    e.printStackTrace();
+                                    logger.error("error while getting CONCENTRATION_CUSTOMER parameter : ",e);
                                     scoringParameterRequest.setConcentrationCustomer_p(false);
                                 }
                                 break;
@@ -2920,8 +2834,7 @@ public class ScoringServiceImpl implements ScoringService {
                                     }
                                 } catch (Exception e) {
                                     totalCredit = 0.0;
-                                    e.printStackTrace();
-                                    logger.error("error while calling analyzer client");
+                                    logger.error("error while calling analyzer client : ",e);
                                 }
 
                                 // get get total credit from Analyser
@@ -2949,8 +2862,7 @@ public class ScoringServiceImpl implements ScoringService {
                                         scoringParameterRequest.setAge_p(false);
                                     }
                                 } catch (Exception e) {
-                                    logger.error("error while getting AGE parameter");
-                                    e.printStackTrace();
+                                    logger.error("error while getting AGE parameter : ",e);
                                     scoringParameterRequest.setAge_p(false);
                                 }
                                 break;
@@ -2966,8 +2878,7 @@ public class ScoringServiceImpl implements ScoringService {
                                         scoringParameterRequest.setNoOfChildren_p(false);
                                     }
                                 } catch (Exception e) {
-                                    logger.error("error while getting NO_OF_CHILDREN parameter");
-                                    e.printStackTrace();
+                                    logger.error("error while getting NO_OF_CHILDREN parameter : ",e);
                                     scoringParameterRequest.setNoOfChildren_p(false);
                                 }
                                 break;
@@ -2983,8 +2894,7 @@ public class ScoringServiceImpl implements ScoringService {
                                         scoringParameterRequest.setOwningHouse_p(false);
                                     }
                                 } catch (Exception e) {
-                                    logger.error("error while getting OWNING_HOUSE parameter");
-                                    e.printStackTrace();
+                                    logger.error("error while getting OWNING_HOUSE parameter : ",e);
                                     scoringParameterRequest.setOwningHouse_p(false);
                                 }
                                 break;
@@ -3000,8 +2910,7 @@ public class ScoringServiceImpl implements ScoringService {
                                         scoringParameterRequest.setAcadamicQualification_p(false);
                                     }
                                 } catch (Exception e) {
-                                    logger.error("error while getting ACADEMIC_QUALIFICATION parameter");
-                                    e.printStackTrace();
+                                    logger.error("error while getting ACADEMIC_QUALIFICATION parameter : ",e);
                                     scoringParameterRequest.setAcadamicQualification_p(false);
                                 }
                                 break;
@@ -3017,8 +2926,7 @@ public class ScoringServiceImpl implements ScoringService {
                                         scoringParameterRequest.setExpLineOfTrade_p(false);
                                     }
                                 } catch (Exception e) {
-                                    logger.error("error while getting EXPERIENCE_IN_THE_LINE_OF_TRADE parameter");
-                                    e.printStackTrace();
+                                    logger.error("error while getting EXPERIENCE_IN_THE_LINE_OF_TRADE parameter : ",e);
                                     scoringParameterRequest.setExpLineOfTrade_p(false);
                                 }
                                 break;
@@ -3034,8 +2942,7 @@ public class ScoringServiceImpl implements ScoringService {
                                         scoringParameterRequest.setSpouseDetails_p(false);
                                     }
                                 } catch (Exception e) {
-                                    logger.error("error while getting SPOUSE_DETAILS parameter");
-                                    e.printStackTrace();
+                                    logger.error("error while getting SPOUSE_DETAILS parameter : ",e);
                                     scoringParameterRequest.setSpouseDetails_p(false);
                                 }
                                 break;
@@ -3051,8 +2958,7 @@ public class ScoringServiceImpl implements ScoringService {
                                         scoringParameterRequest.setAssessedForIncomeTax_p(false);
                                     }
                                 } catch (Exception e) {
-                                    logger.error("error while getting ASSESSED_FOR_INCOME_TAX parameter");
-                                    e.printStackTrace();
+                                    logger.error("error while getting ASSESSED_FOR_INCOME_TAX parameter : ",e);
                                     scoringParameterRequest.setAssessedForIncomeTax_p(false);
                                 }
                                 break;
@@ -3068,8 +2974,7 @@ public class ScoringServiceImpl implements ScoringService {
                                         scoringParameterRequest.setHaveLifeIncPolicy_p(false);
                                     }
                                 } catch (Exception e) {
-                                    logger.error("error while getting HAVE_LIFE_INSURANCE_POLICY parameter");
-                                    e.printStackTrace();
+                                    logger.error("error while getting HAVE_LIFE_INSURANCE_POLICY parameter : ",e);
                                     scoringParameterRequest.setHaveLifeIncPolicy_p(false);
                                 }
                                 break;
@@ -3090,8 +2995,7 @@ public class ScoringServiceImpl implements ScoringService {
                                     scoringParameterRequest.setYearsInBusiness(yearsInBusiness);
                                     scoringParameterRequest.setYearsInBusiness_p(true);
                                 } catch (Exception e) {
-                                    logger.error("error while getting YEARS_IN_BUSINESS parameter");
-                                    e.printStackTrace();
+                                    logger.error("error while getting YEARS_IN_BUSINESS parameter : ",e);
                                     scoringParameterRequest.setYearsInBusiness_p(false);
                                 }
                                 break;
@@ -3104,8 +3008,7 @@ public class ScoringServiceImpl implements ScoringService {
                                     scoringParameterRequest.setRepaymentPeriod(5.0);
                                     scoringParameterRequest.setRepaymentPeriod_p(true);
                                 } catch (Exception e) {
-                                    logger.error("error while getting REPAYMENT_PERIOD parameter");
-                                    e.printStackTrace();
+                                    logger.error("error while getting REPAYMENT_PERIOD parameter : ",e);
                                     scoringParameterRequest.setRepaymentPeriod_p(false);
                                 }
                                 break;
@@ -3125,8 +3028,7 @@ public class ScoringServiceImpl implements ScoringService {
                                     scoringParameterRequest.setContinousNetProfit_p(true);
 
                                 } catch (Exception e) {
-                                    logger.error("error while getting CONTINUOUS_NET_PROFIT parameter");
-                                    e.printStackTrace();
+                                    logger.error("error while getting CONTINUOUS_NET_PROFIT parameter : ",e);
                                     scoringParameterRequest.setContinousNetProfit_p(false);
                                 }
                                 break;
@@ -3144,8 +3046,7 @@ public class ScoringServiceImpl implements ScoringService {
                                     scoringParameterRequest.setQualityOfReceivable_p(true);
 
                                 } catch (Exception e) {
-                                    logger.error("error while getting QUALITY_OF_RECEIVABLES parameter");
-                                    e.printStackTrace();
+                                    logger.error("error while getting QUALITY_OF_RECEIVABLES parameter : ",e);
                                     scoringParameterRequest.setQualityOfReceivable_p(false);
                                 }
                                 break;
@@ -3163,8 +3064,7 @@ public class ScoringServiceImpl implements ScoringService {
                                     scoringParameterRequest.setQualityOfFinishedGood_p(true);
 
                                 } catch (Exception e) {
-                                    logger.error("error while getting QUALITY_OF_FINISHED_GOODS_INVENTORY parameter");
-                                    e.printStackTrace();
+                                    logger.error("error while getting QUALITY_OF_FINISHED_GOODS_INVENTORY parameter : ",e);
                                     scoringParameterRequest.setQualityOfFinishedGood_p(false);
                                 }
                                 break;
@@ -3180,8 +3080,7 @@ public class ScoringServiceImpl implements ScoringService {
                                         scoringParameterRequest.setKnowHow_p(false);
                                     }
                                 } catch (Exception e) {
-                                    logger.error("error while getting KNOW_HOW parameter");
-                                    e.printStackTrace();
+                                    logger.error("error while getting KNOW_HOW parameter : ",e);
                                     scoringParameterRequest.setKnowHow_p(false);
                                 }
                                 break;
@@ -3203,8 +3102,7 @@ public class ScoringServiceImpl implements ScoringService {
                                         scoringParameterRequest.setCompetition_p(false);
                                     }
                                 } catch (Exception e) {
-                                    logger.error("error while getting COMPETITION parameter");
-                                    e.printStackTrace();
+                                    logger.error("error while getting COMPETITION parameter : ",e);
                                     scoringParameterRequest.setCompetition_p(false);
                                 }
                                 break;
@@ -3219,8 +3117,7 @@ public class ScoringServiceImpl implements ScoringService {
                                         scoringParameterRequest.setFactoryPremises_p(false);
                                     }
                                 } catch (Exception e) {
-                                    logger.error("error while getting FACTORY_PREMISES parameter");
-                                    e.printStackTrace();
+                                    logger.error("error while getting FACTORY_PREMISES parameter : ",e);
                                     scoringParameterRequest.setFactoryPremises_p(false);
                                 }
                                 break;
@@ -3245,8 +3142,7 @@ public class ScoringServiceImpl implements ScoringService {
                                     scoringParameterRequest.setSalesShowArisingTrend_p(true);
 
                                 } catch (Exception e) {
-                                    logger.error("error while getting SALES_SHOW_A_RISING_TREND parameter");
-                                    e.printStackTrace();
+                                    logger.error("error while getting SALES_SHOW_A_RISING_TREND parameter : ",e);
                                     scoringParameterRequest.setSalesShowArisingTrend_p(false);
                                 }
                                 break;
@@ -3274,7 +3170,7 @@ public class ScoringServiceImpl implements ScoringService {
 
                     logger.info(SAVING_SCORING_REQUEST_DATA_FOR + applicationId);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    logger.error(CommonUtils.EXCEPTION,e);
                 }
             }
 
@@ -3285,8 +3181,7 @@ public class ScoringServiceImpl implements ScoringService {
         try {
             scoringResponseMain = scoringClient.calculateScoreList(scoringRequestList);
         } catch (Exception e) {
-            logger.error(ERROR_WHILE_CALLING_SCORING);
-            e.printStackTrace();
+            logger.error(ERROR_WHILE_CALLING_SCORING,e);
             LoansResponse loansResponse = new LoansResponse(ERROR_WHILE_CALLING_SCORING, HttpStatus.INTERNAL_SERVER_ERROR.value());
             return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
         }
@@ -3350,8 +3245,7 @@ public class ScoringServiceImpl implements ScoringService {
             try {
                 scoringResponse = scoringClient.listField(scoringRequest);
             } catch (Exception e) {
-                logger.error(ERROR_WHILE_GETTING_FIELD_LIST);
-                e.printStackTrace();
+                logger.error(ERROR_WHILE_GETTING_FIELD_LIST,e);
             }
 
             List<Map<String, Object>> dataList = (List<Map<String, Object>>) scoringResponse.getDataList();
@@ -3365,7 +3259,7 @@ public class ScoringServiceImpl implements ScoringService {
                     modelParameterResponse = MultipleJSONObjectHelper.getObjectFromMap(dataList.get(i),
                             ModelParameterResponse.class);
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    logger.error(CommonUtils.EXCEPTION,e);
                 }
 
                 FundSeekerInputRequest fundSeekerInputRequest = new FundSeekerInputRequest();
@@ -3433,8 +3327,7 @@ public class ScoringServiceImpl implements ScoringService {
                                 scoreParameterNTBRequest.setIsConstitutionOfBorrower(false);
                             }
                         } catch (Exception e) {
-                            logger.error("error while getting CONSTITUTION_OF_BORROWER parameter");
-                            e.printStackTrace();
+                            logger.error("error while getting CONSTITUTION_OF_BORROWER parameter : ",e);
                             scoreParameterNTBRequest.setIsConstitutionOfBorrower(false);
                         }
                         break;
@@ -3452,8 +3345,7 @@ public class ScoringServiceImpl implements ScoringService {
                             scoreParameterNTBRequest.setColatralValue(collatralValue);
                             scoreParameterNTBRequest.setIsAssetCoverageRatio(true);
                         } catch (Exception e) {
-                            logger.error("error while getting ASSET_COVERAGE_RATIO parameter");
-                            e.printStackTrace();
+                            logger.error("error while getting ASSET_COVERAGE_RATIO parameter : ",e);
                             scoreParameterNTBRequest.setIsAssetCoverageRatio(false);
                         }
                         break;
@@ -3464,8 +3356,7 @@ public class ScoringServiceImpl implements ScoringService {
                             scoreParameterNTBRequest.setUnitFactoryPremisesDetails(unitFactoryPremises);
                             scoreParameterNTBRequest.setIsUnitFactoryPremises(true);
                         } catch (Exception e) {
-                            logger.error("error while getting UNIT_FACTORY_PREMISES parameter");
-                            e.printStackTrace();
+                            logger.error("error while getting UNIT_FACTORY_PREMISES parameter : ",e);
                             scoreParameterNTBRequest.setIsUnitFactoryPremises(false);
                         }
                         break;
@@ -3495,8 +3386,7 @@ public class ScoringServiceImpl implements ScoringService {
                                 scoreParameterNTBRequest.setIsBalanceGestationPeriod(false);
 
                         } catch (Exception e) {
-                            logger.error("error while getting BALANCE_GESTATION_PERIOD parameter");
-                            e.printStackTrace();
+                            logger.error("error while getting BALANCE_GESTATION_PERIOD parameter : ",e);
                             scoreParameterNTBRequest.setIsBalanceGestationPeriod(false);
                         }
                         break;
@@ -3517,9 +3407,7 @@ public class ScoringServiceImpl implements ScoringService {
                             irrId = loanApplicationService.getIrrByApplicationId(applicationId);
 
                         } catch (Exception e) {
-                            logger.error("error while getting irr id from one form");
-                            e.printStackTrace();
-
+                            logger.error("error while getting irr id from one form : ",e);
                         }
 
                         // start getting irr industry and business type
@@ -3534,8 +3422,7 @@ public class ScoringServiceImpl implements ScoringService {
 
                             businessTypeId = industryResponse.getBusinessTypeId();
                         } catch (Exception e) {
-                            logger.error("error while getting irr industry detail from rating");
-                            e.printStackTrace();
+                            logger.error("error while getting irr industry detail from rating : ",e);
                         }
 
                         // end get business type id from irr
@@ -3557,8 +3444,7 @@ public class ScoringServiceImpl implements ScoringService {
                                         logger.info("environmentCategoryId from one form client:===============:::::::::::::==========" + environmentCategoryId);
                                         scoreParameterNTBRequest.setIsEnvironmentCategory(true);
                                     } catch (Exception e) {
-                                        logger.error("Error while calling one form client");
-                                        e.printStackTrace();
+                                        logger.error("Error while calling one form client : ",e);
                                     }
                                 } else {
                                     scoreParameterNTBRequest.setIsEnvironmentCategory(false);
@@ -3574,8 +3460,7 @@ public class ScoringServiceImpl implements ScoringService {
                                 scoreParameterNTBRequest.setIsEnvironmentCategory(false);
                             }
                         } catch (Exception e) {
-                            logger.error("error while getting ENVIRONMENT_CATEGORY parameter");
-                            e.printStackTrace();
+                            logger.error("error while getting ENVIRONMENT_CATEGORY parameter : ",e);
                             scoreParameterNTBRequest.setIsEnvironmentCategory(false);
                         }
                         break;
@@ -3598,8 +3483,7 @@ public class ScoringServiceImpl implements ScoringService {
                             }
 
                         } catch (Exception e) {
-                            logger.error("error while getting CNW parameter");
-                            e.printStackTrace();
+                            logger.error("error while getting CNW parameter : ",e);
                             scoreParameterNTBRequest.setIsCNW(false);
                         }
                         break;
@@ -3619,8 +3503,7 @@ public class ScoringServiceImpl implements ScoringService {
             try {
                 scoringResponseMain = scoringClient.calculateScore(scoringRequest);
             } catch (Exception e) {
-                logger.error(ERROR_WHILE_CALLING_SCORING);
-                e.printStackTrace();
+                logger.error(ERROR_WHILE_CALLING_SCORING,e);
                 LoansResponse loansResponse = new LoansResponse(ERROR_WHILE_CALLING_SCORING, HttpStatus.INTERNAL_SERVER_ERROR.value());
                 return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
             }
@@ -3674,8 +3557,7 @@ public class ScoringServiceImpl implements ScoringService {
             try {
                 scoringResponse = scoringClient.listField(scoringRequest);
             } catch (Exception e) {
-                logger.error(ERROR_WHILE_GETTING_FIELD_LIST);
-                e.printStackTrace();
+                logger.error(ERROR_WHILE_GETTING_FIELD_LIST,e);
             }
 
             List<Map<String, Object>> dataList = (List<Map<String, Object>>) scoringResponse.getDataList();
@@ -3689,7 +3571,7 @@ public class ScoringServiceImpl implements ScoringService {
                     modelParameterResponse = MultipleJSONObjectHelper.getObjectFromMap(dataList.get(i),
                             ModelParameterResponse.class);
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    logger.error(CommonUtils.EXCEPTION,e);
                 }
 
                 FundSeekerInputRequest fundSeekerInputRequest = new FundSeekerInputRequest();
@@ -3708,8 +3590,7 @@ public class ScoringServiceImpl implements ScoringService {
                             scoreParameterNTBRequest.setTotalworkingExperience(totalExperience);
                             scoreParameterNTBRequest.setIsWorkingExperience(true);
                         } catch (Exception e) {
-                            logger.error("error while getting WORKING_EXPERIENCE parameter");
-                            e.printStackTrace();
+                            logger.error("error while getting WORKING_EXPERIENCE parameter : ",e);
                             scoreParameterNTBRequest.setIsWorkingExperience(false);
                         }
                         break;
@@ -3724,8 +3605,7 @@ public class ScoringServiceImpl implements ScoringService {
                             }
                             scoreParameterNTBRequest.setIsFamilyMemberInLineOfBusiness(true);
                         } catch (Exception e) {
-                            logger.error("error while getting IS_FAMILY_MEMBER_IN_LINE_OF_BUSINESS parameter");
-                            e.printStackTrace();
+                            logger.error("error while getting IS_FAMILY_MEMBER_IN_LINE_OF_BUSINESS parameter : ",e);
                             scoreParameterNTBRequest.setIsFamilyMemberInLineOfBusiness(false);
                         }
                         break;
@@ -3745,8 +3625,7 @@ public class ScoringServiceImpl implements ScoringService {
                                 scoreParameterNTBRequest.setIsCibilTransunionScore(false);
                             }
                         } catch (Exception e) {
-                            logger.error("error while getting CIBIL_TRANSUNION_SCORE parameter");
-                            e.printStackTrace();
+                            logger.error("error while getting CIBIL_TRANSUNION_SCORE parameter : ",e);
                             scoreParameterNTBRequest.setIsCibilTransunionScore(false);
                         }
                         break;
@@ -3761,8 +3640,7 @@ public class ScoringServiceImpl implements ScoringService {
                                 scoreParameterNTBRequest.setIsAgeOfPromotor(false);
                             }
                         } catch (Exception e) {
-                            logger.error("error while getting AGE_OF_PROMOTOR parameter");
-                            e.printStackTrace();
+                            logger.error("error while getting AGE_OF_PROMOTOR parameter : ",e);
                             scoreParameterNTBRequest.setIsAgeOfPromotor(false);
                         }
                         break;
@@ -3773,8 +3651,7 @@ public class ScoringServiceImpl implements ScoringService {
                             scoreParameterNTBRequest.setEducationQualification(qualificationId);
                             scoreParameterNTBRequest.setIsEducationQualification(true);
                         } catch (Exception e) {
-                            logger.error("error while getting EDUCATION_QUALIFICATION parameter");
-                            e.printStackTrace();
+                            logger.error("error while getting EDUCATION_QUALIFICATION parameter : ",e);
                             scoreParameterNTBRequest.setIsEducationQualification(false);
                         }
                         break;
@@ -3791,8 +3668,7 @@ public class ScoringServiceImpl implements ScoringService {
                             }
 
                         } catch (Exception e) {
-                            logger.error("error while getting EMPLOYMENT_TYPE parameter");
-                            e.printStackTrace();
+                            logger.error("error while getting EMPLOYMENT_TYPE parameter : ",e);
                             scoreParameterNTBRequest.setIsEmploymentType(false);
                         }
                         break;
@@ -3804,8 +3680,7 @@ public class ScoringServiceImpl implements ScoringService {
                             scoreParameterNTBRequest.setHouseOwnerShip(residentType);
                             scoreParameterNTBRequest.setIsHouseOwnership(true);
                         } catch (Exception e) {
-                            logger.error("error while getting HOUSE_OWNERSHIP parameter");
-                            e.printStackTrace();
+                            logger.error("error while getting HOUSE_OWNERSHIP parameter : ",e);
                             scoreParameterNTBRequest.setIsHouseOwnership(false);
                         }
                         break;
@@ -3817,8 +3692,7 @@ public class ScoringServiceImpl implements ScoringService {
                             scoreParameterNTBRequest.setMaritialStatus(maritialStatus);
                             scoreParameterNTBRequest.setIsMaritialStatus(true);
                         } catch (Exception e) {
-                            logger.error("error while getting MARITIAL_STATUS parameter");
-                            e.printStackTrace();
+                            logger.error("error while getting MARITIAL_STATUS parameter : ",e);
                             scoreParameterNTBRequest.setIsMaritialStatus(false);
                         }
                         break;
@@ -3842,8 +3716,7 @@ public class ScoringServiceImpl implements ScoringService {
                             scoreParameterNTBRequest.setItrPromotorContribution(promotorContribution);
                             scoreParameterNTBRequest.setIsItrSalaryIncome(true);
                         } catch (Exception e) {
-                            logger.error("error while getting ITR_SALARY_INCOME parameter");
-                            e.printStackTrace();
+                            logger.error("error while getting ITR_SALARY_INCOME parameter : ",e);
                             scoreParameterNTBRequest.setIsItrSalaryIncome(false);
                         }
                         break;
@@ -3866,8 +3739,7 @@ public class ScoringServiceImpl implements ScoringService {
                             scoreParameterNTBRequest.setTotalEmiPaid(totalEMI);
                             scoreParameterNTBRequest.setIsFixedObligationRatio(true);
                         } catch (Exception e) {
-                            logger.error("error while getting FIXED_OBLIGATION_RATIO parameter");
-                            e.printStackTrace();
+                            logger.error("error while getting FIXED_OBLIGATION_RATIO parameter : ",e);
                             scoreParameterNTBRequest.setIsFixedObligationRatio(false);
                         }
                         break;
@@ -3899,8 +3771,7 @@ public class ScoringServiceImpl implements ScoringService {
                             scoreParameterNTBRequest.setChequeBouncesPastSixMonths(noOfChequeBounce);
                             scoreParameterNTBRequest.setIsChequeBounces(true);
                         } catch (Exception e) {
-                            logger.error("error while getting CHEQUE_BOUNCES parameter");
-                            e.printStackTrace();
+                            logger.error("error while getting CHEQUE_BOUNCES parameter : ",e);
                             scoreParameterNTBRequest.setIsChequeBounces(false);
                         }
                         break;
@@ -3911,8 +3782,7 @@ public class ScoringServiceImpl implements ScoringService {
                             //remaining
                             scoreParameterNTBRequest.setIsDPD(false);
                         } catch (Exception e) {
-                            logger.error("error while getting DPD parameter");
-                            e.printStackTrace();
+                            logger.error("error while getting DPD parameter : ",e);
                             scoreParameterNTBRequest.setIsDPD(false);
                         }
                         break;
@@ -3932,8 +3802,7 @@ public class ScoringServiceImpl implements ScoringService {
             try {
                 scoringResponseMain = scoringClient.calculateScore(scoringRequest);
             } catch (Exception e) {
-                logger.error(ERROR_WHILE_CALLING_SCORING);
-                e.printStackTrace();
+                logger.error(ERROR_WHILE_CALLING_SCORING,e);
                 LoansResponse loansResponse = new LoansResponse(ERROR_WHILE_CALLING_SCORING, HttpStatus.INTERNAL_SERVER_ERROR.value());
                 return false;
                 //return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
@@ -3989,8 +3858,7 @@ public class ScoringServiceImpl implements ScoringService {
             try {
                 scoringResponse = scoringClient.listField(scoringRequest);
             } catch (Exception e) {
-                logger.error(ERROR_WHILE_GETTING_FIELD_LIST);
-                e.printStackTrace();
+                logger.error(ERROR_WHILE_GETTING_FIELD_LIST,e);
             }
 
             List<Map<String, Object>> dataList = (List<Map<String, Object>>) scoringResponse.getDataList();
@@ -4004,7 +3872,7 @@ public class ScoringServiceImpl implements ScoringService {
                     modelParameterResponse = MultipleJSONObjectHelper.getObjectFromMap(dataList.get(i),
                             ModelParameterResponse.class);
                 } catch (IOException | NullPointerException e) {
-                    e.printStackTrace();
+                    logger.error(CommonUtils.EXCEPTION,e);
                 }
 
                 FundSeekerInputRequest fundSeekerInputRequest = new FundSeekerInputRequest();
@@ -4024,8 +3892,7 @@ public class ScoringServiceImpl implements ScoringService {
             try {
                 scoringResponseMain = scoringClient.calculateScore(scoringRequest);
             } catch (Exception e) {
-                logger.error(ERROR_WHILE_CALLING_SCORING);
-                e.printStackTrace();
+                logger.error(ERROR_WHILE_CALLING_SCORING,e);
                 LoansResponse loansResponse = new LoansResponse(ERROR_WHILE_CALLING_SCORING, HttpStatus.INTERNAL_SERVER_ERROR.value());
                 return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
             }
@@ -4079,7 +3946,6 @@ public class ScoringServiceImpl implements ScoringService {
             logger.info("------------------------Exit from readScoringExcel() ---------------name of sheet in workook -----------------------> " + workbook.getSheetName(0));
 
         } catch (NullPointerException | IOException e) {
-            e.printStackTrace();
             logger.error("----------------Error/Exception while calculating scorring()------------------------------> " + e.getMessage());
             throw e;
         }
@@ -4106,8 +3972,7 @@ public class ScoringServiceImpl implements ScoringService {
                 throw new Exception();
             }
         } catch (Exception e) {
-            logger.error(ORG_ID_IS_NULL_OR_EMPTY);
-            e.printStackTrace();
+            logger.error(ORG_ID_IS_NULL_OR_EMPTY,e);
             return new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
         }
 
@@ -4115,8 +3980,7 @@ public class ScoringServiceImpl implements ScoringService {
 
             return scoringClient.getScoringModelTempList(scoringModelReqRes);
         } catch (Exception e) {
-            logger.error("error while geting score model list from scoring");
-            e.printStackTrace();
+            logger.error("error while geting score model list from scoring : ",e);
             return new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
         }
 
@@ -4136,8 +4000,7 @@ public class ScoringServiceImpl implements ScoringService {
                 throw new Exception();
             }
         } catch (Exception e) {
-            logger.error(ORG_ID_IS_NULL_OR_EMPTY);
-            e.printStackTrace();
+            logger.error(ORG_ID_IS_NULL_OR_EMPTY,e);
             return new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
         }
 
@@ -4145,8 +4008,7 @@ public class ScoringServiceImpl implements ScoringService {
 
             return scoringClient.saveScoringModelTemp(scoringModelReqRes);
         } catch (Exception e) {
-            logger.error("error while saving score model from scoring");
-            e.printStackTrace();
+            logger.error("error while saving score model from scoring : ",e);
             return new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
         }
     }
@@ -4158,14 +4020,12 @@ public class ScoringServiceImpl implements ScoringService {
             try {
                 return scoringClient.getScoringModelTempDetail(scoringModelReqRes);
             } catch (Exception e) {
-                logger.error("error while accessing fp product id for scoring");
-                e.printStackTrace();
+                logger.error("error while accessing fp product id for scoring : ",e);
                 return new ScoringModelReqRes("Error while accessing fp product id for scoring", HttpStatus.BAD_REQUEST.value());
             }
 
         } catch (Exception e) {
-            logger.error("error while getting score model detail from scoring");
-            e.printStackTrace();
+            logger.error("error while getting score model detail from scoring : ",e);
             return new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
         }
     }
@@ -4176,8 +4036,7 @@ public class ScoringServiceImpl implements ScoringService {
 
             return scoringClient.saveScoringModelTempDetail(scoringModelReqRes);
         } catch (Exception e) {
-            logger.error("error while saving score model detail from scoring");
-            e.printStackTrace();
+            logger.error("error while saving score model detail from scoring : ",e);
             return new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
         }
     }
@@ -4200,8 +4059,7 @@ public class ScoringServiceImpl implements ScoringService {
                 throw new Exception();
             }
         } catch (Exception e) {
-            logger.error(ORG_ID_IS_NULL_OR_EMPTY);
-            e.printStackTrace();
+            logger.error(ORG_ID_IS_NULL_OR_EMPTY,e);
             return new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
         }
 
@@ -4209,8 +4067,7 @@ public class ScoringServiceImpl implements ScoringService {
 
             return scoringClient.getScoringModelMasterList(scoringModelReqRes);
         } catch (Exception e) {
-            logger.error("error while geting score model list from scoring");
-            e.printStackTrace();
+            logger.error("error while geting score model list from scoring : ",e);
             return new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
         }
 
@@ -4223,14 +4080,12 @@ public class ScoringServiceImpl implements ScoringService {
             try {
                 return scoringClient.getScoringModelMasterDetail(scoringModelReqRes);
             } catch (Exception e) {
-                logger.error("error while accessing fp product id for scoring");
-                e.printStackTrace();
+                logger.error("error while accessing fp product id for scoring : ",e);
                 return new ScoringModelReqRes("Error while accessing fp product id for scoring", HttpStatus.BAD_REQUEST.value());
             }
 
         } catch (Exception e) {
-            logger.error("error while getting score model detail from scoring");
-            e.printStackTrace();
+            logger.error("error while getting score model detail from scoring : ",e);
             return new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
         }
     }
@@ -4242,8 +4097,7 @@ public class ScoringServiceImpl implements ScoringService {
         try {
             itrConnectionResponse = itrClient.getIsUploadAndYearDetails(applicationId);
         } catch (Exception e) {
-            logger.error("error while calling itr client for getIsUploadAndYearDetails()");
-            e.printStackTrace();
+            logger.error("error while calling itr client for getIsUploadAndYearDetails()",e);
         }
         try {
             if (!CommonUtils.isObjectNullOrEmpty(itrConnectionResponse) && !CommonUtils.isObjectNullOrEmpty(itrConnectionResponse.getData())) {
@@ -4254,8 +4108,7 @@ public class ScoringServiceImpl implements ScoringService {
                 }
             }
         } catch (IOException | NullPointerException e) {
-            logger.error("error while getting year from itr response");
-            e.printStackTrace();
+            logger.error("error while getting year from itr response : ",e);
         }
         return year + 1;
     }

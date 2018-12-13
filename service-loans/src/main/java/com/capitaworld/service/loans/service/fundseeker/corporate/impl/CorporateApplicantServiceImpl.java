@@ -184,8 +184,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 			return true;
 
 		} catch (Exception e) {
-			logger.error("Error while Saving Corporate Profile:-");
-			e.printStackTrace();
+			logger.error("Error while Saving Corporate Profile :- ",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
@@ -193,7 +192,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 	@Override
 	public CorporateApplicantRequest getCorporateApplicant(Long userId, Long applicationId) throws Exception {
 		try {
-			// TODO Auto-generated method stub
+
 			CorporateApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId(userId,
 					applicationId);
 
@@ -217,14 +216,12 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 				applicantRequest.setLandlineNo(userRequest.getMobile());
 			}
 			catch (Exception e){
-				logger.warn("error while get user data");
-				e.printStackTrace();
+				logger.error("error while get user data : ",e);
 			}
 			//applicantRequest.setCoApplicants(coApplicantService.getList(applicationId, userId));
 			return applicantRequest;
 		} catch (Exception e) {
-			logger.error("Error while getting Corporate Profile:-");
-			e.printStackTrace();
+			logger.error("Error while getting Corporate Profile :- ",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
@@ -365,13 +362,13 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 
 	@Override
 	public List<Long> getSectorListByIndustryId(List<Long> industryList) throws Exception {
-		// TODO Auto-generated method stub
+
 		return sectorIndustryMappingRepository.getSectorListByIndustryList(industryList);
 	}
 
 	@Override
 	public List<SubSectorListRequest> getSubSectorList(List<Long> list) {
-		// TODO Auto-generated method stub
+
 		List<SubSectorListRequest> subSectorListRequests = new ArrayList<SubSectorListRequest>(list.size());
 		for (Long id : list) {
 			SubSectorListRequest subSectorListRequest = new SubSectorListRequest();
@@ -440,7 +437,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 
 		List<Double> patsPercentage = new ArrayList<>(pats.size());
 		for (int i = 0; i <= pats.size() - 1; i++) {
-			// System.out.println(pats.get(i)+"-"+sales.get(i));
+//			 logger.info(pats.get(i)+"-"+sales.get(i));
 			val = (pats.get(i) / sales.get(i));
 			val = val * 100;
 			if (Double.isNaN(val)) {
@@ -453,7 +450,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		salesPercentage.add(null);
 		// calculate revenue % (Previous sales/sales)%
 		for (int i = 0; i <= (sales.size() - 2); i++) {
-			// System.out.println(sales.get(i+1)+"-"+sales.get(i));
+			// logger.info(sales.get(i+1)+"-"+sales.get(i));
 			val = (sales.get(i + 1) - sales.get(i));
 			val = val / sales.get(i);
 			val = val * 100;
@@ -465,7 +462,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		// calculate Ebidta Percentage (Ebidta/sales)%
 		List<Double> ebidtaPercentage = new ArrayList<>(sales.size());
 		for (int i = 0; i <= (sales.size() - 1); i++) {
-			// System.out.println(sales.get(i+1)+"-"+sales.get(i));
+//			 logger.info(sales.get(i+1)+"-"+sales.get(i));
 			val = (ebidta.get(i) / sales.get(i));
 			val = val * 100;
 			if (Double.isNaN(val)) {
@@ -476,7 +473,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		// calculate ROE(%) (pat/netWorth)%
 		List<Double> roePercentage = new ArrayList<>(pats.size());
 		for (int i = 0; i <= (pats.size() - 1); i++) {
-			// System.out.println(sales.get(i+1)+"-"+sales.get(i));
+//			logger.info(sales.get(i+1)+"-"+sales.get(i));
 			val = (pats.get(i) / netWorth.get(i));
 			val = val * 100;
 			if (Double.isNaN(val)) {
@@ -487,7 +484,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		// calculate ROCE(%) (EBIDTA/CurrentAssets+FixsedAssets)%
 		List<Double> rocePercentage = new ArrayList<>(ebidta.size());
 		for (int i = 0; i <= (ebidta.size() - 1); i++) {
-			// System.out.println(sales.get(i+1)+"-"+sales.get(i));
+//			logger.info(sales.get(i+1)+"-"+sales.get(i));
 			val = (ebidta.get(i) / (currentAsset.get(i) + fixedAsset.get(i)));
 			val = val * 100;
 			if (Double.isNaN(val)) {
@@ -498,7 +495,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 
 		List<Double> debtEquityPercentage = new ArrayList<>(debt.size());
 		for (int i = 0; i <= (debt.size() - 1); i++) {
-			// System.out.println(sales.get(i+1)+"-"+sales.get(i));
+//			logger.info(sales.get(i+1)+"-"+sales.get(i));
 			val = (debt.get(i) / netWorth.get(i));
 			if (Double.isNaN(val)) {
 				val = 0d;
@@ -509,7 +506,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		// calculate current Ration (Current Assets/Current Liabilities)
 		List<Double> currentRatio = new ArrayList<>(currentAsset.size());
 		for (int i = 0; i <= (currentAsset.size() - 1); i++) {
-			// System.out.println(sales.get(i+1)+"-"+sales.get(i));
+//			logger.info(sales.get(i+1)+"-"+sales.get(i));
 			val = (currentAsset.get(i) / (currentLiabilities.get(i)));
 			if (Double.isNaN(val)) {
 				val = 0d;
@@ -566,8 +563,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 			}
 			return latLong;
 		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("Erro While Updating Lat and Lon");
+			logger.error("Error While Updating Lat and Lon : ",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
@@ -589,8 +585,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("Erro While Updating Lat and Lon");
+			logger.error("Error While Updating Lat and Lon :- ",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
@@ -600,15 +595,14 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		try {
 			return applicantDetailRepository.getApplicantEstablishmentYear(userId, applicationId);
 		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("Error while getting Establishment Year");
+			logger.error("Error while getting Establishment Year : ",e);
 		}
 		return null;
 	}
 
 	@Override
 	public List<CorporateCoApplicantRequest> getCoApplicants(Long userId, Long applicationId) throws Exception {
-		// TODO Auto-generated method stub
+
 		return coApplicantService.getList(applicationId, userId);
 	}
 
@@ -656,8 +650,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 			obj.put("coAppIds", coAppIds);
 			return obj;
 		} catch (Exception e) {
-			logger.error("Error while getCoapIds:-");
-			e.printStackTrace();
+			logger.error("Error while getCoapIds :- ",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
@@ -724,12 +717,11 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 					paymentRequest.setMobileNumber(request.getMobile());
 				}
 			}catch(Exception e) {
-				e.printStackTrace();
+				logger.error("Exception in getPaymentInfor : ",e);
 			}
 			return paymentRequest;
 		} catch (Exception e) {
-			logger.error("Error while Getting Payment Related Info:-");
-			e.printStackTrace();
+			logger.error("Error while Getting Payment Related Info :- ",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
