@@ -5,10 +5,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import com.capitaworld.connect.api.ConnectAuditErrorCode;
-import com.capitaworld.connect.api.ConnectLogAuditRequest;
-import com.capitaworld.connect.api.ConnectStage;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -19,7 +15,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.capitaworld.connect.api.ConnectAuditErrorCode;
+import com.capitaworld.connect.api.ConnectLogAuditRequest;
 import com.capitaworld.connect.api.ConnectResponse;
+import com.capitaworld.connect.api.ConnectStage;
 import com.capitaworld.connect.client.ConnectClient;
 import com.capitaworld.service.analyzer.client.AnalyzerClient;
 import com.capitaworld.service.analyzer.model.common.ReportRequest;
@@ -49,10 +48,10 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySec
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FundSeekerInputRequestService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.utils.CommonUtils;
-import com.capitaworld.service.loans.config.AsyncComponent;
 
 @Service
 @Transactional
@@ -68,6 +67,8 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 
 	@Autowired
 	private FinancialArrangementDetailsRepository financialArrangementDetailsRepository;
+	
+	private FinancialArrangementDetailsService financialArrangementDetailsService;
 
 	@Autowired
 	private DirectorBackgroundDetailsRepository directorBackgroundDetailsRepository;
@@ -166,29 +167,30 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestsList = fundSeekerInputRequest
 					.getFinancialArrangementsDetailRequestsList();
 			if(!CommonUtils.isListNullOrEmpty(financialArrangementsDetailRequestsList)) {
-				logger.info("Financial Arrangements Detail List Null Or Empty ------------->");
-				for (FinancialArrangementsDetailRequest reqObj : financialArrangementsDetailRequestsList) {
-					FinancialArrangementsDetail saveFinObj = null;
-					if (!CommonUtils.isObjectNullOrEmpty(reqObj.getId())) {
-						saveFinObj = financialArrangementDetailsRepository.findByIdAndIsActive(reqObj.getId(), true);
-					}
-					if (CommonUtils.isObjectNullOrEmpty(saveFinObj)) {
-						saveFinObj = new FinancialArrangementsDetail();
-						BeanUtils.copyProperties(reqObj, saveFinObj, "id", "createdBy", "createdDate", "modifiedBy",
-								"modifiedDate", "isActive");
-
-						saveFinObj.setApplicationId(new LoanApplicationMaster(fundSeekerInputRequest.getApplicationId()));
-						saveFinObj.setCreatedBy(fundSeekerInputRequest.getUserId());
-						saveFinObj.setCreatedDate(new Date());
-						saveFinObj.setIsActive(true);
-					} else {
-						BeanUtils.copyProperties(reqObj, saveFinObj, "id", "createdBy", "createdDate", "modifiedBy",
-								"modifiedDate");
-						saveFinObj.setModifiedBy(fundSeekerInputRequest.getUserId());
-						saveFinObj.setModifiedDate(new Date());
-					}
-					financialArrangementDetailsRepository.save(saveFinObj);
-				}
+				Boolean saveOrUpdate = financialArrangementDetailsService.saveOrUpdate(financialArrangementsDetailRequestsList, fundSeekerInputRequest.getApplicationId(), fundSeekerInputRequest.getUserId());
+				logger.info("Update Result in Loans Details==>{}",saveOrUpdate);
+//				for (FinancialArrangementsDetailRequest reqObj : financialArrangementsDetailRequestsList) {
+//					FinancialArrangementsDetail saveFinObj = null;
+//					if (!CommonUtils.isObjectNullOrEmpty(reqObj.getId())) {
+//						saveFinObj = financialArrangementDetailsRepository.findByIdAndIsActive(reqObj.getId(), true);
+//					}
+//					if (CommonUtils.isObjectNullOrEmpty(saveFinObj)) {
+//						saveFinObj = new FinancialArrangementsDetail();
+//						BeanUtils.copyProperties(reqObj, saveFinObj, "id", "createdBy", "createdDate", "modifiedBy",
+//								"modifiedDate", "isActive");
+//
+//						saveFinObj.setApplicationId(new LoanApplicationMaster(fundSeekerInputRequest.getApplicationId()));
+//						saveFinObj.setCreatedBy(fundSeekerInputRequest.getUserId());
+//						saveFinObj.setCreatedDate(new Date());
+//						saveFinObj.setIsActive(true);
+//					} else {
+//						BeanUtils.copyProperties(reqObj, saveFinObj, "id", "createdBy", "createdDate", "modifiedBy",
+//								"modifiedDate");
+//						saveFinObj.setModifiedBy(fundSeekerInputRequest.getUserId());
+//						saveFinObj.setModifiedDate(new Date());
+//					}
+//					financialArrangementDetailsRepository.save(saveFinObj);
+//				}
 			}
 			
 			//SAVE MATCHE JSON 
@@ -379,40 +381,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			if (!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail)) {
 				BeanUtils.copyProperties(primaryCorporateDetail, fsInputRes);
 			}
-
-			List<FinancialArrangementsDetail> finArngDetailList = financialArrangementDetailsRepository
-					.listSecurityCorporateDetailByAppId(fsInputReq.getApplicationId());
-			
-//			if(CommonUtils.isListNullOrEmpty(finArngDetailList)) {
-//				if(!CommonUtils.isObjectNullOrEmpty(corpApplicantDetail.getPanNo())) {
-//					if(corpApplicantDetail.getPanNo().charAt(3) == 'P' || corpApplicantDetail.getPanNo().charAt(3) == 'p') {
-//						DirectorBackgroundDetail backgroundDetail = directorBackgroundDetailsRepository.findByApplicationIdIdAndPanNoAndIsActive(fsInputReq.getApplicationId(), corpApplicantDetail.getPanNo().toUpperCase(), true);
-//						if(!CommonUtils.isObjectNullOrEmpty(backgroundDetail) && !CommonUtils.isObjectNullOrEmpty(backgroundDetail.getId())) {
-//							finArngDetailList = financialArrangementDetailsRepository.findByDirectorBackgroundDetailIdAndApplicationIdIdAndIsActive(backgroundDetail.getId(), fsInputReq.getApplicationId(), true);
-//						}else {
-//							logger.info("Director Not Found for Application Id====>{} and Pan No==========>{}",fsInputReq.getApplicationId(), corpApplicantDetail.getPanNo());
-//						}
-//					}else {
-//						logger.info("No Current Financial Loans for Pan No======>{}",corpApplicantDetail.getPanNo());	
-//					}	
-//				}else {
-//					logger.info("Pan No is Blank from Corporate Profile");				
-//				}
-//			}
-
-			List<FinancialArrangementsDetailRequest> finArrngDetailResList = new ArrayList<FinancialArrangementsDetailRequest>(
-					finArngDetailList.size());
-
-			FinancialArrangementsDetailRequest finArrngDetailReq = null;
-			for (FinancialArrangementsDetail finArrngDetail : finArngDetailList) {
-				finArrngDetailReq = new FinancialArrangementsDetailRequest();
-				BeanUtils.copyProperties(finArrngDetail, finArrngDetailReq);
-				if(!CommonUtils.isObjectNullOrEmpty(finArrngDetail.getDirectorBackgroundDetail())) {
-					finArrngDetailReq.setDirectorId(finArrngDetail.getDirectorBackgroundDetail().getId());					
-				}
-				finArrngDetailResList.add(finArrngDetailReq);
-			}
-			fsInputRes.setFinancialArrangementsDetailRequestsList(finArrngDetailResList);
+			fsInputRes.setFinancialArrangementsDetailRequestsList(financialArrangementDetailsService.getFinancialArrangementDetailsList(fsInputReq.getApplicationId(), fsInputReq.getUserId()));
 			
 			List<Long> industryList = industrySectorRepository.getIndustryByApplicationId(fsInputReq.getApplicationId());
 			logger.info("TOTAL INDUSTRY FOUND ------------->" + industryList.size() + "------------By APP Id -----------> " + fsInputReq.getApplicationId());
