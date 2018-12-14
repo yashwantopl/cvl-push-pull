@@ -292,8 +292,7 @@ public class RetailFinalCommonServiceImpl implements RetailFinalCommonApplicantS
 			}
 
 		} catch (Exception e) {
-			// TODO: handle exception
-			e.printStackTrace();
+			logger.error("Exception in getApplicantCommonInfo : ",e);
 		}
  		return finalViewCommonResponse;
 	}
