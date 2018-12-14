@@ -386,39 +386,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 				BeanUtils.copyProperties(primaryCorporateDetail, fsInputRes);
 			}
 
-			List<FinancialArrangementsDetail> finArngDetailList = financialArrangementDetailsRepository
-					.listSecurityCorporateDetailByAppId(fsInputReq.getApplicationId());
-			
-//			if(CommonUtils.isListNullOrEmpty(finArngDetailList)) {
-//				if(!CommonUtils.isObjectNullOrEmpty(corpApplicantDetail.getPanNo())) {
-//					if(corpApplicantDetail.getPanNo().charAt(3) == 'P' || corpApplicantDetail.getPanNo().charAt(3) == 'p') {
-//						DirectorBackgroundDetail backgroundDetail = directorBackgroundDetailsRepository.findByApplicationIdIdAndPanNoAndIsActive(fsInputReq.getApplicationId(), corpApplicantDetail.getPanNo().toUpperCase(), true);
-//						if(!CommonUtils.isObjectNullOrEmpty(backgroundDetail) && !CommonUtils.isObjectNullOrEmpty(backgroundDetail.getId())) {
-//							finArngDetailList = financialArrangementDetailsRepository.findByDirectorBackgroundDetailIdAndApplicationIdIdAndIsActive(backgroundDetail.getId(), fsInputReq.getApplicationId(), true);
-//						}else {
-//							logger.info("Director Not Found for Application Id====>{} and Pan No==========>{}",fsInputReq.getApplicationId(), corpApplicantDetail.getPanNo());
-//						}
-//					}else {
-//						logger.info("No Current Financial Loans for Pan No======>{}",corpApplicantDetail.getPanNo());	
-//					}	
-//				}else {
-//					logger.info("Pan No is Blank from Corporate Profile");				
-//				}
-//			}
-
-			List<FinancialArrangementsDetailRequest> finArrngDetailResList = new ArrayList<FinancialArrangementsDetailRequest>(
-					finArngDetailList.size());
-
-			FinancialArrangementsDetailRequest finArrngDetailReq = null;
-			for (FinancialArrangementsDetail finArrngDetail : finArngDetailList) {
-				finArrngDetailReq = new FinancialArrangementsDetailRequest();
-				BeanUtils.copyProperties(finArrngDetail, finArrngDetailReq);
-				if(!CommonUtils.isObjectNullOrEmpty(finArrngDetail.getDirectorBackgroundDetail())) {
-					finArrngDetailReq.setDirectorId(finArrngDetail.getDirectorBackgroundDetail().getId());					
-				}
-				finArrngDetailResList.add(finArrngDetailReq);
-			}
-			fsInputRes.setFinancialArrangementsDetailRequestsList(finArrngDetailResList);
+			fsInputRes.setFinancialArrangementsDetailRequestsList(financialArrangementDetailsService.getFinancialArrangementDetailsList(fsInputReq.getApplicationId(), fsInputReq.getUserId()));
 			
 			List<Long> industryList = industrySectorRepository.getIndustryByApplicationId(fsInputReq.getApplicationId());
 			logger.info("TOTAL INDUSTRY FOUND ------------->" + industryList.size() + "------------By APP Id -----------> " + fsInputReq.getApplicationId());
