@@ -55,14 +55,12 @@ public class PrimaryUnsecureLoanServiceImpl implements PrimaryUnsecureLoanServic
 			saveNegativeList(unsecureLoanDetail.getApplicationId().getId(), unsecureLoanRequest.getNegativeList());
 			return true;
 		} catch (Exception e) {
-			logger.error("Error while Primary Term Loan Details:-");
-			e.printStackTrace();
+			logger.error("Error while Primary Term Loan Details:-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	private void saveNegativeList(Long id, List<Long> negativeList) {
-		// TODO Auto-generated method stub
 		FsNegativeFpList fsNegativeFpList= null;
 		for (Long fpId : negativeList) {
 			fsNegativeFpList = new FsNegativeFpList();
@@ -99,8 +97,7 @@ public class PrimaryUnsecureLoanServiceImpl implements PrimaryUnsecureLoanServic
 			unsecureLoanRequest.setCurrencyValue(data);
 			return unsecureLoanRequest;
 		} catch (Exception e) {
-			logger.error("Error while Primary Term Loan Details:-");
-			e.printStackTrace();
+			logger.error("Error while Primary Term Loan Details:-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 

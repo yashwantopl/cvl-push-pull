@@ -130,7 +130,6 @@ public class LoanApplicationController {
 
 		} catch (Exception e) {
 			logger.error("Error while saving applicationRequest Details ==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -159,7 +158,6 @@ public class LoanApplicationController {
 
 		} catch (Exception e) {
 			logger.error("Error while saving applicationRequest Details ==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -193,7 +191,6 @@ public class LoanApplicationController {
 
 		} catch (Exception e) {
 			logger.error("Error while getting Loan Application Details==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -230,7 +227,6 @@ public class LoanApplicationController {
 
 		} catch (Exception e) {
 			logger.error("Error while getting Loan Application Details==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -262,7 +258,6 @@ public class LoanApplicationController {
 
 		} catch (Exception e) {
 			logger.error("Error while getting Loan Application Details==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -294,7 +289,6 @@ public class LoanApplicationController {
 
 		} catch (Exception e) {
 			logger.error("Error while getting Loan Application Details==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -320,7 +314,6 @@ public class LoanApplicationController {
 
 		} catch (Exception e) {
 			logger.error("Error while getting Loan Application Details==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -357,7 +350,6 @@ public class LoanApplicationController {
 			}
 		} catch (Exception e) {
 			logger.error("Error while Setting Last Access profile==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -391,7 +383,6 @@ public class LoanApplicationController {
 			}
 		} catch (Exception e) {
 			logger.error("Error while Getting Product Id by Application Id==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -421,7 +412,6 @@ public class LoanApplicationController {
 
 		} catch (Exception e) {
 			logger.error("Error while Getting Product Id by Application Id==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -449,7 +439,6 @@ public class LoanApplicationController {
 
 		} catch (Exception e) {
 			logger.error("Error while Getting Product Id by Application Id==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -482,7 +471,6 @@ public class LoanApplicationController {
 					HttpStatus.OK);
 
 		} catch (Exception e) {
-			e.printStackTrace();
 			logger.error("Error while locking primary information==>" + e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
@@ -519,7 +507,6 @@ public class LoanApplicationController {
 					HttpStatus.OK);
 
 		} catch (Exception e) {
-			e.printStackTrace();
 			logger.error("Error while Locking final information==>" + e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
@@ -554,7 +541,6 @@ public class LoanApplicationController {
 
 		} catch (Exception e) {
 			logger.error("Error while getting Loan Application Details==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -587,7 +573,6 @@ public class LoanApplicationController {
 
 		} catch (Exception e) {
 			logger.error("Error while getting Loan Application Details==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -635,7 +620,6 @@ public class LoanApplicationController {
 
 		} catch (Exception e) {
 			logger.error("Error while getting Loan Application Details==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -668,7 +652,6 @@ public class LoanApplicationController {
 
 		} catch (Exception e) {
 			logger.error("Error while getting Loan Application Details==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -719,7 +702,6 @@ public class LoanApplicationController {
 
 		} catch (Exception e) {
 			logger.error("Error while getting Loan Application Details==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -756,7 +738,6 @@ public class LoanApplicationController {
 
 		} catch (Exception e) {
 			logger.error("Error while getting Loan Application Details==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -789,7 +770,6 @@ public class LoanApplicationController {
 
 		} catch (Exception e) {
 			logger.error("Error while getting Loan Application Details==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -822,7 +802,6 @@ public class LoanApplicationController {
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getting Primary Working Details==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -858,7 +837,6 @@ public class LoanApplicationController {
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getting Primary Working Details==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -891,7 +869,6 @@ public class LoanApplicationController {
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getBowlCount Details==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -908,7 +885,6 @@ public class LoanApplicationController {
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getLoanDetailsForSignUpUserList==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -926,7 +902,6 @@ public class LoanApplicationController {
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getLoanDetailsForAdminPanel==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -944,7 +919,6 @@ public class LoanApplicationController {
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getFilledLoanDetailsForAdminPanel==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -960,7 +934,6 @@ public class LoanApplicationController {
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getUbiReport1ForAdminPanel==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -976,7 +949,6 @@ public class LoanApplicationController {
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getUbiReport1ForAdminPanel==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -992,7 +964,6 @@ public class LoanApplicationController {
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getUbiReport1ForAdminPanel==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -1009,7 +980,6 @@ public class LoanApplicationController {
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getUbiReport1ForAdminPanel==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -1025,7 +995,6 @@ public class LoanApplicationController {
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getUbiReport1ForAdminPanel==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -1043,7 +1012,6 @@ public class LoanApplicationController {
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getChatListByFpMappingId==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -1061,7 +1029,6 @@ public class LoanApplicationController {
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getFpNegativeList==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -1080,7 +1047,6 @@ public class LoanApplicationController {
 
 		} catch (Exception e) {
 			logger.error("Something went wrong", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -1104,7 +1070,6 @@ public class LoanApplicationController {
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getMcaCompanyId==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -1143,7 +1108,6 @@ public class LoanApplicationController {
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while updateLoanApplication==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -1166,7 +1130,6 @@ public class LoanApplicationController {
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getMcaCompanyId==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -1184,7 +1147,6 @@ public class LoanApplicationController {
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getLoanBasicDetails==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -1234,8 +1196,7 @@ public class LoanApplicationController {
 					// }
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
-				logger.error("Error while Set Campaign Code to LoanApplication Master");
+				logger.error("Error while Set Campaign Code to LoanApplication Master : ",e);
 			}
 
 			JSONObject json = new JSONObject();
@@ -1281,7 +1242,6 @@ public class LoanApplicationController {
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while creating Loan from Campaign==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -1302,7 +1262,6 @@ public class LoanApplicationController {
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while check User Has Any Application==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -1349,7 +1308,6 @@ public class LoanApplicationController {
 					HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while sendMailForFirstTimeUserViewMatches Details==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -1367,7 +1325,6 @@ public class LoanApplicationController {
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while isTermLoanLessThanLimit==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -1385,7 +1342,6 @@ public class LoanApplicationController {
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while isApplicationEligibleForIrr==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -1403,7 +1359,6 @@ public class LoanApplicationController {
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getIndustryIrrByApplication==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -1421,7 +1376,6 @@ public class LoanApplicationController {
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error whilegetFsDetailsInMapResponse==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -1435,7 +1389,6 @@ public class LoanApplicationController {
 			return loanApplicationService.setEligibleLoanAmount(loanRequest);
 		} catch (Exception e) {
 			logger.error("Error while updating Eligibility Amount==>", e);
-			e.printStackTrace();
 			return null;
 		}
 	}
@@ -1458,7 +1411,6 @@ public class LoanApplicationController {
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getLoanDetails==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -1483,7 +1435,6 @@ public class LoanApplicationController {
 					HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while updating Flow from UBI to Normal==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -1543,8 +1494,7 @@ public class LoanApplicationController {
 					logger.info("End Sent Mail When FS select CHEQUE Payment");
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
-				logger.info("Throw Exception while send mail when save payment ");
+				logger.error("Throw Exception while send mail when save payment : ",e);
 			}
 
 			LoansResponse response = new LoansResponse("Success", HttpStatus.OK.value());
@@ -1553,7 +1503,6 @@ public class LoanApplicationController {
 			return new ResponseEntity<LoansResponse>(response, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while Saving Payment info==>{}", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -1598,8 +1547,7 @@ public class LoanApplicationController {
 					logger.info("End Sent Mail When FS select CHEQUE Payment");
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
-				logger.info("Throw Exception while send mail when save payment ");
+				logger.error("Throw Exception while send mail when save payment : ",e);
 			}
 
 			LoansResponse response = new LoansResponse("Success", HttpStatus.OK.value());
@@ -1608,7 +1556,6 @@ public class LoanApplicationController {
 			return new ResponseEntity<LoansResponse>(response, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while Saving Payment info==>{}", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -1632,7 +1579,6 @@ public class LoanApplicationController {
 			return new ResponseEntity<LoansResponse>(response, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while updating Payment Status==>{}", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -1651,7 +1597,6 @@ public class LoanApplicationController {
 			return new ResponseEntity<LoansResponse>(response, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while updating Payment Status from SIDBI==>{}", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -1677,7 +1622,6 @@ public class LoanApplicationController {
 			return new ResponseEntity<LoansResponse>(response, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while updating Payment Status==>{}", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -1714,7 +1658,6 @@ public class LoanApplicationController {
 					HttpStatus.OK);
 
 		} catch (Exception e) {
-			e.printStackTrace();
 			logger.error("Error while Locking final information==>" + e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
@@ -1748,7 +1691,6 @@ public class LoanApplicationController {
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse("Successfully loan copied", HttpStatus.OK.value()), HttpStatus.OK);
 		} catch (Exception e) {
-			e.printStackTrace();
 			logger.error("Error while Copyig Loan Information==>" + e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
@@ -1770,7 +1712,6 @@ public class LoanApplicationController {
 
 		} catch (Exception e) {
 			logger.error("Error while getting Loan Application Details from Client==>", e);
-			e.printStackTrace();
 			return null;
 		}
 	}
@@ -1818,7 +1759,6 @@ public class LoanApplicationController {
 
 		} catch (Exception e) {
 			logger.error("Error while Saving Phse1 Details of SIDBI==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -1869,7 +1809,6 @@ public class LoanApplicationController {
 
 		} catch (Exception e) {
 			logger.error("Error while Saving Phase2 Details of SIDBI==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -1906,7 +1845,6 @@ public class LoanApplicationController {
 			return new ResponseEntity<LoansResponse>(response, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getDisbursementDetails", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -1934,7 +1872,6 @@ public class LoanApplicationController {
 			return new ResponseEntity<LoansResponse>(response, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getDetailsForApproval", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -1987,7 +1924,6 @@ public class LoanApplicationController {
 			return new ResponseEntity<LoansResponse>(response, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getDetailsForApproval", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -2009,7 +1945,6 @@ public class LoanApplicationController {
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while updateProductDetails==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -2030,7 +1965,6 @@ public class LoanApplicationController {
 
 		} catch (Exception e) {
 			logger.error("Error while Inactivating Loan Application Details==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -2048,7 +1982,6 @@ public class LoanApplicationController {
 
 		} catch (Exception e) {
 			logger.error("Error while getFpDetailsByFpProductId==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -2068,7 +2001,6 @@ public class LoanApplicationController {
 			
 		} catch (Exception e) {
 			logger.error("Error while getFpDetailsByFpProductMappingId==========>", e.getMessage());
-			e.printStackTrace();
 			
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
@@ -2111,10 +2043,7 @@ public class LoanApplicationController {
 							LoanSanctionRequest.class);
 
 				} catch (Exception e) {
-					e.printStackTrace();
-					logger.info(
-							"Error while Converting Encrypted Object to LoanSanctionRequest  saveLoanSanctionDetail(){} -------------------------> ",
-							e.getMessage());
+					logger.error("Error while Converting Encrypted Object to LoanSanctionRequest  saveLoanSanctionDetail(){} -------------------------> ", e.getMessage());
 					loansResponse = new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value(),
 							HttpStatus.OK);
 					loansResponse.setData(false);
@@ -2183,7 +2112,6 @@ public class LoanApplicationController {
 
 		} catch (Exception e) {
 			logger.error("Error while saveLoanSanctionDetail()----------------------> ", e);
-			e.printStackTrace();
 			loansResponse = new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG,
 					HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.OK);
 			loansResponse.setData(false);
@@ -2234,10 +2162,7 @@ public class LoanApplicationController {
 							LoanDisbursementRequest.class);
 
 				} catch (Exception e) {
-					e.printStackTrace();
-					logger.info(
-							"Error while Converting Encrypted Object to LoanDisbursementRequest  saveLoanDisbursementDetail(){} -------------------------> ",
-							e.getMessage());
+					logger.error("Error while Converting Encrypted Object to LoanDisbursementRequest  saveLoanDisbursementDetail(){} -------------------------> ", e.getMessage());
 					loansResponse = new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value(),
 							HttpStatus.OK);
 					loansResponse.setData(false);
@@ -2314,7 +2239,6 @@ public class LoanApplicationController {
 
 		} catch (Exception e) {
 			logger.error("Error while saveLoanDisbursementDetail()----------------------> ", e);
-			e.printStackTrace();
 			loansResponse = new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG,
 					HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.OK);
 			loansResponse.setData(false);
@@ -2350,7 +2274,6 @@ public class LoanApplicationController {
 			return new ResponseEntity<LoansResponse>(response, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while updating Payment Status==>{}", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
 		}
@@ -2374,7 +2297,6 @@ public class LoanApplicationController {
 			return new ResponseEntity<LoansResponse>(response, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while updating Payment Status for WhiteLabel==>{}", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
 		}
@@ -2398,7 +2320,6 @@ public class LoanApplicationController {
 			return new ResponseEntity<LoansResponse>(response, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while sending In-Principle for Personal Loan==>{}", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
 		}
@@ -2418,7 +2339,6 @@ public class LoanApplicationController {
 					HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getProposalDataFromAppId ==>{}", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
 		}
@@ -2457,10 +2377,7 @@ public class LoanApplicationController {
 					decrypt = AESEncryptionUtility.decrypt(encryptedString);
 					profileReqRes = MultipleJSONObjectHelper.getObjectFromString(decrypt, ProfileReqRes.class);
 				} catch (Exception e) {
-					e.printStackTrace();
-					logger.info(
-							"Error while Converting Encrypted Object to ProfileReqRes  saveDetailedInfo(){} -------------------------> ",
-							e.getMessage());
+					logger.error("Error while Converting Encrypted Object to ProfileReqRes  saveDetailedInfo(){} -------------------------> ", e.getMessage());
 					loansResponse = new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value(),
 							HttpStatus.OK);
 					loansResponse.setData(isSuccess);
@@ -2533,7 +2450,6 @@ public class LoanApplicationController {
 
 		} catch (Exception e) {
 			logger.error("Error while saveDetailedInfo()----------------------> ", e);
-			e.printStackTrace();
 			if (e instanceof LoansException)
 				loansResponse = new LoansResponse(e.getMessage(), HttpStatus.BAD_REQUEST.value(), HttpStatus.OK);
 			else
@@ -2573,8 +2489,7 @@ public class LoanApplicationController {
 				responseParams = decodedresponse;
 				logger.info("Decoded value=======++++++>>>>" + decodedresponse);
 			} catch (UnsupportedEncodingException e) {
-				logger.info("Something went wrong while decoding the response!!!");
-				e.printStackTrace();
+				logger.error("Something went wrong while decoding the response!!!",e);
 			}
 
 			StringTokenizer a = new StringTokenizer(decodedresponse, "&");
@@ -2594,15 +2509,13 @@ public class LoanApplicationController {
 						break;
 					}
 				} catch (Exception e) {
-					logger.info("Token null==================>" + e.getMessage());
-					// e.printStackTrace();
+					logger.error("Token null==================>" + e.getMessage());
 					key = null;
 				}
 				try {
 					value = m.nextToken();
 				} catch (Exception e) {
-					logger.info("Token null==================>" + e.getMessage());
-					// e.printStackTrace();
+					logger.error("Token null==================>" + e.getMessage());
 					value = null;
 				}
 				// map.put(key, value);
@@ -2627,7 +2540,7 @@ public class LoanApplicationController {
 								while (c.hasMoreElements()) {
 									String key = c.nextToken();
 									String value = b.nextToken();
-									System.out.println(key + "================>" + value);
+									logger.info(key + "================>" + value);
 
 									map.put(key, value);
 
@@ -2671,15 +2584,13 @@ public class LoanApplicationController {
 					try {
 						key = p.nextToken();
 					} catch (Exception e) {
-						logger.info("Token null==================>" + e.getMessage());
-						// e.printStackTrace();
+						logger.error("Token null==================>" + e.getMessage());
 						key = null;
 					}
 					try {
 						value = p.nextToken();
 					} catch (Exception e) {
-						logger.info("Token null==================>" + e.getMessage());
-						// e.printStackTrace();
+						logger.error("Token null==================>" + e.getMessage());
 						value = null;
 					}
 					map.put(key, value);
@@ -2715,7 +2626,6 @@ public class LoanApplicationController {
 			// return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while updating Payment Status for mobile==>{}", e);
-			e.printStackTrace();
 			/*
 			 * return new ResponseEntity<LoansResponse>( new
 			 * LoansResponse(CommonUtils.SOMETHING_WENT_WRONG,
@@ -2751,7 +2661,7 @@ public class LoanApplicationController {
 							while (c.hasMoreElements()) {
 								String key = c.nextToken();
 								String value = b.nextToken();
-								System.out.println(key + "================>" + value);
+								logger.info(key + "================>" + value);
 
 								map.put(key, value);
 
@@ -2785,7 +2695,7 @@ public class LoanApplicationController {
 			// return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while updating Payment Status for mobile==>{}", e);
-			e.printStackTrace();
+
 			/*
 			 * return new ResponseEntity<LoansResponse>( new
 			 * LoansResponse(CommonUtils.SOMETHING_WENT_WRONG,
@@ -2811,9 +2721,7 @@ public class LoanApplicationController {
 				generateTokenRequest = MultipleJSONObjectHelper.getObjectFromString(decrypt,
 						GenerateTokenRequest.class);
 			} catch (Exception e) {
-				e.printStackTrace();
-				logger.error("Error while Converting Encrypted Object to GenerateTokenRequest in getToken(){} =====>"
-						+ e.getMessage());
+				logger.error("Error while Converting Encrypted Object to GenerateTokenRequest in getToken(){} =====>" + e.getMessage());
 				loansResponse = new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value(),
 						HttpStatus.OK);
 				loansResponse.setData(isSuccess);
@@ -2858,10 +2766,10 @@ public class LoanApplicationController {
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
+
 			logger.error("Error while token Generation  in getToken()----------------------> ", e);
 			reason = "Exception while token Generation  in getToken() {} ====> MSg  " + e.getMessage();
-			e.printStackTrace();
+
 			loansResponse = new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG,
 					HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.OK);
 			loansResponse.setData(false);
@@ -2888,7 +2796,7 @@ public class LoanApplicationController {
 				generateTokenRequest = MultipleJSONObjectHelper.getObjectFromString(decrypt,
 						GenerateTokenRequest.class);
 			} catch (Exception e) {
-				e.printStackTrace();
+
 				logger.error(
 						"Error while Converting Encrypted Object to GenerateTokenRequest in setTokenAsExpired(){} =====>"
 								+ e.getMessage());
@@ -2936,10 +2844,8 @@ public class LoanApplicationController {
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
 			logger.error("Error while expiring token  in setTokenAsExpired()----------------------> ", e);
 			reason = "Exception while expiring token  in setTokenAsExpired() {} ====> MSg  " + e.getMessage();
-			e.printStackTrace();
 			loansResponse = new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG,
 					HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.OK);
 			loansResponse.setData(false);
@@ -2988,7 +2894,6 @@ public class LoanApplicationController {
 							LoanSanctionAndDisbursedRequest.class);
 					
 				} catch (Exception e) {
-					e.printStackTrace();
 					logger.info(
 							"Error while Converting Encrypted Object to LoanSanctionAndDisbursedRequest  saveLoanSanctionDisbursementDetailFromBank(){} -------------------------> ",
 							e.getMessage());
@@ -3090,7 +2995,6 @@ public class LoanApplicationController {
 
 		} catch (Exception e) {
 			logger.error("Error while saveLoanSanctionDisbursementDetailFromBank()----------------------> ", e);
-			e.printStackTrace();
 			loansResponse = new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG,
 					HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.OK);
 			loansResponse.setData(false);
@@ -3115,7 +3019,6 @@ public class LoanApplicationController {
 			loanSanctionService.saveSanctionAndDisbursementDetailsFromBank();
 		} catch (Exception e) {
 			logger.error("Error while reverseAPI ==>{}", e);
-			e.printStackTrace();
 		}
 	}
 	
@@ -3125,8 +3028,7 @@ public class LoanApplicationController {
 			logger.info("ENTER IN GET DDR STATUS ID---------------->" + applicationId);
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully get data", HttpStatus.OK.value(), loanApplicationService.getDDRStatusId(applicationId)), HttpStatus.OK);
 		} catch (Exception e) {
-			logger.error("Error while get ddr status==>");
-			e.printStackTrace();
+			logger.error("Error while get ddr status==>",e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -3141,7 +3043,6 @@ public class LoanApplicationController {
 			return res;
 		} catch (Exception e) {
 			logger.error("Error while reverseAPI ==>{}", e);
-			e.printStackTrace();
 			return null;
 			
 		}
@@ -3156,8 +3057,7 @@ public class LoanApplicationController {
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully save data", HttpStatus.OK.value(), 
 					loanApplicationService.saveLoanWCRenewalType(loanRequest.getId(), loanRequest.getWcRenewalStatus())), HttpStatus.OK);
 		} catch (Exception e) {
-			logger.error("Error while saveLoanWCRenewalType==>");
-			e.printStackTrace();
+			logger.error("Error while saveLoanWCRenewalType==>",e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -3172,8 +3072,7 @@ public class LoanApplicationController {
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully get data", HttpStatus.OK.value(), 
 					loanApplicationService.getLoanWCRenewalType(applicationId)), HttpStatus.OK);
 		} catch (Exception e) {
-			logger.error("Error while getLoanWCRenewalType==>");
-			e.printStackTrace();
+			logger.error("Error while getLoanWCRenewalType==>",e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
 		}
@@ -3223,7 +3122,6 @@ public class LoanApplicationController {
 				}
 			} catch (Exception e) {
 			logger.error("Error while saveLoanDisbursementDetail()----------------------> ", e);
-			e.printStackTrace();
 			LoansResponse loansResponse =null;
 			loansResponse = new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.OK);
 			loansResponse.setData(false);

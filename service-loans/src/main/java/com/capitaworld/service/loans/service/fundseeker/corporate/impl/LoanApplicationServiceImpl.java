@@ -565,8 +565,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					logger.info("codeExist====>{}", codeExist);
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
-				logger.error("Error while Set Campaign Code to LoanApplication Master");
+				logger.error("Error while Set Campaign Code to LoanApplication Master : ",e);
 			}
 
 			for (Map<String, Object> obj : commonRequest.getDataList()) {
@@ -606,13 +605,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					inactiveCampaignDetails(finalUserId, CommonUtils.CampaignCodes.ALL1MSME.getValue());
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
-				logger.error("Error while inactivating campaign details");
+				logger.error("Error while inactivating campaign details : ",e);
 			}
 			return true;
 		} catch (Exception e) {
-			logger.error("Error while Saving Loan Details:-");
-			e.printStackTrace();
+			logger.error("Error while Saving Loan Details:-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
@@ -626,8 +623,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 //				return (List<String>) response.getData();
 //			}
 //		} catch (Exception e) {
-//			e.printStackTrace();
-//			logger.error("Error while Getting Campaign Codes using Users Client");
+//			logger.error("Error while Getting Campaign Codes using Users Client : ",e);
 //		}
 //		return Collections.emptyList();
 //	}
@@ -648,8 +644,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				}
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("Error while Getting Campaign Codes using Users Client");
+			logger.error("Error while Getting Campaign Codes using Users Client : ",e);
 		}
 	}
 
@@ -689,8 +684,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			userClient.setLastAccessApplicant(usersRequest);
 			return request;
 		} catch (Exception e) {
-			logger.error("Error while Saving Loan Details From Campaign:-");
-			e.printStackTrace();
+			logger.error("Error while Saving Loan Details From Campaign:-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
@@ -778,8 +772,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			logger.info("Exit from saveOrUpdateFromLoanEligibilty");
 			return true;
 		} catch (Exception e) {
-			logger.error("Error while Saving Loan Details:-");
-			e.printStackTrace();
+			logger.error("Error while Saving Loan Details:-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
@@ -801,8 +794,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			retailApplicantDetailRepository.save(retailApplicantDetail);
 			return true;
 		} catch (Exception e) {
-			logger.error("Error while Saving RetailApplicantDetailFromLoanEligibility:-");
-			e.printStackTrace();
+			logger.error("Error while Saving RetailApplicantDetailFromLoanEligibility:-",e);
 			return false;
 		}
 	}
@@ -869,7 +861,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 						currencyAndDenomination = currencyAndDenomination.concat(
 								" in " + CommonDocumentUtils.getDenomination(applicationMaster.getDenominationId()));
 					} catch (Exception e) {
-						e.printStackTrace();
+						logger.error(CommonUtils.EXCEPTION,e);
 					}
 				}
 				applicationRequest.setCurrencyValue(currencyAndDenomination);
@@ -904,13 +896,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				applicationRequest.setName(LoanType.getType(applicationMaster.getProductId()).getName());
 				return applicationRequest;
 			} catch (Exception e) {
-				logger.error("Error while getting Status From Proposal Client");
-				e.printStackTrace();
+				logger.error("Error while getting Status From Proposal Client : ",e);
 				return applicationRequest;
 			}
 		} catch (Exception e) {
-			logger.error("Error while getting Individual Loan Details:-");
-			e.printStackTrace();
+			logger.error("Error while getting Individual Loan Details:-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
@@ -964,7 +954,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 							currencyAndDenomination = currencyAndDenomination
 									.concat(" in " + CommonDocumentUtils.getDenomination(master.getDenominationId()));
 						} catch (Exception e) {
-							e.printStackTrace();
+							logger.error(CommonUtils.EXCEPTION,e);
 						}
 					}
 					request.setCurrencyValue(currencyAndDenomination);
@@ -993,9 +983,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					request.setName(LoanType.getType(master.getProductId()).getName());
 					requests.add(request);
 				} catch (Exception e) {
-					logger.error(
-							"Error while Getting Loan Status from Proposal Client or Proposal Service is not available:-");
-					e.printStackTrace();
+					logger.error("Error while Getting Loan Status from Proposal Client or Proposal Service is not available:-",e);
 					// throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 				}
 				long proposalStatusId = 0l;
@@ -1010,8 +998,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 						proposalStatusId = proposalrequest.getProposalStatusId().longValue();
 					}
 				} catch (Exception e) {
-					logger.error("Error while calling getActiveProposalByApplicationID:-");
-					e.printStackTrace();
+					logger.error("Error while calling getActiveProposalByApplicationID:-",e);
 				}
 
 				Integer status = request.getStatus();
@@ -1047,8 +1034,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		}
 			return requests;
 		} catch (Exception e) {
-			logger.error("Error while Getting Loan Details:-");
-			e.printStackTrace();
+			logger.error("Error while Getting Loan Details:-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
@@ -1079,7 +1065,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 						currencyAndDenomination = currencyAndDenomination.concat(" in "
 								+ CommonDocumentUtils.getDenomination(loanApplicationMaster.getDenominationId()));
 					} catch (Exception e) {
-						e.printStackTrace();
+						logger.error(CommonUtils.EXCEPTION,e);
 					}
 				}
 				response.setCurrency(currencyAndDenomination);
@@ -1115,8 +1101,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 			return true;
 		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("Error while Locking Profile and Primary Information");
+			logger.error("Error while Locking Profile and Primary Information : ",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
@@ -1190,7 +1175,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				// parameters.put("fp_name", CommonUtils.isObjectNullOrEmpty(fpName) ? "NA" :
 				// fpName);
 				// } catch (Exception e) {
-				// // TODO: handle exception
 				// e.printStackTrace();
 				// parameters.put("fp_name", "NA");
 				// }
@@ -1207,7 +1191,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				// }
 				//
 				// } catch (Exception e) {
-				// // TODO: handle exception
 				// e.printStackTrace();
 				// parameters.put("fp_pname", "NA");
 				// }
@@ -1263,12 +1246,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					logService.saveFsLog(applicationId, LogDateTypeMaster.FINAL_SUBMIT.getId());
 				}
 			} catch (Exception e) {
-				logger.info("maker name is null so sms is not sent");
+				logger.error("maker name is null so sms is not sent : ",e);
 			}
 			return loanApplicationRequest;
 		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("Error while Locking Final Information");
+			logger.error("Error while Locking Final Information : ",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 
 		}
@@ -1332,13 +1314,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 
 	private String getApplicantName(long applicationId) throws Exception {
-		// TODO Auto-generated method stub
 		try {
 			String applicantName = getFsApplicantName(applicationId);
 			return applicantName;
 		} catch (LoansException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			logger.error("Exception in getApplicantName : ",e1);
 			return "NA";
 		}
 	}
@@ -1370,7 +1350,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			UsersClient client = new UsersClient(environment.getRequiredProperty(CommonUtils.USER_CLIENT_URL));
 			return client.setLastAccessApplicant(usersRequest);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 
 		}
@@ -1391,8 +1371,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		try {
 			return loanApplicationRepository.getProductIdByApplicationId(applicationId, userId);
 		} catch (Exception e) {
-			logger.error("Error while getting Product Id by Application Id");
-			e.printStackTrace();
+			logger.error("Error while getting Product Id by Application Id : ",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
@@ -1410,8 +1389,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			loanApplicationRepository.setIsApplicantFinalMandatoryFilled(applicationId, userId, flag);
 			loanApplicationRepository.setFinalFilledCount(applicationId, userId, finalFilledCount);
 		} catch (Exception e) {
-			logger.error("Error while updating final information flag");
-			e.printStackTrace();
+			logger.error("Error while updating final information flag : ",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
@@ -1479,8 +1457,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				return true;
 			}
 		} catch (Exception e) {
-			logger.error("Error while getting isProfileAndPrimaryDetailFilled ?");
-			e.printStackTrace();
+			logger.error("Error while getting isProfileAndPrimaryDetailFilled ?",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
@@ -1491,8 +1468,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			Long count = loanApplicationRepository.checkPrimaryDetailIsLocked(applicationId);
 			return (count != null ? count > 0 : false);
 		} catch (Exception e) {
-			logger.error("Error while getting isPrimaryLocked ?");
-			e.printStackTrace();
+			logger.error("Error while getting isPrimaryLocked ?",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
@@ -1503,8 +1479,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			Long count = loanApplicationRepository.checkApplicationIdActive(applicationId);
 			return (count != null ? count > 0 : false);
 		} catch (Exception e) {
-			logger.error("Error while getting isApplicationIdActive ?");
-			e.printStackTrace();
+			logger.error("Error while getting isApplicationIdActive ?",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
@@ -1603,8 +1578,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				return true;
 			}
 		} catch (Exception e) {
-			logger.error("Error while getting isFinalDetailFilled ?");
-			e.printStackTrace();
+			logger.error("Error while getting isFinalDetailFilled ?",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
@@ -1615,8 +1589,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			Long count = loanApplicationRepository.checkFinalDetailIsLocked(applicationId);
 			return (count != null ? count > 0 : false);
 		} catch (Exception e) {
-			logger.error("Error while getting isFinalLocked ?");
-			e.printStackTrace();
+			logger.error("Error while getting isFinalLocked ?",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
@@ -1631,8 +1604,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			json.put("isPrimaryLocked", isPrimaryLocked(applicationId, userId));
 			return json;
 		} catch (Exception e) {
-			logger.error("Error while getting isFinalLocked ?");
-			e.printStackTrace();
+			logger.error("Error while getting isFinalLocked ?",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
@@ -1653,8 +1625,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			jsonObject.put("denomination", CommonDocumentUtils.getDenomination(denominationId));
 			return jsonObject;
 		} catch (Exception e) {
-			logger.error("Error while getting Currency and Denomination Value");
-			e.printStackTrace();
+			logger.error("Error while getting Currency and Denomination Value : ",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
@@ -2926,8 +2897,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				users = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) user,
 						RegisteredUserResponse.class);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 			if (CommonUtils.isObjectNullOrEmpty(users)) {
 				continue;
@@ -2977,10 +2947,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					try {
 						proposalCountResponse = proposalDetailsClient.proposalCountOfFundSeeker(proposalMappingRequest);
 					} catch (Exception e) {
-						e.printStackTrace();
-						logger.warn(
-								"Throw Exception while get matches count for registration user details------------->"
-										+ loanMstr.getId());
+						logger.error("Throw Exception while get matches count for registration user details------------->"+ loanMstr.getId()+" :: ",e);
 					}
 					if (!CommonUtils.isObjectNullOrEmpty(proposalCountResponse)) {
 						obj.put("totalMatches", proposalCountResponse.getTotal());
@@ -3318,7 +3285,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			}
 			responseList.add(response);
 		}
-		System.out.println(responseList);
+		logger.info(""+responseList);
 		return responseList;
 	}
 
@@ -3470,7 +3437,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				responseList.add(response);
 			}
 		}
-		System.out.println(responseList);
+		logger.info(""+responseList);
 		return responseList;
 	}
 
@@ -3585,7 +3552,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 			}
 		}
-		System.out.println(responseList);
+		logger.info(""+responseList);
 		return responseList;
 	}
 
@@ -3739,7 +3706,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			responseList.add(response);
 
 		}
-		System.out.println(responseList);
+		logger.info(""+responseList);
 		return responseList;
 	}
 
@@ -3896,13 +3863,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			responseList.add(response);
 
 		}
-		System.out.println(responseList);
+		logger.info(""+responseList);
 		return responseList;
 	}
 
 	@Override
 	public List<ChatDetails> getChatListByApplicationId(Long applicationId) {
-		// TODO Auto-generated method stub
 		ProposalMappingRequest mappingRequest = new ProposalMappingRequest();
 		mappingRequest.setFpProductId(applicationId);
 		try {
@@ -3936,18 +3902,15 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 						}
 						chatDetailList.add(chatDetails);
 					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						logger.error(CommonUtils.EXCEPTION,e);
 					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						logger.error(CommonUtils.EXCEPTION,e);
 					}
 				}
 				return chatDetailList;
 			}
 		} catch (MatchException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		return null;
 	}
@@ -3998,14 +3961,13 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				}
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		return null;
 	}
 
 	@Override
 	public void saveSuggestionList(ProposalList proposalList) {
-		// TODO Auto-generated method stub
 		try {
 
 			// change proposal status
@@ -4014,7 +3976,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Exception in saveSuggestionList : ",e);
 		}
 	}
 
@@ -4146,8 +4108,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			Long long1 = loanApplicationRepository.getApplicantCountByCode(finalUserId, code);
 			return long1 > 0;
 		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("Error while Checking Code is Exists or not");
+			logger.error("Error while Checking Code is Exists or not : ",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
@@ -4157,8 +4118,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		try {
 			return loanApplicationRepository.getCampaignCodeByApplicationId(applicationId);
 		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("Error while getting Code by Application Id");
+			logger.error("Error while getting Code by Application Id : ",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
@@ -4223,9 +4183,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			logger.info("Exit from setEligibleLoanAmount()");
 			return i;
 		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("Error while updating Eligibility Amount");
-			logger.info("Exit from setEligibleLoanAmount()");
+			logger.error("Error while updating Eligibility Amount : ",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
@@ -4251,9 +4209,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				loanApplicationRepository.save(applicationMaster);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("Error while Coverting UBI flow to Normal");
-			logger.info("Exit from updateFlow()");
+			logger.error("Error while Coverting UBI flow to Normal : ",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 
@@ -4261,7 +4217,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Override
 	public Long getIrrByApplicationId(Long id) throws Exception {
-		// TODO Auto-generated method stub
 		try {
 
 			CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
@@ -4285,13 +4240,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					return res.getIrr();
 				}
 			} catch (Exception e) {
-				logger.error("Error while getting Status From Proposal Client,getKeyVerticalSector can not be null");
-				e.printStackTrace();
+				logger.error("Error while getting Status From Proposal Client,getKeyVerticalSector can not be null : ",e);
 				return null;
 			}
 		} catch (Exception e) {
-			logger.error("Error while getting Individual Loan Details:-");
-			e.printStackTrace();
+			logger.error("Error while getting Individual Loan Details:-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 		return null;
@@ -4366,12 +4319,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					gatewayRequest.setPurposeCode(paymentRequest.getPurposeCode());
 					// gatewayRequest.setResponseParams(paymentRequest.getResponseParams());
 					Object values = gatewayClient.payout(gatewayRequest);
-					System.out.println("Response for gateway is:- " + values);
+					logger.info("Response for gateway is:- " + values);
 					logger.info("End updateLoanApplicationMaster when Payment Mode in ONLINE() in NHBS");
 					return values;
 				} catch (Exception e) {
-					e.printStackTrace();
-					logger.error("Error while Saving Payment History to Patyment Module when Payment Mode is ONLINE");
+					logger.error("Error while Saving Payment History to Patyment Module when Payment Mode is ONLINE : ",e);
 					throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 				}
 			} else if (CommonUtils.PaymentMode.ONLINE.equalsIgnoreCase(paymentRequest.getTypeOfPayment())
@@ -4387,8 +4339,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					usersRequest = MultipleJSONObjectHelper.getObjectFromMap(
 							(LinkedHashMap<String, Object>) emailMobile.getData(), UsersRequest.class);
 				} catch (Exception e) {
-					logger.info("Throw Exception While Get User Email and Mobile");
-					e.printStackTrace();
+					logger.error("Throw Exception While Get User Email and Mobile : ",e);
 				}
 
 				if (!CommonUtils.isObjectNullOrEmpty(usersRequest)) {
@@ -4415,8 +4366,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				return values;
 			}
 		} catch (Exception e) {
-			logger.error("Error while Saving payment information in Loan");
-			e.printStackTrace();
+			logger.error("Error while Saving payment information in Loan : ",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 		return paymentRequest.getTypeOfPayment();
@@ -4453,7 +4403,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					Long fpMappingId = null;
 					try {
 					} catch (Exception e) {
-						e.printStackTrace();
+						logger.error(CommonUtils.EXCEPTION,e);
 					}
 					savePhese1DataToSidbi(loanApplicationMaster.getId(), userId, orgId, fpProductId);
 				}*/
@@ -4469,7 +4419,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				throw new Exception("Something went wrong while call connect client for " + applicationId);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 			throw new Exception("Something went wrong while call connect client for " + applicationId);
 		}
 
@@ -4487,7 +4437,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				throw new Exception("Something went wrong while call proposal client for " + applicationId);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 			throw new Exception("Something went wrong while call proposal client for " + applicationId);
 		}
 
@@ -4525,7 +4475,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					try {
 						savePhese1DataToSidbi(loanApplicationMaster.getId(), userId, orgId, fpProductId);
 					} catch (Exception e) {
-						e.printStackTrace();
+						logger.error(CommonUtils.EXCEPTION,e);
 					}
 				}*/
 
@@ -4540,7 +4490,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				throw new Exception("Something went wrong while call connect client for " + applicationId);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 			throw new Exception("Something went wrong while call connect client for " + applicationId);
 		}
 
@@ -4558,7 +4508,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				throw new Exception("Something went wrong while call proposal client for " + applicationId);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 			throw new Exception("Something went wrong while call proposal client for " + applicationId);
 		}
 
@@ -4586,9 +4536,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			proposalresp = MultipleJSONObjectHelper.getObjectFromMap((Map<String, Object>) response.getData(),
 					Map.class);
 		} catch (Exception e) {
-			logger.info("Error calling Proposal Details Client for getting In-principle response for applicationId:-"
-					+ applicationId);
-			e.printStackTrace();
+			logger.error("Error calling Proposal Details Client for getting In-principle response for applicationId:-" + applicationId + " :: ",e);
 		}
 
 		LoanApplicationRequest loansRequest = loanApplicationService.getFromClient(applicationId);
@@ -4604,10 +4552,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			logger.info("Inside sending mail to Maker after In-principle Approval");
 			fpasyncComponent.sendEmailToAllMakersWhenFSRecievesInPrinciple(proposalresp, paymentRequest, userId, orgId);
 		} catch (Exception e) {
-
-			logger.info("Exception occured while Sending Mail to All Makers");
-			e.printStackTrace();
-
+			logger.error("Exception occured while Sending Mail to All Makers : ",e);
 		}
 
 		try {
@@ -4615,30 +4560,21 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			fpasyncComponent.sendEmailToAllCheckersWhenFSRecievesInPrinciple(proposalresp, paymentRequest, userId,
 					orgId);
 		} catch (Exception e) {
-
-			logger.info("Exception occured while Sending Mail to All Checkers");
-			e.printStackTrace();
-
+			logger.error("Exception occured while Sending Mail to All Checkers : ",e);
 		}
 
 		try {
 			logger.info("Inside sending mail to HO after In-principle Approval");
 			fpasyncComponent.sendEmailToHOWhenFSRecievesInPrinciple(proposalresp, paymentRequest, userId, orgId);
 		} catch (Exception e) {
-
-			logger.info("Exception occured while Sending Mail to HO");
-			e.printStackTrace();
-
+			logger.error("Exception occured while Sending Mail to HO : ",e);
 		}
 
 		try {
 			logger.info("Inside sending mail to BO after In-principle Approval");
 			fpasyncComponent.sendEmailToAllBOWhenFSRecievesInPrinciple(proposalresp, paymentRequest, userId, orgId);
 		} catch (Exception e) {
-
-			logger.info("Exception occured while Sending Mail to All BO");
-			e.printStackTrace();
-
+			logger.error("Exception occured while Sending Mail to All BO : ",e);
 		}
 
 		// =======================================================================================================================================
@@ -4691,7 +4627,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				throw new Exception("Something went wrong while call connect client for " + applicationId);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 			throw new Exception("Something went wrong while call connect client for " + applicationId);
 		}
 
@@ -4709,7 +4645,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				throw new Exception("Something went wrong while call proposal client for " + applicationId);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 			throw new Exception("Something went wrong while call proposal client for " + applicationId);
 		}
 
@@ -4736,9 +4672,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			proposalresp = MultipleJSONObjectHelper.getObjectFromMap((Map<String, Object>) response.getData(),
 					Map.class);
 		} catch (Exception e) {
-			logger.info("Error calling Proposal Details Client for getting In-principle response for applicationId:-"
-					+ applicationId);
-			e.printStackTrace();
+			logger.error("Error calling Proposal Details Client for getting In-principle response for applicationId:-" + applicationId + " :: ",e);
 		}
 
 		LoanApplicationRequest loansRequest = loanApplicationService.getFromClient(applicationId);
@@ -4754,10 +4688,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			logger.info("Inside sending mail to Maker after In-principle Approval");
 			fpasyncComponent.sendEmailToAllMakersWhenFSRecievesInPrinciple(proposalresp, paymentRequest, userId, orgId);
 		} catch (Exception e) {
-
-			logger.info("Exception occured while Sending Mail to All Makers");
-			e.printStackTrace();
-
+			logger.error("Exception occured while Sending Mail to All Makers : ",e);
 		}
 
 		try {
@@ -4765,30 +4696,21 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			fpasyncComponent.sendEmailToAllCheckersWhenFSRecievesInPrinciple(proposalresp, paymentRequest, userId,
 					orgId);
 		} catch (Exception e) {
-
-			logger.info("Exception occured while Sending Mail to All Checkers");
-			e.printStackTrace();
-
+			logger.error("Exception occured while Sending Mail to All Checkers : ",e);
 		}
 
 		try {
 			logger.info("Inside sending mail to HO after In-principle Approval");
 			fpasyncComponent.sendEmailToHOWhenFSRecievesInPrinciple(proposalresp, paymentRequest, userId, orgId);
 		} catch (Exception e) {
-
-			logger.info("Exception occured while Sending Mail to HO");
-			e.printStackTrace();
-
+			logger.error("Exception occured while Sending Mail to HO : ",e);
 		}
 
 		try {
 			logger.info("Inside sending mail to BO after In-principle Approval");
 			fpasyncComponent.sendEmailToAllBOWhenFSRecievesInPrinciple(proposalresp, paymentRequest, userId, orgId);
 		} catch (Exception e) {
-
-			logger.info("Exception occured while Sending Mail to All BO");
-			e.printStackTrace();
-
+			logger.error("Exception occured while Sending Mail to All BO : ",e);
 		}
 
 		// =======================================================================================================================================
@@ -4820,8 +4742,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 								+ paymentRequest.getApplicationId());
 						respProp = proposalDetailsClient.activateProposalOnPayment(paymentRequest.getApplicationId());
 					} catch (Exception e) {
-						logger.info("Throw Exception WHile Activate Proposals");
-						e.printStackTrace();
+						logger.info("Throw Exception WHile Activate Proposals : ",e);
 					}
 
 				}
@@ -4829,8 +4750,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			try {
 				updatePayment = gatewayClient.updatePayment(gatewayRequest);
 			} catch (Exception e) {
-				logger.info("THROW EXCEPTION WHILE UPDATE PAYMENT ON GATEWAY CLIENT");
-				e.printStackTrace();
+				logger.error("THROW EXCEPTION WHILE UPDATE PAYMENT ON GATEWAY CLIENT : ",e);
 			}
 
 			if ("SIDBI_FEES".equals(paymentRequest.getPurposeCode())) {
@@ -4872,8 +4792,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 							/*try {
 								savePhese1DataToSidbi(loanApplicationMaster.getId(), userId, orgId, fpProductId);
 							} catch (Exception e) {
-								e.printStackTrace();
 								logger.error("Error while Saving Phase1 data to Organization Id====>{}", orgId);
+								logger.error(CommonUtils.EXCEPTION,e);
 							}*/
 //						}
 							logger.info("connectResponse.getProceed()==============>>>" + connectResponse.getProceed());
@@ -4908,10 +4828,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 								fpasyncComponent.sendEmailToAllMakersWhenFSRecievesInPrinciple(proposalresp,
 										paymentRequest, userId, orgId);
 							} catch (Exception e) {
-
-								logger.info("Exception occured while Sending Mail to All Makers");
-								e.printStackTrace();
-
+								logger.error("Exception occured while Sending Mail to All Makers : ",e);
 							}
 
 							try {
@@ -4919,10 +4836,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 								fpasyncComponent.sendEmailToAllCheckersWhenFSRecievesInPrinciple(proposalresp,
 										paymentRequest, userId, orgId);
 							} catch (Exception e) {
-
-								logger.info("Exception occured while Sending Mail to All Checkers");
-								e.printStackTrace();
-
+								logger.error("Exception occured while Sending Mail to All Checkers : ",e);
 							}
 
 							try {
@@ -4930,10 +4844,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 								fpasyncComponent.sendEmailToHOWhenFSRecievesInPrinciple(proposalresp, paymentRequest,
 										userId, orgId);
 							} catch (Exception e) {
-
-								logger.info("Exception occured while Sending Mail to HO");
-								e.printStackTrace();
-
+								logger.error("Exception occured while Sending Mail to HO : ",e);
 							}
 
 							try {
@@ -4941,10 +4852,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 								fpasyncComponent.sendEmailToAllBOWhenFSRecievesInPrinciple(proposalresp, paymentRequest,
 										userId, orgId);
 							} catch (Exception e) {
-
-								logger.info("Exception occured while Sending Mail to All BO");
-								e.printStackTrace();
-
+								logger.error("Exception occured while Sending Mail to All BO : ",e);
 							}
 
 							// =======================================================================================================================================
@@ -4974,10 +4882,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 						logger.info("Payment Failed");
 					}
 				} catch (Exception e) {
-					logger.info("THROW EXCEPTION WHILE CALLING PROPOSAL DETAILS FROM MATCHE ENGINE");
-					e.printStackTrace();
+					logger.error("THROW EXCEPTION WHILE CALLING PROPOSAL DETAILS FROM MATCHE ENGINE : ",e);
 				}
-
 				logger.info("End of Congratulations");
 				return applicationRequest;
 			}
@@ -4989,8 +4895,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				loanRequest.setPaymentStatus(updatePayment.toString());
 			}
 			if (CommonUtils.isObjectNullOrEmpty(loanRequest)) {
-				logger.warn("Invalid Application Id in Updating Payment Status====>{}",
-						paymentRequest.getApplicationId());
+				logger.warn("Invalid Application Id in Updating Payment Status====>{}", paymentRequest.getApplicationId());
 				return null;
 			}
 
@@ -5021,14 +4926,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					loanRequest.setMobile(userEmailMobile.getMobile());
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
-				logger.error("Error while Getting Client Details from Users");
+				logger.error("Error while Getting Client Details from Users : ",e);
 			}
 			logger.info("End updateLoanApplicationMasterPaymentStatus() with success");
 			return loanRequest;
 		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("End updateLoanApplicationMasterPaymentStatus() with Exception");
+			logger.error("End updateLoanApplicationMasterPaymentStatus() with Exception : ",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
@@ -5046,31 +4949,27 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			GatewayRequest paymentStatus = gatewayClient.getPaymentStatus(gatewayRequest);
 			return paymentStatus;
 		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("End updateLoanApplicationMasterPaymentStatus() with Exception");
+			logger.error("End updateLoanApplicationMasterPaymentStatus() with Exception : ",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
 	public Integer getIndustryIrrByApplication(Long applicationId) {
-		// TODO Auto-generated method stub
 		IrrRequest irrIndustryRequest = new IrrRequest();
 
 		Long irrId = null;
 		try {
 			irrId = getIrrByApplicationId(applicationId);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 
 		irrIndustryRequest.setIrrIndustryId(irrId);
 		try {
 			irrIndustryRequest = ratingClient.getIrrIndustry(irrIndustryRequest);
 		} catch (RatingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		IndustryResponse industryResponse = irrIndustryRequest.getIndustryResponse();
 		return !CommonUtils.isObjectNullOrEmpty(industryResponse) ? industryResponse.getBusinessTypeId() : null;
@@ -5117,8 +5016,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			loanApplicationRepository.save(applicationMaster);
 			return true;
 		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("Error while Updating DDR Status");
+			logger.error("Error while Updating DDR Status : ",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 
@@ -5170,21 +5068,18 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			}
 			return applicationRequest;
 		} catch (Exception e) {
-			logger.error("Error while getting Individual Loan Details For Client:-");
-			e.printStackTrace();
+			logger.error("Error while getting Individual Loan Details For Client:-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
 	public Boolean isApplicationEligibleForIrr(Long applicationId) throws Exception {
-		// TODO Auto-generated method stub
 		LoanApplicationMaster applicationMaster = loanApplicationRepository.findOne(applicationId);
 		if (CommonUtils.isObjectNullOrEmpty(applicationMaster)) {
 			return false;
 		} else {
-			if (!CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsPrimaryLocked())
-					&& !CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsPrimaryLocked())) {
+			if (!CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsPrimaryLocked()) ) {
 				try {
 
 					CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
@@ -5201,13 +5096,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 							return false;
 						}
 					} catch (Exception e) {
-						logger.error("Error while getting Status From isApplicationEligibleForIrr");
-						e.printStackTrace();
+						logger.error("Error while getting Status From isApplicationEligibleForIrr : ",e);
 						return null;
 					}
 				} catch (Exception e) {
-					logger.error("Error while getting Individual Loan Details:-");
-					e.printStackTrace();
+					logger.error("Error while getting Individual Loan Details:-",e);
 					throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 				}
 			}
@@ -5217,7 +5110,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Override
 	public DisbursementRequest getDisbursementDetails(DisbursementRequest disbursementRequest) {
-		// TODO Auto-generated method stub
 
 				try {
 					// set fs details
@@ -5270,7 +5162,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 								} else {
 								}
 							} catch (Exception e) {
-								e.printStackTrace();
+								logger.error(CommonUtils.EXCEPTION,e);
 							}
 						}
 						disbursementRequest.setFpOrganisationName(fundProviderDetailsRequest.getOrganizationName());
@@ -5288,7 +5180,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 								} else {
 								}
 							} catch (Exception e) {
-								e.printStackTrace();
+								logger.error(CommonUtils.EXCEPTION,e);
 							}
 						}
 						disbursementRequest.setFpAddress(fpAddress);
@@ -5352,7 +5244,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 			}
 
@@ -5371,7 +5263,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					} else {
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 			}
 		} else {
@@ -5518,7 +5410,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				logger.info("Response form Connect lient ---------------->" + null);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		return false;
 	}
@@ -5551,10 +5443,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				return false;
 			}
 		} catch (Exception e) {
-			logger.error("Something goes wrong while setUrlAndTokenInSidbiClient savePhese1DataToSidbi() ");
-			e.printStackTrace();
-			logger.error("Exception while getting token from SidbiIntegrationClient -------------- applicationId "
-					+ applicationId);
+			logger.error("Something goes wrong while setUrlAndTokenInSidbiClient savePhese1DataToSidbi() : ",e);
+			logger.error("Exception while getting token from SidbiIntegrationClient -------------- applicationId " + applicationId);
 			return false;
 		}
 
@@ -5605,10 +5495,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 						auditComponent.updateAudit(AuditComponent.PRELIM_INFO, applicationId, userId, null,
 								savePrelimInfo);
 					} catch (Exception e) {
-						logger.info(
-								"Exception while saving ProfileReqRes in savePhese1DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",
-								applicationId, fpProductMappingId + " Mgs " + e.getMessage());
-						e.printStackTrace();
+						logger.error("Exception while saving ProfileReqRes in savePhese1DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}", applicationId, fpProductMappingId + " Mgs " + e.getMessage());
 						if (e.getMessage() != null && e.getMessage().contains("401")) {
 							auditComponent.updateAudit(AuditComponent.PRELIM_INFO, applicationId, userId,
 									"Unauthorized! while saving ProfileReqRes in savePhese1DataToSidbi() ==> for ApplicationId  ====>{}}"
@@ -5659,9 +5546,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 								matchesParameters);
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
-					logger.info(
-							"Exception in  MatchesParameterRequest in savePhese1DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",
+					logger.error("Exception in  MatchesParameterRequest in savePhese1DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",
 							applicationId, fpProductMappingId + " Mgs " + e.getMessage());
 					if (e.getMessage() != null && e.getMessage().contains("401")) {
 						auditComponent.updateAudit(AuditComponent.MATCHES_PARAMETER, applicationId, userId,
@@ -5714,7 +5599,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					logger.error(
 							"Exception in  BankStatementRequest in savePhese1DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",
 							applicationId, fpProductMappingId + " Mgs " + e.getMessage());
-					e.printStackTrace();
 					if (e.getMessage() != null && e.getMessage().contains("401")) {
 						auditComponent.updateAudit(AuditComponent.BANK_STATEMENT, applicationId, userId,
 								"Unauthorized! in  BankStatementRequest in savePhese1DataToSidbi() ==> for applicationId====>{} "
@@ -5764,10 +5648,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 								eligibilityParameters);
 					}
 				} catch (Exception e) {
-					logger.info(
-							"Exception in  EligibilityDetailRequest in savePhese1DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",
+					logger.error("Exception in  EligibilityDetailRequest in savePhese1DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",
 							applicationId, fpProductMappingId + " Mgs " + e.getMessage());
-					e.printStackTrace();
 					if (e.getMessage() != null && e.getMessage().contains("401")) {
 						auditComponent.updateAudit(AuditComponent.ELIGIBILITY, applicationId, userId,
 								"Unauthorized! in  EligibilityDetailRequest in savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "
@@ -5790,7 +5672,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 			audit = auditComponent.getAudit(applicationId, true, AuditComponent.SCORING_DETAILS);
 			if (audit == null) {
-				// TODO Auto-generated method stub
 				ProposalMappingRequest proposalMappingRequest = new ProposalMappingRequest();
 				proposalMappingRequest.setApplicationId(applicationId);
 				ProposalMappingResponse proposalMappingResponse = proposalService
@@ -5805,7 +5686,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 								.getObjectFromMap(proposalMappingResponseDataList.get(0), ProposalMappingRequest.class);
 						productId = proposalMappingRequest1.getFpProductId();
 					} catch (IOException e) {
-						e.printStackTrace();
+						logger.error(CommonUtils.EXCEPTION,e);
 					}
 					ScoringRequest scoringRequest = new ScoringRequest();
 					scoringRequest.setApplicationId(applicationId);
@@ -5850,10 +5731,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 										auditComponent.updateAudit(AuditComponent.SCORING_DETAILS, applicationId,
 												userId, null, scoringDetails);
 									} catch (Exception e) {
-										logger.info(
-												"Exception in  ScoreParameterDetailsRequest in savePhese1DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",
+										logger.error("Exception in  ScoreParameterDetailsRequest in savePhese1DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",
 												applicationId, fpProductMappingId + " Mgs " + e.getMessage());
-										e.printStackTrace();
 										if (e.getMessage() != null && e.getMessage().contains("401")) {
 											auditComponent.updateAudit(AuditComponent.SCORING_DETAILS, applicationId,
 													userId,
@@ -5874,10 +5753,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 									}
 								}
 							} catch (IOException e) {
-								logger.info(
-										"Exception while getting Object from Map in savePhese1DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",
+								logger.error("Exception while getting Object from Map in savePhese1DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",
 										applicationId, fpProductMappingId + " Mgs " + e.getMessage());
-								e.printStackTrace();
 								auditComponent.updateAudit(AuditComponent.SCORING_DETAILS, applicationId, userId,
 										"Exception in  EligibilityDetailRequest in savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "
 												+ applicationId + " Mgs " + e.getMessage(),
@@ -5890,14 +5767,13 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 							// setTokenAsExpired(generateTokenRequest);
 						}
 					} catch (ScoringException e) {
-						logger.info(
+						logger.error(
 								"Exception while getting ScoringResponse from ScoringClient in savePhese1DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",
 								applicationId, fpProductMappingId + " Mgs " + e.getMessage());
 						auditComponent.updateAudit(AuditComponent.SCORING_DETAILS, applicationId, userId,
 								"Exception while getting ScoringResponse from ScoringClient in savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "
 										+ applicationId + " Mgs " + e.getMessage(),
 								false);
-						e.printStackTrace();
 //						setTokenAsExpired(generateTokenRequest);
 //						return false;
 					}
@@ -5933,8 +5809,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 								saveFinancialDetails);
 					}
 				} catch (Exception e) {
-					logger.error("Error while Saving Financial Details to BANK");
-					e.printStackTrace();
+					logger.error("Error while Saving Financial Details to BANK : ",e);
 					if (e.getMessage() != null && e.getMessage().contains("401")) {
 						auditComponent.updateAudit(AuditComponent.FINANCIAL, applicationId, userId,
 								"Unauthorized! in  Financial in savePhese1DataToSidbi() ==> for applicationId====>{} "
@@ -5984,7 +5859,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 								saveCmaDetails);
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
 					if (e.getMessage() != null && e.getMessage().contains("401")) {
 						auditComponent.updateAudit(AuditComponent.CMA_DETAIL, applicationId, userId,
 								"Unauthorized! in  Cma Detail in savePhese1DataToSidbi() ==> for applicationId====>{} "
@@ -6039,7 +5913,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 									saveLogicDetails);
 						}
 					} catch (Exception e) {
-						e.printStackTrace();
 						if (e.getMessage() != null && e.getMessage().contains("401")) {
 							auditComponent.updateAudit(AuditComponent.LOGIC, applicationId, userId,
 									"Unauthorized! in  LogicDetail in savePhese1DataToSidbi() ==> for applicationId====>{} "
@@ -6095,7 +5968,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 								saveCommercialDetails);
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
 					if (e.getMessage() != null && e.getMessage().contains("401")) {
 						auditComponent.updateAudit(AuditComponent.COMMERCIAL, applicationId, userId,
 								"Unauthorized! in  Commercial Detail in savePhese1DataToSidbi() ==> for applicationId====>{} "
@@ -6119,7 +5991,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			// Saving Logic Details Ends
 
 		} catch (Exception e) {
-			logger.info(
+			logger.error(
 					"Exception while Saving Requests  in savePhese1DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",
 					applicationId, fpProductMappingId + " Mgs " + e.getMessage());
 			auditComponent.updateAudit(AuditComponent.SCORING_DETAILS, applicationId, userId,
@@ -6159,7 +6031,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 							+ applicationId + " Mgs " + e.getMessage(),
 					false);
 			logger.info("Throw Exception While Saving Phase one For SIDBI");
-			e.printStackTrace();
 			setTokenAsExpired(generateTokenRequest, userOrganisationRequest.getCodeLanguage());
 			return false;
 		}
@@ -6186,10 +6057,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				return false;
 			}
 		} catch (Exception e) {
-			logger.error("Something goes wrong while setUrlAndTokenInSidbiClient in savePhese2DataToSidbi() ");
-			e.printStackTrace();
-			logger.error("Exception while getting token from SidbiIntegrationClient -------------- applicationId "
-					+ applicationId);
+			logger.error("Something goes wrong while setUrlAndTokenInSidbiClient in savePhese2DataToSidbi() ",e);
+			logger.error("Exception while getting token from SidbiIntegrationClient -------------- applicationId " + applicationId);
 			return false;
 		}
 
@@ -6251,10 +6120,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 						auditComponent.updateAudit(AuditComponent.DETAILED_INFO, applicationId,
 								applicationMaster.getUserId(), null, saveDetailsInfo);
 					} catch (Exception e) {
-						logger.info(
-								"Exception while Saving profileReqRes by sidbiIntegrationClient   in savePhese2DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",
+						logger.error("Exception while Saving profileReqRes by sidbiIntegrationClient   in savePhese2DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",
 								applicationId, fpProductMappingId + " Mgs " + e.getMessage());
-						e.printStackTrace();
 						if (e.getMessage() != null && e.getMessage().contains("401")) {
 							auditComponent.updateAudit(AuditComponent.DETAILED_INFO, applicationId, userId,
 									"Unauthorized! in  profileReqRes from SidbiIntegrationClient in savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "
@@ -6291,10 +6158,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 							null, saveDDRInfo);
 					logger.info("ddr saved==========>{}", saveDDRInfo);
 				} catch (Exception e) {
-					logger.info(
+					logger.error(
 							"Exception while Saving DDRFormDetailsRequest by sidbiIntegrationClient   in savePhese2DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",
 							applicationId, fpProductMappingId + " Mgs " + e.getMessage());
-					e.printStackTrace();
 					if (e.getMessage() != null && e.getMessage().contains("401")) {
 						auditComponent.updateAudit(AuditComponent.DDR_DETAILS, applicationId, userId,
 								"Unauthorized! in  DDRFormDetailsRequest from SidbiIntegrationClient in savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "
@@ -6373,10 +6239,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					auditComponent.updateAudit(AuditComponent.IRR_DETAILS, applicationId, applicationMaster.getUserId(),
 							null, saveIRRInfo);
 				} catch (Exception e) {
-					logger.info(
+					logger.error(
 							"Exception while Saving saveIRRInfo   by sidbiIntegrationClient   in savePhese2DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",
 							applicationId, fpProductMappingId + " Mgs " + e.getMessage());
-					e.printStackTrace();
 					if (e.getMessage() != null && e.getMessage().contains("401")) {
 						auditComponent.updateAudit(AuditComponent.IRR_DETAILS, applicationId, userId,
 								"Unauthorized! in  saveIRRInfo from SidbiIntegrationClient in savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "
@@ -6398,7 +6263,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			}
 			logger.info("End savePhese2DataToSidbi()==>");
 		} catch (Exception e) {
-			logger.info(
+			logger.error(
 					"Exception while Saving Requests by sidbiIntegrationClient   in savePhese2DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",
 					applicationId, fpProductMappingId + " Mgs " + e.getMessage());
 			auditComponent.updateAudit(AuditComponent.DETAILED_INFO, applicationId, userId,
@@ -6413,7 +6278,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					"Exception while Saving  IRR_DETAILS by sidbiIntegrationClient   in savePhese2DataToSidbi() ==> for ApplicationId  ====>{} "
 							+ applicationId + " Mgs " + e.getMessage(),
 					false);
-			e.printStackTrace();
 			setTokenAsExpired(generateTokenRequest, userOrganisationRequest.getCodeLanguage());
 		}
 		setTokenAsExpired(generateTokenRequest, userOrganisationRequest.getCodeLanguage());
@@ -6484,7 +6348,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				}
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		return commercialRequest;
 	}
@@ -6520,7 +6384,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		try {
 			response = matchEngineClient.displayMatchesOfCorporate(request);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		if (response == null || CommonUtils.isListNullOrEmpty(response.getMatchDisplayObjectList())) {
 			return null;
@@ -6656,8 +6520,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			target.setApplicationId(applicationId);
 			return target;
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		return null;
 	}
@@ -6792,8 +6655,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				return dataRequest;
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		return null;
 	}
@@ -6822,8 +6684,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				try {
 					cibilResponse = cibilClient.getDirectorDetails(cibilRequest);
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 				CreditReport creditReport = null;
 				if (cibilResponse != null && cibilResponse.getData() != null) {
@@ -6832,7 +6693,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 								(LinkedHashMap<String, Object>) cibilResponse.getData(), CreditReport.class);
 
 					} catch (Exception e) {
-						e.printStackTrace();
+						logger.error(CommonUtils.EXCEPTION,e);
 					}
 				}
 
@@ -6869,7 +6730,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 								.setCity(CommonDocumentUtils.getCity(source.getCityId().longValue(), oneFormClient));
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 				target.setAddress(addressRequest);
 				target.setPanNo(source.getPanNo());
@@ -6923,8 +6784,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 										.fromId(String.valueOf(creditReport.getEmploymentSegment().getAccountType()))
 										.getValue());
 							} catch (Exception e) {
-								logger.error("Error while Getting Account type==>");
-								e.printStackTrace();
+								logger.error("Error while Getting Account type==>",e);
 							}
 						}
 						String date = String.valueOf(creditReport.getEmploymentSegment().getDateReportedCertified());
@@ -6934,8 +6794,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 						try {
 							empInfoReq.setDateReported(dateFormat2.parse(dt + "-" + mon + "-" + year));
 						} catch (ParseException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
+							logger.error(CommonUtils.EXCEPTION,e);
 						}
 
 						if (!CommonUtils.isObjectNullOrEmpty(creditReport.getEmploymentSegment().getIncome())) {
@@ -6971,7 +6830,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 								try {
 									contInfoReq.setDateReported(dateFormat2.parse(dt + "-" + mon + "-" + year));
 								} catch (Exception e) {
-									// TODO: handle exception
+									logger.error(CommonUtils.EXCEPTION,e);
 								}
 							}
 							AddressRequest addReq = new AddressRequest();
@@ -7027,7 +6886,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 								try {
 									enqInfoRe.setDateOfEnquiry(dateFormat2.parse(dt + "-" + mon + "-" + year));
 								} catch (Exception e) {
-									// TODO: handle exception
+									logger.error(CommonUtils.EXCEPTION,e);
 								}
 							}
 							enqInfoRe.setApplicationId(applicationId);
@@ -7055,7 +6914,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 							try {
 								perInfo.setDob(dt + "-" + mon + "-" + year);
 							} catch (Exception e) {
-								// TODO: handle exception
+								logger.error(CommonUtils.EXCEPTION,e);
 							}
 						}
 
@@ -7203,7 +7062,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 							}
 						}
 					} catch (Exception e) {
-						e.printStackTrace();
+						logger.error(CommonUtils.EXCEPTION,e);
 					}
 				}
 				target.setApplicationId(applicationId);
@@ -7345,8 +7204,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				}
 
 			} catch (IOException e) {
-				logger.error("error while setting details from proposal details");
-				e.printStackTrace();
+				logger.error("error while setting details from proposal details : ",e);
 			}
 		}
 		if (!CommonUtils.isObjectNullOrEmpty(fpProductId)) {
@@ -7361,8 +7219,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 							(LinkedHashMap<String, Object>) userResponse.getData(), FundProviderDetailsRequest.class);
 					loanMasterRequest.setBankName(fundProviderDetailsRequest.getOrganizationName());
 				} catch (IOException e) {
-					logger.error("error while setting users details from proposal details");
-					e.printStackTrace();
+					logger.error("error while setting users details from proposal details : ",e);
 				}
 			}
 		}
@@ -7395,8 +7252,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			corporateProfileRequest.setContactNo(usersRequest.getMobile());
 			corporateProfileRequest.setEmail(usersRequest.getEmail());
 		} catch (Exception e) {
-			logger.info("Throw Exception While Get User Email and Mobile");
-			e.printStackTrace();
+			logger.error("Throw Exception While Get User Email and Mobile : ",e);
 		}
 
 		// setting Registered Address
@@ -7421,20 +7277,20 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			addressRequest.setCity(
 					CommonDocumentUtils.getCity(corporateApplicantDetail.getRegisteredCityId(), oneFormClient));
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		try {
 			addressRequest.setState(CommonDocumentUtils
 					.getState(corporateApplicantDetail.getRegisteredStateId().longValue(), oneFormClient));
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 
 		try {
 			addressRequest.setCountry(CommonDocumentUtils
 					.getCountry(corporateApplicantDetail.getRegisteredCountryId().longValue(), oneFormClient));
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		corporateProfileRequest.setRegisteredAddress(addressRequest);
 
@@ -7465,14 +7321,14 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				administrativeRequest.setCity(
 						CommonDocumentUtils.getCity(corporateApplicantDetail.getAdministrativeCityId(), oneFormClient));
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		try {
 			if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getAdministrativeStateId()))
 				administrativeRequest.setState(CommonDocumentUtils
 						.getState(corporateApplicantDetail.getAdministrativeStateId().longValue(), oneFormClient));
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 
 		try {
@@ -7480,7 +7336,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				administrativeRequest.setCountry(CommonDocumentUtils
 						.getCountry(corporateApplicantDetail.getAdministrativeCountryId().longValue(), oneFormClient));
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		corporateProfileRequest.setAdministrativeAddress(administrativeRequest);
 		if (corporateApplicantDetail.getKeyVericalFunding() != null) {
@@ -7531,7 +7387,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				map.put("fpUserId", productMaster.getUserId());
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 
 		return map;
@@ -7643,7 +7499,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			Calendar cal = Calendar.getInstance();
 			Integer yearInt = cal.get(Calendar.YEAR);
 			String year = String.valueOf(yearInt - 1);
-			System.out.println("YEAR ::::::::::::::::::::++++++++++++++>>>> " + year);
+			logger.info("YEAR ::::::::::::::::::::++++++++++++++>>>> " + year);
 			List<Object[]> asset = assetsDetailsRepository.getCMADetail(applicationId, "Audited");
 			logger.info("==================================>15");
 			if (!CommonUtils.isObjectListNull(asset)) {
@@ -7672,11 +7528,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					response.setCostOfMachinery(primaryCorporateDetail.getProposedCost());
 				}
 			} catch (Exception e) {
-				// TODO: handle exception
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 			return response;
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 			throw e;
 		}
 	}
@@ -7701,8 +7557,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					proposalresp = MultipleJSONObjectHelper.getObjectFromMap((Map<String, Object>) response.getData(),
 							Map.class);
 				} catch (IOException e) {
-					logger.info("could not extract data");
-					e.printStackTrace();
+					logger.error("could not extract data : ",e);
 				}
 
 				if (!CommonUtils.isObjectNullOrEmpty(proposalresp)) {
@@ -7742,8 +7597,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				logger.info("Proposal Response is null or empty !!");
 			}
 		} catch (Exception e) {
-			logger.info("Throw Exception WHile Get Proposal Detaisl By APplicationId");
-			e.printStackTrace();
+			logger.error("Throw Exception WHile Get Proposal Detaisl By APplicationId : ",e);
 		}
 		return null;
 	}
@@ -7753,8 +7607,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		try {
 			return userClient.getByOrgId(organizationId);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		return null;
 	}
@@ -7827,7 +7680,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 						}
 					} catch (Exception e) {
-						e.printStackTrace();
+						logger.error(CommonUtils.EXCEPTION,e);
 					}
 				}
 
@@ -7848,7 +7701,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 						}
 					} catch (Exception e) {
-						e.printStackTrace();
+						logger.error(CommonUtils.EXCEPTION,e);
 					}
 				}
 
@@ -7869,7 +7722,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 						}
 					} catch (Exception e) {
-						e.printStackTrace();
+						logger.error(CommonUtils.EXCEPTION,e);
 					}
 				}
 
@@ -7968,7 +7821,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 							}
 						} catch (Exception e) {
-							e.printStackTrace();
+							logger.error(CommonUtils.EXCEPTION,e);
 						}
 					}
 
@@ -7989,7 +7842,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 							}
 						} catch (Exception e) {
-							e.printStackTrace();
+							logger.error(CommonUtils.EXCEPTION,e);
 						}
 					}
 
@@ -8010,7 +7863,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 							}
 						} catch (Exception e) {
-							e.printStackTrace();
+							logger.error(CommonUtils.EXCEPTION,e);
 						}
 					}
 
@@ -8040,7 +7893,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			logger.info("End getDataForHunter with Application ID : " + applicationId);
 			return response;
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 			throw e;
 		}
 	}
@@ -8124,7 +7977,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 							}
 						} catch (Exception e) {
-							e.printStackTrace();
+							logger.error(CommonUtils.EXCEPTION,e);
 						}
 					}
 
@@ -8145,7 +7998,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 							}
 						} catch (Exception e) {
-							e.printStackTrace();
+							logger.error(CommonUtils.EXCEPTION,e);
 						}
 					}
 
@@ -8166,7 +8019,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 							}
 						} catch (Exception e) {
-							e.printStackTrace();
+							logger.error(CommonUtils.EXCEPTION,e);
 						}
 					}
 
@@ -8209,7 +8062,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			logger.info("End getDataForHunter with Application ID : " + applicationId);
 			return response;
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 			throw e;
 		}
 	}
@@ -8258,7 +8111,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					+ " ProductMapping Id :" + disbursementRequest.getProductMappingId());
 			return sanctioningDetailResponse;
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 			throw e;
 		}
 	}
@@ -8521,7 +8374,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			}
 			return true;
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 			return false;
 		}
 	}
@@ -8557,7 +8410,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			}
 			return true;
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 			return false;
 		}
 	}
@@ -8591,7 +8444,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			}
 			return true;
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 			return false;
 		}
 	}
@@ -8646,7 +8499,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			}
 			return true;
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 			return false;
 		}
 	}
@@ -8676,7 +8529,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			}
 			return true;
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 			return false;
 		}
 	}
@@ -8823,7 +8676,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			}
 			return true;
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 			return false;
 		}
 	}
@@ -8849,7 +8702,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			}
 			return true;
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 			return false;
 		}
 	}
@@ -8882,9 +8735,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			sidbiIntegrationClient.setTokenAsExpired(generateTokenRequest, generateTokenRequest.getBankToken(),
 					codeLanguage);
 		} catch (Exception e) {
-			logger.info("Exception while set token as  expiring Token ------------- Msg " + e.getMessage());
-			e.printStackTrace();
-
+			logger.error("Exception while set token as  expiring Token ------------- Msg " + e.getMessage());
 		}
 		logger.info("End expiring Token setTokenAsExpired(){} -------------");
 
@@ -9042,7 +8893,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			scoringModelReqRes.setScoringModelIdList(scoringLongList);
 			return scoringClient.getMinMaxMargin(scoringModelReqRes);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 			return null;
 		}
 	}
@@ -9419,11 +9270,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				clientLogicCalculationRequest
 						.setQualityOfFinishedGood((assetsDetailsRequest.getFinishedGoods() / totalCostSales) * 12);
 			}
-			System.out.println("appppppppppppId =----------------------------------->" + applicationId);
+			logger.info("appppppppppppId =----------------------------------->" + applicationId);
 			/* } */
 
 		} catch (Exception e) {
-
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		return clientLogicCalculationRequest;
 	}
@@ -9444,7 +9295,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 							.map(act -> act).collect(Collectors.joining(","));
 					borrowersDetailsRequest.setClassOfActivity(classOfActivity);
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 				borrowersDetailsRequest.setBusinessCategory(borrwerDetails.getBusinessCategory());
 				borrowersDetailsRequest.setInsdustryType(borrwerDetails.getBusinessIndustryType());
@@ -11221,7 +11072,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 						 */
 						enquiryInfoRequest.setEnquiryPurpose(last24MonthEnq.getEnquiryPurpose());
 					} catch (Exception e) {
-						e.printStackTrace();
+						logger.error(CommonUtils.EXCEPTION,e);
 					}
 				}
 				enquiryInfoRequestsList.add(enquiryInfoRequest);
@@ -11257,12 +11108,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				try {
 					return dateFormat.parse(data);
 				} catch (ParseException e) {
-
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 			}
 		} catch (Exception e) {
-			logger.info("----- Error Msg " + e.getMessage());
+			logger.error("----- Error Msg " + e.getMessage());
 		}
 		return null;
 	}

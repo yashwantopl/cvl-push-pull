@@ -195,21 +195,20 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			/*try {
 				asyncComponent.saveOneformMapping(fundSeekerInputRequest.getApplicationId());
 			} catch (Exception e) {
-				e.printStackTrace();
+                logger.error(CommonUtils.EXCEPTION,e);
 			}
 
 			//SAVE MATCHE JSON 
 			/*try {
 				asyncComponent.saveOneformMapping(fundSeekerInputRequest.getApplicationId());
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}*/
 			
 			return true;
 
 		} catch (Exception e) {
-			logger.info("Throw Exception while save and update Fundseeker input request !!");
-			e.printStackTrace();
+			logger.error("Throw Exception while save and update Fundseeker input request !!",e);
 			throw new Exception();
 		}
 	}
@@ -328,9 +327,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 					directorBackgroundDetailsRepository.save(saveDirObj);
 				}
 			} catch (Exception e) {
-				logger.info(
-						"Directors ===============> Throw Exception While Save Director Background Details -------->");
-				e.printStackTrace();
+				logger.error("Directors ===============> Throw Exception While Save Director Background Details -------->",e);
 			}
 
 			LoansResponse res = new LoansResponse("director detail successfully saved", HttpStatus.OK.value());
@@ -343,15 +340,14 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			LoansResponse res = new LoansResponse("error while saving director detail",
 					HttpStatus.INTERNAL_SERVER_ERROR.value());
 			msg="";
-			logger.error("error while saving director detail");
-			e.printStackTrace();
+			logger.error("error while saving director detail",e);
 
 			return new ResponseEntity<LoansResponse>(res, HttpStatus.OK);
 		}finally {
 			try {
 				connectClient.saveAuditLog(new ConnectLogAuditRequest(fundSeekerInputRequest.getApplicationId(), ConnectStage.DIRECTOR_BACKGROUND.getId(),fundSeekerInputRequest.getUserId(),msg, ConnectAuditErrorCode.DIRECTOR_SUBMIT.toString(),CommonUtils.BusinessType.EXISTING_BUSINESS.getId()));
 			} catch (Exception e){
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 		}
 	}
@@ -430,8 +426,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 					new LoansResponse("One form data successfully fetched", HttpStatus.OK.value(), fsInputRes),
 					HttpStatus.OK);
 		} catch (Exception e) {
-			logger.error("Error while fetching one form data");
-			e.printStackTrace();
+			logger.error("Error while fetching one form data : ",e);
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Error while fetching one form input data",
 					HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
 		}
@@ -463,8 +458,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 					fundSeekerInputResponse.setOrganisationName(orgName);
 					logger.info("Fetched Organisation Name from Bank Statement ==>"+orgName);
 				} catch (Exception e) {
-					e.printStackTrace();
-					logger.info("Error while getting perfios data");
+					logger.error("Error while getting perfios data : ",e);
 				}
 			}
 			// === Director
@@ -493,8 +487,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 					HttpStatus.OK.value(), fundSeekerInputResponse), HttpStatus.OK);
 
 		} catch (Exception e) {
-			logger.error("error while fetching director detail");
-			e.printStackTrace();
+			logger.error("error while fetching director detail : ",e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse("Error while fetching director detail", HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -520,9 +513,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 				}
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			logger.info("Error while Calling Matchengine after Oneform Submit=============");
+			logger.error("Error while Calling Matchengine after Oneform Submit=============",e);
 		}
 		return new LoansResponse("Something went wrong while Checking your Eligibility",
 				HttpStatus.INTERNAL_SERVER_ERROR.value());
@@ -634,8 +625,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 					AnalyticsResponse response = fraudAnalyticsClient.callHunterIIAPI(request);
 				}
 				catch (Exception e) {
-					logger.info("End invokeFraudAnalytics() with Error : "+e.getMessage());
-					e.printStackTrace();
+					logger.error("End invokeFraudAnalytics() with Error : "+e.getMessage());
 					return new LoansResponse("Oneform Saved Successfully", HttpStatus.OK.value());
 				}
 			/*	if (response != null && response.getData() != null) {
@@ -656,8 +646,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 
 			}
 		} catch (Exception e) {
-			logger.info("End invokeFraudAnalytics() Error in Fraud Analytics call");
-			e.printStackTrace();
+			logger.error("End invokeFraudAnalytics() Error in Fraud Analytics call",e);
 			return new LoansResponse("Oneform Saved Successfully", HttpStatus.OK.value());
 		}
 	}
@@ -680,8 +669,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 				return new LoansResponse("Success", HttpStatus.OK.value());
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 			return null;
 		}
 	}
