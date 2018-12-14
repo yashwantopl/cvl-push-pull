@@ -49,6 +49,7 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySec
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FundSeekerInputRequestService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -68,6 +69,9 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 
 	@Autowired
 	private FinancialArrangementDetailsRepository financialArrangementDetailsRepository;
+	
+	@Autowired
+	private FinancialArrangementDetailsService financialArrangementDetailsService;
 
 	@Autowired
 	private DirectorBackgroundDetailsRepository directorBackgroundDetailsRepository;
@@ -166,29 +170,31 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestsList = fundSeekerInputRequest
 					.getFinancialArrangementsDetailRequestsList();
 			if(!CommonUtils.isListNullOrEmpty(financialArrangementsDetailRequestsList)) {
-				logger.info("Financial Arrangements Detail List Null Or Empty ------------->");
-				for (FinancialArrangementsDetailRequest reqObj : financialArrangementsDetailRequestsList) {
-					FinancialArrangementsDetail saveFinObj = null;
-					if (!CommonUtils.isObjectNullOrEmpty(reqObj.getId())) {
-						saveFinObj = financialArrangementDetailsRepository.findByIdAndIsActive(reqObj.getId(), true);
-					}
-					if (CommonUtils.isObjectNullOrEmpty(saveFinObj)) {
-						saveFinObj = new FinancialArrangementsDetail();
-						BeanUtils.copyProperties(reqObj, saveFinObj, "id", "createdBy", "createdDate", "modifiedBy",
-								"modifiedDate", "isActive");
-
-						saveFinObj.setApplicationId(new LoanApplicationMaster(fundSeekerInputRequest.getApplicationId()));
-						saveFinObj.setCreatedBy(fundSeekerInputRequest.getUserId());
-						saveFinObj.setCreatedDate(new Date());
-						saveFinObj.setIsActive(true);
-					} else {
-						BeanUtils.copyProperties(reqObj, saveFinObj, "id", "createdBy", "createdDate", "modifiedBy",
-								"modifiedDate");
-						saveFinObj.setModifiedBy(fundSeekerInputRequest.getUserId());
-						saveFinObj.setModifiedDate(new Date());
-					}
-					financialArrangementDetailsRepository.save(saveFinObj);
-				}
+				Boolean saveOrUpdate = financialArrangementDetailsService.saveOrUpdate(financialArrangementsDetailRequestsList, fundSeekerInputRequest.getApplicationId(), fundSeekerInputRequest.getUserId());
+				logger.info("Update Result in Loans Details==>{}",saveOrUpdate);
+//				for (FinancialArrangementsDetailRequest reqObj : financialArrangementsDetailRequestsList) {
+//					FinancialArrangementsDetail saveFinObj = null;
+//					if (!CommonUtils.isObjectNullOrEmpty(reqObj.getId())) {
+//						saveFinObj = financialArrangementDetailsRepository.findByIdAndIsActive(reqObj.getId(), true);
+//					}
+//					if (CommonUtils.isObjectNullOrEmpty(saveFinObj)) {
+//						saveFinObj = new FinancialArrangementsDetail();
+//						BeanUtils.copyProperties(reqObj, saveFinObj, "id", "createdBy", "createdDate", "modifiedBy",
+//								"modifiedDate", "isActive");
+//
+//						saveFinObj.setApplicationId(new LoanApplicationMaster(fundSeekerInputRequest.getApplicationId()));
+//						saveFinObj.setCreatedBy(fundSeekerInputRequest.getUserId());
+//						saveFinObj.setCreatedDate(new Date());
+//						saveFinObj.setIsActive(true);
+//					} else {
+//						BeanUtils.copyProperties(reqObj, saveFinObj, "id", "createdBy", "createdDate", "modifiedBy",
+//								"modifiedDate");
+//						saveFinObj.setModifiedBy(fundSeekerInputRequest.getUserId());
+//						saveFinObj.setModifiedDate(new Date());
+//					}
+//					financialArrangementDetailsRepository.save(saveFinObj);
+//				}
+				
 			}
 			
 			//SAVE MATCHE JSON 

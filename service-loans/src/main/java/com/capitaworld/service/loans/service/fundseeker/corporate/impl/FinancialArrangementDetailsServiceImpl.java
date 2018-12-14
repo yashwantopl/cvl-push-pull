@@ -97,9 +97,10 @@ public class FinancialArrangementDetailsServiceImpl implements FinancialArrangem
 		financialArrangementDetailsRepository.inActive(userId, applicationId);
 		for (FinancialArrangementsDetailRequest req : finArrDetailRequest) {
 			FinancialArrangementsDetail arrangementsDetail = new FinancialArrangementsDetail();
-			BeanUtils.copyProperties(req, arrangementsDetail);
+			BeanUtils.copyProperties(req, arrangementsDetail,"id");
 			arrangementsDetail.setApplicationId(new LoanApplicationMaster(applicationId));
 			arrangementsDetail.setCreatedBy(userId);
+			arrangementsDetail.setCreatedDate(new Date());
 			arrangementsDetail.setIsActive(true);
 			financialArrangementDetailsRepository.save(arrangementsDetail);
 		}
@@ -116,6 +117,7 @@ public class FinancialArrangementDetailsServiceImpl implements FinancialArrangem
 			BeanUtils.copyProperties(req, arrangementsDetail);
 			arrangementsDetail.setApplicationId(new LoanApplicationMaster(applicationId));
 			arrangementsDetail.setCreatedBy(userId);
+			arrangementsDetail.setCreatedDate(new Date());
 			arrangementsDetail.setIsActive(true);
 			arrangementsDetail.setDirectorBackgroundDetail(new DirectorBackgroundDetail(directorId));
 			financialArrangementDetailsRepository.save(arrangementsDetail);
