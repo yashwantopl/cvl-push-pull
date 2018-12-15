@@ -298,7 +298,7 @@ public class LiabilitiesDetails implements Serializable{
 	private LoanApplicationMaster fsLoanApplicationMaster;
 
 	@ManyToOne
-	@JoinColumn(name="proposal_id")
+	@JoinColumn(name="proposal_mapping_id")
 	private ApplicationProposalMapping applicationProposalMapping;
 	
 	

@@ -252,7 +252,7 @@ public class AssetsDetails implements Serializable {
 	private LoanApplicationMaster loanApplicationMaster;
 
 	@ManyToOne
-	@JoinColumn(name="proposal_id")
+	@JoinColumn(name="proposal_mapping_id")
 	private ApplicationProposalMapping applicationProposalMapping;
 	
 	

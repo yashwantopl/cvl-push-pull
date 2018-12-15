@@ -59,7 +59,7 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 	@Autowired
 	private ApplicationProposalMappingRepository applicationProposalMappingRepository;
 
-	
+
 	private FormulaEvaluator evaluator;
 
 	private static final Logger logger = LoggerFactory.getLogger(DownloadCMAFileServiceImpl.class);
@@ -117,7 +117,7 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 			evaluator = wb.getCreationHelper().createFormulaEvaluator();
 
 			List<OperatingStatementDetails> operatingStatementDetailsList = operatingStatementDetailsRepository
-					.getByProposalId(proposalId);
+					.getByApplicationIdAndProposalIdNULL(applicationId);
 			int j = 1;
 			Double temp=0.0;
 
@@ -249,7 +249,7 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 
 			// Liabilities Starts
 			List<LiabilitiesDetails> liabilitiesDetailsList = liabilitiesDetailsRepository
-					.getByProposalId(proposalId);
+					.getByApplicationIdAndProposalIdNULL(applicationId);
 			j = 1;
 			for (LiabilitiesDetails liabilitiesDetails : liabilitiesDetailsList) {
 				// save in db
@@ -345,7 +345,7 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 
 			// Asset Starts
 
-			List<AssetsDetails> assetsDetailsList = assetsDetailsRepository.getByProposalId(proposalId);
+			List<AssetsDetails> assetsDetailsList = assetsDetailsRepository.getByApplicationIdAndProposalIdNULL(applicationId);
 			j = 1;
 			for (AssetsDetails assetsDetails : assetsDetailsList) {
 				temp=Double.parseDouble(assetsDetails.getYear());
