@@ -41,8 +41,8 @@ public class CorporateMcqController {
                 return new ResponseEntity<LoansResponse>(new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
             }
 
-            if (corporateMcqRequest.getProposalId() == null) {
-                logger.warn("Proposal ID can not be empty ==>" + corporateMcqRequest.getProposalId());
+            if (corporateMcqRequest.getProposalMappingId() == null) {
+                logger.warn("Proposal ID can not be empty ==>" + corporateMcqRequest.getProposalMappingId());
                 return new ResponseEntity<LoansResponse>(new LoansResponse("Proposal ID can not be empty.", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
             }
             if (CommonDocumentUtils.isThisClientApplication(request)) {

@@ -13,7 +13,7 @@ public class CorporateMcqRequest implements Serializable {
     private Long id;
     private Long clientId;
     private Long applicationId;
-    private Long proposalId;
+    private Long proposalMappingId;
  //   private Integer accountingSystemsId;
 //    private Integer brandAmbassadorId;
 //   private Integer competenceId;
@@ -603,11 +603,11 @@ public class CorporateMcqRequest implements Serializable {
         this.userId = userId;
     }
 
-    public Long getProposalId() {
-        return proposalId;
+    public Long getProposalMappingId() {
+        return proposalMappingId;
     }
 
-    public void setProposalId(Long proposalId) {
-        this.proposalId = proposalId;
+    public void setProposalMappingId(Long proposalId) {
+        this.proposalMappingId = proposalId;
     }
 }
