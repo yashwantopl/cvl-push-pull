@@ -285,7 +285,7 @@ public class OperatingStatementDetails implements Serializable {
 	private LoanApplicationMaster loanApplicationMaster;
 
 	@ManyToOne
-	@JoinColumn(name="proposal_id")
+	@JoinColumn(name="proposal_mapping_id")
 	private ApplicationProposalMapping applicationProposalMapping;
 	
 	
