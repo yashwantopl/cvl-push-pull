@@ -1301,7 +1301,7 @@ public enum APIFlags {
 				setEntry.setValue(printFields(setEntry.getValue(),data));
 			}
 		}else if(obj instanceof String) {
-			obj = StringEscapeUtils.escapeXml((String)obj);
+			obj = StringEscapeUtils.escapeXml(((String)obj).replaceAll("--", ""));
 			return obj;
 		}else if(obj instanceof Double) {
 			if(!Double.isNaN((Double)obj)) {
