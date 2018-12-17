@@ -67,7 +67,7 @@ public class CommonUtils {
 
 	public static final String CLIENT_ID_IS_NOT_VALID = "Client Id is not valid";
 	public static final String INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND = "Invalid data or Requested data not found.";
-	public static final String EXCEPTION = "EXCEPTION :: ";
+	public static final String EXCEPTION = " EXCEPTION :: ";
 
 	public static final String PARAMETERS_FP_NAME = "fp_name";
 	public static final String PARAMETERS_FS_NAME = "fs_name";

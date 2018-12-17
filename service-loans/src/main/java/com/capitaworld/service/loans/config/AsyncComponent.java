@@ -538,14 +538,13 @@ public class AsyncComponent {
 							try {
 								// SMS
 								UsersRequest resp = getEmailMobile(userId);
-								if (resp.getMobile() != null) {
+								if (resp != null && resp.getMobile() != null) {
 									sendSMSNotification(String.valueOf(userId), parameters,
 											NotificationAlias.SMS_VIEW_MORE_DETAILS, resp.getMobile());
 									logger.info("Sms Sent for fp view more details request:" + resp.getMobile());
 								}
 							} catch (Exception e) {
-								// TODO: handle exception
-								logger.info("mobile number is null when sending sms from AsynchComponent.:" + e);
+								logger.error("mobile number is null when sending sms from AsynchComponent.:" + e);
 							}
 						}
 					}

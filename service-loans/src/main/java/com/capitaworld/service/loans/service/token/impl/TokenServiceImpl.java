@@ -58,7 +58,7 @@ public class TokenServiceImpl implements TokenService{
 	@Override
 	public String checkTokenExpiration(String tokenString) {
 		logger.info("=================Enter in checkTokenExpiration() {} ====================== ");
-		System.out.println(tokenExpireTime);
+		logger.info(""+tokenExpireTime);
 		TokenDetail tokenDetail = tokenRepository.getTokenByApplicationId(tokenString);
 		if (tokenDetail == null) {
 			logger.info("No Token Details FOund FOr token=====>{}",tokenString);
