@@ -50,6 +50,14 @@ public class OfflineProcessAppRepositoryImpl implements OfflineProcessedAppRepos
 		return (List<Object[]>) storedProcedureQuery.getResultList();
 	}
 	
+	@Override
+	public List<Object[]> getRejectProposalsList(Long orgId) {
+		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spFetchRejectProposalsForOffline");
+		storedProcedureQuery.registerStoredProcedureParameter("orgId",Long.class, ParameterMode.IN);
+		storedProcedureQuery.setParameter("orgId",orgId);
+		return (List<Object[]>) storedProcedureQuery.getResultList();
+	}
+	
 
 	@SuppressWarnings("unchecked")
 	@Override 
