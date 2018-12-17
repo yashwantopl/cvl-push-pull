@@ -809,7 +809,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 			FinancialInputRequest financialInputRequest = irrService.cmaIrrMappingService(userId, toApplicationId, null,
 					denomination);
 
-			System.out.println("financialInputRequest.getYear()===>>>" + financialInputRequest.getYear());
+			logger.info("financialInputRequest.getYear()===>>>" + financialInputRequest.getYear());
 			// Profit & Loss Statement
 			financialInputRequest.setNetSaleFy(CommonUtils.substractNumbers(financialInputRequest.getGrossSalesFy(),
 					financialInputRequest.getLessExciseDuityFy()));
@@ -1117,13 +1117,12 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 			if (itrConnectionResponse != null) {
 				corporateFinalViewResponse.setItrXmlIsUploaded(itrConnectionResponse.getData());
 			} else {
-				System.out.println("itr Response is null");
+				logger.info("itr Response is null");
 
 			}
 
 		} catch (Exception e) {
-			System.out.println("error while itr xml is uploaded or not check.");
-			e.printStackTrace();
+			logger.error("error while itr xml is uploaded or not check : ",e);
 		}
 
 		// EXISTING PRODUCT DETAILS
@@ -1450,10 +1449,9 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 			UserResponse userResponse = usersClient.getLastAccessApplicant(usersRequest);
 			fpProductMappingId = userResponse.getId();
 
-			System.out.println("fp product id=========================>>>>>" + fpProductMappingId);
+			logger.info("fp product id=========================>>>>>" + fpProductMappingId);
 		} catch (Exception e) {
-			e.printStackTrace();
-			logger.info("Error while getting fpMappingId For Scoring");
+			logger.error("Error while getting fpMappingId For Scoring : ",e);
 		}
 		ScoringRequest scoringRequest = new ScoringRequest();
 		scoringRequest.setApplicationId(toApplicationId);
@@ -1545,7 +1543,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 				Long assessmentId = workingCapitalPara.getAssessmentMethodId().longValue();
 				corporateFinalViewResponse.setAssesmentId(assessmentId);
 			} else {
-				System.out.println("assesment id is null in wc");
+				logger.info("assesment id is null in wc");
 			}
 			break;
 
@@ -1556,7 +1554,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 				Long assessmentId = termLoanParameter.getAssessmentMethodId().longValue();
 				corporateFinalViewResponse.setAssesmentId(assessmentId);
 			} else {
-				System.out.println("assesment id is null tl");
+				logger.info("assesment id is null tl");
 			}
 			break;
 
@@ -1567,12 +1565,12 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 				Long assessmentId = wctlPara.getAssessmentMethodId().longValue();
 				corporateFinalViewResponse.setAssesmentId(assessmentId);
 			} else {
-				System.out.println("assesment id is null in wctl");
+				logger.info("assesment id is null in wctl");
 			}
 			break;
 
 		default:
-			System.out.println("invalid loan id");
+			logger.info("invalid loan id");
 			break;
 		}
 
@@ -1580,7 +1578,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 		eligibilityReq.setApplicationId(toApplicationId);
 		// eligibilityReq.set
 		eligibilityReq.setFpProductMappingId(fpProductMappingId);
-		System.out.println(" for eligibility appid============>>" + toApplicationId);
+		logger.info(" for eligibility appid============>>" + toApplicationId);
 
 		try {
 
@@ -1588,8 +1586,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 			corporateFinalViewResponse.setEligibilityDataObject(eligibilityResp.getData());
 
 		} catch (Exception e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e1);
 		}
 
 		// CGTMSE
@@ -1597,16 +1594,13 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 			CGTMSEDataResponse cgtmseDataResp = thirdPartyClient.getCalulation(toApplicationId,fpProductMappingId);
 			corporateFinalViewResponse.setCgtmseData(cgtmseDataResp);
 		} catch (Exception e) {
-			
-			logger.error("Error while calling CGTMSE data");
-			e.printStackTrace();
-			
+			logger.error("Error while calling CGTMSE data : ",e);
 		}
 
 		// MCA DATA
 		try {
 			String companyId = loanApplicationMaster.getMcaCompanyId();
-			System.out.println("mca comp id==>>" + companyId);
+			logger.info("mca comp id==>>" + companyId);
 
 			if (companyId != null) {
 
@@ -1632,7 +1626,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 
 		// Name As Per
@@ -1649,8 +1643,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 			}
 
 		} catch (Exception e) {
-			logger.warn(":::::::::::---------Error while fetching name as per itr----------:::::::::::");
-			e.printStackTrace();
+			logger.error(":::::::::::---------Error while fetching name as per itr----------:::::::::::",e);
 		}
 
 		// Name as per Gst
@@ -1666,8 +1659,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 			}
 
 		} catch (Exception e) {
-			logger.warn(":::::::------Error while calling gstData---:::::::");
-			e.printStackTrace();
+			logger.error(":::::::------Error while calling gstData---:::::::",e);
 		}
 
 		// Fraud Detection Data
@@ -1681,10 +1673,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 
 			}
 		} catch (Exception e1) {
-
-			logger.warn("------:::::...Error while fetching Fraud Detection Details...For..::::::-----",
-					toApplicationId);
-			e1.printStackTrace();
+			logger.error("------:::::...Error while fetching Fraud Detection Details...For..::::::-----", toApplicationId + CommonUtils.EXCEPTION + e1);
 		}
 		
 		
