@@ -43,8 +43,7 @@ public class TokenServiceImpl implements TokenService{
 	public void saveToken(GenerateTokenRequest generateTokenRequest ) {
 		logger.info("=================Enter in saveToken() {} ======================");
 		tokenRepository.inActive(generateTokenRequest.getApplicationId());
-		TokenDetail tokenDetail =new TokenDetail();
-		tokenDetail = new  TokenDetail();
+		TokenDetail tokenDetail = new TokenDetail();
 		tokenDetail.setApplicationId(generateTokenRequest.getApplicationId() );
 		tokenDetail.setCreatedDate(new Date());
 		tokenDetail.setIsExpired(false); 
