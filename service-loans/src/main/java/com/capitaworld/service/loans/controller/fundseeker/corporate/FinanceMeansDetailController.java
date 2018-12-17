@@ -93,7 +93,7 @@ public class FinanceMeansDetailController {
 
 	}
 
-	@RequestMapping(value = "/getList/{applicationId}/{proposalId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/getListByApplicationIdAndProposalId/{applicationId}/{proposalId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getList(@PathVariable("applicationId") Long applicationId,
 												@PathVariable("proposalId") Long proposalId,
 												 HttpServletRequest request,@RequestParam(value = "clientId", required = false) Long clientId) {
