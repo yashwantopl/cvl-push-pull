@@ -247,11 +247,12 @@ public class LoansClient {
 	
 	private String loansBaseUrl;
 	
-	@Autowired
-	private RestTemplate restTemplate;
+	
+	private RestTemplate restTemplate = null;
 
 	public LoansClient(String loansBaseUrl) {
 		this.loansBaseUrl = loansBaseUrl;
+		restTemplate = new RestTemplate();
 	}
 
 	public ExcelResponse readCMA(ExcelRequest request) throws ExcelException {
