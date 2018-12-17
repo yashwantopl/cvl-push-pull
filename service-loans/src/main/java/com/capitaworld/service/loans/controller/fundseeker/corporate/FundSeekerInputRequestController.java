@@ -68,17 +68,10 @@ public class FundSeekerInputRequestController {
         		//harshit's client
                 connectClient.saveAuditLog(new ConnectLogAuditRequest(fundSeekerInputRequestResponse.getApplicationId(),
                         ConnectStage.ONE_FORM.getId(),fundSeekerInputRequestResponse.getUserId(),response.getMessage(), ConnectAuditErrorCode.ONFORM_SUBMIT.toString(),CommonUtils.BusinessType.EXISTING_BUSINESS.getId()));
-
-
-        		// initiate fraudanalytics service to invoke hunter api
-        			return new ResponseEntity<LoansResponse>(
-                            response,
-                            HttpStatus.OK);
+        			return new ResponseEntity<LoansResponse>(response,HttpStatus.OK);
             } else {
                 logger.info("FUNDSEEKER INPUT NOT SAVED");
-                return new ResponseEntity<LoansResponse>(
-                        new LoansResponse("Oneform Not Saved", HttpStatus.BAD_REQUEST.value()),
-                        HttpStatus.OK);
+                return new ResponseEntity<LoansResponse>(new LoansResponse("Oneform Not Saved", HttpStatus.BAD_REQUEST.value()),HttpStatus.OK);
             }
 
         } catch (Exception e) {

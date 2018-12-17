@@ -156,9 +156,8 @@ public class FinancialArrangementDetailsServiceImpl implements FinancialArrangem
 	public List<FinancialArrangementsDetailRequest> getFinancialArrangementDetailsListDirId(Long dirId, Long id)
 			throws Exception {
 		try {
-			List<FinancialArrangementsDetail> financialArrangementDetails = financialArrangementDetailsRepository
-					.findByDirectorBackgroundDetailIdAndApplicationIdIdAndIsActive(dirId,id,true);
-			List<FinancialArrangementsDetailRequest> financialArrangementDetailRequests = new ArrayList<FinancialArrangementsDetailRequest>();
+			List<FinancialArrangementsDetail> financialArrangementDetails = financialArrangementDetailsRepository.findByDirectorBackgroundDetailIdAndApplicationIdIdAndIsActive(dirId,id,true);
+			List<FinancialArrangementsDetailRequest> financialArrangementDetailRequests = new ArrayList<FinancialArrangementsDetailRequest>(financialArrangementDetails.size());
 
 			for (FinancialArrangementsDetail detail : financialArrangementDetails) {
 				FinancialArrangementsDetailRequest financialArrangementDetailsRequest = new FinancialArrangementsDetailRequest();

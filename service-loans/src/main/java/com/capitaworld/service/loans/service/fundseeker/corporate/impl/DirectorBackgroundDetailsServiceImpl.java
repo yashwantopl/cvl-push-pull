@@ -63,20 +63,7 @@ public class DirectorBackgroundDetailsServiceImpl implements DirectorBackgroundD
 			for (Map<String, Object> obj : frameRequest.getDataList()) {
 				DirectorBackgroundDetailRequest directorBackgroundDetailRequest= (DirectorBackgroundDetailRequest) MultipleJSONObjectHelper
 						.getObjectFromMap(obj, DirectorBackgroundDetailRequest.class);
-				DirectorBackgroundDetail  directorBackgroundDetail= null;
-				if (directorBackgroundDetailRequest.getId() != null) {
-					directorBackgroundDetail = directorBackgroundDetailsRepository
-							.findOne(directorBackgroundDetailRequest.getId());
-				} else {
-					directorBackgroundDetail = new DirectorBackgroundDetail();
-					directorBackgroundDetail.setCreatedBy(frameRequest.getUserId());
-					directorBackgroundDetail.setCreatedDate(new Date());
-				}
-				BeanUtils.copyProperties(directorBackgroundDetailRequest, directorBackgroundDetail, "applicationId");
-				directorBackgroundDetail.setApplicationId(new LoanApplicationMaster(frameRequest.getApplicationId()));
-				directorBackgroundDetail.setModifiedBy(frameRequest.getUserId());
-				directorBackgroundDetail.setModifiedDate(new Date());
-				directorBackgroundDetailsRepository.save(directorBackgroundDetail);
+				saveDirectorInfo(directorBackgroundDetailRequest, frameRequest.getApplicationId(), frameRequest.getUserId());	
 			}
 			return true;
 		}
@@ -86,6 +73,27 @@ public class DirectorBackgroundDetailsServiceImpl implements DirectorBackgroundD
 			e.printStackTrace();
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
+	}
+	
+	
+	@Override
+	public boolean saveDirectorInfo(DirectorBackgroundDetailRequest backgroundDetailRequest,Long applicationId,Long userId){
+		
+		DirectorBackgroundDetail  directorBackgroundDetail= null;
+		if (backgroundDetailRequest.getId() != null) {
+			directorBackgroundDetail = directorBackgroundDetailsRepository
+					.findOne(backgroundDetailRequest.getId());
+		} else {
+			directorBackgroundDetail = new DirectorBackgroundDetail();
+			directorBackgroundDetail.setCreatedBy(userId);
+			directorBackgroundDetail.setCreatedDate(new Date());
+		}
+		BeanUtils.copyProperties(backgroundDetailRequest, directorBackgroundDetail, "applicationId");
+		directorBackgroundDetail.setApplicationId(new LoanApplicationMaster(applicationId));
+		directorBackgroundDetail.setModifiedBy(userId);
+		directorBackgroundDetail.setModifiedDate(new Date());
+		directorBackgroundDetailsRepository.save(directorBackgroundDetail);
+		return true;
 	}
 
 	@Override

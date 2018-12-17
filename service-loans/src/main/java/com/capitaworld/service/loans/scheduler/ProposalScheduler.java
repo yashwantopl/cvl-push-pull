@@ -20,13 +20,13 @@ public class ProposalScheduler {
 	@Autowired
 	private ProposalService proposalService; 
 	
-	@Scheduled(fixedDelayString = "${cw.proposal.scheduler.timeout}")
+//	@Scheduled(fixedDelayString = "${cw.proposal.scheduler.timeout}")
 	 public void run(){
 	  logger.info("Entry ScheduledTasks proposal");
 	  try {
 	  //proposalDetailsClient.checkPendingProposal();
 		  logger.info("Proposasl Schedule Call................. ");
-		  proposalService.checkPendingProposal();
+//		  proposalService.checkPendingProposal();
 	   logger.info("Exit ScheduledTasks proposal");
 	  } catch (Exception e) {
 	   e.printStackTrace();
