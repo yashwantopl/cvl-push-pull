@@ -114,7 +114,7 @@ public class CorporateUploadServiceImpl implements CorporateUploadService {
 			}
 			docRequest.setProductDocumentMappingId(mappingId);
 			docRequest.setUserType(userType);
-			return dmsClient.listProductDocument(docRequest);
+			return dmsClient.listProductDocumentByProposalId(docRequest);
 		} catch (DocumentException e) {
 			// TODO Auto-generated catch block
 			logger.error("Error while getting Profile Document");
