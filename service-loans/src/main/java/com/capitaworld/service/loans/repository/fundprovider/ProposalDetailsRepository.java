@@ -58,4 +58,7 @@ public interface ProposalDetailsRepository extends JpaRepository<ProposalDetails
 
 	@Query("SELECT pd.id FROM ProposalDetails pd WHERE pd.userOrgId =:userOrgId and pd.applicationId =:applicationId  and isActive = 1")
     public Long findByApplicationIdAndUserOrgId(@Param("userOrgId") Long userOrgId  , @Param("applicationId") Long applicationId);
+
+	@Query(value = "SELECT * FROM proposal_details pd WHERE application_id =:applicationId  ORDER BY id desc LIMIT 1",nativeQuery = true)
+	public ProposalDetails getLastProposalByApplicationId(@Param("applicationId") Long applicationId);
 }

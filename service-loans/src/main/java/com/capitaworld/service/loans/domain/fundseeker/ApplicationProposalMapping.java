@@ -13,11 +13,13 @@ public class ApplicationProposalMapping implements Serializable {
 
     @Id
     @Column(name = "proposal_id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long proposalId;
 
     @Column(name = "application_id")
     private Long applicationId;
+
+    @Column(name = "user_id")
+    private Long userId;
 
     @Column(name = "org_id")
     private Long orgId;
@@ -63,7 +65,7 @@ public class ApplicationProposalMapping implements Serializable {
     private ApplicationStatusMaster applicationStatusMaster;
 
     @Column(name = "loan_amount")
-    private Long loanAmount;
+    private Double loanAmount;
     
     @Column(name = "ddr_status_id")
 	private Long ddrStatusId;
@@ -83,7 +85,7 @@ public class ApplicationProposalMapping implements Serializable {
     private Boolean isFinalMcqFilled;
 
     @Column(name = "tenure")
-    private Long tenure;
+    private Double tenure;
 
     @Column(name = "final_filled_count")
     private String finalFilledCount;
@@ -93,6 +95,58 @@ public class ApplicationProposalMapping implements Serializable {
 
     @Column(name = "primary_filled_count")
     private String primaryFilledCount;
+
+    @Column(name = "product_id")
+    private Integer productId;
+
+    // Common Fields
+    @Column(name = "is_applicant_details_filled")
+    private Boolean isApplicantDetailsFilled;
+
+    @Column(name = "is_applicant_primary_filled")
+    private Boolean isApplicantPrimaryFilled;
+
+    @Column(name = "is_applicant_final_filled")
+    private Boolean isApplicantFinalFilled;
+
+    @Column(name = "application_code")
+    private String applicationCode;
+
+    @Column(name = "payment_status")
+    private String paymentStatus;
+
+    public Integer getBusinessTypeId() {
+        return businessTypeId;
+    }
+
+    public void setBusinessTypeId(Integer businessTypeId) {
+        this.businessTypeId = businessTypeId;
+    }
+
+    @Column(name = "business_type_id")
+
+    private Integer businessTypeId;
+
+
+
+    public String getPaymentStatus() {
+        return paymentStatus;
+    }
+
+    public void setPaymentStatus(String paymentStatus) {
+        this.paymentStatus = paymentStatus;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public ApplicationProposalMapping() {
+    }
 
     public Long getProposalId() {
         return proposalId;
@@ -206,11 +260,11 @@ public class ApplicationProposalMapping implements Serializable {
         isPrimaryLocked = primaryLocked;
     }
 
-    public Long getLoanAmount() {
+    public Double getLoanAmount() {
         return loanAmount;
     }
 
-    public void setLoanAmount(Long loanAmount) {
+    public void setLoanAmount(Double loanAmount) {
         this.loanAmount = loanAmount;
     }
 
@@ -291,11 +345,11 @@ public class ApplicationProposalMapping implements Serializable {
     }
 
 
-    public Long getTenure() {
+    public Double getTenure() {
         return tenure;
     }
 
-    public void setTenure(Long tenure) {
+    public void setTenure(Double tenure) {
         this.tenure = tenure;
     }
 
@@ -321,5 +375,45 @@ public class ApplicationProposalMapping implements Serializable {
 
     public void setPrimaryFilledCount(String primaryFilledCount) {
         this.primaryFilledCount = primaryFilledCount;
+    }
+
+    public Integer getProductId() {
+        return productId;
+    }
+
+    public void setProductId(Integer productId) {
+        this.productId = productId;
+    }
+
+    public Boolean getIsApplicantDetailsFilled() {
+        return isApplicantDetailsFilled;
+    }
+
+    public void setIsApplicantDetailsFilled(Boolean applicantDetailsFilled) {
+        isApplicantDetailsFilled = applicantDetailsFilled;
+    }
+
+    public Boolean getIsApplicantPrimaryFilled() {
+        return isApplicantPrimaryFilled;
+    }
+
+    public void setIsApplicantPrimaryFilled(Boolean applicantPrimaryFilled) {
+        isApplicantPrimaryFilled = applicantPrimaryFilled;
+    }
+
+    public Boolean getIsApplicantFinalFilled() {
+        return isApplicantFinalFilled;
+    }
+
+    public void setIsApplicantFinalFilled(Boolean applicantFinalFilled) {
+        isApplicantFinalFilled = applicantFinalFilled;
+    }
+
+    public String getApplicationCode() {
+        return applicationCode;
+    }
+
+    public void setApplicationCode(String applicationCode) {
+        this.applicationCode = applicationCode;
     }
 }
