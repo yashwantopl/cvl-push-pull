@@ -19,6 +19,12 @@ public class InEligibleProposalDetailsRequest implements Serializable {
     private Boolean isSanctioned;
     
     private Boolean isDisbursed;
+    
+    private Long userId;
+    
+    private Integer status;
+    
+    private String reason;
 
     public Long getApplicationId() {
         return applicationId;
@@ -66,6 +72,30 @@ public class InEligibleProposalDetailsRequest implements Serializable {
 
 	public void setIsDisbursed(Boolean isDisbursed) {
 		this.isDisbursed = isDisbursed;
+	}
+
+	public Long getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Long userId) {
+		this.userId = userId;
+	}
+
+	public Integer getStatus() {
+		return status;
+	}
+
+	public void setStatus(Integer status) {
+		this.status = status;
+	}
+
+	public String getReason() {
+		return reason;
+	}
+
+	public void setReason(String reason) {
+		this.reason = reason;
 	}
     
     

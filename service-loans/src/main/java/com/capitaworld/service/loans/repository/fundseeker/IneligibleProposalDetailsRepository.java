@@ -26,5 +26,7 @@ public interface IneligibleProposalDetailsRepository extends JpaRepository<Ineli
 			"			LEFT JOIN `loan_application`.`fs_loan_application_master` lam ON lam.application_id = ipd.application_id\n" + 
 			"			WHERE pd.user_org_id = :userOrgId AND usr.user_id = cl.user_id AND usr.user_type_id = 1 AND org.user_org_id = :userOrgId and (ipd.created_date BETWEEN :fromDate and :toDate) GROUP BY ipd.application_id ORDER BY ipd.id DESC", nativeQuery = true)
     public List<Object[]> getOfflineProposalDetailsByOrgId(@Param("userOrgId")Long userOrgId,@Param("fromDate") Date fromDate,@Param("toDate") Date toDate);
+    
+    public IneligibleProposalDetails findbyApplicationId(Long applicationId);
 
 }
