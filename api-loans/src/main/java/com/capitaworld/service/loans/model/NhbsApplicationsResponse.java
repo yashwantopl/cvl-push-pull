@@ -76,7 +76,19 @@ public class NhbsApplicationsResponse implements Serializable{
 
 	private Integer businessTypeId;
 
+	public Long getProposalId() {
+		return proposalId;
+	}
+
+	public void setProposalId(Long proposalId) {
+		this.proposalId = proposalId;
+	}
+
 	private Long clientId;
+
+	private Long proposalId;
+
+
 	public Date getAssignedToCheckerDate() {
 		return assignedToCheckerDate;
 	}

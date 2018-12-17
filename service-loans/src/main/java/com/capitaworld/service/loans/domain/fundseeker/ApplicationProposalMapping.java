@@ -13,11 +13,13 @@ public class ApplicationProposalMapping implements Serializable {
 
     @Id
     @Column(name = "proposal_id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long proposalId;
 
     @Column(name = "application_id")
     private Long applicationId;
+
+    @Column(name = "user_id")
+    private Long userId;
 
     @Column(name = "org_id")
     private Long orgId;
@@ -109,6 +111,39 @@ public class ApplicationProposalMapping implements Serializable {
 
     @Column(name = "application_code")
     private String applicationCode;
+
+    @Column(name = "payment_status")
+    private String paymentStatus;
+
+    public Integer getBusinessTypeId() {
+        return businessTypeId;
+    }
+
+    public void setBusinessTypeId(Integer businessTypeId) {
+        this.businessTypeId = businessTypeId;
+    }
+
+    @Column(name = "business_type_id")
+
+    private Integer businessTypeId;
+
+
+
+    public String getPaymentStatus() {
+        return paymentStatus;
+    }
+
+    public void setPaymentStatus(String paymentStatus) {
+        this.paymentStatus = paymentStatus;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
 
     public ApplicationProposalMapping() {
     }
