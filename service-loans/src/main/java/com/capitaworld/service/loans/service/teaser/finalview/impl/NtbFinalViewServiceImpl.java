@@ -221,9 +221,7 @@ public class NtbFinalViewServiceImpl implements NtbFinalViewService{
 					UserResponse userResponse = usersClient.getLastAccessApplicant(usersRequest);
 					fpProductMappingId = userResponse.getId();
 				} catch (Exception e) {
-					logger.error(
-							"error while fetching last access fp product id for fund provider while fetching matches in teaser view");
-					e.printStackTrace();
+					logger.error("error while fetching last access fp product id for fund provider while fetching matches in teaser view : ",e);
 				}
 				try {
 					MatchRequest matchRequest = new MatchRequest();
@@ -232,8 +230,7 @@ public class NtbFinalViewServiceImpl implements NtbFinalViewService{
 					MatchDisplayResponse matchResponse = matchEngineClient.displayMatchesOfCorporate(matchRequest);
 					ntbFinalViewResponse.setMatchesList(matchResponse.getMatchDisplayObjectList());
 				} catch (Exception e) {
-					logger.error("Error while getting matches data for final teaser view");
-					e.printStackTrace();
+					logger.error("Error while getting matches data for final teaser view : ",e);
 				}
 			}
 		}
@@ -265,7 +262,7 @@ public class NtbFinalViewServiceImpl implements NtbFinalViewService{
 						ntbFinalViewResponse.setEstablishmentYear("NA");
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 			}
 
@@ -287,7 +284,7 @@ public class NtbFinalViewServiceImpl implements NtbFinalViewService{
 						ntbFinalViewResponse.setCity("NA");
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 			}
 			cityList.clear();
@@ -307,7 +304,7 @@ public class NtbFinalViewServiceImpl implements NtbFinalViewService{
 						ntbFinalViewResponse.setCity("NA");
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 			}
 			// SET STATE
@@ -328,7 +325,7 @@ public class NtbFinalViewServiceImpl implements NtbFinalViewService{
 						ntbFinalViewResponse.setState("NA");
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 			}
 			stateList.clear();
@@ -347,7 +344,7 @@ public class NtbFinalViewServiceImpl implements NtbFinalViewService{
 						ntbFinalViewResponse.setState("NA");
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 			}
 			// SET COUNTRY
@@ -368,7 +365,7 @@ public class NtbFinalViewServiceImpl implements NtbFinalViewService{
 						ntbFinalViewResponse.setCountry("NA");
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 			}
 			countryList.clear();
@@ -387,7 +384,7 @@ public class NtbFinalViewServiceImpl implements NtbFinalViewService{
 						ntbFinalViewResponse.setCountry("NA");
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 			}
 			// KEY VERTICAL FUNDING (INDUSTRY SECTOR SUBSECTOR DETAILS)
@@ -408,7 +405,7 @@ public class NtbFinalViewServiceImpl implements NtbFinalViewService{
 					}
 
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 			}
 			// KEY VERTICAL SECTOR
@@ -437,8 +434,7 @@ public class NtbFinalViewServiceImpl implements NtbFinalViewService{
 					ntbFinalViewResponse.setKeyVericalSector("NA");
 				}
 			} catch (Exception e) {
-				logger.info("Error while getting key vertical sector data");
-				e.printStackTrace();
+				logger.info("Error while getting key vertical sector data : ",e);
 			}
 
 			// KEY VERTICAL SUB-SECTOR
@@ -449,8 +445,7 @@ public class NtbFinalViewServiceImpl implements NtbFinalViewService{
 					ntbFinalViewResponse.setKeyVericalSubsector((String) oneFormResponse.getData());
 				}
 			} catch (Exception e) {
-				// TODO: handle exception
-				logger.warn("error while getting key vertical sub-sector");
+				logger.error("error while getting key vertical sub-sector : ",e);
 			}
 		}
 		// PROFILE AND PRIMARY DETAILS
@@ -585,8 +580,7 @@ public class NtbFinalViewServiceImpl implements NtbFinalViewService{
 //					corporatePrimaryViewResponse.setTop5FundReceivedList(data.getTop5FundReceivedList());
 //					corporatePrimaryViewResponse.setTop5FundTransferedList(data.getTop5FundTransferedList());
 				}catch (Exception e) {
-					e.printStackTrace();
-					logger.info("Error while getting perfios data");
+					logger.error("Error while getting perfios data : ",e);
 				}
 
 				// scoring Data
@@ -598,10 +592,9 @@ public class NtbFinalViewServiceImpl implements NtbFinalViewService{
 					UserResponse userResponse = usersClient.getLastAccessApplicant(usersRequest);
 					fpProductMappingId = userResponse.getId();
 					
-					System.out.println("fp product id=========================>>>>>"+fpProductMappingId);
+					logger.info("fp product id=========================>>>>>"+fpProductMappingId);
 				} catch (Exception e) {
-					e.printStackTrace();
-					logger.info("Error while getting fpMappingId For Scoring");
+					logger.error("Error while getting fpMappingId For Scoring : ",e);
 				}
 				ScoringRequest scoringRequest = new ScoringRequest();
 				scoringRequest.setApplicationId(toApplicationId);
@@ -619,16 +612,14 @@ public class NtbFinalViewServiceImpl implements NtbFinalViewService{
 					ntbFinalViewResponse.setScoreInterpretation(proposalScoreResponse.getInterpretation());
 
 				} catch (ScoringException | IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-					logger.info("Error while getting Scoring data");
+					logger.error("Error while getting Scoring data : ",e1);
 				}
 
 				//Eligibility Data
 				EligibililityRequest eligibilityReq=new EligibililityRequest();
 				eligibilityReq.setApplicationId(toApplicationId);
 				eligibilityReq.setProductId(!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getProductId()) ? Long.valueOf(primaryCorporateDetail.getProductId()) : null);
-				System.out.println(" for eligibility appid============>>"+toApplicationId);
+				logger.info(" for eligibility appid============>>"+toApplicationId);
 				
 				try {
 					EligibilityResponse eligibilityResp= eligibilityClient.corporateLoanData(eligibilityReq);
@@ -636,9 +627,7 @@ public class NtbFinalViewServiceImpl implements NtbFinalViewService{
 					ntbFinalViewResponse.setEligibilityDataObject(eligibilityResp.getData());
 					
 				} catch (Exception e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-					logger.info("Error while getting Loan Eligibility data");
+					logger.info("Error while getting Loan Eligibility data : ",e1);
 				}
 		
 		
