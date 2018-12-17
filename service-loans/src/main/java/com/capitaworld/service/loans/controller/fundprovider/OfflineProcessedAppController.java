@@ -228,6 +228,69 @@ public class OfflineProcessedAppController {
 		
 	}
 	
+	@RequestMapping(value="/rejectApplicationList", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getRejectApplicationList(HttpServletRequest request,@RequestParam(value = "clientId", required = false) Long clientId)  {
+		//GET USER ID AND USER TYPE
+		Long userId = null;
+		Integer userType = null;
+		Long orgId = null;
+		if(!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_TYPE))) {
+			 userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();		
+		}
+		if(!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_ORG_ID))) {
+			 orgId = ((Long) request.getAttribute(CommonUtils.USER_ORG_ID)).longValue();		
+		}
+		if (CommonDocumentUtils.isThisClientApplication(request)) {
+			if(!CommonUtils.isObjectNullOrEmpty(clientId) && userType != CommonUtils.UserType.FUND_PROVIDER){
+				userId = clientId;
+				try {
+					UserResponse response = usersClient.getUserTypeByUserId(new UsersRequest(userId));
+					if(response != null && response.getData() != null){
+						UserTypeRequest req = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>) response.getData(), UserTypeRequest.class);
+						userType = req.getId().intValue();
+					}else{
+						logger.warn("user_verification, Invalid Request... Client Id is not valid");
+						return new ResponseEntity<LoansResponse>(new LoansResponse("Client Id is not valid",HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+					}
+				}catch(Exception e) {
+					logger.warn("user_verification, Invalid Request... Something went wrong");
+					e.printStackTrace();
+					return new ResponseEntity<LoansResponse>(new LoansResponse("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
+				}
+			}else {
+				if(!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_TYPE))) {
+					userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();		
+				}
+				if(!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_ID))) {
+					userId = ((Long) request.getAttribute(CommonUtils.USER_ID));		
+				}
+			}
+
+		} else {
+			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
+		}
+		     List<OfflineProcessedApplicationRequest> lst = offlineProcessedApplicationService.getRejectProposalList(orgId, userId);
+		     LoansResponse loansResponse = new LoansResponse();
+			try {
+				if(!CommonUtils.isObjectNullOrEmpty(lst)){
+					loansResponse.setData(lst);
+					loansResponse.setMessage("Successfully fetched Reject List");
+					loansResponse.setStatus(HttpStatus.OK.value());
+				}else{
+					loansResponse.setMessage("No data found Reject Loan List");
+					loansResponse.setStatus(HttpStatus.OK.value());
+				}
+				return new ResponseEntity<LoansResponse>(loansResponse,HttpStatus.OK);
+			}catch (Exception e){
+				loansResponse.setData(lst);
+				loansResponse.setMessage("Something went wrong..!");
+				loansResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+		}
+		
+	}
+	
 	
 	
 }

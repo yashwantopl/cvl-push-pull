@@ -11,4 +11,6 @@ public interface OfflineProcessedAppService {
 	public List<OfflineProcessedApplicationRequest> getSanctionedApplicationList(Long orgId, Long userId);
 	
 	public List<OfflineProcessedApplicationRequest> getDisbursedApplicationList(Long orgId, Long userId);
+	
+	public List<OfflineProcessedApplicationRequest> getRejectProposalList(Long orgId, Long userId);
 }
