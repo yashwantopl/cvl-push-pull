@@ -25,8 +25,8 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.client.UnknownHttpStatusCodeException;
 
-@ComponentScan(basePackages = {"com.capitaworld"})
-@Component
+//@ComponentScan(basePackages = {"com.capitaworld"})
+//@Component
 public class RestTemplateConfig {
 	
 	 // Determines the timeout in milliseconds until a connection is established.
