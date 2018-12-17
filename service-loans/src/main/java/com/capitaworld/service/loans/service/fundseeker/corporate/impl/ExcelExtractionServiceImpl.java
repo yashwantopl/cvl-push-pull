@@ -40,10 +40,7 @@ import com.capitaworld.service.loans.service.fundseeker.corporate.TechnologyPosi
 public class ExcelExtractionServiceImpl implements ExcelExtractionService{
 
 	private final Logger log = LoggerFactory.getLogger(ExcelExtractionService.class);
-	
-	@Autowired
-	OperatingStatementDetailsService OperatingStatementDetailsService;
-	
+
 	@Autowired
 	LiabilitiesDetailsService liabilitiesDetailsService;
 	
@@ -106,8 +103,6 @@ public class ExcelExtractionServiceImpl implements ExcelExtractionService{
 	
 	
 	public Boolean readCMA(Long applicationId,Long storageDetailsId,MultipartFile multipartFile) throws Exception {
-		// TODO Auto-generated method stub
-		
 		InputStream file;
 		XSSFWorkbook workbook;
 		XSSFSheet operatingStatementSheet,liabilitiesSheet,assetsSheet;
@@ -121,20 +116,18 @@ public class ExcelExtractionServiceImpl implements ExcelExtractionService{
 	         operatingStatementSheet  = workbook.getSheetAt(0);//pass DPR sheet to function
 	         liabilitiesSheet  = workbook.getSheetAt(1);//pass DPR sheet to function
 	         assetsSheet  = workbook.getSheetAt(2);//pass DPR sheet to function
-	         
-	         OperatingStatementDetailsService.readOperatingStatementDetails(applicationId,storageDetailsId,operatingStatementSheet);
+
+	         operatingStatementDetailsService.readOperatingStatementDetails(applicationId,storageDetailsId,operatingStatementSheet);
 	         liabilitiesDetailsService.readLiabilitiesDetails(applicationId,storageDetailsId, liabilitiesSheet);
 	         assetsDetailsService.readAssetsDetails(applicationId,storageDetailsId, assetsSheet);
 	         workbook.close(); 
 		}
 		catch (Exception e) {
-			// TODO: handle exception
 			
 			assetsDetailsRepository.inActiveAssetsDetails(storageDetailsId);
 			liabilitiesDetailsRepository.inActiveAssetsDetails(storageDetailsId);
 			operatingStatementDetailsRepository.inActiveAssetsDetails(storageDetailsId);
-			log.error("Error while reading CMA");
-			e.printStackTrace();
+			log.error("Error while reading CMA : ",e);
 			throw e ;
 			/*return false;*/
 		}
@@ -191,8 +184,7 @@ public class ExcelExtractionServiceImpl implements ExcelExtractionService{
 			feasibilityService.inActiveFeasibilityDetails(storageDetailsId);
 			scotService.inActiveScotDetails(storageDetailsId);
 			dprUserDataDetailService.inActiveDprUserDataDetails(storageDetailsId);
-			log.error("Error while reading DPR");
-			e.printStackTrace();
+			log.error("Error while reading DPR : ",e);
 			
 			return false;
 		}
@@ -203,7 +195,6 @@ public class ExcelExtractionServiceImpl implements ExcelExtractionService{
 	
 	@Override
 	public Boolean readBS(Long applicationId, Long storageDetailsId, MultipartFile multipartFile) {
-		// TODO Auto-generated method stub
 		InputStream file;
 		XSSFWorkbook workbook;
 		XSSFSheet balanceSheet,profitibilityStatementSheet;
@@ -220,12 +211,10 @@ public class ExcelExtractionServiceImpl implements ExcelExtractionService{
 			 workbook.close();
 		}
 		catch (Exception e) {
-			// TODO: handle exception
 			
 			balanceSheetDetailRepository.inActiveBalanceSheetDetail(storageDetailsId);
 			profitibilityStatementDetailRepository.inActiveProfitibilityStatementDetail(storageDetailsId);
-			log.error("Error while reading BS");
-			e.printStackTrace();
+			log.error("Error while reading BS : ",e);
 			
 			return false;
 		}
@@ -235,17 +224,14 @@ public class ExcelExtractionServiceImpl implements ExcelExtractionService{
 
 	@Override
 	public Boolean inActiveCMA(Long storageDetailsId) {
-		// TODO Auto-generated method stub
 		try {
-			System.out.println("trying to inActivate CMA file");
+			log.info("trying to inActivate CMA file");
 			assetsDetailsService.inActiveAssetsDetails(storageDetailsId);
 			liabilitiesDetailsService.inActiveAssetsDetails(storageDetailsId);
 			operatingStatementDetailsService.inActiveAssetsDetails(storageDetailsId);
-			System.out.println("exit from in activation method");
+			log.info("exit from in activation method");
 		} catch (Exception e) {
-			// TODO: handle exception
-			log.error("Error while inactive CMA");
-			e.printStackTrace();
+			log.error("Error while inactive CMA : ",e);
 			return false;
 		}
 		return true;
@@ -253,14 +239,11 @@ public class ExcelExtractionServiceImpl implements ExcelExtractionService{
 
 	@Override
 	public Boolean inActiveDPR(Long storageDetailsId) {
-		// TODO Auto-generated method stub
 		try {
 			entityInformationDetailService.inActiveEntityInformationDetails(storageDetailsId);
 			managementDetailService.inActiveManagementDetails(storageDetailsId);
 		} catch (Exception e) {
-			// TODO: handle exception
-			log.error("Error while inactive DPR");
-			e.printStackTrace();
+			log.error("Error while inactive DPR : ",e);
 			return false;
 		}
 		return true;
@@ -268,14 +251,11 @@ public class ExcelExtractionServiceImpl implements ExcelExtractionService{
 
 	@Override
 	public Boolean inActiveBS(Long storageDetailsId) {
-		// TODO Auto-generated method stub
 		try {
 			balanceSheetDetailService.inActiveBalanceSheetDetail(storageDetailsId);
 			profitibilityStatementDetailService.inActiveProfitibilityStatementDetail(storageDetailsId);
 		} catch (Exception e) {
-			// TODO: handle exception
-			log.error("Error while inactive BS");
-			e.printStackTrace();
+			log.error("Error while inactive BS : ",e);
 			return false;
 		}
 		return true;

@@ -324,8 +324,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				map.put("mobile", request.getMobile());
 				map.put("email", StringEscapeUtils.escapeXml(request.getEmail()));
 			} catch (IOException e1) {
-				logger.info("Error while getting registration details");
-				e1.printStackTrace();
+				logger.error("Error while getting registration details : ",e1);
 			}	
 		}
 		
@@ -346,7 +345,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 						map.put("adminAddressData",CommonUtils.printFields(pincodeDateService.getById(corporateFinalInfoRequest.getSecondAddress().getDistrictMappingId()),null));				
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 			}
 			//REGISTERED OFFICE ADDRESS
@@ -363,14 +362,13 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 						map.put("registeredAddressData",CommonUtils.printFields(pincodeDateService.getById(corporateFinalInfoRequest.getFirstAddress().getDistrictMappingId()),null));				
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 			}
 			map.put("corporateApplicantFinal",corporateFinalInfoRequest);
 			map.put("aboutUs", StringEscapeUtils.escapeXml(corporateFinalInfoRequest.getAboutUs()));
 		} catch (Exception e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e1);
 		}
 		
 		// Product Name
@@ -401,7 +399,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				map.put("trailDates", auditTrail.getData());
 			}
 		} catch (Exception e2) {
-			e2.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e2);
 		}
 		try {
 			ConnectResponse connectResponse = connectClient.getByAppStageBusinessTypeId(applicationId, ConnectStage.COMPLETE.getId(), com.capitaworld.service.loans.utils.CommonUtils.BusinessType.EXISTING_BUSINESS.getId());
@@ -409,7 +407,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				map.put("dateOfInPrincipalApproval",!CommonUtils.isObjectNullOrEmpty(connectResponse.getData())? DATE_FORMAT.format(connectResponse.getData()):"-");
 			}
 		} catch (Exception e2) {
-			e2.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e2);
 		}
 		
 		//GST DATA
@@ -423,14 +421,14 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			map.put("projectedSales", CommonUtils.convertValue(gstData.getProjectedSales()));
 			map.put("customerConcentration", CommonUtils.convertValue(gstData.getConcentration()));
 		}catch(Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}try {
 			GstResponse response = gstClient.detailCalculation(corporateApplicantRequest.getGstIn());
 			if(!CommonUtils.isObjectNullOrEmpty(response)) {
 				map.put("gstDetailedResp",response.getData());
 			}
 		}catch(Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		PrimaryCorporateDetail primaryCorporateDetail = primaryCorporateRepository.getByApplicationAndUserId(applicationId, userId);
 		if(!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail)) {
@@ -457,8 +455,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 						establishMentYear += " "+ masterResponse.getValue();
 					} 
 				} catch (Exception e) {
-					e.printStackTrace();
-					logger.info("Error in getting establishment year");
+					logger.error("Error in getting establishment year : ",e);
 				}
 			}
 			map.put("establishmentYr",!CommonUtils.isObjectNullOrEmpty(establishMentYear) ? CommonUtils.printFields(establishMentYear,null) : " ");
@@ -466,7 +463,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			Integer industry = corporateApplicantRequest.getKeyVericalFunding().intValue();
 			map.put("keyVerticalFunding", !CommonUtils.isObjectNullOrEmpty(industry) ? CommonUtils.printFields(Industry.getById(industry).getValue(),null) : " ");
 		}catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 			
 			//DIRECTOR'S BACKGROUND
@@ -514,8 +511,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 							}
 							
 						}catch(Exception e) {
-							e.printStackTrace();
-							logger.info("Error while getting cibil details",e);
+							logger.error("Error while getting cibil details : ",e);
 						}
 					}
 					directorBackgroundDetailResponse.setPincode(directorBackgroundDetailRequest.getPincode());
@@ -525,7 +521,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 							directorBackgroundDetailResponse.setPinData(pincodeDateService.getById(directorBackgroundDetailRequest.getDistrictMappingId()));
 						}
 					} catch (Exception e) {
-						e.printStackTrace();
+						logger.error(CommonUtils.EXCEPTION,e);
 					}
 					directorBackgroundDetailResponse.setStateCode(directorBackgroundDetailRequest.getStateCode());
 					directorBackgroundDetailResponse.setCity(directorBackgroundDetailRequest.getCity());
@@ -555,7 +551,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 								directorBackgroundDetailResponse.setNationality("NA");
 							}
 						} catch (Exception e) {
-							e.printStackTrace();
+							logger.error(CommonUtils.EXCEPTION,e);
 						}
 					}
 					try {
@@ -575,16 +571,14 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 							}
 						}
 					}catch(Exception e) {
-						logger.info("error while getting main directors details");
-						e.printStackTrace();
+						logger.error("error while getting main directors details : ",e);
 					}
 					directorBackgroundDetailResponseList.add(directorBackgroundDetailResponse);
 				}
 				map.put("dirBackground", !CommonUtils.isListNullOrEmpty(directorBackgroundDetailResponseList) ? CommonUtils.printFields(directorBackgroundDetailResponseList,null) : " ");
 	        }
 				catch (Exception e) {
-					e.printStackTrace();
-					logger.info("Error in getting directors background details");
+					logger.error("Error in getting directors background details : ",e);
 		    }
 			
 		    //FINANCIAL ARRANGEMENTS
@@ -629,7 +623,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				map.put("amtOfSecurity",!CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getCollateralSecurityAmount()) ? CommonUtils.convertValue(primaryCorporateRequest.getCollateralSecurityAmount()) : " ");
 			}
 		}catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		//FINANCIALS AND NOTES TO ACCOUNTS
 		try {
@@ -657,7 +651,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			}
 			map.put("projectedFinancials", projectedFin);
 		}catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		//MATCHES RESPONSE
 		try {
@@ -668,7 +662,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			map.put("matchesResponse", !CommonUtils.isListNullOrEmpty(matchResponse.getMatchDisplayObjectList()) ? CommonUtils.printFields(matchResponse.getMatchDisplayObjectList(),null) : " ");
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		//PROPOSAL RESPONSE
 		try {
@@ -681,7 +675,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				map.put("proposalResponse", !CommonUtils.isObjectNullOrEmpty(proposalMappingResponse.getData()) ? proposalMappingResponse.getData() : " ");
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		
 		//SCORING DATA 
@@ -938,8 +932,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			map.put("business", business+1);
 		}
 			catch (Exception e) {
-				e.printStackTrace();
-				logger.info("Error while getting scoring data");
+				logger.error("Error while getting scoring data : ",e);
 			}
 		
 		//NAME AS PER ITR
@@ -948,7 +941,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			System.out.println("ITR RESPONSE===========>"+itrResponse);
 			map.put("nameAsPerItr", CommonUtils.printFields(itrResponse.getData(),null));
 		}catch(Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		
 		//CGTMSE DATA
@@ -977,7 +970,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				}
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		
 		//ELIGIBILITY DATA (ASSESSMENT TO LIMITS)
@@ -1017,7 +1010,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 					break;
 				}
 		} catch (Exception e2) {
-			e2.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e2);
 		}
 		try{
 			EligibililityRequest eligibilityReq=new EligibililityRequest();
@@ -1029,8 +1022,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				map.put("assLimits",CommonUtils.convertToDoubleForXml(MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)eligibilityResp.getData(), CLEligibilityRequest.class), new HashMap<>()));
 			}
 		}catch (Exception e) {
-			e.printStackTrace();
-			logger.info("Error while getting Eligibility data");
+			logger.error("Error while getting Eligibility data : ",e);
 		}
 		//MCA DATA
 		try {
@@ -1040,7 +1032,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				map.put("mcaData", CommonUtils.printFields(mcaResponse.getData(),null));
 			}
 		}catch(Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		
 		//HUNTER API ANALYSIS
@@ -1050,7 +1042,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				map.put("hunterResponse",  CommonUtils.printFields(hunterResp.getData(),null));
 			}
 		} catch (Exception e1) {
-			e1.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e1);
 		}
 		
 		//ITR (CHECK IF UPLOADED USING XML OR ONLINE)
@@ -1060,7 +1052,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				map.put("checkItr", itrConnectionResponse.getData());
 			}
 		}catch(Exception e) {
-			logger.info("Error while getting ITR data");
+			logger.error("Error while getting ITR data : ",e);
 		}
 		
 		
@@ -1112,8 +1104,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
-			logger.info("Error while getting perfios data");
+			logger.error("Error while getting perfios data : ",e);
 		}
 		
 		/*ReportRequest reportRequest = new ReportRequest();
@@ -1186,7 +1177,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			}
 			}
 			catch (Exception e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 			//OWNERSHIP DETAILS :- 
 			try {
@@ -1202,7 +1193,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				map.put("ownership", CommonUtils.printFields(ownershipDetailResponseList,null));
 
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 		    }
 			//PROMOTOR BACKGROUND DETAILS
 			try {
@@ -1231,21 +1222,21 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				}
 				map.put("promotorsbckgrnd", CommonUtils.printFields(promotorBackgroundDetailResponseList,null));
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 			
 			//ASSOCIATE ENTITY
 			try {
 				map.put("associatedConcerns",CommonUtils.printFields(associatedConcernDetailService.getAssociatedConcernsDetailList(applicationId, userId),null));
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 			try {
 				map.put("proposedProduct",CommonUtils.printFields(proposedProductDetailsService.getProposedProductDetailList(applicationId, userId),null));
 				map.put("existingProduct",CommonUtils.printFields(existingProductDetailsService.getExistingProductDetailList(applicationId, userId),null));
 				map.put("achievementDetails",CommonUtils.printFields(achievmentDetailsService.getAchievementDetailList(applicationId, userId),null));
 			}catch (Exception e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 			
 			//SHARE PRICE
@@ -1319,7 +1310,6 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		try {
 			map.put("orgName", CommonUtils.printFields(corporateApplicantRequest.getOrganisationName(),null));
 		} catch (Exception e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 		//PERFIOS API DATA (BANK STATEMENT ANALYSIS)
@@ -1379,8 +1369,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		try {
 			map.put("orgName", CommonUtils.printFields(corporateApplicantRequest.getOrganisationName(), null));
 		} catch (Exception e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e1);
 		}
 		// PERFIOS API DATA (BANK STATEMENT ANALYSIS)
 		ReportRequest reportRequest = new ReportRequest();
@@ -1434,8 +1423,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 //				System.out.println("monthlyDetails : "+json);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
-			logger.info("Error while getting perfios data");
+			logger.error("Error while getting perfios data : ",e);
 		}
 
 		return map;
@@ -1851,7 +1839,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				}
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		curFinYearString.setDebtEbitad(CommonUtils.convertValue(CommonUtils.divideNumbers((CommonUtils.substractThreeNumbers(curFinYearDouble.getTotalNonCurruntLiablities(),curFinYearDouble.getUnsecuredLoansPromoters(),curFinYearDouble.getLongTermProvision())), (12*CommonUtils.divideNumbers(curFinYearDouble.getOperatingProfitEbitadOi(),curFinYearDouble.getNoOfMonth())))));
 		prevFinYearString.setDebtEbitad(CommonUtils.convertValue(CommonUtils.divideNumbers((CommonUtils.substractThreeNumbers(prevFinYearDouble.getTotalNonCurruntLiablities(),prevFinYearDouble.getUnsecuredLoansPromoters(),prevFinYearDouble.getLongTermProvision())), (12*CommonUtils.divideNumbers(prevFinYearDouble.getOperatingProfitEbitadOi(),prevFinYearDouble.getNoOfMonth())))));
@@ -1904,7 +1892,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				return masterResponse.getValue();
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		return null;
 	}
@@ -1925,7 +1913,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				return masterResponse.getValue();
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		return null;
 	}
@@ -1946,7 +1934,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				return masterResponse.getValue();
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		return null;
 	}
