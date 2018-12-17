@@ -131,7 +131,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 	public boolean updateStatus(InEligibleProposalDetailsRequest inEliProReq) {
 		IneligibleProposalDetails ineligibleProposalDetails = null;
 		try {
-			ineligibleProposalDetails = ineligibleProposalDetailsRepository.findbyApplicationId(inEliProReq.getApplicationId());
+			ineligibleProposalDetails = ineligibleProposalDetailsRepository.findByApplicationId(inEliProReq.getApplicationId());
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
