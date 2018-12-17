@@ -41,7 +41,12 @@ public class IneligibleProposalDetailsController {
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}
-
+		
+		if (!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_ID))) {
+			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			inEligibleProposalDetailsRequest.setUserId(userId);
+		}
+		
 		Boolean isDetailsSaved = ineligibleProposalDetailsService.save(inEligibleProposalDetailsRequest);
 		if (isDetailsSaved) {
 
@@ -60,6 +65,31 @@ public class IneligibleProposalDetailsController {
 		} else {
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse("Data not saved", HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
+		}
+	}
+	
+	@RequestMapping(value = "/update/ineligible/status", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> update( @RequestBody InEligibleProposalDetailsRequest inEligibleProposalDetailsRequest, HttpServletRequest request) {
+		if (CommonUtils.isObjectNullOrEmpty(inEligibleProposalDetailsRequest) || CommonUtils.isObjectNullOrEmpty(inEligibleProposalDetailsRequest.getApplicationId())
+				|| CommonUtils.isObjectNullOrEmpty(inEligibleProposalDetailsRequest.getStatus()) ||
+				CommonUtils.isObjectNullOrEmpty(inEligibleProposalDetailsRequest.getReason())) {
+			logger.warn("Requested data can not be empty.Invalid Request. ");
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+		}
+		
+		if (!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_ID))) {
+			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			inEligibleProposalDetailsRequest.setUserId(userId);
+		}
+		
+		Boolean isDetailsSaved = ineligibleProposalDetailsService.updateStatus(inEligibleProposalDetailsRequest);
+		if (isDetailsSaved) {
+			return new ResponseEntity<LoansResponse>(new LoansResponse("Data saved", HttpStatus.OK.value()),
+					HttpStatus.OK);
+		} else {
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse("The application has encountered an error, please try again after sometime!!!", HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
 		}
 	}
 	

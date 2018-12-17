@@ -27,6 +27,8 @@ public class OfflineProcessedApplicationRequest {
 	private Double processingFee;
 	private Long isSanctionedFrom;
 	private Boolean isPartiallyDisbursedOffline;
+	private String reason;
+	private Date modifiedDate;
 	
 	
 	public Long getApplicationId() {
@@ -160,6 +162,18 @@ public class OfflineProcessedApplicationRequest {
 	}
 	public void setLocationData(Object locationData) {
 		this.locationData = locationData;
+	}
+	public String getReason() {
+		return reason;
+	}
+	public void setReason(String reason) {
+		this.reason = reason;
+	}
+	public Date getModifiedDate() {
+		return modifiedDate;
+	}
+	public void setModifiedDate(Date modifiedDate) {
+		this.modifiedDate = modifiedDate;
 	}
 	
 	
