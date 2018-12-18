@@ -209,8 +209,7 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 			map.put("mobile", request.getMobile());
 			map.put("email", StringEscapeUtils.escapeXml(request.getEmail()));
 		} catch (IOException e1) {
-			logger.info("Error while getting registration details");
-			e1.printStackTrace();
+			logger.error("Error while getting registration details : ",e1);
 		}
 		CorporateFinalInfoRequest corporateFinalInfoRequest;
 		try {
@@ -229,7 +228,7 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 						map.put("adminAddressData",CommonUtils.printFields(pincodeDateService.getById(corporateFinalInfoRequest.getSecondAddress().getDistrictMappingId()),null));				
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 			}
 			//REGISTERED OFFICE ADDRESS
@@ -246,14 +245,13 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 						map.put("registeredAddressData",CommonUtils.printFields(pincodeDateService.getById(corporateFinalInfoRequest.getFirstAddress().getDistrictMappingId()),null));				
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 			}
 			map.put("corporateApplicantFinal",corporateFinalInfoRequest);
 			map.put("aboutUs", StringEscapeUtils.escapeXml(corporateFinalInfoRequest.getAboutUs()));
 		} catch (Exception e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e1);
 		}
 		
 		//TIMELINE DATES
@@ -273,7 +271,7 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 				map.put("trailDates", auditTrail.getData());
 			}
 		} catch (Exception e2) {
-			e2.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e2);
 		}
 		try {
 			ConnectResponse connectResponse = connectClient.getByAppStageBusinessTypeId(applicationId, ConnectStage.COMPLETE.getId(), com.capitaworld.service.loans.utils.CommonUtils.BusinessType.EXISTING_BUSINESS.getId());
@@ -281,7 +279,7 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 				map.put("dateOfInPrincipalApproval",!CommonUtils.isObjectNullOrEmpty(connectResponse.getData())? DATE_FORMAT.format(connectResponse.getData()):"-");
 			}
 		} catch (Exception e2) {
-			e2.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e2);
 		}
 		
 		//GST DATA
@@ -295,14 +293,14 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 			map.put("projectedSales", CommonUtils.convertValue(gstData.getProjectedSales()));
 			map.put("customerConcentration", CommonUtils.convertValue(gstData.getConcentration()));
 		}catch(Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}try {
 			GstResponse response = gstClient.detailCalculation(corporateApplicantRequest.getGstIn());
 			if(!CommonUtils.isObjectNullOrEmpty(response)) {
 				map.put("gstDetailedResp",response.getData());
 			}
 		}catch(Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		PrimaryCorporateDetail primaryCorporateDetail = primaryCorporateRepository.getByApplicationAndUserId(applicationId, userId);
 		if(!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail)) {
@@ -329,8 +327,7 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 						establishMentYear += " "+ masterResponse.getValue();
 					} 
 				} catch (Exception e) {
-					e.printStackTrace();
-					logger.info("Error in getting establishment year");
+					logger.error("Error in getting establishment year : ",e);
 				}
 			}
 			map.put("establishmentYr",!CommonUtils.isObjectNullOrEmpty(establishMentYear) ? CommonUtils.printFields(establishMentYear,null) : " ");
@@ -338,7 +335,7 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 			Integer industry = corporateApplicantRequest.getKeyVericalFunding().intValue();
 			map.put("keyVerticalFunding", !CommonUtils.isObjectNullOrEmpty(industry) ? CommonUtils.printFields(Industry.getById(industry).getValue(),null) : " ");
 		}catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 			
 			//DIRECTOR'S BACKGROUND
@@ -386,8 +383,7 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 							}
 							
 						}catch(Exception e) {
-							e.printStackTrace();
-							logger.info("Error while getting cibil details",e);
+							logger.error("Error while getting cibil details : ",e);
 						}
 					}
 					directorBackgroundDetailResponse.setPincode(directorBackgroundDetailRequest.getPincode());
@@ -397,7 +393,7 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 							directorBackgroundDetailResponse.setPinData(pincodeDateService.getById(directorBackgroundDetailRequest.getDistrictMappingId()));
 						}
 					} catch (Exception e) {
-						e.printStackTrace();
+						logger.error(CommonUtils.EXCEPTION,e);
 					}
 					directorBackgroundDetailResponse.setStateCode(directorBackgroundDetailRequest.getStateCode());
 					directorBackgroundDetailResponse.setCity(directorBackgroundDetailRequest.getCity());
@@ -427,7 +423,7 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 								directorBackgroundDetailResponse.setNationality("NA");
 							}
 						} catch (Exception e) {
-							e.printStackTrace();
+							logger.error(CommonUtils.EXCEPTION,e);
 						}
 					}
 					try {
@@ -447,16 +443,14 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 							}
 						}
 					}catch(Exception e) {
-						logger.info("error while getting main directors details");
-						e.printStackTrace();
+						logger.error("error while getting main directors details : ",e);
 					}
 					directorBackgroundDetailResponseList.add(directorBackgroundDetailResponse);
 				}
 				map.put("dirBackground", !CommonUtils.isListNullOrEmpty(directorBackgroundDetailResponseList) ? CommonUtils.printFields(directorBackgroundDetailResponseList,null) : " ");
 	        }
 				catch (Exception e) {
-					e.printStackTrace();
-					logger.info("Error in getting directors background details");
+					logger.error("Error in getting directors background details : ",e);
 		    }
 			
 			//MATCHES RESPONSE
@@ -468,7 +462,7 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 				map.put("matchesResponse", !CommonUtils.isListNullOrEmpty(matchResponse.getMatchDisplayObjectList()) ? CommonUtils.printFields(matchResponse.getMatchDisplayObjectList(),null) : " ");
 			}
 			catch (Exception e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 			
 		    //FINANCIAL ARRANGEMENTS
@@ -513,7 +507,7 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 				map.put("amtOfSecurity",!CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getCollateralSecurityAmount()) ? CommonUtils.convertValue(primaryCorporateRequest.getCollateralSecurityAmount()) : " ");
 			}
 		}catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		//FINANCIALS AND NOTES TO ACCOUNTS
 		try {
@@ -549,17 +543,17 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 			
 			
 		}catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		
 		
 		//NAME AS PER ITR
 		try{
 			ITRConnectionResponse itrResponse = itrClient.getITRBasicDetails(applicationId);
-			System.out.println("ITR RESPONSE===========>"+itrResponse);
+			logger.info("ITR RESPONSE===========>"+itrResponse);
 			map.put("nameAsPerItr", CommonUtils.printFields(itrResponse.getData(),null));
 		}catch(Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		
 		
@@ -598,9 +592,9 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 					
 				}
 				
-				//System.out.println("bankStatement : "+bankStatement.size()+" monthlyDetails :"+monthlyDetails.size()+" top5FundReceived :"+top5FundReceived.size());
-				//System.out.println("top5FundTransfered : "+top5FundTransfered.size()+" bouncedChequeList :"+bouncedChequeList.size()+" customerInfo :"+customerInfo.size());
-				//System.out.println("summaryInfo : "+summaryInfo.size()+" bankStatementAnalysis :"+datas.size());
+				//logger.info("bankStatement : "+bankStatement.size()+" monthlyDetails :"+monthlyDetails.size()+" top5FundReceived :"+top5FundReceived.size());
+				//logger.info("top5FundTransfered : "+top5FundTransfered.size()+" bouncedChequeList :"+bouncedChequeList.size()+" customerInfo :"+customerInfo.size());
+				//logger.info("summaryInfo : "+summaryInfo.size()+" bankStatementAnalysis :"+datas.size());
 				
 				//map.put("bankStatement", bankStatement);
 				map.put("monthlyDetails", monthlyDetails);
@@ -613,8 +607,7 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 				
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
-			logger.info("Error while getting perfios data");
+			logger.error("Error while getting perfios data : ",e);
 		}
 
 		
@@ -640,7 +633,7 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 				return masterResponse.getValue();
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		return null;
 	}
@@ -661,7 +654,7 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 				return masterResponse.getValue();
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		return null;
 	}
@@ -682,7 +675,7 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 				return masterResponse.getValue();
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		return null;
 	}

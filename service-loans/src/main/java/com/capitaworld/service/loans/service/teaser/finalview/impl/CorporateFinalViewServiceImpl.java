@@ -334,9 +334,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 					UserResponse userResponse = usersClient.getLastAccessApplicant(usersRequest);
 					fpProductMappingId = userResponse.getId();
 				} catch (Exception e) {
-					logger.error(
-							"error while fetching last access fp product id for fund provider while fetching matches in teaser view");
-					e.printStackTrace();
+					logger.error("error while fetching last access fp product id for fund provider while fetching matches in teaser view : ",e);
 				}
 				try {
 					MatchRequest matchRequest = new MatchRequest();
@@ -345,8 +343,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 					MatchDisplayResponse matchResponse = matchEngineClient.displayMatchesOfCorporate(matchRequest);
 					corporateFinalViewResponse.setMatchesList(matchResponse.getMatchDisplayObjectList());
 				} catch (Exception e) {
-					logger.error("Error while getting matches data for final teaser view");
-					e.printStackTrace();
+					logger.error("Error while getting matches data for final teaser view : ",e);
 				}
 			}
 		}
@@ -378,7 +375,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 						corporateFinalViewResponse.setEstablishmentYear("NA");
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 			}
 
@@ -400,7 +397,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 						corporateFinalViewResponse.setCity("NA");
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 			}
 			cityList.clear();
@@ -420,7 +417,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 						corporateFinalViewResponse.setCity("NA");
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 			}
 			// SET STATE
@@ -441,7 +438,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 						corporateFinalViewResponse.setState("NA");
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 			}
 			stateList.clear();
@@ -460,7 +457,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 						corporateFinalViewResponse.setState("NA");
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 			}
 			// SET COUNTRY
@@ -481,7 +478,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 						corporateFinalViewResponse.setCountry("NA");
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 			}
 			countryList.clear();
@@ -500,7 +497,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 						corporateFinalViewResponse.setCountry("NA");
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 			}
 			// KEY VERTICAL FUNDING (INDUSTRY SECTOR SUBSECTOR DETAILS)
@@ -521,7 +518,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 					}
 
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 			}
 			// KEY VERTICAL SECTOR
@@ -550,8 +547,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 					corporateFinalViewResponse.setKeyVericalSector("NA");
 				}
 			} catch (Exception e) {
-				logger.info("Error while getting key vertical sector data");
-				e.printStackTrace();
+				logger.error("Error while getting key vertical sector data : ",e);
 			}
 
 			// KEY VERTICAL SUB-SECTOR
@@ -562,8 +558,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 					corporateFinalViewResponse.setKeyVericalSubsector((String) oneFormResponse.getData());
 				}
 			} catch (Exception e) {
-				// TODO: handle exception
-				logger.warn("error while getting key vertical sub-sector");
+				logger.error("error while getting key vertical sub-sector : ",e);
 			}
 		}
 		// PROFILE AND PRIMARY DETAILS
@@ -677,7 +672,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 								pincodeDateService.getById(directorBackgroundDetailRequest.getDistrictMappingId()));
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 
 				directorBackgroundDetailResponse.setStateCode(directorBackgroundDetailRequest.getStateCode());
@@ -720,7 +715,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 							directorBackgroundDetailResponse.setNationality("NA");
 						}
 					} catch (Exception e) {
-						e.printStackTrace();
+						logger.error(CommonUtils.EXCEPTION,e);
 					}
 				}
 				
@@ -755,9 +750,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 					}
 					
 				} catch (Exception e) {
-					e.printStackTrace();
-					logger.warn("----:::::: error while get is main dir details ::::::-----For-----",toApplicationId);
-					// TODO: handle exception
+					logger.error("----:::::: error while get is main dir details ::::::-----For-----",toApplicationId + CommonUtils.EXCEPTION + e);
 				}
 			}
 			
@@ -1019,8 +1012,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 			corporateFinalViewResponse.setFinancialInputRequest(financialInputRequest);
 
 		} catch (Exception e) {
-			logger.info("Error while getting irr mapping data");
-			e.printStackTrace();
+			logger.error("Error while getting irr mapping data : ",e);
 		}
 
 		// ============================================FINAL TEASER VIEW
@@ -1055,8 +1047,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 							? CreditRatingTerm.getById(corporateFinalInfoRequest.getCreditRatingId()).getValue()
 							: " ");
 		} catch (Exception e1) {
-			logger.info("Error while getting corporate final information");
-			e1.printStackTrace();
+			logger.error("Error while getting corporate final information : ",e1);
 		}
 
 		// ACHIEVMENTS DETAILS
@@ -1190,7 +1181,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 			}
 			corporateFinalViewResponse.setPromotorBackgroundDetailResponseList(promotorBackgroundDetailResponseList);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 
 		try {
@@ -1323,8 +1314,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 							: null);
 
 		} catch (Exception e) {
-			logger.info("Error while getting mcq");
-			e.printStackTrace();
+			logger.error("Error while getting mcq : ",e);
 		}
 		// OwnerShipDetails
 		try {
@@ -1382,7 +1372,6 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 			}
 			corporateFinalViewResponse.setFinanceMeansDetailResponseList(financeMeansDetailResponsesList);
 		} catch (Exception e1) {
-			// TODO Auto-generated catch block
 			logger.error("Problem to get Data of Finance Means Details {}", e1);
 		}
 
@@ -1436,8 +1425,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 			// corporatePrimaryViewResponse.setTop5FundReceivedList(data.getTop5FundReceivedList());
 			// corporatePrimaryViewResponse.setTop5FundTransferedList(data.getTop5FundTransferedList());
 		} catch (Exception e) {
-			e.printStackTrace();
-			logger.info("Error while getting perfios data");
+			logger.error("Error while getting perfios data : ",e);
 		}
 
 		// scoring Data
@@ -1511,8 +1499,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 				logger.info("SCORING OBJECT NULL OR EMPTY -------------------->");
 			}
 		} catch (ScoringException | IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e1);
 		}
 		
 		
@@ -1693,8 +1680,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 					pindata.getTaluka();
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
-				// TODO: handle exception
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 			if(!CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getSecondAddress())){
 				
@@ -1702,8 +1688,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 			}
 		}
 		catch (Exception e) {
-			e.printStackTrace();
-				// TODO: handle exception
+			logger.error(CommonUtils.EXCEPTION,e);
 			}	
 		
 		//address
@@ -1721,8 +1706,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 					pindata.getTaluka();
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
-				// TODO: handle exception
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 			if(!CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getFirstAddress())){
 				
@@ -1730,8 +1714,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 			}
 		}
 		catch (Exception e) {
-			e.printStackTrace();
-				// TODO: handle exception
+			logger.error(CommonUtils.EXCEPTION,e);
 			}	
 		
 		
@@ -1746,21 +1729,21 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 			corporateFinalViewResponse.setCibilReport(documentResponse.getDataList());
 		} catch (DocumentException e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		documentRequest.setProductDocumentMappingId(DocumentAlias.WORKING_CAPITAL_BANK_STATEMENT);
 		try {
 			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 			corporateFinalViewResponse.setBankStatement(documentResponse.getDataList());
 		} catch (DocumentException e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		documentRequest.setProductDocumentMappingId(DocumentAlias.CORPORATE_ITR_PDF);
 		try {
 			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 			corporateFinalViewResponse.setIrtPdfReport(documentResponse.getDataList());
 		} catch (DocumentException e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		if (primaryCorporateDetail.getProductId() == 1) {
 			documentRequest.setProductDocumentMappingId(DocumentAlias.WORKING_CAPITAL_LAST_AUDITED_ANNUAL_REPORT);
@@ -1768,84 +1751,84 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 				DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 				corporateFinalViewResponse.setAuditedAnnualReport(documentResponse.getDataList());
 			} catch (DocumentException e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 			documentRequest.setProductDocumentMappingId(DocumentAlias.WORKING_CAPITAL_LAST_IT_RETURN);
 			try {
 				DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 				corporateFinalViewResponse.setItr(documentResponse.getDataList());
 			} catch (DocumentException e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 			documentRequest.setProductDocumentMappingId(DocumentAlias.WORKING_CAPITAL_BANK_STATEMENT);
 			try {
 				DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 				corporateFinalViewResponse.setBankStatementFinalView(documentResponse.getDataList());
 			} catch (DocumentException e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 			documentRequest.setProductDocumentMappingId(DocumentAlias.WORKING_CAPITAL_SANCTION_LETTER_COPY);
 			try {
 				DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 				corporateFinalViewResponse.setSanctionLetter(documentResponse.getDataList());
 			} catch (DocumentException e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 			documentRequest.setProductDocumentMappingId(DocumentAlias.WORKING_CAPITAL_PROVISIONAL_FINANCIALS);
 			try {
 				DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 				corporateFinalViewResponse.setProvisionalFinancials(documentResponse.getDataList());
 			} catch (DocumentException e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 			documentRequest.setProductDocumentMappingId(DocumentAlias.WORKING_CAPITAL_NET_WORTH_STATEMENT_OF_DIRECTORS);
 			try {
 				DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 				corporateFinalViewResponse.setNetWorthStatements(documentResponse.getDataList());
 			} catch (DocumentException e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 			documentRequest.setProductDocumentMappingId(DocumentAlias.WORKING_CAPITAL_FINANCIALS_OF_SUBSIDIARIES);
 			try {
 				DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 				corporateFinalViewResponse.setFinancialsOfHolding(documentResponse.getDataList());
 			} catch (DocumentException e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 			documentRequest.setProductDocumentMappingId(DocumentAlias.WORKING_CAPITAL_ASSESSMENT_ORDERS);
 			try {
 				DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 				corporateFinalViewResponse.setAssessmentOrders(documentResponse.getDataList());
 			} catch (DocumentException e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 			documentRequest.setProductDocumentMappingId(DocumentAlias.WC_MOM_AOA);
 			try {
 				DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 				corporateFinalViewResponse.setMomAndAoa(documentResponse.getDataList());
 			} catch (DocumentException e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 			documentRequest.setProductDocumentMappingId(DocumentAlias.WC_GST_APPLIED);
 			try {
 				DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 				corporateFinalViewResponse.setGstCertificate(documentResponse.getDataList());
 			} catch (DocumentException e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 			documentRequest.setProductDocumentMappingId(DocumentAlias.WORKING_CAPITAL_CERTIFICATE_OF_INCORPORATION);
 			try {
 				DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 				corporateFinalViewResponse.setCertificateOfIncorporation(documentResponse.getDataList());
 			} catch (DocumentException e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 			documentRequest.setProductDocumentMappingId(DocumentAlias.WORKING_CAPITAL_COPY_OF_PAN_CARD);
 			try {
 				DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 				corporateFinalViewResponse.setCopyOfPanCard(documentResponse.getDataList());
 			} catch (DocumentException e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 			documentRequest.setProductDocumentMappingId(
 					DocumentAlias.WORKING_CAPITAL_PAN_OF_DIRECTORS_CERTIFICATE_OF_INCORPORATION);
@@ -1853,28 +1836,28 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 				DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 				corporateFinalViewResponse.setPanOfAllDirectors(documentResponse.getDataList());
 			} catch (DocumentException e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 			documentRequest.setProductDocumentMappingId(DocumentAlias.WORKING_CAPITAL_PHOTO_OF_DIRECTORS);
 			try {
 				DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 				corporateFinalViewResponse.setPhotosOfDirectors(documentResponse.getDataList());
 			} catch (DocumentException e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 			documentRequest.setProductDocumentMappingId(DocumentAlias.WORKING_CAPITAL_DIRECTOR_ADDRESS);
 			try {
 				DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 				corporateFinalViewResponse.setResidenceAddOfDirectors(documentResponse.getDataList());
 			} catch (DocumentException e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 			documentRequest.setProductDocumentMappingId((long) DocumentAlias.WC_CMA);
 			try {
 				DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 				corporateFinalViewResponse.setCmaList(documentResponse.getDataList());
 			} catch (DocumentException e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 
 		}
@@ -1884,84 +1867,84 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 				DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 				corporateFinalViewResponse.setAuditedAnnualReport(documentResponse.getDataList());
 			} catch (DocumentException e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 			documentRequest.setProductDocumentMappingId(DocumentAlias.TERM_LOAN_LAST_IT_RETURN);
 			try {
 				DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 				corporateFinalViewResponse.setItr(documentResponse.getDataList());
 			} catch (DocumentException e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 			documentRequest.setProductDocumentMappingId(DocumentAlias.TERM_LOAN_BANK_STATEMENT);
 			try {
 				DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 				corporateFinalViewResponse.setBankStatementFinalView(documentResponse.getDataList());
 			} catch (DocumentException e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 			documentRequest.setProductDocumentMappingId(DocumentAlias.TERM_LOAN_SANCTION_LETTER_COPY);
 			try {
 				DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 				corporateFinalViewResponse.setSanctionLetter(documentResponse.getDataList());
 			} catch (DocumentException e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 			documentRequest.setProductDocumentMappingId(DocumentAlias.TERM_LOAN_PROVISIONAL_FINANCIALS);
 			try {
 				DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 				corporateFinalViewResponse.setProvisionalFinancials(documentResponse.getDataList());
 			} catch (DocumentException e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 			documentRequest.setProductDocumentMappingId(DocumentAlias.TERM_LOAN_NET_WORTH_STATEMENT_OF_DIRECTORS);
 			try {
 				DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 				corporateFinalViewResponse.setNetWorthStatements(documentResponse.getDataList());
 			} catch (DocumentException e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 			documentRequest.setProductDocumentMappingId(DocumentAlias.TERM_LOAN_FINANCIALS_OF_SUBSIDIARIES);
 			try {
 				DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 				corporateFinalViewResponse.setFinancialsOfHolding(documentResponse.getDataList());
 			} catch (DocumentException e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 			documentRequest.setProductDocumentMappingId(DocumentAlias.TERM_LOAN_ASSESSMENT_ORDERS);
 			try {
 				DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 				corporateFinalViewResponse.setAssessmentOrders(documentResponse.getDataList());
 			} catch (DocumentException e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 			documentRequest.setProductDocumentMappingId(DocumentAlias.TL_MOM_AOA);
 			try {
 				DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 				corporateFinalViewResponse.setMomAndAoa(documentResponse.getDataList());
 			} catch (DocumentException e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 			documentRequest.setProductDocumentMappingId(DocumentAlias.TL_GST_APPLIED);
 			try {
 				DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 				corporateFinalViewResponse.setGstCertificate(documentResponse.getDataList());
 			} catch (DocumentException e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 			documentRequest.setProductDocumentMappingId(DocumentAlias.TERM_LOAN_CERTIFICATE_OF_INCORPORATION);
 			try {
 				DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 				corporateFinalViewResponse.setCertificateOfIncorporation(documentResponse.getDataList());
 			} catch (DocumentException e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 			documentRequest.setProductDocumentMappingId(DocumentAlias.TERM_LOAN_COPY_OF_PAN_CARD);
 			try {
 				DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 				corporateFinalViewResponse.setCopyOfPanCard(documentResponse.getDataList());
 			} catch (DocumentException e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 			documentRequest
 					.setProductDocumentMappingId(DocumentAlias.TERM_LOAN_PAN_OF_DIRECTORS_CERTIFICATE_OF_INCORPORATION);
@@ -1969,28 +1952,28 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 				DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 				corporateFinalViewResponse.setPanOfAllDirectors(documentResponse.getDataList());
 			} catch (DocumentException e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 			documentRequest.setProductDocumentMappingId(DocumentAlias.TERM_LOAN_PHOTO_OF_DIRECTORS);
 			try {
 				DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 				corporateFinalViewResponse.setPhotosOfDirectors(documentResponse.getDataList());
 			} catch (DocumentException e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 			documentRequest.setProductDocumentMappingId(DocumentAlias.TERM_LOAN_DIRECTOR_ADDRESS);
 			try {
 				DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 				corporateFinalViewResponse.setResidenceAddOfDirectors(documentResponse.getDataList());
 			} catch (DocumentException e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 			documentRequest.setProductDocumentMappingId((long) DocumentAlias.TL_CMA);
 			try {
 				DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 				corporateFinalViewResponse.setCmaList(documentResponse.getDataList());
 			} catch (DocumentException e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 		}
 		if (primaryCorporateDetail.getProductId() == 15) {
@@ -1999,84 +1982,84 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 				DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 				corporateFinalViewResponse.setAuditedAnnualReport(documentResponse.getDataList());
 			} catch (DocumentException e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 			documentRequest.setProductDocumentMappingId(DocumentAlias.UNSECURED_LOAN_LAST_IT_RETURN);
 			try {
 				DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 				corporateFinalViewResponse.setItr(documentResponse.getDataList());
 			} catch (DocumentException e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 			documentRequest.setProductDocumentMappingId(DocumentAlias.UNSECURED_LOAN_BANK_STATEMENT);
 			try {
 				DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 				corporateFinalViewResponse.setBankStatementFinalView(documentResponse.getDataList());
 			} catch (DocumentException e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 			documentRequest.setProductDocumentMappingId(DocumentAlias.UNSECURED_LOAN_SANCTION_LETTER_COPY);
 			try {
 				DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 				corporateFinalViewResponse.setSanctionLetter(documentResponse.getDataList());
 			} catch (DocumentException e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 			documentRequest.setProductDocumentMappingId(DocumentAlias.UNSECURED_LOAN_PROVISIONAL_FINANCIALS);
 			try {
 				DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 				corporateFinalViewResponse.setProvisionalFinancials(documentResponse.getDataList());
 			} catch (DocumentException e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 			documentRequest.setProductDocumentMappingId(DocumentAlias.UNSECURED_LOAN_NET_WORTH_STATEMENT_OF_DIRECTORS);
 			try {
 				DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 				corporateFinalViewResponse.setNetWorthStatements(documentResponse.getDataList());
 			} catch (DocumentException e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 			documentRequest.setProductDocumentMappingId(DocumentAlias.UNSECURED_LOAN_FINANCIALS_OF_SUBSIDIARIES);
 			try {
 				DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 				corporateFinalViewResponse.setFinancialsOfHolding(documentResponse.getDataList());
 			} catch (DocumentException e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 			documentRequest.setProductDocumentMappingId(DocumentAlias.UNSECURED_LOAN_ASSESSMENT_ORDERS);
 			try {
 				DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 				corporateFinalViewResponse.setAssessmentOrders(documentResponse.getDataList());
 			} catch (DocumentException e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 			documentRequest.setProductDocumentMappingId(DocumentAlias.USL_MOM_AOA);
 			try {
 				DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 				corporateFinalViewResponse.setMomAndAoa(documentResponse.getDataList());
 			} catch (DocumentException e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 			documentRequest.setProductDocumentMappingId(DocumentAlias.USL_GST_APPLIED);
 			try {
 				DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 				corporateFinalViewResponse.setGstCertificate(documentResponse.getDataList());
 			} catch (DocumentException e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 			documentRequest.setProductDocumentMappingId(DocumentAlias.UNSECURED_LOAN_CERTIFICATE_OF_INCORPORATION);
 			try {
 				DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 				corporateFinalViewResponse.setCertificateOfIncorporation(documentResponse.getDataList());
 			} catch (DocumentException e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 			documentRequest.setProductDocumentMappingId(DocumentAlias.UNSECURED_LOAN_COPY_OF_PAN_CARD);
 			try {
 				DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 				corporateFinalViewResponse.setCopyOfPanCard(documentResponse.getDataList());
 			} catch (DocumentException e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 			documentRequest.setProductDocumentMappingId(
 					DocumentAlias.UNSECURED_LOAN_PAN_OF_DIRECTORS_CERTIFICATE_OF_INCORPORATION);
@@ -2084,28 +2067,28 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 				DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 				corporateFinalViewResponse.setPanOfAllDirectors(documentResponse.getDataList());
 			} catch (DocumentException e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 			documentRequest.setProductDocumentMappingId(DocumentAlias.UNSECURED_LOAN_PHOTO_OF_DIRECTORS);
 			try {
 				DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 				corporateFinalViewResponse.setPhotosOfDirectors(documentResponse.getDataList());
 			} catch (DocumentException e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 			documentRequest.setProductDocumentMappingId(DocumentAlias.UNSECURED_LOAN_DIRECTOR_ADDRESS);
 			try {
 				DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 				corporateFinalViewResponse.setResidenceAddOfDirectors(documentResponse.getDataList());
 			} catch (DocumentException e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 			documentRequest.setProductDocumentMappingId((long) DocumentAlias.USL_CMA);
 			try {
 				DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 				corporateFinalViewResponse.setCmaList(documentResponse.getDataList());
 			} catch (DocumentException e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 		}
 
@@ -2115,84 +2098,84 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 				DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 				corporateFinalViewResponse.setAuditedAnnualReport(documentResponse.getDataList());
 			} catch (DocumentException e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 			documentRequest.setProductDocumentMappingId(DocumentAlias.WCTL_LOAN_LAST_IT_RETURN);
 			try {
 				DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 				corporateFinalViewResponse.setItr(documentResponse.getDataList());
 			} catch (DocumentException e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 			documentRequest.setProductDocumentMappingId(DocumentAlias.WCTL_LOAN_BANK_STATEMENT);
 			try {
 				DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 				corporateFinalViewResponse.setBankStatementFinalView(documentResponse.getDataList());
 			} catch (DocumentException e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 			documentRequest.setProductDocumentMappingId(DocumentAlias.WCTL_LOAN_SANCTION_LETTER_COPY);
 			try {
 				DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 				corporateFinalViewResponse.setSanctionLetter(documentResponse.getDataList());
 			} catch (DocumentException e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 			documentRequest.setProductDocumentMappingId(DocumentAlias.WCTL_LOAN_PROVISIONAL_FINANCIALS);
 			try {
 				DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 				corporateFinalViewResponse.setProvisionalFinancials(documentResponse.getDataList());
 			} catch (DocumentException e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 			documentRequest.setProductDocumentMappingId(DocumentAlias.WCTL_LOAN_NET_WORTH_STATEMENT_OF_DIRECTORS);
 			try {
 				DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 				corporateFinalViewResponse.setNetWorthStatements(documentResponse.getDataList());
 			} catch (DocumentException e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 			documentRequest.setProductDocumentMappingId(DocumentAlias.WCTL_LOAN_FINANCIALS_OF_SUBSIDIARIES);
 			try {
 				DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 				corporateFinalViewResponse.setFinancialsOfHolding(documentResponse.getDataList());
 			} catch (DocumentException e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 			documentRequest.setProductDocumentMappingId(DocumentAlias.WCTL_LOAN_ASSESSMENT_ORDERS);
 			try {
 				DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 				corporateFinalViewResponse.setAssessmentOrders(documentResponse.getDataList());
 			} catch (DocumentException e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 			/*
 			 * documentRequest.setProductDocumentMappingId(DocumentAlias.USL_MOM_AOA); try{
 			 * DocumentResponse documentResponse =
 			 * dmsClient.listProductDocument(documentRequest);
 			 * corporateFinalViewResponse.setMomAndAoa(documentResponse.getDataList()); }
-			 * catch (DocumentException e) { e.printStackTrace(); }
+			 * catch (DocumentException e) { logger.error(CommonUtils.EXCEPTION,e); }
 			 */
 			/*
 			 * documentRequest.setProductDocumentMappingId(DocumentAlias.USL_GST_APPLIED);
 			 * try{ DocumentResponse documentResponse =
 			 * dmsClient.listProductDocument(documentRequest);
 			 * corporateFinalViewResponse.setGstCertificate(documentResponse.getDataList());
-			 * } catch (DocumentException e) { e.printStackTrace(); }
+			 * } catch (DocumentException e) { logger.error(CommonUtils.EXCEPTION,e); }
 			 */
 			documentRequest.setProductDocumentMappingId(DocumentAlias.WCTL_LOAN_CERTIFICATE_OF_INCORPORATION);
 			try {
 				DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 				corporateFinalViewResponse.setCertificateOfIncorporation(documentResponse.getDataList());
 			} catch (DocumentException e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 			documentRequest.setProductDocumentMappingId(DocumentAlias.WCTL_LOAN_COPY_OF_PAN_CARD);
 			try {
 				DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 				corporateFinalViewResponse.setCopyOfPanCard(documentResponse.getDataList());
 			} catch (DocumentException e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 			documentRequest
 					.setProductDocumentMappingId(DocumentAlias.WCTL_LOAN_PAN_OF_DIRECTORS_CERTIFICATE_OF_INCORPORATION);
@@ -2200,28 +2183,28 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 				DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 				corporateFinalViewResponse.setPanOfAllDirectors(documentResponse.getDataList());
 			} catch (DocumentException e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 			documentRequest.setProductDocumentMappingId(DocumentAlias.WCTL_LOAN_PHOTO_OF_DIRECTORS);
 			try {
 				DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 				corporateFinalViewResponse.setPhotosOfDirectors(documentResponse.getDataList());
 			} catch (DocumentException e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 			documentRequest.setProductDocumentMappingId(DocumentAlias.WCTL_LOAN_DIRECTOR_ADDRESS);
 			try {
 				DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 				corporateFinalViewResponse.setResidenceAddOfDirectors(documentResponse.getDataList());
 			} catch (DocumentException e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 			documentRequest.setProductDocumentMappingId((long) DocumentAlias.WCTL_CMA);
 			try {
 				DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 				corporateFinalViewResponse.setCmaList(documentResponse.getDataList());
 			} catch (DocumentException e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 		}
 

@@ -62,8 +62,7 @@ public class FinancialArrangementDetailsServiceImpl implements FinancialArrangem
 		}
 
 		catch (Exception e) {
-			logger.info("Exception  in save financialArrangementsDetail  :-");
-			e.printStackTrace();
+			logger.error("Exception  in save financialArrangementsDetail  :-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
@@ -85,8 +84,7 @@ public class FinancialArrangementDetailsServiceImpl implements FinancialArrangem
 		}
 
 		catch (Exception e) {
-			logger.info("Exception  in save financialArrangementsDetail  :-");
-			e.printStackTrace();
+			logger.error("Exception  in save financialArrangementsDetail  :-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
@@ -163,8 +161,7 @@ public class FinancialArrangementDetailsServiceImpl implements FinancialArrangem
 		}
 
 		catch (Exception e) {
-			logger.info("Exception  in save financialArrangementsDetail  :-");
-			e.printStackTrace();
+			logger.error("Exception  in save financialArrangementsDetail  :-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}

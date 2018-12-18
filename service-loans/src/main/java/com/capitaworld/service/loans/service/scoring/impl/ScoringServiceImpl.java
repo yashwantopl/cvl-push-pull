@@ -3969,7 +3969,8 @@ public class ScoringServiceImpl implements ScoringService {
                 scoringModelReqRes.setOrgId(Long.parseLong(userResponse.getData().toString()));
                 /*scoringModelReqRes.setOrgId(1l);*/
             } else {
-                throw new Exception();
+                logger.debug(ORG_ID_IS_NULL_OR_EMPTY + "In getScoringModelTempList");
+                return new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
             }
         } catch (Exception e) {
             logger.error(ORG_ID_IS_NULL_OR_EMPTY,e);
@@ -3997,7 +3998,8 @@ public class ScoringServiceImpl implements ScoringService {
             if (!CommonUtils.isObjectNullOrEmpty(userResponse) && !CommonUtils.isObjectNullOrEmpty(userResponse.getData())) {
                 scoringModelReqRes.getScoringModelResponse().setOrgId(Long.parseLong(userResponse.getData().toString()));
             } else {
-                throw new Exception();
+                logger.error(ORG_ID_IS_NULL_OR_EMPTY + " In saveScoringModelTemp ");
+                return new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
             }
         } catch (Exception e) {
             logger.error(ORG_ID_IS_NULL_OR_EMPTY,e);
@@ -4056,7 +4058,8 @@ public class ScoringServiceImpl implements ScoringService {
                 scoringModelReqRes.setOrgId(Long.parseLong(userResponse.getData().toString()));
                 /*scoringModelReqRes.setOrgId(1l);*/
             } else {
-                throw new Exception();
+                logger.error(ORG_ID_IS_NULL_OR_EMPTY + " In getScoringModelMasterList ");
+                return new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
             }
         } catch (Exception e) {
             logger.error(ORG_ID_IS_NULL_OR_EMPTY,e);

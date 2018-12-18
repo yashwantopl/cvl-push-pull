@@ -82,8 +82,7 @@ public class FundSeekerInputRequestController {
             }
 
         } catch (Exception e) {
-            logger.error("Error while saving one form data");
-            e.printStackTrace();
+            logger.error("Error while saving one form data : ",e);
             return new ResponseEntity<LoansResponse>(
                     new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
                     HttpStatus.OK);
@@ -139,8 +138,7 @@ public class FundSeekerInputRequestController {
 
 
         } catch (Exception e) {
-            logger.error("Error while fetching director detail");
-            e.printStackTrace();
+            logger.error("Error while fetching director detail : ",e);
             return new ResponseEntity<LoansResponse>(
                     new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
                     HttpStatus.INTERNAL_SERVER_ERROR);
@@ -203,8 +201,7 @@ public class FundSeekerInputRequestController {
             return new ResponseEntity<LoansResponse>(callMatchEngineClient, HttpStatus.OK);
 
         } catch (Exception e) {
-            logger.error("Error while Calling Connect Client after Oneform Submit");
-            e.printStackTrace();
+            logger.error("Error while Calling Connect Client after Oneform Submit : ",e);
             return new ResponseEntity<LoansResponse>(
                     new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
                     HttpStatus.OK);
@@ -234,8 +231,7 @@ public class FundSeekerInputRequestController {
             return new ResponseEntity<LoansResponse>(callMatchEngineClient, HttpStatus.OK);
 
         } catch (Exception e) {
-            logger.error("Error while Calling Connect Client after Oneform Submit");
-            e.printStackTrace();
+            logger.error("Error while Calling Connect Client after Oneform Submit : ",e);
             return new ResponseEntity<LoansResponse>(
                     new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
                     HttpStatus.OK);
@@ -264,8 +260,7 @@ public class FundSeekerInputRequestController {
             return new ResponseEntity<LoansResponse>(new LoansResponse("Details successfully fetched",HttpStatus.OK.value(),scoringResponse), HttpStatus.OK);
 
         } catch (Exception e) {
-            logger.error("Error while Fetching details for min-max Margin");
-            e.printStackTrace();
+            logger.error("Error while Fetching details for min-max Margin : ",e);
             return new ResponseEntity<LoansResponse>(
                     new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
                     HttpStatus.OK);

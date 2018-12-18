@@ -106,8 +106,7 @@ public class ScoringController {
 	             loansResponse.setContentInBytes(FileUtils.readFileToByteArray(file));
 	  	       return loansResponse;	             
 	          }catch (NullPointerException |IllegalStateException| InvalidFormatException  |IOException |LoansException e) {
-	        	 return   loansResponse = new LoansResponse(e.getMessage(),
-							HttpStatus.INTERNAL_SERVER_ERROR.value());
+	        	 return  new LoansResponse(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value());
 	        }
 	        finally {
                     try {

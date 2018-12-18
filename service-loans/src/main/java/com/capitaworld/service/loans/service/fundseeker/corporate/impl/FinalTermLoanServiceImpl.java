@@ -65,8 +65,7 @@ public class FinalTermLoanServiceImpl implements FinalTermLoanService {
 			loanApplicationRepository.setFinalFilledCount(termLoanRequest.getApplicationId(), finalUserId,termLoanRequest.getFinalFilledCount());
 			return true;
 		} catch (Exception e) {
-			logger.error("Error while Saving Final Term Loan Details:-");
-			e.printStackTrace();
+			logger.error("Error while Saving Final Term Loan Details:-",e);
 			throw new Exception("Something went Wrong !");
 		}
 	}
@@ -84,8 +83,7 @@ public class FinalTermLoanServiceImpl implements FinalTermLoanService {
 			termLoanRequest.setOverseasNetworkIds(networkRepository.getOverseasNetworkIds(applicationId));
 			return termLoanRequest;
 		} catch (Exception e) {
-			logger.error("Error while getting Final Term Loan Details:-");
-			e.printStackTrace();
+			logger.error("Error while getting Final Term Loan Details:-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}

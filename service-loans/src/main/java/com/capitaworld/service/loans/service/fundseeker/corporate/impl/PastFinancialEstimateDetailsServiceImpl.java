@@ -76,8 +76,7 @@ public class PastFinancialEstimateDetailsServiceImpl implements PastFinancialEst
 		}
 
 		catch (Exception e) {
-			logger.info("Exception  in save pastFinancialEstimateDetail  :-");
-			e.printStackTrace();
+			logger.error("Exception  in save pastFinancialEstimateDetail  :-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
@@ -96,8 +95,7 @@ public class PastFinancialEstimateDetailsServiceImpl implements PastFinancialEst
 			}
 			return pastFinancialEstimateDetailRequests;
 		} catch (Exception e) {
-			logger.info("Exception  in getting pastFinancialEstimateDetail  :-");
-			e.printStackTrace();
+			logger.error("Exception  in getting pastFinancialEstimateDetail  :-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
@@ -175,8 +173,7 @@ public class PastFinancialEstimateDetailsServiceImpl implements PastFinancialEst
 				return yearList;
 
 			} catch (ParseException e) {
-				logger.error("Error While getting Year List of past Financial Year");
-				e.printStackTrace();
+				logger.error("Error While getting Year List of past Financial Year : ",e);
 				throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 			}
 		} else {
@@ -236,7 +233,7 @@ public class PastFinancialEstimateDetailsServiceImpl implements PastFinancialEst
 				}
 
 			} catch (ParseException e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 				throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 			}
 		}
@@ -302,8 +299,8 @@ public class PastFinancialEstimateDetailsServiceImpl implements PastFinancialEst
 						boolean isMatch = false;
 					for(int k = m ; k < finalYearList.size() ; k++){
 							
-							System.out.println(mcaYearList.get(m).getFinancialYear());
-							System.out.println(finalYearList.get(k).getFinancialYear());
+							logger.info(mcaYearList.get(m).getFinancialYear());
+							logger.info(finalYearList.get(k).getFinancialYear());
 							if(finalYearList.get(k).getFinancialYear().equals(mcaYearList.get(m).getFinancialYear())){
 								isMatch = true;
 								break;
@@ -318,11 +315,10 @@ public class PastFinancialEstimateDetailsServiceImpl implements PastFinancialEst
 						finalYearList.add(mcaYearList.get(m));
 					}
 					}
-					System.out.println(finalYearList);
+					logger.info(""+finalYearList);
 					return finalYearList;
 				} catch (ParseException e) {
-					logger.error("Error While getting Year List of past Financial Year");
-					e.printStackTrace();
+					logger.error("Error While getting Year List of past Financial Year : ",e);
 					throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 				}
 			

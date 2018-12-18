@@ -60,8 +60,7 @@ public class CorporateMcqController {
             return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
                     HttpStatus.OK);
         } catch (Exception e) {
-            logger.error("Error while saving final corporate mcq");
-            e.printStackTrace();
+            logger.error("Error while saving final corporate mcq : ",e);
             return new ResponseEntity<LoansResponse>(
                     new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
                     HttpStatus.INTERNAL_SERVER_ERROR);
@@ -94,7 +93,6 @@ public class CorporateMcqController {
                 return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
             } catch (Exception e) {
                 logger.error("Error while getting Final corporate mcq==>", e);
-                e.printStackTrace();
                 return new ResponseEntity<LoansResponse>(
                         new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
                         HttpStatus.OK);
