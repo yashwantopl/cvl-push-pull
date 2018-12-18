@@ -69,8 +69,7 @@ public class CreditRatingOrganizationDetailsServiceImpl implements CreditRatingO
 		}
 
 		catch (Exception e) {
-			logger.info("Exception  in save creditRatingOrganizationDetail  :-");
-			e.printStackTrace();
+			logger.error("Exception  in save creditRatingOrganizationDetail  :-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
@@ -96,8 +95,7 @@ public class CreditRatingOrganizationDetailsServiceImpl implements CreditRatingO
 			}
 			return creditRatingOrganizationDetailRequests;
 		} catch (Exception e) {
-			logger.info("Exception  in save creditRatingOrganizationDetail  :-");
-			e.printStackTrace();
+			logger.error("Exception  in save creditRatingOrganizationDetail  :-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}

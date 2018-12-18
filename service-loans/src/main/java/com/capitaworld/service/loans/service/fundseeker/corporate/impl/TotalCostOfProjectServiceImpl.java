@@ -59,8 +59,7 @@ public class TotalCostOfProjectServiceImpl implements TotalCostOfProjectService 
 		}
 
 		catch (Exception e) {
-			logger.info("Exception in save totalCostOfProject :-");
-			e.printStackTrace();
+			logger.error("Exception in save totalCostOfProject :-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 
@@ -82,8 +81,7 @@ public class TotalCostOfProjectServiceImpl implements TotalCostOfProjectService 
 			}
 			return totalCostOfProjectRequests;
 		} catch (Exception e) {
-			logger.info("Exception getting TotalCostOfProjects  :-");
-			e.printStackTrace();
+			logger.error("Exception getting TotalCostOfProjects  :-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}

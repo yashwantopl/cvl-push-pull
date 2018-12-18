@@ -160,8 +160,7 @@ public class DashboardServiceImpl implements DashboardService {
 			CommonDocumentUtils.endHook(logger, "getCount");
 			return 0;
 		} catch (Exception e) {
-			logger.error("Error while getting count for Dashbord");
-			e.printStackTrace();
+			logger.error("Error while getting count for Dashbord : ",e);
 			throw new ExcelException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}

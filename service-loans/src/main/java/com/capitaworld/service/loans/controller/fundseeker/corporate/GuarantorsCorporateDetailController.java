@@ -88,7 +88,6 @@ public class GuarantorsCorporateDetailController {
 
 		} catch (Exception e) {
 			logger.error("Error while saving Guarantors Corporate Details==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -122,7 +121,6 @@ public class GuarantorsCorporateDetailController {
 
 		} catch (Exception e) {
 			logger.error("Error while getting Guarantors Corporate Details==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);

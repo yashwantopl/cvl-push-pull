@@ -57,14 +57,12 @@ public class PrimaryTermLoanServiceImpl implements PrimaryTermLoanService {
 			saveNegativeList(termLoanDetail.getApplicationId().getId(), termLoanRequest.getNegativeList());*/
 			return true;
 		} catch (Exception e) {
-			logger.error("Error while Primary Term Loan Details:-");
-			e.printStackTrace();
+			logger.error("Error while Primary Term Loan Details:-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	/*private void saveNegativeList(Long id, List<Long> negativeList) {
-		// TODO Auto-generated method stub
 		FsNegativeFpList fsNegativeFpList= null;
 		for (Long fpId : negativeList) {
 			fsNegativeFpList = new FsNegativeFpList();
@@ -133,8 +131,7 @@ public class PrimaryTermLoanServiceImpl implements PrimaryTermLoanService {
 			termLoanRequest.setCurrencyValue(data);
 			return termLoanRequest ;
 		} catch (Exception e) {
-			logger.error("Error while Getting term Details Profile:-");
-			e.printStackTrace();
+			logger.error("Error while Getting term Details Profile:-",e);
 			throw new Exception("Something went Wrong !");
 		}
 	}

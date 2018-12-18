@@ -70,7 +70,6 @@ public class RetailUploadController {
 						HttpStatus.OK);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
 			logger.error("Error while Saving Profile Images==>" + e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
@@ -99,7 +98,6 @@ public class RetailUploadController {
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
 		} catch (Exception e) {
-			e.printStackTrace();
 			logger.error("Error while Getting Profile Images==>" + e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
@@ -121,9 +119,7 @@ public class RetailUploadController {
 			DocumentResponse documentResponse = dmsClient.productImage(jsonObj.toString(), multipartFile);
 			return documentResponse;
 		} catch (DocumentException e) {
-			// TODO Auto-generated catch block
-			logger.error("Error while uploading Profile Document");
-			e.printStackTrace();
+			logger.error("Error while uploading Profile Document : ",e);
 		}
 		return null;
 	}
@@ -181,7 +177,6 @@ public class RetailUploadController {
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
 			logger.error("Error while Saving Profile Images==>" + e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
@@ -220,7 +215,6 @@ public class RetailUploadController {
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
 			logger.error("Error while Saving Profile Images==>" + e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
@@ -318,7 +312,6 @@ public class RetailUploadController {
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
 			logger.error("Error While Uploading Document==>" + e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
@@ -348,7 +341,7 @@ public class RetailUploadController {
 				excelExtractionService.inActiveBS(docId);
 				excelExtractionService.inActiveDPR(docId);
 			} catch (Exception e) {
-				// TODO: handle exception
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 
 			if (response != null && response.getStatus() == 200) {
@@ -416,14 +409,12 @@ public class RetailUploadController {
 				}
 
 			} catch (Exception e) {
-				// TODO: handle exception
-				logger.warn("Invalid Request while Deleting Document");
+				logger.error("Invalid Request while Deleting Document : ",e);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
 			logger.error("Error while Saving Profile Images==>" + e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),

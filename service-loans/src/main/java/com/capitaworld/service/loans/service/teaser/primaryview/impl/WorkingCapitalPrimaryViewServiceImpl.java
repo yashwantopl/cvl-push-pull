@@ -166,8 +166,7 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
 					UserResponse userResponse= usersClient.getLastAccessApplicant(usersRequest);
 					fpProductMappingId=userResponse.getId();
 				} catch (Exception e) {
-					logger.error("error while fetching last access fp rpduct id for fund provider while fetching matches in teaser view");
-					e.printStackTrace();
+					logger.error("error while fetching last access fp rpduct id for fund provider while fetching matches in teaser view : ",e);
 				}
 				try {
 					MatchRequest matchRequest = new MatchRequest();
@@ -176,7 +175,7 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
 					MatchDisplayResponse matchResponse = matchEngineClient.displayMatchesOfCorporate(matchRequest);
 					workingCapitalPrimaryViewResponse.setMatchesList(matchResponse.getMatchDisplayObjectList());
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 			}
 		}
@@ -211,7 +210,7 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
 						workingCapitalPrimaryViewResponse.setEstablishmentYear("NA");
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 			}
 
@@ -234,7 +233,7 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
 						workingCapitalPrimaryViewResponse.setCity("NA");
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 			}
 
@@ -256,7 +255,7 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
 						workingCapitalPrimaryViewResponse.setCity("NA");
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 			}
 
@@ -280,7 +279,7 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
 						workingCapitalPrimaryViewResponse.setState("NA");
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 			}
 
@@ -302,7 +301,7 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
 						workingCapitalPrimaryViewResponse.setState("NA");
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 			}
 			// set country
@@ -324,7 +323,7 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
 						workingCapitalPrimaryViewResponse.setCountry("NA");
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 			}
 
@@ -345,7 +344,7 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
 						workingCapitalPrimaryViewResponse.setCountry("NA");
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 			}
 
@@ -367,7 +366,7 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
 					}
 
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 			}
 		}
@@ -384,7 +383,7 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
 					.getIndustrySectorSubSector(industrySectorSubSectorTeaserRequest);
 			workingCapitalPrimaryViewResponse.setIndustrySector(oneFormResponse.getListData());
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 
 		// get value of working capital data
@@ -441,8 +440,7 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
 //		try {
 //			referenceRetailDetailsRequestList = referenceRetailDetailsService.getReferenceRetailDetailList(toApplicationId,  CommonUtils.ApplicantType.APPLICANT);
 //		} catch (Exception e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
+//		    logger.error(CommonUtils.EXCEPTION,e);
 //		}
 //		workingCapitalPrimaryViewResponse.setReferenceRetailDetailsRequests(referenceRetailDetailsRequestList);
 
@@ -672,7 +670,7 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
 			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 			workingCapitalPrimaryViewResponse.setBrochureList(documentResponse.getDataList());
 		} catch (DocumentException e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 
 		// get list fo certificate
@@ -694,7 +692,7 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
 			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 			workingCapitalPrimaryViewResponse.setPanCardList(documentResponse.getDataList());
 		} catch (DocumentException e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 
 		// get profile pic
@@ -705,7 +703,7 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
 			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 			workingCapitalPrimaryViewResponse.setProfilePic(documentResponse.getDataList());
 		} catch (DocumentException e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 
 		return workingCapitalPrimaryViewResponse;

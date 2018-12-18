@@ -61,8 +61,7 @@ public class AssociatedConcernDetailServiceImpl implements AssociatedConcernDeta
 		}
 
 		catch (Exception e) {
-			logger.error("Exception  in save Associated Concern :-");
-			e.printStackTrace();
+			logger.error("Exception  in save Associated Concern :-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 
@@ -93,8 +92,7 @@ public class AssociatedConcernDetailServiceImpl implements AssociatedConcernDeta
 		}
 
 		catch (Exception e) {
-			logger.error("Exception  in get monthlyTurnoverDetail  :-");
-			e.printStackTrace();
+			logger.error("Exception  in get monthlyTurnoverDetail  :-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
