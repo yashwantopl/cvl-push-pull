@@ -81,7 +81,6 @@ public class WorkingCapitalParameterController {
 			}
 		} catch (Exception e) {
 			logger.error("Error while saving working capital  Parameter==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -116,7 +115,6 @@ public class WorkingCapitalParameterController {
 			}
 		} catch (Exception e) {
 			logger.error("Error while Working capital Loan parameter Details==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
