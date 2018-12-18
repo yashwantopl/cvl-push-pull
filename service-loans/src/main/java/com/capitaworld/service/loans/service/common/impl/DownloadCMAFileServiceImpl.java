@@ -329,7 +329,7 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
                  temp=Double.parseDouble(liabilitiesDetails.getYear());
 				// save in excel
 				sheet2.getRow(4).getCell(j).setCellValue(temp);
-				System.out.println(sheet2.getRow(4).getCell(j).getNumericCellValue());
+				logger.info(""+sheet2.getRow(4).getCell(j).getNumericCellValue());
 			    //sheet1.getRow(8).getCell(j).setCellValue(liabilitiesDetails.get);
 
 				sheet2.getRow(10).getCell(j).setCellValue(liabilitiesDetails.getFromApplicationBank());
@@ -456,7 +456,7 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 				temp=Double.parseDouble(assetsDetails.getYear());
 				// save in excel
 				sheet3.getRow(4).getCell(j).setCellValue(temp);
-				//System.out.println(sheet3.getRow(4).getCell(j).getNumericCellValue());
+				//logger.info(""+sheet3.getRow(4).getCell(j).getNumericCellValue());
 				 sheet3.getRow(8).getCell(j).setCellValue(assetsDetails.getCashAndBankBalance());
 				 
 				//sheet3.getRow(10).getCell(j).setCellValue(assetsDetails.getInvestments());
@@ -583,8 +583,7 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 			logger.info("Exit with cmaFileGenerator() {} ", documentResponse);
 
 		} catch ( IllegalStateException | IOException | InvalidFormatException e) {
-			System.err.println("Exception in cmaFileGenerator");
-			e.printStackTrace();
+			logger.error("Exception in cmaFileGenerator : ",e);
 		}
 		return wb;
 
@@ -971,8 +970,7 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 			logger.info("Exit with cmaFileGenerator() {} ");
 
 		} catch ( IllegalStateException | IOException | InvalidFormatException e) {
-			logger.error("=================Exception in coCMAFileGenerator===================>");
-			e.printStackTrace();
+			logger.error("=================Exception in coCMAFileGenerator===================>",e);
 		}
 		  
 		return wb;
@@ -1004,11 +1002,11 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 		int i = 0 ;
 		for (i = j ; temp <= totalYear; ++temp , i++) {
 			if(flag) {
-				//System.out.println(i+" cell "+sheet.getRow(4));
-				//System.out.println(i+" " + temp);
+				//logger.info(""+i+" cell "+sheet.getRow(4));
+				//logger.info(""+i+" " + temp);
 				sheet.getRow(4).getCell(i).setCellValue(temp);
-				//System.out.println(i+" cell "+sheet.getRow(4));
-				//System.out.println(i+" " + temp);
+				//logger.info(""+i+" cell "+sheet.getRow(4));
+				//logger.info(""+i+" " + temp);
 			}
 			else {
 				sheet.getRow(3).getCell(i).setCellValue(temp);

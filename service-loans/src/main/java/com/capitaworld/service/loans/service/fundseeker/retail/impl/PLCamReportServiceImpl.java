@@ -170,7 +170,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 						map.put("registeredAddressData",CommonUtils.printFields(pincodeDateService.getById(plRetailApplicantRequest.getContactAddress().getDistrictMappingId()),null));				
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 			}
 			map.put("gender", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getGenderId()) ? Gender.getById(plRetailApplicantRequest.getGenderId()).getValue(): "");
@@ -198,7 +198,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 					}
 
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 			}
 			//KEY VERTICAL SECTOR
@@ -217,7 +217,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 					map.put("keyVerticalSector", "-");
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 			//KEY VERTICAL SUBSECTOR
 			try {
@@ -226,12 +226,11 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 					map.put("keyVerticalSubSector",StringEscapeUtils.escapeXml(oneFormResponse.getData().toString()));
 				}
 			} catch (Exception e) {
-				logger.warn("error while getting key vertical sub-sector");
+				logger.error("error while getting key vertical sub-sector : ",e);
 			}
 			
 		} catch (Exception e) {
-			logger.info("Error while getting profile Details");
-			e.printStackTrace();
+			logger.error("Error while getting profile Details : ",e);
 		}
 		//DATE OF IN-PRINCIPLE APPROVAL (CONNECT CLIENT)
 		try {
@@ -240,8 +239,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 				map.put("dateOfInPrincipalApproval",!CommonUtils.isObjectNullOrEmpty(connectResponse.getData())? DATE_FORMAT.format(connectResponse.getData()):"-");
 			}
 		} catch (Exception e2) {
-			logger.info("Error while getting date of in-principal approval from connect client");
-			e2.printStackTrace();
+			logger.info("Error while getting date of in-principal approval from connect client : ",e2);
 		}
 		//MATCHES RESPONSE
 		try {
@@ -254,8 +252,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 			map.put("matchesResponse", !CommonUtils.isListNullOrEmpty(matchResponse.getMatchDisplayObjectList()) ? CommonUtils.printFields(matchResponse.getMatchDisplayObjectList(),null) : " ");
 		}
 		catch (Exception e) {
-			logger.info("Error while getting matches data");
-			e.printStackTrace();
+			logger.error("Error while getting matches data : ",e);
 		}
 		//PROPOSAL RESPONSE
 		try {
@@ -266,7 +263,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 			map.put("proposalResponse", !CommonUtils.isObjectNullOrEmpty(proposalMappingResponse.getData()) ? proposalMappingResponse.getData() : " ");
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		//PRIMARY DATA (LOAN DETAILS)
 		try {
@@ -274,8 +271,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 			map.put("loanPurpose", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getLoanPurpose()) ? PersonalLoanPurpose.getById(plRetailApplicantRequest.getLoanPurpose()).getValue(): "");
 			map.put("retailApplicantPrimaryDetails", plRetailApplicantRequest);
 		} catch (Exception e) {
-			logger.info("Error while getting primary Details");
-			e.printStackTrace();
+			logger.error("Error while getting primary Details : ",e);
 		}
 		
 		//INCOME DETAILS - NET INCOME
@@ -285,8 +281,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 				map.put("incomeDetails", retailApplicantIncomeDetail);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
-			logger.info("Error while getting income details");
+			logger.error("Error while getting income details : ",e);
 		}
 		
 		//FINANCIAL ARRANGEMENTS
@@ -408,8 +403,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 					scoreResponse.add(companyMap);
 					map.put("scoringResp", scoreResponse);
 			}catch (Exception e) {
-				e.printStackTrace();
-				logger.info("Error while getting scoring data");
+				logger.error("Error while getting scoring data : ",e);
 			}
 		
 			//ELIGIBILITY DATA (ASSESSMENT TO LIMITS)
@@ -422,8 +416,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 				map.put("assLimits",CommonUtils.convertToDoubleForXml(MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)eligibilityResp.getData(), PersonalEligibilityRequest.class), new HashMap<>()));
 				}
 			}catch (Exception e) {
-				e.printStackTrace();
-				logger.info("Error while getting Eligibility data");
+				logger.error("Error while getting Eligibility data : ",e);
 			}
 		/*************************************************************FINAL DETAILS***********************************************************/
 		
@@ -450,8 +443,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 					}
 				}
 				} catch (Exception e) {
-				e.printStackTrace();
-				logger.info("Error while getting PROPOSAL DATES data");
+				logger.error("Error while getting PROPOSAL DATES data : ",e);
 			}
 			//RETAIL FINAL DETAILS
 			try {
@@ -472,7 +464,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 							map.put("permanantAddressData",CommonUtils.printFields(pincodeDateService.getById(retailFinalInfo.getPermanentAddress().getDistrictMappingId()),null));				
 						}
 					} catch (Exception e) {
-						e.printStackTrace();
+						logger.error(CommonUtils.EXCEPTION,e);
 					}
 					map.put("officeAddCountry", StringEscapeUtils.escapeXml(getCountryName(retailFinalInfo.getOfficeAddress().getCountryId())));
 					map.put("officeAddState", StringEscapeUtils.escapeXml(getStateName(retailFinalInfo.getOfficeAddress().getStateId())));
@@ -483,12 +475,11 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 							map.put("officeAddressData",CommonUtils.printFields(pincodeDateService.getById(retailFinalInfo.getOfficeAddress().getDistrictMappingId()),null));				
 						}
 					} catch (Exception e) {
-						e.printStackTrace();
+						logger.error(CommonUtils.EXCEPTION,e);
 					}
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
-				logger.info("Error while getting Final Information");
+				logger.error("Error while getting Final Information : ",e);
 			}
 			
 			//INCOME DETAILS - GROSS INCOME
@@ -498,8 +489,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 					map.put("grossIncomeDetails", retailApplicantIncomeDetail);
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
-				logger.info("Error while getting income details");
+				logger.error("Error while getting income details : ",e);
 			}
 			
 			//BANK ACCOUNT HELD DETAILS
@@ -509,8 +499,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 					map.put("bankAccountHeld", bankAccountHeldDetails);
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
-				logger.info("Error while getting bank account held details");
+				logger.error("Error while getting bank account held details : ",e);
 			}
 			
 			//FIXED DEPOSITS DETAILS
@@ -520,8 +509,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 					map.put("fixedDepositeDetails", fixedDepositeDetails);
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
-				logger.info("Error while getting fixed deposite details");
+				logger.error("Error while getting fixed deposite details : ",e);
 			}
 			
 			//OTHER CURRENT ASSEST DETAILS
@@ -531,8 +519,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 					map.put("otherCurrentAssetDetails", otherCurrentAssetDetails);
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
-				logger.info("Error while getting other current asset details");
+				logger.error("Error while getting other current asset details : ",e);
 			}
 			
 			//OBLIGATION DETAILS
@@ -542,8 +529,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 					map.put("obligationDetails", obligationRequest);
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
-				logger.info("Error while getting obligation details");
+				logger.error("Error while getting obligation details : ",e);
 			}
 			
 			//REFERENCES DETAILS
@@ -553,8 +539,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 					map.put("referenceDetails", referenceDetails);
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
-				logger.info("Error while getting reference details");
+				logger.error("Error while getting reference details : ",e);
 			}
 			
 			
@@ -581,7 +566,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 				return masterResponse.getValue();
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		return null;
 	}
@@ -602,7 +587,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 				return masterResponse.getValue();
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		return null;
 	}
@@ -623,7 +608,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 				return masterResponse.getValue();
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		return null;
 	}
