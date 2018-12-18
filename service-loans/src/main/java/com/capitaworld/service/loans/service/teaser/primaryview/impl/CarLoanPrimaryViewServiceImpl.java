@@ -213,7 +213,7 @@ public class CarLoanPrimaryViewServiceImpl implements CarLoanPrimaryViewService{
                     MasterResponse data = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) formResponse.getListData().get(0), MasterResponse.class);
                     officeAddress.setCity(data.getValue());
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    logger.error(CommonUtils.EXCEPTION,e);
                 }
                 try {
                     List<Long> officeCountry = new ArrayList<Long>(1);
@@ -297,7 +297,7 @@ public class CarLoanPrimaryViewServiceImpl implements CarLoanPrimaryViewService{
                 try {
                     profileViewPLResponse.setPanCardList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT,DocumentAlias.CAR_LOAN_APPLICANT_SCANNED_COPY_OF_PAN_CARD));
                 } catch (DocumentException e) {
-                    e.printStackTrace();
+                    logger.error(CommonUtils.EXCEPTION,e);
                 }
 
                 //get list of Aadhar Card
@@ -311,7 +311,7 @@ public class CarLoanPrimaryViewServiceImpl implements CarLoanPrimaryViewService{
                 try {
                     carLoanResponse.setApplicantProfilePicture(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT,DocumentAlias.CAR_LOAN_PROFIEL_PICTURE));
                 } catch (DocumentException e) {
-                    e.printStackTrace();
+                    logger.error(CommonUtils.EXCEPTION,e);
                 }
 
                 carLoanPrimaryViewResponse.setApplicant(profileViewPLResponse);
@@ -336,7 +336,7 @@ public class CarLoanPrimaryViewServiceImpl implements CarLoanPrimaryViewService{
         try {
             guarantorResponse = guarantorService.getGuarantorServiceResponse(toApplicationId, userId,applicationMaster.getProductId());
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(CommonUtils.EXCEPTION,e);
         }
         carLoanPrimaryViewResponse.setGuarantorList(guarantorResponse);
 

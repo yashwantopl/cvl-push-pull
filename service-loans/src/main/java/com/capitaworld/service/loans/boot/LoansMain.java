@@ -30,7 +30,6 @@ import com.capitaworld.service.oneform.client.OneFormClient;
 import com.capitaworld.service.rating.RatingClient;
 import com.capitaworld.service.scoring.ScoringClient;
 import com.capitaworld.service.thirdpaty.client.ThirdPartyClient;
-//import com.capitaworld.service.rating.RatingClient;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.sidbi.integration.client.SidbiIntegrationClient;
 

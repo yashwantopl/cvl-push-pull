@@ -116,8 +116,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 			ineligibleProposalDetailsRepository.save(ineligibleProposalDetails);
 			return true;
 		} catch (Exception e) {
-			logger.error("error while saving in eligible proposal");
-			e.printStackTrace();
+			logger.error("error while saving in eligible proposal : ",e);
 		}
 		return false;
 	}
@@ -131,9 +130,9 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 	public boolean updateStatus(InEligibleProposalDetailsRequest inEliProReq) {
 		IneligibleProposalDetails ineligibleProposalDetails = null;
 		try {
-			ineligibleProposalDetails = ineligibleProposalDetailsRepository.findbyApplicationId(inEliProReq.getApplicationId());
+			ineligibleProposalDetails = ineligibleProposalDetailsRepository.findByApplicationId(inEliProReq.getApplicationId());
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 			return false;
 		}
 		if(CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails)) {
@@ -160,8 +159,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 				try {
 					applicationRequest = loanApplicationService.getFromClient(applicationId);
 				} catch (Exception e1) {
-					logger.info("Exception in getting :" + e1);
-					e1.printStackTrace();
+					logger.error("Exception in getting :" + e1);
 				}
 				// For getting Fund Seeker's Name
 				if (applicationRequest != null) {
@@ -173,16 +171,14 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 					try {
 						response = userClient.getEmailMobile(applicationRequest.getUserId());
 					} catch (Exception e) {
-						logger.info("Something went wrong while calling Users client from sending mail to fs===>{}");
-						e.printStackTrace();
+						logger.error("Something went wrong while calling Users client from sending mail to fs===>{}",e);
 					}
 					if (!CommonUtils.isObjectNullOrEmpty(response)) {
 						try {
 							signUpUser = MultipleJSONObjectHelper
 									.getObjectFromMap((Map<String, Object>) response.getData(), UsersRequest.class);
 						} catch (Exception e) {
-							logger.info("Exception getting signup user at Sending email to fs and bank branch");
-							e.printStackTrace();
+							logger.error("Exception getting signup user at Sending email to fs and bank branch : ",e);
 						}
 					}
 					// ==================For getting Organisation========Name
@@ -193,8 +189,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 					try {
 						userResponse = userClient.getOrgNameByOrgId(Long.valueOf(userOrgId.toString()));
 					} catch (Exception e) {
-						logger.info("Exception occured while getting Organisation details by orgId");
-						e.printStackTrace();
+						logger.error("Exception occured while getting Organisation details by orgId : ",e);
 					}
 					try {
 						if (!CommonUtils.isObjectNullOrEmpty(userResponse)) {
@@ -204,9 +199,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 							organisationName = organisationRequest.getOrganisationName();
 						}
 					} catch (Exception e) {
-						logger.info("Exception occured while getting Organisation details by orgId");
-						e.printStackTrace();
-
+						logger.error("Exception occured while getting Organisation details by orgId : ",e);
 					}
 
 					// ===FS=============================================================================
@@ -273,7 +266,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 							UsersRequest userObj = MultipleJSONObjectHelper.getObjectFromMap(usersRespList.get(i),
 									UsersRequest.class);
 							if (!CommonUtils.isObjectNullOrEmpty(userObj.getEmail())) {
-								// System.out.println("Checker ID:---"+userObj.getEmail());
+								// logger.info("Checker ID:---"+userObj.getEmail());
 								to = userObj.getEmail();
 								mailParameters.put("isDynamic", false);
 								mailParameters.put("app_id", applicationId);
@@ -301,7 +294,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 							UsersRequest userObj = MultipleJSONObjectHelper.getObjectFromMap(usersRespList.get(i),
 									UsersRequest.class);
 							if (!CommonUtils.isObjectNullOrEmpty(userObj.getEmail())) {
-								// System.out.println("Checker ID:---"+userObj.getEmail());
+								// logger.info("Checker ID:---"+userObj.getEmail());
 								to = userObj.getEmail();
 								mailParameters.put("isDynamic", true);
 								createNotificationForEmail(to, applicationRequest.getUserId().toString(),
@@ -320,7 +313,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 							UsersRequest userObj = MultipleJSONObjectHelper.getObjectFromMap(usersRespList.get(i),
 									UsersRequest.class);
 							if (!CommonUtils.isObjectNullOrEmpty(userObj.getEmail())) {
-								// System.out.println("Checker ID:---"+userObj.getEmail());
+								// logger.info("Checker ID:---"+userObj.getEmail());
 								to = userObj.getEmail();
 								mailParameters.put("isDynamic", true);
 								createNotificationForEmail(to, applicationRequest.getUserId().toString(),
@@ -387,9 +380,8 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 									state = CommonDocumentUtils.getState(Long.valueOf(resp.getStateId().toString()),
 											oneFormClient);
 								} catch (Exception e) {
-									logger.info("Error while calling One form client for getting State");
+									logger.error("Error while calling One form client for getting State : ",e);
 									state = " ";
-									e.printStackTrace();
 								}
 								state = state != null ? state : " ";
 							} else {
@@ -400,9 +392,8 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 									city = CommonDocumentUtils.getCity(Long.valueOf(resp.getCityId().toString()),
 											oneFormClient);
 								} catch (Exception e) {
-									logger.info("Error while calling One form client for getting City");
+									logger.error("Error while calling One form client for getting City : ",e);
 									city = " ";
-									e.printStackTrace();
 								}
 								city = city != null ? city : " ";
 							} else {
@@ -432,13 +423,12 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 			}
 			return notificationParams;
 		} catch (Exception e) {
-			logger.info("Error while calling User's client for getting Branch Details");
+			logger.error("Error while calling User's client for getting Branch Details : ",e);
 			notificationParams.put("branch_name", "-");
 			notificationParams.put("branch_code", "-");
 			notificationParams.put("ifsc_code", "-");
 			notificationParams.put("branch_address", "-");
 			notificationParams.put("branch_contact", "-");
-			e.printStackTrace();
 			return notificationParams;
 		}
 	}
@@ -453,8 +443,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 			try {
 				NTBResponse = directorBackgroundDetailsService.getDirectorBasicDetailsListForNTB(applicationId);
 			} catch (Exception e) {
-				e.printStackTrace();
-				logger.info("Exception in  geting details of user in ntb:" + e);
+				logger.error("Exception in  geting details of user in ntb:" + e);
 			}
 			if (!CommonUtils.isObjectNullOrEmpty(NTBResponse)) {
 				int isMainDirector = 0;
@@ -598,14 +587,13 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 			}
 			catch (Exception e)
 			{
-				logger.error("error while attaching cam report");
-				e.printStackTrace();
+				logger.error("error while attaching cam report : ",e);
 			}
 
 			if(!CommonUtils.isObjectNullOrEmpty(bcc))
 			{
 				notification.setBcc(bcc);
-				System.out.println("BCC::"+bcc);
+				logger.info("BCC::"+bcc);
 			}
 
 		}

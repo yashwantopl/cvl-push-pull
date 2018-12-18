@@ -78,8 +78,7 @@ public class CorporateDirectorIncomeServiceImpl implements CorporateDirectorInco
 			}	
 			return true;
 		} catch (Exception e) {
-			logger.info("Exception Occured in saveOrUpdateDirectorIncomeDetails=======================>");
-			e.printStackTrace();
+			logger.error("Exception Occured in saveOrUpdateDirectorIncomeDetails=======================>",e);
 		}
 		return false;
 		
@@ -117,8 +116,7 @@ public class CorporateDirectorIncomeServiceImpl implements CorporateDirectorInco
 		}
 		  return null;
 		} catch (Exception e) {
-			logger.info("Exception Occured in gettingDirectorIncomeDetails=======================>");
-			e.printStackTrace();
+			logger.error("Exception Occured in gettingDirectorIncomeDetails=======================>",e);
 		}
 		  return null;
 	}
@@ -152,8 +150,7 @@ public class CorporateDirectorIncomeServiceImpl implements CorporateDirectorInco
 		}
 		  return null;
 		} catch (Exception e) {
-			logger.info("Exception Occured in gettingDirectorLatestYearIncomeDetails------------->");
-			e.printStackTrace();
+			logger.error("Exception Occured in gettingDirectorLatestYearIncomeDetails------------->",e);
 		}
 		  return null;
 	}
@@ -172,7 +169,7 @@ public class CorporateDirectorIncomeServiceImpl implements CorporateDirectorInco
 			
 			if(!(CommonUtils.isObjectNullOrEmpty(applicationId))){
 				backgroundDetailsList = backgroundDetailsRepository.listPromotorBackgroundFromAppId(applicationId);
-			    System.out.println("Directors List==============>"+backgroundDetailsList);
+			   logger.info("Directors List==============>"+backgroundDetailsList);
 				directorBackgroundlist = new ArrayList<Map<String, Object>>();
 				if(!CommonUtils.isObjectNullOrEmpty(backgroundDetailsList)){
 					for(DirectorBackgroundDetail corpObj:backgroundDetailsList) {
@@ -285,7 +282,7 @@ public class CorporateDirectorIncomeServiceImpl implements CorporateDirectorInco
 										
 									}
 								} catch (Exception e) {
-									e.printStackTrace();
+								 logger.error(CommonUtils.EXCEPTION,e);
 								}
 							 
 							directorBackgroundlist.add(map);
@@ -299,8 +296,7 @@ public class CorporateDirectorIncomeServiceImpl implements CorporateDirectorInco
 		}
 		  return null;
 		} catch (Exception e) {
-			logger.info("Exception Occured in getDirectorBackGroundAndEmployeeDetails=======================>");
-			e.printStackTrace();
+			logger.error("Exception Occured in getDirectorBackGroundAndEmployeeDetails=======================>",e);
 		}
 		  return null;
 	}

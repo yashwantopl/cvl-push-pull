@@ -181,8 +181,7 @@ public class NtbCamReportServiceImpl implements NtbCamReportService{
 			MatchDisplayResponse matchResponse= matchEngineClient.displayMatchesOfCorporate(matchRequest);
 			map.put("matchesResponse", !CommonUtils.isListNullOrEmpty(matchResponse.getMatchDisplayObjectList()) ? CommonUtils.printFields(matchResponse.getMatchDisplayObjectList(),null) : " ");
 		}catch (Exception e) {
-			logger.info("Error while getting Match Engine data");
-			e.printStackTrace();
+			logger.error("Error while getting Match Engine data : ",e);
 		}
 		
 		// GET DIRECTOR BACKGROUND DETAILS
@@ -231,7 +230,7 @@ public class NtbCamReportServiceImpl implements NtbCamReportService{
 					}
 
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 			}
 			//KEY VERTICAL SECTOR
@@ -250,7 +249,7 @@ public class NtbCamReportServiceImpl implements NtbCamReportService{
 					map.put("keyVerticalSector", "-");
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 			//KEY VERTICAL SUBSECTOR
 			try {
@@ -259,7 +258,7 @@ public class NtbCamReportServiceImpl implements NtbCamReportService{
 					map.put("keyVerticalSubSector",(String) oneFormResponse.getData());
 				}
 			} catch (Exception e) {
-				logger.warn("error while getting key vertical sub-sector");
+				logger.error("error while getting key vertical sub-sector : ",e);
 			}
 
 			map.put("otherDetails",fundSeekerInputRequestResponse);
@@ -307,7 +306,6 @@ public class NtbCamReportServiceImpl implements NtbCamReportService{
 					}
 
 				}catch (Exception e) {
-					e.printStackTrace();
 					logger.error("Problem to get Data of Financial Arrangements Details {}", e);
 				}
 			}
@@ -332,8 +330,7 @@ public class NtbCamReportServiceImpl implements NtbCamReportService{
 				map.put("dirEligibility", CommonUtils.printFields(dirEl, new HashMap<>()));
 			}
 		} catch (Exception e1) {
-			e1.printStackTrace();
-			logger.info("Error while getting Eligibility data");
+			logger.error("Error while getting Eligibility data : ",e1);
 		}
 		
 		//SCORING DATA
@@ -493,8 +490,7 @@ public class NtbCamReportServiceImpl implements NtbCamReportService{
 					map.put("companyScoreResponse", scoreResponse);
 			
 		}catch (Exception e) {
-			e.printStackTrace();
-			logger.info("Error while getting scoring data");
+			logger.error("Error while getting scoring data : ",e);
 		}
 		
 		//CGTMSE 
@@ -530,7 +526,7 @@ public class NtbCamReportServiceImpl implements NtbCamReportService{
 						map.put("hunterResponse",  CommonUtils.printFields(hunterResp.getData(),null));
 					}
 				} catch (Exception e1) {
-					e1.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e1);
 		}
 		
 		/**********************************************FINAL DETAILS*****************************************************/
@@ -539,7 +535,7 @@ public class NtbCamReportServiceImpl implements NtbCamReportService{
 					try {
 						map.put("associatedConcerns",CommonUtils.printFields(associatedConcernDetailService.getAssociatedConcernsDetailList(applicationId, userId),null));
 					} catch (Exception e) {
-						e.printStackTrace();
+						logger.error(CommonUtils.EXCEPTION,e);
 					}
 					
 					//DETAILS OF GUARANTER

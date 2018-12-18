@@ -90,7 +90,6 @@ public class FutureFinancialEstimatesDetailsController {
 
 		} catch (Exception e) {
 			logger.error("Error while saving Future Financial Estimate Details==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -135,7 +134,6 @@ public class FutureFinancialEstimatesDetailsController {
 			}
 		} catch (Exception e) {
 			logger.error("Error while getting Future Financial Estimate Details==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);

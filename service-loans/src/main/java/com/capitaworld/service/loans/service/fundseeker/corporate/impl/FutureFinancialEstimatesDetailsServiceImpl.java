@@ -177,7 +177,7 @@ public class FutureFinancialEstimatesDetailsServiceImpl implements FutureFinanci
 				if (todayDate.compareTo(comparisonDate) > 0) {
 					int currentYearForAfterDate = cal.get(Calendar.YEAR);
 					for (int i = 0; i < tenure; i++) {
-						System.out.println(Calendar.YEAR);
+						logger.info(""+Calendar.YEAR);
 						yearList.add(new FutureFinancialEstimatesDetailRequest(
 								currentYearForAfterDate + (i) + " - " + (currentYearForAfterDate + (i + 1))));
 					}
