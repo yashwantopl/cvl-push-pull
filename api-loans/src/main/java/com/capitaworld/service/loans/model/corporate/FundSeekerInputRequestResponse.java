@@ -8,6 +8,10 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * @author akshay
+ *
+ */
 public class FundSeekerInputRequestResponse {
 
     private Long userId;
@@ -26,21 +30,14 @@ public class FundSeekerInputRequestResponse {
     private Address firstAddress;
 
     private String organisationName;
-    ////////////////////
+    
+    private String pan;
+    
     private String aadhar;
 
     private String msmeRegistrationNumber;
 
     private Double loanAmount;
-
-
- //   private Boolean isBusinessAssetChecked;
-
-
- //   private Boolean isWorkingCapitalChecked;
-
-
-//    private Boolean isOtherGeneralChecked;
 
 
     private Integer purposeOfLoanId;
@@ -50,9 +47,9 @@ public class FundSeekerInputRequestResponse {
     private Double collateralSecurityAmount;
 
     private Integer constitutionId;
-    ///////////
 
     private List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestsList;
+    
     private List<DirectorBackgroundDetailRequest> directorBackgroundDetailRequestsList;
 
 
@@ -65,6 +62,10 @@ public class FundSeekerInputRequestResponse {
     /////////
     private Double costOfMachinery;
     private Double incrementalTurnover;
+    
+    //Sales Variables by Akshay
+    private Double actualSalesFinYearCurrent;
+    private Double estimatedSalesFinYearNext;
   
     /*
     * added for machinery equipment finance
@@ -107,6 +108,8 @@ public class FundSeekerInputRequestResponse {
     private Double incrementalMargin;
 
     private Long environmentalImpactId;
+    
+    private Integer actionId;
 
     public Long getUserId() {
         return userId;
@@ -456,49 +459,63 @@ public class FundSeekerInputRequestResponse {
 		this.collateralSecurityAmountStr = collateralSecurityAmountStr;
 	}
 
+	public String getPan() {
+		return pan;
+	}
+
+	public void setPan(String pan) {
+		this.pan = pan;
+	}
+
+	public Double getActualSalesFinYearCurrent() {
+		return actualSalesFinYearCurrent;
+	}
+
+	public void setActualSalesFinYearCurrent(Double actualSalesFinYearCurrent) {
+		this.actualSalesFinYearCurrent = actualSalesFinYearCurrent;
+	}
+
+	public Double getEstimatedSalesFinYearNext() {
+		return estimatedSalesFinYearNext;
+	}
+
+	public void setEstimatedSalesFinYearNext(Double estimatedSalesFinYearNext) {
+		this.estimatedSalesFinYearNext = estimatedSalesFinYearNext;
+	}
+
+	public Integer getActionId() {
+		return actionId;
+	}
+
+	public void setActionId(Integer actionId) {
+		this.actionId = actionId;
+	}
+
 	@Override
-    public String toString() {
-        return "FundSeekerInputRequestResponse{" +
-                "userId=" + userId +
-                ", clientId=" + clientId +
-                ", applicationId=" + applicationId +
-                ", businessTypeId=" + businessTypeId +
-                ", keyVericalFunding=" + keyVericalFunding +
-                ", keyVerticalSector=" + keyVerticalSector +
-                ", keyVerticalSubsector=" + keyVerticalSubsector +
-                ", firstAddress=" + firstAddress +
-                ", organisationName='" + organisationName + '\'' +
-                ", aadhar='" + aadhar + '\'' +
-                ", msmeRegistrationNumber='" + msmeRegistrationNumber + '\'' +
-                ", loanAmount=" + loanAmount +
-                ", purposeOfLoanId=" + purposeOfLoanId +
-                ", haveCollateralSecurity=" + haveCollateralSecurity +
-                ", collateralSecurityAmount=" + collateralSecurityAmount +
-                ", constitutionId=" + constitutionId +
-                ", financialArrangementsDetailRequestsList=" + financialArrangementsDetailRequestsList +
-                ", directorBackgroundDetailRequestsList=" + directorBackgroundDetailRequestsList +
-                ", industrylist=" + industrylist +
-                ", sectorlist=" + sectorlist +
-                ", subsectors=" + subsectors +
-                ", costOfMachinery=" + costOfMachinery +
-                ", incrementalTurnover=" + incrementalTurnover +
-                ", assessmentId=" + assessmentId +
-                ", tenureRequired=" + tenureRequired +
-                ", proposedDetailsOfUnit=" + proposedDetailsOfUnit +
-                ", costOfProject=" + costOfProject +
-                ", proposedOperationDate=" + proposedOperationDate +
-                ", proposedConstitutionOfUnit=" + proposedConstitutionOfUnit +
-                ", promoterContribution=" + promoterContribution +
-                ", totalAmtPercentage=" + totalAmtPercentage +
-                ", stateId=" + stateId +
-                ", cityId=" + cityId +
-                ", proposedCost=" + proposedCost +
-                ", commercialOperationDate=" + commercialOperationDate +
-                ", factoryPremise=" + factoryPremise +
-                ", knowHow=" + knowHow +
-                ", competition=" + competition +
-                ", incrementalMargin=" + incrementalMargin +
-                ", environmentalImpactId=" + environmentalImpactId +
-                '}';
-    }
+	public String toString() {
+		return "FundSeekerInputRequestResponse [userId=" + userId + ", clientId=" + clientId + ", applicationId="
+				+ applicationId + ", businessTypeId=" + businessTypeId + ", keyVericalFunding=" + keyVericalFunding
+				+ ", keyVerticalSector=" + keyVerticalSector + ", keyVerticalSubsector=" + keyVerticalSubsector
+				+ ", firstAddress=" + firstAddress + ", organisationName=" + organisationName + ", pan=" + pan
+				+ ", aadhar=" + aadhar + ", msmeRegistrationNumber=" + msmeRegistrationNumber + ", loanAmount="
+				+ loanAmount + ", purposeOfLoanId=" + purposeOfLoanId + ", haveCollateralSecurity="
+				+ haveCollateralSecurity + ", collateralSecurityAmount=" + collateralSecurityAmount
+				+ ", constitutionId=" + constitutionId + ", financialArrangementsDetailRequestsList="
+				+ financialArrangementsDetailRequestsList + ", directorBackgroundDetailRequestsList="
+				+ directorBackgroundDetailRequestsList + ", industrylist=" + industrylist + ", sectorlist=" + sectorlist
+				+ ", subsectors=" + subsectors + ", costOfMachinery=" + costOfMachinery + ", incrementalTurnover="
+				+ incrementalTurnover + ", actualSalesFinYearCurrent=" + actualSalesFinYearCurrent
+				+ ", estimatedSalesFinYearNext=" + estimatedSalesFinYearNext + ", assessmentId=" + assessmentId
+				+ ", tenureRequired=" + tenureRequired + ", proposedDetailsOfUnit=" + proposedDetailsOfUnit
+				+ ", costOfProject=" + costOfProject + ", proposedOperationDate=" + proposedOperationDate
+				+ ", proposedConstitutionOfUnit=" + proposedConstitutionOfUnit + ", promoterContribution="
+				+ promoterContribution + ", totalAmtPercentage=" + totalAmtPercentage + ", stateId=" + stateId
+				+ ", cityId=" + cityId + ", proposedCost=" + proposedCost + ", commercialOperationDate="
+				+ commercialOperationDate + ", factoryPremise=" + factoryPremise + ", knowHow=" + knowHow
+				+ ", competition=" + competition + ", loanAmt=" + loanAmt + ", costOfProjectStr=" + costOfProjectStr
+				+ ", collateralSecurityAmountStr=" + collateralSecurityAmountStr + ", incrementalMargin="
+				+ incrementalMargin + ", environmentalImpactId=" + environmentalImpactId + ", actionId=" + actionId
+				+ "]";
+	}
+
 }
