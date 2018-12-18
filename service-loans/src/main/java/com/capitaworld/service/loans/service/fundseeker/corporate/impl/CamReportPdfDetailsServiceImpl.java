@@ -938,7 +938,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		//NAME AS PER ITR
 		try{
 			ITRConnectionResponse itrResponse = itrClient.getITRBasicDetails(applicationId);
-			System.out.println("ITR RESPONSE===========>"+itrResponse);
+			logger.info("ITR RESPONSE===========>"+itrResponse);
 			map.put("nameAsPerItr", CommonUtils.printFields(itrResponse.getData(),null));
 		}catch(Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
