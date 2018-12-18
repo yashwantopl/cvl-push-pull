@@ -206,9 +206,7 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 				}
 				wcTlParameterRequest.setIndustrylist(dataRequests);
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				logger.error("error while getTermLoanParameterRequest",e);
-				e.printStackTrace();
+				logger.error("error while getTermLoanParameterRequest : ",e);
 			}
 		}
 		
@@ -229,9 +227,7 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 			 
 			
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			logger.error("error while getTermLoanParameterRequest",e);
-			e.printStackTrace();
+			logger.error("error while getTermLoanParameterRequest : ",e);
 		}
 		}
 
@@ -253,9 +249,7 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 			 
 			
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			logger.error("error while getTermLoanParameterRequest",e);
-			e.printStackTrace();
+			logger.error("error while getTermLoanParameterRequest : ",e);
 		}
 		}
 		
@@ -277,9 +271,7 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 			 
 			
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			logger.error("error while getTermLoanParameterRequest",e);
-			e.printStackTrace();
+			logger.error("error while getTermLoanParameterRequest : ",e);
 		}
 		}
 		
@@ -299,9 +291,7 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 			 
 			
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			logger.error("error while getTermLoanParameterRequest",e);
-			e.printStackTrace();
+			logger.error("error while getTermLoanParameterRequest : ",e);
 		}
 		}
 		
@@ -319,9 +309,7 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 				}
 				wcTlParameterRequest.setNegativeIndustryList(dataRequests);
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				logger.error("error while getTermLoanParameterRequest",e);
-				e.printStackTrace();
+				logger.error("error while getTermLoanParameterRequest : ",e);
 			}
 		}
 		
@@ -457,7 +445,7 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 			return false;
 		}
 	}
@@ -465,7 +453,7 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 	@Override
 	public WcTlParameterRequest getWcTlRequestTemp(Long id,Long role,Long userId) {
 		CommonDocumentUtils.startHook(logger, "getWcTlRequestTemp");
-		// TODO Auto-generated method stub
+
 		WcTlParameterRequest wcTlParameterRequest = new WcTlParameterRequest();
 		WcTlParameterTemp loanParameter =  wcTlParameterTempRepository.getWcTlParameterTempByFpProductId(id);
 		if(loanParameter==null)
@@ -490,9 +478,7 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 				}
 				wcTlParameterRequest.setIndustrylist(dataRequests);
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				logger.error("error while getWcTlRequestTemp",e);
-				e.printStackTrace();
+				logger.error("error while getWcTlRequestTemp : ",e);
 			}
 		}
 		
@@ -512,9 +498,7 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 			 
 			
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			logger.error("error while getWcTlRequestTemp",e);
-			e.printStackTrace();
+			logger.error("error while getWcTlRequestTemp : ",e);
 		}
 		}
 
@@ -534,9 +518,7 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 			 
 			
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			logger.error("error while getWcTlRequestTemp",e);
-			e.printStackTrace();
+			logger.error("error while getWcTlRequestTemp : ",e);
 		}
 		}
 		
@@ -556,9 +538,7 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 			 
 			
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			logger.error("error while getWcTlRequestTemp",e);
-			e.printStackTrace();
+			logger.error("error while getWcTlRequestTemp : ",e);
 		}
 		}
 		
@@ -579,9 +559,7 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 			 
 			
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			logger.error("error while getWcTlRequestTemp",e);
-			e.printStackTrace();
+			logger.error("error while getWcTlRequestTemp : ",e);
 		}
 		}
 		
@@ -601,9 +579,7 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 				
 				wcTlParameterRequest.setNegativeIndustryList(dataRequests);
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				logger.error("error while getWcTlRequestTemp",e);
-				e.printStackTrace();
+				logger.error("error while getWcTlRequestTemp : ",e);
 			}
 		}
 		wcTlParameterRequest.setJobId(loanParameter.getJobId());
@@ -635,7 +611,6 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 	@Override
 	public Boolean saveOrUpdateTemp(WcTlParameterRequest wcTlParameterRequest) {
 		CommonDocumentUtils.startHook(logger, "saveOrUpdateTemp");
-		// TODO Auto-generated method stub
 		
 		WcTlParameterTemp WcTlParameter = null;
 		
@@ -721,7 +696,7 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 	private void saveIndustryTemp(WcTlParameterRequest workingCapitalParameterRequest) {
 		logger.info("start saveIndustryTemp");
 		IndustrySectorDetailTemp industrySectorDetail = null;
-		System.out.println(workingCapitalParameterRequest.getIndustrylist());
+		logger.info(""+workingCapitalParameterRequest.getIndustrylist());
 		for (DataRequest dataRequest : workingCapitalParameterRequest.getIndustrylist()) {
 			industrySectorDetail = new IndustrySectorDetailTemp();
 			industrySectorDetail.setFpProductId(workingCapitalParameterRequest.getId());
@@ -811,7 +786,6 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 	}
 
 	private void saveNegativeIndustryTemp(WcTlParameterRequest workingCapitalParameterRequest) {
-		// TODO Auto-generated method stub
 		CommonDocumentUtils.startHook(logger, "saveNegativeIndustryTemp");
 		NegativeIndustryTemp negativeIndustry= null;
 		for (DataRequest dataRequest : workingCapitalParameterRequest.getUnInterestedIndustrylist()) {

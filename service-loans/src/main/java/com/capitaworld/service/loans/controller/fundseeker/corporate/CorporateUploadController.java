@@ -95,7 +95,6 @@ public class CorporateUploadController {
 						HttpStatus.OK);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
 			logger.error("Error while Saving Profile Images==>" + e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
@@ -121,7 +120,6 @@ public class CorporateUploadController {
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
 		} catch (Exception e) {
-			e.printStackTrace();
 			logger.error("Error while Getting Profile Images==>" + e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
@@ -159,7 +157,6 @@ public class CorporateUploadController {
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
 			logger.error("Error while Saving Profile Images==>" + e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
@@ -185,7 +182,6 @@ public class CorporateUploadController {
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
 			logger.error("Error while Saving Profile Images==>" + e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
@@ -226,7 +222,6 @@ public class CorporateUploadController {
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
 			logger.error("Error while Saving Profile Images==>" + e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
@@ -303,16 +298,13 @@ public class CorporateUploadController {
 					}
 
 				} catch (Exception e) {
-					// TODO: handle exception
-
 					JSONObject json = new JSONObject();
 					json.put("id", response.getStorageId());
 					dmsClient.deleteProductDocument(json.toJSONString());
 
 					// code for inactive CMA BS and DPR recored
 
-					logger.error("Error While Uploading Document==>");
-					e.printStackTrace();
+					logger.error("Error While Uploading Document==>",e);
 					LoansResponse loansResponse = new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value(), e.getMessage());
 					return new ResponseEntity<LoansResponse>( loansResponse,HttpStatus.OK);
 				}
@@ -326,10 +318,10 @@ public class CorporateUploadController {
 				} else {
 
 					// code for inactive CMA BS and DPR recored
-					System.out.println("inActivation start");
+					logger.info("inActivation start");
 					JSONObject json = new JSONObject();
 					json.put("id", response.getStorageId());
-					System.out.println("excel file's storage id is====>>>>"+response.getStorageId());
+					logger.info("excel file's storage id is====>>>>"+response.getStorageId());
 					dmsClient.deleteProductDocument(json.toJSONString());
 					
 					logger.error("Error While Uploading Document==>");
@@ -347,7 +339,6 @@ public class CorporateUploadController {
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
 			logger.error("Error While Uploading Document==>" + e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
@@ -394,7 +385,6 @@ public class CorporateUploadController {
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
 			logger.error("Error while Saving Profile Images==>" + e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
@@ -407,9 +397,9 @@ public class CorporateUploadController {
 	public ResponseEntity<LoansResponse> removeExcelDoc(@PathVariable("docId") Long docId,
 			@PathVariable("productDocumentMappingId") Integer productDocumentMappingId, HttpServletRequest request) {
 		try {
-			System.out.println("in /excel/delete/doc");
+			logger.info("in /excel/delete/doc");
 			CommonDocumentUtils.startHook(logger, "removeExcelDoc");
-			System.out.println("product documet id is===>>>>>"+productDocumentMappingId);
+			logger.info("product documet id is===>>>>>"+productDocumentMappingId);
 			if (CommonUtils.isObjectNullOrEmpty(docId) && CommonUtils.isObjectNullOrEmpty(productDocumentMappingId)) {
 				logger.warn("Document Id and ProductDocumentMappingId not be null");
 				return new ResponseEntity<LoansResponse>(
@@ -423,7 +413,7 @@ public class CorporateUploadController {
 			try {
 
 				JSONObject json = new JSONObject();
-				System.out.println("docis====>>"+docId);
+				logger.info("docis====>>"+docId);
 				json.put("id", docId);
 				DocumentResponse response = dmsClient.deleteProductDocument(json.toJSONString());
 
@@ -435,7 +425,7 @@ public class CorporateUploadController {
 					else if (productDocumentMappingId == DocumentAlias.WC_CMA
 							|| productDocumentMappingId == DocumentAlias.TL_CMA || productDocumentMappingId == DocumentAlias.WCTL_CMA || productDocumentMappingId==DocumentAlias.USL_CMA)
 						{
-						System.out.println("in else if for cma inactivate...===>>>>"+docId);
+						logger.info("in else if for cma inactivate...===>>>>"+docId);
 						excelExtractionService.inActiveCMA(docId);}
 					else if (productDocumentMappingId == DocumentAlias.WC_COMPANY_ACT
 							|| productDocumentMappingId == DocumentAlias.TL_COMPANY_ACT || 
@@ -446,7 +436,7 @@ public class CorporateUploadController {
 					logger.info("File SuccessFully Removed.");
 					LoansResponse finalResponse = new LoansResponse(response.getMessage(), response.getStatus());
 					
-					System.out.println("fina response is====>>"+finalResponse);
+					logger.info("fina response is====>>"+finalResponse);
 					finalResponse.setListData(response.getDataList());
 					CommonDocumentUtils.endHook(logger, "removeExcelDoc");
 					return new ResponseEntity<LoansResponse>(finalResponse, HttpStatus.OK);
@@ -459,15 +449,12 @@ public class CorporateUploadController {
 				}
 
 			} catch (Exception e) {
-				// TODO: handle exception
-				logger.error("Invalid Request while Deleting Document");
-				e.printStackTrace();
+				logger.error("Invalid Request while Deleting Document : ",e);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
 			logger.error("Error while Saving Profile Images==>" + e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
@@ -498,7 +485,6 @@ public class CorporateUploadController {
 					HttpStatus.OK);
 
 		} catch (Exception e) {
-			e.printStackTrace();
 			logger.error("Error while Saving Profile Images==>" + e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
@@ -524,7 +510,6 @@ public class CorporateUploadController {
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 			
 		} catch (Exception e) {
-			e.printStackTrace();
 			logger.error("Error while fetching doc==>" + e);
 			return null;
 		}
@@ -554,9 +539,7 @@ public class CorporateUploadController {
             logger.info("Out getCmaFile");
          
         } catch (NullPointerException |IOException e) {
-        	logger.info("thrown exception from getCmaFile");
-            e.printStackTrace();
-          
+        	logger.error("thrown exception from getCmaFile : ",e);
         }
      
 	}
@@ -580,8 +563,7 @@ public class CorporateUploadController {
 			return new ResponseEntity<LoansResponse>(response, HttpStatus.OK);
 
 		} catch (NullPointerException e) {
-			e.printStackTrace();
-			logger.info("Thrown exception from getCmaFile====>"+e.getMessage());
+			logger.error("Thrown exception from getCmaFile====>"+e.getMessage());
 
 		}
 		LoansResponse response = new LoansResponse("Mapping Id not matched", HttpStatus.OK.value(), null);
@@ -596,8 +578,7 @@ public class CorporateUploadController {
 		try {
 			return new ResponseEntity<DocumentResponse>(corporateUploadService.listOfDocumentByMultiProDocMapId(documentRequest), HttpStatus.OK);
 		} catch (Exception e) {
-			e.printStackTrace();
-			logger.info("Thrown exception from getCmaFile====>"+e.getMessage());
+			logger.error("Thrown exception from getCmaFile====>"+e.getMessage());
 			return new ResponseEntity<DocumentResponse>(new DocumentResponse("Something went wrong",HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
@@ -626,8 +607,8 @@ public class CorporateUploadController {
             logger.info("Out getCmaFile");
          
         } catch (NullPointerException |IOException e) {
-        	logger.info("thrown exception from getCmaFile");
-            e.printStackTrace();
+        	logger.error("thrown exception from getCmaFile : ",e);
+
           
         }
      
