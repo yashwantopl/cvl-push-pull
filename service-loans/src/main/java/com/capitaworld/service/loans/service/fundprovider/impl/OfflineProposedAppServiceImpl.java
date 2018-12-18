@@ -87,7 +87,7 @@ public class OfflineProposedAppServiceImpl implements OfflineProcessedAppService
 					request.setBranchAddress(!CommonUtils.isObjectNullOrEmpty(obj[12])? ((String)obj[12]).toString() : null);
 					request.setLocationData(!CommonUtils.isObjectNullOrEmpty(getLocationCode(userId)) ? getLocationCode(userId) : " ");
 					request.setReason(!CommonUtils.isObjectNullOrEmpty(obj[13])? ((String)obj[13]).toString() : null);
-					request.setModifiedDate(!CommonUtils.isObjectNullOrEmpty(obj[13])? ((Date)obj[13]) : null);
+					request.setModifiedDate(!CommonUtils.isObjectNullOrEmpty(obj[14])? ((Date)obj[14]) : null);
 					applicationRequests.add(request);
 				}
 			}
@@ -171,7 +171,7 @@ public class OfflineProposedAppServiceImpl implements OfflineProcessedAppService
 		req.setId(userId);
 		try {
 			UserResponse resp = usersClient.getBranchDetailsBYUserId(req);
-			logger.info("resp===>"+resp.getData());
+			/*logger.info("resp===>"+resp.getData());*/
 			if(!CommonUtils.isObjectNullOrEmpty(resp.getData())) {
 				return resp.getData();
 			}
