@@ -67,7 +67,7 @@ public class RetailApplicantController {
 					HttpStatus.OK);
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -88,7 +88,7 @@ public class RetailApplicantController {
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
 					HttpStatus.OK);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -117,8 +117,7 @@ public class RetailApplicantController {
 			logger.info("Successfully get Coap And Guar Ids for retail profile");
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
-			logger.error("Error while getting CoapAndGuarIds==>");
-			e.printStackTrace();
+			logger.error("Error while getting CoapAndGuarIds==>",e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -199,7 +198,7 @@ public class RetailApplicantController {
 					HttpStatus.OK);
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -303,7 +302,6 @@ public class RetailApplicantController {
 		try {
 			return applicantService.get(applicationId);
 		} catch (Exception e) {
-			e.printStackTrace();
 			logger.error("Error while getting Retail Applicant Profile Details==>", e);
 			return null;
 		}

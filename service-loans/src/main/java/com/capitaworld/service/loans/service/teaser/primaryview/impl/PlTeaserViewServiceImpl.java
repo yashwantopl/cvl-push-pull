@@ -200,7 +200,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 				plTeaserViewResponse.setDateOfProposal(connectResponse.getData());
 			}
 		} catch (Exception e2) {
-			e2.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e2);
 		}
 
 		/* ========= Matches Data ========== */
@@ -214,8 +214,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 					MatchDisplayResponse matchResponse = matchEngineClient.displayMatchesOfRetail(matchRequest);
 					plTeaserViewResponse.setMatchesList(matchResponse.getMatchDisplayObjectList());
 				} catch (Exception e) {
-					logger.info("Error while getting matches data" + e);
-					e.printStackTrace();
+					logger.error("Error while getting matches data : " + e);
 				}
 			}
 		}
@@ -242,8 +241,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 					logger.warn("District id is null");
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
-				// TODO: handle exception
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 			if(!CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getFirstAddress())){
 				
@@ -251,8 +249,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 			}
 		}
 		catch (Exception e) {
-			e.printStackTrace();
-				// TODO: handle exception
+			logger.error(CommonUtils.EXCEPTION,e);
 			}	*/
 		
 		
@@ -298,8 +295,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 						logger.warn("District id is null");
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
-					// TODO: handle exception
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 				
 				if(plRetailApplicantRequest.getContactAddress() != null){
@@ -349,7 +345,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 						}
 
 					} catch (Exception e) {
-						e.printStackTrace();
+						logger.error(CommonUtils.EXCEPTION,e);
 					}
 				}
 				//KEY VERTICAL SECTOR
@@ -369,7 +365,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 						logger.warn("key vertical sector is null");
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 				//KEY VERTICAL SUBSECTOR
 				try {
@@ -390,9 +386,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 			}
 			
 		} catch (Exception e) {
-			
-			logger.warn("error while fetching retailApplicantDetails..");
-			e.printStackTrace();
+			logger.error("error while fetching retailApplicantDetails : ",e);
 		}
 		
 		//PROPOSAL RESPONSE
@@ -423,8 +417,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 					CibilScoreLogRequest cibilScoreByPanCard = cibilClient.getCibilScoreByPanCard(cibilReq);
 					plTeaserViewResponse.setCibilScore(cibilScoreByPanCard);
 				} catch (Exception e) {
-					logger.info("Error While calling Cibil Score By PanCard");
-					e.printStackTrace();
+					logger.error("Error While calling Cibil Score By PanCard : ",e);
 				}
 		
 		// Income Details
@@ -442,10 +435,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 			
 			
 		} catch (Exception e) {
-			
-			logger.warn("..........::::::::----->> Error while calling PL Income Details <<-----:::::::::.....");
-			e.printStackTrace();
-			// TODO: handle exception
+			logger.error("..........::::::::----->> Error while calling PL Income Details <<-----:::::::::.....",e);
 		}
 		
 		// bank statement data
@@ -465,8 +455,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 			plTeaserViewResponse.setBankData(datas);
 		
 		} catch (Exception e) {
-			e.printStackTrace();
-			logger.info("Error while getting perfios data");
+			logger.error("Error while getting perfios data : ",e);
 		}
 
 		// SCORING DATA
@@ -485,8 +474,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 			plTeaserViewResponse.setScoringResponseList(scoringResponse.getScoringResponseList());
 
 		} catch (ScoringException | IOException e1) {
-
-			e1.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e1);
 		}
 
 		// Eligibility Data
@@ -494,7 +482,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 		EligibililityRequest eligibilityReq = new EligibililityRequest();
 		eligibilityReq.setApplicationId(toApplicationId);
 		eligibilityReq.setFpProductMappingId(productMappingId);
-		System.out.println(" for eligibility appid============>>" + toApplicationId);
+		logger.info(" for eligibility appid============>>" + toApplicationId);
 
 		try {
 
@@ -503,8 +491,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 			plTeaserViewResponse.setEligibilityDataObject(eligibilityResp.getData());
 
 		} catch (Exception e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e1);
 		}
 		
 		try {
@@ -518,8 +505,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 			}
 
 		} catch (Exception e) {
-			logger.warn(":::::::::::---------Error while fetching name as per itr----------:::::::::::");
-			e.printStackTrace();
+			logger.error(":::::::::::---------Error while fetching name as per itr----------:::::::::::",e);
 		}
 		
 		
@@ -532,21 +518,21 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 					plTeaserViewResponse.setProfilePic(documentResponse.getDataList());
 				} catch (DocumentException e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 				documentRequest.setProductDocumentMappingId(DocumentAlias.WORKING_CAPITAL_BANK_STATEMENT);
 				try {
 					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 					plTeaserViewResponse.setBankStatement(documentResponse.getDataList());
 				} catch (DocumentException e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 				documentRequest.setProductDocumentMappingId(DocumentAlias.RETAIL_ITR_PDF);
 				try {
 					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 					plTeaserViewResponse.setIrtPdfReport(documentResponse.getDataList());
 				} catch (DocumentException e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 		
 
@@ -578,8 +564,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 							logger.warn("District id is null");
 						}
 					} catch (Exception e) {
-						e.printStackTrace();
-						// TODO: handle exception
+						logger.error(CommonUtils.EXCEPTION,e);
 					}
 					
 					if(retailFinalInfo.getPermanentAddress() != null){
@@ -601,8 +586,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 							logger.warn("District id is null");
 						}
 					} catch (Exception e) {
-						e.printStackTrace();
-						// TODO: handle exception
+						logger.error(CommonUtils.EXCEPTION,e);
 					}
 					
 					if(retailFinalInfo.getOfficeAddress() != null){
@@ -622,10 +606,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 				
 				
 			} catch (Exception e) {
-				
-				logger.error("Error while fetching RetailFinalData...");
-				e.printStackTrace();
-			
+				logger.error("Error while fetching RetailFinalData : ",e);
 			}
 			
 			
@@ -641,8 +622,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 				}
 				
 			} catch (Exception e) {
-				e.printStackTrace();
-				logger.info("Error while getting bank account held details");
+				logger.error("Error while getting bank account held details : ",e);
 			}
 			
 			//FIXED DEPOSITS DETAILS
@@ -656,8 +636,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 					logger.warn("Fix Deposit Details is Null....");
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
-				logger.info("Error while getting fixed deposite details");
+				logger.error("Error while getting fixed deposite details : ",e);
 			}
 			
 			//OTHER CURRENT ASSEST DETAILS
@@ -672,8 +651,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 					logger.warn("Other Currnt Asset Details is Null....");
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
-				logger.info("Error while getting other current asset details");
+				logger.error("Error while getting other current asset details : ",e);
 			}
 			
 			//OBLIGATION DETAILS
@@ -690,8 +668,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 				}
 				
 			} catch (Exception e) {
-				e.printStackTrace();
-				logger.info("Error while getting obligation details");
+				logger.error("Error while getting obligation details : ",e);
 			}
 			
 			//REFERENCES DETAILS
@@ -704,8 +681,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 					logger.warn("Reference Details is Null...");
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
-				logger.info("Error while getting reference details");
+				logger.error("Error while getting reference details : ",e);
 			}
 			
 			DocumentRequest finalDocumentRequest = new DocumentRequest();
@@ -716,7 +692,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 				DocumentResponse documentResponse = dmsClient.listProductDocument(finalDocumentRequest);
 				plTeaserViewResponse.setProfilePic(documentResponse.getDataList());
 			} catch (DocumentException e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 
 		}

@@ -62,8 +62,7 @@ public class MobileLoanEligibilityController {
 			CommonDocumentUtils.endHook(logger, "calcMinMax");
 			return new ResponseEntity<LoansResponse>(new LoansResponse("true", response.getData(), MobileCustomizeResponse.SUCCESS200.getStatusCode(), MobileCustomizeResponse.SUCCESS200.getDescription(), "successfully calculated"),HttpStatus.OK);
 		} catch (Exception e) {
-			logger.error("Error while calculating Loan eligibility for Home Loans");
-			e.printStackTrace();
+			logger.error("Error while calculating Loan eligibility for Home Loans : ",e);
 			return new ResponseEntity<LoansResponse>(new LoansResponse("false", MobileCustomizeResponse.INTERNALSERVERERROR407.getStatusCode(), MobileCustomizeResponse.INTERNALSERVERERROR407.getDescription(), "Internal Server Error"),HttpStatus.OK);
 		}
 	}
@@ -92,8 +91,7 @@ public class MobileLoanEligibilityController {
 
 		} catch (Exception e) {
 			CommonDocumentUtils.endHook(logger, "getEligibleTenure");
-			logger.error("Error while calculating Eligible Tenure for Home Loans");
-			e.printStackTrace();
+			logger.error("Error while calculating Eligible Tenure for Home Loans : ",e);
 			return new ResponseEntity<LoansResponse>(new LoansResponse("false", MobileCustomizeResponse.INTERNALSERVERERROR407.getStatusCode(), MobileCustomizeResponse.INTERNALSERVERERROR407.getDescription(), "Internal Server Error"),HttpStatus.OK);
 		}
 	}
@@ -119,8 +117,7 @@ public class MobileLoanEligibilityController {
 			CommonDocumentUtils.endHook(logger, "calcHomeLoanAmount");
 			return new ResponseEntity<LoansResponse>(new LoansResponse("true", response.getData(), MobileCustomizeResponse.SUCCESS200.getStatusCode(), MobileCustomizeResponse.SUCCESS200.getDescription(), "successfully calculated"),HttpStatus.OK);
 		} catch (Exception e) {
-			logger.error("Error while calculating Loan eligibility for Home Loans");
-			e.printStackTrace();
+			logger.error("Error while calculating Loan eligibility for Home Loans : ",e);
 			return new ResponseEntity<LoansResponse>(new LoansResponse("false", MobileCustomizeResponse.INTERNALSERVERERROR407.getStatusCode(), MobileCustomizeResponse.INTERNALSERVERERROR407.getDescription(), "Internal Server Error"),HttpStatus.OK);
 		}
 	}
@@ -152,8 +149,7 @@ public class MobileLoanEligibilityController {
 
 		} catch (Exception e) {
 			CommonDocumentUtils.endHook(logger, "getEligibleTenurePL");
-			logger.error("Error while calculating Eligible Tenure for Personal Loans");
-			e.printStackTrace();
+			logger.error("Error while calculating Eligible Tenure for Personal Loans : ",e);
 			return new ResponseEntity<LoansResponse>(new LoansResponse("false", MobileCustomizeResponse.INTERNALSERVERERROR407.getStatusCode(), MobileCustomizeResponse.INTERNALSERVERERROR407.getDescription(), "Internal Server Error"),HttpStatus.OK);
 		}
 	}
@@ -181,8 +177,7 @@ public class MobileLoanEligibilityController {
 			CommonDocumentUtils.endHook(logger, "calcMinMaxPL");
 			return new ResponseEntity<LoansResponse>(new LoansResponse("true", response.getData(), MobileCustomizeResponse.SUCCESS200.getStatusCode(), MobileCustomizeResponse.SUCCESS200.getDescription(), "successfully calculated"),HttpStatus.OK);
 		} catch (Exception e) {
-			logger.error("Error while calculating Loan eligibility for Personal Loans");
-			e.printStackTrace();
+			logger.error("Error while calculating Loan eligibility for Personal Loans : ",e);
 			return new ResponseEntity<LoansResponse>(new LoansResponse("false", MobileCustomizeResponse.INTERNALSERVERERROR407.getStatusCode(), MobileCustomizeResponse.INTERNALSERVERERROR407.getDescription(), "Internal Server Error"),HttpStatus.OK);
 		}
 	}
@@ -215,8 +210,7 @@ public class MobileLoanEligibilityController {
 
 		} catch (Exception e) {
 			CommonDocumentUtils.endHook(logger, "getEligibleTenureLAP");
-			logger.error("Error while calculating Eligible Tenure for Loan Against Properties.");
-			e.printStackTrace();
+			logger.error("Error while calculating Eligible Tenure for Loan Against Properties : ",e);
 			return new ResponseEntity<LoansResponse>(new LoansResponse("false", MobileCustomizeResponse.INTERNALSERVERERROR407.getStatusCode(), MobileCustomizeResponse.INTERNALSERVERERROR407.getDescription(), "Internal Server Error"),HttpStatus.OK);
 		}
 	}
@@ -243,8 +237,7 @@ public class MobileLoanEligibilityController {
 			CommonDocumentUtils.endHook(logger, "calcMinMaxLAP");
 			return new ResponseEntity<LoansResponse>(new LoansResponse("true", response.getData(), MobileCustomizeResponse.SUCCESS200.getStatusCode(), MobileCustomizeResponse.SUCCESS200.getDescription(), "successfully calculated"),HttpStatus.OK);
 		} catch (Exception e) {
-			logger.error("Error while calculating Loan eligibility for LAP");
-			e.printStackTrace();
+			logger.error("Error while calculating Loan eligibility for LAP : ",e);
 			return new ResponseEntity<LoansResponse>(new LoansResponse("false", MobileCustomizeResponse.INTERNALSERVERERROR407.getStatusCode(), MobileCustomizeResponse.INTERNALSERVERERROR407.getDescription(), "Internal Server Error"),HttpStatus.OK);
 		}
 	}
@@ -270,8 +263,7 @@ public class MobileLoanEligibilityController {
 			CommonDocumentUtils.endHook(logger, "calcLAP");
 			return new ResponseEntity<LoansResponse>(new LoansResponse("true", response.getData(), MobileCustomizeResponse.SUCCESS200.getStatusCode(), MobileCustomizeResponse.SUCCESS200.getDescription(), "successfully calculated"),HttpStatus.OK);
 		} catch (Exception e) {
-			logger.error("Error while calculating Loan eligibility for LAP");
-			e.printStackTrace();
+			logger.error("Error while calculating Loan eligibility for LAP : ",e);
 			return new ResponseEntity<LoansResponse>(new LoansResponse("false", MobileCustomizeResponse.INTERNALSERVERERROR407.getStatusCode(), MobileCustomizeResponse.INTERNALSERVERERROR407.getDescription(), "Internal Server Error"),HttpStatus.OK);
 		}
 	}

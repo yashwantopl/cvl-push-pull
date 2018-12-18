@@ -59,8 +59,7 @@ public class ProposedProductDetailsServiceImpl implements ProposedProductDetails
 		}
 
 		catch (Exception e) {
-			logger.info("Exception  in save proposedProductDetail  :-");
-			e.printStackTrace();
+			logger.error("Exception  in save proposedProductDetail  :-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 
@@ -83,8 +82,7 @@ public class ProposedProductDetailsServiceImpl implements ProposedProductDetails
 		}
 
 		catch (Exception e) {
-			logger.info("Exception  in save proposedProductDetail  :-");
-			e.printStackTrace();
+			logger.error("Exception  in save proposedProductDetail  :-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}

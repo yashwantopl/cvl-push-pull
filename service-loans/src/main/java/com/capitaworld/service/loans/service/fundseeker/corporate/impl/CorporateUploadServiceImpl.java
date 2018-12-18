@@ -137,8 +137,7 @@ public class CorporateUploadServiceImpl implements CorporateUploadService {
 				
 				}
 				catch (Exception e) {
-					e.printStackTrace();
-					logger.error("Error while saving Upload FLag");
+					logger.error("Error while saving Upload FLag : ",e);
 					throw new Exception("Error while saving Upload FLag");
 				}	
 			}

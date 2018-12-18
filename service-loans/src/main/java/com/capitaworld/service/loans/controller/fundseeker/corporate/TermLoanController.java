@@ -71,8 +71,7 @@ public class TermLoanController {
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
 					HttpStatus.OK);
 		} catch (Exception e) {
-			logger.error("Error while saving final information of Term Loan");
-			e.printStackTrace();
+			logger.error("Error while saving final information of Term Loan : ",e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -111,8 +110,7 @@ public class TermLoanController {
 						HttpStatus.OK);
 			}
 		} catch (Exception e) {
-			logger.error("Error while getting  final information of Term Loan");
-			e.printStackTrace();
+			logger.error("Error while getting  final information of Term Loan : ",e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -182,7 +180,6 @@ public class TermLoanController {
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getting Primary Term Loan Details==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -208,7 +205,6 @@ public class TermLoanController {
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getting Primary Term Loan Details==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);

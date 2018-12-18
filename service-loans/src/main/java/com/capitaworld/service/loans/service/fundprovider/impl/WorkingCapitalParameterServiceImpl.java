@@ -200,9 +200,7 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 				}
 				workingCapitalParameterRequest.setIndustrylist(dataRequests);
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				logger.error(e.toString());
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 		}
 
@@ -220,9 +218,7 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 				workingCapitalParameterRequest.setSectorlist(dataRequests);
 
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				logger.error(e.toString());
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 		}
 
@@ -240,9 +236,7 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 				workingCapitalParameterRequest.setCountryList(dataRequests);
 
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				logger.error(e.toString());
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 		}
 
@@ -260,9 +254,7 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 				workingCapitalParameterRequest.setStateList(dataRequests);
 
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				logger.error(e.toString());
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 		}
 
@@ -279,9 +271,7 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 				workingCapitalParameterRequest.setCityList(dataRequests);
 
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				logger.error(e.toString());
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 		}
 
@@ -299,9 +289,7 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 				workingCapitalParameterRequest
 						.setUnInterestedIndustrylist(dataRequests);
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				logger.error("error while getWCParameterRequest", e);
-				e.printStackTrace();
+				logger.error("error while getWCParameterRequest : ", e);
 			}
 		}
 		workingCapitalParameterRequest.setMsmeFundingIds(msmeValueMappingService.getDataListFromFpProductId(2,id, workingCapitalParameterRequest.getUserId()));
@@ -314,7 +302,7 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 	private void saveIndustry(WorkingCapitalParameterRequest workingCapitalParameterRequest) {
 		logger.info("start saveIndustry");
 		IndustrySectorDetail industrySectorDetail = null;
-		System.out.println(workingCapitalParameterRequest.getIndustrylist());
+		logger.info(""+workingCapitalParameterRequest.getIndustrylist());
 		List<DataRequest> dataRequests=workingCapitalParameterRequest.getIndustrylist();
 		for (DataRequest dataRequest : workingCapitalParameterRequest.getIndustrylist()) {
 			industrySectorDetail = new IndustrySectorDetail();
@@ -434,7 +422,7 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 			WorkingCapitalParameterRequest workingCapitalParameterRequest = getWorkingCapitalParameterTemp(mappingId,null,null);
 			return saveOrUpdate(workingCapitalParameterRequest,mappingId);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 			return false;
 		}
 
@@ -467,9 +455,7 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 				}
 				workingCapitalParameterRequest.setIndustrylist(dataRequests);
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				logger.error(e.toString());
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 		}
 
@@ -488,9 +474,7 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 				workingCapitalParameterRequest.setSectorlist(dataRequests);
 
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				logger.error(e.toString());
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 		}
 
@@ -510,9 +494,7 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 				workingCapitalParameterRequest.setCountryList(dataRequests);
 
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				logger.error(e.toString());
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 		}
 
@@ -531,9 +513,7 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 				workingCapitalParameterRequest.setStateList(dataRequests);
 
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				logger.error(e.toString());
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 		}
 
@@ -552,9 +532,7 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 				workingCapitalParameterRequest.setCityList(dataRequests);
 
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				logger.error(e.toString());
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 		}
 
@@ -573,9 +551,7 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 				workingCapitalParameterRequest
 						.setUnInterestedIndustrylist(dataRequests);
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				logger.error("error while getWCParameterRequest", e);
-				e.printStackTrace();
+				logger.error("error while getWCParameterRequest : ", e);
 			}
 		}
 		workingCapitalParameterRequest.setJobId(loanParameter.getJobId());
@@ -608,7 +584,6 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 	@Override
 	public Boolean saveOrUpdateTemp(WorkingCapitalParameterRequest workingCapitalParameterRequest) {
 		logger.info("start saveOrUpdateTemp");
-		// TODO Auto-generated method stub
 		WorkingCapitalParameterTemp workingCapitalParameter = null;
 
 		if(workingCapitalParameterRequest.getAppstage()==1)
@@ -697,7 +672,7 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 	private void saveIndustryTemp(WorkingCapitalParameterRequest workingCapitalParameterRequest) {
 		logger.info("start saveIndustryTemp");
 		IndustrySectorDetailTemp industrySectorDetail = null;
-		System.out.println(workingCapitalParameterRequest.getIndustrylist());
+		logger.info(""+workingCapitalParameterRequest.getIndustrylist());
 		for (DataRequest dataRequest : workingCapitalParameterRequest.getIndustrylist()) {
 			industrySectorDetail = new IndustrySectorDetailTemp();
 			industrySectorDetail.setFpProductId(workingCapitalParameterRequest.getId());
@@ -786,7 +761,6 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 	}
 
 	private void saveNegativeIndustryTemp(WorkingCapitalParameterRequest workingCapitalParameterRequest) {
-		// TODO Auto-generated method stub
 		CommonDocumentUtils.startHook(logger, "saveNegativeIndustryTemp");
 		NegativeIndustryTemp negativeIndustry = null;
 		for (DataRequest dataRequest : workingCapitalParameterRequest.getUnInterestedIndustrylist()) {

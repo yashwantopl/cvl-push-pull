@@ -216,7 +216,7 @@ public class LapPrimaryViewServiceImpl implements LapPrimaryViewService{
                        	officeAddress.setCity("-");
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    logger.error(CommonUtils.EXCEPTION,e);
                 }
                 try {
                     List<Long> officeCountry = new ArrayList<Long>(1);
@@ -236,7 +236,7 @@ public class LapPrimaryViewServiceImpl implements LapPrimaryViewService{
                     	officeAddress.setCountry("-");
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    logger.error(CommonUtils.EXCEPTION,e);
 
                 }
                 try {
@@ -257,7 +257,7 @@ public class LapPrimaryViewServiceImpl implements LapPrimaryViewService{
                     	officeAddress.setState("-");
                     }
                 } catch (Exception e) {
-                	e.printStackTrace();
+                    logger.error(CommonUtils.EXCEPTION,e);
                 }
                 officeAddress.setLandMark(applicantDetail.getOfficeLandMark());
                 officeAddress.setPincode(applicantDetail.getOfficePincode() != null ? applicantDetail.getOfficePincode().toString() : null);
@@ -282,7 +282,7 @@ public class LapPrimaryViewServiceImpl implements LapPrimaryViewService{
                     	permanentAddress.setCity("-");
                     }
                 } catch (Exception e) {
-
+                    logger.error(CommonUtils.EXCEPTION,e);
                 }
                 try {
                     List<Long> permanentCountry = new ArrayList<Long>(1);
@@ -301,7 +301,7 @@ public class LapPrimaryViewServiceImpl implements LapPrimaryViewService{
                     	permanentAddress.setCountry("-");
                     }
                 } catch (Exception e) {
-
+                    logger.error(CommonUtils.EXCEPTION,e);
                 }
                 try {
                     List<Long> permanentState = new ArrayList<Long>(1);
@@ -320,7 +320,7 @@ public class LapPrimaryViewServiceImpl implements LapPrimaryViewService{
                     	permanentAddress.setCountry("-");
                     }
                 } catch (Exception e) {
-
+                    logger.error(CommonUtils.EXCEPTION,e);
                 }
                 permanentAddress.setLandMark(applicantDetail.getPermanentLandMark());
                 permanentAddress.setPincode(applicantDetail.getPermanentPincode() != null ? applicantDetail.getPermanentPincode().toString() : null);
@@ -343,28 +343,28 @@ public class LapPrimaryViewServiceImpl implements LapPrimaryViewService{
 				try {
 					lapResponse.setProfileImage(documentManagementService.getDocumentDetails(applicantId,DocumentAlias.UERT_TYPE_APPLICANT,DocumentAlias.LAP_LOAN_PROFIEL_PICTURE));
 				} catch (DocumentException e) {
-					e.printStackTrace();
+                    logger.error(CommonUtils.EXCEPTION,e);
 				}
 				
 				//get list of Pan Card
 				try {
 					profileViewLAPResponse.setPanCardList(documentManagementService.getDocumentDetails(applicantId,DocumentAlias.UERT_TYPE_APPLICANT,DocumentAlias.LAP_LOAN_APPLICANT_SCANNED_COPY_OF_PAN_CARD));
 				} catch (DocumentException e) {
-					e.printStackTrace();
+                    logger.error(CommonUtils.EXCEPTION,e);
 				}
 
 				//get list of Aadhar Card
 				try {
 					profileViewLAPResponse.setAadharCardList(documentManagementService.getDocumentDetails(applicantId,DocumentAlias.UERT_TYPE_APPLICANT,DocumentAlias.LAP_LOAN_APPLICANT_SCANNED_COPY_OF_AADHAR_CARD));
 				} catch (DocumentException e) {
-					e.printStackTrace();
+                    logger.error(CommonUtils.EXCEPTION,e);
 				}
 				lapPrimaryViewResponse.setApplicant(profileViewLAPResponse);
 			} else {
 				throw new Exception("No Data found");
 			}
 		} catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Problem Occured while Fetching Retail Details : ",e);
 			throw new Exception("Problem Occured while Fetching Retail Details");
 		}
 
@@ -418,7 +418,7 @@ public class LapPrimaryViewServiceImpl implements LapPrimaryViewService{
                 	lapResponse.setPropertyCity("-");
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error(CommonUtils.EXCEPTION,e);
             }
             try {
                 List<Long> officeCountry = new ArrayList<Long>(1);
@@ -438,8 +438,7 @@ public class LapPrimaryViewServiceImpl implements LapPrimaryViewService{
                 	lapResponse.setPropertyCountry("-");
                 }
             } catch (Exception e) {
-                e.printStackTrace();
-
+                logger.error(CommonUtils.EXCEPTION,e);
             }
             try {
                 List<Long> officeState = new ArrayList<Long>(1);
@@ -459,7 +458,7 @@ public class LapPrimaryViewServiceImpl implements LapPrimaryViewService{
                 	lapResponse.setPropertyState(null);
                 }
             } catch (Exception e) {
-            	e.printStackTrace();
+                logger.error(CommonUtils.EXCEPTION,e);
             }
 			
 			lapResponse.setPropertyPincode(!CommonUtils.isObjectNullOrEmpty(loanDetail.getPincode()) ? loanDetail.getPincode().toString() : null);
@@ -473,7 +472,7 @@ public class LapPrimaryViewServiceImpl implements LapPrimaryViewService{
 		try {
 			coApplicantResponse = coApplicantService.getCoApplicantPLResponse(applicantId, applicationMaster.getUserId(),applicationMaster.getProductId());
 		} catch (Exception e) {
-			// TODO: handle exception
+            logger.error(CommonUtils.EXCEPTION,e);
 		}
 		lapPrimaryViewResponse.setCoApplicantList(coApplicantResponse);
 
@@ -482,7 +481,7 @@ public class LapPrimaryViewServiceImpl implements LapPrimaryViewService{
 		try {
 			garantorResponse = guarantorService.getGuarantorServiceResponse(applicantId, applicationMaster.getUserId(),applicationMaster.getProductId());
 		} catch (Exception e) {
-			// TODO: handle exception
+            logger.error(CommonUtils.EXCEPTION,e);
 		}
 		lapPrimaryViewResponse.setGuarantorList(garantorResponse);
 		

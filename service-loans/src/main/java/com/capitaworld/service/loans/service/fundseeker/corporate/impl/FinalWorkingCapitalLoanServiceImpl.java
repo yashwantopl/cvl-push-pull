@@ -66,8 +66,7 @@ public class FinalWorkingCapitalLoanServiceImpl implements FinalWorkingCapitalLo
 			loanApplicationRepository.setFinalFilledCount(capitalLoanRequest.getApplicationId(), userId, capitalLoanRequest.getFinalFilledCount());
 			return true;
 		} catch (Exception e) {
-			logger.error("Error while Saving Final Working Capital Details:-");
-			e.printStackTrace();
+			logger.error("Error while Saving Final Working Capital Details:-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
@@ -85,8 +84,7 @@ public class FinalWorkingCapitalLoanServiceImpl implements FinalWorkingCapitalLo
 			capitalLoanRequest.setFinalFilledCount(loanDetails.getApplicationId().getFinalFilledCount());
 			return capitalLoanRequest;
 		} catch (Exception e) {
-			logger.error("Error while getting Final Working Capital Details:-");
-			e.printStackTrace();
+			logger.error("Error while getting Final Working Capital Details:-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 

@@ -44,8 +44,7 @@ public class PrimaryCorporateServiceImpl implements PrimaryCorporateService{
             primaryCorporateRepository.save(primaryCorporateDetail);
             return true;
         }catch (Exception e){
-            logger.error("Error while Primary Corporate Details:-");
-            e.printStackTrace();
+            logger.error("Error while Primary Corporate Details:-",e);
             throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
         }
     }
@@ -66,8 +65,7 @@ public class PrimaryCorporateServiceImpl implements PrimaryCorporateService{
             primaryCorporateRequest.setCurrencyValue(data);
             return primaryCorporateRequest;
         } catch (Exception e) {
-            logger.error("Error while Primary Corporate Details:-");
-            e.printStackTrace();
+            logger.error("Error while Primary Corporate Details:-",e);
             throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
         }
 

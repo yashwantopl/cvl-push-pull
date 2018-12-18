@@ -110,7 +110,7 @@ public class PersonalLoansViewServiceImpl implements PersonalLoansViewService {
 					MasterResponse data = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) formResponse.getListData().get(0), MasterResponse.class);
 					officeAddress.setCity(data.getValue());
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 				try {
 					if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getOfficeCountryId())) {
@@ -133,7 +133,7 @@ public class PersonalLoansViewServiceImpl implements PersonalLoansViewService {
 						officeAddress.setState(dataState.getValue());
 					}
 				} catch (Exception e) {
-
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 				officeAddress.setLandMark(applicantDetail.getOfficeLandMark());
 				officeAddress.setPincode(applicantDetail.getOfficePincode() != null ? applicantDetail.getOfficePincode().toString() : null);
@@ -150,7 +150,7 @@ public class PersonalLoansViewServiceImpl implements PersonalLoansViewService {
 					MasterResponse dataCity = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) formResponsePermanentCity.getListData().get(0), MasterResponse.class);
 					permanentAddress.setCity(dataCity.getValue());
 				} catch (Exception e) {
-
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 				try {
 					if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getPermanentCountryId())) {
@@ -161,7 +161,7 @@ public class PersonalLoansViewServiceImpl implements PersonalLoansViewService {
 						permanentAddress.setCountry(dataCountry.getValue());
 					}
 				} catch (Exception e) {
-
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 				try {
 					if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getPermanentStateId())) {
@@ -173,7 +173,7 @@ public class PersonalLoansViewServiceImpl implements PersonalLoansViewService {
 
 					}
 				} catch (Exception e) {
-
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 				permanentAddress.setLandMark(applicantDetail.getPermanentLandMark());
 				permanentAddress.setPincode(applicantDetail.getPermanentPincode() != null ? applicantDetail.getPermanentPincode().toString() : null);
@@ -295,21 +295,21 @@ public class PersonalLoansViewServiceImpl implements PersonalLoansViewService {
 				try {
 					profileViewPLResponse.setPanCardList(documentManagementService.getDocumentDetails(applicantId,DocumentAlias.UERT_TYPE_APPLICANT,DocumentAlias.PERSONAL_LOAN_APPLICANT_SCANNED_COPY_OF_PAN_CARD));
 				} catch (DocumentException e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 
 				//get list of Aadhar Card
 				try {
 					profileViewPLResponse.setAadharCardList(documentManagementService.getDocumentDetails(applicantId,DocumentAlias.UERT_TYPE_APPLICANT,DocumentAlias.PERSONAL_LOAN_APPLICANT_SCANNED_COPY_OF_AADHAR_CARD));
 				} catch (DocumentException e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 
 				//profile picture
 				try {
 					personalLoanResponse.setApplicantProfilePicture(documentManagementService.getDocumentDetails(applicantId,DocumentAlias.UERT_TYPE_APPLICANT,DocumentAlias.PERSONAL_LOAN_PROFIEL_PICTURE));
 				}catch (DocumentException e){
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 
 				retailPrimaryViewResponse.setPersonalProfileRespoonse(profileViewPLResponse);
@@ -317,7 +317,7 @@ public class PersonalLoansViewServiceImpl implements PersonalLoansViewService {
 				throw new Exception("No Data found");
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Problem Occured while Fetching Retail Details : ",e);
 			throw new Exception("Problem Occured while Fetching Retail Details");
 		}
 
