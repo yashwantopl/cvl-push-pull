@@ -6,6 +6,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.capitaworld.service.dms.model.DocumentRequest;
 import com.capitaworld.service.loans.model.NTBRequest;
+import com.capitaworld.service.loans.model.corporate.FundSeekerInputRequestResponse;
+
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -183,6 +185,33 @@ public class FinancialArrangementDetailsController {
 					HttpStatus.OK);
 		}
 
+	}
+	
+	@RequestMapping(value = "/save_for_one_pager_eligibility", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> saveForOnePagerEligibility(@RequestBody FundSeekerInputRequestResponse fundSeekerInputRequestResponse,HttpServletRequest httpServletRequest ) {
+		
+		// application id and user id must not be null
+		if (fundSeekerInputRequestResponse.getApplicationId() == null) {
+			logger.warn("application id must not be null ==>");
+			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+		}
+		Long userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
+		fundSeekerInputRequestResponse.setUserId(userId);
+
+		logger.info("applicationId == >" + fundSeekerInputRequestResponse.getApplicationId() + "and userId == >" + userId);
+		try {
+			// Checking Profile is Locked
+			Boolean primaryLocked = loanApplicationService.isFinalLocked(fundSeekerInputRequestResponse.getApplicationId(), fundSeekerInputRequestResponse.getUserId());
+			if (!CommonUtils.isObjectNullOrEmpty(primaryLocked) && primaryLocked.booleanValue()) {
+				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.APPLICATION_LOCKED_MESSAGE, HttpStatus.BAD_REQUEST.value()),HttpStatus.OK);
+			}
+			financialArrangementDetailsService.saveOrUpdate(fundSeekerInputRequestResponse.getFinancialArrangementsDetailRequestsList(), fundSeekerInputRequestResponse.getApplicationId(), fundSeekerInputRequestResponse.getUserId());	
+			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),HttpStatus.OK);
+
+		} catch (Exception e) {
+			logger.error("Error while saving Existing Loan Details==>", e);
+			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
+		}
 	}
 	
 	@RequestMapping(value = "/get_total_emi_sanction_amount/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)

@@ -25,6 +25,7 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.client.UnknownHttpStatusCodeException;
 
+
 // @ComponentScan(basePackages = {"com.capitaworld"})
 // @Component
 public class RestTemplateConfig {

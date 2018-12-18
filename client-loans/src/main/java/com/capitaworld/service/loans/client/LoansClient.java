@@ -247,7 +247,6 @@ public class LoansClient {
 	
 	private String loansBaseUrl;
 	
-	
 	private RestTemplate restTemplate = null;
 
 	public LoansClient(String loansBaseUrl) {
