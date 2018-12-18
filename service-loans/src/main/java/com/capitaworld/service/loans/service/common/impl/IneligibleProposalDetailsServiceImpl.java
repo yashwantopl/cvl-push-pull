@@ -34,6 +34,7 @@ import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.matchengine.ProposalDetailsClient;
+import com.capitaworld.service.matchengine.utils.MatchConstant;
 import com.capitaworld.service.notification.client.NotificationClient;
 import com.capitaworld.service.notification.exceptions.NotificationException;
 import com.capitaworld.service.notification.model.Notification;
@@ -109,6 +110,9 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 			BeanUtils.copyProperties(inEligibleProposalDetailsRequest, ineligibleProposalDetails);
 			// Set Created Date.
 			ineligibleProposalDetails.setCreatedDate(new Date());
+			ineligibleProposalDetails.setCreatedBy(inEligibleProposalDetailsRequest.getUserId());
+			ineligibleProposalDetails.setStatus(MatchConstant.ProposalStatus.PENDING.intValue());
+			ineligibleProposalDetails.setIsActive(true);
 			ineligibleProposalDetailsRepository.save(ineligibleProposalDetails);
 			return true;
 		} catch (Exception e) {
@@ -116,6 +120,32 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 			e.printStackTrace();
 		}
 		return false;
+	}
+	
+	/**
+	 * UPDATE REJECTION STATUS
+	 * @param inEliProReq
+	 * @return
+	 */
+	@Override
+	public boolean updateStatus(InEligibleProposalDetailsRequest inEliProReq) {
+		IneligibleProposalDetails ineligibleProposalDetails = null;
+		try {
+			ineligibleProposalDetails = ineligibleProposalDetailsRepository.findByApplicationId(inEliProReq.getApplicationId());
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+		if(CommonUtils.isObjectNullOrEmpty(ineligibleProposalDetails)) {
+			return false;	
+		}
+		ineligibleProposalDetails.setStatus(inEliProReq.getStatus());
+		ineligibleProposalDetails.setReason(inEliProReq.getReason());
+		ineligibleProposalDetails.setModifiedBy(inEliProReq.getUserId());
+		ineligibleProposalDetails.setModifiedDate(new Date());
+		ineligibleProposalDetailsRepository.save(ineligibleProposalDetails);
+		return true;
+		
 	}
 
 	@Override
