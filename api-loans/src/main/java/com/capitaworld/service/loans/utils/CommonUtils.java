@@ -1263,6 +1263,14 @@ public enum APIFlags {
 	public static String convertValueWithoutDecimal(Double value) {
 		return !CommonUtils.isObjectNullOrEmpty(value)? decim2.format(value).toString(): "0";
 	}
+	/*Return Round Value with CommaStyle*/ 
+	public static String convertValueRound(Double value) {
+		return !CommonUtils.isObjectNullOrEmpty(value)? decim2.format(Long.valueOf(Math.round(value)))  : "0";
+	}
+	
+	public static String formatValueWithoutDecimal(Double value) {
+		return !CommonUtils.isObjectNullOrEmpty(value)? decim2.format(value)  : "0";
+	}
 	public static Object convertToDoubleForXml(Object obj, Map<String, Object>data) throws Exception {
 		if(obj ==  null) {
 			return null;
