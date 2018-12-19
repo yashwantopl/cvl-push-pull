@@ -205,10 +205,12 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 					// ===FS=============================================================================
 					notificationParams.put("bank_name", organisationName);
  
-					String subject = "Manual Application";
-					notificationParams.put("app_id", applicationId);
-					if (organisationName != null && applicationId!=null) {
-						notificationParams.put("isDynamic", false);
+
+					 String subject = "Manual Application";
+					 notificationParams.put("app_id", applicationId!=null?applicationId:"NA");
+	                    if (organisationName != null && applicationId!=null) {
+	                        notificationParams.put("isDynamic", false);
+
 						createNotificationForEmail(signUpUser.getEmail(), applicationRequest.getUserId().toString(),
 								notificationParams, NotificationAlias.EMAIL_FS_WHEN_IN_ELIGIBLE, subject,applicationId,true,null);
 					}
@@ -268,8 +270,11 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 							if (!CommonUtils.isObjectNullOrEmpty(userObj.getEmail())) {
 								// logger.info("Checker ID:---"+userObj.getEmail());
 								to = userObj.getEmail();
-								mailParameters.put("isDynamic", false);
-								mailParameters.put("app_id", applicationId);
+
+								 mailParameters.put("isDynamic", false);
+								 notificationParams.put("app_id", applicationId!=null?applicationId:"NA");
+
+
 								String[] bcc=null;
 								if(i==0)
 								{

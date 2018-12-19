@@ -119,10 +119,10 @@ public class ProposalServiceMappingImpl implements ProposalService {
 	private ProposalDetailsClient proposalDetailsClient;
 
 	@Autowired
-	private UsersClient usersClient;
-
-	@Autowired
 	private CIBILClient cibilClient;
+	
+	@Autowired
+	private UsersClient usersClient;
 
 	@Autowired
 	private NotificationService notificationService;

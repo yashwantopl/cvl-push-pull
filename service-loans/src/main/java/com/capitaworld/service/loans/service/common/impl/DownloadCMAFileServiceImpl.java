@@ -158,9 +158,8 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 			
 			//------------------------------- END FOR FIX FIRST THREE ROW IN EXCEL SHEET
 		
-			
+		
 			int j = 1;
-
 			Double temp=0.0;
 			
 			for (OperatingStatementDetails operatingStatementDetails : operatingStatementDetailsList) {
@@ -322,8 +321,8 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 			Collections.sort(liabilitiesDetailsList, new LiabilityComparator());
 			//------------------------------- END FOR FIX FIRST THREE ROW IN EXCEL SHEET
 
-			j = 1 ;
 
+			j = 1 ;
 			for (LiabilitiesDetails liabilitiesDetails : liabilitiesDetailsList) {
 				// save in db
                  temp=Double.parseDouble(liabilitiesDetails.getYear());
