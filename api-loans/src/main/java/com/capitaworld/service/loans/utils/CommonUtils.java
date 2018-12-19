@@ -1,5 +1,7 @@
 package com.capitaworld.service.loans.utils;
 
+import org.apache.commons.lang.StringEscapeUtils;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
@@ -8,16 +10,7 @@ import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.Format;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
-import org.apache.commons.lang.StringEscapeUtils;
+import java.util.*;
 
 public class CommonUtils {
 

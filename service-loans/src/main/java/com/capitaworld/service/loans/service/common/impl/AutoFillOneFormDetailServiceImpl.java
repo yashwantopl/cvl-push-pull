@@ -1400,7 +1400,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		logger.warn("---------- FinalTermLoanDetail --------> " + finalTermLoanDetailTo);
 		if (finalTermLoanDetailTo == null) {
 			finalTermLoanDetailTo = new FinalTermLoanDetail();
-			System.out.println("TL application id ont avialable");
+			logger.info("TL application id ont avialable");
 
 		}
 		BeanUtils.copyProperties(finalUnsecureLoanDetailfrom, finalTermLoanDetailTo, "id", "applicationId");
