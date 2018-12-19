@@ -75,6 +75,9 @@ public class CommonUtils {
 	public static final String LITERAL_AMOUNT = "amount";
 	
 	public static final class UsersRoles {
+		private UsersRoles(){
+			// Do nothing because of X and Y.
+		}
 		public static final Long MAKER = 1l;
 		public static final Long CHECKER = 2l;
 		public static final Long APPROVER = 3l;
@@ -89,6 +92,9 @@ public class CommonUtils {
 	}
 
 	public static final class DenominationInAmount {
+		private DenominationInAmount(){
+			// Do nothing because of X and Y.
+		}
 		public static final Long LAKHS = 100000l;
 		public static final Long MILLIONS = 1000000l;
 		public static final Long CRORES = 10000000l;
@@ -97,6 +103,9 @@ public class CommonUtils {
 	}
 
 	public static final class DenominationId {
+		private DenominationId() {
+			// Do nothing because of X and Y.
+		}
 		public static final Integer LAKHS = 1;
 		public static final Integer MILLIONS = 2;
 		public static final Integer CRORES = 3;
@@ -237,6 +246,9 @@ public class CommonUtils {
 	}
 
 	public static final class IgnorableCopy {
+		private IgnorableCopy() {
+			// Do nothing because of X and Y.
+		}
 		public static final String[] CORPORATE = { "userId", "productId", "name", "categoryCode", "isActive",
 				"applicationId" };
 		public static final String ID = "id";
@@ -301,6 +313,9 @@ public class CommonUtils {
 	}
 
 	public static final class ApplicantType {
+		private ApplicantType() {
+			// Do nothing because of X and Y.
+		}
 		public static final int APPLICANT = 1;
 		public static final int COAPPLICANT = 2;
 		public static final int GARRANTOR = 3;
@@ -308,6 +323,9 @@ public class CommonUtils {
 	}
 
 	public static final class UserMainType {
+		private UserMainType() {
+			// Do nothing because of X and Y.
+		}
 		public static final int RETAIL = 1;
 		public static final int CORPORATE = 2;
 	}
@@ -368,6 +386,9 @@ public class CommonUtils {
 	}
 
 	public static final class ApplicationStatus {
+		private ApplicationStatus() {
+			// Do nothing because of X and Y.
+		}
 		public static final Long OPEN = 1l;
 		public static final Long ASSIGNED = 2l;
 		public static final Long SUBMITTED = 3l;
@@ -400,6 +421,9 @@ public class CommonUtils {
 	}
 
 	public static final class DdrStatus {
+		private DdrStatus() {
+			// Do nothing because of X and Y.
+		}
 		public static final Long OPEN = 1l;
 		public static final Long IN_PROGRESS = 2l;
 		public static final Long SUBMITTED = 3l;
@@ -409,6 +433,9 @@ public class CommonUtils {
 	}
 
 	public static final class UserType {
+		private UserType() {
+			// Do nothing because of X and Y.
+		}
 		public static final int FUND_SEEKER = 1;
 		public static final int FUND_PROVIDER = 2;
 		public static final int SERVICE_PROVIDER = 3;
@@ -416,6 +443,9 @@ public class CommonUtils {
 	}
 
 	public static final class UploadUserType {
+		private UploadUserType() {
+			// Do nothing because of X and Y.
+		}
 		public static final String UERT_TYPE_APPLICANT = "applicant";
 		public static final String UERT_TYPE_CO_APPLICANT = "coApplicant";
 		public static final String UERT_TYPE_GUARANTOR = "guarantor";
@@ -423,21 +453,33 @@ public class CommonUtils {
 	}
 
 	public static final class EmployerConstitution {
+		private EmployerConstitution() {
+			// Do nothing because of X and Y.
+		}
 		public static final int PARTNERSHIP_PROPRIETORSHIP = 1;
 		public static final int ANYOTHER = 2;
 	}
 
 	public static final class EmployementType {
+		private EmployementType() {
+			// Do nothing because of X and Y.
+		}
 		public static final int SALARIED = 1;
 		public static final int BUSINESSMAN = 2;
 	}
 
 	public static final class ReceiptMode {
+		private ReceiptMode() {
+			// Do nothing because of X and Y.
+		}
 		public static final int CASH = 1;
 		public static final int BANK = 2;
 	}
 
 	public static final class PropertyType {
+		private PropertyType () {
+			// Do nothing because of X and Y.
+		}
 		public static final int RESIDENTIAL = 1;
 		public static final int COMMERCIAL = 2;
 		public static final int INDUSTRIAL = 3;
@@ -474,6 +516,9 @@ public class CommonUtils {
 	}
 
 	public static final class TabType {
+		private TabType() {
+			// Do nothing because of X and Y.
+		}
 		public static final int PROFILE = 1;
 		public static final int PROFILE_CO_APPLICANT = 2;
 		public static final int PROFILE_GUARANTOR = 3;
@@ -978,6 +1023,9 @@ public class CommonUtils {
 	}
 
 	public static final class PaymentMode {
+		private PaymentMode () {
+			// Do nothing because of X and Y.
+		}
 		public static final String ONLINE = "ONLINE";
 		public static final String CHEQUE = "CHEQUE";
 		public static final String CASH = "CASH";
@@ -1240,6 +1288,9 @@ public enum APIFlags {
 	}
 	
 	public static final class Status {
+		private Status () {
+			// Do nothing because of X and Y.
+		}
 		public static final int OPEN = 1;
 		public static final int IN_PROGRESS = 2;
 		public static final int REVERTED = 3;
@@ -1507,6 +1558,9 @@ public enum APIFlags {
 		return value;
 	}
 	public static final class sanctionedFrom {
+		private sanctionedFrom () {
+			// Do nothing because of X and Y.
+		}
 		public static final long ELIGIBLE_USERS = 1;
 		public static final long INELIGIBLE_USERS_OFFLINE_APPLICATION = 2;
 		public static final long FROM_API = 3;
