@@ -1429,8 +1429,12 @@ public enum APIFlags {
     public static Long convertLong(Object obj){
     	try {
     		if(!CommonUtils.isObjectNullOrEmpty(obj)) {
-    			BigInteger value =  (BigInteger) obj;
-    			return value.longValue();
+    			if(obj instanceof BigInteger) {
+    				BigInteger value =  (BigInteger) obj;
+        			return value.longValue();	
+    			} else {
+    				return (Long) obj;
+    			}
     		}	
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1441,8 +1445,12 @@ public enum APIFlags {
     public static Integer convertInteger(Object obj){
     	try {
     		if(!CommonUtils.isObjectNullOrEmpty(obj)) {
-    			BigInteger value =  (BigInteger) obj;
-    			return value.intValue();
+    			if(obj instanceof BigInteger) {
+    				BigInteger value =  (BigInteger) obj;
+        			return value.intValue();	
+    			} else {
+    				return (Integer) obj;
+    			}
     		}	
 		} catch (Exception e) {
 			e.printStackTrace();
