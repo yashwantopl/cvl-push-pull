@@ -39,8 +39,7 @@ public class RetailApplicantIncomeController {
 			logger.info("Get Total Record For Retails Applicant Details ----->" + list.size());
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully get data", HttpStatus.OK.value(), list),HttpStatus.OK);	
 		} catch (Exception e) {
-			logger.info("Throw Exception while Get Retail Income Details");
-			e.printStackTrace();
+			logger.error("Throw Exception while Get Retail Income Details : ",e);
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
@@ -52,8 +51,7 @@ public class RetailApplicantIncomeController {
 			applicantIncomeService.saveAll(applicantReqList);
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully save data", HttpStatus.OK.value()),HttpStatus.OK);	
 		} catch (Exception e) {
-			logger.info("Throw Exception while Save Retail Income Details");
-			e.printStackTrace();
+			logger.error("Throw Exception while Save Retail Income Details : ",e);
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}

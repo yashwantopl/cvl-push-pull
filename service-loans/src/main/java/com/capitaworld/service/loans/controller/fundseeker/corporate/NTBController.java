@@ -79,8 +79,6 @@ public class NTBController {
 
         } catch (Exception e) {
             logger.error("Error while fetching data for getOneformDetailByDirectorId()==>", e);
-            logger.info("Exit getOneformDetailByDirectorId()");
-            e.printStackTrace();
             return new ResponseEntity<LoansResponse>(
                     new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
                     HttpStatus.OK);
@@ -120,8 +118,6 @@ public class NTBController {
 
         } catch (Exception e) {
             logger.error("Error while fetching data for getFinancialForPartner()==>", e);
-            logger.info("Exit getFinancialForPartner()");
-            e.printStackTrace();
             return new ResponseEntity<LoansResponse>(
                     new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
                     HttpStatus.OK);
@@ -163,8 +159,6 @@ public class NTBController {
 
         } catch (Exception e) {
             logger.error("Error while saving data for saveOneformDetailForDirector()==>", e);
-            logger.info("Exit saveOneformDetailForDirector()");
-            e.printStackTrace();
             return new ResponseEntity<LoansResponse>(
                     new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
                     HttpStatus.OK);
@@ -252,8 +246,6 @@ public class NTBController {
 
         } catch (Exception e) {
             logger.error("Error while fetching data for getOtherDetails()==>", e);
-            logger.info("Exit getOtherDetails()");
-            e.printStackTrace();
             return new ResponseEntity<LoansResponse>(
                     new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
                     HttpStatus.OK);
@@ -333,8 +325,7 @@ public class NTBController {
             return new ResponseEntity<LoansResponse>(callMatchEngineClient, HttpStatus.OK);
 
         } catch (Exception e) {
-            logger.error("Error while Calling Connect Client after directorBackground");
-            e.printStackTrace();
+            logger.error("Error while Calling Connect Client after directorBackground : ",e);
             return new ResponseEntity<LoansResponse>(
                     new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
                     HttpStatus.OK);
@@ -394,8 +385,7 @@ public class NTBController {
             return new ResponseEntity<LoansResponse>(loanResponse, HttpStatus.OK);
 
         } catch (Exception e) {
-            logger.error("Error while Calling Connect Client after Oneform Submit");
-            e.printStackTrace();
+            logger.error("Error while Calling Connect Client after Oneform Submit : ",e);
             return new ResponseEntity<LoansResponse>(
                     new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
                     HttpStatus.OK);

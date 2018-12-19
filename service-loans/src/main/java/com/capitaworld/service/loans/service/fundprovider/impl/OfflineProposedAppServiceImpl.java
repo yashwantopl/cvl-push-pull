@@ -1,18 +1,13 @@
 package com.capitaworld.service.loans.service.fundprovider.impl;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.capitaworld.service.loans.model.OfflineProcessedApplicationRequest;
 import com.capitaworld.service.loans.repository.OfflineProcessedAppRepository;
 import com.capitaworld.service.loans.service.fundprovider.OfflineProcessedAppService;
@@ -35,56 +30,107 @@ public class OfflineProposedAppServiceImpl implements OfflineProcessedAppService
 	
 	@Override
 	public List<OfflineProcessedApplicationRequest> getApplicationList(Long orgId, Long userId) {
-		List<OfflineProcessedApplicationRequest> applicationRequests = Collections.emptyList();
 		if(!CommonUtils.isObjectNullOrEmpty(orgId)) {
 			List<Object []> lst = offlineProcessedAppRepository.getInEligibleRecordList(orgId);
 			if(!CommonUtils.isObjectListNull(lst)) {
-				applicationRequests = new ArrayList<OfflineProcessedApplicationRequest>(lst.size());
+				List<OfflineProcessedApplicationRequest> applicationRequests = new ArrayList<OfflineProcessedApplicationRequest>(lst.size());
+				OfflineProcessedApplicationRequest request = null;
+				Object locationCode = null;
+				if(lst.size() > 0) {
+					locationCode = getLocationCode(userId);
+				}
 				for(Object[] obj : lst) {
-					OfflineProcessedApplicationRequest request = new OfflineProcessedApplicationRequest();
-					request.setApplicationId(((BigInteger)obj[0]).longValue());
-					request.setUserId(((BigInteger)obj[1]).longValue());
-					request.setLoanAmount(((BigDecimal)obj[2]).doubleValue());
+					request = new OfflineProcessedApplicationRequest();
+					request.setApplicationId(CommonUtils.convertLong(obj[0]));
+					request.setUserId(CommonUtils.convertLong(obj[1]));
+					request.setLoanAmount(CommonUtils.convertDouble(obj[2]));
 					request.setIsCampaignUser(!CommonUtils.isObjectNullOrEmpty(obj[3])?((String)obj[3]).toString() : "Market Place");
-					request.setBranchName(((String)obj[4]).toString());
-					request.setOrganisationName(((String)obj[5]).toString());
-					request.setIsSanctioned(!CommonUtils.isObjectNullOrEmpty(obj[6])?((Boolean)obj[6]).booleanValue():null);
-					request.setIsDisbursed(!CommonUtils.isObjectNullOrEmpty(obj[7])?((Boolean)obj[7]).booleanValue():null);
-					request.setBranchId(!CommonUtils.isObjectNullOrEmpty(obj[8])?((BigInteger)obj[8]).longValue():null);
-					request.setPan(!CommonUtils.isObjectNullOrEmpty(obj[9])? ((String)obj[9]).toString() : null);
-					request.setGstin(!CommonUtils.isObjectNullOrEmpty(obj[10])? ((String)obj[10]).toString() : null);
-					request.setBranchCode(!CommonUtils.isObjectNullOrEmpty(obj[11])? ((String)obj[11]).toString() : null);
-					request.setBranchAddress(!CommonUtils.isObjectNullOrEmpty(obj[12])? ((String)obj[12]).toString() : null);
-					request.setLocationData(!CommonUtils.isObjectNullOrEmpty(getLocationCode(userId)) ? getLocationCode(userId) : " ");
+					request.setBranchName(CommonUtils.convertString(obj[4]));
+					request.setOrganisationName(CommonUtils.convertString(obj[5]));
+					request.setIsSanctioned(CommonUtils.convertBoolean(obj[6]));
+					request.setIsDisbursed(CommonUtils.convertBoolean(obj[7]));
+					request.setBranchId(CommonUtils.convertLong(obj[8]));
+					request.setPan(CommonUtils.convertString(obj[9]));
+					request.setGstin(CommonUtils.convertString(obj[10]));
+					request.setBranchCode(CommonUtils.convertString(obj[11]));
+					request.setBranchAddress(CommonUtils.convertString(obj[12]));
+					request.setLocationData(locationCode);
 					applicationRequests.add(request);
 				}
+				return applicationRequests;
 			}
 		}
-		return applicationRequests;
+		return Collections.emptyList();
+	}
+	
+	/**
+	 * author Harshit
+	 * Rejection List By Organization Id
+	 */
+	@Override
+	public List<OfflineProcessedApplicationRequest> getRejectProposalList(Long orgId, Long userId) {
+		if(!CommonUtils.isObjectNullOrEmpty(orgId)) {
+			List<Object []> lst = offlineProcessedAppRepository.getRejectProposalsList(orgId);
+			if(!CommonUtils.isObjectListNull(lst)) {
+				List<OfflineProcessedApplicationRequest> applicationRequests = new ArrayList<OfflineProcessedApplicationRequest>(lst.size());
+				OfflineProcessedApplicationRequest request = null;
+				Object locationCode = null;
+				if(lst.size() > 0) {
+					locationCode = getLocationCode(userId);
+				}
+				for(Object[] obj : lst) {
+					request = new OfflineProcessedApplicationRequest();
+					request.setApplicationId(CommonUtils.convertLong(obj[0]));
+					request.setUserId(CommonUtils.convertLong(obj[1]));
+					request.setLoanAmount(CommonUtils.convertDouble(obj[2]));
+					request.setIsCampaignUser(!CommonUtils.isObjectNullOrEmpty(obj[3])?((String)obj[3]).toString() : "Market Place");
+					request.setBranchName(CommonUtils.convertString(obj[4]));
+					request.setOrganisationName(CommonUtils.convertString(obj[5]));
+					request.setIsSanctioned(CommonUtils.convertBoolean(obj[6]));
+					request.setIsDisbursed(CommonUtils.convertBoolean(obj[7]));
+					request.setBranchId(CommonUtils.convertLong(obj[8]));
+					request.setPan(CommonUtils.convertString(obj[9]));
+					request.setGstin(CommonUtils.convertString(obj[10]));
+					request.setBranchCode(CommonUtils.convertString(obj[11]));
+					request.setBranchAddress(CommonUtils.convertString(obj[12]));
+					request.setReason(CommonUtils.convertString(obj[13]));
+					request.setModifiedDate(CommonUtils.convertDate(obj[14]));
+					request.setLocationData(locationCode);
+					applicationRequests.add(request);
+				}
+				return applicationRequests;
+			}
+		}
+		return Collections.emptyList();
 	}
 
 	@Override
 	public List<OfflineProcessedApplicationRequest> getSanctionedApplicationList(Long orgId, Long userId) {
-		List<OfflineProcessedApplicationRequest> applicationRequests = Collections.emptyList();
 		if(!CommonUtils.isObjectNullOrEmpty(orgId)) {
 			List<Object []> lst = offlineProcessedAppRepository.getSanctionedApplicationList(orgId);
 			if(!CommonUtils.isObjectListNull(lst)) {
-				applicationRequests = new ArrayList<OfflineProcessedApplicationRequest>(lst.size());
+				List<OfflineProcessedApplicationRequest> applicationRequests = new ArrayList<OfflineProcessedApplicationRequest>(lst.size());
+				OfflineProcessedApplicationRequest request = null;
+				Object locationCode = null;
+				if(lst.size() > 0) {
+					locationCode = getLocationCode(userId);
+				}
 				for(Object[] obj : lst) {
-					OfflineProcessedApplicationRequest request = new OfflineProcessedApplicationRequest();
-					request.setSanctionedAmount(!CommonUtils.isObjectNullOrEmpty(obj[0])? ((Double)obj[0]).doubleValue() : null);
-					request.setSanctionDate(!CommonUtils.isObjectNullOrEmpty(obj[1])? ((Date)obj[1]) : null);
-					request.setRemark(!CommonUtils.isObjectNullOrEmpty(obj[2])? ((String)obj[2]).toString() : null);
-					request.setRoi(!CommonUtils.isObjectNullOrEmpty(obj[3])?((Double)obj[3]).doubleValue() : null);
-					request.setTenure(!CommonUtils.isObjectNullOrEmpty(obj[4])? ((Double)obj[4]).doubleValue() : null);
-					request.setProcessingFee(!CommonUtils.isObjectNullOrEmpty(obj[5])? ((Double)obj[5]).doubleValue(): null);
-					request.setApplicationId(((BigInteger)obj[6]).longValue());
-					request.setIsPartiallyDisbursedOffline(!CommonUtils.isObjectNullOrEmpty(obj[7])?((Boolean)obj[7]).booleanValue():null);
-					request.setOrganisationName(((String)obj[8]).toString());
-					request.setBranchId(!CommonUtils.isObjectNullOrEmpty(obj[9])?((BigInteger)obj[9]).longValue():null);
+					request = new OfflineProcessedApplicationRequest();
+					request.setSanctionedAmount(CommonUtils.convertDouble(obj[0]));
+					request.setSanctionDate(CommonUtils.convertDate(obj[1]));
+					request.setRemark(CommonUtils.convertString(obj[2]));
+					request.setRoi(CommonUtils.convertDouble(obj[3]));
+					request.setTenure(CommonUtils.convertDouble(obj[4]));
+					request.setProcessingFee(CommonUtils.convertDouble(obj[5]));
+					request.setApplicationId(CommonUtils.convertLong(obj[6]));
+					request.setIsPartiallyDisbursedOffline(CommonUtils.convertBoolean(obj[7]));
+					request.setOrganisationName(CommonUtils.convertString(obj[8]));
+					request.setBranchId(CommonUtils.convertLong(obj[9]));
 					try {
-						if(!CommonUtils.isObjectNullOrEmpty(obj[9])) {
-							UserResponse resp = usersClient.getBranchNameById(((BigInteger)obj[9]).longValue());
+						Long value = CommonUtils.convertLong(obj[9]);
+						if(!CommonUtils.isObjectNullOrEmpty(value)) {
+							UserResponse resp = usersClient.getBranchNameById(value);
 							if(!CommonUtils.isObjectNullOrEmpty(resp.getData())) {
 								String branchName = resp.getData().toString();
 								request.setBranchName(branchName);
@@ -94,29 +140,35 @@ public class OfflineProposedAppServiceImpl implements OfflineProcessedAppService
 						logger.info("Error while getting Branch name");
 						e.printStackTrace();
 					}
-					request.setLocationData(!CommonUtils.isObjectNullOrEmpty(getLocationCode(userId)) ? getLocationCode(userId) : " ");
+					request.setLocationData(locationCode);
 					applicationRequests.add(request);
 				}
+				return applicationRequests;
 			}
 		}
-		return applicationRequests;
+		return Collections.emptyList();
 	}
 
 	@Override
 	public List<OfflineProcessedApplicationRequest> getDisbursedApplicationList(Long orgId, Long userId) {
-		List<OfflineProcessedApplicationRequest> applicationRequests = Collections.emptyList();
 		if(!CommonUtils.isObjectNullOrEmpty(orgId)) {
 			List<Object []> lst = offlineProcessedAppRepository.getDisbursedApplicationList(orgId);
 			if(!CommonUtils.isObjectListNull(lst)) {
-				applicationRequests = new ArrayList<OfflineProcessedApplicationRequest>(lst.size());
+				List<OfflineProcessedApplicationRequest> applicationRequests = new ArrayList<OfflineProcessedApplicationRequest>(lst.size());
+				OfflineProcessedApplicationRequest request = null;
+				Object locationCode = null;
+				if(lst.size() > 0) {
+					locationCode = getLocationCode(userId);
+				}
 				for(Object[] obj : lst) {
-					OfflineProcessedApplicationRequest request = new OfflineProcessedApplicationRequest();
-					request.setOrganisationName(((String)obj[3]).toString());
-					request.setApplicationId(((BigInteger)obj[4]).longValue());
-					request.setBranchId(!CommonUtils.isObjectNullOrEmpty(obj[6])?((BigInteger)obj[6]).longValue():null);
+					request = new OfflineProcessedApplicationRequest();
+					request.setOrganisationName(CommonUtils.convertString(obj[3]));
+					request.setApplicationId(CommonUtils.convertLong(obj[4]));
+					request.setBranchId(CommonUtils.convertLong(obj[5]));
 					try {
-						if(!CommonUtils.isObjectNullOrEmpty(obj[6])) {
-							UserResponse resp = usersClient.getBranchNameById(((BigInteger)obj[6]).longValue());
+						Long branchId = CommonUtils.convertLong(obj[6]);
+						if(!CommonUtils.isObjectNullOrEmpty(branchId)) {
+							UserResponse resp = usersClient.getBranchNameById(branchId);
 							if(!CommonUtils.isObjectNullOrEmpty(resp.getData())) {
 								String branchName = resp.getData().toString();
 								request.setBranchName(branchName);
@@ -126,21 +178,24 @@ public class OfflineProposedAppServiceImpl implements OfflineProcessedAppService
 						logger.info("Error while getting Branch name");
 						e.printStackTrace();
 					}
-					request.setLocationData(!CommonUtils.isObjectNullOrEmpty(getLocationCode(userId)) ? getLocationCode(userId) : " ");
+					request.setLocationData(locationCode);
 					applicationRequests.add(request);
 				}
+				return applicationRequests;
 			}
 		}
-		return applicationRequests;	
+		return Collections.emptyList();
 	}
 	
 	private Object getLocationCode(Long userId) {
+		if(CommonUtils.isObjectNullOrEmpty(userId)) {
+			return null;
+		}
 		UsersRequest req = new UsersRequest();
 		req.setId(userId);
 		try {
 			UserResponse resp = usersClient.getBranchDetailsBYUserId(req);
-			logger.info("resp===>"+resp.getData());
-			if(!CommonUtils.isObjectNullOrEmpty(resp.getData())) {
+			if(!CommonUtils.isObjectNullOrEmpty(resp) && !CommonUtils.isObjectNullOrEmpty(resp.getData())) {
 				return resp.getData();
 			}
 		} catch (Exception e) {

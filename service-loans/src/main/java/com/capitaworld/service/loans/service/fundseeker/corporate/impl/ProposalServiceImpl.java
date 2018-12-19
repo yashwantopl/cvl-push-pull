@@ -45,13 +45,11 @@ public class ProposalServiceImpl implements ProposalService {
 
 	@Override
 	public void checkPendingProposal() {
-		// TODO Auto-generated method stub
 		try
 		{
 			proposalDetailsClient.checkPendingProposal();	
 		}
 		catch (Exception e) {
-			// TODO: handle exception
 			e.printStackTrace();
 		}
 		

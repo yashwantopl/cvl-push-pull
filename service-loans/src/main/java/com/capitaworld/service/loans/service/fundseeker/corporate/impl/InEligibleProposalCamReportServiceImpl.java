@@ -209,8 +209,7 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 			map.put("mobile", request.getMobile());
 			map.put("email", StringEscapeUtils.escapeXml(request.getEmail()));
 		} catch (IOException e1) {
-			logger.info("Error while getting registration details");
-			e1.printStackTrace();
+			logger.error("Error while getting registration details : ",e1);
 		}
 		CorporateFinalInfoRequest corporateFinalInfoRequest;
 		try {
@@ -229,7 +228,7 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 						map.put("adminAddressData",CommonUtils.printFields(pincodeDateService.getById(corporateFinalInfoRequest.getSecondAddress().getDistrictMappingId()),null));				
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 			}
 			//REGISTERED OFFICE ADDRESS
@@ -246,14 +245,13 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 						map.put("registeredAddressData",CommonUtils.printFields(pincodeDateService.getById(corporateFinalInfoRequest.getFirstAddress().getDistrictMappingId()),null));				
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 			}
 			map.put("corporateApplicantFinal",corporateFinalInfoRequest);
 			map.put("aboutUs", StringEscapeUtils.escapeXml(corporateFinalInfoRequest.getAboutUs()));
 		} catch (Exception e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e1);
 		}
 		
 		//TIMELINE DATES
@@ -273,16 +271,16 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 				map.put("trailDates", auditTrail.getData());
 			}
 		} catch (Exception e2) {
-			e2.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e2);
 		}
-		try {
+		/*try {
 			ConnectResponse connectResponse = connectClient.getByAppStageBusinessTypeId(applicationId, ConnectStage.COMPLETE.getId(), com.capitaworld.service.loans.utils.CommonUtils.BusinessType.EXISTING_BUSINESS.getId());
 			if(!CommonUtils.isObjectNullOrEmpty(connectResponse)) {
 				map.put("dateOfInPrincipalApproval",!CommonUtils.isObjectNullOrEmpty(connectResponse.getData())? DATE_FORMAT.format(connectResponse.getData()):"-");
 			}
 		} catch (Exception e2) {
-			e2.printStackTrace();
-		}
+			logger.error(CommonUtils.EXCEPTION,e2);
+		}*/
 		
 		//GST DATA
 		try {
@@ -292,17 +290,17 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 			GstCalculation gstData = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)response.getData(),GstCalculation.class);
 			int noOfCustomer = gstData.getNoOfCustomer().intValue();
 			map.put("noOfCustomer", noOfCustomer);
-			map.put("projectedSales", CommonUtils.convertValue(gstData.getProjectedSales()));
+			map.put("projectedSales", CommonUtils.convertValueRound(gstData.getProjectedSales()));
 			map.put("customerConcentration", CommonUtils.convertValue(gstData.getConcentration()));
 		}catch(Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}try {
 			GstResponse response = gstClient.detailCalculation(corporateApplicantRequest.getGstIn());
 			if(!CommonUtils.isObjectNullOrEmpty(response)) {
 				map.put("gstDetailedResp",response.getData());
 			}
 		}catch(Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		PrimaryCorporateDetail primaryCorporateDetail = primaryCorporateRepository.getByApplicationAndUserId(applicationId, userId);
 		if(!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail)) {
@@ -329,8 +327,7 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 						establishMentYear += " "+ masterResponse.getValue();
 					} 
 				} catch (Exception e) {
-					e.printStackTrace();
-					logger.info("Error in getting establishment year");
+					logger.error("Error in getting establishment year : ",e);
 				}
 			}
 			map.put("establishmentYr",!CommonUtils.isObjectNullOrEmpty(establishMentYear) ? CommonUtils.printFields(establishMentYear,null) : " ");
@@ -338,7 +335,7 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 			Integer industry = corporateApplicantRequest.getKeyVericalFunding().intValue();
 			map.put("keyVerticalFunding", !CommonUtils.isObjectNullOrEmpty(industry) ? CommonUtils.printFields(Industry.getById(industry).getValue(),null) : " ");
 		}catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 			
 			//DIRECTOR'S BACKGROUND
@@ -361,7 +358,7 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 					directorBackgroundDetailResponse.setDirectorsName(directorName);
 					//directorBackgroundDetailResponse.setQualification(directorBackgroundDetailRequest.getQualification());
 					directorBackgroundDetailResponse.setTotalExperience(CommonUtils.convertValueWithoutDecimal(directorBackgroundDetailRequest.getTotalExperience()));
-					directorBackgroundDetailResponse.setNetworth(CommonUtils.convertValue(directorBackgroundDetailRequest.getNetworth()));
+					directorBackgroundDetailResponse.setNetworth(CommonUtils.convertValueRound(directorBackgroundDetailRequest.getNetworth()));
 					directorBackgroundDetailResponse.setDesignation(directorBackgroundDetailRequest.getDesignation());
 					directorBackgroundDetailResponse.setAppointmentDate(directorBackgroundDetailRequest.getAppointmentDate());
 					directorBackgroundDetailResponse.setDin(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDin())?decim.format(directorBackgroundDetailRequest.getDin()).toString() : "");
@@ -386,8 +383,7 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 							}
 							
 						}catch(Exception e) {
-							e.printStackTrace();
-							logger.info("Error while getting cibil details",e);
+							logger.error("Error while getting cibil details : ",e);
 						}
 					}
 					directorBackgroundDetailResponse.setPincode(directorBackgroundDetailRequest.getPincode());
@@ -397,7 +393,7 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 							directorBackgroundDetailResponse.setPinData(pincodeDateService.getById(directorBackgroundDetailRequest.getDistrictMappingId()));
 						}
 					} catch (Exception e) {
-						e.printStackTrace();
+						logger.error(CommonUtils.EXCEPTION,e);
 					}
 					directorBackgroundDetailResponse.setStateCode(directorBackgroundDetailRequest.getStateCode());
 					directorBackgroundDetailResponse.setCity(directorBackgroundDetailRequest.getCity());
@@ -427,7 +423,7 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 								directorBackgroundDetailResponse.setNationality("NA");
 							}
 						} catch (Exception e) {
-							e.printStackTrace();
+							logger.error(CommonUtils.EXCEPTION,e);
 						}
 					}
 					try {
@@ -447,16 +443,14 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 							}
 						}
 					}catch(Exception e) {
-						logger.info("error while getting main directors details");
-						e.printStackTrace();
+						logger.error("error while getting main directors details : ",e);
 					}
 					directorBackgroundDetailResponseList.add(directorBackgroundDetailResponse);
 				}
 				map.put("dirBackground", !CommonUtils.isListNullOrEmpty(directorBackgroundDetailResponseList) ? CommonUtils.printFields(directorBackgroundDetailResponseList,null) : " ");
 	        }
 				catch (Exception e) {
-					e.printStackTrace();
-					logger.info("Error in getting directors background details");
+					logger.error("Error in getting directors background details : ",e);
 		    }
 			
 			//MATCHES RESPONSE
@@ -468,7 +462,7 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 				map.put("matchesResponse", !CommonUtils.isListNullOrEmpty(matchResponse.getMatchDisplayObjectList()) ? CommonUtils.printFields(matchResponse.getMatchDisplayObjectList(),null) : " ");
 			}
 			catch (Exception e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 			
 		    //FINANCIAL ARRANGEMENTS
@@ -500,7 +494,7 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 			PrimaryCorporateRequest primaryCorporateRequest = primaryCorporateService.get(applicationId, userId);
 			map.put("loanAmt", !CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getLoanAmount()) ? CommonUtils.convertValueWithoutDecimal(primaryCorporateRequest.getAmount()) : " ");
 			map.put("loanType", !CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getProductId()) ? CommonUtils.LoanType.getType(primaryCorporateRequest.getProductId()).getName() : " ");
-			map.put("promotorsContribution", CommonUtils.convertValue(primaryCorporateRequest.getPromoterContribution()));
+			map.put("promotorsContribution", CommonUtils.convertValueRound(primaryCorporateRequest.getPromoterContribution()));
 			map.put("totalAmtPer", !CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getTotalAmtPercentage()) ? " ("+CommonUtils.convertValue(primaryCorporateRequest.getTotalAmtPercentage())+"%)" : null);
 			if(!CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getPurposeOfLoanId())) {
 				map.put("purpose", StringEscapeUtils.escapeXml(PurposeOfLoan.getById(primaryCorporateRequest.getPurposeOfLoanId()).getValue()));
@@ -513,7 +507,7 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 				map.put("amtOfSecurity",!CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getCollateralSecurityAmount()) ? CommonUtils.convertValue(primaryCorporateRequest.getCollateralSecurityAmount()) : " ");
 			}
 		}catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		//FINANCIALS AND NOTES TO ACCOUNTS
 		try {
@@ -549,17 +543,17 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 			
 			
 		}catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		
 		
 		//NAME AS PER ITR
 		try{
 			ITRConnectionResponse itrResponse = itrClient.getITRBasicDetails(applicationId);
-			System.out.println("ITR RESPONSE===========>"+itrResponse);
+			logger.info("ITR RESPONSE===========>"+itrResponse);
 			map.put("nameAsPerItr", CommonUtils.printFields(itrResponse.getData(),null));
 		}catch(Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		
 		
@@ -598,9 +592,9 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 					
 				}
 				
-				//System.out.println("bankStatement : "+bankStatement.size()+" monthlyDetails :"+monthlyDetails.size()+" top5FundReceived :"+top5FundReceived.size());
-				//System.out.println("top5FundTransfered : "+top5FundTransfered.size()+" bouncedChequeList :"+bouncedChequeList.size()+" customerInfo :"+customerInfo.size());
-				//System.out.println("summaryInfo : "+summaryInfo.size()+" bankStatementAnalysis :"+datas.size());
+				//logger.info("bankStatement : "+bankStatement.size()+" monthlyDetails :"+monthlyDetails.size()+" top5FundReceived :"+top5FundReceived.size());
+				//logger.info("top5FundTransfered : "+top5FundTransfered.size()+" bouncedChequeList :"+bouncedChequeList.size()+" customerInfo :"+customerInfo.size());
+				//logger.info("summaryInfo : "+summaryInfo.size()+" bankStatementAnalysis :"+datas.size());
 				
 				//map.put("bankStatement", bankStatement);
 				map.put("monthlyDetails", monthlyDetails);
@@ -613,8 +607,7 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 				
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
-			logger.info("Error while getting perfios data");
+			logger.error("Error while getting perfios data : ",e);
 		}
 
 		
@@ -640,7 +633,7 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 				return masterResponse.getValue();
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		return null;
 	}
@@ -661,7 +654,7 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 				return masterResponse.getValue();
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		return null;
 	}
@@ -682,7 +675,7 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 				return masterResponse.getValue();
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		return null;
 	}
@@ -717,134 +710,134 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 				osDetails = new OperatingStatementDetails();
 			}
 			
-			osDetailsString.setDomesticSales(CommonUtils.convertValue(osDetails.getDomesticSales()));
-			osDetailsString.setExportSales(CommonUtils.convertValue(osDetails.getExportSales()));
-			osDetailsString.setGrossSalesTotal(CommonUtils.convertValue(CommonUtils.addNumbers(osDetails.getDomesticSales(),osDetails.getExportSales())));
+			osDetailsString.setDomesticSales(CommonUtils.convertValueRound(osDetails.getDomesticSales()));
+			osDetailsString.setExportSales(CommonUtils.convertValueRound(osDetails.getExportSales()));
+			osDetailsString.setGrossSalesTotal(CommonUtils.convertValueRound(CommonUtils.addNumbers(osDetails.getDomesticSales(),osDetails.getExportSales())));
 			financialInputRequestDbl.setGrossSales((osDetails.getDomesticSales()+osDetails.getExportSales()) * denomination);
-			financialInputRequestString.setGrossSales(CommonUtils.convertValue(financialInputRequestDbl.getGrossSales()));
+			financialInputRequestString.setGrossSales(CommonUtils.convertValueRound(financialInputRequestDbl.getGrossSales()));
 			
-			osDetailsString.setLessExciseDuty(CommonUtils.convertValue(osDetails.getLessExciseDuty()));
-			osDetailsString.setDeductOtherItems(CommonUtils.convertValue(osDetails.getDeductOtherItems()));
-			osDetailsString.setExciseDutyTotal(CommonUtils.convertValue(CommonUtils.addNumbers(osDetails.getLessExciseDuty(),osDetails.getDeductOtherItems())));
+			osDetailsString.setLessExciseDuty(CommonUtils.convertValueRound(osDetails.getLessExciseDuty()));
+			osDetailsString.setDeductOtherItems(CommonUtils.convertValueRound(osDetails.getDeductOtherItems()));
+			osDetailsString.setExciseDutyTotal(CommonUtils.convertValueRound(CommonUtils.addNumbers(osDetails.getLessExciseDuty(),osDetails.getDeductOtherItems())));
 			financialInputRequestDbl.setLessExciseDuity((osDetails.getLessExciseDuty()+osDetails.getDeductOtherItems()) * denomination);
-			financialInputRequestString.setLessExciseDuity(CommonUtils.convertValue(financialInputRequestDbl.getLessExciseDuity()));
+			financialInputRequestString.setLessExciseDuity(CommonUtils.convertValueRound(financialInputRequestDbl.getLessExciseDuity()));
 			
-			osDetailsString.setAddOperatingStock(CommonUtils.convertValue(osDetails.getAddOperatingStock()));
-			osDetailsString.setDeductStockInProcess(CommonUtils.convertValue(osDetails.getDeductStockInProcess()));
-			osDetailsString.setAddOperatingStockFg(CommonUtils.convertValue(osDetails.getAddOperatingStockFg()));
-			osDetailsString.setDeductClStockFg(CommonUtils.convertValue(osDetails.getDeductClStockFg()));
-			osDetailsString.setIncreaseDecreaseTotal(CommonUtils.convertValue((osDetails.getAddOperatingStock()-osDetails.getDeductStockInProcess()) + (osDetails.getAddOperatingStockFg()-osDetails.getDeductClStockFg()) * denomination));
+			osDetailsString.setAddOperatingStock(CommonUtils.convertValueRound(osDetails.getAddOperatingStock()));
+			osDetailsString.setDeductStockInProcess(CommonUtils.convertValueRound(osDetails.getDeductStockInProcess()));
+			osDetailsString.setAddOperatingStockFg(CommonUtils.convertValueRound(osDetails.getAddOperatingStockFg()));
+			osDetailsString.setDeductClStockFg(CommonUtils.convertValueRound(osDetails.getDeductClStockFg()));
+			osDetailsString.setIncreaseDecreaseTotal(CommonUtils.convertValueRound((osDetails.getAddOperatingStock()-osDetails.getDeductStockInProcess()) + (osDetails.getAddOperatingStockFg()-osDetails.getDeductClStockFg()) * denomination));
 			financialInputRequestDbl.setIncreaseDecreaseStock(((osDetails.getAddOperatingStock()-osDetails.getDeductStockInProcess()) + (osDetails.getAddOperatingStockFg()-osDetails.getDeductClStockFg())) * denomination);
-			financialInputRequestString.setIncreaseDecreaseStock(CommonUtils.convertValue(financialInputRequestDbl.getIncreaseDecreaseStock()));
+			financialInputRequestString.setIncreaseDecreaseStock(CommonUtils.convertValueRound(financialInputRequestDbl.getIncreaseDecreaseStock()));
 			
-			osDetailsString.setRawMaterials(CommonUtils.convertValue(osDetails.getRawMaterials()));
-			osDetailsString.setOtherSpares(CommonUtils.convertValue(osDetails.getOtherSpares()));
-			osDetailsString.setRawMaterialsConsumedTotal(CommonUtils.convertValue(CommonUtils.addNumbers(osDetails.getRawMaterials(), osDetails.getOtherSpares())));
+			osDetailsString.setRawMaterials(CommonUtils.convertValueRound(osDetails.getRawMaterials()));
+			osDetailsString.setOtherSpares(CommonUtils.convertValueRound(osDetails.getOtherSpares()));
+			osDetailsString.setRawMaterialsConsumedTotal(CommonUtils.convertValueRound(CommonUtils.addNumbers(osDetails.getRawMaterials(), osDetails.getOtherSpares())));
 			financialInputRequestDbl.setRawMaterialConsumed((osDetails.getRawMaterials()+osDetails.getOtherSpares()) * denomination);
-			financialInputRequestString.setRawMaterialConsumed(CommonUtils.convertValue(financialInputRequestDbl.getRawMaterialConsumed()));
+			financialInputRequestString.setRawMaterialConsumed(CommonUtils.convertValueRound(financialInputRequestDbl.getRawMaterialConsumed()));
 			financialInputRequestDbl.setPowerAndFuelCost(osDetails.getPowerAndFuel()  * denomination);
-			financialInputRequestString.setPowerAndFuelCost(CommonUtils.convertValue(financialInputRequestDbl.getPowerAndFuelCost()));
+			financialInputRequestString.setPowerAndFuelCost(CommonUtils.convertValueRound(financialInputRequestDbl.getPowerAndFuelCost()));
 			financialInputRequestDbl.setEmployeeCost(osDetails.getDirectLabour() * denomination);
-			financialInputRequestString.setEmployeeCost(CommonUtils.convertValue(financialInputRequestDbl.getEmployeeCost()));
+			financialInputRequestString.setEmployeeCost(CommonUtils.convertValueRound(financialInputRequestDbl.getEmployeeCost()));
 			financialInputRequestDbl.setGeneralAndAdminExpe(osDetails.getSellingGenlAdmnExpenses() * denomination);
-			financialInputRequestString.setGeneralAndAdminExpe(CommonUtils.convertValue(financialInputRequestDbl.getGeneralAndAdminExpe()));
+			financialInputRequestString.setGeneralAndAdminExpe(CommonUtils.convertValueRound(financialInputRequestDbl.getGeneralAndAdminExpe()));
 			financialInputRequestDbl.setSellingAndDistriExpe(osDetails.getSellingAndDistributionExpenses() * denomination);
-			financialInputRequestString.setSellingAndDistriExpe(CommonUtils.convertValue(financialInputRequestDbl.getSellingAndDistriExpe()));
+			financialInputRequestString.setSellingAndDistriExpe(CommonUtils.convertValueRound(financialInputRequestDbl.getSellingAndDistriExpe()));
 			financialInputRequestDbl.setLessExpeCapita(osDetails.getExpensesAmortised() * denomination);
-			financialInputRequestString.setLessExpeCapita(CommonUtils.convertValue(financialInputRequestDbl.getLessExpeCapita()));
+			financialInputRequestString.setLessExpeCapita(CommonUtils.convertValueRound(financialInputRequestDbl.getLessExpeCapita()));
 			financialInputRequestDbl.setMiscelExpe(osDetails.getOtherMfgExpenses() * denomination);
-			financialInputRequestString.setMiscelExpe(CommonUtils.convertValue(financialInputRequestDbl.getMiscelExpe()));
+			financialInputRequestString.setMiscelExpe(CommonUtils.convertValueRound(financialInputRequestDbl.getMiscelExpe()));
 			financialInputRequestDbl.setOtherIncome(osDetails.getAddOtherRevenueIncome() * denomination);
-			financialInputRequestString.setOtherIncome(CommonUtils.convertValue(financialInputRequestDbl.getOtherIncome()));
+			financialInputRequestString.setOtherIncome(CommonUtils.convertValueRound(financialInputRequestDbl.getOtherIncome()));
 			financialInputRequestDbl.setInterest(osDetails.getInterest() * denomination);
-			financialInputRequestString.setInterest(CommonUtils.convertValue(financialInputRequestDbl.getInterest()));
+			financialInputRequestString.setInterest(CommonUtils.convertValueRound(financialInputRequestDbl.getInterest()));
 			financialInputRequestDbl.setDepriciation(osDetails.getDepreciation() * denomination);
-			financialInputRequestString.setDepriciation(CommonUtils.convertValue(financialInputRequestDbl.getDepriciation()));
+			financialInputRequestString.setDepriciation(CommonUtils.convertValueRound(financialInputRequestDbl.getDepriciation()));
 			financialInputRequestDbl.setExceptionalIncome(osDetails.getNetofNonOpIncomeOrExpenses() * denomination);
-			financialInputRequestString.setExceptionalIncome(CommonUtils.convertValue(financialInputRequestDbl.getExceptionalIncome()));
+			financialInputRequestString.setExceptionalIncome(CommonUtils.convertValueRound(financialInputRequestDbl.getExceptionalIncome()));
 			
-			osDetailsString.setOtherIncomeNeedTocCheckOp(CommonUtils.convertValue(osDetails.getOtherIncomeNeedTocCheckOp()));
+			osDetailsString.setOtherIncomeNeedTocCheckOp(CommonUtils.convertValueRound(osDetails.getOtherIncomeNeedTocCheckOp()));
 			financialInputRequestDbl.setOtherIncomeNeedTocCheckOp(osDetails.getOtherIncomeNeedTocCheckOp() * denomination);
-			financialInputRequestString.setOtherIncomeNeedTocCheckOp(CommonUtils.convertValue(financialInputRequestDbl.getOtherIncomeNeedTocCheckOp()));
+			financialInputRequestString.setOtherIncomeNeedTocCheckOp(CommonUtils.convertValueRound(financialInputRequestDbl.getOtherIncomeNeedTocCheckOp()));
 			
-			osDetailsString.setProvisionForTaxes(CommonUtils.convertValue(osDetails.getProvisionForTaxes()));
-			osDetailsString.setProvisionForDeferredTax(CommonUtils.convertValue(osDetails.getProvisionForDeferredTax()));
-			osDetailsString.setProvisionForTaxTotal(CommonUtils.convertValue(CommonUtils.addNumbers(osDetails.getProvisionForDeferredTax(), osDetails.getProvisionForTaxes())));
+			osDetailsString.setProvisionForTaxes(CommonUtils.convertValueRound(osDetails.getProvisionForTaxes()));
+			osDetailsString.setProvisionForDeferredTax(CommonUtils.convertValueRound(osDetails.getProvisionForDeferredTax()));
+			osDetailsString.setProvisionForTaxTotal(CommonUtils.convertValueRound(CommonUtils.addNumbers(osDetails.getProvisionForDeferredTax(), osDetails.getProvisionForTaxes())));
 			financialInputRequestDbl.setProvisionForTax((osDetails.getProvisionForTaxes() + osDetails.getProvisionForDeferredTax()) * denomination);
-			financialInputRequestString.setProvisionForTax(CommonUtils.convertValue(financialInputRequestDbl.getProvisionForTax()));
+			financialInputRequestString.setProvisionForTax(CommonUtils.convertValueRound(financialInputRequestDbl.getProvisionForTax()));
 			financialInputRequestDbl.setDividendPayOut(osDetails.getEquityDeividendPaidAmt() * denomination);
-			financialInputRequestString.setDividendPayOut(CommonUtils.convertValue(financialInputRequestDbl.getDividendPayOut()));
+			financialInputRequestString.setDividendPayOut(CommonUtils.convertValueRound(financialInputRequestDbl.getDividendPayOut()));
 
 			/************************************************ LIABILITIES DETAIL ***************************************************/
 			LiabilitiesDetails liabilitiesDetails = liabilitiesDetailsRepository.getLiabilitiesDetails(applicationId, year+"");
 			if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails)) {
 				liabilitiesDetails = new LiabilitiesDetails();
 			}
-			liabilitiesDetailsString.setOrdinarySharesCapital(CommonUtils.convertValue(liabilitiesDetails.getOrdinarySharesCapital()));
-			liabilitiesDetailsString.setPreferencesShares(CommonUtils.convertValue(liabilitiesDetails.getPreferencesShares()));
-			liabilitiesDetailsString.setShareCapitalTotal(CommonUtils.convertValue(CommonUtils.addNumbers(liabilitiesDetails.getOrdinarySharesCapital(), liabilitiesDetails.getPreferencesShares())));
+			liabilitiesDetailsString.setOrdinarySharesCapital(CommonUtils.convertValueRound(liabilitiesDetails.getOrdinarySharesCapital()));
+			liabilitiesDetailsString.setPreferencesShares(CommonUtils.convertValueRound(liabilitiesDetails.getPreferencesShares()));
+			liabilitiesDetailsString.setShareCapitalTotal(CommonUtils.convertValueRound(CommonUtils.addNumbers(liabilitiesDetails.getOrdinarySharesCapital(), liabilitiesDetails.getPreferencesShares())));
 			financialInputRequestDbl.setShareCapital((liabilitiesDetails.getPreferencesShares() + liabilitiesDetails.getOrdinarySharesCapital()) * denomination);
-			financialInputRequestString.setShareCapital(CommonUtils.convertValue(financialInputRequestDbl.getShareCapital()));
+			financialInputRequestString.setShareCapital(CommonUtils.convertValueRound(financialInputRequestDbl.getShareCapital()));
 			financialInputRequestDbl.setShareWarrantOutstandings((liabilitiesDetails.getShareWarrentsOutstanding()) * denomination);
-			financialInputRequestString.setShareWarrantOutstandings(CommonUtils.convertValue(financialInputRequestDbl.getShareWarrantOutstandings()));
+			financialInputRequestString.setShareWarrantOutstandings(CommonUtils.convertValueRound(financialInputRequestDbl.getShareWarrantOutstandings()));
 			financialInputRequestDbl.setRevalationReserve((liabilitiesDetails.getRevaluationReservse()) * denomination);
-			financialInputRequestString.setRevalationReserve(CommonUtils.convertValue(financialInputRequestDbl.getRevalationReserve()));
+			financialInputRequestString.setRevalationReserve(CommonUtils.convertValueRound(financialInputRequestDbl.getRevalationReserve()));
 			
-			liabilitiesDetailsString.setGeneralReserve(CommonUtils.convertValue(liabilitiesDetails.getGeneralReserve()));
-			liabilitiesDetailsString.setOtherReservse(CommonUtils.convertValue(liabilitiesDetails.getOtherReservse()));
-			liabilitiesDetailsString.setSurplusOrDeficit(CommonUtils.convertValue(liabilitiesDetails.getSurplusOrDeficit()));
-			liabilitiesDetailsString.setOthers(CommonUtils.convertValue(liabilitiesDetails.getOthers()));
-			liabilitiesDetailsString.setOtherReservesTotal(CommonUtils.convertValue(CommonUtils.addNumbers(liabilitiesDetails.getGeneralReserve(),liabilitiesDetails.getOtherReservse(), liabilitiesDetails.getSurplusOrDeficit(),liabilitiesDetails.getOthers())));
+			liabilitiesDetailsString.setGeneralReserve(CommonUtils.convertValueRound(liabilitiesDetails.getGeneralReserve()));
+			liabilitiesDetailsString.setOtherReservse(CommonUtils.convertValueRound(liabilitiesDetails.getOtherReservse()));
+			liabilitiesDetailsString.setSurplusOrDeficit(CommonUtils.convertValueRound(liabilitiesDetails.getSurplusOrDeficit()));
+			liabilitiesDetailsString.setOthers(CommonUtils.convertValueRound(liabilitiesDetails.getOthers()));
+			liabilitiesDetailsString.setOtherReservesTotal(CommonUtils.convertValueRound(CommonUtils.addNumbers(liabilitiesDetails.getGeneralReserve(),liabilitiesDetails.getOtherReservse(), liabilitiesDetails.getSurplusOrDeficit(),liabilitiesDetails.getOthers())));
 			financialInputRequestDbl.setOtherReserveAndSurplus((liabilitiesDetails.getGeneralReserve() + liabilitiesDetails.getOtherReservse() + liabilitiesDetails.getSurplusOrDeficit() + liabilitiesDetails.getOthers()) * denomination);
-			financialInputRequestString.setOtherReserveAndSurplus(CommonUtils.convertValue(financialInputRequestDbl.getOtherReserveAndSurplus()));
+			financialInputRequestString.setOtherReserveAndSurplus(CommonUtils.convertValueRound(financialInputRequestDbl.getOtherReserveAndSurplus()));
 			financialInputRequestDbl.setMinorityInterest(liabilitiesDetails.getMinorityInterest() * denomination);
-			financialInputRequestString.setMinorityInterest(CommonUtils.convertValue(financialInputRequestDbl.getMinorityInterest()));
+			financialInputRequestString.setMinorityInterest(CommonUtils.convertValueRound(financialInputRequestDbl.getMinorityInterest()));
 			financialInputRequestDbl.setSecuredLoans(liabilitiesDetails.getTermLiabilitiesSecured() * denomination);
-			financialInputRequestString.setSecuredLoans(CommonUtils.convertValue(financialInputRequestDbl.getSecuredLoans()));
+			financialInputRequestString.setSecuredLoans(CommonUtils.convertValueRound(financialInputRequestDbl.getSecuredLoans()));
 			financialInputRequestDbl.setUnsecuredLoansPromoters(liabilitiesDetails.getOtherNclUnsecuredLoansFromPromoters() * denomination);
-			financialInputRequestString.setUnsecuredLoansPromoters(CommonUtils.convertValue(financialInputRequestDbl.getUnsecuredLoansPromoters()));
+			financialInputRequestString.setUnsecuredLoansPromoters(CommonUtils.convertValueRound(financialInputRequestDbl.getUnsecuredLoansPromoters()));
 			
-			liabilitiesDetailsString.setTermLiabilitiesUnsecured(CommonUtils.convertValue(liabilitiesDetails.getTermLiabilitiesUnsecured()));
-			liabilitiesDetailsString.setOtherNclUnsecuredLoansFromOther(CommonUtils.convertValue(liabilitiesDetails.getOtherNclUnsecuredLoansFromOther()));
-			liabilitiesDetailsString.setUnsecuredLoansOthersTotal(CommonUtils.convertValue(CommonUtils.addNumbers(liabilitiesDetails.getTermLiabilitiesUnsecured(), liabilitiesDetails.getOtherNclUnsecuredLoansFromOther())));
+			liabilitiesDetailsString.setTermLiabilitiesUnsecured(CommonUtils.convertValueRound(liabilitiesDetails.getTermLiabilitiesUnsecured()));
+			liabilitiesDetailsString.setOtherNclUnsecuredLoansFromOther(CommonUtils.convertValueRound(liabilitiesDetails.getOtherNclUnsecuredLoansFromOther()));
+			liabilitiesDetailsString.setUnsecuredLoansOthersTotal(CommonUtils.convertValueRound(CommonUtils.addNumbers(liabilitiesDetails.getTermLiabilitiesUnsecured(), liabilitiesDetails.getOtherNclUnsecuredLoansFromOther())));
 			financialInputRequestDbl.setUnsecuredLoansOthers((liabilitiesDetails.getOtherNclUnsecuredLoansFromOther() + liabilitiesDetails.getTermLiabilitiesUnsecured()) * denomination);
-			financialInputRequestString.setUnsecuredLoansOthers(CommonUtils.convertValue(financialInputRequestDbl.getUnsecuredLoansOthers()));
+			financialInputRequestString.setUnsecuredLoansOthers(CommonUtils.convertValueRound(financialInputRequestDbl.getUnsecuredLoansOthers()));
 
-			liabilitiesDetailsString.setSubTotalA(CommonUtils.convertValue(liabilitiesDetails.getSubTotalA()));
-			liabilitiesDetailsString.setShortTermBorrowingFromOthers(CommonUtils.convertValue(liabilitiesDetails.getShortTermBorrowingFromOthers()));
-			liabilitiesDetailsString.setOtherBorrowingsTotal(CommonUtils.convertValue(CommonUtils.addNumbers(liabilitiesDetails.getSubTotalA(), liabilitiesDetails.getShortTermBorrowingFromOthers())));
+			liabilitiesDetailsString.setSubTotalA(CommonUtils.convertValueRound(liabilitiesDetails.getSubTotalA()));
+			liabilitiesDetailsString.setShortTermBorrowingFromOthers(CommonUtils.convertValueRound(liabilitiesDetails.getShortTermBorrowingFromOthers()));
+			liabilitiesDetailsString.setOtherBorrowingsTotal(CommonUtils.convertValueRound(CommonUtils.addNumbers(liabilitiesDetails.getSubTotalA(), liabilitiesDetails.getShortTermBorrowingFromOthers())));
 			financialInputRequestDbl.setOtherBorrowing((liabilitiesDetails.getSubTotalA() + liabilitiesDetails.getShortTermBorrowingFromOthers()) * denomination);
-			financialInputRequestString.setOtherBorrowing(CommonUtils.convertValue(financialInputRequestDbl.getOtherBorrowing()));
+			financialInputRequestString.setOtherBorrowing(CommonUtils.convertValueRound(financialInputRequestDbl.getOtherBorrowing()));
 			financialInputRequestDbl.setDeferredTaxLiablities(liabilitiesDetails.getDeferredTaxLiability() * denomination);
-			financialInputRequestString.setDeferredTaxLiablities(CommonUtils.convertValue(financialInputRequestDbl.getDeferredTaxLiablities()));
+			financialInputRequestString.setDeferredTaxLiablities(CommonUtils.convertValueRound(financialInputRequestDbl.getDeferredTaxLiablities()));
 
-			liabilitiesDetailsString.setOtherNcl(CommonUtils.convertValue(liabilitiesDetails.getOtherNcl()));
-			liabilitiesDetailsString.setDeferredPaymentsCredits(CommonUtils.convertValue(liabilitiesDetails.getDeferredPaymentsCredits()));
-			liabilitiesDetailsString.setTermDeposits(CommonUtils.convertValue(liabilitiesDetails.getTermDeposits()));
-			liabilitiesDetailsString.setDebentures(CommonUtils.convertValue(liabilitiesDetails.getDebentures()));
-			liabilitiesDetailsString.setOtherTermLiabilies(CommonUtils.convertValue(liabilitiesDetails.getOtherTermLiabilies()));
-			liabilitiesDetailsString.setOtherLongTermLiabilitiesTotal(CommonUtils.convertValue(CommonUtils.addNumbers(liabilitiesDetails.getOtherNcl(),liabilitiesDetails.getDeferredPaymentsCredits(),liabilitiesDetails.getTermDeposits(), liabilitiesDetails.getDebentures(), liabilitiesDetails.getOtherTermLiabilies())));
+			liabilitiesDetailsString.setOtherNcl(CommonUtils.convertValueRound(liabilitiesDetails.getOtherNcl()));
+			liabilitiesDetailsString.setDeferredPaymentsCredits(CommonUtils.convertValueRound(liabilitiesDetails.getDeferredPaymentsCredits()));
+			liabilitiesDetailsString.setTermDeposits(CommonUtils.convertValueRound(liabilitiesDetails.getTermDeposits()));
+			liabilitiesDetailsString.setDebentures(CommonUtils.convertValueRound(liabilitiesDetails.getDebentures()));
+			liabilitiesDetailsString.setOtherTermLiabilies(CommonUtils.convertValueRound(liabilitiesDetails.getOtherTermLiabilies()));
+			liabilitiesDetailsString.setOtherLongTermLiabilitiesTotal(CommonUtils.convertValueRound(CommonUtils.addNumbers(liabilitiesDetails.getOtherNcl(),liabilitiesDetails.getDeferredPaymentsCredits(),liabilitiesDetails.getTermDeposits(), liabilitiesDetails.getDebentures(), liabilitiesDetails.getOtherTermLiabilies())));
 			financialInputRequestDbl.setOtherLongTermLiablities((liabilitiesDetails.getOtherNclOthers() + liabilitiesDetails.getDeferredPaymentsCredits() + liabilitiesDetails.getTermDeposits() + liabilitiesDetails.getDebentures() + liabilitiesDetails.getOtherTermLiabilies()) * denomination);
-			financialInputRequestString.setOtherLongTermLiablities(CommonUtils.convertValue(financialInputRequestDbl.getOtherLongTermLiablities()));
+			financialInputRequestString.setOtherLongTermLiablities(CommonUtils.convertValueRound(financialInputRequestDbl.getOtherLongTermLiablities()));
 			financialInputRequestDbl.setLongTermProvision(liabilitiesDetails.getOtherNclLongTermProvisions() * denomination);
-			financialInputRequestString.setLongTermProvision(CommonUtils.convertValue(financialInputRequestDbl.getLongTermProvision()));
+			financialInputRequestString.setLongTermProvision(CommonUtils.convertValueRound(financialInputRequestDbl.getLongTermProvision()));
 			financialInputRequestDbl.setTradePayables(liabilitiesDetails.getSundryCreditors() * denomination);
-			financialInputRequestString.setTradePayables(CommonUtils.convertValue(financialInputRequestDbl.getTradePayables()));
+			financialInputRequestString.setTradePayables(CommonUtils.convertValueRound(financialInputRequestDbl.getTradePayables()));
 			
-			liabilitiesDetailsString.setAdvancePaymentsFromCustomers(CommonUtils.convertValue(liabilitiesDetails.getAdvancePaymentsFromCustomers()));
-			liabilitiesDetailsString.setDividendPayable(CommonUtils.convertValue(liabilitiesDetails.getDividendPayable()));
-			liabilitiesDetailsString.setOtherStatutoryLiability(CommonUtils.convertValue(liabilitiesDetails.getOtherStatutoryLiability()));
-			liabilitiesDetailsString.setDepositsOrInstalmentsOfTermLoans(CommonUtils.convertValue(liabilitiesDetails.getDepositsOrInstalmentsOfTermLoans()));
-			liabilitiesDetailsString.setOtherCurrentLiability(CommonUtils.convertValue(liabilitiesDetails.getOtherCurrentLiability()));
-			liabilitiesDetailsString.setOtherCurrentLiabilitiesTotal(CommonUtils.convertValue(CommonUtils.addNumbers(liabilitiesDetails.getAdvancePaymentsFromCustomers(),liabilitiesDetails.getDividendPayable(),liabilitiesDetails.getOtherStatutoryLiability(),liabilitiesDetails.getDepositsOrInstalmentsOfTermLoans(),liabilitiesDetails.getOtherCurrentLiability())));
+			liabilitiesDetailsString.setAdvancePaymentsFromCustomers(CommonUtils.convertValueRound(liabilitiesDetails.getAdvancePaymentsFromCustomers()));
+			liabilitiesDetailsString.setDividendPayable(CommonUtils.convertValueRound(liabilitiesDetails.getDividendPayable()));
+			liabilitiesDetailsString.setOtherStatutoryLiability(CommonUtils.convertValueRound(liabilitiesDetails.getOtherStatutoryLiability()));
+			liabilitiesDetailsString.setDepositsOrInstalmentsOfTermLoans(CommonUtils.convertValueRound(liabilitiesDetails.getDepositsOrInstalmentsOfTermLoans()));
+			liabilitiesDetailsString.setOtherCurrentLiability(CommonUtils.convertValueRound(liabilitiesDetails.getOtherCurrentLiability()));
+			liabilitiesDetailsString.setOtherCurrentLiabilitiesTotal(CommonUtils.convertValueRound(CommonUtils.addNumbers(liabilitiesDetails.getAdvancePaymentsFromCustomers(),liabilitiesDetails.getDividendPayable(),liabilitiesDetails.getOtherStatutoryLiability(),liabilitiesDetails.getDepositsOrInstalmentsOfTermLoans(),liabilitiesDetails.getOtherCurrentLiability())));
 			financialInputRequestDbl.setOtherCurruntLiablities((liabilitiesDetails.getAdvancePaymentsFromCustomers() + liabilitiesDetails.getDividendPayable() + liabilitiesDetails.getOtherStatutoryLiability() + liabilitiesDetails.getOtherCurrentLiability() + liabilitiesDetails.getDepositsOrInstalmentsOfTermLoans()) * denomination);
-			financialInputRequestString.setOtherCurruntLiablities(CommonUtils.convertValue(financialInputRequestDbl.getOtherCurruntLiablities()));
+			financialInputRequestString.setOtherCurruntLiablities(CommonUtils.convertValueRound(financialInputRequestDbl.getOtherCurruntLiablities()));
 			financialInputRequestDbl.setShortTermProvision(liabilitiesDetails.getProvisionalForTaxation() * denomination);
-			financialInputRequestString.setShortTermProvision(CommonUtils.convertValue(financialInputRequestDbl.getShortTermProvision()));
+			financialInputRequestString.setShortTermProvision(CommonUtils.convertValueRound(financialInputRequestDbl.getShortTermProvision()));
 			
-			liabilitiesDetailsString.setOtherIncomeNeedTocCheckLia(CommonUtils.convertValue(liabilitiesDetails.getOtherIncomeNeedTocCheckLia()));
+			liabilitiesDetailsString.setOtherIncomeNeedTocCheckLia(CommonUtils.convertValueRound(liabilitiesDetails.getOtherIncomeNeedTocCheckLia()));
 			financialInputRequestDbl.setOtherIncomeNeedTocCheckLia(liabilitiesDetails.getOtherIncomeNeedTocCheckLia() * denomination);
-			financialInputRequestString.setOtherIncomeNeedTocCheckLia(CommonUtils.convertValue(financialInputRequestDbl.getOtherIncomeNeedTocCheckLia()));
+			financialInputRequestString.setOtherIncomeNeedTocCheckLia(CommonUtils.convertValueRound(financialInputRequestDbl.getOtherIncomeNeedTocCheckLia()));
 			
 			/************************************************ ASSETS DETAIL ***************************************************/
 			AssetsDetails assetsDetails = assetsDetailsRepository.getAssetsDetails(applicationId, year+"");
@@ -853,129 +846,129 @@ public class InEligibleProposalCamReportServiceImpl implements InEligibleProposa
 			}
 			
 			financialInputRequestDbl.setGrossBlock(assetsDetails.getGrossBlock() * denomination);
-			financialInputRequestString.setGrossBlock(CommonUtils.convertValue(financialInputRequestDbl.getGrossBlock()));
+			financialInputRequestString.setGrossBlock(CommonUtils.convertValueRound(financialInputRequestDbl.getGrossBlock()));
 			financialInputRequestDbl.setLessAccumulatedDepre(assetsDetails.getDepreciationToDate() * denomination);
-			financialInputRequestString.setLessAccumulatedDepre(CommonUtils.convertValue(financialInputRequestDbl.getLessAccumulatedDepre()));
+			financialInputRequestString.setLessAccumulatedDepre(CommonUtils.convertValueRound(financialInputRequestDbl.getLessAccumulatedDepre()));
 			financialInputRequestDbl.setImpairmentofAsset(assetsDetails.getImpairmentAsset() * denomination);
-			financialInputRequestString.setImpairmentofAsset(CommonUtils.convertValue(financialInputRequestDbl.getImpairmentofAsset()));
+			financialInputRequestString.setImpairmentofAsset(CommonUtils.convertValueRound(financialInputRequestDbl.getImpairmentofAsset()));
 			financialInputRequestDbl.setCapitalWorkInProgress(assetsDetails.getOtherNcaOtherCapitalWorkInprogress() * denomination);
-			financialInputRequestString.setCapitalWorkInProgress(CommonUtils.convertValue(financialInputRequestDbl.getCapitalWorkInProgress()));
+			financialInputRequestString.setCapitalWorkInProgress(CommonUtils.convertValueRound(financialInputRequestDbl.getCapitalWorkInProgress()));
 			financialInputRequestDbl.setIntengibleAssets(assetsDetails.getIntangibleAssets() * denomination);
-			financialInputRequestString.setIntengibleAssets(CommonUtils.convertValue(financialInputRequestDbl.getIntengibleAssets()));
+			financialInputRequestString.setIntengibleAssets(CommonUtils.convertValueRound(financialInputRequestDbl.getIntengibleAssets()));
 			financialInputRequestDbl.setPreOperativeExpe(assetsDetails.getOthersPreOperativeExpensesPending() * denomination);
-			financialInputRequestString.setPreOperativeExpe(CommonUtils.convertValue(financialInputRequestDbl.getPreOperativeExpe()));
+			financialInputRequestString.setPreOperativeExpe(CommonUtils.convertValueRound(financialInputRequestDbl.getPreOperativeExpe()));
 			financialInputRequestDbl.setAssetInTransit(assetsDetails.getOthersAssetsInTransit() * denomination);
-			financialInputRequestString.setAssetInTransit(CommonUtils.convertValue(financialInputRequestDbl.getAssetInTransit()));
+			financialInputRequestString.setAssetInTransit(CommonUtils.convertValueRound(financialInputRequestDbl.getAssetInTransit()));
 			financialInputRequestDbl.setInvestmentInSubsidiaries(assetsDetails.getInvestmentsInSubsidiary() * denomination);
-			financialInputRequestString.setInvestmentInSubsidiaries(CommonUtils.convertValue(financialInputRequestDbl.getInvestmentInSubsidiaries()));
+			financialInputRequestString.setInvestmentInSubsidiaries(CommonUtils.convertValueRound(financialInputRequestDbl.getInvestmentInSubsidiaries()));
 			
-			assetDetailsString.setInvestmentsOrBookDebtsString(CommonUtils.convertValue(assetsDetails.getInvestmentsOrBookDebts()));
-			assetDetailsString.setDeferredReceviables(CommonUtils.convertValue(assetsDetails.getDeferredReceviables()));
-			assetDetailsString.setOthers(CommonUtils.convertValue(assetsDetails.getOthers()));
-			assetDetailsString.setOtherInvestmentsTotal(CommonUtils.convertValue(CommonUtils.addNumbers(assetsDetails.getInvestmentsOrBookDebts(), assetsDetails.getDeferredReceviables(),assetsDetails.getOthersOther())));
-			assetDetailsString.setOthersOther(CommonUtils.convertValue(assetsDetails.getOthersOther()));
+			assetDetailsString.setInvestmentsOrBookDebtsString(CommonUtils.convertValueRound(assetsDetails.getInvestmentsOrBookDebts()));
+			assetDetailsString.setDeferredReceviables(CommonUtils.convertValueRound(assetsDetails.getDeferredReceviables()));
+			assetDetailsString.setOthers(CommonUtils.convertValueRound(assetsDetails.getOthers()));
+			assetDetailsString.setOtherInvestmentsTotal(CommonUtils.convertValueRound(CommonUtils.addNumbers(assetsDetails.getInvestmentsOrBookDebts(), assetsDetails.getDeferredReceviables(),assetsDetails.getOthersOther())));
+			assetDetailsString.setOthersOther(CommonUtils.convertValueRound(assetsDetails.getOthersOther()));
 			financialInputRequestDbl.setOtherInvestment((assetsDetails.getOthersOther() + assetsDetails.getDeferredReceviables() + assetsDetails.getOthers()) * denomination);
-			financialInputRequestString.setOtherInvestment(CommonUtils.convertValue(financialInputRequestDbl.getOtherInvestment()));
+			financialInputRequestString.setOtherInvestment(CommonUtils.convertValueRound(financialInputRequestDbl.getOtherInvestment()));
 			
 			financialInputRequestDbl.setLongTermLoansAndAdva(assetsDetails.getAdvanceToSuppliersCapitalGoods() * denomination);
-			financialInputRequestString.setLongTermLoansAndAdva(CommonUtils.convertValue(financialInputRequestDbl.getLongTermLoansAndAdva()));
+			financialInputRequestString.setLongTermLoansAndAdva(CommonUtils.convertValueRound(financialInputRequestDbl.getLongTermLoansAndAdva()));
 			
-			assetDetailsString.setNonConsumableStoreAndSpares(CommonUtils.convertValue(assetsDetails.getNonConsumableStoreAndSpares()));
-			assetDetailsString.setOtherNonCurrentAssets(CommonUtils.convertValue(assetsDetails.getOtherNonCurrentAssets()));
-			assetDetailsString.setOtherNonCurrentAssestsTotal(CommonUtils.convertValue(CommonUtils.addNumbers(assetsDetails.getNonConsumableStoreAndSpares(),assetsDetails.getOtherNonCurrentAssets())));
+			assetDetailsString.setNonConsumableStoreAndSpares(CommonUtils.convertValueRound(assetsDetails.getNonConsumableStoreAndSpares()));
+			assetDetailsString.setOtherNonCurrentAssets(CommonUtils.convertValueRound(assetsDetails.getOtherNonCurrentAssets()));
+			assetDetailsString.setOtherNonCurrentAssestsTotal(CommonUtils.convertValueRound(CommonUtils.addNumbers(assetsDetails.getNonConsumableStoreAndSpares(),assetsDetails.getOtherNonCurrentAssets())));
 			financialInputRequestDbl.setOtheNonCurruntAsset((assetsDetails.getNonConsumableStoreAndSpares() + assetsDetails.getOtherNonCurrentAssets()) * denomination);
-			financialInputRequestString.setOtheNonCurruntAsset(CommonUtils.convertValue(financialInputRequestDbl.getOtheNonCurruntAsset()));
+			financialInputRequestString.setOtheNonCurruntAsset(CommonUtils.convertValueRound(financialInputRequestDbl.getOtheNonCurruntAsset()));
 			financialInputRequestDbl.setInventories(assetsDetails.getInventory() * denomination);
-			financialInputRequestString.setInventories(CommonUtils.convertValue(financialInputRequestDbl.getInventories()));
+			financialInputRequestString.setInventories(CommonUtils.convertValueRound(financialInputRequestDbl.getInventories()));
 			
-			assetDetailsString.setReceivableOtherThanDefferred(CommonUtils.convertValue(assetsDetails.getReceivableOtherThanDefferred()));
-			assetDetailsString.setExportReceivables(CommonUtils.convertValue(assetsDetails.getExportReceivables()));
-			assetDetailsString.setSundryDebtorsTotal(CommonUtils.convertValue(CommonUtils.addNumbers(assetsDetails.getReceivableOtherThanDefferred(),assetsDetails.getExportReceivables())));
+			assetDetailsString.setReceivableOtherThanDefferred(CommonUtils.convertValueRound(assetsDetails.getReceivableOtherThanDefferred()));
+			assetDetailsString.setExportReceivables(CommonUtils.convertValueRound(assetsDetails.getExportReceivables()));
+			assetDetailsString.setSundryDebtorsTotal(CommonUtils.convertValueRound(CommonUtils.addNumbers(assetsDetails.getReceivableOtherThanDefferred(),assetsDetails.getExportReceivables())));
 			financialInputRequestDbl.setSundryDebtors((assetsDetails.getReceivableOtherThanDefferred() + assetsDetails.getExportReceivables()) * denomination);
-			financialInputRequestString.setSundryDebtors(CommonUtils.convertValue(financialInputRequestDbl.getSundryDebtors()));
+			financialInputRequestString.setSundryDebtors(CommonUtils.convertValueRound(financialInputRequestDbl.getSundryDebtors()));
 			financialInputRequestDbl.setCashAndBank(assetsDetails.getCashAndBankBalance() * denomination);
-			financialInputRequestString.setCashAndBank(CommonUtils.convertValue(financialInputRequestDbl.getCashAndBank()));
+			financialInputRequestString.setCashAndBank(CommonUtils.convertValueRound(financialInputRequestDbl.getCashAndBank()));
 			
-			assetDetailsString.setInvestments(CommonUtils.convertValue(assetsDetails.getInvestments()));
-			assetDetailsString.setInstalmentsDeferred(CommonUtils.convertValue(assetsDetails.getInstalmentsDeferred()));
-			assetDetailsString.setOtherCurrentAssets(CommonUtils.convertValue(assetsDetails.getOtherCurrentAssets()));
-			assetDetailsString.setOtherCurrentAssetsTotal(CommonUtils.convertValue(CommonUtils.addNumbers(assetsDetails.getInvestments(),assetsDetails.getInstalmentsDeferred(), assetsDetails.getOtherCurrentAssets())));
+			assetDetailsString.setInvestments(CommonUtils.convertValueRound(assetsDetails.getInvestments()));
+			assetDetailsString.setInstalmentsDeferred(CommonUtils.convertValueRound(assetsDetails.getInstalmentsDeferred()));
+			assetDetailsString.setOtherCurrentAssets(CommonUtils.convertValueRound(assetsDetails.getOtherCurrentAssets()));
+			assetDetailsString.setOtherCurrentAssetsTotal(CommonUtils.convertValueRound(CommonUtils.addNumbers(assetsDetails.getInvestments(),assetsDetails.getInstalmentsDeferred(), assetsDetails.getOtherCurrentAssets())));
 			financialInputRequestDbl.setOtherCurruntAsset((assetsDetails.getInvestments() + assetsDetails.getInstalmentsDeferred() + assetsDetails.getOtherCurrentAssets()) * denomination);
-			financialInputRequestString.setOtherCurruntAsset(CommonUtils.convertValue(financialInputRequestDbl.getOtherCurruntAsset()));
+			financialInputRequestString.setOtherCurruntAsset(CommonUtils.convertValueRound(financialInputRequestDbl.getOtherCurruntAsset()));
 			
-			assetDetailsString.setAdvanceToSupplierRawMaterials(CommonUtils.convertValue(assetsDetails.getAdvanceToSupplierRawMaterials()));
-			assetDetailsString.setAdvancePaymentTaxes(CommonUtils.convertValue(assetsDetails.getAdvancePaymentTaxes()));
-			assetDetailsString.setShortTermLoansAndAdvancesTotal(CommonUtils.convertValue(CommonUtils.addNumbers(assetsDetails.getAdvanceToSupplierRawMaterials(),assetsDetails.getAdvancePaymentTaxes() )));
+			assetDetailsString.setAdvanceToSupplierRawMaterials(CommonUtils.convertValueRound(assetsDetails.getAdvanceToSupplierRawMaterials()));
+			assetDetailsString.setAdvancePaymentTaxes(CommonUtils.convertValueRound(assetsDetails.getAdvancePaymentTaxes()));
+			assetDetailsString.setShortTermLoansAndAdvancesTotal(CommonUtils.convertValueRound(CommonUtils.addNumbers(assetsDetails.getAdvanceToSupplierRawMaterials(),assetsDetails.getAdvancePaymentTaxes() )));
 			financialInputRequestDbl.setShortTermLoansAdvances((assetsDetails.getAdvanceToSupplierRawMaterials() + assetsDetails.getAdvancePaymentTaxes()) * denomination);
-			financialInputRequestString.setShortTermLoansAdvances(CommonUtils.convertValue(financialInputRequestDbl.getShortTermLoansAdvances()));
+			financialInputRequestString.setShortTermLoansAdvances(CommonUtils.convertValueRound(financialInputRequestDbl.getShortTermLoansAdvances()));
 			if(corporateFinalInfoRequest == null) {
 				financialInputRequestDbl.setContingentLiablities(null);
 				financialInputRequestString.setContingentLiablities(null);
 			}
 			else {
 				financialInputRequestDbl.setContingentLiablities(CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getContLiabilityFyAmt()) ? 0.0 : (corporateFinalInfoRequest.getContLiabilityFyAmt()* denomination));
-				financialInputRequestString.setContingentLiablities(CommonUtils.convertValue(financialInputRequestDbl.getContingentLiablities()));
+				financialInputRequestString.setContingentLiablities(CommonUtils.convertValueRound(financialInputRequestDbl.getContingentLiablities()));
 			}
 			
-			assetDetailsString.setOtherIncomeNeedTocCheckAsset(CommonUtils.convertValue(assetsDetails.getOtherIncomeNeedTocCheckAsset()));
+			assetDetailsString.setOtherIncomeNeedTocCheckAsset(CommonUtils.convertValueRound(assetsDetails.getOtherIncomeNeedTocCheckAsset()));
 			financialInputRequestDbl.setOtherIncomeNeedTocCheckAsset(assetsDetails.getOtherIncomeNeedTocCheckAsset() * denomination);
-			financialInputRequestString.setOtherIncomeNeedTocCheckAsset(CommonUtils.convertValue(financialInputRequestDbl.getOtherIncomeNeedTocCheckAsset()));
-			assetDetailsString.setCurrentRatio(CommonUtils.convertValue(assetsDetails.getCurrentRatio()));
+			financialInputRequestString.setOtherIncomeNeedTocCheckAsset(CommonUtils.convertValueRound(financialInputRequestDbl.getOtherIncomeNeedTocCheckAsset()));
+			assetDetailsString.setCurrentRatio(CommonUtils.convertValueRound(assetsDetails.getCurrentRatio()));
 			
 			/************************************************** OTHER CALCULATIONS *******************************************************/ 
 			//Profit & Loss Statement
 	        financialInputRequestDbl.setNetSale(CommonUtils.substractNumbers(financialInputRequestDbl.getGrossSales(), financialInputRequestDbl.getLessExciseDuity()));
-	      	financialInputRequestString.setNetSale(CommonUtils.convertValue(financialInputRequestDbl.getNetSale()));
+	      	financialInputRequestString.setNetSale(CommonUtils.convertValueRound(financialInputRequestDbl.getNetSale()));
 			financialInputRequestDbl.setTotalExpenditure(CommonUtils.substractNumbers(CommonUtils.addNumbers(financialInputRequestDbl.getIncreaseDecreaseStock(),financialInputRequestDbl.getRawMaterialConsumed(),financialInputRequestDbl.getPowerAndFuelCost(),financialInputRequestDbl.getEmployeeCost(), financialInputRequestDbl.getGeneralAndAdminExpe(),financialInputRequestDbl.getSellingAndDistriExpe(),financialInputRequestDbl.getMiscelExpe()), financialInputRequestDbl.getLessExpeCapita()));
-			financialInputRequestString.setTotalExpenditure(CommonUtils.convertValue(financialInputRequestDbl.getTotalExpenditure()));
+			financialInputRequestString.setTotalExpenditure(CommonUtils.convertValueRound(financialInputRequestDbl.getTotalExpenditure()));
 			financialInputRequestDbl.setOperatingProfitExclOi(CommonUtils.substractNumbers(financialInputRequestDbl.getNetSale(),financialInputRequestDbl.getTotalExpenditure()));
-			financialInputRequestString.setOperatingProfitExclOi(CommonUtils.convertValue(financialInputRequestDbl.getOperatingProfitExclOi()));
+			financialInputRequestString.setOperatingProfitExclOi(CommonUtils.convertValueRound(financialInputRequestDbl.getOperatingProfitExclOi()));
 			financialInputRequestDbl.setOperatingProfitEbitadOi(CommonUtils.addNumbers(financialInputRequestDbl.getOperatingProfitExclOi(),financialInputRequestDbl.getOtherIncome()));
-			financialInputRequestString.setOperatingProfitEbitadOi(CommonUtils.convertValue(financialInputRequestDbl.getOperatingProfitEbitadOi()));
+			financialInputRequestString.setOperatingProfitEbitadOi(CommonUtils.convertValueRound(financialInputRequestDbl.getOperatingProfitEbitadOi()));
 			financialInputRequestDbl.setPbdt(CommonUtils.substractNumbers(financialInputRequestDbl.getOperatingProfitEbitadOi(), financialInputRequestDbl.getInterest()));
-			financialInputRequestString.setPbdt(CommonUtils.convertValue(financialInputRequestDbl.getPbdt()));
+			financialInputRequestString.setPbdt(CommonUtils.convertValueRound(financialInputRequestDbl.getPbdt()));
 			financialInputRequestDbl.setProfitBeforeTaxation(CommonUtils.substractNumbers(financialInputRequestDbl.getPbdt(), financialInputRequestDbl.getDepriciation()));
-			financialInputRequestString.setProfitBeforeTaxation(CommonUtils.convertValue(financialInputRequestDbl.getProfitBeforeTaxation()));
+			financialInputRequestString.setProfitBeforeTaxation(CommonUtils.convertValueRound(financialInputRequestDbl.getProfitBeforeTaxation()));
 			financialInputRequestDbl.setProfitBeforeTax(CommonUtils.addNumbers(financialInputRequestDbl.getProfitBeforeTaxation(), financialInputRequestDbl.getExceptionalIncome()));
-			financialInputRequestString.setProfitBeforeTax(CommonUtils.convertValue(financialInputRequestDbl.getProfitBeforeTax()));
+			financialInputRequestString.setProfitBeforeTax(CommonUtils.convertValueRound(financialInputRequestDbl.getProfitBeforeTax()));
 			financialInputRequestDbl.setProfitAfterTax(CommonUtils.substractNumbers(financialInputRequestDbl.getProfitBeforeTax(), financialInputRequestDbl.getProvisionForTax()) + financialInputRequestDbl.getOtherIncomeNeedTocCheckOp());
-			financialInputRequestString.setProfitAfterTax(CommonUtils.convertValue(financialInputRequestDbl.getProfitAfterTax()));
+			financialInputRequestString.setProfitAfterTax(CommonUtils.convertValueRound(financialInputRequestDbl.getProfitAfterTax()));
 			if(financialInputRequestDbl.getDividendPayOut() == 0 || CommonUtils.isObjectNullOrEmpty(financialInputRequestDbl.getDividendPayOut()) || financialInputRequestDbl.getShareFaceValue() == 0 || CommonUtils.isObjectNullOrEmpty(financialInputRequestDbl.getShareFaceValue()) || financialInputRequestDbl.getShareCapital() == 0 || CommonUtils.isObjectNullOrEmpty(financialInputRequestDbl.getShareCapital()))
 				financialInputRequestString.setEquityDividend("0.0");
 			else
-				financialInputRequestString.setEquityDividend(CommonUtils.convertValue((financialInputRequestDbl.getDividendPayOut()*financialInputRequestDbl.getShareFaceValue()/financialInputRequestDbl.getShareCapital())));
+				financialInputRequestString.setEquityDividend(CommonUtils.convertValueRound((financialInputRequestDbl.getDividendPayOut()*financialInputRequestDbl.getShareFaceValue()/financialInputRequestDbl.getShareCapital())));
 			
 			if(financialInputRequestDbl.getShareFaceValue() !=0 && financialInputRequestDbl.getShareCapital() !=0) {
 				double total = financialInputRequestDbl.getShareFaceValue()/financialInputRequestDbl.getShareCapital();
 				if(!CommonUtils.isObjectNullOrEmpty(financialInputRequestDbl.getProfitAfterTax()) && financialInputRequestDbl.getProfitAfterTax() !=0) {
-					financialInputRequestString.setEarningPerShare(CommonUtils.convertValue(financialInputRequestDbl.getProfitAfterTax() * total));
+					financialInputRequestString.setEarningPerShare(CommonUtils.convertValueRound(financialInputRequestDbl.getProfitAfterTax() * total));
 				}
 			}
 			
 			//Balance Sheet -Equities and Liabilities
 			
 			financialInputRequestDbl.setShareHolderFunds(CommonUtils.addNumbers(financialInputRequestDbl.getShareCapital(),financialInputRequestDbl.getShareWarrantOutstandings(),financialInputRequestDbl.getRevalationReserve(),financialInputRequestDbl.getOtherReserveAndSurplus()));
-			financialInputRequestString.setShareHolderFunds(CommonUtils.convertValue(financialInputRequestDbl.getShareHolderFunds()));
+			financialInputRequestString.setShareHolderFunds(CommonUtils.convertValueRound(financialInputRequestDbl.getShareHolderFunds()));
 			financialInputRequestDbl.setTotalNonCurruntLiablities(CommonUtils.addNumbers(financialInputRequestDbl.getMinorityInterest(), financialInputRequestDbl.getSecuredLoans(), financialInputRequestDbl.getUnsecuredLoansOthers(),financialInputRequestDbl.getUnsecuredLoansPromoters(),financialInputRequestDbl.getDeferredTaxLiablities(),financialInputRequestDbl.getOtherLongTermLiablities(),financialInputRequestDbl.getOtherBorrowing(),financialInputRequestDbl.getLongTermProvision()));
-			financialInputRequestString.setTotalNonCurruntLiablities(CommonUtils.convertValue(financialInputRequestDbl.getTotalNonCurruntLiablities()));
+			financialInputRequestString.setTotalNonCurruntLiablities(CommonUtils.convertValueRound(financialInputRequestDbl.getTotalNonCurruntLiablities()));
 			financialInputRequestDbl.setTotalCurruntLiablities(CommonUtils.addNumbers(financialInputRequestDbl.getTradePayables(), financialInputRequestDbl.getOtherCurruntLiablities(), financialInputRequestDbl.getShortTermProvision()));
-			financialInputRequestString.setTotalCurruntLiablities(CommonUtils.convertValue(financialInputRequestDbl.getTotalCurruntLiablities()));
+			financialInputRequestString.setTotalCurruntLiablities(CommonUtils.convertValueRound(financialInputRequestDbl.getTotalCurruntLiablities()));
 			financialInputRequestDbl.setTotalLiablities(CommonUtils.addNumbers(financialInputRequestDbl.getShareHolderFunds(), financialInputRequestDbl.getTotalNonCurruntLiablities(), financialInputRequestDbl.getTotalCurruntLiablities(), financialInputRequestDbl.getOtherIncomeNeedTocCheckLia()));
-			financialInputRequestString.setTotalLiablities(CommonUtils.convertValue(financialInputRequestDbl.getTotalLiablities()));
+			financialInputRequestString.setTotalLiablities(CommonUtils.convertValueRound(financialInputRequestDbl.getTotalLiablities()));
 
 			//Balance Sheet -ASSETS
 			financialInputRequestDbl.setNetBlock(CommonUtils.substractThreeNumbers(financialInputRequestDbl.getGrossBlock(), financialInputRequestDbl.getLessAccumulatedDepre(),financialInputRequestDbl.getImpairmentofAsset()));
-			financialInputRequestString.setNetBlock(CommonUtils.convertValue(financialInputRequestDbl.getNetBlock()));
+			financialInputRequestString.setNetBlock(CommonUtils.convertValueRound(financialInputRequestDbl.getNetBlock()));
 			financialInputRequestDbl.setTotalNonCurruntAsset(CommonUtils.addNumbers(financialInputRequestDbl.getCapitalWorkInProgress(), financialInputRequestDbl.getIntengibleAssets(), financialInputRequestDbl.getPreOperativeExpe(), financialInputRequestDbl.getAssetInTransit(), financialInputRequestDbl.getInvestmentInSubsidiaries(), financialInputRequestDbl.getOtherInvestment(), financialInputRequestDbl.getLongTermLoansAndAdva(), financialInputRequestDbl.getOtheNonCurruntAsset()));
-			financialInputRequestString.setTotalNonCurruntAsset(CommonUtils.convertValue(financialInputRequestDbl.getTotalNonCurruntAsset()));
+			financialInputRequestString.setTotalNonCurruntAsset(CommonUtils.convertValueRound(financialInputRequestDbl.getTotalNonCurruntAsset()));
 			financialInputRequestDbl.setTotalCurruntAsset(CommonUtils.addNumbers(financialInputRequestDbl.getInventories(), financialInputRequestDbl.getSundryDebtors(), financialInputRequestDbl.getCashAndBank(), financialInputRequestDbl.getOtherCurruntAsset(), financialInputRequestDbl.getShortTermLoansAdvances()));
-			financialInputRequestString.setTotalCurruntAsset(CommonUtils.convertValue(financialInputRequestDbl.getTotalCurruntAsset()));
+			financialInputRequestString.setTotalCurruntAsset(CommonUtils.convertValueRound(financialInputRequestDbl.getTotalCurruntAsset()));
 			financialInputRequestDbl.setTotalAsset(CommonUtils.addNumbers(financialInputRequestDbl.getNetBlock(), financialInputRequestDbl.getTotalCurruntAsset(), financialInputRequestDbl.getTotalNonCurruntAsset(), financialInputRequestDbl.getOtherIncomeNeedTocCheckAsset()));
-			financialInputRequestString.setTotalAsset(CommonUtils.convertValue(financialInputRequestDbl.getTotalAsset()));
+			financialInputRequestString.setTotalAsset(CommonUtils.convertValueRound(financialInputRequestDbl.getTotalAsset()));
 			if(financialInputRequestDbl.getShareFaceValue() !=0 && financialInputRequestDbl.getShareCapital() !=0) {
 				double total = financialInputRequestDbl.getShareCapital()/financialInputRequestDbl.getShareFaceValue();
 				if(!CommonUtils.isObjectNullOrEmpty(financialInputRequestDbl.getShareHolderFunds()) && financialInputRequestDbl.getShareHolderFunds() !=0) {
-					financialInputRequestString.setBookValue(CommonUtils.convertValue(financialInputRequestDbl.getShareHolderFunds() / total));
+					financialInputRequestString.setBookValue(CommonUtils.convertValueRound(financialInputRequestDbl.getShareHolderFunds() / total));
 				}
 			}
 			

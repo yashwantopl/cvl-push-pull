@@ -110,8 +110,7 @@ public class NTBServiceImpl implements NTBService {
             return directorBackgroundDetailRequest;
 
         } catch (Exception e) {
-            logger.info("Exception  in getOneformDetailByDirectorId  :-");
-            e.printStackTrace();
+            logger.error("Exception  in getOneformDetailByDirectorId  :-",e);
             return null;
         }
     }
@@ -147,8 +146,7 @@ public class NTBServiceImpl implements NTBService {
             return true;
 
         } catch (Exception e) {
-            logger.info("Exception  in getOneformDetailByDirectorId  :-");
-            e.printStackTrace();
+            logger.error("Exception  in getOneformDetailByDirectorId  :-",e);
             return false;
         }
     }
@@ -171,8 +169,7 @@ public class NTBServiceImpl implements NTBService {
             logger.info("Successfully get data for getFinancialDetails()" + finArrngDetailResList.toString());
             return finArrngDetailResList;
         }catch (Exception e){
-            logger.info("Exception  in getFinancialDetails  :-");
-            e.printStackTrace();
+            logger.error("Exception  in getFinancialDetails  :-",e);
             return null;
         }
 
@@ -213,8 +210,7 @@ public class NTBServiceImpl implements NTBService {
 
             return true;
         }catch (Exception e){
-            logger.info("Exception  in getOneformDetailByDirectorId  :-");
-            e.printStackTrace();
+            logger.error("Exception  in getOneformDetailByDirectorId  :-",e);
             return false;
         }
     }
@@ -253,8 +249,7 @@ public class NTBServiceImpl implements NTBService {
             logger.info("Data found for given applicationid ==>"+applicationId + " response Data {}===>"+fundSeekerInputRequestResponse.toString());
             return fundSeekerInputRequestResponse;
         }catch (Exception e){
-            logger.info("Exception  in getOthersDetail  :-");
-            e.printStackTrace();
+            logger.error("Exception  in getOthersDetail  :-",e);
             return null;
         }
     }
@@ -326,8 +321,7 @@ public class NTBServiceImpl implements NTBService {
                     directorBackgroundDetailsRepository.save(saveDirObj);
                 }
             } catch (Exception e) {
-                logger.info("Directors ===============> Throw Exception While Save Director Details -------->");
-                e.printStackTrace();
+                logger.error("Directors ===============> Throw Exception While Save Director Details -------->",e);
             }
             logger.info("director detail saved successfully");
             return true;
@@ -340,8 +334,7 @@ public class NTBServiceImpl implements NTBService {
             directorBackgroundDetailsRepository.save(directorBackgroundDetail);*/
 
         }catch (Exception e){
-            logger.info("Throw Exception while save and update Others Detail !!");
-            e.printStackTrace();
+            logger.error("Throw Exception while save and update Others Detail !!",e);
             throw new Exception();
         }
     }
@@ -372,8 +365,7 @@ public class NTBServiceImpl implements NTBService {
                 return new LoansResponse("Success", HttpStatus.OK.value(), directorBackgroundDetailRequest);
             }
         } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.error(CommonUtils.EXCEPTION,e);
             return null;
         }
     }
@@ -396,7 +388,7 @@ public class NTBServiceImpl implements NTBService {
                 return new LoansResponse("Success data updated", HttpStatus.OK.value(),true);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(CommonUtils.EXCEPTION,e);
             return new LoansResponse("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
     }
@@ -414,7 +406,7 @@ public class NTBServiceImpl implements NTBService {
                 return new LoansResponse("Success data updated", HttpStatus.OK.value(),true);
             }
         } catch (Exception e) {
-        	e.printStackTrace();
+            logger.error(CommonUtils.EXCEPTION,e);
             return new LoansResponse("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
     }
@@ -473,10 +465,8 @@ public class NTBServiceImpl implements NTBService {
 	                      
 			}
 		} catch (Exception e) {
-			logger.info("End invokeFraudAnalytics() Error in Fraud Analytics call");
-			e.printStackTrace();
 			//throw new Exception();
-			logger.info("End invokeFraudAnalytics() ERROR IN FRAUD ANALYTICS CALL");
+			logger.error("End invokeFraudAnalytics() ERROR IN FRAUD ANALYTICS CALL : ",e);
 			 return new LoansResponse("Successfully Saved", HttpStatus.OK.value());
 		}
 	}

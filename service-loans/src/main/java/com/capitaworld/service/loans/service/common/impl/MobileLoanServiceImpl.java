@@ -379,8 +379,7 @@ public class MobileLoanServiceImpl implements MobileService {
 			}
 			return applicationMaster.getId();
 		} catch (Exception e) {
-			logger.error("Error while Saving Loan Details:-");
-			e.printStackTrace();
+			logger.error("Error while Saving Loan Details:-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
@@ -414,8 +413,7 @@ public class MobileLoanServiceImpl implements MobileService {
 			retailApplicantDetailRepository.save(retailApplicantDetail);
 			return true;
 		} catch (Exception e) {
-			logger.error("Error while Saving RetailApplicantDetailFromLoanEligibility:-");
-			e.printStackTrace();
+			logger.error("Error while Saving RetailApplicantDetailFromLoanEligibility:-",e);
 			return false;
 		}
 	}

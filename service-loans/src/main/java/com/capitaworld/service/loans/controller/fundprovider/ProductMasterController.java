@@ -86,7 +86,6 @@ public class ProductMasterController {
 			}
 		} catch (Exception e) {
 			logger.error("Error while saving addProduct Details==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -103,7 +102,7 @@ public class ProductMasterController {
 			// request must not be null
 
 			Long userId = null;
-			if (CommonDocumentUtils.isThisClientApplication(request) && !CommonUtils.isObjectNullOrEmpty(clientId) && !CommonUtils.isObjectNullOrEmpty(clientId)) {
+			if (CommonDocumentUtils.isThisClientApplication(request) && !CommonUtils.isObjectNullOrEmpty(clientId)) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -139,7 +138,6 @@ public class ProductMasterController {
 			}
 		} catch (Exception e) {
 			logger.error("Error while clickOnWorkFlowButton==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -193,7 +191,6 @@ public class ProductMasterController {
 			}
 		} catch (Exception e) {
 			logger.error("Error while saving corporateProduct  Parameter==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -248,7 +245,6 @@ public class ProductMasterController {
 			}
 		} catch (Exception e) {
 			logger.error("Error while saving retailProduct  Parameter==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -263,7 +259,7 @@ public class ProductMasterController {
 		CommonDocumentUtils.startHook(logger, "getList");
 		try {
 			Long userId = null;
-			if (CommonDocumentUtils.isThisClientApplication(request) && !CommonUtils.isObjectNullOrEmpty(clientId) && !CommonUtils.isObjectNullOrEmpty(clientId)) {
+			if (CommonDocumentUtils.isThisClientApplication(request) && !CommonUtils.isObjectNullOrEmpty(clientId) ) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -283,7 +279,6 @@ public class ProductMasterController {
 
 		} catch (Exception e) {
 			logger.error("Error while getting Products Details==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -297,7 +292,7 @@ public class ProductMasterController {
 		CommonDocumentUtils.startHook(logger, "getActiveInActiveList");
 		try {
 			Long userId = null;
-			if (CommonDocumentUtils.isThisClientApplication(request) && !CommonUtils.isObjectNullOrEmpty(clientId) && !CommonUtils.isObjectNullOrEmpty(clientId)) {
+			if (CommonDocumentUtils.isThisClientApplication(request) && !CommonUtils.isObjectNullOrEmpty(clientId) ) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -317,7 +312,6 @@ public class ProductMasterController {
 
 		} catch (Exception e) {
 			logger.error("Error while getting Active InActive Products Details==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -360,7 +354,6 @@ public class ProductMasterController {
 
 		} catch (Exception e) {
 			logger.error("Error while getting Products Details==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -390,7 +383,6 @@ public class ProductMasterController {
 
 		} catch (Exception e) {
 			logger.error("Error while getting Products Details==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -429,7 +421,6 @@ public class ProductMasterController {
 
 		} catch (Exception e) {
 			logger.error("Error while getting user name ==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -465,7 +456,6 @@ public class ProductMasterController {
 
 		} catch (Exception e) {
 			logger.error("Error while getting user name ==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -493,7 +483,6 @@ public class ProductMasterController {
 
 		} catch (Exception e) {
 			logger.error("Error while getting Loan Application Details==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -529,11 +518,9 @@ public class ProductMasterController {
 			return new ResponseEntity<ProductDetailsResponse>(productDetailsResponse, HttpStatus.OK);
 
 		} catch (Exception e) {
-			// TODO: handle exception
 			ProductDetailsResponse productDetailsResponse = new ProductDetailsResponse("Something went wrong",
 					HttpStatus.INTERNAL_SERVER_ERROR.value());
-			logger.error("Something went wrong");
-			e.printStackTrace();
+			logger.error(CommonUtils.SOMETHING_WENT_WRONG,e);
 			return new ResponseEntity<ProductDetailsResponse>(productDetailsResponse, HttpStatus.OK);
 		}
 	}
@@ -564,7 +551,6 @@ public class ProductMasterController {
 
 		} catch (Exception e) {
 			logger.error("Error while getting fp  product details ==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -596,7 +582,6 @@ public class ProductMasterController {
 
 		} catch (Exception e) {
 			logger.error("Error while checking self view ==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -622,7 +607,6 @@ public class ProductMasterController {
 
 		} catch (Exception e) {
 			logger.error("Error while checking fp parameter filled or not ==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -664,7 +648,6 @@ public class ProductMasterController {
 
 		} catch (Exception e) {
 			logger.error("Error while changeStatus ==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -699,7 +682,6 @@ public class ProductMasterController {
 
 		} catch (Exception e) {
 			logger.error("Error while lastAccessedProduct ==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -717,7 +699,6 @@ public class ProductMasterController {
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getChatListByApplicationId==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -734,7 +715,6 @@ public class ProductMasterController {
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getProductsByOrg==>{}", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -760,7 +740,6 @@ public class ProductMasterController {
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while saveMasterFromTemp==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -817,7 +796,6 @@ public class ProductMasterController {
 			}
 		} catch (Exception e) {
 			logger.error("Error while saving corporateProduct  Parameter==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -876,7 +854,6 @@ public class ProductMasterController {
 			}
 		} catch (Exception e) {
 			logger.error("Error while saving saveRetailInTemp  Parameter==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -920,7 +897,6 @@ public class ProductMasterController {
 
 		} catch (Exception e) {
 			logger.error("Error while getting Products Details==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -935,7 +911,7 @@ public class ProductMasterController {
 
 			Long userId = null;
 			Long jobId = null;
-			if (CommonDocumentUtils.isThisClientApplication(request) && !CommonUtils.isObjectNullOrEmpty(clientId) && !CommonUtils.isObjectNullOrEmpty(clientId)) {
+			if (CommonDocumentUtils.isThisClientApplication(request) && !CommonUtils.isObjectNullOrEmpty(clientId) ) {
 				userId = clientId;
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -973,7 +949,6 @@ public class ProductMasterController {
 			}
 		} catch (Exception e) {
 			logger.error("Error while changeStatusWithWorkFlow==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);

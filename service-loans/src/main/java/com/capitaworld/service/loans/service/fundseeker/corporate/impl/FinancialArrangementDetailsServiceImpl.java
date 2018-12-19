@@ -62,8 +62,7 @@ public class FinancialArrangementDetailsServiceImpl implements FinancialArrangem
 		}
 
 		catch (Exception e) {
-			logger.info("Exception  in save financialArrangementsDetail  :-");
-			e.printStackTrace();
+			logger.error("Exception  in save financialArrangementsDetail  :-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
@@ -79,14 +78,17 @@ public class FinancialArrangementDetailsServiceImpl implements FinancialArrangem
 			for (FinancialArrangementsDetail detail : financialArrangementDetails) {
 				FinancialArrangementsDetailRequest financialArrangementDetailsRequest = new FinancialArrangementsDetailRequest();
 				BeanUtils.copyProperties(detail, financialArrangementDetailsRequest);
+				if(!CommonUtils.isObjectNullOrEmpty(detail.getDirectorBackgroundDetail())) {
+					financialArrangementDetailsRequest.setDirectorId(detail.getDirectorBackgroundDetail().getId());					
+				}
 				financialArrangementDetailRequests.add(financialArrangementDetailsRequest);
+				
 			}
 			return financialArrangementDetailRequests;
 		}
 
 		catch (Exception e) {
-			logger.info("Exception  in save financialArrangementsDetail  :-");
-			e.printStackTrace();
+			logger.error("Exception  in save financialArrangementsDetail  :-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
@@ -97,9 +99,10 @@ public class FinancialArrangementDetailsServiceImpl implements FinancialArrangem
 		financialArrangementDetailsRepository.inActive(userId, applicationId);
 		for (FinancialArrangementsDetailRequest req : finArrDetailRequest) {
 			FinancialArrangementsDetail arrangementsDetail = new FinancialArrangementsDetail();
-			BeanUtils.copyProperties(req, arrangementsDetail);
+			BeanUtils.copyProperties(req, arrangementsDetail,"id");
 			arrangementsDetail.setApplicationId(new LoanApplicationMaster(applicationId));
 			arrangementsDetail.setCreatedBy(userId);
+			arrangementsDetail.setCreatedDate(new Date());
 			arrangementsDetail.setIsActive(true);
 			financialArrangementDetailsRepository.save(arrangementsDetail);
 		}
@@ -116,6 +119,7 @@ public class FinancialArrangementDetailsServiceImpl implements FinancialArrangem
 			BeanUtils.copyProperties(req, arrangementsDetail);
 			arrangementsDetail.setApplicationId(new LoanApplicationMaster(applicationId));
 			arrangementsDetail.setCreatedBy(userId);
+			arrangementsDetail.setCreatedDate(new Date());
 			arrangementsDetail.setIsActive(true);
 			arrangementsDetail.setDirectorBackgroundDetail(new DirectorBackgroundDetail(directorId));
 			financialArrangementDetailsRepository.save(arrangementsDetail);
@@ -150,9 +154,8 @@ public class FinancialArrangementDetailsServiceImpl implements FinancialArrangem
 	public List<FinancialArrangementsDetailRequest> getFinancialArrangementDetailsListDirId(Long dirId, Long id)
 			throws Exception {
 		try {
-			List<FinancialArrangementsDetail> financialArrangementDetails = financialArrangementDetailsRepository
-					.findByDirectorBackgroundDetailIdAndApplicationIdIdAndIsActive(dirId,id,true);
-			List<FinancialArrangementsDetailRequest> financialArrangementDetailRequests = new ArrayList<FinancialArrangementsDetailRequest>();
+			List<FinancialArrangementsDetail> financialArrangementDetails = financialArrangementDetailsRepository.findByDirectorBackgroundDetailIdAndApplicationIdIdAndIsActive(dirId,id,true);
+			List<FinancialArrangementsDetailRequest> financialArrangementDetailRequests = new ArrayList<FinancialArrangementsDetailRequest>(financialArrangementDetails.size());
 
 			for (FinancialArrangementsDetail detail : financialArrangementDetails) {
 				FinancialArrangementsDetailRequest financialArrangementDetailsRequest = new FinancialArrangementsDetailRequest();
@@ -163,8 +166,7 @@ public class FinancialArrangementDetailsServiceImpl implements FinancialArrangem
 		}
 
 		catch (Exception e) {
-			logger.info("Exception  in save financialArrangementsDetail  :-");
-			e.printStackTrace();
+			logger.error("Exception  in save financialArrangementsDetail  :-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}

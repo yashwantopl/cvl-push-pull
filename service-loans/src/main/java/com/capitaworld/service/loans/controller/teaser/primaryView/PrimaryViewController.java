@@ -105,6 +105,8 @@ public class PrimaryViewController {
 	private static final String WARN_MSG_USER_VERIFICATION_INVALID_REQUEST_CLIENT_ID_IS_NOT_VALID = "user_verification, Invalid Request... Client Id is not valid : ";
 	private static final String ERROR_MSG_USER_VERIFICATION_INVALID_REQUEST_SOMETHING_WENT_WRONG = "user_verification, Invalid Request... Something went wrong : ";
 	private static final String WORKING_CAPITAL_PRIMARY_DETAILS = "Working Capital Primary Details";
+	private static final String MSG_USER_ID = "userId : ";
+	private static final String MSG_USER_TYPE = " userType : ";
 
 	@GetMapping(value = "/HomeLoan/{toApplicationId}")
 	public @ResponseBody ResponseEntity<LoansResponse> primaryViewHomeLoan(
@@ -149,6 +151,8 @@ public class PrimaryViewController {
 			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 			userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
 		}
+
+			logger.debug(MSG_USER_ID + userId + MSG_USER_TYPE + userType);
 
 		if (CommonUtils.isObjectNullOrEmpty(toApplicationId)) {
 			logger.warn(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, toApplicationId);

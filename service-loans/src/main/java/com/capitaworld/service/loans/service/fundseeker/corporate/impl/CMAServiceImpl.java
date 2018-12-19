@@ -91,8 +91,7 @@ public class CMAServiceImpl implements CMAService {
 				
 			}	
 		} catch (Exception e) {
-			logger.info("THROW EXCEPTION WHILE SAVE LIABILITY DETAILS");
-			e.printStackTrace();
+			logger.error("THROW EXCEPTION WHILE SAVE LIABILITY DETAILS : ",e);
 		}
 		
 		
@@ -123,8 +122,7 @@ public class CMAServiceImpl implements CMAService {
 				assetsDetailsRepository.save(assetsDetails);
 			}	
 		} catch (Exception e) {
-			logger.info("THROW EXCEPTION WHILE SAVE ASSET DETAILS DETAILS");
-			e.printStackTrace();
+			logger.error("THROW EXCEPTION WHILE SAVE ASSET DETAILS DETAILS",e);
 		}
 		
 		
@@ -154,8 +152,7 @@ public class CMAServiceImpl implements CMAService {
 				operatingStatementDetailsRepository.save(operatingStatementDetails);
 			}
 		} catch (Exception e) {
-			logger.info("THROW EXCEPTION WHILE SAVE OPERATING STATEMENT DETAILS DETAILS");
-			e.printStackTrace();
+			logger.error("THROW EXCEPTION WHILE SAVE OPERATING STATEMENT DETAILS DETAILS : ",e);
 		}
 		logger.info("CMA DETAILS SAVED SUCCESSFULLY");
 		
@@ -660,7 +657,7 @@ public class CMAServiceImpl implements CMAService {
 				currencyAndDenomination = currencyAndDenomination.concat(
 						" in " + CommonDocumentUtils.getDenomination(applicationMaster.getDenominationId()));
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 		} else if (!CommonUtils.isObjectNullOrEmpty(applicationMaster.getCurrencyId())){
 			currencyAndDenomination = CommonDocumentUtils.getCurrency(applicationMaster.getCurrencyId());

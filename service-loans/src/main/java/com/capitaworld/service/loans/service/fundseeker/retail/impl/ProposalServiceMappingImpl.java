@@ -167,7 +167,6 @@ public class ProposalServiceMappingImpl implements ProposalService {
 
 	@Override
 	public List fundproviderProposal(ProposalMappingRequest request) {
-		// TODO Auto-generated method stub
 
 		List proposalDetailsList = new ArrayList();
 
@@ -177,14 +176,12 @@ public class ProposalServiceMappingImpl implements ProposalService {
 				// set branch id to proposal request
 				UsersRequest usersRequest = new UsersRequest();
 				usersRequest.setId(request.getUserId());
-				logger.info(
-						"Current user id ---------------------------------------------------> " + request.getUserId());
+				logger.info("Current user id ---------------------------------------------------> " + request.getUserId());
 				UserResponse userResponse = usersClient.getBranchDetailsBYUserId(usersRequest);
 				BranchBasicDetailsRequest basicDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap(
 						(LinkedHashMap<String, Object>) userResponse.getData(), BranchBasicDetailsRequest.class);
 				if (!CommonUtils.isObjectNullOrEmpty(basicDetailsRequest)) {
-					logger.info("Found Branch Id -----------> " + basicDetailsRequest.getId()
-							+ "---------Role Id ------------------>" + basicDetailsRequest.getRoleId());
+					logger.info("Found Branch Id -----------> " + basicDetailsRequest.getId() + "---------Role Id ------------------>" + basicDetailsRequest.getRoleId());
 					if (basicDetailsRequest.getRoleId() == CommonUtils.UsersRoles.BO
 							|| basicDetailsRequest.getRoleId() == CommonUtils.UsersRoles.FP_CHECKER) {
 						logger.info("Current user is Branch officer or FP_CHECKER");
@@ -194,8 +191,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					logger.info("Branch Id Can't found");
 				}
 			} catch (Exception e) {
-				logger.info("Throw Exception While Get Branch Id from UserId");
-				e.printStackTrace();
+				logger.error("Throw Exception While Get Branch Id from UserId : ",e);
 			}
 
 			// END set branch id to proposal request
@@ -232,7 +228,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 				if (!CommonUtils.isObjectNullOrEmpty(proposalrequest.getApplicationId())) {
 					Object[] loanDeatils = loanApplicationService
 							.getApplicationDetailsById(proposalrequest.getApplicationId());
-					logger.info("user id based on application Id:" + loanDeatils.toString());
+					logger.info("user id based on application Id:" + Arrays.toString(loanDeatils));
 					long userId = loanDeatils[0] != null ? (long) loanDeatils[0] : 0;
 
 					try {
@@ -376,7 +372,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 								corporateProposalDetails.setKeyVertical("NA");
 							}
 						} catch (Exception e) {
-							e.printStackTrace();
+							logger.error(CommonUtils.EXCEPTION,e);
 						}
 					}
 
@@ -404,7 +400,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 							corporateProposalDetails.setSector("NA");
 						}
 					} catch (Exception e) {
-						e.printStackTrace();
+						logger.error(CommonUtils.EXCEPTION,e);
 					}
 					// key vertical Subsector
 					try {
@@ -414,8 +410,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 							corporateProposalDetails.setSubSector((String) oneFormResponse.getData());
 						}
 					} catch (Exception e) {
-						// TODO: handle exception
-						logger.warn("error while getting key vertical sub-sector");
+						logger.error("error while getting key vertical sub-sector : ",e);
 					}
 
 					String amount = "";
@@ -505,7 +500,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 							}
 
 						} catch (Exception e) {
-							e.printStackTrace();
+							logger.error(CommonUtils.EXCEPTION,e);
 						}
 
 					}
@@ -518,9 +513,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 								corporateProposalDetails.setAssignbranch((String) userResponse.getData());
 							}
 						} catch (Exception e) {
-							logger.info("Throw Exception while get branch name by branch id--------->"
-									+ proposalrequest.getAssignBranchTo());
-							e.printStackTrace();
+							logger.error("Throw Exception while get branch name by branch id--------->" + proposalrequest.getAssignBranchTo() + " :: ",e);
 						}
 						corporateProposalDetails.setIsAssignedToBranch(true);
 					} else {
@@ -585,7 +578,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 							retailProposalDetails.setBranchLocationName(basicDetailsRequest.getName());
 						}
 					} catch (Exception e) {
-						logger.info("location id is null for this application:" + applicationId + "::" + e);
+						logger.error("location id is null for this application:" + applicationId + "::" + e);
 					}
 
 					// calling DMS for getting fs retail profile image path
@@ -647,8 +640,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 						MatchDisplayResponse matchResponse = matchEngineClient.displayMatchesOfRetail(matchRequest);
 						retailProposalDetails.setListMatches(matchResponse.getMatchDisplayObjectList());
 					} catch (Exception e) {
-						// TODO: handle exception
-						e.printStackTrace();
+						logger.error(CommonUtils.EXCEPTION,e);
 					}
 					try {
 						CibilRequest cibilRequest = new CibilRequest();
@@ -690,8 +682,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 							logger.info("CibilResponse Found NULL from Loans for PAN ==>" + cibilRequest.getPan());
 						}
 					} catch (Exception e) {
-						e.printStackTrace();
-						logger.error("Error while getting CIbilScore of User");
+						logger.error("Error while getting CIbilScore of User : ",e);
 					}
 					proposalDetailsList.add(retailProposalDetails);
 				}
@@ -699,8 +690,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			}
 
 		} catch (Exception e) {
-			// TODO: handle exception
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		return proposalDetailsList;
 	}
@@ -716,8 +706,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 				}
 			}
 		} catch (Exception e) {
-			logger.info("Throw exception while get name and email by userid");
-			e.printStackTrace();
+			logger.error("Throw exception while get name and email by userid : ",e);
 		}
 		return null;
 	}
@@ -725,7 +714,6 @@ public class ProposalServiceMappingImpl implements ProposalService {
 	@Override
 	public List<FundProviderProposalDetails> fundseekerProposal(ProposalMappingRequest request, Long userId) {
 
-		// TODO Auto-generated method stub
 		List<FundProviderProposalDetails> proposalDetailsList = new ArrayList<FundProviderProposalDetails>();
 
 		try {
@@ -807,8 +795,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 				proposalDetailsList.add(fundProviderProposalDetails);
 			}
 		} catch (Exception e) {
-			// TODO: handle exception
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 
 		return proposalDetailsList;
@@ -821,7 +808,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 		try {
 			response = proposalDetailsClient.proposalCountOfFundProvider(request);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		return response;
 	}
@@ -832,26 +819,25 @@ public class ProposalServiceMappingImpl implements ProposalService {
 		try {
 			response = proposalDetailsClient.proposalCountOfFundSeeker(request);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		return response;
 	}
 
 	@Override
 	public ProposalMappingResponse get(ProposalMappingRequest request) {
-		// TODO Auto-generated method stub
 		ProposalMappingResponse response = new ProposalMappingResponse();
 		try {
 			response = proposalDetailsClient.getProposal(request);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		return response;
 	}
 
 	@Override
 	public ProposalMappingResponse changeStatus(ProposalMappingRequest request) {
-		// TODO Auto-generated method stub
+
 		ProposalMappingResponse response = new ProposalMappingResponse();
 
 		ProposalDetailsClient client = new ProposalDetailsClient(
@@ -859,26 +845,25 @@ public class ProposalServiceMappingImpl implements ProposalService {
 		try {
 			response = client.changeStatus(request);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		return response;
 	}
 
 	@Override
 	public ProposalMappingResponse listOfFundSeekerProposal(ProposalMappingRequest request) {
-		// TODO Auto-generated method stub
+
 		ProposalMappingResponse response = new ProposalMappingResponse();
 		try {
 			response = proposalDetailsClient.listOfFundSeekerProposal(request);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		return response;
 	}
 
 	@Override
 	public ProposalResponse getConectionList(ProposalMappingRequest proposalMappingRequest) {
-		// TODO Auto-generated method stub
 
 		ProposalResponse proposalResponse = new ProposalResponse();
 
@@ -1066,7 +1051,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 							proposalByMatches.add(retailProposalDetails);
 						}
 					} catch (Exception e) {
-						e.printStackTrace();
+						logger.error(CommonUtils.EXCEPTION,e);
 					}
 
 				}
@@ -1244,7 +1229,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 							proposalWithoutMatches.add(retailProposalDetails);
 						}
 					} catch (Exception e) {
-						e.printStackTrace();
+						logger.error(CommonUtils.EXCEPTION,e);
 					}
 
 				}
@@ -1321,7 +1306,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 						fundProviderProposalDetails.setProductId(fpProductId.longValue());
 						proposalByMatches.add(fundProviderProposalDetails);
 					} catch (Exception e) {
-						e.printStackTrace();
+						logger.error(CommonUtils.EXCEPTION,e);
 					}
 				}
 
@@ -1392,16 +1377,15 @@ public class ProposalServiceMappingImpl implements ProposalService {
 						fundProviderProposalDetails.setProductId(fpProductId.longValue());
 						proposalWithoutMatches.add(fundProviderProposalDetails);
 					} catch (Exception e) {
-						e.printStackTrace();
+						logger.error(CommonUtils.EXCEPTION,e);
 					}
 				}
 			}
 
 		} catch (Exception e) {
-			// TODO: handle exception
 			ProposalMappingResponse proposalMappingResponseErr = new ProposalMappingResponse(
 					"Error while getting connection list", HttpStatus.INTERNAL_SERVER_ERROR.value());
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 			return null;
 		}
 
@@ -1412,25 +1396,24 @@ public class ProposalServiceMappingImpl implements ProposalService {
 
 	@Override
 	public ProposalMappingResponse sendRequest(ProposalMappingRequest request) {
-		// TODO Auto-generated method stub
+
 		ProposalMappingResponse response = new ProposalMappingResponse();
 		try {
 			response = proposalDetailsClient.sendRequest(request);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		return response;
 	}
 
 	@Override
 	public Integer getPendingProposalCount(Long applicationId) {
-		// TODO Auto-generated method stub
 		ProposalMappingResponse response = new ProposalMappingResponse();
 		try {
 			response = proposalDetailsClient.getPendingProposalCount(applicationId);
 			return (Integer) response.getData();
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 
 		return null;
@@ -1441,15 +1424,13 @@ public class ProposalServiceMappingImpl implements ProposalService {
 		try {
 			return proposalDetailsClient.updateAssignDetails(request);
 		} catch (Exception e) {
-			logger.info("Throw Exception while updating assign issue");
-			e.printStackTrace();
+			logger.error("Throw Exception while updating assign issue : ",e);
 			throw new Exception("Somethig went wrong");
 		}
 	}
 
 	@Override
 	public List<?> fundproviderProposalByAssignBy(ProposalMappingRequest request) {
-		// TODO Auto-generated method stub
 
 		try {
 			// set branch id to proposal request
@@ -1470,8 +1451,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 				logger.info("Branch Id Can't found");
 			}
 		} catch (Exception e) {
-			logger.info("Throw Exception While Get Branch Id from UserId");
-			e.printStackTrace();
+			logger.error("Throw Exception While Get Branch Id from UserId : ",e);
 		}
 
 		List proposalByMatches = new ArrayList();
@@ -1582,7 +1562,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 								corporateProposalDetails.setKeyVertical("NA");
 							}
 						} catch (Exception e) {
-							e.printStackTrace();
+							logger.error(CommonUtils.EXCEPTION,e);
 						}
 					}
 
@@ -1610,7 +1590,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 							corporateProposalDetails.setSector("NA");
 						}
 					} catch (Exception e) {
-						e.printStackTrace();
+						logger.error(CommonUtils.EXCEPTION,e);
 					}
 					// key vertical Subsector
 					try {
@@ -1620,8 +1600,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 							corporateProposalDetails.setSubSector((String) oneFormResponse.getData());
 						}
 					} catch (Exception e) {
-						// TODO: handle exception
-						logger.warn("error while getting key vertical sub-sector");
+						logger.error("error while getting key vertical sub-sector : ",e);
 					}
 
 					String amount = "";
@@ -1700,9 +1679,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 								corporateProposalDetails.setAssignbranch((String) userResponse.getData());
 							}
 						} catch (Exception e) {
-							logger.info("Throw Exception while get branch name by branch id--------->"
-									+ proposalrequest.getAssignBranchTo());
-							e.printStackTrace();
+							logger.error("Throw Exception while get branch name by branch id--------->" + proposalrequest.getAssignBranchTo() + " :: ",e);
 						}
 						corporateProposalDetails.setIsAssignedToBranch(true);
 					} else {
@@ -1713,8 +1690,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 				}
 			}
 		} catch (Exception e) {
-			logger.info("Throw Exception while Get assign by proposal");
-			e.printStackTrace();
+			logger.error("Throw Exception while Get assign by proposal : ",e);
 		}
 		return proposalByMatches;
 
@@ -1722,12 +1698,9 @@ public class ProposalServiceMappingImpl implements ProposalService {
 
 	@Override
 	public ProposalMappingResponse saveDisbursementDetails(DisbursementDetailsModel request, Long userId) {
-		// TODO Auto-generated method stub
 		try {
 			// set branch id to proposal request
-			logger.info("DISBURSEMENT DETAILS IS ---------------------------------------------------> "
-					+ request.toString());
-			
+			logger.info("DISBURSEMENT DETAILS IS ---------------------------------------------------> " + request.toString());
 
 			Date connectlogModifiedDate = connectClient.getInprincipleDateByAppId(request.getApplicationId());
 			if (!CommonUtils.isObjectNullOrEmpty(connectlogModifiedDate)) {
@@ -1740,8 +1713,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			return mappingResponse;
 
 		} catch (Exception e) {
-			logger.info("Throw Exception While saveDisbursementDetails");
-			e.printStackTrace();
+			logger.error("Throw Exception While saveDisbursementDetails : ",e);
 			new ProposalMappingResponse("error while saving disbursement details",
 					HttpStatus.INTERNAL_SERVER_ERROR.value());
 		}
@@ -1806,8 +1778,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			}
 		} catch (Exception e) {
 
-			e.printStackTrace();
-			logger.error("Error while Getting Min Max Loan Amount");
+			logger.error("Error while Getting Min Max Loan Amount : ",e);
 			loansResponse.setFlag(false);
 			loansResponse.setMessage("You do not have rights to take action for this proposal.");
 		}
@@ -1912,8 +1883,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 				logger.info("Branch Id Can't found");
 			}
 		} catch (Exception e) {
-			logger.info("Throw Exception While Get Branch Id from UserId");
-			e.printStackTrace();
+			logger.error("Throw Exception While Get Branch Id from UserId : ",e);
 		}
 		List<Object[]> result = null;
 		if(request.getBranchId() != null){

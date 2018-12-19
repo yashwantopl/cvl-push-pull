@@ -66,7 +66,7 @@ public class PLCamReportController {
 
 			DocumentResponse documentResponse = dmsClient.uploadFile(jsonObj.toString(), multipartFile);
 			if (documentResponse.getStatus() == 200) {
-				System.out.println(documentResponse);
+				logger.info(""+documentResponse);
 				return new ResponseEntity<LoansResponse>(new LoansResponse(HttpStatus.OK.value(), "success", documentResponse.getData(), response),HttpStatus.OK);
 			} else {
 				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
@@ -101,7 +101,7 @@ public class PLCamReportController {
 
 			DocumentResponse documentResponse = dmsClient.uploadFile(jsonObj.toString(), multipartFile);
 			if (documentResponse.getStatus() == 200) {
-				System.out.println(documentResponse);
+				logger.info(""+documentResponse);
 				return new ResponseEntity<LoansResponse>(new LoansResponse(HttpStatus.OK.value(), "success", documentResponse.getData(), response),HttpStatus.OK);
 			} else {
 				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);

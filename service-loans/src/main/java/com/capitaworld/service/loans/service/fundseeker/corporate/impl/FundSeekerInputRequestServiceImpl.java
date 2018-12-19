@@ -5,10 +5,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import com.capitaworld.connect.api.ConnectAuditErrorCode;
-import com.capitaworld.connect.api.ConnectLogAuditRequest;
-import com.capitaworld.connect.api.ConnectStage;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -19,20 +15,22 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.capitaworld.connect.api.ConnectAuditErrorCode;
+import com.capitaworld.connect.api.ConnectLogAuditRequest;
 import com.capitaworld.connect.api.ConnectResponse;
+import com.capitaworld.connect.api.ConnectStage;
 import com.capitaworld.connect.client.ConnectClient;
 import com.capitaworld.service.analyzer.client.AnalyzerClient;
 import com.capitaworld.service.analyzer.model.common.ReportRequest;
 import com.capitaworld.service.fraudanalytics.client.FraudAnalyticsClient;
 import com.capitaworld.service.fraudanalytics.model.AnalyticsRequest;
 import com.capitaworld.service.fraudanalytics.model.AnalyticsResponse;
-import com.capitaworld.service.loans.config.AsyncComponent;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.DirectorBackgroundDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.DirectorPersonalDetail;
-import com.capitaworld.service.loans.domain.fundseeker.corporate.FinancialArrangementsDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
+import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.Address;
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
 import com.capitaworld.service.loans.model.DirectorPersonalDetailRequest;
@@ -49,10 +47,11 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySec
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.DirectorBackgroundDetailsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FundSeekerInputRequestService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.utils.CommonUtils;
-import com.capitaworld.service.loans.config.AsyncComponent;
 
 @Service
 @Transactional
@@ -68,9 +67,15 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 
 	@Autowired
 	private FinancialArrangementDetailsRepository financialArrangementDetailsRepository;
+	
+	@Autowired
+	private FinancialArrangementDetailsService financialArrangementDetailsService;
 
 	@Autowired
 	private DirectorBackgroundDetailsRepository directorBackgroundDetailsRepository;
+	
+	@Autowired
+	private DirectorBackgroundDetailsService directorBackgroundDetailsService; 
 
 	@Autowired
 	private ConnectClient connectClient;
@@ -96,9 +101,6 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 	@Autowired
 	private Environment environment;
 	
-	@Autowired
-	private AsyncComponent asyncComponent;
-
 	@Autowired
 	private DirectorPersonalDetailRepository directorPersonalDetailRepository;
 	
@@ -166,57 +168,18 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestsList = fundSeekerInputRequest
 					.getFinancialArrangementsDetailRequestsList();
 			if(!CommonUtils.isListNullOrEmpty(financialArrangementsDetailRequestsList)) {
-				logger.info("Financial Arrangements Detail List Null Or Empty ------------->");
-				for (FinancialArrangementsDetailRequest reqObj : financialArrangementsDetailRequestsList) {
-					FinancialArrangementsDetail saveFinObj = null;
-					if (!CommonUtils.isObjectNullOrEmpty(reqObj.getId())) {
-						saveFinObj = financialArrangementDetailsRepository.findByIdAndIsActive(reqObj.getId(), true);
-					}
-					if (CommonUtils.isObjectNullOrEmpty(saveFinObj)) {
-						saveFinObj = new FinancialArrangementsDetail();
-						BeanUtils.copyProperties(reqObj, saveFinObj, "id", "createdBy", "createdDate", "modifiedBy",
-								"modifiedDate", "isActive");
-
-						saveFinObj.setApplicationId(new LoanApplicationMaster(fundSeekerInputRequest.getApplicationId()));
-						saveFinObj.setCreatedBy(fundSeekerInputRequest.getUserId());
-						saveFinObj.setCreatedDate(new Date());
-						saveFinObj.setIsActive(true);
-					} else {
-						BeanUtils.copyProperties(reqObj, saveFinObj, "id", "createdBy", "createdDate", "modifiedBy",
-								"modifiedDate");
-						saveFinObj.setModifiedBy(fundSeekerInputRequest.getUserId());
-						saveFinObj.setModifiedDate(new Date());
-					}
-					financialArrangementDetailsRepository.save(saveFinObj);
-				}
+				Boolean saveOrUpdate = financialArrangementDetailsService.saveOrUpdate(financialArrangementsDetailRequestsList, fundSeekerInputRequest.getApplicationId(), fundSeekerInputRequest.getUserId());
+				logger.info("Update Result in Loans Details==>{}",saveOrUpdate);
 			}
-			
-			//SAVE MATCHE JSON 
-			/*try {
-				asyncComponent.saveOneformMapping(fundSeekerInputRequest.getApplicationId());
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-
-			//SAVE MATCHE JSON 
-			/*try {
-				asyncComponent.saveOneformMapping(fundSeekerInputRequest.getApplicationId());
-			} catch (Exception e) {
-				e.printStackTrace();
-			}*/
-			
 			return true;
-
 		} catch (Exception e) {
-			logger.info("Throw Exception while save and update Fundseeker input request !!");
-			e.printStackTrace();
+			logger.error("Throw Exception while save and update Fundseeker input request !!",e);
 			throw new Exception();
 		}
 	}
 
 	@Override
-	public ResponseEntity<LoansResponse> saveOrUpdateDirectorDetail(
-			FundSeekerInputRequestResponse fundSeekerInputRequest) {
+	public ResponseEntity<LoansResponse> saveOrUpdateDirectorDetail(FundSeekerInputRequestResponse fundSeekerInputRequest) {
 		String msg = null;
 		try {
 			// ==== Applicant Address
@@ -328,9 +291,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 					directorBackgroundDetailsRepository.save(saveDirObj);
 				}
 			} catch (Exception e) {
-				logger.info(
-						"Directors ===============> Throw Exception While Save Director Background Details -------->");
-				e.printStackTrace();
+				logger.error("Directors ===============> Throw Exception While Save Director Background Details -------->",e);
 			}
 
 			LoansResponse res = new LoansResponse("director detail successfully saved", HttpStatus.OK.value());
@@ -343,15 +304,14 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			LoansResponse res = new LoansResponse("error while saving director detail",
 					HttpStatus.INTERNAL_SERVER_ERROR.value());
 			msg="";
-			logger.error("error while saving director detail");
-			e.printStackTrace();
+			logger.error("error while saving director detail",e);
 
 			return new ResponseEntity<LoansResponse>(res, HttpStatus.OK);
 		}finally {
 			try {
 				connectClient.saveAuditLog(new ConnectLogAuditRequest(fundSeekerInputRequest.getApplicationId(), ConnectStage.DIRECTOR_BACKGROUND.getId(),fundSeekerInputRequest.getUserId(),msg, ConnectAuditErrorCode.DIRECTOR_SUBMIT.toString(),CommonUtils.BusinessType.EXISTING_BUSINESS.getId()));
 			} catch (Exception e){
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 		}
 	}
@@ -379,40 +339,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			if (!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail)) {
 				BeanUtils.copyProperties(primaryCorporateDetail, fsInputRes);
 			}
-
-			List<FinancialArrangementsDetail> finArngDetailList = financialArrangementDetailsRepository
-					.listSecurityCorporateDetailByAppId(fsInputReq.getApplicationId());
-			
-//			if(CommonUtils.isListNullOrEmpty(finArngDetailList)) {
-//				if(!CommonUtils.isObjectNullOrEmpty(corpApplicantDetail.getPanNo())) {
-//					if(corpApplicantDetail.getPanNo().charAt(3) == 'P' || corpApplicantDetail.getPanNo().charAt(3) == 'p') {
-//						DirectorBackgroundDetail backgroundDetail = directorBackgroundDetailsRepository.findByApplicationIdIdAndPanNoAndIsActive(fsInputReq.getApplicationId(), corpApplicantDetail.getPanNo().toUpperCase(), true);
-//						if(!CommonUtils.isObjectNullOrEmpty(backgroundDetail) && !CommonUtils.isObjectNullOrEmpty(backgroundDetail.getId())) {
-//							finArngDetailList = financialArrangementDetailsRepository.findByDirectorBackgroundDetailIdAndApplicationIdIdAndIsActive(backgroundDetail.getId(), fsInputReq.getApplicationId(), true);
-//						}else {
-//							logger.info("Director Not Found for Application Id====>{} and Pan No==========>{}",fsInputReq.getApplicationId(), corpApplicantDetail.getPanNo());
-//						}
-//					}else {
-//						logger.info("No Current Financial Loans for Pan No======>{}",corpApplicantDetail.getPanNo());	
-//					}	
-//				}else {
-//					logger.info("Pan No is Blank from Corporate Profile");				
-//				}
-//			}
-
-			List<FinancialArrangementsDetailRequest> finArrngDetailResList = new ArrayList<FinancialArrangementsDetailRequest>(
-					finArngDetailList.size());
-
-			FinancialArrangementsDetailRequest finArrngDetailReq = null;
-			for (FinancialArrangementsDetail finArrngDetail : finArngDetailList) {
-				finArrngDetailReq = new FinancialArrangementsDetailRequest();
-				BeanUtils.copyProperties(finArrngDetail, finArrngDetailReq);
-				if(!CommonUtils.isObjectNullOrEmpty(finArrngDetail.getDirectorBackgroundDetail())) {
-					finArrngDetailReq.setDirectorId(finArrngDetail.getDirectorBackgroundDetail().getId());					
-				}
-				finArrngDetailResList.add(finArrngDetailReq);
-			}
-			fsInputRes.setFinancialArrangementsDetailRequestsList(finArrngDetailResList);
+			fsInputRes.setFinancialArrangementsDetailRequestsList(financialArrangementDetailsService.getFinancialArrangementDetailsList(fsInputReq.getApplicationId(), fsInputReq.getUserId()));
 			
 			List<Long> industryList = industrySectorRepository.getIndustryByApplicationId(fsInputReq.getApplicationId());
 			logger.info("TOTAL INDUSTRY FOUND ------------->" + industryList.size() + "------------By APP Id -----------> " + fsInputReq.getApplicationId());
@@ -430,8 +357,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 					new LoansResponse("One form data successfully fetched", HttpStatus.OK.value(), fsInputRes),
 					HttpStatus.OK);
 		} catch (Exception e) {
-			logger.error("Error while fetching one form data");
-			e.printStackTrace();
+			logger.error("Error while fetching one form data : ",e);
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Error while fetching one form input data",
 					HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
 		}
@@ -463,8 +389,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 					fundSeekerInputResponse.setOrganisationName(orgName);
 					logger.info("Fetched Organisation Name from Bank Statement ==>"+orgName);
 				} catch (Exception e) {
-					e.printStackTrace();
-					logger.info("Error while getting perfios data");
+					logger.error("Error while getting perfios data : ",e);
 				}
 			}
 			// === Director
@@ -493,8 +418,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 					HttpStatus.OK.value(), fundSeekerInputResponse), HttpStatus.OK);
 
 		} catch (Exception e) {
-			logger.error("error while fetching director detail");
-			e.printStackTrace();
+			logger.error("error while fetching director detail : ",e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse("Error while fetching director detail", HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -520,9 +444,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 				}
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			logger.info("Error while Calling Matchengine after Oneform Submit=============");
+			logger.error("Error while Calling Matchengine after Oneform Submit=============",e);
 		}
 		return new LoansResponse("Something went wrong while Checking your Eligibility",
 				HttpStatus.INTERNAL_SERVER_ERROR.value());
@@ -541,26 +463,6 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			to.setRegisteredCountryId(from.getFirstAddress().getCountryId());
 			to.setRegisteredDistMappingId(from.getFirstAddress().getDistrictMappingId());
 		}
-
-		/*
-		 * // Setting Administrative Address if (from.getSameAs() != null &&
-		 * from.getSameAs().booleanValue()) { if (from.getFirstAddress() != null) {
-		 * to.setAdministrativePremiseNumber(from.getFirstAddress().getPremiseNumber());
-		 * to.setAdministrativeLandMark(from.getFirstAddress().getLandMark());
-		 * to.setAdministrativeStreetName(from.getFirstAddress().getStreetName());
-		 * to.setAdministrativePincode(from.getFirstAddress().getPincode());
-		 * to.setAdministrativeCityId(from.getFirstAddress().getCityId());
-		 * to.setAdministrativeStateId(from.getFirstAddress().getStateId());
-		 * to.setAdministrativeCountryId(from.getFirstAddress().getCountryId()); } }
-		 * else { if (from.getSecondAddress() != null) {
-		 * to.setAdministrativePremiseNumber(from.getSecondAddress().getPremiseNumber())
-		 * ; to.setAdministrativeLandMark(from.getSecondAddress().getLandMark());
-		 * to.setAdministrativeStreetName(from.getSecondAddress().getStreetName());
-		 * to.setAdministrativePincode(from.getSecondAddress().getPincode());
-		 * to.setAdministrativeCityId(from.getSecondAddress().getCityId());
-		 * to.setAdministrativeStateId(from.getSecondAddress().getStateId());
-		 * to.setAdministrativeCountryId(from.getSecondAddress().getCountryId()); } }
-		 */
 	}
 
 	private static void copyAddressFromDomainToRequest(CorporateApplicantDetail from,
@@ -577,22 +479,6 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 		address.setCountryId(from.getRegisteredCountryId());
 		address.setDistrictMappingId(from.getRegisteredDistMappingId());
 		to.setFirstAddress(address);
-		/*
-		 * if (from.getSameAs() != null && from.getSameAs()) {
-		 * to.setSecondAddress(address); } else { address = new Address();
-		 * address.setPremiseNumber(from.getAdministrativePremiseNumber());
-		 * address.setLandMark(from.getAdministrativeLandMark());
-		 * address.setStreetName(from.getAdministrativeStreetName());
-		 * address.setPincode(from.getAdministrativePincode());
-		 * address.setCityId(from.getAdministrativeCityId());
-		 * address.setStateId(from.getAdministrativeStateId());
-		 * address.setCountryId(from.getAdministrativeCountryId());
-		 * to.setSecondAddress(address);
-		 * 
-		 * }
-		 */
-
-		// Setting Administrative Address
 	}
 
 	/*
@@ -634,8 +520,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 					AnalyticsResponse response = fraudAnalyticsClient.callHunterIIAPI(request);
 				}
 				catch (Exception e) {
-					logger.info("End invokeFraudAnalytics() with Error : "+e.getMessage());
-					e.printStackTrace();
+					logger.error("End invokeFraudAnalytics() with Error : "+e.getMessage());
 					return new LoansResponse("Oneform Saved Successfully", HttpStatus.OK.value());
 				}
 			/*	if (response != null && response.getData() != null) {
@@ -656,8 +541,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 
 			}
 		} catch (Exception e) {
-			logger.info("End invokeFraudAnalytics() Error in Fraud Analytics call");
-			e.printStackTrace();
+			logger.error("End invokeFraudAnalytics() Error in Fraud Analytics call",e);
 			return new LoansResponse("Oneform Saved Successfully", HttpStatus.OK.value());
 		}
 	}
@@ -680,9 +564,87 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 				return new LoansResponse("Success", HttpStatus.OK.value());
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 			return null;
 		}
 	}
+	
+	public LoansResponse saveOrUpdateForOnePagerEligibility(FundSeekerInputRequestResponse fundSeekerInputRequest) throws Exception {
+		String msg = "";
+		try{
+			
+		logger.info("Enter in save directors details ---------------------------------------->"
+				+ fundSeekerInputRequest.getApplicationId());
+		CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
+				.findOneByApplicationIdId(fundSeekerInputRequest.getApplicationId());
+		if (CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail)) {
+			logger.info("corporateApplicantDetail is null created new object");
+			corporateApplicantDetail = new CorporateApplicantDetail();
+			corporateApplicantDetail.setApplicationId(new LoanApplicationMaster(fundSeekerInputRequest.getApplicationId()));
+			corporateApplicantDetail.setCreatedBy(fundSeekerInputRequest.getUserId());
+			corporateApplicantDetail.setCreatedDate(new Date());
+			corporateApplicantDetail.setIsActive(true);
+		} else {
+			logger.info("constitution id  ------------------------------------------>"+ corporateApplicantDetail.getConstitutionId());
+			corporateApplicantDetail.setModifiedBy(fundSeekerInputRequest.getUserId());
+			corporateApplicantDetail.setModifiedDate(new Date());
+		}
+		corporateApplicantDetail.setOrganisationName(fundSeekerInputRequest.getOrganisationName());
+		corporateApplicantDetail.setPanNo(fundSeekerInputRequest.getPan());
+		corporateApplicantDetail.setConstitutionId(fundSeekerInputRequest.getConstitutionId());
+
+		copyAddressFromRequestToDomain(fundSeekerInputRequest, corporateApplicantDetail);
+
+		logger.info("Just Before Save ------------------------------------->" + corporateApplicantDetail.getConstitutionId());
+		corporateApplicantDetailRepository.save(corporateApplicantDetail);
+		
+		logger.info("getting primaryCorporateDetail from applicationId::" + fundSeekerInputRequest.getApplicationId());
+		PrimaryCorporateDetail primaryCorporateDetail = primaryCorporateDetailRepository.findOneByApplicationIdId(fundSeekerInputRequest.getApplicationId());
+		if (CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail)) {
+			logger.info("primaryCorporateDetail is null created new object");
+			throw new LoansException("PrimaryCorporateDetail Must not be Null for Application Id = >" + fundSeekerInputRequest.getApplicationId());
+		}
+		primaryCorporateDetail.setAmount(fundSeekerInputRequest.getLoanAmount());
+		primaryCorporateDetail.setLoanAmount(fundSeekerInputRequest.getLoanAmount());
+		primaryCorporateDetail.setActualSalesFinYearCurrent(fundSeekerInputRequest.getActualSalesFinYearCurrent());
+		primaryCorporateDetail.setEstimatedSalesFinYearNext(fundSeekerInputRequest.getEstimatedSalesFinYearNext());
+		primaryCorporateDetail.setIsApplicantDetailsFilled(true);
+		primaryCorporateDetail.setIsApplicantPrimaryFilled(true);
+		primaryCorporateDetail.setApplicationId(new LoanApplicationMaster(fundSeekerInputRequest.getApplicationId()));
+		logger.info("Save in LoanAppMaster with BusinessType ==>"+fundSeekerInputRequest.getBusinessTypeId());
+		primaryCorporateDetail.setBusinessTypeId(fundSeekerInputRequest.getBusinessTypeId());
+		primaryCorporateDetail.setModifiedBy(fundSeekerInputRequest.getUserId());
+		primaryCorporateDetail.setModifiedDate(new Date());
+		primaryCorporateDetail.setIsActive(true);
+		primaryCorporateDetailRepository.saveAndFlush(primaryCorporateDetail);
+		// ==== Director details
+		List<DirectorBackgroundDetailRequest> directorBackgroundDetailRequestList = fundSeekerInputRequest.getDirectorBackgroundDetailRequestsList();
+		try {
+			for (DirectorBackgroundDetailRequest reqObj : directorBackgroundDetailRequestList) {
+				directorBackgroundDetailsService.saveDirectorInfo(reqObj, fundSeekerInputRequest.getApplicationId(), fundSeekerInputRequest.getUserId());
+			}
+		} catch (Exception e) {
+			logger.info("Directors ===============> Throw Exception While Save Director Background Details -------->");
+			e.printStackTrace();
+		}
+
+		LoansResponse res = new LoansResponse("director detail successfully saved", HttpStatus.OK.value());
+		res.setFlag(true);
+		logger.info("director detail successfully saved");
+		msg = "director detail successfully saved";
+		return res;
+	} catch (Exception e) {
+		msg="error while saving director detail";
+		LoansResponse res = new LoansResponse(msg,HttpStatus.INTERNAL_SERVER_ERROR.value());
+		logger.error(msg);
+		e.printStackTrace();
+		return res;
+	}finally {
+		try {
+			connectClient.saveAuditLog(new ConnectLogAuditRequest(fundSeekerInputRequest.getApplicationId(), ConnectStage.DIRECTOR_BACKGROUND.getId(),fundSeekerInputRequest.getUserId(),msg, ConnectAuditErrorCode.DIRECTOR_SUBMIT.toString(),CommonUtils.BusinessType.EXISTING_BUSINESS.getId()));
+		} catch (Exception e){
+			e.printStackTrace();
+		}
+	}
+}
 }

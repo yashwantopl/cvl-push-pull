@@ -67,7 +67,7 @@ public class CommonUtils {
 
 	public static final String CLIENT_ID_IS_NOT_VALID = "Client Id is not valid";
 	public static final String INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND = "Invalid data or Requested data not found.";
-	public static final String EXCEPTION = "EXCEPTION :: ";
+	public static final String EXCEPTION = " EXCEPTION :: ";
 
 	public static final String PARAMETERS_FP_NAME = "fp_name";
 	public static final String PARAMETERS_FS_NAME = "fs_name";
@@ -81,7 +81,7 @@ public class CommonUtils {
 	public static final String RATE_INTEREST = "rate_interest";
 	public static final String LITERAL_AMOUNT = "amount";
 	
-	public interface UsersRoles {
+	public static final class UsersRoles {
 		public static final Long MAKER = 1l;
 		public static final Long CHECKER = 2l;
 		public static final Long APPROVER = 3l;
@@ -95,7 +95,7 @@ public class CommonUtils {
 		public static final Long ADMIN_CHECKER = 11l;
 	}
 
-	public interface DenominationInAmount {
+	public static final class DenominationInAmount {
 		public static final Long LAKHS = 100000l;
 		public static final Long MILLIONS = 1000000l;
 		public static final Long CRORES = 10000000l;
@@ -103,7 +103,7 @@ public class CommonUtils {
 		public static final Long ABSOLUTE = 1l;
 	}
 
-	public interface DenominationId {
+	public static final class DenominationId {
 		public static final Integer LAKHS = 1;
 		public static final Integer MILLIONS = 2;
 		public static final Integer CRORES = 3;
@@ -243,7 +243,7 @@ public class CommonUtils {
 
 	}
 
-	public interface IgnorableCopy {
+	public static final class IgnorableCopy {
 		public static final String[] CORPORATE = { "userId", "productId", "name", "categoryCode", "isActive",
 				"applicationId" };
 		public static final String ID = "id";
@@ -307,14 +307,14 @@ public class CommonUtils {
 				"loanAmountRequired", "loanPurpose", "tenureRequired", "repayment", "monthlyIncome","isApplicantDetailsFilled" };
 	}
 
-	public interface ApplicantType {
+	public static final class ApplicantType {
 		public static final int APPLICANT = 1;
 		public static final int COAPPLICANT = 2;
 		public static final int GARRANTOR = 3;
 
 	}
 
-	public interface UserMainType {
+	public static final class UserMainType {
 		public static final int RETAIL = 1;
 		public static final int CORPORATE = 2;
 	}
@@ -374,7 +374,7 @@ public class CommonUtils {
 		}
 	}
 
-	public interface ApplicationStatus {
+	public static final class ApplicationStatus {
 		public static final Long OPEN = 1l;
 		public static final Long ASSIGNED = 2l;
 		public static final Long SUBMITTED = 3l;
@@ -406,7 +406,7 @@ public class CommonUtils {
 		}
 	}
 
-	public interface DdrStatus {
+	public static final class DdrStatus {
 		public static final Long OPEN = 1l;
 		public static final Long IN_PROGRESS = 2l;
 		public static final Long SUBMITTED = 3l;
@@ -415,36 +415,36 @@ public class CommonUtils {
 		public static final Long REVERTED = 6l;
 	}
 
-	public interface UserType {
+	public static final class UserType {
 		public static final int FUND_SEEKER = 1;
 		public static final int FUND_PROVIDER = 2;
 		public static final int SERVICE_PROVIDER = 3;
 		public static final int NETWORK_PARTNER = 4;
 	}
 
-	public interface UploadUserType {
+	public static final class UploadUserType {
 		public static final String UERT_TYPE_APPLICANT = "applicant";
 		public static final String UERT_TYPE_CO_APPLICANT = "coApplicant";
 		public static final String UERT_TYPE_GUARANTOR = "guarantor";
 		public static final String UERT_TYPE_USER = "user";
 	}
 
-	public interface EmployerConstitution {
+	public static final class EmployerConstitution {
 		public static final int PARTNERSHIP_PROPRIETORSHIP = 1;
 		public static final int ANYOTHER = 2;
 	}
 
-	public interface EmployementType {
+	public static final class EmployementType {
 		public static final int SALARIED = 1;
 		public static final int BUSINESSMAN = 2;
 	}
 
-	public interface ReceiptMode {
+	public static final class ReceiptMode {
 		public static final int CASH = 1;
 		public static final int BANK = 2;
 	}
 
-	public interface PropertyType {
+	public static final class PropertyType {
 		public static final int RESIDENTIAL = 1;
 		public static final int COMMERCIAL = 2;
 		public static final int INDUSTRIAL = 3;
@@ -480,7 +480,7 @@ public class CommonUtils {
 		}
 	}
 
-	public interface TabType {
+	public static final class TabType {
 		public static final int PROFILE = 1;
 		public static final int PROFILE_CO_APPLICANT = 2;
 		public static final int PROFILE_GUARANTOR = 3;
@@ -984,7 +984,7 @@ public class CommonUtils {
 		// return isObjectNullOrEmpty(value) ? 0.0 : value;
 	}
 
-	public interface PaymentMode {
+	public static final class PaymentMode {
 		public static final String ONLINE = "ONLINE";
 		public static final String CHEQUE = "CHEQUE";
 		public static final String CASH = "CASH";
@@ -1037,7 +1037,8 @@ public class CommonUtils {
 		
 		NEW_TO_BUSINESS(2, "New to Business"),
 		EXISTING_BUSINESS(1, "Existing Business"),
-		RETAIL_PERSONAL_LOAN(3, "Retail Personal Loan");
+		RETAIL_PERSONAL_LOAN(3, "Retail Personal Loan"),
+		ONE_PAGER_ELIGIBILITY_EXISTING_BUSINESS(4, "One Pager Eligibility For Existing Business");
 
 		private Integer id;
 		private String value;
@@ -1245,7 +1246,7 @@ public enum APIFlags {
 		return null;
 	}
 	
-	public interface Status {
+	public static final class Status {
 		public static final int OPEN = 1;
 		public static final int IN_PROGRESS = 2;
 		public static final int REVERTED = 3;
@@ -1262,6 +1263,14 @@ public enum APIFlags {
 	}
 	public static String convertValueWithoutDecimal(Double value) {
 		return !CommonUtils.isObjectNullOrEmpty(value)? decim2.format(value).toString(): "0";
+	}
+	/*Return Round Value with CommaStyle*/ 
+	public static String convertValueRound(Double value) {
+		return !CommonUtils.isObjectNullOrEmpty(value)? decim2.format(Long.valueOf(Math.round(value)))  : "0";
+	}
+	
+	public static String formatValueWithoutDecimal(Double value) {
+		return !CommonUtils.isObjectNullOrEmpty(value)? decim2.format(value)  : "0";
 	}
 	public static Object convertToDoubleForXml(Object obj, Map<String, Object>data) throws Exception {
 		if(obj ==  null) {
@@ -1420,8 +1429,12 @@ public enum APIFlags {
     public static Long convertLong(Object obj){
     	try {
     		if(!CommonUtils.isObjectNullOrEmpty(obj)) {
-    			BigInteger value =  (BigInteger) obj;
-    			return value.longValue();
+    			if(obj instanceof BigInteger) {
+    				BigInteger value =  (BigInteger) obj;
+        			return value.longValue();	
+    			} else {
+    				return (Long) obj;
+    			}
     		}	
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1432,8 +1445,12 @@ public enum APIFlags {
     public static Integer convertInteger(Object obj){
     	try {
     		if(!CommonUtils.isObjectNullOrEmpty(obj)) {
-    			BigInteger value =  (BigInteger) obj;
-    			return value.intValue();
+    			if(obj instanceof BigInteger) {
+    				BigInteger value =  (BigInteger) obj;
+        			return value.intValue();	
+    			} else {
+    				return (Integer) obj;
+    			}
     		}	
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1496,7 +1513,7 @@ public enum APIFlags {
 		}
 		return value;
 	}
-	public interface sanctionedFrom {
+	public static final class sanctionedFrom {
 		public static final long ELIGIBLE_USERS = 1;
 		public static final long INELIGIBLE_USERS_OFFLINE_APPLICATION = 2;
 		public static final long FROM_API = 3;
