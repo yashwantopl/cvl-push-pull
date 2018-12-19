@@ -657,12 +657,13 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	public List<ProductMasterRequest> getActiveInActiveList(Long userId, Long userOrgId) {
 		// TODO Auto-generated method stub
 		CommonDocumentUtils.startHook(logger, "getActiveInActiveList");
+		UserResponse userResponse=null;
 		BranchBasicDetailsRequest basicDetailsRequest = null;
 		try {
 			UsersRequest usersRequest = new UsersRequest();
 			usersRequest.setId(userId);
 			logger.info("Current user id ---------------------------------------------------> " + userId);
-			UserResponse userResponse = usersClient.getBranchDetailsBYUserId(usersRequest);
+			userResponse = usersClient.getBranchDetailsBYUserId(usersRequest);
 			basicDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap(
 					(LinkedHashMap<String, Object>) userResponse.getData(), BranchBasicDetailsRequest.class);
 		} catch (Exception e) {
@@ -689,7 +690,12 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 					count = proposalDetailsRepository.getProposalCountByFpProductIdAndBranchId(master.getId(), basicDetailsRequest.getId());
 				}else if (basicDetailsRequest.getRoleId() == CommonUtils.UsersRoles.HO) {
 					count = proposalDetailsRepository.getProposalCountByFpProductId(master.getId());
-				} /*else {
+				}
+				else if (basicDetailsRequest.getRoleId() == CommonUtils.UsersRoles.SMECC) // Hiren
+				{
+					count = proposalDetailsRepository.getProposalCountByFpProductIdAndBranchId(master.getId(),userResponse.getBranchList());
+				}
+				/*else {
 					logger.info("Branch Id Can't found,set by assignee");
 					count = proposalDetailsRepository.countProposalListOfFundProviderByAssignId(master.getId(), userId);
 				}*/
