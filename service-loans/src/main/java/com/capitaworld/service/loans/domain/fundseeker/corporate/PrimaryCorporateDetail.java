@@ -306,20 +306,5 @@ public class PrimaryCorporateDetail extends LoanApplicationMaster implements Ser
 		this.estimatedSalesFinYearNext = estimatedSalesFinYearNext;
 	}
 
-	@Override
-	public String toString() {
-		return "PrimaryCorporateDetail [applicationId=" + applicationId + ", loanAmount=" + loanAmount
-				+ ", haveCollateralSecurity=" + haveCollateralSecurity + ", collateralSecurityAmount="
-				+ collateralSecurityAmount + ", purposeOfLoanId=" + purposeOfLoanId + ", tenureRequired="
-				+ tenureRequired + ", proposedDetailsOfUnit=" + proposedDetailsOfUnit + ", costOfProject="
-				+ costOfProject + ", costOfMachinery=" + costOfMachinery + ", incrementalTurnover="
-				+ incrementalTurnover + ", proposedOperationDate=" + proposedOperationDate
-				+ ", proposedConstitutionOfUnit=" + proposedConstitutionOfUnit + ", promoterContribution="
-				+ promoterContribution + ", assessmentId=" + assessmentId + ", commercialOperationDate="
-				+ commercialOperationDate + ", factoryPremise=" + factoryPremise + ", knowHow=" + knowHow
-				+ ", competition=" + competition + ", totalAmtPercentage=" + totalAmtPercentage + ", stateId=" + stateId
-				+ ", cityId=" + cityId + ", proposedCost=" + proposedCost + ", incrementalMargin=" + incrementalMargin
-				+ ", actualSalesFinYearCurrent=" + actualSalesFinYearCurrent + ", estimatedSalesFinYearNext="
-				+ estimatedSalesFinYearNext + "]";
-	}
+
 }
