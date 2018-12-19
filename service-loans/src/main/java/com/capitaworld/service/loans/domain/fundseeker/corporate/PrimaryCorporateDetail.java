@@ -97,8 +97,10 @@ public class PrimaryCorporateDetail extends LoanApplicationMaster implements Ser
     
     
     //By Akshay for OnePager Eligibility
+    @Column(name = "actual_sales_finYear_current")
     private Double actualSalesFinYearCurrent;
     
+    @Column(name = "estimated_sales_fin_year_next")
     private Double estimatedSalesFinYearNext;
 
     public PrimaryCorporateDetail() {
