@@ -1,12 +1,12 @@
 package com.capitaworld.service.loans.model.corporate;
 
-import com.capitaworld.service.loans.model.Address;
-import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
-import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
-
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+
+import com.capitaworld.service.loans.model.Address;
+import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
+import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 
 /**
  * @author akshay
@@ -64,8 +64,7 @@ public class FundSeekerInputRequestResponse {
     private Double incrementalTurnover;
     
     //Sales Variables by Akshay
-    private Double actualSalesFinYearCurrent;
-    private Double estimatedSalesFinYearNext;
+    
   
     /*
     * added for machinery equipment finance
@@ -110,6 +109,16 @@ public class FundSeekerInputRequestResponse {
     private Long environmentalImpactId;
     
     private Integer actionId;
+    
+    private Double turnOverPrevFinYear;
+    
+    private Double turnOverCurrFinYearTillMonth;
+    
+    private Double projectedTurnOverCurrFinYear;
+    
+    private Double profitCurrFinYear;
+    
+    private Double projectedProfitCurrFinYear;
 
     public Long getUserId() {
         return userId;
@@ -467,28 +476,52 @@ public class FundSeekerInputRequestResponse {
 		this.pan = pan;
 	}
 
-	public Double getActualSalesFinYearCurrent() {
-		return actualSalesFinYearCurrent;
-	}
-
-	public void setActualSalesFinYearCurrent(Double actualSalesFinYearCurrent) {
-		this.actualSalesFinYearCurrent = actualSalesFinYearCurrent;
-	}
-
-	public Double getEstimatedSalesFinYearNext() {
-		return estimatedSalesFinYearNext;
-	}
-
-	public void setEstimatedSalesFinYearNext(Double estimatedSalesFinYearNext) {
-		this.estimatedSalesFinYearNext = estimatedSalesFinYearNext;
-	}
-
 	public Integer getActionId() {
 		return actionId;
 	}
 
 	public void setActionId(Integer actionId) {
 		this.actionId = actionId;
+	}
+
+	public Double getTurnOverPrevFinYear() {
+		return turnOverPrevFinYear;
+	}
+
+	public void setTurnOverPrevFinYear(Double turnOverPrevFinYear) {
+		this.turnOverPrevFinYear = turnOverPrevFinYear;
+	}
+
+	public Double getTurnOverCurrFinYearTillMonth() {
+		return turnOverCurrFinYearTillMonth;
+	}
+
+	public void setTurnOverCurrFinYearTillMonth(Double turnOverCurrFinYearTillMonth) {
+		this.turnOverCurrFinYearTillMonth = turnOverCurrFinYearTillMonth;
+	}
+
+	public Double getProjectedTurnOverCurrFinYear() {
+		return projectedTurnOverCurrFinYear;
+	}
+
+	public void setProjectedTurnOverCurrFinYear(Double projectedTurnOverCurrFinYear) {
+		this.projectedTurnOverCurrFinYear = projectedTurnOverCurrFinYear;
+	}
+
+	public Double getProfitCurrFinYear() {
+		return profitCurrFinYear;
+	}
+
+	public void setProfitCurrFinYear(Double profitCurrFinYear) {
+		this.profitCurrFinYear = profitCurrFinYear;
+	}
+
+	public Double getProjectedProfitCurrFinYear() {
+		return projectedProfitCurrFinYear;
+	}
+
+	public void setProjectedProfitCurrFinYear(Double projectedProfitCurrFinYear) {
+		this.projectedProfitCurrFinYear = projectedProfitCurrFinYear;
 	}
 
 	@Override
@@ -504,18 +537,18 @@ public class FundSeekerInputRequestResponse {
 				+ financialArrangementsDetailRequestsList + ", directorBackgroundDetailRequestsList="
 				+ directorBackgroundDetailRequestsList + ", industrylist=" + industrylist + ", sectorlist=" + sectorlist
 				+ ", subsectors=" + subsectors + ", costOfMachinery=" + costOfMachinery + ", incrementalTurnover="
-				+ incrementalTurnover + ", actualSalesFinYearCurrent=" + actualSalesFinYearCurrent
-				+ ", estimatedSalesFinYearNext=" + estimatedSalesFinYearNext + ", assessmentId=" + assessmentId
-				+ ", tenureRequired=" + tenureRequired + ", proposedDetailsOfUnit=" + proposedDetailsOfUnit
-				+ ", costOfProject=" + costOfProject + ", proposedOperationDate=" + proposedOperationDate
-				+ ", proposedConstitutionOfUnit=" + proposedConstitutionOfUnit + ", promoterContribution="
-				+ promoterContribution + ", totalAmtPercentage=" + totalAmtPercentage + ", stateId=" + stateId
-				+ ", cityId=" + cityId + ", proposedCost=" + proposedCost + ", commercialOperationDate="
-				+ commercialOperationDate + ", factoryPremise=" + factoryPremise + ", knowHow=" + knowHow
-				+ ", competition=" + competition + ", loanAmt=" + loanAmt + ", costOfProjectStr=" + costOfProjectStr
-				+ ", collateralSecurityAmountStr=" + collateralSecurityAmountStr + ", incrementalMargin="
-				+ incrementalMargin + ", environmentalImpactId=" + environmentalImpactId + ", actionId=" + actionId
-				+ "]";
+				+ incrementalTurnover + ", assessmentId=" + assessmentId + ", tenureRequired=" + tenureRequired
+				+ ", proposedDetailsOfUnit=" + proposedDetailsOfUnit + ", costOfProject=" + costOfProject
+				+ ", proposedOperationDate=" + proposedOperationDate + ", proposedConstitutionOfUnit="
+				+ proposedConstitutionOfUnit + ", promoterContribution=" + promoterContribution
+				+ ", totalAmtPercentage=" + totalAmtPercentage + ", stateId=" + stateId + ", cityId=" + cityId
+				+ ", proposedCost=" + proposedCost + ", commercialOperationDate=" + commercialOperationDate
+				+ ", factoryPremise=" + factoryPremise + ", knowHow=" + knowHow + ", competition=" + competition
+				+ ", loanAmt=" + loanAmt + ", costOfProjectStr=" + costOfProjectStr + ", collateralSecurityAmountStr="
+				+ collateralSecurityAmountStr + ", incrementalMargin=" + incrementalMargin + ", environmentalImpactId="
+				+ environmentalImpactId + ", actionId=" + actionId + ", turnOverPrevFinYear=" + turnOverPrevFinYear
+				+ ", turnOverCurrFinYearTillMonth=" + turnOverCurrFinYearTillMonth + ", projectedTurnOverCurrFinYear="
+				+ projectedTurnOverCurrFinYear + ", profitCurrFinYear=" + profitCurrFinYear
+				+ ", projectedProfitCurrFinYear=" + projectedProfitCurrFinYear + "]";
 	}
-
 }
