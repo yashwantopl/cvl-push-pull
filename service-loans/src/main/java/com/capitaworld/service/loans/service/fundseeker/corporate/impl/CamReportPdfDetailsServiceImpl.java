@@ -118,6 +118,7 @@ import com.capitaworld.service.matchengine.ProposalDetailsClient;
 import com.capitaworld.service.matchengine.model.MatchDisplayResponse;
 import com.capitaworld.service.matchengine.model.MatchRequest;
 import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
+import com.capitaworld.service.matchengine.model.ProposalMappingRequestString;
 import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
 import com.capitaworld.service.mca.client.McaClient;
 import com.capitaworld.service.mca.model.McaResponse;
@@ -301,6 +302,8 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 
 	@Override
 	public Map<String, Object> getCamReportPrimaryDetails(Long applicationId, Long productId, boolean isFinalView) {
+		
+		ProposalMappingRequestString proposalMappingRequestString = null;
 		Map<String, Object> map = new HashMap<String, Object>();
 		DecimalFormat decim = new DecimalFormat("####");
 		Long userId = loanApplicationRepository.getUserIdByApplicationId(applicationId);
@@ -648,6 +651,8 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				proposalMappingRequest.setApplicationId(applicationId);
 				proposalMappingRequest.setFpProductId(productId);
 				ProposalMappingResponse proposalMappingResponse= proposalDetailsClient.getActiveProposalDetails(proposalMappingRequest);
+				proposalMappingRequestString = new ProposalMappingRequestString();
+				BeanUtils.copyProperties(proposalMappingResponse.getData(), proposalMappingRequestString);
 				map.put("proposalResponse", !CommonUtils.isObjectNullOrEmpty(proposalMappingResponse.getData()) ? proposalMappingResponse.getData() : " ");
 		}
 		catch (Exception e) {
@@ -1062,7 +1067,9 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		if(isFinalView) {
 			//FITCH DATA
 			try {
-			RatingResponse ratingResponse = (RatingResponse) irrService.calculateIrrRating(applicationId, userId).getBody().getData();
+				
+				//proposalMappingRequestString.getId()
+			RatingResponse ratingResponse = (RatingResponse) irrService.calculateIrrRating(applicationId, userId, proposalMappingRequestString.getId()).getBody().getData();
 			if(!CommonUtils.isObjectNullOrEmpty(ratingResponse.getBusinessTypeId())) {
 				if(BusinessType.MANUFACTURING == ratingResponse.getBusinessTypeId())
 				{

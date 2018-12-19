@@ -4,6 +4,6 @@ import com.capitaworld.service.loans.model.teaser.primaryview.CorporatePrimaryVi
 
 public interface CorporatePrimaryViewService {
 
-    public CorporatePrimaryViewResponse getCorporatePrimaryViewDetails(Long toApplicationId, Integer userType, Long fundProviderUserId);
+    public CorporatePrimaryViewResponse getCorporatePrimaryViewDetails(Long proposalMapId, Integer userType, Long fundProviderUserId);
 
 }

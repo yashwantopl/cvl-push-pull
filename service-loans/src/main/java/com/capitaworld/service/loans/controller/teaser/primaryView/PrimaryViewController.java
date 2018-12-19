@@ -618,11 +618,11 @@ public class PrimaryViewController {
 	}
 
 	// -----------corporate Common
-	@GetMapping(value = "/Corporate/{toApplicationId}")
+	@GetMapping(value = "/Corporate/{proposalMapId}")    // @GetMapping(value = "/Corporate/{toApplicationId}")
 	public @ResponseBody ResponseEntity<LoansResponse> primaryViewOfCorporateCommon(
-			@PathVariable(value = "toApplicationId") Long toApplicationId,
+			@PathVariable(value = "proposalMapId") Long proposalMapId,
 			@RequestParam(value = "clientId", required = false) Long clientId, HttpServletRequest request) {
-		logger.info("into /Corporate/{toApplicationId} and toApplicationId is" + toApplicationId);
+		logger.info("into /Corporate/{proposalMapId} and proposalMapId is" + proposalMapId);
 		LoansResponse loansResponse = new LoansResponse();
 
 		// get user id from http servlet request
@@ -676,17 +676,17 @@ public class PrimaryViewController {
 			userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
 		}
 
-		if (CommonUtils.isObjectNullOrEmpty(toApplicationId)) {
-			logger.warn("Invalid data or Requested data not found.", toApplicationId);
+		if (CommonUtils.isObjectNullOrEmpty(proposalMapId)) {
+			logger.warn("Invalid data or Requested data not found.", proposalMapId);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse("Invalid data or Requested data not found.", HttpStatus.BAD_REQUEST.value()),
 					HttpStatus.OK);
 		} else {
 			CorporatePrimaryViewResponse corporatePrimaryViewResponse = null;
 			try {
-				logger.info("toApplicationId,userType,userId is" + toApplicationId + userType + userId);
+				logger.info("proposalMapId,userType,userId is" + proposalMapId + userType + userId);
 				corporatePrimaryViewResponse = corporatePrimaryViewService
-						.getCorporatePrimaryViewDetails(toApplicationId, userType, userId);
+						.getCorporatePrimaryViewDetails(proposalMapId, userType, userId);
 				if (!CommonUtils.isObjectNullOrEmpty(corporatePrimaryViewResponse)) {
 					logger.info("response is" + corporatePrimaryViewResponse.toString());
 					loansResponse.setData(corporatePrimaryViewResponse);

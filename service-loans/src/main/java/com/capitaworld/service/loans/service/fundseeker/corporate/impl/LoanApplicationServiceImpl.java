@@ -6415,7 +6415,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			audit = auditComponent.getAudit(applicationId, true, AuditComponent.IRR_DETAILS);
 			if (audit == null) {
 				// To save irr details
-				RatingResponse rtResponse = irrService.calculateIrrRating(applicationId, applicationMaster.getUserId())
+				RatingResponse rtResponse = irrService.calculateIrrRating(applicationId, applicationMaster.getUserId(), fpProductMappingId)
 						.getBody();
 				RatingResponse ratingResponse = (RatingResponse) rtResponse.getData();
 				com.capitaworld.sidbi.integration.model.irr.IrrRequest irrRequest = new com.capitaworld.sidbi.integration.model.irr.IrrRequest();
