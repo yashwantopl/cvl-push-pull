@@ -187,6 +187,10 @@ public class ProposalServiceMappingImpl implements ProposalService {
 						logger.info("Current user is Branch officer or FP_CHECKER");
 						request.setBranchId(basicDetailsRequest.getId());
 					}
+					else if (basicDetailsRequest.getRoleId() == CommonUtils.UsersRoles.SMECC) {
+						logger.info("Current user is Branch officer or SMECC");
+						request.setBranchIds(userResponse.getBranchList());
+					}
 				} else {
 					logger.info("Branch Id Can't found");
 				}
@@ -1862,14 +1866,16 @@ public class ProposalServiceMappingImpl implements ProposalService {
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<?> basicInfoForSearch(ProposalMappingRequest request) {
+        UserResponse userResponse=null;
+        BranchBasicDetailsRequest basicDetailsRequest=null;
 		try {
 			// set branch id to proposal request
 			UsersRequest usersRequest = new UsersRequest();
 			usersRequest.setId(request.getUserId());
 			logger.info(
 					"Current user id ---------------------------------------------------> " + request.getUserId());
-			UserResponse userResponse = usersClient.getBranchDetailsBYUserId(usersRequest);
-			BranchBasicDetailsRequest basicDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap(
+			userResponse = usersClient.getBranchDetailsBYUserId(usersRequest);
+			basicDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap(
 					(LinkedHashMap<String, Object>) userResponse.getData(), BranchBasicDetailsRequest.class);
 			if (!CommonUtils.isObjectNullOrEmpty(basicDetailsRequest)) {
 				logger.info("Found Branch Id -----------> " + basicDetailsRequest.getId()
@@ -1885,12 +1891,21 @@ public class ProposalServiceMappingImpl implements ProposalService {
 		} catch (Exception e) {
 			logger.error("Throw Exception While Get Branch Id from UserId : ",e);
 		}
-		List<Object[]> result = null;
-		if(request.getBranchId() != null){
-			result = proposalDetailRepository.getAllProposalsForSearchWithBranch(request.getFpProductId(), request.getProposalStatusId(), request.getBranchId());
-		}else{
-			result = proposalDetailRepository.getAllProposalsForSearch(request.getFpProductId(), request.getProposalStatusId());
-		}
+
+        List<Object[]> result = null;
+		if(basicDetailsRequest.getRoleId() == CommonUtils.UsersRoles.SMECC)
+        {
+            result = proposalDetailRepository.getAllProposalsForSearchWithBranch(request.getFpProductId(), request.getProposalStatusId(), userResponse.getBranchList());
+        }
+        else
+        {
+            if(request.getBranchId() != null){
+                result = proposalDetailRepository.getAllProposalsForSearchWithBranch(request.getFpProductId(), request.getProposalStatusId(), request.getBranchId());
+            }else{
+                result = proposalDetailRepository.getAllProposalsForSearch(request.getFpProductId(), request.getProposalStatusId());
+            }
+        }
+
 		
 		List<Map<String, Object>> finalList = new ArrayList<>(result.size());
 		
