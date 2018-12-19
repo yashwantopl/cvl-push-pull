@@ -445,14 +445,12 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 		}
 
 		catch (Exception e) {
-			e.printStackTrace();
-			logger.error("error while saveOrUpdate", e);
+			logger.error("error while saveOrUpdate : ", e);
 			return false;
 		}
 	}
 
 	private void saveNegativeIndustryTemp(Long id, List<DataRequest> negativeIndList,Long userId) {
-		// TODO Auto-generated method stub
 		CommonDocumentUtils.startHook(logger, "saveNegativeIndustryTemp");
 		NegativeIndustryTemp negativeIndustry = null;
 		for (DataRequest dataRequest : negativeIndList) {
@@ -471,7 +469,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	}
 
 	private void saveCityTemp(Long id, List<DataRequest> geogaphicallyCity,Long userId) {
-		// TODO Auto-generated method stub
+
 		logger.info("start saveCity");
 		GeographicalCityDetailTemp geographicalCityDetail = null;
 		//List<GeographicalCityDetailTemp> geographicalCityDetailTemps=new ArrayList<>(geogaphicallyCity.size()); 
@@ -668,8 +666,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 			basicDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap(
 					(LinkedHashMap<String, Object>) userResponse.getData(), BranchBasicDetailsRequest.class);
 		} catch (Exception e) {
-			logger.info("Throw Exception While Get Branch Id from UserId");
-			e.printStackTrace();
+			logger.error("Throw Exception While Get Branch Id from UserId : ",e);
 		}
 		List<ProductMaster> results;
 		if (!CommonUtils.isObjectNullOrEmpty(userOrgId)) {
@@ -1031,9 +1028,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 			}
 			return true;
 		} catch (Exception e) {
-			// TODO: handle exception
-			e.printStackTrace();
-			logger.error("error while changeStatus", e);
+			logger.error("error while changeStatus : ", e);
 		}
 		CommonDocumentUtils.endHook(logger, "changeStatus");
 		return null;
@@ -1041,7 +1036,6 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 
 	@Override
 	public Boolean saveCorporate(CorporateProduct corporateProduct) {
-		// TODO Auto-generated method stub
 		CommonDocumentUtils.startHook(logger, "saveCorporate");
 		if (!CommonUtils.isObjectNullOrEmpty(corporateProduct)) {
 			if (!CommonUtils.isObjectNullOrEmpty(corporateProduct.getProductId())) {
@@ -1141,24 +1135,21 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 								}
 							}
 						} catch (DocumentException e) {
-							e.printStackTrace();
+							logger.error(CommonUtils.EXCEPTION,e);
 							throw new DocumentException(e.getMessage());
 						}
 
 						chatDetailList.add(chatDetails);
 					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						logger.error(CommonUtils.EXCEPTION,e);
 					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						logger.error(CommonUtils.EXCEPTION,e);
 					}
 				}
 				return chatDetailList;
 			}
 		} catch (MatchException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		return null;
 	}
@@ -1356,8 +1347,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 								fpAsyncComponent.sendEmailToCheckerWhenAdminMakerResendProductForApproval(productMasterTemp,workflowData.getUserId(),productType);	
 							}
 							catch(Exception e) {
-								logger.info("Exception occured while sending mail to Checker when Admin Maker resend product for Approval");
-								e.printStackTrace();
+								logger.error("Exception occured while sending mail to Checker when Admin Maker resend product for Approval : ",e);
 							}
 						}
 						else if(productStatus == CommonUtils.Status.OPEN){
@@ -1366,8 +1356,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 								fpAsyncComponent.sendEmailToCheckerWhenAdminMakerSendProductForApproval(productMasterTemp,workflowData.getUserId(),productType);	
 							}
 							catch(Exception e) {
-								logger.info("Exception occured while sending mail to Checker when Admin Maker send product for Approval");
-								e.printStackTrace();
+								logger.error("Exception occured while sending mail to Checker when Admin Maker send product for Approval : ",e);
 							}
 						}
 						
@@ -1389,8 +1378,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 								fpAsyncComponent.sendEmailToMakerWhenAdminCheckerApprovedProduct(productMasterTemp,workflowData.getUserId(),productType);	
 							}
 							catch(Exception e) {
-								logger.info("Exception occured while sending mail to Maker when Admin Checker Approved Product");
-								e.printStackTrace();
+								logger.error("Exception occured while sending mail to Maker when Admin Checker Approved Product : ",e);
 							}
 						}
 						return true;
@@ -1406,8 +1394,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 							fpAsyncComponent.sendEmailToMakerWhenAdminCheckerRevertedProduct(productMasterTemp,workflowData.getUserId(),productType);	
 						}
 						catch(Exception e) {
-							logger.info("Exception occured while sending mail to Maker when Admin Checker reverted Product");
-							e.printStackTrace();
+							logger.error("Exception occured while sending mail to Maker when Admin Checker reverted Product : ",e);
 						}
 					}
 					return true;
@@ -1420,7 +1407,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 			}
 			return false;
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 			return false;
 		}
 	}
@@ -1586,7 +1573,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 			}
 			return false;
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 			return false;
 		}
 	}

@@ -134,8 +134,7 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 		//logger.info("Exit saveLoanSanctionDetail() -----------------------> LoanSanctionDomain "+ loanSanctionDomainOld);
 		return loanSanctionRepository.save(loanSanctionDomainOld) != null;
 		}catch (Exception e) {
-			logger.info("Error/Exception in saveLoanSanctionDetail() -----------------------> Message "+e.getMessage());
-			e.printStackTrace();
+			logger.error("Error/Exception in saveLoanSanctionDetail() -----------------------> Message : ",e);
 			throw e;
 		}
 
@@ -153,7 +152,7 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 	        		return "Invalid ApplicationId ";
 	        	}		 
 	        }catch (Exception e) {
-	        	logger.info("Error/Exception in requestValidation() ----------------------->  Message "+ e.getMessage());
+	        	logger.error("Error/Exception in requestValidation() ----------------------->  Message : ", e);
 	        	throw e;
 			}
 	}
@@ -179,8 +178,7 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 			return saveLoanSanctionDetail(loanSanctionRequest);
 
 		}catch (Exception e) {
-			logger.info("Error/Exception in saveSanctionDetailFromPopup() ----------------------->  Message "+ e.getMessage());
-			e.printStackTrace();
+			logger.error("Error/Exception in saveSanctionDetailFromPopup() ----------------------->  Message : ",e);
 			return false;
 		}
 	}
@@ -307,8 +305,7 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 							auditComponentBankToCW.saveBankToCWReqRes(resJosn == null ? encryptedString : resJosn  , null , null , null , failureReason, userOrganisationRequest.getUserOrgId(), null);
 							
 						}catch(Exception e) {
-							e.printStackTrace();
-							logger.error("Error while Calling get token API and getting sanction & disbursemet detail MSG ==> "+e.getMessage());
+							logger.error("Error while Calling get token API and getting sanction & disbursemet detail MSG ==> ",e);
 						}
 					}
 				}
@@ -317,8 +314,7 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 			logger.info("going to fetch username/password");
 			return isReverseAPI;
 		}catch (Exception e) {
-			logger.info("Error/Exception in saveSanctionAndDisbursementDetailsFromBank() ----------------------->  Message "+ e.getMessage());
-			e.printStackTrace();
+			logger.error("Error/Exception in saveSanctionAndDisbursementDetailsFromBank() ----------------------->  Message : ", e);
 			return false;
 		}
 
@@ -349,8 +345,7 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 					loanSanctionAndDisbursedRequestList = MultipleJSONObjectHelper.getListOfObjects(decrypt,  null ,LoanSanctionAndDisbursedRequest.class);
 					
 				} catch (Exception e) {
-					e.printStackTrace();
-					logger.error("Error while Converting Encrypted Object to LoanSanctionAndDisbursedRequest  saveLoanSanctionDisbursementDetailFromBank(){} -------------------------> ",e.getMessage());
+					logger.error("Error while Converting Encrypted Object to LoanSanctionAndDisbursedRequest  saveLoanSanctionDisbursementDetailFromBank(){} -------------------------> ",e);
 					loansResponse = new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value(),HttpStatus.OK);
 					loansResponse.setData(false);
 					if (CommonUtils.isObjectNullOrEmpty(decrypt)) {
@@ -381,7 +376,6 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 			
 		} catch (Exception e) {
 			logger.error("Error while saveLoanSanctionDisbursementDetailFromBank()----------------------> ", e);
-			e.printStackTrace();
 			/*loansResponse = new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.OK);
 			loansResponse.setData(false);*/
 			reason = "Error/Exception while save LoanSanctionAndDisbursedRequest in  saveLoanSanctionDisbursementDetailFromBank() ===> Msg "+ e.getMessage();
@@ -422,8 +416,7 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 		return loanSanctionRepository.save(loanSanctionDomainOld) != null;*/
 		return true;
 		}catch (Exception e) {
-			logger.info("Error/Exception in saveLoanSanctionDetail() -----------------------> Message "+e.getMessage());
-			e.printStackTrace();
+			logger.error("Error/Exception in saveLoanSanctionDetail() -----------------------> Message : ",e);
 			throw e;
 		}
 	}
@@ -487,7 +480,7 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 										}
 									} catch (Exception e) {
 										sanctionReason = "Error/Exception while saving the sanction Detail MSG ==> "+e.getMessage();
-										e.printStackTrace();
+										logger.error("Error/Exception while saving the sanction Detail MSG ==> ",e);
 									}
 									
 								try {
@@ -591,8 +584,7 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 			try {
 				loanSanctionAndDisbursedRequest.setLoanDisbursementRequestsList( loanDisbursementService.bankRequestValidationAndSave(sanctionPrimaryId  , loanSanctionAndDisbursedRequest.getLoanDisbursementRequestsList() , orgId , CommonUtility.ApiType.REVERSE_DISBURSEMENT)) ;
 			} catch (IOException e) {
-				
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 			if(!CommonUtils.isListNullOrEmpty(loanSanctionAndDisbursedRequest.getLoanDisbursementRequestsList())){
 				disbursementReason = "SUCCESS";

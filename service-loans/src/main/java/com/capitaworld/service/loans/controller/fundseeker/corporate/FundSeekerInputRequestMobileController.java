@@ -68,8 +68,7 @@ public class FundSeekerInputRequestMobileController {
             }
 
         } catch (Exception e) {
-            logger.error("Error while saving one form data");
-            e.printStackTrace();
+            logger.error("Error while saving one form data : ",e);
             return new ResponseEntity<MobileApiResponse>(
                     new MobileApiResponse(CommonUtils.SOMETHING_WENT_WRONG, "false", MobileCustomizeResponse.INTERNALSERVERERROR407),
                     HttpStatus.INTERNAL_SERVER_ERROR);
@@ -105,8 +104,7 @@ public class FundSeekerInputRequestMobileController {
             }
             
         } catch (Exception e) {
-            logger.error("Error while fetching one form data");
-            e.printStackTrace();
+            logger.error("Error while fetching one form data : ",e);
             return new ResponseEntity<MobileApiResponse>(
                     new MobileApiResponse(CommonUtils.SOMETHING_WENT_WRONG, "false", MobileCustomizeResponse.INTERNALSERVERERROR407),
                     HttpStatus.INTERNAL_SERVER_ERROR);
@@ -143,8 +141,7 @@ public class FundSeekerInputRequestMobileController {
             	return new ResponseEntity<MobileApiResponse>(new MobileApiResponse("Data not found","false", null, MobileCustomizeResponse.SUCCESS204), HttpStatus.OK);
             }
         } catch (Exception e) {
-            logger.error("Error while fetching director detail");
-            e.printStackTrace();
+            logger.error("Error while fetching director detail : ",e);
             return new ResponseEntity<MobileApiResponse>(
                     new MobileApiResponse(CommonUtils.SOMETHING_WENT_WRONG, "false", MobileCustomizeResponse.INTERNALSERVERERROR407),
                     HttpStatus.OK);
@@ -176,8 +173,7 @@ public class FundSeekerInputRequestMobileController {
             return new ResponseEntity<MobileApiResponse>(new MobileApiResponse("Successfully saved data","true", loansResponse.getData(), MobileCustomizeResponse.SUCCESS200), HttpStatus.OK);	
 
         } catch (Exception e) {
-            logger.error("Error while saving director detail");
-            e.printStackTrace();
+            logger.error("Error while saving director detail : ",e);
             return new ResponseEntity<MobileApiResponse>(
                     new MobileApiResponse(CommonUtils.SOMETHING_WENT_WRONG, "false", MobileCustomizeResponse.INTERNALSERVERERROR407),
                     HttpStatus.INTERNAL_SERVER_ERROR);
@@ -210,8 +206,7 @@ public class FundSeekerInputRequestMobileController {
                 }
             }
         } catch (Exception e) {
-            logger.error("Error while Calling Connect Client after Oneform Submit");
-            e.printStackTrace();
+            logger.error("Error while Calling Connect Client after Oneform Submit : ",e);
             return  new ResponseEntity<MobileApiResponse>(new MobileApiResponse(CommonUtils.SOMETHING_WENT_WRONG,"false", MobileCustomizeResponse.INTERNALSERVERERROR407), HttpStatus.OK);
         }
     }

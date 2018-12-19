@@ -98,9 +98,7 @@ public class CarLoanParameterServiceImpl implements CarLoanParameterService {
 				carLoanParameterRequest.setCountryList((List<DataRequest>) formResponse.getListData());
 
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				logger.error("error while get",e);
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 		}
 		if (!CommonUtils.isObjectListNull(carLoanParameterRequest.getMaxTenure()))
@@ -115,9 +113,7 @@ public class CarLoanParameterServiceImpl implements CarLoanParameterService {
 				carLoanParameterRequest.setStateList((List<DataRequest>) formResponse.getListData());
 
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				logger.error("error while get",e);
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 		}
 
@@ -128,9 +124,7 @@ public class CarLoanParameterServiceImpl implements CarLoanParameterService {
 				carLoanParameterRequest.setCityList((List<DataRequest>) formResponse.getListData());
 
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				logger.error("error while get",e);
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 		}
 		CommonDocumentUtils.endHook(logger, "getCarLoanParameterRequest");

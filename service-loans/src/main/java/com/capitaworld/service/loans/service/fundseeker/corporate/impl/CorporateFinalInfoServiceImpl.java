@@ -186,8 +186,7 @@ public class CorporateFinalInfoServiceImpl implements CorporateFinalInfoService 
             return true;
 
         }catch (Exception e){
-            logger.error("Error while Saving Corporate Final Info:-");
-            e.printStackTrace();
+            logger.error("Error while Saving Corporate Final Info:-",e);
             throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
         }
     }

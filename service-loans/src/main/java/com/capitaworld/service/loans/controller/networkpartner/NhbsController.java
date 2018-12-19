@@ -54,8 +54,7 @@ public class NhbsController {
 			loansResponse.setListData(applicationsResponseList);
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);			
 		} catch (Exception e) {
-			logger.error("Error while getting proposals based on application or ddr status.", e);
-			e.printStackTrace();
+			logger.error("Error while getting proposals based on application or ddr status : ", e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -82,8 +81,7 @@ public class NhbsController {
 			loansResponse.setListData(applicationsResponseList);
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);	
 		} catch (Exception e) {
-			logger.error("Error while getting assigned proposals ", e);
-			e.printStackTrace();
+			logger.error("Error while getting assigned proposals : ", e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -124,8 +122,7 @@ public class NhbsController {
 			loansResponse.setData(isDataUpdated);
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);	
 		} catch (Exception e) {
-			logger.error("Error while setting maker to proposals ", e);
-			e.printStackTrace();
+			logger.error("Error while setting maker to proposals : ", e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -165,8 +162,7 @@ public class NhbsController {
 			loansResponse.setData(isDataUpdated);
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
-			logger.error("Error while mapping checker with fp to proposals ", e);
-			e.printStackTrace();
+			logger.error("Error while mapping checker with fp to proposals : ", e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -203,8 +199,7 @@ public class NhbsController {
 			loansResponse.setData(checkerName);
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
-			logger.error("Error while getting checker name");
-			e.printStackTrace();
+			logger.error("Error while getting checker name : ",e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -239,8 +234,7 @@ public class NhbsController {
 			loansResponse.setData(jsonCountObj);
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);	
 		} catch (Exception e) {
-			logger.error("Error while getting count of proposals ", e);
-			e.printStackTrace();
+			logger.error("Error while getting count of proposals : ", e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -266,8 +260,7 @@ public class NhbsController {
 			loansResponse.setListData(applicationsResponseList);
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
-			logger.error("Error while getting proposals based on application or ddr status.", e);
-			e.printStackTrace();
+			logger.error("Error while getting proposals based on application or ddr status : ", e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -324,8 +317,7 @@ public class NhbsController {
             loansResponse.setListData(applicationsResponseList);
             return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
         } catch (Exception e) {
-            logger.error("Error while getting assigned proposals ", e);
-            e.printStackTrace();
+            logger.error("Error while getting assigned proposals : ", e);
             return new ResponseEntity<LoansResponse>(
                     new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
                     HttpStatus.INTERNAL_SERVER_ERROR);
@@ -360,8 +352,7 @@ public class NhbsController {
 			loansResponse.setData(jsonCountObj);
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
-			logger.error("Error while getting count of proposals ", e);
-			e.printStackTrace();
+			logger.error("Error while getting count of proposals : ", e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -397,8 +388,7 @@ public class NhbsController {
 			loansResponse.setData(isDataUpdated);
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
-			logger.error("Error while setting maker to proposals ", e);
-			e.printStackTrace();
+			logger.error("Error while setting maker to proposals : ", e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -436,8 +426,7 @@ public class NhbsController {
 			loansResponse.setData(isDataUpdated);
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
-			logger.error("Error while setting maker to proposals ", e);
-			e.printStackTrace();
+			logger.error("Error while setting maker to proposals : ", e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -475,8 +464,7 @@ public class NhbsController {
 			loansResponse.setData(isDataUpdated);
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
-			logger.error("Error while setting maker to proposals ", e);
-			e.printStackTrace();
+			logger.error("Error while setting maker to proposals : ", e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);

@@ -118,8 +118,7 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 			CommonDocumentUtils.endHook(logger, "calculateHomeLoan");
 			return minMaxData;
 		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("Error while Calculating HomeLoan Eligibility");
+			logger.error("Error while Calculating HomeLoan Eligibility : ",e);
 		}
 		return null;
 	}
@@ -238,8 +237,7 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 			}
 			return result;
 		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("Error while Calculating HomeLoan Eligibility");
+			logger.error("Error while Calculating HomeLoan Eligibility : ",e);
 		}
 		return null;
 	}
@@ -344,8 +342,7 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 			CommonDocumentUtils.endHook(logger, "calculateMinMaxForPersonalLoan");
 			return minMaxData;
 		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("Error while Calculating Personal Loan Eligibility");
+			logger.error("Error while Calculating Personal Loan Eligibility : ",e);
 		}
 		return null;
 	}
@@ -457,8 +454,7 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 			CommonDocumentUtils.endHook(logger, "calculateMinMaxForLAP");
 			return minMaxData;
 		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("Error while Calculating LAP Eligibility");
+			logger.error("Error while Calculating LAP Eligibility : ",e);
 		}
 		return null;
 	}
@@ -545,8 +541,7 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 
 			return result;
 		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("Error while Calculating HomeLoan Eligibility");
+			logger.error("Error while Calculating HomeLoan Eligibility : ",e);
 		}
 		return null;
 	}
@@ -579,8 +574,7 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 			}
 		} catch (Exception e) {
 			CommonDocumentUtils.endHook(logger, "calculateTenure");
-			e.printStackTrace();
-			logger.error("Error while calulating tenure for Product ==>" + productId);
+			logger.error("Error while calulating tenure for Product ==>" + productId + CommonUtils.EXCEPTION + e);
 			throw new ExcelException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
@@ -732,8 +726,7 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 			}
 			
 		} catch (NullPointerException e) {
-			e.printStackTrace();
-			logger.info("-----------------Exception in getCMADetail() -------------------");
+			logger.error("-----------------Exception in getCMADetail() -------------------",e);
 		}
 		logger.info("-----------------Exit from getCMADetail() -------------------");
 		return cmaDetailResponse ;

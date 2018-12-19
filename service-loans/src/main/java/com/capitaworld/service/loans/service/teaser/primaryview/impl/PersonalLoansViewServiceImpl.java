@@ -121,8 +121,7 @@ public class PersonalLoansViewServiceImpl implements PersonalLoansViewService {
 						officeAddress.setCountry(dataCountry.getValue());
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
-
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 				try {
 					if (!CommonUtils.isObjectNullOrEmpty(applicantDetail.getOfficeStateId())) {

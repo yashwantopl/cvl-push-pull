@@ -211,9 +211,7 @@ public class  PersonalLoanParameterServiceImpl implements PersonalLoanParameterS
 			 
 			
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			logger.error("error while getPersonalLoanParameterRequest",e);
-			e.printStackTrace();
+			logger.error("error while getPersonalLoanParameterRequest : ",e);
 		}
 		}
 		
@@ -229,9 +227,7 @@ public class  PersonalLoanParameterServiceImpl implements PersonalLoanParameterS
 			 
 			
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			logger.error("error while getPersonalLoanParameterRequest",e);
-			e.printStackTrace();
+			logger.error("error while getPersonalLoanParameterRequest : ",e);
 		}
 		}
 		
@@ -245,9 +241,7 @@ public class  PersonalLoanParameterServiceImpl implements PersonalLoanParameterS
 			 
 			
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			logger.error("error while getPersonalLoanParameterRequest",e);
-			e.printStackTrace();
+			logger.error("error while getPersonalLoanParameterRequest : ",e);
 		}
 		}
 		
@@ -353,7 +347,7 @@ private void saveCountry(PersonalLoanParameterRequest personalLoanParameterReque
 
 	@Override
 	public PersonalLoanParameterRequest getPersonalLoanParameterRequestTemp(Long id, Long role, Long userId) {
-		// TODO Auto-generated method stub
+
 		logger.info("start getWorkingCapitalParameterTemp");
 		PersonalLoanParameterRequest personalLoanParameterRequest= new PersonalLoanParameterRequest();
 		PersonalLoanParameterTemp loanParameter = personalLoanParameterTempRepository
@@ -385,9 +379,7 @@ private void saveCountry(PersonalLoanParameterRequest personalLoanParameterReque
 				personalLoanParameterRequest.setCountryList(dataRequests);
 
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				logger.error(e.toString());
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 		}
 
@@ -406,9 +398,7 @@ private void saveCountry(PersonalLoanParameterRequest personalLoanParameterReque
 				personalLoanParameterRequest.setStateList(dataRequests);
 
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				logger.error(e.toString());
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 		}
 
@@ -427,9 +417,7 @@ private void saveCountry(PersonalLoanParameterRequest personalLoanParameterReque
 				personalLoanParameterRequest.setCityList(dataRequests);
 
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				logger.error(e.toString());
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 		}
 
@@ -528,9 +516,9 @@ private void saveCountry(PersonalLoanParameterRequest personalLoanParameterReque
 
 	@Override
 	public Boolean saveOrUpdateTemp(PersonalLoanParameterRequest personalLoanParameterRequest) {
-		// TODO Auto-generated method stub
+
 		logger.info("start saveOrUpdateTemp");
-		// TODO Auto-generated method stub
+
 		PersonalLoanParameterTemp personalLoanParameterTemp= null;
 
 		if(personalLoanParameterRequest.getAppstage()==1)
@@ -624,7 +612,7 @@ private void saveCountry(PersonalLoanParameterRequest personalLoanParameterReque
 	}
 
 	private void saveRatingAgencyInfo(PersonalLoanParameterRequest personalLoanParameterRequest) {
-		// TODO Auto-generated method stub
+
 		logger.info("save saveRatingAgencyInfo");
 		if(!CommonUtils.isListNullOrEmpty(personalLoanParameterRequest.getCreditRatingSelectedList()))
 		{
@@ -649,7 +637,7 @@ private void saveCountry(PersonalLoanParameterRequest personalLoanParameterReque
 
 	
 	private void saveRatingAgencyInfoMaster(PersonalLoanParameterRequest personalLoanParameterRequest) {
-		// TODO Auto-generated method stub
+
 		logger.info("save saveRatingAgencyInfoMaster");
 		if(!CommonUtils.isListNullOrEmpty(personalLoanParameterRequest.getCreditRatingSelectedList()))
 		{
@@ -673,7 +661,7 @@ private void saveCountry(PersonalLoanParameterRequest personalLoanParameterReque
 	}
 	
 	private void saveEmpStatus(PersonalLoanParameterRequest personalLoanParameterRequest) {
-		// TODO Auto-generated method stub
+
 		logger.info("save saveEmpStatus");
 		if(!CommonUtils.isListNullOrEmpty(personalLoanParameterRequest.getEmpStatusIds()))
 		{
@@ -696,7 +684,7 @@ private void saveCountry(PersonalLoanParameterRequest personalLoanParameterReque
 	}
 	
 	private void saveEmpStatusMaster(PersonalLoanParameterRequest personalLoanParameterRequest) {
-		// TODO Auto-generated method stub
+
 		logger.info("save saveEmpStatusMaster");
 		if(!CommonUtils.isListNullOrEmpty(personalLoanParameterRequest.getEmpStatusIds()))
 		{
@@ -719,7 +707,7 @@ private void saveCountry(PersonalLoanParameterRequest personalLoanParameterReque
 	}
 
 	private void saveEmpWith(PersonalLoanParameterRequest personalLoanParameterRequest) {
-		// TODO Auto-generated method stub
+
 		logger.info("save saveEmpWith");
 		if(!CommonUtils.isListNullOrEmpty(personalLoanParameterRequest.getEmpWithIds()))
 		{
@@ -741,7 +729,7 @@ private void saveCountry(PersonalLoanParameterRequest personalLoanParameterReque
 	}
 	
 	private void saveEmpWithMaster(PersonalLoanParameterRequest personalLoanParameterRequest) {
-		// TODO Auto-generated method stub
+
 		logger.info("save saveEmpWithMaster");
 		if(!CommonUtils.isListNullOrEmpty(personalLoanParameterRequest.getEmpWithIds()))
 		{
@@ -763,7 +751,7 @@ private void saveCountry(PersonalLoanParameterRequest personalLoanParameterReque
 	}
 
 	private void saveCountryTemp(PersonalLoanParameterRequest personalLoanParameterRequest) {
-		// TODO Auto-generated method stub
+
 		logger.info("save saveCountryTemp");
 		if(!CommonUtils.isListNullOrEmpty(personalLoanParameterRequest.getCountryList()))
 		{
@@ -786,7 +774,7 @@ private void saveCountry(PersonalLoanParameterRequest personalLoanParameterReque
 	}
 
 	private void saveStateTemp(PersonalLoanParameterRequest personalLoanParameterRequest) {
-		// TODO Auto-generated method stub
+
 		logger.info("start saveStateTemp");
 		if(!CommonUtils.isListNullOrEmpty(personalLoanParameterRequest.getStateList()))
 		{
@@ -809,7 +797,7 @@ private void saveCountry(PersonalLoanParameterRequest personalLoanParameterReque
 	}
 
 	private void saveCityTemp(PersonalLoanParameterRequest personalLoanParameterRequest) {
-		// TODO Auto-generated method stub
+
 		logger.info("start saveCityTemp");
 		GeographicalCityDetailTemp geographicalCityDetail = null;
 		for (DataRequest dataRequest : personalLoanParameterRequest.getCityList()) {
@@ -830,12 +818,11 @@ private void saveCountry(PersonalLoanParameterRequest personalLoanParameterReque
 
 	@Override
 	public Boolean saveMasterFromTempPl(Long mappingId) throws Exception {
-		// TODO Auto-generated method stub
 		try {
 			PersonalLoanParameterRequest personalLoanParameterRequest= getPersonalLoanParameterRequestTemp(mappingId,null,null);
 			return saveOrUpdate(personalLoanParameterRequest,mappingId);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 			return false;
 		}
 	}

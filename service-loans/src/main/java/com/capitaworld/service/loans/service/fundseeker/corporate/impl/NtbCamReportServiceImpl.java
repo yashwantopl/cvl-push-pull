@@ -514,9 +514,7 @@ public class NtbCamReportServiceImpl implements NtbCamReportService{
 				}
 			}
 		} catch (Exception e) {
-		
-			e.printStackTrace();
-			logger.info("Error while getting CGTMSE data");
+			logger.error("Error while getting CGTMSE data : ",e);
 		}
 		
 		//HUNTER API ANALYSIS

@@ -140,11 +140,11 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 	private static final String LITERAL_LOCKED = "Locked";
 	private static final String LITERAL_UNLOCKED = "Unlocked";
 
-	private static final String ERROR_WHILE_FETCHING_NETWORK_PARTNER_DETAILS = "error while fetching network partner details";
-	private static final String ERROR_FETCHING_DETAILS_FROM_ONEFORM_CLIENT_FOR_CITY_STATE_COUNTRY = "error while fetching details from oneform client for city/state/country";
-	private static final String ERROR_WHILE_GETTING_PROFILE_IMAGE = "error while getting profile image";
-	private static final String ERROR_WHILE_FP_BRANCH_DETAILS = "error while FP branch details";
-	private static final String ERROR_WHILE_FETCHING_FP_DETAILS = "error while fetching FP details";
+	private static final String ERROR_WHILE_FETCHING_NETWORK_PARTNER_DETAILS = "error while fetching network partner details : ";
+	private static final String ERROR_FETCHING_DETAILS_FROM_ONEFORM_CLIENT_FOR_CITY_STATE_COUNTRY = "error while fetching details from oneform client for city/state/country : ";
+	private static final String ERROR_WHILE_GETTING_PROFILE_IMAGE = "error while getting profile image : ";
+	private static final String ERROR_WHILE_FP_BRANCH_DETAILS = "error while FP branch details : ";
+	private static final String ERROR_WHILE_FETCHING_FP_DETAILS = "error while fetching FP details : ";
 
 	private static final String MSG_EXIT_FROM_SET_FP_MAKER = "exit from setFPMaker()";
 
@@ -191,8 +191,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 								NetworkPartnerDetailsRequest.class);
 						nhbsApplicationsResponse.setMakerName(networkPartnerDetailsRequest.getFirstName() + " " + (networkPartnerDetailsRequest.getLastName() == null ? "": networkPartnerDetailsRequest.getLastName()));
 					} catch (Exception e) {
-						logger.error(ERROR_WHILE_FETCHING_NETWORK_PARTNER_DETAILS);
-						e.printStackTrace();
+						logger.error(ERROR_WHILE_FETCHING_NETWORK_PARTNER_DETAILS,e);
 					}
 					
 				}
@@ -218,8 +217,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 									.getCountry(applicantDetail.getRegisteredCountryId().longValue(), oneFormClient));
 						}
 					} catch (Exception e) {
-						logger.error(ERROR_FETCHING_DETAILS_FROM_ONEFORM_CLIENT_FOR_CITY_STATE_COUNTRY);
-						e.printStackTrace();
+						logger.error(ERROR_FETCHING_DETAILS_FROM_ONEFORM_CLIENT_FOR_CITY_STATE_COUNTRY,e);
 					}
 				}
 				
@@ -248,8 +246,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 					nhbsApplicationsResponse.setClientProfilePic(imagePath);
 					
 				} catch (DocumentException | IOException e) {
-					logger.error(ERROR_WHILE_GETTING_PROFILE_IMAGE);
-					e.printStackTrace();
+					logger.error(ERROR_WHILE_GETTING_PROFILE_IMAGE,e);
 				}
 				if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.CHECKER == request.getUserRoleId()){
 
@@ -284,8 +281,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 								nhbsApplicationsResponse.setClientSource("Direct");
 							}
 						}catch (Exception e) {
-							logger.error("error while calling users clients while calling checkUserUnderSp()");
-							e.printStackTrace();
+							logger.error("error while calling users clients while calling checkUserUnderSp()",e);
 						}
 						nhbsApplicationsResponseList.add(nhbsApplicationsResponse);
 						/*if(npOrgId != CommonUtils.NP_NHBS){
@@ -313,8 +309,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 									NetworkPartnerDetailsRequest.class);
 							nhbsApplicationsResponse.setAssigneeName(networkPartnerDetailsRequest.getFirstName() + " " + (networkPartnerDetailsRequest.getLastName() == null ? "": networkPartnerDetailsRequest.getLastName()));
 						} catch (Exception e) {
-							logger.error(ERROR_WHILE_FETCHING_NETWORK_PARTNER_DETAILS);
-							e.printStackTrace();
+							logger.error(ERROR_WHILE_FETCHING_NETWORK_PARTNER_DETAILS,e);
 						}
 					}
 					nhbsApplicationsResponseList.add(nhbsApplicationsResponse);
@@ -378,8 +373,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 									.getCountry(applicantDetail.getRegisteredCountryId().longValue(), oneFormClient));
 						}
 					} catch (Exception e) {
-						logger.error(ERROR_FETCHING_DETAILS_FROM_ONEFORM_CLIENT_FOR_CITY_STATE_COUNTRY);
-						e.printStackTrace();
+						logger.error(ERROR_FETCHING_DETAILS_FROM_ONEFORM_CLIENT_FOR_CITY_STATE_COUNTRY,e);
 					}
 				}				
 				// get profile pic
@@ -407,8 +401,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 					nhbsApplicationsResponse.setClientProfilePic(imagePath);
 					
 				} catch (DocumentException | IOException e) {
-					logger.error(ERROR_WHILE_GETTING_PROFILE_IMAGE);
-					e.printStackTrace();
+					logger.error(ERROR_WHILE_GETTING_PROFILE_IMAGE,e);
 				}
 				if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getIsFinalLocked())){
 					nhbsApplicationsResponse.setOneFormFilled(loanApplicationMaster.getIsFinalLocked() ? LITERAL_LOCKED : LITERAL_UNLOCKED);
@@ -438,8 +431,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 									NetworkPartnerDetailsRequest.class);
 							nhbsApplicationsResponse.setAssigneeName(networkPartnerDetailsRequest.getFirstName() + " " + networkPartnerDetailsRequest.getLastName());
 						} catch (Exception e) {
-							logger.error(ERROR_WHILE_FETCHING_NETWORK_PARTNER_DETAILS);
-							e.printStackTrace();
+							logger.error(ERROR_WHILE_FETCHING_NETWORK_PARTNER_DETAILS,e);
 						}
 						
 					}
@@ -459,8 +451,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 									NetworkPartnerDetailsRequest.class);
 							nhbsApplicationsResponse.setMakerName(networkPartnerDetailsRequest.getFirstName() + " " + networkPartnerDetailsRequest.getLastName());
 						} catch (Exception e) {
-							logger.error(ERROR_WHILE_FETCHING_NETWORK_PARTNER_DETAILS);
-							e.printStackTrace();
+							logger.error(ERROR_WHILE_FETCHING_NETWORK_PARTNER_DETAILS,e);
 						}
 						
 					}
@@ -588,8 +579,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 			logger.info("exit from getPaymentStatuOfApplication()");
 			return paymentStatus;
 		} catch (GatewayException e) {
-			logger.error("error while calling gateway client for payment status");
-			e.printStackTrace();			
+			logger.error("error while calling gateway client for payment status : ",e);
 		}
 		return null;
 	}
@@ -641,10 +631,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 
 			return true;
 		} catch (Exception e) {
-
-			logger.info("Error while sending SMS =====>");
-			e.printStackTrace();
-
+			logger.error("Error while sending SMS =====>",e);
 		}
 
 		
@@ -689,8 +676,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 						NetworkPartnerDetailsRequest.class);
 				checkerName = networkPartnerDetailsRequest.getFirstName() + " " + (networkPartnerDetailsRequest.getLastName() == null ? "": networkPartnerDetailsRequest.getLastName());
 			} catch (Exception e) {
-				logger.error(ERROR_WHILE_FETCHING_NETWORK_PARTNER_DETAILS);
-				e.printStackTrace();
+				logger.error(ERROR_WHILE_FETCHING_NETWORK_PARTNER_DETAILS,e);
 			}
 		}
 		logger.info("exit from getCheckerName()");
@@ -712,8 +698,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 					BranchBasicDetailsRequest.class);
 			branchId = branchBasicDetailsRequest.getId();
 		} catch (Exception e) {
-			logger.error(ERROR_WHILE_FP_BRANCH_DETAILS);
-			e.printStackTrace();
+			logger.error(ERROR_WHILE_FP_BRANCH_DETAILS,e);
 		}
 		List<BigInteger> applicationIdList ;
 		if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.FP_MAKER == request.getUserRoleId()){
@@ -757,8 +742,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 						nhbsApplicationsResponse.setCheckerName(fundProviderDetailsRequest.getFirstName() + " " + (fundProviderDetailsRequest.getLastName() == null ? "": fundProviderDetailsRequest.getLastName()));
 						
 					} catch (Exception e) {
-						logger.error(ERROR_WHILE_FETCHING_FP_DETAILS);
-						e.printStackTrace();
+						logger.error(ERROR_WHILE_FETCHING_FP_DETAILS,e);
 					}
 				}else {
 					nhbsApplicationsResponse.setCheckerName("NA");
@@ -781,13 +765,13 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 								}	
 							}
 						} catch (Exception e) {
-							e.printStackTrace();
+							logger.error(CommonUtils.EXCEPTION,e);
 						}
 						if (!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetail.getCountryId())) {
 							try {
 								nhbsApplicationsResponse.setCountry(CommonDocumentUtils.getCountry(Long.valueOf(directorBackgroundDetail.getCountryId()), oneFormClient));	
 							} catch (Exception e) {
-								e.printStackTrace();
+								logger.error(CommonUtils.EXCEPTION,e);
 							}
 							
 						}
@@ -816,8 +800,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 										.getCountry(applicantDetail.getRegisteredCountryId().longValue(), oneFormClient));
 							}
 						} catch (Exception e) {
-							logger.error(ERROR_FETCHING_DETAILS_FROM_ONEFORM_CLIENT_FOR_CITY_STATE_COUNTRY);
-							e.printStackTrace();
+							logger.error(ERROR_FETCHING_DETAILS_FROM_ONEFORM_CLIENT_FOR_CITY_STATE_COUNTRY,e);
 						}
 					}	
 				} else if(CommonUtils.BusinessType.RETAIL_PERSONAL_LOAN.getId().equals(loanApplicationMaster.getBusinessTypeId())){
@@ -851,8 +834,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 										.getCountry(retailApplicantDetail.getAddressCountry().longValue(), oneFormClient));
 							}
 						} catch (Exception e) {
-							logger.error(ERROR_FETCHING_DETAILS_FROM_ONEFORM_CLIENT_FOR_CITY_STATE_COUNTRY);
-							e.printStackTrace();
+							logger.error(ERROR_FETCHING_DETAILS_FROM_ONEFORM_CLIENT_FOR_CITY_STATE_COUNTRY,e);
 						}
 					}
 				}
@@ -881,8 +863,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 					}
 					nhbsApplicationsResponse.setClientProfilePic(imagePath);
 				} catch (DocumentException | IOException e) {
-					logger.error(ERROR_WHILE_GETTING_PROFILE_IMAGE);
-					e.printStackTrace();
+					logger.error(ERROR_WHILE_GETTING_PROFILE_IMAGE,e);
 				}
 
 				nhbsApplicationsResponse.setApplicationDate(loanApplicationMaster.getCreatedDate());
@@ -903,8 +884,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 							nhbsApplicationsResponse.setMcaStatus(CommonUtils.NA);
 						}
 					} catch (Exception e) {
-						logger.error("error while getting MCA Status");
-						e.printStackTrace();
+						logger.error("error while getting MCA Status : ",e);
 					}
 				}
 				
@@ -960,8 +940,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 										FundProviderDetailsRequest.class);
 								nhbsApplicationsResponse.setMakerName(fundProviderDetailsRequest.getFirstName() + " " + (fundProviderDetailsRequest.getLastName() == null ? "": fundProviderDetailsRequest.getLastName()));
 							} catch (Exception e) {
-								logger.error(ERROR_WHILE_FETCHING_FP_DETAILS);
-								e.printStackTrace();
+								logger.error(ERROR_WHILE_FETCHING_FP_DETAILS,e);
 							}
 						}
 					}else if(loanApplicationMaster.getApplicationStatusMaster().getId()>=CommonUtils.ApplicationStatus.ASSIGNED_TO_CHECKER){
@@ -1129,8 +1108,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 					BranchBasicDetailsRequest.class);
 			branchId = branchBasicDetailsRequest.getId();
 		} catch (Exception e) {
-			logger.error(ERROR_WHILE_FP_BRANCH_DETAILS);
-			e.printStackTrace();
+			logger.error(ERROR_WHILE_FP_BRANCH_DETAILS,e);
 		}
 		List<BigInteger> applicationIdList ;
 		if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.FP_CHECKER == request.getUserRoleId()){
@@ -1190,8 +1168,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 										.getCountry(applicantDetail.getRegisteredCountryId().longValue(), oneFormClient));
 							}
 						} catch (Exception e) {
-							logger.error(ERROR_FETCHING_DETAILS_FROM_ONEFORM_CLIENT_FOR_CITY_STATE_COUNTRY);
-							e.printStackTrace();
+							logger.error(ERROR_FETCHING_DETAILS_FROM_ONEFORM_CLIENT_FOR_CITY_STATE_COUNTRY,e);
 						}
 					}
 				}else if(loanApplicationMaster.getBusinessTypeId().equals(CommonUtils.BusinessType.RETAIL_PERSONAL_LOAN.getId())){
@@ -1226,8 +1203,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 										.getCountry(retailApplicantDetail.getOfficeCountryId().longValue(), oneFormClient));
 							}
 						} catch (Exception e) {
-							logger.error(ERROR_FETCHING_DETAILS_FROM_ONEFORM_CLIENT_FOR_CITY_STATE_COUNTRY);
-							e.printStackTrace();
+							logger.error(ERROR_FETCHING_DETAILS_FROM_ONEFORM_CLIENT_FOR_CITY_STATE_COUNTRY,e);
 						}
 					}
 
@@ -1257,8 +1233,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 					nhbsApplicationsResponse.setClientProfilePic(imagePath);
 
 				} catch (DocumentException | IOException e) {
-					logger.error(ERROR_WHILE_GETTING_PROFILE_IMAGE);
-					e.printStackTrace();
+					logger.error(ERROR_WHILE_GETTING_PROFILE_IMAGE,e);
 				}
 				if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getIsFinalLocked())){
 					nhbsApplicationsResponse.setOneFormFilled(loanApplicationMaster.getIsFinalLocked() ? LITERAL_LOCKED : LITERAL_UNLOCKED);
@@ -1297,8 +1272,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 									FundProviderDetailsRequest.class);
 							nhbsApplicationsResponse.setMakerName(fundProviderDetailsRequest.getFirstName() + " " + (fundProviderDetailsRequest.getLastName() == null ? "": fundProviderDetailsRequest.getLastName()));
 						} catch (Exception e) {
-							logger.error(ERROR_WHILE_FETCHING_FP_DETAILS);
-							e.printStackTrace();
+							logger.error(ERROR_WHILE_FETCHING_FP_DETAILS,e);
 						}
 					}
 					List<ApplicationStatusAudit> applicationStatusAuditList = appStatusRepository.getApplicationByUserIdBasedOnStatusForFPMaker(loanApplicationMaster.getId(), CommonUtils.ApplicationStatus.OPEN);
@@ -1319,8 +1293,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 									FundProviderDetailsRequest.class);
 							nhbsApplicationsResponse.setCheckerName(fundProviderDetailsRequest.getFirstName() + " " + (fundProviderDetailsRequest.getLastName() == null ? "": fundProviderDetailsRequest.getLastName()));
 						} catch (Exception e) {
-							logger.error(ERROR_WHILE_FETCHING_FP_DETAILS);
-							e.printStackTrace();
+							logger.error(ERROR_WHILE_FETCHING_FP_DETAILS,e);
 						}
 					}
 					List<ApplicationStatusAudit> applicationStatusAuditList = appStatusRepository.getApplicationByUserIdBasedOnStatusForFPMaker(loanApplicationMaster.getId(), CommonUtils.ApplicationStatus.ASSIGNED_TO_CHECKER);
@@ -1352,8 +1325,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 					BranchBasicDetailsRequest.class);
 			branchId = branchBasicDetailsRequest.getId();
 		} catch (Exception e) {
-			logger.error(ERROR_WHILE_FP_BRANCH_DETAILS);
-			e.printStackTrace();
+			logger.error(ERROR_WHILE_FP_BRANCH_DETAILS,e);
 		}
 
 		JSONObject countObj = new JSONObject();
@@ -1436,7 +1408,6 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 				}
 
 			} catch (Exception e) {
-				e.printStackTrace();
 				logger.error("Error while Creating Process ==>{}", e);
 			}
 

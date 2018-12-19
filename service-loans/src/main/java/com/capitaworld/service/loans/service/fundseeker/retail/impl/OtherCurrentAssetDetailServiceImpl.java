@@ -81,8 +81,7 @@ public class OtherCurrentAssetDetailServiceImpl implements OtherCurrentAssetDeta
 		}
 
 		catch (Exception e) {
-			logger.info("Exception  in save otherCurrentAssetDetail  :-");
-			e.printStackTrace();
+			logger.error("Exception  in save otherCurrentAssetDetail  :-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 

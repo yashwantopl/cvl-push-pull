@@ -253,8 +253,7 @@ public class OfflineProcessedAppController {
 						return new ResponseEntity<LoansResponse>(new LoansResponse("Client Id is not valid",HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 					}
 				}catch(Exception e) {
-					logger.warn("user_verification, Invalid Request... Something went wrong");
-					e.printStackTrace();
+					logger.error("user_verification, Invalid Request... Something went wrong : ",e);
 					return new ResponseEntity<LoansResponse>(new LoansResponse("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
 				}
 			}else {

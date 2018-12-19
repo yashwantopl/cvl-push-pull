@@ -103,9 +103,7 @@ public class HomeLoanParameterServiceImpl implements HomeLoanParameterService {
 				homeLoanParameterRequest.setCountryList((List<DataRequest>) formResponse.getListData());
 
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				logger.error("error while getHomeLoanParameterRequest",e);
-				e.printStackTrace();
+				logger.error("error while getHomeLoanParameterRequest : ",e);
 			}
 		}
 
@@ -116,9 +114,7 @@ public class HomeLoanParameterServiceImpl implements HomeLoanParameterService {
 				homeLoanParameterRequest.setStateList((List<DataRequest>) formResponse.getListData());
 
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				logger.error("error while getHomeLoanParameterRequest",e);
-				e.printStackTrace();
+				logger.error("error while getHomeLoanParameterRequest : ",e);
 			}
 		}
 
@@ -129,9 +125,7 @@ public class HomeLoanParameterServiceImpl implements HomeLoanParameterService {
 				homeLoanParameterRequest.setCityList((List<DataRequest>) formResponse.getListData());
 
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				logger.error("error while getHomeLoanParameterRequest",e);
-				e.printStackTrace();
+				logger.error("error while getHomeLoanParameterRequest : ",e);
 			}
 		}
 		CommonDocumentUtils.endHook(logger, "getHomeLoanParameterRequest");
