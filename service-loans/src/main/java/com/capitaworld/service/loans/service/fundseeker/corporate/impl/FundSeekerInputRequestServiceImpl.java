@@ -68,6 +68,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 	@Autowired
 	private FinancialArrangementDetailsRepository financialArrangementDetailsRepository;
 	
+	@Autowired
 	private FinancialArrangementDetailsService financialArrangementDetailsService;
 
 	@Autowired
