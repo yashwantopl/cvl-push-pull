@@ -240,7 +240,7 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 						termLoanPrimaryViewResponse.setCity("NA");
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 			}
 
@@ -694,7 +694,7 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 			termLoanPrimaryViewResponse.setProfilePic(documentResponse.getDataList());
 		} catch (DocumentException e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 
 		// set short term rating option

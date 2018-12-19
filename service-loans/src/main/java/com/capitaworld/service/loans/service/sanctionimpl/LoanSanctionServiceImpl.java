@@ -463,8 +463,8 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 								sanctionReason = sanctionRequestValidation(loanSanctionAndDisbursedRequest.getApplicationId(), orgId);
 								  
 							} catch (Exception e) {
-								sanctionReason = "Error/Exception wheile checking the validation MSG ==> "+e.getMessage(); 
-								e.printStackTrace();
+								sanctionReason = "Error/Exception wheile checking the validation MSG ==> "+e.getMessage();
+								logger.error("Error/Exception wheile checking the validation MSG ==> ",e);
 							}
 							
 							if("SUCCESS".equalsIgnoreCase(sanctionReason) ) {
