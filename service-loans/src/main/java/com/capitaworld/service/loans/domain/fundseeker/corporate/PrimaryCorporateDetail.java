@@ -96,24 +96,12 @@ public class PrimaryCorporateDetail extends LoanApplicationMaster implements Ser
     private Double incrementalMargin;
     
     
-    // Start By Akshay for OnePager Eligibility
-    @Column(name = "turn_over_prev_fin_year")
-    private Double turnOverPrevFinYear;
+    //By Akshay for OnePager Eligibility
+    @Column(name = "actual_sales_finYear_current")
+    private Double actualSalesFinYearCurrent;
     
-    @Column(name = "turn_over_curr_fin_year_till_month")
-    private Double turnOverCurrFinYearTillMonth;
-    
-    @Column(name = "projected_turn_over_curr_fin_year")
-    private Double projectedTurnOverCurrFinYear;
-    
-    @Column(name = "profit_curr_fin_year")
-    private Double profitCurrFinYear;
-    
-    @Column(name = "projected_profit_curr_fin_year")
-    private Double projectedProfitCurrFinYear;
-    
- // End By Akshay for OnePager Eligibility
-    
+    @Column(name = "estimated_sales_fin_year_next")
+    private Double estimatedSalesFinYearNext;
 
     public PrimaryCorporateDetail() {
     }
