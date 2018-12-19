@@ -106,8 +106,7 @@ public class FundSeekerInputRequestController {
 
 
         } catch (Exception e) {
-            logger.error("Error while fetching one form data");
-            e.printStackTrace();
+            logger.error("Error while fetching one form data : ",e);
             return new ResponseEntity<LoansResponse>(
                     new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
                     HttpStatus.INTERNAL_SERVER_ERROR);
@@ -160,8 +159,7 @@ public class FundSeekerInputRequestController {
 
 
         } catch (Exception e) {
-            logger.error("Error while saving director detail");
-            e.printStackTrace();
+            logger.error("Error while saving director detail : ",e);
             return new ResponseEntity<LoansResponse>(
                     new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
                     HttpStatus.INTERNAL_SERVER_ERROR);

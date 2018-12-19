@@ -65,8 +65,7 @@ public class CorporateMcqServiceImpl implements CorporateMcqService {
 
             return true;
         } catch (Exception e) {
-            logger.error("Error while Saving Corporate final mcq Details:-");
-            e.printStackTrace();
+            logger.error("Error while Saving Corporate final mcq Details:-",e);
             throw new Exception("Something went Wrong !");
         }
     }
@@ -96,8 +95,7 @@ public class CorporateMcqServiceImpl implements CorporateMcqService {
          //   corporateMcqRequest.setOverseasNetworkIds(networkRepository.getOverseasNetworkIds(applicationId));
             return corporateMcqRequest;
         } catch (Exception e) {
-            logger.error("Error while getting Final Mcq Details:-");
-            e.printStackTrace();
+            logger.error("Error while getting Final Mcq Details:-",e);
             throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
         }
     }

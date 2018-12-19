@@ -168,8 +168,7 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 					UserResponse userResponse= usersClient.getLastAccessApplicant(usersRequest);
 					fpProductMappingId=userResponse.getId();
 				} catch (Exception e) {
-					logger.error("error while fetching last access fp rpduct id for fund provider while fetching matches in teaser view");
-					e.printStackTrace();
+					logger.error("error while fetching last access fp rpduct id for fund provider while fetching matches in teaser view : ",e);
 				}
 				try {
 					MatchRequest matchRequest = new MatchRequest();
@@ -178,7 +177,7 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 					MatchDisplayResponse matchResponse = matchEngineClient.displayMatchesOfCorporate(matchRequest);
 					termLoanPrimaryViewResponse.setMatchesList(matchResponse.getMatchDisplayObjectList());
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 			}
 		}
@@ -219,7 +218,7 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 						termLoanPrimaryViewResponse.setCity("NA");
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 			}
 
@@ -241,7 +240,7 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 						termLoanPrimaryViewResponse.setCity("NA");
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 			}
 
@@ -265,7 +264,7 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 						termLoanPrimaryViewResponse.setState("NA");
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 			}
 
@@ -287,7 +286,7 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 						termLoanPrimaryViewResponse.setState("NA");
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 			}
 			// set country
@@ -309,7 +308,7 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 						termLoanPrimaryViewResponse.setCountry("NA");
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 			}
 
@@ -330,7 +329,7 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 						termLoanPrimaryViewResponse.setCountry("NA");
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 			}
 
@@ -351,7 +350,7 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 				}
 
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 
 		}
@@ -369,7 +368,7 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 						.getIndustrySectorSubSector(industrySectorSubSectorTeaserRequest);
 				termLoanPrimaryViewResponse.setIndustrySector(oneFormResponse.getListData());
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 		}
 		// get value of Term Loan data
@@ -662,7 +661,7 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 			termLoanPrimaryViewResponse.setBrochureList(documentResponse.getDataList());
 		} catch (DocumentException e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 
 		// get list fo certificate
@@ -673,7 +672,7 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 			termLoanPrimaryViewResponse.setCertificateList(documentResponse.getDataList());
 		} catch (DocumentException e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 
 		// get list of pan card
@@ -684,7 +683,7 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 			termLoanPrimaryViewResponse.setPanCardList(documentResponse.getDataList());
 		} catch (DocumentException e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 
 		// get profile pic
@@ -695,7 +694,7 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 			termLoanPrimaryViewResponse.setProfilePic(documentResponse.getDataList());
 		} catch (DocumentException e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 
 		// set short term rating option
@@ -716,8 +715,7 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 				termLoanPrimaryViewResponse.setShortTermRating(shortTermValueList);
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 
 		// set long term rating option
@@ -739,8 +737,7 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 			}
 			termLoanPrimaryViewResponse.setLongTermRating(longTermValueList);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 
 		return termLoanPrimaryViewResponse;

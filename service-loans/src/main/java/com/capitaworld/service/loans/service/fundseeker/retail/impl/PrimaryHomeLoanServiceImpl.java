@@ -63,14 +63,12 @@ public class PrimaryHomeLoanServiceImpl implements PrimaryHomeLoanService {
 		saveNegativeList(primaryHomeLoanDetail.getApplicationId().getId(), homeLoanDetailRequest.getNegativeList());
 		return true;
 		} catch (Exception e) {
-			logger.error("Error while saving Primary Working Details Profile:-");
-			e.printStackTrace();
+			logger.error("Error while saving Primary Working Details Profile:-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	private void saveNegativeList(Long id, List<Long> negativeList) {
-		// TODO Auto-generated method stub
 		FsNegativeFpList fsNegativeFpList= null;
 		for (Long fpId : negativeList) {
 			fsNegativeFpList = new FsNegativeFpList();
@@ -103,8 +101,7 @@ public class PrimaryHomeLoanServiceImpl implements PrimaryHomeLoanService {
 		primaryHomeLoanDetailRequest.setCurrencyValue(CommonDocumentUtils.getCurrency(currencyId));
 		return primaryHomeLoanDetailRequest;
 		} catch (Exception e) {
-			logger.error("Error while getting Primary Home Loan Details Profile:-");
-			e.printStackTrace();
+			logger.error("Error while getting Primary Home Loan Details Profile:-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}

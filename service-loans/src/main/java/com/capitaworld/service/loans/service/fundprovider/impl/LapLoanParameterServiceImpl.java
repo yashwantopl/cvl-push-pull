@@ -104,9 +104,7 @@ public class LapLoanParameterServiceImpl implements LapLoanParameterService {
 			 
 			
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			logger.error("error while getLapParameterRequest",e);
-			e.printStackTrace();
+			logger.error("error while getLapParameterRequest : ",e);
 		}
 		}
 		
@@ -121,9 +119,7 @@ public class LapLoanParameterServiceImpl implements LapLoanParameterService {
 			 
 			
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			logger.error("error while getLapParameterRequest",e);
-			e.printStackTrace();
+			logger.error("error while getLapParameterRequest : ",e);
 		}
 		}
 		
@@ -137,9 +133,7 @@ public class LapLoanParameterServiceImpl implements LapLoanParameterService {
 			 
 			
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			logger.error("error while getLapParameterRequest",e);
-			e.printStackTrace();
+			logger.error("error while getLapParameterRequest : ",e);
 		}
 		}
 		CommonDocumentUtils.endHook(logger, "getLapParameterRequest");

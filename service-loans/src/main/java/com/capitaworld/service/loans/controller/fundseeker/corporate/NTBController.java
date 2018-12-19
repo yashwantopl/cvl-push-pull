@@ -203,8 +203,6 @@ public class NTBController {
 
         } catch (Exception e) {
             logger.error("Error while saving data for saveFinancialForPartner()==>", e);
-            logger.info("Exit saveFinancialForPartner()");
-            e.printStackTrace();
             return new ResponseEntity<LoansResponse>(
                     new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
                     HttpStatus.OK);
@@ -292,8 +290,6 @@ public class NTBController {
 
         } catch (Exception e) {
             logger.error("Error while saving data for saveOtherDetails()==>", e);
-            logger.info("Exit saveOtherDetails()");
-            e.printStackTrace();
             return new ResponseEntity<LoansResponse>(
                     new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
                     HttpStatus.OK);
@@ -354,8 +350,7 @@ public class NTBController {
             return new ResponseEntity<LoansResponse>(loanResponse, HttpStatus.OK);
 
         } catch (Exception e) {
-            logger.error("Error while Calling Connect Client after dirBackChangeStage");
-            e.printStackTrace();
+            logger.error("Error while Calling Connect Client after dirBackChangeStage : ",e);
             return new ResponseEntity<LoansResponse>(
                     new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
                     HttpStatus.OK);

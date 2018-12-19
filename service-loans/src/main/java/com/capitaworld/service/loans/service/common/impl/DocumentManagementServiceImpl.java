@@ -2,6 +2,7 @@ package com.capitaworld.service.loans.service.common.impl;
 
 import java.util.List;
 
+import com.capitaworld.service.loans.utils.CommonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,7 +54,7 @@ public class DocumentManagementServiceImpl implements DocumentManagementService{
 	        CommonDocumentUtils.endHook(logger, "getDocumentDetails");
 	        return documentResponse.getDataList();
 	    } catch (DocumentException e) {
-	        e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 	        throw new DocumentException(e.getMessage());
 	    	}
 		}

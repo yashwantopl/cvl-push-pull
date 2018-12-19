@@ -574,9 +574,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 						getAndSaveFinalFileUploadUSLCoApplicant(autoFillOneFormDetailRequest,
 								corporateApplicantDetailTo, corporateCoApplicantDetailsList, userId);
 					} catch (DocumentException e) {
-						logger.error(
-								"Error final upload ------------- co Applicant file uploding failed from USL To USl");
-						e.printStackTrace();
+						logger.error("Error final upload ------------- co Applicant file uploding failed from USL To USl : ",e);
 					}
 				}
 				// file upload
@@ -710,8 +708,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 			primaryWCRepository.save(workingCapitalLoanDetailTo);
 
 		} catch (NullPointerException e) {
-			logger.error("NullPointer Exception in savePrimaryWCToWC()");
-			e.printStackTrace();
+			logger.error("NullPointer Exception in savePrimaryWCToWC()",e);
 			throw e;
 		}
 
@@ -742,9 +739,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 			logger.info("Sucessfully save PrimaryTermLoanDetail in To application Id"
 					+ corporateApplicantDetailTo.getApplicationId());
 		} catch (NullPointerException e) {
-			logger.error("NullPointer Exception in savePrimaryWCToTL()");
-
-			e.printStackTrace();
+			logger.error("NullPointer Exception in savePrimaryWCToTL()",e);
 			throw e;
 		}
 		logger.info("================= Exit From savePrimaryWCToTL()================== ");
@@ -769,9 +764,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 			primaryUnsecuredLoanDetailRepository.save(primaryUnsecuredLoanDetailTo);
 
 		} catch (NullPointerException e) {
-			logger.error("NullPointer Exception in savePrimaryWCToUSL()");
-
-			e.printStackTrace();
+			logger.error("NullPointer Exception in savePrimaryWCToUSL()",e);
 			throw e;
 
 		}
@@ -796,8 +789,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 			primaryTermLoanDetailTo.setModifiedDate(new Date());
 			primaryTLRepository.save(primaryTermLoanDetailTo);
 		} catch (NullPointerException e) {
-			logger.error("NullPointer Exception in savePrimaryTLtoTL()");
-			e.printStackTrace();
+			logger.error("NullPointer Exception in savePrimaryTLtoTL()",e);
 			throw e;
 
 		}
@@ -823,9 +815,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 			workingCapitalLoanDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 			primaryWCRepository.save(workingCapitalLoanDetailTo);
 		} catch (NullPointerException e) {
-			logger.error("NullPointer Exception in savePrimaryTLtoWC()");
-
-			e.printStackTrace();
+			logger.error("NullPointer Exception in savePrimaryTLtoWC()",e);
 			throw e;
 
 		}
@@ -850,9 +840,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 			primaryUnsecuredLoanDetailTo.setModifiedDate(new Date());
 			primaryUnsecuredLoanDetailRepository.save(primaryUnsecuredLoanDetailTo);
 		} catch (NullPointerException e) {
-			logger.error("NullPointer Exception in savePrimaryTLtoUSL()");
-
-			e.printStackTrace();
+			logger.error("NullPointer Exception in savePrimaryTLtoUSL()",e);
 			throw e;
 
 		}
@@ -878,9 +866,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 			primaryUnsecuredLoanDetailTo.setModifiedDate(new Date());
 			primaryUnsecuredLoanDetailRepository.save(primaryUnsecuredLoanDetailTo);
 		} catch (NullPointerException e) {
-			logger.error("NullPointer Exception in savePrimaryUSLtoUSL()");
-
-			e.printStackTrace();
+			logger.error("NullPointer Exception in savePrimaryUSLtoUSL()",e);
 			throw e;
 
 		}
@@ -905,8 +891,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 			workingCapitalLoanDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 			primaryWCRepository.save(workingCapitalLoanDetailTo);
 		} catch (NullPointerException e) {
-			logger.error("NullPointer Exception in savePrimaryUSLtoWC()");
-			e.printStackTrace();
+			logger.error("NullPointer Exception in savePrimaryUSLtoWC()",e);
 			throw e;
 
 		}
@@ -932,9 +917,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 			primaryTLRepository.save(primaryTermLoanDetailTo);
 
 		} catch (NullPointerException e) {
-			logger.error("NullPointer Exception in savePrimaryUSLtoTL()");
-
-			e.printStackTrace();
+			logger.error("NullPointer Exception in savePrimaryUSLtoTL()",e);
 			throw e;
 		}
 		logger.info("================= Exit From savePrimaryUSLtoTL()================== ");
@@ -1162,9 +1145,9 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 			creditRatingOrganizationDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 			creditRatingOrganizationDetailTo.setCreatedDate(new Date());
 			creditRatingOrganizationDetailsRepository.save(creditRatingOrganizationDetailTo);
-			System.out.println("hii");
+			logger.info("hii");
 		}
-		System.out.println("inside getAndSaveCreditRating");
+		logger.info("inside getAndSaveCreditRating");
 		logger.info("================= Exit From getAndSaveCreditRating()================== ");
 	}
 
@@ -1417,7 +1400,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		logger.warn("---------- FinalTermLoanDetail --------> " + finalTermLoanDetailTo);
 		if (finalTermLoanDetailTo == null) {
 			finalTermLoanDetailTo = new FinalTermLoanDetail();
-			System.out.println("TL application id ont avialable");
+			logger.info("TL application id ont avialable");
 
 		}
 		BeanUtils.copyProperties(finalUnsecureLoanDetailfrom, finalTermLoanDetailTo, "id", "applicationId");
@@ -1847,7 +1830,6 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 				}
 			}
 		} catch (DocumentException | IOException e) {
-			e.printStackTrace();
 			logger.error("-------- Exception in fileUpload  ---------> {}", e.getMessage());
 		}
 		logger.info("================= Exit From fileUpload()================== ");
@@ -1996,9 +1978,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
-
-			logger.error("Error While Uploading Document in Autofill==>{}");
+			logger.error("Error While Uploading Document in Autofill==>{}",e);
 		}
 		/*if (flag) {
 			logger.info("File Uploaded SuccessFully in Autofill");

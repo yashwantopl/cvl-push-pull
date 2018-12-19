@@ -150,8 +150,7 @@ public class GuarantorServiceImpl implements GuarantorService {
 			return true;
 
 		} catch (Exception e) {
-			logger.error("Error while Saving Guarantor Retail Profile:-");
-			e.printStackTrace();
+			logger.error("Error while Saving Guarantor Retail Profile:-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
@@ -161,8 +160,7 @@ public class GuarantorServiceImpl implements GuarantorService {
 		try {
 			return guarantorDetailsRepository.getGuarantorIds(applicationId, userId);
 		} catch (Exception e) {
-			logger.error("Error while Saving Guarantor Retail Profile:-");
-			e.printStackTrace();
+			logger.error("Error while Saving Guarantor Retail Profile:-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
@@ -197,8 +195,7 @@ public class GuarantorServiceImpl implements GuarantorService {
 			guaRequest.setDetailsFilledCount(guarantorDetail.getApplicationId().getDetailsFilledCount());
 			return guaRequest;
 		} catch (Exception e) {
-			logger.error("Error while getting Guarantor Retail Profile:-");
-			e.printStackTrace();
+			logger.error("Error while getting Guarantor Retail Profile:-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
@@ -215,8 +212,7 @@ public class GuarantorServiceImpl implements GuarantorService {
 			}
 			return requests;
 		} catch (Exception e) {
-			logger.error("Error while getting list of Guarantor Retail Profile:-");
-			e.printStackTrace();
+			logger.error("Error while getting list of Guarantor Retail Profile:-",e);
 			throw new Exception("Something went Wrong !");
 		}
 	}
@@ -260,8 +256,7 @@ public class GuarantorServiceImpl implements GuarantorService {
 			return true;
 
 		} catch (Exception e) {
-			logger.error("Error while Saving final Guarantor Retail Profile:-");
-			e.printStackTrace();
+			logger.error("Error while Saving final Guarantor Retail Profile:-",e);
 			throw new Exception("Something went Wrong !");
 		}
 	}
@@ -281,8 +276,7 @@ public class GuarantorServiceImpl implements GuarantorService {
 			applicantRequest.setFinalFilledCount(guaDetail.getApplicationId().getFinalFilledCount());
 			return applicantRequest;
 		} catch (Exception e) {
-			logger.error("Error while getting final Guarantor Retail Profile:-");
-			e.printStackTrace();
+			logger.error("Error while getting final Guarantor Retail Profile:-",e);
 			throw new Exception("Something went Wrong !");
 		}
 	}
@@ -504,7 +498,7 @@ public class GuarantorServiceImpl implements GuarantorService {
 							officeAddress.setCity("-");
 						}
 					} catch (Exception e) {
-						e.printStackTrace();
+						logger.error(CommonUtils.EXCEPTION,e);
 					}
 					try {
 						List<Long> officeCountry = new ArrayList<Long>(1);
@@ -525,7 +519,7 @@ public class GuarantorServiceImpl implements GuarantorService {
 							officeAddress.setCountry("-");
 						}
 					} catch (Exception e) {
-						e.printStackTrace();
+						logger.error(CommonUtils.EXCEPTION,e);
 
 					}
 					try {
@@ -547,7 +541,7 @@ public class GuarantorServiceImpl implements GuarantorService {
 							officeAddress.setState("-");
 						}
 					} catch (Exception e) {
-						e.printStackTrace();
+						logger.error(CommonUtils.EXCEPTION,e);
 					}
 					officeAddress.setLandMark(guarantorDetail.getOfficeLandMark() != null ? guarantorDetail.getOfficeLandMark() :"");
 					officeAddress.setPincode(guarantorDetail.getOfficePincode() != null ? guarantorDetail.getOfficePincode().toString() : "");
@@ -575,7 +569,7 @@ public class GuarantorServiceImpl implements GuarantorService {
 							permanentAddress.setCity("-");
 						}
 					} catch (Exception e) {
-
+						logger.error(CommonUtils.EXCEPTION,e);
 					}
 					try {
 						List<Long> permanentCountry = new ArrayList<Long>(1);
@@ -596,7 +590,7 @@ public class GuarantorServiceImpl implements GuarantorService {
 							permanentAddress.setCountry("-");
 						}
 					} catch (Exception e) {
-
+						logger.error(CommonUtils.EXCEPTION,e);
 					}
 					try {
 						List<Long> permanentState = new ArrayList<Long>(1);
@@ -617,7 +611,7 @@ public class GuarantorServiceImpl implements GuarantorService {
 							permanentAddress.setCountry("-");
 						}
 					} catch (Exception e) {
-
+						logger.error(CommonUtils.EXCEPTION,e);
 					}
 					permanentAddress.setLandMark(guarantorDetail.getPermanentLandMark() !=null ? guarantorDetail.getPermanentLandMark() : "");
 					permanentAddress.setPincode(guarantorDetail.getPermanentPincode() != null ? guarantorDetail.getPermanentPincode().toString() :"");
@@ -702,6 +696,7 @@ public class GuarantorServiceImpl implements GuarantorService {
 				return null;
 			}
 		} catch (Exception e) {
+			logger.error(CommonUtils.EXCEPTION,e);
 			return null;
 		}
 	}
@@ -1149,6 +1144,7 @@ public class GuarantorServiceImpl implements GuarantorService {
 				throw new Exception("No Data found");
 			}
 		} catch (Exception e) {
+			logger.error("Error Fetching Guarantor Details : ",e);
 			throw new Exception("Error Fetching Guarantor Details");
 		}
 	}
@@ -1158,8 +1154,7 @@ public class GuarantorServiceImpl implements GuarantorService {
 		try {
 			return guarantorDetailsRepository.getApplicantIdById(id);
 		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("Error While getting Applicant Id by Guarantor ID");
+			logger.error("Error While getting Applicant Id by Guarantor ID : ",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}

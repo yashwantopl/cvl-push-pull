@@ -681,7 +681,7 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
 			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 			workingCapitalPrimaryViewResponse.setCertificateList(documentResponse.getDataList());
 		} catch (DocumentException e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 
 		// get list of pan card

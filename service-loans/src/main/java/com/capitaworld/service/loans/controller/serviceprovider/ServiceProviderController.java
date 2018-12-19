@@ -58,9 +58,7 @@ public class ServiceProviderController {
 						HttpStatus.OK);
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			logger.error("Something went wrong..!");
+			logger.error(CommonUtils.SOMETHING_WENT_WRONG,e);
 			return new ResponseEntity<UserResponse>(
 					new UserResponse("Something went wrong..!", HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -90,9 +88,7 @@ public class ServiceProviderController {
 						HttpStatus.OK);	
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			logger.error("Something went wrong while fetching SP client count..!");
+			logger.error("Something went wrong while fetching SP client count..!",e);
 			return new ResponseEntity<UserResponse>(
 					new UserResponse("Something went wrong while fetching SP client count..!", HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -122,9 +118,7 @@ public class ServiceProviderController {
 						HttpStatus.OK);
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			logger.error("Something went wrong..!");
+			logger.error(CommonUtils.SOMETHING_WENT_WRONG,e);
 			return new ResponseEntity<UserResponse>(
 					new UserResponse("Something went wrong..!", HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -155,9 +149,7 @@ public class ServiceProviderController {
 						HttpStatus.OK);
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			logger.error("Something went wrong..!");
+			logger.error(CommonUtils.SOMETHING_WENT_WRONG,e);
 			return new ResponseEntity<UserResponse>(
 					new UserResponse("Something went wrong..!", HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -188,9 +180,7 @@ public class ServiceProviderController {
 						HttpStatus.OK);
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			logger.error("Something went wrong..!");
+			logger.error(CommonUtils.SOMETHING_WENT_WRONG,e);
 			return new ResponseEntity<UserResponse>(
 					new UserResponse("Something went wrong..!", HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
