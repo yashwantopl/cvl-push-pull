@@ -86,8 +86,7 @@ public class MatchesController {
 					HttpStatus.OK);
 
 		} catch (Exception e) {
-			logger.error("Error while saving Matches for Corporate Fundseeker ==>" + e);
-			e.printStackTrace();
+			logger.error("Error while saving Matches for Corporate Fundseeker ==>", e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -131,8 +130,7 @@ public class MatchesController {
 					HttpStatus.OK);
 
 		} catch (Exception e) {
-			logger.error("Error while saving Matches for Retail Fundseeker ==>" + e);
-			e.printStackTrace();
+			logger.error("Error while saving Matches for Retail Fundseeker ==>", e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -173,8 +171,7 @@ public class MatchesController {
 					HttpStatus.OK);
 
 		} catch (Exception e) {
-			logger.error("Error while saving Matches for Corporate Fundseeker ==>" + e);
-			e.printStackTrace();
+			logger.error("Error while saving Matches for Corporate Fundseeker ==>", e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -227,8 +224,7 @@ public class MatchesController {
 					HttpStatus.OK);
 
 		} catch (Exception e) {
-			logger.error("Error while saving Matches for Retail Fundseeker ==>" + e);
-			e.printStackTrace();
+			logger.error("Error while saving Matches for Retail Fundseeker ==>", e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -265,8 +261,7 @@ public class MatchesController {
 			
 
 		} catch (Exception e) {
-			logger.error("Error while saveSuggestionList ==>" + e);
-			e.printStackTrace();
+			logger.error("Error while saveSuggestionList ==>", e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);

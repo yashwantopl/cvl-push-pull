@@ -1,6 +1,8 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
 import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +21,8 @@ import com.capitaworld.service.matchengine.ProposalDetailsClient;
 @Service
 @Transactional
 public class ProposalServiceImpl implements ProposalService {
+
+	private static final Logger logger = LoggerFactory.getLogger(ProposalServiceImpl.class);
 	
 	@Autowired
 	LoanApplicationRepository loanApplicationRepository;
@@ -50,7 +54,7 @@ public class ProposalServiceImpl implements ProposalService {
 			proposalDetailsClient.checkPendingProposal();	
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Exception in checkPendingProposal() ",e);
 		}
 		
 		

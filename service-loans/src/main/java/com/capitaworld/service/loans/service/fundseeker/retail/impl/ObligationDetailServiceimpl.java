@@ -64,8 +64,7 @@ public class ObligationDetailServiceimpl implements ObligationDetailService {
         }
 
         catch (Exception e) {
-            logger.info("Exception  in save obligationDetail  :-");
-            e.printStackTrace();
+            logger.error("Exception  in save obligationDetail  :-",e);
             throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
         }
     }

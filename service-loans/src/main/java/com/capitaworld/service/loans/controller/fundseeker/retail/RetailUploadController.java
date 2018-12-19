@@ -146,8 +146,7 @@ public class RetailUploadController {
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("Error while Saving Profile Images==>" + e);
+			logger.error("Error while Saving Profile Images==>",e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -282,7 +281,7 @@ public class RetailUploadController {
 
 					// code for inactive CMA BS and DPR recored
 
-					logger.error("Error While Uploading Document==>");
+					logger.error("Error While Uploading Document==>",e);
 					LoansResponse loansResponse = new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value(), e.getMessage());
 					return new ResponseEntity<LoansResponse>( loansResponse,HttpStatus.OK);
 				}
@@ -356,7 +355,6 @@ public class RetailUploadController {
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
 			logger.error("Error while Saving Profile Images==>" + e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),

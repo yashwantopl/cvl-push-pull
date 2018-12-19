@@ -61,8 +61,7 @@ public class MsmeValueMappingServiceImpl implements MsmeValueMappingService {
                 }
             }
         } catch (Exception e) {
-            logger.error("Error While updating msme value mapping!");
-            e.printStackTrace();
+            logger.error("Error While updating msme value mapping!",e);
             return false;
         }
         logger.info("exit from updateMsmeValueMapping()");
@@ -93,8 +92,7 @@ public class MsmeValueMappingServiceImpl implements MsmeValueMappingService {
                 return false;
             }
         } catch (Exception e) {
-            logger.info("exit form updateMsmeValueMappingTemp() with FALSE");
-            e.printStackTrace();
+            logger.error("exit form updateMsmeValueMappingTemp() with FALSE : ",e);
             return false;
         }
     }

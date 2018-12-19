@@ -198,8 +198,7 @@ public class UnsecuredLoanPrimaryViewServiceImpl implements UnsecuredLoanPrimary
 					UserResponse userResponse= usersClient.getLastAccessApplicant(usersRequest);
 					fpProductMappingId=userResponse.getId();
 				} catch (Exception e) {
-					logger.error("error while fetching last access fp rpduct id for fund provider while fetching matches in teaser view");
-					e.printStackTrace();
+					logger.error("error while fetching last access fp rpduct id for fund provider while fetching matches in teaser view : ",e);
 				}
 				try {
 					MatchRequest matchRequest = new MatchRequest();
@@ -208,7 +207,7 @@ public class UnsecuredLoanPrimaryViewServiceImpl implements UnsecuredLoanPrimary
 					MatchDisplayResponse matchResponse = matchEngineClient.displayMatchesOfCorporate(matchRequest);
 					unsecuredLoanPrimaryViewResponse.setMatchesList(matchResponse.getMatchDisplayObjectList());
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 			}
 		}
@@ -249,7 +248,7 @@ public class UnsecuredLoanPrimaryViewServiceImpl implements UnsecuredLoanPrimary
 						unsecuredLoanPrimaryViewResponse.setCity("NA");
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 			}
 
@@ -271,7 +270,7 @@ public class UnsecuredLoanPrimaryViewServiceImpl implements UnsecuredLoanPrimary
 						unsecuredLoanPrimaryViewResponse.setCity("NA");
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 			}
 
@@ -295,7 +294,7 @@ public class UnsecuredLoanPrimaryViewServiceImpl implements UnsecuredLoanPrimary
 						unsecuredLoanPrimaryViewResponse.setState("NA");
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 			}
 
@@ -317,7 +316,7 @@ public class UnsecuredLoanPrimaryViewServiceImpl implements UnsecuredLoanPrimary
 						unsecuredLoanPrimaryViewResponse.setState("NA");
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 			}
 			// set country
@@ -339,7 +338,7 @@ public class UnsecuredLoanPrimaryViewServiceImpl implements UnsecuredLoanPrimary
 						unsecuredLoanPrimaryViewResponse.setCountry("NA");
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 			}
 
@@ -360,7 +359,7 @@ public class UnsecuredLoanPrimaryViewServiceImpl implements UnsecuredLoanPrimary
 						unsecuredLoanPrimaryViewResponse.setCountry("NA");
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 			}
 
@@ -381,7 +380,7 @@ public class UnsecuredLoanPrimaryViewServiceImpl implements UnsecuredLoanPrimary
 				}
 
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 
 		}
@@ -399,7 +398,7 @@ public class UnsecuredLoanPrimaryViewServiceImpl implements UnsecuredLoanPrimary
 						.getIndustrySectorSubSector(industrySectorSubSectorTeaserRequest);
 				unsecuredLoanPrimaryViewResponse.setIndustrySector(oneFormResponse.getListData());
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 		}
 		// get value of Term Loan data
@@ -690,7 +689,7 @@ public class UnsecuredLoanPrimaryViewServiceImpl implements UnsecuredLoanPrimary
 			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 			unsecuredLoanPrimaryViewResponse.setBrochureList(documentResponse.getDataList());
 		} catch (DocumentException e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 
 		// get list fo certificate
@@ -701,7 +700,7 @@ public class UnsecuredLoanPrimaryViewServiceImpl implements UnsecuredLoanPrimary
 			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 			unsecuredLoanPrimaryViewResponse.setCertificateList(documentResponse.getDataList());
 		} catch (DocumentException e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 
 		// get list of pan card
@@ -712,7 +711,7 @@ public class UnsecuredLoanPrimaryViewServiceImpl implements UnsecuredLoanPrimary
 			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 			unsecuredLoanPrimaryViewResponse.setPanCardList(documentResponse.getDataList());
 		} catch (DocumentException e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 
 		// get profile pic
@@ -723,7 +722,7 @@ public class UnsecuredLoanPrimaryViewServiceImpl implements UnsecuredLoanPrimary
 			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 			unsecuredLoanPrimaryViewResponse.setProfilePic(documentResponse.getDataList());
 		} catch (DocumentException e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 
 		// set short term rating option
@@ -836,7 +835,7 @@ public class UnsecuredLoanPrimaryViewServiceImpl implements UnsecuredLoanPrimary
 			MasterResponse data = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) formResponse.getListData().get(0), MasterResponse.class);
 			permanentAddress.setCity(data.getValue());
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		try {
 			List<Long> permanentCountry = new ArrayList<Long>(1);
@@ -850,8 +849,7 @@ public class UnsecuredLoanPrimaryViewServiceImpl implements UnsecuredLoanPrimary
 				permanentAddress.setCountry(dataCountry.getValue());
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
-
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		try {
 			List<Long> permanentState = new ArrayList<Long>(1);
@@ -865,7 +863,7 @@ public class UnsecuredLoanPrimaryViewServiceImpl implements UnsecuredLoanPrimary
 				permanentAddress.setState(dataState.getValue());
 			}
 		} catch (Exception e) {
-
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		permanentAddress.setLandMark(corporateApplicantDetail.getRegisteredLandMark());
 		permanentAddress.setPincode(corporateApplicantDetail.getRegisteredPincode() != null ? corporateApplicantDetail.getRegisteredPincode().toString() : null);

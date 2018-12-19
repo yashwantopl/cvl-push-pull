@@ -81,8 +81,7 @@ public class ReferenceRetailDetailsServiceImpl implements ReferenceRetailDetails
 		}
 
 		catch (Exception e) {
-			logger.info("Exception  in save referencesRetailDetail  :-");
-			e.printStackTrace();
+			logger.error("Exception  in save referencesRetailDetail  :-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 

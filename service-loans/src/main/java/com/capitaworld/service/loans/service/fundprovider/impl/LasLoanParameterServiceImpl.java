@@ -92,9 +92,7 @@ public class LasLoanParameterServiceImpl implements LasLoanParameterService {
 			 
 			
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			logger.error("error while getLasParameterRequest",e);
-			e.printStackTrace();
+			logger.error("error while getLasParameterRequest : ",e);
 		}
 		}
 		
@@ -108,9 +106,7 @@ public class LasLoanParameterServiceImpl implements LasLoanParameterService {
 			 
 			
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			logger.error("error while getLasParameterRequest",e);
-			e.printStackTrace();
+			logger.error("error while getLasParameterRequest : ",e);
 		}
 		}
 		
@@ -124,9 +120,7 @@ public class LasLoanParameterServiceImpl implements LasLoanParameterService {
 			 
 			
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			logger.error("error while getLasParameterRequest",e);
-			e.printStackTrace();
+			logger.error("error while getLasParameterRequest : ",e);
 		}
 		}
 		CommonDocumentUtils.endHook(logger, "getLasParameterRequest");

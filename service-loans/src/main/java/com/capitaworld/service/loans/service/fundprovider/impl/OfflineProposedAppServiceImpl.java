@@ -137,8 +137,7 @@ public class OfflineProposedAppServiceImpl implements OfflineProcessedAppService
 							}
 						}
 					} catch (Exception e) {
-						logger.info("Error while getting Branch name");
-						e.printStackTrace();
+						logger.error("Error while getting Branch name : ",e);
 					}
 					request.setLocationData(locationCode);
 					applicationRequests.add(request);
@@ -175,8 +174,7 @@ public class OfflineProposedAppServiceImpl implements OfflineProcessedAppService
 							}
 						}
 					} catch (Exception e) {
-						logger.info("Error while getting Branch name");
-						e.printStackTrace();
+						logger.error("Error while getting Branch name : ",e);
 					}
 					request.setLocationData(locationCode);
 					applicationRequests.add(request);
@@ -199,8 +197,7 @@ public class OfflineProposedAppServiceImpl implements OfflineProcessedAppService
 				return resp.getData();
 			}
 		} catch (Exception e) {
-			logger.info("Error while getting Branch and location details from User Id");
-			e.printStackTrace();
+			logger.error("Error while getting Branch and location details from User Id : ",e);
 		}
 		return null;
 	}

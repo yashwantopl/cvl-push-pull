@@ -57,14 +57,12 @@ public class PrimaryPersonalLoanServiceImpl implements PrimaryPersonalLoanServic
 			saveNegativeList(primaryPersonalLoanDetail.getApplicationId().getId(), personalLoanRequest.getNegativeList());
 			return true;
 		} catch (Exception e) {
-			logger.error("Error while saving PrimaryCarLoan Details");
-			e.printStackTrace();
+			logger.error("Error while saving PrimaryCarLoan Details : ",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	private void saveNegativeList(Long id, List<Long> negativeList) {
-		// TODO Auto-generated method stub
 		FsNegativeFpList fsNegativeFpList= null;
 		for (Long fpId : negativeList) {
 			fsNegativeFpList = new FsNegativeFpList();
@@ -98,8 +96,7 @@ public class PrimaryPersonalLoanServiceImpl implements PrimaryPersonalLoanServic
 			personalLoanRequest.setCurrencyValue(CommonDocumentUtils.getCurrency(currencyId));
 			return personalLoanRequest;
 		} catch (Exception e) {
-			logger.error("Error while saving PrimaryCarLoan Details");
-			e.printStackTrace();
+			logger.error("Error while saving PrimaryCarLoan Details : ",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}

@@ -76,8 +76,7 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 			logger.info("Exit saveLoanDisbursementDetail() -----------------------> ");
 			return loanDisbursementRepository.save(loanDisbursementDomain) != null;
 		} catch (Exception e) {
-			logger.info("Error/Exception in saveLoanDisbursementDetail() -----------------------> Message "+e.getMessage());
-			e.printStackTrace();
+			logger.error("Error/Exception in saveLoanDisbursementDetail() -----------------------> Message ",e);
 			throw e;
 		}
 	}
@@ -173,8 +172,7 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 			}
 			
 		} catch (Exception e) {
-			logger.info("Error/Exception in requestValidation() -----------------------> Message "+e.getMessage());
-			e.printStackTrace();
+			logger.error("Error/Exception in requestValidation() -----------------------> Message : ",e);
 			throw e;
 		}
 	}
@@ -197,8 +195,7 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 			logger.warn("No DisbursedList found for applicationId =>" + applicationId);
 			return null;
 		}catch (Exception e){
-			logger.info("Error/Exception in getDisbursedList() -----------------------> Message "+e.getMessage());
-			e.printStackTrace();
+			logger.error("Error/Exception in getDisbursedList() -----------------------> Message : ",e);
 			throw e;
 		}
 	}
@@ -294,8 +291,7 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 			return loanDisbursementRepository.save(loanDisbursementDomain) != null;*/
 			return true;
 		} catch (Exception e) {
-			logger.info("Error/Exception in saveLoanDisbursementDetail() -----------------------> Message "+e.getMessage());
-			e.printStackTrace();
+			logger.error("Error/Exception in saveLoanDisbursementDetail() -----------------------> Message : ",e);
 			throw e;
 		}
 	}

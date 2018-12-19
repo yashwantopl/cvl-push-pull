@@ -22,9 +22,9 @@ public class RetailProposalDetails {
 	
 	private String cibilSCore;
 
-	public String branchLocationName;
-	public String branchCity;
-	public String branchState;
+	private String branchLocationName;
+	private String branchCity;
+	private String branchState;
 	private Integer businessTypeId;
 	
 	private Long fpProductid;

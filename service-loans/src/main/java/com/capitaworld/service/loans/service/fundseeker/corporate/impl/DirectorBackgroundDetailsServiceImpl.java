@@ -69,8 +69,7 @@ public class DirectorBackgroundDetailsServiceImpl implements DirectorBackgroundD
 		}
 
 		catch (Exception e) {
-			logger.info("Exception  in save directorBackgroundDetail  :-");
-			e.printStackTrace();
+			logger.error("Exception  in save directorBackgroundDetail  :-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
@@ -126,8 +125,7 @@ public class DirectorBackgroundDetailsServiceImpl implements DirectorBackgroundD
 			
 			return directorBackgroundDetailRequests;
 		} catch (Exception e) {
-			logger.info("Exception  in getdirectorBackgroundDetail  :-");
-			e.printStackTrace();
+			logger.info("Exception  in getdirectorBackgroundDetail  :-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
@@ -150,8 +148,7 @@ public class DirectorBackgroundDetailsServiceImpl implements DirectorBackgroundD
 			}
 			return dirBackDetailReqList;
 		} catch (Exception e) {
-			logger.info("Exception  in getDirectorBasicDetailsListForNTB  :-");
-			e.printStackTrace();
+			logger.error("Exception  in getDirectorBasicDetailsListForNTB  :-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
@@ -169,8 +166,7 @@ public class DirectorBackgroundDetailsServiceImpl implements DirectorBackgroundD
 			DirectorBackgroundDetailRequest.printFields(directorBackgroundDetailRequest);
 			return directorBackgroundDetailRequest;
 		} catch (Exception e) {
-			logger.info("Exception  in getdirectorBackgroundDetail  :-");
-			e.printStackTrace();
+			logger.info("Exception  in getdirectorBackgroundDetail  :-",e);
 			return null;
 		}
 	}
@@ -238,8 +234,7 @@ public class DirectorBackgroundDetailsServiceImpl implements DirectorBackgroundD
 				logger.info("Connect Response--------------------------------> null");
 			}
 		} catch (Exception e) {
-			logger.error("Throw Exception While Call Connect Client");
-			e.printStackTrace();
+			logger.error("Throw Exception While Call Connect Client : ",e);
 		}
 		logger.info("Exit in saveDirectors()");
 		return false;

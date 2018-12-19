@@ -378,7 +378,7 @@ public class HomeLoanPrimaryViewServiceImpl implements HomeLoanPrimaryViewServic
 					homeLoanResponse.setProfileImage(documentManagementService.getDocumentDetails(applicantId,
 							DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.HOME_LOAN_PROFIEL_PICTURE));
 				} catch (DocumentException e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 
 				// get list of Pan Card
@@ -403,6 +403,7 @@ public class HomeLoanPrimaryViewServiceImpl implements HomeLoanPrimaryViewServic
 				throw new Exception("No Data found");
 			}
 		} catch (Exception e) {
+			logger.error("Exception while Fetching Retail Details : ",e);
 			throw new Exception("Problem Occured while Fetching Retail Details");
 		}
 
