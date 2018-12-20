@@ -23,19 +23,16 @@ public class DDRMultipart implements MultipartFile {
 
 	@Override
 	public String getName() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public String getOriginalFilename() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public String getContentType() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

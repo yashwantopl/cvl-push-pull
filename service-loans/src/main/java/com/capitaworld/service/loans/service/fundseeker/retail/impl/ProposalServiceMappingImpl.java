@@ -181,6 +181,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 				BranchBasicDetailsRequest basicDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap(
 						(LinkedHashMap<String, Object>) userResponse.getData(), BranchBasicDetailsRequest.class);
 				if (!CommonUtils.isObjectNullOrEmpty(basicDetailsRequest)) {
+					request.setUserRoleId(basicDetailsRequest.getRoleId());
 					logger.info("Found Branch Id -----------> " + basicDetailsRequest.getId() + "---------Role Id ------------------>" + basicDetailsRequest.getRoleId());
 					if (basicDetailsRequest.getRoleId() == CommonUtils.UsersRoles.BO
 							|| basicDetailsRequest.getRoleId() == CommonUtils.UsersRoles.FP_CHECKER) {
@@ -337,6 +338,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					corporateProposalDetails
 							.setFsMainType(CommonUtils.getCorporateLoanType(loanApplicationMaster.getProductId()));
 					corporateProposalDetails.setWcRenualNew(loanApplicationMaster.getWcRenewalStatus()!= null ? WcRenewalType.getById(loanApplicationMaster.getWcRenewalStatus()).getValue().toString() : "New");
+					corporateProposalDetails.setApplicationCode(loanApplicationMaster.getApplicationCode()!= null ?  loanApplicationMaster.getApplicationCode() : "-");
 
 					// for get industry id
 					List<Long> listIndustryIds = industrySectorRepository.getIndustryByApplicationId(applicationId);
@@ -938,7 +940,8 @@ public class ProposalServiceMappingImpl implements ProposalService {
 							corporateProposalDetails.setFsMainType(
 									CommonUtils.getCorporateLoanType(loanApplicationMaster.getProductId()));
 							corporateProposalDetails.setWcRenualNew(loanApplicationMaster.getWcRenewalStatus()!= null ? WcRenewalType.getById(loanApplicationMaster.getWcRenewalStatus()).getValue().toString() : "New");
-
+							corporateProposalDetails.setApplicationCode(loanApplicationMaster.getApplicationCode()!= null ?  loanApplicationMaster.getApplicationCode() : "-");
+							
 							String amount = "";
 							if (CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getAmount()))
 								amount += "NA";
@@ -1116,7 +1119,8 @@ public class ProposalServiceMappingImpl implements ProposalService {
 							corporateProposalDetails.setFsMainType(
 									CommonUtils.getCorporateLoanType(loanApplicationMaster.getProductId()));
 							corporateProposalDetails.setWcRenualNew(loanApplicationMaster.getWcRenewalStatus()!= null ? WcRenewalType.getById(loanApplicationMaster.getWcRenewalStatus()).getValue().toString() : "New");
-
+							corporateProposalDetails.setApplicationCode(loanApplicationMaster.getApplicationCode()!= null ?  loanApplicationMaster.getApplicationCode() : "-");
+							
 							String amount = "";
 							if (CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getAmount()))
 								amount += "NA";
@@ -1528,6 +1532,8 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					corporateProposalDetails
 							.setFsMainType(CommonUtils.getCorporateLoanType(loanApplicationMaster.getProductId()));
 					corporateProposalDetails.setWcRenualNew(loanApplicationMaster.getWcRenewalStatus()!= null ? WcRenewalType.getById(loanApplicationMaster.getWcRenewalStatus()).getValue().toString() : "New");	
+					corporateProposalDetails.setApplicationCode(loanApplicationMaster.getApplicationCode()!= null ?  loanApplicationMaster.getApplicationCode() : "-");
+					
 					// for get industry id
 					List<Long> listIndustryIds = industrySectorRepository.getIndustryByApplicationId(applicationId);
 					if (listIndustryIds.size() > 0) {

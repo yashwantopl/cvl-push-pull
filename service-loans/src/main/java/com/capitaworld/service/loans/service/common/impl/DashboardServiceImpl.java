@@ -44,7 +44,6 @@ public class DashboardServiceImpl implements DashboardService {
 
 	@Override
 	public DashboardProfileResponse getBasicProfileInfo(Long applicationId, Long userId,boolean isSP) throws Exception {
-		// TODO Auto-generated method stub
 		CommonDocumentUtils.startHook(logger, "getBasicProfileInfo");
 		
 		Integer productId = null;

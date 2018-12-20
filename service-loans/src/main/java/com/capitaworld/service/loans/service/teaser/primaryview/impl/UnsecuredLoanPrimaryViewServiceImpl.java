@@ -647,7 +647,6 @@ public class UnsecuredLoanPrimaryViewServiceImpl implements UnsecuredLoanPrimary
 //			}
 //			unsecuredLoanPrimaryViewResponse.setFinanceMeansDetailResponseList(financeMeansDetailResponsesList);
 //		} catch (Exception e1) {
-//			// TODO Auto-generated catch block
 //			logger.error("Problem to get Data of Finance Means Details {}", e1);
 //		}
 
@@ -666,7 +665,6 @@ public class UnsecuredLoanPrimaryViewServiceImpl implements UnsecuredLoanPrimary
 //			}
 //			unsecuredLoanPrimaryViewResponse.setTotalCostOfProjectResponseList(costOfProjectResponses);
 //		} catch (Exception e1) {
-//			// TODO Auto-generated catch block
 //			logger.error("Problem to get Data of Total cost of project{}", e1);
 //		}
 
@@ -675,7 +673,6 @@ public class UnsecuredLoanPrimaryViewServiceImpl implements UnsecuredLoanPrimary
 //		try {
 //			referenceRetailDetailsRequestList = referenceRetailDetailsService.getReferenceRetailDetailList(toApplicationId, userType);
 //		} catch (Exception e) {
-//			// TODO Auto-generated catch block
 //			e.printStackTrace();
 //		}
 //		unsecuredLoanPrimaryViewResponse.setReferenceRetailDetailsRequests(referenceRetailDetailsRequestList);
@@ -743,7 +740,6 @@ public class UnsecuredLoanPrimaryViewServiceImpl implements UnsecuredLoanPrimary
 //				unsecuredLoanPrimaryViewResponse.setShortTermRating(shortTermValueList);
 //			}
 //		} catch (Exception e) {
-//			// TODO Auto-generated catch block
 //			e.printStackTrace();
 //		}
 
@@ -766,7 +762,6 @@ public class UnsecuredLoanPrimaryViewServiceImpl implements UnsecuredLoanPrimary
 //			}
 //			unsecuredLoanPrimaryViewResponse.setLongTermRating(longTermValueList);
 //		} catch (Exception e) {
-//			// TODO Auto-generated catch block
 //			e.printStackTrace();
 //		}
 		//setting co-application details

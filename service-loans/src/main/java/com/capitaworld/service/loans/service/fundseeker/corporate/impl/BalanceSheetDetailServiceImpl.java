@@ -21,14 +21,12 @@ public class BalanceSheetDetailServiceImpl implements BalanceSheetDetailService{
 	
 	@Override
 	public void saveOrUpdate(BalanceSheetDetail balanceSheetDetail) {
-		// TODO Auto-generated method stub
 		balanceSheetDetailRepository.save(balanceSheetDetail);
 	}
 
 	@Override
 	public void readBalanceSheetDetails(Long applicationId, Long storageDetailsId,
 			XSSFSheet sheet) {
-		// TODO Auto-generated method stub
 		BalanceSheetExcelReader.run(storageDetailsId, sheet, loanApplicationRepository.findOne(applicationId),
 				balanceSheetDetailRepository);
 		
@@ -36,7 +34,6 @@ public class BalanceSheetDetailServiceImpl implements BalanceSheetDetailService{
 
 	@Override
 	public void inActiveBalanceSheetDetail(Long storageDetailsId) {
-		// TODO Auto-generated method stub
 		balanceSheetDetailRepository.inActiveBalanceSheetDetail(storageDetailsId);
 	}
 

@@ -108,7 +108,6 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 	@Override
 	public boolean saveOrUpdate(WcTlParameterRequest wcTlParameterRequest,Long mappingId) {
 		CommonDocumentUtils.startHook(logger, "saveOrUpdate");
-		// TODO Auto-generated method stub
 		
 		WcTlParameterTemp loanParameter =  wcTlParameterTempRepository.getWcTlParameterTempByFpProductId(mappingId);
 		
@@ -181,7 +180,6 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 	@Override
 	public WcTlParameterRequest getWcTlRequest(Long id) {
 		CommonDocumentUtils.startHook(logger, "getTermLoanParameterRequest");
-		// TODO Auto-generated method stub
 		WcTlParameterRequest wcTlParameterRequest = new WcTlParameterRequest();
 		WcTlParameter loanParameter = wcTlLoanParameterRepository.getById(id);
 		if(loanParameter==null)
@@ -412,7 +410,6 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 
 	@Async
 	private void saveNegativeIndustry(WcTlParameterRequest wcTlParameterRequest) {
-		// TODO Auto-generated method stub
 		CommonDocumentUtils.startHook(logger, "saveNegativeIndustry");
 		NegativeIndustry negativeIndustry= null;
 		for (DataRequest dataRequest : wcTlParameterRequest.getNegativeIndustryList()) {

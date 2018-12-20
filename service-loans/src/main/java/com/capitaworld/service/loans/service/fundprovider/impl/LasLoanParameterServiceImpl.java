@@ -47,8 +47,7 @@ public class LasLoanParameterServiceImpl implements LasLoanParameterService {
 	@Override
 	public boolean saveOrUpdate(LasParameterRequest lasParameterRequest) {
 		CommonDocumentUtils.startHook(logger, "saveOrUpdate");
-		
-		// TODO Auto-generated method stub
+
 		LasParameter lasParameter= null;
 
 		lasParameter = lasParameterRepository.findOne(lasParameterRequest.getId());
@@ -76,7 +75,7 @@ public class LasLoanParameterServiceImpl implements LasLoanParameterService {
 	@Override
 	public LasParameterRequest getLasParameterRequest(Long id) {
 		CommonDocumentUtils.startHook(logger, "getLasParameterRequest");
-		// TODO Auto-generated method stub
+
 		LasParameterRequest lasParameterRequest= new LasParameterRequest();
 		LasParameter lasParameter = lasParameterRepository.getByID(id);
 		if(lasParameter==null)
