@@ -34,6 +34,9 @@ public interface AssetsDetailsRepository extends JpaRepository<AssetsDetails, Lo
 	@Query("select o from AssetsDetails o where o.loanApplicationMaster.id = :applicationId and o.applicationProposalMapping.proposalId = NULL and o.isActive = true")
 	public List<AssetsDetails> getByApplicationIdAndProposalIdNULL(@Param("applicationId") Long applicationId);
 
+	@Query("select o from AssetsDetails o where o.loanApplicationMaster.id = :applicationId and o.year = :yr and o.applicationProposalMapping.proposalId = NULL and o.isActive = true")
+	public AssetsDetails getByApplicationIdAndYearAndProposalIdNULL(@Param("applicationId") Long applicationId, @Param("yr") String year);
+
 	@Query("select o from AssetsDetails o where o.applicationProposalMapping.proposalId = :proposalId and o.isActive = true")
 	public List<AssetsDetails> getByProposalId(@Param("proposalId") Long proposalId);
 	
