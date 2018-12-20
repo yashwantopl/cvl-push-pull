@@ -28,7 +28,7 @@ public class LoanEligibilityCriteriaRepositoryImpl implements LoanEligibilityCri
 	// HomeLoan Starts
 	@Override
 	public HomeLoanEligibilityCriteria getHomeLoanBySalarySlab(Long income, Integer type, Integer bankId) {
-		// TODO Auto-generated method stub
+
 		CommonDocumentUtils.startHook(logger, "getHomeLoanBySalarySlab");
 		String query = "select hl from HomeLoanEligibilityCriteria hl where hl.type =:type and hl.bankId =:bankId and hl.isActive =:isActive and "
 				+ income + " >= hl.min and " + income + " <= hl.max";
@@ -46,7 +46,7 @@ public class LoanEligibilityCriteriaRepositoryImpl implements LoanEligibilityCri
 
 	@Override
 	public Float getHomeLoanBySV(Long sv,Integer bankId) {
-		// TODO Auto-generated method stub
+
 		CommonDocumentUtils.startHook(logger, "getHomeLoanBySVMV");
 //		hl.type =:type and
 		String query = "select hl.saleDeedValue from HomeLoanEligibilityCriteria hl where hl.bankId =:bankId and hl.isActive =:isActive and ("
@@ -65,7 +65,7 @@ public class LoanEligibilityCriteriaRepositoryImpl implements LoanEligibilityCri
 	
 	@Override
 	public Float getHomeLoanByMV(Long mv, Integer bankId) {
-		// TODO Auto-generated method stub
+
 				CommonDocumentUtils.startHook(logger, "getHomeLoanBySVMV");
 //				hl.type =:type and
 				String query = "select hl.marketValue from HomeLoanEligibilityCriteria hl where hl.bankId =:bankId and hl.isActive =:isActive and (" + mv

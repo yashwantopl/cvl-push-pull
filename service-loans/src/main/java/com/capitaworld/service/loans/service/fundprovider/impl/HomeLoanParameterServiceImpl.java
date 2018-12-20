@@ -47,7 +47,7 @@ public class HomeLoanParameterServiceImpl implements HomeLoanParameterService {
 
 	@Override
 	public boolean saveOrUpdate(HomeLoanParameterRequest homeLoanParameterRequest) {
-		// TODO Auto-generated method stub
+
 		CommonDocumentUtils.startHook(logger, "saveOrUpdate");
 		HomeLoanParameter homeLoanParameter = null;
 
@@ -82,7 +82,7 @@ public class HomeLoanParameterServiceImpl implements HomeLoanParameterService {
 
 	@Override
 	public HomeLoanParameterRequest getHomeLoanParameterRequest(Long id) {
-		// TODO Auto-generated method stub
+
 		CommonDocumentUtils.startHook(logger, "getHomeLoanParameterRequest");
 		HomeLoanParameterRequest homeLoanParameterRequest = new HomeLoanParameterRequest();
 		HomeLoanParameter homeLoanParameter = homeLoanParameterRepository.getByID(id);

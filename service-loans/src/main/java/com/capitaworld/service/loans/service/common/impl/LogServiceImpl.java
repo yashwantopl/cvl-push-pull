@@ -27,7 +27,6 @@ public class LogServiceImpl implements LogService {
 	@Override
 	public Boolean save(LogDetailsModel logDetailsModel) {
 		CommonDocumentUtils.startHook(logger, "save");
-		// TODO Auto-generated method stub
 		try {
 			if (!CommonUtils.isObjectNullOrEmpty(logDetailsModel)) {
 				LogDetails logDetails = new LogDetails();
@@ -47,7 +46,6 @@ public class LogServiceImpl implements LogService {
 
 	@Override
 	public Boolean saveFsLog(Long applicationId, Integer logType) {
-		// TODO Auto-generated method stub
 		CommonDocumentUtils.startHook(logger, "saveFsLog");
 		try {
 			LogDetails logDetails = new LogDetails();
@@ -58,7 +56,6 @@ public class LogServiceImpl implements LogService {
 			CommonDocumentUtils.endHook(logger, "saveFsLog");
 			return true;
 		} catch (Exception e) {
-			// TODO: handle exception
 			logger.error(e.toString());
 		}
 		CommonDocumentUtils.endHook(logger, "saveFsLog");
@@ -67,12 +64,10 @@ public class LogServiceImpl implements LogService {
 
 	@Override
 	public Date getDateByLogType(Long applicationId, Integer logType) {
-		// TODO Auto-generated method stub
 		CommonDocumentUtils.startHook(logger, "getDateByLogType");
 		try {
 			return logDetailsRepository.getDateByLogType(applicationId, logType);
 		} catch (Exception e) {
-			// TODO: handle exception
 			logger.error(e.toString());
 		}
 		CommonDocumentUtils.endHook(logger, "getDateByLogType");
