@@ -257,4 +257,26 @@ public class FundSeekerInputRequestController {
                     HttpStatus.OK);
         }
     }
+    
+    @RequestMapping(value = "/verifyGST/{gstin}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LoansResponse> verifyGST(@RequestBody Long applicationId , @PathVariable("gstin") String gstin,HttpServletRequest request)
+            throws Exception
+    {
+        try
+        {
+        	Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+        	if(userId == null) {
+        		   return new ResponseEntity<LoansResponse>(new LoansResponse("Unauthorized User! Please Re-login and try again.", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+        	}
+        	if(applicationId == null) {
+     		   return new ResponseEntity<LoansResponse>(new LoansResponse("Something goes wrong while processig your Request. Please re-login again.", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+        	}
+            return new ResponseEntity<LoansResponse>(new LoansResponse("Details successfully fetched",HttpStatus.OK.value(),null), HttpStatus.OK);
+        } catch (Exception e) {
+            logger.error("Error while Fetching details for min-max Margin : ",e);
+            return new ResponseEntity<LoansResponse>(
+                    new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+                    HttpStatus.OK);
+        }
+    }
 }

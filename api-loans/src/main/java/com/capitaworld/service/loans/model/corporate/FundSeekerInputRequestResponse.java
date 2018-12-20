@@ -31,6 +31,8 @@ public class FundSeekerInputRequestResponse {
 
     private String organisationName;
     
+    private String gstNumber;
+    
     private String pan;
     
     private String aadhar;
@@ -43,6 +45,10 @@ public class FundSeekerInputRequestResponse {
     private Integer purposeOfLoanId;
 
     private Boolean haveCollateralSecurity;
+    
+    private Boolean isGstCompleted;
+    
+    private Boolean isItrCompleted;
 
     private Double collateralSecurityAmount;
 
@@ -524,15 +530,32 @@ public class FundSeekerInputRequestResponse {
 		this.projectedProfitCurrFinYear = projectedProfitCurrFinYear;
 	}
 
+	public Boolean getIsGstCompleted() {
+		return isGstCompleted;
+	}
+
+	public void setIsGstCompleted(Boolean isGstCompleted) {
+		this.isGstCompleted = isGstCompleted;
+	}
+
+	public Boolean getIsItrCompleted() {
+		return isItrCompleted;
+	}
+
+	public void setIsItrCompleted(Boolean isItrCompleted) {
+		this.isItrCompleted = isItrCompleted;
+	}
+
 	@Override
 	public String toString() {
 		return "FundSeekerInputRequestResponse [userId=" + userId + ", clientId=" + clientId + ", applicationId="
 				+ applicationId + ", businessTypeId=" + businessTypeId + ", keyVericalFunding=" + keyVericalFunding
 				+ ", keyVerticalSector=" + keyVerticalSector + ", keyVerticalSubsector=" + keyVerticalSubsector
-				+ ", firstAddress=" + firstAddress + ", organisationName=" + organisationName + ", pan=" + pan
-				+ ", aadhar=" + aadhar + ", msmeRegistrationNumber=" + msmeRegistrationNumber + ", loanAmount="
-				+ loanAmount + ", purposeOfLoanId=" + purposeOfLoanId + ", haveCollateralSecurity="
-				+ haveCollateralSecurity + ", collateralSecurityAmount=" + collateralSecurityAmount
+				+ ", firstAddress=" + firstAddress + ", organisationName=" + organisationName + ", gstNumber="
+				+ gstNumber + ", pan=" + pan + ", aadhar=" + aadhar + ", msmeRegistrationNumber="
+				+ msmeRegistrationNumber + ", loanAmount=" + loanAmount + ", purposeOfLoanId=" + purposeOfLoanId
+				+ ", haveCollateralSecurity=" + haveCollateralSecurity + ", isGstCompleted=" + isGstCompleted
+				+ ", isItrCompleted=" + isItrCompleted + ", collateralSecurityAmount=" + collateralSecurityAmount
 				+ ", constitutionId=" + constitutionId + ", financialArrangementsDetailRequestsList="
 				+ financialArrangementsDetailRequestsList + ", directorBackgroundDetailRequestsList="
 				+ directorBackgroundDetailRequestsList + ", industrylist=" + industrylist + ", sectorlist=" + sectorlist
