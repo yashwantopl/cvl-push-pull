@@ -55,4 +55,12 @@ public interface CorporateApplicantDetailRepository extends JpaRepository<Corpor
 	
 	@Query("select cr.panNo from CorporateApplicantDetail cr where cr.applicationId.id =:applicationId and cr.isActive=true")
 	public String getPanNoByApplicationId(@Param("applicationId") Long applicationId);
+	
+	@Modifying
+	@Query(value="update fs_corporate_applicant_details set is_gst_completed =:flagValue,modified_date =NOW() where application_id =:applicationId and is_active = 1 and gstin =:gstinValue",nativeQuery = true)
+	public int updateGSTFlag(@Param("applicationId")Long applicationId,@Param("gstinValue")String gstin, @Param("flagValue")Boolean flag);
+	
+	@Modifying
+	@Query(value="update fs_corporate_applicant_details set is_itr_completed =:flagValue,modified_date =NOW() where application_id =:applicationId and is_active = 1",nativeQuery = true)
+	public int updateITRFlag(@Param("applicationId")Long applicationId,@Param("flagValue")Boolean flag);
 }
