@@ -1132,7 +1132,7 @@ public class CommonUtils {
 	
 public enum APIFlags {
 		
-		ITR(1, "ITR"),CIBIL(2, "CIBIL"),BANK_STATEMENT(3, "BANK STATEMENT"),ONE_FORM(4, "ONE FORM");
+		ITR(1, "ITR"),CIBIL(2, "CIBIL"),BANK_STATEMENT(3, "BANK STATEMENT"),ONE_FORM(4, "ONE FORM"),GST(5, "GST");
 
 		private Integer id;
 		private String value;

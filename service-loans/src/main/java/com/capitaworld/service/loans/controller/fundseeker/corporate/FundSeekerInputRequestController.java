@@ -279,11 +279,9 @@ public class FundSeekerInputRequestController {
                     HttpStatus.OK);
         }
     }
-    
-    @RequestMapping(value = "/itrFlag/{flagValue}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LoansResponse> updateITRFlag(@RequestBody Long applicationId , @PathVariable("flagValue") Boolean flagValue,HttpServletRequest request)
-            throws Exception
-    {
+
+    @RequestMapping(value = "/updateFlag/{flagValue}/{flagType}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LoansResponse> updateFlag(@RequestBody Long applicationId , @PathVariable("flagValue") Boolean flagValue,@PathVariable("flagType") Integer flagType,HttpServletRequest request)throws Exception{
         try
         {
         	Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -293,9 +291,9 @@ public class FundSeekerInputRequestController {
         	if(applicationId == null) {
      		   return new ResponseEntity<LoansResponse>(new LoansResponse("Something goes wrong while processig your Request. Please re-login again.", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
         	}
-            return new ResponseEntity<LoansResponse>(new LoansResponse("Flag Updated!!",HttpStatus.OK.value(),fundSeekerInputRequestService.updateITRFlag(applicationId, flagValue)), HttpStatus.OK);
+            return new ResponseEntity<LoansResponse>(new LoansResponse("Flag Updated!!",HttpStatus.OK.value(),fundSeekerInputRequestService.updateFlag(applicationId, flagValue,flagType)), HttpStatus.OK);
         } catch (Exception e) {
-            logger.error("Error while Fetching details for min-max Margin : ",e);
+            logger.error("Error while Updating Flag value for Uniform Product : ",e);
             return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
         }
     }
