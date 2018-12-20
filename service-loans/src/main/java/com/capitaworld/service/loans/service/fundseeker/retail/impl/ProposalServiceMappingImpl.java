@@ -181,6 +181,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 				BranchBasicDetailsRequest basicDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap(
 						(LinkedHashMap<String, Object>) userResponse.getData(), BranchBasicDetailsRequest.class);
 				if (!CommonUtils.isObjectNullOrEmpty(basicDetailsRequest)) {
+					request.setUserRoleId(basicDetailsRequest.getRoleId());
 					logger.info("Found Branch Id -----------> " + basicDetailsRequest.getId() + "---------Role Id ------------------>" + basicDetailsRequest.getRoleId());
 					if (basicDetailsRequest.getRoleId() == CommonUtils.UsersRoles.BO
 							|| basicDetailsRequest.getRoleId() == CommonUtils.UsersRoles.FP_CHECKER) {
