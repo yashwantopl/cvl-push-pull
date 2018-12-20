@@ -4521,8 +4521,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		gatewayRequest.setBusinessTypeId(businessTypeId);
 
 		Boolean status = null;
-		//status = gatewayClient.skipPayment(gatewayRequest);
-		status = null;
+		status = gatewayClient.skipPayment(gatewayRequest);
 		logger.info("In-Principle send for WhiteLabel Status=====>" + status);
 
 		// ====================================================================
@@ -4659,8 +4658,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		gatewayRequest.setBusinessTypeId(businessTypeId);
 
 		Boolean status = null;
-		//status = gatewayClient.personalLoanInPrinciple(gatewayRequest);
-		status = null;
+		status = gatewayClient.personalLoanInPrinciple(gatewayRequest);
 		logger.info("In-Principle send for Personal Loan Status=====>" + status);
 		// ====================================================================
 
