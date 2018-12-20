@@ -51,6 +51,8 @@ public class CorporateProposalDetails {
 	private String branchState;
 	
 	private String wcRenualNew;
+	
+	private String applicationCode;
 
 	public String getBranchLocationName() {
 		return branchLocationName;
@@ -316,6 +318,14 @@ public class CorporateProposalDetails {
 
 	public void setWcRenualNew(String wcRenualNew) {
 		this.wcRenualNew = wcRenualNew;
+	}
+
+	public String getApplicationCode() {
+		return applicationCode;
+	}
+
+	public void setApplicationCode(String applicationCode) {
+		this.applicationCode = applicationCode;
 	}
 
 	/**
