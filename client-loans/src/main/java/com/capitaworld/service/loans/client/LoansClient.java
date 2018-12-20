@@ -240,6 +240,7 @@ public class LoansClient {
     private static final String SAVE_LOAN_WC_RENEWAL_TYPE ="/loan_application/saveLoanWCRenewalType";
     private static final String GET_LOAN_WC_RENEWAL_TYPE ="/loan_application/getLoanWCRenewalType";
     private static final String SAVE_INELIGIBALE_PROPOSAL ="/save/ineligible/proposal";
+    private static final String AND_FOR_APPLICATION_ID = " and For Application Id====>";
 
     private static final String REQ_AUTH = "req_auth";
     
@@ -764,7 +765,7 @@ public class LoansClient {
 	
 	public LoansResponse getCorporateApplicant(Long applicationId) throws ExcelException {
 		String url = loansBaseUrl.concat(CORPORATE_APPLICATION_DETAILS_GET).concat("/" + applicationId);
-		logger.info("url for Getting Corporate Details From Client=================>" + url + " and For Application Id====>" + applicationId);
+		logger.info("url for Getting Corporate Details From Client=================>" + url + AND_FOR_APPLICATION_ID + applicationId);
 		try {
 			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
 			HttpHeaders headers = new HttpHeaders();
@@ -779,7 +780,7 @@ public class LoansClient {
 	
 	public LoansResponse getCorporateApplicantNew(Long applicationId) throws ExcelException {
 		String url = loansBaseUrl.concat(CORPORATE_APPLICATION_DETAILS_GET_NEW).concat("/" + applicationId);
-		logger.info("url for Getting Corporate Details From Client=================>" + url + " and For Application Id====>" + applicationId);
+		logger.info("url for Getting Corporate Details From Client=================>" + url + AND_FOR_APPLICATION_ID + applicationId);
 		try {
 			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
 			HttpHeaders headers = new HttpHeaders();
@@ -852,7 +853,7 @@ public class LoansClient {
 	
 	public FinancialArrangementsDetailRequest getTotalEMIAndSanctionAmount(Long applicationId) throws Exception{
 		String url = loansBaseUrl.concat(FINANCIAL_ARRANGEMENT_DETAILS_TOTAL_EMI).concat("/" + applicationId);
-		logger.info("url for Getting TotalEMI From Client=================>" + url + " and For Application Id====>" + applicationId);
+		logger.info("url for Getting TotalEMI From Client=================>" + url + AND_FOR_APPLICATION_ID + applicationId);
 		try {
 			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
 			HttpHeaders headers = new HttpHeaders();
@@ -1065,7 +1066,7 @@ public class LoansClient {
 	
 	public LoansResponse getWorkingCapitalPrimary(Long applicationId) throws ExcelException {
 		String url = loansBaseUrl.concat(WORKING_CAPITAL_PRIMARY_GET).concat("/" + applicationId);
-		logger.info("url for Getting Working Capital Primary From Client=================>" + url + " and For Application Id====>" + applicationId);
+		logger.info("url for Getting Working Capital Primary From Client=================>" + url + AND_FOR_APPLICATION_ID + applicationId);
 		try {
 			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
 			HttpHeaders headers = new HttpHeaders();
@@ -1654,7 +1655,7 @@ public class LoansClient {
 	@SuppressWarnings("unchecked")
 	public List<DirectorBackgroundDetailRequest> getDirectorBackgroundDetails(Long applicationId) throws ExcelException {
 		String url = loansBaseUrl.concat(GET_DIRECTOR_BACKGROUND_DETAILS).concat("/" + applicationId);
-		logger.info("url for Getting DirectorBackgroundDetails From Client=================>" + url + " and For Application Id====>" + applicationId);
+		logger.info("url for Getting DirectorBackgroundDetails From Client=================>" + url + AND_FOR_APPLICATION_ID + applicationId);
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set(REQ_AUTH, "true");
@@ -1668,7 +1669,7 @@ public class LoansClient {
 	
 	public LoansResponse getDirectorBackgroundDetailsForNTB(Long applicationId) throws Exception {
 		String url = loansBaseUrl.concat(GET_DIRECTOR_BACKGROUND_DETAILS_FOR_NTB).concat("/" + applicationId);
-		logger.info("url for Getting DirectorBackgroundDetails for NTB From Client=================>" + url + " and For Application Id====>" + applicationId);
+		logger.info("url for Getting DirectorBackgroundDetails for NTB From Client=================>" + url + AND_FOR_APPLICATION_ID + applicationId);
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set(REQ_AUTH, "true");
