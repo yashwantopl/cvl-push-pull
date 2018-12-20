@@ -41,7 +41,6 @@ public class EkycRequest implements Serializable{
 	
 	public EkycRequest() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 	
 	

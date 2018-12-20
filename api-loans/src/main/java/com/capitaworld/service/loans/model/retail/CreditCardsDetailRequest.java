@@ -39,6 +39,8 @@ public class CreditCardsDetailRequest implements Serializable {
 	private Long cardLimit;
 	
 	private String cardTypeString;
+	
+	private Boolean isManuallyAdded;
 
 	public Long getId() {
 		return id;
@@ -135,5 +137,12 @@ public class CreditCardsDetailRequest implements Serializable {
 	public void setCardTypeString(String cardTypeString) {
 		this.cardTypeString = cardTypeString;
 	}
-	
+
+	public Boolean getIsManuallyAdded() {
+		return isManuallyAdded;
+	}
+
+	public void setIsManuallyAdded(Boolean isManuallyAdded) {
+		this.isManuallyAdded = isManuallyAdded;
+	}
 }

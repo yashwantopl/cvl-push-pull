@@ -1,10 +1,10 @@
 package com.capitaworld.service.loans.model.corporate;
 
-import com.capitaworld.service.loans.model.LoanApplicationRequest;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import java.io.Serializable;
 import java.util.Date;
+
+import com.capitaworld.service.loans.model.LoanApplicationRequest;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class PrimaryCorporateRequest extends LoanApplicationRequest implements Serializable {
@@ -42,6 +42,21 @@ public class PrimaryCorporateRequest extends LoanApplicationRequest implements S
     private Double totalAmtPercentage;
     /*For Eligibility Hybrid-payback method*/
     private Double incrementalMargin;
+    
+    
+    //Start By Akshay for OnePager Eligibility
+    private Double turnOverPrevFinYear;
+    
+    private Double turnOverCurrFinYearTillMonth;
+    
+    private Double projectedTurnOverCurrFinYear;
+    
+    private Double profitCurrFinYear;
+    
+    private Double projectedProfitCurrFinYear;
+    
+  //End By Akshay for OnePager Eligibility
+
 
     public PrimaryCorporateRequest() {
     }
@@ -205,4 +220,45 @@ public class PrimaryCorporateRequest extends LoanApplicationRequest implements S
     public void setIncrementalMargin(Double incrementalMargin) {
         this.incrementalMargin = incrementalMargin;
     }
+
+	public Double getTurnOverPrevFinYear() {
+		return turnOverPrevFinYear;
+	}
+
+	public void setTurnOverPrevFinYear(Double turnOverPrevFinYear) {
+		this.turnOverPrevFinYear = turnOverPrevFinYear;
+	}
+
+	public Double getTurnOverCurrFinYearTillMonth() {
+		return turnOverCurrFinYearTillMonth;
+	}
+
+	public void setTurnOverCurrFinYearTillMonth(Double turnOverCurrFinYearTillMonth) {
+		this.turnOverCurrFinYearTillMonth = turnOverCurrFinYearTillMonth;
+	}
+
+	public Double getProjectedTurnOverCurrFinYear() {
+		return projectedTurnOverCurrFinYear;
+	}
+
+	public void setProjectedTurnOverCurrFinYear(Double projectedTurnOverCurrFinYear) {
+		this.projectedTurnOverCurrFinYear = projectedTurnOverCurrFinYear;
+	}
+
+	public Double getProfitCurrFinYear() {
+		return profitCurrFinYear;
+	}
+
+	public void setProfitCurrFinYear(Double profitCurrFinYear) {
+		this.profitCurrFinYear = profitCurrFinYear;
+	}
+
+	public Double getProjectedProfitCurrFinYear() {
+		return projectedProfitCurrFinYear;
+	}
+
+	public void setProjectedProfitCurrFinYear(Double projectedProfitCurrFinYear) {
+		this.projectedProfitCurrFinYear = projectedProfitCurrFinYear;
+	}
+    
 }

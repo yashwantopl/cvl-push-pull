@@ -48,7 +48,6 @@ public class LapLoanParameterServiceImpl implements LapLoanParameterService {
 	@Override
 	public boolean saveOrUpdate(LapParameterRequest lapParameterRequest) {
 		CommonDocumentUtils.startHook(logger, "saveOrUpdate");
-		// TODO Auto-generated method stub
 		LapParameter lapParameter= null;
 
 		lapParameter = lapParameterRepository.findOne(lapParameterRequest.getId());
@@ -83,7 +82,6 @@ public class LapLoanParameterServiceImpl implements LapLoanParameterService {
 	@Override
 	public LapParameterRequest getLapParameterRequest(Long id) {
 		CommonDocumentUtils.startHook(logger, "getLapParameterRequest");
-		// TODO Auto-generated method stub
 		LapParameterRequest lapParameterRequest= new LapParameterRequest();
 		LapParameter lapParameter = lapParameterRepository.getByID(id);
 		if(lapParameter==null)

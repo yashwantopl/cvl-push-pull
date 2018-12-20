@@ -103,7 +103,6 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 	@Override
 	public boolean saveOrUpdate(WorkingCapitalParameterRequest workingCapitalParameterRequest,Long mappingId) {
 		logger.info("start saveOrUpdate");
-		// TODO Auto-generated method stub
 		
 		WorkingCapitalParameterTemp loanParameter = workingCapitalParameterTempRepository
 				.getworkingCapitalParameterTempByFpProductId(mappingId);
@@ -393,12 +392,10 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 
 	@Override
 	public List<WorkingCapitalParameterRequest> getWorkingCapitalParameterListByUserId(Long id) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	private void saveNegativeIndustry(WorkingCapitalParameterRequest workingCapitalParameterRequest) {
-		// TODO Auto-generated method stub
 		CommonDocumentUtils.startHook(logger, "saveNegativeIndustry");
 		NegativeIndustry negativeIndustry = null;
 		for (DataRequest dataRequest : workingCapitalParameterRequest.getUnInterestedIndustrylist()) {

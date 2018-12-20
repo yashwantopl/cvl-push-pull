@@ -640,7 +640,6 @@ public class FsDetailsForPdfServiceImpl implements FsDetailsForPdfService {
 
 	@Override
 	public Map getSortedMapForUbi(Long applicantId) throws Exception {
-		// TODO Auto-generated method stub
 		try {
 			HomeLoanFinalViewResponse finalViewResponse = homeLoanFinalViewService.getHomeLoanFinalViewDetails(applicantId);
 			Map<String, Object> map = getHomeLoanDetails(applicantId);

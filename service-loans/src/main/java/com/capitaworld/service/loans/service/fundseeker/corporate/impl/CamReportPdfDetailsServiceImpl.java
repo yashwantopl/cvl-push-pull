@@ -1272,7 +1272,6 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				}
 				map.put("costEstimate", CommonUtils.printFields(costOfProjectResponses,null));
 			} catch (Exception e1) {
-				// TODO Auto-generated catch block
 				logger.error("Problem to get Data of Total cost of project{}", e1);
 			}
 			
@@ -1289,7 +1288,6 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				}
 				map.put("meansOfFinance", CommonUtils.printFields(financeMeansDetailResponsesList,null));
 			} catch (Exception e1) {
-				// TODO Auto-generated catch block
 				logger.error("Problem to get Data of Finance Means Details {}", e1);
 			}
 			

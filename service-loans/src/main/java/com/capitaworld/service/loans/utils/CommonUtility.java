@@ -6,7 +6,10 @@ import com.capitaworld.cibil.api.utility.CibilUtils;
 
 public class CommonUtility {
 
-	public interface ApiType{
+	public static final class ApiType{
+		private ApiType () {
+			// Do nothing because of X and Y.
+		}
 		public static final Integer SANCTION = 1; 
 		public static final Integer DISBURSEMENT = 2;
 		public static final Integer DDR_API = 3; 
@@ -82,7 +85,10 @@ public class CommonUtility {
 		}
 	}
 	
-	public interface SanctionDisbursementAPIStatusCode{
+	public static final class SanctionDisbursementAPIStatusCode{
+		private SanctionDisbursementAPIStatusCode () {
+		// Do nothing because of X and Y.
+		}
 		public static final String SUCCESS = "100";
 		public static final String INVALID_APPLICATION_ID = "101"; 
 		public static final String  DISBURSEMENT_WITHOUT_SANCTION = "102";

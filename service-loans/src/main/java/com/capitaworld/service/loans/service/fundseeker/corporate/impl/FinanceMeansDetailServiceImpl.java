@@ -30,7 +30,7 @@ public class FinanceMeansDetailServiceImpl implements FinanceMeansDetailsService
 
 	@Override
 	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception {
-		// TODO Auto-generated method stub
+
 		try {
 			for (Map<String, Object> obj : frameRequest.getDataList()) {
 				FinanceMeansDetailRequest financeMeansRequest = (FinanceMeansDetailRequest) MultipleJSONObjectHelper
