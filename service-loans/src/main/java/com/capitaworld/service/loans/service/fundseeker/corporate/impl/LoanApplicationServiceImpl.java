@@ -568,6 +568,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	private static final String PLEASE_FILL_CO_APPLICANT_2_FINAL_DETAILS_TO_MOVE_NEXT = "Please Fill CO-APPLICANT-2 FINAL details to Move Next !";
 	private static final String GET_LOAN_DETAILS_FOR_ADMIN_PANEL_FROM_AND_TO_DATE_FOR_ADMIN_PANEL = "GetLoanDetailsForAdminPanel, from and todate for admin panel --------> ";
 	private static final String DATE_FORMAT_YYYY_MM_DD_HH_MM_SS  = "yyyy/MM/dd hh:mm:ss";
+	private static final String DATE_FORMAT_DD_MM_YYYY = "dd-MM-yyyy";
 
     @Value("${cw.gst.unit.test}")
     private String IS_UNIT_TEST;
@@ -4027,7 +4028,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 						.getByApplicationAndUserId(loanApplicationMaster.getUserId(), ekycRequest.getApplicantsId());
 				String fullName = retail.getFirstName() + " " + retail.getLastName();
 				Date date = retail.getBirthDate();
-				SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+				SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT_DD_MM_YYYY);
 				String strDate = sdf.format(date);
 				ekycResponse.setFullName(fullName);
 				ekycResponse.setPanNo(retail.getPan());
@@ -4040,7 +4041,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 						loanApplicationMaster.getUserId(), ekycRequest.getApplicantsId());
 				String fullName = coApp.getFirstName() + " " + coApp.getLastName();
 				Date date = coApp.getBirthDate();
-				SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+				SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT_DD_MM_YYYY);
 				String strDate = sdf.format(date);
 				ekycResponse.setFullName(fullName);
 				ekycResponse.setPanNo(coApp.getPan());
@@ -4054,7 +4055,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 						loanApplicationMaster.getUserId(), ekycRequest.getApplicantsId());
 				String fullName = gua.getFirstName() + " " + gua.getLastName();
 				Date date = gua.getBirthDate();
-				SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+				SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT_DD_MM_YYYY);
 				String strDate = sdf.format(date);
 				ekycResponse.setFullName(fullName);
 				ekycResponse.setPanNo(gua.getPan());
@@ -6691,7 +6692,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			return Collections.emptyList();
 		} else {
 			List<DirectorBackgroundDetailRequest> listData = new ArrayList<>(direcotors.size());
-			SimpleDateFormat dateFormat2 = new SimpleDateFormat("dd-MM-yyyy");
+			SimpleDateFormat dateFormat2 = new SimpleDateFormat(DATE_FORMAT_DD_MM_YYYY);
 			AddressRequest addressRequest = null;
 			DirectorBackgroundDetailRequest target = null;
 			for (DirectorBackgroundDetail source : direcotors) {
