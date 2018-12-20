@@ -405,7 +405,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 					
 					//map.put("proposalResponse", !CommonUtils.isObjectNullOrEmpty(proposalMappingResponse.getData()) ? proposalMappingResponse.getData() : " ");
 				}catch (Exception e) {
-					// TODO: handle exception
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 				
 		//cibil score

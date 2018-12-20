@@ -176,7 +176,7 @@ public class FsDetailsForPdfServiceImpl implements FsDetailsForPdfService {
 				
 		}
 		catch (Exception e) {
-			// TODO: handle exception
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		//surplus
 		Double surplus=grossAnnualIncome*12;
