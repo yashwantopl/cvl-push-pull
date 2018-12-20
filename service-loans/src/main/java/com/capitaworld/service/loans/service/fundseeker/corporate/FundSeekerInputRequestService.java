@@ -48,4 +48,13 @@ public interface FundSeekerInputRequestService {
 	 * @return
 	 */
 	public ResponseEntity<LoansResponse> getDataForOnePagerOneForm(Long applicationId);
+	
+	
+	/**
+	 * Update ITR Flag whether its is completed or not
+	 * @param applicationId
+	 * @param flag
+	 * @return
+	 */
+	public boolean updateITRFlag(Long applicationId,Boolean flag);
 }

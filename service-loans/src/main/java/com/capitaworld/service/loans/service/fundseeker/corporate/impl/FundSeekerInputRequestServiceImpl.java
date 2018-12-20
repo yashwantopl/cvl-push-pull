@@ -690,7 +690,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 				updateGSTFlag = corporateApplicantDetailRepository.updateGSTFlag(applicationId, gstin, true);
 				logger.info("GST Updated Count of TRUE WIth GST Status================>{}=====>{}====>{}",updateGSTFlag,response.getStatus(),response.getStatusCd());
 			}else{
-				updateGSTFlag = corporateApplicantDetailRepository.updateGSTFlag(applicationId, gstin, true);
+				updateGSTFlag = corporateApplicantDetailRepository.updateGSTFlag(applicationId, gstin, false);
 				logger.info("GST Updated Count of FALSE WIth GST Status================>{}=====>{}====>{}",updateGSTFlag,response.getStatus(),response.getStatusCd());
 			}
 			return response;
@@ -698,6 +698,11 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			logger.error("error while fetching director detail : ",e);
 			return null;
 		}
+	}
+
+	@Override
+	public boolean updateITRFlag(Long applicationId,Boolean flag) {
+		return corporateApplicantDetailRepository.updateITRFlag(applicationId, flag) > 0;
 	}	
-	
+
 }
