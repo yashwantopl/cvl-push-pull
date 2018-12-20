@@ -1563,7 +1563,11 @@ public class LoansClient {
 		default:
 			break;
 		}
-		url = url.concat("/" + applicationId + "/" + userId);
+		try {
+			url = url.concat("/" + applicationId + "/" + userId);
+		} catch (NullPointerException e) {
+			throw new Exception("Url must not be null. ",e);
+		}
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set(REQ_AUTH, "true");
