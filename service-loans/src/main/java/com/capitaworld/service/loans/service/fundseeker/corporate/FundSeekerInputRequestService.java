@@ -54,7 +54,8 @@ public interface FundSeekerInputRequestService {
 	 * Update ITR Flag whether its is completed or not
 	 * @param applicationId
 	 * @param flag
+	 * @param flagType
 	 * @return
 	 */
-	public boolean updateITRFlag(Long applicationId,Boolean flag);
+	public boolean updateFlag(Long applicationId,Boolean flag,Integer flagType);
 }
