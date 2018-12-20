@@ -1,18 +1,10 @@
 package com.capitaworld.service.loans.domain.fundseeker.corporate;
 
+import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
+
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.NamedQuery;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-
-import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 
 @Entity
 @Table(name = "fs_corporate_primary_details")
@@ -104,24 +96,12 @@ public class PrimaryCorporateDetail extends LoanApplicationMaster implements Ser
     private Double incrementalMargin;
     
     
-    //Start By Akshay for OnePager Eligibility
-    @Column(name = "turn_over_prev_fin_year")
-    private Double turnOverPrevFinYear;
+    //By Akshay for OnePager Eligibility
+    @Column(name = "actual_sales_finYear_current")
+    private Double actualSalesFinYearCurrent;
     
-    @Column(name = "turn_over_curr_fin_year_till_month")
-    private Double turnOverCurrFinYearTillMonth;
-    
-    @Column(name = "projected_turn_over_curr_fin_year")
-    private Double projectedTurnOverCurrFinYear;
-    
-    @Column(name = "profit_curr_fin_year")
-    private Double profitCurrFinYear;
-    
-    @Column(name = "projected_profit_curr_fin_year")
-    private Double projectedProfitCurrFinYear;
-    
-  //End By Akshay for OnePager Eligibility
-    
+    @Column(name = "estimated_sales_fin_year_next")
+    private Double estimatedSalesFinYearNext;
 
     public PrimaryCorporateDetail() {
     }
@@ -310,43 +290,20 @@ public class PrimaryCorporateDetail extends LoanApplicationMaster implements Ser
         this.incrementalMargin = incrementalMargin;
     }
 
-	public Double getTurnOverPrevFinYear() {
-		return turnOverPrevFinYear;
+	public Double getActualSalesFinYearCurrent() {
+		return actualSalesFinYearCurrent;
 	}
 
-	public void setTurnOverPrevFinYear(Double turnOverPrevFinYear) {
-		this.turnOverPrevFinYear = turnOverPrevFinYear;
+	public void setActualSalesFinYearCurrent(Double actualSalesFinYearCurrent) {
+		this.actualSalesFinYearCurrent = actualSalesFinYearCurrent;
 	}
 
-	public Double getTurnOverCurrFinYearTillMonth() {
-		return turnOverCurrFinYearTillMonth;
+	public Double getEstimatedSalesFinYearNext() {
+		return estimatedSalesFinYearNext;
 	}
 
-	public void setTurnOverCurrFinYearTillMonth(Double turnOverCurrFinYearTillMonth) {
-		this.turnOverCurrFinYearTillMonth = turnOverCurrFinYearTillMonth;
+	public void setEstimatedSalesFinYearNext(Double estimatedSalesFinYearNext) {
+		this.estimatedSalesFinYearNext = estimatedSalesFinYearNext;
 	}
 
-	public Double getProjectedTurnOverCurrFinYear() {
-		return projectedTurnOverCurrFinYear;
-	}
-
-	public void setProjectedTurnOverCurrFinYear(Double projectedTurnOverCurrFinYear) {
-		this.projectedTurnOverCurrFinYear = projectedTurnOverCurrFinYear;
-	}
-
-	public Double getProfitCurrFinYear() {
-		return profitCurrFinYear;
-	}
-
-	public void setProfitCurrFinYear(Double profitCurrFinYear) {
-		this.profitCurrFinYear = profitCurrFinYear;
-	}
-
-	public Double getProjectedProfitCurrFinYear() {
-		return projectedProfitCurrFinYear;
-	}
-
-	public void setProjectedProfitCurrFinYear(Double projectedProfitCurrFinYear) {
-		this.projectedProfitCurrFinYear = projectedProfitCurrFinYear;
-	}
 }

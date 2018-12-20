@@ -227,7 +227,7 @@ public class CarLoanPrimaryViewServiceImpl implements CarLoanPrimaryViewService{
                         officeAddress.setCountry(dataCountry.getValue());
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    logger.error(CommonUtils.EXCEPTION,e);
 
                 }
                 try {
@@ -242,7 +242,7 @@ public class CarLoanPrimaryViewServiceImpl implements CarLoanPrimaryViewService{
                         officeAddress.setState(dataState.getValue());
                     }
                 } catch (Exception e) {
-
+                    logger.error(CommonUtils.EXCEPTION,e);
                 }
                 officeAddress.setLandMark(applicantDetail.getOfficeLandMark());
                 officeAddress.setPincode(applicantDetail.getOfficePincode() != null ? applicantDetail.getOfficePincode().toString() : null);
@@ -272,7 +272,7 @@ public class CarLoanPrimaryViewServiceImpl implements CarLoanPrimaryViewService{
                         permanentAddress.setCountry(dataCountry.getValue());
                     }
                 } catch (Exception e) {
-
+                    logger.error(CommonUtils.EXCEPTION,e);
                 }
                 try {
                     List<Long> permanentState = new ArrayList<Long>(1);
@@ -285,7 +285,7 @@ public class CarLoanPrimaryViewServiceImpl implements CarLoanPrimaryViewService{
                         permanentAddress.setState(dataState.getValue());
                     }
                 } catch (Exception e) {
-
+                    logger.error(CommonUtils.EXCEPTION,e);
                 }
                 permanentAddress.setLandMark(applicantDetail.getPermanentLandMark());
                 permanentAddress.setPincode(applicantDetail.getPermanentPincode() != null ? applicantDetail.getPermanentPincode().toString() : null);
@@ -304,7 +304,7 @@ public class CarLoanPrimaryViewServiceImpl implements CarLoanPrimaryViewService{
                 try {
                     profileViewPLResponse.setAadharCardList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT,DocumentAlias.CAR_LOAN_APPLICANT_SCANNED_COPY_OF_AADHAR_CARD));
                 } catch (DocumentException e) {
-                    e.printStackTrace();
+                    logger.error(CommonUtils.EXCEPTION,e);
                 }
 
                 //get profile picture
@@ -319,6 +319,7 @@ public class CarLoanPrimaryViewServiceImpl implements CarLoanPrimaryViewService{
                 throw new Exception("No Data found");
             }
         } catch (Exception e) {
+            logger.error("Problem Occured while Fetching Retail Details : ",e);
            // throw new Exception("Problem Occured while Fetching Retail Details");
         }
 
@@ -327,7 +328,7 @@ public class CarLoanPrimaryViewServiceImpl implements CarLoanPrimaryViewService{
         try {
             coApplicantResponse = coApplicantService.getCoApplicantPLResponse(toApplicationId, userId,applicationMaster.getProductId());
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(CommonUtils.EXCEPTION,e);
         }
         carLoanPrimaryViewResponse.setCoApplicantList(coApplicantResponse);
 
@@ -355,7 +356,7 @@ public class CarLoanPrimaryViewServiceImpl implements CarLoanPrimaryViewService{
             carLoanResponse.setCarType(primaryCarLoanDetailRequest.getCarType() != null ? CarType.getById(primaryCarLoanDetailRequest.getCarType()).getValue() : null);
             carLoanResponse.setNewCarPurchaseType(primaryCarLoanDetailRequest.getNewCarPurchaseType()!=null? CarPurchaseType.getById(primaryCarLoanDetailRequest.getNewCarPurchaseType()).getValue():null);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(CommonUtils.EXCEPTION,e);
         }
         carLoanPrimaryViewResponse.setCarLoanResponse(carLoanResponse);
         return carLoanPrimaryViewResponse;

@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.scheduler;
 
+import com.capitaworld.service.loans.utils.CommonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,8 +24,7 @@ public class APIScheduled {
 		try {
 			loanSanctionService.saveSanctionAndDisbursementDetailsFromBank();
 		} catch (Exception e) {
-			
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		} 	
 	}	
 }

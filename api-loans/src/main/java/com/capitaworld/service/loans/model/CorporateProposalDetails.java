@@ -45,10 +45,10 @@ public class CorporateProposalDetails {
 	private Integer businessTypeId;
 	
 	private String ntbMainDirName;
-	
-	public String branchLocationName;
-	public String branchCity;
-	public String branchState;
+
+	private String branchLocationName;
+	private String branchCity;
+	private String branchState;
 	
 	private String wcRenualNew;
 

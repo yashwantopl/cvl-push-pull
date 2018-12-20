@@ -627,8 +627,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 				directorBackgroundDetailsService.saveDirectorInfo(reqObj, fundSeekerInputRequest.getApplicationId(), fundSeekerInputRequest.getUserId());
 			}
 		} catch (Exception e) {
-			logger.info("Directors ===============> Throw Exception While Save Director Background Details -------->");
-			e.printStackTrace();
+			logger.error("Directors ===============> Throw Exception While Save Director Background Details -------->",e);
 		}
 
 		LoansResponse res = new LoansResponse("director detail successfully saved", HttpStatus.OK.value());
@@ -639,14 +638,13 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 	} catch (Exception e) {
 		msg="error while saving director detail";
 		LoansResponse res = new LoansResponse(msg,HttpStatus.INTERNAL_SERVER_ERROR.value());
-		logger.error(msg);
-		e.printStackTrace();
+		logger.error(msg,e);
 		return res;
 	}finally {
 		try {
 			connectClient.saveAuditLog(new ConnectLogAuditRequest(fundSeekerInputRequest.getApplicationId(), ConnectStage.DIRECTOR_BACKGROUND.getId(),fundSeekerInputRequest.getUserId(),msg, ConnectAuditErrorCode.DIRECTOR_SUBMIT.toString(),CommonUtils.BusinessType.EXISTING_BUSINESS.getId()));
 		} catch (Exception e){
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 	}
 }

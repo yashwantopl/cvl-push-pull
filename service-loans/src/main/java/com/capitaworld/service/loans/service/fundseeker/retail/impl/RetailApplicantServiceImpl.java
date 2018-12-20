@@ -125,8 +125,7 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 			return true;
 
 		} catch (Exception e) {
-			logger.error("Error while Saving Retail Profile:-");
-			e.printStackTrace();
+			logger.error("Error while Saving Retail Profile:-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
@@ -166,8 +165,7 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 			applicantIncomeService.saveAll(applicantRequest.getIncomeDetailsList());
 			return true;
 		} catch (Exception e) {
-			logger.error("Error while Saving Retail Profile:-");
-			e.printStackTrace();
+			logger.error("Error while Saving Retail Profile:-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
@@ -183,8 +181,7 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 			obj.put("guarantorIds", guarantorIds);
 			return obj;
 		} catch (Exception e) {
-			logger.error("Error while getCoapAndGuarIds:-");
-			e.printStackTrace();
+			logger.error("Error while getCoapAndGuarIds:-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
@@ -222,8 +219,7 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 			applicantRequest.setDetailsFilledCount(applicantDetail.getApplicationId().getDetailsFilledCount());
 			return applicantRequest;
 		} catch (Exception e) {
-			logger.error("Error while Getting Retail applicant details:-");
-			e.printStackTrace();
+			logger.error("Error while Getting Retail applicant details:-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
@@ -242,8 +238,7 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 			applicantRequest.setFinalFilledCount(applicantDetail.getApplicationId().getFinalFilledCount());
 			return applicantRequest;
 		} catch (Exception e) {
-			logger.error("Error while Saving Retail Profile:-");
-			e.printStackTrace();
+			logger.error("Error while Saving Retail Profile:-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
@@ -276,15 +271,13 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 					applicantRequest.getFinalFilledCount());
 			return true;
 		} catch (Exception e) {
-			logger.error("Error while Saving Retail Profile:-");
-			e.printStackTrace();
+			logger.error("Error while Saving Retail Profile:-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
 	public List<CoApplicantRequest> getCoApplicants(Long userId, Long applicationId) throws Exception {
-		// TODO Auto-generated method stub
 		return coApplicantService.getList(applicationId, userId);
 	}
 
@@ -293,8 +286,7 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 		try {
 			return applicantRepository.getCurrency(userId, applicationId);
 		} catch (Exception e) {
-			logger.error("Error while Getting Currency:-");
-			e.printStackTrace();
+			logger.error("Error while Getting Currency:-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
@@ -373,8 +365,7 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 			logger.info("End getProfile() method with Success Execution");
 			return cibilFullFillOfferRequest;
 		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("Error while getting Basic profile for CIBIL.");
+			logger.error("Error while getting Basic profile for CIBIL : ",e);
 			logger.info("End getProfile() method with FAILURE Execution");
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}

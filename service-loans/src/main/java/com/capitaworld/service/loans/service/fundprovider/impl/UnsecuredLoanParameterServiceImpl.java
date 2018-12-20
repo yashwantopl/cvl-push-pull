@@ -133,9 +133,7 @@ public class UnsecuredLoanParameterServiceImpl implements UnsecuredLoanParameter
 				OneFormResponse formResponse = oneFormClient.getIndustryById(industryList);
 				unsecuredLoanParameterRequest.setIndustrylist((List<DataRequest>)formResponse.getListData());
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				logger.error("error while getTermLoanParameterRequest",e);
-				e.printStackTrace();
+				logger.error("error while getTermLoanParameterRequest : ",e);
 			}
 		}
 		
@@ -149,9 +147,7 @@ public class UnsecuredLoanParameterServiceImpl implements UnsecuredLoanParameter
 			 
 			
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			logger.error("error while getTermLoanParameterRequest",e);
-			e.printStackTrace();
+			logger.error("error while getTermLoanParameterRequest : ",e);
 		}
 		}
 
@@ -164,9 +160,7 @@ public class UnsecuredLoanParameterServiceImpl implements UnsecuredLoanParameter
 			 
 			
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			logger.error("error while getTermLoanParameterRequest",e);
-			e.printStackTrace();
+			logger.error("error while getTermLoanParameterRequest : ",e);
 		}
 		}
 		
@@ -180,9 +174,7 @@ public class UnsecuredLoanParameterServiceImpl implements UnsecuredLoanParameter
 			 
 			
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			logger.error("error while getTermLoanParameterRequest",e);
-			e.printStackTrace();
+			logger.error("error while getTermLoanParameterRequest : ",e);
 		}
 		}
 		
@@ -196,9 +188,7 @@ public class UnsecuredLoanParameterServiceImpl implements UnsecuredLoanParameter
 			 
 			
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			logger.error("error while getTermLoanParameterRequest",e);
-			e.printStackTrace();
+			logger.error("error while getTermLoanParameterRequest : ",e);
 		}
 		}
 		
@@ -210,9 +200,7 @@ public class UnsecuredLoanParameterServiceImpl implements UnsecuredLoanParameter
 				OneFormResponse formResponse = oneFormClient.getIndustryById(negativeIndustryList);
 				unsecuredLoanParameterRequest.setNegativeIndustryList((List<DataRequest>)formResponse.getListData());
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				logger.error("error while getTermLoanParameterRequest",e);
-				e.printStackTrace();
+				logger.error("error while getTermLoanParameterRequest : ",e);
 			}
 		}
 		CommonDocumentUtils.endHook(logger, "getTermLoanParameterRequest");

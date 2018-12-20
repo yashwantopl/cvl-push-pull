@@ -71,8 +71,7 @@ public class UnsecureLoanController {
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
 					HttpStatus.OK);
 		} catch (Exception e) {
-			logger.error("Error while saving final information of Unsecure Loan");
-			e.printStackTrace();
+			logger.error("Error while saving final information of Unsecure Loan : ",e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -105,14 +104,12 @@ public class UnsecureLoanController {
 				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 			} catch (Exception e) {
 				logger.error("Error while getting Final Unsecure Loan Details==>", e);
-				e.printStackTrace();
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 						HttpStatus.OK);
 			}
 		} catch (Exception e) {
-			logger.error("Error while getting  final information of Unsecure Loan");
-			e.printStackTrace();
+			logger.error("Error while getting  final information of Unsecure Loan : ",e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -150,7 +147,6 @@ public class UnsecureLoanController {
 
 		} catch (Exception e) {
 			logger.error("Error while saving Primary Working Details==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -182,7 +178,6 @@ public class UnsecureLoanController {
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getting Primary Unsecure Loan Details==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);

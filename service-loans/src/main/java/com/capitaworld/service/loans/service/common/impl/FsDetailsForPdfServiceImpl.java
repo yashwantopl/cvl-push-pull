@@ -9,6 +9,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +31,8 @@ import com.capitaworld.service.users.model.UsersRequest;
 @Service
 @Transactional
 public class FsDetailsForPdfServiceImpl implements FsDetailsForPdfService {
+
+	private static final Logger logger = LoggerFactory.getLogger(FsDetailsForPdfServiceImpl.class);
 
 	@Autowired
 	private HomeLoanFinalViewService homeLoanFinalViewService;
@@ -773,8 +777,7 @@ public class FsDetailsForPdfServiceImpl implements FsDetailsForPdfService {
 			return dataMap;
 			
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		return null;
 	}

@@ -172,8 +172,7 @@ public class DashboardServiceImpl implements DashboardService {
 			CommonDocumentUtils.endHook(logger, "getFPBasicProfileInfo");
 			return usersClient.getFPDashboardDetails(userId);
 		} catch (Exception e) {
-			logger.error("Error while getting FP Details on Dashbord");
-			e.printStackTrace();
+			logger.error("Error while getting FP Details on Dashbord : ",e);
 			throw new ExcelException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
