@@ -70,7 +70,6 @@ public class EkycResponse implements Serializable{
 	
 	public EkycResponse() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 	
 	

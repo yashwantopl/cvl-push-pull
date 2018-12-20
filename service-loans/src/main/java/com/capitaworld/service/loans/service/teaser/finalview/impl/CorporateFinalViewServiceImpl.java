@@ -1350,7 +1350,6 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 			}
 			corporateFinalViewResponse.setTotalCostOfProjectResponseList(costOfProjectResponses);
 		} catch (Exception e1) {
-			// TODO Auto-generated catch block
 			logger.error("Problem to get Data of Total cost of project{}", e1);
 		}
 

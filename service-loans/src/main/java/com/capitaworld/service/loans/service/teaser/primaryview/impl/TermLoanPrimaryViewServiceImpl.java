@@ -619,7 +619,6 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 			}
 			termLoanPrimaryViewResponse.setFinanceMeansDetailResponseList(financeMeansDetailResponsesList);
 		} catch (Exception e1) {
-			// TODO Auto-generated catch block
 			logger.error("Problem to get Data of Finance Means Details {}", e1);
 		}
 		//references
@@ -627,7 +626,6 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 		try {
 			referenceRetailDetailsRequestList = referenceRetailDetailsService.getReferenceRetailDetailList(toApplicationId, userType);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		termLoanPrimaryViewResponse.setReferenceRetailDetailsRequests(referenceRetailDetailsRequestList);
@@ -648,7 +646,6 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 			}
 			termLoanPrimaryViewResponse.setTotalCostOfProjectResponseList(costOfProjectResponses);
 		} catch (Exception e1) {
-			// TODO Auto-generated catch block
 			logger.error("Problem to get Data of Total cost of project{}", e1);
 		}
 */
