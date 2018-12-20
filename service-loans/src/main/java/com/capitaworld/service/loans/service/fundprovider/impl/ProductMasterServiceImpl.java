@@ -681,7 +681,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 //			request.setIsMatched(productMasterRepository.getMatchedAndActiveInActiveProduct(userId).size() > 0 ? true : false);
 			request.setIsMatched(matchCount > 0 ? true : false);
 			Long count = null;
-			if(basicDetailsRequest != null && basicDetailsRequest.getId() != null){
+			if(basicDetailsRequest != null){
 				if (basicDetailsRequest.getRoleId() == CommonUtils.UsersRoles.BO || basicDetailsRequest.getRoleId() == CommonUtils.UsersRoles.FP_CHECKER) {
 					count = proposalDetailsRepository.getProposalCountByFpProductIdAndBranchId(master.getId(), basicDetailsRequest.getId());
 				}else if (basicDetailsRequest.getRoleId() == CommonUtils.UsersRoles.HO) {
