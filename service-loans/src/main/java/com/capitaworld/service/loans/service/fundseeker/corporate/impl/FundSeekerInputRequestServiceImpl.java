@@ -606,8 +606,11 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 		}
 		primaryCorporateDetail.setAmount(fundSeekerInputRequest.getLoanAmount());
 		primaryCorporateDetail.setLoanAmount(fundSeekerInputRequest.getLoanAmount());
-		primaryCorporateDetail.setActualSalesFinYearCurrent(fundSeekerInputRequest.getActualSalesFinYearCurrent());
-		primaryCorporateDetail.setEstimatedSalesFinYearNext(fundSeekerInputRequest.getEstimatedSalesFinYearNext());
+		primaryCorporateDetail.setTurnOverPrevFinYear(fundSeekerInputRequest.getTurnOverPrevFinYear());
+		primaryCorporateDetail.setTurnOverCurrFinYearTillMonth(fundSeekerInputRequest.getTurnOverCurrFinYearTillMonth());
+		primaryCorporateDetail.setProjectedTurnOverCurrFinYear(fundSeekerInputRequest.getProjectedTurnOverCurrFinYear());
+		primaryCorporateDetail.setProfitCurrFinYear(fundSeekerInputRequest.getProfitCurrFinYear());
+		primaryCorporateDetail.setProjectedProfitCurrFinYear(fundSeekerInputRequest.getProjectedProfitCurrFinYear());
 		primaryCorporateDetail.setIsApplicantDetailsFilled(true);
 		primaryCorporateDetail.setIsApplicantPrimaryFilled(true);
 		primaryCorporateDetail.setApplicationId(new LoanApplicationMaster(fundSeekerInputRequest.getApplicationId()));
