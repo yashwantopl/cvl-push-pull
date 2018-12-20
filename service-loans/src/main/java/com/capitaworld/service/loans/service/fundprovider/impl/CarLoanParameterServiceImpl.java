@@ -52,7 +52,6 @@ public class CarLoanParameterServiceImpl implements CarLoanParameterService {
 	@Override
 	public boolean saveOrUpdate(CarLoanParameterRequest carLoanParameterRequest) {
 		CommonDocumentUtils.startHook(logger, "saveOrUpdate");
-		// TODO Auto-generated method stub
 		CarLoanParameter carLoanParameter = null;
 
 		carLoanParameter = carLoanParameterRepository.findOne(carLoanParameterRequest.getId());

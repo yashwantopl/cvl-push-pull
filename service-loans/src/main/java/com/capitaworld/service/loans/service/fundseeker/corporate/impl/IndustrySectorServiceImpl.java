@@ -23,8 +23,7 @@ public class IndustrySectorServiceImpl implements IndustrySectorService {
 
 	@Override
 	public void saveOrUpdate(IndustrySectorDetail industrySectorDetail) throws Exception {
-		// TODO Auto-generated method stub
-
+		// Do nothing because of X and Y.
 	}
 
 	@Override

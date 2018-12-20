@@ -3941,7 +3941,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Override
 	public List<FpProfileBasicDetailRequest> getFpNegativeList(Long applicationId) {
-		// TODO Auto-generated method stub
 		try {
 			LoanApplicationMaster applicationMaster = loanApplicationRepository.findOne(applicationId);
 			if (!CommonUtils.isObjectNullOrEmpty(applicationMaster)) {
@@ -4159,7 +4158,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Override
 	public Boolean isTermLoanLessThanLimit(Long applicationId) {
-		// TODO Auto-generated method stub
 		LoanApplicationMaster applicationMaster = loanApplicationRepository.findOne(applicationId);
 		if (CommonUtils.isObjectNullOrEmpty(applicationMaster)) {
 			return null;
@@ -5221,7 +5219,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 
 	private String getAddressByApplicationId(Long applicationId) {
-		// TODO Auto-generated method stub
 		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(applicationId);
 		String address = "";
 		if (CommonUtils.getUserMainTypeName(loanApplicationMaster.getProductId()) == CommonUtils.CORPORATE) {

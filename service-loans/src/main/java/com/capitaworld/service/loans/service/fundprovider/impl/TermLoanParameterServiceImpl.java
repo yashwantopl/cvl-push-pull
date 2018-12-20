@@ -118,7 +118,6 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 	@Override
 	public boolean saveOrUpdate(TermLoanParameterRequest termLoanParameterRequest, Long mappingId) {
 		CommonDocumentUtils.startHook(logger, "saveOrUpdate");
-		// TODO Auto-generated method stub
 		
 		TermLoanParameterTemp loanParameter =  termLoanParameterTempRepository.getTermLoanParameterTempByFpProductId(mappingId);
 		TermLoanParameter termLoanParameter = null;
@@ -187,7 +186,6 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 	@Override
 	public TermLoanParameterRequest getTermLoanParameterRequest(Long id) {
 		CommonDocumentUtils.startHook(logger, "getTermLoanParameterRequest");
-		// TODO Auto-generated method stub
 		TermLoanParameterRequest termLoanParameterRequest = new TermLoanParameterRequest();
 		TermLoanParameter loanParameter = termLoanParameterRepository.getById(id);
 		if(loanParameter==null)
@@ -413,7 +411,6 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 	}
 
 	private void saveNegativeIndustry(TermLoanParameterRequest termLoanParameterRequest) {
-		// TODO Auto-generated method stub
 		CommonDocumentUtils.startHook(logger, "saveNegativeIndustry");
 		NegativeIndustry negativeIndustry= null;
 		for (DataRequest dataRequest : termLoanParameterRequest.getNegativeIndustryList()) {
@@ -454,7 +451,6 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 	@Override
 	public TermLoanParameterRequest getTermLoanParameterRequestTemp(Long id,Long role,Long userId) {
 		CommonDocumentUtils.startHook(logger, "getTermLoanParameterRequest");
-		// TODO Auto-generated method stub
 		TermLoanParameterRequest termLoanParameterRequest = new TermLoanParameterRequest();
 		TermLoanParameterTemp loanParameter =  termLoanParameterTempRepository.getTermLoanParameterTempByFpProductId(id);
 		if(loanParameter==null)
@@ -615,7 +611,6 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 	@Override
 	public Boolean saveOrUpdateTemp(TermLoanParameterRequest termLoanParameterRequest) {
 		CommonDocumentUtils.startHook(logger, "saveOrUpdate");
-		// TODO Auto-generated method stub
 		
 		TermLoanParameterTemp termLoanParameter = null;
 		
@@ -796,7 +791,6 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 	}
 
 	private void saveNegativeIndustryTemp(TermLoanParameterRequest workingCapitalParameterRequest) {
-		// TODO Auto-generated method stub
 		CommonDocumentUtils.startHook(logger, "saveNegativeIndustryTemp");
 		NegativeIndustryTemp negativeIndustry= null;
 		for (DataRequest dataRequest : workingCapitalParameterRequest.getUnInterestedIndustrylist()) {

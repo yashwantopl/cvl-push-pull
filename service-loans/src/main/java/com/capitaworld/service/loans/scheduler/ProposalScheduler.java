@@ -48,7 +48,6 @@ public class ProposalScheduler {
 //			try {
 //				fp.sendMailToFsWhenMakerAcceptPorposal(parameters, applicantRequest, "Maaz Shaikh");
 //			} catch (Exception e) {
-//				// TODO Auto-generated catch block
 //				System.out.println("Exception inside main class:" + e.getMessage());
 //				e.printStackTrace();
 //			}

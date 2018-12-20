@@ -21,7 +21,6 @@ public class OperatingStatementDetailsServiceImpl implements OperatingStatementD
 
 	@Override
 	public void saveOrUpdate(OperatingStatementDetails operatingStatementDetails) {
-		// TODO Auto-generated method stub
 		operatingStatementDetailsRepository.save(operatingStatementDetails);
 
 	}
@@ -37,7 +36,6 @@ public class OperatingStatementDetailsServiceImpl implements OperatingStatementD
 
 	@Override
 	public void inActiveAssetsDetails(Long storageDetailsId) {
-		// TODO Auto-generated method stub
 		operatingStatementDetailsRepository.inActiveAssetsDetails(storageDetailsId);
 
 	}
