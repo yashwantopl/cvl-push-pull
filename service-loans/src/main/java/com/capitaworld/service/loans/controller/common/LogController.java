@@ -47,13 +47,13 @@ public class LogController {
 			if (CommonUtils.isObjectNullOrEmpty(applicationId)) {
 				logger.error("Application id must not be null.");
 				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Invalid data or Requested data not found.", HttpStatus.BAD_REQUEST.value()),
+						new LoansResponse(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, HttpStatus.BAD_REQUEST.value()),
 						HttpStatus.OK);
 			}
 			if (CommonUtils.isObjectNullOrEmpty(logType)) {
 				logger.error("logType  must not be null.");
 				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Invalid data or Requested data not found.", HttpStatus.BAD_REQUEST.value()),
+						new LoansResponse(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, HttpStatus.BAD_REQUEST.value()),
 						HttpStatus.OK);
 			}
 			LoansResponse loansResponse = new LoansResponse("Success Result", HttpStatus.OK.value());
@@ -78,7 +78,7 @@ public class LogController {
 			if (CommonUtils.isObjectNullOrEmpty(logDetailsModel)) {
 				logger.error("logDetails must not be null.");
 				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Invalid data or Requested data not found.", HttpStatus.BAD_REQUEST.value()),
+						new LoansResponse(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, HttpStatus.BAD_REQUEST.value()),
 						HttpStatus.OK);
 			}
 			

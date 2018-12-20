@@ -83,7 +83,7 @@ public class CorporateUploadServiceImpl implements CorporateUploadService {
 			DocumentResponse documentResponse = dmsClient.productImage(jsonObj.toString(), multipartFile);
 			return documentResponse;
 		} catch (DocumentException e) {
-			logger.error("Error while uploading Profile Document");
+			logger.error("Error while uploading Profile Document : ",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 

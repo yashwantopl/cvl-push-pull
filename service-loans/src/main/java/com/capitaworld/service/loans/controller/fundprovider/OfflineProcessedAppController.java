@@ -35,6 +35,7 @@ public class OfflineProcessedAppController {
 	
 	private static final Logger logger = LoggerFactory.getLogger(OfflineProcessedAppController.class);
 	private static final String ERROR_MSG_USER_VERIFICATION_INVALID_REQUEST_SOMETHING_WENT_WRONG = "user_verification, Invalid Request... Something went wrong : ";
+	private static final String WARN_MSG_USER_VERIFICATION_INVALID_REQUEST_CLIENT_ID_IS_NOT_VALID = "user_verification, Invalid Request... Client Id is not valid";
 	
 	@Autowired
 	private UsersClient usersClient;
@@ -63,12 +64,12 @@ public class OfflineProcessedAppController {
 						UserTypeRequest req = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>) response.getData(), UserTypeRequest.class);
 						userType = req.getId().intValue();
 					}else{
-						logger.warn("user_verification, Invalid Request... Client Id is not valid");
-						return new ResponseEntity<LoansResponse>(new LoansResponse("Client Id is not valid",HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+						logger.warn(WARN_MSG_USER_VERIFICATION_INVALID_REQUEST_CLIENT_ID_IS_NOT_VALID);
+						return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.CLIENT_ID_IS_NOT_VALID,HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 					}
 				}catch(Exception e) {
 					logger.error(ERROR_MSG_USER_VERIFICATION_INVALID_REQUEST_SOMETHING_WENT_WRONG,e);
-					return new ResponseEntity<LoansResponse>(new LoansResponse("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
+					return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
 				}
 			}else {
 				if(!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_TYPE))) {
@@ -97,7 +98,7 @@ public class OfflineProcessedAppController {
 				return new ResponseEntity<LoansResponse>(loansResponse,HttpStatus.OK);
 			}catch (Exception e){
 				loansResponse.setData(lst);
-				loansResponse.setMessage("Something went wrong..!");
+				loansResponse.setMessage(CommonUtils.SOMETHING_WENT_WRONG);
 				loansResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
 				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		}
@@ -125,12 +126,12 @@ public class OfflineProcessedAppController {
 						UserTypeRequest req = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>) response.getData(), UserTypeRequest.class);
 						userType = req.getId().intValue();
 					}else{
-						logger.warn("user_verification, Invalid Request... Client Id is not valid");
-						return new ResponseEntity<LoansResponse>(new LoansResponse("Client Id is not valid",HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+						logger.warn(WARN_MSG_USER_VERIFICATION_INVALID_REQUEST_CLIENT_ID_IS_NOT_VALID);
+						return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.CLIENT_ID_IS_NOT_VALID,HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 					}
 				}catch(Exception e) {
 					logger.error(ERROR_MSG_USER_VERIFICATION_INVALID_REQUEST_SOMETHING_WENT_WRONG,e);
-					return new ResponseEntity<LoansResponse>(new LoansResponse("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
+					return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
 				}
 			}else {
 				if(!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_TYPE))) {
@@ -159,7 +160,7 @@ public class OfflineProcessedAppController {
 				return new ResponseEntity<LoansResponse>(loansResponse,HttpStatus.OK);
 			}catch (Exception e){
 				loansResponse.setData(lst);
-				loansResponse.setMessage("Something went wrong..!");
+				loansResponse.setMessage(CommonUtils.SOMETHING_WENT_WRONG);
 				loansResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
 				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		}
@@ -187,12 +188,12 @@ public class OfflineProcessedAppController {
 						UserTypeRequest req = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>) response.getData(), UserTypeRequest.class);
 						userType = req.getId().intValue();
 					}else{
-						logger.warn("user_verification, Invalid Request... Client Id is not valid");
-						return new ResponseEntity<LoansResponse>(new LoansResponse("Client Id is not valid",HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+						logger.warn(WARN_MSG_USER_VERIFICATION_INVALID_REQUEST_CLIENT_ID_IS_NOT_VALID);
+						return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.CLIENT_ID_IS_NOT_VALID,HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 					}
 				}catch(Exception e) {
 					logger.error(ERROR_MSG_USER_VERIFICATION_INVALID_REQUEST_SOMETHING_WENT_WRONG,e);
-					return new ResponseEntity<LoansResponse>(new LoansResponse("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
+					return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
 				}
 			}else {
 				if(!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_TYPE))) {
@@ -221,7 +222,7 @@ public class OfflineProcessedAppController {
 				return new ResponseEntity<LoansResponse>(loansResponse,HttpStatus.OK);
 			}catch (Exception e){
 				loansResponse.setData(lst);
-				loansResponse.setMessage("Something went wrong..!");
+				loansResponse.setMessage(CommonUtils.SOMETHING_WENT_WRONG);
 				loansResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
 				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		}
@@ -249,12 +250,12 @@ public class OfflineProcessedAppController {
 						UserTypeRequest req = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>) response.getData(), UserTypeRequest.class);
 						userType = req.getId().intValue();
 					}else{
-						logger.warn("user_verification, Invalid Request... Client Id is not valid");
-						return new ResponseEntity<LoansResponse>(new LoansResponse("Client Id is not valid",HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+						logger.warn(WARN_MSG_USER_VERIFICATION_INVALID_REQUEST_CLIENT_ID_IS_NOT_VALID);
+						return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.CLIENT_ID_IS_NOT_VALID,HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 					}
 				}catch(Exception e) {
-					logger.error("user_verification, Invalid Request... Something went wrong : ",e);
-					return new ResponseEntity<LoansResponse>(new LoansResponse("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
+					logger.error(ERROR_MSG_USER_VERIFICATION_INVALID_REQUEST_SOMETHING_WENT_WRONG,e);
+					return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
 				}
 			}else {
 				if(!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_TYPE))) {
@@ -283,7 +284,7 @@ public class OfflineProcessedAppController {
 				return new ResponseEntity<LoansResponse>(loansResponse,HttpStatus.OK);
 			}catch (Exception e){
 				loansResponse.setData(lst);
-				loansResponse.setMessage("Something went wrong..!");
+				loansResponse.setMessage(CommonUtils.SOMETHING_WENT_WRONG);
 				loansResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
 				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		}
