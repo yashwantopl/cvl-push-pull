@@ -552,7 +552,22 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	private static final String EMAIL_MOBILE_OR_DATA_IN_EMAIL_MOBILE_MUST_NOT_BE_NULL = "emailMobile or Data in emailMobile must not be null===>{}";
 	private static final String MESSAGE_LITERAL = "message";
 	private static final String RESULT_LITERAL  = "result";
+	private static final String TENURE_LITERAL = "tenure";
 	private static final String PLEASE_FILL_PROFILE_DETAILS_TO_MOVE_NEXT = "Please Fill PROFILE details to Move Next !";
+	private static final String PLEASE_FILL_CO_APPLICANT_1_DETAILS_TO_MOVE_NEXT = "Please Fill CO-APPLICANT-1 details to Move Next !";
+	private static final String PLEASE_FILL_CO_APPLICANT_2_DETAILS_TO_MOVE_NEXT = "Please Fill CO-APPLICANT-2 details to Move Next !";
+	private static final String PLEASE_FILL_PRIMARY_INFORMATION_DETAILS_TO_MOVE_NEXT = "Please Fill PRIMARY INFORMATION details to Move Next !";
+	private static final String PLEASE_LOCK_PRIMARY_DETAILS_TO_MOVE_NEXT = "Please LOCK PRIMARY DETAILS to Move next !";
+	private static final String PLEASE_FILL_FINAL_MCQ_DETAILS_TO_MOVE_NEXT = "Please Fill FINAL MCQ details to Move Next !";
+	private static final String PLEASE_FILL_FINAL_INFORMATION_DETAILS_TO_MOVE_NEXT = "Please Fill FINAL INFORMATION details to Move Next !";
+	private static final String PLEASE_GUARANTOR_1_DETAILS_TO_MOVE_NEXT = "Please GUARANTOR-1 details to Move Next !";
+	private static final String PLEASE_FILL_GUARANTOR_1_DETAILS_TO_MOVE_NEXT = "Please Fill GUARANTOR-1 details to Move Next !";
+	private static final String PLEASE_GUARANTOR_2_DETAILS_TO_MOVE_NEXT = "Please GUARANTOR-2 details to Move Next !";
+	private static final String PLEASE_FILL_GUARANTOR_2_DETAILS_TO_MOVE_NEXT = "Please Fill GUARANTOR-2 details to Move Next !";
+	private static final String PLEASE_FILL_CO_APPLICANT_1_FINAL_DETAILS_TO_MOVE_NEXT = "Please Fill CO-APPLICANT-1 FINAL details to Move Next !";
+	private static final String PLEASE_FILL_CO_APPLICANT_2_FINAL_DETAILS_TO_MOVE_NEXT = "Please Fill CO-APPLICANT-2 FINAL details to Move Next !";
+	private static final String GET_LOAN_DETAILS_FOR_ADMIN_PANEL_FROM_AND_TO_DATE_FOR_ADMIN_PANEL = "GetLoanDetailsForAdminPanel, from and todate for admin panel --------> ";
+	private static final String DATE_FORMAT_YYYY_MM_DD_HH_MM_SS  = "yyyy/MM/dd hh:mm:ss";
 
     @Value("${cw.gst.unit.test}")
     private String IS_UNIT_TEST;
@@ -1744,7 +1759,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				if (coAppCount == 1) {
 					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsCoApp1DetailsFilled())
 							|| !applicationMaster.getIsCoApp1DetailsFilled().booleanValue()) {
-						response.put(MESSAGE_LITERAL, "Please Fill CO-APPLICANT-1 details to Move Next !");
+						response.put(MESSAGE_LITERAL, PLEASE_FILL_CO_APPLICANT_1_DETAILS_TO_MOVE_NEXT);
 						response.put(RESULT_LITERAL, false);
 						return response;
 					}
@@ -1753,13 +1768,13 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				if (coAppCount == 2) {
 					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsCoApp1DetailsFilled())
 							|| !applicationMaster.getIsCoApp1DetailsFilled().booleanValue()) {
-						response.put(MESSAGE_LITERAL, "Please Fill CO-APPLICANT-1 details to Move Next !");
+						response.put(MESSAGE_LITERAL, PLEASE_FILL_CO_APPLICANT_1_DETAILS_TO_MOVE_NEXT);
 						response.put(RESULT_LITERAL, false);
 						return response;
 					}
 					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsCoApp2DetailsFilled())
 							|| !applicationMaster.getIsCoApp2DetailsFilled().booleanValue()) {
-						response.put(MESSAGE_LITERAL, "Please Fill CO-APPLICANT-2 details to Move Next !");
+						response.put(MESSAGE_LITERAL, PLEASE_FILL_CO_APPLICANT_2_DETAILS_TO_MOVE_NEXT);
 						response.put(RESULT_LITERAL, false);
 						return response;
 					}
@@ -1777,7 +1792,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			}
 			if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsApplicantPrimaryFilled())
 					|| !applicationMaster.getIsApplicantPrimaryFilled().booleanValue()) {
-				response.put(MESSAGE_LITERAL, "Please Fill PRIMARY INFORMATION details to Move Next !");
+				response.put(MESSAGE_LITERAL, PLEASE_FILL_PRIMARY_INFORMATION_DETAILS_TO_MOVE_NEXT);
 				response.put(RESULT_LITERAL, false);
 				return response;
 			}
@@ -1792,7 +1807,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				if (coAppCount == 1) {
 					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsCoApp1DetailsFilled())
 							|| !applicationMaster.getIsCoApp1DetailsFilled().booleanValue()) {
-						response.put(MESSAGE_LITERAL, "Please Fill CO-APPLICANT-1 details to Move Next !");
+						response.put(MESSAGE_LITERAL, PLEASE_FILL_CO_APPLICANT_1_DETAILS_TO_MOVE_NEXT);
 						response.put(RESULT_LITERAL, false);
 						return response;
 					}
@@ -1801,13 +1816,13 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				if (coAppCount == 2) {
 					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsCoApp1DetailsFilled())
 							|| !applicationMaster.getIsCoApp1DetailsFilled().booleanValue()) {
-						response.put(MESSAGE_LITERAL, "Please Fill CO-APPLICANT-1 details to Move Next !");
+						response.put(MESSAGE_LITERAL, PLEASE_FILL_CO_APPLICANT_1_DETAILS_TO_MOVE_NEXT);
 						response.put(RESULT_LITERAL, false);
 						return response;
 					}
 					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsCoApp2DetailsFilled())
 							|| !applicationMaster.getIsCoApp2DetailsFilled().booleanValue()) {
-						response.put(MESSAGE_LITERAL, "Please Fill CO-APPLICANT-2 details to Move Next !");
+						response.put(MESSAGE_LITERAL, PLEASE_FILL_CO_APPLICANT_2_DETAILS_TO_MOVE_NEXT);
 						response.put(RESULT_LITERAL, false);
 						return response;
 					}
@@ -1816,7 +1831,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			}
 			isPrimaryLocked = isPrimaryLocked(applicationMaster.getId(), applicationMaster.getUserId());
 			if (!isPrimaryLocked) {
-				response.put(MESSAGE_LITERAL, "Please LOCK PRIMARY DETAILS to Move next !");
+				response.put(MESSAGE_LITERAL, PLEASE_LOCK_PRIMARY_DETAILS_TO_MOVE_NEXT);
 				response.put(RESULT_LITERAL, false);
 				return response;
 			}
@@ -1828,7 +1843,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			}
 			if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsApplicantPrimaryFilled())
 					|| !applicationMaster.getIsApplicantPrimaryFilled().booleanValue()) {
-				response.put(MESSAGE_LITERAL, "Please Fill PRIMARY INFORMATION details to Move Next !");
+				response.put(MESSAGE_LITERAL, PLEASE_FILL_PRIMARY_INFORMATION_DETAILS_TO_MOVE_NEXT);
 				response.put(RESULT_LITERAL, false);
 				return response;
 			}
@@ -1837,14 +1852,14 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			 * (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsPrimaryUploadFilled()
 			 * ) || !applicationMaster.getIsPrimaryUploadFilled().booleanValue()) {
 			 * response.put(MESSAGE_LITERAL,
-			 * "Please Fill PRIMARY INFORMATION details to Move Next !");
+			 * PLEASE_FILL_PRIMARY_INFORMATION_DETAILS_TO_MOVE_NEXT);
 			 * response.put(RESULT_LITERAL, false); return response; }
 			 */
 			break;
 		case CommonUtils.TabType.FINAL_INFORMATION:
 			isPrimaryLocked = isPrimaryLocked(applicationMaster.getId(), applicationMaster.getUserId());
 			if (!isPrimaryLocked) {
-				response.put(MESSAGE_LITERAL, "Please LOCK PRIMARY DETAILS to Move next !");
+				response.put(MESSAGE_LITERAL, PLEASE_LOCK_PRIMARY_DETAILS_TO_MOVE_NEXT);
 				response.put(RESULT_LITERAL, false);
 				return response;
 			}
@@ -1858,7 +1873,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			 * getIsApplicantPrimaryFilled()) ||
 			 * !applicationMaster.getIsApplicantPrimaryFilled().booleanValue()) {
 			 * response.put(MESSAGE_LITERAL,
-			 * "Please Fill PRIMARY INFORMATION details to Move Next !");
+			 * PLEASE_FILL_PRIMARY_INFORMATION_DETAILS_TO_MOVE_NEXT);
 			 * response.put(RESULT_LITERAL, false); return response; }
 			 */
 			// if
@@ -1872,7 +1887,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			if (CommonUtils.BusinessType.EXISTING_BUSINESS.getId().equals(applicationMaster.getBusinessTypeId())) {
 				if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsFinalMcqFilled())
 						|| !applicationMaster.getIsFinalMcqFilled().booleanValue()) {
-					response.put(MESSAGE_LITERAL, "Please Fill FINAL MCQ details to Move Next !");
+					response.put(MESSAGE_LITERAL, PLEASE_FILL_FINAL_MCQ_DETAILS_TO_MOVE_NEXT);
 					response.put(RESULT_LITERAL, false);
 					return response;
 				}
@@ -1882,7 +1897,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			isPrimaryLocked = isPrimaryLocked(applicationMaster.getId(), applicationMaster.getUserId());
 			/*
 			 * if (!isPrimaryLocked) { response.put(MESSAGE_LITERAL,
-			 * "Please LOCK PRIMARY DETAILS to Move next !"); response.put(RESULT_LITERAL, false);
+			 * PLEASE_LOCK_PRIMARY_DETAILS_TO_MOVE_NEXT); response.put(RESULT_LITERAL, false);
 			 * return response; } if (CommonUtils.isObjectNullOrEmpty(applicationMaster.
 			 * getIsApplicantDetailsFilled()) ||
 			 * !applicationMaster.getIsApplicantDetailsFilled().booleanValue()) {
@@ -1902,13 +1917,13 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			 * (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsPrimaryUploadFilled()
 			 * ) || !applicationMaster.getIsPrimaryUploadFilled().booleanValue()) {
 			 * response.put(MESSAGE_LITERAL,
-			 * "Please Fill PRIMARY INFORMATION details to Move Next !");
+			 * PLEASE_FILL_PRIMARY_INFORMATION_DETAILS_TO_MOVE_NEXT);
 			 * response.put(RESULT_LITERAL, false); return response; }
 			 */
 			if (CommonUtils.BusinessType.EXISTING_BUSINESS.getId().equals(applicationMaster.getBusinessTypeId())) {
 				if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsFinalMcqFilled())
 						|| !applicationMaster.getIsFinalMcqFilled().booleanValue()) {
-					response.put(MESSAGE_LITERAL, "Please Fill FINAL MCQ details to Move Next !");
+					response.put(MESSAGE_LITERAL, PLEASE_FILL_FINAL_MCQ_DETAILS_TO_MOVE_NEXT);
 					response.put(RESULT_LITERAL, false);
 					return response;
 				}
@@ -1916,7 +1931,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 			if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsApplicantFinalFilled())
 					|| !applicationMaster.getIsApplicantFinalFilled().booleanValue()) {
-				response.put(MESSAGE_LITERAL, "Please Fill FINAL INFORMATION details to Move Next !");
+				response.put(MESSAGE_LITERAL, PLEASE_FILL_FINAL_INFORMATION_DETAILS_TO_MOVE_NEXT);
 				response.put(RESULT_LITERAL, false);
 				return response;
 			}
@@ -1924,7 +1939,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		case CommonUtils.TabType.FINAL_UPLOAD:
 			isPrimaryLocked = isPrimaryLocked(applicationMaster.getId(), applicationMaster.getUserId());
 			if (!isPrimaryLocked) {
-				response.put(MESSAGE_LITERAL, "Please LOCK PRIMARY DETAILS to Move next !");
+				response.put(MESSAGE_LITERAL, PLEASE_LOCK_PRIMARY_DETAILS_TO_MOVE_NEXT);
 				response.put(RESULT_LITERAL, false);
 				return response;
 			}
@@ -1939,7 +1954,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			 * getIsApplicantPrimaryFilled()) ||
 			 * !applicationMaster.getIsApplicantPrimaryFilled().booleanValue()) {
 			 * response.put(MESSAGE_LITERAL,
-			 * "Please Fill PRIMARY INFORMATION details to Move Next !");
+			 * PLEASE_FILL_PRIMARY_INFORMATION_DETAILS_TO_MOVE_NEXT);
 			 * response.put(RESULT_LITERAL, false); return response; }
 			 */
 			/*
@@ -1947,13 +1962,13 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			 * (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsPrimaryUploadFilled()
 			 * ) || !applicationMaster.getIsPrimaryUploadFilled().booleanValue()) {
 			 * response.put(MESSAGE_LITERAL,
-			 * "Please Fill PRIMARY INFORMATION details to Move Next !");
+			 * PLEASE_FILL_PRIMARY_INFORMATION_DETAILS_TO_MOVE_NEXT);
 			 * response.put(RESULT_LITERAL, false); return response; }
 			 */
 			if (CommonUtils.BusinessType.EXISTING_BUSINESS.getId().equals(applicationMaster.getBusinessTypeId())) {
 				if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsFinalMcqFilled())
 						|| !applicationMaster.getIsFinalMcqFilled().booleanValue()) {
-					response.put(MESSAGE_LITERAL, "Please Fill FINAL MCQ details to Move Next !");
+					response.put(MESSAGE_LITERAL, PLEASE_FILL_FINAL_MCQ_DETAILS_TO_MOVE_NEXT);
 					response.put(RESULT_LITERAL, false);
 					return response;
 				}
@@ -1961,7 +1976,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 			if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsApplicantFinalFilled())
 					|| !applicationMaster.getIsApplicantFinalFilled().booleanValue()) {
-				response.put(MESSAGE_LITERAL, "Please Fill FINAL INFORMATION details to Move Next !");
+				response.put(MESSAGE_LITERAL, PLEASE_FILL_FINAL_INFORMATION_DETAILS_TO_MOVE_NEXT);
 				response.put(RESULT_LITERAL, false);
 				return response;
 			}
@@ -2062,7 +2077,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				if (coAppCount == 1) {
 					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsCoApp1DetailsFilled())
 							|| !applicationMaster.getIsCoApp1DetailsFilled().booleanValue()) {
-						response.put(MESSAGE_LITERAL, "Please Fill CO-APPLICANT-1 details to Move Next !");
+						response.put(MESSAGE_LITERAL, PLEASE_FILL_CO_APPLICANT_1_DETAILS_TO_MOVE_NEXT);
 						response.put(RESULT_LITERAL, false);
 						return response;
 					}
@@ -2070,13 +2085,13 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				if (coAppCount == 2) {
 					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsCoApp1DetailsFilled())
 							|| !applicationMaster.getIsCoApp1DetailsFilled().booleanValue()) {
-						response.put(MESSAGE_LITERAL, "Please Fill CO-APPLICANT-1 details to Move Next !");
+						response.put(MESSAGE_LITERAL, PLEASE_FILL_CO_APPLICANT_1_DETAILS_TO_MOVE_NEXT);
 						response.put(RESULT_LITERAL, false);
 						return response;
 					}
 					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsCoApp2DetailsFilled())
 							|| !applicationMaster.getIsCoApp2DetailsFilled().booleanValue()) {
-						response.put(MESSAGE_LITERAL, "Please Fill CO-APPLICANT-2 details to Move Next !");
+						response.put(MESSAGE_LITERAL, PLEASE_FILL_CO_APPLICANT_2_DETAILS_TO_MOVE_NEXT);
 						response.put(RESULT_LITERAL, false);
 						return response;
 					}
@@ -2102,7 +2117,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			if (index == 1) {
 				if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsGuarantor1DetailsFilled())
 						|| !applicationMaster.getIsGuarantor1DetailsFilled().booleanValue()) {
-					response.put(MESSAGE_LITERAL, "Please GUARANTOR-1 details to Move Next !");
+					response.put(MESSAGE_LITERAL, PLEASE_GUARANTOR_1_DETAILS_TO_MOVE_NEXT);
 					response.put(RESULT_LITERAL, false);
 					return response;
 				}
@@ -2124,7 +2139,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				if (coAppCount == 1) {
 					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsCoApp1DetailsFilled())
 							|| !applicationMaster.getIsCoApp1DetailsFilled().booleanValue()) {
-						response.put(MESSAGE_LITERAL, "Please Fill CO-APPLICANT-1 details to Move Next !");
+						response.put(MESSAGE_LITERAL, PLEASE_FILL_CO_APPLICANT_1_DETAILS_TO_MOVE_NEXT);
 						response.put(RESULT_LITERAL, false);
 						return response;
 					}
@@ -2133,13 +2148,13 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				if (coAppCount == 2) {
 					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsCoApp1DetailsFilled())
 							|| !applicationMaster.getIsCoApp1DetailsFilled().booleanValue()) {
-						response.put(MESSAGE_LITERAL, "Please Fill CO-APPLICANT-1 details to Move Next !");
+						response.put(MESSAGE_LITERAL, PLEASE_FILL_CO_APPLICANT_1_DETAILS_TO_MOVE_NEXT);
 						response.put(RESULT_LITERAL, false);
 						return response;
 					}
 					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsCoApp2DetailsFilled())
 							|| !applicationMaster.getIsCoApp2DetailsFilled().booleanValue()) {
-						response.put(MESSAGE_LITERAL, "Please Fill CO-APPLICANT-2 details to Move Next !");
+						response.put(MESSAGE_LITERAL, PLEASE_FILL_CO_APPLICANT_2_DETAILS_TO_MOVE_NEXT);
 						response.put(RESULT_LITERAL, false);
 						return response;
 					}
@@ -2153,7 +2168,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				if (guarantorCount == 1) {
 					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsGuarantor1DetailsFilled())
 							|| !applicationMaster.getIsGuarantor1DetailsFilled().booleanValue()) {
-						response.put(MESSAGE_LITERAL, "Please Fill GUARANTOR-1 details to Move Next !");
+						response.put(MESSAGE_LITERAL, PLEASE_FILL_GUARANTOR_1_DETAILS_TO_MOVE_NEXT);
 						response.put(RESULT_LITERAL, false);
 						return response;
 					}
@@ -2162,13 +2177,13 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				if (guarantorCount == 2) {
 					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsGuarantor1DetailsFilled())
 							|| !applicationMaster.getIsGuarantor1DetailsFilled().booleanValue()) {
-						response.put(MESSAGE_LITERAL, "Please GUARANTOR-1 details to Move Next !");
+						response.put(MESSAGE_LITERAL, PLEASE_GUARANTOR_1_DETAILS_TO_MOVE_NEXT);
 						response.put(RESULT_LITERAL, false);
 						return response;
 					}
 					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsGuarantor2DetailsFilled())
 							|| !applicationMaster.getIsGuarantor2DetailsFilled().booleanValue()) {
-						response.put(MESSAGE_LITERAL, "Please GUARANTOR-2 details to Move Next !");
+						response.put(MESSAGE_LITERAL, PLEASE_GUARANTOR_2_DETAILS_TO_MOVE_NEXT);
 						response.put(RESULT_LITERAL, false);
 						return response;
 					}
@@ -2191,7 +2206,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				if (coAppCount == 1) {
 					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsCoApp1DetailsFilled())
 							|| !applicationMaster.getIsCoApp1DetailsFilled().booleanValue()) {
-						response.put(MESSAGE_LITERAL, "Please Fill CO-APPLICANT-1 details to Move Next !");
+						response.put(MESSAGE_LITERAL, PLEASE_FILL_CO_APPLICANT_1_DETAILS_TO_MOVE_NEXT);
 						response.put(RESULT_LITERAL, false);
 						return response;
 					}
@@ -2200,13 +2215,13 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				if (coAppCount == 2) {
 					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsCoApp1DetailsFilled())
 							|| !applicationMaster.getIsCoApp1DetailsFilled().booleanValue()) {
-						response.put(MESSAGE_LITERAL, "Please Fill CO-APPLICANT-1 details to Move Next !");
+						response.put(MESSAGE_LITERAL, PLEASE_FILL_CO_APPLICANT_1_DETAILS_TO_MOVE_NEXT);
 						response.put(RESULT_LITERAL, false);
 						return response;
 					}
 					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsCoApp2DetailsFilled())
 							|| !applicationMaster.getIsCoApp2DetailsFilled().booleanValue()) {
-						response.put(MESSAGE_LITERAL, "Please Fill CO-APPLICANT-2 details to Move Next !");
+						response.put(MESSAGE_LITERAL, PLEASE_FILL_CO_APPLICANT_2_DETAILS_TO_MOVE_NEXT);
 						response.put(RESULT_LITERAL, false);
 						return response;
 					}
@@ -2220,7 +2235,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				if (guarantorCount == 1) {
 					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsGuarantor1DetailsFilled())
 							|| !applicationMaster.getIsGuarantor1DetailsFilled().booleanValue()) {
-						response.put(MESSAGE_LITERAL, "Please Fill GUARANTOR-1 details to Move Next !");
+						response.put(MESSAGE_LITERAL, PLEASE_FILL_GUARANTOR_1_DETAILS_TO_MOVE_NEXT);
 						response.put(RESULT_LITERAL, false);
 						return response;
 					}
@@ -2229,13 +2244,13 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				if (guarantorCount == 2) {
 					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsGuarantor1DetailsFilled())
 							|| !applicationMaster.getIsGuarantor1DetailsFilled().booleanValue()) {
-						response.put(MESSAGE_LITERAL, "Please GUARANTOR-1 details to Move Next !");
+						response.put(MESSAGE_LITERAL, PLEASE_GUARANTOR_1_DETAILS_TO_MOVE_NEXT);
 						response.put(RESULT_LITERAL, false);
 						return response;
 					}
 					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsGuarantor2DetailsFilled())
 							|| !applicationMaster.getIsGuarantor2DetailsFilled().booleanValue()) {
-						response.put(MESSAGE_LITERAL, "Please GUARANTOR-2 details to Move Next !");
+						response.put(MESSAGE_LITERAL, PLEASE_GUARANTOR_2_DETAILS_TO_MOVE_NEXT);
 						response.put(RESULT_LITERAL, false);
 						return response;
 					}
@@ -2245,7 +2260,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			// Primary Information Tab Validating
 			if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsApplicantPrimaryFilled())
 					|| !applicationMaster.getIsApplicantPrimaryFilled().booleanValue()) {
-				response.put(MESSAGE_LITERAL, "Please Fill PRIMARY INFORMATION details to Move Next !");
+				response.put(MESSAGE_LITERAL, PLEASE_FILL_PRIMARY_INFORMATION_DETAILS_TO_MOVE_NEXT);
 				response.put(RESULT_LITERAL, false);
 				return response;
 			}
@@ -2253,7 +2268,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		case CommonUtils.TabType.FINAL_INFORMATION:
 			isPrimaryLocked = isPrimaryLocked(applicationMaster.getId(), applicationMaster.getUserId());
 			if (!isPrimaryLocked) {
-				response.put(MESSAGE_LITERAL, "Please LOCK PRIMARY DETAILS to Move next !");
+				response.put(MESSAGE_LITERAL, PLEASE_LOCK_PRIMARY_DETAILS_TO_MOVE_NEXT);
 				response.put(RESULT_LITERAL, false);
 				return response;
 			}
@@ -2272,7 +2287,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				if (coAppCount == 1) {
 					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsCoApp1DetailsFilled())
 							|| !applicationMaster.getIsCoApp1DetailsFilled().booleanValue()) {
-						response.put(MESSAGE_LITERAL, "Please Fill CO-APPLICANT-1 details to Move Next !");
+						response.put(MESSAGE_LITERAL, PLEASE_FILL_CO_APPLICANT_1_DETAILS_TO_MOVE_NEXT);
 						response.put(RESULT_LITERAL, false);
 						return response;
 					}
@@ -2281,13 +2296,13 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				if (coAppCount == 2) {
 					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsCoApp1DetailsFilled())
 							|| !applicationMaster.getIsCoApp1DetailsFilled().booleanValue()) {
-						response.put(MESSAGE_LITERAL, "Please Fill CO-APPLICANT-1 details to Move Next !");
+						response.put(MESSAGE_LITERAL, PLEASE_FILL_CO_APPLICANT_1_DETAILS_TO_MOVE_NEXT);
 						response.put(RESULT_LITERAL, false);
 						return response;
 					}
 					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsCoApp2DetailsFilled())
 							|| !applicationMaster.getIsCoApp2DetailsFilled().booleanValue()) {
-						response.put(MESSAGE_LITERAL, "Please Fill CO-APPLICANT-2 details to Move Next !");
+						response.put(MESSAGE_LITERAL, PLEASE_FILL_CO_APPLICANT_2_DETAILS_TO_MOVE_NEXT);
 						response.put(RESULT_LITERAL, false);
 						return response;
 					}
@@ -2301,7 +2316,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				if (guarantorCount == 1) {
 					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsGuarantor1DetailsFilled())
 							|| !applicationMaster.getIsGuarantor1DetailsFilled().booleanValue()) {
-						response.put(MESSAGE_LITERAL, "Please Fill GUARANTOR-1 details to Move Next !");
+						response.put(MESSAGE_LITERAL, PLEASE_FILL_GUARANTOR_1_DETAILS_TO_MOVE_NEXT);
 						response.put(RESULT_LITERAL, false);
 						return response;
 					}
@@ -2310,13 +2325,13 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				if (guarantorCount == 2) {
 					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsGuarantor1DetailsFilled())
 							|| !applicationMaster.getIsGuarantor1DetailsFilled().booleanValue()) {
-						response.put(MESSAGE_LITERAL, "Please GUARANTOR-1 details to Move Next !");
+						response.put(MESSAGE_LITERAL, PLEASE_GUARANTOR_1_DETAILS_TO_MOVE_NEXT);
 						response.put(RESULT_LITERAL, false);
 						return response;
 					}
 					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsGuarantor2DetailsFilled())
 							|| !applicationMaster.getIsGuarantor2DetailsFilled().booleanValue()) {
-						response.put(MESSAGE_LITERAL, "Please GUARANTOR-2 details to Move Next !");
+						response.put(MESSAGE_LITERAL, PLEASE_GUARANTOR_2_DETAILS_TO_MOVE_NEXT);
 						response.put(RESULT_LITERAL, false);
 						return response;
 					}
@@ -2326,7 +2341,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			// Primary Information Tab Validating
 			if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsApplicantPrimaryFilled())
 					|| !applicationMaster.getIsApplicantPrimaryFilled().booleanValue()) {
-				response.put(MESSAGE_LITERAL, "Please Fill PRIMARY INFORMATION details to Move Next !");
+				response.put(MESSAGE_LITERAL, PLEASE_FILL_PRIMARY_INFORMATION_DETAILS_TO_MOVE_NEXT);
 				response.put(RESULT_LITERAL, false);
 				return response;
 			}
@@ -2343,7 +2358,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		case CommonUtils.TabType.FINAL_CO_APPLICANT:
 			isPrimaryLocked = isPrimaryLocked(applicationMaster.getId(), applicationMaster.getUserId());
 			if (!isPrimaryLocked) {
-				response.put(MESSAGE_LITERAL, "Please LOCK PRIMARY DETAILS to Move next !");
+				response.put(MESSAGE_LITERAL, PLEASE_LOCK_PRIMARY_DETAILS_TO_MOVE_NEXT);
 				response.put(RESULT_LITERAL, false);
 				return response;
 			}
@@ -2376,14 +2391,14 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				if (i == 0) {
 					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsCoApp1DetailsFilled())
 							|| !applicationMaster.getIsCoApp1DetailsFilled().booleanValue()) {
-						response.put(MESSAGE_LITERAL, "Please Fill CO-APPLICANT-1 details to Move Next !");
+						response.put(MESSAGE_LITERAL, PLEASE_FILL_CO_APPLICANT_1_DETAILS_TO_MOVE_NEXT);
 						response.put(RESULT_LITERAL, false);
 						return response;
 					}
 				} else {
 					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsCoApp2DetailsFilled())
 							|| !applicationMaster.getIsCoApp2DetailsFilled().booleanValue()) {
-						response.put(MESSAGE_LITERAL, "Please Fill CO-APPLICANT-2 details to Move Next !");
+						response.put(MESSAGE_LITERAL, PLEASE_FILL_CO_APPLICANT_2_DETAILS_TO_MOVE_NEXT);
 						response.put(RESULT_LITERAL, false);
 						return response;
 					}
@@ -2397,14 +2412,14 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				if (i == 0) {
 					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsGuarantor1DetailsFilled())
 							|| !applicationMaster.getIsGuarantor1DetailsFilled().booleanValue()) {
-						response.put(MESSAGE_LITERAL, "Please Fill GUARANTOR-1 details to Move Next !");
+						response.put(MESSAGE_LITERAL, PLEASE_FILL_GUARANTOR_1_DETAILS_TO_MOVE_NEXT);
 						response.put(RESULT_LITERAL, false);
 						return response;
 					}
 				} else {
 					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsGuarantor2DetailsFilled())
 							|| !applicationMaster.getIsGuarantor2DetailsFilled().booleanValue()) {
-						response.put(MESSAGE_LITERAL, "Please Fill GUARANTOR-2 details to Move Next !");
+						response.put(MESSAGE_LITERAL, PLEASE_FILL_GUARANTOR_2_DETAILS_TO_MOVE_NEXT);
 						response.put(RESULT_LITERAL, false);
 						return response;
 					}
@@ -2412,7 +2427,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			}
 			if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsApplicantPrimaryFilled())
 					|| !applicationMaster.getIsApplicantPrimaryFilled().booleanValue()) {
-				response.put(MESSAGE_LITERAL, "Please Fill PRIMARY INFORMATION details to Move Next !");
+				response.put(MESSAGE_LITERAL, PLEASE_FILL_PRIMARY_INFORMATION_DETAILS_TO_MOVE_NEXT);
 				response.put(RESULT_LITERAL, false);
 				return response;
 			}
@@ -2425,7 +2440,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			 */
 			if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsApplicantFinalFilled())
 					|| !applicationMaster.getIsApplicantFinalFilled().booleanValue()) {
-				response.put(MESSAGE_LITERAL, "Please Fill FINAL INFORMATION details to Move Next !");
+				response.put(MESSAGE_LITERAL, PLEASE_FILL_FINAL_INFORMATION_DETAILS_TO_MOVE_NEXT);
 				response.put(RESULT_LITERAL, false);
 				return response;
 			}
@@ -2444,7 +2459,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		case CommonUtils.TabType.FINAL_GUARANTOR:
 			isPrimaryLocked = isPrimaryLocked(applicationMaster.getId(), applicationMaster.getUserId());
 			if (!isPrimaryLocked) {
-				response.put(MESSAGE_LITERAL, "Please LOCK PRIMARY DETAILS to Move next !");
+				response.put(MESSAGE_LITERAL, PLEASE_LOCK_PRIMARY_DETAILS_TO_MOVE_NEXT);
 				response.put(RESULT_LITERAL, false);
 				return response;
 			}
@@ -2463,14 +2478,14 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				if (i == 0) {
 					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsCoApp1DetailsFilled())
 							|| !applicationMaster.getIsCoApp1DetailsFilled().booleanValue()) {
-						response.put(MESSAGE_LITERAL, "Please Fill CO-APPLICANT-1 details to Move Next !");
+						response.put(MESSAGE_LITERAL, PLEASE_FILL_CO_APPLICANT_1_DETAILS_TO_MOVE_NEXT);
 						response.put(RESULT_LITERAL, false);
 						return response;
 					}
 				} else {
 					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsCoApp2DetailsFilled())
 							|| !applicationMaster.getIsCoApp2DetailsFilled().booleanValue()) {
-						response.put(MESSAGE_LITERAL, "Please Fill CO-APPLICANT-2 details to Move Next !");
+						response.put(MESSAGE_LITERAL, PLEASE_FILL_CO_APPLICANT_2_DETAILS_TO_MOVE_NEXT);
 						response.put(RESULT_LITERAL, false);
 						return response;
 					}
@@ -2497,14 +2512,14 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				if (i == 0) {
 					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsGuarantor1DetailsFilled())
 							|| !applicationMaster.getIsGuarantor1DetailsFilled().booleanValue()) {
-						response.put(MESSAGE_LITERAL, "Please Fill GUARANTOR-1 details to Move Next !");
+						response.put(MESSAGE_LITERAL, PLEASE_FILL_GUARANTOR_1_DETAILS_TO_MOVE_NEXT);
 						response.put(RESULT_LITERAL, false);
 						return response;
 					}
 				} else {
 					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsGuarantor2DetailsFilled())
 							|| !applicationMaster.getIsGuarantor2DetailsFilled().booleanValue()) {
-						response.put(MESSAGE_LITERAL, "Please Fill GUARANTOR-2 details to Move Next !");
+						response.put(MESSAGE_LITERAL, PLEASE_FILL_GUARANTOR_2_DETAILS_TO_MOVE_NEXT);
 						response.put(RESULT_LITERAL, false);
 						return response;
 					}
@@ -2513,7 +2528,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 			if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsApplicantPrimaryFilled())
 					|| !applicationMaster.getIsApplicantPrimaryFilled().booleanValue()) {
-				response.put(MESSAGE_LITERAL, "Please Fill PRIMARY INFORMATION details to Move Next !");
+				response.put(MESSAGE_LITERAL, PLEASE_FILL_PRIMARY_INFORMATION_DETAILS_TO_MOVE_NEXT);
 				response.put(RESULT_LITERAL, false);
 				return response;
 			}
@@ -2526,7 +2541,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			 */
 			if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsApplicantFinalFilled())
 					|| !applicationMaster.getIsApplicantFinalFilled().booleanValue()) {
-				response.put(MESSAGE_LITERAL, "Please Fill FINAL INFORMATION details to Move Next !");
+				response.put(MESSAGE_LITERAL, PLEASE_FILL_FINAL_INFORMATION_DETAILS_TO_MOVE_NEXT);
 				response.put(RESULT_LITERAL, false);
 				return response;
 			}
@@ -2538,14 +2553,14 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				if (i == 0) {
 					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsCoApp1FinalFilled())
 							|| !applicationMaster.getIsCoApp1FinalFilled().booleanValue()) {
-						response.put(MESSAGE_LITERAL, "Please Fill CO-APPLICANT-1 FINAL details to Move Next !");
+						response.put(MESSAGE_LITERAL, PLEASE_FILL_CO_APPLICANT_1_FINAL_DETAILS_TO_MOVE_NEXT);
 						response.put(RESULT_LITERAL, false);
 						return response;
 					}
 				} else {
 					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsCoApp2FinalFilled())
 							|| !applicationMaster.getIsCoApp2FinalFilled().booleanValue()) {
-						response.put(MESSAGE_LITERAL, "Please Fill CO-APPLICANT-2 FINAL details to Move Next !");
+						response.put(MESSAGE_LITERAL, PLEASE_FILL_CO_APPLICANT_2_FINAL_DETAILS_TO_MOVE_NEXT);
 						response.put(RESULT_LITERAL, false);
 						return response;
 					}
@@ -2567,7 +2582,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		case CommonUtils.TabType.FINAL_MCQ:
 			isPrimaryLocked = isPrimaryLocked(applicationMaster.getId(), applicationMaster.getUserId());
 			if (!isPrimaryLocked) {
-				response.put(MESSAGE_LITERAL, "Please LOCK PRIMARY DETAILS to Move next !");
+				response.put(MESSAGE_LITERAL, PLEASE_LOCK_PRIMARY_DETAILS_TO_MOVE_NEXT);
 				response.put(RESULT_LITERAL, false);
 				return response;
 			}
@@ -2586,14 +2601,14 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				if (i == 0) {
 					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsCoApp1DetailsFilled())
 							|| !applicationMaster.getIsCoApp1DetailsFilled().booleanValue()) {
-						response.put(MESSAGE_LITERAL, "Please Fill CO-APPLICANT-1 details to Move Next !");
+						response.put(MESSAGE_LITERAL, PLEASE_FILL_CO_APPLICANT_1_DETAILS_TO_MOVE_NEXT);
 						response.put(RESULT_LITERAL, false);
 						return response;
 					}
 				} else {
 					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsCoApp2DetailsFilled())
 							|| !applicationMaster.getIsCoApp2DetailsFilled().booleanValue()) {
-						response.put(MESSAGE_LITERAL, "Please Fill CO-APPLICANT-2 details to Move Next !");
+						response.put(MESSAGE_LITERAL, PLEASE_FILL_CO_APPLICANT_2_DETAILS_TO_MOVE_NEXT);
 						response.put(RESULT_LITERAL, false);
 						return response;
 					}
@@ -2607,14 +2622,14 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				if (i == 0) {
 					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsGuarantor1DetailsFilled())
 							|| !applicationMaster.getIsGuarantor1DetailsFilled().booleanValue()) {
-						response.put(MESSAGE_LITERAL, "Please Fill GUARANTOR-1 details to Move Next !");
+						response.put(MESSAGE_LITERAL, PLEASE_FILL_GUARANTOR_1_DETAILS_TO_MOVE_NEXT);
 						response.put(RESULT_LITERAL, false);
 						return response;
 					}
 				} else {
 					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsGuarantor2DetailsFilled())
 							|| !applicationMaster.getIsGuarantor2DetailsFilled().booleanValue()) {
-						response.put(MESSAGE_LITERAL, "Please Fill GUARANTOR-2 details to Move Next !");
+						response.put(MESSAGE_LITERAL, PLEASE_FILL_GUARANTOR_2_DETAILS_TO_MOVE_NEXT);
 						response.put(RESULT_LITERAL, false);
 						return response;
 					}
@@ -2623,7 +2638,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 			if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsApplicantPrimaryFilled())
 					|| !applicationMaster.getIsApplicantPrimaryFilled().booleanValue()) {
-				response.put(MESSAGE_LITERAL, "Please Fill PRIMARY INFORMATION details to Move Next !");
+				response.put(MESSAGE_LITERAL, PLEASE_FILL_PRIMARY_INFORMATION_DETAILS_TO_MOVE_NEXT);
 				response.put(RESULT_LITERAL, false);
 				return response;
 			}
@@ -2636,7 +2651,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			 */
 			if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsApplicantFinalFilled())
 					|| !applicationMaster.getIsApplicantFinalFilled().booleanValue()) {
-				response.put(MESSAGE_LITERAL, "Please Fill FINAL INFORMATION details to Move Next !");
+				response.put(MESSAGE_LITERAL, PLEASE_FILL_FINAL_INFORMATION_DETAILS_TO_MOVE_NEXT);
 				response.put(RESULT_LITERAL, false);
 				return response;
 			}
@@ -2646,14 +2661,14 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				if (i == 0) {
 					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsCoApp1FinalFilled())
 							|| !applicationMaster.getIsCoApp1FinalFilled().booleanValue()) {
-						response.put(MESSAGE_LITERAL, "Please Fill CO-APPLICANT-1 FINAL details to Move Next !");
+						response.put(MESSAGE_LITERAL, PLEASE_FILL_CO_APPLICANT_1_FINAL_DETAILS_TO_MOVE_NEXT);
 						response.put(RESULT_LITERAL, false);
 						return response;
 					}
 				} else {
 					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsCoApp2FinalFilled())
 							|| !applicationMaster.getIsCoApp2FinalFilled().booleanValue()) {
-						response.put(MESSAGE_LITERAL, "Please Fill CO-APPLICANT-2 FINAL details to Move Next !");
+						response.put(MESSAGE_LITERAL, PLEASE_FILL_CO_APPLICANT_2_FINAL_DETAILS_TO_MOVE_NEXT);
 						response.put(RESULT_LITERAL, false);
 						return response;
 					}
@@ -2686,7 +2701,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		case CommonUtils.TabType.FINAL_UPLOAD:
 			isPrimaryLocked = isPrimaryLocked(applicationMaster.getId(), applicationMaster.getUserId());
 			if (!isPrimaryLocked) {
-				response.put(MESSAGE_LITERAL, "Please LOCK PRIMARY DETAILS to Move next !");
+				response.put(MESSAGE_LITERAL, PLEASE_LOCK_PRIMARY_DETAILS_TO_MOVE_NEXT);
 				response.put(RESULT_LITERAL, false);
 				return response;
 			}
@@ -2705,14 +2720,14 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				if (i == 0) {
 					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsCoApp1DetailsFilled())
 							|| !applicationMaster.getIsCoApp1DetailsFilled().booleanValue()) {
-						response.put(MESSAGE_LITERAL, "Please Fill CO-APPLICANT-1 details to Move Next !");
+						response.put(MESSAGE_LITERAL, PLEASE_FILL_CO_APPLICANT_1_DETAILS_TO_MOVE_NEXT);
 						response.put(RESULT_LITERAL, false);
 						return response;
 					}
 				} else {
 					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsCoApp2DetailsFilled())
 							|| !applicationMaster.getIsCoApp2DetailsFilled().booleanValue()) {
-						response.put(MESSAGE_LITERAL, "Please Fill CO-APPLICANT-2 details to Move Next !");
+						response.put(MESSAGE_LITERAL, PLEASE_FILL_CO_APPLICANT_2_DETAILS_TO_MOVE_NEXT);
 						response.put(RESULT_LITERAL, false);
 						return response;
 					}
@@ -2726,14 +2741,14 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				if (i == 0) {
 					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsGuarantor1DetailsFilled())
 							|| !applicationMaster.getIsGuarantor1DetailsFilled().booleanValue()) {
-						response.put(MESSAGE_LITERAL, "Please Fill GUARANTOR-1 details to Move Next !");
+						response.put(MESSAGE_LITERAL, PLEASE_FILL_GUARANTOR_1_DETAILS_TO_MOVE_NEXT);
 						response.put(RESULT_LITERAL, false);
 						return response;
 					}
 				} else {
 					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsGuarantor2DetailsFilled())
 							|| !applicationMaster.getIsGuarantor2DetailsFilled().booleanValue()) {
-						response.put(MESSAGE_LITERAL, "Please Fill GUARANTOR-2 details to Move Next !");
+						response.put(MESSAGE_LITERAL, PLEASE_FILL_GUARANTOR_2_DETAILS_TO_MOVE_NEXT);
 						response.put(RESULT_LITERAL, false);
 						return response;
 					}
@@ -2742,7 +2757,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 			if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsApplicantPrimaryFilled())
 					|| !applicationMaster.getIsApplicantPrimaryFilled().booleanValue()) {
-				response.put(MESSAGE_LITERAL, "Please Fill PRIMARY INFORMATION details to Move Next !");
+				response.put(MESSAGE_LITERAL, PLEASE_FILL_PRIMARY_INFORMATION_DETAILS_TO_MOVE_NEXT);
 				response.put(RESULT_LITERAL, false);
 				return response;
 			}
@@ -2755,7 +2770,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			 */
 			if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsApplicantFinalFilled())
 					|| !applicationMaster.getIsApplicantFinalFilled().booleanValue()) {
-				response.put(MESSAGE_LITERAL, "Please Fill FINAL INFORMATION details to Move Next !");
+				response.put(MESSAGE_LITERAL, PLEASE_FILL_FINAL_INFORMATION_DETAILS_TO_MOVE_NEXT);
 				response.put(RESULT_LITERAL, false);
 				return response;
 			}
@@ -2765,14 +2780,14 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				if (i == 0) {
 					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsCoApp1FinalFilled())
 							|| !applicationMaster.getIsCoApp1FinalFilled().booleanValue()) {
-						response.put(MESSAGE_LITERAL, "Please Fill CO-APPLICANT-1 FINAL details to Move Next !");
+						response.put(MESSAGE_LITERAL, PLEASE_FILL_CO_APPLICANT_1_FINAL_DETAILS_TO_MOVE_NEXT);
 						response.put(RESULT_LITERAL, false);
 						return response;
 					}
 				} else {
 					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsCoApp2FinalFilled())
 							|| !applicationMaster.getIsCoApp2FinalFilled().booleanValue()) {
-						response.put(MESSAGE_LITERAL, "Please Fill CO-APPLICANT-2 FINAL details to Move Next !");
+						response.put(MESSAGE_LITERAL, PLEASE_FILL_CO_APPLICANT_2_FINAL_DETAILS_TO_MOVE_NEXT);
 						response.put(RESULT_LITERAL, false);
 						return response;
 					}
@@ -2941,12 +2956,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 							loanMstr.getPrimaryFilledCount(), loanMstr.getFinalFilledCount()) / 3);
 					obj.put("loanCode", loanMstr.getApplicationCode());
 					DecimalFormat decimalFormat = new DecimalFormat("#.##");
-					obj.put("amount",
+					obj.put(CommonUtils.LITERAL_AMOUNT,
 							!CommonUtils.isObjectListNull(loanMstr.getAmount())
 									? decimalFormat.format(loanMstr.getAmount())
 									: 0);
 					obj.put("currency", currency);
-					obj.put("tenure", loanMstr.getTenure() != null ? String.valueOf(loanMstr.getTenure() / 12) : null);
+					obj.put(TENURE_LITERAL, loanMstr.getTenure() != null ? String.valueOf(loanMstr.getTenure() / 12) : null);
 					ProposalMappingRequest proposalMappingRequest = new ProposalMappingRequest();
 					proposalMappingRequest.setApplicationId(loanMstr.getId());
 					ProposalCountResponse proposalCountResponse = null;
@@ -3031,13 +3046,13 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		cal.set(Calendar.HOUR_OF_DAY, 23);
 		cal.set(Calendar.MINUTE, 59);
 		cal.set(Calendar.SECOND, 0);
-		logger.info("GetLoanDetailsForAdminPanel, from and todate for admin panel --------> " + cal.getTime());
+		logger.info(GET_LOAN_DETAILS_FOR_ADMIN_PANEL_FROM_AND_TO_DATE_FOR_ADMIN_PANEL + cal.getTime());
 		loanRequest.setToDate(cal.getTime());
 
 		List<LoanApplicationMaster> loanApplicationList = loanApplicationRepository.getLoanDetailsForAdminPanel(userIds,
 				loanRequest.getFromDate(), loanRequest.getToDate());
 
-		SimpleDateFormat dt = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
+		SimpleDateFormat dt = new SimpleDateFormat(DATE_FORMAT_YYYY_MM_DD_HH_MM_SS);
 		for (LoanApplicationMaster loanApplicationMaster : loanApplicationList) {
 			AdminPanelLoanDetailsResponse response = new AdminPanelLoanDetailsResponse();
 
@@ -3217,12 +3232,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		cal.set(Calendar.HOUR_OF_DAY, 23);
 		cal.set(Calendar.MINUTE, 59);
 		cal.set(Calendar.SECOND, 0);
-		logger.info("GetLoanDetailsForAdminPanel, from and todate for admin panel --------> " + cal.getTime());
+		logger.info(GET_LOAN_DETAILS_FOR_ADMIN_PANEL_FROM_AND_TO_DATE_FOR_ADMIN_PANEL + cal.getTime());
 		loanRequest.setToDate(cal.getTime());
 
 		List<LoanApplicationMaster> loanApplicationList = loanApplicationRepository.getLoanDetailsForAdminPanel(userIds,
 				loanRequest.getFromDate(), loanRequest.getToDate());
-		SimpleDateFormat dt = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
+		SimpleDateFormat dt = new SimpleDateFormat(DATE_FORMAT_YYYY_MM_DD_HH_MM_SS);
 		for (LoanApplicationMaster loanApplicationMaster : loanApplicationList) {
 			AdminPanelLoanDetailsResponse response = new AdminPanelLoanDetailsResponse();
 			UsersRequest usersRequest = listOfObjects.stream()
@@ -3322,7 +3337,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		cal.set(Calendar.HOUR_OF_DAY, 23);
 		cal.set(Calendar.MINUTE, 59);
 		cal.set(Calendar.SECOND, 0);
-		logger.info("GetLoanDetailsForAdminPanel, from and todate for admin panel --------> " + cal.getTime());
+		logger.info(GET_LOAN_DETAILS_FOR_ADMIN_PANEL_FROM_AND_TO_DATE_FOR_ADMIN_PANEL + cal.getTime());
 		loanRequest.setToDate(cal.getTime());
 
 		List<LoanApplicationMaster> loanApplicationList = loanApplicationRepository.getLoanDetailsForAdminPanel(userIds,
@@ -3473,12 +3488,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		cal.set(Calendar.HOUR_OF_DAY, 23);
 		cal.set(Calendar.MINUTE, 59);
 		cal.set(Calendar.SECOND, 0);
-		logger.info("GetLoanDetailsForAdminPanel, from and todate for admin panel --------> " + cal.getTime());
+		logger.info(GET_LOAN_DETAILS_FOR_ADMIN_PANEL_FROM_AND_TO_DATE_FOR_ADMIN_PANEL + cal.getTime());
 		loanRequest.setToDate(cal.getTime());
 
 		List<LoanApplicationMaster> loanApplicationList = loanApplicationRepository.getLoanDetailsForAdminPanel(userIds,
 				loanRequest.getFromDate(), loanRequest.getToDate());
-		SimpleDateFormat dt = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
+		SimpleDateFormat dt = new SimpleDateFormat(DATE_FORMAT_YYYY_MM_DD_HH_MM_SS);
 		for (LoanApplicationMaster loanApplicationMaster : loanApplicationList) {
 			// code for got eligibility
 			if (loanApplicationMaster.getEligibleAmnt() != null) {
@@ -3594,12 +3609,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		cal.set(Calendar.HOUR_OF_DAY, 23);
 		cal.set(Calendar.MINUTE, 59);
 		cal.set(Calendar.SECOND, 0);
-		logger.info("GetLoanDetailsForAdminPanel, from and todate for admin panel --------> " + cal.getTime());
+		logger.info(GET_LOAN_DETAILS_FOR_ADMIN_PANEL_FROM_AND_TO_DATE_FOR_ADMIN_PANEL + cal.getTime());
 		loanRequest.setToDate(cal.getTime());
 
 		List<LoanApplicationMaster> loanApplicationList = loanApplicationRepository.getLoanDetailsForAdminPanelUbi(
 				userId, applicationId, loanRequest.getFromDate(), loanRequest.getToDate());
-		SimpleDateFormat dt = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
+		SimpleDateFormat dt = new SimpleDateFormat(DATE_FORMAT_YYYY_MM_DD_HH_MM_SS);
 		for (LoanApplicationMaster loanApplicationMaster : loanApplicationList) {
 			AdminPanelLoanDetailsResponse response = new AdminPanelLoanDetailsResponse();
 			UsersRequest usersRequest = listOfObjects.stream()
@@ -3748,12 +3763,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		cal.set(Calendar.HOUR_OF_DAY, 23);
 		cal.set(Calendar.MINUTE, 59);
 		cal.set(Calendar.SECOND, 0);
-		logger.info("GetLoanDetailsForAdminPanel, from and todate for admin panel --------> " + cal.getTime());
+		logger.info(GET_LOAN_DETAILS_FOR_ADMIN_PANEL_FROM_AND_TO_DATE_FOR_ADMIN_PANEL + cal.getTime());
 		loanRequest.setToDate(cal.getTime());
 
 		List<LoanApplicationMaster> loanApplicationList = loanApplicationRepository.getLoanDetailsForAdminPanelUbi(
 				userId, applicationId, loanRequest.getFromDate(), loanRequest.getToDate());
-		SimpleDateFormat dt = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
+		SimpleDateFormat dt = new SimpleDateFormat(DATE_FORMAT_YYYY_MM_DD_HH_MM_SS);
 		for (LoanApplicationMaster loanApplicationMaster : loanApplicationList) {
 			AdminPanelLoanDetailsResponse response = new AdminPanelLoanDetailsResponse();
 			UsersRequest usersRequest = listOfObjects.stream()
@@ -4862,8 +4877,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 							// =======================================================================================================================================
 
 							if (proposalresp != null) {
-								applicationRequest.setLoanAmount(proposalresp.get("amount") != null
-										? Double.valueOf(proposalresp.get("amount").toString())
+								applicationRequest.setLoanAmount(proposalresp.get(CommonUtils.LITERAL_AMOUNT) != null
+										? Double.valueOf(proposalresp.get(CommonUtils.LITERAL_AMOUNT).toString())
 										: 0.0);
 								applicationRequest.setTypeOfLoan(
 										CommonUtils.LoanType.getType(applicationRequest.getProductId()).toString());
@@ -7563,10 +7578,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 				if (!CommonUtils.isObjectNullOrEmpty(proposalresp)) {
 					applicationRequest.setLoanAmount(
-							proposalresp.get("amount") != null ? Double.valueOf(proposalresp.get("amount").toString())
+							proposalresp.get(CommonUtils.LITERAL_AMOUNT) != null ? Double.valueOf(proposalresp.get(CommonUtils.LITERAL_AMOUNT).toString())
 									: 0.0);
 					applicationRequest.setTenure(
-							proposalresp.get("tenure") != null ? Double.valueOf(proposalresp.get("tenure").toString())
+							proposalresp.get(TENURE_LITERAL) != null ? Double.valueOf(proposalresp.get(TENURE_LITERAL).toString())
 									: 0.0);
 					applicationRequest.setEmiAmount(proposalresp.get("emi_amount") != null
 							? Double.valueOf(proposalresp.get("emi_amount").toString())
@@ -8105,7 +8120,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			DisbursementRequest disbursementDetailsResponse = getDisbursementDetails(disbursementRequest);
 
 			if (disbursementDetailsResponse != null) {
-				BeanUtils.copyProperties(disbursementDetailsResponse, sanctioningDetailResponse, "tenure", "roi",
+				BeanUtils.copyProperties(disbursementDetailsResponse, sanctioningDetailResponse, TENURE_LITERAL, "roi",
 						"userId");
 			}
 			logger.info("End getDetailsForSanction with data application Id : " + disbursementRequest.getApplicationId()
