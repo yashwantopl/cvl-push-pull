@@ -673,7 +673,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 
 		} catch (Exception e) {
 			logger.error("error while fetching director detail : ",e);
-			return new ResponseEntity<LoansResponse>(new LoansResponse("Error while fetching director detail", HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
+			return new ResponseEntity<LoansResponse>(new LoansResponse("Error while fetching Details for Uniform OneForm", HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
 		}
 	}
 	
@@ -701,8 +701,16 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 	}
 
 	@Override
-	public boolean updateITRFlag(Long applicationId,Boolean flag) {
-		return corporateApplicantDetailRepository.updateITRFlag(applicationId, flag) > 0;
+	public boolean updateFlag(Long applicationId,Boolean flag,Integer flagType) {
+		logger.warn("flagType=================>{}",flagType);
+		if(flagType == CommonUtils.APIFlags.ITR.getId()){
+			return corporateApplicantDetailRepository.updateITRFlag(applicationId, flag) > 0;			
+		}else if(flagType == CommonUtils.APIFlags.GST.getId()){
+			return corporateApplicantDetailRepository.updateITRFlag(applicationId, flag) > 0;			
+		}else{
+			logger.warn("Invalid API Flag so Returning Default False");
+			return false;
+		}
 	}	
 
 }
