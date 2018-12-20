@@ -42,7 +42,7 @@ public class PersonalLoanParameterController {
 			logger.warn("personalLoanParameterRequest Object can not be empty ==>", personalLoanParameterRequest);
 			CommonDocumentUtils.endHook(logger, "save");
 			return new ResponseEntity<LoansResponse>(
-					new LoansResponse("Requested data can not be empty.", HttpStatus.BAD_REQUEST.value()),
+					new LoansResponse(CommonUtils.REQUESTED_DATA_CAN_NOT_BE_EMPTY, HttpStatus.BAD_REQUEST.value()),
 					HttpStatus.OK);
 		}
 
@@ -51,7 +51,7 @@ public class PersonalLoanParameterController {
 			logger.warn("personalLoanParameterRequest id can not be empty ==>", personalLoanParameterRequest);
 			CommonDocumentUtils.endHook(logger, "save");
 			return new ResponseEntity<LoansResponse>(
-					new LoansResponse("Requested data can not be empty.", HttpStatus.BAD_REQUEST.value()),
+					new LoansResponse(CommonUtils.REQUESTED_DATA_CAN_NOT_BE_EMPTY, HttpStatus.BAD_REQUEST.value()),
 					HttpStatus.OK);
 		}
 		
@@ -62,7 +62,7 @@ public class PersonalLoanParameterController {
 			logger.warn("userId  id can not be empty ==>", userId);
 			CommonDocumentUtils.endHook(logger, "save");
 			return new ResponseEntity<LoansResponse>(
-					new LoansResponse("Requested data can not be empty.", HttpStatus.BAD_REQUEST.value()),
+					new LoansResponse(CommonUtils.REQUESTED_DATA_CAN_NOT_BE_EMPTY, HttpStatus.BAD_REQUEST.value()),
 					HttpStatus.OK);
 		}
 		personalLoanParameterRequest.setUserId(userId);

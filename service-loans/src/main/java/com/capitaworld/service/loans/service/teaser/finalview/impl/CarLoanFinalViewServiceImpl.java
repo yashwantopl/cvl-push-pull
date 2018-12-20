@@ -61,16 +61,14 @@ public class CarLoanFinalViewServiceImpl implements CarLoanFinalViewService {
 			try {
 				finalViewResponse.setCoApplicantCommonDetails(coApplicantService.getCoApplicantFinalResponse(applicantId, applicationMaster.getUserId(),applicationMaster.getProductId()));
 			} catch (Exception e) {
-				// TODO: handle exception
-				logger.error("error while getting CoApplicant final details");
+				logger.error("error while getting CoApplicant final details : ",e);
 			}
 			
 			//guarantor final common details
 			try {
 				finalViewResponse.setGuarantorCommonDetails(guarantorService.getGuarantorFinalViewResponse(applicantId, applicationMaster.getUserId(),applicationMaster.getProductId()));
 			} catch (Exception e) {
-				// TODO: handle exception
-				logger.error("error while getting Guarantor final details");
+				logger.error("error while getting Guarantor final details : ",e);
 			}
 			clFinalViewResponse.setFinalViewResponse(finalViewResponse);
 			
@@ -78,8 +76,7 @@ public class CarLoanFinalViewServiceImpl implements CarLoanFinalViewService {
 			try { 
 				clFinalViewResponse.setCarLoanPrimaryViewResponse(carLoanPrimaryViewService.getCarLoanPrimaryViewDetails(applicantId));
 			} catch (Exception e) {
-				// TODO: handle exception
-				logger.error("error while getting CL primary details");
+				logger.error("error while getting CL primary details : ",e);
 			}
 			
 			//Car Loan final details
@@ -97,8 +94,7 @@ public class CarLoanFinalViewServiceImpl implements CarLoanFinalViewService {
 				
            
 			} catch (Exception e) {
-				// TODO: handle exception
-				logger.error("error while getting CL final details");
+				logger.error("error while getting CL final details : ",e);
 			}
 		}
 		return clFinalViewResponse;

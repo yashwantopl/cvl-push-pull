@@ -25,6 +25,8 @@ import com.capitaworld.service.analyzer.model.common.ReportRequest;
 import com.capitaworld.service.fraudanalytics.client.FraudAnalyticsClient;
 import com.capitaworld.service.fraudanalytics.model.AnalyticsRequest;
 import com.capitaworld.service.fraudanalytics.model.AnalyticsResponse;
+import com.capitaworld.service.gst.GstResponse;
+import com.capitaworld.service.gst.client.GstClient;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.DirectorBackgroundDetail;
@@ -42,7 +44,6 @@ import com.capitaworld.service.loans.model.corporate.FundSeekerInputRequestRespo
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.DirectorBackgroundDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.DirectorPersonalDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.FinancialArrangementDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorRepository;
@@ -64,9 +65,6 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
   
 	@Autowired
 	private PrimaryCorporateDetailRepository primaryCorporateDetailRepository;
-
-	@Autowired
-	private FinancialArrangementDetailsRepository financialArrangementDetailsRepository;
 	
 	@Autowired
 	private FinancialArrangementDetailsService financialArrangementDetailsService;
@@ -82,6 +80,9 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 
 	@Autowired
 	private AnalyzerClient analyzerClient;
+	
+	@Autowired
+	private GstClient gstClient; 
 
 	@Autowired
 	private CorporateApplicantService corporateApplicantService;
@@ -649,4 +650,67 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 		}
 	}
 }
+	
+	@Override
+	public ResponseEntity<LoansResponse> getDataForOnePagerOneForm(Long applicationId) {
+
+		FundSeekerInputRequestResponse fundSeekerInputResponse = new FundSeekerInputRequestResponse();
+		fundSeekerInputResponse.setApplicationId(applicationId);
+		try {
+			// === Applicant Address
+			CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository.findOneByApplicationIdId(applicationId);
+			if (CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail)) {
+				fundSeekerInputResponse.setDirectorBackgroundDetailRequestsList(Collections.emptyList());
+				logger.info("Data not found for given applicationid");
+				return new ResponseEntity<LoansResponse>(new LoansResponse("Data not found for given applicationid",HttpStatus.BAD_REQUEST.value(), fundSeekerInputResponse), HttpStatus.OK);
+			}
+
+			BeanUtils.copyProperties(corporateApplicantDetail, fundSeekerInputResponse);
+			copyAddressFromDomainToRequest(corporateApplicantDetail, fundSeekerInputResponse);
+			fundSeekerInputResponse.setDirectorBackgroundDetailRequestsList(directorBackgroundDetailsService.getDirectorBackgroundDetailList(applicationId, null));
+			logger.info("director detail successfully fetched");
+			return new ResponseEntity<LoansResponse>(new LoansResponse("Director detail successfully fetched",HttpStatus.OK.value(), fundSeekerInputResponse), HttpStatus.OK);
+
+		} catch (Exception e) {
+			logger.error("error while fetching director detail : ",e);
+			return new ResponseEntity<LoansResponse>(new LoansResponse("Error while fetching Details for Uniform OneForm", HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
+		}
+	}
+	
+	
+	@Override
+	public GstResponse verifyGST(String gstin,Long applicationId) {
+		try {
+			GstResponse response = gstClient.getGSTSearchData(gstin);
+			if(response == null){
+				return null;
+			}
+			int updateGSTFlag = 0;
+			if(response.getStatus() == HttpStatus.OK.value() && "200".equalsIgnoreCase(response.getStatusCd())){
+				updateGSTFlag = corporateApplicantDetailRepository.updateGSTFlag(applicationId, gstin, true);
+				logger.info("GST Updated Count of TRUE WIth GST Status================>{}=====>{}====>{}",updateGSTFlag,response.getStatus(),response.getStatusCd());
+			}else{
+				updateGSTFlag = corporateApplicantDetailRepository.updateGSTFlag(applicationId, gstin, false);
+				logger.info("GST Updated Count of FALSE WIth GST Status================>{}=====>{}====>{}",updateGSTFlag,response.getStatus(),response.getStatusCd());
+			}
+			return response;
+		} catch (Exception e) {
+			logger.error("error while fetching director detail : ",e);
+			return null;
+		}
+	}
+
+	@Override
+	public boolean updateFlag(Long applicationId,Boolean flag,Integer flagType) {
+		logger.warn("flagType=================>{}",flagType);
+		if(flagType == CommonUtils.APIFlags.ITR.getId()){
+			return corporateApplicantDetailRepository.updateITRFlag(applicationId, flag) > 0;			
+		}else if(flagType == CommonUtils.APIFlags.GST.getId()){
+			return corporateApplicantDetailRepository.updateITRFlag(applicationId, flag) > 0;			
+		}else{
+			logger.warn("Invalid API Flag so Returning Default False");
+			return false;
+		}
+	}	
+
 }

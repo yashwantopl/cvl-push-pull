@@ -44,6 +44,13 @@ public class CamReportPdfDetailsController {
 	private DMSClient dmsClient;
 
 	private static final Logger logger = LoggerFactory.getLogger(CamReportPdfDetailsController.class);
+
+	private static final String SUCCESS_LITERAL = "success";
+	private static final String PRODUCT_DOCUMENT_MAPPING_ID = "productDocumentMappingId";
+	private static final String USER_TYPE = "userType";
+	private static final String ORIGINAL_FILE_NAME = "originalFileName";
+	private static final String APPLICATION_ID = "applicationId";
+	private static final String ERROR_WHILE_GETTING_MAP_DETAILS = "Error while getting MAP Details==>";
 	
 	@RequestMapping(value = "/getPrimaryDataMap/{applicationId}/{productMappingId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getPrimaryDataMap(@PathVariable(value = "applicationId") Long applicationId,@PathVariable(value = "productMappingId") Long productId, HttpServletRequest request)  {
@@ -64,20 +71,20 @@ public class CamReportPdfDetailsController {
 			  JSONObject jsonObj = new JSONObject();
 			  
 
-				jsonObj.put("applicationId", applicationId);
-				jsonObj.put("productDocumentMappingId", 355L);
-				jsonObj.put("userType", CommonUtils.UploadUserType.UERT_TYPE_APPLICANT);
-				jsonObj.put("originalFileName", "CAMREPORTSIDBIPRIMARY"+applicationId+".pdf");
+				jsonObj.put(APPLICATION_ID, applicationId);
+				jsonObj.put(PRODUCT_DOCUMENT_MAPPING_ID, 355L);
+				jsonObj.put(USER_TYPE, CommonUtils.UploadUserType.UERT_TYPE_APPLICANT);
+				jsonObj.put(ORIGINAL_FILE_NAME, "CAMREPORTSIDBIPRIMARY"+applicationId+".pdf");
 				
 				DocumentResponse  documentResponse  =  dmsClient.uploadFile(jsonObj.toString(), multipartFile);
 				if(documentResponse.getStatus() == 200){
 				logger.info(""+documentResponse);
-				return new ResponseEntity<LoansResponse>(new LoansResponse(HttpStatus.OK.value(), "success", documentResponse.getData(), response),HttpStatus.OK);
+				return new ResponseEntity<LoansResponse>(new LoansResponse(HttpStatus.OK.value(), SUCCESS_LITERAL, documentResponse.getData(), response),HttpStatus.OK);
 				}else{
 					 return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
 				}
 		} catch (Exception e) {
-			logger.error("Error while getting MAP Details==>", e);
+			logger.error(ERROR_WHILE_GETTING_MAP_DETAILS, e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -103,21 +110,21 @@ public class CamReportPdfDetailsController {
 			MultipartFile multipartFile = new DDRMultipart(byteArr);			  
 			  JSONObject jsonObj = new JSONObject();
 
-				jsonObj.put("applicationId", applicationId);
-				jsonObj.put("productDocumentMappingId", 362L);
-				jsonObj.put("userType", CommonUtils.UploadUserType.UERT_TYPE_APPLICANT);
-				jsonObj.put("originalFileName", "CAMREPORTSIDBI"+applicationId+".pdf");
+				jsonObj.put(APPLICATION_ID, applicationId);
+				jsonObj.put(PRODUCT_DOCUMENT_MAPPING_ID, 362L);
+				jsonObj.put(USER_TYPE, CommonUtils.UploadUserType.UERT_TYPE_APPLICANT);
+				jsonObj.put(ORIGINAL_FILE_NAME, "CAMREPORTSIDBI"+applicationId+".pdf");
 				
 				DocumentResponse  documentResponse  =  dmsClient.uploadFile(jsonObj.toString(), multipartFile);
 				if(documentResponse.getStatus() == 200){
 				logger.info(""+documentResponse.getData());
-				return new ResponseEntity<LoansResponse>(new LoansResponse(HttpStatus.OK.value(), "success", documentResponse.getData(), response),HttpStatus.OK);
+				return new ResponseEntity<LoansResponse>(new LoansResponse(HttpStatus.OK.value(), SUCCESS_LITERAL, documentResponse.getData(), response),HttpStatus.OK);
 				}
 				else{
 					return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
 				}
 		} catch (Exception e) {
-			logger.error("Error while getting MAP Details==>", e);
+			logger.error(ERROR_WHILE_GETTING_MAP_DETAILS, e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -143,21 +150,21 @@ public class CamReportPdfDetailsController {
 			MultipartFile multipartFile = new DDRMultipart(byteArr);			  
 			  JSONObject jsonObj = new JSONObject();
 
-				jsonObj.put("applicationId", applicationId);
-				jsonObj.put("productDocumentMappingId",553L);
-				jsonObj.put("userType", CommonUtils.UploadUserType.UERT_TYPE_APPLICANT);
-				jsonObj.put("originalFileName", "BANK_STATEMENT_ANALYSIS"+applicationId+".pdf");
+				jsonObj.put(APPLICATION_ID, applicationId);
+				jsonObj.put(PRODUCT_DOCUMENT_MAPPING_ID,553L);
+				jsonObj.put(USER_TYPE, CommonUtils.UploadUserType.UERT_TYPE_APPLICANT);
+				jsonObj.put(ORIGINAL_FILE_NAME, "BANK_STATEMENT_ANALYSIS"+applicationId+".pdf");
 				
 				DocumentResponse  documentResponse  =  dmsClient.uploadFile(jsonObj.toString(), multipartFile);
 				if(documentResponse.getStatus() == 200){
 				logger.info(""+documentResponse.getData());
-				return new ResponseEntity<LoansResponse>(new LoansResponse(HttpStatus.OK.value(), "success", documentResponse.getData(), response),HttpStatus.OK);
+				return new ResponseEntity<LoansResponse>(new LoansResponse(HttpStatus.OK.value(), SUCCESS_LITERAL, documentResponse.getData(), response),HttpStatus.OK);
 				}
 				else{
 					return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
 				}
 		} catch (Exception e) {
-			logger.error("Error while getting MAP Details==>", e);
+			logger.error(ERROR_WHILE_GETTING_MAP_DETAILS, e);
 			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
@@ -182,20 +189,20 @@ public class CamReportPdfDetailsController {
 			  JSONObject jsonObj = new JSONObject();
 			  
 
-				jsonObj.put("applicationId", applicationId);
-				jsonObj.put("productDocumentMappingId", 570L);
-				jsonObj.put("userType", CommonUtils.UploadUserType.UERT_TYPE_APPLICANT);
-				jsonObj.put("originalFileName", "INELIGIBLECAMREPORT"+applicationId+".pdf");
+				jsonObj.put(APPLICATION_ID, applicationId);
+				jsonObj.put(PRODUCT_DOCUMENT_MAPPING_ID, 570L);
+				jsonObj.put(USER_TYPE, CommonUtils.UploadUserType.UERT_TYPE_APPLICANT);
+				jsonObj.put(ORIGINAL_FILE_NAME, "INELIGIBLECAMREPORT"+applicationId+".pdf");
 				
 				DocumentResponse  documentResponse  =  dmsClient.uploadFile(jsonObj.toString(), multipartFile);
 				if(documentResponse.getStatus() == 200){
 				logger.info(""+documentResponse);
-				return new ResponseEntity<LoansResponse>(new LoansResponse(HttpStatus.OK.value(), "success", documentResponse.getData(), response),HttpStatus.OK);
+				return new ResponseEntity<LoansResponse>(new LoansResponse(HttpStatus.OK.value(), SUCCESS_LITERAL, documentResponse.getData(), response),HttpStatus.OK);
 				}else{
 					 return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
 				}
 		} catch (Exception e) {
-			logger.error("Error while getting MAP Details==>", e);
+			logger.error(ERROR_WHILE_GETTING_MAP_DETAILS, e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);

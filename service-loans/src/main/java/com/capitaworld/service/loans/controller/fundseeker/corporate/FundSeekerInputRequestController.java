@@ -257,4 +257,44 @@ public class FundSeekerInputRequestController {
                     HttpStatus.OK);
         }
     }
+    
+    @RequestMapping(value = "/verifyGST/{gstin}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LoansResponse> verifyGST(@RequestBody Long applicationId , @PathVariable("gstin") String gstin,HttpServletRequest request)
+            throws Exception
+    {
+        try
+        {
+        	Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+        	if(userId == null) {
+        		   return new ResponseEntity<LoansResponse>(new LoansResponse("Unauthorized User! Please Re-login and try again.", HttpStatus.UNAUTHORIZED.value()), HttpStatus.OK);
+        	}
+        	if(applicationId == null) {
+     		   return new ResponseEntity<LoansResponse>(new LoansResponse("Something goes wrong while processig your Request. Please re-login again.", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+        	}
+            return new ResponseEntity<LoansResponse>(new LoansResponse("GST Verification",HttpStatus.OK.value(),fundSeekerInputRequestService.verifyGST(gstin, applicationId)), HttpStatus.OK);
+        } catch (Exception e) {
+            logger.error("Error while Fetching details for min-max Margin : ",e);
+            return new ResponseEntity<LoansResponse>(
+                    new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+                    HttpStatus.OK);
+        }
+    }
+
+    @RequestMapping(value = "/updateFlag/{flagValue}/{flagType}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LoansResponse> updateFlag(@RequestBody Long applicationId , @PathVariable("flagValue") Boolean flagValue,@PathVariable("flagType") Integer flagType,HttpServletRequest request)throws Exception{
+        try
+        {
+        	Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+        	if(userId == null) {
+        		   return new ResponseEntity<LoansResponse>(new LoansResponse("Unauthorized User! Please Re-login and try again.", HttpStatus.UNAUTHORIZED.value()), HttpStatus.OK);
+        	}
+        	if(applicationId == null) {
+     		   return new ResponseEntity<LoansResponse>(new LoansResponse("Something goes wrong while processig your Request. Please re-login again.", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+        	}
+            return new ResponseEntity<LoansResponse>(new LoansResponse("Flag Updated!!",HttpStatus.OK.value(),fundSeekerInputRequestService.updateFlag(applicationId, flagValue,flagType)), HttpStatus.OK);
+        } catch (Exception e) {
+            logger.error("Error while Updating Flag value for Uniform Product : ",e);
+            return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
+        }
+    }
 }

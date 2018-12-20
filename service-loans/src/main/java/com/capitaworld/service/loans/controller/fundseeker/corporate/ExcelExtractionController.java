@@ -118,10 +118,9 @@ public class ExcelExtractionController {
 			liabilitiesDetailsService.inActiveAssetsDetails(storageDetailsId);
 			operatingStatementDetailsService.inActiveAssetsDetails(storageDetailsId);
 		} catch (Exception e) {
-			// TODO: handle exception
 			
 			ExcelResponse res= new ExcelResponse("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR.value());
-			log.error("Error while inactive CMA");
+			log.error("Error while inactive CMA : ",e);
 			return new ResponseEntity<ExcelResponse>(res,HttpStatus.OK);
 		}
 		
@@ -176,10 +175,9 @@ public class ExcelExtractionController {
 			entityInformationDetailService.inActiveEntityInformationDetails(storageDetailsId);
 			managementDetailService.inActiveManagementDetails(storageDetailsId);
 		} catch (Exception e) {
-			// TODO: handle exception
 			
 			ExcelResponse res= new ExcelResponse("Something went wrong", HttpStatus.OK.value());
-			log.error("Error while inactive DPR");
+			log.error("Error while inactive DPR : ",e);
 			return new ResponseEntity<ExcelResponse>(res,HttpStatus.OK);
 		}
 		
@@ -236,10 +234,9 @@ public class ExcelExtractionController {
 			balanceSheetDetailService.inActiveBalanceSheetDetail(storageDetailsId);
 			profitibilityStatementDetailService.inActiveProfitibilityStatementDetail(storageDetailsId);
 		} catch (Exception e) {
-			// TODO: handle exception
 			
 			ExcelResponse res= new ExcelResponse("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR.value());
-			log.error("Error while inactive BS");
+			log.error("Error while inactive BS : ",e);
 			return new ResponseEntity<ExcelResponse>(res,HttpStatus.OK);
 		}
 		
