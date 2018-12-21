@@ -25,11 +25,17 @@ public interface AssetsDetailsRepository extends JpaRepository<AssetsDetails, Lo
 	@Query("from AssetsDetails a where a.loanApplicationMaster.id = :appId and a.year = :yr and a.isActive = true")
 	public AssetsDetails getAssetsDetails(@Param("appId") Long applicationId, @Param("yr") String year);
 	
+	@Query("from AssetsDetails a where a.applicationProposalMapping.proposalId = :proposalId and a.year = :yr and a.isActive = true")
+	public AssetsDetails getAssetsDetailByProposal(@Param("proposalId") Long proposalId, @Param("yr") String year);
+	
 	@Query("select o from AssetsDetails o where o.loanApplicationMaster.id = :applicationId and o.isActive = true")
 	public List<AssetsDetails> getByApplicationId(@Param("applicationId") Long applicationId);
 
 	@Query("select o from AssetsDetails o where o.loanApplicationMaster.id = :applicationId and o.applicationProposalMapping.proposalId = NULL and o.isActive = true")
 	public List<AssetsDetails> getByApplicationIdAndProposalIdNULL(@Param("applicationId") Long applicationId);
+
+	@Query("select o from AssetsDetails o where o.loanApplicationMaster.id = :applicationId and o.year = :yr and o.applicationProposalMapping.proposalId = NULL and o.isActive = true")
+	public AssetsDetails getByApplicationIdAndYearAndProposalIdNULL(@Param("applicationId") Long applicationId, @Param("yr") String year);
 
 	@Query("select o from AssetsDetails o where o.applicationProposalMapping.proposalId = :proposalId and o.isActive = true")
 	public List<AssetsDetails> getByProposalId(@Param("proposalId") Long proposalId);

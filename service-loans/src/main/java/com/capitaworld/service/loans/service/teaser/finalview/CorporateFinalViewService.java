@@ -4,5 +4,5 @@ import com.capitaworld.service.loans.model.teaser.finalview.CorporateFinalViewRe
 
 public interface CorporateFinalViewService {
 	
-	public CorporateFinalViewResponse getCorporateFinalViewDetails(Long toApplicationId, Integer userType, Long fundProviderUserId);
+	public CorporateFinalViewResponse getCorporateFinalViewDetails(Long proposalMapId, Integer userType, Long fundProviderUserId);
 }

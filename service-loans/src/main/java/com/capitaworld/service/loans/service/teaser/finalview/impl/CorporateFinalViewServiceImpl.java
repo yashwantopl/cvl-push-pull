@@ -38,6 +38,7 @@ import com.capitaworld.service.gst.client.GstClient;
 import com.capitaworld.service.loans.domain.fundprovider.TermLoanParameter;
 import com.capitaworld.service.loans.domain.fundprovider.WcTlParameter;
 import com.capitaworld.service.loans.domain.fundprovider.WorkingCapitalParameter;
+import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
@@ -63,6 +64,7 @@ import com.capitaworld.service.loans.model.teaser.finalview.CorporateFinalViewRe
 import com.capitaworld.service.loans.repository.fundprovider.TermLoanParameterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.WcTlLoanParameterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.WorkingCapitalParameterRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
@@ -305,19 +307,25 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 	@Autowired
 	private FraudAnalyticsClient fraudAnalyticsClient;
 	
+	@Autowired
+	private ApplicationProposalMappingRepository applicationProposalMappingRepository;
+	
 
 	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 	DecimalFormat decim = new DecimalFormat("#,###.00");
 
 	@Override
-	public CorporateFinalViewResponse getCorporateFinalViewDetails(Long toApplicationId, Integer userType,
-			Long fundProviderUserId) {
+	public CorporateFinalViewResponse getCorporateFinalViewDetails(Long proposalMapId, Integer userType,Long fundProviderUserId) {
+			
 
 		CorporateFinalViewResponse corporateFinalViewResponse = new CorporateFinalViewResponse();
+		
+		ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.findOne(proposalMapId);
+		
+		Long userId = applicationProposalMapping.getUserId();
+		Long toApplicationId = applicationProposalMapping.getApplicationId();
 		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(toApplicationId);
-		Long userId = loanApplicationMaster.getUserId();
-
-		corporateFinalViewResponse.setProductId(loanApplicationMaster.getProductId());
+		corporateFinalViewResponse.setProductId(applicationProposalMapping.getProductId());
 		// ===================== MATCHES DATA ======================//
 		if (userType != null) {
 			if (!(CommonUtils.UserType.FUND_SEEKER == userType)) { // TEASER VIEW FROM FP
@@ -604,7 +612,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 					.setPromotersContributionPer(primaryCorporateDetail.getTotalAmtPercentage() != null
 							? " (" + convertValue(primaryCorporateDetail.getTotalAmtPercentage()) + "%)"
 							: null);
-			corporateFinalViewResponse.setNpOrgId(loanApplicationMaster.getNpOrgId());
+//			corporateFinalViewResponse.setNpOrgId(loanApplicationMaster.getNpOrgId());
 			// workingCapitalPrimaryViewResponse.setSharePriceFace(primaryWorkingCapitalLoanDetail.getSharePriceFace());
 			// workingCapitalPrimaryViewResponse.setSharePriceMarket(primaryWorkingCapitalLoanDetail.getSharePriceMarket());
 			if (!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getModifiedDate()))
@@ -801,7 +809,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 		Long denomination = Denomination.getById(primaryCorporateDetail.getDenominationId()).getDigit();
 		try {
 			FinancialInputRequest financialInputRequest = irrService.cmaIrrMappingService(userId, toApplicationId, null,
-					denomination);
+					denomination,proposalMapId);
 
 			System.out.println("financialInputRequest.getYear()===>>>" + financialInputRequest.getYear());
 			// Profit & Loss Statement
