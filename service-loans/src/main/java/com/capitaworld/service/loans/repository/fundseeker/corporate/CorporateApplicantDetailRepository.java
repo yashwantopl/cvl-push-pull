@@ -61,6 +61,10 @@ public interface CorporateApplicantDetailRepository extends JpaRepository<Corpor
 	public int updateGSTFlag(@Param("applicationId")Long applicationId,@Param("gstinValue")String gstin, @Param("flagValue")Boolean flag);
 	
 	@Modifying
+	@Query(value="update fs_corporate_applicant_details set is_gst_completed =:flagValue,modified_date =NOW() where application_id =:applicationId and is_active = 1",nativeQuery = true)
+	public int updateGSTFlagWithoutGstin(@Param("applicationId")Long applicationId, @Param("flagValue")Boolean flag);
+	
+	@Modifying
 	@Query(value="update fs_corporate_applicant_details set is_itr_completed =:flagValue,modified_date =NOW() where application_id =:applicationId and is_active = 1",nativeQuery = true)
 	public int updateITRFlag(@Param("applicationId")Long applicationId,@Param("flagValue")Boolean flag);
 }
