@@ -573,10 +573,10 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 	
 	@Override
 	public LoansResponse saveOrUpdateForOnePagerEligibility(FundSeekerInputRequestResponse fundSeekerInputRequest){
-		String msg = "";
+		String msg = "Oneform Uniform Detail Successfully Saved";
 		try{
 			
-		logger.info("Enter in save directors details ---------------------------------------->"
+		logger.info("Enter in saveOrUpdateForOnePagerEligibility ---------------------------------------->"
 				+ fundSeekerInputRequest.getApplicationId());
 		CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
 				.findOneByApplicationIdId(fundSeekerInputRequest.getApplicationId());
@@ -593,9 +593,6 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 		logger.info("constitution id  ------------------------------------------>"+ corporateApplicantDetail.getConstitutionId());
 		corporateApplicantDetail.setModifiedBy(fundSeekerInputRequest.getUserId());
 		corporateApplicantDetail.setModifiedDate(new Date());
-		corporateApplicantDetail.setOrganisationName(fundSeekerInputRequest.getOrganisationName());
-		corporateApplicantDetail.setPanNo(fundSeekerInputRequest.getPan());
-		corporateApplicantDetail.setConstitutionId(fundSeekerInputRequest.getConstitutionId());
 
 		copyAddressFromRequestToDomain(fundSeekerInputRequest, corporateApplicantDetail);
 
@@ -632,18 +629,16 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 				directorBackgroundDetailsService.saveDirectorInfo(reqObj, fundSeekerInputRequest.getApplicationId(), fundSeekerInputRequest.getUserId());
 			}
 		} catch (Exception e) {
-			logger.error("Directors ===============> Throw Exception While Save Director Background Details -------->",e);
+			logger.error("Oneform Uniform Product ===============> Throw Exception While Save Oneform Uniform Product -------->{}",e);
 		}
 		financialArrangementDetailsService.saveOrUpdateManuallyAddedLoans(fundSeekerInputRequest.getFinancialArrangementsDetailRequestsList(), fundSeekerInputRequest.getApplicationId(), fundSeekerInputRequest.getUserId());
-		LoansResponse res = new LoansResponse("director detail successfully saved", HttpStatus.OK.value());
+		LoansResponse res = new LoansResponse(msg, HttpStatus.OK.value());
 		res.setFlag(true);
 		res.setData(getDataForOnePagerOneForm(fundSeekerInputRequest.getApplicationId()));
-		logger.info("director detail successfully saved");
-		msg = "director detail successfully saved";
+		logger.info(msg);
 		return res;
 	} catch (Exception e) {
-		msg="Something goes wrong while Processing your request. Please try again after sometime!";
-		LoansResponse res = new LoansResponse(msg,HttpStatus.INTERNAL_SERVER_ERROR.value());
+		LoansResponse res = new LoansResponse(CommonUtils.GENERIC_ERROR_MSG,HttpStatus.INTERNAL_SERVER_ERROR.value());
 		logger.error(msg,e);
 		return res;
 	}finally {
@@ -674,12 +669,13 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			fundSeekerInputResponse.setPan(corporateApplicantDetail.getPanNo());
 			fundSeekerInputResponse.setDirectorBackgroundDetailRequestsList(directorBackgroundDetailsService.getDirectorBackgroundDetailList(applicationId, null));
 			fundSeekerInputResponse.setFinancialArrangementsDetailRequestsList(financialArrangementDetailsService.getManuallyAddedFinancialArrangementDetailsList(applicationId));
-			logger.info("director detail successfully fetched");
-			return new ResponseEntity<LoansResponse>(new LoansResponse("Director detail successfully fetched",HttpStatus.OK.value(), fundSeekerInputResponse), HttpStatus.OK);
+			logger.info("Oneform Uniform Prodcut Details Successfully Fetched");
+			return new ResponseEntity<LoansResponse>(new LoansResponse("Data Found",HttpStatus.OK.value(), fundSeekerInputResponse), HttpStatus.OK);
 
 		} catch (Exception e) {
-			logger.error("error while fetching director detail : ",e);
-			return new ResponseEntity<LoansResponse>(new LoansResponse("Error while fetching Details for Uniform OneForm", HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
+			String msg = "Error while fetching Details for Uniform OneForm"; 
+			logger.error(msg + " : "  ,e);
+			return new ResponseEntity<LoansResponse>(new LoansResponse(msg, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
 		}
 	}
 	
@@ -716,7 +712,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 		if(flagType == CommonUtils.APIFlags.ITR.getId()){
 			return corporateApplicantDetailRepository.updateITRFlag(applicationId, flag) > 0;			
 		}else if(flagType == CommonUtils.APIFlags.GST.getId()){
-			return corporateApplicantDetailRepository.updateITRFlag(applicationId, flag) > 0;			
+			return corporateApplicantDetailRepository.updateGSTFlagWithoutGstin(applicationId, flag) > 0;			
 		}else{
 			logger.warn("Invalid API Flag so Returning Default False");
 			return false;
