@@ -258,6 +258,26 @@ public class FundSeekerInputRequestController {
         }
     }
     
+    @RequestMapping(value = "/one_form_uninform", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LoansResponse> getUniformProductOneForm(@RequestBody Long applicationId , HttpServletRequest request)
+            throws Exception
+    {
+        try
+        {
+        	Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+        	if(userId == null) {
+        		   return new ResponseEntity<LoansResponse>(new LoansResponse("Unauthorized User! Please Re-login and try again.", HttpStatus.UNAUTHORIZED.value()), HttpStatus.OK);
+        	}
+        	if(applicationId == null) {
+     		   return new ResponseEntity<LoansResponse>(new LoansResponse("Something goes wrong while processig your Request. Please re-login again.", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+        	}
+        	return fundSeekerInputRequestService.getDataForOnePagerOneForm(applicationId);
+        } catch (Exception e) {
+            logger.error("Error while Getting Oneform Details for Uniform Product : ",e);
+            return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
+        }
+    }
+    
     @RequestMapping(value = "/verifyGST/{gstin}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LoansResponse> verifyGST(@RequestBody Long applicationId , @PathVariable("gstin") String gstin,HttpServletRequest request)
             throws Exception
