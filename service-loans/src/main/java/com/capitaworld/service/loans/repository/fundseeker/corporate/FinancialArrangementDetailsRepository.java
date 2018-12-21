@@ -21,10 +21,16 @@ public interface FinancialArrangementDetailsRepository extends JpaRepository<Fin
 	@Query("select o from FinancialArrangementsDetail o where o.applicationId.id =:id and o.isActive = true and o.directorBackgroundDetail IS NULL")
 	public List<FinancialArrangementsDetail> listSecurityCorporateDetailFromAppId(@Param("id")Long id);
 	
+	@Query("select o from FinancialArrangementsDetail o where o.applicationId.id =:id and o.isActive = true and o.isManuallyAdded = true and o.directorBackgroundDetail IS NULL")
+	public List<FinancialArrangementsDetail> getManuallyAddedFinancialDetail(@Param("id")Long id);
+	
 	@Modifying
 	@Query("update FinancialArrangementsDetail pm set pm.isActive = false,pm.modifiedDate = NOW(),pm.modifiedBy =:userId where pm.applicationId.id =:applicationId and pm.isActive = true and pm.directorBackgroundDetail IS NULL")
 	public int inActive(@Param("userId") Long userId,@Param("applicationId") Long applicationId);
 
+	@Modifying
+	@Query("update FinancialArrangementsDetail pm set pm.isActive = false,pm.modifiedDate = NOW(),pm.modifiedBy =:userId where pm.applicationId.id =:applicationId and o.isManuallyAdded = true and pm.isActive = true and pm.directorBackgroundDetail IS NULL")
+	public int inActiveManuallyAddedLoans(@Param("userId") Long userId,@Param("applicationId") Long applicationId);
 	
 	@Modifying
 	@Query("update FinancialArrangementsDetail pm set pm.isActive = false,pm.modifiedDate = NOW(),pm.modifiedBy =:userId where pm.applicationId.id =:applicationId and pm.isActive = true and pm.directorBackgroundDetail.id =:directorId")

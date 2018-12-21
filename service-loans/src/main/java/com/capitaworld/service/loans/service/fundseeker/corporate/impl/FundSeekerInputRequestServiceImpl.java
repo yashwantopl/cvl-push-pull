@@ -631,9 +631,10 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 		} catch (Exception e) {
 			logger.error("Directors ===============> Throw Exception While Save Director Background Details -------->",e);
 		}
-
+		financialArrangementDetailsService.saveOrUpdateManuallyAddedLoans(fundSeekerInputRequest.getFinancialArrangementsDetailRequestsList(), fundSeekerInputRequest.getApplicationId(), fundSeekerInputRequest.getUserId());
 		LoansResponse res = new LoansResponse("director detail successfully saved", HttpStatus.OK.value());
 		res.setFlag(true);
+		res.setData(getDataForOnePagerOneForm(fundSeekerInputRequest.getApplicationId()));
 		logger.info("director detail successfully saved");
 		msg = "director detail successfully saved";
 		return res;
@@ -668,6 +669,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			BeanUtils.copyProperties(corporateApplicantDetail, fundSeekerInputResponse);
 			copyAddressFromDomainToRequest(corporateApplicantDetail, fundSeekerInputResponse);
 			fundSeekerInputResponse.setDirectorBackgroundDetailRequestsList(directorBackgroundDetailsService.getDirectorBackgroundDetailList(applicationId, null));
+			fundSeekerInputResponse.setFinancialArrangementsDetailRequestsList(financialArrangementDetailsService.getManuallyAddedFinancialArrangementDetailsList(applicationId));
 			logger.info("director detail successfully fetched");
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Director detail successfully fetched",HttpStatus.OK.value(), fundSeekerInputResponse), HttpStatus.OK);
 

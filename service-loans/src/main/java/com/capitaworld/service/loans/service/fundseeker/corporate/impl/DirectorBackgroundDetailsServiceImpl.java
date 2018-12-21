@@ -80,8 +80,7 @@ public class DirectorBackgroundDetailsServiceImpl implements DirectorBackgroundD
 		
 		DirectorBackgroundDetail  directorBackgroundDetail= null;
 		if (backgroundDetailRequest.getId() != null) {
-			directorBackgroundDetail = directorBackgroundDetailsRepository
-					.findOne(backgroundDetailRequest.getId());
+			directorBackgroundDetail = directorBackgroundDetailsRepository.findOne(backgroundDetailRequest.getId());
 		} else {
 			directorBackgroundDetail = new DirectorBackgroundDetail();
 			directorBackgroundDetail.setCreatedBy(userId);
