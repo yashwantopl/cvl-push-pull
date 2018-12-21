@@ -2,6 +2,7 @@ package com.capitaworld.service.loans.utils.dpr;
 
 import java.util.Date;
 
+import com.capitaworld.service.loans.utils.CommonUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.util.CellReference;
@@ -11,6 +12,8 @@ import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.DprUserDataDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.TechnologyPositioningDetail;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.TechnologyPositioningDetailRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -19,6 +22,9 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.TechnologyP
  */
 public class DprFourthSheetExcelReader
 {
+
+    private static final Logger logger = LoggerFactory.getLogger(DprFourthSheetExcelReader.class);
+
     public static void run(Long storageDetailsId,XSSFSheet sheet,LoanApplicationMaster loanApplicationMaster,TechnologyPositioningDetailRepository technologyPositioningDetailRepository,DprUserDataDetail dprUserDataDetail) {
 
         saveTechnologyPositioning(storageDetailsId,sheet,"12",loanApplicationMaster,technologyPositioningDetailRepository);
@@ -42,7 +48,7 @@ public class DprFourthSheetExcelReader
             }
         }catch (Exception e)
         {
-            e.printStackTrace();
+            logger.error(CommonUtils.EXCEPTION,e);
         }
 
         //save question 782
@@ -55,7 +61,7 @@ public class DprFourthSheetExcelReader
             }
         }catch (Exception e)
         {
-            e.printStackTrace();
+            logger.error(CommonUtils.EXCEPTION,e);
         }
 
     }
@@ -87,7 +93,7 @@ public class DprFourthSheetExcelReader
                 technologyPositioning.setIsActive(true);
                 technologyPositioningDetailRepository.save(technologyPositioning);
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error(CommonUtils.EXCEPTION,e);
             }
         }
     }

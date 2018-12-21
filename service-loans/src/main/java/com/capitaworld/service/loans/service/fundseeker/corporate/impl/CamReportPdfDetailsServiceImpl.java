@@ -1130,8 +1130,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				}
 			}
 		}catch (Exception e) {
-			e.printStackTrace();
-			logger.info("Error while getting perfios data");
+			logger.error("Error while getting perfios data : ",e);
 		}*/
 		
 		
@@ -1310,7 +1309,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		try {
 			map.put("orgName", CommonUtils.printFields(corporateApplicantRequest.getOrganisationName(),null));
 		} catch (Exception e1) {
-			e1.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e1);
 		}
 		//PERFIOS API DATA (BANK STATEMENT ANALYSIS)
 			ReportRequest reportRequest = new ReportRequest();
@@ -1353,8 +1352,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 						}
 					}
 				}catch (Exception e) {
-					e.printStackTrace();
-					logger.info("Error while getting perfios data");
+					logger.error("Error while getting perfios data : ",e);
 				}
 				
 		return map;
@@ -1404,9 +1402,9 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 					
 				}
 				
-				//System.out.println("bankStatement : "+bankStatement.size()+" monthlyDetails :"+monthlyDetails.size()+" top5FundReceived :"+top5FundReceived.size());
-				//System.out.println("top5FundTransfered : "+top5FundTransfered.size()+" bouncedChequeList :"+bouncedChequeList.size()+" customerInfo :"+customerInfo.size());
-				//System.out.println("summaryInfo : "+summaryInfo.size()+" bankStatementAnalysis :"+datas.size());
+				//logger.info("bankStatement : "+bankStatement.size()+" monthlyDetails :"+monthlyDetails.size()+" top5FundReceived :"+top5FundReceived.size());
+				//logger.info("top5FundTransfered : "+top5FundTransfered.size()+" bouncedChequeList :"+bouncedChequeList.size()+" customerInfo :"+customerInfo.size());
+				//logger.info("summaryInfo : "+summaryInfo.size()+" bankStatementAnalysis :"+datas.size());
 				
 				map.put("bankStatement", bankStatement);
 				map.put("monthlyDetails", monthlyDetails);
@@ -1420,7 +1418,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
 				String json = ow.writeValueAsString(monthlyDetails);
 				
-//				System.out.println("monthlyDetails : "+json);
+//				logger.info("monthlyDetails : "+json);
 			}
 		} catch (Exception e) {
 			logger.error("Error while getting perfios data : ",e);
