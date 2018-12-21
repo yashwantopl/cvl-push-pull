@@ -64,6 +64,7 @@ public class OtherIncomeDetail implements Serializable {
 	private Double netIncome;
 
 	public OtherIncomeDetail() {
+		// Do nothing because of X and Y.
 	}
 
 	public Long getId() {

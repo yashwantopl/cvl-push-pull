@@ -76,6 +76,7 @@ public class EmployeesCategoryBreaksDetail implements Serializable {
 	}
 
 	public EmployeesCategoryBreaksDetail() {
+		// Do nothing because of X and Y.
 	}
 
 	public Long getId() {

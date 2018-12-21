@@ -86,6 +86,7 @@ public class FinalWorkingCapitalLoanRequest implements Serializable {
 	private Boolean isFinalMcqFilled;
 
 	public FinalWorkingCapitalLoanRequest() {
+		// Do nothing because of X and Y.
 	}
 
 	public Long getId() {

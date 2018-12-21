@@ -660,6 +660,7 @@ public class UnsecureLoanParameter extends ProductMaster implements Serializable
 	}
 
 	public UnsecureLoanParameter() {
+		// Do nothing because of X and Y.
 	}
 
 	public ProductMaster getFpProductId() {

@@ -69,6 +69,7 @@ public class RequirementsAndAvailabilityRawMaterialsDetail implements Serializab
 	private Long storageDetailsId;
 
 	public RequirementsAndAvailabilityRawMaterialsDetail() {
+		// Do nothing because of X and Y.
 	}
 
 	public long getId() {

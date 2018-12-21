@@ -77,6 +77,7 @@ public class OtherCurrentAssetDetail implements Serializable {
 	private String remark;
 
 	public OtherCurrentAssetDetail() {
+		// Do nothing because of X and Y.
 	}
 
 	public Long getId() {

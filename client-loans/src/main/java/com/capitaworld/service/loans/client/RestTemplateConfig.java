@@ -93,6 +93,7 @@ class RestTemplateCustomErrorHandler extends IOException implements ResponseErro
 	private static final long serialVersionUID = -5054964538412865773L;
 
 	RestTemplateCustomErrorHandler(){
+		// Do nothing because of X and Y.
 	}
 	/**
 	 * Delegates to {@link #hasError(HttpStatus)} with the response status code.

@@ -112,6 +112,7 @@ public class RetailApplicantRequest implements Serializable {
 	
 
 	public RetailApplicantRequest() {
+		// Do nothing because of X and Y.
 	}
 
 	

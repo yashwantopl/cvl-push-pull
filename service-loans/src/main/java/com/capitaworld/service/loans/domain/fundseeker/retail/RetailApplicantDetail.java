@@ -508,6 +508,7 @@ public class RetailApplicantDetail implements Serializable {
     private Integer ddoOrganizationType;
 
 	public RetailApplicantDetail() {
+		// Do nothing because of X and Y.
 	}
 
 	public Long getId() {

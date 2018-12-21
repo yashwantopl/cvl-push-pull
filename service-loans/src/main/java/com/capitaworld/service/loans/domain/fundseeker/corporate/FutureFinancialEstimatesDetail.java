@@ -76,6 +76,7 @@ public class FutureFinancialEstimatesDetail implements Serializable {
 	private Double sales;
 
 	public FutureFinancialEstimatesDetail() {
+		// Do nothing because of X and Y.
 	}
 
 	public Long getId() {

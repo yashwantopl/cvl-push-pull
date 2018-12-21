@@ -62,6 +62,7 @@ public class OwnershipDetail implements Serializable {
 	private Double stackPercentage;
 
 	public OwnershipDetail() {
+		// Do nothing because of X and Y.
 	}
 
 	public Long getId() {

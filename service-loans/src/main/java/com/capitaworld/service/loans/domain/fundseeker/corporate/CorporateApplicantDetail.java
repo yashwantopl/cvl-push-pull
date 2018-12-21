@@ -203,6 +203,7 @@ public class CorporateApplicantDetail implements Serializable {
     private Boolean isItrCompleted;
 
 	public CorporateApplicantDetail() {
+		// Do nothing because of X and Y.
 	}
 
 	public Long getId() {

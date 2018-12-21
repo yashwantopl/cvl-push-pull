@@ -27,9 +27,11 @@ public class CorsFilter implements Filter {
 	}
 
 	public void init(FilterConfig filterConfig) {
+		// Do nothing because of X and Y.
 	}
 
 	public void destroy() {
+		// Do nothing because of X and Y.
 	}
 
 }

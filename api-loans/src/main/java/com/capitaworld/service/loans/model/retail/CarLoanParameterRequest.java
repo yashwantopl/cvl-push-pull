@@ -150,6 +150,7 @@ public class CarLoanParameterRequest extends ProductMasterRequest implements Ser
 	private Boolean isCashProfitMandatory=false;*/
 
 	public CarLoanParameterRequest() {
+		// Do nothing because of X and Y.
 	}
 
 	public Long getFpProductId() {

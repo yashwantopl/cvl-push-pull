@@ -51,6 +51,7 @@ public class EmpWithMappingDetail implements Serializable {
 	private Integer empTypeId;
 
 	public EmpWithMappingDetail() {
+		// Do nothing because of X and Y.
 	}
 
 	public Long getId() {

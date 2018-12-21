@@ -54,6 +54,7 @@ public class PrimaryWorkingCapitalLoanDetail extends LoanApplicationMaster imple
 	private Double sharePriceMarket;
 
 	public PrimaryWorkingCapitalLoanDetail() {
+		// Do nothing because of X and Y.
 	}
 
 	public LoanApplicationMaster getApplicationId() {
