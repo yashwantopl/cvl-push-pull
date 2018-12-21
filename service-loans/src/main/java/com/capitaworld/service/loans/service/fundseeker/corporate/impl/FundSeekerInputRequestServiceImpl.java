@@ -27,6 +27,7 @@ import com.capitaworld.service.fraudanalytics.model.AnalyticsRequest;
 import com.capitaworld.service.fraudanalytics.model.AnalyticsResponse;
 import com.capitaworld.service.gst.GstResponse;
 import com.capitaworld.service.gst.client.GstClient;
+import com.capitaworld.service.gst.yuva.request.GSTR1Request;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.DirectorBackgroundDetail;
@@ -570,7 +571,8 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 		}
 	}
 	
-	public LoansResponse saveOrUpdateForOnePagerEligibility(FundSeekerInputRequestResponse fundSeekerInputRequest) throws Exception {
+	@Override
+	public LoansResponse saveOrUpdateForOnePagerEligibility(FundSeekerInputRequestResponse fundSeekerInputRequest){
 		String msg = "";
 		try{
 			
@@ -639,13 +641,13 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 		msg = "director detail successfully saved";
 		return res;
 	} catch (Exception e) {
-		msg="error while saving director detail";
+		msg="Something goes wrong while Processing your request. Please try again after sometime!";
 		LoansResponse res = new LoansResponse(msg,HttpStatus.INTERNAL_SERVER_ERROR.value());
 		logger.error(msg,e);
 		return res;
 	}finally {
 		try {
-			connectClient.saveAuditLog(new ConnectLogAuditRequest(fundSeekerInputRequest.getApplicationId(), ConnectStage.DIRECTOR_BACKGROUND.getId(),fundSeekerInputRequest.getUserId(),msg, ConnectAuditErrorCode.DIRECTOR_SUBMIT.toString(),CommonUtils.BusinessType.EXISTING_BUSINESS.getId()));
+			connectClient.saveAuditLog(new ConnectLogAuditRequest(fundSeekerInputRequest.getApplicationId(), ConnectStage.ONEPAGER_ONEFORM.getId(),fundSeekerInputRequest.getUserId(),msg, ConnectAuditErrorCode.ONFORM_SUBMIT.toString(),CommonUtils.BusinessType.ONE_PAGER_ELIGIBILITY_EXISTING_BUSINESS.getId()));
 		} catch (Exception e){
 			logger.error(CommonUtils.EXCEPTION,e);
 		}
@@ -681,9 +683,13 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 	
 	
 	@Override
-	public GstResponse verifyGST(String gstin,Long applicationId) {
+	public GstResponse verifyGST(String gstin,Long applicationId,Long userId) {
 		try {
-			GstResponse response = gstClient.getGSTSearchData(gstin);
+			GSTR1Request request = new GSTR1Request();
+			request.setApplicationId(applicationId);
+			request.setGstin(gstin);
+			request.setUserId(userId);
+			GstResponse response = gstClient.getGSTSearchData(request);
 			if(response == null){
 				return null;
 			}

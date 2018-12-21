@@ -258,6 +258,27 @@ public class FundSeekerInputRequestController {
         }
     }
     
+    @RequestMapping(value = "/save_one_form_uninform", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LoansResponse> saveUniformProductOneForm(@RequestBody FundSeekerInputRequestResponse fundSeekerInputRequestResponse , HttpServletRequest request)
+            throws Exception
+    {
+        try
+        {
+        	Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+        	if(userId == null) {
+        		   return new ResponseEntity<LoansResponse>(new LoansResponse("Unauthorized User! Please Re-login and try again.", HttpStatus.UNAUTHORIZED.value()), HttpStatus.OK);
+        	}
+        	if(fundSeekerInputRequestResponse.getApplicationId() == null) {
+     		   return new ResponseEntity<LoansResponse>(new LoansResponse("Something goes wrong while processig your Request. Please re-login again.", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+        	}
+        	fundSeekerInputRequestResponse.setUserId(userId);
+        	return new ResponseEntity<LoansResponse>(fundSeekerInputRequestService.saveOrUpdateForOnePagerEligibility(fundSeekerInputRequestResponse),HttpStatus.OK);
+        } catch (Exception e) {
+            logger.error("Error while Getting Oneform Details for Uniform Product : ",e);
+            return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
+        }
+    }
+    
     @RequestMapping(value = "/one_form_uninform", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LoansResponse> getUniformProductOneForm(@RequestBody Long applicationId , HttpServletRequest request)
             throws Exception
@@ -291,7 +312,7 @@ public class FundSeekerInputRequestController {
         	if(applicationId == null) {
      		   return new ResponseEntity<LoansResponse>(new LoansResponse("Something goes wrong while processig your Request. Please re-login again.", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
         	}
-            return new ResponseEntity<LoansResponse>(new LoansResponse("GST Verification",HttpStatus.OK.value(),fundSeekerInputRequestService.verifyGST(gstin, applicationId)), HttpStatus.OK);
+            return new ResponseEntity<LoansResponse>(new LoansResponse("GST Verification",HttpStatus.OK.value(),fundSeekerInputRequestService.verifyGST(gstin, applicationId,userId)), HttpStatus.OK);
         } catch (Exception e) {
             logger.error("Error while Fetching details for min-max Margin : ",e);
             return new ResponseEntity<LoansResponse>(
