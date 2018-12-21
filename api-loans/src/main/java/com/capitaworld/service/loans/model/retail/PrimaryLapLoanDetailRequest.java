@@ -65,6 +65,7 @@ public class PrimaryLapLoanDetailRequest extends LoanApplicationRequest implemen
 	}
 
 	public PrimaryLapLoanDetailRequest() {
+		// Do nothing because of X and Y.
 	}
 
 	public Integer getAddressCity() {

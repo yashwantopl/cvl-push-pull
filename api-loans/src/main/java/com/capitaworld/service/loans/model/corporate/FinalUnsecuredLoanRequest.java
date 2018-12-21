@@ -90,6 +90,7 @@ public class FinalUnsecuredLoanRequest implements Serializable {
 	private Boolean isFinalMcqFilled;
 	
 	public FinalUnsecuredLoanRequest() {
+		// Do nothing because of X and Y.
 	}
 
 	public Long getId() {

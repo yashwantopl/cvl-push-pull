@@ -52,6 +52,7 @@ public class OverseasNetworkMappingDetail implements Serializable {
 	private Integer overseasNetworkId;
 
 	public OverseasNetworkMappingDetail() {
+		// Do nothing because of X and Y.
 	}
 
 	public Long getId() {

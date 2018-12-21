@@ -78,6 +78,7 @@ public class CreditRatingOrganizationDetail implements Serializable {
 	private Integer ratingAgencyId;
 
 	public CreditRatingOrganizationDetail() {
+		// Do nothing because of X and Y.
 	}
 
 	public Long getId() {

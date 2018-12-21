@@ -73,6 +73,7 @@ public class TechnologyPositioningDetail implements Serializable {
 	private String type;
 
 	public TechnologyPositioningDetail() {
+		// Do nothing because of X and Y.
 	}
 
 	public Long getId() {
