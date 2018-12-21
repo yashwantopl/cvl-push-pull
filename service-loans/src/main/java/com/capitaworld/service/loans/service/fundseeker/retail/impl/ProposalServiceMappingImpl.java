@@ -5,6 +5,7 @@ import java.math.BigInteger;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -19,7 +20,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.capitaworld.cibil.api.model.CibilRequest;
 import com.capitaworld.cibil.api.model.CibilResponse;
 import com.capitaworld.cibil.api.utility.CibilUtils;
@@ -41,7 +41,10 @@ import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.ProposalDetailsAdminRequest;
 import com.capitaworld.service.loans.model.ProposalResponse;
 import com.capitaworld.service.loans.model.RetailProposalDetails;
+import com.capitaworld.service.loans.model.common.ProposalSearchResponse;
+import com.capitaworld.service.loans.model.common.ReportRequest;
 import com.capitaworld.service.loans.repository.OfflineProcessedAppRepository;
+import com.capitaworld.service.loans.repository.common.LoanRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
@@ -150,6 +153,9 @@ public class ProposalServiceMappingImpl implements ProposalService {
 
 	@Autowired
 	private ConnectClient connectClient;
+	
+	@Autowired
+	private LoanRepository loanRepository;
 
 	DecimalFormat df = new DecimalFormat("#");
 
@@ -1925,6 +1931,49 @@ public class ProposalServiceMappingImpl implements ProposalService {
 		}
 		result.clear();
 		return finalList;
+	}
+	
+	public List<ProposalSearchResponse> searchProposalByAppCode(Long loginUserId,Long loginOrgId,ReportRequest reportRequest) {
+		Object[] loggedUserDetailsList = loanRepository.getRoleIdAndBranchIdByUserId(loginUserId);
+		Long roleId = CommonUtils.convertLong(loggedUserDetailsList[0]);
+		Long branchId = CommonUtils.convertLong(loggedUserDetailsList[1]);
+		if(CommonUtils.isObjectNullOrEmpty(roleId)) {
+			return Collections.emptyList();			
+		}
+		if(roleId == 8 || roleId == 9) {
+			List<Object[]> objList = loanRepository.searchProposalByOrgNameAndAppCode(loginOrgId, reportRequest.getValue(), branchId,reportRequest.getNumber().longValue());
+			if(objList.size() > 0) {
+				return setValue(objList, false);	
+			}
+		} else if(roleId == 5){
+			List<Object[]> objList = loanRepository.searchProposalByOrgNameAndAppCode(loginOrgId, reportRequest.getValue(),reportRequest.getNumber().longValue());
+			if(objList.size() > 0) {
+				return setValue(objList, true);	
+			}
+		}
+		return Collections.emptyList();
+	}
+	
+	private List<ProposalSearchResponse> setValue(List<Object[]> objList,boolean setBranch) {
+		List<ProposalSearchResponse> responseList = new ArrayList<>();
+		ProposalSearchResponse response = null;
+		for(Object[] obj : objList) {
+			response = new ProposalSearchResponse();
+			response.setApplicationId(CommonUtils.convertLong(obj[0]));
+			response.setProposalId(CommonUtils.convertLong(obj[1]));
+			response.setFpProductId(CommonUtils.convertLong(obj[2]));
+			response.setApplicationCode(CommonUtils.convertString(obj[3]));
+			response.setOrgName(CommonUtils.convertString(obj[4]));
+			response.setElAmount(CommonUtils.convertDouble(obj[5]));
+			response.setProductName(CommonUtils.convertString(obj[6]));
+			response.setCreatedDate(CommonUtils.convertDate(obj[7]));
+			if(setBranch) {
+				response.setBranchName(CommonUtils.convertString(obj[8]));
+				response.setBranchCode(CommonUtils.convertString(obj[9]));
+			}
+			responseList.add(response);
+		}
+		return responseList;
 	}
 }
 
