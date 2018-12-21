@@ -695,7 +695,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			}
 			return response;
 		} catch (Exception e) {
-			logger.error("error while fetching director detail : ",e);
+			logger.error("error while Verifying GST Number : ",e);
 			return null;
 		}
 	}
