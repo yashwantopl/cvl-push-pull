@@ -2,6 +2,7 @@ package com.capitaworld.service.loans.utils.dpr;
 
 import java.util.Date;
 
+import com.capitaworld.service.loans.utils.CommonUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.util.CellReference;
@@ -15,6 +16,8 @@ import com.capitaworld.service.loans.domain.fundseeker.corporate.RequirementsAnd
 import com.capitaworld.service.loans.repository.fundseeker.corporate.AvailabilityProposedPlantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CapacityDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.RequirementsAndAvailabilityRawMaterialsDetailRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -23,6 +26,9 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.Requirement
  */
 public class DprNinthSheetExcelReader
 {
+
+    private static final Logger logger = LoggerFactory.getLogger(DprNinthSheetExcelReader.class);
+
     public static void run(Long storageDetailsId,XSSFSheet sheet,LoanApplicationMaster loanApplicationMaster,CapacityDetailRepository capacityDetailRepository,AvailabilityProposedPlantDetailRepository availabilityProposedPlantDetailRepository,RequirementsAndAvailabilityRawMaterialsDetailRepository requirementsAndAvailabilityRawMaterialsDetailRepository,DprUserDataDetail dprUserDataDetail) {
 
 	     saveUnitCapacity(storageDetailsId,sheet,"8",loanApplicationMaster,capacityDetailRepository);
@@ -67,7 +73,7 @@ public class DprNinthSheetExcelReader
             }
         }catch (Exception e)
         {
-            e.printStackTrace();
+            logger.error(CommonUtils.EXCEPTION,e);
         }
 
 
@@ -82,7 +88,7 @@ public class DprNinthSheetExcelReader
             }
         }catch (Exception e)
         {
-            e.printStackTrace();
+            logger.error(CommonUtils.EXCEPTION,e);
         }
     }
 
@@ -136,7 +142,7 @@ public class DprNinthSheetExcelReader
                 requirementsAndAvailabilityRawMaterialsDetailRepository.save(requirementsAndAvailabilityOfRawMaterials);
 
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error(CommonUtils.EXCEPTION,e);
             }
         }
     }
@@ -187,7 +193,7 @@ public class DprNinthSheetExcelReader
                 availabilityofProposedPlantandMachineries.setModifiedDate(new Date());
                 availabilityProposedPlantDetailRepository.save(availabilityofProposedPlantandMachineries);
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error(CommonUtils.EXCEPTION,e);
             }
         }
     }
@@ -234,7 +240,7 @@ public class DprNinthSheetExcelReader
                 unitCapacity.setModifiedDate(new Date());
                 capacityDetailRepository.save(unitCapacity);
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error(CommonUtils.EXCEPTION,e);
             }
         }
     }

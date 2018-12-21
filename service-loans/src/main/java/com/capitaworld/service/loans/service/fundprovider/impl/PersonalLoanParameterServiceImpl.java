@@ -438,7 +438,6 @@ private void saveCountry(PersonalLoanParameterRequest personalLoanParameterReque
 
 			} catch (Exception e) {
 				logger.error(e.toString());
-				e.printStackTrace();
 			}
 		}
 

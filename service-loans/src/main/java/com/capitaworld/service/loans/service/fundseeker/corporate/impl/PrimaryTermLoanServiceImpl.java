@@ -99,13 +99,12 @@ public class PrimaryTermLoanServiceImpl implements PrimaryTermLoanService {
 			termLoanRequest.setCurrencyValue(data);
 			return termLoanRequest;
 		} catch (Exception e) {
-			logger.error("Error while Primary Term Loan Details:-");
-			e.printStackTrace();
+			logger.error("Error while Primary Term Loan Details:-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 
 	}*/
-	
+
 	@Override
 	public PrimaryTermLoanRequest get(Long id, Long userId) throws Exception {
 		try {

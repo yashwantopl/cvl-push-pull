@@ -287,8 +287,7 @@ public class NhbsController {
 			loansResponse.setListData(applicationsResponseList);
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
-			logger.error("Error while getting assigned proposals ", e);
-			e.printStackTrace();
+			logger.error("Error while getting assigned proposals : ", e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);

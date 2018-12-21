@@ -1197,7 +1197,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				// parameters.put("fp_name", CommonUtils.isObjectNullOrEmpty(fpName) ? "NA" :
 				// fpName);
 				// } catch (Exception e) {
-				// e.printStackTrace();
+				// logger.error(CommonUtils.EXCEPTION,e);
 				// parameters.put("fp_name", "NA");
 				// }
 				// try {
@@ -1213,7 +1213,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				// }
 				//
 				// } catch (Exception e) {
-				// e.printStackTrace();
+				// logger.error(CommonUtils.EXCEPTION,e);
 				// parameters.put("fp_pname", "NA");
 				// }
 				//
@@ -4632,7 +4632,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				 * logger.info("Start Saving Phase 1 sidbi API -------------------->" +
 				 * loanApplicationMaster.getId()); Long fpMappingId = null; try {
 				 * savePhese1DataToSidbi(loanApplicationMaster.getId(),
-				 * userId,orgId,fpProductId); }catch(Exception e) { e.printStackTrace(); }
+				 * userId,orgId,fpProductId); }catch(Exception e) { logger.error(CommonUtils.EXCEPTION,e); }
 				 */
 				// }
 
@@ -8739,8 +8739,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	 * 
 	 * try { updatePayment = gatewayClient.updatePayment(gatewayRequest); } catch
 	 * (Exception e) {
-	 * logger.info("THROW EXCEPTION WHILE UPDATE PAYMENT ON GATEWAY CLIENT");
-	 * e.printStackTrace(); }
+	 * logger.error("THROW EXCEPTION WHILE UPDATE PAYMENT ON GATEWAY CLIENT : ",e);
+	 *  }
 	 * 
 	 * return updatePayment; }
 	 */
@@ -9081,7 +9081,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			 * } clientLogicCalculationRequest.setAddress(addressList); } } catch (Exception
 			 * e) {
 			 * 
-			 * e.printStackTrace(); }
+			 * logger.error(CommonUtils.EXCEPTION,e); }
 			 */
 
 			// Key Promoters Name

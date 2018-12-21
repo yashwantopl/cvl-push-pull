@@ -3,6 +3,7 @@ package com.capitaworld.service.loans.utils.dpr;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import com.capitaworld.service.loans.utils.CommonUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.util.CellReference;
@@ -12,6 +13,8 @@ import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.DprUserDataDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.ProjectImplementationScheduleDetail;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.ProjectImplementationScheduleDetailRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -20,6 +23,8 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.ProjectImpl
  */
 public class DprEighthSheetExcelReader
 {
+
+    private static final Logger logger = LoggerFactory.getLogger(DprEighthSheetExcelReader.class);
 
 	public static void run(Long storageDetailsId,XSSFSheet sheet,LoanApplicationMaster loanApplicationMaster,ProjectImplementationScheduleDetailRepository projectImplementationScheduleDetailRepository,DprUserDataDetail dprUserDataDetail) {
         saveProjectImplementationSchedule(storageDetailsId,sheet,"11",loanApplicationMaster,projectImplementationScheduleDetailRepository);
@@ -45,7 +50,7 @@ public class DprEighthSheetExcelReader
             }
         }catch (Exception e)
         {
-            e.printStackTrace();
+            logger.error(CommonUtils.EXCEPTION,e);
         }
     }
 
@@ -88,7 +93,7 @@ public class DprEighthSheetExcelReader
                 projectImplementationSchedule.setModifiedDate(new Date());
                 projectImplementationScheduleDetailRepository.save(projectImplementationSchedule);
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error(CommonUtils.EXCEPTION,e);
             }
         }
     }

@@ -498,7 +498,7 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
 //				workingCapitalPrimaryViewResponse.setShortTermRating(shortTermValueList);
 //			}
 //		} catch (Exception e) {
-//			e.printStackTrace();
+//			logger.error(CommonUtils.EXCEPTION,e);
 //		}
 
 		// set long term rating option
@@ -519,7 +519,7 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
 //			}
 //			workingCapitalPrimaryViewResponse.setLongTermRating(longTermValueList);
 //		} catch (Exception e) {
-//			e.printStackTrace();
+//			logger.error(CommonUtils.EXCEPTION,e);
 //		}
 
 		// get value of Ownership Details and set in response

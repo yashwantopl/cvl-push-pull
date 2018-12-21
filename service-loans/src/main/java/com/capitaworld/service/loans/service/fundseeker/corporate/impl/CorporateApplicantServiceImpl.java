@@ -231,8 +231,8 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 	 * userId, Boolean flag) throws Exception { try {
 	 * loanApplicationRepository.setIsApplicantFinalMandatoryFilled( applicationId,
 	 * userId, flag); } catch (Exception e) {
-	 * logger.error("Error while updating final information flag");
-	 * e.printStackTrace(); throw new Exception(CommonUtils.SOMETHING_WENT_WRONG); }
+	 * logger.error("Error while updating final information flag : ",e);
+	 * throw new Exception(CommonUtils.SOMETHING_WENT_WRONG); }
 	 * }
 	 */
 	@Override

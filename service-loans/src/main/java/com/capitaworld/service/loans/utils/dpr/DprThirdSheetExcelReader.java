@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.utils.dpr;
 
+import com.capitaworld.service.loans.utils.CommonUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.util.CellReference;
@@ -7,6 +8,8 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.DprUserDataDetail;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -15,6 +18,9 @@ import com.capitaworld.service.loans.domain.fundseeker.corporate.DprUserDataDeta
  */
 public class DprThirdSheetExcelReader
 {
+
+    private static final Logger logger = LoggerFactory.getLogger(DprThirdSheetExcelReader.class);
+
 	public static void run(Long storageDetailsId,XSSFSheet sheet,LoanApplicationMaster loanApplicationMaster,DprUserDataDetail dprUserDataDetail) {
         try {
             //sheet number 3 fill 780 question answer in db
@@ -26,7 +32,7 @@ public class DprThirdSheetExcelReader
             }
         }catch (Exception e)
         {
-            e.printStackTrace();
+            logger.error(CommonUtils.EXCEPTION,e);
         }
     }
     public static String getDataFromCell(XSSFSheet sheet,String cellNumber)
