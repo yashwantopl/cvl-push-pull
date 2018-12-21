@@ -41,7 +41,7 @@ public class CommonUtils {
 	public static final String MINIMUM = "minimum";
 	public static final String GST_VALIDATION_ERROR_MSG = "Please Enter Valid GSTIN and Verify Before Moving ahead.";
 	public static final String ITR_VALIDATION_ERROR_MSG = "Please Upload Valid itr and Verify Before Moving ahead.";
-	public static final String GENERIC_ERROR_MSG = "The application has encountered an error from Servert. Please try again after sometime!!!.";
+	public static final String GENERIC_ERROR_MSG = "The application has encountered an error from Server. Please try again after sometime!!!.";
 	
 	public static final String HUNTER_INELIGIBLE_MESSAGE= "You do not Qualify for Contactless Process, Kindly visit Bank Branch or get your Due Diligence process completed in www.capitaworld.com to connect to Banks";
 
