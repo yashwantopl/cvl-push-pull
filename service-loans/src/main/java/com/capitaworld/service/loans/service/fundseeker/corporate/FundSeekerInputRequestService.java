@@ -37,9 +37,10 @@ public interface FundSeekerInputRequestService {
 	 * Verify GST whether the GSTIN is Registered or Not.
 	 * @param gstin
 	 * @param applicationId
+	 * @param userId
 	 * @return
 	 */
-	public GstResponse verifyGST(String gstin,Long applicationId);
+	public GstResponse verifyGST(String gstin,Long applicationId,Long userId);
 
 	
 	/**
@@ -58,4 +59,11 @@ public interface FundSeekerInputRequestService {
 	 * @return
 	 */
 	public boolean updateFlag(Long applicationId,Boolean flag,Integer flagType);
+	
+	/**
+	 * Saving OneForm for Uniform Product
+	 * @param fundSeekerInputRequest
+	 * @return
+	 */
+	public LoansResponse saveOrUpdateForOnePagerEligibility(FundSeekerInputRequestResponse fundSeekerInputRequest);
 }
