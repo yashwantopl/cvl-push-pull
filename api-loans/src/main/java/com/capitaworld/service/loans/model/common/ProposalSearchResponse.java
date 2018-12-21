@@ -16,6 +16,7 @@ public class ProposalSearchResponse {
 	private String branchCode;
 	private Integer businessTypeId;
 	private Long proposalStatusId;
+	private Integer productId;
 	
 	public Long getApplicationId() {
 		return applicationId;
@@ -88,6 +89,12 @@ public class ProposalSearchResponse {
 	}
 	public void setProposalStatusId(Long proposalStatusId) {
 		this.proposalStatusId = proposalStatusId;
+	}
+	public Integer getProductId() {
+		return productId;
+	}
+	public void setProductId(Integer productId) {
+		this.productId = productId;
 	}
 	
 	
