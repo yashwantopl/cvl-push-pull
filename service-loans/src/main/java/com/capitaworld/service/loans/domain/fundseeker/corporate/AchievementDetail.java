@@ -26,8 +26,8 @@ public class AchievementDetail implements Serializable {
 	private LoanApplicationMaster applicationId;
 
 	@ManyToOne
-	@JoinColumn(name = "proposal_mapping_id")
-	private ApplicationProposalMapping applicationProposalMapping;
+	@JoinColumn(name="proposal_mapping_id")
+	private ApplicationProposalMapping proposalMapping;
 
 	@Column(name="created_by")
 	private Long createdBy;
@@ -129,11 +129,11 @@ public class AchievementDetail implements Serializable {
 		this.year = year;
 	}
 
-	public ApplicationProposalMapping getApplicationProposalMapping() {
-		return applicationProposalMapping;
+	public ApplicationProposalMapping getProposalMapping() {
+		return proposalMapping;
 	}
 
-	public void setApplicationProposalMapping(ApplicationProposalMapping applicationProposalMapping) {
-		this.applicationProposalMapping = applicationProposalMapping;
+	public void setProposalMapping(ApplicationProposalMapping proposalMapping) {
+		this.proposalMapping = proposalMapping;
 	}
 }

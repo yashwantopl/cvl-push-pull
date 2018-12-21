@@ -15,6 +15,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 
 
@@ -46,6 +47,10 @@ public class PromotorBackgroundDetail implements Serializable {
 	@ManyToOne
 	@JoinColumn(name="application_id")
 	private LoanApplicationMaster applicationId;
+
+	@ManyToOne
+	@JoinColumn(name="proposal_mapping_id")
+	private ApplicationProposalMapping proposalMapping;
 
 	@Column(name="created_by")
 	private Long createdBy;
@@ -259,5 +264,13 @@ public class PromotorBackgroundDetail implements Serializable {
 
 	public void setRelationshipType(Integer relationshipType) {
 		this.relationshipType = relationshipType;
+	}
+
+	public ApplicationProposalMapping getProposalMapping() {
+		return proposalMapping;
+	}
+
+	public void setProposalMapping(ApplicationProposalMapping proposalMapping) {
+		this.proposalMapping = proposalMapping;
 	}
 }
