@@ -12,6 +12,6 @@ public interface CorporateCoApplicantService {
 	public List<CorporateCoApplicantRequest> getList(Long applicationId, Long userId) throws Exception;
 	
 	public List<Long> getCoAppIds(Long applicationId,Long userId) throws Exception;
-	
+
 	public Long getApplicantIdById(Long id) throws Exception;
 }

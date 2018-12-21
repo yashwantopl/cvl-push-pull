@@ -29,11 +29,6 @@ public interface ApplicationProposalMappingRepository extends JpaRepository<Appl
                                                @Param("applicationId") Long applicationId,
                                                @Param("isFinalUploadFilled") Boolean isFinalUploadFilled);
 
-    @Modifying
-    @Query("update ApplicationProposalMapping apm set apm.finalFilledCount =:finalFilledCount,apm.modifiedDate = NOW() where apm.proposalId=:proposalId AND apm.applicationId =:applicationId and apm.isActive = true")
-    public int setFinalFilledCount(@Param("proposalId") Long proposalId,
-                                   @Param("applicationId") Long applicationId,
-                                   @Param("finalFilledCount") String finalFilledCount);
 
     @Modifying
     @Query("update ApplicationProposalMapping apm set apm.isFinalDprUploadFilled =:isFinalDprUploadFilled,apm.modifiedDate = NOW() where apm.proposalId=:proposalId and apm.id =:id and apm.isActive = true")
@@ -83,5 +78,9 @@ public interface ApplicationProposalMappingRepository extends JpaRepository<Appl
     @Query(value = "select lm.proposal_id from application_proposal_mapping lm inner join proposal_details pd on pd.id=lm.proposal_id where pd.branch_id=:branchId and lm.status >=:id and lm.fp_maker_id!=:npUserId and pd.is_active=true and lm.is_active = true ",nativeQuery = true)
     public List<BigInteger> getFPProposalsWithOthersCount(@Param("id") Long applicationStatusId,@Param("npUserId") Long npUserId, @Param("branchId") Long branchId);
 
+    @Modifying
+    @Query("update ApplicationProposalMapping apm set apm.isFinalMcqFilled =:isFinalMcqFilled,apm.modifiedDate = NOW(),apm.modifiedBy =:userId where apm.proposalId =:proposalId and apm.userId =:userId and apm.isActive = true")
+    public int setIsFinalMcqMandatoryFilled(@Param("proposalId") Long proposalId, @Param("userId") Long userId,
+                                            @Param("isFinalMcqFilled") Boolean isFinalMcqFilled);
 
 }
