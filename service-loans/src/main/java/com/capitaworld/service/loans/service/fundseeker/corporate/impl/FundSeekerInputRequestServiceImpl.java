@@ -712,7 +712,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 		if(flagType == CommonUtils.APIFlags.ITR.getId()){
 			return corporateApplicantDetailRepository.updateITRFlag(applicationId, flag) > 0;			
 		}else if(flagType == CommonUtils.APIFlags.GST.getId()){
-			return corporateApplicantDetailRepository.updateITRFlag(applicationId, flag) > 0;			
+			return corporateApplicantDetailRepository.updateGSTFlagWithoutGstin(applicationId, flag) > 0;			
 		}else{
 			logger.warn("Invalid API Flag so Returning Default False");
 			return false;
