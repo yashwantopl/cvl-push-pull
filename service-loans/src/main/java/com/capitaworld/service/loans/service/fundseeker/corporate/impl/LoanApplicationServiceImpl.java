@@ -1679,7 +1679,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		if (!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster)) {
 			response.put("primaryFilledCount", loanApplicationMaster.getPrimaryFilledCount());
 			response.put("profileFilledCount", loanApplicationMaster.getDetailsFilledCount());
-			response.put("finalFilledCount", loanApplicationMaster.getFinalFilledCount());
 		}
 		return response;
 	}

@@ -40,7 +40,7 @@ public class CreditRatingOrganizationDetail implements Serializable {
 
 
 	@ManyToOne
-	@JoinColumn(name="proposal_id")
+	@JoinColumn(name="proposal_mapping_id")
 	private ApplicationProposalMapping proposalId;
 
 	@Column(name="created_by")

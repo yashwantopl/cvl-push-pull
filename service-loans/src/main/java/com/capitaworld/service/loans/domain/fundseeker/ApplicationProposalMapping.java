@@ -87,9 +87,6 @@ public class ApplicationProposalMapping implements Serializable {
     @Column(name = "tenure")
     private Double tenure;
 
-    @Column(name = "final_filled_count")
-    private String finalFilledCount;
-
     @Column(name = "details_filled_count")
     private String detailsFilledCount;
 
@@ -351,14 +348,6 @@ public class ApplicationProposalMapping implements Serializable {
 
     public void setTenure(Double tenure) {
         this.tenure = tenure;
-    }
-
-    public String getFinalFilledCount() {
-        return finalFilledCount;
-    }
-
-    public void setFinalFilledCount(String finalFilledCount) {
-        this.finalFilledCount = finalFilledCount;
     }
 
     public String getDetailsFilledCount() {

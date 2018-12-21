@@ -5,6 +5,7 @@ import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateMcqDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.OverseasNetworkMappingDetail;
 import com.capitaworld.service.loans.model.corporate.CorporateMcqRequest;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateMcqDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.OverseasNetworkRepository;
@@ -35,6 +36,9 @@ public class CorporateMcqServiceImpl implements CorporateMcqService {
     @Autowired
     private LoanApplicationRepository loanApplicationRepository;
 
+    @Autowired
+    private ApplicationProposalMappingRepository applicationProposalMappingRepository;
+
     @Override
     public boolean saveOrUpdate(CorporateMcqRequest corporateMcqRequest, Long userId) throws Exception {
         try {
@@ -60,8 +64,11 @@ public class CorporateMcqServiceImpl implements CorporateMcqService {
             /* saveOverseasNetworkMapping(corporateMcqRequest.getApplicationId(), userId, corporateMcqRequest.getOverseasNetworkIds());
             */
             //setting flag
-            loanApplicationRepository.setIsFinalMcqMandatoryFilled(corporateMcqRequest.getApplicationId(), finalUserId, CommonUtils.isObjectNullOrEmpty(corporateMcqRequest.getFinalMcqFilled()) ? false : corporateMcqRequest.getFinalMcqFilled());
-            loanApplicationRepository.setFinalFilledCount(corporateMcqRequest.getApplicationId(), finalUserId, corporateMcqRequest.getFinalFilledCount());
+
+            //loanApplicationRepository.setIsFinalMcqMandatoryFilled(corporateMcqRequest.getApplicationId(), finalUserId, CommonUtils.isObjectNullOrEmpty(corporateMcqRequest.getFinalMcqFilled()) ? false : corporateMcqRequest.getFinalMcqFilled());
+            //loanApplicationRepository.setFinalFilledCount(corporateMcqRequest.getApplicationId(), finalUserId, corporateMcqRequest.getFinalFilledCount());
+
+            applicationProposalMappingRepository.setIsFinalMcqMandatoryFilled(corporateMcqRequest.getProposalMappingId(), finalUserId, CommonUtils.isObjectNullOrEmpty(corporateMcqRequest.getFinalMcqFilled()) ? false : corporateMcqRequest.getFinalMcqFilled());
             return true;
         } catch (Exception e) {
             logger.error("Error while Saving Corporate final mcq Details:-");

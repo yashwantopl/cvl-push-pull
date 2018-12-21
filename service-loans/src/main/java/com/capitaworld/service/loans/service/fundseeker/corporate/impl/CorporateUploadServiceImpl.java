@@ -114,7 +114,7 @@ public class CorporateUploadServiceImpl implements CorporateUploadService {
 			}
 			docRequest.setProductDocumentMappingId(mappingId);
 			docRequest.setUserType(userType);
-			return dmsClient.listProductDocumentByProposalId(docRequest);
+			return dmsClient.listProductDocument(docRequest);
 		} catch (DocumentException e) {
 			// TODO Auto-generated catch block
 			logger.error("Error while getting Profile Document");
@@ -323,13 +323,9 @@ public class CorporateUploadServiceImpl implements CorporateUploadService {
 					logger.info("Before setIsFinalUploadMandatoryFilled");
 					applicationProposalMappingRepository.setIsFinalUploadMandatoryFilled(proposalId,applicantId,isFilled);
 					logger.info("After setIsFinalUploadMandatoryFilled");
-					logger.info("Before setFinalFilledCount");
-					applicationProposalMappingRepository.setFinalFilledCount(proposalId,applicantId,filledCount);
-					logger.info("After setFinalFilledCount");
 					break;
 				case CommonUtils.TabType.FINAL_DPR_UPLOAD:
 					applicationProposalMappingRepository.setIsFinalDprMandatoryFilled(proposalId,applicantId,isFilled);
-					applicationProposalMappingRepository.setFinalFilledCount(applicantId, userId, filledCount);
 					break;
 				default:
 					break;
