@@ -37,9 +37,10 @@ public interface FundSeekerInputRequestService {
 	 * Verify GST whether the GSTIN is Registered or Not.
 	 * @param gstin
 	 * @param applicationId
+	 * @param userId
 	 * @return
 	 */
-	public GstResponse verifyGST(String gstin,Long applicationId);
+	public GstResponse verifyGST(String gstin,Long applicationId,Long userId);
 
 	
 	/**

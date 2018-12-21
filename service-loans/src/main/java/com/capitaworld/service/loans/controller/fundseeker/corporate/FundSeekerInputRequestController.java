@@ -312,7 +312,7 @@ public class FundSeekerInputRequestController {
         	if(applicationId == null) {
      		   return new ResponseEntity<LoansResponse>(new LoansResponse("Something goes wrong while processig your Request. Please re-login again.", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
         	}
-            return new ResponseEntity<LoansResponse>(new LoansResponse("GST Verification",HttpStatus.OK.value(),fundSeekerInputRequestService.verifyGST(gstin, applicationId)), HttpStatus.OK);
+            return new ResponseEntity<LoansResponse>(new LoansResponse("GST Verification",HttpStatus.OK.value(),fundSeekerInputRequestService.verifyGST(gstin, applicationId,userId)), HttpStatus.OK);
         } catch (Exception e) {
             logger.error("Error while Fetching details for min-max Margin : ",e);
             return new ResponseEntity<LoansResponse>(

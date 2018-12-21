@@ -27,6 +27,7 @@ import com.capitaworld.service.fraudanalytics.model.AnalyticsRequest;
 import com.capitaworld.service.fraudanalytics.model.AnalyticsResponse;
 import com.capitaworld.service.gst.GstResponse;
 import com.capitaworld.service.gst.client.GstClient;
+import com.capitaworld.service.gst.yuva.request.GSTR1Request;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.DirectorBackgroundDetail;
@@ -682,9 +683,13 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 	
 	
 	@Override
-	public GstResponse verifyGST(String gstin,Long applicationId) {
+	public GstResponse verifyGST(String gstin,Long applicationId,Long userId) {
 		try {
-			GstResponse response = gstClient.getGSTSearchData(gstin);
+			GSTR1Request request = new GSTR1Request();
+			request.setApplicationId(applicationId);
+			request.setGstin(gstin);
+			request.setUserId(userId);
+			GstResponse response = gstClient.getGSTSearchData(request);
 			if(response == null){
 				return null;
 			}
