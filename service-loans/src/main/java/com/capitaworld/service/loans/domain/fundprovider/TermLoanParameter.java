@@ -713,6 +713,7 @@ public class TermLoanParameter extends ProductMaster implements Serializable {
 	}
 
 	public TermLoanParameter() {
+		// Do nothing because of X and Y.
 	}
 
 	public ProductMaster getFpProductId() {
