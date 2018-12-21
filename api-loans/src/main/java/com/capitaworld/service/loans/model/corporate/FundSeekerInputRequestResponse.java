@@ -31,7 +31,7 @@ public class FundSeekerInputRequestResponse {
 
     private String organisationName;
     
-    private String gstNumber;
+    private String gstIn;
     
     private String pan;
     
@@ -546,13 +546,21 @@ public class FundSeekerInputRequestResponse {
 		this.isItrCompleted = isItrCompleted;
 	}
 
+	public String getGstIn() {
+		return gstIn;
+	}
+
+	public void setGstIn(String gstIn) {
+		this.gstIn = gstIn;
+	}
+
 	@Override
 	public String toString() {
 		return "FundSeekerInputRequestResponse [userId=" + userId + ", clientId=" + clientId + ", applicationId="
 				+ applicationId + ", businessTypeId=" + businessTypeId + ", keyVericalFunding=" + keyVericalFunding
 				+ ", keyVerticalSector=" + keyVerticalSector + ", keyVerticalSubsector=" + keyVerticalSubsector
-				+ ", firstAddress=" + firstAddress + ", organisationName=" + organisationName + ", gstNumber="
-				+ gstNumber + ", pan=" + pan + ", aadhar=" + aadhar + ", msmeRegistrationNumber="
+				+ ", firstAddress=" + firstAddress + ", organisationName=" + organisationName + ", gstIn="
+				+ gstIn + ", pan=" + pan + ", aadhar=" + aadhar + ", msmeRegistrationNumber="
 				+ msmeRegistrationNumber + ", loanAmount=" + loanAmount + ", purposeOfLoanId=" + purposeOfLoanId
 				+ ", haveCollateralSecurity=" + haveCollateralSecurity + ", isGstCompleted=" + isGstCompleted
 				+ ", isItrCompleted=" + isItrCompleted + ", collateralSecurityAmount=" + collateralSecurityAmount

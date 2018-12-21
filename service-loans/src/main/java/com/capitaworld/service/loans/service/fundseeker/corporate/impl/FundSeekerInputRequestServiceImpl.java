@@ -670,6 +670,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 
 			BeanUtils.copyProperties(corporateApplicantDetail, fundSeekerInputResponse);
 			copyAddressFromDomainToRequest(corporateApplicantDetail, fundSeekerInputResponse);
+			fundSeekerInputResponse.setPan(corporateApplicantDetail.getPanNo());
 			fundSeekerInputResponse.setDirectorBackgroundDetailRequestsList(directorBackgroundDetailsService.getDirectorBackgroundDetailList(applicationId, null));
 			fundSeekerInputResponse.setFinancialArrangementsDetailRequestsList(financialArrangementDetailsService.getManuallyAddedFinancialArrangementDetailsList(applicationId));
 			logger.info("director detail successfully fetched");
