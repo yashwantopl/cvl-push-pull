@@ -1,11 +1,14 @@
 package com.capitaworld.service.loans.utils.dpr;
 
+import com.capitaworld.service.loans.utils.CommonUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.util.CellReference;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 
 import com.capitaworld.service.loans.domain.fundseeker.corporate.DprUserDataDetail;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -14,6 +17,9 @@ import com.capitaworld.service.loans.domain.fundseeker.corporate.DprUserDataDeta
  */
 public class DprSeventhSheetExcelReader
 {
+
+    private static final Logger logger = LoggerFactory.getLogger(DprSeventhSheetExcelReader.class);
+
     public static void run(Long applicationId, Long storageDetailsId,
 			XSSFSheet sheet, DprUserDataDetail dprUserDataDetail) {
 
@@ -26,7 +32,7 @@ public class DprSeventhSheetExcelReader
                 }
             }
         }catch (Exception e) {
-            e.printStackTrace();
+            logger.error(CommonUtils.EXCEPTION,e);
         }
 
         //save 793 question
@@ -38,7 +44,7 @@ public class DprSeventhSheetExcelReader
                 }
             }
         }catch (Exception e) {
-            e.printStackTrace();
+            logger.error(CommonUtils.EXCEPTION,e);
         }
 
         //save 794 question
@@ -50,7 +56,7 @@ public class DprSeventhSheetExcelReader
                 }
             }
         }catch (Exception e) {
-            e.printStackTrace();
+            logger.error(CommonUtils.EXCEPTION,e);
         }
 
 
@@ -63,7 +69,7 @@ public class DprSeventhSheetExcelReader
                 }
             }
         }catch (Exception e) {
-            e.printStackTrace();
+            logger.error(CommonUtils.EXCEPTION,e);
         }
 
         //save 796 question
@@ -75,7 +81,7 @@ public class DprSeventhSheetExcelReader
                 }
             }
         }catch (Exception e) {
-            e.printStackTrace();
+            logger.error(CommonUtils.EXCEPTION,e);
         }
 
         //save 797 question
@@ -87,7 +93,7 @@ public class DprSeventhSheetExcelReader
                 }
             }
         }catch (Exception e) {
-            e.printStackTrace();
+            logger.error(CommonUtils.EXCEPTION,e);
         }
 
         //save 798 question
@@ -99,7 +105,7 @@ public class DprSeventhSheetExcelReader
                 }
             }
         }catch (Exception e) {
-            e.printStackTrace();
+            logger.error(CommonUtils.EXCEPTION,e);
         }
 
         //save 799 question
@@ -111,7 +117,7 @@ public class DprSeventhSheetExcelReader
                 }
             }
         }catch (Exception e) {
-            e.printStackTrace();
+            logger.error(CommonUtils.EXCEPTION,e);
         }
 
         //save 800 question
@@ -123,7 +129,7 @@ public class DprSeventhSheetExcelReader
                 }
             }
         }catch (Exception e) {
-            e.printStackTrace();
+            logger.error(CommonUtils.EXCEPTION,e);
         }
 
         //save 801 question
@@ -135,7 +141,7 @@ public class DprSeventhSheetExcelReader
                 }
             }
         }catch (Exception e) {
-            e.printStackTrace();
+            logger.error(CommonUtils.EXCEPTION,e);
         }
     }
     public static String getDataFromCell(XSSFSheet sheet,String cellNumber)

@@ -1305,7 +1305,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 		// dmsClient.listProductDocument(documentRequest);
 		// corporatePrimaryViewResponse.setZipBytes(documentResponse.getDataList());
 		// } catch (DocumentException e) {
-		// e.printStackTrace();
+		// logger.error(CommonUtils.EXCEPTION,e);
 		// }
 		// List<Long> ids=new ArrayList<>();
 		// ids.add(354l);
@@ -1319,7 +1319,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 		// DocumentResponse documentResponse=dmsClient.getGenerateZip(zipRequest);
 		// corporatePrimaryViewResponse.setZipBytes(documentResponse.getData());
 		// } catch (DocumentException e) {
-		// e.printStackTrace();
+		// logger.error(CommonUtils.EXCEPTION,e);
 		// }
 
 		return corporatePrimaryViewResponse;

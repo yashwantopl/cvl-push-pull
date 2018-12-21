@@ -673,7 +673,7 @@ public class UnsecuredLoanPrimaryViewServiceImpl implements UnsecuredLoanPrimary
 //		try {
 //			referenceRetailDetailsRequestList = referenceRetailDetailsService.getReferenceRetailDetailList(toApplicationId, userType);
 //		} catch (Exception e) {
-//			e.printStackTrace();
+//			logger.error(CommonUtils.EXCEPTION,e);
 //		}
 //		unsecuredLoanPrimaryViewResponse.setReferenceRetailDetailsRequests(referenceRetailDetailsRequestList);
 
@@ -740,7 +740,7 @@ public class UnsecuredLoanPrimaryViewServiceImpl implements UnsecuredLoanPrimary
 //				unsecuredLoanPrimaryViewResponse.setShortTermRating(shortTermValueList);
 //			}
 //		} catch (Exception e) {
-//			e.printStackTrace();
+//			logger.error(CommonUtils.EXCEPTION,e);
 //		}
 
 		// set long term rating option
@@ -762,14 +762,14 @@ public class UnsecuredLoanPrimaryViewServiceImpl implements UnsecuredLoanPrimary
 //			}
 //			unsecuredLoanPrimaryViewResponse.setLongTermRating(longTermValueList);
 //		} catch (Exception e) {
-//			e.printStackTrace();
+//			logger.error(CommonUtils.EXCEPTION,e);
 //		}
 		//setting co-application details
 //        List<CorporateCoApplicantRequest> coApplicantResponse = null;
 //        try {
 //            coApplicantResponse = corporateCoApplicantService.getList(toApplicationId, userId);
 //        } catch (Exception e) {
-//            e.printStackTrace();
+//            logger.error(CommonUtils.EXCEPTION,e);
 //        }
 //        unsecuredLoanPrimaryViewResponse.setCoApplicantList(coApplicantResponse);
 
@@ -783,7 +783,7 @@ public class UnsecuredLoanPrimaryViewServiceImpl implements UnsecuredLoanPrimary
 //            MasterResponse data = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) formResponse.getListData().get(0), MasterResponse.class);
 //            officeAddress.setCity(data.getValue());
 //        } catch (Exception e) {
-//            e.printStackTrace();
+//            logger.error(CommonUtils.EXCEPTION,e);
 //        }
 //        try {
 //            List<Long> officeCountry = new ArrayList<Long>(1);
@@ -797,7 +797,7 @@ public class UnsecuredLoanPrimaryViewServiceImpl implements UnsecuredLoanPrimary
 //                officeAddress.setCountry(dataCountry.getValue());
 //            }
 //        } catch (Exception e) {
-//            e.printStackTrace();
+//            logger.error(CommonUtils.EXCEPTION,e);
 //
 //        }
 //        try {
@@ -812,7 +812,7 @@ public class UnsecuredLoanPrimaryViewServiceImpl implements UnsecuredLoanPrimary
 //                officeAddress.setState(dataState.getValue());
 //            }
 //        } catch (Exception e) {
-//
+//			logger.error(CommonUtils.EXCEPTION,e);
 //        }
 //        officeAddress.setLandMark(corporateApplicantDetail.getAdministrativeLandMark());
 //        officeAddress.setPincode(corporateApplicantDetail.getAdministrativePincode() != null ? corporateApplicantDetail.getAdministrativePincode().toString() : null);
