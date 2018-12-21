@@ -582,16 +582,17 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 				.findOneByApplicationIdId(fundSeekerInputRequest.getApplicationId());
 		if (CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail)) {
 			logger.info("corporateApplicantDetail is null created new object");
-			corporateApplicantDetail = new CorporateApplicantDetail();
-			corporateApplicantDetail.setApplicationId(new LoanApplicationMaster(fundSeekerInputRequest.getApplicationId()));
-			corporateApplicantDetail.setCreatedBy(fundSeekerInputRequest.getUserId());
-			corporateApplicantDetail.setCreatedDate(new Date());
-			corporateApplicantDetail.setIsActive(true);
-		} else {
-			logger.info("constitution id  ------------------------------------------>"+ corporateApplicantDetail.getConstitutionId());
-			corporateApplicantDetail.setModifiedBy(fundSeekerInputRequest.getUserId());
-			corporateApplicantDetail.setModifiedDate(new Date());
+			return new LoansResponse(CommonUtils.GENERIC_ERROR_MSG,HttpStatus.BAD_REQUEST.value());
 		}
+		if(CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getIsGstCompleted()) || !corporateApplicantDetail.getIsGstCompleted()){
+    		return new LoansResponse(CommonUtils.GST_VALIDATION_ERROR_MSG,HttpStatus.BAD_REQUEST.value());	
+    	}
+    	if(CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getIsItrCompleted()) || !corporateApplicantDetail.getIsItrCompleted()){
+    		new LoansResponse(CommonUtils.ITR_VALIDATION_ERROR_MSG,HttpStatus.BAD_REQUEST.value());	
+    	}
+		logger.info("constitution id  ------------------------------------------>"+ corporateApplicantDetail.getConstitutionId());
+		corporateApplicantDetail.setModifiedBy(fundSeekerInputRequest.getUserId());
+		corporateApplicantDetail.setModifiedDate(new Date());
 		corporateApplicantDetail.setOrganisationName(fundSeekerInputRequest.getOrganisationName());
 		corporateApplicantDetail.setPanNo(fundSeekerInputRequest.getPan());
 		corporateApplicantDetail.setConstitutionId(fundSeekerInputRequest.getConstitutionId());
