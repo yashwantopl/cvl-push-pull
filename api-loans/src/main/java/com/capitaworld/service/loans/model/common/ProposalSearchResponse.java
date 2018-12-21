@@ -14,6 +14,8 @@ public class ProposalSearchResponse {
 	private Date createdDate;
 	private String branchName;
 	private String branchCode;
+	private Integer businessTypeId;
+	private Long proposalStatusId;
 	
 	public Long getApplicationId() {
 		return applicationId;
@@ -74,6 +76,18 @@ public class ProposalSearchResponse {
 	}
 	public void setBranchCode(String branchCode) {
 		this.branchCode = branchCode;
+	}
+	public Integer getBusinessTypeId() {
+		return businessTypeId;
+	}
+	public void setBusinessTypeId(Integer businessTypeId) {
+		this.businessTypeId = businessTypeId;
+	}
+	public Long getProposalStatusId() {
+		return proposalStatusId;
+	}
+	public void setProposalStatusId(Long proposalStatusId) {
+		this.proposalStatusId = proposalStatusId;
 	}
 	
 	

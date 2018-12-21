@@ -1967,9 +1967,11 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			response.setElAmount(CommonUtils.convertDouble(obj[5]));
 			response.setProductName(CommonUtils.convertString(obj[6]));
 			response.setCreatedDate(CommonUtils.convertDate(obj[7]));
+			response.setBusinessTypeId(CommonUtils.convertInteger(obj[8]));
+			response.setProposalStatusId(CommonUtils.convertLong(obj[9]));
 			if(setBranch) {
-				response.setBranchName(CommonUtils.convertString(obj[8]));
-				response.setBranchCode(CommonUtils.convertString(obj[9]));
+				response.setBranchName(CommonUtils.convertString(obj[10]));
+				response.setBranchCode(CommonUtils.convertString(obj[11]));
 			}
 			responseList.add(response);
 		}
