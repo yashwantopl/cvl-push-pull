@@ -626,7 +626,7 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 		try {
 			referenceRetailDetailsRequestList = referenceRetailDetailsService.getReferenceRetailDetailList(toApplicationId, userType);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		termLoanPrimaryViewResponse.setReferenceRetailDetailsRequests(referenceRetailDetailsRequestList);
 

@@ -1753,7 +1753,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 	 * }
 	 * 
 	 * } } } catch (DocumentException | IOException e) {
-	 * logger.error("Error - Failed to delect files "); e.printStackTrace(); } }
+	 * logger.error("Error - Failed to delect files : ",e); } }
 	 * logger.info("================= Exit From deleteFile()================== "); }
 	 */
 

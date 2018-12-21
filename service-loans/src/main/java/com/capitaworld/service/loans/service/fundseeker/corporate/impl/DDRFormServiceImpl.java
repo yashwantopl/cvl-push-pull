@@ -798,8 +798,8 @@ public class DDRFormServiceImpl implements DDRFormService {
 		 * referencesResponseList.add(referencesResponse); }
 		 * response.setReferencesResponseList(referencesResponseList); } catch
 		 * (Exception e) {
-		 * logger.info("Throw Exception While Get Reference Details in DDR OneForm");
-		 * e.printStackTrace(); }
+		 * logger.error("Throw Exception While Get Reference Details in DDR OneForm : ",e);
+		 *  }
 		 */
 		return response;
 	}
