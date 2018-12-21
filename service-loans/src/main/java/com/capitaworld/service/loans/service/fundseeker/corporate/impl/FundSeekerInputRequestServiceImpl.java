@@ -584,10 +584,10 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			logger.info("corporateApplicantDetail is null created new object");
 			return new LoansResponse(CommonUtils.GENERIC_ERROR_MSG,HttpStatus.BAD_REQUEST.value());
 		}
-		if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getIsGstCompleted()) && !corporateApplicantDetail.getIsGstCompleted()){
+		if(CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getIsGstCompleted()) || !corporateApplicantDetail.getIsGstCompleted()){
     		return new LoansResponse(CommonUtils.GST_VALIDATION_ERROR_MSG,HttpStatus.BAD_REQUEST.value());	
     	}
-    	if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getIsItrCompleted()) && !corporateApplicantDetail.getIsItrCompleted()){
+    	if(CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getIsItrCompleted()) || !corporateApplicantDetail.getIsItrCompleted()){
     		new LoansResponse(CommonUtils.ITR_VALIDATION_ERROR_MSG,HttpStatus.BAD_REQUEST.value());	
     	}
 		logger.info("constitution id  ------------------------------------------>"+ corporateApplicantDetail.getConstitutionId());
