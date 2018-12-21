@@ -22,6 +22,6 @@ public interface AchievementDetailsRepository extends JpaRepository<AchievementD
 	public int inActive(@Param("userId") Long userId, @Param("applicationId") Long applicationId);
 
 	/*multiple bank*/
-	@Query("from AchievementDetail  a where a.applicationProposalMapping.proposalId=:proposalId  AND a.isActive=true")
+	@Query("from AchievementDetail  a where a.proposalMapping.proposalId=:proposalId  AND a.isActive=true")
 	public List<AchievementDetail> listAchievementFromProposalId(@Param("proposalId") Long proposalId);
 }
