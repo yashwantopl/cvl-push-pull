@@ -273,7 +273,6 @@ public class RetailUploadController {
 					}
 
 				} catch (Exception e) {
-					// TODO: handle exception
 
 					JSONObject json = new JSONObject();
 					json.put("id", response.getStorageId());

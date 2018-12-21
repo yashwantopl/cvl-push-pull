@@ -368,7 +368,7 @@ public class CorporateUploadController {
 				excelExtractionService.inActiveBS(docId);
 				excelExtractionService.inActiveDPR(docId);
 			} catch (Exception e) {
-				// TODO: handle exception
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 
 			if (response != null && response.getStatus() == 200) {

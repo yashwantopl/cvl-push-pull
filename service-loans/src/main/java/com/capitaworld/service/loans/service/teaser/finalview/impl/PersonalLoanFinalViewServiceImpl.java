@@ -54,16 +54,14 @@ public class PersonalLoanFinalViewServiceImpl implements PersonalLoanFinalViewSe
 			try {
 				finalViewResponse.setCoApplicantCommonDetails(coApplicantService.getCoApplicantFinalResponse(applicantId, applicationMaster.getUserId(),applicationMaster.getProductId()));
 			} catch (Exception e) {
-				// TODO: handle exception
-				logger.error("error while getting CoApplicant final details");
+				logger.error("error while getting CoApplicant final details : ",e);
 			}
 			
 			//guarantor final common details
 			try {
 				finalViewResponse.setGuarantorCommonDetails(guarantorService.getGuarantorFinalViewResponse(applicantId, applicationMaster.getUserId(),applicationMaster.getProductId()));
 			} catch (Exception e) {
-				// TODO: handle exception
-				logger.error("error while getting Guarantor final details");
+				logger.error("error while getting Guarantor final details : ",e);
 			}
 			plFinalViewResponse.setFinalViewResponse(finalViewResponse);
 			
@@ -71,8 +69,7 @@ public class PersonalLoanFinalViewServiceImpl implements PersonalLoanFinalViewSe
 			try { 
 				plFinalViewResponse.setPersonalLoansPrimaryViewResponse(primaryViewPLService.getPersonalLoansPrimaryViewDetails(applicantId));
 			} catch (Exception e) {
-				// TODO: handle exception
-				logger.error("error while getting PL primary details");
+				logger.error("error while getting PL primary details : ",e);
 			}
 			
 		}

@@ -826,7 +826,7 @@ public class PrimaryViewController {
 					applicationId, fpProductId, NotificationTemplate.PRIMARY_VIEW, loginUserType);
 
 		} catch (Exception e) {
-			// TODO: handle exception
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 	}
 
@@ -870,7 +870,7 @@ public class PrimaryViewController {
 						applicationId, fpProductId, NotificationTemplate.FINAL_VIEW, loginUserType);
 			}
 		} catch (Exception e) {
-			// TODO: handle exception
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 	}
 
@@ -914,7 +914,7 @@ public class PrimaryViewController {
 					applicationId, fpProductId, null, loginUserType);
 
 		} catch (Exception e) {
-			// TODO: handle exception
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 	}
 
