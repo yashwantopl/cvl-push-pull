@@ -80,6 +80,7 @@ public class CorporateMcqRequest implements Serializable {
 
 
     public CorporateMcqRequest() {
+        // Do nothing because of X and Y.
     }
 
    /* public List<Integer> getOverseasNetworkIds() {
