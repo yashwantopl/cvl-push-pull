@@ -17,7 +17,7 @@ public class AddressRequest implements Serializable {
 	private String postalCode;
 
 	public AddressRequest() {
-
+		// Do nothing because of X and Y.
 	}
 
 	public String getStreetAddress() {
