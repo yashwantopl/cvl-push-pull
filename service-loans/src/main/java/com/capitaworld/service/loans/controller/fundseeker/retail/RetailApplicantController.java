@@ -63,7 +63,7 @@ public class RetailApplicantController {
 				applicantRequest.setClientId(clientId);
 			}
 			applicantService.save(applicantRequest, userId);
-			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
+			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SUCCESSFULLY_SAVED, HttpStatus.OK.value()),
 					HttpStatus.OK);
 
 		} catch (Exception e) {
@@ -85,7 +85,7 @@ public class RetailApplicantController {
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 			applicantService.saveITRResponse(applicantRequest);
-			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
+			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SUCCESSFULLY_SAVED, HttpStatus.OK.value()),
 					HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
@@ -193,7 +193,7 @@ public class RetailApplicantController {
 				applicantRequest.setClientId(clientId);
 			}
 			applicantService.saveFinal(applicantRequest, userId);
-			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
+			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SUCCESSFULLY_SAVED, HttpStatus.OK.value()),
 					HttpStatus.OK);
 
 		} catch (Exception e) {

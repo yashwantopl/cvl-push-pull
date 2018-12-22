@@ -155,7 +155,7 @@ public class ProductMasterController {
 						corporateProduct);
 				CommonDocumentUtils.endHook(logger, "save");
 				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Requested data can not be empty.", HttpStatus.BAD_REQUEST.value()),
+						new LoansResponse(CommonUtils.REQUESTED_DATA_CAN_NOT_BE_EMPTY, HttpStatus.BAD_REQUEST.value()),
 						HttpStatus.OK);
 			}
 
@@ -163,7 +163,7 @@ public class ProductMasterController {
 				logger.warn("corporateProduct id can not be empty ==>", corporateProduct);
 				CommonDocumentUtils.endHook(logger, "save");
 				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Requested data can not be empty.", HttpStatus.BAD_REQUEST.value()),
+						new LoansResponse(CommonUtils.REQUESTED_DATA_CAN_NOT_BE_EMPTY, HttpStatus.BAD_REQUEST.value()),
 						HttpStatus.OK);
 			}
 
@@ -174,7 +174,7 @@ public class ProductMasterController {
 				logger.warn("userId  id can not be empty ==>", userId);
 				CommonDocumentUtils.endHook(logger, "save");
 				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Requested data can not be empty.", HttpStatus.BAD_REQUEST.value()),
+						new LoansResponse(CommonUtils.REQUESTED_DATA_CAN_NOT_BE_EMPTY, HttpStatus.BAD_REQUEST.value()),
 						HttpStatus.OK);
 			}
 			corporateProduct.setUserId(userId);
@@ -209,7 +209,7 @@ public class ProductMasterController {
 						retailProduct);
 				CommonDocumentUtils.endHook(logger, "save");
 				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Requested data can not be empty.", HttpStatus.BAD_REQUEST.value()),
+						new LoansResponse(CommonUtils.REQUESTED_DATA_CAN_NOT_BE_EMPTY, HttpStatus.BAD_REQUEST.value()),
 						HttpStatus.OK);
 			}
 
@@ -217,7 +217,7 @@ public class ProductMasterController {
 				logger.warn("retailProduct id can not be empty ==>", retailProduct);
 				CommonDocumentUtils.endHook(logger, "save");
 				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Requested data can not be empty.", HttpStatus.BAD_REQUEST.value()),
+						new LoansResponse(CommonUtils.REQUESTED_DATA_CAN_NOT_BE_EMPTY, HttpStatus.BAD_REQUEST.value()),
 						HttpStatus.OK);
 			}
 
@@ -228,7 +228,7 @@ public class ProductMasterController {
 				logger.warn("userId  id can not be empty ==>", userId);
 				CommonDocumentUtils.endHook(logger, "save");
 				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Requested data can not be empty.", HttpStatus.BAD_REQUEST.value()),
+						new LoansResponse(CommonUtils.REQUESTED_DATA_CAN_NOT_BE_EMPTY, HttpStatus.BAD_REQUEST.value()),
 						HttpStatus.OK);
 			}
 			retailProduct.setUserId(userId);
@@ -272,7 +272,7 @@ public class ProductMasterController {
 			}
 			Long userOrgId = (Long) request.getAttribute(CommonUtils.USER_ORG_ID);
 			List<ProductMasterRequest> response = productMasterService.getList(userId,userOrgId);
-			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 			loansResponse.setListData(response);
 			CommonDocumentUtils.endHook(logger, "getList");
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
@@ -305,7 +305,7 @@ public class ProductMasterController {
 			}
 			Long userOrgId = (Long) request.getAttribute(CommonUtils.USER_ORG_ID);
 			List<ProductMasterRequest> response = productMasterService.getActiveInActiveList(userId,userOrgId);
-			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 			loansResponse.setListData(response);
 			CommonDocumentUtils.endHook(logger, "getActiveInActiveList");
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
@@ -347,7 +347,7 @@ public class ProductMasterController {
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 			//List<ProductMasterRequest> response = productMasterService.getListByUserType(userId, userType);
-			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 			loansResponse.setListData(productMasterService.getListByUserType(userId, Integer.parseInt(CommonUtils.decode(userType)),Integer.parseInt(CommonUtils.decode(applicationStage)),userOrgId));
 			CommonDocumentUtils.endHook(logger, "getListByUserType");
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
@@ -376,7 +376,7 @@ public class ProductMasterController {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 			}	
 			
-			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 			loansResponse.setData(productMasterService.getProductMasterWithAllData(id,applicationStage,role,userId));
 			CommonDocumentUtils.endHook(logger, "getListByUserType");
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
@@ -407,9 +407,9 @@ public class ProductMasterController {
 			Object[] response = productMasterService.getUserDetailsByPrductId(productId);
 			LoansResponse loansResponse;
 			if (response == null) {
-				loansResponse = new LoansResponse("Data Not Found.", HttpStatus.OK.value());
+				loansResponse = new LoansResponse(CommonUtils.DATA_NOT_FOUND, HttpStatus.OK.value());
 			} else {
-				loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+				loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 				if (!CommonUtils.isObjectNullOrEmpty(response[1])) {
 					loansResponse.setData(response[1]);
 				} else {
@@ -443,9 +443,9 @@ public class ProductMasterController {
 			Object[] response = productMasterService.getUserDetailsByPrductId(productId);
 			LoansResponse loansResponse;
 			if (response == null) {
-				loansResponse = new LoansResponse("Data Not Found.", HttpStatus.OK.value());
+				loansResponse = new LoansResponse(CommonUtils.DATA_NOT_FOUND, HttpStatus.OK.value());
 			} else {
-				loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+				loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 				if (!CommonUtils.isObjectNullOrEmpty(response[0])) {
 					loansResponse.setData(response[0]);
 				}
@@ -476,7 +476,7 @@ public class ProductMasterController {
 			}
 
 			List<ProductDetailsForSp> response = productMasterService.getProductDetailsByUserIdList(userId);
-			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 			loansResponse.setListData(response);
 			CommonDocumentUtils.endHook(logger, "getListByUserIdList");
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
@@ -541,9 +541,9 @@ public class ProductMasterController {
 			FpProductDetails response = productMasterService.getProductDetails(productMappingId);
 			LoansResponse loansResponse;
 			if (response == null) {
-				loansResponse = new LoansResponse("Data Not Found.", HttpStatus.OK.value());
+				loansResponse = new LoansResponse(CommonUtils.DATA_NOT_FOUND, HttpStatus.OK.value());
 			} else {
-				loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+				loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 				loansResponse.setData(response);
 			}
 			CommonDocumentUtils.endHook(logger, "getFpDetails");
@@ -575,7 +575,7 @@ public class ProductMasterController {
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
-			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 			loansResponse.setData(productMasterService.isSelfView(fpMappingId, userId));
 			CommonDocumentUtils.endHook(logger, "isSelfView");
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
@@ -600,7 +600,7 @@ public class ProductMasterController {
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
-			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 			loansResponse.setData(productMasterService.checkParameterIsFilled(fpMappingId));
 			CommonDocumentUtils.endHook(logger, "checkParameterIsFilled");
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
@@ -694,7 +694,7 @@ public class ProductMasterController {
 		// request must not be null
 		try {
 			CommonDocumentUtils.startHook(logger, "getChatListByApplicationId");
-			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 			loansResponse.setListData(productMasterService.getChatListByFpMappingId(mappingId));
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
@@ -709,7 +709,7 @@ public class ProductMasterController {
 	public ResponseEntity<LoansResponse> getProductsByOrg(@PathVariable("orgId") Long orgId) {
 		try {
 			logger.info("start getProductsByOrg()");
-			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 			loansResponse.setData(productMasterService.getProductByOrgId(orgId));
 			logger.info("End getProductsByOrg()");
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
@@ -735,7 +735,7 @@ public class ProductMasterController {
 		}
 		try {
 			CommonDocumentUtils.startHook(logger, "saveMasterFromTemp");
-			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 			productMasterService.saveCorporateMasterFromTemp(mappingId);
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
@@ -757,7 +757,7 @@ public class ProductMasterController {
 						corporateProduct);
 				CommonDocumentUtils.endHook(logger, "save");
 				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Requested data can not be empty.", HttpStatus.BAD_REQUEST.value()),
+						new LoansResponse(CommonUtils.REQUESTED_DATA_CAN_NOT_BE_EMPTY, HttpStatus.BAD_REQUEST.value()),
 						HttpStatus.OK);
 			}
 
@@ -765,7 +765,7 @@ public class ProductMasterController {
 				logger.warn("corporateProduct id can not be empty ==>", corporateProduct);
 				CommonDocumentUtils.endHook(logger, "save");
 				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Requested data can not be empty.", HttpStatus.BAD_REQUEST.value()),
+						new LoansResponse(CommonUtils.REQUESTED_DATA_CAN_NOT_BE_EMPTY, HttpStatus.BAD_REQUEST.value()),
 						HttpStatus.OK);
 			}
 
@@ -777,7 +777,7 @@ public class ProductMasterController {
 				logger.warn("userId  id can not be empty ==>", userId);
 				CommonDocumentUtils.endHook(logger, "save");
 				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Requested data can not be empty.", HttpStatus.BAD_REQUEST.value()),
+						new LoansResponse(CommonUtils.REQUESTED_DATA_CAN_NOT_BE_EMPTY, HttpStatus.BAD_REQUEST.value()),
 						HttpStatus.OK);
 			}
 			corporateProduct.setUserId(userId);
@@ -815,7 +815,7 @@ public class ProductMasterController {
 						retailProduct);
 				CommonDocumentUtils.endHook(logger, "save");
 				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Requested data can not be empty.", HttpStatus.BAD_REQUEST.value()),
+						new LoansResponse(CommonUtils.REQUESTED_DATA_CAN_NOT_BE_EMPTY, HttpStatus.BAD_REQUEST.value()),
 						HttpStatus.OK);
 			}
 
@@ -823,7 +823,7 @@ public class ProductMasterController {
 				logger.warn("corporateProduct id can not be empty ==>", retailProduct);
 				CommonDocumentUtils.endHook(logger, "save");
 				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Requested data can not be empty.", HttpStatus.BAD_REQUEST.value()),
+						new LoansResponse(CommonUtils.REQUESTED_DATA_CAN_NOT_BE_EMPTY, HttpStatus.BAD_REQUEST.value()),
 						HttpStatus.OK);
 			}
 
@@ -835,7 +835,7 @@ public class ProductMasterController {
 				logger.warn("userId  id can not be empty ==>", userId);
 				CommonDocumentUtils.endHook(logger, "save");
 				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Requested data can not be empty.", HttpStatus.BAD_REQUEST.value()),
+						new LoansResponse(CommonUtils.REQUESTED_DATA_CAN_NOT_BE_EMPTY, HttpStatus.BAD_REQUEST.value()),
 						HttpStatus.OK);
 			}
 			retailProduct.setUserId(userId);
@@ -890,7 +890,7 @@ public class ProductMasterController {
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 			//List<ProductMasterRequest> response = productMasterService.getListByUserType(userId, userType);
-			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 			loansResponse.setListData(productMasterService.getApprovedListByProductType(userId, Integer.parseInt(CommonUtils.decode(productId)), CommonUtils.isObjectNullOrEmpty(CommonUtils.decode(businessId))?null:Integer.parseInt(CommonUtils.decode(businessId)),userOrgId));
 			CommonDocumentUtils.endHook(logger, "getListByUserType");
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
