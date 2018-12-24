@@ -72,19 +72,7 @@ public class FinancialArrangementDetailsServiceImpl implements FinancialArrangem
 	public List<FinancialArrangementsDetailRequest> getFinancialArrangementDetailsList(Long id, Long userId)
 			throws Exception {
 		try {
-			List<FinancialArrangementsDetail> financialArrangementDetails = financialArrangementDetailsRepository.listSecurityCorporateDetailFromAppId(id);
-			List<FinancialArrangementsDetailRequest> financialArrangementDetailRequests = new ArrayList<FinancialArrangementsDetailRequest>();
-
-			for (FinancialArrangementsDetail detail : financialArrangementDetails) {
-				FinancialArrangementsDetailRequest financialArrangementDetailsRequest = new FinancialArrangementsDetailRequest();
-				BeanUtils.copyProperties(detail, financialArrangementDetailsRequest);
-				if(!CommonUtils.isObjectNullOrEmpty(detail.getDirectorBackgroundDetail())) {
-					financialArrangementDetailsRequest.setDirectorId(detail.getDirectorBackgroundDetail().getId());					
-				}
-				financialArrangementDetailRequests.add(financialArrangementDetailsRequest);
-				
-			}
-			return financialArrangementDetailRequests;
+			return prepareObject(financialArrangementDetailsRepository.listSecurityCorporateDetailFromAppId(id));
 		}
 
 		catch (Exception e) {
@@ -98,21 +86,8 @@ public class FinancialArrangementDetailsServiceImpl implements FinancialArrangem
 	@Override
 	public List<FinancialArrangementsDetailRequest> getManuallyAddedFinancialArrangementDetailsList(Long applicationId) {
 		try {
-			List<FinancialArrangementsDetail> financialArrangementDetails = financialArrangementDetailsRepository.getManuallyAddedFinancialDetail(applicationId);
-			List<FinancialArrangementsDetailRequest> financialArrangementDetailRequests = new ArrayList<FinancialArrangementsDetailRequest>();
-
-			for (FinancialArrangementsDetail detail : financialArrangementDetails) {
-				FinancialArrangementsDetailRequest financialArrangementDetailsRequest = new FinancialArrangementsDetailRequest();
-				BeanUtils.copyProperties(detail, financialArrangementDetailsRequest);
-				if(!CommonUtils.isObjectNullOrEmpty(detail.getDirectorBackgroundDetail())) {
-					financialArrangementDetailsRequest.setDirectorId(detail.getDirectorBackgroundDetail().getId());					
-				}
-				financialArrangementDetailRequests.add(financialArrangementDetailsRequest);
-				
-			}
-			return financialArrangementDetailRequests;
+			return prepareObject(financialArrangementDetailsRepository.getManuallyAddedFinancialDetail(applicationId));
 		}
-
 		catch (Exception e) {
 			logger.error("Exception  in save financialArrangementsDetail  :-",e);
 			return Collections.emptyList();
@@ -192,23 +167,27 @@ public class FinancialArrangementDetailsServiceImpl implements FinancialArrangem
 	 * @see com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService#getFinancialArrangementDetailsListDirId(java.lang.Long, java.lang.Long)
 	 */
 	@Override
-	public List<FinancialArrangementsDetailRequest> getFinancialArrangementDetailsListDirId(Long dirId, Long id)
-			throws Exception {
+	public List<FinancialArrangementsDetailRequest> getFinancialArrangementDetailsListDirId(Long dirId, Long id) throws Exception {
 		try {
-			List<FinancialArrangementsDetail> financialArrangementDetails = financialArrangementDetailsRepository.findByDirectorBackgroundDetailIdAndApplicationIdIdAndIsActive(dirId,id,true);
-			List<FinancialArrangementsDetailRequest> financialArrangementDetailRequests = new ArrayList<FinancialArrangementsDetailRequest>(financialArrangementDetails.size());
-
-			for (FinancialArrangementsDetail detail : financialArrangementDetails) {
-				FinancialArrangementsDetailRequest financialArrangementDetailsRequest = new FinancialArrangementsDetailRequest();
-				BeanUtils.copyProperties(detail, financialArrangementDetailsRequest);
-				financialArrangementDetailRequests.add(financialArrangementDetailsRequest);
-			}
-			return financialArrangementDetailRequests;
+			return prepareObject(financialArrangementDetailsRepository.findByDirectorBackgroundDetailIdAndApplicationIdIdAndIsActive(dirId,id,true));
 		}
-
 		catch (Exception e) {
 			logger.error("Exception  in save financialArrangementsDetail  :-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
+	}
+	
+	private List<FinancialArrangementsDetailRequest> prepareObject(List<FinancialArrangementsDetail> financialArrangementDetails){
+		List<FinancialArrangementsDetailRequest> financialArrangementDetailRequests = new ArrayList<FinancialArrangementsDetailRequest>(financialArrangementDetails.size());
+
+		for (FinancialArrangementsDetail detail : financialArrangementDetails) {
+			FinancialArrangementsDetailRequest financialArrangementDetailsRequest = new FinancialArrangementsDetailRequest();
+			BeanUtils.copyProperties(detail, financialArrangementDetailsRequest);
+			if(!CommonUtils.isObjectNullOrEmpty(detail.getDirectorBackgroundDetail())) {
+				financialArrangementDetailsRequest.setDirectorId(detail.getDirectorBackgroundDetail().getId());					
+			}
+			financialArrangementDetailRequests.add(financialArrangementDetailsRequest);
+		}
+		return financialArrangementDetailRequests;
 	}
 }
