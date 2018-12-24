@@ -93,7 +93,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 
 	@Override
 	public void saveITRMappingData (CorporateApplicantRequest applicantRequest) {
-		
+		//Updating OneForm Uniform Fields
 		CorporateApplicantDetail applicantDetail = applicantRepository.findByApplicationIdIdAndIsActive(applicantRequest.getApplicationId(),true);
 		if(!CommonUtils.isObjectNullOrEmpty(applicantDetail)) {
 			applicantDetail.setModifiedBy(applicantRequest.getUserId());
