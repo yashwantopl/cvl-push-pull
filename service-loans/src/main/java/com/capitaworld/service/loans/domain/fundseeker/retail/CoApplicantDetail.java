@@ -375,6 +375,7 @@ public class CoApplicantDetail implements Serializable {
 	private Integer modeOfReceipt;
 
 	public CoApplicantDetail() {
+		// Do nothing because of X and Y.
 	}
 
 	public Long getId() {

@@ -54,4 +54,20 @@ public class LoanRepositoryImpl implements LoanRepository {
 		return (List<Object[]>) storedProcedureQuery.getResultList();
 	}
 	
+	public Object[] fpDashBoardCountByOrgId(Long orgId) {
+		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spFetchFpDashbordCountByOrgId");
+		storedProcedureQuery.registerStoredProcedureParameter("orgId",Long.class, ParameterMode.IN);
+		storedProcedureQuery.setParameter("orgId",orgId);
+		return (Object[]) storedProcedureQuery.getSingleResult();
+	}
+	
+	public Object[] fpDashBoardCountByOrgIdAndBranchId(Long orgId,Long branchId) {
+		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spFetchFpDashbordCountByOrgIdAndBranchId");
+		storedProcedureQuery.registerStoredProcedureParameter("orgId",Long.class, ParameterMode.IN);
+		storedProcedureQuery.registerStoredProcedureParameter("branchId",Long.class, ParameterMode.IN);
+		storedProcedureQuery.setParameter("orgId",orgId);
+		storedProcedureQuery.setParameter("branchId",branchId);
+		return (Object[]) storedProcedureQuery.getSingleResult();
+	}
+	
 }

@@ -2,10 +2,6 @@ package com.capitaworld.service.loans.controller.fundseeker.corporate;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.capitaworld.connect.api.ConnectAuditErrorCode;
-import com.capitaworld.connect.api.ConnectLogAuditRequest;
-import com.capitaworld.connect.api.ConnectStage;
-import com.capitaworld.connect.client.ConnectClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +12,15 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.capitaworld.connect.api.ConnectAuditErrorCode;
+import com.capitaworld.connect.api.ConnectLogAuditRequest;
+import com.capitaworld.connect.api.ConnectStage;
+import com.capitaworld.connect.client.ConnectClient;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.NTBRequest;
 import com.capitaworld.service.loans.model.corporate.FundSeekerInputRequestResponse;
@@ -308,8 +311,8 @@ public class FundSeekerInputRequestController {
         }
     }
     
-    @RequestMapping(value = "/verifyGST/{gstin}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LoansResponse> verifyGST(@RequestBody Long applicationId , @PathVariable("gstin") String gstin,HttpServletRequest request)
+    @RequestMapping(value = "/verifyGST/{gstin}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE,consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<LoansResponse> verifyGST(@PathVariable("gstin") String gstin,@RequestParam("gstReceipts") MultipartFile[] uploadingFiles,@RequestPart("requestedData") String requestedData,HttpServletRequest request)
             throws Exception
     {
         try
@@ -318,8 +321,21 @@ public class FundSeekerInputRequestController {
         	if(userId == null) {
         		   return new ResponseEntity<LoansResponse>(new LoansResponse("Unauthorized User! Please Re-login and try again.", HttpStatus.UNAUTHORIZED.value()), HttpStatus.OK);
         	}
-        	if(applicationId == null) {
-     		   return new ResponseEntity<LoansResponse>(new LoansResponse("Something goes wrong while processig your Request. Please re-login again.", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+        	
+        	if(requestedData == null) {
+        		logger.warn("Request Data is Null in verify GST Information for GST===={}",gstin);
+      		   return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.GENERIC_ERROR_MSG, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+         	}
+        	
+        	Long applicationId = null;
+        	try{
+        		applicationId = Long.valueOf(requestedData);
+            	if(applicationId == null) {
+         		   return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.GENERIC_ERROR_MSG, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+            	}        		
+        	}catch(Exception e){
+        		logger.error("Error Converting String to Long for ApplicationId : {}",e);
+        		return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.GENERIC_ERROR_MSG, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
         	}
             return new ResponseEntity<LoansResponse>(new LoansResponse("GST Verification",HttpStatus.OK.value(),fundSeekerInputRequestService.verifyGST(gstin, applicationId,userId)), HttpStatus.OK);
         } catch (Exception e) {

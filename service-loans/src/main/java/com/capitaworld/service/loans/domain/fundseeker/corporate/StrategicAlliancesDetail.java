@@ -74,6 +74,7 @@ public class StrategicAlliancesDetail implements Serializable {
 	}
 
 	public StrategicAlliancesDetail() {
+		// Do nothing because of X and Y.
 	}
 
 	public Long getId() {

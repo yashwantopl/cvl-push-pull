@@ -761,6 +761,7 @@ public class NtbTermLoanParameterTemp extends ProductMasterTemp implements Seria
 	}
 
 	public NtbTermLoanParameterTemp() {
+		// Do nothing because of X and Y.
 	}
 
 	public ProductMasterTemp getFpProductId() {

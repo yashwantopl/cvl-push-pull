@@ -137,6 +137,7 @@ public class DprUserDataDetail implements Serializable {
 	}
 
 	public DprUserDataDetail() {
+		// Do nothing because of X and Y.
 	}
 
 	public Long getId() {

@@ -145,7 +145,6 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 	private ReferenceRetailDetailsService referenceRetailDetailService;
 	
 	private static final Logger logger = LoggerFactory.getLogger(CamReportPdfDetailsServiceImpl.class);
-	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 	
 	@Override
 	public Map<String, Object> getCamReportDetails(Long applicationId, Long productId, boolean isFinalView) {
@@ -153,7 +152,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 		
 		Long userId = loanApplicationRepository.getUserIdByApplicationId(applicationId);
 		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId, userId);
-		map.put("dateOfProposal", !CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getCreatedDate())? DATE_FORMAT.format(loanApplicationMaster.getCreatedDate()):"-");
+		map.put("dateOfProposal", !CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getCreatedDate())? CommonUtils.DATE_FORMAT.format(loanApplicationMaster.getCreatedDate()):"-");
 		try {
 			PLRetailApplicantRequest plRetailApplicantRequest = plRetailApplicantService.getProfile(userId, applicationId);
 			map.put("salutation", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getTitleId()) ? StringEscapeUtils.escapeXml(Title.getById(plRetailApplicantRequest.getTitleId()).getValue()):"");
@@ -174,7 +173,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 				}
 			}
 			map.put("gender", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getGenderId()) ? Gender.getById(plRetailApplicantRequest.getGenderId()).getValue(): "");
-			map.put("birthDate",!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getBirthDate())? DATE_FORMAT.format(plRetailApplicantRequest.getBirthDate()):"-");
+			map.put("birthDate",!CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getBirthDate())? CommonUtils.DATE_FORMAT.format(plRetailApplicantRequest.getBirthDate()):"-");
 			map.put("employmentType", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getEmploymentType()) ? OccupationNatureNTB.getById(plRetailApplicantRequest.getEmploymentType()).getValue() : "");
 			map.put("employmentWith", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getEmploymentWith()) ? EmploymentWithPL.getById(plRetailApplicantRequest.getEmploymentWith()).getValue() : "");
 			map.put("employmentStatus", !CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getEmploymentStatus()) ? EmploymentStatusRetailMst.getById(plRetailApplicantRequest.getEmploymentStatus()).getValue() : "");
@@ -236,7 +235,7 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 		try {
 			ConnectResponse connectResponse = connectClient.getByAppStageBusinessTypeId(applicationId, ConnectStage.COMPLETE.getId(), com.capitaworld.service.loans.utils.CommonUtils.BusinessType.EXISTING_BUSINESS.getId());
 			if(!CommonUtils.isObjectNullOrEmpty(connectResponse)) {
-				map.put("dateOfInPrincipalApproval",!CommonUtils.isObjectNullOrEmpty(connectResponse.getData())? DATE_FORMAT.format(connectResponse.getData()):"-");
+				map.put("dateOfInPrincipalApproval",!CommonUtils.isObjectNullOrEmpty(connectResponse.getData())? CommonUtils.DATE_FORMAT.format(connectResponse.getData()):"-");
 			}
 		} catch (Exception e2) {
 			logger.info("Error while getting date of in-principal approval from connect client : ",e2);
@@ -427,11 +426,11 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 				List<Date[]> data1 = null;
 				data1 = loanDisbursementRepository.findDisbursementDateByApplicationId(applicationId);
 				if(data1 != null && !data1.isEmpty()) {
-					map.put("disbursmentDate", DATE_FORMAT.format(data1.get(0)));
+					map.put("disbursmentDate", CommonUtils.DATE_FORMAT.format(data1.get(0)));
 				}
 				data1 = loanSanctionRepository.findSanctionDateByApplicationId(applicationId);
 				if(data1 != null && !data1.isEmpty()) {
-					map.put("sanctionDate", DATE_FORMAT.format(data1.get(0)));
+					map.put("sanctionDate", CommonUtils.DATE_FORMAT.format(data1.get(0)));
 				}
 				data = proposalDetailsRepository.findProposalDetailByApplicationId(applicationId);
 				if(data != null && !data.isEmpty()) {

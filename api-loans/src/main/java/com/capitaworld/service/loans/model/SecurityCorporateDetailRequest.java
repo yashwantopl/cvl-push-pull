@@ -48,6 +48,7 @@ public class SecurityCorporateDetailRequest implements Serializable {
 	}
 
 	public SecurityCorporateDetailRequest() {
+		// Do nothing because of X and Y.
 	}
 
 	public Long getId() {

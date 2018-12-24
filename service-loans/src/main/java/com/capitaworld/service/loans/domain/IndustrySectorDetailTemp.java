@@ -49,6 +49,7 @@ public class IndustrySectorDetailTemp implements Serializable {
 	private Long sectorId;
 
 	public IndustrySectorDetailTemp() {
+		// Do nothing because of X and Y.
 	}
 
 	public Long getId() {

@@ -12,8 +12,13 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.ProfitibilityStatementDetail;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.ProfitibilityStatementDetailRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ProfitabilityStatementExcelReader {
+
+	private static final Logger logger = LoggerFactory.getLogger(ProfitabilityStatementExcelReader.class);
+
 	public static ArrayList<String> profitabilityStatementMappingList = new ArrayList<String>();
 	public static final DecimalFormat decimalFormat = new DecimalFormat("#.##");
 
@@ -97,7 +102,7 @@ public class ProfitabilityStatementExcelReader {
 		 * e.g. you want to extract B13,B14,... cell data for year 2014
 		 */
 		
-		System.out.println("ProfitabilityStatementExcelReader -----------> "+sheet.getRow(3).getCell(2).getNumericCellValue());       
+		logger.info("ProfitabilityStatementExcelReader -----------> "+sheet.getRow(3).getCell(2).getNumericCellValue());
 //        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, profitabilityStatementMappingList,"C",String.valueOf(sheet.getRow(3).getCell(2).getNumericCellValue()),"Audited", profitibilityStatementDetailRepository);
 //        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, profitabilityStatementMappingList,"D",String.valueOf(sheet.getRow(3).getCell(3).getNumericCellValue()),"Audited",profitibilityStatementDetailRepository);
 //        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, profitabilityStatementMappingList,"E",String.valueOf(sheet.getRow(3).getCell(4).getNumericCellValue()),"Audited",profitibilityStatementDetailRepository);

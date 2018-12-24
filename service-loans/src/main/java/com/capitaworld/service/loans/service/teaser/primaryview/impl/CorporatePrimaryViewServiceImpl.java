@@ -191,7 +191,6 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 	@Autowired
 	private ProductMasterRepository productMasterRepository;
 
-	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 	DecimalFormat decim = new DecimalFormat("#,###.00");
 
 	@Override
@@ -521,7 +520,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 			// workingCapitalPrimaryViewResponse.setSharePriceMarket(primaryWorkingCapitalLoanDetail.getSharePriceMarket());
 			if (!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getModifiedDate()))
 				corporatePrimaryViewResponse.setDateOfProposal(primaryCorporateDetail.getModifiedDate() != null
-						? DATE_FORMAT.format(primaryCorporateDetail.getModifiedDate())
+						? CommonUtils.DATE_FORMAT.format(primaryCorporateDetail.getModifiedDate())
 						: null);
 			
 			// other Details

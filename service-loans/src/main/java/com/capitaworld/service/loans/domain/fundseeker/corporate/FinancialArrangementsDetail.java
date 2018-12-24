@@ -98,6 +98,7 @@ public class FinancialArrangementsDetail implements Serializable {
 	private Boolean isManuallyAdded;
 
 	public FinancialArrangementsDetail() {
+		// Do nothing because of X and Y.
 	}
 	
 	public FinancialArrangementsDetail(Long id) {

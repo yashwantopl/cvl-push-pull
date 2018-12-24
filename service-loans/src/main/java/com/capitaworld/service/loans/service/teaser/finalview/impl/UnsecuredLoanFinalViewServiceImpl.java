@@ -296,8 +296,6 @@ public class UnsecuredLoanFinalViewServiceImpl implements UnsecuredLoanFinalView
 	
 	@Autowired
 	private CreditCardsDetailService creditCardsDetailService;
-	
-	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 
 	protected static final String ONE_FORM_URL = "oneForm";
 	protected static final String USERS_URL = "userURL";
@@ -872,7 +870,7 @@ public class UnsecuredLoanFinalViewServiceImpl implements UnsecuredLoanFinalView
 			response.setLoanType(LoanType.getById(primaryUnsecuredLoanDetail.getProductId()).getValue());
 		}
 		if (primaryUnsecuredLoanDetail.getModifiedDate() != null) {
-			response.setDateOfProposal(DATE_FORMAT.format(primaryUnsecuredLoanDetail.getModifiedDate()));
+			response.setDateOfProposal(CommonUtils.DATE_FORMAT.format(primaryUnsecuredLoanDetail.getModifiedDate()));
 		}
 		if (primaryUnsecuredLoanDetail.getAmount() != null) {
 			response.setLoanAmount(String.valueOf(primaryUnsecuredLoanDetail.getAmount()));

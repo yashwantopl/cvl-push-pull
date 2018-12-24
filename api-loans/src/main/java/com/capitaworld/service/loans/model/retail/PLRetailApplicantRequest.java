@@ -77,7 +77,7 @@ public class PLRetailApplicantRequest implements Serializable {
     private Long addressState;
 
     public PLRetailApplicantRequest() {
-
+        // Do nothing because of X and Y.
     }
 
     public Long getId() {

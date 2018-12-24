@@ -23,6 +23,7 @@ public class SubSectorMappingDetail implements Serializable {
 	private Long subSectorId;
 
 	public SubSectorMappingDetail() {
+		// Do nothing because of X and Y.
 	}
 
 	public Long getId() {

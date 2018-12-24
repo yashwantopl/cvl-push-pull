@@ -124,6 +124,7 @@ public class PrimaryCorporateDetail extends LoanApplicationMaster implements Ser
     
 
     public PrimaryCorporateDetail() {
+        // Do nothing because of X and Y.
     }
 
     public LoanApplicationMaster getApplicationId() {

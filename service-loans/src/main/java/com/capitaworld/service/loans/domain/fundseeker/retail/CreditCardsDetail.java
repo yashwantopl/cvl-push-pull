@@ -76,6 +76,7 @@ public class CreditCardsDetail implements Serializable {
 	private Long cardLimit;
 
 	public CreditCardsDetail() {
+		// Do nothing because of X and Y.
 	}
 
 	public Long getId() {

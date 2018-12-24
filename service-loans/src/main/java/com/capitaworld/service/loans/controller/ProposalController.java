@@ -388,7 +388,7 @@ public class ProposalController {
 		Long userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
 		if(CommonUtils.isObjectNullOrEmpty(userOrgId) || CommonUtils.isObjectNullOrEmpty(userId) || CommonUtils.isObjectNullOrEmpty(reportRequest.getValue())) {
 			logger.info("Bad Request !!");
-			return new ResponseEntity<LoansResponse>(new LoansResponse("Request parameter null or empty !!", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			return new ResponseEntity<LoansResponse>(new LoansResponse(REQUEST_PARAMETER_NULL_OR_EMPTY, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}
 		if(CommonUtils.isObjectNullOrEmpty(reportRequest.getNumber())) {
 			reportRequest.setNumber(10);
@@ -399,6 +399,22 @@ public class ProposalController {
 			logger.error(CommonUtils.EXCEPTION,e);
 			return new ResponseEntity<LoansResponse>(new LoansResponse(e.getMessage()) , HttpStatus.INTERNAL_SERVER_ERROR);
 		}
+	}
+	
+	@RequestMapping(value = "/fpDashboardProposalCont", method = RequestMethod.GET,produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> fpDashboardProposalCont(HttpServletRequest httpServletRequest) {
 		
+		Long userOrgId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ORG_ID);
+		Long userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
+		if(CommonUtils.isObjectNullOrEmpty(userOrgId) || CommonUtils.isObjectNullOrEmpty(userId)) {
+			logger.info("Bad Request !!");
+			return new ResponseEntity<LoansResponse>(new LoansResponse("Request parameter null or empty !!", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+		}
+		try {
+			return new ResponseEntity<LoansResponse>(new LoansResponse("Data Found.", HttpStatus.OK.value(),proposalService.getFpDashBoardCount(userId, userOrgId)), HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+			return new ResponseEntity<LoansResponse>(new LoansResponse(e.getMessage()) , HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 	}
 }

@@ -1,6 +1,7 @@
 package com.capitaworld.service.loans.repository.fundseeker.corporate;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -17,6 +18,10 @@ public interface PrimaryCorporateDetailRepository extends JpaRepository<PrimaryC
 
     @Query("from PrimaryCorporateDetail pd where pd.applicationId.id =:applicationId")
     public PrimaryCorporateDetail findOneByApplicationIdId(@Param("applicationId") Long applicationId);
+
+    @Modifying
+    @Query("update PrimaryCorporateDetail pd set pd.turnOverPrevFinYear =:turnOverPrevFinYear, pd.turnOverCurrFinYearTillMonth =:turnOverCurrFinYearTillMonth, pd.profitCurrFinYear =:profitCurrFinYear where pd.applicationId.id =:applicationId")
+    public PrimaryCorporateDetail updatedFinancialFieldsForUniformProduct(@Param("applicationId") Long applicationId,@Param("turnOverPrevFinYear") Double turnOverPrevFinYear,@Param("turnOverCurrFinYearTillMonth") Double turnOverCurrFinYearTillMonth,@Param("profitCurrFinYear") Double profitCurrFinYear);
 }
 
 
