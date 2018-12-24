@@ -256,7 +256,7 @@ public class CarLoanPrimaryViewServiceImpl implements CarLoanPrimaryViewService{
                     MasterResponse dataCity = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>) formResponsePermanentCity.getListData().get(0), MasterResponse.class);
                     permanentAddress.setCity(dataCity.getValue());
                 } catch (Exception e) {
-
+                    logger.error(CommonUtils.EXCEPTION,e);
                 }
                 try {
                     List<Long> permanentCountry = new ArrayList<Long>(1);
