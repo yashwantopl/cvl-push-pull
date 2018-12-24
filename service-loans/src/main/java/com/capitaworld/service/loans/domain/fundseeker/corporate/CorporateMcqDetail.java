@@ -212,6 +212,7 @@ public class CorporateMcqDetail implements Serializable {
 
 
     public CorporateMcqDetail() {
+        // Do nothing because of X and Y.
     }
 
     public Long getId() {

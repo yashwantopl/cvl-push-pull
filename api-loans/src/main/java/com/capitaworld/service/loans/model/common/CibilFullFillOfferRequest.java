@@ -29,7 +29,7 @@ public class CibilFullFillOfferRequest implements Serializable {
 	private String email;
 
 	public CibilFullFillOfferRequest() {
-
+		// Do nothing because of X and Y.
 	}
 
 	public String getTitle() {
