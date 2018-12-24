@@ -335,16 +335,26 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	private static final Logger logger = LoggerFactory.getLogger(LoanApplicationServiceImpl.class.getName());
 
-	private static final String CONNECTOR_RESPONSE_MSG = "Connector Response ----------------------------->";
-	private static final String BEFORE_START_SAVING_PHASE_1_SIDBI_API_MSG = "Before Start Saving Phase 1 Sidbi API ------------------->";
-	private static final String PROPOSAL_MAPPING_RESPONSE_MSG = "Proposal Mapping Response---------------> ";
-	private static final String PROPOSAL_MAPPING_RESPONSE_NULL_OR_EMPTY_MSG = "Proposal Mapping Response Null or Empty---------------> ";
+	private static final String CONNECTOR_RESPONSE_MSG = "Connector Response -->";
+	private static final String BEFORE_START_SAVING_PHASE_1_SIDBI_API_MSG = "Before Start Saving Phase 1 Sidbi API -->";
+	private static final String FP_PRODUCT_ID_MSG = "FpProductId ==>{}";
+	private static final String PROPOSAL_MAPPING_RESPONSE_MSG = "Proposal Mapping Response --> ";
+	private static final String PROPOSAL_MAPPING_RESPONSE_NULL_OR_EMPTY_MSG = "Proposal Mapping Response Null or Empty --> ";
+	private static final String FETCHED_DIRECTORS_BACKGROUND_DETAILS_FOR_APPLICATION_ID_MSG = "Fetched Director's background details for application Id : ";
+	private static final String INVALID_TOKEN_DETAILS_MSG = "Invalid Token Details";
+	private static final String EXCEPTION_OCCURED_WHILE_SENDING_MAIL_TO_HO_MSG = "Exception occured while Sending Mail to HO : ";
+	private static final String EXCEPTION_OCCURED_WHILE_SENDING_MAIL_TO_ALL_BO_MSG = "Exception occured while Sending Mail to All BO : ";
+	private static final String INSIDE_SENDING_MAIL_TO_HO_AFTER_IN_PRINCIPLE_APPROVAL_MSG = "Inside sending mail to HO after In-principle Approval";
+	private static final String INSIDE_SENDING_MAIL_TO_MAKER_AFTER_IN_PRINCIPLE_APPROVAL_MSG = "Inside sending mail to Maker after In-principle Approval";
+	private static final String INSIDE_SENDING_MAIL_TO_BO_AFTER_IN_PRINCIPLE_APPROVAL_MSG = "Inside sending mail to BO after In-principle Approval";
 	private static final String INSIDE_SENDING_MAIL_TO_CHECKER_AFTER_IN_PRINCIPLE_APPROVAL_MSG = "Inside sending mail to Checker after In-principle Approval";
 	private static final String EXCEPTION_OCCURED_WHILE_SENDING_MAIL_TO_ALL_CHECKERS_MSG  = "Exception occured while Sending Mail to All Checkers : ";
 	private static final String EXCEPTION_OCCURED_WHILE_SENDING_MAIL_TO_ALL_MAKERS_MSG = "Exception occured while Sending Mail to All Makers : ";
 	private static final String SOMETHING_WENT_WRONG_WHILE_CALL_PROPOSAL_CLIENT_FOR_MSG = "Something went wrong while call proposal client for ";
 	private static final String SOMETHING_WENT_WRONG_WHILE_CALL_CONNECT_CLIENT_FOR_MSG = "Something went wrong while call connect client for ";
 	private static final String CONNECTOR_RESPONSE_NULL_OR_EMPTY_MSG = "Connector Response null or empty";
+	private static final String ERROR_MSG = "----- Error Msg : ";
+	private static final String OTHER_LITERAL = "OTHER";
 
 	@Autowired
 	private DMSClient dmsClient;
@@ -4580,7 +4590,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		// branch after FS recieves In-principle Approval==================
 
 		try {
-			logger.info("Inside sending mail to Maker after In-principle Approval");
+			logger.info(INSIDE_SENDING_MAIL_TO_MAKER_AFTER_IN_PRINCIPLE_APPROVAL_MSG);
 			fpasyncComponent.sendEmailToAllMakersWhenFSRecievesInPrinciple(proposalresp, paymentRequest, userId, orgId);
 		} catch (Exception e) {
 			logger.error(EXCEPTION_OCCURED_WHILE_SENDING_MAIL_TO_ALL_MAKERS_MSG,e);
@@ -4595,17 +4605,17 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		}
 
 		try {
-			logger.info("Inside sending mail to HO after In-principle Approval");
+			logger.info(INSIDE_SENDING_MAIL_TO_HO_AFTER_IN_PRINCIPLE_APPROVAL_MSG);
 			fpasyncComponent.sendEmailToHOWhenFSRecievesInPrinciple(proposalresp, paymentRequest, userId, orgId);
 		} catch (Exception e) {
-			logger.error("Exception occured while Sending Mail to HO : ",e);
+			logger.error(EXCEPTION_OCCURED_WHILE_SENDING_MAIL_TO_HO_MSG,e);
 		}
 
 		try {
-			logger.info("Inside sending mail to BO after In-principle Approval");
+			logger.info(INSIDE_SENDING_MAIL_TO_BO_AFTER_IN_PRINCIPLE_APPROVAL_MSG);
 			fpasyncComponent.sendEmailToAllBOWhenFSRecievesInPrinciple(proposalresp, paymentRequest, userId, orgId);
 		} catch (Exception e) {
-			logger.error("Exception occured while Sending Mail to All BO : ",e);
+			logger.error(EXCEPTION_OCCURED_WHILE_SENDING_MAIL_TO_ALL_BO_MSG,e);
 		}
 
 		// =======================================================================================================================================
@@ -4716,7 +4726,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		// branch after FS recieves In-principle Approval==================
 
 		try {
-			logger.info("Inside sending mail to Maker after In-principle Approval");
+			logger.info(INSIDE_SENDING_MAIL_TO_MAKER_AFTER_IN_PRINCIPLE_APPROVAL_MSG);
 			fpasyncComponent.sendEmailToAllMakersWhenFSRecievesInPrinciple(proposalresp, paymentRequest, userId, orgId);
 		} catch (Exception e) {
 			logger.error(EXCEPTION_OCCURED_WHILE_SENDING_MAIL_TO_ALL_MAKERS_MSG,e);
@@ -4731,17 +4741,17 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		}
 
 		try {
-			logger.info("Inside sending mail to HO after In-principle Approval");
+			logger.info(INSIDE_SENDING_MAIL_TO_HO_AFTER_IN_PRINCIPLE_APPROVAL_MSG);
 			fpasyncComponent.sendEmailToHOWhenFSRecievesInPrinciple(proposalresp, paymentRequest, userId, orgId);
 		} catch (Exception e) {
-			logger.error("Exception occured while Sending Mail to HO : ",e);
+			logger.error(EXCEPTION_OCCURED_WHILE_SENDING_MAIL_TO_HO_MSG,e);
 		}
 
 		try {
-			logger.info("Inside sending mail to BO after In-principle Approval");
+			logger.info(INSIDE_SENDING_MAIL_TO_BO_AFTER_IN_PRINCIPLE_APPROVAL_MSG);
 			fpasyncComponent.sendEmailToAllBOWhenFSRecievesInPrinciple(proposalresp, paymentRequest, userId, orgId);
 		} catch (Exception e) {
-			logger.error("Exception occured while Sending Mail to All BO : ",e);
+			logger.error(EXCEPTION_OCCURED_WHILE_SENDING_MAIL_TO_ALL_BO_MSG,e);
 		}
 
 		// =======================================================================================================================================
@@ -4855,7 +4865,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 							// branch after FS recieves In-principle Approval==================
 
 							try {
-								logger.info("Inside sending mail to Maker after In-principle Approval");
+								logger.info(INSIDE_SENDING_MAIL_TO_MAKER_AFTER_IN_PRINCIPLE_APPROVAL_MSG);
 								fpasyncComponent.sendEmailToAllMakersWhenFSRecievesInPrinciple(proposalresp,
 										paymentRequest, userId, orgId);
 							} catch (Exception e) {
@@ -4871,19 +4881,19 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 							}
 
 							try {
-								logger.info("Inside sending mail to HO after In-principle Approval");
+								logger.info(INSIDE_SENDING_MAIL_TO_HO_AFTER_IN_PRINCIPLE_APPROVAL_MSG);
 								fpasyncComponent.sendEmailToHOWhenFSRecievesInPrinciple(proposalresp, paymentRequest,
 										userId, orgId);
 							} catch (Exception e) {
-								logger.error("Exception occured while Sending Mail to HO : ",e);
+								logger.error(EXCEPTION_OCCURED_WHILE_SENDING_MAIL_TO_HO_MSG,e);
 							}
 
 							try {
-								logger.info("Inside sending mail to BO after In-principle Approval");
+								logger.info(INSIDE_SENDING_MAIL_TO_BO_AFTER_IN_PRINCIPLE_APPROVAL_MSG);
 								fpasyncComponent.sendEmailToAllBOWhenFSRecievesInPrinciple(proposalresp, paymentRequest,
 										userId, orgId);
 							} catch (Exception e) {
-								logger.error("Exception occured while Sending Mail to All BO : ",e);
+								logger.error(EXCEPTION_OCCURED_WHILE_SENDING_MAIL_TO_ALL_BO_MSG,e);
 							}
 
 							// =======================================================================================================================================
@@ -4894,8 +4904,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 										: 0.0);
 								applicationRequest.setTypeOfLoan(
 										CommonUtils.LoanType.getType(applicationRequest.getProductId()).toString());
-								applicationRequest.setInterestRate(proposalresp.get("rate_interest") != null
-										? Double.valueOf(proposalresp.get("rate_interest").toString())
+								applicationRequest.setInterestRate(proposalresp.get(CommonUtils.RATE_INTEREST) != null
+										? Double.valueOf(proposalresp.get(CommonUtils.RATE_INTEREST).toString())
 										: 0.0);
 								applicationRequest.setOnlinePaymentSuccess(updatePayment);
 								applicationRequest.setNameOfEntity(paymentRequest.getNameOfEntity());
@@ -5531,7 +5541,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 									"Unauthorized! while saving ProfileReqRes in savePhese1DataToSidbi() ==> for ApplicationId  ====>{}}"
 											+ applicationId + " Mgs " + e.getMessage(),
 									savePrelimInfo);
-							logger.error("Invalid Token Details");
+							logger.error(INVALID_TOKEN_DETAILS_MSG);
 							setTokenAsExpired(generateTokenRequest, userOrganisationRequest.getCodeLanguage());
 							return false;
 						} else {
@@ -5583,7 +5593,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 								"Unauthorized! in  MatchesParameterRequest in savePhese1DataToSidbi()  ====>{}applicationId "
 										+ applicationId + " Msg ==> " + e.getMessage(),
 								matchesParameters);
-						logger.error("Invalid Token Details");
+						logger.error(INVALID_TOKEN_DETAILS_MSG);
 						setTokenAsExpired(generateTokenRequest, userOrganisationRequest.getCodeLanguage());
 						return false;
 					} else {
@@ -5611,7 +5621,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 						auditComponent
 								.updateAudit(AuditComponent.BANK_STATEMENT, applicationId, userId,
 										"\"Bank Statement data Request Not Found for ApplicationId ====>{} "
-												+ applicationId + "FpProductId====>{}" + fpProductMappingId,
+												+ applicationId + FP_PRODUCT_ID_MSG + fpProductMappingId,
 										bankStatement);
 //						setTokenAsExpired(generateTokenRequest);
 //						return false;
@@ -5634,7 +5644,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 								"Unauthorized! in  BankStatementRequest in savePhese1DataToSidbi() ==> for applicationId====>{} "
 										+ applicationId + " Msg ==> " + e.getMessage(),
 								bankStatement);
-						logger.error("Invalid Token Details");
+						logger.error(INVALID_TOKEN_DETAILS_MSG);
 						setTokenAsExpired(generateTokenRequest, userOrganisationRequest.getCodeLanguage());
 						return false;
 					} else {
@@ -5662,7 +5672,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 								applicationId, fpProductMappingId);
 						auditComponent.updateAudit(AuditComponent.ELIGIBILITY, applicationId, userId,
 								"Eligibiity data Request Not Found for ApplicationId ====>{} " + applicationId
-										+ "FpProductId====>{}" + fpProductMappingId,
+										+ FP_PRODUCT_ID_MSG + fpProductMappingId,
 								eligibilityParameters);
 //						setTokenAsExpired(generateTokenRequest);
 //						return false;
@@ -5685,7 +5695,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 								"Unauthorized! in  EligibilityDetailRequest in savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "
 										+ applicationId + " Msg ==> " + e.getMessage(),
 								eligibilityParameters);
-						logger.error("Invalid Token Details");
+						logger.error(INVALID_TOKEN_DETAILS_MSG);
 						setTokenAsExpired(generateTokenRequest, userOrganisationRequest.getCodeLanguage());
 						return false;
 					} else {
@@ -5741,7 +5751,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 											applicationId, fpProductMappingId);
 									auditComponent.updateAudit(AuditComponent.SCORING_DETAILS, applicationId, userId,
 											"Eligibiity data Request Not Found for ApplicationId ====>{} "
-													+ applicationId + "FpProductId====>{}" + fpProductMappingId,
+													+ applicationId + FP_PRODUCT_ID_MSG + fpProductMappingId,
 											eligibilityParameters);
 //									setTokenAsExpired(generateTokenRequest);
 //									return false;
@@ -5769,7 +5779,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 													"Unauthorized! in  EligibilityDetailRequest in savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "
 															+ applicationId + " Mgs " + e.getMessage(),
 													scoringDetails);
-											logger.error("Invalid Token Details");
+											logger.error(INVALID_TOKEN_DETAILS_MSG);
 											setTokenAsExpired(generateTokenRequest,
 													userOrganisationRequest.getCodeLanguage());
 											return false;
@@ -5789,7 +5799,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 										"Exception in  EligibilityDetailRequest in savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "
 												+ applicationId + " Mgs " + e.getMessage(),
 										scoringDetails);
-//								logger.error("Invalid Token Details");
+//								logger.error(INVALID_TOKEN_DETAILS_MSG);
 //								setTokenAsExpired(generateTokenRequest);
 //								return false;						
 							}
@@ -5823,7 +5833,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 								applicationId, fpProductMappingId);
 						auditComponent.updateAudit(AuditComponent.FINANCIAL, applicationId, userId,
 								"Financial Request Not Found for ApplicationId ====>{} " + applicationId
-										+ "FpProductId====>{}" + fpProductMappingId,
+										+ FP_PRODUCT_ID_MSG + fpProductMappingId,
 								false);
 //						setTokenAsExpired(generateTokenRequest);
 //						return false;
@@ -5845,7 +5855,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 								"Unauthorized! in  Financial in savePhese1DataToSidbi() ==> for applicationId====>{} "
 										+ applicationId + " Msg ==> " + e.getMessage(),
 								saveFinancialDetails);
-						logger.error("Invalid Token Details");
+						logger.error(INVALID_TOKEN_DETAILS_MSG);
 						setTokenAsExpired(generateTokenRequest, userOrganisationRequest.getCodeLanguage());
 						return false;
 					} else {
@@ -5873,7 +5883,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 								applicationId, fpProductMappingId);
 						auditComponent.updateAudit(AuditComponent.CMA_DETAIL, applicationId, userId,
 								"CMA Details data Request Not Found for ApplicationId ====>{} " + applicationId
-										+ "FpProductId====>{}" + fpProductMappingId,
+										+ FP_PRODUCT_ID_MSG + fpProductMappingId,
 								false);
 //						setTokenAsExpired(generateTokenRequest);
 //						return false;
@@ -5894,7 +5904,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 								"Unauthorized! in  Cma Detail in savePhese1DataToSidbi() ==> for applicationId====>{} "
 										+ applicationId + " Msg ==> " + e.getMessage(),
 								saveCmaDetails);
-						logger.error("Invalid Token Details");
+						logger.error(INVALID_TOKEN_DETAILS_MSG);
 						setTokenAsExpired(generateTokenRequest, userOrganisationRequest.getCodeLanguage());
 						return false;
 					} else {
@@ -5927,7 +5937,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 									applicationId, fpProductMappingId);
 							auditComponent.updateAudit(AuditComponent.LOGIC, applicationId, userId,
 									"LOGIC Details data Request Not Found for ApplicationId ====>{} " + applicationId
-											+ "FpProductId====>{}" + fpProductMappingId,
+											+ FP_PRODUCT_ID_MSG + fpProductMappingId,
 									false);
 							// setTokenAsExpired(generateTokenRequest);
 							// return false;
@@ -5948,7 +5958,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 									"Unauthorized! in  LogicDetail in savePhese1DataToSidbi() ==> for applicationId====>{} "
 											+ applicationId + " Msg ==> " + e.getMessage(),
 									saveLogicDetails);
-							logger.error("Invalid Token Details");
+							logger.error(INVALID_TOKEN_DETAILS_MSG);
 							setTokenAsExpired(generateTokenRequest, userOrganisationRequest.getCodeLanguage());
 							return false;
 						} else {
@@ -5982,7 +5992,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 								applicationId, fpProductMappingId);
 						auditComponent.updateAudit(AuditComponent.COMMERCIAL, applicationId, userId,
 								"Commercial Details data Request Not Found for ApplicationId ====>{} " + applicationId
-										+ "FpProductId====>{}" + fpProductMappingId,
+										+ FP_PRODUCT_ID_MSG + fpProductMappingId,
 								false);
 //						setTokenAsExpired(generateTokenRequest);
 //						return false;
@@ -6003,7 +6013,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 								"Unauthorized! in  Commercial Detail in savePhese1DataToSidbi() ==> for applicationId====>{} "
 										+ applicationId + " Msg ==> " + e.getMessage(),
 								saveCommercialDetails);
-						logger.error("Invalid Token Details");
+						logger.error(INVALID_TOKEN_DETAILS_MSG);
 						setTokenAsExpired(generateTokenRequest, userOrganisationRequest.getCodeLanguage());
 						return false;
 					} else {
@@ -6157,7 +6167,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 									"Unauthorized! in  profileReqRes from SidbiIntegrationClient in savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "
 											+ applicationId + " Mgs " + e.getMessage(),
 									false);
-							logger.error("Invalid Token Details");
+							logger.error(INVALID_TOKEN_DETAILS_MSG);
 							setTokenAsExpired(generateTokenRequest, userOrganisationRequest.getCodeLanguage());
 							return false;
 						} else {
@@ -6196,7 +6206,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 								"Unauthorized! in  DDRFormDetailsRequest from SidbiIntegrationClient in savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "
 										+ applicationId + " Mgs " + e.getMessage(),
 								false);
-						logger.error("Invalid Token Details");
+						logger.error(INVALID_TOKEN_DETAILS_MSG);
 						setTokenAsExpired(generateTokenRequest, userOrganisationRequest.getCodeLanguage());
 						return false;
 					} else {
@@ -6277,7 +6287,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 								"Unauthorized! in  saveIRRInfo from SidbiIntegrationClient in savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "
 										+ applicationId + " Mgs " + e.getMessage(),
 								false);
-						logger.error("Invalid Token Details");
+						logger.error(INVALID_TOKEN_DETAILS_MSG);
 						setTokenAsExpired(generateTokenRequest, userOrganisationRequest.getCodeLanguage());
 						return false;
 					} else {
@@ -7528,7 +7538,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			Integer yearInt = cal.get(Calendar.YEAR);
 			String year = String.valueOf(yearInt - 1);
 			logger.info("YEAR ::::::::::::::::::::++++++++++++++>>>> " + year);
-			List<Object[]> asset = assetsDetailsRepository.getCMADetail(applicationId, "Audited");
+			List<Object[]> asset = assetsDetailsRepository.getCMADetail(applicationId, CommonUtils.AUDITED);
 			logger.info("==================================>15");
 			if (!CommonUtils.isObjectListNull(asset)) {
 				response.setGrossBlock((Double) asset.get(0)[4]);
@@ -7600,8 +7610,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 							: 0.0);
 					applicationRequest
 							.setTypeOfLoan(CommonUtils.LoanType.getType(applicationRequest.getProductId()).toString());
-					applicationRequest.setInterestRate(proposalresp.get("rate_interest") != null
-							? Double.valueOf(proposalresp.get("rate_interest").toString())
+					applicationRequest.setInterestRate(proposalresp.get(CommonUtils.RATE_INTEREST) != null
+							? Double.valueOf(proposalresp.get(CommonUtils.RATE_INTEREST).toString())
 							: 0.0);
 					applicationRequest.setOnlinePaymentSuccess(true);
 
@@ -7803,7 +7813,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 			response.setDirectorRespo(new ArrayList<DirectorBackgroundDetailResponse>());
 			if (directorList != null && !directorList.isEmpty()) {
-				logger.info("Fetched Director's background details for application Id : " + applicationId);
+				logger.info(FETCHED_DIRECTORS_BACKGROUND_DETAILS_FOR_APPLICATION_ID_MSG + applicationId);
 				for (DirectorBackgroundDetail detail : directorList) {
 					DirectorBackgroundDetailResponse directorDetail = new DirectorBackgroundDetailResponse();
 					BeanUtils.copyProperties(detail, directorDetail);
@@ -7813,9 +7823,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					} else if (Gender.FEMALE.getId() == detail.getGender()) {
 						gender = "FEMALE";
 					} else if (Gender.THIRD_GENDER.getId() == detail.getGender()) {
-						gender = "OTHER";
+						gender = OTHER_LITERAL;
 					} else {
-						gender = "OTHER";
+						gender = OTHER_LITERAL;
 					}
 					directorDetail.setGender(gender);
 					directorDetail.setShareholding(detail.getShareholding());
@@ -7909,7 +7919,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReport(reportRequest);
 
 			if (analyzerResponse != null && analyzerResponse.getStatus() == HttpStatus.OK.value()) {
-				logger.info("Fetched Director's background details for application Id : " + applicationId);
+				logger.info(FETCHED_DIRECTORS_BACKGROUND_DETAILS_FOR_APPLICATION_ID_MSG + applicationId);
 				Data data = MultipleJSONObjectHelper.getObjectFromMap((Map<String, Object>) analyzerResponse.getData(),
 						Data.class);
 
@@ -7959,7 +7969,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 			response.setDirectorRespo(new ArrayList<DirectorBackgroundDetailResponse>());
 			if (directorList != null && !directorList.isEmpty()) {
-				logger.info("Fetched Director's background details for application Id : " + applicationId);
+				logger.info(FETCHED_DIRECTORS_BACKGROUND_DETAILS_FOR_APPLICATION_ID_MSG + applicationId);
 				for (DirectorBackgroundDetail detail : directorList) {
 					DirectorBackgroundDetailResponse directorDetail = new DirectorBackgroundDetailResponse();
 					BeanUtils.copyProperties(detail, directorDetail);
@@ -7969,9 +7979,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					} else if (Gender.FEMALE.getId() == detail.getGender()) {
 						gender = "FEMALE";
 					} else if (Gender.THIRD_GENDER.getId() == detail.getGender()) {
-						gender = "OTHER";
+						gender = OTHER_LITERAL;
 					} else {
-						gender = "OTHER";
+						gender = OTHER_LITERAL;
 					}
 					directorDetail.setGender(gender);
 					directorDetail.setShareholding(detail.getShareholding());
@@ -8064,7 +8074,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReport(reportRequest);
 
 					if (analyzerResponse.getStatus() == HttpStatus.OK.value()) {
-						logger.info("Fetched Director's background details for application Id : " + applicationId);
+						logger.info(FETCHED_DIRECTORS_BACKGROUND_DETAILS_FOR_APPLICATION_ID_MSG + applicationId);
 						Data data = MultipleJSONObjectHelper
 								.getObjectFromMap((Map<String, Object>) analyzerResponse.getData(), Data.class);
 
@@ -8157,9 +8167,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			} else if (EducationQualificationNTB.CA.getId() == qualificationId) {
 				return "PROFESSIONAL";
 			} else if (EducationQualificationNTB.OTHERS.getId() == qualificationId) {
-				return "OTHER";
+				return OTHER_LITERAL;
 			} else {
-				return "OTHER";
+				return OTHER_LITERAL;
 			}
 		}
 		return null;
@@ -8224,7 +8234,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			} else if (Industry.SHIPPING_LOGISTICS.getId() == indId) {
 				return "TRANSPORT AND LOGISTICS";
 			} else {
-				return "OTHER";
+				return OTHER_LITERAL;
 			}
 		} else {
 			return null;
@@ -8860,7 +8870,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		yearList.add(--fromYear + "");
 		yearList.add(--fromYear + "");
 		List<OperatingStatementDetails> operatingStatementDetailsList = operatingStatementDetailsRepository
-				.getOperatingStatementDetailsByApplicationId(applicationId, yearList, "Audited");
+				.getOperatingStatementDetailsByApplicationId(applicationId, yearList, CommonUtils.AUDITED);
 		List<OperatingStatementDetailsRequest> operatingStatementDetailsRequestsList = new ArrayList<OperatingStatementDetailsRequest>();
 		OperatingStatementDetailsRequest operatingStatementDetailsRequest = null;
 		for (OperatingStatementDetails operatingStatementDetails : operatingStatementDetailsList) {
@@ -8871,7 +8881,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		}
 
 		List<LiabilitiesDetails> liabilitiesDetailsList = liabilitiesDetailsRepository
-				.getLiabilitiesDetailsByApplicationId(applicationId, yearList, "Audited");
+				.getLiabilitiesDetailsByApplicationId(applicationId, yearList, CommonUtils.AUDITED);
 		List<LiabilitiesDetailsRequest> liabilitiesDetailsRequestsList = new ArrayList<LiabilitiesDetailsRequest>();
 		LiabilitiesDetailsRequest liabilitiesDetailsRequest = null;
 		for (LiabilitiesDetails liabilitiesDetailsFrom : liabilitiesDetailsList) {
@@ -8882,7 +8892,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 		}
 		List<AssetsDetails> assetsDetailsList = assetsDetailsRepository.getAssetsDetailsByApplicationId(applicationId,
-				yearList, "Audited");
+				yearList, CommonUtils.AUDITED);
 		List<AssetsDetailsRequest> assetsRequestList = new ArrayList<AssetsDetailsRequest>();
 		AssetsDetailsRequest assetsDetailsRequest = null;
 		for (AssetsDetails assetsDetails : assetsDetailsList) {
@@ -11120,7 +11130,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				return Double.valueOf(data);
 			}
 		} catch (Exception e) {
-			logger.info("----- Error Msg " + e.getMessage());
+			logger.info(ERROR_MSG + e.getMessage());
 		}
 		return 0.0;
 
@@ -11140,7 +11150,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				}
 			}
 		} catch (Exception e) {
-			logger.error("----- Error Msg " + e.getMessage());
+			logger.error(ERROR_MSG + e.getMessage());
 		}
 		return null;
 	}
@@ -11160,7 +11170,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			}
 
 		} catch (Exception e) {
-			logger.info("----- Error Msg " + e.getMessage());
+			logger.info(ERROR_MSG + e.getMessage());
 		}
 		return 0l;
 	}
@@ -11171,7 +11181,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				return Integer.valueOf(data.replace("\\s", "").trim());
 			}
 		} catch (Exception e) {
-			logger.info("----- Error Msg " + e.getMessage());
+			logger.info(ERROR_MSG + e.getMessage());
 		}
 		return 0;
 

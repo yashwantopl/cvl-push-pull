@@ -47,6 +47,12 @@ public class CorporateUploadController {
 	private static final Logger logger = LoggerFactory.getLogger(CorporateUploadController.class);
 
 	private static final String UPLOAD_PROFILE_IMAGE_METHOD_NAME = "uploadProfileImage";
+	private static final String ERROR_WHILE_SAVING_PROFILE_IMAGES_MSG = "Error while Saving Profile Images==>";
+	private static final String ERROR_WHILE_UPLOADING_DOCUMENT_MSG = "Error While Uploading Document==>";
+	private static final String INVALID_REQUEST_WHILE_GETTING_DOCUMENTS_MSG = "Invalid Request while Getting Documents";
+	private static final String DOCUMENT_REQUEST_MUST_NOT_BE_NULL_MSG = "Document Request Must not be null";
+	private static final String APPLICATION_CSV_CONTENT_TYPE = "application/csv";
+	private static final String CONTENT_DISPOSITION = "Content-Disposition";
 
 	@Autowired
 	private Environment environment;
@@ -97,7 +103,7 @@ public class CorporateUploadController {
 						HttpStatus.OK);
 			}
 		} catch (Exception e) {
-			logger.error("Error while Saving Profile Images==>" + e);
+			logger.error(ERROR_WHILE_SAVING_PROFILE_IMAGES_MSG + e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -135,7 +141,7 @@ public class CorporateUploadController {
 		try {
 			CommonDocumentUtils.startHook(logger, "uploadDoc");
 			if (CommonUtils.isObjectNullOrEmpty(documentRequestString)) {
-				logger.warn("Document Request Must not be null");
+				logger.warn(DOCUMENT_REQUEST_MUST_NOT_BE_NULL_MSG);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
@@ -153,13 +159,13 @@ public class CorporateUploadController {
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(response.getMessage(), HttpStatus.OK.value()), HttpStatus.OK);
 			} else {
-				logger.error("Error While Uploading Document==>");
+				logger.error(ERROR_WHILE_UPLOADING_DOCUMENT_MSG);
 				CommonDocumentUtils.endHook(logger, "uploadDoc");
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 		} catch (Exception e) {
-			logger.error("Error while Saving Profile Images==>" + e);
+			logger.error(ERROR_WHILE_SAVING_PROFILE_IMAGES_MSG + e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -179,12 +185,12 @@ public class CorporateUploadController {
 				CommonDocumentUtils.endHook(logger, "getDocList");
 				return new ResponseEntity<LoansResponse>(finalResponse, HttpStatus.OK);
 			} else {
-				logger.warn("Invalid Request while Getting Documents");
+				logger.warn(INVALID_REQUEST_WHILE_GETTING_DOCUMENTS_MSG);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 		} catch (Exception e) {
-			logger.error("Error while Saving Profile Images==>" + e);
+			logger.error(ERROR_WHILE_SAVING_PROFILE_IMAGES_MSG + e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -197,7 +203,7 @@ public class CorporateUploadController {
 		try {
 			CommonDocumentUtils.startHook(logger, "getExcelDocList");
 			if (CommonUtils.isObjectNullOrEmpty(documentRequest)) {
-				logger.warn("Document Request Must not be null");
+				logger.warn(DOCUMENT_REQUEST_MUST_NOT_BE_NULL_MSG);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
@@ -219,12 +225,12 @@ public class CorporateUploadController {
 				CommonDocumentUtils.endHook(logger, "getExcelDocList");
 				return new ResponseEntity<LoansResponse>(finalResponse, HttpStatus.OK);
 			} else {
-				logger.warn("Invalid Request while Getting Documents");
+				logger.warn(INVALID_REQUEST_WHILE_GETTING_DOCUMENTS_MSG);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 		} catch (Exception e) {
-			logger.error("Error while Saving Profile Images==>" + e);
+			logger.error(ERROR_WHILE_SAVING_PROFILE_IMAGES_MSG + e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -238,7 +244,7 @@ public class CorporateUploadController {
 		try {
 			CommonDocumentUtils.startHook(logger, "uploadExcel");
 			if (CommonUtils.isObjectNullOrEmpty(documentRequestString)) {
-				logger.warn("Document Request Must not be null");
+				logger.warn(DOCUMENT_REQUEST_MUST_NOT_BE_NULL_MSG);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
@@ -306,7 +312,7 @@ public class CorporateUploadController {
 
 					// code for inactive CMA BS and DPR recored
 
-					logger.error("Error While Uploading Document==>",e);
+					logger.error(ERROR_WHILE_UPLOADING_DOCUMENT_MSG,e);
 					LoansResponse loansResponse = new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value(), e.getMessage());
 					return new ResponseEntity<LoansResponse>( loansResponse,HttpStatus.OK);
 				}
@@ -326,7 +332,7 @@ public class CorporateUploadController {
 					logger.info("excel file's storage id is====>>>>"+response.getStorageId());
 					dmsClient.deleteProductDocument(json.toJSONString());
 					
-					logger.error("Error While Uploading Document==>");
+					logger.error(ERROR_WHILE_UPLOADING_DOCUMENT_MSG);
 					CommonDocumentUtils.endHook(logger, "uploadExcel");
 					return new ResponseEntity<LoansResponse>(
 							new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()),
@@ -334,14 +340,14 @@ public class CorporateUploadController {
 				}
 
 			} else {
-				logger.warn("Invalid Request while Getting Documents");
+				logger.warn(INVALID_REQUEST_WHILE_GETTING_DOCUMENTS_MSG);
 				CommonDocumentUtils.endHook(logger, "uploadExcel");
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 
 		} catch (Exception e) {
-			logger.error("Error While Uploading Document==>" + e);
+			logger.error(ERROR_WHILE_UPLOADING_DOCUMENT_MSG + e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -387,7 +393,7 @@ public class CorporateUploadController {
 			}
 
 		} catch (Exception e) {
-			logger.error("Error while Saving Profile Images==>" + e);
+			logger.error(ERROR_WHILE_SAVING_PROFILE_IMAGES_MSG + e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -457,7 +463,7 @@ public class CorporateUploadController {
 			}
 
 		} catch (Exception e) {
-			logger.error("Error while Saving Profile Images==>" + e);
+			logger.error(ERROR_WHILE_SAVING_PROFILE_IMAGES_MSG + e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -487,7 +493,7 @@ public class CorporateUploadController {
 					HttpStatus.OK);
 
 		} catch (Exception e) {
-			logger.error("Error while Saving Profile Images==>" + e);
+			logger.error(ERROR_WHILE_SAVING_PROFILE_IMAGES_MSG + e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -522,20 +528,20 @@ public class CorporateUploadController {
 		logger.info("In getCmaFile");
 		
         try {
-        	  httpServletResponse.setContentType("application/csv");  
+        	  httpServletResponse.setContentType(APPLICATION_CSV_CONTENT_TYPE);
           if(productDocumentMappingId==(long)DocumentAlias.WC_CMA) {
-            httpServletResponse.setHeader("Content-Disposition", "attachment; filename=\""+CommonUtils.CW_CMA_EXCEL+"\"");
+            httpServletResponse.setHeader(CONTENT_DISPOSITION, "attachment; filename=\""+CommonUtils.CW_CMA_EXCEL+"\"");
             downLoadCMAFileService.cmaFileGenerator(applicationId, productDocumentMappingId).write(httpServletResponse.getOutputStream());
           }
           
           else if (productDocumentMappingId==(long)DocumentAlias.TL_CMA || productDocumentMappingId==(long) DocumentAlias.WCTL_CMA){
-        	  httpServletResponse.setContentType("application/csv");
-        	  httpServletResponse.setHeader("Content-Disposition", "attachment; filename=\""+CommonUtils.CW_TL_WCTL_EXCEL+"\"");
+        	  httpServletResponse.setContentType(APPLICATION_CSV_CONTENT_TYPE);
+        	  httpServletResponse.setHeader(CONTENT_DISPOSITION, "attachment; filename=\""+CommonUtils.CW_TL_WCTL_EXCEL+"\"");
               downLoadCMAFileService.cmaFileGenerator(applicationId, productDocumentMappingId).write(httpServletResponse.getOutputStream());
 		}
           else if(productDocumentMappingId==(long)DocumentAlias.WC_COMPANY_ACT|| productDocumentMappingId==(long)DocumentAlias.TL_COMPANY_ACT || productDocumentMappingId==(long)DocumentAlias.USL_COMPANY_ACT|| productDocumentMappingId==(long) DocumentAlias.WCTL_COMPANY_ACT_DOC ) {
-        	  httpServletResponse.setContentType("application/csv");
-        	  httpServletResponse.setHeader("Content-Disposition", "attachment; filename=\""+CommonUtils.CO_CMA_EXCEL+"\"");
+        	  httpServletResponse.setContentType(APPLICATION_CSV_CONTENT_TYPE);
+        	  httpServletResponse.setHeader(CONTENT_DISPOSITION, "attachment; filename=\""+CommonUtils.CO_CMA_EXCEL+"\"");
               downLoadCMAFileService.coCMAFileGenerator(applicationId, productDocumentMappingId).write(httpServletResponse.getOutputStream());
           }
             logger.info("Out getCmaFile");
@@ -590,20 +596,20 @@ public class CorporateUploadController {
 		logger.info("In getCmaFile");
 		
         try {
-        	  httpServletResponse.setContentType("application/csv");  
+        	  httpServletResponse.setContentType(APPLICATION_CSV_CONTENT_TYPE);
           if(productDocumentMappingId==(long)DocumentAlias.WC_CMA) {
-            httpServletResponse.setHeader("Content-Disposition", "attachment; filename=\""+CommonUtils.CW_CMA_EXCEL+"\"");
+            httpServletResponse.setHeader(CONTENT_DISPOSITION, "attachment; filename=\""+CommonUtils.CW_CMA_EXCEL+"\"");
             downLoadCMAFileService.cmaFileGenerator(applicationId, productDocumentMappingId).write(httpServletResponse.getOutputStream());
           }
           
           else if (productDocumentMappingId==(long)DocumentAlias.TL_CMA || productDocumentMappingId==(long) DocumentAlias.WCTL_CMA){
-        	  httpServletResponse.setContentType("application/csv");
-        	  httpServletResponse.setHeader("Content-Disposition", "attachment; filename=\""+CommonUtils.CW_TL_WCTL_EXCEL+"\"");
+        	  httpServletResponse.setContentType(APPLICATION_CSV_CONTENT_TYPE);
+        	  httpServletResponse.setHeader(CONTENT_DISPOSITION, "attachment; filename=\""+CommonUtils.CW_TL_WCTL_EXCEL+"\"");
               downLoadCMAFileService.cmaFileGenerator(applicationId, productDocumentMappingId).write(httpServletResponse.getOutputStream());
 		}
           else if(productDocumentMappingId==(long)DocumentAlias.WC_COMPANY_ACT|| productDocumentMappingId==(long)DocumentAlias.TL_COMPANY_ACT || productDocumentMappingId==(long)DocumentAlias.USL_COMPANY_ACT|| productDocumentMappingId==(long) DocumentAlias.WCTL_COMPANY_ACT_DOC ) {
-        	  httpServletResponse.setContentType("application/csv");
-        	  httpServletResponse.setHeader("Content-Disposition", "attachment; filename=\""+CommonUtils.CO_CMA_EXCEL+"\"");
+        	  httpServletResponse.setContentType(APPLICATION_CSV_CONTENT_TYPE);
+        	  httpServletResponse.setHeader(CONTENT_DISPOSITION, "attachment; filename=\""+CommonUtils.CO_CMA_EXCEL+"\"");
               downLoadCMAFileService.coCMAFileGenerator(applicationId, productDocumentMappingId).write(httpServletResponse.getOutputStream());
           }
             logger.info("Out getCmaFile");
