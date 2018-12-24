@@ -2,6 +2,7 @@
 package com.capitaworld.service.loans.service;
 
 import java.util.List;
+import java.util.Map;
 
 import com.capitaworld.service.loans.model.FundProviderProposalDetails;
 import com.capitaworld.service.loans.model.LoansResponse;
@@ -52,4 +53,6 @@ public interface ProposalService {
 	public Object getHomeCounterDetail();
 	
 	public List<ProposalSearchResponse> searchProposalByAppCode(Long loginUserId,Long loginOrgId,ReportRequest reportRequest);
+	
+	public Map<String , Integer> getFpDashBoardCount(Long loginUserId,Long loginOrgId);
 }
