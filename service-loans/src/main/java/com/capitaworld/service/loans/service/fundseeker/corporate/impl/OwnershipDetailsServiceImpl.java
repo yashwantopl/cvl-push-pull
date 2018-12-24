@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -52,6 +53,7 @@ public class OwnershipDetailsServiceImpl implements OwnershipDetailsService {
 				ownershipDetail.setApplicationId(new LoanApplicationMaster(frameRequest.getApplicationId()));
 				ownershipDetail.setModifiedBy(frameRequest.getUserId());
 				ownershipDetail.setModifiedDate(new Date());
+				ownershipDetail.setProposalMapping(new ApplicationProposalMapping(frameRequest.getProposalId()));
 				ownershipDetailsRepository.save(ownershipDetail);
 			}
 			return true;

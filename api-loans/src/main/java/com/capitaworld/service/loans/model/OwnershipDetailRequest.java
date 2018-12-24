@@ -27,8 +27,8 @@ public class OwnershipDetailRequest implements Serializable {
 	private Double stackPercentage;
 	
 	private Boolean isActive = true;
-	
-	
+
+	private Long proposalId;
 
 	public Boolean getIsActive() {
 		return isActive;
@@ -81,4 +81,11 @@ public class OwnershipDetailRequest implements Serializable {
 		this.stackPercentage = stackPercentage;
 	}
 
+	public Long getProposalId() {
+		return proposalId;
+	}
+
+	public void setProposalId(Long proposalId) {
+		this.proposalId = proposalId;
+	}
 }
