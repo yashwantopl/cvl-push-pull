@@ -82,6 +82,7 @@ public class CommonUtils {
 	public static final String OBLIGATION_MUST_BE_LESS_THAN_INCOME = "Obligation Must be less than Income";
 	public static final String REQUEST_DATA_NULL_OR_EMPTY = "Request Data Null Or Empty !!";
 	public static final String INTERNAL_SERVER_ERROR  = "Internal Server Error";
+	public static final String MANDATORY_FIELDS_MUST_NOT_BE_NULL = "Mandatory Fields Must Not be Null";
 	public static final String REQUESTED_DATA_CAN_NOT_BE_EMPTY = "Requested data can not be empty.";
 	public static final String INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND = "Invalid data or Requested data not found.";
 
