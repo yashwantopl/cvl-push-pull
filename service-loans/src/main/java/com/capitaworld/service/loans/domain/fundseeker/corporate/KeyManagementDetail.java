@@ -80,6 +80,7 @@ public class KeyManagementDetail implements Serializable {
 	}
 
 	public KeyManagementDetail() {
+		// Do nothing because of X and Y.
 	}
 
 	public Long getId() {

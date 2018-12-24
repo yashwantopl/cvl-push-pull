@@ -46,6 +46,8 @@ public class CorporateUploadController {
 
 	private static final Logger logger = LoggerFactory.getLogger(CorporateUploadController.class);
 
+	private static final String UPLOAD_PROFILE_IMAGE_METHOD_NAME = "uploadProfileImage";
+
 	@Autowired
 	private Environment environment;
 
@@ -73,7 +75,7 @@ public class CorporateUploadController {
 			@RequestPart("file") MultipartFile multipartFiles, @PathVariable("applicationId") Long applicationId,
 			HttpServletRequest request) {
 		try {
-			CommonDocumentUtils.startHook(logger, "uploadProfileImage");
+			CommonDocumentUtils.startHook(logger, UPLOAD_PROFILE_IMAGE_METHOD_NAME);
 			if (CommonUtils.isObjectNullOrEmpty(fileName) || CommonUtils.isObjectNullOrEmpty(productDocMapId)) {
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse("Invalid data or Requested data not found.", HttpStatus.BAD_REQUEST.value()),
@@ -84,12 +86,12 @@ public class CorporateUploadController {
 					Long.valueOf(productDocMapId), fileName, userType, multipartFiles);
 			if (documentResponse != null && documentResponse.getStatus() == 200) {
 				logger.info("Profile picture uploaded successfully-->");
-				CommonDocumentUtils.endHook(logger, "uploadProfileImage");
+				CommonDocumentUtils.endHook(logger, UPLOAD_PROFILE_IMAGE_METHOD_NAME);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(documentResponse.getMessage(), HttpStatus.OK.value()), HttpStatus.OK);
 			} else {
 				logger.error(CommonUtils.SOMETHING_WENT_WRONG);
-				CommonDocumentUtils.endHook(logger, "uploadProfileImage");
+				CommonDocumentUtils.endHook(logger, UPLOAD_PROFILE_IMAGE_METHOD_NAME);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value()),
 						HttpStatus.OK);
@@ -368,7 +370,7 @@ public class CorporateUploadController {
 				excelExtractionService.inActiveBS(docId);
 				excelExtractionService.inActiveDPR(docId);
 			} catch (Exception e) {
-				// TODO: handle exception
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 
 			if (response != null && response.getStatus() == 200) {

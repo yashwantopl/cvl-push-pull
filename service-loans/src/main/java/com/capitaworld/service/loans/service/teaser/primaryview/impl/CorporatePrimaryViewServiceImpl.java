@@ -191,7 +191,6 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 	@Autowired
 	private ProductMasterRepository productMasterRepository;
 
-	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 	DecimalFormat decim = new DecimalFormat("#,###.00");
 
 	@Override
@@ -521,7 +520,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 			// workingCapitalPrimaryViewResponse.setSharePriceMarket(primaryWorkingCapitalLoanDetail.getSharePriceMarket());
 			if (!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getModifiedDate()))
 				corporatePrimaryViewResponse.setDateOfProposal(primaryCorporateDetail.getModifiedDate() != null
-						? DATE_FORMAT.format(primaryCorporateDetail.getModifiedDate())
+						? CommonUtils.DATE_FORMAT.format(primaryCorporateDetail.getModifiedDate())
 						: null);
 			
 			// other Details
@@ -1305,7 +1304,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 		// dmsClient.listProductDocument(documentRequest);
 		// corporatePrimaryViewResponse.setZipBytes(documentResponse.getDataList());
 		// } catch (DocumentException e) {
-		// e.printStackTrace();
+		// logger.error(CommonUtils.EXCEPTION,e);
 		// }
 		// List<Long> ids=new ArrayList<>();
 		// ids.add(354l);
@@ -1319,7 +1318,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 		// DocumentResponse documentResponse=dmsClient.getGenerateZip(zipRequest);
 		// corporatePrimaryViewResponse.setZipBytes(documentResponse.getData());
 		// } catch (DocumentException e) {
-		// e.printStackTrace();
+		// logger.error(CommonUtils.EXCEPTION,e);
 		// }
 
 		return corporatePrimaryViewResponse;

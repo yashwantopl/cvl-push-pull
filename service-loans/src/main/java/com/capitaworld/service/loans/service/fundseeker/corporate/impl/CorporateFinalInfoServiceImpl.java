@@ -111,7 +111,6 @@ public class CorporateFinalInfoServiceImpl implements CorporateFinalInfoService 
     @Override
     public CorporateFinalInfoRequest get(Long userId, Long applicationId) throws Exception {
         try {
-            // TODO Auto-generated method stub
             CorporateApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId(userId,
                     applicationId);
             if (applicantDetail == null) {

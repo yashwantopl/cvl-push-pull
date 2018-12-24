@@ -22,13 +22,12 @@ public class LiabilitiesDetailsServiceImpl implements LiabilitiesDetailsService 
 	
 	@Override
 	public void saveOrUpdate(LiabilitiesDetails liabilitiesDetails) {
-		// TODO Auto-generated method stub
+
 		liabilitiesDetailsRepository.save(liabilitiesDetails);
 	}
 
 	@Override
 	public void  readLiabilitiesDetails(Long applicationId,Long storageDetailsId, XSSFSheet sheet) throws Exception {
-		// TODO Auto-generated method stub
 		  
 		LiabilitiesDetailsExcelReader.run(storageDetailsId, sheet, loanApplicationRepository.findOne(applicationId), liabilitiesDetailsRepository);
 	
@@ -36,7 +35,7 @@ public class LiabilitiesDetailsServiceImpl implements LiabilitiesDetailsService 
 
 	@Override
 	public void inActiveAssetsDetails(Long storageDetailsId) {
-		// TODO Auto-generated method stub
+
 		liabilitiesDetailsRepository.inActiveAssetsDetails(storageDetailsId);
 		
 	}

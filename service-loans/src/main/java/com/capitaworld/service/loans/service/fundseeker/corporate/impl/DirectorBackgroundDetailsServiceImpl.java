@@ -80,8 +80,7 @@ public class DirectorBackgroundDetailsServiceImpl implements DirectorBackgroundD
 		
 		DirectorBackgroundDetail  directorBackgroundDetail= null;
 		if (backgroundDetailRequest.getId() != null) {
-			directorBackgroundDetail = directorBackgroundDetailsRepository
-					.findOne(backgroundDetailRequest.getId());
+			directorBackgroundDetail = directorBackgroundDetailsRepository.findOne(backgroundDetailRequest.getId());
 		} else {
 			directorBackgroundDetail = new DirectorBackgroundDetail();
 			directorBackgroundDetail.setCreatedBy(userId);
@@ -173,7 +172,7 @@ public class DirectorBackgroundDetailsServiceImpl implements DirectorBackgroundD
 
 	@Override
 	public Boolean updateFlag(Long directorId, Integer apiId, Boolean apiFlag,Long userId) {
-		// TODO Auto-generated method stub
+
 		logger.info("Enter in updateFlag()");
 		APIFlags apiFlagObj = CommonUtils.APIFlags.fromId(apiId);
 		if(apiFlag == null) {

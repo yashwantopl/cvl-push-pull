@@ -97,7 +97,7 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 				// Maximum Amount Based on Salary and Max ROI
 				double monthlyRate = homeLoanCriteria.getRoiLow() / 100 / 12;
 				logger.info("monthlyRate first==>" + monthlyRate);
-				double totalPayments = tenure * 12;
+				double totalPayments = (tenure * 12);
 				double result = getPMTCalculation(monthlyRate, totalPayments);
 				logger.info("result first==>" + result);
 				double maximum = getMinMax(income, result);
@@ -318,7 +318,7 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 				logger.info("=========>Bank Name=====>" + bankResponse.getValue());
 				double monthlyRate = personalLoanCriteria.getRoiLow() / 100 / 12;
 				logger.info("monthlyRate==>" + monthlyRate);
-				double totalPayments = tenure * 12;
+				double totalPayments = (tenure * 12);
 				logger.info("totalPayments==>" + totalPayments);
 				double result = getPMTCalculation(monthlyRate, totalPayments);
 				logger.info("result==>" + result);
@@ -432,7 +432,7 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 				logger.info("Bank Name()==>" + bankResponse.getValue());
 				double monthlyRate = lapEligibilityCriteria.getRoiLow() / 100 / 12;
 				logger.info("monthlyRate First==>" + monthlyRate);
-				double totalPayments = tenure * 12;
+				double totalPayments = (tenure * 12);
 				double result = getPMTCalculation(monthlyRate, totalPayments);
 				logger.info("result First==>" + result);
 				double maximum = getMinMax(income, result);

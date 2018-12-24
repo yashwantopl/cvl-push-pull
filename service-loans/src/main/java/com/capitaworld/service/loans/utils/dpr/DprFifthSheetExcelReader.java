@@ -1,11 +1,14 @@
 package com.capitaworld.service.loans.utils.dpr;
 
+import com.capitaworld.service.loans.utils.CommonUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.util.CellReference;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 
 import com.capitaworld.service.loans.domain.fundseeker.corporate.DprUserDataDetail;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -14,6 +17,9 @@ import com.capitaworld.service.loans.domain.fundseeker.corporate.DprUserDataDeta
  */
 public class DprFifthSheetExcelReader
 {
+
+    private static final Logger logger = LoggerFactory.getLogger(DprFifthSheetExcelReader.class);
+
     public static void run(Long storageDetailsId, XSSFSheet sheet,DprUserDataDetail dprUserDataDetail) {
         //save question 783
         try {
@@ -24,7 +30,7 @@ public class DprFifthSheetExcelReader
                 }
             }
         }catch (Exception e) {
-            e.printStackTrace();
+            logger.error(CommonUtils.EXCEPTION,e);
         }
 
         //save question 784
@@ -36,7 +42,7 @@ public class DprFifthSheetExcelReader
                 }
             }
         }catch (Exception e) {
-            e.printStackTrace();
+            logger.error(CommonUtils.EXCEPTION,e);
         }
 
         //save question 785
@@ -48,7 +54,7 @@ public class DprFifthSheetExcelReader
                 }
             }
         }catch (Exception e) {
-            e.printStackTrace();
+            logger.error(CommonUtils.EXCEPTION,e);
         }
 
         //save question 786
@@ -60,7 +66,7 @@ public class DprFifthSheetExcelReader
                 }
             }
         }catch (Exception e) {
-            e.printStackTrace();
+            logger.error(CommonUtils.EXCEPTION,e);
         }
 
         //save question 787
@@ -72,7 +78,7 @@ public class DprFifthSheetExcelReader
                 }
             }
         }catch (Exception e) {
-            e.printStackTrace();
+            logger.error(CommonUtils.EXCEPTION,e);
         }
 
         //save question 788
@@ -84,7 +90,7 @@ public class DprFifthSheetExcelReader
                 }
             }
         }catch (Exception e) {
-            e.printStackTrace();
+            logger.error(CommonUtils.EXCEPTION,e);
         }
 
         //save question 789
@@ -96,7 +102,7 @@ public class DprFifthSheetExcelReader
                 }
             }
         }catch (Exception e) {
-            e.printStackTrace();
+            logger.error(CommonUtils.EXCEPTION,e);
         }
 
     }

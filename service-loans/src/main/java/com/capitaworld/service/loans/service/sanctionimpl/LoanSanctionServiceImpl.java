@@ -284,9 +284,8 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 											TimeUnit.SECONDS.sleep(20);
 											logger.info("*******Going to Call another Bank Reverse API.********** ");
 										}catch (Exception e) {
-											//logger.info("Error/Exception in for 20 second wait() ----------------------->  Message "+ e.getMessage());
+											//logger.error("Error/Exception in for 20 second wait() ----------------------->  Message ",e);
 											failureReason = "Error/Exception while getting appication from getSanctionAndDisbursmentDetailList ------------ orgId "+userOrganisationRequest.getUserOrgId()+" MSG =>" + e.getMessage();
-											//e.printStackTrace();
 										}
 									}
 									//auditComponentBankToCW.saveBankToCWReqRes(resJosn , null , null , null , failureReason, userOrganisationRequest.getUserOrgId(), null);

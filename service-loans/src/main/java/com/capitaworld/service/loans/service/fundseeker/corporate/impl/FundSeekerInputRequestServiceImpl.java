@@ -25,6 +25,9 @@ import com.capitaworld.service.analyzer.model.common.ReportRequest;
 import com.capitaworld.service.fraudanalytics.client.FraudAnalyticsClient;
 import com.capitaworld.service.fraudanalytics.model.AnalyticsRequest;
 import com.capitaworld.service.fraudanalytics.model.AnalyticsResponse;
+import com.capitaworld.service.gst.GstResponse;
+import com.capitaworld.service.gst.client.GstClient;
+import com.capitaworld.service.gst.yuva.request.GSTR1Request;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.DirectorBackgroundDetail;
@@ -42,7 +45,6 @@ import com.capitaworld.service.loans.model.corporate.FundSeekerInputRequestRespo
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.DirectorBackgroundDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.DirectorPersonalDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.FinancialArrangementDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorRepository;
@@ -64,9 +66,6 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
   
 	@Autowired
 	private PrimaryCorporateDetailRepository primaryCorporateDetailRepository;
-
-	@Autowired
-	private FinancialArrangementDetailsRepository financialArrangementDetailsRepository;
 	
 	@Autowired
 	private FinancialArrangementDetailsService financialArrangementDetailsService;
@@ -82,6 +81,9 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 
 	@Autowired
 	private AnalyzerClient analyzerClient;
+	
+	@Autowired
+	private GstClient gstClient; 
 
 	@Autowired
 	private CorporateApplicantService corporateApplicantService;
@@ -569,29 +571,28 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 		}
 	}
 	
-	public LoansResponse saveOrUpdateForOnePagerEligibility(FundSeekerInputRequestResponse fundSeekerInputRequest) throws Exception {
-		String msg = "";
+	@Override
+	public LoansResponse saveOrUpdateForOnePagerEligibility(FundSeekerInputRequestResponse fundSeekerInputRequest){
+		String msg = "Oneform Uniform Detail Successfully Saved";
 		try{
 			
-		logger.info("Enter in save directors details ---------------------------------------->"
+		logger.info("Enter in saveOrUpdateForOnePagerEligibility ---------------------------------------->"
 				+ fundSeekerInputRequest.getApplicationId());
 		CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
 				.findOneByApplicationIdId(fundSeekerInputRequest.getApplicationId());
 		if (CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail)) {
 			logger.info("corporateApplicantDetail is null created new object");
-			corporateApplicantDetail = new CorporateApplicantDetail();
-			corporateApplicantDetail.setApplicationId(new LoanApplicationMaster(fundSeekerInputRequest.getApplicationId()));
-			corporateApplicantDetail.setCreatedBy(fundSeekerInputRequest.getUserId());
-			corporateApplicantDetail.setCreatedDate(new Date());
-			corporateApplicantDetail.setIsActive(true);
-		} else {
-			logger.info("constitution id  ------------------------------------------>"+ corporateApplicantDetail.getConstitutionId());
-			corporateApplicantDetail.setModifiedBy(fundSeekerInputRequest.getUserId());
-			corporateApplicantDetail.setModifiedDate(new Date());
+			return new LoansResponse(CommonUtils.GENERIC_ERROR_MSG,HttpStatus.BAD_REQUEST.value());
 		}
-		corporateApplicantDetail.setOrganisationName(fundSeekerInputRequest.getOrganisationName());
-		corporateApplicantDetail.setPanNo(fundSeekerInputRequest.getPan());
-		corporateApplicantDetail.setConstitutionId(fundSeekerInputRequest.getConstitutionId());
+		if(CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getIsGstCompleted()) || !corporateApplicantDetail.getIsGstCompleted()){
+    		return new LoansResponse(CommonUtils.GST_VALIDATION_ERROR_MSG,HttpStatus.BAD_REQUEST.value());	
+    	}
+    	if(CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getIsItrCompleted()) || !corporateApplicantDetail.getIsItrCompleted()){
+    		new LoansResponse(CommonUtils.ITR_VALIDATION_ERROR_MSG,HttpStatus.BAD_REQUEST.value());	
+    	}
+		logger.info("constitution id  ------------------------------------------>"+ corporateApplicantDetail.getConstitutionId());
+		corporateApplicantDetail.setModifiedBy(fundSeekerInputRequest.getUserId());
+		corporateApplicantDetail.setModifiedDate(new Date());
 
 		copyAddressFromRequestToDomain(fundSeekerInputRequest, corporateApplicantDetail);
 
@@ -628,25 +629,94 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 				directorBackgroundDetailsService.saveDirectorInfo(reqObj, fundSeekerInputRequest.getApplicationId(), fundSeekerInputRequest.getUserId());
 			}
 		} catch (Exception e) {
-			logger.error("Directors ===============> Throw Exception While Save Director Background Details -------->",e);
+			logger.error("Oneform Uniform Product ===============> Throw Exception While Save Oneform Uniform Product -------->{}",e);
 		}
-
-		LoansResponse res = new LoansResponse("director detail successfully saved", HttpStatus.OK.value());
+		financialArrangementDetailsService.saveOrUpdateManuallyAddedLoans(fundSeekerInputRequest.getFinancialArrangementsDetailRequestsList(), fundSeekerInputRequest.getApplicationId(), fundSeekerInputRequest.getUserId());
+		LoansResponse res = new LoansResponse(msg, HttpStatus.OK.value());
 		res.setFlag(true);
-		logger.info("director detail successfully saved");
-		msg = "director detail successfully saved";
+		res.setData(getDataForOnePagerOneForm(fundSeekerInputRequest.getApplicationId()));
+		logger.info(msg);
 		return res;
 	} catch (Exception e) {
-		msg="error while saving director detail";
-		LoansResponse res = new LoansResponse(msg,HttpStatus.INTERNAL_SERVER_ERROR.value());
+		LoansResponse res = new LoansResponse(CommonUtils.GENERIC_ERROR_MSG,HttpStatus.INTERNAL_SERVER_ERROR.value());
 		logger.error(msg,e);
 		return res;
 	}finally {
 		try {
-			connectClient.saveAuditLog(new ConnectLogAuditRequest(fundSeekerInputRequest.getApplicationId(), ConnectStage.DIRECTOR_BACKGROUND.getId(),fundSeekerInputRequest.getUserId(),msg, ConnectAuditErrorCode.DIRECTOR_SUBMIT.toString(),CommonUtils.BusinessType.EXISTING_BUSINESS.getId()));
+			connectClient.saveAuditLog(new ConnectLogAuditRequest(fundSeekerInputRequest.getApplicationId(), ConnectStage.ONEPAGER_ONEFORM.getId(),fundSeekerInputRequest.getUserId(),msg, ConnectAuditErrorCode.ONFORM_SUBMIT.toString(),CommonUtils.BusinessType.ONE_PAGER_ELIGIBILITY_EXISTING_BUSINESS.getId()));
 		} catch (Exception e){
 			logger.error(CommonUtils.EXCEPTION,e);
 		}
 	}
 }
+	
+	@Override
+	public ResponseEntity<LoansResponse> getDataForOnePagerOneForm(Long applicationId) {
+
+		FundSeekerInputRequestResponse fundSeekerInputResponse = new FundSeekerInputRequestResponse();
+		fundSeekerInputResponse.setApplicationId(applicationId);
+		try {
+			// === Applicant Address
+			CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository.findOneByApplicationIdId(applicationId);
+			if (CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail)) {
+				fundSeekerInputResponse.setDirectorBackgroundDetailRequestsList(Collections.emptyList());
+				logger.info("Data not found for given applicationid");
+				return new ResponseEntity<LoansResponse>(new LoansResponse("Data not found for given applicationid",HttpStatus.BAD_REQUEST.value(), fundSeekerInputResponse), HttpStatus.OK);
+			}
+
+			BeanUtils.copyProperties(corporateApplicantDetail, fundSeekerInputResponse);
+			copyAddressFromDomainToRequest(corporateApplicantDetail, fundSeekerInputResponse);
+			fundSeekerInputResponse.setPan(corporateApplicantDetail.getPanNo());
+			fundSeekerInputResponse.setDirectorBackgroundDetailRequestsList(directorBackgroundDetailsService.getDirectorBackgroundDetailList(applicationId, null));
+			fundSeekerInputResponse.setFinancialArrangementsDetailRequestsList(financialArrangementDetailsService.getManuallyAddedFinancialArrangementDetailsList(applicationId));
+			logger.info("Oneform Uniform Prodcut Details Successfully Fetched");
+			return new ResponseEntity<LoansResponse>(new LoansResponse("Data Found",HttpStatus.OK.value(), fundSeekerInputResponse), HttpStatus.OK);
+
+		} catch (Exception e) {
+			String msg = "Error while fetching Details for Uniform OneForm"; 
+			logger.error(msg + " : "  ,e);
+			return new ResponseEntity<LoansResponse>(new LoansResponse(msg, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
+		}
+	}
+	
+	
+	@Override
+	public GstResponse verifyGST(String gstin,Long applicationId,Long userId) {
+		try {
+			GSTR1Request request = new GSTR1Request();
+			request.setApplicationId(applicationId);
+			request.setGstin(gstin);
+			request.setUserId(userId);
+			GstResponse response = gstClient.getGSTSearchData(request);
+			if(response == null){
+				return null;
+			}
+			int updateGSTFlag = 0;
+			if(response.getStatus() == HttpStatus.OK.value() && "200".equalsIgnoreCase(response.getStatusCd())){
+				updateGSTFlag = corporateApplicantDetailRepository.updateGSTFlag(applicationId, gstin, true);
+				logger.info("GST Updated Count of TRUE WIth GST Status================>{}=====>{}====>{}",updateGSTFlag,response.getStatus(),response.getStatusCd());
+			}else{
+				updateGSTFlag = corporateApplicantDetailRepository.updateGSTFlag(applicationId, gstin, false);
+				logger.info("GST Updated Count of FALSE WIth GST Status================>{}=====>{}====>{}",updateGSTFlag,response.getStatus(),response.getStatusCd());
+			}
+			return response;
+		} catch (Exception e) {
+			logger.error("error while Verifying GST Number : ",e);
+			return null;
+		}
+	}
+
+	@Override
+	public boolean updateFlag(Long applicationId,Boolean flag,Integer flagType) {
+		logger.warn("flagType=================>{}",flagType);
+		if(flagType == CommonUtils.APIFlags.ITR.getId()){
+			return corporateApplicantDetailRepository.updateITRFlag(applicationId, flag) > 0;			
+		}else if(flagType == CommonUtils.APIFlags.GST.getId()){
+			return corporateApplicantDetailRepository.updateGSTFlagWithoutGstin(applicationId, flag) > 0;			
+		}else{
+			logger.warn("Invalid API Flag so Returning Default False");
+			return false;
+		}
+	}	
+
 }

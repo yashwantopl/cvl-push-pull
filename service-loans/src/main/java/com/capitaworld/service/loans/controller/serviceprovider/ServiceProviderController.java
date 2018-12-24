@@ -52,15 +52,15 @@ public class ServiceProviderController {
 						new UserResponse(clientList,"Serivce provider's client list", HttpStatus.OK.value()),
 						HttpStatus.OK);
 			}else{
-				logger.info("Something went wrong..!");
+				logger.info(CommonUtils.SOMETHING_WENT_WRONG);
 				return new ResponseEntity<UserResponse>(
-						new UserResponse("Something went wrong..!-->", HttpStatus.BAD_REQUEST.value()),
+						new UserResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value()),
 						HttpStatus.OK);
 			}
 		} catch (Exception e) {
 			logger.error(CommonUtils.SOMETHING_WENT_WRONG,e);
 			return new ResponseEntity<UserResponse>(
-					new UserResponse("Something went wrong..!", HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					new UserResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
 		}
 		
@@ -112,15 +112,15 @@ public class ServiceProviderController {
 						new UserResponse(clientotification,"Serivce provider's client list", HttpStatus.OK.value()),
 						HttpStatus.OK);
 			}else{
-				logger.info("Something went wrong..!");
+				logger.info(CommonUtils.SOMETHING_WENT_WRONG);
 				return new ResponseEntity<UserResponse>(
-						new UserResponse("Something went wrong..!-->", HttpStatus.BAD_REQUEST.value()),
+						new UserResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value()),
 						HttpStatus.OK);
 			}
 		} catch (Exception e) {
 			logger.error(CommonUtils.SOMETHING_WENT_WRONG,e);
 			return new ResponseEntity<UserResponse>(
-					new UserResponse("Something went wrong..!", HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					new UserResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
 		}
 		
@@ -143,15 +143,15 @@ public class ServiceProviderController {
 						new UserResponse(clientotification,"Serivce provider's client list", HttpStatus.OK.value()),
 						HttpStatus.OK);
 			}else{
-				logger.info("Something went wrong..!");
+				logger.info(CommonUtils.SOMETHING_WENT_WRONG);
 				return new ResponseEntity<UserResponse>(
-						new UserResponse("Something went wrong..!-->", HttpStatus.BAD_REQUEST.value()),
+						new UserResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value()),
 						HttpStatus.OK);
 			}
 		} catch (Exception e) {
 			logger.error(CommonUtils.SOMETHING_WENT_WRONG,e);
 			return new ResponseEntity<UserResponse>(
-					new UserResponse("Something went wrong..!", HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					new UserResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
 		}
 		
@@ -174,15 +174,15 @@ public class ServiceProviderController {
 						new UserResponse(null,clientotification,"Serivce provider's client list", HttpStatus.OK.value()),
 						HttpStatus.OK);
 			}else{
-				logger.info("Something went wrong..!");
+				logger.info(CommonUtils.SOMETHING_WENT_WRONG);
 				return new ResponseEntity<UserResponse>(
-						new UserResponse("Something went wrong..!-->", HttpStatus.BAD_REQUEST.value()),
+						new UserResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value()),
 						HttpStatus.OK);
 			}
 		} catch (Exception e) {
 			logger.error(CommonUtils.SOMETHING_WENT_WRONG,e);
 			return new ResponseEntity<UserResponse>(
-					new UserResponse("Something went wrong..!", HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					new UserResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
 		}
 		

@@ -83,8 +83,7 @@ public class CorporateUploadServiceImpl implements CorporateUploadService {
 			DocumentResponse documentResponse = dmsClient.productImage(jsonObj.toString(), multipartFile);
 			return documentResponse;
 		} catch (DocumentException e) {
-			// TODO Auto-generated catch block
-			logger.error("Error while uploading Profile Document");
+			logger.error("Error while uploading Profile Document : ",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 
@@ -111,8 +110,7 @@ public class CorporateUploadServiceImpl implements CorporateUploadService {
 			docRequest.setUserType(userType);
 			return dmsClient.listProductDocument(docRequest);
 		} catch (DocumentException e) {
-			// TODO Auto-generated catch block
-			logger.error("Error while getting Profile Document");
+			logger.error("Error while getting Profile Document : ",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
@@ -143,7 +141,7 @@ public class CorporateUploadServiceImpl implements CorporateUploadService {
 			}
 			return response;
 		} catch (DocumentException e) {
-			logger.error("Error while uploading Corporate Other Documents");
+			logger.error("Error while uploading Corporate Other Documents : ",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 
@@ -154,8 +152,7 @@ public class CorporateUploadServiceImpl implements CorporateUploadService {
 		try {
 			return dmsClient.listProductDocument(documentRequest);
 		} catch (DocumentException e) {
-			// TODO Auto-generated catch block
-			logger.error("Error while getting Corporate Other Documents");
+			logger.error("Error while getting Corporate Other Documents : ",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 
@@ -292,8 +289,7 @@ public class CorporateUploadServiceImpl implements CorporateUploadService {
 				
 				return maps;
 			} catch (DocumentException e) {
-				// TODO Auto-generated catch block
-				logger.error("Error while getting Corporate Other Documents");
+				logger.error("Error while getting Corporate Other Documents : ",e);
 				throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 			}
 
@@ -329,8 +325,7 @@ public class CorporateUploadServiceImpl implements CorporateUploadService {
 				break;
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			logger.error("Error while updating Flag to loan_application_master for upload");
+			logger.error("Error while updating Flag to loan_application_master for upload : ",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}

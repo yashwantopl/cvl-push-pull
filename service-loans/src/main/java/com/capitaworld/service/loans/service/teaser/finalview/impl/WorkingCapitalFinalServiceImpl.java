@@ -161,7 +161,6 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
 	@Autowired
 	private ReferenceRetailDetailsService referenceRetailDetailsService;
 
-	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 	private static final Logger logger = LoggerFactory.getLogger(WorkingCapitalFinalServiceImpl.class);
 
 	@Override
@@ -720,7 +719,7 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
 			response.setLoanType(primaryWorkingCapitalLoanDetail.getProductId() != null ? LoanType.getById(primaryWorkingCapitalLoanDetail.getProductId()).getValue() : null);
 			response.setLoanAmount(String.valueOf(primaryWorkingCapitalLoanDetail.getAmount()));
 			if(!CommonUtils.isObjectNullOrEmpty(primaryWorkingCapitalLoanDetail.getModifiedDate()))
-			response.setDateOfProposal(DATE_FORMAT.format(primaryWorkingCapitalLoanDetail.getModifiedDate()));
+			response.setDateOfProposal(CommonUtils.DATE_FORMAT.format(primaryWorkingCapitalLoanDetail.getModifiedDate()));
 			response.setProjectBrief(primaryWorkingCapitalLoanDetail.getProjectBrief());
             response.setIsCreditRatingAvailable(primaryWorkingCapitalLoanDetail.getCreditRatingId()!= null ? CreditRatingAvailable.getById(primaryWorkingCapitalLoanDetail.getCreditRatingId()).getValue() : null);
             response.setSharePriceFace(primaryWorkingCapitalLoanDetail.getSharePriceFace());

@@ -13,6 +13,7 @@ public class ProductDetailsResponse
 	
 	public ProductDetailsResponse()
 	{
+		// Do nothing because of X and Y.
 	}
 	
 	public ProductDetailsResponse(String message, Integer status) {

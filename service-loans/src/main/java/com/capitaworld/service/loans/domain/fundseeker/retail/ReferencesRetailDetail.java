@@ -80,6 +80,7 @@ public class ReferencesRetailDetail implements Serializable {
 	private Long pincode;
 
 	public ReferencesRetailDetail() {
+		// Do nothing because of X and Y.
 	}
 
 	public Long getId() {

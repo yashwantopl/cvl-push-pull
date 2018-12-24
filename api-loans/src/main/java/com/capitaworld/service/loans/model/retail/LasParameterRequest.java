@@ -72,6 +72,7 @@ public class LasParameterRequest extends ProductMasterRequest implements Seriali
 	private List<DataRequest> cityList = Collections.emptyList();
 
 	public LasParameterRequest() {
+		// Do nothing because of X and Y.
 	}
 
 	public Long getFpProductId() {

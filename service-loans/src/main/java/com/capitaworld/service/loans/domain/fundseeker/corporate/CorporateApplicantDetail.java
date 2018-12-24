@@ -195,8 +195,15 @@ public class CorporateApplicantDetail implements Serializable {
 
 	@Column(name = "environmental_impact_id")
 	private Long environmentalImpactId;
+	
+    @Column(name = "is_gst_completed")
+    private Boolean isGstCompleted;
+    
+    @Column(name = "is_itr_completed")
+    private Boolean isItrCompleted;
 
 	public CorporateApplicantDetail() {
+		// Do nothing because of X and Y.
 	}
 
 	public Long getId() {
@@ -646,5 +653,21 @@ public class CorporateApplicantDetail implements Serializable {
 
 	public void setEnvironmentalImpactId(Long environmentalImpactId) {
 		this.environmentalImpactId = environmentalImpactId;
+	}
+
+	public Boolean getIsGstCompleted() {
+		return isGstCompleted;
+	}
+
+	public void setIsGstCompleted(Boolean isGstCompleted) {
+		this.isGstCompleted = isGstCompleted;
+	}
+
+	public Boolean getIsItrCompleted() {
+		return isItrCompleted;
+	}
+
+	public void setIsItrCompleted(Boolean isItrCompleted) {
+		this.isItrCompleted = isItrCompleted;
 	}
 }

@@ -150,7 +150,7 @@ public class CommonController {
 							new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()),
 							HttpStatus.OK);
 				}
-				LoansResponse response = new LoansResponse("Successfully get data", HttpStatus.OK.value());
+				LoansResponse response = new LoansResponse(CommonUtils.SUCCESSFULLY_GET_DATA, HttpStatus.OK.value());
 				response.setData(
 						corporateApplicantService.getLatLonByApplicationAndUserId(longLatrequest.getId(), finalUserId));
 				logger.warn("successfully get fs long and lat value");
@@ -170,7 +170,7 @@ public class CommonController {
 				userRequest.setUserType(longLatrequest.getUserType());
 				try {
 					UserResponse userResponse = usersClient.getLongLatValue(userRequest);
-					LoansResponse response = new LoansResponse("Successfully get data", HttpStatus.OK.value());
+					LoansResponse response = new LoansResponse(CommonUtils.SUCCESSFULLY_GET_DATA, HttpStatus.OK.value());
 					response.setData(userResponse.getData());
 					logger.warn("successfully get fp and sp long and lat value");
 					return new ResponseEntity<LoansResponse>(response, HttpStatus.OK);
@@ -291,7 +291,7 @@ public class CommonController {
 		}
 		
 		CommonDocumentUtils.endHook(logger, "user_verification");
-		return new ResponseEntity<UserResponse>(new UserResponse(obj, "Successfully get data", HttpStatus.OK.value()),
+		return new ResponseEntity<UserResponse>(new UserResponse(obj, CommonUtils.SUCCESSFULLY_GET_DATA, HttpStatus.OK.value()),
 				HttpStatus.OK);
 	}
 
@@ -312,7 +312,7 @@ public class CommonController {
 //					userId);
 			
 			CGTMSECalcDataResponse response = applicationService.getDataForCGTMSE(applicationId);
-			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 			loansResponse.setData(response);
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
@@ -342,7 +342,7 @@ public class CommonController {
 //					userId);
 			
 			HunterRequestDataResponse response = applicationService.getDataForHunter(applicationId);
-			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 			loansResponse.setData(response);
 			logger.info("End getDataForHunter with Application ID : "+applicationId);
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
@@ -373,7 +373,7 @@ public class CommonController {
 //					userId);
 			
 			HunterRequestDataResponse response = applicationService.getDataForHunterForNTB(applicationId);
-			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 			loansResponse.setData(response);
 			logger.info("End getDataForHunterForNTB with Application ID : "+applicationId);
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);

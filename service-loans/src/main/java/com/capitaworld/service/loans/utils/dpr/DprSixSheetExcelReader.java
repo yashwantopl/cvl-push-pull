@@ -2,6 +2,7 @@ package com.capitaworld.service.loans.utils.dpr;
 
 import java.util.Date;
 
+import com.capitaworld.service.loans.utils.CommonUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.util.CellReference;
@@ -13,6 +14,8 @@ import com.capitaworld.service.loans.domain.fundseeker.corporate.DriverForFuture
 import com.capitaworld.service.loans.domain.fundseeker.corporate.RevenueAndOrderBookDetail;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.DriverForFutureGrowthDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.RevenueAndOrderBookDetailRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -21,6 +24,9 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.RevenueAndO
  */
 public class DprSixSheetExcelReader
 {
+
+    private static final Logger logger = LoggerFactory.getLogger(DprSixSheetExcelReader.class);
+
     public static void run(Long storageDetailsId,XSSFSheet sheet,LoanApplicationMaster loanApplicationMaster,RevenueAndOrderBookDetailRepository revenueAndOrderBookDetailRepository,DriverForFutureGrowthDetailRepository driverForFutureGrowthDetailRepository,DprUserDataDetail dprUserDataDetail) {
 
         saveRevenuesAndOrderBook(storageDetailsId,sheet,"11",loanApplicationMaster,revenueAndOrderBookDetailRepository);
@@ -44,7 +50,7 @@ public class DprSixSheetExcelReader
                 }
             }
         }catch (Exception e) {
-            e.printStackTrace();
+            logger.error(CommonUtils.EXCEPTION,e);
         }
 
         //save question 791
@@ -56,7 +62,7 @@ public class DprSixSheetExcelReader
                 }
             }
         }catch (Exception e) {
-            e.printStackTrace();
+            logger.error(CommonUtils.EXCEPTION,e);
         }
     }
 
@@ -98,7 +104,7 @@ public class DprSixSheetExcelReader
                 driverForFutureGrowth.setStorageDetailsId(storageDetailsId);
                 driverForFutureGrowthDetailRepository.save(driverForFutureGrowth);
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error(CommonUtils.EXCEPTION,e);
             }
         }
     }
@@ -150,7 +156,7 @@ public class DprSixSheetExcelReader
                 revenueAndOrderBook.setStorageDetailsId(storageDetailsId);
                 revenueAndOrderBookDetailRepository.save(revenueAndOrderBook);
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error(CommonUtils.EXCEPTION,e);
             }
             // System.out.println(boardOfDirectorName + designation + qualification + experience + achievements + functionalDuties);
         }

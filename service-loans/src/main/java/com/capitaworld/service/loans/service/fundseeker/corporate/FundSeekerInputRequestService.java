@@ -2,6 +2,7 @@ package com.capitaworld.service.loans.service.fundseeker.corporate;
 
 import org.springframework.http.ResponseEntity;
 
+import com.capitaworld.service.gst.GstResponse;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.NTBRequest;
 import com.capitaworld.service.loans.model.corporate.FundSeekerInputRequestResponse;
@@ -31,5 +32,38 @@ public interface FundSeekerInputRequestService {
 	 * @throws Exception 
 	 */
 	public LoansResponse invokeFraudAnalytics(FundSeekerInputRequestResponse fundSeekerInputRequestResponse) throws Exception;
-    
+	
+	/**
+	 * Verify GST whether the GSTIN is Registered or Not.
+	 * @param gstin
+	 * @param applicationId
+	 * @param userId
+	 * @return
+	 */
+	public GstResponse verifyGST(String gstin,Long applicationId,Long userId);
+
+	
+	/**
+	 * Getting Data for Uniform Product OneForm
+	 * @param applicationId
+	 * @return
+	 */
+	public ResponseEntity<LoansResponse> getDataForOnePagerOneForm(Long applicationId);
+	
+	
+	/**
+	 * Update ITR Flag whether its is completed or not
+	 * @param applicationId
+	 * @param flag
+	 * @param flagType
+	 * @return
+	 */
+	public boolean updateFlag(Long applicationId,Boolean flag,Integer flagType);
+	
+	/**
+	 * Saving OneForm for Uniform Product
+	 * @param fundSeekerInputRequest
+	 * @return
+	 */
+	public LoansResponse saveOrUpdateForOnePagerEligibility(FundSeekerInputRequestResponse fundSeekerInputRequest);
 }

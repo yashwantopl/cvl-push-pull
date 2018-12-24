@@ -229,6 +229,7 @@ public class LapParameter extends ProductMaster implements Serializable {
 	private Boolean isCashProfitMandatory=false;*/
 
 	public LapParameter() {
+		// Do nothing because of X and Y.
 	}
 
 	public ProductMaster getFpProductId() {

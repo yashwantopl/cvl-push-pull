@@ -57,6 +57,7 @@ public class SecurityCorporateDetail implements Serializable {
 	private String primarySecurityName;
 
 	public SecurityCorporateDetail() {
+		// Do nothing because of X and Y.
 	}
 
 	public Long getId() {

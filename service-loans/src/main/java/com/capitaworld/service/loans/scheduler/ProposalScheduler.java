@@ -31,7 +31,7 @@ public class ProposalScheduler {
 	
 //	@Autowired
 //	private FPAsyncComponent fp;
-//	
+//
 //	@Scheduled(initialDelay = 10,fixedDelay=100000)
 //	 public void runF(){
 //	  logger.info("Entry ScheduledTasks proposal");
@@ -48,15 +48,13 @@ public class ProposalScheduler {
 //			try {
 //				fp.sendMailToFsWhenMakerAcceptPorposal(parameters, applicantRequest, "Maaz Shaikh");
 //			} catch (Exception e) {
-//				// TODO Auto-generated catch block
-//				System.out.println("Exception inside main class:" + e.getMessage());
-//				e.printStackTrace();
+//				logger.error("Exception inside main class:",e);
 //			}
 //
-//		  
+//
 //	   logger.info("Exit ScheduledTasks proposal");
 //	  } catch (Exception e) {
-//	   e.printStackTrace();
+//		  logger.error(CommonUtils.EXCEPTION,e);
 //	  }
 //	 }
 }

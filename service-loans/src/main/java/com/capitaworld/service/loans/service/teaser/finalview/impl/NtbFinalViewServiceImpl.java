@@ -199,7 +199,6 @@ public class NtbFinalViewServiceImpl implements NtbFinalViewService{
 	@Autowired
 	private ThirdPartyClient thirdPartyClient;
 
-	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 	DecimalFormat decim = new DecimalFormat("#,###.00");
 	
 	@Override
@@ -485,7 +484,7 @@ public class NtbFinalViewServiceImpl implements NtbFinalViewService{
 			// workingCapitalPrimaryViewResponse.setSharePriceMarket(primaryWorkingCapitalLoanDetail.getSharePriceMarket());
 			if (!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getModifiedDate()))
 				ntbFinalViewResponse.setDateOfProposal(primaryCorporateDetail.getModifiedDate() != null
-						? DATE_FORMAT.format(primaryCorporateDetail.getModifiedDate())
+						? CommonUtils.DATE_FORMAT.format(primaryCorporateDetail.getModifiedDate())
 						: null);
 		}
 		// DIRECTORS BACKGROUND DETAILS
