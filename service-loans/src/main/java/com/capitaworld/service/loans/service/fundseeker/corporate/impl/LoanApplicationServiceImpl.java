@@ -338,6 +338,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	private static final String CONNECTOR_RESPONSE_MSG = "Connector Response ----------------------------->";
 	private static final String BEFORE_START_SAVING_PHASE_1_SIDBI_API_MSG = "Before Start Saving Phase 1 Sidbi API ------------------->";
 	private static final String PROPOSAL_MAPPING_RESPONSE_MSG = "Proposal Mapping Response---------------> ";
+	private static final String PROPOSAL_MAPPING_RESPONSE_NULL_OR_EMPTY_MSG = "Proposal Mapping Response Null or Empty---------------> ";
+	private static final String INSIDE_SENDING_MAIL_TO_CHECKER_AFTER_IN_PRINCIPLE_APPROVAL_MSG = "Inside sending mail to Checker after In-principle Approval";
+	private static final String EXCEPTION_OCCURED_WHILE_SENDING_MAIL_TO_ALL_CHECKERS_MSG  = "Exception occured while Sending Mail to All Checkers : ";
+	private static final String EXCEPTION_OCCURED_WHILE_SENDING_MAIL_TO_ALL_MAKERS_MSG = "Exception occured while Sending Mail to All Makers : ";
+	private static final String SOMETHING_WENT_WRONG_WHILE_CALL_PROPOSAL_CLIENT_FOR_MSG = "Something went wrong while call proposal client for ";
 	private static final String SOMETHING_WENT_WRONG_WHILE_CALL_CONNECT_CLIENT_FOR_MSG = "Something went wrong while call connect client for ";
 	private static final String CONNECTOR_RESPONSE_NULL_OR_EMPTY_MSG = "Connector Response null or empty";
 
@@ -4459,12 +4464,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					throw new Exception(proposalMappingResponse.getMessage());
 				}
 			} else {
-				logger.info("Proposal Mapping Response Null or Empty---------------> ");
-				throw new Exception("Something went wrong while call proposal client for " + applicationId);
+				logger.info(PROPOSAL_MAPPING_RESPONSE_NULL_OR_EMPTY_MSG);
+				throw new Exception(SOMETHING_WENT_WRONG_WHILE_CALL_PROPOSAL_CLIENT_FOR_MSG + applicationId);
 			}
 		} catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
-			throw new Exception("Something went wrong while call proposal client for " + applicationId);
+			throw new Exception(SOMETHING_WENT_WRONG_WHILE_CALL_PROPOSAL_CLIENT_FOR_MSG + applicationId);
 		}
 
 		logger.info("Exit on Update Skip Payment Details ");
@@ -4530,12 +4535,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					throw new Exception(proposalMappingResponse.getMessage());
 				}
 			} else {
-				logger.info("Proposal Mapping Response Null or Empty---------------> ");
-				throw new Exception("Something went wrong while call proposal client for " + applicationId);
+				logger.info(PROPOSAL_MAPPING_RESPONSE_NULL_OR_EMPTY_MSG);
+				throw new Exception(SOMETHING_WENT_WRONG_WHILE_CALL_PROPOSAL_CLIENT_FOR_MSG + applicationId);
 			}
 		} catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
-			throw new Exception("Something went wrong while call proposal client for " + applicationId);
+			throw new Exception(SOMETHING_WENT_WRONG_WHILE_CALL_PROPOSAL_CLIENT_FOR_MSG + applicationId);
 		}
 
 		// Sending In-Principle for WhiteLabel
@@ -4578,15 +4583,15 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			logger.info("Inside sending mail to Maker after In-principle Approval");
 			fpasyncComponent.sendEmailToAllMakersWhenFSRecievesInPrinciple(proposalresp, paymentRequest, userId, orgId);
 		} catch (Exception e) {
-			logger.error("Exception occured while Sending Mail to All Makers : ",e);
+			logger.error(EXCEPTION_OCCURED_WHILE_SENDING_MAIL_TO_ALL_MAKERS_MSG,e);
 		}
 
 		try {
-			logger.info("Inside sending mail to Checker after In-principle Approval");
+			logger.info(INSIDE_SENDING_MAIL_TO_CHECKER_AFTER_IN_PRINCIPLE_APPROVAL_MSG);
 			fpasyncComponent.sendEmailToAllCheckersWhenFSRecievesInPrinciple(proposalresp, paymentRequest, userId,
 					orgId);
 		} catch (Exception e) {
-			logger.error("Exception occured while Sending Mail to All Checkers : ",e);
+			logger.error(EXCEPTION_OCCURED_WHILE_SENDING_MAIL_TO_ALL_CHECKERS_MSG,e);
 		}
 
 		try {
@@ -4667,12 +4672,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					throw new Exception(proposalMappingResponse.getMessage());
 				}
 			} else {
-				logger.info("Proposal Mapping Response Null or Empty---------------> ");
-				throw new Exception("Something went wrong while call proposal client for " + applicationId);
+				logger.info(PROPOSAL_MAPPING_RESPONSE_NULL_OR_EMPTY_MSG);
+				throw new Exception(SOMETHING_WENT_WRONG_WHILE_CALL_PROPOSAL_CLIENT_FOR_MSG + applicationId);
 			}
 		} catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
-			throw new Exception("Something went wrong while call proposal client for " + applicationId);
+			throw new Exception(SOMETHING_WENT_WRONG_WHILE_CALL_PROPOSAL_CLIENT_FOR_MSG + applicationId);
 		}
 
 		// Sending In-Principle for Personal Loan
@@ -4714,15 +4719,15 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			logger.info("Inside sending mail to Maker after In-principle Approval");
 			fpasyncComponent.sendEmailToAllMakersWhenFSRecievesInPrinciple(proposalresp, paymentRequest, userId, orgId);
 		} catch (Exception e) {
-			logger.error("Exception occured while Sending Mail to All Makers : ",e);
+			logger.error(EXCEPTION_OCCURED_WHILE_SENDING_MAIL_TO_ALL_MAKERS_MSG,e);
 		}
 
 		try {
-			logger.info("Inside sending mail to Checker after In-principle Approval");
+			logger.info(INSIDE_SENDING_MAIL_TO_CHECKER_AFTER_IN_PRINCIPLE_APPROVAL_MSG);
 			fpasyncComponent.sendEmailToAllCheckersWhenFSRecievesInPrinciple(proposalresp, paymentRequest, userId,
 					orgId);
 		} catch (Exception e) {
-			logger.error("Exception occured while Sending Mail to All Checkers : ",e);
+			logger.error(EXCEPTION_OCCURED_WHILE_SENDING_MAIL_TO_ALL_CHECKERS_MSG,e);
 		}
 
 		try {
@@ -4854,15 +4859,15 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 								fpasyncComponent.sendEmailToAllMakersWhenFSRecievesInPrinciple(proposalresp,
 										paymentRequest, userId, orgId);
 							} catch (Exception e) {
-								logger.error("Exception occured while Sending Mail to All Makers : ",e);
+								logger.error(EXCEPTION_OCCURED_WHILE_SENDING_MAIL_TO_ALL_MAKERS_MSG,e);
 							}
 
 							try {
-								logger.info("Inside sending mail to Checker after In-principle Approval");
+								logger.info(INSIDE_SENDING_MAIL_TO_CHECKER_AFTER_IN_PRINCIPLE_APPROVAL_MSG);
 								fpasyncComponent.sendEmailToAllCheckersWhenFSRecievesInPrinciple(proposalresp,
 										paymentRequest, userId, orgId);
 							} catch (Exception e) {
-								logger.error("Exception occured while Sending Mail to All Checkers : ",e);
+								logger.error(EXCEPTION_OCCURED_WHILE_SENDING_MAIL_TO_ALL_CHECKERS_MSG,e);
 							}
 
 							try {

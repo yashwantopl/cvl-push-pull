@@ -69,6 +69,7 @@ public class CommonUtils {
 	public static final String SUCCESS = "Success";
 	public static final String FALSE_LITERAL = "false";
 	public static final String NA = "NA";
+	public static final String AUDITED = "Audited";
 	public static final String SUCCESS_RESULT = "Success Result";
 	public static final String DATA_FOUND = "Data Found.";
 	public static final String DATA_NOT_FOUND = "Data Not Found.";
