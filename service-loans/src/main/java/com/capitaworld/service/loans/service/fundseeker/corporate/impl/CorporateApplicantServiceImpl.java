@@ -6,8 +6,6 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
-import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +20,7 @@ import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PastFinancialEstimatesDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.SubsectorDetail;
+import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
 import com.capitaworld.service.loans.model.Address;
 import com.capitaworld.service.loans.model.PaymentRequest;
 import com.capitaworld.service.loans.model.common.GraphResponse;
@@ -33,9 +32,11 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateAp
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PastFinancialEstimateDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.SectorIndustryMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorRepository;
+import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateCoApplicantService;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -82,6 +83,9 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 
     @Autowired
     private RetailApplicantDetailRepository retailApplicantDetailRepository;
+    
+    @Autowired
+    private PrimaryCorporateDetailRepository primaryCorporateDetailRepository;
 
 	@Autowired
 	private UsersClient usersClient;
@@ -93,6 +97,11 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 
 	@Override
 	public void saveITRMappingData (CorporateApplicantRequest applicantRequest) {
+		//Updating OneForm Uniform Fields
+		if(!CommonUtils.isObjectNullOrEmpty(applicantRequest.getTurnOverPrevFinYear()) || !CommonUtils.isObjectNullOrEmpty(applicantRequest.getTurnOverCurrFinYearTillMonth()) || !CommonUtils.isObjectNullOrEmpty(applicantRequest.getProfitCurrFinYear())){
+			primaryCorporateDetailRepository.updatedFinancialFieldsForUniformProduct(applicantRequest.getApplicationId(), applicantRequest.getTurnOverPrevFinYear(), applicantRequest.getTurnOverCurrFinYearTillMonth(),applicantRequest.getProfitCurrFinYear());
+			logger.info("TurnOverPrevFinYear TurnOverCurrFinYearTillMonth ProfitCurrFinYear Updated");
+		}
 		
 		CorporateApplicantDetail applicantDetail = applicantRepository.findByApplicationIdIdAndIsActive(applicantRequest.getApplicationId(),true);
 		if(!CommonUtils.isObjectNullOrEmpty(applicantDetail)) {
