@@ -940,7 +940,6 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				 * ())); } } }
 				 */
 				for (ProductMasterTemp productMaster : results) {
-					//System.out.println("ProductMasterTemp id: "+productMaster.getId()+" jobid : " + productMaster.getActiveInactiveJobId());
 					ProductMasterRequest productMasterRequest = new ProductMasterRequest();
 					BeanUtils.copyProperties(productMaster, productMasterRequest);
 					productMasterRequests.add(productMasterRequest);
@@ -992,7 +991,6 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				 */
 			}
 			for (ProductMaster productMaster : results) {
-				//System.out.println("ProductMaster is copied is" + productMaster.getActiveInactiveJobId());
 				ProductMasterRequest productMasterRequest = new ProductMasterRequest();
 				BeanUtils.copyProperties(productMaster, productMasterRequest);
 				productMasterRequests.add(productMasterRequest);
@@ -1515,7 +1513,6 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 			WorkflowResponse workflowResponse = workflowClient.updateJob(request);
 			
 			if (workflowData.getActionId() == WorkflowUtils.Action.SEND_FOR_APPROVAL && workflowResponse != null) {
-//				System.out.println("fp_product_id : "+workflowData.getFpProductId()+" stage :"+workflowData.getStage()+" send for approval :" + workflowData.getJobId());
 				
 				if(workflowData.getActionFor() == null) {
 					return false;

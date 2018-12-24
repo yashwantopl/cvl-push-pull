@@ -14,7 +14,6 @@ import org.springframework.stereotype.Component;
 
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
-import com.capitaworld.service.loans.service.fundseeker.corporate.impl.LoanApplicationServiceImpl;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.mca.client.McaClient;
 import com.capitaworld.service.mca.model.CompaniesHistoryPara;

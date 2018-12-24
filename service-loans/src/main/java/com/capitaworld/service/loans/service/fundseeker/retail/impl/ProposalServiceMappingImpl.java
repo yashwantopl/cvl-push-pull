@@ -1741,7 +1741,6 @@ public class ProposalServiceMappingImpl implements ProposalService {
 		LoansResponse loansResponse = new LoansResponse();
 
 		try {
-			// System.out.println("getApplicationId :
 			// "+userRequest.getApplicationId() + "userRequest.getId() :
 			// "+userRequest.getId()+" getLoanAmount() :
 			// "+userRequest.getLoanAmount());
@@ -1769,7 +1768,6 @@ public class ProposalServiceMappingImpl implements ProposalService {
 				}
 
 				if (!CommonUtils.isObjectNullOrEmpty(checkerDetailRequest)) {
-					// System.out.println("getMinAmount :
 					// "+checkerDetailRequest.getMinAmount() + " getMaxAmount :
 					// "+checkerDetailRequest.getMaxAmount());
 					if (userRequest.getLoanAmount() != null && checkerDetailRequest.getMinAmount() != null
@@ -1798,7 +1796,6 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			loansResponse.setFlag(false);
 			loansResponse.setMessage("You do not have rights to take action for this proposal.");
 		}
-		// System.out.println("loansResponse : "+loansResponse.toString());
 		return loansResponse;
 	}
 
@@ -1810,7 +1807,6 @@ public class ProposalServiceMappingImpl implements ProposalService {
 
 		// UsersRequest data = (UsersRequest) userData.getData();
 
-		// System.out.println("-----------------> data : "+
 		// userData.toString());
 
 		// Long roleId = (Long) userData.get("roleId");
