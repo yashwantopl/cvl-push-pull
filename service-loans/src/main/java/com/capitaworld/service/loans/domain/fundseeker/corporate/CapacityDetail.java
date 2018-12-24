@@ -85,6 +85,7 @@ public class CapacityDetail implements Serializable {
 	}
 
 	public CapacityDetail() {
+		// Do nothing because of X and Y.
 	}
 
 	public Long getId() {

@@ -28,6 +28,7 @@ public class PrimaryTermLoanRequest extends LoanApplicationRequest implements Se
 	private List<Long> negativeList=Collections.emptyList();
 	
 	public PrimaryTermLoanRequest() {
+		// Do nothing because of X and Y.
 	}
 
 	public Integer getCreditRatingId() {

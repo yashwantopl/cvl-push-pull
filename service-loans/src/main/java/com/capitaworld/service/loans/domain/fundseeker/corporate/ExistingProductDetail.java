@@ -49,6 +49,7 @@ public class ExistingProductDetail implements Serializable {
 	private String product;
 
 	public ExistingProductDetail() {
+		// Do nothing because of X and Y.
 	}
 
 	public Long getId() {

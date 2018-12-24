@@ -85,6 +85,7 @@ public class AssociatedConcernDetail implements Serializable {
 
 
 	public AssociatedConcernDetail() {
+		// Do nothing because of X and Y.
 	}
 
 	public Long getId() {

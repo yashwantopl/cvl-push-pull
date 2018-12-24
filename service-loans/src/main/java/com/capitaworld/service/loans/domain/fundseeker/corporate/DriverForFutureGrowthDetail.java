@@ -82,6 +82,7 @@ public class DriverForFutureGrowthDetail implements Serializable {
 	}
 
 	public DriverForFutureGrowthDetail() {
+		// Do nothing because of X and Y.
 	}
 
 	public Long getId() {

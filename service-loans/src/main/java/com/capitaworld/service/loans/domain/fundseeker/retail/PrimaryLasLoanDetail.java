@@ -32,6 +32,7 @@ public class PrimaryLasLoanDetail extends LoanApplicationMaster implements Seria
 	private Integer month;
 
 	public PrimaryLasLoanDetail() {
+		// Do nothing because of X and Y.
 	}
 
 	public LoanApplicationMaster getApplicationId() {

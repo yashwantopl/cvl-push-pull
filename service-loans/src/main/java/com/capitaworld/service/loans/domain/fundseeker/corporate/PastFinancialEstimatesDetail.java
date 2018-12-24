@@ -78,6 +78,7 @@ public class PastFinancialEstimatesDetail implements Serializable {
 	private Double sales;
 
 	public PastFinancialEstimatesDetail() {
+		// Do nothing because of X and Y.
 	}
 
 	public Long getId() {
