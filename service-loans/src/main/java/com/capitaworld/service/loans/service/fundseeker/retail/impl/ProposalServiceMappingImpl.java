@@ -1978,5 +1978,27 @@ public class ProposalServiceMappingImpl implements ProposalService {
 		}
 		return responseList;
 	}
+	
+	public Map<String , Integer> getFpDashBoardCount(Long loginUserId,Long loginOrgId) {
+		Object[] loggedUserDetailsList = loanRepository.getRoleIdAndBranchIdByUserId(loginUserId);
+		Long roleId = CommonUtils.convertLong(loggedUserDetailsList[0]);
+		Long branchId = CommonUtils.convertLong(loggedUserDetailsList[1]);
+		if(CommonUtils.isObjectNullOrEmpty(roleId)) {
+			return null;			
+		}
+		Map<String , Integer> map = new HashMap<>();
+		Object[] count = null;
+		if(roleId == 9) {
+			count = loanRepository.fpDashBoardCountByOrgIdAndBranchId(loginOrgId, branchId);
+		} else if(roleId == 5){
+			count = loanRepository.fpDashBoardCountByOrgId(loginOrgId);
+		}
+		map.put("inPrincipleCount", CommonUtils.convertInteger(count[0]));
+		map.put("holdCount", CommonUtils.convertInteger(count[1]));
+		map.put("rejectCount", CommonUtils.convertInteger(count[2]));
+		map.put("sanctionedCount", CommonUtils.convertInteger(count[3]));
+		map.put("disbursmentCount", CommonUtils.convertInteger(count[4]));
+		return map;
+	}
 }
 
