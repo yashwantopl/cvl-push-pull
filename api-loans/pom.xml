@@ -5,7 +5,19 @@
 	<!-- <parent> <groupId>com.capitaworld.loans.service.parent</groupId> <artifactId>service-parent-loans</artifactId> 
 		<version>0.0.1</version> </parent> -->
 	<artifactId>api-loans</artifactId>
-	<properties>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>8</source>
+                    <target>8</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    <properties>
 		<java-version>1.8</java-version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>

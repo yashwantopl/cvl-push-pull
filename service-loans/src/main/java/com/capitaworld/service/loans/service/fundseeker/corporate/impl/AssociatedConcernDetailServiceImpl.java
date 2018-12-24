@@ -51,7 +51,7 @@ public class AssociatedConcernDetailServiceImpl implements AssociatedConcernDeta
 					associatedConcernDetail.setCreatedBy(frameRequest.getUserId());
 					associatedConcernDetail.setCreatedDate(new Date());
 					associatedConcernDetail.setApplicationId(new LoanApplicationMaster(frameRequest.getApplicationId()));
-					associatedConcernDetail.setApplicationProposalMapping(new ApplicationProposalMapping(frameRequest.getProposalId()));
+					associatedConcernDetail.setApplicationProposalMapping(new ApplicationProposalMapping(frameRequest.getProposalMappingId()));
 				}
 				BeanUtils.copyProperties(associatedConcernDetailRequest, associatedConcernDetail);
 				associatedConcernDetail.setModifiedBy(frameRequest.getUserId());

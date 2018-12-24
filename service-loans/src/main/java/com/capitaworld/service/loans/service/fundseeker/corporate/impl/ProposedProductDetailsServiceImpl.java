@@ -56,7 +56,7 @@ public class ProposedProductDetailsServiceImpl implements ProposedProductDetails
 				proposedProductDetail
 						.setApplicationId(loanApplicationRepository.findOne(frameRequest.getApplicationId()));
 				proposedProductDetail
-						.setProposalId(applicationProposalMappingRepository.findOne(frameRequest.getProposalId()));
+						.setProposalId(applicationProposalMappingRepository.findOne(frameRequest.getProposalMappingId()));
 				proposedProductDetail.setModifiedBy(frameRequest.getUserId());
 				proposedProductDetail.setModifiedDate(new Date());
 				proposedProductDetailsRepository.save(proposedProductDetail);

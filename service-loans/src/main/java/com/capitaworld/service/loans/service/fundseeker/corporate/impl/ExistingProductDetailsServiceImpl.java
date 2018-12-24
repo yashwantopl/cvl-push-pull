@@ -49,7 +49,7 @@ public class ExistingProductDetailsServiceImpl implements ExistingProductDetails
 					existingProductDetail.setCreatedDate(new Date());
 				}
 				existingProductDetail.setApplicationId(loanApplicationRepository.findOne(frameRequest.getApplicationId()));
-				existingProductDetail.setApplicationProposalMapping(new ApplicationProposalMapping(frameRequest.getProposalId()));
+				existingProductDetail.setApplicationProposalMapping(new ApplicationProposalMapping(frameRequest.getProposalMappingId()));
 				existingProductDetail.setModifiedBy(frameRequest.getUserId());
 				existingProductDetail.setModifiedDate(new Date());
 				existingProductDetailsRepository.save(existingProductDetail);

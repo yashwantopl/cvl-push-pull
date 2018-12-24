@@ -52,7 +52,7 @@ public class TotalCostOfProjectServiceImpl implements TotalCostOfProjectService 
 				
 				BeanUtils.copyProperties(totalCostOfProjectRequest, totalCostOfProject);
 				totalCostOfProject.setApplicationId(new LoanApplicationMaster(frameRequest.getApplicationId()));
-				totalCostOfProject.setProposalId(new ApplicationProposalMapping(frameRequest.getProposalId()));
+				totalCostOfProject.setProposalId(new ApplicationProposalMapping(frameRequest.getProposalMappingId()));
 				totalCostOfProject.setModifiedBy(frameRequest.getUserId());
 				totalCostOfProject.setModifiedDate(new Date());
 				totalCostOfProjectRepository.save(totalCostOfProject);

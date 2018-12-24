@@ -57,7 +57,7 @@ public class FinanceMeansDetailController {
 					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}
 		// application id and user id must not be null
-		if (frameRequest.getProposalId() == null) {
+		if (frameRequest.getProposalMappingId() == null) {
 			logger.warn("application id and user id must not be null ==>" + frameRequest);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.INTERNAL_SERVER_ERROR.value()),
@@ -71,7 +71,7 @@ public class FinanceMeansDetailController {
 			
 			Long finalUserId = (CommonUtils.isObjectNullOrEmpty(frameRequest.getClientId()) ? userId
 					: frameRequest.getClientId());
-			Boolean finalLocked = loanApplicationService.isFinalLockedByProposalId(frameRequest.getProposalId(),
+			Boolean finalLocked = loanApplicationService.isFinalLockedByProposalId(frameRequest.getProposalMappingId(),
 					finalUserId);
 			if (!CommonUtils.isObjectNullOrEmpty(finalLocked) && finalLocked.booleanValue()) {
 				return new ResponseEntity<LoansResponse>(
@@ -99,7 +99,7 @@ public class FinanceMeansDetailController {
 												 HttpServletRequest request,@RequestParam(value = "clientId", required = false) Long clientId) {
 		// request must not be null
 		try {
-			CommonDocumentUtils.startHook(logger, "getList");
+				CommonDocumentUtils.startHook(logger, "getList");
 			Long userId = null;
 			if(CommonDocumentUtils.isThisClientApplication(request)){
 				userId = clientId;

@@ -52,7 +52,7 @@ public class GuarantorsCorporateDetailServiceImpl implements GuarantorsCorporate
 				}
 				BeanUtils.copyProperties(guarantorsCorporateDetailRequest, guarantorsCorporateDetail);
 				guarantorsCorporateDetail.setApplicationId(new LoanApplicationMaster(frameRequest.getApplicationId()));
-				guarantorsCorporateDetail.setApplicationProposalMapping(new ApplicationProposalMapping(frameRequest.getProposalId()));
+				guarantorsCorporateDetail.setApplicationProposalMapping(new ApplicationProposalMapping(frameRequest.getProposalMappingId()));
 				guarantorsCorporateDetail.setModifiedBy(frameRequest.getUserId());
 				guarantorsCorporateDetail.setModifiedDate(new Date());
 				guarantorsCorporateDetailRepository.save(guarantorsCorporateDetail);

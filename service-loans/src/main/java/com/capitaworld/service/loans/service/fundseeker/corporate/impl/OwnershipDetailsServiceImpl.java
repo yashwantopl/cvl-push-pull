@@ -53,7 +53,7 @@ public class OwnershipDetailsServiceImpl implements OwnershipDetailsService {
 				ownershipDetail.setApplicationId(new LoanApplicationMaster(frameRequest.getApplicationId()));
 				ownershipDetail.setModifiedBy(frameRequest.getUserId());
 				ownershipDetail.setModifiedDate(new Date());
-				ownershipDetail.setProposalMapping(new ApplicationProposalMapping(frameRequest.getProposalId()));
+				ownershipDetail.setProposalMapping(new ApplicationProposalMapping(frameRequest.getProposalMappingId()));
 				ownershipDetailsRepository.save(ownershipDetail);
 			}
 			return true;
