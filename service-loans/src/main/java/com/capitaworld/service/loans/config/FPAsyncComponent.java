@@ -149,6 +149,7 @@ public class FPAsyncComponent {
 			try {
 
 				logger.info("Into sending Mail to all Makers after FS gets In-Principle Approval===>{}");
+
 				String subject = SUBJECT_INTIMATION_NEW_PROPOSAL;
 				Map<String, Object> mailParameters = new HashMap<String, Object>();
 				mailParameters.put(CommonUtils.PARAMETERS_FS_NAME,
@@ -280,7 +281,9 @@ public class FPAsyncComponent {
 							} else {
 								mailParameters.put(PARAMETERS_MAKER_NAME, name != null ? name : PARAMETERS_SIR_MADAM);
 							}
+
 							mailParameters.put(CommonUtils.PARAMETERS_IS_DYNAMIC, false);
+
 							String[] bcc = {environment.getRequiredProperty("bccforcam")};
 							createNotificationForEmailForFundProvider(to, userId.toString(), mailParameters,
 									NotificationAlias.EMAIL_ALL_MAKERS_AFTER_INPRINCIPLE_TO_FS, subject,applicationRequest.getId(),proposalresp,bcc);
@@ -342,6 +345,7 @@ public class FPAsyncComponent {
 
 				logger.info("Into sending Mail to all Checkers after FS gets In-Principle Approval===>{}");
 				String subject = SUBJECT_INTIMATION_NEW_PROPOSAL;
+
 				Map<String, Object> mailParameters = new HashMap<String, Object>();
 
 				mailParameters.put(CommonUtils.PARAMETERS_FS_NAME,
@@ -533,6 +537,7 @@ public class FPAsyncComponent {
 
 				logger.info("Into sending Mail to all Checkers after FS gets In-Principle Approval===>{}");
 				String subject = SUBJECT_INTIMATION_NEW_PROPOSAL;
+
 				Map<String, Object> mailParameters = new HashMap<String, Object>();
 				mailParameters.put(CommonUtils.PARAMETERS_FS_NAME,
 						paymentRequest.getNameOfEntity() != null ? paymentRequest.getNameOfEntity() : "NA");
@@ -724,6 +729,7 @@ public class FPAsyncComponent {
 
 				logger.info("Into sending Mail to all BO after FS gets In-Principle Approval===>{}");
 				String subject = SUBJECT_INTIMATION_NEW_PROPOSAL;
+
 				Map<String, Object> mailParameters = new HashMap<String, Object>();
 				mailParameters.put(CommonUtils.PARAMETERS_FS_NAME,
 						paymentRequest.getNameOfEntity() != null ? paymentRequest.getNameOfEntity() : "NA");

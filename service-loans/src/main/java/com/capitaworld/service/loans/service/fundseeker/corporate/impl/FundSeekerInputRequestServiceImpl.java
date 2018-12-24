@@ -25,9 +25,7 @@ import com.capitaworld.service.analyzer.model.common.ReportRequest;
 import com.capitaworld.service.fraudanalytics.client.FraudAnalyticsClient;
 import com.capitaworld.service.fraudanalytics.model.AnalyticsRequest;
 import com.capitaworld.service.fraudanalytics.model.AnalyticsResponse;
-import com.capitaworld.service.gst.GstResponse;
 import com.capitaworld.service.gst.client.GstClient;
-import com.capitaworld.service.gst.yuva.request.GSTR1Request;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.DirectorBackgroundDetail;
@@ -54,6 +52,9 @@ import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArran
 import com.capitaworld.service.loans.service.fundseeker.corporate.FundSeekerInputRequestService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.utils.CommonUtils;
+
+import src.main.java.com.capitaworld.service.gst.GstResponse;
+import src.main.java.com.capitaworld.service.gst.yuva.request.GSTR1Request;
 
 @Service
 @Transactional
