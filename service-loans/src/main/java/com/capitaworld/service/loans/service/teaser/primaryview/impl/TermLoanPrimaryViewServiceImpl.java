@@ -147,8 +147,6 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 	@Autowired
 	private PrimaryCorporateDetailRepository primaryCorporateRepository;
 
-	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
-
 	@Override
 	public TermLoanPrimaryViewResponse getTermLoanPrimaryViewDetails(Long toApplicationId, Integer userType,
 																	 Long fundProviderUserId) {
@@ -393,7 +391,7 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 			termLoanPrimaryViewResponse.setCollateralSecurityAmount(primaryCorporateDetail.getCollateralSecurityAmount() != null ? String.valueOf(primaryCorporateDetail.getCollateralSecurityAmount()) : null);
 			if (primaryTermLoanDetail.getModifiedDate() != null)
 				termLoanPrimaryViewResponse
-						.setDateOfProposal(DATE_FORMAT.format(primaryTermLoanDetail.getModifiedDate()));
+						.setDateOfProposal(CommonUtils.DATE_FORMAT.format(primaryTermLoanDetail.getModifiedDate()));
 			//termLoanPrimaryViewResponse.setIsCreditRatingAvailable(primaryTermLoanDetail.getCreditRatingId() != null
 			// ? CreditRatingAvailable.getById(primaryTermLoanDetail.getCreditRatingId()).getValue() : null);
 		}

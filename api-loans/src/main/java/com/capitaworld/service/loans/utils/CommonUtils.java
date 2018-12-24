@@ -69,6 +69,7 @@ public class CommonUtils {
 	public static final String SUCCESS = "Success";
 	public static final String FALSE_LITERAL = "false";
 	public static final String NA = "NA";
+	public static final String SUCCESS_RESULT = "Success Result";
 	public static final String DATA_FOUND = "Data Found.";
 	public static final String DATA_NOT_FOUND = "Data Not Found.";
 	public static final String SUCCESSFULLY_SAVED = "Successfully Saved.";
@@ -97,7 +98,9 @@ public class CommonUtils {
 
 	public static final String RATE_INTEREST = "rate_interest";
 	public static final String LITERAL_AMOUNT = "amount";
-	
+
+	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
+
 	public static final class UsersRoles {
 		private UsersRoles(){
 			// Do nothing because of X and Y.

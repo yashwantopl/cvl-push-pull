@@ -177,8 +177,6 @@ public class UnsecuredLoanPrimaryViewServiceImpl implements UnsecuredLoanPrimary
 	@Autowired
 	private PrimaryCorporateDetailRepository primaryCorporateDetailRepository;
 
-	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
-
 	@Override
 	public UnsecuredLoanPrimaryViewResponse getUnsecuredLoanPrimaryViewDetails(Long toApplicationId, Integer userType,
 																			   Long fundProviderUserId) {
@@ -424,7 +422,7 @@ public class UnsecuredLoanPrimaryViewServiceImpl implements UnsecuredLoanPrimary
 
 			if (primaryUnsecuredLoanDetail.getModifiedDate() != null)
 				unsecuredLoanPrimaryViewResponse
-						.setDateOfProposal(DATE_FORMAT.format(primaryUnsecuredLoanDetail.getModifiedDate()));
+						.setDateOfProposal(CommonUtils.DATE_FORMAT.format(primaryUnsecuredLoanDetail.getModifiedDate()));
 			unsecuredLoanPrimaryViewResponse.setIsCreditRatingAvailable(primaryUnsecuredLoanDetail.getCreditRatingId() != null
 					? CreditRatingAvailable.getById(primaryUnsecuredLoanDetail.getCreditRatingId()).getValue() : null);
 		}

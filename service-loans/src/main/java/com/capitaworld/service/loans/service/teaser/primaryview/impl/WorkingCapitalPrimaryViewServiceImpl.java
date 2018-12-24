@@ -143,8 +143,6 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
 	@Autowired
 	private PrimaryCorporateDetailRepository primaryCorporateRepository;
 
-	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
-
 	@Override
 	public WorkingCapitalPrimaryViewResponse getWorkingCapitalPrimaryViewDetails(Long toApplicationId, Integer userType,
 																				 Long fundProviderUserId) {
@@ -406,7 +404,7 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
 			//workingCapitalPrimaryViewResponse.setSharePriceFace(primaryWorkingCapitalLoanDetail.getSharePriceFace());
 			//workingCapitalPrimaryViewResponse.setSharePriceMarket(primaryWorkingCapitalLoanDetail.getSharePriceMarket());
 			if (!CommonUtils.isObjectNullOrEmpty(primaryWorkingCapitalLoanDetail.getModifiedDate()))
-				workingCapitalPrimaryViewResponse.setDateOfProposal(primaryWorkingCapitalLoanDetail.getModifiedDate() != null ? DATE_FORMAT.format(primaryWorkingCapitalLoanDetail.getModifiedDate()) : null);
+				workingCapitalPrimaryViewResponse.setDateOfProposal(primaryWorkingCapitalLoanDetail.getModifiedDate() != null ? CommonUtils.DATE_FORMAT.format(primaryWorkingCapitalLoanDetail.getModifiedDate()) : null);
 			workingCapitalPrimaryViewResponse.setIsCreditRatingAvailable(primaryWorkingCapitalLoanDetail.getCreditRatingId() != null ? CreditRatingAvailable.getById(primaryWorkingCapitalLoanDetail.getCreditRatingId()).getValue() : null);
 		}
 
