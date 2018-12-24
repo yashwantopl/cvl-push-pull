@@ -55,7 +55,7 @@ public class PaymentRequest implements Serializable {
 	}
 
 	public PaymentRequest() {
-
+		// Do nothing because of X and Y.
 	}
 
 	public Long getApplicationId() {

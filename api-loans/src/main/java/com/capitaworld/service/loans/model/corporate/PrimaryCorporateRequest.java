@@ -59,6 +59,7 @@ public class PrimaryCorporateRequest extends LoanApplicationRequest implements S
 
 
     public PrimaryCorporateRequest() {
+        // Do nothing because of X and Y.
     }
 
     public Double getLoanAmount() {

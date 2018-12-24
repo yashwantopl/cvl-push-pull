@@ -70,6 +70,8 @@ public class CommonUtils {
 	public static final String FALSE_LITERAL = "false";
 	public static final String NA = "NA";
 	public static final String DATA_FOUND = "Data Found.";
+	public static final String DATA_NOT_FOUND = "Data Not Found.";
+	public static final String SUCCESSFULLY_SAVED = "Successfully Saved.";
 	public static final String INVALID_AGE = "Invalid Age";
 	public static final String SUCCESSFULLY_GET_DATA = "Successfully get data";
 
