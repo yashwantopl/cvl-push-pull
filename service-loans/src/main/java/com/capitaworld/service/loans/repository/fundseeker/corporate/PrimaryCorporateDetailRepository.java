@@ -20,7 +20,7 @@ public interface PrimaryCorporateDetailRepository extends JpaRepository<PrimaryC
     public PrimaryCorporateDetail findOneByApplicationIdId(@Param("applicationId") Long applicationId);
 
     @Modifying
-    @Query("update PrimaryCorporateDetail pd set pd.turnOverPrevFinYear =:turnOverPrevFinYear and pd.turnOverCurrFinYearTillMonth =:turnOverCurrFinYearTillMonth and pd.profitCurrFinYear =:profitCurrFinYear  where pd.applicationId.id =:applicationId")
+    @Query("update PrimaryCorporateDetail pd set pd.turnOverPrevFinYear =:turnOverPrevFinYear, pd.turnOverCurrFinYearTillMonth =:turnOverCurrFinYearTillMonth, pd.profitCurrFinYear =:profitCurrFinYear where pd.applicationId.id =:applicationId")
     public PrimaryCorporateDetail updatedFinancialFieldsForUniformProduct(@Param("applicationId") Long applicationId,@Param("turnOverPrevFinYear") Double turnOverPrevFinYear,@Param("turnOverCurrFinYearTillMonth") Double turnOverCurrFinYearTillMonth,@Param("profitCurrFinYear") Double profitCurrFinYear);
 }
 
