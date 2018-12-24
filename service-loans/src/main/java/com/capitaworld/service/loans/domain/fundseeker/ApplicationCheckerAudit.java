@@ -28,7 +28,7 @@ public class ApplicationCheckerAudit {
 
     //Constructor
     public ApplicationCheckerAudit() {
-
+        // Do nothing because of X and Y.
     }
 
     //getter setter

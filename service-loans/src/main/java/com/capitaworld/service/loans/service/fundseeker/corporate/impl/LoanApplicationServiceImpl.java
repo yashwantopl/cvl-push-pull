@@ -335,6 +335,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	private static final Logger logger = LoggerFactory.getLogger(LoanApplicationServiceImpl.class.getName());
 
+	private static final String CONNECTOR_RESPONSE_MSG = "Connector Response ----------------------------->";
+	private static final String BEFORE_START_SAVING_PHASE_1_SIDBI_API_MSG = "Before Start Saving Phase 1 Sidbi API ------------------->";
+	private static final String PROPOSAL_MAPPING_RESPONSE_MSG = "Proposal Mapping Response---------------> ";
+	private static final String SOMETHING_WENT_WRONG_WHILE_CALL_CONNECT_CLIENT_FOR_MSG = "Something went wrong while call connect client for ";
+	private static final String CONNECTOR_RESPONSE_NULL_OR_EMPTY_MSG = "Connector Response null or empty";
+
 	@Autowired
 	private DMSClient dmsClient;
 
@@ -4416,8 +4422,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					loanApplicationMaster.getBusinessTypeId());
 
 			if (!CommonUtils.isObjectListNull(connectResponse)) {
-				logger.info("Connector Response ----------------------------->" + connectResponse.toString());
-				logger.info("Before Start Saving Phase 1 Sidbi API ------------------->" + orgId);
+				logger.info(CONNECTOR_RESPONSE_MSG + connectResponse.toString());
+				logger.info(BEFORE_START_SAVING_PHASE_1_SIDBI_API_MSG + orgId);
 				/*if (orgId == 10L) {
 					logger.info("Start Saving Phase 1 sidbi API -------------------->" + loanApplicationMaster.getId());
 					Long fpMappingId = null;
@@ -4435,12 +4441,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					}
 				}
 			} else {
-				logger.info("Connector Response null or empty");
-				throw new Exception("Something went wrong while call connect client for " + applicationId);
+				logger.info(CONNECTOR_RESPONSE_NULL_OR_EMPTY_MSG);
+				throw new Exception(SOMETHING_WENT_WRONG_WHILE_CALL_CONNECT_CLIENT_FOR_MSG + applicationId);
 			}
 		} catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
-			throw new Exception("Something went wrong while call connect client for " + applicationId);
+			throw new Exception(SOMETHING_WENT_WRONG_WHILE_CALL_CONNECT_CLIENT_FOR_MSG + applicationId);
 		}
 
 		// TRUE MATCHES PROPOSAL
@@ -4448,7 +4454,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			ProposalMappingResponse proposalMappingResponse = proposalDetailsClient
 					.activateProposalOnPayment(applicationId);
 			if (!CommonUtils.isObjectNullOrEmpty(proposalMappingResponse)) {
-				logger.info("Proposal Mapping Response---------------> " + proposalMappingResponse.toString());
+				logger.info(PROPOSAL_MAPPING_RESPONSE_MSG + proposalMappingResponse.toString());
 				if (proposalMappingResponse.getStatus() != HttpStatus.OK.value()) {
 					throw new Exception(proposalMappingResponse.getMessage());
 				}
@@ -4487,8 +4493,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					loanApplicationMaster.getBusinessTypeId());
 
 			if (!CommonUtils.isObjectListNull(connectResponse)) {
-				logger.info("Connector Response ----------------------------->" + connectResponse.toString());
-				logger.info("Before Start Saving Phase 1 Sidbi API ------------------->" + orgId);
+				logger.info(CONNECTOR_RESPONSE_MSG + connectResponse.toString());
+				logger.info(BEFORE_START_SAVING_PHASE_1_SIDBI_API_MSG + orgId);
 				/*if (orgId == 10L) {
 					logger.info("Start Saving Phase 1 sidbi API -------------------->" + loanApplicationMaster.getId());
 					Long fpMappingId = null;
@@ -4506,12 +4512,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					}
 				}
 			} else {
-				logger.info("Connector Response null or empty");
-				throw new Exception("Something went wrong while call connect client for " + applicationId);
+				logger.info(CONNECTOR_RESPONSE_NULL_OR_EMPTY_MSG);
+				throw new Exception(SOMETHING_WENT_WRONG_WHILE_CALL_CONNECT_CLIENT_FOR_MSG + applicationId);
 			}
 		} catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
-			throw new Exception("Something went wrong while call connect client for " + applicationId);
+			throw new Exception(SOMETHING_WENT_WRONG_WHILE_CALL_CONNECT_CLIENT_FOR_MSG + applicationId);
 		}
 
 		// TRUE MATCHES PROPOSAL
@@ -4519,7 +4525,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			ProposalMappingResponse proposalMappingResponse = proposalDetailsClient
 					.activateProposalOnPayment(applicationId);
 			if (!CommonUtils.isObjectNullOrEmpty(proposalMappingResponse)) {
-				logger.info("Proposal Mapping Response---------------> " + proposalMappingResponse.toString());
+				logger.info(PROPOSAL_MAPPING_RESPONSE_MSG + proposalMappingResponse.toString());
 				if (proposalMappingResponse.getStatus() != HttpStatus.OK.value()) {
 					throw new Exception(proposalMappingResponse.getMessage());
 				}
@@ -4625,8 +4631,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					loanApplicationMaster.getBusinessTypeId());
 
 			if (!CommonUtils.isObjectListNull(connectResponse)) {
-				logger.info("Connector Response ----------------------------->" + connectResponse.toString());
-				logger.info("Before Start Saving Phase 1 Sidbi API ------------------->" + orgId);
+				logger.info(CONNECTOR_RESPONSE_MSG + connectResponse.toString());
+				logger.info(BEFORE_START_SAVING_PHASE_1_SIDBI_API_MSG + orgId);
 				// if(orgId==10L) {
 				/*
 				 * logger.info("Start Saving Phase 1 sidbi API -------------------->" +
@@ -4643,12 +4649,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					}
 				}
 			} else {
-				logger.info("Connector Response null or empty");
-				throw new Exception("Something went wrong while call connect client for " + applicationId);
+				logger.info(CONNECTOR_RESPONSE_NULL_OR_EMPTY_MSG);
+				throw new Exception(SOMETHING_WENT_WRONG_WHILE_CALL_CONNECT_CLIENT_FOR_MSG + applicationId);
 			}
 		} catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
-			throw new Exception("Something went wrong while call connect client for " + applicationId);
+			throw new Exception(SOMETHING_WENT_WRONG_WHILE_CALL_CONNECT_CLIENT_FOR_MSG + applicationId);
 		}
 
 		// TRUE MATCHES PROPOSAL
@@ -4656,7 +4662,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			ProposalMappingResponse proposalMappingResponse = proposalDetailsClient
 					.activateProposalOnPayment(applicationId);
 			if (!CommonUtils.isObjectNullOrEmpty(proposalMappingResponse)) {
-				logger.info("Proposal Mapping Response---------------> " + proposalMappingResponse.toString());
+				logger.info(PROPOSAL_MAPPING_RESPONSE_MSG + proposalMappingResponse.toString());
 				if (proposalMappingResponse.getStatus() != HttpStatus.OK.value()) {
 					throw new Exception(proposalMappingResponse.getMessage());
 				}
@@ -4804,8 +4810,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 						if (!CommonUtils.isObjectListNull(connectResponse)) {
 							logger.info(
-									"Connector Response ----------------------------->" + connectResponse.toString());
-							logger.info("Before Start Saving Phase 1 Sidbi API ------------------->" + orgId);
+									CONNECTOR_RESPONSE_MSG + connectResponse.toString());
+							logger.info(BEFORE_START_SAVING_PHASE_1_SIDBI_API_MSG + orgId);
 //						if(orgId==10L) {
 							logger.info("Start Saving Phase 1 sidbi API -------------------->"
 									+ loanApplicationMaster.getId());
@@ -4827,7 +4833,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 							}
 
 						} else {
-							logger.info("Connector Response null or empty");
+							logger.info(CONNECTOR_RESPONSE_NULL_OR_EMPTY_MSG);
 						}
 
 						ProposalMappingResponse response = proposalDetailsClient

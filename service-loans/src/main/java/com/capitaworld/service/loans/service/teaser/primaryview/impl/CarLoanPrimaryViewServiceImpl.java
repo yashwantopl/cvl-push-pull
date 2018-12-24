@@ -66,10 +66,7 @@ public class CarLoanPrimaryViewServiceImpl implements CarLoanPrimaryViewService{
     @Autowired
     private DocumentManagementService documentManagementService;
 
-
     protected static final String DMS_URL = "dmsURL";
-
-    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 
     @Override
     public CarLoanPrimaryViewResponse getCarLoanPrimaryViewDetails(Long toApplicationId) {
@@ -350,9 +347,9 @@ public class CarLoanPrimaryViewServiceImpl implements CarLoanPrimaryViewService{
              }
             //carLoanResponse.setOnRoadCarPrice(!CommonUtils.isObjectNullOrEmpty(carLoanResponse.getOnRoadCarPrice()) ? CommonUtils.CurrencyFormat(carLoanResponse.getOnRoadCarPrice().toString()) : null);
             //carLoanResponse.setDownPayment(!CommonUtils.isObjectNullOrEmpty(carLoanResponse.getDownPayment()) ? CommonUtils.CurrencyFormat(carLoanResponse.getDownPayment().toString()) : null);
-            carLoanResponse.setDeliveryDate(primaryCarLoanDetailRequest.getDeliveryDate() != null ? DATE_FORMAT.format(primaryCarLoanDetailRequest.getDeliveryDate()) : null);
-            carLoanResponse.setPurchasePreownedDate(primaryCarLoanDetailRequest.getPurchasePreownedDate() != null ? DATE_FORMAT.format(primaryCarLoanDetailRequest.getPurchasePreownedDate()) : null);
-            carLoanResponse.setPurchaseReimbursmentDate(primaryCarLoanDetailRequest.getPurchaseReimbursmentDate() != null ? DATE_FORMAT.format(primaryCarLoanDetailRequest.getPurchaseReimbursmentDate()) : null);
+            carLoanResponse.setDeliveryDate(primaryCarLoanDetailRequest.getDeliveryDate() != null ? CommonUtils.DATE_FORMAT.format(primaryCarLoanDetailRequest.getDeliveryDate()) : null);
+            carLoanResponse.setPurchasePreownedDate(primaryCarLoanDetailRequest.getPurchasePreownedDate() != null ? CommonUtils.DATE_FORMAT.format(primaryCarLoanDetailRequest.getPurchasePreownedDate()) : null);
+            carLoanResponse.setPurchaseReimbursmentDate(primaryCarLoanDetailRequest.getPurchaseReimbursmentDate() != null ? CommonUtils.DATE_FORMAT.format(primaryCarLoanDetailRequest.getPurchaseReimbursmentDate()) : null);
             carLoanResponse.setCarType(primaryCarLoanDetailRequest.getCarType() != null ? CarType.getById(primaryCarLoanDetailRequest.getCarType()).getValue() : null);
             carLoanResponse.setNewCarPurchaseType(primaryCarLoanDetailRequest.getNewCarPurchaseType()!=null? CarPurchaseType.getById(primaryCarLoanDetailRequest.getNewCarPurchaseType()).getValue():null);
         } catch (Exception e) {

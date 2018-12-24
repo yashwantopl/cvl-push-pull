@@ -47,7 +47,7 @@ public class CorporateDirectorIncomeServiceImpl implements CorporateDirectorInco
     private PincodeDateService pincodeDateService;
 	
 	private static final Logger logger = LoggerFactory.getLogger(CorporateDirectorIncomeServiceImpl.class.getName());
-	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
+
 	@Override
 	public Boolean saveOrUpdateIncomeDetails(List<CorporateDirectorIncomeRequest> corporateRequest) throws Exception {
 
@@ -190,7 +190,7 @@ public class CorporateDirectorIncomeServiceImpl implements CorporateDirectorInco
 							map.put("designation", corpObj.getDesignation());
 							map.put("directorsName", corpObj.getDirectorsName());
 							map.put("totalExperience", corpObj.getTotalExperience());
-							map.put("dob", DATE_FORMAT.format(corpObj.getDob()));
+							map.put("dob", CommonUtils.DATE_FORMAT.format(corpObj.getDob()));
 							map.put("mobile", corpObj.getMobile());
 							if(!CommonUtils.isObjectNullOrEmpty(corpObj.getGender())) {
 								Gender byIdGndr = Gender.getById(corpObj.getGender());

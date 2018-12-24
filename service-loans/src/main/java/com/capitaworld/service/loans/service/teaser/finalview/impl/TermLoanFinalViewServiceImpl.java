@@ -156,8 +156,6 @@ public class TermLoanFinalViewServiceImpl implements TermLoanFinalViewService {
 	@Autowired
 	private PastFinancialEstimateDetailsRepository pastFinancialEstimateDetailsRepository;
 
-	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
-
 	protected static final String ONE_FORM_URL = "oneForm";
 	protected static final String USERS_URL = "userURL";
 	protected static final String MATCHES_URL = "matchesURL";
@@ -729,7 +727,7 @@ public class TermLoanFinalViewServiceImpl implements TermLoanFinalViewService {
 			response.setLoanType(LoanType.getById(primaryTermLoanDetail.getProductId()).getValue());
 		}
 		if (primaryTermLoanDetail.getModifiedDate() != null) {
-			response.setDateOfProposal(DATE_FORMAT.format(primaryTermLoanDetail.getModifiedDate()));
+			response.setDateOfProposal(CommonUtils.DATE_FORMAT.format(primaryTermLoanDetail.getModifiedDate()));
 		}
 		if (primaryTermLoanDetail.getAmount() != null) {
 			response.setLoanAmount(String.valueOf(primaryTermLoanDetail.getAmount()));

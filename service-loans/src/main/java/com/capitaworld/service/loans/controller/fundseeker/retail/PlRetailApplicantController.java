@@ -43,7 +43,7 @@ public class PlRetailApplicantController {
                 plRetailApplicantRequest.setClientId(clientId);
             }
             plRetailApplicantService.saveProfile(plRetailApplicantRequest, userId);
-            return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()), HttpStatus.OK);
+            return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SUCCESSFULLY_SAVED, HttpStatus.OK.value()), HttpStatus.OK);
 
         } catch (Exception e) {
             logger.error(CommonUtils.EXCEPTION,e);
@@ -67,7 +67,7 @@ public class PlRetailApplicantController {
             }
 
             PLRetailApplicantRequest plRetailApplicantRequest = plRetailApplicantService.getProfile(userId,applicationId);
-            LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+            LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
             loansResponse.setData(plRetailApplicantRequest);
             return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
@@ -96,7 +96,7 @@ public class PlRetailApplicantController {
                 plRetailApplicantRequest.setClientId(clientId);
             }
             plRetailApplicantService.savePrimary(plRetailApplicantRequest, userId);
-            return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()), HttpStatus.OK);
+            return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SUCCESSFULLY_SAVED, HttpStatus.OK.value()), HttpStatus.OK);
 
         } catch (Exception e) {
             logger.error(CommonUtils.EXCEPTION,e);
@@ -120,7 +120,7 @@ public class PlRetailApplicantController {
             }
 
             //PLRetailApplicantRequest plRetailApplicantRequest = ;
-            LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+            LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
             loansResponse.setData(plRetailApplicantService.getPrimary(userId,applicationId));
             return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
@@ -152,7 +152,7 @@ public class PlRetailApplicantController {
                 retailFinalInfoRequest.setClientId(clientId);
             }
             plRetailApplicantService.saveFinal(retailFinalInfoRequest, userId);
-            return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
+            return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SUCCESSFULLY_SAVED, HttpStatus.OK.value()),
                     HttpStatus.OK);
 
         } catch (Exception e) {
@@ -183,7 +183,7 @@ public class PlRetailApplicantController {
             }
 
             RetailFinalInfoRequest response = plRetailApplicantService.getFinal(userId, applicationId);
-            LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+            LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
             loansResponse.setData(response);
             return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
         } catch (Exception e) {
