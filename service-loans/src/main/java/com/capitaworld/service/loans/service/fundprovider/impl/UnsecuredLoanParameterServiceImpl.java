@@ -64,7 +64,6 @@ public class UnsecuredLoanParameterServiceImpl implements UnsecuredLoanParameter
 	@Override
 	public boolean saveOrUpdate(UnsecuredLoanParameterRequest unsecuredLoanParameterRequest) {
 		CommonDocumentUtils.startHook(logger, "saveOrUpdate");
-		// TODO Auto-generated method stub
 		
 		UnsecureLoanParameter unsecureLoanParameter= null;
 
@@ -114,7 +113,6 @@ public class UnsecuredLoanParameterServiceImpl implements UnsecuredLoanParameter
 	@Override
 	public UnsecuredLoanParameterRequest getUnsecuredLoanParameterRequest(Long id) {
 		CommonDocumentUtils.startHook(logger, "getTermLoanParameterRequest");
-		// TODO Auto-generated method stub
 		UnsecuredLoanParameterRequest unsecuredLoanParameterRequest = new UnsecuredLoanParameterRequest();
 		UnsecureLoanParameter loanParameter = unsecuredLoanParameterRepository.getById(id);
 		if(loanParameter==null)
@@ -299,7 +297,6 @@ public class UnsecuredLoanParameterServiceImpl implements UnsecuredLoanParameter
 	}
 
 	private void saveNegativeIndustry(UnsecuredLoanParameterRequest unsecuredLoanParameterRequest) {
-		// TODO Auto-generated method stub
 		CommonDocumentUtils.startHook(logger, "saveNegativeIndustry");
 		NegativeIndustry negativeIndustry= null;
 		for (DataRequest dataRequest : unsecuredLoanParameterRequest.getNegativeIndustryList()) {

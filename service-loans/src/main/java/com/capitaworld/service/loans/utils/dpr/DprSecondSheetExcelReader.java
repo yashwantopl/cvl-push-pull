@@ -3,6 +3,7 @@ package com.capitaworld.service.loans.utils.dpr;
 
 import java.util.Date;
 
+import com.capitaworld.service.loans.utils.CommonUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.util.CellReference;
@@ -13,6 +14,8 @@ import com.capitaworld.service.loans.domain.fundseeker.corporate.EmployeesCatego
 import com.capitaworld.service.loans.domain.fundseeker.corporate.KeyManagementDetail;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.EmployeesCategoryBreaksDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.KeyManagementDetailRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Sanket
@@ -20,6 +23,9 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.KeyManageme
  */
 public class DprSecondSheetExcelReader
 {
+
+    private static final Logger logger = LoggerFactory.getLogger(DprSecondSheetExcelReader.class);
+
     public static void run(Long storageDetailsId,XSSFSheet sheet,LoanApplicationMaster loanApplicationMaster,KeyManagementDetailRepository keyManagementDetailRepository, EmployeesCategoryBreaksDetailRepository employeesCategoryBreaksDetailRepository) {
 
 		saveEmployeeCategoryStatus(storageDetailsId, sheet, "18", loanApplicationMaster, employeesCategoryBreaksDetailRepository);
@@ -90,9 +96,9 @@ public class DprSecondSheetExcelReader
                 keyManagementDetailRepository.save(keyManagement);
 
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error(CommonUtils.EXCEPTION,e);
             }
-            // System.out.println(boardOfDirectorName + designation + qualification + experience + achievements + functionalDuties);
+//             logger.info(boardOfDirectorName + designation + qualification + experience + achievements + functionalDuties);
         }
     }
     public static void saveEmployeeCategoryStatus(Long storageDetailsId, XSSFSheet sheet, String rowNumber,LoanApplicationMaster loanApplicationMaster,EmployeesCategoryBreaksDetailRepository employeesCategoryBreaksDetailRepository)
@@ -101,7 +107,7 @@ public class DprSecondSheetExcelReader
         String category           = getDataFromCell(sheet,"B"+rowNumber);
         String currentNumber      = getDataFromCell(sheet,"C"+rowNumber);
         String proposedNumber     = getDataFromCell(sheet,"D"+rowNumber);
-        //System.out.println("current : " + currentNumber + "-- Proposed :" + proposedNumber);
+//        logger.info("current : " + currentNumber + "-- Proposed :" + proposedNumber);
 
         if (currentNumber.isEmpty())
         {

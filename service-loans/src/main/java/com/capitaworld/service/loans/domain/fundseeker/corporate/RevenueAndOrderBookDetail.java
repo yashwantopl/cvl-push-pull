@@ -79,6 +79,7 @@ public class RevenueAndOrderBookDetail implements Serializable {
 	}
 
 	public RevenueAndOrderBookDetail() {
+		// Do nothing because of X and Y.
 	}
 
 	public Long getId() {

@@ -235,6 +235,7 @@ public class FinalUnsecureLoanDetail implements Serializable {
 
 
 	public FinalUnsecureLoanDetail() {
+		// Do nothing because of X and Y.
 	}
 
 	public Long getId() {

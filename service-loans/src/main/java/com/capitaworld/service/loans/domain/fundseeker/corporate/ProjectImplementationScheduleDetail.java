@@ -68,6 +68,7 @@ public class ProjectImplementationScheduleDetail implements Serializable {
 	private String timelineTotal;
 
 	public ProjectImplementationScheduleDetail() {
+		// Do nothing because of X and Y.
 	}
 
 	public Long getId() {

@@ -310,7 +310,6 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 	@Autowired
 	private ProductMasterRepository productMasterRepository;
 
-	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 	DecimalFormat decim = new DecimalFormat("#,###.00");
 
 	@Override
@@ -610,7 +609,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 			// workingCapitalPrimaryViewResponse.setSharePriceMarket(primaryWorkingCapitalLoanDetail.getSharePriceMarket());
 			if (!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getModifiedDate()))
 				corporateFinalViewResponse.setDateOfProposal(primaryCorporateDetail.getModifiedDate() != null
-						? DATE_FORMAT.format(primaryCorporateDetail.getModifiedDate())
+						? CommonUtils.DATE_FORMAT.format(primaryCorporateDetail.getModifiedDate())
 						: null);
 			
 			// other Details
@@ -1168,7 +1167,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 						.setNetworth(convertValue(promotorBackgroundDetailRequest.getNetworth()));
 				promotorBackgroundDetailResponse
 						.setAppointmentDate(promotorBackgroundDetailRequest.getAppointmentDate() != null
-								? DATE_FORMAT.format(promotorBackgroundDetailRequest.getAppointmentDate())
+								? CommonUtils.DATE_FORMAT.format(promotorBackgroundDetailRequest.getAppointmentDate())
 								: null);
 				promotorBackgroundDetailResponse
 						.setRelationshipType((promotorBackgroundDetailRequest.getRelationshipType() != null
@@ -1350,7 +1349,6 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 			}
 			corporateFinalViewResponse.setTotalCostOfProjectResponseList(costOfProjectResponses);
 		} catch (Exception e1) {
-			// TODO Auto-generated catch block
 			logger.error("Problem to get Data of Total cost of project{}", e1);
 		}
 

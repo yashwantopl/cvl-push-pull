@@ -37,6 +37,7 @@ public class DirectorPersonalDetail extends AuditActivity implements Serializabl
     private String spouseName;
 
     public DirectorPersonalDetail(){
+        // Do nothing because of X and Y.
     }
 
     public Long getId() {

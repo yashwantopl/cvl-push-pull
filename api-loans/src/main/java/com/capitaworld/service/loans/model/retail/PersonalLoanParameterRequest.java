@@ -169,6 +169,7 @@ public class PersonalLoanParameterRequest extends ProductMasterRequest implement
 	private Boolean isTotalJobExperienceMandatory=false;*/
 
 	public PersonalLoanParameterRequest() {
+		// Do nothing because of X and Y.
 	}
 
 	public Long getFpProductId() {

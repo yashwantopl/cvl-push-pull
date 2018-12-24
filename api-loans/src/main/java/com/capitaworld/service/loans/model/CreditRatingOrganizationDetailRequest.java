@@ -50,6 +50,7 @@ public class CreditRatingOrganizationDetailRequest implements Serializable {
 	}
 
 	public CreditRatingOrganizationDetailRequest() {
+		// Do nothing because of X and Y.
 	}
 
 	public Long getId() {

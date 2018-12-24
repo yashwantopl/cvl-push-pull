@@ -64,6 +64,7 @@ public class TotalCostOfProject implements Serializable {
 	private Date modifiedDate;
 
 	public TotalCostOfProject() {
+		// Do nothing because of X and Y.
 	}
 
 	public Long getId() {

@@ -43,7 +43,7 @@ public class PincodeData implements Serializable{
 
     //constructor
     public PincodeData() {
-
+        // Do nothing because of X and Y.
     }
 
     //getter setter

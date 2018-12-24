@@ -21,6 +21,7 @@ import com.capitaworld.service.loans.config.AsyncComponent;
 import com.capitaworld.service.loans.model.FundProviderProposalDetails;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.ProposalDetailsAdminRequest;
+import com.capitaworld.service.loans.model.common.ReportRequest;
 import com.capitaworld.service.loans.service.ProposalService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -37,6 +38,11 @@ import com.capitaworld.service.users.model.UsersRequest;
 public class ProposalController {
 	
 	private static final Logger logger = LoggerFactory.getLogger(ProposalController.class);
+
+	private static final String REQUEST_GET_SIZE = "request.getSize()::";
+	private static final String REQUEST_GET_PAGE_INDEX = "request.getPageIndex()::";
+
+	private static final String REQUEST_PARAMETER_NULL_OR_EMPTY = "Request parameter null or empty !!";
 	
 	@Autowired
 	ProposalService proposalService;
@@ -51,8 +57,8 @@ public class ProposalController {
 	public ResponseEntity<LoansResponse> fundproviderProposal(@RequestBody ProposalMappingRequest request,HttpServletRequest httpRequest,@RequestParam(value = "clientId", required = false) Long clientId) {
 		
 		// request must not be null
-		logger.info("request.getPageIndex()::"+request.getPageIndex());
-		logger.info("request.getSize()::"+request.getSize());
+		logger.info(REQUEST_GET_PAGE_INDEX+request.getPageIndex());
+		logger.info(REQUEST_GET_SIZE+request.getSize());
 		
 		Long userId = null;
 		if (CommonDocumentUtils.isThisClientApplication(httpRequest) && !CommonUtils.isObjectNullOrEmpty(clientId)) {
@@ -62,7 +68,7 @@ public class ProposalController {
 		}
 		request.setUserId(userId);
 		List proposalDetailsList=proposalService.fundproviderProposal(request);
-		LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+		LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 		loansResponse.setListData(proposalDetailsList);
 		return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 	}
@@ -72,8 +78,8 @@ public class ProposalController {
 	public ResponseEntity<LoansResponse> basicInfoToSearch(@RequestBody ProposalMappingRequest request,HttpServletRequest httpRequest,@RequestParam(value = "clientId", required = false) Long clientId) {
 		
 		// request must not be null
-		logger.info("request.getPageIndex()::"+request.getPageIndex());
-		logger.info("request.getSize()::"+request.getSize());
+		logger.info(REQUEST_GET_PAGE_INDEX+request.getPageIndex());
+		logger.info(REQUEST_GET_SIZE+request.getSize());
 		
 		Long userId = null;
 		if (CommonDocumentUtils.isThisClientApplication(httpRequest) && !CommonUtils.isObjectNullOrEmpty(clientId)) {
@@ -83,7 +89,7 @@ public class ProposalController {
 		}
 		request.setUserId(userId);
 		List proposalDetailsList=proposalService.basicInfoForSearch(request);
-		LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+		LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 		loansResponse.setListData(proposalDetailsList);
 		return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 	}
@@ -229,7 +235,7 @@ public class ProposalController {
 			request.setUserType(userType);
 			
 			
-			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 			loansResponse.setData(proposalService.getConectionList(request));
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
@@ -248,7 +254,7 @@ public class ProposalController {
 			
 			
 			
-			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 			loansResponse.setData(proposalService.getPendingProposalCount(applicationId));
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
@@ -282,7 +288,7 @@ public class ProposalController {
 			if(CommonUtils.isObjectNullOrEmpty(request.getFpProductId()) || CommonUtils.isObjectNullOrEmpty(request.getBranchId())) {
 				logger.info("Fp Product id or Branch id null or empty !!");
 				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Request parameter null or empty !!", HttpStatus.BAD_REQUEST.value()),
+						new LoansResponse(REQUEST_PARAMETER_NULL_OR_EMPTY, HttpStatus.BAD_REQUEST.value()),
 						HttpStatus.OK);
 			}
 			
@@ -303,8 +309,8 @@ public class ProposalController {
 	public ResponseEntity<LoansResponse> fundproviderProposalByAssignBy(@RequestBody ProposalMappingRequest request,HttpServletRequest httpRequest,@RequestParam(value = "clientId", required = false) Long clientId) {
 		
 		// request must not be null
-		logger.info("request.getPageIndex()::"+request.getPageIndex());
-		logger.info("request.getSize()::"+request.getSize());
+		logger.info(REQUEST_GET_PAGE_INDEX+request.getPageIndex());
+		logger.info(REQUEST_GET_SIZE+request.getSize());
 		
 		Long userId = null;
 		if (CommonDocumentUtils.isThisClientApplication(httpRequest) && !CommonUtils.isObjectNullOrEmpty(clientId)) {
@@ -317,13 +323,13 @@ public class ProposalController {
 		if(CommonUtils.isObjectNullOrEmpty(request.getFpProductId())) {
 			logger.info("Fp Product id null or empty !!");
 			return new ResponseEntity<LoansResponse>(
-					new LoansResponse("Request parameter null or empty !!", HttpStatus.BAD_REQUEST.value()),
+					new LoansResponse(REQUEST_PARAMETER_NULL_OR_EMPTY, HttpStatus.BAD_REQUEST.value()),
 					HttpStatus.OK);
 		}
 		logger.info("User id ------------------>" + userId + "----------------------------" + request.getFpProductId());
 		List proposalDetailsList=proposalService.fundproviderProposalByAssignBy(request);
 		
-		LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+		LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 		loansResponse.setListData(proposalDetailsList);
 		CommonDocumentUtils.endHook(logger, "fundproviderProposalByAssignBy");
 		return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
@@ -350,12 +356,12 @@ public class ProposalController {
 		
 		if(CommonUtils.isObjectNullOrEmpty(userOrgId) || CommonUtils.isObjectNullOrEmpty(request.getFromDate()) || CommonUtils.isObjectNullOrEmpty(request.getToDate()) || CommonUtils.isObjectNullOrEmpty(userId)) {
 			logger.info("Bad Request !!");
-			return new ResponseEntity<LoansResponse>(new LoansResponse("Request parameter null or empty !!", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			return new ResponseEntity<LoansResponse>(new LoansResponse(REQUEST_PARAMETER_NULL_OR_EMPTY, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}
 		
 		List<ProposalDetailsAdminRequest> dataList = proposalService.getProposalsByOrgId(userOrgId, request, userId);
 		
-		LoansResponse response = new LoansResponse("Data Found.", HttpStatus.OK.value());
+		LoansResponse response = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 		response.setData(dataList);
 		
 		return new ResponseEntity<LoansResponse>(response, HttpStatus.OK);
@@ -366,7 +372,7 @@ public class ProposalController {
 		
 		try {
 		
-		LoansResponse response = new LoansResponse("Data Found.", HttpStatus.OK.value());
+		LoansResponse response = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 		Object obj = proposalService.getHomeCounterDetail();
 		response.setData(obj);
 		return new ResponseEntity<LoansResponse>(response, HttpStatus.OK);
@@ -374,6 +380,41 @@ public class ProposalController {
 			logger.error(CommonUtils.EXCEPTION,e);
 			return new ResponseEntity<LoansResponse>(new LoansResponse(e.getMessage()) , HttpStatus.INTERNAL_SERVER_ERROR);
 		}
+	}
+	@RequestMapping(value = "/searchProposals", method = RequestMethod.POST,consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getHomeCounter(@RequestBody ReportRequest reportRequest ,HttpServletRequest httpServletRequest) {
 		
+		Long userOrgId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ORG_ID);
+		Long userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
+		if(CommonUtils.isObjectNullOrEmpty(userOrgId) || CommonUtils.isObjectNullOrEmpty(userId) || CommonUtils.isObjectNullOrEmpty(reportRequest.getValue())) {
+			logger.info("Bad Request !!");
+			return new ResponseEntity<LoansResponse>(new LoansResponse(REQUEST_PARAMETER_NULL_OR_EMPTY, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+		}
+		if(CommonUtils.isObjectNullOrEmpty(reportRequest.getNumber())) {
+			reportRequest.setNumber(10);
+		}
+		try {
+			return new ResponseEntity<LoansResponse>(new LoansResponse("Data Found.", HttpStatus.OK.value(),proposalService.searchProposalByAppCode(userId, userOrgId, reportRequest)), HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+			return new ResponseEntity<LoansResponse>(new LoansResponse(e.getMessage()) , HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	@RequestMapping(value = "/fpDashboardProposalCont", method = RequestMethod.GET,produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> fpDashboardProposalCont(HttpServletRequest httpServletRequest) {
+		
+		Long userOrgId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ORG_ID);
+		Long userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
+		if(CommonUtils.isObjectNullOrEmpty(userOrgId) || CommonUtils.isObjectNullOrEmpty(userId)) {
+			logger.info("Bad Request !!");
+			return new ResponseEntity<LoansResponse>(new LoansResponse("Request parameter null or empty !!", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+		}
+		try {
+			return new ResponseEntity<LoansResponse>(new LoansResponse("Data Found.", HttpStatus.OK.value(),proposalService.getFpDashBoardCount(userId, userOrgId)), HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+			return new ResponseEntity<LoansResponse>(new LoansResponse(e.getMessage()) , HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 	}
 }

@@ -2,10 +2,6 @@ package com.capitaworld.service.loans.controller.fundseeker.corporate;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.capitaworld.connect.api.ConnectAuditErrorCode;
-import com.capitaworld.connect.api.ConnectLogAuditRequest;
-import com.capitaworld.connect.api.ConnectStage;
-import com.capitaworld.connect.client.ConnectClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +12,15 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.capitaworld.connect.api.ConnectAuditErrorCode;
+import com.capitaworld.connect.api.ConnectLogAuditRequest;
+import com.capitaworld.connect.api.ConnectStage;
+import com.capitaworld.connect.client.ConnectClient;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.NTBRequest;
 import com.capitaworld.service.loans.model.corporate.FundSeekerInputRequestResponse;
@@ -255,6 +258,109 @@ public class FundSeekerInputRequestController {
             return new ResponseEntity<LoansResponse>(
                     new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
                     HttpStatus.OK);
+        }
+    }
+    
+    @RequestMapping(value = "/save_one_form_uninform", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LoansResponse> saveUniformProductOneForm(@RequestBody FundSeekerInputRequestResponse fundSeekerInputRequestResponse , HttpServletRequest request)
+            throws Exception
+    {
+        try
+        {
+        	Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+        	if(userId == null) {
+        		   return new ResponseEntity<LoansResponse>(new LoansResponse("Unauthorized User! Please Re-login and try again.", HttpStatus.UNAUTHORIZED.value()), HttpStatus.OK);
+        	}
+        	if(fundSeekerInputRequestResponse.getApplicationId() == null) {
+     		   return new ResponseEntity<LoansResponse>(new LoansResponse("Something goes wrong while processig your Request. Please re-login again.", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+        	}
+        	
+        	if(CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequestResponse.getIsGstCompleted()) || !fundSeekerInputRequestResponse.getIsGstCompleted()){
+        		return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.GST_VALIDATION_ERROR_MSG,HttpStatus.BAD_REQUEST.value()),HttpStatus.OK);	
+        	}
+        	
+        	if(CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequestResponse.getIsItrCompleted()) || !fundSeekerInputRequestResponse.getIsItrCompleted()){
+        		return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.ITR_VALIDATION_ERROR_MSG,HttpStatus.BAD_REQUEST.value()),HttpStatus.OK);	
+        	}
+        	
+        	fundSeekerInputRequestResponse.setUserId(userId);
+        	return new ResponseEntity<LoansResponse>(fundSeekerInputRequestService.saveOrUpdateForOnePagerEligibility(fundSeekerInputRequestResponse),HttpStatus.OK);
+        } catch (Exception e) {
+            logger.error("Error while Getting Oneform Details for Uniform Product : ",e);
+            return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
+        }
+    }
+    
+    @RequestMapping(value = "/one_form_uninform", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LoansResponse> getUniformProductOneForm(@RequestBody Long applicationId , HttpServletRequest request)
+            throws Exception
+    {
+        try
+        {
+        	Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+        	if(userId == null) {
+        		   return new ResponseEntity<LoansResponse>(new LoansResponse("Unauthorized User! Please Re-login and try again.", HttpStatus.UNAUTHORIZED.value()), HttpStatus.OK);
+        	}
+        	if(applicationId == null) {
+     		   return new ResponseEntity<LoansResponse>(new LoansResponse("Something goes wrong while processig your Request. Please re-login again.", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+        	}
+        	return fundSeekerInputRequestService.getDataForOnePagerOneForm(applicationId);
+        } catch (Exception e) {
+            logger.error("Error while Getting Oneform Details for Uniform Product : ",e);
+            return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
+        }
+    }
+    
+    @RequestMapping(value = "/verifyGST/{gstin}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE,consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<LoansResponse> verifyGST(@PathVariable("gstin") String gstin,@RequestParam("gstReceipts") MultipartFile[] uploadingFiles,@RequestPart("requestedData") String requestedData,HttpServletRequest request)
+            throws Exception
+    {
+        try
+        {
+        	Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+        	if(userId == null) {
+        		   return new ResponseEntity<LoansResponse>(new LoansResponse("Unauthorized User! Please Re-login and try again.", HttpStatus.UNAUTHORIZED.value()), HttpStatus.OK);
+        	}
+        	
+        	if(requestedData == null) {
+        		logger.warn("Request Data is Null in verify GST Information for GST===={}",gstin);
+      		   return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.GENERIC_ERROR_MSG, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+         	}
+        	
+        	Long applicationId = null;
+        	try{
+        		applicationId = Long.valueOf(requestedData);
+            	if(applicationId == null) {
+         		   return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.GENERIC_ERROR_MSG, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+            	}        		
+        	}catch(Exception e){
+        		logger.error("Error Converting String to Long for ApplicationId : {}",e);
+        		return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.GENERIC_ERROR_MSG, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+        	}
+            return new ResponseEntity<LoansResponse>(new LoansResponse("GST Verification",HttpStatus.OK.value(),fundSeekerInputRequestService.verifyGST(gstin, applicationId,userId)), HttpStatus.OK);
+        } catch (Exception e) {
+            logger.error("Error while Fetching details for min-max Margin : ",e);
+            return new ResponseEntity<LoansResponse>(
+                    new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+                    HttpStatus.OK);
+        }
+    }
+
+    @RequestMapping(value = "/updateFlag/{flagValue}/{flagType}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LoansResponse> updateFlag(@RequestBody Long applicationId , @PathVariable("flagValue") Boolean flagValue,@PathVariable("flagType") Integer flagType,HttpServletRequest request)throws Exception{
+        try
+        {
+        	Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+        	if(userId == null) {
+        		   return new ResponseEntity<LoansResponse>(new LoansResponse("Unauthorized User! Please Re-login and try again.", HttpStatus.UNAUTHORIZED.value()), HttpStatus.OK);
+        	}
+        	if(applicationId == null) {
+     		   return new ResponseEntity<LoansResponse>(new LoansResponse("Something goes wrong while processig your Request. Please re-login again.", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+        	}
+            return new ResponseEntity<LoansResponse>(new LoansResponse("Flag Updated!!",HttpStatus.OK.value(),fundSeekerInputRequestService.updateFlag(applicationId, flagValue,flagType)), HttpStatus.OK);
+        } catch (Exception e) {
+            logger.error("Error while Updating Flag value for Uniform Product : ",e);
+            return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
         }
     }
 }

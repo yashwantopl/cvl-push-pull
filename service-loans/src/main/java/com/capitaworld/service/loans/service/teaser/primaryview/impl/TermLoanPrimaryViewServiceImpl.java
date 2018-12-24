@@ -147,8 +147,6 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 	@Autowired
 	private PrimaryCorporateDetailRepository primaryCorporateRepository;
 
-	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
-
 	@Override
 	public TermLoanPrimaryViewResponse getTermLoanPrimaryViewDetails(Long toApplicationId, Integer userType,
 																	 Long fundProviderUserId) {
@@ -393,7 +391,7 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 			termLoanPrimaryViewResponse.setCollateralSecurityAmount(primaryCorporateDetail.getCollateralSecurityAmount() != null ? String.valueOf(primaryCorporateDetail.getCollateralSecurityAmount()) : null);
 			if (primaryTermLoanDetail.getModifiedDate() != null)
 				termLoanPrimaryViewResponse
-						.setDateOfProposal(DATE_FORMAT.format(primaryTermLoanDetail.getModifiedDate()));
+						.setDateOfProposal(CommonUtils.DATE_FORMAT.format(primaryTermLoanDetail.getModifiedDate()));
 			//termLoanPrimaryViewResponse.setIsCreditRatingAvailable(primaryTermLoanDetail.getCreditRatingId() != null
 			// ? CreditRatingAvailable.getById(primaryTermLoanDetail.getCreditRatingId()).getValue() : null);
 		}
@@ -619,7 +617,6 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 			}
 			termLoanPrimaryViewResponse.setFinanceMeansDetailResponseList(financeMeansDetailResponsesList);
 		} catch (Exception e1) {
-			// TODO Auto-generated catch block
 			logger.error("Problem to get Data of Finance Means Details {}", e1);
 		}
 		//references
@@ -627,8 +624,7 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 		try {
 			referenceRetailDetailsRequestList = referenceRetailDetailsService.getReferenceRetailDetailList(toApplicationId, userType);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		termLoanPrimaryViewResponse.setReferenceRetailDetailsRequests(referenceRetailDetailsRequestList);
 
@@ -648,7 +644,6 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 			}
 			termLoanPrimaryViewResponse.setTotalCostOfProjectResponseList(costOfProjectResponses);
 		} catch (Exception e1) {
-			// TODO Auto-generated catch block
 			logger.error("Problem to get Data of Total cost of project{}", e1);
 		}
 */

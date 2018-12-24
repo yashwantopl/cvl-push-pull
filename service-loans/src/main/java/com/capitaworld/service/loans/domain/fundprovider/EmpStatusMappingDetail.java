@@ -51,6 +51,7 @@ public class EmpStatusMappingDetail implements Serializable {
 	private Integer empStatusId;
 
 	public EmpStatusMappingDetail() {
+		// Do nothing because of X and Y.
 	}
 
 	public Long getId() {

@@ -93,6 +93,7 @@ public class FinalTermLoanRequest implements Serializable {
 	private Boolean isFinalMcqFilled;
 	
 	public FinalTermLoanRequest() {
+		// Do nothing because of X and Y.
 	}
 
 	public Long getId() {

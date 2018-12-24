@@ -529,7 +529,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	}
 
 	private void saveCountryTemp(Long id, List<DataRequest> geogaphicallyCountry,Long userId) {
-		// TODO Auto-generated method stub
+
 		logger.info("save saveCountryTemp");
 		GeographicalCountryDetailTemp geographicalCountryDetail = null;
 		for (DataRequest dataRequest : geogaphicallyCountry) {
@@ -549,7 +549,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	}
 
 	private void saveSectorTemp(Long id, List<DataRequest> secIdList,Long userId) {
-		// TODO Auto-generated method stub
+
 		logger.info("start saveSectorTemp");
 		IndustrySectorDetailTemp industrySectorDetail = null;
 		for (DataRequest dataRequest : secIdList) {
@@ -569,7 +569,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	}
 
 	private void saveIndustryTemp(Long id, List<DataRequest> industrySecIdList,Long userId) {
-		// TODO Auto-generated method stub
+
 		logger.info("start saveIndustryTemp");
 		IndustrySectorDetailTemp industrySectorDetail = null;
 		for (DataRequest dataRequest : industrySecIdList) {
@@ -589,25 +589,23 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	}
 
 	private void saveSectorTemp(List<DataRequest> secIdList,Long userId) {
-		// TODO Auto-generated method stub
+		// Do nothing because of X and Y.
 		
 	}
 
 	private void saveIndustryTemp(List<DataRequest> industrySecIdList,Long userId) {
-		// TODO Auto-generated method stub
+		// Do nothing because of X and Y.
 		
 	}
 
 	@Override
 	public ProductMaster getProductMaster(Long id) {
-		// TODO Auto-generated method stub
 		return productMasterRepository.findOne(id);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public JSONObject checkParameterIsFilled(Long productId) {
-		// TODO Auto-generated method stub
 		CommonDocumentUtils.startHook(logger, "checkParameterIsFilled");
 		ProductMaster productMaster = productMasterRepository.findOne(productId);
 		JSONObject obj = new JSONObject();
@@ -634,7 +632,6 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 
 	@Override
 	public List<ProductMasterRequest> getList(Long userId, Long userOrgId) {
-		// TODO Auto-generated method stub
 		CommonDocumentUtils.startHook(logger, "getList");
 		List<ProductMaster> results;
 		if (!CommonUtils.isObjectNullOrEmpty(userOrgId)) {
@@ -655,7 +652,6 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	
 	@Override
 	public List<ProductMasterRequest> getActiveInActiveList(Long userId, Long userOrgId) {
-		// TODO Auto-generated method stub
 		CommonDocumentUtils.startHook(logger, "getActiveInActiveList");
 		UserResponse userResponse=null;
 		BranchBasicDetailsRequest basicDetailsRequest = null;
@@ -685,7 +681,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 //			request.setIsMatched(productMasterRepository.getMatchedAndActiveInActiveProduct(userId).size() > 0 ? true : false);
 			request.setIsMatched(matchCount > 0 ? true : false);
 			Long count = null;
-			if(basicDetailsRequest != null && basicDetailsRequest.getId() != null){
+			if(basicDetailsRequest != null){
 				if (basicDetailsRequest.getRoleId() == CommonUtils.UsersRoles.BO || basicDetailsRequest.getRoleId() == CommonUtils.UsersRoles.FP_CHECKER) {
 					count = proposalDetailsRepository.getProposalCountByFpProductIdAndBranchId(master.getId(), basicDetailsRequest.getId());
 				}else if (basicDetailsRequest.getRoleId() == CommonUtils.UsersRoles.HO) {
@@ -711,7 +707,6 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 
 	@Override
 	public String getUserNameByApplicationId(Long productId, Long userId) {
-		// TODO Auto-generated method stub
 		CommonDocumentUtils.startHook(logger, "getUserNameByApplicationId");
 		ProductMaster productMaster = productMasterRepository.getUserProduct(productId, userId);
 		if (productMaster != null) {
@@ -724,7 +719,6 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 
 	@Override
 	public Object[] getUserDetailsByPrductId(Long fpMappingId) {
-		// TODO Auto-generated method stub
 		CommonDocumentUtils.startHook(logger, "getUserDetailsByPrductId");
 		List<Object[]> pm = productMasterRepository.findById(fpMappingId);
 		CommonDocumentUtils.endHook(logger, "getUserDetailsByPrductId");
@@ -740,7 +734,6 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 
 	@Override
 	public ProductDetailsResponse getProductDetailsResponse(Long userId, Long userOrgId) {
-		// TODO Auto-generated method stub
 		CommonDocumentUtils.startHook(logger, "getProductDetailsResponse");
 		UserResponse usrResponse = usersClient.getLastAccessApplicant(new UsersRequest(userId));
 		ProductDetailsResponse productDetailsResponse = new ProductDetailsResponse();
@@ -793,7 +786,6 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 
 	@Override
 	public FpProductDetails getProductDetails(Long productMappingId) throws Exception {
-		// TODO Auto-generated method stub
 		CommonDocumentUtils.startHook(logger, "getProductDetails");
 		ProductMaster productMaster = productMasterRepository.findOne(productMappingId);
 		LoanType loanType = LoanType.getById(productMaster.getProductId());
@@ -858,7 +850,6 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 
 	@Override
 	public boolean isProductMatched(Long userId, MultipleFpPruductRequest multipleFpPruductRequest) throws IOException {
-		// TODO Auto-generated method stub
 		CommonDocumentUtils.startHook(logger, "isProductMatched");
 		List<ProductDetailsForSp> productDetailsForSps = productMasterRepository.getMatchedAndActiveProduct(userId);
 		if (CommonUtils.isListNullOrEmpty(productDetailsForSps)) {
@@ -888,7 +879,6 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	@Override
 	public int setIsMatchProduct(Long id, Long userId) {
 		CommonDocumentUtils.startHook(logger, "setIsMatchProduct");
-		// TODO Auto-generated method stub
 		CommonDocumentUtils.endHook(logger, "setIsMatchProduct");
 		return productMasterRepository.setIsMatchProduct(id, userId);
 
@@ -896,7 +886,6 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 
 	@Override
 	public List<ProductMasterRequest> getListByUserType(Long userId, Integer userType, Integer stage, Long userOrgId) {
-		// TODO Auto-generated method stub
 		CommonDocumentUtils.startHook(logger, "getListByUserType");
 		List<ProductMasterRequest> productMasterRequests = new ArrayList<>();
 
@@ -1024,7 +1013,6 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 
 	@Override
 	public Boolean changeStatus(Long fpProductId, Boolean status, Long userId, Integer stage) {
-		// TODO Auto-generated method stub
 		CommonDocumentUtils.startHook(logger, "changeStatus");
 		try {
 			if (stage == 2) {
@@ -1074,7 +1062,6 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 
 	@Override
 	public Boolean saveRetail(RetailProduct retailProduct) {
-		// TODO Auto-generated method stub
 		CommonDocumentUtils.startHook(logger, "saveRetail");
 		if (!CommonUtils.isObjectNullOrEmpty(retailProduct)) {
 			if (!CommonUtils.isObjectNullOrEmpty(retailProduct.getProductId())) {
@@ -1092,7 +1079,6 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 
 	@Override
 	public ProductMasterRequest lastAccessedProduct(Long userId) {
-		// TODO Auto-generated method stub
 		CommonDocumentUtils.startHook(logger, "lastAccessedProduct");
 		ProductMasterRequest productMasterRequest = new ProductMasterRequest();
 		BeanUtils.copyProperties(productMasterRepository.getLastAccessedProduct(userId), productMasterRequest);
@@ -1102,7 +1088,6 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 
 	@Override
 	public List<ChatDetails> getChatListByFpMappingId(Long mappingId) {
-		// TODO Auto-generated method stub
 		ProposalMappingRequest mappingRequest = new ProposalMappingRequest();
 		mappingRequest.setApplicationId(mappingId);
 		try {
@@ -1193,7 +1178,6 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 
 	@Override
 	public Object getProductMasterWithAllData(Long id, Integer stage, Long role, Long userId) {
-		// TODO Auto-generated method stub
 
 		if (!CommonUtils.isObjectNullOrEmpty(stage) && stage == 1) {
 			ProductMasterTemp master = productMasterTempRepository.findOne(id);
@@ -1250,7 +1234,6 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 
 	@Override
 	public Boolean saveCorporateMasterFromTemp(Long mappingId) throws Exception {
-		// TODO Auto-generated method stub
 
 		ProductMasterTemp corporateProduct = productMasterTempRepository.getProductMasterTemp(mappingId);
 		CommonDocumentUtils.startHook(logger, "saveCorporate");
@@ -1283,7 +1266,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 
 	@Override
 	public Boolean saveCorporateInTemp(CorporateProduct corporateProduct) {
-		// TODO Auto-generated method stub
+
 		CommonDocumentUtils.startHook(logger, "saveCorporateInTemp");
 		if (!CommonUtils.isObjectNullOrEmpty(corporateProduct)) {
 			if (!CommonUtils.isObjectNullOrEmpty(corporateProduct.getProductId())) {
@@ -1319,7 +1302,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 
 	@Override
 	public Boolean clickOnWorkFlowButton(WorkflowData workflowData) {
-		// TODO Auto-generated method stub
+
 		try {
 
 			WorkflowRequest request = new WorkflowRequest();
@@ -1420,7 +1403,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 
 	@Override
 	public Boolean saveRetailInTemp(RetailProduct retailProduct) {
-		// TODO Auto-generated method stub
+
 		CommonDocumentUtils.startHook(logger, "saveRetailInTemp");
 		if (!CommonUtils.isObjectNullOrEmpty(retailProduct)) {
 			if (!CommonUtils.isObjectNullOrEmpty(retailProduct.getProductId())) {
@@ -1438,7 +1421,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 
 	@Override
 	public List<ProductMasterRequest> getApprovedListByProductType(Long userId, Integer productId, Integer businessId,Long userOrgId) {
-		// TODO Auto-generated method stub
+
 		List<ProductMaster> results = null;
 		List<ProductMasterRequest> productMasterRequests = new ArrayList<>();
 		

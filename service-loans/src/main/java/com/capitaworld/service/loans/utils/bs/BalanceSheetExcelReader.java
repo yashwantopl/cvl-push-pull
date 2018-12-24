@@ -12,10 +12,15 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.BalanceSheetDetail;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.BalanceSheetDetailRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class BalanceSheetExcelReader
 {
+
+    private static final Logger logger = LoggerFactory.getLogger(BalanceSheetExcelReader.class);
+
     public static ArrayList<String> balanceSheetMappingList = new ArrayList<String>();
     public static final DecimalFormat decimalFormat = new DecimalFormat("#.##");
 
@@ -147,7 +152,7 @@ public class BalanceSheetExcelReader
               * e.g. you want to extract B13,B14,... cell data for year 2014
              */
             
-            System.out.println("BalanceSheetExcelReader -----------> "+sheet.getRow(4).getCell(2).getNumericCellValue());       
+            logger.info("BalanceSheetExcelReader -----------> "+sheet.getRow(4).getCell(2).getNumericCellValue());
 //            extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, balanceSheetMappingList,"C",String.valueOf(sheet.getRow(4).getCell(2).getNumericCellValue()),"Audited", balanceSheetDetailRepository);
 //            extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, balanceSheetMappingList,"D",String.valueOf(sheet.getRow(4).getCell(3).getNumericCellValue()),"Audited",balanceSheetDetailRepository);
 //            extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, balanceSheetMappingList,"E",String.valueOf(sheet.getRow(4).getCell(4).getNumericCellValue()),"Audited",balanceSheetDetailRepository);

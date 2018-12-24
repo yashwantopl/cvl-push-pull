@@ -99,6 +99,7 @@ public abstract class ProductMaster implements Serializable {
 	private String actionFor;
 
 	public ProductMaster() {
+		// Do nothing because of X and Y.
 	}
 
 	public Long getId() {

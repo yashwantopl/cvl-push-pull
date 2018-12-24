@@ -73,6 +73,7 @@ public class ProductMasterRequest implements Serializable {
 	}
 
 	public ProductMasterRequest() {
+		// Do nothing because of X and Y.
 	}
 
 	public Long getId() {

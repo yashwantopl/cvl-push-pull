@@ -193,7 +193,6 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService {
 	@Autowired
 	private PincodeDateService pincodeDateService;
 
-	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 	DecimalFormat decim = new DecimalFormat("#,###.00");
 
 	/*
@@ -284,7 +283,7 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService {
 				ntbPrimaryViewRespone.setNpOrgId(loanApplicationMaster.getNpOrgId());
 				if (!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getModifiedDate()))
 					ntbPrimaryViewRespone.setDateOfProposal(primaryCorporateDetail.getModifiedDate() != null
-							? DATE_FORMAT.format(primaryCorporateDetail.getModifiedDate())
+							? CommonUtils.DATE_FORMAT.format(primaryCorporateDetail.getModifiedDate())
 							: null);
 			}
 
@@ -728,7 +727,6 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService {
 				}
 				ntbPrimaryViewRespone.setFinanceMeansDetailResponseList(financeMeansDetailResponsesList);
 			} catch (Exception e1) {
-				// TODO Auto-generated catch block
 				logger.error("Problem to get Data of Finance Means Details {}", e1);
 			}
 

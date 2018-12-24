@@ -39,6 +39,9 @@ public class CommonUtils {
 	public static final String APPLICATION_LOCKED_MESSAGE = "Your Application is locked. Please Contact Administrator to update the Details.";
 	public static final String MAXIMUM = "maximum";
 	public static final String MINIMUM = "minimum";
+	public static final String GST_VALIDATION_ERROR_MSG = "Please Enter Valid GSTIN and Verify Before Moving ahead.";
+	public static final String ITR_VALIDATION_ERROR_MSG = "Please Upload Valid itr and Verify Before Moving ahead.";
+	public static final String GENERIC_ERROR_MSG = "The application has encountered an error from Server. Please try again after sometime!!!.";
 	
 	public static final String HUNTER_INELIGIBLE_MESSAGE= "You do not Qualify for Contactless Process, Kindly visit Bank Branch or get your Due Diligence process completed in www.capitaworld.com to connect to Banks";
 
@@ -63,11 +66,26 @@ public class CommonUtils {
 	
 	public static final String IN_PROGRESS = "In Progress";
 	public static final String COMPLETED = "Completed";
+	public static final String SUCCESS = "Success";
+	public static final String FALSE_LITERAL = "false";
 	public static final String NA = "NA";
+	public static final String SUCCESS_RESULT = "Success Result";
+	public static final String DATA_FOUND = "Data Found.";
+	public static final String DATA_NOT_FOUND = "Data Not Found.";
+	public static final String SUCCESSFULLY_SAVED = "Successfully Saved.";
+	public static final String INVALID_AGE = "Invalid Age";
+	public static final String SUCCESSFULLY_GET_DATA = "Successfully get data";
 
+	public static final String EXCEPTION = " :: EXCEPTION : ";
 	public static final String CLIENT_ID_IS_NOT_VALID = "Client Id is not valid";
+	public static final String OBLIGATION_MUST_BE_LESS_THAN_INCOME = "Obligation Must be less than Income";
+	public static final String REQUEST_DATA_NULL_OR_EMPTY = "Request Data Null Or Empty !!";
+	public static final String INTERNAL_SERVER_ERROR  = "Internal Server Error";
+	public static final String REQUESTED_DATA_CAN_NOT_BE_EMPTY = "Requested data can not be empty.";
 	public static final String INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND = "Invalid data or Requested data not found.";
-	public static final String EXCEPTION = " EXCEPTION :: ";
+
+	public static final String YOU_ARE_NOT_ELIGIBLE_FOR_HOME_LOAN = "You are not eligible for Home Loan";
+	public static final String YOU_ARE_NOT_ELIGIBLE_FOR_PERSONAL_LOAN = "You are not eligible for Personal Loan";
 
 	public static final String PARAMETERS_FP_NAME = "fp_name";
 	public static final String PARAMETERS_FS_NAME = "fs_name";
@@ -77,11 +95,11 @@ public class CommonUtils {
 	public static final String PARAMETERS_EMI_AMOUNT = "emi_amount";
 	public static final String PARAMETERS_ADDRESS = "address";
 	public static final String PARAMETERS_IS_DYNAMIC = "isDynamic";
-	public static final String PSB_URL= "https://www.psbloansin59minutes.com";
-	public static final String URL= "url";
 	public static final String RATE_INTEREST = "rate_interest";
 	public static final String LITERAL_AMOUNT = "amount";
-	
+
+	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
+
 	public static final class UsersRoles {
 		private UsersRoles(){
 			// Do nothing because of X and Y.
@@ -743,7 +761,7 @@ public class CommonUtils {
 	}
 
 	private static Long convertDenominationToValue(Integer denomination, Double amount) {
-		// TODO Auto-generated method stub
+
 		if (isObjectNullOrEmpty(denomination) || isObjectNullOrEmpty(amount)) {
 			return null;
 		}
@@ -1133,7 +1151,7 @@ public class CommonUtils {
 	
 public enum APIFlags {
 		
-		ITR(1, "ITR"),CIBIL(2, "CIBIL"),BANK_STATEMENT(3, "BANK STATEMENT"),ONE_FORM(4, "ONE FORM");
+		ITR(1, "ITR"),CIBIL(2, "CIBIL"),BANK_STATEMENT(3, "BANK STATEMENT"),ONE_FORM(4, "ONE FORM"),GST(5, "GST");
 
 		private Integer id;
 		private String value;

@@ -67,6 +67,7 @@ public class PrimaryCarLoanDetail extends LoanApplicationMaster implements Seria
 	private Date purchaseReimbursmentDate;
 
 	public PrimaryCarLoanDetail() {
+		// Do nothing because of X and Y.
 	}
 
 	public LoanApplicationMaster getApplicationId() {

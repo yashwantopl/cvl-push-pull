@@ -69,7 +69,7 @@ public class MobileLoanController {
 			return new ResponseEntity<LoansResponse>(new LoansResponse("true", response, MobileCustomizeResponse.SUCCESS200.getStatusCode(), MobileCustomizeResponse.SUCCESS200.getDescription(), "Successfully got data"),HttpStatus.OK);
 		} catch(Exception e) {
 			logger.error("Error While Get Loan List For Mobile App : ",e);
-			return new ResponseEntity<LoansResponse>(new LoansResponse("false", MobileCustomizeResponse.INTERNALSERVERERROR407.getStatusCode(), MobileCustomizeResponse.INTERNALSERVERERROR407.getDescription(), "Internal Server Error"),HttpStatus.OK);
+			return new ResponseEntity<LoansResponse>(new LoansResponse("false", MobileCustomizeResponse.INTERNALSERVERERROR407.getStatusCode(), MobileCustomizeResponse.INTERNALSERVERERROR407.getDescription(), CommonUtils.INTERNAL_SERVER_ERROR),HttpStatus.OK);
 		}
 	}
 	
@@ -82,7 +82,7 @@ public class MobileLoanController {
 			return new ResponseEntity<LoansResponse>(new LoansResponse("true", response, MobileCustomizeResponse.SUCCESS200.getStatusCode(), MobileCustomizeResponse.SUCCESS200.getDescription(), "Successfully got data"),HttpStatus.OK);
 		} catch(Exception e) {
 			logger.error("Error While get applicant details for mobile app : ",e);
-			return new ResponseEntity<LoansResponse>(new LoansResponse("false", MobileCustomizeResponse.INTERNALSERVERERROR407.getStatusCode(), MobileCustomizeResponse.INTERNALSERVERERROR407.getDescription(), "Internal Server Error"),HttpStatus.OK);
+			return new ResponseEntity<LoansResponse>(new LoansResponse("false", MobileCustomizeResponse.INTERNALSERVERERROR407.getStatusCode(), MobileCustomizeResponse.INTERNALSERVERERROR407.getDescription(), CommonUtils.INTERNAL_SERVER_ERROR),HttpStatus.OK);
 		}
 	}
 	
@@ -95,7 +95,7 @@ public class MobileLoanController {
 			return new ResponseEntity<LoansResponse>(new LoansResponse("true", id, MobileCustomizeResponse.SUCCESS200.getStatusCode(), MobileCustomizeResponse.SUCCESS200.getDescription(), "Successfully saved data"),HttpStatus.OK);
 		} catch(Exception e) {
 			logger.error("Error While save applicant details for mobile app : ",e);
-			return new ResponseEntity<LoansResponse>(new LoansResponse("false", MobileCustomizeResponse.INTERNALSERVERERROR407.getStatusCode(), MobileCustomizeResponse.INTERNALSERVERERROR407.getDescription(), "Internal Server Error"),HttpStatus.OK);
+			return new ResponseEntity<LoansResponse>(new LoansResponse("false", MobileCustomizeResponse.INTERNALSERVERERROR407.getStatusCode(), MobileCustomizeResponse.INTERNALSERVERERROR407.getDescription(), CommonUtils.INTERNAL_SERVER_ERROR),HttpStatus.OK);
 		}
 	}
 	
@@ -107,7 +107,7 @@ public class MobileLoanController {
 			return new ResponseEntity<LoansResponse>(new LoansResponse("true", true, MobileCustomizeResponse.SUCCESS200.getStatusCode(), MobileCustomizeResponse.SUCCESS200.getDescription(), "Successfully locked profile"),HttpStatus.OK);
 		} catch(Exception e) {
 			logger.error("Error While lock profile and primary details for mobile app : ",e);
-			return new ResponseEntity<LoansResponse>(new LoansResponse("false", MobileCustomizeResponse.INTERNALSERVERERROR407.getStatusCode(), MobileCustomizeResponse.INTERNALSERVERERROR407.getDescription(), "Internal Server Error"),HttpStatus.OK);
+			return new ResponseEntity<LoansResponse>(new LoansResponse("false", MobileCustomizeResponse.INTERNALSERVERERROR407.getStatusCode(), MobileCustomizeResponse.INTERNALSERVERERROR407.getDescription(), CommonUtils.INTERNAL_SERVER_ERROR),HttpStatus.OK);
 		}
 	}
 	
@@ -125,7 +125,7 @@ public class MobileLoanController {
 			return new ResponseEntity<LoansResponse>(new LoansResponse("true", coAppGuarResponse, MobileCustomizeResponse.SUCCESS200.getStatusCode(), MobileCustomizeResponse.SUCCESS200.getDescription(), "Successfully got data"),HttpStatus.OK);
 		} catch(Exception e) {
 			logger.error("Error While get Guarantor Details details for mobile app : ",e);
-			return new ResponseEntity<LoansResponse>(new LoansResponse("false", MobileCustomizeResponse.INTERNALSERVERERROR407.getStatusCode(), MobileCustomizeResponse.INTERNALSERVERERROR407.getDescription(), "Internal Server Error"),HttpStatus.OK);
+			return new ResponseEntity<LoansResponse>(new LoansResponse("false", MobileCustomizeResponse.INTERNALSERVERERROR407.getStatusCode(), MobileCustomizeResponse.INTERNALSERVERERROR407.getDescription(), CommonUtils.INTERNAL_SERVER_ERROR),HttpStatus.OK);
 		}
 	}
 	
@@ -146,7 +146,7 @@ public class MobileLoanController {
 			}
 		} catch(Exception e) {
 			logger.error("Error While save Guarantor Details details for mobile app : ",e);
-			return new ResponseEntity<LoansResponse>(new LoansResponse("false", MobileCustomizeResponse.INTERNALSERVERERROR407.getStatusCode(), MobileCustomizeResponse.INTERNALSERVERERROR407.getDescription(), "Internal Server Error"),HttpStatus.OK);
+			return new ResponseEntity<LoansResponse>(new LoansResponse("false", MobileCustomizeResponse.INTERNALSERVERERROR407.getStatusCode(), MobileCustomizeResponse.INTERNALSERVERERROR407.getDescription(), CommonUtils.INTERNAL_SERVER_ERROR),HttpStatus.OK);
 		}
 	}
 	
@@ -163,7 +163,7 @@ public class MobileLoanController {
 			return new ResponseEntity<LoansResponse>(new LoansResponse("true", coAppGuarResponse, MobileCustomizeResponse.SUCCESS200.getStatusCode(), MobileCustomizeResponse.SUCCESS200.getDescription(), "Successfully got data"),HttpStatus.OK);
 		} catch(Exception e) {
 			logger.error("Error While get CoApplicant Details details for mobile app : ",e);
-			return new ResponseEntity<LoansResponse>(new LoansResponse("false", MobileCustomizeResponse.INTERNALSERVERERROR407.getStatusCode(), MobileCustomizeResponse.INTERNALSERVERERROR407.getDescription(), "Internal Server Error"),HttpStatus.OK);
+			return new ResponseEntity<LoansResponse>(new LoansResponse("false", MobileCustomizeResponse.INTERNALSERVERERROR407.getStatusCode(), MobileCustomizeResponse.INTERNALSERVERERROR407.getDescription(), CommonUtils.INTERNAL_SERVER_ERROR),HttpStatus.OK);
 		}
 	}
 	
@@ -184,7 +184,7 @@ public class MobileLoanController {
 			}
 		} catch(Exception e) {
 			logger.error("Error While save CoApplicant Details details for mobile app : ",e);
-			return new ResponseEntity<LoansResponse>(new LoansResponse("false", MobileCustomizeResponse.INTERNALSERVERERROR407.getStatusCode(), MobileCustomizeResponse.INTERNALSERVERERROR407.getDescription(), "Internal Server Error"),HttpStatus.OK);
+			return new ResponseEntity<LoansResponse>(new LoansResponse("false", MobileCustomizeResponse.INTERNALSERVERERROR407.getStatusCode(), MobileCustomizeResponse.INTERNALSERVERERROR407.getDescription(), CommonUtils.INTERNAL_SERVER_ERROR),HttpStatus.OK);
 		}
 	}
 	
@@ -206,7 +206,7 @@ public class MobileLoanController {
 			}
 		} catch(Exception e) {
 			logger.error("Error While save Loan Application Details details for mobile app : ",e);
-			return new ResponseEntity<LoansResponse>(new LoansResponse("false", MobileCustomizeResponse.INTERNALSERVERERROR407.getStatusCode(), MobileCustomizeResponse.INTERNALSERVERERROR407.getDescription(), "Internal Server Error"),HttpStatus.OK);
+			return new ResponseEntity<LoansResponse>(new LoansResponse("false", MobileCustomizeResponse.INTERNALSERVERERROR407.getStatusCode(), MobileCustomizeResponse.INTERNALSERVERERROR407.getDescription(), CommonUtils.INTERNAL_SERVER_ERROR),HttpStatus.OK);
 		}
 	}
 	
@@ -219,13 +219,13 @@ public class MobileLoanController {
 			}
 			
 			List<ProductMasterRequest> list = productMasterService.getList(mobileLoanRequest.getUserId(),null);
-			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 			loansResponse.setListData(list);
 			CommonDocumentUtils.endHook(logger, "getProductList for mobile");
 			return new ResponseEntity<LoansResponse>(new LoansResponse("true", loansResponse.getListData(), MobileCustomizeResponse.SUCCESS200.getStatusCode(), MobileCustomizeResponse.SUCCESS200.getDescription(), "Successfully saved data"),HttpStatus.OK);
 		} catch(Exception e) {
 			logger.error("Error While get fp product list for mobile app : ",e);
-			return new ResponseEntity<LoansResponse>(new LoansResponse("false", MobileCustomizeResponse.INTERNALSERVERERROR407.getStatusCode(), MobileCustomizeResponse.INTERNALSERVERERROR407.getDescription(), "Internal Server Error"),HttpStatus.OK);
+			return new ResponseEntity<LoansResponse>(new LoansResponse("false", MobileCustomizeResponse.INTERNALSERVERERROR407.getStatusCode(), MobileCustomizeResponse.INTERNALSERVERERROR407.getDescription(), CommonUtils.INTERNAL_SERVER_ERROR),HttpStatus.OK);
 		}
 	}
 	
@@ -236,13 +236,13 @@ public class MobileLoanController {
 			ProposalMappingRequest proposalMappingRequest = new ProposalMappingRequest();
 			BeanUtils.copyProperties(request, proposalMappingRequest);
 			List proposalDetailsList = proposalService.fundproviderProposal(proposalMappingRequest);
-			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 			loansResponse.setListData(proposalDetailsList);
 			CommonDocumentUtils.endHook(logger, "fundproviderProposal for mobile");
 			return new ResponseEntity<LoansResponse>(new LoansResponse("true", loansResponse.getListData(), MobileCustomizeResponse.SUCCESS200.getStatusCode(), MobileCustomizeResponse.SUCCESS200.getDescription(), "fundproviderProposal for mobile"),HttpStatus.OK);	
 		} catch(Exception e) {
 			logger.error("Error While get fp matches list for mobile app : ",e);
-			return new ResponseEntity<LoansResponse>(new LoansResponse("false", MobileCustomizeResponse.INTERNALSERVERERROR407.getStatusCode(), MobileCustomizeResponse.INTERNALSERVERERROR407.getDescription(), "Internal Server Error"),HttpStatus.OK);
+			return new ResponseEntity<LoansResponse>(new LoansResponse("false", MobileCustomizeResponse.INTERNALSERVERERROR407.getStatusCode(), MobileCustomizeResponse.INTERNALSERVERERROR407.getDescription(), CommonUtils.INTERNAL_SERVER_ERROR),HttpStatus.OK);
 		}
 	}
 	
@@ -253,13 +253,13 @@ public class MobileLoanController {
 			ProposalMappingRequest proposalMappingRequest = new ProposalMappingRequest();
 			BeanUtils.copyProperties(request, proposalMappingRequest);
 			List<FundProviderProposalDetails> proposalDetailsList = proposalService.fundseekerProposal(proposalMappingRequest, request.getUserId());
-			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 			loansResponse.setListData(proposalDetailsList);
 			CommonDocumentUtils.endHook(logger, "fundseekerProposal matches for mobile");
 			return new ResponseEntity<LoansResponse>(new LoansResponse("true", loansResponse.getListData(), MobileCustomizeResponse.SUCCESS200.getStatusCode(), MobileCustomizeResponse.SUCCESS200.getDescription(), "fundseekerProposal matches for mobile"),HttpStatus.OK);	
 		} catch(Exception e) {
 			logger.error("Error While get FS matches list for mobile app : ",e);
-			return new ResponseEntity<LoansResponse>(new LoansResponse("false", MobileCustomizeResponse.INTERNALSERVERERROR407.getStatusCode(), MobileCustomizeResponse.INTERNALSERVERERROR407.getDescription(), "Internal Server Error"),HttpStatus.OK);
+			return new ResponseEntity<LoansResponse>(new LoansResponse("false", MobileCustomizeResponse.INTERNALSERVERERROR407.getStatusCode(), MobileCustomizeResponse.INTERNALSERVERERROR407.getDescription(), CommonUtils.INTERNAL_SERVER_ERROR),HttpStatus.OK);
 		}
 	}
 	
@@ -278,7 +278,7 @@ public class MobileLoanController {
 			return new ResponseEntity<LoansResponse>(new LoansResponse("true", response, MobileCustomizeResponse.SUCCESS200.getStatusCode(), MobileCustomizeResponse.SUCCESS200.getDescription(), "Successfully got response from match-engine"),HttpStatus.OK);	
 		} catch (Exception e) {
 			logger.error("Error While change mobile matches status : ",e);
-			return new ResponseEntity<LoansResponse>(new LoansResponse("false", MobileCustomizeResponse.INTERNALSERVERERROR407.getStatusCode(), MobileCustomizeResponse.INTERNALSERVERERROR407.getDescription(), "Internal Server Error"),HttpStatus.OK);
+			return new ResponseEntity<LoansResponse>(new LoansResponse("false", MobileCustomizeResponse.INTERNALSERVERERROR407.getStatusCode(), MobileCustomizeResponse.INTERNALSERVERERROR407.getDescription(), CommonUtils.INTERNAL_SERVER_ERROR),HttpStatus.OK);
 		}
 		
 	}

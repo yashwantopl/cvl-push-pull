@@ -73,7 +73,6 @@ public class RecentViewServiceImpl implements RecentViewService{
 
 	@Override
 	public RecentProfileViewDetailResponse getRecentViewDetailListByAppId(Long applicationId, Long userId) throws DocumentException, IOException {
-		// TODO Auto-generated method stub
 		NotificationRequest request = new NotificationRequest();
 		request.setApplicationId(applicationId);
 		request.setClientRefId(userId.toString());
@@ -215,7 +214,6 @@ public class RecentViewServiceImpl implements RecentViewService{
 	@Override
 	public RecentProfileViewDetailResponse getRecentViewDetailListByProdId(Long productId, Long userId)
 			throws Exception {
-		// TODO Auto-generated method stub
 		NotificationRequest request = new NotificationRequest();
 		request.setProductId(productId);
 		request.setClientRefId(userId.toString());

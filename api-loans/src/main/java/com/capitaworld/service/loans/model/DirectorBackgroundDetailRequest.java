@@ -142,6 +142,7 @@ public class DirectorBackgroundDetailRequest implements Serializable {
 	}
 
 	public DirectorBackgroundDetailRequest() {
+		// Do nothing because of X and Y.
 	}
 
 	public Long getId() {

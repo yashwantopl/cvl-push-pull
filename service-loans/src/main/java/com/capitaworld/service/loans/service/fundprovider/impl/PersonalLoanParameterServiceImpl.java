@@ -111,7 +111,6 @@ public class  PersonalLoanParameterServiceImpl implements PersonalLoanParameterS
 	@Override
 	public boolean saveOrUpdate(PersonalLoanParameterRequest personalLoanParameterRequest,Long mappingId) {
 		CommonDocumentUtils.startHook(logger, "saveOrUpdate");
-		// TODO Auto-generated method stub
 		PersonalLoanParameterTemp loanParameter = personalLoanParameterTempRepository
 				.getPlParameterTempByFpProductId(mappingId);
 		
@@ -189,7 +188,6 @@ public class  PersonalLoanParameterServiceImpl implements PersonalLoanParameterS
 
 	@Override
 	public PersonalLoanParameterRequest getPersonalLoanParameterRequest(Long id) {
-		// TODO Auto-generated method stub
 		CommonDocumentUtils.startHook(logger, "getPersonalLoanParameterRequest");
 		PersonalLoanParameterRequest personalLoanParameterRequest= new PersonalLoanParameterRequest();
 		PersonalLoanParameter personalLoanParameter = personalLoanParameterRepository.getByID(id);
@@ -439,9 +437,7 @@ private void saveCountry(PersonalLoanParameterRequest personalLoanParameterReque
 				personalLoanParameterRequest.setCityList(dataRequests);
 
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				logger.error(e.toString());
-				e.printStackTrace();
 			}
 		}
 

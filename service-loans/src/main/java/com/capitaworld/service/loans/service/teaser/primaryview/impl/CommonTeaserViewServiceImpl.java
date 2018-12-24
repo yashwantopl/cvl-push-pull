@@ -77,7 +77,6 @@ public class CommonTeaserViewServiceImpl implements CommonTeaserViewService{
 	public Boolean getPrimaryViewDetails(Long applicantId, LoansResponse loansResponse)
 			throws Exception {
 		logger.info("start getPrimaryViewDetails ");
-		// TODO Auto-generated method stub
 		LoanApplicationMaster applicationMaster=loanApplicationMasterRepo.findOne(applicantId);
 		if(CommonUtils.isObjectNullOrEmpty(applicationMaster))
 		return false;
@@ -129,7 +128,6 @@ public class CommonTeaserViewServiceImpl implements CommonTeaserViewService{
 	}
 	@Override
 	public Boolean getFinalViewDetails(Long applicantId, LoansResponse loansResponse) throws Exception {
-		// TODO Auto-generated method stub
 		logger.info("start getFinalViewDetails ");
 		LoanApplicationMaster applicationMaster=loanApplicationMasterRepo.findOne(applicantId);
 		if(CommonUtils.isObjectNullOrEmpty(applicationMaster))
