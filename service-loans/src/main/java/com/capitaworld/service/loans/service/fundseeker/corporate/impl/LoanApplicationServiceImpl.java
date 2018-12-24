@@ -5519,9 +5519,13 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				(LoanType.WORKING_CAPITAL.getValue() ==productDetails.getProductId() ||
 				LoanType.TERM_LOAN.getValue() ==productDetails.getProductId() ||
 				LoanType.WCTL_LOAN.getValue() ==productDetails.getProductId())){
-			ApplicationProposalMapping applicationProposalMapping = new ApplicationProposalMapping();
-			applicationProposalMapping.setProposalId(proposalDetails.getId());
-			applicationProposalMapping.setApplicationId(proposalDetails.getApplicationId());
+			ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.findOne(proposalDetails.getId());
+			if(CommonUtils.isObjectNullOrEmpty(applicationProposalMapping)){
+				logger.info("Proposal Id not found" + loanApplicationRequest.getId());
+				return false;
+			}
+			//applicationProposalMapping.setProposalId(proposalDetails.getId());
+			//applicationProposalMapping.setApplicationId(proposalDetails.getApplicationId());
 			applicationProposalMapping.setLoanAmount(loanApplicationRequest.getAmount());
 			applicationProposalMapping.setTenure(loanApplicationRequest.getTenure());
 			applicationProposalMapping.setProductId(loanApplicationRequest.getProductId());
@@ -5540,9 +5544,15 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				applicationProposalMapping.setOrgId(loanApplicationRequest.getNpOrgId());
 			}
 			ApplicationProposalMapping existingDetails = applicationProposalMappingRepository.getByApplicationId(proposalDetails.getApplicationId());
-			if (!CommonUtils.isObjectNullOrEmpty(existingDetails)) {
+			if (!CommonUtils.isObjectNullOrEmpty(existingDetails) && !CommonUtils.isObjectNullOrEmpty(existingDetails.getApplicationCode())) {
 				applicationProposalMapping
 						.setApplicationCode(existingDetails.getApplicationCode());
+			}else {
+				LoanType type = CommonUtils.LoanType.getType(loanApplicationRequest.getProductId());
+				if (!CommonUtils.isObjectNullOrEmpty(type)) {
+					loanApplicationMaster
+							.setApplicationCode(applicationSequenceService.getApplicationSequenceNumber(type.getValue()));
+				}
 			}
 			applicationProposalMapping.setCreatedBy(proposalDetails.getApplicationId());
 			applicationProposalMapping.setCreatedDate(new Date());
