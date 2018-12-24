@@ -2973,10 +2973,7 @@ public class FPAsyncComponent {
 			String fpName = proposalresp.get(CommonUtils.PARAMETERS_FP_NAME) != null ? proposalresp.get(CommonUtils.PARAMETERS_FP_NAME).toString() : "NA";
 			mailParameters.put(CommonUtils.PARAMETERS_FP_NAME, fpName != null ? fpName : "NA");
 			mailParameters.put(PARAMETERS_PRODUCT_TYPE, productType != null ? productType : "NA");
-			mailParameters.put(CommonUtils.PARAMETERS_LOAN_AMOUNT,
-					applicationRequest.getLoanAmount() != null
-							? Double.valueOf(applicationRequest.getLoanAmount().toString())
-							: "NA");
+			mailParameters.put(CommonUtils.PARAMETERS_LOAN_AMOUNT,loanSanctionDomainOld.getSanctionAmount() != null ? loanSanctionDomainOld.getSanctionAmount(): "NA");
 			mailParameters.put("processing_fees",
 					loanSanctionDomainOld.getProcessingFee() != null ? loanSanctionDomainOld.getProcessingFee() : "NA");
 			mailParameters.put(CommonUtils.LITERAL_AMOUNT,
