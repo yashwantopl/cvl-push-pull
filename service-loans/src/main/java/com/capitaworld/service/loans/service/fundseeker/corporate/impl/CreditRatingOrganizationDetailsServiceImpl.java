@@ -63,7 +63,7 @@ public class CreditRatingOrganizationDetailsServiceImpl implements CreditRatingO
 				creditRatingOrganizationDetail
 						.setApplicationId(new LoanApplicationMaster(frameRequest.getApplicationId()));
 				creditRatingOrganizationDetail
-						.setProposalId(new ApplicationProposalMapping(frameRequest.getProposalId()));
+						.setProposalId(new ApplicationProposalMapping(frameRequest.getProposalMappingId()));
 				creditRatingOrganizationDetail.setModifiedBy(frameRequest.getUserId());
 				creditRatingOrganizationDetail.setModifiedDate(new Date());
 				creditRatingOrganizationDetailsRepository.save(creditRatingOrganizationDetail);

@@ -11,7 +11,7 @@ import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplic
 
 public interface CorporateApplicantDetailRepository extends JpaRepository<CorporateApplicantDetail, Long> {
 
-	@Query("from CorporateApplicantDetail cr where cr.applicationId.id =:applicationId and cr.applicationId.userId =:userId and cr.isActive=true")
+	@Query("from CorporateApplicantDetail cr where cr.applicationId.id =:applicationId and cr.applicationId.userId =:userId and cr.isActive=true and cr.applicationProposalMapping.proposalId =NULL")
 	public CorporateApplicantDetail getByApplicationAndUserId(@Param("userId") Long userId, @Param("applicationId") Long applicationId);
 
 	@Query("from CorporateApplicantDetail cr where cr.applicationProposalMapping.proposalId =:proposalId and cr.isActive=true")
@@ -26,7 +26,7 @@ public interface CorporateApplicantDetailRepository extends JpaRepository<Corpor
 			@Param("applicationId") Long applicationId);
 
 
-	@Query("from CorporateApplicantDetail cr where cr.applicationId.id =:applicationId")
+	@Query("from CorporateApplicantDetail cr where cr.applicationId.id =:applicationId and cr.applicationProposalMapping.proposalId =NULL")
 	public CorporateApplicantDetail findOneByApplicationIdId(@Param("applicationId") Long applicationId);
 	
 	@Query("from CorporateApplicantDetail cr where cr.applicationId.id =:applicationId and cr.isActive=true")

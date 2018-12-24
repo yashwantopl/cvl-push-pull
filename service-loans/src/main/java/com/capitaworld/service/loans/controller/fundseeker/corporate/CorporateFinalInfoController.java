@@ -87,7 +87,7 @@ public class CorporateFinalInfoController {
             // Checking Profile is Locked
             Long finalUserId = (CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getClientId()) ? userId
                     : corporateFinalInfoRequest.getClientId());
-            Boolean finalLocked = loanApplicationService.isFinalLockedByProposalId(corporateFinalInfoRequest.getProposalId(),
+            Boolean finalLocked = loanApplicationService.isFinalLockedByProposalId(corporateFinalInfoRequest.getProposalMappingId(),
                     finalUserId);
             if (!CommonUtils.isObjectNullOrEmpty(finalLocked) && finalLocked.booleanValue()) {
                 return new ResponseEntity<LoansResponse>(

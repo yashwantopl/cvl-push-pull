@@ -116,7 +116,7 @@ public class CorporateUploadController {
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 
-			DocumentResponse profilePic = corporateUploadService.getProfilePic(applicationId, mappingId, userType);
+			DocumentResponse profilePic = corporateUploadService.getProfilePicByProposalId(proposalMappingId,applicationId, mappingId, userType);
 			LoansResponse loansResponse = new LoansResponse(profilePic.getMessage(), HttpStatus.OK.value());
 			loansResponse.setData(profilePic);
 			CommonDocumentUtils.endHook(logger, "getProfileImage");

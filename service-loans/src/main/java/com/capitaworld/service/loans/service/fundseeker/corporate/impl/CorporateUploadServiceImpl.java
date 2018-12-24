@@ -96,6 +96,34 @@ public class CorporateUploadServiceImpl implements CorporateUploadService {
 	}
 
 	@Override
+	public DocumentResponse getProfilePicByProposalId(Long proposalId,Long applicantId, Long mappingId, String userType) throws Exception {
+		try {
+			DocumentRequest docRequest = new DocumentRequest();
+			if (CommonUtils.UploadUserType.UERT_TYPE_APPLICANT.equalsIgnoreCase(userType)) {
+				docRequest.setApplicationId(applicantId);
+			} else if (CommonUtils.UploadUserType.UERT_TYPE_CO_APPLICANT.equalsIgnoreCase(userType)) {
+				// here we have set same applicant variable because when
+				// requested user is co-applicant then it "coApplicantId" will
+				// be considered and same as for "guarantors".
+				docRequest.setCoApplicantId(applicantId);
+			} else if (CommonUtils.UploadUserType.UERT_TYPE_GUARANTOR.equalsIgnoreCase(userType)) {
+				// here we have set same applicant variable because when
+				// requested user is co-applicant then it "coApplicantId" will
+				// be considered and same as for "guarantors".
+				docRequest.setGuarantorId(applicantId);
+			}
+			docRequest.setProductDocumentMappingId(mappingId);
+			docRequest.setUserType(userType);
+			docRequest.setProposalMappingId(proposalId);
+			return dmsClient.listProductDocumentByProposalId(docRequest);
+		} catch (DocumentException e) {
+			// TODO Auto-generated catch block
+			logger.error("Error while getting Profile Document");
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+	}
+
+	@Override
 	public DocumentResponse getProfilePic(Long applicantId, Long mappingId, String userType) throws Exception {
 		try {
 			DocumentRequest docRequest = new DocumentRequest();

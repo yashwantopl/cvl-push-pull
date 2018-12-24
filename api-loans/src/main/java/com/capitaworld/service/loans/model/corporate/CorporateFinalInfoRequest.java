@@ -269,11 +269,11 @@ public class CorporateFinalInfoRequest implements Serializable {
         return serialVersionUID;
     }
 
-    public Long getProposalId() {
+    public Long getProposalMappingId() {
         return proposalMappingId;
     }
 
-    public void setProposalId(Long proposalMappingId) {
+    public void setProposalMappingId(Long proposalMappingId) {
         this.proposalMappingId = proposalMappingId;
     }
 }

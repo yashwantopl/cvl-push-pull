@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
+import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.model.Address;
@@ -33,8 +34,7 @@ public class CorporateFinalInfoServiceImpl implements CorporateFinalInfoService 
         try{
             Long finalUserId = (CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getClientId()) ? userId
                     : corporateFinalInfoRequest.getClientId());
-            CorporateApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId(finalUserId,
-                    corporateFinalInfoRequest.getApplicationId());
+            CorporateApplicantDetail applicantDetail = applicantRepository.getByProposalId(corporateFinalInfoRequest.getProposalMappingId());
 
             if (applicantDetail != null) {
                 applicantDetail.setModifiedBy(userId);
@@ -46,11 +46,13 @@ public class CorporateFinalInfoServiceImpl implements CorporateFinalInfoService 
                 applicantDetail.setCreatedDate(new Date());
                 applicantDetail.setIsActive(true);
                 applicantDetail.setApplicationId(new LoanApplicationMaster(corporateFinalInfoRequest.getApplicationId()));
+                if (corporateFinalInfoRequest.getProposalMappingId() != null)
+                    applicantDetail.setApplicationProposalMapping(new ApplicationProposalMapping(corporateFinalInfoRequest.getProposalMappingId()));
             }
 
             BeanUtils.copyProperties(corporateFinalInfoRequest, applicantDetail, CommonUtils.IgnorableCopy.CORPORATE_PROFILE); //--------------------put check for Ignore properties
             applicantDetail.setModifiedBy(userId);
-            applicantDetail.setModifiedDate(new Date());
+            applicantDetail.  setModifiedDate(new Date());
             copyAddressFromRequestToDomain(corporateFinalInfoRequest, applicantDetail); //--------------------put check for Ignore properties
             applicantDetail = applicantRepository.save(applicantDetail);
 

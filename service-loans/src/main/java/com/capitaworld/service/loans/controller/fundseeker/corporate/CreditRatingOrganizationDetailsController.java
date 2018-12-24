@@ -63,8 +63,8 @@ public class CreditRatingOrganizationDetailsController {
 					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}
 		// application id and user id must not be null
-		if (frameRequest.getProposalId() == null) {
-			logger.warn("proposal id and user id must not be null ==>" + frameRequest.getProposalId());
+		if (frameRequest.getProposalMappingId() == null) {
+			logger.warn("proposal id and user id must not be null ==>" + frameRequest.getProposalMappingId());
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -78,7 +78,7 @@ public class CreditRatingOrganizationDetailsController {
 
 			Long finalUserId = (CommonUtils.isObjectNullOrEmpty(frameRequest.getClientId()) ? userId
 					: frameRequest.getClientId());
-			Boolean finalLocked = loanApplicationService.isFinalLockedByProposalId(frameRequest.getProposalId(),
+			Boolean finalLocked = loanApplicationService.isFinalLockedByProposalId(frameRequest.getProposalMappingId(),
 					finalUserId);
 			if (!CommonUtils.isObjectNullOrEmpty(finalLocked) && finalLocked.booleanValue()) {
 				return new ResponseEntity<LoansResponse>(

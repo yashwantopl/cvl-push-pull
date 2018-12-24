@@ -44,7 +44,7 @@ public class AchievementDetailServiceImpl implements AchievmentDetailsService {
 					achievementDetail.setCreatedDate(new Date());
 				}
 				achievementDetail.setApplicationId(new LoanApplicationMaster(frameRequest.getApplicationId()));
-				achievementDetail.setProposalMapping(new ApplicationProposalMapping(frameRequest.getProposalId()));
+				achievementDetail.setProposalMapping(new ApplicationProposalMapping(frameRequest.getProposalMappingId()));
 				achievementDetail.setModifiedBy(frameRequest.getUserId());
 				achievementDetail.setModifiedDate(new Date());
 				achievementDetailsRepository.save(achievementDetail);

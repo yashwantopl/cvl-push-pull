@@ -52,7 +52,7 @@ public class SecurityCorporateDetailsServiceImpl implements SecurityCorporateDet
 				}
 				BeanUtils.copyProperties(securityCorporateDetailRequest, securityCorporateDetail);
 				securityCorporateDetail.setApplicationId(new LoanApplicationMaster(frameRequest.getApplicationId()));
-				securityCorporateDetail.setProposalId(new ApplicationProposalMapping(frameRequest.getProposalId()));
+				securityCorporateDetail.setProposalId(new ApplicationProposalMapping(frameRequest.getProposalMappingId()));
 				securityCorporateDetail.setModifiedBy(frameRequest.getUserId());
 				securityCorporateDetail.setModifiedDate(new Date());
 				securityCorporateDetailsRepository.save(securityCorporateDetail);

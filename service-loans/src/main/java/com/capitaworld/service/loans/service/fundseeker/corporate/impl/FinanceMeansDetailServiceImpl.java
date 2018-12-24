@@ -47,7 +47,7 @@ public class FinanceMeansDetailServiceImpl implements FinanceMeansDetailsService
 
 				BeanUtils.copyProperties(financeMeansRequest, financeMeansDetail);
 				financeMeansDetail.setApplicationId(new LoanApplicationMaster(frameRequest.getApplicationId()));
-				financeMeansDetail.setProposalId(new ApplicationProposalMapping(frameRequest.getProposalId()));
+				financeMeansDetail.setProposalId(new ApplicationProposalMapping(frameRequest.getProposalMappingId()));
 				financeMeansDetail.setModifiedBy(frameRequest.getUserId());
 				financeMeansDetail.setModifiedDate(new Date());
 				financeMeansDetailRepository.save(financeMeansDetail);
