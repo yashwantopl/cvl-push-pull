@@ -54,5 +54,5 @@ public interface ProposalService {
 	
 	public List<ProposalSearchResponse> searchProposalByAppCode(Long loginUserId,Long loginOrgId,ReportRequest reportRequest);
 	
-	public Map<String , Integer> getFpDashBoardCount(Long loginUserId,Long loginOrgId);
+	public Map<String , Double> getFpDashBoardCount(Long loginUserId,Long loginOrgId);
 }
