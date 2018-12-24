@@ -99,8 +99,8 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 	public void saveITRMappingData (CorporateApplicantRequest applicantRequest) {
 		//Updating OneForm Uniform Fields
 		if(!CommonUtils.isObjectNullOrEmpty(applicantRequest.getTurnOverPrevFinYear()) || !CommonUtils.isObjectNullOrEmpty(applicantRequest.getTurnOverCurrFinYearTillMonth()) || !CommonUtils.isObjectNullOrEmpty(applicantRequest.getProfitCurrFinYear())){
+			logger.info("TurnOverPrevFinYear===>{}TurnOverCurrFinYearTillMonth====>{}ProfitCurrFinYear===>{}",applicantRequest.getTurnOverPrevFinYear(), applicantRequest.getTurnOverCurrFinYearTillMonth(),applicantRequest.getProfitCurrFinYear());
 			primaryCorporateDetailRepository.updatedFinancialFieldsForUniformProduct(applicantRequest.getApplicationId(), applicantRequest.getTurnOverPrevFinYear(), applicantRequest.getTurnOverCurrFinYearTillMonth(),applicantRequest.getProfitCurrFinYear());
-			logger.info("TurnOverPrevFinYear TurnOverCurrFinYearTillMonth ProfitCurrFinYear Updated");
 		}
 		
 		CorporateApplicantDetail applicantDetail = applicantRepository.findByApplicationIdIdAndIsActive(applicantRequest.getApplicationId(),true);
