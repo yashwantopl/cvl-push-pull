@@ -39,6 +39,8 @@ public class ProductMasterController {
 
 	private static final String USER_ID_CAN_NOT_BE_EMPTY_MSG = "userId can not be empty ==>";
 	private static final String CORPORATE_PRODUCT_ID_CAN_NOT_BE_EMPTY_MSG = "corporateProduct id can not be empty ==>";
+	private static final String USER_ID_REQUIRE_TO_GET_PRODUCT_DETAILS_MSG = "UserId Require to get product Details ==>";
+	private static final String ERROR_WHILE_GETTING_PRODUCTS_DETAILS_MSG = "Error while getting Products Details ==>";
 
 	@Autowired
 	private ProductMasterService productMasterService;
@@ -269,7 +271,7 @@ public class ProductMasterController {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 			}
 			if (userId == null) {
-				logger.warn("UserId Require to get product Details ==>" + userId);
+				logger.warn(USER_ID_REQUIRE_TO_GET_PRODUCT_DETAILS_MSG + userId);
 				CommonDocumentUtils.endHook(logger, "getList");
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
@@ -282,7 +284,7 @@ public class ProductMasterController {
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
 		} catch (Exception e) {
-			logger.error("Error while getting Products Details==>", e);
+			logger.error(ERROR_WHILE_GETTING_PRODUCTS_DETAILS_MSG, e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -302,7 +304,7 @@ public class ProductMasterController {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 			}
 			if (userId == null) {
-				logger.warn("UserId Require to get product Details ==>" + userId);
+				logger.warn(USER_ID_REQUIRE_TO_GET_PRODUCT_DETAILS_MSG + userId);
 				CommonDocumentUtils.endHook(logger, "getActiveInActiveList");
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
@@ -339,7 +341,7 @@ public class ProductMasterController {
 			Long userOrgId = (Long) request.getAttribute(CommonUtils.USER_ORG_ID);
 			
 			if (userId == null) {
-				logger.warn("UserId Require to get product Details ==>" + userId);
+				logger.warn(USER_ID_REQUIRE_TO_GET_PRODUCT_DETAILS_MSG + userId);
 				CommonDocumentUtils.endHook(logger, "getListByUserType");
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
@@ -357,7 +359,7 @@ public class ProductMasterController {
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
 		} catch (Exception e) {
-			logger.error("Error while getting Products Details==>", e);
+			logger.error(ERROR_WHILE_GETTING_PRODUCTS_DETAILS_MSG, e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -386,7 +388,7 @@ public class ProductMasterController {
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
 		} catch (Exception e) {
-			logger.error("Error while getting Products Details==>", e);
+			logger.error(ERROR_WHILE_GETTING_PRODUCTS_DETAILS_MSG, e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -633,7 +635,7 @@ public class ProductMasterController {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 			}
 			if (userId == null) {
-				logger.warn("UserId Require to get product Details ==>" + userId);
+				logger.warn(USER_ID_REQUIRE_TO_GET_PRODUCT_DETAILS_MSG + userId);
 				CommonDocumentUtils.endHook(logger, "getList");
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
@@ -882,7 +884,7 @@ public class ProductMasterController {
 			Long userOrgId = (Long) request.getAttribute(CommonUtils.USER_ORG_ID);
 			
 			if (userId == null) {
-				logger.warn("UserId Require to get product Details ==>" + userId);
+				logger.warn(USER_ID_REQUIRE_TO_GET_PRODUCT_DETAILS_MSG + userId);
 				CommonDocumentUtils.endHook(logger, "getListByUserType");
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
@@ -900,7 +902,7 @@ public class ProductMasterController {
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
 		} catch (Exception e) {
-			logger.error("Error while getting Products Details==>", e);
+			logger.error(ERROR_WHILE_GETTING_PRODUCTS_DETAILS_MSG, e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
