@@ -1,8 +1,11 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
+import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 
 public interface ApplicationProposalMappingService {
 
     Boolean saveOrUpdate();
+    
+    ApplicationProposalMapping getByApplicationId(Long applicationId);
+    
 }
