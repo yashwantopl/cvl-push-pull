@@ -311,26 +311,6 @@ public class FundSeekerInputRequestController {
         }
     }
     
-    @RequestMapping(value = "/post_itr_upload", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LoansResponse> postItrUpload(@RequestBody Long applicationId , HttpServletRequest request)
-            throws Exception
-    {
-        try
-        {
-        	Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-        	if(userId == null) {
-        		   return new ResponseEntity<LoansResponse>(new LoansResponse("Unauthorized User! Please Re-login and try again.", HttpStatus.UNAUTHORIZED.value()), HttpStatus.OK);
-        	}
-        	if(applicationId == null) {
-     		   return new ResponseEntity<LoansResponse>(new LoansResponse("Something goes wrong while processig your Request. Please re-login again.", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
-        	}
-        	return fundSeekerInputRequestService.getDataForOnePagerOneForm(applicationId);
-        } catch (Exception e) {
-            logger.error("Error while Getting Oneform Details for Uniform Product : ",e);
-            return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
-        }
-    }
-    
     @RequestMapping(value = "/verifyGST/{gstin}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE,consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<LoansResponse> verifyGST(@PathVariable("gstin") String gstin,@RequestParam("gstReceipts") MultipartFile[] uploadingFiles,@RequestPart("requestedData") String requestedData,HttpServletRequest request)
             throws Exception
