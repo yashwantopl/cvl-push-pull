@@ -1,6 +1,7 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.capitaworld.service.gst.GstResponse;
 import com.capitaworld.service.loans.model.LoansResponse;
@@ -38,9 +39,10 @@ public interface FundSeekerInputRequestService {
 	 * @param gstin
 	 * @param applicationId
 	 * @param userId
+	 * @param uploadedFile
 	 * @return
 	 */
-	public GstResponse verifyGST(String gstin,Long applicationId,Long userId);
+	public LoansResponse verifyGST(String gstin,Long applicationId,Long userId,MultipartFile[] uploadedFile);
 
 	
 	/**

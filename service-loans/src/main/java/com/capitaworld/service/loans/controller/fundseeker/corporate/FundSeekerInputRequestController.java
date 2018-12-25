@@ -337,7 +337,7 @@ public class FundSeekerInputRequestController {
         		logger.error("Error Converting String to Long for ApplicationId : {}",e);
         		return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.GENERIC_ERROR_MSG, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
         	}
-            return new ResponseEntity<LoansResponse>(new LoansResponse("GST Verification",HttpStatus.OK.value(),fundSeekerInputRequestService.verifyGST(gstin, applicationId,userId)), HttpStatus.OK);
+            return new ResponseEntity<LoansResponse>(fundSeekerInputRequestService.verifyGST(gstin, applicationId,userId,uploadingFiles), HttpStatus.OK);
         } catch (Exception e) {
             logger.error("Error while Fetching details for min-max Margin : ",e);
             return new ResponseEntity<LoansResponse>(
