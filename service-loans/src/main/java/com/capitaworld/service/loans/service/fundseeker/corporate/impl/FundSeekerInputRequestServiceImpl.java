@@ -757,22 +757,44 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			
 			return loansResponse;
 		} catch (Exception e) {
-			logger.error("error while Verifying GST Number : ",e);
+			logger.error("error while Verifying GST Number : {}",e);
 			return null;
 		}
 	}
 
 	@Override
-	public boolean updateFlag(Long applicationId,Boolean flag,Integer flagType) {
+	public LoansResponse updateFlag(Long applicationId,Boolean flag,Integer flagType) {
 		logger.warn("flagType=================>{}",flagType);
+		DocumentRequest documentRequest = new DocumentRequest();
+		int count = 0;
 		if(flagType == CommonUtils.APIFlags.ITR.getId()){
-			return corporateApplicantDetailRepository.updateITRFlag(applicationId, flag) > 0;			
+			count = corporateApplicantDetailRepository.updateITRFlag(applicationId, flag);
+			documentRequest.setProductDocumentMappingId(DocumentAlias.GST_RECEIPT);
+			logger.info("ITR Flag Change Count==>{}",count);
 		}else if(flagType == CommonUtils.APIFlags.GST.getId()){
-			return corporateApplicantDetailRepository.updateGSTFlagWithoutGstin(applicationId, flag) > 0;			
+			count = corporateApplicantDetailRepository.updateGSTFlagWithoutGstin(applicationId, flag);
+			documentRequest.setProductDocumentMappingId(DocumentAlias.CORPORATE_ITR_XML);
+			logger.info("ITR Flag Change Count==>{}",count);
 		}else{
 			logger.warn("Invalid API Flag so Returning Default False");
-			return false;
+			return new LoansResponse("Invalid API Type",HttpStatus.BAD_REQUEST.value());
 		}
+		LoansResponse loansResponse = new LoansResponse("Success",HttpStatus.OK.value());
+		if(count > 0){
+			documentRequest.setApplicationId(applicationId);
+			documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
+			try{
+				DocumentResponse listProductDocument = dMSClient.listProductDocument(documentRequest);
+				if(!CommonUtils.isObjectNullOrEmpty(listProductDocument)){
+					loansResponse.setListData(listProductDocument.getDataList());					
+				}else{
+					logger.warn("No GST Receipt Found for Application Id===>{}",applicationId);
+				}	
+			}catch(DocumentException exception){
+				logger.error("error Updating Flags and Getting Document : {}",exception);
+			}
+		}
+		return loansResponse;
 	}	
 
 }

@@ -357,7 +357,7 @@ public class FundSeekerInputRequestController {
         	if(applicationId == null) {
      		   return new ResponseEntity<LoansResponse>(new LoansResponse("Something goes wrong while processig your Request. Please re-login again.", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
         	}
-            return new ResponseEntity<LoansResponse>(new LoansResponse("Flag Updated!!",HttpStatus.OK.value(),fundSeekerInputRequestService.updateFlag(applicationId, flagValue,flagType)), HttpStatus.OK);
+            return new ResponseEntity<LoansResponse>(fundSeekerInputRequestService.updateFlag(applicationId, flagValue,flagType), HttpStatus.OK);
         } catch (Exception e) {
             logger.error("Error while Updating Flag value for Uniform Product : ",e);
             return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);

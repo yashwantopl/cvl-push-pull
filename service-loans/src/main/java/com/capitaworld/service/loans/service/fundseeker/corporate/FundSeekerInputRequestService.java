@@ -60,7 +60,7 @@ public interface FundSeekerInputRequestService {
 	 * @param flagType
 	 * @return
 	 */
-	public boolean updateFlag(Long applicationId,Boolean flag,Integer flagType);
+	public LoansResponse updateFlag(Long applicationId,Boolean flag,Integer flagType);
 	
 	/**
 	 * Saving OneForm for Uniform Product
