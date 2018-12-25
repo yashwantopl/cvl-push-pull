@@ -29,7 +29,7 @@ public class FrameRequest implements Serializable{
 	
 	private Boolean isFromClient;
 
-	private Long proposalId;
+	private Long proposalMappingId;
 
 	public int getApplicantType() {
 		return applicantType;
@@ -95,11 +95,11 @@ public class FrameRequest implements Serializable{
 		this.isFromClient = isFromClient;
 	}
 
-	public Long getProposalId() {
-		return proposalId;
+	public Long getProposalMappingId() {
+		return proposalMappingId;
 	}
 
-	public void setProposalId(Long proposalId) {
-		this.proposalId = proposalId;
+	public void setProposalMappingId(Long proposalMappingId) {
+		this.proposalMappingId = proposalMappingId;
 	}
 }

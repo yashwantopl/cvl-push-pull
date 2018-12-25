@@ -209,7 +209,7 @@ public class IrrServiceImpl implements IrrService{
 			// end getting irr industry and business type
 
 			irrRequest.setApplicationId(appId);
-			irrRequest.setProposalMappingId(proposalMapId);
+			//irrRequest.setProposalMappingId(proposalMapId);
 			irrRequest.setCompanyName(corporateApplicantDetail.getOrganisationName());
 			irrRequest.setBusinessTypeId(businessTypeId);
 			irrRequest.setUserId(userId);
