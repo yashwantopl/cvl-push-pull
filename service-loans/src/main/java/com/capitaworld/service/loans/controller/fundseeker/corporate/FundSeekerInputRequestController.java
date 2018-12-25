@@ -1,5 +1,7 @@
 package com.capitaworld.service.loans.controller.fundseeker.corporate;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
@@ -360,6 +362,35 @@ public class FundSeekerInputRequestController {
             return new ResponseEntity<LoansResponse>(fundSeekerInputRequestService.updateFlag(applicationId, flagValue,flagType), HttpStatus.OK);
         } catch (Exception e) {
             logger.error("Error while Updating Flag value for Uniform Product : ",e);
+            return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
+        }
+    }
+    
+    @RequestMapping(value = "/delete/{applicationId}/{mappingId}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LoansResponse> deleteFile(@RequestBody List<Long> docIds , @PathVariable("applicationId") Long applicationId,@PathVariable("mappingId") Long mappingId,HttpServletRequest request)throws Exception{
+        try
+        {
+        	Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+        	if(userId == null) {
+        		   return new ResponseEntity<LoansResponse>(new LoansResponse("Unauthorized User! Please Re-login and try again.", HttpStatus.UNAUTHORIZED.value()), HttpStatus.OK);
+        	}
+        	if(CommonUtils.isListNullOrEmpty(docIds)) {
+        		logger.warn("docIds Must not be null or Empty====>{}",docIds);
+     		   return new ResponseEntity<LoansResponse>(new LoansResponse("Something goes wrong while processig your Request. Please re-login again.", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+        	}
+        	
+        	if(CommonUtils.isObjectNullOrEmpty(mappingId)) {
+        		logger.warn("mappingId Must not be null or Empty====>{}",mappingId);
+      		   return new ResponseEntity<LoansResponse>(new LoansResponse("Something goes wrong while processig your Request. Please re-login again.", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+         	}
+        	
+        	if(CommonUtils.isObjectNullOrEmpty(applicationId)) {
+        		logger.warn("applicationId Must not be null or Empty====>{}",applicationId);
+      		   return new ResponseEntity<LoansResponse>(new LoansResponse("Something goes wrong while processig your Request. Please re-login again.", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+         	}
+            return new ResponseEntity<LoansResponse>(fundSeekerInputRequestService.deleteDocument(applicationId, docIds, mappingId), HttpStatus.OK);
+        } catch (Exception e) {
+            logger.error("Error while Deleting Document for Uniform Product : ",e);
             return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
         }
     }
