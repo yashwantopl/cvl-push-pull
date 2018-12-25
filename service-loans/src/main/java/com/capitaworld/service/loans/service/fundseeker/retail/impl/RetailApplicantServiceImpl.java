@@ -44,6 +44,8 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 
 	private static final Logger logger = LoggerFactory.getLogger(RetailApplicantServiceImpl.class.getName());
 
+	private static final String ERROR_WHILE_SAVING_RETAIL_PROFILE_MSG = "Error while Saving Retail Profile :- ";
+
 	@Autowired
 	private RetailApplicantDetailRepository applicantRepository;
 	
@@ -125,7 +127,7 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 			return true;
 
 		} catch (Exception e) {
-			logger.error("Error while Saving Retail Profile:-",e);
+			logger.error(ERROR_WHILE_SAVING_RETAIL_PROFILE_MSG,e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
@@ -165,7 +167,7 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 			applicantIncomeService.saveAll(applicantRequest.getIncomeDetailsList());
 			return true;
 		} catch (Exception e) {
-			logger.error("Error while Saving Retail Profile:-",e);
+			logger.error(ERROR_WHILE_SAVING_RETAIL_PROFILE_MSG,e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
@@ -238,7 +240,7 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 			applicantRequest.setFinalFilledCount(applicantDetail.getApplicationId().getFinalFilledCount());
 			return applicantRequest;
 		} catch (Exception e) {
-			logger.error("Error while Saving Retail Profile:-",e);
+			logger.error(ERROR_WHILE_SAVING_RETAIL_PROFILE_MSG,e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
@@ -271,7 +273,7 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 					applicantRequest.getFinalFilledCount());
 			return true;
 		} catch (Exception e) {
-			logger.error("Error while Saving Retail Profile:-",e);
+			logger.error(ERROR_WHILE_SAVING_RETAIL_PROFILE_MSG,e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}

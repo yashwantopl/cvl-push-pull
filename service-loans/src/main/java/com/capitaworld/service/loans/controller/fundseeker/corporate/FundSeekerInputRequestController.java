@@ -33,8 +33,10 @@ import com.capitaworld.service.scoring.model.scoringmodel.ScoringModelReqRes;
 @RequestMapping("/fundseeker_input_request")
 public class FundSeekerInputRequestController {
 
-
     private static final Logger logger = LoggerFactory.getLogger(FundSeekerInputRequestController.class);
+
+    private static final String UNAUTHORIZED_USER_PLEASE_RE_LOGIN_AND_TRY_AGAIN_MSG = "Unauthorized User! Please Re-login and try again.";
+    private static final String SOMETHING_GOES_WRONG_WHILE_PROCESSING_YOUR_REQUEST_PLEASE_RE_LOGIN_AGAIN_MSG = "Something goes wrong while processing your Request.Please re-login again.";
 
     @Autowired
     private FundSeekerInputRequestService fundSeekerInputRequestService;
@@ -60,7 +62,7 @@ public class FundSeekerInputRequestController {
             if (CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequestResponse.getUserId()) || CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequestResponse.getApplicationId())) {
                 logger.warn("userId/applicationId can not be empty");
                 return new ResponseEntity<LoansResponse>(
-                        new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+                        new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
             }
 
             logger.info("GOING TO SAVE FUNDSEEKER INPUT REQUEST-------------USERID--->" + userId + "-------------APPLICATION ID --------------------->" + fundSeekerInputRequestResponse.getApplicationId());
@@ -102,7 +104,7 @@ public class FundSeekerInputRequestController {
 //            if (CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequestResponse.getUserId()) || CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequestResponse.getApplicationId())) {
 //                logger.warn("userId/applicationId can not be empty");
 //                return new ResponseEntity<LoansResponse>(
-//                        new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+//                        new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 //            }
 
             return fundSeekerInputRequestService.get(fundSeekerInputRequestResponse);
@@ -154,7 +156,7 @@ public class FundSeekerInputRequestController {
             if (CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequestResponse.getUserId()) || CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequestResponse.getApplicationId())) {
                 logger.warn("userId/applicationId can not be empty");
                 return new ResponseEntity<LoansResponse>(
-                        new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+                        new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
             }
 
 
@@ -179,7 +181,7 @@ public class FundSeekerInputRequestController {
         	Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
         	if(userId == null) {
         		   return new ResponseEntity<LoansResponse>(
-                           new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+                           new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
         	}
         	logger.info("Application Id for Getting============>{}",applicationId);
         	//Commented by Akshay discussed with Hiren
@@ -187,7 +189,7 @@ public class FundSeekerInputRequestController {
 //            if (CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequestResponse.getUserId()) || CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequestResponse.getApplicationId())) {
 //                logger.warn("userId/applicationId can not be empty");
 //                return new ResponseEntity<LoansResponse>(
-//                        new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+//                        new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 //            }
 
             LoansResponse callMatchEngineClient = fundSeekerInputRequestService.callMatchEngineClient(applicationId,userId,businessTypeId);
@@ -211,7 +213,7 @@ public class FundSeekerInputRequestController {
         	Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
         	if(userId == null) {
         		   return new ResponseEntity<LoansResponse>(
-                           new LoansResponse("Unauthorized User! Please Re-login and try again.", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+                           new LoansResponse(UNAUTHORIZED_USER_PLEASE_RE_LOGIN_AND_TRY_AGAIN_MSG, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
         	}
         	if(CommonUtils.isObjectListNull(ntbRequest.getDirectorId(),ntbRequest.getApplicationId(),ntbRequest.getBusineeTypeId())) {
         		logger.info("Director Id or Application Id or BusinessTypeId is NUll============>{}",ntbRequest.toString());
@@ -241,7 +243,7 @@ public class FundSeekerInputRequestController {
         	Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
         	if(userId == null) {
         		   return new ResponseEntity<LoansResponse>(
-                           new LoansResponse("Unauthorized User! Please Re-login and try again.", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+                           new LoansResponse(UNAUTHORIZED_USER_PLEASE_RE_LOGIN_AND_TRY_AGAIN_MSG, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
         	}
         	if(CommonUtils.isObjectNullOrEmpty(ntbRequest.getApplicationId()) || CommonUtils.isObjectNullOrEmpty(ntbRequest.getBusineeTypeId())) {
         		logger.info("Application Id OR BusinessTypeID is NUll============>{}");
@@ -269,10 +271,10 @@ public class FundSeekerInputRequestController {
         {
         	Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
         	if(userId == null) {
-        		   return new ResponseEntity<LoansResponse>(new LoansResponse("Unauthorized User! Please Re-login and try again.", HttpStatus.UNAUTHORIZED.value()), HttpStatus.OK);
+        		   return new ResponseEntity<LoansResponse>(new LoansResponse(UNAUTHORIZED_USER_PLEASE_RE_LOGIN_AND_TRY_AGAIN_MSG, HttpStatus.UNAUTHORIZED.value()), HttpStatus.OK);
         	}
         	if(fundSeekerInputRequestResponse.getApplicationId() == null) {
-     		   return new ResponseEntity<LoansResponse>(new LoansResponse("Something goes wrong while processig your Request. Please re-login again.", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+     		   return new ResponseEntity<LoansResponse>(new LoansResponse(SOMETHING_GOES_WRONG_WHILE_PROCESSING_YOUR_REQUEST_PLEASE_RE_LOGIN_AGAIN_MSG, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
         	}
         	
         	if(CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequestResponse.getIsGstCompleted()) || !fundSeekerInputRequestResponse.getIsGstCompleted()){
@@ -299,10 +301,10 @@ public class FundSeekerInputRequestController {
         {
         	Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
         	if(userId == null) {
-        		   return new ResponseEntity<LoansResponse>(new LoansResponse("Unauthorized User! Please Re-login and try again.", HttpStatus.UNAUTHORIZED.value()), HttpStatus.OK);
+        		   return new ResponseEntity<LoansResponse>(new LoansResponse(UNAUTHORIZED_USER_PLEASE_RE_LOGIN_AND_TRY_AGAIN_MSG, HttpStatus.UNAUTHORIZED.value()), HttpStatus.OK);
         	}
         	if(applicationId == null) {
-     		   return new ResponseEntity<LoansResponse>(new LoansResponse("Something goes wrong while processig your Request. Please re-login again.", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+     		   return new ResponseEntity<LoansResponse>(new LoansResponse(SOMETHING_GOES_WRONG_WHILE_PROCESSING_YOUR_REQUEST_PLEASE_RE_LOGIN_AGAIN_MSG, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
         	}
         	return fundSeekerInputRequestService.getDataForOnePagerOneForm(applicationId);
         } catch (Exception e) {
@@ -319,7 +321,7 @@ public class FundSeekerInputRequestController {
         {
         	Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
         	if(userId == null) {
-        		   return new ResponseEntity<LoansResponse>(new LoansResponse("Unauthorized User! Please Re-login and try again.", HttpStatus.UNAUTHORIZED.value()), HttpStatus.OK);
+        		   return new ResponseEntity<LoansResponse>(new LoansResponse(UNAUTHORIZED_USER_PLEASE_RE_LOGIN_AND_TRY_AGAIN_MSG, HttpStatus.UNAUTHORIZED.value()), HttpStatus.OK);
         	}
         	
         	if(requestedData == null) {
@@ -352,10 +354,10 @@ public class FundSeekerInputRequestController {
         {
         	Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
         	if(userId == null) {
-        		   return new ResponseEntity<LoansResponse>(new LoansResponse("Unauthorized User! Please Re-login and try again.", HttpStatus.UNAUTHORIZED.value()), HttpStatus.OK);
+        		   return new ResponseEntity<LoansResponse>(new LoansResponse(UNAUTHORIZED_USER_PLEASE_RE_LOGIN_AND_TRY_AGAIN_MSG, HttpStatus.UNAUTHORIZED.value()), HttpStatus.OK);
         	}
         	if(applicationId == null) {
-     		   return new ResponseEntity<LoansResponse>(new LoansResponse("Something goes wrong while processig your Request. Please re-login again.", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+     		   return new ResponseEntity<LoansResponse>(new LoansResponse(SOMETHING_GOES_WRONG_WHILE_PROCESSING_YOUR_REQUEST_PLEASE_RE_LOGIN_AGAIN_MSG, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
         	}
             return new ResponseEntity<LoansResponse>(fundSeekerInputRequestService.updateFlag(applicationId, flagValue,flagType), HttpStatus.OK);
         } catch (Exception e) {
