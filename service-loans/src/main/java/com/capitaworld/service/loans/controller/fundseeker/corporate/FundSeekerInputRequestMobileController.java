@@ -26,6 +26,11 @@ public class FundSeekerInputRequestMobileController {
 
     private static final Logger logger = LoggerFactory.getLogger(FundSeekerInputRequestController.class);
 
+    private static final String MOBILE_GET_ONE_FORM_USER_ID_IS_NULL_OR_EMPTY_MSG = "Mobile Get Oneform UserId is null or empty !! ";
+    private static final String MOBILE_GET_ONE_FORM_APPLCATION_ID_IS_NULL_OR_EMPTY_MSG  = "Mobile Get Oneform ApplcationId is null or empty !! ";
+    private static final String USER_ID_IS_NULL_OR_EMPTY_MSG = "UserId is null or empty !!";
+    private static final String APPLCATION_ID_IS_NULL_OR_EMPTY_MSG = "ApplcationId is null or empty !!";
+
     @Autowired
     private FundSeekerInputRequestService fundSeekerInputRequestService;
 
@@ -39,16 +44,16 @@ public class FundSeekerInputRequestMobileController {
             logger.info("ENTER IN SAVE FUNDSEEKER INPUT REQUEST----------------------------------->");
 
             if(fundSeekerInputRequestResponse.getUserId() == null) {
-            	logger.info("Mobile Get Oneform UserId id is null or empty !! ");
+            	logger.info(MOBILE_GET_ONE_FORM_USER_ID_IS_NULL_OR_EMPTY_MSG);
             	return new ResponseEntity<MobileApiResponse>(
-                        new MobileApiResponse("UserId is null or empty !!", "false", MobileCustomizeResponse.ERROR403),
+                        new MobileApiResponse(USER_ID_IS_NULL_OR_EMPTY_MSG, "false", MobileCustomizeResponse.ERROR403),
                         HttpStatus.BAD_REQUEST);
             }
             
             if(fundSeekerInputRequestResponse.getApplicationId() == null) {
-            	logger.info("Mobile Get Oneform ApplcationId is null or empty !! ");
+            	logger.info(MOBILE_GET_ONE_FORM_APPLCATION_ID_IS_NULL_OR_EMPTY_MSG);
             	return new ResponseEntity<MobileApiResponse>(
-                        new MobileApiResponse("ApplcationId is null or empty !!", "false", MobileCustomizeResponse.ERROR403),
+                        new MobileApiResponse(APPLCATION_ID_IS_NULL_OR_EMPTY_MSG, "false", MobileCustomizeResponse.ERROR403),
                         HttpStatus.BAD_REQUEST);
             }           
 
@@ -81,16 +86,16 @@ public class FundSeekerInputRequestMobileController {
     {
         try {
             if(fundSeekerInputRequestResponse.getUserId() == null) {
-            	logger.info("Mobile Get Oneform UserId id is null or empty !! ");
+            	logger.info(MOBILE_GET_ONE_FORM_USER_ID_IS_NULL_OR_EMPTY_MSG);
             	return new ResponseEntity<MobileApiResponse>(
-                        new MobileApiResponse("UserId is null or empty !!", "false", MobileCustomizeResponse.ERROR403),
+                        new MobileApiResponse(USER_ID_IS_NULL_OR_EMPTY_MSG, "false", MobileCustomizeResponse.ERROR403),
                         HttpStatus.BAD_REQUEST);
             }
             
             if(fundSeekerInputRequestResponse.getApplicationId() == null) {
-            	logger.info("Mobile Get Oneform ApplcationId is null or empty !! ");
+            	logger.info(MOBILE_GET_ONE_FORM_APPLCATION_ID_IS_NULL_OR_EMPTY_MSG);
             	return new ResponseEntity<MobileApiResponse>(
-                        new MobileApiResponse("ApplcationId is null or empty !!", "false", MobileCustomizeResponse.ERROR403),
+                        new MobileApiResponse(APPLCATION_ID_IS_NULL_OR_EMPTY_MSG, "false", MobileCustomizeResponse.ERROR403),
                         HttpStatus.BAD_REQUEST);
             }
             logger.info("Application Id for Getting one form for mobile============>{}",fundSeekerInputRequestResponse.getApplicationId());
@@ -120,16 +125,16 @@ public class FundSeekerInputRequestMobileController {
         try
         {
         	 if(fundSeekerInputRequestResponse.getUserId() == null) {
-             	logger.info("Mobile Get Oneform UserId id is null or empty !! ");
+             	logger.info(MOBILE_GET_ONE_FORM_USER_ID_IS_NULL_OR_EMPTY_MSG);
              	return new ResponseEntity<MobileApiResponse>(
-                         new MobileApiResponse("UserId is null or empty !!", "false", MobileCustomizeResponse.ERROR403),
+                         new MobileApiResponse(USER_ID_IS_NULL_OR_EMPTY_MSG, "false", MobileCustomizeResponse.ERROR403),
                          HttpStatus.BAD_REQUEST);
              }
              
              if(fundSeekerInputRequestResponse.getApplicationId() == null) {
-             	logger.info("Mobile Get Oneform ApplcationId is null or empty !! ");
+             	logger.info(MOBILE_GET_ONE_FORM_APPLCATION_ID_IS_NULL_OR_EMPTY_MSG);
              	return new ResponseEntity<MobileApiResponse>(
-                         new MobileApiResponse("ApplcationId is null or empty !!", "false", MobileCustomizeResponse.ERROR403),
+                         new MobileApiResponse(APPLCATION_ID_IS_NULL_OR_EMPTY_MSG, "false", MobileCustomizeResponse.ERROR403),
                          HttpStatus.BAD_REQUEST);
              }
             logger.info("Application Id for Getting director detail============>{}",fundSeekerInputRequestResponse.getApplicationId());
@@ -155,16 +160,16 @@ public class FundSeekerInputRequestMobileController {
     {
         try {
         	 if(fundSeekerInputRequestResponse.getUserId() == null) {
-             	logger.info("Mobile Get Oneform UserId id is null or empty !! ");
+             	logger.info(MOBILE_GET_ONE_FORM_USER_ID_IS_NULL_OR_EMPTY_MSG);
              	return new ResponseEntity<MobileApiResponse>(
-                         new MobileApiResponse("UserId is null or empty !!", "false", MobileCustomizeResponse.ERROR403),
+                         new MobileApiResponse(USER_ID_IS_NULL_OR_EMPTY_MSG, "false", MobileCustomizeResponse.ERROR403),
                          HttpStatus.BAD_REQUEST);
              }
              
              if(fundSeekerInputRequestResponse.getApplicationId() == null) {
-             	logger.info("Mobile Get Oneform ApplcationId is null or empty !! ");
+             	logger.info(MOBILE_GET_ONE_FORM_APPLCATION_ID_IS_NULL_OR_EMPTY_MSG);
              	return new ResponseEntity<MobileApiResponse>(
-                         new MobileApiResponse("ApplcationId is null or empty !!", "false", MobileCustomizeResponse.ERROR403),
+                         new MobileApiResponse(APPLCATION_ID_IS_NULL_OR_EMPTY_MSG, "false", MobileCustomizeResponse.ERROR403),
                          HttpStatus.BAD_REQUEST);
              }
 
