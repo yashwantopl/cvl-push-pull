@@ -7,12 +7,17 @@ import javax.persistence.ParameterMode;
 import javax.persistence.PersistenceContext;
 import javax.persistence.StoredProcedureQuery;
 
+import com.capitaworld.service.loans.utils.CommonUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
 import com.capitaworld.service.loans.repository.common.LoanRepository;
 
 @Repository
 public class LoanRepositoryImpl implements LoanRepository {
+
+	private static final Logger logger = LoggerFactory.getLogger(LoanRepositoryImpl.class);
 
 	@PersistenceContext
 	private EntityManager entityManager;
@@ -25,7 +30,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 					.getSingleResult();
 			return value;	
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		return null;
 	}
