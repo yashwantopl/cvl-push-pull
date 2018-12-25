@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -591,16 +592,18 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 				+ fundSeekerInputRequest.getApplicationId());
 		CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
 				.findOneByApplicationIdId(fundSeekerInputRequest.getApplicationId());
-		if (CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail)) {
-			logger.info("corporateApplicantDetail is null created new object");
-			return new LoansResponse(CommonUtils.GENERIC_ERROR_MSG,HttpStatus.BAD_REQUEST.value());
-		}
-		if(CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getIsGstCompleted()) || !corporateApplicantDetail.getIsGstCompleted()){
-    		return new LoansResponse(CommonUtils.GST_VALIDATION_ERROR_MSG,HttpStatus.BAD_REQUEST.value());	
-    	}
-    	if(CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getIsItrCompleted()) || !corporateApplicantDetail.getIsItrCompleted()){
-    		new LoansResponse(CommonUtils.ITR_VALIDATION_ERROR_MSG,HttpStatus.BAD_REQUEST.value());	
-    	}
+//		if (CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail)) {
+//			.info("corporateApplicantDetail is null created new object");
+//			return new LoansResponse(CommonUtils.GENERIC_ERROR_MSG,HttpStatus.BAD_REQUEST.value());
+//		}
+//		if(CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getIsGstCompleted()) || !corporateApplicantDetail.getIsGstCompleted()){
+//    		return new LoansResponse(CommonUtils.GST_VALIDATION_ERROR_MSG,HttpStatus.BAD_REQUEST.value());	
+//    	}
+//    	if(CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getIsItrCompleted()) || !corporateApplicantDetail.getIsItrCompleted()){
+//    		new LoansResponse(CommonUtils.ITR_VALIDATION_ERROR_MSG,HttpStatus.BAD_REQUEST.value());	
+//    	}
+		
+		
 		logger.info("constitution id  ------------------------------------------>"+ corporateApplicantDetail.getConstitutionId());
 		corporateApplicantDetail.setModifiedBy(fundSeekerInputRequest.getUserId());
 		corporateApplicantDetail.setModifiedDate(new Date());
@@ -618,10 +621,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 		}
 		primaryCorporateDetail.setAmount(fundSeekerInputRequest.getLoanAmount());
 		primaryCorporateDetail.setLoanAmount(fundSeekerInputRequest.getLoanAmount());
-//		Following commented Object will be auto populated from ITR so no need to Updated it
-//		primaryCorporateDetail.setTurnOverPrevFinYear(fundSeekerInputRequest.getTurnOverPrevFinYear());
-//		primaryCorporateDetail.setTurnOverCurrFinYearTillMonth(fundSeekerInputRequest.getTurnOverCurrFinYearTillMonth());
-//		primaryCorporateDetail.setProfitCurrFinYear(fundSeekerInputRequest.getProfitCurrFinYear());
+		primaryCorporateDetail.setTurnOverCurrFinYearTillMonth(fundSeekerInputRequest.getTurnOverCurrFinYearTillMonth());
 		primaryCorporateDetail.setProjectedTurnOverCurrFinYear(fundSeekerInputRequest.getProjectedTurnOverCurrFinYear());
 		primaryCorporateDetail.setProjectedProfitCurrFinYear(fundSeekerInputRequest.getProjectedProfitCurrFinYear());
 		primaryCorporateDetail.setIsApplicantDetailsFilled(true);
@@ -827,5 +827,41 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 		}
 		return loansResponse;
 	}	
+	
+	@SuppressWarnings("unchecked")
+	public LoansResponse deleteDocument(Long applicationId,List<Long> docIds,Long mappingId){
+		
+		for(Long id : docIds){
+			JSONObject jsonObject = new JSONObject();
+			jsonObject.put("id", id);
+			try{
+				DocumentResponse inactiveFile = dMSClient.deleteProductDocument(jsonObject.toJSONString());
+				if(!CommonUtils.isObjectNullOrEmpty(inactiveFile)){
+					logger.warn("Delete/Inactive Document status is ===>{}======>for ApplicationId==={} for Doc Id=====>{}",inactiveFile.getStatus(),applicationId,id);
+				}else{
+					logger.warn("Something goes wrong while deleting/inactivating Document. The status is NULL for ApplicationId==={} for Doc Id=====>{}",applicationId,id);
+				}	
+			}catch(DocumentException exception){
+				logger.error("error while Deleting/Inactivating Document for Document Id : {} : and Exceptions are : {}",id,exception);
+			}			
+		}
+		DocumentRequest documentRequest = new DocumentRequest();
+		documentRequest.setApplicationId(applicationId);
+		documentRequest.setProductDocumentMappingId(mappingId);
+		documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
+
+		LoansResponse loansResponse = new LoansResponse("Process Done.",HttpStatus.OK.value());
+		try{
+			DocumentResponse listProductDocument = dMSClient.listProductDocument(documentRequest);
+			if(!CommonUtils.isObjectNullOrEmpty(listProductDocument)){
+				loansResponse.setListData(listProductDocument.getDataList());					
+			}else{
+				logger.warn("No GST Receipt Found for Application Id===>{}",applicationId);
+			}	
+		}catch(DocumentException exception){
+			logger.error("error Updating Flags and Getting Document : {}",exception);
+		}
+		return loansResponse;
+	}
 
 }
