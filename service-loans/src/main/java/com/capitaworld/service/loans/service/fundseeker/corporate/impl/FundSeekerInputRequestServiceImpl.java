@@ -592,10 +592,10 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 				+ fundSeekerInputRequest.getApplicationId());
 		CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
 				.findOneByApplicationIdId(fundSeekerInputRequest.getApplicationId());
-//		if (CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail)) {
-//			.info("corporateApplicantDetail is null created new object");
-//			return new LoansResponse(CommonUtils.GENERIC_ERROR_MSG,HttpStatus.BAD_REQUEST.value());
-//		}
+		if (CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail)) {
+			logger.info("corporateApplicantDetail is null created new object");
+			return new LoansResponse(CommonUtils.GENERIC_ERROR_MSG,HttpStatus.BAD_REQUEST.value());
+		}
 //		if(CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getIsGstCompleted()) || !corporateApplicantDetail.getIsGstCompleted()){
 //    		return new LoansResponse(CommonUtils.GST_VALIDATION_ERROR_MSG,HttpStatus.BAD_REQUEST.value());	
 //    	}
