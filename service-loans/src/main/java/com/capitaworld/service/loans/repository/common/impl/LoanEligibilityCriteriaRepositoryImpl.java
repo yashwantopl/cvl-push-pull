@@ -21,6 +21,7 @@ import com.capitaworld.service.loans.utils.CommonUtils;
 public class LoanEligibilityCriteriaRepositoryImpl implements LoanEligibilityCriteriaRepository {
 
 	private static final Logger logger = LoggerFactory.getLogger(LoanEligibilityCriteriaRepositoryImpl.class);
+	private static final String GIVEN_CRITERIA_DOES_NOT_MATCH_WITH_THE_DATABASE_RECORDS_MSG = "Given Criteria Does not match with the Database Records";
 
 	@PersistenceContext
 	private EntityManager entityManager;
@@ -39,7 +40,7 @@ public class LoanEligibilityCriteriaRepositoryImpl implements LoanEligibilityCri
 			CommonDocumentUtils.endHook(logger, "getHomeLoanBySalarySlab");
 			return eligibility.get(0);
 		}
-		logger.warn("Given Criteria Does not match with the Database Records");
+		logger.warn(GIVEN_CRITERIA_DOES_NOT_MATCH_WITH_THE_DATABASE_RECORDS_MSG);
 		CommonDocumentUtils.endHook(logger, "getHomeLoanBySalarySlab");
 		return null;
 	}
@@ -58,7 +59,7 @@ public class LoanEligibilityCriteriaRepositoryImpl implements LoanEligibilityCri
 			CommonDocumentUtils.endHook(logger, "getHomeLoanBySVMV");
 			return eligibility.get(0);
 		}
-		logger.warn("Given Criteria Does not match with the Database Records");
+		logger.warn(GIVEN_CRITERIA_DOES_NOT_MATCH_WITH_THE_DATABASE_RECORDS_MSG);
 		CommonDocumentUtils.endHook(logger, "getHomeLoanBySVMV");
 		return null;
 	}
@@ -77,7 +78,7 @@ public class LoanEligibilityCriteriaRepositoryImpl implements LoanEligibilityCri
 					CommonDocumentUtils.endHook(logger, "getHomeLoanBySVMV");
 					return eligibility.get(0);
 				}
-				logger.warn("Given Criteria Does not match with the Database Records");
+				logger.warn(GIVEN_CRITERIA_DOES_NOT_MATCH_WITH_THE_DATABASE_RECORDS_MSG);
 				CommonDocumentUtils.endHook(logger, "getHomeLoanBySVMV");
 				return null;
 
@@ -113,7 +114,7 @@ public class LoanEligibilityCriteriaRepositoryImpl implements LoanEligibilityCri
 			CommonDocumentUtils.endHook(logger, "getPersonalLoanBySalarySlab");
 			return eligibility.get(0);
 		}
-		logger.warn("Given Criteria Does not match with the Database Records");
+		logger.warn(GIVEN_CRITERIA_DOES_NOT_MATCH_WITH_THE_DATABASE_RECORDS_MSG);
 		CommonDocumentUtils.endHook(logger, "getPersonalLoanBySalarySlab");
 		return null;
 	}
@@ -153,7 +154,7 @@ public class LoanEligibilityCriteriaRepositoryImpl implements LoanEligibilityCri
 			CommonDocumentUtils.endHook(logger, "getLAPBySalarySlab");
 			return eligibility.get(0);
 		}
-		logger.warn("Given Criteria Does not match with the Database Records");
+		logger.warn(GIVEN_CRITERIA_DOES_NOT_MATCH_WITH_THE_DATABASE_RECORDS_MSG);
 		CommonDocumentUtils.endHook(logger, "getLAPBySalarySlab");
 		return null;
 	}

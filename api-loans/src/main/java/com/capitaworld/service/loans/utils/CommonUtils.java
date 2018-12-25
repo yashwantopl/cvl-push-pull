@@ -75,6 +75,7 @@ public class CommonUtils {
 	public static final String DATA_NOT_FOUND = "Data Not Found.";
 	public static final String SUCCESSFULLY_SAVED = "Successfully Saved.";
 	public static final String INVALID_AGE = "Invalid Age";
+	public static final String ONE_FORM_SAVED_SUCCESSFULLY = "Oneform Saved Successfully";
 	public static final String SUCCESSFULLY_GET_DATA = "Successfully get data";
 
 	public static final String EXCEPTION = " :: EXCEPTION : ";
