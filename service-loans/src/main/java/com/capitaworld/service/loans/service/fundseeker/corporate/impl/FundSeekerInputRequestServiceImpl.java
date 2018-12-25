@@ -680,8 +680,39 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			fundSeekerInputResponse.setPan(corporateApplicantDetail.getPanNo());
 			fundSeekerInputResponse.setDirectorBackgroundDetailRequestsList(directorBackgroundDetailsService.getDirectorBackgroundDetailList(applicationId, null));
 			fundSeekerInputResponse.setFinancialArrangementsDetailRequestsList(financialArrangementDetailsService.getManuallyAddedFinancialArrangementDetailsList(applicationId));
+			
+			LoansResponse loansResponse = new LoansResponse("Data Found",HttpStatus.OK.value(), fundSeekerInputResponse);
+			//Getting Uploaded Documents of GST
+			DocumentRequest documentRequest = new DocumentRequest();
+			documentRequest.setApplicationId(applicationId);
+			documentRequest.setProductDocumentMappingId(DocumentAlias.GST_RECEIPT);
+			documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
+			try{
+					DocumentResponse listProductDocument = dMSClient.listProductDocument(documentRequest);
+					if(!CommonUtils.isObjectNullOrEmpty(listProductDocument)){
+						loansResponse.setListData(listProductDocument.getDataList());					
+					}else{
+						logger.warn("No GST Receipt Found for Application Id===>{}",applicationId);
+					}
+			}catch(DocumentException documentException){
+				logger.error("Error while Getting GST Reveipt from S3 : {}",documentException);	
+			}
+			
+			
+			//Getting Uploaded Documents of ITR
+			try{
+				documentRequest.setProductDocumentMappingId(DocumentAlias.CORPORATE_ITR_XML);
+				DocumentResponse listProductDocument = dMSClient.listProductDocument(documentRequest);
+				if(!CommonUtils.isObjectNullOrEmpty(listProductDocument)){
+					loansResponse.getListData().addAll(listProductDocument.getDataList());					
+				}else{
+					logger.warn("No GST Receipt Found for Application Id===>{}",applicationId);
+				}
+			}catch(DocumentException documentException){
+				logger.error("Error while Getting GST Reveipt from S3 : {}",documentException);	
+			}
 			logger.info("Oneform Uniform Prodcut Details Successfully Fetched");
-			return new ResponseEntity<LoansResponse>(new LoansResponse("Data Found",HttpStatus.OK.value(), fundSeekerInputResponse), HttpStatus.OK);
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
 		} catch (Exception e) {
 			String msg = "Error while fetching Details for Uniform OneForm"; 
