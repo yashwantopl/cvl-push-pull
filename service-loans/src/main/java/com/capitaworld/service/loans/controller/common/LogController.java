@@ -15,11 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.capitaworld.service.loans.controller.fundseeker.LoanApplicationController;
-import com.capitaworld.service.loans.domain.common.LogDetails;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.common.LogDetailsModel;
-import com.capitaworld.service.loans.model.corporate.CorporateProduct;
 import com.capitaworld.service.loans.service.common.LogService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;

@@ -6,11 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.capitaworld.service.loans.utils.CommonDocumentUtils;
-import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
 import com.capitaworld.service.rating.exception.RatingException;
-import com.capitaworld.service.rating.model.FinancialInputRequest;
-import com.capitaworld.service.rating.model.RatingResponse;
 import com.capitaworld.service.scoring.model.GenericCheckerReqRes;
 import com.capitaworld.service.scoring.model.scoringmodel.ScoringModelReqRes;
 import org.apache.commons.io.FileUtils;

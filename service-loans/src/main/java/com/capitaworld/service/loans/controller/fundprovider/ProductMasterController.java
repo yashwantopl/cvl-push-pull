@@ -15,9 +15,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.capitaworld.api.workflow.model.WorkflowResponse;
-import com.capitaworld.api.workflow.utility.WorkflowUtils;
-import com.capitaworld.client.workflow.WorkflowClient;
 import com.capitaworld.service.loans.model.FpProductDetails;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.ProductDetailsForSp;
