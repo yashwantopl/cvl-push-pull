@@ -91,7 +91,7 @@ public class FPAsyncComponent {
 	private static final String MSG_MAKER_ID = "Maker ID:---";
 	private static final String MSG_CHECKER_ID = "Checker ID:---";
 
-	private static final String URL_WWW_BITLY_COM = "www.bitly.com";
+	private static final String URL_WWW_BITLY_COM = "https://www.psbloansin59minutes.com";
 	private static final String DATE_FORMAT_DD_MM_YYYY = "dd/MM/yyyy";
 
 	@Autowired
@@ -2728,7 +2728,11 @@ public class FPAsyncComponent {
 						smsParameters.put(PARAMETERS_PRODUCT_NAME,
 								productMasterTemp.getName() != null ? productMasterTemp.getName() : "NA");
 						smsParameters.put(PARAMETERS_PRODUCT_TYPE, productType != null ? productType : "NA");
+<<<<<<< HEAD
+						smsParameters.put(CommonUtils.URL ,CommonUtils.PSB_URL);
+=======
 						smsParameters.put("url", URL_WWW_BITLY_COM);
+>>>>>>> branch 'sidbi-development' of https://github.com/capitawrld/service-loans.git
 
 						sendSMSNotification(userId.toString(), smsParameters,
 								NotificationAlias.SMS_ADMIN_MAKER_PRODUCT_APPROVED_BY_CHECKER, to);
@@ -2916,7 +2920,11 @@ public class FPAsyncComponent {
 						smsParameters.put(PARAMETERS_PRODUCT_NAME,
 								productMasterTemp.getName() != null ? productMasterTemp.getName() : "NA");
 						smsParameters.put(PARAMETERS_PRODUCT_TYPE, productType != null ? productType : "NA");
+<<<<<<< HEAD
+						smsParameters.put(CommonUtils.URL ,CommonUtils.PSB_URL);
+=======
 						smsParameters.put("url", URL_WWW_BITLY_COM);
+>>>>>>> branch 'sidbi-development' of https://github.com/capitawrld/service-loans.git
 
 						sendSMSNotification(userId.toString(), smsParameters,
 								NotificationAlias.SMS_ADMIN_MAKER_PRODUCT_REVERTED_BY_CHECKER, to);
@@ -2985,9 +2993,8 @@ public class FPAsyncComponent {
 			String fpName = proposalresp.get(CommonUtils.PARAMETERS_FP_NAME) != null ? proposalresp.get(CommonUtils.PARAMETERS_FP_NAME).toString() : "NA";
 			mailParameters.put(CommonUtils.PARAMETERS_FP_NAME, fpName != null ? fpName : "NA");
 			mailParameters.put(PARAMETERS_PRODUCT_TYPE, productType != null ? productType : "NA");
-			mailParameters.put(CommonUtils.PARAMETERS_LOAN_AMOUNT,
-					applicationRequest.getLoanAmount() != null
-							? Double.valueOf(applicationRequest.getLoanAmount().toString())
+			mailParameters.put(CommonUtils.LITERAL_AMOUNT,
+					loanSanctionDomainOld.getSanctionAmount() != null ? loanSanctionDomainOld.getSanctionAmount()
 							: "NA");
 			mailParameters.put("processing_fees",
 					loanSanctionDomainOld.getProcessingFee() != null ? loanSanctionDomainOld.getProcessingFee() : "NA");
@@ -3180,11 +3187,7 @@ public class FPAsyncComponent {
 						smsParameters.put(PARAMETERS_CHECKER_NAME, checkerName != null ? checkerName : LITERAL_CHECKER);
 						smsParameters.put(CommonUtils.PARAMETERS_FS_NAME, fsName != null ? fsName : "NA");
 						smsParameters.put(PARAMETERS_PRODUCT_TYPE, productType != null ? productType : "NA");
-						smsParameters.put(CommonUtils.PARAMETERS_LOAN_AMOUNT,
-								applicationRequest.getLoanAmount() != null
-										? Double.valueOf(applicationRequest.getLoanAmount().toString())
-										: "NA");
-
+						smsParameters.put(CommonUtils.PARAMETERS_LOAN_AMOUNT,loanSanctionDomainOld.getSanctionAmount() != null ? loanSanctionDomainOld.getSanctionAmount(): "NA");
 						smsParameters.put("url", URL_WWW_BITLY_COM);
 
 						sendSMSNotification(userObj.getId().toString(), smsParameters,
@@ -3257,10 +3260,7 @@ public class FPAsyncComponent {
 						smsParameters.put(PARAMETERS_CHECKER_NAME, checkerName != null ? checkerName : LITERAL_CHECKER);
 						smsParameters.put(CommonUtils.PARAMETERS_FS_NAME, fsName != null ? fsName : "NA");
 						smsParameters.put(PARAMETERS_PRODUCT_TYPE, productType != null ? productType : "NA");
-						smsParameters.put(CommonUtils.PARAMETERS_LOAN_AMOUNT,
-								applicationRequest.getLoanAmount() != null
-										? Double.valueOf(applicationRequest.getLoanAmount().toString())
-										: "NA");
+						smsParameters.put(CommonUtils.PARAMETERS_LOAN_AMOUNT,loanSanctionDomainOld.getSanctionAmount() != null ? loanSanctionDomainOld.getSanctionAmount(): "NA");
 
 						smsParameters.put("url", URL_WWW_BITLY_COM);
 
@@ -3364,10 +3364,7 @@ public class FPAsyncComponent {
 			}
 			mailParameters.put(CommonUtils.PARAMETERS_FP_NAME, fpName != null ? fpName : "");
 			mailParameters.put(PARAMETERS_PRODUCT_TYPE, productType != null ? productType : "");
-			mailParameters.put(CommonUtils.PARAMETERS_LOAN_AMOUNT,
-					applicationRequest.getLoanAmount() != null
-							? Double.valueOf(applicationRequest.getLoanAmount().toString())
-							: "NA");
+			mailParameters.put(CommonUtils.PARAMETERS_LOAN_AMOUNT,loanSanctionDomainOld.getSanctionAmount() != null ? loanSanctionDomainOld.getSanctionAmount(): "NA");
 			mailParameters.put("processing_fees",
 					loanSanctionDomainOld.getProcessingFee() != null ? loanSanctionDomainOld.getProcessingFee() : "");
 			mailParameters.put(CommonUtils.LITERAL_AMOUNT,

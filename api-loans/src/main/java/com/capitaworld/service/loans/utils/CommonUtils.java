@@ -95,7 +95,6 @@ public class CommonUtils {
 	public static final String PARAMETERS_EMI_AMOUNT = "emi_amount";
 	public static final String PARAMETERS_ADDRESS = "address";
 	public static final String PARAMETERS_IS_DYNAMIC = "isDynamic";
-
 	public static final String RATE_INTEREST = "rate_interest";
 	public static final String LITERAL_AMOUNT = "amount";
 
