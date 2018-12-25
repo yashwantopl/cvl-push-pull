@@ -998,15 +998,11 @@ public class FPAsyncComponent {
 				fsName=applicationRequest.getUserName();
 				address=applicationRequest.getAddress();
 				RetailApplicantRequest retailApplicantRequest = retailapplicantService.get(request.getApplicationId());
-				if (!CommonUtils.isObjectNullOrEmpty(retailApplicantRequest)) {
-					if (!CommonUtils.isObjectNullOrEmpty(retailApplicantRequest.getAddressState())) {
+				if (!CommonUtils.isObjectNullOrEmpty(retailApplicantRequest) && !CommonUtils.isObjectNullOrEmpty(retailApplicantRequest.getAddressState()) ) {
 						state = CommonDocumentUtils.getState(retailApplicantRequest.getAddressState(), oneFormClient);
-					}
 				}
-				if (!CommonUtils.isObjectNullOrEmpty(retailApplicantRequest)) {
-					if (!CommonUtils.isObjectNullOrEmpty(retailApplicantRequest.getAddressCity())) {
+				if (!CommonUtils.isObjectNullOrEmpty(retailApplicantRequest) && !CommonUtils.isObjectNullOrEmpty(retailApplicantRequest.getAddressCity()) ) {
 						city = CommonDocumentUtils.getState(retailApplicantRequest.getAddressCity(), oneFormClient);
-					}
 				}
 				NotificationAliasId= NotificationAlias.PL_EMAIL_TO_FS_WHEN_MAKKER_ACCEPT_PROPOSAL;
 			}else {
