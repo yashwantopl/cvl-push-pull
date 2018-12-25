@@ -14,7 +14,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.capitaworld.cibil.api.utility.CibilUtils;
 import com.capitaworld.connect.api.ConnectAuditErrorCode;
 import com.capitaworld.connect.api.ConnectLogAuditRequest;
 import com.capitaworld.connect.api.ConnectResponse;
@@ -22,6 +24,11 @@ import com.capitaworld.connect.api.ConnectStage;
 import com.capitaworld.connect.client.ConnectClient;
 import com.capitaworld.service.analyzer.client.AnalyzerClient;
 import com.capitaworld.service.analyzer.model.common.ReportRequest;
+import com.capitaworld.service.dms.client.DMSClient;
+import com.capitaworld.service.dms.exception.DocumentException;
+import com.capitaworld.service.dms.model.DocumentRequest;
+import com.capitaworld.service.dms.model.DocumentResponse;
+import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.fraudanalytics.client.FraudAnalyticsClient;
 import com.capitaworld.service.fraudanalytics.model.AnalyticsRequest;
 import com.capitaworld.service.fraudanalytics.model.AnalyticsResponse;
@@ -54,6 +61,7 @@ import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArran
 import com.capitaworld.service.loans.service.fundseeker.corporate.FundSeekerInputRequestService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.utils.CommonUtils;
+import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 
 @Service
 @Transactional
@@ -84,6 +92,9 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 	
 	@Autowired
 	private GstClient gstClient; 
+	
+	@Autowired
+	private DMSClient dMSClient; 
 
 	@Autowired
 	private CorporateApplicantService corporateApplicantService;
@@ -681,7 +692,35 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 	
 	
 	@Override
-	public GstResponse verifyGST(String gstin,Long applicationId,Long userId) {
+	public LoansResponse verifyGST(String gstin,Long applicationId,Long userId,MultipartFile[] uploadedFiles) {
+		//Uploading GST Receipt
+		boolean isDocumentUploaded = false;
+		DocumentRequest documentRequest = new DocumentRequest();
+		try{
+			documentRequest.setApplicationId(applicationId);
+			documentRequest.setProductDocumentMappingId(DocumentAlias.GST_RECEIPT);
+			documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
+			
+			for (MultipartFile uploadedFile : uploadedFiles) {
+				if(CommonUtils.isObjectNullOrEmpty(uploadedFile)) {
+					/*logger.info("CURRENT MULTIPART OBJECT IS NULL OR EMPTY");*/
+					continue;
+				}
+				documentRequest.setOriginalFileName(uploadedFile.getOriginalFilename());
+				DocumentResponse uploadFile = dMSClient.uploadFile(MultipleJSONObjectHelper.getStringfromObject(documentRequest), uploadedFile);
+				if (CibilUtils.isObjectListNull(uploadFile)) {
+					logger.warn("Something goes wrong while uploading GST Receipt for APplicationId as Response Found Null===>{}",applicationId);
+				} else if (uploadFile.getStatus() == HttpStatus.OK.value()) {
+					logger.info("Successfully Uploaded GST Receipt For Application Id==>{}",applicationId);
+					isDocumentUploaded = true;
+				} else {
+					logger.warn("Something goes wrong while uploading GST Receipt for APplicationId===>{}",applicationId);
+				}
+			}
+		}catch(Exception e){
+			logger.error("Error while Upllading GST Reveipt to S3 : {}",e);
+		}
+		
 		try {
 			GSTR1Request request = new GSTR1Request();
 			request.setApplicationId(applicationId);
@@ -699,7 +738,24 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 				updateGSTFlag = corporateApplicantDetailRepository.updateGSTFlag(applicationId, gstin, false);
 				logger.info("GST Updated Count of FALSE WIth GST Status================>{}=====>{}====>{}",updateGSTFlag,response.getStatus(),response.getStatusCd());
 			}
-			return response;
+			//Getting Uploaded GST Receipt
+			LoansResponse loansResponse = new LoansResponse("Done",HttpStatus.OK.value(),response);
+			try{
+				logger.info("Uploaded Document Result for Application Id===>{}",isDocumentUploaded);
+				
+				if(isDocumentUploaded){
+					DocumentResponse listProductDocument = dMSClient.listProductDocument(documentRequest);
+					if(!CommonUtils.isObjectNullOrEmpty(listProductDocument)){
+						loansResponse.setListData(listProductDocument.getDataList());					
+					}else{
+						logger.warn("No GST Receipt Found for Application Id===>{}",applicationId);
+					}
+				}	
+			}catch(DocumentException documentException){
+				logger.error("Error while Getting GST Reveipt from S3 : {}",documentException);	
+			}
+			
+			return loansResponse;
 		} catch (Exception e) {
 			logger.error("error while Verifying GST Number : ",e);
 			return null;
