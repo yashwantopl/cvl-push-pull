@@ -70,6 +70,10 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 
 	private static final Logger logger = LoggerFactory.getLogger(FundSeekerInputRequestServiceImpl.class);
 
+	private static final String DATA_NOT_FOUND_FOR_GIVEN_APPLICATION_ID_MSG = "Data not found for given application id";
+	private static final String DIRECTOR_DETAIL_SUCCESSFULLY_SAVED_MSG = "director detail successfully saved";
+	private static final String CORPORATE_APPLICANT_DETAIL_IS_NULL_CREATED_NEW_OBJECT_MSG = "corporateApplicantDetail is null created new object";
+
 	@Autowired
 	private CorporateApplicantDetailRepository corporateApplicantDetailRepository;
   
@@ -126,7 +130,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
 					.findOneByApplicationIdId(fundSeekerInputRequest.getApplicationId());
 			if (CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail)) {
-				logger.info("corporateApplicantDetail is null created new object");
+				logger.info(CORPORATE_APPLICANT_DETAIL_IS_NULL_CREATED_NEW_OBJECT_MSG);
 				corporateApplicantDetail = new CorporateApplicantDetail();
 				BeanUtils.copyProperties(fundSeekerInputRequest, corporateApplicantDetail, "secondAddress", "sameAs","organisationName","constitutionId",
 						"creditRatingId", "contLiabilityFyAmt", "contLiabilitySyAmt", "contLiabilityTyAmt",
@@ -203,7 +207,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
 					.findOneByApplicationIdId(fundSeekerInputRequest.getApplicationId());
 			if (CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail)) {
-				logger.info("corporateApplicantDetail is null created new object");
+				logger.info(CORPORATE_APPLICANT_DETAIL_IS_NULL_CREATED_NEW_OBJECT_MSG);
 				corporateApplicantDetail = new CorporateApplicantDetail();
 				BeanUtils.copyProperties(fundSeekerInputRequest, corporateApplicantDetail, "aadhar", "secondAddress",
 						"sameAs", "creditRatingId", "contLiabilityFyAmt", "contLiabilitySyAmt", "contLiabilityTyAmt",
@@ -308,10 +312,10 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 				logger.error("Directors ===============> Throw Exception While Save Director Background Details -------->",e);
 			}
 
-			LoansResponse res = new LoansResponse("director detail successfully saved", HttpStatus.OK.value());
+			LoansResponse res = new LoansResponse(DIRECTOR_DETAIL_SUCCESSFULLY_SAVED_MSG, HttpStatus.OK.value());
 			res.setFlag(true);
-			logger.info("director detail successfully saved");
-			msg = "director detail successfully saved";
+			logger.info(DIRECTOR_DETAIL_SUCCESSFULLY_SAVED_MSG);
+			msg = DIRECTOR_DETAIL_SUCCESSFULLY_SAVED_MSG;
 			return new ResponseEntity<LoansResponse>(res, HttpStatus.OK);
 
 		} catch (Exception e) {
@@ -340,9 +344,9 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			CorporateApplicantDetail corpApplicantDetail = corporateApplicantDetailRepository
 					.findOneByApplicationIdId(fsInputReq.getApplicationId());
 			if (CommonUtils.isObjectNullOrEmpty(corpApplicantDetail)) {
-				logger.info("Data not found for given applicationid");
+				logger.info(DATA_NOT_FOUND_FOR_GIVEN_APPLICATION_ID_MSG);
 				fsInputRes.setFinancialArrangementsDetailRequestsList(Collections.emptyList());
-				return new ResponseEntity<LoansResponse>(new LoansResponse("Data not found for given applicationid",
+				return new ResponseEntity<LoansResponse>(new LoansResponse(DATA_NOT_FOUND_FOR_GIVEN_APPLICATION_ID_MSG,
 						HttpStatus.BAD_REQUEST.value(), fsInputRes), HttpStatus.OK);
 			}
 
@@ -388,8 +392,8 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 					.findOneByApplicationIdId(fundSeekerInputRequest.getApplicationId());
 			if (CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail)) {
 				fundSeekerInputResponse.setDirectorBackgroundDetailRequestsList(Collections.emptyList());
-				logger.info("Data not found for given applicationid");
-				return new ResponseEntity<LoansResponse>(new LoansResponse("Data not found for given applicationid",
+				logger.info(DATA_NOT_FOUND_FOR_GIVEN_APPLICATION_ID_MSG);
+				return new ResponseEntity<LoansResponse>(new LoansResponse(DATA_NOT_FOUND_FOR_GIVEN_APPLICATION_ID_MSG,
 						HttpStatus.BAD_REQUEST.value(), fundSeekerInputResponse), HttpStatus.OK);
 			}
 
@@ -527,7 +531,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 				request.setUserId(fundSeekerInputRequestResponse.getUserId());
 				request.setData(hunterRequestDataResponse);
 				request.setIsNtb(isNTB);
-				res.setMessage("Oneform Saved Successfully");
+				res.setMessage(CommonUtils.ONE_FORM_SAVED_SUCCESSFULLY);
 				res.setStatus(HttpStatus.OK.value());
 
 				try {
@@ -535,7 +539,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 				}
 				catch (Exception e) {
 					logger.error("End invokeFraudAnalytics() with Error : "+e.getMessage());
-					return new LoansResponse("Oneform Saved Successfully", HttpStatus.OK.value());
+					return new LoansResponse(CommonUtils.ONE_FORM_SAVED_SUCCESSFULLY, HttpStatus.OK.value());
 				}
 			/*	if (response != null && response.getData() != null) {
 					Boolean resp = Boolean.valueOf(response.getData().toString());
@@ -547,16 +551,16 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 				} */
 
 				logger.info("End invokeFraudAnalytics() with resp : " + res.getData());
-				return new LoansResponse("Oneform Saved Successfully", HttpStatus.OK.value());
+				return new LoansResponse(CommonUtils.ONE_FORM_SAVED_SUCCESSFULLY, HttpStatus.OK.value());
 			} else {
 				logger.info("End invokeFraudAnalytics() Skiping Fraud Analytics call");
 				logger.info("FUNDSEEKER INPUT SAVED SUCCESSFULLY");
-				return new LoansResponse("Oneform Saved Successfully", HttpStatus.OK.value());
+				return new LoansResponse(CommonUtils.ONE_FORM_SAVED_SUCCESSFULLY, HttpStatus.OK.value());
 
 			}
 		} catch (Exception e) {
 			logger.error("End invokeFraudAnalytics() Error in Fraud Analytics call",e);
-			return new LoansResponse("Oneform Saved Successfully", HttpStatus.OK.value());
+			return new LoansResponse(CommonUtils.ONE_FORM_SAVED_SUCCESSFULLY, HttpStatus.OK.value());
 		}
 	}
 
@@ -593,7 +597,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 		CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
 				.findOneByApplicationIdId(fundSeekerInputRequest.getApplicationId());
 		if (CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail)) {
-			logger.info("corporateApplicantDetail is null created new object");
+			logger.info(CORPORATE_APPLICANT_DETAIL_IS_NULL_CREATED_NEW_OBJECT_MSG);
 			return new LoansResponse(CommonUtils.GENERIC_ERROR_MSG,HttpStatus.BAD_REQUEST.value());
 		}
 //		if(CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getIsGstCompleted()) || !corporateApplicantDetail.getIsGstCompleted()){
@@ -662,7 +666,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 }
 	
 	@Override
-	public LoansResponse getDataForOnePagerOneForm(Long applicationId) {
+	public ResponseEntity<LoansResponse> getDataForOnePagerOneForm(Long applicationId) {
 
 		FundSeekerInputRequestResponse fundSeekerInputResponse = new FundSeekerInputRequestResponse();
 		fundSeekerInputResponse.setApplicationId(applicationId);
@@ -672,8 +676,8 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			if (CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail)) {
 				fundSeekerInputResponse.setDirectorBackgroundDetailRequestsList(Collections.emptyList());
 				fundSeekerInputResponse.setFinancialArrangementsDetailRequestsList(Collections.emptyList());
-				logger.info("Data not found for given applicationid");
-				return new LoansResponse("Data not found for given applicationid",HttpStatus.BAD_REQUEST.value(), fundSeekerInputResponse);
+				logger.info(DATA_NOT_FOUND_FOR_GIVEN_APPLICATION_ID_MSG);
+				return new ResponseEntity<LoansResponse>(new LoansResponse(DATA_NOT_FOUND_FOR_GIVEN_APPLICATION_ID_MSG,HttpStatus.BAD_REQUEST.value(), fundSeekerInputResponse), HttpStatus.OK);
 			}
 
 			BeanUtils.copyProperties(corporateApplicantDetail, fundSeekerInputResponse);
@@ -688,7 +692,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			if (CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail)) {
 				fundSeekerInputResponse.setDirectorBackgroundDetailRequestsList(Collections.emptyList());
 				logger.info("Data not found for given applicationid from Primary Corporate Details");
-				return new LoansResponse("Data not found for given applicationid",HttpStatus.BAD_REQUEST.value(), fundSeekerInputResponse);
+				return new ResponseEntity<LoansResponse>(new LoansResponse("Data not found for given applicationid",HttpStatus.BAD_REQUEST.value(), fundSeekerInputResponse), HttpStatus.OK);
 			}
 			
 			fundSeekerInputResponse.setTurnOverPrevFinYear(primaryCorporateDetail.getTurnOverPrevFinYear());
@@ -728,12 +732,12 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 				logger.error("Error while Getting GST Reveipt from S3 : {}",documentException);	
 			}
 			logger.info("Oneform Uniform Prodcut Details Successfully Fetched");
-			return loansResponse;
+			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
 		} catch (Exception e) {
 			String msg = "Error while fetching Details for Uniform OneForm"; 
 			logger.error(msg + " : "  ,e);
-			return new LoansResponse(msg, HttpStatus.INTERNAL_SERVER_ERROR.value());
+			return new ResponseEntity<LoansResponse>(new LoansResponse(msg, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
 		}
 	}
 	
