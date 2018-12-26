@@ -49,7 +49,7 @@ public class MobileLoanEligibilityController {
 		try {
 			LoansResponse response = isHomeLoanRequestIsValid(homeLoanRequest, false);
 			if (response.getStatus().equals(HttpStatus.BAD_REQUEST.value())) {
-				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.FALSE_LITERAL, MobileCustomizeResponse.ERROR403.getStatusCode(), MobileCustomizeResponse.ERROR403.getDescription(), "Reuested Data cannot be null or empty"),HttpStatus.OK);
+				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.FALSE_LITERAL, MobileCustomizeResponse.ERROR403.getStatusCode(), MobileCustomizeResponse.ERROR403.getDescription(), CommonUtils.REQUESTED_DATA_CAN_NOT_BE_NULL_OR_EMPTY),HttpStatus.OK);
 			}
 
 			JSONObject minMaxBySalarySlab = loanEligibilityCalculatorService.getMinMaxBySalarySlab(homeLoanRequest);
@@ -79,7 +79,7 @@ public class MobileLoanEligibilityController {
 		try {
 			LoansResponse response = isHomeLoanRequestIsValid(homeLoanRequest, false);
 			if (response.getStatus().equals(HttpStatus.BAD_REQUEST.value())) {
-				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.FALSE_LITERAL, MobileCustomizeResponse.ERROR403.getStatusCode(), MobileCustomizeResponse.ERROR403.getDescription(), "Reuested Data cannot be null or empty"),HttpStatus.OK);
+				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.FALSE_LITERAL, MobileCustomizeResponse.ERROR403.getStatusCode(), MobileCustomizeResponse.ERROR403.getDescription(), CommonUtils.REQUESTED_DATA_CAN_NOT_BE_NULL_OR_EMPTY),HttpStatus.OK);
 			}
 
 			CommonDocumentUtils.endHook(logger, GET_ELIGIBLE_TENURE);
@@ -108,7 +108,7 @@ public class MobileLoanEligibilityController {
 		try {
 			LoansResponse response = isHomeLoanRequestIsValid(homeLoanRequest, true);
 			if (response.getStatus().equals(HttpStatus.BAD_REQUEST.value())) {
-				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.FALSE_LITERAL, MobileCustomizeResponse.ERROR403.getStatusCode(), MobileCustomizeResponse.ERROR403.getDescription(), "Reuested Data cannot be null or empty"),HttpStatus.OK);
+				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.FALSE_LITERAL, MobileCustomizeResponse.ERROR403.getStatusCode(), MobileCustomizeResponse.ERROR403.getDescription(), CommonUtils.REQUESTED_DATA_CAN_NOT_BE_NULL_OR_EMPTY),HttpStatus.OK);
 			}
 
 			JSONObject jsonObject = loanEligibilityCalculatorService.calcHomeLoanAmount(homeLoanRequest);
@@ -137,7 +137,7 @@ public class MobileLoanEligibilityController {
 		try {
 			LoansResponse response = isPersonalLoanRequestIsValid(eligibilityRequest);
 			if (response.getStatus().equals(HttpStatus.BAD_REQUEST.value())) {
-				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.FALSE_LITERAL, MobileCustomizeResponse.ERROR403.getStatusCode(), MobileCustomizeResponse.ERROR403.getDescription(), "Reuested Data cannot be null or empty"),HttpStatus.OK);
+				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.FALSE_LITERAL, MobileCustomizeResponse.ERROR403.getStatusCode(), MobileCustomizeResponse.ERROR403.getDescription(), CommonUtils.REQUESTED_DATA_CAN_NOT_BE_NULL_OR_EMPTY),HttpStatus.OK);
 			}
 
 			CommonDocumentUtils.endHook(logger, GET_ELIGIBLE_TENURE_PL);
@@ -166,7 +166,7 @@ public class MobileLoanEligibilityController {
 		try {
 			LoansResponse response = isPersonalLoanRequestIsValid(eligibilityRequest);
 			if (response.getStatus().equals(HttpStatus.BAD_REQUEST.value())) {
-				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.FALSE_LITERAL, MobileCustomizeResponse.ERROR403.getStatusCode(), MobileCustomizeResponse.ERROR403.getDescription(), "Reuested Data cannot be null or empty"),HttpStatus.OK);
+				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.FALSE_LITERAL, MobileCustomizeResponse.ERROR403.getStatusCode(), MobileCustomizeResponse.ERROR403.getDescription(), CommonUtils.REQUESTED_DATA_CAN_NOT_BE_NULL_OR_EMPTY),HttpStatus.OK);
 			}
 
 			JSONObject minMaxBySalarySlab = loanEligibilityCalculatorService
@@ -197,7 +197,7 @@ public class MobileLoanEligibilityController {
 		try {
 			LoansResponse response = isLAPRequestIsValid(eligibilityRequest);
 			if (response.getStatus().equals(HttpStatus.BAD_REQUEST.value())) {
-				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.FALSE_LITERAL, MobileCustomizeResponse.ERROR403.getStatusCode(), MobileCustomizeResponse.ERROR403.getDescription(), "Reuested Data cannot be null or empty"),HttpStatus.OK);
+				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.FALSE_LITERAL, MobileCustomizeResponse.ERROR403.getStatusCode(), MobileCustomizeResponse.ERROR403.getDescription(), CommonUtils.REQUESTED_DATA_CAN_NOT_BE_NULL_OR_EMPTY),HttpStatus.OK);
 			}
 
 			CommonDocumentUtils.endHook(logger, GET_ELIGIBLE_TENURE_LAP);
@@ -227,7 +227,7 @@ public class MobileLoanEligibilityController {
 		try {
 			LoansResponse response = isLAPRequestIsValid(eligibilityRequest);
 			if (response.getStatus().equals(HttpStatus.BAD_REQUEST.value())) {
-				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.FALSE_LITERAL, MobileCustomizeResponse.ERROR403.getStatusCode(), MobileCustomizeResponse.ERROR403.getDescription(), "Reuested Data cannot be null or empty"),HttpStatus.OK);
+				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.FALSE_LITERAL, MobileCustomizeResponse.ERROR403.getStatusCode(), MobileCustomizeResponse.ERROR403.getDescription(), CommonUtils.REQUESTED_DATA_CAN_NOT_BE_NULL_OR_EMPTY),HttpStatus.OK);
 			}
 
 			JSONObject minMaxBySalarySlab = loanEligibilityCalculatorService.calcMinMaxForLAP(eligibilityRequest);
@@ -254,7 +254,7 @@ public class MobileLoanEligibilityController {
 		try {
 			LoansResponse response = isLAPRequestIsValid(eligibilityRequest);
 			if (response.getStatus().equals(HttpStatus.BAD_REQUEST.value())) {
-				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.FALSE_LITERAL, MobileCustomizeResponse.ERROR403.getStatusCode(), MobileCustomizeResponse.ERROR403.getDescription(), "Reuested Data cannot be null or empty"),HttpStatus.OK);
+				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.FALSE_LITERAL, MobileCustomizeResponse.ERROR403.getStatusCode(), MobileCustomizeResponse.ERROR403.getDescription(), CommonUtils.REQUESTED_DATA_CAN_NOT_BE_NULL_OR_EMPTY),HttpStatus.OK);
 			}
 			JSONObject jsonObject = loanEligibilityCalculatorService.calcLAPAmount(eligibilityRequest);
 			if (jsonObject == null) {

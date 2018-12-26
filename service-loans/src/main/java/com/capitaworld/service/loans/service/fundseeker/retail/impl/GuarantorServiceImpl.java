@@ -213,7 +213,7 @@ public class GuarantorServiceImpl implements GuarantorService {
 			return requests;
 		} catch (Exception e) {
 			logger.error("Error while getting list of Guarantor Retail Profile:-",e);
-			throw new Exception("Something went Wrong !");
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
@@ -257,7 +257,7 @@ public class GuarantorServiceImpl implements GuarantorService {
 
 		} catch (Exception e) {
 			logger.error("Error while Saving final Guarantor Retail Profile:-",e);
-			throw new Exception("Something went Wrong !");
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
@@ -277,7 +277,7 @@ public class GuarantorServiceImpl implements GuarantorService {
 			return applicantRequest;
 		} catch (Exception e) {
 			logger.error("Error while getting final Guarantor Retail Profile:-",e);
-			throw new Exception("Something went Wrong !");
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 

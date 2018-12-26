@@ -39,6 +39,8 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 
 	private static final Logger logger = LoggerFactory.getLogger(LoanDisbursementServiceImpl.class);
 
+	private static final String EXIT_SAVE_LOAN_DISBURSEMENT_DETAIL_MSG = "Exit saveLoanDisbursementDetail() --> msg==>";
+
 	@Autowired
 	private LoanDisbursementRepository loanDisbursementRepository;
 
@@ -91,7 +93,7 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 				loanSanctionDomain  = loanSanctionRepository.findByBankSanctionPrimaryKeyAndIsActiveAndApplicationId(sanctionPrimaryId , true,loanDisbursementRequest.getApplicationId());
 			}
 			if(loanSanctionDomain == null || loanSanctionDomain.getSanctionAmount() == null) {
-				logger.info("Exit saveLoanDisbursementDetail() -----------------------> msg==>" +"Please Sanction Before Disbursement for this applicationId==>" +loanDisbursementRequest.getApplicationId() );
+				logger.info(EXIT_SAVE_LOAN_DISBURSEMENT_DETAIL_MSG +"Please Sanction Before Disbursement for this applicationId==>" +loanDisbursementRequest.getApplicationId() );
 				 loanDisbursementRequest.setReason("Please Sanction Before Disbursement for this applicationId ==>" +loanDisbursementRequest.getApplicationId());
 				 loanDisbursementRequest.setIsSaved(false);
 				 loanDisbursementRequest.setStatusCode(CommonUtility.SanctionDisbursementAPIStatusCode.DISBURSEMENT_WITHOUT_SANCTION);
@@ -105,7 +107,7 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 				Double oldDisbursedAmount = loanDisbursementRepository.getTotalDisbursedAmount(loanDisbursementRequest.getApplicationId());
 				if (oldDisbursedAmount != null) {
 					if (loanSanctionDomain.getSanctionAmount() == oldDisbursedAmount) {
-						logger.info("Exit saveLoanDisbursementDetail() -----------------------> msg==>"+"Alread Your Disbursement is Complete");
+						logger.info(EXIT_SAVE_LOAN_DISBURSEMENT_DETAIL_MSG+"Alread Your Disbursement is Complete");
 						loanDisbursementRequest.setReason("Alread Your Disbursement is Complete");
 						loanDisbursementRequest.setIsSaved(true);
 						loanDisbursementRequest.setStatusCode(CommonUtility.SanctionDisbursementAPIStatusCode.ALREADY_DONE_DISBURSEMENT);
@@ -117,7 +119,7 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 					}
 					Double totalDisbursedAmount = oldDisbursedAmount + loanDisbursementRequest.getDisbursedAmount();
 					if (loanSanctionDomain.getSanctionAmount() == totalDisbursedAmount) {
-						logger.info("Exit saveLoanDisbursementDetail() -----------------------> msg==>"+"SUCCESS");
+						logger.info(EXIT_SAVE_LOAN_DISBURSEMENT_DETAIL_MSG+"SUCCESS");
 						loanDisbursementRequest.setReason("SUCCESS");
 						loanDisbursementRequest.setIsSaved(false);
 						loanDisbursementRequest.setStatusCode(CommonUtility.SanctionDisbursementAPIStatusCode.SUCCESS);
@@ -127,7 +129,7 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 						}
 						return loanDisbursementRequest;
 					}else if (loanSanctionDomain.getSanctionAmount() > totalDisbursedAmount) {
-						logger.info("Exit saveLoanDisbursementDetail() -----------------------> msg==>"+"SUCCESS");
+						logger.info(EXIT_SAVE_LOAN_DISBURSEMENT_DETAIL_MSG+"SUCCESS");
 						loanDisbursementRequest.setReason("Remaining");
 						loanDisbursementRequest.setIsSaved(false);
 						loanDisbursementRequest.setStatusCode(CommonUtility.SanctionDisbursementAPIStatusCode.SUCCESS);
@@ -137,7 +139,7 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 						}
 						return loanDisbursementRequest;
 					} else {
-						logger.info("Exit saveLoanDisbursementDetail() -----------------------> msg==>"+ "Total Disbursement Amount EXCEED Sanction Amount");
+						logger.info(EXIT_SAVE_LOAN_DISBURSEMENT_DETAIL_MSG+ "Total Disbursement Amount EXCEED Sanction Amount");
 						loanDisbursementRequest.setReason("Total Disbursement Amount EXCEED Sanction Amount{} sanctionAmount ==>"+loanSanctionDomain.getSanctionAmount()+" ,  ( oldDisbursedAmount ==> "+oldDisbursedAmount+" +  newDisbursedAmount==>" +loanDisbursementRequest.getDisbursedAmount()+" ) = totalDisbursedAmount==>"+totalDisbursedAmount);
 						loanDisbursementRequest.setIsSaved(false);
 						loanDisbursementRequest.setStatusCode(CommonUtility.SanctionDisbursementAPIStatusCode.DISBURSEMENT_AMOUNT_EXCEED_SANCTION_AMOUNT);
@@ -148,7 +150,7 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 						return loanDisbursementRequest;
 					}
 				} else {
-					logger.info("Exit saveLoanDisbursementDetail() -----------------------> msg==>" +"First Disbursement");
+					logger.info(EXIT_SAVE_LOAN_DISBURSEMENT_DETAIL_MSG +"First Disbursement");
 					loanDisbursementRequest.setReason("First Disbursement");
 					loanDisbursementRequest.setIsSaved(false);
 					loanDisbursementRequest.setStatusCode(CommonUtility.SanctionDisbursementAPIStatusCode.FIRST_DISBURSEMENT);
@@ -164,7 +166,7 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 					return loanDisbursementRequest;
 				}
 			} else {
-				logger.info("Exit saveLoanDisbursementDetail() -----------------------> msg==>" +"Invalid ApplicationId ");
+				logger.info(EXIT_SAVE_LOAN_DISBURSEMENT_DETAIL_MSG +"Invalid ApplicationId ");
 				loanDisbursementRequest.setReason( "Invalid ApplicationId");
 				loanDisbursementRequest.setIsSaved(false);
 				loanDisbursementRequest.setStatusCode(CommonUtility.SanctionDisbursementAPIStatusCode.DISBURSEMENT_WITHOUT_SANCTION);

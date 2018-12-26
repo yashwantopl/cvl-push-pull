@@ -59,7 +59,12 @@ import com.capitaworld.service.oneform.model.OneFormResponse;
 @Service
 @Transactional
 public class WcTlParameterServiceImpl implements WcTlParameterService {
+
 	private static final Logger logger = LoggerFactory.getLogger(WcTlParameterServiceImpl.class);
+
+	private static final String ERROR_WHILE_GET_TERM_LOAN_PARAMETER_REQUEST_MSG = "error while getTermLoanParameterRequest : ";
+	private static final String ERROR_WHILE_GET_WCTL_REQUEST_TEMP_MSG = "error while getWcTlRequestTemp : ";
+
 	@Autowired
 	private WcTlLoanParameterRepository wcTlLoanParameterRepository;
 	
@@ -204,7 +209,7 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 				}
 				wcTlParameterRequest.setIndustrylist(dataRequests);
 			} catch (Exception e) {
-				logger.error("error while getTermLoanParameterRequest : ",e);
+				logger.error(ERROR_WHILE_GET_TERM_LOAN_PARAMETER_REQUEST_MSG,e);
 			}
 		}
 		
@@ -225,7 +230,7 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 			 
 			
 		} catch (Exception e) {
-			logger.error("error while getTermLoanParameterRequest : ",e);
+			logger.error(ERROR_WHILE_GET_TERM_LOAN_PARAMETER_REQUEST_MSG,e);
 		}
 		}
 
@@ -247,7 +252,7 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 			 
 			
 		} catch (Exception e) {
-			logger.error("error while getTermLoanParameterRequest : ",e);
+			logger.error(ERROR_WHILE_GET_TERM_LOAN_PARAMETER_REQUEST_MSG,e);
 		}
 		}
 		
@@ -269,7 +274,7 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 			 
 			
 		} catch (Exception e) {
-			logger.error("error while getTermLoanParameterRequest : ",e);
+			logger.error(ERROR_WHILE_GET_TERM_LOAN_PARAMETER_REQUEST_MSG,e);
 		}
 		}
 		
@@ -289,7 +294,7 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 			 
 			
 		} catch (Exception e) {
-			logger.error("error while getTermLoanParameterRequest : ",e);
+			logger.error(ERROR_WHILE_GET_TERM_LOAN_PARAMETER_REQUEST_MSG,e);
 		}
 		}
 		
@@ -307,7 +312,7 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 				}
 				wcTlParameterRequest.setNegativeIndustryList(dataRequests);
 			} catch (Exception e) {
-				logger.error("error while getTermLoanParameterRequest : ",e);
+				logger.error(ERROR_WHILE_GET_TERM_LOAN_PARAMETER_REQUEST_MSG,e);
 			}
 		}
 		
@@ -475,7 +480,7 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 				}
 				wcTlParameterRequest.setIndustrylist(dataRequests);
 			} catch (Exception e) {
-				logger.error("error while getWcTlRequestTemp : ",e);
+				logger.error(ERROR_WHILE_GET_WCTL_REQUEST_TEMP_MSG,e);
 			}
 		}
 		
@@ -495,7 +500,7 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 			 
 			
 		} catch (Exception e) {
-			logger.error("error while getWcTlRequestTemp : ",e);
+			logger.error(ERROR_WHILE_GET_WCTL_REQUEST_TEMP_MSG,e);
 		}
 		}
 
@@ -515,7 +520,7 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 			 
 			
 		} catch (Exception e) {
-			logger.error("error while getWcTlRequestTemp : ",e);
+			logger.error(ERROR_WHILE_GET_WCTL_REQUEST_TEMP_MSG,e);
 		}
 		}
 		
@@ -535,7 +540,7 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 			 
 			
 		} catch (Exception e) {
-			logger.error("error while getWcTlRequestTemp : ",e);
+			logger.error(ERROR_WHILE_GET_WCTL_REQUEST_TEMP_MSG,e);
 		}
 		}
 		
@@ -556,7 +561,7 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 			 
 			
 		} catch (Exception e) {
-			logger.error("error while getWcTlRequestTemp : ",e);
+			logger.error(ERROR_WHILE_GET_WCTL_REQUEST_TEMP_MSG,e);
 		}
 		}
 		
@@ -576,7 +581,7 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 				
 				wcTlParameterRequest.setNegativeIndustryList(dataRequests);
 			} catch (Exception e) {
-				logger.error("error while getWcTlRequestTemp : ",e);
+				logger.error(ERROR_WHILE_GET_WCTL_REQUEST_TEMP_MSG,e);
 			}
 		}
 		wcTlParameterRequest.setJobId(loanParameter.getJobId());

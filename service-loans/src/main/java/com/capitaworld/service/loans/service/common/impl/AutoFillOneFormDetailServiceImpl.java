@@ -129,6 +129,8 @@ import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailService {
 
 	private static final String SUCESSFULLY_FINAL_UNSECURE_LOAN_DETAIL_SAVE_MSG = "Sucessfully FinalUnsecureLoanDetail save ==>  ";
+	private static final String ENTER_IN_GET_AND_SAVE_OWNERSHIP_MSG = "===== Enter in getAndSaveOwnerShip() =======";
+	private static final String WITH_USER_ID_MSG = " with user Id ==>";
 
 	@Autowired
 	private CorporateApplicantDetailRepository applicantRepository;
@@ -327,7 +329,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 			if (loanDetailFrom == null) {
 				logger.error("Throw NullPointerException in FromWCL ");
 				throw new NullPointerException("PrimaryWorkingCapitalLoanDetail not exist in DB with ID=>"
-						+ autoFillOneFormDetailRequest.getFromApplicationId() + " with user Id==>" + userId);
+						+ autoFillOneFormDetailRequest.getFromApplicationId() + WITH_USER_ID_MSG + userId);
 			}
 
 			logger.info("Get Detail  Final MCQ  FinalWorkingCapitalLoanDetail From ApplicatinId ====>"
@@ -338,7 +340,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 			if (finalWorkingCapitalLoanDetailFrom == null) {
 				logger.error("Error - Throw NullPointerException in FromWCL ");
 				throw new NullPointerException("FinalWorkingCapitalLoanDetail not exist in DB with ID=>"
-						+ autoFillOneFormDetailRequest.getFromApplicationId() + " with user Id==>" + userId);
+						+ autoFillOneFormDetailRequest.getFromApplicationId() + WITH_USER_ID_MSG + userId);
 			}
 
 			// IN FINAL getting list of product mappingid doc and other type
@@ -420,14 +422,14 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 					.getByApplicationAndUserId(autoFillOneFormDetailRequest.getFromApplicationId(), userId);
 			if (primaryTermLoanDetailFrom == null) {
 				throw new NullPointerException("PrimaryTermLoanDetail not exist in DB with ID=>"
-						+ autoFillOneFormDetailRequest.getFromApplicationId() + " with user Id==>" + userId);
+						+ autoFillOneFormDetailRequest.getFromApplicationId() + WITH_USER_ID_MSG + userId);
 			}
 
 			FinalTermLoanDetail finalTermLoanDetailFrom = finalTermLoanDetailRepository
 					.getByApplicationAndUserId(autoFillOneFormDetailRequest.getFromApplicationId(), userId);
 			if (finalTermLoanDetailFrom == null) {
 				throw new NullPointerException("PrimaryTermLoanDetail not exist in DB with ID=>"
-						+ autoFillOneFormDetailRequest.getFromApplicationId() + " with user Id==>" + userId);
+						+ autoFillOneFormDetailRequest.getFromApplicationId() + WITH_USER_ID_MSG + userId);
 			}
 
 			fromDocTypeProductMappingIDList = getTLExcelTypeProductMappingIDList();
@@ -513,7 +515,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 					.getByApplicationAndUserId(autoFillOneFormDetailRequest.getFromApplicationId(), userId);
 			if (primaryUnsecuredLoanDetailFrom == null && finalUnsecureLoanDetailFrom == null) {
 				throw new NullPointerException("PrimaryUnsecuredLoanDetail not exist in DB with ID=>"
-						+ autoFillOneFormDetailRequest.getFromApplicationId() + " with user Id==>" + userId);
+						+ autoFillOneFormDetailRequest.getFromApplicationId() + WITH_USER_ID_MSG + userId);
 			}
 			fromDocTypeProductMappingIDList = getUSLExcelTypeProductMappingIDList();
 			fromOtherTypeProductMappingIDList = getUSLOtherTypeProductMappingIDList();
@@ -984,7 +986,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 
 	public void getAndSavePromotoresBackGround(AutoFillOneFormDetailRequest autoFillOneFormDetailRequest,
 			CorporateApplicantDetail corporateApplicantDetailTo, Long userId) {
-		logger.info("================Enter in getAndSaveOwnerShip() ===========");
+		logger.info(ENTER_IN_GET_AND_SAVE_OWNERSHIP_MSG);
 		// save director / promoter
 		List<PromotorBackgroundDetail> promotorBackgroundDetailsFromList = promotorBackgroundDetailsRepository
 				.listPromotorBackgroundFromAppId(autoFillOneFormDetailRequest.getFromApplicationId(), userId);
@@ -1003,7 +1005,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 
 	public void getAndSaveOwnerShip(AutoFillOneFormDetailRequest autoFillOneFormDetailRequest,
 			CorporateApplicantDetail corporateApplicantDetailTo, Long userId) {
-		logger.info("================Enter in getAndSaveOwnerShip() ===========");
+		logger.info(ENTER_IN_GET_AND_SAVE_OWNERSHIP_MSG);
 		// promoters
 		List<OwnershipDetail> ownershipDetailsList = ownershipDetailsRepository
 				.listOwnershipFromAppId(autoFillOneFormDetailRequest.getFromApplicationId(), userId);
@@ -1021,7 +1023,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 
 	public void getAndSaveDirectorBackGround(AutoFillOneFormDetailRequest autoFillOneFormDetailRequest,
 			CorporateApplicantDetail corporateApplicantDetailTo, Long userId) {
-		logger.info("================Enter in getAndSaveOwnerShip() ===========");
+		logger.info(ENTER_IN_GET_AND_SAVE_OWNERSHIP_MSG);
 		// promoters
 		List<DirectorBackgroundDetail> directorBackgroundDetailsList = directorBackgroundDetailsRepository
 				.listPromotorBackgroundFromAppId(autoFillOneFormDetailRequest.getFromApplicationId(), userId);

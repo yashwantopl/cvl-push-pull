@@ -373,21 +373,21 @@ public class FundSeekerInputRequestController {
         {
         	Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
         	if(userId == null) {
-        		   return new ResponseEntity<LoansResponse>(new LoansResponse("Unauthorized User! Please Re-login and try again.", HttpStatus.UNAUTHORIZED.value()), HttpStatus.OK);
+        		   return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.UNAUTHORIZED_USER_PLEASE_RE_LOGIN_AND_TRY_AGAIN, HttpStatus.UNAUTHORIZED.value()), HttpStatus.OK);
         	}
         	if(CommonUtils.isListNullOrEmpty(docIds)) {
         		logger.warn("docIds Must not be null or Empty====>{}",docIds);
-     		   return new ResponseEntity<LoansResponse>(new LoansResponse("Something goes wrong while processig your Request. Please re-login again.", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+     		   return new ResponseEntity<LoansResponse>(new LoansResponse(SOMETHING_GOES_WRONG_WHILE_PROCESSING_YOUR_REQUEST_PLEASE_RE_LOGIN_AGAIN_MSG, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
         	}
         	
         	if(CommonUtils.isObjectNullOrEmpty(mappingId)) {
         		logger.warn("mappingId Must not be null or Empty====>{}",mappingId);
-      		   return new ResponseEntity<LoansResponse>(new LoansResponse("Something goes wrong while processig your Request. Please re-login again.", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+      		   return new ResponseEntity<LoansResponse>(new LoansResponse(SOMETHING_GOES_WRONG_WHILE_PROCESSING_YOUR_REQUEST_PLEASE_RE_LOGIN_AGAIN_MSG, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
          	}
         	
         	if(CommonUtils.isObjectNullOrEmpty(applicationId)) {
         		logger.warn("applicationId Must not be null or Empty====>{}",applicationId);
-      		   return new ResponseEntity<LoansResponse>(new LoansResponse("Something goes wrong while processig your Request. Please re-login again.", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+      		   return new ResponseEntity<LoansResponse>(new LoansResponse(SOMETHING_GOES_WRONG_WHILE_PROCESSING_YOUR_REQUEST_PLEASE_RE_LOGIN_AGAIN_MSG, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
          	}
             return new ResponseEntity<LoansResponse>(fundSeekerInputRequestService.deleteDocument(applicationId, docIds, mappingId), HttpStatus.OK);
         } catch (Exception e) {
