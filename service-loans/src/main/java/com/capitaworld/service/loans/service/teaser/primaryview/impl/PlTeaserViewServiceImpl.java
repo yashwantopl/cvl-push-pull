@@ -204,8 +204,8 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 		}
 
 		/* ========= Matches Data ========== */
-		if (userType != null) {
-			if (!(CommonUtils.UserType.FUND_SEEKER == userType)) {// TEASER VIEW FROM FP SIDE
+		if (userType != null && !(CommonUtils.UserType.FUND_SEEKER == userType) ) {
+			// TEASER VIEW FROM FP SIDE
 				try {
 					MatchRequest matchRequest = new MatchRequest();
 					matchRequest.setApplicationId(toApplicationId);
@@ -216,7 +216,6 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 				} catch (Exception e) {
 					logger.error("Error while getting matches data : " + e);
 				}
-			}
 		}
 		
 		

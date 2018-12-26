@@ -447,8 +447,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
     }
 
     public static void copyAddressFromRequestToDomainForFinal(RetailFinalInfoRequest from, RetailApplicantDetail to, String type){
-        if(type.equalsIgnoreCase("permanent")){
-            if (from.getPermanentAddress() != null) {
+        if(type.equalsIgnoreCase("permanent") && from.getPermanentAddress() != null ){
                 to.setPermanentPremiseNumberName(from.getPermanentAddress().getPremiseNumber());
                 to.setPermanentStreetName(from.getPermanentAddress().getStreetName());
                 to.setPermanentLandMark(from.getPermanentAddress().getLandMark());
@@ -457,10 +456,8 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
                 to.setPermanentCountryId(from.getPermanentAddress().getCountryId());
                 to.setPermanentdistrictMappingId(from.getPermanentAddress().getDistrictMappingId());
                 to.setPermanentPincode(from.getPermanentAddress().getPincode());
-            }
         }
-        if(type.equalsIgnoreCase("office")){
-            if (from.getOfficeAddress() != null) {
+        if(type.equalsIgnoreCase("office") && from.getOfficeAddress() != null ){
                 to.setOfficePremiseNumberName(from.getOfficeAddress().getPremiseNumber());
                 to.setOfficeStreetName(from.getOfficeAddress().getStreetName());
                 to.setOfficeLandMark(from.getOfficeAddress().getLandMark());
@@ -469,7 +466,6 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
                 to.setOfficeCountryId(from.getOfficeAddress().getCountryId());
                 to.setOfficeDistrictMappingId(from.getOfficeAddress().getDistrictMappingId());
                 to.setOfficePincode(from.getOfficeAddress().getPincode());
-            }
         }
     }
 }
