@@ -34,6 +34,8 @@ public class FinancialArrangementDetailsServiceImpl implements FinancialArrangem
 
 	private static final Logger logger = LoggerFactory.getLogger(SecurityCorporateDetailsServiceImpl.class);
 
+	private static final String EXCEPTION_IN_SAVE_FINANCIAL_ARRANGEMENTS_DETAIL_MSG = "Exception in save financialArrangementsDetail :-";
+
 	@Autowired
 	private FinancialArrangementDetailsRepository financialArrangementDetailsRepository;
 
@@ -63,7 +65,7 @@ public class FinancialArrangementDetailsServiceImpl implements FinancialArrangem
 		}
 
 		catch (Exception e) {
-			logger.error("Exception  in save financialArrangementsDetail  :-",e);
+			logger.error(EXCEPTION_IN_SAVE_FINANCIAL_ARRANGEMENTS_DETAIL_MSG,e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
@@ -76,7 +78,7 @@ public class FinancialArrangementDetailsServiceImpl implements FinancialArrangem
 		}
 
 		catch (Exception e) {
-			logger.error("Exception  in save financialArrangementsDetail  :-",e);
+			logger.error(EXCEPTION_IN_SAVE_FINANCIAL_ARRANGEMENTS_DETAIL_MSG,e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
@@ -89,7 +91,7 @@ public class FinancialArrangementDetailsServiceImpl implements FinancialArrangem
 			return prepareObject(financialArrangementDetailsRepository.getManuallyAddedFinancialDetail(applicationId));
 		}
 		catch (Exception e) {
-			logger.error("Exception  in save financialArrangementsDetail  :-",e);
+			logger.error(EXCEPTION_IN_SAVE_FINANCIAL_ARRANGEMENTS_DETAIL_MSG,e);
 			return Collections.emptyList();
 		}
 	}
@@ -172,7 +174,7 @@ public class FinancialArrangementDetailsServiceImpl implements FinancialArrangem
 			return prepareObject(financialArrangementDetailsRepository.findByDirectorBackgroundDetailIdAndApplicationIdIdAndIsActive(dirId,id,true));
 		}
 		catch (Exception e) {
-			logger.error("Exception  in save financialArrangementsDetail  :-",e);
+			logger.error(EXCEPTION_IN_SAVE_FINANCIAL_ARRANGEMENTS_DETAIL_MSG,e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}

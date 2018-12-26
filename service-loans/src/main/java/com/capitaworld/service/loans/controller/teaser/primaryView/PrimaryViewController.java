@@ -149,7 +149,7 @@ public class PrimaryViewController {
 
 		} else {
 			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
+			userType = (Integer) request.getAttribute(CommonUtils.USER_TYPE);
 		}
 
 			logger.debug(MSG_USER_ID + userId + MSG_USER_TYPE + userType);
@@ -221,7 +221,7 @@ public class PrimaryViewController {
 
 		} else {
 			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
+			userType = (Integer) request.getAttribute(CommonUtils.USER_TYPE);
 		}
 
 		if (CommonUtils.isObjectNullOrEmpty(toApplicationId)) {
@@ -294,7 +294,7 @@ public class PrimaryViewController {
 
 		} else {
 			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
+			userType = (Integer) request.getAttribute(CommonUtils.USER_TYPE);
 		}
 
 		if (CommonUtils.isObjectNullOrEmpty(toApplicationId)) {
@@ -366,7 +366,7 @@ public class PrimaryViewController {
 
 		} else {
 			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
+			userType = (Integer) request.getAttribute(CommonUtils.USER_TYPE);
 		}
 
 		if (CommonUtils.isObjectNullOrEmpty(toApplicationId)) {
@@ -438,7 +438,7 @@ public class PrimaryViewController {
 
 		} else {
 			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
+			userType = (Integer) request.getAttribute(CommonUtils.USER_TYPE);
 		}
 
 		if (CommonUtils.isObjectNullOrEmpty(toApplicationId)) {
@@ -511,7 +511,7 @@ public class PrimaryViewController {
 
 		} else {
 			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
+			userType = (Integer) request.getAttribute(CommonUtils.USER_TYPE);
 		}
 
 		if (toApplicationId == null) {
@@ -586,7 +586,7 @@ public class PrimaryViewController {
 
 		} else {
 			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
+			userType = (Integer) request.getAttribute(CommonUtils.USER_TYPE);
 		}
 
 		if (toApplicationId == null) {
@@ -630,7 +630,7 @@ public class PrimaryViewController {
 		Integer userType = null;
 		Long productId = null;
 		if (!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_TYPE))) {
-			userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
+			userType = (Integer) request.getAttribute(CommonUtils.USER_TYPE);
 		}
 
 		if (CommonDocumentUtils.isThisClientApplication(request)) {
@@ -657,7 +657,7 @@ public class PrimaryViewController {
 				}
 			} else {
 				if (!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_TYPE))) {
-					userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
+					userType = (Integer) request.getAttribute(CommonUtils.USER_TYPE);
 				}
 				if (!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_ID))) {
 					userId = ((Long) request.getAttribute(CommonUtils.USER_ID));
@@ -672,7 +672,7 @@ public class PrimaryViewController {
 
 		} else {
 			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
+			userType = (Integer) request.getAttribute(CommonUtils.USER_TYPE);
 		}
 
 		if (CommonUtils.isObjectNullOrEmpty(toApplicationId)) {
@@ -719,7 +719,7 @@ public class PrimaryViewController {
 		Long userId = null;
 		Integer userType = null;
 		if (!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_TYPE))) {
-			userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
+			userType = (Integer) request.getAttribute(CommonUtils.USER_TYPE);
 		}
 		if (CommonDocumentUtils.isThisClientApplication(request)) {
 			if (!CommonUtils.isObjectNullOrEmpty(clientId) && userType != CommonUtils.UserType.FUND_PROVIDER) {
@@ -744,7 +744,7 @@ public class PrimaryViewController {
 				}
 			} else {
 				if (!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_TYPE))) {
-					userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
+					userType = (Integer) request.getAttribute(CommonUtils.USER_TYPE);
 				}
 				if (!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_ID))) {
 					userId = ((Long) request.getAttribute(CommonUtils.USER_ID));
@@ -753,7 +753,7 @@ public class PrimaryViewController {
 
 		} else {
 			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
+			userType = (Integer) request.getAttribute(CommonUtils.USER_TYPE);
 		}
 		if (CommonUtils.isObjectNullOrEmpty(toApplicationId) || CommonUtils.isObjectNullOrEmpty(productMappingId)) {
 			logger.warn(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND + toApplicationId + productMappingId);
@@ -932,7 +932,7 @@ public class PrimaryViewController {
 		Long userId = null;
 		Integer userType = null;
 		if (!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_TYPE))) {
-			userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
+			userType = (Integer) request.getAttribute(CommonUtils.USER_TYPE);
 		}
 		if (CommonDocumentUtils.isThisClientApplication(request)) {
 			if (!CommonUtils.isObjectNullOrEmpty(clientId) && userType != CommonUtils.UserType.FUND_PROVIDER) {
@@ -957,7 +957,7 @@ public class PrimaryViewController {
 				}
 			} else {
 				if (!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_TYPE))) {
-					userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
+					userType = (Integer) request.getAttribute(CommonUtils.USER_TYPE);
 				}
 				if (!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_ID))) {
 					userId = ((Long) request.getAttribute(CommonUtils.USER_ID));

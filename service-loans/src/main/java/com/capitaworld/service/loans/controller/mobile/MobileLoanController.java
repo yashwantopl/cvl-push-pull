@@ -118,7 +118,7 @@ public class MobileLoanController {
 		try {
 			if(CommonUtils.isObjectNullOrEmpty(mobileUserRequest.getId()) || CommonUtils.isObjectNullOrEmpty(mobileUserRequest.getUserId())
 					|| CommonUtils.isObjectNullOrEmpty(mobileUserRequest.getApplicationId())) {
-				return new ResponseEntity<LoansResponse>(new LoansResponse("false", MobileCustomizeResponse.ERROR403.getStatusCode(), MobileCustomizeResponse.ERROR403.getDescription(), "Reuested Data cannot be null or empty"),HttpStatus.OK);
+				return new ResponseEntity<LoansResponse>(new LoansResponse("false", MobileCustomizeResponse.ERROR403.getStatusCode(), MobileCustomizeResponse.ERROR403.getDescription(), CommonUtils.REQUESTED_DATA_CAN_NOT_BE_NULL_OR_EMPTY),HttpStatus.OK);
 			}
 			MRetailCoAppGuarResponse coAppGuarResponse = mobileService.getGuarantorDetails(mobileUserRequest);
 			logger.info("Successfullly get Guarantor details for mobile app");
@@ -134,7 +134,7 @@ public class MobileLoanController {
 		logger.info("Enter in save Guarantor Details details for mobile app");
 		try {
 			if(CommonUtils.isObjectNullOrEmpty(coAppGuarResponse.getApplicationId()) || CommonUtils.isObjectNullOrEmpty(coAppGuarResponse.getUserId())) {
-				return new ResponseEntity<LoansResponse>(new LoansResponse("false", MobileCustomizeResponse.ERROR403.getStatusCode(), MobileCustomizeResponse.ERROR403.getDescription(), "Reuested Data cannot be null or empty"),HttpStatus.OK);
+				return new ResponseEntity<LoansResponse>(new LoansResponse("false", MobileCustomizeResponse.ERROR403.getStatusCode(), MobileCustomizeResponse.ERROR403.getDescription(), CommonUtils.REQUESTED_DATA_CAN_NOT_BE_NULL_OR_EMPTY),HttpStatus.OK);
 			}
 			Long saveId = mobileService.saveGuarantorDetails(coAppGuarResponse);
 			if(CommonUtils.isObjectNullOrEmpty(saveId)) {
@@ -156,7 +156,7 @@ public class MobileLoanController {
 		try {
 			if(CommonUtils.isObjectNullOrEmpty(mobileUserRequest.getId()) || CommonUtils.isObjectNullOrEmpty(mobileUserRequest.getUserId())
 					|| CommonUtils.isObjectNullOrEmpty(mobileUserRequest.getApplicationId())) {
-				return new ResponseEntity<LoansResponse>(new LoansResponse("false", MobileCustomizeResponse.ERROR403.getStatusCode(), MobileCustomizeResponse.ERROR403.getDescription(), "Reuested Data cannot be null or empty"),HttpStatus.OK);
+				return new ResponseEntity<LoansResponse>(new LoansResponse("false", MobileCustomizeResponse.ERROR403.getStatusCode(), MobileCustomizeResponse.ERROR403.getDescription(), CommonUtils.REQUESTED_DATA_CAN_NOT_BE_NULL_OR_EMPTY),HttpStatus.OK);
 			}
 			MRetailCoAppGuarResponse coAppGuarResponse = mobileService.getCoApplicantDetails(mobileUserRequest);
 			logger.info("Successfullly get CoApplicant details for mobile app");
@@ -172,7 +172,7 @@ public class MobileLoanController {
 		logger.info("Enter in save CoApplicant Details details for mobile app");
 		try {
 			if(CommonUtils.isObjectNullOrEmpty(coAppGuarResponse.getApplicationId()) || CommonUtils.isObjectNullOrEmpty(coAppGuarResponse.getUserId())) {
-				return new ResponseEntity<LoansResponse>(new LoansResponse("false", MobileCustomizeResponse.ERROR403.getStatusCode(), MobileCustomizeResponse.ERROR403.getDescription(), "Reuested Data cannot be null or empty"),HttpStatus.OK);
+				return new ResponseEntity<LoansResponse>(new LoansResponse("false", MobileCustomizeResponse.ERROR403.getStatusCode(), MobileCustomizeResponse.ERROR403.getDescription(), CommonUtils.REQUESTED_DATA_CAN_NOT_BE_NULL_OR_EMPTY),HttpStatus.OK);
 			}
 			Long saveId = mobileService.saveCoApplicantDetails(coAppGuarResponse);
 			if(CommonUtils.isObjectNullOrEmpty(saveId)) {
@@ -194,7 +194,7 @@ public class MobileLoanController {
 		logger.info("Enter in save Loan Application Details details for mobile app");
 		try {
 			if( CommonUtils.isObjectNullOrEmpty(mobileFrameRequest.getUserId())) {
-				return new ResponseEntity<LoansResponse>(new LoansResponse("false", MobileCustomizeResponse.ERROR403.getStatusCode(), MobileCustomizeResponse.ERROR403.getDescription(), "Reuested Data cannot be null or empty"),HttpStatus.OK);
+				return new ResponseEntity<LoansResponse>(new LoansResponse("false", MobileCustomizeResponse.ERROR403.getStatusCode(), MobileCustomizeResponse.ERROR403.getDescription(), CommonUtils.REQUESTED_DATA_CAN_NOT_BE_NULL_OR_EMPTY),HttpStatus.OK);
 			}
 			Long saveId = mobileService.saveLoanApplicationDetails(mobileFrameRequest);
 			if(CommonUtils.isObjectNullOrEmpty(saveId)) {
@@ -215,7 +215,7 @@ public class MobileLoanController {
 		logger.info("Enter in get fp product list for mobile app");
 		try {
 			if(CommonUtils.isObjectNullOrEmpty(mobileLoanRequest.getUserId())) {
-				return new ResponseEntity<LoansResponse>(new LoansResponse("false", MobileCustomizeResponse.ERROR403.getStatusCode(), MobileCustomizeResponse.ERROR403.getDescription(), "Reuested Data cannot be null or empty"),HttpStatus.OK);
+				return new ResponseEntity<LoansResponse>(new LoansResponse("false", MobileCustomizeResponse.ERROR403.getStatusCode(), MobileCustomizeResponse.ERROR403.getDescription(), CommonUtils.REQUESTED_DATA_CAN_NOT_BE_NULL_OR_EMPTY),HttpStatus.OK);
 			}
 			
 			List<ProductMasterRequest> list = productMasterService.getList(mobileLoanRequest.getUserId(),null);
