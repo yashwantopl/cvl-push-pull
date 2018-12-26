@@ -662,7 +662,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 }
 	
 	@Override
-	public ResponseEntity<LoansResponse> getDataForOnePagerOneForm(Long applicationId) {
+	public LoansResponse getDataForOnePagerOneForm(Long applicationId) {
 
 		FundSeekerInputRequestResponse fundSeekerInputResponse = new FundSeekerInputRequestResponse();
 		fundSeekerInputResponse.setApplicationId(applicationId);
@@ -673,7 +673,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 				fundSeekerInputResponse.setDirectorBackgroundDetailRequestsList(Collections.emptyList());
 				fundSeekerInputResponse.setFinancialArrangementsDetailRequestsList(Collections.emptyList());
 				logger.info("Data not found for given applicationid");
-				return new ResponseEntity<LoansResponse>(new LoansResponse("Data not found for given applicationid",HttpStatus.BAD_REQUEST.value(), fundSeekerInputResponse), HttpStatus.OK);
+				return new LoansResponse("Data not found for given applicationid",HttpStatus.BAD_REQUEST.value(), fundSeekerInputResponse);
 			}
 
 			BeanUtils.copyProperties(corporateApplicantDetail, fundSeekerInputResponse);
@@ -688,7 +688,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			if (CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail)) {
 				fundSeekerInputResponse.setDirectorBackgroundDetailRequestsList(Collections.emptyList());
 				logger.info("Data not found for given applicationid from Primary Corporate Details");
-				return new ResponseEntity<LoansResponse>(new LoansResponse("Data not found for given applicationid",HttpStatus.BAD_REQUEST.value(), fundSeekerInputResponse), HttpStatus.OK);
+				return new LoansResponse("Data not found for given applicationid",HttpStatus.BAD_REQUEST.value(), fundSeekerInputResponse);
 			}
 			
 			fundSeekerInputResponse.setTurnOverPrevFinYear(primaryCorporateDetail.getTurnOverPrevFinYear());
@@ -728,12 +728,12 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 				logger.error("Error while Getting GST Reveipt from S3 : {}",documentException);	
 			}
 			logger.info("Oneform Uniform Prodcut Details Successfully Fetched");
-			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
+			return loansResponse;
 
 		} catch (Exception e) {
 			String msg = "Error while fetching Details for Uniform OneForm"; 
 			logger.error(msg + " : "  ,e);
-			return new ResponseEntity<LoansResponse>(new LoansResponse(msg, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
+			return new LoansResponse(msg, HttpStatus.INTERNAL_SERVER_ERROR.value());
 		}
 	}
 	

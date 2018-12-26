@@ -307,7 +307,7 @@ public class FundSeekerInputRequestController {
         	if(applicationId == null) {
      		   return new ResponseEntity<LoansResponse>(new LoansResponse(SOMETHING_GOES_WRONG_WHILE_PROCESSING_YOUR_REQUEST_PLEASE_RE_LOGIN_AGAIN_MSG, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
         	}
-        	return fundSeekerInputRequestService.getDataForOnePagerOneForm(applicationId);
+        	return new ResponseEntity<LoansResponse>(fundSeekerInputRequestService.getDataForOnePagerOneForm(applicationId), HttpStatus.OK);
         } catch (Exception e) {
             logger.error("Error while Getting Oneform Details for Uniform Product : ",e);
             return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
