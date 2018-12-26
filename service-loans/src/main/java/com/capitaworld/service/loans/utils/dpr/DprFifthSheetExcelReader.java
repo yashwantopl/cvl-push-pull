@@ -25,7 +25,7 @@ public class DprFifthSheetExcelReader
         try {
             String question783Answer = getDataFromCell(sheet, "C4");
             if (!(question783Answer.isEmpty())) {//if textbox is empty not insert record
-                if (!(question783Answer.equals("Insert Text Here"))) {
+                if (!(question783Answer.equals(CommonUtils.INSERT_TEXT_HERE))) {
                 	dprUserDataDetail.setGlobalScenario(question783Answer);
                 }
             }
@@ -37,7 +37,7 @@ public class DprFifthSheetExcelReader
         try {
             String question784Answer = getDataFromCell(sheet, "C6");
             if (!(question784Answer.isEmpty())) {//if textbox is empty not insert record
-                if (!(question784Answer.equals("Insert Text Here"))) {
+                if (!(question784Answer.equals(CommonUtils.INSERT_TEXT_HERE))) {
                 	dprUserDataDetail.setNationalScenario(question784Answer);
                 }
             }
@@ -49,7 +49,7 @@ public class DprFifthSheetExcelReader
         try {
             String question785Answer = getDataFromCell(sheet, "C8");
             if (!(question785Answer.isEmpty())) {//if textbox is empty not insert record
-                if (!(question785Answer.equals("Insert Text Here"))) {
+                if (!(question785Answer.equals(CommonUtils.INSERT_TEXT_HERE))) {
                 	dprUserDataDetail.setCompetitiveLandscape(question785Answer);
                 }
             }
@@ -61,7 +61,7 @@ public class DprFifthSheetExcelReader
         try {
             String question786Answer = getDataFromCell(sheet, "C10");
             if (!(question786Answer.isEmpty())) {//if textbox is empty not insert record
-                if (!(question786Answer.equals("Insert Text Here"))) {
+                if (!(question786Answer.equals(CommonUtils.INSERT_TEXT_HERE))) {
                 	dprUserDataDetail.setKeyPlayers(question786Answer);
                 }
             }
@@ -73,7 +73,7 @@ public class DprFifthSheetExcelReader
         try {
             String question787Answer = getDataFromCell(sheet, "C12");
             if (!(question787Answer.isEmpty())) {//if textbox is empty not insert record
-                if (!(question787Answer.equals("Insert Text Here"))) {
+                if (!(question787Answer.equals(CommonUtils.INSERT_TEXT_HERE))) {
                 	dprUserDataDetail.setMarketTrends(question787Answer);
                 }
             }
@@ -85,7 +85,7 @@ public class DprFifthSheetExcelReader
         try {
             String question788Answer = getDataFromCell(sheet, "C14");
             if (!(question788Answer.isEmpty())) {//if textbox is empty not insert record
-                if (!(question788Answer.equals("Insert Text Here"))) {
+                if (!(question788Answer.equals(CommonUtils.INSERT_TEXT_HERE))) {
                 	dprUserDataDetail.setMarketNeeds(question788Answer);
                 }
             }
@@ -97,7 +97,7 @@ public class DprFifthSheetExcelReader
         try {
             String question789Answer = getDataFromCell(sheet, "C16");
             if (!(question789Answer.isEmpty())) {//if textbox is empty not insert record
-                if (!(question789Answer.equals("Insert Text Here"))) {
+                if (!(question789Answer.equals(CommonUtils.INSERT_TEXT_HERE))) {
                 	dprUserDataDetail.setMarketGrowth(question789Answer);
                 }
             }

@@ -580,7 +580,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 							permanentAddress.setCity("-");
 						}
 					} catch (Exception e) {
-
+						logger.error(CommonUtils.EXCEPTION,e);
 					}
 					try {
 						List<Long> permanentCountry = new ArrayList<Long>(1);
@@ -601,7 +601,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 							permanentAddress.setCountry("-");
 						}
 					} catch (Exception e) {
-
+						logger.error(CommonUtils.EXCEPTION,e);
 					}
 					try {
 						List<Long> permanentState = new ArrayList<Long>(1);
@@ -622,7 +622,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 							permanentAddress.setCountry("-");
 						}
 					} catch (Exception e) {
-
+						logger.error(CommonUtils.EXCEPTION,e);
 					}
 					permanentAddress.setLandMark(coApplicantDetail.getPermanentLandMark() != null ? coApplicantDetail.getPermanentLandMark() : "");
 					permanentAddress.setPincode(coApplicantDetail.getPermanentPincode() != null ? coApplicantDetail.getPermanentPincode().toString() : "");

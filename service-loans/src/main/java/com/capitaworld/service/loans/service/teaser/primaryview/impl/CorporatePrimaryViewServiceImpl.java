@@ -442,7 +442,6 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 					corporatePrimaryViewResponse.setKeyVericalSector("NA");
 				}
 			} catch (Exception e) {
-				// System.o
 				logger.error(CommonUtils.EXCEPTION,e);
 			}
 

@@ -15,9 +15,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.capitaworld.api.workflow.model.WorkflowResponse;
-import com.capitaworld.api.workflow.utility.WorkflowUtils;
-import com.capitaworld.client.workflow.WorkflowClient;
 import com.capitaworld.service.loans.model.FpProductDetails;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.ProductDetailsForSp;
@@ -34,7 +31,13 @@ import com.capitaworld.service.loans.utils.CommonUtils;
 @RestController
 @RequestMapping("/product_master")
 public class ProductMasterController {
+
 	private static final Logger logger = LoggerFactory.getLogger(ProductMasterController.class);
+
+	private static final String USER_ID_CAN_NOT_BE_EMPTY_MSG = "userId can not be empty ==>";
+	private static final String CORPORATE_PRODUCT_ID_CAN_NOT_BE_EMPTY_MSG = "corporateProduct id can not be empty ==>";
+	private static final String USER_ID_REQUIRE_TO_GET_PRODUCT_DETAILS_MSG = "UserId Require to get product Details ==>";
+	private static final String ERROR_WHILE_GETTING_PRODUCTS_DETAILS_MSG = "Error while getting Products Details ==>";
 
 	@Autowired
 	private ProductMasterService productMasterService;
@@ -61,7 +64,7 @@ public class ProductMasterController {
 			}
 
 			if (userId == null) {
-				logger.warn("userId  can not be empty ==>" + userId);
+				logger.warn(USER_ID_CAN_NOT_BE_EMPTY_MSG + userId);
 				CommonDocumentUtils.endHook(logger, "addProduct");
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
@@ -77,7 +80,7 @@ public class ProductMasterController {
 			if (response) {
 				CommonDocumentUtils.endHook(logger, "addProduct");
 				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Successfully Saved.", HttpStatus.OK.value()), HttpStatus.OK);
+						new LoansResponse(CommonUtils.SUCCESSFULLY_SAVED, HttpStatus.OK.value()), HttpStatus.OK);
 			} else {
 				CommonDocumentUtils.endHook(logger, "addProduct");
 				return new ResponseEntity<LoansResponse>(
@@ -118,7 +121,7 @@ public class ProductMasterController {
 			}
 
 			if (userId == null) {
-				logger.warn("userId  can not be empty ==>" + userId);
+				logger.warn(USER_ID_CAN_NOT_BE_EMPTY_MSG + userId);
 				CommonDocumentUtils.endHook(logger, "addProduct");
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
@@ -129,7 +132,7 @@ public class ProductMasterController {
 			if (response) {
 				CommonDocumentUtils.endHook(logger, "clickOnWorkFlowButton");
 				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Successfully Saved.", HttpStatus.OK.value()), HttpStatus.OK);
+						new LoansResponse(CommonUtils.SUCCESSFULLY_SAVED, HttpStatus.OK.value()), HttpStatus.OK);
 			} else {
 				CommonDocumentUtils.endHook(logger, "clickOnWorkFlowButton");
 				return new ResponseEntity<LoansResponse>(
@@ -160,7 +163,7 @@ public class ProductMasterController {
 			}
 
 			if (corporateProduct.getId() == null) {
-				logger.warn("corporateProduct id can not be empty ==>", corporateProduct);
+				logger.warn(CORPORATE_PRODUCT_ID_CAN_NOT_BE_EMPTY_MSG, corporateProduct);
 				CommonDocumentUtils.endHook(logger, "save");
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.REQUESTED_DATA_CAN_NOT_BE_EMPTY, HttpStatus.BAD_REQUEST.value()),
@@ -171,7 +174,7 @@ public class ProductMasterController {
 			//Long userId=1755l;
 			if(userId==null)
 			{
-				logger.warn("userId  id can not be empty ==>", userId);
+				logger.warn(USER_ID_CAN_NOT_BE_EMPTY_MSG, userId);
 				CommonDocumentUtils.endHook(logger, "save");
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.REQUESTED_DATA_CAN_NOT_BE_EMPTY, HttpStatus.BAD_REQUEST.value()),
@@ -182,7 +185,7 @@ public class ProductMasterController {
 			if (response) {
 				CommonDocumentUtils.endHook(logger, "save");
 				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Successfully Saved.", HttpStatus.OK.value()), HttpStatus.OK);
+						new LoansResponse(CommonUtils.SUCCESSFULLY_SAVED, HttpStatus.OK.value()), HttpStatus.OK);
 			} else {
 				CommonDocumentUtils.endHook(logger, "save");
 				return new ResponseEntity<LoansResponse>(
@@ -225,7 +228,7 @@ public class ProductMasterController {
 			//Long userId=1755l;
 			if(userId==null)
 			{
-				logger.warn("userId  id can not be empty ==>", userId);
+				logger.warn(USER_ID_CAN_NOT_BE_EMPTY_MSG, userId);
 				CommonDocumentUtils.endHook(logger, "save");
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.REQUESTED_DATA_CAN_NOT_BE_EMPTY, HttpStatus.BAD_REQUEST.value()),
@@ -236,7 +239,7 @@ public class ProductMasterController {
 			if (response) {
 				CommonDocumentUtils.endHook(logger, "save");
 				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Successfully Saved.", HttpStatus.OK.value()), HttpStatus.OK);
+						new LoansResponse(CommonUtils.SUCCESSFULLY_SAVED, HttpStatus.OK.value()), HttpStatus.OK);
 			} else {
 				CommonDocumentUtils.endHook(logger, "save");
 				return new ResponseEntity<LoansResponse>(
@@ -265,7 +268,7 @@ public class ProductMasterController {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 			}
 			if (userId == null) {
-				logger.warn("UserId Require to get product Details ==>" + userId);
+				logger.warn(USER_ID_REQUIRE_TO_GET_PRODUCT_DETAILS_MSG + userId);
 				CommonDocumentUtils.endHook(logger, "getList");
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
@@ -278,7 +281,7 @@ public class ProductMasterController {
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
 		} catch (Exception e) {
-			logger.error("Error while getting Products Details==>", e);
+			logger.error(ERROR_WHILE_GETTING_PRODUCTS_DETAILS_MSG, e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -298,7 +301,7 @@ public class ProductMasterController {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 			}
 			if (userId == null) {
-				logger.warn("UserId Require to get product Details ==>" + userId);
+				logger.warn(USER_ID_REQUIRE_TO_GET_PRODUCT_DETAILS_MSG + userId);
 				CommonDocumentUtils.endHook(logger, "getActiveInActiveList");
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
@@ -335,7 +338,7 @@ public class ProductMasterController {
 			Long userOrgId = (Long) request.getAttribute(CommonUtils.USER_ORG_ID);
 			
 			if (userId == null) {
-				logger.warn("UserId Require to get product Details ==>" + userId);
+				logger.warn(USER_ID_REQUIRE_TO_GET_PRODUCT_DETAILS_MSG + userId);
 				CommonDocumentUtils.endHook(logger, "getListByUserType");
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
@@ -353,7 +356,7 @@ public class ProductMasterController {
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
 		} catch (Exception e) {
-			logger.error("Error while getting Products Details==>", e);
+			logger.error(ERROR_WHILE_GETTING_PRODUCTS_DETAILS_MSG, e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -382,7 +385,7 @@ public class ProductMasterController {
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
 		} catch (Exception e) {
-			logger.error("Error while getting Products Details==>", e);
+			logger.error(ERROR_WHILE_GETTING_PRODUCTS_DETAILS_MSG, e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -629,7 +632,7 @@ public class ProductMasterController {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 			}
 			if (userId == null) {
-				logger.warn("UserId Require to get product Details ==>" + userId);
+				logger.warn(USER_ID_REQUIRE_TO_GET_PRODUCT_DETAILS_MSG + userId);
 				CommonDocumentUtils.endHook(logger, "getList");
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
@@ -762,7 +765,7 @@ public class ProductMasterController {
 			}
 
 			if (corporateProduct.getId() == null) {
-				logger.warn("corporateProduct id can not be empty ==>", corporateProduct);
+				logger.warn(CORPORATE_PRODUCT_ID_CAN_NOT_BE_EMPTY_MSG, corporateProduct);
 				CommonDocumentUtils.endHook(logger, "save");
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.REQUESTED_DATA_CAN_NOT_BE_EMPTY, HttpStatus.BAD_REQUEST.value()),
@@ -774,7 +777,7 @@ public class ProductMasterController {
 			//Long userId=1755l;
 			if(userId==null)
 			{
-				logger.warn("userId  id can not be empty ==>", userId);
+				logger.warn(USER_ID_CAN_NOT_BE_EMPTY_MSG, userId);
 				CommonDocumentUtils.endHook(logger, "save");
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.REQUESTED_DATA_CAN_NOT_BE_EMPTY, HttpStatus.BAD_REQUEST.value()),
@@ -787,7 +790,7 @@ public class ProductMasterController {
 			if (response) {
 				CommonDocumentUtils.endHook(logger, "save");
 				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Successfully Saved.", HttpStatus.OK.value()), HttpStatus.OK);
+						new LoansResponse(CommonUtils.SUCCESSFULLY_SAVED, HttpStatus.OK.value()), HttpStatus.OK);
 			} else {
 				CommonDocumentUtils.endHook(logger, "save");
 				return new ResponseEntity<LoansResponse>(
@@ -820,7 +823,7 @@ public class ProductMasterController {
 			}
 
 			if (retailProduct.getId() == null) {
-				logger.warn("corporateProduct id can not be empty ==>", retailProduct);
+				logger.warn(CORPORATE_PRODUCT_ID_CAN_NOT_BE_EMPTY_MSG, retailProduct);
 				CommonDocumentUtils.endHook(logger, "save");
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.REQUESTED_DATA_CAN_NOT_BE_EMPTY, HttpStatus.BAD_REQUEST.value()),
@@ -832,7 +835,7 @@ public class ProductMasterController {
 			//Long userId=1755l;
 			if(userId==null)
 			{
-				logger.warn("userId  id can not be empty ==>", userId);
+				logger.warn(USER_ID_CAN_NOT_BE_EMPTY_MSG, userId);
 				CommonDocumentUtils.endHook(logger, "save");
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.REQUESTED_DATA_CAN_NOT_BE_EMPTY, HttpStatus.BAD_REQUEST.value()),
@@ -845,7 +848,7 @@ public class ProductMasterController {
 			if (response) {
 				CommonDocumentUtils.endHook(logger, "save");
 				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Successfully Saved.", HttpStatus.OK.value()), HttpStatus.OK);
+						new LoansResponse(CommonUtils.SUCCESSFULLY_SAVED, HttpStatus.OK.value()), HttpStatus.OK);
 			} else {
 				CommonDocumentUtils.endHook(logger, "save");
 				return new ResponseEntity<LoansResponse>(
@@ -878,7 +881,7 @@ public class ProductMasterController {
 			Long userOrgId = (Long) request.getAttribute(CommonUtils.USER_ORG_ID);
 			
 			if (userId == null) {
-				logger.warn("UserId Require to get product Details ==>" + userId);
+				logger.warn(USER_ID_REQUIRE_TO_GET_PRODUCT_DETAILS_MSG + userId);
 				CommonDocumentUtils.endHook(logger, "getListByUserType");
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
@@ -896,7 +899,7 @@ public class ProductMasterController {
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
 		} catch (Exception e) {
-			logger.error("Error while getting Products Details==>", e);
+			logger.error(ERROR_WHILE_GETTING_PRODUCTS_DETAILS_MSG, e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -918,7 +921,7 @@ public class ProductMasterController {
 			}
 			
 			if (userId == null) {
-				logger.warn("userId  can not be empty ==>" + userId);
+				logger.warn(USER_ID_CAN_NOT_BE_EMPTY_MSG + userId);
 				CommonDocumentUtils.endHook(logger, "addProduct");
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
@@ -940,7 +943,7 @@ public class ProductMasterController {
 			if (response) {
 				CommonDocumentUtils.endHook(logger, "changeStatusWithWorkFlow");
 				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Successfully Saved.", HttpStatus.OK.value()), HttpStatus.OK);
+						new LoansResponse(CommonUtils.SUCCESSFULLY_SAVED, HttpStatus.OK.value()), HttpStatus.OK);
 			} else {
 				CommonDocumentUtils.endHook(logger, "changeStatusWithWorkFlow");
 				return new ResponseEntity<LoansResponse>(

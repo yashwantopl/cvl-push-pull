@@ -43,6 +43,10 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 
 	private static final Logger logger = LoggerFactory.getLogger(LoanEligibilityCalculatorServiceImpl.class);
 
+	private static final String ERROR_WHILE_CALCULATING_HOME_LOAN_ELIGIBILITY_MSG = "Error while Calculating HomeLoan Eligibility : ";
+	private static final String MESSAGE_LITERAL = "message";
+	private static final String NO_RESULT_FOUND = "No Result Found";
+
 	@Autowired
 	private LoanEligibilityCriteriaRepository loanEligibilityCriteriaRepository;
 
@@ -118,7 +122,7 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 			CommonDocumentUtils.endHook(logger, "calculateHomeLoan");
 			return minMaxData;
 		} catch (Exception e) {
-			logger.error("Error while Calculating HomeLoan Eligibility : ",e);
+			logger.error(ERROR_WHILE_CALCULATING_HOME_LOAN_ELIGIBILITY_MSG,e);
 		}
 		return null;
 	}
@@ -224,7 +228,7 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 
 			JSONObject result = new JSONObject();
 			if (finalMaxList.isEmpty() && finalMinList.isEmpty()) {
-				result.put("message", "No Result Found");
+				result.put(MESSAGE_LITERAL, NO_RESULT_FOUND);
 			} else {
 				result.put(CommonUtils.MAXIMUM, Math.abs(Math.round(Collections.max(finalMaxList))));
 				result.put(CommonUtils.MINIMUM, Math.abs(Math.round(Collections.min(finalMinList))));
@@ -237,7 +241,7 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 			}
 			return result;
 		} catch (Exception e) {
-			logger.error("Error while Calculating HomeLoan Eligibility : ",e);
+			logger.error(ERROR_WHILE_CALCULATING_HOME_LOAN_ELIGIBILITY_MSG,e);
 		}
 		return null;
 	}
@@ -369,7 +373,7 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 		}
 
 		if (json.isEmpty()) {
-			json.put("message", "No Result Found");
+			json.put(MESSAGE_LITERAL, NO_RESULT_FOUND);
 		} else {
 
 			// Getting Loan Providers
@@ -526,7 +530,7 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 
 			JSONObject result = new JSONObject();
 			if (finalMinList.isEmpty() && finalMaxList.isEmpty()) {
-				result.put("message", "No Result Found");
+				result.put(MESSAGE_LITERAL, NO_RESULT_FOUND);
 			} else {
 				result.put(CommonUtils.MAXIMUM, Math.abs(Math.round(Collections.max(finalMaxList))));
 				result.put(CommonUtils.MINIMUM, Math.abs(Math.round(Collections.min(finalMinList))));
@@ -541,7 +545,7 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 
 			return result;
 		} catch (Exception e) {
-			logger.error("Error while Calculating HomeLoan Eligibility : ",e);
+			logger.error(ERROR_WHILE_CALCULATING_HOME_LOAN_ELIGIBILITY_MSG,e);
 		}
 		return null;
 	}
@@ -674,7 +678,7 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 		try {
 		logger.info("==================================>1");
 			
-		List<Object[]> operating=operatingStatementDetailsRepository.getCMADetail(applicationId,"Audited");
+		List<Object[]> operating=operatingStatementDetailsRepository.getCMADetail(applicationId,CommonUtils.AUDITED);
 		logger.info("==================================>2");
 			if(!CommonUtils.isObjectListNull(operating)) {
 				logger.info("==================================>3");
@@ -692,7 +696,7 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 				logger.info("==================================>8");
 				logger.info("Successfully get from operating ");
 			}
-			List<Object[]> liabilitie =liabilitiesDetailsRepository.getCMADetail(applicationId,"Audited");
+			List<Object[]> liabilitie =liabilitiesDetailsRepository.getCMADetail(applicationId,CommonUtils.AUDITED);
 			logger.info("==================================>9");
 			if(!CommonUtils.isObjectListNull(liabilitie)) {
 				logger.info("==================================>10");
@@ -706,7 +710,7 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 				logger.info("==================================>14");
 				logger.info("Successfully get from liabilitie ");
 			}
-			List<Object[]> asset =assetsDetailsRepository.getCMADetail(applicationId,"Audited");
+			List<Object[]> asset =assetsDetailsRepository.getCMADetail(applicationId,CommonUtils.AUDITED);
 			logger.info("==================================>15");
 			if(!CommonUtils.isObjectListNull(asset)) {
 				logger.info("==================================>16");

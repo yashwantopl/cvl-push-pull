@@ -126,7 +126,7 @@ public class DDRFormController {
 			DDRRequest ddrRequest = ddrFormService.getMergeDDR(appId, userId);
 			logger.info("DDR Form Get Successfully---------------------------->");
 			return new ResponseEntity<LoansResponse>(
-					new LoansResponse("Successfully get data", HttpStatus.OK.value(), ddrRequest),
+					new LoansResponse(CommonUtils.SUCCESSFULLY_GET_DATA, HttpStatus.OK.value(), ddrRequest),
 					HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getting DDR Form Details ==>", e);
@@ -188,7 +188,7 @@ public class DDRFormController {
 			DDRFormDetailsRequest dDRFormDetailsRequest = ddrFormService.get(appId, userId);
 			logger.info("DDR Form Get Successfully---------------------------->");
 			return new ResponseEntity<LoansResponse>(
-					new LoansResponse("Successfully get data", HttpStatus.OK.value(), dDRFormDetailsRequest),
+					new LoansResponse(CommonUtils.SUCCESSFULLY_GET_DATA, HttpStatus.OK.value(), dDRFormDetailsRequest),
 					HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getting DDR Form Details ==>", e);
@@ -218,7 +218,7 @@ public class DDRFormController {
 			DDROneFormResponse oneFormDetails = ddrFormService.getOneFormDetails(userId, appId,true);
 			logger.info("DDR AutoFilled Form Get Successfully---------------------------->");
 			return new ResponseEntity<LoansResponse>(
-					new LoansResponse("Successfully get data", HttpStatus.OK.value(), oneFormDetails), HttpStatus.OK);
+					new LoansResponse(CommonUtils.SUCCESSFULLY_GET_DATA, HttpStatus.OK.value(), oneFormDetails), HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getting DDR AutoFilled Form Details ==>", e);
 			return new ResponseEntity<LoansResponse>(
@@ -230,7 +230,7 @@ public class DDRFormController {
 	@RequestMapping(value = "/getFinancialToBeFilledMaster", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getFinancialToBeFilled() {
 		try {
-			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully get data", HttpStatus.OK.value(),
+			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SUCCESSFULLY_GET_DATA, HttpStatus.OK.value(),
 					ddrFormService.getFinancialSummaryToBeFieldsList()), HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getting DDR Financial To Be Filled Details ==>", e);
@@ -244,7 +244,7 @@ public class DDRFormController {
 	public ResponseEntity<LoansResponse> getSidbi(@PathVariable("appId") Long appId,
 			@PathVariable("userId") Long userId) {
 		try {
-			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully get data", HttpStatus.OK.value(),
+			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SUCCESSFULLY_GET_DATA, HttpStatus.OK.value(),
 					ddrFormService.getSIDBIDetails(appId, userId)), HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getting DDR Financial To Be Filled Details ==>", e);
@@ -257,7 +257,7 @@ public class DDRFormController {
 	@RequestMapping(value = "/getFinancialAutoFilledMaster", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getFinancialAutoFilled() {
 		try {
-			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully get data", HttpStatus.OK.value(),
+			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SUCCESSFULLY_GET_DATA, HttpStatus.OK.value(),
 					ddrFormService.getFinancialSummaryFieldsList()), HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getting DDR Financial Auto Filled Details ==>", e);
@@ -493,7 +493,7 @@ public class DDRFormController {
 		try {
 			DDRCustomerRequest resposnse = ddrFormService.checkCustomerDetailFilled(appId);
 			logger.info("SUCCESSFULLT GET CUSTOMER DETAILS FILLED ---------------------------->" + resposnse.toString());
-			return new ResponseEntity<LoansResponse>( new LoansResponse("Successfully get data", HttpStatus.OK.value(), resposnse), HttpStatus.OK);
+			return new ResponseEntity<LoansResponse>( new LoansResponse(CommonUtils.SUCCESSFULLY_GET_DATA, HttpStatus.OK.value(), resposnse), HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while CHECK CUSTOMER DETAILS FILLED" +  e.getMessage());
 			return new ResponseEntity<LoansResponse>(
@@ -554,7 +554,7 @@ public class DDRFormController {
 			return new ResponseEntity<LoansResponse>( new LoansResponse("Invalid Request, CustomerId is null or Empty", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}
 		try {
-			return new ResponseEntity<LoansResponse>( new LoansResponse("Successfully get data", HttpStatus.OK.value(), ddrFormService.getCustomerNameById(customerRequest)), HttpStatus.OK);	
+			return new ResponseEntity<LoansResponse>( new LoansResponse(CommonUtils.SUCCESSFULLY_GET_DATA, HttpStatus.OK.value(), ddrFormService.getCustomerNameById(customerRequest)), HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while GET CUSTOMER NAME BY CUSTOMER ID" +  e.getMessage());
 			return new ResponseEntity<LoansResponse>(

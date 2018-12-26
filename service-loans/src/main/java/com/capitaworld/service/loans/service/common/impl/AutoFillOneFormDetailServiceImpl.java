@@ -128,6 +128,8 @@ import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 @Transactional
 public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailService {
 
+	private static final String SUCESSFULLY_FINAL_UNSECURE_LOAN_DETAIL_SAVE_MSG = "Sucessfully FinalUnsecureLoanDetail save ==>  ";
+
 	@Autowired
 	private CorporateApplicantDetailRepository applicantRepository;
 	@Autowired
@@ -1283,7 +1285,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		finalUnsecureLoanDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 		finalUnsecureLoanDetailTo.setCreatedDate(new Date());
 		finalUnsecureLoanDetailTo = finalUnsecuredLoanDetailRepository.save(finalUnsecureLoanDetailTo);
-		logger.info("Sucessfully FinalUnsecureLoanDetail save ======>  " + finalUnsecureLoanDetailTo);
+		logger.info(SUCESSFULLY_FINAL_UNSECURE_LOAN_DETAIL_SAVE_MSG + finalUnsecureLoanDetailTo);
 		logger.info("================= Exit From saveFinalWCToUSL()================== ");
 	}
 
@@ -1345,7 +1347,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		finalUnsecureLoanDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 		finalUnsecureLoanDetailTo.setCreatedDate(new Date());
 		finalUnsecureLoanDetailTo = finalUnsecuredLoanDetailRepository.save(finalUnsecureLoanDetailTo);
-		logger.info("Sucessfully FinalUnsecureLoanDetail save ======>  " + finalUnsecureLoanDetailTo);
+		logger.info(SUCESSFULLY_FINAL_UNSECURE_LOAN_DETAIL_SAVE_MSG + finalUnsecureLoanDetailTo);
 		logger.info("================= Exit From saveFinalTLToUSL()================== ");
 	}
 
@@ -1366,7 +1368,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		finalUnsecureLoanDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 		finalUnsecureLoanDetailTo.setCreatedDate(new Date());
 		finalUnsecureLoanDetailTo = finalUnsecuredLoanDetailRepository.save(finalUnsecureLoanDetailTo);
-		logger.info("Sucessfully FinalUnsecureLoanDetail save ======>  " + finalUnsecureLoanDetailTo);
+		logger.info(SUCESSFULLY_FINAL_UNSECURE_LOAN_DETAIL_SAVE_MSG + finalUnsecureLoanDetailTo);
 		logger.info("================= Exit From saveFinalUSLToUSL()================== ");
 	}
 
@@ -2006,7 +2008,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		yearList.add(--fromYear + "");
 		List<OperatingStatementDetails> operatingStatementDetailsList = operatingStatementDetailsRepository
 				.getOperatingStatementDetailsByApplicationId(autoFillOneFormDetailRequest.getFromApplicationId(),
-						yearList, "Audited");
+						yearList, CommonUtils.AUDITED);
 		OperatingStatementDetails operatingStatementDetailsTo = null;
 		for (OperatingStatementDetails operatingStatementDetailsFrom : operatingStatementDetailsList) {
 			operatingStatementDetailsTo = new OperatingStatementDetails();
@@ -2020,7 +2022,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		}
 		List<LiabilitiesDetails> liabilitiesDetailsList = liabilitiesDetailsRepository
 				.getLiabilitiesDetailsByApplicationId(autoFillOneFormDetailRequest.getFromApplicationId(), yearList,
-						"Audited");
+						CommonUtils.AUDITED);
 		LiabilitiesDetails liabilitiesDetailsTo = null;
 		for (LiabilitiesDetails liabilitiesDetailsFrom : liabilitiesDetailsList) {
 			liabilitiesDetailsTo = new LiabilitiesDetails();
@@ -2033,7 +2035,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 			liabilitiesDetailsRepository.save(liabilitiesDetailsTo);
 		}
 		List<AssetsDetails> assetsDetailsList = assetsDetailsRepository.getAssetsDetailsByApplicationId(
-				autoFillOneFormDetailRequest.getFromApplicationId(), yearList, "Audited");
+				autoFillOneFormDetailRequest.getFromApplicationId(), yearList, CommonUtils.AUDITED);
 		AssetsDetails assetsDetailsTo = null;
 		for (AssetsDetails assetsDetailsFrom : assetsDetailsList) {
 			assetsDetailsTo = new AssetsDetails();
@@ -2063,7 +2065,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 
 		List<ProfitibilityStatementDetail> profitibilityStatementDetailsList = profitibilityStatementDetailRepository
 				.getProfitibilityStatementDetailByApplicationId(autoFillOneFormDetailRequest.getFromApplicationId(),
-						yearList, "Audited");
+						yearList, CommonUtils.AUDITED);
 		ProfitibilityStatementDetail profitibilityStatementDetailTo = null;
 		for (ProfitibilityStatementDetail profitibilityStatementDetailFrom : profitibilityStatementDetailsList) {
 			profitibilityStatementDetailTo = new ProfitibilityStatementDetail();
@@ -2078,7 +2080,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 
 		List<BalanceSheetDetail> balanceSheetDetailsList = balanceSheetDetailRepository
 				.getBalanceSheetDetailByApplicationId(autoFillOneFormDetailRequest.getFromApplicationId(), yearList,
-						"Audited");
+						CommonUtils.AUDITED);
 		BalanceSheetDetail balanceSheetDetailTo = null;
 		for (BalanceSheetDetail balanceSheetDetailFrom : balanceSheetDetailsList) {
 			balanceSheetDetailTo = new BalanceSheetDetail();

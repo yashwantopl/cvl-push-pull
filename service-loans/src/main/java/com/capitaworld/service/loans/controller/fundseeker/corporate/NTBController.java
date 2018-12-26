@@ -30,6 +30,10 @@ public class NTBController {
 
     private static final Logger logger = LoggerFactory.getLogger(NTBController.class);
 
+    private static final String SUCCESSFULLY_FETCHED_MSG = "Successfully Fetched ";
+    private static final String USER_ID_CAN_NOT_BE_EMPTY_MSG = "userId can not be empty ";
+    private static final String APPLICATION_ID_FOR_GETTING_MSG = "Application Id for Getting============>{}";
+
     @Autowired
     private NTBService ntbService;
     @Autowired
@@ -69,7 +73,7 @@ public class NTBController {
 
             LoansResponse loansResponse = null;
             if(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest)) {
-                loansResponse = new LoansResponse("Successfully Fetched ", HttpStatus.OK.value());
+                loansResponse = new LoansResponse(SUCCESSFULLY_FETCHED_MSG, HttpStatus.OK.value());
                 loansResponse.setData(directorBackgroundDetailRequest);
             }else {
                 loansResponse = new LoansResponse("Error while getting getOneformDetail for Director Id", HttpStatus.BAD_REQUEST.value());
@@ -108,7 +112,7 @@ public class NTBController {
 
             LoansResponse loansResponse = null;
             if(!CommonUtils.isObjectNullOrEmpty(financialArrangementsDetailRequestList)) {
-                loansResponse = new LoansResponse("Successfully Fetched ", HttpStatus.OK.value());
+                loansResponse = new LoansResponse(SUCCESSFULLY_FETCHED_MSG, HttpStatus.OK.value());
                 loansResponse.setData(financialArrangementsDetailRequestList);
             }else {
                 loansResponse = new LoansResponse("Error while getting getFinancialForPartner", HttpStatus.BAD_REQUEST.value());
@@ -134,7 +138,7 @@ public class NTBController {
         }else if(!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_ID))){
             userId = (Long) request.getAttribute(CommonUtils.USER_ID);
         }else{
-            logger.warn("userId can not be empty ");
+            logger.warn(USER_ID_CAN_NOT_BE_EMPTY_MSG);
             return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
         }
 
@@ -175,7 +179,7 @@ public class NTBController {
         }else if(!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_ID))){
             userId = (Long) request.getAttribute(CommonUtils.USER_ID);
         }else{
-            logger.warn("userId can not be empty ");
+            logger.warn(USER_ID_CAN_NOT_BE_EMPTY_MSG);
             return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
         }
 
@@ -219,7 +223,7 @@ public class NTBController {
         }else if(!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_ID))){
             userId = (Long) request.getAttribute(CommonUtils.USER_ID);
         }else{
-            logger.warn("userId can not be empty ");
+            logger.warn(USER_ID_CAN_NOT_BE_EMPTY_MSG);
             return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
         }
         // request must not be null
@@ -234,7 +238,7 @@ public class NTBController {
 
             LoansResponse loansResponse = null;
             if(!CommonUtils.isObjectNullOrEmpty(fundSeekerInputRequestResponse)) {
-                loansResponse = new LoansResponse("Successfully Fetched ", HttpStatus.OK.value());
+                loansResponse = new LoansResponse(SUCCESSFULLY_FETCHED_MSG, HttpStatus.OK.value());
                 loansResponse.setData(fundSeekerInputRequestResponse);
             }else {
                 loansResponse = new LoansResponse("Error while getting getOtherDetails", HttpStatus.BAD_REQUEST.value());
@@ -260,7 +264,7 @@ public class NTBController {
         }else if(!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_ID))){
             userId = (Long) request.getAttribute(CommonUtils.USER_ID);
         }else{
-            logger.warn("userId can not be empty ");
+            logger.warn(USER_ID_CAN_NOT_BE_EMPTY_MSG);
             return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
         }
 
@@ -307,7 +311,7 @@ public class NTBController {
             Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
             if(userId == null) {
                 return new ResponseEntity<LoansResponse>(
-                        new LoansResponse("Unauthorized User! Please Re-login and try again.", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+                        new LoansResponse(CommonUtils.UNAUTHORIZED_USER_PLEASE_RE_LOGIN_AND_TRY_AGAIN, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
             }
             if(CommonUtils.isObjectListNull(ntbRequest.getDirectorId(),ntbRequest.getApplicationId(),ntbRequest.getBusineeTypeId())) {
                 logger.info("Director Id or Application Id or BusinessTypeId is NUll============>{}",ntbRequest.toString());
@@ -315,7 +319,7 @@ public class NTBController {
                         HttpStatus.OK);
             }
             ntbRequest.setUserId(userId);
-            logger.info("Application Id for Getting============>{}",ntbRequest.getApplicationId());
+            logger.info(APPLICATION_ID_FOR_GETTING_MSG,ntbRequest.getApplicationId());
             LoansResponse callMatchEngineClient = ntbService.postDirectorBackground(ntbRequest);
             logger.info("Response from directorBackground ==>{}",callMatchEngineClient.toString());
             return new ResponseEntity<LoansResponse>(callMatchEngineClient, HttpStatus.OK);
@@ -336,7 +340,7 @@ public class NTBController {
             Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
             if(userId == null) {
                 return new ResponseEntity<LoansResponse>(
-                        new LoansResponse("Unauthorized User! Please Re-login and try again.", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+                        new LoansResponse(CommonUtils.UNAUTHORIZED_USER_PLEASE_RE_LOGIN_AND_TRY_AGAIN, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
             }
             if(CommonUtils.isObjectListNull(ntbRequest.getApplicationId(),ntbRequest.getBusineeTypeId())) {
                 logger.info("Application Id or BusinessTypeId is NUll============>{}",ntbRequest.toString());
@@ -344,7 +348,7 @@ public class NTBController {
                         HttpStatus.OK);
             }
             ntbRequest.setUserId(userId);
-            logger.info("Application Id for Getting============>{}",ntbRequest.getApplicationId());
+            logger.info(APPLICATION_ID_FOR_GETTING_MSG,ntbRequest.getApplicationId());
             LoansResponse loanResponse = ntbService.postDirectorsChangeStage(ntbRequest);
             logger.info("Response from dirBackChangeStage ==>{}",loanResponse.toString());
             return new ResponseEntity<LoansResponse>(loanResponse, HttpStatus.OK);
@@ -366,7 +370,7 @@ public class NTBController {
         {
             Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
             if(userId == null) {
-                return new ResponseEntity<LoansResponse>(new LoansResponse("Unauthorized User! Please Re-login and try again.", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+                return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.UNAUTHORIZED_USER_PLEASE_RE_LOGIN_AND_TRY_AGAIN, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
             }
             if(CommonUtils.isObjectListNull(ntbRequest.getApplicationId(),ntbRequest.getBusineeTypeId())) {
                 logger.info("Application Id or BusinessTypeId is NUll============>{}",ntbRequest.toString());
@@ -374,7 +378,7 @@ public class NTBController {
                         HttpStatus.OK);
             }
             ntbRequest.setUserId(userId);
-            logger.info("Application Id for Getting============>{}",ntbRequest.getApplicationId());
+            logger.info(APPLICATION_ID_FOR_GETTING_MSG,ntbRequest.getApplicationId());
             LoansResponse loanResponse = ntbService.postOthersChangeStage(ntbRequest);
             logger.info("Response from postOthersChangeStage ==>{}",loanResponse.toString());
             return new ResponseEntity<LoansResponse>(loanResponse, HttpStatus.OK);

@@ -158,7 +158,6 @@ public class DprSixSheetExcelReader
             } catch (Exception e) {
                 logger.error(CommonUtils.EXCEPTION,e);
             }
-            // System.out.println(boardOfDirectorName + designation + qualification + experience + achievements + functionalDuties);
         }
     }
 

@@ -32,6 +32,9 @@ public class MatchesController {
 
 	private static final Logger logger = LoggerFactory.getLogger(MatchesController.class);
 
+	private static final String MATCH_REQUEST_MUST_NOT_BE_EMPTY_MSG = "matchRequest must not be empty ==>";
+	private static final String MATCHES_SUCCESSFULLY_SAVED_MSG = "Matches Successfully Saved";
+
 	@Autowired
 	private MatchEngineClient engineClient;
 	
@@ -63,7 +66,7 @@ public class MatchesController {
 		matchRequest.setUserId(userId);
 		
 		if (matchRequest == null || matchRequest.getApplicationId() == null) {
-			logger.warn("matchRequest must not be empty ==>" + matchRequest);
+			logger.warn(MATCH_REQUEST_MUST_NOT_BE_EMPTY_MSG + matchRequest);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}
@@ -75,7 +78,7 @@ public class MatchesController {
 					logger.info("Start Sending Mail To Fs Corporate for Profile and primary fill complete");
 					asyncComponent.sendMailWhenUserCompletePrimaryForm(userId,matchRequest.getApplicationId());	
 				}
-				LoansResponse loansResponse = new LoansResponse("Matches Successfully Saved", HttpStatus.OK.value());
+				LoansResponse loansResponse = new LoansResponse(MATCHES_SUCCESSFULLY_SAVED_MSG, HttpStatus.OK.value());
 				loansResponse.setData(matchResponse.getData());
 				loansResponse.setFlag(matchResponse.getIsUBIMatched());
 				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
@@ -108,7 +111,7 @@ public class MatchesController {
 		matchRequest.setUserId(userId);
 		
 		if (matchRequest == null || matchRequest.getApplicationId() == null) {
-			logger.warn("matchRequest must not be empty ==>" + matchRequest);
+			logger.warn(MATCH_REQUEST_MUST_NOT_BE_EMPTY_MSG + matchRequest);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}
@@ -120,7 +123,7 @@ public class MatchesController {
 					logger.info("Start Sending Mail To Fs Retails for Profile and primary fill complete");
 					asyncComponent.sendMailWhenUserCompletePrimaryForm(userId,matchRequest.getApplicationId());	
 				}
-				LoansResponse loansResponse = new LoansResponse("Matches Successfully Saved", HttpStatus.OK.value());
+				LoansResponse loansResponse = new LoansResponse(MATCHES_SUCCESSFULLY_SAVED_MSG, HttpStatus.OK.value());
 				loansResponse.setData(matchResponse.getData());
 				loansResponse.setFlag(matchResponse.getIsUBIMatched());
 				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
@@ -151,7 +154,7 @@ public class MatchesController {
 		matchRequest.setUserId(userId);
 		
 		if (matchRequest == null || matchRequest.getProductId() == null) {
-			logger.warn("matchRequest must not be empty ==>" + matchRequest);
+			logger.warn(MATCH_REQUEST_MUST_NOT_BE_EMPTY_MSG + matchRequest);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}
@@ -164,7 +167,7 @@ public class MatchesController {
 				productMasterService.setIsMatchProduct(matchRequest.getProductId(), matchRequest.getUserId());
 				
 				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Matches Successfully Saved", HttpStatus.OK.value()), HttpStatus.OK);
+						new LoansResponse(MATCHES_SUCCESSFULLY_SAVED_MSG, HttpStatus.OK.value()), HttpStatus.OK);
 			}
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
@@ -204,7 +207,7 @@ public class MatchesController {
 		
 		
 		if (matchRequest == null || matchRequest.getProductId() == null) {
-			logger.warn("matchRequest must not be empty ==>" + matchRequest);
+			logger.warn(MATCH_REQUEST_MUST_NOT_BE_EMPTY_MSG + matchRequest);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}
@@ -217,7 +220,7 @@ public class MatchesController {
 				productMasterService.setIsMatchProduct(matchRequest.getProductId(), matchRequest.getUserId());
 				
 				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Matches Successfully Saved", HttpStatus.OK.value()), HttpStatus.OK);
+						new LoansResponse(MATCHES_SUCCESSFULLY_SAVED_MSG, HttpStatus.OK.value()), HttpStatus.OK);
 			}
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),

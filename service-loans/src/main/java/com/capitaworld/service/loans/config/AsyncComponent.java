@@ -193,10 +193,8 @@ public class AsyncComponent {
 							try {
 								UserResponse response = usersClient
 										.getActiveUserCount(CommonUtils.UserType.FUND_PROVIDER);
-								if (!CommonUtils.isObjectNullOrEmpty(response)) {
-									if (!CommonUtils.isObjectNullOrEmpty(response.getData())) {
+								if (!CommonUtils.isObjectNullOrEmpty(response) && !CommonUtils.isObjectNullOrEmpty(response.getData()) ) {
 										totalCount = (Integer) response.getData();
-									}
 								}
 							} catch (Exception e) {
 								logger.error("Throw Excecption While Get Total Fp User Count : ",e);

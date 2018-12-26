@@ -88,6 +88,7 @@ public class PersonalLoansViewServiceImpl implements PersonalLoansViewService {
 				try {
 					profileViewPLResponse.setGender(Gender.getById(applicantDetail.getGenderId()).getValue());
 				} catch (Exception e) {
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 				profileViewPLResponse.setLastName(applicantDetail.getLastName());
 				profileViewPLResponse.setMaritalStatus(applicantDetail.getStatusId() != null ? MaritalStatus.getById(applicantDetail.getStatusId()).getValue() : null);

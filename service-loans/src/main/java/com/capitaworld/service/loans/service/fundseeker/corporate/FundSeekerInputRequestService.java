@@ -1,6 +1,9 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate;
 
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.capitaworld.service.gst.GstResponse;
 import com.capitaworld.service.loans.model.LoansResponse;
@@ -38,9 +41,10 @@ public interface FundSeekerInputRequestService {
 	 * @param gstin
 	 * @param applicationId
 	 * @param userId
+	 * @param uploadedFile
 	 * @return
 	 */
-	public GstResponse verifyGST(String gstin,Long applicationId,Long userId);
+	public LoansResponse verifyGST(String gstin,Long applicationId,Long userId,MultipartFile[] uploadedFile);
 
 	
 	/**
@@ -58,7 +62,7 @@ public interface FundSeekerInputRequestService {
 	 * @param flagType
 	 * @return
 	 */
-	public boolean updateFlag(Long applicationId,Boolean flag,Integer flagType);
+	public LoansResponse updateFlag(Long applicationId,Boolean flag,Integer flagType);
 	
 	/**
 	 * Saving OneForm for Uniform Product
@@ -66,4 +70,13 @@ public interface FundSeekerInputRequestService {
 	 * @return
 	 */
 	public LoansResponse saveOrUpdateForOnePagerEligibility(FundSeekerInputRequestResponse fundSeekerInputRequest);
+	
+	/**
+	 * Deleting Document and Return the remaining list of Document for the givem mapping Id
+	 * @param applicationId
+	 * @param docIds
+	 * @param mappingId
+	 * @return
+	 */
+	public LoansResponse deleteDocument(Long applicationId,List<Long> docIds,Long mappingId);
 }
