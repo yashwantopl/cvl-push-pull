@@ -817,11 +817,11 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 		int count = 0;
 		if(flagType == CommonUtils.APIFlags.ITR.getId()){
 			count = corporateApplicantDetailRepository.updateITRFlag(applicationId, flag);
-			documentRequest.setProductDocumentMappingId(DocumentAlias.GST_RECEIPT);
-			logger.info("ITR Flag Change Count==>{}",count);
+			documentRequest.setProductDocumentMappingId(DocumentAlias.CORPORATE_ITR_XML);
+			logger.info("ITR Flag Change Count==>{}",count);			
 		}else if(flagType == CommonUtils.APIFlags.GST.getId()){
 			count = corporateApplicantDetailRepository.updateGSTFlagWithoutGstin(applicationId, flag);
-			documentRequest.setProductDocumentMappingId(DocumentAlias.CORPORATE_ITR_XML);
+			documentRequest.setProductDocumentMappingId(DocumentAlias.GST_RECEIPT);
 			logger.info("ITR Flag Change Count==>{}",count);
 		}else{
 			logger.warn("Invalid API Flag so Returning Default False");
