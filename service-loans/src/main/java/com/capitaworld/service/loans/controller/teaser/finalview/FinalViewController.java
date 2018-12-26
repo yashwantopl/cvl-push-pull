@@ -120,7 +120,7 @@ private static final Logger logger = LoggerFactory.getLogger(FinalViewController
 			
 		} else {
 			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
+			userType = (Integer) request.getAttribute(CommonUtils.USER_TYPE);
 		}
 
 		logger.debug(MSG_USER_ID+userId+MSG_USER_TYPE+userType);
@@ -187,7 +187,7 @@ private static final Logger logger = LoggerFactory.getLogger(FinalViewController
 			
 		} else {
 			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
+			userType = (Integer) request.getAttribute(CommonUtils.USER_TYPE);
 		}
 
 		logger.debug(MSG_USER_ID+userId+MSG_USER_TYPE+userType);
@@ -254,7 +254,7 @@ private static final Logger logger = LoggerFactory.getLogger(FinalViewController
 			
 		} else {
 			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
+			userType = (Integer) request.getAttribute(CommonUtils.USER_TYPE);
 		}
 
 			logger.debug(MSG_USER_ID+userId+MSG_USER_TYPE+userType);
@@ -319,7 +319,7 @@ private static final Logger logger = LoggerFactory.getLogger(FinalViewController
 			
 		} else {
 			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
+			userType = (Integer) request.getAttribute(CommonUtils.USER_TYPE);
 		}
 
 			logger.debug(MSG_USER_ID+userId+MSG_USER_TYPE+userType);
@@ -385,7 +385,7 @@ private static final Logger logger = LoggerFactory.getLogger(FinalViewController
 			
 		} else {
 			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
+			userType = (Integer) request.getAttribute(CommonUtils.USER_TYPE);
 		}
 
 			logger.debug(MSG_USER_ID+userId+MSG_USER_TYPE+userType);
@@ -451,7 +451,7 @@ private static final Logger logger = LoggerFactory.getLogger(FinalViewController
 			
 		} else {
 			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
+			userType = (Integer) request.getAttribute(CommonUtils.USER_TYPE);
 		}
 
 			logger.debug(MSG_USER_ID+userId+MSG_USER_TYPE+userType);
@@ -517,7 +517,7 @@ private static final Logger logger = LoggerFactory.getLogger(FinalViewController
 			
 		} else {
 			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
+			userType = (Integer) request.getAttribute(CommonUtils.USER_TYPE);
 		}
 
 			logger.debug(MSG_USER_ID+userId+MSG_USER_TYPE+userType);
@@ -577,7 +577,7 @@ private static final Logger logger = LoggerFactory.getLogger(FinalViewController
 					}
 				} else {
 					if(!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_TYPE))) {
-						userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();		
+						userType = (Integer) request.getAttribute(CommonUtils.USER_TYPE);
 					}
 					if(!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_ID))) {
 						userId = ((Long) request.getAttribute(CommonUtils.USER_ID));		
@@ -590,7 +590,7 @@ private static final Logger logger = LoggerFactory.getLogger(FinalViewController
 				}
 			} else {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-				userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
+				userType = (Integer) request.getAttribute(CommonUtils.USER_TYPE);
 			}
 
 				logger.debug(MSG_USER_ID+userId+MSG_USER_TYPE+userType);

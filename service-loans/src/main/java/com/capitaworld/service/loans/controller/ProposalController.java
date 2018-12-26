@@ -64,7 +64,7 @@ public class ProposalController {
 		if (CommonDocumentUtils.isThisClientApplication(httpRequest) && !CommonUtils.isObjectNullOrEmpty(clientId)) {
 			userId = clientId;
 		} else {
-			userId = ((Long) httpRequest.getAttribute(CommonUtils.USER_ID)).longValue();
+			userId = (Long) httpRequest.getAttribute(CommonUtils.USER_ID);
 		}
 		request.setUserId(userId);
 		List proposalDetailsList=proposalService.fundproviderProposal(request);
@@ -85,7 +85,7 @@ public class ProposalController {
 		if (CommonDocumentUtils.isThisClientApplication(httpRequest) && !CommonUtils.isObjectNullOrEmpty(clientId)) {
 			userId = clientId;
 		} else {
-			userId = ((Long) httpRequest.getAttribute(CommonUtils.USER_ID)).longValue();
+			userId = (Long) httpRequest.getAttribute(CommonUtils.USER_ID);
 		}
 		request.setUserId(userId);
 		List proposalDetailsList=proposalService.basicInfoForSearch(request);
@@ -104,7 +104,7 @@ public class ProposalController {
 		if (CommonDocumentUtils.isThisClientApplication(httpRequest)) {
 			userId = clientId;
 		} else {
-			userId = ((Long) httpRequest.getAttribute(CommonUtils.USER_ID)).longValue();
+			userId = (Long) httpRequest.getAttribute(CommonUtils.USER_ID);
 		}
 		List<FundProviderProposalDetails> proposalDetailsList=proposalService.fundseekerProposal(request, userId);
 		return new ResponseEntity<List<FundProviderProposalDetails>>(proposalDetailsList,HttpStatus.OK);
@@ -119,7 +119,7 @@ public class ProposalController {
 		if (CommonDocumentUtils.isThisClientApplication(httpRequest) && !CommonUtils.isObjectNullOrEmpty(clientId)) {
 			userId = clientId;
 		} else {
-			userId = ((Long) httpRequest.getAttribute(CommonUtils.USER_ID)).longValue();
+			userId = (Long) httpRequest.getAttribute(CommonUtils.USER_ID);
 		}
 		request.setUserId(userId);
 		return new ResponseEntity<ProposalMappingResponse>(proposalService.saveDisbursementDetails(request, userId),HttpStatus.OK);
@@ -316,7 +316,7 @@ public class ProposalController {
 		if (CommonDocumentUtils.isThisClientApplication(httpRequest) && !CommonUtils.isObjectNullOrEmpty(clientId)) {
 			userId = clientId;
 		} else {
-			userId = ((Long) httpRequest.getAttribute(CommonUtils.USER_ID)).longValue();
+			userId = (Long) httpRequest.getAttribute(CommonUtils.USER_ID);
 		}
 		request.setUserId(userId);
 		

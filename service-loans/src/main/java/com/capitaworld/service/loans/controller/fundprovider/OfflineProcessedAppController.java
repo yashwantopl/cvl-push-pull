@@ -50,10 +50,10 @@ public class OfflineProcessedAppController {
 		Integer userType = null;
 		Long orgId = null;
 		if(!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_TYPE))) {
-			 userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();		
+			 userType = (Integer) request.getAttribute(CommonUtils.USER_TYPE);
 		}
 		if(!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_ORG_ID))) {
-			 orgId = ((Long) request.getAttribute(CommonUtils.USER_ORG_ID)).longValue();		
+			 orgId = (Long) request.getAttribute(CommonUtils.USER_ORG_ID);
 		}
 		if (CommonDocumentUtils.isThisClientApplication(request)) {
 			if(!CommonUtils.isObjectNullOrEmpty(clientId) && userType != CommonUtils.UserType.FUND_PROVIDER){
@@ -73,7 +73,7 @@ public class OfflineProcessedAppController {
 				}
 			}else {
 				if(!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_TYPE))) {
-					userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();		
+					userType = (Integer) request.getAttribute(CommonUtils.USER_TYPE);
 				}
 				if(!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_ID))) {
 					userId = ((Long) request.getAttribute(CommonUtils.USER_ID));		
@@ -82,7 +82,7 @@ public class OfflineProcessedAppController {
 
 		} else {
 			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
+			userType = (Integer) request.getAttribute(CommonUtils.USER_TYPE);
 		}
 		     List<OfflineProcessedApplicationRequest> lst = offlineProcessedApplicationService.getApplicationList(orgId,userId);
 		     LoansResponse loansResponse = new LoansResponse();
@@ -112,10 +112,10 @@ public class OfflineProcessedAppController {
 		Integer userType = null;
 		Long orgId = null;
 		if(!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_TYPE))) {
-			 userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();		
+			 userType = (Integer) request.getAttribute(CommonUtils.USER_TYPE);
 		}
 		if(!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_ORG_ID))) {
-			 orgId = ((Long) request.getAttribute(CommonUtils.USER_ORG_ID)).longValue();		
+			 orgId = (Long) request.getAttribute(CommonUtils.USER_ORG_ID);
 		}
 		if (CommonDocumentUtils.isThisClientApplication(request)) {
 			if(!CommonUtils.isObjectNullOrEmpty(clientId) && userType != CommonUtils.UserType.FUND_PROVIDER){
@@ -135,7 +135,7 @@ public class OfflineProcessedAppController {
 				}
 			}else {
 				if(!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_TYPE))) {
-					userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();		
+					userType = (Integer) request.getAttribute(CommonUtils.USER_TYPE);
 				}
 				if(!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_ID))) {
 					userId = ((Long) request.getAttribute(CommonUtils.USER_ID));		
@@ -144,7 +144,7 @@ public class OfflineProcessedAppController {
 
 		} else {
 			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
+			userType = (Integer) request.getAttribute(CommonUtils.USER_TYPE);
 		}
 		     List<OfflineProcessedApplicationRequest> lst = offlineProcessedApplicationService.getSanctionedApplicationList(orgId,userId);
 		     LoansResponse loansResponse = new LoansResponse();
@@ -174,10 +174,10 @@ public class OfflineProcessedAppController {
 		Integer userType = null;
 		Long orgId = null;
 		if(!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_TYPE))) {
-			 userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();		
+			 userType = (Integer) request.getAttribute(CommonUtils.USER_TYPE);
 		}
 		if(!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_ORG_ID))) {
-			 orgId = ((Long) request.getAttribute(CommonUtils.USER_ORG_ID)).longValue();		
+			 orgId = (Long) request.getAttribute(CommonUtils.USER_ORG_ID);
 		}
 		if (CommonDocumentUtils.isThisClientApplication(request)) {
 			if(!CommonUtils.isObjectNullOrEmpty(clientId) && userType != CommonUtils.UserType.FUND_PROVIDER){
@@ -197,7 +197,7 @@ public class OfflineProcessedAppController {
 				}
 			}else {
 				if(!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_TYPE))) {
-					userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();		
+					userType = (Integer) request.getAttribute(CommonUtils.USER_TYPE);
 				}
 				if(!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_ID))) {
 					userId = ((Long) request.getAttribute(CommonUtils.USER_ID));		
@@ -206,7 +206,7 @@ public class OfflineProcessedAppController {
 
 		} else {
 			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
+			userType = (Integer) request.getAttribute(CommonUtils.USER_TYPE);
 		}
 		     List<OfflineProcessedApplicationRequest> lst = offlineProcessedApplicationService.getDisbursedApplicationList(orgId,userId);
 		     LoansResponse loansResponse = new LoansResponse();
@@ -236,10 +236,10 @@ public class OfflineProcessedAppController {
 		Integer userType = null;
 		Long orgId = null;
 		if(!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_TYPE))) {
-			 userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();		
+			 userType = (Integer) request.getAttribute(CommonUtils.USER_TYPE);
 		}
 		if(!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_ORG_ID))) {
-			 orgId = ((Long) request.getAttribute(CommonUtils.USER_ORG_ID)).longValue();		
+			 orgId = (Long) request.getAttribute(CommonUtils.USER_ORG_ID);
 		}
 		if (CommonDocumentUtils.isThisClientApplication(request)) {
 			if(!CommonUtils.isObjectNullOrEmpty(clientId) && userType != CommonUtils.UserType.FUND_PROVIDER){
@@ -259,7 +259,7 @@ public class OfflineProcessedAppController {
 				}
 			}else {
 				if(!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_TYPE))) {
-					userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();		
+					userType = (Integer) request.getAttribute(CommonUtils.USER_TYPE);
 				}
 				if(!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_ID))) {
 					userId = ((Long) request.getAttribute(CommonUtils.USER_ID));		
@@ -268,7 +268,7 @@ public class OfflineProcessedAppController {
 
 		} else {
 			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
+			userType = (Integer) request.getAttribute(CommonUtils.USER_TYPE);
 		}
 		     List<OfflineProcessedApplicationRequest> lst = offlineProcessedApplicationService.getRejectProposalList(orgId, userId);
 		     LoansResponse loansResponse = new LoansResponse();
