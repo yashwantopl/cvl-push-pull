@@ -53,6 +53,8 @@ public class AssociatedConcernDetail implements Serializable {
 
 	private String name;
 
+	private String pan;
+	
 	@Column(name="nature_activity")
 	private String natureActivity;
 
@@ -82,7 +84,12 @@ public class AssociatedConcernDetail implements Serializable {
 
 	@Column(name="date_of_incorporation")
 	private Date dateOfIncorporation;
-
+	
+	@Column(name = "financial_institution_name")
+	private String financialInstitutionName;
+	
+	@Column(name = "limit_availed")
+	private Double limitAvailed;
 
 	public AssociatedConcernDetail() {
 		// Do nothing because of X and Y.
@@ -254,5 +261,29 @@ public class AssociatedConcernDetail implements Serializable {
 
 	public void setDateOfIncorporation(Date dateOfIncorporation) {
 		this.dateOfIncorporation = dateOfIncorporation;
+	}
+
+	public String getPan() {
+		return pan;
+	}
+
+	public void setPan(String pan) {
+		this.pan = pan;
+	}
+
+	public String getFinancialInstitutionName() {
+		return financialInstitutionName;
+	}
+
+	public void setFinancialInstitutionName(String financialInstitutionName) {
+		this.financialInstitutionName = financialInstitutionName;
+	}
+
+	public Double getLimitAvailed() {
+		return limitAvailed;
+	}
+
+	public void setLimitAvailed(Double limitAvailed) {
+		this.limitAvailed = limitAvailed;
 	}
 }
