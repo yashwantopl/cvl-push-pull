@@ -25,10 +25,8 @@ public class DprThirdSheetExcelReader
         try {
             //sheet number 3 fill 780 question answer in db
             String productAndServices = getDataFromCell(sheet, "C8");
-            if (!(productAndServices.isEmpty())) {//if textbox is empty not insert record
-                if (!(productAndServices.equals("Insert Text Here"))) {
+            if (!(productAndServices.isEmpty()) && !(productAndServices.equals("Insert Text Here")) ) {//if textbox is empty not insert record
                 	dprUserDataDetail.setSpecialFeaturesProductsAndServices(productAndServices);
-                }
             }
         }catch (Exception e)
         {
