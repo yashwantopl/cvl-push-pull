@@ -59,7 +59,11 @@ import com.capitaworld.service.oneform.model.OneFormResponse;
 @Transactional
 @Service
 public class  PersonalLoanParameterServiceImpl implements PersonalLoanParameterService {
+
 	private static final Logger logger = LoggerFactory.getLogger(PersonalLoanParameterServiceImpl.class);
+
+	private static final String ERROR_WHILE_GET_PERSONAL_LOAN_PARAMETER_REQUEST_MSG = "error while getPersonalLoanParameterRequest : ";
+
 	@Autowired
 	private PersonalLoanParameterRepository personalLoanParameterRepository;
 	
@@ -209,7 +213,7 @@ public class  PersonalLoanParameterServiceImpl implements PersonalLoanParameterS
 			 
 			
 		} catch (Exception e) {
-			logger.error("error while getPersonalLoanParameterRequest : ",e);
+			logger.error(ERROR_WHILE_GET_PERSONAL_LOAN_PARAMETER_REQUEST_MSG,e);
 		}
 		}
 		
@@ -225,7 +229,7 @@ public class  PersonalLoanParameterServiceImpl implements PersonalLoanParameterS
 			 
 			
 		} catch (Exception e) {
-			logger.error("error while getPersonalLoanParameterRequest : ",e);
+			logger.error(ERROR_WHILE_GET_PERSONAL_LOAN_PARAMETER_REQUEST_MSG,e);
 		}
 		}
 		
@@ -239,7 +243,7 @@ public class  PersonalLoanParameterServiceImpl implements PersonalLoanParameterS
 			 
 			
 		} catch (Exception e) {
-			logger.error("error while getPersonalLoanParameterRequest : ",e);
+			logger.error(ERROR_WHILE_GET_PERSONAL_LOAN_PARAMETER_REQUEST_MSG,e);
 		}
 		}
 		

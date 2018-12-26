@@ -29,7 +29,11 @@ import com.capitaworld.service.oneform.model.OneFormResponse;
 @Transactional
 @Service
 public class LapLoanParameterServiceImpl implements LapLoanParameterService {
+
 	private static final Logger logger = LoggerFactory.getLogger(LapLoanParameterServiceImpl.class);
+
+	private static final String ERROR_WHILE_GET_LAP_PARAMETER_REQUEST_MSG = "error while getLapParameterRequest : ";
+
 	@Autowired
 	private LapParameterRepository lapParameterRepository;
 	
@@ -102,7 +106,7 @@ public class LapLoanParameterServiceImpl implements LapLoanParameterService {
 			 
 			
 		} catch (Exception e) {
-			logger.error("error while getLapParameterRequest : ",e);
+			logger.error(ERROR_WHILE_GET_LAP_PARAMETER_REQUEST_MSG,e);
 		}
 		}
 		
@@ -117,7 +121,7 @@ public class LapLoanParameterServiceImpl implements LapLoanParameterService {
 			 
 			
 		} catch (Exception e) {
-			logger.error("error while getLapParameterRequest : ",e);
+			logger.error(ERROR_WHILE_GET_LAP_PARAMETER_REQUEST_MSG,e);
 		}
 		}
 		
@@ -131,7 +135,7 @@ public class LapLoanParameterServiceImpl implements LapLoanParameterService {
 			 
 			
 		} catch (Exception e) {
-			logger.error("error while getLapParameterRequest : ",e);
+			logger.error(ERROR_WHILE_GET_LAP_PARAMETER_REQUEST_MSG,e);
 		}
 		}
 		CommonDocumentUtils.endHook(logger, "getLapParameterRequest");

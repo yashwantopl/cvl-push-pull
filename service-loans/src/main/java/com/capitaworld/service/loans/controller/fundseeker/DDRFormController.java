@@ -50,6 +50,8 @@ public class DDRFormController {
 
 	private static final Logger logger = LoggerFactory.getLogger(DDRFormController.class);
 
+	private static final String SAVING_REQUEST_TO_DB_MSG = "Saving Request to DB ===> ";
+
 	@Autowired
 	private DDRFormService ddrFormService;
 
@@ -437,14 +439,14 @@ public class DDRFormController {
 						loansResponse = new LoansResponse("Information Successfully Stored ", HttpStatus.OK.value());
 						loansResponse.setData(isSuccess);
 
-						logger.info("Saving Request to DB ===> " + "Exit saveDDRInfo()() ---------------->  msg ==>" + "Information Successfully Stored " );
+						logger.info(SAVING_REQUEST_TO_DB_MSG + "Exit saveDDRInfo()() ---------------->  msg ==>" + "Information Successfully Stored " );
 						return new ResponseEntity<LoansResponse>(loansResponse ,HttpStatus.OK );
 					}else {
 						reason ="Invalid Credentials";
 						logger.info("Invalid Credentials while saveDDRInfo() ----------------> orgId "+ orgId ) ;
 						loansResponse = new LoansResponse(reason, HttpStatus.OK.value());
 						loansResponse.setData(isSuccess);
-						logger.info("Saving Request to DB ===> " + "Exit saveDDRInfo()() ---------------->  msg ==>" + reason );
+						logger.info(SAVING_REQUEST_TO_DB_MSG + "Exit saveDDRInfo()() ---------------->  msg ==>" + reason );
 						return new ResponseEntity<LoansResponse>(loansResponse ,HttpStatus.OK );
 					}
 					
@@ -452,7 +454,7 @@ public class DDRFormController {
 					logger.info("Null in DDRFormDetailsRequest  while saveDDRInfo() ----------------> ddrFormDetailsRequest" + ddrFormDetailsRequest  );
 					loansResponse =new LoansResponse("Mandatory Fields Must Not be Null", HttpStatus.BAD_REQUEST.value(),HttpStatus.OK);
 					loansResponse.setData(isSuccess);
-					logger.info("Saving Request to DB ===> ");
+					logger.info(SAVING_REQUEST_TO_DB_MSG);
 					reason="Mandatory Fields Must Not be Null  ddrFormDetailsRequest ====> " + ddrFormDetailsRequest;
 					return  new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 				}
@@ -460,7 +462,7 @@ public class DDRFormController {
 				logger.info("Null in encryptedString while saveDDRInfo() ----------------> encryptedString " +encryptedString );
 				loansResponse =new LoansResponse("Mandatory Fields Must Not be Null", HttpStatus.BAD_REQUEST.value(),HttpStatus.OK);
 				loansResponse.setData(isSuccess);
-				logger.info("Saving Request to DB ===> ");
+				logger.info(SAVING_REQUEST_TO_DB_MSG);
 				reason="Null in encryptedString  ====>"+encryptedString;
 				return  new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 			}

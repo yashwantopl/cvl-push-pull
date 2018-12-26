@@ -28,7 +28,11 @@ import com.capitaworld.service.oneform.model.OneFormResponse;
 @Transactional
 @Service
 public class LasLoanParameterServiceImpl implements LasLoanParameterService {
+
 	private static final Logger logger = LoggerFactory.getLogger(LasLoanParameterServiceImpl.class);
+
+	private static final String ERROR_WHILE_GET_LAS_PARAMETER_REQUEST_MSG = "error while getLasParameterRequest : ";
+
 	@Autowired
 	private LasParameterRepository lasParameterRepository;
 	
@@ -91,7 +95,7 @@ public class LasLoanParameterServiceImpl implements LasLoanParameterService {
 			 
 			
 		} catch (Exception e) {
-			logger.error("error while getLasParameterRequest : ",e);
+			logger.error(ERROR_WHILE_GET_LAS_PARAMETER_REQUEST_MSG,e);
 		}
 		}
 		
@@ -105,7 +109,7 @@ public class LasLoanParameterServiceImpl implements LasLoanParameterService {
 			 
 			
 		} catch (Exception e) {
-			logger.error("error while getLasParameterRequest : ",e);
+			logger.error(ERROR_WHILE_GET_LAS_PARAMETER_REQUEST_MSG,e);
 		}
 		}
 		
@@ -119,7 +123,7 @@ public class LasLoanParameterServiceImpl implements LasLoanParameterService {
 			 
 			
 		} catch (Exception e) {
-			logger.error("error while getLasParameterRequest : ",e);
+			logger.error(ERROR_WHILE_GET_LAS_PARAMETER_REQUEST_MSG,e);
 		}
 		}
 		CommonDocumentUtils.endHook(logger, "getLasParameterRequest");
