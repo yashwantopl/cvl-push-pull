@@ -1,5 +1,7 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate;
 
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -68,4 +70,13 @@ public interface FundSeekerInputRequestService {
 	 * @return
 	 */
 	public LoansResponse saveOrUpdateForOnePagerEligibility(FundSeekerInputRequestResponse fundSeekerInputRequest);
+	
+	/**
+	 * Deleting Document and Return the remaining list of Document for the givem mapping Id
+	 * @param applicationId
+	 * @param docIds
+	 * @param mappingId
+	 * @return
+	 */
+	public LoansResponse deleteDocument(Long applicationId,List<Long> docIds,Long mappingId);
 }
