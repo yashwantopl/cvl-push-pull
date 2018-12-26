@@ -52,7 +52,7 @@ public interface FundSeekerInputRequestService {
 	 * @param applicationId
 	 * @return
 	 */
-	public ResponseEntity<LoansResponse> getDataForOnePagerOneForm(Long applicationId);
+	public LoansResponse getDataForOnePagerOneForm(Long applicationId);
 	
 	
 	/**
