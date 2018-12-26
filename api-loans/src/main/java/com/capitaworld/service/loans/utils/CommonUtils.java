@@ -69,11 +69,14 @@ public class CommonUtils {
 	public static final String SUCCESS = "Success";
 	public static final String FALSE_LITERAL = "false";
 	public static final String NA = "NA";
+	public static final String AUDITED = "Audited";
+	public static final String PROJECTED = "Projected";
 	public static final String SUCCESS_RESULT = "Success Result";
 	public static final String DATA_FOUND = "Data Found.";
 	public static final String DATA_NOT_FOUND = "Data Not Found.";
 	public static final String SUCCESSFULLY_SAVED = "Successfully Saved.";
 	public static final String INVALID_AGE = "Invalid Age";
+	public static final String ONE_FORM_SAVED_SUCCESSFULLY = "Oneform Saved Successfully";
 	public static final String SUCCESSFULLY_GET_DATA = "Successfully get data";
 
 	public static final String EXCEPTION = " :: EXCEPTION : ";
@@ -81,8 +84,11 @@ public class CommonUtils {
 	public static final String OBLIGATION_MUST_BE_LESS_THAN_INCOME = "Obligation Must be less than Income";
 	public static final String REQUEST_DATA_NULL_OR_EMPTY = "Request Data Null Or Empty !!";
 	public static final String INTERNAL_SERVER_ERROR  = "Internal Server Error";
+	public static final String INSERT_TEXT_HERE = "Insert Text Here";
+	public static final String MANDATORY_FIELDS_MUST_NOT_BE_NULL = "Mandatory Fields Must Not be Null";
 	public static final String REQUESTED_DATA_CAN_NOT_BE_EMPTY = "Requested data can not be empty.";
 	public static final String INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND = "Invalid data or Requested data not found.";
+	public static final String UNAUTHORIZED_USER_PLEASE_RE_LOGIN_AND_TRY_AGAIN = "Unauthorized User! Please Re-login and try again.";
 
 	public static final String YOU_ARE_NOT_ELIGIBLE_FOR_HOME_LOAN = "You are not eligible for Home Loan";
 	public static final String YOU_ARE_NOT_ELIGIBLE_FOR_PERSONAL_LOAN = "You are not eligible for Personal Loan";
@@ -1575,9 +1581,6 @@ public enum APIFlags {
 	// commaReplace method teaser and final view...
 	
 	public static String commaReplace(String value) {
-		
-		//System.out.println("comma Replace called :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
-		
 		
 		if(value != null && !value.equals("") && value.charAt(value.length()-1) != ',') {
 			return value+", ";

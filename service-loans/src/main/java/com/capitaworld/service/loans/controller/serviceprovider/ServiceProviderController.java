@@ -40,7 +40,7 @@ public class ServiceProviderController {
 		if(CommonUtils.isObjectNullOrEmpty(usersRequest) || CommonUtils.isObjectNullOrEmpty(usersRequest.getUserType())){
 			return new ResponseEntity<UserResponse>(
 
-					new UserResponse("Invalid data or Requested data not found.", HttpStatus.BAD_REQUEST.value()),
+					new UserResponse(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, HttpStatus.BAD_REQUEST.value()),
 					HttpStatus.OK);
 		}
 		try {
@@ -71,7 +71,7 @@ public class ServiceProviderController {
 	public ResponseEntity<UserResponse> spClientCount(HttpServletRequest request){
 		if(CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_ID).toString())){
 			return new ResponseEntity<UserResponse>(
-					new UserResponse("Invalid data or Requested data not found.", HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					new UserResponse(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
 		}
 		try {
@@ -100,7 +100,7 @@ public class ServiceProviderController {
 	public ResponseEntity<UserResponse> spClientNotifications(HttpServletRequest request){
 		if(CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_ID).toString())){
 			return new ResponseEntity<UserResponse>(
-					new UserResponse("Invalid data or Requested data not found.", HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					new UserResponse(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
 		}
 		try {
@@ -131,7 +131,7 @@ public class ServiceProviderController {
 	public ResponseEntity<UserResponse> spClientAllNotifications(HttpServletRequest request, @RequestBody NotificationPageRequest notificationPageRequest){
 		if(CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_ID).toString())){
 			return new ResponseEntity<UserResponse>(
-					new UserResponse("Invalid data or Requested data not found.", HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					new UserResponse(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
 		}
 		try {
@@ -162,7 +162,7 @@ public class ServiceProviderController {
 	public ResponseEntity<UserResponse> spClientAllNotificationsCount(HttpServletRequest request, @RequestBody NotificationPageRequest notificationPageRequest){
 		if(CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_ID).toString())){
 			return new ResponseEntity<UserResponse>(
-					new UserResponse("Invalid data or Requested data not found.", HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					new UserResponse(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
 		}
 		try {

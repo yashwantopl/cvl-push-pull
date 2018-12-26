@@ -280,10 +280,8 @@ public class CommonController {
 			try {
 				logger.info("Call Users Module for check user email verfied or not");
 				UserResponse response = usersClient.checkEmailVerified(usersRequest);
-				if(!CommonUtils.isObjectNullOrEmpty(response)){
-					if(!CommonUtils.isObjectNullOrEmpty(response.getData())){
+				if(!CommonUtils.isObjectNullOrEmpty(response) && !CommonUtils.isObjectNullOrEmpty(response.getData()) ){
 						obj.put("emailVerified", ((Boolean) response.getData()));
-					}
 				}
 			} catch(Exception e){
 				logger.error("Throw exception while check email verified or not : ",e);

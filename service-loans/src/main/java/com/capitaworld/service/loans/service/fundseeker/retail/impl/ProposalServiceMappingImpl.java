@@ -161,6 +161,13 @@ public class ProposalServiceMappingImpl implements ProposalService {
 
 	private static final Logger logger = LoggerFactory.getLogger(ProposalServiceMappingImpl.class.getName());
 
+	private static final String FOUND_BRANCH_ID_MSG = "Found Branch Id --> ";
+	private static final String CURRENT_USER_ID_MSG = "Current user id --> ";
+	private static final String ROLE_ID_MSG = "-- Role Id -->";
+	private static final String BRANCH_ID_CAN_NOT_BE_FOUND_MSG = "Branch Id Can not be found";
+	private static final String THROW_EXCEPTION_WHILE_GET_BRANCH_ID_FROM_USER_ID_MSG = "Throw Exception While Get Branch Id from UserId : ";
+	private static final String YOU_DO_NOT_HAVE_RIGHTS_TO_TAKE_ACTION_FOR_THIS_PROPOSAL_MSG = "You do not have rights to take action for this proposal.";
+
 	private String getMainDirectorName(Long appId) {
 		DirectorBackgroundDetail dirBackDetails = directorBackgroundDetailsRepository
 				.getMainDirectorByApplicationId(appId);
@@ -182,13 +189,13 @@ public class ProposalServiceMappingImpl implements ProposalService {
 				// set branch id to proposal request
 				UsersRequest usersRequest = new UsersRequest();
 				usersRequest.setId(request.getUserId());
-				logger.info("Current user id ---------------------------------------------------> " + request.getUserId());
+				logger.info(CURRENT_USER_ID_MSG + request.getUserId());
 				UserResponse userResponse = usersClient.getBranchDetailsBYUserId(usersRequest);
 				BranchBasicDetailsRequest basicDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap(
 						(LinkedHashMap<String, Object>) userResponse.getData(), BranchBasicDetailsRequest.class);
 				if (!CommonUtils.isObjectNullOrEmpty(basicDetailsRequest)) {
 					request.setUserRoleId(basicDetailsRequest.getRoleId());
-					logger.info("Found Branch Id -----------> " + basicDetailsRequest.getId() + "---------Role Id ------------------>" + basicDetailsRequest.getRoleId());
+					logger.info(FOUND_BRANCH_ID_MSG + basicDetailsRequest.getId() + ROLE_ID_MSG + basicDetailsRequest.getRoleId());
 					if (basicDetailsRequest.getRoleId() == CommonUtils.UsersRoles.BO
 							|| basicDetailsRequest.getRoleId() == CommonUtils.UsersRoles.FP_CHECKER) {
 						logger.info("Current user is Branch officer or FP_CHECKER");
@@ -199,10 +206,10 @@ public class ProposalServiceMappingImpl implements ProposalService {
 						request.setBranchIds(userResponse.getBranchList());
 					}
 				} else {
-					logger.info("Branch Id Can't found");
+					logger.info(BRANCH_ID_CAN_NOT_BE_FOUND_MSG);
 				}
 			} catch (Exception e) {
-				logger.error("Throw Exception While Get Branch Id from UserId : ",e);
+				logger.error(THROW_EXCEPTION_WHILE_GET_BRANCH_ID_FROM_USER_ID_MSG,e);
 			}
 
 			// END set branch id to proposal request
@@ -1450,22 +1457,22 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			// set branch id to proposal request
 			UsersRequest usersRequest = new UsersRequest();
 			usersRequest.setId(request.getUserId());
-			logger.info("Current user id ---------------------------------------------------> " + request.getUserId());
+			logger.info(CURRENT_USER_ID_MSG + request.getUserId());
 			UserResponse userResponse = usersClient.getBranchDetailsBYUserId(usersRequest);
 			BranchBasicDetailsRequest basicDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap(
 					(LinkedHashMap<String, Object>) userResponse.getData(), BranchBasicDetailsRequest.class);
 			if (!CommonUtils.isObjectNullOrEmpty(basicDetailsRequest)) {
-				logger.info("Found Branch Id -----------> " + basicDetailsRequest.getId()
-						+ "---------Role Id ------------------>" + basicDetailsRequest.getRoleId());
+				logger.info(FOUND_BRANCH_ID_MSG + basicDetailsRequest.getId()
+						+ ROLE_ID_MSG + basicDetailsRequest.getRoleId());
 				if (basicDetailsRequest.getRoleId() == CommonUtils.UsersRoles.BO) {
 					logger.info("Current user is Branch officer");
 					request.setBranchId(basicDetailsRequest.getId());
 				}
 			} else {
-				logger.info("Branch Id Can't found");
+				logger.info(BRANCH_ID_CAN_NOT_BE_FOUND_MSG);
 			}
 		} catch (Exception e) {
-			logger.error("Throw Exception While Get Branch Id from UserId : ",e);
+			logger.error(THROW_EXCEPTION_WHILE_GET_BRANCH_ID_FROM_USER_ID_MSG,e);
 		}
 
 		List proposalByMatches = new ArrayList();
@@ -1741,7 +1748,6 @@ public class ProposalServiceMappingImpl implements ProposalService {
 		LoansResponse loansResponse = new LoansResponse();
 
 		try {
-			// System.out.println("getApplicationId :
 			// "+userRequest.getApplicationId() + "userRequest.getId() :
 			// "+userRequest.getId()+" getLoanAmount() :
 			// "+userRequest.getLoanAmount());
@@ -1769,7 +1775,6 @@ public class ProposalServiceMappingImpl implements ProposalService {
 				}
 
 				if (!CommonUtils.isObjectNullOrEmpty(checkerDetailRequest)) {
-					// System.out.println("getMinAmount :
 					// "+checkerDetailRequest.getMinAmount() + " getMaxAmount :
 					// "+checkerDetailRequest.getMaxAmount());
 					if (userRequest.getLoanAmount() != null && checkerDetailRequest.getMinAmount() != null
@@ -1783,22 +1788,21 @@ public class ProposalServiceMappingImpl implements ProposalService {
 				} else {
 					// You dont have Authorised for this Action
 					loansResponse.setFlag(false);
-					loansResponse.setMessage("You do not have rights to take action for this proposal.");
+					loansResponse.setMessage(YOU_DO_NOT_HAVE_RIGHTS_TO_TAKE_ACTION_FOR_THIS_PROPOSAL_MSG);
 				}
 
 			} else {
 				// You dont have Authorised for this Action
 				logger.error("Not getting min max loan amount for this user");
 				loansResponse.setFlag(false);
-				loansResponse.setMessage("You do not have rights to take action for this proposal.");
+				loansResponse.setMessage(YOU_DO_NOT_HAVE_RIGHTS_TO_TAKE_ACTION_FOR_THIS_PROPOSAL_MSG);
 			}
 		} catch (Exception e) {
 
 			logger.error("Error while Getting Min Max Loan Amount : ",e);
 			loansResponse.setFlag(false);
-			loansResponse.setMessage("You do not have rights to take action for this proposal.");
+			loansResponse.setMessage(YOU_DO_NOT_HAVE_RIGHTS_TO_TAKE_ACTION_FOR_THIS_PROPOSAL_MSG);
 		}
-		// System.out.println("loansResponse : "+loansResponse.toString());
 		return loansResponse;
 	}
 
@@ -1810,7 +1814,6 @@ public class ProposalServiceMappingImpl implements ProposalService {
 
 		// UsersRequest data = (UsersRequest) userData.getData();
 
-		// System.out.println("-----------------> data : "+
 		// userData.toString());
 
 		// Long roleId = (Long) userData.get("roleId");
@@ -1884,24 +1887,23 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			// set branch id to proposal request
 			UsersRequest usersRequest = new UsersRequest();
 			usersRequest.setId(request.getUserId());
-			logger.info(
-					"Current user id ---------------------------------------------------> " + request.getUserId());
+			logger.info(CURRENT_USER_ID_MSG + request.getUserId());
 			userResponse = usersClient.getBranchDetailsBYUserId(usersRequest);
 			basicDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap(
 					(LinkedHashMap<String, Object>) userResponse.getData(), BranchBasicDetailsRequest.class);
 			if (!CommonUtils.isObjectNullOrEmpty(basicDetailsRequest)) {
-				logger.info("Found Branch Id -----------> " + basicDetailsRequest.getId()
-						+ "---------Role Id ------------------>" + basicDetailsRequest.getRoleId());
+				logger.info(FOUND_BRANCH_ID_MSG + basicDetailsRequest.getId()
+						+ ROLE_ID_MSG + basicDetailsRequest.getRoleId());
 				if (basicDetailsRequest.getRoleId() == CommonUtils.UsersRoles.BO
 						|| basicDetailsRequest.getRoleId() == CommonUtils.UsersRoles.FP_CHECKER) {
 					logger.info("Current user is Branch officer or FP_CHECKER");
 					request.setBranchId(basicDetailsRequest.getId());
 				}
 			} else {
-				logger.info("Branch Id Can't found");
+				logger.info(BRANCH_ID_CAN_NOT_BE_FOUND_MSG);
 			}
 		} catch (Exception e) {
-			logger.error("Throw Exception While Get Branch Id from UserId : ",e);
+			logger.error(THROW_EXCEPTION_WHILE_GET_BRANCH_ID_FROM_USER_ID_MSG,e);
 		}
 
         List<Object[]> result = null;

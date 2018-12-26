@@ -137,7 +137,7 @@ public class DirectorBackgroundDetailsController {
 
 			List<DirectorBackgroundDetailRequest> response = directorBackgroundDetailsService
 					.getDirectorBackgroundDetailList(id,userId);
-			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 			loansResponse.setListData(response);
 			CommonDocumentUtils.endHook(logger, "getList");
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
@@ -229,7 +229,7 @@ public class DirectorBackgroundDetailsController {
 
 			List<DirectorBackgroundDetailRequest> response = directorBackgroundDetailsService
 					.getDirectorBackgroundDetailList(applicationId,null);
-			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 			loansResponse.setListData(response);
 			CommonDocumentUtils.endHook(logger, "getListClient");
 			return new ResponseEntity<List<DirectorBackgroundDetailRequest>>(response, HttpStatus.OK);
@@ -256,7 +256,7 @@ public class DirectorBackgroundDetailsController {
 
 			List<DirectorBackgroundDetailRequest> response = directorBackgroundDetailsService
 					.getDirectorBackgroundDetailList(id, null);
-			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 			loansResponse.setListData(response);
 			CommonDocumentUtils.endHook(logger, "getList");
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
@@ -277,7 +277,7 @@ public class DirectorBackgroundDetailsController {
 		
 		try {
 			List<DirectorBackgroundDetailRequest> response = directorBackgroundDetailsService.getDirectorBasicDetailsListForNTB(applicationId);
-			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 			loansResponse.setListData(response);
 			CommonDocumentUtils.endHook(logger, "getList");
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);

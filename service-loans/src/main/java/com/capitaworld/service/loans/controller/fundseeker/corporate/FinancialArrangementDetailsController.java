@@ -33,7 +33,10 @@ import com.capitaworld.service.loans.utils.CommonUtils;
 @RestController
 @RequestMapping("/financial_arrangement_details")
 public class FinancialArrangementDetailsController {
+
 	private static final Logger logger = LoggerFactory.getLogger(SecurityCorporateDetailsController.class);
+
+	private static final String APPLICATION_ID_MSG = "applicationId == >";
 
 	@Autowired
 	private FinancialArrangementDetailsService financialArrangementDetailsService;
@@ -83,7 +86,7 @@ public class FinancialArrangementDetailsController {
 			}
 			financialArrangementDetailsService.saveOrUpdate(frameRequest);
 			CommonDocumentUtils.endHook(logger, "save");
-			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
+			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SUCCESSFULLY_SAVED, HttpStatus.OK.value()),
 					HttpStatus.OK);
 
 		} catch (Exception e) {
@@ -155,7 +158,7 @@ public class FinancialArrangementDetailsController {
 			clientId = null;
 		}
 
-		logger.warn("applicationId == >" + applicationId + "and userId == >" + userId + " and ClienId ==> " + clientId);
+		logger.warn(APPLICATION_ID_MSG + applicationId + "and userId == >" + userId + " and ClienId ==> " + clientId);
 		try {
 			// Checking Profile is Locked
 			Long finalUserId = (CommonUtils.isObjectNullOrEmpty(clientId) ? userId : clientId);
@@ -174,7 +177,7 @@ public class FinancialArrangementDetailsController {
 				financialArrangementDetailsService.saveOrUpdate(detailRequests, applicationId, finalUserId,directorId);
 			}
 			
-			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
+			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SUCCESSFULLY_SAVED, HttpStatus.OK.value()),
 					HttpStatus.OK);
 
 		} catch (Exception e) {
@@ -197,7 +200,7 @@ public class FinancialArrangementDetailsController {
 		Long userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
 		fundSeekerInputRequestResponse.setUserId(userId);
 
-		logger.info("applicationId == >" + fundSeekerInputRequestResponse.getApplicationId() + "and userId == >" + userId);
+		logger.info(APPLICATION_ID_MSG + fundSeekerInputRequestResponse.getApplicationId() + "and userId == >" + userId);
 		try {
 			// Checking Profile is Locked
 			Boolean primaryLocked = loanApplicationService.isFinalLocked(fundSeekerInputRequestResponse.getApplicationId(), fundSeekerInputRequestResponse.getUserId());
@@ -205,7 +208,7 @@ public class FinancialArrangementDetailsController {
 				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.APPLICATION_LOCKED_MESSAGE, HttpStatus.BAD_REQUEST.value()),HttpStatus.OK);
 			}
 			financialArrangementDetailsService.saveOrUpdate(fundSeekerInputRequestResponse.getFinancialArrangementsDetailRequestsList(), fundSeekerInputRequestResponse.getApplicationId(), fundSeekerInputRequestResponse.getUserId());	
-			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),HttpStatus.OK);
+			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SUCCESSFULLY_SAVED, HttpStatus.OK.value()),HttpStatus.OK);
 
 		} catch (Exception e) {
 			logger.error("Error while saving Existing Loan Details==>", e);
@@ -219,7 +222,7 @@ public class FinancialArrangementDetailsController {
 			logger.warn("application id, must not be null ==>");
 			return null;
 		}
-		logger.warn("applicationId == >" + applicationId);
+		logger.warn(APPLICATION_ID_MSG + applicationId);
 		try {
 			return financialArrangementDetailsService.getTotalEmiAndSanctionAmountByApplicationId(applicationId);
 		} catch (Exception e) {

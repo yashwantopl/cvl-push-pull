@@ -1,7 +1,6 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -14,7 +13,6 @@ import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
-import org.apache.commons.lang.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -25,23 +23,15 @@ import com.capitaworld.api.eligibility.model.CLEligibilityRequest;
 import com.capitaworld.api.eligibility.model.EligibililityRequest;
 import com.capitaworld.api.eligibility.model.EligibilityResponse;
 import com.capitaworld.client.eligibility.EligibilityClient;
-import com.capitaworld.connect.api.ConnectResponse;
-import com.capitaworld.connect.api.ConnectStage;
-import com.capitaworld.connect.client.ConnectClient;
 import com.capitaworld.service.analyzer.client.AnalyzerClient;
-import com.capitaworld.service.analyzer.model.common.AnalyzerResponse;
-import com.capitaworld.service.analyzer.model.common.Data;
-import com.capitaworld.service.analyzer.model.common.ReportRequest;
 import com.capitaworld.service.fraudanalytics.client.FraudAnalyticsClient;
 import com.capitaworld.service.fraudanalytics.model.AnalyticsResponse;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
-import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
 import com.capitaworld.service.loans.model.FinanceMeansDetailRequest;
 import com.capitaworld.service.loans.model.FinanceMeansDetailResponse;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailResponse;
-import com.capitaworld.service.loans.model.OwnershipDetailResponse;
 import com.capitaworld.service.loans.model.TotalCostOfProjectResponse;
 import com.capitaworld.service.loans.model.corporate.CorporateDirectorIncomeRequest;
 import com.capitaworld.service.loans.model.corporate.FundSeekerInputRequestResponse;
@@ -84,7 +74,6 @@ import com.capitaworld.service.scoring.model.ScoringResponse;
 import com.capitaworld.service.scoring.utils.ScoreParameter.NTB;
 import com.capitaworld.service.thirdparty.model.CGTMSEDataResponse;
 import com.capitaworld.service.thirdpaty.client.ThirdPartyClient;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 
 @Service

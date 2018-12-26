@@ -2,7 +2,6 @@ package com.capitaworld.service.loans.service.common.impl;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -12,10 +11,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
-import com.capitaworld.service.loans.model.LoanApplicationRequest;
-import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
-import com.capitaworld.service.loans.model.retail.RetailApplicantRequest;
 import com.capitaworld.service.loans.service.common.NotificationService;
 import com.capitaworld.service.loans.service.fundprovider.ProductMasterService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
@@ -26,7 +21,6 @@ import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.loans.utils.CommonNotificationUtils.NotificationTemplate;
-import com.capitaworld.service.loans.utils.CommonUtils.LoanType;
 import com.capitaworld.service.notification.client.NotificationClient;
 import com.capitaworld.service.notification.exceptions.NotificationException;
 import com.capitaworld.service.notification.model.Notification;

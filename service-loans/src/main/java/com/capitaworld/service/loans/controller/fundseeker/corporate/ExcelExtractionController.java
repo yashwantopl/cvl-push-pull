@@ -29,7 +29,9 @@ import com.capitaworld.service.loans.utils.CommonUtils;
 public class ExcelExtractionController {
 
 	private final Logger log = LoggerFactory.getLogger(ExcelExtractionController.class);
-	
+
+	private static final String REQUEST_PARAMETER_IS_NULL_OR_EMPTY_MSG = "request parameter is null or empty";
+
 	@Autowired
 	ExcelExtractionService excelExtractionService;
 	
@@ -73,8 +75,8 @@ public class ExcelExtractionController {
 		
 		if(CommonUtils.isObjectNullOrEmpty(filePath) && CommonUtils.isObjectNullOrEmpty(applicationId) && CommonUtils.isObjectNullOrEmpty(storageDetailsId))
 		{
-			ExcelResponse res= new ExcelResponse("request parameter is null or empty", HttpStatus.BAD_REQUEST.value());
-			log.error("request parameter is null or empty");
+			ExcelResponse res= new ExcelResponse(REQUEST_PARAMETER_IS_NULL_OR_EMPTY_MSG, HttpStatus.BAD_REQUEST.value());
+			log.error(REQUEST_PARAMETER_IS_NULL_OR_EMPTY_MSG);
 			return new ResponseEntity<ExcelResponse>(res,HttpStatus.OK);
 		}
 		
@@ -83,12 +85,12 @@ public class ExcelExtractionController {
 		try {
 			if(!(excelExtractionService.readCMA(applicationId,storageDetailsId,file)))
 			{
-				ExcelResponse res= new ExcelResponse("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR.value());
+				ExcelResponse res= new ExcelResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value());
 				log.error("Error while reading CMA");
 				return new ResponseEntity<ExcelResponse>(res,HttpStatus.OK);
 			}
 		}catch (Exception e) {
-			ExcelResponse res= new ExcelResponse("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR.value());
+			ExcelResponse res= new ExcelResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value());
 			res.setData(e.getMessage());
 			log.error("Error while reading CMA");
 			return new ResponseEntity<ExcelResponse>(res,HttpStatus.OK);
@@ -107,8 +109,8 @@ public class ExcelExtractionController {
 		
 		if(CommonUtils.isObjectNullOrEmpty(storageDetailsId))
 		{
-			ExcelResponse res= new ExcelResponse("request parameter is null or empty", HttpStatus.BAD_REQUEST.value());
-			log.error("request parameter is null or empty");
+			ExcelResponse res= new ExcelResponse(REQUEST_PARAMETER_IS_NULL_OR_EMPTY_MSG, HttpStatus.BAD_REQUEST.value());
+			log.error(REQUEST_PARAMETER_IS_NULL_OR_EMPTY_MSG);
 			return new ResponseEntity<ExcelResponse>(res,HttpStatus.OK);
 		}
 		
@@ -119,7 +121,7 @@ public class ExcelExtractionController {
 			operatingStatementDetailsService.inActiveAssetsDetails(storageDetailsId);
 		} catch (Exception e) {
 			
-			ExcelResponse res= new ExcelResponse("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR.value());
+			ExcelResponse res= new ExcelResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value());
 			log.error("Error while inactive CMA : ",e);
 			return new ResponseEntity<ExcelResponse>(res,HttpStatus.OK);
 		}
@@ -140,15 +142,15 @@ public class ExcelExtractionController {
 		
 		if(CommonUtils.isObjectNullOrEmpty(filePath) || CommonUtils.isObjectNullOrEmpty(applicationId) || CommonUtils.isObjectNullOrEmpty(storageDetailsId))
 		{
-			ExcelResponse res= new ExcelResponse("request parameter is null or empty", HttpStatus.OK.value());
-			log.error("request parameter is null or empty");
+			ExcelResponse res= new ExcelResponse(REQUEST_PARAMETER_IS_NULL_OR_EMPTY_MSG, HttpStatus.OK.value());
+			log.error(REQUEST_PARAMETER_IS_NULL_OR_EMPTY_MSG);
 			return new ResponseEntity<ExcelResponse>(res,HttpStatus.OK);
 		}
 		
 		
 		if(!(excelExtractionService.readDPR(applicationId,storageDetailsId,file)))
 		{
-			ExcelResponse res= new ExcelResponse("Something went wrong", HttpStatus.OK.value());
+			ExcelResponse res= new ExcelResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.OK.value());
 			log.error("Error while reading DPR");
 			return new ResponseEntity<ExcelResponse>(res,HttpStatus.OK);
 		}
@@ -166,8 +168,8 @@ public class ExcelExtractionController {
 		
 		if(CommonUtils.isObjectNullOrEmpty(storageDetailsId))
 		{
-			ExcelResponse res= new ExcelResponse("request parameter is null or empty", HttpStatus.OK.value());
-			log.error("request parameter is null or empty");
+			ExcelResponse res= new ExcelResponse(REQUEST_PARAMETER_IS_NULL_OR_EMPTY_MSG, HttpStatus.OK.value());
+			log.error(REQUEST_PARAMETER_IS_NULL_OR_EMPTY_MSG);
 			return new ResponseEntity<ExcelResponse>(res,HttpStatus.OK);
 		}
 		
@@ -176,7 +178,7 @@ public class ExcelExtractionController {
 			managementDetailService.inActiveManagementDetails(storageDetailsId);
 		} catch (Exception e) {
 			
-			ExcelResponse res= new ExcelResponse("Something went wrong", HttpStatus.OK.value());
+			ExcelResponse res= new ExcelResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.OK.value());
 			log.error("Error while inactive DPR : ",e);
 			return new ResponseEntity<ExcelResponse>(res,HttpStatus.OK);
 		}
@@ -198,15 +200,15 @@ public class ExcelExtractionController {
 		
 		if(CommonUtils.isObjectNullOrEmpty(filePath) && CommonUtils.isObjectNullOrEmpty(applicationId) && CommonUtils.isObjectNullOrEmpty(storageDetailsId))
 		{
-			ExcelResponse res= new ExcelResponse("request parameter is null or empty", HttpStatus.BAD_REQUEST.value());
-			log.error("request parameter is null or empty");
+			ExcelResponse res= new ExcelResponse(REQUEST_PARAMETER_IS_NULL_OR_EMPTY_MSG, HttpStatus.BAD_REQUEST.value());
+			log.error(REQUEST_PARAMETER_IS_NULL_OR_EMPTY_MSG);
 			return new ResponseEntity<ExcelResponse>(res,HttpStatus.OK);
 		}
 		
 		
 		if(!(excelExtractionService.readBS(applicationId,storageDetailsId,file)))
 		{
-			ExcelResponse res= new ExcelResponse("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR.value());
+			ExcelResponse res= new ExcelResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value());
 			log.error("Error while reading BS");
 			return new ResponseEntity<ExcelResponse>(res,HttpStatus.OK);
 		}
@@ -225,8 +227,8 @@ public class ExcelExtractionController {
 		
 		if(CommonUtils.isObjectNullOrEmpty(storageDetailsId))
 		{
-			ExcelResponse res= new ExcelResponse("request parameter is null or empty", HttpStatus.BAD_REQUEST.value());
-			log.error("request parameter is null or empty");
+			ExcelResponse res= new ExcelResponse(REQUEST_PARAMETER_IS_NULL_OR_EMPTY_MSG, HttpStatus.BAD_REQUEST.value());
+			log.error(REQUEST_PARAMETER_IS_NULL_OR_EMPTY_MSG);
 			return new ResponseEntity<ExcelResponse>(res,HttpStatus.OK);
 		}
 		
@@ -235,7 +237,7 @@ public class ExcelExtractionController {
 			profitibilityStatementDetailService.inActiveProfitibilityStatementDetail(storageDetailsId);
 		} catch (Exception e) {
 			
-			ExcelResponse res= new ExcelResponse("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR.value());
+			ExcelResponse res= new ExcelResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value());
 			log.error("Error while inactive BS : ",e);
 			return new ResponseEntity<ExcelResponse>(res,HttpStatus.OK);
 		}

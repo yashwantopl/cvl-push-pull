@@ -4,6 +4,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
+import com.capitaworld.service.loans.utils.CommonUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.util.CellReference;
@@ -158,14 +159,14 @@ public class BalanceSheetExcelReader
 //            extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, balanceSheetMappingList,"E",String.valueOf(sheet.getRow(4).getCell(4).getNumericCellValue()),"Audited",balanceSheetDetailRepository);
             extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, balanceSheetMappingList,"F",String.valueOf(sheet.getRow(4).getCell(5).getNumericCellValue()),"Estimated",balanceSheetDetailRepository);
             if(loanApplicationMaster.getProductId()!=15){
-            extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, balanceSheetMappingList,"G",String.valueOf(sheet.getRow(4).getCell(6).getNumericCellValue()),"Projected", balanceSheetDetailRepository);
-            extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, balanceSheetMappingList,"H",String.valueOf(sheet.getRow(4).getCell(7).getNumericCellValue()),"Projected",balanceSheetDetailRepository);
-            extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, balanceSheetMappingList,"I",String.valueOf(sheet.getRow(4).getCell(8).getNumericCellValue()),"Projected",balanceSheetDetailRepository);
-            extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, balanceSheetMappingList,"J",String.valueOf(sheet.getRow(4).getCell(9).getNumericCellValue()),"Projected",balanceSheetDetailRepository);
-            extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, balanceSheetMappingList,"K",String.valueOf(sheet.getRow(4).getCell(10).getNumericCellValue()),"Projected",balanceSheetDetailRepository);
-            extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, balanceSheetMappingList,"L",String.valueOf(sheet.getRow(4).getCell(11).getNumericCellValue()),"Projected",balanceSheetDetailRepository);
-            extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, balanceSheetMappingList,"M",String.valueOf(sheet.getRow(4).getCell(12).getNumericCellValue()),"Projected",balanceSheetDetailRepository);
-            extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, balanceSheetMappingList,"N",String.valueOf(sheet.getRow(4).getCell(13).getNumericCellValue()),"Projected",balanceSheetDetailRepository);
+            extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, balanceSheetMappingList,"G",String.valueOf(sheet.getRow(4).getCell(6).getNumericCellValue()), CommonUtils.PROJECTED, balanceSheetDetailRepository);
+            extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, balanceSheetMappingList,"H",String.valueOf(sheet.getRow(4).getCell(7).getNumericCellValue()),CommonUtils.PROJECTED,balanceSheetDetailRepository);
+            extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, balanceSheetMappingList,"I",String.valueOf(sheet.getRow(4).getCell(8).getNumericCellValue()),CommonUtils.PROJECTED,balanceSheetDetailRepository);
+            extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, balanceSheetMappingList,"J",String.valueOf(sheet.getRow(4).getCell(9).getNumericCellValue()),CommonUtils.PROJECTED,balanceSheetDetailRepository);
+            extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, balanceSheetMappingList,"K",String.valueOf(sheet.getRow(4).getCell(10).getNumericCellValue()),CommonUtils.PROJECTED,balanceSheetDetailRepository);
+            extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, balanceSheetMappingList,"L",String.valueOf(sheet.getRow(4).getCell(11).getNumericCellValue()),CommonUtils.PROJECTED,balanceSheetDetailRepository);
+            extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, balanceSheetMappingList,"M",String.valueOf(sheet.getRow(4).getCell(12).getNumericCellValue()),CommonUtils.PROJECTED,balanceSheetDetailRepository);
+            extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, balanceSheetMappingList,"N",String.valueOf(sheet.getRow(4).getCell(13).getNumericCellValue()),CommonUtils.PROJECTED,balanceSheetDetailRepository);
 
             }
             

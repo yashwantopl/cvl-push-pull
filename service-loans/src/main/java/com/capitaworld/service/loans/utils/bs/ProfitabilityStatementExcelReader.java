@@ -4,6 +4,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
+import com.capitaworld.service.loans.utils.CommonUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.util.CellReference;
@@ -108,14 +109,14 @@ public class ProfitabilityStatementExcelReader {
 //        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, profitabilityStatementMappingList,"E",String.valueOf(sheet.getRow(3).getCell(4).getNumericCellValue()),"Audited",profitibilityStatementDetailRepository);
         extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, profitabilityStatementMappingList,"F",String.valueOf(sheet.getRow(3).getCell(5).getNumericCellValue()),"Estimated",profitibilityStatementDetailRepository);
         if(loanApplicationMaster.getProductId()!=15){
-        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, profitabilityStatementMappingList,"G",String.valueOf(sheet.getRow(3).getCell(6).getNumericCellValue()),"Projected", profitibilityStatementDetailRepository);
-        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, profitabilityStatementMappingList,"H",String.valueOf(sheet.getRow(3).getCell(7).getNumericCellValue()),"Projected",profitibilityStatementDetailRepository);
-        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, profitabilityStatementMappingList,"I",String.valueOf(sheet.getRow(3).getCell(8).getNumericCellValue()),"Projected",profitibilityStatementDetailRepository);
-        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, profitabilityStatementMappingList,"J",String.valueOf(sheet.getRow(3).getCell(9).getNumericCellValue()),"Projected",profitibilityStatementDetailRepository);
-        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, profitabilityStatementMappingList,"K",String.valueOf(sheet.getRow(3).getCell(10).getNumericCellValue()),"Projected",profitibilityStatementDetailRepository);
-        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, profitabilityStatementMappingList,"L",String.valueOf(sheet.getRow(3).getCell(11).getNumericCellValue()),"Projected",profitibilityStatementDetailRepository);
-        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, profitabilityStatementMappingList,"M",String.valueOf(sheet.getRow(3).getCell(12).getNumericCellValue()),"Projected",profitibilityStatementDetailRepository);
-        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, profitabilityStatementMappingList,"N",String.valueOf(sheet.getRow(3).getCell(13).getNumericCellValue()),"Projected",profitibilityStatementDetailRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, profitabilityStatementMappingList,"G",String.valueOf(sheet.getRow(3).getCell(6).getNumericCellValue()), CommonUtils.PROJECTED, profitibilityStatementDetailRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, profitabilityStatementMappingList,"H",String.valueOf(sheet.getRow(3).getCell(7).getNumericCellValue()),CommonUtils.PROJECTED,profitibilityStatementDetailRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, profitabilityStatementMappingList,"I",String.valueOf(sheet.getRow(3).getCell(8).getNumericCellValue()),CommonUtils.PROJECTED,profitibilityStatementDetailRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, profitabilityStatementMappingList,"J",String.valueOf(sheet.getRow(3).getCell(9).getNumericCellValue()),CommonUtils.PROJECTED,profitibilityStatementDetailRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, profitabilityStatementMappingList,"K",String.valueOf(sheet.getRow(3).getCell(10).getNumericCellValue()),CommonUtils.PROJECTED,profitibilityStatementDetailRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, profitabilityStatementMappingList,"L",String.valueOf(sheet.getRow(3).getCell(11).getNumericCellValue()),CommonUtils.PROJECTED,profitibilityStatementDetailRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, profitabilityStatementMappingList,"M",String.valueOf(sheet.getRow(3).getCell(12).getNumericCellValue()),CommonUtils.PROJECTED,profitibilityStatementDetailRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, profitabilityStatementMappingList,"N",String.valueOf(sheet.getRow(3).getCell(13).getNumericCellValue()),CommonUtils.PROJECTED,profitibilityStatementDetailRepository);
 		}
 		
 		

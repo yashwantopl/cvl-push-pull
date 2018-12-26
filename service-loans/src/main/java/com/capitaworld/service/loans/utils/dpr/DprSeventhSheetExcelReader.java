@@ -27,7 +27,7 @@ public class DprSeventhSheetExcelReader
         try {
             String question792Answer = getDataFromCell(sheet, "C4");
             if (!(question792Answer.isEmpty())) {//if textbox is empty not insert record
-                if (!(question792Answer.equals("Insert Text Here"))) {
+                if (!(question792Answer.equals(CommonUtils.INSERT_TEXT_HERE))) {
                     dprUserDataDetail.setAbsenceCivicRestrictions(question792Answer);
                 }
             }
@@ -39,7 +39,7 @@ public class DprSeventhSheetExcelReader
         try {
             String question793Answer = getDataFromCell(sheet, "C6");
             if (!(question793Answer.isEmpty())) {//if textbox is empty not insert record
-                if (!(question793Answer.equals("Insert Text Here"))) {
+                if (!(question793Answer.equals(CommonUtils.INSERT_TEXT_HERE))) {
                     dprUserDataDetail.setProximityToSourceRawMaterials(question793Answer);
                 }
             }
@@ -51,7 +51,7 @@ public class DprSeventhSheetExcelReader
         try {
             String question794Answer = getDataFromCell(sheet, "C8");
             if (!(question794Answer.isEmpty())) {//if textbox is empty not insert record
-                if (!(question794Answer.equals("Insert Text Here"))) {
+                if (!(question794Answer.equals(CommonUtils.INSERT_TEXT_HERE))) {
                     dprUserDataDetail.setMarketForTheProduct(question794Answer);
                 }
             }
@@ -64,7 +64,7 @@ public class DprSeventhSheetExcelReader
         try {
             String question795Answer = getDataFromCell(sheet, "C11");
             if (!(question795Answer.isEmpty())) {//if textbox is empty not insert record
-                if (!(question795Answer.equals("Insert Text Here"))) {
+                if (!(question795Answer.equals(CommonUtils.INSERT_TEXT_HERE))) {
                     dprUserDataDetail.setPowerAvailability(question795Answer);
                 }
             }
@@ -76,7 +76,7 @@ public class DprSeventhSheetExcelReader
         try {
             String question796Answer = getDataFromCell(sheet, "C12");
             if (!(question796Answer.isEmpty())) {//if textbox is empty not insert record
-                if (!(question796Answer.equals("Insert Text Here"))) {
+                if (!(question796Answer.equals(CommonUtils.INSERT_TEXT_HERE))) {
                     dprUserDataDetail.setWaterAvailability(question796Answer);
                 }
             }
@@ -88,7 +88,7 @@ public class DprSeventhSheetExcelReader
         try {
             String question797Answer = getDataFromCell(sheet, "C13");
             if (!(question797Answer.isEmpty())) {//if textbox is empty not insert record
-                if (!(question797Answer.equals("Insert Text Here"))) {
+                if (!(question797Answer.equals(CommonUtils.INSERT_TEXT_HERE))) {
                     dprUserDataDetail.setLabourAvailability(question797Answer);
                 }
             }
@@ -100,7 +100,7 @@ public class DprSeventhSheetExcelReader
         try {
             String question798Answer = getDataFromCell(sheet, "C14");
             if (!(question798Answer.isEmpty())) {//if textbox is empty not insert record
-                if (!(question798Answer.equals("Insert Text Here"))) {
+                if (!(question798Answer.equals(CommonUtils.INSERT_TEXT_HERE))) {
                     dprUserDataDetail.setTransportAvailability(question798Answer);
                 }
             }
@@ -112,7 +112,7 @@ public class DprSeventhSheetExcelReader
         try {
             String question799Answer = getDataFromCell(sheet, "C15");
             if (!(question799Answer.isEmpty())) {//if textbox is empty not insert record
-                if (!(question799Answer.equals("Insert Text Here"))) {
+                if (!(question799Answer.equals(CommonUtils.INSERT_TEXT_HERE))) {
                     dprUserDataDetail.setOtherAvailability(question799Answer);
                 }
             }
@@ -124,7 +124,7 @@ public class DprSeventhSheetExcelReader
         try {
             String question800Answer = getDataFromCell(sheet, "C17");
             if (!(question800Answer.isEmpty())) {//if textbox is empty not insert record
-                if (!(question800Answer.equals("Insert Text Here"))) {
+                if (!(question800Answer.equals(CommonUtils.INSERT_TEXT_HERE))) {
                     dprUserDataDetail.setWhetherClearanceIsObtainedFromPollutionControlAuthority(question800Answer);
                 }
             }
@@ -136,7 +136,7 @@ public class DprSeventhSheetExcelReader
         try {
             String question801Answer = getDataFromCell(sheet, "C19");
             if (!(question801Answer.isEmpty())) {//if textbox is empty not insert record
-                if (!(question801Answer.equals("Insert Text Here"))) {
+                if (!(question801Answer.equals(CommonUtils.INSERT_TEXT_HERE))) {
                     dprUserDataDetail.setOtherBenefits(question801Answer);
                 }
             }
