@@ -57,13 +57,11 @@ public class DashboardController {
 						HttpStatus.OK);
 			}
 			
-			if (userType == CommonUtils.UserType.FUND_SEEKER) {
-				if (CommonUtils.isObjectNullOrEmpty(data.getId())) {
+			if (userType == CommonUtils.UserType.FUND_SEEKER && CommonUtils.isObjectNullOrEmpty(data.getId()) ) {
 					logger.warn("Application Id must not be Empty");
 					return new ResponseEntity<LoansResponse>(
 							new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()),
 							HttpStatus.OK);
-				}
 			}
 			
 			LoansResponse loansResponse = new LoansResponse("Data Found",HttpStatus.OK.value());			
