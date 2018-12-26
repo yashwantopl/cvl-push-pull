@@ -57,7 +57,7 @@ public class MatchesController {
 			HttpServletRequest request,@RequestParam(value = "clientId", required = false) Long clientId) {
 		CommonDocumentUtils.startHook(logger, "matchFSCorporate");
 		Long userId = null;
-		Integer userType = ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue();
+		Integer userType = (Integer)request.getAttribute(CommonUtils.USER_TYPE);
 		   if(CommonDocumentUtils.isThisClientApplication(request)){
 		    userId = clientId;
 		   } else {
@@ -102,7 +102,7 @@ public class MatchesController {
 			HttpServletRequest request,@RequestParam(value = "clientId", required = false) Long clientId) {
 		CommonDocumentUtils.startHook(logger, "matchFSRetail");
 		Long userId = null;
-		Integer userType = ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue();
+		Integer userType = (Integer)request.getAttribute(CommonUtils.USER_TYPE);
 		   if(CommonDocumentUtils.isThisClientApplication(request)){
 		    userId = clientId;
 		   } else {

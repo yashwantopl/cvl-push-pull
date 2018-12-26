@@ -474,7 +474,7 @@ public class LoanApplicationController {
 		try {
 			CommonDocumentUtils.startHook(logger, "lockPrimary");
 			Long userId = null;
-			Integer userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
+			Integer userType = (Integer) request.getAttribute(CommonUtils.USER_TYPE);
 			if (CommonDocumentUtils.isThisClientApplication(request) && !CommonUtils.isObjectNullOrEmpty(clientId)) {
 				userId = clientId;
 			} else {
@@ -688,7 +688,7 @@ public class LoanApplicationController {
 		try {
 			CommonDocumentUtils.startHook(logger, "isFinalLocked");
 			Long userId = null;
-			Integer userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
+			Integer userType = (Integer) request.getAttribute(CommonUtils.USER_TYPE);
 			if ((CommonUtils.UserType.SERVICE_PROVIDER == userType || CommonUtils.UserType.NETWORK_PARTNER == userType
 					|| CommonUtils.UserType.FUND_PROVIDER == userType) && !CommonUtils.isObjectNullOrEmpty(clientId)) {
 				userId = clientId;

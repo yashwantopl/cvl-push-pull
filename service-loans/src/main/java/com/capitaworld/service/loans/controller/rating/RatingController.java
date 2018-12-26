@@ -35,7 +35,7 @@ private static final Logger logger = LoggerFactory.getLogger(RatingController.cl
 	public ResponseEntity<RatingResponse> calculateIrrRating(@RequestBody ProposalMappingRequest proposalMappingRequest,HttpServletRequest httpRequest, HttpServletRequest request,@RequestParam(value = "clientId", required = false) Long clientId) throws RatingException {
 		
 		Long userId = null;
-		Integer userType = ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue();
+		Integer userType = (Integer)request.getAttribute(CommonUtils.USER_TYPE);
 		if(CommonDocumentUtils.isThisClientApplication(httpRequest)){
 		   userId = clientId;
 		} else {
@@ -49,7 +49,7 @@ private static final Logger logger = LoggerFactory.getLogger(RatingController.cl
 	public ResponseEntity<RatingResponse> cmaIrrMappingService(@RequestBody ProposalMappingRequest proposalMappingRequest,HttpServletRequest httpRequest, HttpServletRequest request,@RequestParam(value = "clientId", required = false) Long clientId) throws RatingException {
 		
 		Long userId = null;
-		Integer userType = ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue();
+		Integer userType = (Integer)request.getAttribute(CommonUtils.USER_TYPE);
 		if(CommonDocumentUtils.isThisClientApplication(httpRequest)){
 		   userId = clientId;
 		} else {

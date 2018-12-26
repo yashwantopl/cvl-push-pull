@@ -41,7 +41,7 @@ public class ProposalController {
 
 	private static final String REQUEST_GET_SIZE = "request.getSize()::";
 	private static final String REQUEST_GET_PAGE_INDEX = "request.getPageIndex()::";
-
+	private static final String BAD_REQUEST_MSG = "Bad Request !!";
 	private static final String REQUEST_PARAMETER_NULL_OR_EMPTY = "Request parameter null or empty !!";
 	
 	@Autowired
@@ -64,7 +64,7 @@ public class ProposalController {
 		if (CommonDocumentUtils.isThisClientApplication(httpRequest) && !CommonUtils.isObjectNullOrEmpty(clientId)) {
 			userId = clientId;
 		} else {
-			userId = ((Long) httpRequest.getAttribute(CommonUtils.USER_ID)).longValue();
+			userId = (Long) httpRequest.getAttribute(CommonUtils.USER_ID);
 		}
 		request.setUserId(userId);
 		List proposalDetailsList=proposalService.fundproviderProposal(request);
@@ -85,7 +85,7 @@ public class ProposalController {
 		if (CommonDocumentUtils.isThisClientApplication(httpRequest) && !CommonUtils.isObjectNullOrEmpty(clientId)) {
 			userId = clientId;
 		} else {
-			userId = ((Long) httpRequest.getAttribute(CommonUtils.USER_ID)).longValue();
+			userId = (Long) httpRequest.getAttribute(CommonUtils.USER_ID);
 		}
 		request.setUserId(userId);
 		List proposalDetailsList=proposalService.basicInfoForSearch(request);
@@ -104,7 +104,7 @@ public class ProposalController {
 		if (CommonDocumentUtils.isThisClientApplication(httpRequest)) {
 			userId = clientId;
 		} else {
-			userId = ((Long) httpRequest.getAttribute(CommonUtils.USER_ID)).longValue();
+			userId = (Long) httpRequest.getAttribute(CommonUtils.USER_ID);
 		}
 		List<FundProviderProposalDetails> proposalDetailsList=proposalService.fundseekerProposal(request, userId);
 		return new ResponseEntity<List<FundProviderProposalDetails>>(proposalDetailsList,HttpStatus.OK);
@@ -119,7 +119,7 @@ public class ProposalController {
 		if (CommonDocumentUtils.isThisClientApplication(httpRequest) && !CommonUtils.isObjectNullOrEmpty(clientId)) {
 			userId = clientId;
 		} else {
-			userId = ((Long) httpRequest.getAttribute(CommonUtils.USER_ID)).longValue();
+			userId = (Long) httpRequest.getAttribute(CommonUtils.USER_ID);
 		}
 		request.setUserId(userId);
 		return new ResponseEntity<ProposalMappingResponse>(proposalService.saveDisbursementDetails(request, userId),HttpStatus.OK);
@@ -316,7 +316,7 @@ public class ProposalController {
 		if (CommonDocumentUtils.isThisClientApplication(httpRequest) && !CommonUtils.isObjectNullOrEmpty(clientId)) {
 			userId = clientId;
 		} else {
-			userId = ((Long) httpRequest.getAttribute(CommonUtils.USER_ID)).longValue();
+			userId = (Long) httpRequest.getAttribute(CommonUtils.USER_ID);
 		}
 		request.setUserId(userId);
 		
@@ -355,7 +355,7 @@ public class ProposalController {
 		Long userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
 		
 		if(CommonUtils.isObjectNullOrEmpty(userOrgId) || CommonUtils.isObjectNullOrEmpty(request.getFromDate()) || CommonUtils.isObjectNullOrEmpty(request.getToDate()) || CommonUtils.isObjectNullOrEmpty(userId)) {
-			logger.info("Bad Request !!");
+			logger.info(BAD_REQUEST_MSG);
 			return new ResponseEntity<LoansResponse>(new LoansResponse(REQUEST_PARAMETER_NULL_OR_EMPTY, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}
 		
@@ -387,7 +387,7 @@ public class ProposalController {
 		Long userOrgId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ORG_ID);
 		Long userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
 		if(CommonUtils.isObjectNullOrEmpty(userOrgId) || CommonUtils.isObjectNullOrEmpty(userId) || CommonUtils.isObjectNullOrEmpty(reportRequest.getValue())) {
-			logger.info("Bad Request !!");
+			logger.info(BAD_REQUEST_MSG);
 			return new ResponseEntity<LoansResponse>(new LoansResponse(REQUEST_PARAMETER_NULL_OR_EMPTY, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}
 		if(CommonUtils.isObjectNullOrEmpty(reportRequest.getNumber())) {
@@ -407,8 +407,8 @@ public class ProposalController {
 		Long userOrgId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ORG_ID);
 		Long userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
 		if(CommonUtils.isObjectNullOrEmpty(userOrgId) || CommonUtils.isObjectNullOrEmpty(userId)) {
-			logger.info("Bad Request !!");
-			return new ResponseEntity<LoansResponse>(new LoansResponse("Request parameter null or empty !!", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			logger.info(BAD_REQUEST_MSG);
+			return new ResponseEntity<LoansResponse>(new LoansResponse(REQUEST_PARAMETER_NULL_OR_EMPTY, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}
 		try {
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Data Found.", HttpStatus.OK.value(),proposalService.getFpDashBoardCount(userId, userOrgId)), HttpStatus.OK);

@@ -35,7 +35,11 @@ import com.capitaworld.service.oneform.model.OneFormResponse;
 @Service
 @Transactional
 public class UnsecuredLoanParameterServiceImpl implements UnsecuredLoanParameterService {
+
 	private static final Logger logger = LoggerFactory.getLogger(UnsecuredLoanParameterServiceImpl.class);
+
+	private static final String ERROR_WHILE_GET_TERM_LOAN_PARAMETER_REQUEST_MSG = "error while getTermLoanParameterRequest : ";
+
 	@Autowired
 	private UnsecuredLoanParameterRepository unsecuredLoanParameterRepository;
 	
@@ -127,7 +131,7 @@ public class UnsecuredLoanParameterServiceImpl implements UnsecuredLoanParameter
 				OneFormResponse formResponse = oneFormClient.getIndustryById(industryList);
 				unsecuredLoanParameterRequest.setIndustrylist((List<DataRequest>)formResponse.getListData());
 			} catch (Exception e) {
-				logger.error("error while getTermLoanParameterRequest : ",e);
+				logger.error(ERROR_WHILE_GET_TERM_LOAN_PARAMETER_REQUEST_MSG,e);
 			}
 		}
 		
@@ -141,7 +145,7 @@ public class UnsecuredLoanParameterServiceImpl implements UnsecuredLoanParameter
 			 
 			
 		} catch (Exception e) {
-			logger.error("error while getTermLoanParameterRequest : ",e);
+			logger.error(ERROR_WHILE_GET_TERM_LOAN_PARAMETER_REQUEST_MSG,e);
 		}
 		}
 
@@ -154,7 +158,7 @@ public class UnsecuredLoanParameterServiceImpl implements UnsecuredLoanParameter
 			 
 			
 		} catch (Exception e) {
-			logger.error("error while getTermLoanParameterRequest : ",e);
+			logger.error(ERROR_WHILE_GET_TERM_LOAN_PARAMETER_REQUEST_MSG,e);
 		}
 		}
 		
@@ -168,7 +172,7 @@ public class UnsecuredLoanParameterServiceImpl implements UnsecuredLoanParameter
 			 
 			
 		} catch (Exception e) {
-			logger.error("error while getTermLoanParameterRequest : ",e);
+			logger.error(ERROR_WHILE_GET_TERM_LOAN_PARAMETER_REQUEST_MSG,e);
 		}
 		}
 		
@@ -182,7 +186,7 @@ public class UnsecuredLoanParameterServiceImpl implements UnsecuredLoanParameter
 			 
 			
 		} catch (Exception e) {
-			logger.error("error while getTermLoanParameterRequest : ",e);
+			logger.error(ERROR_WHILE_GET_TERM_LOAN_PARAMETER_REQUEST_MSG,e);
 		}
 		}
 		
@@ -194,7 +198,7 @@ public class UnsecuredLoanParameterServiceImpl implements UnsecuredLoanParameter
 				OneFormResponse formResponse = oneFormClient.getIndustryById(negativeIndustryList);
 				unsecuredLoanParameterRequest.setNegativeIndustryList((List<DataRequest>)formResponse.getListData());
 			} catch (Exception e) {
-				logger.error("error while getTermLoanParameterRequest : ",e);
+				logger.error(ERROR_WHILE_GET_TERM_LOAN_PARAMETER_REQUEST_MSG,e);
 			}
 		}
 		CommonDocumentUtils.endHook(logger, "getTermLoanParameterRequest");

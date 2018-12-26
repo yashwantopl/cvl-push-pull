@@ -38,6 +38,8 @@ public class CorporateUploadServiceImpl implements CorporateUploadService {
 
 	private static final Logger logger = LoggerFactory.getLogger(CorporateUploadServiceImpl.class);
 
+	private static final String ERROR_WHILE_SAVING_UPLOAD_FLAG_MSG = "Error while saving Upload FLag";
+
 	// @Autowired
 	// private Environment environment;
 
@@ -129,14 +131,14 @@ public class CorporateUploadServiceImpl implements CorporateUploadService {
 					logger.info("saving Upload FLag");
 				Long resp = saveDocumentFLag( request);
 				if(resp == 0L){
-					logger.error("Error while saving Upload FLag");
-					throw new Exception("Error while saving Upload FLag");
+					logger.error(ERROR_WHILE_SAVING_UPLOAD_FLAG_MSG);
+					throw new Exception(ERROR_WHILE_SAVING_UPLOAD_FLAG_MSG);
 				}
 				
 				}
 				catch (Exception e) {
 					logger.error("Error while saving Upload FLag : ",e);
-					throw new Exception("Error while saving Upload FLag");
+					throw new Exception(ERROR_WHILE_SAVING_UPLOAD_FLAG_MSG);
 				}	
 			}
 			return response;
