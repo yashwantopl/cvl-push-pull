@@ -809,6 +809,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public LoansResponse updateFlag(Long applicationId,Boolean flag,Integer flagType) {
 		logger.warn("flagType=================>{}",flagType);
@@ -841,6 +842,24 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 				logger.error("error Updating Flags and Getting Document : {}",exception);
 			}
 		}
+		PrimaryCorporateDetail primaryCorporateDetail = primaryCorporateDetailRepository.findOneByApplicationIdId(applicationId);
+		if (CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail)) {
+			logger.info("Data not found for given applicationid from Primary Corporate Details");
+			return loansResponse;
+		}
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("turnOverPrevFinYear", primaryCorporateDetail.getTurnOverPrevFinYear());
+		jsonObject.put("profitCurrFinYear", primaryCorporateDetail.getProfitCurrFinYear());
+		jsonObject.put("projectedProfitCurrFinYear", primaryCorporateDetail.getProjectedProfitCurrFinYear());
+		jsonObject.put("turnOverCurrFinYearTillMonth", primaryCorporateDetail.getTurnOverCurrFinYearTillMonth());
+		jsonObject.put("projectedTurnOverCurrFinYear", primaryCorporateDetail.getProjectedTurnOverCurrFinYear());
+		try {
+			jsonObject.put("direcorsList",directorBackgroundDetailsService.getDirectorBackgroundDetailList(applicationId, null));
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error while Getting Directors List After Updating Flags ======>{}",e);
+		}
+		loansResponse.setData(jsonObject);
 		return loansResponse;
 	}	
 	
