@@ -1942,13 +1942,18 @@ public class ProposalServiceMappingImpl implements ProposalService {
 		if(CommonUtils.isObjectNullOrEmpty(roleId)) {
 			return Collections.emptyList();			
 		}
-		if(roleId == 8 || roleId == 9) {
-			List<Object[]> objList = loanRepository.searchProposalByOrgNameAndAppCode(loginOrgId, reportRequest.getValue(), branchId,reportRequest.getNumber().longValue());
+		if(roleId == 9) {//CHECKER AND MAKER
+			List<Object[]> objList = loanRepository.searchProposalForCheckerAndMaker(loginOrgId, reportRequest.getValue(), branchId,reportRequest.getNumber().longValue());
 			if(objList.size() > 0) {
 				return setValue(objList, false);	
 			}
-		} else if(roleId == 5){
-			List<Object[]> objList = loanRepository.searchProposalByOrgNameAndAppCode(loginOrgId, reportRequest.getValue(),reportRequest.getNumber().longValue());
+		} else if(roleId == 5) {//HO
+			List<Object[]> objList = loanRepository.searchProposalForHO(loginOrgId, reportRequest.getValue(),reportRequest.getNumber().longValue());
+			if(objList.size() > 0) {
+				return setValue(objList, true);	
+			}
+		} else if(roleId == 12) {//SMECC
+			List<Object[]> objList = loanRepository.searchProposalForSMECC(loginOrgId, reportRequest.getValue(),loginUserId,reportRequest.getNumber().longValue());
 			if(objList.size() > 0) {
 				return setValue(objList, true);	
 			}
@@ -1988,19 +1993,24 @@ public class ProposalServiceMappingImpl implements ProposalService {
 		if(CommonUtils.isObjectNullOrEmpty(roleId)) {
 			return null;			
 		}
-		Map<String , Double> map = new HashMap<>();
 		Object[] count = null;
-		if(roleId == 9) {
+		if(roleId == 9) {//FP CHECKER
 			count = loanRepository.fpDashBoardCountByOrgIdAndBranchId(loginOrgId, branchId);
-		} else if(roleId == 5){
+		} else if(roleId == 5){//HO
 			count = loanRepository.fpDashBoardCountByOrgId(loginOrgId);
+		} else if(roleId == 12){//SMECC
+			count = loanRepository.fpDashBoardCountByOrgIdAndUserId(loginOrgId, loginUserId);
 		}
-		map.put("inPrincipleCount", CommonUtils.convertDouble(count[0]));
-		map.put("holdCount", CommonUtils.convertDouble(count[1]));
-		map.put("rejectCount", CommonUtils.convertDouble(count[2]));
-		map.put("sanctionedCount", CommonUtils.convertDouble(count[3]));
-		map.put("disbursmentCount", CommonUtils.convertDouble(count[4]));
-		return map;
+		if(count != null) {
+			Map<String , Double> map = new HashMap<>();
+			map.put("inPrincipleCount", CommonUtils.convertDouble(count[0]));
+			map.put("holdCount", CommonUtils.convertDouble(count[1]));
+			map.put("rejectCount", CommonUtils.convertDouble(count[2]));
+			map.put("sanctionedCount", CommonUtils.convertDouble(count[3]));
+			map.put("disbursmentCount", CommonUtils.convertDouble(count[4]));
+			return map;
+		}
+		return null;
 	}
 }
 
