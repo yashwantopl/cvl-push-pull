@@ -56,6 +56,7 @@ import com.capitaworld.service.users.model.UserResponse;
 import com.capitaworld.service.users.model.UsersRequest;
 
 
+
 @Component
 public class FPAsyncComponent {
 
@@ -152,14 +153,43 @@ public class FPAsyncComponent {
 					mailParameters.put("mobile_no", mobile != null ? mobile : "NA");
 
 				}
-
+				
 				LoanApplicationRequest applicationRequest = loanApplicationService
 						.getFromClient(paymentRequest.getApplicationId());
 				String address = null;
 				if(!CommonUtils.isObjectNullOrEmpty(applicationRequest)
 						&& applicationRequest.getBusinessTypeId() == 1){
-					CorporateApplicantRequest applicantRequest = corporateapplicantService
-							.getCorporateApplicant(paymentRequest.getApplicationId());
+					
+				   // CHANGES FOR NOTIFICATION PURPOSE---STARTS HERE----->
+					ProposalMappingResponse proposalResponse = null;
+					//Map<String, Object> proposalresp1 = null;
+					try {
+						if(paymentRequest.getApplicationId()!=null){
+						proposalResponse = proposalDetailsClient.getInPricipleById(paymentRequest.getApplicationId());
+						proposalresp = MultipleJSONObjectHelper
+								.getObjectFromMap((Map<String, Object>) proposalResponse.getData(), Map.class);
+					} 
+						}catch (Exception e) {
+						logger.info(
+								"Error calling Proposal Details Client for getting Branch Id:-" + paymentRequest.getApplicationId());
+						e.printStackTrace();
+					}
+					
+					// CHANGES FOR  MULTPLE BANK PURPOSE NOTIFICATION- NEW CODE --->
+					CorporateFinalInfoRequest applicantRequest = null;
+					try {
+						if(applicantRequest.getUserId()!=null && proposalResponse.getId()!=null){
+						applicantRequest = corporateFinalInfoService.getByProposalId(applicationRequest.getUserId(),proposalResponse.getId());
+						logger.info("THIS IS USER ID --------- AND" + " "+applicantRequest.getUserId()+ ""
+								+ "THIS IS PROPOSAL MAPPING ID==========>>>>"+proposalResponse.getId());
+						}	
+					}catch (Exception e) {
+						logger.error("EXCEPTION IS GETTING WHILE GETBY PROPOSALID IN FPASYNCOMPONENT=====>:"+e.getMessage());
+						e.printStackTrace();
+					}
+					//      OLD CODE==============>
+/*					CorporateApplicantRequest applicantRequest = corporateapplicantService
+							.getCorporateApplicant(paymentRequest.getApplicationId());*/
 					if (!CommonUtils.isObjectNullOrEmpty(applicantRequest)
 							&& !CommonUtils.isObjectNullOrEmpty(applicantRequest.getFirstAddress())) {
 						String premiseNumber = null;
@@ -2995,7 +3025,6 @@ public class FPAsyncComponent {
 	@Async
 	public void sendEmailToMakerHOBOWhenCheckerSanctionLoan(LoanSanctionDomain loanSanctionDomainOld) {
 		try {
-
 			logger.info("Into sending Mail to Maker/HO/BO when Checker sanction loan===>{}");
 			String subject = "Intimation: Sanction - Application ID " + loanSanctionDomainOld.getApplicationId();
 			Map<String, Object> mailParameters = new HashMap<String, Object>();
