@@ -87,6 +87,7 @@ public class CommonUtils {
 	public static final String INSERT_TEXT_HERE = "Insert Text Here";
 	public static final String MANDATORY_FIELDS_MUST_NOT_BE_NULL = "Mandatory Fields Must Not be Null";
 	public static final String REQUESTED_DATA_CAN_NOT_BE_EMPTY = "Requested data can not be empty.";
+	public static final String REQUESTED_DATA_CAN_NOT_BE_NULL_OR_EMPTY = "Requested Data cannot be null or empty";
 	public static final String INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND = "Invalid data or Requested data not found.";
 	public static final String UNAUTHORIZED_USER_PLEASE_RE_LOGIN_AND_TRY_AGAIN = "Unauthorized User! Please Re-login and try again.";
 
