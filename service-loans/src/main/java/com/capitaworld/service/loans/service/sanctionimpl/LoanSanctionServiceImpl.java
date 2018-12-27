@@ -52,6 +52,7 @@ import com.capitaworld.sidbi.integration.util.AESEncryptionUtilitySBI;
 public class LoanSanctionServiceImpl implements LoanSanctionService {
 	private static final Logger logger = LoggerFactory.getLogger(LoanSanctionServiceImpl.class);
 
+	private static final String SUCCESS_LITERAL = "SUCCESS";
 	private static final String ERROR_LITERAL = "error";
 
 	@Autowired
@@ -149,7 +150,7 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 		 
 	        	Long recCount = proposalDetailsRepository.getApplicationIdCountByOrgId(applicationId ,orgId);
 	        	if(recCount != null && recCount  > 0) {
-	        		return  "SUCCESS";
+	        		return  SUCCESS_LITERAL;
 	        	}else {
 	        		return "Invalid ApplicationId ";
 	        	}		 
@@ -468,7 +469,7 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 								logger.error("Error/Exception wheile checking the validation MSG ==> ",e);
 							}
 							
-							if("SUCCESS".equalsIgnoreCase(sanctionReason) ) {
+							if(SUCCESS_LITERAL.equalsIgnoreCase(sanctionReason) ) {
 								bankCWAuditTrailDomain = bankToCWAuditTrailRepository.findFirstByApplicationIdAndOrgIdAndApiTypeAndBankPrimaryKeyAndIsActiveOrderByIdDesc(loanSanctionAndDisbursedRequest.getApplicationId(), orgId, CommonUtility.ApiType.REVERSE_SANCTION , loanSanctionAndDisbursedRequest.getLoanSanctionRequest().getId() , true);
 								if(CommonUtils.isObjectNullOrEmpty(bankCWAuditTrailDomain)) {
 									try {
@@ -545,16 +546,16 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 			}
 		}	
 		
-		if( "SUCCESS".equalsIgnoreCase(sanctionReason) && "SUCCESS".equalsIgnoreCase(disbursementReason)){
+		if( SUCCESS_LITERAL.equalsIgnoreCase(sanctionReason) && SUCCESS_LITERAL.equalsIgnoreCase(disbursementReason)){
 			
 			/*loansResponse = setLoanResponse("Both Sanction and disbursement Information Successfully Stored" , true  , HttpStatus.OK.value()) ;*/
 			logger.info("------------------- reverse sanction and disbursement  is saved--------------");
 
-		}else if( "SUCCESS".equalsIgnoreCase(sanctionReason) ){
+		}else if( SUCCESS_LITERAL.equalsIgnoreCase(sanctionReason) ){
 			/*loansResponse = setLoanResponse("Only Sanction Information Successfully Stored ", true  , HttpStatus.OK.value()) ;*/
 			logger.info("-------------------only  reverse sanction is saved--------------");
 
-		}else if("SUCCESS".equalsIgnoreCase(disbursementReason) || "First Disbursement".equalsIgnoreCase(disbursementReason)){
+		}else if(SUCCESS_LITERAL.equalsIgnoreCase(disbursementReason) || "First Disbursement".equalsIgnoreCase(disbursementReason)){
 			/*loansResponse = setLoanResponse("Only Disbursement Information Successfully Stored ", true , HttpStatus.OK.value()) ;*/
 			logger.info("-------------------only  reverse disbursement is saved--------------");
 
@@ -588,7 +589,7 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 				logger.error(CommonUtils.EXCEPTION,e);
 			}
 			if(!CommonUtils.isListNullOrEmpty(loanSanctionAndDisbursedRequest.getLoanDisbursementRequestsList())){
-				disbursementReason = "SUCCESS";
+				disbursementReason = SUCCESS_LITERAL;
 				apiType = CommonUtility.ApiType.REVERSE_DISBURSEMENT ;
 				 
 				auditComponentBankToCW.saveBankToCWReqRes(jsonString, loanSanctionAndDisbursedRequest.getApplicationId() , apiType , disbursementReason , null  , orgId, null);

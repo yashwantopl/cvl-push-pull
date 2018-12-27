@@ -91,6 +91,7 @@ public class LoanApplicationController {
 	private static final String RESPONSE_MSG = "Response========>{}";
 	private static final String REASON_MSG = " reason  ";
 	private static final String TOKEN_LITERAL = "token";
+	private static final String SUCCESS_LITERAL = "SUCCESS";
 
 	@Autowired
 	private LoanApplicationService loanApplicationService;
@@ -2082,7 +2083,7 @@ public class LoanApplicationController {
 							loanSanctionRequest.getPassword());
 					if (!CommonUtils.isObjectNullOrEmpty(orgId)) {
 						reason = loanSanctionService.sanctionRequestValidation(loanSanctionRequest.getApplicationId(), orgId);
-						if ("SUCCESS".equalsIgnoreCase(reason)) {
+						if (SUCCESS_LITERAL.equalsIgnoreCase(reason)) {
 							logger.info("Success msg while saveLoanSanctionDetail() ----------------> msg " + reason);
 							reason = null;
 							loansResponse = new LoansResponse(INFORMATION_SUCCESSFULLY_STORED_MSG,
@@ -2204,7 +2205,7 @@ public class LoanApplicationController {
 
 						loanDisbursementRequest = loanDisbursementService.disbursementRequestValidation(null , loanDisbursementRequest, orgId , CommonUtility.ApiType.DISBURSEMENT);
 
-						if ("SUCCESS".equalsIgnoreCase(loanDisbursementRequest.getReason()) || "First Disbursement".equalsIgnoreCase(loanDisbursementRequest.getReason())) {
+						if (SUCCESS_LITERAL.equalsIgnoreCase(loanDisbursementRequest.getReason()) || "First Disbursement".equalsIgnoreCase(loanDisbursementRequest.getReason())) {
 							logger.info(
 									"Success msg while saveLoanDisbursementDetail() ----------------> msg " + reason);
 							loanDisbursementRequest = null;
@@ -2947,7 +2948,7 @@ public class LoanApplicationController {
 							loanSanctionAndDisbursedRequest.getPassword());
 					if (!CommonUtils.isObjectNullOrEmpty(orgId)) {
 						sanctionReason = loanSanctionService.requestValidation(loanSanctionAndDisbursedRequest.getApplicationId(), orgId);
-						if ("SUCCESS".equalsIgnoreCase(sanctionReason) && loanSanctionService
+						if (SUCCESS_LITERAL.equalsIgnoreCase(sanctionReason) && loanSanctionService
 								.saveLoanSanctionDetail(loanSanctionAndDisbursedRequest.getLoanSanctionRequest())) {
 							if(! CommonUtils.isListNullOrEmpty(loanSanctionAndDisbursedRequest.getLoanDisbursementRequestsList())) {
 								disbursementReason = loanDisbursementService.bankRequestValidationAndSave(
@@ -2955,14 +2956,14 @@ public class LoanApplicationController {
 							}
 						}
 
-						if ("SUCCESS".equalsIgnoreCase(sanctionReason) || "First Disbursement".equalsIgnoreCase(sanctionReason)) {
+						if (SUCCESS_LITERAL.equalsIgnoreCase(sanctionReason) || "First Disbursement".equalsIgnoreCase(sanctionReason)) {
 							logger.info(
 									"Success msg while saveLoanSanctionDisbursementDetailFromBank() ----------------> msg "
 											+ sanctionReason);
 							sanctionReason = null;
 							loansResponse = new LoansResponse(INFORMATION_SUCCESSFULLY_STORED_MSG,
 									HttpStatus.OK.value());
-							if("SUCCESS".equalsIgnoreCase(disbursementReason) || "First Disbursement".equalsIgnoreCase(disbursementReason)){
+							if(SUCCESS_LITERAL.equalsIgnoreCase(disbursementReason) || "First Disbursement".equalsIgnoreCase(disbursementReason)){
 								loansResponse.setData(CommonUtility.ApiType.SANCTION_AND_DISBURSEMENT);
 							}else {
 								loansResponse.setData(CommonUtility.ApiType.SANCTION);
@@ -3120,7 +3121,7 @@ public class LoanApplicationController {
 					Long orgId = loanDisbursementRequest.getOrgId();
 					if (!CommonUtils.isObjectNullOrEmpty(orgId)) {
 						loanDisbursementRequest = loanDisbursementService.disbursementRequestValidation(null , loanDisbursementRequest, orgId , CommonUtility.ApiType.DISBURSEMENT);
-						if ("SUCCESS".equalsIgnoreCase(loanDisbursementRequest.getReason()) || "First Disbursement".equalsIgnoreCase(loanDisbursementRequest.getReason())) {
+						if (SUCCESS_LITERAL.equalsIgnoreCase(loanDisbursementRequest.getReason()) || "First Disbursement".equalsIgnoreCase(loanDisbursementRequest.getReason())) {
 							logger.info("Success msg while saveLoanDisbursementDetail()");
 							loansResponse = new LoansResponse(INFORMATION_SUCCESSFULLY_STORED_MSG,HttpStatus.OK.value());
 							loansResponse.setData(loanDisbursementService.saveLoanDisbursementDetail(loanDisbursementRequest));

@@ -340,6 +340,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	private static final String FP_PRODUCT_ID_MSG = "FpProductId ==>{}";
 	private static final String PROPOSAL_MAPPING_RESPONSE_MSG = "Proposal Mapping Response --> ";
 	private static final String PROPOSAL_MAPPING_RESPONSE_NULL_OR_EMPTY_MSG = "Proposal Mapping Response Null or Empty --> ";
+	private static final String EXCEPTION_IN_EDR_IN_SAVE_PHESE1_DATA_TO_SIDBI_MSG = "Exception in  EligibilityDetailRequest in savePhese1DataToSidbi() for ApplicationId ==>{} ";
 	private static final String FETCHED_DIRECTORS_BACKGROUND_DETAILS_FOR_APPLICATION_ID_MSG = "Fetched Director's background details for application Id : ";
 	private static final String INVALID_TOKEN_DETAILS_MSG = "Invalid Token Details";
 	private static final String EXCEPTION_OCCURED_WHILE_SENDING_MAIL_TO_HO_MSG = "Exception occured while Sending Mail to HO : ";
@@ -5704,7 +5705,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 						return false;
 					} else {
 						auditComponent.updateAudit(AuditComponent.ELIGIBILITY, applicationId, userId,
-								"Exception in  EligibilityDetailRequest in savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "
+								EXCEPTION_IN_EDR_IN_SAVE_PHESE1_DATA_TO_SIDBI_MSG
 										+ applicationId + MSG_LITERAL + e.getMessage(),
 								eligibilityParameters);
 					}
@@ -5790,7 +5791,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 										} else {
 											auditComponent.updateAudit(AuditComponent.SCORING_DETAILS, applicationId,
 													userId,
-													"Exception in  EligibilityDetailRequest in savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "
+													EXCEPTION_IN_EDR_IN_SAVE_PHESE1_DATA_TO_SIDBI_MSG
 															+ applicationId + MSG_LITERAL + e.getMessage(),
 													scoringDetails);
 										}
@@ -5800,7 +5801,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 								logger.error("Exception while getting Object from Map in savePhese1DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",
 										applicationId, fpProductMappingId + MSG_LITERAL + e.getMessage());
 								auditComponent.updateAudit(AuditComponent.SCORING_DETAILS, applicationId, userId,
-										"Exception in  EligibilityDetailRequest in savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "
+										EXCEPTION_IN_EDR_IN_SAVE_PHESE1_DATA_TO_SIDBI_MSG
 												+ applicationId + MSG_LITERAL + e.getMessage(),
 										scoringDetails);
 //								logger.error(INVALID_TOKEN_DETAILS_MSG);
