@@ -43,10 +43,8 @@ public class DprEighthSheetExcelReader
         try {
             //sheet number 3 fill 780 question answer in db
             String question802Answer = getDataFromCell(sheet, "C25");
-            if (!(question802Answer.isEmpty())) {//if textbox is empty not insert record
-                if (!(question802Answer.equals("Insert Text Here"))) {
+            if (!(question802Answer.isEmpty()) && !(question802Answer.equals("Insert Text Here")) ) {//if textbox is empty not insert record
                     dprUserDataDetail.setProjectJjustification(question802Answer);
-                }
             }
         }catch (Exception e)
         {

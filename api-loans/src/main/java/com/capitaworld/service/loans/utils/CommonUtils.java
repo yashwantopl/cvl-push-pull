@@ -18,8 +18,12 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CommonUtils {
+
+	private static final Logger logger = LoggerFactory.getLogger(CommonUtils.class);
 
 	public static final String USER_ID = "userId";
 	public static final String USER_TYPE = "userType";
@@ -1499,7 +1503,7 @@ public enum APIFlags {
     			return (Boolean) obj;
     		}	
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(EXCEPTION,e);
 		}
 		return null;
 	}
@@ -1515,7 +1519,7 @@ public enum APIFlags {
     			}
     		}	
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(EXCEPTION,e);
 		}
 		return null;
 	}
@@ -1531,7 +1535,7 @@ public enum APIFlags {
     			}
     		}	
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(EXCEPTION,e);
 		}
 		return null;
 	}
@@ -1542,7 +1546,7 @@ public enum APIFlags {
     			return (Date) obj;
     		}	
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(EXCEPTION,e);
 		}
 		return null;
 	}
@@ -1558,7 +1562,7 @@ public enum APIFlags {
     			}
     		}	
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(EXCEPTION,e);
 		}
 		return null;
 	}
@@ -1574,7 +1578,7 @@ public enum APIFlags {
     			}
     		}	
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(EXCEPTION,e);
 		}
 		return null;
 	}

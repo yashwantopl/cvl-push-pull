@@ -108,10 +108,8 @@ public class CommonDocumentUtils {
 	}
 
 	public static String getDenomination(Integer denominationId) {
-		if (!CommonUtils.isObjectNullOrEmpty(denominationId)) {
-			if (!CommonUtils.isObjectNullOrEmpty(Denomination.getById(denominationId))) {
+		if (!CommonUtils.isObjectNullOrEmpty(denominationId) && !CommonUtils.isObjectNullOrEmpty(Denomination.getById(denominationId)) ) {
 				return Denomination.getById(denominationId).getValue();
-			}
 		}
 		return "NA";
 	}

@@ -324,8 +324,8 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 		corporateFinalViewResponse.setProductId(loanApplicationMaster.getProductId());
 		corporateFinalViewResponse.setApplicationType(loanApplicationMaster.getWcRenewalStatus() != null ? WcRenewalType.getById(loanApplicationMaster.getWcRenewalStatus()).getValue().toString() : "New" );
 		// ===================== MATCHES DATA ======================//
-		if (userType != null) {
-			if (!(CommonUtils.UserType.FUND_SEEKER == userType)) { // TEASER VIEW FROM FP
+		if (userType != null && !(CommonUtils.UserType.FUND_SEEKER == userType) ) {
+			    // TEASER VIEW FROM FP
 				Long fpProductMappingId = null;
 				try {
 					UsersRequest usersRequest = new UsersRequest();
@@ -344,7 +344,6 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 				} catch (Exception e) {
 					logger.error("Error while getting matches data for final teaser view : ",e);
 				}
-			}
 		}
 		// GET CORPORATE APPLICANT DETAILS
 		CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
