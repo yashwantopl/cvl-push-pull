@@ -98,19 +98,12 @@ public class AssetsDetailsExcelReader
         int j = 2;
         if(loanApplicationMaster.getBusinessTypeId() == CommonUtils.BusinessType.EXISTING_BUSINESS.getId()) {
     
-        	Double yearFromSheet  = sheet.getRow(4).getCell(4).getNumericCellValue() ; 
-        	AssetsDetails assetsDetails = assetsDetailsRepository.findByLoanApplicationMasterIdAndYearAndFinancialYearlyStatementAndIsActive(loanApplicationMaster.getId() , String.valueOf(yearFromSheet.longValue()) , "Audited" , true );
+        	
+           	int updateRow = assetsDetailsRepository.inActiveByAppIdAndFinancialYearlyStatementAndIsActive(loanApplicationMaster.getId());
+           	log.info("---------------- inactive old estimate and project data ------- updated row "+ updateRow);
 
-           	if(assetsDetails !=null && "Audited".equalsIgnoreCase(assetsDetails.getFinancialYearlyStatement()) && yearFromSheet <= Double.valueOf(assetsDetails.getYear())) {
-           		
-           		throw new  Exception("Invalid cma details"); 
-         
-           	}else {
-           		int updateRow = assetsDetailsRepository.inActiveByAppIdAndFinancialYearlyStatementAndIsActive(loanApplicationMaster.getId());
-           		log.info("---------------- inactive old estimate and project data ------- updated row "+ updateRow);
-           		extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, assetsMappingList,"E",String.valueOf(sheet.getRow(4).getCell(4).getNumericCellValue()),"Estimated",assetsDetailsRepository);
-           		j=5;
-           	}
+           	extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, assetsMappingList,"E",String.valueOf(sheet.getRow(4).getCell(4).getNumericCellValue()),"Estimated",assetsDetailsRepository);
+           	j=5;
       
         }
         
@@ -146,14 +139,7 @@ public class AssetsDetailsExcelReader
 
     }
 
-    public static void extractCellFromSheet(Long storageDetailsId,
-    										XSSFSheet sheet,
-                                            LoanApplicationMaster loanApplicationMaster,
-                                            List<String> arrayList,
-                                            String column,
-                                            String year,
-                                            String financialYearlyStatement,
-                                            AssetsDetailsRepository assetsDetailsRepository)
+    public static void extractCellFromSheet(Long storageDetailsId,XSSFSheet sheet,LoanApplicationMaster loanApplicationMaster,List<String> arrayList,String column,String year,String financialYearlyStatement,AssetsDetailsRepository assetsDetailsRepository) throws Exception
     {
         int arrayListCounter = 0;
         int nullCounter=0;
@@ -165,8 +151,16 @@ public class AssetsDetailsExcelReader
         
         if(!(nullCounter==54)) {
         	
+        	Double yearFromSheet  = Double.valueOf(year) ; 
+        	AssetsDetails cmaAssets = assetsDetailsRepository.findByLoanApplicationMasterIdAndYearAndFinancialYearlyStatementAndIsActive(loanApplicationMaster.getId(), String.valueOf(yearFromSheet.longValue()) ,  financialYearlyStatement , true );
         	
-        	AssetsDetails  cmaAssets = new AssetsDetails();
+        	if(cmaAssets != null &&  "Audited".equalsIgnoreCase(cmaAssets.getFinancialYearlyStatement()) && yearFromSheet <= Double.valueOf(cmaAssets.getYear()) ) {
+           		
+           		throw new  Exception("Invalid cma details"); 
+         
+           	}
+        	
+        	cmaAssets = new AssetsDetails();
     		cmaAssets.setCreatedDate(new Date());
     		cmaAssets.setModifiedDate(new Date());
         	log.info("calledd===============");
