@@ -2324,6 +2324,8 @@ public class IrrServiceImpl implements IrrService{
 				else
 					qualitativeInputSheetManuRequest.setProjectSize(0.0);
 
+				break;
+
 			}
 			case  WCTL_LOAN:
 			{
@@ -2340,11 +2342,16 @@ public class IrrServiceImpl implements IrrService{
 					qualitativeInputSheetManuRequest.setProjectSize(totalCostEstimate/totalAsset);//----- formula based
 				else
 					qualitativeInputSheetManuRequest.setProjectSize(0.0);
+
+				break;
 			}
 			case  WORKING_CAPITAL:
 			{
 				qualitativeInputSheetManuRequest.setProjectSize(0.0);//----- formula based
+				break;
 			}
+
+			default : break;
 		}
 
 		return qualitativeInputSheetManuRequest;

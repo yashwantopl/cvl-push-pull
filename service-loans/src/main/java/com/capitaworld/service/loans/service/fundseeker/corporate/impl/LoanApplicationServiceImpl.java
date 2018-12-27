@@ -355,6 +355,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	private static final String CONNECTOR_RESPONSE_NULL_OR_EMPTY_MSG = "Connector Response null or empty";
 	private static final String ERROR_MSG = "----- Error Msg : ";
 	private static final String OTHER_LITERAL = "OTHER";
+	private static final String DIRECT_LITERAL = "Direct";
 
 	@Autowired
 	private DMSClient dmsClient;
@@ -3270,7 +3271,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					!CommonUtils.isObjectNullOrEmpty(usersRequest.getMobile()) ? usersRequest.getMobile() : null);
 			response.setCampaignCode(!CommonUtils.isObjectNullOrEmpty(usersRequest.getCampaignCode())
 					? CampaignCode.getById(Integer.valueOf(usersRequest.getCampaignCode())).toString()
-					: "Direct");
+					: DIRECT_LITERAL);
 			response.setLastLoginDate(
 					!CommonUtils.isObjectNullOrEmpty(usersRequest.getSignUpDate()) ? usersRequest.getSignUpDate()
 							: null);
@@ -3375,7 +3376,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 						!CommonUtils.isObjectNullOrEmpty(usersRequest.getMobile()) ? usersRequest.getMobile() : null);
 				response.setCampaignCode(!CommonUtils.isObjectNullOrEmpty(usersRequest.getCampaignCode())
 						? CampaignCode.getById(Integer.valueOf(usersRequest.getCampaignCode())).toString()
-						: "Direct");
+						: DIRECT_LITERAL);
 				response.setLastLoginDate(
 						!CommonUtils.isObjectNullOrEmpty(usersRequest.getSignUpDate()) ? usersRequest.getSignUpDate()
 								: null);
@@ -3530,7 +3531,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 									: null);
 					response.setCampaignCode(!CommonUtils.isObjectNullOrEmpty(usersRequest.getCampaignCode())
 							? CampaignCode.getById(Integer.valueOf(usersRequest.getCampaignCode())).toString()
-							: "Direct");
+							: DIRECT_LITERAL);
 					response.setLastLoginDate(!CommonUtils.isObjectNullOrEmpty(usersRequest.getSignUpDate())
 							? usersRequest.getSignUpDate()
 							: null);
@@ -3647,7 +3648,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					!CommonUtils.isObjectNullOrEmpty(usersRequest.getMobile()) ? usersRequest.getMobile() : null);
 			response.setCampaignCode(!CommonUtils.isObjectNullOrEmpty(usersRequest.getCampaignCode())
 					? CampaignCode.getById(Integer.valueOf(usersRequest.getCampaignCode())).toString()
-					: "Direct");
+					: DIRECT_LITERAL);
 			response.setLastLoginDate(
 					!CommonUtils.isObjectNullOrEmpty(usersRequest.getSignUpDate()) ? usersRequest.getSignUpDate()
 							: null);
@@ -3801,7 +3802,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					!CommonUtils.isObjectNullOrEmpty(usersRequest.getMobile()) ? usersRequest.getMobile() : null);
 			response.setCampaignCode(!CommonUtils.isObjectNullOrEmpty(usersRequest.getCampaignCode())
 					? CampaignCode.getById(Integer.valueOf(usersRequest.getCampaignCode())).toString()
-					: "Direct");
+					: DIRECT_LITERAL);
 			response.setLastLoginDate(
 					!CommonUtils.isObjectNullOrEmpty(usersRequest.getSignUpDate()) ? usersRequest.getSignUpDate()
 							: null);

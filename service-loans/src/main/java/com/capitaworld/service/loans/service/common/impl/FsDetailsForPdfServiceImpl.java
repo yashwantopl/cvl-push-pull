@@ -34,6 +34,9 @@ public class FsDetailsForPdfServiceImpl implements FsDetailsForPdfService {
 
 	private static final Logger logger = LoggerFactory.getLogger(FsDetailsForPdfServiceImpl.class);
 
+	private static final String OCCUPATION = "occupation";
+	private static final String PURCHASE_OF_PLOT = "Purchase of Plot";
+
 	@Autowired
 	private HomeLoanFinalViewService homeLoanFinalViewService;
 
@@ -112,7 +115,7 @@ public class FsDetailsForPdfServiceImpl implements FsDetailsForPdfService {
 		UsersRequest request = MultipleJSONObjectHelper.getObjectFromMap(lm,UsersRequest.class);
 		map.put("mobile", request.getMobile());
 		map.put("email", request.getEmail());
-		map.put("occupation",finalViewResponse.getHomeLoanPrimaryViewResponse().getPersonalProfileRespoonse().getNatureOfOccupation());
+		map.put(OCCUPATION,finalViewResponse.getHomeLoanPrimaryViewResponse().getPersonalProfileRespoonse().getNatureOfOccupation());
 		if(finalViewResponse.getHomeLoanPrimaryViewResponse().getPersonalProfileRespoonse().getNatureOfOccupationId() == 2){
 			map.put("orgName",finalViewResponse.getHomeLoanPrimaryViewResponse().getPersonalProfileRespoonse().getCompanyName());
 		}
@@ -374,10 +377,10 @@ public class FsDetailsForPdfServiceImpl implements FsDetailsForPdfService {
 				+" "+(CommonUtils.isObjectNullOrEmpty(finalViewResponse.getPropCountry())?"":finalViewResponse.getPropCountry())
 				+" "+ (CommonUtils.isObjectNullOrEmpty(finalViewResponse.getPropPinCode())?"":finalViewResponse.getPropPinCode());
 		map.put("propertyAddress", propertyAddress);
-		if(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPropertyType() == "Purchase of Plot"){
+		if(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPropertyType() == PURCHASE_OF_PLOT){
 			map.put("areaOfLand", finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getArea());
 		}
-		if(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPropertyType() == "Purchase of ready flat/tenament/row house" || finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPropertyType() == "Repairing/Renovation of flat/tenament" || finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPropertyType() == "Purchase of Plot"){
+		if(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPropertyType() == "Purchase of ready flat/tenament/row house" || finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPropertyType() == "Repairing/Renovation of flat/tenament" || finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPropertyType() == PURCHASE_OF_PLOT){
 			map.put("builtUpArea", finalViewResponse.getBuiltUpArea());
 			map.put("carpetUpArea", finalViewResponse.getCarpetArea());
 		}
@@ -386,7 +389,7 @@ public class FsDetailsForPdfServiceImpl implements FsDetailsForPdfService {
 			map.put("costOfLand", CommonUtils.convertInBigDecimal(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getLandPlotCost()));
 			requirementTotal+= CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getLandPlotCost())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getLandPlotCost().replaceAll(",", ""));
 		}
-		if(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPropertyType() == "Purchase of Plot"){
+		if(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getPropertyType() == PURCHASE_OF_PLOT){
 			map.put("costOfLand", CommonUtils.convertInBigDecimal(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getLandPlotCost()));
 			requirementTotal+= CommonUtils.isObjectNullOrEmptyOrDash(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getLandPlotCost())?0:Double.parseDouble(finalViewResponse.getHomeLoanPrimaryViewResponse().getHomeLoanResponse().getLandPlotCost().replaceAll(",", ""));
 		}
@@ -654,7 +657,7 @@ public class FsDetailsForPdfServiceImpl implements FsDetailsForPdfService {
 			dataMap.put("Cust Title", finalViewResponse.getHomeLoanPrimaryViewResponse().getPersonalProfileRespoonse().getTitle());
 			dataMap.put("Cust Name ", map.get("name"));
 			dataMap.put("Cust Status  ", null);
-			dataMap.put("Cust Occupation ", map.get("occupation"));
+			dataMap.put("Cust Occupation ", map.get(OCCUPATION));
 			dataMap.put("Constitution ", null);
 			dataMap.put("Gender ", map.get("gender"));
 			dataMap.put("Addrs Type", null);
@@ -694,7 +697,7 @@ public class FsDetailsForPdfServiceImpl implements FsDetailsForPdfService {
 			dataMap.put("Mode of Advance", null);
 			dataMap.put("Type of Advance", null);
 			dataMap.put("Industry Type", null);
-			dataMap.put("Occupation", map.get("occupation"));
+			dataMap.put("Occupation", map.get(OCCUPATION));
 			dataMap.put("PAN Number", map.get("panNo"));
 			dataMap.put("Date of Birth", map.get("birthDate"));
 			dataMap.put("Customer Employee Number ", null);
