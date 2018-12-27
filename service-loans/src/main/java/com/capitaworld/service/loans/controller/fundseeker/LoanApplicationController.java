@@ -89,6 +89,8 @@ public class LoanApplicationController {
 	private static final String AND_USER_ID_MSG = " and UserId ==>";
 	private static final String TOKEN_NULL_MSG = "Token null==================>";
 	private static final String RESPONSE_MSG = "Response========>{}";
+	private static final String REASON_MSG = " reason  ";
+	private static final String TOKEN_LITERAL = "token";
 
 	@Autowired
 	private LoanApplicationService loanApplicationService;
@@ -2043,7 +2045,7 @@ public class LoanApplicationController {
 		try {
 			logger.info(
 					"=============================checking authorized token in saveLoanSanctionDetail(){} ============================= ");
-			tokenString = httpServletRequest.getHeader("token");
+			tokenString = httpServletRequest.getHeader(TOKEN_LITERAL);
 			if (CommonUtils.isObjectNullOrEmpty(tokenString)) {
 				reason = TOKEN_IS_NULL;
 				loansResponse = new LoansResponse(reason, HttpStatus.UNAUTHORIZED.value());
@@ -2103,7 +2105,7 @@ public class LoanApplicationController {
 					} else {
 						reason = INVALID_CREDENTIALS;
 						logger.info("Invalid Credentials while saveLoanSanctionDetail() ----------------> orgId "
-								+ orgId + " reason  " + reason);
+								+ orgId + REASON_MSG + reason);
 						loansResponse = new LoansResponse(reason, HttpStatus.UNAUTHORIZED.value());
 						loansResponse.setData(false);
 						logger.info("================== Exit saveLoanSanctionDetail() =================");
@@ -2163,7 +2165,7 @@ public class LoanApplicationController {
 		try {
 			logger.info(
 					"=============================checking authorized token in saveLoanDisbursementDetail(){} ============================= ");
-			tokenString = httpServletRequest.getHeader("token");
+			tokenString = httpServletRequest.getHeader(TOKEN_LITERAL);
 			if (CommonUtils.isObjectNullOrEmpty(tokenString)) {
 				reason = TOKEN_IS_NULL;
 				loansResponse = new LoansResponse(reason, HttpStatus.UNAUTHORIZED.value());
@@ -2230,7 +2232,7 @@ public class LoanApplicationController {
 					} else {
 						reason = INVALID_CREDENTIALS;
 						logger.info("Invalid Credentials while saveLoanDisbursementDetail() ----------------> orgId "
-								+ orgId + " reason  " + reason);
+								+ orgId + REASON_MSG + reason);
 						loansResponse = new LoansResponse(reason, HttpStatus.UNAUTHORIZED.value());
 						loansResponse.setData(false);
 						logger.info("================== Exit saveLoanDisbursementDetail() =================");
@@ -2381,7 +2383,7 @@ public class LoanApplicationController {
 
 			logger.info(
 					"=============================checking authorized token in  saveDetailedInfo(){} ============================= ");
-			tokenString = httpServletRequest.getHeader("token");
+			tokenString = httpServletRequest.getHeader(TOKEN_LITERAL);
 			if (CommonUtils.isObjectNullOrEmpty(tokenString)) {
 				reason = TOKEN_IS_NULL;
 				loansResponse = new LoansResponse(reason, HttpStatus.UNAUTHORIZED.value());
@@ -2441,7 +2443,7 @@ public class LoanApplicationController {
 					} else {
 						reason = INVALID_CREDENTIALS;
 						logger.info("Invalid Credentials while saveDetailedInfo() ----------------> orgId " + orgId
-								+ " reason  " + reason);
+								+ REASON_MSG + reason);
 						loansResponse = new LoansResponse(reason, HttpStatus.UNAUTHORIZED.value());
 						loansResponse.setData(isSuccess);
 						logger.info("================== Exit saveDetailedInfo() =================");
@@ -2771,7 +2773,7 @@ public class LoanApplicationController {
 					return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 				} else {
 					reason = INVALID_CREDENTIALS;
-					logger.info("Invalid Credentials while getToken() ----------------> orgId " + orgId + " reason  "
+					logger.info("Invalid Credentials while getToken() ----------------> orgId " + orgId + REASON_MSG
 							+ reason);
 					loansResponse = new LoansResponse(reason, HttpStatus.UNAUTHORIZED.value());
 					loansResponse.setData(isSuccess);
@@ -2850,7 +2852,7 @@ public class LoanApplicationController {
 				} else {
 					reason = INVALID_CREDENTIALS;
 					logger.info("Invalid Credentials while setTokenAsExpired() ----------------> orgId " + orgId
-							+ " reason  " + reason);
+							+ REASON_MSG + reason);
 					loansResponse = new LoansResponse(reason, HttpStatus.UNAUTHORIZED.value());
 					loansResponse.setData(isSuccess);
 					logger.info("================== Exit setTokenAsExpired() () =================");
@@ -2986,7 +2988,7 @@ public class LoanApplicationController {
 						sanctionReason = INVALID_CREDENTIALS;
 						logger.info(
 								"Invalid Credentials while saveLoanSanctionDisbursementDetailFromBank() ----------------> orgId "
-										+ orgId + " reason  " + sanctionReason);
+										+ orgId + REASON_MSG + sanctionReason);
 						loansResponse = new LoansResponse(sanctionReason, HttpStatus.UNAUTHORIZED.value());
 						loansResponse.setData(false);
 						logger.info("================== Exit saveLoanDisbursementDetail() =================");
