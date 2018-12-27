@@ -51,12 +51,8 @@ public class DirectorBackgroundDetailsServiceImpl implements DirectorBackgroundD
 	@Override
 	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception {
 		
-		if(!CommonUtils.isObjectNullOrEmpty(frameRequest)) {
-			if(!CommonUtils.isObjectNullOrEmpty(frameRequest.getIsFromClient())) {
-				if(frameRequest.getIsFromClient()) {
-					directorBackgroundDetailsRepository.inActive(frameRequest.getUserId(), frameRequest.getApplicationId());	
-				}
-			}
+		if(!CommonUtils.isObjectNullOrEmpty(frameRequest) && !CommonUtils.isObjectNullOrEmpty(frameRequest.getIsFromClient()) && frameRequest.getIsFromClient() ) {
+					directorBackgroundDetailsRepository.inActive(frameRequest.getUserId(), frameRequest.getApplicationId());
 		}
 		
 		try {
@@ -69,7 +65,7 @@ public class DirectorBackgroundDetailsServiceImpl implements DirectorBackgroundD
 		}
 
 		catch (Exception e) {
-			logger.error("Exception  in save directorBackgroundDetail  :-",e);
+			logger.error("Exception  in save directorBackgroundDetail :- ",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}

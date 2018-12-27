@@ -866,7 +866,6 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 		try {
 			jsonObject.put("direcorsList",directorBackgroundDetailsService.getDirectorBackgroundDetailList(applicationId, null));
 		} catch (Exception e) {
-			e.printStackTrace();
 			logger.error("Error while Getting Directors List After Updating Flags ======>{}",e);
 		}
 		loansResponse.setData(jsonObject);

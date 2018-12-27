@@ -231,15 +231,27 @@ public class PLCamReportServiceImpl implements PLCamReportService{
 		} catch (Exception e) {
 			logger.error("Error while getting profile Details : ",e);
 		}
-		//DATE OF IN-PRINCIPLE APPROVAL (CONNECT CLIENT)
-		try {
+		//DATE OF IN-PRINCIPLE APPROVAL (CONNECT CLIENT) EXISTING CODE
+		/*try {
 			ConnectResponse connectResponse = connectClient.getByAppStageBusinessTypeId(applicationId, ConnectStage.COMPLETE.getId(), com.capitaworld.service.loans.utils.CommonUtils.BusinessType.EXISTING_BUSINESS.getId());
 			if(!CommonUtils.isObjectNullOrEmpty(connectResponse)) {
 				map.put("dateOfInPrincipalApproval",!CommonUtils.isObjectNullOrEmpty(connectResponse.getData())? CommonUtils.DATE_FORMAT.format(connectResponse.getData()):"-");
 			}
 		} catch (Exception e2) {
 			logger.info("Error while getting date of in-principal approval from connect client : ",e2);
+		}*/
+		
+		//  CHANGES FOR DATE OF PROPOSAL IN CAM REPORTS (NEW CODE)
+		try {
+			Date InPrincipleDate = loanApplicationRepository.getModifiedDate(applicationId, ConnectStage.RETAIL_COMPLETE.getId(), com.capitaworld.service.loans.utils.CommonUtils.BusinessType.RETAIL_PERSONAL_LOAN.getId());
+			if(!CommonUtils.isObjectNullOrEmpty(InPrincipleDate)) {
+				map.put("dateOfInPrincipalApproval",!CommonUtils.isObjectNullOrEmpty(InPrincipleDate)? CommonUtils.DATE_FORMAT.format(InPrincipleDate):"-");
+			}
+		} catch (Exception e2) {
+			logger.error(CommonUtils.EXCEPTION,e2);
 		}
+		// ENDS HERE===================>
+		
 		//MATCHES RESPONSE
 		try {
 			MatchRequest matchRequest = new MatchRequest();

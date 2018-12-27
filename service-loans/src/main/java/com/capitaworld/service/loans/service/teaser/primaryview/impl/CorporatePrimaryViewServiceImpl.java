@@ -204,8 +204,8 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 		corporatePrimaryViewResponse.setProductId(loanApplicationMaster.getProductId());
 		corporatePrimaryViewResponse.setApplicationType(loanApplicationMaster.getWcRenewalStatus() != null ? WcRenewalType.getById(loanApplicationMaster.getWcRenewalStatus()).getValue().toString() : "New" );
 		/* ========= Matches Data ========== */
-		if (userType != null) {
-			if (!(CommonUtils.UserType.FUND_SEEKER == userType)) { // teaser
+		if (userType != null && !(CommonUtils.UserType.FUND_SEEKER == userType) ) {
+			     // teaser
 				// view
 				// viwed by
 				// fund
@@ -230,7 +230,6 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 				} catch (Exception e) {
 					logger.error(CommonUtils.EXCEPTION,e);
 				}
-			}
 		}
 		
 	

@@ -182,8 +182,8 @@ public class UnsecuredLoanPrimaryViewServiceImpl implements UnsecuredLoanPrimary
 																			   Long fundProviderUserId) {
 		UnsecuredLoanPrimaryViewResponse unsecuredLoanPrimaryViewResponse = new UnsecuredLoanPrimaryViewResponse();
 
-		if (userType != null) {
-			if (!(CommonUtils.UserType.FUND_SEEKER == userType)) { // teaser
+		if (userType != null && !(CommonUtils.UserType.FUND_SEEKER == userType) ) {
+			     // teaser
 				// view
 				// viwed by
 				// fund
@@ -207,7 +207,6 @@ public class UnsecuredLoanPrimaryViewServiceImpl implements UnsecuredLoanPrimary
 				} catch (Exception e) {
 					logger.error(CommonUtils.EXCEPTION,e);
 				}
-			}
 		}
 
 		LoanApplicationMaster applicationMaster = loanApplicationRepository.findOne(toApplicationId);

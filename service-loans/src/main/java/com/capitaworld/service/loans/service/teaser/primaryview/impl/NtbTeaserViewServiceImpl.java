@@ -213,8 +213,8 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService {
 		// ntbPrimaryViewRespone.setBusinessTypeId(loanApplicationMaster.getBusinessTypeId());
 
 		/* ========= Matches Data ========== */
-		if (userType != null) {
-			if (!(CommonUtils.UserType.FUND_SEEKER == userType)) {// TEASER VIEW FROM FP SIDE
+		if (userType != null && !(CommonUtils.UserType.FUND_SEEKER == userType) ) {
+			// TEASER VIEW FROM FP SIDE
 				try {
 					MatchRequest matchRequest = new MatchRequest();
 					matchRequest.setApplicationId(toApplicationId);
@@ -225,7 +225,6 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService {
 				} catch (Exception e) {
 					logger.error("Error while getting matches data" + e);
 				}
-			}
 		}
 
 		CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
