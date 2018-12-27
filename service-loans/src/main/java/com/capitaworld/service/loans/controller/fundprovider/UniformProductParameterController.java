@@ -71,7 +71,7 @@ public class UniformProductParameterController {
 			//Long userId=1755l;
 			if(userId == null || orgId == null)
 			{
-				logger.warn("userId  id can not be empty ==>", userId);
+				logger.warn("userId and Org Id can not be empty ==>{}=====>Org Id=====>{}", userId,orgId);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse("Unauthorized!. Please Re-login.", HttpStatus.UNAUTHORIZED.value()),
 						HttpStatus.OK);
