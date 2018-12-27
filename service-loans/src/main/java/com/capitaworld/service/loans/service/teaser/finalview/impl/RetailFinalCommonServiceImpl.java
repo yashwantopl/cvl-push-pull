@@ -101,12 +101,10 @@ public class RetailFinalCommonServiceImpl implements RetailFinalCommonApplicantS
 			finalViewCommonResponse.setBirthDate(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getBirthDate()) ? applicantDetail.getBirthDate().toString() : "-");
 			finalViewCommonResponse.setFatherFullName(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getFatherName()) ? applicantDetail.getFatherName() : "-");
 			finalViewCommonResponse.setMotherName(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getMotherName()) ? applicantDetail.getMotherName() : "-");
-			if(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getStatusId())){
-				if(applicantDetail.getStatusId() == 2){
+			if(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getStatusId()) && applicantDetail.getStatusId() == 2 ){
 					finalViewCommonResponse.setSpouseName(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getSpouseName()) ? applicantDetail.getSpouseName() :"-");
 					finalViewCommonResponse.setSpouseEmployed(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getIsSpouseEmployed()) ? (applicantDetail.getIsSpouseEmployed()==true ? "Yes" : "No") :"-");
 					finalViewCommonResponse.setNoOfChildren(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getNoChildren()) ? applicantDetail.getNoChildren().toString() : "-");
-				}
 			}
 			finalViewCommonResponse.setNoOfDependents(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getNoDependent()) ? applicantDetail.getNoDependent().toString() : "-");
 			if(!CommonUtils.isObjectNullOrEmpty(applicantDetail.getHighestQualification())){

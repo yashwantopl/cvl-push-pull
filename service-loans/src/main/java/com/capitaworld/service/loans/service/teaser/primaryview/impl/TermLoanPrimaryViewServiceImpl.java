@@ -152,8 +152,8 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 																	 Long fundProviderUserId) {
 		TermLoanPrimaryViewResponse termLoanPrimaryViewResponse = new TermLoanPrimaryViewResponse();
 
-		if (userType != null) {
-			if (!(CommonUtils.UserType.FUND_SEEKER == userType)) { // teaser
+		if (userType != null && !(CommonUtils.UserType.FUND_SEEKER == userType) ) {
+			     // teaser
 				// view
 				// viwed by
 				// fund
@@ -177,7 +177,6 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 				} catch (Exception e) {
 					logger.error(CommonUtils.EXCEPTION,e);
 				}
-			}
 		}
 
 		LoanApplicationMaster applicationMaster = loanApplicationRepository.findOne(toApplicationId);

@@ -44,10 +44,8 @@ public class DprSixSheetExcelReader
         //save question 790
         try {
             String question790Answer = getDataFromCell(sheet, "C4");
-            if (!(question790Answer.isEmpty())) {//if textbox is empty not insert record
-                if (!(question790Answer.equals("Insert Text Here"))) {
+            if (!(question790Answer.isEmpty()) && !(question790Answer.equals("Insert Text Here")) ) {//if textbox is empty not insert record
                 	dprUserDataDetail.setMarketsCurrentlyServed(question790Answer);
-                }
             }
         }catch (Exception e) {
             logger.error(CommonUtils.EXCEPTION,e);
@@ -56,10 +54,8 @@ public class DprSixSheetExcelReader
         //save question 791
         try {
             String question791Answer = getDataFromCell(sheet, "C6");
-            if (!(question791Answer.isEmpty())) {//if textbox is empty not insert record
-                if (!(question791Answer.equals("Insert Text Here"))) {
+            if (!(question791Answer.isEmpty()) && !(question791Answer.equals("Insert Text Here")) ) {//if textbox is empty not insert record
                 	dprUserDataDetail.setTargetMarketStrategy(question791Answer);
-                }
             }
         }catch (Exception e) {
             logger.error(CommonUtils.EXCEPTION,e);

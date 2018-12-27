@@ -150,8 +150,8 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
 		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(toApplicationId);
 		Long userId = loanApplicationMaster.getUserId();
 
-		if (userType != null) {
-			if (!(CommonUtils.UserType.FUND_SEEKER == userType)) { // teaser
+		if (userType != null && !(CommonUtils.UserType.FUND_SEEKER == userType) ) {
+			     // teaser
 				// view
 				// viwed by
 				// fund
@@ -175,7 +175,6 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
 				} catch (Exception e) {
 					logger.error(CommonUtils.EXCEPTION,e);
 				}
-			}
 		}
 		// get details of CorporateApplicantDetail
 		CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository

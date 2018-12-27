@@ -129,7 +129,11 @@ import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailService {
 
 	private static final String SUCESSFULLY_FINAL_UNSECURE_LOAN_DETAIL_SAVE_MSG = "Sucessfully FinalUnsecureLoanDetail save ==>  ";
-	private static final String ENTER_IN_GET_AND_SAVE_OWNERSHIP_MSG = "===== Enter in getAndSaveOwnerShip() =======";
+	private static final String SUCESSFULLY_FINAL_WORKING_CAPITAL_LOAN_DETAIL_SAVE_MSG = "Sucessfully FinalWorkingCapitalLoanDetail save ==>  ";
+	private static final String NEW_OBJECT_CREATED_EMPTY_DETAIL_IN_FINAL_UNSECURE_LOAN_DETAIL_MSG = "-- New Object Created, Empty detail in FinalUnsecureLoanDetail -->";
+	private static final String NEW_OBJECT_CREATED_EMPTY_DETAIL_IN_FINAL_WORKING_CAPITAL_LOAN_DETAIL_MSG = "-- New Object Created, Empty detail in FinalWorkingCapitalLoanDetail -->";
+	private static final String SUCESSFULLY_FINAL_TERM_LOAN_DETAIL_SAVE_MSG = "Sucessfully FinalTermLoanDetail save ==>  ";
+	private static final String ENTER_IN_GET_AND_SAVE_OWNERSHIP_MSG = "===== Enter in getAndSaveOwnerShip() =====";
 	private static final String WITH_USER_ID_MSG = " with user Id ==>";
 
 	@Autowired
@@ -1234,7 +1238,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 				.getByApplicationAndUserId(autoFillOneFormDetailRequest.getToApplicationId(), userId);
 		if (finalWorkingCapitalLoanDetailTo == null) {
 			logger.warn("Aplication Id not available in DB=====> saveFinalWCToWC()");
-			logger.warn("----------New Object Created,  Empty detail in FinalWorkingCapitalLoanDetail  --------> "
+			logger.warn(NEW_OBJECT_CREATED_EMPTY_DETAIL_IN_FINAL_WORKING_CAPITAL_LOAN_DETAIL_MSG
 					+ finalWorkingCapitalLoanDetailTo);
 			finalWorkingCapitalLoanDetailTo = new FinalWorkingCapitalLoanDetail();
 
@@ -1244,7 +1248,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		finalWorkingCapitalLoanDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 		finalWorkingCapitalLoanDetailTo.setCreatedDate(new Date());
 		finalWorkingCapitalLoanDetailTo = finalWCRepository.save(finalWorkingCapitalLoanDetailTo);
-		logger.info("Sucessfully FinalWorkingCapitalLoanDetail save ======>  " + finalWorkingCapitalLoanDetailTo);
+		logger.info(SUCESSFULLY_FINAL_WORKING_CAPITAL_LOAN_DETAIL_SAVE_MSG + finalWorkingCapitalLoanDetailTo);
 		logger.info("================= Exit From saveFinalWCToWC()================== ");
 	}
 
@@ -1266,7 +1270,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		finalTermLoanDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 		finalTermLoanDetailTo.setCreatedDate(new Date());
 		finalTermLoanDetailTo = finalTermLoanDetailRepository.save(finalTermLoanDetailTo);
-		logger.info("Sucessfully FinalTermLoanDetail save ======>  " + finalTermLoanDetailTo);
+		logger.info(SUCESSFULLY_FINAL_TERM_LOAN_DETAIL_SAVE_MSG + finalTermLoanDetailTo);
 		logger.info("================= Exit From saveFinalWCToTL()================== ");
 	}
 
@@ -1279,7 +1283,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 				.getByApplicationAndUserId(autoFillOneFormDetailRequest.getToApplicationId(), userId);
 		if (finalUnsecureLoanDetailTo == null) {
 			logger.warn("Aplication Id not available in DB =====> saveFinalWCToUSL()");
-			logger.warn("----------New Object Created,  Empty detail in FinalUnsecureLoanDetail  --------> "
+			logger.warn(NEW_OBJECT_CREATED_EMPTY_DETAIL_IN_FINAL_UNSECURE_LOAN_DETAIL_MSG
 					+ finalUnsecureLoanDetailTo);
 			finalUnsecureLoanDetailTo = new FinalUnsecureLoanDetail();
 		}
@@ -1308,7 +1312,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		finalTermLoanDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 		finalTermLoanDetailTo.setCreatedDate(new Date());
 		finalTermLoanDetailTo = finalTermLoanDetailRepository.save(finalTermLoanDetailTo);
-		logger.info("Sucessfully FinalTermLoanDetail save ======>  " + finalTermLoanDetailTo);
+		logger.info(SUCESSFULLY_FINAL_TERM_LOAN_DETAIL_SAVE_MSG + finalTermLoanDetailTo);
 		logger.info("================= Exit From saveFinalTLToTL()================== ");
 	}
 
@@ -1320,7 +1324,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		FinalWorkingCapitalLoanDetail finalWorkingCapitalLoanDetailTo = finalWCRepository
 				.getByApplicationAndUserId(autoFillOneFormDetailRequest.getToApplicationId(), userId);
 		if (finalWorkingCapitalLoanDetailTo == null) {
-			logger.warn("----------New Object Created,  Empty detail in FinalWorkingCapitalLoanDetail  --------> "
+			logger.warn(NEW_OBJECT_CREATED_EMPTY_DETAIL_IN_FINAL_WORKING_CAPITAL_LOAN_DETAIL_MSG
 					+ finalWorkingCapitalLoanDetailTo);
 			finalWorkingCapitalLoanDetailTo = new FinalWorkingCapitalLoanDetail();
 		}
@@ -1328,7 +1332,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		finalWorkingCapitalLoanDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 		finalWorkingCapitalLoanDetailTo.setCreatedDate(new Date());
 		finalWorkingCapitalLoanDetailTo = finalWCRepository.save(finalWorkingCapitalLoanDetailTo);
-		logger.info("Sucessfully FinalWorkingCapitalLoanDetail save ======>  " + finalWorkingCapitalLoanDetailTo);
+		logger.info(SUCESSFULLY_FINAL_WORKING_CAPITAL_LOAN_DETAIL_SAVE_MSG + finalWorkingCapitalLoanDetailTo);
 		logger.info("================= Exit From saveFinalTLToWL()================== ");
 	}
 
@@ -1341,7 +1345,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 				.getByApplicationAndUserId(autoFillOneFormDetailRequest.getToApplicationId(), userId);
 		if (finalUnsecureLoanDetailTo == null) {
 			logger.warn("applicationId not  available in DB in saveFinalTLToUSL () ");
-			logger.warn("----------New Object Created,  Empty detail in FinalUnsecureLoanDetail  --------> "
+			logger.warn(NEW_OBJECT_CREATED_EMPTY_DETAIL_IN_FINAL_UNSECURE_LOAN_DETAIL_MSG
 					+ finalUnsecureLoanDetailTo);
 			finalUnsecureLoanDetailTo = new FinalUnsecureLoanDetail();
 		}
@@ -1362,7 +1366,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 				.getByApplicationAndUserId(autoFillOneFormDetailRequest.getToApplicationId(), userId);
 		if (finalUnsecureLoanDetailTo == null) {
 			logger.warn("applicationid not available in  DB saveFinalUSLToUSL ");
-			logger.warn("----------New Object Created,  Empty detail in FinalUnsecureLoanDetail  --------> "
+			logger.warn(NEW_OBJECT_CREATED_EMPTY_DETAIL_IN_FINAL_UNSECURE_LOAN_DETAIL_MSG
 					+ finalUnsecureLoanDetailTo);
 			finalUnsecureLoanDetailTo = new FinalUnsecureLoanDetail();
 		}
@@ -1381,7 +1385,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		FinalWorkingCapitalLoanDetail finalWorkingCapitalLoanDetailTo = finalWCRepository
 				.getByApplicationAndUserId(autoFillOneFormDetailRequest.getToApplicationId(), userId);
 		if (finalWorkingCapitalLoanDetailTo == null) {
-			logger.warn("----------New Object Created,  Empty detail in FinalWorkingCapitalLoanDetail  --------> "
+			logger.warn(NEW_OBJECT_CREATED_EMPTY_DETAIL_IN_FINAL_WORKING_CAPITAL_LOAN_DETAIL_MSG
 					+ finalWorkingCapitalLoanDetailTo);
 			finalWorkingCapitalLoanDetailTo = new FinalWorkingCapitalLoanDetail();
 
@@ -1390,7 +1394,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		finalWorkingCapitalLoanDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 		finalWorkingCapitalLoanDetailTo.setCreatedDate(new Date());
 		finalWorkingCapitalLoanDetailTo = finalWCRepository.save(finalWorkingCapitalLoanDetailTo);
-		logger.info("Sucessfully FinalWorkingCapitalLoanDetail save ======>  " + finalWorkingCapitalLoanDetailTo);
+		logger.info(SUCESSFULLY_FINAL_WORKING_CAPITAL_LOAN_DETAIL_SAVE_MSG + finalWorkingCapitalLoanDetailTo);
 		logger.info("================= Exit From saveFinalUSLToWC()================== ");
 	}
 
@@ -1411,7 +1415,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		finalTermLoanDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 		finalTermLoanDetailTo.setCreatedDate(new Date());
 		finalTermLoanDetailTo = finalTermLoanDetailRepository.save(finalTermLoanDetailTo);
-		logger.info("Sucessfully FinalTermLoanDetail save ======>  " + finalTermLoanDetailTo);
+		logger.info(SUCESSFULLY_FINAL_TERM_LOAN_DETAIL_SAVE_MSG + finalTermLoanDetailTo);
 		logger.info("================= Exit From saveFinalUSLToTL()================== ");
 	}
 
