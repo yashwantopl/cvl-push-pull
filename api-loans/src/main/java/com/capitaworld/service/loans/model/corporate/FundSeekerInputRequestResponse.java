@@ -5,9 +5,14 @@ import java.util.Date;
 import java.util.List;
 
 import com.capitaworld.service.loans.model.Address;
+import com.capitaworld.service.loans.model.AssociatedConcernDetailRequest;
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 
+/**
+ * @author akshay
+ *
+ */
 /**
  * @author akshay
  *
@@ -54,9 +59,11 @@ public class FundSeekerInputRequestResponse {
 
     private Integer constitutionId;
 
-    private List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestsList;
+    private List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestsList = Collections.emptyList();
     
-    private List<DirectorBackgroundDetailRequest> directorBackgroundDetailRequestsList;
+    private List<DirectorBackgroundDetailRequest> directorBackgroundDetailRequestsList = Collections.emptyList();
+    
+    private List<AssociatedConcernDetailRequest> associatedConcernDetailRequestsList = Collections.emptyList();
 
 
     ///////////
@@ -552,6 +559,14 @@ public class FundSeekerInputRequestResponse {
 
 	public void setGstIn(String gstIn) {
 		this.gstIn = gstIn;
+	}
+
+	public List<AssociatedConcernDetailRequest> getAssociatedConcernDetailRequestsList() {
+		return associatedConcernDetailRequestsList;
+	}
+
+	public void setAssociatedConcernDetailRequestsList(List<AssociatedConcernDetailRequest> associatedConcernDetailRequestsList) {
+		this.associatedConcernDetailRequestsList = associatedConcernDetailRequestsList;
 	}
 
 	@Override

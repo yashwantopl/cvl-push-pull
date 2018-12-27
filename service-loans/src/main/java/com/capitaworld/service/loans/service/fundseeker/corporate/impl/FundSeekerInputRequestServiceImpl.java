@@ -56,6 +56,7 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.DirectorPer
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorRepository;
+import com.capitaworld.service.loans.service.fundseeker.corporate.AssociatedConcernDetailService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.DirectorBackgroundDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService;
@@ -88,6 +89,9 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 	
 	@Autowired
 	private DirectorBackgroundDetailsService directorBackgroundDetailsService; 
+	
+	@Autowired
+	private AssociatedConcernDetailService associatedConcernDetailService; 
 
 	@Autowired
 	private ConnectClient connectClient;
@@ -647,6 +651,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			logger.error("Oneform Uniform Product ===============> Throw Exception While Save Oneform Uniform Product -------->{}",e);
 		}
 		financialArrangementDetailsService.saveOrUpdateManuallyAddedLoans(fundSeekerInputRequest.getFinancialArrangementsDetailRequestsList(), fundSeekerInputRequest.getApplicationId(), fundSeekerInputRequest.getUserId());
+		associatedConcernDetailService.saveOrUpdate(fundSeekerInputRequest.getAssociatedConcernDetailRequestsList(), fundSeekerInputRequest.getApplicationId(), fundSeekerInputRequest.getUserId());
 		LoansResponse res = new LoansResponse(msg, HttpStatus.OK.value());
 		res.setFlag(true);
 		res.setData(getDataForOnePagerOneForm(fundSeekerInputRequest.getApplicationId()));
@@ -685,6 +690,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			fundSeekerInputResponse.setPan(corporateApplicantDetail.getPanNo());
 			fundSeekerInputResponse.setDirectorBackgroundDetailRequestsList(directorBackgroundDetailsService.getDirectorBackgroundDetailList(applicationId, null));
 			fundSeekerInputResponse.setFinancialArrangementsDetailRequestsList(financialArrangementDetailsService.getManuallyAddedFinancialArrangementDetailsList(applicationId));
+			fundSeekerInputResponse.setAssociatedConcernDetailRequestsList(associatedConcernDetailService.getAssociatedConcernsDetailList(applicationId, null));
 			
 			//Getting Financial Information from PrimaryCorporateDetails
 

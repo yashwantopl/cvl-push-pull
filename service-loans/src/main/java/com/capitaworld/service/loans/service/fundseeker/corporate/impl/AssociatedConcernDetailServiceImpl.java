@@ -43,8 +43,7 @@ public class AssociatedConcernDetailServiceImpl implements AssociatedConcernDeta
 						.getObjectFromMap(obj, AssociatedConcernDetailRequest.class);
 				AssociatedConcernDetail associatedConcernDetail = null;
 				if (associatedConcernDetailRequest.getId() != null) {
-					associatedConcernDetail = associatedConcernDetailRepository
-							.findOne(associatedConcernDetailRequest.getId());
+					associatedConcernDetail = associatedConcernDetailRepository.findOne(associatedConcernDetailRequest.getId());
 				} else {
 					associatedConcernDetail = new AssociatedConcernDetail();
 					associatedConcernDetail.setCreatedBy(frameRequest.getUserId());
@@ -68,13 +67,29 @@ public class AssociatedConcernDetailServiceImpl implements AssociatedConcernDeta
 	}
 
 	@Override
+	public Boolean saveOrUpdate(List<AssociatedConcernDetailRequest> requests,Long applicationId,Long userId) {
+		// Inactivating Previous Details
+		associatedConcernDetailRepository.inActive(userId, applicationId);
+		for (AssociatedConcernDetailRequest associatedConcernDetailRequest : requests) {
+			AssociatedConcernDetail associatedConcernDetail = new AssociatedConcernDetail();
+			associatedConcernDetail.setCreatedBy(userId);
+			associatedConcernDetail.setCreatedDate(new Date());
+			associatedConcernDetail.setApplicationId(new LoanApplicationMaster(applicationId));
+			BeanUtils.copyProperties(associatedConcernDetailRequest, associatedConcernDetail);
+			associatedConcernDetail.setModifiedBy(userId);
+			associatedConcernDetail.setModifiedDate(new Date());
+			associatedConcernDetailRepository.save(associatedConcernDetail);
+		}
+		return true;
+	}
+
+
+	@Override
 	public List<AssociatedConcernDetailRequest> getAssociatedConcernsDetailList(Long id,Long userId) throws Exception {
 		try {
 			CommonDocumentUtils.startHook(logger, "getAssociatedConcernsDetailList");
-			List<AssociatedConcernDetail> associatedConcernDetail = associatedConcernDetailRepository
-					.listAssociatedConcernFromAppId(id);
-			List<AssociatedConcernDetailRequest> associatedConcernDetailRequests = new ArrayList<AssociatedConcernDetailRequest>();
-
+			List<AssociatedConcernDetail> associatedConcernDetail = associatedConcernDetailRepository.listAssociatedConcernFromAppId(id);
+			List<AssociatedConcernDetailRequest> associatedConcernDetailRequests = new ArrayList<AssociatedConcernDetailRequest>(associatedConcernDetail.size());
 			for (AssociatedConcernDetail detail : associatedConcernDetail) {
 				AssociatedConcernDetailRequest associatedConcernDetailRequest = new AssociatedConcernDetailRequest();
 				associatedConcernDetailRequest.setProfitPastOneYearString(CommonUtils.convertValue(detail.getProfitPastOneYear()));
