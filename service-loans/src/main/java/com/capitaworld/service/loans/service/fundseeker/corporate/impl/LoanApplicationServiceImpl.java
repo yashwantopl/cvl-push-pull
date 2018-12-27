@@ -6538,6 +6538,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				res.setCommercialCibilFs(checkIsNull(displayObject.getValue()));
 				res.setCommercialCibilFlag(displayObject.getIsMatched());
 				break;
+			default : break;
 			}
 		}
 		return res;

@@ -300,6 +300,7 @@ public class CorporateUploadController {
 						flag = excelExtractionService.readBS(applicationId, response.getStorageId(), multipartFiles);
 						break;
 					}
+					default : break;
 					}
 
 				} catch (Exception e) {

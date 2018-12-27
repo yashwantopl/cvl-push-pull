@@ -687,6 +687,7 @@ public class GuarantorServiceImpl implements GuarantorService {
 								guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR,
 								DocumentAlias.LAS_LOAN_GUARANTOR_SCANNED_COPY_OF_AADHAR_CARD));
 						break;
+					default : break;
 					}
 
 					plResponses.add(profileViewPLResponse);
@@ -1135,6 +1136,7 @@ public class GuarantorServiceImpl implements GuarantorService {
 								guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR,
 								DocumentAlias.LAS_LOAN_GUARANTOR_DOCUMENTARY_PROOF_OF_ALLIED_AGRICULTURAL_ACTIVITIES_DAIRY__POULTRY__PLANTATION_HORTICULTURE));
 						break;
+					default : break;
 					}
 					finalCommonresponseList.add(finalViewResponse);
 				}

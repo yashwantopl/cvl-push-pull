@@ -696,6 +696,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 								coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
 								DocumentAlias.LAS_LOAN_CO_APPLICANT_SCANNED_COPY_OF_AADHAR_CARD));
 						break;
+					default : break;
 					}
 					plResponses.add(profileViewPLResponse);
 				}
@@ -1152,6 +1153,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 								coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
 								DocumentAlias.LAS_LOAN_CO_APPLICANT_DOCUMENTARY_PROOF_OF_ALLIED_AGRICULTURAL_ACTIVITIES_DAIRY__POULTRY__PLANTATION_HORTICULTURE));
 						break;
+					default : break;
 					}
 
 					finalCommonresponseList.add(finalViewResponse);
