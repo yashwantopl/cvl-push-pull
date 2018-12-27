@@ -52,6 +52,8 @@ import com.capitaworld.sidbi.integration.util.AESEncryptionUtilitySBI;
 public class LoanSanctionServiceImpl implements LoanSanctionService {
 	private static final Logger logger = LoggerFactory.getLogger(LoanSanctionServiceImpl.class);
 
+	private static final String ERROR_LITERAL = "error";
+
 	@Autowired
 	private LoanSanctionRepository loanSanctionRepository;
 	
@@ -250,9 +252,9 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 									sidbiIntegrationClient.setTokenAsExpired(generateTokenRequest, generateTokenRequest.getBankToken(), userOrganisationRequest.getCodeLanguage());
 
 								} catch (Exception e) {
-									logger.info("---------- Error/Exception while expiring token ------------ " +e.getMessage());
+									logger.error("---------- Error/Exception while expiring token ------------ " +e.getMessage());
 								}
-								if(resJosn != null || ! "error".equalsIgnoreCase(resJosn) ){
+								if(resJosn != null || ! ERROR_LITERAL.equalsIgnoreCase(resJosn) ){
 									//List<LoanSanctionAndDisbursedRequest> list = (List<LoanSanctionAndDisbursedRequest> )res;
 									List<com.capitaworld.sidbi.integration.model.sanction.LoanSanctionAndDisbursedRequest> list1   = null ;
 									try {
@@ -362,7 +364,7 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 					return MultipleJSONObjectHelper.getStringfromObject(loanSanctionAndDisbursedRequestList) ;
 				} catch (Exception e) {
 					reason = "Error/Exception while converting object to string "+e.getMessage() ;
-					return "error" ;
+					return ERROR_LITERAL ;
 				}
 				
 			} else {
@@ -378,7 +380,7 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 			/*loansResponse = new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG,HttpStatus.INTERNAL_SERVER_ERROR.value(), HttpStatus.OK);
 			loansResponse.setData(false);*/
 			reason = "Error/Exception while save LoanSanctionAndDisbursedRequest in  saveLoanSanctionDisbursementDetailFromBank() ===> Msg "+ e.getMessage();
-			return  "error";
+			return  ERROR_LITERAL;
 		} finally {
 			logger.info("Saving Request to DB ===> ");
 			auditComponentBankToCW.saveBankToCWReqRes(decrypt != null ? decrypt : encryptedString , null ,CommonUtility.ApiType.REVERSE_SANCTION_AND_DISBURSEMENT, null , " ** Whole Request with reason ** => "+reason +" getting by username and password orgId => "+orgId , mainOrgId , null);

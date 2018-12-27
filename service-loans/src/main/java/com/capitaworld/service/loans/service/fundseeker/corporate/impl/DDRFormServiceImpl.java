@@ -2042,7 +2042,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 					directorName += " " + directorBackgroundDetailRequest.getDirectorsName();
 				} else {
 					if (directorBackgroundDetailRequest.getTitle() != null)
-					directorName += " " + directorBackgroundDetailRequest.getTitle();
+						directorName += " " + directorBackgroundDetailRequest.getTitle();
 					directorName += " " + directorBackgroundDetailRequest.getFirstName();
 					directorName += " " + directorBackgroundDetailRequest.getMiddleName();
 					directorName += " " + directorBackgroundDetailRequest.getLastName();

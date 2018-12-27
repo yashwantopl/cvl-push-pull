@@ -356,6 +356,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	private static final String ERROR_MSG = "----- Error Msg : ";
 	private static final String OTHER_LITERAL = "OTHER";
 	private static final String DIRECT_LITERAL = "Direct";
+	private static final String SIDBI_FEES = "SIDBI_FEES";
+	private static final String ORG_ID = "org_id";
+	private static final String MSG_LITERAL = " Msg : ";
 
 	@Autowired
 	private DMSClient dmsClient;
@@ -4308,7 +4311,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			}
 			logger.info("Loan Master------------------>" + loanApplicationMaster);
 
-			if ("SIDBI_FEES".equalsIgnoreCase(paymentRequest.getPurposeCode())) {
+			if (SIDBI_FEES.equalsIgnoreCase(paymentRequest.getPurposeCode())) {
 
 				loanApplicationMaster.setTypeOfPayment(paymentRequest.getTypeOfPayment());
 				loanApplicationRepository.save(loanApplicationMaster);
@@ -4369,7 +4372,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 				}
 			} else if (CommonUtils.PaymentMode.ONLINE.equalsIgnoreCase(paymentRequest.getTypeOfPayment())
-					&& paymentRequest.getPurposeCode().equals("SIDBI_FEES")) {
+					&& paymentRequest.getPurposeCode().equals(SIDBI_FEES)) {
 
 				logger.info("Start updateLoanApplicationMaster when Payment Mode in ONLINE() in SIDBI");
 
@@ -4777,7 +4780,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 			Boolean updatePayment = false;
 			ProposalMappingResponse respProp = null;
-			if ("SIDBI_FEES".equals(paymentRequest.getPurposeCode())) {
+			if (SIDBI_FEES.equals(paymentRequest.getPurposeCode())) {
 				if ("Success".equals(paymentRequest.getStatus())) {
 					try {
 						logger.info("Start update true proposal-------------------------->"
@@ -4795,7 +4798,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				logger.error("THROW EXCEPTION WHILE UPDATE PAYMENT ON GATEWAY CLIENT : ",e);
 			}
 
-			if ("SIDBI_FEES".equals(paymentRequest.getPurposeCode())) {
+			if (SIDBI_FEES.equals(paymentRequest.getPurposeCode())) {
 				Long orgId = null;
 				LoanApplicationMaster loanApplicationMaster = loanApplicationRepository
 						.findOne(paymentRequest.getApplicationId());
@@ -4910,8 +4913,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 										: 0.0);
 								applicationRequest.setOnlinePaymentSuccess(updatePayment);
 								applicationRequest.setNameOfEntity(paymentRequest.getNameOfEntity());
-								orgId = proposalresp.get("org_id") != null
-										? Long.valueOf(proposalresp.get("org_id").toString())
+								orgId = proposalresp.get(ORG_ID) != null
+										? Long.valueOf(proposalresp.get(ORG_ID).toString())
 										: null;
 								applicationRequest
 										.setFundProvider(orgId != null ? CommonUtils.getOrganizationName(orgId) : null);
@@ -5536,11 +5539,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 						auditComponent.updateAudit(AuditComponent.PRELIM_INFO, applicationId, userId, null,
 								savePrelimInfo);
 					} catch (Exception e) {
-						logger.error("Exception while saving ProfileReqRes in savePhese1DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}", applicationId, fpProductMappingId + " Mgs " + e.getMessage());
+						logger.error("Exception while saving ProfileReqRes in savePhese1DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}", applicationId, fpProductMappingId + MSG_LITERAL + e.getMessage());
 						if (e.getMessage() != null && e.getMessage().contains("401")) {
 							auditComponent.updateAudit(AuditComponent.PRELIM_INFO, applicationId, userId,
 									"Unauthorized! while saving ProfileReqRes in savePhese1DataToSidbi() ==> for ApplicationId  ====>{}}"
-											+ applicationId + " Mgs " + e.getMessage(),
+											+ applicationId + MSG_LITERAL + e.getMessage(),
 									savePrelimInfo);
 							logger.error(INVALID_TOKEN_DETAILS_MSG);
 							setTokenAsExpired(generateTokenRequest, userOrganisationRequest.getCodeLanguage());
@@ -5548,7 +5551,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 						} else {
 							auditComponent.updateAudit(AuditComponent.PRELIM_INFO, applicationId, userId,
 									"Exceptions while saving ProfileReqRes in savePhese1DataToSidbi() ==> for ApplicationId  ====>{}}"
-											+ applicationId + " Mgs " + e.getMessage(),
+											+ applicationId + MSG_LITERAL + e.getMessage(),
 									savePrelimInfo);
 						}
 					}
@@ -5588,11 +5591,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					}
 				} catch (Exception e) {
 					logger.error("Exception in  MatchesParameterRequest in savePhese1DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",
-							applicationId, fpProductMappingId + " Mgs " + e.getMessage());
+							applicationId, fpProductMappingId + MSG_LITERAL + e.getMessage());
 					if (e.getMessage() != null && e.getMessage().contains("401")) {
 						auditComponent.updateAudit(AuditComponent.MATCHES_PARAMETER, applicationId, userId,
 								"Unauthorized! in  MatchesParameterRequest in savePhese1DataToSidbi()  ====>{}applicationId "
-										+ applicationId + " Msg ==> " + e.getMessage(),
+										+ applicationId + MSG_LITERAL + e.getMessage(),
 								matchesParameters);
 						logger.error(INVALID_TOKEN_DETAILS_MSG);
 						setTokenAsExpired(generateTokenRequest, userOrganisationRequest.getCodeLanguage());
@@ -5600,7 +5603,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					} else {
 						auditComponent.updateAudit(AuditComponent.MATCHES_PARAMETER, applicationId, userId,
 								"Exceptions in  MatchesParameterRequest in savePhese1DataToSidbi()  ====>{}applicationId "
-										+ applicationId + " Msg ==> " + e.getMessage(),
+										+ applicationId + MSG_LITERAL + e.getMessage(),
 								matchesParameters);
 					}
 				}
@@ -5639,11 +5642,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				} catch (Exception e) {
 					logger.error(
 							"Exception in  BankStatementRequest in savePhese1DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",
-							applicationId, fpProductMappingId + " Mgs " + e.getMessage());
+							applicationId, fpProductMappingId + MSG_LITERAL + e.getMessage());
 					if (e.getMessage() != null && e.getMessage().contains("401")) {
 						auditComponent.updateAudit(AuditComponent.BANK_STATEMENT, applicationId, userId,
 								"Unauthorized! in  BankStatementRequest in savePhese1DataToSidbi() ==> for applicationId====>{} "
-										+ applicationId + " Msg ==> " + e.getMessage(),
+										+ applicationId + MSG_LITERAL + e.getMessage(),
 								bankStatement);
 						logger.error(INVALID_TOKEN_DETAILS_MSG);
 						setTokenAsExpired(generateTokenRequest, userOrganisationRequest.getCodeLanguage());
@@ -5651,7 +5654,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					} else {
 						auditComponent.updateAudit(AuditComponent.BANK_STATEMENT, applicationId, userId,
 								"Exceptions! in  BankStatementRequest in savePhese1DataToSidbi() ==> for applicationId====>{} "
-										+ applicationId + " Msg ==> " + e.getMessage(),
+										+ applicationId + MSG_LITERAL + e.getMessage(),
 								bankStatement);
 					}
 				}
@@ -5690,11 +5693,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					}
 				} catch (Exception e) {
 					logger.error("Exception in  EligibilityDetailRequest in savePhese1DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",
-							applicationId, fpProductMappingId + " Mgs " + e.getMessage());
+							applicationId, fpProductMappingId + MSG_LITERAL + e.getMessage());
 					if (e.getMessage() != null && e.getMessage().contains("401")) {
 						auditComponent.updateAudit(AuditComponent.ELIGIBILITY, applicationId, userId,
 								"Unauthorized! in  EligibilityDetailRequest in savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "
-										+ applicationId + " Msg ==> " + e.getMessage(),
+										+ applicationId + MSG_LITERAL + e.getMessage(),
 								eligibilityParameters);
 						logger.error(INVALID_TOKEN_DETAILS_MSG);
 						setTokenAsExpired(generateTokenRequest, userOrganisationRequest.getCodeLanguage());
@@ -5702,7 +5705,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					} else {
 						auditComponent.updateAudit(AuditComponent.ELIGIBILITY, applicationId, userId,
 								"Exception in  EligibilityDetailRequest in savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "
-										+ applicationId + " Msg ==> " + e.getMessage(),
+										+ applicationId + MSG_LITERAL + e.getMessage(),
 								eligibilityParameters);
 					}
 				}
@@ -5773,12 +5776,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 												userId, null, scoringDetails);
 									} catch (Exception e) {
 										logger.error("Exception in  ScoreParameterDetailsRequest in savePhese1DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",
-												applicationId, fpProductMappingId + " Mgs " + e.getMessage());
+												applicationId, fpProductMappingId + MSG_LITERAL + e.getMessage());
 										if (e.getMessage() != null && e.getMessage().contains("401")) {
 											auditComponent.updateAudit(AuditComponent.SCORING_DETAILS, applicationId,
 													userId,
 													"Unauthorized! in  EligibilityDetailRequest in savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "
-															+ applicationId + " Mgs " + e.getMessage(),
+															+ applicationId + MSG_LITERAL + e.getMessage(),
 													scoringDetails);
 											logger.error(INVALID_TOKEN_DETAILS_MSG);
 											setTokenAsExpired(generateTokenRequest,
@@ -5788,17 +5791,17 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 											auditComponent.updateAudit(AuditComponent.SCORING_DETAILS, applicationId,
 													userId,
 													"Exception in  EligibilityDetailRequest in savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "
-															+ applicationId + " Mgs " + e.getMessage(),
+															+ applicationId + MSG_LITERAL + e.getMessage(),
 													scoringDetails);
 										}
 									}
 								}
 							} catch (IOException e) {
 								logger.error("Exception while getting Object from Map in savePhese1DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",
-										applicationId, fpProductMappingId + " Mgs " + e.getMessage());
+										applicationId, fpProductMappingId + MSG_LITERAL + e.getMessage());
 								auditComponent.updateAudit(AuditComponent.SCORING_DETAILS, applicationId, userId,
 										"Exception in  EligibilityDetailRequest in savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "
-												+ applicationId + " Mgs " + e.getMessage(),
+												+ applicationId + MSG_LITERAL + e.getMessage(),
 										scoringDetails);
 //								logger.error(INVALID_TOKEN_DETAILS_MSG);
 //								setTokenAsExpired(generateTokenRequest);
@@ -5810,10 +5813,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					} catch (ScoringException e) {
 						logger.error(
 								"Exception while getting ScoringResponse from ScoringClient in savePhese1DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",
-								applicationId, fpProductMappingId + " Mgs " + e.getMessage());
+								applicationId, fpProductMappingId + MSG_LITERAL + e.getMessage());
 						auditComponent.updateAudit(AuditComponent.SCORING_DETAILS, applicationId, userId,
 								"Exception while getting ScoringResponse from ScoringClient in savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "
-										+ applicationId + " Mgs " + e.getMessage(),
+										+ applicationId + MSG_LITERAL + e.getMessage(),
 								false);
 //						setTokenAsExpired(generateTokenRequest);
 //						return false;
@@ -5854,7 +5857,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					if (e.getMessage() != null && e.getMessage().contains("401")) {
 						auditComponent.updateAudit(AuditComponent.FINANCIAL, applicationId, userId,
 								"Unauthorized! in  Financial in savePhese1DataToSidbi() ==> for applicationId====>{} "
-										+ applicationId + " Msg ==> " + e.getMessage(),
+										+ applicationId + MSG_LITERAL + e.getMessage(),
 								saveFinancialDetails);
 						logger.error(INVALID_TOKEN_DETAILS_MSG);
 						setTokenAsExpired(generateTokenRequest, userOrganisationRequest.getCodeLanguage());
@@ -5862,7 +5865,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					} else {
 						auditComponent.updateAudit(AuditComponent.FINANCIAL, applicationId, userId,
 								"Exception while saving financial detail savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "
-										+ applicationId + " Mgs " + e.getMessage(),
+										+ applicationId + MSG_LITERAL + e.getMessage(),
 								saveFinancialDetails);
 					}
 				}
@@ -5903,7 +5906,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					if (e.getMessage() != null && e.getMessage().contains("401")) {
 						auditComponent.updateAudit(AuditComponent.CMA_DETAIL, applicationId, userId,
 								"Unauthorized! in  Cma Detail in savePhese1DataToSidbi() ==> for applicationId====>{} "
-										+ applicationId + " Msg ==> " + e.getMessage(),
+										+ applicationId + MSG_LITERAL + e.getMessage(),
 								saveCmaDetails);
 						logger.error(INVALID_TOKEN_DETAILS_MSG);
 						setTokenAsExpired(generateTokenRequest, userOrganisationRequest.getCodeLanguage());
@@ -5911,7 +5914,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					} else {
 						auditComponent.updateAudit(AuditComponent.CMA_DETAIL, applicationId, userId,
 								"Exception while saving CMA detail savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "
-										+ applicationId + " Mgs " + e.getMessage(),
+										+ applicationId + MSG_LITERAL + e.getMessage(),
 								saveCmaDetails);
 						logger.error("Error while Calling CMA client in integration");
 					}
@@ -5957,7 +5960,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 						if (e.getMessage() != null && e.getMessage().contains("401")) {
 							auditComponent.updateAudit(AuditComponent.LOGIC, applicationId, userId,
 									"Unauthorized! in  LogicDetail in savePhese1DataToSidbi() ==> for applicationId====>{} "
-											+ applicationId + " Msg ==> " + e.getMessage(),
+											+ applicationId + MSG_LITERAL + e.getMessage(),
 									saveLogicDetails);
 							logger.error(INVALID_TOKEN_DETAILS_MSG);
 							setTokenAsExpired(generateTokenRequest, userOrganisationRequest.getCodeLanguage());
@@ -5966,7 +5969,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 							logger.error("Error while calling logic client");
 							auditComponent.updateAudit(AuditComponent.LOGIC, applicationId, userId,
 									"Exception while saving LOGIC detail savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "
-											+ applicationId + " Mgs " + e.getMessage(),
+											+ applicationId + MSG_LITERAL + e.getMessage(),
 									saveLogicDetails);
 						}
 					}
@@ -6012,7 +6015,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					if (e.getMessage() != null && e.getMessage().contains("401")) {
 						auditComponent.updateAudit(AuditComponent.COMMERCIAL, applicationId, userId,
 								"Unauthorized! in  Commercial Detail in savePhese1DataToSidbi() ==> for applicationId====>{} "
-										+ applicationId + " Msg ==> " + e.getMessage(),
+										+ applicationId + MSG_LITERAL + e.getMessage(),
 								saveCommercialDetails);
 						logger.error(INVALID_TOKEN_DETAILS_MSG);
 						setTokenAsExpired(generateTokenRequest, userOrganisationRequest.getCodeLanguage());
@@ -6021,7 +6024,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 						logger.error("Error while calling client of Commercial in SIdbi");
 						auditComponent.updateAudit(AuditComponent.COMMERCIAL, applicationId, userId,
 								"Exception while saving COMMERCIAL detail savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "
-										+ applicationId + " Mgs " + e.getMessage(),
+										+ applicationId + MSG_LITERAL + e.getMessage(),
 								saveCommercialDetails);
 					}
 				}
@@ -6034,42 +6037,42 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		} catch (Exception e) {
 			logger.error(
 					"Exception while Saving Requests  in savePhese1DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",
-					applicationId, fpProductMappingId + " Mgs " + e.getMessage());
+					applicationId, fpProductMappingId + MSG_LITERAL + e.getMessage());
 			auditComponent.updateAudit(AuditComponent.SCORING_DETAILS, applicationId, userId,
 					"Exception while saving ScoringResponse  in savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "
-							+ applicationId + " Mgs " + e.getMessage(),
+							+ applicationId + MSG_LITERAL + e.getMessage(),
 					false);
 			auditComponent.updateAudit(AuditComponent.PRELIM_INFO, applicationId, userId,
 					"Exception while saving ProfileReqRes ==> Prelim Sheet Object in savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "
-							+ applicationId + " Mgs " + e.getMessage(),
+							+ applicationId + MSG_LITERAL + e.getMessage(),
 					false);
 			auditComponent.updateAudit(AuditComponent.BANK_STATEMENT, applicationId, userId,
 					"Exception while saving BankStatemnt in savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "
-							+ applicationId + " Mgs " + e.getMessage(),
+							+ applicationId + MSG_LITERAL + e.getMessage(),
 					false);
 			auditComponent.updateAudit(AuditComponent.MATCHES_PARAMETER, applicationId, userId,
 					"Exception while saving MatchesparameterRequest in savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "
-							+ applicationId + " Mgs " + e.getMessage(),
+							+ applicationId + MSG_LITERAL + e.getMessage(),
 					false);
 			auditComponent.updateAudit(AuditComponent.ELIGIBILITY, applicationId, userId,
 					"Exception while saving EligibiliyDetsilRequest in savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "
-							+ applicationId + " Mgs " + e.getMessage(),
+							+ applicationId + MSG_LITERAL + e.getMessage(),
 					false);
 			auditComponent.updateAudit(AuditComponent.FINANCIAL, applicationId, userId,
 					"Exception while Saving  Financial Details by sidbiIntegrationClient   in savePhese2DataToSidbi() ==> for ApplicationId  ====>{} "
-							+ applicationId + " Mgs " + e.getMessage(),
+							+ applicationId + MSG_LITERAL + e.getMessage(),
 					false);
 			auditComponent.updateAudit(AuditComponent.CMA_DETAIL, applicationId, userId,
 					"Exception while Saving  CMA Details by sidbiIntegrationClient   in savePhese2DataToSidbi() ==> for ApplicationId  ====>{} "
-							+ applicationId + " Mgs " + e.getMessage(),
+							+ applicationId + MSG_LITERAL + e.getMessage(),
 					false);
 			auditComponent.updateAudit(AuditComponent.LOGIC, applicationId, userId,
 					"Exception while Saving  LOGIC Details by sidbiIntegrationClient   in savePhese2DataToSidbi() ==> for ApplicationId  ====>{} "
-							+ applicationId + " Mgs " + e.getMessage(),
+							+ applicationId + MSG_LITERAL + e.getMessage(),
 					false);
 			auditComponent.updateAudit(AuditComponent.COMMERCIAL, applicationId, userId,
 					"Exception while Saving  COMMERCIAL Details by sidbiIntegrationClient   in savePhese2DataToSidbi() ==> for ApplicationId  ====>{} "
-							+ applicationId + " Mgs " + e.getMessage(),
+							+ applicationId + MSG_LITERAL + e.getMessage(),
 					false);
 			logger.info("Throw Exception While Saving Phase one For SIDBI");
 			setTokenAsExpired(generateTokenRequest, userOrganisationRequest.getCodeLanguage());
@@ -6162,11 +6165,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 								applicationMaster.getUserId(), null, saveDetailsInfo);
 					} catch (Exception e) {
 						logger.error("Exception while Saving profileReqRes by sidbiIntegrationClient   in savePhese2DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",
-								applicationId, fpProductMappingId + " Mgs " + e.getMessage());
+								applicationId, fpProductMappingId + MSG_LITERAL + e.getMessage());
 						if (e.getMessage() != null && e.getMessage().contains("401")) {
 							auditComponent.updateAudit(AuditComponent.DETAILED_INFO, applicationId, userId,
 									"Unauthorized! in  profileReqRes from SidbiIntegrationClient in savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "
-											+ applicationId + " Mgs " + e.getMessage(),
+											+ applicationId + MSG_LITERAL + e.getMessage(),
 									false);
 							logger.error(INVALID_TOKEN_DETAILS_MSG);
 							setTokenAsExpired(generateTokenRequest, userOrganisationRequest.getCodeLanguage());
@@ -6175,7 +6178,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 							auditComponent.updateAudit(AuditComponent.DETAILED_INFO, applicationId,
 									applicationMaster.getUserId(),
 									"Exception while Saving profileReqRes from SidbiIntegrationClient  in savePhese2DataToSidbi() ==> for ApplicationId  ====>{} "
-											+ applicationId + " Msg ==> " + e.getMessage(),
+											+ applicationId + MSG_LITERAL + e.getMessage(),
 									false);
 						}
 					}
@@ -6201,11 +6204,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				} catch (Exception e) {
 					logger.error(
 							"Exception while Saving DDRFormDetailsRequest by sidbiIntegrationClient   in savePhese2DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",
-							applicationId, fpProductMappingId + " Mgs " + e.getMessage());
+							applicationId, fpProductMappingId + MSG_LITERAL + e.getMessage());
 					if (e.getMessage() != null && e.getMessage().contains("401")) {
 						auditComponent.updateAudit(AuditComponent.DDR_DETAILS, applicationId, userId,
 								"Unauthorized! in  DDRFormDetailsRequest from SidbiIntegrationClient in savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "
-										+ applicationId + " Mgs " + e.getMessage(),
+										+ applicationId + MSG_LITERAL + e.getMessage(),
 								false);
 						logger.error(INVALID_TOKEN_DETAILS_MSG);
 						setTokenAsExpired(generateTokenRequest, userOrganisationRequest.getCodeLanguage());
@@ -6214,7 +6217,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 						auditComponent.updateAudit(AuditComponent.DDR_DETAILS, applicationId,
 								applicationMaster.getUserId(),
 								"Exception while Saving DDRFormDetailsRequest by sidbiIntegrationClient   in savePhese2DataToSidbi() ==> for ApplicationId  ====>{}"
-										+ applicationId + " Mgs " + e.getMessage(),
+										+ applicationId + MSG_LITERAL + e.getMessage(),
 								false);
 					}
 				}
@@ -6282,11 +6285,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				} catch (Exception e) {
 					logger.error(
 							"Exception while Saving saveIRRInfo   by sidbiIntegrationClient   in savePhese2DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",
-							applicationId, fpProductMappingId + " Mgs " + e.getMessage());
+							applicationId, fpProductMappingId + MSG_LITERAL + e.getMessage());
 					if (e.getMessage() != null && e.getMessage().contains("401")) {
 						auditComponent.updateAudit(AuditComponent.IRR_DETAILS, applicationId, userId,
 								"Unauthorized! in  saveIRRInfo from SidbiIntegrationClient in savePhese1DataToSidbi() ==> for ApplicationId  ====>{} "
-										+ applicationId + " Mgs " + e.getMessage(),
+										+ applicationId + MSG_LITERAL + e.getMessage(),
 								false);
 						logger.error(INVALID_TOKEN_DETAILS_MSG);
 						setTokenAsExpired(generateTokenRequest, userOrganisationRequest.getCodeLanguage());
@@ -6295,7 +6298,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 						auditComponent.updateAudit(AuditComponent.IRR_DETAILS, applicationId,
 								applicationMaster.getUserId(),
 								"Exception while Saving saveIRRInfo   by sidbiIntegrationClient   in savePhese2DataToSidbi() ==> for ApplicationId  ====>{} "
-										+ applicationId + " Mgs " + e.getMessage(),
+										+ applicationId + MSG_LITERAL + e.getMessage(),
 								false);
 					}
 				}
@@ -6306,18 +6309,18 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		} catch (Exception e) {
 			logger.error(
 					"Exception while Saving Requests by sidbiIntegrationClient   in savePhese2DataToSidbi() ==> for ApplicationId  ====>{}FpProductId====>{}",
-					applicationId, fpProductMappingId + " Mgs " + e.getMessage());
+					applicationId, fpProductMappingId + MSG_LITERAL + e.getMessage());
 			auditComponent.updateAudit(AuditComponent.DETAILED_INFO, applicationId, userId,
 					"Exception while Saving DETAILED_INFO by sidbiIntegrationClient   in savePhese2DataToSidbi() ==> for ApplicationId  ====>{} "
-							+ applicationId + " Mgs " + e.getMessage(),
+							+ applicationId + MSG_LITERAL + e.getMessage(),
 					false);
 			auditComponent.updateAudit(AuditComponent.DDR_DETAILS, applicationId, userId,
 					"Exception while Saving DDR_DETAILS by sidbiIntegrationClient   in savePhese2DataToSidbi() ==> for ApplicationId  ====>{} "
-							+ applicationId + " Mgs " + e.getMessage(),
+							+ applicationId + MSG_LITERAL + e.getMessage(),
 					false);
 			auditComponent.updateAudit(AuditComponent.IRR_DETAILS, applicationId, userId,
 					"Exception while Saving  IRR_DETAILS by sidbiIntegrationClient   in savePhese2DataToSidbi() ==> for ApplicationId  ====>{} "
-							+ applicationId + " Mgs " + e.getMessage(),
+							+ applicationId + MSG_LITERAL + e.getMessage(),
 					false);
 			setTokenAsExpired(generateTokenRequest, userOrganisationRequest.getCodeLanguage());
 		}
@@ -7621,7 +7624,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail)) {
 						applicationRequest.setNameOfEntity(corporateApplicantDetail.getOrganisationName());
 					}
-					Object orgObject = proposalresp.get("org_id");
+					Object orgObject = proposalresp.get(ORG_ID);
 					if (!CommonUtils.isObjectNullOrEmpty(orgObject)) {
 						Integer orgObjectInt = (Integer) orgObject;
 						applicationRequest.setFundProvider(CommonUtils.getOrganizationName(orgObjectInt.longValue()));

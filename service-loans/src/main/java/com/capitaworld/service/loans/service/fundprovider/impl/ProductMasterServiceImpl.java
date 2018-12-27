@@ -391,31 +391,31 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				industrySectorTempRepository.inActiveMappingByFpProductId(productMaster2.getId());
 				// industry data save
 				if(!CommonUtils.isListNullOrEmpty(industrySecIdList))
-				saveIndustryTemp(productMaster2.getId(),industrySecIdList,(CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
+					saveIndustryTemp(productMaster2.getId(),industrySecIdList,(CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
 						? addProductRequest.getUserId() : addProductRequest.getClientId()));
 				// Sector data save
 				if(!CommonUtils.isListNullOrEmpty(secIdList))
-				saveSectorTemp(productMaster2.getId(),secIdList,(CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
+					saveSectorTemp(productMaster2.getId(),secIdList,(CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
 						? addProductRequest.getUserId() : addProductRequest.getClientId()));
 				geographicalCountryTempRepository.inActiveMappingByFpProductId(productMaster2.getId());
 				// country data save
 				if(!CommonUtils.isListNullOrEmpty(geogaphicallyCountry))
-				saveCountryTemp(productMaster2.getId(),geogaphicallyCountry,(CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
+					saveCountryTemp(productMaster2.getId(),geogaphicallyCountry,(CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
 						? addProductRequest.getUserId() : addProductRequest.getClientId()));
 				// state data save
 				geographicalStateTempRepository.inActiveMappingByFpProductId(productMaster2.getId());
 				if(!CommonUtils.isListNullOrEmpty(geogaphicallyState))
-				saveStateTemp(productMaster2.getId(),geogaphicallyState,(CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
+					saveStateTemp(productMaster2.getId(),geogaphicallyState,(CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
 						? addProductRequest.getUserId() : addProductRequest.getClientId()));
 				// city data save
 				geographicalCityTempRepository.inActiveMappingByFpProductId(productMaster2.getId());
 				if(!CommonUtils.isListNullOrEmpty(geogaphicallyCity))
-				saveCityTemp(productMaster2.getId(),geogaphicallyCity,(CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
+					saveCityTemp(productMaster2.getId(),geogaphicallyCity,(CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
 						? addProductRequest.getUserId() : addProductRequest.getClientId()));
 				// negative industry save
 				negativeIndustryTempRepository.inActiveMappingByFpProductMasterId(productMaster2.getId());
 				if(!CommonUtils.isListNullOrEmpty(negativeIndList))
-				saveNegativeIndustryTemp(productMaster2.getId(),negativeIndList,(CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
+					saveNegativeIndustryTemp(productMaster2.getId(),negativeIndList,(CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
 						? addProductRequest.getUserId() : addProductRequest.getClientId()));
 				
 				

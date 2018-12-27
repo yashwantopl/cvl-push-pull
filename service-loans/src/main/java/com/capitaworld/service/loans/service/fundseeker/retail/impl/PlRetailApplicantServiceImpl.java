@@ -41,6 +41,9 @@ import com.capitaworld.service.oneform.enums.CreditCardTypesRetail;
 public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
     private static final Logger logger = LoggerFactory.getLogger(PlRetailApplicantServiceImpl.class.getName());
 
+    private static final String PERMANENT_LITERAL = "permanent";
+    private static final String OFFICE_LITERAL = "office";
+
     @Autowired
     private RetailApplicantDetailRepository applicantRepository;
 
@@ -344,8 +347,8 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             applicantDetail.setModifiedBy(userId);
             applicantDetail.setModifiedDate(new Date());
             BeanUtils.copyProperties(applicantRequest, applicantDetail, CommonUtils.IgnorableCopy.RETAIL_PL_PROFILE);
-            copyAddressFromRequestToDomainForFinal(applicantRequest, applicantDetail, "permanent");
-            copyAddressFromRequestToDomainForFinal(applicantRequest, applicantDetail, "office");
+            copyAddressFromRequestToDomainForFinal(applicantRequest, applicantDetail, PERMANENT_LITERAL);
+            copyAddressFromRequestToDomainForFinal(applicantRequest, applicantDetail, OFFICE_LITERAL);
             applicantRepository.save(applicantDetail);
             // Updating Final Flag
             loanApplicationRepository.setIsApplicantFinalMandatoryFilled(applicantRequest.getApplicationId(),
@@ -370,8 +373,8 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             RetailFinalInfoRequest applicantRequest = new RetailFinalInfoRequest();
             BeanUtils.copyProperties(applicantDetail, applicantRequest, CommonUtils.IgnorableCopy.RETAIL_PL_PROFILE);
             copyAddressFromDomainToRequestForFinal(applicantDetail, applicantRequest, "contact");
-            copyAddressFromDomainToRequestForFinal(applicantDetail, applicantRequest, "permanent");
-            copyAddressFromDomainToRequestForFinal(applicantDetail, applicantRequest, "office");
+            copyAddressFromDomainToRequestForFinal(applicantDetail, applicantRequest, PERMANENT_LITERAL);
+            copyAddressFromDomainToRequestForFinal(applicantDetail, applicantRequest, OFFICE_LITERAL);
             return applicantRequest;
         } catch (Exception e) {
             logger.error("Error while getting Retail Final :- ",e);
@@ -420,7 +423,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             address.setDistrictMappingId(from.getAddressDistrictMappingId());
             to.setContactAddress(address);
         }
-        if(type.equalsIgnoreCase("permanent")){
+        if(type.equalsIgnoreCase(PERMANENT_LITERAL)){
             Address address = new Address();
             address.setPremiseNumber(from.getPermanentPremiseNumberName());
             address.setLandMark(from.getPermanentLandMark());
@@ -432,7 +435,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             address.setDistrictMappingId(from.getPermanentdistrictMappingId());
             to.setPermanentAddress(address);
         }
-        if(type.equalsIgnoreCase("office")){
+        if(type.equalsIgnoreCase(OFFICE_LITERAL)){
             Address address = new Address();
             address.setPremiseNumber(from.getOfficePremiseNumberName());
             address.setLandMark(from.getOfficeLandMark());
@@ -447,7 +450,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
     }
 
     public static void copyAddressFromRequestToDomainForFinal(RetailFinalInfoRequest from, RetailApplicantDetail to, String type){
-        if(type.equalsIgnoreCase("permanent") && from.getPermanentAddress() != null ){
+        if(type.equalsIgnoreCase(PERMANENT_LITERAL) && from.getPermanentAddress() != null ){
                 to.setPermanentPremiseNumberName(from.getPermanentAddress().getPremiseNumber());
                 to.setPermanentStreetName(from.getPermanentAddress().getStreetName());
                 to.setPermanentLandMark(from.getPermanentAddress().getLandMark());
@@ -457,7 +460,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
                 to.setPermanentdistrictMappingId(from.getPermanentAddress().getDistrictMappingId());
                 to.setPermanentPincode(from.getPermanentAddress().getPincode());
         }
-        if(type.equalsIgnoreCase("office") && from.getOfficeAddress() != null ){
+        if(type.equalsIgnoreCase(OFFICE_LITERAL) && from.getOfficeAddress() != null ){
                 to.setOfficePremiseNumberName(from.getOfficeAddress().getPremiseNumber());
                 to.setOfficeStreetName(from.getOfficeAddress().getStreetName());
                 to.setOfficeLandMark(from.getOfficeAddress().getLandMark());
