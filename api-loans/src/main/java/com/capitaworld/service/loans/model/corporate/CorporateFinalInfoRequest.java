@@ -560,16 +560,6 @@ public class CorporateFinalInfoRequest implements Serializable {
         return serialVersionUID;
     }
 
-    public Long getProposalMappingId() {
-        return proposalMappingId;
-    }
-
-    public void setProposalMappingId(Long proposalMappingId) {
-        this.proposalMappingId = proposalMappingId;
-    }
-    
-
-    
     @Override
 	public String toString() {
 		return "CorporateFinalInfoRequest [id=" + id + ", userId=" + userId + ", clientId=" + clientId
