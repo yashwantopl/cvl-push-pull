@@ -1857,11 +1857,9 @@ public class LoanApplicationController {
 					logger.warn(ALL_PARAMETER_MUST_NOT_BE_NULL_MSG);
 					return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 				}
-			}else if(disbursementRequest.getIsIneligibleProposal() != null && disbursementRequest.getIsIneligibleProposal() == true) {
-				if(CommonUtils.isObjectNullOrEmpty(disbursementRequest.getApplicationId())) {
+			}else if(disbursementRequest.getIsIneligibleProposal() != null && disbursementRequest.getIsIneligibleProposal() == true && CommonUtils.isObjectNullOrEmpty(disbursementRequest.getApplicationId()) ) {
 					logger.warn("Application Id must not be null");
 					return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
-				}
 			}
 			LoansResponse response = new LoansResponse(CommonUtils.SUCCESS, HttpStatus.OK.value());
 			response.setData(loanApplicationService.getDisbursementDetails(disbursementRequest));
@@ -1884,11 +1882,9 @@ public class LoanApplicationController {
 					logger.warn(ALL_PARAMETER_MUST_NOT_BE_NULL_MSG);
 					return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 				}
-			}else if(disbursementRequest.getIsIneligibleProposal() != null && disbursementRequest.getIsIneligibleProposal() == true) {
-				if(CommonUtils.isObjectNullOrEmpty(disbursementRequest.getApplicationId())) {
+			}else if(disbursementRequest.getIsIneligibleProposal() != null && disbursementRequest.getIsIneligibleProposal() == true && CommonUtils.isObjectNullOrEmpty(disbursementRequest.getApplicationId()) ) {
 					logger.warn("Application Id must not be null");
 					return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
-				}
 			}
 			LoansResponse response = new LoansResponse(CommonUtils.SUCCESS, HttpStatus.OK.value());
 			response.setData(loanApplicationService.getDetailsForSanction(disbursementRequest));
