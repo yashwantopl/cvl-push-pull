@@ -6,6 +6,7 @@ package com.capitaworld.service.loans.service.teaser.primaryview.impl;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -196,14 +197,30 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 		plTeaserViewResponse.setAppId(toApplicationId);
 		
 		//date of proposal
-		try {
+         // CHANGES PENDING FOR DATE OF PROPOSAL(EXISTING CODE) 		
+		/*try {
 			ConnectResponse connectResponse = connectClient.getByAppStageBusinessTypeId(toApplicationId, ConnectStage.RETAIL_COMPLETE.getId(), com.capitaworld.service.loans.utils.CommonUtils.BusinessType.RETAIL_PERSONAL_LOAN.getId());
 			if(!CommonUtils.isObjectNullOrEmpty(connectResponse)) {
 				plTeaserViewResponse.setDateOfProposal(connectResponse.getData());
 			}
 		} catch (Exception e2) {
 			logger.error(CommonUtils.EXCEPTION,e2);
-		}
+		}*/
+		
+		 // CHANGES FOR DATE OF PROPOSAL(TEASER VIEW)	NEW CODE
+			try {
+				Object obj = "-";
+				Date dateOfProposal = loanApplicationRepository.getModifiedDate(toApplicationId, ConnectStage.RETAIL_COMPLETE.getId(), com.capitaworld.service.loans.utils.CommonUtils.BusinessType.RETAIL_PERSONAL_LOAN.getId());
+				if(!CommonUtils.isObjectNullOrEmpty(dateOfProposal)) {
+			     plTeaserViewResponse.setDateOfProposal(dateOfProposal);
+				}else{
+				plTeaserViewResponse.setDateOfProposal(obj);	
+				}	
+			} catch (Exception e) {
+				logger.error(CommonUtils.EXCEPTION,e);
+			}
+			// ENDS HERE===================>
+		
 
 		/* ========= Matches Data ========== */
 		if (userType != null && !(CommonUtils.UserType.FUND_SEEKER == userType) ) {
