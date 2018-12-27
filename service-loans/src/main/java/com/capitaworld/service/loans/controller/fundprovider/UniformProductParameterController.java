@@ -51,7 +51,12 @@ public class UniformProductParameterController {
 			}
 			paramterRequest.setUserId(userId);
 			paramterRequest.setUserOrgId(orgId);
-			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SUCCESS_RESULT, HttpStatus.OK.value(),uniformProductParameterService.saveOrUpdate(paramterRequest)),HttpStatus.OK);
+			Boolean saveOrUpdate = uniformProductParameterService.saveOrUpdate(paramterRequest);
+			if(saveOrUpdate){
+				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SUCCESS_RESULT, HttpStatus.OK.value(),uniformProductParameterService.get(userId, orgId)),HttpStatus.OK);				
+			}else{
+				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INTERNAL_SERVER_ERROR, HttpStatus.BAD_REQUEST.value()),HttpStatus.OK);
+			}
 		} catch (Exception e) {
 			logger.error("Error while saving Uniform Product Parameter==>{}", e);
 			return new ResponseEntity<LoansResponse>(

@@ -18,5 +18,14 @@ public interface UniformProductParameterRepository extends JpaRepository<Uniform
 	 * @param userOrgId
 	 * @return
 	 */
-	public UniformProductParamter findByUserOrgId(Long userOrgId);
+	public UniformProductParamter findFirstByUserOrgIdOrderByIdDesc(Long userOrgId);
+	
+	/**
+	 * Getting Active Uniform product for the given Organization.
+	 * @param userOrgId
+	 * @param isActive
+	 * @return
+	 */
+	public UniformProductParamter findFirstByUserOrgIdAndIsActiveOrderByIdDesc(Long userOrgId,Boolean isActive);
+	
 }

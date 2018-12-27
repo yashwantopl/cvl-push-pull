@@ -24,7 +24,7 @@ public class UniformProductParameterServiceImpl implements UniformProductParamet
 	
 	@Override
 	@Transactional
-	public UniformProductParamterRequest saveOrUpdate(UniformProductParamterRequest productParamterRequest) {
+	public Boolean saveOrUpdate(UniformProductParamterRequest productParamterRequest) {
 		UniformProductParamter uniformProductParamter = uniformProductParameterRepository.findById(productParamterRequest.getId());
 		if(CommonUtils.isObjectNullOrEmpty(uniformProductParamter)){
 			uniformProductParamter = new UniformProductParamter();
@@ -38,13 +38,13 @@ public class UniformProductParameterServiceImpl implements UniformProductParamet
 		uniformProductParamter.setUserOrgId(productParamterRequest.getUserOrgId());
 		uniformProductParamter.setUserId(productParamterRequest.getUserId());
 		uniformProductParameterRepository.save(uniformProductParamter);
-		return get(productParamterRequest.getUserId(), productParamterRequest.getUserOrgId());
+		return true;
 	}
 
 	@Override
 	@Transactional(readOnly = true)
 	public UniformProductParamterRequest get(Long userId, Long orgId) {
-		UniformProductParamter uniformProductParamter = uniformProductParameterRepository.findByUserOrgId(orgId);
+		UniformProductParamter uniformProductParamter = uniformProductParameterRepository.findFirstByUserOrgIdOrderByIdDesc(orgId);
 		if(CommonUtils.isObjectNullOrEmpty(uniformProductParamter)){
 			return null;		
 		}

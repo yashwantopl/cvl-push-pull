@@ -10,7 +10,7 @@ public interface UniformProductParameterService {
 	 * @param orgId
 	 * @return
 	 */
-	public UniformProductParamterRequest saveOrUpdate(UniformProductParamterRequest productParamterRequest);
+	public Boolean saveOrUpdate(UniformProductParamterRequest productParamterRequest);
 	
 	/**
 	 * Get Uniform Product

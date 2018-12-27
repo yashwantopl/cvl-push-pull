@@ -12,7 +12,7 @@ import javax.persistence.Table;
  * 
  */
 @Entity
-@Table(name = "fp_working_capital_details")
+@Table(name = "fp_uniform_product_details")
 @PrimaryKeyJoinColumn(referencedColumnName = "fp_product_id")
 public class UniformProductParamter extends ProductMaster implements Serializable {
 	private static final long serialVersionUID = 1L;
