@@ -74,6 +74,9 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 	private static final String DATA_NOT_FOUND_FOR_GIVEN_APPLICATION_ID_MSG = "Data not found for given application id";
 	private static final String DIRECTOR_DETAIL_SUCCESSFULLY_SAVED_MSG = "director detail successfully saved";
 	private static final String CORPORATE_APPLICANT_DETAIL_IS_NULL_CREATED_NEW_OBJECT_MSG = "corporateApplicantDetail is null created new object";
+	private static final String ERROR_WHILE_GETTING_GST_RECEIPT_FROM_S3_MSG = "Error while Getting GST Receipt from S3 : {}";
+	private static final String NO_GST_RECEIPT_FOUND_FOR_APPLICATION_ID_MSG = "No GST Receipt Found for Application Id ==>{}";
+
 
 	@Autowired
 	private CorporateApplicantDetailRepository corporateApplicantDetailRepository;
@@ -364,15 +367,15 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			fsInputRes.setFinancialArrangementsDetailRequestsList(financialArrangementDetailsService.getFinancialArrangementDetailsList(fsInputReq.getApplicationId(), fsInputReq.getUserId()));
 			
 			List<Long> industryList = industrySectorRepository.getIndustryByApplicationId(fsInputReq.getApplicationId());
-			logger.info("TOTAL INDUSTRY FOUND ------------->" + industryList.size() + "------------By APP Id -----------> " + fsInputReq.getApplicationId());
+			logger.info("TOTAL INDUSTRY FOUND ------------>" + industryList.size() + "------------By APP Id -----------> " + fsInputReq.getApplicationId());
 			fsInputRes.setIndustrylist(industryList);
             
 			List<Long> sectorList = industrySectorRepository.getSectorByApplicationId(fsInputReq.getApplicationId());
-			logger.info("TOTAL SECTOR FOUND ------------->" + sectorList.size() + "------------By APP Id -----------> " + fsInputReq.getApplicationId());
+			logger.info("TOTAL SECTOR FOUND ------------->" + sectorList.size() + "-----------By APP Id -----------> " + fsInputReq.getApplicationId());
 			fsInputRes.setSectorlist(sectorList);
             
             List<Long> subSectorList = subSectorRepository.getSubSectorByApplicationId(fsInputReq.getApplicationId());
-			logger.info("TOTAL SUB SECTOR FOUND ------------->" + subSectorList.size() + "------------By APP Id -----------> " + fsInputReq.getApplicationId());
+			logger.info("TOTAL SUB SECTOR FOUND ------------->" + subSectorList.size() + "----------By APP Id ---------> " + fsInputReq.getApplicationId());
 			fsInputRes.setSubsectors(subSectorList);
 
 			return new ResponseEntity<LoansResponse>(
@@ -718,10 +721,10 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 					if(!CommonUtils.isObjectNullOrEmpty(listProductDocument)){
 						loansResponse.setListData(listProductDocument.getDataList());					
 					}else{
-						logger.warn("No GST Receipt Found for Application Id===>{}",applicationId);
+						logger.warn(NO_GST_RECEIPT_FOUND_FOR_APPLICATION_ID_MSG,applicationId);
 					}
 			}catch(DocumentException documentException){
-				logger.error("Error while Getting GST Reveipt from S3 : {}",documentException);	
+				logger.error(ERROR_WHILE_GETTING_GST_RECEIPT_FROM_S3_MSG,documentException);
 			}
 			
 			
@@ -732,10 +735,10 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 				if(!CommonUtils.isObjectNullOrEmpty(listProductDocument)){
 					loansResponse.getListData().addAll(listProductDocument.getDataList());					
 				}else{
-					logger.warn("No GST Receipt Found for Application Id===>{}",applicationId);
+					logger.warn(NO_GST_RECEIPT_FOUND_FOR_APPLICATION_ID_MSG,applicationId);
 				}
 			}catch(DocumentException documentException){
-				logger.error("Error while Getting GST Reveipt from S3 : {}",documentException);	
+				logger.error(ERROR_WHILE_GETTING_GST_RECEIPT_FROM_S3_MSG,documentException);
 			}
 			logger.info("Oneform Uniform Prodcut Details Successfully Fetched");
 			return loansResponse;
@@ -805,11 +808,11 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 					if(!CommonUtils.isObjectNullOrEmpty(listProductDocument)){
 						loansResponse.setListData(listProductDocument.getDataList());					
 					}else{
-						logger.warn("No GST Receipt Found for Application Id===>{}",applicationId);
+						logger.warn(NO_GST_RECEIPT_FOUND_FOR_APPLICATION_ID_MSG,applicationId);
 					}
 				}	
 			}catch(DocumentException documentException){
-				logger.error("Error while Getting GST Reveipt from S3 : {}",documentException);	
+				logger.error(ERROR_WHILE_GETTING_GST_RECEIPT_FROM_S3_MSG,documentException);
 			}
 			
 			return loansResponse;
@@ -846,7 +849,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 				if(!CommonUtils.isObjectNullOrEmpty(listProductDocument)){
 					loansResponse.setListData(listProductDocument.getDataList());					
 				}else{
-					logger.warn("No GST Receipt Found for Application Id===>{}",applicationId);
+					logger.warn(NO_GST_RECEIPT_FOUND_FOR_APPLICATION_ID_MSG,applicationId);
 				}	
 			}catch(DocumentException exception){
 				logger.error("error Updating Flags and Getting Document : {}",exception);
@@ -900,7 +903,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			if(!CommonUtils.isObjectNullOrEmpty(listProductDocument)){
 				loansResponse.setListData(listProductDocument.getDataList());					
 			}else{
-				logger.warn("No GST Receipt Found for Application Id===>{}",applicationId);
+				logger.warn(NO_GST_RECEIPT_FOUND_FOR_APPLICATION_ID_MSG,applicationId);
 			}	
 		}catch(DocumentException exception){
 			logger.error("error Updating Flags and Getting Document : {}",exception);

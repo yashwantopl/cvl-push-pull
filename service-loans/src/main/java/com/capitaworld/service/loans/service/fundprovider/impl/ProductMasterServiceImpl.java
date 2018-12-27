@@ -108,6 +108,10 @@ import com.capitaworld.service.users.model.UsersRequest;
 @Transactional
 public class ProductMasterServiceImpl implements ProductMasterService {
 	private static final Logger logger = LoggerFactory.getLogger(ProductMasterServiceImpl.class);
+
+	private static final String STATUS_LITERAL = "status";
+	private static final String MESSAGE_LITERAL = "message";
+
 	@Autowired
 	private OneFormClient oneFormClient;
 
@@ -610,22 +614,22 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 		ProductMaster productMaster = productMasterRepository.findOne(productId);
 		JSONObject obj = new JSONObject();
 		if (CommonUtils.isObjectNullOrEmpty(productMaster)) {
-			obj.put("status", false);
-			obj.put("message", "Product id is not valid");
+			obj.put(STATUS_LITERAL, false);
+			obj.put(MESSAGE_LITERAL, "Product id is not valid");
 			return obj;
 		}
 		if (!productMaster.getIsActive()) {
-			obj.put("status", false);
-			obj.put("message", "Requested User is In Active");
+			obj.put(STATUS_LITERAL, false);
+			obj.put(MESSAGE_LITERAL, "Requested User is In Active");
 			return obj;
 		}
 		if (!productMaster.getIsParameterFilled()) {
-			obj.put("status", false);
-			obj.put("message", "Requested user has not filled parameter yet");
+			obj.put(STATUS_LITERAL, false);
+			obj.put(MESSAGE_LITERAL, "Requested user has not filled parameter yet");
 			return obj;
 		}
-		obj.put("status", true);
-		obj.put("message", "Show teaser view");
+		obj.put(STATUS_LITERAL, true);
+		obj.put(MESSAGE_LITERAL, "Show teaser view");
 		CommonDocumentUtils.endHook(logger, "checkParameterIsFilled");
 		return obj;
 	}
