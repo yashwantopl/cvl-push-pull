@@ -1,5 +1,8 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
+import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
+import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,6 +22,9 @@ public class AssetsDetailsServiceImpl implements AssetsDetailsService {
 	@Autowired
 	LoanApplicationRepository loanApplicationRepository;
 
+	@Autowired
+	ApplicationProposalMappingRepository applicationProposalMappingRepository;
+
 	@Override
 	public void saveOrUpdate(AssetsDetails assetsDetails) {
 		// TODO Auto-generated method stub
@@ -30,7 +36,15 @@ public class AssetsDetailsServiceImpl implements AssetsDetailsService {
 		// TODO Auto-generated method stub
 		AssetsDetailsExcelReader.run(storageDetailsId, sheet, loanApplicationRepository.findOne(applicationId),
 				assetsDetailsRepository);
+	}
 
+	@Override
+	public void readAssetsDetails(Long applicationId,Long proposalMappingId, Long storageDetailsId, XSSFSheet sheet) {
+		// TODO Auto-generated method stub
+		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(applicationId);
+		ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.findOne(proposalMappingId);
+		AssetsDetailsExcelReader.run(storageDetailsId, sheet, loanApplicationMaster,applicationProposalMapping,
+				assetsDetailsRepository);
 	}
 
 	@Override

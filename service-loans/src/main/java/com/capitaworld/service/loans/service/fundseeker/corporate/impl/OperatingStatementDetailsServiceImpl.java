@@ -1,5 +1,8 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
+import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
+import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,10 +22,24 @@ public class OperatingStatementDetailsServiceImpl implements OperatingStatementD
 	@Autowired
 	LoanApplicationRepository loanApplicationRepository;
 
+	@Autowired
+	ApplicationProposalMappingRepository applicationProposalMappingRepository;
+
 	@Override
 	public void saveOrUpdate(OperatingStatementDetails operatingStatementDetails) {
 		// TODO Auto-generated method stub
 		operatingStatementDetailsRepository.save(operatingStatementDetails);
+
+	}
+
+	@Override
+	public void readOperatingStatementDetails(Long applicationId,Long proposalMappingId, Long storageDetailsId,
+											  XSSFSheet sheet) {
+
+		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(applicationId);
+		ApplicationProposalMapping applicationProposalMapping  = applicationProposalMappingRepository.findOne(proposalMappingId);
+		OperatingStatementDetailsExcelReader.run(storageDetailsId, sheet,
+				loanApplicationMaster,applicationProposalMapping, operatingStatementDetailsRepository);
 
 	}
 

@@ -2,9 +2,11 @@ package com.capitaworld.service.loans.utils.cma;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.util.CellReference;
@@ -22,6 +24,39 @@ public class LiabilitiesDetailsExcelReader
 	public static final Logger log = LoggerFactory.getLogger(LiabilitiesDetailsExcelReader.class);
     public static List<String> liabilitiesMappingList = new ArrayList<String>();
     public static final DecimalFormat decimalFormat = new DecimalFormat("#.##");
+
+
+    public static void run(Long storageDetailsId, XSSFSheet sheet, LoanApplicationMaster loanApplicationMaster, ApplicationProposalMapping applicationProposalMapping, LiabilitiesDetailsRepository liabilitiesDetailsRepository) {
+
+        String[] numbers = new String[]{"11","12","13","15","17","19",
+                "21","23","25","27","29","32",
+                "35","37","41","43","45","46",
+                "47","49","51","53","55","57",
+                "58","59","60","61","63","67",
+                "69","71","73","75","77","79",
+                "81","83","85","86","87"};
+
+        liabilitiesMappingList.clear();
+        liabilitiesMappingList.addAll(Arrays.asList(numbers));
+
+        log.info("OperatingStatementDetailsExcelReader -----------> " + sheet.getRow(4).getCell(1).getNumericCellValue());
+        int j = 2;
+        if (applicationProposalMapping.getBusinessTypeId() == CommonUtils.BusinessType.EXISTING_BUSINESS.getId()) {
+
+            extractCellFromSheet(storageDetailsId, sheet, loanApplicationMaster,applicationProposalMapping, liabilitiesMappingList, "E", String.valueOf(sheet.getRow(4).getCell(4).getNumericCellValue()), "Estimated", liabilitiesDetailsRepository);
+            j = 5;
+
+        }
+        if (applicationProposalMapping.getProductId() != 15 && applicationProposalMapping.getProductId() != 1) {
+
+            /*int j = 5;*/
+
+            for (int i = 0; i < applicationProposalMapping.getTenure(); i++) {
+                extractCellFromSheet(storageDetailsId, sheet,loanApplicationMaster, applicationProposalMapping, liabilitiesMappingList, CellReference.convertNumToColString(sheet.getRow(4).getCell(j).getColumnIndex()), String.valueOf(sheet.getRow(4).getCell(j).getNumericCellValue()), "Projected", liabilitiesDetailsRepository);
+                j++;
+            }
+        }
+    }
 
     public static void run(Long storageDetailsId,XSSFSheet sheet,LoanApplicationMaster loanApplicationMaster,LiabilitiesDetailsRepository liabilitiesDetailsRepository) {
         liabilitiesMappingList.clear();
@@ -114,6 +149,98 @@ public class LiabilitiesDetailsExcelReader
         extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, liabilitiesMappingList,"X",String.valueOf(sheet.getRow(4).getCell(12).getNumericCellValue()),"Projected", liabilitiesDetailsRepository);
         extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, liabilitiesMappingList,"Y",String.valueOf(sheet.getRow(4).getCell(12).getNumericCellValue()),"Projected", liabilitiesDetailsRepository);
         */}
+    }
+
+    public static void extractCellFromSheet(Long storageDetailsId,
+                                            XSSFSheet sheet,
+                                            LoanApplicationMaster loanApplicationMaster,
+                                            ApplicationProposalMapping applicationProposalMapping,
+                                            List<String> arrayList,
+                                            String column,
+                                            String year,
+                                            String financialYearlyStatement,
+                                            LiabilitiesDetailsRepository liabilitiesDetailsRepository)
+    {
+        int arrayListCounter = 0;
+        int nullCounter=0;
+        for (int i = 0; i < liabilitiesMappingList.size(); i++) {
+            if ((getNumericDataFromCell(sheet,column + liabilitiesMappingList.get(i)))==0.0) {
+                ++nullCounter;
+            }
+        }
+
+        if(!(nullCounter==40)) {
+
+            LiabilitiesDetails cmaLiabilities = new LiabilitiesDetails();
+
+            cmaLiabilities.setFsLoanApplicationMaster(loanApplicationMaster);
+            cmaLiabilities.setApplicationProposalMapping(applicationProposalMapping);
+            cmaLiabilities.setStorageDetailsId(storageDetailsId);
+
+            cmaLiabilities.setYear(CommonUtils.getCMAFilterYear(year));
+            cmaLiabilities.setFinancialYearlyStatement(financialYearlyStatement);
+            cmaLiabilities.setFromApplicationBank(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaLiabilities.setFromOtherBanks(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaLiabilities.setWhichBpAndBd(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaLiabilities.setSubTotalA(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaLiabilities.setShortTermBorrowingFromOthers(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaLiabilities.setSundryCreditors(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaLiabilities.setAdvancePaymentsFromCustomers(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaLiabilities.setProvisionalForTaxation(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaLiabilities.setDividendPayable(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaLiabilities.setOtherStatutoryLiability(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaLiabilities.setDepositsOrInstalmentsOfTermLoans(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaLiabilities.setOtherCurrentLiability(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaLiabilities.setSubTotalB(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaLiabilities.setTotalCurrentLiabilities(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaLiabilities.setDebentures(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaLiabilities.setPreferencesShares(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaLiabilities.setTermLoans(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            //46_47
+            cmaLiabilities.setTermLiabilitiesSecured(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaLiabilities.setTermLiabilitiesUnsecured(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+
+            cmaLiabilities.setDeferredPaymentsCredits(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaLiabilities.setTermDeposits(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaLiabilities.setOtherTermLiabilies(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaLiabilities.setTotalTermLiabilities(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            //57 to 61
+
+            cmaLiabilities.setOtherNcl(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaLiabilities.setOtherNclUnsecuredLoansFromPromoters(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaLiabilities.setOtherNclUnsecuredLoansFromOther(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaLiabilities.setOtherNclLongTermProvisions(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaLiabilities.setOtherNclOthers(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+
+
+
+            cmaLiabilities.setTotalOutsideLiabilities(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaLiabilities.setOrdinarySharesCapital(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            //69 and 71
+
+            cmaLiabilities.setShareWarrentsOutstanding(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaLiabilities.setMinorityInterest(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+
+
+            cmaLiabilities.setGeneralReserve(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaLiabilities.setRevaluationReservse(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaLiabilities.setOtherReservse(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaLiabilities.setSurplusOrDeficit(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaLiabilities.setDeferredTaxLiability(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaLiabilities.setOthers(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaLiabilities.setNetWorth(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaLiabilities.setOtherIncomeNeedTocCheckLia(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+            cmaLiabilities.setTotalLiability(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
+
+            cmaLiabilities.setIsActive(true);
+            cmaLiabilities.setCreatedDate(new Date());
+            cmaLiabilities.setModifiedDate(new Date());
+//          cmaLiabilities.setCreatedBy(createdBy);
+//          cmaLiabilities.setModifiedBy(modifiedBy);
+
+            liabilitiesDetailsRepository.save(cmaLiabilities);
+
+        }
     }
     public static void extractCellFromSheet(Long storageDetailsId,
     										XSSFSheet sheet,

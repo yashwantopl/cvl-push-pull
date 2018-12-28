@@ -3,6 +3,7 @@ package com.capitaworld.service.loans.model.ddr;
 public class DDRUploadRequest {
 
 	private Long applicationId;
+	private Long proposalMappingId;
 	private Long docId;
 	private String modelName;
 	private Integer totalDocs;
@@ -30,8 +31,6 @@ public class DDRUploadRequest {
 	public void setTotalDocs(Integer totalDocs) {
 		this.totalDocs = totalDocs;
 	}
-	
-	
-	
-	
+	public Long getProposalMappingId() {return proposalMappingId;}
+	public void setProposalMappingId(Long proposalMappingId) {this.proposalMappingId = proposalMappingId;}
 }

@@ -102,9 +102,43 @@ public class ExcelExtractionServiceImpl implements ExcelExtractionService{
 	ProfitibilityStatementDetailRepository profitibilityStatementDetailRepository;
 	
 	@Autowired
-	OperatingStatementDetailsService operatingStatementDetailsService; 
-	
-	
+	OperatingStatementDetailsService operatingStatementDetailsService;
+
+	public Boolean readCMA(Long applicationId,Long proposalMappingId,Long storageDetailsId,MultipartFile multipartFile) {
+		// TODO Auto-generated method stub
+
+		InputStream file;
+		XSSFWorkbook workbook;
+		XSSFSheet operatingStatementSheet,liabilitiesSheet,assetsSheet;
+
+
+
+		try{
+			file = new ByteArrayInputStream(multipartFile.getBytes());
+			workbook = new XSSFWorkbook(file);
+
+			operatingStatementSheet  = workbook.getSheetAt(0);//pass DPR sheet to function
+			liabilitiesSheet  = workbook.getSheetAt(1);//pass DPR sheet to function
+			assetsSheet  = workbook.getSheetAt(2);//pass DPR sheet to function
+
+			OperatingStatementDetailsService.readOperatingStatementDetails(applicationId,proposalMappingId,storageDetailsId,operatingStatementSheet);
+			liabilitiesDetailsService.readLiabilitiesDetails(applicationId,proposalMappingId,storageDetailsId, liabilitiesSheet);
+			assetsDetailsService.readAssetsDetails(applicationId,proposalMappingId,storageDetailsId, assetsSheet);
+		}
+		catch (Exception e) {
+			// TODO: handle exception
+
+			assetsDetailsRepository.inActiveAssetsDetails(storageDetailsId);
+			liabilitiesDetailsRepository.inActiveAssetsDetails(storageDetailsId);
+			operatingStatementDetailsRepository.inActiveAssetsDetails(storageDetailsId);
+			log.error("Error while reading CMA");
+			e.printStackTrace();
+			return false;
+		}
+
+		return true;
+	}
+
 	public Boolean readCMA(Long applicationId,Long storageDetailsId,MultipartFile multipartFile) {
 		// TODO Auto-generated method stub
 		

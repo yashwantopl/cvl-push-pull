@@ -31,9 +31,9 @@ public interface ApplicationProposalMappingRepository extends JpaRepository<Appl
 
 
     @Modifying
-    @Query("update ApplicationProposalMapping apm set apm.isFinalDprUploadFilled =:isFinalDprUploadFilled,apm.modifiedDate = NOW() where apm.proposalId=:proposalId and apm.id =:id and apm.isActive = true")
+    @Query("update ApplicationProposalMapping apm set apm.isFinalDprUploadFilled =:isFinalDprUploadFilled,apm.modifiedDate = NOW() where apm.proposalId=:proposalId and apm.applicationId =:applicationId and apm.isActive = true")
     public int setIsFinalDprMandatoryFilled(@Param("proposalId") Long proposalId,
-                                            @Param("id") Long id,
+                                            @Param("applicationId") Long applicationId,
                                             @Param("isFinalDprUploadFilled") Boolean isFinalDprUploadFilled);
 
 
@@ -83,4 +83,10 @@ public interface ApplicationProposalMappingRepository extends JpaRepository<Appl
     public int setIsFinalMcqMandatoryFilled(@Param("proposalId") Long proposalId, @Param("userId") Long userId,
                                             @Param("isFinalMcqFilled") Boolean isFinalMcqFilled);
 
+    @Modifying
+    @Query("update ApplicationProposalMapping apm set apm.isApplicantFinalFilled =:isApplicantFinalFilled,apm.modifiedDate = NOW(),apm.modifiedBy =:userId where apm.proposalId =:proposalId and apm.applicationId =:applicationId and apm.userId =:userId and apm.isActive = true")
+    public int setIsApplicantFinalMandatoryFilled(@Param("proposalId") Long proposalId,
+                                                  @Param("applicationId") Long applicationId ,
+                                                  @Param("userId") Long userId,
+                                                  @Param("isApplicantFinalFilled") Boolean isApplicantFinalFilled);
 }

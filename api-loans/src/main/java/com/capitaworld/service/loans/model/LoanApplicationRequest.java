@@ -15,6 +15,8 @@ public class LoanApplicationRequest implements Serializable {
 
 	private Long id;
 
+	private Long proposalMappingId;
+
 	private Long clientId;
 
 	private Double amount;
@@ -631,6 +633,14 @@ public class LoanApplicationRequest implements Serializable {
 
 	public void setWcRenewalStatus(Integer wcRenewalStatus) {
 		this.wcRenewalStatus = wcRenewalStatus;
+	}
+
+	public Long getProposalMappingId() {
+		return proposalMappingId;
+	}
+
+	public void setProposalMappingId(Long proposalMappingId) {
+		this.proposalMappingId = proposalMappingId;
 	}
 
 	/* (non-Javadoc)

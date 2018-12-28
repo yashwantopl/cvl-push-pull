@@ -137,18 +137,17 @@ public class DDRFormController {
 					HttpStatus.OK);
 		}
 	}
-	
-	
-	@RequestMapping(value = "/getCombinedDDR/{appId}/{orgId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> getCombinedDDR(@PathVariable("appId") Long appId, @PathVariable("orgId") Long orgId, HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
-		logger.info("Enter in COMBINED DDR Form Get Method -------------------------->" + appId +" -- "+orgId);
+
+	@RequestMapping(value = "/getCombinedDDR/{appId}/{proposalId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getCombinedDDR(@PathVariable("appId") Long appId, @PathVariable("proposalId") Long proposalId, HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
+		logger.info("Enter in COMBINED DDR Form Get Method -------------------------->" + appId +" -- "+proposalId);
 
 		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 		if (CommonDocumentUtils.isThisClientApplication(request) && !CommonUtils.isObjectNullOrEmpty(clientId)) {
 			userId = clientId;
 		}
 		try {
-			DDRRequest ddrRequest = ddrFormService.getMergeDDRNew(appId, userId, orgId);
+			DDRRequest ddrRequest = ddrFormService.getMergeDDRByProposalId(appId, userId,proposalId);
 			logger.info("DDR Form Get Successfully---------------------------->");
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse("Successfully get data", HttpStatus.OK.value(), ddrRequest),
@@ -195,7 +194,7 @@ public class DDRFormController {
 		}
 	}
 	
-	@RequestMapping(value = "/saveCombinedDDRNew", method = RequestMethod.POST,consumes = MediaType.APPLICATION_JSON_VALUE , produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/saveCombinedDDRByProposalId", method = RequestMethod.POST,consumes = MediaType.APPLICATION_JSON_VALUE , produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> saveCombinedDDRNew(@RequestBody DDRRequest ddrRequest, HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
 		logger.info("Enter in COMBINED DDR Form SAVE Method -------------------------->");
 
@@ -210,7 +209,7 @@ public class DDRFormController {
 		}
 		try {
 			ddrRequest.setUserId(userId);
-			ddrFormService.saveMergeDDRNew(ddrRequest);
+			ddrFormService.saveMergeDDRByProposalId(ddrRequest);
 			logger.info("DDR COMBINED Form Saved Successfully---------------------------->");
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Data Saved", HttpStatus.OK.value()), HttpStatus.OK);
 		} catch (Exception e) {
@@ -333,6 +332,20 @@ public class DDRFormController {
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Deleted", HttpStatus.OK.value(), deleteDocument), HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while DDR Delete Documents ==>", e);	
+			e.printStackTrace();
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.OK);
+		}
+	}
+
+	@RequestMapping(value = "/deleteDocsByProposalId", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> deleteDocsByPropsoalId(@RequestBody DDRUploadRequest ddrUploadRequest) {
+		try {
+			boolean deleteDocument = ddrFormService.deleteDocumentByProposalId(ddrUploadRequest);
+			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Deleted", HttpStatus.OK.value(), deleteDocument), HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while DDR Delete Documents ==>", e);
 			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
