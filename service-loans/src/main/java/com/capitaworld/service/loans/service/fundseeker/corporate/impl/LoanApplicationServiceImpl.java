@@ -599,6 +599,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
     @Value("${cw.gst.unit.test}")
     private String IS_UNIT_TEST;
 
+    @Value("${cw.ismca.on}")
+    private String IS_MCA_ON;
+    
 	@Override
 	public boolean saveOrUpdate(FrameRequest commonRequest, Long userId) throws Exception {
 		try {
@@ -4456,8 +4459,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 				if (connectResponse.getProceed()) {
 					if (loanApplicationMaster.getCompanyCinNumber() != null) {
+						if("Y".equals(IS_MCA_ON)) {
 						mcaAsyncComponent.callMCAForData(loanApplicationMaster.getCompanyCinNumber(),
 								loanApplicationMaster.getId(), loanApplicationMaster.getUserId());
+						}
 					}
 				}
 			} else {
@@ -4527,8 +4532,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 				if (connectResponse.getProceed()) {
 					if (loanApplicationMaster.getCompanyCinNumber() != null) {
+						if("Y".equals(IS_MCA_ON)) {
 						mcaAsyncComponent.callMCAForData(loanApplicationMaster.getCompanyCinNumber(),
 								loanApplicationMaster.getId(), loanApplicationMaster.getUserId());
+						}
 					}
 				}
 			} else {
@@ -4664,8 +4671,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 				if (connectResponse.getProceed()) {
 					if (loanApplicationMaster.getCompanyCinNumber() != null) {
+						if("Y".equals(IS_MCA_ON)) {
 						mcaAsyncComponent.callMCAForData(loanApplicationMaster.getCompanyCinNumber(),
 								loanApplicationMaster.getId(), loanApplicationMaster.getUserId());
+						}
 					}
 				}
 			} else {
@@ -4847,8 +4856,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 								logger.info("loanApplicationMaster.getCompanyCinNumber()==============>>>"
 										+ loanApplicationMaster.getCompanyCinNumber());
 								if (loanApplicationMaster.getCompanyCinNumber() != null) {
+									if("Y".equals(IS_MCA_ON)) {
 									mcaAsyncComponent.callMCAForData(loanApplicationMaster.getCompanyCinNumber(),
 											loanApplicationMaster.getId(), loanApplicationMaster.getUserId());
+									}
 								}
 							}
 
