@@ -2,7 +2,6 @@ package com.capitaworld.service.loans.service.teaser.primaryview.impl;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -32,8 +31,6 @@ import com.capitaworld.service.dms.model.DocumentRequest;
 import com.capitaworld.service.dms.model.DocumentResponse;
 import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.fraudanalytics.client.FraudAnalyticsClient;
-import com.capitaworld.service.fraudanalytics.model.AnalyticsResponse;
-import com.capitaworld.service.gst.GSTDataDetailResponse;
 import com.capitaworld.service.gst.GstResponse;
 import com.capitaworld.service.gst.client.GstClient;
 import com.capitaworld.service.loans.domain.fundprovider.TermLoanParameter;
@@ -1132,12 +1129,12 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 					logger.warn("::::::=====MCA Data is Null====:::::::For:::::==>" + companyId);
 				}
 				
-				McaResponse mcaFinancialAndDetailsRes=mcaClient.getCompanyFinancialCalcAndDetails(toApplicationId, companyId);
+				/*McaResponse mcaFinancialAndDetailsRes=mcaClient.getCompanyFinancialCalcAndDetails(toApplicationId, companyId);
 				if(mcaFinancialAndDetailsRes.getData()!=null) {
 					corporatePrimaryViewResponse.setMcaFinancialAndDetailsResponse(mcaFinancialAndDetailsRes);
 				}else {
 					logger.info("::::::=====MCA Financial Data is Null====:::::::For:::::==>"+ companyId + " appId==>"+toApplicationId);
-				}
+				}*/
 			} else {
 				logger.warn("Mca Company Id is Null");
 
