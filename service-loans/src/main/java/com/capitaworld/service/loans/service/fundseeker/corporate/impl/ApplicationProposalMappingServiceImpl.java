@@ -4,6 +4,8 @@ import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMappin
 import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.ApplicationProposalMappingService;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,7 +17,9 @@ public class ApplicationProposalMappingServiceImpl implements ApplicationProposa
 	@Autowired
 	ApplicationProposalMappingRepository repository;
 	
-    @Override
+	Logger logger =LoggerFactory.getLogger(ApplicationProposalMappingServiceImpl.class);
+
+	@Override
     public Boolean saveOrUpdate() {
         return null;
     }
