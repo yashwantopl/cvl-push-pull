@@ -51,6 +51,7 @@ public class CamReportPdfDetailsController {
 	private static final String ORIGINAL_FILE_NAME = "originalFileName";
 	private static final String APPLICATION_ID = "applicationId";
 	private static final String ERROR_WHILE_GETTING_MAP_DETAILS = "Error while getting MAP Details==>";
+	private static final String INELIGIBLE_CAM_REPORT = "INELIGIBLECAMREPORT";
 	
 	@RequestMapping(value = "/getPrimaryDataMap/{applicationId}/{productMappingId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getPrimaryDataMap(@PathVariable(value = "applicationId") Long applicationId,@PathVariable(value = "productMappingId") Long productId, HttpServletRequest request)  {
@@ -182,8 +183,8 @@ public class CamReportPdfDetailsController {
 			Map<String,Object> response = inEligibleProposalCamReportService.getInEligibleCamReport(applicationId);
 			ReportRequest reportRequest = new ReportRequest();
 			reportRequest.setParams(response);
-			reportRequest.setTemplate("INELIGIBLECAMREPORT");
-			reportRequest.setType("INELIGIBLECAMREPORT");
+			reportRequest.setTemplate(INELIGIBLE_CAM_REPORT);
+			reportRequest.setType(INELIGIBLE_CAM_REPORT);
 			byte[] byteArr = reportsClient.generatePDFFile(reportRequest);
 			MultipartFile multipartFile = new DDRMultipart(byteArr);			  
 			  JSONObject jsonObj = new JSONObject();
@@ -192,7 +193,7 @@ public class CamReportPdfDetailsController {
 				jsonObj.put(APPLICATION_ID, applicationId);
 				jsonObj.put(PRODUCT_DOCUMENT_MAPPING_ID, 570L);
 				jsonObj.put(USER_TYPE, CommonUtils.UploadUserType.UERT_TYPE_APPLICANT);
-				jsonObj.put(ORIGINAL_FILE_NAME, "INELIGIBLECAMREPORT"+applicationId+".pdf");
+				jsonObj.put(ORIGINAL_FILE_NAME, INELIGIBLE_CAM_REPORT+applicationId+".pdf");
 				
 				DocumentResponse  documentResponse  =  dmsClient.uploadFile(jsonObj.toString(), multipartFile);
 				if(documentResponse.getStatus() == 200){

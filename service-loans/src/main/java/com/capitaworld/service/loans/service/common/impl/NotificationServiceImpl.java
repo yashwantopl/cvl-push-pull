@@ -38,6 +38,7 @@ public class NotificationServiceImpl implements NotificationService{
 	private static final Logger logger = LoggerFactory.getLogger(NotificationServiceImpl.class);
 
 	private static final String FP_PNAME_PARAMETERS = "fp_pname";
+	private static final String SEND_VIEW_NOTIFICATION = "sendViewNotification";
 	
 	@Autowired
 	private LoanApplicationService loanApplicationService;
@@ -128,7 +129,7 @@ public class NotificationServiceImpl implements NotificationService{
 	public void sendViewNotification(String toUserId, Long fromUserId, Long fromUserTypeId, Long notificationId,
 			Long applicationId, Long fpProductId,NotificationTemplate notificationTemplate,Long loginUserType) {
 
-		CommonDocumentUtils.startHook(logger, "sendViewNotification");
+		CommonDocumentUtils.startHook(logger, SEND_VIEW_NOTIFICATION);
 		
 		if (toUserId != null && fromUserId != null) {
 			String[] a = { toUserId.toString() };
@@ -183,7 +184,7 @@ public class NotificationServiceImpl implements NotificationService{
 			} catch (NotificationException e) {
 				logger.error(CommonUtils.EXCEPTION,e);
 			}
-			CommonDocumentUtils.endHook(logger, "sendViewNotification");
+			CommonDocumentUtils.endHook(logger, SEND_VIEW_NOTIFICATION);
 		}
 		
 	}
@@ -200,7 +201,7 @@ public class NotificationServiceImpl implements NotificationService{
 		} catch (NotificationException e) {
 			logger.error(CommonUtils.EXCEPTION,e);
 		}
-		CommonDocumentUtils.endHook(logger, "sendViewNotification");
+		CommonDocumentUtils.endHook(logger, SEND_VIEW_NOTIFICATION);
 	} 
 
 }

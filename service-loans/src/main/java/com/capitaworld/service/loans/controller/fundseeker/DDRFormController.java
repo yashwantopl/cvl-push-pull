@@ -51,6 +51,7 @@ public class DDRFormController {
 	private static final Logger logger = LoggerFactory.getLogger(DDRFormController.class);
 
 	private static final String SAVING_REQUEST_TO_DB_MSG = "Saving Request to DB ===> ";
+	private static final String UPLOAD_FLAG = "uploadFlag";
 
 	@Autowired
 	private DDRFormService ddrFormService;
@@ -347,7 +348,7 @@ public class DDRFormController {
 			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
 		try {
 
-			CommonDocumentUtils.startHook(logger, "uploadFlag");
+			CommonDocumentUtils.startHook(logger, UPLOAD_FLAG);
 			if (CommonUtils.isObjectNullOrEmpty(documentRequest)) {
 				logger.warn("Document Request Must not be null");
 				return new ResponseEntity<LoansResponse>(
@@ -369,12 +370,12 @@ public class DDRFormController {
 			// multipartFiles);
 			if (response != null && response == 1) {
 				logger.info("File Updated Document Flag SuccessFully");
-				CommonDocumentUtils.endHook(logger, "uploadFlag");
+				CommonDocumentUtils.endHook(logger, UPLOAD_FLAG);
 				return new ResponseEntity<LoansResponse>(new LoansResponse(response.toString(), HttpStatus.OK.value()),
 						HttpStatus.OK);
 			} else {
 				logger.error("Error While Updating Document Flag==>");
-				CommonDocumentUtils.endHook(logger, "uploadFlag");
+				CommonDocumentUtils.endHook(logger, UPLOAD_FLAG);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
