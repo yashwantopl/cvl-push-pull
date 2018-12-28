@@ -108,6 +108,7 @@ public class CommonUtils {
 	public static final String PARAMETERS_IS_DYNAMIC = "isDynamic";
 	public static final String RATE_INTEREST = "rate_interest";
 	public static final String LITERAL_AMOUNT = "amount";
+	public static final String GET_LIST = "getList";
 
 	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 

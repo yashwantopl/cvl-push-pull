@@ -40,6 +40,8 @@ public class ProductMasterController {
 	private static final String ERROR_WHILE_GETTING_PRODUCTS_DETAILS_MSG = "Error while getting Products Details ==>";
 	private static final String ADD_PRODUCT = "addProduct";
 	private static final String CLICK_ON_WORK_FLOW_BUTTON = "clickOnWorkFlowButton";
+	private static final String GET_ACTIVE_INACTIVE_LIST = "getActiveInActiveList";
+	private static final String GET_LIST_BY_USER_TYPE = "getListByUserType";
 
 	@Autowired
 	private ProductMasterService productMasterService;
@@ -261,7 +263,7 @@ public class ProductMasterController {
 	public ResponseEntity<LoansResponse> getList(HttpServletRequest request,
 			@RequestParam(value = "clientId", required = false) Long clientId) {
 		// request must not be null
-		CommonDocumentUtils.startHook(logger, "getList");
+		CommonDocumentUtils.startHook(logger, CommonUtils.GET_LIST);
 		try {
 			Long userId = null;
 			if (CommonDocumentUtils.isThisClientApplication(request) && !CommonUtils.isObjectNullOrEmpty(clientId) ) {
@@ -271,7 +273,7 @@ public class ProductMasterController {
 			}
 			if (userId == null) {
 				logger.warn(USER_ID_REQUIRE_TO_GET_PRODUCT_DETAILS_MSG + userId);
-				CommonDocumentUtils.endHook(logger, "getList");
+				CommonDocumentUtils.endHook(logger, CommonUtils.GET_LIST);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
@@ -279,7 +281,7 @@ public class ProductMasterController {
 			List<ProductMasterRequest> response = productMasterService.getList(userId,userOrgId);
 			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 			loansResponse.setListData(response);
-			CommonDocumentUtils.endHook(logger, "getList");
+			CommonDocumentUtils.endHook(logger, CommonUtils.GET_LIST);
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
 		} catch (Exception e) {
@@ -294,7 +296,7 @@ public class ProductMasterController {
 	public ResponseEntity<LoansResponse> getActiveInActiveList(HttpServletRequest request,
 			@RequestParam(value = "clientId", required = false) Long clientId) {
 		// request must not be null
-		CommonDocumentUtils.startHook(logger, "getActiveInActiveList");
+		CommonDocumentUtils.startHook(logger, GET_ACTIVE_INACTIVE_LIST);
 		try {
 			Long userId = null;
 			if (CommonDocumentUtils.isThisClientApplication(request) && !CommonUtils.isObjectNullOrEmpty(clientId) ) {
@@ -304,7 +306,7 @@ public class ProductMasterController {
 			}
 			if (userId == null) {
 				logger.warn(USER_ID_REQUIRE_TO_GET_PRODUCT_DETAILS_MSG + userId);
-				CommonDocumentUtils.endHook(logger, "getActiveInActiveList");
+				CommonDocumentUtils.endHook(logger, GET_ACTIVE_INACTIVE_LIST);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
@@ -312,7 +314,7 @@ public class ProductMasterController {
 			List<ProductMasterRequest> response = productMasterService.getActiveInActiveList(userId,userOrgId);
 			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 			loansResponse.setListData(response);
-			CommonDocumentUtils.endHook(logger, "getActiveInActiveList");
+			CommonDocumentUtils.endHook(logger, GET_ACTIVE_INACTIVE_LIST);
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
 		} catch (Exception e) {
@@ -328,7 +330,7 @@ public class ProductMasterController {
 			@PathVariable(value = "userType") String userType,@PathVariable(value = "applicationStage")String applicationStage,
 			@RequestParam(value = "clientId", required = false) Long clientId) {
 		// request must not be null
-		CommonDocumentUtils.startHook(logger, "getListByUserType");
+		CommonDocumentUtils.startHook(logger, GET_LIST_BY_USER_TYPE);
 		try {
 			Long userId = null;
 			if (CommonDocumentUtils.isThisClientApplication(request) && !CommonUtils.isObjectNullOrEmpty(clientId)) {
@@ -341,20 +343,20 @@ public class ProductMasterController {
 			
 			if (userId == null) {
 				logger.warn(USER_ID_REQUIRE_TO_GET_PRODUCT_DETAILS_MSG + userId);
-				CommonDocumentUtils.endHook(logger, "getListByUserType");
+				CommonDocumentUtils.endHook(logger, GET_LIST_BY_USER_TYPE);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 			if (userType == null) {
 				logger.warn("userType Require to get product Details ==>" + userId);
-				CommonDocumentUtils.endHook(logger, "getListByUserType");
+				CommonDocumentUtils.endHook(logger, GET_LIST_BY_USER_TYPE);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 			//List<ProductMasterRequest> response = productMasterService.getListByUserType(userId, userType);
 			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 			loansResponse.setListData(productMasterService.getListByUserType(userId, Integer.parseInt(CommonUtils.decode(userType)),Integer.parseInt(CommonUtils.decode(applicationStage)),userOrgId));
-			CommonDocumentUtils.endHook(logger, "getListByUserType");
+			CommonDocumentUtils.endHook(logger, GET_LIST_BY_USER_TYPE);
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
 		} catch (Exception e) {
@@ -383,7 +385,7 @@ public class ProductMasterController {
 			
 			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 			loansResponse.setData(productMasterService.getProductMasterWithAllData(id,applicationStage,role,userId));
-			CommonDocumentUtils.endHook(logger, "getListByUserType");
+			CommonDocumentUtils.endHook(logger, GET_LIST_BY_USER_TYPE);
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
 		} catch (Exception e) {
@@ -635,7 +637,7 @@ public class ProductMasterController {
 			}
 			if (userId == null) {
 				logger.warn(USER_ID_REQUIRE_TO_GET_PRODUCT_DETAILS_MSG + userId);
-				CommonDocumentUtils.endHook(logger, "getList");
+				CommonDocumentUtils.endHook(logger, CommonUtils.GET_LIST);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
@@ -871,7 +873,7 @@ public class ProductMasterController {
 			@PathVariable(value = "productId") String productId,@PathVariable(value = "businessId") String businessId,
 			@RequestParam(value = "clientId", required = false) Long clientId) {
 		// request must not be null
-		CommonDocumentUtils.startHook(logger, "getListByUserType");
+		CommonDocumentUtils.startHook(logger, GET_LIST_BY_USER_TYPE);
 		try {
 			Long userId = null;
 			if (CommonDocumentUtils.isThisClientApplication(request) && !CommonUtils.isObjectNullOrEmpty(clientId)) {
@@ -884,20 +886,20 @@ public class ProductMasterController {
 			
 			if (userId == null) {
 				logger.warn(USER_ID_REQUIRE_TO_GET_PRODUCT_DETAILS_MSG + userId);
-				CommonDocumentUtils.endHook(logger, "getListByUserType");
+				CommonDocumentUtils.endHook(logger, GET_LIST_BY_USER_TYPE);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 			if (productId == null) {
 				logger.warn("productType Require to get product Details ==>" + userId);
-				CommonDocumentUtils.endHook(logger, "getListByUserType");
+				CommonDocumentUtils.endHook(logger, GET_LIST_BY_USER_TYPE);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 			//List<ProductMasterRequest> response = productMasterService.getListByUserType(userId, userType);
 			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 			loansResponse.setListData(productMasterService.getApprovedListByProductType(userId, Integer.parseInt(CommonUtils.decode(productId)), CommonUtils.isObjectNullOrEmpty(CommonUtils.decode(businessId))?null:Integer.parseInt(CommonUtils.decode(businessId)),userOrgId));
-			CommonDocumentUtils.endHook(logger, "getListByUserType");
+			CommonDocumentUtils.endHook(logger, GET_LIST_BY_USER_TYPE);
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
 		} catch (Exception e) {
