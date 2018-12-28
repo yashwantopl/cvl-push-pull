@@ -157,6 +157,18 @@ public class FinancialArrangementDetailsServiceImpl implements FinancialArrangem
 		arrangementsDetailRequest.setEmi(totalEmi);
 		return arrangementsDetailRequest;
 	}
+	
+	@Override
+	public FinancialArrangementsDetailRequest getTotalEmiAndSanctionAmountByApplicationIdForUniforProduct(Long applicationId) {
+		Double totalEmi = financialArrangementDetailsRepository.getTotalEmiByApplicationIdForUniformProduct(applicationId);
+		logger.info("getTotalOfEmiByApplicationId for Uniform Product=====>" + totalEmi + " For Application Id=====>{}", applicationId);		
+		Double existingLimits = financialArrangementDetailsRepository.getExistingLimitsForUniformProduct(applicationId);
+		logger.info("existingLimits for Uniform Product=====>" + existingLimits + " For Application Id=====>{}", applicationId);
+		FinancialArrangementsDetailRequest arrangementsDetailRequest = new FinancialArrangementsDetailRequest();
+		arrangementsDetailRequest.setAmount(existingLimits);
+		arrangementsDetailRequest.setEmi(totalEmi);
+		return arrangementsDetailRequest;
+	}
 
 	@Override
 	public Double getTotalOfEmiByApplicationIdAndDirectorId(Long applicationId, Long directorId) {

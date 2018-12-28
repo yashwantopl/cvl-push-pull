@@ -28,5 +28,7 @@ public interface FinancialArrangementDetailsService {
 	public Double getTotalOfEmiByApplicationIdAndDirectorId(Long applicationId,Long directorId);
 	
 	public Boolean saveOrUpdateManuallyAddedLoans(List<FinancialArrangementsDetailRequest> finArrDetailRequest,Long applicationId,Long userId);
+	
+	public FinancialArrangementsDetailRequest getTotalEmiAndSanctionAmountByApplicationIdForUniforProduct(Long applicationId);
 
 }
