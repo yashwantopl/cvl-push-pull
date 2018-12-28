@@ -537,7 +537,7 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
 			// set city
 			List<Long> cityList = new ArrayList<>();
 			if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCityId()))
-			cityList.add(corporateApplicantDetail.getRegisteredCityId());
+				cityList.add(corporateApplicantDetail.getRegisteredCityId());
 			if(!CommonUtils.isListNullOrEmpty(cityList))
 			{
 			try {
@@ -559,7 +559,7 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
 			
 			cityList.clear();
 			if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getAdministrativeCityId()))
-			cityList.add(corporateApplicantDetail.getAdministrativeCityId());
+				cityList.add(corporateApplicantDetail.getAdministrativeCityId());
 			if(!CommonUtils.isListNullOrEmpty(cityList))
 			{
 			try {
@@ -583,7 +583,7 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
 			// set state
 			List<Long> stateList = new ArrayList<>();
 			if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredStateId()))
-			stateList.add(Long.valueOf(corporateApplicantDetail.getRegisteredStateId()));
+				stateList.add(Long.valueOf(corporateApplicantDetail.getRegisteredStateId()));
 			if(!CommonUtils.isListNullOrEmpty(stateList))
 			{
 			try {
@@ -627,7 +627,7 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
 			// set country
 			List<Long> countryList = new ArrayList<>();
 			if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCountryId()))
-			countryList.add(Long.valueOf(corporateApplicantDetail.getRegisteredCountryId()));
+				countryList.add(Long.valueOf(corporateApplicantDetail.getRegisteredCountryId()));
 			if(!CommonUtils.isListNullOrEmpty(countryList))
 			{
 			try {
@@ -671,7 +671,7 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
 				
 			List<Long> keyVerticalFundingId = new ArrayList<>();
 			if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getKeyVericalFunding()))
-			keyVerticalFundingId.add(corporateApplicantDetail.getKeyVericalFunding());
+				keyVerticalFundingId.add(corporateApplicantDetail.getKeyVericalFunding());
 			if(!CommonUtils.isListNullOrEmpty(keyVerticalFundingId))
 			{
 			try {
@@ -714,12 +714,12 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
 			// set value to response
 			BeanUtils.copyProperties(primaryWorkingCapitalLoanDetail, response);
 			if(!CommonUtils.isObjectNullOrEmpty(primaryWorkingCapitalLoanDetail.getCurrencyId())&&!CommonUtils.isObjectNullOrEmpty(primaryWorkingCapitalLoanDetail.getDenominationId()))
-			response.setCurrencyDenomination(Currency.getById(primaryWorkingCapitalLoanDetail.getCurrencyId()).getValue() + " in "
+				response.setCurrencyDenomination(Currency.getById(primaryWorkingCapitalLoanDetail.getCurrencyId()).getValue() + " in "
 							+ Denomination.getById(primaryWorkingCapitalLoanDetail.getDenominationId()).getValue());
 			response.setLoanType(primaryWorkingCapitalLoanDetail.getProductId() != null ? LoanType.getById(primaryWorkingCapitalLoanDetail.getProductId()).getValue() : null);
 			response.setLoanAmount(String.valueOf(primaryWorkingCapitalLoanDetail.getAmount()));
 			if(!CommonUtils.isObjectNullOrEmpty(primaryWorkingCapitalLoanDetail.getModifiedDate()))
-			response.setDateOfProposal(CommonUtils.DATE_FORMAT.format(primaryWorkingCapitalLoanDetail.getModifiedDate()));
+				response.setDateOfProposal(CommonUtils.DATE_FORMAT.format(primaryWorkingCapitalLoanDetail.getModifiedDate()));
 			response.setProjectBrief(primaryWorkingCapitalLoanDetail.getProjectBrief());
             response.setIsCreditRatingAvailable(primaryWorkingCapitalLoanDetail.getCreditRatingId()!= null ? CreditRatingAvailable.getById(primaryWorkingCapitalLoanDetail.getCreditRatingId()).getValue() : null);
             response.setSharePriceFace(primaryWorkingCapitalLoanDetail.getSharePriceFace());

@@ -1424,13 +1424,11 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
         
 		Long applicationStatus = null;
 		Date lastModifiedDate = null;
-		if(!CommonUtils.isObjectNullOrEmpty(applicationMaster)) {
-			if(!CommonUtils.isObjectNullOrEmpty(applicationMaster.getApplicationStatusMaster()) 
-			   && !CommonUtils.isObjectNullOrEmpty(applicationMaster.getApplicationStatusMaster().getId())) {
+		if(!CommonUtils.isObjectNullOrEmpty(applicationMaster) && !CommonUtils.isObjectNullOrEmpty(applicationMaster.getApplicationStatusMaster())
+				&& !CommonUtils.isObjectNullOrEmpty(applicationMaster.getApplicationStatusMaster().getId()) ) {
 				applicationStatus = applicationMaster.getApplicationStatusMaster().getId();
 				if(!CommonUtils.isObjectNullOrEmpty(applicationMaster.getModifiedDate())) {
-					lastModifiedDate = applicationMaster.getModifiedDate();	
-				}
+					lastModifiedDate = applicationMaster.getModifiedDate();
 			}
 		}
 			if(!CommonUtils.isObjectNullOrEmpty(applicationMaster)){

@@ -37,8 +37,8 @@ public class CommonDocumentUtils {
 			return DocumentAlias.LAS_LOAN_PROFIEL_PICTURE;
 		case 15:// UNSECURED_LOAN_PROFIEL_PICTURE
 			return DocumentAlias.UNSECURED_LOAN_PROFIEL_PICTURE;
+		default: return null;
 		}
-		return null;
 	}
 
 	public static String getCity(Long cityId, OneFormClient oneFormClient) throws Exception {
