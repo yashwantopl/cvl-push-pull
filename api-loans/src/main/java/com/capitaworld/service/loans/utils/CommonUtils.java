@@ -110,6 +110,7 @@ public class CommonUtils {
 	public static final String LITERAL_AMOUNT = "amount";
 	public static final String GET_LIST = "getList";
 	public static final String GET_PRIMARY = "getPrimary";
+	public static final String ORG_NAME = "orgName";
 
 	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 
