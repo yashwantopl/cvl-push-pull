@@ -230,6 +230,21 @@ public class FinancialArrangementDetailsController {
 			return null;
 		}
 	}
+	
+	@RequestMapping(value = "/get_total_emi_sanction_amount_uniform/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public FinancialArrangementsDetailRequest getTotalEmiAndSanctionedAmountUniform(@PathVariable("applicationId") Long applicationId) {
+		if (applicationId == null) {
+			logger.warn("application id, must not be null ==>");
+			return null;
+		}
+		logger.warn(APPLICATION_ID_MSG + applicationId);
+		try {
+			return financialArrangementDetailsService.getTotalEmiAndSanctionAmountByApplicationIdForUniforProduct(applicationId);
+		} catch (Exception e) {
+			logger.error("Error while Getting total EMI by Application Id==>", e);
+			return null;
+		}
+	}
 
 	@PostMapping(value = "/getTotalEmiFromDirectorId", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getTotalEmi(@RequestBody NTBRequest ntbRequest) {
