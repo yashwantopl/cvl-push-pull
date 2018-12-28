@@ -225,6 +225,8 @@ public class CorporateFinalViewResponse implements Serializable {
     
     private String applicationType;
     private String fpProductName;
+    
+    private Object mcaFinancialAndDetailsResponse;
     			
     
 	public List<?> getMatchesList() {
@@ -2114,6 +2116,14 @@ public class CorporateFinalViewResponse implements Serializable {
 
 	public void setFpProductName(String fpProductName) {
 		this.fpProductName = fpProductName;
+	}
+
+	public Object getMcaFinancialAndDetailsResponse() {
+		return mcaFinancialAndDetailsResponse;
+	}
+
+	public void setMcaFinancialAndDetailsResponse(Object mcaFinancialAndDetailsResponse) {
+		this.mcaFinancialAndDetailsResponse = mcaFinancialAndDetailsResponse;
 	}
 
 	
