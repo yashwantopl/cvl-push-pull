@@ -22,6 +22,7 @@ public class LoanEligibilityCriteriaRepositoryImpl implements LoanEligibilityCri
 
 	private static final Logger logger = LoggerFactory.getLogger(LoanEligibilityCriteriaRepositoryImpl.class);
 	private static final String GIVEN_CRITERIA_DOES_NOT_MATCH_WITH_THE_DATABASE_RECORDS_MSG = "Given Criteria Does not match with the Database Records";
+	private static final String GET_HOME_LOAN_BY_SALARY_SLAB = "getHomeLoanBySalarySlab";
 
 	@PersistenceContext
 	private EntityManager entityManager;
@@ -30,18 +31,18 @@ public class LoanEligibilityCriteriaRepositoryImpl implements LoanEligibilityCri
 	@Override
 	public HomeLoanEligibilityCriteria getHomeLoanBySalarySlab(Long income, Integer type, Integer bankId) {
 
-		CommonDocumentUtils.startHook(logger, "getHomeLoanBySalarySlab");
+		CommonDocumentUtils.startHook(logger, GET_HOME_LOAN_BY_SALARY_SLAB);
 		String query = "select hl from HomeLoanEligibilityCriteria hl where hl.type =:type and hl.bankId =:bankId and hl.isActive =:isActive and "
 				+ income + " >= hl.min and " + income + " <= hl.max";
 		List<HomeLoanEligibilityCriteria> eligibility = entityManager
 				.createQuery(query, HomeLoanEligibilityCriteria.class).setParameter("type", type)
 				.setParameter("bankId", bankId).setParameter("isActive", true).getResultList();
 		if (!CommonUtils.isListNullOrEmpty(eligibility)) {
-			CommonDocumentUtils.endHook(logger, "getHomeLoanBySalarySlab");
+			CommonDocumentUtils.endHook(logger, GET_HOME_LOAN_BY_SALARY_SLAB);
 			return eligibility.get(0);
 		}
 		logger.warn(GIVEN_CRITERIA_DOES_NOT_MATCH_WITH_THE_DATABASE_RECORDS_MSG);
-		CommonDocumentUtils.endHook(logger, "getHomeLoanBySalarySlab");
+		CommonDocumentUtils.endHook(logger, GET_HOME_LOAN_BY_SALARY_SLAB);
 		return null;
 	}
 
