@@ -136,6 +136,8 @@ public class CorporatePrimaryViewResponse {
     
     private String applicationType;
     private String fpProductName;
+    
+    private Object mcaFinancialAndDetailsResponse;
      
     
    
@@ -1182,6 +1184,12 @@ public class CorporatePrimaryViewResponse {
 	}
 	public void setFpProductName(String fpProductName) {
 		this.fpProductName = fpProductName;
+	}
+	public Object getMcaFinancialAndDetailsResponse() {
+		return mcaFinancialAndDetailsResponse;
+	}
+	public void setMcaFinancialAndDetailsResponse(Object mcaFinancialAndDetailsResponse) {
+		this.mcaFinancialAndDetailsResponse = mcaFinancialAndDetailsResponse;
 	}
 	
 	

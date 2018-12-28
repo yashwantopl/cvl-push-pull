@@ -1605,6 +1605,14 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 
 					logger.warn("::::::=====MCA Data is Null====:::::::For:::::==>" + companyId);
 				}
+				
+				McaResponse mcaFinancialAndDetailsRes=mcaClient.getCompanyFinancialCalcAndDetails(toApplicationId, companyId);
+				if(mcaFinancialAndDetailsRes.getData()!=null) {
+					corporateFinalViewResponse.setMcaFinancialAndDetailsResponse(mcaFinancialAndDetailsRes);
+				}else {
+					logger.info("::::::=====MCA Financial Data is Null====:::::::For:::::==>"+ companyId + " appId==>"+toApplicationId);
+				}
+				
 			} else {
 				logger.warn("Mca Company Id is Null");
 
@@ -1648,7 +1656,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 
 		// Fraud Detection Data
 
-		try {
+		/*try {
 			AnalyticsResponse hunterResp = fraudAnalyticsClient.getRuleAnalysisData(toApplicationId);
 
 			if (!CommonUtils.isObjectListNull(hunterResp, hunterResp.getData())) {
@@ -1658,7 +1666,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 			}
 		} catch (Exception e1) {
 			logger.error("------:::::...Error while fetching Fraud Detection Details...For..::::::-----", toApplicationId + CommonUtils.EXCEPTION + e1);
-		}
+		}*/
 		
 		
 		
