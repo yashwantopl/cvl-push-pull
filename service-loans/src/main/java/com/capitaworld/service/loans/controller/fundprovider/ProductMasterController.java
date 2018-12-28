@@ -38,6 +38,8 @@ public class ProductMasterController {
 	private static final String CORPORATE_PRODUCT_ID_CAN_NOT_BE_EMPTY_MSG = "corporateProduct id can not be empty ==>";
 	private static final String USER_ID_REQUIRE_TO_GET_PRODUCT_DETAILS_MSG = "UserId Require to get product Details ==>";
 	private static final String ERROR_WHILE_GETTING_PRODUCTS_DETAILS_MSG = "Error while getting Products Details ==>";
+	private static final String ADD_PRODUCT = "addProduct";
+	private static final String CLICK_ON_WORK_FLOW_BUTTON = "clickOnWorkFlowButton";
 
 	@Autowired
 	private ProductMasterService productMasterService;
@@ -52,7 +54,7 @@ public class ProductMasterController {
 	@RequestMapping(value = "/addProduct", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> addProduct(@RequestBody AddProductRequest addProductRequest,
 			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
-		CommonDocumentUtils.startHook(logger, "addProduct");
+		CommonDocumentUtils.startHook(logger, ADD_PRODUCT);
 		try {
 			// request must not be null
 
@@ -65,24 +67,24 @@ public class ProductMasterController {
 
 			if (userId == null) {
 				logger.warn(USER_ID_CAN_NOT_BE_EMPTY_MSG + userId);
-				CommonDocumentUtils.endHook(logger, "addProduct");
+				CommonDocumentUtils.endHook(logger, ADD_PRODUCT);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 			if (addProductRequest == null) {
 				logger.warn("addProductRequest Object can not be empty ==>" + addProductRequest);
-				CommonDocumentUtils.endHook(logger, "addProduct");
+				CommonDocumentUtils.endHook(logger, ADD_PRODUCT);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 
 			Boolean response = productMasterService.saveOrUpdate(addProductRequest,userOrgId);
 			if (response) {
-				CommonDocumentUtils.endHook(logger, "addProduct");
+				CommonDocumentUtils.endHook(logger, ADD_PRODUCT);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.SUCCESSFULLY_SAVED, HttpStatus.OK.value()), HttpStatus.OK);
 			} else {
-				CommonDocumentUtils.endHook(logger, "addProduct");
+				CommonDocumentUtils.endHook(logger, ADD_PRODUCT);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 						HttpStatus.OK);
@@ -100,7 +102,7 @@ public class ProductMasterController {
 	@RequestMapping(value = "/clickOnWorkFlowButton", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> clickOnWorkFlowButton(@RequestBody WorkflowData workflowData,
 			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
-		CommonDocumentUtils.startHook(logger, "clickOnWorkFlowButton");
+		CommonDocumentUtils.startHook(logger, CLICK_ON_WORK_FLOW_BUTTON);
 		try {
 			// request must not be null
 
@@ -115,14 +117,14 @@ public class ProductMasterController {
 			if(CommonUtils.isObjectListNull(workflowData.getActionId(),workflowData.getFpProductId(),workflowData.getJobId(),workflowData.getNextworkflowStep(),workflowData.getWorkflowStep()))
 			{
 				logger.warn("workflow data can not be null" );
-				CommonDocumentUtils.endHook(logger, "clickOnWorkFlowButton");
+				CommonDocumentUtils.endHook(logger, CLICK_ON_WORK_FLOW_BUTTON);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 
 			if (userId == null) {
 				logger.warn(USER_ID_CAN_NOT_BE_EMPTY_MSG + userId);
-				CommonDocumentUtils.endHook(logger, "addProduct");
+				CommonDocumentUtils.endHook(logger, ADD_PRODUCT);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
@@ -130,11 +132,11 @@ public class ProductMasterController {
 
 			Boolean response = productMasterService.clickOnWorkFlowButton(workflowData);
 			if (response) {
-				CommonDocumentUtils.endHook(logger, "clickOnWorkFlowButton");
+				CommonDocumentUtils.endHook(logger, CLICK_ON_WORK_FLOW_BUTTON);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.SUCCESSFULLY_SAVED, HttpStatus.OK.value()), HttpStatus.OK);
 			} else {
-				CommonDocumentUtils.endHook(logger, "clickOnWorkFlowButton");
+				CommonDocumentUtils.endHook(logger, CLICK_ON_WORK_FLOW_BUTTON);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 						HttpStatus.OK);
@@ -922,7 +924,7 @@ public class ProductMasterController {
 			
 			if (userId == null) {
 				logger.warn(USER_ID_CAN_NOT_BE_EMPTY_MSG + userId);
-				CommonDocumentUtils.endHook(logger, "addProduct");
+				CommonDocumentUtils.endHook(logger, ADD_PRODUCT);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
