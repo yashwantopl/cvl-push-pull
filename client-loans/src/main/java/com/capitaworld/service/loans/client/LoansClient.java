@@ -2427,8 +2427,8 @@ public class LoansClient {
 		}
 	}
 	
-	public LoansResponse getLoanByProposalId(Long proposalId) throws LoansException {
-		String url = loansBaseUrl.concat(GET_LOAN_PROPOSAL_BY_PROPOSAL_ID).concat("/" + proposalId);
+	public LoansResponse getLoanByApplicationId(Long applcationId) throws LoansException {
+		String url = loansBaseUrl.concat(GET_LOAN_PROPOSAL_BY_PROPOSAL_ID).concat("/" + applcationId);
 		try {
 			logger.info("Enter in GET_LOAN_PROPOSAL_BY_PROPOSAL_ID ---------->" + url);
 			HttpHeaders headers = new HttpHeaders();
