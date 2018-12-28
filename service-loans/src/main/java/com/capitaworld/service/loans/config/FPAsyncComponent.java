@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 
 import com.capitaworld.service.gst.client.GstClient;
 import com.capitaworld.service.loans.domain.fundprovider.ProductMasterTemp;
+import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
 import com.capitaworld.service.loans.domain.sanction.LoanSanctionDomain;
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
@@ -24,8 +25,12 @@ import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.model.NhbsApplicationRequest;
 import com.capitaworld.service.loans.model.PaymentRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
+import com.capitaworld.service.loans.model.corporate.CorporateFinalInfoRequest;
 import com.capitaworld.service.loans.model.retail.RetailApplicantRequest;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
+import com.capitaworld.service.loans.service.fundseeker.corporate.ApplicationProposalMappingService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateFinalInfoService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.DirectorBackgroundDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.service.fundseeker.retail.RetailApplicantService;
@@ -49,6 +54,8 @@ import com.capitaworld.service.users.model.FundProviderDetailsRequest;
 import com.capitaworld.service.users.model.UserOrganisationRequest;
 import com.capitaworld.service.users.model.UserResponse;
 import com.capitaworld.service.users.model.UsersRequest;
+
+
 
 @Component
 public class FPAsyncComponent {
@@ -85,6 +92,12 @@ public class FPAsyncComponent {
 	@Autowired
 	public GstClient gstClient;
 
+	@Autowired
+	private CorporateFinalInfoService corporateFinalInfoService;
+	
+	@Autowired
+	private ApplicationProposalMappingService appPropMappService; 
+	  
 	private static final String EMAIL_ADDRESS_FROM = "no-reply@capitaworld.com";
 
 	@Value("${capitaworld.sidbi.mail.to.maker.checker}")
@@ -140,14 +153,43 @@ public class FPAsyncComponent {
 					mailParameters.put("mobile_no", mobile != null ? mobile : "NA");
 
 				}
-
+				
 				LoanApplicationRequest applicationRequest = loanApplicationService
 						.getFromClient(paymentRequest.getApplicationId());
 				String address = null;
 				if(!CommonUtils.isObjectNullOrEmpty(applicationRequest)
 						&& applicationRequest.getBusinessTypeId() == 1){
-					CorporateApplicantRequest applicantRequest = corporateapplicantService
-							.getCorporateApplicant(paymentRequest.getApplicationId());
+					
+				   // CHANGES FOR NOTIFICATION PURPOSE---STARTS HERE----->
+					ProposalMappingResponse proposalResponse = null;
+					//Map<String, Object> proposalresp1 = null;
+					try {
+						if(paymentRequest.getApplicationId()!=null){
+						proposalResponse = proposalDetailsClient.getInPricipleById(paymentRequest.getApplicationId());
+						proposalresp = MultipleJSONObjectHelper
+								.getObjectFromMap((Map<String, Object>) proposalResponse.getData(), Map.class);
+					} 
+						}catch (Exception e) {
+						logger.info(
+								"Error calling Proposal Details Client for getting Branch Id:-" + paymentRequest.getApplicationId());
+						e.printStackTrace();
+					}
+					
+					// CHANGES FOR  MULTPLE BANK PURPOSE NOTIFICATION- NEW CODE --->
+					CorporateFinalInfoRequest applicantRequest = null;
+					try {
+						if(applicantRequest.getUserId()!=null && proposalResponse.getId()!=null){
+						applicantRequest = corporateFinalInfoService.getByProposalId(applicationRequest.getUserId(),proposalResponse.getId());
+						logger.info("THIS IS USER ID --------- AND" + " "+applicantRequest.getUserId()+ ""
+								+ "THIS IS PROPOSAL MAPPING ID==========>>>>"+proposalResponse.getId());
+						}	
+					}catch (Exception e) {
+						logger.error("EXCEPTION IS GETTING WHILE GETBY PROPOSALID IN FPASYNCOMPONENT=====>:"+e.getMessage());
+						e.printStackTrace();
+					}
+					//      OLD CODE==============>
+/*					CorporateApplicantRequest applicantRequest = corporateapplicantService
+							.getCorporateApplicant(paymentRequest.getApplicationId());*/
 					if (!CommonUtils.isObjectNullOrEmpty(applicantRequest)
 							&& !CommonUtils.isObjectNullOrEmpty(applicantRequest.getFirstAddress())) {
 						String premiseNumber = null;
@@ -677,14 +719,15 @@ public class FPAsyncComponent {
 
 	// ==================Sending Mail to BO after FS receives In-principle
 	// Approval==================
-
-	@Async
+/* 
+ * This method need to be changed with proposalmapping
+ * */
+ 	@Async
 	public void sendEmailToAllBOWhenFSRecievesInPrinciple(Map<String, Object> proposalresp,
 			PaymentRequest paymentRequest, Long userId, Long orgId) {
 		if (mailToMakerChecker) {
 
 			try {
-
 				logger.info("Into sending Mail to all BO after FS gets In-Principle Approval===>{}");
 				String subject = "Intimation : New Proposal -  #Application Id=" + paymentRequest.getApplicationId();
 				Map<String, Object> mailParameters = new HashMap<String, Object>();
@@ -874,9 +917,13 @@ public class FPAsyncComponent {
 		logger.info("Enter in sending mail to Maker and all Makers When Maker accepts Proposal");
 		try {
 			Long NotificationAliasId=null;
+//			convert loan applicationService to applicationProposalMappdingtable
 			LoanApplicationRequest applicationRequest = loanApplicationService
 					.getFromClient(request.getApplicationId());
 			Map<String, Object> parameters = new HashMap<String, Object>();
+			
+//			instead of loan application use this Application proposal mapping 
+//			ApplicationProposalMapping applicationRequest = appPropMappService.getByApplicationId(request.getApplicationId());
 			
 			String address = null;
 			String state = null;
@@ -915,54 +962,7 @@ public class FPAsyncComponent {
 			} else {
 				fsName = applicationRequest.getUserName() != null ? applicationRequest.getUserName() : "NA";
 			}
-			// =========================================================================================================
 			
-			if(!CommonUtils.isObjectNullOrEmpty(applicationRequest)
-					&& applicationRequest.getBusinessTypeId() == 1){
-				CorporateApplicantRequest applicantRequest = corporateapplicantService
-						.getCorporateApplicant(request.getApplicationId());
-				if (!CommonUtils.isObjectNullOrEmpty(applicantRequest)
-						&& !CommonUtils.isObjectNullOrEmpty(applicantRequest.getFirstAddress())) {
-					String premiseNumber = null;
-					String streetName = null;
-					String landMark = null;
-					premiseNumber = applicantRequest.getFirstAddress().getPremiseNumber()!=null?applicantRequest.getFirstAddress().getPremiseNumber():"";
-					streetName = applicantRequest.getFirstAddress().getStreetName()!=null?applicantRequest.getFirstAddress().getStreetName():"";
-					landMark = applicantRequest.getFirstAddress().getLandMark()!=null?applicantRequest.getFirstAddress().getLandMark():"";
-					address = premiseNumber.toString()+" "+streetName.toString()+" "+landMark.toString();
-
-					List<Long> stateList = new ArrayList<Long>();
-
-					Long stateId = null;
-					if (!CommonUtils.isObjectNullOrEmpty(applicantRequest.getFirstAddress().getStateId())) {
-						stateId = Long.valueOf(applicantRequest.getFirstAddress().getStateId());
-						stateList.add(stateId);
-					}
-
-					if (!CommonUtils.isListNullOrEmpty(stateList)) {
-						try {
-							logger.info("Calling One form client for getting state by state list Id");
-							OneFormResponse oneFormResponse = oneFormClient.getStateByStateListId(stateList);
-							List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
-									.getListData();
-							if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
-								MasterResponse masterResponse = MultipleJSONObjectHelper
-										.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
-								state = masterResponse.getValue();
-								city = CommonDocumentUtils.getCity(applicantRequest.getFirstAddress().getCityId(), oneFormClient);
-							} else {
-								state = "NA";
-								city = "NA";
-							}
-							
-						} catch (Exception e) {
-							logger.info("Error Calling One form client for getting state by state list Id");
-
-							e.printStackTrace();
-						}
-					}
-				}
-			}
 
 			//	when proposal belongs to PL			
 			if(!CommonUtils.isObjectNullOrEmpty(applicationRequest)
@@ -1002,6 +1002,63 @@ public class FPAsyncComponent {
 						"Error calling Proposal Details Client for getting Branch Id:-" + request.getApplicationId());
 				e.printStackTrace();
 			}
+			
+			// =========================================================================================================
+			/* 
+			 * implementation for multiple bank
+			 *  */
+			CorporateFinalInfoRequest corFinalByProposalId =null;
+			try {
+				corFinalByProposalId = corporateFinalInfoService.getByProposalId(request.getUserId(),proposalResponse.getId());
+			}catch (Exception e) {
+				logger.error("Exception while getting proposal mapping details by proposalId:"+e);
+				e.printStackTrace();
+			}
+			if(!CommonUtils.isObjectNullOrEmpty(applicationRequest)
+					&& applicationRequest.getBusinessTypeId() == 1){
+//				CorporateApplicantRequest applicantRequest = corporateapplicantService.getCorporateApplicant(request.getApplicationId());
+				if (!CommonUtils.isObjectNullOrEmpty(corFinalByProposalId)
+						&& !CommonUtils.isObjectNullOrEmpty(corFinalByProposalId.getFirstAddress())) {
+					String premiseNumber = null;
+					String streetName = null;
+					String landMark = null;
+					premiseNumber = corFinalByProposalId.getFirstAddress().getPremiseNumber()!=null?corFinalByProposalId.getFirstAddress().getPremiseNumber():"";
+					streetName = corFinalByProposalId.getFirstAddress().getStreetName()!=null?corFinalByProposalId.getFirstAddress().getStreetName():"";
+					landMark = corFinalByProposalId.getFirstAddress().getLandMark()!=null?corFinalByProposalId.getFirstAddress().getLandMark():"";
+					address = premiseNumber.toString()+" "+streetName.toString()+" "+landMark.toString();
+
+					List<Long> stateList = new ArrayList<Long>();
+
+					Long stateId = null;
+					if (!CommonUtils.isObjectNullOrEmpty(corFinalByProposalId.getFirstAddress().getStateId())) {
+						stateId = Long.valueOf(corFinalByProposalId.getFirstAddress().getStateId());
+						stateList.add(stateId);
+					}
+
+					if (!CommonUtils.isListNullOrEmpty(stateList)) {
+						try {
+							logger.info("Calling One form client for getting state by state list Id");
+							OneFormResponse oneFormResponse = oneFormClient.getStateByStateListId(stateList);
+							List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse.getListData();
+							if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+								MasterResponse masterResponse = MultipleJSONObjectHelper
+										.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+								state = masterResponse.getValue();
+								city = CommonDocumentUtils.getCity(corFinalByProposalId.getFirstAddress().getCityId(), oneFormClient);
+							} else {
+								state = "NA";
+								city = "NA";
+							}
+							
+						} catch (Exception e) {
+							logger.info("Error Calling One form client for getting state by state list Id");
+
+							e.printStackTrace();
+						}
+					}
+				}
+			}
+			
 
 			Long branchId = null;
 			if (!CommonUtils.isObjectNullOrEmpty(proposalresp.get("branch_id"))) {
@@ -2968,7 +3025,6 @@ public class FPAsyncComponent {
 	@Async
 	public void sendEmailToMakerHOBOWhenCheckerSanctionLoan(LoanSanctionDomain loanSanctionDomainOld) {
 		try {
-
 			logger.info("Into sending Mail to Maker/HO/BO when Checker sanction loan===>{}");
 			String subject = "Intimation: Sanction - Application ID " + loanSanctionDomainOld.getApplicationId();
 			Map<String, Object> mailParameters = new HashMap<String, Object>();
