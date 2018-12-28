@@ -87,11 +87,16 @@ public class LoanApplicationController {
 	private static final String ERROR_WHILE_UPDATING_PAYMENT_STATUS_MSG = "Error while updating Payment Status==>{}";
 	private static final String SAVING_REQUEST_TO_DB_MSG = "Saving Request to DB ===> ";
 	private static final String AND_USER_ID_MSG = " and UserId ==>";
-	private static final String TOKEN_NULL_MSG = "Token null==================>";
-	private static final String RESPONSE_MSG = "Response========>{}";
+	private static final String TOKEN_NULL_MSG = "Token null ==>";
+	private static final String RESPONSE_MSG = "Response ==>{}";
 	private static final String REASON_MSG = " reason  ";
 	private static final String TOKEN_LITERAL = "token";
 	private static final String SUCCESS_LITERAL = "SUCCESS";
+	private static final String IS_PRIMARY_LOCKED = "isPrimaryLocked";
+	private static final String IS_FINAL_LOCKED = "isFinalLocked";
+	private static final String PRODUCT_INFO = "productinfo";
+	private static final String GET_UBI_REPORT1_FOR_ADMIN_PANEL = "getUbiReport1ForAdminPanel";
+
 
 	@Autowired
 	private LoanApplicationService loanApplicationService;
@@ -610,7 +615,7 @@ public class LoanApplicationController {
 			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
 		// request must not be null
 		try {
-			CommonDocumentUtils.startHook(logger, "isPrimaryLocked");
+			CommonDocumentUtils.startHook(logger, IS_PRIMARY_LOCKED);
 			Long userId = null;
 			if (CommonDocumentUtils.isThisClientApplication(request) && !CommonUtils.isObjectNullOrEmpty(clientId)) {
 				userId = clientId;
@@ -631,17 +636,17 @@ public class LoanApplicationController {
 			if (!loanApplicationService.isApplicationIdActive(applicationId)) {
 				loansResponse.setData(false);
 				loansResponse.setMessage("Requested user is Inactive");
-				CommonDocumentUtils.endHook(logger, "isPrimaryLocked");
+				CommonDocumentUtils.endHook(logger, IS_PRIMARY_LOCKED);
 				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 			}
 			if (!loanApplicationService.isPrimaryLocked(applicationId, userId)) {
 				loansResponse.setData(false);
 				loansResponse.setMessage("Requested User has not filled Primary Details");
-				CommonDocumentUtils.endHook(logger, "isPrimaryLocked");
+				CommonDocumentUtils.endHook(logger, IS_PRIMARY_LOCKED);
 				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 			}
 
-			CommonDocumentUtils.endHook(logger, "isPrimaryLocked");
+			CommonDocumentUtils.endHook(logger, IS_PRIMARY_LOCKED);
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
 		} catch (Exception e) {
@@ -689,7 +694,7 @@ public class LoanApplicationController {
 			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
 		// request must not be null
 		try {
-			CommonDocumentUtils.startHook(logger, "isFinalLocked");
+			CommonDocumentUtils.startHook(logger, IS_FINAL_LOCKED);
 			Long userId = null;
 			Integer userType = (Integer) request.getAttribute(CommonUtils.USER_TYPE);
 			if ((CommonUtils.UserType.SERVICE_PROVIDER == userType || CommonUtils.UserType.NETWORK_PARTNER == userType
@@ -710,7 +715,7 @@ public class LoanApplicationController {
 			if (!loanApplicationService.isApplicationIdActive(applicationId)) {
 				loansResponse.setData(false);
 				loansResponse.setMessage("Requested user is Inactive");
-				CommonDocumentUtils.endHook(logger, "isFinalLocked");
+				CommonDocumentUtils.endHook(logger, IS_FINAL_LOCKED);
 				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 			}
 			if (!loanApplicationService.isFinalLocked(applicationId, userId)) {
@@ -720,10 +725,10 @@ public class LoanApplicationController {
 					logger.info("Start Sending Mail To Fs for Fill Final Details When FP Click View More Details");
 					asyncComponent.sendMailWhenUserNotCompleteFinalDetails(userId, applicationId);
 				}
-				CommonDocumentUtils.endHook(logger, "isFinalLocked");
+				CommonDocumentUtils.endHook(logger, IS_FINAL_LOCKED);
 				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 			}
-			CommonDocumentUtils.endHook(logger, "isFinalLocked");
+			CommonDocumentUtils.endHook(logger, IS_FINAL_LOCKED);
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
 		} catch (Exception e) {
@@ -954,7 +959,7 @@ public class LoanApplicationController {
 	@RequestMapping(value = "/getUbiReport1ForAdminPanel", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getUbiReport1ForAdminPanel(@RequestBody MobileLoanRequest loanRequest) {
 		try {
-			CommonDocumentUtils.startHook(logger, "getUbiReport1ForAdminPanel");
+			CommonDocumentUtils.startHook(logger, GET_UBI_REPORT1_FOR_ADMIN_PANEL);
 			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 			loansResponse.setListData(loanApplicationService.getPostLoginForAdminPanel(loanRequest));
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
@@ -969,7 +974,7 @@ public class LoanApplicationController {
 	@RequestMapping(value = "/getUbiReport2ForAdminPanel", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getUbiReport2ForAdminPanel(@RequestBody MobileLoanRequest loanRequest) {
 		try {
-			CommonDocumentUtils.startHook(logger, "getUbiReport1ForAdminPanel");
+			CommonDocumentUtils.startHook(logger, GET_UBI_REPORT1_FOR_ADMIN_PANEL);
 			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 			loansResponse.setListData(loanApplicationService.getPostLoginForAdminPanelOfNotEligibility(loanRequest));
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
@@ -984,7 +989,7 @@ public class LoanApplicationController {
 	@RequestMapping(value = "/getUbiReport3ForAdminPanel", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getUbiReport3ForAdminPanel(@RequestBody MobileLoanRequest loanRequest) {
 		try {
-			CommonDocumentUtils.startHook(logger, "getUbiReport1ForAdminPanel");
+			CommonDocumentUtils.startHook(logger, GET_UBI_REPORT1_FOR_ADMIN_PANEL);
 			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 			loansResponse.setListData(loanApplicationService.getPostLoginForAdminPanelOfEligibility(loanRequest));
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
@@ -999,7 +1004,7 @@ public class LoanApplicationController {
 	@RequestMapping(value = "/getUbiReport4ForAdminPanel", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getUbiReport4ForAdminPanel(@RequestBody MobileLoanRequest loanRequest) {
 		try {
-			CommonDocumentUtils.startHook(logger, "getUbiReport1ForAdminPanel");
+			CommonDocumentUtils.startHook(logger, GET_UBI_REPORT1_FOR_ADMIN_PANEL);
 			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 			loansResponse.setListData(
 					loanApplicationService.getPostLoginForAdminPanelOfFinalLockedRejectedByUbi(loanRequest));
@@ -1015,7 +1020,7 @@ public class LoanApplicationController {
 	@RequestMapping(value = "/getUbiReport5ForAdminPanel", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getUbiReport5ForAdminPanel(@RequestBody MobileLoanRequest loanRequest) {
 		try {
-			CommonDocumentUtils.startHook(logger, "getUbiReport1ForAdminPanel");
+			CommonDocumentUtils.startHook(logger, GET_UBI_REPORT1_FOR_ADMIN_PANEL);
 			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 			loansResponse.setListData(loanApplicationService.getPostLoginForAdminPanelOfApprovedByUbi(loanRequest));
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
@@ -2581,7 +2586,7 @@ public class LoanApplicationController {
 				paymentRequest = new PaymentRequest();
 				paymentRequest.setApplicationId(Long.valueOf(String.valueOf(map.get("applicationId"))));
 				paymentRequest.setUserId(Long.valueOf(String.valueOf(map.get("AdditionalInfo2"))));
-				paymentRequest.setPurposeCode(map.get("productinfo").toString());
+				paymentRequest.setPurposeCode(map.get(PRODUCT_INFO).toString());
 				paymentRequest.setResponseParams(responseParams);
 				paymentRequest.setNameOfEntity(map.get("firstname").toString());
 				
@@ -2622,7 +2627,7 @@ public class LoanApplicationController {
 				paymentRequest = new PaymentRequest();
 				paymentRequest.setApplicationId(Long.valueOf(String.valueOf(map.get("udf1"))));
 				paymentRequest.setUserId(Long.valueOf(String.valueOf(map.get("udf2"))));
-				paymentRequest.setPurposeCode(map.get("productinfo").toString());
+				paymentRequest.setPurposeCode(map.get(PRODUCT_INFO).toString());
 				paymentRequest.setResponseParams(responseParams);
 				paymentRequest.setNameOfEntity(map.get("firstname").toString());
 				
@@ -2701,7 +2706,7 @@ public class LoanApplicationController {
 
 			paymentRequest.setApplicationId(Long.valueOf(String.valueOf(map.get("udf1"))));
 			paymentRequest.setUserId(Long.valueOf(String.valueOf(map.get("udf2"))));
-			paymentRequest.setPurposeCode(map.get("productinfo").toString());
+			paymentRequest.setPurposeCode(map.get(PRODUCT_INFO).toString());
 			if ("success".equals(map.get("status").toString())) {
 				paymentRequest.setStatus(CommonUtils.SUCCESS);
 			} else {
