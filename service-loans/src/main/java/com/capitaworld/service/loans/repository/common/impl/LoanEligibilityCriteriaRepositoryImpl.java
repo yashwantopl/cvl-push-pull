@@ -23,6 +23,9 @@ public class LoanEligibilityCriteriaRepositoryImpl implements LoanEligibilityCri
 	private static final Logger logger = LoggerFactory.getLogger(LoanEligibilityCriteriaRepositoryImpl.class);
 	private static final String GIVEN_CRITERIA_DOES_NOT_MATCH_WITH_THE_DATABASE_RECORDS_MSG = "Given Criteria Does not match with the Database Records";
 	private static final String GET_HOME_LOAN_BY_SALARY_SLAB = "getHomeLoanBySalarySlab";
+	private static final String GET_PERSONAL_LOAN_BY_SALARY_SLAB = "getPersonalLoanBySalarySlab";
+	private static final String GET_LAP_BY_SALARY_SLAB = "getLAPBySalarySlab";
+	private static final String GET_HOME_LOAN_BY_SVMV = "getHomeLoanBySVMV";
 
 	@PersistenceContext
 	private EntityManager entityManager;
@@ -49,7 +52,7 @@ public class LoanEligibilityCriteriaRepositoryImpl implements LoanEligibilityCri
 	@Override
 	public Float getHomeLoanBySV(Long sv,Integer bankId) {
 
-		CommonDocumentUtils.startHook(logger, "getHomeLoanBySVMV");
+		CommonDocumentUtils.startHook(logger, GET_HOME_LOAN_BY_SVMV);
 //		hl.type =:type and
 		String query = "select hl.saleDeedValue from HomeLoanEligibilityCriteria hl where hl.bankId =:bankId and hl.isActive =:isActive and ("
 				+ sv + " >= hl.minPropertyAmount and " + sv + " <= hl.maxPropertyAmount) order by hl.id";
@@ -57,18 +60,18 @@ public class LoanEligibilityCriteriaRepositoryImpl implements LoanEligibilityCri
 				.createQuery(query, Float.class)
 				.setParameter("bankId", bankId).setParameter("isActive", true).getResultList();
 		if (!CommonUtils.isListNullOrEmpty(eligibility)) {
-			CommonDocumentUtils.endHook(logger, "getHomeLoanBySVMV");
+			CommonDocumentUtils.endHook(logger, GET_HOME_LOAN_BY_SVMV);
 			return eligibility.get(0);
 		}
 		logger.warn(GIVEN_CRITERIA_DOES_NOT_MATCH_WITH_THE_DATABASE_RECORDS_MSG);
-		CommonDocumentUtils.endHook(logger, "getHomeLoanBySVMV");
+		CommonDocumentUtils.endHook(logger, GET_HOME_LOAN_BY_SVMV);
 		return null;
 	}
 	
 	@Override
 	public Float getHomeLoanByMV(Long mv, Integer bankId) {
 
-				CommonDocumentUtils.startHook(logger, "getHomeLoanBySVMV");
+				CommonDocumentUtils.startHook(logger, GET_HOME_LOAN_BY_SVMV);
 //				hl.type =:type and
 				String query = "select hl.marketValue from HomeLoanEligibilityCriteria hl where hl.bankId =:bankId and hl.isActive =:isActive and (" + mv
 						+ " >= hl.minPropertyAmount and " + mv + " <= hl.maxPropertyAmount) order by hl.id";
@@ -76,11 +79,11 @@ public class LoanEligibilityCriteriaRepositoryImpl implements LoanEligibilityCri
 						.createQuery(query, Float.class)
 						.setParameter("bankId", bankId).setParameter("isActive", true).getResultList();
 				if (!CommonUtils.isListNullOrEmpty(eligibility)) {
-					CommonDocumentUtils.endHook(logger, "getHomeLoanBySVMV");
+					CommonDocumentUtils.endHook(logger, GET_HOME_LOAN_BY_SVMV);
 					return eligibility.get(0);
 				}
 				logger.warn(GIVEN_CRITERIA_DOES_NOT_MATCH_WITH_THE_DATABASE_RECORDS_MSG);
-				CommonDocumentUtils.endHook(logger, "getHomeLoanBySVMV");
+				CommonDocumentUtils.endHook(logger, GET_HOME_LOAN_BY_SVMV);
 				return null;
 
 	}
@@ -105,18 +108,18 @@ public class LoanEligibilityCriteriaRepositoryImpl implements LoanEligibilityCri
 	// Personal Loan Starts
 	@Override
 	public PersonalLoanEligibilityCriteria getPersonalLoanBySalarySlab(Long income, Integer type, Integer bankId) {
-		CommonDocumentUtils.startHook(logger, "getPersonalLoanBySalarySlab");
+		CommonDocumentUtils.startHook(logger, GET_PERSONAL_LOAN_BY_SALARY_SLAB);
 		String query = "select pl from PersonalLoanEligibilityCriteria pl where pl.type =:type and pl.bankId =:bankId and pl.isActive =:isActive and "
 				+ income + " >= pl.min and " + income + " <= pl.max";
 		List<PersonalLoanEligibilityCriteria> eligibility = entityManager
 				.createQuery(query, PersonalLoanEligibilityCriteria.class).setParameter("type", type)
 				.setParameter("bankId", bankId).setParameter("isActive", true).getResultList();
 		if (!CommonUtils.isListNullOrEmpty(eligibility)) {
-			CommonDocumentUtils.endHook(logger, "getPersonalLoanBySalarySlab");
+			CommonDocumentUtils.endHook(logger, GET_PERSONAL_LOAN_BY_SALARY_SLAB);
 			return eligibility.get(0);
 		}
 		logger.warn(GIVEN_CRITERIA_DOES_NOT_MATCH_WITH_THE_DATABASE_RECORDS_MSG);
-		CommonDocumentUtils.endHook(logger, "getPersonalLoanBySalarySlab");
+		CommonDocumentUtils.endHook(logger, GET_PERSONAL_LOAN_BY_SALARY_SLAB);
 		return null;
 	}
 
@@ -145,18 +148,18 @@ public class LoanEligibilityCriteriaRepositoryImpl implements LoanEligibilityCri
 	// LAP Starts
 	@Override
 	public LAPEligibilityCriteria getLAPBySalarySlab(Long income, Integer type, Integer bankId, Integer propertyType) {
-		CommonDocumentUtils.startHook(logger, "getLAPBySalarySlab");
+		CommonDocumentUtils.startHook(logger, GET_LAP_BY_SALARY_SLAB);
 		String query = "select lap from LAPEligibilityCriteria lap where lap.type =:type and lap.bankId =:bankId and lap.isActive =:isActive and lap.propertyType =:propertyType and "
 				+ income + " >= lap.min";
 		List<LAPEligibilityCriteria> eligibility = entityManager.createQuery(query, LAPEligibilityCriteria.class)
 				.setParameter("type", type).setParameter("bankId", bankId).setParameter("propertyType", propertyType)
 				.setParameter("isActive", true).getResultList();
 		if (!CommonUtils.isListNullOrEmpty(eligibility)) {
-			CommonDocumentUtils.endHook(logger, "getLAPBySalarySlab");
+			CommonDocumentUtils.endHook(logger, GET_LAP_BY_SALARY_SLAB);
 			return eligibility.get(0);
 		}
 		logger.warn(GIVEN_CRITERIA_DOES_NOT_MATCH_WITH_THE_DATABASE_RECORDS_MSG);
-		CommonDocumentUtils.endHook(logger, "getLAPBySalarySlab");
+		CommonDocumentUtils.endHook(logger, GET_LAP_BY_SALARY_SLAB);
 		return null;
 	}
 
