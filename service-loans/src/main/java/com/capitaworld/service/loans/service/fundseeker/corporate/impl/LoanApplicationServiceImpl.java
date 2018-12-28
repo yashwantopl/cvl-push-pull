@@ -1097,6 +1097,112 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		}
 	}
 
+    @Override
+    public LoanApplicationRequest lockFinalByProposalId(Long applicationId, Long proposalId,Long userId, boolean flag) throws Exception {
+        try {
+
+            LoanApplicationRequest loanApplicationRequest = new LoanApplicationRequest();
+            loanApplicationRequest.setIsMailSent(false);
+            LoanApplicationMaster applicationMaster1 = loanApplicationRepository.getByIdAndUserId(applicationId, userId);
+            ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.getByProposalIdAndApplicationId(proposalId,applicationId);
+            if (applicationProposalMapping == null) {
+                throw new Exception(
+                        "applicationProposalMapping object Must not be null while locking the Profile And Primary Details==>"
+                                + applicationProposalMapping);
+            }
+            applicationProposalMapping.setIsFinalLocked(flag);
+            applicationProposalMapping
+                    .setApplicationStatusMaster(new ApplicationStatusMaster(CommonUtils.ApplicationStatus.SUBMITTED));
+            applicationProposalMappingRepository.save(applicationProposalMapping);
+
+            // send FP notification
+            ProposalMappingRequest request = new ProposalMappingRequest();
+            request.setApplicationId(applicationId);
+            request.setProposalStatusId(MatchConstant.ProposalStatus.ACCEPT);
+            ProposalMappingResponse response = proposalDetailsClient.proposalListOfFundSeeker(request);
+            NotificationRequest notificationRequest = new NotificationRequest();
+            notificationRequest.setClientRefId(userId.toString());
+            String fsName = getApplicantName(applicationId);
+            for (int i = 0; i < response.getDataList().size(); i++) {
+                ProposalMappingRequest proposalrequest = MultipleJSONObjectHelper.getObjectFromMap(
+                        (LinkedHashMap<String, Object>) response.getDataList().get(i), ProposalMappingRequest.class);
+
+                ProductMaster master = productMasterRepository.findOne(proposalrequest.getFpProductId());
+                if (!master.getIsActive()) {
+                    logger.info("Product Id is InActive while get fundSeeker proposals=====>"
+                            + proposalrequest.getFpProductId());
+                    continue;
+                }
+                UsersRequest userRequest = new UsersRequest();
+                userRequest.setId(master.getUserId());
+                Map<String, Object> parameters = new HashMap<String, Object>();
+                // calling USER for getting fp details
+                UserResponse userResponse = userClient.getFPDetails(userRequest);
+
+                try {
+                    if (CommonUtils.isObjectNullOrEmpty(fsName)) {
+                        parameters.put("fs_name", "NA");
+                    } else {
+                        parameters.put("fs_name", fsName);
+                    }
+
+                } catch (Exception e) {
+                    // TODO: handle exception
+                    parameters.put("fs_name", "NA");
+                }
+                String[] a = { master.getUserId().toString() };
+                notificationRequest
+                        .addNotification(createNotification(a, userId, 0L, NotificationAlias.SYS_FS_FINAL_LOCK,
+                                parameters, applicationId, proposalrequest.getFpProductId()));
+            }
+            logger.info("Before send mail-------------------------------------->");
+            int userMainType = CommonUtils.getUserMainType(applicationProposalMapping.getProductId());
+            if (userMainType == CommonUtils.UserMainType.CORPORATE) {
+                logger.info("Current loan is corporate-------------------------------------->");
+                if (!CommonUtils.isObjectNullOrEmpty(applicationProposalMapping.getNpAssigneeId())
+                        && !CommonUtils.isObjectNullOrEmpty(applicationProposalMapping.getNpUserId())) {
+                    logger.info("Start sending mail when maker has lock primary details");
+
+                    loanApplicationRequest.setId(applicationProposalMapping.getApplicationId());
+                    loanApplicationRequest.setProposalMappingId(applicationProposalMapping.getProposalId());
+                    loanApplicationRequest.setNpAssigneeId(applicationProposalMapping.getNpAssigneeId());
+                    loanApplicationRequest.setNpUserId(applicationProposalMapping.getNpUserId());
+                    loanApplicationRequest.setApplicationCode(applicationProposalMapping.getApplicationCode());
+                    loanApplicationRequest.setProductId(applicationProposalMapping.getProductId());
+                    loanApplicationRequest.setName(fsName);
+                    loanApplicationRequest.setIsMailSent(true);
+
+                } else {
+                    logger.info("NP userId or assign id null or empty-------------------------------------->");
+                }
+
+            }
+            notificationClient.send(notificationRequest);
+            UsersRequest resp = getEmailMobile(applicationProposalMapping.getNpAssigneeId());
+            Map<String, Object> parameters = new HashMap<String, Object>();
+            parameters.put("url", "https://bit.ly/2IGwvBF");
+            try {
+                String makerName = getNPName(applicationProposalMapping.getNpUserId());
+                if (makerName != null) {
+                    parameters.put("maker_name", getNPName(applicationProposalMapping.getNpUserId()));
+                    parameters.put("checker_name", getNPName(applicationProposalMapping.getNpAssigneeId()));
+                    sendSMSNotification(applicationProposalMapping.getNpAssigneeId().toString(), parameters,
+                            NotificationAlias.SMS_MAKER_LOCKS_ONEFORM, resp.getMobile());
+
+                    logService.saveFsLog(applicationId, LogDateTypeMaster.FINAL_SUBMIT.getId());
+                }
+            } catch (Exception e) {
+                logger.info("maker name is null so sms is not sent");
+            }
+            return loanApplicationRequest;
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error("Error while Locking Final Information");
+            throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+
+        }
+    }
+
 	@Override
 	public LoanApplicationRequest lockFinal(Long applicationId, Long userId, boolean flag) throws Exception {
 		try {
@@ -1692,6 +1798,184 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			response.put("primaryFilledCount", loanApplicationMaster.getPrimaryFilledCount());
 			response.put("profileFilledCount", loanApplicationMaster.getDetailsFilledCount());
 			response.put("finalFilledCount", loanApplicationMaster.getFinalFilledCount());
+		}
+		return response;
+	}
+
+	@SuppressWarnings("unchecked")
+	private JSONObject corporateValidating(ApplicationProposalMapping proposalMapping, Integer toTabType) throws Exception {
+
+		final String INVALID_MSG = "Requested data is Invalid.";
+		JSONObject response = new JSONObject();
+		response.put("message", "NA");
+		response.put("result", true);
+
+		switch (toTabType) {
+
+			case CommonUtils.TabType.PROFILE_CO_APPLICANT:
+				if (CommonUtils.isObjectNullOrEmpty(proposalMapping.getIsApplicantDetailsFilled())
+						|| !proposalMapping.getIsApplicantDetailsFilled().booleanValue()) {
+					response.put("message", "Please Fill PROFILE details to Move Next !");
+					response.put("result", false);
+					return response;
+				}
+				break;
+
+			case CommonUtils.TabType.MATCHES:
+				boolean isPrimaryLocked = isPrimaryLockedByProposalId(proposalMapping.getProposalId(),proposalMapping.getUserId());
+				if (!isPrimaryLocked) {
+					response.put("message", "Please LOCK PRIMARY DETAILS to See the matches !");
+					response.put("result", false);
+					return response;
+				}
+				break;
+
+			case CommonUtils.TabType.CONNECTIONS:
+				isPrimaryLocked = isPrimaryLockedByProposalId(proposalMapping.getProposalId(), proposalMapping.getUserId());
+				if (!isPrimaryLocked) {
+					response.put("message", "Please LOCK PRIMARY DETAILS to See the connections !");
+					response.put("result", false);
+					return response;
+				}
+				break;
+			case CommonUtils.TabType.PRIMARY_INFORMATION:
+				if (CommonUtils.isObjectNullOrEmpty(proposalMapping.getIsApplicantDetailsFilled())
+						|| !proposalMapping.getIsApplicantDetailsFilled().booleanValue()) {
+					response.put("message", "Please Fill PROFILE details to Move Next !");
+					response.put("result", false);
+					return response;
+				}
+
+				// Co-Applicant Profile Checking
+				break;
+			case CommonUtils.TabType.PRIMARY_UPLOAD:
+				if (CommonUtils.isObjectNullOrEmpty(proposalMapping.getIsApplicantDetailsFilled())
+						|| !proposalMapping.getIsApplicantDetailsFilled().booleanValue()) {
+					response.put("message", "Please Fill PROFILE details to Move Next !");
+					response.put("result", false);
+					return response;
+				}
+				if (CommonUtils.isObjectNullOrEmpty(proposalMapping.getIsApplicantPrimaryFilled())
+						|| !proposalMapping.getIsApplicantPrimaryFilled().booleanValue()) {
+					response.put("message", "Please Fill PRIMARY INFORMATION details to Move Next !");
+					response.put("result", false);
+					return response;
+				}
+				break;
+			case CommonUtils.TabType.FINAL_MCQ:
+
+				// Co-Applicant Profile Checking
+				isPrimaryLocked = isPrimaryLockedByProposalId(proposalMapping.getProposalId(), proposalMapping.getUserId());
+				if (!isPrimaryLocked) {
+					response.put("message", "Please LOCK PRIMARY DETAILS to Move next !");
+					response.put("result", false);
+					return response;
+				}
+				if (CommonUtils.isObjectNullOrEmpty(proposalMapping.getIsApplicantDetailsFilled())
+						|| !proposalMapping.getIsApplicantDetailsFilled().booleanValue()) {
+					response.put("message", "Please Fill PROFILE details to Move Next !");
+					response.put("result", false);
+					return response;
+				}
+				if (CommonUtils.isObjectNullOrEmpty(proposalMapping.getIsApplicantPrimaryFilled())
+						|| !proposalMapping.getIsApplicantPrimaryFilled().booleanValue()) {
+					response.put("message", "Please Fill PRIMARY INFORMATION details to Move Next !");
+					response.put("result", false);
+					return response;
+				}
+				/*
+				 * if
+				 * (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsPrimaryUploadFilled()
+				 * ) || !applicationMaster.getIsPrimaryUploadFilled().booleanValue()) {
+				 * response.put("message",
+				 * "Please Fill PRIMARY INFORMATION details to Move Next !");
+				 * response.put("result", false); return response; }
+				 */
+				break;
+			case CommonUtils.TabType.FINAL_INFORMATION:
+
+				isPrimaryLocked = isPrimaryLockedByProposalId(proposalMapping.getProposalId(), proposalMapping.getUserId());
+				if (!isPrimaryLocked) {
+
+					response.put("message", "Please LOCK PRIMARY DETAILS to Move next !");
+					response.put("result", false);
+					return response;
+				}
+
+				if (CommonUtils.BusinessType.EXISTING_BUSINESS.getId().equals(proposalMapping.getBusinessTypeId())) {
+
+					if (CommonUtils.isObjectNullOrEmpty(proposalMapping.getIsFinalMcqFilled())
+							|| !proposalMapping.getIsFinalMcqFilled().booleanValue()) {
+
+						response.put("message", "Please Fill FINAL MCQ details to Move Next !");
+						response.put("result", false);
+						return response;
+					}
+				}
+				break;
+			case CommonUtils.TabType.FINAL_DPR_UPLOAD:
+
+				isPrimaryLocked = isPrimaryLocked(proposalMapping.getProposalId(), proposalMapping.getUserId());
+
+				if (CommonUtils.BusinessType.EXISTING_BUSINESS.getId().equals(proposalMapping.getBusinessTypeId())) {
+
+					if (CommonUtils.isObjectNullOrEmpty(proposalMapping.getIsFinalMcqFilled())
+							|| !proposalMapping.getIsFinalMcqFilled().booleanValue()) {
+
+						response.put("message", "Please Fill FINAL MCQ details to Move Next !");
+						response.put("result", false);
+						return response;
+					}
+				}
+
+				if (CommonUtils.isObjectNullOrEmpty(proposalMapping.getIsApplicantFinalFilled())
+						|| !proposalMapping.getIsApplicantFinalFilled().booleanValue()) {
+
+					response.put("message", "Please Fill FINAL INFORMATION details to Move Next !");
+					response.put("result", false);
+					return response;
+				}
+				break;
+			case CommonUtils.TabType.FINAL_UPLOAD:
+
+				isPrimaryLocked = isPrimaryLockedByProposalId(proposalMapping.getProposalId(), proposalMapping.getUserId());
+
+				if (!isPrimaryLocked) {
+
+					response.put("message", "Please LOCK PRIMARY DETAILS to Move next !");
+					response.put("result", false);
+					return response;
+				}
+
+				if (CommonUtils.BusinessType.EXISTING_BUSINESS.getId().equals(proposalMapping.getBusinessTypeId())) {
+
+					if (CommonUtils.isObjectNullOrEmpty(proposalMapping.getIsFinalMcqFilled())
+							|| !proposalMapping.getIsFinalMcqFilled().booleanValue()) {
+
+						response.put("message", "Please Fill FINAL MCQ details to Move Next !");
+						response.put("result", false);
+						return response;
+					}
+				}
+
+				if (CommonUtils.isObjectNullOrEmpty(proposalMapping.getIsApplicantFinalFilled())
+						|| !proposalMapping.getIsApplicantFinalFilled().booleanValue()) {
+
+					response.put("message", "Please Fill FINAL INFORMATION details to Move Next !");
+					response.put("result", false);
+					return response;
+				}
+
+				if (CommonUtils.isObjectNullOrEmpty(proposalMapping.getIsFinalDprUploadFilled())
+						|| !proposalMapping.getIsFinalDprUploadFilled().booleanValue()) {
+
+					response.put("message", "Please Fill Financial Model details to Move Next !");
+					response.put("result", false);
+					return response;
+				}
+				break;
+			default:
+				break;
 		}
 		return response;
 	}
@@ -5137,10 +5421,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 	
 	@Override
-	public Boolean updateDDRStatusNew(Long applicationId, Long userId, Long orgId, Long statusId) throws Exception {
+	public Boolean updateDDRStatusByProposalId(Long applicationId, Long userId, Long proposalId, Long statusId) throws Exception {
 		logger.info("start updateDDRStatusNew()");
 		try {
-			ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.getByApplicationIdAndOrgId(applicationId, orgId);
+			ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.getByProposalIdAndApplicationId(proposalId,applicationId);
 			
 			if (applicationProposalMapping == null) {
 				throw new Exception("LoanapplicationMaster object Must not be null while Updating DDR Status==>"
@@ -11440,9 +11724,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	public JSONObject isAllowToMoveAheadForMultiProposal(Long applicationId, Long proposalId, Long userId, Integer nextTabType,
 														 Long coAppllicantOrGuarantorId) throws Exception {
 		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId, userId);
+		ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.getByProposalIdAndApplicationId(proposalId,applicationId);
 		int userMainType = CommonUtils.getUserMainType(loanApplicationMaster.getProductId());
 		if (CommonUtils.UserMainType.CORPORATE == userMainType) {
-			return corporateValidatingForMultiProposal(loanApplicationMaster, nextTabType, coAppllicantOrGuarantorId,proposalId);
+			return corporateValidating(applicationProposalMapping, nextTabType);
 		} else {
 			return retailValidating(loanApplicationMaster, nextTabType, coAppllicantOrGuarantorId);
 		}

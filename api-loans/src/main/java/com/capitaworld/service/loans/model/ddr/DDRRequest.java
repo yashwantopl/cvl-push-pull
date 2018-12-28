@@ -24,6 +24,7 @@ public class DDRRequest implements Serializable {
 
 	private Long id;
 	private Long applicationId;
+	private Long proposalMappingId;
 	private Long roleId;
 	private Long userId;
 	private String godownStockyard;
@@ -807,6 +808,12 @@ public class DDRRequest implements Serializable {
 	public void setOrgId(Long orgId) {
 		this.orgId = orgId;
 	}
-	
-	
+
+	public Long getProposalMappingId() {
+		return proposalMappingId;
+	}
+
+	public void setProposalMappingId(Long proposalMappingId) {
+		this.proposalMappingId = proposalMappingId;
+	}
 }

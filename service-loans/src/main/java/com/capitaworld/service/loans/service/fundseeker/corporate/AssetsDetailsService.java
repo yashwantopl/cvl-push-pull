@@ -11,6 +11,8 @@ public interface AssetsDetailsService {
 	public void saveOrUpdate(AssetsDetails assetsDetails);
 	
 	public void readAssetsDetails(Long applicationId,Long storageDetailsId,XSSFSheet sheet);
-	
+
+	public void readAssetsDetails(Long applicationId,Long applicationProposalId,Long storageDetailsId,XSSFSheet sheet);
+
 	public void inActiveAssetsDetails(Long storageDetailsId);
 }

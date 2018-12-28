@@ -6,6 +6,7 @@ import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplic
 import com.capitaworld.service.loans.model.Address;
 import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateFinalInfoRequest;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateFinalInfoService;
@@ -28,6 +29,10 @@ public class CorporateFinalInfoServiceImpl implements CorporateFinalInfoService 
 
     @Autowired
     private LoanApplicationRepository loanApplicationRepository;
+
+    @Autowired
+    private ApplicationProposalMappingRepository applicationProposalMappingRepository;
+
     @Override
     public boolean saveOrUpdate(CorporateFinalInfoRequest corporateFinalInfoRequest, Long userId) throws Exception {
 
@@ -59,7 +64,11 @@ public class CorporateFinalInfoServiceImpl implements CorporateFinalInfoService 
 
             // Setting Flag to applicantDetailFilled or not
            // loanApplicationRepository.setIsApplicantProfileMandatoryFilled(applicantDetail.getApplicationId().getId(),finalUserId, CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getFinalDetailsFilled()) ? false : corporateFinalInfoRequest.getFinalDetailsFilled());
-            loanApplicationRepository.setIsApplicantFinalMandatoryFilled(applicantDetail.getApplicationId().getId(),finalUserId, CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getFinalDetailsFilled()) ? false : corporateFinalInfoRequest.getFinalDetailsFilled());
+            if (corporateFinalInfoRequest.getProposalMappingId() == null) {
+                loanApplicationRepository.setIsApplicantFinalMandatoryFilled(applicantDetail.getApplicationId().getId(), finalUserId, CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getFinalDetailsFilled()) ? false : corporateFinalInfoRequest.getFinalDetailsFilled());
+            }else {
+                applicationProposalMappingRepository.setIsApplicantFinalMandatoryFilled(corporateFinalInfoRequest.getProposalMappingId(), applicantDetail.getApplicationId().getId(), finalUserId, CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getFinalDetailsFilled()) ? false : corporateFinalInfoRequest.getFinalDetailsFilled());
+            }
             // Updating Profile Filled Count
            /* loanApplicationRepository.setProfileFilledCount(applicantDetail.getApplicationId().getId(), finalUserId,
                     corporateFinalInfoRequest.getDetailsFilledCount());*/

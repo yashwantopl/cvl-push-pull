@@ -55,7 +55,9 @@ public interface LoanApplicationService {
 	public boolean lockPrimary(Long applicationId, Long userId,boolean flag) throws Exception;
 
 	public LoanApplicationRequest lockFinal(Long applicationId, Long userId,boolean flag) throws Exception;
-	
+
+	public LoanApplicationRequest lockFinalByProposalId(Long applicationId,Long proposalId ,Long userId,boolean flag) throws Exception;
+
 	public UserResponse setLastAccessApplication(Long applicationId,Long userId) throws Exception;
 	
 	public Integer getProductIdByApplicationId(Long applicationId,Long userId) throws Exception;
@@ -162,7 +164,7 @@ public interface LoanApplicationService {
 	
 	public Boolean updateDDRStatus(Long applicationId, Long userId , Long clientId, Long statusId) throws Exception;
 	
-	public Boolean updateDDRStatusNew(Long applicationId, Long userId , Long orgId, Long statusId) throws Exception;
+	public Boolean updateDDRStatusByProposalId(Long applicationId, Long userId , Long proposalId, Long statusId) throws Exception;
 	
 	public LoanApplicationRequest getFromClient(Long id) throws Exception;
 

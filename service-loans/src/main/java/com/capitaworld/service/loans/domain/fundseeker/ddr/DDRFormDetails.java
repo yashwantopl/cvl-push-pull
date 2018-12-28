@@ -35,6 +35,9 @@ public class DDRFormDetails implements Serializable {
 	
 	@Column(name = "application_id")
 	private Long applicationId;
+
+	@Column(name = "proposal_mapping_id")
+	private Long proposalMappingId;
 	
 	@Column(name = "reference_no")
 	private String referenceNo;
@@ -1079,9 +1082,17 @@ public class DDRFormDetails implements Serializable {
 		this.orgId = orgId;
 	}
 
+	public Long getProposalMappingId() {
+		return proposalMappingId;
+	}
+
+	public void setProposalMappingId(Long proposalMappingId) {
+		this.proposalMappingId = proposalMappingId;
+	}
+
 	@Override
 	public String toString() {
-		return "DDRFormDetails [id=" + id + ", applicationId=" + applicationId + ", referenceNo=" + referenceNo
+		return "DDRFormDetails [id=" + id + ", applicationId=" + applicationId + ", proposalMappingId="+proposalMappingId+", referenceNo=" + referenceNo
 				+ ", userId=" + userId + ", godownStockyard=" + godownStockyard + ", companySuccessPlan="
 				+ companySuccessPlan + ", detailsOfBankingArrangement=" + detailsOfBankingArrangement
 				+ ", salesOfAutomobileDivision=" + salesOfAutomobileDivision + ", othersSales=" + othersSales

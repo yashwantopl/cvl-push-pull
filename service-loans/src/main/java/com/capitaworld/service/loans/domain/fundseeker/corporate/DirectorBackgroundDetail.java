@@ -5,6 +5,7 @@ import java.util.Date;
 
 import javax.persistence.*;
 
+import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.capitaworld.service.loans.domain.fundseeker.AuditActivity;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 
@@ -45,6 +46,10 @@ public class DirectorBackgroundDetail extends AuditActivity implements Serializa
 	@ManyToOne
 	@JoinColumn(name="application_id")
 	private LoanApplicationMaster applicationId;
+
+	@ManyToOne
+	@JoinColumn(name="proposal_mapping_id")
+	private ApplicationProposalMapping applicationProposalMapping;
 	
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name="appointment_date")
@@ -641,5 +646,13 @@ public class DirectorBackgroundDetail extends AuditActivity implements Serializa
 
 	public void setDistrictMappingId(Long districtMappingId) {
 		this.districtMappingId = districtMappingId;
+	}
+
+	public ApplicationProposalMapping getApplicationProposalMapping() {
+		return applicationProposalMapping;
+	}
+
+	public void setApplicationProposalMapping(ApplicationProposalMapping applicationProposalMapping) {
+		this.applicationProposalMapping = applicationProposalMapping;
 	}
 }

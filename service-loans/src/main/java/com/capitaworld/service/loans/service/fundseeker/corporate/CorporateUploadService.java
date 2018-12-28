@@ -18,8 +18,12 @@ public interface CorporateUploadService {
 
 	public DocumentResponse uploadOtherDoc(String documentString, MultipartFile multipartFiles, Long userId) throws Exception;
 
+	public DocumentResponse uploadOtherDocByProposalId(String documentString, MultipartFile multipartFiles, Long userId) throws Exception;
+
 	public DocumentResponse getOtherDoc(DocumentRequest documentRequest) throws Exception;
-	
+
+	public DocumentResponse getOtherDocByProposalId(DocumentRequest documentRequest) throws Exception;
+
 	public void updateLoanApplicationFlag(Long applicantId, Long userId, int tabType,Boolean isFilled,String filledCount) throws Exception;
 
 	public void updateLoanApplicationFlagByProposalId(Long proposalId,Long applicantId, Long userId, int tabType,Boolean isFilled,String filledCount) throws Exception;

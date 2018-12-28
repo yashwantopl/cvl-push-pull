@@ -18,11 +18,11 @@ public interface DDRFormService {
 	
 	public DDRRequest getMergeDDR(Long appId,Long userId) ;
 	
-	public DDRRequest getMergeDDRNew(Long appId,Long userId, Long orgId);
+	public DDRRequest getMergeDDRByProposalId(Long appId, Long userId, Long orgId);
 	
 	public void saveMergeDDR(DDRRequest dDRRequest) throws Exception;
 	
-	public void saveMergeDDRNew(DDRRequest dDRRequest) throws Exception;
+	public void saveMergeDDRByProposalId(DDRRequest dDRRequest) throws Exception;
 	
 	public DDRFormDetailsRequest get(Long id,Long userId);
 	
@@ -39,7 +39,9 @@ public interface DDRFormService {
 	public com.capitaworld.sidbi.integration.model.ddr.DDRFormDetailsRequest getSIDBIDetails(Long appId,Long userId);
 	
 	public boolean deleteDocument(DDRUploadRequest ddrUploadRequest);
-	
+
+	public boolean deleteDocumentByProposalId(DDRUploadRequest ddrUploadRequest);
+
 	public DDRCustomerRequest checkCustomerDetailFilled(Long applicationId);
 	
 	public Boolean saveCustomerDetailFilled(DDRCustomerRequest customerRequest);

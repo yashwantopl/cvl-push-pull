@@ -6,6 +6,8 @@ public interface ExcelExtractionService {
 	
 	public Boolean readCMA(Long applicationId,Long storageDetailsId,MultipartFile multipartFile);
 
+	public Boolean readCMA(Long applicationId,Long proposalMappingId,Long storageDetailsId,MultipartFile multipartFile);
+
 	public Boolean readDPR(Long applicationId, Long storageDetailsId, MultipartFile multipartFile);
 	
 	public Boolean readBS(Long applicationId,Long storageDetailsId,MultipartFile multipartFile);
