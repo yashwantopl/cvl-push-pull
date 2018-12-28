@@ -123,7 +123,7 @@ public class CorporateFinalInfoServiceImpl implements CorporateFinalInfoService 
             CorporateFinalInfoRequest corporateFinalInfoRequest = new CorporateFinalInfoRequest();
             BeanUtils.copyProperties(applicantDetail, corporateFinalInfoRequest, CommonUtils.IgnorableCopy.CORPORATE_PROFILE);
             copyAddressFromDomainToRequest(applicantDetail, corporateFinalInfoRequest);
-
+            corporateFinalInfoRequest.setOrganisationName(corporateFinalInfoRequest.getOrganisationName());
             //applicantRequest.setDetailsFilledCount(applicantDetail.getApplicationId().getDetailsFilledCount());
 
             return corporateFinalInfoRequest;

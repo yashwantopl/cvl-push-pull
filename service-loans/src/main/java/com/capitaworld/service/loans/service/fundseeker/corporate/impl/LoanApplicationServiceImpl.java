@@ -20,10 +20,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.capitaworld.service.loans.domain.fundprovider.ProposalDetails;
-import com.capitaworld.service.loans.model.*;
-import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.*;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -100,6 +96,7 @@ import com.capitaworld.service.loans.config.FPAsyncComponent;
 import com.capitaworld.service.loans.config.MCAAsyncComponent;
 import com.capitaworld.service.loans.domain.common.AuditMaster;
 import com.capitaworld.service.loans.domain.fundprovider.ProductMaster;
+import com.capitaworld.service.loans.domain.fundprovider.ProposalDetails;
 import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.capitaworld.service.loans.domain.fundseeker.ApplicationStatusMaster;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
@@ -137,6 +134,17 @@ import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryPersonalLoa
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
 import com.capitaworld.service.loans.domain.sanction.LoanSanctionDomain;
 import com.capitaworld.service.loans.exceptions.LoansException;
+import com.capitaworld.service.loans.model.AdminPanelLoanDetailsResponse;
+import com.capitaworld.service.loans.model.CommonResponse;
+import com.capitaworld.service.loans.model.DashboardProfileResponse;
+import com.capitaworld.service.loans.model.DirectorBackgroundDetailResponse;
+import com.capitaworld.service.loans.model.FrameRequest;
+import com.capitaworld.service.loans.model.LoanApplicationDetailsForSp;
+import com.capitaworld.service.loans.model.LoanApplicationRequest;
+import com.capitaworld.service.loans.model.LoanEligibilityRequest;
+import com.capitaworld.service.loans.model.PaymentRequest;
+import com.capitaworld.service.loans.model.PincodeDataResponse;
+import com.capitaworld.service.loans.model.ReportResponse;
 import com.capitaworld.service.loans.model.common.CGTMSECalcDataResponse;
 import com.capitaworld.service.loans.model.common.ChatDetails;
 import com.capitaworld.service.loans.model.common.DisbursementRequest;
@@ -145,11 +153,38 @@ import com.capitaworld.service.loans.model.common.EkycResponse;
 import com.capitaworld.service.loans.model.common.HunterRequestDataResponse;
 import com.capitaworld.service.loans.model.common.ProposalList;
 import com.capitaworld.service.loans.model.common.SanctioningDetailResponse;
+import com.capitaworld.service.loans.model.corporate.CorporateFinalInfoRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateProduct;
 import com.capitaworld.service.loans.model.mobile.MLoanDetailsResponse;
 import com.capitaworld.service.loans.model.mobile.MobileLoanRequest;
 import com.capitaworld.service.loans.repository.common.LogDetailsRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
+import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.AchievementDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.AssetsDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.AssociatedConcernDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateCoApplicantRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.CreditRatingOrganizationDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.DirectorBackgroundDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.ExistingProductDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.FinanceMeansDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.FinancialArrangementDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.GuarantorsCorporateDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.LiabilitiesDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.MonthlyTurnoverDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.OperatingStatementDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.OwnershipDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryTermLoanDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryUnsecuredLoanDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryWorkingCapitalLoanDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.PromotorBackgroundDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.ProposedProductDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.SecurityCorporateDetailsRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.TotalCostOfProjectRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.CoApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.GuarantorDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.PrimaryHomeLoanDetailRepository;
@@ -162,8 +197,11 @@ import com.capitaworld.service.loans.service.common.DashboardService;
 import com.capitaworld.service.loans.service.common.LogService;
 import com.capitaworld.service.loans.service.common.PincodeDateService;
 import com.capitaworld.service.loans.service.fundprovider.OrganizationReportsService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.ApplicationProposalMappingService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CMAService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateCoApplicantService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateFinalInfoService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateUploadService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.DDRFormService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
@@ -521,6 +559,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	@Autowired
 	private LoanApplicationService loanApplicationService;
 
+	@Autowired
+	private ApplicationProposalMappingService appPropMappService;
+	
+	@Autowired
+	private CorporateFinalInfoService corporateFinalInfoService;
 	public static final String EMAIL_ADDRESS_FROM = "no-reply@capitaworld.com";
 	
     @Value("${cw.gst.unit.test}")
@@ -2860,7 +2903,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Override
 	public String getFsApplicantName(Long applicationId) throws Exception {
-		LoanApplicationMaster applicationMaster = loanApplicationRepository.findOne(applicationId);
+		ApplicationProposalMapping applicationMaster = appPropMappService.getByApplicationId(applicationId);
 		if (CommonUtils.isObjectNullOrEmpty(applicationMaster))
 			return null;
 
@@ -2874,29 +2917,23 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				if (directorBackgroundDetail != null) {
 					return directorBackgroundDetail.getDirectorsName();
 				}
-
 			} else if (applicationMaster.getBusinessTypeId().intValue() == CommonUtils.BusinessType.RETAIL_PERSONAL_LOAN
 					.getId()) {
 				RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository
 						.findOneByApplicationIdId(applicationId);
 				return retailApplicantDetail.getFirstName() + " " + retailApplicantDetail.getLastName();
 			}
-
 			else {
 				if (CommonUtils.getUserMainType(applicationMaster.getProductId()) == CommonUtils.UserMainType.RETAIL) {
 					RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository
 							.findOneByApplicationIdId(applicationId);
 					return retailApplicantDetail.getFirstName() + " " + retailApplicantDetail.getLastName();
-				} else if (CommonUtils
-						.getUserMainType(applicationMaster.getProductId()) == CommonUtils.UserMainType.CORPORATE) {
-					CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
-							.findOneByApplicationIdId(applicationId);
-					return corporateApplicantDetail.getOrganisationName();
+				} else if (CommonUtils.getUserMainType(applicationMaster.getProductId()) == CommonUtils.UserMainType.CORPORATE) {
+					String organisationName = corporateApplicantDetailRepository.getOrganisationNameByProposalId(applicationMaster.getProposalId());
+					return organisationName;
 				}
 			}
-
 		} else {
-
 			if (applicationMaster.getBusinessTypeId() != null && applicationMaster.getBusinessTypeId().intValue() == CommonUtils.BusinessType.NEW_TO_BUSINESS.getId()
 					.intValue()) {
 				List<DirectorBackgroundDetail> directorBackgroundDetails = directorBackgroundDetailsRepository
@@ -2907,12 +2944,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					return directorBackgroundDetail.getDirectorsName();
 				}
 			}
-
-			CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
-					.findOneByApplicationIdId(applicationId);
-			return corporateApplicantDetail.getOrganisationName();
+			String organisationName = corporateApplicantDetailRepository.getOrganisationNameByProposalId(applicationMaster.getProposalId());
+			return organisationName;
 		}
-
 		return null;
 	}
 
@@ -5181,7 +5215,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	@Override
 	public LoanApplicationRequest getFromClient(Long id) throws Exception {
 		try {
-			LoanApplicationMaster applicationMaster = loanApplicationRepository.findOne(id);
+			ApplicationProposalMapping applicationMaster = appPropMappService.getByApplicationId(id);
+//			LoanApplicationMaster applicationMaster = loanApplicationRepository.findOne(id);
 			if (applicationMaster == null) {
 				throw new NullPointerException("Invalid Loan Application ID==>" + id);
 			}
@@ -5206,10 +5241,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			if (!CommonUtils.isObjectNullOrEmpty(applicationMaster.getProductId())) {
 				int mainType = CommonUtils.getUserMainType(applicationMaster.getProductId().intValue());
 				if (CommonUtils.UserMainType.CORPORATE == mainType) {
-					CorporateApplicantDetail applicantDetail = corporateApplicantDetailRepository
-							.findOneByApplicationIdId(id);
+					CorporateApplicantDetail corpApplicantDetail =new CorporateApplicantDetail();
+					CorporateFinalInfoRequest applicantDetail = corporateFinalInfoService.getByProposalId(id, applicationMaster.getProposalId());
+					BeanUtils.copyProperties(applicantDetail, corpApplicantDetail );
+					
 					if (!CommonUtils.isObjectNullOrEmpty(applicantDetail)) {
-						address = CommonDocumentUtils.getAdministrativeOfficeAddress(applicantDetail, oneFormClient);
+						address = CommonDocumentUtils.getAdministrativeOfficeAddress(corpApplicantDetail, oneFormClient);
 					}
 				} else {
 					RetailApplicantDetail applicantDetail = retailApplicantDetailRepository
@@ -5222,6 +5259,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			} else {
 				logger.info("No ProductId Found========>");
 			}
+			
 			return applicationRequest;
 		} catch (Exception e) {
 			logger.error("Error while getting Individual Loan Details For Client:-");
