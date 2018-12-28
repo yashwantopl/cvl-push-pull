@@ -70,8 +70,9 @@ public class AssociatedConcernDetailServiceImpl implements AssociatedConcernDeta
 	public Boolean saveOrUpdate(List<AssociatedConcernDetailRequest> requests,Long applicationId,Long userId) {
 		// Inactivating Previous Details
 		associatedConcernDetailRepository.inActive(userId, applicationId);
+		AssociatedConcernDetail associatedConcernDetail = null;
 		for (AssociatedConcernDetailRequest associatedConcernDetailRequest : requests) {
-			AssociatedConcernDetail associatedConcernDetail = new AssociatedConcernDetail();
+			associatedConcernDetail = new AssociatedConcernDetail();
 			associatedConcernDetail.setCreatedBy(userId);
 			associatedConcernDetail.setCreatedDate(new Date());
 			associatedConcernDetail.setApplicationId(new LoanApplicationMaster(applicationId));
