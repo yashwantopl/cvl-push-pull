@@ -1131,6 +1131,13 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 
 					logger.warn("::::::=====MCA Data is Null====:::::::For:::::==>" + companyId);
 				}
+				
+				McaResponse mcaFinancialAndDetailsRes=mcaClient.getCompanyFinancialCalcAndDetails(toApplicationId, companyId);
+				if(mcaFinancialAndDetailsRes.getData()!=null) {
+					corporatePrimaryViewResponse.setMcaFinancialAndDetailsResponse(mcaFinancialAndDetailsRes);
+				}else {
+					logger.info("::::::=====MCA Financial Data is Null====:::::::For:::::==>"+ companyId + " appId==>"+toApplicationId);
+				}
 			} else {
 				logger.warn("Mca Company Id is Null");
 
@@ -1174,7 +1181,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 
 		// Fraud Detection Data
 
-		try {
+		/*try {
 			AnalyticsResponse hunterResp = fraudAnalyticsClient.getRuleAnalysisData(toApplicationId);
 
 			if (!CommonUtils.isObjectListNull(hunterResp, hunterResp.getData())) {
@@ -1184,7 +1191,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 			}
 		} catch (Exception e1) {
 			logger.error("------:::::...Error while fetching Fraud Detection Details...For..::::::-----" + toApplicationId + CommonUtils.EXCEPTION + e1);
-		}
+		}*/
 		
 		
 		// Product Name

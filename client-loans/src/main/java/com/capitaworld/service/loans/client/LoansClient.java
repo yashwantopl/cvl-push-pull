@@ -97,6 +97,7 @@ public class LoansClient {
 	private static final String MEANS_OF_FINANCE = "/means_of_finance/save";
 	private static final String FINANCIAL_ARRANGEMENT_DETAILS = "/financial_arrangement_details/save";
 	private static final String FINANCIAL_ARRANGEMENT_DETAILS_TOTAL_EMI = "/financial_arrangement_details/get_total_emi_sanction_amount";
+	private static final String FINANCIAL_ARRANGEMENT_DETAILS_TOTAL_EMI_UNIFORM = "/financial_arrangement_details/get_total_emi_sanction_amount_uniform";
 	private static final String FINANCIAL_ARRANGEMENT_DETAILS_TOTAL_EMI_FROM_DIRECTOR_ID = "/financial_arrangement_details/getTotalEmiFromDirectorId";
 	private static final String FUTURE_FINANCIAL_ESTIMATE_DETAILS = "/future_financial_estimate_details/save";
 	private static final String GUARANTORS_CORPORATE_DETAILS = "/guarantors_corporate_details/save";
@@ -862,6 +863,21 @@ public class LoansClient {
 		} catch (Exception e) {
 			logger.error("Exception in getTotalEMIAndSanctionAmount : ",e);
 			throw new Exception(e.getCause().getMessage());
+		}
+	}
+	
+	public FinancialArrangementsDetailRequest getTotalEMIAndSanctionAmountUniform(Long applicationId) throws LoansException{
+		String url = loansBaseUrl.concat(FINANCIAL_ARRANGEMENT_DETAILS_TOTAL_EMI_UNIFORM).concat("/" + applicationId);
+		logger.info("url for Getting TotalEMI From Client FOr Uniform Product=================>" + url + AND_FOR_APPLICATION_ID + applicationId);
+		try {
+			/* return restTemplate.postForObject(url, request, ExcelResponse.class); */
+			HttpHeaders headers = new HttpHeaders();
+			headers.set(REQ_AUTH, "true");
+			HttpEntity<?> entity = new HttpEntity<>(null, headers);
+			return restTemplate.exchange(url, HttpMethod.GET, entity, FinancialArrangementsDetailRequest.class).getBody();
+		} catch (Exception e) {
+			logger.error("Exception in getTotalEMIAndSanctionAmount : ",e);
+			throw new LoansException(e.getCause().getMessage());
 		}
 	}
 
