@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -28,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.capitaworld.service.gateway.model.GatewayRequest;
 import com.capitaworld.service.loans.config.AsyncComponent;
 import com.capitaworld.service.loans.config.AuditComponentBankToCW;
+import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.LoanApplicationDetailsForSp;
@@ -42,6 +44,7 @@ import com.capitaworld.service.loans.model.common.EkycRequest;
 import com.capitaworld.service.loans.model.mobile.MobileLoanRequest;
 import com.capitaworld.service.loans.service.common.AutoFillOneFormDetailService;
 import com.capitaworld.service.loans.service.common.FsDetailsForPdfService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.ApplicationProposalMappingService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.service.sanction.LoanDisbursementService;
 import com.capitaworld.service.loans.service.sanction.LoanSanctionService;
@@ -60,6 +63,7 @@ import com.capitaworld.service.users.model.UsersRequest;
 import com.capitaworld.sidbi.integration.model.GenerateTokenRequest;
 import com.capitaworld.sidbi.integration.model.ProfileReqRes;
 import com.capitaworld.sidbi.integration.util.AESEncryptionUtility;
+import com.ibm.icu.text.SimpleDateFormat;
 
 @RestController
 @RequestMapping("/loan_application")
@@ -96,7 +100,10 @@ public class LoanApplicationController {
 
 	@Autowired
 	private TokenService tokenService;
-
+	
+	@Autowired
+	private ApplicationProposalMappingService appPropMappService;
+	
 	/*@RequestMapping(value = "/ping", method = RequestMethod.GET)
 	public String getPing() {
 		logger.info("Ping success");
@@ -3442,6 +3449,34 @@ public class LoanApplicationController {
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	@RequestMapping(value = "/getLoanApplicationById/{applicationId}", method = RequestMethod.GET)
+	public ResponseEntity<LoansResponse> getLoanApplicationById(@PathVariable("applicationId") Long applicationId, HttpServletRequest request) {
+		try {
+			logger.info("Inside getLoanApplicationById start");
+			ApplicationProposalMapping applicationMaster = appPropMappService.getByApplicationId(applicationId);
+			if (applicationMaster == null) {
+				throw new NullPointerException("Invalid Loan Application ID==>" + applicationId);
+			}
+			LoanApplicationRequest applicationRequest = new LoanApplicationRequest();
+			BeanUtils.copyProperties(applicationMaster, applicationRequest);
+			if(applicationMaster.getApplicationId()==null){
+				return new ResponseEntity<>(new LoansResponse(
+						"Application not found", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+			LoansResponse loansResponse  = new LoansResponse();
+			loansResponse.setMessage("Loan application got successful");
+			loansResponse.setData(applicationRequest);
+			loansResponse.setStatus(200);
+			logger.info("Inside getLoanApplicationById - end");
+			return new ResponseEntity<>(loansResponse,HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while /getLoanApplicationById/{applicationId}==>");
+			e.printStackTrace();
+			return new ResponseEntity<>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
 		}
 	}
 
