@@ -118,7 +118,7 @@ public class LoansClient {
 	private static final String UPDATE_LOAN_APPLICATION = "/loan_application/updateLoanApplication";
 	private static final String BASIC_DETAIL_URL = "/fs_retail_profile/profile/get_basic_details";
 	private static final String LOAN_BASIC_DETAILS = "/loan_application/getLoanBasicDetails";
-	private static final String PRIMARY_INFORMATION = "/corporate_primary/get_for_client";
+	private static final String PRIMARY_INFORMATION = "/corporate_primary/primary/get";
 	private static final String STRING_TO_BINARY_ARRAY = "/convertToByteArray";
 
 	private static final String MOBILE_LOANLIST = "/mobile/loanList";
