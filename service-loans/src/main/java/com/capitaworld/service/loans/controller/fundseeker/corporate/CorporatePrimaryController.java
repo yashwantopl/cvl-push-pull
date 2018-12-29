@@ -104,7 +104,7 @@ public class CorporatePrimaryController {
         }
     }
     
-    @RequestMapping(value = "${primary}/get_for_clent", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "${primary}/get_for_client", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public PrimaryCorporateRequest getPrimaryForClient(@RequestBody Long applicationId) {
         try {
             CommonDocumentUtils.startHook(logger, "getPrimaryForClient");
