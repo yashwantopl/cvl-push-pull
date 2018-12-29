@@ -79,7 +79,7 @@ public class CommonTeaserViewServiceImpl implements CommonTeaserViewService{
 		logger.info("start getPrimaryViewDetails ");
 		LoanApplicationMaster applicationMaster=loanApplicationMasterRepo.findOne(applicantId);
 		if(CommonUtils.isObjectNullOrEmpty(applicationMaster))
-		return false;
+			return false;
 		
 		LoanType loanType = LoanType.getById(Integer.parseInt(applicationMaster.getProductId().toString()));
 		if (loanType == null)
@@ -131,7 +131,7 @@ public class CommonTeaserViewServiceImpl implements CommonTeaserViewService{
 		logger.info("start getFinalViewDetails ");
 		LoanApplicationMaster applicationMaster=loanApplicationMasterRepo.findOne(applicantId);
 		if(CommonUtils.isObjectNullOrEmpty(applicationMaster))
-		return false;
+			return false;
 		
 		LoanType loanType = LoanType.getById(Integer.parseInt(applicationMaster.getProductId().toString()));
 		if (loanType == null)

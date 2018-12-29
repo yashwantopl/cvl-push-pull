@@ -157,7 +157,7 @@ public class TermLoanController {
 	public ResponseEntity<LoansResponse> getPrimary(@PathVariable("applicationId") Long applicationId,
 			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
 		try {
-			CommonDocumentUtils.startHook(logger, "getPrimary");
+			CommonDocumentUtils.startHook(logger, CommonUtils.GET_PRIMARY);
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 			if (CommonDocumentUtils.isThisClientApplication(request)) {
 				userId = clientId;
@@ -174,7 +174,7 @@ public class TermLoanController {
 			PrimaryTermLoanRequest response = primaryTLService.get(applicationId, userId);
 			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 			loansResponse.setData(response);
-			CommonDocumentUtils.endHook(logger, "getPrimary");
+			CommonDocumentUtils.endHook(logger, CommonUtils.GET_PRIMARY);
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getting Primary Term Loan Details==>", e);
@@ -199,7 +199,7 @@ public class TermLoanController {
 			PrimaryTermLoanRequest response = primaryTLService.get(applicationId, null);
 			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 			loansResponse.setData(response);
-			CommonDocumentUtils.endHook(logger, "getPrimary");
+			CommonDocumentUtils.endHook(logger, CommonUtils.GET_PRIMARY);
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getting Primary Term Loan Details==>", e);

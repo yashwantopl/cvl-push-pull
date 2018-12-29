@@ -10,6 +10,7 @@ public class OfflineProcessedApplicationRequest {
 	private String organisationName;
 	private String branchName;
 	private String isCampaignUser;
+	private String campaignCode;
 	private Boolean isSanctioned;
 	private Boolean isDisbursed;
 	private Long branchId;
@@ -174,6 +175,12 @@ public class OfflineProcessedApplicationRequest {
 	}
 	public void setModifiedDate(Date modifiedDate) {
 		this.modifiedDate = modifiedDate;
+	}
+	public String getCampaignCode() {
+		return campaignCode;
+	}
+	public void setCampaignCode(String campaignCode) {
+		this.campaignCode = campaignCode;
 	}
 	
 	

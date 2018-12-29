@@ -37,10 +37,8 @@ public class UserLoanAmountMappingController {
 	public ResponseEntity<LoansResponse> checkAmountByUserIdAndProductId(@RequestBody UserLoanAmountMappingRequest amountMappingRequest,HttpServletRequest httpServletRequest){
 
 		logger.info("Enter in check amount by user Id -------------------->" + amountMappingRequest.toString());
-		if(CommonUtils.isObjectNullOrEmpty(amountMappingRequest.getUserId())) {
-			if(!CommonUtils.isObjectNullOrEmpty(httpServletRequest.getAttribute(CommonUtils.USER_ID))) {
+		if(CommonUtils.isObjectNullOrEmpty(amountMappingRequest.getUserId()) && !CommonUtils.isObjectNullOrEmpty(httpServletRequest.getAttribute(CommonUtils.USER_ID)) ) {
 				amountMappingRequest.setUserId((Long)(httpServletRequest.getAttribute(CommonUtils.USER_ID)));
-			}
 		}
 		
 		if(CommonUtils.isObjectNullOrEmpty(amountMappingRequest.getUserId())) {
@@ -70,10 +68,8 @@ public class UserLoanAmountMappingController {
 	public ResponseEntity<LoansResponse> getByUserIdAndProductId(@RequestBody UserLoanAmountMappingRequest amountMappingRequest,HttpServletRequest httpServletRequest){
 
 		logger.info("Enter in get by user id and product id-------------------->" + amountMappingRequest.toString());
-		if(CommonUtils.isObjectNullOrEmpty(amountMappingRequest.getUserId())) {
-			if(!CommonUtils.isObjectNullOrEmpty(httpServletRequest.getAttribute(CommonUtils.USER_ID))) {
+		if(CommonUtils.isObjectNullOrEmpty(amountMappingRequest.getUserId()) && !CommonUtils.isObjectNullOrEmpty(httpServletRequest.getAttribute(CommonUtils.USER_ID)) ) {
 				amountMappingRequest.setUserId((Long)(httpServletRequest.getAttribute(CommonUtils.USER_ID)));
-			}
 		}
 		
 		if(CommonUtils.isObjectNullOrEmpty(amountMappingRequest.getUserId())) {

@@ -307,6 +307,10 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 	
 	private static final Logger logger = LoggerFactory.getLogger(CamReportPdfDetailsServiceImpl.class);
 
+	private static final String ASSESSMENT_ID = "assessmentId";
+	private static final String FITCH_RESPONSE = "fitchResponse";
+	private static final String FITCH_TITLE = "fitchTitle";
+
 	@Override
 	public Map<String, Object> getCamReportPrimaryDetails(Long applicationId, Long productId, boolean isFinalView) {
 		Map<String, Object> map = new HashMap<String, Object>();
@@ -983,27 +987,27 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				WorkingCapitalParameter workingCapitalPara = workingCapitalParameterRepository.getByID(productId);
 					if (workingCapitalPara.getAssessmentMethodId() != null) {
 						Long assessmentId = workingCapitalPara.getAssessmentMethodId().longValue();
-						map.put("assessmentId", assessmentId);
+						map.put(ASSESSMENT_ID, assessmentId);
 					}else {
-						map.put("assessmentId", " ");
+						map.put(ASSESSMENT_ID, " ");
 					}
 					break;
 				case 2:
 				TermLoanParameter termLoanParameter = termLoanParameterRepository.getById(productId);
 					if (termLoanParameter.getAssessmentMethodId() != null) {
 						Long assessmentId = termLoanParameter.getAssessmentMethodId().longValue();
-						map.put("assessmentId", assessmentId);
+						map.put(ASSESSMENT_ID, assessmentId);
 					} else {
-						map.put("assessmentId", " ");
+						map.put(ASSESSMENT_ID, " ");
 					}
 					break;
 				case 16:
 				WcTlParameter wctlPara = wcTlLoanParameterRepository.getById(productId);
 					if (wctlPara.getAssessmentMethodId() != null) {
 						Long assessmentId = wctlPara.getAssessmentMethodId().longValue();
-						map.put("assessmentId", assessmentId);
+						map.put(ASSESSMENT_ID, assessmentId);
 					}else {
-						map.put("assessmentId", " ");
+						map.put(ASSESSMENT_ID, " ");
 					}
 					break;
 				default:
@@ -1142,7 +1146,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				{
 					FitchOutputManu fitchOutputManu= MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)ratingResponse.getData(),FitchOutputManu.class);
 					if(!CommonUtils.isObjectNullOrEmpty(fitchOutputManu)) {
-						map.put("fitchResponse",CommonUtils.convertToDoubleForXml(fitchOutputManu,null));
+						map.put(FITCH_RESPONSE,CommonUtils.convertToDoubleForXml(fitchOutputManu,null));
 						map.put("financialClosure",!CommonUtils.isObjectNullOrEmpty(fitchOutputManu.getFinancialClosureScore()) ? fitchOutputManu.getFinancialClosureScore() : "NA");
 						map.put("intraCompany",!CommonUtils.isObjectNullOrEmpty(fitchOutputManu.getIntraCompanyScore()) ? fitchOutputManu.getIntraCompanyScore() : "NA");
 						map.put("statusProjectClearance",!CommonUtils.isObjectNullOrEmpty(fitchOutputManu.getStatusProjectClearanceScore()) ? fitchOutputManu.getStatusProjectClearanceScore() : "NA");
@@ -1151,23 +1155,23 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 						map.put("constructionContract",!CommonUtils.isObjectNullOrEmpty(fitchOutputManu.getConstructionContractScore()) ? fitchOutputManu.getConstructionContractScore() : "NA");
 						map.put("forexRisk",!CommonUtils.isObjectNullOrEmpty(fitchOutputManu.getForexRiskScore()) ? fitchOutputManu.getForexRiskScore() : "NA");
 						map.put("designTechnology",!CommonUtils.isObjectNullOrEmpty(fitchOutputManu.getDesignTechnologyRiskScore()) ? fitchOutputManu.getDesignTechnologyRiskScore() : "NA");
-						map.put("fitchTitle","Manufacturing");
+						map.put(FITCH_TITLE,"Manufacturing");
 					}
 				}
 				if(BusinessType.TRADING == ratingResponse.getBusinessTypeId())
 				{
 					FitchOutputTrad fitchOutputTrad = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)ratingResponse.getData(),FitchOutputTrad.class);
 					if(!CommonUtils.isObjectNullOrEmpty(fitchOutputTrad)) {
-						map.put("fitchResponse",CommonUtils.convertToDoubleForXml(fitchOutputTrad,null));
-						map.put("fitchTitle","Trading");
+						map.put(FITCH_RESPONSE,CommonUtils.convertToDoubleForXml(fitchOutputTrad,null));
+						map.put(FITCH_TITLE,"Trading");
 					}
 				}
 				if(BusinessType.SERVICE == ratingResponse.getBusinessTypeId())
 				{
 					FitchOutputServ fitchOutputServ = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>)ratingResponse.getData(),FitchOutputServ.class);
 					if(!CommonUtils.isObjectNullOrEmpty(fitchOutputServ)) {
-						map.put("fitchResponse",CommonUtils.convertToDoubleForXml(fitchOutputServ,null));
-						map.put("fitchTitle","Service");
+						map.put(FITCH_RESPONSE,CommonUtils.convertToDoubleForXml(fitchOutputServ,null));
+						map.put(FITCH_TITLE,"Service");
 					}
 				}
 			}

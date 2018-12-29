@@ -36,6 +36,9 @@ import com.capitaworld.service.users.model.UsersRequest;
 public class NotificationServiceImpl implements NotificationService{
 	
 	private static final Logger logger = LoggerFactory.getLogger(NotificationServiceImpl.class);
+
+	private static final String FP_PNAME_PARAMETERS = "fp_pname";
+	private static final String SEND_VIEW_NOTIFICATION = "sendViewNotification";
 	
 	@Autowired
 	private LoanApplicationService loanApplicationService;
@@ -91,7 +94,7 @@ public class NotificationServiceImpl implements NotificationService{
         
         try {
         	for(int i=0;i <toIds.length;i++) {
-        		UserResponse toUsersDetails = usersClient.getEmailMobile(Long.valueOf(toIds[i].toString()));
+        		UserResponse toUsersDetails = usersClient.getEmailMobile(Long.valueOf(toIds[i]));
                 if (!CommonUtils.isObjectNullOrEmpty(toUsersDetails.getData())) {
         			UsersRequest request = MultipleJSONObjectHelper
         					.getObjectFromMap((LinkedHashMap<String, Object>) toUsersDetails.getData(), UsersRequest.class);
@@ -126,10 +129,10 @@ public class NotificationServiceImpl implements NotificationService{
 	public void sendViewNotification(String toUserId, Long fromUserId, Long fromUserTypeId, Long notificationId,
 			Long applicationId, Long fpProductId,NotificationTemplate notificationTemplate,Long loginUserType) {
 
-		CommonDocumentUtils.startHook(logger, "sendViewNotification");
+		CommonDocumentUtils.startHook(logger, SEND_VIEW_NOTIFICATION);
 		
 		if (toUserId != null && fromUserId != null) {
-			String[] a = { toUserId.toString() };
+			String[] a = { toUserId };
 			NotificationRequest request = new NotificationRequest();
 			request.setClientRefId(fromUserId.toString());
 			Map<String, Object> parameters = new HashMap<String, Object>();
@@ -156,23 +159,23 @@ public class NotificationServiceImpl implements NotificationService{
 				try {
 					if(o!=null) {
 						fpName = o[1].toString();
-						parameters.put("fp_name",fpName);
+						parameters.put(CommonUtils.PARAMETERS_FP_NAME,fpName);
 					} else {
-						parameters.put("fp_name","NA");
+						parameters.put(CommonUtils.PARAMETERS_FP_NAME,"NA");
 					}
 
 				} catch (Exception e) {
 					logger.error(CommonUtils.EXCEPTION,e);
-					parameters.put("fp_name", "NA");
+					parameters.put(CommonUtils.PARAMETERS_FP_NAME, "NA");
 				}
 				try {
 					if(o!=null)
-						parameters.put("fp_pname", o[2].toString());
+						parameters.put(FP_PNAME_PARAMETERS, o[2].toString());
 					else
-						parameters.put("fp_pname", "NA");
+						parameters.put(FP_PNAME_PARAMETERS, "NA");
 				} catch (Exception e) {
 					logger.error(CommonUtils.EXCEPTION,e);
-					parameters.put("fp_pname", "NA");
+					parameters.put(FP_PNAME_PARAMETERS, "NA");
 				}
 				request.addNotification(createEmailNotification(a, fromUserId, fromUserTypeId,notificationId, parameters, applicationId, fpProductId,notificationTemplate,fpName));
 			try {
@@ -181,7 +184,7 @@ public class NotificationServiceImpl implements NotificationService{
 			} catch (NotificationException e) {
 				logger.error(CommonUtils.EXCEPTION,e);
 			}
-			CommonDocumentUtils.endHook(logger, "sendViewNotification");
+			CommonDocumentUtils.endHook(logger, SEND_VIEW_NOTIFICATION);
 		}
 		
 	}
@@ -198,7 +201,7 @@ public class NotificationServiceImpl implements NotificationService{
 		} catch (NotificationException e) {
 			logger.error(CommonUtils.EXCEPTION,e);
 		}
-		CommonDocumentUtils.endHook(logger, "sendViewNotification");
+		CommonDocumentUtils.endHook(logger, SEND_VIEW_NOTIFICATION);
 	} 
 
 }

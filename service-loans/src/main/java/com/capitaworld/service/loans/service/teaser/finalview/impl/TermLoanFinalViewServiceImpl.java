@@ -526,7 +526,7 @@ public class TermLoanFinalViewServiceImpl implements TermLoanFinalViewService {
 			// set city
 						List<Long> cityList = new ArrayList<>();
 						if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCityId()))
-						cityList.add(corporateApplicantDetail.getRegisteredCityId());
+							cityList.add(corporateApplicantDetail.getRegisteredCityId());
 						if(!CommonUtils.isListNullOrEmpty(cityList))
 						{
 						try {
@@ -548,7 +548,7 @@ public class TermLoanFinalViewServiceImpl implements TermLoanFinalViewService {
 						
 						cityList.clear();
 						if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getAdministrativeCityId()))
-						cityList.add(corporateApplicantDetail.getAdministrativeCityId());
+							cityList.add(corporateApplicantDetail.getAdministrativeCityId());
 						if(!CommonUtils.isListNullOrEmpty(cityList))
 						{
 						try {
@@ -572,7 +572,7 @@ public class TermLoanFinalViewServiceImpl implements TermLoanFinalViewService {
 						// set state
 						List<Long> stateList = new ArrayList<>();
 						if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredStateId()))
-						stateList.add(Long.valueOf(corporateApplicantDetail.getRegisteredStateId()));
+							stateList.add(Long.valueOf(corporateApplicantDetail.getRegisteredStateId()));
 						if(!CommonUtils.isListNullOrEmpty(stateList))
 						{
 						try {
@@ -616,7 +616,7 @@ public class TermLoanFinalViewServiceImpl implements TermLoanFinalViewService {
 						// set country
 						List<Long> countryList = new ArrayList<>();
 						if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCountryId()))
-						countryList.add(Long.valueOf(corporateApplicantDetail.getRegisteredCountryId()));
+							countryList.add(Long.valueOf(corporateApplicantDetail.getRegisteredCountryId()));
 						if(!CommonUtils.isListNullOrEmpty(countryList))
 						{
 						try {

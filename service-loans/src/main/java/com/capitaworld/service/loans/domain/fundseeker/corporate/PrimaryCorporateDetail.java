@@ -120,6 +120,9 @@ public class PrimaryCorporateDetail extends LoanApplicationMaster implements Ser
     @Column(name = "projected_profit_curr_fin_year")
     private Double projectedProfitCurrFinYear;
     
+    @Column(name = "gross_sales")
+    private Double grossSales;
+    
   //End By Akshay for OnePager Eligibility
     
 
@@ -349,5 +352,13 @@ public class PrimaryCorporateDetail extends LoanApplicationMaster implements Ser
 
 	public void setProjectedProfitCurrFinYear(Double projectedProfitCurrFinYear) {
 		this.projectedProfitCurrFinYear = projectedProfitCurrFinYear;
+	}
+
+	public Double getGrossSales() {
+		return grossSales;
+	}
+
+	public void setGrossSales(Double grossSales) {
+		this.grossSales = grossSales;
 	}
 }

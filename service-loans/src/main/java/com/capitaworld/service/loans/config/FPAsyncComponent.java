@@ -201,7 +201,7 @@ public class FPAsyncComponent {
 						premiseNumber = applicantRequest.getFirstAddress().getPremiseNumber()!=null?applicantRequest.getFirstAddress().getPremiseNumber():"";
 						streetName = applicantRequest.getFirstAddress().getStreetName()!=null?applicantRequest.getFirstAddress().getStreetName():"";
 						landMark = applicantRequest.getFirstAddress().getLandMark()!=null?applicantRequest.getFirstAddress().getLandMark():"";
-						address = premiseNumber.toString()+" "+streetName.toString()+" "+landMark.toString();
+						address = premiseNumber+" "+streetName+" "+landMark;
 					}
 				}
 				else if(!CommonUtils.isObjectNullOrEmpty(applicationRequest)
@@ -395,7 +395,7 @@ public class FPAsyncComponent {
 						premiseNumber = applicantRequest.getFirstAddress().getPremiseNumber()!=null?applicantRequest.getFirstAddress().getPremiseNumber():"";
 						streetName = applicantRequest.getFirstAddress().getStreetName()!=null?applicantRequest.getFirstAddress().getStreetName():"";
 						landMark = applicantRequest.getFirstAddress().getLandMark()!=null?applicantRequest.getFirstAddress().getLandMark():"";
-						address = premiseNumber.toString()+" "+streetName.toString()+" "+landMark.toString();
+						address = premiseNumber+" "+streetName+" "+landMark;
 					}
 				}
 				else if(!CommonUtils.isObjectNullOrEmpty(applicationRequest)
@@ -588,7 +588,7 @@ public class FPAsyncComponent {
 						premiseNumber = applicantRequest.getFirstAddress().getPremiseNumber()!=null?applicantRequest.getFirstAddress().getPremiseNumber():"";
 						streetName = applicantRequest.getFirstAddress().getStreetName()!=null?applicantRequest.getFirstAddress().getStreetName():"";
 						landMark = applicantRequest.getFirstAddress().getLandMark()!=null?applicantRequest.getFirstAddress().getLandMark():"";
-						address = premiseNumber.toString()+" "+streetName.toString()+" "+landMark.toString();
+						address = premiseNumber+" "+streetName+" "+landMark;
 					}
 				}
 				else if(!CommonUtils.isObjectNullOrEmpty(applicationRequest)
@@ -780,7 +780,7 @@ public class FPAsyncComponent {
 						premiseNumber = applicantRequest.getFirstAddress().getPremiseNumber()!=null?applicantRequest.getFirstAddress().getPremiseNumber():"";
 						streetName = applicantRequest.getFirstAddress().getStreetName()!=null?applicantRequest.getFirstAddress().getStreetName():"";
 						landMark = applicantRequest.getFirstAddress().getLandMark()!=null?applicantRequest.getFirstAddress().getLandMark():"";
-						address = premiseNumber.toString()+" "+streetName.toString()+" "+landMark.toString();
+						address = premiseNumber+" "+streetName+" "+landMark;
 					}
 				}
 				else if(!CommonUtils.isObjectNullOrEmpty(applicationRequest)
@@ -965,7 +965,7 @@ public class FPAsyncComponent {
 					premiseNumber = applicantRequest.getFirstAddress().getPremiseNumber()!=null?applicantRequest.getFirstAddress().getPremiseNumber():"";
 					streetName = applicantRequest.getFirstAddress().getStreetName()!=null?applicantRequest.getFirstAddress().getStreetName():"";
 					landMark = applicantRequest.getFirstAddress().getLandMark()!=null?applicantRequest.getFirstAddress().getLandMark():"";
-					address = premiseNumber.toString()+" "+streetName.toString()+" "+landMark.toString();
+					address = premiseNumber+" "+streetName+" "+landMark;
 
 					List<Long> stateList = new ArrayList<Long>();
 
@@ -1515,8 +1515,8 @@ public class FPAsyncComponent {
 	public void sendMailToFsWhenMakerAcceptPorposal(String fsName, Map<String, Object> proposalresp,String assignedMakerName,LoanApplicationRequest applicationRequest, UsersRequest signUpUser, String address,Long NotificationAliasId){
 		logger.info("Sending email to fs when maker accept proposal");
 		Map<String, Object> mailParameter = new HashMap<String, Object>();
-		mailParameter.put(CommonUtils.PARAMETERS_FS_NAME, fsName != null ? fsName.toString() : "NA");
-		mailParameter.put("entity_name", fsName != null ? fsName.toString() : "NA");
+		mailParameter.put(CommonUtils.PARAMETERS_FS_NAME, fsName != null ? fsName : "NA");
+		mailParameter.put("entity_name", fsName != null ? fsName : "NA");
 		mailParameter.put(CommonUtils.PARAMETERS_LOAN_TYPE,
 				proposalresp.get(CommonUtils.PARAMETERS_LOAN_TYPE) != null ? proposalresp.get(CommonUtils.PARAMETERS_LOAN_TYPE).toString() : "NA");
 		mailParameter.put(PARAMETERS_MAKER_NAME, assignedMakerName);
@@ -1687,7 +1687,7 @@ public class FPAsyncComponent {
 					premiseNumber = applicantRequest.getFirstAddress().getPremiseNumber()!=null?applicantRequest.getFirstAddress().getPremiseNumber():"";
 					streetName = applicantRequest.getFirstAddress().getStreetName()!=null?applicantRequest.getFirstAddress().getStreetName():"";
 					landMark = applicantRequest.getFirstAddress().getLandMark()!=null?applicantRequest.getFirstAddress().getLandMark():"";
-					address = premiseNumber.toString()+" "+streetName.toString()+" "+landMark.toString();
+					address = premiseNumber+" "+streetName+" "+landMark;
 				}
 			}
 			else if(!CommonUtils.isObjectNullOrEmpty(applicationRequest)
@@ -2103,7 +2103,7 @@ public class FPAsyncComponent {
 					premiseNumber = applicantRequest.getFirstAddress().getPremiseNumber()!=null?applicantRequest.getFirstAddress().getPremiseNumber():"";
 					streetName = applicantRequest.getFirstAddress().getStreetName()!=null?applicantRequest.getFirstAddress().getStreetName():"";
 					landMark = applicantRequest.getFirstAddress().getLandMark()!=null?applicantRequest.getFirstAddress().getLandMark():"";
-					address = premiseNumber.toString()+" "+streetName.toString()+" "+landMark.toString();
+					address = premiseNumber+" "+streetName+" "+landMark;
 				}
 			}
 			else if(!CommonUtils.isObjectNullOrEmpty(applicationRequest)

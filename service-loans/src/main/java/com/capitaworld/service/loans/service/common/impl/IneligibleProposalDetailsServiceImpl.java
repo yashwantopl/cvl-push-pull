@@ -410,8 +410,8 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 							} else {
 								city = " ";
 							}
-							address = premiseNo.toString() + ", " + streetName.toString() + ", " + landMark.toString()
-									+ ", " + state.toString() + ", " + city.toString();
+							address = premiseNo + ", " + streetName + ", " + landMark
+									+ ", " + state + ", " + city;
 							address = address + pinCode;
 							notificationParams.put(BRANCH_ADDRESS_PARAMETERS, address != null ? address : "-");
 							notificationParams.put(BRANCH_CONTACT_PARAMETERS,
@@ -548,7 +548,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 					landMark = applicantRequest.getFirstAddress().getLandMark() != null
 							? applicantRequest.getFirstAddress().getLandMark()
 							: "";
-					address = premiseNumber.toString() + " " + streetName.toString() + " " + landMark.toString();
+					address = premiseNumber + " " + streetName + " " + landMark;
 
 					notificationParams.put(CommonUtils.PARAMETERS_ADDRESS, address != null ? address : "NA");
 				}

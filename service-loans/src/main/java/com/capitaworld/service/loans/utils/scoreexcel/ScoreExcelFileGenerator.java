@@ -264,6 +264,7 @@ public class ScoreExcelFileGenerator {
  			    			sheet.getRow(i).createCell(1).setCellStyle(style1);
 		    				sheet.getRow(i).getCell(1).setCellValue("Credit Summation");
 		    				break;
+		    			default : break;
 		    		}
  			    		 sheet.getRow(i).createCell(2).setCellStyle(style2);
 			    		 sheet.getRow(i).getCell(2).setCellValue(proposalScoreDetailResponse.getParameterOption());

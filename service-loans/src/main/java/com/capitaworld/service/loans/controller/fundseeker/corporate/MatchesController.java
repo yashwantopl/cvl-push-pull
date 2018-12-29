@@ -34,6 +34,7 @@ public class MatchesController {
 
 	private static final String MATCH_REQUEST_MUST_NOT_BE_EMPTY_MSG = "matchRequest must not be empty ==>";
 	private static final String MATCHES_SUCCESSFULLY_SAVED_MSG = "Matches Successfully Saved";
+	private static final String MATCH_FS_CORPORATE = "matchFSCorporate";
 
 	@Autowired
 	private MatchEngineClient engineClient;
@@ -55,7 +56,7 @@ public class MatchesController {
 	@RequestMapping(value = "/${corporate}/fundseeker", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> matchFSCorporate(@RequestBody MatchRequest matchRequest,
 			HttpServletRequest request,@RequestParam(value = "clientId", required = false) Long clientId) {
-		CommonDocumentUtils.startHook(logger, "matchFSCorporate");
+		CommonDocumentUtils.startHook(logger, MATCH_FS_CORPORATE);
 		Long userId = null;
 		Integer userType = (Integer)request.getAttribute(CommonUtils.USER_TYPE);
 		   if(CommonDocumentUtils.isThisClientApplication(request)){
@@ -73,7 +74,7 @@ public class MatchesController {
 		try {
 			MatchResponse matchResponse = engineClient.calculateMatchesOfCorporateFundSeeker(matchRequest);
 			if (matchResponse != null && matchResponse.getStatus() == 200) {
-				CommonDocumentUtils.endHook(logger, "matchFSCorporate");
+				CommonDocumentUtils.endHook(logger, MATCH_FS_CORPORATE);
 				if(CommonUtils.UserType.FUND_SEEKER == userType){
 					logger.info("Start Sending Mail To Fs Corporate for Profile and primary fill complete");
 					asyncComponent.sendMailWhenUserCompletePrimaryForm(userId,matchRequest.getApplicationId());	
@@ -83,7 +84,7 @@ public class MatchesController {
 				loansResponse.setFlag(matchResponse.getIsUBIMatched());
 				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 			}
-			CommonDocumentUtils.endHook(logger, "matchFSCorporate");
+			CommonDocumentUtils.endHook(logger, MATCH_FS_CORPORATE);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);

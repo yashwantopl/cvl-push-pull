@@ -167,6 +167,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 	private static final String BRANCH_ID_CAN_NOT_BE_FOUND_MSG = "Branch Id Can not be found";
 	private static final String THROW_EXCEPTION_WHILE_GET_BRANCH_ID_FROM_USER_ID_MSG = "Throw Exception While Get Branch Id from UserId : ";
 	private static final String YOU_DO_NOT_HAVE_RIGHTS_TO_TAKE_ACTION_FOR_THIS_PROPOSAL_MSG = "You do not have rights to take action for this proposal.";
+	private static final String USER_URL = "userURL";
 
 	private String getMainDirectorName(Long appId) {
 		DirectorBackgroundDetail dirBackDetails = directorBackgroundDetailsRepository
@@ -745,7 +746,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			List<ProposalMappingRequest> proposalMappingList = new ArrayList<ProposalMappingRequest>();
 
 			for (int i = 0; i < proposalDetailsResponse.getDataList().size(); i++) {
-				UsersClient usersClient = new UsersClient(environment.getRequiredProperty("userURL"));
+				UsersClient usersClient = new UsersClient(environment.getRequiredProperty(USER_URL));
 				ProposalMappingRequest proposalrequest = MultipleJSONObjectHelper.getObjectFromMap(
 						(LinkedHashMap<String, Object>) proposalDetailsResponse.getDataList().get(i),
 						ProposalMappingRequest.class);
@@ -1262,7 +1263,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 						+ connectionResponse.getSuggetionByMatchesList().size());
 				for (int i = 0; i < connectionResponse.getSuggetionByMatchesList().size(); i++) {
 					try {
-						UsersClient usersClient = new UsersClient(environment.getRequiredProperty("userURL"));
+						UsersClient usersClient = new UsersClient(environment.getRequiredProperty(USER_URL));
 
 						BigInteger fpProductId = BigInteger.class
 								.cast(connectionResponse.getSuggetionByMatchesList().get(i));
@@ -1337,7 +1338,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 						+ connectionResponse.getSuggetionList().size());
 				for (int i = 0; i < connectionResponse.getSuggetionList().size(); i++) {
 					try {
-						UsersClient usersClient = new UsersClient(environment.getRequiredProperty("userURL"));
+						UsersClient usersClient = new UsersClient(environment.getRequiredProperty(USER_URL));
 
 						BigInteger fpProductId = BigInteger.class.cast(connectionResponse.getSuggetionList().get(i));
 						ProductMaster master = productMasterRepository.findOne(fpProductId.longValue());
