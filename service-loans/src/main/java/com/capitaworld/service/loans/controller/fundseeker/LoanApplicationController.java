@@ -2590,7 +2590,7 @@ public class LoanApplicationController {
 				paymentRequest.setResponseParams(responseParams);
 				paymentRequest.setNameOfEntity(map.get("firstname").toString());
 				
-				if ("0300".toString().equals(map.get("statusCode"))) {
+				if ("0300".equals(map.get("statusCode"))) {
 					paymentRequest.setStatus(CommonUtils.SUCCESS);
 				}
 				else {

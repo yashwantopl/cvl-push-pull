@@ -843,6 +843,6 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService {
 	}
 
 	public String convertValue(Double value) {
-		return !CommonUtils.isObjectNullOrEmpty(value) ? decim.format(value).toString() : "0";
+		return !CommonUtils.isObjectNullOrEmpty(value) ? decim.format(value) : "0";
 	}
 }

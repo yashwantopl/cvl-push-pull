@@ -5216,7 +5216,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 								if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
 									MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
 									fpAddress = masterResponse.getValue() + ",";
-								} else {
 								}
 							} catch (Exception e) {
 								logger.error(CommonUtils.EXCEPTION,e);
@@ -5234,7 +5233,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 								if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
 									MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
 									fpAddress += masterResponse.getValue();
-								} else {
 								}
 							} catch (Exception e) {
 								logger.error(CommonUtils.EXCEPTION,e);
@@ -5296,8 +5294,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 						MasterResponse masterResponse = MultipleJSONObjectHelper
 								.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
 						address = masterResponse.getValue() + ",";
-					} else {
-
 					}
 				} catch (Exception e) {
 					logger.error(CommonUtils.EXCEPTION,e);
@@ -5316,14 +5312,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 						MasterResponse masterResponse = MultipleJSONObjectHelper
 								.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
 						address += masterResponse.getValue() + ",";
-					} else {
 					}
 				} catch (Exception e) {
 					logger.error(CommonUtils.EXCEPTION,e);
 				}
 			}
-		} else {
-
 		}
 		return address;
 	}
@@ -7731,8 +7724,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 							MasterResponse masterResponse = MultipleJSONObjectHelper
 									.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
 							state = masterResponse.getValue();
-						} else {
-
 						}
 					} catch (Exception e) {
 						logger.error(CommonUtils.EXCEPTION,e);
@@ -7752,8 +7743,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 							MasterResponse masterResponse = MultipleJSONObjectHelper
 									.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
 							city = masterResponse.getValue();
-						} else {
-
 						}
 					} catch (Exception e) {
 						logger.error(CommonUtils.EXCEPTION,e);
@@ -7773,8 +7762,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 							MasterResponse masterResponse = MultipleJSONObjectHelper
 									.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
 							country = masterResponse.getValue();
-						} else {
-
 						}
 					} catch (Exception e) {
 						logger.error(CommonUtils.EXCEPTION,e);
@@ -7872,8 +7859,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 								MasterResponse masterResponse = MultipleJSONObjectHelper
 										.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
 								state = masterResponse.getValue();
-							} else {
-
 							}
 						} catch (Exception e) {
 							logger.error(CommonUtils.EXCEPTION,e);
@@ -7893,8 +7878,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 								MasterResponse masterResponse = MultipleJSONObjectHelper
 										.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
 								country = masterResponse.getValue();
-							} else {
-
 							}
 						} catch (Exception e) {
 							logger.error(CommonUtils.EXCEPTION,e);
@@ -7914,8 +7897,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 								MasterResponse masterResponse = MultipleJSONObjectHelper
 										.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
 								city = masterResponse.getValue();
-							} else {
-
 							}
 						} catch (Exception e) {
 							logger.error(CommonUtils.EXCEPTION,e);
@@ -8028,8 +8009,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 								MasterResponse masterResponse = MultipleJSONObjectHelper
 										.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
 								state = masterResponse.getValue();
-							} else {
-
 							}
 						} catch (Exception e) {
 							logger.error(CommonUtils.EXCEPTION,e);
@@ -8049,8 +8028,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 								MasterResponse masterResponse = MultipleJSONObjectHelper
 										.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
 								country = masterResponse.getValue();
-							} else {
-
 							}
 						} catch (Exception e) {
 							logger.error(CommonUtils.EXCEPTION,e);
@@ -8070,8 +8047,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 								MasterResponse masterResponse = MultipleJSONObjectHelper
 										.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
 								city = masterResponse.getValue();
-							} else {
-
 							}
 						} catch (Exception e) {
 							logger.error(CommonUtils.EXCEPTION,e);
@@ -8978,8 +8953,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				clientLogicCalculationRequest.setIsExistingCustomer(true);
 				clientLogicCalculationRequest.setCifAccountNumber(data.getSummaryInfo().getAccNo());
 				clientLogicCalculationRequest.setAccountType(data.getSummaryInfo().getAccType());
-
-			} else {
 
 			}
 			/*

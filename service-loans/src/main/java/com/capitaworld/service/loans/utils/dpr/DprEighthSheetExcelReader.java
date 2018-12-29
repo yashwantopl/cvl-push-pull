@@ -107,7 +107,7 @@ public class DprEighthSheetExcelReader
                 if (!(cellValue.equals("0.0"))) {
                     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
                     Date d = cell.getDateCellValue();
-                    returnValue = simpleDateFormat.format(d).toString();
+                    returnValue = simpleDateFormat.format(d);
                 }
             } else {
               returnValue="";

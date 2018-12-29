@@ -1345,10 +1345,10 @@ public enum APIFlags {
 	static DecimalFormat decim2 = new DecimalFormat("#,###");
 	
 	public static String convertValue(Double value) {
-		return !CommonUtils.isObjectNullOrEmpty(value)? decimal.format(value).toString(): "0";
+		return !CommonUtils.isObjectNullOrEmpty(value)? decimal.format(value) : "0";
 	}
 	public static String convertValueWithoutDecimal(Double value) {
-		return !CommonUtils.isObjectNullOrEmpty(value)? decim2.format(value).toString(): "0";
+		return !CommonUtils.isObjectNullOrEmpty(value)? decim2.format(value) : "0";
 	}
 	/*Return Round Value with CommaStyle*/ 
 	public static String convertValueRound(Double value) {

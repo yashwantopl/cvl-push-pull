@@ -44,7 +44,7 @@ public class OfflineProposedAppServiceImpl implements OfflineProcessedAppService
 					request.setApplicationId(CommonUtils.convertLong(obj[0]));
 					request.setUserId(CommonUtils.convertLong(obj[1]));
 					request.setLoanAmount(CommonUtils.convertDouble(obj[2]));
-					request.setIsCampaignUser(!CommonUtils.isObjectNullOrEmpty(obj[3])?((String)obj[3]).toString() : "Market Place");
+					request.setIsCampaignUser(!CommonUtils.isObjectNullOrEmpty(obj[3])?((String)obj[3]) : "Market Place");
 					request.setBranchName(CommonUtils.convertString(obj[4]));
 					request.setOrganisationName(CommonUtils.convertString(obj[5]));
 					request.setIsSanctioned(CommonUtils.convertBoolean(obj[6]));
@@ -83,7 +83,7 @@ public class OfflineProposedAppServiceImpl implements OfflineProcessedAppService
 					request.setApplicationId(CommonUtils.convertLong(obj[0]));
 					request.setUserId(CommonUtils.convertLong(obj[1]));
 					request.setLoanAmount(CommonUtils.convertDouble(obj[2]));
-					request.setIsCampaignUser(!CommonUtils.isObjectNullOrEmpty(obj[3])?((String)obj[3]).toString() : "Market Place");
+					request.setIsCampaignUser(!CommonUtils.isObjectNullOrEmpty(obj[3])?((String)obj[3]) : "Market Place");
 					request.setBranchName(CommonUtils.convertString(obj[4]));
 					request.setOrganisationName(CommonUtils.convertString(obj[5]));
 					request.setIsSanctioned(CommonUtils.convertBoolean(obj[6]));
