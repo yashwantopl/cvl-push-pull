@@ -118,7 +118,7 @@ public class LoansClient {
 	private static final String UPDATE_LOAN_APPLICATION = "/loan_application/updateLoanApplication";
 	private static final String BASIC_DETAIL_URL = "/fs_retail_profile/profile/get_basic_details";
 	private static final String LOAN_BASIC_DETAILS = "/loan_application/getLoanBasicDetails";
-	private static final String PRIMARY_INFORMATION = "/corporate_primary/get";
+	private static final String PRIMARY_INFORMATION = "/corporate_primary/get_for_client";
 	private static final String STRING_TO_BINARY_ARRAY = "/convertToByteArray";
 
 	private static final String MOBILE_LOANLIST = "/mobile/loanList";
@@ -270,6 +270,7 @@ public class LoansClient {
 	
 	public PrimaryCorporateRequest getPrimaryCorporateDetails(Long applicationId) throws LoansException {
 		String url = loansBaseUrl.concat(PRIMARY_INFORMATION);
+		logger.info("URL in getPrimaryCorporateDetails : {}",url);
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set(REQ_AUTH, "true");
@@ -277,7 +278,7 @@ public class LoansClient {
 			HttpEntity<Long> entity = new HttpEntity<Long>(applicationId, headers);
 			return restTemplate.exchange(url, HttpMethod.POST, entity, PrimaryCorporateRequest.class).getBody();
 		} catch (Exception e) {
-			logger.error("Exception in readCMA : ",e);
+			logger.error("Exception in getPrimaryCorporateDetails :{} ",e);
 			throw new LoansException(e.getCause().getMessage());
 		}
 	}
