@@ -60,6 +60,7 @@ public class OfflineProposedAppServiceImpl implements OfflineProcessedAppService
 			} else {
 				request.setIsCampaignUser("Bank Specific");
 			}
+			request.setBranchId(CommonUtils.convertLong(obj[11]));
 			applicationRequests.add(request);
 		}
 		return applicationRequests;
