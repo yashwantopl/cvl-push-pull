@@ -44,7 +44,7 @@ public class OfflineProcessAppRepositoryImpl implements OfflineProcessedAppRepos
 
 	@Override
 	public List<Object[]> getDisbursedApplicationList(Long userId) {
-		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spFetchDisbursedApplicationList");
+		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spFetchOfflineDisbursedProposal");
 		storedProcedureQuery.registerStoredProcedureParameter("userId",Long.class, ParameterMode.IN);
 		storedProcedureQuery.setParameter("userId",userId);
 		return (List<Object[]>) storedProcedureQuery.getResultList();
@@ -52,7 +52,7 @@ public class OfflineProcessAppRepositoryImpl implements OfflineProcessedAppRepos
 	
 	@Override
 	public List<Object[]> getRejectProposalsList(Long userId) {
-		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spFetchRejectProposalsForOffline");
+		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spFetchOfflineRejectProposal");
 		storedProcedureQuery.registerStoredProcedureParameter("userId",Long.class, ParameterMode.IN);
 		storedProcedureQuery.setParameter("userId",userId);
 		return (List<Object[]>) storedProcedureQuery.getResultList();
