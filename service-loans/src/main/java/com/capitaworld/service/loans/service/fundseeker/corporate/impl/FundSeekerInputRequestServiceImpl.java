@@ -709,6 +709,11 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			fundSeekerInputResponse.setProjectedProfitCurrFinYear(primaryCorporateDetail.getProjectedProfitCurrFinYear());
 			fundSeekerInputResponse.setTurnOverCurrFinYearTillMonth(primaryCorporateDetail.getTurnOverCurrFinYearTillMonth());
 			fundSeekerInputResponse.setProjectedTurnOverCurrFinYear(primaryCorporateDetail.getProjectedTurnOverCurrFinYear());
+			if(CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getLoanAmount())){
+				fundSeekerInputResponse.setLoanAmount(primaryCorporateDetail.getAmount());
+			}else{
+				fundSeekerInputResponse.setLoanAmount(primaryCorporateDetail.getLoanAmount());				
+			}
 			
 			LoansResponse loansResponse = new LoansResponse("Data Found",HttpStatus.OK.value(), fundSeekerInputResponse);
 			//Getting Uploaded Documents of GST
