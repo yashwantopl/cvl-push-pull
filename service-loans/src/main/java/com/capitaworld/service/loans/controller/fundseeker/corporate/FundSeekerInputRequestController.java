@@ -314,6 +314,8 @@ public class FundSeekerInputRequestController {
         			return new ResponseEntity<LoansResponse>(eligibility,HttpStatus.OK);
         		}catch(Exception e){
         			logger.error("Exception :{}",e);
+        			eligibility.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+					eligibility.setMessage("Your request could not be refined now, please try again after sometime!");
         			return new ResponseEntity<LoansResponse>(eligibility,HttpStatus.OK);
         		}
         	}
