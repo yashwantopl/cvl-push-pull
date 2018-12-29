@@ -55,6 +55,8 @@ public class PrimaryCorporateRequest extends LoanApplicationRequest implements S
     
     private Double projectedProfitCurrFinYear;
     
+    private Double grossSales;
+    
   //End By Akshay for OnePager Eligibility
 
 
@@ -261,5 +263,12 @@ public class PrimaryCorporateRequest extends LoanApplicationRequest implements S
 	public void setProjectedProfitCurrFinYear(Double projectedProfitCurrFinYear) {
 		this.projectedProfitCurrFinYear = projectedProfitCurrFinYear;
 	}
-    
+
+	public Double getGrossSales() {
+		return grossSales;
+	}
+
+	public void setGrossSales(Double grossSales) {
+		this.grossSales = grossSales;
+	}
 }
