@@ -120,7 +120,7 @@ public class DirectorBackgroundDetailsController {
 
 	@RequestMapping(value = "/getList/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getList(@PathVariable("id") Long id, HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
-		CommonDocumentUtils.startHook(logger, "getList");
+		CommonDocumentUtils.startHook(logger, CommonUtils.GET_LIST);
 		Long userId = null;
 		if(CommonDocumentUtils.isThisClientApplication(request) && !CommonUtils.isObjectNullOrEmpty(clientId)){
 			userId = clientId;
@@ -139,7 +139,7 @@ public class DirectorBackgroundDetailsController {
 					.getDirectorBackgroundDetailList(id,userId);
 			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 			loansResponse.setListData(response);
-			CommonDocumentUtils.endHook(logger, "getList");
+			CommonDocumentUtils.endHook(logger, CommonUtils.GET_LIST);
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
 		} catch (Exception e) {
@@ -205,7 +205,7 @@ public class DirectorBackgroundDetailsController {
 				loansResponse = new LoansResponse("Director Details Found.", HttpStatus.OK.value());
 				loansResponse.setData(response);
 			}
-			CommonDocumentUtils.endHook(logger, "getList");
+			CommonDocumentUtils.endHook(logger, CommonUtils.GET_LIST);
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
 		} catch (Exception e) {
@@ -258,7 +258,7 @@ public class DirectorBackgroundDetailsController {
 					.getDirectorBackgroundDetailList(id, null);
 			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 			loansResponse.setListData(response);
-			CommonDocumentUtils.endHook(logger, "getList");
+			CommonDocumentUtils.endHook(logger, CommonUtils.GET_LIST);
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
 		} catch (Exception e) {
@@ -279,7 +279,7 @@ public class DirectorBackgroundDetailsController {
 			List<DirectorBackgroundDetailRequest> response = directorBackgroundDetailsService.getDirectorBasicDetailsListForNTB(applicationId);
 			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 			loansResponse.setListData(response);
-			CommonDocumentUtils.endHook(logger, "getList");
+			CommonDocumentUtils.endHook(logger, CommonUtils.GET_LIST);
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
 		} catch (Exception e) {

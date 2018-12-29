@@ -108,6 +108,8 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 
 	private static final Logger logger = LoggerFactory.getLogger(PlTeaserViewServiceImpl.class);
 
+	private static final String DISTRICT_ID_IS_NULL_MSG = "District id is null";
+
 	@Autowired
 	private CorporateApplicantDetailRepository corporateApplicantDetailRepository;
 
@@ -254,7 +256,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 					plTeaserViewResponse.setPresentAddTaluko(pindata.getTaluka());
 					pindata.getTaluka();
 				}else {
-					logger.warn("District id is null");
+					logger.warn(DISTRICT_ID_IS_NULL_MSG);
 				}
 			} catch (Exception e) {
 				logger.error(CommonUtils.EXCEPTION,e);
@@ -308,7 +310,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 						plTeaserViewResponse.setPresentAddTaluko(pindata.getTaluka());
 						pindata.getTaluka();
 					}else {
-						logger.warn("District id is null");
+						logger.warn(DISTRICT_ID_IS_NULL_MSG);
 					}
 				} catch (Exception e) {
 					logger.error(CommonUtils.EXCEPTION,e);
@@ -577,7 +579,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 							plTeaserViewResponse.setPermAddTaluko(pindata.getTaluka());
 							pindata.getTaluka();
 						}else {
-							logger.warn("District id is null");
+							logger.warn(DISTRICT_ID_IS_NULL_MSG);
 						}
 					} catch (Exception e) {
 						logger.error(CommonUtils.EXCEPTION,e);
@@ -599,7 +601,7 @@ public class PlTeaserViewServiceImpl implements PlTeaserViewService {
 							plTeaserViewResponse.setOffAddTaluko(pindata.getTaluka());
 							pindata.getTaluka();
 						}else {
-							logger.warn("District id is null");
+							logger.warn(DISTRICT_ID_IS_NULL_MSG);
 						}
 					} catch (Exception e) {
 						logger.error(CommonUtils.EXCEPTION,e);

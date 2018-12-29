@@ -592,6 +592,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 						fromOtherTypeProductMappingIDList, fromOtherTypeProductMappingIDList, userId);
 			}
 			break;
+		default : break;
 		}
 
 		// Comapny and Project in all loan
@@ -1982,7 +1983,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 				flag = true;
 				break;
 			}
-
+			default : break;
 			}
 
 		} catch (Exception e) {

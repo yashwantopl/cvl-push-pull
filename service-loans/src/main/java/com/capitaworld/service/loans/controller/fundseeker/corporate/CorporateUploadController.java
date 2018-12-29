@@ -48,8 +48,13 @@ public class CorporateUploadController {
 	private static final String ERROR_WHILE_UPLOADING_DOCUMENT_MSG = "Error While Uploading Document==>";
 	private static final String INVALID_REQUEST_WHILE_GETTING_DOCUMENTS_MSG = "Invalid Request while Getting Documents";
 	private static final String DOCUMENT_REQUEST_MUST_NOT_BE_NULL_MSG = "Document Request Must not be null";
+	private static final String IN_GET_CMA_FILE_MSG = "In getCmaFile";
 	private static final String APPLICATION_CSV_CONTENT_TYPE = "application/csv";
 	private static final String CONTENT_DISPOSITION = "Content-Disposition";
+	private static final String UPLOAD_DOC = "uploadDoc";
+	private static final String UPLOAD_EXCEL = "uploadExcel";
+	private static final String REMOVE_DOC = "removeDoc";
+	private static final String REMOVE_EXCEL_DOC = "removeExcelDoc";
 
 	@Autowired
 	private Environment environment;
@@ -136,7 +141,7 @@ public class CorporateUploadController {
 	public ResponseEntity<LoansResponse> uploadDoc(@RequestPart("uploadRequest") String documentRequestString,
 			@RequestPart("file") MultipartFile multipartFiles, HttpServletRequest request,@RequestParam(value = "clientId", required = false) Long clientId) {
 		try {
-			CommonDocumentUtils.startHook(logger, "uploadDoc");
+			CommonDocumentUtils.startHook(logger, UPLOAD_DOC);
 			if (CommonUtils.isObjectNullOrEmpty(documentRequestString)) {
 				logger.warn(DOCUMENT_REQUEST_MUST_NOT_BE_NULL_MSG);
 				return new ResponseEntity<LoansResponse>(
@@ -152,12 +157,12 @@ public class CorporateUploadController {
 			DocumentResponse response = corporateUploadService.uploadOtherDoc(documentRequestString, multipartFiles,userId);
 			if (response != null && response.getStatus() == 200) {
 				logger.info("File Uploaded SuccessFully");
-				CommonDocumentUtils.endHook(logger, "uploadDoc");
+				CommonDocumentUtils.endHook(logger, UPLOAD_DOC);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(response.getMessage(), HttpStatus.OK.value()), HttpStatus.OK);
 			} else {
 				logger.error(ERROR_WHILE_UPLOADING_DOCUMENT_MSG);
-				CommonDocumentUtils.endHook(logger, "uploadDoc");
+				CommonDocumentUtils.endHook(logger, UPLOAD_DOC);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
@@ -239,7 +244,7 @@ public class CorporateUploadController {
 	public ResponseEntity<LoansResponse> uploadExcel(@RequestPart("uploadRequest") String documentRequestString,
 			@RequestPart("file") MultipartFile multipartFiles, HttpServletRequest request) {
 		try {
-			CommonDocumentUtils.startHook(logger, "uploadExcel");
+			CommonDocumentUtils.startHook(logger, UPLOAD_EXCEL);
 			if (CommonUtils.isObjectNullOrEmpty(documentRequestString)) {
 				logger.warn(DOCUMENT_REQUEST_MUST_NOT_BE_NULL_MSG);
 				return new ResponseEntity<LoansResponse>(
@@ -300,6 +305,7 @@ public class CorporateUploadController {
 						flag = excelExtractionService.readBS(applicationId, response.getStorageId(), multipartFiles);
 						break;
 					}
+					default : break;
 					}
 
 				} catch (Exception e) {
@@ -317,7 +323,7 @@ public class CorporateUploadController {
 				if (flag) {
 
 					logger.info("File Uploaded SuccessFully");
-					CommonDocumentUtils.endHook(logger, "uploadExcel");
+					CommonDocumentUtils.endHook(logger, UPLOAD_EXCEL);
 					return new ResponseEntity<LoansResponse>(
 							new LoansResponse(response.getMessage(), HttpStatus.OK.value()), HttpStatus.OK);
 				} else {
@@ -330,7 +336,7 @@ public class CorporateUploadController {
 					dmsClient.deleteProductDocument(json.toJSONString());
 					
 					logger.error(ERROR_WHILE_UPLOADING_DOCUMENT_MSG);
-					CommonDocumentUtils.endHook(logger, "uploadExcel");
+					CommonDocumentUtils.endHook(logger, UPLOAD_EXCEL);
 					return new ResponseEntity<LoansResponse>(
 							new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()),
 							HttpStatus.OK);
@@ -338,7 +344,7 @@ public class CorporateUploadController {
 
 			} else {
 				logger.warn(INVALID_REQUEST_WHILE_GETTING_DOCUMENTS_MSG);
-				CommonDocumentUtils.endHook(logger, "uploadExcel");
+				CommonDocumentUtils.endHook(logger, UPLOAD_EXCEL);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
@@ -355,7 +361,7 @@ public class CorporateUploadController {
 	@RequestMapping(value = "/other_doc/delete/{docId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> removeDoc(@PathVariable("docId") Long docId, HttpServletRequest request) {
 		try {
-			CommonDocumentUtils.startHook(logger, "removeDoc");
+			CommonDocumentUtils.startHook(logger, REMOVE_DOC);
 			if (CommonUtils.isObjectNullOrEmpty(docId)) {
 				logger.warn("Document Id not be null");
 				return new ResponseEntity<LoansResponse>(
@@ -380,11 +386,11 @@ public class CorporateUploadController {
 				logger.info("File SuccessFully Removed.");
 				LoansResponse finalResponse = new LoansResponse(response.getMessage(), response.getStatus());
 				finalResponse.setListData(response.getDataList());
-				CommonDocumentUtils.endHook(logger, "removeDoc");
+				CommonDocumentUtils.endHook(logger, REMOVE_DOC);
 				return new ResponseEntity<LoansResponse>(finalResponse, HttpStatus.OK);
 			} else {
 				logger.warn("Invalid Request while Deleting Document");
-				CommonDocumentUtils.endHook(logger, "removeDoc");
+				CommonDocumentUtils.endHook(logger, REMOVE_DOC);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
@@ -403,7 +409,7 @@ public class CorporateUploadController {
 			@PathVariable("productDocumentMappingId") Integer productDocumentMappingId, HttpServletRequest request) {
 		try {
 			logger.info("in /excel/delete/doc");
-			CommonDocumentUtils.startHook(logger, "removeExcelDoc");
+			CommonDocumentUtils.startHook(logger, REMOVE_EXCEL_DOC);
 			logger.info("product documet id is===>>>>>"+productDocumentMappingId);
 			if (CommonUtils.isObjectNullOrEmpty(docId) && CommonUtils.isObjectNullOrEmpty(productDocumentMappingId)) {
 				logger.warn("Document Id and ProductDocumentMappingId not be null");
@@ -443,11 +449,11 @@ public class CorporateUploadController {
 					
 					logger.info("fina response is====>>"+finalResponse);
 					finalResponse.setListData(response.getDataList());
-					CommonDocumentUtils.endHook(logger, "removeExcelDoc");
+					CommonDocumentUtils.endHook(logger, REMOVE_EXCEL_DOC);
 					return new ResponseEntity<LoansResponse>(finalResponse, HttpStatus.OK);
 				} else {
 					logger.warn("Invalid Request while Deleting Document");
-					CommonDocumentUtils.endHook(logger, "removeExcelDoc");
+					CommonDocumentUtils.endHook(logger, REMOVE_EXCEL_DOC);
 					return new ResponseEntity<LoansResponse>(
 							new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()),
 							HttpStatus.OK);
@@ -522,7 +528,7 @@ public class CorporateUploadController {
 	
 	@RequestMapping(value="/downloadCMAAndCoCMAExcelFile/{applicationId}/{productDocumentMappingId}" , method=RequestMethod.GET)
 	public void downloadExcelFile(@PathVariable("applicationId") Long applicationId , @PathVariable("productDocumentMappingId") Long productDocumentMappingId ,HttpServletResponse httpServletResponse) {
-		logger.info("In getCmaFile");
+		logger.info(IN_GET_CMA_FILE_MSG);
 		
         try {
         	  httpServletResponse.setContentType(APPLICATION_CSV_CONTENT_TYPE);
@@ -552,7 +558,7 @@ public class CorporateUploadController {
 	
 	@RequestMapping(value="/get_CMA_by_applicationId_productDocumentMappingId/{applicationId}/{productDocumentMappingId}" , method=RequestMethod.GET)
 	public ResponseEntity<LoansResponse> getCMAForGateway(@PathVariable("applicationId") Long applicationId , @PathVariable("productDocumentMappingId") Long productDocumentMappingId) throws IOException {
-		logger.info("In getCmaFile");
+		logger.info(IN_GET_CMA_FILE_MSG);
 		
 		try {
 			
@@ -578,7 +584,7 @@ public class CorporateUploadController {
 	
 	@RequestMapping(value="/listOfDocumentByMultiProDocMapId" , method=RequestMethod.POST,consumes = MediaType.APPLICATION_JSON_VALUE,produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<DocumentResponse> listOfDocumentByMultiProDocMapId(@RequestBody DocumentRequest documentRequest) throws IOException {
-		logger.info("In getCmaFile");
+		logger.info(IN_GET_CMA_FILE_MSG);
 		
 		try {
 			return new ResponseEntity<DocumentResponse>(corporateUploadService.listOfDocumentByMultiProDocMapId(documentRequest), HttpStatus.OK);
@@ -590,7 +596,7 @@ public class CorporateUploadController {
 	
 	/*@RequestMapping(value="/downloadCMAAndCoCMAExcelFile/{applicationId}/{productDocumentMappingId}" , method=RequestMethod.GET)
 	public void getCMADetail(@PathVariable("applicationId") Long applicationId , @PathVariable("productDocumentMappingId") Long productDocumentMappingId ,HttpServletResponse httpServletResponse) {
-		logger.info("In getCmaFile");
+		logger.info(IN_GET_CMA_FILE_MSG);
 		
         try {
         	  httpServletResponse.setContentType(APPLICATION_CSV_CONTENT_TYPE);

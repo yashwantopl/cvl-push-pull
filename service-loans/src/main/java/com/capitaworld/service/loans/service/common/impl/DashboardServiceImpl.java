@@ -27,6 +27,8 @@ public class DashboardServiceImpl implements DashboardService {
 
 	private static final Logger logger = LoggerFactory.getLogger(DashboardServiceImpl.class);
 
+	private static final String GET_BASIC_PROFILE_INFO = "getBasicProfileInfo";
+
 	@Autowired
 	private LoanApplicationRepository loanApplicationRepository;
 
@@ -44,7 +46,7 @@ public class DashboardServiceImpl implements DashboardService {
 
 	@Override
 	public DashboardProfileResponse getBasicProfileInfo(Long applicationId, Long userId,boolean isSP) throws Exception {
-		CommonDocumentUtils.startHook(logger, "getBasicProfileInfo");
+		CommonDocumentUtils.startHook(logger, GET_BASIC_PROFILE_INFO);
 		
 		Integer productId = null;
 		/*if(isSP){
@@ -71,7 +73,7 @@ public class DashboardServiceImpl implements DashboardService {
 			
 
 			if (CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail)) {
-				CommonDocumentUtils.endHook(logger, "getBasicProfileInfo");
+				CommonDocumentUtils.endHook(logger, GET_BASIC_PROFILE_INFO);
 				return dashboardProfileResponse;
 			}
 			dashboardProfileResponse.setPan(corporateApplicantDetail.getPanNo());
@@ -113,7 +115,7 @@ public class DashboardServiceImpl implements DashboardService {
 			}
 			
 			if (CommonUtils.isObjectNullOrEmpty(retailApplicantDetail)) {
-				CommonDocumentUtils.endHook(logger, "getBasicProfileInfo");
+				CommonDocumentUtils.endHook(logger, GET_BASIC_PROFILE_INFO);
 				return dashboardProfileResponse;
 			}
 			dashboardProfileResponse.setPan(retailApplicantDetail.getPan());
@@ -144,7 +146,7 @@ public class DashboardServiceImpl implements DashboardService {
 			dashboardProfileResponse.setName(name);
 		}
 		dashboardProfileResponse.setAddress();
-		CommonDocumentUtils.endHook(logger, "getBasicProfileInfo");
+		CommonDocumentUtils.endHook(logger, GET_BASIC_PROFILE_INFO);
 		return dashboardProfileResponse;
 	}
 

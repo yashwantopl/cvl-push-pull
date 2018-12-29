@@ -69,7 +69,7 @@ public class MobileLoanController {
 			return new ResponseEntity<LoansResponse>(new LoansResponse("true", response, MobileCustomizeResponse.SUCCESS200.getStatusCode(), MobileCustomizeResponse.SUCCESS200.getDescription(), SUCCESSFULLY_GOT_DATA),HttpStatus.OK);
 		} catch(Exception e) {
 			logger.error("Error While Get Loan List For Mobile App : ",e);
-			return new ResponseEntity<LoansResponse>(new LoansResponse("false", MobileCustomizeResponse.INTERNALSERVERERROR407.getStatusCode(), MobileCustomizeResponse.INTERNALSERVERERROR407.getDescription(), CommonUtils.INTERNAL_SERVER_ERROR),HttpStatus.OK);
+			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.FALSE_LITERAL, MobileCustomizeResponse.INTERNALSERVERERROR407.getStatusCode(), MobileCustomizeResponse.INTERNALSERVERERROR407.getDescription(), CommonUtils.INTERNAL_SERVER_ERROR),HttpStatus.OK);
 		}
 	}
 	
@@ -82,7 +82,7 @@ public class MobileLoanController {
 			return new ResponseEntity<LoansResponse>(new LoansResponse("true", response, MobileCustomizeResponse.SUCCESS200.getStatusCode(), MobileCustomizeResponse.SUCCESS200.getDescription(), SUCCESSFULLY_GOT_DATA),HttpStatus.OK);
 		} catch(Exception e) {
 			logger.error("Error While get applicant details for mobile app : ",e);
-			return new ResponseEntity<LoansResponse>(new LoansResponse("false", MobileCustomizeResponse.INTERNALSERVERERROR407.getStatusCode(), MobileCustomizeResponse.INTERNALSERVERERROR407.getDescription(), CommonUtils.INTERNAL_SERVER_ERROR),HttpStatus.OK);
+			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.FALSE_LITERAL, MobileCustomizeResponse.INTERNALSERVERERROR407.getStatusCode(), MobileCustomizeResponse.INTERNALSERVERERROR407.getDescription(), CommonUtils.INTERNAL_SERVER_ERROR),HttpStatus.OK);
 		}
 	}
 	
@@ -95,7 +95,7 @@ public class MobileLoanController {
 			return new ResponseEntity<LoansResponse>(new LoansResponse("true", id, MobileCustomizeResponse.SUCCESS200.getStatusCode(), MobileCustomizeResponse.SUCCESS200.getDescription(), SUCCESSFULLY_SAVED_DATA),HttpStatus.OK);
 		} catch(Exception e) {
 			logger.error("Error While save applicant details for mobile app : ",e);
-			return new ResponseEntity<LoansResponse>(new LoansResponse("false", MobileCustomizeResponse.INTERNALSERVERERROR407.getStatusCode(), MobileCustomizeResponse.INTERNALSERVERERROR407.getDescription(), CommonUtils.INTERNAL_SERVER_ERROR),HttpStatus.OK);
+			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.FALSE_LITERAL, MobileCustomizeResponse.INTERNALSERVERERROR407.getStatusCode(), MobileCustomizeResponse.INTERNALSERVERERROR407.getDescription(), CommonUtils.INTERNAL_SERVER_ERROR),HttpStatus.OK);
 		}
 	}
 	
@@ -107,7 +107,7 @@ public class MobileLoanController {
 			return new ResponseEntity<LoansResponse>(new LoansResponse("true", true, MobileCustomizeResponse.SUCCESS200.getStatusCode(), MobileCustomizeResponse.SUCCESS200.getDescription(), "Successfully locked profile"),HttpStatus.OK);
 		} catch(Exception e) {
 			logger.error("Error While lock profile and primary details for mobile app : ",e);
-			return new ResponseEntity<LoansResponse>(new LoansResponse("false", MobileCustomizeResponse.INTERNALSERVERERROR407.getStatusCode(), MobileCustomizeResponse.INTERNALSERVERERROR407.getDescription(), CommonUtils.INTERNAL_SERVER_ERROR),HttpStatus.OK);
+			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.FALSE_LITERAL, MobileCustomizeResponse.INTERNALSERVERERROR407.getStatusCode(), MobileCustomizeResponse.INTERNALSERVERERROR407.getDescription(), CommonUtils.INTERNAL_SERVER_ERROR),HttpStatus.OK);
 		}
 	}
 	
@@ -118,14 +118,14 @@ public class MobileLoanController {
 		try {
 			if(CommonUtils.isObjectNullOrEmpty(mobileUserRequest.getId()) || CommonUtils.isObjectNullOrEmpty(mobileUserRequest.getUserId())
 					|| CommonUtils.isObjectNullOrEmpty(mobileUserRequest.getApplicationId())) {
-				return new ResponseEntity<LoansResponse>(new LoansResponse("false", MobileCustomizeResponse.ERROR403.getStatusCode(), MobileCustomizeResponse.ERROR403.getDescription(), CommonUtils.REQUESTED_DATA_CAN_NOT_BE_NULL_OR_EMPTY),HttpStatus.OK);
+				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.FALSE_LITERAL, MobileCustomizeResponse.ERROR403.getStatusCode(), MobileCustomizeResponse.ERROR403.getDescription(), CommonUtils.REQUESTED_DATA_CAN_NOT_BE_NULL_OR_EMPTY),HttpStatus.OK);
 			}
 			MRetailCoAppGuarResponse coAppGuarResponse = mobileService.getGuarantorDetails(mobileUserRequest);
 			logger.info("Successfullly get Guarantor details for mobile app");
 			return new ResponseEntity<LoansResponse>(new LoansResponse("true", coAppGuarResponse, MobileCustomizeResponse.SUCCESS200.getStatusCode(), MobileCustomizeResponse.SUCCESS200.getDescription(), SUCCESSFULLY_GOT_DATA),HttpStatus.OK);
 		} catch(Exception e) {
 			logger.error("Error While get Guarantor Details details for mobile app : ",e);
-			return new ResponseEntity<LoansResponse>(new LoansResponse("false", MobileCustomizeResponse.INTERNALSERVERERROR407.getStatusCode(), MobileCustomizeResponse.INTERNALSERVERERROR407.getDescription(), CommonUtils.INTERNAL_SERVER_ERROR),HttpStatus.OK);
+			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.FALSE_LITERAL, MobileCustomizeResponse.INTERNALSERVERERROR407.getStatusCode(), MobileCustomizeResponse.INTERNALSERVERERROR407.getDescription(), CommonUtils.INTERNAL_SERVER_ERROR),HttpStatus.OK);
 		}
 	}
 	
@@ -134,19 +134,19 @@ public class MobileLoanController {
 		logger.info("Enter in save Guarantor Details details for mobile app");
 		try {
 			if(CommonUtils.isObjectNullOrEmpty(coAppGuarResponse.getApplicationId()) || CommonUtils.isObjectNullOrEmpty(coAppGuarResponse.getUserId())) {
-				return new ResponseEntity<LoansResponse>(new LoansResponse("false", MobileCustomizeResponse.ERROR403.getStatusCode(), MobileCustomizeResponse.ERROR403.getDescription(), CommonUtils.REQUESTED_DATA_CAN_NOT_BE_NULL_OR_EMPTY),HttpStatus.OK);
+				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.FALSE_LITERAL, MobileCustomizeResponse.ERROR403.getStatusCode(), MobileCustomizeResponse.ERROR403.getDescription(), CommonUtils.REQUESTED_DATA_CAN_NOT_BE_NULL_OR_EMPTY),HttpStatus.OK);
 			}
 			Long saveId = mobileService.saveGuarantorDetails(coAppGuarResponse);
 			if(CommonUtils.isObjectNullOrEmpty(saveId)) {
 				logger.info("Guarantor details is not saved for mobile app");
-				return new ResponseEntity<LoansResponse>(new LoansResponse("false", MobileCustomizeResponse.ERROR404.getStatusCode(), MobileCustomizeResponse.ERROR404.getDescription(), "Guarantor Details not saved"),HttpStatus.OK);
+				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.FALSE_LITERAL, MobileCustomizeResponse.ERROR404.getStatusCode(), MobileCustomizeResponse.ERROR404.getDescription(), "Guarantor Details not saved"),HttpStatus.OK);
 			} else {
 				logger.info("Successfullly Guarantor details saved for mobile app");
 				return new ResponseEntity<LoansResponse>(new LoansResponse("true", saveId, MobileCustomizeResponse.SUCCESS200.getStatusCode(), MobileCustomizeResponse.SUCCESS200.getDescription(), SUCCESSFULLY_GOT_DATA),HttpStatus.OK);
 			}
 		} catch(Exception e) {
 			logger.error("Error While save Guarantor Details details for mobile app : ",e);
-			return new ResponseEntity<LoansResponse>(new LoansResponse("false", MobileCustomizeResponse.INTERNALSERVERERROR407.getStatusCode(), MobileCustomizeResponse.INTERNALSERVERERROR407.getDescription(), CommonUtils.INTERNAL_SERVER_ERROR),HttpStatus.OK);
+			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.FALSE_LITERAL, MobileCustomizeResponse.INTERNALSERVERERROR407.getStatusCode(), MobileCustomizeResponse.INTERNALSERVERERROR407.getDescription(), CommonUtils.INTERNAL_SERVER_ERROR),HttpStatus.OK);
 		}
 	}
 	
@@ -156,14 +156,14 @@ public class MobileLoanController {
 		try {
 			if(CommonUtils.isObjectNullOrEmpty(mobileUserRequest.getId()) || CommonUtils.isObjectNullOrEmpty(mobileUserRequest.getUserId())
 					|| CommonUtils.isObjectNullOrEmpty(mobileUserRequest.getApplicationId())) {
-				return new ResponseEntity<LoansResponse>(new LoansResponse("false", MobileCustomizeResponse.ERROR403.getStatusCode(), MobileCustomizeResponse.ERROR403.getDescription(), CommonUtils.REQUESTED_DATA_CAN_NOT_BE_NULL_OR_EMPTY),HttpStatus.OK);
+				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.FALSE_LITERAL, MobileCustomizeResponse.ERROR403.getStatusCode(), MobileCustomizeResponse.ERROR403.getDescription(), CommonUtils.REQUESTED_DATA_CAN_NOT_BE_NULL_OR_EMPTY),HttpStatus.OK);
 			}
 			MRetailCoAppGuarResponse coAppGuarResponse = mobileService.getCoApplicantDetails(mobileUserRequest);
 			logger.info("Successfullly get CoApplicant details for mobile app");
 			return new ResponseEntity<LoansResponse>(new LoansResponse("true", coAppGuarResponse, MobileCustomizeResponse.SUCCESS200.getStatusCode(), MobileCustomizeResponse.SUCCESS200.getDescription(), SUCCESSFULLY_GOT_DATA),HttpStatus.OK);
 		} catch(Exception e) {
 			logger.error("Error While get CoApplicant Details details for mobile app : ",e);
-			return new ResponseEntity<LoansResponse>(new LoansResponse("false", MobileCustomizeResponse.INTERNALSERVERERROR407.getStatusCode(), MobileCustomizeResponse.INTERNALSERVERERROR407.getDescription(), CommonUtils.INTERNAL_SERVER_ERROR),HttpStatus.OK);
+			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.FALSE_LITERAL, MobileCustomizeResponse.INTERNALSERVERERROR407.getStatusCode(), MobileCustomizeResponse.INTERNALSERVERERROR407.getDescription(), CommonUtils.INTERNAL_SERVER_ERROR),HttpStatus.OK);
 		}
 	}
 	
@@ -172,19 +172,19 @@ public class MobileLoanController {
 		logger.info("Enter in save CoApplicant Details details for mobile app");
 		try {
 			if(CommonUtils.isObjectNullOrEmpty(coAppGuarResponse.getApplicationId()) || CommonUtils.isObjectNullOrEmpty(coAppGuarResponse.getUserId())) {
-				return new ResponseEntity<LoansResponse>(new LoansResponse("false", MobileCustomizeResponse.ERROR403.getStatusCode(), MobileCustomizeResponse.ERROR403.getDescription(), CommonUtils.REQUESTED_DATA_CAN_NOT_BE_NULL_OR_EMPTY),HttpStatus.OK);
+				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.FALSE_LITERAL, MobileCustomizeResponse.ERROR403.getStatusCode(), MobileCustomizeResponse.ERROR403.getDescription(), CommonUtils.REQUESTED_DATA_CAN_NOT_BE_NULL_OR_EMPTY),HttpStatus.OK);
 			}
 			Long saveId = mobileService.saveCoApplicantDetails(coAppGuarResponse);
 			if(CommonUtils.isObjectNullOrEmpty(saveId)) {
 				logger.info("CoApplicant details is not saved for mobile app");
-				return new ResponseEntity<LoansResponse>(new LoansResponse("false", MobileCustomizeResponse.ERROR404.getStatusCode(), MobileCustomizeResponse.ERROR404.getDescription(), "Coapplicant Details not saved"),HttpStatus.OK);
+				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.FALSE_LITERAL, MobileCustomizeResponse.ERROR404.getStatusCode(), MobileCustomizeResponse.ERROR404.getDescription(), "Coapplicant Details not saved"),HttpStatus.OK);
 			} else {
 				logger.info("Successfullly CoApplicant details saved for mobile app");
 				return new ResponseEntity<LoansResponse>(new LoansResponse("true", saveId, MobileCustomizeResponse.SUCCESS200.getStatusCode(), MobileCustomizeResponse.SUCCESS200.getDescription(), SUCCESSFULLY_SAVED_DATA),HttpStatus.OK);
 			}
 		} catch(Exception e) {
 			logger.error("Error While save CoApplicant Details details for mobile app : ",e);
-			return new ResponseEntity<LoansResponse>(new LoansResponse("false", MobileCustomizeResponse.INTERNALSERVERERROR407.getStatusCode(), MobileCustomizeResponse.INTERNALSERVERERROR407.getDescription(), CommonUtils.INTERNAL_SERVER_ERROR),HttpStatus.OK);
+			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.FALSE_LITERAL, MobileCustomizeResponse.INTERNALSERVERERROR407.getStatusCode(), MobileCustomizeResponse.INTERNALSERVERERROR407.getDescription(), CommonUtils.INTERNAL_SERVER_ERROR),HttpStatus.OK);
 		}
 	}
 	
@@ -194,19 +194,19 @@ public class MobileLoanController {
 		logger.info("Enter in save Loan Application Details details for mobile app");
 		try {
 			if( CommonUtils.isObjectNullOrEmpty(mobileFrameRequest.getUserId())) {
-				return new ResponseEntity<LoansResponse>(new LoansResponse("false", MobileCustomizeResponse.ERROR403.getStatusCode(), MobileCustomizeResponse.ERROR403.getDescription(), CommonUtils.REQUESTED_DATA_CAN_NOT_BE_NULL_OR_EMPTY),HttpStatus.OK);
+				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.FALSE_LITERAL, MobileCustomizeResponse.ERROR403.getStatusCode(), MobileCustomizeResponse.ERROR403.getDescription(), CommonUtils.REQUESTED_DATA_CAN_NOT_BE_NULL_OR_EMPTY),HttpStatus.OK);
 			}
 			Long saveId = mobileService.saveLoanApplicationDetails(mobileFrameRequest);
 			if(CommonUtils.isObjectNullOrEmpty(saveId)) {
 				logger.info("Loan Application details is not saved for mobile app");
-				return new ResponseEntity<LoansResponse>(new LoansResponse("false", MobileCustomizeResponse.ERROR404.getStatusCode(), MobileCustomizeResponse.ERROR404.getDescription(), "Details not saved"),HttpStatus.OK);
+				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.FALSE_LITERAL, MobileCustomizeResponse.ERROR404.getStatusCode(), MobileCustomizeResponse.ERROR404.getDescription(), "Details not saved"),HttpStatus.OK);
 			} else {
 				logger.info("Successfullly Loan Application details saved for mobile app");
 				return new ResponseEntity<LoansResponse>(new LoansResponse("true", saveId, MobileCustomizeResponse.SUCCESS200.getStatusCode(), MobileCustomizeResponse.SUCCESS200.getDescription(), SUCCESSFULLY_SAVED_DATA),HttpStatus.OK);
 			}
 		} catch(Exception e) {
 			logger.error("Error While save Loan Application Details details for mobile app : ",e);
-			return new ResponseEntity<LoansResponse>(new LoansResponse("false", MobileCustomizeResponse.INTERNALSERVERERROR407.getStatusCode(), MobileCustomizeResponse.INTERNALSERVERERROR407.getDescription(), CommonUtils.INTERNAL_SERVER_ERROR),HttpStatus.OK);
+			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.FALSE_LITERAL, MobileCustomizeResponse.INTERNALSERVERERROR407.getStatusCode(), MobileCustomizeResponse.INTERNALSERVERERROR407.getDescription(), CommonUtils.INTERNAL_SERVER_ERROR),HttpStatus.OK);
 		}
 	}
 	
@@ -215,7 +215,7 @@ public class MobileLoanController {
 		logger.info("Enter in get fp product list for mobile app");
 		try {
 			if(CommonUtils.isObjectNullOrEmpty(mobileLoanRequest.getUserId())) {
-				return new ResponseEntity<LoansResponse>(new LoansResponse("false", MobileCustomizeResponse.ERROR403.getStatusCode(), MobileCustomizeResponse.ERROR403.getDescription(), CommonUtils.REQUESTED_DATA_CAN_NOT_BE_NULL_OR_EMPTY),HttpStatus.OK);
+				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.FALSE_LITERAL, MobileCustomizeResponse.ERROR403.getStatusCode(), MobileCustomizeResponse.ERROR403.getDescription(), CommonUtils.REQUESTED_DATA_CAN_NOT_BE_NULL_OR_EMPTY),HttpStatus.OK);
 			}
 			
 			List<ProductMasterRequest> list = productMasterService.getList(mobileLoanRequest.getUserId(),null);
@@ -225,7 +225,7 @@ public class MobileLoanController {
 			return new ResponseEntity<LoansResponse>(new LoansResponse("true", loansResponse.getListData(), MobileCustomizeResponse.SUCCESS200.getStatusCode(), MobileCustomizeResponse.SUCCESS200.getDescription(), SUCCESSFULLY_SAVED_DATA),HttpStatus.OK);
 		} catch(Exception e) {
 			logger.error("Error While get fp product list for mobile app : ",e);
-			return new ResponseEntity<LoansResponse>(new LoansResponse("false", MobileCustomizeResponse.INTERNALSERVERERROR407.getStatusCode(), MobileCustomizeResponse.INTERNALSERVERERROR407.getDescription(), CommonUtils.INTERNAL_SERVER_ERROR),HttpStatus.OK);
+			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.FALSE_LITERAL, MobileCustomizeResponse.INTERNALSERVERERROR407.getStatusCode(), MobileCustomizeResponse.INTERNALSERVERERROR407.getDescription(), CommonUtils.INTERNAL_SERVER_ERROR),HttpStatus.OK);
 		}
 	}
 	
@@ -242,7 +242,7 @@ public class MobileLoanController {
 			return new ResponseEntity<LoansResponse>(new LoansResponse("true", loansResponse.getListData(), MobileCustomizeResponse.SUCCESS200.getStatusCode(), MobileCustomizeResponse.SUCCESS200.getDescription(), "fundproviderProposal for mobile"),HttpStatus.OK);	
 		} catch(Exception e) {
 			logger.error("Error While get fp matches list for mobile app : ",e);
-			return new ResponseEntity<LoansResponse>(new LoansResponse("false", MobileCustomizeResponse.INTERNALSERVERERROR407.getStatusCode(), MobileCustomizeResponse.INTERNALSERVERERROR407.getDescription(), CommonUtils.INTERNAL_SERVER_ERROR),HttpStatus.OK);
+			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.FALSE_LITERAL, MobileCustomizeResponse.INTERNALSERVERERROR407.getStatusCode(), MobileCustomizeResponse.INTERNALSERVERERROR407.getDescription(), CommonUtils.INTERNAL_SERVER_ERROR),HttpStatus.OK);
 		}
 	}
 	
@@ -259,7 +259,7 @@ public class MobileLoanController {
 			return new ResponseEntity<LoansResponse>(new LoansResponse("true", loansResponse.getListData(), MobileCustomizeResponse.SUCCESS200.getStatusCode(), MobileCustomizeResponse.SUCCESS200.getDescription(), "fundseekerProposal matches for mobile"),HttpStatus.OK);	
 		} catch(Exception e) {
 			logger.error("Error While get FS matches list for mobile app : ",e);
-			return new ResponseEntity<LoansResponse>(new LoansResponse("false", MobileCustomizeResponse.INTERNALSERVERERROR407.getStatusCode(), MobileCustomizeResponse.INTERNALSERVERERROR407.getDescription(), CommonUtils.INTERNAL_SERVER_ERROR),HttpStatus.OK);
+			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.FALSE_LITERAL, MobileCustomizeResponse.INTERNALSERVERERROR407.getStatusCode(), MobileCustomizeResponse.INTERNALSERVERERROR407.getDescription(), CommonUtils.INTERNAL_SERVER_ERROR),HttpStatus.OK);
 		}
 	}
 	
@@ -278,7 +278,7 @@ public class MobileLoanController {
 			return new ResponseEntity<LoansResponse>(new LoansResponse("true", response, MobileCustomizeResponse.SUCCESS200.getStatusCode(), MobileCustomizeResponse.SUCCESS200.getDescription(), "Successfully got response from match-engine"),HttpStatus.OK);	
 		} catch (Exception e) {
 			logger.error("Error While change mobile matches status : ",e);
-			return new ResponseEntity<LoansResponse>(new LoansResponse("false", MobileCustomizeResponse.INTERNALSERVERERROR407.getStatusCode(), MobileCustomizeResponse.INTERNALSERVERERROR407.getDescription(), CommonUtils.INTERNAL_SERVER_ERROR),HttpStatus.OK);
+			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.FALSE_LITERAL, MobileCustomizeResponse.INTERNALSERVERERROR407.getStatusCode(), MobileCustomizeResponse.INTERNALSERVERERROR407.getDescription(), CommonUtils.INTERNAL_SERVER_ERROR),HttpStatus.OK);
 		}
 		
 	}

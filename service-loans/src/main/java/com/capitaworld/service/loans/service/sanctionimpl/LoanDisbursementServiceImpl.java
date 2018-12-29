@@ -40,6 +40,8 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 	private static final Logger logger = LoggerFactory.getLogger(LoanDisbursementServiceImpl.class);
 
 	private static final String EXIT_SAVE_LOAN_DISBURSEMENT_DETAIL_MSG = "Exit saveLoanDisbursementDetail() --> msg==>";
+	private static final String SUCCESS_LITERAL = "SUCCESS";
+	private static final String FIRST_DISBURSEMENT = "First Disbursement";
 
 	@Autowired
 	private LoanDisbursementRepository loanDisbursementRepository;
@@ -119,8 +121,8 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 					}
 					Double totalDisbursedAmount = oldDisbursedAmount + loanDisbursementRequest.getDisbursedAmount();
 					if (loanSanctionDomain.getSanctionAmount() == totalDisbursedAmount) {
-						logger.info(EXIT_SAVE_LOAN_DISBURSEMENT_DETAIL_MSG+"SUCCESS");
-						loanDisbursementRequest.setReason("SUCCESS");
+						logger.info(EXIT_SAVE_LOAN_DISBURSEMENT_DETAIL_MSG+SUCCESS_LITERAL);
+						loanDisbursementRequest.setReason(SUCCESS_LITERAL);
 						loanDisbursementRequest.setIsSaved(false);
 						loanDisbursementRequest.setStatusCode(CommonUtility.SanctionDisbursementAPIStatusCode.SUCCESS);
 						if(loanDisbursementRequest.getIsIneligibleProposal()!= null &&  loanDisbursementRequest.getIsIneligibleProposal()) {
@@ -129,7 +131,7 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 						}
 						return loanDisbursementRequest;
 					}else if (loanSanctionDomain.getSanctionAmount() > totalDisbursedAmount) {
-						logger.info(EXIT_SAVE_LOAN_DISBURSEMENT_DETAIL_MSG+"SUCCESS");
+						logger.info(EXIT_SAVE_LOAN_DISBURSEMENT_DETAIL_MSG+SUCCESS_LITERAL);
 						loanDisbursementRequest.setReason("Remaining");
 						loanDisbursementRequest.setIsSaved(false);
 						loanDisbursementRequest.setStatusCode(CommonUtility.SanctionDisbursementAPIStatusCode.SUCCESS);
@@ -150,8 +152,8 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 						return loanDisbursementRequest;
 					}
 				} else {
-					logger.info(EXIT_SAVE_LOAN_DISBURSEMENT_DETAIL_MSG +"First Disbursement");
-					loanDisbursementRequest.setReason("First Disbursement");
+					logger.info(EXIT_SAVE_LOAN_DISBURSEMENT_DETAIL_MSG +FIRST_DISBURSEMENT);
+					loanDisbursementRequest.setReason(FIRST_DISBURSEMENT);
 					loanDisbursementRequest.setIsSaved(false);
 					loanDisbursementRequest.setStatusCode(CommonUtility.SanctionDisbursementAPIStatusCode.FIRST_DISBURSEMENT);
 					if(loanDisbursementRequest.getIsIneligibleProposal() != null &&  loanDisbursementRequest.getIsIneligibleProposal()) {
@@ -232,7 +234,7 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 			//saving req in bank to  cw-audit table
 			String jsonString = null;
 			
-			if("SUCCESS".equalsIgnoreCase(loanDisbursementRequest.getReason()) || "First Disbursement".equalsIgnoreCase(loanDisbursementRequest.getReason()) || "Remaining".equalsIgnoreCase(loanDisbursementRequest.getReason())) {
+			if(SUCCESS_LITERAL.equalsIgnoreCase(loanDisbursementRequest.getReason()) || FIRST_DISBURSEMENT.equalsIgnoreCase(loanDisbursementRequest.getReason()) || "Remaining".equalsIgnoreCase(loanDisbursementRequest.getReason())) {
 				status= loanDisbursementRequest.getReason();
 				if(CommonUtility.ApiType.DISBURSEMENT == apiType) {
 					if(saveLoanDisbursementDetail(loanDisbursementRequest)) {

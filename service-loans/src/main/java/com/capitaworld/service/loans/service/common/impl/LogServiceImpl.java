@@ -21,6 +21,8 @@ import com.capitaworld.service.loans.utils.CommonUtils;
 public class LogServiceImpl implements LogService {
 	private static final Logger logger = LoggerFactory.getLogger(LogServiceImpl.class);
 
+	private static final String SAVE_FS_LOG = "saveFsLog";
+
 	@Autowired
 	private LogDetailsRepository logDetailsRepository;
 
@@ -46,19 +48,19 @@ public class LogServiceImpl implements LogService {
 
 	@Override
 	public Boolean saveFsLog(Long applicationId, Integer logType) {
-		CommonDocumentUtils.startHook(logger, "saveFsLog");
+		CommonDocumentUtils.startHook(logger, SAVE_FS_LOG);
 		try {
 			LogDetails logDetails = new LogDetails();
 			logDetails.setLoanApplicationMasterId(applicationId);
 			logDetails.setDateTypeMasterId(logType);
 			logDetails.setCreatedDate(new Date());
 			logDetailsRepository.save(logDetails);
-			CommonDocumentUtils.endHook(logger, "saveFsLog");
+			CommonDocumentUtils.endHook(logger, SAVE_FS_LOG);
 			return true;
 		} catch (Exception e) {
 			logger.error(e.toString());
 		}
-		CommonDocumentUtils.endHook(logger, "saveFsLog");
+		CommonDocumentUtils.endHook(logger, SAVE_FS_LOG);
 		return false;
 	}
 
