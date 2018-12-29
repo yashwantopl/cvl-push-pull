@@ -94,7 +94,7 @@ public class NotificationServiceImpl implements NotificationService{
         
         try {
         	for(int i=0;i <toIds.length;i++) {
-        		UserResponse toUsersDetails = usersClient.getEmailMobile(Long.valueOf(toIds[i].toString()));
+        		UserResponse toUsersDetails = usersClient.getEmailMobile(Long.valueOf(toIds[i]));
                 if (!CommonUtils.isObjectNullOrEmpty(toUsersDetails.getData())) {
         			UsersRequest request = MultipleJSONObjectHelper
         					.getObjectFromMap((LinkedHashMap<String, Object>) toUsersDetails.getData(), UsersRequest.class);
@@ -132,7 +132,7 @@ public class NotificationServiceImpl implements NotificationService{
 		CommonDocumentUtils.startHook(logger, SEND_VIEW_NOTIFICATION);
 		
 		if (toUserId != null && fromUserId != null) {
-			String[] a = { toUserId.toString() };
+			String[] a = { toUserId };
 			NotificationRequest request = new NotificationRequest();
 			request.setClientRefId(fromUserId.toString());
 			Map<String, Object> parameters = new HashMap<String, Object>();
