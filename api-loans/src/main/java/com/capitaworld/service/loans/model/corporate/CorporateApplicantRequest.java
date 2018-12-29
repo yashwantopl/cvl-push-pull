@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.List;
 
 import com.capitaworld.service.loans.model.Address;
-import com.capitaworld.service.loans.model.retail.CoApplicantRequest;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
@@ -80,6 +79,8 @@ public class CorporateApplicantRequest implements Serializable {
     private Double turnOverCurrFinYearTillMonth;
     
     private Double profitCurrFinYear;
+    
+    private Double grossSales;
     
 	public Long getUserId() {
 		return userId;
@@ -330,6 +331,14 @@ public class CorporateApplicantRequest implements Serializable {
 		this.profitCurrFinYear = profitCurrFinYear;
 	}
 
+	public Double getGrossSales() {
+		return grossSales;
+	}
+
+	public void setGrossSales(Double grossSales) {
+		this.grossSales = grossSales;
+	}
+
 	@Override
 	public String toString() {
 		return "CorporateApplicantRequest [id=" + id + ", clientId=" + clientId + ", applicationId=" + applicationId
@@ -343,6 +352,7 @@ public class CorporateApplicantRequest implements Serializable {
 				+ keyVerticalSector + ", keyVerticalSubsector=" + keyVerticalSubsector + ", gstIn=" + gstIn + ", email="
 				+ email + ", companyCIN=" + companyCIN + ", environmentalImpactId=" + environmentalImpactId
 				+ ", turnOverPrevFinYear=" + turnOverPrevFinYear + ", turnOverCurrFinYearTillMonth="
-				+ turnOverCurrFinYearTillMonth + ", profitCurrFinYear=" + profitCurrFinYear + "]";
+				+ turnOverCurrFinYearTillMonth + ", profitCurrFinYear=" + profitCurrFinYear + ", grossSales="
+				+ grossSales + "]";
 	}
 }

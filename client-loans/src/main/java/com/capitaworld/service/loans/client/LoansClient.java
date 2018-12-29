@@ -43,6 +43,7 @@ import com.capitaworld.service.loans.model.corporate.CorporateDirectorIncomeRequ
 import com.capitaworld.service.loans.model.corporate.FinalTermLoanRequest;
 import com.capitaworld.service.loans.model.corporate.FinalWorkingCapitalLoanRequest;
 import com.capitaworld.service.loans.model.corporate.FundSeekerInputRequestResponse;
+import com.capitaworld.service.loans.model.corporate.PrimaryCorporateRequest;
 import com.capitaworld.service.loans.model.corporate.PrimaryTermLoanRequest;
 import com.capitaworld.service.loans.model.corporate.PrimaryWorkingCapitalLoanRequest;
 import com.capitaworld.service.loans.model.mobile.MRetailApplicantResponse;
@@ -117,6 +118,7 @@ public class LoansClient {
 	private static final String UPDATE_LOAN_APPLICATION = "/loan_application/updateLoanApplication";
 	private static final String BASIC_DETAIL_URL = "/fs_retail_profile/profile/get_basic_details";
 	private static final String LOAN_BASIC_DETAILS = "/loan_application/getLoanBasicDetails";
+	private static final String PRIMARY_INFORMATION = "/corporate_primary/get";
 	private static final String STRING_TO_BINARY_ARRAY = "/convertToByteArray";
 
 	private static final String MOBILE_LOANLIST = "/mobile/loanList";
@@ -263,6 +265,20 @@ public class LoansClient {
 		} catch (Exception e) {
 			logger.error("Exception in readCMA : ",e);
 			throw new ExcelException(e.getCause().getMessage());
+		}
+	}
+	
+	public PrimaryCorporateRequest getPrimaryCorporateDetails(Long applicationId) throws LoansException {
+		String url = loansBaseUrl.concat(PRIMARY_INFORMATION);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set(REQ_AUTH, "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<Long> entity = new HttpEntity<Long>(applicationId, headers);
+			return restTemplate.exchange(url, HttpMethod.POST, entity, PrimaryCorporateRequest.class).getBody();
+		} catch (Exception e) {
+			logger.error("Exception in readCMA : ",e);
+			throw new LoansException(e.getCause().getMessage());
 		}
 	}
 
