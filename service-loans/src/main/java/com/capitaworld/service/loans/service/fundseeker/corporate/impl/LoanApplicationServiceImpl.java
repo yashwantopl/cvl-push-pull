@@ -8503,7 +8503,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				guarantorsCorporateDetail.setName(guarantorsCorporateDetailRequest.getName());
 				guarantorsCorporateDetail.setPropertiesOwned(guarantorsCorporateDetailRequest.getPropertiesOwned());
 				guarantorsCorporateDetail.setPropertyType(guarantorsCorporateDetailRequest.getValue());
-				;
 				guarantorsCorporateDetail.setAddress(guarantorsCorporateDetailRequest.getAddress());
 				guarantorsCorporateDetail.setOccupation(guarantorsCorporateDetailRequest.getOccupation());
 				guarantorsCorporateDetail.setApplicationId(new LoanApplicationMaster(applicationId));

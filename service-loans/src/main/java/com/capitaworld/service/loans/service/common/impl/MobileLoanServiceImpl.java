@@ -158,7 +158,7 @@ public class MobileLoanServiceImpl implements MobileService {
 				
 			} else if(loantype.getValue() == LoanType.LAP_LOAN.getValue()) {
 				logger.info("Start Save Applicant LAP Loan Primary Details...");
-				PrimaryLapLoanDetailRequest lapLoanDetailRequest =  MultipleJSONObjectHelper.getObjectFromMap((Map<String,Object>) mRetailApplicantResponse.getData(),PrimaryLapLoanDetailRequest.class);;
+				PrimaryLapLoanDetailRequest lapLoanDetailRequest =  MultipleJSONObjectHelper.getObjectFromMap((Map<String,Object>) mRetailApplicantResponse.getData(),PrimaryLapLoanDetailRequest.class);
 				if(!CommonUtils.isObjectNullOrEmpty(lapLoanDetailRequest)){
 					primaryLapLoanService.saveOrUpdate(lapLoanDetailRequest, mRetailApplicantResponse.getUserId());
 				}
