@@ -113,6 +113,14 @@ public class CommonUtils {
 	public static final String ORG_NAME = "orgName";
 	public static final String SAVE_OR_UPDATE = "saveOrUpdate";
 
+	public static final String STORAGE_DETAILS_ID = "storageDetailsId";
+	public static final String APPLICATION_ID = "applicationId";
+	public static final String CREATED_BY = "createdBy";
+	public static final String CREATED_DATE = "createdDate";
+	public static final String MODIFIED_BY = "modifiedBy";
+	public static final String MODIFIED_DATE = "modifiedDate";
+	public static final String IS_ACTIVE = "isActive";
+
 	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 
 	public static final class UsersRoles {
