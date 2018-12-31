@@ -515,10 +515,9 @@ public class FPAsyncComponent {
 			}
 
 		} else {
-
 			logger.info("Mail to Checkers after In-principle to FS is disabled==========>");
 		}
-	};
+	}
 
 	// ==========================================================================================================
 
@@ -710,7 +709,7 @@ public class FPAsyncComponent {
 
 			logger.info("Mail to HO after In-principle to FS is disabled==========>");
 		}
-	};
+	}
 
 	// ==========================================================================================================
 

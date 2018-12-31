@@ -866,7 +866,7 @@ public class AsyncComponent {
 			logger.error("Throw exception while sending final lock mail : ",e);
 		}
 
-	};
+	}
 
 	/**
 	 * 

@@ -80,7 +80,7 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 		Workbook wb = null;
 		try {
             //EXISTING WCTL_CMA OR TL 
-            String EXCEL_FILE_LOCATION  = "cw.mca.cwtlwctlcmafile.location"; ;
+            String EXCEL_FILE_LOCATION  = "cw.mca.cwtlwctlcmafile.location";
  			logger.warn("excel file====>>"+EXCEL_FILE_LOCATION);
  			Integer businessTypeId =loanApplicationRepository.findOneBusinessTypeIdByIdAndIsActive(applicationId);
  			logger.info("Busyness Type ID=====>" + businessTypeId);

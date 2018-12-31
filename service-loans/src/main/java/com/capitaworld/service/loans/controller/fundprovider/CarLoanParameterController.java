@@ -85,7 +85,7 @@ public class CarLoanParameterController {
 	@RequestMapping(value = "/get/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> get(@PathVariable("id") Long id) {
 		// request must not be null
-		CommonDocumentUtils.startHook(logger, "get");;
+		CommonDocumentUtils.startHook(logger, "get");
 		try {
 			if (id == null) {
 				logger.warn("ID Require to get car loan parameter ==>" + id);
