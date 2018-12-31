@@ -680,7 +680,6 @@ public class ProposalServiceMappingImpl implements ProposalService {
 											String score = creditScore.get("riskScore").toString();
 											logger.info("Pan===>" + cibilRequest.getPan() + " ==> Score===>" + score);
 											retailProposalDetails.setCibilSCore(score);
-											;
 										} else {
 											logger.info("no data Found from key ns4:CreditScore");
 										}
