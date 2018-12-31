@@ -746,8 +746,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 									? coApplicantDetail.getFatherName() : null);
 					finalViewResponse.setMotherName(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getMotherName())
 							? coApplicantDetail.getMotherName() : null);
-					if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getStatusId())) {
-						if (coApplicantDetail.getStatusId() == 2) {
+					if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getStatusId()) && coApplicantDetail.getStatusId() == 2 ) {
 							finalViewResponse
 									.setSpouseName(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getSpouseName())
 											? coApplicantDetail.getSpouseName() : null);
@@ -757,7 +756,6 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 							finalViewResponse
 									.setNoOfChildren(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getNoChildren())
 											? coApplicantDetail.getNoChildren().toString() : null);
-						}
 					}
 					finalViewResponse
 							.setNoOfDependents(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getNoDependent())

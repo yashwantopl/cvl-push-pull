@@ -737,8 +737,7 @@ public class GuarantorServiceImpl implements GuarantorService {
 									? guarantorDetail.getFatherName() : null);
 					finalViewResponse.setMotherName(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getMotherName())
 							? guarantorDetail.getMotherName() : null);
-					if (!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getStatusId())) {
-						if (guarantorDetail.getStatusId() == 2) {
+					if (!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getStatusId()) && guarantorDetail.getStatusId() == 2 ) {
 							finalViewResponse
 									.setSpouseName(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getSpouseName())
 											? guarantorDetail.getSpouseName() : null);
@@ -748,7 +747,6 @@ public class GuarantorServiceImpl implements GuarantorService {
 							finalViewResponse
 									.setNoOfChildren(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getNoChildren())
 											? guarantorDetail.getNoChildren().toString() : null);
-						}
 					}
 					finalViewResponse
 							.setNoOfDependents(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getNoDependent())

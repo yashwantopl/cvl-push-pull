@@ -35,6 +35,7 @@ public class FinancialArrangementDetailsServiceImpl implements FinancialArrangem
 	private static final Logger logger = LoggerFactory.getLogger(SecurityCorporateDetailsServiceImpl.class);
 
 	private static final String EXCEPTION_IN_SAVE_FINANCIAL_ARRANGEMENTS_DETAIL_MSG = "Exception in save financialArrangementsDetail :-";
+	private static final String FOR_APPLICATION_ID_MSG = " For Application Id=====>{}";
 
 	@Autowired
 	private FinancialArrangementDetailsRepository financialArrangementDetailsRepository;
@@ -148,10 +149,10 @@ public class FinancialArrangementDetailsServiceImpl implements FinancialArrangem
 	@Override
 	public FinancialArrangementsDetailRequest getTotalEmiAndSanctionAmountByApplicationId(Long applicationId) {
 		Double totalEmi = financialArrangementDetailsRepository.getTotalEmiByApplicationId(applicationId);
-		logger.info("getTotalOfEmiByApplicationId=====>" + totalEmi + " For Application Id=====>{}", applicationId);		
+		logger.info("getTotalOfEmiByApplicationId=====>" + totalEmi + FOR_APPLICATION_ID_MSG, applicationId);
 		List<String> loanTypes = Arrays.asList(new String[]{"cash credit","overdraft"});
 		Double existingLimits = financialArrangementDetailsRepository.getExistingLimits(applicationId, loanTypes);
-		logger.info("existingLimits=====>" + existingLimits + " For Application Id=====>{}", applicationId);
+		logger.info("existingLimits=====>" + existingLimits + FOR_APPLICATION_ID_MSG, applicationId);
 		FinancialArrangementsDetailRequest arrangementsDetailRequest = new FinancialArrangementsDetailRequest();
 		arrangementsDetailRequest.setAmount(existingLimits);
 		arrangementsDetailRequest.setEmi(totalEmi);
@@ -161,9 +162,9 @@ public class FinancialArrangementDetailsServiceImpl implements FinancialArrangem
 	@Override
 	public FinancialArrangementsDetailRequest getTotalEmiAndSanctionAmountByApplicationIdForUniforProduct(Long applicationId) {
 		Double totalEmi = financialArrangementDetailsRepository.getTotalEmiByApplicationIdForUniformProduct(applicationId);
-		logger.info("getTotalOfEmiByApplicationId for Uniform Product=====>" + totalEmi + " For Application Id=====>{}", applicationId);		
+		logger.info("getTotalOfEmiByApplicationId for Uniform Product=====>" + totalEmi + FOR_APPLICATION_ID_MSG, applicationId);
 		Double existingLimits = financialArrangementDetailsRepository.getExistingLimitsForUniformProduct(applicationId);
-		logger.info("existingLimits for Uniform Product=====>" + existingLimits + " For Application Id=====>{}", applicationId);
+		logger.info("existingLimits for Uniform Product=====>" + existingLimits + FOR_APPLICATION_ID_MSG, applicationId);
 		FinancialArrangementsDetailRequest arrangementsDetailRequest = new FinancialArrangementsDetailRequest();
 		arrangementsDetailRequest.setAmount(existingLimits);
 		arrangementsDetailRequest.setEmi(totalEmi);

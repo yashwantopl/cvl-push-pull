@@ -613,19 +613,18 @@ public class CommonUtils {
 		return getBowlCount(profileCount, null) + getBowlCount(primaryCount, null) + getBowlCount(finalCount, null);
 	}
 
-	public static List<String> urlsBrforeLogin = null;
+	public static final List<String> URLS_BRFORE_LOGIN = new ArrayList<String>(8);
 	static {
-		urlsBrforeLogin = new ArrayList<String>(8);
-		urlsBrforeLogin.add("/loans/loan_application/getUsersRegisteredLoanDetails".toLowerCase());
-		urlsBrforeLogin.add("/loans/loan_application/getLoanDetailsForAdminPanel".toLowerCase());
-		urlsBrforeLogin.add("/loans/corporate_upload/downloadCMAAndCoCMAExcelFile/**".toLowerCase());
-		urlsBrforeLogin.add("/loans/loan_application/save_payment_info_for_mobile".toLowerCase());
-		urlsBrforeLogin.add("/loans/loan_application/mobile/successUrl".toLowerCase());
-		urlsBrforeLogin.add("/loans/loan_application/getToken".toLowerCase());
-		urlsBrforeLogin.add("/loans/loan_application/saveLoanDisbursementDetail".toLowerCase());
-		urlsBrforeLogin.add("/loans/loan_application/saveLoanSanctionDetail".toLowerCase());
-		urlsBrforeLogin.add("/loans/loan_application/saveLoanSanctionDisbursementDetailFromBank".toLowerCase());
-		urlsBrforeLogin.add("/loans/ddr/getCustomerNameById".toLowerCase());
+		URLS_BRFORE_LOGIN.add("/loans/loan_application/getUsersRegisteredLoanDetails".toLowerCase());
+		URLS_BRFORE_LOGIN.add("/loans/loan_application/getLoanDetailsForAdminPanel".toLowerCase());
+		URLS_BRFORE_LOGIN.add("/loans/corporate_upload/downloadCMAAndCoCMAExcelFile/**".toLowerCase());
+		URLS_BRFORE_LOGIN.add("/loans/loan_application/save_payment_info_for_mobile".toLowerCase());
+		URLS_BRFORE_LOGIN.add("/loans/loan_application/mobile/successUrl".toLowerCase());
+		URLS_BRFORE_LOGIN.add("/loans/loan_application/getToken".toLowerCase());
+		URLS_BRFORE_LOGIN.add("/loans/loan_application/saveLoanDisbursementDetail".toLowerCase());
+		URLS_BRFORE_LOGIN.add("/loans/loan_application/saveLoanSanctionDetail".toLowerCase());
+		URLS_BRFORE_LOGIN.add("/loans/loan_application/saveLoanSanctionDisbursementDetailFromBank".toLowerCase());
+		URLS_BRFORE_LOGIN.add("/loans/ddr/getCustomerNameById".toLowerCase());
 	}
 
 	public static int calculateAge(Date dateOfBirth) {

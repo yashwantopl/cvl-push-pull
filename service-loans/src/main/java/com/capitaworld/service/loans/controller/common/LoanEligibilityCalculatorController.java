@@ -319,12 +319,10 @@ public class LoanEligibilityCalculatorController {
 			return response;
 		}
 
-		if (!CommonUtils.isObjectNullOrEmpty(homeLoanRequest.getObligation())) {
-			if (homeLoanRequest.getIncome() <= homeLoanRequest.getObligation()) {
+		if (!CommonUtils.isObjectNullOrEmpty(homeLoanRequest.getObligation()) && homeLoanRequest.getIncome() <= homeLoanRequest.getObligation() ) {
 				response = new LoansResponse(CommonUtils.OBLIGATION_MUST_BE_LESS_THAN_INCOME, HttpStatus.BAD_REQUEST.value());
 				response.setData(MSG);
 				return response;
-			}
 		}
 
 		if (homeLoanRequest.getIncome() < 9000) {

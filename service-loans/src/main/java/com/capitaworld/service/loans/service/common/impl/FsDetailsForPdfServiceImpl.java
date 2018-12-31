@@ -758,7 +758,6 @@ public class FsDetailsForPdfServiceImpl implements FsDetailsForPdfService {
 			dataMap.put("Applicant E-mail", map.get("email"));
 			dataMap.put("Application Process Fees", null);
 			dataMap.put("Margin", null);
-			dataMap.put("Networth", null);
 			dataMap.put("Rating", null);
 			dataMap.put("Rating Date", null);
 			dataMap.put("FATCA_DEC_FLG", null);

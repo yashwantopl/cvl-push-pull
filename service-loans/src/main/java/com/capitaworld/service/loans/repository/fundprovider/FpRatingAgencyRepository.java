@@ -7,10 +7,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.capitaworld.service.loans.domain.fundprovider.EmpWithMappingDetail;
 import com.capitaworld.service.loans.domain.fundprovider.FpRatingValueMapping;
-import com.capitaworld.service.loans.domain.fundprovider.GeographicalCountryDetail;
-import com.capitaworld.service.loans.domain.fundprovider.GeographicalStateDetail;
 
 public interface FpRatingAgencyRepository extends JpaRepository<FpRatingValueMapping, Long>{
 	@Modifying
