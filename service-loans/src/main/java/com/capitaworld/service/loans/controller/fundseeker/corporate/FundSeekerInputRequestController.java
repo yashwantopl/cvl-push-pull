@@ -291,7 +291,7 @@ public class FundSeekerInputRequestController {
         	LoansResponse eligibility = fundSeekerInputRequestService.saveOrUpdateForOnePagerEligibility(fundSeekerInputRequestResponse);
         	if(CommonUtils.isObjectNullOrEmpty(eligibility) || CommonUtils.isObjectNullOrEmpty(eligibility.getFlag()) || !eligibility.getFlag() || eligibility.getStatus() != 200){
         		return new ResponseEntity<LoansResponse>(eligibility,HttpStatus.OK);	
-        	}else{
+        	}
         		try {
         			ConnectResponse postOneForm = connectClient.postOneForm(fundSeekerInputRequestResponse.getApplicationId(), userId, CommonUtils.BusinessType.ONE_PAGER_ELIGIBILITY_EXISTING_BUSINESS.getId());
         			if (postOneForm != null) {
@@ -318,9 +318,6 @@ public class FundSeekerInputRequestController {
 					eligibility.setMessage("Your request could not be refined now, please try again after sometime!");
         			return new ResponseEntity<LoansResponse>(eligibility,HttpStatus.OK);
         		}
-        	}
-        	
-        	
         } catch (Exception e) {
             logger.error("Error while Getting Oneform Details for Uniform Product : ",e);
             return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
