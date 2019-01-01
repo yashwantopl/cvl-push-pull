@@ -75,7 +75,7 @@ public class CMAServiceImpl implements CMAService {
 					liabilitiesDetails = liabilitiesDetailsRepository.getLiabilitiesDetails(liabilitiesDetailsRequest.getApplicationId(), liabilitiesDetailsRequest.getYear());
 				}
 				if(!CommonUtils.isObjectNullOrEmpty(liabilitiesDetails)) {
-					BeanUtils.copyProperties(liabilitiesDetailsRequest, liabilitiesDetails,"id","applicationId","createdBy","createdDate","isActive");
+					BeanUtils.copyProperties(liabilitiesDetailsRequest, liabilitiesDetails,"id",CommonUtils.APPLICATION_ID,CommonUtils.CREATED_BY,CommonUtils.CREATED_DATE,CommonUtils.IS_ACTIVE);
 					liabilitiesDetails.setModifiedBy(cmaRequest.getUserId());
 					liabilitiesDetails.setModifiedDate(new Date());
 				} else {
@@ -107,7 +107,7 @@ public class CMAServiceImpl implements CMAService {
 					assetsDetails = assetsDetailsRepository.getAssetsDetails(assetsDetailsRequest.getApplicationId(), assetsDetailsRequest.getYear());
 				}
 				if(!CommonUtils.isObjectNullOrEmpty(assetsDetails)) {
-					BeanUtils.copyProperties(assetsDetailsRequest, assetsDetails,"id","applicationId","createdBy","createdDate","isActive");
+					BeanUtils.copyProperties(assetsDetailsRequest, assetsDetails,"id",CommonUtils.APPLICATION_ID,CommonUtils.CREATED_BY,CommonUtils.CREATED_DATE,CommonUtils.IS_ACTIVE);
 					assetsDetails.setModifiedBy(cmaRequest.getUserId());
 					assetsDetails.setModifiedDate(new Date());
 				} else {
@@ -137,7 +137,7 @@ public class CMAServiceImpl implements CMAService {
 					operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStatementDetails(operatingStatementDetailsRequest.getApplicationId(), operatingStatementDetailsRequest.getYear());
 				}
 				if(!CommonUtils.isObjectNullOrEmpty(operatingStatementDetails)) {
-					BeanUtils.copyProperties(operatingStatementDetailsRequest, operatingStatementDetails,"id","applicationId","createdBy","createdDate","isActive");
+					BeanUtils.copyProperties(operatingStatementDetailsRequest, operatingStatementDetails,"id",CommonUtils.APPLICATION_ID,CommonUtils.CREATED_BY,CommonUtils.CREATED_DATE,CommonUtils.IS_ACTIVE);
 					operatingStatementDetails.setModifiedBy(cmaRequest.getUserId());
 					operatingStatementDetails.setModifiedDate(new Date());
 				} else {

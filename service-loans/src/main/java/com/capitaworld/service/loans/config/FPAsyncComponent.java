@@ -515,10 +515,9 @@ public class FPAsyncComponent {
 			}
 
 		} else {
-
 			logger.info("Mail to Checkers after In-principle to FS is disabled==========>");
 		}
-	};
+	}
 
 	// ==========================================================================================================
 
@@ -710,7 +709,7 @@ public class FPAsyncComponent {
 
 			logger.info("Mail to HO after In-principle to FS is disabled==========>");
 		}
-	};
+	}
 
 	// ==========================================================================================================
 
@@ -3329,8 +3328,7 @@ public class FPAsyncComponent {
 
 			SimpleDateFormat form = new SimpleDateFormat(DATE_FORMAT_DD_MM_YYYY);
 			String fpName = proposalresp.get("organisationName") != null ? proposalresp.get("organisationName").toString() : "";
-			if(!CommonUtils.isObjectNullOrEmpty(loanSanctionDomainOld.getIsSanctionedFrom())){
-				if(loanSanctionDomainOld.getIsSanctionedFrom().equals(CommonUtils.sanctionedFrom.INELIGIBLE_USERS_OFFLINE_APPLICATION)){
+			if(!CommonUtils.isObjectNullOrEmpty(loanSanctionDomainOld.getIsSanctionedFrom()) && loanSanctionDomainOld.getIsSanctionedFrom().equals(CommonUtils.sanctionedFrom.INELIGIBLE_USERS_OFFLINE_APPLICATION) ){
 
 					subject = "Congratulations - Your Loan for Manual Application Has Been Sanctioned!!!";
 					//==================For getting Organisation Name==================
@@ -3359,7 +3357,6 @@ public class FPAsyncComponent {
 						logger.error("Exception occured while getting Organisation details by orgId : ",e);
 					}
 					//============================================================
-				}
 			}
 			mailParameters.put(CommonUtils.PARAMETERS_FP_NAME, fpName != null ? fpName : "");
 			mailParameters.put(PARAMETERS_PRODUCT_TYPE, productType != null ? productType : "");

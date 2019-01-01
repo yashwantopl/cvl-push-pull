@@ -83,7 +83,7 @@ public class CorporateFinalViewResponse implements Serializable {
 	private String contigentLiablitiesFy;
 	private String contigentLiablitiesSy;
 	private String contigentLiablitiesTy;
-;
+
 	// FINAL MCQ
 
 	private String technologyRiskId;
