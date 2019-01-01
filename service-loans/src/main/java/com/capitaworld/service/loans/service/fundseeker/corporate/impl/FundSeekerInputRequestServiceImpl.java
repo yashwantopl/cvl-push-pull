@@ -64,6 +64,7 @@ import com.capitaworld.service.loans.service.fundseeker.corporate.FundSeekerInpu
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
+import com.capitaworld.service.oneform.enums.Constitution;
 
 @Service
 @Transactional
@@ -618,6 +619,10 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 		logger.info("constitution id  ------------------------------------------>"+ corporateApplicantDetail.getConstitutionId());
 		corporateApplicantDetail.setModifiedBy(fundSeekerInputRequest.getUserId());
 		corporateApplicantDetail.setModifiedDate(new Date());
+		
+		if(Constitution.SOLE_PROPRIETORSHIP.getId().equals(fundSeekerInputRequest.getConstitutionId())){
+			corporateApplicantDetail.setOrganisationName(fundSeekerInputRequest.getOrganisationName());
+		}
 
 		copyAddressFromRequestToDomain(fundSeekerInputRequest, corporateApplicantDetail);
 
