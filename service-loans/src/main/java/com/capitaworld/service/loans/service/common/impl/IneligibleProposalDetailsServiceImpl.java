@@ -151,7 +151,6 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 			ineligibleProposalDetailsRepository.save(inlProposalDetails);
 			return true;
 		} catch (Exception e) {
-			e.printStackTrace();
 			logger.error("error while saving in eligible proposal : ",e);
 		}
 		return false;
