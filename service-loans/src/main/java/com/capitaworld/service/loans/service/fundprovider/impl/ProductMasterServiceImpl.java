@@ -871,13 +871,11 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 						.getObjectFromMap(obj, ProductMasterRequest.class);
 
 				ProductMaster master = productMasterRepository.findOne(productMasterRequest.getId());
-				if (!CommonUtils.isObjectNullOrEmpty(master)) {
+				if (!CommonUtils.isObjectNullOrEmpty(master) && !productMasterRequest.getProductId().toString()
+						.equals(productDetailsForSps.get(0).getProductId().toString())) {
 					// if(master.getId())
-					if (!productMasterRequest.getProductId().toString()
-							.equals(productDetailsForSps.get(0).getProductId().toString())) {
 						CommonDocumentUtils.endHook(logger, IS_PRODUCT_MATCHED);
 						return true;
-					}
 				}
 			}
 
@@ -1459,11 +1457,8 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				continue;
 				
 			
-			if (!CommonUtils.isObjectNullOrEmpty(businessId) && productMaster.getProductId()==2 && !CommonUtils.isObjectNullOrEmpty(productMaster.getBusinessTypeId())) {
-				if(!businessId.toString().equals(productMaster.getBusinessTypeId().toString()))
-						{
-							continue;
-						}
+			if (!CommonUtils.isObjectNullOrEmpty(businessId) && productMaster.getProductId()==2 && !CommonUtils.isObjectNullOrEmpty(productMaster.getBusinessTypeId()) && !businessId.toString().equals(productMaster.getBusinessTypeId().toString()) ) {
+				continue;
 			}
 			ProductMasterRequest productMasterRequest = new ProductMasterRequest();
 			BeanUtils.copyProperties(productMaster, productMasterRequest);

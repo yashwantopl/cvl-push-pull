@@ -509,10 +509,8 @@ public class ProposalServiceMappingImpl implements ProposalService {
 											FundProviderDetailsRequest.class);
 							if (!CommonUtils.isObjectNullOrEmpty(fundProviderDetailsRequest)) {
 								if (!CommonUtils.isObjectNullOrEmpty(fundProviderDetailsRequest.getCityId())) {
-									if (!CommonUtils.isObjectNullOrEmpty(fundProviderDetailsRequest.getCityId())) {
 										corporateProposalDetails.setCity(CommonDocumentUtils.getCity(
 												fundProviderDetailsRequest.getCityId().longValue(), oneFormClient));
-									}
 								}
 								if (!CommonUtils.isObjectNullOrEmpty(fundProviderDetailsRequest.getPincode())) {
 									corporateProposalDetails.setPincode(fundProviderDetailsRequest.getPincode());
@@ -682,7 +680,6 @@ public class ProposalServiceMappingImpl implements ProposalService {
 											String score = creditScore.get("riskScore").toString();
 											logger.info("Pan===>" + cibilRequest.getPan() + " ==> Score===>" + score);
 											retailProposalDetails.setCibilSCore(score);
-											;
 										} else {
 											logger.info("no data Found from key ns4:CreditScore");
 										}
@@ -1269,8 +1266,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 								.cast(connectionResponse.getSuggetionByMatchesList().get(i));
 						ProductMaster master = productMasterRepository.findOne(fpProductId.longValue());
 
-						if (!CommonUtils.isObjectNullOrEmpty(master)) {
-							if (!CommonUtils.isObjectNullOrEmpty(master.getUserOrgId())) {
+						if (!CommonUtils.isObjectNullOrEmpty(master) && !CommonUtils.isObjectNullOrEmpty(master.getUserOrgId()) ) {
 								if (userOrgSuggetionByMatchesList.contains(master.getUserOrgId())) {
 									logger.info(
 											"Found same user org id in connection suggestion by matches list ---------------"
@@ -1278,8 +1274,6 @@ public class ProposalServiceMappingImpl implements ProposalService {
 									continue;
 								}
 								userOrgSuggetionByMatchesList.add(master.getUserOrgId());
-							}
-
 						}
 
 						UsersRequest userRequest = new UsersRequest();
@@ -1342,16 +1336,13 @@ public class ProposalServiceMappingImpl implements ProposalService {
 
 						BigInteger fpProductId = BigInteger.class.cast(connectionResponse.getSuggetionList().get(i));
 						ProductMaster master = productMasterRepository.findOne(fpProductId.longValue());
-						if (!CommonUtils.isObjectNullOrEmpty(master)) {
-							if (!CommonUtils.isObjectNullOrEmpty(master.getUserOrgId())) {
+						if (!CommonUtils.isObjectNullOrEmpty(master) && !CommonUtils.isObjectNullOrEmpty(master.getUserOrgId()) ) {
 								if (userOgList.contains(master.getUserOrgId())) {
 									logger.info("Found same user org id in connection suggestion list ---------------"
 											+ master.getId() + "--------------->" + master.getUserOrgId());
 									continue;
 								}
 								userOgList.add(master.getUserOrgId());
-							}
-
 						}
 						UsersRequest userRequest = new UsersRequest();
 						userRequest.setId(master.getUserId());
@@ -1678,10 +1669,8 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap(
 							(LinkedHashMap<String, Object>) usrResponse.getData(), FundProviderDetailsRequest.class);
 					if (!CommonUtils.isObjectNullOrEmpty(fundProviderDetailsRequest.getCityId())) {
-						if (!CommonUtils.isObjectNullOrEmpty(fundProviderDetailsRequest.getCityId())) {
 							corporateProposalDetails.setCity(CommonDocumentUtils
 									.getCity(fundProviderDetailsRequest.getCityId().longValue(), oneFormClient));
-						}
 					}
 					if (!CommonUtils.isObjectNullOrEmpty(fundProviderDetailsRequest.getPincode())) {
 						corporateProposalDetails.setPincode(fundProviderDetailsRequest.getPincode());
