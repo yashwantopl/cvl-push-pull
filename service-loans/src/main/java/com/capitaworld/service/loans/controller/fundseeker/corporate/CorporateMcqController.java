@@ -67,6 +67,45 @@ public class CorporateMcqController {
         }
 
     }
+    
+    @RequestMapping(value = "/skipMcq", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LoansResponse> skipMcq(@RequestBody CorporateMcqRequest corporateMcqRequest,
+                                              HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId)
+            throws Exception {
+        try {
+        	System.out.println("id :"+corporateMcqRequest.getApplicationId() + " isMcqSkipped : "+corporateMcqRequest.getIsMcqSkipped());
+            CommonDocumentUtils.startHook(logger, "skipMcq");
+            // request must not be null
+
+            Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+
+            if (userId == null) {
+                logger.warn("userId can not be empty ==>" + corporateMcqRequest);
+                return new ResponseEntity<LoansResponse>(
+                        new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+            }
+
+            if (corporateMcqRequest.getApplicationId() == null) {
+                logger.warn("Application ID can not be empty ==>" + corporateMcqRequest.getId());
+                return new ResponseEntity<LoansResponse>(
+                        new LoansResponse("Application ID can not be empty.", HttpStatus.BAD_REQUEST.value()),
+                        HttpStatus.OK);
+            }
+            if (CommonDocumentUtils.isThisClientApplication(request)) {
+                corporateMcqRequest.setClientId(clientId);
+            }
+            corporateMcqService.skipMcq(corporateMcqRequest, userId);
+            CommonDocumentUtils.endHook(logger, "skipMcq");
+            return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
+                    HttpStatus.OK);
+        } catch (Exception e) {
+            logger.error("Error while skipping final corporate mcq : ",e);
+            return new ResponseEntity<LoansResponse>(
+                    new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+    }
 
     @RequestMapping(value = "/get/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LoansResponse> get(@PathVariable("applicationId") Long applicationId,

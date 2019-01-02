@@ -318,7 +318,11 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		DecimalFormat decim = new DecimalFormat("####");
 		Long userId = loanApplicationRepository.getUserIdByApplicationId(applicationId);
 		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId, userId);
-		map.put("date",!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getApprovedDate())? CommonUtils.DATE_FORMAT.format(loanApplicationMaster.getApprovedDate()):"-");
+		if(loanApplicationMaster != null) {
+			map.put("date",!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getApprovedDate())? CommonUtils.DATE_FORMAT.format(loanApplicationMaster.getApprovedDate()):"-");
+			map.put("isMcqSkipped", loanApplicationMaster.getIsMcqSkipped() != null ? loanApplicationMaster.getIsMcqSkipped() : false);
+		}
+		
 		CorporateApplicantRequest corporateApplicantRequest =corporateApplicantService.getCorporateApplicant(applicationId);
 		UserResponse userResponse = usersClient.getEmailMobile(userId);
 		if(userResponse!= null) {
@@ -1136,7 +1140,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		
 /**********************************************FINAL DETAILS*****************************************************/
 		
-		if(isFinalView) {
+		if(isFinalView && loanApplicationMaster.getIsMcqSkipped() == false) {
 			//FITCH DATA
 			try {
 				//proposalMappingRequestString.getId()

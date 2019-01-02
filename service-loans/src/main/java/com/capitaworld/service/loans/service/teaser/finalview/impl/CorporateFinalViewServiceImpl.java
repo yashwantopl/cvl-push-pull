@@ -323,6 +323,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 
 		corporateFinalViewResponse.setProductId(loanApplicationMaster.getProductId());
 		corporateFinalViewResponse.setApplicationType(loanApplicationMaster.getWcRenewalStatus() != null ? WcRenewalType.getById(loanApplicationMaster.getWcRenewalStatus()).getValue().toString() : "New" );
+		corporateFinalViewResponse.setIsMcqSkipped(loanApplicationMaster.getIsMcqSkipped() != null ? loanApplicationMaster.getIsMcqSkipped() : false);
 		// ===================== MATCHES DATA ======================//
 		if (userType != null && !(CommonUtils.UserType.FUND_SEEKER == userType) ) {
 			    // TEASER VIEW FROM FP
