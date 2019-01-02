@@ -1644,6 +1644,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
+	
+	@Override
+	public Boolean isMcqSkipped(Long applicationId) throws Exception {
+		Long count = loanApplicationRepository.checkMcqSkipped(applicationId);
+		return (count != null ? count > 0 : false);
+	}
 
 	@SuppressWarnings("unchecked")
 	@Override

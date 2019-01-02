@@ -214,6 +214,8 @@ public interface LoanApplicationService {
 	
 	public Boolean saveLoanWCRenewalType(Long applicationId,Integer wcRenewalType);
 	public Integer getLoanWCRenewalType(Long applicationId);
+
+	Boolean isMcqSkipped(Long applicationId) throws Exception;
 }
 
 
