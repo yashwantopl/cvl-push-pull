@@ -6333,7 +6333,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				 * Base base = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,
 				 * Object>)msmeCommercial.getData(), Base.class);
 				 */
-				if (!CommonUtils.isObjectNullOrEmpty(base) && !CommonUtils.isObjectNullOrEmpty(base.getResponseReport())
+				if (base != null && !CommonUtils.isObjectNullOrEmpty(base) && !CommonUtils.isObjectNullOrEmpty(base.getResponseReport())
 						&& !CommonUtils.isObjectNullOrEmpty(base.getResponseReport().getProductSec())) {
 					Base.ResponseReport.ProductSec productSec = base.getResponseReport().getProductSec();
 					if (!CommonUtils.isObjectNullOrEmpty(productSec)) {

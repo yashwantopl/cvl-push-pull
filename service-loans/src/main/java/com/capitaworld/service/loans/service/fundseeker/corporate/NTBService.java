@@ -5,8 +5,6 @@ import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.NTBRequest;
 import com.capitaworld.service.loans.model.corporate.FundSeekerInputRequestResponse;
-import com.capitaworld.service.loans.model.corporate.PrimaryCorporateRequest;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 
 import java.util.List;
 
