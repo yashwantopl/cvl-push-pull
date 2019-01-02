@@ -63,8 +63,7 @@ public class MCAAsyncComponent {
 		SearchCompaniesResponse a = MultipleJSONObjectHelper.getObjectFromMap((Map<String, Object>)mcaClient.searchCompanies(request).getData(),SearchCompaniesResponse.class);
 		logger.info("End of MCA Search Call");
 		
-		if(a!=null) {
-				if (a.getCompanies() != null && a.getCompanies().length>0) {
+		if(a!=null && a.getCompanies() != null && a.getCompanies().length>0 ) {
 					String[] companyIds = { a.getCompanies()[0].getCompanyId() };
 					request = new McaRequest();
 					CompaniesHistoryRequest companiesHistoryRequest = new CompaniesHistoryRequest();
@@ -85,7 +84,6 @@ public class MCAAsyncComponent {
 					logger.info("Initiated MCA data save Call");
 					loanService.updateLoanApplication(loanRequest);
 					logger.info("End of MCA data save Call");
-				}
 			}
 		}
 		catch (Exception e) {

@@ -737,8 +737,7 @@ public class GuarantorServiceImpl implements GuarantorService {
 									? guarantorDetail.getFatherName() : null);
 					finalViewResponse.setMotherName(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getMotherName())
 							? guarantorDetail.getMotherName() : null);
-					if (!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getStatusId())) {
-						if (guarantorDetail.getStatusId() == 2) {
+					if (!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getStatusId()) && guarantorDetail.getStatusId() == 2 ) {
 							finalViewResponse
 									.setSpouseName(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getSpouseName())
 											? guarantorDetail.getSpouseName() : null);
@@ -748,7 +747,6 @@ public class GuarantorServiceImpl implements GuarantorService {
 							finalViewResponse
 									.setNoOfChildren(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getNoChildren())
 											? guarantorDetail.getNoChildren().toString() : null);
-						}
 					}
 					finalViewResponse
 							.setNoOfDependents(!CommonUtils.isObjectNullOrEmpty(guarantorDetail.getNoDependent())
@@ -1000,7 +998,7 @@ public class GuarantorServiceImpl implements GuarantorService {
 								DocumentAlias.HOME_LOAN_GUARANTOR_ADDRESS_PROOF));
 						finalViewResponse.setGuarantor_IncomeProof(documentManagementService.getDocumentDetails(
 								guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR,
-								DocumentAlias.HOME_LOAN_GUARANTOR_INCOME_PROOF_OF_ENTITY___INCOME_TAX_RETURN_FOR_LAST_2_YEARS));
+								DocumentAlias.HOME_LOAN_GUARANTOR_INCOME_PROOF_OF_ENTITY_INCOME_TAX_RETURN_FOR_LAST_2_YEARS));
 						finalViewResponse.setGuarantor_CropCultivation(documentManagementService.getDocumentDetails(
 								guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR,
 								DocumentAlias.HOME_LOAN_GUARANTOR_CROP_CULTIVATION_SHOWING_CROPPING_PATTERN_LAND_HOLDING_WITH_PHOTOGRAPH));
@@ -1026,7 +1024,7 @@ public class GuarantorServiceImpl implements GuarantorService {
 								DocumentAlias.PERSONAL_LOAN_GUARANTOR_INCOME_TAX_RETURNS_OR_FORM_16_FOR_THE_LAST_2_YEARS));
 						finalViewResponse.setGuarantor_BalanceSheet(documentManagementService.getDocumentDetails(
 								guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR,
-								DocumentAlias.PERSONAL_LOAN_GUARANTOR_AUDITED_UNAUDITED_BALANCE_SHEET_PROFIT__LOSS_STATEMENT_FOR_3_YEARS));
+								DocumentAlias.PERSONAL_LOAN_GUARANTOR_AUDITED_UNAUDITED_BALANCE_SHEET_PROFIT_LOSS_STATEMENT_FOR_3_YEARS));
 						finalViewResponse.setGuarantor_AddressProof(documentManagementService.getDocumentDetails(
 								guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR,
 								DocumentAlias.PERSONAL_LOAN_GUARANTOR_ADDRESS_PROOF_ELECTRICITY_BILL_ADHAR_CARD_VOTER_ID_CARD_ANY_1));
@@ -1035,10 +1033,10 @@ public class GuarantorServiceImpl implements GuarantorService {
 								DocumentAlias.PERSONAL_LOAN_GUARANTOR_INCOME_PROOF_OF_ENTITY_INCOME_TAX_RETURN_FOR_LAST_2_YEARS));
 						finalViewResponse.setGuarantor_CropCultivation(documentManagementService.getDocumentDetails(
 								guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR,
-								DocumentAlias.PERSONAL_LOAN_GUARANTOR_CROP_CULTIVATION_SHOWING_CROPPING_PATTERN__LAND_HOLDING_WITH_PHOTOGRAPH));
+								DocumentAlias.PERSONAL_LOAN_GUARANTOR_CROP_CULTIVATION_SHOWING_CROPPING_PATTERN_LAND_HOLDING_WITH_PHOTOGRAPH));
 						finalViewResponse.setGuarantor_AlliedActivities(documentManagementService.getDocumentDetails(
 								guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR,
-								DocumentAlias.PERSONAL_LOAN_GUARANTOR_DOCUMENTARY_PROOF_OF_ALLIED_AGRICULTURAL_ACTIVITIES_DAIRY__POULTRY__PLANTATION__HORTICULTURE));
+								DocumentAlias.PERSONAL_LOAN_GUARANTOR_DOCUMENTARY_PROOF_OF_ALLIED_AGRICULTURAL_ACTIVITIES_DAIRY_POULTRY_PLANTATION_HORTICULTURE));
 						break;
 					case 12:// CAR_LOAN
 						finalViewResponse.setGuarantor_panCardList(documentManagementService.getDocumentDetails(
@@ -1064,7 +1062,7 @@ public class GuarantorServiceImpl implements GuarantorService {
 								DocumentAlias.CAR_LOAN_GUARANTOR_ADDRESS_PROOF));
 						finalViewResponse.setGuarantor_IncomeProof(documentManagementService.getDocumentDetails(
 								guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR,
-								DocumentAlias.CAR_LOAN_GUARANTOR_INCOME_PROOF_OF_ENTITY___INCOME_TAX_RETURN_FOR_LAST_2_YEARS));
+								DocumentAlias.CAR_LOAN_GUARANTOR_INCOME_PROOF_OF_ENTITY_INCOME_TAX_RETURN_FOR_LAST_2_YEARS));
 						finalViewResponse.setGuarantor_CropCultivation(documentManagementService.getDocumentDetails(
 								guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR,
 								DocumentAlias.CAR_LOAN_GUARANTOR_CROP_CULTIVATION_SHOWING_CROPPING_PATTERN_LAND_HOLDING_WITH_PHOTOGRAPH));
@@ -1102,7 +1100,7 @@ public class GuarantorServiceImpl implements GuarantorService {
 								DocumentAlias.LAP_LOAN_GUARANTOR_CROP_CULTIVATION_SHOWING_CROPPING_PATTERN_LAND_HOLDING_WITH_PHOTOGRAPH));
 						finalViewResponse.setGuarantor_AlliedActivities(documentManagementService.getDocumentDetails(
 								guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR,
-								DocumentAlias.LAP_LOAN_GUARANTOR_DOCUMENTARY_PROOF_OF_ALLIED_AGRICULTURAL_ACTIVITIES_DAIRY__POULTRY__PLANTATION__HORTICULTURE));
+								DocumentAlias.LAP_LOAN_GUARANTOR_DOCUMENTARY_PROOF_OF_ALLIED_AGRICULTURAL_ACTIVITIES_DAIRY_POULTRY_PLANTATION_HORTICULTURE));
 						break;
 					case 14:// LOAN_AGAINST_SHARES_AND_SECUIRITIES
 						finalViewResponse.setGuarantor_panCardList(documentManagementService.getDocumentDetails(
@@ -1134,7 +1132,7 @@ public class GuarantorServiceImpl implements GuarantorService {
 								DocumentAlias.LAS_LOAN_GUARANTOR_CROP_CULTIVATION_SHOWING_CROPPING_PATTERN_LAND_HOLDING_WITH_PHOTOGRAPH));
 						finalViewResponse.setGuarantor_AlliedActivities(documentManagementService.getDocumentDetails(
 								guarantorDetail.getId(), DocumentAlias.UERT_TYPE_GUARANTOR,
-								DocumentAlias.LAS_LOAN_GUARANTOR_DOCUMENTARY_PROOF_OF_ALLIED_AGRICULTURAL_ACTIVITIES_DAIRY__POULTRY__PLANTATION_HORTICULTURE));
+								DocumentAlias.LAS_LOAN_GUARANTOR_DOCUMENTARY_PROOF_OF_ALLIED_AGRICULTURAL_ACTIVITIES_DAIRY_POULTRY_PLANTATION_HORTICULTURE));
 						break;
 					default : break;
 					}

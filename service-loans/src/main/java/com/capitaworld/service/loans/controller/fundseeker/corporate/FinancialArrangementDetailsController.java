@@ -37,6 +37,7 @@ public class FinancialArrangementDetailsController {
 	private static final Logger logger = LoggerFactory.getLogger(SecurityCorporateDetailsController.class);
 
 	private static final String APPLICATION_ID_MSG = "applicationId == >";
+	private static final String ERROR_WHILE_GETTING_TOTAL_EMI_BY_APPLICATION_ID_MSG = "Error while Getting total EMI by Application Id==>";
 
 	@Autowired
 	private FinancialArrangementDetailsService financialArrangementDetailsService;
@@ -226,7 +227,7 @@ public class FinancialArrangementDetailsController {
 		try {
 			return financialArrangementDetailsService.getTotalEmiAndSanctionAmountByApplicationId(applicationId);
 		} catch (Exception e) {
-			logger.error("Error while Getting total EMI by Application Id==>", e);
+			logger.error(ERROR_WHILE_GETTING_TOTAL_EMI_BY_APPLICATION_ID_MSG, e);
 			return null;
 		}
 	}
@@ -241,7 +242,7 @@ public class FinancialArrangementDetailsController {
 		try {
 			return financialArrangementDetailsService.getTotalEmiAndSanctionAmountByApplicationIdForUniforProduct(applicationId);
 		} catch (Exception e) {
-			logger.error("Error while Getting total EMI by Application Id==>", e);
+			logger.error(ERROR_WHILE_GETTING_TOTAL_EMI_BY_APPLICATION_ID_MSG, e);
 			return null;
 		}
 	}
@@ -259,7 +260,7 @@ public class FinancialArrangementDetailsController {
 				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 		} catch (Exception e) {
-			logger.error("Error while Getting total EMI by Application Id==>", e);
+			logger.error(ERROR_WHILE_GETTING_TOTAL_EMI_BY_APPLICATION_ID_MSG, e);
 			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
 		}
 	}

@@ -123,7 +123,7 @@ public class ScoringController {
     public ResponseEntity<ScoringModelReqRes> getScoringModelTempList(@RequestBody ScoringModelReqRes scoringModelReqRes,HttpServletRequest request) throws RatingException {
 
         try {
-            Long userId =  (Long) request.getAttribute(CommonUtils.USER_ID);;
+            Long userId =  (Long) request.getAttribute(CommonUtils.USER_ID);
             scoringModelReqRes.setUserId(userId);
             /*scoringModelReqRes.setUserId(1l);*/
 
@@ -144,7 +144,7 @@ public class ScoringController {
     public ResponseEntity<ScoringModelReqRes> saveScoringModelTemp(@RequestBody ScoringModelReqRes scoringModelReqRes, HttpServletRequest httpRequest, HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) throws RatingException {
 
         try {
-            Long userId =  (Long) request.getAttribute(CommonUtils.USER_ID);;
+            Long userId =  (Long) request.getAttribute(CommonUtils.USER_ID);
             scoringModelReqRes.setUserId(userId);
             /*scoringModelReqRes.setUserId(1l);*/
             ScoringModelReqRes scoringModelReqResNew=scoringService.saveScoringModelTemp(scoringModelReqRes);
@@ -162,7 +162,7 @@ public class ScoringController {
     public ResponseEntity<ScoringModelReqRes> getScoringModelTempDetail(@RequestBody ScoringModelReqRes scoringModelReqRes, HttpServletRequest httpRequest, HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) throws RatingException {
 
         try {
-            Long userId =  (Long) request.getAttribute(CommonUtils.USER_ID);;
+            Long userId =  (Long) request.getAttribute(CommonUtils.USER_ID);
             scoringModelReqRes.setUserId(userId);
            /* scoringModelReqRes.setUserId(1l);*/
             ScoringModelReqRes scoringModelReqResNew=scoringService.getScoringModelTempDetail(scoringModelReqRes);
@@ -181,7 +181,7 @@ public class ScoringController {
     public ResponseEntity<ScoringModelReqRes> saveScoringModelTempDetail(@RequestBody ScoringModelReqRes scoringModelReqRes, HttpServletRequest httpRequest, HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) throws RatingException {
 
         try {
-            Long userId =  (Long) request.getAttribute(CommonUtils.USER_ID);;
+            Long userId =  (Long) request.getAttribute(CommonUtils.USER_ID);
             scoringModelReqRes.setUserId(userId);
             /*scoringModelReqRes.setUserId(1l);*/
             ScoringModelReqRes scoringModelReqResNew=scoringService.saveScoringModelTempDetail(scoringModelReqRes);
@@ -221,7 +221,7 @@ public class ScoringController {
     public ResponseEntity<ScoringModelReqRes> getScoringModelMasterList(@RequestBody ScoringModelReqRes scoringModelReqRes, HttpServletRequest httpRequest, HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) throws RatingException {
 
         try {
-            Long userId =  (Long) request.getAttribute(CommonUtils.USER_ID);;
+            Long userId =  (Long) request.getAttribute(CommonUtils.USER_ID);
             scoringModelReqRes.setUserId(userId);
             /*scoringModelReqRes.setUserId(1l);*/
 
@@ -241,7 +241,7 @@ public class ScoringController {
     public ResponseEntity<ScoringModelReqRes> getScoringModelMasterDetail(@RequestBody ScoringModelReqRes scoringModelReqRes, HttpServletRequest httpRequest, HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) throws RatingException {
 
         try {
-            Long userId =  (Long) request.getAttribute(CommonUtils.USER_ID);;
+            Long userId =  (Long) request.getAttribute(CommonUtils.USER_ID);
             scoringModelReqRes.setUserId(userId);
            /* scoringModelReqRes.setUserId(1l);*/
             ScoringModelReqRes scoringModelReqResNew=scoringService.getScoringModelMasterDetail(scoringModelReqRes);

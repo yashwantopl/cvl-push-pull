@@ -762,6 +762,7 @@ public class LoanApplicationController {
 			JSONObject json = new JSONObject();
 			json.put("isPrimaryLock", loanApplicationService.isPrimaryLocked(applicationId, userId));
 			json.put("isFinalLock", loanApplicationService.isFinalLocked(applicationId, userId));
+			json.put("isMcqSkipped", loanApplicationService.isMcqSkipped(applicationId));
 			LoansResponse loansResponse = new LoansResponse(CommonUtils.SUCCESS_RESULT, HttpStatus.OK.value());
 			loansResponse.setData(json);
 			CommonDocumentUtils.endHook(logger, "isPrimaryAndFinalLocked");

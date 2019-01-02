@@ -28,7 +28,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
 
 		String requestURI = request.getRequestURI();
 		logger.info("Loan Request URI------------------------------> " + requestURI);
-		if(CommonUtils.urlsBrforeLogin.contains(requestURI.toLowerCase())){
+		if(CommonUtils.URLS_BRFORE_LOGIN.contains(requestURI.toLowerCase())){
 			return true;
 		}
 		
