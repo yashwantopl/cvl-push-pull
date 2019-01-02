@@ -64,6 +64,7 @@ import com.capitaworld.service.loans.service.fundseeker.corporate.FundSeekerInpu
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
+import com.capitaworld.service.oneform.enums.Constitution;
 
 @Service
 @Transactional
@@ -618,6 +619,10 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 		logger.info("constitution id  ------------------------------------------>"+ corporateApplicantDetail.getConstitutionId());
 		corporateApplicantDetail.setModifiedBy(fundSeekerInputRequest.getUserId());
 		corporateApplicantDetail.setModifiedDate(new Date());
+		
+		if(Constitution.SOLE_PROPRIETORSHIP.getId().equals(fundSeekerInputRequest.getConstitutionId())){
+			corporateApplicantDetail.setOrganisationName(fundSeekerInputRequest.getOrganisationName());
+		}
 
 		copyAddressFromRequestToDomain(fundSeekerInputRequest, corporateApplicantDetail);
 
@@ -647,6 +652,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 		// ==== Director details
 		List<DirectorBackgroundDetailRequest> directorBackgroundDetailRequestList = fundSeekerInputRequest.getDirectorBackgroundDetailRequestsList();
 		try {
+			directorBackgroundDetailsService.inactive(fundSeekerInputRequest.getApplicationId(), fundSeekerInputRequest.getUserId());
 			for (DirectorBackgroundDetailRequest reqObj : directorBackgroundDetailRequestList) {
 				directorBackgroundDetailsService.saveDirectorInfo(reqObj, fundSeekerInputRequest.getApplicationId(), fundSeekerInputRequest.getUserId());
 			}
@@ -759,16 +765,28 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 	@Override
 	public LoansResponse verifyGST(String gstin,Long applicationId,Long userId,MultipartFile[] uploadedFiles) {
 		//Uploading GST Receipt
-		boolean isDocumentUploaded = false;
 		DocumentRequest documentRequest = new DocumentRequest();
+		documentRequest.setApplicationId(applicationId);
+		documentRequest.setProductDocumentMappingId(DocumentAlias.GST_RECEIPT);
+		documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
 		try{
-			documentRequest.setApplicationId(applicationId);
-			documentRequest.setProductDocumentMappingId(DocumentAlias.GST_RECEIPT);
-			documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
-			
+			DocumentResponse documentResponse = dMSClient.deleteProductDocumentFromApplicationId(MultipleJSONObjectHelper.getStringfromObject(documentRequest));
+			if (CibilUtils.isObjectListNull(documentResponse)) {
+				logger.warn("Something goes wrong while Deleting GST Receipt for ApplicationId as Response Found Null===>{}",applicationId);
+			} else if (documentResponse.getStatus() == HttpStatus.OK.value()) {
+				logger.info("Successfully Deleting GST Receipt For Application Id==>{}",applicationId);
+			} else {
+				logger.warn("Something goes wrong while Deleting GST Receipt for ApplicationId===>{}",applicationId);
+			}
+		}catch(Exception e){
+			logger.error("Error while Deleting Existing Doccuments of GST and ITR : {}", e);
+		}
+		
+		
+		boolean isDocumentUploaded = false;
+		try{
 			for (MultipartFile uploadedFile : uploadedFiles) {
 				if(CommonUtils.isObjectNullOrEmpty(uploadedFile)) {
-					/*logger.info("CURRENT MULTIPART OBJECT IS NULL OR EMPTY");*/
 					continue;
 				}
 				documentRequest.setOriginalFileName(uploadedFile.getOriginalFilename());
