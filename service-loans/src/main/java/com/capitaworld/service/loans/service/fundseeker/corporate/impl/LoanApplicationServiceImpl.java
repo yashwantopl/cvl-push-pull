@@ -1514,7 +1514,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	@Override
 	public Integer getProductIdByApplicationId(Long applicationId, Long userId) throws Exception {
 		try {
-			return loanApplicationRepository.getProductIdByApplicationId(applicationId, userId);
+			//return loanApplicationRepository.getProductIdByApplicationId(applicationId, userId);
+			return applicationProposalMappingRepository.getProductIdByApplicationId(applicationId, userId);
 		} catch (Exception e) {
 			logger.error("Error while getting Product Id by Application Id");
 			e.printStackTrace();
@@ -5842,7 +5843,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				LoanType.TERM_LOAN.getValue() ==productDetails.getProductId() ||
 				LoanType.WCTL_LOAN.getValue() ==productDetails.getProductId())){
 			ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.findOne(proposalDetails.getId());
-			if(!CommonUtils.isObjectNullOrEmpty(applicationProposalMapping)){
+			if(CommonUtils.isObjectNullOrEmpty(applicationProposalMapping)){
 				applicationProposalMapping = new ApplicationProposalMapping();
 			}
 			applicationProposalMapping.setProposalId(proposalDetails.getId());
@@ -5857,10 +5858,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			//set application ddr stage
 			applicationProposalMapping.setDdrStatusId(CommonUtils.DdrStatus.OPEN);
 			applicationProposalMapping.setApplicationCode(loanApplicationMaster.getApplicationCode());
-
+			applicationProposalMapping.setIsPrimaryUploadFilled(true);
 			applicationProposalMapping.setIsApplicantDetailsFilled(true);
 			applicationProposalMapping.setIsApplicantPrimaryFilled(true);
 			applicationProposalMapping.setIsPrimaryLocked(true);
+			applicationProposalMapping.setBusinessTypeId(CommonUtils.BusinessType.EXISTING_BUSINESS.getId());
 			if (!CommonUtils.isObjectNullOrEmpty(loanApplicationRequest.getNpOrgId())) {
 				applicationProposalMapping.setOrgId(loanApplicationRequest.getNpOrgId());
 			}
@@ -5871,10 +5873,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			}else {
 				LoanType type = CommonUtils.LoanType.getType(loanApplicationRequest.getProductId());
 				if (!CommonUtils.isObjectNullOrEmpty(type)) {
-					loanApplicationMaster
-							.setApplicationCode(applicationSequenceService.getApplicationSequenceNumber(type.getValue())+"-"+applicationStatusMaster.getId());
+					applicationProposalMapping
+							.setApplicationCode(applicationSequenceService.getApplicationSequenceNumber(type.getValue())+"-"+loanApplicationMaster.getId());
 				}
 			}
+			applicationProposalMapping.setUserId(loanApplicationMaster.getUserId());
 			applicationProposalMapping.setCreatedBy(proposalDetails.getApplicationId());
 			applicationProposalMapping.setCreatedDate(new Date());
 			applicationProposalMapping.setIsActive(true);
