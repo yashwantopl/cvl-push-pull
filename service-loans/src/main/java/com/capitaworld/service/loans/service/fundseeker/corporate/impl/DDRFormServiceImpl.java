@@ -483,7 +483,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 										.findByIdAndIsActive(assConcernDetailReq.getId(), true);
 							}
 
-							if (CommonUtils.isObjectNullOrEmpty(assConcernDetail)) {
+							if (assConcernDetail == null || CommonUtils.isObjectNullOrEmpty(assConcernDetail)) {
 								assConcernDetail = new AssociatedConcernDetail();
 								assConcernDetail.setCreatedBy(userId);
 								assConcernDetail.setCreatedDate(new Date());

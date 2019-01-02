@@ -3414,7 +3414,7 @@ public class FPAsyncComponent {
 
 			UsersRequest fs = null;
 
-			if (!CommonUtils.isObjectNullOrEmpty(fsResponse) && fsResponse.getData() != null ) {
+			if (fsResponse != null && !CommonUtils.isObjectNullOrEmpty(fsResponse) ) {
 				fs = MultipleJSONObjectHelper.getObjectFromMap((Map<String, Object>) fsResponse.getData(),
 						UsersRequest.class);
 			}
