@@ -73,7 +73,7 @@ public class CorporateMcqController {
                                               HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId)
             throws Exception {
         try {
-        	System.out.println("id :"+corporateMcqRequest.getApplicationId() + " isMcqSkipped : "+corporateMcqRequest.getIsMcqSkipped());
+//        	System.out.println("id :"+corporateMcqRequest.getApplicationId() + " isMcqSkipped : "+corporateMcqRequest.getIsMcqSkipped());
             CommonDocumentUtils.startHook(logger, "skipMcq");
             // request must not be null
 
