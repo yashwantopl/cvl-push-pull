@@ -28,7 +28,11 @@ import com.capitaworld.service.oneform.model.OneFormResponse;
 @Transactional
 @Service
 public class LasLoanParameterServiceImpl implements LasLoanParameterService {
+
 	private static final Logger logger = LoggerFactory.getLogger(LasLoanParameterServiceImpl.class);
+
+	private static final String ERROR_WHILE_GET_LAS_PARAMETER_REQUEST_MSG = "error while getLasParameterRequest : ";
+
 	@Autowired
 	private LasParameterRepository lasParameterRepository;
 	
@@ -47,8 +51,7 @@ public class LasLoanParameterServiceImpl implements LasLoanParameterService {
 	@Override
 	public boolean saveOrUpdate(LasParameterRequest lasParameterRequest) {
 		CommonDocumentUtils.startHook(logger, "saveOrUpdate");
-		
-		// TODO Auto-generated method stub
+
 		LasParameter lasParameter= null;
 
 		lasParameter = lasParameterRepository.findOne(lasParameterRequest.getId());
@@ -76,7 +79,7 @@ public class LasLoanParameterServiceImpl implements LasLoanParameterService {
 	@Override
 	public LasParameterRequest getLasParameterRequest(Long id) {
 		CommonDocumentUtils.startHook(logger, "getLasParameterRequest");
-		// TODO Auto-generated method stub
+
 		LasParameterRequest lasParameterRequest= new LasParameterRequest();
 		LasParameter lasParameter = lasParameterRepository.getByID(id);
 		if(lasParameter==null)
@@ -92,9 +95,7 @@ public class LasLoanParameterServiceImpl implements LasLoanParameterService {
 			 
 			
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			logger.error("error while getLasParameterRequest",e);
-			e.printStackTrace();
+			logger.error(ERROR_WHILE_GET_LAS_PARAMETER_REQUEST_MSG,e);
 		}
 		}
 		
@@ -108,9 +109,7 @@ public class LasLoanParameterServiceImpl implements LasLoanParameterService {
 			 
 			
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			logger.error("error while getLasParameterRequest",e);
-			e.printStackTrace();
+			logger.error(ERROR_WHILE_GET_LAS_PARAMETER_REQUEST_MSG,e);
 		}
 		}
 		
@@ -124,9 +123,7 @@ public class LasLoanParameterServiceImpl implements LasLoanParameterService {
 			 
 			
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			logger.error("error while getLasParameterRequest",e);
-			e.printStackTrace();
+			logger.error(ERROR_WHILE_GET_LAS_PARAMETER_REQUEST_MSG,e);
 		}
 		}
 		CommonDocumentUtils.endHook(logger, "getLasParameterRequest");

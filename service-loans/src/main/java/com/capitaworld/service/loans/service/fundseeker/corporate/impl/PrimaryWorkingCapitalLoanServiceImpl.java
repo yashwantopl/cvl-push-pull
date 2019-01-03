@@ -57,14 +57,13 @@ public class PrimaryWorkingCapitalLoanServiceImpl implements PrimaryWorkingCapit
 			saveNegativeList(capitalLoanDetail.getApplicationId().getId(), capitalLoanRequest.getNegativeList());
 			return true;
 		} catch (Exception e) {
-			logger.error("Error while Primary Working Details Profile:-");
-			e.printStackTrace();
+			logger.error("Error while Primary Working Details Profile :- ",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	private void saveNegativeList(Long id, List<Long> negativeList) {
-		// TODO Auto-generated method stub
+
 		FsNegativeFpList fsNegativeFpList= null;
 		for (Long fpId : negativeList) {
 			fsNegativeFpList = new FsNegativeFpList();
@@ -106,8 +105,7 @@ public class PrimaryWorkingCapitalLoanServiceImpl implements PrimaryWorkingCapit
 			capitalLoanRequest.setCurrencyValue(data);
 			return capitalLoanRequest;
 		} catch (Exception e) {
-			logger.error("Error while Getting Working Details Profile:-");
-			e.printStackTrace();
+			logger.error("Error while Getting Working Details Profile :- ",e);
 			throw new Exception("Something went Wrong !");
 		}
 	}

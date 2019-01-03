@@ -52,6 +52,7 @@ public class GeographicalCountryDetail implements Serializable {
 	private Date modifiedDate;
 
 	public GeographicalCountryDetail() {
+		// Do nothing because of X and Y.
 	}
 
 	public Long getId() {

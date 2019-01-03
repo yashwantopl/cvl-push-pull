@@ -65,8 +65,7 @@ public class FinalUnsecuredLoanServiceImpl implements FinalUnsecuredLoanService 
 			loanApplicationRepository.setFinalFilledCount(unsecuredLoanRequest.getApplicationId(), finalUserId,unsecuredLoanRequest.getFinalFilledCount());
 			return true;
 		} catch (Exception e) {
-			logger.error("Error while Saving Final Unsecured Loan Details:-");
-			e.printStackTrace();
+			logger.error("Error while Saving Final Unsecured Loan Details:-",e);
 			throw new Exception("Something went Wrong !");
 		}
 	}
@@ -84,8 +83,7 @@ public class FinalUnsecuredLoanServiceImpl implements FinalUnsecuredLoanService 
 			unsecuredLoanRequest.setOverseasNetworkIds(networkRepository.getOverseasNetworkIds(applicationId));
 			return unsecuredLoanRequest;
 		} catch (Exception e) {
-			logger.error("Error while getting Final Unsecured Loan Details:-");
-			e.printStackTrace();
+			logger.error("Error while getting Final Unsecured Loan Details:-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}

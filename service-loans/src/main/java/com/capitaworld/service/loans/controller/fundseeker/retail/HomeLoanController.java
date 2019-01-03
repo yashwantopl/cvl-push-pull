@@ -103,7 +103,7 @@ public class HomeLoanController {
 
 			PrimaryHomeLoanDetailRequest response = primaryHomeLoanService.get(applicationId, userId);
 			if (response != null) {
-				LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+				LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 				loansResponse.setData(response);
 				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 			} else {
@@ -178,7 +178,7 @@ public class HomeLoanController {
 			}
 
 			FinalHomeLoanDetailRequest response = finalHomeLoanService.get(applicationId, userId);
-			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 			loansResponse.setData(response);
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
@@ -196,7 +196,7 @@ public class HomeLoanController {
 			try {
 				PrimaryHomeLoanDetailRequest response = primaryHomeLoanService.get(applicationId, userId);
 				if (response != null) {
-					LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+					LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 					loansResponse.setData(response);
 					return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 				} else {

@@ -41,6 +41,7 @@ public class SectorIndustryMapping implements Serializable {
 	private Long sectorId;
 
 	public SectorIndustryMapping() {
+		// Do nothing because of X and Y.
 	}
 
 	public String getId() {

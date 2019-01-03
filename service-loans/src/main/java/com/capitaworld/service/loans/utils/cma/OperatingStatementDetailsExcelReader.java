@@ -22,7 +22,7 @@ import com.capitaworld.service.loans.utils.CommonUtils;
 public class OperatingStatementDetailsExcelReader {
 
 	public static final Logger log = LoggerFactory.getLogger(OperatingStatementDetailsExcelReader.class);
-    public static List<String> operatingStatementMappingList = new ArrayList<String>();
+    public static final List<String> OPERATING_STATEMENT_MAPPING_LIST = new ArrayList<String>();
     public static final DecimalFormat decimalFormat = new DecimalFormat("#.##");
 
     public static void run(Long storageDetailsId, XSSFSheet sheet,LoanApplicationMaster loanApplicationMaster, ApplicationProposalMapping applicationProposalMapping, OperatingStatementDetailsRepository operatingStatementDetailsRepository) {
@@ -36,75 +36,75 @@ public class OperatingStatementDetailsExcelReader {
                 "69", "70", "71", "73", "75", "76",
                 "77", "78", "80", "82", "84", "86"};
 
-        operatingStatementMappingList.clear();
-        operatingStatementMappingList.addAll(Arrays.asList(numbers));
+        OPERATING_STATEMENT_MAPPING_LIST.clear();
+        OPERATING_STATEMENT_MAPPING_LIST.addAll(Arrays.asList(numbers));
         log.info("OperatingStatementDetailsExcelReader -----------> " + sheet.getRow(4).getCell(1).getNumericCellValue());
 
         int j = 2;
         if (applicationProposalMapping.getBusinessTypeId() == CommonUtils.BusinessType.EXISTING_BUSINESS.getId()) {
-            extractCellFromSheet(storageDetailsId, sheet, loanApplicationMaster, applicationProposalMapping, operatingStatementMappingList, "E", String.valueOf(sheet.getRow(4).getCell(4).getNumericCellValue()), "Estimated", operatingStatementDetailsRepository);
+            extractCellFromSheet(storageDetailsId, sheet, loanApplicationMaster, applicationProposalMapping, OPERATING_STATEMENT_MAPPING_LIST, "E", String.valueOf(sheet.getRow(4).getCell(4).getNumericCellValue()), "Estimated", operatingStatementDetailsRepository);
             j = 5;
         }
 
         if (applicationProposalMapping.getProductId() != 15 && applicationProposalMapping.getProductId() != 1) {
             for (int i = 0; i < applicationProposalMapping.getTenure(); i++) {
-                extractCellFromSheet(storageDetailsId, sheet, loanApplicationMaster, applicationProposalMapping, operatingStatementMappingList, CellReference.convertNumToColString(sheet.getRow(4).getCell(j).getColumnIndex()), String.valueOf(sheet.getRow(4).getCell(j).getNumericCellValue()), "Projected", operatingStatementDetailsRepository);
+                extractCellFromSheet(storageDetailsId, sheet, loanApplicationMaster, applicationProposalMapping, OPERATING_STATEMENT_MAPPING_LIST, CellReference.convertNumToColString(sheet.getRow(4).getCell(j).getColumnIndex()), String.valueOf(sheet.getRow(4).getCell(j).getNumericCellValue()), "Projected", operatingStatementDetailsRepository);
                 j++;
             }
         }
     }
 
-    public static void run(Long storageDetailsId,XSSFSheet sheet,LoanApplicationMaster loanApplicationMaster,OperatingStatementDetailsRepository operatingStatementDetailsRepository) {
-           	operatingStatementMappingList.clear();
-            operatingStatementMappingList.add("8");
-            operatingStatementMappingList.add("9");
-            operatingStatementMappingList.add("10");
-            operatingStatementMappingList.add("11");
-            operatingStatementMappingList.add("13");
-            operatingStatementMappingList.add("14");
-            operatingStatementMappingList.add("15");
-            operatingStatementMappingList.add("17");
+    public static void run(Long storageDetailsId,XSSFSheet sheet,LoanApplicationMaster loanApplicationMaster,OperatingStatementDetailsRepository operatingStatementDetailsRepository) throws Exception {
+            OPERATING_STATEMENT_MAPPING_LIST.clear();
+            OPERATING_STATEMENT_MAPPING_LIST.add("8");
+            OPERATING_STATEMENT_MAPPING_LIST.add("9");
+            OPERATING_STATEMENT_MAPPING_LIST.add("10");
+            OPERATING_STATEMENT_MAPPING_LIST.add("11");
+            OPERATING_STATEMENT_MAPPING_LIST.add("13");
+            OPERATING_STATEMENT_MAPPING_LIST.add("14");
+            OPERATING_STATEMENT_MAPPING_LIST.add("15");
+            OPERATING_STATEMENT_MAPPING_LIST.add("17");
             //19
-            operatingStatementMappingList.add("20");
-            operatingStatementMappingList.add("21");
-            operatingStatementMappingList.add("22");
-            operatingStatementMappingList.add("24");
-            operatingStatementMappingList.add("25");
-            operatingStatementMappingList.add("26");
-            operatingStatementMappingList.add("28");
-            operatingStatementMappingList.add("30");
-            operatingStatementMappingList.add("32");
-            operatingStatementMappingList.add("34");
-            operatingStatementMappingList.add("36");
-            operatingStatementMappingList.add("38");
-            operatingStatementMappingList.add("40");
-            operatingStatementMappingList.add("42");
-            operatingStatementMappingList.add("44");
-            operatingStatementMappingList.add("46");
-            operatingStatementMappingList.add("48");
-            operatingStatementMappingList.add("50");
-            operatingStatementMappingList.add("52");
-            operatingStatementMappingList.add("54");
-            operatingStatementMappingList.add("56");
-            operatingStatementMappingList.add("58");
-            operatingStatementMappingList.add("60");
-            operatingStatementMappingList.add("62");
-            operatingStatementMappingList.add("64");
-            operatingStatementMappingList.add("66");
-            operatingStatementMappingList.add("67");
-            operatingStatementMappingList.add("68");
-            operatingStatementMappingList.add("69");
-            operatingStatementMappingList.add("70");
-            operatingStatementMappingList.add("71");
-            operatingStatementMappingList.add("73");
-            operatingStatementMappingList.add("75");
-            operatingStatementMappingList.add("76");
-            operatingStatementMappingList.add("77");
-            operatingStatementMappingList.add("78");
-            operatingStatementMappingList.add("80");
-            operatingStatementMappingList.add("82");
-            operatingStatementMappingList.add("84");
-            operatingStatementMappingList.add("86");
+            OPERATING_STATEMENT_MAPPING_LIST.add("20");
+            OPERATING_STATEMENT_MAPPING_LIST.add("21");
+            OPERATING_STATEMENT_MAPPING_LIST.add("22");
+            OPERATING_STATEMENT_MAPPING_LIST.add("24");
+            OPERATING_STATEMENT_MAPPING_LIST.add("25");
+            OPERATING_STATEMENT_MAPPING_LIST.add("26");
+            OPERATING_STATEMENT_MAPPING_LIST.add("28");
+            OPERATING_STATEMENT_MAPPING_LIST.add("30");
+            OPERATING_STATEMENT_MAPPING_LIST.add("32");
+            OPERATING_STATEMENT_MAPPING_LIST.add("34");
+            OPERATING_STATEMENT_MAPPING_LIST.add("36");
+            OPERATING_STATEMENT_MAPPING_LIST.add("38");
+            OPERATING_STATEMENT_MAPPING_LIST.add("40");
+            OPERATING_STATEMENT_MAPPING_LIST.add("42");
+            OPERATING_STATEMENT_MAPPING_LIST.add("44");
+            OPERATING_STATEMENT_MAPPING_LIST.add("46");
+            OPERATING_STATEMENT_MAPPING_LIST.add("48");
+            OPERATING_STATEMENT_MAPPING_LIST.add("50");
+            OPERATING_STATEMENT_MAPPING_LIST.add("52");
+            OPERATING_STATEMENT_MAPPING_LIST.add("54");
+            OPERATING_STATEMENT_MAPPING_LIST.add("56");
+            OPERATING_STATEMENT_MAPPING_LIST.add("58");
+            OPERATING_STATEMENT_MAPPING_LIST.add("60");
+            OPERATING_STATEMENT_MAPPING_LIST.add("62");
+            OPERATING_STATEMENT_MAPPING_LIST.add("64");
+            OPERATING_STATEMENT_MAPPING_LIST.add("66");
+            OPERATING_STATEMENT_MAPPING_LIST.add("67");
+            OPERATING_STATEMENT_MAPPING_LIST.add("68");
+            OPERATING_STATEMENT_MAPPING_LIST.add("69");
+            OPERATING_STATEMENT_MAPPING_LIST.add("70");
+            OPERATING_STATEMENT_MAPPING_LIST.add("71");
+            OPERATING_STATEMENT_MAPPING_LIST.add("73");
+            OPERATING_STATEMENT_MAPPING_LIST.add("75");
+            OPERATING_STATEMENT_MAPPING_LIST.add("76");
+            OPERATING_STATEMENT_MAPPING_LIST.add("77");
+            OPERATING_STATEMENT_MAPPING_LIST.add("78");
+            OPERATING_STATEMENT_MAPPING_LIST.add("80");
+            OPERATING_STATEMENT_MAPPING_LIST.add("82");
+            OPERATING_STATEMENT_MAPPING_LIST.add("84");
+            OPERATING_STATEMENT_MAPPING_LIST.add("86");
 
             /*
               * this method extract data from excel associate column and row wise
@@ -115,47 +115,50 @@ public class OperatingStatementDetailsExcelReader {
             log.info("OperatingStatementDetailsExcelReader -----------> "+sheet.getRow(4).getCell(1).getNumericCellValue());       
            
 
-            //extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, operatingStatementMappingList,"B",String.valueOf(sheet.getRow(4).getCell(1).getNumericCellValue()),"Audited", operatingStatementDetailsRepository);
-            //extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, operatingStatementMappingList,"C",String.valueOf(sheet.getRow(4).getCell(2).getNumericCellValue()),"Audited",operatingStatementDetailsRepository);
-            //extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, operatingStatementMappingList,"D",String.valueOf(sheet.getRow(4).getCell(3).getNumericCellValue()),"Audited",operatingStatementDetailsRepository);
+            //extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, OPERATING_STATEMENT_MAPPING_LIST,"B",String.valueOf(sheet.getRow(4).getCell(1).getNumericCellValue()),"Audited", operatingStatementDetailsRepository);
+            //extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, OPERATING_STATEMENT_MAPPING_LIST,"C",String.valueOf(sheet.getRow(4).getCell(2).getNumericCellValue()),"Audited",operatingStatementDetailsRepository);
+            //extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, OPERATING_STATEMENT_MAPPING_LIST,"D",String.valueOf(sheet.getRow(4).getCell(3).getNumericCellValue()),"Audited",operatingStatementDetailsRepository);
             //j== 2 for NTB 
             int j = 2;
-            if(loanApplicationMaster.getBusinessTypeId() == CommonUtils.BusinessType.EXISTING_BUSINESS.getId()) {
-        
-        	  extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, operatingStatementMappingList,"E",String.valueOf(sheet.getRow(4).getCell(4).getNumericCellValue()),"Estimated",operatingStatementDetailsRepository);
-        	   j=5;
+         if(loanApplicationMaster.getBusinessTypeId() == CommonUtils.BusinessType.EXISTING_BUSINESS.getId()) {
+
+        	 int updateRow = operatingStatementDetailsRepository.inActiveByAppIdAndFinancialYearlyStatementAndIsActive(loanApplicationMaster.getId());
+        	 log.info("---------------- inactive old estimate and project data ------- updated row "+ updateRow);
+
+        	 extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, OPERATING_STATEMENT_MAPPING_LIST,"E",String.valueOf(sheet.getRow(4).getCell(4).getNumericCellValue()),"Estimated",operatingStatementDetailsRepository);
+        	 j=5;
           
-            }
+        }
         if(loanApplicationMaster.getProductId()!=15 && loanApplicationMaster.getProductId()!=1 ){
         	/*int j = 5;*/
 
         	for(int i = 0; i < loanApplicationMaster.getTenure(); i++) {
-        		extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, operatingStatementMappingList, CellReference.convertNumToColString(sheet.getRow(4).getCell(j).getColumnIndex()),String.valueOf(sheet.getRow(4).getCell(j).getNumericCellValue()),"Projected", operatingStatementDetailsRepository);
+        		extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, OPERATING_STATEMENT_MAPPING_LIST, CellReference.convertNumToColString(sheet.getRow(4).getCell(j).getColumnIndex()),String.valueOf(sheet.getRow(4).getCell(j).getNumericCellValue()),"Projected", operatingStatementDetailsRepository);
         		j++;
         	}
 
        	
-        /*  extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, operatingStatementMappingList,"F",String.valueOf(sheet.getRow(4).getCell(5).getNumericCellValue()),"Projected", operatingStatementDetailsRepository);
+        /*  extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, OPERATING_STATEMENT_MAPPING_LIST,"F",String.valueOf(sheet.getRow(4).getCell(5).getNumericCellValue()),"Projected", operatingStatementDetailsRepository);
 
-        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, operatingStatementMappingList,"G",String.valueOf(sheet.getRow(4).getCell(6).getNumericCellValue()),"Projected",operatingStatementDetailsRepository);
-        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, operatingStatementMappingList,"H",String.valueOf(sheet.getRow(4).getCell(7).getNumericCellValue()),"Projected",operatingStatementDetailsRepository);
-        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, operatingStatementMappingList,"I",String.valueOf(sheet.getRow(4).getCell(8).getNumericCellValue()),"Projected",operatingStatementDetailsRepository);
-        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, operatingStatementMappingList,"J",String.valueOf(sheet.getRow(4).getCell(9).getNumericCellValue()),"Projected",operatingStatementDetailsRepository);
-        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, operatingStatementMappingList,"K",String.valueOf(sheet.getRow(4).getCell(10).getNumericCellValue()),"Projected",operatingStatementDetailsRepository);
-        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, operatingStatementMappingList,"L",String.valueOf(sheet.getRow(4).getCell(11).getNumericCellValue()),"Projected",operatingStatementDetailsRepository);
-        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, operatingStatementMappingList,"M",String.valueOf(sheet.getRow(4).getCell(12).getNumericCellValue()),"Projected",operatingStatementDetailsRepository);
-        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, operatingStatementMappingList,"N",String.valueOf(sheet.getRow(4).getCell(12).getNumericCellValue()),"Projected",operatingStatementDetailsRepository);
-        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, operatingStatementMappingList,"O",String.valueOf(sheet.getRow(4).getCell(12).getNumericCellValue()),"Projected",operatingStatementDetailsRepository);
-        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, operatingStatementMappingList,"P",String.valueOf(sheet.getRow(4).getCell(12).getNumericCellValue()),"Projected",operatingStatementDetailsRepository);
-        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, operatingStatementMappingList,"Q",String.valueOf(sheet.getRow(4).getCell(12).getNumericCellValue()),"Projected",operatingStatementDetailsRepository);
-        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, operatingStatementMappingList,"R",String.valueOf(sheet.getRow(4).getCell(12).getNumericCellValue()),"Projected",operatingStatementDetailsRepository);
-        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, operatingStatementMappingList,"S",String.valueOf(sheet.getRow(4).getCell(12).getNumericCellValue()),"Projected",operatingStatementDetailsRepository);
-        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, operatingStatementMappingList,"T",String.valueOf(sheet.getRow(4).getCell(12).getNumericCellValue()),"Projected",operatingStatementDetailsRepository);
-        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, operatingStatementMappingList,"U",String.valueOf(sheet.getRow(4).getCell(12).getNumericCellValue()),"Projected",operatingStatementDetailsRepository);
-        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, operatingStatementMappingList,"V",String.valueOf(sheet.getRow(4).getCell(12).getNumericCellValue()),"Projected",operatingStatementDetailsRepository);
-        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, operatingStatementMappingList,"W",String.valueOf(sheet.getRow(4).getCell(12).getNumericCellValue()),"Projected",operatingStatementDetailsRepository);
-        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, operatingStatementMappingList,"X",String.valueOf(sheet.getRow(4).getCell(12).getNumericCellValue()),"Projected",operatingStatementDetailsRepository);
-        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, operatingStatementMappingList,"Y",String.valueOf(sheet.getRow(4).getCell(12).getNumericCellValue()),"Projected",operatingStatementDetailsRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, OPERATING_STATEMENT_MAPPING_LIST,"G",String.valueOf(sheet.getRow(4).getCell(6).getNumericCellValue()),"Projected",operatingStatementDetailsRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, OPERATING_STATEMENT_MAPPING_LIST,"H",String.valueOf(sheet.getRow(4).getCell(7).getNumericCellValue()),"Projected",operatingStatementDetailsRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, OPERATING_STATEMENT_MAPPING_LIST,"I",String.valueOf(sheet.getRow(4).getCell(8).getNumericCellValue()),"Projected",operatingStatementDetailsRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, OPERATING_STATEMENT_MAPPING_LIST,"J",String.valueOf(sheet.getRow(4).getCell(9).getNumericCellValue()),"Projected",operatingStatementDetailsRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, OPERATING_STATEMENT_MAPPING_LIST,"K",String.valueOf(sheet.getRow(4).getCell(10).getNumericCellValue()),"Projected",operatingStatementDetailsRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, OPERATING_STATEMENT_MAPPING_LIST,"L",String.valueOf(sheet.getRow(4).getCell(11).getNumericCellValue()),"Projected",operatingStatementDetailsRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, OPERATING_STATEMENT_MAPPING_LIST,"M",String.valueOf(sheet.getRow(4).getCell(12).getNumericCellValue()),"Projected",operatingStatementDetailsRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, OPERATING_STATEMENT_MAPPING_LIST,"N",String.valueOf(sheet.getRow(4).getCell(12).getNumericCellValue()),"Projected",operatingStatementDetailsRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, OPERATING_STATEMENT_MAPPING_LIST,"O",String.valueOf(sheet.getRow(4).getCell(12).getNumericCellValue()),"Projected",operatingStatementDetailsRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, OPERATING_STATEMENT_MAPPING_LIST,"P",String.valueOf(sheet.getRow(4).getCell(12).getNumericCellValue()),"Projected",operatingStatementDetailsRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, OPERATING_STATEMENT_MAPPING_LIST,"Q",String.valueOf(sheet.getRow(4).getCell(12).getNumericCellValue()),"Projected",operatingStatementDetailsRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, OPERATING_STATEMENT_MAPPING_LIST,"R",String.valueOf(sheet.getRow(4).getCell(12).getNumericCellValue()),"Projected",operatingStatementDetailsRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, OPERATING_STATEMENT_MAPPING_LIST,"S",String.valueOf(sheet.getRow(4).getCell(12).getNumericCellValue()),"Projected",operatingStatementDetailsRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, OPERATING_STATEMENT_MAPPING_LIST,"T",String.valueOf(sheet.getRow(4).getCell(12).getNumericCellValue()),"Projected",operatingStatementDetailsRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, OPERATING_STATEMENT_MAPPING_LIST,"U",String.valueOf(sheet.getRow(4).getCell(12).getNumericCellValue()),"Projected",operatingStatementDetailsRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, OPERATING_STATEMENT_MAPPING_LIST,"V",String.valueOf(sheet.getRow(4).getCell(12).getNumericCellValue()),"Projected",operatingStatementDetailsRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, OPERATING_STATEMENT_MAPPING_LIST,"W",String.valueOf(sheet.getRow(4).getCell(12).getNumericCellValue()),"Projected",operatingStatementDetailsRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, OPERATING_STATEMENT_MAPPING_LIST,"X",String.valueOf(sheet.getRow(4).getCell(12).getNumericCellValue()),"Projected",operatingStatementDetailsRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, OPERATING_STATEMENT_MAPPING_LIST,"Y",String.valueOf(sheet.getRow(4).getCell(12).getNumericCellValue()),"Projected",operatingStatementDetailsRepository);
         */}
     }
 
@@ -163,8 +166,8 @@ public class OperatingStatementDetailsExcelReader {
     {
         int arrayListCounter = 0;
         int nullCounter=0;
-        for (int i = 0; i < operatingStatementMappingList.size(); i++) {
-            if ((getNumericDataFromCell(sheet,column + operatingStatementMappingList.get(i)))==0.0) {
+        for (int i = 0; i < OPERATING_STATEMENT_MAPPING_LIST.size(); i++) {
+            if ((getNumericDataFromCell(sheet,column + OPERATING_STATEMENT_MAPPING_LIST.get(i)))==0.0) {
                 ++nullCounter;
             }
         }
@@ -238,19 +241,30 @@ public class OperatingStatementDetailsExcelReader {
         }
     }
 
-    public static void extractCellFromSheet(Long storageDetailsId,XSSFSheet sheet,LoanApplicationMaster loanApplicationMaster,List<String> arrayList,String column,String year,String financialYearlyStatement,OperatingStatementDetailsRepository operatingStatementDetailsRepository)
+    public static void extractCellFromSheet(Long storageDetailsId,XSSFSheet sheet,LoanApplicationMaster loanApplicationMaster,List<String> arrayList,String column,String year,String financialYearlyStatement,OperatingStatementDetailsRepository operatingStatementDetailsRepository)  throws Exception
     {
         int arrayListCounter = 0;
         int nullCounter=0;
-        for (int i = 0; i < operatingStatementMappingList.size(); i++) {
-            if ((getNumericDataFromCell(sheet,column + operatingStatementMappingList.get(i)))==0.0) {
+        for (int i = 0; i < OPERATING_STATEMENT_MAPPING_LIST.size(); i++) {
+            if ((getNumericDataFromCell(sheet,column + OPERATING_STATEMENT_MAPPING_LIST.get(i)))==0.0) {
                 ++nullCounter;
             }
         }
         log.info("nullCounter---" + nullCounter);
         if(!(nullCounter==46||nullCounter==47)) {
-            OperatingStatementDetails operatingStatementDetails = new OperatingStatementDetails();
-            
+
+        	Double yearFromSheet  = Double.valueOf(year) ;
+           	OperatingStatementDetails operatingStatementDetails = operatingStatementDetailsRepository.findByLoanApplicationMasterIdAndYearAndFinancialYearlyStatementAndIsActive(loanApplicationMaster.getId(), String.valueOf(yearFromSheet.longValue()) ,  financialYearlyStatement , true );
+
+           	if(operatingStatementDetails != null &&  "Audited".equalsIgnoreCase(operatingStatementDetails.getFinancialYearlyStatement()) && yearFromSheet <= Double.valueOf(operatingStatementDetails.getYear()) ) {
+
+           		throw new  Exception("Invalid cma details");
+
+           	}
+
+           	operatingStatementDetails = new OperatingStatementDetails() ;
+           	operatingStatementDetails.setCreatedDate(new Date());
+        	operatingStatementDetails.setModifiedDate(new Date());
             operatingStatementDetails.setLoanApplicationMaster(loanApplicationMaster);
             operatingStatementDetails.setStorageDetailsId(storageDetailsId);
             
@@ -307,8 +321,7 @@ public class OperatingStatementDetailsExcelReader {
             operatingStatementDetails.setRetainedProfitOrNetProfit(getNumericDataFromCell(sheet, column + arrayList.get(arrayListCounter++)));
 
             operatingStatementDetails.setIsActive(true);
-            operatingStatementDetails.setCreatedDate(new Date());
-            operatingStatementDetails.setModifiedDate(new Date());
+
 //          operatingStatementDetails.setCreatedBy(createdBy);
 //          operatingStatementDetails.setModifiedBy(modifiedBy);
             

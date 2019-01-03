@@ -25,6 +25,9 @@ import com.capitaworld.service.loans.utils.CommonUtils;
 public class LapLoanParameterController {
 
 	private static final Logger logger = LoggerFactory.getLogger(LapLoanParameterController.class.getName());
+
+	private static final String LITERAL_START = "start";
+
 	@Autowired
 	private LapLoanParameterService lapLoanParameterService;
 
@@ -37,21 +40,21 @@ public class LapLoanParameterController {
 	@RequestMapping(value = "/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> save(@RequestBody LapParameterRequest  lapParameterRequest,HttpServletRequest request) {
 		// request must not be null
-		CommonDocumentUtils.startHook(logger, "start");
+		CommonDocumentUtils.startHook(logger, LITERAL_START);
 		if (lapParameterRequest == null) {
 			logger.warn("lapParameterRequest Object can not be empty ==>", lapParameterRequest);
-			CommonDocumentUtils.endHook(logger, "start");
+			CommonDocumentUtils.endHook(logger, LITERAL_START);
 			return new ResponseEntity<LoansResponse>(
-					new LoansResponse("Requested data can not be empty.", HttpStatus.BAD_REQUEST.value()),
+					new LoansResponse(CommonUtils.REQUESTED_DATA_CAN_NOT_BE_EMPTY, HttpStatus.BAD_REQUEST.value()),
 					HttpStatus.OK);
 		}
 
 		if(lapParameterRequest.getId()==null)
 		{
 			logger.warn("lapParameterRequest id can not be empty ==>", lapParameterRequest);
-			CommonDocumentUtils.endHook(logger, "start");
+			CommonDocumentUtils.endHook(logger, LITERAL_START);
 			return new ResponseEntity<LoansResponse>(
-					new LoansResponse("Requested data can not be empty.", HttpStatus.BAD_REQUEST.value()),
+					new LoansResponse(CommonUtils.REQUESTED_DATA_CAN_NOT_BE_EMPTY, HttpStatus.BAD_REQUEST.value()),
 					HttpStatus.OK);
 		}
 		
@@ -60,20 +63,20 @@ public class LapLoanParameterController {
 		if(userId==null)
 		{
 			logger.warn("userId  id can not be empty ==>", userId);
-			CommonDocumentUtils.endHook(logger, "start");
+			CommonDocumentUtils.endHook(logger, LITERAL_START);
 			return new ResponseEntity<LoansResponse>(
-					new LoansResponse("Requested data can not be empty.", HttpStatus.BAD_REQUEST.value()),
+					new LoansResponse(CommonUtils.REQUESTED_DATA_CAN_NOT_BE_EMPTY, HttpStatus.BAD_REQUEST.value()),
 					HttpStatus.OK);
 		}
 		lapParameterRequest.setUserId(userId);
 		
 		boolean response = lapLoanParameterService.saveOrUpdate(lapParameterRequest);
 		if (response) {
-			CommonDocumentUtils.endHook(logger, "start");
+			CommonDocumentUtils.endHook(logger, LITERAL_START);
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
 					HttpStatus.OK);
 		} else {
-			CommonDocumentUtils.endHook(logger, "start");
+			CommonDocumentUtils.endHook(logger, LITERAL_START);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -107,7 +110,6 @@ public class LapLoanParameterController {
 			}
 		} catch (Exception e) {
 			logger.error("Error while getting lap Loan Details==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);

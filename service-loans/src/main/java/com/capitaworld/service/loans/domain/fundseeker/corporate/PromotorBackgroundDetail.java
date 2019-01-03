@@ -104,6 +104,7 @@ public class PromotorBackgroundDetail implements Serializable {
 	private Integer relationshipType;
 
 	public PromotorBackgroundDetail() {
+		// Do nothing because of X and Y.
 	}
 
 	public Long getId() {

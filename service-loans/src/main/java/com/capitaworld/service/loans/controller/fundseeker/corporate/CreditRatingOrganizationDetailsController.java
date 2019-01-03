@@ -92,7 +92,6 @@ public class CreditRatingOrganizationDetailsController {
 
 		} catch (Exception e) {
 			logger.error("Error while saving Credit Rating Organization Details==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);

@@ -56,24 +56,21 @@ public class LapFinalViewServiceImpl implements LapFinalViewService{
 			try {
 				finalViewResponse.setCoApplicantCommonDetails(coApplicantService.getCoApplicantFinalResponse(applicantId, applicationMaster.getUserId(),applicationMaster.getProductId()));
 			} catch (Exception e) {
-				// TODO: handle exception
-				logger.error("error while getting CoApplicant final details");
+				logger.error("error while getting CoApplicant final details : ",e);
 			}
 			
 			//guarantor final common details
 			try {
 				finalViewResponse.setGuarantorCommonDetails(guarantorService.getGuarantorFinalViewResponse(applicantId, applicationMaster.getUserId(),applicationMaster.getProductId()));
 			} catch (Exception e) {
-				// TODO: handle exception
-				logger.error("error while getting Guarantor final details");
+				logger.error("error while getting Guarantor final details : ",e);
 			}
 			lapFinalViewResponse.setFinalViewResponse(finalViewResponse);
 			//LAP Loan primary details
 			try { 
 				lapFinalViewResponse.setLapPrimaryViewResponse(lapPrimaryService.getLapPrimaryViewDetails(applicantId));
 			} catch (Exception e) {
-				// TODO: handle exception
-				logger.error("error while getting LAP primary details");
+				logger.error("error while getting LAP primary details : ",e);
 			}
 			
 			

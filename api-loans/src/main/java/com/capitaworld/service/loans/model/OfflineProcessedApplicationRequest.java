@@ -10,6 +10,7 @@ public class OfflineProcessedApplicationRequest {
 	private String organisationName;
 	private String branchName;
 	private String isCampaignUser;
+	private String campaignCode;
 	private Boolean isSanctioned;
 	private Boolean isDisbursed;
 	private Long branchId;
@@ -27,6 +28,8 @@ public class OfflineProcessedApplicationRequest {
 	private Double processingFee;
 	private Long isSanctionedFrom;
 	private Boolean isPartiallyDisbursedOffline;
+	private String reason;
+	private Date modifiedDate;
 	
 	
 	public Long getApplicationId() {
@@ -160,6 +163,24 @@ public class OfflineProcessedApplicationRequest {
 	}
 	public void setLocationData(Object locationData) {
 		this.locationData = locationData;
+	}
+	public String getReason() {
+		return reason;
+	}
+	public void setReason(String reason) {
+		this.reason = reason;
+	}
+	public Date getModifiedDate() {
+		return modifiedDate;
+	}
+	public void setModifiedDate(Date modifiedDate) {
+		this.modifiedDate = modifiedDate;
+	}
+	public String getCampaignCode() {
+		return campaignCode;
+	}
+	public void setCampaignCode(String campaignCode) {
+		this.campaignCode = campaignCode;
 	}
 	
 	

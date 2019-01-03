@@ -1,20 +1,5 @@
 package com.capitaworld.service.loans.config;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Timer;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Component;
-
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.model.PaymentRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
@@ -29,21 +14,7 @@ import com.capitaworld.service.loans.utils.CommonUtils.LoanType;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.matchengine.MatchEngineClient;
 import com.capitaworld.service.matchengine.ProposalDetailsClient;
-import com.capitaworld.service.matchengine.model.ConnectionResponse;
-import com.capitaworld.service.matchengine.model.MatchDisplayResponse;
-import com.capitaworld.service.matchengine.model.MatchRequest;
-import com.capitaworld.service.matchengine.model.ProposalCountResponse;
-import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
-import com.capitaworld.service.matchengine.model.ProposalMappingResponse;
-import com.capitaworld.service.mca.client.McaClient;
-import com.capitaworld.service.mca.model.CompaniesHistoryPara;
-import com.capitaworld.service.mca.model.CompaniesHistoryRequest;
-import com.capitaworld.service.mca.model.CompaniesHistoryResponse;
-import com.capitaworld.service.mca.model.McaRequest;
-import com.capitaworld.service.mca.model.McaRequestPara;
-import com.capitaworld.service.mca.model.SearchCompaniesRequest;
-import com.capitaworld.service.mca.model.SearchCompaniesResponse;
-import com.capitaworld.service.mca.model.SearchCriteria;
+import com.capitaworld.service.matchengine.model.*;
 import com.capitaworld.service.notification.client.NotificationClient;
 import com.capitaworld.service.notification.exceptions.NotificationException;
 import com.capitaworld.service.notification.model.Notification;
@@ -58,9 +29,15 @@ import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.UserResponse;
 import com.capitaworld.service.users.model.UsersRequest;
 import com.ibm.icu.text.SimpleDateFormat;
-import com.capitaworld.service.matchengine.MatchEngineClient;
-import com.capitaworld.service.matchengine.model.MatchDisplayResponse;
-import com.capitaworld.service.matchengine.model.MatchRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Component;
+
+import java.io.IOException;
+import java.util.*;
 
 @Component
 public class AsyncComponent {
@@ -97,6 +74,10 @@ public class AsyncComponent {
 	private OneFormClient oneFormClient;
 
 	private static final String EMAIL_ADDRESS_FROM = "com.capitaworld.mail.url";
+	private static final String PARAMETERS_TOTAL_MATCHES = "total_matches";
+
+	private static final String THROW_EXCEPTION_WHILE_SENDING_MAIL_PRIMARY_COMPLETE = "Throw exception while sending mail, Primary Complete : ";
+	private static final String ERROR_WHILE_GET_FUND_PROVIDER_NAME = "Error while get fund provider name : ";
 
 	/**
 	 * FS Mail Number :- 4 Send Mail when Fund seeker login first time in our system
@@ -128,7 +109,7 @@ public class AsyncComponent {
 						.getObjectFromMap((LinkedHashMap<String, Object>) userResponse.getData(), UsersRequest.class);
 				if (!CommonUtils.isObjectNullOrEmpty(request)) {
 					Map<String, Object> parameters = new HashMap<String, Object>();
-					parameters.put("fs_name", request.getName());
+					parameters.put(CommonUtils.PARAMETERS_FS_NAME, request.getName());
 					String[] toIds = { request.getEmail() };
 					sendNotification(toIds, userId.toString(), parameters, NotificationTemplate.LOGOUT_IMMEDIATELY,
 							null, false, null);
@@ -140,8 +121,7 @@ public class AsyncComponent {
 				logger.info("User response null while getting email id and user type");
 			}
 		} catch (Exception e) {
-			logger.info("Throw exception while sending mail, logout immediately");
-			e.printStackTrace();
+			logger.error("Throw exception while sending mail, logout immediately : ",e);
 		}
 	}
 
@@ -199,28 +179,25 @@ public class AsyncComponent {
 						Map<String, Object> parameters = new HashMap<String, Object>();
 						if (template.getValue() == NotificationTemplate.LOGOUT_WITHOUT_FILLED_PROFILE_DETAILS
 								.getValue()) {
-							parameters.put("fs_name", request.getName());
-							parameters.put("application_id",
+							parameters.put(CommonUtils.PARAMETERS_FS_NAME, request.getName());
+							parameters.put(CommonUtils.PARAMETERS_APPLICATION_ID,
 									!CommonUtils.isObjectNullOrEmpty(loanApplicationRequest.getApplicationCode())
 											? loanApplicationRequest.getApplicationCode()
 											: "NA");
 						} else if (template.getValue() == NotificationTemplate.LOGOUT_WITHOUT_FILLED_PRIMARY_DETAILS
 								.getValue()) {
 							String fsName = loanApplicationService.getFsApplicantName(loanApplicationRequest.getId());
-							parameters.put("fs_name",
+							parameters.put(CommonUtils.PARAMETERS_FS_NAME,
 									!CommonUtils.isObjectNullOrEmpty(fsName) ? fsName : request.getName());
 							Integer totalCount = 0;
 							try {
 								UserResponse response = usersClient
 										.getActiveUserCount(CommonUtils.UserType.FUND_PROVIDER);
-								if (!CommonUtils.isObjectNullOrEmpty(response)) {
-									if (!CommonUtils.isObjectNullOrEmpty(response.getData())) {
+								if (!CommonUtils.isObjectNullOrEmpty(response) && !CommonUtils.isObjectNullOrEmpty(response.getData()) ) {
 										totalCount = (Integer) response.getData();
-									}
 								}
 							} catch (Exception e) {
-								logger.error("Throw Excecption While Get Total Fp User Count");
-								e.printStackTrace();
+								logger.error("Throw Excecption While Get Total Fp User Count : ",e);
 							}
 							parameters.put("total_fp_count", totalCount);
 						}
@@ -238,9 +215,7 @@ public class AsyncComponent {
 				logger.info("LoanAoplicationRequest object null or empty");
 			}
 		} catch (Exception e) {
-			logger.info(
-					"Throw Exception while sent Mail When User Logout Without Filling First Profile or primary Data");
-			e.printStackTrace();
+			logger.info("Throw Exception while sent Mail When User Logout Without Filling First Profile or primary Data : ",e);
 		}
 
 	}
@@ -274,7 +249,7 @@ public class AsyncComponent {
 							if (!CommonUtils.isObjectNullOrEmpty(request)) {
 								Map<String, Object> parameters = new HashMap<String, Object>();
 								String fsName = loanApplicationService.getFsApplicantName(applicationId);
-								parameters.put("fs_name",
+								parameters.put(CommonUtils.PARAMETERS_FS_NAME,
 										!CommonUtils.isObjectNullOrEmpty(fsName) ? fsName : request.getName());
 								String[] toIds = { request.getEmail() };
 								sendNotification(toIds, userId.toString(), parameters,
@@ -292,7 +267,7 @@ public class AsyncComponent {
 						logger.error(
 								"Error while sent mail when User not Fill Final Detail After 3 Hour From Primary Submit----->"
 										+ applicationId);
-						e.printStackTrace();
+						logger.error(CommonUtils.EXCEPTION,e);
 					}
 				}
 			}, 10800000);
@@ -300,7 +275,7 @@ public class AsyncComponent {
 		} catch (Exception e) {
 			logger.error("Error while sent mail when User not Fill Final Detail After 3 Hour From Primary Submit----->"
 					+ applicationId);
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 	}
 
@@ -330,14 +305,12 @@ public class AsyncComponent {
 								NotificationTemplate.LOGOUT_IMMEDIATELY_REMAINDER, null, false, null);
 						logger.info("Logout Immediately remainder,Successfully sent mail to this email ===>" + toIds);
 					} catch (NotificationException e) {
-						logger.error("Error while sent logout immediately reminder mail");
-						e.printStackTrace();
+						logger.error("Error while sent logout immediately reminder mail : ",e);
 					}
 				}
 			}, 172800000);
 		} catch (Exception e) {
-			logger.error("Error while sent logout immediately reminder mail");
-			e.printStackTrace();
+			logger.error("Error while sent logout immediately reminder mail : ",e);
 		}
 	}
 
@@ -366,8 +339,7 @@ public class AsyncComponent {
 				}
 			}
 		} catch (Exception e) {
-			logger.info("Throw exception while sending mail, Primary Complete");
-			e.printStackTrace();
+			logger.error(THROW_EXCEPTION_WHILE_SENDING_MAIL_PRIMARY_COMPLETE,e);
 		}
 	}
 
@@ -382,8 +354,7 @@ public class AsyncComponent {
 				}
 			}
 		} catch (Exception e) {
-			logger.info("Throw exception while get name and email by userid");
-			e.printStackTrace();
+			logger.error("Throw exception while get name and email by userid : ",e);
 		}
 		return null;
 	}
@@ -415,24 +386,23 @@ public class AsyncComponent {
 				}
 			}
 		} catch (Exception e) {
-			logger.info("Throw exception while sending mail, Primary Complete");
-			e.printStackTrace();
+			logger.error(THROW_EXCEPTION_WHILE_SENDING_MAIL_PRIMARY_COMPLETE,e);
 		}
 	}
 
 	private Map<String, Object> getFSMapData(Long userId, Long applicationId) throws Exception {
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		String fsName = loanApplicationService.getFsApplicantName(applicationId);
-		parameters.put("fs_name", !CommonUtils.isObjectNullOrEmpty(fsName) ? fsName : "NA");
+		parameters.put(CommonUtils.PARAMETERS_FS_NAME, !CommonUtils.isObjectNullOrEmpty(fsName) ? fsName : "NA");
 		LoanApplicationRequest loanBasicDetails = loanApplicationService.getLoanBasicDetails(applicationId, userId);
 		if (loanBasicDetails != null) {
-			parameters.put("application_id",
+			parameters.put(CommonUtils.PARAMETERS_APPLICATION_ID,
 					!CommonUtils.isObjectNullOrEmpty(loanBasicDetails.getApplicationCode())
 							? loanBasicDetails.getApplicationCode()
 							: "NA");
 			parameters.put("loan", LoanType.getType(loanBasicDetails.getProductId()).getName());
 		} else {
-			parameters.put("application_id", "NA");
+			parameters.put(CommonUtils.PARAMETERS_APPLICATION_ID, "NA");
 			parameters.put("loan", "NA");
 		}
 
@@ -450,20 +420,19 @@ public class AsyncComponent {
 							+ connectionResponse.getSuggetionList().size());
 					logger.info("successfully get total matches count -----> "
 							+ connectionResponse.getSuggetionByMatchesList().size());
-					parameters.put("total_matches", connectionResponse.getSuggetionByMatchesList().size());
+					parameters.put(PARAMETERS_TOTAL_MATCHES, connectionResponse.getSuggetionByMatchesList().size());
 				} else {
 					logger.warn("ConnectionResponse null or empty whilte getting total matches count");
-					parameters.put("total_matches", 0);
+					parameters.put(PARAMETERS_TOTAL_MATCHES, 0);
 				}
 			} else {
 				logger.warn("Something went wrong, Proposal service not available");
-				parameters.put("total_matches", 0);
+				parameters.put(PARAMETERS_TOTAL_MATCHES, 0);
 			}
 
 		} catch (Exception e) {
-			logger.warn("Error while get total suggestion matches list when primary locked mail sending");
-			e.printStackTrace();
-			parameters.put("total_matches", 0);
+			logger.error("Error while get total suggestion matches list when primary locked mail sending : ",e);
+			parameters.put(PARAMETERS_TOTAL_MATCHES, 0);
 		}
 		return parameters;
 	}
@@ -487,8 +456,7 @@ public class AsyncComponent {
 			}
 			Long userId = loanApplicationService.getUserIdByApplicationId(applicationId);
 			UserResponse response = usersClient.checkUserUnderSp(userId);
-			if (!CommonUtils.isObjectNullOrEmpty(response)) {
-				if (!(Boolean) response.getData()) {
+			if (!CommonUtils.isObjectNullOrEmpty(response) && !(Boolean) response.getData() ) {
 					UserResponse userResponse = usersClient.getEmailAndNameByUserId(userId);
 					if (!CommonUtils.isObjectNullOrEmpty(userResponse.getData())) {
 						UsersRequest request = MultipleJSONObjectHelper.getObjectFromMap(
@@ -496,17 +464,17 @@ public class AsyncComponent {
 						if (!CommonUtils.isObjectNullOrEmpty(request)) {
 							Map<String, Object> parameters = new HashMap<String, Object>();
 							String fsName = loanApplicationService.getFsApplicantName(applicationId);
-							parameters.put("fs_name", !CommonUtils.isObjectNullOrEmpty(fsName) ? fsName : "Sir/Madam");
+							parameters.put(CommonUtils.PARAMETERS_FS_NAME, !CommonUtils.isObjectNullOrEmpty(fsName) ? fsName : "Sir/Madam");
 							LoanApplicationRequest loanBasicDetails = loanApplicationService
 									.getLoanBasicDetails(applicationId, userId);
 							if (loanBasicDetails != null) {
-								parameters.put("application_id",
+								parameters.put(CommonUtils.PARAMETERS_APPLICATION_ID,
 										!CommonUtils.isObjectNullOrEmpty(loanBasicDetails.getApplicationCode())
 												? loanBasicDetails.getApplicationCode()
 												: "NA");
 								parameters.put("loan", LoanType.getType(loanBasicDetails.getProductId()).getName());
 							} else {
-								parameters.put("application_id", "NA");
+								parameters.put(CommonUtils.PARAMETERS_APPLICATION_ID, "NA");
 								parameters.put("loan", "NA");
 							}
 							String fpName = "Fund Provider";
@@ -530,11 +498,10 @@ public class AsyncComponent {
 								} else {
 									logger.info("Fund Provider name can't find using " + lastFpProductId + " id");
 								}
-								parameters.put("fp_name", fpName);
+								parameters.put(CommonUtils.PARAMETERS_FP_NAME, fpName);
 							} catch (Exception e) {
-								logger.warn("Error while get fund provider name");
-								e.printStackTrace();
-								parameters.put("fp_name", fpName);
+								logger.error(ERROR_WHILE_GET_FUND_PROVIDER_NAME,e);
+								parameters.put(CommonUtils.PARAMETERS_FP_NAME, fpName);
 							}
 
 							try {
@@ -546,7 +513,7 @@ public class AsyncComponent {
 								if (!CommonUtils.isObjectNullOrEmpty(proposalCountResponse)) {
 									logger.info("Successfully get total matches count ----> "
 											+ proposalCountResponse.getMatches());
-									parameters.put("total_matches",
+									parameters.put(PARAMETERS_TOTAL_MATCHES,
 											!CommonUtils.isObjectNullOrEmpty(proposalCountResponse.getMatches())
 													? proposalCountResponse.getMatches()
 													: 0);
@@ -554,38 +521,33 @@ public class AsyncComponent {
 									logger.info("Something went to wrong while get total matches count");
 								}
 							} catch (Exception e) {
-								logger.warn(
-										"Error while get total suggestion matches list when final details not filling mail sending");
-								e.printStackTrace();
-								parameters.put("total_matches", 0);
+								logger.error("Error while get total suggestion matches list when final details not filling mail sending : ",e);
+								parameters.put(PARAMETERS_TOTAL_MATCHES, 0);
 							}
 							String[] toIds = { request.getEmail() };
-							if (request.getEmail() != null && fpName != null && fsName != null) {
-								sendNotification(toIds, userId.toString(), parameters,
-										NotificationTemplate.FP_VIEW_MORE_DETAILS, fpName, false, null);
-							} else {
-								logger.info("Email id is null when sending email from AsynchComponent.");
-							}
+//							if (request.getEmail() != null && fpName != null && fsName != null) {
+//								sendNotification(toIds, userId.toString(), parameters,
+//										NotificationTemplate.FP_VIEW_MORE_DETAILS, fpName, false, null);
+//							} else {
+//								logger.info("Email id is null when sending email from AsynchComponent.");
+//							}
 
 							try {
 								// SMS
 								UsersRequest resp = getEmailMobile(userId);
-								if (resp.getMobile() != null) {
+								if (resp != null && resp.getMobile() != null) {
 									sendSMSNotification(String.valueOf(userId), parameters,
 											NotificationAlias.SMS_VIEW_MORE_DETAILS, resp.getMobile());
 									logger.info("Sms Sent for fp view more details request:" + resp.getMobile());
 								}
 							} catch (Exception e) {
-								// TODO: handle exception
-								logger.info("mobile number is null when sending sms from AsynchComponent.:" + e);
+								logger.error("mobile number is null when sending sms from AsynchComponent.:" + e);
 							}
 						}
 					}
-				}
 			}
 		} catch (Exception e) {
-			logger.info("Throw exception while sending mail, Primary Complete");
-			e.printStackTrace();
+			logger.error(THROW_EXCEPTION_WHILE_SENDING_MAIL_PRIMARY_COMPLETE,e);
 		}
 	}
 
@@ -646,14 +608,14 @@ public class AsyncComponent {
 									+ applicationId);
 							Map<String, Object> parameters = new HashMap<String, Object>();
 							String fsName = loanApplicationService.getFsApplicantName(applicationId);
-							parameters.put("fs_name",
+							parameters.put(CommonUtils.PARAMETERS_FS_NAME,
 									!CommonUtils.isObjectNullOrEmpty(fsName) ? fsName : request.getName());
 							LoanApplicationRequest loanBasicDetails = loanApplicationService
 									.getLoanBasicDetails(applicationId, userId);
 							if (loanBasicDetails != null) {
 								logger.info("FPSentDirectRequestToFS, Application Code ----->"
 										+ loanBasicDetails.getApplicationCode());
-								parameters.put("application_id",
+								parameters.put(CommonUtils.PARAMETERS_APPLICATION_ID,
 										!CommonUtils.isObjectNullOrEmpty(loanBasicDetails.getApplicationCode())
 												? loanBasicDetails.getApplicationCode()
 												: "NA");
@@ -661,7 +623,7 @@ public class AsyncComponent {
 										+ LoanType.getType(loanBasicDetails.getProductId()).getName());
 								parameters.put("loan", LoanType.getType(loanBasicDetails.getProductId()).getName());
 							} else {
-								parameters.put("application_id", "NA");
+								parameters.put(CommonUtils.PARAMETERS_APPLICATION_ID, "NA");
 								parameters.put("loan", "NA");
 							}
 							logger.info("FPSentDirectRequestToFS, Start get fp name (fpProductId) ---->" + fpProductId);
@@ -675,11 +637,10 @@ public class AsyncComponent {
 								} else {
 									logger.info("Fund Provider name can't find using " + fpProductId + " id");
 								}
-								parameters.put("fp_name", fpName);
+								parameters.put(CommonUtils.PARAMETERS_FP_NAME, fpName);
 							} catch (Exception e) {
-								logger.warn("Error while get fund provider name");
-								e.printStackTrace();
-								parameters.put("fp_name", "NA");
+								logger.error(ERROR_WHILE_GET_FUND_PROVIDER_NAME,e);
+								parameters.put(CommonUtils.PARAMETERS_FP_NAME, "NA");
 							}
 							logger.info("FPSentDirectRequestToFS, End Parameter fill, And Start sending mail to ---->"
 									+ request.getEmail());
@@ -703,8 +664,7 @@ public class AsyncComponent {
 						+ userId);
 			}
 		} catch (Exception e) {
-			logger.info("Throw exception while sending mail, Primary Complete");
-			e.printStackTrace();
+			logger.error(THROW_EXCEPTION_WHILE_SENDING_MAIL_PRIMARY_COMPLETE,e);
 		}
 	}
 
@@ -718,8 +678,7 @@ public class AsyncComponent {
 			}
 			return null;
 		} catch (Exception e) {
-			logger.warn("Error while get fund provider name");
-			e.printStackTrace();
+			logger.error(ERROR_WHILE_GET_FUND_PROVIDER_NAME,e);
 			return null;
 		}
 	}
@@ -762,14 +721,12 @@ public class AsyncComponent {
 						logger.info("End Sent Mail Wth Timer------->" + milisecond + "<-------->" + value);
 						sendMail(notificationRequest);
 					} catch (NotificationException e) {
-						logger.error("Error while send mail in notfication");
-						e.printStackTrace();
+						logger.error("Error while send mail in notfication : ",e);
 					}
 				}
 			}, milisecond);
 		} catch (Exception e) {
-			logger.error("Error while call timer method in notification");
-			e.printStackTrace();
+			logger.error("Error while call timer method in notification : ",e);
 		}
 	}
 
@@ -804,8 +761,7 @@ public class AsyncComponent {
 			}
 			return null;
 		} catch (Exception e) {
-			logger.warn("Something went wrong while get fundseeker name");
-			e.printStackTrace();
+			logger.error("Something went wrong while get fundseeker name : ",e);
 			return null;
 		}
 
@@ -821,7 +777,7 @@ public class AsyncComponent {
 			Map<String, Object> parameters = new HashMap<>();
 			SimpleDateFormat dt = new SimpleDateFormat("yyyy/MM/dd hh:mm:ss");
 			String fsName = loanApplicationService.getFsApplicantName(paymentInfo.getApplicationId());
-			parameters.put("fs_name", !CommonUtils.isObjectNullOrEmpty(fsName) ? fsName : "NA");
+			parameters.put(CommonUtils.PARAMETERS_FS_NAME, !CommonUtils.isObjectNullOrEmpty(fsName) ? fsName : "NA");
 			parameters.put("entity_name",
 					!CommonUtils.isObjectNullOrEmpty(paymentInfo.getNameOfEntity()) ? paymentInfo.getNameOfEntity()
 							: "NA");
@@ -866,8 +822,7 @@ public class AsyncComponent {
 					+ paymentInfo.getEmailAddress());
 
 		} catch (Exception e) {
-			logger.info("Throw Exception while send FS select online payment !!");
-			e.printStackTrace();
+			logger.error("Throw Exception while send FS select online payment !!",e);
 		}
 
 	}
@@ -895,7 +850,7 @@ public class AsyncComponent {
 			Map<String, Object> parameters = new HashMap<>();
 			parameters.put("maker_name", makerUserName.getName());
 			parameters.put("checker_name", checkerUserName.getName());
-			parameters.put("fs_name", fsName);
+			parameters.put(CommonUtils.PARAMETERS_FS_NAME, fsName);
 			parameters.put("lone_type", LoanType.getType(productId).getName());
 			String[] toIds = { checkerUserName.getEmail() };
 			String subject = makerUserName.getName() + " has lock final details for " + applicationCode;
@@ -908,11 +863,10 @@ public class AsyncComponent {
 					null);
 			logger.info("Successfully send system notification------------------>");
 		} catch (Exception e) {
-			logger.info("Throw exception while sending final lock mail");
-			e.printStackTrace();
+			logger.error("Throw exception while sending final lock mail : ",e);
 		}
 
-	};
+	}
 
 	/**
 	 * 
@@ -944,8 +898,7 @@ public class AsyncComponent {
 		try {
 			notificationClient.send(notificationRequest);
 		} catch (NotificationException e) {
-			logger.info("Throw Exception While Send Sys Notication");
-			e.printStackTrace();
+			logger.error("Throw Exception While Send Sys Notication : ",e);
 		}
 
 	}
@@ -966,8 +919,7 @@ public class AsyncComponent {
 				return masterResponse.getValue();
 			}
 		} catch (Exception e) {
-			logger.info("Throw Exception while get city name by city Id in Asyn Mail Integation");
-			e.printStackTrace();
+			logger.error("Throw Exception while get city name by city Id in Asyn Mail Integation : ",e);
 		}
 		return null;
 	}
@@ -988,8 +940,7 @@ public class AsyncComponent {
 				return masterResponse.getValue();
 			}
 		} catch (Exception e) {
-			logger.info("Throw Exception while get city name by city Id in Asyn Mail Integation");
-			e.printStackTrace();
+			logger.error("Throw Exception while get city name by city Id in Asyn Mail Integation : ",e);
 		}
 		return null;
 	}
@@ -1010,8 +961,7 @@ public class AsyncComponent {
 				return masterResponse.getValue();
 			}
 		} catch (Exception e) {
-			logger.info("Throw Exception while get country name by country Id in DDR Onform");
-			e.printStackTrace();
+			logger.error("Throw Exception while get country name by country Id in DDR Onform : ",e);
 		}
 		return null;
 	}
@@ -1031,8 +981,7 @@ public class AsyncComponent {
 				logger.info("RESPONSE WHILE SAVE MATCHES JSON WHILE ONEFORM SUBMIT --------------> NULL");
 			}
 		} catch (Exception e) {
-			logger.info("EXCEPTION THROW WHILE SAVE MATCHES JSON WHILE SUBMIT ONEFORM DETAILS");
-			e.printStackTrace();
+			logger.error("EXCEPTION THROW WHILE SAVE MATCHES JSON WHILE SUBMIT ONEFORM DETAILS : ",e);
 		}
 
 	}

@@ -72,8 +72,7 @@ public class FinalCarLoanServiceImpl implements FinalCarLoanService {
 			
 			return true;
 		} catch (Exception e) {
-			logger.error("Error while Saving Final Car Loan Details:-");
-			e.printStackTrace();
+			logger.error("Error while Saving Final Car Loan Details:-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
@@ -99,8 +98,7 @@ public class FinalCarLoanServiceImpl implements FinalCarLoanService {
 			finalCarLoanDetailRequest.setFinalFilledCount(loanDetail.getApplicationId().getFinalFilledCount());
 			return finalCarLoanDetailRequest;
 		} catch (Exception e) {
-			logger.error("Error while getting Final Car Loan Details:-");
-			e.printStackTrace();
+			logger.error("Error while getting Final Car Loan Details:-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}

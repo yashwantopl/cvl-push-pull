@@ -72,7 +72,6 @@ public class WorkingCapitalLoanController {
 					HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while saving Final Working Details==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -101,7 +100,7 @@ public class WorkingCapitalLoanController {
 			FinalWorkingCapitalLoanRequest response = finalWCService.get(userId, applicationId);
 			CommonDocumentUtils.endHook(logger, "getFinal");
 			if (response != null) {
-				LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+				LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 				loansResponse.setData(response);
 				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 			} else {
@@ -111,7 +110,6 @@ public class WorkingCapitalLoanController {
 			}
 		} catch (Exception e) {
 			logger.error("Error while getting Final Working Details==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -141,7 +139,6 @@ public class WorkingCapitalLoanController {
 					HttpStatus.OK);
 
 		} catch (Exception e) {
-			e.printStackTrace();
 			logger.error("Error while saving Primary Working Details==>", e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
@@ -153,7 +150,7 @@ public class WorkingCapitalLoanController {
 	public ResponseEntity<LoansResponse> getPrimary(@PathVariable("applicationId") Long applicationId, HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
 		// request must not be null
 		try {
-			CommonDocumentUtils.startHook(logger, "getPrimary");
+			CommonDocumentUtils.startHook(logger, CommonUtils.GET_PRIMARY);
 			Long userId = null;
 			if (CommonDocumentUtils.isThisClientApplication(request)) {
 				userId = clientId;
@@ -169,13 +166,12 @@ public class WorkingCapitalLoanController {
 			}
 
 			PrimaryWorkingCapitalLoanRequest response = primaryWCService.get(applicationId,userId);
-			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 			loansResponse.setData(response);
-			CommonDocumentUtils.endHook(logger, "getPrimary");
+			CommonDocumentUtils.endHook(logger, CommonUtils.GET_PRIMARY);
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getting Primary Working Details==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -193,13 +189,12 @@ public class WorkingCapitalLoanController {
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 			PrimaryWorkingCapitalLoanRequest response = primaryWCService.get(applicationId,null);
-			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 			loansResponse.setData(response);
-			CommonDocumentUtils.endHook(logger, "getPrimary");
+			CommonDocumentUtils.endHook(logger, CommonUtils.GET_PRIMARY);
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getting Primary Working Details==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);

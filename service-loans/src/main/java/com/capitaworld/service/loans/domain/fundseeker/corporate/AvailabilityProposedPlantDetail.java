@@ -71,6 +71,7 @@ public class AvailabilityProposedPlantDetail implements Serializable {
 	private String useOrPurpose;
 
 	public AvailabilityProposedPlantDetail() {
+		// Do nothing because of X and Y.
 	}
 
 	public Long getId() {

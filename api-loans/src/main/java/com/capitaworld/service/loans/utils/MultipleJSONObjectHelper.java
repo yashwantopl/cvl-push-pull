@@ -21,6 +21,7 @@ public class MultipleJSONObjectHelper implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	public MultipleJSONObjectHelper() {
+		// Do nothing because of X and Y.
 	}
 
 	public static <T> T getObject(String data, String key, Class<?> clazz) throws IOException {

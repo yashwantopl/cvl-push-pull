@@ -699,6 +699,7 @@ public class TermLoanParameterTemp extends ProductMasterTemp implements Serializ
 	}
 
 	public TermLoanParameterTemp() {
+		// Do nothing because of X and Y.
 	}
 
 	public ProductMasterTemp getFpProductId() {

@@ -33,10 +33,16 @@ public class IneligibleProposalDetails implements Serializable{
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="created_date")
     private Date createdDate;
+    
+    @Column(name="created_by")
+    private Long createdBy;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="modified_date")
     private Date modifiedDate;
+    
+    @Column(name="modified_by")
+    private Long modifiedBy;
 
     @Column(name="is_active")
     private Boolean isActive;
@@ -46,6 +52,12 @@ public class IneligibleProposalDetails implements Serializable{
     
     @Column(name="is_Disbursed")
     private Boolean isDisbursed;
+    
+    @Column(name="status")
+    private Integer status;
+    
+    @Column(name="reason")
+    private String reason;
 
     public Long getId() {
         return id;
@@ -126,5 +138,38 @@ public class IneligibleProposalDetails implements Serializable{
 	public void setIsDisbursed(Boolean isDisbursed) {
 		this.isDisbursed = isDisbursed;
 	}
+
+	public Long getCreatedBy() {
+		return createdBy;
+	}
+
+	public void setCreatedBy(Long createdBy) {
+		this.createdBy = createdBy;
+	}
+
+	public Long getModifiedBy() {
+		return modifiedBy;
+	}
+
+	public void setModifiedBy(Long modifiedBy) {
+		this.modifiedBy = modifiedBy;
+	}
+
+	public Integer getStatus() {
+		return status;
+	}
+
+	public void setStatus(Integer status) {
+		this.status = status;
+	}
+
+	public String getReason() {
+		return reason;
+	}
+
+	public void setReason(String reason) {
+		this.reason = reason;
+	}
     
+	
 }

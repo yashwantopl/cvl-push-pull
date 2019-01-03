@@ -81,15 +81,14 @@ public class CorporateCoApplicantServiceImpl implements CorporateCoApplicantServ
 			return true;
 
 		} catch (Exception e) {
-			logger.error("Error while Saving Retail Profile:-");
-			e.printStackTrace();
+			logger.error("Error while Saving Retail Profile:-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
 	public CorporateCoApplicantRequest get(Long userId, Long applicationId, Long id) throws Exception {
-		// TODO Auto-generated method stub
+
 		try {
 			CorporateCoApplicantDetail applicantDetail = coApplicantDetailRepository.get(applicationId, userId, id);
 			if (applicantDetail == null) {
@@ -105,15 +104,13 @@ public class CorporateCoApplicantServiceImpl implements CorporateCoApplicantServ
 			applicantRequest.setDetailsFilledCount(applicantDetail.getApplicationId().getDetailsFilledCount());
 			return applicantRequest;
 		} catch (Exception e) {
-			logger.error("Error while getting CoApplicant Retail Profile:-");
-			e.printStackTrace();
+			logger.error("Error while getting CoApplicant Retail Profile:-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
 	public List<CorporateCoApplicantRequest> getList(Long applicationId, Long userId) throws Exception {
-		// TODO Auto-generated method stub
 		try {
 			List<CorporateCoApplicantDetail> details = coApplicantDetailRepository.getList(applicationId, userId);
 			List<CorporateCoApplicantRequest> requests = new ArrayList<>(details.size());
@@ -125,34 +122,29 @@ public class CorporateCoApplicantServiceImpl implements CorporateCoApplicantServ
 			}
 			return requests;
 		} catch (Exception e) {
-			logger.error("Error while getting List of CoApplicant Retail Profile:-");
-			e.printStackTrace();
+			logger.error("Error while getting List of CoApplicant Retail Profile:-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
 	public List<Long> getCoAppIds(Long applicationId,Long userId) throws Exception {
-		// TODO Auto-generated method stub
 		try {
 			
 			//List<CorporateCoApplicantDetail> temp =coApplicantDetailRepository.getCoAppIdstmp(applicationId);
 			return coApplicantDetailRepository.getCoAppIds(applicationId);
 		} catch (Exception e) {
-			logger.error("Error while getCoAppIds:-");
-			e.printStackTrace();
+			logger.error("Error while getCoAppIds:-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
 	public Long getApplicantIdById(Long id) throws Exception {
-		// TODO Auto-generated method stub
 		try {
 			return coApplicantDetailRepository.getApplicantIdById(id);
 		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("Error While getting Applicant Id by CoApplicant ID");
+			logger.error("Error While getting Applicant Id by CoApplicant ID : ",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}

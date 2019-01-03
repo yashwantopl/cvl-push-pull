@@ -18,18 +18,14 @@ import com.capitaworld.service.loans.domain.fundprovider.GeographicalCountryDeta
 import com.capitaworld.service.loans.domain.fundprovider.GeographicalStateDetail;
 import com.capitaworld.service.loans.domain.fundprovider.NegativeIndustry;
 import com.capitaworld.service.loans.domain.fundprovider.UnsecureLoanParameter;
-import com.capitaworld.service.loans.domain.fundprovider.UnsecureLoanParameter;
 import com.capitaworld.service.loans.model.DataRequest;
-import com.capitaworld.service.loans.model.corporate.UnsecuredLoanParameterRequest;
 import com.capitaworld.service.loans.model.corporate.UnsecuredLoanParameterRequest;
 import com.capitaworld.service.loans.repository.fundprovider.GeographicalCityRepository;
 import com.capitaworld.service.loans.repository.fundprovider.GeographicalCountryRepository;
 import com.capitaworld.service.loans.repository.fundprovider.GeographicalStateRepository;
 import com.capitaworld.service.loans.repository.fundprovider.NegativeIndustryRepository;
-import com.capitaworld.service.loans.repository.fundprovider.TermLoanParameterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.UnsecuredLoanParameterRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
-import com.capitaworld.service.loans.service.fundprovider.TermLoanParameterService;
 import com.capitaworld.service.loans.service.fundprovider.UnsecuredLoanParameterService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
@@ -39,7 +35,11 @@ import com.capitaworld.service.oneform.model.OneFormResponse;
 @Service
 @Transactional
 public class UnsecuredLoanParameterServiceImpl implements UnsecuredLoanParameterService {
+
 	private static final Logger logger = LoggerFactory.getLogger(UnsecuredLoanParameterServiceImpl.class);
+
+	private static final String ERROR_WHILE_GET_TERM_LOAN_PARAMETER_REQUEST_MSG = "error while getTermLoanParameterRequest : ";
+
 	@Autowired
 	private UnsecuredLoanParameterRepository unsecuredLoanParameterRepository;
 	
@@ -64,7 +64,6 @@ public class UnsecuredLoanParameterServiceImpl implements UnsecuredLoanParameter
 	@Override
 	public boolean saveOrUpdate(UnsecuredLoanParameterRequest unsecuredLoanParameterRequest) {
 		CommonDocumentUtils.startHook(logger, "saveOrUpdate");
-		// TODO Auto-generated method stub
 		
 		UnsecureLoanParameter unsecureLoanParameter= null;
 
@@ -114,7 +113,6 @@ public class UnsecuredLoanParameterServiceImpl implements UnsecuredLoanParameter
 	@Override
 	public UnsecuredLoanParameterRequest getUnsecuredLoanParameterRequest(Long id) {
 		CommonDocumentUtils.startHook(logger, "getTermLoanParameterRequest");
-		// TODO Auto-generated method stub
 		UnsecuredLoanParameterRequest unsecuredLoanParameterRequest = new UnsecuredLoanParameterRequest();
 		UnsecureLoanParameter loanParameter = unsecuredLoanParameterRepository.getById(id);
 		if(loanParameter==null)
@@ -133,9 +131,7 @@ public class UnsecuredLoanParameterServiceImpl implements UnsecuredLoanParameter
 				OneFormResponse formResponse = oneFormClient.getIndustryById(industryList);
 				unsecuredLoanParameterRequest.setIndustrylist((List<DataRequest>)formResponse.getListData());
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				logger.error("error while getTermLoanParameterRequest",e);
-				e.printStackTrace();
+				logger.error(ERROR_WHILE_GET_TERM_LOAN_PARAMETER_REQUEST_MSG,e);
 			}
 		}
 		
@@ -149,9 +145,7 @@ public class UnsecuredLoanParameterServiceImpl implements UnsecuredLoanParameter
 			 
 			
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			logger.error("error while getTermLoanParameterRequest",e);
-			e.printStackTrace();
+			logger.error(ERROR_WHILE_GET_TERM_LOAN_PARAMETER_REQUEST_MSG,e);
 		}
 		}
 
@@ -164,9 +158,7 @@ public class UnsecuredLoanParameterServiceImpl implements UnsecuredLoanParameter
 			 
 			
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			logger.error("error while getTermLoanParameterRequest",e);
-			e.printStackTrace();
+			logger.error(ERROR_WHILE_GET_TERM_LOAN_PARAMETER_REQUEST_MSG,e);
 		}
 		}
 		
@@ -180,9 +172,7 @@ public class UnsecuredLoanParameterServiceImpl implements UnsecuredLoanParameter
 			 
 			
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			logger.error("error while getTermLoanParameterRequest",e);
-			e.printStackTrace();
+			logger.error(ERROR_WHILE_GET_TERM_LOAN_PARAMETER_REQUEST_MSG,e);
 		}
 		}
 		
@@ -196,9 +186,7 @@ public class UnsecuredLoanParameterServiceImpl implements UnsecuredLoanParameter
 			 
 			
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			logger.error("error while getTermLoanParameterRequest",e);
-			e.printStackTrace();
+			logger.error(ERROR_WHILE_GET_TERM_LOAN_PARAMETER_REQUEST_MSG,e);
 		}
 		}
 		
@@ -210,9 +198,7 @@ public class UnsecuredLoanParameterServiceImpl implements UnsecuredLoanParameter
 				OneFormResponse formResponse = oneFormClient.getIndustryById(negativeIndustryList);
 				unsecuredLoanParameterRequest.setNegativeIndustryList((List<DataRequest>)formResponse.getListData());
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				logger.error("error while getTermLoanParameterRequest",e);
-				e.printStackTrace();
+				logger.error(ERROR_WHILE_GET_TERM_LOAN_PARAMETER_REQUEST_MSG,e);
 			}
 		}
 		CommonDocumentUtils.endHook(logger, "getTermLoanParameterRequest");
@@ -311,7 +297,6 @@ public class UnsecuredLoanParameterServiceImpl implements UnsecuredLoanParameter
 	}
 
 	private void saveNegativeIndustry(UnsecuredLoanParameterRequest unsecuredLoanParameterRequest) {
-		// TODO Auto-generated method stub
 		CommonDocumentUtils.startHook(logger, "saveNegativeIndustry");
 		NegativeIndustry negativeIndustry= null;
 		for (DataRequest dataRequest : unsecuredLoanParameterRequest.getNegativeIndustryList()) {

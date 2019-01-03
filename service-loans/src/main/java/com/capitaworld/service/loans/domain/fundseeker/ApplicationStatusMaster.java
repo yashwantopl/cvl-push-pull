@@ -49,6 +49,7 @@ public class ApplicationStatusMaster implements Serializable {
 	private String status;
 
 	public ApplicationStatusMaster() {
+		// Do nothing because of X and Y.
 	}
 
 	public ApplicationStatusMaster(Long id) {

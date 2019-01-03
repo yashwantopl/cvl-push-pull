@@ -1,19 +1,14 @@
+
 package com.capitaworld.service.loans.service.fundprovider.impl;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
-import javax.persistence.Persistence;
-import javax.persistence.PersistenceContext;
 
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
@@ -95,8 +90,8 @@ import com.capitaworld.service.loans.service.fundprovider.WcTlParameterService;
 import com.capitaworld.service.loans.service.fundprovider.WorkingCapitalParameterService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
-import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.loans.utils.CommonUtils.UserMainType;
+import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.matchengine.ProposalDetailsClient;
 import com.capitaworld.service.matchengine.exception.MatchException;
 import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
@@ -105,6 +100,7 @@ import com.capitaworld.service.oneform.enums.LoanType;
 import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
 import com.capitaworld.service.users.client.UsersClient;
+import com.capitaworld.service.users.model.BranchBasicDetailsRequest;
 import com.capitaworld.service.users.model.UserResponse;
 import com.capitaworld.service.users.model.UsersRequest;
 
@@ -112,6 +108,16 @@ import com.capitaworld.service.users.model.UsersRequest;
 @Transactional
 public class ProductMasterServiceImpl implements ProductMasterService {
 	private static final Logger logger = LoggerFactory.getLogger(ProductMasterServiceImpl.class);
+
+	private static final String STATUS_LITERAL = "status";
+	private static final String MESSAGE_LITERAL = "message";
+	private static final String GET_USER_NAME_BY_APPLICATION_ID = "getUserNameByApplicationId";
+	private static final String IS_PRODUCT_MATCHED = "isProductMatched";
+	private static final String SAVE_CORPORATE = "saveCorporate";
+	private static final String SAVE_RETAIL = "saveRetail";
+	private static final String SAVE_CORPORATE_IN_TEMP = "saveCorporateInTemp";
+	private static final String SAVE_RETAIL_IN_TEMP = "saveRetailInTemp";
+
 	@Autowired
 	private OneFormClient oneFormClient;
 
@@ -395,31 +401,31 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				industrySectorTempRepository.inActiveMappingByFpProductId(productMaster2.getId());
 				// industry data save
 				if(!CommonUtils.isListNullOrEmpty(industrySecIdList))
-				saveIndustryTemp(productMaster2.getId(),industrySecIdList,(CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
+					saveIndustryTemp(productMaster2.getId(),industrySecIdList,(CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
 						? addProductRequest.getUserId() : addProductRequest.getClientId()));
 				// Sector data save
 				if(!CommonUtils.isListNullOrEmpty(secIdList))
-				saveSectorTemp(productMaster2.getId(),secIdList,(CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
+					saveSectorTemp(productMaster2.getId(),secIdList,(CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
 						? addProductRequest.getUserId() : addProductRequest.getClientId()));
 				geographicalCountryTempRepository.inActiveMappingByFpProductId(productMaster2.getId());
 				// country data save
 				if(!CommonUtils.isListNullOrEmpty(geogaphicallyCountry))
-				saveCountryTemp(productMaster2.getId(),geogaphicallyCountry,(CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
+					saveCountryTemp(productMaster2.getId(),geogaphicallyCountry,(CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
 						? addProductRequest.getUserId() : addProductRequest.getClientId()));
 				// state data save
 				geographicalStateTempRepository.inActiveMappingByFpProductId(productMaster2.getId());
 				if(!CommonUtils.isListNullOrEmpty(geogaphicallyState))
-				saveStateTemp(productMaster2.getId(),geogaphicallyState,(CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
+					saveStateTemp(productMaster2.getId(),geogaphicallyState,(CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
 						? addProductRequest.getUserId() : addProductRequest.getClientId()));
 				// city data save
 				geographicalCityTempRepository.inActiveMappingByFpProductId(productMaster2.getId());
 				if(!CommonUtils.isListNullOrEmpty(geogaphicallyCity))
-				saveCityTemp(productMaster2.getId(),geogaphicallyCity,(CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
+					saveCityTemp(productMaster2.getId(),geogaphicallyCity,(CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
 						? addProductRequest.getUserId() : addProductRequest.getClientId()));
 				// negative industry save
 				negativeIndustryTempRepository.inActiveMappingByFpProductMasterId(productMaster2.getId());
 				if(!CommonUtils.isListNullOrEmpty(negativeIndList))
-				saveNegativeIndustryTemp(productMaster2.getId(),negativeIndList,(CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
+					saveNegativeIndustryTemp(productMaster2.getId(),negativeIndList,(CommonUtils.isObjectNullOrEmpty(addProductRequest.getClientId())
 						? addProductRequest.getUserId() : addProductRequest.getClientId()));
 				
 				
@@ -449,14 +455,12 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 		}
 
 		catch (Exception e) {
-			e.printStackTrace();
-			logger.error("error while saveOrUpdate", e);
+			logger.error("error while saveOrUpdate : ", e);
 			return false;
 		}
 	}
 
 	private void saveNegativeIndustryTemp(Long id, List<DataRequest> negativeIndList,Long userId) {
-		// TODO Auto-generated method stub
 		CommonDocumentUtils.startHook(logger, "saveNegativeIndustryTemp");
 		NegativeIndustryTemp negativeIndustry = null;
 		for (DataRequest dataRequest : negativeIndList) {
@@ -475,7 +479,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	}
 
 	private void saveCityTemp(Long id, List<DataRequest> geogaphicallyCity,Long userId) {
-		// TODO Auto-generated method stub
+
 		logger.info("start saveCity");
 		GeographicalCityDetailTemp geographicalCityDetail = null;
 		//List<GeographicalCityDetailTemp> geographicalCityDetailTemps=new ArrayList<>(geogaphicallyCity.size()); 
@@ -535,7 +539,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	}
 
 	private void saveCountryTemp(Long id, List<DataRequest> geogaphicallyCountry,Long userId) {
-		// TODO Auto-generated method stub
+
 		logger.info("save saveCountryTemp");
 		GeographicalCountryDetailTemp geographicalCountryDetail = null;
 		for (DataRequest dataRequest : geogaphicallyCountry) {
@@ -555,7 +559,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	}
 
 	private void saveSectorTemp(Long id, List<DataRequest> secIdList,Long userId) {
-		// TODO Auto-generated method stub
+
 		logger.info("start saveSectorTemp");
 		IndustrySectorDetailTemp industrySectorDetail = null;
 		for (DataRequest dataRequest : secIdList) {
@@ -575,7 +579,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	}
 
 	private void saveIndustryTemp(Long id, List<DataRequest> industrySecIdList,Long userId) {
-		// TODO Auto-generated method stub
+
 		logger.info("start saveIndustryTemp");
 		IndustrySectorDetailTemp industrySectorDetail = null;
 		for (DataRequest dataRequest : industrySecIdList) {
@@ -595,52 +599,49 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	}
 
 	private void saveSectorTemp(List<DataRequest> secIdList,Long userId) {
-		// TODO Auto-generated method stub
+		// Do nothing because of X and Y.
 		
 	}
 
 	private void saveIndustryTemp(List<DataRequest> industrySecIdList,Long userId) {
-		// TODO Auto-generated method stub
+		// Do nothing because of X and Y.
 		
 	}
 
 	@Override
 	public ProductMaster getProductMaster(Long id) {
-		// TODO Auto-generated method stub
 		return productMasterRepository.findOne(id);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public JSONObject checkParameterIsFilled(Long productId) {
-		// TODO Auto-generated method stub
 		CommonDocumentUtils.startHook(logger, "checkParameterIsFilled");
 		ProductMaster productMaster = productMasterRepository.findOne(productId);
 		JSONObject obj = new JSONObject();
 		if (CommonUtils.isObjectNullOrEmpty(productMaster)) {
-			obj.put("status", false);
-			obj.put("message", "Product id is not valid");
+			obj.put(STATUS_LITERAL, false);
+			obj.put(MESSAGE_LITERAL, "Product id is not valid");
 			return obj;
 		}
 		if (!productMaster.getIsActive()) {
-			obj.put("status", false);
-			obj.put("message", "Requested User is In Active");
+			obj.put(STATUS_LITERAL, false);
+			obj.put(MESSAGE_LITERAL, "Requested User is In Active");
 			return obj;
 		}
 		if (!productMaster.getIsParameterFilled()) {
-			obj.put("status", false);
-			obj.put("message", "Requested user has not filled parameter yet");
+			obj.put(STATUS_LITERAL, false);
+			obj.put(MESSAGE_LITERAL, "Requested user has not filled parameter yet");
 			return obj;
 		}
-		obj.put("status", true);
-		obj.put("message", "Show teaser view");
+		obj.put(STATUS_LITERAL, true);
+		obj.put(MESSAGE_LITERAL, "Show teaser view");
 		CommonDocumentUtils.endHook(logger, "checkParameterIsFilled");
 		return obj;
 	}
 
 	@Override
 	public List<ProductMasterRequest> getList(Long userId, Long userOrgId) {
-		// TODO Auto-generated method stub
 		CommonDocumentUtils.startHook(logger, "getList");
 		List<ProductMaster> results;
 		if (!CommonUtils.isObjectNullOrEmpty(userOrgId)) {
@@ -661,8 +662,19 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	
 	@Override
 	public List<ProductMasterRequest> getActiveInActiveList(Long userId, Long userOrgId) {
-		// TODO Auto-generated method stub
 		CommonDocumentUtils.startHook(logger, "getActiveInActiveList");
+		UserResponse userResponse=null;
+		BranchBasicDetailsRequest basicDetailsRequest = null;
+		try {
+			UsersRequest usersRequest = new UsersRequest();
+			usersRequest.setId(userId);
+			logger.info("Current user id ---------------------------------------------------> " + userId);
+			userResponse = usersClient.getBranchDetailsBYUserId(usersRequest);
+			basicDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap(
+					(LinkedHashMap<String, Object>) userResponse.getData(), BranchBasicDetailsRequest.class);
+		} catch (Exception e) {
+			logger.error("Throw Exception While Get Branch Id from UserId : ",e);
+		}
 		List<ProductMaster> results;
 		if (!CommonUtils.isObjectNullOrEmpty(userOrgId)) {
 			results = productMasterRepository.getUserProductActiveInActiveListByOrgId(userOrgId);
@@ -678,7 +690,25 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 			BeanUtils.copyProperties(master, request);
 //			request.setIsMatched(productMasterRepository.getMatchedAndActiveInActiveProduct(userId).size() > 0 ? true : false);
 			request.setIsMatched(matchCount > 0 ? true : false);
-			request.setProposalCount(proposalDetailsRepository.getProposalCountByUserIdAndFpProductId(master.getId(), userId));
+			Long count = null;
+			if(basicDetailsRequest != null){
+				if (basicDetailsRequest.getRoleId() == CommonUtils.UsersRoles.BO || basicDetailsRequest.getRoleId() == CommonUtils.UsersRoles.FP_CHECKER) {
+					count = proposalDetailsRepository.getProposalCountByFpProductIdAndBranchId(master.getId(), basicDetailsRequest.getId());
+				}else if (basicDetailsRequest.getRoleId() == CommonUtils.UsersRoles.HO) {
+					count = proposalDetailsRepository.getProposalCountByFpProductId(master.getId());
+				}
+				else if (basicDetailsRequest.getRoleId() == CommonUtils.UsersRoles.SMECC) // Hiren
+				{
+					count = proposalDetailsRepository.getProposalCountByFpProductIdAndBranchId(master.getId(),userResponse.getBranchList());
+				}
+				/*else {
+					logger.info("Branch Id Can't found,set by assignee");
+					count = proposalDetailsRepository.countProposalListOfFundProviderByAssignId(master.getId(), userId);
+				}*/
+			}else{
+				count = proposalDetailsRepository.getProposalCountByFpProductId(master.getId());
+			}
+			request.setProposalCount(count);
 			requests.add(request);
 		}
 		CommonDocumentUtils.endHook(logger, "getActiveInActiveList");
@@ -687,20 +717,18 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 
 	@Override
 	public String getUserNameByApplicationId(Long productId, Long userId) {
-		// TODO Auto-generated method stub
-		CommonDocumentUtils.startHook(logger, "getUserNameByApplicationId");
+		CommonDocumentUtils.startHook(logger, GET_USER_NAME_BY_APPLICATION_ID);
 		ProductMaster productMaster = productMasterRepository.getUserProduct(productId, userId);
 		if (productMaster != null) {
-			CommonDocumentUtils.endHook(logger, "getUserNameByApplicationId");
+			CommonDocumentUtils.endHook(logger, GET_USER_NAME_BY_APPLICATION_ID);
 			return productMaster.getFpName();
 		}
-		CommonDocumentUtils.endHook(logger, "getUserNameByApplicationId");
+		CommonDocumentUtils.endHook(logger, GET_USER_NAME_BY_APPLICATION_ID);
 		return null;
 	}
 
 	@Override
 	public Object[] getUserDetailsByPrductId(Long fpMappingId) {
-		// TODO Auto-generated method stub
 		CommonDocumentUtils.startHook(logger, "getUserDetailsByPrductId");
 		List<Object[]> pm = productMasterRepository.findById(fpMappingId);
 		CommonDocumentUtils.endHook(logger, "getUserDetailsByPrductId");
@@ -716,7 +744,6 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 
 	@Override
 	public ProductDetailsResponse getProductDetailsResponse(Long userId, Long userOrgId) {
-		// TODO Auto-generated method stub
 		CommonDocumentUtils.startHook(logger, "getProductDetailsResponse");
 		UserResponse usrResponse = usersClient.getLastAccessApplicant(new UsersRequest(userId));
 		ProductDetailsResponse productDetailsResponse = new ProductDetailsResponse();
@@ -769,7 +796,6 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 
 	@Override
 	public FpProductDetails getProductDetails(Long productMappingId) throws Exception {
-		// TODO Auto-generated method stub
 		CommonDocumentUtils.startHook(logger, "getProductDetails");
 		ProductMaster productMaster = productMasterRepository.findOne(productMappingId);
 		LoanType loanType = LoanType.getById(productMaster.getProductId());
@@ -834,8 +860,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 
 	@Override
 	public boolean isProductMatched(Long userId, MultipleFpPruductRequest multipleFpPruductRequest) throws IOException {
-		// TODO Auto-generated method stub
-		CommonDocumentUtils.startHook(logger, "isProductMatched");
+		CommonDocumentUtils.startHook(logger, IS_PRODUCT_MATCHED);
 		List<ProductDetailsForSp> productDetailsForSps = productMasterRepository.getMatchedAndActiveProduct(userId);
 		if (CommonUtils.isListNullOrEmpty(productDetailsForSps)) {
 			return false;
@@ -846,25 +871,22 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 						.getObjectFromMap(obj, ProductMasterRequest.class);
 
 				ProductMaster master = productMasterRepository.findOne(productMasterRequest.getId());
-				if (!CommonUtils.isObjectNullOrEmpty(master)) {
+				if (!CommonUtils.isObjectNullOrEmpty(master) && !productMasterRequest.getProductId().toString()
+						.equals(productDetailsForSps.get(0).getProductId().toString())) {
 					// if(master.getId())
-					if (!productMasterRequest.getProductId().toString()
-							.equals(productDetailsForSps.get(0).getProductId().toString())) {
-						CommonDocumentUtils.endHook(logger, "isProductMatched");
+						CommonDocumentUtils.endHook(logger, IS_PRODUCT_MATCHED);
 						return true;
-					}
 				}
 			}
 
 		}
-		CommonDocumentUtils.endHook(logger, "isProductMatched");
+		CommonDocumentUtils.endHook(logger, IS_PRODUCT_MATCHED);
 		return false;
 	}
 
 	@Override
 	public int setIsMatchProduct(Long id, Long userId) {
 		CommonDocumentUtils.startHook(logger, "setIsMatchProduct");
-		// TODO Auto-generated method stub
 		CommonDocumentUtils.endHook(logger, "setIsMatchProduct");
 		return productMasterRepository.setIsMatchProduct(id, userId);
 
@@ -872,7 +894,6 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 
 	@Override
 	public List<ProductMasterRequest> getListByUserType(Long userId, Integer userType, Integer stage, Long userOrgId) {
-		// TODO Auto-generated method stub
 		CommonDocumentUtils.startHook(logger, "getListByUserType");
 		List<ProductMasterRequest> productMasterRequests = new ArrayList<>();
 
@@ -927,7 +948,6 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				 * ())); } } }
 				 */
 				for (ProductMasterTemp productMaster : results) {
-					//System.out.println("ProductMasterTemp id: "+productMaster.getId()+" jobid : " + productMaster.getActiveInactiveJobId());
 					ProductMasterRequest productMasterRequest = new ProductMasterRequest();
 					BeanUtils.copyProperties(productMaster, productMasterRequest);
 					productMasterRequests.add(productMasterRequest);
@@ -979,7 +999,6 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				 */
 			}
 			for (ProductMaster productMaster : results) {
-				//System.out.println("ProductMaster is copied is" + productMaster.getActiveInactiveJobId());
 				ProductMasterRequest productMasterRequest = new ProductMasterRequest();
 				BeanUtils.copyProperties(productMaster, productMasterRequest);
 				productMasterRequests.add(productMasterRequest);
@@ -1000,7 +1019,6 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 
 	@Override
 	public Boolean changeStatus(Long fpProductId, Boolean status, Long userId, Integer stage) {
-		// TODO Auto-generated method stub
 		CommonDocumentUtils.startHook(logger, "changeStatus");
 		try {
 			if (stage == 2) {
@@ -1010,9 +1028,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 			}
 			return true;
 		} catch (Exception e) {
-			// TODO: handle exception
-			e.printStackTrace();
-			logger.error("error while changeStatus", e);
+			logger.error("error while changeStatus : ", e);
 		}
 		CommonDocumentUtils.endHook(logger, "changeStatus");
 		return null;
@@ -1020,58 +1036,49 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 
 	@Override
 	public Boolean saveCorporate(CorporateProduct corporateProduct) {
-		// TODO Auto-generated method stub
-		CommonDocumentUtils.startHook(logger, "saveCorporate");
-		if (!CommonUtils.isObjectNullOrEmpty(corporateProduct)) {
-			if (!CommonUtils.isObjectNullOrEmpty(corporateProduct.getProductId())) {
+		CommonDocumentUtils.startHook(logger, SAVE_CORPORATE);
+		if (!CommonUtils.isObjectNullOrEmpty(corporateProduct) && !CommonUtils.isObjectNullOrEmpty(corporateProduct.getProductId()) ) {
 				if (corporateProduct.getProductId() == CommonUtils.LoanType.WORKING_CAPITAL.getValue()) {
 					WorkingCapitalParameterRequest capitalParameterRequest = new WorkingCapitalParameterRequest();
 					BeanUtils.copyProperties(corporateProduct, capitalParameterRequest);
-					CommonDocumentUtils.endHook(logger, "saveCorporate");
+					CommonDocumentUtils.endHook(logger, SAVE_CORPORATE);
 					return workingCapitalParameterService.saveOrUpdate(capitalParameterRequest, null);
 				} else if (corporateProduct.getProductId() == CommonUtils.LoanType.TERM_LOAN.getValue()) {
 					TermLoanParameterRequest loanParameterRequest = new TermLoanParameterRequest();
 					BeanUtils.copyProperties(corporateProduct, loanParameterRequest);
-					CommonDocumentUtils.endHook(logger, "saveCorporate");
+					CommonDocumentUtils.endHook(logger, SAVE_CORPORATE);
 					return termLoanParameterService.saveOrUpdate(loanParameterRequest, null);
 				} else if (corporateProduct.getProductId() == CommonUtils.LoanType.UNSECURED_LOAN.getValue()) {
 					UnsecuredLoanParameterRequest unsecuredLoanParameterRequest = new UnsecuredLoanParameterRequest();
 					BeanUtils.copyProperties(corporateProduct, unsecuredLoanParameterRequest);
-					CommonDocumentUtils.endHook(logger, "saveCorporate");
+					CommonDocumentUtils.endHook(logger, SAVE_CORPORATE);
 					return unsecuredLoanParameterService.saveOrUpdate(unsecuredLoanParameterRequest);
 				} else if (corporateProduct.getProductId() == CommonUtils.LoanType.WCTL_LOAN.getValue()) {
 					WcTlParameterRequest wcTlParameterRequest = new WcTlParameterRequest();
 					BeanUtils.copyProperties(corporateProduct, wcTlParameterRequest);
-					CommonDocumentUtils.endHook(logger, "saveCorporate");
+					CommonDocumentUtils.endHook(logger, SAVE_CORPORATE);
 					return wcTlParameterService.saveOrUpdate(wcTlParameterRequest, null);
 				}
-			}
 		}
-		CommonDocumentUtils.endHook(logger, "saveCorporate");
+		CommonDocumentUtils.endHook(logger, SAVE_CORPORATE);
 		return false;
 	}
 
 	@Override
 	public Boolean saveRetail(RetailProduct retailProduct) {
-		// TODO Auto-generated method stub
-		CommonDocumentUtils.startHook(logger, "saveRetail");
-		if (!CommonUtils.isObjectNullOrEmpty(retailProduct)) {
-			if (!CommonUtils.isObjectNullOrEmpty(retailProduct.getProductId())) {
-				 if (retailProduct.getProductId() == CommonUtils.LoanType.PERSONAL_LOAN.getValue()) {
+		CommonDocumentUtils.startHook(logger, SAVE_RETAIL);
+		if (!CommonUtils.isObjectNullOrEmpty(retailProduct) && !CommonUtils.isObjectNullOrEmpty(retailProduct.getProductId()) && retailProduct.getProductId() == CommonUtils.LoanType.PERSONAL_LOAN.getValue() ) {
 					PersonalLoanParameterRequest personalLoanParameterRequest = new PersonalLoanParameterRequest();
 					BeanUtils.copyProperties(retailProduct, personalLoanParameterRequest);
-					CommonDocumentUtils.endHook(logger, "saveRetail");
+					CommonDocumentUtils.endHook(logger, SAVE_RETAIL);
 					return personalLoanParameterService.saveOrUpdate(personalLoanParameterRequest,null);
-				}
-			}
 		}
-		CommonDocumentUtils.endHook(logger, "saveRetail");
+		CommonDocumentUtils.endHook(logger, SAVE_RETAIL);
 		return false;
 	}
 
 	@Override
 	public ProductMasterRequest lastAccessedProduct(Long userId) {
-		// TODO Auto-generated method stub
 		CommonDocumentUtils.startHook(logger, "lastAccessedProduct");
 		ProductMasterRequest productMasterRequest = new ProductMasterRequest();
 		BeanUtils.copyProperties(productMasterRepository.getLastAccessedProduct(userId), productMasterRequest);
@@ -1081,7 +1088,6 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 
 	@Override
 	public List<ChatDetails> getChatListByFpMappingId(Long mappingId) {
-		// TODO Auto-generated method stub
 		ProposalMappingRequest mappingRequest = new ProposalMappingRequest();
 		mappingRequest.setApplicationId(mappingId);
 		try {
@@ -1109,35 +1115,30 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 						documentRequest.setUserDocumentMappingId(DocumentAlias.FUND_PROVIDER_PROFIEL_PICTURE);
 						try {
 							DocumentResponse documentResponse = dmsClient.listUserDocument(documentRequest);
-							if (!CommonUtils.isObjectNullOrEmpty(documentResponse)) {
-								if (!CommonUtils.isListNullOrEmpty(documentResponse.getDataList())) {
+							if (!CommonUtils.isObjectNullOrEmpty(documentResponse) && !CommonUtils.isListNullOrEmpty(documentResponse.getDataList()) ) {
 									StorageDetailsResponse storageDetailsResponse = MultipleJSONObjectHelper
 											.getObjectFromMap((LinkedHashMap<String, Object>) documentResponse
 													.getDataList().get(0), StorageDetailsResponse.class);
 									if (!CommonUtils.isObjectNullOrEmpty(storageDetailsResponse)) {
 										chatDetails.setProfile(storageDetailsResponse.getFilePath());
 									}
-								}
 							}
 						} catch (DocumentException e) {
-							e.printStackTrace();
+							logger.error(CommonUtils.EXCEPTION,e);
 							throw new DocumentException(e.getMessage());
 						}
 
 						chatDetailList.add(chatDetails);
 					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						logger.error(CommonUtils.EXCEPTION,e);
 					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						logger.error(CommonUtils.EXCEPTION,e);
 					}
 				}
 				return chatDetailList;
 			}
 		} catch (MatchException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		return null;
 	}
@@ -1175,7 +1176,6 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 
 	@Override
 	public Object getProductMasterWithAllData(Long id, Integer stage, Long role, Long userId) {
-		// TODO Auto-generated method stub
 
 		if (!CommonUtils.isObjectNullOrEmpty(stage) && stage == 1) {
 			ProductMasterTemp master = productMasterTempRepository.findOne(id);
@@ -1232,17 +1232,15 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 
 	@Override
 	public Boolean saveCorporateMasterFromTemp(Long mappingId) throws Exception {
-		// TODO Auto-generated method stub
 
 		ProductMasterTemp corporateProduct = productMasterTempRepository.getProductMasterTemp(mappingId);
-		CommonDocumentUtils.startHook(logger, "saveCorporate");
-		if (!CommonUtils.isObjectNullOrEmpty(corporateProduct)) {
-			if (!CommonUtils.isObjectNullOrEmpty(corporateProduct.getProductId())) {
+		CommonDocumentUtils.startHook(logger, SAVE_CORPORATE);
+		if (!CommonUtils.isObjectNullOrEmpty(corporateProduct) && !CommonUtils.isObjectNullOrEmpty(corporateProduct.getProductId()) ) {
 				if (corporateProduct.getProductId() == CommonUtils.LoanType.WORKING_CAPITAL.getValue()) {
-					CommonDocumentUtils.endHook(logger, "saveCorporate");
+					CommonDocumentUtils.endHook(logger, SAVE_CORPORATE);
 					return workingCapitalParameterService.saveMasterFromTempWc(mappingId);
 				} else if (corporateProduct.getProductId() == CommonUtils.LoanType.TERM_LOAN.getValue()) {
-					CommonDocumentUtils.endHook(logger, "saveCorporate");
+					CommonDocumentUtils.endHook(logger, SAVE_CORPORATE);
 					if (corporateProduct.getBusinessTypeId() != null && corporateProduct.getBusinessTypeId() == 2) {
 						return termLoanParameterService.saveMasterFromNtbTempTl(mappingId);
 					} else {
@@ -1250,58 +1248,55 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 					}
 
 				} else if (corporateProduct.getProductId() == CommonUtils.LoanType.WCTL_LOAN.getValue()) {
-					CommonDocumentUtils.endHook(logger, "saveCorporate");
+					CommonDocumentUtils.endHook(logger, SAVE_CORPORATE);
 					return wcTlParameterService.saveMasterFromTempWcTl(mappingId);
 				}
 				 else if (corporateProduct.getProductId() == CommonUtils.LoanType.PERSONAL_LOAN.getValue()) {
-						CommonDocumentUtils.endHook(logger, "saveCorporate");
+						CommonDocumentUtils.endHook(logger, SAVE_CORPORATE);
 						return personalLoanParameterService.saveMasterFromTempPl(mappingId);
 					}
-			}
 		}
-		CommonDocumentUtils.endHook(logger, "saveCorporate");
+		CommonDocumentUtils.endHook(logger, SAVE_CORPORATE);
 		return false;
 	}
 
 	@Override
 	public Boolean saveCorporateInTemp(CorporateProduct corporateProduct) {
-		// TODO Auto-generated method stub
-		CommonDocumentUtils.startHook(logger, "saveCorporateInTemp");
-		if (!CommonUtils.isObjectNullOrEmpty(corporateProduct)) {
-			if (!CommonUtils.isObjectNullOrEmpty(corporateProduct.getProductId())) {
+
+		CommonDocumentUtils.startHook(logger, SAVE_CORPORATE_IN_TEMP);
+		if (!CommonUtils.isObjectNullOrEmpty(corporateProduct) && !CommonUtils.isObjectNullOrEmpty(corporateProduct.getProductId()) ) {
 				if (corporateProduct.getProductId() == CommonUtils.LoanType.WORKING_CAPITAL.getValue()) {
 					WorkingCapitalParameterRequest capitalParameterRequest = new WorkingCapitalParameterRequest();
 					BeanUtils.copyProperties(corporateProduct, capitalParameterRequest);
-					CommonDocumentUtils.endHook(logger, "saveCorporateInTemp");
+					CommonDocumentUtils.endHook(logger, SAVE_CORPORATE_IN_TEMP);
 					return workingCapitalParameterService.saveOrUpdateTemp(capitalParameterRequest);
 				} else if (corporateProduct.getProductId() == CommonUtils.LoanType.TERM_LOAN.getValue()) {
 					if (corporateProduct.getBusinessTypeId() != null && corporateProduct.getBusinessTypeId() == 2) {
 						TermLoanParameterRequest loanParameterRequest = new TermLoanParameterRequest();
 						BeanUtils.copyProperties(corporateProduct, loanParameterRequest);
-						CommonDocumentUtils.endHook(logger, "saveCorporateInTemp");
+						CommonDocumentUtils.endHook(logger, SAVE_CORPORATE_IN_TEMP);
 						return termLoanParameterService.saveOrUpdateNtbTemp(loanParameterRequest);
 					} else {
 						TermLoanParameterRequest loanParameterRequest = new TermLoanParameterRequest();
 						BeanUtils.copyProperties(corporateProduct, loanParameterRequest);
-						CommonDocumentUtils.endHook(logger, "saveCorporateInTemp");
+						CommonDocumentUtils.endHook(logger, SAVE_CORPORATE_IN_TEMP);
 						return termLoanParameterService.saveOrUpdateTemp(loanParameterRequest);
 					}
 
 				} else if (corporateProduct.getProductId() == CommonUtils.LoanType.WCTL_LOAN.getValue()) {
 					WcTlParameterRequest wcTlParameterRequest = new WcTlParameterRequest();
 					BeanUtils.copyProperties(corporateProduct, wcTlParameterRequest);
-					CommonDocumentUtils.endHook(logger, "saveCorporateInTemp");
+					CommonDocumentUtils.endHook(logger, SAVE_CORPORATE_IN_TEMP);
 					return wcTlParameterService.saveOrUpdateTemp(wcTlParameterRequest);
 				}
-			}
 		}
-		CommonDocumentUtils.endHook(logger, "saveCorporate");
+		CommonDocumentUtils.endHook(logger, SAVE_CORPORATE);
 		return false;
 	}
 
 	@Override
 	public Boolean clickOnWorkFlowButton(WorkflowData workflowData) {
-		// TODO Auto-generated method stub
+
 		try {
 
 			WorkflowRequest request = new WorkflowRequest();
@@ -1335,8 +1330,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 								fpAsyncComponent.sendEmailToCheckerWhenAdminMakerResendProductForApproval(productMasterTemp,workflowData.getUserId(),productType);	
 							}
 							catch(Exception e) {
-								logger.info("Exception occured while sending mail to Checker when Admin Maker resend product for Approval");
-								e.printStackTrace();
+								logger.error("Exception occured while sending mail to Checker when Admin Maker resend product for Approval : ",e);
 							}
 						}
 						else if(productStatus == CommonUtils.Status.OPEN){
@@ -1345,8 +1339,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 								fpAsyncComponent.sendEmailToCheckerWhenAdminMakerSendProductForApproval(productMasterTemp,workflowData.getUserId(),productType);	
 							}
 							catch(Exception e) {
-								logger.info("Exception occured while sending mail to Checker when Admin Maker send product for Approval");
-								e.printStackTrace();
+								logger.error("Exception occured while sending mail to Checker when Admin Maker send product for Approval : ",e);
 							}
 						}
 						
@@ -1368,8 +1361,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 								fpAsyncComponent.sendEmailToMakerWhenAdminCheckerApprovedProduct(productMasterTemp,workflowData.getUserId(),productType);	
 							}
 							catch(Exception e) {
-								logger.info("Exception occured while sending mail to Maker when Admin Checker Approved Product");
-								e.printStackTrace();
+								logger.error("Exception occured while sending mail to Maker when Admin Checker Approved Product : ",e);
 							}
 						}
 						return true;
@@ -1385,8 +1377,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 							fpAsyncComponent.sendEmailToMakerWhenAdminCheckerRevertedProduct(productMasterTemp,workflowData.getUserId(),productType);	
 						}
 						catch(Exception e) {
-							logger.info("Exception occured while sending mail to Maker when Admin Checker reverted Product");
-							e.printStackTrace();
+							logger.error("Exception occured while sending mail to Maker when Admin Checker reverted Product : ",e);
 						}
 					}
 					return true;
@@ -1399,32 +1390,28 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 			}
 			return false;
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 			return false;
 		}
 	}
 
 	@Override
 	public Boolean saveRetailInTemp(RetailProduct retailProduct) {
-		// TODO Auto-generated method stub
-		CommonDocumentUtils.startHook(logger, "saveRetailInTemp");
-		if (!CommonUtils.isObjectNullOrEmpty(retailProduct)) {
-			if (!CommonUtils.isObjectNullOrEmpty(retailProduct.getProductId())) {
-				if (retailProduct.getProductId() == CommonUtils.LoanType.PERSONAL_LOAN.getValue()) {
+
+		CommonDocumentUtils.startHook(logger, SAVE_RETAIL_IN_TEMP);
+		if (!CommonUtils.isObjectNullOrEmpty(retailProduct) && !CommonUtils.isObjectNullOrEmpty(retailProduct.getProductId()) && retailProduct.getProductId() == CommonUtils.LoanType.PERSONAL_LOAN.getValue() ) {
 					PersonalLoanParameterRequest personalLoanParameterRequest= new PersonalLoanParameterRequest();
 					BeanUtils.copyProperties(retailProduct, personalLoanParameterRequest);
-					CommonDocumentUtils.endHook(logger, "saveRetailInTemp");
+					CommonDocumentUtils.endHook(logger, SAVE_RETAIL_IN_TEMP);
 					return personalLoanParameterService.saveOrUpdateTemp(personalLoanParameterRequest);
-				} 
-			}
 		}
-		CommonDocumentUtils.endHook(logger, "saveRetailInTemp");
+		CommonDocumentUtils.endHook(logger, SAVE_RETAIL_IN_TEMP);
 		return false;
 	}
 
 	@Override
 	public List<ProductMasterRequest> getApprovedListByProductType(Long userId, Integer productId, Integer businessId,Long userOrgId) {
-		// TODO Auto-generated method stub
+
 		List<ProductMaster> results = null;
 		List<ProductMasterRequest> productMasterRequests = new ArrayList<>();
 		
@@ -1470,11 +1457,8 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				continue;
 				
 			
-			if (!CommonUtils.isObjectNullOrEmpty(businessId) && productMaster.getProductId()==2 && !CommonUtils.isObjectNullOrEmpty(productMaster.getBusinessTypeId())) {
-				if(!businessId.toString().equals(productMaster.getBusinessTypeId().toString()))
-						{
-							continue;
-						}
+			if (!CommonUtils.isObjectNullOrEmpty(businessId) && productMaster.getProductId()==2 && !CommonUtils.isObjectNullOrEmpty(productMaster.getBusinessTypeId()) && !businessId.toString().equals(productMaster.getBusinessTypeId().toString()) ) {
+				continue;
 			}
 			ProductMasterRequest productMasterRequest = new ProductMasterRequest();
 			BeanUtils.copyProperties(productMaster, productMasterRequest);
@@ -1518,7 +1502,6 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 			WorkflowResponse workflowResponse = workflowClient.updateJob(request);
 			
 			if (workflowData.getActionId() == WorkflowUtils.Action.SEND_FOR_APPROVAL && workflowResponse != null) {
-//				System.out.println("fp_product_id : "+workflowData.getFpProductId()+" stage :"+workflowData.getStage()+" send for approval :" + workflowData.getJobId());
 				
 				if(workflowData.getActionFor() == null) {
 					return false;
@@ -1565,9 +1548,10 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 			}
 			return false;
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 			return false;
 		}
 	}
 
 }
+

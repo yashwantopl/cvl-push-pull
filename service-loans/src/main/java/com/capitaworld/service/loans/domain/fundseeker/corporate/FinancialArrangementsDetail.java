@@ -99,7 +99,11 @@ public class FinancialArrangementsDetail implements Serializable {
 	@Column(name = "others_bank_name")
 	private String othersBankName;
 
+	@Column(name = "is_manually_added")
+	private Boolean isManuallyAdded;
+
 	public FinancialArrangementsDetail() {
+		// Do nothing because of X and Y.
 	}
 	
 	public FinancialArrangementsDetail(Long id) {
@@ -270,6 +274,13 @@ public class FinancialArrangementsDetail implements Serializable {
 		this.othersBankName = othersBankName;
 	}
 
+	public Boolean getIsManuallyAdded() {
+		return isManuallyAdded;
+	}
+
+	public void setIsManuallyAdded(Boolean isManuallyAdded) {
+		this.isManuallyAdded = isManuallyAdded;
+	}
 	public ApplicationProposalMapping getApplicationProposalMapping() {
 		return applicationProposalMapping;
 	}

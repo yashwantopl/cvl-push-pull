@@ -8,8 +8,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.capitaworld.service.loans.domain.fundprovider.EmpWithMappingDetail;
-import com.capitaworld.service.loans.domain.fundprovider.GeographicalCountryDetail;
-import com.capitaworld.service.loans.domain.fundprovider.GeographicalStateDetail;
 
 public interface FpEmpWithRepository extends JpaRepository<EmpWithMappingDetail, Long>{
 	@Modifying

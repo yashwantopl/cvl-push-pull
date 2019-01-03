@@ -82,6 +82,7 @@ public class ExistingLoanDetail implements Serializable {
 	private Double outstandingBalance;
 
 	public ExistingLoanDetail() {
+		// Do nothing because of X and Y.
 	}
 
 	public Long getId() {

@@ -33,6 +33,8 @@ public class ExistingLoanDetailsServiceImpl implements ExistingLoanDetailsServic
 
 	private static final Logger logger = LoggerFactory.getLogger(ExistingLoanDetailsServiceImpl.class);
 
+	private static final String INVALID_APPLICATION_TYPE_MSG =  "Invalid Application Type==>";
+
 	@Autowired
 	private ExistingLoanDetailsRepository existingLoanDetailsRepository;
 
@@ -71,7 +73,7 @@ public class ExistingLoanDetailsServiceImpl implements ExistingLoanDetailsServic
 							.setGuarantorDetailId(guarantorDetailsRepository.findOne(frameRequest.getApplicationId()));
 					break;
 				default:
-					throw new Exception("Invalid Application Type==>" + frameRequest.getApplicantType());
+					throw new Exception(INVALID_APPLICATION_TYPE_MSG + frameRequest.getApplicantType());
 				}
 
 				existingLoanDetail.setModifiedBy(frameRequest.getUserId());
@@ -82,8 +84,7 @@ public class ExistingLoanDetailsServiceImpl implements ExistingLoanDetailsServic
 		}
 
 		catch (Exception e) {
-			logger.info("Exception  in save existingLoanDetail  :-");
-			e.printStackTrace();
+			logger.error("Exception  in save existingLoanDetail  :-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 
@@ -104,7 +105,7 @@ public class ExistingLoanDetailsServiceImpl implements ExistingLoanDetailsServic
 			existingLoanDetails = existingLoanDetailsRepository.listExistingLoanFromGarrId(id);
 			break;
 		default:
-			throw new Exception("Invalid Application Type==>" + applicationType);
+			throw new Exception(INVALID_APPLICATION_TYPE_MSG + applicationType);
 		}
 
 		List<ExistingLoanDetailRequest> existingLoanDetailRequests = new ArrayList<ExistingLoanDetailRequest>();
@@ -147,7 +148,7 @@ public class ExistingLoanDetailsServiceImpl implements ExistingLoanDetailsServic
 							.setGuarantorDetailId(guarantorDetailsRepository.findOne(applicationId));
 					break;
 				default:
-					throw new Exception("Invalid Application Type==>" + applicantType);
+					throw new Exception(INVALID_APPLICATION_TYPE_MSG + applicantType);
 				}
 
 				existingLoanDetail.setModifiedBy(userId);
@@ -158,8 +159,7 @@ public class ExistingLoanDetailsServiceImpl implements ExistingLoanDetailsServic
 		}
 
 		catch (Exception e) {
-			logger.info("Exception  in save existingLoanDetail from CIBIL :-");
-			e.printStackTrace();
+			logger.error("Exception  in save existingLoanDetail from CIBIL :-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 

@@ -93,6 +93,7 @@ public class GuarantorsCorporateDetail implements Serializable {
 	private Integer subsectorlist;
 
 	public GuarantorsCorporateDetail() {
+		// Do nothing because of X and Y.
 	}
 
 	public Long getId() {

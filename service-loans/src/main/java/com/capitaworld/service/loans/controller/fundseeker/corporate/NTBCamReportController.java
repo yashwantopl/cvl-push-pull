@@ -40,13 +40,16 @@ public class NTBCamReportController {
 	private DMSClient dmsClient;
 	
 	private static final Logger logger = LoggerFactory.getLogger(NTBCamReportController.class);
+
+	private static final String NTB_CAM_PRIMARY = "NTBCAMPRIMARY";
+	private static final String NTB_CAM_FINAL = "NTBCAMFINAL";
 	
 	@RequestMapping(value = "/getPrimaryNtbCamData/{applicationId}/{productMappingId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getPrimaryNtbCamData(@PathVariable(value = "applicationId") Long applicationId,@PathVariable(value = "productMappingId") Long productId, HttpServletRequest request)  {
 		
 		if (CommonUtils.isObjectNullOrEmpty(applicationId)||CommonUtils.isObjectNullOrEmpty(productId)) {
-				logger.warn("Invalid data or Requested data not found.", applicationId + productId);
-				return new ResponseEntity<LoansResponse>(new LoansResponse("Invalid data or Requested data not found.", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+				logger.warn(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, applicationId + productId);
+				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}
 		Long userId = null;
 		if(!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_ID))) {
@@ -56,8 +59,8 @@ public class NTBCamReportController {
 			Map<String,Object> response = ntbCamReportService.getNtbCamReport(applicationId,productId,userId,false);
 			ReportRequest reportRequest = new ReportRequest();
 			reportRequest.setParams(response);
-			reportRequest.setTemplate("NTBCAMPRIMARY");
-			reportRequest.setType("NTBCAMPRIMARY");
+			reportRequest.setTemplate(NTB_CAM_PRIMARY);
+			reportRequest.setType(NTB_CAM_PRIMARY);
 			byte[] byteArr = reportsClient.generatePDFFile(reportRequest);
 			MultipartFile multipartFile = new DDRMultipart(byteArr);			  
 			  JSONObject jsonObj = new JSONObject();
@@ -65,7 +68,7 @@ public class NTBCamReportController {
 				jsonObj.put("applicationId", applicationId);
 				jsonObj.put("productDocumentMappingId", 355L);
 				jsonObj.put("userType", CommonUtils.UploadUserType.UERT_TYPE_APPLICANT);
-				jsonObj.put("originalFileName", "NTBCAMPRIMARY"+applicationId+".pdf");
+				jsonObj.put("originalFileName", NTB_CAM_PRIMARY+applicationId+".pdf");
 				
 				DocumentResponse  documentResponse  =  dmsClient.uploadFile(jsonObj.toString(), multipartFile);
 				if(documentResponse.getStatus() == 200){
@@ -85,8 +88,8 @@ public class NTBCamReportController {
 	public ResponseEntity<LoansResponse> getFinalNtbCamData(@PathVariable(value = "applicationId") Long applicationId,@PathVariable(value = "productMappingId") Long productId, HttpServletRequest request)  {
 		
 		if (CommonUtils.isObjectNullOrEmpty(applicationId)||CommonUtils.isObjectNullOrEmpty(productId)) {
-				logger.warn("Invalid data or Requested data not found.", applicationId + productId);
-				return new ResponseEntity<LoansResponse>(new LoansResponse("Invalid data or Requested data not found.", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+				logger.warn(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, applicationId + productId);
+				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}
 		Long userId = null;
 		if(!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_ID))) {
@@ -96,8 +99,8 @@ public class NTBCamReportController {
 			Map<String,Object> response = ntbCamReportService.getNtbCamReport(applicationId,productId,userId,true);
 			ReportRequest reportRequest = new ReportRequest();
 			reportRequest.setParams(response);
-			reportRequest.setTemplate("NTBCAMFINAL");
-			reportRequest.setType("NTBCAMFINAL");
+			reportRequest.setTemplate(NTB_CAM_FINAL);
+			reportRequest.setType(NTB_CAM_FINAL);
 			byte[] byteArr = reportsClient.generatePDFFile(reportRequest);
 			MultipartFile multipartFile = new DDRMultipart(byteArr);			  
 			  JSONObject jsonObj = new JSONObject();
@@ -105,7 +108,7 @@ public class NTBCamReportController {
 				jsonObj.put("applicationId", applicationId);
 				jsonObj.put("productDocumentMappingId", 362L);
 				jsonObj.put("userType", CommonUtils.UploadUserType.UERT_TYPE_APPLICANT);
-				jsonObj.put("originalFileName", "NTBCAMFINAL"+applicationId+".pdf");
+				jsonObj.put("originalFileName", NTB_CAM_FINAL+applicationId+".pdf");
 				
 				DocumentResponse  documentResponse  =  dmsClient.uploadFile(jsonObj.toString(), multipartFile);
 				if(documentResponse.getStatus() == 200){

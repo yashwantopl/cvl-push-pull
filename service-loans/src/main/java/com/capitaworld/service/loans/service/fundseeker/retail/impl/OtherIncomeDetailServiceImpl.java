@@ -83,8 +83,7 @@ public class OtherIncomeDetailServiceImpl implements OtherIncomeDetailService {
 		}
 
 		catch (Exception e) {
-			logger.info("Exception in save otherIncomeDetail  :-");
-			e.printStackTrace();
+			logger.error("Exception in save otherIncomeDetail  :- ",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 
@@ -119,8 +118,7 @@ public class OtherIncomeDetailServiceImpl implements OtherIncomeDetailService {
 		}
 
 		catch (Exception e) {
-			logger.info("Exception in getting otherIncomeDetail  :-");
-			e.printStackTrace();
+			logger.error("Exception in getting otherIncomeDetail :- ",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}

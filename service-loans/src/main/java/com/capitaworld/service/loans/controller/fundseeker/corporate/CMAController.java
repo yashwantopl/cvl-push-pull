@@ -39,8 +39,7 @@ public class CMAController {
 			cma = cmaService.getCMA(applicationId);
 			logger.info("Get CMA Successfully ");
 		} catch(Exception e) {
-			logger.info("Throw Exception While Get CMA Details");
-			e.printStackTrace();
+			logger.error("Throw Exception While Get CMA Details : ",e);
 		}
 		return cma;
 	}
@@ -53,8 +52,7 @@ public class CMAController {
 			logger.info("Save CMA Successfully ");
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Save Succesfully", HttpStatus.OK.value()),HttpStatus.OK);
 		} catch(Exception e) {
-			logger.info("Throw Exception While Get CMA Details");
-			e.printStackTrace();
+			logger.error("Throw Exception While Get CMA Details : ",e);
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
@@ -71,8 +69,7 @@ public class CMAController {
 			logger.info("Successfully Found Financial Data For Bank Integration");
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Get Succesfully", HttpStatus.OK.value(),financialDetails),HttpStatus.OK);
 		} catch(Exception e) {
-			logger.info("Throw Exception While GET Financial Data For Bank Integration");
-			e.printStackTrace();
+			logger.error("Throw Exception While GET Financial Data For Bank Integration : ",e);
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}

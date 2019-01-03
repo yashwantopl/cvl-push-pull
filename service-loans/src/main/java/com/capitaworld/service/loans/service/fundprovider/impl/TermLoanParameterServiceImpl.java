@@ -63,7 +63,16 @@ import com.capitaworld.service.oneform.model.OneFormResponse;
 @Service
 @Transactional
 public class TermLoanParameterServiceImpl implements TermLoanParameterService {
+
 	private static final Logger logger = LoggerFactory.getLogger(TermLoanParameterServiceImpl.class);
+
+	private static final String ERROR_WHILE_GET_TERM_LOAN_PARAMETER_REQUEST_MSG = "error while getTermLoanParameterRequest : ";
+	private static final String ERROR_WHILE_GET_TERM_LOAN_PARAMETER_REQUEST_TEMP_MSG = "error while getTermLoanParameterRequestTemp : ";
+	private static final String ERROR_WHILE_GET_NTB_TERM_LOAN_PARAMETER_REQUEST_TEMP_MSG = "error while getNtbTermLoanParameterRequestTemp : ";
+	private static final String ERROR_WHILE_GET_NTB_TERM_LOAN_PARAMETER_REQUEST_MSG = "error while getNtbTermLoanParameterRequest : ";
+	private static final String UPDATED_MSG = "updated = {}";
+	private static final String GET_TERM_LOAN_PARAMETER_REQUEST = "getTermLoanParameterRequest";
+
 	@Autowired
 	private TermLoanParameterRepository termLoanParameterRepository;
 	
@@ -117,8 +126,7 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 
 	@Override
 	public boolean saveOrUpdate(TermLoanParameterRequest termLoanParameterRequest, Long mappingId) {
-		CommonDocumentUtils.startHook(logger, "saveOrUpdate");
-		// TODO Auto-generated method stub
+		CommonDocumentUtils.startHook(logger, CommonUtils.SAVE_OR_UPDATE);
 		
 		TermLoanParameterTemp loanParameter =  termLoanParameterTempRepository.getTermLoanParameterTempByFpProductId(mappingId);
 		TermLoanParameter termLoanParameter = null;
@@ -176,8 +184,8 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 
 		//Ravina
 		boolean isUpdate = msmeValueMappingService.updateMsmeValueMapping(false, mappingId,termLoanParameter2.getId());
-		logger.info("updated = {}",isUpdate);
-		CommonDocumentUtils.endHook(logger, "saveOrUpdate");
+		logger.info(UPDATED_MSG,isUpdate);
+		CommonDocumentUtils.endHook(logger, CommonUtils.SAVE_OR_UPDATE);
 		return true;
 
 	}
@@ -186,8 +194,7 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 
 	@Override
 	public TermLoanParameterRequest getTermLoanParameterRequest(Long id) {
-		CommonDocumentUtils.startHook(logger, "getTermLoanParameterRequest");
-		// TODO Auto-generated method stub
+		CommonDocumentUtils.startHook(logger, GET_TERM_LOAN_PARAMETER_REQUEST);
 		TermLoanParameterRequest termLoanParameterRequest = new TermLoanParameterRequest();
 		TermLoanParameter loanParameter = termLoanParameterRepository.getById(id);
 		if(loanParameter==null)
@@ -212,9 +219,7 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 				}
 				termLoanParameterRequest.setIndustrylist(dataRequests);
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				logger.error("error while getTermLoanParameterRequest",e);
-				e.printStackTrace();
+				logger.error(ERROR_WHILE_GET_TERM_LOAN_PARAMETER_REQUEST_MSG,e);
 			}
 		}
 		
@@ -235,9 +240,7 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 			 
 			
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			logger.error("error while getTermLoanParameterRequest",e);
-			e.printStackTrace();
+			logger.error(ERROR_WHILE_GET_TERM_LOAN_PARAMETER_REQUEST_MSG,e);
 		}
 		}
 
@@ -257,9 +260,7 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 			 
 			
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			logger.error("error while getTermLoanParameterRequest",e);
-			e.printStackTrace();
+			logger.error(ERROR_WHILE_GET_TERM_LOAN_PARAMETER_REQUEST_MSG,e);
 		}
 		}
 		
@@ -281,9 +282,7 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 			 
 			
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			logger.error("error while getTermLoanParameterRequest",e);
-			e.printStackTrace();
+			logger.error(ERROR_WHILE_GET_TERM_LOAN_PARAMETER_REQUEST_MSG,e);
 		}
 		}
 		
@@ -303,9 +302,7 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 			 
 			
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			logger.error("error while getTermLoanParameterRequest",e);
-			e.printStackTrace();
+			logger.error(ERROR_WHILE_GET_TERM_LOAN_PARAMETER_REQUEST_MSG,e);
 		}
 		}
 		
@@ -323,13 +320,11 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 				}
 				termLoanParameterRequest.setNegativeIndustryList(dataRequests);
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				logger.error("error while getTermLoanParameterRequest",e);
-				e.printStackTrace();
+				logger.error(ERROR_WHILE_GET_TERM_LOAN_PARAMETER_REQUEST_MSG,e);
 			}
 		}
 		termLoanParameterRequest.setMsmeFundingIds(msmeValueMappingService.getDataListFromFpProductId(2,id, termLoanParameterRequest.getUserId()));
-		CommonDocumentUtils.endHook(logger, "getTermLoanParameterRequest");
+		CommonDocumentUtils.endHook(logger, GET_TERM_LOAN_PARAMETER_REQUEST);
 		return termLoanParameterRequest;
 	}
 	
@@ -425,7 +420,6 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 	}
 
 	private void saveNegativeIndustry(TermLoanParameterRequest termLoanParameterRequest) {
-		// TODO Auto-generated method stub
 		CommonDocumentUtils.startHook(logger, "saveNegativeIndustry");
 		NegativeIndustry negativeIndustry= null;
 		for (DataRequest dataRequest : termLoanParameterRequest.getNegativeIndustryList()) {
@@ -458,15 +452,14 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 			
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 			return false;
 		}
 	}
 	
 	@Override
 	public TermLoanParameterRequest getTermLoanParameterRequestTemp(Long id,Long role,Long userId) {
-		CommonDocumentUtils.startHook(logger, "getTermLoanParameterRequest");
-		// TODO Auto-generated method stub
+		CommonDocumentUtils.startHook(logger, GET_TERM_LOAN_PARAMETER_REQUEST);
 		TermLoanParameterRequest termLoanParameterRequest = new TermLoanParameterRequest();
 		TermLoanParameterTemp loanParameter =  termLoanParameterTempRepository.getTermLoanParameterTempByFpProductId(id);
 		if(loanParameter==null)
@@ -491,9 +484,7 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 				}
 				termLoanParameterRequest.setIndustrylist(dataRequests);
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				logger.error("error while getTermLoanParameterRequestTemp",e);
-				e.printStackTrace();
+				logger.error(ERROR_WHILE_GET_TERM_LOAN_PARAMETER_REQUEST_TEMP_MSG,e);
 			}
 		}
 		
@@ -514,9 +505,7 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 			 
 			
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			logger.error("error while getTermLoanParameterRequestTemp",e);
-			e.printStackTrace();
+			logger.error(ERROR_WHILE_GET_TERM_LOAN_PARAMETER_REQUEST_TEMP_MSG,e);
 		}
 		}
 
@@ -536,9 +525,7 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 			 
 			
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			logger.error("error while getTermLoanParameterRequestTemp",e);
-			e.printStackTrace();
+			logger.error(ERROR_WHILE_GET_TERM_LOAN_PARAMETER_REQUEST_TEMP_MSG,e);
 		}
 		}
 		
@@ -559,9 +546,7 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 			 
 			
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			logger.error("error while getTermLoanParameterRequestTemp",e);
-			e.printStackTrace();
+			logger.error(ERROR_WHILE_GET_TERM_LOAN_PARAMETER_REQUEST_TEMP_MSG,e);
 		}
 		}
 		
@@ -581,9 +566,7 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 			 
 			
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			logger.error("error while getTermLoanParameterRequestTemp",e);
-			e.printStackTrace();
+			logger.error(ERROR_WHILE_GET_TERM_LOAN_PARAMETER_REQUEST_TEMP_MSG,e);
 		}
 		}
 		
@@ -602,9 +585,7 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 				
 				termLoanParameterRequest.setNegativeIndustryList(dataRequests);
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				logger.error("error while getTermLoanParameterRequestTemp",e);
-				e.printStackTrace();
+				logger.error(ERROR_WHILE_GET_TERM_LOAN_PARAMETER_REQUEST_TEMP_MSG,e);
 			}
 		}
 		CommonDocumentUtils.endHook(logger, "getTermLoanParameterRequestTemp");
@@ -638,8 +619,7 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 	
 	@Override
 	public Boolean saveOrUpdateTemp(TermLoanParameterRequest termLoanParameterRequest) {
-		CommonDocumentUtils.startHook(logger, "saveOrUpdate");
-		// TODO Auto-generated method stub
+		CommonDocumentUtils.startHook(logger, CommonUtils.SAVE_OR_UPDATE);
 		
 		TermLoanParameterTemp termLoanParameter = null;
 		
@@ -716,9 +696,9 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		saveNegativeIndustryTemp(termLoanParameterRequest);
 
 		boolean isUpdate = msmeValueMappingService.updateMsmeValueMappingTemp(termLoanParameterRequest.getMsmeFundingIds(),termLoanParameterRequest.getId(), termLoanParameterRequest.getUserId());
-		logger.info("updated = {}",isUpdate);
+		logger.info(UPDATED_MSG,isUpdate);
 
-		CommonDocumentUtils.endHook(logger, "saveOrUpdate");
+		CommonDocumentUtils.endHook(logger, CommonUtils.SAVE_OR_UPDATE);
 		return true;
 
 	}
@@ -728,7 +708,7 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 	private void saveIndustryTemp(TermLoanParameterRequest workingCapitalParameterRequest) {
 		logger.info("start saveIndustryTemp");
 		IndustrySectorDetailTemp industrySectorDetail = null;
-		System.out.println(workingCapitalParameterRequest.getIndustrylist());
+		logger.info(""+workingCapitalParameterRequest.getIndustrylist());
 		for (DataRequest dataRequest : workingCapitalParameterRequest.getIndustrylist()) {
 			industrySectorDetail = new IndustrySectorDetailTemp();
 			industrySectorDetail.setFpProductId(workingCapitalParameterRequest.getId());
@@ -820,7 +800,6 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 	}
 
 	private void saveNegativeIndustryTemp(TermLoanParameterRequest workingCapitalParameterRequest) {
-		// TODO Auto-generated method stub
 		CommonDocumentUtils.startHook(logger, "saveNegativeIndustryTemp");
 		NegativeIndustryTemp negativeIndustry= null;
 		for (DataRequest dataRequest : workingCapitalParameterRequest.getUnInterestedIndustrylist()) {
@@ -843,9 +822,7 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 
 	@Override
 	public TermLoanParameterRequest getNtbTermLoanParameterRequestTemp(Long id, Long role, Long userId) {
-		// TODO Auto-generated method stub
 		CommonDocumentUtils.startHook(logger, "getNtbTermLoanParameterRequestTemp");
-		// TODO Auto-generated method stub
 		TermLoanParameterRequest termLoanParameterRequest = new TermLoanParameterRequest();
 		NtbTermLoanParameterTemp loanParameter =  ntbTermLoanParameterTempRepository.getNtbTermLoanParameterTempByFpProductId(id);
 		if(loanParameter==null)
@@ -870,9 +847,7 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 				}
 				termLoanParameterRequest.setIndustrylist(dataRequests);
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				logger.error("error while getNtbTermLoanParameterRequestTemp",e);
-				e.printStackTrace();
+				logger.error(ERROR_WHILE_GET_NTB_TERM_LOAN_PARAMETER_REQUEST_TEMP_MSG,e);
 			}
 		}
 		
@@ -892,9 +867,7 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 			 
 			
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			logger.error("error while getNtbTermLoanParameterRequestTemp",e);
-			e.printStackTrace();
+			logger.error(ERROR_WHILE_GET_NTB_TERM_LOAN_PARAMETER_REQUEST_TEMP_MSG,e);
 		}
 		}
 
@@ -913,9 +886,7 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 			 
 			
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			logger.error("error while getNtbTermLoanParameterRequestTemp",e);
-			e.printStackTrace();
+			logger.error(ERROR_WHILE_GET_NTB_TERM_LOAN_PARAMETER_REQUEST_TEMP_MSG,e);
 		}
 		}
 		
@@ -935,9 +906,7 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 			 
 			
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			logger.error("error while getNtbTermLoanParameterRequestTemp",e);
-			e.printStackTrace();
+			logger.error(ERROR_WHILE_GET_NTB_TERM_LOAN_PARAMETER_REQUEST_TEMP_MSG,e);
 		}
 		}
 		
@@ -957,9 +926,7 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 			 
 			
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			logger.error("error while getNtbTermLoanParameterRequestTemp",e);
-			e.printStackTrace();
+			logger.error(ERROR_WHILE_GET_NTB_TERM_LOAN_PARAMETER_REQUEST_TEMP_MSG,e);
 		}
 		}
 		
@@ -977,9 +944,7 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 				}
 				termLoanParameterRequest.setNegativeIndustryList(dataRequests);
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				logger.error("error while getNtbTermLoanParameterRequestTemp",e);
-				e.printStackTrace();
+				logger.error(ERROR_WHILE_GET_NTB_TERM_LOAN_PARAMETER_REQUEST_TEMP_MSG,e);
 			}
 		}
 		CommonDocumentUtils.endHook(logger, "getNtbTermLoanParameterRequestTemp");
@@ -1015,7 +980,6 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 
 	@Override
 	public Boolean saveOrUpdateNtbTemp(TermLoanParameterRequest termLoanParameterRequest) {
-		// TODO Auto-generated method stub
 		NtbTermLoanParameterTemp termLoanParameter = null;
 		
 		if(termLoanParameterRequest.getAppstage()==1)
@@ -1091,9 +1055,9 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 		saveNegativeIndustryTemp(termLoanParameterRequest);
 
 		boolean isUpdate = msmeValueMappingService.updateMsmeValueMappingTemp(termLoanParameterRequest.getMsmeFundingIds(),termLoanParameterRequest.getId(), termLoanParameterRequest.getUserId());
-		logger.info("updated = {}",isUpdate);
+		logger.info(UPDATED_MSG,isUpdate);
 
-		CommonDocumentUtils.endHook(logger, "saveOrUpdate");
+		CommonDocumentUtils.endHook(logger, CommonUtils.SAVE_OR_UPDATE);
 		return true;
 	}
 
@@ -1101,7 +1065,6 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 
 	@Override
 	public Boolean saveMasterFromNtbTempTl(Long mappingId) throws Exception {
-		// TODO Auto-generated method stub
 		try {
 			TermLoanParameterRequest  temp =  getNtbTermLoanParameterRequestTemp(mappingId,null,null);
 			
@@ -1109,7 +1072,7 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 			
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 			return false;
 		}
 	}
@@ -1118,9 +1081,7 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 
 	@Override
 	public boolean saveOrUpdateNtb(TermLoanParameterRequest termLoanParameterRequest, Long mappingId) {
-		// TODO Auto-generated method stub
 		CommonDocumentUtils.startHook(logger, "saveOrUpdateTmp");
-		// TODO Auto-generated method stub
 		NtbTermLoanParameterTemp loanParameter =  ntbTermLoanParameterTempRepository.getNtbTermLoanParameterTempByFpProductId(mappingId);
 		
 		
@@ -1184,8 +1145,8 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 
 		//Ravina
 		boolean isUpdate = msmeValueMappingService.updateMsmeValueMapping(false, mappingId,ntbParameter.getId());
-		logger.info("updated = {}",isUpdate);
-		CommonDocumentUtils.endHook(logger, "saveOrUpdate");
+		logger.info(UPDATED_MSG,isUpdate);
+		CommonDocumentUtils.endHook(logger, CommonUtils.SAVE_OR_UPDATE);
 		return true;
 	}
 
@@ -1193,9 +1154,9 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 
 	@Override
 	public TermLoanParameterRequest getNtbTermLoanParameterRequest(Long id) {
-		// TODO Auto-generated method stub
+
 		CommonDocumentUtils.startHook(logger, "getNtbTermLoanParameterRequest");
-		// TODO Auto-generated method stub
+
 		TermLoanParameterRequest termLoanParameterRequest = new TermLoanParameterRequest();
 		NTBParameter loanParameter = ntbParameterRepository.getById(id);
 		if(loanParameter==null)
@@ -1220,9 +1181,7 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 				}
 				termLoanParameterRequest.setIndustrylist(dataRequests);
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				logger.error("error while getNtbTermLoanParameterRequest",e);
-				e.printStackTrace();
+				logger.error(ERROR_WHILE_GET_NTB_TERM_LOAN_PARAMETER_REQUEST_MSG,e);
 			}
 		}
 		
@@ -1243,9 +1202,7 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 			 
 			
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			logger.error("error while getNtbTermLoanParameterRequest",e);
-			e.printStackTrace();
+			logger.error(ERROR_WHILE_GET_NTB_TERM_LOAN_PARAMETER_REQUEST_MSG,e);
 		}
 		}
 
@@ -1265,9 +1222,7 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 			 
 			
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			logger.error("error while getNtbTermLoanParameterRequest",e);
-			e.printStackTrace();
+			logger.error(ERROR_WHILE_GET_NTB_TERM_LOAN_PARAMETER_REQUEST_MSG,e);
 		}
 		}
 		
@@ -1289,9 +1244,7 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 			 
 			
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			logger.error("error while getNtbTermLoanParameterRequest",e);
-			e.printStackTrace();
+			logger.error(ERROR_WHILE_GET_NTB_TERM_LOAN_PARAMETER_REQUEST_MSG,e);
 		}
 		}
 		
@@ -1311,9 +1264,7 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 			 
 			
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			logger.error("error while getTermLoanParameterRequest",e);
-			e.printStackTrace();
+			logger.error(ERROR_WHILE_GET_TERM_LOAN_PARAMETER_REQUEST_MSG,e);
 		}
 		}
 		
@@ -1331,9 +1282,7 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 				}
 				termLoanParameterRequest.setNegativeIndustryList(dataRequests);
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				logger.error("error while getTermLoanParameterRequest",e);
-				e.printStackTrace();
+				logger.error(ERROR_WHILE_GET_TERM_LOAN_PARAMETER_REQUEST_MSG,e);
 			}
 		}
 		termLoanParameterRequest.setMsmeFundingIds(msmeValueMappingService.getDataListFromFpProductId(2,id, termLoanParameterRequest.getUserId()));

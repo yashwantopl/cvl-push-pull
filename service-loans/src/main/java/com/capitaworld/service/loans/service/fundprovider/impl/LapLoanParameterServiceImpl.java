@@ -29,7 +29,11 @@ import com.capitaworld.service.oneform.model.OneFormResponse;
 @Transactional
 @Service
 public class LapLoanParameterServiceImpl implements LapLoanParameterService {
+
 	private static final Logger logger = LoggerFactory.getLogger(LapLoanParameterServiceImpl.class);
+
+	private static final String ERROR_WHILE_GET_LAP_PARAMETER_REQUEST_MSG = "error while getLapParameterRequest : ";
+
 	@Autowired
 	private LapParameterRepository lapParameterRepository;
 	
@@ -48,7 +52,6 @@ public class LapLoanParameterServiceImpl implements LapLoanParameterService {
 	@Override
 	public boolean saveOrUpdate(LapParameterRequest lapParameterRequest) {
 		CommonDocumentUtils.startHook(logger, "saveOrUpdate");
-		// TODO Auto-generated method stub
 		LapParameter lapParameter= null;
 
 		lapParameter = lapParameterRepository.findOne(lapParameterRequest.getId());
@@ -83,7 +86,6 @@ public class LapLoanParameterServiceImpl implements LapLoanParameterService {
 	@Override
 	public LapParameterRequest getLapParameterRequest(Long id) {
 		CommonDocumentUtils.startHook(logger, "getLapParameterRequest");
-		// TODO Auto-generated method stub
 		LapParameterRequest lapParameterRequest= new LapParameterRequest();
 		LapParameter lapParameter = lapParameterRepository.getByID(id);
 		if(lapParameter==null)
@@ -104,9 +106,7 @@ public class LapLoanParameterServiceImpl implements LapLoanParameterService {
 			 
 			
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			logger.error("error while getLapParameterRequest",e);
-			e.printStackTrace();
+			logger.error(ERROR_WHILE_GET_LAP_PARAMETER_REQUEST_MSG,e);
 		}
 		}
 		
@@ -121,9 +121,7 @@ public class LapLoanParameterServiceImpl implements LapLoanParameterService {
 			 
 			
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			logger.error("error while getLapParameterRequest",e);
-			e.printStackTrace();
+			logger.error(ERROR_WHILE_GET_LAP_PARAMETER_REQUEST_MSG,e);
 		}
 		}
 		
@@ -137,9 +135,7 @@ public class LapLoanParameterServiceImpl implements LapLoanParameterService {
 			 
 			
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			logger.error("error while getLapParameterRequest",e);
-			e.printStackTrace();
+			logger.error(ERROR_WHILE_GET_LAP_PARAMETER_REQUEST_MSG,e);
 		}
 		}
 		CommonDocumentUtils.endHook(logger, "getLapParameterRequest");

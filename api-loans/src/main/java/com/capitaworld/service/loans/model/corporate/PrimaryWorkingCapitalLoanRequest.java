@@ -33,6 +33,7 @@ public class PrimaryWorkingCapitalLoanRequest extends LoanApplicationRequest imp
 	private List<Long> negativeList=Collections.emptyList();
 
 	public PrimaryWorkingCapitalLoanRequest() {
+		// Do nothing because of X and Y.
 	}
 
 	public Integer getCreditRatingId() {

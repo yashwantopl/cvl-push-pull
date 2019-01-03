@@ -100,6 +100,10 @@ public abstract class ProductMaster implements Serializable {
 
 	public ProductMaster() {
 	}
+	
+	public ProductMaster(Long id) {
+		this.id = id;
+	}
 
 	public Long getId() {
 		return this.id;

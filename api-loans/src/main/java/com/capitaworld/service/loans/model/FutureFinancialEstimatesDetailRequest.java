@@ -38,6 +38,7 @@ public class FutureFinancialEstimatesDetailRequest implements Serializable {
 	private Double sales;
 
 	public FutureFinancialEstimatesDetailRequest() {
+		// Do nothing because of X and Y.
 	}
 
 	public FutureFinancialEstimatesDetailRequest(String financialYear) {
