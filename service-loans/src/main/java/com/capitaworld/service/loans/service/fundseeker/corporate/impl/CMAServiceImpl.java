@@ -634,7 +634,7 @@ public class CMAServiceImpl implements CMAService {
 			ratioDetailsReq.setCfoMargin(profitAndLossStmntReq.getNetSales() != 0 ? CommonUtils.checkDouble((cashFromOperating/profitAndLossStmntReq.getNetSales()) * 100) : 0.0);
 			
 			//B126 -----> =(B125-C125)/C125
-			ratioDetailsReq.setGrowthInCfoMargin(ratioDtlsForNextYear.getCfoMargin() != 0 ? CommonUtils.checkDouble((ratioDetailsReq.getCfoMargin() - ratioDtlsForNextYear.getCfoMargin() / ratioDtlsForNextYear.getCfoMargin()) * 100) : 0.0);
+			ratioDetailsReq.setGrowthInCfoMargin(ratioDtlsForNextYear.getCfoMargin() != 0 ? CommonUtils.checkDouble(((ratioDetailsReq.getCfoMargin() - ratioDtlsForNextYear.getCfoMargin()) / ratioDtlsForNextYear.getCfoMargin()) * 100) : 0.0);
 			
 			ratioDetailsReqList.add(ratioDetailsReq);
 		}
