@@ -70,9 +70,9 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 
 	private static final Logger logger = LoggerFactory.getLogger(DownloadCMAFileServiceImpl.class);
     
-	private static final String PROFITIBILITY_SHEET ="PS";
+//	private static final String PROFITIBILITY_SHEET ="PS";
 	
-	private static final String BALANCE_SHEET ="BS";
+//	private static final String BALANCE_SHEET ="BS";
 	@Override
 	public Workbook cmaFileGenerator(Long applicationId , Long productDocumentMappingId) {
 		logger.info("Enter in cmaFileGenerator()  Forming Excel Data");
