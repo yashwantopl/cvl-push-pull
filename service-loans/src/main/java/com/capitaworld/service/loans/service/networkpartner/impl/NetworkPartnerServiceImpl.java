@@ -1349,11 +1349,15 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 			//List<Long> applicationForSameBranchList = proposalDetailsRepository.getApplicationsBasedOnBranchId(branchId);
 			List<BigInteger> newApplicationIdList = null;
 			if(environment.getRequiredProperty(isPaymentBypass).equals("true")) {
+				logger.info("In payment bypass" + " \nRequest details Application status" + CommonUtils.ApplicationStatus.OPEN + " ORGID: " + npOrgId +" branch id: " + branchId);
 				newApplicationIdList = applicationProposalMappingRepository.getFPMakerNewProposalCount(CommonUtils.ApplicationStatus.OPEN,npOrgId,com.capitaworld.service.gateway.utils.CommonUtils.PaymentStatus.BYPASS,branchId);
 			}
 			else {
+				logger.info("In payment");
+				logger.info("In payment " + " \nRequest details Application status" + CommonUtils.ApplicationStatus.OPEN + " ORGID: " + npOrgId +" branch id: " + branchId);
 				newApplicationIdList = applicationProposalMappingRepository.getFPMakerNewProposalCount(CommonUtils.ApplicationStatus.OPEN,npOrgId,com.capitaworld.service.gateway.utils.CommonUtils.PaymentStatus.SUCCESS,branchId);
 			}
+			logger.info("Applications found from database :: " + newApplicationIdList.size());
 			//newApplicationList.removeIf((LoanApplicationMaster loanApplicationMaster) -> !applicationForSameBranchList.contains(loanApplicationMaster.getId()));
 			countObj.put("newProposalCount", newApplicationIdList.size());
 
@@ -1389,6 +1393,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 
 		}
 		logger.info("exit from getFPProposalCount()");
+		logger.info(countObj.toJSONString());
 		return countObj;
 	}
 
