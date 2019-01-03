@@ -3635,7 +3635,7 @@ public class FPAsyncComponent {
 		// start attach CAM to Mail
 
 		Long fpProductId = Long.parseLong(proposalresp.get("fp_product_id").toString());
-		Map<String,Object> response = camReportPdfDetailsService.getCamReportPrimaryDetails(applicationId,fpProductId,false);
+		Map<String,Object> response = camReportPdfDetailsService.getCamReportPrimaryDetails(applicationId,fpProductId,null,false);
 		ReportRequest reportRequest = new ReportRequest();
 		reportRequest.setParams(response);
 		reportRequest.setTemplate("CAMREPORTPRIMARYSIDBI");
