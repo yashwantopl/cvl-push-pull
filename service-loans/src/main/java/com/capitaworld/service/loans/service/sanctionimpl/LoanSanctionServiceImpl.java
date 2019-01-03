@@ -111,7 +111,7 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 					offlineProcessedAppRepository.updateSanctionedFlag(loanSanctionRequest.getApplicationId(), loanSanctionRequest.getOrgId(), loanSanctionRequest.getBranch(), userId);	
 				} catch (Exception e) {
 					e.printStackTrace();
-				}*/
+				}*/ 
 			} else if(CommonUtils.isObjectNullOrEmpty(loanSanctionRequest.getIsIneligibleProposal()) || loanSanctionRequest.getIsIneligibleProposal() == false) {
 				loanSanctionDomainOld.setIsSanctionedFrom(CommonUtils.sanctionedFrom.ELIGIBLE_USERS);
 			}
