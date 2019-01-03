@@ -5,7 +5,6 @@ import java.lang.reflect.Field;
 import java.util.Date;
 
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
-import com.capitaworld.service.loans.model.DirectorBackgroundDetailResponse;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)

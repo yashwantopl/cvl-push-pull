@@ -2,7 +2,6 @@ package com.capitaworld.service.loans.model.retail;
 
 import com.capitaworld.service.loans.model.Address;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
-import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.io.Serializable;
 import java.util.Date;

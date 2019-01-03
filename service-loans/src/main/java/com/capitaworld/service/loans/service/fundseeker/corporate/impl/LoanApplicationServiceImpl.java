@@ -3006,7 +3006,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					} catch (Exception e) {
 						logger.error("Throw Exception while get matches count for registration user details------------->"+ loanMstr.getId()+" :: ",e);
 					}
-					if (!CommonUtils.isObjectNullOrEmpty(proposalCountResponse)) {
+					if (proposalCountResponse != null && !CommonUtils.isObjectNullOrEmpty(proposalCountResponse)) {
 						obj.put("totalMatches", proposalCountResponse.getTotal());
 						obj.put("matches", proposalCountResponse.getMatches());
 						obj.put("directSent", proposalCountResponse.getSent());
@@ -4383,7 +4383,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					logger.error("Throw Exception While Get User Email and Mobile : ",e);
 				}
 
-				if (!CommonUtils.isObjectNullOrEmpty(usersRequest)) {
+				if (usersRequest != null && !CommonUtils.isObjectNullOrEmpty(usersRequest)) {
 					gatewayRequest.setEmail(usersRequest.getEmail());
 					gatewayRequest.setPhone(usersRequest.getMobile());
 				} else {
@@ -5964,7 +5964,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			audit = auditComponent.getAudit(applicationId, true, AuditComponent.COMMERCIAL);
 			if (audit == null) {
 				String pan = null;
-				if (!CommonUtils.isObjectNullOrEmpty(prelimData)
+				if (prelimData != null && !CommonUtils.isObjectNullOrEmpty(prelimData)
 						&& !CommonUtils.isObjectNullOrEmpty(prelimData.getCorporateProfileRequest())
 						&& !CommonUtils.isObjectNullOrEmpty(prelimData.getCorporateProfileRequest().getPan())) {
 					pan = prelimData.getCorporateProfileRequest().getPan();

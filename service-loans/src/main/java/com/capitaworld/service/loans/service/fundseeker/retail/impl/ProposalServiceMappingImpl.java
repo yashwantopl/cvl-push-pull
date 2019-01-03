@@ -1758,7 +1758,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 				}
 
 				CheckerDetailRequest checkerDetailRequest = null;
-				if (!CommonUtils.isObjectListNull(userResponse)
+				if (userResponse != null && !CommonUtils.isObjectListNull(userResponse)
 						&& !(CommonUtils.isObjectNullOrEmpty(userResponse.getData()))) {
 					checkerDetailRequest = MultipleJSONObjectHelper.getObjectFromMap(
 							(LinkedHashMap<String, Object>) userResponse.getData(), CheckerDetailRequest.class);
