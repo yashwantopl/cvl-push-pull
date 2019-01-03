@@ -1767,7 +1767,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 				if (!CommonUtils.isObjectNullOrEmpty(checkerDetailRequest)) {
 					// "+checkerDetailRequest.getMinAmount() + " getMaxAmount :
 					// "+checkerDetailRequest.getMaxAmount());
-					if (userRequest.getLoanAmount() != null && checkerDetailRequest.getMinAmount() != null
+					if (userRequest.getLoanAmount() != null && checkerDetailRequest != null && checkerDetailRequest.getMinAmount() != null
 							&& checkerDetailRequest.getMaxAmount() != null
 							&& !(userRequest.getLoanAmount() >= checkerDetailRequest.getMinAmount()
 									&& userRequest.getLoanAmount() <= checkerDetailRequest.getMaxAmount())) {

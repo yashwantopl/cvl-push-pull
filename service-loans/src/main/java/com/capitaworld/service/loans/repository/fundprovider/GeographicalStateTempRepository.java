@@ -7,8 +7,6 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.capitaworld.service.loans.domain.fundprovider.GeographicalCountryDetail;
-import com.capitaworld.service.loans.domain.fundprovider.GeographicalStateDetail;
 import com.capitaworld.service.loans.domain.fundprovider.GeographicalStateDetailTemp;
 
 public interface GeographicalStateTempRepository extends JpaRepository<GeographicalStateDetailTemp, Long>{
