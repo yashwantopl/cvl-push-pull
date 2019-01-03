@@ -174,8 +174,10 @@ public class OrganizationReportsServiceImpl implements OrganizationReportsServic
         } catch (Exception e) {
             master = null;
         }
-        master.add(applicationId);
-        master.add(userId);
+        if (master != null) {
+            master.add(applicationId);
+            master.add(userId);
+        }
         return master;
     }
     @Override
@@ -196,8 +198,10 @@ public class OrganizationReportsServiceImpl implements OrganizationReportsServic
         } catch (Exception e) {
             master = null;
         }
-        master.add(applicationId);
-        master.add(userId);
+        if (master != null) {
+            master.add(applicationId);
+            master.add(userId);
+        }
         return master;
     }
 

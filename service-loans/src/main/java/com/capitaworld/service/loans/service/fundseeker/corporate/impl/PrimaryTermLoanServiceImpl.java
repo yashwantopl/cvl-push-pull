@@ -1,7 +1,6 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
 import java.util.Date;
-import java.util.List;
 
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
@@ -11,11 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.capitaworld.service.loans.domain.fundseeker.FsNegativeFpList;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryTermLoanDetail;
-import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryWorkingCapitalLoanDetail;
 import com.capitaworld.service.loans.model.corporate.PrimaryTermLoanRequest;
-import com.capitaworld.service.loans.model.corporate.PrimaryWorkingCapitalLoanRequest;
 import com.capitaworld.service.loans.repository.fundseeker.FsNegativeFpListRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryTermLoanDetailRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
