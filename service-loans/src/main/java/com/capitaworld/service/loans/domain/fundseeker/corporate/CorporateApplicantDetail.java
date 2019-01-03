@@ -128,7 +128,7 @@ public class CorporateApplicantDetail implements Serializable {
 	private String websiteAddress;
 
 	@Column(name = "pan")
-	@Convert(converter = EncryptionUtils.class)
+	
 	private String panNo;
 
 	@Column(name = "gstin")
