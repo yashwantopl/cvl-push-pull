@@ -23,18 +23,15 @@ public class IndustrySectorServiceImpl implements IndustrySectorService {
 
 	@Override
 	public void saveOrUpdate(IndustrySectorDetail industrySectorDetail) throws Exception {
-		// TODO Auto-generated method stub
-
+		// Do nothing because of X and Y.
 	}
 
 	@Override
 	public List<Long> getIndustryByApplicantId(Long applicantId) throws Exception {
-		// TODO Auto-generated method stub
 		try {
 			return industrySectorRepository.getIndustryByApplicationId(applicantId);
 		} catch (Exception e) {
-			logger.error("Error while getIndustryByApplicantId");
-			e.printStackTrace();
+			logger.error("Error while getIndustryByApplicantId : ",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 
 		}
@@ -43,12 +40,10 @@ public class IndustrySectorServiceImpl implements IndustrySectorService {
 
 	@Override
 	public List<Long> getSectorByApplicantId(Long applicantId) throws Exception {
-		// TODO Auto-generated method stub
 		try {
 			return industrySectorRepository.getSectorByApplicationId(applicantId);
 		} catch (Exception e) {
-			logger.error("Error while getIndustryByApplicantId");
-			e.printStackTrace();
+			logger.error("Error while getIndustryByApplicantId : ",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 
 		}

@@ -40,6 +40,12 @@ public class CorporateUploadServiceImpl implements CorporateUploadService {
 
 	private static final Logger logger = LoggerFactory.getLogger(CorporateUploadServiceImpl.class);
 
+	private static final String ERROR_WHILE_SAVING_UPLOAD_FLAG_MSG = "Error while saving Upload FLag";
+	private static final String IDENTITY_PROOF = "identity_proof";
+	private static final String ADDRESS_PROOF = "address_proof";
+	private static final String BANK_STATEMENT = "bank_statement";
+	private static final String AUDITED_ANNUAL_REPORT = "audited_annual_report";
+
 	// @Autowired
 	// private Environment environment;
 
@@ -88,8 +94,7 @@ public class CorporateUploadServiceImpl implements CorporateUploadService {
 			DocumentResponse documentResponse = dmsClient.productImage(jsonObj.toString(), multipartFile);
 			return documentResponse;
 		} catch (DocumentException e) {
-			// TODO Auto-generated catch block
-			logger.error("Error while uploading Profile Document");
+			logger.error("Error while uploading Profile Document : ",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 
@@ -144,8 +149,7 @@ public class CorporateUploadServiceImpl implements CorporateUploadService {
 			docRequest.setUserType(userType);
 			return dmsClient.listProductDocument(docRequest);
 		} catch (DocumentException e) {
-			// TODO Auto-generated catch block
-			logger.error("Error while getting Profile Document");
+			logger.error("Error while getting Profile Document : ",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
@@ -197,15 +201,14 @@ public class CorporateUploadServiceImpl implements CorporateUploadService {
 					logger.info("saving Upload FLag");
 				Long resp = saveDocumentFLag( request);
 				if(resp == 0L){
-					logger.error("Error while saving Upload FLag");
-					throw new Exception("Error while saving Upload FLag");
+					logger.error(ERROR_WHILE_SAVING_UPLOAD_FLAG_MSG);
+					throw new Exception(ERROR_WHILE_SAVING_UPLOAD_FLAG_MSG);
 				}
 				
 				}
 				catch (Exception e) {
-					e.printStackTrace();
-					logger.error("Error while saving Upload FLag");
-					throw new Exception("Error while saving Upload FLag");
+					logger.error("Error while saving Upload FLag : ",e);
+					throw new Exception(ERROR_WHILE_SAVING_UPLOAD_FLAG_MSG);
 				}	
 			}
 			return response;
@@ -234,8 +237,7 @@ public class CorporateUploadServiceImpl implements CorporateUploadService {
 		try {
 			return dmsClient.listProductDocument(documentRequest);
 		} catch (DocumentException e) {
-			// TODO Auto-generated catch block
-			logger.error("Error while getting Corporate Other Documents");
+			logger.error("Error while getting Corporate Other Documents : ",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 
@@ -258,11 +260,11 @@ public class CorporateUploadServiceImpl implements CorporateUploadService {
 				gua_proIdList.addAll((List<Long>) Arrays.asList(guarantorArray));
 				Map<String, Map<String, Object>> maps = new HashMap<String, Map<String,Object>>();
 				Map<String, Object> map = new HashMap<String, Object>();
-				map.put("identity_proof", false);
-				map.put("bank_statement", false);
+				map.put(IDENTITY_PROOF, false);
+				map.put(BANK_STATEMENT, false);
 				map.put("itr", false);
-				map.put("audited_annual_report", false);
-				map.put("address_proof", false);
+				map.put(AUDITED_ANNUAL_REPORT, false);
+				map.put(ADDRESS_PROOF, false);
 				for (Long id : proIdList) {
 					DocumentRequest documentRequest = new DocumentRequest();
 					documentRequest.setApplicationId(applicationId);
@@ -272,19 +274,19 @@ public class CorporateUploadServiceImpl implements CorporateUploadService {
 								
 					if (dmsClient.listProductDocument(documentRequest).getDataList().size() > 0) {
 						if(id.equals(55L) || id.equals(56L)){
-							map.put("identity_proof", true);
+							map.put(IDENTITY_PROOF, true);
 						}
 						else if(id.equals(61L)){
-							map.put("bank_statement", true);
+							map.put(BANK_STATEMENT, true);
 						}
 						else if(id.equals(63L) || id.equals(243L) || id.equals(248L)){
 							map.put("itr", true);
 						}
 						else if(id.equals(64L)){
-							map.put("audited_annual_report", true);
+							map.put(AUDITED_ANNUAL_REPORT, true);
 						}
 						else if(id.equals(65L)){
-							map.put("address_proof", true);
+							map.put(ADDRESS_PROOF, true);
 						}
 					}
 				}
@@ -295,11 +297,11 @@ public class CorporateUploadServiceImpl implements CorporateUploadService {
 				
 				for (Long coappid : ids) {
 					Map<String, Object> mapCoApp = new HashMap<String, Object>();
-					mapCoApp.put("identity_proof", false);
-					mapCoApp.put("bank_statement", false);
+					mapCoApp.put(IDENTITY_PROOF, false);
+					mapCoApp.put(BANK_STATEMENT, false);
 					mapCoApp.put("itr", false);
-					mapCoApp.put("audited_annual_report", false);
-					mapCoApp.put("address_proof", false);
+					mapCoApp.put(AUDITED_ANNUAL_REPORT, false);
+					mapCoApp.put(ADDRESS_PROOF, false);
 					for (Long id : co_app_proIdList) {
 						DocumentRequest documentRequest = new DocumentRequest();
 						documentRequest.setCoApplicantId(coappid);
@@ -309,19 +311,19 @@ public class CorporateUploadServiceImpl implements CorporateUploadService {
 								
 						if (dmsClient.listProductDocument(documentRequest).getDataList().size() > 0) {
 							if(id.equals(57L) || id.equals(58L)){
-								mapCoApp.put("identity_proof", true);
+								mapCoApp.put(IDENTITY_PROOF, true);
 							}
 							else if(id.equals(69L)){
-								mapCoApp.put("bank_statement", true);
+								mapCoApp.put(BANK_STATEMENT, true);
 							}
 							else if(id.equals(71L) || id.equals(254L) || id.equals(259L)){
 								mapCoApp.put("itr", true);
 							}
 							else if(id.equals(72L)){
-								mapCoApp.put("audited_annual_report", true);
+								mapCoApp.put(AUDITED_ANNUAL_REPORT, true);
 							}
 							else if(id.equals(73L)){
-								mapCoApp.put("address_proof", true);
+								mapCoApp.put(ADDRESS_PROOF, true);
 							}
 						} 
 					}
@@ -336,11 +338,11 @@ public class CorporateUploadServiceImpl implements CorporateUploadService {
 				int j = 1;
 				for (Long guaId : gua_ids) {
 					Map<String, Object> mapGua = new HashMap<String, Object>();
-						mapGua.put("identity_proof", false);
-						mapGua.put("bank_statement", false);
+						mapGua.put(IDENTITY_PROOF, false);
+						mapGua.put(BANK_STATEMENT, false);
 						mapGua.put("itr", false);
-						mapGua.put("audited_annual_report", false);
-						mapGua.put("address_proof", false);
+						mapGua.put(AUDITED_ANNUAL_REPORT, false);
+						mapGua.put(ADDRESS_PROOF, false);
 				for (Long id : gua_proIdList) {
 					DocumentRequest documentRequest = new DocumentRequest();
 					documentRequest.setGuarantorId(guaId);
@@ -350,19 +352,19 @@ public class CorporateUploadServiceImpl implements CorporateUploadService {
 						
 					if (dmsClient.listProductDocument(documentRequest).getDataList().size() > 0) {
 						if(id.equals(59L) || id.equals(60L)){
-							mapGua.put("identity_proof", true);
+							mapGua.put(IDENTITY_PROOF, true);
 						}
 						else if(id.equals(77L)){
-							mapGua.put("bank_statement", true);
+							mapGua.put(BANK_STATEMENT, true);
 						}
 						else if(id.equals(79L) || id.equals(264L) || id.equals(269L)){
 							mapGua.put("itr", true);
 						}
 						else if(id.equals(80L)){
-							mapGua.put("audited_annual_report", true);
+							mapGua.put(AUDITED_ANNUAL_REPORT, true);
 						}
 						else if(id.equals(81L)){
-							mapGua.put("address_proof", true);
+							mapGua.put(ADDRESS_PROOF, true);
 						}
 					} 
 				}
@@ -372,8 +374,7 @@ public class CorporateUploadServiceImpl implements CorporateUploadService {
 				
 				return maps;
 			} catch (DocumentException e) {
-				// TODO Auto-generated catch block
-				logger.error("Error while getting Corporate Other Documents");
+				logger.error("Error while getting Corporate Other Documents : ",e);
 				throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 			}
 
@@ -440,8 +441,7 @@ public class CorporateUploadServiceImpl implements CorporateUploadService {
 				break;
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			logger.error("Error while updating Flag to loan_application_master for upload");
+			logger.error("Error while updating Flag to loan_application_master for upload : ",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}

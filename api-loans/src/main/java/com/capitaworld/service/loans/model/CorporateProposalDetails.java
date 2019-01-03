@@ -30,6 +30,8 @@ public class CorporateProposalDetails {
 	
 	private Date lastStatusActionDate;
 	
+	private Long proposalStatus;
+	
 	private Boolean isAssignedToBranch;
 	
 	private Date modifiedDate;
@@ -43,12 +45,15 @@ public class CorporateProposalDetails {
 	private Integer businessTypeId;
 	
 	private String ntbMainDirName;
-	
-	public String branchLocationName;
-	public String branchCity;
-	public String branchState;
 
+	private String branchLocationName;
+	private String branchCity;
+	private String branchState;
 	
+	private String wcRenualNew;
+	
+	private String applicationCode;
+
 	public String getBranchLocationName() {
 		return branchLocationName;
 	}
@@ -200,6 +205,14 @@ public class CorporateProposalDetails {
 	public void setModifiedBy(String modifiedBy) {
 		this.modifiedBy = modifiedBy;
 	}
+	
+	public Long getProposalStatus() {
+		return proposalStatus;
+	}
+
+	public void setProposalStatus(Long proposalStatus) {
+		this.proposalStatus = proposalStatus;
+	}
 
 	/**
 	 * @return the keyVertical
@@ -297,6 +310,22 @@ public class CorporateProposalDetails {
 	 */
 	public void setNtbMainDirName(String ntbMainDirName) {
 		this.ntbMainDirName = ntbMainDirName;
+	}
+
+	public String getWcRenualNew() {
+		return wcRenualNew;
+	}
+
+	public void setWcRenualNew(String wcRenualNew) {
+		this.wcRenualNew = wcRenualNew;
+	}
+
+	public String getApplicationCode() {
+		return applicationCode;
+	}
+
+	public void setApplicationCode(String applicationCode) {
+		this.applicationCode = applicationCode;
 	}
 
 	/**

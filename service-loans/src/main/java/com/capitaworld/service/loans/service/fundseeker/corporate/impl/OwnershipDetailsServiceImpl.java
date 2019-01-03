@@ -60,8 +60,7 @@ public class OwnershipDetailsServiceImpl implements OwnershipDetailsService {
 		}
 
 		catch (Exception e) {
-			logger.info("Exception  in save ownershipDetail  :-");
-			e.printStackTrace();
+			logger.error("Exception  in save ownershipDetail  :-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
@@ -81,8 +80,7 @@ public class OwnershipDetailsServiceImpl implements OwnershipDetailsService {
 		}
 
 		catch (Exception e) {
-			logger.info("Exception  in get ownershipDetail  :-");
-			e.printStackTrace();
+			logger.error("Exception  in get ownershipDetail  :-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}

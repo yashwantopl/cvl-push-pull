@@ -72,8 +72,7 @@ public class CreditRatingOrganizationDetailsServiceImpl implements CreditRatingO
 		}
 
 		catch (Exception e) {
-			logger.info("Exception  in save creditRatingOrganizationDetail  :-");
-			e.printStackTrace();
+			logger.error("Exception  in save creditRatingOrganizationDetail  :-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
@@ -127,8 +126,7 @@ public class CreditRatingOrganizationDetailsServiceImpl implements CreditRatingO
 			}
 			return creditRatingOrganizationDetailRequests;
 		} catch (Exception e) {
-			logger.info("Exception  in save creditRatingOrganizationDetail  :-");
-			e.printStackTrace();
+			logger.error("Exception  in save creditRatingOrganizationDetail  :-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
@@ -152,13 +150,11 @@ public class CreditRatingOrganizationDetailsServiceImpl implements CreditRatingO
 
 	@Override
 	public List<Integer> getShortTermCreditRatingForTeaser(Long id, Long userId) throws Exception {
-		// TODO Auto-generated method stub
 		return creditRatingOrganizationDetailsRepository.listShortCreditRatingOptionDetailsFromAppId(id, userId);
 	}
 
 	@Override
 	public List<Integer> getLongTermCreditRatingForTeaser(Long id, Long userId) throws Exception {
-		// TODO Auto-generated method stub
 		return creditRatingOrganizationDetailsRepository.listLongCreditRatingOptionDetailsFromAppId(id, userId);
 	}
 }

@@ -14,6 +14,8 @@ public interface FinancialArrangementDetailsService {
 	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception;
 
 	public List<FinancialArrangementsDetailRequest> getFinancialArrangementDetailsList(Long id,Long userId) throws Exception;
+	
+	public List<FinancialArrangementsDetailRequest> getManuallyAddedFinancialArrangementDetailsList(Long applicationId);
 
 	public List<FinancialArrangementsDetailRequest> getFinancialArrangementDetailsListDirId(Long id,Long dirId) throws Exception;
 	
@@ -24,5 +26,9 @@ public interface FinancialArrangementDetailsService {
 	public FinancialArrangementsDetailRequest getTotalEmiAndSanctionAmountByApplicationId(Long applicationId);
 
 	public Double getTotalOfEmiByApplicationIdAndDirectorId(Long applicationId,Long directorId);
+	
+	public Boolean saveOrUpdateManuallyAddedLoans(List<FinancialArrangementsDetailRequest> finArrDetailRequest,Long applicationId,Long userId);
+	
+	public FinancialArrangementsDetailRequest getTotalEmiAndSanctionAmountByApplicationIdForUniforProduct(Long applicationId);
 
 }

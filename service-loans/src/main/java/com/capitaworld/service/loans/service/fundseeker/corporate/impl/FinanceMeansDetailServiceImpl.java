@@ -31,7 +31,7 @@ public class FinanceMeansDetailServiceImpl implements FinanceMeansDetailsService
 
 	@Override
 	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception {
-		// TODO Auto-generated method stub
+
 		try {
 			for (Map<String, Object> obj : frameRequest.getDataList()) {
 				FinanceMeansDetailRequest financeMeansRequest = (FinanceMeansDetailRequest) MultipleJSONObjectHelper
@@ -56,8 +56,7 @@ public class FinanceMeansDetailServiceImpl implements FinanceMeansDetailsService
 		}
 
 		catch (Exception e) {
-			logger.info("Exception in save totalCostOfProject :-");
-			e.printStackTrace();
+			logger.error("Exception in save totalCostOfProject :-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 		
@@ -99,8 +98,7 @@ public class FinanceMeansDetailServiceImpl implements FinanceMeansDetailsService
 			}
 			return financeMeansRequests;
 		} catch (Exception e) {
-			logger.info("Exception getting financeMeansDetail  :-");
-			e.printStackTrace();
+			logger.error("Exception getting financeMeansDetail  :-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}

@@ -127,6 +127,7 @@ public class ProductMasterTemp implements Serializable {
 	
 
 	public ProductMasterTemp() {
+		// Do nothing because of X and Y.
 	}
 
 	public Long getId() {

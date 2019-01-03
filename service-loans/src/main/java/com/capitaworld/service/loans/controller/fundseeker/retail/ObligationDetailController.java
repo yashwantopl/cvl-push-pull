@@ -121,6 +121,8 @@ public class ObligationDetailController {
                     currencyId = retailApplicantService.getCurrency(id, userId);
                     break;
 
+                default : break;
+
             }
             loansResponse.setData(CommonDocumentUtils.getCurrency(currencyId));
             return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);

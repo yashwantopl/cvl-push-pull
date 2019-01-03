@@ -1,11 +1,15 @@
+
 package com.capitaworld.service.loans.service;
 
 import java.util.List;
+import java.util.Map;
 
 import com.capitaworld.service.loans.model.FundProviderProposalDetails;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.ProposalDetailsAdminRequest;
 import com.capitaworld.service.loans.model.ProposalResponse;
+import com.capitaworld.service.loans.model.common.ProposalSearchResponse;
+import com.capitaworld.service.loans.model.common.ReportRequest;
 import com.capitaworld.service.matchengine.model.DisbursementDetailsModel;
 import com.capitaworld.service.matchengine.model.ProposalCountResponse;
 import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
@@ -16,6 +20,8 @@ public interface ProposalService {
 
 	public List<?>  fundproviderProposal(ProposalMappingRequest request);
 	
+	public List<?>  basicInfoForSearch(ProposalMappingRequest request);
+
 	public List<?> fundproviderProposalByAssignBy(ProposalMappingRequest request);
 	
 	public List<FundProviderProposalDetails>  fundseekerProposal(ProposalMappingRequest request,Long userId);
@@ -45,6 +51,10 @@ public interface ProposalService {
 	public List<ProposalDetailsAdminRequest> getProposalsByOrgId(Long userOrgId, ProposalDetailsAdminRequest request, Long userId);
 	
 	public Object getHomeCounterDetail();
+
+	public List<ProposalSearchResponse> searchProposalByAppCode(Long loginUserId,Long loginOrgId,ReportRequest reportRequest);
+
+	public Map<String , Double> getFpDashBoardCount(Long loginUserId,Long loginOrgId);
 
 	public Boolean checkAvailabilityForBankSelection(Long applicationId, Integer businessTypeId);
 }

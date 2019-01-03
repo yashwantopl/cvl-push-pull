@@ -2,6 +2,7 @@ package com.capitaworld.service.loans.utils.dpr;
 
 import java.util.Date;
 
+import com.capitaworld.service.loans.utils.CommonUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.util.CellReference;
@@ -11,6 +12,8 @@ import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.DprUserDataDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.TechnologyPositioningDetail;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.TechnologyPositioningDetailRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -19,6 +22,9 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.TechnologyP
  */
 public class DprFourthSheetExcelReader
 {
+
+    private static final Logger logger = LoggerFactory.getLogger(DprFourthSheetExcelReader.class);
+
     public static void run(Long storageDetailsId,XSSFSheet sheet,LoanApplicationMaster loanApplicationMaster,TechnologyPositioningDetailRepository technologyPositioningDetailRepository,DprUserDataDetail dprUserDataDetail) {
 
         saveTechnologyPositioning(storageDetailsId,sheet,"12",loanApplicationMaster,technologyPositioningDetailRepository);
@@ -35,27 +41,23 @@ public class DprFourthSheetExcelReader
         //save question 781
         try {
             String question781Answer = getDataFromCell(sheet, "C4");
-            if (!(question781Answer.isEmpty())) {//if textbox is empty not insert record
-                if (!(question781Answer.equalsIgnoreCase("Insert Text Here"))) {
+            if (!(question781Answer.isEmpty()) && !(question781Answer.equalsIgnoreCase("Insert Text Here")) ) {//if textbox is empty not insert record
                 	dprUserDataDetail.setManufacturingProcess(question781Answer);
-                }
             }
         }catch (Exception e)
         {
-            e.printStackTrace();
+            logger.error(CommonUtils.EXCEPTION,e);
         }
 
         //save question 782
         try {
             String question782Answer = getDataFromCell(sheet, "C6");
-            if (!(question782Answer.isEmpty())) {//if textbox is empty not insert record
-                if (!(question782Answer.equalsIgnoreCase("Insert Text Here"))) {
+            if (!(question782Answer.isEmpty()) && !(question782Answer.equalsIgnoreCase("Insert Text Here")) ) {//if textbox is empty not insert record
                 	dprUserDataDetail.setTechnicalKnowHow(question782Answer);
-                }
             }
         }catch (Exception e)
         {
-            e.printStackTrace();
+            logger.error(CommonUtils.EXCEPTION,e);
         }
 
     }
@@ -87,7 +89,7 @@ public class DprFourthSheetExcelReader
                 technologyPositioning.setIsActive(true);
                 technologyPositioningDetailRepository.save(technologyPositioning);
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error(CommonUtils.EXCEPTION,e);
             }
         }
     }

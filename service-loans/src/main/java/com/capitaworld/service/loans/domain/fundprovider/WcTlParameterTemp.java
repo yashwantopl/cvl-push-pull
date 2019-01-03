@@ -688,6 +688,7 @@ public class WcTlParameterTemp extends ProductMasterTemp implements Serializable
 	}
 
 	public WcTlParameterTemp() {
+		// Do nothing because of X and Y.
 	}
 
 	public ProductMasterTemp getFpProductId() {

@@ -32,7 +32,6 @@ public class AchievementDetailServiceImpl implements AchievmentDetailsService {
 
 	@Override
 	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception {
-		// TODO Auto-generated method stub
 		CommonDocumentUtils.startHook(logger, "saveOrUpdate");
 		try {
 			for (Map<String, Object> obj : frameRequest.getDataList()) {
@@ -54,8 +53,7 @@ public class AchievementDetailServiceImpl implements AchievmentDetailsService {
 		}
 
 		catch (Exception e) {
-			logger.error("Exception  in save achievementDetail  :-");
-			e.printStackTrace();
+			logger.error("Exception  in save achievementDetail  :-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 
@@ -77,8 +75,7 @@ public class AchievementDetailServiceImpl implements AchievmentDetailsService {
 			CommonDocumentUtils.endHook(logger, "getAchievementDetailList");
 			return achievementDetailRequests;
 		} catch (Exception e) {
-			logger.error("Exception getting achievementDetail  :-");
-			e.printStackTrace();
+			logger.error("Exception getting achievementDetail  :-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}

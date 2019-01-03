@@ -61,8 +61,7 @@ public class SecurityCorporateDetailsServiceImpl implements SecurityCorporateDet
 		}
 
 		catch (Exception e) {
-			logger.info("Exception  in save securityCorporateDetail  :-");
-			e.printStackTrace();
+			logger.error("Exception  in save securityCorporateDetail  :-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
@@ -109,8 +108,7 @@ public class SecurityCorporateDetailsServiceImpl implements SecurityCorporateDet
 		}
 
 		catch (Exception e) {
-			logger.info("Exception  in save securityCorporateDetail  :-");
-			e.printStackTrace();
+			logger.error("Exception  in save securityCorporateDetail  :-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}

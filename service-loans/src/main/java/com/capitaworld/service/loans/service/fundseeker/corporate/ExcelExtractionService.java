@@ -4,7 +4,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 public interface ExcelExtractionService {
 	
-	public Boolean readCMA(Long applicationId,Long storageDetailsId,MultipartFile multipartFile);
+	public Boolean readCMA(Long applicationId,Long storageDetailsId,MultipartFile multipartFile) throws Exception;
 
 	public Boolean readCMA(Long applicationId,Long proposalMappingId,Long storageDetailsId,MultipartFile multipartFile);
 

@@ -27,7 +27,11 @@ import com.capitaworld.service.loans.utils.CommonUtils;
 @RestController
 @RequestMapping("/RecentView")
 public class RecentViewController {
+
 	private static final Logger logger = LoggerFactory.getLogger(DashboardController.class);
+
+	private static final String ID_REQUIRE_TO_GET_RECENT_PROFILE_VIEW_DETAILS = "ID Require to get Recent Profile View Details ==>";
+	private static final String ERROR_WHILE_GETTING_RECENT_PROFILE_VIEW_DETAILS = "Error while getting Recent Profile View Details==>";
 	
 	@Autowired
 	private RecentViewService recentViewService;
@@ -44,19 +48,19 @@ public class RecentViewController {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 			}
 			if (applicationId == null) {
-				logger.warn("ID Require to get Recent Profile View Details ==>" + applicationId);
+				logger.warn(ID_REQUIRE_TO_GET_RECENT_PROFILE_VIEW_DETAILS + applicationId);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 
 			RecentProfileViewDetailResponse response = recentViewService.getRecentViewDetailListByAppId(applicationId,
 					userId);
-			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 			loansResponse.setData(response);
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
 		} catch (Exception e) {
-			logger.error("Error while getting Recent Profile View Details==>", e);
+			logger.error(ERROR_WHILE_GETTING_RECENT_PROFILE_VIEW_DETAILS, e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -77,19 +81,19 @@ public class RecentViewController {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 			}
 			if (productId == null) {
-				logger.warn("ID Require to get Recent Profile View Details ==>" + productId);
+				logger.warn(ID_REQUIRE_TO_GET_RECENT_PROFILE_VIEW_DETAILS + productId);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 
 			RecentProfileViewDetailResponse response = recentViewService.getRecentViewDetailListByProdId(productId,
 					userId);
-			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 			loansResponse.setData(response);
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
 		} catch (Exception e) {
-			logger.error("Error while getting Recent Profile View Details==>", e);
+			logger.error(ERROR_WHILE_GETTING_RECENT_PROFILE_VIEW_DETAILS, e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -109,19 +113,19 @@ public class RecentViewController {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 			}
 			if (applicationId == null) {
-				logger.warn("ID Require to get Recent Profile View Details ==>" + applicationId);
+				logger.warn(ID_REQUIRE_TO_GET_RECENT_PROFILE_VIEW_DETAILS + applicationId);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 
 			RecentProfileViewDetailResponse response = recentViewService.getLatestRecentViewDetailListByAppId(applicationId,
 					userId);
-			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 			loansResponse.setData(response);
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
 		} catch (Exception e) {
-			logger.error("Error while getting Recent Profile View Details==>", e);
+			logger.error(ERROR_WHILE_GETTING_RECENT_PROFILE_VIEW_DETAILS, e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -141,19 +145,19 @@ public class RecentViewController {
 				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 			}
 			if (applicationId == null) {
-				logger.warn("ID Require to get Recent Profile View Details ==>" + applicationId);
+				logger.warn(ID_REQUIRE_TO_GET_RECENT_PROFILE_VIEW_DETAILS + applicationId);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 
 			RecentProfileViewDetailResponse response = recentViewService.getLatestRecentViewDetailListByProdId(applicationId,
 					userId);
-			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 			loansResponse.setData(response);
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
 		} catch (Exception e) {
-			logger.error("Error while getting Recent Profile View Details==>", e);
+			logger.error(ERROR_WHILE_GETTING_RECENT_PROFILE_VIEW_DETAILS, e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);

@@ -18,8 +18,12 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CommonUtils {
+
+	private static final Logger logger = LoggerFactory.getLogger(CommonUtils.class);
 
 	public static final String USER_ID = "userId";
 	public static final String PROPOSAL_MAPPING_ID = "proposalMappingId";
@@ -40,6 +44,9 @@ public class CommonUtils {
 	public static final String APPLICATION_LOCKED_MESSAGE = "Your Application is locked. Please Contact Administrator to update the Details.";
 	public static final String MAXIMUM = "maximum";
 	public static final String MINIMUM = "minimum";
+	public static final String GST_VALIDATION_ERROR_MSG = "Please Enter Valid GSTIN and Verify Before Moving ahead.";
+	public static final String ITR_VALIDATION_ERROR_MSG = "Please Upload Valid itr and Verify Before Moving ahead.";
+	public static final String GENERIC_ERROR_MSG = "The application has encountered an error from Server. Please try again after sometime!!!.";
 	
 	public static final String HUNTER_INELIGIBLE_MESSAGE= "You do not Qualify for Contactless Process, Kindly visit Bank Branch or get your Due Diligence process completed in www.capitaworld.com to connect to Banks";
 
@@ -64,9 +71,63 @@ public class CommonUtils {
 	
 	public static final String IN_PROGRESS = "In Progress";
 	public static final String COMPLETED = "Completed";
+	public static final String SUCCESS = "Success";
+	public static final String FALSE_LITERAL = "false";
 	public static final String NA = "NA";
-	
-	public interface UsersRoles {
+	public static final String AUDITED = "Audited";
+	public static final String PROJECTED = "Projected";
+	public static final String SUCCESS_RESULT = "Success Result";
+	public static final String DATA_FOUND = "Data Found.";
+	public static final String DATA_NOT_FOUND = "Data Not Found.";
+	public static final String SUCCESSFULLY_SAVED = "Successfully Saved.";
+	public static final String INVALID_AGE = "Invalid Age";
+	public static final String ONE_FORM_SAVED_SUCCESSFULLY = "Oneform Saved Successfully";
+	public static final String SUCCESSFULLY_GET_DATA = "Successfully get data";
+
+	public static final String EXCEPTION = " :: EXCEPTION : ";
+	public static final String CLIENT_ID_IS_NOT_VALID = "Client Id is not valid";
+	public static final String OBLIGATION_MUST_BE_LESS_THAN_INCOME = "Obligation Must be less than Income";
+	public static final String REQUEST_DATA_NULL_OR_EMPTY = "Request Data Null Or Empty !!";
+	public static final String INTERNAL_SERVER_ERROR  = "Internal Server Error";
+	public static final String INSERT_TEXT_HERE = "Insert Text Here";
+	public static final String MANDATORY_FIELDS_MUST_NOT_BE_NULL = "Mandatory Fields Must Not be Null";
+	public static final String REQUESTED_DATA_CAN_NOT_BE_EMPTY = "Requested data can not be empty.";
+	public static final String REQUESTED_DATA_CAN_NOT_BE_NULL_OR_EMPTY = "Requested Data cannot be null or empty";
+	public static final String INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND = "Invalid data or Requested data not found.";
+	public static final String UNAUTHORIZED_USER_PLEASE_RE_LOGIN_AND_TRY_AGAIN = "Unauthorized User! Please Re-login and try again.";
+
+	public static final String YOU_ARE_NOT_ELIGIBLE_FOR_HOME_LOAN = "You are not eligible for Home Loan";
+	public static final String YOU_ARE_NOT_ELIGIBLE_FOR_PERSONAL_LOAN = "You are not eligible for Personal Loan";
+
+	public static final String PARAMETERS_FP_NAME = "fp_name";
+	public static final String PARAMETERS_FS_NAME = "fs_name";
+	public static final String PARAMETERS_LOAN_TYPE = "loan_type";
+	public static final String PARAMETERS_LOAN_AMOUNT = "loan_amount";
+	public static final String PARAMETERS_APPLICATION_ID = "application_id";
+	public static final String PARAMETERS_EMI_AMOUNT = "emi_amount";
+	public static final String PARAMETERS_ADDRESS = "address";
+	public static final String PARAMETERS_IS_DYNAMIC = "isDynamic";
+	public static final String RATE_INTEREST = "rate_interest";
+	public static final String LITERAL_AMOUNT = "amount";
+	public static final String GET_LIST = "getList";
+	public static final String GET_PRIMARY = "getPrimary";
+	public static final String ORG_NAME = "orgName";
+	public static final String SAVE_OR_UPDATE = "saveOrUpdate";
+
+	public static final String STORAGE_DETAILS_ID = "storageDetailsId";
+	public static final String APPLICATION_ID = "applicationId";
+	public static final String CREATED_BY = "createdBy";
+	public static final String CREATED_DATE = "createdDate";
+	public static final String MODIFIED_BY = "modifiedBy";
+	public static final String MODIFIED_DATE = "modifiedDate";
+	public static final String IS_ACTIVE = "isActive";
+
+	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
+
+	public static final class UsersRoles {
+		private UsersRoles(){
+			// Do nothing because of X and Y.
+		}
 		public static final Long MAKER = 1l;
 		public static final Long CHECKER = 2l;
 		public static final Long APPROVER = 3l;
@@ -78,9 +139,13 @@ public class CommonUtils {
 		public static final Long FP_CHECKER = 9l;
 		public static final Long ADMIN_MAKER = 10l;
 		public static final Long ADMIN_CHECKER = 11l;
+		public static final Long SMECC = 12l;
 	}
 
-	public interface DenominationInAmount {
+	public static final class DenominationInAmount {
+		private DenominationInAmount(){
+			// Do nothing because of X and Y.
+		}
 		public static final Long LAKHS = 100000l;
 		public static final Long MILLIONS = 1000000l;
 		public static final Long CRORES = 10000000l;
@@ -88,7 +153,10 @@ public class CommonUtils {
 		public static final Long ABSOLUTE = 1l;
 	}
 
-	public interface DenominationId {
+	public static final class DenominationId {
+		private DenominationId() {
+			// Do nothing because of X and Y.
+		}
 		public static final Integer LAKHS = 1;
 		public static final Integer MILLIONS = 2;
 		public static final Integer CRORES = 3;
@@ -228,7 +296,10 @@ public class CommonUtils {
 
 	}
 
-	public interface IgnorableCopy {
+	public static final class IgnorableCopy {
+		private IgnorableCopy() {
+			// Do nothing because of X and Y.
+		}
 		public static final String[] CORPORATE = { "userId", "productId", "name", "categoryCode", "isActive",
 				"applicationId" };
 		public static final String ID = "id";
@@ -292,14 +363,20 @@ public class CommonUtils {
 				"loanAmountRequired", "loanPurpose", "tenureRequired", "repayment", "monthlyIncome","isApplicantDetailsFilled" };
 	}
 
-	public interface ApplicantType {
+	public static final class ApplicantType {
+		private ApplicantType() {
+			// Do nothing because of X and Y.
+		}
 		public static final int APPLICANT = 1;
 		public static final int COAPPLICANT = 2;
 		public static final int GARRANTOR = 3;
 
 	}
 
-	public interface UserMainType {
+	public static final class UserMainType {
+		private UserMainType() {
+			// Do nothing because of X and Y.
+		}
 		public static final int RETAIL = 1;
 		public static final int CORPORATE = 2;
 	}
@@ -359,7 +436,10 @@ public class CommonUtils {
 		}
 	}
 
-	public interface ApplicationStatus {
+	public static final class ApplicationStatus {
+		private ApplicationStatus() {
+			// Do nothing because of X and Y.
+		}
 		public static final Long OPEN = 1l;
 		public static final Long ASSIGNED = 2l;
 		public static final Long SUBMITTED = 3l;
@@ -391,7 +471,10 @@ public class CommonUtils {
 		}
 	}
 
-	public interface DdrStatus {
+	public static final class DdrStatus {
+		private DdrStatus() {
+			// Do nothing because of X and Y.
+		}
 		public static final Long OPEN = 1l;
 		public static final Long IN_PROGRESS = 2l;
 		public static final Long SUBMITTED = 3l;
@@ -400,36 +483,54 @@ public class CommonUtils {
 		public static final Long REVERTED = 6l;
 	}
 
-	public interface UserType {
+	public static final class UserType {
+		private UserType() {
+			// Do nothing because of X and Y.
+		}
 		public static final int FUND_SEEKER = 1;
 		public static final int FUND_PROVIDER = 2;
 		public static final int SERVICE_PROVIDER = 3;
 		public static final int NETWORK_PARTNER = 4;
 	}
 
-	public interface UploadUserType {
+	public static final class UploadUserType {
+		private UploadUserType() {
+			// Do nothing because of X and Y.
+		}
 		public static final String UERT_TYPE_APPLICANT = "applicant";
 		public static final String UERT_TYPE_CO_APPLICANT = "coApplicant";
 		public static final String UERT_TYPE_GUARANTOR = "guarantor";
 		public static final String UERT_TYPE_USER = "user";
 	}
 
-	public interface EmployerConstitution {
+	public static final class EmployerConstitution {
+		private EmployerConstitution() {
+			// Do nothing because of X and Y.
+		}
 		public static final int PARTNERSHIP_PROPRIETORSHIP = 1;
 		public static final int ANYOTHER = 2;
 	}
 
-	public interface EmployementType {
+	public static final class EmployementType {
+		private EmployementType() {
+			// Do nothing because of X and Y.
+		}
 		public static final int SALARIED = 1;
 		public static final int BUSINESSMAN = 2;
 	}
 
-	public interface ReceiptMode {
+	public static final class ReceiptMode {
+		private ReceiptMode() {
+			// Do nothing because of X and Y.
+		}
 		public static final int CASH = 1;
 		public static final int BANK = 2;
 	}
 
-	public interface PropertyType {
+	public static final class PropertyType {
+		private PropertyType () {
+			// Do nothing because of X and Y.
+		}
 		public static final int RESIDENTIAL = 1;
 		public static final int COMMERCIAL = 2;
 		public static final int INDUSTRIAL = 3;
@@ -465,7 +566,10 @@ public class CommonUtils {
 		}
 	}
 
-	public interface TabType {
+	public static final class TabType {
+		private TabType() {
+			// Do nothing because of X and Y.
+		}
 		public static final int PROFILE = 1;
 		public static final int PROFILE_CO_APPLICANT = 2;
 		public static final int PROFILE_GUARANTOR = 3;
@@ -518,19 +622,18 @@ public class CommonUtils {
 		return getBowlCount(profileCount, null) + getBowlCount(primaryCount, null) + getBowlCount(finalCount, null);
 	}
 
-	public static List<String> urlsBrforeLogin = null;
+	public static final List<String> URLS_BRFORE_LOGIN = new ArrayList<String>(8);
 	static {
-		urlsBrforeLogin = new ArrayList<String>(8);
-		urlsBrforeLogin.add("/loans/loan_application/getUsersRegisteredLoanDetails".toLowerCase());
-		urlsBrforeLogin.add("/loans/loan_application/getLoanDetailsForAdminPanel".toLowerCase());
-		urlsBrforeLogin.add("/loans/corporate_upload/downloadCMAAndCoCMAExcelFile/**".toLowerCase());
-		urlsBrforeLogin.add("/loans/loan_application/save_payment_info_for_mobile".toLowerCase());
-		urlsBrforeLogin.add("/loans/loan_application/mobile/successUrl".toLowerCase());
-		urlsBrforeLogin.add("/loans/loan_application/getToken".toLowerCase());
-		urlsBrforeLogin.add("/loans/loan_application/saveLoanDisbursementDetail".toLowerCase());
-		urlsBrforeLogin.add("/loans/loan_application/saveLoanSanctionDetail".toLowerCase());
-		urlsBrforeLogin.add("/loans/loan_application/saveLoanSanctionDisbursementDetailFromBank".toLowerCase());
-		urlsBrforeLogin.add("/loans/ddr/getCustomerNameById".toLowerCase());
+		URLS_BRFORE_LOGIN.add("/loans/loan_application/getUsersRegisteredLoanDetails".toLowerCase());
+		URLS_BRFORE_LOGIN.add("/loans/loan_application/getLoanDetailsForAdminPanel".toLowerCase());
+		URLS_BRFORE_LOGIN.add("/loans/corporate_upload/downloadCMAAndCoCMAExcelFile/**".toLowerCase());
+		URLS_BRFORE_LOGIN.add("/loans/loan_application/save_payment_info_for_mobile".toLowerCase());
+		URLS_BRFORE_LOGIN.add("/loans/loan_application/mobile/successUrl".toLowerCase());
+		URLS_BRFORE_LOGIN.add("/loans/loan_application/getToken".toLowerCase());
+		URLS_BRFORE_LOGIN.add("/loans/loan_application/saveLoanDisbursementDetail".toLowerCase());
+		URLS_BRFORE_LOGIN.add("/loans/loan_application/saveLoanSanctionDetail".toLowerCase());
+		URLS_BRFORE_LOGIN.add("/loans/loan_application/saveLoanSanctionDisbursementDetailFromBank".toLowerCase());
+		URLS_BRFORE_LOGIN.add("/loans/ddr/getCustomerNameById".toLowerCase());
 	}
 
 	public static int calculateAge(Date dateOfBirth) {
@@ -681,7 +784,7 @@ public class CommonUtils {
 	}
 
 	private static Long convertDenominationToValue(Integer denomination, Double amount) {
-		// TODO Auto-generated method stub
+
 		if (isObjectNullOrEmpty(denomination) || isObjectNullOrEmpty(amount)) {
 			return null;
 		}
@@ -969,7 +1072,10 @@ public class CommonUtils {
 		// return isObjectNullOrEmpty(value) ? 0.0 : value;
 	}
 
-	public interface PaymentMode {
+	public static final class PaymentMode {
+		private PaymentMode () {
+			// Do nothing because of X and Y.
+		}
 		public static final String ONLINE = "ONLINE";
 		public static final String CHEQUE = "CHEQUE";
 		public static final String CASH = "CASH";
@@ -1022,7 +1128,8 @@ public class CommonUtils {
 		
 		NEW_TO_BUSINESS(2, "New to Business"),
 		EXISTING_BUSINESS(1, "Existing Business"),
-		RETAIL_PERSONAL_LOAN(3, "Retail Personal Loan");
+		RETAIL_PERSONAL_LOAN(3, "Retail Personal Loan"),
+		ONE_PAGER_ELIGIBILITY_EXISTING_BUSINESS(4, "One Pager Eligibility For Existing Business");
 
 		private Integer id;
 		private String value;
@@ -1067,7 +1174,7 @@ public class CommonUtils {
 	
 public enum APIFlags {
 		
-		ITR(1, "ITR"),CIBIL(2, "CIBIL"),BANK_STATEMENT(3, "BANK STATEMENT"),ONE_FORM(4, "ONE FORM");
+		ITR(1, "ITR"),CIBIL(2, "CIBIL"),BANK_STATEMENT(3, "BANK STATEMENT"),ONE_FORM(4, "ONE FORM"),GST(5, "GST");
 
 		private Integer id;
 		private String value;
@@ -1230,7 +1337,10 @@ public enum APIFlags {
 		return null;
 	}
 	
-	public interface Status {
+	public static final class Status {
+		private Status () {
+			// Do nothing because of X and Y.
+		}
 		public static final int OPEN = 1;
 		public static final int IN_PROGRESS = 2;
 		public static final int REVERTED = 3;
@@ -1243,10 +1353,18 @@ public enum APIFlags {
 	static DecimalFormat decim2 = new DecimalFormat("#,###");
 	
 	public static String convertValue(Double value) {
-		return !CommonUtils.isObjectNullOrEmpty(value)? decimal.format(value).toString(): "0";
+		return !CommonUtils.isObjectNullOrEmpty(value)? decimal.format(value) : "0";
 	}
 	public static String convertValueWithoutDecimal(Double value) {
-		return !CommonUtils.isObjectNullOrEmpty(value)? decim2.format(value).toString(): "0";
+		return !CommonUtils.isObjectNullOrEmpty(value)? decim2.format(value) : "0";
+	}
+	/*Return Round Value with CommaStyle*/ 
+	public static String convertValueRound(Double value) {
+		return !CommonUtils.isObjectNullOrEmpty(value)? decim2.format(Long.valueOf(Math.round(value)))  : "0";
+	}
+	
+	public static String formatValueWithoutDecimal(Double value) {
+		return !CommonUtils.isObjectNullOrEmpty(value)? decim2.format(value)  : "0";
 	}
 	public static Object convertToDoubleForXml(Object obj, Map<String, Object>data) throws Exception {
 		if(obj ==  null) {
@@ -1302,7 +1420,7 @@ public enum APIFlags {
 				setEntry.setValue(printFields(setEntry.getValue(),data));
 			}
 		}else if(obj instanceof String) {
-			obj = StringEscapeUtils.escapeXml((String)obj);
+			obj = StringEscapeUtils.escapeXml(((String)obj).replaceAll("--", ""));
 			return obj;
 		}else if(obj instanceof Double) {
 			if(!Double.isNaN((Double)obj)) {
@@ -1397,7 +1515,7 @@ public enum APIFlags {
     			return (Boolean) obj;
     		}	
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(EXCEPTION,e);
 		}
 		return null;
 	}
@@ -1405,11 +1523,15 @@ public enum APIFlags {
     public static Long convertLong(Object obj){
     	try {
     		if(!CommonUtils.isObjectNullOrEmpty(obj)) {
-    			BigInteger value =  (BigInteger) obj;
-    			return value.longValue();
+    			if(obj instanceof BigInteger) {
+    				BigInteger value =  (BigInteger) obj;
+        			return value.longValue();	
+    			} else {
+    				return (Long) obj;
+    			}
     		}	
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(EXCEPTION,e);
 		}
 		return null;
 	}
@@ -1417,11 +1539,15 @@ public enum APIFlags {
     public static Integer convertInteger(Object obj){
     	try {
     		if(!CommonUtils.isObjectNullOrEmpty(obj)) {
-    			BigInteger value =  (BigInteger) obj;
-    			return value.intValue();
+    			if(obj instanceof BigInteger) {
+    				BigInteger value =  (BigInteger) obj;
+        			return value.intValue();	
+    			} else {
+    				return (Integer) obj;
+    			}
     		}	
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(EXCEPTION,e);
 		}
 		return null;
 	}
@@ -1432,7 +1558,7 @@ public enum APIFlags {
     			return (Date) obj;
     		}	
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(EXCEPTION,e);
 		}
 		return null;
 	}
@@ -1448,7 +1574,7 @@ public enum APIFlags {
     			}
     		}	
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(EXCEPTION,e);
 		}
 		return null;
 	}
@@ -1464,7 +1590,7 @@ public enum APIFlags {
     			}
     		}	
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(EXCEPTION,e);
 		}
 		return null;
 	}
@@ -1473,15 +1599,15 @@ public enum APIFlags {
 	
 	public static String commaReplace(String value) {
 		
-		//System.out.println("comma Replace called :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
-		
-		
 		if(value != null && !value.equals("") && value.charAt(value.length()-1) != ',') {
 			return value+", ";
 		}
 		return value;
 	}
-	public interface sanctionedFrom {
+	public static final class sanctionedFrom {
+		private sanctionedFrom () {
+			// Do nothing because of X and Y.
+		}
 		public static final long ELIGIBLE_USERS = 1;
 		public static final long INELIGIBLE_USERS_OFFLINE_APPLICATION = 2;
 		public static final long FROM_API = 3;

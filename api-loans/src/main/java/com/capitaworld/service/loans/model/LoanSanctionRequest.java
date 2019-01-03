@@ -26,7 +26,7 @@ public class LoanSanctionRequest extends AuditActivityRequest implements Seriali
 	
 	private Long branch;
 	private Long applicationId;
-	private Long referenceNo;
+	private String referenceNo;
 	private Double tenure;
 	private String sanctionAuthority;
 	private String remark;
@@ -109,11 +109,11 @@ public class LoanSanctionRequest extends AuditActivityRequest implements Seriali
 		this.applicationId = applicationId;
 	}
 
-	public Long getReferenceNo() {
+	public String getReferenceNo() {
 		return referenceNo;
 	}
 
-	public void setReferenceNo(Long referenceNo) {
+	public void setReferenceNo(String referenceNo) {
 		this.referenceNo = referenceNo;
 	}
 
@@ -251,7 +251,7 @@ public class LoanSanctionRequest extends AuditActivityRequest implements Seriali
 				+ ", transactionNo=" + transactionNo + ", roi=" + roi + ", sanctionDate=" + sanctionDate + ", branch="
 				+ branch + ", applicationId=" + applicationId + ", referenceNo=" + referenceNo + ", tenure=" + tenure
 				+ ", sanctionAuthority=" + sanctionAuthority + ", remark=" + remark + ", userName=" + userName
-				+ ", password=" + password + ", actionBy=" + actionBy + ", processingFee=" + processingFee + ", orgId="
+				+ ", actionBy=" + actionBy + ", processingFee=" + processingFee + ", orgId="
 				+ orgId + ", proposalId=" + proposalId + ", proposalStatusId=" + proposalStatusId + ", isSaved="
 				+ isSaved + ", reason=" + reason + ", statusCode=" + statusCode + ", isIneligibleProposal="
 				+ isIneligibleProposal + ", isSanctionedFrom=" + isSanctionedFrom + "]";

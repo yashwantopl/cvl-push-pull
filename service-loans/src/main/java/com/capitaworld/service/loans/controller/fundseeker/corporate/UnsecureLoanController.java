@@ -54,7 +54,7 @@ public class UnsecureLoanController {
 			if (userId == null) {
 				logger.warn("userId can not be empty ==>" + unsecureLoanRequest);
 				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 
 			if (unsecureLoanRequest.getApplicationId() == null) {
@@ -71,8 +71,7 @@ public class UnsecureLoanController {
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
 					HttpStatus.OK);
 		} catch (Exception e) {
-			logger.error("Error while saving final information of Unsecure Loan");
-			e.printStackTrace();
+			logger.error("Error while saving final information of Unsecure Loan : ",e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -96,7 +95,7 @@ public class UnsecureLoanController {
 					logger.warn("ID and ApplicationId Require to get Final Unsecure Loan Details. ID==>" + userId
 							+ " and ApplicationId==>" + applicationId);
 					return new ResponseEntity<LoansResponse>(
-							new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+							new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 				}
 				FinalUnsecuredLoanRequest response = finalUSLService.get(userId, applicationId);
 				LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
@@ -105,14 +104,12 @@ public class UnsecureLoanController {
 				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 			} catch (Exception e) {
 				logger.error("Error while getting Final Unsecure Loan Details==>", e);
-				e.printStackTrace();
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 						HttpStatus.OK);
 			}
 		} catch (Exception e) {
-			logger.error("Error while getting  final information of Unsecure Loan");
-			e.printStackTrace();
+			logger.error("Error while getting  final information of Unsecure Loan : ",e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -134,7 +131,7 @@ public class UnsecureLoanController {
 			if (userId == null) {
 				logger.warn("userId can not be empty ==>" + unsecureLoanRequest);
 				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 
 			if (unsecureLoanRequest.getId() == null) {
@@ -150,7 +147,6 @@ public class UnsecureLoanController {
 
 		} catch (Exception e) {
 			logger.error("Error while saving Primary Working Details==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -173,7 +169,7 @@ public class UnsecureLoanController {
 				logger.warn("ID and User Id Require to get Primary Working Details ==>" + applicationId + "User ID ==>"
 						+ userId);
 				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 			PrimaryUnsecureLoanRequest response = primaryUSLService.get(applicationId, userId);
 			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
@@ -182,7 +178,6 @@ public class UnsecureLoanController {
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getting Primary Unsecure Loan Details==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);

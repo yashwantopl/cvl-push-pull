@@ -6,6 +6,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.capitaworld.service.dms.model.DocumentRequest;
 import com.capitaworld.service.loans.model.NTBRequest;
+import com.capitaworld.service.loans.model.corporate.FundSeekerInputRequestResponse;
+
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +33,11 @@ import com.capitaworld.service.loans.utils.CommonUtils;
 @RestController
 @RequestMapping("/financial_arrangement_details")
 public class FinancialArrangementDetailsController {
+
 	private static final Logger logger = LoggerFactory.getLogger(SecurityCorporateDetailsController.class);
+
+	private static final String APPLICATION_ID_MSG = "applicationId == >";
+	private static final String ERROR_WHILE_GETTING_TOTAL_EMI_BY_APPLICATION_ID_MSG = "Error while Getting total EMI by Application Id==>";
 
 	@Autowired
 	private FinancialArrangementDetailsService financialArrangementDetailsService;
@@ -81,12 +87,11 @@ public class FinancialArrangementDetailsController {
 			}
 			financialArrangementDetailsService.saveOrUpdate(frameRequest);
 			CommonDocumentUtils.endHook(logger, "save");
-			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
+			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SUCCESSFULLY_SAVED, HttpStatus.OK.value()),
 					HttpStatus.OK);
 
 		} catch (Exception e) {
 			logger.error("Error while saving Financial Arrangement Details==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -124,7 +129,6 @@ public class FinancialArrangementDetailsController {
 
 		} catch (Exception e) {
 			logger.error("Error while getting Financial Arrangement Details==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -155,7 +159,7 @@ public class FinancialArrangementDetailsController {
 			clientId = null;
 		}
 
-		logger.warn("applicationId == >" + applicationId + "and userId == >" + userId + " and ClienId ==> " + clientId);
+		logger.warn(APPLICATION_ID_MSG + applicationId + "and userId == >" + userId + " and ClienId ==> " + clientId);
 		try {
 			// Checking Profile is Locked
 			Long finalUserId = (CommonUtils.isObjectNullOrEmpty(clientId) ? userId : clientId);
@@ -174,7 +178,7 @@ public class FinancialArrangementDetailsController {
 				financialArrangementDetailsService.saveOrUpdate(detailRequests, applicationId, finalUserId,directorId);
 			}
 			
-			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
+			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SUCCESSFULLY_SAVED, HttpStatus.OK.value()),
 					HttpStatus.OK);
 
 		} catch (Exception e) {
@@ -186,17 +190,59 @@ public class FinancialArrangementDetailsController {
 
 	}
 	
+	@RequestMapping(value = "/save_for_one_pager_eligibility", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> saveForOnePagerEligibility(@RequestBody FundSeekerInputRequestResponse fundSeekerInputRequestResponse,HttpServletRequest httpServletRequest ) {
+		
+		// application id and user id must not be null
+		if (fundSeekerInputRequestResponse.getApplicationId() == null) {
+			logger.warn("application id must not be null ==>");
+			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+		}
+		Long userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
+		fundSeekerInputRequestResponse.setUserId(userId);
+
+		logger.info(APPLICATION_ID_MSG + fundSeekerInputRequestResponse.getApplicationId() + "and userId == >" + userId);
+		try {
+			// Checking Profile is Locked
+			Boolean primaryLocked = loanApplicationService.isFinalLocked(fundSeekerInputRequestResponse.getApplicationId(), fundSeekerInputRequestResponse.getUserId());
+			if (!CommonUtils.isObjectNullOrEmpty(primaryLocked) && primaryLocked.booleanValue()) {
+				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.APPLICATION_LOCKED_MESSAGE, HttpStatus.BAD_REQUEST.value()),HttpStatus.OK);
+			}
+			financialArrangementDetailsService.saveOrUpdate(fundSeekerInputRequestResponse.getFinancialArrangementsDetailRequestsList(), fundSeekerInputRequestResponse.getApplicationId(), fundSeekerInputRequestResponse.getUserId());	
+			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SUCCESSFULLY_SAVED, HttpStatus.OK.value()),HttpStatus.OK);
+
+		} catch (Exception e) {
+			logger.error("Error while saving Existing Loan Details==>", e);
+			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
+		}
+	}
+	
 	@RequestMapping(value = "/get_total_emi_sanction_amount/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public FinancialArrangementsDetailRequest getTotalEmiAndSanctionedAmount(@PathVariable("applicationId") Long applicationId) {
 		if (applicationId == null) {
 			logger.warn("application id, must not be null ==>");
 			return null;
 		}
-		logger.warn("applicationId == >" + applicationId);
+		logger.warn(APPLICATION_ID_MSG + applicationId);
 		try {
 			return financialArrangementDetailsService.getTotalEmiAndSanctionAmountByApplicationId(applicationId);
 		} catch (Exception e) {
-			logger.error("Error while Getting total EMI by Application Id==>", e);
+			logger.error(ERROR_WHILE_GETTING_TOTAL_EMI_BY_APPLICATION_ID_MSG, e);
+			return null;
+		}
+	}
+	
+	@RequestMapping(value = "/get_total_emi_sanction_amount_uniform/{applicationId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public FinancialArrangementsDetailRequest getTotalEmiAndSanctionedAmountUniform(@PathVariable("applicationId") Long applicationId) {
+		if (applicationId == null) {
+			logger.warn("application id, must not be null ==>");
+			return null;
+		}
+		logger.warn(APPLICATION_ID_MSG + applicationId);
+		try {
+			return financialArrangementDetailsService.getTotalEmiAndSanctionAmountByApplicationIdForUniforProduct(applicationId);
+		} catch (Exception e) {
+			logger.error(ERROR_WHILE_GETTING_TOTAL_EMI_BY_APPLICATION_ID_MSG, e);
 			return null;
 		}
 	}
@@ -214,7 +260,7 @@ public class FinancialArrangementDetailsController {
 				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 		} catch (Exception e) {
-			logger.error("Error while Getting total EMI by Application Id==>", e);
+			logger.error(ERROR_WHILE_GETTING_TOTAL_EMI_BY_APPLICATION_ID_MSG, e);
 			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
 		}
 	}

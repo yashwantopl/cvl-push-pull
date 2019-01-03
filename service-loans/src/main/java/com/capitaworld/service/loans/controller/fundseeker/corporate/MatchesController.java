@@ -32,6 +32,10 @@ public class MatchesController {
 
 	private static final Logger logger = LoggerFactory.getLogger(MatchesController.class);
 
+	private static final String MATCH_REQUEST_MUST_NOT_BE_EMPTY_MSG = "matchRequest must not be empty ==>";
+	private static final String MATCHES_SUCCESSFULLY_SAVED_MSG = "Matches Successfully Saved";
+	private static final String MATCH_FS_CORPORATE = "matchFSCorporate";
+
 	@Autowired
 	private MatchEngineClient engineClient;
 	
@@ -52,9 +56,9 @@ public class MatchesController {
 	@RequestMapping(value = "/${corporate}/fundseeker", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> matchFSCorporate(@RequestBody MatchRequest matchRequest,
 			HttpServletRequest request,@RequestParam(value = "clientId", required = false) Long clientId) {
-		CommonDocumentUtils.startHook(logger, "matchFSCorporate");
+		CommonDocumentUtils.startHook(logger, MATCH_FS_CORPORATE);
 		Long userId = null;
-		Integer userType = ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue();
+		Integer userType = (Integer)request.getAttribute(CommonUtils.USER_TYPE);
 		   if(CommonDocumentUtils.isThisClientApplication(request)){
 		    userId = clientId;
 		   } else {
@@ -63,31 +67,30 @@ public class MatchesController {
 		matchRequest.setUserId(userId);
 		
 		if (matchRequest == null || matchRequest.getApplicationId() == null) {
-			logger.warn("matchRequest must not be empty ==>" + matchRequest);
+			logger.warn(MATCH_REQUEST_MUST_NOT_BE_EMPTY_MSG + matchRequest);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}
 		try {
 			MatchResponse matchResponse = engineClient.calculateMatchesOfCorporateFundSeeker(matchRequest);
 			if (matchResponse != null && matchResponse.getStatus() == 200) {
-				CommonDocumentUtils.endHook(logger, "matchFSCorporate");
+				CommonDocumentUtils.endHook(logger, MATCH_FS_CORPORATE);
 				if(CommonUtils.UserType.FUND_SEEKER == userType){
 					logger.info("Start Sending Mail To Fs Corporate for Profile and primary fill complete");
 					asyncComponent.sendMailWhenUserCompletePrimaryForm(userId,matchRequest.getApplicationId());	
 				}
-				LoansResponse loansResponse = new LoansResponse("Matches Successfully Saved", HttpStatus.OK.value());
+				LoansResponse loansResponse = new LoansResponse(MATCHES_SUCCESSFULLY_SAVED_MSG, HttpStatus.OK.value());
 				loansResponse.setData(matchResponse.getData());
 				loansResponse.setFlag(matchResponse.getIsUBIMatched());
 				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 			}
-			CommonDocumentUtils.endHook(logger, "matchFSCorporate");
+			CommonDocumentUtils.endHook(logger, MATCH_FS_CORPORATE);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
 
 		} catch (Exception e) {
-			logger.error("Error while saving Matches for Corporate Fundseeker ==>" + e);
-			e.printStackTrace();
+			logger.error("Error while saving Matches for Corporate Fundseeker ==>", e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -100,7 +103,7 @@ public class MatchesController {
 			HttpServletRequest request,@RequestParam(value = "clientId", required = false) Long clientId) {
 		CommonDocumentUtils.startHook(logger, "matchFSRetail");
 		Long userId = null;
-		Integer userType = ((Integer)request.getAttribute(CommonUtils.USER_TYPE)).intValue();
+		Integer userType = (Integer)request.getAttribute(CommonUtils.USER_TYPE);
 		   if(CommonDocumentUtils.isThisClientApplication(request)){
 		    userId = clientId;
 		   } else {
@@ -109,7 +112,7 @@ public class MatchesController {
 		matchRequest.setUserId(userId);
 		
 		if (matchRequest == null || matchRequest.getApplicationId() == null) {
-			logger.warn("matchRequest must not be empty ==>" + matchRequest);
+			logger.warn(MATCH_REQUEST_MUST_NOT_BE_EMPTY_MSG + matchRequest);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}
@@ -121,7 +124,7 @@ public class MatchesController {
 					logger.info("Start Sending Mail To Fs Retails for Profile and primary fill complete");
 					asyncComponent.sendMailWhenUserCompletePrimaryForm(userId,matchRequest.getApplicationId());	
 				}
-				LoansResponse loansResponse = new LoansResponse("Matches Successfully Saved", HttpStatus.OK.value());
+				LoansResponse loansResponse = new LoansResponse(MATCHES_SUCCESSFULLY_SAVED_MSG, HttpStatus.OK.value());
 				loansResponse.setData(matchResponse.getData());
 				loansResponse.setFlag(matchResponse.getIsUBIMatched());
 				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
@@ -131,8 +134,7 @@ public class MatchesController {
 					HttpStatus.OK);
 
 		} catch (Exception e) {
-			logger.error("Error while saving Matches for Retail Fundseeker ==>" + e);
-			e.printStackTrace();
+			logger.error("Error while saving Matches for Retail Fundseeker ==>", e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -153,7 +155,7 @@ public class MatchesController {
 		matchRequest.setUserId(userId);
 		
 		if (matchRequest == null || matchRequest.getProductId() == null) {
-			logger.warn("matchRequest must not be empty ==>" + matchRequest);
+			logger.warn(MATCH_REQUEST_MUST_NOT_BE_EMPTY_MSG + matchRequest);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}
@@ -166,15 +168,14 @@ public class MatchesController {
 				productMasterService.setIsMatchProduct(matchRequest.getProductId(), matchRequest.getUserId());
 				
 				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Matches Successfully Saved", HttpStatus.OK.value()), HttpStatus.OK);
+						new LoansResponse(MATCHES_SUCCESSFULLY_SAVED_MSG, HttpStatus.OK.value()), HttpStatus.OK);
 			}
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
 
 		} catch (Exception e) {
-			logger.error("Error while saving Matches for Corporate Fundseeker ==>" + e);
-			e.printStackTrace();
+			logger.error("Error while saving Matches for Corporate Fundseeker ==>", e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -207,7 +208,7 @@ public class MatchesController {
 		
 		
 		if (matchRequest == null || matchRequest.getProductId() == null) {
-			logger.warn("matchRequest must not be empty ==>" + matchRequest);
+			logger.warn(MATCH_REQUEST_MUST_NOT_BE_EMPTY_MSG + matchRequest);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}
@@ -220,15 +221,14 @@ public class MatchesController {
 				productMasterService.setIsMatchProduct(matchRequest.getProductId(), matchRequest.getUserId());
 				
 				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Matches Successfully Saved", HttpStatus.OK.value()), HttpStatus.OK);
+						new LoansResponse(MATCHES_SUCCESSFULLY_SAVED_MSG, HttpStatus.OK.value()), HttpStatus.OK);
 			}
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
 
 		} catch (Exception e) {
-			logger.error("Error while saving Matches for Retail Fundseeker ==>" + e);
-			e.printStackTrace();
+			logger.error("Error while saving Matches for Retail Fundseeker ==>", e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -265,8 +265,7 @@ public class MatchesController {
 			
 
 		} catch (Exception e) {
-			logger.error("Error while saveSuggestionList ==>" + e);
-			e.printStackTrace();
+			logger.error("Error while saveSuggestionList ==>", e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);

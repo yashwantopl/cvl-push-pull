@@ -61,8 +61,7 @@ public class GuarantorsCorporateDetailServiceImpl implements GuarantorsCorporate
 		}
 
 		catch (Exception e) {
-			logger.info("Exception  in save GuarantorDetails  :-");
-			e.printStackTrace();
+			logger.error("Exception  in save GuarantorDetails  :-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 
@@ -107,8 +106,7 @@ public class GuarantorsCorporateDetailServiceImpl implements GuarantorsCorporate
 		}
 
 		catch (Exception e) {
-			logger.info("Exception  in get Guarantor Details :-");
-			e.printStackTrace();
+			logger.info("Exception  in get Guarantor Details :-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 

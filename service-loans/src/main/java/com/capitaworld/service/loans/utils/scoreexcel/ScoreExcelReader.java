@@ -21,7 +21,7 @@ public class ScoreExcelReader {
 		for (int i=1; ( sheet.getRow(i)!=null && sheet.getRow(i).getCell(0)!=null );i++) {
 			scoreParameterRequestLoans=new ScoreParameterRequestLoans();
 		
-            System.out.println(sheet.getRow(i).getCell(0).getNumericCellValue());
+            logger.info(""+sheet.getRow(i).getCell(0).getNumericCellValue());
 			scoreParameterRequestLoans.setTestId((long)sheet.getRow(i).getCell(0).getNumericCellValue());
 			scoreParameterRequestLoans.setNetworthSum(sheet.getRow(i).getCell(1).getNumericCellValue());
 			scoreParameterRequestLoans.setTermLoanTy(sheet.getRow(i).getCell(2).getNumericCellValue());
@@ -63,8 +63,7 @@ public class ScoreExcelReader {
 		    scoreParameterRequestLoansList.add(scoreParameterRequestLoans);
 		}
            }catch (NullPointerException  e ) {
-			  e.printStackTrace();
-			  logger.error("Exception in extractCellFromSheet() --------------------   Error message'----------> "+ e.getMessage());
+			  logger.error("Exception in extractCellFromSheet() --------------------   Error message'----------> "+ e);
 			  throw new NullPointerException("Your file formate is not valid  while calculationg scoring.");
 		}
 		logger.info("Exist from extractCellFromSheet() --------------------Complete excel reading and put in list  'ScoreParameterRequestLoansList'----------> " + scoreParameterRequestLoansList.size());

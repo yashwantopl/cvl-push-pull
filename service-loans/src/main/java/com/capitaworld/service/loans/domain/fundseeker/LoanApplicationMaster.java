@@ -292,6 +292,7 @@ public class LoanApplicationMaster implements Serializable {
 	private ApplicationStatusMaster applicationStatusMaster;
 
 	public LoanApplicationMaster() {
+		// Do nothing because of X and Y.
 	}
 
 	public LoanApplicationMaster(Long id) {

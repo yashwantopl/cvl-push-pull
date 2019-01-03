@@ -4,11 +4,11 @@ package com.capitaworld.service.loans.model;
  *
  */
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 public class AssociatedConcernDetailRequest implements Serializable{
 
@@ -28,6 +28,8 @@ public class AssociatedConcernDetailRequest implements Serializable{
 	private Boolean isActive =true;
 
 	private String name;
+	
+	private String pan;
 
 	private String natureActivity;
 
@@ -61,6 +63,10 @@ public class AssociatedConcernDetailRequest implements Serializable{
 
 	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd-MM-yyyy")
 	private Date dateOfIncorporation;
+	
+	private String financialInstitutionName;
+	
+	private Double limitAvailed;
 
 	public Long getId() {
 		return id;
@@ -237,6 +243,30 @@ public class AssociatedConcernDetailRequest implements Serializable{
 
 	public void setDateOfIncorporation(Date dateOfIncorporation) {
 		this.dateOfIncorporation = dateOfIncorporation;
+	}
+
+	public String getPan() {
+		return pan;
+	}
+
+	public void setPan(String pan) {
+		this.pan = pan;
+	}
+
+	public String getFinancialInstitutionName() {
+		return financialInstitutionName;
+	}
+
+	public void setFinancialInstitutionName(String financialInstitutionName) {
+		this.financialInstitutionName = financialInstitutionName;
+	}
+
+	public Double getLimitAvailed() {
+		return limitAvailed;
+	}
+
+	public void setLimitAvailed(Double limitAvailed) {
+		this.limitAvailed = limitAvailed;
 	}
 
 	public static void printFields(Object obj) throws Exception {

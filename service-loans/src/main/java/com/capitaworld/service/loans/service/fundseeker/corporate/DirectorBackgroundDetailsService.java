@@ -22,5 +22,9 @@ public interface DirectorBackgroundDetailsService {
 	public Boolean saveDirectors(Long applicationId,Long userId,Integer noOfDirector);
 	
 	public DirectorBackgroundDetailRequest getDirectorBackgroundDetail(Long id);
+	
+	public boolean saveDirectorInfo(DirectorBackgroundDetailRequest backgroundDetailRequest,Long applicationId,Long userId);
+	
+	public boolean inactive(Long applicationId,Long userId);
 
 }

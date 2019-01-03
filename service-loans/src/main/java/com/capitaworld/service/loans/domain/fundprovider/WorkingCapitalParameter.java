@@ -710,6 +710,7 @@ public class WorkingCapitalParameter extends ProductMaster implements Serializab
 	}
 
 	public WorkingCapitalParameter() {
+		// Do nothing because of X and Y.
 	}
 
 	public ProductMaster getFpProductId() {

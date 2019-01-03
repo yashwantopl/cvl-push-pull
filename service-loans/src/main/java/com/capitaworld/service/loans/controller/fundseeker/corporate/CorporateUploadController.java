@@ -1,10 +1,7 @@
 package com.capitaworld.service.loans.controller.fundseeker.corporate;
 
 import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -46,6 +43,19 @@ public class CorporateUploadController {
 
 	private static final Logger logger = LoggerFactory.getLogger(CorporateUploadController.class);
 
+	private static final String UPLOAD_PROFILE_IMAGE_METHOD_NAME = "uploadProfileImage";
+	private static final String ERROR_WHILE_SAVING_PROFILE_IMAGES_MSG = "Error while Saving Profile Images==>";
+	private static final String ERROR_WHILE_UPLOADING_DOCUMENT_MSG = "Error While Uploading Document==>";
+	private static final String INVALID_REQUEST_WHILE_GETTING_DOCUMENTS_MSG = "Invalid Request while Getting Documents";
+	private static final String DOCUMENT_REQUEST_MUST_NOT_BE_NULL_MSG = "Document Request Must not be null";
+	private static final String IN_GET_CMA_FILE_MSG = "In getCmaFile";
+	private static final String APPLICATION_CSV_CONTENT_TYPE = "application/csv";
+	private static final String CONTENT_DISPOSITION = "Content-Disposition";
+	private static final String UPLOAD_DOC = "uploadDoc";
+	private static final String UPLOAD_EXCEL = "uploadExcel";
+	private static final String REMOVE_DOC = "removeDoc";
+	private static final String REMOVE_EXCEL_DOC = "removeExcelDoc";
+
 	@Autowired
 	private Environment environment;
 
@@ -73,7 +83,7 @@ public class CorporateUploadController {
 			@RequestPart("file") MultipartFile multipartFiles, @PathVariable("applicationId") Long applicationId,
 			HttpServletRequest request) {
 		try {
-			CommonDocumentUtils.startHook(logger, "uploadProfileImage");
+			CommonDocumentUtils.startHook(logger, UPLOAD_PROFILE_IMAGE_METHOD_NAME);
 			if (CommonUtils.isObjectNullOrEmpty(fileName) || CommonUtils.isObjectNullOrEmpty(productDocMapId)) {
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse("Invalid data or Requested data not found.", HttpStatus.BAD_REQUEST.value()),
@@ -84,19 +94,18 @@ public class CorporateUploadController {
 					Long.valueOf(productDocMapId), fileName, userType, multipartFiles);
 			if (documentResponse != null && documentResponse.getStatus() == 200) {
 				logger.info("Profile picture uploaded successfully-->");
-				CommonDocumentUtils.endHook(logger, "uploadProfileImage");
+				CommonDocumentUtils.endHook(logger, UPLOAD_PROFILE_IMAGE_METHOD_NAME);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(documentResponse.getMessage(), HttpStatus.OK.value()), HttpStatus.OK);
 			} else {
 				logger.error(CommonUtils.SOMETHING_WENT_WRONG);
-				CommonDocumentUtils.endHook(logger, "uploadProfileImage");
+				CommonDocumentUtils.endHook(logger, UPLOAD_PROFILE_IMAGE_METHOD_NAME);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value()),
 						HttpStatus.OK);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("Error while Saving Profile Images==>" + e);
+			logger.error(ERROR_WHILE_SAVING_PROFILE_IMAGES_MSG + e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -149,7 +158,6 @@ public class CorporateUploadController {
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
 		} catch (Exception e) {
-			e.printStackTrace();
 			logger.error("Error while Getting Profile Images==>" + e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
@@ -199,9 +207,9 @@ public class CorporateUploadController {
 	public ResponseEntity<LoansResponse> uploadDoc(@RequestPart("uploadRequest") String documentRequestString,
 			@RequestPart("file") MultipartFile multipartFiles, HttpServletRequest request,@RequestParam(value = "clientId", required = false) Long clientId) {
 		try {
-			CommonDocumentUtils.startHook(logger, "uploadDoc");
+			CommonDocumentUtils.startHook(logger, UPLOAD_DOC);
 			if (CommonUtils.isObjectNullOrEmpty(documentRequestString)) {
-				logger.warn("Document Request Must not be null");
+				logger.warn(DOCUMENT_REQUEST_MUST_NOT_BE_NULL_MSG);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
@@ -215,18 +223,17 @@ public class CorporateUploadController {
 			DocumentResponse response = corporateUploadService.uploadOtherDoc(documentRequestString, multipartFiles,userId);
 			if (response != null && response.getStatus() == 200) {
 				logger.info("File Uploaded SuccessFully");
-				CommonDocumentUtils.endHook(logger, "uploadDoc");
+				CommonDocumentUtils.endHook(logger, UPLOAD_DOC);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(response.getMessage(), HttpStatus.OK.value()), HttpStatus.OK);
 			} else {
-				logger.error("Error While Uploading Document==>");
-				CommonDocumentUtils.endHook(logger, "uploadDoc");
+				logger.error(ERROR_WHILE_UPLOADING_DOCUMENT_MSG);
+				CommonDocumentUtils.endHook(logger, UPLOAD_DOC);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("Error while Saving Profile Images==>" + e);
+			logger.error(ERROR_WHILE_SAVING_PROFILE_IMAGES_MSG + e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -272,13 +279,12 @@ public class CorporateUploadController {
 				CommonDocumentUtils.endHook(logger, "getDocList");
 				return new ResponseEntity<LoansResponse>(finalResponse, HttpStatus.OK);
 			} else {
-				logger.warn("Invalid Request while Getting Documents");
+				logger.warn(INVALID_REQUEST_WHILE_GETTING_DOCUMENTS_MSG);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("Error while Saving Profile Images==>" + e);
+			logger.error(ERROR_WHILE_SAVING_PROFILE_IMAGES_MSG + e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -332,7 +338,7 @@ public class CorporateUploadController {
 		try {
 			CommonDocumentUtils.startHook(logger, "getExcelDocList");
 			if (CommonUtils.isObjectNullOrEmpty(documentRequest)) {
-				logger.warn("Document Request Must not be null");
+				logger.warn(DOCUMENT_REQUEST_MUST_NOT_BE_NULL_MSG);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
@@ -354,13 +360,12 @@ public class CorporateUploadController {
 				CommonDocumentUtils.endHook(logger, "getExcelDocList");
 				return new ResponseEntity<LoansResponse>(finalResponse, HttpStatus.OK);
 			} else {
-				logger.warn("Invalid Request while Getting Documents");
+				logger.warn(INVALID_REQUEST_WHILE_GETTING_DOCUMENTS_MSG);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("Error while Saving Profile Images==>" + e);
+			logger.error(ERROR_WHILE_SAVING_PROFILE_IMAGES_MSG + e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -496,9 +501,9 @@ public class CorporateUploadController {
 	public ResponseEntity<LoansResponse> uploadExcel(@RequestPart("uploadRequest") String documentRequestString,
 			@RequestPart("file") MultipartFile multipartFiles, HttpServletRequest request) {
 		try {
-			CommonDocumentUtils.startHook(logger, "uploadExcel");
+			CommonDocumentUtils.startHook(logger, UPLOAD_EXCEL);
 			if (CommonUtils.isObjectNullOrEmpty(documentRequestString)) {
-				logger.warn("Document Request Must not be null");
+				logger.warn(DOCUMENT_REQUEST_MUST_NOT_BE_NULL_MSG);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
@@ -557,56 +562,52 @@ public class CorporateUploadController {
 						flag = excelExtractionService.readBS(applicationId, response.getStorageId(), multipartFiles);
 						break;
 					}
+					default : break;
 					}
 
 				} catch (Exception e) {
-					// TODO: handle exception
-
 					JSONObject json = new JSONObject();
 					json.put("id", response.getStorageId());
 					dmsClient.deleteProductDocument(json.toJSONString());
 
 					// code for inactive CMA BS and DPR recored
 
-					logger.error("Error While Uploading Document==>");
-					e.printStackTrace();
-					return new ResponseEntity<LoansResponse>(
-							new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()),
-							HttpStatus.OK);
+					logger.error(ERROR_WHILE_UPLOADING_DOCUMENT_MSG,e);
+					LoansResponse loansResponse = new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value(), e.getMessage());
+					return new ResponseEntity<LoansResponse>( loansResponse,HttpStatus.OK);
 				}
 
 				if (flag) {
 
 					logger.info("File Uploaded SuccessFully");
-					CommonDocumentUtils.endHook(logger, "uploadExcel");
+					CommonDocumentUtils.endHook(logger, UPLOAD_EXCEL);
 					return new ResponseEntity<LoansResponse>(
 							new LoansResponse(response.getMessage(), HttpStatus.OK.value()), HttpStatus.OK);
 				} else {
 
 					// code for inactive CMA BS and DPR recored
-					System.out.println("inActivation start");
+					logger.info("inActivation start");
 					JSONObject json = new JSONObject();
 					json.put("id", response.getStorageId());
-					System.out.println("excel file's storage id is====>>>>"+response.getStorageId());
+					logger.info("excel file's storage id is====>>>>"+response.getStorageId());
 					dmsClient.deleteProductDocument(json.toJSONString());
 					
-					logger.error("Error While Uploading Document==>");
-					CommonDocumentUtils.endHook(logger, "uploadExcel");
+					logger.error(ERROR_WHILE_UPLOADING_DOCUMENT_MSG);
+					CommonDocumentUtils.endHook(logger, UPLOAD_EXCEL);
 					return new ResponseEntity<LoansResponse>(
 							new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()),
 							HttpStatus.OK);
 				}
 
 			} else {
-				logger.warn("Invalid Request while Getting Documents");
-				CommonDocumentUtils.endHook(logger, "uploadExcel");
+				logger.warn(INVALID_REQUEST_WHILE_GETTING_DOCUMENTS_MSG);
+				CommonDocumentUtils.endHook(logger, UPLOAD_EXCEL);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("Error While Uploading Document==>" + e);
+			logger.error(ERROR_WHILE_UPLOADING_DOCUMENT_MSG + e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -617,7 +618,7 @@ public class CorporateUploadController {
 	@RequestMapping(value = "/other_doc/delete/{docId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> removeDoc(@PathVariable("docId") Long docId, HttpServletRequest request) {
 		try {
-			CommonDocumentUtils.startHook(logger, "removeDoc");
+			CommonDocumentUtils.startHook(logger, REMOVE_DOC);
 			if (CommonUtils.isObjectNullOrEmpty(docId)) {
 				logger.warn("Document Id not be null");
 				return new ResponseEntity<LoansResponse>(
@@ -635,25 +636,24 @@ public class CorporateUploadController {
 				excelExtractionService.inActiveBS(docId);
 				excelExtractionService.inActiveDPR(docId);
 			} catch (Exception e) {
-				// TODO: handle exception
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 
 			if (response != null && response.getStatus() == 200) {
 				logger.info("File SuccessFully Removed.");
 				LoansResponse finalResponse = new LoansResponse(response.getMessage(), response.getStatus());
 				finalResponse.setListData(response.getDataList());
-				CommonDocumentUtils.endHook(logger, "removeDoc");
+				CommonDocumentUtils.endHook(logger, REMOVE_DOC);
 				return new ResponseEntity<LoansResponse>(finalResponse, HttpStatus.OK);
 			} else {
 				logger.warn("Invalid Request while Deleting Document");
-				CommonDocumentUtils.endHook(logger, "removeDoc");
+				CommonDocumentUtils.endHook(logger, REMOVE_DOC);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("Error while Saving Profile Images==>" + e);
+			logger.error(ERROR_WHILE_SAVING_PROFILE_IMAGES_MSG + e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -665,9 +665,9 @@ public class CorporateUploadController {
 	public ResponseEntity<LoansResponse> removeExcelDoc(@PathVariable("docId") Long docId,
 			@PathVariable("productDocumentMappingId") Integer productDocumentMappingId, HttpServletRequest request) {
 		try {
-			System.out.println("in /excel/delete/doc");
-			CommonDocumentUtils.startHook(logger, "removeExcelDoc");
-			System.out.println("product documet id is===>>>>>"+productDocumentMappingId);
+			logger.info("in /excel/delete/doc");
+			CommonDocumentUtils.startHook(logger, REMOVE_EXCEL_DOC);
+			logger.info("product documet id is===>>>>>"+productDocumentMappingId);
 			if (CommonUtils.isObjectNullOrEmpty(docId) && CommonUtils.isObjectNullOrEmpty(productDocumentMappingId)) {
 				logger.warn("Document Id and ProductDocumentMappingId not be null");
 				return new ResponseEntity<LoansResponse>(
@@ -681,7 +681,7 @@ public class CorporateUploadController {
 			try {
 
 				JSONObject json = new JSONObject();
-				System.out.println("docis====>>"+docId);
+				logger.info("docis====>>"+docId);
 				json.put("id", docId);
 				DocumentResponse response = dmsClient.deleteProductDocument(json.toJSONString());
 
@@ -693,7 +693,7 @@ public class CorporateUploadController {
 					else if (productDocumentMappingId == DocumentAlias.WC_CMA
 							|| productDocumentMappingId == DocumentAlias.TL_CMA || productDocumentMappingId == DocumentAlias.WCTL_CMA || productDocumentMappingId==DocumentAlias.USL_CMA)
 						{
-						System.out.println("in else if for cma inactivate...===>>>>"+docId);
+						logger.info("in else if for cma inactivate...===>>>>"+docId);
 						excelExtractionService.inActiveCMA(docId);}
 					else if (productDocumentMappingId == DocumentAlias.WC_COMPANY_ACT
 							|| productDocumentMappingId == DocumentAlias.TL_COMPANY_ACT || 
@@ -704,29 +704,26 @@ public class CorporateUploadController {
 					logger.info("File SuccessFully Removed.");
 					LoansResponse finalResponse = new LoansResponse(response.getMessage(), response.getStatus());
 					
-					System.out.println("fina response is====>>"+finalResponse);
+					logger.info("fina response is====>>"+finalResponse);
 					finalResponse.setListData(response.getDataList());
-					CommonDocumentUtils.endHook(logger, "removeExcelDoc");
+					CommonDocumentUtils.endHook(logger, REMOVE_EXCEL_DOC);
 					return new ResponseEntity<LoansResponse>(finalResponse, HttpStatus.OK);
 				} else {
 					logger.warn("Invalid Request while Deleting Document");
-					CommonDocumentUtils.endHook(logger, "removeExcelDoc");
+					CommonDocumentUtils.endHook(logger, REMOVE_EXCEL_DOC);
 					return new ResponseEntity<LoansResponse>(
 							new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()),
 							HttpStatus.OK);
 				}
 
 			} catch (Exception e) {
-				// TODO: handle exception
-				logger.error("Invalid Request while Deleting Document");
-				e.printStackTrace();
+				logger.error("Invalid Request while Deleting Document : ",e);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("Error while Saving Profile Images==>" + e);
+			logger.error(ERROR_WHILE_SAVING_PROFILE_IMAGES_MSG + e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -787,8 +784,7 @@ public class CorporateUploadController {
 					HttpStatus.OK);
 
 		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("Error while Saving Profile Images==>" + e);
+			logger.error(ERROR_WHILE_SAVING_PROFILE_IMAGES_MSG + e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -813,7 +809,6 @@ public class CorporateUploadController {
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 			
 		} catch (Exception e) {
-			e.printStackTrace();
 			logger.error("Error while fetching doc==>" + e);
 			return null;
 		}
@@ -853,31 +848,29 @@ public class CorporateUploadController {
 
 	@RequestMapping(value="/downloadCMAAndCoCMAExcelFile/{applicationId}/{productDocumentMappingId}" , method=RequestMethod.GET)
 	public void downloadExcelFile(@PathVariable("applicationId") Long applicationId , @PathVariable("productDocumentMappingId") Long productDocumentMappingId ,HttpServletResponse httpServletResponse) {
-		logger.info("In getCmaFile");
+		logger.info(IN_GET_CMA_FILE_MSG);
 		
         try {
-        	  httpServletResponse.setContentType("application/csv");  
+        	  httpServletResponse.setContentType(APPLICATION_CSV_CONTENT_TYPE);
           if(productDocumentMappingId==(long)DocumentAlias.WC_CMA) {
-            httpServletResponse.setHeader("Content-Disposition", "attachment; filename=\""+CommonUtils.CW_CMA_EXCEL+"\"");
+            httpServletResponse.setHeader(CONTENT_DISPOSITION, "attachment; filename=\""+CommonUtils.CW_CMA_EXCEL+"\"");
             downLoadCMAFileService.cmaFileGenerator(applicationId, productDocumentMappingId).write(httpServletResponse.getOutputStream());
           }
           
           else if (productDocumentMappingId==(long)DocumentAlias.TL_CMA || productDocumentMappingId==(long) DocumentAlias.WCTL_CMA){
-        	  httpServletResponse.setContentType("application/csv");
-        	  httpServletResponse.setHeader("Content-Disposition", "attachment; filename=\""+CommonUtils.CW_TL_WCTL_EXCEL+"\"");
+        	  httpServletResponse.setContentType(APPLICATION_CSV_CONTENT_TYPE);
+        	  httpServletResponse.setHeader(CONTENT_DISPOSITION, "attachment; filename=\""+CommonUtils.CW_TL_WCTL_EXCEL+"\"");
               downLoadCMAFileService.cmaFileGenerator(applicationId, productDocumentMappingId).write(httpServletResponse.getOutputStream());
 		}
           else if(productDocumentMappingId==(long)DocumentAlias.WC_COMPANY_ACT|| productDocumentMappingId==(long)DocumentAlias.TL_COMPANY_ACT || productDocumentMappingId==(long)DocumentAlias.USL_COMPANY_ACT|| productDocumentMappingId==(long) DocumentAlias.WCTL_COMPANY_ACT_DOC ) {
-        	  httpServletResponse.setContentType("application/csv");
-        	  httpServletResponse.setHeader("Content-Disposition", "attachment; filename=\""+CommonUtils.CO_CMA_EXCEL+"\"");
+        	  httpServletResponse.setContentType(APPLICATION_CSV_CONTENT_TYPE);
+        	  httpServletResponse.setHeader(CONTENT_DISPOSITION, "attachment; filename=\""+CommonUtils.CO_CMA_EXCEL+"\"");
               downLoadCMAFileService.coCMAFileGenerator(applicationId, productDocumentMappingId).write(httpServletResponse.getOutputStream());
           }
             logger.info("Out getCmaFile");
          
         } catch (NullPointerException |IOException e) {
-        	logger.info("thrown exception from getCmaFile");
-            e.printStackTrace();
-          
+        	logger.error("thrown exception from getCmaFile : ",e);
         }
      
 	}
@@ -885,7 +878,7 @@ public class CorporateUploadController {
 	
 	@RequestMapping(value="/get_CMA_by_applicationId_productDocumentMappingId/{applicationId}/{productDocumentMappingId}" , method=RequestMethod.GET)
 	public ResponseEntity<LoansResponse> getCMAForGateway(@PathVariable("applicationId") Long applicationId , @PathVariable("productDocumentMappingId") Long productDocumentMappingId) throws IOException {
-		logger.info("In getCmaFile");
+		logger.info(IN_GET_CMA_FILE_MSG);
 		
 		try {
 			
@@ -901,8 +894,7 @@ public class CorporateUploadController {
 			return new ResponseEntity<LoansResponse>(response, HttpStatus.OK);
 
 		} catch (NullPointerException e) {
-			e.printStackTrace();
-			logger.info("Thrown exception from getCmaFile====>"+e.getMessage());
+			logger.error("Thrown exception from getCmaFile====>"+e.getMessage());
 
 		}
 		LoansResponse response = new LoansResponse("Mapping Id not matched", HttpStatus.OK.value(), null);
@@ -912,43 +904,42 @@ public class CorporateUploadController {
 	
 	@RequestMapping(value="/listOfDocumentByMultiProDocMapId" , method=RequestMethod.POST,consumes = MediaType.APPLICATION_JSON_VALUE,produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<DocumentResponse> listOfDocumentByMultiProDocMapId(@RequestBody DocumentRequest documentRequest) throws IOException {
-		logger.info("In getCmaFile");
+		logger.info(IN_GET_CMA_FILE_MSG);
 		
 		try {
 			return new ResponseEntity<DocumentResponse>(corporateUploadService.listOfDocumentByMultiProDocMapId(documentRequest), HttpStatus.OK);
 		} catch (Exception e) {
-			e.printStackTrace();
-			logger.info("Thrown exception from getCmaFile====>"+e.getMessage());
+			logger.error("Thrown exception from getCmaFile====>"+e.getMessage());
 			return new ResponseEntity<DocumentResponse>(new DocumentResponse("Something went wrong",HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 	
 	/*@RequestMapping(value="/downloadCMAAndCoCMAExcelFile/{applicationId}/{productDocumentMappingId}" , method=RequestMethod.GET)
 	public void getCMADetail(@PathVariable("applicationId") Long applicationId , @PathVariable("productDocumentMappingId") Long productDocumentMappingId ,HttpServletResponse httpServletResponse) {
-		logger.info("In getCmaFile");
+		logger.info(IN_GET_CMA_FILE_MSG);
 		
         try {
-        	  httpServletResponse.setContentType("application/csv");  
+        	  httpServletResponse.setContentType(APPLICATION_CSV_CONTENT_TYPE);
           if(productDocumentMappingId==(long)DocumentAlias.WC_CMA) {
-            httpServletResponse.setHeader("Content-Disposition", "attachment; filename=\""+CommonUtils.CW_CMA_EXCEL+"\"");
+            httpServletResponse.setHeader(CONTENT_DISPOSITION, "attachment; filename=\""+CommonUtils.CW_CMA_EXCEL+"\"");
             downLoadCMAFileService.cmaFileGenerator(applicationId, productDocumentMappingId).write(httpServletResponse.getOutputStream());
           }
           
           else if (productDocumentMappingId==(long)DocumentAlias.TL_CMA || productDocumentMappingId==(long) DocumentAlias.WCTL_CMA){
-        	  httpServletResponse.setContentType("application/csv");
-        	  httpServletResponse.setHeader("Content-Disposition", "attachment; filename=\""+CommonUtils.CW_TL_WCTL_EXCEL+"\"");
+        	  httpServletResponse.setContentType(APPLICATION_CSV_CONTENT_TYPE);
+        	  httpServletResponse.setHeader(CONTENT_DISPOSITION, "attachment; filename=\""+CommonUtils.CW_TL_WCTL_EXCEL+"\"");
               downLoadCMAFileService.cmaFileGenerator(applicationId, productDocumentMappingId).write(httpServletResponse.getOutputStream());
 		}
           else if(productDocumentMappingId==(long)DocumentAlias.WC_COMPANY_ACT|| productDocumentMappingId==(long)DocumentAlias.TL_COMPANY_ACT || productDocumentMappingId==(long)DocumentAlias.USL_COMPANY_ACT|| productDocumentMappingId==(long) DocumentAlias.WCTL_COMPANY_ACT_DOC ) {
-        	  httpServletResponse.setContentType("application/csv");
-        	  httpServletResponse.setHeader("Content-Disposition", "attachment; filename=\""+CommonUtils.CO_CMA_EXCEL+"\"");
+        	  httpServletResponse.setContentType(APPLICATION_CSV_CONTENT_TYPE);
+        	  httpServletResponse.setHeader(CONTENT_DISPOSITION, "attachment; filename=\""+CommonUtils.CO_CMA_EXCEL+"\"");
               downLoadCMAFileService.coCMAFileGenerator(applicationId, productDocumentMappingId).write(httpServletResponse.getOutputStream());
           }
             logger.info("Out getCmaFile");
          
         } catch (NullPointerException |IOException e) {
-        	logger.info("thrown exception from getCmaFile");
-            e.printStackTrace();
+        	logger.error("thrown exception from getCmaFile : ",e);
+
           
         }
      

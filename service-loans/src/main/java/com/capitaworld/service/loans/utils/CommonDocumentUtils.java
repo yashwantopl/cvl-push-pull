@@ -37,8 +37,8 @@ public class CommonDocumentUtils {
 			return DocumentAlias.LAS_LOAN_PROFIEL_PICTURE;
 		case 15:// UNSECURED_LOAN_PROFIEL_PICTURE
 			return DocumentAlias.UNSECURED_LOAN_PROFIEL_PICTURE;
+		default: return null;
 		}
-		return null;
 	}
 
 	public static String getCity(Long cityId, OneFormClient oneFormClient) throws Exception {
@@ -108,10 +108,8 @@ public class CommonDocumentUtils {
 	}
 
 	public static String getDenomination(Integer denominationId) {
-		if (!CommonUtils.isObjectNullOrEmpty(denominationId)) {
-			if (!CommonUtils.isObjectNullOrEmpty(Denomination.getById(denominationId))) {
+		if (!CommonUtils.isObjectNullOrEmpty(denominationId) && !CommonUtils.isObjectNullOrEmpty(Denomination.getById(denominationId)) ) {
 				return Denomination.getById(denominationId).getValue();
-			}
 		}
 		return "NA";
 	}

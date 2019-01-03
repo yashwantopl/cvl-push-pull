@@ -57,8 +57,7 @@ public class ExistingProductDetailsServiceImpl implements ExistingProductDetails
 			return true;
 		}
 		catch (Exception e) {
-			logger.info("Exception  in save existingProductDetail  :-");
-			e.printStackTrace();
+			logger.error("Exception  in save existingProductDetail  :-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
@@ -96,8 +95,7 @@ public class ExistingProductDetailsServiceImpl implements ExistingProductDetails
 			}
 			return existingProductDetailRequests;
 		} catch (Exception e) {
-			logger.info("Exception  in save existingProductDetail  :-");
-			e.printStackTrace();
+			logger.error("Exception  in save existingProductDetail  :-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 

@@ -79,8 +79,11 @@ private static final Logger logger = LoggerFactory.getLogger(FinalViewController
 	@Autowired
 	private NtbFinalViewService ntbFinalViewService;
 	
-	
-	
+	private static final String WARN_MSG_USER_VERIFICATION_INVALID_REQUEST_CLIENT_ID_IS_NOT_VALID = "user_verification, Invalid Request... Client Id is not valid";
+	private static final String ERROR_MSG_USER_VERIFICATION_INVALID_REQUEST_SOMETHING_WENT_WRONG = "user_verification, Invalid Request... Something went wrong : ";
+	private static final String MSG_USER_ID = "userId : ";
+	private static final String MSG_USER_TYPE = " userType : ";
+
 	@GetMapping(value = "/HomeLoan/{toApplicationId}")
     public @ResponseBody ResponseEntity<LoansResponse> finalViewHomeLoan(@PathVariable(value = "toApplicationId") Long toApplicationId,@RequestParam(value = "clientId", required = false) Long clientId,HttpServletRequest request) {
 		LoansResponse loansResponse = new LoansResponse();
@@ -98,14 +101,13 @@ private static final Logger logger = LoggerFactory.getLogger(FinalViewController
 						UserTypeRequest req = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>) response.getData(), UserTypeRequest.class);
 						userType = req.getId().intValue();
 					} else {
-						logger.warn("user_verification, Invalid Request... Client Id is not valid");
-						return new ResponseEntity<LoansResponse>(new LoansResponse("Client Id is not valid",
+						logger.warn(WARN_MSG_USER_VERIFICATION_INVALID_REQUEST_CLIENT_ID_IS_NOT_VALID);
+						return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.CLIENT_ID_IS_NOT_VALID,
 								HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 					}	
 				} catch(Exception e) {
-					logger.warn("user_verification, Invalid Request... Something went wrong");
-					e.printStackTrace();
-					return new ResponseEntity<LoansResponse>(new LoansResponse("Something went wrong",
+					logger.error(ERROR_MSG_USER_VERIFICATION_INVALID_REQUEST_SOMETHING_WENT_WRONG,e);
+					return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG,
 							HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
 				}
 			} else {
@@ -118,13 +120,15 @@ private static final Logger logger = LoggerFactory.getLogger(FinalViewController
 			
 		} else {
 			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
+			userType = (Integer) request.getAttribute(CommonUtils.USER_TYPE);
 		}
 
+		logger.debug(MSG_USER_ID+userId+MSG_USER_TYPE+userType);
+
         if(CommonUtils.isObjectNullOrEmpty(toApplicationId)){
-			logger.warn("Invalid data or Requested data not found.", toApplicationId);
+			logger.warn(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, toApplicationId);
 			return new ResponseEntity<LoansResponse>(
-					new LoansResponse("Invalid data or Requested data not found.", HttpStatus.BAD_REQUEST.value()),
+					new LoansResponse(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, HttpStatus.BAD_REQUEST.value()),
 					HttpStatus.OK);
         }else {
         	HomeLoanFinalViewResponse homeLoanFinalViewResponse = null;
@@ -140,7 +144,7 @@ private static final Logger logger = LoggerFactory.getLogger(FinalViewController
 				}
 		        return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 			} catch (Exception e) {
-		            loansResponse.setMessage("Something went wrong..!"+e.getMessage());
+		            loansResponse.setMessage(CommonUtils.SOMETHING_WENT_WRONG+e.getMessage());
 		            loansResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
 		            return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 			}      
@@ -164,14 +168,13 @@ private static final Logger logger = LoggerFactory.getLogger(FinalViewController
 						UserTypeRequest req = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>) response.getData(), UserTypeRequest.class);
 						userType = req.getId().intValue();
 					} else {
-						logger.warn("user_verification, Invalid Request... Client Id is not valid");
-						return new ResponseEntity<LoansResponse>(new LoansResponse("Client Id is not valid",
+						logger.warn(WARN_MSG_USER_VERIFICATION_INVALID_REQUEST_CLIENT_ID_IS_NOT_VALID);
+						return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.CLIENT_ID_IS_NOT_VALID,
 								HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 					}	
 				} catch(Exception e) {
-					logger.warn("user_verification, Invalid Request... Something went wrong");
-					e.printStackTrace();
-					return new ResponseEntity<LoansResponse>(new LoansResponse("Something went wrong",
+					logger.error(ERROR_MSG_USER_VERIFICATION_INVALID_REQUEST_SOMETHING_WENT_WRONG,e);
+					return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG,
 							HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
 				}
 			} else {
@@ -184,13 +187,15 @@ private static final Logger logger = LoggerFactory.getLogger(FinalViewController
 			
 		} else {
 			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
+			userType = (Integer) request.getAttribute(CommonUtils.USER_TYPE);
 		}
 
+		logger.debug(MSG_USER_ID+userId+MSG_USER_TYPE+userType);
+
         if(CommonUtils.isObjectNullOrEmpty(toApplicationId)){
-			logger.warn("Invalid data or Requested data not found.", toApplicationId);
+			logger.warn(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, toApplicationId);
 			return new ResponseEntity<LoansResponse>(
-					new LoansResponse("Invalid data or Requested data not found.", HttpStatus.BAD_REQUEST.value()),
+					new LoansResponse(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, HttpStatus.BAD_REQUEST.value()),
 					HttpStatus.OK);
         }else {
         	CarLoanFinalViewResponse clFinalViewResponse = null;
@@ -206,7 +211,7 @@ private static final Logger logger = LoggerFactory.getLogger(FinalViewController
 				}
 		        return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 			} catch (Exception e) {
-		            loansResponse.setMessage("Something went wrong..!"+e.getMessage());
+		            loansResponse.setMessage(CommonUtils.SOMETHING_WENT_WRONG+e.getMessage());
 		            loansResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
 		            return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 			}      
@@ -230,14 +235,13 @@ private static final Logger logger = LoggerFactory.getLogger(FinalViewController
 						UserTypeRequest req = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>) response.getData(), UserTypeRequest.class);
 						userType = req.getId().intValue();
 					} else {
-						logger.warn("user_verification, Invalid Request... Client Id is not valid");
-						return new ResponseEntity<LoansResponse>(new LoansResponse("Client Id is not valid",
+						logger.warn(WARN_MSG_USER_VERIFICATION_INVALID_REQUEST_CLIENT_ID_IS_NOT_VALID);
+						return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.CLIENT_ID_IS_NOT_VALID,
 								HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 					}	
 				} catch(Exception e) {
-					logger.warn("user_verification, Invalid Request... Something went wrong");
-					e.printStackTrace();
-					return new ResponseEntity<LoansResponse>(new LoansResponse("Something went wrong",
+					logger.error(ERROR_MSG_USER_VERIFICATION_INVALID_REQUEST_SOMETHING_WENT_WRONG,e);
+					return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG,
 							HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
 				}
 			} else {						
@@ -250,13 +254,15 @@ private static final Logger logger = LoggerFactory.getLogger(FinalViewController
 			
 		} else {
 			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
+			userType = (Integer) request.getAttribute(CommonUtils.USER_TYPE);
 		}
 
+			logger.debug(MSG_USER_ID+userId+MSG_USER_TYPE+userType);
+
         if(CommonUtils.isObjectNullOrEmpty(toApplicationId)){
-			logger.warn("Invalid data or Requested data not found.", toApplicationId);
+			logger.warn(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, toApplicationId);
 			return new ResponseEntity<LoansResponse>(
-					new LoansResponse("Invalid data or Requested data not found.", HttpStatus.BAD_REQUEST.value()),
+					new LoansResponse(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, HttpStatus.BAD_REQUEST.value()),
 					HttpStatus.OK);
         }else {
         	PersonalLoanFinalViewResponse plFinalViewResponse = null;
@@ -272,7 +278,7 @@ private static final Logger logger = LoggerFactory.getLogger(FinalViewController
 				}
 		        return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 			} catch (Exception e) {
-		            loansResponse.setMessage("Something went wrong..!"+e.getMessage());
+		            loansResponse.setMessage(CommonUtils.SOMETHING_WENT_WRONG+e.getMessage());
 		            loansResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
 		            return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 			}     
@@ -296,14 +302,13 @@ private static final Logger logger = LoggerFactory.getLogger(FinalViewController
 						UserTypeRequest req = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>) response.getData(), UserTypeRequest.class);
 						userType = req.getId().intValue();
 					} else {
-						logger.warn("user_verification, Invalid Request... Client Id is not valid");
-						return new ResponseEntity<LoansResponse>(new LoansResponse("Client Id is not valid",
+						logger.warn(WARN_MSG_USER_VERIFICATION_INVALID_REQUEST_CLIENT_ID_IS_NOT_VALID);
+						return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.CLIENT_ID_IS_NOT_VALID,
 								HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 					}	
 				} catch(Exception e) {
-					logger.warn("user_verification, Invalid Request... Something went wrong");
-					e.printStackTrace();
-					return new ResponseEntity<LoansResponse>(new LoansResponse("Something went wrong",
+					logger.error(ERROR_MSG_USER_VERIFICATION_INVALID_REQUEST_SOMETHING_WENT_WRONG,e);
+					return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG,
 							HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
 				}
 			} else {if(CommonUtils.UserType.SERVICE_PROVIDER == userType){
@@ -314,13 +319,15 @@ private static final Logger logger = LoggerFactory.getLogger(FinalViewController
 			
 		} else {
 			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
+			userType = (Integer) request.getAttribute(CommonUtils.USER_TYPE);
 		}
 
+			logger.debug(MSG_USER_ID+userId+MSG_USER_TYPE+userType);
+
         if(CommonUtils.isObjectNullOrEmpty(toApplicationId)){
-			logger.warn("Invalid data or Requested data not found.", toApplicationId);
+			logger.warn(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, toApplicationId);
 			return new ResponseEntity<LoansResponse>(
-					new LoansResponse("Invalid data or Requested data not found.", HttpStatus.BAD_REQUEST.value()),
+					new LoansResponse(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, HttpStatus.BAD_REQUEST.value()),
 					HttpStatus.OK);
         }else {
         	LapFinalViewResponse lapFinalViewResponse = null;
@@ -336,7 +343,7 @@ private static final Logger logger = LoggerFactory.getLogger(FinalViewController
 				}
 		        return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 			} catch (Exception e) {
-		            loansResponse.setMessage("Something went wrong..!"+e.getMessage());
+		            loansResponse.setMessage(CommonUtils.SOMETHING_WENT_WRONG+e.getMessage());
 		            loansResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
 		            return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 			}     
@@ -360,14 +367,13 @@ private static final Logger logger = LoggerFactory.getLogger(FinalViewController
 						UserTypeRequest req = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>) response.getData(), UserTypeRequest.class);
 						userType = req.getId().intValue();
 					} else {
-						logger.warn("user_verification, Invalid Request... Client Id is not valid");
-						return new ResponseEntity<LoansResponse>(new LoansResponse("Client Id is not valid",
+						logger.warn(WARN_MSG_USER_VERIFICATION_INVALID_REQUEST_CLIENT_ID_IS_NOT_VALID);
+						return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.CLIENT_ID_IS_NOT_VALID,
 								HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 					}	
 				} catch(Exception e) {
-					logger.warn("user_verification, Invalid Request... Something went wrong");
-					e.printStackTrace();
-					return new ResponseEntity<LoansResponse>(new LoansResponse("Something went wrong",
+					logger.error(ERROR_MSG_USER_VERIFICATION_INVALID_REQUEST_SOMETHING_WENT_WRONG,e);
+					return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG,
 							HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
 				}
 			} else {if(CommonUtils.UserType.SERVICE_PROVIDER == userType){
@@ -379,13 +385,15 @@ private static final Logger logger = LoggerFactory.getLogger(FinalViewController
 			
 		} else {
 			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
+			userType = (Integer) request.getAttribute(CommonUtils.USER_TYPE);
 		}
 
+			logger.debug(MSG_USER_ID+userId+MSG_USER_TYPE+userType);
+
 		if(CommonUtils.isObjectNullOrEmpty(toApplicationId)){
-			logger.warn("Invalid data or Requested data not found.", toApplicationId);
+			logger.warn(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, toApplicationId);
 			return new ResponseEntity<LoansResponse>(
-					new LoansResponse("Invalid data or Requested data not found.", HttpStatus.BAD_REQUEST.value()),
+					new LoansResponse(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, HttpStatus.BAD_REQUEST.value()),
 					HttpStatus.OK);
 		}else {
 			WorkingCapitalFinalViewResponse workingCapitalFinalViewResponse = null;
@@ -401,7 +409,7 @@ private static final Logger logger = LoggerFactory.getLogger(FinalViewController
 				}
 				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 			} catch (Exception e) {
-				loansResponse.setMessage("Something went wrong..!"+e.getMessage());
+				loansResponse.setMessage(CommonUtils.SOMETHING_WENT_WRONG+e.getMessage());
 				loansResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
 				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 			}
@@ -425,14 +433,13 @@ private static final Logger logger = LoggerFactory.getLogger(FinalViewController
 						UserTypeRequest req = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>) response.getData(), UserTypeRequest.class);
 						userType = req.getId().intValue();
 					} else {
-						logger.warn("user_verification, Invalid Request... Client Id is not valid");
-						return new ResponseEntity<LoansResponse>(new LoansResponse("Client Id is not valid",
+						logger.warn(WARN_MSG_USER_VERIFICATION_INVALID_REQUEST_CLIENT_ID_IS_NOT_VALID);
+						return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.CLIENT_ID_IS_NOT_VALID,
 								HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 					}	
 				} catch(Exception e) {
-					logger.warn("user_verification, Invalid Request... Something went wrong");
-					e.printStackTrace();
-					return new ResponseEntity<LoansResponse>(new LoansResponse("Something went wrong",
+					logger.error(ERROR_MSG_USER_VERIFICATION_INVALID_REQUEST_SOMETHING_WENT_WRONG,e);
+					return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG,
 							HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
 				}
 			} else {if(CommonUtils.UserType.SERVICE_PROVIDER == userType){
@@ -444,13 +451,15 @@ private static final Logger logger = LoggerFactory.getLogger(FinalViewController
 			
 		} else {
 			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
+			userType = (Integer) request.getAttribute(CommonUtils.USER_TYPE);
 		}
 
+			logger.debug(MSG_USER_ID+userId+MSG_USER_TYPE+userType);
+
 		if(CommonUtils.isObjectNullOrEmpty(toApplicationId)){
-			logger.warn("Invalid data or Requested data not found.", toApplicationId);
+			logger.warn(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, toApplicationId);
 			return new ResponseEntity<LoansResponse>(
-					new LoansResponse("Invalid data or Requested data not found.", HttpStatus.BAD_REQUEST.value()),
+					new LoansResponse(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, HttpStatus.BAD_REQUEST.value()),
 					HttpStatus.OK);
 		}else {
 			TermLoanFinalViewResponse termLoanFinalViewResponse = null;
@@ -466,7 +475,7 @@ private static final Logger logger = LoggerFactory.getLogger(FinalViewController
 				}
 				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 			} catch (Exception e) {
-				loansResponse.setMessage("Something went wrong..!"+e.getMessage());
+				loansResponse.setMessage(CommonUtils.SOMETHING_WENT_WRONG+e.getMessage());
 				loansResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
 				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 			}
@@ -490,14 +499,13 @@ private static final Logger logger = LoggerFactory.getLogger(FinalViewController
 						UserTypeRequest req = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,Object>) response.getData(), UserTypeRequest.class);
 						userType = req.getId().intValue();
 					} else {
-						logger.warn("user_verification, Invalid Request... Client Id is not valid");
-						return new ResponseEntity<LoansResponse>(new LoansResponse("Client Id is not valid",
+						logger.warn(WARN_MSG_USER_VERIFICATION_INVALID_REQUEST_CLIENT_ID_IS_NOT_VALID);
+						return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.CLIENT_ID_IS_NOT_VALID,
 								HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 					}	
 				} catch(Exception e) {
-					logger.warn("user_verification, Invalid Request... Something went wrong");
-					e.printStackTrace();
-					return new ResponseEntity<LoansResponse>(new LoansResponse("Something went wrong",
+					logger.error(ERROR_MSG_USER_VERIFICATION_INVALID_REQUEST_SOMETHING_WENT_WRONG,e);
+					return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG,
 							HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
 				}
 			} else {if(CommonUtils.UserType.SERVICE_PROVIDER == userType){
@@ -509,13 +517,15 @@ private static final Logger logger = LoggerFactory.getLogger(FinalViewController
 			
 		} else {
 			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
+			userType = (Integer) request.getAttribute(CommonUtils.USER_TYPE);
 		}
 
+			logger.debug(MSG_USER_ID+userId+MSG_USER_TYPE+userType);
+
 		if(CommonUtils.isObjectNullOrEmpty(toApplicationId)){
-			logger.warn("Invalid data or Requested data not found.", toApplicationId);
+			logger.warn(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, toApplicationId);
 			return new ResponseEntity<LoansResponse>(
-					new LoansResponse("Invalid data or Requested data not found.", HttpStatus.BAD_REQUEST.value()),
+					new LoansResponse(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, HttpStatus.BAD_REQUEST.value()),
 					HttpStatus.OK);
 		}else {
 			UnsecuredLoanFinalViewResponse unsecuredLoanFinalViewResponse = null;
@@ -531,7 +541,7 @@ private static final Logger logger = LoggerFactory.getLogger(FinalViewController
 				}
 				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 			} catch (Exception e) {
-				loansResponse.setMessage("Something went wrong..!"+e.getMessage());
+				loansResponse.setMessage(CommonUtils.SOMETHING_WENT_WRONG+e.getMessage());
 				loansResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
 				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 			}
@@ -620,5 +630,5 @@ private static final Logger logger = LoggerFactory.getLogger(FinalViewController
 			}
 		}
 	}
-		
+
 }
