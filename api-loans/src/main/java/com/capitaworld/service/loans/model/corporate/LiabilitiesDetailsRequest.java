@@ -3,8 +3,6 @@ package com.capitaworld.service.loans.model.corporate;
 import java.io.Serializable;
 import java.util.Date;
 
-import com.capitaworld.service.loans.model.LoanApplicationRequest;
-
 public class LiabilitiesDetailsRequest implements Serializable{
 	
 	private static final long serialVersionUID = 1L;

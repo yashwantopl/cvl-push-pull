@@ -1,7 +1,6 @@
 package com.capitaworld.service.loans.repository.fundseeker;
 
 import com.capitaworld.service.loans.domain.ScoringRequestDetail;
-import com.capitaworld.service.loans.domain.fundseeker.ApplicationStatusAudit;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

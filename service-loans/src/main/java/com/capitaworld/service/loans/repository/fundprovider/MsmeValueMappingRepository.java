@@ -1,7 +1,6 @@
 package com.capitaworld.service.loans.repository.fundprovider;
 
 import com.capitaworld.service.loans.domain.fundprovider.MsmeValueMapping;
-import com.capitaworld.service.loans.domain.fundprovider.MsmeValueMappingTemp;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

@@ -21,9 +21,8 @@ import com.capitaworld.service.loans.utils.CommonUtils;
 @RestController
 @RequestMapping("/disbursement")
 public class DisbursementController {
-private static final Logger logger = LoggerFactory.getLogger(DisbursementController.class.getName());
-	/*
-	
+/*
+    private static final Logger logger = LoggerFactory.getLogger(DisbursementController.class.getName());
 
 	@RequestMapping(value = "/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> save(@RequestBody CarLoanParameterRequest  carLoanParameterRequest,HttpServletRequest request) {

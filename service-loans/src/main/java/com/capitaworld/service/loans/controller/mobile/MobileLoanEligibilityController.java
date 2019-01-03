@@ -302,12 +302,10 @@ public class MobileLoanEligibilityController {
 			return response;
 		}
 
-		if (!CommonUtils.isObjectNullOrEmpty(homeLoanRequest.getObligation())) {
-			if (homeLoanRequest.getIncome() <= homeLoanRequest.getObligation()) {
+		if ((!CommonUtils.isObjectNullOrEmpty(homeLoanRequest.getObligation())) && (homeLoanRequest.getIncome() <= homeLoanRequest.getObligation()) ) {
 				response = new LoansResponse(CommonUtils.OBLIGATION_MUST_BE_LESS_THAN_INCOME, HttpStatus.BAD_REQUEST.value());
 				response.setData(MSG);
 				return response;
-			}
 		}
 
 		if (homeLoanRequest.getIncome() < 9000) {
@@ -361,12 +359,10 @@ public class MobileLoanEligibilityController {
 			return response;
 		}
 
-		if (!CommonUtils.isObjectNullOrEmpty(eligibilityRequest.getObligation())) {
-			if (eligibilityRequest.getIncome() <= eligibilityRequest.getObligation()) {
+		if ((!CommonUtils.isObjectNullOrEmpty(eligibilityRequest.getObligation())) && (eligibilityRequest.getIncome() <= eligibilityRequest.getObligation()) ) {
 				response = new LoansResponse(CommonUtils.OBLIGATION_MUST_BE_LESS_THAN_INCOME, HttpStatus.BAD_REQUEST.value());
 				response.setData(MSG);
 				return response;
-			}
 		}
 		if (eligibilityRequest.getIncome() < 10000) {
 			response = new LoansResponse("Minimum Salary should be 10000", HttpStatus.BAD_REQUEST.value());
@@ -396,12 +392,10 @@ public class MobileLoanEligibilityController {
 			response = new LoansResponse("Invalid PropertyType", HttpStatus.BAD_REQUEST.value());
 			response.setData(MSG);
 		}
-		if (!CommonUtils.isObjectNullOrEmpty(eligibilityRequest.getObligation())) {
-			if (eligibilityRequest.getIncome() <= eligibilityRequest.getObligation()) {
+		if ((!CommonUtils.isObjectNullOrEmpty(eligibilityRequest.getObligation())) && (eligibilityRequest.getIncome() <= eligibilityRequest.getObligation()) ) {
 				response = new LoansResponse(CommonUtils.OBLIGATION_MUST_BE_LESS_THAN_INCOME, HttpStatus.BAD_REQUEST.value());
 				response.setData(MSG);
 				return response;
-			}
 		}
 
 		if (eligibilityRequest.getPropertyType().intValue() == CommonUtils.PropertyType.RESIDENTIAL

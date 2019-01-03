@@ -1,7 +1,6 @@
 package com.capitaworld.service.loans.model.teaser.finalview;
 
 import java.io.Serializable;
-import java.util.List;
 
 import com.capitaworld.service.loans.model.teaser.primaryview.HomeLoanPrimaryViewResponse;
 

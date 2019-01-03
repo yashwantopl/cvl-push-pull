@@ -41,7 +41,6 @@ import com.capitaworld.service.oneform.enums.EmploymentStatusRetailMst;
 import com.capitaworld.service.oneform.enums.IncomeDetails;
 import com.capitaworld.service.oneform.enums.InterestRateRetailMst;
 import com.capitaworld.service.oneform.enums.OfficeTypeRetailMst;
-import com.capitaworld.service.oneform.enums.Options;
 import com.capitaworld.service.oneform.enums.OwnershipTypeRetailMst;
 import com.capitaworld.service.oneform.enums.ReligionRetailMst;
 import com.capitaworld.service.oneform.enums.RepaymentCycleRetailMst;

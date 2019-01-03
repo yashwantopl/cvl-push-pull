@@ -2,7 +2,6 @@ package com.capitaworld.service.loans.repository.fundseeker.corporate;
 
 
 import com.capitaworld.service.loans.domain.fundseeker.corporate.RevenueAndOrderBookDetail;
-import com.capitaworld.service.loans.domain.fundseeker.corporate.TechnologyPositioningDetail;
 import com.capitaworld.service.loans.model.teaser.finalview.RevenueAndOrderBookResponse;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
