@@ -22,7 +22,6 @@ import com.capitaworld.service.loans.model.teaser.finalview.CarLoanFinalViewResp
 import com.capitaworld.service.loans.model.teaser.finalview.CorporateFinalViewResponse;
 import com.capitaworld.service.loans.model.teaser.finalview.HomeLoanFinalViewResponse;
 import com.capitaworld.service.loans.model.teaser.finalview.LapFinalViewResponse;
-import com.capitaworld.service.loans.model.teaser.finalview.NtbFinalViewResponse;
 import com.capitaworld.service.loans.model.teaser.finalview.PersonalLoanFinalViewResponse;
 import com.capitaworld.service.loans.model.teaser.finalview.TermLoanFinalViewResponse;
 import com.capitaworld.service.loans.model.teaser.finalview.UnsecuredLoanFinalViewResponse;

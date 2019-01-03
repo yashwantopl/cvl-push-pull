@@ -1644,6 +1644,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
+	
+	@Override
+	public Boolean isMcqSkipped(Long applicationId) throws Exception {
+		Long count = loanApplicationRepository.checkMcqSkipped(applicationId);
+		return (count != null ? count > 0 : false);
+	}
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -1712,7 +1718,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		List<Long> coAppIds = null;
 
 		Long coAppCount;
-
+		
+		Boolean isFinalMcqFilled = applicationMaster.getIsFinalMcqFilled() != null ? applicationMaster.getIsFinalMcqFilled() : false; 
+		Boolean isMcqSkipped = applicationMaster.getIsMcqSkipped() != null ? applicationMaster.getIsMcqSkipped() : false; 
+		
 		int index = 0;
 		final String INVALID_MSG = "Requested data is Invalid.";
 		JSONObject response = new JSONObject();
@@ -1915,8 +1924,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			// return response;
 			// }
 			if (CommonUtils.BusinessType.EXISTING_BUSINESS.getId().equals(applicationMaster.getBusinessTypeId())) {
-				if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsFinalMcqFilled())
-						|| !applicationMaster.getIsFinalMcqFilled().booleanValue()) {
+				if (!isFinalMcqFilled && !isMcqSkipped) {
 					response.put(MESSAGE_LITERAL, PLEASE_FILL_FINAL_MCQ_DETAILS_TO_MOVE_NEXT);
 					response.put(RESULT_LITERAL, false);
 					return response;
@@ -1951,8 +1959,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			 * response.put(RESULT_LITERAL, false); return response; }
 			 */
 			if (CommonUtils.BusinessType.EXISTING_BUSINESS.getId().equals(applicationMaster.getBusinessTypeId())) {
-				if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsFinalMcqFilled())
-						|| !applicationMaster.getIsFinalMcqFilled().booleanValue()) {
+				if (!isFinalMcqFilled && !isMcqSkipped) {
 					response.put(MESSAGE_LITERAL, PLEASE_FILL_FINAL_MCQ_DETAILS_TO_MOVE_NEXT);
 					response.put(RESULT_LITERAL, false);
 					return response;
@@ -1996,8 +2003,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			 * response.put(RESULT_LITERAL, false); return response; }
 			 */
 			if (CommonUtils.BusinessType.EXISTING_BUSINESS.getId().equals(applicationMaster.getBusinessTypeId())) {
-				if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsFinalMcqFilled())
-						|| !applicationMaster.getIsFinalMcqFilled().booleanValue()) {
+				if (!isFinalMcqFilled && !isMcqSkipped) {
 					response.put(MESSAGE_LITERAL, PLEASE_FILL_FINAL_MCQ_DETAILS_TO_MOVE_NEXT);
 					response.put(RESULT_LITERAL, false);
 					return response;
@@ -3000,7 +3006,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					} catch (Exception e) {
 						logger.error("Throw Exception while get matches count for registration user details------------->"+ loanMstr.getId()+" :: ",e);
 					}
-					if (!CommonUtils.isObjectNullOrEmpty(proposalCountResponse)) {
+					if (proposalCountResponse != null && !CommonUtils.isObjectNullOrEmpty(proposalCountResponse)) {
 						obj.put("totalMatches", proposalCountResponse.getTotal());
 						obj.put("matches", proposalCountResponse.getMatches());
 						obj.put("directSent", proposalCountResponse.getSent());
@@ -4377,7 +4383,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					logger.error("Throw Exception While Get User Email and Mobile : ",e);
 				}
 
-				if (!CommonUtils.isObjectNullOrEmpty(usersRequest)) {
+				if (usersRequest != null && !CommonUtils.isObjectNullOrEmpty(usersRequest)) {
 					gatewayRequest.setEmail(usersRequest.getEmail());
 					gatewayRequest.setPhone(usersRequest.getMobile());
 				} else {
@@ -5958,7 +5964,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			audit = auditComponent.getAudit(applicationId, true, AuditComponent.COMMERCIAL);
 			if (audit == null) {
 				String pan = null;
-				if (!CommonUtils.isObjectNullOrEmpty(prelimData)
+				if (prelimData != null && !CommonUtils.isObjectNullOrEmpty(prelimData)
 						&& !CommonUtils.isObjectNullOrEmpty(prelimData.getCorporateProfileRequest())
 						&& !CommonUtils.isObjectNullOrEmpty(prelimData.getCorporateProfileRequest().getPan())) {
 					pan = prelimData.getCorporateProfileRequest().getPan();
@@ -6333,7 +6339,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				 * Base base = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,
 				 * Object>)msmeCommercial.getData(), Base.class);
 				 */
-				if (!CommonUtils.isObjectNullOrEmpty(base) && !CommonUtils.isObjectNullOrEmpty(base.getResponseReport())
+				if (base != null && !CommonUtils.isObjectNullOrEmpty(base) && !CommonUtils.isObjectNullOrEmpty(base.getResponseReport())
 						&& !CommonUtils.isObjectNullOrEmpty(base.getResponseReport().getProductSec())) {
 					Base.ResponseReport.ProductSec productSec = base.getResponseReport().getProductSec();
 					if (!CommonUtils.isObjectNullOrEmpty(productSec)) {

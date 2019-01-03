@@ -7,7 +7,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.capitaworld.service.loans.domain.fundprovider.NTBParameter;
-import com.capitaworld.service.loans.domain.fundprovider.TermLoanParameter;
 
 public interface NtbParameterRepository extends JpaRepository<NTBParameter, Long>{
 	@Query("from NTBParameter tp where tp.fpProductId.id =:id ")

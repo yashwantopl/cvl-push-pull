@@ -219,7 +219,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
                     if (!CommonUtils.isObjectNullOrEmpty(reqObj.getId())) {
                         saveFinObj = financialArrangementDetailsRepository.findByIdAndIsActive(reqObj.getId(), true);
                     }
-                    if (CommonUtils.isObjectNullOrEmpty(saveFinObj)) {
+                    if (saveFinObj == null || CommonUtils.isObjectNullOrEmpty(saveFinObj)) {
                         saveFinObj = new FinancialArrangementsDetail();
                         BeanUtils.copyProperties(reqObj, saveFinObj, "id", CommonUtils.CREATED_BY, CommonUtils.CREATED_DATE, CommonUtils.MODIFIED_BY,
                                 CommonUtils.MODIFIED_DATE, "isActive");
@@ -246,7 +246,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
                     if (!CommonUtils.isObjectNullOrEmpty(reqObj.getId())) {
                         saveObj = creditCardsDetailRepository.findOne(reqObj.getId());
                     }
-                    if (CommonUtils.isObjectNullOrEmpty(saveObj)) {
+                    if (saveObj == null || CommonUtils.isObjectNullOrEmpty(saveObj)) {
                         saveObj = new CreditCardsDetail();
                         BeanUtils.copyProperties(reqObj, saveObj, "id", CommonUtils.CREATED_BY, CommonUtils.CREATED_DATE, CommonUtils.MODIFIED_BY,
                                 CommonUtils.MODIFIED_DATE, "isActive");

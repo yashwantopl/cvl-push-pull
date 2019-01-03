@@ -215,6 +215,10 @@ public class LoanApplicationMaster implements Serializable {
 	
 	@Column(name = "wc_renewal_status")
 	private Integer wcRenewalStatus;
+	
+	@Column(name = "is_mcq_skipped")
+	private Boolean isMcqSkipped;
+	
 
 	public Long getFpMakerId() {
 		return fpMakerId;
@@ -717,6 +721,14 @@ public class LoanApplicationMaster implements Serializable {
 		this.wcRenewalStatus = wcRenewalStatus;
 	}
 
+	public Boolean getIsMcqSkipped() {
+		return isMcqSkipped;
+	}
+
+	public void setIsMcqSkipped(Boolean isMcqSkipped) {
+		this.isMcqSkipped = isMcqSkipped;
+	}
+	
 	@Override
 	public String toString() {
 		return "LoanApplicationMaster [id=" + id + "]";

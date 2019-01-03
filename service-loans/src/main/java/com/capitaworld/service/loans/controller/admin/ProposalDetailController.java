@@ -17,8 +17,6 @@ public class ProposalDetailController {
     @Autowired
     private ProposalDetailsAdminService proposalDetailsAdminService;
 
-    private static final Logger logger = LoggerFactory.getLogger(ProposalDetailController.class);
-
     @PostMapping(value = "/admin/getProposal", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LoansResponse> proposalDetail() {
         LoansResponse loansResponse = new LoansResponse();

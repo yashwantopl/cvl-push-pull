@@ -2,7 +2,6 @@ package com.capitaworld.service.loans.model.corporate;
 
 import java.io.Serializable;
 import java.util.Date;
-import com.capitaworld.service.loans.model.LoanApplicationRequest;
 
 
 public class AssetsDetailsRequest implements Serializable {

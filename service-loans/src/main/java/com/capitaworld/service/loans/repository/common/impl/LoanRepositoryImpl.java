@@ -19,6 +19,11 @@ public class LoanRepositoryImpl implements LoanRepository {
 
 	private static final Logger logger = LoggerFactory.getLogger(LoanRepositoryImpl.class);
 
+	private static final String ORG_ID = "orgId";
+	private static final String BRANCH_ID = "branchId";
+	private static final String LIST_LIMIT = "listLimit";
+	private static final String SEARCH_STRING = "searchString";
+
 	@PersistenceContext
 	private EntityManager entityManager;
 	
@@ -26,7 +31,7 @@ public class LoanRepositoryImpl implements LoanRepository {
 		try {
 			Object[] value = (Object[]) entityManager
 					.createNativeQuery("SELECT user_role_id,branch_id FROM users.`users` WHERE user_id =:userId")
-					.setParameter("userId", userId)
+					.setParameter(CommonUtils.USER_ID, userId)
 					.getSingleResult();
 			return value;	
 		} catch (Exception e) {
@@ -37,63 +42,63 @@ public class LoanRepositoryImpl implements LoanRepository {
 	
 	public List<Object[]> searchProposalForHO(Long orgId,String searchString,Long listLimit) {
 		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spFetchProposalsByOrgAndSearchString");
-		storedProcedureQuery.registerStoredProcedureParameter("orgId",Long.class, ParameterMode.IN);
-		storedProcedureQuery.registerStoredProcedureParameter("searchString",String.class, ParameterMode.IN);
-		storedProcedureQuery.registerStoredProcedureParameter("listLimit",Long.class, ParameterMode.IN);
-		storedProcedureQuery.setParameter("orgId",orgId);
-		storedProcedureQuery.setParameter("searchString",searchString);
-		storedProcedureQuery.setParameter("listLimit",listLimit);
+		storedProcedureQuery.registerStoredProcedureParameter(ORG_ID,Long.class, ParameterMode.IN);
+		storedProcedureQuery.registerStoredProcedureParameter(SEARCH_STRING,String.class, ParameterMode.IN);
+		storedProcedureQuery.registerStoredProcedureParameter(LIST_LIMIT,Long.class, ParameterMode.IN);
+		storedProcedureQuery.setParameter(ORG_ID,orgId);
+		storedProcedureQuery.setParameter(SEARCH_STRING,searchString);
+		storedProcedureQuery.setParameter(LIST_LIMIT,listLimit);
 		return (List<Object[]>) storedProcedureQuery.getResultList();
 	}
 	
 	public List<Object[]> searchProposalForCheckerAndMaker(Long orgId,String searchString,Long branchId,Long listLimit) {
 		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spFetchProposalsByOrgAndBranchAndSearchString");
-		storedProcedureQuery.registerStoredProcedureParameter("orgId",Long.class, ParameterMode.IN);
-		storedProcedureQuery.registerStoredProcedureParameter("searchString",String.class, ParameterMode.IN);
-		storedProcedureQuery.registerStoredProcedureParameter("branchId",Long.class, ParameterMode.IN);
-		storedProcedureQuery.registerStoredProcedureParameter("listLimit",Long.class, ParameterMode.IN);
-		storedProcedureQuery.setParameter("orgId",orgId);
-		storedProcedureQuery.setParameter("searchString",searchString);
-		storedProcedureQuery.setParameter("branchId",branchId);
-		storedProcedureQuery.setParameter("listLimit",listLimit);
+		storedProcedureQuery.registerStoredProcedureParameter(ORG_ID,Long.class, ParameterMode.IN);
+		storedProcedureQuery.registerStoredProcedureParameter(SEARCH_STRING,String.class, ParameterMode.IN);
+		storedProcedureQuery.registerStoredProcedureParameter(BRANCH_ID,Long.class, ParameterMode.IN);
+		storedProcedureQuery.registerStoredProcedureParameter(LIST_LIMIT,Long.class, ParameterMode.IN);
+		storedProcedureQuery.setParameter(ORG_ID,orgId);
+		storedProcedureQuery.setParameter(SEARCH_STRING,searchString);
+		storedProcedureQuery.setParameter(BRANCH_ID,branchId);
+		storedProcedureQuery.setParameter(LIST_LIMIT,listLimit);
 		return (List<Object[]>) storedProcedureQuery.getResultList();
 	}
 	
 	public List<Object[]> searchProposalForSMECC(Long orgId,String searchString,Long userId,Long listLimit) {
 		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spFetchProposalsByOrgAndUserIdAndSearchString");
-		storedProcedureQuery.registerStoredProcedureParameter("orgId",Long.class, ParameterMode.IN);
-		storedProcedureQuery.registerStoredProcedureParameter("searchString",String.class, ParameterMode.IN);
-		storedProcedureQuery.registerStoredProcedureParameter("userId",Long.class, ParameterMode.IN);
-		storedProcedureQuery.registerStoredProcedureParameter("listLimit",Long.class, ParameterMode.IN);
-		storedProcedureQuery.setParameter("orgId",orgId);
-		storedProcedureQuery.setParameter("searchString",searchString);
-		storedProcedureQuery.setParameter("userId",userId);
-		storedProcedureQuery.setParameter("listLimit",listLimit);
+		storedProcedureQuery.registerStoredProcedureParameter(ORG_ID,Long.class, ParameterMode.IN);
+		storedProcedureQuery.registerStoredProcedureParameter(SEARCH_STRING,String.class, ParameterMode.IN);
+		storedProcedureQuery.registerStoredProcedureParameter(CommonUtils.USER_ID,Long.class, ParameterMode.IN);
+		storedProcedureQuery.registerStoredProcedureParameter(LIST_LIMIT,Long.class, ParameterMode.IN);
+		storedProcedureQuery.setParameter(ORG_ID,orgId);
+		storedProcedureQuery.setParameter(SEARCH_STRING,searchString);
+		storedProcedureQuery.setParameter(CommonUtils.USER_ID,userId);
+		storedProcedureQuery.setParameter(LIST_LIMIT,listLimit);
 		return (List<Object[]>) storedProcedureQuery.getResultList();
 	}
 	
 	public Object[] fpDashBoardCountByOrgId(Long orgId) {
 		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spFetchFpDashbordCountByOrgId");
-		storedProcedureQuery.registerStoredProcedureParameter("orgId",Long.class, ParameterMode.IN);
-		storedProcedureQuery.setParameter("orgId",orgId);
+		storedProcedureQuery.registerStoredProcedureParameter(ORG_ID,Long.class, ParameterMode.IN);
+		storedProcedureQuery.setParameter(ORG_ID,orgId);
 		return (Object[]) storedProcedureQuery.getSingleResult();
 	}
 	
 	public Object[] fpDashBoardCountByOrgIdAndBranchId(Long orgId,Long branchId) {
 		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spFetchFpDashbordCountByOrgIdAndBranchId");
-		storedProcedureQuery.registerStoredProcedureParameter("orgId",Long.class, ParameterMode.IN);
-		storedProcedureQuery.registerStoredProcedureParameter("branchId",Long.class, ParameterMode.IN);
-		storedProcedureQuery.setParameter("orgId",orgId);
-		storedProcedureQuery.setParameter("branchId",branchId);
+		storedProcedureQuery.registerStoredProcedureParameter(ORG_ID,Long.class, ParameterMode.IN);
+		storedProcedureQuery.registerStoredProcedureParameter(BRANCH_ID,Long.class, ParameterMode.IN);
+		storedProcedureQuery.setParameter(ORG_ID,orgId);
+		storedProcedureQuery.setParameter(BRANCH_ID,branchId);
 		return (Object[]) storedProcedureQuery.getSingleResult();
 	}
 	
 	public Object[] fpDashBoardCountByOrgIdAndUserId(Long orgId,Long userId) {
 		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spFetchFpDashbordCountByOrgIdAndUserId");
-		storedProcedureQuery.registerStoredProcedureParameter("orgId",Long.class, ParameterMode.IN);
-		storedProcedureQuery.registerStoredProcedureParameter("userId",Long.class, ParameterMode.IN);
-		storedProcedureQuery.setParameter("orgId",orgId);
-		storedProcedureQuery.setParameter("userId",userId);
+		storedProcedureQuery.registerStoredProcedureParameter(ORG_ID,Long.class, ParameterMode.IN);
+		storedProcedureQuery.registerStoredProcedureParameter(CommonUtils.USER_ID,Long.class, ParameterMode.IN);
+		storedProcedureQuery.setParameter(ORG_ID,orgId);
+		storedProcedureQuery.setParameter(CommonUtils.USER_ID,userId);
 		return (Object[]) storedProcedureQuery.getSingleResult();
 	}
 	

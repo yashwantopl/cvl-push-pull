@@ -1758,7 +1758,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 				}
 
 				CheckerDetailRequest checkerDetailRequest = null;
-				if (!CommonUtils.isObjectListNull(userResponse)
+				if (userResponse != null && !CommonUtils.isObjectListNull(userResponse)
 						&& !(CommonUtils.isObjectNullOrEmpty(userResponse.getData()))) {
 					checkerDetailRequest = MultipleJSONObjectHelper.getObjectFromMap(
 							(LinkedHashMap<String, Object>) userResponse.getData(), CheckerDetailRequest.class);
@@ -1767,7 +1767,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 				if (!CommonUtils.isObjectNullOrEmpty(checkerDetailRequest)) {
 					// "+checkerDetailRequest.getMinAmount() + " getMaxAmount :
 					// "+checkerDetailRequest.getMaxAmount());
-					if (userRequest.getLoanAmount() != null && checkerDetailRequest.getMinAmount() != null
+					if (userRequest.getLoanAmount() != null && checkerDetailRequest != null && checkerDetailRequest.getMinAmount() != null
 							&& checkerDetailRequest.getMaxAmount() != null
 							&& !(userRequest.getLoanAmount() >= checkerDetailRequest.getMinAmount()
 									&& userRequest.getLoanAmount() <= checkerDetailRequest.getMaxAmount())) {
