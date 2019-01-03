@@ -100,17 +100,19 @@ public class FutureFinancialEstimatesDetailsServiceImpl implements FutureFinanci
 		LoanApplicationMaster applicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId, userId);
 		LoanType loanType = CommonUtils.LoanType.getType(applicationMaster.getProductId());
 		if (loanType == null) {
-			Collections.emptyList();
+			return Collections.emptyList();
 		}
-		switch (loanType) {
-		case WORKING_CAPITAL:
-			return calucateWCFinancialYear(futureFinancialEstimateDetails);
-		case TERM_LOAN:
-			return calucateTLFinancialYear(futureFinancialEstimateDetails, applicationMaster, applicationId, userId);
-		default:
-			break;
+		else {
+			switch (loanType) {
+				case WORKING_CAPITAL:
+					return calucateWCFinancialYear(futureFinancialEstimateDetails);
+				case TERM_LOAN:
+					return calucateTLFinancialYear(futureFinancialEstimateDetails, applicationMaster, applicationId, userId);
+				default:
+					break;
+			}
+			return Collections.emptyList();
 		}
-		return Collections.emptyList();
 	}
 
 	private List<FutureFinancialEstimatesDetailRequest> calucateWCFinancialYear(

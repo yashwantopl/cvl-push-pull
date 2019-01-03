@@ -1,7 +1,6 @@
 package com.capitaworld.service.loans.service.teaser.finalview.impl;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -122,16 +121,13 @@ import com.capitaworld.service.oneform.enums.Integrity;
 import com.capitaworld.service.oneform.enums.InternalAudit;
 import com.capitaworld.service.oneform.enums.InternalControl;
 import com.capitaworld.service.oneform.enums.InternalReturn;
-import com.capitaworld.service.oneform.enums.LenderType;
 import com.capitaworld.service.oneform.enums.LimitOverdrawn;
 import com.capitaworld.service.oneform.enums.LoanType;
-import com.capitaworld.service.oneform.enums.LoanTypeNatureFacility;
 import com.capitaworld.service.oneform.enums.ManagementCompetence;
 import com.capitaworld.service.oneform.enums.MarketPosition;
 import com.capitaworld.service.oneform.enums.MarketPositioningTop;
 import com.capitaworld.service.oneform.enums.MarketShareTurnover;
 import com.capitaworld.service.oneform.enums.MarketingPositioningNew;
-import com.capitaworld.service.oneform.enums.NatureFacility;
 import com.capitaworld.service.oneform.enums.OperatingMargins;
 import com.capitaworld.service.oneform.enums.OrderBook;
 import com.capitaworld.service.oneform.enums.OverseasNetwork;
