@@ -15,7 +15,9 @@ import com.capitaworld.service.users.model.UsersRequest;
 public interface ProposalService {
 
 	public List<?>  fundproviderProposal(ProposalMappingRequest request);
-	
+
+	public List<?>  fundproviderProposalByProposalId(ProposalMappingRequest request);
+
 	public List<?> fundproviderProposalByAssignBy(ProposalMappingRequest request);
 	
 	public List<FundProviderProposalDetails>  fundseekerProposal(ProposalMappingRequest request,Long userId);

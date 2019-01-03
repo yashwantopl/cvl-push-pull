@@ -88,6 +88,7 @@ public class NhbsApplicationsResponse implements Serializable{
 
 	private Long proposalId;
 
+	boolean isSanction;
 
 	public Date getAssignedToCheckerDate() {
 		return assignedToCheckerDate;
@@ -314,6 +315,12 @@ public class NhbsApplicationsResponse implements Serializable{
 		this.productName = productName;
 	}
 
-	
 
+	public boolean isSanction() {
+		return isSanction;
+	}
+
+	public void setSanction(boolean sanction) {
+		isSanction = sanction;
+	}
 }

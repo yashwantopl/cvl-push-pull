@@ -61,9 +61,11 @@ public interface LoanApplicationService {
 	public UserResponse setLastAccessApplication(Long applicationId,Long userId) throws Exception;
 	
 	public Integer getProductIdByApplicationId(Long applicationId,Long userId) throws Exception;
-	
+
+	public Object[] getApplicationDetailsByProposalId(Long applicationId,Long proposalMappingId) throws Exception;
+
 	public Object[] getApplicationDetailsById(Long applicationId) throws Exception;
-	
+
 	public String getFsApplicantName(Long applicationId) throws Exception;
 	
 	public void updateFinalCommonInformation(Long applicationId, Long userId, Boolean flag,String finalFilledCount) throws Exception;

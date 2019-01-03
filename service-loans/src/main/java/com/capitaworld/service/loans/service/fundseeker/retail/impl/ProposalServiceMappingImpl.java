@@ -6,6 +6,8 @@ import java.text.DecimalFormat;
 import java.util.*;
 
 import com.capitaworld.connect.api.ConnectResponse;
+import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.*;
 import com.capitaworld.service.matchengine.utils.MatchConstant;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
@@ -46,10 +48,6 @@ import com.capitaworld.service.loans.model.RetailProposalDetails;
 import com.capitaworld.service.loans.repository.OfflineProcessedAppRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.DirectorBackgroundDetailsRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
-import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.sanction.LoanDisbursementRepository;
 import com.capitaworld.service.loans.service.ProposalService;
@@ -104,6 +102,9 @@ public class ProposalServiceMappingImpl implements ProposalService {
 
 	@Autowired
 	private LoanApplicationRepository loanApplicationRepository;
+
+	@Autowired
+	private ApplicationProposalMappingRepository applicationProposalMappingRepository;
 
 	@Autowired
 	private CorporateApplicantDetailRepository corporateApplicantDetailRepository;
@@ -172,6 +173,530 @@ public class ProposalServiceMappingImpl implements ProposalService {
 		}
 		return "NA";
 
+	}
+
+	@Override
+	public List fundproviderProposalByProposalId(ProposalMappingRequest request) {
+		// TODO Auto-generated method stub
+
+		List proposalDetailsList = new ArrayList();
+
+		try {
+
+			try {
+				// set branch id to proposal request
+				UsersRequest usersRequest = new UsersRequest();
+				usersRequest.setId(request.getUserId());
+				logger.info(
+						"Current user id ---------------------------------------------------> " + request.getUserId());
+				UserResponse userResponse = usersClient.getBranchDetailsBYUserId(usersRequest);
+				BranchBasicDetailsRequest basicDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap(
+						(LinkedHashMap<String, Object>) userResponse.getData(), BranchBasicDetailsRequest.class);
+				if (!CommonUtils.isObjectNullOrEmpty(basicDetailsRequest)) {
+					logger.info("Found Branch Id -----------> " + basicDetailsRequest.getId()
+							+ "---------Role Id ------------------>" + basicDetailsRequest.getRoleId());
+					if (basicDetailsRequest.getRoleId() == CommonUtils.UsersRoles.BO || basicDetailsRequest.getRoleId() == CommonUtils.UsersRoles.FP_CHECKER) {
+						logger.info("Current user is Branch officer or FP_CHECKER");
+						request.setBranchId(basicDetailsRequest.getId());
+					}
+				} else {
+					logger.info("Branch Id Can't found");
+				}
+			} catch (Exception e) {
+				logger.info("Throw Exception While Get Branch Id from UserId");
+				e.printStackTrace();
+			}
+
+			// END set branch id to proposal request
+			// calling MATCHENGINE for getting proposal list
+
+			ProposalMappingResponse proposalDetailsResponse = proposalDetailsClient.proposalListOfFundProvider(request);
+
+			MatchEngineClient matchEngineClient = new MatchEngineClient(environment.getRequiredProperty("matchesURL"));
+
+			for (int i = 0; i < proposalDetailsResponse.getDataList().size(); i++) {
+				ProposalMappingRequest proposalrequest = MultipleJSONObjectHelper.getObjectFromMap(
+						(LinkedHashMap<String, Object>) proposalDetailsResponse.getDataList().get(i),
+						ProposalMappingRequest.class);
+
+				Long applicationId = proposalrequest.getApplicationId();
+				Long proposalMappingId = proposalrequest.getId();
+				ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.findOne(proposalrequest.getId());
+				if(CommonUtils.isObjectNullOrEmpty(applicationProposalMapping))
+					continue;
+				//LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(applicationId);
+				Integer bId = applicationProposalMapping.getBusinessTypeId();
+
+//				getting the value of proposal's branch address city state based on proposal applicationID
+//				step 1  get proposal details by applicationID and user details
+//				step2 get branch details by branch id available in proposalDetails
+//				step3 get branch state by state id available in location Master
+//				step4 get branch city by city id available in location Master
+
+				UsersRequest usersRequestData = new UsersRequest();
+				usersRequestData.setId(request.getUserId());
+				BranchBasicDetailsRequest basicDetailsRequest = null;
+
+				// step 1
+				logger.info("application Id:" + proposalrequest.getApplicationId());
+				if (!CommonUtils.isObjectNullOrEmpty(proposalrequest.getApplicationId())) {
+					Object[] loanDeatils = loanApplicationService
+							.getApplicationDetailsByProposalId(proposalrequest.getApplicationId(),proposalrequest.getId());
+					logger.info("user id based on application Id:" + loanDeatils.toString());
+					long userId = loanDeatils[0] != null ? (long) loanDeatils[0] : 0;
+
+					try {
+//						step 2	get branch details by branch id available in proposalDetails	BRANCH-MASTER
+						if (proposalrequest.getBranchId() != null) {
+//						getlocation id available in branch then find city state location name based on location id
+							UserResponse userResponse = usersClient.getBranchDetailById(proposalrequest.getBranchId());
+							basicDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap(
+									(LinkedHashMap<String, Object>) userResponse.getData(),
+									BranchBasicDetailsRequest.class);
+							logger.info(
+									"--------------------------------------------------------------------------------");
+							logger.info("Get BranchDetails By ID:" + userResponse.getData());
+							logger.info("branch id By proposal:" + basicDetailsRequest.getBranchId());
+							if (basicDetailsRequest.getLocationId() != null) {
+								logger.info("location id by branchId:" + basicDetailsRequest.getLocationId());
+								try {
+									LocationMasterResponse locationDetails = usersClient
+											.getLocationDetailByLocationId(basicDetailsRequest.getLocationId());
+									logger.info("locationName:====>" + locationDetails.getLocationName());
+									logger.info("cityName:====>" + locationDetails.getCity().getName());
+									basicDetailsRequest.setLocationMasterResponse(locationDetails);
+									logger.info("stateName:====>" + locationDetails.getState().getName());
+								} catch (Exception e) {
+									logger.info("Exception in getting location by id:"+e);
+								}
+							}
+						}
+					} catch (Exception e) {
+						logger.info("Exception in getting value from location based on branch id:" + e);
+					}
+				}
+				if (CommonUtils.isObjectNullOrEmpty(applicationProposalMapping)) {
+					logger.info("loanApplicationMaster null ot empty !!");
+					continue;
+				}
+
+				if (CommonUtils.isObjectNullOrEmpty(applicationProposalMapping.getIsActive())
+						|| !applicationProposalMapping.getIsActive()) {
+					logger.info("Application Id is InActive while get fundprovider proposals=====>" + applicationId);
+					continue;
+				}
+				if (CommonUtils.UserMainType.CORPORATE == CommonUtils
+						.getUserMainType(applicationProposalMapping.getProductId())) {
+
+					CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
+							.getByProposalId(proposalMappingId);
+					System.out.println("User Is: " + proposalrequest.getUserId() + " Applicationid: " + applicationId + " Proposal Mapping id: "  + proposalMappingId);
+
+					if (corporateApplicantDetail == null)
+						continue;
+
+					// for get address city state country
+					String address = "";
+					if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCityId())) {
+						address += CommonDocumentUtils.getCity(corporateApplicantDetail.getRegisteredCityId(),
+								oneFormClient) + ",";
+					} else {
+						address += "NA ,";
+					}
+					if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredStateId())) {
+						address += CommonDocumentUtils.getState(
+								corporateApplicantDetail.getRegisteredStateId().longValue(), oneFormClient) + ",";
+					} else {
+						address += "NA ,";
+					}
+					if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCountryId())) {
+						address += CommonDocumentUtils.getCountry(
+								corporateApplicantDetail.getRegisteredCountryId().longValue(), oneFormClient);
+					} else {
+						address += "NA";
+					}
+
+					CorporateProposalDetails corporateProposalDetails = new CorporateProposalDetails();
+					corporateProposalDetails.setBusinessTypeId(applicationProposalMapping.getBusinessTypeId());
+					corporateProposalDetails.setAddress(address);
+
+//					set Branch State and city and name
+					try {
+						if (basicDetailsRequest.getLocationId() != null) {
+							corporateProposalDetails.setBranchLocationName(basicDetailsRequest.getName());
+							corporateProposalDetails
+									.setBranchCity(basicDetailsRequest.getLocationMasterResponse().getCity().getName());
+							corporateProposalDetails.setBranchState(
+									basicDetailsRequest.getLocationMasterResponse().getState().getName());
+							corporateProposalDetails.setBranchLocationName(basicDetailsRequest.getName());
+						}
+					} catch (Exception e) {
+						logger.info("Branch Id is null:");
+					}
+					if (CommonUtils.BusinessType.NEW_TO_BUSINESS.getId().equals(bId)) {
+
+						corporateProposalDetails.setName(getMainDirectorName(applicationId));
+					} else if (CommonUtils.BusinessType.EXISTING_BUSINESS.getId().equals(bId) || bId == null) {
+						if (CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getOrganisationName()))
+							corporateProposalDetails.setName("NA");
+						else
+							corporateProposalDetails.setName(corporateApplicantDetail.getOrganisationName());
+					}
+
+					corporateProposalDetails
+							.setFsMainType(CommonUtils.getCorporateLoanType(applicationProposalMapping.getProductId()));
+
+					// for get industry id
+					List<Long> listIndustryIds = industrySectorRepository.getIndustryByApplicationId(applicationId);
+					if (listIndustryIds.size() > 0) {
+						OneFormResponse formResponse = oneFormClient.getIndustryById(listIndustryIds);
+						List<Map<String, Object>> loanResponseDatalist = (List<Map<String, Object>>) formResponse
+								.getListData();
+						String industry = "";
+						if (loanResponseDatalist.size() > 0) {
+							for (int k = 0; k < loanResponseDatalist.size(); k++) {
+								MasterResponse masterResponse = new MasterResponse();
+								masterResponse = MultipleJSONObjectHelper.getObjectFromMap(loanResponseDatalist.get(k),
+										MasterResponse.class);
+								industry += masterResponse.getValue() + " ,";
+							}
+							corporateProposalDetails.setIndustry(industry);
+						} else {
+							corporateProposalDetails.setIndustry("NA");
+						}
+					} else {
+						corporateProposalDetails.setIndustry("NA");
+					}
+
+					List<Long> keyVerticalFundingId = new ArrayList<>();
+					if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getKeyVericalFunding()))
+						keyVerticalFundingId.add(corporateApplicantDetail.getKeyVericalFunding());
+					if (!CommonUtils.isListNullOrEmpty(keyVerticalFundingId)) {
+						try {
+							OneFormResponse oneFormResponse = oneFormClient.getIndustryById(keyVerticalFundingId);
+							List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
+									.getListData();
+							if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+								MasterResponse masterResponse = MultipleJSONObjectHelper
+										.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+								corporateProposalDetails.setKeyVertical(masterResponse.getValue());
+							} else {
+								corporateProposalDetails.setKeyVertical("NA");
+							}
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+
+					// key vertical sector
+					List<Long> keyVerticalSectorId = new ArrayList<>();
+					// getting sector id from mapping
+					if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getKeyVerticalSector()))
+						keyVerticalSectorId.add(corporateApplicantDetail.getKeyVerticalSector());
+					try {
+						OneFormResponse formResponse = oneFormClient
+								.getIndustrySecByMappingId(corporateApplicantDetail.getKeyVerticalSector());
+						SectorIndustryModel sectorIndustryModel = MultipleJSONObjectHelper
+								.getObjectFromMap((Map) formResponse.getData(), SectorIndustryModel.class);
+
+						// get key vertical sector value
+						OneFormResponse oneFormResponse = oneFormClient
+								.getSectorById(Arrays.asList(sectorIndustryModel.getSectorId()));
+						List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
+								.getListData();
+						if (oneResponseDataList != null && !oneResponseDataList.isEmpty()) {
+							MasterResponse masterResponse = MultipleJSONObjectHelper
+									.getObjectFromMap(oneResponseDataList.get(0), MasterResponse.class);
+							corporateProposalDetails.setSector(masterResponse.getValue());
+						} else {
+							corporateProposalDetails.setSector("NA");
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+					// key vertical Subsector
+					try {
+						if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getKeyVerticalSubsector())) {
+							OneFormResponse oneFormResponse = oneFormClient
+									.getSubSecNameByMappingId(corporateApplicantDetail.getKeyVerticalSubsector());
+							corporateProposalDetails.setSubSector((String) oneFormResponse.getData());
+						}
+					} catch (Exception e) {
+						// TODO: handle exception
+						logger.warn("error while getting key vertical sub-sector");
+					}
+
+					String amount = "";
+					if (CommonUtils.isObjectNullOrEmpty(applicationProposalMapping.getLoanAmount()))
+						amount += "NA";
+					else
+						amount += df.format(applicationProposalMapping.getLoanAmount());
+
+					if (CommonUtils.isObjectNullOrEmpty(5))
+						amount += " NA";
+					else
+						amount += " " + Denomination.getById(5).getValue();
+
+					corporateProposalDetails.setAmount(amount);
+
+					// calling DMS for getting fs corporate profile image path
+
+					DocumentRequest documentRequest = new DocumentRequest();
+					documentRequest.setApplicationId(applicationId);
+					documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
+					documentRequest.setProductDocumentMappingId(
+							CommonDocumentUtils.getProductDocumentId(applicationProposalMapping.getProductId()));
+
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					String imagePath = null;
+					if (documentResponse != null && documentResponse.getStatus() == 200) {
+						List<Map<String, Object>> list = documentResponse.getDataList();
+						if (!CommonUtils.isListNullOrEmpty(list)) {
+							StorageDetailsResponse response = null;
+
+							response = MultipleJSONObjectHelper.getObjectFromMap(list.get(0),
+									StorageDetailsResponse.class);
+
+							if (!CommonUtils.isObjectNullOrEmpty(response.getFilePath()))
+								imagePath = response.getFilePath();
+							else
+								imagePath = null;
+						}
+					}
+					corporateProposalDetails.setAssignDate(proposalrequest.getAssignDate());
+					corporateProposalDetails.setImagePath(imagePath);
+					corporateProposalDetails.setLastStatusActionDate(logService.getDateByLogType(
+							proposalrequest.getApplicationId(), proposalrequest.getDateTypeMasterId()));
+					corporateProposalDetails.setApplicationId(applicationId);
+					corporateProposalDetails.setProposalMappingId(proposalrequest.getId());
+					corporateProposalDetails.setFsType(CommonUtils.UserMainType.CORPORATE);
+					corporateProposalDetails.setModifiedDate(applicationProposalMapping.getModifiedDate());
+					if (!CommonUtils.isObjectNullOrEmpty(proposalrequest.getModifiedBy())) {
+						UsersRequest usersRequest = getUserNameAndEmail(proposalrequest.getModifiedBy());
+						if (!CommonUtils.isObjectNullOrEmpty(usersRequest)) {
+							corporateProposalDetails.setModifiedBy(usersRequest.getName());
+						}
+					}
+
+					/*
+					 * if(!CommonUtils.isObjectNullOrEmpty(proposalrequest.getAssignBy())) {
+					 * UsersRequest usersRequest =
+					 * getUserNameAndEmail(proposalrequest.getAssignBy());
+					 * if(!CommonUtils.isObjectNullOrEmpty(usersRequest)) {
+					 * corporateProposalDetails.setAssignBy(usersRequest.getName()); } }
+					 */
+
+					// city for fp
+					UserResponse usrResponse = usersClient.getFPDetails(usersRequestData);
+					if (!CommonUtils.isObjectNullOrEmpty(usrResponse)) {
+						try {
+							FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper
+									.getObjectFromMap((LinkedHashMap<String, Object>) usrResponse.getData(),
+											FundProviderDetailsRequest.class);
+							if (!CommonUtils.isObjectNullOrEmpty(fundProviderDetailsRequest)) {
+								if (!CommonUtils.isObjectNullOrEmpty(fundProviderDetailsRequest.getCityId())) {
+									if (!CommonUtils.isObjectNullOrEmpty(fundProviderDetailsRequest.getCityId())) {
+										corporateProposalDetails.setCity(CommonDocumentUtils.getCity(
+												fundProviderDetailsRequest.getCityId().longValue(), oneFormClient));
+									}
+								}
+								if (!CommonUtils.isObjectNullOrEmpty(fundProviderDetailsRequest.getPincode())) {
+									corporateProposalDetails.setPincode(fundProviderDetailsRequest.getPincode());
+								}
+							}
+
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+
+					}
+
+					if (!CommonUtils.isObjectNullOrEmpty(proposalrequest.getAssignBranchTo())) {
+						try {
+							UserResponse userResponse = usersClient
+									.getBranchNameById(proposalrequest.getAssignBranchTo());
+							if (!CommonUtils.isObjectNullOrEmpty(userResponse)) {
+								corporateProposalDetails.setAssignbranch((String) userResponse.getData());
+							}
+						} catch (Exception e) {
+							logger.info("Throw Exception while get branch name by branch id--------->"
+									+ proposalrequest.getAssignBranchTo());
+							e.printStackTrace();
+						}
+						corporateProposalDetails.setIsAssignedToBranch(true);
+					} else {
+						corporateProposalDetails.setIsAssignedToBranch(false);
+					}
+					proposalDetailsList.add(corporateProposalDetails);
+				} else {
+					Long fpProductId = request.getFpProductId();
+
+					RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository
+							.findOneByApplicationIdId(applicationId);
+
+					if (retailApplicantDetail == null)
+						continue;
+
+					// for get address city state country
+					String address = "";
+					if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getPermanentCityId())) {
+						address += CommonDocumentUtils.getCity(retailApplicantDetail.getPermanentCityId(),
+								oneFormClient) + ",";
+					} else {
+						address += "NA ,";
+					}
+					if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getPermanentStateId())) {
+						address += CommonDocumentUtils.getState(retailApplicantDetail.getPermanentStateId().longValue(),
+								oneFormClient) + ",";
+					} else {
+						address += "NA ,";
+					}
+					if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getPermanentCountryId())) {
+						address += CommonDocumentUtils
+								.getCountry(retailApplicantDetail.getPermanentCountryId().longValue(), oneFormClient);
+					} else {
+						address += "NA";
+					}
+
+					RetailProposalDetails retailProposalDetails = new RetailProposalDetails();
+					retailProposalDetails.setAddress(address);
+
+					String name = "";
+
+					if (CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getFirstName()))
+						name += "NA";
+					else
+						name += retailApplicantDetail.getFirstName();
+
+					if (CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getLastName()))
+						name += " NA";
+					else
+						name += " " + retailApplicantDetail.getLastName();
+
+					retailProposalDetails.setName(name);
+
+//					set Branch State and city and name
+					try {
+						if (basicDetailsRequest.getLocationId() != null) {
+							retailProposalDetails.setBranchLocationName(basicDetailsRequest.getName());
+							retailProposalDetails
+									.setBranchCity(basicDetailsRequest.getLocationMasterResponse().getCity().getName());
+							retailProposalDetails.setBranchState(
+									basicDetailsRequest.getLocationMasterResponse().getState().getName());
+							retailProposalDetails.setBranchLocationName(basicDetailsRequest.getName());
+						}
+					} catch (Exception e) {
+						logger.info("location id is null for this application:" + applicationId + "::" + e);
+					}
+
+					// calling DMS for getting fs retail profile image path
+
+					DocumentRequest documentRequest = new DocumentRequest();
+					documentRequest.setApplicationId(applicationId);
+					documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
+					documentRequest.setProductDocumentMappingId(
+							CommonDocumentUtils.getProductDocumentId(applicationProposalMapping.getProductId()));
+					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
+					String imagePath = null;
+					if (documentResponse != null && documentResponse.getStatus() == 200) {
+						List<Map<String, Object>> list = documentResponse.getDataList();
+						if (!CommonUtils.isListNullOrEmpty(list)) {
+							StorageDetailsResponse response = null;
+
+							response = MultipleJSONObjectHelper.getObjectFromMap(list.get(0),
+									StorageDetailsResponse.class);
+
+							if (!CommonUtils.isObjectNullOrEmpty(response.getFilePath()))
+								imagePath = response.getFilePath();
+							else
+								imagePath = null;
+						}
+					}
+
+					retailProposalDetails.setImagePath(imagePath);
+					retailProposalDetails.setApplicationId(applicationId);
+					retailProposalDetails.setProposalMappingId(proposalrequest.getId());
+					retailProposalDetails.setFsType(CommonUtils.UserMainType.RETAIL);
+					retailProposalDetails.setBusinessTypeId(applicationProposalMapping.getBusinessTypeId());
+					retailProposalDetails.setFpProductid(fpProductId);
+					// get retail loan amount
+
+					String loanAmount = "";
+					if (!CommonUtils.isObjectNullOrEmpty(applicationProposalMapping.getLoanAmount())) {
+						loanAmount += df.format(applicationProposalMapping.getLoanAmount());
+					} else {
+						loanAmount += "NA";
+					}
+
+					if (!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail.getCurrencyId())) {
+						loanAmount += " " + Currency.getById(retailApplicantDetail.getCurrencyId());
+					} else {
+						loanAmount += " NA";
+					}
+
+					retailProposalDetails.setAmount(loanAmount);
+
+					try {
+						MatchRequest matchRequest = new MatchRequest();
+						matchRequest.setApplicationId(applicationId);
+						matchRequest.setProductId(fpProductId);
+						MatchDisplayResponse matchResponse = matchEngineClient.displayMatchesOfRetail(matchRequest);
+						retailProposalDetails.setListMatches(matchResponse.getMatchDisplayObjectList());
+					} catch (Exception e) {
+						// TODO: handle exception
+						e.printStackTrace();
+					}
+					try {
+						CibilRequest cibilRequest = new CibilRequest();
+						cibilRequest.setApplicationId(applicationId);
+						cibilRequest.setUserId(request.getUserId());
+						cibilRequest.setPan(retailApplicantDetail.getPan());
+						CibilResponse cibilResponse = cibilClient.getCibilScore(cibilRequest);
+						if (!CibilUtils.isObjectNullOrEmpty(cibilResponse)) {
+							String response = (String) cibilResponse.getData();
+							if (!CibilUtils.isObjectNullOrEmpty(response)) {
+								JSONObject jsonObject = new JSONObject(response);
+								JSONObject asset = jsonObject.getJSONObject("Asset");
+								if (!CibilUtils.isObjectNullOrEmpty(asset)) {
+									JSONObject trueLinkCreditReport = asset.getJSONObject("ns4:TrueLinkCreditReport");
+									if (!CibilUtils.isObjectNullOrEmpty(trueLinkCreditReport)) {
+										JSONObject creditScore = trueLinkCreditReport.getJSONObject("ns4:Borrower")
+												.getJSONObject("ns4:CreditScore");
+										if (!CibilUtils.isObjectNullOrEmpty(creditScore)) {
+											String score = creditScore.get("riskScore").toString();
+											logger.info("Pan===>" + cibilRequest.getPan() + " ==> Score===>" + score);
+											retailProposalDetails.setCibilSCore(score);
+											;
+										} else {
+											logger.info("no data Found from key ns4:CreditScore");
+										}
+
+									} else {
+										logger.info("no data Found from key ns4:TrueLinkCreditReport");
+									}
+
+								} else {
+									logger.info("no data Found from key ns4:Asset");
+								}
+							} else {
+								logger.info("Cibil Actual data Response Found NULL from Loans for PAN ==>"
+										+ cibilRequest.getPan());
+							}
+						} else {
+							logger.info("CibilResponse Found NULL from Loans for PAN ==>" + cibilRequest.getPan());
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+						logger.error("Error while getting CIbilScore of User");
+					}
+					proposalDetailsList.add(retailProposalDetails);
+				}
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+		return proposalDetailsList;
 	}
 
 	@Override
