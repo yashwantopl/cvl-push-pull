@@ -204,15 +204,13 @@ public class ProposalController {
 		request.setUserId(userId);
 		request.setUserType(userType.longValue());
 		ProposalMappingResponse response = proposalService.sendRequest(request);
-		if(response.getStatus() == HttpStatus.OK.value()) {
-			if(CommonUtils.UserType.FUND_PROVIDER == loginUserType) {
+		if(response.getStatus() == HttpStatus.OK.value() && CommonUtils.UserType.FUND_PROVIDER == loginUserType ) {
 				logger.info("ProposalController, FP send request to fund seeker and sent mail");
 				if(!CommonUtils.isObjectNullOrEmpty(request.getFpProductId())) {
 					asyncComponent.sentMailWhenFPSentFSDirectREquest(userId,request.getFpProductId(),request.getApplicationId());	
 				} else {
 					logger.info("ProposalController, FP ProductId or application id null or empty");	
 				}
-			}
 		}
 		return new ResponseEntity<ProposalMappingResponse>(response,HttpStatus.OK);
 	}

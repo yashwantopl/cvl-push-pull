@@ -4108,7 +4108,7 @@ public class ScoringServiceImpl implements ScoringService {
             logger.error("error while calling itr client for getIsUploadAndYearDetails()",e);
         }
         try {
-            if (!CommonUtils.isObjectNullOrEmpty(itrConnectionResponse) && !CommonUtils.isObjectNullOrEmpty(itrConnectionResponse.getData())) {
+            if (itrConnectionResponse != null && !CommonUtils.isObjectNullOrEmpty(itrConnectionResponse) && !CommonUtils.isObjectNullOrEmpty(itrConnectionResponse.getData())) {
                 Map<String, Object> map = (Map<String, Object>) itrConnectionResponse.getData();
                 ITRBasicDetailsResponse res = MultipleJSONObjectHelper.getObjectFromMap(map, ITRBasicDetailsResponse.class);
                 if (!CommonUtils.isObjectNullOrEmpty(res)) {

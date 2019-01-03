@@ -9,7 +9,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.capitaworld.service.loans.domain.fundseeker.corporate.ProfitibilityStatementDetail;
-import com.capitaworld.service.loans.domain.fundseeker.corporate.RevenueAndOrderBookDetail;
 
 public interface ProfitibilityStatementDetailRepository extends JpaRepository<ProfitibilityStatementDetail, Long>{
 

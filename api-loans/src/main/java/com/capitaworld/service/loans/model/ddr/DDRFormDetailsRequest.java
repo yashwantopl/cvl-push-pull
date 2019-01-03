@@ -1113,7 +1113,21 @@ public class DDRFormDetailsRequest implements Serializable {
 		this.password = password;
 	}
 
+	public String getCustomerId() {
+		return customerId;
+	}
 
+	public void setCustomerId(String customerId) {
+		this.customerId = customerId;
+	}
+
+	public String getCustomerName() {
+		return customerName;
+	}
+
+	public void setCustomerName(String customerName) {
+		this.customerName = customerName;
+	}
 
 	@Override
 	public String toString() {

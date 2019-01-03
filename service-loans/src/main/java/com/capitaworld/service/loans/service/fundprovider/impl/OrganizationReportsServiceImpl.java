@@ -6,7 +6,6 @@ import com.capitaworld.service.loans.service.fundprovider.OrganizationReportsSer
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,6 +31,7 @@ public class OrganizationReportsServiceImpl implements OrganizationReportsServic
 
     private static final Logger logger = LoggerFactory.getLogger(OrganizationReportsServiceImpl.class);
     private static final String PROPERTY_NAME_DATABASE_NAME = "capitaworld.loans.db.name";
+    private static final String ORGANIZATION_ID = "organization_id";
 
     @Override
     public String getCountOfProposalInInboxAndPrimary(Long organization_id) {
@@ -42,7 +42,7 @@ public class OrganizationReportsServiceImpl implements OrganizationReportsServic
                     .createNativeQuery("SELECT COUNT(*) FROM proposal_details WHERE proposal_details.fp_product_id IN " +
                             "(SELECT fp_product_master.fp_product_id FROM fp_product_master WHERE fp_product_master.user_org_id=:organization_id AND fp_product_master.is_active = TRUE) " +
                             "AND proposal_details.is_active = TRUE AND proposal_details.proposal_status_id IN (1,2); ")
-                    .setParameter("organization_id", organization_id).getSingleResult().toString();
+                    .setParameter(ORGANIZATION_ID, organization_id).getSingleResult().toString();
         } catch (Exception e) {
             count = "0";
             logger.error("Error while getting data getCountOfProposalInInboxAndPrimary() methods ", e);
@@ -60,7 +60,7 @@ public class OrganizationReportsServiceImpl implements OrganizationReportsServic
                     .createNativeQuery("SELECT COUNT(*) FROM proposal_details WHERE proposal_details.fp_product_id IN " +
                             "(SELECT fp_product_master.fp_product_id FROM fp_product_master WHERE fp_product_master.user_org_id=:organization_id AND fp_product_master.is_active = TRUE) " +
                             "AND proposal_details.is_active = TRUE AND proposal_details.proposal_status_id=5; ")
-                    .setParameter("organization_id", organization_id).getSingleResult().toString();
+                    .setParameter(ORGANIZATION_ID, organization_id).getSingleResult().toString();
         } catch (Exception e) {
             count = "0";
             logger.error("Error while getting data getCountOfAdvance() methods ", e);
@@ -87,7 +87,7 @@ public class OrganizationReportsServiceImpl implements OrganizationReportsServic
                             "(SELECT proposal_details.application_id FROM proposal_details WHERE proposal_details.fp_product_id " +
                             "IN (SELECT fp_product_master.fp_product_id FROM fp_product_master WHERE fp_product_master.user_org_id=:organization_id AND fp_product_master.is_active = TRUE) " +
                             "AND proposal_details.is_active = TRUE AND proposal_details.proposal_status_id IN (1,2));")
-                    .setParameter("organization_id", organization_id).getSingleResult().toString();
+                    .setParameter(ORGANIZATION_ID, organization_id).getSingleResult().toString();
         } catch (Exception e) {
             count = "0";
             logger.error("Error while getting data getCountOfAdvance() methods ", e);
@@ -114,7 +114,7 @@ public class OrganizationReportsServiceImpl implements OrganizationReportsServic
                             "(SELECT proposal_details.application_id FROM proposal_details WHERE proposal_details.fp_product_id " +
                             "IN (SELECT fp_product_master.fp_product_id FROM fp_product_master WHERE fp_product_master.user_org_id=:organization_id AND fp_product_master.is_active = TRUE) " +
                             "AND proposal_details.is_active = TRUE AND proposal_details.proposal_status_id = 5);")
-                    .setParameter("organization_id", organization_id).getSingleResult().toString();
+                    .setParameter(ORGANIZATION_ID, organization_id).getSingleResult().toString();
         } catch (Exception e) {
             count = "0";
             logger.error("Error while getting data getSumOfAmountProposalInAdvance() methods ", e);
@@ -131,7 +131,7 @@ public class OrganizationReportsServiceImpl implements OrganizationReportsServic
         try {
             objectsList = entityManager
                     .createNativeQuery("SELECT branch_name,COUNT(application_id) FROM org_branch_audit WHERE user_org_id=:organization_id AND is_active = TRUE GROUP BY branch_id;")
-                    .setParameter("organization_id", organizationId).getResultList();
+                    .setParameter(ORGANIZATION_ID, organizationId).getResultList();
             for (Object[] a : objectsList) {
                 count +="{\"name\":\"" + a[0] + "\",\"y\":\"" + a[1]+"\"},";
             }

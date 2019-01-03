@@ -77,7 +77,15 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 	private static final String CORPORATE_APPLICANT_DETAIL_IS_NULL_CREATED_NEW_OBJECT_MSG = "corporateApplicantDetail is null created new object";
 	private static final String ERROR_WHILE_GETTING_GST_RECEIPT_FROM_S3_MSG = "Error while Getting GST Receipt from S3 : {}";
 	private static final String NO_GST_RECEIPT_FOUND_FOR_APPLICATION_ID_MSG = "No GST Receipt Found for Application Id ==>{}";
-
+	private static final String ABOUT_US = "aboutUs";
+	private static final String SAME_AS = "sameAs";
+	private static final String CREDIT_RATING_ID = "creditRatingId";
+	private static final String NOT_APPLICABLE = "notApplicable";
+	private static final String SECOND_ADDRESS = "secondAddress";
+	private static final String CONSTITUTION_ID = "constitutionId";
+	private static final String CONT_LIABILITY_FY_AMT = "contLiabilityFyAmt";
+	private static final String CONT_LIABILITY_SY_AMT = "contLiabilitySyAmt";
+	private static final String CONT_LIABILITY_TY_AMT = "contLiabilityTyAmt";
 
 	@Autowired
 	private CorporateApplicantDetailRepository corporateApplicantDetailRepository;
@@ -140,18 +148,18 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			if (CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail)) {
 				logger.info(CORPORATE_APPLICANT_DETAIL_IS_NULL_CREATED_NEW_OBJECT_MSG);
 				corporateApplicantDetail = new CorporateApplicantDetail();
-				BeanUtils.copyProperties(fundSeekerInputRequest, corporateApplicantDetail, "secondAddress", "sameAs","organisationName","constitutionId",
-						"creditRatingId", "contLiabilityFyAmt", "contLiabilitySyAmt", "contLiabilityTyAmt",
-						" contLiabilityYear", "notApplicable", "aboutUs", "id", "isActive");
+				BeanUtils.copyProperties(fundSeekerInputRequest, corporateApplicantDetail, SECOND_ADDRESS, SAME_AS,"organisationName",CONSTITUTION_ID,
+						CREDIT_RATING_ID, CONT_LIABILITY_FY_AMT, CONT_LIABILITY_SY_AMT, CONT_LIABILITY_TY_AMT,
+						" contLiabilityYear", NOT_APPLICABLE, ABOUT_US, "id", CommonUtils.IS_ACTIVE);
 				corporateApplicantDetail
 						.setApplicationId(new LoanApplicationMaster(fundSeekerInputRequest.getApplicationId()));
 				corporateApplicantDetail.setCreatedBy(fundSeekerInputRequest.getUserId());
 				corporateApplicantDetail.setCreatedDate(new Date());
 				corporateApplicantDetail.setIsActive(true);
 			} else {
-				BeanUtils.copyProperties(fundSeekerInputRequest, corporateApplicantDetail, "secondAddress", "sameAs","organisationName","constitutionId",
-						"creditRatingId", "contLiabilityFyAmt", "contLiabilitySyAmt", "contLiabilityTyAmt",
-						" contLiabilityYear", "notApplicable", "aboutUs", "id");
+				BeanUtils.copyProperties(fundSeekerInputRequest, corporateApplicantDetail, SECOND_ADDRESS, SAME_AS,"organisationName",CONSTITUTION_ID,
+						CREDIT_RATING_ID, CONT_LIABILITY_FY_AMT, CONT_LIABILITY_SY_AMT, CONT_LIABILITY_TY_AMT,
+						" contLiabilityYear", NOT_APPLICABLE, ABOUT_US, "id");
 				corporateApplicantDetail.setModifiedBy(fundSeekerInputRequest.getUserId());
 				corporateApplicantDetail.setModifiedDate(new Date());
 			}
@@ -217,9 +225,9 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			if (CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail)) {
 				logger.info(CORPORATE_APPLICANT_DETAIL_IS_NULL_CREATED_NEW_OBJECT_MSG);
 				corporateApplicantDetail = new CorporateApplicantDetail();
-				BeanUtils.copyProperties(fundSeekerInputRequest, corporateApplicantDetail, "aadhar", "secondAddress",
-						"sameAs", "creditRatingId", "contLiabilityFyAmt", "contLiabilitySyAmt", "contLiabilityTyAmt",
-						" contLiabilityYear", "notApplicable", "aboutUs", "id", "isActive");
+				BeanUtils.copyProperties(fundSeekerInputRequest, corporateApplicantDetail, "aadhar", SECOND_ADDRESS,
+						SAME_AS, CREDIT_RATING_ID, CONT_LIABILITY_FY_AMT, CONT_LIABILITY_SY_AMT, CONT_LIABILITY_TY_AMT,
+						" contLiabilityYear", NOT_APPLICABLE, ABOUT_US, "id", CommonUtils.IS_ACTIVE);
 				corporateApplicantDetail
 						.setApplicationId(new LoanApplicationMaster(fundSeekerInputRequest.getApplicationId()));
 				corporateApplicantDetail.setCreatedBy(fundSeekerInputRequest.getUserId());
@@ -229,9 +237,9 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 				logger.info("constitution id  ------------------------------------------>"
 						+ corporateApplicantDetail.getConstitutionId());
 				CorporateApplicantDetail copyObj = corporateApplicantDetail;
-				BeanUtils.copyProperties(fundSeekerInputRequest, corporateApplicantDetail, "aadhar", "secondAddress",
-						"sameAs", "creditRatingId", "contLiabilityFyAmt", "contLiabilitySyAmt", "contLiabilityTyAmt",
-						" contLiabilityYear", "notApplicable", "aboutUs", "id", "constitutionId");
+				BeanUtils.copyProperties(fundSeekerInputRequest, corporateApplicantDetail, "aadhar", SECOND_ADDRESS,
+						SAME_AS, CREDIT_RATING_ID, CONT_LIABILITY_FY_AMT, CONT_LIABILITY_SY_AMT, CONT_LIABILITY_TY_AMT,
+						" contLiabilityYear", NOT_APPLICABLE, ABOUT_US, "id", CONSTITUTION_ID);
 				logger.info(
 						"Before save constitution id ---------------> " + fundSeekerInputRequest.getKeyVericalFunding()
 								+ "---------------in DB------------->" + copyObj.getConstitutionId());
@@ -288,7 +296,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 						logger.info("New Object Created for Director");
 						saveDirObj = new DirectorBackgroundDetail();
 						BeanUtils.copyProperties(reqObj, saveDirObj, "id", "createdBy", "createdDate", "modifiedBy",
-								"modifiedDate", "isActive");
+								"modifiedDate", CommonUtils.IS_ACTIVE);
 						saveDirObj
 								.setApplicationId(new LoanApplicationMaster(fundSeekerInputRequest.getApplicationId()));
 						saveDirObj.setCreatedBy(fundSeekerInputRequest.getUserId());

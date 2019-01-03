@@ -500,7 +500,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 							: "NA";
 					notificationParams.put(CommonUtils.PARAMETERS_FS_NAME, fsName != null ? fsName : "NA");
 					notificationParams.put(CommonUtils.PARAMETERS_ADDRESS,
-							NTBResponse.get(0).getAddress() != null ? NTBResponse.get(0).getAddress() : "NA");
+							NTBResponse == null ? "NA" : NTBResponse.get(0).getAddress() != null ? NTBResponse.get(0).getAddress() : "NA");
 				}
 			} else {
 				notificationParams.put(CommonUtils.PARAMETERS_FS_NAME, fsName != null ? fsName : "NA");
