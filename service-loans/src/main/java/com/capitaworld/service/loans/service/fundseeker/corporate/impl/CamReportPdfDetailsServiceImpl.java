@@ -54,6 +54,7 @@ import com.capitaworld.service.gst.yuva.request.GSTR1Request;
 import com.capitaworld.service.loans.domain.fundprovider.TermLoanParameter;
 import com.capitaworld.service.loans.domain.fundprovider.WcTlParameter;
 import com.capitaworld.service.loans.domain.fundprovider.WorkingCapitalParameter;
+import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.AssetsDetails;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
@@ -86,6 +87,7 @@ import com.capitaworld.service.loans.repository.fundprovider.ProductMasterReposi
 import com.capitaworld.service.loans.repository.fundprovider.TermLoanParameterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.WcTlLoanParameterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.WorkingCapitalParameterRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.AssetsDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LiabilitiesDetailsRepository;
@@ -172,6 +174,10 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 
 	@Autowired
 	private LoanApplicationRepository loanApplicationRepository;
+	
+	
+	@Autowired
+	private ApplicationProposalMappingRepository applicationProposalMappingRepository;
 	
 	@Autowired
 	private IrrService irrService; 
@@ -312,14 +318,24 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 	private static final String FITCH_TITLE = "fitchTitle";
 
 	@Override
-	public Map<String, Object> getCamReportPrimaryDetails(Long applicationId, Long productId, boolean isFinalView) {
+	public Map<String, Object> getCamReportPrimaryDetails(Long applicationId, Long productId,Long proposalId, boolean isFinalView) {
 
 		ProposalMappingRequestString proposalMappingRequestString = null;
 		Map<String, Object> map = new HashMap<String, Object>();
 		DecimalFormat decim = new DecimalFormat("####");
 		Long userId = loanApplicationRepository.getUserIdByApplicationId(applicationId);
+		
+		//CHANGES====>
 		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId, userId);
-		map.put("date",!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getApprovedDate())? CommonUtils.DATE_FORMAT.format(loanApplicationMaster.getApprovedDate()):"-");
+		 //map.put("date",!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getApprovedDate())? CommonUtils.DATE_FORMAT.format(loanApplicationMaster.getApprovedDate()):"-");
+		
+		// CHANGES FOR NEW MULTIPLE BANKS----->
+		ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.getByApplicationIdAndProposalId(applicationId,proposalId);
+		  logger.info("GETTING DATA BASED ON APPLICATION ID AND PROPOSAL ID IN"
+				+ " APPROVE DATE ========>"+applicationProposalMapping.getApprovedDate()+"====CREATED DATE====> "+applicationProposalMapping.getCreatedBy()+" === tenure"+
+			applicationProposalMapping.getTenure()+" loan amount "+applicationProposalMapping.getLoanAmount()+"application code"+""+applicationProposalMapping.getProposalId());
+		map.put("date",!CommonUtils.isObjectNullOrEmpty(applicationProposalMapping.getApprovedDate())? DATE_FORMAT.format(applicationProposalMapping.getApprovedDate()):"-");
+				// ENDS HERE MULTIPLE BANK----->
 		CorporateApplicantRequest corporateApplicantRequest =corporateApplicantService.getCorporateApplicant(applicationId);
 		UserResponse userResponse = usersClient.getEmailMobile(userId);
 		if(userResponse!= null) {
@@ -393,7 +409,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 
 
 		//TIMELINE DATES
-		map.put("dateOfProposal", !CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getCreatedDate())? CommonUtils.DATE_FORMAT.format(loanApplicationMaster.getCreatedDate()):"-");
+		map.put("dateOfProposal", !CommonUtils.isObjectNullOrEmpty(applicationProposalMapping.getCreatedDate())? CommonUtils.DATE_FORMAT.format(applicationProposalMapping.getCreatedDate()):"-");
 		try {
 			WorkflowRequest workflowRequest = new WorkflowRequest();
 			workflowRequest.setApplicationId(applicationId);
@@ -636,6 +652,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			PrimaryCorporateRequest primaryCorporateRequest = primaryCorporateService.get(applicationId, userId);
 			int currentYear = scoringService.getFinYear(applicationId);
 			map.put("currentYr",currentYear-1);
+			// PENDING
 			Long denominationValue = Denomination.getById(loanApplicationMaster.getDenominationId()).getDigit();
 			Integer years[] = {currentYear-3, currentYear-2, currentYear-1};
 			Map<Integer, Object[]> financials = new TreeMap<Integer, Object[]>(Collections.reverseOrder());
@@ -645,15 +662,15 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			}
 			calculateRatioAnalysis(financials, applicationId);
 			map.put("financials", financials);
-			Map<Integer, Object[]> projectedFin = new HashMap<Integer, Object[]>(loanApplicationMaster.getTenure().intValue());
+			Map<Integer, Object[]> projectedFin = new HashMap<Integer, Object[]>(applicationProposalMapping.getTenure().intValue());
 			if(primaryCorporateRequest.getProductId() == 1) {
 				projectedFin.put(currentYear , calculateFinancials(userId, applicationId, null, denominationValue, currentYear));
 				map.put("tenure", 1);
 			}else {
-				for(int i=0; i<=loanApplicationMaster.getTenure().intValue();i++) {
+				for(int i=0; i<=applicationProposalMapping.getTenure().intValue();i++) {
 					projectedFin.put(currentYear + i, calculateFinancials(userId, applicationId, null, denominationValue, currentYear + i));
 				}
-				map.put("tenure", loanApplicationMaster.getTenure().intValue() +1);
+				map.put("tenure", applicationProposalMapping.getTenure().intValue() +1);
 			}
 			map.put("projectedFinancials", projectedFin);
 		}catch (Exception e) {
@@ -1032,6 +1049,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		}
 		//MCA DATA
 		try {
+			// CURRENTLY PENDING DATA-ID NOT EXISTS IN application_proposal_mapping-->applicationProposalMapping
 			String companyId = loanApplicationMaster.getMcaCompanyId();
 			McaResponse mcaResponse = mcaClient.getCompanyDetailedData(companyId);
 			if(!CommonUtils.isObjectNullOrEmpty(mcaResponse.getData())) {
