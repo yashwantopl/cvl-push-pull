@@ -2,7 +2,6 @@ package com.capitaworld.service.loans.model;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 
 public class NhbsApplicationsResponse implements Serializable{
 

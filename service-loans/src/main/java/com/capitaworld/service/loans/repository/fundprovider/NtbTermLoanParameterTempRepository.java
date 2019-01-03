@@ -8,7 +8,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.capitaworld.service.loans.domain.fundprovider.NtbTermLoanParameterTemp;
-import com.capitaworld.service.loans.domain.fundprovider.TermLoanParameterTemp;
 
 /**
  * @author sanket

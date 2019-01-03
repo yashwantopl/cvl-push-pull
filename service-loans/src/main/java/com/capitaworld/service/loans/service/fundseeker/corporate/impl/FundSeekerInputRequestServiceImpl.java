@@ -64,6 +64,7 @@ import com.capitaworld.service.loans.service.fundseeker.corporate.FundSeekerInpu
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
+import com.capitaworld.service.oneform.enums.Constitution;
 
 @Service
 @Transactional
@@ -76,7 +77,15 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 	private static final String CORPORATE_APPLICANT_DETAIL_IS_NULL_CREATED_NEW_OBJECT_MSG = "corporateApplicantDetail is null created new object";
 	private static final String ERROR_WHILE_GETTING_GST_RECEIPT_FROM_S3_MSG = "Error while Getting GST Receipt from S3 : {}";
 	private static final String NO_GST_RECEIPT_FOUND_FOR_APPLICATION_ID_MSG = "No GST Receipt Found for Application Id ==>{}";
-
+	private static final String ABOUT_US = "aboutUs";
+	private static final String SAME_AS = "sameAs";
+	private static final String CREDIT_RATING_ID = "creditRatingId";
+	private static final String NOT_APPLICABLE = "notApplicable";
+	private static final String SECOND_ADDRESS = "secondAddress";
+	private static final String CONSTITUTION_ID = "constitutionId";
+	private static final String CONT_LIABILITY_FY_AMT = "contLiabilityFyAmt";
+	private static final String CONT_LIABILITY_SY_AMT = "contLiabilitySyAmt";
+	private static final String CONT_LIABILITY_TY_AMT = "contLiabilityTyAmt";
 
 	@Autowired
 	private CorporateApplicantDetailRepository corporateApplicantDetailRepository;
@@ -139,18 +148,18 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			if (CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail)) {
 				logger.info(CORPORATE_APPLICANT_DETAIL_IS_NULL_CREATED_NEW_OBJECT_MSG);
 				corporateApplicantDetail = new CorporateApplicantDetail();
-				BeanUtils.copyProperties(fundSeekerInputRequest, corporateApplicantDetail, "secondAddress", "sameAs","organisationName","constitutionId",
-						"creditRatingId", "contLiabilityFyAmt", "contLiabilitySyAmt", "contLiabilityTyAmt",
-						" contLiabilityYear", "notApplicable", "aboutUs", "id", "isActive");
+				BeanUtils.copyProperties(fundSeekerInputRequest, corporateApplicantDetail, SECOND_ADDRESS, SAME_AS,"organisationName",CONSTITUTION_ID,
+						CREDIT_RATING_ID, CONT_LIABILITY_FY_AMT, CONT_LIABILITY_SY_AMT, CONT_LIABILITY_TY_AMT,
+						" contLiabilityYear", NOT_APPLICABLE, ABOUT_US, "id", CommonUtils.IS_ACTIVE);
 				corporateApplicantDetail
 						.setApplicationId(new LoanApplicationMaster(fundSeekerInputRequest.getApplicationId()));
 				corporateApplicantDetail.setCreatedBy(fundSeekerInputRequest.getUserId());
 				corporateApplicantDetail.setCreatedDate(new Date());
 				corporateApplicantDetail.setIsActive(true);
 			} else {
-				BeanUtils.copyProperties(fundSeekerInputRequest, corporateApplicantDetail, "secondAddress", "sameAs","organisationName","constitutionId",
-						"creditRatingId", "contLiabilityFyAmt", "contLiabilitySyAmt", "contLiabilityTyAmt",
-						" contLiabilityYear", "notApplicable", "aboutUs", "id");
+				BeanUtils.copyProperties(fundSeekerInputRequest, corporateApplicantDetail, SECOND_ADDRESS, SAME_AS,"organisationName",CONSTITUTION_ID,
+						CREDIT_RATING_ID, CONT_LIABILITY_FY_AMT, CONT_LIABILITY_SY_AMT, CONT_LIABILITY_TY_AMT,
+						" contLiabilityYear", NOT_APPLICABLE, ABOUT_US, "id");
 				corporateApplicantDetail.setModifiedBy(fundSeekerInputRequest.getUserId());
 				corporateApplicantDetail.setModifiedDate(new Date());
 			}
@@ -216,9 +225,9 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			if (CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail)) {
 				logger.info(CORPORATE_APPLICANT_DETAIL_IS_NULL_CREATED_NEW_OBJECT_MSG);
 				corporateApplicantDetail = new CorporateApplicantDetail();
-				BeanUtils.copyProperties(fundSeekerInputRequest, corporateApplicantDetail, "aadhar", "secondAddress",
-						"sameAs", "creditRatingId", "contLiabilityFyAmt", "contLiabilitySyAmt", "contLiabilityTyAmt",
-						" contLiabilityYear", "notApplicable", "aboutUs", "id", "isActive");
+				BeanUtils.copyProperties(fundSeekerInputRequest, corporateApplicantDetail, "aadhar", SECOND_ADDRESS,
+						SAME_AS, CREDIT_RATING_ID, CONT_LIABILITY_FY_AMT, CONT_LIABILITY_SY_AMT, CONT_LIABILITY_TY_AMT,
+						" contLiabilityYear", NOT_APPLICABLE, ABOUT_US, "id", CommonUtils.IS_ACTIVE);
 				corporateApplicantDetail
 						.setApplicationId(new LoanApplicationMaster(fundSeekerInputRequest.getApplicationId()));
 				corporateApplicantDetail.setCreatedBy(fundSeekerInputRequest.getUserId());
@@ -228,9 +237,9 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 				logger.info("constitution id  ------------------------------------------>"
 						+ corporateApplicantDetail.getConstitutionId());
 				CorporateApplicantDetail copyObj = corporateApplicantDetail;
-				BeanUtils.copyProperties(fundSeekerInputRequest, corporateApplicantDetail, "aadhar", "secondAddress",
-						"sameAs", "creditRatingId", "contLiabilityFyAmt", "contLiabilitySyAmt", "contLiabilityTyAmt",
-						" contLiabilityYear", "notApplicable", "aboutUs", "id", "constitutionId");
+				BeanUtils.copyProperties(fundSeekerInputRequest, corporateApplicantDetail, "aadhar", SECOND_ADDRESS,
+						SAME_AS, CREDIT_RATING_ID, CONT_LIABILITY_FY_AMT, CONT_LIABILITY_SY_AMT, CONT_LIABILITY_TY_AMT,
+						" contLiabilityYear", NOT_APPLICABLE, ABOUT_US, "id", CONSTITUTION_ID);
 				logger.info(
 						"Before save constitution id ---------------> " + fundSeekerInputRequest.getKeyVericalFunding()
 								+ "---------------in DB------------->" + copyObj.getConstitutionId());
@@ -287,7 +296,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 						logger.info("New Object Created for Director");
 						saveDirObj = new DirectorBackgroundDetail();
 						BeanUtils.copyProperties(reqObj, saveDirObj, "id", "createdBy", "createdDate", "modifiedBy",
-								"modifiedDate", "isActive");
+								"modifiedDate", CommonUtils.IS_ACTIVE);
 						saveDirObj
 								.setApplicationId(new LoanApplicationMaster(fundSeekerInputRequest.getApplicationId()));
 						saveDirObj.setCreatedBy(fundSeekerInputRequest.getUserId());
@@ -618,6 +627,10 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 		logger.info("constitution id  ------------------------------------------>"+ corporateApplicantDetail.getConstitutionId());
 		corporateApplicantDetail.setModifiedBy(fundSeekerInputRequest.getUserId());
 		corporateApplicantDetail.setModifiedDate(new Date());
+		
+		if(Constitution.SOLE_PROPRIETORSHIP.getId().equals(fundSeekerInputRequest.getConstitutionId())){
+			corporateApplicantDetail.setOrganisationName(fundSeekerInputRequest.getOrganisationName());
+		}
 
 		copyAddressFromRequestToDomain(fundSeekerInputRequest, corporateApplicantDetail);
 
@@ -647,6 +660,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 		// ==== Director details
 		List<DirectorBackgroundDetailRequest> directorBackgroundDetailRequestList = fundSeekerInputRequest.getDirectorBackgroundDetailRequestsList();
 		try {
+			directorBackgroundDetailsService.inactive(fundSeekerInputRequest.getApplicationId(), fundSeekerInputRequest.getUserId());
 			for (DirectorBackgroundDetailRequest reqObj : directorBackgroundDetailRequestList) {
 				directorBackgroundDetailsService.saveDirectorInfo(reqObj, fundSeekerInputRequest.getApplicationId(), fundSeekerInputRequest.getUserId());
 			}
@@ -709,6 +723,11 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			fundSeekerInputResponse.setProjectedProfitCurrFinYear(primaryCorporateDetail.getProjectedProfitCurrFinYear());
 			fundSeekerInputResponse.setTurnOverCurrFinYearTillMonth(primaryCorporateDetail.getTurnOverCurrFinYearTillMonth());
 			fundSeekerInputResponse.setProjectedTurnOverCurrFinYear(primaryCorporateDetail.getProjectedTurnOverCurrFinYear());
+			if(CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getLoanAmount())){
+				fundSeekerInputResponse.setLoanAmount(primaryCorporateDetail.getAmount());
+			}else{
+				fundSeekerInputResponse.setLoanAmount(primaryCorporateDetail.getLoanAmount());				
+			}
 			
 			LoansResponse loansResponse = new LoansResponse("Data Found",HttpStatus.OK.value(), fundSeekerInputResponse);
 			//Getting Uploaded Documents of GST
@@ -754,16 +773,28 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 	@Override
 	public LoansResponse verifyGST(String gstin,Long applicationId,Long userId,MultipartFile[] uploadedFiles) {
 		//Uploading GST Receipt
-		boolean isDocumentUploaded = false;
 		DocumentRequest documentRequest = new DocumentRequest();
+		documentRequest.setApplicationId(applicationId);
+		documentRequest.setProductDocumentMappingId(DocumentAlias.GST_RECEIPT);
+		documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
 		try{
-			documentRequest.setApplicationId(applicationId);
-			documentRequest.setProductDocumentMappingId(DocumentAlias.GST_RECEIPT);
-			documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
-			
+			DocumentResponse documentResponse = dMSClient.deleteProductDocumentFromApplicationId(MultipleJSONObjectHelper.getStringfromObject(documentRequest));
+			if (CibilUtils.isObjectListNull(documentResponse)) {
+				logger.warn("Something goes wrong while Deleting GST Receipt for ApplicationId as Response Found Null===>{}",applicationId);
+			} else if (documentResponse.getStatus() == HttpStatus.OK.value()) {
+				logger.info("Successfully Deleting GST Receipt For Application Id==>{}",applicationId);
+			} else {
+				logger.warn("Something goes wrong while Deleting GST Receipt for ApplicationId===>{}",applicationId);
+			}
+		}catch(Exception e){
+			logger.error("Error while Deleting Existing Doccuments of GST and ITR : {}", e);
+		}
+		
+		
+		boolean isDocumentUploaded = false;
+		try{
 			for (MultipartFile uploadedFile : uploadedFiles) {
 				if(CommonUtils.isObjectNullOrEmpty(uploadedFile)) {
-					/*logger.info("CURRENT MULTIPART OBJECT IS NULL OR EMPTY");*/
 					continue;
 				}
 				documentRequest.setOriginalFileName(uploadedFile.getOriginalFilename());

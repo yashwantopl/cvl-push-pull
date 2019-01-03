@@ -1644,6 +1644,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
+	
+	@Override
+	public Boolean isMcqSkipped(Long applicationId) throws Exception {
+		Long count = loanApplicationRepository.checkMcqSkipped(applicationId);
+		return (count != null ? count > 0 : false);
+	}
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -1712,7 +1718,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		List<Long> coAppIds = null;
 
 		Long coAppCount;
-
+		
+		Boolean isFinalMcqFilled = applicationMaster.getIsFinalMcqFilled() != null ? applicationMaster.getIsFinalMcqFilled() : false; 
+		Boolean isMcqSkipped = applicationMaster.getIsMcqSkipped() != null ? applicationMaster.getIsMcqSkipped() : false; 
+		
 		int index = 0;
 		final String INVALID_MSG = "Requested data is Invalid.";
 		JSONObject response = new JSONObject();
@@ -1915,8 +1924,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			// return response;
 			// }
 			if (CommonUtils.BusinessType.EXISTING_BUSINESS.getId().equals(applicationMaster.getBusinessTypeId())) {
-				if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsFinalMcqFilled())
-						|| !applicationMaster.getIsFinalMcqFilled().booleanValue()) {
+				if (!isFinalMcqFilled && !isMcqSkipped) {
 					response.put(MESSAGE_LITERAL, PLEASE_FILL_FINAL_MCQ_DETAILS_TO_MOVE_NEXT);
 					response.put(RESULT_LITERAL, false);
 					return response;
@@ -1951,8 +1959,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			 * response.put(RESULT_LITERAL, false); return response; }
 			 */
 			if (CommonUtils.BusinessType.EXISTING_BUSINESS.getId().equals(applicationMaster.getBusinessTypeId())) {
-				if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsFinalMcqFilled())
-						|| !applicationMaster.getIsFinalMcqFilled().booleanValue()) {
+				if (!isFinalMcqFilled && !isMcqSkipped) {
 					response.put(MESSAGE_LITERAL, PLEASE_FILL_FINAL_MCQ_DETAILS_TO_MOVE_NEXT);
 					response.put(RESULT_LITERAL, false);
 					return response;
@@ -1996,8 +2003,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			 * response.put(RESULT_LITERAL, false); return response; }
 			 */
 			if (CommonUtils.BusinessType.EXISTING_BUSINESS.getId().equals(applicationMaster.getBusinessTypeId())) {
-				if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsFinalMcqFilled())
-						|| !applicationMaster.getIsFinalMcqFilled().booleanValue()) {
+				if (!isFinalMcqFilled && !isMcqSkipped) {
 					response.put(MESSAGE_LITERAL, PLEASE_FILL_FINAL_MCQ_DETAILS_TO_MOVE_NEXT);
 					response.put(RESULT_LITERAL, false);
 					return response;
@@ -3000,7 +3006,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					} catch (Exception e) {
 						logger.error("Throw Exception while get matches count for registration user details------------->"+ loanMstr.getId()+" :: ",e);
 					}
-					if (!CommonUtils.isObjectNullOrEmpty(proposalCountResponse)) {
+					if (proposalCountResponse != null && !CommonUtils.isObjectNullOrEmpty(proposalCountResponse)) {
 						obj.put("totalMatches", proposalCountResponse.getTotal());
 						obj.put("matches", proposalCountResponse.getMatches());
 						obj.put("directSent", proposalCountResponse.getSent());
@@ -3117,10 +3123,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				Integer currencyId = retailApplicantDetailRepository.getCurrency(loanApplicationMaster.getUserId(),
 						loanApplicationMaster.getId());
 				response.setCurrency(CommonDocumentUtils.getCurrency(currencyId));
-				if (!CommonUtils.isObjectNullOrEmpty(currencyId)) {
-					if (currencyId.equals(Currency.RUPEES.getId())) {
+				if (!CommonUtils.isObjectNullOrEmpty(currencyId) && currencyId.equals(Currency.RUPEES.getId()) ) {
 						response.setAmounInRuppes(true);
-					}
 				}
 			}
 
@@ -3296,10 +3300,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					|| loanApplicationMaster.getProductId() == 15) {//
 				CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
 						.getByApplicationAndUserId(loanApplicationMaster.getUserId(), loanApplicationMaster.getId());
-				if (corporateApplicantDetail != null) {
-					if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredPincode())) {
+				if (corporateApplicantDetail != null && !CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredPincode()) ) {
 						response.setPincode(corporateApplicantDetail.getRegisteredPincode().toString());
-					}
 				}
 			} else if (loanApplicationMaster.getProductId() == 3 || loanApplicationMaster.getProductId() == 12
 					|| loanApplicationMaster.getProductId() == 7 || loanApplicationMaster.getProductId() == 13
@@ -3402,10 +3404,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
 							.getByApplicationAndUserId(loanApplicationMaster.getUserId(),
 									loanApplicationMaster.getId());
-					if (corporateApplicantDetail != null) {
-						if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredPincode())) {
+					if (corporateApplicantDetail != null && !CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredPincode()) ) {
 							response.setPincode(corporateApplicantDetail.getRegisteredPincode().toString());
-						}
 					}
 				} else if (loanApplicationMaster.getProductId() == 3 || loanApplicationMaster.getProductId() == 12
 						|| loanApplicationMaster.getProductId() == 7 || loanApplicationMaster.getProductId() == 13
@@ -3526,8 +3526,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		SimpleDateFormat dt = new SimpleDateFormat(DATE_FORMAT_YYYY_MM_DD_HH_MM_SS);
 		for (LoanApplicationMaster loanApplicationMaster : loanApplicationList) {
 			// code for got eligibility
-			if (loanApplicationMaster.getEligibleAmnt() != null) {
-				if (CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getIsFinalLocked())) {
+			if (loanApplicationMaster.getEligibleAmnt() != null && CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getIsFinalLocked()) ) {
 					AdminPanelLoanDetailsResponse response = new AdminPanelLoanDetailsResponse();
 					UsersRequest usersRequest = listOfObjects.stream()
 							.filter(x -> x.getId().equals(loanApplicationMaster.getUserId())).findFirst().orElse(null);
@@ -3560,10 +3559,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 						CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
 								.getByApplicationAndUserId(loanApplicationMaster.getUserId(),
 										loanApplicationMaster.getId());
-						if (corporateApplicantDetail != null) {
-							if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredPincode())) {
+						if (corporateApplicantDetail != null && !CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredPincode()) ) {
 								response.setPincode(corporateApplicantDetail.getRegisteredPincode().toString());
-							}
 						}
 					} else if (loanApplicationMaster.getProductId() == 3 || loanApplicationMaster.getProductId() == 12
 							|| loanApplicationMaster.getProductId() == 7 || loanApplicationMaster.getProductId() == 13
@@ -3599,7 +3596,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 						}
 						responseList.add(response);
 					}
-				}
 
 			}
 		}
@@ -3673,10 +3669,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					|| loanApplicationMaster.getProductId() == 15) {//
 				CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
 						.getByApplicationAndUserId(loanApplicationMaster.getUserId(), loanApplicationMaster.getId());
-				if (corporateApplicantDetail != null) {
-					if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredPincode())) {
+				if (corporateApplicantDetail != null && !CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredPincode()) ) {
 						response.setPincode(corporateApplicantDetail.getRegisteredPincode().toString());
-					}
 				}
 			} else if (loanApplicationMaster.getProductId() == 3 || loanApplicationMaster.getProductId() == 12
 					|| loanApplicationMaster.getProductId() == 7 || loanApplicationMaster.getProductId() == 13
@@ -3830,10 +3824,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					|| loanApplicationMaster.getProductId() == 15) {//
 				CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
 						.getByApplicationAndUserId(loanApplicationMaster.getUserId(), loanApplicationMaster.getId());
-				if (corporateApplicantDetail != null) {
-					if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredPincode())) {
+				if (corporateApplicantDetail != null && !CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredPincode()) ) {
 						response.setPincode(corporateApplicantDetail.getRegisteredPincode().toString());
-					}
 				}
 			} else if (loanApplicationMaster.getProductId() == 3 || loanApplicationMaster.getProductId() == 12
 					|| loanApplicationMaster.getProductId() == 7 || loanApplicationMaster.getProductId() == 13
@@ -4391,7 +4383,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					logger.error("Throw Exception While Get User Email and Mobile : ",e);
 				}
 
-				if (!CommonUtils.isObjectNullOrEmpty(usersRequest)) {
+				if (usersRequest != null && !CommonUtils.isObjectNullOrEmpty(usersRequest)) {
 					gatewayRequest.setEmail(usersRequest.getEmail());
 					gatewayRequest.setPhone(usersRequest.getMobile());
 				} else {
@@ -4457,13 +4449,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					savePhese1DataToSidbi(loanApplicationMaster.getId(), userId, orgId, fpProductId);
 				}*/
 
-				if (connectResponse.getProceed()) {
-					if (loanApplicationMaster.getCompanyCinNumber() != null) {
-						if("Y".equals(IS_MCA_ON)) {
+				if (connectResponse.getProceed() && loanApplicationMaster.getCompanyCinNumber() != null && "Y".equals(IS_MCA_ON) ) {
 						mcaAsyncComponent.callMCAForData(loanApplicationMaster.getCompanyCinNumber(),
 								loanApplicationMaster.getId(), loanApplicationMaster.getUserId());
-						}
-					}
 				}
 			} else {
 				logger.info(CONNECTOR_RESPONSE_NULL_OR_EMPTY_MSG);
@@ -4530,13 +4518,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					}
 				}*/
 
-				if (connectResponse.getProceed()) {
-					if (loanApplicationMaster.getCompanyCinNumber() != null) {
-						if("Y".equals(IS_MCA_ON)) {
+				if (connectResponse.getProceed() && loanApplicationMaster.getCompanyCinNumber() != null && "Y".equals(IS_MCA_ON) ) {
 						mcaAsyncComponent.callMCAForData(loanApplicationMaster.getCompanyCinNumber(),
 								loanApplicationMaster.getId(), loanApplicationMaster.getUserId());
-						}
-					}
 				}
 			} else {
 				logger.info(CONNECTOR_RESPONSE_NULL_OR_EMPTY_MSG);
@@ -4669,13 +4653,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				 */
 				// }
 
-				if (connectResponse.getProceed()) {
-					if (loanApplicationMaster.getCompanyCinNumber() != null) {
-						if("Y".equals(IS_MCA_ON)) {
+				if (connectResponse.getProceed() && loanApplicationMaster.getCompanyCinNumber() != null && "Y".equals(IS_MCA_ON) ) {
 						mcaAsyncComponent.callMCAForData(loanApplicationMaster.getCompanyCinNumber(),
 								loanApplicationMaster.getId(), loanApplicationMaster.getUserId());
-						}
-					}
 				}
 			} else {
 				logger.info(CONNECTOR_RESPONSE_NULL_OR_EMPTY_MSG);
@@ -4790,8 +4770,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 			Boolean updatePayment = false;
 			ProposalMappingResponse respProp = null;
-			if (SIDBI_FEES.equals(paymentRequest.getPurposeCode())) {
-				if ("Success".equals(paymentRequest.getStatus())) {
+			if (SIDBI_FEES.equals(paymentRequest.getPurposeCode()) && "Success".equals(paymentRequest.getStatus()) ) {
 					try {
 						logger.info("Start update true proposal-------------------------->"
 								+ paymentRequest.getApplicationId());
@@ -4800,7 +4779,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 						logger.info("Throw Exception WHile Activate Proposals : ",e);
 					}
 
-				}
 			}
 			try {
 				updatePayment = gatewayClient.updatePayment(gatewayRequest);
@@ -4855,11 +4833,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 							if (connectResponse.getProceed()) {
 								logger.info("loanApplicationMaster.getCompanyCinNumber()==============>>>"
 										+ loanApplicationMaster.getCompanyCinNumber());
-								if (loanApplicationMaster.getCompanyCinNumber() != null) {
-									if("Y".equals(IS_MCA_ON)) {
+								if (loanApplicationMaster.getCompanyCinNumber() != null && "Y".equals(IS_MCA_ON) ) {
 									mcaAsyncComponent.callMCAForData(loanApplicationMaster.getCompanyCinNumber(),
 											loanApplicationMaster.getId(), loanApplicationMaster.getUserId());
-									}
 								}
 							}
 
@@ -5988,7 +5964,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			audit = auditComponent.getAudit(applicationId, true, AuditComponent.COMMERCIAL);
 			if (audit == null) {
 				String pan = null;
-				if (!CommonUtils.isObjectNullOrEmpty(prelimData)
+				if (prelimData != null && !CommonUtils.isObjectNullOrEmpty(prelimData)
 						&& !CommonUtils.isObjectNullOrEmpty(prelimData.getCorporateProfileRequest())
 						&& !CommonUtils.isObjectNullOrEmpty(prelimData.getCorporateProfileRequest().getPan())) {
 					pan = prelimData.getCorporateProfileRequest().getPan();
@@ -6363,7 +6339,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				 * Base base = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,
 				 * Object>)msmeCommercial.getData(), Base.class);
 				 */
-				if (!CommonUtils.isObjectNullOrEmpty(base) && !CommonUtils.isObjectNullOrEmpty(base.getResponseReport())
+				if (base != null && !CommonUtils.isObjectNullOrEmpty(base) && !CommonUtils.isObjectNullOrEmpty(base.getResponseReport())
 						&& !CommonUtils.isObjectNullOrEmpty(base.getResponseReport().getProductSec())) {
 					Base.ResponseReport.ProductSec productSec = base.getResponseReport().getProductSec();
 					if (!CommonUtils.isObjectNullOrEmpty(productSec)) {
@@ -6595,8 +6571,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					dataRequest.setCustomerInfo(customerInfo);
 				}
 				// Set Monthly Details
-				if (!CommonUtils.isObjectNullOrEmpty(dataResponse.getMonthlyDetailList())) {
-					if (!CommonUtils.isListNullOrEmpty(dataResponse.getMonthlyDetailList().getMonthlyDetails())) {
+				if (!CommonUtils.isObjectNullOrEmpty(dataResponse.getMonthlyDetailList()) && !CommonUtils.isListNullOrEmpty(dataResponse.getMonthlyDetailList().getMonthlyDetails()) ) {
 						List<com.capitaworld.sidbi.integration.model.bankstatement.MonthlyDetail> monthlyDetailList = new ArrayList<>(
 								dataResponse.getMonthlyDetailList().getMonthlyDetails().size());
 						for (MonthlyDetail monResponse : dataResponse.getMonthlyDetailList().getMonthlyDetails()) {
@@ -6605,7 +6580,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 							monthlyDetailList.add(moRequest);
 						}
 						dataRequest.setMonthlyDetails(monthlyDetailList);
-					}
 				}
 
 				// Set Summary Info
@@ -6634,8 +6608,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				}
 
 				// Set Top5 Fund Received List
-				if (!CommonUtils.isObjectNullOrEmpty(dataResponse.getTop5FundReceivedList())) {
-					if (!CommonUtils.isListNullOrEmpty(dataResponse.getTop5FundReceivedList().getItem())) {
+				if (!CommonUtils.isObjectNullOrEmpty(dataResponse.getTop5FundReceivedList()) && !CommonUtils.isListNullOrEmpty(dataResponse.getTop5FundReceivedList().getItem()) ) {
 						List<com.capitaworld.sidbi.integration.model.bankstatement.Item> top5FundReceivedList = new ArrayList<>(
 								dataResponse.getTop5FundReceivedList().getItem().size());
 						for (Item itemResponse : dataResponse.getTop5FundReceivedList().getItem()) {
@@ -6644,12 +6617,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 							top5FundReceivedList.add(itemRequest);
 						}
 						dataRequest.setTop5FundReceivedList(top5FundReceivedList);
-					}
 				}
 
 				// Set Top5 Fund Transfered List
-				if (!CommonUtils.isObjectNullOrEmpty(dataResponse.getTop5FundTransferedList())) {
-					if (!CommonUtils.isListNullOrEmpty(dataResponse.getTop5FundTransferedList().getItem())) {
+				if (!CommonUtils.isObjectNullOrEmpty(dataResponse.getTop5FundTransferedList()) && !CommonUtils.isListNullOrEmpty(dataResponse.getTop5FundTransferedList().getItem()) ) {
 						List<com.capitaworld.sidbi.integration.model.bankstatement.Item> top5FundTransferedList = new ArrayList<>(
 								dataResponse.getTop5FundTransferedList().getItem().size());
 						for (Item itemResponse : dataResponse.getTop5FundTransferedList().getItem()) {
@@ -6658,12 +6629,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 							top5FundTransferedList.add(itemRequest);
 						}
 						dataRequest.setTop5FundTransferedList(top5FundTransferedList);
-					}
 				}
 
 				// Set BouncedOrPenalXnList
-				if (!CommonUtils.isObjectNullOrEmpty(dataResponse.getBouncedOrPenalXnList())) {
-					if (!CommonUtils.isListNullOrEmpty(dataResponse.getBouncedOrPenalXnList().getBouncedOrPenalXns())) {
+				if (!CommonUtils.isObjectNullOrEmpty(dataResponse.getBouncedOrPenalXnList()) && !CommonUtils.isListNullOrEmpty(dataResponse.getBouncedOrPenalXnList().getBouncedOrPenalXns()) ) {
 						List<com.capitaworld.sidbi.integration.model.bankstatement.BouncedOrPenalXn> bouncedOrPanelXnList = new ArrayList<>(
 								dataResponse.getBouncedOrPenalXnList().getBouncedOrPenalXns().size());
 						for (BouncedOrPenalXn bounceResponse : dataResponse.getBouncedOrPenalXnList()
@@ -6673,12 +6642,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 							bouncedOrPanelXnList.add(bounceRequest);
 						}
 						dataRequest.setBouncedOrPenalXnList(bouncedOrPanelXnList);
-					}
 				}
 
 				// Set Panel List
-				if (!CommonUtils.isObjectNullOrEmpty(dataResponse.getPenalList())) {
-					if (!CommonUtils.isListNullOrEmpty(dataResponse.getPenalList().getBouncedOrPenalXns())) {
+				if (!CommonUtils.isObjectNullOrEmpty(dataResponse.getPenalList()) && !CommonUtils.isListNullOrEmpty(dataResponse.getPenalList().getBouncedOrPenalXns()) ) {
 						List<com.capitaworld.sidbi.integration.model.bankstatement.BouncedOrPenalXn> panelXnList = new ArrayList<>(
 								dataResponse.getPenalList().getBouncedOrPenalXns().size());
 						for (BouncedOrPenalXn bounceResponse : dataResponse.getPenalList().getBouncedOrPenalXns()) {
@@ -6687,7 +6654,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 							panelXnList.add(bounceRequest);
 						}
 						dataRequest.setPenalList(panelXnList);
-					}
 				}
 
 				// Set Xns
@@ -7563,12 +7529,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 				if (primaryCorporateDetail != null) {
 					response.setColleteralValue(primaryCorporateDetail.getCollateralSecurityAmount());
-					if (primaryCorporateDetail.getAssessmentId() != null) {
-						if (primaryCorporateDetail.getAssessmentId() == AssessmentOptionForFS.EQUIPMENT_MACHINERY
-								.getId()) {
+					if (primaryCorporateDetail.getAssessmentId() != null && primaryCorporateDetail.getAssessmentId() == AssessmentOptionForFS.EQUIPMENT_MACHINERY
+							.getId() ) {
 							response.setIsPurchaseOfEqup(true);
 							response.setCostOfMachinery(primaryCorporateDetail.getCostOfMachinery());
-						}
 					}
 				}
 				if (loan != null && loan.getBusinessTypeId() != null && loan.getBusinessTypeId() == 2) {
@@ -8545,7 +8509,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				guarantorsCorporateDetail.setName(guarantorsCorporateDetailRequest.getName());
 				guarantorsCorporateDetail.setPropertiesOwned(guarantorsCorporateDetailRequest.getPropertiesOwned());
 				guarantorsCorporateDetail.setPropertyType(guarantorsCorporateDetailRequest.getValue());
-				;
 				guarantorsCorporateDetail.setAddress(guarantorsCorporateDetailRequest.getAddress());
 				guarantorsCorporateDetail.setOccupation(guarantorsCorporateDetailRequest.getOccupation());
 				guarantorsCorporateDetail.setApplicationId(new LoanApplicationMaster(applicationId));
@@ -10560,10 +10523,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		// locationDetailsRequest.setreg
 		// locationDetailsRequest.set
 
-		if (!CommonUtils.isObjectNullOrEmpty(productSec.getLocationDetailsSec())) {
-
-			if (!CommonUtils.isObjectNullOrEmpty(productSec.getLocationDetailsSec().getLocationInformationVec())
-					&& CommonUtils.isObjectNullOrEmpty(productSec.getLocationDetailsSec().getMessage())) {
+		if (!CommonUtils.isObjectNullOrEmpty(productSec.getLocationDetailsSec()) && !CommonUtils.isObjectNullOrEmpty(productSec.getLocationDetailsSec().getLocationInformationVec())
+				&& CommonUtils.isObjectNullOrEmpty(productSec.getLocationDetailsSec().getMessage())) {
 				AddressAndContactDetailsRequest addressAndContactDetailsRequest = null;
 				AddressRequest registeredOfficeAddress = null;
 				for (LocationInformation locationInformation : productSec.getLocationDetailsSec()
@@ -10602,7 +10563,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 						branchOrRegionalOfficeAddressAndContactDetailsRequests.add(addressAndContactDetailsRequest);
 					}
 				}
-			}
 		}
 
 		locationDetailsRequest.setRegisteredOffice(regOfficeAddressAndContactDetailsRequests);

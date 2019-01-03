@@ -75,6 +75,8 @@ public class CorporateMcqRequest implements Serializable {
     private String finalFilledCount;
     private Long userId;
     private Boolean isFinalMcqFilled;
+    
+    private Boolean isMcqSkipped;
 //    private Boolean whetherTechnologyIsTied;
 //    private List<Integer> overseasNetworkIds = Collections.emptyList();
 
@@ -602,4 +604,14 @@ public class CorporateMcqRequest implements Serializable {
     public void setUserId(Long userId) {
         this.userId = userId;
     }
+
+	public Boolean getIsMcqSkipped() {
+		return isMcqSkipped;
+	}
+
+	public void setIsMcqSkipped(Boolean isMcqSkipped) {
+		this.isMcqSkipped = isMcqSkipped;
+	}
+    
+    
 }

@@ -70,9 +70,9 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 
 	private static final Logger logger = LoggerFactory.getLogger(DownloadCMAFileServiceImpl.class);
     
-	private static final String profitibilitySheet="PS";
+//	private static final String PROFITIBILITY_SHEET ="PS";
 	
-	private static final String balanceSheet="BS";
+//	private static final String BALANCE_SHEET ="BS";
 	@Override
 	public Workbook cmaFileGenerator(Long applicationId , Long productDocumentMappingId) {
 		logger.info("Enter in cmaFileGenerator()  Forming Excel Data");
@@ -80,7 +80,7 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 		Workbook wb = null;
 		try {
             //EXISTING WCTL_CMA OR TL 
-            String EXCEL_FILE_LOCATION  = "cw.mca.cwtlwctlcmafile.location"; ;
+            String EXCEL_FILE_LOCATION  = "cw.mca.cwtlwctlcmafile.location";
  			logger.warn("excel file====>>"+EXCEL_FILE_LOCATION);
  			Integer businessTypeId =loanApplicationRepository.findOneBusinessTypeIdByIdAndIsActive(applicationId);
  			logger.info("Busyness Type ID=====>" + businessTypeId);
@@ -995,7 +995,7 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 			totalYear=temp+total_Column-4;
 		}*/
 		
-		/*if(profitibilitySheet.equals(sheet.getSheetName())|| balanceSheet.equals(sheet.getSheetName())) {
+		/*if(PROFITIBILITY_SHEET.equals(sheet.getSheetName())|| BALANCE_SHEET.equals(sheet.getSheetName())) {
 			j=1;
 		}*/
 		int i = 0 ;

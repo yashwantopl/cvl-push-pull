@@ -113,6 +113,14 @@ public class CommonUtils {
 	public static final String ORG_NAME = "orgName";
 	public static final String SAVE_OR_UPDATE = "saveOrUpdate";
 
+	public static final String STORAGE_DETAILS_ID = "storageDetailsId";
+	public static final String APPLICATION_ID = "applicationId";
+	public static final String CREATED_BY = "createdBy";
+	public static final String CREATED_DATE = "createdDate";
+	public static final String MODIFIED_BY = "modifiedBy";
+	public static final String MODIFIED_DATE = "modifiedDate";
+	public static final String IS_ACTIVE = "isActive";
+
 	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 
 	public static final class UsersRoles {
@@ -613,19 +621,23 @@ public class CommonUtils {
 		return getBowlCount(profileCount, null) + getBowlCount(primaryCount, null) + getBowlCount(finalCount, null);
 	}
 
-	public static List<String> urlsBrforeLogin = null;
+	private static final List<String> URLS_BRFORE_LOGIN = new ArrayList<String>(8);
+
+	public static List<String> getUrlsBrforeLogin() {
+		return URLS_BRFORE_LOGIN;
+	}
+
 	static {
-		urlsBrforeLogin = new ArrayList<String>(8);
-		urlsBrforeLogin.add("/loans/loan_application/getUsersRegisteredLoanDetails".toLowerCase());
-		urlsBrforeLogin.add("/loans/loan_application/getLoanDetailsForAdminPanel".toLowerCase());
-		urlsBrforeLogin.add("/loans/corporate_upload/downloadCMAAndCoCMAExcelFile/**".toLowerCase());
-		urlsBrforeLogin.add("/loans/loan_application/save_payment_info_for_mobile".toLowerCase());
-		urlsBrforeLogin.add("/loans/loan_application/mobile/successUrl".toLowerCase());
-		urlsBrforeLogin.add("/loans/loan_application/getToken".toLowerCase());
-		urlsBrforeLogin.add("/loans/loan_application/saveLoanDisbursementDetail".toLowerCase());
-		urlsBrforeLogin.add("/loans/loan_application/saveLoanSanctionDetail".toLowerCase());
-		urlsBrforeLogin.add("/loans/loan_application/saveLoanSanctionDisbursementDetailFromBank".toLowerCase());
-		urlsBrforeLogin.add("/loans/ddr/getCustomerNameById".toLowerCase());
+		URLS_BRFORE_LOGIN.add("/loans/loan_application/getUsersRegisteredLoanDetails".toLowerCase());
+		URLS_BRFORE_LOGIN.add("/loans/loan_application/getLoanDetailsForAdminPanel".toLowerCase());
+		URLS_BRFORE_LOGIN.add("/loans/corporate_upload/downloadCMAAndCoCMAExcelFile/**".toLowerCase());
+		URLS_BRFORE_LOGIN.add("/loans/loan_application/save_payment_info_for_mobile".toLowerCase());
+		URLS_BRFORE_LOGIN.add("/loans/loan_application/mobile/successUrl".toLowerCase());
+		URLS_BRFORE_LOGIN.add("/loans/loan_application/getToken".toLowerCase());
+		URLS_BRFORE_LOGIN.add("/loans/loan_application/saveLoanDisbursementDetail".toLowerCase());
+		URLS_BRFORE_LOGIN.add("/loans/loan_application/saveLoanSanctionDetail".toLowerCase());
+		URLS_BRFORE_LOGIN.add("/loans/loan_application/saveLoanSanctionDisbursementDetailFromBank".toLowerCase());
+		URLS_BRFORE_LOGIN.add("/loans/ddr/getCustomerNameById".toLowerCase());
 	}
 
 	public static int calculateAge(Date dateOfBirth) {

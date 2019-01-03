@@ -23,6 +23,9 @@ public class PrimaryCorporateServiceImpl implements PrimaryCorporateService {
 
 	private static final Logger logger = LoggerFactory.getLogger(PrimaryCorporateServiceImpl.class.getName());
 
+	private static final String ERROR_WHILE_PRIMARY_CORPORATE_DETAILS_MSG = "Error while Primary Corporate Details:-";
+	private static final String PRIMARY_CORPORATE_DETAIL_NOT_EXIST_IN_DB_WITH_ID_MSG = "PrimaryCorporateDetail not exist in DB with ID=>";
+
 	@Autowired
 	private PrimaryCorporateDetailRepository primaryCorporateRepository;
 
@@ -38,7 +41,7 @@ public class PrimaryCorporateServiceImpl implements PrimaryCorporateService {
 					(CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getClientId()) ? userId
 							: primaryCorporateRequest.getClientId()));
 			if (primaryCorporateDetail == null) {
-				throw new NullPointerException("PrimaryCorporateDetail not exist in DB with ID=>"
+				throw new NullPointerException(PRIMARY_CORPORATE_DETAIL_NOT_EXIST_IN_DB_WITH_ID_MSG
 						+ primaryCorporateRequest.getId() + " and UserId==>" + userId);
 			}
 			BeanUtils.copyProperties(primaryCorporateRequest, primaryCorporateDetail,
@@ -48,7 +51,7 @@ public class PrimaryCorporateServiceImpl implements PrimaryCorporateService {
 			primaryCorporateRepository.save(primaryCorporateDetail);
 			return true;
 		} catch (Exception e) {
-			logger.error("Error while Primary Corporate Details:-", e);
+			logger.error(ERROR_WHILE_PRIMARY_CORPORATE_DETAILS_MSG, e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
@@ -60,7 +63,7 @@ public class PrimaryCorporateServiceImpl implements PrimaryCorporateService {
 					userId);
 			if (loanDetail == null) {
 				throw new NullPointerException(
-						"PrimaryCorporateDetail not exist in DB with ID=>" + applicationId + " and UserId==>" + userId);
+						PRIMARY_CORPORATE_DETAIL_NOT_EXIST_IN_DB_WITH_ID_MSG + applicationId + " and UserId==>" + userId);
 			}
 			PrimaryCorporateRequest primaryCorporateRequest = new PrimaryCorporateRequest();
 			BeanUtils.copyProperties(loanDetail, primaryCorporateRequest);
@@ -70,7 +73,7 @@ public class PrimaryCorporateServiceImpl implements PrimaryCorporateService {
 			primaryCorporateRequest.setCurrencyValue(data);
 			return primaryCorporateRequest;
 		} catch (Exception e) {
-			logger.error("Error while Primary Corporate Details:-", e);
+			logger.error(ERROR_WHILE_PRIMARY_CORPORATE_DETAILS_MSG, e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 
@@ -81,13 +84,13 @@ public class PrimaryCorporateServiceImpl implements PrimaryCorporateService {
 		try {
 			PrimaryCorporateDetail loanDetail = primaryCorporateRepository.findByApplicationIdId(applicationId);
 			if (loanDetail == null) {
-				throw new NullPointerException("PrimaryCorporateDetail not exist in DB with ID=>" + applicationId);
+				throw new NullPointerException(PRIMARY_CORPORATE_DETAIL_NOT_EXIST_IN_DB_WITH_ID_MSG + applicationId);
 			}
 			PrimaryCorporateRequest primaryCorporateRequest = new PrimaryCorporateRequest();
 			BeanUtils.copyProperties(loanDetail, primaryCorporateRequest);
 			return primaryCorporateRequest;
 		} catch (Exception e) {
-			logger.error("Error while Primary Corporate Details:-", e);
+			logger.error(ERROR_WHILE_PRIMARY_CORPORATE_DETAILS_MSG, e);
 		}
 		return null;
 	}

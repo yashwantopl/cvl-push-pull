@@ -14,10 +14,10 @@ import com.capitaworld.service.loans.model.corporate.UniformProductParamterReque
 import com.capitaworld.service.loans.repository.fundprovider.UniformProductParameterRepository;
 import com.capitaworld.service.loans.service.fundprovider.UniformProductParameterService;
 import com.capitaworld.service.loans.utils.CommonUtils;
+import com.capitaworld.service.loans.utils.CommonUtils.LoanType;
 
 @Service
 public class UniformProductParameterServiceImpl implements UniformProductParameterService {
-	private static final Logger logger = LoggerFactory.getLogger(UniformProductParameterServiceImpl.class);
 
 	@Autowired
 	private UniformProductParameterRepository uniformProductParameterRepository; 
@@ -38,6 +38,8 @@ public class UniformProductParameterServiceImpl implements UniformProductParamet
 		uniformProductParamter.setUserOrgId(productParamterRequest.getUserOrgId());
 		uniformProductParamter.setBusinessTypeId(CommonUtils.BusinessType.ONE_PAGER_ELIGIBILITY_EXISTING_BUSINESS.getId().longValue());
 		uniformProductParamter.setUserId(productParamterRequest.getUserId());
+		uniformProductParamter.setName("Uniform Product");
+		uniformProductParamter.setProductId(LoanType.WORKING_CAPITAL.getValue());
 		uniformProductParameterRepository.save(uniformProductParamter);
 		return true;
 	}

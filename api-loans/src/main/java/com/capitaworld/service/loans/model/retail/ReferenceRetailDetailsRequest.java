@@ -3,7 +3,6 @@ package com.capitaworld.service.loans.model.retail;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 
-import com.capitaworld.service.loans.model.ddr.DDRCMACalculationResponse;
 
 /**
  * @author Sanket

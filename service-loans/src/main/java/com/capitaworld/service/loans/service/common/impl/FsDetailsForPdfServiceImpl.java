@@ -1,12 +1,9 @@
 package com.capitaworld.service.loans.service.common.impl;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -758,7 +755,6 @@ public class FsDetailsForPdfServiceImpl implements FsDetailsForPdfService {
 			dataMap.put("Applicant E-mail", map.get("email"));
 			dataMap.put("Application Process Fees", null);
 			dataMap.put("Margin", null);
-			dataMap.put("Networth", null);
 			dataMap.put("Rating", null);
 			dataMap.put("Rating Date", null);
 			dataMap.put("FATCA_DEC_FLG", null);

@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -16,6 +17,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
+import com.capitaworld.service.loans.utils.EncryptionUtils;
 
 /**
  * The persistent class for the fs_corporate_applicant_details database table.
@@ -126,6 +128,7 @@ public class CorporateApplicantDetail implements Serializable {
 	private String websiteAddress;
 
 	@Column(name = "pan")
+	
 	private String panNo;
 
 	@Column(name = "gstin")

@@ -26,6 +26,7 @@ public class LoanEligibilityCriteriaRepositoryImpl implements LoanEligibilityCri
 	private static final String GET_PERSONAL_LOAN_BY_SALARY_SLAB = "getPersonalLoanBySalarySlab";
 	private static final String GET_LAP_BY_SALARY_SLAB = "getLAPBySalarySlab";
 	private static final String GET_HOME_LOAN_BY_SVMV = "getHomeLoanBySVMV";
+	private static final String BANK_ID = "bankId";
 
 	@PersistenceContext
 	private EntityManager entityManager;
@@ -39,7 +40,7 @@ public class LoanEligibilityCriteriaRepositoryImpl implements LoanEligibilityCri
 				+ income + " >= hl.min and " + income + " <= hl.max";
 		List<HomeLoanEligibilityCriteria> eligibility = entityManager
 				.createQuery(query, HomeLoanEligibilityCriteria.class).setParameter("type", type)
-				.setParameter("bankId", bankId).setParameter("isActive", true).getResultList();
+				.setParameter(BANK_ID, bankId).setParameter(CommonUtils.IS_ACTIVE, true).getResultList();
 		if (!CommonUtils.isListNullOrEmpty(eligibility)) {
 			CommonDocumentUtils.endHook(logger, GET_HOME_LOAN_BY_SALARY_SLAB);
 			return eligibility.get(0);
@@ -58,7 +59,7 @@ public class LoanEligibilityCriteriaRepositoryImpl implements LoanEligibilityCri
 				+ sv + " >= hl.minPropertyAmount and " + sv + " <= hl.maxPropertyAmount) order by hl.id";
 		List<Float> eligibility = entityManager
 				.createQuery(query, Float.class)
-				.setParameter("bankId", bankId).setParameter("isActive", true).getResultList();
+				.setParameter(BANK_ID, bankId).setParameter(CommonUtils.IS_ACTIVE, true).getResultList();
 		if (!CommonUtils.isListNullOrEmpty(eligibility)) {
 			CommonDocumentUtils.endHook(logger, GET_HOME_LOAN_BY_SVMV);
 			return eligibility.get(0);
@@ -77,7 +78,7 @@ public class LoanEligibilityCriteriaRepositoryImpl implements LoanEligibilityCri
 						+ " >= hl.minPropertyAmount and " + mv + " <= hl.maxPropertyAmount) order by hl.id";
 				List<Float> eligibility = entityManager
 						.createQuery(query, Float.class)
-						.setParameter("bankId", bankId).setParameter("isActive", true).getResultList();
+						.setParameter(BANK_ID, bankId).setParameter(CommonUtils.IS_ACTIVE, true).getResultList();
 				if (!CommonUtils.isListNullOrEmpty(eligibility)) {
 					CommonDocumentUtils.endHook(logger, GET_HOME_LOAN_BY_SVMV);
 					return eligibility.get(0);
@@ -97,7 +98,7 @@ public class LoanEligibilityCriteriaRepositoryImpl implements LoanEligibilityCri
 		@SuppressWarnings("unchecked")
 		List<Object[]> data = entityManager.createQuery(
 				"select min(hl.roiLow),max(hl.roiHigh) from HomeLoanEligibilityCriteria hl where hl.isActive =:isActive and hl.bankId in (:ids)")
-				.setParameter("isActive", true).setParameter("ids", bankIds).getResultList();
+				.setParameter(CommonUtils.IS_ACTIVE, true).setParameter("ids", bankIds).getResultList();
 		if (!CommonUtils.isListNullOrEmpty(data)) {
 			return data.get(0);
 		}
@@ -113,7 +114,7 @@ public class LoanEligibilityCriteriaRepositoryImpl implements LoanEligibilityCri
 				+ income + " >= pl.min and " + income + " <= pl.max";
 		List<PersonalLoanEligibilityCriteria> eligibility = entityManager
 				.createQuery(query, PersonalLoanEligibilityCriteria.class).setParameter("type", type)
-				.setParameter("bankId", bankId).setParameter("isActive", true).getResultList();
+				.setParameter(BANK_ID, bankId).setParameter(CommonUtils.IS_ACTIVE, true).getResultList();
 		if (!CommonUtils.isListNullOrEmpty(eligibility)) {
 			CommonDocumentUtils.endHook(logger, GET_PERSONAL_LOAN_BY_SALARY_SLAB);
 			return eligibility.get(0);
@@ -132,7 +133,7 @@ public class LoanEligibilityCriteriaRepositoryImpl implements LoanEligibilityCri
 		
 		List<Object[]> data = entityManager.createQuery(
 				"select min(pl.roiLow),max(pl.roiHigh) from PersonalLoanEligibilityCriteria pl where pl.isActive =:isActive and pl.type =:type and pl.bankId in (:ids)")
-				.setParameter("isActive", true)
+				.setParameter(CommonUtils.IS_ACTIVE, true)
 				.setParameter("type", type)
 				.setParameter("ids", bankIds)
 				.getResultList();
@@ -152,8 +153,8 @@ public class LoanEligibilityCriteriaRepositoryImpl implements LoanEligibilityCri
 		String query = "select lap from LAPEligibilityCriteria lap where lap.type =:type and lap.bankId =:bankId and lap.isActive =:isActive and lap.propertyType =:propertyType and "
 				+ income + " >= lap.min";
 		List<LAPEligibilityCriteria> eligibility = entityManager.createQuery(query, LAPEligibilityCriteria.class)
-				.setParameter("type", type).setParameter("bankId", bankId).setParameter("propertyType", propertyType)
-				.setParameter("isActive", true).getResultList();
+				.setParameter("type", type).setParameter(BANK_ID, bankId).setParameter("propertyType", propertyType)
+				.setParameter(CommonUtils.IS_ACTIVE, true).getResultList();
 		if (!CommonUtils.isListNullOrEmpty(eligibility)) {
 			CommonDocumentUtils.endHook(logger, GET_LAP_BY_SALARY_SLAB);
 			return eligibility.get(0);
@@ -172,7 +173,7 @@ public class LoanEligibilityCriteriaRepositoryImpl implements LoanEligibilityCri
 		}
 		List<Object[]> data = entityManager.createQuery(
 				"select min(lap.roiLow),max(lap.roiHigh) from LAPEligibilityCriteria lap where lap.isActive =:isActive and lap.bankId in (:ids) and lap.type =:employementType and lap.propertyType =:propertyType")
-				.setParameter("isActive", true).setParameter("ids", bankIds).setParameter("propertyType", propertyType)
+				.setParameter(CommonUtils.IS_ACTIVE, true).setParameter("ids", bankIds).setParameter("propertyType", propertyType)
 				.setParameter("employementType", employementType).getResultList();
 		if (!CommonUtils.isListNullOrEmpty(data)) {
 			return data.get(0);

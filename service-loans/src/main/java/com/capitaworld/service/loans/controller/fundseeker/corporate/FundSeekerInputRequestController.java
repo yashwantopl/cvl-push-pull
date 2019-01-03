@@ -21,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.capitaworld.connect.api.ConnectAuditErrorCode;
 import com.capitaworld.connect.api.ConnectLogAuditRequest;
+import com.capitaworld.connect.api.ConnectResponse;
 import com.capitaworld.connect.api.ConnectStage;
 import com.capitaworld.connect.client.ConnectClient;
 import com.capitaworld.service.loans.model.LoansResponse;
@@ -287,7 +288,36 @@ public class FundSeekerInputRequestController {
 //        	}
         	
         	fundSeekerInputRequestResponse.setUserId(userId);
-        	return new ResponseEntity<LoansResponse>(fundSeekerInputRequestService.saveOrUpdateForOnePagerEligibility(fundSeekerInputRequestResponse),HttpStatus.OK);
+        	LoansResponse eligibility = fundSeekerInputRequestService.saveOrUpdateForOnePagerEligibility(fundSeekerInputRequestResponse);
+        	if(CommonUtils.isObjectNullOrEmpty(eligibility) || CommonUtils.isObjectNullOrEmpty(eligibility.getFlag()) || !eligibility.getFlag() || eligibility.getStatus() != 200){
+        		return new ResponseEntity<LoansResponse>(eligibility,HttpStatus.OK);	
+        	}
+        		try {
+        			ConnectResponse postOneForm = connectClient.postOneForm(fundSeekerInputRequestResponse.getApplicationId(), userId, CommonUtils.BusinessType.ONE_PAGER_ELIGIBILITY_EXISTING_BUSINESS.getId());
+        			if (postOneForm != null) {
+        				logger.info("postOneForm=======================>Client Connect Response Uniform Product=============>{}",
+        						postOneForm.toString());
+        				if(!postOneForm.getProceed().booleanValue() && postOneForm.getStatus() == 4){
+        					eligibility.setStatus(HttpStatus.METHOD_FAILURE.value());
+        					eligibility.setMessage("Your request could not be processed now, please try again after sometime.");
+        				}else if (!postOneForm.getProceed().booleanValue() && postOneForm.getStatus() == 6) {
+        					eligibility.setStatus(HttpStatus.BAD_REQUEST.value());
+        					eligibility.setMessage("Not Eligibile from Matchengine");
+        				}else if (!postOneForm.getProceed().booleanValue() && postOneForm.getStatus() == 500) {
+        					eligibility.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        					eligibility.setMessage("Your request could not be refined now, please try again after sometime!");
+        				} else {
+        					eligibility.setStatus(HttpStatus.OK.value());
+        					eligibility.setMessage("Successfully Matched");
+        				}
+        			}
+        			return new ResponseEntity<LoansResponse>(eligibility,HttpStatus.OK);
+        		}catch(Exception e){
+        			logger.error("Exception :{}",e);
+        			eligibility.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+					eligibility.setMessage("Your request could not be refined now, please try again after sometime!");
+        			return new ResponseEntity<LoansResponse>(eligibility,HttpStatus.OK);
+        		}
         } catch (Exception e) {
             logger.error("Error while Getting Oneform Details for Uniform Product : ",e);
             return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);

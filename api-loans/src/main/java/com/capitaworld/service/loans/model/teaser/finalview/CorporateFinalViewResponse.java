@@ -83,7 +83,7 @@ public class CorporateFinalViewResponse implements Serializable {
 	private String contigentLiablitiesFy;
 	private String contigentLiablitiesSy;
 	private String contigentLiablitiesTy;
-;
+
 	// FINAL MCQ
 
 	private String technologyRiskId;
@@ -227,6 +227,8 @@ public class CorporateFinalViewResponse implements Serializable {
     private String fpProductName;
     
     private Object mcaFinancialAndDetailsResponse;
+    
+    private Boolean isMcqSkipped;
     			
     
 	public List<?> getMatchesList() {
@@ -2124,6 +2126,14 @@ public class CorporateFinalViewResponse implements Serializable {
 
 	public void setMcaFinancialAndDetailsResponse(Object mcaFinancialAndDetailsResponse) {
 		this.mcaFinancialAndDetailsResponse = mcaFinancialAndDetailsResponse;
+	}
+
+	public Boolean getIsMcqSkipped() {
+		return isMcqSkipped;
+	}
+
+	public void setIsMcqSkipped(Boolean isMcqSkipped) {
+		this.isMcqSkipped = isMcqSkipped;
 	}
 
 	

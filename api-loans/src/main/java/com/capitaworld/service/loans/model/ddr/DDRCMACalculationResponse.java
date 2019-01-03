@@ -3,7 +3,6 @@ package com.capitaworld.service.loans.model.ddr;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 
-import com.capitaworld.service.loans.model.AssociatedConcernDetailRequest;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)

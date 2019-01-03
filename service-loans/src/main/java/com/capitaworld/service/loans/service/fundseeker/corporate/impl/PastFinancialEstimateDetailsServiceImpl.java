@@ -205,10 +205,8 @@ public class PastFinancialEstimateDetailsServiceImpl implements PastFinancialEst
 				} else {
 					List<PastFinancialEstimatesDetail> financialEstimatesNewList = new ArrayList<>();
 					String recordYearsArray[] = null;
-					if(pastFinancialEstimateDetails.get(0)!=null){
-						if(pastFinancialEstimateDetails.get(0).getFinancialYear()!=null){
+					if(pastFinancialEstimateDetails.get(0)!=null && pastFinancialEstimateDetails.get(0).getFinancialYear()!=null ){
 							recordYearsArray = pastFinancialEstimateDetails.get(0).getFinancialYear().toString().split("-");
-						}
 					}
 					int lastYear= 0;
 					if(recordYearsArray !=null){

@@ -3,7 +3,6 @@ package com.capitaworld.service.loans.model.corporate;
 import com.capitaworld.service.loans.model.Address;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 
 import java.io.Serializable;
 import java.util.Date;

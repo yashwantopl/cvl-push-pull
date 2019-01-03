@@ -188,9 +188,9 @@ public class NTBServiceImpl implements NTBService {
                     if (!CommonUtils.isObjectNullOrEmpty(reqObj.getId())) {
                         saveFinObj = financialArrangementDetailsRepository.findByIdAndIsActive(reqObj.getId(), true);
                     }
-                    if (CommonUtils.isObjectNullOrEmpty(saveFinObj)) {
+                    if (saveFinObj == null || CommonUtils.isObjectNullOrEmpty(saveFinObj)) {
                         saveFinObj = new FinancialArrangementsDetail();
-                        BeanUtils.copyProperties(reqObj, saveFinObj, "id", "createdBy", "createdDate", "modifiedBy", "modifiedDate", "isActive");
+                        BeanUtils.copyProperties(reqObj, saveFinObj, "id", CommonUtils.CREATED_BY, CommonUtils.CREATED_DATE, CommonUtils.MODIFIED_BY, CommonUtils.MODIFIED_DATE, "isActive");
 
                         saveFinObj.setDirectorBackgroundDetail(directorBackgroundDetailsRepository.findOne(directorId));
                         saveFinObj.setApplicationId(new LoanApplicationMaster(applicationId));
@@ -198,7 +198,7 @@ public class NTBServiceImpl implements NTBService {
                         saveFinObj.setCreatedDate(new Date());
                         saveFinObj.setIsActive(true);
                     } else {
-                        BeanUtils.copyProperties(reqObj, saveFinObj, "id", "createdBy", "createdDate", "modifiedBy", "modifiedDate");
+                        BeanUtils.copyProperties(reqObj, saveFinObj, "id", CommonUtils.CREATED_BY, CommonUtils.CREATED_DATE, CommonUtils.MODIFIED_BY, CommonUtils.MODIFIED_DATE);
                         saveFinObj.setModifiedBy(userId);
                         saveFinObj.setModifiedDate(new Date());
                     }
@@ -317,7 +317,7 @@ public class NTBServiceImpl implements NTBService {
                     if (!CommonUtils.isObjectNullOrEmpty(reqObj.getId())) {
                         saveDirObj = directorBackgroundDetailsRepository.findByIdAndIsActive(reqObj.getId(), true);
                         logger.info("Old Object Retrived For Director saveDirObj.getId()==========================>{}",saveDirObj.getId());
-                        BeanUtils.copyProperties(reqObj, saveDirObj, "id", "createdBy", "createdDate", "modifiedBy","modifiedDate");
+                        BeanUtils.copyProperties(reqObj, saveDirObj, "id", CommonUtils.CREATED_BY, CommonUtils.CREATED_DATE, CommonUtils.MODIFIED_BY,CommonUtils.MODIFIED_DATE);
                         saveDirObj.setModifiedBy(userId);
                         saveDirObj.setModifiedDate(new Date());
                     }

@@ -12,10 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
-import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateCoApplicantDetail;
 import com.capitaworld.service.loans.model.Address;
-import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateCoApplicantRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateCoApplicantRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
