@@ -1560,6 +1560,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 
 	@Override
+	public Object[] getApplicationDetailsByProposalId(Long applicationId,Long proposalMappingId) {
+		List<Object[]> data = applicationProposalMappingRepository.getUserDetailsByApplicationIdAndPropsoalMappingId(applicationId,proposalMappingId);
+		return (!CommonUtils.isListNullOrEmpty(data)) ? data.toArray() : null;
+	}
+
+	@Override
 	public void updateFinalCommonInformation(Long applicationId, Long userId, Boolean flag, String finalFilledCount)
 			throws Exception {
 		try {

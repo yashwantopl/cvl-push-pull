@@ -32,6 +32,9 @@ public class ApplicationStatusAudit implements Serializable{
 	@Column(name = "application_id")
 	private Long applicationId;
 
+	@Column(name = "proposal_mapping_id")
+	private Long proposalId;
+
 	private Double amount;
 
 	@Column(name = "category_code")
@@ -558,4 +561,11 @@ public class ApplicationStatusAudit implements Serializable{
 		this.npUserId = npUserId;
 	}
 
+	public Long getProposalId() {
+		return proposalId;
+	}
+
+	public void setProposalId(Long proposalId) {
+		this.proposalId = proposalId;
+	}
 }
