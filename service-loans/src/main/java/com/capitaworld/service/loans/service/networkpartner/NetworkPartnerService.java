@@ -1,7 +1,6 @@
 package com.capitaworld.service.loans.service.networkpartner;
 
 import java.util.List;
-import java.util.Map;
 
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.model.FpNpMappingRequest;

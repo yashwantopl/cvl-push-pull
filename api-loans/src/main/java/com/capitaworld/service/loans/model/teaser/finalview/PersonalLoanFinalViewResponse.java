@@ -2,7 +2,6 @@ package com.capitaworld.service.loans.model.teaser.finalview;
 
 import java.io.Serializable;
 
-import com.capitaworld.service.loans.model.teaser.primaryview.PersonalLoandsPrimaryViewResponse;
 import com.capitaworld.service.loans.model.teaser.primaryview.RetailPrimaryViewResponse;
 
 public class PersonalLoanFinalViewResponse  implements Serializable{

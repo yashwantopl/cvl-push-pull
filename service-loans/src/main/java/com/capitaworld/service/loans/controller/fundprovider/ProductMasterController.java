@@ -72,10 +72,6 @@ public class ProductMasterController {
 
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 			Long userOrgId = (Long) request.getAttribute(CommonUtils.USER_ORG_ID);
-			addProductRequest.setUserId(userId);
-			if (CommonDocumentUtils.isThisClientApplication(request) && !CommonUtils.isObjectNullOrEmpty(clientId)) {
-				addProductRequest.setClientId(clientId);
-			}
 
 			if (userId == null) {
 				logger.warn(USER_ID_CAN_NOT_BE_EMPTY_MSG + userId);
@@ -88,6 +84,11 @@ public class ProductMasterController {
 				CommonDocumentUtils.endHook(logger, ADD_PRODUCT);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+			}
+
+			addProductRequest.setUserId(userId);
+			if (CommonDocumentUtils.isThisClientApplication(request) && !CommonUtils.isObjectNullOrEmpty(clientId)) {
+				addProductRequest.setClientId(clientId);
 			}
 
 			Boolean response = productMasterService.saveOrUpdate(addProductRequest,userOrgId);
@@ -165,7 +166,6 @@ public class ProductMasterController {
 	public ResponseEntity<LoansResponse> saveCorporate(
 			@RequestBody CorporateProduct corporateProduct,HttpServletRequest request) {
 		CommonDocumentUtils.startHook(logger, "save");
-		logger.info("json"+corporateProduct.toString());
 		try {
 			if (corporateProduct == null) {
 				logger.warn("corporateProduct Object can not be empty ==>",

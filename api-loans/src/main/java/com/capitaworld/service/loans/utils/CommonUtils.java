@@ -621,7 +621,12 @@ public class CommonUtils {
 		return getBowlCount(profileCount, null) + getBowlCount(primaryCount, null) + getBowlCount(finalCount, null);
 	}
 
-	public static final List<String> URLS_BRFORE_LOGIN = new ArrayList<String>(8);
+	private static final List<String> URLS_BRFORE_LOGIN = new ArrayList<String>(8);
+
+	public static List<String> getUrlsBrforeLogin() {
+		return URLS_BRFORE_LOGIN;
+	}
+
 	static {
 		URLS_BRFORE_LOGIN.add("/loans/loan_application/getUsersRegisteredLoanDetails".toLowerCase());
 		URLS_BRFORE_LOGIN.add("/loans/loan_application/getLoanDetailsForAdminPanel".toLowerCase());

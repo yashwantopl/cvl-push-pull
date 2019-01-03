@@ -38,7 +38,7 @@ public class ScoreExcelFileGenerator {
 
 	 private String SCORE_CALCULATION_RESULT = "cw.loan.score.result.location";
 
-	private FormulaEvaluator evaluator;
+//	private FormulaEvaluator evaluator;
 
 	private final Logger logger = LoggerFactory.getLogger(ScoreExcelFileGenerator.class);
 

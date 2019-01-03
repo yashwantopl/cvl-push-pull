@@ -6,6 +6,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.ParameterMode;
 import javax.persistence.PersistenceContext;
 import javax.persistence.StoredProcedureQuery;
+
+import com.capitaworld.service.loans.utils.CommonUtils;
 import org.springframework.stereotype.Repository;
 import com.capitaworld.service.loans.domain.fundseeker.IneligibleProposalDetails;
 
@@ -20,8 +22,8 @@ public class OfflineProcessAppRepositoryImpl implements OfflineProcessedAppRepos
 	@Override
 	public List<Object[]> getInEligibleRecordList(Long userId) {
 		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spFetchOfflinePendingProposal");
-		storedProcedureQuery.registerStoredProcedureParameter("userId",Long.class, ParameterMode.IN);
-		storedProcedureQuery.setParameter("userId",userId);
+		storedProcedureQuery.registerStoredProcedureParameter(CommonUtils.USER_ID,Long.class, ParameterMode.IN);
+		storedProcedureQuery.setParameter(CommonUtils.USER_ID,userId);
 		return (List<Object[]>) storedProcedureQuery.getResultList();
 	}
 	
@@ -37,24 +39,24 @@ public class OfflineProcessAppRepositoryImpl implements OfflineProcessedAppRepos
 	@Override
 	public List<Object[]> getSanctionedApplicationList(Long userId) {
 		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spFetchOfflineSanctionedProposal");
-		storedProcedureQuery.registerStoredProcedureParameter("userId",Long.class, ParameterMode.IN);
-		storedProcedureQuery.setParameter("userId",userId);
+		storedProcedureQuery.registerStoredProcedureParameter(CommonUtils.USER_ID,Long.class, ParameterMode.IN);
+		storedProcedureQuery.setParameter(CommonUtils.USER_ID,userId);
 		return (List<Object[]>) storedProcedureQuery.getResultList();
 	}
 
 	@Override
 	public List<Object[]> getDisbursedApplicationList(Long userId) {
 		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spFetchOfflineDisbursedProposal");
-		storedProcedureQuery.registerStoredProcedureParameter("userId",Long.class, ParameterMode.IN);
-		storedProcedureQuery.setParameter("userId",userId);
+		storedProcedureQuery.registerStoredProcedureParameter(CommonUtils.USER_ID,Long.class, ParameterMode.IN);
+		storedProcedureQuery.setParameter(CommonUtils.USER_ID,userId);
 		return (List<Object[]>) storedProcedureQuery.getResultList();
 	}
 	
 	@Override
 	public List<Object[]> getRejectProposalsList(Long userId) {
 		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spFetchOfflineRejectProposal");
-		storedProcedureQuery.registerStoredProcedureParameter("userId",Long.class, ParameterMode.IN);
-		storedProcedureQuery.setParameter("userId",userId);
+		storedProcedureQuery.registerStoredProcedureParameter(CommonUtils.USER_ID,Long.class, ParameterMode.IN);
+		storedProcedureQuery.setParameter(CommonUtils.USER_ID,userId);
 		return (List<Object[]>) storedProcedureQuery.getResultList();
 	}
 	

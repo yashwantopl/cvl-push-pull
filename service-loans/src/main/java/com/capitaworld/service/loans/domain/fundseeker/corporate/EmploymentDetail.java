@@ -4,7 +4,6 @@ import com.capitaworld.service.loans.domain.fundseeker.AuditActivity;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Date;
 
 @Entity
 @Table(name="fs_corporate_employment_details")

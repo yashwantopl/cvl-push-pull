@@ -50,7 +50,7 @@ public class RetailApplicantIncomeServiceImpl implements RetailApplicantIncomeSe
 						appIncomeReq.getYear(), true);
 			}
 			
-			if(CommonUtils.isObjectNullOrEmpty(appIncomeDetail)) {
+			if(appIncomeDetail == null || CommonUtils.isObjectNullOrEmpty(appIncomeDetail)) {
 				appIncomeDetail = new RetailApplicantIncomeDetail();
 				appIncomeDetail.setCreatedBy(appIncomeReq.getUserId());
 				appIncomeDetail.setCreatedDate(new Date());

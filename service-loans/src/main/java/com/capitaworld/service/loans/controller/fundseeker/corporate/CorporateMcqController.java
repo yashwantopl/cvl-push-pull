@@ -43,7 +43,7 @@ public class CorporateMcqController {
             if (userId == null) {
                 logger.warn("userId can not be empty ==>" + corporateMcqRequest);
                 return new ResponseEntity<LoansResponse>(
-                        new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+                        new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
             }
 
             if (corporateMcqRequest.getApplicationId() == null) {
@@ -82,7 +82,7 @@ public class CorporateMcqController {
             if (userId == null) {
                 logger.warn("userId can not be empty ==>" + corporateMcqRequest);
                 return new ResponseEntity<LoansResponse>(
-                        new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+                        new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
             }
 
             if (corporateMcqRequest.getApplicationId() == null) {
@@ -123,7 +123,7 @@ public class CorporateMcqController {
                     logger.warn("ID and ApplicationId Require to get Final  corporate mcq. ID==>" + userId
                             + " and ApplicationId==>" + applicationId);
                     return new ResponseEntity<LoansResponse>(
-                            new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+                            new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
                 }
                 CorporateMcqRequest response = corporateMcqService.get(userId, applicationId);
                 LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());

@@ -1,6 +1,5 @@
 package com.capitaworld.service.loans.controller.fundseeker.retail;
 
-import com.capitaworld.service.loans.domain.fundseeker.retail.ObligationDetail;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.retail.ObligationDetailRequest;
