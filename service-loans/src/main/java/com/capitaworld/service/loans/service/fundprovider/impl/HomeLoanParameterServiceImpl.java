@@ -29,7 +29,11 @@ import com.capitaworld.service.oneform.model.OneFormResponse;
 @Transactional
 @Service
 public class HomeLoanParameterServiceImpl implements HomeLoanParameterService {
+
 	private static final Logger logger = LoggerFactory.getLogger(HomeLoanParameterServiceImpl.class);
+
+	private static final String ERROR_WHILE_GET_HOME_LOAN_PARAMETER_REQUEST_MSG = "error while getHomeLoanParameterRequest : ";
+
 	@Autowired
 	private HomeLoanParameterRepository homeLoanParameterRepository;
 
@@ -47,7 +51,7 @@ public class HomeLoanParameterServiceImpl implements HomeLoanParameterService {
 
 	@Override
 	public boolean saveOrUpdate(HomeLoanParameterRequest homeLoanParameterRequest) {
-		// TODO Auto-generated method stub
+
 		CommonDocumentUtils.startHook(logger, "saveOrUpdate");
 		HomeLoanParameter homeLoanParameter = null;
 
@@ -82,7 +86,7 @@ public class HomeLoanParameterServiceImpl implements HomeLoanParameterService {
 
 	@Override
 	public HomeLoanParameterRequest getHomeLoanParameterRequest(Long id) {
-		// TODO Auto-generated method stub
+
 		CommonDocumentUtils.startHook(logger, "getHomeLoanParameterRequest");
 		HomeLoanParameterRequest homeLoanParameterRequest = new HomeLoanParameterRequest();
 		HomeLoanParameter homeLoanParameter = homeLoanParameterRepository.getByID(id);
@@ -103,9 +107,7 @@ public class HomeLoanParameterServiceImpl implements HomeLoanParameterService {
 				homeLoanParameterRequest.setCountryList((List<DataRequest>) formResponse.getListData());
 
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				logger.error("error while getHomeLoanParameterRequest",e);
-				e.printStackTrace();
+				logger.error(ERROR_WHILE_GET_HOME_LOAN_PARAMETER_REQUEST_MSG,e);
 			}
 		}
 
@@ -116,9 +118,7 @@ public class HomeLoanParameterServiceImpl implements HomeLoanParameterService {
 				homeLoanParameterRequest.setStateList((List<DataRequest>) formResponse.getListData());
 
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				logger.error("error while getHomeLoanParameterRequest",e);
-				e.printStackTrace();
+				logger.error(ERROR_WHILE_GET_HOME_LOAN_PARAMETER_REQUEST_MSG,e);
 			}
 		}
 
@@ -129,9 +129,7 @@ public class HomeLoanParameterServiceImpl implements HomeLoanParameterService {
 				homeLoanParameterRequest.setCityList((List<DataRequest>) formResponse.getListData());
 
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				logger.error("error while getHomeLoanParameterRequest",e);
-				e.printStackTrace();
+				logger.error(ERROR_WHILE_GET_HOME_LOAN_PARAMETER_REQUEST_MSG,e);
 			}
 		}
 		CommonDocumentUtils.endHook(logger, "getHomeLoanParameterRequest");

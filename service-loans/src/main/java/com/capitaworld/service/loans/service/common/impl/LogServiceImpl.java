@@ -21,13 +21,14 @@ import com.capitaworld.service.loans.utils.CommonUtils;
 public class LogServiceImpl implements LogService {
 	private static final Logger logger = LoggerFactory.getLogger(LogServiceImpl.class);
 
+	private static final String SAVE_FS_LOG = "saveFsLog";
+
 	@Autowired
 	private LogDetailsRepository logDetailsRepository;
 
 	@Override
 	public Boolean save(LogDetailsModel logDetailsModel) {
 		CommonDocumentUtils.startHook(logger, "save");
-		// TODO Auto-generated method stub
 		try {
 			if (!CommonUtils.isObjectNullOrEmpty(logDetailsModel)) {
 				LogDetails logDetails = new LogDetails();
@@ -47,21 +48,19 @@ public class LogServiceImpl implements LogService {
 
 	@Override
 	public Boolean saveFsLog(Long applicationId, Integer logType) {
-		// TODO Auto-generated method stub
-		CommonDocumentUtils.startHook(logger, "saveFsLog");
+		CommonDocumentUtils.startHook(logger, SAVE_FS_LOG);
 		try {
 			LogDetails logDetails = new LogDetails();
 			logDetails.setLoanApplicationMasterId(applicationId);
 			logDetails.setDateTypeMasterId(logType);
 			logDetails.setCreatedDate(new Date());
 			logDetailsRepository.save(logDetails);
-			CommonDocumentUtils.endHook(logger, "saveFsLog");
+			CommonDocumentUtils.endHook(logger, SAVE_FS_LOG);
 			return true;
 		} catch (Exception e) {
-			// TODO: handle exception
 			logger.error(e.toString());
 		}
-		CommonDocumentUtils.endHook(logger, "saveFsLog");
+		CommonDocumentUtils.endHook(logger, SAVE_FS_LOG);
 		return false;
 	}
 
@@ -88,12 +87,10 @@ public class LogServiceImpl implements LogService {
 	
 	@Override
 	public Date getDateByLogType(Long applicationId, Integer logType) {
-		// TODO Auto-generated method stub
 		CommonDocumentUtils.startHook(logger, "getDateByLogType");
 		try {
 			return logDetailsRepository.getDateByLogType(applicationId, logType);
 		} catch (Exception e) {
-			// TODO: handle exception
 			logger.error(e.toString());
 		}
 		CommonDocumentUtils.endHook(logger, "getDateByLogType");

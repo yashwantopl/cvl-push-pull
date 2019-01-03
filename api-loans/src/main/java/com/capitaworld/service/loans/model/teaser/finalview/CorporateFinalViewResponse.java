@@ -83,7 +83,7 @@ public class CorporateFinalViewResponse implements Serializable {
 	private String contigentLiablitiesFy;
 	private String contigentLiablitiesSy;
 	private String contigentLiablitiesTy;
-;
+
 	// FINAL MCQ
 
 	private String technologyRiskId;
@@ -222,6 +222,11 @@ public class CorporateFinalViewResponse implements Serializable {
     private Object regPinData;
     private String regAddDist;
     private String regAddTaluko;
+    
+    private String applicationType;
+    private String fpProductName;
+    
+    private Object mcaFinancialAndDetailsResponse;
     			
     
 	public List<?> getMatchesList() {
@@ -2095,6 +2100,30 @@ public class CorporateFinalViewResponse implements Serializable {
 
 	public void setRegAddTaluko(String regAddTaluko) {
 		this.regAddTaluko = regAddTaluko;
+	}
+
+	public String getApplicationType() {
+		return applicationType;
+	}
+
+	public void setApplicationType(String applicationType) {
+		this.applicationType = applicationType;
+	}
+
+	public String getFpProductName() {
+		return fpProductName;
+	}
+
+	public void setFpProductName(String fpProductName) {
+		this.fpProductName = fpProductName;
+	}
+
+	public Object getMcaFinancialAndDetailsResponse() {
+		return mcaFinancialAndDetailsResponse;
+	}
+
+	public void setMcaFinancialAndDetailsResponse(Object mcaFinancialAndDetailsResponse) {
+		this.mcaFinancialAndDetailsResponse = mcaFinancialAndDetailsResponse;
 	}
 
 	

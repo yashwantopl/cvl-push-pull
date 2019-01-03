@@ -34,6 +34,11 @@ public class RetailUploadController {
 
 	private static final Logger logger = LoggerFactory.getLogger(RetailUploadController.class);
 
+	private static final String ERROR_WHILE_SAVING_PROFILE_IMAGES_MSG = "Error while Saving Profile Images ==>";
+	private static final String DOCUMENT_REQUEST_MUST_NOT_BE_NULL_MSG = "Document Request Must not be null";
+	private static final String ERROR_WHILE_UPLOADING_DOCUMENT_MSG = "Error While Uploading Document ==>";
+	private static final String INVALID_REQUEST_WHILE_GETTING_DOCUMENTS_MSG = "Invalid Request while Getting Documents";
+
 	@Autowired
 	private Environment environment;
 
@@ -70,8 +75,7 @@ public class RetailUploadController {
 						HttpStatus.OK);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("Error while Saving Profile Images==>" + e);
+			logger.error(ERROR_WHILE_SAVING_PROFILE_IMAGES_MSG + e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -99,7 +103,6 @@ public class RetailUploadController {
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
 		} catch (Exception e) {
-			e.printStackTrace();
 			logger.error("Error while Getting Profile Images==>" + e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
@@ -121,9 +124,7 @@ public class RetailUploadController {
 			DocumentResponse documentResponse = dmsClient.productImage(jsonObj.toString(), multipartFile);
 			return documentResponse;
 		} catch (DocumentException e) {
-			// TODO Auto-generated catch block
-			logger.error("Error while uploading Profile Document");
-			e.printStackTrace();
+			logger.error("Error while uploading Profile Document : ",e);
 		}
 		return null;
 	}
@@ -133,7 +134,7 @@ public class RetailUploadController {
 			@RequestPart("file") MultipartFile multipartFiles, HttpServletRequest request) {
 		try {
 			if (CommonUtils.isObjectNullOrEmpty(documentRequestString)) {
-				logger.warn("Document Request Must not be null");
+				logger.warn(DOCUMENT_REQUEST_MUST_NOT_BE_NULL_MSG);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
@@ -145,13 +146,12 @@ public class RetailUploadController {
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(response.getMessage(), HttpStatus.OK.value()), HttpStatus.OK);
 			} else {
-				logger.error("Error While Uploading Document==>");
+				logger.error(ERROR_WHILE_UPLOADING_DOCUMENT_MSG);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("Error while Saving Profile Images==>" + e);
+			logger.error(ERROR_WHILE_SAVING_PROFILE_IMAGES_MSG,e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -163,7 +163,7 @@ public class RetailUploadController {
 			HttpServletRequest request) {
 		try {
 			if (CommonUtils.isObjectNullOrEmpty(documentRequest)) {
-				logger.warn("Document Request Must not be null");
+				logger.warn(DOCUMENT_REQUEST_MUST_NOT_BE_NULL_MSG);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
@@ -176,13 +176,12 @@ public class RetailUploadController {
 				finalResponse.setListData(response.getDataList());
 				return new ResponseEntity<LoansResponse>(finalResponse, HttpStatus.OK);
 			} else {
-				logger.warn("Invalid Request while Getting Documents");
+				logger.warn(INVALID_REQUEST_WHILE_GETTING_DOCUMENTS_MSG);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("Error while Saving Profile Images==>" + e);
+			logger.error(ERROR_WHILE_SAVING_PROFILE_IMAGES_MSG + e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -194,7 +193,7 @@ public class RetailUploadController {
 			HttpServletRequest request) {
 		try {
 			if (CommonUtils.isObjectNullOrEmpty(documentRequest)) {
-				logger.warn("Document Request Must not be null");
+				logger.warn(DOCUMENT_REQUEST_MUST_NOT_BE_NULL_MSG);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
@@ -215,13 +214,12 @@ public class RetailUploadController {
 				finalResponse.setListData(response.getDataList());
 				return new ResponseEntity<LoansResponse>(finalResponse, HttpStatus.OK);
 			} else {
-				logger.warn("Invalid Request while Getting Documents");
+				logger.warn(INVALID_REQUEST_WHILE_GETTING_DOCUMENTS_MSG);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("Error while Saving Profile Images==>" + e);
+			logger.error(ERROR_WHILE_SAVING_PROFILE_IMAGES_MSG + e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -233,7 +231,7 @@ public class RetailUploadController {
 			@RequestPart("file") MultipartFile multipartFiles, HttpServletRequest request) {
 		try {
 			if (CommonUtils.isObjectNullOrEmpty(documentRequestString)) {
-				logger.warn("Document Request Must not be null");
+				logger.warn(DOCUMENT_REQUEST_MUST_NOT_BE_NULL_MSG);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
@@ -277,10 +275,10 @@ public class RetailUploadController {
 						flag = excelExtractionService.readBS(applicationId, response.getStorageId(), multipartFiles);
 						break;
 					}
+					default : break;
 					}
 
 				} catch (Exception e) {
-					// TODO: handle exception
 
 					JSONObject json = new JSONObject();
 					json.put("id", response.getStorageId());
@@ -288,10 +286,9 @@ public class RetailUploadController {
 
 					// code for inactive CMA BS and DPR recored
 
-					logger.error("Error While Uploading Document==>");
-					return new ResponseEntity<LoansResponse>(
-							new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()),
-							HttpStatus.OK);
+					logger.error(ERROR_WHILE_UPLOADING_DOCUMENT_MSG,e);
+					LoansResponse loansResponse = new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value(), e.getMessage());
+					return new ResponseEntity<LoansResponse>( loansResponse,HttpStatus.OK);
 				}
 
 				if (flag) {
@@ -306,21 +303,20 @@ public class RetailUploadController {
 					json.put("id", response.getStorageId());
 					dmsClient.deleteProductDocument(json.toJSONString());
 
-					logger.error("Error While Uploading Document==>");
+					logger.error(ERROR_WHILE_UPLOADING_DOCUMENT_MSG);
 					return new ResponseEntity<LoansResponse>(
 							new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()),
 							HttpStatus.OK);
 				}
 
 			} else {
-				logger.warn("Invalid Request while Getting Documents");
+				logger.warn(INVALID_REQUEST_WHILE_GETTING_DOCUMENTS_MSG);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("Error While Uploading Document==>" + e);
+			logger.error(ERROR_WHILE_UPLOADING_DOCUMENT_MSG + e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -349,7 +345,7 @@ public class RetailUploadController {
 				excelExtractionService.inActiveBS(docId);
 				excelExtractionService.inActiveDPR(docId);
 			} catch (Exception e) {
-				// TODO: handle exception
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 
 			if (response != null && response.getStatus() == 200) {
@@ -364,8 +360,7 @@ public class RetailUploadController {
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("Error while Saving Profile Images==>" + e);
+			logger.error(ERROR_WHILE_SAVING_PROFILE_IMAGES_MSG + e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -417,15 +412,13 @@ public class RetailUploadController {
 				}
 
 			} catch (Exception e) {
-				// TODO: handle exception
-				logger.warn("Invalid Request while Deleting Document");
+				logger.error("Invalid Request while Deleting Document : ",e);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("Error while Saving Profile Images==>" + e);
+			logger.error(ERROR_WHILE_SAVING_PROFILE_IMAGES_MSG + e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);

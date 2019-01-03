@@ -51,41 +51,43 @@ public class DirectorBackgroundDetailsServiceImpl implements DirectorBackgroundD
 	@Override
 	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception {
 		
-		if(!CommonUtils.isObjectNullOrEmpty(frameRequest)) {
-			if(!CommonUtils.isObjectNullOrEmpty(frameRequest.getIsFromClient())) {
-				if(frameRequest.getIsFromClient()) {
-					directorBackgroundDetailsRepository.inActive(frameRequest.getUserId(), frameRequest.getApplicationId());	
-				}
-			}
+		if(!CommonUtils.isObjectNullOrEmpty(frameRequest) && !CommonUtils.isObjectNullOrEmpty(frameRequest.getIsFromClient()) && frameRequest.getIsFromClient() ) {
+					directorBackgroundDetailsRepository.inActive(frameRequest.getUserId(), frameRequest.getApplicationId());
 		}
 		
 		try {
 			for (Map<String, Object> obj : frameRequest.getDataList()) {
 				DirectorBackgroundDetailRequest directorBackgroundDetailRequest= (DirectorBackgroundDetailRequest) MultipleJSONObjectHelper
 						.getObjectFromMap(obj, DirectorBackgroundDetailRequest.class);
-				DirectorBackgroundDetail  directorBackgroundDetail= null;
-				if (directorBackgroundDetailRequest.getId() != null) {
-					directorBackgroundDetail = directorBackgroundDetailsRepository
-							.findOne(directorBackgroundDetailRequest.getId());
-				} else {
-					directorBackgroundDetail = new DirectorBackgroundDetail();
-					directorBackgroundDetail.setCreatedBy(frameRequest.getUserId());
-					directorBackgroundDetail.setCreatedDate(new Date());
-				}
-				BeanUtils.copyProperties(directorBackgroundDetailRequest, directorBackgroundDetail, "applicationId");
-				directorBackgroundDetail.setApplicationId(new LoanApplicationMaster(frameRequest.getApplicationId()));
-				directorBackgroundDetail.setModifiedBy(frameRequest.getUserId());
-				directorBackgroundDetail.setModifiedDate(new Date());
-				directorBackgroundDetailsRepository.save(directorBackgroundDetail);
+				saveDirectorInfo(directorBackgroundDetailRequest, frameRequest.getApplicationId(), frameRequest.getUserId());	
 			}
 			return true;
 		}
 
 		catch (Exception e) {
-			logger.info("Exception  in save directorBackgroundDetail  :-");
-			e.printStackTrace();
+			logger.error("Exception  in save directorBackgroundDetail :- ",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
+	}
+	
+	
+	@Override
+	public boolean saveDirectorInfo(DirectorBackgroundDetailRequest backgroundDetailRequest,Long applicationId,Long userId){
+		
+		DirectorBackgroundDetail  directorBackgroundDetail= null;
+		if (backgroundDetailRequest.getId() != null) {
+			directorBackgroundDetail = directorBackgroundDetailsRepository.findOne(backgroundDetailRequest.getId());
+		} else {
+			directorBackgroundDetail = new DirectorBackgroundDetail();
+			directorBackgroundDetail.setCreatedBy(userId);
+			directorBackgroundDetail.setCreatedDate(new Date());
+		}
+		BeanUtils.copyProperties(backgroundDetailRequest, directorBackgroundDetail, "applicationId");
+		directorBackgroundDetail.setApplicationId(new LoanApplicationMaster(applicationId));
+		directorBackgroundDetail.setModifiedBy(userId);
+		directorBackgroundDetail.setModifiedDate(new Date());
+		directorBackgroundDetailsRepository.save(directorBackgroundDetail);
+		return true;
 	}
 
 	@Override
@@ -118,8 +120,7 @@ public class DirectorBackgroundDetailsServiceImpl implements DirectorBackgroundD
 			
 			return directorBackgroundDetailRequests;
 		} catch (Exception e) {
-			logger.info("Exception  in getdirectorBackgroundDetail  :-");
-			e.printStackTrace();
+			logger.info("Exception  in getdirectorBackgroundDetail  :-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
@@ -142,8 +143,7 @@ public class DirectorBackgroundDetailsServiceImpl implements DirectorBackgroundD
 			}
 			return dirBackDetailReqList;
 		} catch (Exception e) {
-			logger.info("Exception  in getDirectorBasicDetailsListForNTB  :-");
-			e.printStackTrace();
+			logger.error("Exception  in getDirectorBasicDetailsListForNTB  :-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
@@ -161,15 +161,14 @@ public class DirectorBackgroundDetailsServiceImpl implements DirectorBackgroundD
 			DirectorBackgroundDetailRequest.printFields(directorBackgroundDetailRequest);
 			return directorBackgroundDetailRequest;
 		} catch (Exception e) {
-			logger.info("Exception  in getdirectorBackgroundDetail  :-");
-			e.printStackTrace();
+			logger.info("Exception  in getdirectorBackgroundDetail  :-",e);
 			return null;
 		}
 	}
 
 	@Override
 	public Boolean updateFlag(Long directorId, Integer apiId, Boolean apiFlag,Long userId) {
-		// TODO Auto-generated method stub
+
 		logger.info("Enter in updateFlag()");
 		APIFlags apiFlagObj = CommonUtils.APIFlags.fromId(apiId);
 		if(apiFlag == null) {
@@ -230,11 +229,17 @@ public class DirectorBackgroundDetailsServiceImpl implements DirectorBackgroundD
 				logger.info("Connect Response--------------------------------> null");
 			}
 		} catch (Exception e) {
-			logger.error("Throw Exception While Call Connect Client");
-			e.printStackTrace();
+			logger.error("Throw Exception While Call Connect Client : ",e);
 		}
 		logger.info("Exit in saveDirectors()");
 		return false;
+	}
+
+
+	@Override
+	public boolean inactive(Long applicationId, Long userId) {
+		int inActive = directorBackgroundDetailsRepository.inActive(userId, applicationId);
+		return inActive > 0;
 	}
 	
 	

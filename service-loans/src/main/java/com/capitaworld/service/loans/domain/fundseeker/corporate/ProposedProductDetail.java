@@ -64,6 +64,7 @@ public class ProposedProductDetail implements Serializable {
 	private String product;
 
 	public ProposedProductDetail() {
+		// Do nothing because of X and Y.
 	}
 
 	public Long getId() {

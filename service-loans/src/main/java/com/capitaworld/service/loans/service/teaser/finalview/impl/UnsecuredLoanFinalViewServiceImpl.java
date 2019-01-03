@@ -296,8 +296,6 @@ public class UnsecuredLoanFinalViewServiceImpl implements UnsecuredLoanFinalView
 	
 	@Autowired
 	private CreditCardsDetailService creditCardsDetailService;
-	
-	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 
 	protected static final String ONE_FORM_URL = "oneForm";
 	protected static final String USERS_URL = "userURL";
@@ -318,7 +316,7 @@ public class UnsecuredLoanFinalViewServiceImpl implements UnsecuredLoanFinalView
 		try {
 			response.setProfilePic(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.UNSECURED_LOAN_PROFIEL_PICTURE));
 		} catch (DocumentException e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 
 		/*
@@ -328,157 +326,157 @@ public class UnsecuredLoanFinalViewServiceImpl implements UnsecuredLoanFinalView
 		try{
 			response.setLastAuditedAnnualReportList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.UNSECURED_LOAN_LAST_AUDITED_ANNUAL_REPORT));
 		} catch (DocumentException e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		try{
 			response.setSanctionLetterCopyList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.UNSECURED_LOAN_SANCTION_LETTER_COPY));
 		} catch (DocumentException e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		try{
 			response.setLastITReturnList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.UNSECURED_LOAN_LAST_IT_RETURN));
 		} catch (DocumentException e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		try{
 			response.setBankStatementList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.UNSECURED_LOAN_BANK_STATEMENT));
 		} catch (DocumentException e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		try{
 			response.setNetWorthStatementOfdirectorsList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.UNSECURED_LOAN_NET_WORTH_STATEMENT_OF_DIRECTORS));
 		} catch (DocumentException e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		try{
 			response.setProvisionalFinancialsList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.UNSECURED_LOAN_PROVISIONAL_FINANCIALS));
 		} catch (DocumentException e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		try {
 			response.setBrochureList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.UNSECURED_LOAN_BROCHURE_OF_PROPOSED_ACTIVITIES)));
 		} catch (DocumentException e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		
 		try{
 			response.setCmaList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.USL_CMA)));
 		}catch(DocumentException e){
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		try{
 			response.setBsFormatList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.USL_COMPANY_ACT)));
 		}catch(DocumentException e){
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		try {
 			response.setItReturnForFYOfAllDirectorsList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.UNSECURED_LOAN_IT_RETURN_DIRECTOR)));
 		} catch (DocumentException e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		try {
 			response.setFinSubsidiariesEntitiesList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.UNSECURED_LOAN_FINANCIALS_OF_SUBSIDIARIES)));
 		} catch (DocumentException e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		try {
 			response.setAssessOrderForLastThreeYearsList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.UNSECURED_LOAN_ASSESSMENT_ORDERS)));
 		} catch (DocumentException e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 
 		/* KYC UPLOADS */
 		try {
 			response.setCertificateOfIncorpList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.UNSECURED_LOAN_CERTIFICATE_OF_INCORPORATION)));
 		} catch (DocumentException e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		try{
 			response.setDetailedListOfShareholdersList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.UNSECURED_LOAN_DETAILED_LIST_OF_SHAREHOLDERS));
 		} catch (DocumentException e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		try {
 			response.setPanCardList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.UNSECURED_LOAN_COPY_OF_PAN_CARD)));
 		} catch (DocumentException e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		try{
 			response.setPhotoOfDirectorsList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, DocumentAlias.UNSECURED_LOAN_PHOTO_OF_DIRECTORS));
 		} catch (DocumentException e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		try{
 			response.setPanOfDirectorsList(documentManagementService.getDocumentDetails(toApplicationId, DocumentAlias.UERT_TYPE_APPLICANT,DocumentAlias.UNSECURED_LOAN_PAN_OF_DIRECTORS_CERTIFICATE_OF_INCORPORATION));
 		} catch (DocumentException e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		try{
 			response.setResidenceAddProofList(documentManagementService.getDocumentDetails(toApplicationId, DocumentAlias.UERT_TYPE_APPLICANT,DocumentAlias.UNSECURED_LOAN_DIRECTOR_ADDRESS));
 		} catch (DocumentException e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		try {
 			response.setResolutionForAdditionOfDirectorsList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.UNSECURED_LOAN_DIRECTOR_RESOLUTION)));
 		} catch (DocumentException e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 
 		/* OTHERS UPLOADS */
 		try {
 			response.setMomAndAOAList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.USL_MOM_AOA)));
 		} catch (DocumentException e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		try {
 			response.setDebtorsList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.USL_DEBTORS_LIST)));
 		} catch (DocumentException e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		try {
 			response.setGstVATExciseList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.USL_GST_APPLIED)));
 		} catch (DocumentException e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		try {
 			response.setLetterOfIntentFromFPList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.USL_LETTER_OF_INTENT)));
 		} catch (DocumentException e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		try {
 			response.setCopiesOfRelevantLicenseList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.USL_RELEVANT_LICENSE)));
 		} catch (DocumentException e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		try {
 			response.setSalesTaxReturnsList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.USL_SALES_TAX)));
 		} catch (DocumentException e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		try {
 			response.setLatestTaxPaidCoyList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.USL_LATEST_TAX)));
 		} catch (DocumentException e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		try {
 			response.setEncumbranceList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.USL_ENCUMBRANCE)));
 		} catch (DocumentException e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		try {
 			response.setCopiesOfTrustDeedList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.USL_COPIES_TRUST_DEEDS)));
 		} catch (DocumentException e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		try {
 			response.setMarketSurveyReportList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.USL_MARKET_SURVEY_REPORT)));
 		} catch (DocumentException e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		try {
 			response.setDetailsOfContLiabilitiesList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.USL_CONTINGENT_LIABILITIES)));
 		} catch (DocumentException e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		
 		/*
@@ -487,12 +485,12 @@ public class UnsecuredLoanFinalViewServiceImpl implements UnsecuredLoanFinalView
 		try{
 			response.setCmaList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.USL_CMA)));
 		}catch(DocumentException e){
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		try{
 			response.setBsFormatList(documentManagementService.getDocumentDetails(toApplicationId,DocumentAlias.UERT_TYPE_APPLICANT, Long.valueOf(DocumentAlias.USL_COMPANY_ACT)));
 		}catch(DocumentException e){
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		
 		List<CorporateCoApplicantDetail> coApplicantDetails = corporateCoApplicantRepository.getList(toApplicationId, userId);
@@ -511,37 +509,37 @@ public class UnsecuredLoanFinalViewServiceImpl implements UnsecuredLoanFinalView
 							coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
 							DocumentAlias.UNSECURED_LOAN_CO_APPLICANT_STATEMENT_OF_BANK_ACCOUNT_FOR_LAST_6_MONTHS));
 				} catch (DocumentException e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 				try {
 					coApplicantRequest.setCoApplicant_ItReturn(documentManagementService.getDocumentDetails(coApplicantDetail.getId(),DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.UNSECURED_LOAN_CO_APPLICANT_ITR));
 				} catch (DocumentException e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 				try {
 					coApplicantRequest.setCoApplicant_Form_16(documentManagementService.getDocumentDetails(coApplicantDetail.getId(),DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.UNSECURED_LOAN_CO_APPLICANT_FORM_16));
 				} catch (DocumentException e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 				try {
 					coApplicantRequest.setCoApplicant_BalanceSheet(documentManagementService.getDocumentDetails(coApplicantDetail.getId(),DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.UNSECURED_LOAN_CO_APPLICANT_AUDITEDUNAUDITED_BALANCE_SHEET_PROFIT_LOSS_STATEMENT_FOR_3_YEARS));
 				} catch (DocumentException e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 				try {
 					coApplicantRequest.setCoApplicant_AddressProof(documentManagementService.getDocumentDetails(coApplicantDetail.getId(),DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.UNSECURED_LOAN_CO_APPLICANT_ADDRESS_PROOF_ELECTRICITY_BILL_ADHAR_CARD_VOTER_ID_CARD_ANY_1));
 				} catch (DocumentException e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 				try {
 					coApplicantRequest.setCoApplicant_aadharCardList(documentManagementService.getDocumentDetails(coApplicantDetail.getId(),DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.UNSECURED_LOAN_CO_APPLICANT_SCANNED_COPY_OF_AADHAR_CARD));
 				} catch (DocumentException e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 				try {
 					coApplicantRequest.setCoApplicant_panCardList(documentManagementService.getDocumentDetails(coApplicantDetail.getId(),DocumentAlias.UERT_TYPE_CO_APPLICANT, DocumentAlias.UNSECURED_LOAN_CO_APPLICANT_SCANNED_COPY_OF_PAN_CARD));
 				} catch (DocumentException e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 				response.addCoApplicantList(coApplicantRequest);
 			}
@@ -635,7 +633,7 @@ public class UnsecuredLoanFinalViewServiceImpl implements UnsecuredLoanFinalView
 			response.setOverseasNetwork(overseasString);
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		// set registered email address and registered contact number
 		UserResponse userResponse = usersClient.getEmailMobile(userId);
@@ -648,7 +646,7 @@ public class UnsecuredLoanFinalViewServiceImpl implements UnsecuredLoanFinalView
 					response.setRegisteredContactNumber(usersRequest.getMobile());
 				}
 			} catch (IOException e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 		}
 
@@ -664,8 +662,9 @@ public class UnsecuredLoanFinalViewServiceImpl implements UnsecuredLoanFinalView
 
 			// set city
 						List<Long> cityList = new ArrayList<>();
-						if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCityId()))
-						cityList.add(corporateApplicantDetail.getRegisteredCityId());
+						if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCityId())) {
+							cityList.add(corporateApplicantDetail.getRegisteredCityId());
+						}
 						if(!CommonUtils.isListNullOrEmpty(cityList))
 						{
 						try {
@@ -681,13 +680,14 @@ public class UnsecuredLoanFinalViewServiceImpl implements UnsecuredLoanFinalView
 								response.setCity("NA");
 							}
 						} catch (Exception e) {
-							e.printStackTrace();
+							logger.error(CommonUtils.EXCEPTION,e);
 						}
 						}
 						
 						cityList.clear();
-						if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getAdministrativeCityId()))
-						cityList.add(corporateApplicantDetail.getAdministrativeCityId());
+						if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getAdministrativeCityId())) {
+							cityList.add(corporateApplicantDetail.getAdministrativeCityId());
+						}
 						if(!CommonUtils.isListNullOrEmpty(cityList))
 						{
 						try {
@@ -703,7 +703,7 @@ public class UnsecuredLoanFinalViewServiceImpl implements UnsecuredLoanFinalView
 								response.setCity("NA");
 							}
 						} catch (Exception e) {
-							e.printStackTrace();
+							logger.error(CommonUtils.EXCEPTION,e);
 						}
 						}
 						
@@ -711,7 +711,9 @@ public class UnsecuredLoanFinalViewServiceImpl implements UnsecuredLoanFinalView
 						// set state
 						List<Long> stateList = new ArrayList<>();
 						if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredStateId()))
-						stateList.add(Long.valueOf(corporateApplicantDetail.getRegisteredStateId()));
+						{
+							stateList.add(Long.valueOf(corporateApplicantDetail.getRegisteredStateId()));
+						}
 						if(!CommonUtils.isListNullOrEmpty(stateList))
 						{
 						try {
@@ -727,7 +729,7 @@ public class UnsecuredLoanFinalViewServiceImpl implements UnsecuredLoanFinalView
 								response.setState("NA");
 							}
 						} catch (Exception e) {
-							e.printStackTrace();
+							logger.error(CommonUtils.EXCEPTION,e);
 						}
 						}
 						
@@ -749,13 +751,15 @@ public class UnsecuredLoanFinalViewServiceImpl implements UnsecuredLoanFinalView
 									response.setState("NA");
 								}
 							} catch (Exception e) {
-								e.printStackTrace();
+								logger.error(CommonUtils.EXCEPTION,e);
 							}
 							}
 						// set country
 						List<Long> countryList = new ArrayList<>();
 						if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCountryId()))
-						countryList.add(Long.valueOf(corporateApplicantDetail.getRegisteredCountryId()));
+						{
+							countryList.add(Long.valueOf(corporateApplicantDetail.getRegisteredCountryId()));
+						}
 						if(!CommonUtils.isListNullOrEmpty(countryList))
 						{
 						try {
@@ -771,7 +775,7 @@ public class UnsecuredLoanFinalViewServiceImpl implements UnsecuredLoanFinalView
 								response.setCountry("NA");
 							}
 						} catch (Exception e) {
-							e.printStackTrace();
+							logger.error(CommonUtils.EXCEPTION,e);
 						}
 						}
 						
@@ -792,7 +796,7 @@ public class UnsecuredLoanFinalViewServiceImpl implements UnsecuredLoanFinalView
 									response.setCountry("NA");
 								}
 							} catch (Exception e) {
-								e.printStackTrace();
+								logger.error(CommonUtils.EXCEPTION,e);
 							}
 							}
 							
@@ -813,7 +817,7 @@ public class UnsecuredLoanFinalViewServiceImpl implements UnsecuredLoanFinalView
 				}
 
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 		}
 
@@ -831,7 +835,7 @@ public class UnsecuredLoanFinalViewServiceImpl implements UnsecuredLoanFinalView
 				response.setEstablishmentYear("NA");
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
        userType = CommonUtils.ApplicantType.APPLICANT;
 		// get industry sectors
@@ -847,7 +851,7 @@ public class UnsecuredLoanFinalViewServiceImpl implements UnsecuredLoanFinalView
 					.getIndustrySectorSubSector(industrySectorSubSectorTeaserRequest);
 			response.setIndustrySector(oneFormResponse.getListData());
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 
 		// get value of Unsecured Loan data
@@ -866,7 +870,7 @@ public class UnsecuredLoanFinalViewServiceImpl implements UnsecuredLoanFinalView
 			response.setLoanType(LoanType.getById(primaryUnsecuredLoanDetail.getProductId()).getValue());
 		}
 		if (primaryUnsecuredLoanDetail.getModifiedDate() != null) {
-			response.setDateOfProposal(DATE_FORMAT.format(primaryUnsecuredLoanDetail.getModifiedDate()));
+			response.setDateOfProposal(CommonUtils.DATE_FORMAT.format(primaryUnsecuredLoanDetail.getModifiedDate()));
 		}
 		if (primaryUnsecuredLoanDetail.getAmount() != null) {
 			response.setLoanAmount(String.valueOf(primaryUnsecuredLoanDetail.getAmount()));
@@ -950,7 +954,7 @@ public class UnsecuredLoanFinalViewServiceImpl implements UnsecuredLoanFinalView
 				response.setShortTermRating(shortTermValueList);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 
 		// set long term rating option
@@ -971,7 +975,7 @@ public class UnsecuredLoanFinalViewServiceImpl implements UnsecuredLoanFinalView
 			}
 			response.setLongTermRating(longTermValueList);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 
 		// get value of Ownership Details and set in response
@@ -1143,7 +1147,7 @@ public class UnsecuredLoanFinalViewServiceImpl implements UnsecuredLoanFinalView
 					}
 
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 				}
 				
@@ -1166,7 +1170,7 @@ public class UnsecuredLoanFinalViewServiceImpl implements UnsecuredLoanFinalView
 					}
 
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 				}
 				
@@ -1202,8 +1206,7 @@ public class UnsecuredLoanFinalViewServiceImpl implements UnsecuredLoanFinalView
 		try {
 			creditCardsDetailRequestList = creditCardsDetailService.getCreditCardDetailList(toApplicationId, userType);
 		} catch (Exception e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e1);
 		}
 		List<CreditCardsDetailResponse> creditCardsDetailResponseList = new ArrayList<CreditCardsDetailResponse>();
 		CreditCardsDetailResponse cardsDetailResponse = new CreditCardsDetailResponse();
@@ -1224,8 +1227,7 @@ public class UnsecuredLoanFinalViewServiceImpl implements UnsecuredLoanFinalView
 		try {
 			referenceRetailDetailsRequestList = referenceRetailDetailsService.getReferenceRetailDetailList(toApplicationId, userType);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		response.setReferenceRetailDetailsRequest(referenceRetailDetailsRequestList);
 

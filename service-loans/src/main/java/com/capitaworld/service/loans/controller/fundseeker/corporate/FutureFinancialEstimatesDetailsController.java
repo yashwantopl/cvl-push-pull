@@ -90,7 +90,6 @@ public class FutureFinancialEstimatesDetailsController {
 
 		} catch (Exception e) {
 			logger.error("Error while saving Future Financial Estimate Details==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -103,7 +102,7 @@ public class FutureFinancialEstimatesDetailsController {
 			HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
 		// request must not be null
 		try {
-			CommonDocumentUtils.startHook(logger, "getList");
+			CommonDocumentUtils.startHook(logger, CommonUtils.GET_LIST);
 			Long userId = null;
 			if(CommonDocumentUtils.isThisClientApplication(request)){
 				userId = clientId;
@@ -125,17 +124,16 @@ public class FutureFinancialEstimatesDetailsController {
 				data = data.concat(" In "+ result.get("denomination").toString());
 				loansResponse.setData(data);
 				loansResponse.setListData(response);
-				CommonDocumentUtils.endHook(logger, "getList");
+				CommonDocumentUtils.endHook(logger, CommonUtils.GET_LIST);
 				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 			} else {
-				CommonDocumentUtils.endHook(logger, "getList");
+				CommonDocumentUtils.endHook(logger, CommonUtils.GET_LIST);
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 						HttpStatus.OK);
 			}
 		} catch (Exception e) {
 			logger.error("Error while getting Future Financial Estimate Details==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);

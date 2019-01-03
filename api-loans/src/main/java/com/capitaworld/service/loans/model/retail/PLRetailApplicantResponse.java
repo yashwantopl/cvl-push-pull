@@ -73,7 +73,7 @@ public class PLRetailApplicantResponse implements Serializable {
     * */
 
     public PLRetailApplicantResponse() {
-
+        // Do nothing because of X and Y.
     }
 
     public Long getId() {

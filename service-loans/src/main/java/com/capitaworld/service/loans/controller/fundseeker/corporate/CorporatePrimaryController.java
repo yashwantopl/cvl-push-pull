@@ -67,7 +67,6 @@ public class CorporatePrimaryController {
 
         } catch (Exception e) {
             logger.error("Error while saving Primary Details==>", e);
-            e.printStackTrace();
             return new ResponseEntity<LoansResponse>(
                     new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
                     HttpStatus.INTERNAL_SERVER_ERROR);
@@ -99,10 +98,26 @@ public class CorporatePrimaryController {
             return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
         } catch (Exception e) {
             logger.error("Error while getting Primary Corporate Details==>", e);
-            e.printStackTrace();
             return new ResponseEntity<LoansResponse>(
                     new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
                     HttpStatus.OK);
+        }
+    }
+    
+    @RequestMapping(value = "${primary}/get", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public PrimaryCorporateRequest getPrimaryForClient(@RequestBody Long applicationId) {
+        try {
+            CommonDocumentUtils.startHook(logger, "getPrimaryForClient");
+
+            if (applicationId == null) {
+                logger.warn("ID and User Id Require to get Primary Working Details ==>" + applicationId);
+                return null;
+            }
+            CommonDocumentUtils.endHook(logger, "getPrimaryForClient");
+            return primaryCorporateService.get(applicationId);
+        } catch (Exception e) {
+            logger.error("Error while getting Primary Corporate Details==>{}", e);
+            return null;
         }
     }
 }

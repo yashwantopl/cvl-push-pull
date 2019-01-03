@@ -71,8 +71,7 @@ public class FinalHomeLoanServiceImpl implements FinalHomeLoanService {
 			loanApplicationRepository.setFinalFilledCount(finalHomeLoanDetailRequest.getApplicationId(), finalUserId,finalHomeLoanDetailRequest.getFinalFilledCount());
 			return true;
 		} catch (Exception e) {
-			logger.error("Error while Saving Final Home Loan Details:-");
-			e.printStackTrace();
+			logger.error("Error while Saving Final Home Loan Details:-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
@@ -98,8 +97,7 @@ public class FinalHomeLoanServiceImpl implements FinalHomeLoanService {
 			finalHomeLoanDetailRequest.setFinalFilledCount(loanDetail.getApplicationId().getFinalFilledCount());
 			return finalHomeLoanDetailRequest;
 		} catch (Exception e) {
-			logger.error("Error while getting Final Home Loan Details:-");
-			e.printStackTrace();
+			logger.error("Error while getting Final Home Loan Details:-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}

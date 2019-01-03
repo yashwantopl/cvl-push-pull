@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.json.simple.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -56,6 +58,8 @@ import com.capitaworld.service.users.model.UserResponse;
 @Transactional
 public class ServiceProviderFlowServiceImpl implements ServiceProviderFlowService {
 
+	private static final Logger logger = LoggerFactory.getLogger(ServiceProviderFlowServiceImpl.class);
+
 	@Autowired
 	private Environment environmment;
 	
@@ -82,6 +86,9 @@ public class ServiceProviderFlowServiceImpl implements ServiceProviderFlowServic
 
 	private static final String USERS_BASE_URL_KEY = "userURL";
 	private static final String ONEFORM_BASE_URL_KEY = "oneForm";
+	private static final String ERROR_WHILE_GETTING_CLIENT_LIST = "Error while getting client list.";
+	private static final String ERROR_WHILE_GETTING_SP_CLIENT_COUNT = "Error while getting SP client count.";
+
 	@Override
 	public List<SpClientListing> spClientList(int pageIndex,int size,Long spId, String userTypeCode) throws Exception {
 		UsersClient usersClient = new UsersClient(environmment.getRequiredProperty(USERS_BASE_URL_KEY));
@@ -239,15 +246,13 @@ public class ServiceProviderFlowServiceImpl implements ServiceProviderFlowServic
 								try {
 									response = MultipleJSONObjectHelper.getObjectFromMap(list.get(0), StorageDetailsResponse.class);
 								} catch (IOException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
+									logger.error(CommonUtils.EXCEPTION,e);
 								}
 								fpImagePath = response.getFilePath();	
 							}
 						}
 					} catch (DocumentException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						logger.error(CommonUtils.EXCEPTION,e);
 					}
 					spClientDetail.setClientImagePath(fpImagePath);
 					
@@ -346,9 +351,8 @@ public class ServiceProviderFlowServiceImpl implements ServiceProviderFlowServic
 			}
 			return clientListings;
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			throw new Exception("Error while getting client list.");
+			logger.error(ERROR_WHILE_GETTING_CLIENT_LIST,e);
+			throw new Exception(ERROR_WHILE_GETTING_CLIENT_LIST);
 		}
 
 	}
@@ -362,9 +366,8 @@ public class ServiceProviderFlowServiceImpl implements ServiceProviderFlowServic
 				return MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)response.getData(), JSONObject.class);
 			}
 		} catch (Exception e) {
-			// TODO: handle exception
-			e.printStackTrace();
-			throw new Exception("Error while getting SP client count.");
+			logger.error(ERROR_WHILE_GETTING_SP_CLIENT_COUNT,e);
+			throw new Exception(ERROR_WHILE_GETTING_SP_CLIENT_COUNT);
 		}
 		return null;
 	}
@@ -451,9 +454,8 @@ public class ServiceProviderFlowServiceImpl implements ServiceProviderFlowServic
 			return spSysNotifResponse;
 			
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			throw new Exception("Error while getting client list.");
+			logger.error(ERROR_WHILE_GETTING_CLIENT_LIST,e);
+			throw new Exception(ERROR_WHILE_GETTING_CLIENT_LIST);
 		}
 		
 	
@@ -545,9 +547,8 @@ public class ServiceProviderFlowServiceImpl implements ServiceProviderFlowServic
 			return spSysNotifResponses;
 			
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			throw new Exception("Error while getting client list.");
+			logger.error(ERROR_WHILE_GETTING_CLIENT_LIST,e);
+			throw new Exception(ERROR_WHILE_GETTING_CLIENT_LIST);
 		}
 		
 	
@@ -618,9 +619,8 @@ public class ServiceProviderFlowServiceImpl implements ServiceProviderFlowServic
 			return totalCount;
 			
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			throw new Exception("Error while getting client list.");
+			logger.error(ERROR_WHILE_GETTING_CLIENT_LIST,e);
+			throw new Exception(ERROR_WHILE_GETTING_CLIENT_LIST);
 		}
 		
 	

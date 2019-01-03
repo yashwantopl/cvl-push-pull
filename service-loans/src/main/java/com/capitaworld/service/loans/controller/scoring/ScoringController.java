@@ -6,11 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.capitaworld.service.loans.utils.CommonDocumentUtils;
-import com.capitaworld.service.matchengine.model.ProposalMappingRequest;
 import com.capitaworld.service.rating.exception.RatingException;
-import com.capitaworld.service.rating.model.FinancialInputRequest;
-import com.capitaworld.service.rating.model.RatingResponse;
 import com.capitaworld.service.scoring.model.GenericCheckerReqRes;
 import com.capitaworld.service.scoring.model.scoringmodel.ScoringModelReqRes;
 import org.apache.commons.io.FileUtils;
@@ -88,12 +84,13 @@ public class ScoringController {
 	public LoansResponse  uploadExcel( @RequestPart("file") MultipartFile multipartFiles) {
 		// Code for read Score Excel
 			logger.info("-----------------In uploadExcel() ----------------multipartfile size---"+multipartFiles.getSize());
+            FileOutputStream fileOutputStream = null;
 			LoansResponse loansResponse= null;
 	        try {
 	        	
 	        	File file=new File(CommonUtils.SCORING_EXCEL);
-	        	
-	        	FileOutputStream fileOutputStream =new FileOutputStream(file);
+
+	        	fileOutputStream =new FileOutputStream(file);
 				logger.info("-----------------In reading excel file() ----------------");
 	        	scoringService.readScoringExcel(multipartFiles).write(fileOutputStream);
 	        	
@@ -105,9 +102,17 @@ public class ScoringController {
 	             loansResponse.setContentInBytes(FileUtils.readFileToByteArray(file));
 	  	       return loansResponse;	             
 	          }catch (NullPointerException |IllegalStateException| InvalidFormatException  |IOException |LoansException e) {
-	        	 return   loansResponse = new LoansResponse(e.getMessage(),
-							HttpStatus.INTERNAL_SERVER_ERROR.value());
+	        	 return  new LoansResponse(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value());
 	        }
+	        finally {
+                    try {
+                        if(fileOutputStream != null){
+                            fileOutputStream.close();
+                        }
+                    }catch (IOException e){
+                        logger.error(CommonUtils.EXCEPTION,e);
+                    }
+            }
 	}
 
 
@@ -118,7 +123,7 @@ public class ScoringController {
     public ResponseEntity<ScoringModelReqRes> getScoringModelTempList(@RequestBody ScoringModelReqRes scoringModelReqRes,HttpServletRequest request) throws RatingException {
 
         try {
-            Long userId =  (Long) request.getAttribute(CommonUtils.USER_ID);;
+            Long userId =  (Long) request.getAttribute(CommonUtils.USER_ID);
             scoringModelReqRes.setUserId(userId);
             /*scoringModelReqRes.setUserId(1l);*/
 
@@ -128,10 +133,8 @@ public class ScoringController {
         }
         catch (Exception e)
         {
-            // TODO: handle exception
             ScoringModelReqRes res=new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG,HttpStatus.BAD_REQUEST.value());
-            logger.error("Error while getting scoring model list");
-            e.printStackTrace();
+            logger.error("Error while getting scoring model list :  ",e);
             return new ResponseEntity<ScoringModelReqRes>(res,HttpStatus.OK);
         }
     }
@@ -141,7 +144,7 @@ public class ScoringController {
     public ResponseEntity<ScoringModelReqRes> saveScoringModelTemp(@RequestBody ScoringModelReqRes scoringModelReqRes, HttpServletRequest httpRequest, HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) throws RatingException {
 
         try {
-            Long userId =  (Long) request.getAttribute(CommonUtils.USER_ID);;
+            Long userId =  (Long) request.getAttribute(CommonUtils.USER_ID);
             scoringModelReqRes.setUserId(userId);
             /*scoringModelReqRes.setUserId(1l);*/
             ScoringModelReqRes scoringModelReqResNew=scoringService.saveScoringModelTemp(scoringModelReqRes);
@@ -149,10 +152,8 @@ public class ScoringController {
         }
         catch (Exception e)
         {
-            // TODO: handle exception
             ScoringModelReqRes res=new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG,HttpStatus.BAD_REQUEST.value());
-            logger.error("Error while saving scoring model");
-            e.printStackTrace();
+            logger.error("Error while saving scoring model : ",e);
             return new ResponseEntity<ScoringModelReqRes>(res,HttpStatus.OK);
         }
     }
@@ -161,7 +162,7 @@ public class ScoringController {
     public ResponseEntity<ScoringModelReqRes> getScoringModelTempDetail(@RequestBody ScoringModelReqRes scoringModelReqRes, HttpServletRequest httpRequest, HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) throws RatingException {
 
         try {
-            Long userId =  (Long) request.getAttribute(CommonUtils.USER_ID);;
+            Long userId =  (Long) request.getAttribute(CommonUtils.USER_ID);
             scoringModelReqRes.setUserId(userId);
            /* scoringModelReqRes.setUserId(1l);*/
             ScoringModelReqRes scoringModelReqResNew=scoringService.getScoringModelTempDetail(scoringModelReqRes);
@@ -169,10 +170,8 @@ public class ScoringController {
         }
         catch (Exception e)
         {
-            // TODO: handle exception
             ScoringModelReqRes res=new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG,HttpStatus.BAD_REQUEST.value());
-            logger.error("Error while getting scoring model detail");
-            e.printStackTrace();
+            logger.error("Error while getting scoring model detail :  ",e);
             return new ResponseEntity<ScoringModelReqRes>(res,HttpStatus.OK);
         }
     }
@@ -182,7 +181,7 @@ public class ScoringController {
     public ResponseEntity<ScoringModelReqRes> saveScoringModelTempDetail(@RequestBody ScoringModelReqRes scoringModelReqRes, HttpServletRequest httpRequest, HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) throws RatingException {
 
         try {
-            Long userId =  (Long) request.getAttribute(CommonUtils.USER_ID);;
+            Long userId =  (Long) request.getAttribute(CommonUtils.USER_ID);
             scoringModelReqRes.setUserId(userId);
             /*scoringModelReqRes.setUserId(1l);*/
             ScoringModelReqRes scoringModelReqResNew=scoringService.saveScoringModelTempDetail(scoringModelReqRes);
@@ -190,10 +189,8 @@ public class ScoringController {
         }
         catch (Exception e)
         {
-            // TODO: handle exception
             ScoringModelReqRes res=new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG,HttpStatus.BAD_REQUEST.value());
-            logger.error("Error while saving scoring model detail");
-            e.printStackTrace();
+            logger.error("Error while saving scoring model detail : ",e);
             return new ResponseEntity<ScoringModelReqRes>(res,HttpStatus.OK);
         }
     }
@@ -215,8 +212,7 @@ public class ScoringController {
         	GenericCheckerReqRes reqres= new GenericCheckerReqRes();
         	reqres.setActionFlag(false);
         	res.add(reqres);
-            logger.error("Error while saving scoring model detail");
-            e.printStackTrace();
+            logger.error("Error while saving scoring model detail : ",e);
             return new ResponseEntity<List<GenericCheckerReqRes> >(res,HttpStatus.OK);
         }
     }
@@ -225,7 +221,7 @@ public class ScoringController {
     public ResponseEntity<ScoringModelReqRes> getScoringModelMasterList(@RequestBody ScoringModelReqRes scoringModelReqRes, HttpServletRequest httpRequest, HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) throws RatingException {
 
         try {
-            Long userId =  (Long) request.getAttribute(CommonUtils.USER_ID);;
+            Long userId =  (Long) request.getAttribute(CommonUtils.USER_ID);
             scoringModelReqRes.setUserId(userId);
             /*scoringModelReqRes.setUserId(1l);*/
 
@@ -235,10 +231,8 @@ public class ScoringController {
         }
         catch (Exception e)
         {
-            // TODO: handle exception
             ScoringModelReqRes res=new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG,HttpStatus.BAD_REQUEST.value());
-            logger.error("Error while getting scoring model list");
-            e.printStackTrace();
+            logger.error("Error while getting scoring model list : ",e);
             return new ResponseEntity<ScoringModelReqRes>(res,HttpStatus.OK);
         }
     }
@@ -247,7 +241,7 @@ public class ScoringController {
     public ResponseEntity<ScoringModelReqRes> getScoringModelMasterDetail(@RequestBody ScoringModelReqRes scoringModelReqRes, HttpServletRequest httpRequest, HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) throws RatingException {
 
         try {
-            Long userId =  (Long) request.getAttribute(CommonUtils.USER_ID);;
+            Long userId =  (Long) request.getAttribute(CommonUtils.USER_ID);
             scoringModelReqRes.setUserId(userId);
            /* scoringModelReqRes.setUserId(1l);*/
             ScoringModelReqRes scoringModelReqResNew=scoringService.getScoringModelMasterDetail(scoringModelReqRes);
@@ -255,10 +249,8 @@ public class ScoringController {
         }
         catch (Exception e)
         {
-            // TODO: handle exception
             ScoringModelReqRes res=new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG,HttpStatus.BAD_REQUEST.value());
-            logger.error("Error while getting scoring model detail");
-            e.printStackTrace();
+            logger.error("Error while getting scoring model detail : ",e);
             return new ResponseEntity<ScoringModelReqRes>(res,HttpStatus.OK);
         }
     }

@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.List;
 
 import com.capitaworld.service.loans.model.Address;
-import com.capitaworld.service.loans.model.retail.CoApplicantRequest;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
@@ -72,6 +71,17 @@ public class CorporateApplicantRequest implements Serializable {
 	
 	private String companyCIN;
 	private Long environmentalImpactId;
+	
+	
+	///For Uniform Product
+	private Double turnOverPrevFinYear;
+    
+    private Double turnOverCurrFinYearTillMonth;
+    
+    private Double profitCurrFinYear;
+    
+    private Double grossSales;
+    
 	public Long getUserId() {
 		return userId;
 	}
@@ -81,6 +91,7 @@ public class CorporateApplicantRequest implements Serializable {
 	}
 
 	public CorporateApplicantRequest() {
+		// Do nothing because of X and Y.
 	}
 
 	public Long getId() {
@@ -296,35 +307,52 @@ public class CorporateApplicantRequest implements Serializable {
 		this.companyCIN = companyCIN;
 	}
 
+	public Double getTurnOverPrevFinYear() {
+		return turnOverPrevFinYear;
+	}
+
+	public void setTurnOverPrevFinYear(Double turnOverPrevFinYear) {
+		this.turnOverPrevFinYear = turnOverPrevFinYear;
+	}
+
+	public Double getTurnOverCurrFinYearTillMonth() {
+		return turnOverCurrFinYearTillMonth;
+	}
+
+	public void setTurnOverCurrFinYearTillMonth(Double turnOverCurrFinYearTillMonth) {
+		this.turnOverCurrFinYearTillMonth = turnOverCurrFinYearTillMonth;
+	}
+
+	public Double getProfitCurrFinYear() {
+		return profitCurrFinYear;
+	}
+
+	public void setProfitCurrFinYear(Double profitCurrFinYear) {
+		this.profitCurrFinYear = profitCurrFinYear;
+	}
+
+	public Double getGrossSales() {
+		return grossSales;
+	}
+
+	public void setGrossSales(Double grossSales) {
+		this.grossSales = grossSales;
+	}
+
 	@Override
 	public String toString() {
-		return "CorporateApplicantRequest{" +
-				"id=" + id +
-				", clientId=" + clientId +
-				", applicationId=" + applicationId +
-				", panNo='" + panNo + '\'' +
-				", constitutionId=" + constitutionId +
-				", establishmentMonth=" + establishmentMonth +
-				", establishmentYear=" + establishmentYear +
-				", keyVericalFunding=" + keyVericalFunding +
-				", latitude=" + latitude +
-				", longitude=" + longitude +
-				", organisationName='" + organisationName + '\'' +
-				", firstAddress=" + firstAddress +
-				", websiteAddress='" + websiteAddress + '\'' +
-				", landlineNo='" + landlineNo + '\'' +
-				", industrylist=" + industrylist +
-				", sectorlist=" + sectorlist +
-				", subsectors=" + subsectors +
-				", isApplicantDetailsFilled=" + isApplicantDetailsFilled +
-				", detailsFilledCount='" + detailsFilledCount + '\'' +
-				", userId=" + userId +
-				", keyVerticalSector=" + keyVerticalSector +
-				", keyVerticalSubsector=" + keyVerticalSubsector +
-				", gstIn='" + gstIn + '\'' +
-				", email='" + email + '\'' +
-				", companyCIN='" + companyCIN + '\'' +
-				", environmentalImpactId=" + environmentalImpactId +
-				'}';
+		return "CorporateApplicantRequest [id=" + id + ", clientId=" + clientId + ", applicationId=" + applicationId
+				+ ", panNo=" + panNo + ", constitutionId=" + constitutionId + ", establishmentMonth="
+				+ establishmentMonth + ", establishmentYear=" + establishmentYear + ", keyVericalFunding="
+				+ keyVericalFunding + ", latitude=" + latitude + ", longitude=" + longitude + ", organisationName="
+				+ organisationName + ", firstAddress=" + firstAddress + ", websiteAddress=" + websiteAddress
+				+ ", landlineNo=" + landlineNo + ", industrylist=" + industrylist + ", sectorlist=" + sectorlist
+				+ ", subsectors=" + subsectors + ", isApplicantDetailsFilled=" + isApplicantDetailsFilled
+				+ ", detailsFilledCount=" + detailsFilledCount + ", userId=" + userId + ", keyVerticalSector="
+				+ keyVerticalSector + ", keyVerticalSubsector=" + keyVerticalSubsector + ", gstIn=" + gstIn + ", email="
+				+ email + ", companyCIN=" + companyCIN + ", environmentalImpactId=" + environmentalImpactId
+				+ ", turnOverPrevFinYear=" + turnOverPrevFinYear + ", turnOverCurrFinYearTillMonth="
+				+ turnOverCurrFinYearTillMonth + ", profitCurrFinYear=" + profitCurrFinYear + ", grossSales="
+				+ grossSales + "]";
 	}
 }

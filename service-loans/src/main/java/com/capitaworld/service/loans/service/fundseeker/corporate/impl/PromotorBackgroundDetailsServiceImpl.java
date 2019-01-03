@@ -59,8 +59,7 @@ public class PromotorBackgroundDetailsServiceImpl implements PromotorBackgroundD
 		}
 
 		catch (Exception e) {
-			logger.info("Exception  in save promoterBackgroundDetail  :-");
-			e.printStackTrace();
+			logger.error("Exception  in save promoterBackgroundDetail  :-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
@@ -99,8 +98,7 @@ public class PromotorBackgroundDetailsServiceImpl implements PromotorBackgroundD
 			}
 			return promotorBackgroundDetailRequests;
 		} catch (Exception e) {
-			logger.info("Exception  in getpromoterBackgroundDetail  :-");
-			e.printStackTrace();
+			logger.error("Exception  in getpromoterBackgroundDetail  :-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}

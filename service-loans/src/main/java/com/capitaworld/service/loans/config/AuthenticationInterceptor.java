@@ -6,11 +6,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
-
 import com.capitaworld.service.auth.client.AuthClient;
 import com.capitaworld.service.auth.model.AuthClientResponse;
 import com.capitaworld.service.auth.model.AuthRequest;
@@ -20,9 +18,8 @@ import com.capitaworld.service.loans.utils.CommonUtils;
 public class AuthenticationInterceptor implements HandlerInterceptor {
 
 	@Autowired
-	private Environment environment;
+	private AuthClient authClient;
 
-	public static final String AUTH_URL = "capitaworld.service.auth.url";
 	private static final Logger logger = LoggerFactory.getLogger(AuthenticationInterceptor.class);
 
 	@Override
@@ -31,7 +28,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
 
 		String requestURI = request.getRequestURI();
 		logger.info("Loan Request URI------------------------------> " + requestURI);
-		if(CommonUtils.urlsBrforeLogin.contains(requestURI.toLowerCase())){
+		if(CommonUtils.URLS_BRFORE_LOGIN.contains(requestURI.toLowerCase())){
 			return true;
 		}
 		
@@ -41,10 +38,8 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
 		String reqAuth = request.getHeader(AuthCredentialUtils.REQUEST_HEADER_AUTHENTICATE);
 		logger.info("URI----->"+requestURI);
 		logger.info("Client Call----------------->" + reqAuth);
-		if (reqAuth != null && reqAuth != "") {
-			if ("true".equals(reqAuth)) {
+		if (reqAuth != null && reqAuth != "" && "true".equals(reqAuth) ) {
 				return true;
-			}
 		}
 
 		String accessToken = request.getHeader(AuthCredentialUtils.REQUEST_HEADER_ACCESS_TOKEN);
@@ -63,10 +58,9 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
 			return false;
 		}
 
-		AuthClient client = new AuthClient(environment.getRequiredProperty(AUTH_URL));
 		AuthRequest authRequest = new AuthRequest(username, accessToken, refreshToken);
 		authRequest.setLoginToken(Integer.valueOf(loginToken));
-		AuthClientResponse authResponse = client.isAccessTokenValidOrNot(authRequest);
+		AuthClientResponse authResponse = authClient.isAccessTokenValidOrNot(authRequest);
 		if (!authResponse.isAuthenticate()) {
 			logger.warn("Unauthorized Request, Access token expire or invalid");
 			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -81,14 +75,14 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
 	@Override
 	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
 			ModelAndView modelAndView) throws Exception {
-		// TODO Auto-generated method stub
+		// Do nothing because of X and Y.
 
 	}
 
 	@Override
 	public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex)
 			throws Exception {
-		// TODO Auto-generated method stub
+		// Do nothing because of X and Y.
 
 	}
 

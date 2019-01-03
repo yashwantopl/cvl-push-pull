@@ -100,6 +100,9 @@ public interface LoanApplicationRepository extends JpaRepository<LoanApplication
 	@Query("from LoanApplicationMaster lm where lm.id =:id and lm.userId =:userId and lm.isActive = true order by lm.id")
 	public LoanApplicationMaster getByIdAndUserId(@Param("id") Long id, @Param("userId") Long userId);
 	
+	@Query("from LoanApplicationMaster lm where lm.id =:id and lm.userId =:userId order by lm.id")
+	public LoanApplicationMaster getByIdAndUserIdForInEligibleCam(@Param("id") Long id, @Param("userId") Long userId);
+	
 	@Query("from LoanApplicationMaster lm where lm.id =:id and lm.isActive = true order by lm.id")
 	public LoanApplicationMaster getById(@Param("id") Long id);
 	
@@ -337,4 +340,8 @@ public interface LoanApplicationRepository extends JpaRepository<LoanApplication
 	//fwt busynessTypeId by applicationId
 	@Query("select lm.businessTypeId from LoanApplicationMaster lm where lm.id =:applicationId and lm.isActive = true ")
 	public Integer findOneBusinessTypeIdByIdAndIsActive(@Param("applicationId")  Long applicationId); 
+	
+	/*For cam report In-principleDate*/
+	@Query(value = "select lg.modified_date from connect.connect_log lg where lg.application_id=:applicationId AND lg.stage_id=:stage AND lg.business_type_id=:businessTypeId ORDER BY lg.id desc LIMIT 1", nativeQuery = true)
+	Date getModifiedDate(@Param("applicationId")  Long applicationId,@Param("stage")  Integer stage,@Param("businessTypeId")  Integer businessTypeId);
 }

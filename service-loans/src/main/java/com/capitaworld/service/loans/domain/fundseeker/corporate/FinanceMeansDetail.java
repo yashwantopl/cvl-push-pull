@@ -59,6 +59,7 @@ public class FinanceMeansDetail implements Serializable {
 	private Double total;
 
 	public FinanceMeansDetail() {
+		// Do nothing because of X and Y.
 	}
 
 	public Long getId() {

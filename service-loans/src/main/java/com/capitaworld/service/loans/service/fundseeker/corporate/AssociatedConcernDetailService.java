@@ -14,6 +14,8 @@ public interface AssociatedConcernDetailService {
 	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception;
 
 	public List<AssociatedConcernDetailRequest> getAssociatedConcernsDetailList(Long id,Long userId) throws Exception;
+	
+	public Boolean saveOrUpdate(List<AssociatedConcernDetailRequest> requests,Long applicationId,Long userId);
 
 	public List<AssociatedConcernDetailRequest> getAssociatedConcernsDetailListByProposalId(Long id,Long userId) throws Exception;
 

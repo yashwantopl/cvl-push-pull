@@ -49,6 +49,9 @@ public class NTBServiceImpl implements NTBService {
 
     private static final Logger logger = LoggerFactory.getLogger(NTBServiceImpl.class);
 
+    private static final String EXCEPTION_IN_GET_ONE_FORM_DETAIL_BY_DIRECTOR_ID_MSG = "Exception in getOneformDetailByDirectorId  :-";
+    private static final String SOMETHING_GOES_WRONG_PLEASE_TRY_AGAIN_AFTER_SOMETIME_MSG = "Something goes wrong with the internal server. Please try again after sometime.";
+
     @Autowired
     private DirectorBackgroundDetailsRepository directorBackgroundDetailsRepository;
 
@@ -110,8 +113,7 @@ public class NTBServiceImpl implements NTBService {
             return directorBackgroundDetailRequest;
 
         } catch (Exception e) {
-            logger.info("Exception  in getOneformDetailByDirectorId  :-");
-            e.printStackTrace();
+            logger.error(EXCEPTION_IN_GET_ONE_FORM_DETAIL_BY_DIRECTOR_ID_MSG,e);
             return null;
         }
     }
@@ -147,8 +149,7 @@ public class NTBServiceImpl implements NTBService {
             return true;
 
         } catch (Exception e) {
-            logger.info("Exception  in getOneformDetailByDirectorId  :-");
-            e.printStackTrace();
+            logger.error(EXCEPTION_IN_GET_ONE_FORM_DETAIL_BY_DIRECTOR_ID_MSG,e);
             return false;
         }
     }
@@ -171,8 +172,7 @@ public class NTBServiceImpl implements NTBService {
             logger.info("Successfully get data for getFinancialDetails()" + finArrngDetailResList.toString());
             return finArrngDetailResList;
         }catch (Exception e){
-            logger.info("Exception  in getFinancialDetails  :-");
-            e.printStackTrace();
+            logger.error("Exception  in getFinancialDetails  :-",e);
             return null;
         }
 
@@ -190,7 +190,7 @@ public class NTBServiceImpl implements NTBService {
                     }
                     if (CommonUtils.isObjectNullOrEmpty(saveFinObj)) {
                         saveFinObj = new FinancialArrangementsDetail();
-                        BeanUtils.copyProperties(reqObj, saveFinObj, "id", "createdBy", "createdDate", "modifiedBy", "modifiedDate", "isActive");
+                        BeanUtils.copyProperties(reqObj, saveFinObj, "id", CommonUtils.CREATED_BY, CommonUtils.CREATED_DATE, CommonUtils.MODIFIED_BY, CommonUtils.MODIFIED_DATE, "isActive");
 
                         saveFinObj.setDirectorBackgroundDetail(directorBackgroundDetailsRepository.findOne(directorId));
                         saveFinObj.setApplicationId(new LoanApplicationMaster(applicationId));
@@ -198,7 +198,7 @@ public class NTBServiceImpl implements NTBService {
                         saveFinObj.setCreatedDate(new Date());
                         saveFinObj.setIsActive(true);
                     } else {
-                        BeanUtils.copyProperties(reqObj, saveFinObj, "id", "createdBy", "createdDate", "modifiedBy", "modifiedDate");
+                        BeanUtils.copyProperties(reqObj, saveFinObj, "id", CommonUtils.CREATED_BY, CommonUtils.CREATED_DATE, CommonUtils.MODIFIED_BY, CommonUtils.MODIFIED_DATE);
                         saveFinObj.setModifiedBy(userId);
                         saveFinObj.setModifiedDate(new Date());
                     }
@@ -213,8 +213,7 @@ public class NTBServiceImpl implements NTBService {
 
             return true;
         }catch (Exception e){
-            logger.info("Exception  in getOneformDetailByDirectorId  :-");
-            e.printStackTrace();
+            logger.error(EXCEPTION_IN_GET_ONE_FORM_DETAIL_BY_DIRECTOR_ID_MSG,e);
             return false;
         }
     }
@@ -253,8 +252,7 @@ public class NTBServiceImpl implements NTBService {
             logger.info("Data found for given applicationid ==>"+applicationId + " response Data {}===>"+fundSeekerInputRequestResponse.toString());
             return fundSeekerInputRequestResponse;
         }catch (Exception e){
-            logger.info("Exception  in getOthersDetail  :-");
-            e.printStackTrace();
+            logger.error("Exception  in getOthersDetail  :-",e);
             return null;
         }
     }
@@ -319,15 +317,14 @@ public class NTBServiceImpl implements NTBService {
                     if (!CommonUtils.isObjectNullOrEmpty(reqObj.getId())) {
                         saveDirObj = directorBackgroundDetailsRepository.findByIdAndIsActive(reqObj.getId(), true);
                         logger.info("Old Object Retrived For Director saveDirObj.getId()==========================>{}",saveDirObj.getId());
-                        BeanUtils.copyProperties(reqObj, saveDirObj, "id", "createdBy", "createdDate", "modifiedBy","modifiedDate");
+                        BeanUtils.copyProperties(reqObj, saveDirObj, "id", CommonUtils.CREATED_BY, CommonUtils.CREATED_DATE, CommonUtils.MODIFIED_BY,CommonUtils.MODIFIED_DATE);
                         saveDirObj.setModifiedBy(userId);
                         saveDirObj.setModifiedDate(new Date());
                     }
                     directorBackgroundDetailsRepository.save(saveDirObj);
                 }
             } catch (Exception e) {
-                logger.info("Directors ===============> Throw Exception While Save Director Details -------->");
-                e.printStackTrace();
+                logger.error("Directors ===============> Throw Exception While Save Director Details -------->",e);
             }
             logger.info("director detail saved successfully");
             return true;
@@ -340,8 +337,7 @@ public class NTBServiceImpl implements NTBService {
             directorBackgroundDetailsRepository.save(directorBackgroundDetail);*/
 
         }catch (Exception e){
-            logger.info("Throw Exception while save and update Others Detail !!");
-            e.printStackTrace();
+            logger.error("Throw Exception while save and update Others Detail !!",e);
             throw new Exception();
         }
     }
@@ -354,7 +350,7 @@ public class NTBServiceImpl implements NTBService {
                     ntbRequest.getUserId(), ntbRequest.getBusineeTypeId(), ntbRequest.getDirectorId());
             if (connectResponse == null) {
                 return new LoansResponse(
-                        "Something goes wrong with the internal server. Please try again after sometime.",
+                        SOMETHING_GOES_WRONG_PLEASE_TRY_AGAIN_AFTER_SOMETIME_MSG,
                         HttpStatus.BAD_REQUEST.value());
             }
             logger.info("End postDirectorBackground()");
@@ -372,8 +368,7 @@ public class NTBServiceImpl implements NTBService {
                 return new LoansResponse("Success", HttpStatus.OK.value(), directorBackgroundDetailRequest);
             }
         } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.error(CommonUtils.EXCEPTION,e);
             return null;
         }
     }
@@ -386,7 +381,7 @@ public class NTBServiceImpl implements NTBService {
                     ntbRequest.getUserId(), ntbRequest.getBusineeTypeId());
             if (connectResponse == null) {
                 return new LoansResponse(
-                        "Something goes wrong with the internal server. Please try again after sometime.",
+                        SOMETHING_GOES_WRONG_PLEASE_TRY_AGAIN_AFTER_SOMETIME_MSG,
                         HttpStatus.BAD_REQUEST.value());
             }
             logger.info("End postDirectorsChangeStage()");
@@ -396,7 +391,7 @@ public class NTBServiceImpl implements NTBService {
                 return new LoansResponse("Success data updated", HttpStatus.OK.value(),true);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(CommonUtils.EXCEPTION,e);
             return new LoansResponse("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
     }
@@ -406,7 +401,7 @@ public class NTBServiceImpl implements NTBService {
         try {
             ConnectResponse connectResponse = connectClient.postNTBOneFormOtherDetails(ntbRequest.getApplicationId(), ntbRequest.getUserId(), ntbRequest.getBusineeTypeId());
             if (CommonUtils.isObjectNullOrEmpty(connectResponse)) {
-                return new LoansResponse( "Something goes wrong with the internal server. Please try again after sometime.", HttpStatus.BAD_REQUEST.value());
+                return new LoansResponse( SOMETHING_GOES_WRONG_PLEASE_TRY_AGAIN_AFTER_SOMETIME_MSG, HttpStatus.BAD_REQUEST.value());
             }
             if (!connectResponse.getProceed().booleanValue()) {
                 return new LoansResponse(connectResponse.getMessage(), HttpStatus.BAD_REQUEST.value(),false);
@@ -414,7 +409,7 @@ public class NTBServiceImpl implements NTBService {
                 return new LoansResponse("Success data updated", HttpStatus.OK.value(),true);
             }
         } catch (Exception e) {
-        	e.printStackTrace();
+            logger.error(CommonUtils.EXCEPTION,e);
             return new LoansResponse("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
     }
@@ -443,7 +438,7 @@ public class NTBServiceImpl implements NTBService {
 			request.setUserId(fundSeekerInputRequestResponse.getUserId());
 			request.setData(hunterRequestDataResponse);
 			request.setIsNtb(isNTB);
-			res.setMessage("Oneform Saved Successfully");
+			res.setMessage(CommonUtils.ONE_FORM_SAVED_SUCCESSFULLY);
 			res.setStatus(HttpStatus.OK.value());
 			AnalyticsResponse response = fraudAnalyticsClient.callHunterIIAPI(request);
 			if (response != null) {
@@ -455,7 +450,7 @@ public class NTBServiceImpl implements NTBService {
 				res.setData(resp);
 				if(resp) {
 					res.setStatus(HttpStatus.OK.value());
-					res.setMessage("Oneform Saved Successfully");
+					res.setMessage(CommonUtils.ONE_FORM_SAVED_SUCCESSFULLY);
 				}
 				else {
 					res.setStatus(HttpStatus.UNAVAILABLE_FOR_LEGAL_REASONS.value());
@@ -469,14 +464,12 @@ public class NTBServiceImpl implements NTBService {
 			else {
 				logger.info("End invokeFraudAnalytics() Skiping Fraud Analytics call");
 				   logger.info("Successfully Saved");
-	                return new LoansResponse("Oneform Saved Successfully", HttpStatus.OK.value());
+	                return new LoansResponse(CommonUtils.ONE_FORM_SAVED_SUCCESSFULLY, HttpStatus.OK.value());
 	                      
 			}
 		} catch (Exception e) {
-			logger.info("End invokeFraudAnalytics() Error in Fraud Analytics call");
-			e.printStackTrace();
 			//throw new Exception();
-			logger.info("End invokeFraudAnalytics() ERROR IN FRAUD ANALYTICS CALL");
+			logger.error("End invokeFraudAnalytics() ERROR IN FRAUD ANALYTICS CALL : ",e);
 			 return new LoansResponse("Successfully Saved", HttpStatus.OK.value());
 		}
 	}

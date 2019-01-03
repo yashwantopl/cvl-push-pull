@@ -30,7 +30,6 @@ public class ExcelResponse implements Serializable {
 
 	public ExcelResponse() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	

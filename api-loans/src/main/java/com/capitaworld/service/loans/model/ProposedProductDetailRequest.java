@@ -36,6 +36,7 @@ public class ProposedProductDetailRequest implements Serializable {
 	}
 
 	public ProposedProductDetailRequest() {
+		// Do nothing because of X and Y.
 	}
 
 	public Long getId() {

@@ -56,6 +56,7 @@ public class PastFinancialEstimatesDetailRequest implements Serializable {
 	}
 
 	public PastFinancialEstimatesDetailRequest() {
+		// Do nothing because of X and Y.
 	}
 
 	public Boolean getIsActive() {

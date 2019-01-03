@@ -87,8 +87,10 @@ public interface ApplicationProposalMappingRepository extends JpaRepository<Appl
     @Query("update ApplicationProposalMapping apm set apm.isApplicantFinalFilled =:isApplicantFinalFilled,apm.modifiedDate = NOW(),apm.modifiedBy =:userId where apm.proposalId =:proposalId and apm.applicationId =:applicationId and apm.userId =:userId and apm.isActive = true")
     public int setIsApplicantFinalMandatoryFilled(@Param("proposalId") Long proposalId,
                                                   @Param("applicationId") Long applicationId ,
-                                                  @Param("userId") Long userId,
-                                                  @Param("isApplicantFinalFilled") Boolean isApplicantFinalFilled);
+                                                  @Param("userId") Long userId,@Param("isApplicantFinalFilled") Boolean isApplicantFinalFilled);
+
+    @Query(value= "select lm.productId from ApplicationProposalMapping lm where lm.applicationId =:id and lm.userId =:userId and lm.isActive = true order by lm.proposalId desc limit 1",nativeQuery = true)
+    public Integer getProductIdByApplicationId(@Param("id") Long applicationId, @Param("userId") Long userId);
 
     @Query(value = "select lm.proposal_id from application_proposal_mapping lm inner join proposal_details pd on pd.id=lm.proposal_id where pd.branch_id=:branchId and pd.fp_product_id=:fpProductId and lm.ddr_status_id =:id and lm.np_user_id=:npUserId and pd.is_active=true and lm.is_active = true ",nativeQuery = true)
     public List<BigInteger> getFPAssignedToCheckerProposalsCount(@Param("id") Long ddrStatusId,@Param("npUserId") Long npUserId, @Param("branchId") Long branchId,@Param("fpProductId") Long fpProductId);

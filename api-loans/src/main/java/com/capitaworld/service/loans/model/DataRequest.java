@@ -13,7 +13,7 @@ public class DataRequest implements Serializable{
 	
 
 	public DataRequest() {
-
+		// Do nothing because of X and Y.
 	}
 
 	public Long getId() {

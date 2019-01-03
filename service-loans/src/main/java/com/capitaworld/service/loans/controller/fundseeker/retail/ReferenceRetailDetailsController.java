@@ -152,6 +152,7 @@ public class ReferenceRetailDetailsController {
 				applicantIdById = guarantorService.getApplicantIdById(id);
 				currencyId = retailApplicantService.getCurrency(applicantIdById, userId);
 				break;
+			default : break;
 			}
 			loansResponse.setData(CommonDocumentUtils.getCurrency(currencyId));
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);

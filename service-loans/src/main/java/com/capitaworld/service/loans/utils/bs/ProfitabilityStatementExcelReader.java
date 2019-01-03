@@ -4,6 +4,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
+import com.capitaworld.service.loans.utils.CommonUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.util.CellReference;
@@ -12,105 +13,110 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.ProfitibilityStatementDetail;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.ProfitibilityStatementDetailRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ProfitabilityStatementExcelReader {
-	public static ArrayList<String> profitabilityStatementMappingList = new ArrayList<String>();
+
+	private static final Logger logger = LoggerFactory.getLogger(ProfitabilityStatementExcelReader.class);
+
+	public static final ArrayList<String> PROFITABILITY_STATEMENT_MAPPING_LIST = new ArrayList<String>();
 	public static final DecimalFormat decimalFormat = new DecimalFormat("#.##");
 
 	public static void run(Long storageDetailsId, XSSFSheet sheet, LoanApplicationMaster loanApplicationMaster,
 			ProfitibilityStatementDetailRepository profitibilityStatementDetailRepository) {
-		profitabilityStatementMappingList.clear();
+		PROFITABILITY_STATEMENT_MAPPING_LIST.clear();
 		
 		
-		profitabilityStatementMappingList.add("7");
-		profitabilityStatementMappingList.add("8");
-		profitabilityStatementMappingList.add("9");
-		profitabilityStatementMappingList.add("10");
-		profitabilityStatementMappingList.add("11");
-		profitabilityStatementMappingList.add("12");
-		profitabilityStatementMappingList.add("13");
-		profitabilityStatementMappingList.add("14");
-		profitabilityStatementMappingList.add("15");
-		profitabilityStatementMappingList.add("16");
-		profitabilityStatementMappingList.add("17");
-		profitabilityStatementMappingList.add("18");
-		profitabilityStatementMappingList.add("19");
-		profitabilityStatementMappingList.add("20");
-		profitabilityStatementMappingList.add("21");
-		profitabilityStatementMappingList.add("22");
-		profitabilityStatementMappingList.add("23");
-		profitabilityStatementMappingList.add("24");
-		profitabilityStatementMappingList.add("26");
-		profitabilityStatementMappingList.add("27");
-		profitabilityStatementMappingList.add("28");
-		profitabilityStatementMappingList.add("29");
-		profitabilityStatementMappingList.add("30");
-		profitabilityStatementMappingList.add("31");
-		profitabilityStatementMappingList.add("32");
-		profitabilityStatementMappingList.add("33");
-		profitabilityStatementMappingList.add("34");
-		profitabilityStatementMappingList.add("35");
-		profitabilityStatementMappingList.add("36");
-		profitabilityStatementMappingList.add("37");
-		profitabilityStatementMappingList.add("38");
-		profitabilityStatementMappingList.add("39");
-		profitabilityStatementMappingList.add("40");
-		profitabilityStatementMappingList.add("41");
-		profitabilityStatementMappingList.add("42");
-		profitabilityStatementMappingList.add("43");
-		profitabilityStatementMappingList.add("44");
-		profitabilityStatementMappingList.add("45");
-		profitabilityStatementMappingList.add("46");
-		profitabilityStatementMappingList.add("47");
-		profitabilityStatementMappingList.add("48");
-		profitabilityStatementMappingList.add("49");
-		profitabilityStatementMappingList.add("50");
-		profitabilityStatementMappingList.add("51");
-		profitabilityStatementMappingList.add("52");
-		profitabilityStatementMappingList.add("53");
-		profitabilityStatementMappingList.add("55");
-		profitabilityStatementMappingList.add("56");
-		profitabilityStatementMappingList.add("57");
-		profitabilityStatementMappingList.add("59");
-		profitabilityStatementMappingList.add("61");
-		profitabilityStatementMappingList.add("63");
-		profitabilityStatementMappingList.add("65");
-		profitabilityStatementMappingList.add("66");
-		profitabilityStatementMappingList.add("67");
-		profitabilityStatementMappingList.add("68");
-		profitabilityStatementMappingList.add("69");
-		profitabilityStatementMappingList.add("70");
-		profitabilityStatementMappingList.add("71");
-		profitabilityStatementMappingList.add("72");
-		profitabilityStatementMappingList.add("73");
-		profitabilityStatementMappingList.add("75");
-		profitabilityStatementMappingList.add("76");
-		profitabilityStatementMappingList.add("77");
-		profitabilityStatementMappingList.add("79");
-		profitabilityStatementMappingList.add("81");
-		profitabilityStatementMappingList.add("82");
-		profitabilityStatementMappingList.add("83");
-		profitabilityStatementMappingList.add("85");
+		PROFITABILITY_STATEMENT_MAPPING_LIST.add("7");
+		PROFITABILITY_STATEMENT_MAPPING_LIST.add("8");
+		PROFITABILITY_STATEMENT_MAPPING_LIST.add("9");
+		PROFITABILITY_STATEMENT_MAPPING_LIST.add("10");
+		PROFITABILITY_STATEMENT_MAPPING_LIST.add("11");
+		PROFITABILITY_STATEMENT_MAPPING_LIST.add("12");
+		PROFITABILITY_STATEMENT_MAPPING_LIST.add("13");
+		PROFITABILITY_STATEMENT_MAPPING_LIST.add("14");
+		PROFITABILITY_STATEMENT_MAPPING_LIST.add("15");
+		PROFITABILITY_STATEMENT_MAPPING_LIST.add("16");
+		PROFITABILITY_STATEMENT_MAPPING_LIST.add("17");
+		PROFITABILITY_STATEMENT_MAPPING_LIST.add("18");
+		PROFITABILITY_STATEMENT_MAPPING_LIST.add("19");
+		PROFITABILITY_STATEMENT_MAPPING_LIST.add("20");
+		PROFITABILITY_STATEMENT_MAPPING_LIST.add("21");
+		PROFITABILITY_STATEMENT_MAPPING_LIST.add("22");
+		PROFITABILITY_STATEMENT_MAPPING_LIST.add("23");
+		PROFITABILITY_STATEMENT_MAPPING_LIST.add("24");
+		PROFITABILITY_STATEMENT_MAPPING_LIST.add("26");
+		PROFITABILITY_STATEMENT_MAPPING_LIST.add("27");
+		PROFITABILITY_STATEMENT_MAPPING_LIST.add("28");
+		PROFITABILITY_STATEMENT_MAPPING_LIST.add("29");
+		PROFITABILITY_STATEMENT_MAPPING_LIST.add("30");
+		PROFITABILITY_STATEMENT_MAPPING_LIST.add("31");
+		PROFITABILITY_STATEMENT_MAPPING_LIST.add("32");
+		PROFITABILITY_STATEMENT_MAPPING_LIST.add("33");
+		PROFITABILITY_STATEMENT_MAPPING_LIST.add("34");
+		PROFITABILITY_STATEMENT_MAPPING_LIST.add("35");
+		PROFITABILITY_STATEMENT_MAPPING_LIST.add("36");
+		PROFITABILITY_STATEMENT_MAPPING_LIST.add("37");
+		PROFITABILITY_STATEMENT_MAPPING_LIST.add("38");
+		PROFITABILITY_STATEMENT_MAPPING_LIST.add("39");
+		PROFITABILITY_STATEMENT_MAPPING_LIST.add("40");
+		PROFITABILITY_STATEMENT_MAPPING_LIST.add("41");
+		PROFITABILITY_STATEMENT_MAPPING_LIST.add("42");
+		PROFITABILITY_STATEMENT_MAPPING_LIST.add("43");
+		PROFITABILITY_STATEMENT_MAPPING_LIST.add("44");
+		PROFITABILITY_STATEMENT_MAPPING_LIST.add("45");
+		PROFITABILITY_STATEMENT_MAPPING_LIST.add("46");
+		PROFITABILITY_STATEMENT_MAPPING_LIST.add("47");
+		PROFITABILITY_STATEMENT_MAPPING_LIST.add("48");
+		PROFITABILITY_STATEMENT_MAPPING_LIST.add("49");
+		PROFITABILITY_STATEMENT_MAPPING_LIST.add("50");
+		PROFITABILITY_STATEMENT_MAPPING_LIST.add("51");
+		PROFITABILITY_STATEMENT_MAPPING_LIST.add("52");
+		PROFITABILITY_STATEMENT_MAPPING_LIST.add("53");
+		PROFITABILITY_STATEMENT_MAPPING_LIST.add("55");
+		PROFITABILITY_STATEMENT_MAPPING_LIST.add("56");
+		PROFITABILITY_STATEMENT_MAPPING_LIST.add("57");
+		PROFITABILITY_STATEMENT_MAPPING_LIST.add("59");
+		PROFITABILITY_STATEMENT_MAPPING_LIST.add("61");
+		PROFITABILITY_STATEMENT_MAPPING_LIST.add("63");
+		PROFITABILITY_STATEMENT_MAPPING_LIST.add("65");
+		PROFITABILITY_STATEMENT_MAPPING_LIST.add("66");
+		PROFITABILITY_STATEMENT_MAPPING_LIST.add("67");
+		PROFITABILITY_STATEMENT_MAPPING_LIST.add("68");
+		PROFITABILITY_STATEMENT_MAPPING_LIST.add("69");
+		PROFITABILITY_STATEMENT_MAPPING_LIST.add("70");
+		PROFITABILITY_STATEMENT_MAPPING_LIST.add("71");
+		PROFITABILITY_STATEMENT_MAPPING_LIST.add("72");
+		PROFITABILITY_STATEMENT_MAPPING_LIST.add("73");
+		PROFITABILITY_STATEMENT_MAPPING_LIST.add("75");
+		PROFITABILITY_STATEMENT_MAPPING_LIST.add("76");
+		PROFITABILITY_STATEMENT_MAPPING_LIST.add("77");
+		PROFITABILITY_STATEMENT_MAPPING_LIST.add("79");
+		PROFITABILITY_STATEMENT_MAPPING_LIST.add("81");
+		PROFITABILITY_STATEMENT_MAPPING_LIST.add("82");
+		PROFITABILITY_STATEMENT_MAPPING_LIST.add("83");
+		PROFITABILITY_STATEMENT_MAPPING_LIST.add("85");
 		
 		/*
 		 * this method extract data from excel associate column and row wise
 		 * e.g. you want to extract B13,B14,... cell data for year 2014
 		 */
 		
-		System.out.println("ProfitabilityStatementExcelReader -----------> "+sheet.getRow(3).getCell(2).getNumericCellValue());       
-//        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, profitabilityStatementMappingList,"C",String.valueOf(sheet.getRow(3).getCell(2).getNumericCellValue()),"Audited", profitibilityStatementDetailRepository);
-//        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, profitabilityStatementMappingList,"D",String.valueOf(sheet.getRow(3).getCell(3).getNumericCellValue()),"Audited",profitibilityStatementDetailRepository);
-//        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, profitabilityStatementMappingList,"E",String.valueOf(sheet.getRow(3).getCell(4).getNumericCellValue()),"Audited",profitibilityStatementDetailRepository);
-        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, profitabilityStatementMappingList,"F",String.valueOf(sheet.getRow(3).getCell(5).getNumericCellValue()),"Estimated",profitibilityStatementDetailRepository);
+		logger.info("ProfitabilityStatementExcelReader -----------> "+sheet.getRow(3).getCell(2).getNumericCellValue());
+//        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, PROFITABILITY_STATEMENT_MAPPING_LIST,"C",String.valueOf(sheet.getRow(3).getCell(2).getNumericCellValue()),"Audited", profitibilityStatementDetailRepository);
+//        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, PROFITABILITY_STATEMENT_MAPPING_LIST,"D",String.valueOf(sheet.getRow(3).getCell(3).getNumericCellValue()),"Audited",profitibilityStatementDetailRepository);
+//        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, PROFITABILITY_STATEMENT_MAPPING_LIST,"E",String.valueOf(sheet.getRow(3).getCell(4).getNumericCellValue()),"Audited",profitibilityStatementDetailRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, PROFITABILITY_STATEMENT_MAPPING_LIST,"F",String.valueOf(sheet.getRow(3).getCell(5).getNumericCellValue()),"Estimated",profitibilityStatementDetailRepository);
         if(loanApplicationMaster.getProductId()!=15){
-        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, profitabilityStatementMappingList,"G",String.valueOf(sheet.getRow(3).getCell(6).getNumericCellValue()),"Projected", profitibilityStatementDetailRepository);
-        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, profitabilityStatementMappingList,"H",String.valueOf(sheet.getRow(3).getCell(7).getNumericCellValue()),"Projected",profitibilityStatementDetailRepository);
-        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, profitabilityStatementMappingList,"I",String.valueOf(sheet.getRow(3).getCell(8).getNumericCellValue()),"Projected",profitibilityStatementDetailRepository);
-        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, profitabilityStatementMappingList,"J",String.valueOf(sheet.getRow(3).getCell(9).getNumericCellValue()),"Projected",profitibilityStatementDetailRepository);
-        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, profitabilityStatementMappingList,"K",String.valueOf(sheet.getRow(3).getCell(10).getNumericCellValue()),"Projected",profitibilityStatementDetailRepository);
-        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, profitabilityStatementMappingList,"L",String.valueOf(sheet.getRow(3).getCell(11).getNumericCellValue()),"Projected",profitibilityStatementDetailRepository);
-        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, profitabilityStatementMappingList,"M",String.valueOf(sheet.getRow(3).getCell(12).getNumericCellValue()),"Projected",profitibilityStatementDetailRepository);
-        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, profitabilityStatementMappingList,"N",String.valueOf(sheet.getRow(3).getCell(13).getNumericCellValue()),"Projected",profitibilityStatementDetailRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, PROFITABILITY_STATEMENT_MAPPING_LIST,"G",String.valueOf(sheet.getRow(3).getCell(6).getNumericCellValue()), CommonUtils.PROJECTED, profitibilityStatementDetailRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, PROFITABILITY_STATEMENT_MAPPING_LIST,"H",String.valueOf(sheet.getRow(3).getCell(7).getNumericCellValue()),CommonUtils.PROJECTED,profitibilityStatementDetailRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, PROFITABILITY_STATEMENT_MAPPING_LIST,"I",String.valueOf(sheet.getRow(3).getCell(8).getNumericCellValue()),CommonUtils.PROJECTED,profitibilityStatementDetailRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, PROFITABILITY_STATEMENT_MAPPING_LIST,"J",String.valueOf(sheet.getRow(3).getCell(9).getNumericCellValue()),CommonUtils.PROJECTED,profitibilityStatementDetailRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, PROFITABILITY_STATEMENT_MAPPING_LIST,"K",String.valueOf(sheet.getRow(3).getCell(10).getNumericCellValue()),CommonUtils.PROJECTED,profitibilityStatementDetailRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, PROFITABILITY_STATEMENT_MAPPING_LIST,"L",String.valueOf(sheet.getRow(3).getCell(11).getNumericCellValue()),CommonUtils.PROJECTED,profitibilityStatementDetailRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, PROFITABILITY_STATEMENT_MAPPING_LIST,"M",String.valueOf(sheet.getRow(3).getCell(12).getNumericCellValue()),CommonUtils.PROJECTED,profitibilityStatementDetailRepository);
+        extractCellFromSheet(storageDetailsId,sheet,loanApplicationMaster, PROFITABILITY_STATEMENT_MAPPING_LIST,"N",String.valueOf(sheet.getRow(3).getCell(13).getNumericCellValue()),CommonUtils.PROJECTED,profitibilityStatementDetailRepository);
 		}
 		
 		
@@ -123,12 +129,12 @@ public class ProfitabilityStatementExcelReader {
 		int arrayListCounter = 0;
 		// check user enter the data or not in column
 
-		for (int i = 0; i < profitabilityStatementMappingList.size(); i++) {
-			if ((getNumericDataFromCell(sheet, column + profitabilityStatementMappingList.get(i))) == 0) {
+		for (int i = 0; i < PROFITABILITY_STATEMENT_MAPPING_LIST.size(); i++) {
+			if ((getNumericDataFromCell(sheet, column + PROFITABILITY_STATEMENT_MAPPING_LIST.get(i))) == 0) {
 				++nullCounter;
 			}
 		}
-		if (!(nullCounter == profitabilityStatementMappingList.size())) {
+		if (!(nullCounter == PROFITABILITY_STATEMENT_MAPPING_LIST.size())) {
 
 			ProfitibilityStatementDetail bsProfitabilityStatement = new ProfitibilityStatementDetail();
 			bsProfitabilityStatement.setApplicationId(loanApplicationMaster);

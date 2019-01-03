@@ -125,7 +125,7 @@ public class DDRFormDetailsRequest implements Serializable {
 	List<DDRFamilyDirectorsDetailsRequest> dDRFamilyDirectorsList = new ArrayList<DDRFamilyDirectorsDetailsRequest>();
 	
 	private String userName;
-	
+
 	private String password;
 	
 	public String getOutsideLoansString() {
@@ -1202,8 +1202,7 @@ public class DDRFormDetailsRequest implements Serializable {
 				", existingBankerDetailList=" + existingBankerDetailList +
 				", dDRFamilyDirectorsList=" + dDRFamilyDirectorsList +
 				", userName =" + userName +
-				", password =" + password +
-				
+
 				'}';
 	}
 

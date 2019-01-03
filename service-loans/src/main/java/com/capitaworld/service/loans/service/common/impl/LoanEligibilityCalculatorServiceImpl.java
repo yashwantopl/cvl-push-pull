@@ -43,6 +43,14 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 
 	private static final Logger logger = LoggerFactory.getLogger(LoanEligibilityCalculatorServiceImpl.class);
 
+	private static final String ERROR_WHILE_CALCULATING_HOME_LOAN_ELIGIBILITY_MSG = "Error while Calculating HomeLoan Eligibility : ";
+	private static final String MESSAGE_LITERAL = "message";
+	private static final String NO_RESULT_FOUND = "No Result Found";
+	private static final String MIN_ROI = "minRoi";
+	private static final String MAX_ROI = "maxRoi";
+	private static final String FUND_PROIVDERS = "fundProivders";
+	private static final String CALCULATE_TENURE = "calculateTenure";
+
 	@Autowired
 	private LoanEligibilityCriteriaRepository loanEligibilityCriteriaRepository;
 
@@ -97,7 +105,7 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 				// Maximum Amount Based on Salary and Max ROI
 				double monthlyRate = homeLoanCriteria.getRoiLow() / 100 / 12;
 				logger.info("monthlyRate first==>" + monthlyRate);
-				double totalPayments = tenure * 12;
+				double totalPayments = (tenure * 12);
 				double result = getPMTCalculation(monthlyRate, totalPayments);
 				logger.info("result first==>" + result);
 				double maximum = getMinMax(income, result);
@@ -118,8 +126,7 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 			CommonDocumentUtils.endHook(logger, "calculateHomeLoan");
 			return minMaxData;
 		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("Error while Calculating HomeLoan Eligibility");
+			logger.error(ERROR_WHILE_CALCULATING_HOME_LOAN_ELIGIBILITY_MSG,e);
 		}
 		return null;
 	}
@@ -225,21 +232,20 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 
 			JSONObject result = new JSONObject();
 			if (finalMaxList.isEmpty() && finalMinList.isEmpty()) {
-				result.put("message", "No Result Found");
+				result.put(MESSAGE_LITERAL, NO_RESULT_FOUND);
 			} else {
 				result.put(CommonUtils.MAXIMUM, Math.abs(Math.round(Collections.max(finalMaxList))));
 				result.put(CommonUtils.MINIMUM, Math.abs(Math.round(Collections.min(finalMinList))));
 				Object[] minMaxArr = loanEligibilityCriteriaRepository.getMinMaxRoiForHomeLoan(bankIds);
 				if (!CommonUtils.isObjectNullOrEmpty(minMaxArr)) {
-					result.put("minRoi", minMaxArr[0]);
-					result.put("maxRoi", minMaxArr[1]);
+					result.put(MIN_ROI, minMaxArr[0]);
+					result.put(MAX_ROI, minMaxArr[1]);
 				}
-				result.put("fundProivders", bankIds.size());
+				result.put(FUND_PROIVDERS, bankIds.size());
 			}
 			return result;
 		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("Error while Calculating HomeLoan Eligibility");
+			logger.error(ERROR_WHILE_CALCULATING_HOME_LOAN_ELIGIBILITY_MSG,e);
 		}
 		return null;
 	}
@@ -320,7 +326,7 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 				logger.info("=========>Bank Name=====>" + bankResponse.getValue());
 				double monthlyRate = personalLoanCriteria.getRoiLow() / 100 / 12;
 				logger.info("monthlyRate==>" + monthlyRate);
-				double totalPayments = tenure * 12;
+				double totalPayments = (tenure * 12);
 				logger.info("totalPayments==>" + totalPayments);
 				double result = getPMTCalculation(monthlyRate, totalPayments);
 				logger.info("result==>" + result);
@@ -344,8 +350,7 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 			CommonDocumentUtils.endHook(logger, "calculateMinMaxForPersonalLoan");
 			return minMaxData;
 		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("Error while Calculating Personal Loan Eligibility");
+			logger.error("Error while Calculating Personal Loan Eligibility : ",e);
 		}
 		return null;
 	}
@@ -372,7 +377,7 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 		}
 
 		if (json.isEmpty()) {
-			json.put("message", "No Result Found");
+			json.put(MESSAGE_LITERAL, NO_RESULT_FOUND);
 		} else {
 
 			// Getting Loan Providers
@@ -380,12 +385,12 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 			for (Entry<Integer, JSONObject> entry : minMaxData.entrySet()) {
 				bankIds.add(entry.getKey());
 			}
-			json.put("fundProivders", bankIds.size());
+			json.put(FUND_PROIVDERS, bankIds.size());
 			Object[] minMaxArr = loanEligibilityCriteriaRepository.getMinMaxRoiForPersonalLoan(bankIds,
 					eligibilityRequest.getConstitution());
 			if (!CommonUtils.isObjectNullOrEmpty(minMaxArr)) {
-				json.put("minRoi", minMaxArr[0]);
-				json.put("maxRoi", minMaxArr[1]);
+				json.put(MIN_ROI, minMaxArr[0]);
+				json.put(MAX_ROI, minMaxArr[1]);
 			}
 
 		}
@@ -435,7 +440,7 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 				logger.info("Bank Name()==>" + bankResponse.getValue());
 				double monthlyRate = lapEligibilityCriteria.getRoiLow() / 100 / 12;
 				logger.info("monthlyRate First==>" + monthlyRate);
-				double totalPayments = tenure * 12;
+				double totalPayments = (tenure * 12);
 				double result = getPMTCalculation(monthlyRate, totalPayments);
 				logger.info("result First==>" + result);
 				double maximum = getMinMax(income, result);
@@ -457,8 +462,7 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 			CommonDocumentUtils.endHook(logger, "calculateMinMaxForLAP");
 			return minMaxData;
 		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("Error while Calculating LAP Eligibility");
+			logger.error("Error while Calculating LAP Eligibility : ",e);
 		}
 		return null;
 	}
@@ -530,23 +534,22 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 
 			JSONObject result = new JSONObject();
 			if (finalMinList.isEmpty() && finalMaxList.isEmpty()) {
-				result.put("message", "No Result Found");
+				result.put(MESSAGE_LITERAL, NO_RESULT_FOUND);
 			} else {
 				result.put(CommonUtils.MAXIMUM, Math.abs(Math.round(Collections.max(finalMaxList))));
 				result.put(CommonUtils.MINIMUM, Math.abs(Math.round(Collections.min(finalMinList))));
 				Object[] minMaxArr = loanEligibilityCriteriaRepository.getMinMaxRoiForLAP(bankIds,
 						eligibilityRequest.getEmploymentType(), eligibilityRequest.getPropertyType());
 				if (!CommonUtils.isObjectNullOrEmpty(minMaxArr)) {
-					result.put("minRoi", minMaxArr[0]);
-					result.put("maxRoi", minMaxArr[1]);
+					result.put(MIN_ROI, minMaxArr[0]);
+					result.put(MAX_ROI, minMaxArr[1]);
 				}
-				result.put("fundProivders", bankIds.size());
+				result.put(FUND_PROIVDERS, bankIds.size());
 			}
 
 			return result;
 		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("Error while Calculating HomeLoan Eligibility");
+			logger.error(ERROR_WHILE_CALCULATING_HOME_LOAN_ELIGIBILITY_MSG,e);
 		}
 		return null;
 	}
@@ -556,7 +559,7 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 	// COMMON STARTS
 	@Override
 	public Integer calculateTenure(LoanEligibilility eligibilility, Integer productId) throws Exception {
-		CommonDocumentUtils.startHook(logger, "calculateTenure");
+		CommonDocumentUtils.startHook(logger, CALCULATE_TENURE);
 		try {
 			Integer age = CommonUtils.getAgeFromBirthDate(eligibilility.getDateOfBirth());
 			if (age == null || age >= 60 || age == 0) {
@@ -565,22 +568,21 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 			LoanType type = CommonUtils.LoanType.getType(productId);
 			switch (type) {
 			case HOME_LOAN:
-				CommonDocumentUtils.endHook(logger, "calculateTenure");
+				CommonDocumentUtils.endHook(logger, CALCULATE_TENURE);
 				return (60 - age > 30 ? 30 : 60 - age);
 			case LAP_LOAN:
-				CommonDocumentUtils.endHook(logger, "calculateTenure");
+				CommonDocumentUtils.endHook(logger, CALCULATE_TENURE);
 				return (60 - age > 15 ? 15 : 60 - age);
 			case PERSONAL_LOAN:
-				CommonDocumentUtils.endHook(logger, "calculateTenure");
+				CommonDocumentUtils.endHook(logger, CALCULATE_TENURE);
 				return (60 - age > 5 ? 5 : 60 - age);
 			default:
-				CommonDocumentUtils.endHook(logger, "calculateTenure");
+				CommonDocumentUtils.endHook(logger, CALCULATE_TENURE);
 				return null;
 			}
 		} catch (Exception e) {
-			CommonDocumentUtils.endHook(logger, "calculateTenure");
-			e.printStackTrace();
-			logger.error("Error while calulating tenure for Product ==>" + productId);
+			CommonDocumentUtils.endHook(logger, CALCULATE_TENURE);
+			logger.error("Error while calulating tenure for Product ==>" + productId + CommonUtils.EXCEPTION + e);
 			throw new ExcelException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
@@ -649,22 +651,22 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 		Integer actualTenure = null;
 		switch (type) {
 		case HOME_LOAN:
-			CommonDocumentUtils.endHook(logger, "calculateTenure");
+			CommonDocumentUtils.endHook(logger, CALCULATE_TENURE);
 			age = CommonUtils.getAgeFromBirthDate(request.getDateOfBirth());
 			actualTenure = (60 - age > 30 ? 30 : 60 - age);
 			break;
 		case LAP_LOAN:
-			CommonDocumentUtils.endHook(logger, "calculateTenure");
+			CommonDocumentUtils.endHook(logger, CALCULATE_TENURE);
 			age = CommonUtils.getAgeFromBirthDate(request.getDateOfBirth());
 			actualTenure = (60 - age > 15 ? 15 : 60 - age);
 			break;
 		case PERSONAL_LOAN:
-			CommonDocumentUtils.endHook(logger, "calculateTenure");
+			CommonDocumentUtils.endHook(logger, CALCULATE_TENURE);
 			age = CommonUtils.getAgeFromBirthDate(request.getDateOfBirth());
 			actualTenure = (60 - age > 5 ? 5 : 60 - age);
 			break;
 		default:
-			CommonDocumentUtils.endHook(logger, "calculateTenure");
+			CommonDocumentUtils.endHook(logger, CALCULATE_TENURE);
 			break;
 		}
 		
@@ -680,7 +682,7 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 		try {
 		logger.info("==================================>1");
 			
-		List<Object[]> operating=operatingStatementDetailsRepository.getCMADetail(applicationId,"Audited");
+		List<Object[]> operating=operatingStatementDetailsRepository.getCMADetail(applicationId,CommonUtils.AUDITED);
 		logger.info("==================================>2");
 			if(!CommonUtils.isObjectListNull(operating)) {
 				logger.info("==================================>3");
@@ -698,7 +700,7 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 				logger.info("==================================>8");
 				logger.info("Successfully get from operating ");
 			}
-			List<Object[]> liabilitie =liabilitiesDetailsRepository.getCMADetail(applicationId,"Audited");
+			List<Object[]> liabilitie =liabilitiesDetailsRepository.getCMADetail(applicationId,CommonUtils.AUDITED);
 			logger.info("==================================>9");
 			if(!CommonUtils.isObjectListNull(liabilitie)) {
 				logger.info("==================================>10");
@@ -712,7 +714,7 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 				logger.info("==================================>14");
 				logger.info("Successfully get from liabilitie ");
 			}
-			List<Object[]> asset =assetsDetailsRepository.getCMADetail(applicationId,"Audited");
+			List<Object[]> asset =assetsDetailsRepository.getCMADetail(applicationId,CommonUtils.AUDITED);
 			logger.info("==================================>15");
 			if(!CommonUtils.isObjectListNull(asset)) {
 				logger.info("==================================>16");
@@ -732,8 +734,7 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 			}
 			
 		} catch (NullPointerException e) {
-			e.printStackTrace();
-			logger.info("-----------------Exception in getCMADetail() -------------------");
+			logger.error("-----------------Exception in getCMADetail() -------------------",e);
 		}
 		logger.info("-----------------Exit from getCMADetail() -------------------");
 		return cmaDetailResponse ;

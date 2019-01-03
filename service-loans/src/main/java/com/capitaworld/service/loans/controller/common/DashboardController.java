@@ -57,13 +57,11 @@ public class DashboardController {
 						HttpStatus.OK);
 			}
 			
-			if (userType == CommonUtils.UserType.FUND_SEEKER) {
-				if (CommonUtils.isObjectNullOrEmpty(data.getId())) {
+			if (userType == CommonUtils.UserType.FUND_SEEKER && CommonUtils.isObjectNullOrEmpty(data.getId()) ) {
 					logger.warn("Application Id must not be Empty");
 					return new ResponseEntity<LoansResponse>(
 							new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()),
 							HttpStatus.OK);
-				}
 			}
 			
 			LoansResponse loansResponse = new LoansResponse("Data Found",HttpStatus.OK.value());			
@@ -81,7 +79,6 @@ public class DashboardController {
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while saving applicationRequest Details==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -115,7 +112,6 @@ public class DashboardController {
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getting count of Users==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);

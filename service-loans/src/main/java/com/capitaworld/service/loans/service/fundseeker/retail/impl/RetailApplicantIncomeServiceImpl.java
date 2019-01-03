@@ -72,8 +72,7 @@ public class RetailApplicantIncomeServiceImpl implements RetailApplicantIncomeSe
 			appIncomeRepository.save(appIncomeDetail);
 			return true;
 		} catch (Exception e) {
-			logger.error("THROW EXCEPTION WHILE SAVE RETAIL APPLICANT INCOME DETAILS");
-			e.printStackTrace();
+			logger.error("THROW EXCEPTION WHILE SAVE RETAIL APPLICANT INCOME DETAILS : ",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
@@ -139,8 +138,7 @@ public class RetailApplicantIncomeServiceImpl implements RetailApplicantIncomeSe
 		}
 
 		catch (Exception e) {
-			logger.info("Exception  in save Gross Income Detail  :-");
-			e.printStackTrace();
+			logger.error("Exception  in save Gross Income Detail  :-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}

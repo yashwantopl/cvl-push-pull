@@ -32,6 +32,7 @@ public class PrimaryPersonalLoanDetail extends LoanApplicationMaster implements 
 
 
 	public PrimaryPersonalLoanDetail() {
+		// Do nothing because of X and Y.
 	}
 
 	

@@ -75,8 +75,7 @@ public class CorporateFinalInfoServiceImpl implements CorporateFinalInfoService 
             return true;
 
         }catch (Exception e){
-            logger.error("Error while Saving Corporate Final Info:-");
-            e.printStackTrace();
+            logger.error("Error while Saving Corporate Final Info:-",e);
             throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
         }
 
@@ -146,7 +145,6 @@ public class CorporateFinalInfoServiceImpl implements CorporateFinalInfoService 
     @Override
     public CorporateFinalInfoRequest get(Long userId, Long applicationId) throws Exception {
         try {
-            // TODO Auto-generated method stub
             CorporateApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId(userId,
                     applicationId);
             if (applicantDetail == null) {
@@ -160,8 +158,7 @@ public class CorporateFinalInfoServiceImpl implements CorporateFinalInfoService 
 
             return corporateFinalInfoRequest;
         } catch (Exception e) {
-            logger.error("Error while getting Corporate Profile:-");
-            e.printStackTrace();
+            logger.error("Error while getting Corporate Profile:-",e);
             throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
         }
     }
@@ -169,7 +166,6 @@ public class CorporateFinalInfoServiceImpl implements CorporateFinalInfoService 
     @Override
     public CorporateFinalInfoRequest getNTBDetails(Long userId, Long applicationId) throws Exception {
         try {
-            // TODO Auto-generated method stub
             CorporateApplicantDetail applicantDetail = applicantRepository.getByApplicationIdAndIsAtive(applicationId);
             if (applicantDetail == null) {
                 return null;
@@ -182,8 +178,7 @@ public class CorporateFinalInfoServiceImpl implements CorporateFinalInfoService 
 
             return corporateFinalInfoRequest;
         } catch (Exception e) {
-            logger.error("Error while getting Corporate Profile:-");
-            e.printStackTrace();
+            logger.error("Error while getting Corporate Profile:-",e);
             throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
         }
     }
@@ -224,8 +219,7 @@ public class CorporateFinalInfoServiceImpl implements CorporateFinalInfoService 
             return true;
 
         }catch (Exception e){
-            logger.error("Error while Saving Corporate Final Info:-");
-            e.printStackTrace();
+            logger.error("Error while Saving Corporate Final Info:-",e);
             throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
         }
     }

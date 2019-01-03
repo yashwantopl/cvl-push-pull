@@ -701,6 +701,7 @@ public class WcTlParameter extends ProductMaster implements Serializable {
 	}
 
 	public WcTlParameter() {
+		// Do nothing because of X and Y.
 	}
 
 	public ProductMaster getFpProductId() {

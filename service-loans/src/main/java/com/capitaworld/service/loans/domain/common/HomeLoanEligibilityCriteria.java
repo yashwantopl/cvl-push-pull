@@ -194,7 +194,7 @@ public class HomeLoanEligibilityCriteria implements Serializable {
 		this.updateDate = updateDate;
 	}
 	
-	public Long getCreatedBy() {;
+	public Long getCreatedBy() {
 		return createdBy;
 	}
 

@@ -102,6 +102,12 @@ public class PrimaryViewController {
 	@Autowired
 	private PlTeaserViewService plTeaserViewService;
 
+	private static final String WARN_MSG_USER_VERIFICATION_INVALID_REQUEST_CLIENT_ID_IS_NOT_VALID = "user_verification, Invalid Request... Client Id is not valid : ";
+	private static final String ERROR_MSG_USER_VERIFICATION_INVALID_REQUEST_SOMETHING_WENT_WRONG = "user_verification, Invalid Request... Something went wrong : ";
+	private static final String WORKING_CAPITAL_PRIMARY_DETAILS = "Working Capital Primary Details";
+	private static final String MSG_USER_ID = "userId : ";
+	private static final String MSG_USER_TYPE = " userType : ";
+
 	@GetMapping(value = "/HomeLoan/{toApplicationId}")
 	public @ResponseBody ResponseEntity<LoansResponse> primaryViewHomeLoan(
 			@PathVariable(value = "toApplicationId") Long toApplicationId,
@@ -122,16 +128,15 @@ public class PrimaryViewController {
 								(LinkedHashMap<String, Object>) response.getData(), UserTypeRequest.class);
 						userType = req.getId().intValue();
 					} else {
-						logger.warn("user_verification, Invalid Request... Client Id is not valid");
+						logger.warn(WARN_MSG_USER_VERIFICATION_INVALID_REQUEST_CLIENT_ID_IS_NOT_VALID);
 						return new ResponseEntity<LoansResponse>(
-								new LoansResponse("Client Id is not valid", HttpStatus.BAD_REQUEST.value()),
+								new LoansResponse(CommonUtils.CLIENT_ID_IS_NOT_VALID, HttpStatus.BAD_REQUEST.value()),
 								HttpStatus.OK);
 					}
 				} catch (Exception e) {
-					logger.warn("user_verification, Invalid Request... Something went wrong");
-					e.printStackTrace();
+					logger.error(ERROR_MSG_USER_VERIFICATION_INVALID_REQUEST_SOMETHING_WENT_WRONG,e);
 					return new ResponseEntity<LoansResponse>(
-							new LoansResponse("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR.value()),
+							new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 							HttpStatus.OK);
 				}
 			} else {
@@ -144,13 +149,15 @@ public class PrimaryViewController {
 
 		} else {
 			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
+			userType = (Integer) request.getAttribute(CommonUtils.USER_TYPE);
 		}
 
+			logger.debug(MSG_USER_ID + userId + MSG_USER_TYPE + userType);
+
 		if (CommonUtils.isObjectNullOrEmpty(toApplicationId)) {
-			logger.warn("Invalid data or Requested data not found.", toApplicationId);
+			logger.warn(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, toApplicationId);
 			return new ResponseEntity<LoansResponse>(
-					new LoansResponse("Invalid data or Requested data not found.", HttpStatus.BAD_REQUEST.value()),
+					new LoansResponse(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, HttpStatus.BAD_REQUEST.value()),
 					HttpStatus.OK);
 		} else {
 			HomeLoanPrimaryViewResponse homeLoanPrimaryViewResponse = null;
@@ -166,7 +173,7 @@ public class PrimaryViewController {
 				}
 				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 			} catch (Exception e) {
-				loansResponse.setMessage("Something went wrong..!" + e.getMessage());
+				loansResponse.setMessage(CommonUtils.SOMETHING_WENT_WRONG + e.getMessage());
 				loansResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
 				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 			}
@@ -193,16 +200,15 @@ public class PrimaryViewController {
 								(LinkedHashMap<String, Object>) response.getData(), UserTypeRequest.class);
 						userType = req.getId().intValue();
 					} else {
-						logger.warn("user_verification, Invalid Request... Client Id is not valid");
+						logger.warn(WARN_MSG_USER_VERIFICATION_INVALID_REQUEST_CLIENT_ID_IS_NOT_VALID);
 						return new ResponseEntity<LoansResponse>(
-								new LoansResponse("Client Id is not valid", HttpStatus.BAD_REQUEST.value()),
+								new LoansResponse(CommonUtils.CLIENT_ID_IS_NOT_VALID, HttpStatus.BAD_REQUEST.value()),
 								HttpStatus.OK);
 					}
 				} catch (Exception e) {
-					logger.warn("user_verification, Invalid Request... Something went wrong");
-					e.printStackTrace();
+					logger.warn(ERROR_MSG_USER_VERIFICATION_INVALID_REQUEST_SOMETHING_WENT_WRONG,e);
 					return new ResponseEntity<LoansResponse>(
-							new LoansResponse("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR.value()),
+							new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 							HttpStatus.OK);
 				}
 			} else {
@@ -215,13 +221,13 @@ public class PrimaryViewController {
 
 		} else {
 			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
+			userType = (Integer) request.getAttribute(CommonUtils.USER_TYPE);
 		}
 
 		if (CommonUtils.isObjectNullOrEmpty(toApplicationId)) {
-			logger.warn("Invalid data or Requested data not found.", toApplicationId);
+			logger.warn(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, toApplicationId);
 			return new ResponseEntity<LoansResponse>(
-					new LoansResponse("Invalid data or Requested data not found.", HttpStatus.BAD_REQUEST.value()),
+					new LoansResponse(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, HttpStatus.BAD_REQUEST.value()),
 					HttpStatus.OK);
 		} else {
 			RetailPrimaryViewResponse personalLoansPrimaryViewResponse = null;
@@ -267,16 +273,15 @@ public class PrimaryViewController {
 								(LinkedHashMap<String, Object>) response.getData(), UserTypeRequest.class);
 						userType = req.getId().intValue();
 					} else {
-						logger.warn("user_verification, Invalid Request... Client Id is not valid");
+						logger.warn(WARN_MSG_USER_VERIFICATION_INVALID_REQUEST_CLIENT_ID_IS_NOT_VALID);
 						return new ResponseEntity<LoansResponse>(
-								new LoansResponse("Client Id is not valid", HttpStatus.BAD_REQUEST.value()),
+								new LoansResponse(CommonUtils.CLIENT_ID_IS_NOT_VALID, HttpStatus.BAD_REQUEST.value()),
 								HttpStatus.OK);
 					}
 				} catch (Exception e) {
-					logger.warn("user_verification, Invalid Request... Something went wrong");
-					e.printStackTrace();
+					logger.error(ERROR_MSG_USER_VERIFICATION_INVALID_REQUEST_SOMETHING_WENT_WRONG,e);
 					return new ResponseEntity<LoansResponse>(
-							new LoansResponse("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR.value()),
+							new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 							HttpStatus.OK);
 				}
 			} else {
@@ -289,13 +294,13 @@ public class PrimaryViewController {
 
 		} else {
 			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
+			userType = (Integer) request.getAttribute(CommonUtils.USER_TYPE);
 		}
 
 		if (CommonUtils.isObjectNullOrEmpty(toApplicationId)) {
-			logger.warn("Invalid data or Requested data not found.", toApplicationId);
+			logger.warn(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, toApplicationId);
 			return new ResponseEntity<LoansResponse>(
-					new LoansResponse("Invalid data or Requested data not found.", HttpStatus.BAD_REQUEST.value()),
+					new LoansResponse(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, HttpStatus.BAD_REQUEST.value()),
 					HttpStatus.OK);
 		} else {
 			CarLoanPrimaryViewResponse carLoanPrimaryViewResponse = null;
@@ -340,16 +345,15 @@ public class PrimaryViewController {
 								(LinkedHashMap<String, Object>) response.getData(), UserTypeRequest.class);
 						userType = req.getId().intValue();
 					} else {
-						logger.warn("user_verification, Invalid Request... Client Id is not valid");
+						logger.warn(WARN_MSG_USER_VERIFICATION_INVALID_REQUEST_CLIENT_ID_IS_NOT_VALID);
 						return new ResponseEntity<LoansResponse>(
-								new LoansResponse("Client Id is not valid", HttpStatus.BAD_REQUEST.value()),
+								new LoansResponse(CommonUtils.CLIENT_ID_IS_NOT_VALID, HttpStatus.BAD_REQUEST.value()),
 								HttpStatus.OK);
 					}
 				} catch (Exception e) {
-					logger.warn("user_verification, Invalid Request... Something went wrong");
-					e.printStackTrace();
+					logger.error(ERROR_MSG_USER_VERIFICATION_INVALID_REQUEST_SOMETHING_WENT_WRONG,e);
 					return new ResponseEntity<LoansResponse>(
-							new LoansResponse("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR.value()),
+							new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 							HttpStatus.OK);
 				}
 			} else {
@@ -362,13 +366,13 @@ public class PrimaryViewController {
 
 		} else {
 			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
+			userType = (Integer) request.getAttribute(CommonUtils.USER_TYPE);
 		}
 
 		if (CommonUtils.isObjectNullOrEmpty(toApplicationId)) {
-			logger.warn("Invalid data or Requested data not found.", toApplicationId);
+			logger.warn(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, toApplicationId);
 			return new ResponseEntity<LoansResponse>(
-					new LoansResponse("Invalid data or Requested data not found.", HttpStatus.BAD_REQUEST.value()),
+					new LoansResponse(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, HttpStatus.BAD_REQUEST.value()),
 					HttpStatus.OK);
 		} else {
 			LapPrimaryViewResponse lapPrimaryViewResponse = null;
@@ -384,9 +388,8 @@ public class PrimaryViewController {
 				}
 				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 			} catch (Exception e) {
-				e.printStackTrace();
 				loansResponse.setData(lapPrimaryViewResponse);
-				loansResponse.setMessage("Something went wrong..!");
+				loansResponse.setMessage(CommonUtils.SOMETHING_WENT_WRONG);
 				loansResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
 				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 			}
@@ -414,16 +417,15 @@ public class PrimaryViewController {
 								(LinkedHashMap<String, Object>) response.getData(), UserTypeRequest.class);
 						userType = req.getId().intValue();
 					} else {
-						logger.warn("user_verification, Invalid Request... Client Id is not valid");
+						logger.warn(WARN_MSG_USER_VERIFICATION_INVALID_REQUEST_CLIENT_ID_IS_NOT_VALID);
 						return new ResponseEntity<LoansResponse>(
-								new LoansResponse("Client Id is not valid", HttpStatus.BAD_REQUEST.value()),
+								new LoansResponse(CommonUtils.CLIENT_ID_IS_NOT_VALID, HttpStatus.BAD_REQUEST.value()),
 								HttpStatus.OK);
 					}
 				} catch (Exception e) {
-					logger.warn("user_verification, Invalid Request... Something went wrong");
-					e.printStackTrace();
+					logger.error(ERROR_MSG_USER_VERIFICATION_INVALID_REQUEST_SOMETHING_WENT_WRONG,e);
 					return new ResponseEntity<LoansResponse>(
-							new LoansResponse("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR.value()),
+							new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 							HttpStatus.OK);
 				}
 			} else {
@@ -436,13 +438,13 @@ public class PrimaryViewController {
 
 		} else {
 			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
+			userType = (Integer) request.getAttribute(CommonUtils.USER_TYPE);
 		}
 
 		if (CommonUtils.isObjectNullOrEmpty(toApplicationId)) {
-			logger.warn("Invalid data or Requested data not found.", toApplicationId);
+			logger.warn(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, toApplicationId);
 			return new ResponseEntity<LoansResponse>(
-					new LoansResponse("Invalid data or Requested data not found.", HttpStatus.BAD_REQUEST.value()),
+					new LoansResponse(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, HttpStatus.BAD_REQUEST.value()),
 					HttpStatus.OK);
 		} else {
 			WorkingCapitalPrimaryViewResponse workingCapitalPrimaryViewResponse = null;
@@ -451,7 +453,7 @@ public class PrimaryViewController {
 						.getWorkingCapitalPrimaryViewDetails(toApplicationId, userType, userId);
 				if (!CommonUtils.isObjectNullOrEmpty(workingCapitalPrimaryViewResponse)) {
 					loansResponse.setData(workingCapitalPrimaryViewResponse);
-					loansResponse.setMessage("Working Capital Primary Details");
+					loansResponse.setMessage(WORKING_CAPITAL_PRIMARY_DETAILS);
 					loansResponse.setStatus(HttpStatus.OK.value());
 				} else {
 					loansResponse.setMessage("No data found for Working Capital final view");
@@ -460,7 +462,7 @@ public class PrimaryViewController {
 				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 			} catch (Exception e) {
 				loansResponse.setData(workingCapitalPrimaryViewResponse);
-				loansResponse.setMessage("Something went wrong..!");
+				loansResponse.setMessage(CommonUtils.SOMETHING_WENT_WRONG);
 				loansResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
 				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 			}
@@ -488,16 +490,15 @@ public class PrimaryViewController {
 								(LinkedHashMap<String, Object>) response.getData(), UserTypeRequest.class);
 						userType = req.getId().intValue();
 					} else {
-						logger.warn("user_verification, Invalid Request... Client Id is not valid");
+						logger.warn(WARN_MSG_USER_VERIFICATION_INVALID_REQUEST_CLIENT_ID_IS_NOT_VALID);
 						return new ResponseEntity<LoansResponse>(
-								new LoansResponse("Client Id is not valid", HttpStatus.BAD_REQUEST.value()),
+								new LoansResponse(CommonUtils.CLIENT_ID_IS_NOT_VALID, HttpStatus.BAD_REQUEST.value()),
 								HttpStatus.OK);
 					}
 				} catch (Exception e) {
-					logger.warn("user_verification, Invalid Request... Something went wrong");
-					e.printStackTrace();
+					logger.error(ERROR_MSG_USER_VERIFICATION_INVALID_REQUEST_SOMETHING_WENT_WRONG,e);
 					return new ResponseEntity<LoansResponse>(
-							new LoansResponse("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR.value()),
+							new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 							HttpStatus.OK);
 				}
 			} else {
@@ -510,13 +511,13 @@ public class PrimaryViewController {
 
 		} else {
 			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
+			userType = (Integer) request.getAttribute(CommonUtils.USER_TYPE);
 		}
 
 		if (toApplicationId == null) {
-			logger.warn("Invalid data or Requested data not found.", toApplicationId);
+			logger.warn(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, toApplicationId);
 			return new ResponseEntity<LoansResponse>(
-					new LoansResponse("Invalid data or Requested data not found.", HttpStatus.BAD_REQUEST.value()),
+					new LoansResponse(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, HttpStatus.BAD_REQUEST.value()),
 					HttpStatus.OK);
 		} else {
 			TermLoanPrimaryViewResponse termLoanPrimaryViewResponse = null;
@@ -525,7 +526,7 @@ public class PrimaryViewController {
 						userType, userId);
 				if (!CommonUtils.isObjectNullOrEmpty(termLoanPrimaryViewResponse)) {
 					loansResponse.setData(termLoanPrimaryViewResponse);
-					loansResponse.setMessage("Working Capital Primary Details");
+					loansResponse.setMessage(WORKING_CAPITAL_PRIMARY_DETAILS);
 					loansResponse.setStatus(HttpStatus.OK.value());
 				} else {
 					loansResponse.setMessage("No data found for Term Loan final view");
@@ -534,7 +535,7 @@ public class PrimaryViewController {
 				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 			} catch (Exception e) {
 				loansResponse.setData(termLoanPrimaryViewResponse);
-				loansResponse.setMessage("Something went wrong..!");
+				loansResponse.setMessage(CommonUtils.SOMETHING_WENT_WRONG);
 				loansResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
 				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 			}
@@ -564,16 +565,15 @@ public class PrimaryViewController {
 								(LinkedHashMap<String, Object>) response.getData(), UserTypeRequest.class);
 						userType = req.getId().intValue();
 					} else {
-						logger.warn("user_verification, Invalid Request... Client Id is not valid");
+						logger.warn(WARN_MSG_USER_VERIFICATION_INVALID_REQUEST_CLIENT_ID_IS_NOT_VALID);
 						return new ResponseEntity<LoansResponse>(
-								new LoansResponse("Client Id is not valid", HttpStatus.BAD_REQUEST.value()),
+								new LoansResponse(CommonUtils.CLIENT_ID_IS_NOT_VALID, HttpStatus.BAD_REQUEST.value()),
 								HttpStatus.OK);
 					}
 				} catch (Exception e) {
-					logger.warn("user_verification, Invalid Request... Something went wrong");
-					e.printStackTrace();
+					logger.error(ERROR_MSG_USER_VERIFICATION_INVALID_REQUEST_SOMETHING_WENT_WRONG,e);
 					return new ResponseEntity<LoansResponse>(
-							new LoansResponse("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR.value()),
+							new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 							HttpStatus.OK);
 				}
 			} else {
@@ -586,13 +586,13 @@ public class PrimaryViewController {
 
 		} else {
 			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
+			userType = (Integer) request.getAttribute(CommonUtils.USER_TYPE);
 		}
 
 		if (toApplicationId == null) {
-			logger.warn("Invalid data or Requested data not found.", toApplicationId);
+			logger.warn(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, toApplicationId);
 			return new ResponseEntity<LoansResponse>(
-					new LoansResponse("Invalid data or Requested data not found.", HttpStatus.BAD_REQUEST.value()),
+					new LoansResponse(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, HttpStatus.BAD_REQUEST.value()),
 					HttpStatus.OK);
 		} else {
 			UnsecuredLoanPrimaryViewResponse unsecuredLoanPrimaryViewResponse = null;
@@ -601,7 +601,7 @@ public class PrimaryViewController {
 						.getUnsecuredLoanPrimaryViewDetails(toApplicationId, userType, userId);
 				if (!CommonUtils.isObjectNullOrEmpty(unsecuredLoanPrimaryViewResponse)) {
 					loansResponse.setData(unsecuredLoanPrimaryViewResponse);
-					loansResponse.setMessage("Working Capital Primary Details");
+					loansResponse.setMessage(WORKING_CAPITAL_PRIMARY_DETAILS);
 					loansResponse.setStatus(HttpStatus.OK.value());
 				} else {
 					loansResponse.setMessage("No data found for Term Loan final view");
@@ -610,7 +610,7 @@ public class PrimaryViewController {
 				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 			} catch (Exception e) {
 				loansResponse.setData(unsecuredLoanPrimaryViewResponse);
-				loansResponse.setMessage("Something went wrong..!");
+				loansResponse.setMessage(CommonUtils.SOMETHING_WENT_WRONG);
 				loansResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
 				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 			}
@@ -630,7 +630,7 @@ public class PrimaryViewController {
 		Integer userType = null;
 		Long productId = null;
 		if (!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_TYPE))) {
-			userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
+			userType = (Integer) request.getAttribute(CommonUtils.USER_TYPE);
 		}
 
 		if (CommonDocumentUtils.isThisClientApplication(request)) {
@@ -644,21 +644,20 @@ public class PrimaryViewController {
 								(LinkedHashMap<String, Object>) response.getData(), UserTypeRequest.class);
 						userType = req.getId().intValue();
 					} else {
-						logger.warn("user_verification, Invalid Request... Client Id is not valid");
+						logger.warn(WARN_MSG_USER_VERIFICATION_INVALID_REQUEST_CLIENT_ID_IS_NOT_VALID);
 						return new ResponseEntity<LoansResponse>(
-								new LoansResponse("Client Id is not valid", HttpStatus.BAD_REQUEST.value()),
+								new LoansResponse(CommonUtils.CLIENT_ID_IS_NOT_VALID, HttpStatus.BAD_REQUEST.value()),
 								HttpStatus.OK);
 					}
 				} catch (Exception e) {
-					logger.warn("user_verification, Invalid Request... Something went wrong");
-					e.printStackTrace();
+					logger.error(ERROR_MSG_USER_VERIFICATION_INVALID_REQUEST_SOMETHING_WENT_WRONG,e);
 					return new ResponseEntity<LoansResponse>(
-							new LoansResponse("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR.value()),
+							new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 							HttpStatus.OK);
 				}
 			} else {
 				if (!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_TYPE))) {
-					userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
+					userType = (Integer) request.getAttribute(CommonUtils.USER_TYPE);
 				}
 				if (!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_ID))) {
 					userId = ((Long) request.getAttribute(CommonUtils.USER_ID));
@@ -673,13 +672,13 @@ public class PrimaryViewController {
 
 		} else {
 			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
+			userType = (Integer) request.getAttribute(CommonUtils.USER_TYPE);
 		}
 
 		if (CommonUtils.isObjectNullOrEmpty(proposalMapId)) {
 			logger.warn("Invalid data or Requested data not found.", proposalMapId);
 			return new ResponseEntity<LoansResponse>(
-					new LoansResponse("Invalid data or Requested data not found.", HttpStatus.BAD_REQUEST.value()),
+					new LoansResponse(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, HttpStatus.BAD_REQUEST.value()),
 					HttpStatus.OK);
 		} else {
 			CorporatePrimaryViewResponse corporatePrimaryViewResponse = null;
@@ -699,7 +698,7 @@ public class PrimaryViewController {
 				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 			} catch (Exception e) {
 				loansResponse.setData(corporatePrimaryViewResponse);
-				loansResponse.setMessage("Something went wrong..!");
+				loansResponse.setMessage(CommonUtils.SOMETHING_WENT_WRONG);
 				loansResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
 				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 			}
@@ -720,7 +719,7 @@ public class PrimaryViewController {
 		Long userId = null;
 		Integer userType = null;
 		if (!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_TYPE))) {
-			userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
+			userType = (Integer) request.getAttribute(CommonUtils.USER_TYPE);
 		}
 		if (CommonDocumentUtils.isThisClientApplication(request)) {
 			if (!CommonUtils.isObjectNullOrEmpty(clientId) && userType != CommonUtils.UserType.FUND_PROVIDER) {
@@ -732,21 +731,20 @@ public class PrimaryViewController {
 								(LinkedHashMap<String, Object>) response.getData(), UserTypeRequest.class);
 						userType = req.getId().intValue();
 					} else {
-						logger.warn("user_verification, Invalid Request... Client Id is not valid");
+						logger.warn(WARN_MSG_USER_VERIFICATION_INVALID_REQUEST_CLIENT_ID_IS_NOT_VALID);
 						return new ResponseEntity<LoansResponse>(
-								new LoansResponse("Client Id is not valid", HttpStatus.BAD_REQUEST.value()),
+								new LoansResponse(CommonUtils.CLIENT_ID_IS_NOT_VALID, HttpStatus.BAD_REQUEST.value()),
 								HttpStatus.OK);
 					}
 				} catch (Exception e) {
-					logger.warn("user_verification, Invalid Request... Something went wrong");
-					e.printStackTrace();
+					logger.error(ERROR_MSG_USER_VERIFICATION_INVALID_REQUEST_SOMETHING_WENT_WRONG,e);
 					return new ResponseEntity<LoansResponse>(
-							new LoansResponse("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR.value()),
+							new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 							HttpStatus.OK);
 				}
 			} else {
 				if (!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_TYPE))) {
-					userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
+					userType = (Integer) request.getAttribute(CommonUtils.USER_TYPE);
 				}
 				if (!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_ID))) {
 					userId = ((Long) request.getAttribute(CommonUtils.USER_ID));
@@ -755,12 +753,12 @@ public class PrimaryViewController {
 
 		} else {
 			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
+			userType = (Integer) request.getAttribute(CommonUtils.USER_TYPE);
 		}
 		if (CommonUtils.isObjectNullOrEmpty(toApplicationId) || CommonUtils.isObjectNullOrEmpty(productMappingId)) {
-			logger.warn("Invalid data or Requested data not found." + toApplicationId + productMappingId);
+			logger.warn(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND + toApplicationId + productMappingId);
 			return new ResponseEntity<LoansResponse>(
-					new LoansResponse("Invalid data or Requested data not found.", HttpStatus.BAD_REQUEST.value()),
+					new LoansResponse(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, HttpStatus.BAD_REQUEST.value()),
 					HttpStatus.OK);
 		} else {
 			LoansResponse loansResponse = new LoansResponse();
@@ -782,7 +780,7 @@ public class PrimaryViewController {
 				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 			} catch (Exception e) {
 				loansResponse.setData(ntbPrimaryViewResponse);
-				loansResponse.setMessage("Something went wrong..!");
+				loansResponse.setMessage(CommonUtils.SOMETHING_WENT_WRONG);
 				loansResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
 				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 			}
@@ -828,7 +826,7 @@ public class PrimaryViewController {
 					applicationId, fpProductId, NotificationTemplate.PRIMARY_VIEW, loginUserType);
 
 		} catch (Exception e) {
-			// TODO: handle exception
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 	}
 
@@ -872,7 +870,7 @@ public class PrimaryViewController {
 						applicationId, fpProductId, NotificationTemplate.FINAL_VIEW, loginUserType);
 			}
 		} catch (Exception e) {
-			// TODO: handle exception
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 	}
 
@@ -916,7 +914,7 @@ public class PrimaryViewController {
 					applicationId, fpProductId, null, loginUserType);
 
 		} catch (Exception e) {
-			// TODO: handle exception
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 	}
 
@@ -934,7 +932,7 @@ public class PrimaryViewController {
 		Long userId = null;
 		Integer userType = null;
 		if (!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_TYPE))) {
-			userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
+			userType = (Integer) request.getAttribute(CommonUtils.USER_TYPE);
 		}
 		if (CommonDocumentUtils.isThisClientApplication(request)) {
 			if (!CommonUtils.isObjectNullOrEmpty(clientId) && userType != CommonUtils.UserType.FUND_PROVIDER) {
@@ -946,21 +944,20 @@ public class PrimaryViewController {
 								(LinkedHashMap<String, Object>) response.getData(), UserTypeRequest.class);
 						userType = req.getId().intValue();
 					} else {
-						logger.warn("user_verification, Invalid Request... Client Id is not valid");
+						logger.warn(WARN_MSG_USER_VERIFICATION_INVALID_REQUEST_CLIENT_ID_IS_NOT_VALID);
 						return new ResponseEntity<LoansResponse>(
-								new LoansResponse("Client Id is not valid", HttpStatus.BAD_REQUEST.value()),
+								new LoansResponse(CommonUtils.CLIENT_ID_IS_NOT_VALID, HttpStatus.BAD_REQUEST.value()),
 								HttpStatus.OK);
 					}
 				} catch (Exception e) {
-					logger.warn("user_verification, Invalid Request... Something went wrong");
-					e.printStackTrace();
+					logger.error(ERROR_MSG_USER_VERIFICATION_INVALID_REQUEST_SOMETHING_WENT_WRONG,e);
 					return new ResponseEntity<LoansResponse>(
-							new LoansResponse("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR.value()),
+							new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 							HttpStatus.OK);
 				}
 			} else {
 				if (!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_TYPE))) {
-					userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
+					userType = (Integer) request.getAttribute(CommonUtils.USER_TYPE);
 				}
 				if (!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_ID))) {
 					userId = ((Long) request.getAttribute(CommonUtils.USER_ID));
@@ -972,9 +969,9 @@ public class PrimaryViewController {
 			userType = 1;// ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
 		}
 		if (CommonUtils.isObjectNullOrEmpty(toApplicationId) || CommonUtils.isObjectNullOrEmpty(productMappingId)) {
-			logger.warn("Invalid data or Requested data not found." + toApplicationId + productMappingId);
+			logger.warn(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND + toApplicationId + productMappingId);
 			return new ResponseEntity<LoansResponse>(
-					new LoansResponse("Invalid data or Requested data not found.", HttpStatus.BAD_REQUEST.value()),
+					new LoansResponse(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, HttpStatus.BAD_REQUEST.value()),
 					HttpStatus.OK);
 		} else {
 			LoansResponse loansResponse = new LoansResponse();
@@ -996,7 +993,7 @@ public class PrimaryViewController {
 				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 			} catch (Exception e) {
 				loansResponse.setData(plPrimaryViewResponse);
-				loansResponse.setMessage("Something went wrong..!");
+				loansResponse.setMessage(CommonUtils.SOMETHING_WENT_WRONG);
 				loansResponse.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
 				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 			}

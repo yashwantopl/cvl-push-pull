@@ -59,9 +59,9 @@ public class CorporateFinalInfoController {
                 } else if (!CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getUserId())) {
                     userId = corporateFinalInfoRequest.getUserId();
                 } else {
-                    logger.warn("Invalid request.");
+                    logger.warn(CommonUtils.INVALID_REQUEST);
                     return new ResponseEntity<LoansResponse>(
-                            new LoansResponse("Invalid request.", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+                            new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
                 }
             }
 
@@ -100,7 +100,7 @@ public class CorporateFinalInfoController {
             return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
                     HttpStatus.OK);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(CommonUtils.EXCEPTION,e);
             return new ResponseEntity<LoansResponse>(
                     new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
                     HttpStatus.INTERNAL_SERVER_ERROR);
@@ -160,7 +160,7 @@ public class CorporateFinalInfoController {
                 logger.warn(
                         "ApplicationId Require to get Corporate Final Info Details. Application Id ==>" + applicationId);
                 return new ResponseEntity<LoansResponse>(
-                        new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+                        new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
             }
 
             CorporateFinalInfoRequest response = corporateFinalInfoService.get(id, applicationId);
@@ -193,7 +193,7 @@ public class CorporateFinalInfoController {
                 logger.warn(
                         "ApplicationId Require to get Corporate Final Info Details. Application Id ==>" + applicationId);
                 return new ResponseEntity<LoansResponse>(
-                        new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+                        new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
             }
 
             CorporateFinalInfoRequest response = corporateFinalInfoService.getNTBDetails(id, applicationId);
@@ -226,9 +226,9 @@ public class CorporateFinalInfoController {
                 } else if (!CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getUserId())) {
                     userId = corporateFinalInfoRequest.getUserId();
                 } else {
-                    logger.warn("Invalid request.");
+                    logger.warn(CommonUtils.INVALID_REQUEST);
                     return new ResponseEntity<LoansResponse>(
-                            new LoansResponse("Invalid request.", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+                            new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
                 }
             }
 
@@ -267,7 +267,7 @@ public class CorporateFinalInfoController {
             return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
                     HttpStatus.OK);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(CommonUtils.EXCEPTION,e);
             return new ResponseEntity<LoansResponse>(
                     new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
                     HttpStatus.INTERNAL_SERVER_ERROR);

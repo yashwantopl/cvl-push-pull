@@ -29,6 +29,7 @@ public class ExistingProductDetailRequest implements Serializable {
 	private Boolean isActive=true;
 
 	public ExistingProductDetailRequest() {
+		// Do nothing because of X and Y.
 	}
 
 	public Long getId() {
