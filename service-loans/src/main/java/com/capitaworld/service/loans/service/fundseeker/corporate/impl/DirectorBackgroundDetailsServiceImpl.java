@@ -234,6 +234,13 @@ public class DirectorBackgroundDetailsServiceImpl implements DirectorBackgroundD
 		logger.info("Exit in saveDirectors()");
 		return false;
 	}
+
+
+	@Override
+	public boolean inactive(Long applicationId, Long userId) {
+		int inActive = directorBackgroundDetailsRepository.inActive(userId, applicationId);
+		return inActive > 0;
+	}
 	
 	
 

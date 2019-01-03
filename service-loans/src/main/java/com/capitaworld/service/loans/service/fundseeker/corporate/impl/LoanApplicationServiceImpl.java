@@ -1644,6 +1644,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
+	
+	@Override
+	public Boolean isMcqSkipped(Long applicationId) throws Exception {
+		Long count = loanApplicationRepository.checkMcqSkipped(applicationId);
+		return (count != null ? count > 0 : false);
+	}
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -1712,7 +1718,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		List<Long> coAppIds = null;
 
 		Long coAppCount;
-
+		
+		Boolean isFinalMcqFilled = applicationMaster.getIsFinalMcqFilled() != null ? applicationMaster.getIsFinalMcqFilled() : false; 
+		Boolean isMcqSkipped = applicationMaster.getIsMcqSkipped() != null ? applicationMaster.getIsMcqSkipped() : false; 
+		
 		int index = 0;
 		final String INVALID_MSG = "Requested data is Invalid.";
 		JSONObject response = new JSONObject();
@@ -1915,8 +1924,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			// return response;
 			// }
 			if (CommonUtils.BusinessType.EXISTING_BUSINESS.getId().equals(applicationMaster.getBusinessTypeId())) {
-				if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsFinalMcqFilled())
-						|| !applicationMaster.getIsFinalMcqFilled().booleanValue()) {
+				if (!isFinalMcqFilled && !isMcqSkipped) {
 					response.put(MESSAGE_LITERAL, PLEASE_FILL_FINAL_MCQ_DETAILS_TO_MOVE_NEXT);
 					response.put(RESULT_LITERAL, false);
 					return response;
@@ -1951,8 +1959,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			 * response.put(RESULT_LITERAL, false); return response; }
 			 */
 			if (CommonUtils.BusinessType.EXISTING_BUSINESS.getId().equals(applicationMaster.getBusinessTypeId())) {
-				if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsFinalMcqFilled())
-						|| !applicationMaster.getIsFinalMcqFilled().booleanValue()) {
+				if (!isFinalMcqFilled && !isMcqSkipped) {
 					response.put(MESSAGE_LITERAL, PLEASE_FILL_FINAL_MCQ_DETAILS_TO_MOVE_NEXT);
 					response.put(RESULT_LITERAL, false);
 					return response;
@@ -1996,8 +2003,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			 * response.put(RESULT_LITERAL, false); return response; }
 			 */
 			if (CommonUtils.BusinessType.EXISTING_BUSINESS.getId().equals(applicationMaster.getBusinessTypeId())) {
-				if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsFinalMcqFilled())
-						|| !applicationMaster.getIsFinalMcqFilled().booleanValue()) {
+				if (!isFinalMcqFilled && !isMcqSkipped) {
 					response.put(MESSAGE_LITERAL, PLEASE_FILL_FINAL_MCQ_DETAILS_TO_MOVE_NEXT);
 					response.put(RESULT_LITERAL, false);
 					return response;

@@ -323,6 +323,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 
 		corporateFinalViewResponse.setProductId(loanApplicationMaster.getProductId());
 		corporateFinalViewResponse.setApplicationType(loanApplicationMaster.getWcRenewalStatus() != null ? WcRenewalType.getById(loanApplicationMaster.getWcRenewalStatus()).getValue().toString() : "New" );
+		corporateFinalViewResponse.setIsMcqSkipped(loanApplicationMaster.getIsMcqSkipped() != null ? loanApplicationMaster.getIsMcqSkipped() : false);
 		// ===================== MATCHES DATA ======================//
 		if (userType != null && !(CommonUtils.UserType.FUND_SEEKER == userType) ) {
 			    // TEASER VIEW FROM FP
@@ -1606,12 +1607,12 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 					logger.warn("::::::=====MCA Data is Null====:::::::For:::::==>" + companyId);
 				}
 				
-				/*McaResponse mcaFinancialAndDetailsRes=mcaClient.getCompanyFinancialCalcAndDetails(toApplicationId, companyId);
+				McaResponse mcaFinancialAndDetailsRes=mcaClient.getCompanyFinancialCalcAndDetails(toApplicationId, companyId);
 				if(mcaFinancialAndDetailsRes.getData()!=null) {
 					corporateFinalViewResponse.setMcaFinancialAndDetailsResponse(mcaFinancialAndDetailsRes);
 				}else {
 					logger.info("::::::=====MCA Financial Data is Null====:::::::For:::::==>"+ companyId + " appId==>"+toApplicationId);
-				}*/
+				}
 				
 			} else {
 				logger.warn("Mca Company Id is Null");
