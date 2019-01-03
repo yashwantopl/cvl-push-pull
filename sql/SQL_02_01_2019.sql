@@ -1,0 +1,1 @@
+ALTER TABLE `loan_application`.`fs_loan_application_master` ADD COLUMN `is_mcq_skipped` BIT(1) DEFAULT FALSE NULL AFTER `wc_renewal_status`; 

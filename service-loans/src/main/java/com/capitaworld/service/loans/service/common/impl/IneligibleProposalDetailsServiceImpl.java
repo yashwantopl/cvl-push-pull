@@ -151,7 +151,6 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 			ineligibleProposalDetailsRepository.save(inlProposalDetails);
 			return true;
 		} catch (Exception e) {
-			e.printStackTrace();
 			logger.error("error while saving in eligible proposal : ",e);
 		}
 		return false;
@@ -497,11 +496,11 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 					}
 				}
 				if (isMainDirector == 0) {
-					fsName = NTBResponse.get(0).getDirectorsName() != null ? NTBResponse.get(0).getDirectorsName()
+					fsName = NTBResponse == null ? "NA" : NTBResponse.get(0).getDirectorsName() != null ? NTBResponse.get(0).getDirectorsName()
 							: "NA";
 					notificationParams.put(CommonUtils.PARAMETERS_FS_NAME, fsName != null ? fsName : "NA");
 					notificationParams.put(CommonUtils.PARAMETERS_ADDRESS,
-							NTBResponse.get(0).getAddress() != null ? NTBResponse.get(0).getAddress() : "NA");
+							NTBResponse == null ? "NA" : NTBResponse.get(0).getAddress() != null ? NTBResponse.get(0).getAddress() : "NA");
 				}
 			} else {
 				notificationParams.put(CommonUtils.PARAMETERS_FS_NAME, fsName != null ? fsName : "NA");

@@ -4,7 +4,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.capitaworld.service.loans.domain.fundseeker.corporate.FinalTermLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.FinalUnsecureLoanDetail;
 
 public interface FinalUnsecuredLoanDetailRepository extends JpaRepository<FinalUnsecureLoanDetail, Long> {

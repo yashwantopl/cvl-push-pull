@@ -1,6 +1,5 @@
 package com.capitaworld.service.loans.service.teaser.primaryview.impl;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;

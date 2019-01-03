@@ -31,7 +31,6 @@ import com.capitaworld.service.loans.utils.CommonUtils.LoanType;
 
 @Service
 public class UniformProductParameterServiceImpl implements UniformProductParameterService {
-	private static final Logger logger = LoggerFactory.getLogger(UniformProductParameterServiceImpl.class);
 
 	@Autowired
 	private UniformProductParameterRepository uniformProductParameterRepository;

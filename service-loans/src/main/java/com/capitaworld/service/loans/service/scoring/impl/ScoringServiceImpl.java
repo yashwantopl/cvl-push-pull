@@ -684,8 +684,10 @@ public class ScoringServiceImpl implements ScoringService {
                         logger.error(ERROR_WHILE_GETTING_FIELD_LIST,e);
                     }
 
-                    List<Map<String, Object>> dataList = (List<Map<String, Object>>) scoringResponse.getDataList();
-
+                    List<Map<String, Object>> dataList = new ArrayList<>();
+                    if (scoringResponse != null && scoringResponse.getDataList() != null) {
+                        dataList = (List<Map<String, Object>>) scoringResponse.getDataList();
+                    }
 
                     for (int i = 0; i < dataList.size(); i++) {
 
@@ -3861,7 +3863,10 @@ public class ScoringServiceImpl implements ScoringService {
                 logger.error(ERROR_WHILE_GETTING_FIELD_LIST,e);
             }
 
-            List<Map<String, Object>> dataList = (List<Map<String, Object>>) scoringResponse.getDataList();
+            List<Map<String, Object>> dataList = new ArrayList<>();
+            if (scoringResponse != null && scoringResponse.getDataList() != null ) {
+                dataList = (List<Map<String, Object>>) scoringResponse.getDataList();
+            }
 
             List<FundSeekerInputRequest> fundSeekerInputRequestList = new ArrayList<>(dataList.size());
 
@@ -4103,7 +4108,7 @@ public class ScoringServiceImpl implements ScoringService {
             logger.error("error while calling itr client for getIsUploadAndYearDetails()",e);
         }
         try {
-            if (!CommonUtils.isObjectNullOrEmpty(itrConnectionResponse) && !CommonUtils.isObjectNullOrEmpty(itrConnectionResponse.getData())) {
+            if (itrConnectionResponse != null && !CommonUtils.isObjectNullOrEmpty(itrConnectionResponse) && !CommonUtils.isObjectNullOrEmpty(itrConnectionResponse.getData())) {
                 Map<String, Object> map = (Map<String, Object>) itrConnectionResponse.getData();
                 ITRBasicDetailsResponse res = MultipleJSONObjectHelper.getObjectFromMap(map, ITRBasicDetailsResponse.class);
                 if (!CommonUtils.isObjectNullOrEmpty(res)) {

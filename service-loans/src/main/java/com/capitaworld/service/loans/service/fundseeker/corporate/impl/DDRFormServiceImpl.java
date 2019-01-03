@@ -326,7 +326,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 							proposedProductDetail = proposedProductDetailsRepository
 									.findByIdAndIsActive(proProduct.getId(), true);
 						}
-						if (CommonUtils.isObjectNullOrEmpty(proposedProductDetail)) {
+						if (proposedProductDetail == null || CommonUtils.isObjectNullOrEmpty(proposedProductDetail)) {
 							proposedProductDetail = new ProposedProductDetail();
 							proposedProductDetail.setCreatedBy(userId);
 							proposedProductDetail.setCreatedDate(new Date());
@@ -353,7 +353,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 								existingProductDetail = existingProductDetailsRepository
 										.findByIdAndIsActive(existingPro.getId(), true);
 							}
-							if (CommonUtils.isObjectNullOrEmpty(existingProductDetail)) {
+							if (existingProductDetail == null || CommonUtils.isObjectNullOrEmpty(existingProductDetail)) {
 								existingProductDetail = new ExistingProductDetail();
 								existingProductDetail.setCreatedBy(userId);
 								existingProductDetail.setCreatedDate(new Date());
@@ -382,7 +382,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 										true);
 							}
 
-							if (CommonUtils.isObjectNullOrEmpty(promBack)) {
+							if (promBack == null || CommonUtils.isObjectNullOrEmpty(promBack)) {
 								promBack = new PromotorBackgroundDetail();
 								promBack.setCreatedBy(userId);
 								promBack.setCreatedDate(new Date());
@@ -419,7 +419,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 											.findByIdAndIsActive(directorBackReq.getId(), true);
 								}
 
-								if (CommonUtils.isObjectNullOrEmpty(dirBack)) {
+								if (dirBack == null || CommonUtils.isObjectNullOrEmpty(dirBack)) {
 									dirBack = new DirectorBackgroundDetail();
 									dirBack.setCreatedBy(userId);
 									dirBack.setCreatedDate(new Date());
@@ -455,7 +455,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 								ownership = ownershipDetailsRepository.findByIdAndIsActive(ownershipReq.getId(), true);
 							}
 
-							if (CommonUtils.isObjectNullOrEmpty(ownership)) {
+							if (ownership == null || CommonUtils.isObjectNullOrEmpty(ownership)) {
 								ownership = new OwnershipDetail();
 								ownership.setCreatedBy(userId);
 								ownership.setCreatedDate(new Date());
@@ -483,7 +483,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 										.findByIdAndIsActive(assConcernDetailReq.getId(), true);
 							}
 
-							if (CommonUtils.isObjectNullOrEmpty(assConcernDetail)) {
+							if (assConcernDetail == null || CommonUtils.isObjectNullOrEmpty(assConcernDetail)) {
 								assConcernDetail = new AssociatedConcernDetail();
 								assConcernDetail.setCreatedBy(userId);
 								assConcernDetail.setCreatedDate(new Date());
@@ -522,7 +522,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 										.findByIdAndIsActive(securityCorDetailReq.getId(), true);
 							}
 
-							if (CommonUtils.isObjectNullOrEmpty(securityCorporateDetail)) {
+							if (securityCorporateDetail == null || CommonUtils.isObjectNullOrEmpty(securityCorporateDetail)) {
 								securityCorporateDetail = new SecurityCorporateDetail();
 								securityCorporateDetail.setCreatedBy(userId);
 								securityCorporateDetail.setCreatedDate(new Date());
@@ -1143,7 +1143,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 					ddrAuthorizedSignDetails = authorizedSignDetailsRepository
 							.getByIdAndIsActive(dDRAuthSignDetails.getId());
 				}
-				if (CommonUtils.isObjectNullOrEmpty(ddrAuthorizedSignDetails)) {
+				if (ddrAuthorizedSignDetails == null || CommonUtils.isObjectNullOrEmpty(ddrAuthorizedSignDetails)) {
 					ddrAuthorizedSignDetails = new DDRAuthorizedSignDetails();
 					BeanUtils.copyProperties(dDRAuthSignDetails, ddrAuthorizedSignDetails, "id", CommonUtils.CREATED_BY,
 							CommonUtils.CREATED_DATE, MODIFY_BY, MODIFY_DATE, DDR_FORM_ID, CommonUtils.IS_ACTIVE);
@@ -1197,7 +1197,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 				if (!CommonUtils.isObjectNullOrEmpty(reqObj.getId())) {
 					saveObj = cardDetailsRepository.getByIdAndIsActive(reqObj.getId());
 				}
-				if (CommonUtils.isObjectNullOrEmpty(saveObj)) {
+				if (saveObj == null || CommonUtils.isObjectNullOrEmpty(saveObj)) {
 					saveObj = new DDRCreditCardDetails();
 					BeanUtils.copyProperties(reqObj, saveObj, "id", CommonUtils.CREATED_BY, CommonUtils.CREATED_DATE, MODIFY_BY,
 							MODIFY_DATE, DDR_FORM_ID, CommonUtils.IS_ACTIVE);
@@ -1251,7 +1251,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 				if (!CommonUtils.isObjectNullOrEmpty(reqObj.getId())) {
 					saveObj = creditorsDetailsRepository.getByIdAndIsActive(reqObj.getId());
 				}
-				if (CommonUtils.isObjectNullOrEmpty(saveObj)) {
+				if (saveObj == null || CommonUtils.isObjectNullOrEmpty(saveObj)) {
 					saveObj = new DDRCreditorsDetails();
 					BeanUtils.copyProperties(reqObj, saveObj, "id", CommonUtils.CREATED_BY, CommonUtils.CREATED_DATE, MODIFY_BY,
 							MODIFY_DATE, DDR_FORM_ID, CommonUtils.IS_ACTIVE);
@@ -1310,7 +1310,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 					saveObj = ddrOfficeDetailsRepository.getByIdAndIsActive(reqObj.getId());
 				}
 
-				if (CommonUtils.isObjectNullOrEmpty(saveObj)) {
+				if (saveObj == null || CommonUtils.isObjectNullOrEmpty(saveObj)) {
 					saveObj = new DDROfficeDetails();
 					BeanUtils.copyProperties(reqObj, saveObj, "id", CommonUtils.CREATED_BY, CommonUtils.CREATED_DATE, MODIFY_BY,
 							MODIFY_DATE, DDR_FORM_ID, CommonUtils.IS_ACTIVE);
@@ -1367,7 +1367,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 					saveObj = bankLoanDetailsRepository.getByIdAndIsActive(reqObj.getId());
 				}
 
-				if (CommonUtils.isObjectNullOrEmpty(saveObj)) {
+				if (saveObj == null || CommonUtils.isObjectNullOrEmpty(saveObj)) {
 					saveObj = new DDROtherBankLoanDetails();
 					BeanUtils.copyProperties(reqObj, saveObj, "id", CommonUtils.CREATED_BY, CommonUtils.CREATED_DATE, MODIFY_BY,
 							MODIFY_DATE, DDR_FORM_ID, CommonUtils.IS_ACTIVE);
@@ -1422,7 +1422,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 					saveObj = dbsDetailsRepository.getByIdAndIsActive(reqObj.getId());
 				}
 
-				if (CommonUtils.isObjectNullOrEmpty(saveObj)) {
+				if (saveObj == null || CommonUtils.isObjectNullOrEmpty(saveObj)) {
 					saveObj = new DDRRelWithDbsDetails();
 					BeanUtils.copyProperties(reqObj, saveObj, "id", CommonUtils.CREATED_BY, CommonUtils.CREATED_DATE, MODIFY_BY,
 							MODIFY_DATE, DDR_FORM_ID, CommonUtils.IS_ACTIVE);
@@ -1479,7 +1479,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 					saveObj = vehiclesOwnedDetailsRepository.getByIdAndIsActive(reqObj.getId());
 				}
 
-				if (CommonUtils.isObjectNullOrEmpty(saveObj)) {
+				if (saveObj == null || CommonUtils.isObjectNullOrEmpty(saveObj)) {
 					saveObj = new DDRVehiclesOwnedDetails();
 					BeanUtils.copyProperties(reqObj, saveObj, "id", CommonUtils.CREATED_BY, CommonUtils.CREATED_DATE, MODIFY_BY,
 							MODIFY_DATE, DDR_FORM_ID, CommonUtils.IS_ACTIVE);
@@ -1558,7 +1558,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 					saveObj = financialSummaryRepository.getByIdAndIsActive(reqObj.getId());
 				}
 
-				if (CommonUtils.isObjectNullOrEmpty(saveObj)) {
+				if (saveObj == null || CommonUtils.isObjectNullOrEmpty(saveObj)) {
 					saveObj = new DDRFinancialSummary();
 					BeanUtils.copyProperties(reqObj, saveObj, "id", CommonUtils.CREATED_BY, CommonUtils.CREATED_DATE, MODIFY_BY,
 							MODIFY_DATE, DDR_FORM_ID, CommonUtils.IS_ACTIVE);
@@ -1758,7 +1758,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 					saveObj = ddrExistingBankerDetailsRepository.getByIdAndIsActive(reqObj.getId());
 				}
 
-				if (CommonUtils.isObjectNullOrEmpty(saveObj)) {
+				if (saveObj == null || CommonUtils.isObjectNullOrEmpty(saveObj)) {
 					saveObj = new DDRExistingBankerDetails();
 					BeanUtils.copyProperties(reqObj, saveObj, "id", CommonUtils.CREATED_BY, CommonUtils.CREATED_DATE, MODIFY_BY,
 							MODIFY_DATE, DDR_FORM_ID, CommonUtils.IS_ACTIVE);
@@ -1789,7 +1789,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 					saveObj = familyDirectorsDetailsRepository.getByIdAndIsActive(reqObj.getId());
 				}
 
-				if (CommonUtils.isObjectNullOrEmpty(saveObj)) {
+				if (saveObj == null || CommonUtils.isObjectNullOrEmpty(saveObj)) {
 					saveObj = new DDRFamilyDirectorsDetails();
 					BeanUtils.copyProperties(reqObj, saveObj, "id", CommonUtils.CREATED_BY, CommonUtils.CREATED_DATE, MODIFY_BY,
 							MODIFY_DATE, DDR_FORM_ID, CommonUtils.IS_ACTIVE);

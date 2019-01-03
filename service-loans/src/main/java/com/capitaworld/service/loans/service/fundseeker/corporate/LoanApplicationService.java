@@ -16,7 +16,6 @@ import com.capitaworld.service.loans.model.AdminPanelLoanDetailsResponse;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.LoanApplicationDetailsForSp;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
-import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.PaymentRequest;
 
 import com.capitaworld.service.loans.model.common.CGTMSECalcDataResponse;
@@ -214,6 +213,8 @@ public interface LoanApplicationService {
 	
 	public Boolean saveLoanWCRenewalType(Long applicationId,Integer wcRenewalType);
 	public Integer getLoanWCRenewalType(Long applicationId);
+
+	Boolean isMcqSkipped(Long applicationId) throws Exception;
 }
 
 
