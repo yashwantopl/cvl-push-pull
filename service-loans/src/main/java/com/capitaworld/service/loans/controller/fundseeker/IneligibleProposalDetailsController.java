@@ -80,7 +80,9 @@ public class IneligibleProposalDetailsController {
 		
 		if (!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_ID))) {
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			Long userOrgId = (Long) request.getAttribute(CommonUtils.USER_ORG_ID);
 			inEligibleProposalDetailsRequest.setUserId(userId);
+			inEligibleProposalDetailsRequest.setUserOrgId(userOrgId);
 		}
 		
 		Boolean isDetailsSaved = ineligibleProposalDetailsService.updateStatus(inEligibleProposalDetailsRequest);

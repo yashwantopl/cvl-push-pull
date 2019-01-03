@@ -28,5 +28,11 @@ public interface IneligibleProposalDetailsRepository extends JpaRepository<Ineli
     public List<Object[]> getOfflineProposalDetailsByOrgId(@Param("userOrgId")Long userOrgId,@Param("fromDate") Date fromDate,@Param("toDate") Date toDate);
     
     public IneligibleProposalDetails findByApplicationIdAndIsActive(Long applicationId,Boolean isActive);
+    
+    public IneligibleProposalDetails findByApplicationIdAndUserOrgIdAndIsActive(Long applicationId,Long userOrgId,Boolean isActive);
+    
+    public List<IneligibleProposalDetails> findByGstinAndIsActive(String gstin,Boolean isActive);
+    
+    public IneligibleProposalDetails findByGstinAndUserOrgIdAndIsActive(String gstin,Long userOrgId,Boolean isActive);
 
 }

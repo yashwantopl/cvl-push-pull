@@ -1937,14 +1937,14 @@ public class LoanApplicationController {
 			if (!result) {
 				response.setMessage("something went wrong while saving sanctioned details");
 				response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-			} else {
+			}/* else {
 				ProposalMappingRequest proposalMappingRequest = new ProposalMappingRequest();
 				proposalMappingRequest.setId(loanSanctionRequest.getProposalId());
 				proposalMappingRequest.setProposalStatusId(loanSanctionRequest.getProposalStatusId());
 				proposalMappingRequest.setLastActionPerformedBy(userType);
 				proposalMappingRequest.setUserId(userId);
 				proposalDetailsClient.changeStatus(proposalMappingRequest);
-			}
+			}*/
 
 			logger.info("end getDetailsForApproval()");
 			return new ResponseEntity<LoansResponse>(response, HttpStatus.OK);
