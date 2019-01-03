@@ -18,3 +18,4 @@ ALTER TABLE `loan_application`.`fs_corporate_current_financial_arrangements_deta
 ALTER TABLE `loan_application`.`fs_corporate_director_background_details` ADD COLUMN `proposal_mapping_id` BIGINT(20) DEFAULT NULL;
 ALTER TABLE `loan_application`.`fs_corporate_bs_profitibility_statement_details` ADD COLUMN `proposal_mapping_id` BIGINT(20) DEFAULT NULL;
 ALTER TABLE `loan_application`.`application_status_audit` ADD COLUMN `proposal_mapping_id` BIGINT(20) DEFAULT NULL;
+ALTER TABLE `loan_application`.`fs_retail_applicant_details` ADD COLUMN `proposal_mapping_id` BIGINT(20) DEFAULT NULL;
