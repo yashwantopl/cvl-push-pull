@@ -89,7 +89,7 @@ public interface ApplicationProposalMappingRepository extends JpaRepository<Appl
                                                   @Param("applicationId") Long applicationId ,
                                                   @Param("userId") Long userId,@Param("isApplicantFinalFilled") Boolean isApplicantFinalFilled);
 
-    @Query(value= "select lm.productId from ApplicationProposalMapping lm where lm.applicationId =:id and lm.userId =:userId and lm.isActive = true order by lm.proposalId desc limit 1")
+    @Query(value= "select lm.product_id from application_proposal_mapping lm where lm.application_id =:id and lm.user_id =:userId and lm.is_active = true order by lm.proposal_id desc limit 1",nativeQuery = true)
     public Integer getProductIdByApplicationId(@Param("id") Long applicationId, @Param("userId") Long userId);
 
     @Query(value = "select lm.proposal_id from application_proposal_mapping lm inner join proposal_details pd on pd.id=lm.proposal_id where pd.branch_id=:branchId and pd.fp_product_id=:fpProductId and lm.ddr_status_id =:id and lm.np_user_id=:npUserId and pd.is_active=true and lm.is_active = true ",nativeQuery = true)
