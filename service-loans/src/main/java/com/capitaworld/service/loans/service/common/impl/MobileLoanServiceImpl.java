@@ -246,6 +246,7 @@ public class MobileLoanServiceImpl implements MobileService {
 	public Long saveLoanApplicationDetails(MobileFrameRequest commonRequest) throws Exception {
 		try {
 			LoanApplicationMaster applicationMaster = null;
+			Long appId = null;
 			for (Map<String, Object> obj : commonRequest.getDataList()) {
 				MobileFrameDetailsRequest loanApplicationRequest = (MobileFrameDetailsRequest) MultipleJSONObjectHelper
 						.getObjectFromMap(obj, MobileFrameDetailsRequest.class);
@@ -376,8 +377,10 @@ public class MobileLoanServiceImpl implements MobileService {
 				default:
 					continue;
 				}
+
+				appId = applicationMaster.getId();
 			}
-			return applicationMaster.getId();
+			return appId;
 		} catch (Exception e) {
 			logger.error("Error while Saving Loan Details:-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
