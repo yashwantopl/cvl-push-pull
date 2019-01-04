@@ -1386,18 +1386,14 @@ public enum APIFlags {
 	             if(data != null) {
 	            	 data.put(field.getName(), value);
 	             }
-	             if(!CommonUtils.isObjectNullOrEmpty(value)) {
-	            	 if(value instanceof Double){
-	                	 if(!Double.isNaN((Double)value)) {
-	                    	 value = Double.parseDouble(decim.format(value));
-	                    	 if(data != null) {
-	                    		 value = decimal.format(value);
-	                    		 data.put(field.getName(), value);	
-	                    	 }else {
-	                    		 field.set(obj,value);                    		 
-	                    	 }
-	                	 }
-	                 }
+	             if(!CommonUtils.isObjectNullOrEmpty(value) && value instanceof Double && !Double.isNaN((Double)value)) {
+					 value = Double.parseDouble(decim.format(value));
+					 if(data != null) {
+						 value = decimal.format(value);
+						 data.put(field.getName(), value);
+					 }else {
+						 field.set(obj,value);
+					 }
 	             }
 			 }			
 		}

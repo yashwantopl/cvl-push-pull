@@ -3177,10 +3177,8 @@ public class DDRFormServiceImpl implements DDRFormService {
 	private double calculateFinancialSummary(Double provisinalYear, Double lastYear) {
 		try {
 			DecimalFormat decimalFormat = new DecimalFormat("0.00");
-			if (!CommonUtils.isObjectNullOrEmpty(provisinalYear) && !CommonUtils.isObjectNullOrEmpty(lastYear)) {
-				if ((provisinalYear > 0 && lastYear > 0) || (provisinalYear > 0 || lastYear > 0)) {
+			if (!CommonUtils.isObjectNullOrEmpty(provisinalYear) && !CommonUtils.isObjectNullOrEmpty(lastYear) && ((provisinalYear > 0 && lastYear > 0) || (provisinalYear > 0 || lastYear > 0))) {
 					return Double.valueOf(decimalFormat.format(((provisinalYear - lastYear) / lastYear) * 100));
-				}
 			}
 			return 0.0;
 		} catch (Exception e) {
@@ -3192,10 +3190,8 @@ public class DDRFormServiceImpl implements DDRFormService {
 	private String calculateFinancialSummaryString(Double provisinalYear, Double lastYear) {
 		try {
 			DecimalFormat decimalFormat = new DecimalFormat("0.00");
-			if (!CommonUtils.isObjectNullOrEmpty(provisinalYear) && !CommonUtils.isObjectNullOrEmpty(lastYear)) {
-				if ((provisinalYear > 0 && lastYear > 0) || (provisinalYear > 0 || lastYear > 0)) {
+			if (!CommonUtils.isObjectNullOrEmpty(provisinalYear) && !CommonUtils.isObjectNullOrEmpty(lastYear) && ((provisinalYear > 0 && lastYear > 0) || (provisinalYear > 0 || lastYear > 0))) {
 					return decimalFormat.format(((provisinalYear - lastYear) / lastYear) * 100);
-				}
 			}
 			return "0.00";
 		} catch (Exception e) {
@@ -3426,9 +3422,8 @@ public class DDRFormServiceImpl implements DDRFormService {
 			json.put("id", ddrUploadRequest.getDocId());
 			DocumentResponse docResponse = dmsClient.deleteProductDocument(json.toJSONString());
 			if (!CommonUtils.isObjectNullOrEmpty(docResponse)
-					&& docResponse.getStatus().equals(HttpStatus.OK.value())) {
+					&& docResponse.getStatus().equals(HttpStatus.OK.value()) && ddrUploadRequest.getTotalDocs() < 1 ) {
 
-				if (ddrUploadRequest.getTotalDocs() < 1) {
 					DDRFormDetails dDRFormDetails = ddrFormDetailsRepository
 							.getByAppIdAndIsActive(ddrUploadRequest.getApplicationId());
 
@@ -3504,7 +3499,6 @@ public class DDRFormServiceImpl implements DDRFormService {
 						break;
 					}
 					ddrFormDetailsRepository.save(dDRFormDetails);
-				}
 			}
 			return true;
 		} catch (Exception e) {
