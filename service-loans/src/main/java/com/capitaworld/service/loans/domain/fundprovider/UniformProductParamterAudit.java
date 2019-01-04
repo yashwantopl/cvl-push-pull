@@ -22,7 +22,7 @@ public class UniformProductParamterAudit implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@Column(name = "fp_product_id")
+	@Column(name = "id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	

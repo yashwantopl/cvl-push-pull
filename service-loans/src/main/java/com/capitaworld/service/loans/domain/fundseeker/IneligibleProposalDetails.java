@@ -58,6 +58,9 @@ public class IneligibleProposalDetails implements Serializable{
     
     @Column(name="reason")
     private String reason;
+    
+    @Column(name="gstin")
+    private String gstin;
 
     public Long getId() {
         return id;
@@ -169,6 +172,14 @@ public class IneligibleProposalDetails implements Serializable{
 
 	public void setReason(String reason) {
 		this.reason = reason;
+	}
+
+	public String getGstin() {
+		return gstin;
+	}
+
+	public void setGstin(String gstin) {
+		this.gstin = gstin;
 	}
     
 	

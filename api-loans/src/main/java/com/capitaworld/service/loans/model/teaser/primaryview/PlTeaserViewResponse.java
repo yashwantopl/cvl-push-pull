@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.capitaworld.service.loans.model.AssociatedConcernDetailRequest;
-import com.capitaworld.service.loans.model.DirectorBackgroundDetailResponse;
 import com.capitaworld.service.loans.model.ExistingProductDetailRequest;
 import com.capitaworld.service.loans.model.FinanceMeansDetailResponse;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailResponse;
