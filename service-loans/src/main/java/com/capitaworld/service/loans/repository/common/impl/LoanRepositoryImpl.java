@@ -102,4 +102,11 @@ public class LoanRepositoryImpl implements LoanRepository {
 		return (Object[]) storedProcedureQuery.getSingleResult();
 	}
 	
+	public String getGSTINByAppId(Long applicationId) {
+		String fpProductName =(String) entityManager
+				.createNativeQuery("SELECT gstin FROM connect.`connect_log` WHERE application_id =:applicationId")
+						.setParameter("applicationId", applicationId).getSingleResult();
+		return fpProductName;
+	}
+	
 }

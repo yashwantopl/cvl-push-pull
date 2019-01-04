@@ -136,12 +136,10 @@ public class GuarantorServiceImpl implements GuarantorService {
 							guarantorRequest.getApplicationId(), finalUserId,
 							guarantorRequest.getIsGuarantor1DetailsFilled());
 				}
-			} else if (index == 1) {
-				if (!CommonUtils.isObjectNullOrEmpty(guarantorRequest.getIsGuarantor2DetailsFilled())) {
+			} else if (index == 1 && !CommonUtils.isObjectNullOrEmpty(guarantorRequest.getIsGuarantor2DetailsFilled())) {
 					loanApplicationRepository.setIsGuarantorTwoProfileMandatoryFilled(
 							guarantorRequest.getApplicationId(), finalUserId,
 							guarantorRequest.getIsGuarantor2DetailsFilled());
-				}
 			}
 
 			// Updating Bowl Count
@@ -242,11 +240,9 @@ public class GuarantorServiceImpl implements GuarantorService {
 					loanApplicationRepository.setIsGuarantorOneFinalMandatoryFilled(applicantRequest.getApplicationId(),
 							finalUserId, applicantRequest.getIsGuarantor1FinalFilled());
 				}
-			} else if (index == 1) {
-				if (!CommonUtils.isObjectNullOrEmpty(applicantRequest.getIsGuarantor2FinalFilled())) {
+			} else if (index == 1 && !CommonUtils.isObjectNullOrEmpty(applicantRequest.getIsGuarantor2FinalFilled())) {
 					loanApplicationRepository.setIsGuarantorTwoFinalMandatoryFilled(applicantRequest.getApplicationId(),
 							finalUserId, applicantRequest.getIsGuarantor2FinalFilled());
-				}
 			}
 
 			// Updating Final Count
