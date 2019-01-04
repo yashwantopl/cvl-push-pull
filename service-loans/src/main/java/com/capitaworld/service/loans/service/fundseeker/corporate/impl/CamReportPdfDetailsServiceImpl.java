@@ -318,6 +318,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		Long userId = loanApplicationRepository.getUserIdByApplicationId(applicationId);
 		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId, userId);
 		if(loanApplicationMaster != null) {
+			map.put("applicationCode", loanApplicationMaster.getApplicationCode());
 			map.put("date",!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getApprovedDate())? CommonUtils.DATE_FORMAT.format(loanApplicationMaster.getApprovedDate()):"-");
 			map.put("isMcqSkipped", loanApplicationMaster.getIsMcqSkipped() != null ? loanApplicationMaster.getIsMcqSkipped() : false);
 		}
