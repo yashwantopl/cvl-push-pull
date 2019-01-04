@@ -66,11 +66,9 @@ public class CorporateCoApplicantServiceImpl implements CorporateCoApplicantServ
 					loanApplicationRepository.setIsCoAppOneProfileMandatoryFilled(applicationId, finalUserId,
 							applicantRequest.getIsCoApp1DetailsFilled());
 				}
-			} else if (index == 1) {
-				if (!CommonUtils.isObjectNullOrEmpty(applicantRequest.getIsCoApp2DetailsFilled())) {
+			} else if (index == 1 && !CommonUtils.isObjectNullOrEmpty(applicantRequest.getIsCoApp2DetailsFilled()) ) {
 					loanApplicationRepository.setIsCoAppTwoProfileMandatoryFilled(applicationId, finalUserId,
 							applicantRequest.getIsCoApp2DetailsFilled());
-				}
 			}
 
 			// Updating Bowl Count

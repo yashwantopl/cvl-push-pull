@@ -17,5 +17,7 @@ public interface LoanRepository {
 	public Object[] fpDashBoardCountByOrgIdAndBranchId(Long orgId,Long branchId);
 	
 	public Object[] fpDashBoardCountByOrgIdAndUserId(Long orgId,Long userId);
+	
+	public String getGSTINByAppId(Long applicationId);
 
 }

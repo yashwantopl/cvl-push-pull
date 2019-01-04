@@ -1,6 +1,5 @@
 package com.capitaworld.service.loans.repository.common.impl;
 
-import java.util.Collections;
 import java.util.List;
 
 import javax.persistence.EntityManager;

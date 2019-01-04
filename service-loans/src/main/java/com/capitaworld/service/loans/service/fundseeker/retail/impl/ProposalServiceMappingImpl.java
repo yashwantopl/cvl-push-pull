@@ -1716,11 +1716,9 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			logger.info("DISBURSEMENT DETAILS IS ---------------------------------------------------> " + request.toString());
 
 			Date connectlogModifiedDate = connectClient.getInprincipleDateByAppId(request.getApplicationId());
-			if (!CommonUtils.isObjectNullOrEmpty(connectlogModifiedDate)) {
-				if (request.getDisbursementDate().compareTo(connectlogModifiedDate)<0 || request.getDisbursementDate().compareTo(new Date())>0) {
+			if (!CommonUtils.isObjectNullOrEmpty(connectlogModifiedDate) && (request.getDisbursementDate().compareTo(connectlogModifiedDate)<0 || request.getDisbursementDate().compareTo(new Date())>0)) {
 				return	new ProposalMappingResponse("Please insert valid disbursement date",
 							HttpStatus.INTERNAL_SERVER_ERROR.value());
-				}
 			}
 			ProposalMappingResponse mappingResponse = proposalDetailsClient.saveDisbursementDetails(request);
 			return mappingResponse;
