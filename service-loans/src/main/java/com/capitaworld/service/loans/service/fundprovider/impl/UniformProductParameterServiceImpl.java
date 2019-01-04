@@ -18,7 +18,6 @@ import com.capitaworld.api.workflow.model.WorkflowResponse;
 import com.capitaworld.api.workflow.utility.MultipleJSONObjectHelper;
 import com.capitaworld.api.workflow.utility.WorkflowUtils;
 import com.capitaworld.client.workflow.WorkflowClient;
-import com.capitaworld.service.loans.domain.fundprovider.ProductMasterTemp;
 import com.capitaworld.service.loans.domain.fundprovider.UniformProductParamter;
 import com.capitaworld.service.loans.domain.fundprovider.UniformProductParamterTemp;
 import com.capitaworld.service.loans.model.WorkflowData;
@@ -31,6 +30,8 @@ import com.capitaworld.service.loans.utils.CommonUtils.LoanType;
 
 @Service
 public class UniformProductParameterServiceImpl implements UniformProductParameterService {
+	
+	private static final Logger logger = LoggerFactory.getLogger(UniformProductParameterServiceImpl.class.getName());
 
 	@Autowired
 	private UniformProductParameterRepository uniformProductParameterRepository;
