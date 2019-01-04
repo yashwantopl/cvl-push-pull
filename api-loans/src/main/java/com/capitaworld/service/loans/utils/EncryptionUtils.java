@@ -38,8 +38,7 @@ public class EncryptionUtils  implements AttributeConverter<String, String>{
 		        return new String(Hex.encodeHex(ciphertextBytes));
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("error while encrypting data " + plainText);
+			logger.error("error while encrypting data : " + plainText + CommonUtils.EXCEPTION,e);
 		}
 		return null;
 	}
@@ -59,8 +58,7 @@ public class EncryptionUtils  implements AttributeConverter<String, String>{
 		        return new String(cipher.doFinal(Hex.decodeHex(encryptedText.toCharArray())));
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("error while decrypting data " + encryptedText);
+			logger.error("error while decrypting data : " + encryptedText + CommonUtils.EXCEPTION,e);
 		}
 		return null;
 	}

@@ -1923,12 +1923,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			// response.put(RESULT_LITERAL, false);
 			// return response;
 			// }
-			if (CommonUtils.BusinessType.EXISTING_BUSINESS.getId().equals(applicationMaster.getBusinessTypeId())) {
-				if (!isFinalMcqFilled && !isMcqSkipped) {
+			if (CommonUtils.BusinessType.EXISTING_BUSINESS.getId().equals(applicationMaster.getBusinessTypeId()) && !isFinalMcqFilled && !isMcqSkipped ) {
 					response.put(MESSAGE_LITERAL, PLEASE_FILL_FINAL_MCQ_DETAILS_TO_MOVE_NEXT);
 					response.put(RESULT_LITERAL, false);
 					return response;
-				}
 			}
 			break;
 		case CommonUtils.TabType.FINAL_DPR_UPLOAD:
@@ -1958,12 +1956,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			 * PLEASE_FILL_PRIMARY_INFORMATION_DETAILS_TO_MOVE_NEXT);
 			 * response.put(RESULT_LITERAL, false); return response; }
 			 */
-			if (CommonUtils.BusinessType.EXISTING_BUSINESS.getId().equals(applicationMaster.getBusinessTypeId())) {
-				if (!isFinalMcqFilled && !isMcqSkipped) {
+			if (CommonUtils.BusinessType.EXISTING_BUSINESS.getId().equals(applicationMaster.getBusinessTypeId()) && !isFinalMcqFilled && !isMcqSkipped ) {
 					response.put(MESSAGE_LITERAL, PLEASE_FILL_FINAL_MCQ_DETAILS_TO_MOVE_NEXT);
 					response.put(RESULT_LITERAL, false);
 					return response;
-				}
 			}
 
 			if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsApplicantFinalFilled())
@@ -2002,12 +1998,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			 * PLEASE_FILL_PRIMARY_INFORMATION_DETAILS_TO_MOVE_NEXT);
 			 * response.put(RESULT_LITERAL, false); return response; }
 			 */
-			if (CommonUtils.BusinessType.EXISTING_BUSINESS.getId().equals(applicationMaster.getBusinessTypeId())) {
-				if (!isFinalMcqFilled && !isMcqSkipped) {
+			if (CommonUtils.BusinessType.EXISTING_BUSINESS.getId().equals(applicationMaster.getBusinessTypeId()) && !isFinalMcqFilled && !isMcqSkipped ) {
 					response.put(MESSAGE_LITERAL, PLEASE_FILL_FINAL_MCQ_DETAILS_TO_MOVE_NEXT);
 					response.put(RESULT_LITERAL, false);
 					return response;
-				}
 			}
 
 			if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsApplicantFinalFilled())
@@ -7537,7 +7531,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				}
 				if (loan != null && loan.getBusinessTypeId() != null && loan.getBusinessTypeId() == 2) {
 					response.setIsPurchaseOfEqup(true);
-					response.setCostOfMachinery(primaryCorporateDetail.getProposedCost());
+					if (primaryCorporateDetail != null) {
+						response.setCostOfMachinery(primaryCorporateDetail.getProposedCost());
+					}
 				}
 			} catch (Exception e) {
 				logger.error(CommonUtils.EXCEPTION,e);
