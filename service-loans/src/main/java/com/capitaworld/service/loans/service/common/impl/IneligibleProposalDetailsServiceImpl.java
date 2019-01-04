@@ -12,6 +12,7 @@ import com.capitaworld.service.loans.service.fundseeker.corporate.InEligibleProp
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +20,7 @@ import com.capitaworld.service.loans.domain.fundseeker.IneligibleProposalDetails
 import com.capitaworld.service.loans.domain.fundseeker.corporate.PrimaryCorporateDetail;
 import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
 import com.capitaworld.service.loans.model.retail.RetailApplicantRequest;
+import com.capitaworld.service.loans.repository.common.LoanRepository;
 import com.capitaworld.service.loans.repository.fundseeker.IneligibleProposalDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
 import com.capitaworld.service.loans.service.common.IneligibleProposalDetailsService;
@@ -28,8 +30,8 @@ import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicatio
 import com.capitaworld.service.loans.service.fundseeker.retail.RetailApplicantService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
+import com.capitaworld.service.loans.utils.CommonUtils.InEligibleProposalStatus;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
-import com.capitaworld.service.matchengine.utils.MatchConstant;
 import com.capitaworld.service.notification.client.NotificationClient;
 import com.capitaworld.service.notification.exceptions.NotificationException;
 import com.capitaworld.service.notification.model.Notification;
@@ -71,7 +73,10 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 	private OneFormClient oneFormClient;
 
 	@Autowired
-	LoanApplicationService loanApplicationService;
+	private LoanApplicationService loanApplicationService;
+	
+	@Autowired
+	private LoanRepository loanRepository;
 
 	@Autowired
 	private NotificationClient notificationClient;
@@ -99,25 +104,72 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 	private Environment environment;
 
 	private static final String EMAIL_ADDRESS_FROM = "no-reply@capitaworld.com";
+	
+	@Value("${com.connect.inPrincipleDayDifference}")
+	private Integer DAY_DIFFERENCE_FOR_INPRINCIPLE;
 
 
 
 	@Override
 	public Boolean save(InEligibleProposalDetailsRequest inlPropReq) {
 		try {
+			String gstin = loanRepository.getGSTINByAppId(inlPropReq.getApplicationId());
+			
 			IneligibleProposalDetails inlProposalDetails = ineligibleProposalDetailsRepository.findByApplicationIdAndIsActive(inlPropReq.getApplicationId(), true);
 			boolean isCreateNew = false;
 			if(!CommonUtils.isObjectNullOrEmpty(inlProposalDetails)) {
-				//IF ALREADY FOUND DATA WITH THIS APPLICATION ID THEN NEED TO COMPARE BANK AND BRANCH ID WITH ALREADY EXISTS DATA 
-				if((inlProposalDetails.getUserOrgId() != inlPropReq.getUserOrgId()) || (inlProposalDetails.getBranchId() != inlPropReq.getBranchId())) {
-					//IF NOT MATCHED WIH EXSTING DATA THEN CURRENT OBJECT IS INACTIVE 
+				if(inlProposalDetails.getIsSanctioned()) {
+					// THIS APPLCATION IS ALREADY SANCTIONED
+					return false;
+				}
+				//IF ALREADY FOUND DATA WITH THIS APPLICATION ID THEN NEED TO COMPARE BANK ID WITH ALREADY EXISTS DATA 
+				if(inlProposalDetails.getUserOrgId() != inlPropReq.getUserOrgId()) {
+					//IF NOT MATCHED WIH EXSTING BANK DATA THEN CURRENT OBJECT IS INACTIVE AND UPDATE STATUS 
 					inlProposalDetails.setIsActive(false);
+					inlProposalDetails.setModifiedBy(inlPropReq.getUserId());
+					inlProposalDetails.setModifiedDate(new Date());
+					inlProposalDetails.setStatus(InEligibleProposalStatus.OTHER_BANK);
+					ineligibleProposalDetailsRepository.save(inlProposalDetails);
+					isCreateNew = true;
+				} else if(inlProposalDetails.getBranchId() != inlPropReq.getBranchId()) {
+					//IF NOT MATCHED WIH EXSTING BRANCH DATA THEN CURRENT OBJECT IS INACTIVE 
+					inlProposalDetails.setIsActive(false);
+					inlProposalDetails.setModifiedBy(inlPropReq.getUserId());
+					inlProposalDetails.setModifiedDate(new Date());
+					inlProposalDetails.setStatus(InEligibleProposalStatus.OTHER_BRANCH);
 					ineligibleProposalDetailsRepository.save(inlProposalDetails);
 					isCreateNew = true;
 				}
 			} else {
 				isCreateNew = true;
 			}
+			if(!CommonUtils.isObjectNullOrEmpty(gstin)) {
+				//UPDARE STATUS FOR SAME GSTIN OLD APPLICATIONS
+				List<IneligibleProposalDetails> inlProposalList = ineligibleProposalDetailsRepository.findByGstinPan(gstin.substring(2, 12));
+				for(IneligibleProposalDetails inlProposal : inlProposalList) {
+					//CHECK IF SAME BANK PROPOSAL AVAILABLE FOR THIS GSTIN 
+					if(inlProposal.getUserOrgId() == inlPropReq.getUserOrgId()) {
+						// NEED TO CHECK IF ALREADY SANCTIONED OR NOT
+						if(CommonUtils.isObjectNullOrEmpty(inlProposal.getIsSanctioned()) || !inlProposal.getIsSanctioned()) {
+							// CHECK 60 DAY IN-PRINCIPLE VALIDITY
+							long dateDiff = daysBetween(new Date(), inlProposal.getCreatedDate());
+							if(CommonUtils.isObjectNullOrEmpty(DAY_DIFFERENCE_FOR_INPRINCIPLE)) {
+								DAY_DIFFERENCE_FOR_INPRINCIPLE = 60;
+							}
+							if (dateDiff < DAY_DIFFERENCE_FOR_INPRINCIPLE) {
+								inlProposal.setIsActive(false);
+								inlProposal.setModifiedBy(inlPropReq.getUserId());
+								inlProposal.setModifiedDate(new Date());
+								inlProposal.setStatus(InEligibleProposalStatus.OTHER_BANK);
+								ineligibleProposalDetailsRepository.save(inlProposal);
+							}
+						} else {
+							continue;
+						}
+					}	
+				}
+			}
+			
 			if(isCreateNew) {
 				inlProposalDetails = new IneligibleProposalDetails();
 				inlProposalDetails.setUserOrgId(inlPropReq.getUserOrgId());
@@ -125,7 +177,13 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 				inlProposalDetails.setApplicationId(inlPropReq.getApplicationId());
 				inlProposalDetails.setCreatedDate(new Date());
 				inlProposalDetails.setCreatedBy(inlPropReq.getUserId());
-				inlProposalDetails.setStatus(MatchConstant.ProposalStatus.PENDING.intValue());
+				inlProposalDetails.setStatus(InEligibleProposalStatus.PENDING);
+				try {
+					//SET GSTIN 
+					inlProposalDetails.setGstin(loanRepository.getGSTINByAppId(inlPropReq.getApplicationId()));	
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 				inlProposalDetails.setIsActive(true);	
 			} else {
 				if(!CommonUtils.isObjectNullOrEmpty(inlPropReq.getUserOrgId())) {
@@ -143,6 +201,14 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 				if(!CommonUtils.isObjectNullOrEmpty(inlPropReq.getIsSanctioned())) {
 					inlProposalDetails.setIsSanctioned(inlPropReq.getIsSanctioned());
 				}
+				try {
+					//SET GSTIN
+					if(CommonUtils.isObjectNullOrEmpty(inlProposalDetails.getGstin())) {
+						inlProposalDetails.setGstin(loanRepository.getGSTINByAppId(inlPropReq.getApplicationId()));	
+					}	
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 				inlProposalDetails.setModifiedDate(new Date());
 				inlProposalDetails.setModifiedBy(inlPropReq.getUserId());
 			}
@@ -151,9 +217,15 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 			ineligibleProposalDetailsRepository.save(inlProposalDetails);
 			return true;
 		} catch (Exception e) {
+			e.printStackTrace();
 			logger.error("error while saving in eligible proposal : ",e);
 		}
 		return false;
+	}
+	
+	private static long daysBetween(Date one, Date two) {
+		long difference = (one.getTime() - two.getTime()) / 86400000;
+		return Math.abs(difference);
 	}
 	
 	/**
@@ -165,7 +237,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 	public boolean updateStatus(InEligibleProposalDetailsRequest inEliProReq) {
 		IneligibleProposalDetails ineligibleProposalDetails = null;
 		try {
-			ineligibleProposalDetails = ineligibleProposalDetailsRepository.findByApplicationIdAndIsActive(inEliProReq.getApplicationId(),true);
+			ineligibleProposalDetails = ineligibleProposalDetailsRepository.findByApplicationIdAndUserOrgIdAndIsActive(inEliProReq.getApplicationId(), inEliProReq.getUserOrgId(), true);
 		} catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
 			return false;

@@ -447,6 +447,18 @@ public class CommonUtils {
 		public static final Long REVERTED = 6l;
 		public static final Long ASSIGNED_TO_CHECKER = 7l;
 	}
+	
+	public static final class InEligibleProposalStatus {
+		private InEligibleProposalStatus() {}
+		public static final Integer PENDING = 1;
+		public static final Integer SANCTIONED = 2;
+        public static final Integer DISBURED = 3;
+        public static final Integer DECLINE = 4;
+        public static final Integer SANCTIONED_BY_OTHER_BANK = 5;
+        public static final Integer SANCTIONED_BY_OTHER_BRANCH = 6;
+        public static final Integer OTHER_BRANCH = 7;
+        public static final Integer OTHER_BANK = 8;
+	}
 
 	public static String getDdrStatusString(Integer ddrStatusId) {
 		if (isObjectNullOrEmpty(ddrStatusId)) {
