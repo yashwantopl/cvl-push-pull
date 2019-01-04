@@ -127,10 +127,6 @@ public class UniformProductParameterServiceImpl implements UniformProductParamet
 		return true;
 	}
 	
-	public void copyObjectProperties(){
-		
-	}
-
 	@SuppressWarnings("unchecked")
 	@Override
 	@Transactional(readOnly = true)
