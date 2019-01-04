@@ -137,11 +137,9 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 					loanApplicationRepository.setIsCoAppOneProfileMandatoryFilled(applicationId, finalUserId,
 							applicantRequest.getIsCoApp1DetailsFilled());
 				}
-			} else if (index == 1) {
-				if (!CommonUtils.isObjectNullOrEmpty(applicantRequest.getIsCoApp2DetailsFilled())) {
+			} else if (index == 1 && !CommonUtils.isObjectNullOrEmpty(applicantRequest.getIsCoApp2DetailsFilled())) {
 					loanApplicationRepository.setIsCoAppTwoProfileMandatoryFilled(applicationId, finalUserId,
 							applicantRequest.getIsCoApp2DetailsFilled());
-				}
 			}
 
 			// Updating Bowl Count
@@ -251,11 +249,9 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 					loanApplicationRepository.setIsCoAppOneFinalMandatoryFilled(applicantRequest.getApplicationId(),
 							finalUserId, applicantRequest.getIsCoApp1FinalFilled());
 				}
-			} else if (index == 1) {
-				if (!CommonUtils.isObjectNullOrEmpty(applicantRequest.getIsCoApp2FinalFilled())) {
+			} else if (index == 1 && !CommonUtils.isObjectNullOrEmpty(applicantRequest.getIsCoApp2FinalFilled())) {
 					loanApplicationRepository.setIsCoAppTwoFinalMandatoryFilled(applicantRequest.getApplicationId(),
 							finalUserId, applicantRequest.getIsCoApp2FinalFilled());
-				}
 			}
 			// Updating Final Count
 			loanApplicationRepository.setFinalFilledCount(applicantRequest.getApplicationId(), finalUserId,

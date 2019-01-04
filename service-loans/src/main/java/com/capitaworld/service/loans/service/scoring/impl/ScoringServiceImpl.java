@@ -3881,8 +3881,10 @@ public class ScoringServiceImpl implements ScoringService {
                 }
 
                 FundSeekerInputRequest fundSeekerInputRequest = new FundSeekerInputRequest();
-                fundSeekerInputRequest.setFieldId(modelParameterResponse.getFieldMasterId());
-                fundSeekerInputRequest.setName(modelParameterResponse.getName());
+                if (modelParameterResponse != null) {
+                    fundSeekerInputRequest.setFieldId(modelParameterResponse.getFieldMasterId());
+                    fundSeekerInputRequest.setName(modelParameterResponse.getName());
+                }
                 fundSeekerInputRequestList.add(fundSeekerInputRequest);
             }
 
