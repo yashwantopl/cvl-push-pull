@@ -11614,7 +11614,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 														 Long coAppllicantOrGuarantorId) throws Exception {
 		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId, userId);
 		ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.getByProposalIdAndApplicationId(proposalId,applicationId);
-		int userMainType = CommonUtils.getUserMainType(loanApplicationMaster.getProductId());
+		int userMainType = CommonUtils.getUserMainType(applicationProposalMapping.getProductId());
 		if (CommonUtils.UserMainType.CORPORATE == userMainType) {
 			return corporateValidating(applicationProposalMapping, nextTabType);
 		} else {
