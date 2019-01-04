@@ -1163,14 +1163,20 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 		// Gst Data
 
 		try {
-			GstResponse response = gstClient.detailCalculation(corporateApplicantDetail.getGstIn());
-			if (response != null) {
-				corporatePrimaryViewResponse.setGstData(response);
-			} else {
+			
+			if(corporateApplicantDetail.getGstIn()!= null) {
+				GstResponse response = gstClient.detailCalculation(corporateApplicantDetail.getGstIn());
+				if (response != null) {
+					corporatePrimaryViewResponse.setGstData(response);
+				} else {
 
-				logger.warn("----------:::::::: Gst Response is null :::::::---------");
+					logger.warn("----------:::::::: Gst Response is null :::::::---------");
 
+				}
+			}else {
+				logger.warn("gstIn is Null for in corporate Applicant Details=>>>>>"+toApplicationId);
 			}
+			
 
 		} catch (Exception e) {
 			logger.error(":::::::------Error while calling gstData---:::::::",e);
