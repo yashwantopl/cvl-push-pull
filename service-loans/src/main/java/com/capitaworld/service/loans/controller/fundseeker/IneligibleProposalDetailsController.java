@@ -34,7 +34,9 @@ public class IneligibleProposalDetailsController {
 			@RequestBody InEligibleProposalDetailsRequest inEligibleProposalDetailsRequest,
 			HttpServletRequest request) {
 		if (CommonUtils.isObjectNullOrEmpty(inEligibleProposalDetailsRequest)
-				|| CommonUtils.isObjectNullOrEmpty(inEligibleProposalDetailsRequest.getApplicationId())) {
+				|| CommonUtils.isObjectNullOrEmpty(inEligibleProposalDetailsRequest.getApplicationId())
+				|| CommonUtils.isObjectNullOrEmpty(inEligibleProposalDetailsRequest.getUserOrgId())
+				|| CommonUtils.isObjectNullOrEmpty(inEligibleProposalDetailsRequest.getBranchId())) {
 			logger.warn("Requested data can not be empty.Invalid Request. ");
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);

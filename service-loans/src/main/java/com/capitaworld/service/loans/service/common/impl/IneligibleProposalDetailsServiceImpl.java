@@ -12,6 +12,7 @@ import com.capitaworld.service.loans.service.fundseeker.corporate.InEligibleProp
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -103,6 +104,9 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 	private Environment environment;
 
 	private static final String EMAIL_ADDRESS_FROM = "no-reply@capitaworld.com";
+	
+	@Value("${com.connect.inPrincipleDayDifference}")
+	private Integer DAY_DIFFERENCE_FOR_INPRINCIPLE;
 
 
 
@@ -114,6 +118,10 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 			IneligibleProposalDetails inlProposalDetails = ineligibleProposalDetailsRepository.findByApplicationIdAndIsActive(inlPropReq.getApplicationId(), true);
 			boolean isCreateNew = false;
 			if(!CommonUtils.isObjectNullOrEmpty(inlProposalDetails)) {
+				if(inlProposalDetails.getIsSanctioned()) {
+					// THIS APPLCATION IS ALREADY SANCTIONED
+					return false;
+				}
 				//IF ALREADY FOUND DATA WITH THIS APPLICATION ID THEN NEED TO COMPARE BANK ID WITH ALREADY EXISTS DATA 
 				if(inlProposalDetails.getUserOrgId() != inlPropReq.getUserOrgId()) {
 					//IF NOT MATCHED WIH EXSTING BANK DATA THEN CURRENT OBJECT IS INACTIVE AND UPDATE STATUS 
@@ -135,25 +143,33 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 			} else {
 				isCreateNew = true;
 			}
-			List<IneligibleProposalDetails> inlProposalList = ineligibleProposalDetailsRepository.findByGstinAndIsActive(gstin, true);
-			for(IneligibleProposalDetails inlProposal : inlProposalList) {
-				// NEED TO CHECK IF ALREADY SANCTIONED OR NOT
-				if(inlProposal.getUserOrgId() == inlPropReq.getUserOrgId()) {
-					if(CommonUtils.isObjectNullOrEmpty(inlProposal.getIsSanctioned()) || !inlProposal.getIsSanctioned()) {
-						Long before60DayMiliSec = new Date().getTime() - 5184000000l;
-						if(before60DayMiliSec > inlProposal.getCreatedDate().getTime()) {
-							//IF NOT MATCHED WIH EXSTING BANK DATA THEN CURRENT OBJECT IS INACTIVE AND UPDATE STATUS 
-							inlProposal.setIsActive(false);
-							inlProposal.setModifiedBy(inlPropReq.getUserId());
-							inlProposal.setModifiedDate(new Date());
-							inlProposal.setStatus(InEligibleProposalStatus.OTHER_BANK);
-							ineligibleProposalDetailsRepository.save(inlProposal);
+			if(!CommonUtils.isObjectNullOrEmpty(gstin)) {
+				//UPDARE STATUS FOR SAME GSTIN OLD APPLICATIONS
+				List<IneligibleProposalDetails> inlProposalList = ineligibleProposalDetailsRepository.findByGstinPan(gstin.substring(2, 12));
+				for(IneligibleProposalDetails inlProposal : inlProposalList) {
+					//CHECK IF SAME BANK PROPOSAL AVAILABLE FOR THIS GSTIN 
+					if(inlProposal.getUserOrgId() == inlPropReq.getUserOrgId()) {
+						// NEED TO CHECK IF ALREADY SANCTIONED OR NOT
+						if(CommonUtils.isObjectNullOrEmpty(inlProposal.getIsSanctioned()) || !inlProposal.getIsSanctioned()) {
+							// CHECK 60 DAY IN-PRINCIPLE VALIDITY
+							long dateDiff = daysBetween(new Date(), inlProposal.getCreatedDate());
+							if(CommonUtils.isObjectNullOrEmpty(DAY_DIFFERENCE_FOR_INPRINCIPLE)) {
+								DAY_DIFFERENCE_FOR_INPRINCIPLE = 60;
+							}
+							if (dateDiff < DAY_DIFFERENCE_FOR_INPRINCIPLE) {
+								inlProposal.setIsActive(false);
+								inlProposal.setModifiedBy(inlPropReq.getUserId());
+								inlProposal.setModifiedDate(new Date());
+								inlProposal.setStatus(InEligibleProposalStatus.OTHER_BANK);
+								ineligibleProposalDetailsRepository.save(inlProposal);
+							}
+						} else {
+							continue;
 						}
-					} else {
-						continue;
-					}
-				}	
+					}	
+				}
 			}
+			
 			if(isCreateNew) {
 				inlProposalDetails = new IneligibleProposalDetails();
 				inlProposalDetails.setUserOrgId(inlPropReq.getUserOrgId());
@@ -201,9 +217,15 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 			ineligibleProposalDetailsRepository.save(inlProposalDetails);
 			return true;
 		} catch (Exception e) {
+			e.printStackTrace();
 			logger.error("error while saving in eligible proposal : ",e);
 		}
 		return false;
+	}
+	
+	private static long daysBetween(Date one, Date two) {
+		long difference = (one.getTime() - two.getTime()) / 86400000;
+		return Math.abs(difference);
 	}
 	
 	/**

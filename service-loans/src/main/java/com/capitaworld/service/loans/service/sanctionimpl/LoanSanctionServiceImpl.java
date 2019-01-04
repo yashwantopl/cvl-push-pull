@@ -100,18 +100,14 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 			loanSanctionDomainOld.setOrgId(!CommonUtils.isObjectNullOrEmpty(loanSanctionRequest.getOrgId()) ? loanSanctionRequest.getOrgId() : null);
 			if(loanSanctionRequest.getIsIneligibleProposal() != null && loanSanctionRequest.getIsIneligibleProposal() == true) {
 				loanSanctionDomainOld.setIsSanctionedFrom(loanSanctionRequest.getIsSanctionedFrom());
-				IneligibleProposalDetails ineligibleProposalDetails = (IneligibleProposalDetails) offlineProcessedAppRepository.findByAppliationId(loanSanctionRequest.getApplicationId());
-				ineligibleProposalDetails.setIsSanctioned(true);
+				/*IneligibleProposalDetails ineligibleProposalDetails = (IneligibleProposalDetails) offlineProcessedAppRepository.findByAppliationId(loanSanctionRequest.getApplicationId());
+				ineligibleProposalDetails.setIsSanctioned(true);*/
 				//update sanctioned is true flag in ineligible proposal table
-				/*try {
-					Long userId = null;
-					if(!CommonUtils.isObjectNullOrEmpty(loanSanctionRequest.getActionBy())) {
-						userId = Long.valueOf(loanSanctionRequest.getActionBy());
-					}
-					offlineProcessedAppRepository.updateSanctionedFlag(loanSanctionRequest.getApplicationId(), loanSanctionRequest.getOrgId(), loanSanctionRequest.getBranch(), userId);	
-				} catch (Exception e) {
-					e.printStackTrace();
-				}*/ 
+				Long userId = null;
+				if(!CommonUtils.isObjectNullOrEmpty(loanSanctionRequest.getActionBy())) {
+					userId = Long.valueOf(loanSanctionRequest.getActionBy());
+				}
+				offlineProcessedAppRepository.updateSanctionedFlag(loanSanctionRequest.getApplicationId(), loanSanctionRequest.getOrgId(), loanSanctionRequest.getBranch(), userId);
 			} else if(CommonUtils.isObjectNullOrEmpty(loanSanctionRequest.getIsIneligibleProposal()) || loanSanctionRequest.getIsIneligibleProposal() == false) {
 				loanSanctionDomainOld.setIsSanctionedFrom(CommonUtils.sanctionedFrom.ELIGIBLE_USERS);
 			}
@@ -122,18 +118,14 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 			//BeanUtils.copyProperties(loanSanctionRequest, loanSanctionDomainOld,"id");
 			if(loanSanctionRequest.getIsIneligibleProposal() != null && loanSanctionRequest.getIsIneligibleProposal()) {
 				loanSanctionDomainOld.setIsSanctionedFrom(loanSanctionRequest.getIsSanctionedFrom());
-				IneligibleProposalDetails ineligibleProposalDetails = (IneligibleProposalDetails) offlineProcessedAppRepository.findByAppliationId(loanSanctionRequest.getApplicationId());
-				ineligibleProposalDetails.setIsSanctioned(true);
+				/*IneligibleProposalDetails ineligibleProposalDetails = (IneligibleProposalDetails) offlineProcessedAppRepository.findByAppliationId(loanSanctionRequest.getApplicationId());
+				ineligibleProposalDetails.setIsSanctioned(true);*/
 				//update sanctioned is true flag in ineligible proposal table
-				/*try {
-					Long userId = null;
-					if(!CommonUtils.isObjectNullOrEmpty(loanSanctionRequest.getActionBy())) {
-						userId = Long.valueOf(loanSanctionRequest.getActionBy());
-					}
-					offlineProcessedAppRepository.updateSanctionedFlag(loanSanctionRequest.getApplicationId(), loanSanctionRequest.getOrgId(), loanSanctionRequest.getBranch(), userId);	
-				} catch (Exception e) {
-					e.printStackTrace();
-				}*/
+				Long userId = null;
+				if(!CommonUtils.isObjectNullOrEmpty(loanSanctionRequest.getActionBy())) {
+					userId = Long.valueOf(loanSanctionRequest.getActionBy());
+				}
+				offlineProcessedAppRepository.updateSanctionedFlag(loanSanctionRequest.getApplicationId(), loanSanctionRequest.getOrgId(), loanSanctionRequest.getBranch(), userId);
 			} else {
 				loanSanctionDomainOld.setIsSanctionedFrom(CommonUtils.sanctionedFrom.ELIGIBLE_USERS);
 			}
