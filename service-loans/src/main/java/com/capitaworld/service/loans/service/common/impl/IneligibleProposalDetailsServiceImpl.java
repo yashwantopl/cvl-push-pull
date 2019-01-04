@@ -111,16 +111,16 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 
 
 	@Override
-	public Boolean save(InEligibleProposalDetailsRequest inlPropReq) {
+	public Integer save(InEligibleProposalDetailsRequest inlPropReq) {
 		try {
 			String gstin = loanRepository.getGSTINByAppId(inlPropReq.getApplicationId());
 			
 			IneligibleProposalDetails inlProposalDetails = ineligibleProposalDetailsRepository.findByApplicationIdAndIsActive(inlPropReq.getApplicationId(), true);
 			boolean isCreateNew = false;
 			if(!CommonUtils.isObjectNullOrEmpty(inlProposalDetails)) {
-				if(inlProposalDetails.getIsSanctioned()) {
+				if(inlProposalDetails.getIsSanctioned()) {//HANDLE MESSAGE
 					// THIS APPLCATION IS ALREADY SANCTIONED
-					return false;
+					return 1;
 				}
 				//IF ALREADY FOUND DATA WITH THIS APPLICATION ID THEN NEED TO COMPARE BANK ID WITH ALREADY EXISTS DATA 
 				if(inlProposalDetails.getUserOrgId() != inlPropReq.getUserOrgId()) {
@@ -215,12 +215,12 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 			// Set Created Date.
 			
 			ineligibleProposalDetailsRepository.save(inlProposalDetails);
-			return true;
+			return 2;
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error("error while saving in eligible proposal : ",e);
 		}
-		return false;
+		return 0;
 	}
 	
 	private static long daysBetween(Date one, Date two) {

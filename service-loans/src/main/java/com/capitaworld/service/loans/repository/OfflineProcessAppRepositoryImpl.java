@@ -37,7 +37,6 @@ public class OfflineProcessAppRepositoryImpl implements OfflineProcessedAppRepos
 	}
 	
 	public boolean updateSanctionedFlag(Long appId,Long orgId,Long branchId,Long userId) {
-		Boolean result = false;
 		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spUpdateOfflineSanctionedFlag");
 		storedProcedureQuery.registerStoredProcedureParameter("appId",Long.class, ParameterMode.IN);
 		storedProcedureQuery.registerStoredProcedureParameter("orgId",Long.class, ParameterMode.IN);
@@ -50,6 +49,15 @@ public class OfflineProcessAppRepositoryImpl implements OfflineProcessedAppRepos
 		storedProcedureQuery.setParameter("userId",userId);
 		storedProcedureQuery.execute();
 		return (Boolean) storedProcedureQuery.getOutputParameterValue("result");
+	}
+	
+	public Integer checkBeforeOfflineSanctioned(Long appId) {
+		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spCheckBeforeOfflineSanctioned");
+		storedProcedureQuery.registerStoredProcedureParameter("appId",Long.class, ParameterMode.IN);
+		storedProcedureQuery.registerStoredProcedureParameter("result",Integer.class, ParameterMode.OUT);
+		storedProcedureQuery.setParameter("appId",appId);
+		storedProcedureQuery.execute();
+		return (Integer) storedProcedureQuery.getOutputParameterValue("result");
 	}
 
 	@Override
