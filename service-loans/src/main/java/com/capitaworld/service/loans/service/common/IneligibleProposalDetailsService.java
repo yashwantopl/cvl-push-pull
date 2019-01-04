@@ -10,7 +10,7 @@ import com.capitaworld.service.loans.model.ProposalDetailsAdminRequest;
  */
 public interface IneligibleProposalDetailsService {
 
-	public Boolean save(InEligibleProposalDetailsRequest inEligibleProposalDetailsRequest);
+	public Integer save(InEligibleProposalDetailsRequest inEligibleProposalDetailsRequest);
 
 	public Boolean sendMailToFsAndBankBranch(Long applicationId, Long branchId, Long userOrgId);
 

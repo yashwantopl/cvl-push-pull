@@ -56,7 +56,7 @@ public class UniformProductParameterServiceImpl implements UniformProductParamet
 			uniformProductParamter.setModifiedDate(new Date());
 		}
 		BeanUtils.copyProperties(productParamterRequest, uniformProductParamter, "id", "createdBy", "createdDate",
-				"modifiedDate", "modifiedBy");
+				"modifiedDate", "modifiedBy","version");
 		uniformProductParamter.setUserOrgId(productParamterRequest.getUserOrgId());
 		uniformProductParamter.setBusinessTypeId(
 				CommonUtils.BusinessType.ONE_PAGER_ELIGIBILITY_EXISTING_BUSINESS.getId().longValue());

@@ -1932,22 +1932,27 @@ public class LoanApplicationController {
 			}
 			LoansResponse response = new LoansResponse(CommonUtils.SUCCESS, HttpStatus.OK.value());
 
-			Boolean result = loanSanctionService.saveSanctionDetailFromPopup(loanSanctionRequest);
+			Integer result = loanSanctionService.saveSanctionDetailFromPopup(loanSanctionRequest);
 			logger.info("result of save sanction detail ---------------------{}", result);
-			response.setData(result);
-			if (!result) {
-				response.setMessage("something went wrong while saving sanctioned details");
-				response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-			}/* else {
-				ProposalMappingRequest proposalMappingRequest = new ProposalMappingRequest();
-				proposalMappingRequest.setId(loanSanctionRequest.getProposalId());
-				proposalMappingRequest.setProposalStatusId(loanSanctionRequest.getProposalStatusId());
-				proposalMappingRequest.setLastActionPerformedBy(userType);
-				proposalMappingRequest.setUserId(userId);
-				proposalDetailsClient.changeStatus(proposalMappingRequest);
-			}*/
-
-			logger.info("end getDetailsForApproval()");
+			
+			if (result == 4) {
+				response.setData(true);
+				response.setMessage("Updated Successfully");
+				response.setStatus(HttpStatus.OK.value());
+			} else if (result == 1) {
+				response.setData(false);
+				response.setMessage("Proposal has got in-principle !!");
+				response.setStatus(HttpStatus.BAD_REQUEST.value());
+			} else if (result == 2) {
+				response.setData(false);
+				response.setMessage("Proposal has already sanctioned !!");
+				response.setStatus(HttpStatus.BAD_REQUEST.value());
+			} else {
+				response.setData(false);
+				response.setMessage("The application has encountered an error, please try again after sometime!!!");
+				response.setStatus(HttpStatus.BAD_REQUEST.value());
+			}
+			logger.info("end getDetailsForApproval()---------------->" + result);
 			return new ResponseEntity<LoansResponse>(response, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getDetailsForApproval", e);
