@@ -12,9 +12,9 @@ import javax.persistence.Table;
  * 
  */
 @Entity
-@Table(name = "fp_uniform_product_details")
+@Table(name = "fp_uniform_product_details_temp")
 @PrimaryKeyJoinColumn(referencedColumnName = "fp_product_id")
-public class UniformProductParamter extends ProductMaster implements Serializable {
+public class UniformProductParamterTemp extends ProductMasterTemp implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Column(name = "min_amount")
@@ -30,32 +30,31 @@ public class UniformProductParamter extends ProductMaster implements Serializabl
 	
 	@Column(name = "max_cmr")
 	private Integer maxCmr;
-	
+
 	private Integer currency;
 
 	private Integer denomination;
-	
+
 	@Column(name = "assessment_method")
 	private Integer assessmentMethod;
-	
+
 	@Column(name = "promotor_contribution")
 	private Double promotorContribution;
-	
+
 	@Column(name = "wc_requirement")
 	private Double wcRequirement;
-	
+
 	@Column(name = "max_growth")
 	private Double maxGrowth;
-	
-	private Integer version;
 
-	public UniformProductParamter(){
+	public UniformProductParamterTemp() {
 		super();
 	}
-	
-	public UniformProductParamter(Long id){
+
+	public UniformProductParamterTemp(Long id) {
 		super();
 	}
+
 	public Double getRoi() {
 		return roi;
 	}
@@ -144,14 +143,6 @@ public class UniformProductParamter extends ProductMaster implements Serializabl
 		this.maxGrowth = maxGrowth;
 	}
 
-	public Integer getVersion() {
-		return version;
-	}
-
-	public void setVersion(Integer version) {
-		this.version = version;
-	}
-
 	public Integer getMinCmr() {
 		return minCmr;
 	}
@@ -170,11 +161,10 @@ public class UniformProductParamter extends ProductMaster implements Serializabl
 
 	@Override
 	public String toString() {
-		return "UniformProductParamter [minAmount=" + minAmount + ", maxAmount=" + maxAmount + ", roi=" + roi + ", pf="
-				+ pf + ", minCibilScore=" + minCibilScore + ", minCmr=" + minCmr + ", maxCmr=" + maxCmr + ", currency="
-				+ currency + ", denomination=" + denomination + ", assessmentMethod=" + assessmentMethod
+		return "UniformProductParamterTemp [minAmount=" + minAmount + ", maxAmount=" + maxAmount + ", roi=" + roi
+				+ ", pf=" + pf + ", minCibilScore=" + minCibilScore + ", minCmr=" + minCmr + ", maxCmr=" + maxCmr
+				+ ", currency=" + currency + ", denomination=" + denomination + ", assessmentMethod=" + assessmentMethod
 				+ ", promotorContribution=" + promotorContribution + ", wcRequirement=" + wcRequirement + ", maxGrowth="
-				+ maxGrowth + ", version=" + version + "]";
+				+ maxGrowth + "]";
 	}
-
 }
