@@ -47,8 +47,8 @@ public class IneligibleProposalDetailsController {
 			inEligibleProposalDetailsRequest.setUserId(userId);
 		}
 		
-		Boolean isDetailsSaved = ineligibleProposalDetailsService.save(inEligibleProposalDetailsRequest);
-		if (isDetailsSaved) {
+		Integer isDetailsSaved = ineligibleProposalDetailsService.save(inEligibleProposalDetailsRequest);
+		if (isDetailsSaved == 2) {
 
 //        	Trigger mail  to fs and bank branch
 			Boolean isSent = ineligibleProposalDetailsService.sendMailToFsAndBankBranch(
@@ -62,7 +62,10 @@ public class IneligibleProposalDetailsController {
 
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Data saved", HttpStatus.OK.value()),
 					HttpStatus.OK);
-		} else {
+		} else  if (isDetailsSaved == 1) {
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse("Your proposal is already sanctioned !!", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+		}  else {
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse("Data not saved", HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
 		}
