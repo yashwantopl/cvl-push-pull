@@ -154,6 +154,7 @@ import com.capitaworld.service.loans.model.common.SanctioningDetailResponse;
 import com.capitaworld.service.loans.model.corporate.CorporateProduct;
 import com.capitaworld.service.loans.model.mobile.MLoanDetailsResponse;
 import com.capitaworld.service.loans.model.mobile.MobileLoanRequest;
+import com.capitaworld.service.loans.repository.common.LoanRepository;
 import com.capitaworld.service.loans.repository.common.LogDetailsRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.AchievementDetailsRepository;
@@ -570,6 +571,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Autowired
 	private LoanApplicationService loanApplicationService;
+	
+	@Autowired
+	private LoanRepository loanRepository;
 
 	public static final String EMAIL_ADDRESS_FROM = "no-reply@capitaworld.com";
 
@@ -11137,6 +11141,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		}
 		logger.info("IN GET LOAN WC RENEWAL TYPE NOT FOUND BY APPLICATION ID ---------->" + applicationId);
 		return null;
+	}
+	
+	@Override
+	public String getCommonPropertiesValue(String key) {
+		return loanRepository.getCommonPropertiesValue(key);
 	}
 
 }

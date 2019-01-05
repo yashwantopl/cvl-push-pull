@@ -196,7 +196,6 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 			loanSanctionRequest.setUserName(userOrganisationRequest.getUsername());
 			loanSanctionRequest.setPassword(userOrganisationRequest.getPassword());*/
 		} catch (Exception e) {
-			e.printStackTrace();
 			logger.error("Error/Exception in saveSanctionDetailFromPopup() ----------------------->  Message : ",e);
 			return 0;
 		}
