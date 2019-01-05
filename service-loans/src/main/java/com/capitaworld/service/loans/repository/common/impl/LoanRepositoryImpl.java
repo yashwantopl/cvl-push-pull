@@ -109,4 +109,15 @@ public class LoanRepositoryImpl implements LoanRepository {
 		return fpProductName;
 	}
 	
+	public String getCommonPropertiesValue(String key) {
+		try {
+			return (String) entityManager
+					.createNativeQuery("SELECT `value` FROM `loan_application`.`common_properties` WHERE `key` =:key")
+							.setParameter("key", key).getSingleResult();
+		} catch (Exception e) {
+			logger.error("Exception while get common properties value ----->" ,e);
+		}
+		return null;
+	}
+	
 }

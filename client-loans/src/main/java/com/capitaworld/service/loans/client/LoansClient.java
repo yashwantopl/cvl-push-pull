@@ -242,6 +242,7 @@ public class LoansClient {
     private static final String SAVE_LOAN_WC_RENEWAL_TYPE ="/loan_application/saveLoanWCRenewalType";
     private static final String GET_LOAN_WC_RENEWAL_TYPE ="/loan_application/getLoanWCRenewalType";
     private static final String SAVE_INELIGIBALE_PROPOSAL ="/save/ineligible/proposal";
+    private static final String GET_COMMON_PROPERTIES ="/loan_application/getCommonPropValue";
     private static final String AND_FOR_APPLICATION_ID = " and For Application Id====>";
 
     private static final String REQ_AUTH = "req_auth";
@@ -2448,6 +2449,26 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			logger.error("Exception in saveIneligibleProposal : ",e);
+			throw new LoansException(e.getCause().getMessage());
+		}
+	}
+	
+	/**
+	 * 
+	 * @param keyName
+	 * @return  in data key 
+	 * @throws LoansException
+	 */
+	public LoansResponse getCommonPropValue(String keyName) throws LoansException {
+		String url = loansBaseUrl.concat(GET_COMMON_PROPERTIES).concat("/" + keyName);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set(REQ_AUTH, "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<?> entity = new HttpEntity<>(null, headers);
+			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			logger.error("Exception in getCommonPropValue : ",e);
 			throw new LoansException(e.getCause().getMessage());
 		}
 	}

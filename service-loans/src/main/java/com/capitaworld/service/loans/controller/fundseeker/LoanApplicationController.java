@@ -3162,7 +3162,18 @@ public class LoanApplicationController {
 		return null;
 	}
 	
-	
+	@RequestMapping(value = "/getCommonPropValue/{keyName}", method = RequestMethod.GET)
+	public ResponseEntity<LoansResponse> getCommonPropValue(@PathVariable("keyName") String keyName) {
+		try {
+			logger.info("ENTER IN getCommonPropValue---------------->" + keyName);
+			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully get data", HttpStatus.OK.value(), 
+					loanApplicationService.getCommonPropertiesValue(keyName)), HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while getCommonPropValue==>",e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
+		}
+	}
 	
 	
 	

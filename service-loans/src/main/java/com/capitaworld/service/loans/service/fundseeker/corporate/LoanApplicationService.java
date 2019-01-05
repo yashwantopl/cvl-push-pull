@@ -215,6 +215,8 @@ public interface LoanApplicationService {
 	public Integer getLoanWCRenewalType(Long applicationId);
 
 	Boolean isMcqSkipped(Long applicationId) throws Exception;
+	
+	public String getCommonPropertiesValue(String key);
 }
 
 
