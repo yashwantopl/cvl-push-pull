@@ -13,4 +13,6 @@ public interface OfflineProcessedAppService {
 	public List<OfflineProcessedApplicationRequest> getDisbursedApplicationList(Long userId);
 	
 	public List<OfflineProcessedApplicationRequest> getRejectProposalList(Long userId);
+	
+	public List<OfflineProcessedApplicationRequest> getOtherProposalList(Long userId);
 }
