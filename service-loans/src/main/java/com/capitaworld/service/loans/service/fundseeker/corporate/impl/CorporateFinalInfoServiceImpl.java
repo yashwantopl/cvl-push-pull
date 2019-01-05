@@ -2,6 +2,7 @@ package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.CorporateApplicantDetail;
+import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.Address;
 import com.capitaworld.service.loans.model.corporate.CorporateFinalInfoRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
@@ -27,7 +28,7 @@ public class CorporateFinalInfoServiceImpl implements CorporateFinalInfoService 
     @Autowired
     private LoanApplicationRepository loanApplicationRepository;
     @Override
-    public boolean saveOrUpdate(CorporateFinalInfoRequest corporateFinalInfoRequest, Long userId) throws Exception {
+    public boolean saveOrUpdate(CorporateFinalInfoRequest corporateFinalInfoRequest, Long userId) throws LoansException {
 
         try{
             Long finalUserId = (CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getClientId()) ? userId
@@ -64,7 +65,7 @@ public class CorporateFinalInfoServiceImpl implements CorporateFinalInfoService 
 
         }catch (Exception e){
             logger.error("Error while Saving Corporate Final Info:-",e);
-            throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+            throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
         }
 
     }
@@ -108,7 +109,7 @@ public class CorporateFinalInfoServiceImpl implements CorporateFinalInfoService 
 		}
     }
     @Override
-    public CorporateFinalInfoRequest get(Long userId, Long applicationId) throws Exception {
+    public CorporateFinalInfoRequest get(Long userId, Long applicationId) throws LoansException {
         try {
             CorporateApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId(userId,
                     applicationId);
@@ -124,12 +125,12 @@ public class CorporateFinalInfoServiceImpl implements CorporateFinalInfoService 
             return corporateFinalInfoRequest;
         } catch (Exception e) {
             logger.error("Error while getting Corporate Profile:-",e);
-            throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+            throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
         }
     }
 
     @Override
-    public CorporateFinalInfoRequest getNTBDetails(Long userId, Long applicationId) throws Exception {
+    public CorporateFinalInfoRequest getNTBDetails(Long userId, Long applicationId) throws LoansException {
         try {
             CorporateApplicantDetail applicantDetail = applicantRepository.getByApplicationIdAndIsAtive(applicationId);
             if (applicantDetail == null) {
@@ -144,12 +145,12 @@ public class CorporateFinalInfoServiceImpl implements CorporateFinalInfoService 
             return corporateFinalInfoRequest;
         } catch (Exception e) {
             logger.error("Error while getting Corporate Profile:-",e);
-            throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+            throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
         }
     }
 
     @Override
-    public boolean saveOrUpdateNTBDetails(CorporateFinalInfoRequest corporateFinalInfoRequest, Long userId) throws Exception {
+    public boolean saveOrUpdateNTBDetails(CorporateFinalInfoRequest corporateFinalInfoRequest, Long userId) throws LoansException {
         try{
             Long finalUserId = (CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getClientId()) ? userId
                     : corporateFinalInfoRequest.getClientId());
@@ -185,7 +186,7 @@ public class CorporateFinalInfoServiceImpl implements CorporateFinalInfoService 
 
         }catch (Exception e){
             logger.error("Error while Saving Corporate Final Info:-",e);
-            throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+            throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
         }
     }
 

@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.service.fundseeker.retail;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.retail.CoApplicantRequest;
 import com.capitaworld.service.loans.model.retail.FinalCommonRetailRequestOld;
 import com.capitaworld.service.loans.model.teaser.finalview.RetailFinalViewCommonResponse;
@@ -8,21 +9,21 @@ import com.capitaworld.service.loans.model.teaser.primaryview.RetailProfileViewR
 import java.util.List;
 
 public interface CoApplicantService {
-	public boolean save(CoApplicantRequest applicantRequest, Long applicationId, Long userId) throws Exception;
+	public boolean save(CoApplicantRequest applicantRequest, Long applicationId, Long userId) throws LoansException;
 
-	public CoApplicantRequest get(Long userId, Long applicationId, Long id) throws Exception;
+	public CoApplicantRequest get(Long userId, Long applicationId, Long id) throws LoansException;
 
-	public List<CoApplicantRequest> getList(Long applicationId, Long userId) throws Exception;
+	public List<CoApplicantRequest> getList(Long applicationId, Long userId) throws LoansException;
 
-	public boolean saveFinal(FinalCommonRetailRequestOld applicantRequest, Long userId) throws Exception;
+	public boolean saveFinal(FinalCommonRetailRequestOld applicantRequest, Long userId) throws LoansException;
 
-	public FinalCommonRetailRequestOld getFinal(Long userId, Long applicationId, Long id) throws Exception;
+	public FinalCommonRetailRequestOld getFinal(Long userId, Long applicationId, Long id) throws LoansException;
 
-	public List<RetailProfileViewResponse> getCoApplicantPLResponse(Long applicantId, Long userId,int productId) throws Exception;
+	public List<RetailProfileViewResponse> getCoApplicantPLResponse(Long applicantId, Long userId,int productId) throws LoansException;
 	
-	public List<Long> getCoAppIds(Long userId, Long applicationId) throws Exception;
+	public List<Long> getCoAppIds(Long userId, Long applicationId) throws LoansException;
 	
-	public List<RetailFinalViewCommonResponse> getCoApplicantFinalResponse(Long applicantId, Long userId,int productId) throws Exception;
+	public List<RetailFinalViewCommonResponse> getCoApplicantFinalResponse(Long applicantId, Long userId,int productId) throws LoansException;
 	
-	public Long getApplicantIdById(Long id) throws Exception;
+	public Long getApplicantIdById(Long id) throws LoansException;
 }

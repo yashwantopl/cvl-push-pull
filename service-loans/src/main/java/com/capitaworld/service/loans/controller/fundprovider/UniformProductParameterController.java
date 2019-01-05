@@ -27,7 +27,10 @@ import com.capitaworld.service.loans.utils.CommonUtils;
 public class UniformProductParameterController {
 
 	private static final Logger logger = LoggerFactory.getLogger(UniformProductParameterController.class.getName());
-	
+
+	private static final String USER_ID_AND_ORG_ID_CAN_NOT_BE_EMPTY_MSG = "userId and OrgId can not be empty ==> Org Id ==>{}";
+	private static final String UNAUTHORIZED_PLEASE_RE_LOGIN_MSG = "Unauthorized!. Please Re-login.";
+
 	@Autowired
 	private UniformProductParameterService uniformProductParameterService; 
 	
@@ -51,9 +54,9 @@ public class UniformProductParameterController {
 			//Long userId=1755l;
 			if(userId == null || orgId == null)
 			{
-				logger.warn("userId and Org Id can not be empty ==>{}=====>Org Id=====>{}", userId,orgId);
+				logger.warn(USER_ID_AND_ORG_ID_CAN_NOT_BE_EMPTY_MSG, userId,orgId);
 				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Unauthorized!. Please Re-login.", HttpStatus.UNAUTHORIZED.value()),
+						new LoansResponse(UNAUTHORIZED_PLEASE_RE_LOGIN_MSG, HttpStatus.UNAUTHORIZED.value()),
 						HttpStatus.OK);
 			}
 			paramterRequest.setUserId(userId);
@@ -83,9 +86,9 @@ public class UniformProductParameterController {
 			//Long userId=1755l;
 			if(userId == null || orgId == null)
 			{
-				logger.warn("userId and Org Id can not be empty ==>{}=====>Org Id=====>{}", userId,orgId);
+				logger.warn(USER_ID_AND_ORG_ID_CAN_NOT_BE_EMPTY_MSG, userId,orgId);
 				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Unauthorized!. Please Re-login.", HttpStatus.UNAUTHORIZED.value()),
+						new LoansResponse(UNAUTHORIZED_PLEASE_RE_LOGIN_MSG, HttpStatus.UNAUTHORIZED.value()),
 						HttpStatus.OK);
 			}
 			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SUCCESSFULLY_GET_DATA, HttpStatus.OK.value(),uniformProductParameterService.getTempObj(userId, orgId,roleIds)),HttpStatus.OK);
@@ -108,9 +111,9 @@ public class UniformProductParameterController {
 //			//Long userId=1755l;
 //			if(userId == null || orgId == null)
 //			{
-//				logger.warn("userId and Org Id can not be empty ==>{}=====>Org Id=====>{}", userId,orgId);
+//				logger.warn(USER_ID_AND_ORG_ID_CAN_NOT_BE_EMPTY_MSG, userId,orgId);
 //				return new ResponseEntity<LoansResponse>(
-//						new LoansResponse("Unauthorized!. Please Re-login.", HttpStatus.UNAUTHORIZED.value()),
+//						new LoansResponse(UNAUTHORIZED_PLEASE_RE_LOGIN_MSG, HttpStatus.UNAUTHORIZED.value()),
 //						HttpStatus.OK);
 //			}
 //			paramterRequest.setUserId(userId);
@@ -140,9 +143,9 @@ public class UniformProductParameterController {
 			//Long userId=1755l;
 			if(userId == null || orgId == null)
 			{
-				logger.warn("userId and Org Id can not be empty ==>{}=====>Org Id=====>{}", userId,orgId);
+				logger.warn(USER_ID_AND_ORG_ID_CAN_NOT_BE_EMPTY_MSG, userId,orgId);
 				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Unauthorized!. Please Re-login.", HttpStatus.UNAUTHORIZED.value()),
+						new LoansResponse(UNAUTHORIZED_PLEASE_RE_LOGIN_MSG, HttpStatus.UNAUTHORIZED.value()),
 						HttpStatus.OK);
 			}
 			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SUCCESSFULLY_GET_DATA, HttpStatus.OK.value(),uniformProductParameterService.getTempObj(userId, orgId,roleIds)),HttpStatus.OK);
@@ -164,9 +167,9 @@ public class UniformProductParameterController {
 			//Long userId=1755l;
 			if(userId == null || orgId == null)
 			{
-				logger.warn("userId and Org Id can not be empty ==>{}=====>Org Id=====>{}", userId,orgId);
+				logger.warn(USER_ID_AND_ORG_ID_CAN_NOT_BE_EMPTY_MSG, userId,orgId);
 				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Unauthorized!. Please Re-login.", HttpStatus.UNAUTHORIZED.value()),
+						new LoansResponse(UNAUTHORIZED_PLEASE_RE_LOGIN_MSG, HttpStatus.UNAUTHORIZED.value()),
 						HttpStatus.OK);
 			}
 			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SUCCESSFULLY_GET_DATA, HttpStatus.OK.value(),uniformProductParameterAuditService.get(userId, orgId)),HttpStatus.OK);

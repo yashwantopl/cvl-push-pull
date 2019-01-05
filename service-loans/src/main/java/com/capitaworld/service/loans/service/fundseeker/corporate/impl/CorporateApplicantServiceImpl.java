@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -140,7 +141,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 	}
 	
 	@Override
-	public boolean save(CorporateApplicantRequest applicantRequest, Long userId) throws Exception {
+	public boolean save(CorporateApplicantRequest applicantRequest, Long userId) throws LoansException {
 		try {
 			// application id must not be null
 			Long finalUserId = (CommonUtils.isObjectNullOrEmpty(applicantRequest.getClientId()) ? userId
@@ -195,12 +196,12 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 
 		} catch (Exception e) {
 			logger.error("Error while Saving Corporate Profile :- ",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
-	public CorporateApplicantRequest getCorporateApplicant(Long userId, Long applicationId) throws Exception {
+	public CorporateApplicantRequest getCorporateApplicant(Long userId, Long applicationId) throws LoansException {
 		try {
 
 			CorporateApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId(userId,
@@ -232,7 +233,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 			return applicantRequest;
 		} catch (Exception e) {
 			logger.error("Error while getting Corporate Profile :- ",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
@@ -371,7 +372,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 	}
 
 	@Override
-	public List<Long> getSectorListByIndustryId(List<Long> industryList) throws Exception {
+	public List<Long> getSectorListByIndustryId(List<Long> industryList) throws LoansException {
 
 		return sectorIndustryMappingRepository.getSectorListByIndustryList(industryList);
 	}
@@ -547,7 +548,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 	}
 
 	@Override
-	public int updateLatLong(LongitudeLatitudeRequest request, Long userId) throws Exception {
+	public int updateLatLong(LongitudeLatitudeRequest request, Long userId) throws LoansException {
 		try {
 			Long finalUserId = !CommonUtils.isObjectNullOrEmpty(request.getClientId()) ? request.getClientId() : userId;
 
@@ -574,12 +575,12 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 			return latLong;
 		} catch (Exception e) {
 			logger.error("Error While Updating Lat and Lon : ",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
-	public LongitudeLatitudeRequest getLatLonByApplicationAndUserId(Long applicationId, Long userId) throws Exception {
+	public LongitudeLatitudeRequest getLatLonByApplicationAndUserId(Long applicationId, Long userId) throws LoansException {
 		try {
 			List<Object[]> latLons = applicantDetailRepository.getLatLonByApplicationAndUserId(applicationId, userId);
 			if (CommonUtils.isListNullOrEmpty(latLons)) {
@@ -596,12 +597,12 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 
 		} catch (Exception e) {
 			logger.error("Error While Updating Lat and Lon :- ",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
-	public Integer getCorporateEstablishmentYear(Long applicationId, Long userId) throws Exception {
+	public Integer getCorporateEstablishmentYear(Long applicationId, Long userId) throws LoansException {
 		try {
 			return applicantDetailRepository.getApplicantEstablishmentYear(userId, applicationId);
 		} catch (Exception e) {
@@ -611,7 +612,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 	}
 
 	@Override
-	public List<CorporateCoApplicantRequest> getCoApplicants(Long userId, Long applicationId) throws Exception {
+	public List<CorporateCoApplicantRequest> getCoApplicants(Long userId, Long applicationId) throws LoansException {
 
 		return coApplicantService.getList(applicationId, userId);
 	}
@@ -652,7 +653,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public JSONObject getCoapAndGuarIds(Long userId, Long applicationId) throws Exception {
+	public JSONObject getCoapAndGuarIds(Long userId, Long applicationId) throws LoansException {
 		try {
 			List<Long> coAppIds = coApplicantService.getCoAppIds(applicationId, userId);
 
@@ -661,12 +662,12 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 			return obj;
 		} catch (Exception e) {
 			logger.error("Error while getCoapIds :- ",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
-	public PaymentRequest getPaymentInfor(Long userId, Long applicationId) throws Exception {
+	public PaymentRequest getPaymentInfor(Long userId, Long applicationId) throws LoansException {
 		try {
 			LoanApplicationMaster loanApplicationMaster = loanApplicationRepository
 					.findOne(applicationId);
@@ -732,7 +733,7 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 			return paymentRequest;
 		} catch (Exception e) {
 			logger.error("Error while Getting Payment Related Info :- ",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 

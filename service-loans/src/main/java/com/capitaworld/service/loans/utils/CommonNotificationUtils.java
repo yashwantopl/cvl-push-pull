@@ -33,9 +33,9 @@ public class CommonNotificationUtils {
 		public Long getValue() {
 			return value;
 		}
-		public void setValue(Long value) {
-			this.value = value;
-		}
+//		public void setValue(Long value) {
+//			this.value = value;
+//		}
 
 		public static String getSubjectName(Long x,String fpName) {
 			if(x == NotificationAlias.EMAIL_PRIMARY_VIEW_FS) {

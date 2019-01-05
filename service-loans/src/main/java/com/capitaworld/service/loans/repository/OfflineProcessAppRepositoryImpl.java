@@ -89,7 +89,6 @@ public class OfflineProcessAppRepositoryImpl implements OfflineProcessedAppRepos
 	@Override 
 	public List<Object[]> getHomeCounterDetail(){
 		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spGetHomeCounter");
-		
 		return  (List<Object[]>) storedProcedureQuery.getResultList() ; 
 	 }
 
