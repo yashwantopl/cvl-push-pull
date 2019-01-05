@@ -351,7 +351,9 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 
 		CorporateFinalInfoRequest corporateFinalInfoRequest;
 		try {
-			corporateFinalInfoRequest = corporateFinalInfoService.get(userId, applicationId);
+			//corporateFinalInfoRequest = corporateFinalInfoService.get(userId, applicationId);  PREVIOIS
+			corporateFinalInfoRequest = corporateFinalInfoService.getByProposalId(userId, proposalId);//NEW
+			
 			//ADMIN OFFICE ADDRESS
 			if(!CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getSecondAddress())){
 				map.put("adminAddPremise", !CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getSecondAddress().getPremiseNumber()) ? CommonUtils.printFields(corporateFinalInfoRequest.getSecondAddress().getPremiseNumber(),null) + "," : "");
@@ -657,18 +659,21 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			Integer years[] = {currentYear-3, currentYear-2, currentYear-1};
 			Map<Integer, Object[]> financials = new TreeMap<Integer, Object[]>(Collections.reverseOrder());
 			for(Integer year : years) {
-				Object[] data = calculateFinancials(userId, applicationId, null, denominationValue, year);
+				//Object[] data = calculateFinancials(userId, applicationId, null, denominationValue, year); // PREVIOUS
+				Object[] data = calculateFinancials(userId, applicationId, null, denominationValue,proposalId, year);//NEW BASED ON PROPOSAL ID 
 				financials.put(year, data);
 			}
 			calculateRatioAnalysis(financials, applicationId);
 			map.put("financials", financials);
 			Map<Integer, Object[]> projectedFin = new HashMap<Integer, Object[]>(applicationProposalMapping.getTenure().intValue());
 			if(primaryCorporateRequest.getProductId() == 1) {
-				projectedFin.put(currentYear , calculateFinancials(userId, applicationId, null, denominationValue, currentYear));
+				//		projectedFin.put(currentYear , calculateFinancials(userId, applicationId, null, denominationValue, currentYear)); // PREVIOUS
+				projectedFin.put(currentYear , calculateFinancials(userId, applicationId, null, denominationValue,proposalId, currentYear));// NEW BASED ON PROPOSAL ID
 				map.put("tenure", 1);
 			}else {
 				for(int i=0; i<=applicationProposalMapping.getTenure().intValue();i++) {
-					projectedFin.put(currentYear + i, calculateFinancials(userId, applicationId, null, denominationValue, currentYear + i));
+					//projectedFin.put(currentYear + i, calculateFinancials(userId, applicationId, null, denominationValue, currentYear + i));// PREVIOUS
+					projectedFin.put(currentYear + i, calculateFinancials(userId, applicationId, null, denominationValue, proposalId,currentYear + i));// NEW BASED ON PROPOSAL ID 
 				}
 				map.put("tenure", applicationProposalMapping.getTenure().intValue() +1);
 			}
@@ -1449,16 +1454,22 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 	}
 	
 	//FINANCIALS & NOTES TO ACCOUNTS
-	public Object[] calculateFinancials(Long userId, Long applicationId, String industry, Long denomination, Integer year) throws Exception {
+	public Object[] calculateFinancials(Long userId, Long applicationId, String industry, Long denomination, Long proposalId,Integer year) throws Exception {
+		logger.info("USER ID =APPLICATION_ID AND PROPOSAL ID AND YEAR DEMONITAION---------------------"+"==="+userId+" ==>>"+applicationId+"====>"+year+"======>"+proposalId);
 		FinancialInputRequestDbl financialInputRequestDbl = new FinancialInputRequestDbl();
 		FinancialInputRequestString financialInputRequestString = new FinancialInputRequestString();
 		OperatingStatementDetailsString osDetailsString = new OperatingStatementDetailsString();
 		LiabilitiesDetailsString liabilitiesDetailsString = new LiabilitiesDetailsString();
 		AssetDetailsString assetDetailsString = new AssetDetailsString();
-		CorporateFinalInfoRequest  corporateFinalInfoRequest = corporateFinalInfoService.get(userId ,applicationId);
+		//CorporateFinalInfoRequest  corporateFinalInfoRequest = corporateFinalInfoService.get(userId ,applicationId);// PREVIOUS 
+		CorporateFinalInfoRequest  corporateFinalInfoRequest = corporateFinalInfoService.getByProposalId(null,proposalId);//NEW BASED ON PROPOSAL ID 
+		logger.info("user id and application ID  fs corporate Applicatiion details======>"+corporateFinalInfoRequest.getSharePriceFace());
         //SET SHARE FACE VALUE
 		Double shareFaceVal=1.00;
-		CorporateApplicantDetail corporateApplicantDetail=corporateApplicantDetailRepository.findOneByApplicationIdId(applicationId);
+		// changes remaining---->
+		//CorporateApplicantDetail corporateApplicantDetail=corporateApplicantDetailRepository.findOneByApplicationIdId(applicationId); // PREVIOUS 
+		CorporateApplicantDetail corporateApplicantDetail=corporateApplicantDetailRepository.getByApplicationIdAndProposalIdAndIsActive(applicationId,proposalId); // NEW BASED ON PROPOSAL ID 
+		logger.info("CMA DETAILS===========================>"+corporateApplicantDetail);
 		if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail)) {
 			if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getSharePriceFace())) {
 				shareFaceVal=corporateApplicantDetail.getSharePriceFace();
@@ -1473,7 +1484,8 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		financialInputRequestDbl.setNoOfMonth(12.0);
 		
 		/************************************************** OPERATING STATEMENT ***************************************************/
-		OperatingStatementDetails osDetails = operatingStatementDetailsRepository.getOperatingStatementDetails(applicationId, year+"");
+		//OperatingStatementDetails osDetails = operatingStatementDetailsRepository.getOperatingStatementDetails(applicationId, year+""); // PREVIOUS 
+		OperatingStatementDetails osDetails = operatingStatementDetailsRepository.getOperatingStatementDetails(applicationId,proposalId, year+""); // NEW BASED ON PROPOSAL ID 
 		if(CommonUtils.isObjectNullOrEmpty(osDetails)) {
 			osDetails = new OperatingStatementDetails();
 		}
@@ -1537,7 +1549,8 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		financialInputRequestString.setDividendPayOut(CommonUtils.convertValueRound(financialInputRequestDbl.getDividendPayOut()));
 
 		/************************************************ LIABILITIES DETAIL ***************************************************/
-		LiabilitiesDetails liabilitiesDetails = liabilitiesDetailsRepository.getLiabilitiesDetails(applicationId, year+"");
+		//LiabilitiesDetails liabilitiesDetails = liabilitiesDetailsRepository.getLiabilitiesDetails(applicationId, year+""); // PREVIOUS 
+		LiabilitiesDetails liabilitiesDetails = liabilitiesDetailsRepository.getLiabilitiesDetailByProposal(proposalId,year+"");// NEW BASED ON PROPOSAL ID 
 		if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails)) {
 			liabilitiesDetails = new LiabilitiesDetails();
 		}
@@ -1608,7 +1621,8 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		financialInputRequestString.setOtherIncomeNeedTocCheckLia(CommonUtils.convertValueRound(financialInputRequestDbl.getOtherIncomeNeedTocCheckLia()));
 		
 		/************************************************ ASSETS DETAIL ***************************************************/
-		AssetsDetails assetsDetails = assetsDetailsRepository.getAssetsDetails(applicationId, year+"");
+		//AssetsDetails assetsDetails = assetsDetailsRepository.getAssetsDetails(applicationId, year+""); // PREVIOUS 
+		AssetsDetails assetsDetails = assetsDetailsRepository.getAssetsDetailByProposal(proposalId, year+"");// NEW BASED ON PROPOSAL ID 
 		if(CommonUtils.isObjectNullOrEmpty(assetsDetails)) {
 			assetsDetails = new AssetsDetails();
 		}
