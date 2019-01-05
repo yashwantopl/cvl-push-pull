@@ -78,13 +78,20 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 		DocumentResponse documentResponse = null;
 		Workbook wb = null;
 		try {
-			Double total_Column=24.0;
-
 			//EXISTING WCTL_CMA OR TL
-			String EXCEL_FILE_LOCATION ="cw.mca.cwtlwctlcmafile.location";
+			String EXCEL_FILE_LOCATION  = "cw.mca.cwtlwctlcmafile.location";
 			logger.warn("excel file====>>"+EXCEL_FILE_LOCATION);
 			Integer businessTypeId =loanApplicationRepository.findOneBusinessTypeIdByIdAndIsActive(applicationId);
 			logger.info("Busyness Type ID=====>" + businessTypeId);
+			Double tenure = 1.0;
+
+			if(productDocumentMappingId == DocumentAlias.WCTL_CMA || productDocumentMappingId == DocumentAlias.TL_CMA  ){
+
+				tenure =  applicationProposalMappingRepository.getTenure(proposalId);
+				tenure = !CommonUtils.isObjectNullOrEmpty(tenure) ? tenure + 1 : 0.0;
+
+			}
+
 			if(BusinessType.NEW_TO_BUSINESS.getId() == businessTypeId) {
 
 				EXCEL_FILE_LOCATION =	"cw.mca.ntbtlcmafile.location"; //NTB TL
@@ -96,20 +103,20 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 			}else if(BusinessType.EXISTING_BUSINESS.getId() == businessTypeId) {
 
 				/*EXCEL_FILE_LOCATION ="cw.mca.cwtlwctlcmafile.location"; //EXISTING WCTL_CMA OR TL */
-
 				if(productDocumentMappingId==(long)DocumentAlias.WC_CMA) { //EXISTING WC
+
 					EXCEL_FILE_LOCATION =	"cw.mca.cwcmafile.location";
-					total_Column=0.0;
+
+
 				}else if(productDocumentMappingId==(long)DocumentAlias.USL_CMA) { //EXISTING USL
+
 					EXCEL_FILE_LOCATION =	"cw.mca.cwcmafile.usl.location";
-					total_Column=0.0;
+
+
 				}
 			}
-
-			Double tenure =  applicationProposalMappingRepository.getTenure(proposalId);
-			tenure = !CommonUtils.isObjectNullOrEmpty(tenure) ? tenure + 1 : 0.0;
 			logger.warn("tenure==>>"+tenure);
-
+			logger.info("FILE PATH ------------------------------->" + environment.getRequiredProperty(EXCEL_FILE_LOCATION));
 			wb = new XSSFWorkbook(OPCPackage.open(environment.getRequiredProperty(EXCEL_FILE_LOCATION)));
 
 			Sheet sheet1 = wb.getSheetAt(0);
@@ -120,8 +127,37 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 
 			evaluator = wb.getCreationHelper().createFormulaEvaluator();
 
-			List<OperatingStatementDetails> operatingStatementDetailsList = operatingStatementDetailsRepository
-					.getByApplicationIdAndProposalIdNULL(applicationId);
+			List<OperatingStatementDetails> operatingStatementDetailsList = operatingStatementDetailsRepository.getByApplicationIdAndProposalIdNULL(applicationId);
+			//------------------------------- START FOR FIX FIRST THREE ROW IN EXCEL SHEET
+			List<Integer> yearList = new ArrayList<>(operatingStatementDetailsList.size());
+			for (OperatingStatementDetails operatingStatementDetails : operatingStatementDetailsList) {
+				String year = operatingStatementDetails.getYear();
+				if(!CommonUtils.isObjectNullOrEmpty(year)) {
+					yearList.add(Integer.parseInt(year));
+				}
+			}
+			if(yearList.size() < 3) {
+				OperatingStatementDetails operatingStatementDetails = null;
+				if(yearList.size() == 2) {//IF USER UPLOAD 3 YEAR ITR
+					Integer minValue = Math.min(yearList.get(0), yearList.get(1));
+					operatingStatementDetails = new OperatingStatementDetails();
+					operatingStatementDetails.setYear(String.valueOf(minValue-1));
+					operatingStatementDetailsList.add(operatingStatementDetails);
+				} else if(yearList.size() == 1)  {//IF USER UPLOAD 1 YEAR ITR
+					operatingStatementDetails = new OperatingStatementDetails();
+					operatingStatementDetails.setYear(String.valueOf(yearList.get(0)-1));
+					operatingStatementDetailsList.add(operatingStatementDetails);
+
+					operatingStatementDetails = new OperatingStatementDetails();
+					operatingStatementDetails.setYear(String.valueOf(yearList.get(0)-2));
+					operatingStatementDetailsList.add(operatingStatementDetails);
+				}
+				Collections.sort(operatingStatementDetailsList, new OperatingStatementComparator());
+			}
+
+			//------------------------------- END FOR FIX FIRST THREE ROW IN EXCEL SHEET
+
+
 			int j = 1;
 			Double temp=0.0;
 
@@ -237,30 +273,61 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 
 			}
 			//Hide rows dynamically as per tenure in operating statement.
-			int k = 1;
+			/*int k = 1;
 			for(;j<=24;j++) {
 				if(k<=tenure) {
 
 				}
 				else {
-					sheet1.setColumnHidden(j,true);
+					 sheet1.setColumnHidden(j,true);
 				}
 				k++;
-			}
+			}*/
 			// Operating Stmt. ends
-			setyear(sheet1, temp, operatingStatementDetailsList.size() , total_Column, true , businessTypeId);
-
+			setyear(sheet1, temp, j , tenure, true , businessTypeId);
 
 			// Liabilities Starts
-			List<LiabilitiesDetails> liabilitiesDetailsList = liabilitiesDetailsRepository
-					.getByApplicationIdAndProposalIdNULL(applicationId);
-			j = 1;
+			temp = 0.0 ;
+
+			List<LiabilitiesDetails> liabilitiesDetailsList = liabilitiesDetailsRepository.getByApplicationIdAndProposalIdNULL(applicationId);
+
+			//------------------------------- START FOR FIX FIRST THREE ROW IN EXCEL SHEET
+			List<Integer> libYearList = new ArrayList<>(liabilitiesDetailsList.size());
+			for (LiabilitiesDetails liabilitiesDetails : liabilitiesDetailsList) {
+				String year = liabilitiesDetails.getYear();
+				if(!CommonUtils.isObjectNullOrEmpty(year)) {
+					libYearList.add(Integer.parseInt(year));
+				}
+			}
+			if(libYearList.size() < 3) {
+				LiabilitiesDetails liabilitiesDetails = null;
+				if(libYearList.size() == 2) {//IF USER UPLOAD 3 YEAR ITR
+					Integer minValue = Math.min(libYearList.get(0), libYearList.get(1));
+					liabilitiesDetails = new LiabilitiesDetails();
+					liabilitiesDetails.setYear(String.valueOf(minValue-1));
+					liabilitiesDetailsList.add(liabilitiesDetails);
+				} else if(libYearList.size() == 1){//IF USER UPLOAD 1 YEAR ITR
+					liabilitiesDetails = new LiabilitiesDetails();
+					liabilitiesDetails.setYear(String.valueOf(libYearList.get(0)-1));
+					liabilitiesDetailsList.add(liabilitiesDetails);
+
+					liabilitiesDetails = new LiabilitiesDetails();
+					liabilitiesDetails.setYear(String.valueOf(libYearList.get(0)-2));
+					liabilitiesDetailsList.add(liabilitiesDetails);
+				}
+// 				Collections.sort(liabilitiesDetailsList, new LiabilityComparator());
+			}
+			Collections.sort(liabilitiesDetailsList, new LiabilityComparator());
+			//------------------------------- END FOR FIX FIRST THREE ROW IN EXCEL SHEET
+
+
+			j = 1 ;
 			for (LiabilitiesDetails liabilitiesDetails : liabilitiesDetailsList) {
 				// save in db
 				temp=Double.parseDouble(liabilitiesDetails.getYear());
 				// save in excel
 				sheet2.getRow(4).getCell(j).setCellValue(temp);
-				System.out.println(sheet2.getRow(4).getCell(j).getNumericCellValue());
+				logger.info(""+sheet2.getRow(4).getCell(j).getNumericCellValue());
 				//sheet1.getRow(8).getCell(j).setCellValue(liabilitiesDetails.get);
 
 				sheet2.getRow(10).getCell(j).setCellValue(liabilitiesDetails.getFromApplicationBank());
@@ -333,29 +400,61 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 
 			}
 			//Hide rows dynamically as per tenure in liabilities.
-			int o = 1;
+			/*int o = 1;
 			for(;j<=24;j++) {
 				if(o<=tenure) {
 				}
 				else {
-					sheet2.setColumnHidden(j,true);
+					 sheet2.setColumnHidden(j,true);
 				}
 				o++;
-			}
+			}*/
 			// Liabilities Ends
-			setyear(sheet2, temp, liabilitiesDetailsList.size(),total_Column, true , businessTypeId);
+			setyear(sheet2, temp, j , tenure , true , businessTypeId);
 
 
 
 			// Asset Starts
 
 			List<AssetsDetails> assetsDetailsList = assetsDetailsRepository.getByApplicationIdAndProposalIdNULL(applicationId);
-			j = 1;
+
+			//------------------------------- START FOR FIX FIRST THREE ROW IN EXCEL SHEET
+			List<Integer> assetYearList = new ArrayList<>(assetsDetailsList.size());
 			for (AssetsDetails assetsDetails : assetsDetailsList) {
+				String year = assetsDetails.getYear();
+				if(!CommonUtils.isObjectNullOrEmpty(year)) {
+					assetYearList.add(Integer.parseInt(year));
+				}
+			}
+			if(assetYearList.size() < 3) {
+				AssetsDetails assetsDetails = null;
+				if(assetYearList.size() == 2) {//IF USER UPLOAD 3 YEAR ITR
+					Integer minValue = Math.min(assetYearList.get(0), assetYearList.get(1));
+					assetsDetails = new AssetsDetails();
+					assetsDetails.setYear(String.valueOf(minValue-1));
+					assetsDetailsList.add(assetsDetails);
+				} else if(assetYearList.size() == 1) {//IF USER UPLOAD 1 YEAR ITR
+					assetsDetails = new AssetsDetails();
+					assetsDetails.setYear(String.valueOf(assetYearList.get(0)-1));
+					assetsDetailsList.add(assetsDetails);
+
+					assetsDetails = new AssetsDetails();
+					assetsDetails.setYear(String.valueOf(assetYearList.get(0)-2));
+					assetsDetailsList.add(assetsDetails);
+				}
+				Collections.sort(assetsDetailsList, new AssetComparator());
+			}
+
+			//------------------------------- END FOR FIX FIRST THREE ROW IN EXCEL SHEET
+
+			j = 1;
+
+			for (AssetsDetails assetsDetails : assetsDetailsList) {
+
 				temp=Double.parseDouble(assetsDetails.getYear());
 				// save in excel
 				sheet3.getRow(4).getCell(j).setCellValue(temp);
-				System.out.println(sheet3.getRow(4).getCell(j).getNumericCellValue());
+				//logger.info(""+sheet3.getRow(4).getCell(j).getNumericCellValue());
 				sheet3.getRow(8).getCell(j).setCellValue(assetsDetails.getCashAndBankBalance());
 
 				//sheet3.getRow(10).getCell(j).setCellValue(assetsDetails.getInvestments());
@@ -467,26 +566,24 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 
 			}
 			//Hide rows dynamically as per tenure in asset.
-			int p = 1;
+			/*int p = 1;
 			for(;j<=24;j++) {
 				if(p<=tenure) {
 				}
 				else {
-					sheet3.setColumnHidden(j,true);
+					 sheet3.setColumnHidden(j,true);
 				}
 				p++;
-			}
+			}*/
 			// Asset Ends
-			setyear(sheet3, temp, assetsDetailsList.size(),total_Column, true, businessTypeId);
+			setyear(sheet3, temp, j ,tenure , true, businessTypeId);
 			//documentResponse =fileUpload(wb, applicationId, productDocumentMappingId);
 			logger.info("Exit with cmaFileGenerator() {} ", documentResponse);
 
 		} catch ( IllegalStateException | IOException | InvalidFormatException e) {
-			System.err.println("Exception in cmaFileGenerator");
-			e.printStackTrace();
+			logger.error("Exception in cmaFileGenerator : ",e);
 		}
 		return wb;
-
 	}
 
 
