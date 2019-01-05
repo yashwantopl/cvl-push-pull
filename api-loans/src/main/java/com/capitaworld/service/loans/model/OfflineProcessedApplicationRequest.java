@@ -30,6 +30,7 @@ public class OfflineProcessedApplicationRequest {
 	private Boolean isPartiallyDisbursedOffline;
 	private String reason;
 	private Date modifiedDate;
+	private Integer status;
 	
 	
 	public Long getApplicationId() {
@@ -181,6 +182,12 @@ public class OfflineProcessedApplicationRequest {
 	}
 	public void setCampaignCode(String campaignCode) {
 		this.campaignCode = campaignCode;
+	}
+	public Integer getStatus() {
+		return status;
+	}
+	public void setStatus(Integer status) {
+		this.status = status;
 	}
 	
 	

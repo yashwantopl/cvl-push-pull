@@ -103,6 +103,40 @@ public class OfflineProposedAppServiceImpl implements OfflineProcessedAppService
 		}
 		return applicationRequests;
 	}
+	
+	@Override
+	public List<OfflineProcessedApplicationRequest> getOtherProposalList(Long userId) {
+		List<Object []> lst = offlineProcessedAppRepository.getOtherProposalsList(userId);
+		if(lst.size() == 0) {
+			return Collections.emptyList();
+		}
+		List<OfflineProcessedApplicationRequest> applicationRequests = new ArrayList<OfflineProcessedApplicationRequest>(lst.size());
+		OfflineProcessedApplicationRequest request = null;
+		for(Object[] obj : lst) {
+			request = new OfflineProcessedApplicationRequest();
+			request.setApplicationId(CommonUtils.convertLong(obj[0]));
+			request.setOrganisationName(CommonUtils.convertString(obj[1]));
+			request.setPan(CommonUtils.convertString(obj[2]));
+			request.setGstin(CommonUtils.convertString(obj[3]));
+			request.setUserId(CommonUtils.convertLong(obj[4]));
+			request.setLoanAmount(CommonUtils.convertDouble(obj[5]));
+			request.setBranchName(CommonUtils.convertString(obj[6]));
+			request.setBranchCode(CommonUtils.convertString(obj[7]));
+			request.setBranchAddress(CommonUtils.convertString(obj[8]));
+			request.setModifiedDate(CommonUtils.convertDate(obj[9]));
+			request.setCampaignCode(CommonUtils.convertString(obj[10]));
+			Integer campId = CommonUtils.convertInteger(obj[11]);
+			if(campId == 0) {
+				request.setIsCampaignUser("Market Place");	
+			} else {
+				request.setIsCampaignUser("Bank Specific");
+			}
+			request.setBranchId(CommonUtils.convertLong(obj[12]));
+			request.setStatus(CommonUtils.convertInteger(obj[13]));
+			applicationRequests.add(request);
+		}
+		return applicationRequests;
+	}
 
 	@Override
 	public List<OfflineProcessedApplicationRequest> getSanctionedApplicationList(Long userId) {

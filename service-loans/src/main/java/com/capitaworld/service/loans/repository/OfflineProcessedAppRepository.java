@@ -20,6 +20,8 @@ public interface OfflineProcessedAppRepository{
 	public List<Object []> getDisbursedApplicationList(Long userId);
 	
 	public List<Object[]> getRejectProposalsList(Long userId);
+	
+	public List<Object[]> getOtherProposalsList(Long userId);
 
 	public List<Object[]> getHomeCounterDetail();
 }
