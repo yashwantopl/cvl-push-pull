@@ -84,6 +84,14 @@ public class OfflineProcessAppRepositoryImpl implements OfflineProcessedAppRepos
 		return (List<Object[]>) storedProcedureQuery.getResultList();
 	}
 	
+	@Override
+	public List<Object[]> getOtherProposalsList(Long userId) {
+		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spFetchOfflineOtherProposal");
+		storedProcedureQuery.registerStoredProcedureParameter(CommonUtils.USER_ID,Long.class, ParameterMode.IN);
+		storedProcedureQuery.setParameter(CommonUtils.USER_ID,userId);
+		return (List<Object[]>) storedProcedureQuery.getResultList();
+	}
+	
 
 	@SuppressWarnings("unchecked")
 	@Override 
