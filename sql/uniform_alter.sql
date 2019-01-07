@@ -176,3 +176,9 @@ ADD COLUMN `version_audit` VARCHAR(200);
 
 ALTER TABLE `loan_application`.`proposal_details` ADD COLUMN `version` INT(3) NULL AFTER `reason`; 
 ALTER TABLE `loan_application`.`application_product_audit` ADD COLUMN `version` INT(3) NULL AFTER `score`; 
+
+
+ALTER TABLE `loan_application`.`fp_uniform_product_details` ADD COLUMN `dpd` INT(3);
+ALTER TABLE `loan_application`.`fp_uniform_product_details_audit` ADD COLUMN `dpd` INT(3);
+ALTER TABLE `loan_application`.`fp_uniform_product_details_audit` ADD COLUMN `dpd_audit` VARCHAR(1000);
+ALTER TABLE `loan_application`.`fp_uniform_product_details_temp` ADD COLUMN `dpd` INT(3);

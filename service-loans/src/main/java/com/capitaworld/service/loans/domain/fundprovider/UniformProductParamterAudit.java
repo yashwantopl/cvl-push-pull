@@ -118,6 +118,11 @@ public class UniformProductParamterAudit implements Serializable {
 	@Column(name = "created_date")
 	private Date createdDate;
 	
+	@Column(name = "dpd_audit")
+	private String dpdAudit;
+	
+	private Integer dpd;
+	
 	public UniformProductParamterAudit(){
 		super();
 	}
@@ -378,6 +383,22 @@ public class UniformProductParamterAudit implements Serializable {
 		this.createdDate = createdDate;
 	}
 
+	public Integer getDpd() {
+		return dpd;
+	}
+
+	public void setDpd(Integer dpd) {
+		this.dpd = dpd;
+	}
+
+	public String getDpdAudit() {
+		return dpdAudit;
+	}
+
+	public void setDpdAudit(String dpdAudit) {
+		this.dpdAudit = dpdAudit;
+	}
+
 	@Override
 	public String toString() {
 		return "UniformProductParamterAudit [id=" + id + ", minAmount=" + minAmount + ", minAmountAudit="
@@ -391,6 +412,6 @@ public class UniformProductParamterAudit implements Serializable {
 				+ promotorContributionAudit + ", wcRequirement=" + wcRequirement + ", wcRequirementAudit="
 				+ wcRequirementAudit + ", maxGrowth=" + maxGrowth + ", maxGrowthAudit=" + maxGrowthAudit + ", version="
 				+ version + ", versionAudit=" + versionAudit + ", fpProductId=" + fpProductId + ", orgId=" + orgId
-				+ ", createdDate=" + createdDate + "]";
+				+ ", createdDate=" + createdDate + ", dpdAudit=" + dpdAudit + ", dpd=" + dpd + "]";
 	}
 }

@@ -20,6 +20,8 @@ public class UniformProductParamterRequest extends ProductMasterRequest implemen
 	
 	private Integer currency;
 
+	private Integer dpd;
+	
 	private Integer denomination;
 	
 	private Integer assessmentMethod;
@@ -333,17 +335,25 @@ public class UniformProductParamterRequest extends ProductMasterRequest implemen
 		this.createdDate = createdDate;
 	}
 
+	public Integer getDpd() {
+		return dpd;
+	}
+
+	public void setDpd(Integer dpd) {
+		this.dpd = dpd;
+	}
+
 	@Override
 	public String toString() {
 		return "UniformProductParamterRequest [minAmount=" + minAmount + ", maxAmount=" + maxAmount + ", roi=" + roi
 				+ ", pf=" + pf + ", minCibilScore=" + minCibilScore + ", minCmr=" + minCmr + ", maxCmr=" + maxCmr
-				+ ", currency=" + currency + ", denomination=" + denomination + ", assessmentMethod=" + assessmentMethod
-				+ ", version=" + version + ", promotorContribution=" + promotorContribution + ", wcRequirement="
-				+ wcRequirement + ", maxGrowth=" + maxGrowth + ", workflowData=" + workflowData + ", workflowRequest="
-				+ workflowRequest + ", roleIds=" + roleIds + ", minAmountAudit=" + minAmountAudit + ", maxAmountAudit="
-				+ maxAmountAudit + ", roiAudit=" + roiAudit + ", pfAudit=" + pfAudit + ", minCibilScoreAudit="
-				+ minCibilScoreAudit + ", minCmrAudit=" + minCmrAudit + ", maxCmrAudit=" + maxCmrAudit
-				+ ", currencyAudit=" + currencyAudit + ", denominationAudit=" + denominationAudit
+				+ ", currency=" + currency + ", dpd=" + dpd + ", denomination=" + denomination + ", assessmentMethod="
+				+ assessmentMethod + ", version=" + version + ", promotorContribution=" + promotorContribution
+				+ ", wcRequirement=" + wcRequirement + ", maxGrowth=" + maxGrowth + ", workflowData=" + workflowData
+				+ ", workflowRequest=" + workflowRequest + ", roleIds=" + roleIds + ", minAmountAudit=" + minAmountAudit
+				+ ", maxAmountAudit=" + maxAmountAudit + ", roiAudit=" + roiAudit + ", pfAudit=" + pfAudit
+				+ ", minCibilScoreAudit=" + minCibilScoreAudit + ", minCmrAudit=" + minCmrAudit + ", maxCmrAudit="
+				+ maxCmrAudit + ", currencyAudit=" + currencyAudit + ", denominationAudit=" + denominationAudit
 				+ ", assessmentMethodAudit=" + assessmentMethodAudit + ", promotorContributionAudit="
 				+ promotorContributionAudit + ", wcRequirementAudit=" + wcRequirementAudit + ", maxGrowthAudit="
 				+ maxGrowthAudit + ", versionAudit=" + versionAudit + ", createdDate=" + createdDate + "]";
