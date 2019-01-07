@@ -925,6 +925,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					throw new NullPointerException(INVALID_LOAN_APPLICATION_ID + id + " of User Org Id==>" + userOrdId);
 				}else{
 					applicationMaster.setProductId(applicationProposalMapping.getProductId());
+					applicationMaster.setIsPrimaryLocked(applicationProposalMapping.getIsPrimaryLocked());
 				}
 			}else{
 				applicationMaster.setProductId(applicationProposalMapping.getProductId());
