@@ -190,3 +190,5 @@ ALTER TABLE `loan_application`.`fp_uniform_product_details` ADD COLUMN `dpd` INT
 ALTER TABLE `loan_application`.`fp_uniform_product_details_audit` ADD COLUMN `dpd` INT(3);
 ALTER TABLE `loan_application`.`fp_uniform_product_details_audit` ADD COLUMN `dpd_audit` VARCHAR(1000);
 ALTER TABLE `loan_application`.`fp_uniform_product_details_temp` ADD COLUMN `dpd` INT(3);
+
+ALTER TABLE `loan_application`.`fp_uniform_product_details_temp` ADD COLUMN `is_edited` BIT(1);
