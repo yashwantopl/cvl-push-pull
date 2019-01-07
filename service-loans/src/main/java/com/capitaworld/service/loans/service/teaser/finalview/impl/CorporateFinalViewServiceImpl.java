@@ -1583,6 +1583,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 		// MCA DATA
 		try {
 			String companyId = loanApplicationMaster.getMcaCompanyId();
+			corporateFinalViewResponse.setCompanyId(companyId);
 			logger.info("mca comp id==>>" + companyId);
 
 			if (companyId != null) {
