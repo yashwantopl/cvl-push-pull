@@ -93,6 +93,7 @@ public class UniformProductParameterServiceImpl implements UniformProductParamet
 				.findFirstByUserOrgIdOrderByIdDesc(productParamterRequest.getUserOrgId());
 		if (CommonUtils.isObjectNullOrEmpty(uniformProductParamter)) {
 			uniformProductParamter = new UniformProductParamterTemp();
+			uniformProductParamter.setIsEdit(false);
 			uniformProductParamter.setCreatedBy(productParamterRequest.getUserId());
 			uniformProductParamter.setCreatedDate(new Date());
 		} else {

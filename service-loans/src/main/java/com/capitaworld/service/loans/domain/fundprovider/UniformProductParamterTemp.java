@@ -48,6 +48,9 @@ public class UniformProductParamterTemp extends ProductMasterTemp implements Ser
 
 	@Column(name = "max_growth")
 	private Double maxGrowth;
+	
+	@Column(name = "is_edited")
+	private Boolean isEdited;
 
 	public UniformProductParamterTemp() {
 		super();
@@ -169,12 +172,20 @@ public class UniformProductParamterTemp extends ProductMasterTemp implements Ser
 		this.dpd = dpd;
 	}
 
+	public Boolean getIsEdited() {
+		return isEdited;
+	}
+
+	public void setIsEdited(Boolean isEdited) {
+		this.isEdited = isEdited;
+	}
+
 	@Override
 	public String toString() {
 		return "UniformProductParamterTemp [minAmount=" + minAmount + ", maxAmount=" + maxAmount + ", roi=" + roi
 				+ ", pf=" + pf + ", minCibilScore=" + minCibilScore + ", minCmr=" + minCmr + ", maxCmr=" + maxCmr
 				+ ", currency=" + currency + ", dpd=" + dpd + ", denomination=" + denomination + ", assessmentMethod="
 				+ assessmentMethod + ", promotorContribution=" + promotorContribution + ", wcRequirement="
-				+ wcRequirement + ", maxGrowth=" + maxGrowth + "]";
+				+ wcRequirement + ", maxGrowth=" + maxGrowth + ", isEdited=" + isEdited + "]";
 	}
 }
