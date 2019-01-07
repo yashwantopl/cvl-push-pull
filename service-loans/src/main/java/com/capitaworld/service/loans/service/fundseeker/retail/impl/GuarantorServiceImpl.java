@@ -4,6 +4,7 @@ import com.capitaworld.service.dms.util.CommonUtil;
 import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.retail.GuarantorDetails;
+import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.Address;
 import com.capitaworld.service.loans.model.AddressResponse;
 import com.capitaworld.service.loans.model.retail.*;
@@ -84,7 +85,7 @@ public class GuarantorServiceImpl implements GuarantorService {
 	private OneFormClient oneFormClient;
 
 	@Override
-	public boolean save(GuarantorRequest guarantorRequest, Long applicationId, Long userId) throws Exception {
+	public boolean save(GuarantorRequest guarantorRequest, Long applicationId, Long userId) throws LoansException {
 		try {
 			Long finalUserId = (CommonUtils.isObjectNullOrEmpty(guarantorRequest.getClientId()) ? userId
 					: guarantorRequest.getClientId());
@@ -149,22 +150,22 @@ public class GuarantorServiceImpl implements GuarantorService {
 
 		} catch (Exception e) {
 			logger.error("Error while Saving Guarantor Retail Profile:-",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
-	public List<Long> getGuarantorIds(Long userId, Long applicationId) throws Exception {
+	public List<Long> getGuarantorIds(Long userId, Long applicationId) throws LoansException {
 		try {
 			return guarantorDetailsRepository.getGuarantorIds(applicationId, userId);
 		} catch (Exception e) {
 			logger.error("Error while Saving Guarantor Retail Profile:-",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
-	public GuarantorRequest get(Long userId, Long applicationId, Long id) throws Exception {
+	public GuarantorRequest get(Long userId, Long applicationId, Long id) throws LoansException {
 		try {
 			GuarantorDetails guarantorDetail = guarantorDetailsRepository.get(applicationId, userId, id);
 			if (guarantorDetail == null) {
@@ -194,12 +195,12 @@ public class GuarantorServiceImpl implements GuarantorService {
 			return guaRequest;
 		} catch (Exception e) {
 			logger.error("Error while getting Guarantor Retail Profile:-",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
-	public List<GuarantorRequest> getList(Long applicationId, Long userId) throws Exception {
+	public List<GuarantorRequest> getList(Long applicationId, Long userId) throws LoansException {
 		try {
 			List<GuarantorDetails> details = guarantorDetailsRepository.getList(applicationId, userId);
 			List<GuarantorRequest> requests = new ArrayList<>(details.size());
@@ -211,12 +212,12 @@ public class GuarantorServiceImpl implements GuarantorService {
 			return requests;
 		} catch (Exception e) {
 			logger.error("Error while getting list of Guarantor Retail Profile:-",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
-	public boolean saveFinal(FinalCommonRetailRequestOld applicantRequest, Long userId) throws Exception {
+	public boolean saveFinal(FinalCommonRetailRequestOld applicantRequest, Long userId) throws LoansException {
 		try {
 			Long finalUserId = (CommonUtils.isObjectNullOrEmpty(applicantRequest.getClientId()) ? userId
 					: applicantRequest.getClientId());
@@ -253,12 +254,12 @@ public class GuarantorServiceImpl implements GuarantorService {
 
 		} catch (Exception e) {
 			logger.error("Error while Saving final Guarantor Retail Profile:-",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
-	public FinalCommonRetailRequestOld getFinal(Long userId, Long applicationId, Long id) throws Exception {
+	public FinalCommonRetailRequestOld getFinal(Long userId, Long applicationId, Long id) throws LoansException {
 		try {
 			GuarantorDetails guaDetail = guarantorDetailsRepository.get(applicationId, userId, id);
 			if (guaDetail == null) {
@@ -273,7 +274,7 @@ public class GuarantorServiceImpl implements GuarantorService {
 			return applicantRequest;
 		} catch (Exception e) {
 			logger.error("Error while getting final Guarantor Retail Profile:-",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
@@ -363,7 +364,7 @@ public class GuarantorServiceImpl implements GuarantorService {
 
 	@Override
 	public List<RetailProfileViewResponse> getGuarantorServiceResponse(Long applicantId, Long userId, int productId)
-			throws Exception {
+			throws LoansException {
 		try {
 			List<GuarantorDetails> guarantorDetails = guarantorDetailsRepository.getList(applicantId, userId);
 			if (guarantorDetails != null && !guarantorDetails.isEmpty()) {
@@ -700,7 +701,7 @@ public class GuarantorServiceImpl implements GuarantorService {
 
 	@Override
 	public List<RetailFinalViewCommonResponse> getGuarantorFinalViewResponse(Long applicantId, Long userId,
-			int productId) throws Exception {
+			int productId) throws LoansException {
 		try {
 			List<GuarantorDetails> guarantorDetails = guarantorDetailsRepository.getList(applicantId, userId);
 			if (guarantorDetails != null && !guarantorDetails.isEmpty()) {
@@ -1141,17 +1142,17 @@ public class GuarantorServiceImpl implements GuarantorService {
 			}
 		} catch (Exception e) {
 			logger.error("Error Fetching Guarantor Details : ",e);
-			throw new Exception("Error Fetching Guarantor Details");
+			throw new LoansException("Error Fetching Guarantor Details");
 		}
 	}
 
 	@Override
-	public Long getApplicantIdById(Long id) throws Exception {
+	public Long getApplicantIdById(Long id) throws LoansException {
 		try {
 			return guarantorDetailsRepository.getApplicantIdById(id);
 		} catch (Exception e) {
 			logger.error("Error While getting Applicant Id by Guarantor ID : ",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 }

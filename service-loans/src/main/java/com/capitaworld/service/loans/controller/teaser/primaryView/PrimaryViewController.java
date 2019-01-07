@@ -4,6 +4,7 @@ import java.util.LinkedHashMap;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -790,7 +791,7 @@ public class PrimaryViewController {
 	@RequestMapping(value = "/sendPrimaryTeaserViewNotification", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public void primaryTeaserViewNotification(@RequestBody ProposalMappingRequest request,
 			HttpServletRequest httpRequest, @RequestParam(value = "clientId", required = false) Long clientId,
-			@RequestParam(value = "clientUserType", required = false) Long clientUserType) throws Exception {
+			@RequestParam(value = "clientUserType", required = false) Long clientUserType) throws LoansException {
 
 		// request must not be null
 
@@ -833,7 +834,7 @@ public class PrimaryViewController {
 	@RequestMapping(value = "/sendFinalTeaserViewNotification", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public void finalTeaserViewNotification(@RequestBody ProposalMappingRequest request, HttpServletRequest httpRequest,
 			@RequestParam(value = "clientId", required = false) Long clientId,
-			@RequestParam(value = "clientUserType", required = false) Long clientUserType) throws Exception {
+			@RequestParam(value = "clientUserType", required = false) Long clientUserType) throws LoansException {
 
 		// request must not be null
 
@@ -877,7 +878,7 @@ public class PrimaryViewController {
 	@RequestMapping(value = "/finalTeaserReqViewNotification", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public void finalTeaserReqViewNotification(@RequestBody ProposalMappingRequest request,
 			HttpServletRequest httpRequest, @RequestParam(value = "clientId", required = false) Long clientId,
-			@RequestParam(value = "clientUserType", required = false) Long clientUserType) throws Exception {
+			@RequestParam(value = "clientUserType", required = false) Long clientUserType) throws LoansException {
 
 		// request must not be null
 

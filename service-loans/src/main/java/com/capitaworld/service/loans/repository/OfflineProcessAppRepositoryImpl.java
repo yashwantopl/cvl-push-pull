@@ -15,9 +15,12 @@ import com.capitaworld.service.loans.domain.fundseeker.IneligibleProposalDetails
 @Repository
 public class OfflineProcessAppRepositoryImpl implements OfflineProcessedAppRepository{
 
+	private static final String APP_ID = "appId";
+	private static final String RESULT  = "result";
+
 	@PersistenceContext
 	private EntityManager entityManager;
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<Object[]> getInEligibleRecordList(Long userId) {
@@ -38,26 +41,26 @@ public class OfflineProcessAppRepositoryImpl implements OfflineProcessedAppRepos
 	
 	public boolean updateSanctionedFlag(Long appId,Long orgId,Long branchId,Long userId) {
 		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spUpdateOfflineSanctionedFlag");
-		storedProcedureQuery.registerStoredProcedureParameter("appId",Long.class, ParameterMode.IN);
+		storedProcedureQuery.registerStoredProcedureParameter(APP_ID,Long.class, ParameterMode.IN);
 		storedProcedureQuery.registerStoredProcedureParameter("orgId",Long.class, ParameterMode.IN);
 		storedProcedureQuery.registerStoredProcedureParameter("branchId",Long.class, ParameterMode.IN);
 		storedProcedureQuery.registerStoredProcedureParameter("userId",Long.class, ParameterMode.IN);
-		storedProcedureQuery.registerStoredProcedureParameter("result",Boolean.class, ParameterMode.OUT);
-		storedProcedureQuery.setParameter("appId",appId);
+		storedProcedureQuery.registerStoredProcedureParameter(RESULT,Boolean.class, ParameterMode.OUT);
+		storedProcedureQuery.setParameter(APP_ID,appId);
 		storedProcedureQuery.setParameter("orgId",orgId);
 		storedProcedureQuery.setParameter("branchId",branchId);
 		storedProcedureQuery.setParameter("userId",userId);
 		storedProcedureQuery.execute();
-		return (Boolean) storedProcedureQuery.getOutputParameterValue("result");
+		return (Boolean) storedProcedureQuery.getOutputParameterValue(RESULT);
 	}
 	
 	public Integer checkBeforeOfflineSanctioned(Long appId) {
 		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spCheckBeforeOfflineSanctioned");
-		storedProcedureQuery.registerStoredProcedureParameter("appId",Long.class, ParameterMode.IN);
-		storedProcedureQuery.registerStoredProcedureParameter("result",Integer.class, ParameterMode.OUT);
-		storedProcedureQuery.setParameter("appId",appId);
+		storedProcedureQuery.registerStoredProcedureParameter(APP_ID,Long.class, ParameterMode.IN);
+		storedProcedureQuery.registerStoredProcedureParameter(RESULT,Integer.class, ParameterMode.OUT);
+		storedProcedureQuery.setParameter(APP_ID,appId);
 		storedProcedureQuery.execute();
-		return (Integer) storedProcedureQuery.getOutputParameterValue("result");
+		return (Integer) storedProcedureQuery.getOutputParameterValue(RESULT);
 	}
 
 	@Override

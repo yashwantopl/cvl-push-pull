@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -50,7 +51,7 @@ public class PastFinancialEstimateDetailsServiceImpl implements PastFinancialEst
 	private PastFinancialEstimateDetailsRepository pastFinancialEstimateDetailsRepository;
 
 	@Override
-	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception {
+	public Boolean saveOrUpdate(FrameRequest frameRequest) throws LoansException {
 		try {
 			for (Map<String, Object> obj : frameRequest.getDataList()) {
 				PastFinancialEstimatesDetailRequest pastFinancialEstimateDetailRequest = (PastFinancialEstimatesDetailRequest) MultipleJSONObjectHelper
@@ -77,12 +78,12 @@ public class PastFinancialEstimateDetailsServiceImpl implements PastFinancialEst
 
 		catch (Exception e) {
 			logger.error("Exception  in save pastFinancialEstimateDetail  :-",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
-	public List<PastFinancialEstimatesDetailRequest> getPastFinancialEstimateDetailsList(Long id) throws Exception {
+	public List<PastFinancialEstimatesDetailRequest> getPastFinancialEstimateDetailsList(Long id) throws LoansException {
 		try {
 			List<PastFinancialEstimatesDetail> pastFinancialEstimateDetails = pastFinancialEstimateDetailsRepository
 					.listPastFinancialEstimateDetailsFromAppId(id);
@@ -96,7 +97,7 @@ public class PastFinancialEstimateDetailsServiceImpl implements PastFinancialEst
 			return pastFinancialEstimateDetailRequests;
 		} catch (Exception e) {
 			logger.error("Exception  in getting pastFinancialEstimateDetail  :-",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
