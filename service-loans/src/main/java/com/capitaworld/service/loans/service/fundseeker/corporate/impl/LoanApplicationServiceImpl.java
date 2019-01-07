@@ -919,8 +919,22 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			// start for multiple loan Hiren
 
             ApplicationProposalMapping applicationProposalMapping=applicationProposalMappingRepository.getByApplicationIdAndOrgId(id,userOrdId);
-            applicationMaster.setProductId(applicationProposalMapping.getProductId());
-            applicationRequest.setFinalLocked(applicationProposalMapping.getFinalLocked());
+            if(CommonUtils.isObjectNullOrEmpty(applicationProposalMapping)){
+				applicationProposalMapping = applicationProposalMappingRepository.getByApplicationId(id);
+				if(CommonUtils.isObjectNullOrEmpty(applicationProposalMapping)){
+					throw new NullPointerException(INVALID_LOAN_APPLICATION_ID + id + " of User Org Id==>" + userOrdId);
+				}else{
+					applicationMaster.setProductId(applicationProposalMapping.getProductId());
+					applicationMaster.setIsPrimaryLocked(applicationProposalMapping.getIsPrimaryLocked());
+					applicationRequest.setFinalLocked(applicationProposalMapping.getFinalLocked());
+					applicationMaster.setApplicationCode(applicationProposalMapping.getApplicationCode());
+				}
+			}else{
+				applicationMaster.setProductId(applicationProposalMapping.getProductId());
+				applicationMaster.setIsPrimaryLocked(applicationProposalMapping.getIsPrimaryLocked());
+				applicationRequest.setFinalLocked(applicationProposalMapping.getFinalLocked());
+				applicationMaster.setApplicationCode(applicationProposalMapping.getApplicationCode());
+			}
 
             // end for multiple loan Hiren
 
