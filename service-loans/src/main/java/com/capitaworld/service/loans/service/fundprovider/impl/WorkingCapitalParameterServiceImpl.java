@@ -3,6 +3,7 @@ package com.capitaworld.service.loans.service.fundprovider.impl;
 import java.io.IOException;
 import java.util.*;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.service.fundprovider.MsmeValueMappingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -411,7 +412,7 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 
 	}
 
-	public Boolean saveMasterFromTempWc(Long mappingId) throws Exception {
+	public Boolean saveMasterFromTempWc(Long mappingId) throws LoansException {
 		try {
 			WorkingCapitalParameterRequest workingCapitalParameterRequest = getWorkingCapitalParameterTemp(mappingId,null,null);
 			return saveOrUpdate(workingCapitalParameterRequest,mappingId);

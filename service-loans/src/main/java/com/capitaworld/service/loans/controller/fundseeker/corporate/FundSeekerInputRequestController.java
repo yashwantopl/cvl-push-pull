@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,7 +52,7 @@ public class FundSeekerInputRequestController {
 
     @RequestMapping(value = "/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LoansResponse> save(@RequestBody FundSeekerInputRequestResponse fundSeekerInputRequestResponse,HttpServletRequest request)
-            throws Exception
+            throws LoansException
     {
         try {
         	Long userId = fundSeekerInputRequestResponse.getUserId();
@@ -92,7 +93,7 @@ public class FundSeekerInputRequestController {
 
     @RequestMapping(value = "/get", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LoansResponse> get(@RequestBody FundSeekerInputRequestResponse fundSeekerInputRequestResponse,HttpServletRequest request)
-            throws Exception
+            throws LoansException
     {
         try
         {
@@ -123,7 +124,7 @@ public class FundSeekerInputRequestController {
 
     @RequestMapping(value = "/get_director_detail", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LoansResponse> getDirectorDetail(@RequestBody FundSeekerInputRequestResponse fundSeekerInputRequestResponse,HttpServletRequest request)
-            throws Exception
+            throws LoansException
     {
         try
         {
@@ -147,7 +148,7 @@ public class FundSeekerInputRequestController {
 
     @RequestMapping(value = "/save_director_detail", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LoansResponse> saveDirectorDetail(@RequestBody FundSeekerInputRequestResponse fundSeekerInputRequestResponse,HttpServletRequest request)
-            throws Exception
+            throws LoansException
     {
         try {
             Long userId = fundSeekerInputRequestResponse.getUserId();
@@ -176,7 +177,7 @@ public class FundSeekerInputRequestController {
 
     @RequestMapping(value = "/match/{businessTypeId}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LoansResponse> callMatchengine(@RequestBody Long applicationId,@PathVariable("businessTypeId") Integer businessTypeId,HttpServletRequest request)
-            throws Exception
+            throws LoansException
     {
         try
         {
@@ -208,7 +209,7 @@ public class FundSeekerInputRequestController {
     
     @RequestMapping(value = "/match_ntb", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LoansResponse> callMatchengineNTB(@RequestBody NTBRequest ntbRequest,HttpServletRequest request)
-            throws Exception
+            throws LoansException
     {
         try
         {
@@ -238,7 +239,7 @@ public class FundSeekerInputRequestController {
 
     @RequestMapping(value = "/get_min_max_margin", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LoansResponse> getMinMaxMargin(@RequestBody NTBRequest ntbRequest,HttpServletRequest request)
-            throws Exception
+            throws LoansException
     {
         try
         {
@@ -267,7 +268,7 @@ public class FundSeekerInputRequestController {
     
     @RequestMapping(value = "/save_one_form_uninform", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LoansResponse> saveUniformProductOneForm(@RequestBody FundSeekerInputRequestResponse fundSeekerInputRequestResponse , HttpServletRequest request)
-            throws Exception
+            throws LoansException
     {
         try
         {
@@ -326,7 +327,7 @@ public class FundSeekerInputRequestController {
     
     @RequestMapping(value = "/one_form_uninform", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LoansResponse> getUniformProductOneForm(@RequestBody Long applicationId , HttpServletRequest request)
-            throws Exception
+            throws LoansException
     {
         try
         {
@@ -346,7 +347,7 @@ public class FundSeekerInputRequestController {
     
     @RequestMapping(value = "/verifyGST/{gstin}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE,consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<LoansResponse> verifyGST(@PathVariable("gstin") String gstin,@RequestParam("gstReceipts") MultipartFile[] uploadingFiles,@RequestPart("requestedData") String requestedData,HttpServletRequest request)
-            throws Exception
+            throws LoansException
     {
         try
         {
@@ -380,7 +381,7 @@ public class FundSeekerInputRequestController {
     }
 
     @RequestMapping(value = "/updateFlag/{flagValue}/{flagType}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LoansResponse> updateFlag(@RequestBody Long applicationId , @PathVariable("flagValue") Boolean flagValue,@PathVariable("flagType") Integer flagType,HttpServletRequest request)throws Exception{
+    public ResponseEntity<LoansResponse> updateFlag(@RequestBody Long applicationId , @PathVariable("flagValue") Boolean flagValue,@PathVariable("flagType") Integer flagType,HttpServletRequest request)throws LoansException{
         try
         {
         	Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -398,7 +399,7 @@ public class FundSeekerInputRequestController {
     }
     
     @RequestMapping(value = "/delete/{applicationId}/{mappingId}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LoansResponse> deleteFile(@RequestBody List<Long> docIds , @PathVariable("applicationId") Long applicationId,@PathVariable("mappingId") Long mappingId,HttpServletRequest request)throws Exception{
+    public ResponseEntity<LoansResponse> deleteFile(@RequestBody List<Long> docIds , @PathVariable("applicationId") Long applicationId,@PathVariable("mappingId") Long mappingId,HttpServletRequest request)throws LoansException{
         try
         {
         	Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
