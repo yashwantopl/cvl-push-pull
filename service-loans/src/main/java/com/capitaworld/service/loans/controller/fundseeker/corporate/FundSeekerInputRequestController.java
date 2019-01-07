@@ -439,6 +439,8 @@ public class FundSeekerInputRequestController {
         		logger.warn("applicationId Must not be null or Empty====>{}",connectResponse.getApplicationId());
       		   return new ResponseEntity<LoansResponse>(new LoansResponse(SOMETHING_GOES_WRONG_WHILE_PROCESSING_YOUR_REQUEST_PLEASE_RE_LOGIN_AGAIN_MSG, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
          	}
+        	
+        	connectResponse.setUserId(userId);
             return new ResponseEntity<LoansResponse>(fundSeekerInputRequestService.resetUniformApplication(connectResponse), HttpStatus.OK);
         } catch (Exception e) {
             logger.error("Error while Deleting Document for Uniform Product : ",e);

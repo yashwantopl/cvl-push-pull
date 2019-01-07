@@ -956,6 +956,38 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 		associatedConcernDetailRepository.inActive(connectResponse.getUserId(), connectResponse.getApplicationId());
 		directorBackgroundDetailsRepository.inActive(connectResponse.getUserId(), connectResponse.getApplicationId());
 		primaryCorporateDetailRepository.updatedFinancialFieldsForUniformProduct(connectResponse.getApplicationId(), null, null,null,null);
+		corporateApplicantDetailRepository.updateGSTFlag(connectResponse.getApplicationId(), connectResponse.getGstin(), false);
+		corporateApplicantDetailRepository.updateITRFlag(connectResponse.getApplicationId(), false);
+		DocumentRequest documentRequest = new DocumentRequest();
+		documentRequest.setApplicationId(connectResponse.getApplicationId());
+		documentRequest.setProductDocumentMappingId(DocumentAlias.GST_RECEIPT);
+		documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
+		try{
+			DocumentResponse documentResponse = dMSClient.deleteProductDocumentFromApplicationId(MultipleJSONObjectHelper.getStringfromObject(documentRequest));
+			if (CibilUtils.isObjectListNull(documentResponse)) {
+				logger.warn("Something goes wrong while Deleting GST Receipt for ApplicationId as Response Found Null===>{}",connectResponse.getApplicationId());
+			} else if (documentResponse.getStatus() == HttpStatus.OK.value()) {
+				logger.info("Successfully Deleting GST Receipt For Application Id==>{}",connectResponse.getApplicationId());
+			} else {
+				logger.warn("Something goes wrong while Deleting GST Receipt for ApplicationId===>{}",connectResponse.getApplicationId());
+			}
+		}catch(Exception e){
+			logger.error("Error while Deleting Existing Doccuments of GST and ITR : {}", e);
+		}
+		
+		try{
+			documentRequest.setProductDocumentMappingId(DocumentAlias.CORPORATE_ITR_XML);
+			DocumentResponse documentResponse = dMSClient.deleteProductDocumentFromApplicationId(MultipleJSONObjectHelper.getStringfromObject(documentRequest));
+			if (CibilUtils.isObjectListNull(documentResponse)) {
+				logger.warn("Something goes wrong while Deleting GST Receipt for ApplicationId as Response Found Null===>{}",connectResponse.getApplicationId());
+			} else if (documentResponse.getStatus() == HttpStatus.OK.value()) {
+				logger.info("Successfully Deleting GST Receipt For Application Id==>{}",connectResponse.getApplicationId());
+			} else {
+				logger.warn("Something goes wrong while Deleting GST Receipt for ApplicationId===>{}",connectResponse.getApplicationId());
+			}
+		}catch(Exception e){
+			logger.error("Error while Deleting Existing Doccuments of GST and ITR : {}", e);
+		}
 		return new LoansResponse("Successfully Reset the Form.", HttpStatus.OK.value(), getDataForOnePagerOneForm(connectResponse.getApplicationId()));
 	}
 
