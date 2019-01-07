@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.service.fundprovider;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.corporate.WcTlParameterRequest;
 
 public interface WcTlParameterService {
@@ -11,7 +12,7 @@ public interface WcTlParameterService {
 	 * @param mappingId
 	 * @return
 	 */
-	public Boolean saveMasterFromTempWcTl(Long mappingId) throws Exception;
+	public Boolean saveMasterFromTempWcTl(Long mappingId) throws LoansException;
 
 	/**
 	 * @param wcTlParameterRequest
