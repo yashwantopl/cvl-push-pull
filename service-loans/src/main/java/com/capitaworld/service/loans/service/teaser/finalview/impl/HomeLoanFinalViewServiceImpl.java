@@ -3,6 +3,7 @@ package com.capitaworld.service.loans.service.teaser.finalview.impl;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.retail.FinalHomeLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
+import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.teaser.finalview.HomeLoanFinalViewResponse;
 import com.capitaworld.service.loans.model.teaser.finalview.RetailFinalViewResponse;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
@@ -63,7 +64,7 @@ public class HomeLoanFinalViewServiceImpl implements HomeLoanFinalViewService{
 	private RetailFinalCommonApplicantService finalCommonService;
 	
 	@Override
-	public HomeLoanFinalViewResponse getHomeLoanFinalViewDetails(Long applicantId) throws Exception {
+	public HomeLoanFinalViewResponse getHomeLoanFinalViewDetails(Long applicantId) throws LoansException {
 		LoanApplicationMaster applicationMaster = loanApplicationRepository.findOne(applicantId);
 		HomeLoanFinalViewResponse homeLoanFinalViewResponse = new HomeLoanFinalViewResponse();
 		RetailApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId(applicationMaster.getUserId(), applicantId);

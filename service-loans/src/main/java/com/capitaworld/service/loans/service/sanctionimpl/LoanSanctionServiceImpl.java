@@ -9,6 +9,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.transaction.Transactional;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -88,7 +89,7 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 	private OfflineProcessedAppRepository offlineProcessedAppRepository;
 
 	@Override
-	public Boolean saveLoanSanctionDetail(LoanSanctionRequest loanSanctionRequest) throws Exception {
+	public Boolean saveLoanSanctionDetail(LoanSanctionRequest loanSanctionRequest) throws LoansException {
 		try {
 		logger.info("Enter in saveLoanSanctionDetail() ----------------------->  LoanSanctionRequest==> "+ loanSanctionRequest);
 		
@@ -154,7 +155,7 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 	}
 	
 	@Override
-	public String sanctionRequestValidation( Long applicationId,Long orgId) throws Exception {
+	public String sanctionRequestValidation( Long applicationId,Long orgId) throws LoansException {
 		logger.info("Enter in requestValidation() ----------------------->  applicationId==> "+ applicationId);
 	        try {        	
 		 
@@ -171,7 +172,7 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 	}
 
 	@Override
-	public Integer saveSanctionDetailFromPopup(LoanSanctionRequest loanSanctionRequest) throws Exception {
+	public Integer saveSanctionDetailFromPopup(LoanSanctionRequest loanSanctionRequest) throws LoansException {
 		logger.info("Enter in saveSanctionDetailFromPopup() ----------------------------- sanctionRequest Data : "+ loanSanctionRequest.toString());
 		try {
 			//FIRST CHECK IF CURRENT PROPOSAL IS ELIGIBL FOR SANCTIONED OR NOT 
@@ -201,7 +202,7 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public Boolean saveSanctionAndDisbursementDetailsFromBank() throws Exception {
+	public Boolean saveSanctionAndDisbursementDetailsFromBank() throws LoansException {
 
 		logger.info("================= Enter in saveSanctionAndDisbursementDetailsFromBank() ============================== ");
 		try {
@@ -402,7 +403,7 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 	}
 
 	@Override
-	public Boolean saveLoanSanctionDetailById(Long orgId ,LoanSanctionRequest loanSanctionRequest) throws Exception {
+	public Boolean saveLoanSanctionDetailById(Long orgId ,LoanSanctionRequest loanSanctionRequest) throws LoansException {
 		try {
 		logger.info("========================Enter in saveLoanSanctionDetail() ====================  applicationId ==> "+ loanSanctionRequest.getApplicationId());
 		                                                                       
