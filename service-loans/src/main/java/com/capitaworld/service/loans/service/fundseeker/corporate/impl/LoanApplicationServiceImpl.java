@@ -926,10 +926,14 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				}else{
 					applicationMaster.setProductId(applicationProposalMapping.getProductId());
 					applicationMaster.setIsPrimaryLocked(applicationProposalMapping.getIsPrimaryLocked());
+					applicationRequest.setFinalLocked(applicationProposalMapping.getFinalLocked());
+					applicationMaster.setApplicationCode(applicationProposalMapping.getApplicationCode());
 				}
 			}else{
 				applicationMaster.setProductId(applicationProposalMapping.getProductId());
+				applicationMaster.setIsPrimaryLocked(applicationProposalMapping.getIsPrimaryLocked());
 				applicationRequest.setFinalLocked(applicationProposalMapping.getFinalLocked());
+				applicationMaster.setApplicationCode(applicationProposalMapping.getApplicationCode());
 			}
 
             // end for multiple loan Hiren
