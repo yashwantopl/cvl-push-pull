@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -816,7 +817,7 @@ private void saveCountry(PersonalLoanParameterRequest personalLoanParameterReque
 	}
 
 	@Override
-	public Boolean saveMasterFromTempPl(Long mappingId) throws Exception {
+	public Boolean saveMasterFromTempPl(Long mappingId) throws LoansException {
 		try {
 			PersonalLoanParameterRequest personalLoanParameterRequest= getPersonalLoanParameterRequestTemp(mappingId,null,null);
 			return saveOrUpdate(personalLoanParameterRequest,mappingId);

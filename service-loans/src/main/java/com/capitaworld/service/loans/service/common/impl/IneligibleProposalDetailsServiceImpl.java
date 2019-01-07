@@ -183,7 +183,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 					//SET GSTIN 
 					inlProposalDetails.setGstin(loanRepository.getGSTINByAppId(inlPropReq.getApplicationId()));	
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 				inlProposalDetails.setIsActive(true);	
 			} else {
@@ -208,7 +208,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 						inlProposalDetails.setGstin(loanRepository.getGSTINByAppId(inlPropReq.getApplicationId()));	
 					}	
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 				inlProposalDetails.setModifiedDate(new Date());
 				inlProposalDetails.setModifiedBy(inlPropReq.getUserId());
@@ -218,7 +218,6 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 			ineligibleProposalDetailsRepository.save(inlProposalDetails);
 			return 2;
 		} catch (Exception e) {
-			e.printStackTrace();
 			logger.error("error while saving in eligible proposal : ",e);
 		}
 		return 0;

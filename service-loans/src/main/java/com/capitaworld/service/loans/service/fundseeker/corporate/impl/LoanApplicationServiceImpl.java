@@ -607,7 +607,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
     private String IS_MCA_ON;
     
 	@Override
-	public boolean saveOrUpdate(FrameRequest commonRequest, Long userId) throws Exception {
+	public boolean saveOrUpdate(FrameRequest commonRequest, Long userId) throws LoansException {
 		try {
 			LoanApplicationMaster applicationMaster = null;
 			Long finalUserId = (CommonUtils.isObjectNullOrEmpty(commonRequest.getClientId()) ? userId
@@ -666,7 +666,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			return true;
 		} catch (Exception e) {
 			logger.error("Error while Saving Loan Details:-",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
@@ -705,7 +705,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 
 	@Override
-	public LoanApplicationRequest saveFromCampaign(Long userId, Long clientId, String campaignCode) throws Exception {
+	public LoanApplicationRequest saveFromCampaign(Long userId, Long clientId, String campaignCode) throws LoansException {
 		try {
 			String loanCode = com.capitaworld.service.users.utils.CommonUtils.getLoanCodeFromCode(campaignCode);
 			LoanType type = CommonUtils.getProductByLoanCode(loanCode);
@@ -741,12 +741,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			return request;
 		} catch (Exception e) {
 			logger.error("Error while Saving Loan Details From Campaign:-",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
-	public boolean saveOrUpdateFromLoanEligibilty(FrameRequest commonRequest, Long userId) throws Exception {
+	public boolean saveOrUpdateFromLoanEligibilty(FrameRequest commonRequest, Long userId) throws LoansException {
 		logger.info("Entry in saveOrUpdateFromLoanEligibilty");
 		try {
 			LoanApplicationMaster applicationMaster = null;
@@ -829,7 +829,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			return true;
 		} catch (Exception e) {
 			logger.error("Error while Saving Loan Details:-",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
@@ -892,7 +892,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 
 	@Override
-	public LoanApplicationRequest get(Long id, Long userId) throws Exception {
+	public LoanApplicationRequest get(Long id, Long userId) throws LoansException {
 		try {
 			LoanApplicationRequest applicationRequest = new LoanApplicationRequest();
 			LoanApplicationMaster applicationMaster = loanApplicationRepository.getByIdAndUserId(id, userId);
@@ -957,12 +957,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			}
 		} catch (Exception e) {
 			logger.error(ERROR_WHILE_GETTING_INDIVIDUAL_LOAN_DETAILS,e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
-	public LoanApplicationRequest inActive(Long id, Long userId) throws Exception {
+	public LoanApplicationRequest inActive(Long id, Long userId) throws LoansException {
 		loanApplicationRepository.inActive(id, userId);
 		List<LoanApplicationMaster> userLoans = loanApplicationRepository.getUserLoans(userId);
 		UsersRequest usersRequest = new UsersRequest();
@@ -981,7 +981,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 
 	@Override
-	public List<LoanApplicationRequest> getList(Long userId) throws Exception {
+	public List<LoanApplicationRequest> getList(Long userId) throws LoansException {
 		try {
 			
 			logger.info("In GetList");
@@ -1091,7 +1091,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			return requests;
 		} catch (Exception e) {
 			logger.error("Error while Getting Loan Details:-",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
@@ -1141,7 +1141,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 
 	@Override
-	public boolean lockPrimary(Long applicationId, Long userId, boolean flag) throws Exception {
+	public boolean lockPrimary(Long applicationId, Long userId, boolean flag) throws LoansException {
 		try {
 			LoanApplicationMaster applicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId, userId);
 			if (applicationMaster == null) {
@@ -1158,12 +1158,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			return true;
 		} catch (Exception e) {
 			logger.error("Error while Locking Profile and Primary Information : ",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
-	public LoanApplicationRequest lockFinal(Long applicationId, Long userId, boolean flag) throws Exception {
+	public LoanApplicationRequest lockFinal(Long applicationId, Long userId, boolean flag) throws LoansException {
 		try {
 
 			LoanApplicationRequest loanApplicationRequest = new LoanApplicationRequest();
@@ -1306,7 +1306,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			return loanApplicationRequest;
 		} catch (Exception e) {
 			logger.error("Error while Locking Final Information : ",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 
 		}
 	}
@@ -1397,7 +1397,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 
 	@Override
-	public UserResponse setLastAccessApplication(Long applicationId, Long userId) throws Exception {
+	public UserResponse setLastAccessApplication(Long applicationId, Long userId) throws LoansException {
 		try {
 			UsersRequest usersRequest = new UsersRequest();
 			usersRequest.setLastAccessApplicantId(applicationId);
@@ -1406,7 +1406,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			return client.setLastAccessApplicant(usersRequest);
 		} catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 
 		}
 
@@ -1422,12 +1422,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 
 	@Override
-	public Integer getProductIdByApplicationId(Long applicationId, Long userId) throws Exception {
+	public Integer getProductIdByApplicationId(Long applicationId, Long userId) throws LoansException {
 		try {
 			return loanApplicationRepository.getProductIdByApplicationId(applicationId, userId);
 		} catch (Exception e) {
 			logger.error("Error while getting Product Id by Application Id : ",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
@@ -1439,18 +1439,18 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Override
 	public void updateFinalCommonInformation(Long applicationId, Long userId, Boolean flag, String finalFilledCount)
-			throws Exception {
+			throws LoansException {
 		try {
 			loanApplicationRepository.setIsApplicantFinalMandatoryFilled(applicationId, userId, flag);
 			loanApplicationRepository.setFinalFilledCount(applicationId, userId, finalFilledCount);
 		} catch (Exception e) {
 			logger.error("Error while updating final information flag : ",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
-	public Boolean isProfileAndPrimaryDetailFilled(Long applicationId, Long userId) throws Exception {
+	public Boolean isProfileAndPrimaryDetailFilled(Long applicationId, Long userId) throws LoansException {
 		try {
 			LoanApplicationMaster applicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId, userId);
 			int userMainType = CommonUtils.getUserMainType(applicationMaster.getProductId());
@@ -1511,34 +1511,34 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			}
 		} catch (Exception e) {
 			logger.error("Error while getting isProfileAndPrimaryDetailFilled ?",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
-	public Boolean isPrimaryLocked(Long applicationId, Long userId) throws Exception {
+	public Boolean isPrimaryLocked(Long applicationId, Long userId) throws LoansException {
 		try {
 			Long count = loanApplicationRepository.checkPrimaryDetailIsLocked(applicationId);
 			return (count != null ? count > 0 : false);
 		} catch (Exception e) {
 			logger.error("Error while getting isPrimaryLocked ?",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
-	public Boolean isApplicationIdActive(Long applicationId) throws Exception {
+	public Boolean isApplicationIdActive(Long applicationId) throws LoansException {
 		try {
 			Long count = loanApplicationRepository.checkApplicationIdActive(applicationId);
 			return (count != null ? count > 0 : false);
 		} catch (Exception e) {
 			logger.error("Error while getting isApplicationIdActive ?",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
-	public Boolean isFinalDetailFilled(Long applicationId, Long userId) throws Exception {
+	public Boolean isFinalDetailFilled(Long applicationId, Long userId) throws LoansException {
 		try {
 			LoanApplicationMaster applicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId, userId);
 			if (CommonUtils.isObjectNullOrEmpty(applicationMaster)) {
@@ -1627,30 +1627,30 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			}
 		} catch (Exception e) {
 			logger.error("Error while getting isFinalDetailFilled ?",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
-	public Boolean isFinalLocked(Long applicationId, Long userId) throws Exception {
+	public Boolean isFinalLocked(Long applicationId, Long userId) throws LoansException {
 		try {
 			Long count = loanApplicationRepository.checkFinalDetailIsLocked(applicationId);
 			return (count != null ? count > 0 : false);
 		} catch (Exception e) {
 			logger.error("Error while getting isFinalLocked ?",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 	
 	@Override
-	public Boolean isMcqSkipped(Long applicationId) throws Exception {
+	public Boolean isMcqSkipped(Long applicationId) throws LoansException {
 		Long count = loanApplicationRepository.checkMcqSkipped(applicationId);
 		return (count != null ? count > 0 : false);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public JSONObject getSelfViewAndPrimaryLocked(Long applicationId, Long userId) throws Exception {
+	public JSONObject getSelfViewAndPrimaryLocked(Long applicationId, Long userId) throws LoansException {
 		try {
 			JSONObject json = new JSONObject();
 			Long selfViewCount = loanApplicationRepository.isSelfApplicantView(applicationId, userId);
@@ -1659,18 +1659,18 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			return json;
 		} catch (Exception e) {
 			logger.error("Error while getting isFinalLocked ?",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
-	public Integer getCurrencyId(Long applicationId, Long userId) throws Exception {
+	public Integer getCurrencyId(Long applicationId, Long userId) throws LoansException {
 		return loanApplicationRepository.getCurrencyId(applicationId, userId);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public JSONObject getCurrencyAndDenomination(Long applicationId, Long userId) throws Exception {
+	public JSONObject getCurrencyAndDenomination(Long applicationId, Long userId) throws LoansException {
 		try {
 			Integer currencyId = loanApplicationRepository.getCurrencyId(applicationId, userId);
 			Integer denominationId = loanApplicationRepository.getDenominationId(applicationId, userId);
@@ -1680,13 +1680,13 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			return jsonObject;
 		} catch (Exception e) {
 			logger.error("Error while getting Currency and Denomination Value : ",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
 	public JSONObject isAllowToMoveAhead(Long applicationId, Long userId, Integer nextTabType,
-			Long coAppllicantOrGuarantorId) throws Exception {
+			Long coAppllicantOrGuarantorId) throws LoansException {
 		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId, userId);
 		int userMainType = CommonUtils.getUserMainType(loanApplicationMaster.getProductId());
 		if (CommonUtils.UserMainType.CORPORATE == userMainType) {
@@ -1711,7 +1711,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@SuppressWarnings("unchecked")
 	private JSONObject corporateValidating(LoanApplicationMaster applicationMaster, Integer toTabType,
-			Long coAppllicantOrGuarantorId) throws Exception {
+			Long coAppllicantOrGuarantorId) throws LoansException {
 		List<Long> coAppIds = null;
 
 		Long coAppCount;
@@ -2024,7 +2024,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@SuppressWarnings("unchecked")
 	private JSONObject retailValidating(LoanApplicationMaster applicationMaster, Integer toTabType,
-			Long coAppllicantOrGuarantorId) throws Exception {
+			Long coAppllicantOrGuarantorId) throws LoansException {
 		List<Long> coAppIds = null;
 		List<Long> guaIds = null;
 		Long coAppCount = null;
@@ -2837,7 +2837,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 
 	@Override
-	public String getFsApplicantName(Long applicationId) throws Exception {
+	public String getFsApplicantName(Long applicationId) throws LoansException {
 		LoanApplicationMaster applicationMaster = loanApplicationRepository.findOne(applicationId);
 		if (CommonUtils.isObjectNullOrEmpty(applicationMaster))
 			return null;
@@ -3019,7 +3019,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<AdminPanelLoanDetailsResponse> getLoanDetailsForAdminPanel(Integer type, MobileLoanRequest loanRequest)
-			throws Exception {
+			throws IOException , Exception {
 
 		List<AdminPanelLoanDetailsResponse> responseList = new ArrayList<>();
 		UserResponse userResponse = userClient.getFsIsSelfActiveUserId();
@@ -3204,7 +3204,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	// report1
 	@Override
 	public List<AdminPanelLoanDetailsResponse> getPostLoginForAdminPanel(MobileLoanRequest loanRequest)
-			throws IOException, Exception {
+			throws IOException, LoansException {
 		List<AdminPanelLoanDetailsResponse> responseList = new ArrayList<>();
 		UserResponse userResponse = userClient.getFsIsSelfActiveForAdminPanel();
 		if (userResponse.getStatus() != HttpStatus.OK.value()) {
@@ -3306,7 +3306,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Override
 	public List<AdminPanelLoanDetailsResponse> getPostLoginForAdminPanelOfNotEligibility(MobileLoanRequest loanRequest)
-			throws Exception {
+			throws IOException, LoansException {
 		List<AdminPanelLoanDetailsResponse> responseList = new ArrayList<>();
 		UserResponse userResponse = userClient.getFsIsSelfActiveForAdminPanel();
 		if (userResponse.getStatus() != HttpStatus.OK.value()) {
@@ -3456,7 +3456,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Override
 	public List<AdminPanelLoanDetailsResponse> getPostLoginForAdminPanelOfEligibility(MobileLoanRequest loanRequest)
-			throws Exception {
+			throws IOException, LoansException {
 		List<AdminPanelLoanDetailsResponse> responseList = new ArrayList<>();
 		UserResponse userResponse = userClient.getFsIsSelfActiveForAdminPanel();
 		if (userResponse.getStatus() != HttpStatus.OK.value()) {
@@ -3567,7 +3567,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Override
 	public List<AdminPanelLoanDetailsResponse> getPostLoginForAdminPanelOfFinalLockedRejectedByUbi(
-			MobileLoanRequest loanRequest) throws IOException {
+			MobileLoanRequest loanRequest) throws IOException, LoansException {
 
 		List<List<Long>> master = organizationReportsService.getApplicationIdAndUserId();
 		List<Long> userId = null;
@@ -3719,7 +3719,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Override
 	public List<AdminPanelLoanDetailsResponse> getPostLoginForAdminPanelOfApprovedByUbi(MobileLoanRequest loanRequest)
-			throws IOException, Exception {
+			throws IOException, LoansException {
 		List<ReportResponse> master = organizationReportsService.getFpProductMappingId();
 		List<Long> userId = new ArrayList<>();
 		List<Long> applicationId = new ArrayList<>();
@@ -4106,24 +4106,24 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 
 	@Override
-	public boolean isCampaignCodeExist(Long userId, Long clientId, String code) throws Exception {
+	public boolean isCampaignCodeExist(Long userId, Long clientId, String code) throws LoansException {
 		try {
 			Long finalUserId = CommonUtils.isObjectNullOrEmpty(clientId) ? userId : clientId;
 			Long long1 = loanApplicationRepository.getApplicantCountByCode(finalUserId, code);
 			return long1 > 0;
 		} catch (Exception e) {
 			logger.error("Error while Checking Code is Exists or not : ",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
-	public String getCampaignCodeByApplicationId(Long applicationId) throws Exception {
+	public String getCampaignCodeByApplicationId(Long applicationId) throws LoansException {
 		try {
 			return loanApplicationRepository.getCampaignCodeByApplicationId(applicationId);
 		} catch (Exception e) {
 			logger.error("Error while getting Code by Application Id : ",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
@@ -4174,7 +4174,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 
 	@Override
-	public Integer setEligibleLoanAmount(LoanApplicationRequest applicationRequest) throws Exception {
+	public Integer setEligibleLoanAmount(LoanApplicationRequest applicationRequest) throws LoansException {
 		logger.info("Entry in setEligibleLoanAmount()");
 		try {
 			Long finalUserId = CommonUtils.isObjectNullOrEmpty(applicationRequest.getClientId())
@@ -4187,12 +4187,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			return i;
 		} catch (Exception e) {
 			logger.error("Error while updating Eligibility Amount : ",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
-	public void updateFlow(Long applicationId, Long clientId, Long userId) throws Exception {
+	public void updateFlow(Long applicationId, Long clientId, Long userId) throws LoansException {
 		logger.info("Entry in updateFlow()");
 		try {
 			Long finalUserId = CommonUtils.isObjectNullOrEmpty(clientId) ? userId : clientId;
@@ -4213,13 +4213,13 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			}
 		} catch (Exception e) {
 			logger.error("Error while Coverting UBI flow to Normal : ",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 
 	}
 
 	@Override
-	public Long getIrrByApplicationId(Long id) throws Exception {
+	public Long getIrrByApplicationId(Long id) throws LoansException {
 		try {
 
 			CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
@@ -4248,13 +4248,13 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			}
 		} catch (Exception e) {
 			logger.error(ERROR_WHILE_GETTING_INDIVIDUAL_LOAN_DETAILS,e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 		return null;
 	}
 
 	@Override
-	public Object updateLoanApplicationMaster(PaymentRequest paymentRequest, Long userId) throws Exception {
+	public Object updateLoanApplicationMaster(PaymentRequest paymentRequest, Long userId) throws LoansException {
 		logger.info("Start updateLoanApplicationMaster()");
 		try {
 
@@ -4370,13 +4370,13 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			}
 		} catch (Exception e) {
 			logger.error("Error while Saving payment information in Loan : ",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 		return paymentRequest.getTypeOfPayment();
 	}
 
 	@Override
-	public void updateSkipPayment(Long userId, Long applicationId, Long orgId, Long fpProductId) throws Exception {
+	public void updateSkipPayment(Long userId, Long applicationId, Long orgId, Long fpProductId) throws LoansException {
 
 		logger.info("Enter in Update Skip Payment Details !!");
 
@@ -4417,11 +4417,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				}
 			} else {
 				logger.info(CONNECTOR_RESPONSE_NULL_OR_EMPTY_MSG);
-				throw new Exception(SOMETHING_WENT_WRONG_WHILE_CALL_CONNECT_CLIENT_FOR_MSG + applicationId);
+				throw new LoansException(SOMETHING_WENT_WRONG_WHILE_CALL_CONNECT_CLIENT_FOR_MSG + applicationId);
 			}
 		} catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
-			throw new Exception(SOMETHING_WENT_WRONG_WHILE_CALL_CONNECT_CLIENT_FOR_MSG + applicationId);
+			throw new LoansException(SOMETHING_WENT_WRONG_WHILE_CALL_CONNECT_CLIENT_FOR_MSG + applicationId);
 		}
 
 		// TRUE MATCHES PROPOSAL
@@ -4431,15 +4431,15 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			if (!CommonUtils.isObjectNullOrEmpty(proposalMappingResponse)) {
 				logger.info(PROPOSAL_MAPPING_RESPONSE_MSG + proposalMappingResponse.toString());
 				if (proposalMappingResponse.getStatus() != HttpStatus.OK.value()) {
-					throw new Exception(proposalMappingResponse.getMessage());
+					throw new LoansException(proposalMappingResponse.getMessage());
 				}
 			} else {
 				logger.info(PROPOSAL_MAPPING_RESPONSE_NULL_OR_EMPTY_MSG);
-				throw new Exception(SOMETHING_WENT_WRONG_WHILE_CALL_PROPOSAL_CLIENT_FOR_MSG + applicationId);
+				throw new LoansException(SOMETHING_WENT_WRONG_WHILE_CALL_PROPOSAL_CLIENT_FOR_MSG + applicationId);
 			}
 		} catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
-			throw new Exception(SOMETHING_WENT_WRONG_WHILE_CALL_PROPOSAL_CLIENT_FOR_MSG + applicationId);
+			throw new LoansException(SOMETHING_WENT_WRONG_WHILE_CALL_PROPOSAL_CLIENT_FOR_MSG + applicationId);
 		}
 
 		logger.info("Exit on Update Skip Payment Details ");
@@ -4621,11 +4621,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				}
 			} else {
 				logger.info(CONNECTOR_RESPONSE_NULL_OR_EMPTY_MSG);
-				throw new Exception(SOMETHING_WENT_WRONG_WHILE_CALL_CONNECT_CLIENT_FOR_MSG + applicationId);
+				throw new LoansException(SOMETHING_WENT_WRONG_WHILE_CALL_CONNECT_CLIENT_FOR_MSG + applicationId);
 			}
 		} catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
-			throw new Exception(SOMETHING_WENT_WRONG_WHILE_CALL_CONNECT_CLIENT_FOR_MSG + applicationId);
+			throw new LoansException(SOMETHING_WENT_WRONG_WHILE_CALL_CONNECT_CLIENT_FOR_MSG + applicationId);
 		}
 
 		// TRUE MATCHES PROPOSAL
@@ -4635,15 +4635,15 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			if (!CommonUtils.isObjectNullOrEmpty(proposalMappingResponse)) {
 				logger.info(PROPOSAL_MAPPING_RESPONSE_MSG + proposalMappingResponse.toString());
 				if (proposalMappingResponse.getStatus() != HttpStatus.OK.value()) {
-					throw new Exception(proposalMappingResponse.getMessage());
+					throw new LoansException(proposalMappingResponse.getMessage());
 				}
 			} else {
 				logger.info(PROPOSAL_MAPPING_RESPONSE_NULL_OR_EMPTY_MSG);
-				throw new Exception(SOMETHING_WENT_WRONG_WHILE_CALL_PROPOSAL_CLIENT_FOR_MSG + applicationId);
+				throw new LoansException(SOMETHING_WENT_WRONG_WHILE_CALL_PROPOSAL_CLIENT_FOR_MSG + applicationId);
 			}
 		} catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
-			throw new Exception(SOMETHING_WENT_WRONG_WHILE_CALL_PROPOSAL_CLIENT_FOR_MSG + applicationId);
+			throw new LoansException(SOMETHING_WENT_WRONG_WHILE_CALL_PROPOSAL_CLIENT_FOR_MSG + applicationId);
 		}
 
 		// Sending In-Principle for Personal Loan
@@ -4717,7 +4717,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Override
 	public LoanApplicationRequest updateLoanApplicationMasterPaymentStatus(PaymentRequest paymentRequest, Long userId)
-			throws Exception {
+			throws LoansException {
 		logger.info("start updateLoanApplicationMasterPaymentStatus()");
 		try {
 
@@ -4927,12 +4927,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			return loanRequest;
 		} catch (Exception e) {
 			logger.error("End updateLoanApplicationMasterPaymentStatus() with Exception : ",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
-	public GatewayRequest getPaymentStatus(PaymentRequest paymentRequest, Long userId, Long ClientId) throws Exception {
+	public GatewayRequest getPaymentStatus(PaymentRequest paymentRequest, Long userId, Long ClientId) throws LoansException {
 		logger.info("start getPaymentStatus()");
 		try {
 			GatewayRequest gatewayRequest = new GatewayRequest();
@@ -4945,7 +4945,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			return paymentStatus;
 		} catch (Exception e) {
 			logger.error("End updateLoanApplicationMasterPaymentStatus() with Exception : ",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
@@ -4978,7 +4978,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 
 	@Override
-	public Boolean updateDDRStatus(Long applicationId, Long userId, Long clientId, Long statusId) throws Exception {
+	public Boolean updateDDRStatus(Long applicationId, Long userId, Long clientId, Long statusId) throws LoansException {
 		logger.info("start getPaymentStatus()");
 		try {
 			LoanApplicationMaster applicationMaster = loanApplicationRepository.getById(applicationId);
@@ -5012,13 +5012,13 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			return true;
 		} catch (Exception e) {
 			logger.error("Error while Updating DDR Status : ",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 
 	}
 
 	@Override
-	public LoanApplicationRequest getFromClient(Long id) throws Exception {
+	public LoanApplicationRequest getFromClient(Long id) throws LoansException {
 		try {
 			LoanApplicationMaster applicationMaster = loanApplicationRepository.findOne(id);
 			if (applicationMaster == null) {
@@ -5064,12 +5064,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			return applicationRequest;
 		} catch (Exception e) {
 			logger.error("Error while getting Individual Loan Details For Client:-",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
-	public Boolean isApplicationEligibleForIrr(Long applicationId) throws Exception {
+	public Boolean isApplicationEligibleForIrr(Long applicationId) throws LoansException {
 		LoanApplicationMaster applicationMaster = loanApplicationRepository.findOne(applicationId);
 		if (CommonUtils.isObjectNullOrEmpty(applicationMaster)) {
 			return false;
@@ -5096,7 +5096,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					}
 				} catch (Exception e) {
 					logger.error(ERROR_WHILE_GETTING_INDIVIDUAL_LOAN_DETAILS,e);
-					throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+					throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 				}
 			}
 		}
@@ -7348,7 +7348,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		return corporateProfileRequest;
 	}
 
-	public Map<String, Object> getFpDetailsByFpProductId(Long fpProductId) throws Exception {
+	public Map<String, Object> getFpDetailsByFpProductId(Long fpProductId) throws LoansException {
 		Map<String, Object> map = null;
 		try {
 			map = new HashMap<String, Object>();
@@ -7370,7 +7370,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		return map;
 	}
 
-	public CorporateProduct getFpDetailsByFpProductMappingId(Long fpProductMappingId) throws Exception {
+	public CorporateProduct getFpDetailsByFpProductMappingId(Long fpProductMappingId) throws LoansException {
 		logger.info("ENTER IN LOAN APPLICATIONSERVICEIMPL-------------FP PRODUCT MAPPING ID >>>>>>>>>>>"
 				+ fpProductMappingId);
 
@@ -7405,7 +7405,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	 * LoanApplicationService#getDataForCGTMSE(java.lang.Long)
 	 */
 	@Override
-	public CGTMSECalcDataResponse getDataForCGTMSE(Long applicationId) throws Exception {
+	public CGTMSECalcDataResponse getDataForCGTMSE(Long applicationId) throws LoansException {
 		try {
 
 			logger.info("In getDataForCGTMSE");
@@ -8190,7 +8190,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 
 	@Override
-	public String saveDetailedInfo(ProfileReqRes profileReqRes) throws LoansException, Exception {
+	public String saveDetailedInfo(ProfileReqRes profileReqRes) throws LoansException {
 		logger.info("================== Enter in saveDetailedInfo =============== ");
 		Long applicationId = null;
 		CorporateProfileRequest corporateProfileRequest = profileReqRes.getCorporateProfileRequest();
@@ -8203,7 +8203,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				corporateProfileRequest.getAdministrativeAddress().getPincode(),
 				corporateProfileRequest.getContLiabilityFyAmt(), corporateProfileRequest.getContLiabilitySyAmt(),
 				corporateProfileRequest.getContLiabilityTyAmt())) {
-			throw new Exception(
+			throw new LoansException(
 					"Mandatory field must not be null (** applicationId , udhyogAddhar , city , state , country , pincode , ContLiabilityFyAmt ,  ContLiabilitySyAmt ,  ContLiabilityTyAmt ** ) ");
 		}
 		applicationId = saveCorporateProfile(profileReqRes.getCorporateProfileRequest());

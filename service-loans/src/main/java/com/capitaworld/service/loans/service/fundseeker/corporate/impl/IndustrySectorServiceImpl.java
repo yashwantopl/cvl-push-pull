@@ -2,6 +2,7 @@ package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
 import java.util.List;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,29 +22,29 @@ public class IndustrySectorServiceImpl implements IndustrySectorService {
 	private IndustrySectorRepository industrySectorRepository;
 
 	@Override
-	public void saveOrUpdate(IndustrySectorDetail industrySectorDetail) throws Exception {
+	public void saveOrUpdate(IndustrySectorDetail industrySectorDetail) throws LoansException {
 		// Do nothing because of X and Y.
 	}
 
 	@Override
-	public List<Long> getIndustryByApplicantId(Long applicantId) throws Exception {
+	public List<Long> getIndustryByApplicantId(Long applicantId) throws LoansException {
 		try {
 			return industrySectorRepository.getIndustryByApplicationId(applicantId);
 		} catch (Exception e) {
 			logger.error("Error while getIndustryByApplicantId : ",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 
 		}
 
 	}
 
 	@Override
-	public List<Long> getSectorByApplicantId(Long applicantId) throws Exception {
+	public List<Long> getSectorByApplicantId(Long applicantId) throws LoansException {
 		try {
 			return industrySectorRepository.getSectorByApplicationId(applicantId);
 		} catch (Exception e) {
 			logger.error("Error while getIndustryByApplicantId : ",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 
 		}
 

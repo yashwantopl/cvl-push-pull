@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.service.fundprovider;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.retail.PersonalLoanParameterRequest;
 
 public interface PersonalLoanParameterService {
@@ -11,5 +12,5 @@ public interface PersonalLoanParameterService {
 
 	public Boolean saveOrUpdateTemp(PersonalLoanParameterRequest personalLoanParameterRequest);
 	
-	public Boolean saveMasterFromTempPl(Long mappingId) throws Exception;
+	public Boolean saveMasterFromTempPl(Long mappingId) throws LoansException;
 }

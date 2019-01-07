@@ -10,6 +10,7 @@ import java.util.Map;
 
 import javax.persistence.EntityManager;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1231,7 +1232,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	}
 
 	@Override
-	public Boolean saveCorporateMasterFromTemp(Long mappingId) throws Exception {
+	public Boolean saveCorporateMasterFromTemp(Long mappingId) throws LoansException {
 
 		ProductMasterTemp corporateProduct = productMasterTempRepository.getProductMasterTemp(mappingId);
 		CommonDocumentUtils.startHook(logger, SAVE_CORPORATE);

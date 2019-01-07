@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.retail.FinalCommonRetailRequestOld;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
@@ -74,7 +75,7 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 	private static final String SIDBI_AMOUNT = "com.capitaworld.sidbi.amount";
 
 	@Override
-	public boolean save(RetailApplicantRequest applicantRequest, Long userId) throws Exception {
+	public boolean save(RetailApplicantRequest applicantRequest, Long userId) throws LoansException {
 
 		try {
 			Long finalUserId = (CommonUtils.isObjectNullOrEmpty(applicantRequest.getClientId()) ? userId
@@ -128,12 +129,12 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 
 		} catch (Exception e) {
 			logger.error(ERROR_WHILE_SAVING_RETAIL_PROFILE_MSG,e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 	
 	@Override
-	public boolean saveITRResponse(RetailApplicantRequest applicantRequest) throws Exception {
+	public boolean saveITRResponse(RetailApplicantRequest applicantRequest) throws LoansException {
 		try {
 			RetailApplicantDetail applicantDetail = applicantRepository.findOneByApplicationIdIdAndIsActive(applicantRequest.getApplicationId(), true);
 			if (applicantDetail != null) {
@@ -168,13 +169,13 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 			return true;
 		} catch (Exception e) {
 			logger.error(ERROR_WHILE_SAVING_RETAIL_PROFILE_MSG,e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public JSONObject getCoapAndGuarIds(Long userId, Long applicationId) throws Exception {
+	public JSONObject getCoapAndGuarIds(Long userId, Long applicationId) throws LoansException {
 		try {
 			List<Long> coAppIds = coApplicantService.getCoAppIds(userId, applicationId);
 			List<Long> guarantorIds = guarantorService.getGuarantorIds(userId, applicationId);
@@ -184,12 +185,12 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 			return obj;
 		} catch (Exception e) {
 			logger.error("Error while getCoapAndGuarIds:-",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
-	public RetailApplicantRequest get(Long applicationId) throws Exception {
+	public RetailApplicantRequest get(Long applicationId) throws LoansException {
 		try {
 			RetailApplicantDetail applicantDetail = applicantRepository.findOneByApplicationIdIdAndIsActive(applicationId,true);
 			/*if (applicantDetail == null) {
@@ -222,12 +223,12 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 			return applicantRequest;
 		} catch (Exception e) {
 			logger.error("Error while Getting Retail applicant details:-",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
-	public FinalCommonRetailRequestOld getFinal(Long id, Long applicationId) throws Exception {
+	public FinalCommonRetailRequestOld getFinal(Long id, Long applicationId) throws LoansException {
 		try {
 			RetailApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId(id, applicationId);
 			if (applicantDetail == null) {
@@ -241,12 +242,12 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 			return applicantRequest;
 		} catch (Exception e) {
 			logger.error(ERROR_WHILE_SAVING_RETAIL_PROFILE_MSG,e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
-	public boolean saveFinal(FinalCommonRetailRequestOld applicantRequest, Long userId) throws Exception {
+	public boolean saveFinal(FinalCommonRetailRequestOld applicantRequest, Long userId) throws LoansException {
 		try {
 			if (applicantRequest.getApplicationId() == null) {
 				throw new NullPointerException("Application Id and ID(Primary Key) must not be null=>Application ID==>"
@@ -274,32 +275,32 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 			return true;
 		} catch (Exception e) {
 			logger.error(ERROR_WHILE_SAVING_RETAIL_PROFILE_MSG,e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
-	public List<CoApplicantRequest> getCoApplicants(Long userId, Long applicationId) throws Exception {
+	public List<CoApplicantRequest> getCoApplicants(Long userId, Long applicationId) throws LoansException {
 		return coApplicantService.getList(applicationId, userId);
 	}
 
 	@Override
-	public Integer getCurrency(Long applicationId, Long userId) throws Exception {
+	public Integer getCurrency(Long applicationId, Long userId) throws LoansException {
 		try {
 			return applicantRepository.getCurrency(userId, applicationId);
 		} catch (Exception e) {
 			logger.error("Error while Getting Currency:-",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
-	public List<GuarantorRequest> getGuarantors(Long userId, Long applicationId) throws Exception {
+	public List<GuarantorRequest> getGuarantors(Long userId, Long applicationId) throws LoansException {
 		return guarantorService.getList(applicationId, userId);
 	}
 
 	@Override
-	public CibilFullFillOfferRequest getProfile(Long userId, Long applicationId) throws Exception {
+	public CibilFullFillOfferRequest getProfile(Long userId, Long applicationId) throws LoansException {
 		try {
 			logger.info("start getProfile() method");
 			RetailApplicantDetail applicantDetail = null;
@@ -369,7 +370,7 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 		} catch (Exception e) {
 			logger.error("Error while getting Basic profile for CIBIL : ",e);
 			logger.info("End getProfile() method with FAILURE Execution");
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 

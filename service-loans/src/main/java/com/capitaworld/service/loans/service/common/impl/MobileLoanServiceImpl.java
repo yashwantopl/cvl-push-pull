@@ -5,6 +5,7 @@ import java.util.Map;
 
 import javax.transaction.Transactional;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -243,7 +244,7 @@ public class MobileLoanServiceImpl implements MobileService {
 	
 	
 	@Override
-	public Long saveLoanApplicationDetails(MobileFrameRequest commonRequest) throws Exception {
+	public Long saveLoanApplicationDetails(MobileFrameRequest commonRequest) throws LoansException {
 		try {
 			LoanApplicationMaster applicationMaster = null;
 			Long appId = null;
@@ -383,7 +384,7 @@ public class MobileLoanServiceImpl implements MobileService {
 			return appId;
 		} catch (Exception e) {
 			logger.error("Error while Saving Loan Details:-",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 

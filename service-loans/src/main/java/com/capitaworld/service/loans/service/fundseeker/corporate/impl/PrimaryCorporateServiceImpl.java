@@ -2,6 +2,7 @@ package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
 import java.util.Date;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +34,7 @@ public class PrimaryCorporateServiceImpl implements PrimaryCorporateService {
 	private LoanApplicationService loanApplicationService;
 
 	@Override
-	public boolean saveOrUpdate(PrimaryCorporateRequest primaryCorporateRequest, Long userId) throws Exception {
+	public boolean saveOrUpdate(PrimaryCorporateRequest primaryCorporateRequest, Long userId) throws LoansException {
 
 		try {
 			PrimaryCorporateDetail primaryCorporateDetail = primaryCorporateRepository.getByApplicationAndUserId(
@@ -52,12 +53,12 @@ public class PrimaryCorporateServiceImpl implements PrimaryCorporateService {
 			return true;
 		} catch (Exception e) {
 			logger.error(ERROR_WHILE_PRIMARY_CORPORATE_DETAILS_MSG, e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
-	public PrimaryCorporateRequest get(Long applicationId, Long userId) throws Exception {
+	public PrimaryCorporateRequest get(Long applicationId, Long userId) throws LoansException {
 		try {
 			PrimaryCorporateDetail loanDetail = primaryCorporateRepository.getByApplicationAndUserId(applicationId,
 					userId);
@@ -74,7 +75,7 @@ public class PrimaryCorporateServiceImpl implements PrimaryCorporateService {
 			return primaryCorporateRequest;
 		} catch (Exception e) {
 			logger.error(ERROR_WHILE_PRIMARY_CORPORATE_DETAILS_MSG, e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 
 	}
