@@ -1993,10 +1993,12 @@ public class ProposalServiceMappingImpl implements ProposalService {
 		if(count != null) {
 			Map<String , Double> map = new HashMap<>();
 			map.put("inPrincipleCount", CommonUtils.convertDouble(count[0]));
-			map.put("holdCount", CommonUtils.convertDouble(count[1]));
-			map.put("rejectCount", CommonUtils.convertDouble(count[2]));
-			map.put("sanctionedCount", CommonUtils.convertDouble(count[3]));
-			map.put("disbursmentCount", CommonUtils.convertDouble(count[4]));
+			map.put("holdBeforeCount", CommonUtils.convertDouble(count[1]));
+			map.put("holdAfterCount", CommonUtils.convertDouble(count[2]));
+			map.put("rejectBeforeCount", CommonUtils.convertDouble(count[3]));
+			map.put("rejectAfterCount", CommonUtils.convertDouble(count[4]));
+			map.put("sanctionedCount", CommonUtils.convertDouble(count[5]));
+			map.put("disbursmentCount", CommonUtils.convertDouble(count[6]));
 			return map;
 		}
 		return null;
