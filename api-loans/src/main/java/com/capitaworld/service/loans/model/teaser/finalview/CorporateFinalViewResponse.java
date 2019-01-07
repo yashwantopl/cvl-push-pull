@@ -229,6 +229,7 @@ public class CorporateFinalViewResponse implements Serializable {
     private Object mcaFinancialAndDetailsResponse;
     
     private Boolean isMcqSkipped;
+    private String companyId;
     			
     
 	public List<?> getMatchesList() {
@@ -2134,6 +2135,14 @@ public class CorporateFinalViewResponse implements Serializable {
 
 	public void setIsMcqSkipped(Boolean isMcqSkipped) {
 		this.isMcqSkipped = isMcqSkipped;
+	}
+
+	public String getCompanyId() {
+		return companyId;
+	}
+
+	public void setCompanyId(String companyId) {
+		this.companyId = companyId;
 	}
 
 	
