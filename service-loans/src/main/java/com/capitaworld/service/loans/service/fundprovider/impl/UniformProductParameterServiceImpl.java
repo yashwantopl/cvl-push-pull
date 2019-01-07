@@ -121,7 +121,6 @@ public class UniformProductParameterServiceImpl implements UniformProductParamet
 			}
 		}
 		uniformProductParamter.setJobId(productParamterRequest.getJobId());
-		uniformProductParamter.setIsActive(true);
 		uniformProductParameterTempRepository.save(uniformProductParamter);
 		return true;
 	}
