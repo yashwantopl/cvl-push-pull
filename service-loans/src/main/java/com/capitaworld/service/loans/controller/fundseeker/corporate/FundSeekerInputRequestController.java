@@ -425,4 +425,26 @@ public class FundSeekerInputRequestController {
             return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
         }
     }
+    
+    @RequestMapping(value = "/reset", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LoansResponse> resetApplicationUniform(@RequestBody ConnectResponse connectResponse ,HttpServletRequest request)throws Exception{
+        try
+        {
+        	Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+        	if(userId == null) {
+        		   return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.UNAUTHORIZED_USER_PLEASE_RE_LOGIN_AND_TRY_AGAIN, HttpStatus.UNAUTHORIZED.value()), HttpStatus.OK);
+        	}
+        	
+        	if(CommonUtils.isObjectNullOrEmpty(connectResponse.getApplicationId())) {
+        		logger.warn("applicationId Must not be null or Empty====>{}",connectResponse.getApplicationId());
+      		   return new ResponseEntity<LoansResponse>(new LoansResponse(SOMETHING_GOES_WRONG_WHILE_PROCESSING_YOUR_REQUEST_PLEASE_RE_LOGIN_AGAIN_MSG, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+         	}
+        	
+        	connectResponse.setUserId(userId);
+            return new ResponseEntity<LoansResponse>(fundSeekerInputRequestService.resetUniformApplication(connectResponse), HttpStatus.OK);
+        } catch (Exception e) {
+            logger.error("Error while Deleting Document for Uniform Product : ",e);
+            return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
+        }
+    }
 }

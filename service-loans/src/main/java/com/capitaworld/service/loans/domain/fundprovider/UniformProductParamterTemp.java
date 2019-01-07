@@ -32,6 +32,8 @@ public class UniformProductParamterTemp extends ProductMasterTemp implements Ser
 	private Integer maxCmr;
 
 	private Integer currency;
+	
+	private Integer dpd;
 
 	private Integer denomination;
 
@@ -159,12 +161,20 @@ public class UniformProductParamterTemp extends ProductMasterTemp implements Ser
 		this.maxCmr = maxCmr;
 	}
 
+	public Integer getDpd() {
+		return dpd;
+	}
+
+	public void setDpd(Integer dpd) {
+		this.dpd = dpd;
+	}
+
 	@Override
 	public String toString() {
 		return "UniformProductParamterTemp [minAmount=" + minAmount + ", maxAmount=" + maxAmount + ", roi=" + roi
 				+ ", pf=" + pf + ", minCibilScore=" + minCibilScore + ", minCmr=" + minCmr + ", maxCmr=" + maxCmr
-				+ ", currency=" + currency + ", denomination=" + denomination + ", assessmentMethod=" + assessmentMethod
-				+ ", promotorContribution=" + promotorContribution + ", wcRequirement=" + wcRequirement + ", maxGrowth="
-				+ maxGrowth + "]";
+				+ ", currency=" + currency + ", dpd=" + dpd + ", denomination=" + denomination + ", assessmentMethod="
+				+ assessmentMethod + ", promotorContribution=" + promotorContribution + ", wcRequirement="
+				+ wcRequirement + ", maxGrowth=" + maxGrowth + "]";
 	}
 }

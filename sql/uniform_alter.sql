@@ -93,9 +93,14 @@ ADD COLUMN `max_cmr_audit` VARCHAR(200);
 
 
 DELIMITER $$
+
+USE `loan_application`$$
+
+DROP TRIGGER  `uniform_product_update_audit`$$
+
 CREATE
-    TRIGGER `loan_application`.`uniform_product_update_audit` AFTER UPDATE
-    ON `loan_application`.`fp_uniform_product_details`
+    
+    TRIGGER `uniform_product_update_audit` AFTER UPDATE ON `fp_uniform_product_details` 
     FOR EACH ROW BEGIN 
     IF (NEW.version IS NOT NULL AND NEW.version != OLD.version) THEN
     INSERT INTO `loan_application`.`fp_uniform_product_details_audit` 
@@ -162,9 +167,12 @@ CREATE
     NOW(),
     (SELECT pm.user_org_id FROM `loan_application`.`fp_product_master` pm WHERE pm.fp_product_id = OLD.fp_product_id),
     OLD.version,
-    CONCAT('{oldValue:',OLD.version , ',newValue:',NEW.version, ',isChanged:', (OLD.version <> NEW.version), ' } '));
+    CONCAT('{oldValue:',OLD.version , ',newValue:',NEW.version, ',isChanged:', (OLD.version <> NEW.version), ' } '),
+    OLD.dpd,
+    CONCAT('{oldValue:',OLD.dpd , ',newValue:',NEW.dpd, ',isChanged:', (OLD.dpd <> NEW.dpd), ' } '));
     END IF;
-    END$$
+    END;
+$$
 DELIMITER ;
 
 ALTER TABLE `loan_application`.`fp_uniform_product_details_audit`
@@ -176,3 +184,9 @@ ADD COLUMN `version_audit` VARCHAR(200);
 
 ALTER TABLE `loan_application`.`proposal_details` ADD COLUMN `version` INT(3) NULL AFTER `reason`; 
 ALTER TABLE `loan_application`.`application_product_audit` ADD COLUMN `version` INT(3) NULL AFTER `score`; 
+
+
+ALTER TABLE `loan_application`.`fp_uniform_product_details` ADD COLUMN `dpd` INT(3);
+ALTER TABLE `loan_application`.`fp_uniform_product_details_audit` ADD COLUMN `dpd` INT(3);
+ALTER TABLE `loan_application`.`fp_uniform_product_details_audit` ADD COLUMN `dpd_audit` VARCHAR(1000);
+ALTER TABLE `loan_application`.`fp_uniform_product_details_temp` ADD COLUMN `dpd` INT(3);

@@ -69,7 +69,6 @@ public class UniformProductParameterServiceImpl implements UniformProductParamet
 		} else {
 			uniformProductParamter.setVersion(1);
 		}
-		uniformProductParamter.setIsActive(true);
 		uniformProductParameterRepository.save(uniformProductParamter);
 		return true;
 	}
@@ -122,7 +121,6 @@ public class UniformProductParameterServiceImpl implements UniformProductParamet
 			}
 		}
 		uniformProductParamter.setJobId(productParamterRequest.getJobId());
-		uniformProductParamter.setIsActive(true);
 		uniformProductParameterTempRepository.save(uniformProductParamter);
 		return true;
 	}
