@@ -34,7 +34,7 @@ public interface IneligibleProposalDetailsRepository extends JpaRepository<Ineli
     public List<IneligibleProposalDetails> findByGstinAndIsActive(String gstin,Boolean isActive);
     
     @Query(value = "SELECT * FROM loan_application.`ineligible_proposal_details` inl WHERE SUBSTR(inl.gstin,3,10) =:gstin AND inl.`is_active` = TRUE", nativeQuery = true)
-    public List<IneligibleProposalDetails> findByGstinPan(String gstin);
+    public List<IneligibleProposalDetails> findByGstinPan(@Param("gstin")String gstin);
     
     public IneligibleProposalDetails findByGstinAndUserOrgIdAndIsActive(String gstin,Long userOrgId,Boolean isActive);
 

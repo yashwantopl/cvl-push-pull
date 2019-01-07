@@ -1924,7 +1924,7 @@ public class ScoringServiceImpl implements ScoringService {
 
                                 monthsDiff = todayDate.get(java.util.Calendar.MONTH) - corporateApplicantDetail.getEstablishmentMonth();
 
-                                Double yearsInBusiness = Double.valueOf((yearsInBetween * 12 + monthsDiff) / 12);
+                                Double yearsInBusiness = (((double)yearsInBetween * 12 + (double)monthsDiff) / 12);
 
                                 scoringParameterRequest.setYearsInBusiness(yearsInBusiness);
                                 scoringParameterRequest.setYearsInBusiness_p(true);
@@ -2992,7 +2992,7 @@ public class ScoringServiceImpl implements ScoringService {
 
                                     monthsDiff = todayDate.get(java.util.Calendar.MONTH) - corporateApplicantDetail.getEstablishmentMonth();
 
-                                    Double yearsInBusiness = Double.valueOf((yearsInBetween * 12 + monthsDiff) / 12);
+                                    Double yearsInBusiness = (((double)yearsInBetween * 12 + (double)monthsDiff) / 12);
 
                                     scoringParameterRequest.setYearsInBusiness(yearsInBusiness);
                                     scoringParameterRequest.setYearsInBusiness_p(true);

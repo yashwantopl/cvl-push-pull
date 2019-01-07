@@ -27,6 +27,7 @@ import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.sanction.LoanSanctionAndDisbursedRequest;
 import com.capitaworld.service.loans.repository.OfflineProcessedAppRepository;
 import com.capitaworld.service.loans.repository.banktocw.BankToCWAuditTrailRepository;
+import com.capitaworld.service.loans.repository.common.LoanRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
 import com.capitaworld.service.loans.repository.sanction.LoanSanctionRepository;
 import com.capitaworld.service.loans.service.sanction.LoanDisbursementService;
@@ -172,9 +173,20 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 	}
 
 	@Override
-	public Boolean saveSanctionDetailFromPopup(LoanSanctionRequest loanSanctionRequest) throws Exception {
+	public Integer saveSanctionDetailFromPopup(LoanSanctionRequest loanSanctionRequest) throws Exception {
 		logger.info("Enter in saveSanctionDetailFromPopup() ----------------------------- sanctionRequest Data : "+ loanSanctionRequest.toString());
 		try {
+			//FIRST CHECK IF CURRENT PROPOSAL IS ELIGIBL FOR SANCTIONED OR NOT 
+			Integer status = offlineProcessedAppRepository.checkBeforeOfflineSanctioned(loanSanctionRequest.getApplicationId());
+			if(status == 4) {
+				loanSanctionRequest.setSanctionDate(new Date());
+				Boolean result = saveLoanSanctionDetail(loanSanctionRequest);
+				return !result ? 0 : 4;
+			} else {
+				return status;	
+			}
+			/*loanSanctionRequest.setSanctionDate(new Date());
+			return saveLoanSanctionDetail(loanSanctionRequest);*/
 			/*logger.info("going to fetch username/password");
 			UserOrganisationRequest userOrganisationRequest = userClient.getByOrgId(loanSanctionRequest.getOrgId());
 			if(CommonUtils.isObjectListNull( userOrganisationRequest, userOrganisationRequest.getUsername(),  userOrganisationRequest.getPassword() )){
@@ -183,11 +195,9 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 			}
 			loanSanctionRequest.setUserName(userOrganisationRequest.getUsername());
 			loanSanctionRequest.setPassword(userOrganisationRequest.getPassword());*/
-			loanSanctionRequest.setSanctionDate(new Date());
-			return saveLoanSanctionDetail(loanSanctionRequest);
 		} catch (Exception e) {
 			logger.error("Error/Exception in saveSanctionDetailFromPopup() ----------------------->  Message : ",e);
-			return false;
+			return 0;
 		}
 	}
 	

@@ -14,7 +14,7 @@ public interface LoanSanctionService {
 	
 	/*public Long getOrgIdByCredential(String userName, String pwd) throws Exception ;*/
 
-	public Boolean saveSanctionDetailFromPopup(LoanSanctionRequest loanSanctionRequest) throws Exception;
+	public Integer saveSanctionDetailFromPopup(LoanSanctionRequest loanSanctionRequest) throws Exception;
 	
 	public Boolean saveSanctionAndDisbursementDetailsFromBank() throws Exception ;
 	

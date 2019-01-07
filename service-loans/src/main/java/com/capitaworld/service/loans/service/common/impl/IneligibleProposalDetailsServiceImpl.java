@@ -105,22 +105,18 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 
 	private static final String EMAIL_ADDRESS_FROM = "no-reply@capitaworld.com";
 	
-	@Value("${com.connect.inPrincipleDayDifference}")
-	private Integer DAY_DIFFERENCE_FOR_INPRINCIPLE;
-
-
 
 	@Override
-	public Boolean save(InEligibleProposalDetailsRequest inlPropReq) {
+	public Integer save(InEligibleProposalDetailsRequest inlPropReq) {
 		try {
 			String gstin = loanRepository.getGSTINByAppId(inlPropReq.getApplicationId());
 			
 			IneligibleProposalDetails inlProposalDetails = ineligibleProposalDetailsRepository.findByApplicationIdAndIsActive(inlPropReq.getApplicationId(), true);
 			boolean isCreateNew = false;
 			if(!CommonUtils.isObjectNullOrEmpty(inlProposalDetails)) {
-				if(inlProposalDetails.getIsSanctioned()) {
+				if(inlProposalDetails.getIsSanctioned()) {//HANDLE MESSAGE
 					// THIS APPLCATION IS ALREADY SANCTIONED
-					return false;
+					return 1;
 				}
 				//IF ALREADY FOUND DATA WITH THIS APPLICATION ID THEN NEED TO COMPARE BANK ID WITH ALREADY EXISTS DATA 
 				if(inlProposalDetails.getUserOrgId() != inlPropReq.getUserOrgId()) {
@@ -153,8 +149,13 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 						if(CommonUtils.isObjectNullOrEmpty(inlProposal.getIsSanctioned()) || !inlProposal.getIsSanctioned()) {
 							// CHECK 60 DAY IN-PRINCIPLE VALIDITY
 							long dateDiff = daysBetween(new Date(), inlProposal.getCreatedDate());
-							if(CommonUtils.isObjectNullOrEmpty(DAY_DIFFERENCE_FOR_INPRINCIPLE)) {
+							
+							String value = loanRepository.getCommonPropertiesValue(com.capitaworld.commons.lib.common.CommonUtils.COMMON_PROPERTIES.CONNECT_MSME_INPRINCIPLE_DATE_RANGE);
+							Integer DAY_DIFFERENCE_FOR_INPRINCIPLE = 0;
+							if(CommonUtils.isObjectNullOrEmpty(value)) {//IF NULL IN COMMON PROPERTIES THEN DEFAULT VALUE IS 60 DAYS
 								DAY_DIFFERENCE_FOR_INPRINCIPLE = 60;
+							} else {
+								DAY_DIFFERENCE_FOR_INPRINCIPLE = Integer.valueOf(value);
 							}
 							if (dateDiff < DAY_DIFFERENCE_FOR_INPRINCIPLE) {
 								inlProposal.setIsActive(false);
@@ -215,12 +216,12 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 			// Set Created Date.
 			
 			ineligibleProposalDetailsRepository.save(inlProposalDetails);
-			return true;
+			return 2;
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error("error while saving in eligible proposal : ",e);
 		}
-		return false;
+		return 0;
 	}
 	
 	private static long daysBetween(Date one, Date two) {

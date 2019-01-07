@@ -13,11 +13,15 @@ public interface OfflineProcessedAppRepository{
 	
 	public boolean updateSanctionedFlag(Long appId,Long orgId,Long branchId,Long userId);
 	
+	public Integer checkBeforeOfflineSanctioned(Long appId);
+	
 	public List<Object []> getSanctionedApplicationList(Long userId);
 	
 	public List<Object []> getDisbursedApplicationList(Long userId);
 	
 	public List<Object[]> getRejectProposalsList(Long userId);
+	
+	public List<Object[]> getOtherProposalsList(Long userId);
 
 	public List<Object[]> getHomeCounterDetail();
 }

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -34,7 +35,7 @@ public class CorporateCoApplicantServiceImpl implements CorporateCoApplicantServ
 	
 	@Override
 	public boolean save(CorporateCoApplicantRequest applicantRequest, Long applicationId, Long userId)
-			throws Exception {
+			throws LoansException {
 		try {
 			Long finalUserId = CommonUtils.isObjectNullOrEmpty(applicantRequest.getClientId()) ? userId
 					: applicantRequest.getClientId();
@@ -78,7 +79,7 @@ public class CorporateCoApplicantServiceImpl implements CorporateCoApplicantServ
 
 		} catch (Exception e) {
 			logger.error("Error while Saving Retail Profile:-",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
@@ -106,7 +107,7 @@ public class CorporateCoApplicantServiceImpl implements CorporateCoApplicantServ
 	}
 
 	@Override
-	public List<CorporateCoApplicantRequest> getList(Long applicationId, Long userId) throws Exception {
+	public List<CorporateCoApplicantRequest> getList(Long applicationId, Long userId) throws LoansException {
 		try {
 			List<CorporateCoApplicantDetail> details = coApplicantDetailRepository.getList(applicationId, userId);
 			List<CorporateCoApplicantRequest> requests = new ArrayList<>(details.size());
@@ -119,29 +120,29 @@ public class CorporateCoApplicantServiceImpl implements CorporateCoApplicantServ
 			return requests;
 		} catch (Exception e) {
 			logger.error("Error while getting List of CoApplicant Retail Profile:-",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
-	public List<Long> getCoAppIds(Long applicationId,Long userId) throws Exception {
+	public List<Long> getCoAppIds(Long applicationId,Long userId) throws LoansException {
 		try {
 			
 			//List<CorporateCoApplicantDetail> temp =coApplicantDetailRepository.getCoAppIdstmp(applicationId);
 			return coApplicantDetailRepository.getCoAppIds(applicationId);
 		} catch (Exception e) {
 			logger.error("Error while getCoAppIds:-",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
-	public Long getApplicantIdById(Long id) throws Exception {
+	public Long getApplicantIdById(Long id) throws LoansException {
 		try {
 			return coApplicantDetailRepository.getApplicantIdById(id);
 		} catch (Exception e) {
 			logger.error("Error While getting Applicant Id by CoApplicant ID : ",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 	

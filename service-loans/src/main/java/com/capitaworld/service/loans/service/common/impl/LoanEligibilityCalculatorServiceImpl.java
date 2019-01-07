@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,7 +20,6 @@ import com.capitaworld.service.dms.util.MultipleJSONObjectHelper;
 import com.capitaworld.service.loans.domain.common.HomeLoanEligibilityCriteria;
 import com.capitaworld.service.loans.domain.common.LAPEligibilityCriteria;
 import com.capitaworld.service.loans.domain.common.PersonalLoanEligibilityCriteria;
-import com.capitaworld.service.loans.exceptions.ExcelException;
 import com.capitaworld.service.loans.model.CMADetailResponse;
 import com.capitaworld.service.loans.model.common.HomeLoanEligibilityRequest;
 import com.capitaworld.service.loans.model.common.LAPEligibilityRequest;
@@ -68,7 +68,7 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 	// HOME LOAN STARTS
 	@SuppressWarnings("unchecked")
 	private Map<Integer, JSONObject> calculateMinMaxForHomeLoan(HomeLoanEligibilityRequest homeLoanRequest)
-			throws Exception {
+			throws LoansException {
 		CommonDocumentUtils.startHook(logger, "calculateMinMaxForHomeLoan");
 		try {
 			Integer tenure = getUpdatedTenure(homeLoanRequest, CommonUtils.LoanType.HOME_LOAN.getValue());
@@ -133,7 +133,7 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public JSONObject getMinMaxBySalarySlab(HomeLoanEligibilityRequest homeLoanRequest) throws Exception {
+	public JSONObject getMinMaxBySalarySlab(HomeLoanEligibilityRequest homeLoanRequest) throws LoansException {
 		CommonDocumentUtils.startHook(logger, "getMinMaxBySalarySlab");
 		Map<Integer, JSONObject> minMaxData = calculateMinMaxForHomeLoan(homeLoanRequest);
 		if (minMaxData == null) {
@@ -157,7 +157,7 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public JSONObject calcHomeLoanAmount(HomeLoanEligibilityRequest homeLoanRequest) throws Exception {
+	public JSONObject calcHomeLoanAmount(HomeLoanEligibilityRequest homeLoanRequest) throws LoansException {
 		CommonDocumentUtils.startHook(logger, "calculateMinSVMVForHomeLoan");
 		Map<Integer, JSONObject> minMaxSalary = calculateMinMaxForHomeLoan(homeLoanRequest);
 		if (minMaxSalary == null) {
@@ -292,7 +292,7 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 	// PERSONAL LOAN STARTS
 	@SuppressWarnings("unchecked")
 	private Map<Integer, JSONObject> calculateMinMaxForPersonalLoan(PersonalLoanEligibilityRequest eligibilityRequest)
-			throws Exception {
+			throws LoansException {
 		CommonDocumentUtils.startHook(logger, "calculateMinMaxForPersonalLoan");
 		try {
 			Integer tenure = getUpdatedTenure(eligibilityRequest, CommonUtils.LoanType.PERSONAL_LOAN.getValue());
@@ -357,7 +357,7 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public JSONObject calcMinMaxForPersonalLoan(PersonalLoanEligibilityRequest eligibilityRequest) throws Exception {
+	public JSONObject calcMinMaxForPersonalLoan(PersonalLoanEligibilityRequest eligibilityRequest) throws LoansException {
 		CommonDocumentUtils.startHook(logger, "calcMinMaxForPersonalLoan");
 		Map<Integer, JSONObject> minMaxData = calculateMinMaxForPersonalLoan(eligibilityRequest);
 		if (minMaxData == null) {
@@ -402,7 +402,7 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 
 	// LAP Starts
 	@SuppressWarnings("unchecked")
-	private Map<Integer, JSONObject> calculateMinMaxForLAP(LAPEligibilityRequest eligibilityRequest) throws Exception {
+	private Map<Integer, JSONObject> calculateMinMaxForLAP(LAPEligibilityRequest eligibilityRequest) throws LoansException {
 		CommonDocumentUtils.startHook(logger, "calculateMinMaxForLAP");
 		try {
 			Integer tenure = getUpdatedTenure(eligibilityRequest, CommonUtils.LoanType.LAP_LOAN.getValue());
@@ -469,7 +469,7 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public JSONObject calcMinMaxForLAP(LAPEligibilityRequest eligibilityRequest) throws Exception {
+	public JSONObject calcMinMaxForLAP(LAPEligibilityRequest eligibilityRequest) throws LoansException {
 		CommonDocumentUtils.startHook(logger, "calcMinMaxForLAP");
 		Map<Integer, JSONObject> minMaxData = calculateMinMaxForLAP(eligibilityRequest);
 		if (minMaxData == null) {
@@ -493,7 +493,7 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public JSONObject calcLAPAmount(LAPEligibilityRequest eligibilityRequest) throws Exception {
+	public JSONObject calcLAPAmount(LAPEligibilityRequest eligibilityRequest) throws LoansException {
 		CommonDocumentUtils.startHook(logger, "calcLAPAmount");
 		Map<Integer, JSONObject> minMaxSalary = calculateMinMaxForLAP(eligibilityRequest);
 		if (minMaxSalary == null) {
@@ -558,7 +558,7 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 
 	// COMMON STARTS
 	@Override
-	public Integer calculateTenure(LoanEligibilility eligibilility, Integer productId) throws Exception {
+	public Integer calculateTenure(LoanEligibilility eligibilility, Integer productId) throws LoansException {
 		CommonDocumentUtils.startHook(logger, CALCULATE_TENURE);
 		try {
 			Integer age = CommonUtils.getAgeFromBirthDate(eligibilility.getDateOfBirth());
@@ -583,7 +583,7 @@ public class LoanEligibilityCalculatorServiceImpl implements LoanEligibilityCalc
 		} catch (Exception e) {
 			CommonDocumentUtils.endHook(logger, CALCULATE_TENURE);
 			logger.error("Error while calulating tenure for Product ==>" + productId + CommonUtils.EXCEPTION + e);
-			throw new ExcelException(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
