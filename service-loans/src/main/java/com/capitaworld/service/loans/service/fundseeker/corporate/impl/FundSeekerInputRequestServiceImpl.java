@@ -3,6 +3,7 @@ package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.json.simple.JSONObject;
@@ -778,6 +779,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 	}
 	
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public LoansResponse verifyGST(String gstin,Long applicationId,Long userId,MultipartFile[] uploadedFiles) {
 		//Uploading GST Receipt
@@ -837,7 +839,24 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 				updateGSTFlag = corporateApplicantDetailRepository.updateGSTFlag(applicationId, gstin, false);
 				logger.info("GST Updated Count of FALSE WIth GST Status================>{}=====>{}====>{}",updateGSTFlag,response.getStatus(),response.getStatusCd());
 			}
+			
+			//Getting Address Details from GST
+			CorporateApplicantDetail corpApplicantDetail = corporateApplicantDetailRepository
+					.findOneByApplicationIdId(applicationId);
+			if (!CommonUtils.isObjectNullOrEmpty(corpApplicantDetail) && !CommonUtils.isObjectNullOrEmpty(response.getData())) {
+				LinkedHashMap<String, Object> data = (LinkedHashMap<String, Object>)response.getData();
+				data.put("premiseNumber", corpApplicantDetail.getRegisteredPremiseNumber());
+				data.put("landMark", corpApplicantDetail.getRegisteredLandMark());
+				data.put("streetName", corpApplicantDetail.getRegisteredStreetName());
+				data.put("pincode", corpApplicantDetail.getRegisteredPincode());
+				data.put("cityId", corpApplicantDetail.getRegisteredCityId());
+				data.put("stateId", corpApplicantDetail.getRegisteredStateId());
+				data.put("sountryId", corpApplicantDetail.getRegisteredCountryId());
+				data.put("districtMappingId", corpApplicantDetail.getRegisteredDistMappingId());
+				response.setData(data);
+			}
 			//Getting Uploaded GST Receipt
+//			BeanUtils.copyProperties(corpApplicantDetail, fsInputRes);
 			LoansResponse loansResponse = new LoansResponse("Done",HttpStatus.OK.value(),response);
 			try{
 				logger.info("Uploaded Document Result for Application Id===>{}",isDocumentUploaded);

@@ -93,7 +93,6 @@ public class UniformProductParameterServiceImpl implements UniformProductParamet
 				.findFirstByUserOrgIdOrderByIdDesc(productParamterRequest.getUserOrgId());
 		if (CommonUtils.isObjectNullOrEmpty(uniformProductParamter)) {
 			uniformProductParamter = new UniformProductParamterTemp();
-			uniformProductParamter.setIsEdit(false);
 			uniformProductParamter.setCreatedBy(productParamterRequest.getUserId());
 			uniformProductParamter.setCreatedDate(new Date());
 		} else {
@@ -102,6 +101,7 @@ public class UniformProductParameterServiceImpl implements UniformProductParamet
 		}
 		BeanUtils.copyProperties(productParamterRequest, uniformProductParamter, "id", "createdBy", "createdDate",
 				"modifiedDate", "modifiedBy", "jobId");
+		uniformProductParamter.setIsEdit(productParamterRequest.getIsEdited());
 		uniformProductParamter.setUserOrgId(productParamterRequest.getUserOrgId());
 		uniformProductParamter.setBusinessTypeId(
 				CommonUtils.BusinessType.ONE_PAGER_ELIGIBILITY_EXISTING_BUSINESS.getId().longValue());
