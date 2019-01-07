@@ -50,9 +50,11 @@ import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.NTBRequest;
 import com.capitaworld.service.loans.model.common.HunterRequestDataResponse;
 import com.capitaworld.service.loans.model.corporate.FundSeekerInputRequestResponse;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.AssociatedConcernDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.DirectorBackgroundDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.DirectorPersonalDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.FinancialArrangementDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorRepository;
@@ -95,6 +97,9 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 	
 	@Autowired
 	private FinancialArrangementDetailsService financialArrangementDetailsService;
+	
+	@Autowired
+	private FinancialArrangementDetailsRepository financialArrangementDetailsRepository; 
 
 	@Autowired
 	private DirectorBackgroundDetailsRepository directorBackgroundDetailsRepository;
@@ -104,6 +109,9 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 	
 	@Autowired
 	private AssociatedConcernDetailService associatedConcernDetailService; 
+	
+	@Autowired
+	private AssociatedConcernDetailRepository associatedConcernDetailRepository; 
 
 	@Autowired
 	private ConnectClient connectClient;
@@ -940,6 +948,15 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			logger.error("error Updating Flags and Getting Document : {}",exception);
 		}
 		return loansResponse;
+	}
+	
+	@Override
+	public LoansResponse resetUniformApplication(ConnectResponse connectResponse){
+		financialArrangementDetailsRepository.inActiveManuallyAddedLoans(connectResponse.getUserId(), connectResponse.getApplicationId());
+		associatedConcernDetailRepository.inActive(connectResponse.getUserId(), connectResponse.getApplicationId());
+		directorBackgroundDetailsRepository.inActive(connectResponse.getUserId(), connectResponse.getApplicationId());
+		primaryCorporateDetailRepository.updatedFinancialFieldsForUniformProduct(connectResponse.getApplicationId(), null, null,null,null);
+		return new LoansResponse("Successfully Reset the Form.", HttpStatus.OK.value(), getDataForOnePagerOneForm(connectResponse.getApplicationId()));
 	}
 
 }
