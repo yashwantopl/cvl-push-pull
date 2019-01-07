@@ -907,7 +907,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 
 	@Override
-	public LoanApplicationRequest get(Long id, Long userId) throws Exception {
+	public LoanApplicationRequest get(Long id, Long userId,Long userOrdId) throws Exception {
 		try {
 			LoanApplicationRequest applicationRequest = new LoanApplicationRequest();
 			LoanApplicationMaster applicationMaster = loanApplicationRepository.getByIdAndUserId(id, userId);
@@ -915,6 +915,15 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				throw new NullPointerException(INVALID_LOAN_APPLICATION_ID + id + " of User ID==>" + userId);
 			}
 			BeanUtils.copyProperties(applicationMaster, applicationRequest, "name");
+
+			// start for multiple loan Hiren
+
+            ApplicationProposalMapping applicationProposalMapping=applicationProposalMappingRepository.getByApplicationIdAndOrgId(id,userOrdId);
+            applicationMaster.setProductId(applicationProposalMapping.getProductId());
+            applicationRequest.setFinalLocked(applicationProposalMapping.getFinalLocked());
+
+            // end for multiple loan Hiren
+
 			if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getProductId())) {
 				return applicationRequest;
 			}
@@ -958,7 +967,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				applicationRequest.setLoanTypeSub("DEBT");
 			}
 			applicationRequest.setProfilePrimaryLocked(applicationMaster.getIsPrimaryLocked());
-			applicationRequest.setFinalLocked(applicationMaster.getIsFinalLocked());
 			try {
 				ProposalMappingResponse response = proposalDetailsClient
 						.getFundSeekerApplicationStatus(applicationMaster.getId());

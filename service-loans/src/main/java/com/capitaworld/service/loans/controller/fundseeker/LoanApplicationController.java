@@ -221,7 +221,9 @@ public class LoanApplicationController {
 						new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value()),
 						HttpStatus.OK);
 			}
-			LoanApplicationRequest response = loanApplicationService.get(id, userId);
+
+			Long userOrdId = (Long) request.getAttribute(CommonUtils.USER_ORG_ID);
+			LoanApplicationRequest response = loanApplicationService.get(id, userId,userOrdId);
 			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 			loansResponse.setData(response);
 			CommonDocumentUtils.endHook(logger, "get");
