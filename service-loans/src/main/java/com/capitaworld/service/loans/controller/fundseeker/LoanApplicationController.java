@@ -1941,11 +1941,11 @@ public class LoanApplicationController {
 				response.setStatus(HttpStatus.OK.value());
 			} else if (result == 1) {
 				response.setData(false);
-				response.setMessage("Proposal has got in-principle !!");
+				response.setMessage("The said borrower has already receive in-principle approval through online journey, hence the same proposal can not be sanctioned through offline mode");
 				response.setStatus(HttpStatus.BAD_REQUEST.value());
 			} else if (result == 2) {
 				response.setData(false);
-				response.setMessage("Proposal has already sanctioned !!");
+				response.setMessage("The said proposal has already been sanctioned by one of our bank partners, hence the same proposal can not be sanctioned again");
 				response.setStatus(HttpStatus.BAD_REQUEST.value());
 			} else {
 				response.setData(false);
