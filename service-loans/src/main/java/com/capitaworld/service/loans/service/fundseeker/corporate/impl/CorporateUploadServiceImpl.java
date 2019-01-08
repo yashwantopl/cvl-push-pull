@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,7 +64,7 @@ public class CorporateUploadServiceImpl implements CorporateUploadService {
 	@SuppressWarnings("unchecked")
 	@Override
 	public DocumentResponse uploadProfile(Long applicantId, Long mappingId, String fileName, String userType,
-			MultipartFile multipartFile) throws Exception {
+			MultipartFile multipartFile) throws LoansException {
 		try {
 			JSONObject jsonObj = new JSONObject();
 
@@ -88,13 +89,13 @@ public class CorporateUploadServiceImpl implements CorporateUploadService {
 			return documentResponse;
 		} catch (DocumentException e) {
 			logger.error("Error while uploading Profile Document : ",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 
 	}
 
 	@Override
-	public DocumentResponse getProfilePic(Long applicantId, Long mappingId, String userType) throws Exception {
+	public DocumentResponse getProfilePic(Long applicantId, Long mappingId, String userType) throws LoansException {
 		try {
 			DocumentRequest docRequest = new DocumentRequest();
 			if (CommonUtils.UploadUserType.UERT_TYPE_APPLICANT.equalsIgnoreCase(userType)) {
@@ -115,7 +116,7 @@ public class CorporateUploadServiceImpl implements CorporateUploadService {
 			return dmsClient.listProductDocument(docRequest);
 		} catch (DocumentException e) {
 			logger.error("Error while getting Profile Document : ",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
@@ -140,31 +141,31 @@ public class CorporateUploadServiceImpl implements CorporateUploadService {
 				}
 				catch (Exception e) {
 					logger.error("Error while saving Upload FLag : ",e);
-					throw new Exception(ERROR_WHILE_SAVING_UPLOAD_FLAG_MSG);
+					throw new LoansException(ERROR_WHILE_SAVING_UPLOAD_FLAG_MSG);
 				}	
 			}
 			return response;
 		} catch (DocumentException e) {
 			logger.error("Error while uploading Corporate Other Documents : ",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 
 	}
 
 	@Override
-	public DocumentResponse getOtherDoc(DocumentRequest documentRequest) throws Exception {
+	public DocumentResponse getOtherDoc(DocumentRequest documentRequest) throws LoansException {
 		try {
 			return dmsClient.listProductDocument(documentRequest);
 		} catch (DocumentException e) {
 			logger.error("Error while getting Corporate Other Documents : ",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 
 	}
 
 	// New UBI Requirement
 		@Override
-		public Map<String, Map<String, Object>> getOtherDocReport(Long applicationId) throws Exception {
+		public Map<String, Map<String, Object>> getOtherDocReport(Long applicationId) throws LoansException {
 			try {
 				
 				Long userId = loanApplicationRepository.getUserIdByApplicationId(applicationId);
@@ -294,7 +295,7 @@ public class CorporateUploadServiceImpl implements CorporateUploadService {
 				return maps;
 			} catch (DocumentException e) {
 				logger.error("Error while getting Corporate Other Documents : ",e);
-				throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+				throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 			}
 
 		}
@@ -302,7 +303,7 @@ public class CorporateUploadServiceImpl implements CorporateUploadService {
 		
 	@Override
 	public void updateLoanApplicationFlag(Long applicantId, Long userId, int tabType, Boolean isFilled,
-			String filledCount) throws Exception {
+			String filledCount) throws LoansException {
 		logger.info("In updateLoanApplicationFlag service method");
 		logger.info("appId----------->" + applicantId + "------userId------->" + userId + 
 				"---------tabtype------->"+tabType + "--------isFilled------->" + isFilled +
@@ -330,7 +331,7 @@ public class CorporateUploadServiceImpl implements CorporateUploadService {
 			}
 		} catch (Exception e) {
 			logger.error("Error while updating Flag to loan_application_master for upload : ",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 	

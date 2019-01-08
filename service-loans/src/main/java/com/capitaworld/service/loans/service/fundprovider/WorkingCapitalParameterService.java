@@ -2,6 +2,7 @@ package com.capitaworld.service.loans.service.fundprovider;
 
 import java.util.List;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.corporate.WorkingCapitalParameterRequest;
 
 public interface WorkingCapitalParameterService {
@@ -11,7 +12,7 @@ public interface WorkingCapitalParameterService {
 	
 	public List<WorkingCapitalParameterRequest> getWorkingCapitalParameterListByUserId(Long id);
 	
-	public Boolean saveMasterFromTempWc(Long mappingId) throws Exception;
+	public Boolean saveMasterFromTempWc(Long mappingId) throws LoansException;
 
 	/**
 	 * @param capitalParameterRequest

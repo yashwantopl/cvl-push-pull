@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.config;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.model.PaymentRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
@@ -390,7 +391,7 @@ public class AsyncComponent {
 		}
 	}
 
-	private Map<String, Object> getFSMapData(Long userId, Long applicationId) throws Exception {
+	private Map<String, Object> getFSMapData(Long userId, Long applicationId) throws LoansException {
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		String fsName = loanApplicationService.getFsApplicantName(applicationId);
 		parameters.put(CommonUtils.PARAMETERS_FS_NAME, !CommonUtils.isObjectNullOrEmpty(fsName) ? fsName : "NA");

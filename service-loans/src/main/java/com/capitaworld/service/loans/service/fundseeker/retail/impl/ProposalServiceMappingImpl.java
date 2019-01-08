@@ -12,6 +12,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1433,12 +1434,12 @@ public class ProposalServiceMappingImpl implements ProposalService {
 	}
 
 	@Override
-	public ProposalMappingResponse updateAssignDetails(ProposalMappingRequest request) throws Exception {
+	public ProposalMappingResponse updateAssignDetails(ProposalMappingRequest request) throws LoansException {
 		try {
 			return proposalDetailsClient.updateAssignDetails(request);
 		} catch (Exception e) {
 			logger.error("Throw Exception while updating assign issue : ",e);
-			throw new Exception("Somethig went wrong");
+			throw new LoansException("Somethig went wrong");
 		}
 	}
 

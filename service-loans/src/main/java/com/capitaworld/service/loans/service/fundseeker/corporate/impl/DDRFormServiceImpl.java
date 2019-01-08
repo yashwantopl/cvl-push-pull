@@ -10,6 +10,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import com.capitaworld.service.loans.domain.fundseeker.ddr.*;
+import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.ddr.*;
 import com.capitaworld.service.loans.repository.fundseeker.ddr.*;
 import com.capitaworld.service.oneform.enums.*;
@@ -271,7 +272,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 	}
 
 	@Override
-	public void saveMergeDDR(DDRRequest dDRRequest) throws Exception {
+	public void saveMergeDDR(DDRRequest dDRRequest) throws LoansException {
 		Long userId = dDRRequest.getUserId();
 		try {
 			DDRFormDetails dDRFormDetails = ddrFormDetailsRepository.getByAppIdAndIsActive(dDRRequest.getApplicationId());
@@ -567,7 +568,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 					+ dDRFormDetails.getId());
 		} catch (Exception e) {
 			logger.error("DDR ===============> Throw Exception while saving ddr form : ",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
@@ -820,7 +821,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 	 */
 
 	@Override
-	public void saveDDRForm(DDRFormDetailsRequest ddrFormDetailsRequest) throws Exception {
+	public void saveDDRForm(DDRFormDetailsRequest ddrFormDetailsRequest) throws LoansException {
 
 		Long userId = ddrFormDetailsRequest.getUserId();
 
@@ -868,7 +869,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 					+ dDRFormDetails.getId());
 		} catch (Exception e) {
 			logger.error("DDR Throw Exception while saving ddr form : ",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 
 	}
@@ -3227,7 +3228,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 	}
 
 	@Override
-	public Long saveDocumentFLag(DocumentUploadFlagRequest documentUploadFlagRequest) throws Exception {
+	public Long saveDocumentFLag(DocumentUploadFlagRequest documentUploadFlagRequest) throws LoansException {
 		// DDRFormDetailsRequest
 		try {
 			DDRFormDetails dDRFormDetails = ddrFormDetailsRepository
@@ -3515,7 +3516,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 	 * isDDRApproved(java.lang.Long, java.lang.Long)
 	 */
 	@Override
-	public Boolean isDDRApproved(Long userId, Long applicationId) throws Exception {
+	public Boolean isDDRApproved(Long userId, Long applicationId) throws LoansException {
 		try {
 			LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId,
 					userId);
@@ -3527,7 +3528,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 			}
 		} catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
-			throw new Exception();
+			throw new LoansException(e);
 		}
 	}
 

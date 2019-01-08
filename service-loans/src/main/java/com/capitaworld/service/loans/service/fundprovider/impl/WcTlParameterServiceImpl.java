@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -438,7 +439,7 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 	 * @see com.capitaworld.service.loans.service.fundprovider.WcTlParameterService#saveMasterFromTempWcTl(java.lang.Long)
 	 */
 	@Override
-	public Boolean saveMasterFromTempWcTl(Long mappingId) throws Exception {
+	public Boolean saveMasterFromTempWcTl(Long mappingId) throws LoansException {
 		try {
 			WcTlParameterRequest temp =  getWcTlRequestTemp(mappingId,null,null);
 			
