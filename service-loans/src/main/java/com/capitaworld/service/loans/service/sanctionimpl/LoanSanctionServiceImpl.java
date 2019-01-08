@@ -175,14 +175,20 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 	public Integer saveSanctionDetailFromPopup(LoanSanctionRequest loanSanctionRequest) throws LoansException {
 		logger.info("Enter in saveSanctionDetailFromPopup() ----------------------------- sanctionRequest Data : "+ loanSanctionRequest.toString());
 		try {
-			//FIRST CHECK IF CURRENT PROPOSAL IS ELIGIBL FOR SANCTIONED OR NOT 
-			Integer status = offlineProcessedAppRepository.checkBeforeOfflineSanctioned(loanSanctionRequest.getApplicationId());
-			if(status == 4) {
-				loanSanctionRequest.setSanctionDate(new Date());
+			
+			if(loanSanctionRequest.getIsSanctionedFrom() == 2){
+				//FIRST CHECK IF CURRENT PROPOSAL IS ELIGIBL FOR SANCTIONED OR NOT 
+				Integer status = offlineProcessedAppRepository.checkBeforeOfflineSanctioned(loanSanctionRequest.getApplicationId());
+				if(status == 4) {
+					loanSanctionRequest.setSanctionDate(new Date());
+					Boolean result = saveLoanSanctionDetail(loanSanctionRequest);
+					return !result ? 0 : 4;
+				} else {
+					return status;	
+				}	
+			} else {
 				Boolean result = saveLoanSanctionDetail(loanSanctionRequest);
 				return !result ? 0 : 4;
-			} else {
-				return status;	
 			}
 			/*loanSanctionRequest.setSanctionDate(new Date());
 			return saveLoanSanctionDetail(loanSanctionRequest);*/
