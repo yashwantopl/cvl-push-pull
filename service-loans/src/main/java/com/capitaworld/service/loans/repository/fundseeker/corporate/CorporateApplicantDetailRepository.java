@@ -44,7 +44,8 @@ public interface CorporateApplicantDetailRepository extends JpaRepository<Corpor
 	@Query("from CorporateApplicantDetail cr where cr.applicationId.id =:applicationId and cr.applicationProposalMapping.proposalId =:proposalId and cr.isActive=true")
 	public CorporateApplicantDetail getByApplicationIdAndApplicationIdAndIsAtive(@Param("applicationId") Long applicationId,@Param("proposalId") Long proposalId);
 
-	public CorporateApplicantDetail findByApplicationIdIdAndIsActive(Long applicationId,Boolean isActive);
+	@Query("from CorporateApplicantDetail cr where cr.applicationId.id =:applicationId and cr.isActive=:isActive and cr.applicationProposalMapping.proposalId=NULL")
+	public CorporateApplicantDetail findByApplicationIdIdAndIsActive(@Param("applicationId") Long applicationId,@Param("isActive") Boolean isActive);
 
 	@Query("select count(cr.applicationId.id) from CorporateApplicantDetail cr where cr.applicationId.id =:applicationId and cr.applicationId.userId =:userId and cr.isActive=true and (cr.organisationName != NULL and cr.organisationName != '')")
 	public Long hasAlreadyApplied(@Param("userId") Long userId,
