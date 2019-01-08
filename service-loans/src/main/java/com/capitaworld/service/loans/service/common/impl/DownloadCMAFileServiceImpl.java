@@ -152,8 +152,8 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 					operatingStatementDetails.setYear(String.valueOf(yearList.get(0)-2));
 					operatingStatementDetailsList.add(operatingStatementDetails);
 				}
-				Collections.sort(operatingStatementDetailsList, new OperatingStatementComparator());
 			}
+			Collections.sort(operatingStatementDetailsList, new OperatingStatementComparator());
 
 			//------------------------------- END FOR FIX FIRST THREE ROW IN EXCEL SHEET
 
@@ -442,8 +442,8 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 					assetsDetails.setYear(String.valueOf(assetYearList.get(0)-2));
 					assetsDetailsList.add(assetsDetails);
 				}
-				Collections.sort(assetsDetailsList, new AssetComparator());
 			}
+			Collections.sort(assetsDetailsList, new AssetComparator());
 
 			//------------------------------- END FOR FIX FIRST THREE ROW IN EXCEL SHEET
 
