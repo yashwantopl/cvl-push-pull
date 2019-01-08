@@ -52,6 +52,10 @@ public class NhbsApplicationsResponse implements Serializable{
 	
 	private String mcaStatus;
 	
+	private Integer productId;
+	
+	private Boolean isFinalLocked;
+	
 	
 	public int getDdrStatusId() {
 		return ddrStatusId;
@@ -299,6 +303,22 @@ public class NhbsApplicationsResponse implements Serializable{
 
 	public void setProductName(String productName) {
 		this.productName = productName;
+	}
+
+	public Integer getProductId() {
+		return productId;
+	}
+
+	public Boolean getIsFinalLocked() {
+		return isFinalLocked;
+	}
+
+	public void setProductId(Integer productId) {
+		this.productId = productId;
+	}
+
+	public void setIsFinalLocked(Boolean isFinalLocked) {
+		this.isFinalLocked = isFinalLocked;
 	}
 
 	
