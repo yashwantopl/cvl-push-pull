@@ -1939,6 +1939,14 @@ public class LoanApplicationController {
 				response.setData(true);
 				response.setMessage("Updated Successfully");
 				response.setStatus(HttpStatus.OK.value());
+				if(loanSanctionRequest.getIsSanctionedFrom() != 2){
+					ProposalMappingRequest proposalMappingRequest = new ProposalMappingRequest();
+					proposalMappingRequest.setId(loanSanctionRequest.getProposalId());
+					proposalMappingRequest.setProposalStatusId(loanSanctionRequest.getProposalStatusId());
+					proposalMappingRequest.setLastActionPerformedBy(userType);
+					proposalMappingRequest.setUserId(userId);
+					proposalDetailsClient.changeStatus(proposalMappingRequest);	
+				}
 			} else if (result == 1) {
 				response.setData(false);
 				response.setMessage("The said borrower has already receive in-principle approval through online journey, hence the same proposal can not be sanctioned through offline mode");
