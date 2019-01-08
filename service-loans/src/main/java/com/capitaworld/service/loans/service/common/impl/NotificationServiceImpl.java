@@ -146,6 +146,8 @@ public class NotificationServiceImpl implements NotificationService{
 					int fsType = CommonUtils.getUserMainType(fsProdId);
 					String fsName = loanApplicationService.getFsApplicantName(applicationId);
 					parameters.put("fs_name", fsName != null ? fsName : "NA");
+					parameters.put("application_id", fsName != null ? applicationId : "NA");
+					
 				} catch (Exception e) {
 					logger.error("Exception in getting name of fs : ",e);
 					parameters.put("fs_name", "NA");
