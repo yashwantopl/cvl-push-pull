@@ -216,7 +216,7 @@ public class CorporateUploadController {
 			}
 			DocumentResponse response = dmsClient.listProductDocument(documentRequest);
 			// used in front end to download mca fianancial Data and set it in loans response in data.
-		/*	LoanApplicationMaster loanApplicationMaster=loanApplicationRepo.getMcaCin(documentRequest.getApplicationId());*/
+			LoanApplicationMaster loanApplicationMaster=loanApplicationRepo.getMcaCin(documentRequest.getApplicationId());
 			
 			if (response != null && response.getStatus() == 200) {
 				logger.info("File Uploaded SuccessFully -->");
@@ -232,7 +232,7 @@ public class CorporateUploadController {
 				}
 				finalResponse = new LoansResponse(response.getMessage(), response.getStatus());
 				finalResponse.setListData(response.getDataList());
-				/*finalResponse.setData(loanApplicationMaster.getMcaCompanyId());*/
+				finalResponse.setData(loanApplicationMaster.getMcaCompanyId());
 				CommonDocumentUtils.endHook(logger, "getExcelDocList");
 				return new ResponseEntity<LoansResponse>(finalResponse, HttpStatus.OK);
 			} else {
