@@ -526,7 +526,7 @@ public class ScoringServiceImpl implements ScoringService {
                         case ScoreParameter.Retail.DAY_PAST_DUE_PL: {
                             try {
 
-                                CibilResponse cibilResponse = cibilClient.getDPDLastXMonth(applicationId,retailApplicantDetail.getPan(),null);
+                                CibilResponse cibilResponse = cibilClient.getDPDLastXMonth(applicationId,retailApplicantDetail.getPan());
                                 if (!CommonUtils.isObjectNullOrEmpty(cibilResponse) && !CommonUtils.isListNullOrEmpty(cibilResponse.getListData())) {
                                     List<Integer> listDPD = (List<Integer>) cibilResponse.getListData();
 
@@ -941,7 +941,7 @@ public class ScoringServiceImpl implements ScoringService {
                             case ScoreParameter.Retail.DAY_PAST_DUE_PL: {
                                 try {
 
-                                    CibilResponse cibilResponse = cibilClient.getDPDLastXMonth(applicationId,retailApplicantDetail.getPan(),null);
+                                    CibilResponse cibilResponse = cibilClient.getDPDLastXMonth(applicationId,retailApplicantDetail.getPan());
                                     if (!CommonUtils.isObjectNullOrEmpty(cibilResponse) && !CommonUtils.isListNullOrEmpty(cibilResponse.getListData())) {
                                         List<Integer> listDPD = (List<Integer>) cibilResponse.getListData();
 
