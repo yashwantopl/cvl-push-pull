@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.config;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.model.PaymentRequest;
 import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
@@ -390,7 +391,7 @@ public class AsyncComponent {
 		}
 	}
 
-	private Map<String, Object> getFSMapData(Long userId, Long applicationId) throws Exception {
+	private Map<String, Object> getFSMapData(Long userId, Long applicationId) throws LoansException {
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		String fsName = loanApplicationService.getFsApplicantName(applicationId);
 		parameters.put(CommonUtils.PARAMETERS_FS_NAME, !CommonUtils.isObjectNullOrEmpty(fsName) ? fsName : "NA");
@@ -456,8 +457,7 @@ public class AsyncComponent {
 			}
 			Long userId = loanApplicationService.getUserIdByApplicationId(applicationId);
 			UserResponse response = usersClient.checkUserUnderSp(userId);
-			if (!CommonUtils.isObjectNullOrEmpty(response)) {
-				if (!(Boolean) response.getData()) {
+			if (!CommonUtils.isObjectNullOrEmpty(response) && !(Boolean) response.getData() ) {
 					UserResponse userResponse = usersClient.getEmailAndNameByUserId(userId);
 					if (!CommonUtils.isObjectNullOrEmpty(userResponse.getData())) {
 						UsersRequest request = MultipleJSONObjectHelper.getObjectFromMap(
@@ -546,7 +546,6 @@ public class AsyncComponent {
 							}
 						}
 					}
-				}
 			}
 		} catch (Exception e) {
 			logger.error(THROW_EXCEPTION_WHILE_SENDING_MAIL_PRIMARY_COMPLETE,e);
@@ -868,7 +867,7 @@ public class AsyncComponent {
 			logger.error("Throw exception while sending final lock mail : ",e);
 		}
 
-	};
+	}
 
 	/**
 	 * 

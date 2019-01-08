@@ -2,7 +2,6 @@ package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -318,7 +317,12 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		DecimalFormat decim = new DecimalFormat("####");
 		Long userId = loanApplicationRepository.getUserIdByApplicationId(applicationId);
 		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId, userId);
-		map.put("date",!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getApprovedDate())? CommonUtils.DATE_FORMAT.format(loanApplicationMaster.getApprovedDate()):"-");
+		if(loanApplicationMaster != null) {
+			map.put("applicationCode", loanApplicationMaster.getApplicationCode());
+			map.put("date",!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getApprovedDate())? CommonUtils.DATE_FORMAT.format(loanApplicationMaster.getApprovedDate()):"-");
+			map.put("isMcqSkipped", loanApplicationMaster.getIsMcqSkipped() != null ? loanApplicationMaster.getIsMcqSkipped() : false);
+		}
+		
 		CorporateApplicantRequest corporateApplicantRequest =corporateApplicantService.getCorporateApplicant(applicationId);
 		UserResponse userResponse = usersClient.getEmailMobile(userId);
 		if(userResponse!= null) {
@@ -1136,7 +1140,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		
 /**********************************************FINAL DETAILS*****************************************************/
 		
-		if(isFinalView) {
+		if(isFinalView && loanApplicationMaster.getIsMcqSkipped() == false) {
 			//FITCH DATA
 			try {
 				//proposalMappingRequestString.getId()
@@ -1240,9 +1244,16 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			}
 			
 			//SHARE PRICE
-			CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository.getByApplicationAndUserId(userId, applicationId);
-			map.put("sharePriceFace", CommonUtils.convertValue(corporateApplicantDetail.getSharePriceFace()));
-			map.put("sharePriceMarket", CommonUtils.convertValue(corporateApplicantDetail.getSharePriceMarket()));
+			try {
+				CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository.getByApplicationAndUserId(userId, applicationId);
+				if(corporateApplicantDetail != null) {
+					map.put("sharePriceFace", CommonUtils.convertValue(corporateApplicantDetail.getSharePriceFace()));
+					map.put("sharePriceMarket", CommonUtils.convertValue(corporateApplicantDetail.getSharePriceMarket()));
+				}
+				
+			}catch (Exception e) {
+				logger.error(CommonUtils.EXCEPTION,e);
+			}
 			
 			//DETAILS OF GUARANTER
 			try {

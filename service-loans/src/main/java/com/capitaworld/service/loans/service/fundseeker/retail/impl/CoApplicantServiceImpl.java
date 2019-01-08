@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.retail.*;
 import com.capitaworld.service.oneform.enums.*;
 import org.slf4j.Logger;
@@ -92,7 +93,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 	private OneFormClient oneFormClient;
 
 	@Override
-	public boolean save(CoApplicantRequest applicantRequest, Long applicationId, Long userId) throws Exception {
+	public boolean save(CoApplicantRequest applicantRequest, Long applicationId, Long userId) throws LoansException {
 		try {
 			Long finalUserId = CommonUtils.isObjectNullOrEmpty(applicantRequest.getClientId()) ? userId
 					: applicantRequest.getClientId();
@@ -137,11 +138,9 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 					loanApplicationRepository.setIsCoAppOneProfileMandatoryFilled(applicationId, finalUserId,
 							applicantRequest.getIsCoApp1DetailsFilled());
 				}
-			} else if (index == 1) {
-				if (!CommonUtils.isObjectNullOrEmpty(applicantRequest.getIsCoApp2DetailsFilled())) {
+			} else if (index == 1 && !CommonUtils.isObjectNullOrEmpty(applicantRequest.getIsCoApp2DetailsFilled())) {
 					loanApplicationRepository.setIsCoAppTwoProfileMandatoryFilled(applicationId, finalUserId,
 							applicantRequest.getIsCoApp2DetailsFilled());
-				}
 			}
 
 			// Updating Bowl Count
@@ -151,22 +150,22 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 
 		} catch (Exception e) {
 			logger.error("Error while Saving Retail Profile :- ",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
-	public List<Long> getCoAppIds(Long userId, Long applicationId) throws Exception {
+	public List<Long> getCoAppIds(Long userId, Long applicationId) throws LoansException {
 		try {
 			return coApplicantDetailRepository.getCoAppIds(applicationId, userId);
 		} catch (Exception e) {
 			logger.error("Error while getCoAppIds :- ",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
-	public CoApplicantRequest get(Long userId, Long applicationId, Long id) throws Exception {
+	public CoApplicantRequest get(Long userId, Long applicationId, Long id) throws LoansException {
 		try {
 			CoApplicantDetail applicantDetail = coApplicantDetailRepository.get(applicationId, userId, id);
 			if (applicantDetail == null) {
@@ -195,13 +194,13 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 			return applicantRequest;
 		} catch (Exception e) {
 			logger.error("Error while getting CoApplicant Retail Profile :- ",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 
 	}
 
 	@Override
-	public List<CoApplicantRequest> getList(Long applicationId, Long userId) throws Exception {
+	public List<CoApplicantRequest> getList(Long applicationId, Long userId) throws LoansException {
 		try {
 			List<CoApplicantDetail> details = coApplicantDetailRepository.getList(applicationId, userId);
 			List<CoApplicantRequest> requests = new ArrayList<>(details.size());
@@ -223,12 +222,12 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 			return requests;
 		} catch (Exception e) {
 			logger.error("Error while getting List of CoApplicant Retail Profile :- ",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
-	public boolean saveFinal(FinalCommonRetailRequestOld applicantRequest, Long userId) throws Exception {
+	public boolean saveFinal(FinalCommonRetailRequestOld applicantRequest, Long userId) throws LoansException {
 		try {
 			Long finalUserId = (CommonUtils.isObjectNullOrEmpty(applicantRequest.getClientId()) ? userId
 					: applicantRequest.getClientId());
@@ -251,11 +250,9 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 					loanApplicationRepository.setIsCoAppOneFinalMandatoryFilled(applicantRequest.getApplicationId(),
 							finalUserId, applicantRequest.getIsCoApp1FinalFilled());
 				}
-			} else if (index == 1) {
-				if (!CommonUtils.isObjectNullOrEmpty(applicantRequest.getIsCoApp2FinalFilled())) {
+			} else if (index == 1 && !CommonUtils.isObjectNullOrEmpty(applicantRequest.getIsCoApp2FinalFilled())) {
 					loanApplicationRepository.setIsCoAppTwoFinalMandatoryFilled(applicantRequest.getApplicationId(),
 							finalUserId, applicantRequest.getIsCoApp2FinalFilled());
-				}
 			}
 			// Updating Final Count
 			loanApplicationRepository.setFinalFilledCount(applicantRequest.getApplicationId(), finalUserId,
@@ -265,12 +262,12 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 
 		} catch (Exception e) {
 			logger.error("Error while Saving Final CoApplicant Retail Profile :- ",e);
-			throw new Exception("Something went Wrong !");
+			throw new LoansException("Something went Wrong !");
 		}
 	}
 
 	@Override
-	public FinalCommonRetailRequestOld getFinal(Long userId, Long applicationId, Long id) throws Exception {
+	public FinalCommonRetailRequestOld getFinal(Long userId, Long applicationId, Long id) throws LoansException {
 		try {
 			CoApplicantDetail applicantDetail = coApplicantDetailRepository.get(applicationId, userId, id);
 			if (applicantDetail == null) {
@@ -285,7 +282,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 			return applicantRequest;
 		} catch (Exception e) {
 			logger.error("Error while getting Final CoApplicant Retail Profile :- ",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
@@ -374,7 +371,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 
 	@Override
 	public List<RetailProfileViewResponse> getCoApplicantPLResponse(Long applicantId, Long userId, int productId)
-			throws Exception {
+			throws LoansException {
 		try {
 			List<CoApplicantDetail> coApplicantDetails = coApplicantDetailRepository.getList(applicantId, userId);
 			if (coApplicantDetails != null && !coApplicantDetails.isEmpty()) {
@@ -706,13 +703,13 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 				return null;
 			}
 		} catch (Exception e) {
-			throw new Exception("Error Occured while fetching CoApplicant Details");
+			throw new LoansException("Error Occured while fetching CoApplicant Details");
 		}
 	}
 
 	@Override
 	public List<RetailFinalViewCommonResponse> getCoApplicantFinalResponse(Long applicantId, Long userId, int productId)
-			throws Exception {
+			throws LoansException {
 		try {
 			List<CoApplicantDetail> coApplicantDetails = coApplicantDetailRepository.getList(applicantId, userId);
 			if (coApplicantDetails != null && !coApplicantDetails.isEmpty()) {
@@ -746,8 +743,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 									? coApplicantDetail.getFatherName() : null);
 					finalViewResponse.setMotherName(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getMotherName())
 							? coApplicantDetail.getMotherName() : null);
-					if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getStatusId())) {
-						if (coApplicantDetail.getStatusId() == 2) {
+					if (!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getStatusId()) && coApplicantDetail.getStatusId() == 2 ) {
 							finalViewResponse
 									.setSpouseName(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getSpouseName())
 											? coApplicantDetail.getSpouseName() : null);
@@ -757,7 +753,6 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 							finalViewResponse
 									.setNoOfChildren(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getNoChildren())
 											? coApplicantDetail.getNoChildren().toString() : null);
-						}
 					}
 					finalViewResponse
 							.setNoOfDependents(!CommonUtils.isObjectNullOrEmpty(coApplicantDetail.getNoDependent())
@@ -1017,7 +1012,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 								DocumentAlias.HOME_LOAN_CO_APPLICANT_ADDRESS_PROOF));
 						finalViewResponse.setCoApplicant_IncomeProof(documentManagementService.getDocumentDetails(
 								coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
-								DocumentAlias.HOME_LOAN_CO_APPLICANT_INCOME_PROOF_OF_ENTITY___INCOME_TAX_RETURN_FOR_LAST_2_YEARS));
+								DocumentAlias.HOME_LOAN_CO_APPLICANT_INCOME_PROOF_OF_ENTITY_INCOME_TAX_RETURN_FOR_LAST_2_YEARS));
 						finalViewResponse.setCoApplicant_CropCultivation(documentManagementService.getDocumentDetails(
 								coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
 								DocumentAlias.HOME_LOAN_CO_APPLICANT_CROP_CULTIVATION_SHOWING_CROPPING_PATTERN_LAND_HOLDING_WITH_PHOTOGRAPH));
@@ -1043,7 +1038,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 								DocumentAlias.PERSONAL_LOAN_CO_APPLICANT_INCOME_TAX_RETURNS_OR_FORM_16_FOR_THE_LAST_2_YEARS));
 						finalViewResponse.setCoApplicant_BalanceSheet(documentManagementService.getDocumentDetails(
 								coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
-								DocumentAlias.PERSONAL_LOAN_CO_APPLICANT_AUDITED_UNAUDITED_BALANCE_SHEET_PROFIT__LOSS_STATEMENT_FOR_3_YEARS));
+								DocumentAlias.PERSONAL_LOAN_CO_APPLICANT_AUDITED_UNAUDITED_BALANCE_SHEET_PROFIT_LOSS_STATEMENT_FOR_3_YEARS));
 						finalViewResponse.setCoApplicant_AddressProof(documentManagementService.getDocumentDetails(
 								coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
 								DocumentAlias.PERSONAL_LOAN_CO_APPLICANT_ADDRESS_PROOF_ELECTRICITY_BILL_ADHAR_CARD_VOTER_ID_CARDANY_1));
@@ -1052,10 +1047,10 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 								DocumentAlias.PERSONAL_LOAN_CO_APPLICANT_INCOME_PROOF_OF_ENTITY_INCOME_TAX_RETURN_FOR_LAST_2_YEARS));
 						finalViewResponse.setCoApplicant_CropCultivation(documentManagementService.getDocumentDetails(
 								coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
-								DocumentAlias.PERSONAL_LOAN_CO_APPLICANT_CROP_CULTIVATION_SHOWING_CROPPING_PATTERN__LAND_HOLDING_WITH_PHOTOGRAPH));
+								DocumentAlias.PERSONAL_LOAN_CO_APPLICANT_CROP_CULTIVATION_SHOWING_CROPPING_PATTERN_LAND_HOLDING_WITH_PHOTOGRAPH));
 						finalViewResponse.setCoApplicant_AlliedActivities(documentManagementService.getDocumentDetails(
 								coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
-								DocumentAlias.PERSONAL_LOAN_CO_APPLICANT_DOCUMENTARY_PROOF_OF_ALLIED_AGRICULTURAL_ACTIVITIES_DAIRY__POULTRY__PLANTATION__HORTICULTURE));
+								DocumentAlias.PERSONAL_LOAN_CO_APPLICANT_DOCUMENTARY_PROOF_OF_ALLIED_AGRICULTURAL_ACTIVITIES_DAIRY_POULTRY_PLANTATION_HORTICULTURE));
 						break;
 					case 12:// CAR_LOAN
 						finalViewResponse.setCoApplicant_panCardList(documentManagementService.getDocumentDetails(
@@ -1081,7 +1076,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 								DocumentAlias.CAR_LOAN_CO_APPLICANT_ADDRESS_PROOF));
 						finalViewResponse.setCoApplicant_IncomeProof(documentManagementService.getDocumentDetails(
 								coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
-								DocumentAlias.CAR_LOAN_CO_APPLICANT_INCOME_PROOF_OF_ENTITY___INCOME_TAX_RETURN_FOR_LAST_2_YEARS));
+								DocumentAlias.CAR_LOAN_CO_APPLICANT_INCOME_PROOF_OF_ENTITY_INCOME_TAX_RETURN_FOR_LAST_2_YEARS));
 						finalViewResponse.setCoApplicant_CropCultivation(documentManagementService.getDocumentDetails(
 								coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
 								DocumentAlias.CAR_LOAN_CO_APPLICANT_CROP_CULTIVATION_SHOWING_CROPPING_PATTERN_LAND_HOLDING_WITH_PHOTOGRAPH));
@@ -1119,7 +1114,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 								DocumentAlias.LAP_LOAN_CO_APPLICANT_CROP_CULTIVATION_SHOWING_CROPPING_PATTERN_LAND_HOLDING_WITH_PHOTOGRAPH));
 						finalViewResponse.setCoApplicant_AlliedActivities(documentManagementService.getDocumentDetails(
 								coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
-								DocumentAlias.LAP_LOAN_CO_APPLICANT_DOCUMENTARY_PROOF_OF_ALLIED_AGRICULTURAL_ACTIVITIES_DAIRY__POULTRY__PLANTATION__HORTICULTURE));
+								DocumentAlias.LAP_LOAN_CO_APPLICANT_DOCUMENTARY_PROOF_OF_ALLIED_AGRICULTURAL_ACTIVITIES_DAIRY_POULTRY_PLANTATION_HORTICULTURE));
 						break;
 					case 14:// LOAN_AGAINST_SHARES_AND_SECUIRITIES
 						finalViewResponse.setCoApplicant_panCardList(documentManagementService.getDocumentDetails(
@@ -1151,7 +1146,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 								DocumentAlias.LAS_LOAN_CO_APPLICANT_CROP_CULTIVATION_SHOWING_CROPPING_PATTERN_LAND_HOLDING_WITH_PHOTOGRAPH));
 						finalViewResponse.setCoApplicant_AlliedActivities(documentManagementService.getDocumentDetails(
 								coApplicantDetail.getId(), DocumentAlias.UERT_TYPE_CO_APPLICANT,
-								DocumentAlias.LAS_LOAN_CO_APPLICANT_DOCUMENTARY_PROOF_OF_ALLIED_AGRICULTURAL_ACTIVITIES_DAIRY__POULTRY__PLANTATION_HORTICULTURE));
+								DocumentAlias.LAS_LOAN_CO_APPLICANT_DOCUMENTARY_PROOF_OF_ALLIED_AGRICULTURAL_ACTIVITIES_DAIRY_POULTRY_PLANTATION_HORTICULTURE));
 						break;
 					default : break;
 					}
@@ -1164,17 +1159,17 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 				return null;
 			}
 		} catch (Exception e) {
-			throw new Exception("Error Occured while fetching CoApplicant Final Details");
+			throw new LoansException("Error Occured while fetching CoApplicant Final Details");
 		}
 	}
 
 	@Override
-	public Long getApplicantIdById(Long id) throws Exception {
+	public Long getApplicantIdById(Long id) throws LoansException {
 		try {
 			return coApplicantDetailRepository.getApplicantIdById(id);
 		} catch (Exception e) {
 			logger.error("Error While getting Applicant Id by CoApplicant ID : ",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 

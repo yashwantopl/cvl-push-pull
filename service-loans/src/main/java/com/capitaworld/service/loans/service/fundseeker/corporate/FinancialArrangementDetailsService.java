@@ -2,6 +2,7 @@ package com.capitaworld.service.loans.service.fundseeker.corporate;
 
 import java.util.List;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.FrameRequest;
 
@@ -11,13 +12,13 @@ import com.capitaworld.service.loans.model.FrameRequest;
  */
 public interface FinancialArrangementDetailsService {
 
-	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception;
+	public Boolean saveOrUpdate(FrameRequest frameRequest) throws LoansException;
 
-	public List<FinancialArrangementsDetailRequest> getFinancialArrangementDetailsList(Long id,Long userId) throws Exception;
+	public List<FinancialArrangementsDetailRequest> getFinancialArrangementDetailsList(Long id,Long userId) throws LoansException;
 	
 	public List<FinancialArrangementsDetailRequest> getManuallyAddedFinancialArrangementDetailsList(Long applicationId);
 
-	public List<FinancialArrangementsDetailRequest> getFinancialArrangementDetailsListDirId(Long id,Long dirId) throws Exception;
+	public List<FinancialArrangementsDetailRequest> getFinancialArrangementDetailsListDirId(Long id,Long dirId) throws LoansException;
 	
 	public Boolean saveOrUpdate(List<FinancialArrangementsDetailRequest> existingLoanDetailRequest,Long applicationId,Long userId);
 	

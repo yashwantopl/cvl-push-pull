@@ -99,4 +99,13 @@ public class CorporateMcqServiceImpl implements CorporateMcqService {
             throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
         }
     }
+
+	@Override
+	public boolean skipMcq(CorporateMcqRequest corporateMcqRequest, Long userId) throws Exception {
+        Long finalUserId = (CommonUtils.isObjectNullOrEmpty(corporateMcqRequest.getClientId()) ? userId : corporateMcqRequest.getClientId());
+       
+        loanApplicationRepository.setIsMcqSkipped(corporateMcqRequest.getApplicationId(), finalUserId, CommonUtils.isObjectNullOrEmpty(corporateMcqRequest.getIsMcqSkipped()) ? false : corporateMcqRequest.getIsMcqSkipped());
+        
+        return true;
+	}
 }

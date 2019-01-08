@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -35,12 +36,13 @@ public class FinancialArrangementDetailsServiceImpl implements FinancialArrangem
 	private static final Logger logger = LoggerFactory.getLogger(SecurityCorporateDetailsServiceImpl.class);
 
 	private static final String EXCEPTION_IN_SAVE_FINANCIAL_ARRANGEMENTS_DETAIL_MSG = "Exception in save financialArrangementsDetail :-";
+	private static final String FOR_APPLICATION_ID_MSG = " For Application Id=====>{}";
 
 	@Autowired
 	private FinancialArrangementDetailsRepository financialArrangementDetailsRepository;
 
 	@Override
-	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception {
+	public Boolean saveOrUpdate(FrameRequest frameRequest) throws LoansException {
 		try {
 			for (Map<String, Object> obj : frameRequest.getDataList()) {
 				FinancialArrangementsDetailRequest financialArrangementsDetailRequest = (FinancialArrangementsDetailRequest) MultipleJSONObjectHelper
@@ -66,20 +68,20 @@ public class FinancialArrangementDetailsServiceImpl implements FinancialArrangem
 
 		catch (Exception e) {
 			logger.error(EXCEPTION_IN_SAVE_FINANCIAL_ARRANGEMENTS_DETAIL_MSG,e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
 	public List<FinancialArrangementsDetailRequest> getFinancialArrangementDetailsList(Long id, Long userId)
-			throws Exception {
+			throws LoansException {
 		try {
 			return prepareObject(financialArrangementDetailsRepository.listSecurityCorporateDetailFromAppId(id));
 		}
 
 		catch (Exception e) {
 			logger.error(EXCEPTION_IN_SAVE_FINANCIAL_ARRANGEMENTS_DETAIL_MSG,e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 	
@@ -148,10 +150,10 @@ public class FinancialArrangementDetailsServiceImpl implements FinancialArrangem
 	@Override
 	public FinancialArrangementsDetailRequest getTotalEmiAndSanctionAmountByApplicationId(Long applicationId) {
 		Double totalEmi = financialArrangementDetailsRepository.getTotalEmiByApplicationId(applicationId);
-		logger.info("getTotalOfEmiByApplicationId=====>" + totalEmi + " For Application Id=====>{}", applicationId);		
+		logger.info("getTotalOfEmiByApplicationId=====>" + totalEmi + FOR_APPLICATION_ID_MSG, applicationId);
 		List<String> loanTypes = Arrays.asList(new String[]{"cash credit","overdraft"});
 		Double existingLimits = financialArrangementDetailsRepository.getExistingLimits(applicationId, loanTypes);
-		logger.info("existingLimits=====>" + existingLimits + " For Application Id=====>{}", applicationId);
+		logger.info("existingLimits=====>" + existingLimits + FOR_APPLICATION_ID_MSG, applicationId);
 		FinancialArrangementsDetailRequest arrangementsDetailRequest = new FinancialArrangementsDetailRequest();
 		arrangementsDetailRequest.setAmount(existingLimits);
 		arrangementsDetailRequest.setEmi(totalEmi);
@@ -161,9 +163,9 @@ public class FinancialArrangementDetailsServiceImpl implements FinancialArrangem
 	@Override
 	public FinancialArrangementsDetailRequest getTotalEmiAndSanctionAmountByApplicationIdForUniforProduct(Long applicationId) {
 		Double totalEmi = financialArrangementDetailsRepository.getTotalEmiByApplicationIdForUniformProduct(applicationId);
-		logger.info("getTotalOfEmiByApplicationId for Uniform Product=====>" + totalEmi + " For Application Id=====>{}", applicationId);		
+		logger.info("getTotalOfEmiByApplicationId for Uniform Product=====>" + totalEmi + FOR_APPLICATION_ID_MSG, applicationId);
 		Double existingLimits = financialArrangementDetailsRepository.getExistingLimitsForUniformProduct(applicationId);
-		logger.info("existingLimits for Uniform Product=====>" + existingLimits + " For Application Id=====>{}", applicationId);
+		logger.info("existingLimits for Uniform Product=====>" + existingLimits + FOR_APPLICATION_ID_MSG, applicationId);
 		FinancialArrangementsDetailRequest arrangementsDetailRequest = new FinancialArrangementsDetailRequest();
 		arrangementsDetailRequest.setAmount(existingLimits);
 		arrangementsDetailRequest.setEmi(totalEmi);
@@ -181,13 +183,13 @@ public class FinancialArrangementDetailsServiceImpl implements FinancialArrangem
 	 * @see com.capitaworld.service.loans.service.fundseeker.corporate.FinancialArrangementDetailsService#getFinancialArrangementDetailsListDirId(java.lang.Long, java.lang.Long)
 	 */
 	@Override
-	public List<FinancialArrangementsDetailRequest> getFinancialArrangementDetailsListDirId(Long dirId, Long id) throws Exception {
+	public List<FinancialArrangementsDetailRequest> getFinancialArrangementDetailsListDirId(Long dirId, Long id) throws LoansException {
 		try {
 			return prepareObject(financialArrangementDetailsRepository.findByDirectorBackgroundDetailIdAndApplicationIdIdAndIsActive(dirId,id,true));
 		}
 		catch (Exception e) {
 			logger.error(EXCEPTION_IN_SAVE_FINANCIAL_ARRANGEMENTS_DETAIL_MSG,e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 	

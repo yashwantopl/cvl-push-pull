@@ -2,7 +2,6 @@ package com.capitaworld.service.loans.model;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 
 public class NhbsApplicationsResponse implements Serializable{
 
@@ -52,6 +51,10 @@ public class NhbsApplicationsResponse implements Serializable{
 	private int ddrStatusId;
 	
 	private String mcaStatus;
+	
+	private Integer productId;
+	
+	private Boolean isFinalLocked;
 	
 	
 	public int getDdrStatusId() {
@@ -300,6 +303,22 @@ public class NhbsApplicationsResponse implements Serializable{
 
 	public void setProductName(String productName) {
 		this.productName = productName;
+	}
+
+	public Integer getProductId() {
+		return productId;
+	}
+
+	public Boolean getIsFinalLocked() {
+		return isFinalLocked;
+	}
+
+	public void setProductId(Integer productId) {
+		this.productId = productId;
+	}
+
+	public void setIsFinalLocked(Boolean isFinalLocked) {
+		this.isFinalLocked = isFinalLocked;
 	}
 
 	

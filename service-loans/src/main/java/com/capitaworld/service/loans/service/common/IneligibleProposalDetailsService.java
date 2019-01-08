@@ -1,11 +1,8 @@
 package com.capitaworld.service.loans.service.common;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import com.capitaworld.service.loans.model.InEligibleProposalDetailsRequest;
-import com.capitaworld.service.loans.model.LoanApplicationRequest;
 import com.capitaworld.service.loans.model.ProposalDetailsAdminRequest;
 
 /**
@@ -13,7 +10,7 @@ import com.capitaworld.service.loans.model.ProposalDetailsAdminRequest;
  */
 public interface IneligibleProposalDetailsService {
 
-	public Boolean save(InEligibleProposalDetailsRequest inEligibleProposalDetailsRequest);
+	public Integer save(InEligibleProposalDetailsRequest inEligibleProposalDetailsRequest);
 
 	public Boolean sendMailToFsAndBankBranch(Long applicationId, Long branchId, Long userOrgId);
 

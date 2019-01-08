@@ -9,6 +9,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.transaction.Transactional;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -20,7 +21,6 @@ import org.springframework.stereotype.Service;
 import com.capitaworld.service.loans.config.AuditComponentBankToCW;
 import com.capitaworld.service.loans.config.FPAsyncComponent;
 import com.capitaworld.service.loans.domain.BankCWAuditTrailDomain;
-import com.capitaworld.service.loans.domain.fundseeker.IneligibleProposalDetails;
 import com.capitaworld.service.loans.domain.sanction.LoanSanctionDomain;
 import com.capitaworld.service.loans.model.LoanSanctionRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
@@ -89,22 +89,28 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 	private OfflineProcessedAppRepository offlineProcessedAppRepository;
 
 	@Override
-	public Boolean saveLoanSanctionDetail(LoanSanctionRequest loanSanctionRequest) throws Exception {
+	public Boolean saveLoanSanctionDetail(LoanSanctionRequest loanSanctionRequest) throws LoansException {
 		try {
 		logger.info("Enter in saveLoanSanctionDetail() ----------------------->  LoanSanctionRequest==> "+ loanSanctionRequest);
 		
 		LoanSanctionDomain loanSanctionDomainOld =loanSanctionRepository.findByAppliationId(loanSanctionRequest.getApplicationId());
 		if(CommonUtils.isObjectNullOrEmpty(loanSanctionDomainOld) ) {
 			loanSanctionDomainOld = new LoanSanctionDomain();
+			BeanUtils.copyProperties(loanSanctionRequest, loanSanctionDomainOld,"id");
 			loanSanctionDomainOld.setOrgId(!CommonUtils.isObjectNullOrEmpty(loanSanctionRequest.getOrgId()) ? loanSanctionRequest.getOrgId() : null);
 			if(loanSanctionRequest.getIsIneligibleProposal() != null && loanSanctionRequest.getIsIneligibleProposal() == true) {
 				loanSanctionDomainOld.setIsSanctionedFrom(loanSanctionRequest.getIsSanctionedFrom());
-				IneligibleProposalDetails ineligibleProposalDetails = (IneligibleProposalDetails) offlineProcessedAppRepository.findByAppliationId(loanSanctionRequest.getApplicationId());
-				ineligibleProposalDetails.setIsSanctioned(true);
-			}else if(CommonUtils.isObjectNullOrEmpty(loanSanctionRequest.getIsIneligibleProposal()) || loanSanctionRequest.getIsIneligibleProposal() == false) {
+				/*IneligibleProposalDetails ineligibleProposalDetails = (IneligibleProposalDetails) offlineProcessedAppRepository.findByAppliationId(loanSanctionRequest.getApplicationId());
+				ineligibleProposalDetails.setIsSanctioned(true);*/
+				//update sanctioned is true flag in ineligible proposal table
+				Long userId = null;
+				if(!CommonUtils.isObjectNullOrEmpty(loanSanctionRequest.getActionBy())) {
+					userId = Long.valueOf(loanSanctionRequest.getActionBy());
+				}
+				offlineProcessedAppRepository.updateSanctionedFlag(loanSanctionRequest.getApplicationId(), loanSanctionRequest.getOrgId(), loanSanctionRequest.getBranch(), userId);
+			} else if(CommonUtils.isObjectNullOrEmpty(loanSanctionRequest.getIsIneligibleProposal()) || loanSanctionRequest.getIsIneligibleProposal() == false) {
 				loanSanctionDomainOld.setIsSanctionedFrom(CommonUtils.sanctionedFrom.ELIGIBLE_USERS);
 			}
-			BeanUtils.copyProperties(loanSanctionRequest, loanSanctionDomainOld,"id");
 			loanSanctionDomainOld.setCreatedBy(loanSanctionRequest.getActionBy());
 			loanSanctionDomainOld.setCreatedDate(new Date());
 			loanSanctionDomainOld.setIsActive(true);
@@ -112,12 +118,17 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 			//BeanUtils.copyProperties(loanSanctionRequest, loanSanctionDomainOld,"id");
 			if(loanSanctionRequest.getIsIneligibleProposal() != null && loanSanctionRequest.getIsIneligibleProposal()) {
 				loanSanctionDomainOld.setIsSanctionedFrom(loanSanctionRequest.getIsSanctionedFrom());
-				IneligibleProposalDetails ineligibleProposalDetails = (IneligibleProposalDetails) offlineProcessedAppRepository.findByAppliationId(loanSanctionRequest.getApplicationId());
-				ineligibleProposalDetails.setIsSanctioned(true);
-			}else {
+				/*IneligibleProposalDetails ineligibleProposalDetails = (IneligibleProposalDetails) offlineProcessedAppRepository.findByAppliationId(loanSanctionRequest.getApplicationId());
+				ineligibleProposalDetails.setIsSanctioned(true);*/
+				//update sanctioned is true flag in ineligible proposal table
+				Long userId = null;
+				if(!CommonUtils.isObjectNullOrEmpty(loanSanctionRequest.getActionBy())) {
+					userId = Long.valueOf(loanSanctionRequest.getActionBy());
+				}
+				offlineProcessedAppRepository.updateSanctionedFlag(loanSanctionRequest.getApplicationId(), loanSanctionRequest.getOrgId(), loanSanctionRequest.getBranch(), userId);
+			} else {
 				loanSanctionDomainOld.setIsSanctionedFrom(CommonUtils.sanctionedFrom.ELIGIBLE_USERS);
 			}
-			
 			loanSanctionDomainOld.setSanctionAmount(loanSanctionRequest.getSanctionAmount());
 			loanSanctionDomainOld.setSanctionDate(new Date());
 			loanSanctionDomainOld.setTenure(loanSanctionRequest.getTenure());
@@ -126,7 +137,7 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 			loanSanctionDomainOld.setRemark(loanSanctionRequest.getRemark());
 			loanSanctionDomainOld.setModifiedBy(loanSanctionRequest.getActionBy());
 			loanSanctionDomainOld.setModifiedDate(new Date());
-			loanSanctionDomainOld.setIsSanctionedFrom(1l);
+			/*loanSanctionDomainOld.setIsSanctionedFrom(1l);*/
 		}
 		//==================Sending Mail notification to Maker=============================
 		
@@ -144,7 +155,7 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 	}
 	
 	@Override
-	public String sanctionRequestValidation( Long applicationId,Long orgId) throws Exception {
+	public String sanctionRequestValidation( Long applicationId,Long orgId) throws LoansException {
 		logger.info("Enter in requestValidation() ----------------------->  applicationId==> "+ applicationId);
 	        try {        	
 		 
@@ -161,34 +172,37 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 	}
 
 	@Override
-	public Boolean saveSanctionDetailFromPopup(LoanSanctionRequest loanSanctionRequest) throws Exception {
-
+	public Integer saveSanctionDetailFromPopup(LoanSanctionRequest loanSanctionRequest) throws LoansException {
 		logger.info("Enter in saveSanctionDetailFromPopup() ----------------------------- sanctionRequest Data : "+ loanSanctionRequest.toString());
 		try {
-
-
-			logger.info("going to fetch username/password");
+			//FIRST CHECK IF CURRENT PROPOSAL IS ELIGIBL FOR SANCTIONED OR NOT 
+			Integer status = offlineProcessedAppRepository.checkBeforeOfflineSanctioned(loanSanctionRequest.getApplicationId());
+			if(status == 4) {
+				loanSanctionRequest.setSanctionDate(new Date());
+				Boolean result = saveLoanSanctionDetail(loanSanctionRequest);
+				return !result ? 0 : 4;
+			} else {
+				return status;	
+			}
+			/*loanSanctionRequest.setSanctionDate(new Date());
+			return saveLoanSanctionDetail(loanSanctionRequest);*/
+			/*logger.info("going to fetch username/password");
 			UserOrganisationRequest userOrganisationRequest = userClient.getByOrgId(loanSanctionRequest.getOrgId());
 			if(CommonUtils.isObjectListNull( userOrganisationRequest, userOrganisationRequest.getUsername(),  userOrganisationRequest.getPassword() )){
 				logger.warn("username/password found null ");
 				return false;
 			}
-
 			loanSanctionRequest.setUserName(userOrganisationRequest.getUsername());
-			loanSanctionRequest.setPassword(userOrganisationRequest.getPassword());
-			loanSanctionRequest.setSanctionDate(new Date());
-
-			return saveLoanSanctionDetail(loanSanctionRequest);
-
-		}catch (Exception e) {
+			loanSanctionRequest.setPassword(userOrganisationRequest.getPassword());*/
+		} catch (Exception e) {
 			logger.error("Error/Exception in saveSanctionDetailFromPopup() ----------------------->  Message : ",e);
-			return false;
+			return 0;
 		}
 	}
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public Boolean saveSanctionAndDisbursementDetailsFromBank() throws Exception {
+	public Boolean saveSanctionAndDisbursementDetailsFromBank() throws LoansException {
 
 		logger.info("================= Enter in saveSanctionAndDisbursementDetailsFromBank() ============================== ");
 		try {
@@ -389,7 +403,7 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 	}
 
 	@Override
-	public Boolean saveLoanSanctionDetailById(Long orgId ,LoanSanctionRequest loanSanctionRequest) throws Exception {
+	public Boolean saveLoanSanctionDetailById(Long orgId ,LoanSanctionRequest loanSanctionRequest) throws LoansException {
 		try {
 		logger.info("========================Enter in saveLoanSanctionDetail() ====================  applicationId ==> "+ loanSanctionRequest.getApplicationId());
 		                                                                       

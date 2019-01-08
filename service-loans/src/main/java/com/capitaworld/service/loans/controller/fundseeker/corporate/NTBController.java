@@ -4,6 +4,7 @@ import com.capitaworld.connect.api.ConnectAuditErrorCode;
 import com.capitaworld.connect.api.ConnectLogAuditRequest;
 import com.capitaworld.connect.api.ConnectStage;
 import com.capitaworld.connect.client.ConnectClient;
+import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
 import com.capitaworld.service.loans.model.FinancialArrangementsDetailRequest;
 import com.capitaworld.service.loans.model.LoansResponse;
@@ -304,7 +305,7 @@ public class NTBController {
 
     @RequestMapping(value = "/post/directorBackground", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LoansResponse> callPostIndividualDirector(@RequestBody NTBRequest ntbRequest, HttpServletRequest request)
-            throws Exception
+            throws LoansException
     {
         try
         {
@@ -334,7 +335,7 @@ public class NTBController {
 
     @RequestMapping(value = "/post/dirBackChangeStage", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LoansResponse> postDirectorsChangeStage(@RequestBody NTBRequest ntbRequest, HttpServletRequest request)
-            throws Exception {
+            throws LoansException {
     	logger.info("ENTER IN POST DIRECTOR BACKGROUD DETAILS --------------> ");
         try {
             Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
@@ -364,7 +365,7 @@ public class NTBController {
 
     @RequestMapping(value = "/post/others", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LoansResponse> postOthersChangeStage(@RequestBody NTBRequest ntbRequest, HttpServletRequest request)
-            throws Exception
+            throws LoansException
     {
         try
         {

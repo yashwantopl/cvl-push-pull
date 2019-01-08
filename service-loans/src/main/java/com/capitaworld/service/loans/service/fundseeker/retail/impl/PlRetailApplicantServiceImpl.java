@@ -6,6 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 import com.capitaworld.cibil.api.utility.MultipleJSONObjectHelper;
+import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.UserResponse;
 import com.capitaworld.service.users.model.UsersRequest;
@@ -63,7 +64,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
     private CreditCardsDetailRepository creditCardsDetailRepository;
 
     @Override
-    public boolean saveProfile(PLRetailApplicantRequest plRetailApplicantRequest, Long userId) throws Exception {
+    public boolean saveProfile(PLRetailApplicantRequest plRetailApplicantRequest, Long userId) throws LoansException {
         try {
             Long finalUserId = (CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getClientId()) ? userId : plRetailApplicantRequest.getClientId());
             RetailApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId(finalUserId, plRetailApplicantRequest.getApplicationId());
@@ -91,12 +92,12 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
 
         } catch (Exception e) {
             logger.error("Error while Saving Retail Profile :- ",e);
-            throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+            throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
         }
     }
 
     @Override
-    public PLRetailApplicantRequest getProfile(Long userId, Long applicationId) throws Exception {
+    public PLRetailApplicantRequest getProfile(Long userId, Long applicationId) throws LoansException {
         try {
             RetailApplicantDetail applicantDetail = applicantRepository.findOneByApplicationIdId(applicationId);
             if (applicantDetail == null) {
@@ -187,12 +188,12 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             return applicantRequest;
         } catch (Exception e) {
             logger.error("Error while getting Retail Profile :- ",e);
-            throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+            throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
         }
     }
 
     @Override
-    public boolean savePrimary(PLRetailApplicantRequest plRetailApplicantRequest, Long userId) throws Exception {
+    public boolean savePrimary(PLRetailApplicantRequest plRetailApplicantRequest, Long userId) throws LoansException {
         try {
             Long finalUserId = (CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getClientId()) ? userId : plRetailApplicantRequest.getClientId());
             RetailApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId(finalUserId, plRetailApplicantRequest.getApplicationId());
@@ -219,18 +220,18 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
                     if (!CommonUtils.isObjectNullOrEmpty(reqObj.getId())) {
                         saveFinObj = financialArrangementDetailsRepository.findByIdAndIsActive(reqObj.getId(), true);
                     }
-                    if (CommonUtils.isObjectNullOrEmpty(saveFinObj)) {
+                    if (saveFinObj == null || CommonUtils.isObjectNullOrEmpty(saveFinObj)) {
                         saveFinObj = new FinancialArrangementsDetail();
-                        BeanUtils.copyProperties(reqObj, saveFinObj, "id", "createdBy", "createdDate", "modifiedBy",
-                                "modifiedDate", "isActive");
+                        BeanUtils.copyProperties(reqObj, saveFinObj, "id", CommonUtils.CREATED_BY, CommonUtils.CREATED_DATE, CommonUtils.MODIFIED_BY,
+                                CommonUtils.MODIFIED_DATE, "isActive");
 
                         saveFinObj.setApplicationId(new LoanApplicationMaster(plRetailApplicantRequest.getApplicationId()));
                         saveFinObj.setCreatedBy(userId);
                         saveFinObj.setCreatedDate(new Date());
                         saveFinObj.setIsActive(true);
                     } else {
-                        BeanUtils.copyProperties(reqObj, saveFinObj, "id", "createdBy", "createdDate", "modifiedBy",
-                                "modifiedDate");
+                        BeanUtils.copyProperties(reqObj, saveFinObj, "id", CommonUtils.CREATED_BY, CommonUtils.CREATED_DATE, CommonUtils.MODIFIED_BY,
+                                CommonUtils.MODIFIED_DATE);
                         saveFinObj.setModifiedBy(userId);
                         saveFinObj.setModifiedDate(new Date());
                     }
@@ -246,18 +247,18 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
                     if (!CommonUtils.isObjectNullOrEmpty(reqObj.getId())) {
                         saveObj = creditCardsDetailRepository.findOne(reqObj.getId());
                     }
-                    if (CommonUtils.isObjectNullOrEmpty(saveObj)) {
+                    if (saveObj == null || CommonUtils.isObjectNullOrEmpty(saveObj)) {
                         saveObj = new CreditCardsDetail();
-                        BeanUtils.copyProperties(reqObj, saveObj, "id", "createdBy", "createdDate", "modifiedBy",
-                                "modifiedDate", "isActive");
+                        BeanUtils.copyProperties(reqObj, saveObj, "id", CommonUtils.CREATED_BY, CommonUtils.CREATED_DATE, CommonUtils.MODIFIED_BY,
+                                CommonUtils.MODIFIED_DATE, "isActive");
 
                         saveObj.setApplicantionId(new LoanApplicationMaster(plRetailApplicantRequest.getApplicationId()));
                         saveObj.setCreatedBy(userId);
                         saveObj.setCreatedDate(new Date());
                         saveObj.setIsActive(true);
                     } else {
-                        BeanUtils.copyProperties(reqObj, saveObj, "id", "createdBy", "createdDate", "modifiedBy",
-                                "modifiedDate");
+                        BeanUtils.copyProperties(reqObj, saveObj, "id", CommonUtils.CREATED_BY, CommonUtils.CREATED_DATE, CommonUtils.MODIFIED_BY,
+                                CommonUtils.MODIFIED_DATE);
                         saveObj.setModifiedBy(userId);
                         saveObj.setModifiedDate(new Date());
                     }
@@ -277,12 +278,12 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
 
         } catch (Exception e) {
             logger.error("Error while Saving Retail Primary :- ",e);
-            throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+            throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
         }
     }
 
     @Override
-    public PLRetailApplicantRequest getPrimary(Long userId, Long applicationId) throws Exception {
+    public PLRetailApplicantRequest getPrimary(Long userId, Long applicationId) throws LoansException {
         try {
             RetailApplicantDetail applicantDetail = applicantRepository.findOneByApplicationIdId(applicationId);
             if (applicantDetail == null) {
@@ -324,7 +325,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             return applicantRequest;
         } catch (Exception e) {
             logger.error("Error while getting Retail Primary :- ",e);
-            throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+            throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
         }
     }
 

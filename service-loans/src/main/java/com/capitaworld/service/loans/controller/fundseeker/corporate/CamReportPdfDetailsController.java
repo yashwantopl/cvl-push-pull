@@ -49,7 +49,6 @@ public class CamReportPdfDetailsController {
 	private static final String PRODUCT_DOCUMENT_MAPPING_ID = "productDocumentMappingId";
 	private static final String USER_TYPE = "userType";
 	private static final String ORIGINAL_FILE_NAME = "originalFileName";
-	private static final String APPLICATION_ID = "applicationId";
 	private static final String ERROR_WHILE_GETTING_MAP_DETAILS = "Error while getting MAP Details==>";
 	private static final String INELIGIBLE_CAM_REPORT = "INELIGIBLECAMREPORT";
 	
@@ -72,7 +71,7 @@ public class CamReportPdfDetailsController {
 			  JSONObject jsonObj = new JSONObject();
 			  
 
-				jsonObj.put(APPLICATION_ID, applicationId);
+				jsonObj.put(CommonUtils.APPLICATION_ID, applicationId);
 				jsonObj.put(PRODUCT_DOCUMENT_MAPPING_ID, 355L);
 				jsonObj.put(USER_TYPE, CommonUtils.UploadUserType.UERT_TYPE_APPLICANT);
 				jsonObj.put(ORIGINAL_FILE_NAME, "CAMREPORTSIDBIPRIMARY"+applicationId+".pdf");
@@ -111,7 +110,7 @@ public class CamReportPdfDetailsController {
 			MultipartFile multipartFile = new DDRMultipart(byteArr);			  
 			  JSONObject jsonObj = new JSONObject();
 
-				jsonObj.put(APPLICATION_ID, applicationId);
+				jsonObj.put(CommonUtils.APPLICATION_ID, applicationId);
 				jsonObj.put(PRODUCT_DOCUMENT_MAPPING_ID, 362L);
 				jsonObj.put(USER_TYPE, CommonUtils.UploadUserType.UERT_TYPE_APPLICANT);
 				jsonObj.put(ORIGINAL_FILE_NAME, "CAMREPORTSIDBI"+applicationId+".pdf");
@@ -151,7 +150,7 @@ public class CamReportPdfDetailsController {
 			MultipartFile multipartFile = new DDRMultipart(byteArr);			  
 			  JSONObject jsonObj = new JSONObject();
 
-				jsonObj.put(APPLICATION_ID, applicationId);
+				jsonObj.put(CommonUtils.APPLICATION_ID, applicationId);
 				jsonObj.put(PRODUCT_DOCUMENT_MAPPING_ID,553L);
 				jsonObj.put(USER_TYPE, CommonUtils.UploadUserType.UERT_TYPE_APPLICANT);
 				jsonObj.put(ORIGINAL_FILE_NAME, "BANK_STATEMENT_ANALYSIS"+applicationId+".pdf");
@@ -190,7 +189,7 @@ public class CamReportPdfDetailsController {
 			  JSONObject jsonObj = new JSONObject();
 			  
 
-				jsonObj.put(APPLICATION_ID, applicationId);
+				jsonObj.put(CommonUtils.APPLICATION_ID, applicationId);
 				jsonObj.put(PRODUCT_DOCUMENT_MAPPING_ID, 570L);
 				jsonObj.put(USER_TYPE, CommonUtils.UploadUserType.UERT_TYPE_APPLICANT);
 				jsonObj.put(ORIGINAL_FILE_NAME, INELIGIBLE_CAM_REPORT+applicationId+".pdf");

@@ -154,6 +154,7 @@ import com.capitaworld.service.loans.model.common.SanctioningDetailResponse;
 import com.capitaworld.service.loans.model.corporate.CorporateProduct;
 import com.capitaworld.service.loans.model.mobile.MLoanDetailsResponse;
 import com.capitaworld.service.loans.model.mobile.MobileLoanRequest;
+import com.capitaworld.service.loans.repository.common.LoanRepository;
 import com.capitaworld.service.loans.repository.common.LogDetailsRepository;
 import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.AchievementDetailsRepository;
@@ -570,6 +571,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Autowired
 	private LoanApplicationService loanApplicationService;
+	
+	@Autowired
+	private LoanRepository loanRepository;
 
 	public static final String EMAIL_ADDRESS_FROM = "no-reply@capitaworld.com";
 
@@ -603,7 +607,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
     private String IS_MCA_ON;
     
 	@Override
-	public boolean saveOrUpdate(FrameRequest commonRequest, Long userId) throws Exception {
+	public boolean saveOrUpdate(FrameRequest commonRequest, Long userId) throws LoansException {
 		try {
 			LoanApplicationMaster applicationMaster = null;
 			Long finalUserId = (CommonUtils.isObjectNullOrEmpty(commonRequest.getClientId()) ? userId
@@ -662,7 +666,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			return true;
 		} catch (Exception e) {
 			logger.error("Error while Saving Loan Details:-",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
@@ -701,7 +705,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 
 	@Override
-	public LoanApplicationRequest saveFromCampaign(Long userId, Long clientId, String campaignCode) throws Exception {
+	public LoanApplicationRequest saveFromCampaign(Long userId, Long clientId, String campaignCode) throws LoansException {
 		try {
 			String loanCode = com.capitaworld.service.users.utils.CommonUtils.getLoanCodeFromCode(campaignCode);
 			LoanType type = CommonUtils.getProductByLoanCode(loanCode);
@@ -737,12 +741,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			return request;
 		} catch (Exception e) {
 			logger.error("Error while Saving Loan Details From Campaign:-",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
-	public boolean saveOrUpdateFromLoanEligibilty(FrameRequest commonRequest, Long userId) throws Exception {
+	public boolean saveOrUpdateFromLoanEligibilty(FrameRequest commonRequest, Long userId) throws LoansException {
 		logger.info("Entry in saveOrUpdateFromLoanEligibilty");
 		try {
 			LoanApplicationMaster applicationMaster = null;
@@ -825,7 +829,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			return true;
 		} catch (Exception e) {
 			logger.error("Error while Saving Loan Details:-",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
@@ -888,7 +892,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 
 	@Override
-	public LoanApplicationRequest get(Long id, Long userId) throws Exception {
+	public LoanApplicationRequest get(Long id, Long userId) throws LoansException {
 		try {
 			LoanApplicationRequest applicationRequest = new LoanApplicationRequest();
 			LoanApplicationMaster applicationMaster = loanApplicationRepository.getByIdAndUserId(id, userId);
@@ -953,12 +957,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			}
 		} catch (Exception e) {
 			logger.error(ERROR_WHILE_GETTING_INDIVIDUAL_LOAN_DETAILS,e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
-	public LoanApplicationRequest inActive(Long id, Long userId) throws Exception {
+	public LoanApplicationRequest inActive(Long id, Long userId) throws LoansException {
 		loanApplicationRepository.inActive(id, userId);
 		List<LoanApplicationMaster> userLoans = loanApplicationRepository.getUserLoans(userId);
 		UsersRequest usersRequest = new UsersRequest();
@@ -977,7 +981,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 
 	@Override
-	public List<LoanApplicationRequest> getList(Long userId) throws Exception {
+	public List<LoanApplicationRequest> getList(Long userId) throws LoansException {
 		try {
 			
 			logger.info("In GetList");
@@ -1087,7 +1091,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			return requests;
 		} catch (Exception e) {
 			logger.error("Error while Getting Loan Details:-",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
@@ -1137,7 +1141,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 
 	@Override
-	public boolean lockPrimary(Long applicationId, Long userId, boolean flag) throws Exception {
+	public boolean lockPrimary(Long applicationId, Long userId, boolean flag) throws LoansException {
 		try {
 			LoanApplicationMaster applicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId, userId);
 			if (applicationMaster == null) {
@@ -1154,12 +1158,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			return true;
 		} catch (Exception e) {
 			logger.error("Error while Locking Profile and Primary Information : ",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
-	public LoanApplicationRequest lockFinal(Long applicationId, Long userId, boolean flag) throws Exception {
+	public LoanApplicationRequest lockFinal(Long applicationId, Long userId, boolean flag) throws LoansException {
 		try {
 
 			LoanApplicationRequest loanApplicationRequest = new LoanApplicationRequest();
@@ -1302,7 +1306,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			return loanApplicationRequest;
 		} catch (Exception e) {
 			logger.error("Error while Locking Final Information : ",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 
 		}
 	}
@@ -1393,7 +1397,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 
 	@Override
-	public UserResponse setLastAccessApplication(Long applicationId, Long userId) throws Exception {
+	public UserResponse setLastAccessApplication(Long applicationId, Long userId) throws LoansException {
 		try {
 			UsersRequest usersRequest = new UsersRequest();
 			usersRequest.setLastAccessApplicantId(applicationId);
@@ -1402,7 +1406,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			return client.setLastAccessApplicant(usersRequest);
 		} catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 
 		}
 
@@ -1418,12 +1422,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 
 	@Override
-	public Integer getProductIdByApplicationId(Long applicationId, Long userId) throws Exception {
+	public Integer getProductIdByApplicationId(Long applicationId, Long userId) throws LoansException {
 		try {
 			return loanApplicationRepository.getProductIdByApplicationId(applicationId, userId);
 		} catch (Exception e) {
 			logger.error("Error while getting Product Id by Application Id : ",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
@@ -1435,18 +1439,18 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Override
 	public void updateFinalCommonInformation(Long applicationId, Long userId, Boolean flag, String finalFilledCount)
-			throws Exception {
+			throws LoansException {
 		try {
 			loanApplicationRepository.setIsApplicantFinalMandatoryFilled(applicationId, userId, flag);
 			loanApplicationRepository.setFinalFilledCount(applicationId, userId, finalFilledCount);
 		} catch (Exception e) {
 			logger.error("Error while updating final information flag : ",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
-	public Boolean isProfileAndPrimaryDetailFilled(Long applicationId, Long userId) throws Exception {
+	public Boolean isProfileAndPrimaryDetailFilled(Long applicationId, Long userId) throws LoansException {
 		try {
 			LoanApplicationMaster applicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId, userId);
 			int userMainType = CommonUtils.getUserMainType(applicationMaster.getProductId());
@@ -1472,9 +1476,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsCoApp2DetailsFilled())
 							|| !applicationMaster.getIsCoApp2DetailsFilled().booleanValue())
 						return false;
-				} else if (coApps == 1) {
-					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsCoApp1DetailsFilled())
-							|| !applicationMaster.getIsCoApp1DetailsFilled().booleanValue())
+				} else if (coApps == 1 && (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsCoApp1DetailsFilled())
+						|| !applicationMaster.getIsCoApp1DetailsFilled().booleanValue())) {
 						return false;
 				}
 
@@ -1488,9 +1491,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsGuarantor2DetailsFilled())
 							|| !applicationMaster.getIsGuarantor2DetailsFilled().booleanValue())
 						return false;
-				} else if (guarantors == 1) {
-					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsGuarantor1DetailsFilled())
-							|| !applicationMaster.getIsGuarantor1DetailsFilled().booleanValue())
+				} else if (guarantors == 1 && (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsGuarantor1DetailsFilled())
+						|| !applicationMaster.getIsGuarantor1DetailsFilled().booleanValue())) {
 						return false;
 				}
 
@@ -1509,34 +1511,34 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			}
 		} catch (Exception e) {
 			logger.error("Error while getting isProfileAndPrimaryDetailFilled ?",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
-	public Boolean isPrimaryLocked(Long applicationId, Long userId) throws Exception {
+	public Boolean isPrimaryLocked(Long applicationId, Long userId) throws LoansException {
 		try {
 			Long count = loanApplicationRepository.checkPrimaryDetailIsLocked(applicationId);
 			return (count != null ? count > 0 : false);
 		} catch (Exception e) {
 			logger.error("Error while getting isPrimaryLocked ?",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
-	public Boolean isApplicationIdActive(Long applicationId) throws Exception {
+	public Boolean isApplicationIdActive(Long applicationId) throws LoansException {
 		try {
 			Long count = loanApplicationRepository.checkApplicationIdActive(applicationId);
 			return (count != null ? count > 0 : false);
 		} catch (Exception e) {
 			logger.error("Error while getting isApplicationIdActive ?",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
-	public Boolean isFinalDetailFilled(Long applicationId, Long userId) throws Exception {
+	public Boolean isFinalDetailFilled(Long applicationId, Long userId) throws LoansException {
 		try {
 			LoanApplicationMaster applicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId, userId);
 			if (CommonUtils.isObjectNullOrEmpty(applicationMaster)) {
@@ -1583,9 +1585,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsCoApp2FinalFilled())
 							|| !applicationMaster.getIsCoApp2FinalFilled().booleanValue())
 						return false;
-				} else if (coApps == 1) {
-					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsCoApp1FinalFilled())
-							|| !applicationMaster.getIsCoApp1FinalFilled().booleanValue())
+				} else if (coApps == 1 && (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsCoApp1FinalFilled())
+						|| !applicationMaster.getIsCoApp1FinalFilled().booleanValue())) {
 						return false;
 				}
 
@@ -1603,9 +1604,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsGuarantor2FinalFilled())
 							|| !applicationMaster.getIsGuarantor2FinalFilled().booleanValue())
 						return false;
-				} else if (guarantors == 1) {
-					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsGuarantor1FinalFilled())
-							|| !applicationMaster.getIsGuarantor1FinalFilled().booleanValue())
+				} else if (guarantors == 1 && (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsGuarantor1FinalFilled())
+						|| !applicationMaster.getIsGuarantor1FinalFilled().booleanValue())) {
 						return false;
 				}
 
@@ -1619,35 +1619,38 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					return false;
 				}
 
-				if ((loanType.getId() == CommonUtils.LoanType.HOME_LOAN.getValue()
-						|| loanType.getId() == CommonUtils.LoanType.CAR_LOAN.getValue())) {
-					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsFinalMcqFilled())
-							|| !applicationMaster.getIsFinalMcqFilled().booleanValue()) {
+				if ((loanType.getId() == CommonUtils.LoanType.HOME_LOAN.getValue() || loanType.getId() == CommonUtils.LoanType.CAR_LOAN.getValue())
+					&& (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsFinalMcqFilled()) || !applicationMaster.getIsFinalMcqFilled().booleanValue())) {
 						return false;
-					}
 				}
 				return true;
 			}
 		} catch (Exception e) {
 			logger.error("Error while getting isFinalDetailFilled ?",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
-	public Boolean isFinalLocked(Long applicationId, Long userId) throws Exception {
+	public Boolean isFinalLocked(Long applicationId, Long userId) throws LoansException {
 		try {
 			Long count = loanApplicationRepository.checkFinalDetailIsLocked(applicationId);
 			return (count != null ? count > 0 : false);
 		} catch (Exception e) {
 			logger.error("Error while getting isFinalLocked ?",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
+	}
+	
+	@Override
+	public Boolean isMcqSkipped(Long applicationId) throws LoansException {
+		Long count = loanApplicationRepository.checkMcqSkipped(applicationId);
+		return (count != null ? count > 0 : false);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public JSONObject getSelfViewAndPrimaryLocked(Long applicationId, Long userId) throws Exception {
+	public JSONObject getSelfViewAndPrimaryLocked(Long applicationId, Long userId) throws LoansException {
 		try {
 			JSONObject json = new JSONObject();
 			Long selfViewCount = loanApplicationRepository.isSelfApplicantView(applicationId, userId);
@@ -1656,18 +1659,18 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			return json;
 		} catch (Exception e) {
 			logger.error("Error while getting isFinalLocked ?",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
-	public Integer getCurrencyId(Long applicationId, Long userId) throws Exception {
+	public Integer getCurrencyId(Long applicationId, Long userId) throws LoansException {
 		return loanApplicationRepository.getCurrencyId(applicationId, userId);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public JSONObject getCurrencyAndDenomination(Long applicationId, Long userId) throws Exception {
+	public JSONObject getCurrencyAndDenomination(Long applicationId, Long userId) throws LoansException {
 		try {
 			Integer currencyId = loanApplicationRepository.getCurrencyId(applicationId, userId);
 			Integer denominationId = loanApplicationRepository.getDenominationId(applicationId, userId);
@@ -1677,13 +1680,13 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			return jsonObject;
 		} catch (Exception e) {
 			logger.error("Error while getting Currency and Denomination Value : ",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
 	public JSONObject isAllowToMoveAhead(Long applicationId, Long userId, Integer nextTabType,
-			Long coAppllicantOrGuarantorId) throws Exception {
+			Long coAppllicantOrGuarantorId) throws LoansException {
 		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId, userId);
 		int userMainType = CommonUtils.getUserMainType(loanApplicationMaster.getProductId());
 		if (CommonUtils.UserMainType.CORPORATE == userMainType) {
@@ -1708,11 +1711,14 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@SuppressWarnings("unchecked")
 	private JSONObject corporateValidating(LoanApplicationMaster applicationMaster, Integer toTabType,
-			Long coAppllicantOrGuarantorId) throws Exception {
+			Long coAppllicantOrGuarantorId) throws LoansException {
 		List<Long> coAppIds = null;
 
 		Long coAppCount;
-
+		
+		Boolean isFinalMcqFilled = applicationMaster.getIsFinalMcqFilled() != null ? applicationMaster.getIsFinalMcqFilled() : false; 
+		Boolean isMcqSkipped = applicationMaster.getIsMcqSkipped() != null ? applicationMaster.getIsMcqSkipped() : false; 
+		
 		int index = 0;
 		final String INVALID_MSG = "Requested data is Invalid.";
 		JSONObject response = new JSONObject();
@@ -1744,13 +1750,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				return response;
 			}
 
-			if (index == 1) {
-				if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsCoApp1DetailsFilled())
-						|| !applicationMaster.getIsCoApp1DetailsFilled().booleanValue()) {
+			if (index == 1 && (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsCoApp1DetailsFilled())
+					|| !applicationMaster.getIsCoApp1DetailsFilled().booleanValue())) {
 					response.put(MESSAGE_LITERAL, "Please CO-APPLICANT-1 details to Move Next !");
 					response.put(RESULT_LITERAL, false);
 					return response;
-				}
 			}
 			break;
 
@@ -1786,13 +1790,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			coAppCount = corporateCoApplicantRepository.getCoAppCountByApplicationAndUserId(applicationMaster.getId(),
 					applicationMaster.getUserId());
 			if (!CommonUtils.isObjectNullOrEmpty(coAppCount) || coAppCount > 0) {
-				if (coAppCount == 1) {
-					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsCoApp1DetailsFilled())
-							|| !applicationMaster.getIsCoApp1DetailsFilled().booleanValue()) {
+				if (coAppCount == 1 && (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsCoApp1DetailsFilled())
+						|| !applicationMaster.getIsCoApp1DetailsFilled().booleanValue())) {
 						response.put(MESSAGE_LITERAL, PLEASE_FILL_CO_APPLICANT_1_DETAILS_TO_MOVE_NEXT);
 						response.put(RESULT_LITERAL, false);
 						return response;
-					}
 				}
 
 				if (coAppCount == 2) {
@@ -1834,13 +1836,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			coAppCount = corporateCoApplicantRepository.getCoAppCountByApplicationAndUserId(applicationMaster.getId(),
 					applicationMaster.getUserId());
 			if (!CommonUtils.isObjectNullOrEmpty(coAppCount) || coAppCount > 0) {
-				if (coAppCount == 1) {
-					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsCoApp1DetailsFilled())
-							|| !applicationMaster.getIsCoApp1DetailsFilled().booleanValue()) {
+				if (coAppCount == 1 && (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsCoApp1DetailsFilled())
+						|| !applicationMaster.getIsCoApp1DetailsFilled().booleanValue())) {
 						response.put(MESSAGE_LITERAL, PLEASE_FILL_CO_APPLICANT_1_DETAILS_TO_MOVE_NEXT);
 						response.put(RESULT_LITERAL, false);
 						return response;
-					}
 				}
 
 				if (coAppCount == 2) {
@@ -1914,13 +1914,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			// response.put(RESULT_LITERAL, false);
 			// return response;
 			// }
-			if (CommonUtils.BusinessType.EXISTING_BUSINESS.getId().equals(applicationMaster.getBusinessTypeId())) {
-				if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsFinalMcqFilled())
-						|| !applicationMaster.getIsFinalMcqFilled().booleanValue()) {
+			if (CommonUtils.BusinessType.EXISTING_BUSINESS.getId().equals(applicationMaster.getBusinessTypeId()) && !isFinalMcqFilled && !isMcqSkipped ) {
 					response.put(MESSAGE_LITERAL, PLEASE_FILL_FINAL_MCQ_DETAILS_TO_MOVE_NEXT);
 					response.put(RESULT_LITERAL, false);
 					return response;
-				}
 			}
 			break;
 		case CommonUtils.TabType.FINAL_DPR_UPLOAD:
@@ -1950,13 +1947,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			 * PLEASE_FILL_PRIMARY_INFORMATION_DETAILS_TO_MOVE_NEXT);
 			 * response.put(RESULT_LITERAL, false); return response; }
 			 */
-			if (CommonUtils.BusinessType.EXISTING_BUSINESS.getId().equals(applicationMaster.getBusinessTypeId())) {
-				if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsFinalMcqFilled())
-						|| !applicationMaster.getIsFinalMcqFilled().booleanValue()) {
+			if (CommonUtils.BusinessType.EXISTING_BUSINESS.getId().equals(applicationMaster.getBusinessTypeId()) && !isFinalMcqFilled && !isMcqSkipped ) {
 					response.put(MESSAGE_LITERAL, PLEASE_FILL_FINAL_MCQ_DETAILS_TO_MOVE_NEXT);
 					response.put(RESULT_LITERAL, false);
 					return response;
-				}
 			}
 
 			if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsApplicantFinalFilled())
@@ -1995,13 +1989,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			 * PLEASE_FILL_PRIMARY_INFORMATION_DETAILS_TO_MOVE_NEXT);
 			 * response.put(RESULT_LITERAL, false); return response; }
 			 */
-			if (CommonUtils.BusinessType.EXISTING_BUSINESS.getId().equals(applicationMaster.getBusinessTypeId())) {
-				if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsFinalMcqFilled())
-						|| !applicationMaster.getIsFinalMcqFilled().booleanValue()) {
+			if (CommonUtils.BusinessType.EXISTING_BUSINESS.getId().equals(applicationMaster.getBusinessTypeId()) && !isFinalMcqFilled && !isMcqSkipped ) {
 					response.put(MESSAGE_LITERAL, PLEASE_FILL_FINAL_MCQ_DETAILS_TO_MOVE_NEXT);
 					response.put(RESULT_LITERAL, false);
 					return response;
-				}
 			}
 
 			if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsApplicantFinalFilled())
@@ -2033,7 +2024,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@SuppressWarnings("unchecked")
 	private JSONObject retailValidating(LoanApplicationMaster applicationMaster, Integer toTabType,
-			Long coAppllicantOrGuarantorId) throws Exception {
+			Long coAppllicantOrGuarantorId) throws LoansException {
 		List<Long> coAppIds = null;
 		List<Long> guaIds = null;
 		Long coAppCount = null;
@@ -2084,13 +2075,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				return response;
 			}
 
-			if (index == 1) {
-				if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsCoApp1DetailsFilled())
-						|| !applicationMaster.getIsCoApp1DetailsFilled().booleanValue()) {
+			if (index == 1 && (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsCoApp1DetailsFilled())
+					|| !applicationMaster.getIsCoApp1DetailsFilled().booleanValue())) {
 					response.put(MESSAGE_LITERAL, "Please CO-APPLICANT-1 details to Move Next !");
 					response.put(RESULT_LITERAL, false);
 					return response;
-				}
 			}
 			break;
 		case CommonUtils.TabType.PROFILE_GUARANTOR:
@@ -2104,13 +2093,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			coAppCount = coApplicantDetailRepository.getCoAppCountByApplicationAndUserId(applicationMaster.getId(),
 					applicationMaster.getUserId());
 			if (!CommonUtils.isObjectNullOrEmpty(coAppCount) || coAppCount > 0) {
-				if (coAppCount == 1) {
-					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsCoApp1DetailsFilled())
-							|| !applicationMaster.getIsCoApp1DetailsFilled().booleanValue()) {
+				if (coAppCount == 1 && (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsCoApp1DetailsFilled())
+						|| !applicationMaster.getIsCoApp1DetailsFilled().booleanValue())) {
 						response.put(MESSAGE_LITERAL, PLEASE_FILL_CO_APPLICANT_1_DETAILS_TO_MOVE_NEXT);
 						response.put(RESULT_LITERAL, false);
 						return response;
-					}
 				}
 				if (coAppCount == 2) {
 					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsCoApp1DetailsFilled())
@@ -2144,13 +2131,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				return response;
 			}
 
-			if (index == 1) {
-				if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsGuarantor1DetailsFilled())
-						|| !applicationMaster.getIsGuarantor1DetailsFilled().booleanValue()) {
+			if (index == 1 && (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsGuarantor1DetailsFilled())
+					|| !applicationMaster.getIsGuarantor1DetailsFilled().booleanValue())) {
 					response.put(MESSAGE_LITERAL, PLEASE_GUARANTOR_1_DETAILS_TO_MOVE_NEXT);
 					response.put(RESULT_LITERAL, false);
 					return response;
-				}
 			}
 
 			break;
@@ -2166,13 +2151,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			coAppCount = coApplicantDetailRepository.getCoAppCountByApplicationAndUserId(applicationMaster.getId(),
 					applicationMaster.getUserId());
 			if (!CommonUtils.isObjectNullOrEmpty(coAppCount) || coAppCount > 0) {
-				if (coAppCount == 1) {
-					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsCoApp1DetailsFilled())
-							|| !applicationMaster.getIsCoApp1DetailsFilled().booleanValue()) {
+				if (coAppCount == 1 && (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsCoApp1DetailsFilled())
+						|| !applicationMaster.getIsCoApp1DetailsFilled().booleanValue())) {
 						response.put(MESSAGE_LITERAL, PLEASE_FILL_CO_APPLICANT_1_DETAILS_TO_MOVE_NEXT);
 						response.put(RESULT_LITERAL, false);
 						return response;
-					}
 				}
 
 				if (coAppCount == 2) {
@@ -2195,13 +2178,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			guarantorCount = guarantorDetailsRepository
 					.getGuarantorCountByApplicationAndUserId(applicationMaster.getId(), applicationMaster.getUserId());
 			if (!CommonUtils.isObjectNullOrEmpty(guarantorCount) || guarantorCount > 0) {
-				if (guarantorCount == 1) {
-					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsGuarantor1DetailsFilled())
-							|| !applicationMaster.getIsGuarantor1DetailsFilled().booleanValue()) {
+				if (guarantorCount == 1 && (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsGuarantor1DetailsFilled())
+						|| !applicationMaster.getIsGuarantor1DetailsFilled().booleanValue())) {
 						response.put(MESSAGE_LITERAL, PLEASE_FILL_GUARANTOR_1_DETAILS_TO_MOVE_NEXT);
 						response.put(RESULT_LITERAL, false);
 						return response;
-					}
 				}
 
 				if (guarantorCount == 2) {
@@ -2233,13 +2214,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			coAppCount = coApplicantDetailRepository.getCoAppCountByApplicationAndUserId(applicationMaster.getId(),
 					applicationMaster.getUserId());
 			if (!CommonUtils.isObjectNullOrEmpty(coAppCount) || coAppCount > 0) {
-				if (coAppCount == 1) {
-					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsCoApp1DetailsFilled())
-							|| !applicationMaster.getIsCoApp1DetailsFilled().booleanValue()) {
+				if (coAppCount == 1 && (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsCoApp1DetailsFilled())
+						|| !applicationMaster.getIsCoApp1DetailsFilled().booleanValue())) {
 						response.put(MESSAGE_LITERAL, PLEASE_FILL_CO_APPLICANT_1_DETAILS_TO_MOVE_NEXT);
 						response.put(RESULT_LITERAL, false);
 						return response;
-					}
 				}
 
 				if (coAppCount == 2) {
@@ -2262,13 +2241,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			guarantorCount = guarantorDetailsRepository
 					.getGuarantorCountByApplicationAndUserId(applicationMaster.getId(), applicationMaster.getUserId());
 			if (!CommonUtils.isObjectNullOrEmpty(guarantorCount) || guarantorCount > 0) {
-				if (guarantorCount == 1) {
-					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsGuarantor1DetailsFilled())
-							|| !applicationMaster.getIsGuarantor1DetailsFilled().booleanValue()) {
+				if (guarantorCount == 1 && (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsGuarantor1DetailsFilled())
+						|| !applicationMaster.getIsGuarantor1DetailsFilled().booleanValue())) {
 						response.put(MESSAGE_LITERAL, PLEASE_FILL_GUARANTOR_1_DETAILS_TO_MOVE_NEXT);
 						response.put(RESULT_LITERAL, false);
 						return response;
-					}
 				}
 
 				if (guarantorCount == 2) {
@@ -2314,13 +2291,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			coAppCount = coApplicantDetailRepository.getCoAppCountByApplicationAndUserId(applicationMaster.getId(),
 					applicationMaster.getUserId());
 			if (!CommonUtils.isObjectNullOrEmpty(coAppCount) || coAppCount > 0) {
-				if (coAppCount == 1) {
-					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsCoApp1DetailsFilled())
-							|| !applicationMaster.getIsCoApp1DetailsFilled().booleanValue()) {
+				if (coAppCount == 1 && (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsCoApp1DetailsFilled())
+						|| !applicationMaster.getIsCoApp1DetailsFilled().booleanValue())) {
 						response.put(MESSAGE_LITERAL, PLEASE_FILL_CO_APPLICANT_1_DETAILS_TO_MOVE_NEXT);
 						response.put(RESULT_LITERAL, false);
 						return response;
-					}
 				}
 
 				if (coAppCount == 2) {
@@ -2343,13 +2318,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			guarantorCount = guarantorDetailsRepository
 					.getGuarantorCountByApplicationAndUserId(applicationMaster.getId(), applicationMaster.getUserId());
 			if (!CommonUtils.isObjectNullOrEmpty(guarantorCount) || guarantorCount > 0) {
-				if (guarantorCount == 1) {
-					if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsGuarantor1DetailsFilled())
-							|| !applicationMaster.getIsGuarantor1DetailsFilled().booleanValue()) {
+				if (guarantorCount == 1 && (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsGuarantor1DetailsFilled())
+						|| !applicationMaster.getIsGuarantor1DetailsFilled().booleanValue())) {
 						response.put(MESSAGE_LITERAL, PLEASE_FILL_GUARANTOR_1_DETAILS_TO_MOVE_NEXT);
 						response.put(RESULT_LITERAL, false);
 						return response;
-					}
 				}
 
 				if (guarantorCount == 2) {
@@ -2476,13 +2449,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			}
 
 			// CO-APPLICANT Final Check
-			if (index == 1) {
-				if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsCoApp1FinalFilled())
-						|| !applicationMaster.getIsCoApp1FinalFilled().booleanValue()) {
+			if (index == 1 && (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsCoApp1FinalFilled())
+					|| !applicationMaster.getIsCoApp1FinalFilled().booleanValue())) {
 					response.put(MESSAGE_LITERAL, "Please Fill CO-APPLICANT-1 Final Details to Move Next !");
 					response.put(RESULT_LITERAL, false);
 					return response;
-				}
 			}
 
 			break;
@@ -2598,13 +2569,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			}
 
 			// FOR FINAL GUARANTOR
-			if (index == 1) {
-				if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsGuarantor1FinalFilled())
-						|| !applicationMaster.getIsGuarantor1FinalFilled().booleanValue()) {
+			if (index == 1 && (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsGuarantor1FinalFilled())
+					|| !applicationMaster.getIsGuarantor1FinalFilled().booleanValue())) {
 					response.put(MESSAGE_LITERAL, "Please Fill GUARANTOR-1 Final Details to Move Next !");
 					response.put(RESULT_LITERAL, false);
 					return response;
-				}
 			}
 
 			break;
@@ -2847,11 +2816,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 			com.capitaworld.service.oneform.enums.LoanType loanType = com.capitaworld.service.oneform.enums.LoanType
 					.getById(applicationMaster.getProductId());
-			if (!CommonUtils.isObjectNullOrEmpty(loanType)
+			if ((!CommonUtils.isObjectNullOrEmpty(loanType)
 					&& (loanType.getId() == CommonUtils.LoanType.HOME_LOAN.getValue()
-							|| loanType.getId() == CommonUtils.LoanType.CAR_LOAN.getValue())) {
-				if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsFinalMcqFilled())
-						|| !applicationMaster.getIsFinalMcqFilled().booleanValue()) {
+							|| loanType.getId() == CommonUtils.LoanType.CAR_LOAN.getValue()))
+                    && (CommonUtils.isObjectNullOrEmpty(applicationMaster.getIsFinalMcqFilled())
+                            || !applicationMaster.getIsFinalMcqFilled().booleanValue())) {
 					if (loanType.getId() == CommonUtils.LoanType.CAR_LOAN.getValue()) {
 						response.put(MESSAGE_LITERAL, "Please Fill CAR-LOAN FINAL details to Move Next !");
 					} else {
@@ -2859,7 +2828,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					}
 					response.put(RESULT_LITERAL, false);
 					return response;
-				}
 			}
 			break;
 		default:
@@ -2869,7 +2837,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 
 	@Override
-	public String getFsApplicantName(Long applicationId) throws Exception {
+	public String getFsApplicantName(Long applicationId) throws LoansException {
 		LoanApplicationMaster applicationMaster = loanApplicationRepository.findOne(applicationId);
 		if (CommonUtils.isObjectNullOrEmpty(applicationMaster))
 			return null;
@@ -3000,7 +2968,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					} catch (Exception e) {
 						logger.error("Throw Exception while get matches count for registration user details------------->"+ loanMstr.getId()+" :: ",e);
 					}
-					if (!CommonUtils.isObjectNullOrEmpty(proposalCountResponse)) {
+					if (proposalCountResponse != null && !CommonUtils.isObjectNullOrEmpty(proposalCountResponse)) {
 						obj.put("totalMatches", proposalCountResponse.getTotal());
 						obj.put("matches", proposalCountResponse.getMatches());
 						obj.put("directSent", proposalCountResponse.getSent());
@@ -3051,7 +3019,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<AdminPanelLoanDetailsResponse> getLoanDetailsForAdminPanel(Integer type, MobileLoanRequest loanRequest)
-			throws Exception {
+			throws IOException , Exception {
 
 		List<AdminPanelLoanDetailsResponse> responseList = new ArrayList<>();
 		UserResponse userResponse = userClient.getFsIsSelfActiveUserId();
@@ -3117,10 +3085,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				Integer currencyId = retailApplicantDetailRepository.getCurrency(loanApplicationMaster.getUserId(),
 						loanApplicationMaster.getId());
 				response.setCurrency(CommonDocumentUtils.getCurrency(currencyId));
-				if (!CommonUtils.isObjectNullOrEmpty(currencyId)) {
-					if (currencyId.equals(Currency.RUPEES.getId())) {
+				if (!CommonUtils.isObjectNullOrEmpty(currencyId) && currencyId.equals(Currency.RUPEES.getId()) ) {
 						response.setAmounInRuppes(true);
-					}
 				}
 			}
 
@@ -3238,7 +3204,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	// report1
 	@Override
 	public List<AdminPanelLoanDetailsResponse> getPostLoginForAdminPanel(MobileLoanRequest loanRequest)
-			throws IOException, Exception {
+			throws IOException, LoansException {
 		List<AdminPanelLoanDetailsResponse> responseList = new ArrayList<>();
 		UserResponse userResponse = userClient.getFsIsSelfActiveForAdminPanel();
 		if (userResponse.getStatus() != HttpStatus.OK.value()) {
@@ -3296,10 +3262,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					|| loanApplicationMaster.getProductId() == 15) {//
 				CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
 						.getByApplicationAndUserId(loanApplicationMaster.getUserId(), loanApplicationMaster.getId());
-				if (corporateApplicantDetail != null) {
-					if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredPincode())) {
+				if (corporateApplicantDetail != null && !CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredPincode()) ) {
 						response.setPincode(corporateApplicantDetail.getRegisteredPincode().toString());
-					}
 				}
 			} else if (loanApplicationMaster.getProductId() == 3 || loanApplicationMaster.getProductId() == 12
 					|| loanApplicationMaster.getProductId() == 7 || loanApplicationMaster.getProductId() == 13
@@ -3342,7 +3306,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Override
 	public List<AdminPanelLoanDetailsResponse> getPostLoginForAdminPanelOfNotEligibility(MobileLoanRequest loanRequest)
-			throws Exception {
+			throws IOException, LoansException {
 		List<AdminPanelLoanDetailsResponse> responseList = new ArrayList<>();
 		UserResponse userResponse = userClient.getFsIsSelfActiveForAdminPanel();
 		if (userResponse.getStatus() != HttpStatus.OK.value()) {
@@ -3402,10 +3366,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
 							.getByApplicationAndUserId(loanApplicationMaster.getUserId(),
 									loanApplicationMaster.getId());
-					if (corporateApplicantDetail != null) {
-						if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredPincode())) {
+					if (corporateApplicantDetail != null && !CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredPincode()) ) {
 							response.setPincode(corporateApplicantDetail.getRegisteredPincode().toString());
-						}
 					}
 				} else if (loanApplicationMaster.getProductId() == 3 || loanApplicationMaster.getProductId() == 12
 						|| loanApplicationMaster.getProductId() == 7 || loanApplicationMaster.getProductId() == 13
@@ -3494,7 +3456,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Override
 	public List<AdminPanelLoanDetailsResponse> getPostLoginForAdminPanelOfEligibility(MobileLoanRequest loanRequest)
-			throws Exception {
+			throws IOException, LoansException {
 		List<AdminPanelLoanDetailsResponse> responseList = new ArrayList<>();
 		UserResponse userResponse = userClient.getFsIsSelfActiveForAdminPanel();
 		if (userResponse.getStatus() != HttpStatus.OK.value()) {
@@ -3526,8 +3488,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		SimpleDateFormat dt = new SimpleDateFormat(DATE_FORMAT_YYYY_MM_DD_HH_MM_SS);
 		for (LoanApplicationMaster loanApplicationMaster : loanApplicationList) {
 			// code for got eligibility
-			if (loanApplicationMaster.getEligibleAmnt() != null) {
-				if (CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getIsFinalLocked())) {
+			if (loanApplicationMaster.getEligibleAmnt() != null && CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getIsFinalLocked()) ) {
 					AdminPanelLoanDetailsResponse response = new AdminPanelLoanDetailsResponse();
 					UsersRequest usersRequest = listOfObjects.stream()
 							.filter(x -> x.getId().equals(loanApplicationMaster.getUserId())).findFirst().orElse(null);
@@ -3560,10 +3521,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 						CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
 								.getByApplicationAndUserId(loanApplicationMaster.getUserId(),
 										loanApplicationMaster.getId());
-						if (corporateApplicantDetail != null) {
-							if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredPincode())) {
+						if (corporateApplicantDetail != null && !CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredPincode()) ) {
 								response.setPincode(corporateApplicantDetail.getRegisteredPincode().toString());
-							}
 						}
 					} else if (loanApplicationMaster.getProductId() == 3 || loanApplicationMaster.getProductId() == 12
 							|| loanApplicationMaster.getProductId() == 7 || loanApplicationMaster.getProductId() == 13
@@ -3599,7 +3558,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 						}
 						responseList.add(response);
 					}
-				}
 
 			}
 		}
@@ -3609,7 +3567,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Override
 	public List<AdminPanelLoanDetailsResponse> getPostLoginForAdminPanelOfFinalLockedRejectedByUbi(
-			MobileLoanRequest loanRequest) throws IOException {
+			MobileLoanRequest loanRequest) throws IOException, LoansException {
 
 		List<List<Long>> master = organizationReportsService.getApplicationIdAndUserId();
 		List<Long> userId = null;
@@ -3673,10 +3631,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					|| loanApplicationMaster.getProductId() == 15) {//
 				CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
 						.getByApplicationAndUserId(loanApplicationMaster.getUserId(), loanApplicationMaster.getId());
-				if (corporateApplicantDetail != null) {
-					if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredPincode())) {
+				if (corporateApplicantDetail != null && !CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredPincode()) ) {
 						response.setPincode(corporateApplicantDetail.getRegisteredPincode().toString());
-					}
 				}
 			} else if (loanApplicationMaster.getProductId() == 3 || loanApplicationMaster.getProductId() == 12
 					|| loanApplicationMaster.getProductId() == 7 || loanApplicationMaster.getProductId() == 13
@@ -3763,7 +3719,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Override
 	public List<AdminPanelLoanDetailsResponse> getPostLoginForAdminPanelOfApprovedByUbi(MobileLoanRequest loanRequest)
-			throws IOException, Exception {
+			throws IOException, LoansException {
 		List<ReportResponse> master = organizationReportsService.getFpProductMappingId();
 		List<Long> userId = new ArrayList<>();
 		List<Long> applicationId = new ArrayList<>();
@@ -3830,10 +3786,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					|| loanApplicationMaster.getProductId() == 15) {//
 				CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
 						.getByApplicationAndUserId(loanApplicationMaster.getUserId(), loanApplicationMaster.getId());
-				if (corporateApplicantDetail != null) {
-					if (!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredPincode())) {
+				if (corporateApplicantDetail != null && !CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredPincode()) ) {
 						response.setPincode(corporateApplicantDetail.getRegisteredPincode().toString());
-					}
 				}
 			} else if (loanApplicationMaster.getProductId() == 3 || loanApplicationMaster.getProductId() == 12
 					|| loanApplicationMaster.getProductId() == 7 || loanApplicationMaster.getProductId() == 13
@@ -4152,24 +4106,24 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 
 	@Override
-	public boolean isCampaignCodeExist(Long userId, Long clientId, String code) throws Exception {
+	public boolean isCampaignCodeExist(Long userId, Long clientId, String code) throws LoansException {
 		try {
 			Long finalUserId = CommonUtils.isObjectNullOrEmpty(clientId) ? userId : clientId;
 			Long long1 = loanApplicationRepository.getApplicantCountByCode(finalUserId, code);
 			return long1 > 0;
 		} catch (Exception e) {
 			logger.error("Error while Checking Code is Exists or not : ",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
-	public String getCampaignCodeByApplicationId(Long applicationId) throws Exception {
+	public String getCampaignCodeByApplicationId(Long applicationId) throws LoansException {
 		try {
 			return loanApplicationRepository.getCampaignCodeByApplicationId(applicationId);
 		} catch (Exception e) {
 			logger.error("Error while getting Code by Application Id : ",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
@@ -4220,7 +4174,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 
 	@Override
-	public Integer setEligibleLoanAmount(LoanApplicationRequest applicationRequest) throws Exception {
+	public Integer setEligibleLoanAmount(LoanApplicationRequest applicationRequest) throws LoansException {
 		logger.info("Entry in setEligibleLoanAmount()");
 		try {
 			Long finalUserId = CommonUtils.isObjectNullOrEmpty(applicationRequest.getClientId())
@@ -4233,12 +4187,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			return i;
 		} catch (Exception e) {
 			logger.error("Error while updating Eligibility Amount : ",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
-	public void updateFlow(Long applicationId, Long clientId, Long userId) throws Exception {
+	public void updateFlow(Long applicationId, Long clientId, Long userId) throws LoansException {
 		logger.info("Entry in updateFlow()");
 		try {
 			Long finalUserId = CommonUtils.isObjectNullOrEmpty(clientId) ? userId : clientId;
@@ -4259,13 +4213,13 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			}
 		} catch (Exception e) {
 			logger.error("Error while Coverting UBI flow to Normal : ",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 
 	}
 
 	@Override
-	public Long getIrrByApplicationId(Long id) throws Exception {
+	public Long getIrrByApplicationId(Long id) throws LoansException {
 		try {
 
 			CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
@@ -4294,13 +4248,13 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			}
 		} catch (Exception e) {
 			logger.error(ERROR_WHILE_GETTING_INDIVIDUAL_LOAN_DETAILS,e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 		return null;
 	}
 
 	@Override
-	public Object updateLoanApplicationMaster(PaymentRequest paymentRequest, Long userId) throws Exception {
+	public Object updateLoanApplicationMaster(PaymentRequest paymentRequest, Long userId) throws LoansException {
 		logger.info("Start updateLoanApplicationMaster()");
 		try {
 
@@ -4391,7 +4345,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					logger.error("Throw Exception While Get User Email and Mobile : ",e);
 				}
 
-				if (!CommonUtils.isObjectNullOrEmpty(usersRequest)) {
+				if (usersRequest != null && !CommonUtils.isObjectNullOrEmpty(usersRequest)) {
 					gatewayRequest.setEmail(usersRequest.getEmail());
 					gatewayRequest.setPhone(usersRequest.getMobile());
 				} else {
@@ -4416,13 +4370,13 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			}
 		} catch (Exception e) {
 			logger.error("Error while Saving payment information in Loan : ",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 		return paymentRequest.getTypeOfPayment();
 	}
 
 	@Override
-	public void updateSkipPayment(Long userId, Long applicationId, Long orgId, Long fpProductId) throws Exception {
+	public void updateSkipPayment(Long userId, Long applicationId, Long orgId, Long fpProductId) throws LoansException {
 
 		logger.info("Enter in Update Skip Payment Details !!");
 
@@ -4457,21 +4411,17 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					savePhese1DataToSidbi(loanApplicationMaster.getId(), userId, orgId, fpProductId);
 				}*/
 
-				if (connectResponse.getProceed()) {
-					if (loanApplicationMaster.getCompanyCinNumber() != null) {
-						if("Y".equals(IS_MCA_ON)) {
+				if (connectResponse.getProceed() && loanApplicationMaster.getCompanyCinNumber() != null && "Y".equals(IS_MCA_ON) ) {
 						mcaAsyncComponent.callMCAForData(loanApplicationMaster.getCompanyCinNumber(),
 								loanApplicationMaster.getId(), loanApplicationMaster.getUserId());
-						}
-					}
 				}
 			} else {
 				logger.info(CONNECTOR_RESPONSE_NULL_OR_EMPTY_MSG);
-				throw new Exception(SOMETHING_WENT_WRONG_WHILE_CALL_CONNECT_CLIENT_FOR_MSG + applicationId);
+				throw new LoansException(SOMETHING_WENT_WRONG_WHILE_CALL_CONNECT_CLIENT_FOR_MSG + applicationId);
 			}
 		} catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
-			throw new Exception(SOMETHING_WENT_WRONG_WHILE_CALL_CONNECT_CLIENT_FOR_MSG + applicationId);
+			throw new LoansException(SOMETHING_WENT_WRONG_WHILE_CALL_CONNECT_CLIENT_FOR_MSG + applicationId);
 		}
 
 		// TRUE MATCHES PROPOSAL
@@ -4481,15 +4431,15 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			if (!CommonUtils.isObjectNullOrEmpty(proposalMappingResponse)) {
 				logger.info(PROPOSAL_MAPPING_RESPONSE_MSG + proposalMappingResponse.toString());
 				if (proposalMappingResponse.getStatus() != HttpStatus.OK.value()) {
-					throw new Exception(proposalMappingResponse.getMessage());
+					throw new LoansException(proposalMappingResponse.getMessage());
 				}
 			} else {
 				logger.info(PROPOSAL_MAPPING_RESPONSE_NULL_OR_EMPTY_MSG);
-				throw new Exception(SOMETHING_WENT_WRONG_WHILE_CALL_PROPOSAL_CLIENT_FOR_MSG + applicationId);
+				throw new LoansException(SOMETHING_WENT_WRONG_WHILE_CALL_PROPOSAL_CLIENT_FOR_MSG + applicationId);
 			}
 		} catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
-			throw new Exception(SOMETHING_WENT_WRONG_WHILE_CALL_PROPOSAL_CLIENT_FOR_MSG + applicationId);
+			throw new LoansException(SOMETHING_WENT_WRONG_WHILE_CALL_PROPOSAL_CLIENT_FOR_MSG + applicationId);
 		}
 
 		logger.info("Exit on Update Skip Payment Details ");
@@ -4530,13 +4480,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					}
 				}*/
 
-				if (connectResponse.getProceed()) {
-					if (loanApplicationMaster.getCompanyCinNumber() != null) {
-						if("Y".equals(IS_MCA_ON)) {
+				if (connectResponse.getProceed() && loanApplicationMaster.getCompanyCinNumber() != null && "Y".equals(IS_MCA_ON) ) {
 						mcaAsyncComponent.callMCAForData(loanApplicationMaster.getCompanyCinNumber(),
 								loanApplicationMaster.getId(), loanApplicationMaster.getUserId());
-						}
-					}
 				}
 			} else {
 				logger.info(CONNECTOR_RESPONSE_NULL_OR_EMPTY_MSG);
@@ -4669,21 +4615,17 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				 */
 				// }
 
-				if (connectResponse.getProceed()) {
-					if (loanApplicationMaster.getCompanyCinNumber() != null) {
-						if("Y".equals(IS_MCA_ON)) {
+				if (connectResponse.getProceed() && loanApplicationMaster.getCompanyCinNumber() != null && "Y".equals(IS_MCA_ON) ) {
 						mcaAsyncComponent.callMCAForData(loanApplicationMaster.getCompanyCinNumber(),
 								loanApplicationMaster.getId(), loanApplicationMaster.getUserId());
-						}
-					}
 				}
 			} else {
 				logger.info(CONNECTOR_RESPONSE_NULL_OR_EMPTY_MSG);
-				throw new Exception(SOMETHING_WENT_WRONG_WHILE_CALL_CONNECT_CLIENT_FOR_MSG + applicationId);
+				throw new LoansException(SOMETHING_WENT_WRONG_WHILE_CALL_CONNECT_CLIENT_FOR_MSG + applicationId);
 			}
 		} catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
-			throw new Exception(SOMETHING_WENT_WRONG_WHILE_CALL_CONNECT_CLIENT_FOR_MSG + applicationId);
+			throw new LoansException(SOMETHING_WENT_WRONG_WHILE_CALL_CONNECT_CLIENT_FOR_MSG + applicationId);
 		}
 
 		// TRUE MATCHES PROPOSAL
@@ -4693,15 +4635,15 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			if (!CommonUtils.isObjectNullOrEmpty(proposalMappingResponse)) {
 				logger.info(PROPOSAL_MAPPING_RESPONSE_MSG + proposalMappingResponse.toString());
 				if (proposalMappingResponse.getStatus() != HttpStatus.OK.value()) {
-					throw new Exception(proposalMappingResponse.getMessage());
+					throw new LoansException(proposalMappingResponse.getMessage());
 				}
 			} else {
 				logger.info(PROPOSAL_MAPPING_RESPONSE_NULL_OR_EMPTY_MSG);
-				throw new Exception(SOMETHING_WENT_WRONG_WHILE_CALL_PROPOSAL_CLIENT_FOR_MSG + applicationId);
+				throw new LoansException(SOMETHING_WENT_WRONG_WHILE_CALL_PROPOSAL_CLIENT_FOR_MSG + applicationId);
 			}
 		} catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
-			throw new Exception(SOMETHING_WENT_WRONG_WHILE_CALL_PROPOSAL_CLIENT_FOR_MSG + applicationId);
+			throw new LoansException(SOMETHING_WENT_WRONG_WHILE_CALL_PROPOSAL_CLIENT_FOR_MSG + applicationId);
 		}
 
 		// Sending In-Principle for Personal Loan
@@ -4775,7 +4717,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Override
 	public LoanApplicationRequest updateLoanApplicationMasterPaymentStatus(PaymentRequest paymentRequest, Long userId)
-			throws Exception {
+			throws LoansException {
 		logger.info("start updateLoanApplicationMasterPaymentStatus()");
 		try {
 
@@ -4790,8 +4732,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 			Boolean updatePayment = false;
 			ProposalMappingResponse respProp = null;
-			if (SIDBI_FEES.equals(paymentRequest.getPurposeCode())) {
-				if ("Success".equals(paymentRequest.getStatus())) {
+			if (SIDBI_FEES.equals(paymentRequest.getPurposeCode()) && "Success".equals(paymentRequest.getStatus()) ) {
 					try {
 						logger.info("Start update true proposal-------------------------->"
 								+ paymentRequest.getApplicationId());
@@ -4800,7 +4741,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 						logger.info("Throw Exception WHile Activate Proposals : ",e);
 					}
 
-				}
 			}
 			try {
 				updatePayment = gatewayClient.updatePayment(gatewayRequest);
@@ -4855,11 +4795,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 							if (connectResponse.getProceed()) {
 								logger.info("loanApplicationMaster.getCompanyCinNumber()==============>>>"
 										+ loanApplicationMaster.getCompanyCinNumber());
-								if (loanApplicationMaster.getCompanyCinNumber() != null) {
-									if("Y".equals(IS_MCA_ON)) {
+								if (loanApplicationMaster.getCompanyCinNumber() != null && "Y".equals(IS_MCA_ON) ) {
 									mcaAsyncComponent.callMCAForData(loanApplicationMaster.getCompanyCinNumber(),
 											loanApplicationMaster.getId(), loanApplicationMaster.getUserId());
-									}
 								}
 							}
 
@@ -4989,12 +4927,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			return loanRequest;
 		} catch (Exception e) {
 			logger.error("End updateLoanApplicationMasterPaymentStatus() with Exception : ",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
-	public GatewayRequest getPaymentStatus(PaymentRequest paymentRequest, Long userId, Long ClientId) throws Exception {
+	public GatewayRequest getPaymentStatus(PaymentRequest paymentRequest, Long userId, Long ClientId) throws LoansException {
 		logger.info("start getPaymentStatus()");
 		try {
 			GatewayRequest gatewayRequest = new GatewayRequest();
@@ -5007,7 +4945,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			return paymentStatus;
 		} catch (Exception e) {
 			logger.error("End updateLoanApplicationMasterPaymentStatus() with Exception : ",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
@@ -5040,7 +4978,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 
 	@Override
-	public Boolean updateDDRStatus(Long applicationId, Long userId, Long clientId, Long statusId) throws Exception {
+	public Boolean updateDDRStatus(Long applicationId, Long userId, Long clientId, Long statusId) throws LoansException {
 		logger.info("start getPaymentStatus()");
 		try {
 			LoanApplicationMaster applicationMaster = loanApplicationRepository.getById(applicationId);
@@ -5074,13 +5012,13 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			return true;
 		} catch (Exception e) {
 			logger.error("Error while Updating DDR Status : ",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 
 	}
 
 	@Override
-	public LoanApplicationRequest getFromClient(Long id) throws Exception {
+	public LoanApplicationRequest getFromClient(Long id) throws LoansException {
 		try {
 			LoanApplicationMaster applicationMaster = loanApplicationRepository.findOne(id);
 			if (applicationMaster == null) {
@@ -5126,12 +5064,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			return applicationRequest;
 		} catch (Exception e) {
 			logger.error("Error while getting Individual Loan Details For Client:-",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
-	public Boolean isApplicationEligibleForIrr(Long applicationId) throws Exception {
+	public Boolean isApplicationEligibleForIrr(Long applicationId) throws LoansException {
 		LoanApplicationMaster applicationMaster = loanApplicationRepository.findOne(applicationId);
 		if (CommonUtils.isObjectNullOrEmpty(applicationMaster)) {
 			return false;
@@ -5158,7 +5096,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					}
 				} catch (Exception e) {
 					logger.error(ERROR_WHILE_GETTING_INDIVIDUAL_LOAN_DETAILS,e);
-					throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+					throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 				}
 			}
 		}
@@ -5988,7 +5926,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			audit = auditComponent.getAudit(applicationId, true, AuditComponent.COMMERCIAL);
 			if (audit == null) {
 				String pan = null;
-				if (!CommonUtils.isObjectNullOrEmpty(prelimData)
+				if (prelimData != null && !CommonUtils.isObjectNullOrEmpty(prelimData)
 						&& !CommonUtils.isObjectNullOrEmpty(prelimData.getCorporateProfileRequest())
 						&& !CommonUtils.isObjectNullOrEmpty(prelimData.getCorporateProfileRequest().getPan())) {
 					pan = prelimData.getCorporateProfileRequest().getPan();
@@ -6363,7 +6301,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				 * Base base = MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String,
 				 * Object>)msmeCommercial.getData(), Base.class);
 				 */
-				if (!CommonUtils.isObjectNullOrEmpty(base) && !CommonUtils.isObjectNullOrEmpty(base.getResponseReport())
+				if (base != null && !CommonUtils.isObjectNullOrEmpty(base) && !CommonUtils.isObjectNullOrEmpty(base.getResponseReport())
 						&& !CommonUtils.isObjectNullOrEmpty(base.getResponseReport().getProductSec())) {
 					Base.ResponseReport.ProductSec productSec = base.getResponseReport().getProductSec();
 					if (!CommonUtils.isObjectNullOrEmpty(productSec)) {
@@ -6595,8 +6533,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					dataRequest.setCustomerInfo(customerInfo);
 				}
 				// Set Monthly Details
-				if (!CommonUtils.isObjectNullOrEmpty(dataResponse.getMonthlyDetailList())) {
-					if (!CommonUtils.isListNullOrEmpty(dataResponse.getMonthlyDetailList().getMonthlyDetails())) {
+				if (!CommonUtils.isObjectNullOrEmpty(dataResponse.getMonthlyDetailList()) && !CommonUtils.isListNullOrEmpty(dataResponse.getMonthlyDetailList().getMonthlyDetails()) ) {
 						List<com.capitaworld.sidbi.integration.model.bankstatement.MonthlyDetail> monthlyDetailList = new ArrayList<>(
 								dataResponse.getMonthlyDetailList().getMonthlyDetails().size());
 						for (MonthlyDetail monResponse : dataResponse.getMonthlyDetailList().getMonthlyDetails()) {
@@ -6605,7 +6542,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 							monthlyDetailList.add(moRequest);
 						}
 						dataRequest.setMonthlyDetails(monthlyDetailList);
-					}
 				}
 
 				// Set Summary Info
@@ -6634,8 +6570,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				}
 
 				// Set Top5 Fund Received List
-				if (!CommonUtils.isObjectNullOrEmpty(dataResponse.getTop5FundReceivedList())) {
-					if (!CommonUtils.isListNullOrEmpty(dataResponse.getTop5FundReceivedList().getItem())) {
+				if (!CommonUtils.isObjectNullOrEmpty(dataResponse.getTop5FundReceivedList()) && !CommonUtils.isListNullOrEmpty(dataResponse.getTop5FundReceivedList().getItem()) ) {
 						List<com.capitaworld.sidbi.integration.model.bankstatement.Item> top5FundReceivedList = new ArrayList<>(
 								dataResponse.getTop5FundReceivedList().getItem().size());
 						for (Item itemResponse : dataResponse.getTop5FundReceivedList().getItem()) {
@@ -6644,12 +6579,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 							top5FundReceivedList.add(itemRequest);
 						}
 						dataRequest.setTop5FundReceivedList(top5FundReceivedList);
-					}
 				}
 
 				// Set Top5 Fund Transfered List
-				if (!CommonUtils.isObjectNullOrEmpty(dataResponse.getTop5FundTransferedList())) {
-					if (!CommonUtils.isListNullOrEmpty(dataResponse.getTop5FundTransferedList().getItem())) {
+				if (!CommonUtils.isObjectNullOrEmpty(dataResponse.getTop5FundTransferedList()) && !CommonUtils.isListNullOrEmpty(dataResponse.getTop5FundTransferedList().getItem()) ) {
 						List<com.capitaworld.sidbi.integration.model.bankstatement.Item> top5FundTransferedList = new ArrayList<>(
 								dataResponse.getTop5FundTransferedList().getItem().size());
 						for (Item itemResponse : dataResponse.getTop5FundTransferedList().getItem()) {
@@ -6658,12 +6591,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 							top5FundTransferedList.add(itemRequest);
 						}
 						dataRequest.setTop5FundTransferedList(top5FundTransferedList);
-					}
 				}
 
 				// Set BouncedOrPenalXnList
-				if (!CommonUtils.isObjectNullOrEmpty(dataResponse.getBouncedOrPenalXnList())) {
-					if (!CommonUtils.isListNullOrEmpty(dataResponse.getBouncedOrPenalXnList().getBouncedOrPenalXns())) {
+				if (!CommonUtils.isObjectNullOrEmpty(dataResponse.getBouncedOrPenalXnList()) && !CommonUtils.isListNullOrEmpty(dataResponse.getBouncedOrPenalXnList().getBouncedOrPenalXns()) ) {
 						List<com.capitaworld.sidbi.integration.model.bankstatement.BouncedOrPenalXn> bouncedOrPanelXnList = new ArrayList<>(
 								dataResponse.getBouncedOrPenalXnList().getBouncedOrPenalXns().size());
 						for (BouncedOrPenalXn bounceResponse : dataResponse.getBouncedOrPenalXnList()
@@ -6673,12 +6604,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 							bouncedOrPanelXnList.add(bounceRequest);
 						}
 						dataRequest.setBouncedOrPenalXnList(bouncedOrPanelXnList);
-					}
 				}
 
 				// Set Panel List
-				if (!CommonUtils.isObjectNullOrEmpty(dataResponse.getPenalList())) {
-					if (!CommonUtils.isListNullOrEmpty(dataResponse.getPenalList().getBouncedOrPenalXns())) {
+				if (!CommonUtils.isObjectNullOrEmpty(dataResponse.getPenalList()) && !CommonUtils.isListNullOrEmpty(dataResponse.getPenalList().getBouncedOrPenalXns()) ) {
 						List<com.capitaworld.sidbi.integration.model.bankstatement.BouncedOrPenalXn> panelXnList = new ArrayList<>(
 								dataResponse.getPenalList().getBouncedOrPenalXns().size());
 						for (BouncedOrPenalXn bounceResponse : dataResponse.getPenalList().getBouncedOrPenalXns()) {
@@ -6687,7 +6616,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 							panelXnList.add(bounceRequest);
 						}
 						dataRequest.setPenalList(panelXnList);
-					}
 				}
 
 				// Set Xns
@@ -7420,7 +7348,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		return corporateProfileRequest;
 	}
 
-	public Map<String, Object> getFpDetailsByFpProductId(Long fpProductId) throws Exception {
+	public Map<String, Object> getFpDetailsByFpProductId(Long fpProductId) throws LoansException {
 		Map<String, Object> map = null;
 		try {
 			map = new HashMap<String, Object>();
@@ -7442,7 +7370,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		return map;
 	}
 
-	public CorporateProduct getFpDetailsByFpProductMappingId(Long fpProductMappingId) throws Exception {
+	public CorporateProduct getFpDetailsByFpProductMappingId(Long fpProductMappingId) throws LoansException {
 		logger.info("ENTER IN LOAN APPLICATIONSERVICEIMPL-------------FP PRODUCT MAPPING ID >>>>>>>>>>>"
 				+ fpProductMappingId);
 
@@ -7477,7 +7405,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	 * LoanApplicationService#getDataForCGTMSE(java.lang.Long)
 	 */
 	@Override
-	public CGTMSECalcDataResponse getDataForCGTMSE(Long applicationId) throws Exception {
+	public CGTMSECalcDataResponse getDataForCGTMSE(Long applicationId) throws LoansException {
 		try {
 
 			logger.info("In getDataForCGTMSE");
@@ -7563,17 +7491,17 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 				if (primaryCorporateDetail != null) {
 					response.setColleteralValue(primaryCorporateDetail.getCollateralSecurityAmount());
-					if (primaryCorporateDetail.getAssessmentId() != null) {
-						if (primaryCorporateDetail.getAssessmentId() == AssessmentOptionForFS.EQUIPMENT_MACHINERY
-								.getId()) {
+					if (primaryCorporateDetail.getAssessmentId() != null && primaryCorporateDetail.getAssessmentId() == AssessmentOptionForFS.EQUIPMENT_MACHINERY
+							.getId() ) {
 							response.setIsPurchaseOfEqup(true);
 							response.setCostOfMachinery(primaryCorporateDetail.getCostOfMachinery());
-						}
 					}
 				}
 				if (loan != null && loan.getBusinessTypeId() != null && loan.getBusinessTypeId() == 2) {
 					response.setIsPurchaseOfEqup(true);
-					response.setCostOfMachinery(primaryCorporateDetail.getProposedCost());
+					if (primaryCorporateDetail != null) {
+						response.setCostOfMachinery(primaryCorporateDetail.getProposedCost());
+					}
 				}
 			} catch (Exception e) {
 				logger.error(CommonUtils.EXCEPTION,e);
@@ -8262,7 +8190,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 
 	@Override
-	public String saveDetailedInfo(ProfileReqRes profileReqRes) throws LoansException, Exception {
+	public String saveDetailedInfo(ProfileReqRes profileReqRes) throws LoansException {
 		logger.info("================== Enter in saveDetailedInfo =============== ");
 		Long applicationId = null;
 		CorporateProfileRequest corporateProfileRequest = profileReqRes.getCorporateProfileRequest();
@@ -8275,7 +8203,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				corporateProfileRequest.getAdministrativeAddress().getPincode(),
 				corporateProfileRequest.getContLiabilityFyAmt(), corporateProfileRequest.getContLiabilitySyAmt(),
 				corporateProfileRequest.getContLiabilityTyAmt())) {
-			throw new Exception(
+			throw new LoansException(
 					"Mandatory field must not be null (** applicationId , udhyogAddhar , city , state , country , pincode , ContLiabilityFyAmt ,  ContLiabilitySyAmt ,  ContLiabilityTyAmt ** ) ");
 		}
 		applicationId = saveCorporateProfile(profileReqRes.getCorporateProfileRequest());
@@ -8545,7 +8473,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				guarantorsCorporateDetail.setName(guarantorsCorporateDetailRequest.getName());
 				guarantorsCorporateDetail.setPropertiesOwned(guarantorsCorporateDetailRequest.getPropertiesOwned());
 				guarantorsCorporateDetail.setPropertyType(guarantorsCorporateDetailRequest.getValue());
-				;
 				guarantorsCorporateDetail.setAddress(guarantorsCorporateDetailRequest.getAddress());
 				guarantorsCorporateDetail.setOccupation(guarantorsCorporateDetailRequest.getOccupation());
 				guarantorsCorporateDetail.setApplicationId(new LoanApplicationMaster(applicationId));
@@ -10560,10 +10487,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		// locationDetailsRequest.setreg
 		// locationDetailsRequest.set
 
-		if (!CommonUtils.isObjectNullOrEmpty(productSec.getLocationDetailsSec())) {
-
-			if (!CommonUtils.isObjectNullOrEmpty(productSec.getLocationDetailsSec().getLocationInformationVec())
-					&& CommonUtils.isObjectNullOrEmpty(productSec.getLocationDetailsSec().getMessage())) {
+		if (!CommonUtils.isObjectNullOrEmpty(productSec.getLocationDetailsSec()) && !CommonUtils.isObjectNullOrEmpty(productSec.getLocationDetailsSec().getLocationInformationVec())
+				&& CommonUtils.isObjectNullOrEmpty(productSec.getLocationDetailsSec().getMessage())) {
 				AddressAndContactDetailsRequest addressAndContactDetailsRequest = null;
 				AddressRequest registeredOfficeAddress = null;
 				for (LocationInformation locationInformation : productSec.getLocationDetailsSec()
@@ -10602,7 +10527,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 						branchOrRegionalOfficeAddressAndContactDetailsRequests.add(addressAndContactDetailsRequest);
 					}
 				}
-			}
 		}
 
 		locationDetailsRequest.setRegisteredOffice(regOfficeAddressAndContactDetailsRequests);
@@ -11217,6 +11141,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		}
 		logger.info("IN GET LOAN WC RENEWAL TYPE NOT FOUND BY APPLICATION ID ---------->" + applicationId);
 		return null;
+	}
+	
+	@Override
+	public String getCommonPropertiesValue(String key) {
+		return loanRepository.getCommonPropertiesValue(key);
 	}
 
 }

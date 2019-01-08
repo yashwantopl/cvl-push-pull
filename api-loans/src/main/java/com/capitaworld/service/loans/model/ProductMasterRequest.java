@@ -61,6 +61,15 @@ public class ProductMasterRequest implements Serializable {
 	private String actionFor;
 	
 	
+	public ProductMasterRequest() {
+		// Do nothing because of X and Y.
+	}
+
+	public ProductMasterRequest(Long id) {
+		this.id = id;
+	}
+
+	
 	/**
 	 * @return the jobId
 	 */
@@ -75,10 +84,7 @@ public class ProductMasterRequest implements Serializable {
 		this.jobId = jobId;
 	}
 
-	public ProductMasterRequest() {
-		// Do nothing because of X and Y.
-	}
-
+	
 	public Long getId() {
 		return this.id;
 	}

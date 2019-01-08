@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.service.fundprovider.MsmeValueMappingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,8 +37,6 @@ import com.capitaworld.service.loans.domain.fundprovider.NegativeIndustryTemp;
 import com.capitaworld.service.loans.domain.fundprovider.NtbTermLoanParameterTemp;
 import com.capitaworld.service.loans.domain.fundprovider.TermLoanParameter;
 import com.capitaworld.service.loans.domain.fundprovider.TermLoanParameterTemp;
-import com.capitaworld.service.loans.domain.fundprovider.WcTlParameter;
-import com.capitaworld.service.loans.domain.fundprovider.WorkingCapitalParameter;
 import com.capitaworld.service.loans.model.DataRequest;
 import com.capitaworld.service.loans.model.corporate.TermLoanParameterRequest;
 import com.capitaworld.service.loans.repository.fundprovider.GeographicalCityRepository;
@@ -444,7 +443,7 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 	 * @see com.capitaworld.service.loans.service.fundprovider.TermLoanParameterService#saveMasterFromTempTl(java.lang.Long)
 	 */
 	@Override
-	public Boolean saveMasterFromTempTl(Long mappingId) throws Exception {
+	public Boolean saveMasterFromTempTl(Long mappingId) throws LoansException {
 		try {
 			TermLoanParameterRequest  temp =  getTermLoanParameterRequestTemp(mappingId,null,null);
 			
@@ -1064,7 +1063,7 @@ public class TermLoanParameterServiceImpl implements TermLoanParameterService {
 
 
 	@Override
-	public Boolean saveMasterFromNtbTempTl(Long mappingId) throws Exception {
+	public Boolean saveMasterFromNtbTempTl(Long mappingId) throws LoansException {
 		try {
 			TermLoanParameterRequest  temp =  getNtbTermLoanParameterRequestTemp(mappingId,null,null);
 			

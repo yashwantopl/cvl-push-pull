@@ -762,6 +762,7 @@ public class LoanApplicationController {
 			JSONObject json = new JSONObject();
 			json.put("isPrimaryLock", loanApplicationService.isPrimaryLocked(applicationId, userId));
 			json.put("isFinalLock", loanApplicationService.isFinalLocked(applicationId, userId));
+			json.put("isMcqSkipped", loanApplicationService.isMcqSkipped(applicationId));
 			LoansResponse loansResponse = new LoansResponse(CommonUtils.SUCCESS_RESULT, HttpStatus.OK.value());
 			loansResponse.setData(json);
 			CommonDocumentUtils.endHook(logger, "isPrimaryAndFinalLocked");
@@ -1931,22 +1932,27 @@ public class LoanApplicationController {
 			}
 			LoansResponse response = new LoansResponse(CommonUtils.SUCCESS, HttpStatus.OK.value());
 
-			Boolean result = loanSanctionService.saveSanctionDetailFromPopup(loanSanctionRequest);
+			Integer result = loanSanctionService.saveSanctionDetailFromPopup(loanSanctionRequest);
 			logger.info("result of save sanction detail ---------------------{}", result);
-			response.setData(result);
-			if (!result) {
-				response.setMessage("something went wrong while saving sanctioned details");
-				response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+			
+			if (result == 4) {
+				response.setData(true);
+				response.setMessage("Updated Successfully");
+				response.setStatus(HttpStatus.OK.value());
+			} else if (result == 1) {
+				response.setData(false);
+				response.setMessage("The said borrower has already receive in-principle approval through online journey, hence the same proposal can not be sanctioned through offline mode");
+				response.setStatus(HttpStatus.BAD_REQUEST.value());
+			} else if (result == 2) {
+				response.setData(false);
+				response.setMessage("The said proposal has already been sanctioned by one of our bank partners, hence the same proposal can not be sanctioned again");
+				response.setStatus(HttpStatus.BAD_REQUEST.value());
 			} else {
-				ProposalMappingRequest proposalMappingRequest = new ProposalMappingRequest();
-				proposalMappingRequest.setId(loanSanctionRequest.getProposalId());
-				proposalMappingRequest.setProposalStatusId(loanSanctionRequest.getProposalStatusId());
-				proposalMappingRequest.setLastActionPerformedBy(userType);
-				proposalMappingRequest.setUserId(userId);
-				proposalDetailsClient.changeStatus(proposalMappingRequest);
+				response.setData(false);
+				response.setMessage("The application has encountered an error, please try again after sometime!!!");
+				response.setStatus(HttpStatus.BAD_REQUEST.value());
 			}
-
-			logger.info("end getDetailsForApproval()");
+			logger.info("end getDetailsForApproval()---------------->" + result);
 			return new ResponseEntity<LoansResponse>(response, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getDetailsForApproval", e);
@@ -3156,7 +3162,18 @@ public class LoanApplicationController {
 		return null;
 	}
 	
-	
+	@RequestMapping(value = "/getCommonPropValue/{keyName}", method = RequestMethod.GET)
+	public ResponseEntity<LoansResponse> getCommonPropValue(@PathVariable("keyName") String keyName) {
+		try {
+			logger.info("ENTER IN getCommonPropValue---------------->" + keyName);
+			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully get data", HttpStatus.OK.value(), 
+					loanApplicationService.getCommonPropertiesValue(keyName)), HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while getCommonPropValue==>",e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
+		}
+	}
 	
 	
 	

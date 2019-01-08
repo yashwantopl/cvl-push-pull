@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -89,7 +90,7 @@ public class NTBServiceImpl implements NTBService {
     private Environment environment;
 
     @Override
-    public DirectorBackgroundDetailRequest getOneformDetailByDirectorId(Long directorId) throws Exception {
+    public DirectorBackgroundDetailRequest getOneformDetailByDirectorId(Long directorId) throws LoansException {
         logger.info("Enter getOneformDetailByDirectorId() with directorID : " + directorId);
 
         try {
@@ -119,7 +120,7 @@ public class NTBServiceImpl implements NTBService {
     }
 
     @Override
-    public Boolean saveOneformDetailForDirector(DirectorBackgroundDetailRequest directorBackgroundDetailRequest, Long userId) throws Exception {
+    public Boolean saveOneformDetailForDirector(DirectorBackgroundDetailRequest directorBackgroundDetailRequest, Long userId) throws LoansException {
          logger.info("Enter saveOneformDetailForDirector() with data : " + directorBackgroundDetailRequest.toString());
         try {
             EmploymentDetailRequest employmentDetailRequest =directorBackgroundDetailRequest.getEmploymentDetailRequest();
@@ -157,7 +158,7 @@ public class NTBServiceImpl implements NTBService {
 
 
     @Override
-    public List<FinancialArrangementsDetailRequest> getFinancialDetails(Long applicationId, Long directorId) throws Exception {
+    public List<FinancialArrangementsDetailRequest> getFinancialDetails(Long applicationId, Long directorId) throws LoansException {
         logger.info("Entry in getFinancialDetails() for applicationId : " + applicationId + " directorId : " + directorId);
         try{
             List<FinancialArrangementsDetail> finArngDetailList = financialArrangementDetailsRepository.findByDirectorBackgroundDetailIdAndApplicationIdIdAndIsActive(directorId, applicationId, true);
@@ -179,7 +180,7 @@ public class NTBServiceImpl implements NTBService {
     }
 
     @Override
-    public Boolean saveFinancialDetails(List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestList, Long applicationId, Long userId, Long directorId) throws Exception {
+    public Boolean saveFinancialDetails(List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestList, Long applicationId, Long userId, Long directorId) throws LoansException {
         logger.info("Entry in saveFinancialDetails() for applicationId : " + applicationId + " userId:" + userId);
         try {
             if (!CommonUtils.isListNullOrEmpty(financialArrangementsDetailRequestList)) {
@@ -188,9 +189,9 @@ public class NTBServiceImpl implements NTBService {
                     if (!CommonUtils.isObjectNullOrEmpty(reqObj.getId())) {
                         saveFinObj = financialArrangementDetailsRepository.findByIdAndIsActive(reqObj.getId(), true);
                     }
-                    if (CommonUtils.isObjectNullOrEmpty(saveFinObj)) {
+                    if (saveFinObj == null || CommonUtils.isObjectNullOrEmpty(saveFinObj)) {
                         saveFinObj = new FinancialArrangementsDetail();
-                        BeanUtils.copyProperties(reqObj, saveFinObj, "id", "createdBy", "createdDate", "modifiedBy", "modifiedDate", "isActive");
+                        BeanUtils.copyProperties(reqObj, saveFinObj, "id", CommonUtils.CREATED_BY, CommonUtils.CREATED_DATE, CommonUtils.MODIFIED_BY, CommonUtils.MODIFIED_DATE, "isActive");
 
                         saveFinObj.setDirectorBackgroundDetail(directorBackgroundDetailsRepository.findOne(directorId));
                         saveFinObj.setApplicationId(new LoanApplicationMaster(applicationId));
@@ -198,7 +199,7 @@ public class NTBServiceImpl implements NTBService {
                         saveFinObj.setCreatedDate(new Date());
                         saveFinObj.setIsActive(true);
                     } else {
-                        BeanUtils.copyProperties(reqObj, saveFinObj, "id", "createdBy", "createdDate", "modifiedBy", "modifiedDate");
+                        BeanUtils.copyProperties(reqObj, saveFinObj, "id", CommonUtils.CREATED_BY, CommonUtils.CREATED_DATE, CommonUtils.MODIFIED_BY, CommonUtils.MODIFIED_DATE);
                         saveFinObj.setModifiedBy(userId);
                         saveFinObj.setModifiedDate(new Date());
                     }
@@ -219,7 +220,7 @@ public class NTBServiceImpl implements NTBService {
     }
 
     @Override
-    public FundSeekerInputRequestResponse getOthersDetail(Long applicationId) throws Exception {
+    public FundSeekerInputRequestResponse getOthersDetail(Long applicationId) throws LoansException {
         try{
             FundSeekerInputRequestResponse fundSeekerInputRequestResponse = new FundSeekerInputRequestResponse();
             CorporateApplicantDetail corpApplicantDetail = corporateApplicantDetailRepository.findOneByApplicationIdId(applicationId);
@@ -258,7 +259,7 @@ public class NTBServiceImpl implements NTBService {
     }
 
     @Override
-    public Boolean saveOthersDetail(FundSeekerInputRequestResponse fundSeekerInputRequestResponse, Long applicationId, Long userId) throws Exception {
+    public Boolean saveOthersDetail(FundSeekerInputRequestResponse fundSeekerInputRequestResponse, Long applicationId, Long userId) throws LoansException {
 
         try{
             logger.info("getting corporateApplicantDetail from applicationId::"+applicationId);
@@ -317,7 +318,7 @@ public class NTBServiceImpl implements NTBService {
                     if (!CommonUtils.isObjectNullOrEmpty(reqObj.getId())) {
                         saveDirObj = directorBackgroundDetailsRepository.findByIdAndIsActive(reqObj.getId(), true);
                         logger.info("Old Object Retrived For Director saveDirObj.getId()==========================>{}",saveDirObj.getId());
-                        BeanUtils.copyProperties(reqObj, saveDirObj, "id", "createdBy", "createdDate", "modifiedBy","modifiedDate");
+                        BeanUtils.copyProperties(reqObj, saveDirObj, "id", CommonUtils.CREATED_BY, CommonUtils.CREATED_DATE, CommonUtils.MODIFIED_BY,CommonUtils.MODIFIED_DATE);
                         saveDirObj.setModifiedBy(userId);
                         saveDirObj.setModifiedDate(new Date());
                     }
@@ -338,7 +339,7 @@ public class NTBServiceImpl implements NTBService {
 
         }catch (Exception e){
             logger.error("Throw Exception while save and update Others Detail !!",e);
-            throw new Exception();
+            throw new LoansException(e);
         }
     }
 
@@ -416,7 +417,7 @@ public class NTBServiceImpl implements NTBService {
     
     @Override
 	public LoansResponse invokeFraudAnalytics(FundSeekerInputRequestResponse fundSeekerInputRequestResponse)
-			throws Exception {
+			throws LoansException {
 		
 		try {
 			logger.info("Start invokeFraudAnalytics()");

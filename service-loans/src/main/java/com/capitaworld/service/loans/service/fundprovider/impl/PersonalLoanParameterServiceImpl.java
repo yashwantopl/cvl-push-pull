@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -34,7 +35,6 @@ import com.capitaworld.service.loans.domain.fundprovider.GeographicalStateDetail
 import com.capitaworld.service.loans.domain.fundprovider.PersonalLoanParameter;
 import com.capitaworld.service.loans.domain.fundprovider.PersonalLoanParameterTemp;
 import com.capitaworld.service.loans.model.DataRequest;
-import com.capitaworld.service.loans.model.corporate.WorkingCapitalParameterRequest;
 import com.capitaworld.service.loans.model.retail.CreditRatingPlParameter;
 import com.capitaworld.service.loans.model.retail.PersonalLoanParameterRequest;
 import com.capitaworld.service.loans.repository.fundprovider.FpEmpStatusRepository;
@@ -817,7 +817,7 @@ private void saveCountry(PersonalLoanParameterRequest personalLoanParameterReque
 	}
 
 	@Override
-	public Boolean saveMasterFromTempPl(Long mappingId) throws Exception {
+	public Boolean saveMasterFromTempPl(Long mappingId) throws LoansException {
 		try {
 			PersonalLoanParameterRequest personalLoanParameterRequest= getPersonalLoanParameterRequestTemp(mappingId,null,null);
 			return saveOrUpdate(personalLoanParameterRequest,mappingId);

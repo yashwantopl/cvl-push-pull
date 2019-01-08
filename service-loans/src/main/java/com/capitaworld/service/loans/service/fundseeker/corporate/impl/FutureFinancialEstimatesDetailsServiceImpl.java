@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -45,7 +46,7 @@ public class FutureFinancialEstimatesDetailsServiceImpl implements FutureFinanci
 	private LoanApplicationRepository loanApplicationRepository;
 
 	@Override
-	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception {
+	public Boolean saveOrUpdate(FrameRequest frameRequest) throws LoansException {
 		try {
 			for (Map<String, Object> obj : frameRequest.getDataList()) {
 				FutureFinancialEstimatesDetailRequest futureFinancialEstimateDetailRequest = (FutureFinancialEstimatesDetailRequest) MultipleJSONObjectHelper
@@ -67,12 +68,12 @@ public class FutureFinancialEstimatesDetailsServiceImpl implements FutureFinanci
 
 		catch (Exception e) {
 			logger.error("Exception  in save futureFinancialEstimateDetail :- ",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
-	public List<FutureFinancialEstimatesDetailRequest> getFutureFinancialEstimateDetailsList(Long id,Long userId) throws Exception {
+	public List<FutureFinancialEstimatesDetailRequest> getFutureFinancialEstimateDetailsList(Long id,Long userId) throws LoansException {
 		try {
 			List<FutureFinancialEstimatesDetail> futureFinancialEstimateDetails = futureFinancialEstimateDetailsRepository
 					.listFutureFinancialEstimateDetailsFromAppId(id,userId);
@@ -88,29 +89,31 @@ public class FutureFinancialEstimatesDetailsServiceImpl implements FutureFinanci
 
 		catch (Exception e) {
 			logger.error("Exception  in save futureFinancialEstimateDetail  :- ",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
 	public List<FutureFinancialEstimatesDetailRequest> getFutureEstimateDetailsList(Long userId, Long applicationId)
-			throws Exception {
+			throws LoansException {
 		List<FutureFinancialEstimatesDetail> futureFinancialEstimateDetails = futureFinancialEstimateDetailsRepository
 				.listFutureFinancialEstimateDetailsFromAppId(applicationId,userId);
 		LoanApplicationMaster applicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId, userId);
 		LoanType loanType = CommonUtils.LoanType.getType(applicationMaster.getProductId());
 		if (loanType == null) {
-			Collections.emptyList();
+			return Collections.emptyList();
 		}
-		switch (loanType) {
-		case WORKING_CAPITAL:
-			return calucateWCFinancialYear(futureFinancialEstimateDetails);
-		case TERM_LOAN:
-			return calucateTLFinancialYear(futureFinancialEstimateDetails, applicationMaster, applicationId, userId);
-		default:
-			break;
+		else {
+			switch (loanType) {
+				case WORKING_CAPITAL:
+					return calucateWCFinancialYear(futureFinancialEstimateDetails);
+				case TERM_LOAN:
+					return calucateTLFinancialYear(futureFinancialEstimateDetails, applicationMaster, applicationId, userId);
+				default:
+					break;
+			}
+			return Collections.emptyList();
 		}
-		return Collections.emptyList();
 	}
 
 	private List<FutureFinancialEstimatesDetailRequest> calucateWCFinancialYear(

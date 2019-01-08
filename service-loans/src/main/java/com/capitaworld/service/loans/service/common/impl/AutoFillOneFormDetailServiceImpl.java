@@ -279,8 +279,8 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 
 	private List<CorporateCoApplicantDetail> corporateCoApplicantDetailToList = new ArrayList<>(2);
 	private static List<Long> prodDocMappingListCoApp = new ArrayList<Long>(10);
-	private static String[] skipPrimaryData = { "id", "userId", "applicationId", "productId", "categoryCode",
-			"applicationCode", "isPrimaryLocked", "isFinalLocked", "createdBy", "createdDate", "isActive",
+	private static String[] skipPrimaryData = { "id", "userId", CommonUtils.APPLICATION_ID, "productId", "categoryCode",
+			"applicationCode", "isPrimaryLocked", "isFinalLocked", "createdBy", CommonUtils.CREATED_DATE, "isActive",
 			"isMsmeScoreRequired", "eligibleAmnt", "npUserId", "npAssigneeId", "ddrStatusId", "typeOfPayment",
 			"appointmentDate", "appointmentTime", "paymentAmount", "isApplicantDetailsFilled",
 			"isApplicantPrimaryFilled", "isApplicantFinalFilled", "isCoApp1DetailsFilled", "isCoApp1FinalFilled",
@@ -289,10 +289,10 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 			"isFinalUploadFilled", "isFinalMcqFilled", "detailsFilledTime", "primaryFilledTime", "finalFilledTime",
 			"detailsFilledCount", "primaryFilledCount", "finalFilledCount", "mcaCompanyId", "isMca", "campaignCode",
 			"campaignCode" };
-	private static String[] skipProfileData = { "id", "applicationId", "organisationName",
+	private static String[] skipProfileData = { "id", CommonUtils.APPLICATION_ID, "organisationName",
 			"administrativePremiseNumber", "administrativeStreetName", "administrativeLandMark",
 			"administrativeCountryId", "administrativeStateId", "administrativeCityId", "administrativePincode",
-			"createdDate", "createdBy", "isActive" };
+			CommonUtils.CREATED_DATE, "createdBy", "isActive" };
 
 	static {
 		prodDocMappingListCoApp.add(
@@ -685,7 +685,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 
 			for (CorporateCoApplicantDetail corporateCoApplicantDetail : corporateCoApplicantDetailsFromList) {
 				CorporateCoApplicantDetail coTo = new CorporateCoApplicantDetail();
-				BeanUtils.copyProperties(corporateCoApplicantDetail, coTo, "id", "applicationId");
+				BeanUtils.copyProperties(corporateCoApplicantDetail, coTo, "id", CommonUtils.APPLICATION_ID);
 				coTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 				coTo.setCreatedDate(new Date());
 				corporateCoApplicantDetailToList.add(coApplicantDetailRepository.save(coTo));
@@ -944,7 +944,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 
 		for (AchievementDetail achievementDetailFrom : achievementDetailsFromList) {
 			AchievementDetail achievementDetailTo = new AchievementDetail();
-			BeanUtils.copyProperties(achievementDetailFrom, achievementDetailTo, "id", "applicationId");
+			BeanUtils.copyProperties(achievementDetailFrom, achievementDetailTo, "id", CommonUtils.APPLICATION_ID);
 			achievementDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 			achievementDetailTo.setCreatedDate(new Date());
 			achievementDetailsRepository.save(achievementDetailTo);
@@ -963,7 +963,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		existingProductDetailsRepository.inActive(userId, corporateApplicantDetailTo.getApplicationId().getId());
 		for (ExistingProductDetail existingProductDetailFrom : existingProductDetailsFromList) {
 			ExistingProductDetail existingProductDetailTo = new ExistingProductDetail();
-			BeanUtils.copyProperties(existingProductDetailFrom, existingProductDetailTo, "id", "applicationId");
+			BeanUtils.copyProperties(existingProductDetailFrom, existingProductDetailTo, "id", CommonUtils.APPLICATION_ID);
 			existingProductDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 			existingProductDetailTo.setCreatedDate(new Date());
 			existingProductDetailsRepository.save(existingProductDetailTo);
@@ -980,7 +980,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		proposedProductDetailsRepository.inActive(userId, corporateApplicantDetailTo.getApplicationId().getId());
 		for (ProposedProductDetail proposedProductDetailFrom : proposedProductDetailsFromList) {
 			ProposedProductDetail proposedProductDetailTo = new ProposedProductDetail();
-			BeanUtils.copyProperties(proposedProductDetailFrom, proposedProductDetailTo, "id", "applicationId");
+			BeanUtils.copyProperties(proposedProductDetailFrom, proposedProductDetailTo, "id", CommonUtils.APPLICATION_ID);
 			proposedProductDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 
 			proposedProductDetailTo.setCreatedDate(new Date());
@@ -999,7 +999,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		promotorBackgroundDetailsRepository.inActive(userId, corporateApplicantDetailTo.getApplicationId().getId());
 		for (PromotorBackgroundDetail promotorBackgroundDetailFrom : promotorBackgroundDetailsFromList) {
 			PromotorBackgroundDetail promotorBackgroundDetailTo = new PromotorBackgroundDetail();
-			BeanUtils.copyProperties(promotorBackgroundDetailFrom, promotorBackgroundDetailTo, "id", "applicationId");
+			BeanUtils.copyProperties(promotorBackgroundDetailFrom, promotorBackgroundDetailTo, "id", CommonUtils.APPLICATION_ID);
 			promotorBackgroundDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 			promotorBackgroundDetailTo.setCreatedBy(userId);
 			promotorBackgroundDetailTo.setModifiedDate(new Date());
@@ -1018,7 +1018,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 
 		for (OwnershipDetail ownershipDetailFrom : ownershipDetailsList) {
 			OwnershipDetail ownershipDetailTo = new OwnershipDetail();
-			BeanUtils.copyProperties(ownershipDetailFrom, ownershipDetailTo, "id", "applicationId");
+			BeanUtils.copyProperties(ownershipDetailFrom, ownershipDetailTo, "id", CommonUtils.APPLICATION_ID);
 			ownershipDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 			ownershipDetailTo.setCreatedDate(new Date());
 			ownershipDetailsRepository.save(ownershipDetailTo);
@@ -1035,7 +1035,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		directorBackgroundDetailsRepository.inActive(userId, corporateApplicantDetailTo.getApplicationId().getId());
 		for (DirectorBackgroundDetail directorBackgroundDetailFrom : directorBackgroundDetailsList) {
 			DirectorBackgroundDetail directorBackgroundDetailTo = new DirectorBackgroundDetail();
-			BeanUtils.copyProperties(directorBackgroundDetailFrom, directorBackgroundDetailTo, "id", "applicationId");
+			BeanUtils.copyProperties(directorBackgroundDetailFrom, directorBackgroundDetailTo, "id", CommonUtils.APPLICATION_ID);
 			directorBackgroundDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 			directorBackgroundDetailTo.setCreatedDate(new Date());
 			directorBackgroundDetailsRepository.save(directorBackgroundDetailTo);
@@ -1053,7 +1053,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 
 		for (TotalCostOfProject totalCostOfProjectFrom : totalCostOfProjectRequestfromList) {
 			TotalCostOfProject totalCostOfProjectTo = new TotalCostOfProject();
-			BeanUtils.copyProperties(totalCostOfProjectFrom, totalCostOfProjectTo, "id", "applicationId");
+			BeanUtils.copyProperties(totalCostOfProjectFrom, totalCostOfProjectTo, "id", CommonUtils.APPLICATION_ID);
 			totalCostOfProjectTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 			totalCostOfProjectTo.setCreatedDate(new Date());
 			totalCostOfProjectRepository.save(totalCostOfProjectTo);
@@ -1070,7 +1070,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		financeMeansDetailRepository.inActive(userId, corporateApplicantDetailTo.getApplicationId().getId());
 		for (FinanceMeansDetail financeMeansDetailFrom : financeMeansDetailsFromList) {
 			FinanceMeansDetail financeMeansDetailTo = new FinanceMeansDetail();
-			BeanUtils.copyProperties(financeMeansDetailFrom, financeMeansDetailTo, "id", "applicationId");
+			BeanUtils.copyProperties(financeMeansDetailFrom, financeMeansDetailTo, "id", CommonUtils.APPLICATION_ID);
 			financeMeansDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 			financeMeansDetailTo.setCreatedDate(new Date());
 			financeMeansDetailRepository.save(financeMeansDetailTo);
@@ -1088,7 +1088,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		for (PastFinancialEstimatesDetail pastFinancialEstimatesDetailfrom : pastFinancialEstimateDetailsFromList) {
 			PastFinancialEstimatesDetail pastFinancialEstimatesDetailTo = new PastFinancialEstimatesDetail();
 			BeanUtils.copyProperties(pastFinancialEstimatesDetailfrom, pastFinancialEstimatesDetailTo, "id",
-					"applicationId");
+					CommonUtils.APPLICATION_ID);
 			pastFinancialEstimatesDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 			pastFinancialEstimatesDetailTo.setCreatedDate(new Date());
 			pastFinancialEstimateDetailsRepository.save(pastFinancialEstimatesDetailTo);
@@ -1112,7 +1112,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		for (FutureFinancialEstimatesDetail futureFinancialEstimatesDetailFrom : futureFinancialEstimateDetailsFormLsit) {
 			FutureFinancialEstimatesDetail futureFinancialEstimatesDetailTo = new FutureFinancialEstimatesDetail();
 			BeanUtils.copyProperties(futureFinancialEstimatesDetailFrom, futureFinancialEstimatesDetailTo, "id",
-					"applicationId");
+					CommonUtils.APPLICATION_ID);
 			futureFinancialEstimatesDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 			futureFinancialEstimatesDetailTo.setCreatedDate(new Date());
 			futureFinancialEstimateDetailsRepository.save(futureFinancialEstimatesDetailTo);
@@ -1130,7 +1130,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		for (FinancialArrangementsDetail financialArrangementsDetailFrom : financialArrangementDetailsFromList) {
 			FinancialArrangementsDetail financialArrangementsDetailTo = new FinancialArrangementsDetail();
 			BeanUtils.copyProperties(financialArrangementsDetailFrom, financialArrangementsDetailTo, "id",
-					"applicationId");
+					CommonUtils.APPLICATION_ID);
 			financialArrangementsDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 			financialArrangementsDetailTo.setCreatedDate(new Date());
 			financialArrangementDetailsRepository.save(financialArrangementsDetailTo);
@@ -1150,7 +1150,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		for (CreditRatingOrganizationDetail creditRatingOrganizationDetailFrom : creditRatingOrganizationDetailsFromList) {
 			CreditRatingOrganizationDetail creditRatingOrganizationDetailTo = new CreditRatingOrganizationDetail();
 			BeanUtils.copyProperties(creditRatingOrganizationDetailFrom, creditRatingOrganizationDetailTo, "id",
-					"applicationId");
+					CommonUtils.APPLICATION_ID);
 			creditRatingOrganizationDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 			creditRatingOrganizationDetailTo.setCreatedDate(new Date());
 			creditRatingOrganizationDetailsRepository.save(creditRatingOrganizationDetailTo);
@@ -1169,7 +1169,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		securityCorporateDetailsRepository.inActive(userId, corporateApplicantDetailTo.getApplicationId().getId());
 		for (SecurityCorporateDetail securityCorporateDetailFrom : securityCorporateDetailsFromList) {
 			SecurityCorporateDetail securityCorporateDetailTo = new SecurityCorporateDetail();
-			BeanUtils.copyProperties(securityCorporateDetailFrom, securityCorporateDetailTo, "id", "applicationId");
+			BeanUtils.copyProperties(securityCorporateDetailFrom, securityCorporateDetailTo, "id", CommonUtils.APPLICATION_ID);
 			securityCorporateDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 			securityCorporateDetailTo.setCreatedDate(new Date());
 			securityCorporateDetailsRepository.save(securityCorporateDetailTo);
@@ -1196,7 +1196,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		referenceRetailDetailsRepository.inActive(userId, corporateApplicantDetailTo.getApplicationId().getId());
 		for (ReferencesRetailDetail referencesRetailDetailFrom : referencesRetailDetailFromList) {
 			ReferencesRetailDetail referencesRetailDetailTo = new ReferencesRetailDetail();
-			BeanUtils.copyProperties(referencesRetailDetailFrom, referencesRetailDetailTo, "id", "applicationId");
+			BeanUtils.copyProperties(referencesRetailDetailFrom, referencesRetailDetailTo, "id", CommonUtils.APPLICATION_ID);
 			referencesRetailDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 			referencesRetailDetailTo.setModifiedBy(userId);
 			referencesRetailDetailTo.setModifiedDate(new Date());
@@ -1245,7 +1245,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 
 		}
 		BeanUtils.copyProperties(finalWorkingCapitalLoanDetailFrom, finalWorkingCapitalLoanDetailTo, "id",
-				"applicationId");
+				CommonUtils.APPLICATION_ID);
 		finalWorkingCapitalLoanDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 		finalWorkingCapitalLoanDetailTo.setCreatedDate(new Date());
 		finalWorkingCapitalLoanDetailTo = finalWCRepository.save(finalWorkingCapitalLoanDetailTo);
@@ -1267,7 +1267,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 			finalTermLoanDetailTo = new FinalTermLoanDetail();
 
 		}
-		BeanUtils.copyProperties(finalWorkingCapitalLoanDetailFrom, finalTermLoanDetailTo, "id", "applicationId");
+		BeanUtils.copyProperties(finalWorkingCapitalLoanDetailFrom, finalTermLoanDetailTo, "id", CommonUtils.APPLICATION_ID);
 		finalTermLoanDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 		finalTermLoanDetailTo.setCreatedDate(new Date());
 		finalTermLoanDetailTo = finalTermLoanDetailRepository.save(finalTermLoanDetailTo);
@@ -1288,7 +1288,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 					+ finalUnsecureLoanDetailTo);
 			finalUnsecureLoanDetailTo = new FinalUnsecureLoanDetail();
 		}
-		BeanUtils.copyProperties(finalWorkingCapitalLoanDetailFrom, finalUnsecureLoanDetailTo, "id", "applicationId");
+		BeanUtils.copyProperties(finalWorkingCapitalLoanDetailFrom, finalUnsecureLoanDetailTo, "id", CommonUtils.APPLICATION_ID);
 		finalUnsecureLoanDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 		finalUnsecureLoanDetailTo.setCreatedDate(new Date());
 		finalUnsecureLoanDetailTo = finalUnsecuredLoanDetailRepository.save(finalUnsecureLoanDetailTo);
@@ -1309,7 +1309,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 					+ finalTermLoanDetailTo);
 			finalTermLoanDetailTo = new FinalTermLoanDetail();
 		}
-		BeanUtils.copyProperties(finalTermLoanDetailFrom, finalTermLoanDetailTo, "id", "applicationId");
+		BeanUtils.copyProperties(finalTermLoanDetailFrom, finalTermLoanDetailTo, "id", CommonUtils.APPLICATION_ID);
 		finalTermLoanDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 		finalTermLoanDetailTo.setCreatedDate(new Date());
 		finalTermLoanDetailTo = finalTermLoanDetailRepository.save(finalTermLoanDetailTo);
@@ -1329,7 +1329,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 					+ finalWorkingCapitalLoanDetailTo);
 			finalWorkingCapitalLoanDetailTo = new FinalWorkingCapitalLoanDetail();
 		}
-		BeanUtils.copyProperties(finalTermLoanDetailFrom, finalWorkingCapitalLoanDetailTo, "id", "applicationId");
+		BeanUtils.copyProperties(finalTermLoanDetailFrom, finalWorkingCapitalLoanDetailTo, "id", CommonUtils.APPLICATION_ID);
 		finalWorkingCapitalLoanDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 		finalWorkingCapitalLoanDetailTo.setCreatedDate(new Date());
 		finalWorkingCapitalLoanDetailTo = finalWCRepository.save(finalWorkingCapitalLoanDetailTo);
@@ -1350,7 +1350,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 					+ finalUnsecureLoanDetailTo);
 			finalUnsecureLoanDetailTo = new FinalUnsecureLoanDetail();
 		}
-		BeanUtils.copyProperties(finalTermLoanDetailFrom, finalUnsecureLoanDetailTo, "id", "applicationId");
+		BeanUtils.copyProperties(finalTermLoanDetailFrom, finalUnsecureLoanDetailTo, "id", CommonUtils.APPLICATION_ID);
 		finalUnsecureLoanDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 		finalUnsecureLoanDetailTo.setCreatedDate(new Date());
 		finalUnsecureLoanDetailTo = finalUnsecuredLoanDetailRepository.save(finalUnsecureLoanDetailTo);
@@ -1371,7 +1371,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 					+ finalUnsecureLoanDetailTo);
 			finalUnsecureLoanDetailTo = new FinalUnsecureLoanDetail();
 		}
-		BeanUtils.copyProperties(finalUnsecureLoanDetailfrom, finalUnsecureLoanDetailTo, "id", "applicationId");
+		BeanUtils.copyProperties(finalUnsecureLoanDetailfrom, finalUnsecureLoanDetailTo, "id", CommonUtils.APPLICATION_ID);
 		finalUnsecureLoanDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 		finalUnsecureLoanDetailTo.setCreatedDate(new Date());
 		finalUnsecureLoanDetailTo = finalUnsecuredLoanDetailRepository.save(finalUnsecureLoanDetailTo);
@@ -1391,7 +1391,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 			finalWorkingCapitalLoanDetailTo = new FinalWorkingCapitalLoanDetail();
 
 		}
-		BeanUtils.copyProperties(finalUnsecureLoanDetailfrom, finalWorkingCapitalLoanDetailTo, "id", "applicationId");
+		BeanUtils.copyProperties(finalUnsecureLoanDetailfrom, finalWorkingCapitalLoanDetailTo, "id", CommonUtils.APPLICATION_ID);
 		finalWorkingCapitalLoanDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 		finalWorkingCapitalLoanDetailTo.setCreatedDate(new Date());
 		finalWorkingCapitalLoanDetailTo = finalWCRepository.save(finalWorkingCapitalLoanDetailTo);
@@ -1412,7 +1412,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 			logger.info("TL application id ont avialable");
 
 		}
-		BeanUtils.copyProperties(finalUnsecureLoanDetailfrom, finalTermLoanDetailTo, "id", "applicationId");
+		BeanUtils.copyProperties(finalUnsecureLoanDetailfrom, finalTermLoanDetailTo, "id", CommonUtils.APPLICATION_ID);
 		finalTermLoanDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 		finalTermLoanDetailTo.setCreatedDate(new Date());
 		finalTermLoanDetailTo = finalTermLoanDetailRepository.save(finalTermLoanDetailTo);
@@ -1457,8 +1457,8 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		monthlyTurnoverDetailsRepository.inActive(userId, corporateApplicantDetailTo.getApplicationId().getId());
 		for (MonthlyTurnoverDetail monthlyTurnoverDetailFrom : monthlyTurnoverDetailsList) {
 			MonthlyTurnoverDetail monthlyTurnoverDetailTo = new MonthlyTurnoverDetail();
-			BeanUtils.copyProperties(monthlyTurnoverDetailFrom, monthlyTurnoverDetailTo, "id", "applicationId",
-					"createdDate");
+			BeanUtils.copyProperties(monthlyTurnoverDetailFrom, monthlyTurnoverDetailTo, "id", CommonUtils.APPLICATION_ID,
+					CommonUtils.CREATED_DATE);
 			monthlyTurnoverDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 			monthlyTurnoverDetailTo.setCreatedDate(new Date());
 			monthlyTurnoverDetailsRepository.save(monthlyTurnoverDetailTo);
@@ -1476,8 +1476,8 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		guarantorsCorporateDetailRepository.inActive(userId, corporateApplicantDetailTo.getApplicationId().getId());
 		for (GuarantorsCorporateDetail guarantorsCorporateDetailFrom : guarantorsCorporateDetailList) {
 			GuarantorsCorporateDetail guarantorsCorporateDetailTo = new GuarantorsCorporateDetail();
-			BeanUtils.copyProperties(guarantorsCorporateDetailFrom, guarantorsCorporateDetailTo, "id", "applicationId",
-					"createdDate");
+			BeanUtils.copyProperties(guarantorsCorporateDetailFrom, guarantorsCorporateDetailTo, "id", CommonUtils.APPLICATION_ID,
+					CommonUtils.CREATED_DATE);
 			guarantorsCorporateDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 			guarantorsCorporateDetailTo.setCreatedDate(new Date());
 			guarantorsCorporateDetailRepository.save(guarantorsCorporateDetailTo);
@@ -1495,8 +1495,8 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		associatedConcernDetailRepository.inActive(userId, corporateApplicantDetailTo.getApplicationId().getId());
 		for (AssociatedConcernDetail associatedConcernDetailFrom : associatedConcernDetailList) {
 			AssociatedConcernDetail associatedConcernDetailTo = new AssociatedConcernDetail();
-			BeanUtils.copyProperties(associatedConcernDetailFrom, associatedConcernDetailTo, "id", "applicationId",
-					"createdDate");
+			BeanUtils.copyProperties(associatedConcernDetailFrom, associatedConcernDetailTo, "id", CommonUtils.APPLICATION_ID,
+					CommonUtils.CREATED_DATE);
 			associatedConcernDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 			associatedConcernDetailTo.setCreatedDate(new Date());
 			associatedConcernDetailRepository.save(associatedConcernDetailTo);
@@ -1514,7 +1514,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		referenceRetailDetailsRepository.inActive(userId, corporateApplicantDetailTo.getApplicationId().getId());
 		for (ReferencesRetailDetail referencesRetailDetailFrom : referencesRetailDetailList) {
 			ReferencesRetailDetail referencesRetailRequestTo = new ReferencesRetailDetail();
-			BeanUtils.copyProperties(referencesRetailDetailFrom, referencesRetailRequestTo, "id", "applicationId");
+			BeanUtils.copyProperties(referencesRetailDetailFrom, referencesRetailRequestTo, "id", CommonUtils.APPLICATION_ID);
 			referencesRetailRequestTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 			referencesRetailRequestTo.setCreatedDate(new Date());
 			referenceRetailDetailsRepository.save(referencesRetailRequestTo);
@@ -1531,7 +1531,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		bankAccountHeldDetailRepository.inActive(userId, corporateApplicantDetailTo.getApplicationId().getId());
 		for (BankAccountHeldDetail bankAccountHeldDetailFrom : bankAccountHeldDetailsList) {
 			BankAccountHeldDetail bankAccountHeldDetailTo = new BankAccountHeldDetail();
-			BeanUtils.copyProperties(bankAccountHeldDetailFrom, bankAccountHeldDetailTo, "id", "applicationId");
+			BeanUtils.copyProperties(bankAccountHeldDetailFrom, bankAccountHeldDetailTo, "id", CommonUtils.APPLICATION_ID);
 			bankAccountHeldDetailTo.setApplicantId(corporateApplicantDetailTo.getApplicationId());
 			bankAccountHeldDetailTo.setCreatedDate(new Date());
 			bankAccountHeldDetailRepository.save(bankAccountHeldDetailTo);
@@ -1548,7 +1548,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		creditCardsDetailRepository.inactive(corporateApplicantDetailTo.getApplicationId().getId());
 		for (CreditCardsDetail creditCardsDetailFrom : creditCardsDetailsList) {
 			CreditCardsDetail creditCardsDetailTo = new CreditCardsDetail();
-			BeanUtils.copyProperties(creditCardsDetailFrom, creditCardsDetailTo, "id", "applicationId");
+			BeanUtils.copyProperties(creditCardsDetailFrom, creditCardsDetailTo, "id", CommonUtils.APPLICATION_ID);
 			creditCardsDetailTo.setApplicantionId(corporateApplicantDetailTo.getApplicationId());
 			creditCardsDetailTo.setCreatedDate(new Date());
 			creditCardsDetailRepository.save(creditCardsDetailTo);
@@ -2019,8 +2019,8 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		OperatingStatementDetails operatingStatementDetailsTo = null;
 		for (OperatingStatementDetails operatingStatementDetailsFrom : operatingStatementDetailsList) {
 			operatingStatementDetailsTo = new OperatingStatementDetails();
-			BeanUtils.copyProperties(operatingStatementDetailsFrom, operatingStatementDetailsTo, "id", "applicationId",
-					"modifiedBy", "modifiedDate", "storageDetailsId");
+			BeanUtils.copyProperties(operatingStatementDetailsFrom, operatingStatementDetailsTo, "id", CommonUtils.APPLICATION_ID,
+					CommonUtils.MODIFIED_BY, CommonUtils.MODIFIED_DATE, CommonUtils.STORAGE_DETAILS_ID);
 			operatingStatementDetailsTo.setLoanApplicationMaster(corporateApplicantDetailTo.getApplicationId());
 			operatingStatementDetailsTo.setStorageDetailsId(null);
 			operatingStatementDetailsTo.setModifiedBy(userId);
@@ -2033,8 +2033,8 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		LiabilitiesDetails liabilitiesDetailsTo = null;
 		for (LiabilitiesDetails liabilitiesDetailsFrom : liabilitiesDetailsList) {
 			liabilitiesDetailsTo = new LiabilitiesDetails();
-			BeanUtils.copyProperties(liabilitiesDetailsFrom, liabilitiesDetailsTo, "id", "applicationId", "modifiedBy",
-					"modifiedDate", "storageDetailsId");
+			BeanUtils.copyProperties(liabilitiesDetailsFrom, liabilitiesDetailsTo, "id", CommonUtils.APPLICATION_ID, CommonUtils.MODIFIED_BY,
+					CommonUtils.MODIFIED_DATE, CommonUtils.STORAGE_DETAILS_ID);
 			liabilitiesDetailsTo.setFsLoanApplicationMaster(corporateApplicantDetailTo.getApplicationId());
 			liabilitiesDetailsTo.setStorageDetailsId(null);
 			liabilitiesDetailsTo.setModifiedBy(userId);
@@ -2046,8 +2046,8 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		AssetsDetails assetsDetailsTo = null;
 		for (AssetsDetails assetsDetailsFrom : assetsDetailsList) {
 			assetsDetailsTo = new AssetsDetails();
-			BeanUtils.copyProperties(assetsDetailsFrom, assetsDetailsTo, "id", "applicationId", "modifiedBy",
-					"modifiedDate", "storageDetailsId");
+			BeanUtils.copyProperties(assetsDetailsFrom, assetsDetailsTo, "id", CommonUtils.APPLICATION_ID, CommonUtils.MODIFIED_BY,
+					CommonUtils.MODIFIED_DATE, CommonUtils.STORAGE_DETAILS_ID);
 			assetsDetailsTo.setLoanApplicationMaster(corporateApplicantDetailTo.getApplicationId());
 			assetsDetailsTo.setModifiedBy(userId);
 			assetsDetailsTo.setStorageDetailsId(null);
@@ -2077,7 +2077,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		for (ProfitibilityStatementDetail profitibilityStatementDetailFrom : profitibilityStatementDetailsList) {
 			profitibilityStatementDetailTo = new ProfitibilityStatementDetail();
 			BeanUtils.copyProperties(profitibilityStatementDetailFrom, profitibilityStatementDetailTo, "id",
-					"applicationId", "modifiedBy", "modifiedDate", "storageDetailsId");
+					CommonUtils.APPLICATION_ID, CommonUtils.MODIFIED_BY, CommonUtils.MODIFIED_DATE, CommonUtils.STORAGE_DETAILS_ID);
 			profitibilityStatementDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 			profitibilityStatementDetailTo.setModifiedBy(userId);
 			profitibilityStatementDetailTo.setModifiedDate(new Date());
@@ -2091,8 +2091,8 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		BalanceSheetDetail balanceSheetDetailTo = null;
 		for (BalanceSheetDetail balanceSheetDetailFrom : balanceSheetDetailsList) {
 			balanceSheetDetailTo = new BalanceSheetDetail();
-			BeanUtils.copyProperties(balanceSheetDetailFrom, balanceSheetDetailTo, "id", "applicationId", "modifiedBy",
-					"modifiedDate", "storageDetailsId");
+			BeanUtils.copyProperties(balanceSheetDetailFrom, balanceSheetDetailTo, "id", CommonUtils.APPLICATION_ID, CommonUtils.MODIFIED_BY,
+					CommonUtils.MODIFIED_DATE, CommonUtils.STORAGE_DETAILS_ID);
 			balanceSheetDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 			balanceSheetDetailTo.setModifiedBy(userId);
 			balanceSheetDetailTo.setModifiedDate(new Date());
@@ -2110,8 +2110,8 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		BoardOfDirectorsDetail boardOfDirectorsDetailTo = null;
 		for (BoardOfDirectorsDetail boardOfDirectorsDetailFrom : boardOfDirectorsDetailList) {
 			boardOfDirectorsDetailTo = new BoardOfDirectorsDetail();
-			BeanUtils.copyProperties(boardOfDirectorsDetailFrom, boardOfDirectorsDetailTo, "id", "applicationId",
-					"modifiedBy", "modifiedDate", "storageDetailsId");
+			BeanUtils.copyProperties(boardOfDirectorsDetailFrom, boardOfDirectorsDetailTo, "id", CommonUtils.APPLICATION_ID,
+					CommonUtils.MODIFIED_BY, CommonUtils.MODIFIED_DATE, CommonUtils.STORAGE_DETAILS_ID);
 			boardOfDirectorsDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 			boardOfDirectorsDetailTo.setModifiedBy(userId);
 			boardOfDirectorsDetailTo.setModifiedDate(new Date());
@@ -2124,8 +2124,8 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		StrategicAlliancesDetail strategicAlliancesDetailTo = null;
 		for (StrategicAlliancesDetail strategicAlliancesDetailFrom : strategicAlliancesDetailList) {
 			strategicAlliancesDetailTo = new StrategicAlliancesDetail();
-			BeanUtils.copyProperties(strategicAlliancesDetailFrom, strategicAlliancesDetailTo, "id", "applicationId",
-					"modifiedBy", "modifiedDate", "storageDetailsId");
+			BeanUtils.copyProperties(strategicAlliancesDetailFrom, strategicAlliancesDetailTo, "id", CommonUtils.APPLICATION_ID,
+					CommonUtils.MODIFIED_BY, CommonUtils.MODIFIED_DATE, CommonUtils.STORAGE_DETAILS_ID);
 			strategicAlliancesDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 			strategicAlliancesDetailTo.setModifiedBy(userId);
 			strategicAlliancesDetailTo.setModifiedDate(new Date());
@@ -2138,8 +2138,8 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		KeyManagementDetail keyManagementDetailTo = null;
 		for (KeyManagementDetail keyManagementDetailFrom : keyManagementDetailList) {
 			keyManagementDetailTo = new KeyManagementDetail();
-			BeanUtils.copyProperties(keyManagementDetailFrom, keyManagementDetailTo, "id", "applicationId",
-					"modifiedBy", "modifiedDate", "storageDetailsId");
+			BeanUtils.copyProperties(keyManagementDetailFrom, keyManagementDetailTo, "id", CommonUtils.APPLICATION_ID,
+					CommonUtils.MODIFIED_BY, CommonUtils.MODIFIED_DATE, CommonUtils.STORAGE_DETAILS_ID);
 			keyManagementDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 			keyManagementDetailTo.setModifiedBy(userId);
 			keyManagementDetailTo.setModifiedDate(new Date());
@@ -2154,7 +2154,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 
 			employeesCategoryBreaksDetailTo = new EmployeesCategoryBreaksDetail();
 			BeanUtils.copyProperties(employeesCategoryBreaksDetailFrom, employeesCategoryBreaksDetailTo, "id",
-					"applicationId", "modifiedBy", "modifiedDate", "storageDetailsId");
+					CommonUtils.APPLICATION_ID, CommonUtils.MODIFIED_BY, CommonUtils.MODIFIED_DATE, CommonUtils.STORAGE_DETAILS_ID);
 			employeesCategoryBreaksDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 			employeesCategoryBreaksDetailTo.setModifiedBy(userId);
 			employeesCategoryBreaksDetailTo.setModifiedDate(new Date());
@@ -2170,7 +2170,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 
 			technologyPositioningDetailTo = new TechnologyPositioningDetail();
 			BeanUtils.copyProperties(technologyPositioningDetailFrom, technologyPositioningDetailTo, "id",
-					"applicationId", "modifiedBy", "modifiedDate", "storageDetailsId");
+					CommonUtils.APPLICATION_ID, CommonUtils.MODIFIED_BY, CommonUtils.MODIFIED_DATE, CommonUtils.STORAGE_DETAILS_ID);
 			technologyPositioningDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 			technologyPositioningDetailTo.setModifiedBy(userId);
 			technologyPositioningDetailTo.setModifiedDate(new Date());
@@ -2184,8 +2184,8 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		RevenueAndOrderBookDetail revenueAndOrderBookDetailTo = null;
 		for (RevenueAndOrderBookDetail revenueAndOrderBookDetailFrom : revenueAndOrderBookDetailList) {
 			revenueAndOrderBookDetailTo = new RevenueAndOrderBookDetail();
-			BeanUtils.copyProperties(revenueAndOrderBookDetailFrom, revenueAndOrderBookDetailTo, "id", "applicationId",
-					"modifiedBy", "modifiedDate", "storageDetailsId");
+			BeanUtils.copyProperties(revenueAndOrderBookDetailFrom, revenueAndOrderBookDetailTo, "id", CommonUtils.APPLICATION_ID,
+					CommonUtils.MODIFIED_BY, CommonUtils.MODIFIED_DATE, CommonUtils.STORAGE_DETAILS_ID);
 			revenueAndOrderBookDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 			revenueAndOrderBookDetailTo.setModifiedBy(userId);
 			revenueAndOrderBookDetailTo.setModifiedDate(new Date());
@@ -2199,7 +2199,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		for (DriverForFutureGrowthDetail driverForFutureGrowthDetailFrom : driverForFutureGrowthDetailList) {
 			driverForFutureGrowthDetailTo = new DriverForFutureGrowthDetail();
 			BeanUtils.copyProperties(driverForFutureGrowthDetailFrom, driverForFutureGrowthDetailTo, "id",
-					"applicationId", "modifiedBy", "modifiedDate", "storageDetailsId");
+					CommonUtils.APPLICATION_ID, CommonUtils.MODIFIED_BY, CommonUtils.MODIFIED_DATE, CommonUtils.STORAGE_DETAILS_ID);
 			driverForFutureGrowthDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 			driverForFutureGrowthDetailTo.setModifiedBy(userId);
 			driverForFutureGrowthDetailTo.setModifiedDate(new Date());
@@ -2213,7 +2213,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		for (AvailabilityProposedPlantDetail availabilityProposedPlantDetailFrom : availabilityProposedPlantDetailList) {
 			availabilityProposedPlantDetailTo = new AvailabilityProposedPlantDetail();
 			BeanUtils.copyProperties(availabilityProposedPlantDetailFrom, availabilityProposedPlantDetailTo, "id",
-					"applicationId", "modifiedBy", "modifiedDate", "storageDetailsId");
+					CommonUtils.APPLICATION_ID, CommonUtils.MODIFIED_BY, CommonUtils.MODIFIED_DATE, CommonUtils.STORAGE_DETAILS_ID);
 			availabilityProposedPlantDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 			availabilityProposedPlantDetailTo.setModifiedBy(userId);
 			availabilityProposedPlantDetailTo.setModifiedDate(new Date());
@@ -2228,7 +2228,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		for (ProjectImplementationScheduleDetail projectImplementationScheduleDetailFrom : projectImplementationScheduleDetailList) {
 			projectImplementationScheduleDetailTo = new ProjectImplementationScheduleDetail();
 			BeanUtils.copyProperties(projectImplementationScheduleDetailFrom, projectImplementationScheduleDetailTo,
-					"id", "applicationId", "modifiedBy", "modifiedDate", "storageDetailsId");
+					"id", CommonUtils.APPLICATION_ID, CommonUtils.MODIFIED_BY, CommonUtils.MODIFIED_DATE, CommonUtils.STORAGE_DETAILS_ID);
 			projectImplementationScheduleDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 			projectImplementationScheduleDetailTo.setModifiedBy(userId);
 			projectImplementationScheduleDetailTo.setModifiedDate(new Date());
@@ -2242,8 +2242,8 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		for (RequirementsAndAvailabilityRawMaterialsDetail requirementsAndAvailabilityRawMaterialsDetailFrom : requirementsAndAvailabilityRawMaterialsDetailList) {
 			requirementsAndAvailabilityRawMaterialsDetailTo = new RequirementsAndAvailabilityRawMaterialsDetail();
 			BeanUtils.copyProperties(requirementsAndAvailabilityRawMaterialsDetailFrom,
-					requirementsAndAvailabilityRawMaterialsDetailTo, "id", "applicationId", "modifiedBy",
-					"modifiedDate", "storageDetailsId");
+					requirementsAndAvailabilityRawMaterialsDetailTo, "id", CommonUtils.APPLICATION_ID, CommonUtils.MODIFIED_BY,
+					CommonUtils.MODIFIED_DATE, CommonUtils.STORAGE_DETAILS_ID);
 			requirementsAndAvailabilityRawMaterialsDetailTo
 					.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 			requirementsAndAvailabilityRawMaterialsDetailTo.setModifiedBy(userId);
@@ -2257,8 +2257,8 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		ScotAnalysisDetail scotAnalysisDetailTo = null;
 		for (ScotAnalysisDetail scotAnalysisDetailFrom : scotAnalysisDetailList) {
 			scotAnalysisDetailTo = new ScotAnalysisDetail();
-			BeanUtils.copyProperties(scotAnalysisDetailFrom, scotAnalysisDetailTo, "id", "applicationId", "modifiedBy",
-					"modifiedDate", "storageDetailsId");
+			BeanUtils.copyProperties(scotAnalysisDetailFrom, scotAnalysisDetailTo, "id", CommonUtils.APPLICATION_ID, CommonUtils.MODIFIED_BY,
+					CommonUtils.MODIFIED_DATE, CommonUtils.STORAGE_DETAILS_ID);
 			scotAnalysisDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 			scotAnalysisDetailTo.setModifiedBy(userId);
 			scotAnalysisDetailTo.setModifiedDate(new Date());
@@ -2271,8 +2271,8 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 		DprUserDataDetail dprUserDataDetailTo = null;
 		for (DprUserDataDetail dprUserDataDetailFrom : dprUserDataDetailList) {
 			dprUserDataDetailTo = new DprUserDataDetail();
-			BeanUtils.copyProperties(dprUserDataDetailFrom, dprUserDataDetailTo, "id", "applicationId", "modifiedBy",
-					"modifiedDate", "storageDetailsId");
+			BeanUtils.copyProperties(dprUserDataDetailFrom, dprUserDataDetailTo, "id", CommonUtils.APPLICATION_ID, CommonUtils.MODIFIED_BY,
+					CommonUtils.MODIFIED_DATE, CommonUtils.STORAGE_DETAILS_ID);
 			dprUserDataDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
 			dprUserDataDetailTo.setStorageDetailsId(null);
 			dprUserDataDetailTo.setModifiedBy(userId);

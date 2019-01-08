@@ -38,7 +38,7 @@ public class ScoreExcelFileGenerator {
 
 	 private String SCORE_CALCULATION_RESULT = "cw.loan.score.result.location";
 
-	private FormulaEvaluator evaluator;
+//	private FormulaEvaluator evaluator;
 
 	private final Logger logger = LoggerFactory.getLogger(ScoreExcelFileGenerator.class);
 
@@ -104,7 +104,7 @@ public class ScoreExcelFileGenerator {
 			    	sheet.createRow(--i).createCell(0).setCellStyle(style0);
 			    	sheet.getRow(i).getCell(0).setCellValue("TEST ID");
 			    	
-			    	sheet.getRow(i).createCell(1).setCellStyle(style0);;
+			    	sheet.getRow(i).createCell(1).setCellStyle(style0);
 			    	sheet.getRow(i).getCell(1).setCellValue("PARAMETER NAME");
 			    	
 			    	sheet.getRow(i).createCell(2).setCellStyle(style0);

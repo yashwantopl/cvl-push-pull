@@ -22,7 +22,6 @@ import com.capitaworld.client.reports.ReportsClient;
 import com.capitaworld.service.dms.client.DMSClient;
 import com.capitaworld.service.dms.model.DocumentResponse;
 import com.capitaworld.service.loans.model.LoansResponse;
-import com.capitaworld.service.loans.service.fundseeker.corporate.CamReportPdfDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.retail.PLCamReportService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.DDRMultipart;

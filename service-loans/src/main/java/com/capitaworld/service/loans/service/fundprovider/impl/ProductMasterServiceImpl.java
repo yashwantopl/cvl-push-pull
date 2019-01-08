@@ -10,6 +10,7 @@ import java.util.Map;
 
 import javax.persistence.EntityManager;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -871,13 +872,11 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 						.getObjectFromMap(obj, ProductMasterRequest.class);
 
 				ProductMaster master = productMasterRepository.findOne(productMasterRequest.getId());
-				if (!CommonUtils.isObjectNullOrEmpty(master)) {
+				if (!CommonUtils.isObjectNullOrEmpty(master) && !productMasterRequest.getProductId().toString()
+						.equals(productDetailsForSps.get(0).getProductId().toString())) {
 					// if(master.getId())
-					if (!productMasterRequest.getProductId().toString()
-							.equals(productDetailsForSps.get(0).getProductId().toString())) {
 						CommonDocumentUtils.endHook(logger, IS_PRODUCT_MATCHED);
 						return true;
-					}
 				}
 			}
 
@@ -1233,7 +1232,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 	}
 
 	@Override
-	public Boolean saveCorporateMasterFromTemp(Long mappingId) throws Exception {
+	public Boolean saveCorporateMasterFromTemp(Long mappingId) throws LoansException {
 
 		ProductMasterTemp corporateProduct = productMasterTempRepository.getProductMasterTemp(mappingId);
 		CommonDocumentUtils.startHook(logger, SAVE_CORPORATE);
@@ -1459,11 +1458,8 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 				continue;
 				
 			
-			if (!CommonUtils.isObjectNullOrEmpty(businessId) && productMaster.getProductId()==2 && !CommonUtils.isObjectNullOrEmpty(productMaster.getBusinessTypeId())) {
-				if(!businessId.toString().equals(productMaster.getBusinessTypeId().toString()))
-						{
-							continue;
-						}
+			if (!CommonUtils.isObjectNullOrEmpty(businessId) && productMaster.getProductId()==2 && !CommonUtils.isObjectNullOrEmpty(productMaster.getBusinessTypeId()) && !businessId.toString().equals(productMaster.getBusinessTypeId().toString()) ) {
+				continue;
 			}
 			ProductMasterRequest productMasterRequest = new ProductMasterRequest();
 			BeanUtils.copyProperties(productMaster, productMasterRequest);
@@ -1512,42 +1508,48 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 					return false;
 				}
 				
-				if (workflowData.getStage() == 2) {
+				if (workflowData.getStage() == 2 && productMaster != null) {
 					productMaster.setActiveInactiveJobId(workflowData.getJobId());
 					productMaster.setActionFor(workflowData.getActionFor());
 					productMasterRepository.save(productMaster);
 				} else {
-					productMasterTemp.setActiveInactiveJobId(workflowData.getJobId());
-					productMasterTemp.setActionFor(workflowData.getActionFor());
-					productMasterTempRepository.save(productMasterTemp);
+					if (productMasterTemp != null) {
+						productMasterTemp.setActiveInactiveJobId(workflowData.getJobId());
+						productMasterTemp.setActionFor(workflowData.getActionFor());
+						productMasterTempRepository.save(productMasterTemp);
+					}
 				}
 				
 				return true;
 				
 			} else if (workflowData.getActionId() == WorkflowUtils.Action.APPROVED  && workflowResponse != null) {
 								
-				if (workflowData.getStage() == 2) {
+				if (workflowData.getStage() == 2 && productMaster != null) {
 					if(productMaster.getActionFor() == null) {
 						return false;
 					}
 					status = productMaster.getActionFor().equals("Active") ? true : false;
 					productMasterRepository.changeStatusAndActiveInactiveJobId(workflowData.getUserId(), workflowData.getFpProductId(), status);
 				} else {
-					if(productMasterTemp.getActionFor() == null) {
-						return false;
+					if (productMasterTemp != null) {
+						if (productMasterTemp.getActionFor() == null) {
+							return false;
+						}
+						status = productMasterTemp.getActionFor().equals("Active") ? true : false;
+						productMasterTempRepository.changeStatusAndActiveInactiveJobId(workflowData.getUserId(), workflowData.getFpProductId(), status);
 					}
-					status = productMasterTemp.getActionFor().equals("Active") ? true : false;
-					productMasterTempRepository.changeStatusAndActiveInactiveJobId(workflowData.getUserId(), workflowData.getFpProductId(), status);
 				}
 				return true;
 				
 			} else if (workflowData.getActionId() == WorkflowUtils.Action.SEND_BACK  && workflowResponse != null) {
-				if (workflowData.getStage() == 2) {
+				if (workflowData.getStage() == 2 && productMaster != null) {
 					productMaster.setActiveInactiveJobId(null);
 					productMasterRepository.save(productMaster);
 				} else {
-					productMasterTemp.setActiveInactiveJobId(null);
-					productMasterTempRepository.save(productMasterTemp);
+					if (productMasterTemp != null) {
+						productMasterTemp.setActiveInactiveJobId(null);
+						productMasterTempRepository.save(productMasterTemp);
+					}
 				}
 				return true;
 			}

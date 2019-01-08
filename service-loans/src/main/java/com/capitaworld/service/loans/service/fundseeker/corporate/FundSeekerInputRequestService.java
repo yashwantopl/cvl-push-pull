@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.capitaworld.service.gst.GstResponse;
+import com.capitaworld.connect.api.ConnectResponse;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.NTBRequest;
 import com.capitaworld.service.loans.model.corporate.FundSeekerInputRequestResponse;
@@ -79,4 +79,11 @@ public interface FundSeekerInputRequestService {
 	 * @return
 	 */
 	public LoansResponse deleteDocument(Long applicationId,List<Long> docIds,Long mappingId);
+	
+	/**
+	 * Inactive all the information for given applicationId for Uniform Product.
+	 * @param connectResponse
+	 * @return
+	 */
+	public LoansResponse resetUniformApplication(ConnectResponse connectResponse);
 }

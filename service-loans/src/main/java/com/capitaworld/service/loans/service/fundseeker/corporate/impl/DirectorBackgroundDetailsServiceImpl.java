@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -49,7 +50,7 @@ public class DirectorBackgroundDetailsServiceImpl implements DirectorBackgroundD
 	private Environment environment;
 
 	@Override
-	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception {
+	public Boolean saveOrUpdate(FrameRequest frameRequest) throws LoansException {
 		
 		if(!CommonUtils.isObjectNullOrEmpty(frameRequest) && !CommonUtils.isObjectNullOrEmpty(frameRequest.getIsFromClient()) && frameRequest.getIsFromClient() ) {
 					directorBackgroundDetailsRepository.inActive(frameRequest.getUserId(), frameRequest.getApplicationId());
@@ -66,7 +67,7 @@ public class DirectorBackgroundDetailsServiceImpl implements DirectorBackgroundD
 
 		catch (Exception e) {
 			logger.error("Exception  in save directorBackgroundDetail :- ",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 	
@@ -91,7 +92,7 @@ public class DirectorBackgroundDetailsServiceImpl implements DirectorBackgroundD
 	}
 
 	@Override
-	public List<DirectorBackgroundDetailRequest> getDirectorBackgroundDetailList(Long applicationId,Long userId) throws Exception {
+	public List<DirectorBackgroundDetailRequest> getDirectorBackgroundDetailList(Long applicationId,Long userId) throws LoansException {
 		try {
 			List<DirectorBackgroundDetail> directorBackgroundDetails = null;
 			if(userId != null) {
@@ -121,12 +122,12 @@ public class DirectorBackgroundDetailsServiceImpl implements DirectorBackgroundD
 			return directorBackgroundDetailRequests;
 		} catch (Exception e) {
 			logger.info("Exception  in getdirectorBackgroundDetail  :-",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 	
 	@Override
-	public List<DirectorBackgroundDetailRequest> getDirectorBasicDetailsListForNTB(Long applicationId) throws Exception {
+	public List<DirectorBackgroundDetailRequest> getDirectorBasicDetailsListForNTB(Long applicationId) throws LoansException {
 		try {
 			List<DirectorBackgroundDetail> dirBackDetails = directorBackgroundDetailsRepository.listPromotorBackgroundFromAppId(applicationId);
 			List<DirectorBackgroundDetailRequest> dirBackDetailReqList = new ArrayList<DirectorBackgroundDetailRequest>();
@@ -144,7 +145,7 @@ public class DirectorBackgroundDetailsServiceImpl implements DirectorBackgroundD
 			return dirBackDetailReqList;
 		} catch (Exception e) {
 			logger.error("Exception  in getDirectorBasicDetailsListForNTB  :-",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 	
@@ -233,6 +234,13 @@ public class DirectorBackgroundDetailsServiceImpl implements DirectorBackgroundD
 		}
 		logger.info("Exit in saveDirectors()");
 		return false;
+	}
+
+
+	@Override
+	public boolean inactive(Long applicationId, Long userId) {
+		int inActive = directorBackgroundDetailsRepository.inActive(userId, applicationId);
+		return inActive > 0;
 	}
 	
 	

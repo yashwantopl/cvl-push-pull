@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -34,7 +35,6 @@ import com.capitaworld.service.loans.domain.fundprovider.NegativeIndustry;
 import com.capitaworld.service.loans.domain.fundprovider.NegativeIndustryTemp;
 import com.capitaworld.service.loans.domain.fundprovider.WcTlParameter;
 import com.capitaworld.service.loans.domain.fundprovider.WcTlParameterTemp;
-import com.capitaworld.service.loans.domain.fundprovider.WorkingCapitalParameter;
 import com.capitaworld.service.loans.model.DataRequest;
 import com.capitaworld.service.loans.model.corporate.WcTlParameterRequest;
 import com.capitaworld.service.loans.repository.fundprovider.GeographicalCityRepository;
@@ -439,7 +439,7 @@ public class WcTlParameterServiceImpl implements WcTlParameterService {
 	 * @see com.capitaworld.service.loans.service.fundprovider.WcTlParameterService#saveMasterFromTempWcTl(java.lang.Long)
 	 */
 	@Override
-	public Boolean saveMasterFromTempWcTl(Long mappingId) throws Exception {
+	public Boolean saveMasterFromTempWcTl(Long mappingId) throws LoansException {
 		try {
 			WcTlParameterRequest temp =  getWcTlRequestTemp(mappingId,null,null);
 			

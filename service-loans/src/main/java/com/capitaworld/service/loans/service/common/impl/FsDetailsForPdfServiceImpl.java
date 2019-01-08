@@ -1,14 +1,12 @@
 package com.capitaworld.service.loans.service.common.impl;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -648,7 +646,7 @@ public class FsDetailsForPdfServiceImpl implements FsDetailsForPdfService {
 	}
 
 	@Override
-	public Map getSortedMapForUbi(Long applicantId) throws Exception {
+	public Map getSortedMapForUbi(Long applicantId) throws LoansException {
 		try {
 			HomeLoanFinalViewResponse finalViewResponse = homeLoanFinalViewService.getHomeLoanFinalViewDetails(applicantId);
 			Map<String, Object> map = getHomeLoanDetails(applicantId);
@@ -758,7 +756,6 @@ public class FsDetailsForPdfServiceImpl implements FsDetailsForPdfService {
 			dataMap.put("Applicant E-mail", map.get("email"));
 			dataMap.put("Application Process Fees", null);
 			dataMap.put("Margin", null);
-			dataMap.put("Networth", null);
 			dataMap.put("Rating", null);
 			dataMap.put("Rating Date", null);
 			dataMap.put("FATCA_DEC_FLG", null);

@@ -23,6 +23,33 @@ public class UniformProductParamter extends ProductMaster implements Serializabl
 	private Double maxAmount;
 	private Double roi;
 	private Double pf;
+	@Column(name = "min_cibil_score")
+	private Double minCibilScore;
+	@Column(name = "min_cmr")
+	private Integer minCmr;
+	
+	@Column(name = "max_cmr")
+	private Integer maxCmr;
+	
+	private Integer currency;
+	
+	private Integer dpd;
+
+	private Integer denomination;
+	
+	@Column(name = "assessment_method")
+	private Integer assessmentMethod;
+	
+	@Column(name = "promotor_contribution")
+	private Double promotorContribution;
+	
+	@Column(name = "wc_requirement")
+	private Double wcRequirement;
+	
+	@Column(name = "max_growth")
+	private Double maxGrowth;
+	
+	private Integer version;
 
 	public UniformProductParamter(){
 		super();
@@ -63,9 +90,100 @@ public class UniformProductParamter extends ProductMaster implements Serializabl
 		this.maxAmount = maxAmount;
 	}
 
+	public Double getMinCibilScore() {
+		return minCibilScore;
+	}
+
+	public void setMinCibilScore(Double minCibilScore) {
+		this.minCibilScore = minCibilScore;
+	}
+
+	public Integer getCurrency() {
+		return currency;
+	}
+
+	public void setCurrency(Integer currency) {
+		this.currency = currency;
+	}
+
+	public Integer getDenomination() {
+		return denomination;
+	}
+
+	public void setDenomination(Integer denomination) {
+		this.denomination = denomination;
+	}
+
+	public Integer getAssessmentMethod() {
+		return assessmentMethod;
+	}
+
+	public void setAssessmentMethod(Integer assessmentMethod) {
+		this.assessmentMethod = assessmentMethod;
+	}
+
+	public Double getPromotorContribution() {
+		return promotorContribution;
+	}
+
+	public void setPromotorContribution(Double promotorContribution) {
+		this.promotorContribution = promotorContribution;
+	}
+
+	public Double getWcRequirement() {
+		return wcRequirement;
+	}
+
+	public void setWcRequirement(Double wcRequirement) {
+		this.wcRequirement = wcRequirement;
+	}
+
+	public Double getMaxGrowth() {
+		return maxGrowth;
+	}
+
+	public void setMaxGrowth(Double maxGrowth) {
+		this.maxGrowth = maxGrowth;
+	}
+
+	public Integer getVersion() {
+		return version;
+	}
+
+	public void setVersion(Integer version) {
+		this.version = version;
+	}
+
+	public Integer getMinCmr() {
+		return minCmr;
+	}
+
+	public void setMinCmr(Integer minCmr) {
+		this.minCmr = minCmr;
+	}
+
+	public Integer getMaxCmr() {
+		return maxCmr;
+	}
+
+	public void setMaxCmr(Integer maxCmr) {
+		this.maxCmr = maxCmr;
+	}
+
+	public Integer getDpd() {
+		return dpd;
+	}
+
+	public void setDpd(Integer dpd) {
+		this.dpd = dpd;
+	}
+
 	@Override
 	public String toString() {
 		return "UniformProductParamter [minAmount=" + minAmount + ", maxAmount=" + maxAmount + ", roi=" + roi + ", pf="
-				+ pf + "]";
+				+ pf + ", minCibilScore=" + minCibilScore + ", minCmr=" + minCmr + ", maxCmr=" + maxCmr + ", currency="
+				+ currency + ", dpd=" + dpd + ", denomination=" + denomination + ", assessmentMethod="
+				+ assessmentMethod + ", promotorContribution=" + promotorContribution + ", wcRequirement="
+				+ wcRequirement + ", maxGrowth=" + maxGrowth + ", version=" + version + "]";
 	}
 }

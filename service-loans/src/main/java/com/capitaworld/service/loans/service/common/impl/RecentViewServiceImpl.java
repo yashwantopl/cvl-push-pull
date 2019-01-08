@@ -36,7 +36,6 @@ import com.capitaworld.service.notification.model.NotificationRequest;
 import com.capitaworld.service.notification.model.NotificationResponse;
 import com.capitaworld.service.notification.model.SysNotifyResponse;
 import com.capitaworld.service.oneform.client.OneFormClient;
-import com.capitaworld.service.oneform.enums.FundproviderType;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.FundProviderDetailsRequest;
 import com.capitaworld.service.users.model.UserResponse;

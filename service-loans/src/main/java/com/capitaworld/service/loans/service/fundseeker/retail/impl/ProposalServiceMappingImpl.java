@@ -12,6 +12,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -509,10 +510,8 @@ public class ProposalServiceMappingImpl implements ProposalService {
 											FundProviderDetailsRequest.class);
 							if (!CommonUtils.isObjectNullOrEmpty(fundProviderDetailsRequest)) {
 								if (!CommonUtils.isObjectNullOrEmpty(fundProviderDetailsRequest.getCityId())) {
-									if (!CommonUtils.isObjectNullOrEmpty(fundProviderDetailsRequest.getCityId())) {
 										corporateProposalDetails.setCity(CommonDocumentUtils.getCity(
 												fundProviderDetailsRequest.getCityId().longValue(), oneFormClient));
-									}
 								}
 								if (!CommonUtils.isObjectNullOrEmpty(fundProviderDetailsRequest.getPincode())) {
 									corporateProposalDetails.setPincode(fundProviderDetailsRequest.getPincode());
@@ -682,7 +681,6 @@ public class ProposalServiceMappingImpl implements ProposalService {
 											String score = creditScore.get("riskScore").toString();
 											logger.info("Pan===>" + cibilRequest.getPan() + " ==> Score===>" + score);
 											retailProposalDetails.setCibilSCore(score);
-											;
 										} else {
 											logger.info("no data Found from key ns4:CreditScore");
 										}
@@ -1269,8 +1267,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 								.cast(connectionResponse.getSuggetionByMatchesList().get(i));
 						ProductMaster master = productMasterRepository.findOne(fpProductId.longValue());
 
-						if (!CommonUtils.isObjectNullOrEmpty(master)) {
-							if (!CommonUtils.isObjectNullOrEmpty(master.getUserOrgId())) {
+						if (!CommonUtils.isObjectNullOrEmpty(master) && !CommonUtils.isObjectNullOrEmpty(master.getUserOrgId()) ) {
 								if (userOrgSuggetionByMatchesList.contains(master.getUserOrgId())) {
 									logger.info(
 											"Found same user org id in connection suggestion by matches list ---------------"
@@ -1278,8 +1275,6 @@ public class ProposalServiceMappingImpl implements ProposalService {
 									continue;
 								}
 								userOrgSuggetionByMatchesList.add(master.getUserOrgId());
-							}
-
 						}
 
 						UsersRequest userRequest = new UsersRequest();
@@ -1342,16 +1337,13 @@ public class ProposalServiceMappingImpl implements ProposalService {
 
 						BigInteger fpProductId = BigInteger.class.cast(connectionResponse.getSuggetionList().get(i));
 						ProductMaster master = productMasterRepository.findOne(fpProductId.longValue());
-						if (!CommonUtils.isObjectNullOrEmpty(master)) {
-							if (!CommonUtils.isObjectNullOrEmpty(master.getUserOrgId())) {
+						if (!CommonUtils.isObjectNullOrEmpty(master) && !CommonUtils.isObjectNullOrEmpty(master.getUserOrgId()) ) {
 								if (userOgList.contains(master.getUserOrgId())) {
 									logger.info("Found same user org id in connection suggestion list ---------------"
 											+ master.getId() + "--------------->" + master.getUserOrgId());
 									continue;
 								}
 								userOgList.add(master.getUserOrgId());
-							}
-
 						}
 						UsersRequest userRequest = new UsersRequest();
 						userRequest.setId(master.getUserId());
@@ -1442,12 +1434,12 @@ public class ProposalServiceMappingImpl implements ProposalService {
 	}
 
 	@Override
-	public ProposalMappingResponse updateAssignDetails(ProposalMappingRequest request) throws Exception {
+	public ProposalMappingResponse updateAssignDetails(ProposalMappingRequest request) throws LoansException {
 		try {
 			return proposalDetailsClient.updateAssignDetails(request);
 		} catch (Exception e) {
 			logger.error("Throw Exception while updating assign issue : ",e);
-			throw new Exception("Somethig went wrong");
+			throw new LoansException("Somethig went wrong");
 		}
 	}
 
@@ -1678,10 +1670,8 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					FundProviderDetailsRequest fundProviderDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap(
 							(LinkedHashMap<String, Object>) usrResponse.getData(), FundProviderDetailsRequest.class);
 					if (!CommonUtils.isObjectNullOrEmpty(fundProviderDetailsRequest.getCityId())) {
-						if (!CommonUtils.isObjectNullOrEmpty(fundProviderDetailsRequest.getCityId())) {
 							corporateProposalDetails.setCity(CommonDocumentUtils
 									.getCity(fundProviderDetailsRequest.getCityId().longValue(), oneFormClient));
-						}
 					}
 					if (!CommonUtils.isObjectNullOrEmpty(fundProviderDetailsRequest.getPincode())) {
 						corporateProposalDetails.setPincode(fundProviderDetailsRequest.getPincode());
@@ -1727,11 +1717,9 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			logger.info("DISBURSEMENT DETAILS IS ---------------------------------------------------> " + request.toString());
 
 			Date connectlogModifiedDate = connectClient.getInprincipleDateByAppId(request.getApplicationId());
-			if (!CommonUtils.isObjectNullOrEmpty(connectlogModifiedDate)) {
-				if (request.getDisbursementDate().compareTo(connectlogModifiedDate)<0 || request.getDisbursementDate().compareTo(new Date())>0) {
+			if (!CommonUtils.isObjectNullOrEmpty(connectlogModifiedDate) && (request.getDisbursementDate().compareTo(connectlogModifiedDate)<0 || request.getDisbursementDate().compareTo(new Date())>0)) {
 				return	new ProposalMappingResponse("Please insert valid disbursement date",
 							HttpStatus.INTERNAL_SERVER_ERROR.value());
-				}
 			}
 			ProposalMappingResponse mappingResponse = proposalDetailsClient.saveDisbursementDetails(request);
 			return mappingResponse;
@@ -1769,7 +1757,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 				}
 
 				CheckerDetailRequest checkerDetailRequest = null;
-				if (!CommonUtils.isObjectListNull(userResponse)
+				if (userResponse != null && !CommonUtils.isObjectListNull(userResponse)
 						&& !(CommonUtils.isObjectNullOrEmpty(userResponse.getData()))) {
 					checkerDetailRequest = MultipleJSONObjectHelper.getObjectFromMap(
 							(LinkedHashMap<String, Object>) userResponse.getData(), CheckerDetailRequest.class);
@@ -1778,7 +1766,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 				if (!CommonUtils.isObjectNullOrEmpty(checkerDetailRequest)) {
 					// "+checkerDetailRequest.getMinAmount() + " getMaxAmount :
 					// "+checkerDetailRequest.getMaxAmount());
-					if (userRequest.getLoanAmount() != null && checkerDetailRequest.getMinAmount() != null
+					if (userRequest.getLoanAmount() != null && checkerDetailRequest != null && checkerDetailRequest.getMinAmount() != null
 							&& checkerDetailRequest.getMaxAmount() != null
 							&& !(userRequest.getLoanAmount() >= checkerDetailRequest.getMinAmount()
 									&& userRequest.getLoanAmount() <= checkerDetailRequest.getMaxAmount())) {
@@ -2005,10 +1993,12 @@ public class ProposalServiceMappingImpl implements ProposalService {
 		if(count != null) {
 			Map<String , Double> map = new HashMap<>();
 			map.put("inPrincipleCount", CommonUtils.convertDouble(count[0]));
-			map.put("holdCount", CommonUtils.convertDouble(count[1]));
-			map.put("rejectCount", CommonUtils.convertDouble(count[2]));
-			map.put("sanctionedCount", CommonUtils.convertDouble(count[3]));
-			map.put("disbursmentCount", CommonUtils.convertDouble(count[4]));
+			map.put("holdBeforeCount", CommonUtils.convertDouble(count[1]));
+			map.put("holdAfterCount", CommonUtils.convertDouble(count[2]));
+			map.put("rejectBeforeCount", CommonUtils.convertDouble(count[3]));
+			map.put("rejectAfterCount", CommonUtils.convertDouble(count[4]));
+			map.put("sanctionedCount", CommonUtils.convertDouble(count[5]));
+			map.put("disbursmentCount", CommonUtils.convertDouble(count[6]));
 			return map;
 		}
 		return null;

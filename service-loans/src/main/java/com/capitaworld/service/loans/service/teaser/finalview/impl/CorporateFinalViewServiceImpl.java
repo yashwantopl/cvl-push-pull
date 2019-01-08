@@ -2,7 +2,6 @@ package com.capitaworld.service.loans.service.teaser.finalview.impl;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -32,7 +31,6 @@ import com.capitaworld.service.dms.model.DocumentRequest;
 import com.capitaworld.service.dms.model.DocumentResponse;
 import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.fraudanalytics.client.FraudAnalyticsClient;
-import com.capitaworld.service.fraudanalytics.model.AnalyticsResponse;
 import com.capitaworld.service.gst.GstResponse;
 import com.capitaworld.service.gst.client.GstClient;
 import com.capitaworld.service.loans.domain.fundprovider.TermLoanParameter;
@@ -323,6 +321,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 
 		corporateFinalViewResponse.setProductId(loanApplicationMaster.getProductId());
 		corporateFinalViewResponse.setApplicationType(loanApplicationMaster.getWcRenewalStatus() != null ? WcRenewalType.getById(loanApplicationMaster.getWcRenewalStatus()).getValue().toString() : "New" );
+		corporateFinalViewResponse.setIsMcqSkipped(loanApplicationMaster.getIsMcqSkipped() != null ? loanApplicationMaster.getIsMcqSkipped() : false);
 		// ===================== MATCHES DATA ======================//
 		if (userType != null && !(CommonUtils.UserType.FUND_SEEKER == userType) ) {
 			    // TEASER VIEW FROM FP
@@ -1584,6 +1583,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 		// MCA DATA
 		try {
 			String companyId = loanApplicationMaster.getMcaCompanyId();
+			corporateFinalViewResponse.setCompanyId(companyId);
 			logger.info("mca comp id==>>" + companyId);
 
 			if (companyId != null) {
@@ -1606,12 +1606,12 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 					logger.warn("::::::=====MCA Data is Null====:::::::For:::::==>" + companyId);
 				}
 				
-				/*McaResponse mcaFinancialAndDetailsRes=mcaClient.getCompanyFinancialCalcAndDetails(toApplicationId, companyId);
+				McaResponse mcaFinancialAndDetailsRes=mcaClient.getCompanyFinancialCalcAndDetails(toApplicationId, companyId);
 				if(mcaFinancialAndDetailsRes.getData()!=null) {
 					corporateFinalViewResponse.setMcaFinancialAndDetailsResponse(mcaFinancialAndDetailsRes);
 				}else {
 					logger.info("::::::=====MCA Financial Data is Null====:::::::For:::::==>"+ companyId + " appId==>"+toApplicationId);
-				}*/
+				}
 				
 			} else {
 				logger.warn("Mca Company Id is Null");
@@ -1641,14 +1641,20 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 		// Name as per Gst
 
 		try {
-			GstResponse response = gstClient.detailCalculation(corporateApplicantDetail.getGstIn());
-			if (response != null) {
-				corporateFinalViewResponse.setGstData(response);
-			} else {
+			
+			if(corporateApplicantDetail.getGstIn()!= null) {
+				GstResponse response = gstClient.detailCalculation(corporateApplicantDetail.getGstIn());
+				if (response != null) {
+					corporateFinalViewResponse.setGstData(response);
+				} else {
 
-				logger.warn("----------:::::::: Gst Response is null :::::::---------");
+					logger.warn("----------:::::::: Gst Response is null :::::::---------");
 
+				}
+			}else {
+				logger.warn("gstIn is Null for in corporate Applicant Details=>>>>>"+toApplicationId);
 			}
+			
 
 		} catch (Exception e) {
 			logger.error(":::::::------Error while calling gstData---:::::::",e);

@@ -1,12 +1,12 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -49,7 +49,7 @@ public class CorporateDirectorIncomeServiceImpl implements CorporateDirectorInco
 	private static final Logger logger = LoggerFactory.getLogger(CorporateDirectorIncomeServiceImpl.class.getName());
 
 	@Override
-	public Boolean saveOrUpdateIncomeDetails(List<CorporateDirectorIncomeRequest> corporateRequest) throws Exception {
+	public Boolean saveOrUpdateIncomeDetails(List<CorporateDirectorIncomeRequest> corporateRequest) throws LoansException {
 
 		try {
 			logger.info("Entering into saveOrUpdateDirectorIncomeDetails=======================>");
@@ -86,7 +86,7 @@ public class CorporateDirectorIncomeServiceImpl implements CorporateDirectorInco
 
 	@Override
 	public List<CorporateDirectorIncomeRequest> getDirectorIncomeDetails(Long applicationId)
-			throws Exception {
+			throws LoansException {
 		
 		try {
 			CorporateDirectorIncomeRequest incomeRequest = null;
@@ -123,7 +123,7 @@ public class CorporateDirectorIncomeServiceImpl implements CorporateDirectorInco
 	
 	@Override
 	public List<CorporateDirectorIncomeRequest> getDirectorIncomeLatestYearDetails(Long applicationId)
-			throws Exception {
+			throws LoansException {
 		try {
 			CorporateDirectorIncomeRequest incomeRequest = null;
 			List<CorporateDirectorIncomeDetails> incomeDetails = null;
@@ -159,7 +159,7 @@ public class CorporateDirectorIncomeServiceImpl implements CorporateDirectorInco
 	
 
 	@Override
-	public List<Map<String, Object>> getDirectorBackGroundDetails(Long applicationId) throws Exception {
+	public List<Map<String, Object>> getDirectorBackGroundDetails(Long applicationId) throws LoansException {
 		
 		try {
 			List<DirectorBackgroundDetail> backgroundDetailsList = null;			

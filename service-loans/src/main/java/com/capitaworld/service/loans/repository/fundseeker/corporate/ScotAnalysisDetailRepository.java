@@ -8,7 +8,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.capitaworld.service.loans.domain.fundseeker.corporate.RequirementsAndAvailabilityRawMaterialsDetail;
 import com.capitaworld.service.loans.domain.fundseeker.corporate.ScotAnalysisDetail;
 import com.capitaworld.service.loans.model.teaser.finalview.ScotAnalysisDetailResponse;
 
