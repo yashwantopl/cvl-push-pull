@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.controller.fundseeker.corporate;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.corporate.CorporateMcqRequest;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateMcqService;
@@ -33,7 +34,7 @@ public class CorporateMcqController {
     @RequestMapping(value = "/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LoansResponse> save(@RequestBody CorporateMcqRequest corporateMcqRequest,
                                               HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId)
-            throws Exception {
+            throws LoansException {
         try {
             CommonDocumentUtils.startHook(logger, "save");
             // request must not be null
@@ -71,7 +72,7 @@ public class CorporateMcqController {
     @RequestMapping(value = "/skipMcq", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LoansResponse> skipMcq(@RequestBody CorporateMcqRequest corporateMcqRequest,
                                               HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId)
-            throws Exception {
+            throws LoansException {
         try {
 //        	System.out.println("id :"+corporateMcqRequest.getApplicationId() + " isMcqSkipped : "+corporateMcqRequest.getIsMcqSkipped());
             CommonDocumentUtils.startHook(logger, "skipMcq");

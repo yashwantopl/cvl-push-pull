@@ -64,7 +64,7 @@ public class IneligibleProposalDetailsController {
 					HttpStatus.OK);
 		} else  if (isDetailsSaved == 1) {
 			return new ResponseEntity<LoansResponse>(
-					new LoansResponse("Your proposal is already sanctioned !!", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+					new LoansResponse("It seems your proposal is already sanctioned by one of our bank partner. If you did not receive any communication from bank please mail your details at support@psbloansin59minutes.com", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}  else {
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse("Data not saved", HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);

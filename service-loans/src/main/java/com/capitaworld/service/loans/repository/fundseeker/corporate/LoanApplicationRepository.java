@@ -177,6 +177,9 @@ public interface LoanApplicationRepository extends JpaRepository<LoanApplication
 	@Query("select lm from LoanApplicationMaster lm where lm.id =:id and lm.isActive = true order by lm.id")
 	public LoanApplicationMaster getMCACompanyIdById(@Param("id") Long id);
 	
+	@Query("select lm from LoanApplicationMaster lm where lm.id =:id and lm.isActive = true order by lm.id")
+	public LoanApplicationMaster getMcaCin(@Param("id") Long id);
+	
 	@Query("select count(lm.id) from LoanApplicationMaster lm where lm.userId =:userId and lm.isActive = true")
 	public Long getTotalUserApplication(@Param("userId") Long userId);
 	
