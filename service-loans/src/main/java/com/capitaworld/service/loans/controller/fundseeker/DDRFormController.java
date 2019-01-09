@@ -207,7 +207,6 @@ public class DDRFormController {
 		logger.info("Enter in DDR AutoFilled Form Get Method -------------------------->" + appId);
 
 		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-		Integer userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE));
 		if (CommonDocumentUtils.isThisClientApplication(request) && !CommonUtils.isObjectNullOrEmpty(clientId)) {
 			userId = clientId;
 		}

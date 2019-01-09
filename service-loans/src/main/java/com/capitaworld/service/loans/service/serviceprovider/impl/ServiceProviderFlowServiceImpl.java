@@ -387,7 +387,6 @@ public class ServiceProviderFlowServiceImpl implements ServiceProviderFlowServic
 				
 				if (userTpyeId.equals(com.capitaworld.service.users.utils.CommonUtils.USER_TYPECODE_FUNDSEEKER)) {
 					List<LoanApplicationDetailsForSp> fsClientDetails = loanApplicationService.getLoanDetailsByUserIdList(clientResponse.getClientId());
-					List<LoanApplicationDetailsForSp> fsApplicationDetails = new ArrayList<LoanApplicationDetailsForSp>();
 					for (LoanApplicationDetailsForSp applicationDetailsForSp : fsClientDetails) {
 						if(!CommonUtils.isObjectNullOrEmpty(applicationDetailsForSp.getProductId())){
 //							boolean applied = loanApplicationService.hasAlreadyApplied(clientResponse.getClientId(), applicationDetailsForSp.getId(),applicationDetailsForSp.getProductId());
@@ -476,7 +475,6 @@ public class ServiceProviderFlowServiceImpl implements ServiceProviderFlowServic
 				
 				if (userTpyeId.equals(com.capitaworld.service.users.utils.CommonUtils.USER_TYPECODE_FUNDSEEKER)) {
 					List<LoanApplicationDetailsForSp> fsClientDetails = loanApplicationService.getLoanDetailsByUserIdList(clientResponse.getClientId());
-					List<LoanApplicationDetailsForSp> fsApplicationDetails = new ArrayList<LoanApplicationDetailsForSp>();
 					for (LoanApplicationDetailsForSp applicationDetailsForSp : fsClientDetails) {
 						if(!CommonUtils.isObjectNullOrEmpty(applicationDetailsForSp.getProductId())){
 							//code for sp fs notification
@@ -542,7 +540,7 @@ public class ServiceProviderFlowServiceImpl implements ServiceProviderFlowServic
 				}
 			}
 			}
-			List<SpSysNotifyResponse> spSysNotifResponses = new ArrayList<SpSysNotifyResponse>();
+			List<SpSysNotifyResponse> spSysNotifResponses;
 			spSysNotifResponses = getPages(spSysNotifResponse,notificationPageRequest.getPageIndex(), notificationPageRequest.getSize());
 			return spSysNotifResponses;
 			
@@ -569,7 +567,6 @@ public class ServiceProviderFlowServiceImpl implements ServiceProviderFlowServic
 				
 				if (userTpyeId.equals(com.capitaworld.service.users.utils.CommonUtils.USER_TYPECODE_FUNDSEEKER)) {
 					List<LoanApplicationDetailsForSp> fsClientDetails = loanApplicationService.getLoanDetailsByUserIdList(clientResponse.getClientId());
-					List<LoanApplicationDetailsForSp> fsApplicationDetails = new ArrayList<LoanApplicationDetailsForSp>();
 					for (LoanApplicationDetailsForSp applicationDetailsForSp : fsClientDetails) {
 						if(!CommonUtils.isObjectNullOrEmpty(applicationDetailsForSp.getProductId())){
 							//code for sp fs notification

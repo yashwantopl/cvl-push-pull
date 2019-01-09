@@ -7,6 +7,7 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -182,7 +183,7 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 	}
 
 	@Override
-	public List<LoanDisbursementRequest> getDisbursedList(Long applicationId) throws Exception {
+	public List<LoanDisbursementRequest> getDisbursedList(Long applicationId) throws LoansException {
 		try{
 			List<LoanDisbursementDomain> loanDisbursementDomainList = loanDisbursementRepository.getDisbursedListByApplicationId(applicationId);
 			if(!CommonUtils.isListNullOrEmpty(loanDisbursementDomainList)){

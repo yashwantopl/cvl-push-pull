@@ -2,6 +2,7 @@ package com.capitaworld.service.loans.service.fundseeker.retail;
 
 import java.util.List;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.retail.OtherCurrentAssetDetailRequest;
 
@@ -11,8 +12,8 @@ import com.capitaworld.service.loans.model.retail.OtherCurrentAssetDetailRequest
  */
 public interface OtherCurrentAssetDetailService {
 
-	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception;
+	public Boolean saveOrUpdate(FrameRequest frameRequest) throws LoansException;
 
-	public List<OtherCurrentAssetDetailRequest> getOtherCurrentAssetDetailList(Long id, int applicationType) throws Exception;
+	public List<OtherCurrentAssetDetailRequest> getOtherCurrentAssetDetailList(Long id, int applicationType) throws LoansException;
 
 }

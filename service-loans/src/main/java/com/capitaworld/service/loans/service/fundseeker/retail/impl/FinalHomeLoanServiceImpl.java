@@ -2,6 +2,7 @@ package com.capitaworld.service.loans.service.fundseeker.retail.impl;
 
 import java.util.Date;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +41,7 @@ public class FinalHomeLoanServiceImpl implements FinalHomeLoanService {
 	private LoanApplicationService loanApplicationService;
 
 	@Override
-	public boolean saveOrUpdate(FinalHomeLoanDetailRequest finalHomeLoanDetailRequest, Long userId) throws Exception {
+	public boolean saveOrUpdate(FinalHomeLoanDetailRequest finalHomeLoanDetailRequest, Long userId) throws LoansException {
 		try {
 			Long finalUserId = (CommonUtils.isObjectNullOrEmpty(finalHomeLoanDetailRequest.getClientId()) ? userId : finalHomeLoanDetailRequest.getClientId());
 			FinalHomeLoanDetail finalHomeLoanDetail = finalHomeLoanDetailRepository
@@ -72,12 +73,12 @@ public class FinalHomeLoanServiceImpl implements FinalHomeLoanService {
 			return true;
 		} catch (Exception e) {
 			logger.error("Error while Saving Final Home Loan Details:-",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
-	public FinalHomeLoanDetailRequest get(Long applicationId, Long userId) throws Exception {
+	public FinalHomeLoanDetailRequest get(Long applicationId, Long userId) throws LoansException {
 		try {
 			FinalHomeLoanDetail loanDetail = finalHomeLoanDetailRepository.getByApplicationAndUserId(applicationId,
 					userId);
@@ -98,7 +99,7 @@ public class FinalHomeLoanServiceImpl implements FinalHomeLoanService {
 			return finalHomeLoanDetailRequest;
 		} catch (Exception e) {
 			logger.error("Error while getting Final Home Loan Details:-",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 

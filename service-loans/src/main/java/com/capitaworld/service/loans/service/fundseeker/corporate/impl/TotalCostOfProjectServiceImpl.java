@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -34,7 +35,7 @@ public class TotalCostOfProjectServiceImpl implements TotalCostOfProjectService 
 	private LoanApplicationRepository loanApplicationRepository;
 
 	@Override
-	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception {
+	public Boolean saveOrUpdate(FrameRequest frameRequest) throws LoansException {
 		try {
 			for (Map<String, Object> obj : frameRequest.getDataList()) {
 				TotalCostOfProjectRequest totalCostOfProjectRequest = (TotalCostOfProjectRequest) MultipleJSONObjectHelper
@@ -59,14 +60,14 @@ public class TotalCostOfProjectServiceImpl implements TotalCostOfProjectService 
 
 		catch (Exception e) {
 			logger.error("Exception in save totalCostOfProject :-",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 
 	}
 
 	@Override
 	public List<TotalCostOfProjectRequest> getCostOfProjectDetailList(Long applicationId, Long userId)
-			throws Exception {
+			throws LoansException {
 		try {
 			List<TotalCostOfProject> totalCostOfProjectRequest = totalCostOfProjectRepository
 					.listCostOfProjectFromAppId(applicationId, userId);
@@ -81,7 +82,7 @@ public class TotalCostOfProjectServiceImpl implements TotalCostOfProjectService 
 			return totalCostOfProjectRequests;
 		} catch (Exception e) {
 			logger.error("Exception getting TotalCostOfProjects  :-",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 	

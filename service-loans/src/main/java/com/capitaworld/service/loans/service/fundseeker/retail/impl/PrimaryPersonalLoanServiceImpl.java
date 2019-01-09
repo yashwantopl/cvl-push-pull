@@ -3,6 +3,7 @@ package com.capitaworld.service.loans.service.fundseeker.retail.impl;
 import java.util.Date;
 import java.util.List;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -36,7 +37,7 @@ public class PrimaryPersonalLoanServiceImpl implements PrimaryPersonalLoanServic
 	private FsNegativeFpListRepository fsNegativeFpListRepository;
 	
 	@Override
-	public boolean saveOrUpdate(PrimaryPersonalLoanRequest personalLoanRequest, Long userId) throws Exception {
+	public boolean saveOrUpdate(PrimaryPersonalLoanRequest personalLoanRequest, Long userId) throws LoansException {
 		// ID must not be null
 		try {
 			PrimaryPersonalLoanDetail primaryPersonalLoanDetail = personalLoanDetailRepository
@@ -58,7 +59,7 @@ public class PrimaryPersonalLoanServiceImpl implements PrimaryPersonalLoanServic
 			return true;
 		} catch (Exception e) {
 			logger.error("Error while saving PrimaryCarLoan Details : ",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
@@ -80,7 +81,7 @@ public class PrimaryPersonalLoanServiceImpl implements PrimaryPersonalLoanServic
 	}
 	
 	@Override
-	public PrimaryPersonalLoanRequest get(Long applicationId, Long userId) throws Exception {
+	public PrimaryPersonalLoanRequest get(Long applicationId, Long userId) throws LoansException {
 		try {
 			PrimaryPersonalLoanDetail loanDetail = personalLoanDetailRepository.getByApplicationAndUserId(applicationId, userId);
 			if (loanDetail == null) {
@@ -97,7 +98,7 @@ public class PrimaryPersonalLoanServiceImpl implements PrimaryPersonalLoanServic
 			return personalLoanRequest;
 		} catch (Exception e) {
 			logger.error("Error while saving PrimaryCarLoan Details : ",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 }

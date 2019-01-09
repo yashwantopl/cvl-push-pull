@@ -220,7 +220,7 @@ public class ScoringServiceImpl implements ScoringService {
 
         List<ScoringRequestDetail> scoringRequestDetailList = scoringRequestDetailRepository.getScoringRequestDetailByApplicationIdAndIsActive(applicationId);
 
-        ScoringRequestDetail scoringRequestDetailSaved = new ScoringRequestDetail();
+        ScoringRequestDetail scoringRequestDetailSaved;
 
         if (scoringRequestDetailList.size() > 0) {
             logger.info("Getting Old Scoring request Data for  =====> " + applicationId);
@@ -1053,7 +1053,6 @@ public class ScoringServiceImpl implements ScoringService {
         try {
             if (data != null) {
                 List<Xn> xns = data.getXns().getXn();
-                List<Double> al = new ArrayList<Double>();
                 for (Xn xn : xns) {
                     if (xn.getCategory().equalsIgnoreCase("Salary")) {
                         salaryWithBank=true;
@@ -1101,7 +1100,7 @@ public class ScoringServiceImpl implements ScoringService {
         List<ScoringRequestDetail> scoringRequestDetailList = scoringRequestDetailRepository.getScoringRequestDetailByApplicationIdAndIsActive(applicationId);
 
 
-        ScoringRequestDetail scoringRequestDetailSaved = new ScoringRequestDetail();
+        ScoringRequestDetail scoringRequestDetailSaved;
 
         if (scoringRequestDetailList.size() > 0) {
             logger.info("Getting Old Scoring request Data for  =====> " + applicationId);
@@ -1185,11 +1184,11 @@ public class ScoringServiceImpl implements ScoringService {
             OperatingStatementDetails operatingStatementDetailsTY = new OperatingStatementDetails();
 
 
-            LiabilitiesDetails liabilitiesDetailsFY = new LiabilitiesDetails();
-            LiabilitiesDetails liabilitiesDetailsSY = new LiabilitiesDetails();
+            LiabilitiesDetails liabilitiesDetailsFY;
+            LiabilitiesDetails liabilitiesDetailsSY;
             LiabilitiesDetails liabilitiesDetailsTY = new LiabilitiesDetails();
 
-            AssetsDetails assetsDetailsFY = new AssetsDetails();
+            AssetsDetails assetsDetailsFY;
             AssetsDetails assetsDetailsSY = new AssetsDetails();
             AssetsDetails assetsDetailsTY = new AssetsDetails();
 
@@ -1545,21 +1544,21 @@ public class ScoringServiceImpl implements ScoringService {
                                 if (CommonUtils.isObjectNullOrEmpty(exportSalesFy))
                                     exportSalesFy = 0.0;
 
-                                Double totalSale_FY = 0.0;
+                                Double totalSale_FY;
                                 if (domesticSalesFy + exportSalesFy == 0.0) {
                                     totalSale_FY = 1.0;
                                 } else {
                                     totalSale_FY = domesticSalesFy + exportSalesFy;
                                 }
 
-                                Double totalSale_SY = 0.0;
+                                Double totalSale_SY;
                                 if (domesticSalesSy + exportSalesSy == 0.0) {
                                     totalSale_SY = 1.0;
                                 } else {
                                     totalSale_SY = domesticSalesSy + exportSalesSy;
                                 }
 
-                                Double totalSale_TY = 0.0;
+                                Double totalSale_TY;
                                 if (domesticSalesTy + exportSalesTy == 0.0) {
                                     totalSale_TY = 1.0;
                                 } else {
@@ -2253,11 +2252,11 @@ public class ScoringServiceImpl implements ScoringService {
                 OperatingStatementDetails operatingStatementDetailsTY = new OperatingStatementDetails();
 
 
-                LiabilitiesDetails liabilitiesDetailsFY = new LiabilitiesDetails();
-                LiabilitiesDetails liabilitiesDetailsSY = new LiabilitiesDetails();
+                LiabilitiesDetails liabilitiesDetailsFY;
+                LiabilitiesDetails liabilitiesDetailsSY;
                 LiabilitiesDetails liabilitiesDetailsTY = new LiabilitiesDetails();
 
-                AssetsDetails assetsDetailsFY = new AssetsDetails();
+                AssetsDetails assetsDetailsFY;
                 AssetsDetails assetsDetailsSY = new AssetsDetails();
                 AssetsDetails assetsDetailsTY = new AssetsDetails();
 

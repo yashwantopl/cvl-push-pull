@@ -135,7 +135,6 @@ public class RecentViewServiceImpl implements RecentViewService{
 		List<RecentProfileViewResponse> listThisMonth = new ArrayList<RecentProfileViewResponse>();
 		for(SysNotifyResponse response  : thisMonth){
 			RecentProfileViewResponse thisMonthResp = new RecentProfileViewResponse();
-			Long fpProductId = response.getProductId();
 			//CALLING DMS FOR FP PROFILE PIC IMAGE PATH
 			DocumentRequest documentRequest = new DocumentRequest();
 			documentRequest.setUserId(response.getUserId());
@@ -174,7 +173,6 @@ public class RecentViewServiceImpl implements RecentViewService{
 		List<RecentProfileViewResponse> listEarlier = new ArrayList<RecentProfileViewResponse>();
 		for(SysNotifyResponse response  : earlier){
 			RecentProfileViewResponse earlierResp = new RecentProfileViewResponse();
-			Long fpProductId = response.getProductId();
 			//CALLING DMS FOR FP PROFILE PIC IMAGE PATH
 			DocumentRequest documentRequest = new DocumentRequest();
 			documentRequest.setUserId(response.getUserId());
@@ -305,7 +303,6 @@ public class RecentViewServiceImpl implements RecentViewService{
 			}	
 			else{
 				//FOR RETAIL USER
-				Long fpProductId=response.getProductId();
 				RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.findOneByApplicationIdId(applicationId);
 				if(retailApplicantDetail == null)
 					continue;
@@ -440,7 +437,6 @@ public class RecentViewServiceImpl implements RecentViewService{
 			}	
 			else{
 				//FOR RETAIL USER
-				Long fpProductId=response.getProductId();
 				RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.findOneByApplicationIdId(applicationId);
 				if(retailApplicantDetail == null)
 					continue;
@@ -575,7 +571,6 @@ public class RecentViewServiceImpl implements RecentViewService{
 			}	
 			else{
 				//FOR RETAIL USER
-				Long fpProductId=response.getProductId();
 				RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.findOneByApplicationIdId(applicationId);
 				if(retailApplicantDetail == null)
 					continue;
@@ -660,7 +655,6 @@ public class RecentViewServiceImpl implements RecentViewService{
 		List<RecentProfileViewResponse> listRecentView = new ArrayList<RecentProfileViewResponse>();
 		for(SysNotifyResponse response  : recentView){
 			RecentProfileViewResponse thisWeekResp = new RecentProfileViewResponse();
-			Long fpProductId = response.getProductId();
 			//CALLING DMS FOR FP PROFILE PIC IMAGE PATH
 			DocumentRequest documentRequest = new DocumentRequest();
 			documentRequest.setUserId(response.getUserId());
@@ -784,7 +778,6 @@ public class RecentViewServiceImpl implements RecentViewService{
 				}	
 				else{
 					//FOR RETAIL USER
-					Long fpProductId=response.getProductId();
 					RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.findOneByApplicationIdId(applicationId);
 					if(retailApplicantDetail == null)
 						continue;

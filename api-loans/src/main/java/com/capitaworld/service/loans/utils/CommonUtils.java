@@ -201,7 +201,7 @@ public class CommonUtils {
 	}
 
 	public static Integer[] saperateDayMonthYearFromDate(Date date) {
-		Integer result[] = new Integer[3];
+		Integer[] result = new Integer[3];
 		if (date == null) {
 			return result;
 		}

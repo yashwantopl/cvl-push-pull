@@ -3,6 +3,7 @@ package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 import java.util.Date;
 import java.util.List;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -37,7 +38,7 @@ public class FinalWorkingCapitalLoanServiceImpl implements FinalWorkingCapitalLo
 	private LoanApplicationRepository loanApplicationRepository;
 
 	@Override
-	public boolean saveOrUpdate(FinalWorkingCapitalLoanRequest capitalLoanRequest, Long userId) throws Exception {
+	public boolean saveOrUpdate(FinalWorkingCapitalLoanRequest capitalLoanRequest, Long userId) throws LoansException {
 		try {
 			Long finalUserId = (CommonUtils.isObjectNullOrEmpty(capitalLoanRequest.getClientId()) ? userId : capitalLoanRequest.getClientId());
 			FinalWorkingCapitalLoanDetail capitalLoanDetail = finalWCRepository
@@ -67,12 +68,12 @@ public class FinalWorkingCapitalLoanServiceImpl implements FinalWorkingCapitalLo
 			return true;
 		} catch (Exception e) {
 			logger.error("Error while Saving Final Working Capital Details:-",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
-	public FinalWorkingCapitalLoanRequest get(Long id, Long applicationId) throws Exception {
+	public FinalWorkingCapitalLoanRequest get(Long id, Long applicationId) throws LoansException {
 		try {
 			FinalWorkingCapitalLoanDetail loanDetails = finalWCRepository.getByApplicationAndUserId(applicationId, id);
 			if (loanDetails == null) {
@@ -85,7 +86,7 @@ public class FinalWorkingCapitalLoanServiceImpl implements FinalWorkingCapitalLo
 			return capitalLoanRequest;
 		} catch (Exception e) {
 			logger.error("Error while getting Final Working Capital Details:-",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 
 	}

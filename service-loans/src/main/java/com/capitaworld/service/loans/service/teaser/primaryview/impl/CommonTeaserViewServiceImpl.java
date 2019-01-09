@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.service.teaser.primaryview.impl;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.service.teaser.primaryview.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,7 +76,7 @@ public class CommonTeaserViewServiceImpl implements CommonTeaserViewService{
 	private LapFinalViewService lapFinalViewService;
 	@Override
 	public Boolean getPrimaryViewDetails(Long applicantId, LoansResponse loansResponse)
-			throws Exception {
+			throws LoansException {
 		logger.info("start getPrimaryViewDetails ");
 		LoanApplicationMaster applicationMaster=loanApplicationMasterRepo.findOne(applicantId);
 		if(CommonUtils.isObjectNullOrEmpty(applicationMaster))

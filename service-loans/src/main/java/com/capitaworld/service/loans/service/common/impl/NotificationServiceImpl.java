@@ -155,7 +155,7 @@ public class NotificationServiceImpl implements NotificationService{
 				
 				
 				
-				Object o[]=productMasterService.getUserDetailsByPrductId(fpProductId);
+				Object[] o=productMasterService.getUserDetailsByPrductId(fpProductId);
 				
 				String fpName = "";
 				try {

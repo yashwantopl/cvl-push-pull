@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -47,7 +48,7 @@ public class OtherIncomeDetailServiceImpl implements OtherIncomeDetailService {
 	private GuarantorDetailsRepository guarantorDetailsRepository;
 
 	@Override
-	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception {
+	public Boolean saveOrUpdate(FrameRequest frameRequest) throws LoansException {
 		try {
 			for (Map<String, Object> obj : frameRequest.getDataList()) {
 				OtherIncomeDetailRequest otherIncomeDetailRequest = (OtherIncomeDetailRequest) MultipleJSONObjectHelper
@@ -84,15 +85,15 @@ public class OtherIncomeDetailServiceImpl implements OtherIncomeDetailService {
 
 		catch (Exception e) {
 			logger.error("Exception in save otherIncomeDetail  :- ",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 
 	}
 
 	@Override
-	public List<OtherIncomeDetailRequest> getOtherIncomeDetailList(Long id, int applicationType) throws Exception {
+	public List<OtherIncomeDetailRequest> getOtherIncomeDetailList(Long id, int applicationType) throws LoansException {
 		try {
-			List<OtherIncomeDetail> otherIncomeDetails = new ArrayList<OtherIncomeDetail>();
+			List<OtherIncomeDetail> otherIncomeDetails;
 			switch (applicationType) {
 			case CommonUtils.ApplicantType.APPLICANT:
 				otherIncomeDetails = otherIncomeDetailRepository.listOtherIncomeFromAppId(id);
@@ -104,7 +105,7 @@ public class OtherIncomeDetailServiceImpl implements OtherIncomeDetailService {
 				otherIncomeDetails = otherIncomeDetailRepository.listOtherIncomeFromGarrId(id);
 				break;
 			default:
-				throw new Exception();
+				throw new LoansException();
 			}
 
 			List<OtherIncomeDetailRequest> otherIncomeRequests = new ArrayList<OtherIncomeDetailRequest>();
@@ -119,7 +120,7 @@ public class OtherIncomeDetailServiceImpl implements OtherIncomeDetailService {
 
 		catch (Exception e) {
 			logger.error("Exception in getting otherIncomeDetail :- ",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 

@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -35,7 +36,7 @@ public class SecurityCorporateDetailsServiceImpl implements SecurityCorporateDet
 	private SecurityCorporateDetailsRepository securityCorporateDetailsRepository;
 
 	@Override
-	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception {
+	public Boolean saveOrUpdate(FrameRequest frameRequest) throws LoansException {
 		try {
 			for (Map<String, Object> obj : frameRequest.getDataList()) {
 				SecurityCorporateDetailRequest securityCorporateDetailRequest = (SecurityCorporateDetailRequest) MultipleJSONObjectHelper
@@ -60,12 +61,12 @@ public class SecurityCorporateDetailsServiceImpl implements SecurityCorporateDet
 
 		catch (Exception e) {
 			logger.error("Exception  in save securityCorporateDetail  :-",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
-	public List<SecurityCorporateDetailRequest> getsecurityCorporateDetailsList(Long id,Long userId) throws Exception {
+	public List<SecurityCorporateDetailRequest> getsecurityCorporateDetailsList(Long id,Long userId) throws LoansException {
 		try {
 			List<SecurityCorporateDetail> securityCorporateDetails = securityCorporateDetailsRepository
 					.getSecurityCorporateDetailFromAppId(id);
@@ -83,7 +84,7 @@ public class SecurityCorporateDetailsServiceImpl implements SecurityCorporateDet
 
 		catch (Exception e) {
 			logger.error("Exception  in save securityCorporateDetail  :-",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 }

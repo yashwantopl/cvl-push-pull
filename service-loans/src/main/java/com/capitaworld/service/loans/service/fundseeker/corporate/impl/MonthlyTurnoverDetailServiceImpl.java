@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -39,7 +40,7 @@ public class MonthlyTurnoverDetailServiceImpl implements MonthlyTurnoverDetailSe
 	private MonthlyTurnoverDetailRepository monthlyTurnoverDetailsRepository;
 
 	@Override
-	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception {
+	public Boolean saveOrUpdate(FrameRequest frameRequest) throws LoansException {
 		try {
 			for (Map<String, Object> obj : frameRequest.getDataList()) {
 				MonthlyTurnoverDetailRequest monthlyTurnoverDetailRequest = (MonthlyTurnoverDetailRequest) MultipleJSONObjectHelper
@@ -65,13 +66,13 @@ public class MonthlyTurnoverDetailServiceImpl implements MonthlyTurnoverDetailSe
 
 		catch (Exception e) {
 			logger.error("Exception in save monthlyTurnoverDetail :- ",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 
 	}
 
 	@Override
-	public List<MonthlyTurnoverDetailRequest> getMonthlyTurnoverDetailList(Long id,Long userId) throws Exception {
+	public List<MonthlyTurnoverDetailRequest> getMonthlyTurnoverDetailList(Long id,Long userId) throws LoansException {
 		try {
 			List<MonthlyTurnoverDetail> monthlyTurnoverDetails = monthlyTurnoverDetailsRepository
 					.listMonthlyTurnoverFromAppId(id,userId);
@@ -93,7 +94,7 @@ public class MonthlyTurnoverDetailServiceImpl implements MonthlyTurnoverDetailSe
 
 		catch (Exception e) {
 			logger.error("Exception in get List monthlyTurnoverDetail :- ",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 

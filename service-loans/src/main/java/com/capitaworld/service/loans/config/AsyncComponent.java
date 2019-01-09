@@ -492,7 +492,7 @@ public class AsyncComponent {
 								fpName = active.getFpProductName();
 								logger.info("FP name is:===" + fpName);
 								logger.info("active proposal:" + active.getFpProductId());
-								Object o[] = productMasterService.getUserDetailsByPrductId(active.getFpProductId());
+								Object[] o = productMasterService.getUserDetailsByPrductId(active.getFpProductId());
 								if (o != null) {
 									fpName = o[1].toString();
 									logger.info("Successfully get fo name------->" + fpName);
@@ -631,7 +631,7 @@ public class AsyncComponent {
 							String fpName = "NA";
 							try {
 								logger.info("Start Getting Fp Name By Fp Product Id =======>" + fpProductId);
-								Object o[] = productMasterService.getUserDetailsByPrductId(fpProductId);
+								Object[] o = productMasterService.getUserDetailsByPrductId(fpProductId);
 								if (o != null) {
 									fpName = o[1].toString();
 									logger.info("Successfully get fo name------->" + fpName);

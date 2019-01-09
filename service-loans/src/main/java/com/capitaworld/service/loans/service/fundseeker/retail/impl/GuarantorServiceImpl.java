@@ -1138,7 +1138,7 @@ public class GuarantorServiceImpl implements GuarantorService {
 
 				return finalCommonresponseList;
 			} else {
-				throw new Exception("No Data found");
+				throw new LoansException("No Data found");
 			}
 		} catch (Exception e) {
 			logger.error("Error Fetching Guarantor Details : ",e);

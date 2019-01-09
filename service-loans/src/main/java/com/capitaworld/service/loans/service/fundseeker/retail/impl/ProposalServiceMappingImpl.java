@@ -364,7 +364,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 						String industry = "";
 						if (loanResponseDatalist.size() > 0) {
 							for (int k = 0; k < loanResponseDatalist.size(); k++) {
-								MasterResponse masterResponse = new MasterResponse();
+								MasterResponse masterResponse;
 								masterResponse = MultipleJSONObjectHelper.getObjectFromMap(loanResponseDatalist.get(k),
 										MasterResponse.class);
 								industry += masterResponse.getValue() + " ,";
@@ -740,8 +740,6 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			ProposalMappingResponse proposalDetailsResponse = proposalDetailsClient.proposalListOfFundSeeker(request);
 
 			List<Object[]> disbursmentData = loanDisbursementRepository.getDisbursmentData(request.getApplicationId());
-
-			List<ProposalMappingRequest> proposalMappingList = new ArrayList<ProposalMappingRequest>();
 
 			for (int i = 0; i < proposalDetailsResponse.getDataList().size(); i++) {
 				UsersClient usersClient = new UsersClient(environment.getRequiredProperty(USER_URL));
@@ -1806,7 +1804,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 		// userData.toString());
 
 		// Long roleId = (Long) userData.get("roleId");
-		List<Object[]> result = new ArrayList<Object[]>();
+		List<Object[]> result;
 
 		// if(UsersRoles.HO.equals(roleId)) {
 		// result =
