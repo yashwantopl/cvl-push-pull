@@ -347,14 +347,21 @@ public class IrrServiceImpl implements IrrService{
 		LiabilitiesDetails liabilitiesDetails = new LiabilitiesDetails();
 		AssetsDetails assetsDetails = new AssetsDetails();
 		CorporateFinalInfoRequest  corporateFinalInfoRequest = new CorporateFinalInfoRequest();
-		corporateFinalInfoRequest = corporateFinalInfoService.get(userId ,aplicationId);
+		
+		//corporateFinalInfoRequest = corporateFinalInfoService.get(userId ,aplicationId); // PREVIOUS
+		corporateFinalInfoRequest = corporateFinalInfoService.getByProposalId(userId ,proposalMapId); // // NEW BASED ON PROPOSAL MAPPING ID 
+		
+		//log.info("corporateFinalInfoRequest========================>"+corporateFinalInfoRequest);
+		log.info("corporateFinalInfoRequest========================>"+corporateFinalInfoRequest.getSharePriceFace());
 		
 		//---SHARE FACE VALUE SET-----
         Double shareFaceVal=1.00;
 
-		CorporateApplicantDetail corporateApplicantDetail=corporateApplicantDetailRepository.findOneByApplicationIdId(aplicationId);
-		if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getSharePriceFace()))
-            shareFaceVal=corporateApplicantDetail.getSharePriceFace();
+		//CorporateApplicantDetail corporateApplicantDetail=corporateApplicantDetailRepository.findOneByApplicationIdId(aplicationId);
+		//log.info("corporateApplicantDetail=============>"+corporateApplicantDetail.getSharePriceFace()); // PREVIOUS
+	
+		if(!CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getSharePriceFace()))
+            shareFaceVal=corporateFinalInfoRequest.getSharePriceFace(); // NEW corporateFinalInfoRequest 
 
 		financialInputRequest.setShareFaceValue(shareFaceVal);
 
@@ -839,7 +846,7 @@ public class IrrServiceImpl implements IrrService{
 		
 		try {
 			
-			liabilitiesDetails = liabilitiesDetailsRepository.getLiabilitiesDetailByProposal(proposalMapId, currentYear-2+"");
+			liabilitiesDetails = liabilitiesDetailsRepository.getLiabilitiesDetailByProposal(proposalMapId, currentYear-2+""); //  BY PROPOSAL MAPPING ID BASED
 			
 			if(liabilitiesDetails != null) {
 				
