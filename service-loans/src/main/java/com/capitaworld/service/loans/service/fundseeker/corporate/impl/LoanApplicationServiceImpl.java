@@ -5520,15 +5520,14 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				applicationRequest.setEmail(userEmailMobile.getEmail());
 				applicationRequest.setMobile(userEmailMobile.getMobile());
 			}
-			// SETTING ADDRESS
+			// SETTING ADDRESS	
 			String address = null;
 			if (!CommonUtils.isObjectNullOrEmpty(applicationMaster.getProductId())) {
 				int mainType = CommonUtils.getUserMainType(applicationMaster.getProductId().intValue());
 				if (CommonUtils.UserMainType.CORPORATE == mainType) {
 					CorporateApplicantDetail corpApplicantDetail =new CorporateApplicantDetail();
-					CorporateFinalInfoRequest applicantDetail = corporateFinalInfoService.getByProposalId(id, applicationMaster.getProposalId());
+					CorporateFinalInfoRequest applicantDetail = corporateFinalInfoService.getByProposalId(applicationRequest.getUserId(), applicationMaster.getProposalId());
 					BeanUtils.copyProperties(applicantDetail, corpApplicantDetail );
-					
 					if (!CommonUtils.isObjectNullOrEmpty(applicantDetail)) {
 						address = CommonDocumentUtils.getAdministrativeOfficeAddress(corpApplicantDetail, oneFormClient);
 					}
