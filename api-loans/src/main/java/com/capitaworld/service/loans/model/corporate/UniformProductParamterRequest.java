@@ -72,6 +72,8 @@ public class UniformProductParamterRequest extends ProductMasterRequest implemen
 	
 	private String versionAudit;
 	
+	private String isActiveAudit;
+	
 	private Date createdDate;
 
 	public UniformProductParamterRequest(){
@@ -351,5 +353,13 @@ public class UniformProductParamterRequest extends ProductMasterRequest implemen
 
 	public void setIsEdited(Boolean isEdited) {
 		this.isEdited = isEdited;
+	}
+
+	public String getIsActiveAudit() {
+		return isActiveAudit;
+	}
+
+	public void setIsActiveAudit(String isActiveAudit) {
+		this.isActiveAudit = isActiveAudit;
 	}
 }
