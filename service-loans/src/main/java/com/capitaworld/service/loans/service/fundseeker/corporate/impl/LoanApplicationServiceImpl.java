@@ -5806,7 +5806,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			if (!CommonUtils.isObjectNullOrEmpty(loanApplicationRequest.getNpOrgId())) {
 				applicationProposalMapping.setOrgId(loanApplicationRequest.getNpOrgId());
 			}
-			ApplicationProposalMapping existingDetails = applicationProposalMappingRepository.getByApplicationId(proposalDetails.getApplicationId());
+			ApplicationProposalMapping existingDetails = applicationProposalMappingRepository.getByProposalIdAndApplicationId(proposalDetails.getId(),proposalDetails.getApplicationId());//getByApplicationId(proposalDetails.getApplicationId());
 			if (!CommonUtils.isObjectNullOrEmpty(existingDetails) && !CommonUtils.isObjectNullOrEmpty(existingDetails.getApplicationCode())) {
 				applicationProposalMapping
 						.setApplicationCode(existingDetails.getApplicationCode());
