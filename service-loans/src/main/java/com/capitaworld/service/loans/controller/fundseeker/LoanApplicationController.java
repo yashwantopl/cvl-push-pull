@@ -844,7 +844,7 @@ public class LoanApplicationController {
 						HttpStatus.OK);
 			}
 			JSONObject json = new JSONObject();
-			json.put("isPrimaryLock", loanApplicationService.isPrimaryLockedByProposalId(applicationId, userId));
+			json.put("isPrimaryLock", loanApplicationService.isPrimaryLocked(applicationId, userId));
 			json.put("isFinalLock", loanApplicationService.isFinalLocked(applicationId, userId));
 			LoansResponse loansResponse = new LoansResponse(CommonUtils.SUCCESS_RESULT, HttpStatus.OK.value());
 			loansResponse.setData(json);
