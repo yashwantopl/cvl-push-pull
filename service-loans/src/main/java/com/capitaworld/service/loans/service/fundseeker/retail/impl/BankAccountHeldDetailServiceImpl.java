@@ -83,8 +83,7 @@ public class BankAccountHeldDetailServiceImpl implements BankAccountHeldDetailSe
 		}
 
 		catch (Exception e) {
-			logger.info("Exception  in save bankAccountHeldDetail  :-");
-			e.printStackTrace();
+			logger.error("Exception  in save bankAccountHeldDetail  :-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 
@@ -121,8 +120,7 @@ public class BankAccountHeldDetailServiceImpl implements BankAccountHeldDetailSe
 		}
 
 		catch (Exception e) {
-			logger.info("Exception in getting bankAccountHeldDetail  :-");
-			e.printStackTrace();
+			logger.error("Exception in getting bankAccountHeldDetail  :-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}

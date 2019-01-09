@@ -75,7 +75,7 @@ public class CMAServiceImpl implements CMAService {
 					liabilitiesDetails = liabilitiesDetailsRepository.getLiabilitiesDetails(liabilitiesDetailsRequest.getApplicationId(), liabilitiesDetailsRequest.getYear());
 				}
 				if(!CommonUtils.isObjectNullOrEmpty(liabilitiesDetails)) {
-					BeanUtils.copyProperties(liabilitiesDetailsRequest, liabilitiesDetails,"id","applicationId","createdBy","createdDate","isActive");
+					BeanUtils.copyProperties(liabilitiesDetailsRequest, liabilitiesDetails,"id",CommonUtils.APPLICATION_ID,CommonUtils.CREATED_BY,CommonUtils.CREATED_DATE,CommonUtils.IS_ACTIVE);
 					liabilitiesDetails.setModifiedBy(cmaRequest.getUserId());
 					liabilitiesDetails.setModifiedDate(new Date());
 				} else {
@@ -91,8 +91,7 @@ public class CMAServiceImpl implements CMAService {
 				
 			}	
 		} catch (Exception e) {
-			logger.info("THROW EXCEPTION WHILE SAVE LIABILITY DETAILS");
-			e.printStackTrace();
+			logger.error("THROW EXCEPTION WHILE SAVE LIABILITY DETAILS : ",e);
 		}
 		
 		
@@ -108,7 +107,7 @@ public class CMAServiceImpl implements CMAService {
 					assetsDetails = assetsDetailsRepository.getAssetsDetails(assetsDetailsRequest.getApplicationId(), assetsDetailsRequest.getYear());
 				}
 				if(!CommonUtils.isObjectNullOrEmpty(assetsDetails)) {
-					BeanUtils.copyProperties(assetsDetailsRequest, assetsDetails,"id","applicationId","createdBy","createdDate","isActive");
+					BeanUtils.copyProperties(assetsDetailsRequest, assetsDetails,"id",CommonUtils.APPLICATION_ID,CommonUtils.CREATED_BY,CommonUtils.CREATED_DATE,CommonUtils.IS_ACTIVE);
 					assetsDetails.setModifiedBy(cmaRequest.getUserId());
 					assetsDetails.setModifiedDate(new Date());
 				} else {
@@ -123,8 +122,7 @@ public class CMAServiceImpl implements CMAService {
 				assetsDetailsRepository.save(assetsDetails);
 			}	
 		} catch (Exception e) {
-			logger.info("THROW EXCEPTION WHILE SAVE ASSET DETAILS DETAILS");
-			e.printStackTrace();
+			logger.error("THROW EXCEPTION WHILE SAVE ASSET DETAILS DETAILS",e);
 		}
 		
 		
@@ -139,7 +137,7 @@ public class CMAServiceImpl implements CMAService {
 					operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStatementDetails(operatingStatementDetailsRequest.getApplicationId(), operatingStatementDetailsRequest.getYear());
 				}
 				if(!CommonUtils.isObjectNullOrEmpty(operatingStatementDetails)) {
-					BeanUtils.copyProperties(operatingStatementDetailsRequest, operatingStatementDetails,"id","applicationId","createdBy","createdDate","isActive");
+					BeanUtils.copyProperties(operatingStatementDetailsRequest, operatingStatementDetails,"id",CommonUtils.APPLICATION_ID,CommonUtils.CREATED_BY,CommonUtils.CREATED_DATE,CommonUtils.IS_ACTIVE);
 					operatingStatementDetails.setModifiedBy(cmaRequest.getUserId());
 					operatingStatementDetails.setModifiedDate(new Date());
 				} else {
@@ -154,8 +152,7 @@ public class CMAServiceImpl implements CMAService {
 				operatingStatementDetailsRepository.save(operatingStatementDetails);
 			}
 		} catch (Exception e) {
-			logger.info("THROW EXCEPTION WHILE SAVE OPERATING STATEMENT DETAILS DETAILS");
-			e.printStackTrace();
+			logger.error("THROW EXCEPTION WHILE SAVE OPERATING STATEMENT DETAILS DETAILS : ",e);
 		}
 		logger.info("CMA DETAILS SAVED SUCCESSFULLY");
 		
@@ -660,7 +657,7 @@ public class CMAServiceImpl implements CMAService {
 				currencyAndDenomination = currencyAndDenomination.concat(
 						" in " + CommonDocumentUtils.getDenomination(applicationMaster.getDenominationId()));
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 		} else if (!CommonUtils.isObjectNullOrEmpty(applicationMaster.getCurrencyId())){
 			currencyAndDenomination = CommonDocumentUtils.getCurrency(applicationMaster.getCurrencyId());

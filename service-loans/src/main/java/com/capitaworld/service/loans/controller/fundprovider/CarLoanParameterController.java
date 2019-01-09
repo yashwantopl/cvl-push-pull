@@ -43,7 +43,7 @@ public class CarLoanParameterController {
 			logger.warn("carLoanParameterRequest Object can not be empty ==>", carLoanParameterRequest);
 			CommonDocumentUtils.endHook(logger, "save");
 			return new ResponseEntity<LoansResponse>(
-					new LoansResponse("Requested data can not be empty.", HttpStatus.BAD_REQUEST.value()),
+					new LoansResponse(CommonUtils.REQUESTED_DATA_CAN_NOT_BE_EMPTY, HttpStatus.BAD_REQUEST.value()),
 					HttpStatus.OK);
 		}
 
@@ -52,7 +52,7 @@ public class CarLoanParameterController {
 			logger.warn("carLoanParameterRequest id can not be empty ==>", carLoanParameterRequest);
 			CommonDocumentUtils.endHook(logger, "save");
 			return new ResponseEntity<LoansResponse>(
-					new LoansResponse("Requested data can not be empty.", HttpStatus.BAD_REQUEST.value()),
+					new LoansResponse(CommonUtils.REQUESTED_DATA_CAN_NOT_BE_EMPTY, HttpStatus.BAD_REQUEST.value()),
 					HttpStatus.OK);
 		}
 		
@@ -64,7 +64,7 @@ public class CarLoanParameterController {
 			logger.warn("userId  id can not be empty ==>", userId);
 			CommonDocumentUtils.endHook(logger, "save");
 			return new ResponseEntity<LoansResponse>(
-					new LoansResponse("Requested data can not be empty.", HttpStatus.BAD_REQUEST.value()),
+					new LoansResponse(CommonUtils.REQUESTED_DATA_CAN_NOT_BE_EMPTY, HttpStatus.BAD_REQUEST.value()),
 					HttpStatus.OK);
 		}
 		carLoanParameterRequest.setUserId(userId);
@@ -85,7 +85,7 @@ public class CarLoanParameterController {
 	@RequestMapping(value = "/get/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> get(@PathVariable("id") Long id) {
 		// request must not be null
-		CommonDocumentUtils.startHook(logger, "get");;
+		CommonDocumentUtils.startHook(logger, "get");
 		try {
 			if (id == null) {
 				logger.warn("ID Require to get car loan parameter ==>" + id);

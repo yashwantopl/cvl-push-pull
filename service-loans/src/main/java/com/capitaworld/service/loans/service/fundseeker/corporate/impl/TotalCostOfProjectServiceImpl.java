@@ -36,7 +36,6 @@ public class TotalCostOfProjectServiceImpl implements TotalCostOfProjectService 
 
 	@Override
 	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception {
-		// TODO Auto-generated method stub
 		try {
 			for (Map<String, Object> obj : frameRequest.getDataList()) {
 				TotalCostOfProjectRequest totalCostOfProjectRequest = (TotalCostOfProjectRequest) MultipleJSONObjectHelper
@@ -61,8 +60,7 @@ public class TotalCostOfProjectServiceImpl implements TotalCostOfProjectService 
 		}
 
 		catch (Exception e) {
-			logger.info("Exception in save totalCostOfProject :-");
-			e.printStackTrace();
+			logger.error("Exception in save totalCostOfProject :-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 
@@ -106,8 +104,7 @@ public class TotalCostOfProjectServiceImpl implements TotalCostOfProjectService 
 			}
 			return totalCostOfProjectRequests;
 		} catch (Exception e) {
-			logger.info("Exception getting TotalCostOfProjects  :-");
-			e.printStackTrace();
+			logger.error("Exception getting TotalCostOfProjects  :-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}

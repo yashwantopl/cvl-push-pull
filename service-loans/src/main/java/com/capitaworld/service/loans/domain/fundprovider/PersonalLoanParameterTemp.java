@@ -218,6 +218,7 @@ public class PersonalLoanParameterTemp extends ProductMasterTemp implements Seri
 	private Integer userCreditRating;
 
 	public PersonalLoanParameterTemp() {
+		// Do nothing because of X and Y.
 	}
 
 	

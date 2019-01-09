@@ -50,6 +50,7 @@ public class SubsectorDetail implements Serializable {
 	private Long sectorSubsectorTransactionId;
 
 	public SubsectorDetail() {
+		// Do nothing because of X and Y.
 	}
 
 	public Long getId() {

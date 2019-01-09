@@ -110,9 +110,6 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 	private FinancialArrangementDetailsService financialArrangementDetailsService;
 
 	@Autowired
-	private DirectorBackgroundDetailsService DirectorBackgroundDetailsService;
-
-	@Autowired
 	private OneFormClient oneFormClient;
 
 	@Autowired
@@ -150,15 +147,13 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 	@Autowired
 	private PrimaryCorporateDetailRepository primaryCorporateRepository;
 
-	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
-
 	@Override
 	public TermLoanPrimaryViewResponse getTermLoanPrimaryViewDetails(Long toApplicationId, Integer userType,
 																	 Long fundProviderUserId) {
 		TermLoanPrimaryViewResponse termLoanPrimaryViewResponse = new TermLoanPrimaryViewResponse();
 
-		if (userType != null) {
-			if (!(CommonUtils.UserType.FUND_SEEKER == userType)) { // teaser
+		if (userType != null && !(CommonUtils.UserType.FUND_SEEKER == userType) ) {
+			     // teaser
 				// view
 				// viwed by
 				// fund
@@ -171,8 +166,7 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 					UserResponse userResponse= usersClient.getLastAccessApplicant(usersRequest);
 					fpProductMappingId=userResponse.getId();
 				} catch (Exception e) {
-					logger.error("error while fetching last access fp rpduct id for fund provider while fetching matches in teaser view");
-					e.printStackTrace();
+					logger.error("error while fetching last access fp rpduct id for fund provider while fetching matches in teaser view : ",e);
 				}
 				try {
 					MatchRequest matchRequest = new MatchRequest();
@@ -181,9 +175,8 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 					MatchDisplayResponse matchResponse = matchEngineClient.displayMatchesOfCorporate(matchRequest);
 					termLoanPrimaryViewResponse.setMatchesList(matchResponse.getMatchDisplayObjectList());
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
-			}
 		}
 
 		LoanApplicationMaster applicationMaster = loanApplicationRepository.findOne(toApplicationId);
@@ -222,7 +215,7 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 						termLoanPrimaryViewResponse.setCity("NA");
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 			}
 
@@ -244,7 +237,7 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 						termLoanPrimaryViewResponse.setCity("NA");
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 			}
 
@@ -268,7 +261,7 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 						termLoanPrimaryViewResponse.setState("NA");
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 			}
 
@@ -290,7 +283,7 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 						termLoanPrimaryViewResponse.setState("NA");
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 			}
 			// set country
@@ -312,7 +305,7 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 						termLoanPrimaryViewResponse.setCountry("NA");
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 			}
 
@@ -333,7 +326,7 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 						termLoanPrimaryViewResponse.setCountry("NA");
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(CommonUtils.EXCEPTION,e);
 				}
 			}
 
@@ -354,7 +347,7 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 				}
 
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 
 		}
@@ -372,7 +365,7 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 						.getIndustrySectorSubSector(industrySectorSubSectorTeaserRequest);
 				termLoanPrimaryViewResponse.setIndustrySector(oneFormResponse.getListData());
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 		}
 		// get value of Term Loan data
@@ -397,7 +390,7 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 			termLoanPrimaryViewResponse.setCollateralSecurityAmount(primaryCorporateDetail.getCollateralSecurityAmount() != null ? String.valueOf(primaryCorporateDetail.getCollateralSecurityAmount()) : null);
 			if (primaryTermLoanDetail.getModifiedDate() != null)
 				termLoanPrimaryViewResponse
-						.setDateOfProposal(DATE_FORMAT.format(primaryTermLoanDetail.getModifiedDate()));
+						.setDateOfProposal(CommonUtils.DATE_FORMAT.format(primaryTermLoanDetail.getModifiedDate()));
 			//termLoanPrimaryViewResponse.setIsCreditRatingAvailable(primaryTermLoanDetail.getCreditRatingId() != null
 			// ? CreditRatingAvailable.getById(primaryTermLoanDetail.getCreditRatingId()).getValue() : null);
 		}
@@ -623,7 +616,6 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 			}
 			termLoanPrimaryViewResponse.setFinanceMeansDetailResponseList(financeMeansDetailResponsesList);
 		} catch (Exception e1) {
-			// TODO Auto-generated catch block
 			logger.error("Problem to get Data of Finance Means Details {}", e1);
 		}
 		//references
@@ -631,8 +623,7 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 		try {
 			referenceRetailDetailsRequestList = referenceRetailDetailsService.getReferenceRetailDetailList(toApplicationId, userType);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		termLoanPrimaryViewResponse.setReferenceRetailDetailsRequests(referenceRetailDetailsRequestList);
 
@@ -652,7 +643,6 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 			}
 			termLoanPrimaryViewResponse.setTotalCostOfProjectResponseList(costOfProjectResponses);
 		} catch (Exception e1) {
-			// TODO Auto-generated catch block
 			logger.error("Problem to get Data of Total cost of project{}", e1);
 		}
 */
@@ -665,7 +655,7 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 			termLoanPrimaryViewResponse.setBrochureList(documentResponse.getDataList());
 		} catch (DocumentException e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 
 		// get list fo certificate
@@ -676,7 +666,7 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 			termLoanPrimaryViewResponse.setCertificateList(documentResponse.getDataList());
 		} catch (DocumentException e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 
 		// get list of pan card
@@ -687,7 +677,7 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 			termLoanPrimaryViewResponse.setPanCardList(documentResponse.getDataList());
 		} catch (DocumentException e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 
 		// get profile pic
@@ -698,7 +688,7 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 			DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 			termLoanPrimaryViewResponse.setProfilePic(documentResponse.getDataList());
 		} catch (DocumentException e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 
 		// set short term rating option
@@ -719,8 +709,7 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 				termLoanPrimaryViewResponse.setShortTermRating(shortTermValueList);
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 
 		// set long term rating option
@@ -742,8 +731,7 @@ public class TermLoanPrimaryViewServiceImpl implements TermLoanPrimaryViewServic
 			}
 			termLoanPrimaryViewResponse.setLongTermRating(longTermValueList);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 
 		return termLoanPrimaryViewResponse;

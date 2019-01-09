@@ -45,6 +45,7 @@ public class PrimaryTermLoanDetail extends LoanApplicationMaster implements Seri
 	private Double sharePriceMarket;
 
 	public PrimaryTermLoanDetail() {
+		// Do nothing because of X and Y.
 	}
 
 	public LoanApplicationMaster getApplicationId() {

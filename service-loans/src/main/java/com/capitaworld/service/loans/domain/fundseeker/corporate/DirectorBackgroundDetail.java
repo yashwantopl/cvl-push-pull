@@ -186,6 +186,7 @@ public class DirectorBackgroundDetail extends AuditActivity implements Serializa
 	private DirectorPersonalDetail directorPersonalDetail;
 
 	public DirectorBackgroundDetail() {
+		// Do nothing because of X and Y.
 	}
 	
 	public DirectorBackgroundDetail(Long id) {

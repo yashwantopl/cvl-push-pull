@@ -64,8 +64,7 @@ public class MonthlyTurnoverDetailServiceImpl implements MonthlyTurnoverDetailSe
 		}
 
 		catch (Exception e) {
-			logger.info("Exception  in save monthlyTurnoverDetail  :-");
-			e.printStackTrace();
+			logger.error("Exception in save monthlyTurnoverDetail :- ",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 
@@ -93,8 +92,7 @@ public class MonthlyTurnoverDetailServiceImpl implements MonthlyTurnoverDetailSe
 		}
 
 		catch (Exception e) {
-			logger.info("Exception  in get List monthlyTurnoverDetail  :-");
-			e.printStackTrace();
+			logger.error("Exception in get List monthlyTurnoverDetail :- ",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
@@ -122,7 +120,7 @@ public class MonthlyTurnoverDetailServiceImpl implements MonthlyTurnoverDetailSe
 									+ cal.get(Calendar.YEAR)));
 				}
 			} else if (todayDate.compareTo(comparisonDate) <= 0) {
-				System.out.println("Comparison Date is before Today's Date");
+				logger.info("Comparison Date is before Today's Date");
 				int year = cal.get(Calendar.YEAR);
 				cal.set(year, currentMonth - 2, currentDate);
 				for (int i = 0; i < 12; i++) {
@@ -134,7 +132,7 @@ public class MonthlyTurnoverDetailServiceImpl implements MonthlyTurnoverDetailSe
 			}
 
 		} catch (ParseException e) {
-			e.printStackTrace();
+			logger.error("Exception in getList : ",e);
 		}
 		return yearList;
 	}

@@ -222,6 +222,7 @@ public class HomeLoanParameter extends ProductMaster implements Serializable {
 	private Boolean isCashProfitMandatory=false;*/
 	
 	public HomeLoanParameter() {
+		// Do nothing because of X and Y.
 	}
 
 	public ProductMaster getFpProductId() {

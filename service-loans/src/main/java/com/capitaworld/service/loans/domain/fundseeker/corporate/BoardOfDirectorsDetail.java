@@ -85,6 +85,7 @@ public class BoardOfDirectorsDetail implements Serializable {
 	}
 
 	public BoardOfDirectorsDetail() {
+		// Do nothing because of X and Y.
 	}
 
 	public Long getId() {

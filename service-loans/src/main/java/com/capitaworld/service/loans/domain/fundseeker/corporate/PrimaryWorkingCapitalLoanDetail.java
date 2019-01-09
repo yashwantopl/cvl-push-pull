@@ -1,7 +1,6 @@
 package com.capitaworld.service.loans.domain.fundseeker.corporate;
 
 import java.io.Serializable;
-import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -10,8 +9,6 @@ import javax.persistence.Lob;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 
@@ -54,6 +51,7 @@ public class PrimaryWorkingCapitalLoanDetail extends LoanApplicationMaster imple
 	private Double sharePriceMarket;
 
 	public PrimaryWorkingCapitalLoanDetail() {
+		// Do nothing because of X and Y.
 	}
 
 	public LoanApplicationMaster getApplicationId() {

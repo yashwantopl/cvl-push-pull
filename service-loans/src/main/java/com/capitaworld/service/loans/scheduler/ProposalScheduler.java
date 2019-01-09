@@ -1,16 +1,12 @@
 package com.capitaworld.service.loans.scheduler;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import com.capitaworld.service.loans.utils.CommonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import com.capitaworld.service.loans.config.FPAsyncComponent;
-import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
 import com.capitaworld.service.loans.service.fundseeker.corporate.ProposalService;
 
 @Component
@@ -29,13 +25,13 @@ public class ProposalScheduler {
 		  proposalService.checkPendingProposal();
 	   logger.info("Exit ScheduledTasks proposal");
 	  } catch (Exception e) {
-	   e.printStackTrace();
+		  logger.error(CommonUtils.EXCEPTION,e);
 	  }
 	 }
 	
 //	@Autowired
 //	private FPAsyncComponent fp;
-//	
+//
 //	@Scheduled(initialDelay = 10,fixedDelay=100000)
 //	 public void runF(){
 //	  logger.info("Entry ScheduledTasks proposal");
@@ -52,15 +48,13 @@ public class ProposalScheduler {
 //			try {
 //				fp.sendMailToFsWhenMakerAcceptPorposal(parameters, applicantRequest, "Maaz Shaikh");
 //			} catch (Exception e) {
-//				// TODO Auto-generated catch block
-//				System.out.println("Exception inside main class:" + e.getMessage());
-//				e.printStackTrace();
+//				logger.error("Exception inside main class:",e);
 //			}
 //
-//		  
+//
 //	   logger.info("Exit ScheduledTasks proposal");
 //	  } catch (Exception e) {
-//	   e.printStackTrace();
+//		  logger.error(CommonUtils.EXCEPTION,e);
 //	  }
 //	 }
 }

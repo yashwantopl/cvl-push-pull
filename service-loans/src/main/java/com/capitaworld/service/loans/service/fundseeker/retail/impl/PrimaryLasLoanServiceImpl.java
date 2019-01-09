@@ -49,8 +49,7 @@ public class PrimaryLasLoanServiceImpl implements PrimaryLasLoanService {
 			primaryLasLoanDetailRepository.save(primaryLasLoanDetail);
 			return true;
 		} catch (Exception e) {
-			logger.error("Error while saving Primary LAS Loan Details Profile:-");
-			e.printStackTrace();
+			logger.error("Error while saving Primary LAS Loan Details Profile:-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
@@ -72,8 +71,7 @@ public class PrimaryLasLoanServiceImpl implements PrimaryLasLoanService {
 			lasLoanDetailRequest.setCurrencyValue(CommonDocumentUtils.getCurrency(currencyId));
 			return lasLoanDetailRequest;
 		} catch (Exception e) {
-			logger.error("Error while getting Primary LAS Loan Details Profile:-");
-			e.printStackTrace();
+			logger.error("Error while getting Primary LAS Loan Details Profile:-",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}

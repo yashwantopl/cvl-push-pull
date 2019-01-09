@@ -111,6 +111,7 @@ public class LasParameter extends ProductMaster implements Serializable {
 	private Integer tenureYear;
 
 	public LasParameter() {
+		// Do nothing because of X and Y.
 	}
 
 	public ProductMaster getFpProductId() {

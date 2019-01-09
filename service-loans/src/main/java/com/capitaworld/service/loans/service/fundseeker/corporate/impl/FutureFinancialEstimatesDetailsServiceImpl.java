@@ -66,8 +66,7 @@ public class FutureFinancialEstimatesDetailsServiceImpl implements FutureFinanci
 		}
 
 		catch (Exception e) {
-			logger.info("Exception  in save futureFinancialEstimateDetail  :-");
-			e.printStackTrace();
+			logger.error("Exception  in save futureFinancialEstimateDetail :- ",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
@@ -88,8 +87,7 @@ public class FutureFinancialEstimatesDetailsServiceImpl implements FutureFinanci
 		}
 
 		catch (Exception e) {
-			logger.info("Exception  in save futureFinancialEstimateDetail  :-");
-			e.printStackTrace();
+			logger.error("Exception  in save futureFinancialEstimateDetail  :- ",e);
 			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
@@ -147,7 +145,7 @@ public class FutureFinancialEstimatesDetailsServiceImpl implements FutureFinanci
 							(currentYearForBeforeDate + 2) + " - " + (currentYearForBeforeDate + 3)));
 				}
 			} catch (ParseException e) {
-				e.printStackTrace();
+				logger.error("Exception in calucateWCFinancialYear : ",e);
 			}
 			return yearList;
 		} else {
@@ -179,7 +177,7 @@ public class FutureFinancialEstimatesDetailsServiceImpl implements FutureFinanci
 				if (todayDate.compareTo(comparisonDate) > 0) {
 					int currentYearForAfterDate = cal.get(Calendar.YEAR);
 					for (int i = 0; i < tenure; i++) {
-						System.out.println(Calendar.YEAR);
+						logger.info(""+Calendar.YEAR);
 						yearList.add(new FutureFinancialEstimatesDetailRequest(
 								currentYearForAfterDate + (i) + " - " + (currentYearForAfterDate + (i + 1))));
 					}
@@ -194,7 +192,7 @@ public class FutureFinancialEstimatesDetailsServiceImpl implements FutureFinanci
 				}
 
 			} catch (ParseException e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
 
 		} else {
@@ -234,7 +232,7 @@ public class FutureFinancialEstimatesDetailsServiceImpl implements FutureFinanci
 				}
 
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.error("Exception in calucateTLFinancialYear : ",e);
 			}
 		}
 		return Collections.emptyList();

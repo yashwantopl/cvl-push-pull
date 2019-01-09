@@ -187,6 +187,7 @@ public class LoanApplicationRequest implements Serializable {
 	}
 
 	public LoanApplicationRequest() {
+		// Do nothing because of X and Y.
 	}
 
 	public LoanApplicationRequest(Long id) {

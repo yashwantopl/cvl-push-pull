@@ -597,6 +597,7 @@ public class WorkingCapitalParameterRequest extends ProductMasterRequest impleme
 	private List<DataRequest> unInterestedIndustrylist=Collections.emptyList();
 
 	public WorkingCapitalParameterRequest() {
+		// Do nothing because of X and Y.
 	}
 
 	public Integer getCurrency() {

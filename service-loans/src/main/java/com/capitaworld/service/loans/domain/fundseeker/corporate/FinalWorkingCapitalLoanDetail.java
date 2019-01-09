@@ -231,6 +231,7 @@ public class FinalWorkingCapitalLoanDetail implements Serializable {
 	
 	
 	public FinalWorkingCapitalLoanDetail() {
+		// Do nothing because of X and Y.
 	}
 
 	public Long getId() {

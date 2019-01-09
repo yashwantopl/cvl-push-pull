@@ -27,6 +27,8 @@ import com.capitaworld.service.loans.utils.CommonUtils;
 public class UserLoanAmountMappingController {
 	
 	private static final Logger logger = LoggerFactory.getLogger(UserLoanAmountMappingController.class);
+
+	private static final String RESPONSE_FROM_SERVICE_LAYER = "Response from service layer ===============>";
 	
 	@Autowired
 	private UserLoanAmountMappingService amountMappingService; 
@@ -35,29 +37,26 @@ public class UserLoanAmountMappingController {
 	public ResponseEntity<LoansResponse> checkAmountByUserIdAndProductId(@RequestBody UserLoanAmountMappingRequest amountMappingRequest,HttpServletRequest httpServletRequest){
 
 		logger.info("Enter in check amount by user Id -------------------->" + amountMappingRequest.toString());
-		if(CommonUtils.isObjectNullOrEmpty(amountMappingRequest.getUserId())) {
-			if(!CommonUtils.isObjectNullOrEmpty(httpServletRequest.getAttribute(CommonUtils.USER_ID))) {
+		if(CommonUtils.isObjectNullOrEmpty(amountMappingRequest.getUserId()) && !CommonUtils.isObjectNullOrEmpty(httpServletRequest.getAttribute(CommonUtils.USER_ID)) ) {
 				amountMappingRequest.setUserId((Long)(httpServletRequest.getAttribute(CommonUtils.USER_ID)));
-			}
 		}
 		
 		if(CommonUtils.isObjectNullOrEmpty(amountMappingRequest.getUserId())) {
 			logger.info("UserId is null or Empty");
-			return new ResponseEntity<LoansResponse>(new LoansResponse("Request Data Null Or Empty !!", HttpStatus.BAD_REQUEST.value()),HttpStatus.OK);
+			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.REQUEST_DATA_NULL_OR_EMPTY, HttpStatus.BAD_REQUEST.value()),HttpStatus.OK);
 		}
 		
 		if(CommonUtils.isObjectNullOrEmpty(amountMappingRequest.getProductId())) {
 			logger.info("Product Id is null or Empty");
-			return new ResponseEntity<LoansResponse>(new LoansResponse("Request Data Null Or Empty !!", HttpStatus.BAD_REQUEST.value()),HttpStatus.OK);
+			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.REQUEST_DATA_NULL_OR_EMPTY, HttpStatus.BAD_REQUEST.value()),HttpStatus.OK);
 		}
 		
 		try {
 			Boolean result = amountMappingService.checkAmountByUserIdAndProductId(amountMappingRequest.getUserId(), amountMappingRequest.getAmount(), amountMappingRequest.getProductId());
-			logger.info("Response from service layer ===============>" + result);
+			logger.info(RESPONSE_FROM_SERVICE_LAYER + result);
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Checked !!", HttpStatus.OK.value(),result),HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while check amount by userid and product id==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -69,34 +68,31 @@ public class UserLoanAmountMappingController {
 	public ResponseEntity<LoansResponse> getByUserIdAndProductId(@RequestBody UserLoanAmountMappingRequest amountMappingRequest,HttpServletRequest httpServletRequest){
 
 		logger.info("Enter in get by user id and product id-------------------->" + amountMappingRequest.toString());
-		if(CommonUtils.isObjectNullOrEmpty(amountMappingRequest.getUserId())) {
-			if(!CommonUtils.isObjectNullOrEmpty(httpServletRequest.getAttribute(CommonUtils.USER_ID))) {
+		if(CommonUtils.isObjectNullOrEmpty(amountMappingRequest.getUserId()) && !CommonUtils.isObjectNullOrEmpty(httpServletRequest.getAttribute(CommonUtils.USER_ID)) ) {
 				amountMappingRequest.setUserId((Long)(httpServletRequest.getAttribute(CommonUtils.USER_ID)));
-			}
 		}
 		
 		if(CommonUtils.isObjectNullOrEmpty(amountMappingRequest.getUserId())) {
 			logger.info("UserId is null or Empty");
-			return new ResponseEntity<LoansResponse>(new LoansResponse("Request Data Null Or Empty !!", HttpStatus.BAD_REQUEST.value()),HttpStatus.OK);
+			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.REQUEST_DATA_NULL_OR_EMPTY, HttpStatus.BAD_REQUEST.value()),HttpStatus.OK);
 		}
 		
 		if(CommonUtils.isObjectNullOrEmpty(amountMappingRequest.getProductId())) {
 			logger.info("Product Id is null or Empty");
-			return new ResponseEntity<LoansResponse>(new LoansResponse("Request Data Null Or Empty !!", HttpStatus.BAD_REQUEST.value()),HttpStatus.OK);
+			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.REQUEST_DATA_NULL_OR_EMPTY, HttpStatus.BAD_REQUEST.value()),HttpStatus.OK);
 		}
 		
 		try {
 			UserLoanAmountMappingRequest response = amountMappingService.getByUserIdAndProductId(amountMappingRequest.getUserId(), amountMappingRequest.getProductId());
 			
 			if(!CommonUtils.isObjectNullOrEmpty(response)) {
-				logger.info("Response from service layer ===============>" + response.toString());
+				logger.info(RESPONSE_FROM_SERVICE_LAYER + response.toString());
 				return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully get data !!", HttpStatus.OK.value(),response),HttpStatus.OK);
 			}
-			logger.info("Response from service layer ===============>"  + response);
+			logger.info(RESPONSE_FROM_SERVICE_LAYER  + response);
 			return new ResponseEntity<LoansResponse>(new LoansResponse("No data found !!", HttpStatus.BAD_REQUEST.value()),HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while get by user id and product id==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);

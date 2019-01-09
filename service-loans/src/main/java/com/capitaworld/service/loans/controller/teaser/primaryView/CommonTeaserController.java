@@ -30,8 +30,8 @@ public class CommonTeaserController {
 	      
 
 	        if(CommonUtils.isObjectNullOrEmpty(applicationId)){
-				logger.warn("Invalid data or Requested data not found.", applicationId);
-				return new ResponseEntity<LoansResponse>(new LoansResponse("Invalid data or Requested data not found.", HttpStatus.BAD_REQUEST.value()),HttpStatus.OK);
+				logger.warn(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, applicationId);
+				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, HttpStatus.BAD_REQUEST.value()),HttpStatus.OK);
 	        }else {
 	        
 				try {
@@ -53,8 +53,8 @@ public class CommonTeaserController {
 	      
 
 	        if(CommonUtils.isObjectNullOrEmpty(applicationId)){
-				logger.warn("Invalid data or Requested data not found.", applicationId);
-				return new ResponseEntity<LoansResponse>(new LoansResponse("Invalid data or Requested data not found.", HttpStatus.BAD_REQUEST.value()),HttpStatus.OK);
+				logger.warn(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, applicationId);
+				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, HttpStatus.BAD_REQUEST.value()),HttpStatus.OK);
 	        }else {
 	        
 				try {

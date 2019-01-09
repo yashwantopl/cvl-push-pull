@@ -27,6 +27,7 @@ public class TotalCostOfProjectRequest implements Serializable {
 	private Integer particularsId;
 
 	public TotalCostOfProjectRequest() {
+		// Do nothing because of X and Y.
 	}
 
 	public Long getId() {

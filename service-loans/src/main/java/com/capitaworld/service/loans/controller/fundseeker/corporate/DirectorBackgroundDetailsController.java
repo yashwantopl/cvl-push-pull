@@ -38,7 +38,9 @@ public class DirectorBackgroundDetailsController {
 	private DirectorBackgroundDetailsService directorBackgroundDetailsService;
 	
 	@Autowired
-	private LoanApplicationService loanApplicationService; 
+	private LoanApplicationService loanApplicationService;
+
+	private static final String ERROR_WHILE_GETTING_DIRECTOR_BACKGROUND_DETAILS = "Error while getting Director Background Details==>";
 
 	/*@RequestMapping(value = "/ping", method = RequestMethod.GET)
 	public String getPing() {
@@ -109,7 +111,6 @@ public class DirectorBackgroundDetailsController {
 
 		} catch (Exception e) {
 			logger.error("Error while saving Director Background Details==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -119,7 +120,7 @@ public class DirectorBackgroundDetailsController {
 
 	@RequestMapping(value = "/getList/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getList(@PathVariable("id") Long id, HttpServletRequest request,@RequestParam(value = "clientId",required = false) Long clientId) {
-		CommonDocumentUtils.startHook(logger, "getList");
+		CommonDocumentUtils.startHook(logger, CommonUtils.GET_LIST);
 		Long userId = null;
 		if(CommonDocumentUtils.isThisClientApplication(request) && !CommonUtils.isObjectNullOrEmpty(clientId)){
 			userId = clientId;
@@ -136,14 +137,13 @@ public class DirectorBackgroundDetailsController {
 
 			List<DirectorBackgroundDetailRequest> response = directorBackgroundDetailsService
 					.getDirectorBackgroundDetailList(id,userId);
-			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 			loansResponse.setListData(response);
-			CommonDocumentUtils.endHook(logger, "getList");
+			CommonDocumentUtils.endHook(logger, CommonUtils.GET_LIST);
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
 		} catch (Exception e) {
-			logger.error("Error while getting Director Background Details==>", e);
-			e.printStackTrace();
+			logger.error(ERROR_WHILE_GETTING_DIRECTOR_BACKGROUND_DETAILS, e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -180,9 +180,7 @@ public class DirectorBackgroundDetailsController {
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
 		} catch (Exception e) {
-			logger.error("Error while Saving No Of Directors==>", e);
-			logger.info("Exit saveDirectors()");
-			e.printStackTrace();
+			logger.error("Error while Saving No Of Directors and Exit from saveDirectors() ==>", e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -207,12 +205,11 @@ public class DirectorBackgroundDetailsController {
 				loansResponse = new LoansResponse("Director Details Found.", HttpStatus.OK.value());
 				loansResponse.setData(response);
 			}
-			CommonDocumentUtils.endHook(logger, "getList");
+			CommonDocumentUtils.endHook(logger, CommonUtils.GET_LIST);
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
 		} catch (Exception e) {
-			logger.error("Error while getting Director Background Details==>", e);
-			e.printStackTrace();
+			logger.error(ERROR_WHILE_GETTING_DIRECTOR_BACKGROUND_DETAILS, e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -232,14 +229,13 @@ public class DirectorBackgroundDetailsController {
 
 			List<DirectorBackgroundDetailRequest> response = directorBackgroundDetailsService
 					.getDirectorBackgroundDetailList(applicationId,null);
-			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 			loansResponse.setListData(response);
 			CommonDocumentUtils.endHook(logger, "getListClient");
 			return new ResponseEntity<List<DirectorBackgroundDetailRequest>>(response, HttpStatus.OK);
 
 		} catch (Exception e) {
-			logger.error("Error while getting Director Background Details==>", e);
-			e.printStackTrace();
+			logger.error(ERROR_WHILE_GETTING_DIRECTOR_BACKGROUND_DETAILS, e);
 			return new ResponseEntity<List<DirectorBackgroundDetailRequest>>(Collections.emptyList(),
 					HttpStatus.OK);
 		}
@@ -260,14 +256,13 @@ public class DirectorBackgroundDetailsController {
 
 			List<DirectorBackgroundDetailRequest> response = directorBackgroundDetailsService
 					.getDirectorBackgroundDetailList(id, null);
-			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 			loansResponse.setListData(response);
-			CommonDocumentUtils.endHook(logger, "getList");
+			CommonDocumentUtils.endHook(logger, CommonUtils.GET_LIST);
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
 		} catch (Exception e) {
-			logger.error("Error while getting Director Background Details==>", e);
-			e.printStackTrace();
+			logger.error(ERROR_WHILE_GETTING_DIRECTOR_BACKGROUND_DETAILS, e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -282,14 +277,13 @@ public class DirectorBackgroundDetailsController {
 		
 		try {
 			List<DirectorBackgroundDetailRequest> response = directorBackgroundDetailsService.getDirectorBasicDetailsListForNTB(applicationId);
-			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 			loansResponse.setListData(response);
-			CommonDocumentUtils.endHook(logger, "getList");
+			CommonDocumentUtils.endHook(logger, CommonUtils.GET_LIST);
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 
 		} catch (Exception e) {
 			logger.error("Error while getting Director Background Details FOR NTB==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -308,7 +302,7 @@ public class DirectorBackgroundDetailsController {
 			logger.info("apiId==>{}",apiId);
 			logger.info("apiFlag==>{}",apiFlag);
 			
-			if (directorId == null || apiFlag == null || apiFlag == null) {
+			if (directorId == null || apiFlag == null ) {
 				logger.warn("Something is NULL from DirectorId Or APIFlag or Flag ==>");
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
@@ -325,7 +319,6 @@ public class DirectorBackgroundDetailsController {
 
 		} catch (Exception e) {
 			logger.error("Error while Updating Flag==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);

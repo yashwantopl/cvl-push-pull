@@ -690,6 +690,7 @@ public class WorkingCapitalParameterTemp extends ProductMasterTemp implements Se
 	}
 
 	public WorkingCapitalParameterTemp() {
+		// Do nothing because of X and Y.
 	}
 
 	public ProductMaster getFpProductId() {

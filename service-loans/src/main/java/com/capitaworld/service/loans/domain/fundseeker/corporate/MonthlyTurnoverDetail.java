@@ -48,6 +48,7 @@ public class MonthlyTurnoverDetail implements Serializable {
 	private String monthName;
 
 	public MonthlyTurnoverDetail() {
+		// Do nothing because of X and Y.
 	}
 
 	public Long getId() {

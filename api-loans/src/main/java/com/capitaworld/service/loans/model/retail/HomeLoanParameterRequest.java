@@ -152,6 +152,7 @@ public class HomeLoanParameterRequest extends ProductMasterRequest implements Se
 
 	
 	public HomeLoanParameterRequest() {
+		// Do nothing because of X and Y.
 	}
 
 	public Long getFpProductId() {

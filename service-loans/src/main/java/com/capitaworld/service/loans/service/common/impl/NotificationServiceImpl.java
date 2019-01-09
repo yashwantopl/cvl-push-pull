@@ -2,7 +2,6 @@ package com.capitaworld.service.loans.service.common.impl;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -12,10 +11,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.capitaworld.service.loans.model.DirectorBackgroundDetailRequest;
-import com.capitaworld.service.loans.model.LoanApplicationRequest;
-import com.capitaworld.service.loans.model.corporate.CorporateApplicantRequest;
-import com.capitaworld.service.loans.model.retail.RetailApplicantRequest;
 import com.capitaworld.service.loans.service.common.NotificationService;
 import com.capitaworld.service.loans.service.fundprovider.ProductMasterService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
@@ -26,7 +21,6 @@ import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.loans.utils.CommonNotificationUtils.NotificationTemplate;
-import com.capitaworld.service.loans.utils.CommonUtils.LoanType;
 import com.capitaworld.service.notification.client.NotificationClient;
 import com.capitaworld.service.notification.exceptions.NotificationException;
 import com.capitaworld.service.notification.model.Notification;
@@ -42,6 +36,9 @@ import com.capitaworld.service.users.model.UsersRequest;
 public class NotificationServiceImpl implements NotificationService{
 	
 	private static final Logger logger = LoggerFactory.getLogger(NotificationServiceImpl.class);
+
+	private static final String FP_PNAME_PARAMETERS = "fp_pname";
+	private static final String SEND_VIEW_NOTIFICATION = "sendViewNotification";
 	
 	@Autowired
 	private LoanApplicationService loanApplicationService;
@@ -97,7 +94,7 @@ public class NotificationServiceImpl implements NotificationService{
         
         try {
         	for(int i=0;i <toIds.length;i++) {
-        		UserResponse toUsersDetails = usersClient.getEmailMobile(Long.valueOf(toIds[i].toString()));
+        		UserResponse toUsersDetails = usersClient.getEmailMobile(Long.valueOf(toIds[i]));
                 if (!CommonUtils.isObjectNullOrEmpty(toUsersDetails.getData())) {
         			UsersRequest request = MultipleJSONObjectHelper
         					.getObjectFromMap((LinkedHashMap<String, Object>) toUsersDetails.getData(), UsersRequest.class);
@@ -107,8 +104,7 @@ public class NotificationServiceImpl implements NotificationService{
         		}	
         	}
         } catch(Exception e) {
-        	logger.info("Throw exception while get users details for send mail in send notification");
-        	e.printStackTrace();
+        	logger.error("Throw exception while get users details for send mail in send notification : ",e);
         }
         if(CommonUtils.isObjectNullOrEmpty(toEmail)) {
         	logger.info("ToEmail Null Or Empty");
@@ -132,11 +128,11 @@ public class NotificationServiceImpl implements NotificationService{
 	@Override
 	public void sendViewNotification(String toUserId, Long fromUserId, Long fromUserTypeId, Long notificationId,
 			Long applicationId, Long fpProductId,NotificationTemplate notificationTemplate,Long loginUserType) {
-		// TODO Auto-generated method stub
-		CommonDocumentUtils.startHook(logger, "sendViewNotification");
+
+		CommonDocumentUtils.startHook(logger, SEND_VIEW_NOTIFICATION);
 		
 		if (toUserId != null && fromUserId != null) {
-			String[] a = { toUserId.toString() };
+			String[] a = { toUserId };
 			NotificationRequest request = new NotificationRequest();
 			request.setClientRefId(fromUserId.toString());
 			Map<String, Object> parameters = new HashMap<String, Object>();
@@ -151,9 +147,7 @@ public class NotificationServiceImpl implements NotificationService{
 					String fsName = loanApplicationService.getFsApplicantName(applicationId);
 					parameters.put("fs_name", fsName != null ? fsName : "NA");
 				} catch (Exception e) {
-					// TODO: handle exception
-					logger.info("Exception in getting name of fs:"+e);
-					e.printStackTrace();
+					logger.error("Exception in getting name of fs : ",e);
 					parameters.put("fs_name", "NA");
 				}
 				
@@ -165,34 +159,32 @@ public class NotificationServiceImpl implements NotificationService{
 				try {
 					if(o!=null) {
 						fpName = o[1].toString();
-						parameters.put("fp_name",fpName);
+						parameters.put(CommonUtils.PARAMETERS_FP_NAME,fpName);
 					} else {
-						parameters.put("fp_name","NA");
+						parameters.put(CommonUtils.PARAMETERS_FP_NAME,"NA");
 					}
 
 				} catch (Exception e) {
-					// TODO: handle exception
-					e.printStackTrace(); 
-					parameters.put("fp_name", "NA");
+					logger.error(CommonUtils.EXCEPTION,e);
+					parameters.put(CommonUtils.PARAMETERS_FP_NAME, "NA");
 				}
 				try {
 					if(o!=null)
-						parameters.put("fp_pname", o[2].toString());
+						parameters.put(FP_PNAME_PARAMETERS, o[2].toString());
 					else
-						parameters.put("fp_pname", "NA");
+						parameters.put(FP_PNAME_PARAMETERS, "NA");
 				} catch (Exception e) {
-					// TODO: handle exception
-					logger.info("Exception :"+e);
-					parameters.put("fp_pname", "NA");
+					logger.error(CommonUtils.EXCEPTION,e);
+					parameters.put(FP_PNAME_PARAMETERS, "NA");
 				}
 				request.addNotification(createEmailNotification(a, fromUserId, fromUserTypeId,notificationId, parameters, applicationId, fpProductId,notificationTemplate,fpName));
 			try {
 				notificationClient.send(request);
 				logger.info("Successfully sent notification and email for primary or final view");
 			} catch (NotificationException e) {
-				e.printStackTrace();
+				logger.error(CommonUtils.EXCEPTION,e);
 			}
-			CommonDocumentUtils.endHook(logger, "sendViewNotification");
+			CommonDocumentUtils.endHook(logger, SEND_VIEW_NOTIFICATION);
 		}
 		
 	}
@@ -207,9 +199,9 @@ public class NotificationServiceImpl implements NotificationService{
 			notificationClient.send(request);
 			logger.info("Successfully sent notification and email for primary or final view");
 		} catch (NotificationException e) {
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
-		CommonDocumentUtils.endHook(logger, "sendViewNotification");
+		CommonDocumentUtils.endHook(logger, SEND_VIEW_NOTIFICATION);
 	} 
 
 }

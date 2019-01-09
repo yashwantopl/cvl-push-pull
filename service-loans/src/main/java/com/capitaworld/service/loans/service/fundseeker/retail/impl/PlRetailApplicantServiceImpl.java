@@ -41,6 +41,9 @@ import com.capitaworld.service.oneform.enums.CreditCardTypesRetail;
 public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
     private static final Logger logger = LoggerFactory.getLogger(PlRetailApplicantServiceImpl.class.getName());
 
+    private static final String PERMANENT_LITERAL = "permanent";
+    private static final String OFFICE_LITERAL = "office";
+
     @Autowired
     private RetailApplicantDetailRepository applicantRepository;
 
@@ -87,8 +90,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             return true;
 
         } catch (Exception e) {
-            logger.error("Error while Saving Retail Profile:-");
-            e.printStackTrace();
+            logger.error("Error while Saving Retail Profile :- ",e);
             throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
         }
     }
@@ -149,9 +151,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
 				}
                 
 			} catch (Exception e) {
-				
-				logger.error("=======>>>>> Error while fetching FinancialArrangementDetails <<<<<<<=========");
-				e.printStackTrace();
+				logger.error("=======>>>>> Error while fetching FinancialArrangementDetails <<<<<<<=========",e);
 			}
             
             
@@ -179,16 +179,14 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
 					logger.warn("CreditCard Details is Null");
 				}
 			} catch (Exception e) {
-				logger.error("==========>>>>>>> Error while Fetching CreditCardDetails <<<<<<<============");
-				e.printStackTrace();
+				logger.error("==========>>>>>>> Error while Fetching CreditCardDetails <<<<<<<============",e);
 			}
             
             
 
             return applicantRequest;
         } catch (Exception e) {
-            logger.error("Error while getting Retail Profile:-");
-            e.printStackTrace();
+            logger.error("Error while getting Retail Profile :- ",e);
             throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
         }
     }
@@ -223,16 +221,16 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
                     }
                     if (CommonUtils.isObjectNullOrEmpty(saveFinObj)) {
                         saveFinObj = new FinancialArrangementsDetail();
-                        BeanUtils.copyProperties(reqObj, saveFinObj, "id", "createdBy", "createdDate", "modifiedBy",
-                                "modifiedDate", "isActive");
+                        BeanUtils.copyProperties(reqObj, saveFinObj, "id", CommonUtils.CREATED_BY, CommonUtils.CREATED_DATE, CommonUtils.MODIFIED_BY,
+                                CommonUtils.MODIFIED_DATE, "isActive");
 
                         saveFinObj.setApplicationId(new LoanApplicationMaster(plRetailApplicantRequest.getApplicationId()));
                         saveFinObj.setCreatedBy(userId);
                         saveFinObj.setCreatedDate(new Date());
                         saveFinObj.setIsActive(true);
                     } else {
-                        BeanUtils.copyProperties(reqObj, saveFinObj, "id", "createdBy", "createdDate", "modifiedBy",
-                                "modifiedDate");
+                        BeanUtils.copyProperties(reqObj, saveFinObj, "id", CommonUtils.CREATED_BY, CommonUtils.CREATED_DATE, CommonUtils.MODIFIED_BY,
+                                CommonUtils.MODIFIED_DATE);
                         saveFinObj.setModifiedBy(userId);
                         saveFinObj.setModifiedDate(new Date());
                     }
@@ -250,16 +248,16 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
                     }
                     if (CommonUtils.isObjectNullOrEmpty(saveObj)) {
                         saveObj = new CreditCardsDetail();
-                        BeanUtils.copyProperties(reqObj, saveObj, "id", "createdBy", "createdDate", "modifiedBy",
-                                "modifiedDate", "isActive");
+                        BeanUtils.copyProperties(reqObj, saveObj, "id", CommonUtils.CREATED_BY, CommonUtils.CREATED_DATE, CommonUtils.MODIFIED_BY,
+                                CommonUtils.MODIFIED_DATE, "isActive");
 
                         saveObj.setApplicantionId(new LoanApplicationMaster(plRetailApplicantRequest.getApplicationId()));
                         saveObj.setCreatedBy(userId);
                         saveObj.setCreatedDate(new Date());
                         saveObj.setIsActive(true);
                     } else {
-                        BeanUtils.copyProperties(reqObj, saveObj, "id", "createdBy", "createdDate", "modifiedBy",
-                                "modifiedDate");
+                        BeanUtils.copyProperties(reqObj, saveObj, "id", CommonUtils.CREATED_BY, CommonUtils.CREATED_DATE, CommonUtils.MODIFIED_BY,
+                                CommonUtils.MODIFIED_DATE);
                         saveObj.setModifiedBy(userId);
                         saveObj.setModifiedDate(new Date());
                     }
@@ -278,8 +276,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             return true;
 
         } catch (Exception e) {
-            logger.error("Error while Saving Retail Primary:-");
-            e.printStackTrace();
+            logger.error("Error while Saving Retail Primary :- ",e);
             throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
         }
     }
@@ -326,8 +323,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
 
             return applicantRequest;
         } catch (Exception e) {
-            logger.error("Error while getting Retail Primary:-");
-            e.printStackTrace();
+            logger.error("Error while getting Retail Primary :- ",e);
             throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
         }
     }
@@ -351,8 +347,8 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             applicantDetail.setModifiedBy(userId);
             applicantDetail.setModifiedDate(new Date());
             BeanUtils.copyProperties(applicantRequest, applicantDetail, CommonUtils.IgnorableCopy.RETAIL_PL_PROFILE);
-            copyAddressFromRequestToDomainForFinal(applicantRequest, applicantDetail, "permanent");
-            copyAddressFromRequestToDomainForFinal(applicantRequest, applicantDetail, "office");
+            copyAddressFromRequestToDomainForFinal(applicantRequest, applicantDetail, PERMANENT_LITERAL);
+            copyAddressFromRequestToDomainForFinal(applicantRequest, applicantDetail, OFFICE_LITERAL);
             applicantRepository.save(applicantDetail);
             // Updating Final Flag
             loanApplicationRepository.setIsApplicantFinalMandatoryFilled(applicantRequest.getApplicationId(),
@@ -361,8 +357,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
 
             return true;
         } catch (Exception e) {
-            logger.error("Error while Saving Retail Final:-");
-            e.printStackTrace();
+            logger.error("Error while Saving Retail Final :- ",e);
             throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
         }
     }
@@ -378,12 +373,11 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             RetailFinalInfoRequest applicantRequest = new RetailFinalInfoRequest();
             BeanUtils.copyProperties(applicantDetail, applicantRequest, CommonUtils.IgnorableCopy.RETAIL_PL_PROFILE);
             copyAddressFromDomainToRequestForFinal(applicantDetail, applicantRequest, "contact");
-            copyAddressFromDomainToRequestForFinal(applicantDetail, applicantRequest, "permanent");
-            copyAddressFromDomainToRequestForFinal(applicantDetail, applicantRequest, "office");
+            copyAddressFromDomainToRequestForFinal(applicantDetail, applicantRequest, PERMANENT_LITERAL);
+            copyAddressFromDomainToRequestForFinal(applicantDetail, applicantRequest, OFFICE_LITERAL);
             return applicantRequest;
         } catch (Exception e) {
-            logger.error("Error while getting Retail Final:-");
-            e.printStackTrace();
+            logger.error("Error while getting Retail Final :- ",e);
             throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
         }
     }
@@ -429,7 +423,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             address.setDistrictMappingId(from.getAddressDistrictMappingId());
             to.setContactAddress(address);
         }
-        if(type.equalsIgnoreCase("permanent")){
+        if(type.equalsIgnoreCase(PERMANENT_LITERAL)){
             Address address = new Address();
             address.setPremiseNumber(from.getPermanentPremiseNumberName());
             address.setLandMark(from.getPermanentLandMark());
@@ -441,7 +435,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             address.setDistrictMappingId(from.getPermanentdistrictMappingId());
             to.setPermanentAddress(address);
         }
-        if(type.equalsIgnoreCase("office")){
+        if(type.equalsIgnoreCase(OFFICE_LITERAL)){
             Address address = new Address();
             address.setPremiseNumber(from.getOfficePremiseNumberName());
             address.setLandMark(from.getOfficeLandMark());
@@ -456,8 +450,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
     }
 
     public static void copyAddressFromRequestToDomainForFinal(RetailFinalInfoRequest from, RetailApplicantDetail to, String type){
-        if(type.equalsIgnoreCase("permanent")){
-            if (from.getPermanentAddress() != null) {
+        if(type.equalsIgnoreCase(PERMANENT_LITERAL) && from.getPermanentAddress() != null ){
                 to.setPermanentPremiseNumberName(from.getPermanentAddress().getPremiseNumber());
                 to.setPermanentStreetName(from.getPermanentAddress().getStreetName());
                 to.setPermanentLandMark(from.getPermanentAddress().getLandMark());
@@ -466,10 +459,8 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
                 to.setPermanentCountryId(from.getPermanentAddress().getCountryId());
                 to.setPermanentdistrictMappingId(from.getPermanentAddress().getDistrictMappingId());
                 to.setPermanentPincode(from.getPermanentAddress().getPincode());
-            }
         }
-        if(type.equalsIgnoreCase("office")){
-            if (from.getOfficeAddress() != null) {
+        if(type.equalsIgnoreCase(OFFICE_LITERAL) && from.getOfficeAddress() != null ){
                 to.setOfficePremiseNumberName(from.getOfficeAddress().getPremiseNumber());
                 to.setOfficeStreetName(from.getOfficeAddress().getStreetName());
                 to.setOfficeLandMark(from.getOfficeAddress().getLandMark());
@@ -478,7 +469,6 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
                 to.setOfficeCountryId(from.getOfficeAddress().getCountryId());
                 to.setOfficeDistrictMappingId(from.getOfficeAddress().getDistrictMappingId());
                 to.setOfficePincode(from.getOfficeAddress().getPincode());
-            }
         }
     }
 }

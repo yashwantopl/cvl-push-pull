@@ -7,6 +7,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -45,6 +47,12 @@ import com.capitaworld.service.users.model.UserResponse;
  */
 @Service
 public class RecentViewServiceImpl implements RecentViewService{
+
+	private static final Logger logger = LoggerFactory.getLogger(RecentViewServiceImpl.class);
+
+	private static final String EARLIER_LITERAL = "earlier";
+	private static final String THIS_MONTH = "thisMonth";
+	private static final String THIS_WEEK = "thisWeek";
 	
 	@Autowired
 	private NotificationClient notificationClient;
@@ -69,7 +77,6 @@ public class RecentViewServiceImpl implements RecentViewService{
 
 	@Override
 	public RecentProfileViewDetailResponse getRecentViewDetailListByAppId(Long applicationId, Long userId) throws DocumentException, IOException {
-		// TODO Auto-generated method stub
 		NotificationRequest request = new NotificationRequest();
 		request.setApplicationId(applicationId);
 		request.setClientRefId(userId.toString());
@@ -77,13 +84,12 @@ public class RecentViewServiceImpl implements RecentViewService{
 		try {
 			notificationResponse =  notificationClient.getAllRecentViewNotificationByAppId(request);
 		} catch (NotificationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		Map<String, List<SysNotifyResponse>> a = notificationResponse.getRecentViewResponse();
-		List<SysNotifyResponse> thisWeek = a.get("thisWeek");
-		List<SysNotifyResponse> thisMonth = a.get("thisMonth");
-		List<SysNotifyResponse> earlier = a.get("earlier");
+		List<SysNotifyResponse> thisWeek = a.get(THIS_WEEK);
+		List<SysNotifyResponse> thisMonth = a.get(THIS_MONTH);
+		List<SysNotifyResponse> earlier = a.get(EARLIER_LITERAL);
 		
 		RecentProfileViewDetailResponse detailResponse = new RecentProfileViewDetailResponse();
 		Map<String, List<RecentProfileViewResponse>> map = new HashMap<String, List<RecentProfileViewResponse>>();
@@ -123,7 +129,7 @@ public class RecentViewServiceImpl implements RecentViewService{
 			thisWeekResp.setUserId(response.getUserId());
 			listThisWeek.add(thisWeekResp);
 		}
-		map.put("thisWeek", listThisWeek);
+		map.put(THIS_WEEK, listThisWeek);
 		//END CODE FOR THIS WEEK RECENT VIEW
 		
 		//BEGIN CODE FOR THIS MONTH RECENT VIEW
@@ -162,7 +168,7 @@ public class RecentViewServiceImpl implements RecentViewService{
 			thisMonthResp.setUserId(response.getUserId());
 			listThisMonth.add(thisMonthResp);
 		}
-		map.put("thisMonth", listThisMonth);
+		map.put(THIS_MONTH, listThisMonth);
 		//END CODE FOR THIS MONTH RECENT VIEW
 		
 		//BEGIN CODE FOR EARLIER RECENT VIEW
@@ -203,7 +209,7 @@ public class RecentViewServiceImpl implements RecentViewService{
 			listEarlier.add(earlierResp);
 			
 		}
-		map.put("earlier", listEarlier);
+		map.put(EARLIER_LITERAL, listEarlier);
 		//END CODE FOR EARLIER RECENT VIEW
 		detailResponse.setRecentProfileMap(map);
 		return detailResponse;
@@ -212,7 +218,6 @@ public class RecentViewServiceImpl implements RecentViewService{
 	@Override
 	public RecentProfileViewDetailResponse getRecentViewDetailListByProdId(Long productId, Long userId)
 			throws Exception {
-		// TODO Auto-generated method stub
 		NotificationRequest request = new NotificationRequest();
 		request.setProductId(productId);
 		request.setClientRefId(userId.toString());
@@ -220,13 +225,12 @@ public class RecentViewServiceImpl implements RecentViewService{
 		try {
 			notificationResponse =  notificationClient.getAllRecentViewNotificationByProdId(request);
 		} catch (NotificationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		Map<String, List<SysNotifyResponse>> a = notificationResponse.getRecentViewResponse();
-		List<SysNotifyResponse> thisWeek = a.get("thisWeek");
-		List<SysNotifyResponse> thisMonth = a.get("thisMonth");
-		List<SysNotifyResponse> earlier = a.get("earlier");
+		List<SysNotifyResponse> thisWeek = a.get(THIS_WEEK);
+		List<SysNotifyResponse> thisMonth = a.get(THIS_MONTH);
+		List<SysNotifyResponse> earlier = a.get(EARLIER_LITERAL);
 		
 		RecentProfileViewDetailResponse detailResponse = new RecentProfileViewDetailResponse();
 		Map<String, List<RecentProfileViewResponse>> map = new HashMap<String, List<RecentProfileViewResponse>>();
@@ -364,7 +368,7 @@ public class RecentViewServiceImpl implements RecentViewService{
 				listMonthWeek.add(thisWeekResp);
 			}
 		}
-		map.put("thisWeek", listMonthWeek);
+		map.put(THIS_WEEK, listMonthWeek);
 		//END CODE FOR THIS WEEK RECENT VIEW
 		
 		//BEGIN CODE FOR THIS MONTH RECENT VIEW
@@ -499,7 +503,7 @@ public class RecentViewServiceImpl implements RecentViewService{
 				listThisMonth.add(thisMonthResp);
 			}
 		}
-		map.put("thisMonth", listThisMonth);
+		map.put(THIS_MONTH, listThisMonth);
 		//END CODE FOR THIS MONTH RECENT VIEW
 		
 		//BEGIN CODE FOR EARLIER RECENT VIEW
@@ -634,7 +638,7 @@ public class RecentViewServiceImpl implements RecentViewService{
 				listEarlier.add(earlierResp);
 			}
 		}
-		map.put("earlier", listEarlier);
+		map.put(EARLIER_LITERAL, listEarlier);
 		//END CODE FOR EARLIER RECENT VIEW
 		detailResponse.setRecentProfileMap(map);
 		return detailResponse;
@@ -649,8 +653,7 @@ public class RecentViewServiceImpl implements RecentViewService{
 		try {
 			notificationResponse =  notificationClient.getAllLatestRecentViewNotificationByAppId(request);
 		} catch (NotificationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		List<SysNotifyResponse> recentView = notificationResponse.getSysNotification();
 		RecentProfileViewDetailResponse detailResponse = new RecentProfileViewDetailResponse();
@@ -707,8 +710,7 @@ public class RecentViewServiceImpl implements RecentViewService{
 		try {
 			notificationResponse =  notificationClient.getAllLatestRecentViewNotificationByProdId(request);
 		} catch (NotificationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(CommonUtils.EXCEPTION,e);
 		}
 		List<SysNotifyResponse> thisWeek = notificationResponse.getSysNotification();
 		RecentProfileViewDetailResponse detailResponse = new RecentProfileViewDetailResponse();

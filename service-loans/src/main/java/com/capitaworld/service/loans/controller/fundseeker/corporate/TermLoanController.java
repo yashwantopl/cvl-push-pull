@@ -54,7 +54,7 @@ public class TermLoanController {
 			if (userId == null) {
 				logger.warn("userId can not be empty ==>" + termLoanRequest);
 				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 
 			if (termLoanRequest.getApplicationId() == null) {
@@ -71,8 +71,7 @@ public class TermLoanController {
 			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully Saved.", HttpStatus.OK.value()),
 					HttpStatus.OK);
 		} catch (Exception e) {
-			logger.error("Error while saving final information of Term Loan");
-			e.printStackTrace();
+			logger.error("Error while saving final information of Term Loan : ",e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -96,23 +95,21 @@ public class TermLoanController {
 					logger.warn("ID and ApplicationId Require to get Final Term Loan Details. ID==>" + userId
 							+ " and ApplicationId==>" + applicationId);
 					return new ResponseEntity<LoansResponse>(
-							new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+							new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 				}
 				FinalTermLoanRequest response = finalTLService.get(userId, applicationId);
-				LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+				LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 				loansResponse.setData(response);
 				CommonDocumentUtils.endHook(logger, "getFinal");
 				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 			} catch (Exception e) {
 				logger.error("Error while getting Final Term Loan Details==>", e);
-				e.printStackTrace();
 				return new ResponseEntity<LoansResponse>(
 						new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 						HttpStatus.OK);
 			}
 		} catch (Exception e) {
-			logger.error("Error while getting  final information of Term Loan");
-			e.printStackTrace();
+			logger.error("Error while getting  final information of Term Loan : ",e);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -134,7 +131,7 @@ public class TermLoanController {
 			if (userId == null) {
 				logger.warn("userId can not be empty ==>" + termLoanRequest);
 				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 
 			if (termLoanRequest.getId() == null) {
@@ -150,7 +147,6 @@ public class TermLoanController {
 
 		} catch (Exception e) {
 			logger.error("Error while saving Primary Working Details==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.INTERNAL_SERVER_ERROR);
@@ -161,7 +157,7 @@ public class TermLoanController {
 	public ResponseEntity<LoansResponse> getPrimary(@PathVariable("applicationId") Long applicationId,
 			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
 		try {
-			CommonDocumentUtils.startHook(logger, "getPrimary");
+			CommonDocumentUtils.startHook(logger, CommonUtils.GET_PRIMARY);
 			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 			if (CommonDocumentUtils.isThisClientApplication(request)) {
 				userId = clientId;
@@ -173,16 +169,15 @@ public class TermLoanController {
 				logger.warn("ID and User Id Require to get Primary Working Details ==>" + applicationId + "User ID ==>"
 						+ userId);
 				return new ResponseEntity<LoansResponse>(
-						new LoansResponse("Invalid Request", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 			PrimaryTermLoanRequest response = primaryTLService.get(applicationId, userId);
-			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 			loansResponse.setData(response);
-			CommonDocumentUtils.endHook(logger, "getPrimary");
+			CommonDocumentUtils.endHook(logger, CommonUtils.GET_PRIMARY);
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getting Primary Term Loan Details==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);
@@ -202,13 +197,12 @@ public class TermLoanController {
 					new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}
 			PrimaryTermLoanRequest response = primaryTLService.get(applicationId, null);
-			LoansResponse loansResponse = new LoansResponse("Data Found.", HttpStatus.OK.value());
+			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 			loansResponse.setData(response);
-			CommonDocumentUtils.endHook(logger, "getPrimary");
+			CommonDocumentUtils.endHook(logger, CommonUtils.GET_PRIMARY);
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getting Primary Term Loan Details==>", e);
-			e.printStackTrace();
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
 					HttpStatus.OK);

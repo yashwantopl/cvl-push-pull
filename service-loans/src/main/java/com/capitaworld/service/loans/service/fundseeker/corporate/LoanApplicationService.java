@@ -40,7 +40,7 @@ public interface LoanApplicationService {
 	
 	public boolean saveOrUpdateFromLoanEligibilty(FrameRequest commonRequest, Long userId) throws Exception;
 
-	public LoanApplicationRequest get(Long id, Long userId) throws Exception;
+	public LoanApplicationRequest get(Long id, Long userId,Long userOrdId) throws Exception;
 	
 	public Long getIrrByApplicationId(Long id) throws Exception;
 
@@ -61,9 +61,11 @@ public interface LoanApplicationService {
 	public UserResponse setLastAccessApplication(Long applicationId,Long userId) throws Exception;
 	
 	public Integer getProductIdByApplicationId(Long applicationId,Long userId) throws Exception;
-	
+
+	public Object[] getApplicationDetailsByProposalId(Long applicationId,Long proposalMappingId) throws Exception;
+
 	public Object[] getApplicationDetailsById(Long applicationId) throws Exception;
-	
+
 	public String getFsApplicantName(Long applicationId) throws Exception;
 	
 	public void updateFinalCommonInformation(Long applicationId, Long userId, Boolean flag,String finalFilledCount) throws Exception;
@@ -74,7 +76,9 @@ public interface LoanApplicationService {
 
 	public Boolean isPrimaryLockedByProposalId(Long proposalId, Long userId) throws Exception;
 
-	public Boolean isApplicationIdActive(Long applicationId) throws Exception;
+	public Boolean isApplicationIdActive(Long applicationId) throws Exception; // previous
+	public Boolean getByProposalId(Long proposalId) throws Exception; // new 
+	
 	
 	public Boolean isFinalDetailFilled(Long applicationId, Long userId) throws Exception;
 	

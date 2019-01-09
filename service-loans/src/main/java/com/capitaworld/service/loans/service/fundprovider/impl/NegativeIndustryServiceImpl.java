@@ -9,13 +9,11 @@ public class NegativeIndustryServiceImpl implements NegativeIndustryService{
 
 	@Override
 	public void saveOrUpdate(NegativeIndustry negativeIndustry) throws Exception {
-		// TODO Auto-generated method stub
-		
+		// Do nothing because of X and Y.
 	}
 
 	@Override
 	public List<Long> getNegativeIndustryByFpMappingId(Long fpMappingId) throws Exception {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
