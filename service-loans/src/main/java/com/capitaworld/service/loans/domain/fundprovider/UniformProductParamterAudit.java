@@ -123,6 +123,12 @@ public class UniformProductParamterAudit implements Serializable {
 	
 	private Integer dpd;
 	
+	@Column(name = "is_active")
+	private Boolean isActive;
+	
+	@Column(name = "is_active_audit")
+	private String isActiveAudit;
+	
 	public UniformProductParamterAudit(){
 		super();
 	}
@@ -399,6 +405,22 @@ public class UniformProductParamterAudit implements Serializable {
 		this.dpdAudit = dpdAudit;
 	}
 
+	public Boolean getIsActive() {
+		return isActive;
+	}
+
+	public void setIsActive(Boolean isActive) {
+		this.isActive = isActive;
+	}
+
+	public String getIsActiveAudit() {
+		return isActiveAudit;
+	}
+
+	public void setIsActiveAudit(String isActiveAudit) {
+		this.isActiveAudit = isActiveAudit;
+	}
+
 	@Override
 	public String toString() {
 		return "UniformProductParamterAudit [id=" + id + ", minAmount=" + minAmount + ", minAmountAudit="
@@ -412,6 +434,8 @@ public class UniformProductParamterAudit implements Serializable {
 				+ promotorContributionAudit + ", wcRequirement=" + wcRequirement + ", wcRequirementAudit="
 				+ wcRequirementAudit + ", maxGrowth=" + maxGrowth + ", maxGrowthAudit=" + maxGrowthAudit + ", version="
 				+ version + ", versionAudit=" + versionAudit + ", fpProductId=" + fpProductId + ", orgId=" + orgId
-				+ ", createdDate=" + createdDate + ", dpdAudit=" + dpdAudit + ", dpd=" + dpd + "]";
+				+ ", createdDate=" + createdDate + ", dpdAudit=" + dpdAudit + ", dpd=" + dpd + ", isActive=" + isActive
+				+ ", isActiveAudit=" + isActiveAudit + "]";
 	}
+
 }
