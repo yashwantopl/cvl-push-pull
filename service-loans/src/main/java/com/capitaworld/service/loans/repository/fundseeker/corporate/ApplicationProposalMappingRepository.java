@@ -120,5 +120,8 @@ public interface ApplicationProposalMappingRepository extends JpaRepository<Appl
    	public ApplicationProposalMapping getByApplicationIdAndProposalId(@Param("applicationId") Long applicationId, @Param("proposalId") Long proposalId);
    		//ENDS HERE=====
    
-    
+	// STARTS HERE==MULTIPLE BANK===>
+    @Query(value = "select count(proposal_id) from application_proposal_mapping lm where  lm.proposal_id =:proposalId and lm.is_active= true",nativeQuery = true)
+   	public Long getByProposalId(@Param("proposalId") Long proposalId);
+   		//ENDS HERE===== 
 }

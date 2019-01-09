@@ -1691,9 +1691,21 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 
 	@Override
-	public Boolean isApplicationIdActive(Long applicationId) throws Exception {
+	public Boolean isApplicationIdActive(Long applicationId) throws Exception { // PREVIOUS
 		try {
 			Long count = loanApplicationRepository.checkApplicationIdActive(applicationId);
+			return (count != null ? count > 0 : false);
+		} catch (Exception e) {
+			logger.error("Error while getting isApplicationIdActive ?",e);
+			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+		}
+	}
+	
+	
+	@Override
+	public Boolean getByProposalId(Long proposalId) throws Exception { // NEW BASED ON PROPOSAL ID 
+		try {
+			Long count = applicationProposalMappingRepository.getByProposalId(proposalId);
 			return (count != null ? count > 0 : false);
 		} catch (Exception e) {
 			logger.error("Error while getting isApplicationIdActive ?",e);
@@ -5806,7 +5818,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			if (!CommonUtils.isObjectNullOrEmpty(loanApplicationRequest.getNpOrgId())) {
 				applicationProposalMapping.setOrgId(loanApplicationRequest.getNpOrgId());
 			}
-			ApplicationProposalMapping existingDetails = applicationProposalMappingRepository.getByApplicationId(proposalDetails.getApplicationId());
+			ApplicationProposalMapping existingDetails = applicationProposalMappingRepository.getByProposalIdAndApplicationId(proposalDetails.getId(),proposalDetails.getApplicationId());//getByApplicationId(proposalDetails.getApplicationId());
 			if (!CommonUtils.isObjectNullOrEmpty(existingDetails) && !CommonUtils.isObjectNullOrEmpty(existingDetails.getApplicationCode())) {
 				applicationProposalMapping
 						.setApplicationCode(existingDetails.getApplicationCode());

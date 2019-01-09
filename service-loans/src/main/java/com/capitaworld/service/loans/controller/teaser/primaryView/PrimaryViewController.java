@@ -618,9 +618,9 @@ public class PrimaryViewController {
 	}
 
 	// -----------corporate Common
-	@GetMapping(value = "/Corporate/{proposalMapId}")    // @GetMapping(value = "/Corporate/{toApplicationId}")
+	@GetMapping(value = "/Corporate/{proposalMappingId}")    // @GetMapping(value = "/Corporate/{toApplicationId}")
 	public @ResponseBody ResponseEntity<LoansResponse> primaryViewOfCorporateCommon(
-			@PathVariable(value = "proposalMapId") Long proposalMapId,
+			@PathVariable(value = "proposalMappingId") Long proposalMapId,
 			@RequestParam(value = "clientId", required = false) Long clientId, HttpServletRequest request) {
 		logger.info("into /Corporate/{proposalMapId} and proposalMapId is" + proposalMapId);
 		LoansResponse loansResponse = new LoansResponse();
@@ -684,8 +684,7 @@ public class PrimaryViewController {
 			CorporatePrimaryViewResponse corporatePrimaryViewResponse = null;
 			try {
 				logger.info("proposalMapId,userType,userId is" + proposalMapId + userType + userId);
-				corporatePrimaryViewResponse = corporatePrimaryViewService
-						.getCorporatePrimaryViewDetails(proposalMapId, userType, userId);
+				corporatePrimaryViewResponse = corporatePrimaryViewService.getCorporatePrimaryViewDetails(proposalMapId,userType, userId);
 				if (!CommonUtils.isObjectNullOrEmpty(corporatePrimaryViewResponse)) {
 					logger.info("response is" + corporatePrimaryViewResponse.toString());
 					loansResponse.setData(corporatePrimaryViewResponse);
@@ -787,7 +786,9 @@ public class PrimaryViewController {
 		}
 	}
 
-	@RequestMapping(value = "/sendPrimaryTeaserViewNotification", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	/* CURRENTLY COMMENTED THE CODDE FOR MULTIPLE BANKS
+	 *  
+	 * @RequestMapping(value = "/sendPrimaryTeaserViewNotification", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public void primaryTeaserViewNotification(@RequestBody ProposalMappingRequest request,
 			HttpServletRequest httpRequest, @RequestParam(value = "clientId", required = false) Long clientId,
 			@RequestParam(value = "clientUserType", required = false) Long clientUserType) throws Exception {
@@ -807,6 +808,8 @@ public class PrimaryViewController {
 		}
 		Long applicationId = request.getApplicationId();
 		Long fpProductId = request.getFpProductId();
+		Long proposalId  =null; 
+				
 		String toUserId = null;
 		Long notificationId;
 
@@ -815,22 +818,27 @@ public class PrimaryViewController {
 			Object[] o = productMasterService.getUserDetailsByPrductId(fpProductId);
 			toUserId = o[0].toString();
 		} else {
-			Object[] o = loanApplicationService.getApplicationDetailsById(applicationId);
+			Object[] o = loanApplicationService.getApplicationDetailsById(4479l); // PREVIOUS 
+			logger.info("THIS IS THE APPLICATION iD =====>"+applicationId);
+			//Object[] o = loanApplicationService.getApplicationDetailsByProposalId(applicationId,proposalId); // NEW BASED ON PROPOSAL MAPPING ID =={} PENDING
 			toUserId = o[0].toString();
+			logger.info("=============>"+toUserId);
 			notificationId = NotificationAlias.SYS_FP_VIEW;
 		}
 
 		try {
 
 			notificationService.sendViewNotification(toUserId, fromUserId, fromUserTypeId, notificationId,
-					applicationId, fpProductId, NotificationTemplate.PRIMARY_VIEW, loginUserType);
+				applicationId, fpProductId, NotificationTemplate.PRIMARY_VIEW, loginUserType);
 
 		} catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
 		}
-	}
+	}*/
 
-	@RequestMapping(value = "/sendFinalTeaserViewNotification", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	/*CURRENTLY COMMENTED THE CODDE FOR MULTIPLE BANKS
+	 * 
+	 * @RequestMapping(value = "/sendFinalTeaserViewNotification", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public void finalTeaserViewNotification(@RequestBody ProposalMappingRequest request, HttpServletRequest httpRequest,
 			@RequestParam(value = "clientId", required = false) Long clientId,
 			@RequestParam(value = "clientUserType", required = false) Long clientUserType) throws Exception {
@@ -872,9 +880,11 @@ public class PrimaryViewController {
 		} catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
 		}
-	}
+	}*/
 
-	@RequestMapping(value = "/finalTeaserReqViewNotification", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	/*CURRENTLY COMMENTED THE CODDE FOR MULTIPLE BANKS
+	 * 
+	 * @RequestMapping(value = "/finalTeaserReqViewNotification", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public void finalTeaserReqViewNotification(@RequestBody ProposalMappingRequest request,
 			HttpServletRequest httpRequest, @RequestParam(value = "clientId", required = false) Long clientId,
 			@RequestParam(value = "clientUserType", required = false) Long clientUserType) throws Exception {
@@ -916,7 +926,7 @@ public class PrimaryViewController {
 		} catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
 		}
-	}
+	}*/
 
 	// PL PRIMARY VIEW
 	@GetMapping(value = "/PlTeaserView/{toApplicationId}/{productMappingId}/{isFinalView}")

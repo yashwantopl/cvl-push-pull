@@ -201,7 +201,9 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 			Long fundProviderUserId) {
 
 		CorporatePrimaryViewResponse corporatePrimaryViewResponse = new CorporatePrimaryViewResponse();
-		ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.findOne(proposalMapId);
+		
+		ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.findOne(proposalMapId); // NEW BASED ON PROPOSAL MAPPING ID 
+		logger.info("===============>"+applicationProposalMapping.getApplicationId());
 		Long toApplicationId = applicationProposalMapping.getApplicationId();
 
 		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(toApplicationId);
@@ -240,9 +242,13 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 
 
 
-		// get details of CorporateApplicantDetail
+		// get details of CorporateApplicantDetail PREVIOUS 
+	/*	CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
+				.getByApplicationAndUserId(userId, toApplicationId);*/ // PREVIOUS
+		
 		CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
-				.getByApplicationAndUserId(userId, toApplicationId);
+				.getByApplicationAndProposalIdAndUserId(userId,toApplicationId,proposalMapId); //NEW BASED ON PROPOSAL MAPPING ID=======> 
+		
 		// set value to response
 		if (corporateApplicantDetail != null) {
 			BeanUtils.copyProperties(corporateApplicantDetail, corporatePrimaryViewResponse);
@@ -692,8 +698,9 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 		Long denomination = Denomination.getById(primaryCorporateDetail.getDenominationId()).getDigit();
 
 		try {
+		//	FinancialInputRequest financialInputRequest = irrService.cmaIrrMappingService(userId, toApplicationId, null,enomination); //=======>>>>PREVIOUS  
 			FinancialInputRequest financialInputRequest = irrService.cmaIrrMappingService(userId, toApplicationId, null,
-					denomination,proposalMapId);
+					denomination,proposalMapId); // CHANGES PROPOSAL ID NEW 
 
 			logger.info("financialInputRequest.getYear()===>>>" + financialInputRequest.getYear());
 			// Profit & Loss Statement
@@ -1219,7 +1226,9 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 		
 		CorporateFinalInfoRequest corporateFinalInfoRequest;
 		try {
-			corporateFinalInfoRequest = corporateFinalInfoService.get(userId,toApplicationId);
+			//corporateFinalInfoRequest = corporateFinalInfoService.get(userId,toApplicationId); // PREVIOUS CHANGES
+			corporateFinalInfoRequest = corporateFinalInfoService.getByProposalId(userId,proposalMapId); //// NEW BASED ON PROPOSAL MAPPING ID 
+			
 			//ADMIN OFFICE ADDRESS
 			try {
 				if(corporateFinalInfoRequest.getSecondAddress().getDistrictMappingId() != null) {
@@ -1238,7 +1247,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 			}
 		}
 		catch (Exception e) {
-			logger.error(CommonUtils.EXCEPTION,e);
+			logger.error(CommonUtils.EXCEPTION,e); 
 			}	
 			
 		
@@ -1247,7 +1256,10 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 		
 				
 				try {
-					corporateFinalInfoRequest = corporateFinalInfoService.get(userId,toApplicationId);
+					//corporateFinalInfoRequest = corporateFinalInfoService.get(userId,toApplicationId); // PREVIOUS
+					corporateFinalInfoRequest = corporateFinalInfoService.getByProposalId(userId,proposalMapId); // NEW BASED ON PROPOSAL MAPPING ID 
+				//	logger.info("==================>"+corporateFinalInfoRequest.getFirstAddress());
+					logger.info("==================>"+corporateFinalInfoRequest.getSecondAddress().getDistrictMappingId());
 					//Reg OFFICE ADDRESS
 					try {
 						if(corporateFinalInfoRequest.getSecondAddress().getDistrictMappingId() != null) {
