@@ -148,7 +148,7 @@ public class UniformProductParameterController {
 						new LoansResponse(UNAUTHORIZED_PLEASE_RE_LOGIN_MSG, HttpStatus.UNAUTHORIZED.value()),
 						HttpStatus.OK);
 			}
-			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SUCCESSFULLY_GET_DATA, HttpStatus.OK.value(),uniformProductParameterService.getTempObj(userId, orgId,roleIds)),HttpStatus.OK);
+			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SUCCESSFULLY_GET_DATA, HttpStatus.OK.value(),uniformProductParameterService.get(userId, orgId)),HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while Getting Uniform Product parameter Details==>{}", e);
 			return new ResponseEntity<LoansResponse>(
