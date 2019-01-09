@@ -67,6 +67,8 @@ public class ProposalController {
 		}
 		request.setUserId(userId);
 		List proposalDetailsList=proposalService.fundproviderProposalByProposalId(request);
+		logger.info("proposalDetailsList"+proposalDetailsList);
+		
 		LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
 		loansResponse.setListData(proposalDetailsList);
 		return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
