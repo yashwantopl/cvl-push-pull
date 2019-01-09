@@ -1861,11 +1861,9 @@ public class FPAsyncComponent {
 						request.getNpUserId().toString(), request.getNpUserId().toString());
 			}
 
-			// ====================Sending Mail to HO when Maker Assigns DDR to
-			// Checker=====================
+			// ====================Sending Mail to HO when Maker Assigns DDR to Checker===========
 
 			String subject = "Intimation: Assigned DDR- #ApplicationId=" + request.getApplicationId();
-
 			UserResponse hoResponse = userClient.getUserDetailByOrgRoleBranchId(applicationRequest.getNpOrgId(),
 					com.capitaworld.service.users.utils.CommonUtils.UserRoles.HEAD_OFFICER, branchId);
 			List<Map<String, Object>> hoRespList = (List<Map<String, Object>>) hoResponse.getListData();
@@ -1873,9 +1871,7 @@ public class FPAsyncComponent {
 				for (int i = 0; i < hoRespList.size(); i++) {
 					UsersRequest hoObj = MultipleJSONObjectHelper.getObjectFromMap(hoRespList.get(i),
 							UsersRequest.class);
-
 					String name = null;
-
 					try {
 						logger.info(MSG_INTO_GETTING_FP_NAME + hoObj);
 						UserResponse userResponseForName = userClient.getFPDetails(hoObj);
@@ -1928,7 +1924,6 @@ public class FPAsyncComponent {
 								NotificationAlias.SYS_HO_MAKER_ASSIGN_APPLICATION_TO_CHECKER, hoObj.getId().toString(),
 								hoObj.getId().toString());
 					}
-
 				}
 
 			} else {
@@ -1940,7 +1935,7 @@ public class FPAsyncComponent {
 			// ====================Sending Mail to BO when Maker Assigns DDR to
 			// Checker=====================
 
-			subject = "Intimation: Assigned DDR- Application ID " + request.getApplicationId();
+			subject = "Intimation: Assigned DDR- #ApplicationId=" + request.getApplicationId();
 
 			UserResponse boResponse = userClient.getUserDetailByOrgRoleBranchId(applicationRequest.getNpOrgId(),
 					com.capitaworld.service.users.utils.CommonUtils.UserRoles.BRANCH_OFFICER, branchId);

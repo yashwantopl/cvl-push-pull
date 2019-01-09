@@ -242,9 +242,8 @@ public class LoansClient {
     private static final String SAVE_LOAN_WC_RENEWAL_TYPE ="/loan_application/saveLoanWCRenewalType";
     private static final String GET_LOAN_WC_RENEWAL_TYPE ="/loan_application/getLoanWCRenewalType";
     private static final String SAVE_INELIGIBALE_PROPOSAL ="/save/ineligible/proposal";
-    private static final String GET_LOAN_PROPOSAL_BY_PROPOSAL_ID="/loan_application/getLoanApplicationById";
+    private static final String GET_LOAN_APPLICATION_BY_PROPOSAL_ID="/loan_application/getLoanApplicationById";
     private static final String AND_FOR_APPLICATION_ID = " and For Application Id====>";
-
     private static final String REQ_AUTH = "req_auth";
 
 	private static final Logger logger = LoggerFactory.getLogger(LoansClient.class);
@@ -2453,8 +2452,8 @@ public class LoansClient {
 		}
 	}
 	
-	public LoansResponse getLoanByApplicationId(Long applcationId) throws LoansException {
-		String url = loansBaseUrl.concat(GET_LOAN_PROPOSAL_BY_PROPOSAL_ID).concat("/" + applcationId);
+	public LoansResponse getLoanApplicationByProposalId(Long applcationId) throws LoansException {
+		String url = loansBaseUrl.concat(GET_LOAN_APPLICATION_BY_PROPOSAL_ID).concat("/" + applcationId);
 		try {
 			logger.info("Enter in GET_LOAN_PROPOSAL_BY_PROPOSAL_ID ---------->" + url);
 			HttpHeaders headers = new HttpHeaders();
