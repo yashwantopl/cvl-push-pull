@@ -76,7 +76,9 @@ public interface LoanApplicationService {
 
 	public Boolean isPrimaryLockedByProposalId(Long proposalId, Long userId) throws Exception;
 
-	public Boolean isApplicationIdActive(Long applicationId) throws Exception;
+	public Boolean isApplicationIdActive(Long applicationId) throws Exception; // previous
+	public Boolean getByProposalId(Long proposalId) throws Exception; // new 
+	
 	
 	public Boolean isFinalDetailFilled(Long applicationId, Long userId) throws Exception;
 	
