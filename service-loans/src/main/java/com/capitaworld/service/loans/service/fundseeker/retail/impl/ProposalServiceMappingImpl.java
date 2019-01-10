@@ -2270,16 +2270,11 @@ public class ProposalServiceMappingImpl implements ProposalService {
 		LoansResponse loansResponse = new LoansResponse();
 
 		try {
-			// "+userRequest.getApplicationId() + "userRequest.getId() :
-			// "+userRequest.getId()+" getLoanAmount() :
-			// "+userRequest.getLoanAmount());
 			loansResponse.setFlag(true);
 
-			Long applicationProposalId=null;
 			ApplicationProposalMapping applicationProposalMapping=applicationProposalMappingRepository.getByApplicationIdAndOrgId(userRequest.getApplicationId(),userOrgId);
 
 			if (applicationProposalMapping != null && userRequest != null) {
-				// Check If Requested Application is assigned to Currunt Fp
 				// Cheker or not
 				UserResponse userResponse = null;
 				userRequest.setProductIdString(CommonUtility.encode("" + applicationProposalMapping.getProductId()));
