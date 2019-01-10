@@ -75,6 +75,8 @@ public class UniformProductParamterRequest extends ProductMasterRequest implemen
 	private String isActiveAudit;
 	
 	private Date createdDate;
+	
+	private Date modifiedDate;
 
 	public UniformProductParamterRequest(){
 		super();
@@ -361,5 +363,13 @@ public class UniformProductParamterRequest extends ProductMasterRequest implemen
 
 	public void setIsActiveAudit(String isActiveAudit) {
 		this.isActiveAudit = isActiveAudit;
+	}
+
+	public Date getModifiedDate() {
+		return modifiedDate;
+	}
+
+	public void setModifiedDate(Date modifiedDate) {
+		this.modifiedDate = modifiedDate;
 	}
 }
