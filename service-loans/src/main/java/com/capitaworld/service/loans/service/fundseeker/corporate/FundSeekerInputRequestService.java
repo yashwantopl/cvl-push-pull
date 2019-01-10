@@ -2,16 +2,18 @@ package com.capitaworld.service.loans.service.fundseeker.corporate;
 
 import java.util.List;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.capitaworld.connect.api.ConnectResponse;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.NTBRequest;
 import com.capitaworld.service.loans.model.corporate.FundSeekerInputRequestResponse;
 
 public interface FundSeekerInputRequestService {
 
-    public boolean saveOrUpdate(FundSeekerInputRequestResponse fundSeekerInputRequest) throws Exception;
+    public boolean saveOrUpdate(FundSeekerInputRequestResponse fundSeekerInputRequest) throws LoansException;
 
     public ResponseEntity<LoansResponse> saveOrUpdateDirectorDetail(FundSeekerInputRequestResponse fundSeekerInputRequest);
 
@@ -33,7 +35,7 @@ public interface FundSeekerInputRequestService {
 	 * @param fundSeekerInputRequestResponse
 	 * @throws Exception 
 	 */
-	public LoansResponse invokeFraudAnalytics(FundSeekerInputRequestResponse fundSeekerInputRequestResponse) throws Exception;
+	public LoansResponse invokeFraudAnalytics(FundSeekerInputRequestResponse fundSeekerInputRequestResponse) throws LoansException;
 	
 	/**
 	 * Verify GST whether the GSTIN is Registered or Not.
@@ -78,4 +80,11 @@ public interface FundSeekerInputRequestService {
 	 * @return
 	 */
 	public LoansResponse deleteDocument(Long applicationId,List<Long> docIds,Long mappingId);
+	
+	/**
+	 * Inactive all the information for given applicationId for Uniform Product.
+	 * @param connectResponse
+	 * @return
+	 */
+	public LoansResponse resetUniformApplication(ConnectResponse connectResponse);
 }

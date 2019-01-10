@@ -102,4 +102,22 @@ public class LoanRepositoryImpl implements LoanRepository {
 		return (Object[]) storedProcedureQuery.getSingleResult();
 	}
 	
+	public String getGSTINByAppId(Long applicationId) {
+		String fpProductName =(String) entityManager
+				.createNativeQuery("SELECT gstin FROM connect.`connect_log` WHERE application_id =:applicationId")
+						.setParameter("applicationId", applicationId).getSingleResult();
+		return fpProductName;
+	}
+	
+	public String getCommonPropertiesValue(String key) {
+		try {
+			return (String) entityManager
+					.createNativeQuery("SELECT `value` FROM `loan_application`.`common_properties` WHERE `key` =:key")
+							.setParameter("key", key).getSingleResult();
+		} catch (Exception e) {
+			logger.error("Exception while get common properties value ----->" ,e);
+		}
+		return null;
+	}
+	
 }

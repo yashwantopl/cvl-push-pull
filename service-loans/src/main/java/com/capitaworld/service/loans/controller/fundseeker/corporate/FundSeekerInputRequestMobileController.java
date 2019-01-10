@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.controller.fundseeker.corporate;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.corporate.FundSeekerInputRequestResponse;
 import com.capitaworld.service.loans.model.mobile.MobileApiResponse;
@@ -35,7 +36,7 @@ public class FundSeekerInputRequestMobileController {
 
     @RequestMapping(value = "/save_oneform", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<MobileApiResponse> save(@RequestBody FundSeekerInputRequestResponse fundSeekerInputRequestResponse)
-            throws Exception
+            throws LoansException
 
     {
         try {
@@ -81,7 +82,7 @@ public class FundSeekerInputRequestMobileController {
 
     @RequestMapping(value = "/get_oneform", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<MobileApiResponse> get(@RequestBody FundSeekerInputRequestResponse fundSeekerInputRequestResponse)
-            throws Exception
+            throws LoansException
     {
         try {
             if(fundSeekerInputRequestResponse.getUserId() == null) {
@@ -119,7 +120,7 @@ public class FundSeekerInputRequestMobileController {
 
     @RequestMapping(value = "/get_director_detail", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<MobileApiResponse> getDirectorDetail(@RequestBody FundSeekerInputRequestResponse fundSeekerInputRequestResponse)
-            throws Exception
+            throws LoansException
     {
         try
         {
@@ -155,7 +156,7 @@ public class FundSeekerInputRequestMobileController {
 
     @RequestMapping(value = "/save_director_detail", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<MobileApiResponse> saveDirectorDetail(@RequestBody FundSeekerInputRequestResponse fundSeekerInputRequestResponse)
-            throws Exception
+            throws LoansException
     {
         try {
         	 if(fundSeekerInputRequestResponse.getUserId() == null) {
@@ -186,7 +187,7 @@ public class FundSeekerInputRequestMobileController {
 
 
     @RequestMapping(value = "/match", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<MobileApiResponse> callMatchengine(@RequestBody MobileLoanRequest mobileLoanRequest) throws Exception {
+    public ResponseEntity<MobileApiResponse> callMatchengine(@RequestBody MobileLoanRequest mobileLoanRequest) throws LoansException {
         try {
             if(CommonUtils.isObjectNullOrEmpty(mobileLoanRequest.getUserId())) {
                 return new ResponseEntity<MobileApiResponse>(

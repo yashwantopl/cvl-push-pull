@@ -4,6 +4,7 @@ package com.capitaworld.service.loans.service;
 import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.FundProviderProposalDetails;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.ProposalDetailsAdminRequest;
@@ -42,7 +43,7 @@ public interface ProposalService {
 	
 	public Integer getPendingProposalCount(Long applicationId);
 	
-	public ProposalMappingResponse updateAssignDetails(ProposalMappingRequest request)  throws Exception;
+	public ProposalMappingResponse updateAssignDetails(ProposalMappingRequest request)  throws LoansException;
 
 	public ProposalMappingResponse saveDisbursementDetails(DisbursementDetailsModel request, Long userId);
 

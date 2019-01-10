@@ -56,7 +56,7 @@ public class UniformProductParameterServiceImpl implements UniformProductParamet
 			uniformProductParamter.setModifiedDate(new Date());
 		}
 		BeanUtils.copyProperties(productParamterRequest, uniformProductParamter, "id", "createdBy", "createdDate",
-				"modifiedDate", "modifiedBy");
+				"modifiedDate", "modifiedBy","version");
 		uniformProductParamter.setUserOrgId(productParamterRequest.getUserOrgId());
 		uniformProductParamter.setBusinessTypeId(
 				CommonUtils.BusinessType.ONE_PAGER_ELIGIBILITY_EXISTING_BUSINESS.getId().longValue());
@@ -69,7 +69,6 @@ public class UniformProductParameterServiceImpl implements UniformProductParamet
 		} else {
 			uniformProductParamter.setVersion(1);
 		}
-		uniformProductParamter.setIsActive(true);
 		uniformProductParameterRepository.save(uniformProductParamter);
 		return true;
 	}
@@ -102,6 +101,7 @@ public class UniformProductParameterServiceImpl implements UniformProductParamet
 		}
 		BeanUtils.copyProperties(productParamterRequest, uniformProductParamter, "id", "createdBy", "createdDate",
 				"modifiedDate", "modifiedBy", "jobId");
+		uniformProductParamter.setIsEdit(productParamterRequest.getIsEdited());
 		uniformProductParamter.setUserOrgId(productParamterRequest.getUserOrgId());
 		uniformProductParamter.setBusinessTypeId(
 				CommonUtils.BusinessType.ONE_PAGER_ELIGIBILITY_EXISTING_BUSINESS.getId().longValue());
@@ -122,7 +122,6 @@ public class UniformProductParameterServiceImpl implements UniformProductParamet
 			}
 		}
 		uniformProductParamter.setJobId(productParamterRequest.getJobId());
-		uniformProductParamter.setIsActive(true);
 		uniformProductParameterTempRepository.save(uniformProductParamter);
 		return true;
 	}

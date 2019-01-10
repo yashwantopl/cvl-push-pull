@@ -30,7 +30,9 @@ import com.capitaworld.service.dms.model.DocumentRequest;
 import com.capitaworld.service.dms.model.DocumentResponse;
 import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.dms.util.MultipleJSONObjectHelper;
+import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.model.LoansResponse;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.service.common.DownLoadCMAFileService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateUploadService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.ExcelExtractionService;
@@ -70,6 +72,9 @@ public class CorporateUploadController {
 	
 	@Autowired
 	private DMSClient dmsClient;
+	
+	@Autowired
+	private LoanApplicationRepository loanApplicationRepo;
 
 	/*@RequestMapping(value = "/ping", method = RequestMethod.GET)
 	public String getPing() {
@@ -210,9 +215,11 @@ public class CorporateUploadController {
 						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 			}
 			DocumentResponse response = dmsClient.listProductDocument(documentRequest);
+			// used in front end to download mca fianancial Data and set it in loans response in data.
+			LoanApplicationMaster loanApplicationMaster=loanApplicationRepo.getMcaCin(documentRequest.getApplicationId());
+			
 			if (response != null && response.getStatus() == 200) {
 				logger.info("File Uploaded SuccessFully -->");
-				LoansResponse finalResponse = new LoansResponse(response.getMessage(), response.getStatus());
 				if (!(response.getDataList().size() > 0)) {
 					try {
 						Thread.sleep(5000); // 5000 milliseconds is three
@@ -222,8 +229,9 @@ public class CorporateUploadController {
 						Thread.currentThread().interrupt();
 					}
 				}
-				finalResponse = new LoansResponse(response.getMessage(), response.getStatus());
+				LoansResponse finalResponse = new LoansResponse(response.getMessage(), response.getStatus());
 				finalResponse.setListData(response.getDataList());
+				finalResponse.setData(loanApplicationMaster.getMcaCompanyId());
 				CommonDocumentUtils.endHook(logger, "getExcelDocList");
 				return new ResponseEntity<LoansResponse>(finalResponse, HttpStatus.OK);
 			} else {

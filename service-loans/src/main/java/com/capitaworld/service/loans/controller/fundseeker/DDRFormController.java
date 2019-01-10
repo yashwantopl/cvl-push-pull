@@ -207,7 +207,6 @@ public class DDRFormController {
 		logger.info("Enter in DDR AutoFilled Form Get Method -------------------------->" + appId);
 
 		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-		Integer userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE));
 		if (CommonDocumentUtils.isThisClientApplication(request) && !CommonUtils.isObjectNullOrEmpty(clientId)) {
 			userId = clientId;
 		}
@@ -405,7 +404,8 @@ public class DDRFormController {
 				 loansResponse = new LoansResponse(reason,  HttpStatus.UNAUTHORIZED .value());
 				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.UNAUTHORIZED);
 			}else {
-				if(CommonUtils.isObjectNullOrEmpty((tokenString = tokenService.checkTokenExpiration(tokenString)))) {
+				tokenString = tokenService.checkTokenExpiration(tokenString);
+				if(CommonUtils.isObjectNullOrEmpty(tokenString)) {
 					reason = "Token is Expired ";
 					loansResponse = new LoansResponse(reason,  HttpStatus.UNAUTHORIZED .value());
 					return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.UNAUTHORIZED);

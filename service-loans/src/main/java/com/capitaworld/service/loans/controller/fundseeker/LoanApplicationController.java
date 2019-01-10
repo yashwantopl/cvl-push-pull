@@ -201,7 +201,7 @@ public class LoanApplicationController {
 		// request must not be null
 		try {
 			CommonDocumentUtils.startHook(logger, "get");
-			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			Long userId;
 			if (CommonDocumentUtils.isThisClientApplication(request) && !CommonUtils.isObjectNullOrEmpty(clientId)) {
 				userId = clientId;
 			} else {
@@ -234,7 +234,7 @@ public class LoanApplicationController {
 		// request must not be null
 		try {
 			CommonDocumentUtils.startHook(logger, "getIrrByApplicationId");
-			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			Long userId;
 			if (CommonDocumentUtils.isThisClientApplication(request) && !CommonUtils.isObjectNullOrEmpty(clientId)) {
 				userId = clientId;
 			} else {
@@ -1753,105 +1753,6 @@ public class LoanApplicationController {
 		}
 	}
 
-	@RequestMapping(value = "/save_phase1_sidbi", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> savePhese1DataToSidbi(
-			@RequestBody LoanApplicationRequest loanApplicationRequest, HttpServletRequest request) {
-		// request must not be null
-		try {
-
-			logger.info("Start savePhese1DataToSidbi()");
-			Long userId = null;
-			if (CommonUtils.isObjectNullOrEmpty(loanApplicationRequest.getUserId())) {
-				if (!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_ID))) {
-					userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-				}
-			} else {
-				userId = loanApplicationRequest.getUserId();
-			}
-			if (userId == null) {
-				logger.warn("UserId must not be null==>");
-				return new ResponseEntity<LoansResponse>(new LoansResponse(
-						INVALID_USER_PLEASE_RELOGIN_AND_TRY_AGAIN_MSG, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
-			}
-
-			if (loanApplicationRequest.getId() == null) {
-				logger.warn("applicationId must not be null==>");
-				return new ResponseEntity<LoansResponse>(
-						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
-			}
-
-			if (loanApplicationRequest.getNpOrgId() == null) {
-				logger.warn("Organization Id must not be null==>");
-				return new ResponseEntity<LoansResponse>(
-						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
-			}
-			logger.info("Save Phase one Application id -------------------->" + loanApplicationRequest.getId());
-			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
-			boolean isSavePhase1Data = loanApplicationService.savePhese1DataToSidbi(loanApplicationRequest.getId(),
-					userId, loanApplicationRequest.getNpOrgId(), loanApplicationRequest.getFpProductId());
-			logger.info("Result in savePhese1DataToSidbi== {}", isSavePhase1Data);
-			loansResponse.setData(isSavePhase1Data);
-			logger.info("End savePhese1DataToSidbi()");
-			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
-
-		} catch (Exception e) {
-			logger.error("Error while Saving Phse1 Details of SIDBI==>", e);
-			return new ResponseEntity<LoansResponse>(
-					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
-					HttpStatus.OK);
-		}
-	}
-
-	@RequestMapping(value = "/save_phase2_sidbi", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<LoansResponse> savePhese2DataToSidbi(
-			@RequestBody LoanApplicationRequest loanApplicationRequest, HttpServletRequest request) {
-		// request must not be null
-		try {
-
-			logger.info("Start savePhese2DataToSidbi()");
-
-			Long userId = null;
-			if (CommonUtils.isObjectNullOrEmpty(loanApplicationRequest.getUserId())) {
-				if (!CommonUtils.isObjectNullOrEmpty(request.getAttribute(CommonUtils.USER_ID))) {
-					userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-				}
-			} else {
-				userId = loanApplicationRequest.getUserId();
-			}
-			if (userId == null) {
-				logger.warn(USER_ID_MUST_NOT_BE_NULL_MSG);
-				return new ResponseEntity<LoansResponse>(new LoansResponse(
-						INVALID_USER_PLEASE_RELOGIN_AND_TRY_AGAIN_MSG, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
-			}
-
-			if (loanApplicationRequest.getId() == null) {
-				logger.warn("applicationId must not be null==>");
-				return new ResponseEntity<LoansResponse>(
-						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
-			}
-
-			if (loanApplicationRequest.getNpOrgId() == null) {
-				logger.warn("Organization Id must not be null==>");
-				return new ResponseEntity<LoansResponse>(
-						new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
-			}
-
-			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
-			boolean isSavePhase2Data = loanApplicationService.savePhese2DataToSidbi(loanApplicationRequest.getId(),
-					userId, loanApplicationRequest.getNpOrgId(), loanApplicationRequest.getFpProductId());
-			logger.info("Result in savePhese2DataToSidbi== {}", isSavePhase2Data);
-			loansResponse.setData(isSavePhase2Data);
-			logger.info("End savePhese2DataToSidbi()");
-			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
-
-		} catch (Exception e) {
-			logger.error("Error while Saving Phase2 Details of SIDBI==>", e);
-			return new ResponseEntity<LoansResponse>(
-					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
-					HttpStatus.OK);
-		}
-	}
-
 	@RequestMapping(value = "/getDisbursementDetails", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getDisbursementDetails(@RequestBody DisbursementRequest disbursementRequest,
 			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
@@ -1938,22 +1839,35 @@ public class LoanApplicationController {
 			}
 			LoansResponse response = new LoansResponse(CommonUtils.SUCCESS, HttpStatus.OK.value());
 
-			Boolean result = loanSanctionService.saveSanctionDetailFromPopup(loanSanctionRequest);
+			Integer result = loanSanctionService.saveSanctionDetailFromPopup(loanSanctionRequest);
 			logger.info("result of save sanction detail ---------------------{}", result);
-			response.setData(result);
-			if (!result) {
-				response.setMessage("something went wrong while saving sanctioned details");
-				response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+			
+			if (result == 4) {
+				response.setData(true);
+				response.setMessage("Updated Successfully");
+				response.setStatus(HttpStatus.OK.value());
+				if(loanSanctionRequest.getIsSanctionedFrom() != 2){
+					ProposalMappingRequest proposalMappingRequest = new ProposalMappingRequest();
+					proposalMappingRequest.setId(loanSanctionRequest.getProposalId());
+					proposalMappingRequest.setProposalStatusId(loanSanctionRequest.getProposalStatusId());
+					proposalMappingRequest.setLastActionPerformedBy(userType);
+					proposalMappingRequest.setUserId(userId);
+					proposalDetailsClient.changeStatus(proposalMappingRequest);	
+				}
+			} else if (result == 1) {
+				response.setData(false);
+				response.setMessage("The said borrower has already receive in-principle approval through online journey, hence the same proposal can not be sanctioned through offline mode");
+				response.setStatus(HttpStatus.BAD_REQUEST.value());
+			} else if (result == 2) {
+				response.setData(false);
+				response.setMessage("The said proposal has already been sanctioned by one of our bank partners, hence the same proposal can not be sanctioned again");
+				response.setStatus(HttpStatus.BAD_REQUEST.value());
 			} else {
-				ProposalMappingRequest proposalMappingRequest = new ProposalMappingRequest();
-				proposalMappingRequest.setId(loanSanctionRequest.getProposalId());
-				proposalMappingRequest.setProposalStatusId(loanSanctionRequest.getProposalStatusId());
-				proposalMappingRequest.setLastActionPerformedBy(userType);
-				proposalMappingRequest.setUserId(userId);
-				proposalDetailsClient.changeStatus(proposalMappingRequest);
+				response.setData(false);
+				response.setMessage("The application has encountered an error, please try again after sometime!!!");
+				response.setStatus(HttpStatus.BAD_REQUEST.value());
 			}
-
-			logger.info("end getDetailsForApproval()");
+			logger.info("end getDetailsForApproval()---------------->" + result);
 			return new ResponseEntity<LoansResponse>(response, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getDetailsForApproval", e);
@@ -2060,7 +1974,8 @@ public class LoanApplicationController {
 				loansResponse = new LoansResponse(reason, HttpStatus.UNAUTHORIZED.value());
 				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.UNAUTHORIZED);
 			} else {
-				if (CommonUtils.isObjectNullOrEmpty((tokenString = tokenService.checkTokenExpiration(tokenString)))) {
+				tokenString = tokenService.checkTokenExpiration(tokenString);
+				if (CommonUtils.isObjectNullOrEmpty(tokenString)) {
 					reason = TOKEN_IS_EXPIRED;
 					loansResponse = new LoansResponse(reason, HttpStatus.UNAUTHORIZED.value());
 					return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.UNAUTHORIZED);
@@ -2180,7 +2095,8 @@ public class LoanApplicationController {
 				loansResponse = new LoansResponse(reason, HttpStatus.UNAUTHORIZED.value());
 				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.UNAUTHORIZED);
 			} else {
-				if (CommonUtils.isObjectNullOrEmpty((tokenString = tokenService.checkTokenExpiration(tokenString)))) {
+				tokenString = tokenService.checkTokenExpiration(tokenString);
+				if (CommonUtils.isObjectNullOrEmpty(tokenString)) {
 					reason = TOKEN_IS_EXPIRED;
 					loansResponse = new LoansResponse(reason, HttpStatus.UNAUTHORIZED.value());
 					return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.UNAUTHORIZED);
@@ -2398,7 +2314,8 @@ public class LoanApplicationController {
 				loansResponse = new LoansResponse(reason, HttpStatus.UNAUTHORIZED.value());
 				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.UNAUTHORIZED);
 			} else {
-				if (CommonUtils.isObjectNullOrEmpty((tokenString = tokenService.checkTokenExpiration(tokenString)))) {
+				tokenString = tokenService.checkTokenExpiration(tokenString);
+				if (CommonUtils.isObjectNullOrEmpty(tokenString)) {
 					reason = TOKEN_IS_EXPIRED;
 					loansResponse = new LoansResponse(reason, HttpStatus.UNAUTHORIZED.value());
 					return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.UNAUTHORIZED);
@@ -3045,21 +2962,12 @@ public class LoanApplicationController {
 	}*/
 
 	
-	@RequestMapping(value = "/reverse_api", method = RequestMethod.GET)
-	public void reverseAPI() {
-		try {
-			logger.info("start reverseAPI()");
-			loanSanctionService.saveSanctionAndDisbursementDetailsFromBank();
-		} catch (Exception e) {
-			logger.error("Error while reverseAPI ==>{}", e);
-		}
-	}
 	
 	@RequestMapping(value = "/ddr_status/{applicationId}", method = RequestMethod.GET)
 	public ResponseEntity<LoansResponse> ddrStatus(@PathVariable("applicationId") Long applicationId) {
 		try {
 			logger.info("ENTER IN GET DDR STATUS ID---------------->" + applicationId);
-			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully get data", HttpStatus.OK.value(), loanApplicationService.getDDRStatusId(applicationId)), HttpStatus.OK);
+			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SUCCESSFULLY_GET_DATA, HttpStatus.OK.value(), loanApplicationService.getDDRStatusId(applicationId)), HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while get ddr status==>",e);
 			return new ResponseEntity<LoansResponse>(
@@ -3068,18 +2976,7 @@ public class LoanApplicationController {
 		}
 	}
 	
-	@RequestMapping(value = "/getToken/{url}/{langCode}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-	public String getToken(@PathVariable("url") String url , @RequestBody GenerateTokenRequest generateTokenRequest , @PathVariable("langCode") Integer  langCode ) {
-		try {
-			logger.info("start getToken()");
-			String res = loanSanctionService.getToken(url, generateTokenRequest, langCode);
-			return res;
-		} catch (Exception e) {
-			logger.error("Error while reverseAPI ==>{}", e);
-			return null;
-			
-		}
-	}
+	
 	@RequestMapping(value = "/saveLoanWCRenewalType", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE,consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> saveLoanWCRenewalType(@RequestBody LoanApplicationRequest loanRequest) {
 		if(CommonUtils.isObjectNullOrEmpty(loanRequest.getId()) || CommonUtils.isObjectNullOrEmpty(loanRequest.getWcRenewalStatus())) {
@@ -3102,7 +2999,7 @@ public class LoanApplicationController {
 	public ResponseEntity<LoansResponse> getLoanWCRenewalType(@PathVariable("applicationId") Long applicationId) {
 		try {
 			logger.info("ENTER IN getLoanWCRenewalType---------------->" + applicationId);
-			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully get data", HttpStatus.OK.value(), 
+			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SUCCESSFULLY_GET_DATA, HttpStatus.OK.value(),
 					loanApplicationService.getLoanWCRenewalType(applicationId)), HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getLoanWCRenewalType==>",e);
@@ -3163,7 +3060,18 @@ public class LoanApplicationController {
 		return null;
 	}
 	
-	
+	@RequestMapping(value = "/getCommonPropValue/{keyName}", method = RequestMethod.GET)
+	public ResponseEntity<LoansResponse> getCommonPropValue(@PathVariable("keyName") String keyName) {
+		try {
+			logger.info("ENTER IN getCommonPropValue---------------->" + keyName);
+			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SUCCESSFULLY_GET_DATA, HttpStatus.OK.value(),
+					loanApplicationService.getCommonPropertiesValue(keyName)), HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error while getCommonPropValue==>",e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
+		}
+	}
 	
 	
 	

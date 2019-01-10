@@ -12,6 +12,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -363,7 +364,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 						String industry = "";
 						if (loanResponseDatalist.size() > 0) {
 							for (int k = 0; k < loanResponseDatalist.size(); k++) {
-								MasterResponse masterResponse = new MasterResponse();
+								MasterResponse masterResponse;
 								masterResponse = MultipleJSONObjectHelper.getObjectFromMap(loanResponseDatalist.get(k),
 										MasterResponse.class);
 								industry += masterResponse.getValue() + " ,";
@@ -739,8 +740,6 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			ProposalMappingResponse proposalDetailsResponse = proposalDetailsClient.proposalListOfFundSeeker(request);
 
 			List<Object[]> disbursmentData = loanDisbursementRepository.getDisbursmentData(request.getApplicationId());
-
-			List<ProposalMappingRequest> proposalMappingList = new ArrayList<ProposalMappingRequest>();
 
 			for (int i = 0; i < proposalDetailsResponse.getDataList().size(); i++) {
 				UsersClient usersClient = new UsersClient(environment.getRequiredProperty(USER_URL));
@@ -1433,12 +1432,12 @@ public class ProposalServiceMappingImpl implements ProposalService {
 	}
 
 	@Override
-	public ProposalMappingResponse updateAssignDetails(ProposalMappingRequest request) throws Exception {
+	public ProposalMappingResponse updateAssignDetails(ProposalMappingRequest request) throws LoansException {
 		try {
 			return proposalDetailsClient.updateAssignDetails(request);
 		} catch (Exception e) {
 			logger.error("Throw Exception while updating assign issue : ",e);
-			throw new Exception("Somethig went wrong");
+			throw new LoansException("Somethig went wrong");
 		}
 	}
 
@@ -1548,7 +1547,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 						String industry = "";
 						if (loanResponseDatalist.size() > 0) {
 							for (int k = 0; k < loanResponseDatalist.size(); k++) {
-								MasterResponse masterResponse = new MasterResponse();
+								MasterResponse masterResponse;
 								masterResponse = MultipleJSONObjectHelper.getObjectFromMap(loanResponseDatalist.get(k),
 										MasterResponse.class);
 								industry += masterResponse.getValue() + " ,";
@@ -1716,11 +1715,9 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			logger.info("DISBURSEMENT DETAILS IS ---------------------------------------------------> " + request.toString());
 
 			Date connectlogModifiedDate = connectClient.getInprincipleDateByAppId(request.getApplicationId());
-			if (!CommonUtils.isObjectNullOrEmpty(connectlogModifiedDate)) {
-				if (request.getDisbursementDate().compareTo(connectlogModifiedDate)<0 || request.getDisbursementDate().compareTo(new Date())>0) {
+			if (!CommonUtils.isObjectNullOrEmpty(connectlogModifiedDate) && (request.getDisbursementDate().compareTo(connectlogModifiedDate)<0 || request.getDisbursementDate().compareTo(new Date())>0)) {
 				return	new ProposalMappingResponse("Please insert valid disbursement date",
 							HttpStatus.INTERNAL_SERVER_ERROR.value());
-				}
 			}
 			ProposalMappingResponse mappingResponse = proposalDetailsClient.saveDisbursementDetails(request);
 			return mappingResponse;
@@ -1807,7 +1804,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 		// userData.toString());
 
 		// Long roleId = (Long) userData.get("roleId");
-		List<Object[]> result = new ArrayList<Object[]>();
+		List<Object[]> result;
 
 		// if(UsersRoles.HO.equals(roleId)) {
 		// result =
@@ -1994,10 +1991,12 @@ public class ProposalServiceMappingImpl implements ProposalService {
 		if(count != null) {
 			Map<String , Double> map = new HashMap<>();
 			map.put("inPrincipleCount", CommonUtils.convertDouble(count[0]));
-			map.put("holdCount", CommonUtils.convertDouble(count[1]));
-			map.put("rejectCount", CommonUtils.convertDouble(count[2]));
-			map.put("sanctionedCount", CommonUtils.convertDouble(count[3]));
-			map.put("disbursmentCount", CommonUtils.convertDouble(count[4]));
+			map.put("holdBeforeCount", CommonUtils.convertDouble(count[1]));
+			map.put("holdAfterCount", CommonUtils.convertDouble(count[2]));
+			map.put("rejectBeforeCount", CommonUtils.convertDouble(count[3]));
+			map.put("rejectAfterCount", CommonUtils.convertDouble(count[4]));
+			map.put("sanctionedCount", CommonUtils.convertDouble(count[5]));
+			map.put("disbursmentCount", CommonUtils.convertDouble(count[6]));
 			return map;
 		}
 		return null;

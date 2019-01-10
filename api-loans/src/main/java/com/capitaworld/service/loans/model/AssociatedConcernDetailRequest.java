@@ -271,7 +271,7 @@ public class AssociatedConcernDetailRequest implements Serializable{
 
 	public static void printFields(Object obj) throws Exception {
         Field[] fields = AssociatedConcernDetailRequest.class.getDeclaredFields();
-        
+
         for(Field field : fields) {
             Object value = field.get(obj);
             if(value instanceof String){

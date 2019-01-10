@@ -15,9 +15,12 @@ import com.capitaworld.service.loans.domain.fundseeker.IneligibleProposalDetails
 @Repository
 public class OfflineProcessAppRepositoryImpl implements OfflineProcessedAppRepository{
 
+	private static final String APP_ID = "appId";
+	private static final String RESULT  = "result";
+
 	@PersistenceContext
 	private EntityManager entityManager;
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<Object[]> getInEligibleRecordList(Long userId) {
@@ -34,6 +37,30 @@ public class OfflineProcessAppRepositoryImpl implements OfflineProcessedAppRepos
 			return data.get(0);
 		}
 		return null;
+	}
+	
+	public boolean updateSanctionedFlag(Long appId,Long orgId,Long branchId,Long userId) {
+		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spUpdateOfflineSanctionedFlag");
+		storedProcedureQuery.registerStoredProcedureParameter(APP_ID,Long.class, ParameterMode.IN);
+		storedProcedureQuery.registerStoredProcedureParameter("orgId",Long.class, ParameterMode.IN);
+		storedProcedureQuery.registerStoredProcedureParameter("branchId",Long.class, ParameterMode.IN);
+		storedProcedureQuery.registerStoredProcedureParameter("userId",Long.class, ParameterMode.IN);
+		storedProcedureQuery.registerStoredProcedureParameter(RESULT,Boolean.class, ParameterMode.OUT);
+		storedProcedureQuery.setParameter(APP_ID,appId);
+		storedProcedureQuery.setParameter("orgId",orgId);
+		storedProcedureQuery.setParameter("branchId",branchId);
+		storedProcedureQuery.setParameter("userId",userId);
+		storedProcedureQuery.execute();
+		return (Boolean) storedProcedureQuery.getOutputParameterValue(RESULT);
+	}
+	
+	public Integer checkBeforeOfflineSanctioned(Long appId) {
+		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spCheckBeforeOfflineSanctioned");
+		storedProcedureQuery.registerStoredProcedureParameter(APP_ID,Long.class, ParameterMode.IN);
+		storedProcedureQuery.registerStoredProcedureParameter(RESULT,Integer.class, ParameterMode.OUT);
+		storedProcedureQuery.setParameter(APP_ID,appId);
+		storedProcedureQuery.execute();
+		return (Integer) storedProcedureQuery.getOutputParameterValue(RESULT);
 	}
 
 	@Override
@@ -60,12 +87,19 @@ public class OfflineProcessAppRepositoryImpl implements OfflineProcessedAppRepos
 		return (List<Object[]>) storedProcedureQuery.getResultList();
 	}
 	
+	@Override
+	public List<Object[]> getOtherProposalsList(Long userId) {
+		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spFetchOfflineOtherProposal");
+		storedProcedureQuery.registerStoredProcedureParameter(CommonUtils.USER_ID,Long.class, ParameterMode.IN);
+		storedProcedureQuery.setParameter(CommonUtils.USER_ID,userId);
+		return (List<Object[]>) storedProcedureQuery.getResultList();
+	}
+	
 
 	@SuppressWarnings("unchecked")
 	@Override 
 	public List<Object[]> getHomeCounterDetail(){
 		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spGetHomeCounter");
-		
 		return  (List<Object[]>) storedProcedureQuery.getResultList() ; 
 	 }
 

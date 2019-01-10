@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -47,7 +48,7 @@ public class FixedDepositsDetailServiceImpl implements FixedDepositsDetailServic
 	private GuarantorDetailsRepository guarantorDetailsRepository;
 
 	@Override
-	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception {
+	public Boolean saveOrUpdate(FrameRequest frameRequest) throws LoansException {
 		try {
 			for (Map<String, Object> obj : frameRequest.getDataList()) {
 				FixedDepositsDetailsRequest fixedDepositsDetailRequest = (FixedDepositsDetailsRequest) MultipleJSONObjectHelper
@@ -72,7 +73,7 @@ public class FixedDepositsDetailServiceImpl implements FixedDepositsDetailServic
 							.setGuarantorDetailId(guarantorDetailsRepository.findOne(frameRequest.getApplicationId()));
 					break;
 				default:
-					throw new Exception();
+					throw new LoansException();
 				}
 
 				fixedDepositsDetail.setModifiedBy(frameRequest.getUserId());
@@ -84,13 +85,13 @@ public class FixedDepositsDetailServiceImpl implements FixedDepositsDetailServic
 
 		catch (Exception e) {
 			logger.error("Exception  in save fixedDepositsDetail  :-",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 
 	}
 
 	@Override
-	public List<FixedDepositsDetailsRequest> getFixedDepositsDetailList(Long id, int applicationType) throws Exception {
+	public List<FixedDepositsDetailsRequest> getFixedDepositsDetailList(Long id, int applicationType) throws LoansException {
 		try {
 			List<FixedDepositsDetail> fixedDepositsDetails = null;
 			switch (applicationType) {
@@ -104,7 +105,7 @@ public class FixedDepositsDetailServiceImpl implements FixedDepositsDetailServic
 				fixedDepositsDetails = fixedDepositsDetailRepository.listFixedDepositsFromGarrId(id);
 				break;
 			default:
-				throw new Exception();
+				throw new LoansException();
 			}
 
 			List<FixedDepositsDetailsRequest> fixedDepositsDetailRequests = new ArrayList<FixedDepositsDetailsRequest>(fixedDepositsDetails.size());
@@ -127,7 +128,7 @@ public class FixedDepositsDetailServiceImpl implements FixedDepositsDetailServic
 
 		catch (Exception e) {
 			logger.error("Exception in get fixedDepositsDetail  :-",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 
 	}

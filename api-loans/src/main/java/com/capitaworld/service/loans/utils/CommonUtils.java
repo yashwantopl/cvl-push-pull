@@ -201,7 +201,7 @@ public class CommonUtils {
 	}
 
 	public static Integer[] saperateDayMonthYearFromDate(Date date) {
-		Integer result[] = new Integer[3];
+		Integer[] result = new Integer[3];
 		if (date == null) {
 			return result;
 		}
@@ -446,6 +446,18 @@ public class CommonUtils {
 		public static final Long APPROVED = 5l;
 		public static final Long REVERTED = 6l;
 		public static final Long ASSIGNED_TO_CHECKER = 7l;
+	}
+	
+	public static final class InEligibleProposalStatus {
+		private InEligibleProposalStatus() {}
+		public static final Integer PENDING = 1;
+		public static final Integer SANCTIONED = 2;
+        public static final Integer DISBURED = 3;
+        public static final Integer DECLINE = 4;
+        public static final Integer SANCTIONED_BY_OTHER_BANK = 5;
+        public static final Integer SANCTIONED_BY_OTHER_BRANCH = 6;
+        public static final Integer OTHER_BRANCH = 7;
+        public static final Integer OTHER_BANK = 8;
 	}
 
 	public static String getDdrStatusString(Integer ddrStatusId) {
@@ -1386,18 +1398,14 @@ public enum APIFlags {
 	             if(data != null) {
 	            	 data.put(field.getName(), value);
 	             }
-	             if(!CommonUtils.isObjectNullOrEmpty(value)) {
-	            	 if(value instanceof Double){
-	                	 if(!Double.isNaN((Double)value)) {
-	                    	 value = Double.parseDouble(decim.format(value));
-	                    	 if(data != null) {
-	                    		 value = decimal.format(value);
-	                    		 data.put(field.getName(), value);	
-	                    	 }else {
-	                    		 field.set(obj,value);                    		 
-	                    	 }
-	                	 }
-	                 }
+	             if(!CommonUtils.isObjectNullOrEmpty(value) && value instanceof Double && !Double.isNaN((Double)value)) {
+					 value = Double.parseDouble(decim.format(value));
+					 if(data != null) {
+						 value = decimal.format(value);
+						 data.put(field.getName(), value);
+					 }else {
+						 field.set(obj,value);
+					 }
 	             }
 			 }			
 		}
@@ -1409,6 +1417,7 @@ public enum APIFlags {
 	public static Object printFields(Object obj, Map<String, Object>data) throws Exception {
 		if(obj != null) {
 			if(obj.getClass().isArray()) {
+				// Do nothing because of X and Y.
 		}
 		}else {
 			return obj;
@@ -1435,6 +1444,7 @@ public enum APIFlags {
 				Field[] fields = obj.getClass().getDeclaredFields();
 				for (Field field : fields) {
 					if((field.getModifiers()& Modifier.STATIC) == Modifier.STATIC){
+						// Do nothing because of X and Y.
 					}else {
 						field.setAccessible(true);
 						Object value = field.get(obj);

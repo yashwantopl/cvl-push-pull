@@ -6,6 +6,7 @@ import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryLapLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
+import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.AddressResponse;
 import com.capitaworld.service.loans.model.teaser.primaryview.LapPrimaryViewResponse;
 import com.capitaworld.service.loans.model.teaser.primaryview.LapResponse;
@@ -63,7 +64,7 @@ public class LapPrimaryViewServiceImpl implements LapPrimaryViewService{
     protected static final String DMS_URL = "dmsURL";
 
 	@Override
-	public LapPrimaryViewResponse getLapPrimaryViewDetails(Long applicantId) throws Exception {
+	public LapPrimaryViewResponse getLapPrimaryViewDetails(Long applicantId) throws LoansException {
 		
 		LapPrimaryViewResponse lapPrimaryViewResponse = new LapPrimaryViewResponse();
 		LapResponse lapResponse = new LapResponse();
@@ -361,11 +362,11 @@ public class LapPrimaryViewServiceImpl implements LapPrimaryViewService{
 				}
 				lapPrimaryViewResponse.setApplicant(profileViewLAPResponse);
 			} else {
-				throw new Exception("No Data found");
+				throw new LoansException("No Data found");
 			}
 		} catch (Exception e) {
             logger.error("Problem Occured while Fetching Retail Details : ",e);
-			throw new Exception("Problem Occured while Fetching Retail Details");
+			throw new LoansException("Problem Occured while Fetching Retail Details");
 		}
 
 		//set up loan specific details

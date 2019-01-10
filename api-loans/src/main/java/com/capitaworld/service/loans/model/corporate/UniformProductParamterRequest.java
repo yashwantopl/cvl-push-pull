@@ -20,6 +20,10 @@ public class UniformProductParamterRequest extends ProductMasterRequest implemen
 	
 	private Integer currency;
 
+	private Boolean isEdited;
+	
+	private Integer dpd;
+	
 	private Integer denomination;
 	
 	private Integer assessmentMethod;
@@ -68,7 +72,11 @@ public class UniformProductParamterRequest extends ProductMasterRequest implemen
 	
 	private String versionAudit;
 	
+	private String isActiveAudit;
+	
 	private Date createdDate;
+	
+	private Date modifiedDate;
 
 	public UniformProductParamterRequest(){
 		super();
@@ -333,19 +341,35 @@ public class UniformProductParamterRequest extends ProductMasterRequest implemen
 		this.createdDate = createdDate;
 	}
 
-	@Override
-	public String toString() {
-		return "UniformProductParamterRequest [minAmount=" + minAmount + ", maxAmount=" + maxAmount + ", roi=" + roi
-				+ ", pf=" + pf + ", minCibilScore=" + minCibilScore + ", minCmr=" + minCmr + ", maxCmr=" + maxCmr
-				+ ", currency=" + currency + ", denomination=" + denomination + ", assessmentMethod=" + assessmentMethod
-				+ ", version=" + version + ", promotorContribution=" + promotorContribution + ", wcRequirement="
-				+ wcRequirement + ", maxGrowth=" + maxGrowth + ", workflowData=" + workflowData + ", workflowRequest="
-				+ workflowRequest + ", roleIds=" + roleIds + ", minAmountAudit=" + minAmountAudit + ", maxAmountAudit="
-				+ maxAmountAudit + ", roiAudit=" + roiAudit + ", pfAudit=" + pfAudit + ", minCibilScoreAudit="
-				+ minCibilScoreAudit + ", minCmrAudit=" + minCmrAudit + ", maxCmrAudit=" + maxCmrAudit
-				+ ", currencyAudit=" + currencyAudit + ", denominationAudit=" + denominationAudit
-				+ ", assessmentMethodAudit=" + assessmentMethodAudit + ", promotorContributionAudit="
-				+ promotorContributionAudit + ", wcRequirementAudit=" + wcRequirementAudit + ", maxGrowthAudit="
-				+ maxGrowthAudit + ", versionAudit=" + versionAudit + ", createdDate=" + createdDate + "]";
+	public Integer getDpd() {
+		return dpd;
+	}
+
+	public void setDpd(Integer dpd) {
+		this.dpd = dpd;
+	}
+
+	public Boolean getIsEdited() {
+		return isEdited;
+	}
+
+	public void setIsEdited(Boolean isEdited) {
+		this.isEdited = isEdited;
+	}
+
+	public String getIsActiveAudit() {
+		return isActiveAudit;
+	}
+
+	public void setIsActiveAudit(String isActiveAudit) {
+		this.isActiveAudit = isActiveAudit;
+	}
+
+	public Date getModifiedDate() {
+		return modifiedDate;
+	}
+
+	public void setModifiedDate(Date modifiedDate) {
+		this.modifiedDate = modifiedDate;
 	}
 }

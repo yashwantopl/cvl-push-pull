@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -47,7 +48,7 @@ public class BankAccountHeldDetailServiceImpl implements BankAccountHeldDetailSe
 	private GuarantorDetailsRepository guarantorDetailsRepository;
 
 	@Override
-	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception {
+	public Boolean saveOrUpdate(FrameRequest frameRequest) throws LoansException {
 		try {
 			for (Map<String, Object> obj : frameRequest.getDataList()) {
 				BankAccountHeldDetailsRequest bankAccountHeldDetailRequest = (BankAccountHeldDetailsRequest) MultipleJSONObjectHelper
@@ -72,7 +73,7 @@ public class BankAccountHeldDetailServiceImpl implements BankAccountHeldDetailSe
 							.setGuarantorDetailId(guarantorDetailsRepository.findOne(frameRequest.getApplicationId()));
 					break;
 				default:
-					throw new Exception();
+					throw new LoansException();
 				}
 
 				bankAccountHeldDetail.setModifiedBy(frameRequest.getUserId());
@@ -84,16 +85,16 @@ public class BankAccountHeldDetailServiceImpl implements BankAccountHeldDetailSe
 
 		catch (Exception e) {
 			logger.error("Exception  in save bankAccountHeldDetail  :-",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 
 	}
 
 	@Override
 	public List<BankAccountHeldDetailsRequest> getExistingLoanDetailList(Long id, int applicationType)
-			throws Exception {
+			throws LoansException {
 		try {
-			List<BankAccountHeldDetail> existingLoanDetails = new ArrayList<BankAccountHeldDetail>();
+			List<BankAccountHeldDetail> existingLoanDetails;
 			switch (applicationType) {
 			case CommonUtils.ApplicantType.APPLICANT:
 				existingLoanDetails = bankAccountHeldDetailRepository.listBankAccountHeldFromAppId(id);
@@ -105,7 +106,7 @@ public class BankAccountHeldDetailServiceImpl implements BankAccountHeldDetailSe
 				existingLoanDetails = bankAccountHeldDetailRepository.listBankAccountHeldFromGarrId(id);
 				break;
 			default:
-				throw new Exception();
+				throw new LoansException();
 			}
 
 			List<BankAccountHeldDetailsRequest> existingLoanDetailRequests = new ArrayList<BankAccountHeldDetailsRequest>();
@@ -121,7 +122,7 @@ public class BankAccountHeldDetailServiceImpl implements BankAccountHeldDetailSe
 
 		catch (Exception e) {
 			logger.error("Exception in getting bankAccountHeldDetail  :-",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 

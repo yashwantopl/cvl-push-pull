@@ -3,6 +3,7 @@ package com.capitaworld.service.loans.service.fundseeker.retail.impl;
 import java.util.Date;
 import java.util.List;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -40,7 +41,7 @@ public class PrimaryCarLoanServiceImpl implements PrimaryCarLoanService {
 	private FsNegativeFpListRepository fsNegativeFpListRepository;
 	
 	@Override
-	public boolean saveOrUpdate(PrimaryCarLoanDetailRequest carLoanDetailRequest, Long userId) throws Exception {
+	public boolean saveOrUpdate(PrimaryCarLoanDetailRequest carLoanDetailRequest, Long userId) throws LoansException {
 		// ID must not be null
 		try {
 			Long finalUserId = (CommonUtils.isObjectNullOrEmpty(carLoanDetailRequest.getClientId()) ? userId : carLoanDetailRequest.getClientId());
@@ -64,7 +65,7 @@ public class PrimaryCarLoanServiceImpl implements PrimaryCarLoanService {
 			return true;
 		} catch (Exception e) {
 			logger.error("Error while saving PrimaryCarLoan Details : ",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
@@ -87,7 +88,7 @@ public class PrimaryCarLoanServiceImpl implements PrimaryCarLoanService {
 	}
 	
 	@Override
-	public PrimaryCarLoanDetailRequest get(Long id, Long userId) throws Exception {
+	public PrimaryCarLoanDetailRequest get(Long id, Long userId) throws LoansException {
 		try {
 			PrimaryCarLoanDetail loanDetail = primaryCarLoanDetailRepository.getByApplicationAndUserId(id, userId);
 			if (loanDetail == null) {
@@ -104,7 +105,7 @@ public class PrimaryCarLoanServiceImpl implements PrimaryCarLoanService {
 			return carLoanDetailRequest;
 		} catch (Exception e) {
 			logger.error("Error while getting Primary CarLoan Details : ",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 }

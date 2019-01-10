@@ -3,6 +3,7 @@ package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.json.simple.JSONObject;
@@ -50,9 +51,11 @@ import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.model.NTBRequest;
 import com.capitaworld.service.loans.model.common.HunterRequestDataResponse;
 import com.capitaworld.service.loans.model.corporate.FundSeekerInputRequestResponse;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.AssociatedConcernDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.CorporateApplicantDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.DirectorBackgroundDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.DirectorPersonalDetailRepository;
+import com.capitaworld.service.loans.repository.fundseeker.corporate.FinancialArrangementDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.IndustrySectorRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.PrimaryCorporateDetailRepository;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.SubSectorRepository;
@@ -77,6 +80,10 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 	private static final String CORPORATE_APPLICANT_DETAIL_IS_NULL_CREATED_NEW_OBJECT_MSG = "corporateApplicantDetail is null created new object";
 	private static final String ERROR_WHILE_GETTING_GST_RECEIPT_FROM_S3_MSG = "Error while Getting GST Receipt from S3 : {}";
 	private static final String NO_GST_RECEIPT_FOUND_FOR_APPLICATION_ID_MSG = "No GST Receipt Found for Application Id ==>{}";
+	private static final String SOMETHING_GOES_WRONG_WHILE_DELETING_GST_RECEIPT_RESPONSE_FOUND_NULL_MSG = "Something goes wrong while Deleting GST Receipt for ApplicationId as Response Found Null==>{}";
+	private static final String SUCCESSFULLY_DELETING_GST_RECEIPT_MSG = "Successfully Deleting GST Receipt For Application Id ==>{}";
+	private static final String SOMETHING_GOES_WRONG_WHILE_DELETING_GST_RECEIPT_FOR_APPLICATION_ID_MSG = "Something goes wrong while Deleting GST Receipt for ApplicationId===>{}";
+	private static final String ERROR_WHILE_DELETING_EXISTING_DOCUMENTS_OF_GST_AND_ITR_MSG = "Error while Deleting Existing Documents of GST and ITR : {}";
 	private static final String ABOUT_US = "aboutUs";
 	private static final String SAME_AS = "sameAs";
 	private static final String CREDIT_RATING_ID = "creditRatingId";
@@ -95,6 +102,9 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 	
 	@Autowired
 	private FinancialArrangementDetailsService financialArrangementDetailsService;
+	
+	@Autowired
+	private FinancialArrangementDetailsRepository financialArrangementDetailsRepository; 
 
 	@Autowired
 	private DirectorBackgroundDetailsRepository directorBackgroundDetailsRepository;
@@ -104,6 +114,9 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 	
 	@Autowired
 	private AssociatedConcernDetailService associatedConcernDetailService; 
+	
+	@Autowired
+	private AssociatedConcernDetailRepository associatedConcernDetailRepository; 
 
 	@Autowired
 	private ConnectClient connectClient;
@@ -139,7 +152,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 	private DirectorPersonalDetailRepository directorPersonalDetailRepository;
 	
 	@Override
-	public boolean saveOrUpdate(FundSeekerInputRequestResponse fundSeekerInputRequest) throws Exception {
+	public boolean saveOrUpdate(FundSeekerInputRequestResponse fundSeekerInputRequest) throws LoansException {
 		try {
 			logger.info("getting corporateApplicantDetail from applicationId::"
 					+ fundSeekerInputRequest.getApplicationId());
@@ -208,7 +221,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			return true;
 		} catch (Exception e) {
 			logger.error("Throw Exception while save and update Fundseeker input request !!",e);
-			throw new Exception();
+			throw new LoansException(e);
 		}
 	}
 
@@ -524,7 +537,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 	 */
 	@Override
 	public LoansResponse invokeFraudAnalytics(FundSeekerInputRequestResponse fundSeekerInputRequestResponse)
-			throws Exception {
+			throws LoansException {
 
 		try {
 			logger.info("Start invokeFraudAnalytics()");
@@ -770,6 +783,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 	}
 	
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public LoansResponse verifyGST(String gstin,Long applicationId,Long userId,MultipartFile[] uploadedFiles) {
 		//Uploading GST Receipt
@@ -780,14 +794,14 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 		try{
 			DocumentResponse documentResponse = dMSClient.deleteProductDocumentFromApplicationId(MultipleJSONObjectHelper.getStringfromObject(documentRequest));
 			if (CibilUtils.isObjectListNull(documentResponse)) {
-				logger.warn("Something goes wrong while Deleting GST Receipt for ApplicationId as Response Found Null===>{}",applicationId);
+				logger.warn(SOMETHING_GOES_WRONG_WHILE_DELETING_GST_RECEIPT_RESPONSE_FOUND_NULL_MSG,applicationId);
 			} else if (documentResponse.getStatus() == HttpStatus.OK.value()) {
-				logger.info("Successfully Deleting GST Receipt For Application Id==>{}",applicationId);
+				logger.info(SUCCESSFULLY_DELETING_GST_RECEIPT_MSG,applicationId);
 			} else {
-				logger.warn("Something goes wrong while Deleting GST Receipt for ApplicationId===>{}",applicationId);
+				logger.warn(SOMETHING_GOES_WRONG_WHILE_DELETING_GST_RECEIPT_FOR_APPLICATION_ID_MSG,applicationId);
 			}
 		}catch(Exception e){
-			logger.error("Error while Deleting Existing Doccuments of GST and ITR : {}", e);
+			logger.error(ERROR_WHILE_DELETING_EXISTING_DOCUMENTS_OF_GST_AND_ITR_MSG, e);
 		}
 		
 		
@@ -829,7 +843,24 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 				updateGSTFlag = corporateApplicantDetailRepository.updateGSTFlag(applicationId, gstin, false);
 				logger.info("GST Updated Count of FALSE WIth GST Status================>{}=====>{}====>{}",updateGSTFlag,response.getStatus(),response.getStatusCd());
 			}
+			
+			//Getting Address Details from GST
+			CorporateApplicantDetail corpApplicantDetail = corporateApplicantDetailRepository
+					.findOneByApplicationIdId(applicationId);
+			if (!CommonUtils.isObjectNullOrEmpty(corpApplicantDetail) && !CommonUtils.isObjectNullOrEmpty(response.getData())) {
+				LinkedHashMap<String, Object> data = (LinkedHashMap<String, Object>)response.getData();
+				data.put("premiseNumber", corpApplicantDetail.getRegisteredPremiseNumber());
+				data.put("landMark", corpApplicantDetail.getRegisteredLandMark());
+				data.put("streetName", corpApplicantDetail.getRegisteredStreetName());
+				data.put("pincode", corpApplicantDetail.getRegisteredPincode());
+				data.put("cityId", corpApplicantDetail.getRegisteredCityId());
+				data.put("stateId", corpApplicantDetail.getRegisteredStateId());
+				data.put("sountryId", corpApplicantDetail.getRegisteredCountryId());
+				data.put("districtMappingId", corpApplicantDetail.getRegisteredDistMappingId());
+				response.setData(data);
+			}
 			//Getting Uploaded GST Receipt
+//			BeanUtils.copyProperties(corpApplicantDetail, fsInputRes);
 			LoansResponse loansResponse = new LoansResponse("Done",HttpStatus.OK.value(),response);
 			try{
 				logger.info("Uploaded Document Result for Application Id===>{}",isDocumentUploaded);
@@ -940,6 +971,47 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			logger.error("error Updating Flags and Getting Document : {}",exception);
 		}
 		return loansResponse;
+	}
+	
+	@Override
+	public LoansResponse resetUniformApplication(ConnectResponse connectResponse){
+		financialArrangementDetailsRepository.inActiveManuallyAddedLoans(connectResponse.getUserId(), connectResponse.getApplicationId());
+		associatedConcernDetailRepository.inActive(connectResponse.getUserId(), connectResponse.getApplicationId());
+		directorBackgroundDetailsRepository.inActive(connectResponse.getUserId(), connectResponse.getApplicationId());
+		primaryCorporateDetailRepository.updatedFinancialFieldsForUniformProduct(connectResponse.getApplicationId(), null, null,null,null);
+		corporateApplicantDetailRepository.updateGSTFlag(connectResponse.getApplicationId(), connectResponse.getGstin(), false);
+		corporateApplicantDetailRepository.updateITRFlag(connectResponse.getApplicationId(), false);
+		DocumentRequest documentRequest = new DocumentRequest();
+		documentRequest.setApplicationId(connectResponse.getApplicationId());
+		documentRequest.setProductDocumentMappingId(DocumentAlias.GST_RECEIPT);
+		documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
+		try{
+			DocumentResponse documentResponse = dMSClient.deleteProductDocumentFromApplicationId(MultipleJSONObjectHelper.getStringfromObject(documentRequest));
+			if (CibilUtils.isObjectListNull(documentResponse)) {
+				logger.warn(SOMETHING_GOES_WRONG_WHILE_DELETING_GST_RECEIPT_RESPONSE_FOUND_NULL_MSG,connectResponse.getApplicationId());
+			} else if (documentResponse.getStatus() == HttpStatus.OK.value()) {
+				logger.info(SUCCESSFULLY_DELETING_GST_RECEIPT_MSG,connectResponse.getApplicationId());
+			} else {
+				logger.warn(SOMETHING_GOES_WRONG_WHILE_DELETING_GST_RECEIPT_FOR_APPLICATION_ID_MSG,connectResponse.getApplicationId());
+			}
+		}catch(Exception e){
+			logger.error(ERROR_WHILE_DELETING_EXISTING_DOCUMENTS_OF_GST_AND_ITR_MSG, e);
+		}
+		
+		try{
+			documentRequest.setProductDocumentMappingId(DocumentAlias.CORPORATE_ITR_XML);
+			DocumentResponse documentResponse = dMSClient.deleteProductDocumentFromApplicationId(MultipleJSONObjectHelper.getStringfromObject(documentRequest));
+			if (CibilUtils.isObjectListNull(documentResponse)) {
+				logger.warn(SOMETHING_GOES_WRONG_WHILE_DELETING_GST_RECEIPT_RESPONSE_FOUND_NULL_MSG,connectResponse.getApplicationId());
+			} else if (documentResponse.getStatus() == HttpStatus.OK.value()) {
+				logger.info(SUCCESSFULLY_DELETING_GST_RECEIPT_MSG,connectResponse.getApplicationId());
+			} else {
+				logger.warn(SOMETHING_GOES_WRONG_WHILE_DELETING_GST_RECEIPT_FOR_APPLICATION_ID_MSG,connectResponse.getApplicationId());
+			}
+		}catch(Exception e){
+			logger.error(ERROR_WHILE_DELETING_EXISTING_DOCUMENTS_OF_GST_AND_ITR_MSG, e);
+		}
+		return new LoansResponse("Successfully Reset the Form.", HttpStatus.OK.value(), getDataForOnePagerOneForm(connectResponse.getApplicationId()));
 	}
 
 }

@@ -2,6 +2,7 @@ package com.capitaworld.service.loans.controller.fundseeker.corporate;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +40,7 @@ public class CorporatePrimaryController {
     @RequestMapping(value = "${primary}/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LoansResponse> savePrimary(@RequestBody PrimaryCorporateRequest primaryCorporateRequest,
                                                      HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId)
-            throws Exception {
+            throws LoansException {
         try {
             CommonDocumentUtils.startHook(logger, "savePrimary");
             // request must not be null
@@ -78,7 +79,7 @@ public class CorporatePrimaryController {
                                                     HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
         try {
             CommonDocumentUtils.startHook(logger, "getPrimary");
-            Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+            Long userId;
             if (CommonDocumentUtils.isThisClientApplication(request)) {
                 userId = clientId;
             } else {

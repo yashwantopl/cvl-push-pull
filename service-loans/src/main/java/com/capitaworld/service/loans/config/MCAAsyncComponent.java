@@ -5,6 +5,7 @@ package com.capitaworld.service.loans.config;
 
 import java.util.Map;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,7 +45,7 @@ public class MCAAsyncComponent {
 	 * @param userId
 	 */
 	
-	private void callMCA(String cin, Long applicationId, Long userId) throws Exception{
+	private void callMCA(String cin, Long applicationId, Long userId) throws LoansException {
 		try {
 		McaRequest request = new McaRequest();
 		
@@ -87,7 +88,7 @@ public class MCAAsyncComponent {
 			}
 		}
 		catch (Exception e) {
-			throw new Exception();
+			throw new LoansException(e);
 		}
 	}
 	

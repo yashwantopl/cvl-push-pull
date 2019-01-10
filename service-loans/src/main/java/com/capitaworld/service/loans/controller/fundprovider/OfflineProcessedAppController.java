@@ -76,6 +76,18 @@ public class OfflineProcessedAppController {
 		}
 		
 	}
+	
+	@RequestMapping(value="/otherApplicationList", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getOtherApplicationList(HttpServletRequest request)  {
+		try {
+			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully fetched Other Loans List", HttpStatus.OK.value(),offlineProcessedApplicationService.getOtherProposalList(userId)), HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("Exception while get Other offline proposal list : ",e);
+			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.OK);
+		}
+		
+	}
 	/*		Long userId = null;
 	Integer userType = null;
 	Long orgId = null;

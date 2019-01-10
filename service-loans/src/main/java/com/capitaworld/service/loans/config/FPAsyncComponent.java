@@ -3482,7 +3482,7 @@ public class FPAsyncComponent {
 			notificationRequest.setIsDynamic(false);
 		}
 
-		String to[] = { toNo };
+		String[] to = { toNo };
 		Notification notification = new Notification();
 		notification.setContentType(ContentType.TEMPLATE);
 		notification.setTemplateId(templateId);
@@ -3500,7 +3500,7 @@ public class FPAsyncComponent {
 
 
 	private void createNotificationForEmailForFundProvider(String toNo, String userId, Map<String, Object> mailParameters,
-														   Long templateId, String emailSubject,Long applicationId,Map<String, Object> proposalresp,String bcc[]) throws NotificationException {
+														   Long templateId, String emailSubject,Long applicationId,Map<String, Object> proposalresp,String[] bcc) throws NotificationException {
 		logger.info("Inside send notification===>{}" + toNo);
 
 		NotificationRequest notificationRequest = new NotificationRequest();
@@ -3511,7 +3511,7 @@ public class FPAsyncComponent {
 			notificationRequest.setIsDynamic(false);
 		}
 
-		String to[] = { toNo };
+		String[] to = { toNo };
 		Notification notification = new Notification();
 		notification.setContentType(ContentType.TEMPLATE);
 		notification.setTemplateId(templateId);

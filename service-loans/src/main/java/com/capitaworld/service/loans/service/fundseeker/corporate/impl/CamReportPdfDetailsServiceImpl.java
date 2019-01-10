@@ -640,7 +640,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			int currentYear = scoringService.getFinYear(applicationId);
 			map.put("currentYr",currentYear-1);
 			Long denominationValue = Denomination.getById(loanApplicationMaster.getDenominationId()).getDigit();
-			Integer years[] = {currentYear-3, currentYear-2, currentYear-1};
+			Integer[] years = {currentYear-3, currentYear-2, currentYear-1};
 			Map<Integer, Object[]> financials = new TreeMap<Integer, Object[]>(Collections.reverseOrder());
 			for(Integer year : years) {
 				Object[] data = calculateFinancials(userId, applicationId, null, denominationValue, year);

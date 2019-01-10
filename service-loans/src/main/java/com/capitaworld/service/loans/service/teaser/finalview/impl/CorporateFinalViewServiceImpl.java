@@ -1583,6 +1583,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 		// MCA DATA
 		try {
 			String companyId = loanApplicationMaster.getMcaCompanyId();
+			corporateFinalViewResponse.setCompanyId(companyId);
 			logger.info("mca comp id==>>" + companyId);
 
 			if (companyId != null) {
@@ -1640,14 +1641,20 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 		// Name as per Gst
 
 		try {
-			GstResponse response = gstClient.detailCalculation(corporateApplicantDetail.getGstIn());
-			if (response != null) {
-				corporateFinalViewResponse.setGstData(response);
-			} else {
+			
+			if(corporateApplicantDetail.getGstIn()!= null) {
+				GstResponse response = gstClient.detailCalculation(corporateApplicantDetail.getGstIn());
+				if (response != null) {
+					corporateFinalViewResponse.setGstData(response);
+				} else {
 
-				logger.warn("----------:::::::: Gst Response is null :::::::---------");
+					logger.warn("----------:::::::: Gst Response is null :::::::---------");
 
+				}
+			}else {
+				logger.warn("gstIn is Null for in corporate Applicant Details=>>>>>"+toApplicationId);
 			}
+			
 
 		} catch (Exception e) {
 			logger.error(":::::::------Error while calling gstData---:::::::",e);

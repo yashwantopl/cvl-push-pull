@@ -6,6 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -42,12 +43,12 @@ public class CreditRatingOrganizationDetailsServiceImpl implements CreditRatingO
 	private OneFormClient oneFormClient;
 
 	@Override
-	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception {
+	public Boolean saveOrUpdate(FrameRequest frameRequest) throws LoansException {
 		try {
 			for (Map<String, Object> obj : frameRequest.getDataList()) {
 				CreditRatingOrganizationDetailRequest creditRatingOrganizationsDetailRequest = (CreditRatingOrganizationDetailRequest) MultipleJSONObjectHelper
 						.getObjectFromMap(obj, CreditRatingOrganizationDetailRequest.class);
-				CreditRatingOrganizationDetail creditRatingOrganizationDetail = new CreditRatingOrganizationDetail();
+				CreditRatingOrganizationDetail creditRatingOrganizationDetail;
 				if (creditRatingOrganizationsDetailRequest.getId() != null) {
 					creditRatingOrganizationDetail = creditRatingOrganizationDetailsRepository
 							.findOne(creditRatingOrganizationsDetailRequest.getId());
@@ -68,13 +69,13 @@ public class CreditRatingOrganizationDetailsServiceImpl implements CreditRatingO
 
 		catch (Exception e) {
 			logger.error("Exception  in save creditRatingOrganizationDetail  :-",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
 	public List<CreditRatingOrganizationDetailRequest> getcreditRatingOrganizationDetailsList(Long id, Long userId)
-			throws Exception {
+			throws LoansException {
 		try {
 			List<CreditRatingOrganizationDetail> creditRatingOrganizationDetails = creditRatingOrganizationDetailsRepository
 					.listCreditRatingOrganizationDetailsFromAppId(id, userId);
@@ -94,7 +95,7 @@ public class CreditRatingOrganizationDetailsServiceImpl implements CreditRatingO
 			return creditRatingOrganizationDetailRequests;
 		} catch (Exception e) {
 			logger.error("Exception  in save creditRatingOrganizationDetail  :-",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 	
@@ -116,12 +117,12 @@ public class CreditRatingOrganizationDetailsServiceImpl implements CreditRatingO
 	}
 
 	@Override
-	public List<Integer> getShortTermCreditRatingForTeaser(Long id, Long userId) throws Exception {
+	public List<Integer> getShortTermCreditRatingForTeaser(Long id, Long userId) throws LoansException {
 		return creditRatingOrganizationDetailsRepository.listShortCreditRatingOptionDetailsFromAppId(id, userId);
 	}
 
 	@Override
-	public List<Integer> getLongTermCreditRatingForTeaser(Long id, Long userId) throws Exception {
+	public List<Integer> getLongTermCreditRatingForTeaser(Long id, Long userId) throws LoansException {
 		return creditRatingOrganizationDetailsRepository.listLongCreditRatingOptionDetailsFromAppId(id, userId);
 	}
 }

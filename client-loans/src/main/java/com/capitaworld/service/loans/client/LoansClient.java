@@ -242,6 +242,7 @@ public class LoansClient {
     private static final String SAVE_LOAN_WC_RENEWAL_TYPE ="/loan_application/saveLoanWCRenewalType";
     private static final String GET_LOAN_WC_RENEWAL_TYPE ="/loan_application/getLoanWCRenewalType";
     private static final String SAVE_INELIGIBALE_PROPOSAL ="/save/ineligible/proposal";
+    private static final String GET_COMMON_PROPERTIES ="/loan_application/getCommonPropValue";
     private static final String AND_FOR_APPLICATION_ID = " and For Application Id====>";
 
     private static final String REQ_AUTH = "req_auth";
@@ -868,7 +869,7 @@ public class LoansClient {
 		}
 	}
 	
-	public FinancialArrangementsDetailRequest getTotalEMIAndSanctionAmount(Long applicationId) throws Exception{
+	public FinancialArrangementsDetailRequest getTotalEMIAndSanctionAmount(Long applicationId) throws LoansException{
 		String url = loansBaseUrl.concat(FINANCIAL_ARRANGEMENT_DETAILS_TOTAL_EMI).concat("/" + applicationId);
 		logger.info("url for Getting TotalEMI From Client=================>" + url + AND_FOR_APPLICATION_ID + applicationId);
 		try {
@@ -879,7 +880,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.GET, entity, FinancialArrangementsDetailRequest.class).getBody();
 		} catch (Exception e) {
 			logger.error("Exception in getTotalEMIAndSanctionAmount : ",e);
-			throw new Exception(e.getCause().getMessage());
+			throw new LoansException(e.getCause().getMessage());
 		}
 	}
 	
@@ -899,7 +900,7 @@ public class LoansClient {
 	}
 
 	//Dhaval
-	public LoansResponse getTotalEMIFromDirectorId(NTBRequest request) throws Exception{
+	public LoansResponse getTotalEMIFromDirectorId(NTBRequest request) throws LoansException{
 		String url = loansBaseUrl.concat(FINANCIAL_ARRANGEMENT_DETAILS_TOTAL_EMI_FROM_DIRECTOR_ID);
 		logger.info("url for Getting TotalEMIDirector From Client=================>" + url);
 		try {
@@ -911,7 +912,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			logger.error("Exception in getTotalEMIFromDirectorId : ",e);
-			throw new Exception(e.getCause().getMessage());
+			throw new LoansException(e.getCause().getMessage());
 		}
 	}
 
@@ -1429,7 +1430,7 @@ public class LoansClient {
 	}
 	
 	public LoansResponse saveCreditRatingDetailFromCibil(List<CreditRatingOrganizationDetailRequest> detailRequests, Long userId,
-			Long clientId, Long applicationId) throws Exception {
+			Long clientId, Long applicationId) throws LoansException {
 		String url = loansBaseUrl.concat(CREDIT_RATING_DETAILS_CIBIL)
 				.concat("/" + applicationId + "/" + userId + "/" + clientId);
 		try {
@@ -1441,7 +1442,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			logger.error("Exception in saveCreditRatingDetailFromCibil : ",e);
-			throw new Exception(url + " " + e.getCause().getMessage());
+			throw new LoansException(url + " " + e.getCause().getMessage());
 		}
 	}
 
@@ -1579,7 +1580,7 @@ public class LoansClient {
 			throw new ExcelException(e.getCause().getMessage());
 		}
 		}
-	public LoansResponse getFullPrimaryDetails(Long applicationId,Long userId,Integer productId) throws Exception {
+	public LoansResponse getFullPrimaryDetails(Long applicationId,Long userId,Integer productId) throws LoansException {
 		String url = null;
 		LoanType type = CommonUtils.LoanType.getType(productId);
 		switch (type) {
@@ -1597,7 +1598,7 @@ public class LoansClient {
 		}
 
 		if (url == null){
-			throw new Exception("Url must not be null.");
+			throw new LoansException("Url must not be null.");
 		}
 
 		url = url.concat("/" + applicationId + "/" + userId);
@@ -1610,10 +1611,10 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			logger.error("Exception in getFullPrimaryDetails : ",e);
-			throw new Exception(e.getCause().getMessage());
+			throw new LoansException(e.getCause().getMessage());
 		}
 	}
-	public RetailApplicantRequest getFullProfileDetail(Long applicationId) throws Exception {
+	public RetailApplicantRequest getFullProfileDetail(Long applicationId) throws LoansException {
 		String url = loansBaseUrl.concat(GET_FULL_PROFILE).concat("/" + applicationId);
 		try {
 			HttpHeaders headers = new HttpHeaders();
@@ -1623,7 +1624,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.GET, entity, RetailApplicantRequest.class).getBody();
 		} catch (Exception e) {
 			logger.error("Exception in getFullProfileDetail : ",e);
-			throw new Exception(e.getCause().getMessage());
+			throw new LoansException(e.getCause().getMessage());
 		}
 	}
 	
@@ -1641,7 +1642,7 @@ public class LoansClient {
 		}
 		}
 	
-	public Integer setEligibilityAmount(LoanApplicationRequest applicationRequest) throws Exception {
+	public Integer setEligibilityAmount(LoanApplicationRequest applicationRequest) throws LoansException {
 		String url = loansBaseUrl.concat(SET_ELIGIBILITY_AMOUNT);
 		logger.info("Eligibility update client URL==>"  + url);
 		try {
@@ -1652,7 +1653,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.POST, entity, Integer.class).getBody();
 		} catch (Exception e) {
 			logger.error("Exception in setEligibilityAmount : ",e);
-			throw new Exception(e.getCause().getMessage());
+			throw new LoansException(e.getCause().getMessage());
 		}
 	}
 	
@@ -1681,9 +1682,9 @@ public class LoansClient {
 		} catch (Exception e) {
 			logger.error("Exception in updateDirectorAPIFlag : ",e);
 			if(e.getMessage().contains("404")) {
-				throw new Exception(url + " is Not Found");				
+				throw new Exception(url + " is Not Found");
 			}else if(e.getMessage().contains("400")) {
-				throw new Exception(url + " is Not Valid Request");				
+				throw new Exception(url + " is Not Valid Request");
 			}else {
 				throw new ExcelException(e.getCause().getMessage());
 			}
@@ -1705,7 +1706,7 @@ public class LoansClient {
 		}
 	}
 	
-	public LoansResponse getDirectorBackgroundDetailsForNTB(Long applicationId) throws Exception {
+	public LoansResponse getDirectorBackgroundDetailsForNTB(Long applicationId) throws LoansException {
 		String url = loansBaseUrl.concat(GET_DIRECTOR_BACKGROUND_DETAILS_FOR_NTB).concat("/" + applicationId);
 		logger.info("url for Getting DirectorBackgroundDetails for NTB From Client=================>" + url + AND_FOR_APPLICATION_ID + applicationId);
 		try {
@@ -1715,7 +1716,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			logger.error("Exception in getDirectorBackgroundDetailsForNTB : ",e);
-			throw new Exception(e.getCause().getMessage());
+			throw new LoansException(e.getCause().getMessage());
 		}
 	}
 	
@@ -1788,7 +1789,7 @@ public class LoansClient {
 
 
 
-	public LoansResponse calculateScoring(ScoringRequestLoans scoringRequestLoans) throws Exception {
+	public LoansResponse calculateScoring(ScoringRequestLoans scoringRequestLoans) throws LoansException {
 		String url = loansBaseUrl.concat(CALCULATE_SCORING);
 		try {
 			HttpHeaders headers = new HttpHeaders();
@@ -1798,11 +1799,11 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			logger.error("Exception in calculateScoring : ",e);
-			throw new Exception(e.getCause().getMessage());
+			throw new LoansException(e.getCause().getMessage());
 		}
 	}
 
-	public LoansResponse calculateScoringCorporateExistingList(List<ScoringRequestLoans> scoringRequestLoansList) throws Exception {
+	public LoansResponse calculateScoringCorporateExistingList(List<ScoringRequestLoans> scoringRequestLoansList) throws LoansException {
 		String url = loansBaseUrl.concat(CALCULATE_SCORING_EXISTING_LIST);
 		try {
 			HttpHeaders headers = new HttpHeaders();
@@ -1812,11 +1813,11 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			logger.error("Exception in calculateScoringCorporateExistingList : ",e);
-			throw new Exception(e.getCause().getMessage());
+			throw new LoansException(e.getCause().getMessage());
 		}
 	}
 
-	public LoansResponse calculateScoringRetailPLList(List<ScoringRequestLoans> scoringRequestLoansList) throws Exception {
+	public LoansResponse calculateScoringRetailPLList(List<ScoringRequestLoans> scoringRequestLoansList) throws LoansException {
 		String url = loansBaseUrl.concat(CALCULATE_SCORING_RETAIL_PL_LIST);
 		try {
 			HttpHeaders headers = new HttpHeaders();
@@ -1826,7 +1827,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			logger.error("Exception in calculateScoringRetailPLList : ",e);
-			throw new Exception(e.getCause().getMessage());
+			throw new LoansException(e.getCause().getMessage());
 		}
 	}
 
@@ -1846,7 +1847,7 @@ public class LoansClient {
 		
 	}
 	
-	public CMARequest getCMA(Long applicationId) throws Exception {
+	public CMARequest getCMA(Long applicationId) throws LoansException {
 		String url = loansBaseUrl.concat(CMA_DETAILS) + "/" + applicationId;
 		logger.info("Enter in Loan CLient For get CMA Details ----------------------> " + url);
 		try {
@@ -1856,11 +1857,11 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.GET, entity, CMARequest.class).getBody();
 		} catch (Exception e) {
 			logger.error("Throw Exception While Get CMA Details Using Loan CLient : ",e);
-			throw new Exception(e.getCause().getMessage());
+			throw new LoansException(e.getCause().getMessage());
 		}
 	}
 	
-	public LoansResponse saveCMA(CMARequest cmaRequest) throws Exception {
+	public LoansResponse saveCMA(CMARequest cmaRequest) throws LoansException {
 		String url = loansBaseUrl.concat(SAVE_CMA_DETAILS);
 		logger.info("Enter in save CMA details in Loan client");
 		try {
@@ -1871,7 +1872,7 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			logger.error("Throw Exception while call save CMA details : ",e);
-			throw new Exception(e.getCause().getMessage());
+			throw new LoansException(e.getCause().getMessage());
 		}
 	}
 
@@ -2448,6 +2449,26 @@ public class LoansClient {
 			return restTemplate.exchange(url, HttpMethod.POST, entity, LoansResponse.class).getBody();
 		} catch (Exception e) {
 			logger.error("Exception in saveIneligibleProposal : ",e);
+			throw new LoansException(e.getCause().getMessage());
+		}
+	}
+	
+	/**
+	 * 
+	 * @param keyName
+	 * @return  in data key 
+	 * @throws LoansException
+	 */
+	public LoansResponse getCommonPropValue(String keyName) throws LoansException {
+		String url = loansBaseUrl.concat(GET_COMMON_PROPERTIES).concat("/" + keyName);
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.set(REQ_AUTH, "true");
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<?> entity = new HttpEntity<>(null, headers);
+			return restTemplate.exchange(url, HttpMethod.GET, entity, LoansResponse.class).getBody();
+		} catch (Exception e) {
+			logger.error("Exception in getCommonPropValue : ",e);
 			throw new LoansException(e.getCause().getMessage());
 		}
 	}

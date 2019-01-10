@@ -118,6 +118,21 @@ public class UniformProductParamterAudit implements Serializable {
 	@Column(name = "created_date")
 	private Date createdDate;
 	
+	@Column(name = "dpd_audit")
+	private String dpdAudit;
+	
+	private Integer dpd;
+	
+	@Column(name = "is_active")
+	private Boolean isActive;
+	
+	@Column(name = "is_active_audit")
+	private String isActiveAudit;
+	
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "from_date")
+	private Date fromDate;
+	
 	public UniformProductParamterAudit(){
 		super();
 	}
@@ -378,6 +393,46 @@ public class UniformProductParamterAudit implements Serializable {
 		this.createdDate = createdDate;
 	}
 
+	public Integer getDpd() {
+		return dpd;
+	}
+
+	public void setDpd(Integer dpd) {
+		this.dpd = dpd;
+	}
+
+	public String getDpdAudit() {
+		return dpdAudit;
+	}
+
+	public void setDpdAudit(String dpdAudit) {
+		this.dpdAudit = dpdAudit;
+	}
+
+	public Boolean getIsActive() {
+		return isActive;
+	}
+
+	public void setIsActive(Boolean isActive) {
+		this.isActive = isActive;
+	}
+
+	public String getIsActiveAudit() {
+		return isActiveAudit;
+	}
+
+	public void setIsActiveAudit(String isActiveAudit) {
+		this.isActiveAudit = isActiveAudit;
+	}
+
+	public Date getFromDate() {
+		return fromDate;
+	}
+
+	public void setFromDate(Date fromDate) {
+		this.fromDate = fromDate;
+	}
+
 	@Override
 	public String toString() {
 		return "UniformProductParamterAudit [id=" + id + ", minAmount=" + minAmount + ", minAmountAudit="
@@ -391,6 +446,7 @@ public class UniformProductParamterAudit implements Serializable {
 				+ promotorContributionAudit + ", wcRequirement=" + wcRequirement + ", wcRequirementAudit="
 				+ wcRequirementAudit + ", maxGrowth=" + maxGrowth + ", maxGrowthAudit=" + maxGrowthAudit + ", version="
 				+ version + ", versionAudit=" + versionAudit + ", fpProductId=" + fpProductId + ", orgId=" + orgId
-				+ ", createdDate=" + createdDate + "]";
+				+ ", createdDate=" + createdDate + ", dpdAudit=" + dpdAudit + ", dpd=" + dpd + ", isActive=" + isActive
+				+ ", isActiveAudit=" + isActiveAudit + ", fromDate=" + fromDate + "]";
 	}
 }

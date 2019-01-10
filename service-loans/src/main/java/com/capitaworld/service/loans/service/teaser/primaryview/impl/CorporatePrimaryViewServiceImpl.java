@@ -219,11 +219,14 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 					logger.error("error while fetching last access fp rpduct id for fund provider while fetching matches in teaser view : ",e);
 				}
 				try {
+					
+				
 					MatchRequest matchRequest = new MatchRequest();
 					matchRequest.setApplicationId(toApplicationId);
 					matchRequest.setProductId(fpProductMappingId);
 					MatchDisplayResponse matchResponse = matchEngineClient.displayMatchesOfCorporate(matchRequest);
 					corporatePrimaryViewResponse.setMatchesList(matchResponse.getMatchDisplayObjectList());
+				
 				} catch (Exception e) {
 					logger.error(CommonUtils.EXCEPTION,e);
 				}
@@ -1163,14 +1166,20 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 		// Gst Data
 
 		try {
-			GstResponse response = gstClient.detailCalculation(corporateApplicantDetail.getGstIn());
-			if (response != null) {
-				corporatePrimaryViewResponse.setGstData(response);
-			} else {
+			
+			if(corporateApplicantDetail.getGstIn()!= null) {
+				GstResponse response = gstClient.detailCalculation(corporateApplicantDetail.getGstIn());
+				if (response != null) {
+					corporatePrimaryViewResponse.setGstData(response);
+				} else {
 
-				logger.warn("----------:::::::: Gst Response is null :::::::---------");
+					logger.warn("----------:::::::: Gst Response is null :::::::---------");
 
+				}
+			}else {
+				logger.warn("gstIn is Null for in corporate Applicant Details=>>>>>"+toApplicationId);
 			}
+			
 
 		} catch (Exception e) {
 			logger.error(":::::::------Error while calling gstData---:::::::",e);

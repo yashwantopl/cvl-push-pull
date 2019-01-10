@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.service.fundprovider;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.corporate.TermLoanParameterRequest;
 
 public interface TermLoanParameterService {
@@ -15,9 +16,9 @@ public interface TermLoanParameterService {
 	 * @param mappingId
 	 * @return
 	 */
-	public Boolean saveMasterFromTempTl(Long mappingId) throws Exception;
+	public Boolean saveMasterFromTempTl(Long mappingId) throws LoansException;
 	
-	public Boolean saveMasterFromNtbTempTl(Long mappingId) throws Exception;
+	public Boolean saveMasterFromNtbTempTl(Long mappingId) throws LoansException;
 
 	/**
 	 * @param loanParameterRequest

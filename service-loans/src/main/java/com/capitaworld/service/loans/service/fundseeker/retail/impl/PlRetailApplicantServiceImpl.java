@@ -6,6 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 import com.capitaworld.cibil.api.utility.MultipleJSONObjectHelper;
+import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.UserResponse;
 import com.capitaworld.service.users.model.UsersRequest;
@@ -63,7 +64,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
     private CreditCardsDetailRepository creditCardsDetailRepository;
 
     @Override
-    public boolean saveProfile(PLRetailApplicantRequest plRetailApplicantRequest, Long userId) throws Exception {
+    public boolean saveProfile(PLRetailApplicantRequest plRetailApplicantRequest, Long userId) throws LoansException {
         try {
             Long finalUserId = (CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getClientId()) ? userId : plRetailApplicantRequest.getClientId());
             RetailApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId(finalUserId, plRetailApplicantRequest.getApplicationId());
@@ -91,12 +92,12 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
 
         } catch (Exception e) {
             logger.error("Error while Saving Retail Profile :- ",e);
-            throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+            throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
         }
     }
 
     @Override
-    public PLRetailApplicantRequest getProfile(Long userId, Long applicationId) throws Exception {
+    public PLRetailApplicantRequest getProfile(Long userId, Long applicationId) throws LoansException {
         try {
             RetailApplicantDetail applicantDetail = applicantRepository.findOneByApplicationIdId(applicationId);
             if (applicantDetail == null) {
@@ -187,12 +188,12 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             return applicantRequest;
         } catch (Exception e) {
             logger.error("Error while getting Retail Profile :- ",e);
-            throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+            throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
         }
     }
 
     @Override
-    public boolean savePrimary(PLRetailApplicantRequest plRetailApplicantRequest, Long userId) throws Exception {
+    public boolean savePrimary(PLRetailApplicantRequest plRetailApplicantRequest, Long userId) throws LoansException {
         try {
             Long finalUserId = (CommonUtils.isObjectNullOrEmpty(plRetailApplicantRequest.getClientId()) ? userId : plRetailApplicantRequest.getClientId());
             RetailApplicantDetail applicantDetail = applicantRepository.getByApplicationAndUserId(finalUserId, plRetailApplicantRequest.getApplicationId());
@@ -277,12 +278,12 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
 
         } catch (Exception e) {
             logger.error("Error while Saving Retail Primary :- ",e);
-            throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+            throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
         }
     }
 
     @Override
-    public PLRetailApplicantRequest getPrimary(Long userId, Long applicationId) throws Exception {
+    public PLRetailApplicantRequest getPrimary(Long userId, Long applicationId) throws LoansException {
         try {
             RetailApplicantDetail applicantDetail = applicantRepository.findOneByApplicationIdId(applicationId);
             if (applicantDetail == null) {
@@ -324,7 +325,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             return applicantRequest;
         } catch (Exception e) {
             logger.error("Error while getting Retail Primary :- ",e);
-            throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+            throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
         }
     }
 
@@ -358,7 +359,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             return true;
         } catch (Exception e) {
             logger.error("Error while Saving Retail Final :- ",e);
-            throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+            throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
         }
     }
 
@@ -378,7 +379,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             return applicantRequest;
         } catch (Exception e) {
             logger.error("Error while getting Retail Final :- ",e);
-            throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+            throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
         }
     }
 
