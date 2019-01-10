@@ -300,13 +300,13 @@ public class FundSeekerInputRequestController {
         						postOneForm.toString());
         				if(!postOneForm.getProceed().booleanValue() && postOneForm.getStatus() == 4){
         					eligibility.setStatus(HttpStatus.METHOD_FAILURE.value());
-        					eligibility.setMessage("Your request could not be processed now, please try again after sometime.");
+        					eligibility.setMessage(CommonUtils.isObjectNullOrEmpty(postOneForm) ? "Your request could not be processed now, please try again after sometime." : postOneForm.getMessage());
         				}else if (!postOneForm.getProceed().booleanValue() && postOneForm.getStatus() == 6) {
         					eligibility.setStatus(HttpStatus.BAD_REQUEST.value());
-        					eligibility.setMessage("Not Eligibile from Matchengine");
+        					eligibility.setMessage(CommonUtils.isObjectNullOrEmpty(postOneForm) ? "Not Eligibile from Matchengine" : postOneForm.getMessage());
         				}else if (!postOneForm.getProceed().booleanValue() && postOneForm.getStatus() == 500) {
         					eligibility.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-        					eligibility.setMessage("Your request could not be refined now, please try again after sometime!");
+        					eligibility.setMessage(CommonUtils.isObjectNullOrEmpty(postOneForm) ? "Your request could not be refined now, please try again after sometime!" : postOneForm.getMessage());
         				} else {
         					eligibility.setStatus(HttpStatus.OK.value());
         					eligibility.setMessage("Successfully Matched");

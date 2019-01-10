@@ -240,7 +240,7 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 					if(saveLoanDisbursementDetail(loanDisbursementRequest)) {
 						logger.info("Success msg while saveLoanDisbursementDetail() ----------------> msg " + loanDisbursementRequest.getReason()) ;
 					}
-				}else if(saveLoanDisbursementDetailbyId(orgId , loanDisbursementRequest)) {
+				}/*else if(saveLoanDisbursementDetailbyId(orgId , loanDisbursementRequest)) {
 					
 					status= loanDisbursementRequest.getReason(); 
 					try {
@@ -253,7 +253,7 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 					
 					logger.info("Success msg while saveLoanDisbursementDetail() ----------------> msg " + loanDisbursementRequest.getReason() +"  -------updating the proposal detail table detail status rowUpdated ---------" +rowUpdated) ;
 					loanDisbursementRequest.setIsSaved(true);
-				}
+				}*/
 				try {
 					jsonString = MultipleJSONObjectHelper.getStringfromObject(loanDisbursementRequest);
 					auditComponentBankToCW.saveBankToCWReqRes(jsonString , 	loanDisbursementRequest.getApplicationId() , apiType , status , null , orgId ,loanDisbursementRequest.getId());
@@ -268,37 +268,5 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 		}
 		return loanDisbursementRequestsList;
 	}
-	//its save , disbursement request by there primary key 'id' and isSavedFromBank
-	@Override
-	public Boolean saveLoanDisbursementDetailbyId(Long orgId , LoanDisbursementRequest loanDisbursementRequest ) throws IOException {
-		logger.info("Enter in saveLoanDisbursementDetail() ----------------------->  LoanDisbursementRequest "+ loanDisbursementRequest);
-		try { 
-			LoanDisbursementDomain loanDisbursementDomain =  loanDisbursementRepository.findByBankDisbursementPrimaryKeyAndApplicationIdAndIsActive(loanDisbursementRequest.getId() , loanDisbursementRequest.getApplicationId() ,    true);
-			if(CommonUtils.isObjectNullOrEmpty(loanDisbursementDomain)) {
-				loanDisbursementDomain = new LoanDisbursementDomain();
-				loanDisbursementDomain.setIsActive(true);
-				loanDisbursementDomain.setCreatedBy(loanDisbursementRequest.getActionBy());
-				loanDisbursementDomain.setCreatedDate(new Date());
-				BeanUtils.copyProperties(loanDisbursementRequest, loanDisbursementDomain , "id","createdBy" , "createdDate" , "isActive" , "modifiedBy" , "modifiedDate");
-				loanDisbursementDomain.setBankDisbursementPrimaryKey(loanDisbursementRequest.getId());
-				loanDisbursementDomain.setApplicationId(loanDisbursementRequest.getApplicationId());
-				loanDisbursementDomain.setOrgId(orgId);
-				return loanDisbursementRepository.save(loanDisbursementDomain) != null;
-			}/*else {
-				loanDisbursementDomain.setModifiedBy(loanDisbursementRequest.getActionBy());
-				loanDisbursementDomain.setModifiedDate(new Date());
-				logger.info("Exit saveLoanDisbursementDetail() -----------------------> ");
-			}*/
-			/*BeanUtils.copyProperties(loanDisbursementRequest, loanDisbursementDomain , "id","createdBy" , "createdDate" , "isActive" , "modifiedBy" , "modifiedDate");
-			loanDisbursementDomain.setBankDisbursementPrimaryKey(loanDisbursementRequest.getId());
-			
-			return loanDisbursementRepository.save(loanDisbursementDomain) != null;*/
-			return true;
-		} catch (Exception e) {
-			logger.error("Error/Exception in saveLoanDisbursementDetail() -----------------------> Message : ",e);
-			throw e;
-		}
-	}
-
 	
 }
