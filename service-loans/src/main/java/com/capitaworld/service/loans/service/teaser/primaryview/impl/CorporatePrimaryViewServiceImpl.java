@@ -219,11 +219,14 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 					logger.error("error while fetching last access fp rpduct id for fund provider while fetching matches in teaser view : ",e);
 				}
 				try {
+					
+				
 					MatchRequest matchRequest = new MatchRequest();
 					matchRequest.setApplicationId(toApplicationId);
 					matchRequest.setProductId(fpProductMappingId);
 					MatchDisplayResponse matchResponse = matchEngineClient.displayMatchesOfCorporate(matchRequest);
 					corporatePrimaryViewResponse.setMatchesList(matchResponse.getMatchDisplayObjectList());
+				
 				} catch (Exception e) {
 					logger.error(CommonUtils.EXCEPTION,e);
 				}

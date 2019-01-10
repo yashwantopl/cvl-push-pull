@@ -165,10 +165,6 @@ public interface LoanApplicationService {
 
 	public boolean updateProductDetails(LoanApplicationRequest loanApplicationRequest);
 	
-	public boolean savePhese1DataToSidbi(Long applicationId,Long userId,Long organizationId,Long fpProductMappingId);
-	
-	public boolean savePhese2DataToSidbi(Long applicationId,Long userId,Long organizationId,Long fpProductMappingId);
-	
 	public Map<String, Object> getFpDetailsByFpProductId(Long fpProductId) throws LoansException;
 	
 	public CorporateProduct getFpDetailsByFpProductMappingId(Long fpProductId) throws LoansException;
