@@ -220,7 +220,6 @@ public class CorporateUploadController {
 			
 			if (response != null && response.getStatus() == 200) {
 				logger.info("File Uploaded SuccessFully -->");
-				LoansResponse finalResponse = new LoansResponse(response.getMessage(), response.getStatus());
 				if (!(response.getDataList().size() > 0)) {
 					try {
 						Thread.sleep(5000); // 5000 milliseconds is three
@@ -230,7 +229,7 @@ public class CorporateUploadController {
 						Thread.currentThread().interrupt();
 					}
 				}
-				finalResponse = new LoansResponse(response.getMessage(), response.getStatus());
+				LoansResponse finalResponse = new LoansResponse(response.getMessage(), response.getStatus());
 				finalResponse.setListData(response.getDataList());
 				finalResponse.setData(loanApplicationMaster.getMcaCompanyId());
 				CommonDocumentUtils.endHook(logger, "getExcelDocList");

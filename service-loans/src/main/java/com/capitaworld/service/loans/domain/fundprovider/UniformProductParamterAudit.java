@@ -129,6 +129,10 @@ public class UniformProductParamterAudit implements Serializable {
 	@Column(name = "is_active_audit")
 	private String isActiveAudit;
 	
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "from_date")
+	private Date fromDate;
+	
 	public UniformProductParamterAudit(){
 		super();
 	}
@@ -421,6 +425,14 @@ public class UniformProductParamterAudit implements Serializable {
 		this.isActiveAudit = isActiveAudit;
 	}
 
+	public Date getFromDate() {
+		return fromDate;
+	}
+
+	public void setFromDate(Date fromDate) {
+		this.fromDate = fromDate;
+	}
+
 	@Override
 	public String toString() {
 		return "UniformProductParamterAudit [id=" + id + ", minAmount=" + minAmount + ", minAmountAudit="
@@ -435,7 +447,6 @@ public class UniformProductParamterAudit implements Serializable {
 				+ wcRequirementAudit + ", maxGrowth=" + maxGrowth + ", maxGrowthAudit=" + maxGrowthAudit + ", version="
 				+ version + ", versionAudit=" + versionAudit + ", fpProductId=" + fpProductId + ", orgId=" + orgId
 				+ ", createdDate=" + createdDate + ", dpdAudit=" + dpdAudit + ", dpd=" + dpd + ", isActive=" + isActive
-				+ ", isActiveAudit=" + isActiveAudit + "]";
+				+ ", isActiveAudit=" + isActiveAudit + ", fromDate=" + fromDate + "]";
 	}
-
 }

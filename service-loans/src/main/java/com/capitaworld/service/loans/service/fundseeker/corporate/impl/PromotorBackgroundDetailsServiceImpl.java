@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -35,7 +36,7 @@ public class PromotorBackgroundDetailsServiceImpl implements PromotorBackgroundD
 	private PromotorBackgroundDetailsRepository promotorBackgroundDetailsRepository;
 
 	@Override
-	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception {
+	public Boolean saveOrUpdate(FrameRequest frameRequest) throws LoansException {
 		try {
 			for (Map<String, Object> obj : frameRequest.getDataList()) {
 				PromotorBackgroundDetailRequest promotorBackgroundDetailRequest = (PromotorBackgroundDetailRequest) MultipleJSONObjectHelper
@@ -60,12 +61,12 @@ public class PromotorBackgroundDetailsServiceImpl implements PromotorBackgroundD
 
 		catch (Exception e) {
 			logger.error("Exception  in save promoterBackgroundDetail  :-",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
 	@Override
-	public List<PromotorBackgroundDetailRequest> getPromotorBackgroundDetailList(Long applicationId,Long userId) throws Exception {
+	public List<PromotorBackgroundDetailRequest> getPromotorBackgroundDetailList(Long applicationId,Long userId) throws LoansException {
 		try {
 			List<PromotorBackgroundDetail> promotorBackgroundDetails = promotorBackgroundDetailsRepository
 					.listPromotorBackgroundFromAppId(applicationId);
@@ -79,7 +80,7 @@ public class PromotorBackgroundDetailsServiceImpl implements PromotorBackgroundD
 			return promotorBackgroundDetailRequests;
 		} catch (Exception e) {
 			logger.error("Exception  in getpromoterBackgroundDetail  :-",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 

@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -30,7 +31,7 @@ public class AchievementDetailServiceImpl implements AchievmentDetailsService {
 	private AchievementDetailsRepository achievementDetailsRepository;
 
 	@Override
-	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception {
+	public Boolean saveOrUpdate(FrameRequest frameRequest) throws LoansException {
 		CommonDocumentUtils.startHook(logger, "saveOrUpdate");
 		try {
 			for (Map<String, Object> obj : frameRequest.getDataList()) {
@@ -53,13 +54,13 @@ public class AchievementDetailServiceImpl implements AchievmentDetailsService {
 
 		catch (Exception e) {
 			logger.error("Exception  in save achievementDetail  :-",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 
 	}
 
 	@Override
-	public List<AchievementDetailRequest> getAchievementDetailList(Long applicationId, Long userId) throws Exception {
+	public List<AchievementDetailRequest> getAchievementDetailList(Long applicationId, Long userId) throws LoansException {
 		try {
 			CommonDocumentUtils.startHook(logger, "getAchievementDetailList");
 			List<AchievementDetail> achievementDetails = achievementDetailsRepository
@@ -76,7 +77,7 @@ public class AchievementDetailServiceImpl implements AchievmentDetailsService {
 			return achievementDetailRequests;
 		} catch (Exception e) {
 			logger.error("Exception getting achievementDetail  :-",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 

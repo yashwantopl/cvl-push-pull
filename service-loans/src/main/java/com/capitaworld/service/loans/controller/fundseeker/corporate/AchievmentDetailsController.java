@@ -100,7 +100,7 @@ public class AchievmentDetailsController {
 		// request must not be null
 		try {
 			CommonDocumentUtils.startHook(logger, "getList");
-			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			Long userId;
 			if(CommonDocumentUtils.isThisClientApplication(request)){
 				userId = clientId;
 			}else{

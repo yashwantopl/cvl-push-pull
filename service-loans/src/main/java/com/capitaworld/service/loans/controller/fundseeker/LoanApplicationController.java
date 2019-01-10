@@ -201,7 +201,7 @@ public class LoanApplicationController {
 		// request must not be null
 		try {
 			CommonDocumentUtils.startHook(logger, "get");
-			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			Long userId;
 			if (CommonDocumentUtils.isThisClientApplication(request) && !CommonUtils.isObjectNullOrEmpty(clientId)) {
 				userId = clientId;
 			} else {
@@ -234,7 +234,7 @@ public class LoanApplicationController {
 		// request must not be null
 		try {
 			CommonDocumentUtils.startHook(logger, "getIrrByApplicationId");
-			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			Long userId;
 			if (CommonDocumentUtils.isThisClientApplication(request) && !CommonUtils.isObjectNullOrEmpty(clientId)) {
 				userId = clientId;
 			} else {
@@ -1968,7 +1968,8 @@ public class LoanApplicationController {
 				loansResponse = new LoansResponse(reason, HttpStatus.UNAUTHORIZED.value());
 				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.UNAUTHORIZED);
 			} else {
-				if (CommonUtils.isObjectNullOrEmpty((tokenString = tokenService.checkTokenExpiration(tokenString)))) {
+				tokenString = tokenService.checkTokenExpiration(tokenString);
+				if (CommonUtils.isObjectNullOrEmpty(tokenString)) {
 					reason = TOKEN_IS_EXPIRED;
 					loansResponse = new LoansResponse(reason, HttpStatus.UNAUTHORIZED.value());
 					return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.UNAUTHORIZED);
@@ -2088,7 +2089,8 @@ public class LoanApplicationController {
 				loansResponse = new LoansResponse(reason, HttpStatus.UNAUTHORIZED.value());
 				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.UNAUTHORIZED);
 			} else {
-				if (CommonUtils.isObjectNullOrEmpty((tokenString = tokenService.checkTokenExpiration(tokenString)))) {
+				tokenString = tokenService.checkTokenExpiration(tokenString);
+				if (CommonUtils.isObjectNullOrEmpty(tokenString)) {
 					reason = TOKEN_IS_EXPIRED;
 					loansResponse = new LoansResponse(reason, HttpStatus.UNAUTHORIZED.value());
 					return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.UNAUTHORIZED);
@@ -2306,7 +2308,8 @@ public class LoanApplicationController {
 				loansResponse = new LoansResponse(reason, HttpStatus.UNAUTHORIZED.value());
 				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.UNAUTHORIZED);
 			} else {
-				if (CommonUtils.isObjectNullOrEmpty((tokenString = tokenService.checkTokenExpiration(tokenString)))) {
+				tokenString = tokenService.checkTokenExpiration(tokenString);
+				if (CommonUtils.isObjectNullOrEmpty(tokenString)) {
 					reason = TOKEN_IS_EXPIRED;
 					loansResponse = new LoansResponse(reason, HttpStatus.UNAUTHORIZED.value());
 					return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.UNAUTHORIZED);
@@ -2958,7 +2961,7 @@ public class LoanApplicationController {
 	public ResponseEntity<LoansResponse> ddrStatus(@PathVariable("applicationId") Long applicationId) {
 		try {
 			logger.info("ENTER IN GET DDR STATUS ID---------------->" + applicationId);
-			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully get data", HttpStatus.OK.value(), loanApplicationService.getDDRStatusId(applicationId)), HttpStatus.OK);
+			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SUCCESSFULLY_GET_DATA, HttpStatus.OK.value(), loanApplicationService.getDDRStatusId(applicationId)), HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while get ddr status==>",e);
 			return new ResponseEntity<LoansResponse>(
@@ -2990,7 +2993,7 @@ public class LoanApplicationController {
 	public ResponseEntity<LoansResponse> getLoanWCRenewalType(@PathVariable("applicationId") Long applicationId) {
 		try {
 			logger.info("ENTER IN getLoanWCRenewalType---------------->" + applicationId);
-			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully get data", HttpStatus.OK.value(), 
+			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SUCCESSFULLY_GET_DATA, HttpStatus.OK.value(),
 					loanApplicationService.getLoanWCRenewalType(applicationId)), HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getLoanWCRenewalType==>",e);
@@ -3055,7 +3058,7 @@ public class LoanApplicationController {
 	public ResponseEntity<LoansResponse> getCommonPropValue(@PathVariable("keyName") String keyName) {
 		try {
 			logger.info("ENTER IN getCommonPropValue---------------->" + keyName);
-			return new ResponseEntity<LoansResponse>(new LoansResponse("Successfully get data", HttpStatus.OK.value(), 
+			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SUCCESSFULLY_GET_DATA, HttpStatus.OK.value(),
 					loanApplicationService.getCommonPropertiesValue(keyName)), HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getCommonPropValue==>",e);

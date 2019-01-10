@@ -86,7 +86,7 @@ public class TermLoanController {
 		try {
 			try {
 				CommonDocumentUtils.startHook(logger, "getFinal");
-				Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+				Long userId;
 				if (CommonDocumentUtils.isThisClientApplication(request)) {
 					userId = clientId;
 				} else {
@@ -159,7 +159,7 @@ public class TermLoanController {
 			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
 		try {
 			CommonDocumentUtils.startHook(logger, CommonUtils.GET_PRIMARY);
-			Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+			Long userId;
 			if (CommonDocumentUtils.isThisClientApplication(request)) {
 				userId = clientId;
 			} else {

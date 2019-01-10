@@ -3,6 +3,7 @@ package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 import java.util.Date;
 import java.util.List;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +37,7 @@ public class PrimaryUnsecureLoanServiceImpl implements PrimaryUnsecureLoanServic
 	private FsNegativeFpListRepository fsNegativeFpListRepository; 
 
 	@Override
-	public boolean saveOrUpdate(PrimaryUnsecureLoanRequest unsecureLoanRequest, Long userId) throws Exception {
+	public boolean saveOrUpdate(PrimaryUnsecureLoanRequest unsecureLoanRequest, Long userId) throws LoansException {
 		try {
 			PrimaryUnsecuredLoanDetail unsecureLoanDetail = primaryUSLRepository
 					.getByApplicationAndUserId(unsecureLoanRequest.getId(),  (CommonUtils.isObjectNullOrEmpty(unsecureLoanRequest.getClientId()) ? userId : unsecureLoanRequest.getClientId()));
@@ -56,7 +57,7 @@ public class PrimaryUnsecureLoanServiceImpl implements PrimaryUnsecureLoanServic
 			return true;
 		} catch (Exception e) {
 			logger.error("Error while Primary Term Loan Details:-",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
@@ -78,7 +79,7 @@ public class PrimaryUnsecureLoanServiceImpl implements PrimaryUnsecureLoanServic
 	}
 	
 	@Override
-	public PrimaryUnsecureLoanRequest get(Long applicationId, Long userId) throws Exception {
+	public PrimaryUnsecureLoanRequest get(Long applicationId, Long userId) throws LoansException {
 		try {
 			PrimaryUnsecuredLoanDetail loanDetail = primaryUSLRepository.getByApplicationAndUserId(applicationId, userId);
 			if (loanDetail == null) {
@@ -98,7 +99,7 @@ public class PrimaryUnsecureLoanServiceImpl implements PrimaryUnsecureLoanServic
 			return unsecureLoanRequest;
 		} catch (Exception e) {
 			logger.error("Error while Primary Term Loan Details:-",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 
 	}

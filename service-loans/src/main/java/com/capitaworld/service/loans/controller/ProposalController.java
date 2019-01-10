@@ -138,6 +138,8 @@ public class ProposalController {
 			userType = Long.valueOf(httpServletRequest.getAttribute(CommonUtils.USER_TYPE).toString());
 		}
 		request.setUserId(userId);
+		request.setUserType(userType);
+
 		return new ResponseEntity<ProposalCountResponse>(proposalService.fundProviderProposalCount(request),HttpStatus.OK);
 	}
 	

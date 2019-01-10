@@ -2,6 +2,7 @@ package com.capitaworld.service.loans.service.fundseeker.corporate;
 
 import java.util.List;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.PromotorBackgroundDetailRequest;
 
@@ -11,8 +12,8 @@ import com.capitaworld.service.loans.model.PromotorBackgroundDetailRequest;
  */
 public interface PromotorBackgroundDetailsService {
 
-	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception;
+	public Boolean saveOrUpdate(FrameRequest frameRequest) throws LoansException;
 
-	List<PromotorBackgroundDetailRequest> getPromotorBackgroundDetailList(Long applicationId,Long userId) throws Exception;
+	List<PromotorBackgroundDetailRequest> getPromotorBackgroundDetailList(Long applicationId,Long userId) throws LoansException;
 
 }

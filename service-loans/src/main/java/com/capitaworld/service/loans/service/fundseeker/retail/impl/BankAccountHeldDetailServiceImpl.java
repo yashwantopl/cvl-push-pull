@@ -73,7 +73,7 @@ public class BankAccountHeldDetailServiceImpl implements BankAccountHeldDetailSe
 							.setGuarantorDetailId(guarantorDetailsRepository.findOne(frameRequest.getApplicationId()));
 					break;
 				default:
-					throw new Exception();
+					throw new LoansException();
 				}
 
 				bankAccountHeldDetail.setModifiedBy(frameRequest.getUserId());
@@ -94,7 +94,7 @@ public class BankAccountHeldDetailServiceImpl implements BankAccountHeldDetailSe
 	public List<BankAccountHeldDetailsRequest> getExistingLoanDetailList(Long id, int applicationType)
 			throws LoansException {
 		try {
-			List<BankAccountHeldDetail> existingLoanDetails = new ArrayList<BankAccountHeldDetail>();
+			List<BankAccountHeldDetail> existingLoanDetails;
 			switch (applicationType) {
 			case CommonUtils.ApplicantType.APPLICANT:
 				existingLoanDetails = bankAccountHeldDetailRepository.listBankAccountHeldFromAppId(id);

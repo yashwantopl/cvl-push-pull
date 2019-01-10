@@ -3,6 +3,7 @@ package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 import java.util.Date;
 import java.util.List;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -36,7 +37,7 @@ public class FinalTermLoanServiceImpl implements FinalTermLoanService {
 	private LoanApplicationRepository loanApplicationRepository;
 
 	@Override
-	public boolean saveOrUpdate(FinalTermLoanRequest termLoanRequest, Long userId) throws Exception {
+	public boolean saveOrUpdate(FinalTermLoanRequest termLoanRequest, Long userId) throws LoansException {
 		try {
 			Long finalUserId = (CommonUtils.isObjectNullOrEmpty(termLoanRequest.getClientId()) ? userId : termLoanRequest.getClientId());
 			FinalTermLoanDetail termLoanDetail = termLoanDetailRepository
@@ -66,12 +67,12 @@ public class FinalTermLoanServiceImpl implements FinalTermLoanService {
 			return true;
 		} catch (Exception e) {
 			logger.error("Error while Saving Final Term Loan Details:-",e);
-			throw new Exception("Something went Wrong !");
+			throw new LoansException("Something went Wrong !");
 		}
 	}
 
 	@Override
-	public FinalTermLoanRequest get(Long userId, Long applicationId) throws Exception {
+	public FinalTermLoanRequest get(Long userId, Long applicationId) throws LoansException {
 		try {
 			FinalTermLoanDetail loanDetail = termLoanDetailRepository.getByApplicationAndUserId(applicationId, userId);
 			if (loanDetail == null) {
@@ -84,7 +85,7 @@ public class FinalTermLoanServiceImpl implements FinalTermLoanService {
 			return termLoanRequest;
 		} catch (Exception e) {
 			logger.error("Error while getting Final Term Loan Details:-",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 

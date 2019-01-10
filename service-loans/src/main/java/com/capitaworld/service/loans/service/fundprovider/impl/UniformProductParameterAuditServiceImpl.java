@@ -3,8 +3,6 @@ package com.capitaworld.service.loans.service.fundprovider.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,7 +16,6 @@ import com.capitaworld.service.loans.utils.CommonUtils;
 
 @Service
 public class UniformProductParameterAuditServiceImpl implements UniformProductParameterAuditService {
-	private static final Logger logger = LoggerFactory.getLogger(UniformProductParameterAuditServiceImpl.class);
 
 	@Autowired
 	private UniformProductParameterAuditRepository uniformProductParameterAuditRepository; 
@@ -43,6 +40,7 @@ public class UniformProductParameterAuditServiceImpl implements UniformProductPa
 		for(UniformProductParamterAudit uniformProductParamter : uniformProductParamters){
 			paramterRequest = new UniformProductParamterRequest();
 			BeanUtils.copyProperties(uniformProductParamter, paramterRequest);
+			paramterRequest.setModifiedDate(uniformProductParamter.getFromDate());
 			paramterRequests.add(paramterRequest);
 		}
 		return paramterRequests;
