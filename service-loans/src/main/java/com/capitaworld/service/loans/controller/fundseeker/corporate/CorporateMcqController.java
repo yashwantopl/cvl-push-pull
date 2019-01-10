@@ -74,7 +74,7 @@ public class CorporateMcqController {
                                               HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId)
             throws LoansException {
         try {
-//        	System.out.println("id :"+corporateMcqRequest.getApplicationId() + " isMcqSkipped : "+corporateMcqRequest.getIsMcqSkipped());
+//        	logger.info("id :"+corporateMcqRequest.getApplicationId() + " isMcqSkipped : "+corporateMcqRequest.getIsMcqSkipped());
             CommonDocumentUtils.startHook(logger, "skipMcq");
             // request must not be null
 
@@ -114,7 +114,7 @@ public class CorporateMcqController {
         try {
             try {
                 CommonDocumentUtils.startHook(logger, "get");
-                Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+                Long userId;
                 if (CommonDocumentUtils.isThisClientApplication(request)) {
                     userId = clientId;
                 } else {

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.oneform.enums.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -312,7 +313,7 @@ public class CarLoanPrimaryViewServiceImpl implements CarLoanPrimaryViewService{
 
                 carLoanPrimaryViewResponse.setApplicant(profileViewPLResponse);
             } else {
-                throw new Exception("No Data found");
+                throw new LoansException("No Data found");
             }
         } catch (Exception e) {
             logger.error("Problem Occured while Fetching Retail Details : ",e);

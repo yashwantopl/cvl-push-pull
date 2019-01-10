@@ -80,6 +80,10 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 	private static final String CORPORATE_APPLICANT_DETAIL_IS_NULL_CREATED_NEW_OBJECT_MSG = "corporateApplicantDetail is null created new object";
 	private static final String ERROR_WHILE_GETTING_GST_RECEIPT_FROM_S3_MSG = "Error while Getting GST Receipt from S3 : {}";
 	private static final String NO_GST_RECEIPT_FOUND_FOR_APPLICATION_ID_MSG = "No GST Receipt Found for Application Id ==>{}";
+	private static final String SOMETHING_GOES_WRONG_WHILE_DELETING_GST_RECEIPT_RESPONSE_FOUND_NULL_MSG = "Something goes wrong while Deleting GST Receipt for ApplicationId as Response Found Null==>{}";
+	private static final String SUCCESSFULLY_DELETING_GST_RECEIPT_MSG = "Successfully Deleting GST Receipt For Application Id ==>{}";
+	private static final String SOMETHING_GOES_WRONG_WHILE_DELETING_GST_RECEIPT_FOR_APPLICATION_ID_MSG = "Something goes wrong while Deleting GST Receipt for ApplicationId===>{}";
+	private static final String ERROR_WHILE_DELETING_EXISTING_DOCUMENTS_OF_GST_AND_ITR_MSG = "Error while Deleting Existing Documents of GST and ITR : {}";
 	private static final String ABOUT_US = "aboutUs";
 	private static final String SAME_AS = "sameAs";
 	private static final String CREDIT_RATING_ID = "creditRatingId";
@@ -148,7 +152,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 	private DirectorPersonalDetailRepository directorPersonalDetailRepository;
 	
 	@Override
-	public boolean saveOrUpdate(FundSeekerInputRequestResponse fundSeekerInputRequest) throws Exception {
+	public boolean saveOrUpdate(FundSeekerInputRequestResponse fundSeekerInputRequest) throws LoansException {
 		try {
 			logger.info("getting corporateApplicantDetail from applicationId::"
 					+ fundSeekerInputRequest.getApplicationId());
@@ -217,7 +221,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			return true;
 		} catch (Exception e) {
 			logger.error("Throw Exception while save and update Fundseeker input request !!",e);
-			throw new Exception();
+			throw new LoansException(e);
 		}
 	}
 
@@ -533,7 +537,7 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 	 */
 	@Override
 	public LoansResponse invokeFraudAnalytics(FundSeekerInputRequestResponse fundSeekerInputRequestResponse)
-			throws Exception {
+			throws LoansException {
 
 		try {
 			logger.info("Start invokeFraudAnalytics()");
@@ -790,14 +794,14 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 		try{
 			DocumentResponse documentResponse = dMSClient.deleteProductDocumentFromApplicationId(MultipleJSONObjectHelper.getStringfromObject(documentRequest));
 			if (CibilUtils.isObjectListNull(documentResponse)) {
-				logger.warn("Something goes wrong while Deleting GST Receipt for ApplicationId as Response Found Null===>{}",applicationId);
+				logger.warn(SOMETHING_GOES_WRONG_WHILE_DELETING_GST_RECEIPT_RESPONSE_FOUND_NULL_MSG,applicationId);
 			} else if (documentResponse.getStatus() == HttpStatus.OK.value()) {
-				logger.info("Successfully Deleting GST Receipt For Application Id==>{}",applicationId);
+				logger.info(SUCCESSFULLY_DELETING_GST_RECEIPT_MSG,applicationId);
 			} else {
-				logger.warn("Something goes wrong while Deleting GST Receipt for ApplicationId===>{}",applicationId);
+				logger.warn(SOMETHING_GOES_WRONG_WHILE_DELETING_GST_RECEIPT_FOR_APPLICATION_ID_MSG,applicationId);
 			}
 		}catch(Exception e){
-			logger.error("Error while Deleting Existing Doccuments of GST and ITR : {}", e);
+			logger.error(ERROR_WHILE_DELETING_EXISTING_DOCUMENTS_OF_GST_AND_ITR_MSG, e);
 		}
 		
 		
@@ -984,28 +988,28 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 		try{
 			DocumentResponse documentResponse = dMSClient.deleteProductDocumentFromApplicationId(MultipleJSONObjectHelper.getStringfromObject(documentRequest));
 			if (CibilUtils.isObjectListNull(documentResponse)) {
-				logger.warn("Something goes wrong while Deleting GST Receipt for ApplicationId as Response Found Null===>{}",connectResponse.getApplicationId());
+				logger.warn(SOMETHING_GOES_WRONG_WHILE_DELETING_GST_RECEIPT_RESPONSE_FOUND_NULL_MSG,connectResponse.getApplicationId());
 			} else if (documentResponse.getStatus() == HttpStatus.OK.value()) {
-				logger.info("Successfully Deleting GST Receipt For Application Id==>{}",connectResponse.getApplicationId());
+				logger.info(SUCCESSFULLY_DELETING_GST_RECEIPT_MSG,connectResponse.getApplicationId());
 			} else {
-				logger.warn("Something goes wrong while Deleting GST Receipt for ApplicationId===>{}",connectResponse.getApplicationId());
+				logger.warn(SOMETHING_GOES_WRONG_WHILE_DELETING_GST_RECEIPT_FOR_APPLICATION_ID_MSG,connectResponse.getApplicationId());
 			}
 		}catch(Exception e){
-			logger.error("Error while Deleting Existing Doccuments of GST and ITR : {}", e);
+			logger.error(ERROR_WHILE_DELETING_EXISTING_DOCUMENTS_OF_GST_AND_ITR_MSG, e);
 		}
 		
 		try{
 			documentRequest.setProductDocumentMappingId(DocumentAlias.CORPORATE_ITR_XML);
 			DocumentResponse documentResponse = dMSClient.deleteProductDocumentFromApplicationId(MultipleJSONObjectHelper.getStringfromObject(documentRequest));
 			if (CibilUtils.isObjectListNull(documentResponse)) {
-				logger.warn("Something goes wrong while Deleting GST Receipt for ApplicationId as Response Found Null===>{}",connectResponse.getApplicationId());
+				logger.warn(SOMETHING_GOES_WRONG_WHILE_DELETING_GST_RECEIPT_RESPONSE_FOUND_NULL_MSG,connectResponse.getApplicationId());
 			} else if (documentResponse.getStatus() == HttpStatus.OK.value()) {
-				logger.info("Successfully Deleting GST Receipt For Application Id==>{}",connectResponse.getApplicationId());
+				logger.info(SUCCESSFULLY_DELETING_GST_RECEIPT_MSG,connectResponse.getApplicationId());
 			} else {
-				logger.warn("Something goes wrong while Deleting GST Receipt for ApplicationId===>{}",connectResponse.getApplicationId());
+				logger.warn(SOMETHING_GOES_WRONG_WHILE_DELETING_GST_RECEIPT_FOR_APPLICATION_ID_MSG,connectResponse.getApplicationId());
 			}
 		}catch(Exception e){
-			logger.error("Error while Deleting Existing Doccuments of GST and ITR : {}", e);
+			logger.error(ERROR_WHILE_DELETING_EXISTING_DOCUMENTS_OF_GST_AND_ITR_MSG, e);
 		}
 		return new LoansResponse("Successfully Reset the Form.", HttpStatus.OK.value(), getDataForOnePagerOneForm(connectResponse.getApplicationId()));
 	}

@@ -79,7 +79,7 @@ public class CorporatePrimaryController {
                                                     HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
         try {
             CommonDocumentUtils.startHook(logger, "getPrimary");
-            Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
+            Long userId;
             if (CommonDocumentUtils.isThisClientApplication(request)) {
                 userId = clientId;
             } else {

@@ -6,6 +6,7 @@ import com.capitaworld.service.dms.util.DocumentAlias;
 import com.capitaworld.service.loans.domain.fundseeker.LoanApplicationMaster;
 import com.capitaworld.service.loans.domain.fundseeker.retail.PrimaryPersonalLoanDetail;
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
+import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.AddressResponse;
 import com.capitaworld.service.loans.model.teaser.primaryview.PersonalLoanResponse;
 import com.capitaworld.service.loans.model.teaser.primaryview.RetailPrimaryViewResponse;
@@ -72,7 +73,7 @@ public class PersonalLoansViewServiceImpl implements PersonalLoansViewService {
 	private DocumentManagementService documentManagementService;
 	
 	@Override
-	public RetailPrimaryViewResponse getPersonalLoansPrimaryViewDetails(Long applicantId) throws Exception {
+	public RetailPrimaryViewResponse getPersonalLoansPrimaryViewDetails(Long applicantId) throws LoansException {
 		LoanApplicationMaster applicationMaster = loanApplicationRepository.findOne(applicantId);
 		RetailPrimaryViewResponse retailPrimaryViewResponse = new RetailPrimaryViewResponse();
 		PersonalLoanResponse personalLoanResponse = new PersonalLoanResponse();
@@ -318,7 +319,7 @@ public class PersonalLoansViewServiceImpl implements PersonalLoansViewService {
 			}
 		} catch (Exception e) {
 			logger.error("Problem Occured while Fetching Retail Details : ",e);
-			throw new Exception("Problem Occured while Fetching Retail Details");
+			throw new LoansException("Problem Occured while Fetching Retail Details");
 		}
 
 		//set up loan specific details

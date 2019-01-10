@@ -2,6 +2,7 @@ package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
 import java.util.Date;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +35,7 @@ public class PrimaryTermLoanServiceImpl implements PrimaryTermLoanService {
 	private FsNegativeFpListRepository fsNegativeFpListRepository; 
 
 	@Override
-	public boolean saveOrUpdate(PrimaryTermLoanRequest termLoanRequest, Long userId) throws Exception {
+	public boolean saveOrUpdate(PrimaryTermLoanRequest termLoanRequest, Long userId) throws LoansException {
 		try {
 			PrimaryTermLoanDetail termLoanDetail = primaryTLRepository
 					.getByApplicationAndUserId(termLoanRequest.getId(),  (CommonUtils.isObjectNullOrEmpty(termLoanRequest.getClientId()) ? userId : termLoanRequest.getClientId()));
@@ -54,7 +55,7 @@ public class PrimaryTermLoanServiceImpl implements PrimaryTermLoanService {
 			return true;
 		} catch (Exception e) {
 			logger.error("Error while Primary Term Loan Details:-",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
@@ -102,7 +103,7 @@ public class PrimaryTermLoanServiceImpl implements PrimaryTermLoanService {
 	}*/
 
 	@Override
-	public PrimaryTermLoanRequest get(Long id, Long userId) throws Exception {
+	public PrimaryTermLoanRequest get(Long id, Long userId) throws LoansException {
 		try {
 			PrimaryTermLoanDetail loanDetail = null;
 			if(userId != null) {
@@ -127,7 +128,7 @@ public class PrimaryTermLoanServiceImpl implements PrimaryTermLoanService {
 			return termLoanRequest ;
 		} catch (Exception e) {
 			logger.error("Error while Getting term Details Profile:-",e);
-			throw new Exception("Something went Wrong !");
+			throw new LoansException("Something went Wrong !");
 		}
 	}
 	

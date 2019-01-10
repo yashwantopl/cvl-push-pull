@@ -1027,7 +1027,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		try {
 			LoanApplicationMaster applicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId, userId);
 			if (applicationMaster == null) {
-				throw new Exception(
+				throw new LoansException(
 						"LoanapplicationMaster object Must not be null while locking the Profile And Primary Details==>"
 								+ applicationMaster);
 			}
@@ -1052,7 +1052,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			loanApplicationRequest.setIsMailSent(false);
 			LoanApplicationMaster applicationMaster = loanApplicationRepository.getByIdAndUserId(applicationId, userId);
 			if (applicationMaster == null) {
-				throw new Exception(
+				throw new LoansException(
 						"LoanapplicationMaster object Must not be null while locking the Profile And Primary Details==>"
 								+ applicationMaster);
 			}
@@ -1250,7 +1250,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		return (pm != null && !pm.isEmpty()) ? pm.get(0) : null;
 	}
 
-	private String getApplicantName(long applicationId) throws Exception {
+	private String getApplicantName(long applicationId) throws LoansException {
 		try {
 			String applicantName = getFsApplicantName(applicationId);
 			return applicantName;
@@ -3834,7 +3834,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				List<Long> fpUserIdList = productMasterRepository
 						.getUserIdListByProductId(applicationMaster.getProductId());
 				if (!CommonUtils.isListNullOrEmpty(fpUserIdList)) {
-					CommonResponse response = new CommonResponse();
 					// get fp name from user client
 
 					UserResponse userResponse = userClient.getFPNameListByUserId(fpUserIdList);
@@ -4209,7 +4208,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					return values;
 				} catch (Exception e) {
 					logger.error("Error while Saving Payment History to Patyment Module when Payment Mode is ONLINE : ",e);
-					throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+					throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 				}
 			} else if (CommonUtils.PaymentMode.ONLINE.equalsIgnoreCase(paymentRequest.getTypeOfPayment())
 					&& paymentRequest.getPurposeCode().equals(SIDBI_FEES)) {
@@ -4368,11 +4367,11 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				}
 			} else {
 				logger.info(CONNECTOR_RESPONSE_NULL_OR_EMPTY_MSG);
-				throw new Exception(SOMETHING_WENT_WRONG_WHILE_CALL_CONNECT_CLIENT_FOR_MSG + applicationId);
+				throw new LoansException(SOMETHING_WENT_WRONG_WHILE_CALL_CONNECT_CLIENT_FOR_MSG + applicationId);
 			}
 		} catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
-			throw new Exception(SOMETHING_WENT_WRONG_WHILE_CALL_CONNECT_CLIENT_FOR_MSG + applicationId);
+			throw new LoansException(SOMETHING_WENT_WRONG_WHILE_CALL_CONNECT_CLIENT_FOR_MSG + applicationId);
 		}
 
 		// TRUE MATCHES PROPOSAL
@@ -4382,15 +4381,15 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			if (!CommonUtils.isObjectNullOrEmpty(proposalMappingResponse)) {
 				logger.info(PROPOSAL_MAPPING_RESPONSE_MSG + proposalMappingResponse.toString());
 				if (proposalMappingResponse.getStatus() != HttpStatus.OK.value()) {
-					throw new Exception(proposalMappingResponse.getMessage());
+					throw new LoansException(proposalMappingResponse.getMessage());
 				}
 			} else {
 				logger.info(PROPOSAL_MAPPING_RESPONSE_NULL_OR_EMPTY_MSG);
-				throw new Exception(SOMETHING_WENT_WRONG_WHILE_CALL_PROPOSAL_CLIENT_FOR_MSG + applicationId);
+				throw new LoansException(SOMETHING_WENT_WRONG_WHILE_CALL_PROPOSAL_CLIENT_FOR_MSG + applicationId);
 			}
 		} catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
-			throw new Exception(SOMETHING_WENT_WRONG_WHILE_CALL_PROPOSAL_CLIENT_FOR_MSG + applicationId);
+			throw new LoansException(SOMETHING_WENT_WRONG_WHILE_CALL_PROPOSAL_CLIENT_FOR_MSG + applicationId);
 		}
 
 		// Sending In-Principle for WhiteLabel
@@ -4865,7 +4864,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		try {
 			LoanApplicationMaster applicationMaster = loanApplicationRepository.getById(applicationId);
 			if (applicationMaster == null) {
-				throw new Exception("LoanapplicationMaster object Must not be null while Updating DDR Status==>"
+				throw new LoansException("LoanapplicationMaster object Must not be null while Updating DDR Status==>"
 						+ applicationMaster);
 			}
 

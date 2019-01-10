@@ -3,6 +3,7 @@ package com.capitaworld.service.loans.service.fundseeker.retail.impl;
 import java.util.Date;
 import java.util.List;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -40,7 +41,7 @@ public class PrimaryHomeLoanServiceImpl implements PrimaryHomeLoanService {
 	private FsNegativeFpListRepository fsNegativeFpListRepository;
 	
 	@Override
-	public boolean saveOrUpdate(PrimaryHomeLoanDetailRequest homeLoanDetailRequest,Long userId) throws Exception {
+	public boolean saveOrUpdate(PrimaryHomeLoanDetailRequest homeLoanDetailRequest,Long userId) throws LoansException {
 		// ID must not be null
 		try{
 		Long finalUserId = (CommonUtils.isObjectNullOrEmpty(homeLoanDetailRequest.getClientId()) ? userId : homeLoanDetailRequest.getClientId());
@@ -64,7 +65,7 @@ public class PrimaryHomeLoanServiceImpl implements PrimaryHomeLoanService {
 		return true;
 		} catch (Exception e) {
 			logger.error("Error while saving Primary Working Details Profile:-",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
@@ -86,7 +87,7 @@ public class PrimaryHomeLoanServiceImpl implements PrimaryHomeLoanService {
 	}
 	
 	@Override
-	public PrimaryHomeLoanDetailRequest get(Long applicationId,Long userId) throws Exception {
+	public PrimaryHomeLoanDetailRequest get(Long applicationId,Long userId) throws LoansException {
 		try{
 		PrimaryHomeLoanDetail loanDetail = primaryHomeLoanDetailRepository.getByApplicationAndUserId(applicationId, userId);
 		if (loanDetail == null) {
@@ -102,7 +103,7 @@ public class PrimaryHomeLoanServiceImpl implements PrimaryHomeLoanService {
 		return primaryHomeLoanDetailRequest;
 		} catch (Exception e) {
 			logger.error("Error while getting Primary Home Loan Details Profile:-",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 }

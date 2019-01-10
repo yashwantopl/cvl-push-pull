@@ -92,7 +92,7 @@ public class CreditCardsDetailServiceImpl implements CreditCardsDetailService {
 	@Override
 	public List<CreditCardsDetailRequest> getCreditCardDetailList(Long id, int applicationType) throws LoansException {
 
-		List<CreditCardsDetail> creditCardsDetails = new ArrayList<CreditCardsDetail>();
+		List<CreditCardsDetail> creditCardsDetails;
 		switch (applicationType) {
 		case CommonUtils.ApplicantType.APPLICANT:
 			creditCardsDetails = creditCardsDetailRepository.listCreditCardsFromAppId(id);

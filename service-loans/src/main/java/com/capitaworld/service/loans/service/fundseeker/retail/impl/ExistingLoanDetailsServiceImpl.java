@@ -94,7 +94,7 @@ public class ExistingLoanDetailsServiceImpl implements ExistingLoanDetailsServic
 	@Override
 	public List<ExistingLoanDetailRequest> getExistingLoanDetailList(Long id, int applicationType) throws LoansException {
 
-		List<ExistingLoanDetail> existingLoanDetails = new ArrayList<ExistingLoanDetail>();
+		List<ExistingLoanDetail> existingLoanDetails;
 		switch (applicationType) {
 		case CommonUtils.ApplicantType.APPLICANT:
 			existingLoanDetails = existingLoanDetailsRepository.listExistingLoanFromAppId(id);

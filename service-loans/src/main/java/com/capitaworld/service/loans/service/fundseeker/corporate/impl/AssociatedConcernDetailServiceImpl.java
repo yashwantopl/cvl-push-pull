@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -35,7 +36,7 @@ public class AssociatedConcernDetailServiceImpl implements AssociatedConcernDeta
 	private AssociatedConcernDetailRepository associatedConcernDetailRepository;
 	
 	@Override
-	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception {
+	public Boolean saveOrUpdate(FrameRequest frameRequest) throws LoansException {
 		try {
 			CommonDocumentUtils.startHook(logger, "saveOrUpdate");
 			for (Map<String, Object> obj : frameRequest.getDataList()) {
@@ -61,7 +62,7 @@ public class AssociatedConcernDetailServiceImpl implements AssociatedConcernDeta
 
 		catch (Exception e) {
 			logger.error("Exception  in save Associated Concern :-",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 
 	}
@@ -86,7 +87,7 @@ public class AssociatedConcernDetailServiceImpl implements AssociatedConcernDeta
 
 
 	@Override
-	public List<AssociatedConcernDetailRequest> getAssociatedConcernsDetailList(Long id,Long userId) throws Exception {
+	public List<AssociatedConcernDetailRequest> getAssociatedConcernsDetailList(Long id,Long userId) throws LoansException {
 		try {
 			CommonDocumentUtils.startHook(logger, "getAssociatedConcernsDetailList");
 			List<AssociatedConcernDetail> associatedConcernDetail = associatedConcernDetailRepository.listAssociatedConcernFromAppId(id);
@@ -109,7 +110,7 @@ public class AssociatedConcernDetailServiceImpl implements AssociatedConcernDeta
 
 		catch (Exception e) {
 			logger.error("Exception  in get monthlyTurnoverDetail  :-",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 

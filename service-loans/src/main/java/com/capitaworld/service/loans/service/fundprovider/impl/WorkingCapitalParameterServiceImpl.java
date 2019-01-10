@@ -300,7 +300,6 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 		logger.info("start saveIndustry");
 		IndustrySectorDetail industrySectorDetail = null;
 		logger.info(""+workingCapitalParameterRequest.getIndustrylist());
-		List<DataRequest> dataRequests=workingCapitalParameterRequest.getIndustrylist();
 		for (DataRequest dataRequest : workingCapitalParameterRequest.getIndustrylist()) {
 			industrySectorDetail = new IndustrySectorDetail();
 			industrySectorDetail.setFpProductId(workingCapitalParameterRequest.getId());
