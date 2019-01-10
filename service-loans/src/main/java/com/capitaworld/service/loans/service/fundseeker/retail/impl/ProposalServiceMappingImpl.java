@@ -6,6 +6,7 @@ import java.text.DecimalFormat;
 import java.util.*;
 
 import com.capitaworld.connect.api.ConnectResponse;
+import com.capitaworld.service.loans.domain.fundprovider.ProposalDetails;
 import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.*;
 import com.capitaworld.service.matchengine.utils.MatchConstant;
@@ -1376,11 +1377,46 @@ public class ProposalServiceMappingImpl implements ProposalService {
 	@Override
 	public ProposalMappingResponse get(ProposalMappingRequest request) {
 		ProposalMappingResponse response = new ProposalMappingResponse();
+		ProposalMappingRequest proposalMappingRequest=null;
 		try {
 			response = proposalDetailsClient.getProposal(request);
+
+			proposalMappingRequest = (ProposalMappingRequest) MultipleJSONObjectHelper.getObjectFromMap(
+					(Map<String, Object>) response.getData(), ProposalMappingRequest.class);
+
+			ProposalDetails proposalDetails = proposalDetailRepository.getSanctionProposalByApplicationId(proposalMappingRequest.getApplicationId());
+
+			Boolean isButtonDisplay=true;
+			String messageOfButton=null;
+			if(!CommonUtils.isObjectNullOrEmpty(proposalDetails))
+			{
+				if(!proposalDetails.getUserOrgId().toString().equals(request.getUserOrgId().toString()))
+				{
+					if(ProposalStatus.APPROVED ==  proposalDetails.getProposalStatusId().getId())
+						messageOfButton="Proposal is Sanctioned";
+					else if(ProposalStatus.DISBURSED ==  proposalDetails.getProposalStatusId().getId())
+						messageOfButton="Proposal is Disbursed";
+					else if(ProposalStatus.PARTIALLY_DISBURSED ==  proposalDetails.getProposalStatusId().getId())
+						messageOfButton="Proposal is Partially Disbursed";
+					isButtonDisplay=false;
+
+					proposalMappingRequest.setMessageOfButton(messageOfButton);
+					proposalMappingRequest.setIsButtonDisplay(isButtonDisplay);
+				}
+				else
+				{
+					proposalMappingRequest.setIsButtonDisplay(isButtonDisplay);
+				}
+			}
+			else
+			{
+				proposalMappingRequest.setIsButtonDisplay(isButtonDisplay);
+			}
+			response.setData(proposalMappingRequest);
 		} catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
 		}
+
 		return response;
 	}
 
