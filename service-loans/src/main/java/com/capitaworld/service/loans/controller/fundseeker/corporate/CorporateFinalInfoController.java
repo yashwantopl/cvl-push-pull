@@ -85,7 +85,7 @@ public class CorporateFinalInfoController {
             }
             corporateFinalInfoRequest.setUserId(userId);
             // Checking Profile is Locked
-            Long finalUserId = (CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getClientId()) ? userId
+           /* Long finalUserId = (CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getClientId()) ? userId
                     : corporateFinalInfoRequest.getClientId());
             Boolean finalLocked = loanApplicationService.isFinalLocked(corporateFinalInfoRequest.getApplicationId(),
                     finalUserId);
@@ -93,7 +93,7 @@ public class CorporateFinalInfoController {
                 return new ResponseEntity<LoansResponse>(
                         new LoansResponse(CommonUtils.APPLICATION_LOCKED_MESSAGE, HttpStatus.BAD_REQUEST.value()),
                         HttpStatus.OK);
-            }
+            }*/
 
             corporateFinalInfoService.saveOrUpdate(corporateFinalInfoRequest, userId);
             CommonDocumentUtils.endHook(logger, "save");

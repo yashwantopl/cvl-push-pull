@@ -41,8 +41,6 @@ public interface LoanApplicationService {
 
 	public LoanApplicationRequest get(Long id, Long userId) throws LoansException;
 	
-	public Long getIrrByApplicationId(Long id) throws LoansException;
-
 	public LoanApplicationRequest inActive(Long id, Long userId) throws LoansException;
 	
 	public int inActiveApplication(Long id, Long userId);
@@ -213,6 +211,10 @@ public interface LoanApplicationService {
 	Boolean isMcqSkipped(Long applicationId) throws LoansException;
 	
 	public String getCommonPropertiesValue(String key);
+
+	Long getIrrByApplicationId(Long id) throws LoansException;
+
+	LoanApplicationRequest getAllFlag(Long id, Long userId) throws Exception;
 }
 
 
