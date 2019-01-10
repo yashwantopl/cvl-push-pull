@@ -3417,13 +3417,14 @@ public class LoanApplicationController {
 		}
 	}
 
-	@RequestMapping(value = "/getLoanApplicationById/{applicationId}", method = RequestMethod.GET)
-	public ResponseEntity<LoansResponse> getLoanApplicationById(@PathVariable("applicationId") Long applicationId, HttpServletRequest request) {
+	@RequestMapping(value = "/getLoanApplicationById/{proposalId}", method = RequestMethod.GET)
+	public ResponseEntity<LoansResponse> getApplicationProposalByProposalId(@PathVariable("proposalId") Long proposalId, HttpServletRequest request) {
 		try {
 			logger.info("Inside getLoanApplicationById start");
-			ApplicationProposalMapping applicationMaster = appPropMappService.getByApplicationId(applicationId);
+			ApplicationProposalMapping applicationMaster = appPropMappService.getApplicationProposalMappingByProposalId(proposalId);
 			if (applicationMaster == null) {
-				throw new NullPointerException("Invalid Loan Application ID==>" + applicationId);
+				logger.info("may be Loan Application is inActive");
+				throw new NullPointerException("Invalid Loan Application ID==>" + proposalId);
 			}
 			LoanApplicationRequest applicationRequest = new LoanApplicationRequest();
 			BeanUtils.copyProperties(applicationMaster, applicationRequest);

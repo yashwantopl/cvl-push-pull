@@ -3,6 +3,7 @@ package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.ApplicationProposalMappingRepository;
 import com.capitaworld.service.loans.service.fundseeker.corporate.ApplicationProposalMappingService;
+import com.capitaworld.service.matchengine.utils.CommonUtils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +26,7 @@ public class ApplicationProposalMappingServiceImpl implements ApplicationProposa
     }
 
 	@Override
-	public ApplicationProposalMapping getByApplicationId(Long applicationId) {
-		return repository.getByApplicationId(applicationId);
+	public ApplicationProposalMapping getApplicationProposalMappingByProposalId(Long proposalId) {
+		return repository.findByProposalIdAndIsActive(proposalId,true);
 	}
 }

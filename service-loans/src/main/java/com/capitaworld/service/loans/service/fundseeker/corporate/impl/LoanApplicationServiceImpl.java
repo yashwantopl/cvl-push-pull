@@ -3250,7 +3250,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Override
 	public String getFsApplicantName(Long applicationId) throws Exception {
-		ApplicationProposalMapping applicationMaster = appPropMappService.getByApplicationId(applicationId);
+		ApplicationProposalMapping applicationMaster = appPropMappService.getApplicationProposalMappingByProposalId(applicationId);
 		if (CommonUtils.isObjectNullOrEmpty(applicationMaster))
 			return null;
 
@@ -5465,7 +5465,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	@Override
 	public LoanApplicationRequest getFromClient(Long id) throws Exception {
 		try {
-			ApplicationProposalMapping applicationMaster = appPropMappService.getByApplicationId(id);
+			ApplicationProposalMapping applicationMaster = appPropMappService.getApplicationProposalMappingByProposalId(id);
 //			LoanApplicationMaster applicationMaster = loanApplicationRepository.findOne(id);
 			if (applicationMaster == null) {
 				throw new NullPointerException(INVALID_LOAN_APPLICATION_ID + id);
