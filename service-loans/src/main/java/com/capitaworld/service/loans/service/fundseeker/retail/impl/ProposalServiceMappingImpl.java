@@ -1547,7 +1547,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 						String industry = "";
 						if (loanResponseDatalist.size() > 0) {
 							for (int k = 0; k < loanResponseDatalist.size(); k++) {
-								MasterResponse masterResponse = new MasterResponse();
+								MasterResponse masterResponse;
 								masterResponse = MultipleJSONObjectHelper.getObjectFromMap(loanResponseDatalist.get(k),
 										MasterResponse.class);
 								industry += masterResponse.getValue() + " ,";
