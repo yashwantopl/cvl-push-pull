@@ -335,12 +335,11 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		
 		Long userId = loanApplicationRepository.getUserIdByApplicationId(applicationProposalMapping.getApplicationId());
 		logger.info("======================>"+userId);
-		
-		
-		/*  logger.info("GETTING DATA BASED ON APPLICATION ID AND PROPOSAL ID IN"
+
+		logger.info("GETTING DATA BASED ON APPLICATION ID AND PROPOSAL ID IN"
 				+ " APPROVE DATE ========>"+applicationProposalMapping.getApprovedDate()+"====CREATED DATE====> "+applicationProposalMapping.getCreatedBy()+" === tenure"+
-			applicationProposalMapping.getTenure()+" loan amount "+applicationProposalMapping.getLoanAmount()+"application code"+""+applicationProposalMapping.getProposalId());*/
-		//map.put("date",!CommonUtils.isObjectNullOrEmpty(applicationProposalMapping.getApprovedDate())? DATE_FORMAT.format(applicationProposalMapping.getApprovedDate()):"-");
+			applicationProposalMapping.getTenure()+" loan amount "+applicationProposalMapping.getLoanAmount()+"application code"+""+applicationProposalMapping.getProposalId());
+		    map.put("date",!CommonUtils.isObjectNullOrEmpty(applicationProposalMapping.getApprovedDate())? DATE_FORMAT.format(applicationProposalMapping.getApprovedDate()):"-");
 		
 				// ENDS HERE MULTIPLE BANK----->
 		
@@ -672,7 +671,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			Map<Integer, Object[]> financials = new TreeMap<Integer, Object[]>(Collections.reverseOrder());
 			for(Integer year : years) {
 				//Object[] data = calculateFinancials(userId, applicationId, null, denominationValue, year); // PREVIOUS
-				Object[] data = calculateFinancials(userId, applicationProposalMapping.getApplicationId(), null, denominationValue,proposalId, year);//NEW BASED ON PROPOSAL ID 
+				Object[] data = calculateFinancials(userId, applicationId, null, denominationValue,proposalId, year);//NEW BASED ON PROPOSAL ID 
 				financials.put(year, data);
 			}
 			calculateRatioAnalysis(financials, applicationProposalMapping.getApplicationId());
@@ -1015,7 +1014,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		
 		//ELIGIBILITY DATA (ASSESSMENT TO LIMITS)
 		try {
-			PrimaryCorporateRequest primaryCorporateRequest = primaryCorporateService.get(applicationProposalMapping.getApplicationId(), userId);
+			PrimaryCorporateRequest primaryCorporateRequest = primaryCorporateService.get(applicationId, userId);
 			int loanId = primaryCorporateRequest.getProductId();
 			switch (loanId) {
 				case 1:
@@ -1472,7 +1471,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		LiabilitiesDetailsString liabilitiesDetailsString = new LiabilitiesDetailsString();
 		AssetDetailsString assetDetailsString = new AssetDetailsString();
 		//CorporateFinalInfoRequest  corporateFinalInfoRequest = corporateFinalInfoService.get(userId ,applicationId);// PREVIOUS 
-		CorporateFinalInfoRequest  corporateFinalInfoRequest = corporateFinalInfoService.getByProposalId(null,proposalId);//NEW BASED ON PROPOSAL ID 
+		CorporateFinalInfoRequest  corporateFinalInfoRequest = corporateFinalInfoService.getByProposalId(userId,proposalId);//NEW BASED ON PROPOSAL ID 
 		logger.info("user id and application ID  fs corporate Applicatiion details======>"+corporateFinalInfoRequest.getSharePriceFace());
         //SET SHARE FACE VALUE
 		Double shareFaceVal=1.00;
