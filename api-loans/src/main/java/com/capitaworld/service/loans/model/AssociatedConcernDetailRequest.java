@@ -8,6 +8,7 @@ import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.Date;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 public class AssociatedConcernDetailRequest implements Serializable{
@@ -269,17 +270,22 @@ public class AssociatedConcernDetailRequest implements Serializable{
 		this.limitAvailed = limitAvailed;
 	}
 
-	public static void printFields(Object obj) throws Exception {
-        Field[] fields = AssociatedConcernDetailRequest.class.getDeclaredFields();
+	public static void printFields(Object obj) throws LoansException {
+		try {
+			Field[] fields = AssociatedConcernDetailRequest.class.getDeclaredFields();
 
-        for(Field field : fields) {
-            Object value = field.get(obj);
-            if(value instanceof String){
-             String a = value.toString().replaceAll("&", "&amp;");
-             value = a;
-             field.set(obj, value);
-            }
-        }
+			for(Field field : fields) {
+				Object value = field.get(obj);
+				if(value instanceof String){
+					String a = value.toString().replaceAll("&", "&amp;");
+					value = a;
+					field.set(obj, value);
+				}
+			}
+		}
+		catch (Exception e){
+			throw new LoansException(e);
+		}
     }
 	
 	

@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import org.apache.commons.lang.StringEscapeUtils;
 
 import com.capitaworld.service.loans.model.AssociatedConcernDetailRequest;
@@ -243,15 +244,21 @@ public class DDROneFormResponse implements Serializable {
 		this.ddrStatusId = ddrStatusId;
 	}
 
-	public static void printFields(Object obj) throws Exception {
-	         Field[] fields = DDROneFormResponse.class.getDeclaredFields();
-	         for(Field field : fields) {
-	             Object value = field.get(obj);
-	             if(value instanceof String){
-	              String a = StringEscapeUtils.escapeXml(value.toString());
-	              value = a;
-	              field.set(obj, value);
-	             }
-	         }
-	     }
+	public static void printFields(Object obj) throws LoansException {
+		try {
+			Field[] fields = DDROneFormResponse.class.getDeclaredFields();
+			for(Field field : fields) {
+				Object value = field.get(obj);
+				if(value instanceof String){
+					String a = StringEscapeUtils.escapeXml(value.toString());
+					value = a;
+					field.set(obj, value);
+				}
+			}
+		}
+		catch (Exception e){
+			throw new LoansException(e);
+		}
+
+	}
 }
