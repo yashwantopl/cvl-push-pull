@@ -6,6 +6,6 @@ public interface ApplicationProposalMappingService {
 
     Boolean saveOrUpdate();
     
-    ApplicationProposalMapping getByApplicationId(Long applicationId);
+    ApplicationProposalMapping getApplicationProposalMappingByProposalId(Long proposalId);
     
 }
