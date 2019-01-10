@@ -1968,7 +1968,8 @@ public class LoanApplicationController {
 				loansResponse = new LoansResponse(reason, HttpStatus.UNAUTHORIZED.value());
 				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.UNAUTHORIZED);
 			} else {
-				if (CommonUtils.isObjectNullOrEmpty((tokenString = tokenService.checkTokenExpiration(tokenString)))) {
+				tokenString = tokenService.checkTokenExpiration(tokenString);
+				if (CommonUtils.isObjectNullOrEmpty(tokenString)) {
 					reason = TOKEN_IS_EXPIRED;
 					loansResponse = new LoansResponse(reason, HttpStatus.UNAUTHORIZED.value());
 					return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.UNAUTHORIZED);
@@ -2088,7 +2089,8 @@ public class LoanApplicationController {
 				loansResponse = new LoansResponse(reason, HttpStatus.UNAUTHORIZED.value());
 				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.UNAUTHORIZED);
 			} else {
-				if (CommonUtils.isObjectNullOrEmpty((tokenString = tokenService.checkTokenExpiration(tokenString)))) {
+				tokenString = tokenService.checkTokenExpiration(tokenString);
+				if (CommonUtils.isObjectNullOrEmpty(tokenString)) {
 					reason = TOKEN_IS_EXPIRED;
 					loansResponse = new LoansResponse(reason, HttpStatus.UNAUTHORIZED.value());
 					return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.UNAUTHORIZED);
@@ -2306,7 +2308,8 @@ public class LoanApplicationController {
 				loansResponse = new LoansResponse(reason, HttpStatus.UNAUTHORIZED.value());
 				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.UNAUTHORIZED);
 			} else {
-				if (CommonUtils.isObjectNullOrEmpty((tokenString = tokenService.checkTokenExpiration(tokenString)))) {
+				tokenString = tokenService.checkTokenExpiration(tokenString);
+				if (CommonUtils.isObjectNullOrEmpty(tokenString)) {
 					reason = TOKEN_IS_EXPIRED;
 					loansResponse = new LoansResponse(reason, HttpStatus.UNAUTHORIZED.value());
 					return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.UNAUTHORIZED);

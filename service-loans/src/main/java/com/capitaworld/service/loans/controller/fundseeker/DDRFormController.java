@@ -404,7 +404,8 @@ public class DDRFormController {
 				 loansResponse = new LoansResponse(reason,  HttpStatus.UNAUTHORIZED .value());
 				return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.UNAUTHORIZED);
 			}else {
-				if(CommonUtils.isObjectNullOrEmpty((tokenString = tokenService.checkTokenExpiration(tokenString)))) {
+				tokenString = tokenService.checkTokenExpiration(tokenString);
+				if(CommonUtils.isObjectNullOrEmpty(tokenString)) {
 					reason = "Token is Expired ";
 					loansResponse = new LoansResponse(reason,  HttpStatus.UNAUTHORIZED .value());
 					return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.UNAUTHORIZED);

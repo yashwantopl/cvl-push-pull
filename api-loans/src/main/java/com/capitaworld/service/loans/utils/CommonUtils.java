@@ -1417,6 +1417,7 @@ public enum APIFlags {
 	public static Object printFields(Object obj, Map<String, Object>data) throws Exception {
 		if(obj != null) {
 			if(obj.getClass().isArray()) {
+				// Do nothing because of X and Y.
 		}
 		}else {
 			return obj;
@@ -1443,6 +1444,7 @@ public enum APIFlags {
 				Field[] fields = obj.getClass().getDeclaredFields();
 				for (Field field : fields) {
 					if((field.getModifiers()& Modifier.STATIC) == Modifier.STATIC){
+						// Do nothing because of X and Y.
 					}else {
 						field.setAccessible(true);
 						Object value = field.get(obj);
