@@ -3,6 +3,7 @@ package com.capitaworld.service.loans.controller;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.PathParam;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -353,11 +354,12 @@ public class ProposalController {
 	public ResponseEntity<LoansResponse> checkFpMakerAccess(@RequestBody UsersRequest userRequest, HttpServletRequest httpServletRequest) {
 
 		Long userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
+		Long userOrgId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ORG_ID);
 		userRequest.setId(userId);
 		userRequest.setApplicationId(Long.parseLong(CommonUtils.decode(userRequest.getApplicationIdString())));
 
 
-		LoansResponse loansResponse=proposalService.checkMinMaxAmount(userRequest);
+		LoansResponse loansResponse=proposalService.checkMinMaxAmount(userRequest,userOrgId);
 		return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 	}
 	

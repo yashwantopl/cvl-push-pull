@@ -48,7 +48,7 @@ public interface ProposalService {
 
 	public ProposalMappingResponse saveDisbursementDetails(DisbursementDetailsModel request, Long userId);
 
-	public LoansResponse checkMinMaxAmount(UsersRequest userRequest);
+	public LoansResponse checkMinMaxAmount(UsersRequest userRequest,Long userOrgId);
 	
 	public List<ProposalDetailsAdminRequest> getProposalsByOrgId(Long userOrgId, ProposalDetailsAdminRequest request, Long userId);
 	

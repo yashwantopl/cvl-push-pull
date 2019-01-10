@@ -2266,7 +2266,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 	}
 
 	@Override
-	public LoansResponse checkMinMaxAmount(UsersRequest userRequest) {
+	public LoansResponse checkMinMaxAmount(UsersRequest userRequest,Long userOrgId) {
 		LoansResponse loansResponse = new LoansResponse();
 
 		try {
@@ -2275,17 +2275,17 @@ public class ProposalServiceMappingImpl implements ProposalService {
 			// "+userRequest.getLoanAmount());
 			loansResponse.setFlag(true);
 
-			LoanApplicationMaster loanApplicationMaster = loanApplicationRepository
-					.findOne(userRequest.getApplicationId());
+			Long applicationProposalId=null;
+			ApplicationProposalMapping applicationProposalMapping=applicationProposalMappingRepository.getByApplicationIdAndOrgId(userRequest.getApplicationId(),userOrgId);
 
-			if (loanApplicationMaster != null && userRequest != null) {
+			if (applicationProposalMapping != null && userRequest != null) {
 				// Check If Requested Application is assigned to Currunt Fp
 				// Cheker or not
 				UserResponse userResponse = null;
-				userRequest.setProductIdString(CommonUtility.encode("" + loanApplicationMaster.getProductId()));
-				if (loanApplicationMaster.getNpUserId() == null) {
+				userRequest.setProductIdString(CommonUtility.encode("" + applicationProposalMapping.getProductId()));
+				if (applicationProposalMapping.getNpUserId() == null) {
 					userResponse = usersClient.getMinMaxAmount(userRequest);
-				} else if ((loanApplicationMaster.getNpUserId()).equals(userRequest.getId())) {
+				} else if ((applicationProposalMapping.getNpUserId()).equals(userRequest.getId())) {
 					userResponse = usersClient.getMinMaxAmount(userRequest);
 				}
 
