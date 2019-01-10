@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.repository.fundprovider;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -100,4 +101,9 @@ public interface ProductMasterRepository extends JpaRepository<ProductMaster, Lo
 	@Query("select distinct(pm.productId) from ProductMaster pm where pm.isActive = true and pm.userOrgId =:orgId")
 	public List<Integer> getProductsByOrgId(@Param("orgId")Long orgId);
 	
+	@Query(value="SELECT IF (pm.modified_date IS NULL,pm.created_date,pm.modified_date) FROM loan_application.fp_product_master pm WHERE pm.fp_product_id =:fpProductId and pm.is_active = true",nativeQuery = true)
+	public Date getUpdatedDate(@Param("fpProductId")Long fpProductId);
+
+	@Query("from ProductMaster pm where pm.id=:id")
+	public ProductMaster getById(@Param("id") Long id);
 }
