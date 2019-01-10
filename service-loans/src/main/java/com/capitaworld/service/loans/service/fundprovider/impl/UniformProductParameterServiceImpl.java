@@ -204,7 +204,7 @@ public class UniformProductParameterServiceImpl implements UniformProductParamet
 				if(newObj != null){
 					try{
 						if(oldObj != null){
-							UniformProductParamterAudit uniformProductParamterAudit = uniformProductParameterAuditRepository.findFirstByFpProductIdOrderByDesc(paramterRequest.getId());
+							UniformProductParamterAudit uniformProductParamterAudit = uniformProductParameterAuditRepository.findFirstByFpProductIdOrderByIdDesc(paramterRequest.getId());
 							if(!CommonUtils.isObjectNullOrEmpty(uniformProductParamterAudit)){
 								uniformProductParamterAudit.setFromDate(CommonUtils.isObjectNullOrEmpty(oldObj.getModifiedDate()) ? oldObj.getCreatedDate() : oldObj.getModifiedDate());
 								uniformProductParamterAudit.setIsActive(oldObj.getIsActive());
