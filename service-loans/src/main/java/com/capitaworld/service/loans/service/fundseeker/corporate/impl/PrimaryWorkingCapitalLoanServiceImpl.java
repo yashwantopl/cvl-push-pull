@@ -3,6 +3,7 @@ package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 import java.util.Date;
 import java.util.List;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +37,7 @@ public class PrimaryWorkingCapitalLoanServiceImpl implements PrimaryWorkingCapit
 	private FsNegativeFpListRepository fsNegativeFpListRepository; 
 
 	@Override
-	public boolean saveOrUpdate(PrimaryWorkingCapitalLoanRequest capitalLoanRequest, Long userId) throws Exception {
+	public boolean saveOrUpdate(PrimaryWorkingCapitalLoanRequest capitalLoanRequest, Long userId) throws LoansException {
 		try {
 			// ID must not be null
 			PrimaryWorkingCapitalLoanDetail capitalLoanDetail = primaryWCRepository
@@ -57,7 +58,7 @@ public class PrimaryWorkingCapitalLoanServiceImpl implements PrimaryWorkingCapit
 			return true;
 		} catch (Exception e) {
 			logger.error("Error while Primary Working Details Profile :- ",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 
@@ -80,7 +81,7 @@ public class PrimaryWorkingCapitalLoanServiceImpl implements PrimaryWorkingCapit
 	}
 
 	@Override
-	public PrimaryWorkingCapitalLoanRequest get(Long id, Long userId) throws Exception {
+	public PrimaryWorkingCapitalLoanRequest get(Long id, Long userId) throws LoansException {
 		try {
 			PrimaryWorkingCapitalLoanDetail loanDetail = null;
 			if(userId != null) {
@@ -105,7 +106,7 @@ public class PrimaryWorkingCapitalLoanServiceImpl implements PrimaryWorkingCapit
 			return capitalLoanRequest;
 		} catch (Exception e) {
 			logger.error("Error while Getting Working Details Profile :- ",e);
-			throw new Exception("Something went Wrong !");
+			throw new LoansException("Something went Wrong !");
 		}
 	}
 }

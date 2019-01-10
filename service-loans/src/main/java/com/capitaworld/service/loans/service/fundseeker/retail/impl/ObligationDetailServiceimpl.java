@@ -1,6 +1,7 @@
 package com.capitaworld.service.loans.service.fundseeker.retail.impl;
 
 import com.capitaworld.service.loans.domain.fundseeker.retail.ObligationDetail;
+import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.FrameRequest;
 import com.capitaworld.service.loans.model.retail.ObligationDetailRequest;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
@@ -36,7 +37,7 @@ public class ObligationDetailServiceimpl implements ObligationDetailService {
     @Autowired
     private LoanApplicationRepository loanApplicationRepository;
     @Override
-    public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception {
+    public Boolean saveOrUpdate(FrameRequest frameRequest) throws LoansException {
         try {
             for (Map<String, Object> obj : frameRequest.getDataList()) {
                 ObligationDetailRequest obligationDetailRequest = (ObligationDetailRequest) MultipleJSONObjectHelper
@@ -53,7 +54,7 @@ public class ObligationDetailServiceimpl implements ObligationDetailService {
                         break;
 
                     default :
-                        throw new Exception();
+                        throw new LoansException();
                 }
 
                 obligationDetail.setModifiedBy(frameRequest.getUserId());
@@ -65,20 +66,20 @@ public class ObligationDetailServiceimpl implements ObligationDetailService {
 
         catch (Exception e) {
             logger.error("Exception  in save obligationDetail  :-",e);
-            throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+            throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
         }
     }
 
     @Override
-    public List<ObligationDetailRequest> getObligationDetailList(Long id, int applicationType) throws Exception {
-        List<ObligationDetail> otherCurrentAssetDetails = new ArrayList<ObligationDetail>() ;
+    public List<ObligationDetailRequest> getObligationDetailList(Long id, int applicationType) throws LoansException {
+        List<ObligationDetail> otherCurrentAssetDetails;
         switch (applicationType) {
             case CommonUtils.ApplicantType.APPLICANT:
                 otherCurrentAssetDetails = obligationDetailRepository.listObligationDetailFromAppId(id);
                 break;
 
             default:
-                throw new Exception();
+                throw new LoansException();
         }
 
         List<ObligationDetailRequest> obligationDetailRequests = new ArrayList<ObligationDetailRequest>();

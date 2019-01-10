@@ -98,7 +98,6 @@ public class MsmeValueMappingServiceImpl implements MsmeValueMappingService {
 
     @Override
     public List<Integer> getDataListFromFpProductId(int dataRequestType, Long fpProductId, Long userId) {
-        List<MsmeValueMappingRequest> requestList = new ArrayList<>();
         List<Integer> msmeFundingIds = new ArrayList<Integer>();
         if (dataRequestType == 1) {//pending
             List<MsmeValueMappingTemp> tempList = tempRepository.findByFpProductIdAndIsActive(fpProductId, true);

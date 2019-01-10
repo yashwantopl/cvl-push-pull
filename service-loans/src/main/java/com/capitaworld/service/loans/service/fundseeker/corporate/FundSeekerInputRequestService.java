@@ -2,6 +2,7 @@ package com.capitaworld.service.loans.service.fundseeker.corporate;
 
 import java.util.List;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -12,7 +13,7 @@ import com.capitaworld.service.loans.model.corporate.FundSeekerInputRequestRespo
 
 public interface FundSeekerInputRequestService {
 
-    public boolean saveOrUpdate(FundSeekerInputRequestResponse fundSeekerInputRequest) throws Exception;
+    public boolean saveOrUpdate(FundSeekerInputRequestResponse fundSeekerInputRequest) throws LoansException;
 
     public ResponseEntity<LoansResponse> saveOrUpdateDirectorDetail(FundSeekerInputRequestResponse fundSeekerInputRequest);
 
@@ -34,7 +35,7 @@ public interface FundSeekerInputRequestService {
 	 * @param fundSeekerInputRequestResponse
 	 * @throws Exception 
 	 */
-	public LoansResponse invokeFraudAnalytics(FundSeekerInputRequestResponse fundSeekerInputRequestResponse) throws Exception;
+	public LoansResponse invokeFraudAnalytics(FundSeekerInputRequestResponse fundSeekerInputRequestResponse) throws LoansException;
 	
 	/**
 	 * Verify GST whether the GSTIN is Registered or Not.

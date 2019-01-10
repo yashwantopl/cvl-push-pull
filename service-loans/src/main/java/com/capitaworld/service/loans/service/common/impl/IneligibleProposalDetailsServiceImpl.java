@@ -12,7 +12,6 @@ import com.capitaworld.service.loans.service.fundseeker.corporate.InEligibleProp
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -259,7 +258,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 		boolean isSent = false;
 		if (applicationId != null && branchId != null && userOrgId != null) {
 			try {
-				Map<String, Object> notificationParams = new HashMap<>();
+				Map<String, Object> notificationParams;
 				// Sending mail to FS who become Ineligible
 				// 1 Get Details of FS_NAME,Bank name, Branch name and Address based on application Id
 				LoanApplicationRequest applicationRequest = null;
@@ -659,7 +658,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 	}
 
 	private void createNotificationForEmail(String toNo, String userId, Map<String, Object> mailParameters,
-			Long templateId, String emailSubject,Long applicationId,Boolean isFundSeeker,String bcc[]) throws NotificationException {
+			Long templateId, String emailSubject,Long applicationId,Boolean isFundSeeker,String[] bcc) throws NotificationException {
 		logger.info("Inside send notification===>{}" + toNo);
 		NotificationRequest notificationRequest = new NotificationRequest();
 		notificationRequest.setClientRefId(userId);
@@ -670,7 +669,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 			notificationRequest.setIsDynamic(false);
 		}
 		
-		String to[] = { toNo };
+		String[] to = { toNo };
 		Notification notification = new Notification();
 		notification.setContentType(ContentType.TEMPLATE);
 		notification.setTemplateId(templateId);
@@ -727,7 +726,7 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 	public List<ProposalDetailsAdminRequest> getOfflineProposals(Long userOrgId, Long userId,
 			ProposalDetailsAdminRequest request) {
 
-		List<Object[]> result = new ArrayList<Object[]>();
+		List<Object[]> result;
 
 		result = ineligibleProposalDetailsRepository.getOfflineProposalDetailsByOrgId(userOrgId, request.getFromDate(),
 				request.getToDate());

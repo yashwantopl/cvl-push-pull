@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -29,7 +30,7 @@ public class FinanceMeansDetailServiceImpl implements FinanceMeansDetailsService
 	private FinanceMeansDetailRepository financeMeansDetailRepository;
 
 	@Override
-	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception {
+	public Boolean saveOrUpdate(FrameRequest frameRequest) throws LoansException {
 
 		try {
 			for (Map<String, Object> obj : frameRequest.getDataList()) {
@@ -55,13 +56,13 @@ public class FinanceMeansDetailServiceImpl implements FinanceMeansDetailsService
 
 		catch (Exception e) {
 			logger.error("Exception in save totalCostOfProject :-",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 		
 	}
 
 	@Override
-	public List<FinanceMeansDetailRequest> getMeansOfFinanceList(Long applicationId, Long userId) throws Exception {
+	public List<FinanceMeansDetailRequest> getMeansOfFinanceList(Long applicationId, Long userId) throws LoansException {
 		try {
 			List<FinanceMeansDetail> financeMeansDetails = financeMeansDetailRepository
 					.listFinanceMeansFromAppId(applicationId, userId);
@@ -76,7 +77,7 @@ public class FinanceMeansDetailServiceImpl implements FinanceMeansDetailsService
 			return financeMeansRequests;
 		} catch (Exception e) {
 			logger.error("Exception getting financeMeansDetail  :-",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 	}
 

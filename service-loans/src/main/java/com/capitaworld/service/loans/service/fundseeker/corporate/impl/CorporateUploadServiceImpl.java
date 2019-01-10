@@ -135,7 +135,7 @@ public class CorporateUploadServiceImpl implements CorporateUploadService {
 				Long resp = saveDocumentFLag( request);
 				if(resp == 0L){
 					logger.error(ERROR_WHILE_SAVING_UPLOAD_FLAG_MSG);
-					throw new Exception(ERROR_WHILE_SAVING_UPLOAD_FLAG_MSG);
+					throw new LoansException(ERROR_WHILE_SAVING_UPLOAD_FLAG_MSG);
 				}
 				
 				}
@@ -172,9 +172,9 @@ public class CorporateUploadServiceImpl implements CorporateUploadService {
 				List<Long> proIdList = new ArrayList<>();
 				List<Long> co_app_proIdList = new ArrayList<>();
 				List<Long> gua_proIdList = new ArrayList<>();
-				Long applicantArray[] = { 55L, 56L, 61L, 63L, 64L, 65L, 243L, 248L };
-				Long co_appArray[] = { 57L, 58L, 69L, 71L, 72L, 73L, 254L, 259L };
-				Long guarantorArray[] = { 59L, 60L, 77L, 79L, 80L, 81L, 264L, 269L };
+				Long[] applicantArray = { 55L, 56L, 61L, 63L, 64L, 65L, 243L, 248L };
+				Long[] co_appArray = { 57L, 58L, 69L, 71L, 72L, 73L, 254L, 259L };
+				Long[] guarantorArray = { 59L, 60L, 77L, 79L, 80L, 81L, 264L, 269L };
 				proIdList.addAll((List<Long>) Arrays.asList(applicantArray));
 				co_app_proIdList.addAll((List<Long>) Arrays.asList(co_appArray));
 				gua_proIdList.addAll((List<Long>) Arrays.asList(guarantorArray));

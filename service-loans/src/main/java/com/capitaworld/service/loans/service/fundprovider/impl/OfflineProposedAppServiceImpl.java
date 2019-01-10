@@ -23,6 +23,9 @@ import com.capitaworld.service.users.model.UsersRequest;
 public class OfflineProposedAppServiceImpl implements OfflineProcessedAppService{
 	
 	private static final Logger logger = LoggerFactory.getLogger(OfflineProposedAppServiceImpl.class);
+
+	private static final String MARKET_PLACE = "Market Place";
+	private static final String BANK_SPECIFIC  = "Bank Specific";
 	
 	@Autowired
 	private OfflineProcessedAppRepository offlineProcessedAppRepository;
@@ -56,9 +59,9 @@ public class OfflineProposedAppServiceImpl implements OfflineProcessedAppService
 			request.setCampaignCode(CommonUtils.convertString(obj[9]));
 			Integer campId = CommonUtils.convertInteger(obj[10]);
 			if(campId == 0) {
-				request.setIsCampaignUser("Market Place");	
+				request.setIsCampaignUser(MARKET_PLACE);
 			} else {
-				request.setIsCampaignUser("Bank Specific");
+				request.setIsCampaignUser(BANK_SPECIFIC);
 			}
 			request.setBranchId(CommonUtils.convertLong(obj[11]));
 			applicationRequests.add(request);
@@ -94,9 +97,9 @@ public class OfflineProposedAppServiceImpl implements OfflineProcessedAppService
 			request.setCampaignCode(CommonUtils.convertString(obj[11]));
 			Integer campId = CommonUtils.convertInteger(obj[12]);
 			if(campId == 0) {
-				request.setIsCampaignUser("Market Place");	
+				request.setIsCampaignUser(MARKET_PLACE);
 			} else {
-				request.setIsCampaignUser("Bank Specific");
+				request.setIsCampaignUser(BANK_SPECIFIC);
 			}
 			request.setBranchId(CommonUtils.convertLong(obj[13]));
 			applicationRequests.add(request);
@@ -127,9 +130,9 @@ public class OfflineProposedAppServiceImpl implements OfflineProcessedAppService
 			request.setCampaignCode(CommonUtils.convertString(obj[10]));
 			Integer campId = CommonUtils.convertInteger(obj[11]);
 			if(campId == 0) {
-				request.setIsCampaignUser("Market Place");	
+				request.setIsCampaignUser(MARKET_PLACE);
 			} else {
-				request.setIsCampaignUser("Bank Specific");
+				request.setIsCampaignUser(BANK_SPECIFIC);
 			}
 			request.setBranchId(CommonUtils.convertLong(obj[12]));
 			request.setStatus(CommonUtils.convertInteger(obj[13]));

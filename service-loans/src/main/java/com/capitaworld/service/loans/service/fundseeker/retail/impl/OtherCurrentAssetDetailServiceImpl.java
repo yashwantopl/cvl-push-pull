@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +49,7 @@ public class OtherCurrentAssetDetailServiceImpl implements OtherCurrentAssetDeta
 	private GuarantorDetailsRepository guarantorDetailsRepository;
 
 	@Override
-	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception {
+	public Boolean saveOrUpdate(FrameRequest frameRequest) throws LoansException {
 		try {
 			for (Map<String, Object> obj : frameRequest.getDataList()) {
 				OtherCurrentAssetDetailRequest otherCurrentAssetDetailRequest = (OtherCurrentAssetDetailRequest) MultipleJSONObjectHelper
@@ -82,15 +83,15 @@ public class OtherCurrentAssetDetailServiceImpl implements OtherCurrentAssetDeta
 
 		catch (Exception e) {
 			logger.error("Exception  in save otherCurrentAssetDetail  :-",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 
 	}
 
 	@Override
-	public List<OtherCurrentAssetDetailRequest> getOtherCurrentAssetDetailList(Long id, int applicationType) throws Exception {
+	public List<OtherCurrentAssetDetailRequest> getOtherCurrentAssetDetailList(Long id, int applicationType) throws LoansException {
 
-		List<OtherCurrentAssetDetail> otherCurrentAssetDetails = new ArrayList<OtherCurrentAssetDetail>() ;
+		List<OtherCurrentAssetDetail> otherCurrentAssetDetails;
 		switch (applicationType) {
 		case CommonUtils.ApplicantType.APPLICANT:
 			otherCurrentAssetDetails = otherCurrentAssetDetailRepository.listOtherCurrentAssetFromAppId(id);
@@ -102,7 +103,7 @@ public class OtherCurrentAssetDetailServiceImpl implements OtherCurrentAssetDeta
 			otherCurrentAssetDetails = otherCurrentAssetDetailRepository.listOtherCurrentAssetFromGarrId(id);
 			break;
 		default:
-			throw new Exception();
+			throw new LoansException();
 		}
 		
 		List<OtherCurrentAssetDetailRequest> otherCurrentAssetRequests = new ArrayList<OtherCurrentAssetDetailRequest>();

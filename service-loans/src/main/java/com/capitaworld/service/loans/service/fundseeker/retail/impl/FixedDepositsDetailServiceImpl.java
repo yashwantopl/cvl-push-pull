@@ -73,7 +73,7 @@ public class FixedDepositsDetailServiceImpl implements FixedDepositsDetailServic
 							.setGuarantorDetailId(guarantorDetailsRepository.findOne(frameRequest.getApplicationId()));
 					break;
 				default:
-					throw new Exception();
+					throw new LoansException();
 				}
 
 				fixedDepositsDetail.setModifiedBy(frameRequest.getUserId());
@@ -105,7 +105,7 @@ public class FixedDepositsDetailServiceImpl implements FixedDepositsDetailServic
 				fixedDepositsDetails = fixedDepositsDetailRepository.listFixedDepositsFromGarrId(id);
 				break;
 			default:
-				throw new Exception();
+				throw new LoansException();
 			}
 
 			List<FixedDepositsDetailsRequest> fixedDepositsDetailRequests = new ArrayList<FixedDepositsDetailsRequest>(fixedDepositsDetails.size());

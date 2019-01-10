@@ -48,7 +48,7 @@ public class CreditRatingOrganizationDetailsServiceImpl implements CreditRatingO
 			for (Map<String, Object> obj : frameRequest.getDataList()) {
 				CreditRatingOrganizationDetailRequest creditRatingOrganizationsDetailRequest = (CreditRatingOrganizationDetailRequest) MultipleJSONObjectHelper
 						.getObjectFromMap(obj, CreditRatingOrganizationDetailRequest.class);
-				CreditRatingOrganizationDetail creditRatingOrganizationDetail = new CreditRatingOrganizationDetail();
+				CreditRatingOrganizationDetail creditRatingOrganizationDetail;
 				if (creditRatingOrganizationsDetailRequest.getId() != null) {
 					creditRatingOrganizationDetail = creditRatingOrganizationDetailsRepository
 							.findOne(creditRatingOrganizationsDetailRequest.getId());

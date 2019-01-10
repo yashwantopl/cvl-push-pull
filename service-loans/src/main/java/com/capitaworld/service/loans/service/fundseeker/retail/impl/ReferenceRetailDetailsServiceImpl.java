@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +49,7 @@ public class ReferenceRetailDetailsServiceImpl implements ReferenceRetailDetails
 	private GuarantorDetailsRepository guarantorDetailsRepository;
 
 	@Override
-	public Boolean saveOrUpdate(FrameRequest frameRequest) throws Exception {
+	public Boolean saveOrUpdate(FrameRequest frameRequest) throws LoansException {
 		try {
 			for (Map<String, Object> obj : frameRequest.getDataList()) {
 				ReferenceRetailDetailsRequest referencesRetailDetailRequest = (ReferenceRetailDetailsRequest) MultipleJSONObjectHelper
@@ -82,15 +83,15 @@ public class ReferenceRetailDetailsServiceImpl implements ReferenceRetailDetails
 
 		catch (Exception e) {
 			logger.error("Exception  in save referencesRetailDetail  :-",e);
-			throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
 
 	}
 
 	@Override
-	public List<ReferenceRetailDetailsRequest> getReferenceRetailDetailList(Long id, int applicationType) throws Exception {
+	public List<ReferenceRetailDetailsRequest> getReferenceRetailDetailList(Long id, int applicationType) throws LoansException {
 
-		List<ReferencesRetailDetail> referencesRetailDetails = new ArrayList<ReferencesRetailDetail>() ;
+		List<ReferencesRetailDetail> referencesRetailDetails;
 		switch (applicationType) {
 		case CommonUtils.ApplicantType.APPLICANT:
 			referencesRetailDetails = referenceRetailDetailsRepository.listReferencesRetailFromAppId(id);
@@ -102,7 +103,7 @@ public class ReferenceRetailDetailsServiceImpl implements ReferenceRetailDetails
 			referencesRetailDetails = referenceRetailDetailsRepository.listReferencesRetailFromGarrId(id);
 			break;
 		default:
-			throw new Exception();
+			throw new LoansException();
 		}
 		
 		List<ReferenceRetailDetailsRequest> referencesRetailRequests = new ArrayList<ReferenceRetailDetailsRequest>();

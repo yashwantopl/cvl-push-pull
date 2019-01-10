@@ -359,7 +359,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             return true;
         } catch (Exception e) {
             logger.error("Error while Saving Retail Final :- ",e);
-            throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+            throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
         }
     }
 
@@ -379,7 +379,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
             return applicantRequest;
         } catch (Exception e) {
             logger.error("Error while getting Retail Final :- ",e);
-            throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+            throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
         }
     }
 
