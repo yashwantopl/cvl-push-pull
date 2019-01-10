@@ -40,6 +40,7 @@ public class UniformProductParameterAuditServiceImpl implements UniformProductPa
 		for(UniformProductParamterAudit uniformProductParamter : uniformProductParamters){
 			paramterRequest = new UniformProductParamterRequest();
 			BeanUtils.copyProperties(uniformProductParamter, paramterRequest);
+			paramterRequest.setModifiedDate(uniformProductParamter.getFromDate());
 			paramterRequests.add(paramterRequest);
 		}
 		return paramterRequests;
