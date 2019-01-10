@@ -220,13 +220,13 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 				}
 				try {
 					
-					System.out.println("in for match engine response");
+				
 					MatchRequest matchRequest = new MatchRequest();
 					matchRequest.setApplicationId(toApplicationId);
 					matchRequest.setProductId(fpProductMappingId);
 					MatchDisplayResponse matchResponse = matchEngineClient.displayMatchesOfCorporate(matchRequest);
 					corporatePrimaryViewResponse.setMatchesList(matchResponse.getMatchDisplayObjectList());
-					System.out.println("out for match engine response");
+				
 				} catch (Exception e) {
 					logger.error(CommonUtils.EXCEPTION,e);
 				}
