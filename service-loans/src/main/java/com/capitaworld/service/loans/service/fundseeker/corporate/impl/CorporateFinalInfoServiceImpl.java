@@ -26,6 +26,7 @@ public class CorporateFinalInfoServiceImpl implements CorporateFinalInfoService 
 
     @Autowired
     private LoanApplicationRepository loanApplicationRepository;
+    
     @Override
     public boolean saveOrUpdate(CorporateFinalInfoRequest corporateFinalInfoRequest, Long userId) throws Exception {
 

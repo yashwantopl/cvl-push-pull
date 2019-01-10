@@ -204,6 +204,9 @@ public class CorporateApplicantDetail implements Serializable {
     
     @Column(name = "is_itr_completed")
     private Boolean isItrCompleted;
+    
+    private String remarks;
+    
 
 	public CorporateApplicantDetail() {
 		// Do nothing because of X and Y.
@@ -673,4 +676,14 @@ public class CorporateApplicantDetail implements Serializable {
 	public void setIsItrCompleted(Boolean isItrCompleted) {
 		this.isItrCompleted = isItrCompleted;
 	}
+
+	public String getRemarks() {
+		return remarks;
+	}
+
+	public void setRemarks(String remarks) {
+		this.remarks = remarks;
+	}
+	
+	
 }

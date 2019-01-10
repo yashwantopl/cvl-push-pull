@@ -759,10 +759,16 @@ public class LoanApplicationController {
 						new LoansResponse(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, HttpStatus.BAD_REQUEST.value()),
 						HttpStatus.OK);
 			}
-			JSONObject json = new JSONObject();
-			json.put("isPrimaryLock", loanApplicationService.isPrimaryLocked(applicationId, userId));
-			json.put("isFinalLock", loanApplicationService.isFinalLocked(applicationId, userId));
-			json.put("isMcqSkipped", loanApplicationService.isMcqSkipped(applicationId));
+			
+			LoanApplicationRequest applicationRequest = loanApplicationService.getAllFlag(applicationId, userId);
+			JSONObject json = null;
+			if(applicationRequest != null) {
+				json = new JSONObject();
+				json.put("isPrimaryLock", applicationRequest.getProfilePrimaryLocked());
+				json.put("isFinalLock", applicationRequest.getFinalLocked());
+				json.put("isMcqSkipped", applicationRequest.getIsMcqSkipped());
+				json.put("ddrStatusId", applicationRequest.getDdrStatusId());
+			}
 			LoansResponse loansResponse = new LoansResponse(CommonUtils.SUCCESS_RESULT, HttpStatus.OK.value());
 			loansResponse.setData(json);
 			CommonDocumentUtils.endHook(logger, "isPrimaryAndFinalLocked");

@@ -896,9 +896,15 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				throw new NullPointerException(INVALID_LOAN_APPLICATION_ID + id + " of User ID==>" + userId);
 			}
 			BeanUtils.copyProperties(applicationMaster, applicationRequest, "name");
+			applicationRequest.setProfilePrimaryLocked(applicationMaster.getIsPrimaryLocked() != null ? applicationMaster.getIsPrimaryLocked() : false);
+			applicationRequest.setFinalLocked(applicationMaster.getIsFinalLocked() != null ? applicationMaster.getIsFinalLocked() : false);
+			applicationRequest.setIsMcqSkipped(applicationMaster.getIsMcqSkipped() != null ? applicationMaster.getIsMcqSkipped() : false);
+			applicationRequest.setDdrStatusId(applicationMaster.getDdrStatusId());
+			
 			if (CommonUtils.isObjectNullOrEmpty(applicationMaster.getProductId())) {
 				return applicationRequest;
 			}
+			
 			applicationRequest.setHasAlreadyApplied(
 					hasAlreadyApplied(userId, applicationMaster.getId(), applicationMaster.getProductId()));
 
@@ -1023,8 +1029,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					if (!CommonUtils.isObjectNullOrEmpty(master.getApplicationStatusMaster())) {
 						request.setStatus(Integer.valueOf(master.getApplicationStatusMaster().getId().toString()));
 						request.setIsNhbsApplication(true);
-						request.setDdrStatusId(CommonUtils.isObjectListNull(master.getDdrStatusId()) ? null
-								: Integer.valueOf(master.getDdrStatusId().toString()));
+						request.setDdrStatusId(master.getDdrStatusId());
 					} else {
 						ProposalMappingResponse response = proposalDetailsClient
 								.getFundSeekerApplicationStatus(master.getId());
@@ -1054,7 +1059,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 				}
 
 				Integer status = request.getStatus();
-				Integer ddrStatus = request.getDdrStatusId();
+				Long ddrStatus = request.getDdrStatusId();
 				String applicationStatus = null;
 				if (status == CommonUtils.ApplicationStatus.OPEN.intValue()) {
 					if (request
@@ -1063,7 +1068,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					} else {
 						applicationStatus = CommonUtils.ApplicationStatusMessage.IN_PROGRESS.getValue();
 					}
-				} else if (ddrStatus == CommonUtils.DdrStatus.APPROVED.intValue()) {
+				} else if (ddrStatus == CommonUtils.DdrStatus.APPROVED) {
 					if (proposalStatusId == MatchConstant.ProposalStatus.APPROVED) {
 						applicationStatus = CommonUtils.ApplicationStatusMessage.SANCTIONED.getValue();
 					} else if (proposalStatusId == MatchConstant.ProposalStatus.HOLD) {
@@ -11177,6 +11182,21 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		}
 		logger.info("IN GET LOAN WC RENEWAL TYPE NOT FOUND BY APPLICATION ID ---------->" + applicationId);
 		return null;
+	}
+
+	@Override
+	public LoanApplicationRequest getAllFlag(Long id, Long userId) throws Exception {
+		LoanApplicationRequest applicationRequest = null;
+		LoanApplicationMaster applicationMaster = loanApplicationRepository.getByIdAndUserId(id, userId);
+		if (applicationMaster != null) {
+			applicationRequest = new LoanApplicationRequest();
+			applicationRequest.setProfilePrimaryLocked(applicationMaster.getIsPrimaryLocked() != null ? applicationMaster.getIsPrimaryLocked() : false);
+			applicationRequest.setFinalLocked(applicationMaster.getIsFinalLocked() != null ? applicationMaster.getIsFinalLocked() : false);
+			applicationRequest.setIsMcqSkipped(applicationMaster.getIsMcqSkipped() != null ? applicationMaster.getIsMcqSkipped() : false);
+			applicationRequest.setDdrStatusId(applicationMaster.getDdrStatusId());
+		}
+		
+		return applicationRequest;
 	}
 
 }
