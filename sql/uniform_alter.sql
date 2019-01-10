@@ -192,3 +192,11 @@ ALTER TABLE `loan_application`.`fp_uniform_product_details_audit` ADD COLUMN `dp
 ALTER TABLE `loan_application`.`fp_uniform_product_details_temp` ADD COLUMN `dpd` INT(3);
 
 ALTER TABLE `loan_application`.`fp_uniform_product_details_temp` ADD COLUMN `is_edited` BIT(1);
+
+ALTER TABLE `loan_application`.`fp_uniform_product_details_audit` 
+ADD COLUMN is_active BIT(1),
+ADD COLUMN is_active_audit BIT(1);
+
+
+ALTER TABLE `loan_application`.`fp_uniform_product_details_audit` 
+MODIFY COLUMN is_active_audit VARCHAR(200);
