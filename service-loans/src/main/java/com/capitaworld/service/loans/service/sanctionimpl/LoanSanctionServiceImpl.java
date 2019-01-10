@@ -143,14 +143,15 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 			if(loanSanctionRequest.getIsSanctionedFrom() == 2){
 				//FIRST CHECK IF CURRENT PROPOSAL IS ELIGIBL FOR SANCTIONED OR NOT 
 				Integer status = offlineProcessedAppRepository.checkBeforeOfflineSanctioned(loanSanctionRequest.getApplicationId());
-				if(status == 4) {
+				if(status == 4) {//OFFLINE
 					loanSanctionRequest.setSanctionDate(new Date());
 					Boolean result = saveLoanSanctionDetail(loanSanctionRequest);
 					return !result ? 0 : 4;
 				} else {
 					return status;	
 				}	
-			} else {
+			} else {//OFFLINE
+				loanSanctionRequest.setSanctionDate(loanSanctionRequest.getSanctionDate() != null ? loanSanctionRequest.getSanctionDate() :new Date());
 				Boolean result = saveLoanSanctionDetail(loanSanctionRequest);
 				return !result ? 0 : 4;
 			}
