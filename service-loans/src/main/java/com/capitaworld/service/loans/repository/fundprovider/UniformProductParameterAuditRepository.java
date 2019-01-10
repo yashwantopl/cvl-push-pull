@@ -23,4 +23,19 @@ public interface UniformProductParameterAuditRepository extends JpaRepository<Un
 	public List<UniformProductParamterAudit> findByOrgId(Long userOrgId);
 	
 	
+	/**
+	 * Getting Last record To Update Modified Date.
+	 * @param userOrgId
+	 * @return
+	 */
+	public UniformProductParamterAudit findFirstByOrgIdOrderByDesc(Long userOrgId);
+	
+	/**
+	 * Getting Last record To Update Modified Date.
+	 * @param userOrgId
+	 * @return
+	 */
+	public UniformProductParamterAudit findFirstByFpProductIdOrderByDesc(Long fpProductId);
+	
+	
 }
