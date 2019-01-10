@@ -240,7 +240,7 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 					if(saveLoanDisbursementDetail(loanDisbursementRequest)) {
 						logger.info("Success msg while saveLoanDisbursementDetail() ----------------> msg " + loanDisbursementRequest.getReason()) ;
 					}
-				}else if(saveLoanDisbursementDetailbyId(orgId , loanDisbursementRequest)) {
+				}/*else if(saveLoanDisbursementDetailbyId(orgId , loanDisbursementRequest)) {
 					
 					status= loanDisbursementRequest.getReason(); 
 					try {
@@ -253,7 +253,7 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 					
 					logger.info("Success msg while saveLoanDisbursementDetail() ----------------> msg " + loanDisbursementRequest.getReason() +"  -------updating the proposal detail table detail status rowUpdated ---------" +rowUpdated) ;
 					loanDisbursementRequest.setIsSaved(true);
-				}
+				}*/
 				try {
 					jsonString = MultipleJSONObjectHelper.getStringfromObject(loanDisbursementRequest);
 					auditComponentBankToCW.saveBankToCWReqRes(jsonString , 	loanDisbursementRequest.getApplicationId() , apiType , status , null , orgId ,loanDisbursementRequest.getId());

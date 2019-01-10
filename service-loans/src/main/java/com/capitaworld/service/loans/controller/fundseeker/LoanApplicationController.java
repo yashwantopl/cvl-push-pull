@@ -2953,15 +2953,6 @@ public class LoanApplicationController {
 	}*/
 
 	
-	@RequestMapping(value = "/reverse_api", method = RequestMethod.GET)
-	public void reverseAPI() {
-		try {
-			logger.info("start reverseAPI()");
-			loanSanctionService.saveSanctionAndDisbursementDetailsFromBank();
-		} catch (Exception e) {
-			logger.error("Error while reverseAPI ==>{}", e);
-		}
-	}
 	
 	@RequestMapping(value = "/ddr_status/{applicationId}", method = RequestMethod.GET)
 	public ResponseEntity<LoansResponse> ddrStatus(@PathVariable("applicationId") Long applicationId) {
@@ -2976,18 +2967,7 @@ public class LoanApplicationController {
 		}
 	}
 	
-	@RequestMapping(value = "/getToken/{url}/{langCode}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-	public String getToken(@PathVariable("url") String url , @RequestBody GenerateTokenRequest generateTokenRequest , @PathVariable("langCode") Integer  langCode ) {
-		try {
-			logger.info("start getToken()");
-			String res = loanSanctionService.getToken(url, generateTokenRequest, langCode);
-			return res;
-		} catch (Exception e) {
-			logger.error("Error while reverseAPI ==>{}", e);
-			return null;
-			
-		}
-	}
+	
 	@RequestMapping(value = "/saveLoanWCRenewalType", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE,consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> saveLoanWCRenewalType(@RequestBody LoanApplicationRequest loanRequest) {
 		if(CommonUtils.isObjectNullOrEmpty(loanRequest.getId()) || CommonUtils.isObjectNullOrEmpty(loanRequest.getWcRenewalStatus())) {

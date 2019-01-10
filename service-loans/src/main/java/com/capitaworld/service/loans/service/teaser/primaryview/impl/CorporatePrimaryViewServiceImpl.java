@@ -224,7 +224,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 					MatchRequest matchRequest = new MatchRequest();
 					matchRequest.setApplicationId(toApplicationId);
 					matchRequest.setProductId(fpProductMappingId);
-					MatchDisplayResponse matchResponse = matchEngineClient.getDisplayMatchesOfCorporate(matchRequest);
+					MatchDisplayResponse matchResponse = matchEngineClient.displayMatchesOfCorporate(matchRequest);
 					corporatePrimaryViewResponse.setMatchesList(matchResponse.getMatchDisplayObjectList());
 					System.out.println("out for match engine response");
 				} catch (Exception e) {
