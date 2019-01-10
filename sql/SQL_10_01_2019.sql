@@ -1,0 +1,1 @@
+ALTER TABLE loan_application.fs_corporate_applicant_details ADD COLUMN remarks VARCHAR(255) NULL AFTER temp; 
