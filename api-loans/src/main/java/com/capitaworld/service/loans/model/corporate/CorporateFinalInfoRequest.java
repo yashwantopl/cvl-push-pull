@@ -53,6 +53,7 @@ public class CorporateFinalInfoRequest implements Serializable {
     private Integer constitutionId;
     private String panNo;
     private String landlineNo;
+    private String remarks;
 
     public Boolean getSameAs() {
         return sameAs;
@@ -262,4 +263,13 @@ public class CorporateFinalInfoRequest implements Serializable {
     public void setLandlineNo(String landlineNo) {
         this.landlineNo = landlineNo;
     }
+
+	public String getRemarks() {
+		return remarks;
+	}
+
+	public void setRemarks(String remarks) {
+		this.remarks = remarks;
+	}
+    
 }
