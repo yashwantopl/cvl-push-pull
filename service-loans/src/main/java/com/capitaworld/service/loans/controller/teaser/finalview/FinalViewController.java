@@ -549,11 +549,11 @@ private static final Logger logger = LoggerFactory.getLogger(FinalViewController
 	}
 	
 	// COMMON FINAL CORPORATE TEASER VIEW
-	@GetMapping(value = "/Corporate/{proposalMapId}")   // @GetMapping(value = "/Corporate/{toApplicationId}")
+	@GetMapping(value = "/Corporate/{toApplicationId}/{proposalId}")   // @GetMapping(value = "/Corporate/{toApplicationId}")
 	public @ResponseBody ResponseEntity<LoansResponse> primaryViewOfCorporateByProposal(
-			@PathVariable(value = "proposalMapId") Long proposalMapId,
+			@PathVariable(value = "toApplicationId") Long toApplicationId,@PathVariable(value = "proposalId") Long proposalId,
 			@RequestParam(value = "clientId", required = false) Long clientId, HttpServletRequest request) {
-		logger.info("IN FINAL CORPORATE TEASER VIEW======>" + proposalMapId);
+		logger.info("IN FINAL CORPORATE TEASER VIEW======>" + proposalId);
 		LoansResponse loansResponse = new LoansResponse();
 		// GET USERID
 		Long userId = null;
@@ -600,17 +600,17 @@ private static final Logger logger = LoggerFactory.getLogger(FinalViewController
 			userId = (Long) request.getAttribute(CommonUtils.USER_ID);
 			userType = ((Integer) request.getAttribute(CommonUtils.USER_TYPE)).intValue();
 		}
-		if (CommonUtils.isObjectNullOrEmpty(proposalMapId)) {
-			logger.warn("Invalid data or Requested data not found.", proposalMapId);
+		if (CommonUtils.isObjectNullOrEmpty(proposalId)) {
+			logger.warn("Invalid data or Requested data not found.", proposalId);
 			return new ResponseEntity<LoansResponse>(
 					new LoansResponse("Invalid data or Requested data not found.", HttpStatus.BAD_REQUEST.value()),
 					HttpStatus.OK);
 		} else {
 			CorporateFinalViewResponse corporateFinalViewResponse = null;
 			try {
-				logger.info("Request users details:- toApplicationId,userType,userId is" + proposalMapId + userType
+				logger.info("Request users details:- toApplicationId,userType,userId is" + proposalId + userType
 						+ userId);
-				corporateFinalViewResponse = corporateFinalViewService.getCorporateFinalViewDetails(proposalMapId,
+				corporateFinalViewResponse = corporateFinalViewService.getCorporateFinalViewDetails(toApplicationId,proposalId,
 						userType, userId);
 				if (!CommonUtils.isObjectNullOrEmpty(corporateFinalViewResponse)) {
 					logger.info("response is" + corporateFinalViewResponse.toString());
