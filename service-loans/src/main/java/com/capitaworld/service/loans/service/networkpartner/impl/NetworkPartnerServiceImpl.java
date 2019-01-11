@@ -18,10 +18,12 @@ import com.capitaworld.api.workflow.utility.WorkflowUtils;
 import com.capitaworld.client.workflow.WorkflowClient;
 import com.capitaworld.itr.api.model.ITRConnectionResponse;
 import com.capitaworld.itr.client.ITRClient;
+import com.capitaworld.service.auth.model.UserRequest;
 import com.capitaworld.service.gateway.model.GatewayResponse;
 import com.capitaworld.service.gateway.model.PaymentTypeRequest;
 import com.capitaworld.service.loans.config.FPAsyncComponent;
 import com.capitaworld.service.loans.domain.fundprovider.FpNpMapping;
+import com.capitaworld.service.loans.domain.fundprovider.ProposalDetails;
 import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
 import com.capitaworld.service.loans.domain.sanction.LoanSanctionDomain;
@@ -33,6 +35,7 @@ import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplican
 import com.capitaworld.service.loans.repository.sanction.LoanSanctionRepository;
 import com.capitaworld.service.loans.service.fundprovider.FpNpMappingService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
+import com.capitaworld.service.loans.utils.CommonUtility;
 import com.capitaworld.service.users.model.*;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
@@ -103,6 +106,9 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 
 	@Autowired
 	private LoanSanctionRepository loanSanctionRepository;
+
+	@Autowired
+	private ProposalDetailsRepository proposalDetailsRepository;
 
 	@Autowired
 	private DMSClient dmsClient;
@@ -958,9 +964,13 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 						nhbsApplicationsResponse.setApplicationWith("Checker");
 					}
 				}
-				LoanSanctionDomain loanSanctionDetails = loanSanctionRepository.findByAppliationId(nhbsApplicationsResponse.getApplicationId());
-				if (!CommonUtils.isObjectNullOrEmpty(loanSanctionDetails)) {
-					nhbsApplicationsResponse.setSanction(true);
+
+				ProposalDetails proposalDetails = proposalDetailsRepository.getSanctionProposalByApplicationId(nhbsApplicationsResponse.getApplicationId());
+				if (!CommonUtils.isObjectNullOrEmpty(proposalDetails)) {
+					ApplicationProposalMapping applicationProposalMapping1 = applicationProposalMappingRepository.findOne(proposalDetails.getId());
+					if (!applicationProposalMapping1.getOrgId().equals(npOrgId)) {
+						nhbsApplicationsResponse.setSanction(true);
+					}
 				}
 				nhbsApplicationsResponseList.add(nhbsApplicationsResponse);
 			}
@@ -1317,9 +1327,13 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 					nhbsApplicationsResponse.setCheckerName("-");
 				}
 
-				LoanSanctionDomain loanSanctionDomain = loanSanctionRepository.findByAppliationId(nhbsApplicationsResponse.getApplicationId());
-				if(!CommonUtils.isObjectNullOrEmpty(loanSanctionDomain))
-					nhbsApplicationsResponse.setSanction(true);
+				ProposalDetails proposalDetails = proposalDetailsRepository.getSanctionProposalByApplicationId(nhbsApplicationsResponse.getApplicationId());
+				if (!CommonUtils.isObjectNullOrEmpty(proposalDetails)) {
+					ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.findOne(proposalDetails.getId());
+					if (!applicationProposalMapping.getOrgId().equals(usersRequest.getUserOrgId())) {
+						nhbsApplicationsResponse.setSanction(true);
+					}
+				}
 				nhbsApplicationsResponseList.add(nhbsApplicationsResponse);
 			}
 		}
