@@ -52,12 +52,6 @@ public class NTBController {
     @RequestMapping(value = "/oneform_director_detail/get/{directorId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LoansResponse> getOneformDetailByDirectorId(@PathVariable("directorId") Long directorId, HttpServletRequest request, @RequestParam(value = "clientId",required = false) Long clientId) {
         logger.info("Enter getOneformDetailByDirectorId()");
-        Long userId = null;
-        if(CommonDocumentUtils.isThisClientApplication(request) && !CommonUtils.isObjectNullOrEmpty(clientId)){
-            userId = clientId;
-        }else{
-            userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-        }
         // request must not be null
         try {
             if (directorId == null ) {
@@ -94,12 +88,6 @@ public class NTBController {
     @RequestMapping(value = "/financial/get/{applicationId}/{directorId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LoansResponse> getFinancialForPartner(@PathVariable("applicationId") Long applicationId, @PathVariable("directorId") Long directorId, HttpServletRequest request, @RequestParam(value = "clientId",required = false) Long clientId) {
         logger.info("Enter getFinancialForPartner()");
-        Long userId = null;
-        if(CommonDocumentUtils.isThisClientApplication(request) && !CommonUtils.isObjectNullOrEmpty(clientId)){
-            userId = clientId;
-        }else{
-            userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-        }
         // request must not be null
         try {
             if (directorId == null || applicationId == null) {

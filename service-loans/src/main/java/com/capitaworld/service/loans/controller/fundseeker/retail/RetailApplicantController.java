@@ -130,12 +130,6 @@ public class RetailApplicantController {
 			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
 		// request must not be null
 		try {
-			Long userId = null;
-			if (CommonDocumentUtils.isThisClientApplication(request)) {
-				userId = clientId;
-			} else {
-				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			}
 			if (applicationId == null) {
 				logger.warn("ApplicationId Require to get Retail Profile Details. Application Id ==>" + applicationId);
 				return new ResponseEntity<LoansResponse>(
