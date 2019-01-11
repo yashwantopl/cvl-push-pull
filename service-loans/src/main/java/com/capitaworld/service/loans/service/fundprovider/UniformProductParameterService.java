@@ -2,6 +2,7 @@ package com.capitaworld.service.loans.service.fundprovider;
 
 import java.util.List;
 
+import com.capitaworld.service.loans.domain.fundprovider.UniformProductParamter;
 import com.capitaworld.service.loans.model.corporate.UniformProductParamterRequest;
 
 public interface UniformProductParameterService {
@@ -12,7 +13,7 @@ public interface UniformProductParameterService {
 	 * @param orgId
 	 * @return
 	 */
-	public Boolean saveOrUpdate(UniformProductParamterRequest productParamterRequest);
+	public UniformProductParamter saveOrUpdate(UniformProductParamterRequest productParamterRequest);
 	
 	/**
 	 * Get Uniform Product
