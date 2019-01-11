@@ -142,8 +142,7 @@ public class NotificationServiceImpl implements NotificationService{
 						fsProdId =loanApplicationService.getProductIdByApplicationId(applicationId, fromUserId);
 					else
 						fsProdId =loanApplicationService.getProductIdByApplicationId(applicationId, Long.parseLong(toUserId));
-					
-					int fsType = CommonUtils.getUserMainType(fsProdId);
+
 					String fsName = loanApplicationService.getFsApplicantName(applicationId);
 					parameters.put("fs_name", fsName != null ? fsName : "NA");
 					parameters.put("application_id", fsName != null ? applicationId : "NA");

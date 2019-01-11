@@ -428,7 +428,7 @@ public class FundSeekerInputRequestController {
     }
     
     @RequestMapping(value = "/reset", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LoansResponse> resetApplicationUniform(@RequestBody ConnectResponse connectResponse ,HttpServletRequest request)throws Exception{
+    public ResponseEntity<LoansResponse> resetApplicationUniform(@RequestBody ConnectResponse connectResponse ,HttpServletRequest request)throws LoansException{
         try
         {
         	Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);

@@ -319,7 +319,7 @@ public class ServiceProviderFlowServiceImpl implements ServiceProviderFlowServic
 					            	documentRequest.setProductDocumentMappingId(DocumentAlias.UNSECURED_LOAN_PROFIEL_PICTURE);
 					            	break;
 					            default:
-									return null;
+									return Collections.emptyList();
 								}
 								// applicant image
 								DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);

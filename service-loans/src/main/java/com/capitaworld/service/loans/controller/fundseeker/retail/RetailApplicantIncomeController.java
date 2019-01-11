@@ -109,12 +109,6 @@ public class RetailApplicantIncomeController {
 												 @RequestParam(value = "clientId", required = false) Long clientId, HttpServletRequest request) {
 		// request must not be null
 		try {
-			Long userId = null;
-			if (CommonDocumentUtils.isThisClientApplication(request)) {
-				userId = clientId;
-			} else {
-				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			}
 			if (id == null) {
 				logger.warn("ID Require to get Gross Income Details==>" + id);
 				return new ResponseEntity<LoansResponse>(
