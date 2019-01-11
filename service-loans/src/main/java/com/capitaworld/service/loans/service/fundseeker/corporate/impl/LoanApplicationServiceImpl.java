@@ -1672,8 +1672,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 			// Co-Applicant Profile Checking
 
-			coAppCount = null;
-
 			coAppCount = corporateCoApplicantRepository.getCoAppCountByApplicationAndUserId(applicationMaster.getId(),
 					applicationMaster.getUserId());
 			if (!CommonUtils.isObjectNullOrEmpty(coAppCount) || coAppCount > 0) {
@@ -1719,7 +1717,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		case CommonUtils.TabType.FINAL_MCQ:
 
 			// Co-Applicant Profile Checking
-			coAppCount = null;
+
 			coAppCount = corporateCoApplicantRepository.getCoAppCountByApplicationAndUserId(applicationMaster.getId(),
 					applicationMaster.getUserId());
 			if (!CommonUtils.isObjectNullOrEmpty(coAppCount) || coAppCount > 0) {

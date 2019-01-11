@@ -4085,7 +4085,6 @@ public class ScoringServiceImpl implements ScoringService {
     @Override
     public ScoringModelReqRes getScoringModelMasterDetail(ScoringModelReqRes scoringModelReqRes) {
         try {
-            Long fpProductId = scoringModelReqRes.getFpProductId();
             try {
                 return scoringClient.getScoringModelMasterDetail(scoringModelReqRes);
             } catch (Exception e) {
