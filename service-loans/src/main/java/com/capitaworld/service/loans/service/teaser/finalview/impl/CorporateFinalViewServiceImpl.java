@@ -319,7 +319,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 	DecimalFormat decim = new DecimalFormat("#,###.00");
 
 	@Override
-	public CorporateFinalViewResponse getCorporateFinalViewDetails(Long proposalMapId, Integer userType,Long fundProviderUserId) {
+	public CorporateFinalViewResponse getCorporateFinalViewDetails(Long toapplicationId,Long proposalMapId, Integer userType,Long fundProviderUserId) {
 
 
 		CorporateFinalViewResponse corporateFinalViewResponse = new CorporateFinalViewResponse();
@@ -333,7 +333,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 		corporateFinalViewResponse.setApplicationType(loanApplicationMaster.getWcRenewalStatus() != null ? WcRenewalType.getById(loanApplicationMaster.getWcRenewalStatus()).getValue().toString() : "New" );
 
 		//corporateFinalViewResponse.setProductId(loanApplicationMaster.getProductId());
-		corporateFinalViewResponse.setApplicationType(loanApplicationMaster.getWcRenewalStatus() != null ? WcRenewalType.getById(loanApplicationMaster.getWcRenewalStatus()).getValue().toString() : "New" );
+		//corporateFinalViewResponse.setApplicationType(loanApplicationMaster.getWcRenewalStatus() != null ? WcRenewalType.getById(loanApplicationMaster.getWcRenewalStatus()).getValue().toString() : "New" );
 		corporateFinalViewResponse.setProductId(applicationProposalMapping.getProductId());
 		// ===================== MATCHES DATA ======================//
 		if (userType != null && !(CommonUtils.UserType.FUND_SEEKER == userType) ) {
@@ -1195,7 +1195,8 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 		}
 
 		try {
-			CorporateMcqRequest corporateMcqRequest = corporateMcqService.get(toApplicationId);
+			//CorporateMcqRequest corporateMcqRequest = corporateMcqService.get(toApplicationId); // PREVIOUS 
+			CorporateMcqRequest corporateMcqRequest = corporateMcqService.get(proposalMapId); // NEW
 
 			corporateFinalViewResponse.setTechnologyRiskId(corporateMcqRequest.getTechnologyRiskId() != null
 					? TechnologyRisk.getById(corporateMcqRequest.getTechnologyRiskId()).getValue()
