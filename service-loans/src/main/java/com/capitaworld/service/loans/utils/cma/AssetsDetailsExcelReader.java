@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.capitaworld.service.loans.exceptions.ExcelException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.util.CellReference;
@@ -139,7 +140,7 @@ public class AssetsDetailsExcelReader
 
     }
 
-    public static void extractCellFromSheet(Long storageDetailsId,XSSFSheet sheet,LoanApplicationMaster loanApplicationMaster,List<String> arrayList,String column,String year,String financialYearlyStatement,AssetsDetailsRepository assetsDetailsRepository) throws Exception
+    public static void extractCellFromSheet(Long storageDetailsId,XSSFSheet sheet,LoanApplicationMaster loanApplicationMaster,List<String> arrayList,String column,String year,String financialYearlyStatement,AssetsDetailsRepository assetsDetailsRepository) throws ExcelException
     {
         int arrayListCounter = 0;
         int nullCounter=0;
@@ -156,7 +157,7 @@ public class AssetsDetailsExcelReader
         	
         	if(cmaAssets != null &&  "Audited".equalsIgnoreCase(cmaAssets.getFinancialYearlyStatement()) && yearFromSheet <= Double.valueOf(cmaAssets.getYear()) ) {
            		
-           		throw new  Exception("Invalid cma details"); 
+           		throw new ExcelException("Invalid cma details");
          
            	}
         	
