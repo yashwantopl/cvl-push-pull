@@ -336,7 +336,9 @@ public class CarLoanPrimaryViewServiceImpl implements CarLoanPrimaryViewService{
         } catch (Exception e) {
             logger.error(CommonUtils.EXCEPTION,e);
         }
-        carLoanPrimaryViewResponse.setGuarantorList(guarantorResponse);
+        if (guarantorResponse != null && !guarantorResponse.isEmpty()) {
+            carLoanPrimaryViewResponse.setGuarantorList(guarantorResponse);
+        }
 
         //setting Personal Loan Specific Data
         try {

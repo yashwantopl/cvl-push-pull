@@ -49,7 +49,7 @@ public class ServiceProviderController {
 		try {
 			List<SpClientListing> clientList = serviceProviderFlowService.spClientList(Integer.parseInt(usersRequest.getPageIndex().toString()),Integer.parseInt(usersRequest.getSize().toString()),Long.valueOf(request.getAttribute(CommonUtils.USER_ID).toString()), usersRequest.getUserType().getCode());
 
-			if(clientList != null){
+			if(clientList != null && !clientList.isEmpty()){
 				logger.info(SERIVCE_PROVIDERS_CLIENT_LIST_MSG);
 				return new ResponseEntity<UserResponse>(
 						new UserResponse(clientList,SERIVCE_PROVIDERS_CLIENT_LIST_MSG, HttpStatus.OK.value()),
