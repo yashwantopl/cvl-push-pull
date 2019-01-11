@@ -104,10 +104,12 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 			/*loanSanctionDomainOld.setIsSanctionedFrom(1l);*/
 		}
 		//==================Sending Mail notification to Maker=============================
-		
-		fpAsyncComponent.sendEmailToFSWhenCheckerSanctionLoan(loanSanctionDomainOld);
-		fpAsyncComponent.sendEmailToMakerHOBOWhenCheckerSanctionLoan(loanSanctionDomainOld);
-		
+		try{
+			fpAsyncComponent.sendEmailToFSWhenCheckerSanctionLoan(loanSanctionDomainOld);
+			fpAsyncComponent.sendEmailToMakerHOBOWhenCheckerSanctionLoan(loanSanctionDomainOld);			
+		}catch(Exception e){
+			logger.error("Exception : {}",e);
+		}
 		//=================================================================================
 		//logger.info("Exit saveLoanSanctionDetail() -----------------------> LoanSanctionDomain "+ loanSanctionDomainOld);
 		return loanSanctionRepository.save(loanSanctionDomainOld) != null;

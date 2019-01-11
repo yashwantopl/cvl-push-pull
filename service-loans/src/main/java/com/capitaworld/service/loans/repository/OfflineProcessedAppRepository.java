@@ -24,4 +24,44 @@ public interface OfflineProcessedAppRepository{
 	public List<Object[]> getOtherProposalsList(Long userId);
 
 	public List<Object[]> getHomeCounterDetail();
+	
+	
+	/**
+	 * Getting Uniform Proposals
+	 * @param userId
+	 * @return
+	 */
+	public List<Object []> getUniformApplications(Long userId);
+
+	/**
+	 * Getting Uniform Sanctioned Proposals
+	 * @param userId
+	 * @return
+	 */
+	public List<Object []> getUniformSanctionedApplicationList(Long userId);
+	
+	/**
+	 * Get Uniform Disbursed Application List
+	 * 
+	 * @param userId
+	 * @return
+	 */
+	
+	public List<Object []> getUniformDisbursedApplicationList(Long userId);
+	
+	
+	/**
+	 * Getting Unfiform Rejected Application
+	 * @param userId
+	 * @return
+	 */
+	public List<Object[]> getUniformRejectProposalsList(Long userId);
+	
+	
+	/**
+	 * Getting Uniform Other Application List
+	 * @param userId
+	 * @return
+	 */
+	public List<Object[]> getUniformOtherProposalsList(Long userId);;
 }
