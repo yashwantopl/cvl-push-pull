@@ -18,6 +18,9 @@ import com.capitaworld.service.oneform.model.MasterResponse;
 import com.capitaworld.service.oneform.model.OneFormResponse;
 
 public class CommonDocumentUtils {
+	private CommonDocumentUtils() {
+		// Do nothing because of X and Y.
+	}
 
 	public static Long getProductDocumentId(int productId) {
 		switch (productId) {

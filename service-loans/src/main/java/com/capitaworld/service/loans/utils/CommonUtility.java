@@ -5,6 +5,9 @@ import java.util.Base64;
 import com.capitaworld.cibil.api.utility.CibilUtils;
 
 public class CommonUtility {
+	private CommonUtility() {
+		// Do nothing because of X and Y.
+	}
 
 	public static final class ApiType{
 		private ApiType () {

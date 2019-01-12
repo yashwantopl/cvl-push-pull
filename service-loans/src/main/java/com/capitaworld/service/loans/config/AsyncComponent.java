@@ -849,8 +849,12 @@ public class AsyncComponent {
 				return;
 			}
 			Map<String, Object> parameters = new HashMap<>();
-			parameters.put("maker_name", makerUserName.getName());
-			parameters.put("checker_name", checkerUserName.getName());
+			if (makerUserName != null && makerUserName.getName() != null) {
+				parameters.put("maker_name", makerUserName.getName());
+			}
+			if (checkerUserName != null && checkerUserName.getName() != null) {
+				parameters.put("checker_name", checkerUserName.getName());
+			}
 			parameters.put(CommonUtils.PARAMETERS_FS_NAME, fsName);
 			parameters.put("lone_type", LoanType.getType(productId).getName());
 			String[] toIds = { checkerUserName.getEmail() };

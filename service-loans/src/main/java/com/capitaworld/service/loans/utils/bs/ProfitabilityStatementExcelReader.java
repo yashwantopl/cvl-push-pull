@@ -17,6 +17,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ProfitabilityStatementExcelReader {
+	private ProfitabilityStatementExcelReader() {
+		// Do nothing because of X and Y.
+	}
 
 	private static final Logger logger = LoggerFactory.getLogger(ProfitabilityStatementExcelReader.class);
 

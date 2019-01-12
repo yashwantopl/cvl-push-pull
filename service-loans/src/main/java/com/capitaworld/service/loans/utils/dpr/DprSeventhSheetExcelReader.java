@@ -18,6 +18,10 @@ import org.slf4j.LoggerFactory;
 public class DprSeventhSheetExcelReader
 {
 
+    private DprSeventhSheetExcelReader() {
+        // Do nothing because of X and Y.
+    }
+
     private static final Logger logger = LoggerFactory.getLogger(DprSeventhSheetExcelReader.class);
 
     public static void run(Long applicationId, Long storageDetailsId,

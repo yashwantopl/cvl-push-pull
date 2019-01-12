@@ -19,6 +19,9 @@ import org.slf4j.LoggerFactory;
 
 public class BalanceSheetExcelReader
 {
+    private BalanceSheetExcelReader() {
+        // Do nothing because of X and Y.
+    }
 
     private static final Logger logger = LoggerFactory.getLogger(BalanceSheetExcelReader.class);
 

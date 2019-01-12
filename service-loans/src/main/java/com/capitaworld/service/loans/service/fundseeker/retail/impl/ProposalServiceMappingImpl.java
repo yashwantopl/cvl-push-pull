@@ -1747,9 +1747,7 @@ public class ProposalServiceMappingImpl implements ProposalService {
 				// Cheker or not
 				UserResponse userResponse = null;
 				userRequest.setProductIdString(CommonUtility.encode("" + loanApplicationMaster.getProductId()));
-				if (loanApplicationMaster.getNpUserId() == null) {
-					userResponse = usersClient.getMinMaxAmount(userRequest);
-				} else if ((loanApplicationMaster.getNpUserId()).equals(userRequest.getId())) {
+				if (loanApplicationMaster.getNpUserId() == null || (loanApplicationMaster.getNpUserId()).equals(userRequest.getId()) ) {
 					userResponse = usersClient.getMinMaxAmount(userRequest);
 				}
 
