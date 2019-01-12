@@ -2,12 +2,7 @@ package com.capitaworld.service.loans.service.networkpartner.impl;
 
 import java.io.IOException;
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.transaction.Transactional;
 
@@ -653,7 +648,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 			return loanApplicationMasterList;
 		}
 		logger.info("exit from getApplicationListToAssignedCheckerFromBoFp()");
-		return null;
+		return Collections.emptyList();
 	}
 
 	@Override

@@ -96,11 +96,10 @@ public class NTBController {
                         new LoansResponse(CommonUtils.INVALID_REQUEST, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
             }
 
-            List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestList = null;
-            financialArrangementsDetailRequestList = ntbService.getFinancialDetails(applicationId, directorId);
+            List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestList = ntbService.getFinancialDetails(applicationId, directorId);
 
             LoansResponse loansResponse = null;
-            if(!CommonUtils.isObjectNullOrEmpty(financialArrangementsDetailRequestList)) {
+            if(financialArrangementsDetailRequestList != null && !financialArrangementsDetailRequestList.isEmpty()) {
                 loansResponse = new LoansResponse(SUCCESSFULLY_FETCHED_MSG, HttpStatus.OK.value());
                 loansResponse.setData(financialArrangementsDetailRequestList);
             }else {
