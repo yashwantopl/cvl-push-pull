@@ -249,7 +249,6 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					Object[] loanDeatils = loanApplicationService
 							.getApplicationDetailsById(proposalrequest.getApplicationId());
 					logger.info("user id based on application Id:" + Arrays.toString(loanDeatils));
-					long userId = loanDeatils[0] != null ? (long) loanDeatils[0] : 0;
 
 					try {
 						// step 2 get branch details by branch id available in
