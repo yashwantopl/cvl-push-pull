@@ -2,6 +2,7 @@ package com.capitaworld.service.loans.service.sanctionimpl;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -198,7 +199,7 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 				return loanDisbursementRequestList;
 			}
 			logger.warn("No DisbursedList found for applicationId =>" + applicationId);
-			return null;
+			return Collections.emptyList();
 		}catch (Exception e){
 			logger.error("Error/Exception in getDisbursedList() -----------------------> Message : ",e);
 			throw e;

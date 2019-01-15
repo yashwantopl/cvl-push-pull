@@ -34,12 +34,6 @@ public class LogController {
 			HttpServletRequest request, @RequestParam(value = "clientId", required = false) Long clientId) {
 		try {
 			CommonDocumentUtils.startHook(logger, "createFsLog");
-			Long userId = null;
-			if (CommonDocumentUtils.isThisClientApplication(request)) {
-				userId = clientId;
-			} else {
-				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			}
 
 			if (CommonUtils.isObjectNullOrEmpty(applicationId)) {
 				logger.error("Application id must not be null.");

@@ -90,12 +90,6 @@ public class DashboardController {
 			@RequestParam(value = "clientId", required = false) Long clientId) {
 		try {
 			CommonDocumentUtils.startHook(logger, "getFsOrFpCount");
-			Long userId = null;
-			if (CommonDocumentUtils.isThisClientApplication(request) && !CommonUtils.isObjectNullOrEmpty(clientId)) {
-				userId = clientId;
-			} else {
-				userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-			}
 			
 			if(CommonUtils.isObjectNullOrEmpty(data.getValue())){
 				logger.warn("UserType must not be Empty");

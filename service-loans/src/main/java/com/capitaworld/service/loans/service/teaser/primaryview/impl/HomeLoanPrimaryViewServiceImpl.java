@@ -488,7 +488,9 @@ public class HomeLoanPrimaryViewServiceImpl implements HomeLoanPrimaryViewServic
 		} catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
 		}
-		homeLoanPrimaryViewResponse.setGarantorResponse(garantorResponse);
+		if (garantorResponse != null && !garantorResponse.isEmpty()) {
+			homeLoanPrimaryViewResponse.setGarantorResponse(garantorResponse);
+		}
 
 		return homeLoanPrimaryViewResponse;
 	}

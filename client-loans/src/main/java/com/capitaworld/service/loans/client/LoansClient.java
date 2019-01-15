@@ -1672,7 +1672,7 @@ public class LoansClient {
 		}
 	}
 	
-	public LoansResponse updateDirectorAPIFlag(Long directorId,Long userId,Integer apiId, Boolean apiFlag) throws Exception {
+	public LoansResponse updateDirectorAPIFlag(Long directorId,Long userId,Integer apiId, Boolean apiFlag) throws ExcelException {
 		String url = loansBaseUrl.concat(UPDATE_DIRECTOR_BACKGROUND_API_FLAG) + "?userId=" + userId + "&directorId=" + directorId + "&apiId=" + apiId + "&apiFlag=" + apiFlag;
 		try {
 			HttpHeaders headers = new HttpHeaders();
@@ -1682,9 +1682,9 @@ public class LoansClient {
 		} catch (Exception e) {
 			logger.error("Exception in updateDirectorAPIFlag : ",e);
 			if(e.getMessage().contains("404")) {
-				throw new Exception(url + " is Not Found");
+				throw new ExcelException(url + " is Not Found");
 			}else if(e.getMessage().contains("400")) {
-				throw new Exception(url + " is Not Valid Request");
+				throw new ExcelException(url + " is Not Valid Request");
 			}else {
 				throw new ExcelException(e.getCause().getMessage());
 			}
@@ -1720,7 +1720,7 @@ public class LoansClient {
 		}
 	}
 	
-	public LoansResponse getDirectorBackgroundDetail(Long id) throws Exception {
+	public LoansResponse getDirectorBackgroundDetail(Long id) throws ExcelException {
 		String url = loansBaseUrl.concat(GET_DIRECTOR_BACKGROUND_DETAIL).concat("/" + id);
 		logger.info("url for Getting DirectorBackgroundDetail From Client=================>" + url + " and For Id====>" + id);
 		try {
@@ -1731,9 +1731,9 @@ public class LoansClient {
 		} catch (Exception e) {
 			logger.error("Exception in getDirectorBackgroundDetail : ",e);
 			if(e.getMessage().contains("404")) {
-				throw new Exception(url + " is Not Found");				
+				throw new ExcelException(url + " is Not Found");
 			}else if(e.getMessage().contains("400")) {
-				throw new Exception(url + " " + e.getCause().getMessage());				
+				throw new ExcelException(url + " " + e.getCause().getMessage());
 			}else {
 				throw new ExcelException(e.getCause().getMessage());
 			}

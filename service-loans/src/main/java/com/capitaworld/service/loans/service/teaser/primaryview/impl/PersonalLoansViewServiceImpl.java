@@ -336,7 +336,9 @@ public class PersonalLoansViewServiceImpl implements PersonalLoansViewService {
 
 		//setting guarantor details
 		List<RetailProfileViewResponse> garantorResponse = guarantorService.getGuarantorServiceResponse(applicantId, userId,applicationMaster.getProductId());
-		retailPrimaryViewResponse.setGarantorResponse(garantorResponse);
+		if (garantorResponse != null && !garantorResponse.isEmpty()) {
+			retailPrimaryViewResponse.setGarantorResponse(garantorResponse);
+		}
 
 		//setting Personal Loan Specific Data
 		retailPrimaryViewResponse.setPersonalLoanResponse(personalLoanResponse);

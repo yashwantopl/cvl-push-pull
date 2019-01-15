@@ -63,6 +63,7 @@ public class OfflineProcessAppRepositoryImpl implements OfflineProcessedAppRepos
 		return (Integer) storedProcedureQuery.getOutputParameterValue(RESULT);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<Object[]> getSanctionedApplicationList(Long userId) {
 		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spFetchOfflineSanctionedProposal");
@@ -71,6 +72,7 @@ public class OfflineProcessAppRepositoryImpl implements OfflineProcessedAppRepos
 		return (List<Object[]>) storedProcedureQuery.getResultList();
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<Object[]> getDisbursedApplicationList(Long userId) {
 		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spFetchOfflineDisbursedProposal");
@@ -79,6 +81,7 @@ public class OfflineProcessAppRepositoryImpl implements OfflineProcessedAppRepos
 		return (List<Object[]>) storedProcedureQuery.getResultList();
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<Object[]> getRejectProposalsList(Long userId) {
 		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spFetchOfflineRejectProposal");
@@ -87,6 +90,7 @@ public class OfflineProcessAppRepositoryImpl implements OfflineProcessedAppRepos
 		return (List<Object[]>) storedProcedureQuery.getResultList();
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<Object[]> getOtherProposalsList(Long userId) {
 		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spFetchOfflineOtherProposal");
@@ -103,4 +107,46 @@ public class OfflineProcessAppRepositoryImpl implements OfflineProcessedAppRepos
 		return  (List<Object[]>) storedProcedureQuery.getResultList() ; 
 	 }
 
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Object[]> getUniformApplications(Long userId) {
+		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spFetchUniformPendingProposal");
+		storedProcedureQuery.registerStoredProcedureParameter(CommonUtils.USER_ID,Long.class, ParameterMode.IN);
+		storedProcedureQuery.setParameter(CommonUtils.USER_ID,userId);
+		return (List<Object[]>) storedProcedureQuery.getResultList();
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Object[]> getUniformSanctionedApplicationList(Long userId) {
+		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spFetchUniformSanctionedProposal");
+		storedProcedureQuery.registerStoredProcedureParameter(CommonUtils.USER_ID,Long.class, ParameterMode.IN);
+		storedProcedureQuery.setParameter(CommonUtils.USER_ID,userId);
+		return (List<Object[]>) storedProcedureQuery.getResultList();
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Object[]> getUniformDisbursedApplicationList(Long userId) {
+		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spFetchUniformDisbursedProposal");
+		storedProcedureQuery.registerStoredProcedureParameter(CommonUtils.USER_ID,Long.class, ParameterMode.IN);
+		storedProcedureQuery.setParameter(CommonUtils.USER_ID,userId);
+		return (List<Object[]>) storedProcedureQuery.getResultList();
+	}
+
+	@Override
+	public List<Object[]> getUniformRejectProposalsList(Long userId) {
+		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spFetchUniformRejectProposal");
+		storedProcedureQuery.registerStoredProcedureParameter(CommonUtils.USER_ID,Long.class, ParameterMode.IN);
+		storedProcedureQuery.setParameter(CommonUtils.USER_ID,userId);
+		return (List<Object[]>) storedProcedureQuery.getResultList();
+	}
+
+	@Override
+	public List<Object[]> getUniformOtherProposalsList(Long userId) {
+		StoredProcedureQuery storedProcedureQuery = entityManager.createStoredProcedureQuery("spFetchUniformOtherProposal");
+		storedProcedureQuery.registerStoredProcedureParameter(CommonUtils.USER_ID,Long.class, ParameterMode.IN);
+		storedProcedureQuery.setParameter(CommonUtils.USER_ID,userId);
+		return (List<Object[]>) storedProcedureQuery.getResultList();
+	}
 }

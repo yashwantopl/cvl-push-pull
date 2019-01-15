@@ -132,6 +132,8 @@ public class FundSeekerInputRequestResponse {
     private Double profitCurrFinYear;
     
     private Double projectedProfitCurrFinYear;
+    
+    private Double enhancementAmount;
 
     public Long getUserId() {
         return userId;
@@ -567,6 +569,14 @@ public class FundSeekerInputRequestResponse {
 
 	public void setAssociatedConcernDetailRequestsList(List<AssociatedConcernDetailRequest> associatedConcernDetailRequestsList) {
 		this.associatedConcernDetailRequestsList = associatedConcernDetailRequestsList;
+	}
+	
+	public Double getEnhancementAmount() {
+		return enhancementAmount;
+	}
+
+	public void setEnhancementAmount(Double enhancementAmount) {
+		this.enhancementAmount = enhancementAmount;
 	}
 
 	@Override

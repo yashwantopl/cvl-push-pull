@@ -484,7 +484,9 @@ public class LapPrimaryViewServiceImpl implements LapPrimaryViewService{
 		} catch (Exception e) {
             logger.error(CommonUtils.EXCEPTION,e);
 		}
-		lapPrimaryViewResponse.setGuarantorList(garantorResponse);
+		if (garantorResponse != null && !garantorResponse.isEmpty()) {
+            lapPrimaryViewResponse.setGuarantorList(garantorResponse);
+        }
 		
 		return lapPrimaryViewResponse;
 	}

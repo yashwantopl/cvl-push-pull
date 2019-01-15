@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -18,10 +19,14 @@ import com.capitaworld.api.workflow.model.WorkflowResponse;
 import com.capitaworld.api.workflow.utility.MultipleJSONObjectHelper;
 import com.capitaworld.api.workflow.utility.WorkflowUtils;
 import com.capitaworld.client.workflow.WorkflowClient;
+import com.capitaworld.service.loans.domain.fundprovider.ProductMaster;
 import com.capitaworld.service.loans.domain.fundprovider.UniformProductParamter;
+import com.capitaworld.service.loans.domain.fundprovider.UniformProductParamterAudit;
 import com.capitaworld.service.loans.domain.fundprovider.UniformProductParamterTemp;
 import com.capitaworld.service.loans.model.WorkflowData;
 import com.capitaworld.service.loans.model.corporate.UniformProductParamterRequest;
+import com.capitaworld.service.loans.repository.fundprovider.ProductMasterRepository;
+import com.capitaworld.service.loans.repository.fundprovider.UniformProductParameterAuditRepository;
 import com.capitaworld.service.loans.repository.fundprovider.UniformProductParameterRepository;
 import com.capitaworld.service.loans.repository.fundprovider.UniformProductParameterTempRepository;
 import com.capitaworld.service.loans.service.fundprovider.UniformProductParameterService;
@@ -35,16 +40,22 @@ public class UniformProductParameterServiceImpl implements UniformProductParamet
 
 	@Autowired
 	private UniformProductParameterRepository uniformProductParameterRepository;
+	
+	@Autowired
+	private UniformProductParameterAuditRepository uniformProductParameterAuditRepository; 
 
 	@Autowired
 	private UniformProductParameterTempRepository uniformProductParameterTempRepository;
+	
+	@Autowired
+	private ProductMasterRepository productMasterRepository; 
 
 	@Autowired
 	private WorkflowClient workflowClient;
 
 	@Override
 	@Transactional
-	public Boolean saveOrUpdate(UniformProductParamterRequest productParamterRequest) {
+	public UniformProductParamter saveOrUpdate(UniformProductParamterRequest productParamterRequest) {
 		UniformProductParamter uniformProductParamter = uniformProductParameterRepository
 				.findFirstByUserOrgIdOrderByIdDesc(productParamterRequest.getUserOrgId());
 		if (CommonUtils.isObjectNullOrEmpty(uniformProductParamter)) {
@@ -69,8 +80,7 @@ public class UniformProductParameterServiceImpl implements UniformProductParamet
 		} else {
 			uniformProductParamter.setVersion(1);
 		}
-		uniformProductParameterRepository.save(uniformProductParamter);
-		return true;
+		return uniformProductParameterRepository.save(uniformProductParamter);
 	}
 
 	@Override
@@ -184,8 +194,32 @@ public class UniformProductParameterServiceImpl implements UniformProductParamet
 					return;
 				}
 			} else if (workflowData.getActionId() == WorkflowUtils.Action.APPROVED) {
-				Boolean saveOrUpdate = saveOrUpdate(paramterRequest);
-				if(saveOrUpdate){
+				ProductMaster oldObj = null;
+				try{
+					oldObj = productMasterRepository.getById(paramterRequest.getId());
+				}catch(Exception e){
+					logger.error("Exception :: ==> {}",e);
+				}
+				UniformProductParamter newObj = saveOrUpdate(paramterRequest);
+				if(newObj != null){
+					try{
+						if(oldObj != null){
+							UniformProductParamterAudit uniformProductParamterAudit = uniformProductParameterAuditRepository.findFirstByFpProductIdOrderByIdDesc(paramterRequest.getId());
+							if(!CommonUtils.isObjectNullOrEmpty(uniformProductParamterAudit)){
+								uniformProductParamterAudit.setFromDate(CommonUtils.isObjectNullOrEmpty(oldObj.getModifiedDate()) ? oldObj.getCreatedDate() : oldObj.getModifiedDate());
+								uniformProductParamterAudit.setIsActive(oldObj.getIsActive());
+								JSONObject jsonObject = new JSONObject();
+								jsonObject.put("oldValue", oldObj.getIsActive());
+								jsonObject.put("newValue", newObj.getIsActive());
+								jsonObject.put("isChanged", (oldObj.getIsActive() != null  ? oldObj.getIsActive().equals(newObj.getIsActive()) : false));
+								uniformProductParamterAudit.setIsActiveAudit(jsonObject.toString());
+								uniformProductParameterAuditRepository.save(uniformProductParamterAudit);
+							}
+						}
+					}catch(Exception e){
+						logger.error("Exception :: ==> {}",e);	
+					}
+					
 					WorkflowResponse workflowResponse = workflowClient.updateJob(request);
 					if (workflowResponse.getStatus() == 200) {
 						logger.info("Successfully Updated Status to Approved on Job Id ===> {}", workflowData.getJobId());

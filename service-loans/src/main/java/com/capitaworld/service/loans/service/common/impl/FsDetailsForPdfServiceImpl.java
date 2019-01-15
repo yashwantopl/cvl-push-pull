@@ -543,7 +543,6 @@ public class FsDetailsForPdfServiceImpl implements FsDetailsForPdfService {
 				map.put("coappCreditCardsMap"+ j, coappCreditCardsMap);
 			}
 		}
-		Double coappAccValue = (double) 0;
 		//FIXED ASSET BANK NAME COAPPLICANT
 		if (!CommonUtils.isObjectListNull(finalViewResponse.getFinalViewResponse().getCoApplicantCommonDetails())) {
 			for (int i = 0; i < finalViewResponse.getFinalViewResponse().getCoApplicantCommonDetails().size(); i++) {

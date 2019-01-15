@@ -99,11 +99,11 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 	@Override
 	public void saveITRMappingData (CorporateApplicantRequest applicantRequest) {
 		//Updating OneForm Uniform Fields
-		if(!CommonUtils.isObjectNullOrEmpty(applicantRequest.getTurnOverPrevFinYear()) || !CommonUtils.isObjectNullOrEmpty(applicantRequest.getTurnOverCurrFinYearTillMonth()) || !CommonUtils.isObjectNullOrEmpty(applicantRequest.getProfitCurrFinYear())){
-			logger.info("TurnOverPrevFinYear===>{}TurnOverCurrFinYearTillMonth====>{}ProfitCurrFinYear===>{}",applicantRequest.getTurnOverPrevFinYear(), applicantRequest.getTurnOverCurrFinYearTillMonth(),applicantRequest.getProfitCurrFinYear());
+		/*if(!CommonUtils.isObjectNullOrEmpty(applicantRequest.getTurnOverPrevFinYear()) || !CommonUtils.isObjectNullOrEmpty(applicantRequest.getTurnOverCurrFinYearTillMonth()) || !CommonUtils.isObjectNullOrEmpty(applicantRequest.getProfitCurrFinYear())){*/
+			logger.info("TurnOverPrevFinYear===>{}TurnOverCurrFinYearTillMonth====>{}ProfitCurrFinYear===>{}====>GrossSales==>{}",applicantRequest.getTurnOverPrevFinYear(), applicantRequest.getTurnOverCurrFinYearTillMonth(),applicantRequest.getProfitCurrFinYear(),applicantRequest.getGrossSales());
 			int count = primaryCorporateDetailRepository.updatedFinancialFieldsForUniformProduct(applicantRequest.getApplicationId(), applicantRequest.getTurnOverPrevFinYear(), applicantRequest.getTurnOverCurrFinYearTillMonth(),applicantRequest.getProfitCurrFinYear(),applicantRequest.getGrossSales());
 			logger.info("Count in Updation===>{}",count);
-		}
+		/*}*/
 		
 		CorporateApplicantDetail applicantDetail = applicantRepository.findByApplicationIdIdAndIsActive(applicantRequest.getApplicationId(),true);
 		if(!CommonUtils.isObjectNullOrEmpty(applicantDetail)) {
