@@ -205,10 +205,10 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 			BeanUtils.copyProperties(fundSeekerInputRequest, primaryCorporateDetail);
 			
 			if(fundSeekerInputRequest.getEnhancementAmount() != null) {
-				requiredLoanAmount = requiredLoanAmount + (fundSeekerInputRequest.getEnhancementAmount() != null ? fundSeekerInputRequest.getEnhancementAmount() : 0);
+				requiredLoanAmount = requiredLoanAmount + fundSeekerInputRequest.getEnhancementAmount();
 			}
 			
-			primaryCorporateDetail.setAmount(requiredLoanAmount);
+			primaryCorporateDetail.setLoanAmount(requiredLoanAmount);
 			primaryCorporateDetail.setEnhancementAmount(fundSeekerInputRequest.getEnhancementAmount());
 			primaryCorporateDetail.setIsApplicantDetailsFilled(true);
 			primaryCorporateDetail.setIsApplicantPrimaryFilled(true);
