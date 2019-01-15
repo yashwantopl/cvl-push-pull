@@ -44,6 +44,7 @@ public class CorporatePrimaryViewResponse {
     private String haveCollateralSecurity;
     private String collateralSecurityAmount;
     private List<Object> profilePic;
+    private Double enhancementAmount;
 
     /*private String  isBusinessAssetChecked;
     private String  isWorkingCapitalChecked;
@@ -1190,6 +1191,12 @@ public class CorporatePrimaryViewResponse {
 	}
 	public void setMcaFinancialAndDetailsResponse(Object mcaFinancialAndDetailsResponse) {
 		this.mcaFinancialAndDetailsResponse = mcaFinancialAndDetailsResponse;
+	}
+	public Double getEnhancementAmount() {
+		return enhancementAmount;
+	}
+	public void setEnhancementAmount(Double enhancementAmount) {
+		this.enhancementAmount = enhancementAmount;
 	}
 	
 	

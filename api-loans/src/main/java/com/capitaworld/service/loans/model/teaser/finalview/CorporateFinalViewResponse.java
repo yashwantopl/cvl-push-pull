@@ -55,6 +55,7 @@ public class CorporateFinalViewResponse implements Serializable {
 	private Double sharePriceFace;
 	private Double sharePriceMarket;
 	private String loanAmount;
+	private Double enhancementAmount;
 	private String gstIn;
 	private String haveCollateralSecurity;
 	private String collateralSecurityAmount;
@@ -2143,6 +2144,14 @@ public class CorporateFinalViewResponse implements Serializable {
 
 	public void setCompanyId(String companyId) {
 		this.companyId = companyId;
+	}
+
+	public Double getEnhancementAmount() {
+		return enhancementAmount;
+	}
+
+	public void setEnhancementAmount(Double enhancementAmount) {
+		this.enhancementAmount = enhancementAmount;
 	}
 
 	

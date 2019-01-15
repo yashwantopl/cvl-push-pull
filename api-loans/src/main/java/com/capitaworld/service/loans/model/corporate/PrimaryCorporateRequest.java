@@ -25,7 +25,8 @@ public class PrimaryCorporateRequest extends LoanApplicationRequest implements S
     private Long stateId;
     private Long cityId;
     private Double proposedCost;
-
+    private Double enhancementAmount;
+    
     /*
      * SBI MSME Integration related fields
      * By Ravina
@@ -271,4 +272,14 @@ public class PrimaryCorporateRequest extends LoanApplicationRequest implements S
 	public void setGrossSales(Double grossSales) {
 		this.grossSales = grossSales;
 	}
+
+	public Double getEnhancementAmount() {
+		return enhancementAmount;
+	}
+
+	public void setEnhancementAmount(Double enhancementAmount) {
+		this.enhancementAmount = enhancementAmount;
+	}
+	
+	
 }
