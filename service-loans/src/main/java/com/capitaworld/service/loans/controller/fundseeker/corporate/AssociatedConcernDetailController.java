@@ -120,17 +120,11 @@ public class AssociatedConcernDetailController {
 				Integer currentYear = null;
 			if (!CommonUtils.isListNullOrEmpty(response)) {
 				currentYear = response.get(0).getCurrentYear();
-				if (currentYear != null) {
+				if (currentYear == null) {
 					Calendar calendar = Calendar.getInstance();
 					calendar.setTime(new Date());
 					currentYear = calendar.get(Calendar.YEAR);
 				}
-				 else {
-						Calendar calendar = Calendar.getInstance();
-						calendar.setTime(new Date());
-						currentYear = calendar.get(Calendar.YEAR);
-					}
-
 			} else {
 				Calendar calendar = Calendar.getInstance();
 				calendar.setTime(new Date());

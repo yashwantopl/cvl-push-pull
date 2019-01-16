@@ -802,12 +802,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					GatewayRequest gatewayRequest = networkPartnerService
 							.getPaymentStatuOfApplication(applicationRequest.getId());
 					if (!CommonUtils.isObjectNullOrEmpty(gatewayRequest)) {
-						if (gatewayRequest.getStatus()
-								.equals(com.capitaworld.service.gateway.utils.CommonUtils.PaymentStatus.SUCCESS)) {
 							applicationRequest.setPaymentStatus(gatewayRequest.getStatus());
-						} else {
-							applicationRequest.setPaymentStatus(gatewayRequest.getStatus());
-						}
 					}
 				}
 			} else {

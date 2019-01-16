@@ -695,8 +695,12 @@ public class ScoringServiceImpl implements ScoringService {
                         try {
                             modelParameterResponse = MultipleJSONObjectHelper.getObjectFromMap(dataList.get(i),
                                     ModelParameterResponse.class);
+                            if(modelParameterResponse == null){
+                                continue;
+                            }
                         } catch (IOException | NullPointerException e) {
                             logger.error(CommonUtils.EXCEPTION,e);
+                            continue;
                         }
 
                         FundSeekerInputRequest fundSeekerInputRequest = new FundSeekerInputRequest();
