@@ -154,7 +154,7 @@ public class FPAsyncComponent {
 
 	@Value("${capitaworld.sidbi.mail.to.maker.checker}")
 	private Boolean mailToMakerChecker;
-
+	/*====================This emails are triggered from new payment module.==============================*/
 	// ====Sending Mail to all Makers after FS receives In-principle Approval=======changed for the multiple bank=
 	@Async
 	public void sendEmailToAllMakersWhenFSRecievesInPrinciple(Map<String, Object> proposalresp,
@@ -887,7 +887,10 @@ public class FPAsyncComponent {
 			logger.info("Mail to BO after In-principle to FS is disabled==========>");
 		}
 	}
-
+/*===============================================================================================================================*/
+ 	
+ 	
+ 	
 	// ====================Sending Mail to Maker and all Makers and Checkers when maker accepts Proposal==========
 	@Async
 	public void sendMailToMakerandAllMakersWhenMakerAcceptProposal(NhbsApplicationRequest request) {
