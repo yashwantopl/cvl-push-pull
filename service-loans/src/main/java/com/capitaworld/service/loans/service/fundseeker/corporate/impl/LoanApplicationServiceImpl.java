@@ -6730,8 +6730,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Override
 	public LoanApplicationRequest getAllFlag(Long id, Long userId) throws Exception {
+//		System.out.println("userId :"+userId);
 		LoanApplicationRequest applicationRequest = null;
-		LoanApplicationMaster applicationMaster = loanApplicationRepository.getByIdAndUserId(id, userId);
+		LoanApplicationMaster applicationMaster = loanApplicationRepository.getById(id);
 		if (applicationMaster != null) {
 			applicationRequest = new LoanApplicationRequest();
 			applicationRequest.setProfilePrimaryLocked(applicationMaster.getIsPrimaryLocked() != null ? applicationMaster.getIsPrimaryLocked() : false);
