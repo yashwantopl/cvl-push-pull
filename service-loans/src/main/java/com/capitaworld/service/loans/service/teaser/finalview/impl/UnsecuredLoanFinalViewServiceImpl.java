@@ -6,6 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -301,7 +302,7 @@ public class UnsecuredLoanFinalViewServiceImpl implements UnsecuredLoanFinalView
 
 	@Override
 	public UnsecuredLoanFinalViewResponse getUnsecuredLoanFinalViewDetails(Long toApplicationId, Integer userType,
-			Long fundProviderUserId) throws JsonProcessingException {
+			Long fundProviderUserId) throws LoansException {
 		LoanApplicationMaster applicationMaster = loanApplicationRepository.findOne(toApplicationId);
 		Long userId = applicationMaster.getUserId();
 

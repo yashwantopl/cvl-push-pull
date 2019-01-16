@@ -7,6 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -214,7 +215,7 @@ public class RecentViewServiceImpl implements RecentViewService{
 
 	@Override
 	public RecentProfileViewDetailResponse getRecentViewDetailListByProdId(Long productId, Long userId)
-			throws Exception {
+			throws DocumentException, IOException, LoansException {
 		NotificationRequest request = new NotificationRequest();
 		request.setProductId(productId);
 		request.setClientRefId(userId.toString());

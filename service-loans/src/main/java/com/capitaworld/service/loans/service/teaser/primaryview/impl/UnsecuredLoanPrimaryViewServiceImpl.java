@@ -5,6 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.capitaworld.service.loans.exceptions.LoansException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -157,7 +158,7 @@ public class UnsecuredLoanPrimaryViewServiceImpl implements UnsecuredLoanPrimary
 
 	@Override
 	public UnsecuredLoanPrimaryViewResponse getUnsecuredLoanPrimaryViewDetails(Long toApplicationId, Integer userType,
-																			   Long fundProviderUserId) {
+																			   Long fundProviderUserId) throws LoansException {
 		UnsecuredLoanPrimaryViewResponse unsecuredLoanPrimaryViewResponse = new UnsecuredLoanPrimaryViewResponse();
 
 		if (userType != null && !(CommonUtils.UserType.FUND_SEEKER == userType) ) {

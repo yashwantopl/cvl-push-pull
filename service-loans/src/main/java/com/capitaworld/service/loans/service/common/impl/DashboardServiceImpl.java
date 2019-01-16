@@ -46,7 +46,7 @@ public class DashboardServiceImpl implements DashboardService {
 	private UsersClient usersClient;
 
 	@Override
-	public DashboardProfileResponse getBasicProfileInfo(Long applicationId, Long userId,boolean isSP) throws Exception {
+	public DashboardProfileResponse getBasicProfileInfo(Long applicationId, Long userId,boolean isSP) throws LoansException {
 		CommonDocumentUtils.startHook(logger, GET_BASIC_PROFILE_INFO);
 
 		Integer productId = null;

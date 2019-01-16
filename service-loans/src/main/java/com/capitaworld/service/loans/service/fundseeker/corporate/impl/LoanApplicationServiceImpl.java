@@ -2885,7 +2885,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<AdminPanelLoanDetailsResponse> getLoanDetailsForAdminPanel(Integer type, MobileLoanRequest loanRequest)
-			throws IOException , Exception {
+			throws IOException , LoansException {
 
 		List<AdminPanelLoanDetailsResponse> responseList = new ArrayList<>();
 		UserResponse userResponse = userClient.getFsIsSelfActiveUserId();
@@ -5513,7 +5513,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	
 
 	@Override
-	public HunterRequestDataResponse getDataForHunter(Long applicationId) throws Exception {
+	public HunterRequestDataResponse getDataForHunter(Long applicationId) throws LoansException {
 		try {
 
 			logger.info("In getDataForHunter with Application ID : " + applicationId);
@@ -5744,12 +5744,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			return response;
 		} catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
-			throw e;
+			throw new LoansException(e);
 		}
 	}
 
 	@Override
-	public HunterRequestDataResponse getDataForHunterForNTB(Long applicationId) throws Exception {
+	public HunterRequestDataResponse getDataForHunterForNTB(Long applicationId) throws LoansException {
 		try {
 
 			logger.info("In getDataForHunter with Application ID : " + applicationId);
@@ -5907,12 +5907,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			return response;
 		} catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
-			throw e;
+			throw new LoansException(e);
 		}
 	}
 
 	@Override
-	public SanctioningDetailResponse getDetailsForSanction(DisbursementRequest disbursementRequest) throws Exception {
+	public SanctioningDetailResponse getDetailsForSanction(DisbursementRequest disbursementRequest) throws LoansException {
 		try {
 			logger.info(
 					"Start getDetailsForSanction with data application Id : " + disbursementRequest.getApplicationId()
@@ -5956,7 +5956,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			return sanctioningDetailResponse;
 		} catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
-			throw e;
+			throw new LoansException(e);
 		}
 	}
 
@@ -6719,7 +6719,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 
 	@Override
-	public LoanApplicationRequest getAllFlag(Long id, Long userId) throws Exception {
+	public LoanApplicationRequest getAllFlag(Long id, Long userId) throws LoansException {
 		LoanApplicationRequest applicationRequest = null;
 		LoanApplicationMaster applicationMaster = loanApplicationRepository.getByIdAndUserId(id, userId);
 		if (applicationMaster != null) {

@@ -86,7 +86,7 @@ public class MobileLoanServiceImpl implements MobileService {
 
 	
 	@Override
-	public MRetailApplicantResponse getApplicantDetails(MobileLoanRequest mobileUserRequest) throws Exception {
+	public MRetailApplicantResponse getApplicantDetails(MobileLoanRequest mobileUserRequest) throws LoansException {
 		logger.info("Get Applicant Details From RetailApplicantDetail");
 		RetailApplicantDetail retailApplicantDetail = retailApplicantDetailRepository.getByApplicationAndUserId(mobileUserRequest.getUserId(), mobileUserRequest.getApplicationId());
 		if(!CommonUtils.isObjectNullOrEmpty(retailApplicantDetail)) {
