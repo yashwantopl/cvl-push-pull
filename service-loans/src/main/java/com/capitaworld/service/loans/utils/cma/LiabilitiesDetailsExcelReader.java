@@ -24,7 +24,7 @@ public class LiabilitiesDetailsExcelReader
         // Do nothing because of X and Y.
     }
 	public static final Logger log = LoggerFactory.getLogger(LiabilitiesDetailsExcelReader.class);
-    public static final List<String> LIABILITIES_MAPPING_LIST = new ArrayList<String>();
+    private static final List<String> LIABILITIES_MAPPING_LIST = new ArrayList<String>();
     public static final DecimalFormat decimalFormat = new DecimalFormat("#.##");
 
     public static void run(Long storageDetailsId,XSSFSheet sheet,LoanApplicationMaster loanApplicationMaster,LiabilitiesDetailsRepository liabilitiesDetailsRepository) throws Exception {

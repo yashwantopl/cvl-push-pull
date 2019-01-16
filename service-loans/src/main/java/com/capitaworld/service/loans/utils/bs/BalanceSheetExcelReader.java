@@ -25,7 +25,7 @@ public class BalanceSheetExcelReader
 
     private static final Logger logger = LoggerFactory.getLogger(BalanceSheetExcelReader.class);
 
-    public static final ArrayList<String> BALANCE_SHEET_MAPPING_LIST = new ArrayList<String>();
+    private static final ArrayList<String> BALANCE_SHEET_MAPPING_LIST = new ArrayList<String>();
     public static final DecimalFormat decimalFormat = new DecimalFormat("#.##");
 
     public static void run(Long storageDetailsId,XSSFSheet sheet,LoanApplicationMaster loanApplicationMaster,BalanceSheetDetailRepository balanceSheetDetailRepository) {
