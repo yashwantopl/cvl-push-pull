@@ -475,7 +475,9 @@ public class LapPrimaryViewServiceImpl implements LapPrimaryViewService{
 		} catch (Exception e) {
             logger.error(CommonUtils.EXCEPTION,e);
 		}
-		lapPrimaryViewResponse.setCoApplicantList(coApplicantResponse);
+		if (coApplicantResponse != null && !coApplicantResponse.isEmpty()) {
+            lapPrimaryViewResponse.setCoApplicantList(coApplicantResponse);
+        }
 
 		//setting guarantor details
 		List<RetailProfileViewResponse> garantorResponse = null;

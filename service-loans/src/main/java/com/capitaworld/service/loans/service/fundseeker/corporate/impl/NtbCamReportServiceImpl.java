@@ -173,7 +173,9 @@ public class NtbCamReportServiceImpl implements NtbCamReportService{
 		// GET DIRECTOR BACKGROUND DETAILS
 		try {
 			List<Map<String, Object>> directorBackgroundDetails = corporateDirectorIncomeService.getDirectorBackGroundDetails(applicationId);
-			map.put("directorBackgroundDetails", directorBackgroundDetails);
+			if (directorBackgroundDetails != null && !directorBackgroundDetails.isEmpty()) {
+				map.put("directorBackgroundDetails", directorBackgroundDetails);
+			}
 			if (directorBackgroundDetails.size() == 1) {
 				map.put("isMultipleDirector", false);
 			} else {
@@ -257,8 +259,11 @@ public class NtbCamReportServiceImpl implements NtbCamReportService{
 		// GET DIRECTOR INCOME DETAILS
 		try {
 			List<CorporateDirectorIncomeRequest> directorIncomeDetails = corporateDirectorIncomeService.getDirectorIncomeDetails(applicationId);
-			Map<String, List<CorporateDirectorIncomeRequest>> dirIncomeDetail = directorIncomeDetails.stream().collect(Collectors.groupingBy(CorporateDirectorIncomeRequest:: getDirectorName));
-			if(!CommonUtils.isObjectNullOrEmpty(dirIncomeDetail)) {
+			Map<String, List<CorporateDirectorIncomeRequest>> dirIncomeDetail = null;
+			if (directorIncomeDetails != null && !directorIncomeDetails.isEmpty()) {
+				dirIncomeDetail = directorIncomeDetails.stream().collect(Collectors.groupingBy(CorporateDirectorIncomeRequest::getDirectorName));
+			}
+			if(dirIncomeDetail != null && !dirIncomeDetail.isEmpty()) {
 				map.put("directorIncomeDetails", dirIncomeDetail);
 			}
 		} catch (Exception e) {

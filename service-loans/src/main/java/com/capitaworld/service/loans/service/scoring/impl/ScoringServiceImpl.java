@@ -695,8 +695,12 @@ public class ScoringServiceImpl implements ScoringService {
                         try {
                             modelParameterResponse = MultipleJSONObjectHelper.getObjectFromMap(dataList.get(i),
                                     ModelParameterResponse.class);
+                            if(modelParameterResponse == null){
+                                continue;
+                            }
                         } catch (IOException | NullPointerException e) {
                             logger.error(CommonUtils.EXCEPTION,e);
+                            continue;
                         }
 
                         FundSeekerInputRequest fundSeekerInputRequest = new FundSeekerInputRequest();
@@ -1204,11 +1208,7 @@ public class ScoringServiceImpl implements ScoringService {
                 assetsDetailsTY = assetsDetailsRepository.getAssetsDetails(applicationId, currentYear - 1 + "");
                 assetsDetailsSY = assetsDetailsRepository.getAssetsDetails(applicationId, currentYear - 2 + "");
                 assetsDetailsFY = assetsDetailsRepository.getAssetsDetails(applicationId, currentYear - 3 + "");
-            } else if (ScoreParameter.FinancialTypeForITR.ONE_YEAR_ITR == financialTypeId) {
-                operatingStatementDetailsTY = operatingStatementDetailsRepository.getOperatingStatementDetails(applicationId, currentYear - 1 + "");
-                liabilitiesDetailsTY = liabilitiesDetailsRepository.getLiabilitiesDetails(applicationId, currentYear - 1 + "");
-                assetsDetailsTY = assetsDetailsRepository.getAssetsDetails(applicationId, currentYear - 1 + "");
-            } else if (ScoreParameter.FinancialTypeForITR.PRESUMPTIVE == financialTypeId) {
+            } else if (ScoreParameter.FinancialTypeForITR.ONE_YEAR_ITR == financialTypeId || ScoreParameter.FinancialTypeForITR.PRESUMPTIVE == financialTypeId) {
                 operatingStatementDetailsTY = operatingStatementDetailsRepository.getOperatingStatementDetails(applicationId, currentYear - 1 + "");
                 liabilitiesDetailsTY = liabilitiesDetailsRepository.getLiabilitiesDetails(applicationId, currentYear - 1 + "");
                 assetsDetailsTY = assetsDetailsRepository.getAssetsDetails(applicationId, currentYear - 1 + "");
@@ -2272,11 +2272,7 @@ public class ScoringServiceImpl implements ScoringService {
                     assetsDetailsTY = assetsDetailsRepository.getAssetsDetails(applicationId, currentYear - 1 + "");
                     assetsDetailsSY = assetsDetailsRepository.getAssetsDetails(applicationId, currentYear - 2 + "");
                     assetsDetailsFY = assetsDetailsRepository.getAssetsDetails(applicationId, currentYear - 3 + "");
-                } else if (ScoreParameter.FinancialTypeForITR.ONE_YEAR_ITR == scoringRequest.getFinancialTypeId()) {
-                    operatingStatementDetailsTY = operatingStatementDetailsRepository.getOperatingStatementDetails(applicationId, currentYear - 1 + "");
-                    liabilitiesDetailsTY = liabilitiesDetailsRepository.getLiabilitiesDetails(applicationId, currentYear - 1 + "");
-                    assetsDetailsTY = assetsDetailsRepository.getAssetsDetails(applicationId, currentYear - 1 + "");
-                } else if (ScoreParameter.FinancialTypeForITR.PRESUMPTIVE == scoringRequest.getFinancialTypeId()) {
+                } else if (ScoreParameter.FinancialTypeForITR.ONE_YEAR_ITR == scoringRequest.getFinancialTypeId() || ScoreParameter.FinancialTypeForITR.PRESUMPTIVE == scoringRequest.getFinancialTypeId()) {
                     operatingStatementDetailsTY = operatingStatementDetailsRepository.getOperatingStatementDetails(applicationId, currentYear - 1 + "");
                     liabilitiesDetailsTY = liabilitiesDetailsRepository.getLiabilitiesDetails(applicationId, currentYear - 1 + "");
                     assetsDetailsTY = assetsDetailsRepository.getAssetsDetails(applicationId, currentYear - 1 + "");
@@ -4024,7 +4020,6 @@ public class ScoringServiceImpl implements ScoringService {
     @Override
     public ScoringModelReqRes getScoringModelTempDetail(ScoringModelReqRes scoringModelReqRes) {
         try {
-            Long fpProductId = scoringModelReqRes.getFpProductId();
             try {
                 return scoringClient.getScoringModelTempDetail(scoringModelReqRes);
             } catch (Exception e) {

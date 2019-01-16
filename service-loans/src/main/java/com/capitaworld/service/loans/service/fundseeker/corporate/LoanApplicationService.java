@@ -87,7 +87,7 @@ public interface LoanApplicationService {
 	
 	public List<RegisteredUserResponse> getUsersRegisteredLoanDetails(MobileLoanRequest loanRequest);
 	
-	public List<AdminPanelLoanDetailsResponse> getLoanDetailsForAdminPanel(Integer type,MobileLoanRequest loanRequest) throws IOException, Exception;
+	public List<AdminPanelLoanDetailsResponse> getLoanDetailsForAdminPanel(Integer type,MobileLoanRequest loanRequest) throws IOException, LoansException;
 
 	public List<AdminPanelLoanDetailsResponse> getPostLoginForAdminPanel(MobileLoanRequest loanRequest) throws IOException, LoansException;
 
@@ -183,10 +183,10 @@ public interface LoanApplicationService {
 	 * @param applicationId
 	 * @return
 	 */
-	public HunterRequestDataResponse getDataForHunter(Long applicationId) throws Exception;
+	public HunterRequestDataResponse getDataForHunter(Long applicationId) throws LoansException;
 
 
-	public SanctioningDetailResponse getDetailsForSanction(DisbursementRequest disbursementRequest) throws Exception;
+	public SanctioningDetailResponse getDetailsForSanction(DisbursementRequest disbursementRequest) throws LoansException;
 
 	
 	public String saveDetailedInfo(ProfileReqRes profileReqRes) throws LoansException;
@@ -203,7 +203,7 @@ public interface LoanApplicationService {
 	 * @return
 	 * @throws Exception
 	 */
-	public HunterRequestDataResponse getDataForHunterForNTB(Long applicationId) throws Exception;
+	public HunterRequestDataResponse getDataForHunterForNTB(Long applicationId) throws LoansException;
 	
 	public Boolean saveLoanWCRenewalType(Long applicationId,Integer wcRenewalType);
 	public Integer getLoanWCRenewalType(Long applicationId);
@@ -214,7 +214,7 @@ public interface LoanApplicationService {
 
 	Long getIrrByApplicationId(Long id) throws LoansException;
 
-	LoanApplicationRequest getAllFlag(Long id, Long userId) throws Exception;
+	LoanApplicationRequest getAllFlag(Long id, Long userId) throws LoansException;
 }
 
 

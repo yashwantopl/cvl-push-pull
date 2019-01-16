@@ -71,7 +71,7 @@ public class OtherCurrentAssetDetailServiceImpl implements OtherCurrentAssetDeta
 					otherCurrentAssetDetail.setGuarantorDetailId(guarantorDetailsRepository.findOne(frameRequest.getApplicationId()));
 					break;
 				default :
-					throw new Exception();
+					throw new LoansException();
 				}
 				
 				otherCurrentAssetDetail.setModifiedBy(frameRequest.getUserId());

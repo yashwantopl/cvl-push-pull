@@ -2,11 +2,7 @@
 package com.capitaworld.service.loans.service.fundprovider.impl;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.persistence.EntityManager;
 
@@ -1136,7 +1132,7 @@ public class ProductMasterServiceImpl implements ProductMasterService {
 		} catch (MatchException e) {
 			logger.error(CommonUtils.EXCEPTION,e);
 		}
-		return null;
+		return Collections.emptyList();
 	}
 
 	@Override

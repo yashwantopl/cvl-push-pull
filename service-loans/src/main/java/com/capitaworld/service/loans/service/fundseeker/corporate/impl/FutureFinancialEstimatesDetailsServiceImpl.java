@@ -244,6 +244,10 @@ public class FutureFinancialEstimatesDetailsServiceImpl implements FutureFinanci
 
 	private List<FutureFinancialEstimatesDetailRequest> getRequestFromDomain(
 			List<FutureFinancialEstimatesDetail> details) {
+		if(CommonUtils.isListNullOrEmpty(details)){
+			return Collections.emptyList();
+		}
+
 		List<FutureFinancialEstimatesDetailRequest> response = new ArrayList<FutureFinancialEstimatesDetailRequest>(
 				details.size());
 		for (FutureFinancialEstimatesDetail detail : details) {

@@ -23,8 +23,12 @@ import com.capitaworld.service.loans.utils.CommonUtils;
 
 public class AssetsDetailsExcelReader
 {
+    private AssetsDetailsExcelReader() {
+        // Do nothing because of X and Y.
+    }
+
 	public static final Logger log = LoggerFactory.getLogger(AssetsDetailsExcelReader.class);
-    public static final List<String> ASSETS_MAPPING_LIST = new ArrayList<String>();
+    private static final List<String> ASSETS_MAPPING_LIST = new ArrayList<String>();
     public static final DecimalFormat decimalFormat = new DecimalFormat("#.##");
     public static void run(Long storageDetailsId,XSSFSheet sheet,LoanApplicationMaster loanApplicationMaster,AssetsDetailsRepository assetsDetailsRepository) throws Exception {
         ASSETS_MAPPING_LIST.clear();

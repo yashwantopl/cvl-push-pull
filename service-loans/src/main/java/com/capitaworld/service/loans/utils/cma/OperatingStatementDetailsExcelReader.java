@@ -19,8 +19,13 @@ import com.capitaworld.service.loans.repository.fundseeker.corporate.OperatingSt
 import com.capitaworld.service.loans.utils.CommonUtils;
 
 public class OperatingStatementDetailsExcelReader {
+
+    private OperatingStatementDetailsExcelReader() {
+        // Do nothing because of X and Y.
+    }
+
 	public static final Logger log = LoggerFactory.getLogger(OperatingStatementDetailsExcelReader.class);
-    public static final List<String> OPERATING_STATEMENT_MAPPING_LIST = new ArrayList<String>();
+    private static final List<String> OPERATING_STATEMENT_MAPPING_LIST = new ArrayList<String>();
     public static final DecimalFormat decimalFormat = new DecimalFormat("#.##");
 
     public static void run(Long storageDetailsId,XSSFSheet sheet,LoanApplicationMaster loanApplicationMaster,OperatingStatementDetailsRepository operatingStatementDetailsRepository) throws Exception {

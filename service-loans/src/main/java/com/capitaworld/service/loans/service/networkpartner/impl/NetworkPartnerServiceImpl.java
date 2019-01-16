@@ -2,12 +2,7 @@ package com.capitaworld.service.loans.service.networkpartner.impl;
 
 import java.io.IOException;
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.transaction.Transactional;
 
@@ -128,7 +123,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 	
 	@Autowired
 	private ProposalDetailsRepository proposalDetailsRepository;
-	
+
 	@Autowired
 	private McaClient mcaClient;
 	
@@ -657,7 +652,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 			return loanApplicationMasterList;
 		}
 		logger.info("exit from getApplicationListToAssignedCheckerFromBoFp()");
-		return null;
+		return Collections.emptyList();
 	}
 
 	@Override
@@ -1248,7 +1243,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
                 }else if(request.getDdrStatusId()==CommonUtils.DdrStatus.REVERTED){
                     List<ApplicationStatusAudit> applicationStatusAuditList = appStatusRepository.getApplicationByUserIdBasedOnDDRStatusForFPChecker(loanApplicationMaster.getId(), CommonUtils.DdrStatus.SUBMITTED);
                     if(!CommonUtils.isListNullOrEmpty(applicationStatusAuditList)){
-                        nhbsApplicationsResponse.setReceivedDate(applicationStatusAuditList.get(0).getModifiedDate());
+                        nhbsApplicationsResponse.setRevertDate(applicationStatusAuditList.get(0).getModifiedDate());
                     }
                 }else if(request.getDdrStatusId()==CommonUtils.DdrStatus.APPROVED){
                     List<ApplicationStatusAudit> applicationStatusAuditList = appStatusRepository.getApplicationByUserIdBasedOnDDRStatusForFPChecker(loanApplicationMaster.getId(), CommonUtils.DdrStatus.SUBMITTED);

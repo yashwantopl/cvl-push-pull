@@ -330,7 +330,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
     }
 
     @Override
-    public boolean saveFinal(RetailFinalInfoRequest applicantRequest, Long userId) throws Exception {
+    public boolean saveFinal(RetailFinalInfoRequest applicantRequest, Long userId) throws LoansException {
         try {
             if (applicantRequest.getApplicationId() == null) {
                 throw new NullPointerException("Application Id and ID(Primary Key) must not be null=>Application ID==>"
@@ -364,7 +364,7 @@ public class PlRetailApplicantServiceImpl implements PlRetailApplicantService {
     }
 
     @Override
-    public RetailFinalInfoRequest getFinal(Long userId, Long applicationId) throws Exception {
+    public RetailFinalInfoRequest getFinal(Long userId, Long applicationId) throws LoansException {
         try {
             RetailApplicantDetail applicantDetail = applicantRepository.findOneByApplicationIdIdAndIsActive(applicationId, true);
             if (applicantDetail == null) {
