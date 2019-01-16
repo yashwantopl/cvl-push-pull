@@ -23,7 +23,7 @@ public interface IrrService {
 	
 	public QualitativeInputSheetTradRequest qualitativeInputServiceTrading(Long aplicationId, Long userId, Integer productId,Boolean isCmaUploaded, Boolean isCoActUploaded, Long denom, Long proposalMapId) throws Exception;
 	
-//	public ResponseEntity<RatingResponse> calculateIrrRating(Long applicationId,Long userId);
+//	public ResponseEntity<RatingResponse> calculateIrrRating(Long applicationId,Long userId); 
 	
 	public ResponseEntity<RatingResponse> calculateIrrRating(Long applicationId,Long userId, Long proposalId);
 
