@@ -52,7 +52,7 @@ public class NhbsApplicationsResponse implements Serializable{
 	
 	private String mcaStatus;
 	
-	private Integer productId;
+	private Long fpProductId;
 	
 	private Boolean isFinalLocked;
 	
@@ -305,20 +305,20 @@ public class NhbsApplicationsResponse implements Serializable{
 		this.productName = productName;
 	}
 
-	public Integer getProductId() {
-		return productId;
-	}
-
 	public Boolean getIsFinalLocked() {
 		return isFinalLocked;
 	}
 
-	public void setProductId(Integer productId) {
-		this.productId = productId;
-	}
-
 	public void setIsFinalLocked(Boolean isFinalLocked) {
 		this.isFinalLocked = isFinalLocked;
+	}
+
+	public Long getFpProductId() {
+		return fpProductId;
+	}
+
+	public void setFpProductId(Long fpProductId) {
+		this.fpProductId = fpProductId;
 	}
 
 	
