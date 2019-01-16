@@ -303,7 +303,6 @@ public class ProposalServiceMappingImpl implements ProposalService {
 
 					CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
 							.getByProposalId(proposalMappingId);
-					System.out.println("User Is: " + proposalrequest.getUserId() + " Applicationid: " + applicationId + " Proposal Mapping id: "  + proposalMappingId);
 
 					if (corporateApplicantDetail == null)
 						continue;
@@ -540,6 +539,20 @@ public class ProposalServiceMappingImpl implements ProposalService {
 					} else {
 						corporateProposalDetails.setIsAssignedToBranch(false);
 					}
+
+					//checking whether proposal already sanction or not.
+					ProposalDetails proposalDetails = proposalDetailRepository.getSanctionProposalByApplicationId(applicationId);
+					if (!CommonUtils.isObjectNullOrEmpty(proposalDetails)) {
+						if (!proposalDetails.getUserOrgId().toString().equals(request.getUserOrgId().toString())) {
+							corporateProposalDetails.setIsSanction(true);
+						} else {
+							corporateProposalDetails.setIsSanction(false);
+						}
+					} else {
+						corporateProposalDetails.setIsSanction(false);
+					}
+					//
+
 					proposalDetailsList.add(corporateProposalDetails);
 				} else {
 					Long fpProductId = request.getFpProductId();
