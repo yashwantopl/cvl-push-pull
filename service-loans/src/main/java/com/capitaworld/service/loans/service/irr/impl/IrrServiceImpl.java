@@ -2255,12 +2255,12 @@ public class IrrServiceImpl implements IrrService{
 	
 	
 	@Override
-	public QualitativeInputSheetManuRequest qualitativeInputServiceManu(Long aplicationId, Long userId, Integer productId, Boolean isCmaUploaded, Boolean isCoActUploaded,Double industryRiskScore,Long denom, Long proposalMapId)
+	public QualitativeInputSheetManuRequest qualitativeInputServiceManu(Long aplicationId, Long userId, Integer productId, Boolean isCmaUploaded, Boolean isCoActUploaded,Double industryRiskScore,Long denom, Long proposalId)
 			throws Exception {
 
 		QualitativeInputSheetManuRequest qualitativeInputSheetManuRequest = null;
 
-		return setQualitativeInputManu(aplicationId,productId, userId,isCmaUploaded,isCoActUploaded, industryRiskScore, denom, proposalMapId);
+		return setQualitativeInputManu(aplicationId,productId, userId,isCmaUploaded,isCoActUploaded, industryRiskScore, denom, proposalId);
 		/*LoanType type = CommonUtils.LoanType.getType(productId);
 		switch (type) {
 		case WORKING_CAPITAL:
@@ -2277,11 +2277,11 @@ public class IrrServiceImpl implements IrrService{
 		}*/
 	}
 
-	public QualitativeInputSheetManuRequest setQualitativeInputManu(Long aplicationId,Integer productId,Long userId,Boolean isCmaUploaded, Boolean isCoActUploaded,Double industryRiskScore,Long denom, Long proposalMapId) throws Exception{
+	public QualitativeInputSheetManuRequest setQualitativeInputManu(Long aplicationId,Integer productId,Long userId,Boolean isCmaUploaded, Boolean isCoActUploaded,Double industryRiskScore,Long denom, Long proposalId) throws Exception{
 		QualitativeInputSheetManuRequest qualitativeInputSheetManuRequest = new QualitativeInputSheetManuRequest();
 
 		CorporateMcqDetail corporateMcqDetail = null;
-		corporateMcqDetail = corporateMcqDetailRepository.getByProposalIdAndUserId(proposalMapId);
+		corporateMcqDetail = corporateMcqDetailRepository.getByProposalIdAndUserId(proposalId);
 
 		qualitativeInputSheetManuRequest.setAccountingQuality(corporateMcqDetail.getAccountingQuality().longValue());
 		qualitativeInputSheetManuRequest.setUnhedgedForeignCurrencyExposure(corporateMcqDetail.getUnhedgedForeignCurrency().longValue());
@@ -2584,12 +2584,12 @@ public class IrrServiceImpl implements IrrService{
 	
 	
 	@Override
-	public QualitativeInputSheetServRequest qualitativeInputServiceService(Long aplicationId,Long userId , Integer productId,Boolean isCmaUploaded, Boolean isCoActUploaded,Long denom, Long proposalMapId)
+	public QualitativeInputSheetServRequest qualitativeInputServiceService(Long aplicationId,Long userId , Integer productId,Boolean isCmaUploaded, Boolean isCoActUploaded,Long denom, Long proposalId)
 			throws Exception {
 
 		QualitativeInputSheetServRequest qualitativeInputSheetServRequest = new QualitativeInputSheetServRequest();
 
-		return setServiceQualitativeInput(aplicationId,userId ,isCmaUploaded, isCoActUploaded, denom, proposalMapId);
+		return setServiceQualitativeInput(aplicationId,userId ,isCmaUploaded, isCoActUploaded, denom, proposalId);
 		/*LoanType type = CommonUtils.LoanType.getType(productId);
 		switch (type) {
 		case WORKING_CAPITAL:
@@ -2601,12 +2601,12 @@ public class IrrServiceImpl implements IrrService{
 		}*/
 	}
 
-	public QualitativeInputSheetServRequest setServiceQualitativeInput(Long aplicationId,Long userId,Boolean isCmaUploaded, Boolean isCoActUploaded,Long denom, Long proposalMapId) throws Exception{
+	public QualitativeInputSheetServRequest setServiceQualitativeInput(Long aplicationId,Long userId,Boolean isCmaUploaded, Boolean isCoActUploaded,Long denom, Long proposalId) throws Exception{
 		QualitativeInputSheetServRequest qualitativeInputSheetServRequest = new QualitativeInputSheetServRequest();
 
 		CorporateMcqDetail corporateMcqDetail = null;
 //		corporateMcqDetail = corporateMcqDetailRepository.getByApplicationAndUserId(aplicationId,userId);
-		corporateMcqDetail = corporateMcqDetailRepository.getByProposalIdAndUserId(proposalMapId);
+		corporateMcqDetail = corporateMcqDetailRepository.getByProposalIdAndUserId(proposalId);
 		
 		qualitativeInputSheetServRequest.setAccountingQuality(corporateMcqDetail.getAccountingQuality().longValue());
 		qualitativeInputSheetServRequest.setCustomerQuality(corporateMcqDetail.getCustomerQuality().longValue());
@@ -2640,7 +2640,7 @@ public class IrrServiceImpl implements IrrService{
 		if(isCmaUploaded) {
 			AssetsDetails assetsDetails = new AssetsDetails();
 			//assetsDetails = assetsDetailsRepository.getAssetsDetails(aplicationId, currentYear-1+""); PREVIOUS 
-			assetsDetails = assetsDetailsRepository.getAssetsDetailByProposal(proposalMapId, currentYear-1+""); // NEW
+			assetsDetails = assetsDetailsRepository.getAssetsDetailByProposal(proposalId, currentYear-1+""); // NEW
 			if(CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getContLiabilityFyAmt()))
 				qualitativeInputSheetServRequest.setContingentLiabilities(0.0);//-----formula based
 			else if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getTangibleNetWorth()))
@@ -2748,12 +2748,12 @@ public class IrrServiceImpl implements IrrService{
 	
 	
 	@Override
-	public QualitativeInputSheetTradRequest qualitativeInputServiceTrading(Long aplicationId, Long userId, Integer productId,Boolean isCmaUploaded, Boolean isCoActUploaded,Long denom, Long proposalMapId)
+	public QualitativeInputSheetTradRequest qualitativeInputServiceTrading(Long aplicationId, Long userId, Integer productId,Boolean isCmaUploaded, Boolean isCoActUploaded,Long denom, Long proposalId)
 			throws Exception {
 
 		QualitativeInputSheetTradRequest qualitativeInputSheetTradRequest = new QualitativeInputSheetTradRequest();
 
-		return setTradingQualitativeInput(aplicationId,userId ,isCmaUploaded, isCoActUploaded, denom, proposalMapId);
+		return setTradingQualitativeInput(aplicationId,userId ,isCmaUploaded, isCoActUploaded, denom, proposalId);
 		/*LoanType type = CommonUtils.LoanType.getType(productId);
 		switch (type) {
 		case WORKING_CAPITAL:
@@ -2765,12 +2765,12 @@ public class IrrServiceImpl implements IrrService{
 		}*/
 	}
 
-	public QualitativeInputSheetTradRequest setTradingQualitativeInput(Long aplicationId,Long userId,Boolean isCmaUploaded, Boolean isCoActUploaded, Long denom, Long proposalMapId) throws Exception{
+	public QualitativeInputSheetTradRequest setTradingQualitativeInput(Long aplicationId,Long userId,Boolean isCmaUploaded, Boolean isCoActUploaded, Long denom, Long proposalId) throws Exception{
 		QualitativeInputSheetTradRequest qualitativeInputSheetTradRequest = new QualitativeInputSheetTradRequest();
 		
 		CorporateMcqDetail corporateMcqDetail = null;
 //		corporateMcqDetail = corporateMcqDetailRepository.getByApplicationAndUserId(aplicationId,userId);
-		corporateMcqDetail = corporateMcqDetailRepository.getByProposalIdAndUserId(proposalMapId);
+		corporateMcqDetail = corporateMcqDetailRepository.getByProposalIdAndUserId(proposalId);
 		
 		qualitativeInputSheetTradRequest.setAccountingQuality(corporateMcqDetail.getAccountingQuality().longValue());
 		qualitativeInputSheetTradRequest.setCustomerQuality(corporateMcqDetail.getCustomerQuality().longValue());
