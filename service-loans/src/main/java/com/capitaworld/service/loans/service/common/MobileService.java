@@ -8,7 +8,7 @@ import com.capitaworld.service.loans.model.mobile.MobileLoanRequest;
 
 public interface MobileService {
 
-	public MRetailApplicantResponse getApplicantDetails(MobileLoanRequest mobileUserRequest) throws Exception;
+	public MRetailApplicantResponse getApplicantDetails(MobileLoanRequest mobileUserRequest) throws LoansException;
 	
 	public Long saveApplicantDetails(MRetailApplicantResponse mApplicantProfileResponse) throws Exception;
 	

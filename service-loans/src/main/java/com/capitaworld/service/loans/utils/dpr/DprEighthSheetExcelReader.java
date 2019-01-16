@@ -23,6 +23,9 @@ import org.slf4j.LoggerFactory;
  */
 public class DprEighthSheetExcelReader
 {
+    private DprEighthSheetExcelReader() {
+        // Do nothing because of X and Y.
+    }
 
     private static final Logger logger = LoggerFactory.getLogger(DprEighthSheetExcelReader.class);
 

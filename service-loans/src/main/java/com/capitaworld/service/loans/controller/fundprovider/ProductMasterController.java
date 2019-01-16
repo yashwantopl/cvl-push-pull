@@ -2,6 +2,8 @@ package com.capitaworld.service.loans.controller.fundprovider;
 
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
+
+import com.capitaworld.service.loans.model.common.ChatDetails;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -712,7 +714,10 @@ public class ProductMasterController {
 		try {
 			CommonDocumentUtils.startHook(logger, "getChatListByApplicationId");
 			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
-			loansResponse.setListData(productMasterService.getChatListByFpMappingId(mappingId));
+			List<ChatDetails> chatDetailsList = productMasterService.getChatListByFpMappingId(mappingId);
+			if (chatDetailsList != null && !chatDetailsList.isEmpty()) {
+				loansResponse.setListData(chatDetailsList);
+			}
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getChatListByApplicationId==>", e);

@@ -5,6 +5,7 @@ import com.capitaworld.service.loans.domain.fundseeker.retail.FinalHomeLoanDetai
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
 import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.teaser.finalview.HomeLoanFinalViewResponse;
+import com.capitaworld.service.loans.model.teaser.finalview.RetailFinalViewCommonResponse;
 import com.capitaworld.service.loans.model.teaser.finalview.RetailFinalViewResponse;
 import com.capitaworld.service.loans.repository.fundseeker.corporate.LoanApplicationRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.FinalHomeLoanDetailRepository;
@@ -75,7 +76,10 @@ public class HomeLoanFinalViewServiceImpl implements HomeLoanFinalViewService{
 			
 			//co-applicant final common details
 			try {
-				finalViewResponse.setCoApplicantCommonDetails(coApplicantService.getCoApplicantFinalResponse(applicantId, applicationMaster.getUserId(),applicationMaster.getProductId()));
+				List<RetailFinalViewCommonResponse> retailFinalViewCommonResponses = coApplicantService.getCoApplicantFinalResponse(applicantId, applicationMaster.getUserId(),applicationMaster.getProductId());
+				if (retailFinalViewCommonResponses != null && !retailFinalViewCommonResponses.isEmpty()) {
+					finalViewResponse.setCoApplicantCommonDetails(retailFinalViewCommonResponses);
+				}
 			} catch (Exception e) {
 				logger.error("error while getting CoApplicant final details : ",e);
 			}

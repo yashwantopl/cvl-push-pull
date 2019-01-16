@@ -211,12 +211,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	private static final String CONNECTOR_RESPONSE_MSG = "Connector Response -->";
 	private static final String BEFORE_START_SAVING_PHASE_1_SIDBI_API_MSG = "Before Start Saving Phase 1 Sidbi API -->";
-	private static final String FP_PRODUCT_ID_MSG = "FpProductId ==>{}";
 	private static final String PROPOSAL_MAPPING_RESPONSE_MSG = "Proposal Mapping Response --> ";
 	private static final String PROPOSAL_MAPPING_RESPONSE_NULL_OR_EMPTY_MSG = "Proposal Mapping Response Null or Empty --> ";
-	private static final String EXCEPTION_IN_EDR_IN_SAVE_PHESE1_DATA_TO_SIDBI_MSG = "Exception in  EligibilityDetailRequest in savePhese1DataToSidbi() for ApplicationId ==>{} ";
 	private static final String FETCHED_DIRECTORS_BACKGROUND_DETAILS_FOR_APPLICATION_ID_MSG = "Fetched Director's background details for application Id : ";
-	private static final String INVALID_TOKEN_DETAILS_MSG = "Invalid Token Details";
 	private static final String EXCEPTION_OCCURED_WHILE_SENDING_MAIL_TO_HO_MSG = "Exception occured while Sending Mail to HO : ";
 	private static final String EXCEPTION_OCCURED_WHILE_SENDING_MAIL_TO_ALL_BO_MSG = "Exception occured while Sending Mail to All BO : ";
 	private static final String INSIDE_SENDING_MAIL_TO_HO_AFTER_IN_PRINCIPLE_APPROVAL_MSG = "Inside sending mail to HO after In-principle Approval";
@@ -228,12 +225,10 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	private static final String SOMETHING_WENT_WRONG_WHILE_CALL_PROPOSAL_CLIENT_FOR_MSG = "Something went wrong while call proposal client for ";
 	private static final String SOMETHING_WENT_WRONG_WHILE_CALL_CONNECT_CLIENT_FOR_MSG = "Something went wrong while call connect client for ";
 	private static final String CONNECTOR_RESPONSE_NULL_OR_EMPTY_MSG = "Connector Response null or empty";
-	private static final String ERROR_MSG = "----- Error Msg : ";
 	private static final String OTHER_LITERAL = "OTHER";
 	private static final String DIRECT_LITERAL = "Direct";
 	private static final String SIDBI_FEES = "SIDBI_FEES";
 	private static final String ORG_ID = "org_id";
-	private static final String MSG_LITERAL = " Msg : ";
 
 	@Autowired
 	private DMSClient dmsClient;
@@ -807,12 +802,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					GatewayRequest gatewayRequest = networkPartnerService
 							.getPaymentStatuOfApplication(applicationRequest.getId());
 					if (!CommonUtils.isObjectNullOrEmpty(gatewayRequest)) {
-						if (gatewayRequest.getStatus()
-								.equals(com.capitaworld.service.gateway.utils.CommonUtils.PaymentStatus.SUCCESS)) {
 							applicationRequest.setPaymentStatus(gatewayRequest.getStatus());
-						} else {
-							applicationRequest.setPaymentStatus(gatewayRequest.getStatus());
-						}
 					}
 				}
 			} else {
@@ -2895,12 +2885,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<AdminPanelLoanDetailsResponse> getLoanDetailsForAdminPanel(Integer type, MobileLoanRequest loanRequest)
-			throws IOException , Exception {
+			throws IOException , LoansException {
 
 		List<AdminPanelLoanDetailsResponse> responseList = new ArrayList<>();
 		UserResponse userResponse = userClient.getFsIsSelfActiveUserId();
 		if (userResponse.getStatus() != HttpStatus.OK.value()) {
-			return null;
+			return Collections.emptyList();
 		}
 		List<LinkedHashMap<String, Object>> dataList = (List<LinkedHashMap<String, Object>>) userResponse.getData();
 		List<UsersRequest> listOfObjects = new ArrayList<>(dataList.size());
@@ -3084,7 +3074,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		List<AdminPanelLoanDetailsResponse> responseList = new ArrayList<>();
 		UserResponse userResponse = userClient.getFsIsSelfActiveForAdminPanel();
 		if (userResponse.getStatus() != HttpStatus.OK.value()) {
-			return null;
+			return Collections.emptyList();
 		}
 		List<LinkedHashMap<String, Object>> dataList = (List<LinkedHashMap<String, Object>>) userResponse.getData();
 		List<UsersRequest> listOfObjects = new ArrayList<>(dataList.size());
@@ -3186,7 +3176,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		List<AdminPanelLoanDetailsResponse> responseList = new ArrayList<>();
 		UserResponse userResponse = userClient.getFsIsSelfActiveForAdminPanel();
 		if (userResponse.getStatus() != HttpStatus.OK.value()) {
-			return null;
+			return Collections.emptyList();
 		}
 		@SuppressWarnings("unchecked")
 		List<LinkedHashMap<String, Object>> dataList = (List<LinkedHashMap<String, Object>>) userResponse.getData();
@@ -3336,7 +3326,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		List<AdminPanelLoanDetailsResponse> responseList = new ArrayList<>();
 		UserResponse userResponse = userClient.getFsIsSelfActiveForAdminPanel();
 		if (userResponse.getStatus() != HttpStatus.OK.value()) {
-			return null;
+			return Collections.emptyList();
 		}
 		List<LinkedHashMap<String, Object>> dataList = (List<LinkedHashMap<String, Object>>) userResponse.getData();
 		List<UsersRequest> listOfObjects = new ArrayList<>(dataList.size());
@@ -3457,7 +3447,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		List<AdminPanelLoanDetailsResponse> responseList = new ArrayList<>();
 		UserResponse userResponse = userClient.getDetailsOfUsersForAdminPanel(uRequest);
 		if (userResponse.getStatus() != HttpStatus.OK.value()) {
-			return null;
+			return Collections.emptyList();
 		}
 		List<LinkedHashMap<String, Object>> dataList = (List<LinkedHashMap<String, Object>>) userResponse.getData();
 		List<UsersRequest> listOfObjects = new ArrayList<>(dataList.size());
@@ -3608,7 +3598,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		List<AdminPanelLoanDetailsResponse> responseList = new ArrayList<>();
 		UserResponse userResponse = userClient.getDetailsOfUsersForAdminPanel(uRequest);
 		if (userResponse.getStatus() != HttpStatus.OK.value()) {
-			return null;
+			return Collections.emptyList();
 		}
 		List<LinkedHashMap<String, Object>> dataList = (List<LinkedHashMap<String, Object>>) userResponse.getData();
 		List<UsersRequest> listOfObjects = new ArrayList<>(dataList.size());
@@ -3793,7 +3783,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		} catch (MatchException e) {
 			logger.error(CommonUtils.EXCEPTION,e);
 		}
-		return null;
+		return Collections.emptyList();
 	}
 
 	public Long getProfilePicKeyByProductId(Integer id) {
@@ -3842,7 +3832,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		} catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
 		}
-		return null;
+		return Collections.emptyList();
 	}
 
 	@Override
@@ -5523,7 +5513,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	
 
 	@Override
-	public HunterRequestDataResponse getDataForHunter(Long applicationId) throws Exception {
+	public HunterRequestDataResponse getDataForHunter(Long applicationId) throws LoansException {
 		try {
 
 			logger.info("In getDataForHunter with Application ID : " + applicationId);
@@ -5754,12 +5744,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			return response;
 		} catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
-			throw e;
+			throw new LoansException(e);
 		}
 	}
 
 	@Override
-	public HunterRequestDataResponse getDataForHunterForNTB(Long applicationId) throws Exception {
+	public HunterRequestDataResponse getDataForHunterForNTB(Long applicationId) throws LoansException {
 		try {
 
 			logger.info("In getDataForHunter with Application ID : " + applicationId);
@@ -5917,12 +5907,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			return response;
 		} catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
-			throw e;
+			throw new LoansException(e);
 		}
 	}
 
 	@Override
-	public SanctioningDetailResponse getDetailsForSanction(DisbursementRequest disbursementRequest) throws Exception {
+	public SanctioningDetailResponse getDetailsForSanction(DisbursementRequest disbursementRequest) throws LoansException {
 		try {
 			logger.info(
 					"Start getDetailsForSanction with data application Id : " + disbursementRequest.getApplicationId()
@@ -5966,7 +5956,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			return sanctioningDetailResponse;
 		} catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
-			throw e;
+			throw new LoansException(e);
 		}
 	}
 
@@ -6729,7 +6719,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 
 	@Override
-	public LoanApplicationRequest getAllFlag(Long id, Long userId) throws Exception {
+	public LoanApplicationRequest getAllFlag(Long id, Long userId) throws LoansException {
 		LoanApplicationRequest applicationRequest = null;
 		LoanApplicationMaster applicationMaster = loanApplicationRepository.getByIdAndUserId(id, userId);
 		if (applicationMaster != null) {

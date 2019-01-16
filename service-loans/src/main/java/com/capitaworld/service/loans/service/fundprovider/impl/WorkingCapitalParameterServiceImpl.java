@@ -389,7 +389,7 @@ public class WorkingCapitalParameterServiceImpl implements WorkingCapitalParamet
 
 	@Override
 	public List<WorkingCapitalParameterRequest> getWorkingCapitalParameterListByUserId(Long id) {
-		return null;
+		return Collections.emptyList();
 	}
 
 	private void saveNegativeIndustry(WorkingCapitalParameterRequest workingCapitalParameterRequest) {

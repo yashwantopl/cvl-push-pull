@@ -13,7 +13,7 @@ public interface PlRetailApplicantService {
 
     public PLRetailApplicantRequest getPrimary(Long userId, Long applicationId) throws LoansException;
 
-    public boolean saveFinal(RetailFinalInfoRequest applicantRequest, Long userId) throws Exception;
+    public boolean saveFinal(RetailFinalInfoRequest applicantRequest, Long userId) throws LoansException;
 
-    public RetailFinalInfoRequest getFinal(Long userId, Long applicationId) throws Exception;
+    public RetailFinalInfoRequest getFinal(Long userId, Long applicationId) throws LoansException;
 }
