@@ -22,6 +22,7 @@ import com.capitaworld.service.loans.domain.fundprovider.FpNpMapping;
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
 import com.capitaworld.service.loans.model.FpNpMappingRequest;
 import com.capitaworld.service.loans.repository.fundprovider.FpNpMappingRepository;
+import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
 import com.capitaworld.service.loans.service.fundprovider.FpNpMappingService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
@@ -124,6 +125,9 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 	
 	@Autowired
 	private LoanApplicationService loanApplicationService;
+	
+	@Autowired
+	private ProposalDetailsRepository proposalDetailsRepository;
 	
 	@Autowired
 	private McaClient mcaClient;
@@ -720,13 +724,14 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 		if(!CommonUtils.isListNullOrEmpty(applicationIdList)){
 			for (BigInteger applicationId : applicationIdList) {
 				LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(applicationId.longValue());
+				Long fpProductId = proposalDetailsRepository.getFpProductIdByApplicationId(applicationId.longValue());
 				NhbsApplicationsResponse nhbsApplicationsResponse = new NhbsApplicationsResponse();
 				nhbsApplicationsResponse.setUserId(loanApplicationMaster.getUserId());
 				nhbsApplicationsResponse.setApplicationId(loanApplicationMaster.getId());
 				nhbsApplicationsResponse.setApplicationType(loanApplicationMaster.getProductId());
 				nhbsApplicationsResponse.setBusinessTypeId(loanApplicationMaster.getBusinessTypeId());
 				nhbsApplicationsResponse.setApplicationCode(loanApplicationMaster.getApplicationCode());
-				nhbsApplicationsResponse.setProductId(loanApplicationMaster.getProductId());
+				nhbsApplicationsResponse.setFpProductId(fpProductId);
 				nhbsApplicationsResponse.setIsFinalLocked(loanApplicationMaster.getIsFinalLocked());
 				
 				if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getNpUserId())){
