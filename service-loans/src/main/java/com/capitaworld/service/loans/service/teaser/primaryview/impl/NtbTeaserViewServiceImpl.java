@@ -291,7 +291,9 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService {
 		try {
 			List<Map<String, Object>> directorBackgroundDetails = corporateDirectorIncomeService
 					.getDirectorBackGroundDetails(toApplicationId);
-			ntbPrimaryViewRespone.setDirectorBackGroundDetails(directorBackgroundDetails);
+			if (directorBackgroundDetails != null && !directorBackgroundDetails.isEmpty()) {
+				ntbPrimaryViewRespone.setDirectorBackGroundDetails(directorBackgroundDetails);
+			}
 			if (directorBackgroundDetails.size() == 1) {
 				logger.info("director list size====>>>>" + directorBackgroundDetails.size());
 				ntbPrimaryViewRespone.setIsMultipleUser(false);
@@ -344,7 +346,9 @@ public class NtbTeaserViewServiceImpl implements NtbTeaserViewService {
 		try {
 			List<CorporateDirectorIncomeRequest> directorIncomeDetails = corporateDirectorIncomeService
 					.getDirectorIncomeDetails(toApplicationId);
-			ntbPrimaryViewRespone.setDirectorIncomeDetails(directorIncomeDetails);
+			if (directorIncomeDetails != null && !directorIncomeDetails.isEmpty()) {
+				ntbPrimaryViewRespone.setDirectorIncomeDetails(directorIncomeDetails);
+			}
 
 		} catch (Exception e) {
 			logger.error("Problem to get Director's Income Details===========> {}", e);

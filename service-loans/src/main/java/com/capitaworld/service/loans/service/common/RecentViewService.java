@@ -3,6 +3,7 @@ package com.capitaworld.service.loans.service.common;
 import java.io.IOException;
 
 import com.capitaworld.service.dms.exception.DocumentException;
+import com.capitaworld.service.loans.exceptions.LoansException;
 import com.capitaworld.service.loans.model.common.RecentProfileViewDetailResponse;
 
 /**
@@ -13,7 +14,7 @@ public interface RecentViewService {
 
 	RecentProfileViewDetailResponse getRecentViewDetailListByAppId(Long applicationId, Long userId) throws DocumentException, IOException;
 
-	RecentProfileViewDetailResponse getRecentViewDetailListByProdId(Long productId, Long userId)throws DocumentException, IOException, Exception;
+	RecentProfileViewDetailResponse getRecentViewDetailListByProdId(Long productId, Long userId)throws DocumentException, IOException, LoansException;
 
 	RecentProfileViewDetailResponse getLatestRecentViewDetailListByAppId(Long applicationId, Long userId) throws DocumentException, IOException;
 

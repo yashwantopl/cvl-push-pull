@@ -137,12 +137,6 @@ public class NotificationServiceImpl implements NotificationService{
 			request.setClientRefId(fromUserId.toString());
 			Map<String, Object> parameters = new HashMap<String, Object>();
 				try {
-					int fsProdId;
-					if(CommonUtils.UserType.FUND_SEEKER == fromUserTypeId)
-						fsProdId =loanApplicationService.getProductIdByApplicationId(applicationId, fromUserId);
-					else
-						fsProdId =loanApplicationService.getProductIdByApplicationId(applicationId, Long.parseLong(toUserId));
-
 					String fsName = loanApplicationService.getFsApplicantName(applicationId);
 					parameters.put("fs_name", fsName != null ? fsName : "NA");
 					parameters.put("application_id", fsName != null ? applicationId : "NA");

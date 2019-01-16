@@ -17,10 +17,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ProfitabilityStatementExcelReader {
+	private ProfitabilityStatementExcelReader() {
+		// Do nothing because of X and Y.
+	}
 
 	private static final Logger logger = LoggerFactory.getLogger(ProfitabilityStatementExcelReader.class);
 
-	public static final ArrayList<String> PROFITABILITY_STATEMENT_MAPPING_LIST = new ArrayList<String>();
+	private static final ArrayList<String> PROFITABILITY_STATEMENT_MAPPING_LIST = new ArrayList<String>();
 	public static final DecimalFormat decimalFormat = new DecimalFormat("#.##");
 
 	public static void run(Long storageDetailsId, XSSFSheet sheet, LoanApplicationMaster loanApplicationMaster,

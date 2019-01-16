@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.service.fundprovider.impl;
 
+import java.util.Collections;
 import java.util.List;
 
 import com.capitaworld.service.loans.domain.fundprovider.NegativeIndustry;
@@ -15,7 +16,7 @@ public class NegativeIndustryServiceImpl implements NegativeIndustryService{
 
 	@Override
 	public List<Long> getNegativeIndustryByFpMappingId(Long fpMappingId) throws LoansException {
-		return null;
+		return Collections.emptyList();
 	}
 
 }

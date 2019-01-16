@@ -478,7 +478,9 @@ public class HomeLoanPrimaryViewServiceImpl implements HomeLoanPrimaryViewServic
 		} catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
 		}
-		homeLoanPrimaryViewResponse.setCoApplicantResponse(coApplicantResponse);
+		if (coApplicantResponse != null && !coApplicantResponse.isEmpty()) {
+			homeLoanPrimaryViewResponse.setCoApplicantResponse(coApplicantResponse);
+		}
 
 		// setting guarantor details
 		List<RetailProfileViewResponse> garantorResponse = null;

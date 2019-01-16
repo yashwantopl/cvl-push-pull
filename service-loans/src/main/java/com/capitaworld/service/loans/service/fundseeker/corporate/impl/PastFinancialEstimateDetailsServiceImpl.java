@@ -104,7 +104,7 @@ public class PastFinancialEstimateDetailsServiceImpl implements PastFinancialEst
 
 	@Override
 	public List<PastFinancialEstimatesDetailRequest> getFinancialListData(Long userId, Long applicationId)
-			throws Exception {
+			throws LoansException {
 		List<PastFinancialEstimatesDetail> pastFinancialEstimateDetails = pastFinancialEstimateDetailsRepository
 				.listPastFinancialEstimateDetailsFromAppId(applicationId);
 

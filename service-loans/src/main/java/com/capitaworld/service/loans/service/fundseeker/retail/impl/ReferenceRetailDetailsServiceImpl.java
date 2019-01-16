@@ -71,7 +71,7 @@ public class ReferenceRetailDetailsServiceImpl implements ReferenceRetailDetails
 					referencesRetailDetail.setGuarantorDetailId(guarantorDetailsRepository.findOne(frameRequest.getApplicationId()));
 					break;
 				default :
-					throw new Exception();
+					throw new LoansException();
 				}
 				
 				referencesRetailDetail.setModifiedBy(frameRequest.getUserId());

@@ -11,6 +11,9 @@ import java.util.StringTokenizer;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.capitaworld.service.loans.model.*;
+import com.capitaworld.service.loans.model.common.ChatDetails;
+import com.capitaworld.service.users.model.FpProfileBasicDetailRequest;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,13 +32,6 @@ import com.capitaworld.service.gateway.model.GatewayRequest;
 import com.capitaworld.service.loans.config.AsyncComponent;
 import com.capitaworld.service.loans.config.AuditComponentBankToCW;
 import com.capitaworld.service.loans.exceptions.LoansException;
-import com.capitaworld.service.loans.model.FrameRequest;
-import com.capitaworld.service.loans.model.LoanApplicationDetailsForSp;
-import com.capitaworld.service.loans.model.LoanApplicationRequest;
-import com.capitaworld.service.loans.model.LoanDisbursementRequest;
-import com.capitaworld.service.loans.model.LoanSanctionRequest;
-import com.capitaworld.service.loans.model.LoansResponse;
-import com.capitaworld.service.loans.model.PaymentRequest;
 import com.capitaworld.service.loans.model.common.AutoFillOneFormDetailRequest;
 import com.capitaworld.service.loans.model.common.DisbursementRequest;
 import com.capitaworld.service.loans.model.common.EkycRequest;
@@ -935,7 +931,10 @@ public class LoanApplicationController {
 		try {
 			CommonDocumentUtils.startHook(logger, "getLoanDetailsForAdminPanel");
 			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
-			loansResponse.setListData(loanApplicationService.getLoanDetailsForAdminPanel(1, loanRequest));
+			List<AdminPanelLoanDetailsResponse> adminPanelLoanDetailsResponses = loanApplicationService.getLoanDetailsForAdminPanel(1, loanRequest);
+			if (adminPanelLoanDetailsResponses != null && !adminPanelLoanDetailsResponses.isEmpty()) {
+				loansResponse.setListData(adminPanelLoanDetailsResponses);
+			}
 
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
@@ -952,7 +951,10 @@ public class LoanApplicationController {
 		try {
 			CommonDocumentUtils.startHook(logger, "getFilledLoanDetailsForAdminPanel");
 			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
-			loansResponse.setListData(loanApplicationService.getLoanDetailsForAdminPanel(2, loanRequest));
+			List<AdminPanelLoanDetailsResponse> adminPanelLoanDetailsResponses = loanApplicationService.getLoanDetailsForAdminPanel(2, loanRequest);
+			if (adminPanelLoanDetailsResponses != null && !adminPanelLoanDetailsResponses.isEmpty()) {
+				loansResponse.setListData(adminPanelLoanDetailsResponses);
+			}
 
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
@@ -968,7 +970,10 @@ public class LoanApplicationController {
 		try {
 			CommonDocumentUtils.startHook(logger, GET_UBI_REPORT1_FOR_ADMIN_PANEL);
 			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
-			loansResponse.setListData(loanApplicationService.getPostLoginForAdminPanel(loanRequest));
+			List<AdminPanelLoanDetailsResponse> adminPanelLoanDetailsResponses = loanApplicationService.getPostLoginForAdminPanel(loanRequest);
+			if (adminPanelLoanDetailsResponses != null && !adminPanelLoanDetailsResponses.isEmpty()) {
+				loansResponse.setListData(adminPanelLoanDetailsResponses);
+			}
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error(ERROR_WHILE_GET_UBI_REPORT1_FOR_ADMIN_PANEL_MSG, e);
@@ -983,7 +988,10 @@ public class LoanApplicationController {
 		try {
 			CommonDocumentUtils.startHook(logger, GET_UBI_REPORT1_FOR_ADMIN_PANEL);
 			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
-			loansResponse.setListData(loanApplicationService.getPostLoginForAdminPanelOfNotEligibility(loanRequest));
+			List<AdminPanelLoanDetailsResponse> adminPanelLoanDetailsResponses = loanApplicationService.getPostLoginForAdminPanelOfNotEligibility(loanRequest);
+			if (adminPanelLoanDetailsResponses != null && !adminPanelLoanDetailsResponses.isEmpty()) {
+				loansResponse.setListData(adminPanelLoanDetailsResponses);
+			}
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error(ERROR_WHILE_GET_UBI_REPORT1_FOR_ADMIN_PANEL_MSG, e);
@@ -998,7 +1006,10 @@ public class LoanApplicationController {
 		try {
 			CommonDocumentUtils.startHook(logger, GET_UBI_REPORT1_FOR_ADMIN_PANEL);
 			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
-			loansResponse.setListData(loanApplicationService.getPostLoginForAdminPanelOfEligibility(loanRequest));
+			List<AdminPanelLoanDetailsResponse> adminPanelLoanDetailsResponses = loanApplicationService.getPostLoginForAdminPanelOfEligibility(loanRequest);
+			if (adminPanelLoanDetailsResponses != null && !adminPanelLoanDetailsResponses.isEmpty()) {
+				loansResponse.setListData(adminPanelLoanDetailsResponses);
+			}
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error(ERROR_WHILE_GET_UBI_REPORT1_FOR_ADMIN_PANEL_MSG, e);
@@ -1013,8 +1024,10 @@ public class LoanApplicationController {
 		try {
 			CommonDocumentUtils.startHook(logger, GET_UBI_REPORT1_FOR_ADMIN_PANEL);
 			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
-			loansResponse.setListData(
-					loanApplicationService.getPostLoginForAdminPanelOfFinalLockedRejectedByUbi(loanRequest));
+			List<AdminPanelLoanDetailsResponse> adminPanelLoanDetailsResponses = loanApplicationService.getPostLoginForAdminPanelOfFinalLockedRejectedByUbi(loanRequest);
+			if (adminPanelLoanDetailsResponses != null && !adminPanelLoanDetailsResponses.isEmpty()) {
+				loansResponse.setListData(adminPanelLoanDetailsResponses);
+			}
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error(ERROR_WHILE_GET_UBI_REPORT1_FOR_ADMIN_PANEL_MSG, e);
@@ -1029,7 +1042,10 @@ public class LoanApplicationController {
 		try {
 			CommonDocumentUtils.startHook(logger, GET_UBI_REPORT1_FOR_ADMIN_PANEL);
 			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
-			loansResponse.setListData(loanApplicationService.getPostLoginForAdminPanelOfApprovedByUbi(loanRequest));
+            List<AdminPanelLoanDetailsResponse> adminPanelLoanDetailsResponses = loanApplicationService.getPostLoginForAdminPanelOfApprovedByUbi(loanRequest);
+			if (adminPanelLoanDetailsResponses != null && !adminPanelLoanDetailsResponses.isEmpty()) {
+                loansResponse.setListData(adminPanelLoanDetailsResponses);
+            }
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error(ERROR_WHILE_GET_UBI_REPORT1_FOR_ADMIN_PANEL_MSG, e);
@@ -1046,7 +1062,10 @@ public class LoanApplicationController {
 		try {
 			CommonDocumentUtils.startHook(logger, "getChatListByFpMappingId");
 			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
-			loansResponse.setListData(loanApplicationService.getChatListByApplicationId(applicationId));
+			List<ChatDetails> chatDetailsList = loanApplicationService.getChatListByApplicationId(applicationId);
+			if (chatDetailsList != null && !chatDetailsList.isEmpty()) {
+				loansResponse.setListData(chatDetailsList);
+			}
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getChatListByFpMappingId==>", e);
@@ -1063,7 +1082,10 @@ public class LoanApplicationController {
 		try {
 			CommonDocumentUtils.startHook(logger, "getFpNegativeList");
 			LoansResponse loansResponse = new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value());
-			loansResponse.setListData(loanApplicationService.getFpNegativeList(applicationId));
+			List<FpProfileBasicDetailRequest> fpProfileBasicDetailRequests = loanApplicationService.getFpNegativeList(applicationId);
+			if (fpProfileBasicDetailRequests != null && !fpProfileBasicDetailRequests.isEmpty()) {
+				loansResponse.setListData(fpProfileBasicDetailRequests);
+			}
 			return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("Error while getFpNegativeList==>", e);

@@ -16,6 +16,6 @@ public interface PastFinancialEstiamateDetailsService {
 
 	public List<PastFinancialEstimatesDetailRequest> getPastFinancialEstimateDetailsList(Long id) throws LoansException;
 
-	public List<PastFinancialEstimatesDetailRequest> getFinancialListData(Long userId, Long applicationId) throws Exception;
+	public List<PastFinancialEstimatesDetailRequest> getFinancialListData(Long userId, Long applicationId) throws LoansException;
 
 }

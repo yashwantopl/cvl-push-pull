@@ -327,7 +327,9 @@ public class CarLoanPrimaryViewServiceImpl implements CarLoanPrimaryViewService{
         } catch (Exception e) {
             logger.error(CommonUtils.EXCEPTION,e);
         }
-        carLoanPrimaryViewResponse.setCoApplicantList(coApplicantResponse);
+        if (coApplicantResponse != null && !coApplicantResponse.isEmpty()) {
+            carLoanPrimaryViewResponse.setCoApplicantList(coApplicantResponse);
+        }
 
         //setting guarantor details
         List<RetailProfileViewResponse> guarantorResponse = null;

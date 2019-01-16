@@ -671,13 +671,11 @@ public class CommonUtils {
 
 		// If birth date is greater than todays date (after 2 days adjustment of
 		// leap year) then decrement age one year
-		if ((birthDateDayOfYear - todayDayOfYear > 3) || (birthDateMonth > todayMonth)) {
+		if ((birthDateDayOfYear - todayDayOfYear > 3) || (birthDateMonth > todayMonth) || ((birthDateMonth == todayMonth) && (birthDateDayOfMonth > todayDayOfMonth))) {
 			age--;
 
 			// If birth date and todays date are of same month and birth day of
 			// month is greater than todays day of month then decrement age
-		} else if ((birthDateMonth == todayMonth) && (birthDateDayOfMonth > todayDayOfMonth)) {
-			age--;
 		}
 		return age;
 	}
