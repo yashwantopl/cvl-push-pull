@@ -27,7 +27,9 @@ public class PrimaryCorporateDetail extends LoanApplicationMaster implements Ser
 
     @Column(name = "loan_amount")
     private Double loanAmount;
-
+    
+    @Column(name = "enhancement_amount")
+    private Double enhancementAmount;
 
     @Column(name = "have_collateral_security")
     private Boolean haveCollateralSecurity;
@@ -361,4 +363,14 @@ public class PrimaryCorporateDetail extends LoanApplicationMaster implements Ser
 	public void setGrossSales(Double grossSales) {
 		this.grossSales = grossSales;
 	}
+
+	public Double getEnhancementAmount() {
+		return enhancementAmount;
+	}
+
+	public void setEnhancementAmount(Double enhancementAmount) {
+		this.enhancementAmount = enhancementAmount;
+	}
+	
+	
 }

@@ -196,13 +196,20 @@ public class FundSeekerInputRequestServiceImpl implements FundSeekerInputRequest
 					"getting primaryCorporateDetail from applicationId::" + fundSeekerInputRequest.getApplicationId());
 			PrimaryCorporateDetail primaryCorporateDetail = primaryCorporateDetailRepository
 					.findOneByApplicationIdId(fundSeekerInputRequest.getApplicationId());
+			
+			Double requiredLoanAmount = fundSeekerInputRequest.getLoanAmount();
 			if (CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail)) {
 				logger.info("primaryCorporateDetail is null created new object");
 				primaryCorporateDetail = new PrimaryCorporateDetail();
 			}
 			BeanUtils.copyProperties(fundSeekerInputRequest, primaryCorporateDetail);
-			primaryCorporateDetail.setAmount(fundSeekerInputRequest.getLoanAmount());
-
+			
+			if(fundSeekerInputRequest.getEnhancementAmount() != null) {
+				requiredLoanAmount = requiredLoanAmount + fundSeekerInputRequest.getEnhancementAmount();
+			}
+			
+			primaryCorporateDetail.setLoanAmount(requiredLoanAmount);
+			primaryCorporateDetail.setEnhancementAmount(fundSeekerInputRequest.getEnhancementAmount());
 			primaryCorporateDetail.setIsApplicantDetailsFilled(true);
 			primaryCorporateDetail.setIsApplicantPrimaryFilled(true);
 			primaryCorporateDetail.setApplicationId(new LoanApplicationMaster(fundSeekerInputRequest.getApplicationId()));
