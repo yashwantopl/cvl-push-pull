@@ -2,12 +2,7 @@ package com.capitaworld.service.loans.service.networkpartner.impl;
 
 import java.io.IOException;
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.transaction.Transactional;
 
@@ -22,6 +17,7 @@ import com.capitaworld.service.loans.domain.fundprovider.FpNpMapping;
 import com.capitaworld.service.loans.domain.fundseeker.retail.RetailApplicantDetail;
 import com.capitaworld.service.loans.model.FpNpMappingRequest;
 import com.capitaworld.service.loans.repository.fundprovider.FpNpMappingRepository;
+import com.capitaworld.service.loans.repository.fundprovider.ProposalDetailsRepository;
 import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplicantDetailRepository;
 import com.capitaworld.service.loans.service.fundprovider.FpNpMappingService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
@@ -125,6 +121,9 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 	@Autowired
 	private LoanApplicationService loanApplicationService;
 	
+	@Autowired
+	private ProposalDetailsRepository proposalDetailsRepository;
+
 	@Autowired
 	private McaClient mcaClient;
 	
@@ -653,7 +652,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 			return loanApplicationMasterList;
 		}
 		logger.info("exit from getApplicationListToAssignedCheckerFromBoFp()");
-		return null;
+		return Collections.emptyList();
 	}
 
 	@Override
@@ -720,13 +719,14 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 		if(!CommonUtils.isListNullOrEmpty(applicationIdList)){
 			for (BigInteger applicationId : applicationIdList) {
 				LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(applicationId.longValue());
+				Long fpProductId = proposalDetailsRepository.getFpProductIdByApplicationId(applicationId.longValue());
 				NhbsApplicationsResponse nhbsApplicationsResponse = new NhbsApplicationsResponse();
 				nhbsApplicationsResponse.setUserId(loanApplicationMaster.getUserId());
 				nhbsApplicationsResponse.setApplicationId(loanApplicationMaster.getId());
 				nhbsApplicationsResponse.setApplicationType(loanApplicationMaster.getProductId());
 				nhbsApplicationsResponse.setBusinessTypeId(loanApplicationMaster.getBusinessTypeId());
 				nhbsApplicationsResponse.setApplicationCode(loanApplicationMaster.getApplicationCode());
-				nhbsApplicationsResponse.setProductId(loanApplicationMaster.getProductId());
+				nhbsApplicationsResponse.setFpProductId(fpProductId);
 				nhbsApplicationsResponse.setIsFinalLocked(loanApplicationMaster.getIsFinalLocked());
 				
 				if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getNpUserId())){
@@ -1243,7 +1243,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
                 }else if(request.getDdrStatusId()==CommonUtils.DdrStatus.REVERTED){
                     List<ApplicationStatusAudit> applicationStatusAuditList = appStatusRepository.getApplicationByUserIdBasedOnDDRStatusForFPChecker(loanApplicationMaster.getId(), CommonUtils.DdrStatus.SUBMITTED);
                     if(!CommonUtils.isListNullOrEmpty(applicationStatusAuditList)){
-                        nhbsApplicationsResponse.setReceivedDate(applicationStatusAuditList.get(0).getModifiedDate());
+                        nhbsApplicationsResponse.setRevertDate(applicationStatusAuditList.get(0).getModifiedDate());
                     }
                 }else if(request.getDdrStatusId()==CommonUtils.DdrStatus.APPROVED){
                     List<ApplicationStatusAudit> applicationStatusAuditList = appStatusRepository.getApplicationByUserIdBasedOnDDRStatusForFPChecker(loanApplicationMaster.getId(), CommonUtils.DdrStatus.SUBMITTED);

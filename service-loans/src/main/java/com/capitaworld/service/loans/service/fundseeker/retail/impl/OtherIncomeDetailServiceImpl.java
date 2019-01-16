@@ -73,7 +73,7 @@ public class OtherIncomeDetailServiceImpl implements OtherIncomeDetailService {
 							.setGuarantorDetailId(guarantorDetailsRepository.findOne(frameRequest.getApplicationId()));
 					break;
 				default:
-					throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
+					throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 				}
 
 				otherIncomeDetail.setModifiedBy(frameRequest.getUserId());

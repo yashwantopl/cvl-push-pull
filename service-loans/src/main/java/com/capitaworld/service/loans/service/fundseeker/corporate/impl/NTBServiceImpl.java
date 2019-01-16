@@ -1,6 +1,7 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -174,7 +175,7 @@ public class NTBServiceImpl implements NTBService {
             return finArrngDetailResList;
         }catch (Exception e){
             logger.error("Exception  in getFinancialDetails  :-",e);
-            return null;
+            return Collections.emptyList();
         }
 
     }

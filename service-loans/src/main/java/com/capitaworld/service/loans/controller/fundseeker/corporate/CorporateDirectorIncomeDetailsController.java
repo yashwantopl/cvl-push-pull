@@ -67,7 +67,7 @@ public class CorporateDirectorIncomeDetailsController {
 				logger.info("Inside Corporate Director Income Details controller===>{}"+ applicationId);
 				List<CorporateDirectorIncomeRequest> response = incomeDetailsService.getDirectorIncomeDetails(applicationId);
 				logger.info("Response from getting income details===>{}", response);
-				if (!CommonUtils.isObjectNullOrEmpty(response)) {
+				if (response != null && !response.isEmpty()) {
 					return new ResponseEntity<LoansResponse>(
 							new LoansResponse("Income details get successfully", HttpStatus.OK.value(), response),
 							HttpStatus.OK);
@@ -93,7 +93,7 @@ public class CorporateDirectorIncomeDetailsController {
 				logger.info("Inside Corporate Director Income latest year Details controller===>{}"+ applicationId);
 				List<CorporateDirectorIncomeRequest> response = incomeDetailsService.getDirectorIncomeLatestYearDetails(applicationId);
 				logger.info("Response from getting income details latest year ===>{}", response);
-				if (!CommonUtils.isObjectNullOrEmpty(response)) {
+				if (response != null && !response.isEmpty()) {
 					return new ResponseEntity<LoansResponse>(
 							new LoansResponse("Income details latest year get successfully", HttpStatus.OK.value(), response),
 							HttpStatus.OK);
@@ -119,7 +119,7 @@ public class CorporateDirectorIncomeDetailsController {
 				logger.info("Inside Corporate Director Details controller===>{}"+ applicationId);
 				List<Map<String,Object>> response = incomeDetailsService.getDirectorBackGroundDetails(applicationId);
 				logger.info("Response from getting Director background and employee details===>{}", response);
-				if (!CommonUtils.isObjectNullOrEmpty(response)) {
+				if (response != null && !response.isEmpty()) {
 					return new ResponseEntity<LoansResponse>(
 							new LoansResponse("Director background and employee details get successfully", HttpStatus.OK.value(), response),
 							HttpStatus.OK);

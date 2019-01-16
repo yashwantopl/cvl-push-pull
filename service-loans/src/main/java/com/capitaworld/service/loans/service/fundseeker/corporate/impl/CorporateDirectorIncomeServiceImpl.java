@@ -1,10 +1,6 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import com.capitaworld.service.loans.exceptions.LoansException;
 import org.slf4j.Logger;
@@ -114,11 +110,11 @@ public class CorporateDirectorIncomeServiceImpl implements CorporateDirectorInco
 			}
 				
 		}
-		  return null;
+		  return Collections.emptyList();
 		} catch (Exception e) {
 			logger.error("Exception Occured in gettingDirectorIncomeDetails=======================>",e);
 		}
-		  return null;
+		  return Collections.emptyList();
 	}
 	
 	@Override
@@ -148,11 +144,11 @@ public class CorporateDirectorIncomeServiceImpl implements CorporateDirectorInco
 			}
 				
 		}
-		  return null;
+		  return Collections.emptyList();
 		} catch (Exception e) {
 			logger.error("Exception Occured in gettingDirectorLatestYearIncomeDetails------------->",e);
 		}
-		  return null;
+		  return Collections.emptyList();
 	}
 	
 	
@@ -294,11 +290,11 @@ public class CorporateDirectorIncomeServiceImpl implements CorporateDirectorInco
 			}
 				
 		}
-		  return null;
+		  return Collections.emptyList();
 		} catch (Exception e) {
 			logger.error("Exception Occured in getDirectorBackGroundAndEmployeeDetails=======================>",e);
 		}
-		  return null;
+		  return Collections.emptyList();
 	}
 
 }

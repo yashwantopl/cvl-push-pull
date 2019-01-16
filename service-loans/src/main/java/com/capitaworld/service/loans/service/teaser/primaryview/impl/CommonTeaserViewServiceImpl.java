@@ -128,7 +128,7 @@ public class CommonTeaserViewServiceImpl implements CommonTeaserViewService{
 		
 	}
 	@Override
-	public Boolean getFinalViewDetails(Long applicantId, LoansResponse loansResponse) throws Exception {
+	public Boolean getFinalViewDetails(Long applicantId, LoansResponse loansResponse) throws LoansException {
 		logger.info("start getFinalViewDetails ");
 		LoanApplicationMaster applicationMaster=loanApplicationMasterRepo.findOne(applicantId);
 		if(CommonUtils.isObjectNullOrEmpty(applicationMaster))

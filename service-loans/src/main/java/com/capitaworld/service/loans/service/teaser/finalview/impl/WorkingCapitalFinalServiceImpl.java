@@ -603,10 +603,11 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
 			
 			
 			stateList.clear();
-			if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getAdministrativeStateId()))
+			if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getAdministrativeStateId())) {
 				stateList.add(Long.valueOf(corporateApplicantDetail.getAdministrativeStateId()));
-				if(!CommonUtils.isListNullOrEmpty(stateList))
-				{
+			}
+			if(!CommonUtils.isListNullOrEmpty(stateList))
+			{
 				try {
 					OneFormResponse oneFormResponse = oneFormClient.getStateByStateListId(stateList);
 					List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
@@ -621,7 +622,7 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
 				} catch (Exception e) {
 					logger.error(CommonUtils.EXCEPTION,e);
 				}
-				}
+			}
 			// set country
 			List<Long> countryList = new ArrayList<>();
 			if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getRegisteredCountryId()))
@@ -646,10 +647,11 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
 			}
 			
 			countryList.clear();
-			if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getAdministrativeCountryId()))
+			if(!CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getAdministrativeCountryId())) {
 				countryList.add(Long.valueOf(corporateApplicantDetail.getAdministrativeCountryId()));
-				if(!CommonUtils.isListNullOrEmpty(countryList))
-				{
+			}
+			if(!CommonUtils.isListNullOrEmpty(countryList))
+			{
 				try {
 					OneFormResponse oneFormResponse = oneFormClient.getCountryByCountryListId(countryList);
 					List<Map<String, Object>> oneResponseDataList = (List<Map<String, Object>>) oneFormResponse
@@ -664,7 +666,7 @@ public class WorkingCapitalFinalServiceImpl implements WorkingCapitalFinalServic
 				} catch (Exception e) {
 					logger.error(CommonUtils.EXCEPTION,e);
 				}
-				}
+			}
 				
 				
 			List<Long> keyVerticalFundingId = new ArrayList<>();

@@ -315,7 +315,7 @@ public class PersonalLoansViewServiceImpl implements PersonalLoansViewService {
 
 				retailPrimaryViewResponse.setPersonalProfileRespoonse(profileViewPLResponse);
 			} else {
-				throw new Exception("No Data found");
+				throw new LoansException("No Data found");
 			}
 		} catch (Exception e) {
 			logger.error("Problem Occured while Fetching Retail Details : ",e);
@@ -332,7 +332,9 @@ public class PersonalLoansViewServiceImpl implements PersonalLoansViewService {
 
 		//setting co-application details
 		List<RetailProfileViewResponse> coApplicantResponse = coApplicantService.getCoApplicantPLResponse(applicantId, userId,applicationMaster.getProductId());
-		retailPrimaryViewResponse.setCoApplicantResponse(coApplicantResponse);
+		if (coApplicantResponse != null && !coApplicantResponse.isEmpty()) {
+			retailPrimaryViewResponse.setCoApplicantResponse(coApplicantResponse);
+		}
 
 		//setting guarantor details
 		List<RetailProfileViewResponse> garantorResponse = guarantorService.getGuarantorServiceResponse(applicantId, userId,applicationMaster.getProductId());

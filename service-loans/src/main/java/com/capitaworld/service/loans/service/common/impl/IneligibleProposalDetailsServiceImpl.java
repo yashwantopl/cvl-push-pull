@@ -590,23 +590,40 @@ public class IneligibleProposalDetailsServiceImpl implements IneligibleProposalD
 							: "";
 					String streetName = plRequest.getAddressStreetName() != "" ? plRequest.getAddressStreetName() : "";
 					String landMark = plRequest.getAddressLandmark() != "" ? plRequest.getAddressLandmark() : "";
-					address = "";
-					if (primiseName != "" && primiseName != null)
+					address = null;
+					if (primiseName != "" && primiseName != null){
 						address = primiseName;
-					if (streetName != "" && streetName != null && primiseName != "")
-						address = address + "," + streetName;
-					else
-						address=streetName;
-					if (landMark != "" && landMark != null && streetName != "")
-						address = address + "," + landMark;
-					else
-						address = address + "," + landMark;	
+					}
+
+					if (streetName != "" && streetName != null)
+						if(address != null){
+							address = address + "," + streetName;
+						}else{
+							address = streetName;
+						}
+
+					if (landMark != "" && landMark != null){
+						if(address != null){
+							address = address + "," + landMark;
+						}else{
+							address = landMark;
+						}
+					}
+
+//					else
+//						address = address + "," + landMark;
 					String city = "";
 					try {
 						city = CommonDocumentUtils.getCity(Long.valueOf(plRequest.getAddressCity().toString()),
 								oneFormClient);
-						if (city != "")
-							address = address + "," + city;
+						if (city != ""){
+							if(address != null){
+								address = address + "," + city;
+							}else{
+								address = city;
+							}
+						}
+
 					} catch (Exception e) {
 						logger.error("Error in getting city from city id" + e);
 					}

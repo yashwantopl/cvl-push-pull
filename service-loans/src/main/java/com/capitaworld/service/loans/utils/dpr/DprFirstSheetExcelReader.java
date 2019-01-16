@@ -24,6 +24,10 @@ import org.slf4j.LoggerFactory;
  */
 public class DprFirstSheetExcelReader {
 
+    private DprFirstSheetExcelReader() {
+        // Do nothing because of X and Y.
+    }
+
     private static final Logger logger = LoggerFactory.getLogger(DprFirstSheetExcelReader.class);
 
     public static void run(Long storageDetailsId,XSSFSheet sheet,LoanApplicationMaster loanApplicationMaster,BoardOfDirectorsDetailRepository boardOfDirectorsDetailRepository,StrategicAlliancesDetailRepository strategicAlliancesDetailRepository){

@@ -10,6 +10,11 @@ import org.slf4j.LoggerFactory;
 import com.capitaworld.service.loans.model.score.ScoreParameterRequestLoans;
 
 public class ScoreExcelReader {
+
+	private ScoreExcelReader() {
+		// Do nothing because of X and Y.
+	}
+
 	private static final Logger logger = LoggerFactory.getLogger(ScoreExcelReader.class);
 	
 	public static List<ScoreParameterRequestLoans> extractCellFromSheet(Sheet sheet) throws NullPointerException {
