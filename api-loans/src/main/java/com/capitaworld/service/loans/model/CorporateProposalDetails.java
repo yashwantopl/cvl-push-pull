@@ -54,6 +54,8 @@ public class CorporateProposalDetails {
 	
 	private String applicationCode;
 
+	private Boolean isSanction;
+
 	public String getBranchLocationName() {
 		return branchLocationName;
 	}
@@ -326,6 +328,14 @@ public class CorporateProposalDetails {
 
 	public void setApplicationCode(String applicationCode) {
 		this.applicationCode = applicationCode;
+	}
+
+	public Boolean getIsSanction() {
+		return isSanction;
+	}
+
+	public void setIsSanction(Boolean sanction) {
+		isSanction = sanction;
 	}
 
 	/**
