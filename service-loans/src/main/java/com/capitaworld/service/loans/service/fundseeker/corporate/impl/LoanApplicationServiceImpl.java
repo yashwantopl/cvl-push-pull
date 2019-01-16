@@ -368,6 +368,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	private static final String SIDBI_FEES = "SIDBI_FEES";
 	private static final String ORG_ID = "org_id";
 	private static final String MSG_LITERAL = " Msg : ";
+	private static final String PROPOSAL_ID="proposalId";
 
 	@Autowired
 	private DMSClient dmsClient;
@@ -4926,7 +4927,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		status = gatewayClient.skipPayment(gatewayRequest);
 		logger.info("In-Principle send for WhiteLabel Status=====>" + status);
 
-		// ====================================================================
+		// =======================changes made for multiple bank===================
 
 		ProposalMappingResponse response = null;
 		Map<String, Object> proposalresp = null;
@@ -4940,8 +4941,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		} catch (Exception e) {
 			logger.error("Error calling Proposal Details Client for getting In-principle response for applicationId:-" + applicationId + " :: ",e);
 		}
-
-		LoanApplicationRequest loansRequest = loanApplicationService.getFromClient(applicationId);
+		Long prposalId=Long.valueOf(String.valueOf(proposalresp.get(PROPOSAL_ID)));
+		LoanApplicationRequest loansRequest = loanApplicationService.getFromClient(prposalId);
 
 		PaymentRequest paymentRequest = new PaymentRequest();
 		paymentRequest.setApplicationId(applicationId);
@@ -5075,7 +5076,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			logger.error("Error calling Proposal Details Client for getting In-principle response for applicationId:-" + applicationId + " :: ",e);
 		}
 
-		LoanApplicationRequest loansRequest = loanApplicationService.getFromClient(applicationId);
+		Long prposalId=Long.valueOf(String.valueOf(proposalresp.get(PROPOSAL_ID)));
+		LoanApplicationRequest loansRequest = loanApplicationService.getFromClient(prposalId);
 
 		PaymentRequest paymentRequest = new PaymentRequest();
 		paymentRequest.setApplicationId(applicationId);
@@ -5208,8 +5210,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 							logger.info(CONNECTOR_RESPONSE_NULL_OR_EMPTY_MSG);
 						}
 
-						ProposalMappingResponse response = proposalDetailsClient
-								.getInPricipleById(paymentRequest.getApplicationId());
+						ProposalMappingResponse response = proposalDetailsClient.getInPricipleById(paymentRequest.getApplicationId());
 						if (response != null && response.getData() != null) {
 							logger.info("Inside Congratulations");
 
