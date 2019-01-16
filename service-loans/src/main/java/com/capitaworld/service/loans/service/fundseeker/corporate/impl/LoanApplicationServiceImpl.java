@@ -6719,7 +6719,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 	}
 
 	@Override
-	public LoanApplicationRequest getAllFlag(Long id, Long userId) throws Exception {
+	public LoanApplicationRequest getAllFlag(Long id, Long userId) throws LoansException {
 
 		LoanApplicationRequest applicationRequest = null;
 		LoanApplicationMaster applicationMaster = loanApplicationRepository.getById(id);

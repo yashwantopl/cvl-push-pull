@@ -66,7 +66,7 @@ public interface ProposalDetailsRepository extends JpaRepository<ProposalDetails
     public Long getFpProductIdByApplicationId(@Param("applicationId") Long applicationId);
     
     @Modifying 
-    @Query("UPDATE ProposalDetails set proposalStatusId.id =:statuId , modifiedDate = now()  WHERE  applicationId =:applicationId AND isActive = true " )
+    @Query("UPDATE ProposalDetails set proposalStatusId.id =:statuId , modifiedDate = now()  WHERE  applicationId =:applicationIl̥d AND isActive = true " )
     public Integer updateSanctionStatus(@Param("statuId") Long statuId  , @Param("applicationId") Long applicationId);
     
     @Modifying 
