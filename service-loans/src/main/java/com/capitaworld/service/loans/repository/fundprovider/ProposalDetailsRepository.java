@@ -62,6 +62,9 @@ public interface ProposalDetailsRepository extends JpaRepository<ProposalDetails
     @Query(value="SELECT DATE_FORMAT(pd.modified_date, '%d/%m/%Y') AS modified_date, proposal_status_id, psm.code FROM proposal_details AS pd JOIN proposal_status_master AS psm ON psm.id = pd.proposal_status_id WHERE application_id = :applicationId AND pd.is_active = TRUE",nativeQuery=true)
     public List<Object[]> findProposalDetailByApplicationId(@Param("applicationId") Long applicationId);
 
+    @Query(value="SELECT fp_product_id FROM proposal_details WHERE application_id =:applicationId  AND is_active = TRUE LIMIT 1",nativeQuery= true)
+    public Long getFpProductIdByApplicationId(@Param("applicationId") Long applicationId);
+    
     @Modifying 
     @Query("UPDATE ProposalDetails set proposalStatusId.id =:statuId , modifiedDate = now()  WHERE  applicationId =:applicationId AND isActive = true " )
     public Integer updateSanctionStatus(@Param("statuId") Long statuId  , @Param("applicationId") Long applicationId);
