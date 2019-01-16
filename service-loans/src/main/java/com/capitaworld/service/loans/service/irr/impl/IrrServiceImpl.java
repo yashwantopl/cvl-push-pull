@@ -118,7 +118,9 @@ public class IrrServiceImpl implements IrrService{
 	private static final String MSG_CURRENT_YEAR_1 = " currentYear-1::";
 
 	@Override
-	public ResponseEntity<RatingResponse> calculateIrrRating(Long appId, Long userId, Long proposalMapId) {
+	public ResponseEntity<RatingResponse> calculateIrrRating(Long appId, Long userId, Long proposalId) {
+		
+		log.info("THIS IS FINAL PROPOSAL ID=============================>"+proposalId);
 		// TODO Auto-generated method stub
 		Integer businessTypeId = null; // get from irr-cw industry mapping
 		Double industryRiskScore = 0.0;
@@ -131,7 +133,7 @@ public class IrrServiceImpl implements IrrService{
 		CorporateApplicantDetail corporateApplicantDetail = null;
 		try {
 
-			applicationProposalMapping = applicationProposalMappingRepository.findOne(proposalMapId);
+			applicationProposalMapping = applicationProposalMappingRepository.findOne(proposalId);
 			applicationMaster = loanApplicationRepository.findOne(appId);
 
 			Long denom = null;
@@ -198,6 +200,7 @@ public class IrrServiceImpl implements IrrService{
 				}
 
 				businessTypeId = industryResponse.getBusinessTypeId();
+				log.info("THIS IS THE BUSSNESS TYPE ID ==================>>>>"+businessTypeId);
 				industryRiskScore = industryResponse.getScore();
 				industry = industryResponse.getIndustry();
 			} catch (Exception e) {
@@ -238,20 +241,20 @@ public class IrrServiceImpl implements IrrService{
 			if (com.capitaworld.service.rating.utils.CommonUtils.BusinessType.MANUFACTURING == businessTypeId) {
 				// ---- Manufacturing
 				irrRequest.setQualitativeInputSheetManuRequest(qualitativeInputServiceManu(appId, userId,
-						applicationMaster.getProductId(), isCmaUploaded, isCoActUploaded, industryRiskScore, denom, proposalMapId));
+						applicationMaster.getProductId(), isCmaUploaded, isCoActUploaded, industryRiskScore, denom, proposalId));
 			} else if (com.capitaworld.service.rating.utils.CommonUtils.BusinessType.SERVICE == businessTypeId) {
 				// ---- Service
 				irrRequest.setQualitativeInputSheetServRequest(qualitativeInputServiceService(appId, userId,
-						applicationMaster.getProductId(), isCmaUploaded, isCoActUploaded, denom, proposalMapId));
+						applicationMaster.getProductId(), isCmaUploaded, isCoActUploaded, denom, proposalId));
 			} else if (com.capitaworld.service.rating.utils.CommonUtils.BusinessType.TRADING == businessTypeId) {
 				// ---- Trading
 				irrRequest.setQualitativeInputSheetTradRequest(qualitativeInputServiceTrading(appId, userId,
-						applicationMaster.getProductId(), isCmaUploaded, isCoActUploaded, denom, proposalMapId));
+						applicationMaster.getProductId(), isCmaUploaded, isCoActUploaded, denom, proposalId));
 			}
 
 			// if CMA filled
 			if (isCmaUploaded)
-				irrRequest.setFinancialInputRequest(cmaIrrMappingService(userId, appId, industry, denom, proposalMapId));
+				irrRequest.setFinancialInputRequest(cmaIrrMappingService(userId, appId, industry, denom, proposalId));
 
 			/*
 			 * // if coAct filled if(isCoActUploaded)
@@ -336,7 +339,7 @@ public class IrrServiceImpl implements IrrService{
 	
 	
 	@Override
-	public FinancialInputRequest cmaIrrMappingService(Long userId, Long aplicationId,String industry,Long denom, Long proposalMapId) throws Exception {
+	public FinancialInputRequest cmaIrrMappingService(Long userId, Long aplicationId,String industry,Long denom, Long proposalId) throws Exception {
 		// TODO Auto-generated method stub
 		//JSONObject jSONObject = new JSONObject();
 		log.info("APPLICATION ID:::"+aplicationId);
@@ -349,7 +352,7 @@ public class IrrServiceImpl implements IrrService{
 		CorporateFinalInfoRequest  corporateFinalInfoRequest = new CorporateFinalInfoRequest();
 		
 		//corporateFinalInfoRequest = corporateFinalInfoService.get(userId ,aplicationId); // PREVIOUS
-		corporateFinalInfoRequest = corporateFinalInfoService.getByProposalId(userId ,proposalMapId); // // NEW BASED ON PROPOSAL MAPPING ID 
+		corporateFinalInfoRequest = corporateFinalInfoService.getByProposalId(userId ,proposalId); // // NEW BASED ON PROPOSAL MAPPING ID 
 		
 		//log.info("corporateFinalInfoRequest========================>"+corporateFinalInfoRequest);
 		log.info("corporateFinalInfoRequest========================>"+corporateFinalInfoRequest.getSharePriceFace());
@@ -402,7 +405,7 @@ public class IrrServiceImpl implements IrrService{
 		
 		try {
 			
-			operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStatementDetailsByProposal(proposalMapId, currentYear-1+"");
+			operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStatementDetailsByProposal(proposalId, currentYear-1+"");
 			if(operatingStatementDetails != null) {
 				
 				log.info(MSG_APP_ID + aplicationId + MSG_CURRENT_YEAR_1 + (currentYear-1) + OPERATING_STATEMENT_DETAILS_GET_DEPRECIATION+operatingStatementDetails.getDepreciation());
@@ -509,7 +512,7 @@ public class IrrServiceImpl implements IrrService{
 		//========= ===============================================LIABILITIES DETAIL 3 YR==================================================================
 		
 		try {
-			liabilitiesDetails = liabilitiesDetailsRepository.getLiabilitiesDetailByProposal(proposalMapId, currentYear-1+"");
+			liabilitiesDetails = liabilitiesDetailsRepository.getLiabilitiesDetailByProposal(proposalId, currentYear-1+"");
 			if(liabilitiesDetails != null) {
 				
 				if(CommonUtils.isObjectNullOrEmpty(liabilitiesDetails)){
@@ -624,7 +627,7 @@ public class IrrServiceImpl implements IrrService{
 		
 		try {
 			
-			assetsDetails = assetsDetailsRepository.getAssetsDetailByProposal(proposalMapId, currentYear-1+"");
+			assetsDetails = assetsDetailsRepository.getAssetsDetailByProposal(proposalId, currentYear-1+"");
 			
 			if(assetsDetails != null ) {
 				
@@ -733,7 +736,7 @@ public class IrrServiceImpl implements IrrService{
 		
 		//----------------------------------------------------------------SECOND YEAR DATA---------------------------------------------------------------------
 		//========= ================================================OPERATINGSTATEMENT DETAIL 2 YR=========================================================
-		operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStatementDetailsByProposal(proposalMapId, currentYear-2+"");
+		operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStatementDetailsByProposal(proposalId, currentYear-2+"");
 			
 		
 		try {
@@ -846,7 +849,7 @@ public class IrrServiceImpl implements IrrService{
 		
 		try {
 			
-			liabilitiesDetails = liabilitiesDetailsRepository.getLiabilitiesDetailByProposal(proposalMapId, currentYear-2+""); //  BY PROPOSAL MAPPING ID BASED
+			liabilitiesDetails = liabilitiesDetailsRepository.getLiabilitiesDetailByProposal(proposalId, currentYear-2+""); //  BY PROPOSAL MAPPING ID BASED
 			
 			if(liabilitiesDetails != null) {
 				
@@ -962,7 +965,7 @@ public class IrrServiceImpl implements IrrService{
 		
 		try {
 			
-			assetsDetails = assetsDetailsRepository.getAssetsDetailByProposal(proposalMapId, currentYear-2+"");
+			assetsDetails = assetsDetailsRepository.getAssetsDetailByProposal(proposalId, currentYear-2+"");
 			
 			if(assetsDetails != null) {
 				if(CommonUtils.isObjectNullOrEmpty(assetsDetails)){
@@ -1076,7 +1079,7 @@ public class IrrServiceImpl implements IrrService{
 		
 		try {
 			
-			operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStatementDetailsByProposal(proposalMapId, currentYear-3+"");
+			operatingStatementDetails = operatingStatementDetailsRepository.getOperatingStatementDetailsByProposal(proposalId, currentYear-3+"");
 			
 			if(operatingStatementDetails != null) {
 				
@@ -1193,7 +1196,7 @@ public class IrrServiceImpl implements IrrService{
 				
 				try {
 					
-					liabilitiesDetails = liabilitiesDetailsRepository.getLiabilitiesDetailByProposal(proposalMapId, currentYear-3+"");
+					liabilitiesDetails = liabilitiesDetailsRepository.getLiabilitiesDetailByProposal(proposalId, currentYear-3+"");
 					
 					if(liabilitiesDetails != null) {
 						
@@ -1308,7 +1311,7 @@ public class IrrServiceImpl implements IrrService{
 				
 				try {
 					
-					assetsDetails = assetsDetailsRepository.getAssetsDetailByProposal(proposalMapId, currentYear-3+"");
+					assetsDetails = assetsDetailsRepository.getAssetsDetailByProposal(proposalId, currentYear-3+"");
 					
 					if(assetsDetails != null) {
 						if(CommonUtils.isObjectNullOrEmpty(assetsDetails)){
@@ -2636,7 +2639,8 @@ public class IrrServiceImpl implements IrrService{
 		int currentYear = scoringService.getFinYear(aplicationId);
 		if(isCmaUploaded) {
 			AssetsDetails assetsDetails = new AssetsDetails();
-			assetsDetails = assetsDetailsRepository.getAssetsDetails(aplicationId, currentYear-1+"");
+			//assetsDetails = assetsDetailsRepository.getAssetsDetails(aplicationId, currentYear-1+""); PREVIOUS 
+			assetsDetails = assetsDetailsRepository.getAssetsDetailByProposal(proposalMapId, currentYear-1+""); // NEW
 			if(CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getContLiabilityFyAmt()))
 				qualitativeInputSheetServRequest.setContingentLiabilities(0.0);//-----formula based
 			else if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getTangibleNetWorth()))
