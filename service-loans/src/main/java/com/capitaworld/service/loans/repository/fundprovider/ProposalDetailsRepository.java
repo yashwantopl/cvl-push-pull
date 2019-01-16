@@ -66,6 +66,10 @@ public interface ProposalDetailsRepository extends JpaRepository<ProposalDetails
     @Query("UPDATE ProposalDetails set proposalStatusId.id =:statuId , modifiedDate = now()  WHERE  applicationId =:applicationId AND isActive = true " )
     public Integer updateSanctionStatus(@Param("statuId") Long statuId  , @Param("applicationId") Long applicationId);
     
+    @Modifying 
+    @Query("UPDATE ProposalDetails set proposalStatusId.id =:statuId , modifiedDate = now(),reason =:remarks WHERE  applicationId =:applicationId AND isActive = true and fpProductId =:fpProductId")
+    public Integer updateStatus(@Param("statuId") Long statuId  , @Param("applicationId") Long applicationId, @Param("fpProductId") Long fpProductId,@Param("remarks") String remarks);
+    
     @Query(value = "SELECT lm.id,cap.organisationName,lm.applicationCode,lm.businessTypeId from ProposalDetails pd,CorporateApplicantDetail cap,LoanApplicationMaster lm where pd.fpProductId =:fpProductId and pd.proposalStatusId.id =:proposalStatusId and pd.isActive = true and pd.branchId =:branchId and cap.applicationId.id = pd.applicationId and cap.applicationId.id = pd.applicationId and cap.applicationId.id = lm.id")
     public List<Object[]> getAllProposalsForSearchWithBranch(@Param("fpProductId") Long fpProductId,@Param("proposalStatusId") Long proposalStatusId,@Param("branchId") Long branchId);
 

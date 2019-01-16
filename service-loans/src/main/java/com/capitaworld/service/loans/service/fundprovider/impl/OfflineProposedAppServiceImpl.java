@@ -236,6 +236,9 @@ public class OfflineProposedAppServiceImpl implements OfflineProcessedAppService
 				request.setIsCampaignUser(BANK_SPECIFIC);
 			}
 			request.setBranchId(CommonUtils.convertLong(obj[11]));
+			request.setRoi(CommonUtils.convertDouble(obj[12]));
+			request.setProcessingFee(CommonUtils.convertDouble(obj[13]));
+			request.setFpProductId(CommonUtils.convertLong(obj[14]));	
 			applicationRequests.add(request);
 		}
 		return applicationRequests;
@@ -262,6 +265,8 @@ public class OfflineProposedAppServiceImpl implements OfflineProcessedAppService
 			request.setBranchName(CommonUtils.convertString(obj[8]));
 			request.setBranchCode(CommonUtils.convertString(obj[9]));
 			request.setBranchId(CommonUtils.convertLong(obj[10]));
+			request.setFpProductId(CommonUtils.convertLong(obj[11]));
+			request.setProposalId(CommonUtils.convertLong(obj[12]));
 			applicationRequests.add(request);
 		}
 		return applicationRequests;
@@ -282,6 +287,15 @@ public class OfflineProposedAppServiceImpl implements OfflineProcessedAppService
 			request.setBranchName(CommonUtils.convertString(obj[2]));
 			request.setBranchCode(CommonUtils.convertString(obj[3]));
 			request.setBranchId(CommonUtils.convertLong(obj[4]));
+			request.setRoi(CommonUtils.convertDouble(obj[5]));
+			request.setProcessingFee(CommonUtils.convertDouble(obj[6]));
+			request.setFpProductId(CommonUtils.convertLong(obj[7]));
+			request.setDisbursedAmount(CommonUtils.convertDouble(obj[8]));
+			request.setTransactionNo(CommonUtils.convertString(obj[9]));
+			request.setAccountNo(CommonUtils.convertString(obj[10]));
+			request.setDisbursedDate(CommonUtils.convertDate(obj[11]));
+			request.setPaymentMode(CommonUtils.convertInteger(obj[12]));
+			request.setProposalId(CommonUtils.convertLong(obj[13]));
 			applicationRequests.add(request);
 		}
 		return applicationRequests;
@@ -316,6 +330,9 @@ public class OfflineProposedAppServiceImpl implements OfflineProcessedAppService
 				request.setIsCampaignUser(BANK_SPECIFIC);
 			}
 			request.setBranchId(CommonUtils.convertLong(obj[13]));
+			request.setRoi(CommonUtils.convertDouble(obj[14]));
+			request.setProcessingFee(CommonUtils.convertDouble(obj[15]));
+			request.setFpProductId(CommonUtils.convertLong(obj[16]));
 			applicationRequests.add(request);
 		}
 		return applicationRequests;
@@ -350,6 +367,9 @@ public class OfflineProposedAppServiceImpl implements OfflineProcessedAppService
 			}
 			request.setBranchId(CommonUtils.convertLong(obj[12]));
 			request.setStatus(CommonUtils.convertInteger(obj[13]));
+			request.setRoi(CommonUtils.convertDouble(obj[14]));
+			request.setProcessingFee(CommonUtils.convertDouble(obj[15]));
+			request.setFpProductId(CommonUtils.convertLong(obj[16]));
 			applicationRequests.add(request);
 		}
 		return applicationRequests;

@@ -56,4 +56,6 @@ public interface ProposalService {
 	public List<ProposalSearchResponse> searchProposalByAppCode(Long loginUserId,Long loginOrgId,ReportRequest reportRequest);
 	
 	public Map<String , Double> getFpDashBoardCount(Long loginUserId,Long loginOrgId);
+	
+	public Integer updateStatus(Long applicationId,Long fpProductId,Long status,String remarks);
 }

@@ -417,4 +417,27 @@ public class ProposalController {
 			return new ResponseEntity<LoansResponse>(new LoansResponse(e.getMessage()) , HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
+	
+	@RequestMapping(value = "/update_Status", method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE,consumes = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> updateStatus(@RequestBody ProposalMappingRequest mappingRequest, HttpServletRequest httpServletRequest) {
+		
+		Long userOrgId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ORG_ID);
+		Long userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
+		if(CommonUtils.isObjectNullOrEmpty(userOrgId) || CommonUtils.isObjectNullOrEmpty(userId)) {
+			logger.info(BAD_REQUEST_MSG);
+			return new ResponseEntity<LoansResponse>(new LoansResponse(REQUEST_PARAMETER_NULL_OR_EMPTY, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+		}
+		
+		if(CommonUtils.isObjectNullOrEmpty(mappingRequest.getApplicationId()) || CommonUtils.isObjectNullOrEmpty(mappingRequest.getProposalStatusId())
+				 || CommonUtils.isObjectNullOrEmpty(mappingRequest.getFpProductId())) {
+			logger.info(BAD_REQUEST_MSG);
+			return new ResponseEntity<LoansResponse>(new LoansResponse(REQUEST_PARAMETER_NULL_OR_EMPTY, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+		}
+		try {
+			return new ResponseEntity<LoansResponse>(new LoansResponse("Data Found.", HttpStatus.OK.value(),proposalService.updateStatus(mappingRequest.getApplicationId(), mappingRequest.getFpProductId(), mappingRequest.getProposalStatusId(),mappingRequest.getReason())), HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+			return new ResponseEntity<LoansResponse>(new LoansResponse(e.getMessage()) , HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
 }

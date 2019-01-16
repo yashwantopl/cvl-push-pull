@@ -108,6 +108,9 @@ public class ProposalDetails implements Serializable {
     @Column(name="processing_fee")
     private Double processingFee;
 
+	@Column(name="reason")
+	private String reason;
+    
     public Double getEmi() {
         return emi;
     }
@@ -341,5 +344,13 @@ public class ProposalDetails implements Serializable {
 
 	public void setVersion(Integer version) {
 		this.version = version;
+	}
+
+	public String getReason() {
+		return reason;
+	}
+
+	public void setReason(String reason) {
+		this.reason = reason;
 	}
 }
