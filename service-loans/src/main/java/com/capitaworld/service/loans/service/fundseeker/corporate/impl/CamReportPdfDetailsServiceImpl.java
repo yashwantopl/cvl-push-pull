@@ -386,7 +386,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 					if(productName != null) {
 						map.put("fpProductName", productName);	
 					}else {
-						logger.info("product name is null..");
+						logger.info("product name is null.."+ productId);
 					}
 				}else {
 					logger.info("fpProductMapping id is null..");
