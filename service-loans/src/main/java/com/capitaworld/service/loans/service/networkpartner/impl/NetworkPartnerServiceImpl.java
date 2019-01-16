@@ -1243,7 +1243,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
                 }else if(request.getDdrStatusId()==CommonUtils.DdrStatus.REVERTED){
                     List<ApplicationStatusAudit> applicationStatusAuditList = appStatusRepository.getApplicationByUserIdBasedOnDDRStatusForFPChecker(loanApplicationMaster.getId(), CommonUtils.DdrStatus.SUBMITTED);
                     if(!CommonUtils.isListNullOrEmpty(applicationStatusAuditList)){
-                        nhbsApplicationsResponse.setReceivedDate(applicationStatusAuditList.get(0).getModifiedDate());
+                        nhbsApplicationsResponse.setRevertDate(applicationStatusAuditList.get(0).getModifiedDate());
                     }
                 }else if(request.getDdrStatusId()==CommonUtils.DdrStatus.APPROVED){
                     List<ApplicationStatusAudit> applicationStatusAuditList = appStatusRepository.getApplicationByUserIdBasedOnDDRStatusForFPChecker(loanApplicationMaster.getId(), CommonUtils.DdrStatus.SUBMITTED);
