@@ -1195,8 +1195,8 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 		}
 
 		try {
-			//CorporateMcqRequest corporateMcqRequest = corporateMcqService.get(toApplicationId); // PREVIOUS 
-			CorporateMcqRequest corporateMcqRequest = corporateMcqService.get(proposalMapId); // NEW
+			//CorporateMcqRequest corporateMcqRequest = corporateMcqService.get(toApplicationId);
+			CorporateMcqRequest corporateMcqRequest = corporateMcqService.get(proposalMapId);
 
 			corporateFinalViewResponse.setTechnologyRiskId(corporateMcqRequest.getTechnologyRiskId() != null
 					? TechnologyRisk.getById(corporateMcqRequest.getTechnologyRiskId()).getValue()

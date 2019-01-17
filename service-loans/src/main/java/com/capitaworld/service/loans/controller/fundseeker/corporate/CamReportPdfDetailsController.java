@@ -93,7 +93,7 @@ public class CamReportPdfDetailsController {
 
 	}
 	
-	@RequestMapping(value = "/getFinalDataMap/{applicationId}/{productMappingId}/{proposalMappingId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/getFinalDataMap/{applicationId}/{productMappingId}/{proposalId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getFinalDataMap(@PathVariable(value = "applicationId") Long applicationId,@PathVariable(value = "productMappingId") Long productId, 
 			@PathVariable(value ="proposalId") Long proposalId,HttpServletRequest request)  {
 		

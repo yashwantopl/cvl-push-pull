@@ -710,6 +710,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 				proposalMappingRequest.setFpProductId(productId);
 				ProposalMappingResponse proposalMappingResponse= proposalDetailsClient.getActiveProposalDetails(proposalMappingRequest);
 				proposalMappingRequestString = new ProposalMappingRequestString();
+				logger.info("======================>"+proposalMappingRequestString.getId());
 				BeanUtils.copyProperties(proposalMappingResponse.getData(), proposalMappingRequestString);
 				map.put("proposalResponse", !CommonUtils.isObjectNullOrEmpty(proposalMappingResponse.getData()) ? proposalMappingResponse.getData() : " ");
 		}
@@ -1175,8 +1176,9 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			//FITCH DATA
 			try {
 			//RatingResponse ratingResponse = (RatingResponse) irrService.calculateIrrRating(applicationId, userId).getBody().getData();
-
-			RatingResponse ratingResponse = (RatingResponse) irrService.calculateIrrRating(proposalMappingRequestString.getId(), userId, proposalMappingRequestString.getId()).getBody().getData();
+				
+			//RatingResponse ratingResponse = (RatingResponse) irrService.calculateIrrRating(proposalMappingRequestString.getId(), userId, proposalMappingRequestString.getId()).getBody().getData();// PREVIOUS 
+				RatingResponse ratingResponse = (RatingResponse) irrService.calculateIrrRating(applicationId, userId, applicationProposalMapping.getProposalId()).getBody().getData(); //NEW BASED ON PROPOSAL MAPPING ID 
 			if(!CommonUtils.isObjectNullOrEmpty(ratingResponse.getBusinessTypeId())) {
 				if(BusinessType.MANUFACTURING == ratingResponse.getBusinessTypeId())
 				{

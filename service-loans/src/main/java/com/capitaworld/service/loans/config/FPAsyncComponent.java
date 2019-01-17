@@ -99,6 +99,9 @@ public class FPAsyncComponent {
 
 	private static final String URL_WWW_BITLY_COM = "https://www.psbloansin59minutes.com";
 	private static final String DATE_FORMAT_DD_MM_YYYY = "dd/MM/yyyy";
+	
+	/*By Maaz*/
+	private static final String PROPOSAL_ID="proposalId";
 
 	@Autowired
 	private NotificationClient notificationClient;
@@ -151,10 +154,8 @@ public class FPAsyncComponent {
 
 	@Value("${capitaworld.sidbi.mail.to.maker.checker}")
 	private Boolean mailToMakerChecker;
-
-	// ==================Sending Mail to all Makers after FS receives In-principle
-	// Approval==================
-
+	/*====================This emails are triggered from new payment module.==============================*/
+	// ====Sending Mail to all Makers after FS receives In-principle Approval=======changed for the multiple bank=
 	@Async
 	public void sendEmailToAllMakersWhenFSRecievesInPrinciple(Map<String, Object> proposalresp,
 															  PaymentRequest paymentRequest, Long userId, Long orgId) {
@@ -203,35 +204,36 @@ public class FPAsyncComponent {
 
 				}
 
-				LoanApplicationRequest applicationRequest = loanApplicationService
-						.getFromClient(paymentRequest.getApplicationId());
+				// CHANGES FOR NOTIFICATION PURPOSE---STARTS HERE- Multiple bank---->
+				ProposalMappingResponse proposalResponse = null;
+				//Map<String, Object> proposalresp1 = null;
+				/*
+				 * Not need this call its already in param
+				 * try {
+					if(paymentRequest.getApplicationId()!=null){
+					proposalResponse = proposalDetailsClient.getInPricipleById(paymentRequest.getApplicationId());
+					proposalresp = MultipleJSONObjectHelper
+							.getObjectFromMap((Map<String, Object>) proposalResponse.getData(), Map.class);
+				}
+					}catch (Exception e) {
+					logger.info(
+							"Error calling Proposal Details Client for getting Branch Id:-" + paymentRequest.getApplicationId());
+					e.printStackTrace();
+				}
+*/
+				Long propsalId = Long.valueOf(String.valueOf(proposalresp.get(PROPOSAL_ID)));
+				LoanApplicationRequest applicationRequest = loanApplicationService.getFromClient(propsalId);
 				String address = null;
 				if(!CommonUtils.isObjectNullOrEmpty(applicationRequest)
 						&& applicationRequest.getBusinessTypeId() == 1){
-
-				   // CHANGES FOR NOTIFICATION PURPOSE---STARTS HERE----->
-					ProposalMappingResponse proposalResponse = null;
-					//Map<String, Object> proposalresp1 = null;
-					try {
-						if(paymentRequest.getApplicationId()!=null){
-						proposalResponse = proposalDetailsClient.getInPricipleById(paymentRequest.getApplicationId());
-						proposalresp = MultipleJSONObjectHelper
-								.getObjectFromMap((Map<String, Object>) proposalResponse.getData(), Map.class);
-					}
-						}catch (Exception e) {
-						logger.info(
-								"Error calling Proposal Details Client for getting Branch Id:-" + paymentRequest.getApplicationId());
-						e.printStackTrace();
-					}
-
 					// CHANGES FOR  MULTPLE BANK PURPOSE NOTIFICATION- NEW CODE --->
 					CorporateFinalInfoRequest applicantRequest = null;
 					try {
-						if(applicantRequest.getUserId()!=null && proposalResponse.getId()!=null){
-						applicantRequest = corporateFinalInfoService.getByProposalId(applicationRequest.getUserId(),proposalResponse.getId());
+						/*if(applicantRequest.getUserId()!=null && proposalResponse.getId()!=null){*/
+						applicantRequest = corporateFinalInfoService.getByProposalId(applicationRequest.getUserId(),propsalId);
 						logger.info("THIS IS USER ID --------- AND" + " "+applicantRequest.getUserId()+ ""
 								+ "THIS IS PROPOSAL MAPPING ID==========>>>>"+proposalResponse.getId());
-						}
+						/*}*/
 					}catch (Exception e) {
 						logger.error("EXCEPTION IS GETTING WHILE GETBY PROPOSALID IN FPASYNCOMPONENT=====>:"+e.getMessage());
 						e.printStackTrace();
@@ -279,8 +281,6 @@ public class FPAsyncComponent {
 					} else {
 						address = "NA";
 					}
-					// =========================================================================================================
-
 				}
 
 				mailParameters.put(CommonUtils.PARAMETERS_ADDRESS, address != null ? address : "NA");
@@ -356,35 +356,24 @@ public class FPAsyncComponent {
 									sysParameters, NotificationAlias.SYS_ALL_MAKERS_AFTER_INPRINCIPLE_TO_FS,
 									userObj.getId().toString(), userObj.getId().toString());
 						}
-
 					}
-
 				} else {
 					logger.info("No Maker found=================>");
 				}
-
 			} catch (Exception e) {
 				logger.error("An exception getting while sending mail to all Makers=============>{}",e);
 			}
-
 		} else {
-
 			logger.info("Mail to Makers after In-principle to FS is disabled==========>");
 		}
 	}
 
-	// ==========================================================================================================
-
-	// ==================Sending Mail to all Checkers after FS receives In-principle
-	// Approval==================
-
+	//====Sending Mail to all Checkers after FS receives In-principle Approval=======changed for the multiple bank=
 	@Async
-	public void sendEmailToAllCheckersWhenFSRecievesInPrinciple(Map<String, Object> proposalresp,
-																PaymentRequest paymentRequest, Long userId, Long orgId) {
+	public void sendEmailToAllCheckersWhenFSRecievesInPrinciple(Map<String, Object> proposalresp,PaymentRequest paymentRequest, Long userId, Long orgId) {
 		if (mailToMakerChecker) {
-
 			try {
-
+				Long proposalId=Long.valueOf(String.valueOf(proposalresp.get(PROPOSAL_ID)));
 				logger.info("Into sending Mail to all Checkers after FS gets In-Principle Approval===>{}");
 				String subject = SUBJECT_INTIMATION_NEW_PROPOSAL;
 
@@ -406,32 +395,26 @@ public class FPAsyncComponent {
 								? Double.valueOf(proposalresp.get(CommonUtils.RATE_INTEREST).toString())
 								: "NA");
 				mailParameters.put(CommonUtils.PARAMETERS_APPLICATION_ID, paymentRequest.getApplicationId());
-
 				UserResponse response = null;
-
 				try {
 					response = userClient.getEmailMobile(userId);
 				} catch (Exception e) {
 					logger.error(SOMETHING_WENT_WRONG_WHILE_CALLING_USERS_CLIENT,e);
 				}
-
 				if (!CommonUtils.isObjectNullOrEmpty(response)) {
-					UsersRequest signUpUser = MultipleJSONObjectHelper
-							.getObjectFromMap((Map<String, Object>) response.getData(), UsersRequest.class);
-
+					UsersRequest signUpUser = MultipleJSONObjectHelper.getObjectFromMap((Map<String, Object>) response.getData(), UsersRequest.class);
 					String mobile = signUpUser.getMobile();
 					logger.info(MSG_MOBILE_NO + mobile);
 					mailParameters.put(PARAMETERS_MOBILE_NO, mobile != null ? mobile : "NA");
 
 				}
-
-				LoanApplicationRequest applicationRequest = loanApplicationService
-						.getFromClient(paymentRequest.getApplicationId());
+				LoanApplicationRequest applicationRequest = loanApplicationService.getFromClient(proposalId);
 				String address = null;
 				if(!CommonUtils.isObjectNullOrEmpty(applicationRequest)
 						&& applicationRequest.getBusinessTypeId() == 1){
-					CorporateApplicantRequest applicantRequest = corporateapplicantService
-							.getCorporateApplicant(paymentRequest.getApplicationId());
+					
+//					CorporateApplicantRequest applicantRequest = corporateapplicantService.getCorporateApplicant(paymentRequest.getApplicationId());
+					CorporateFinalInfoRequest applicantRequest  = corporateFinalInfoService.getByProposalId(null, proposalId);
 					if (!CommonUtils.isObjectNullOrEmpty(applicantRequest)
 							&& !CommonUtils.isObjectNullOrEmpty(applicantRequest.getFirstAddress())) {
 						String premiseNumber = null;
@@ -448,7 +431,6 @@ public class FPAsyncComponent {
 					address = applicationRequest.getAddress();
 				}
 				else{
-
 					// For getting Address of Primary Director
 					// =========================================================================================================
 					List<DirectorBackgroundDetailRequest> NTBResponse = null;
@@ -488,11 +470,8 @@ public class FPAsyncComponent {
 				String to = null;
 				if (!CommonUtils.isObjectNullOrEmpty(usersRespList)) {
 					for (int i = 0; i < usersRespList.size(); i++) {
-						UsersRequest userObj = MultipleJSONObjectHelper.getObjectFromMap(usersRespList.get(i),
-								UsersRequest.class);
-
+						UsersRequest userObj = MultipleJSONObjectHelper.getObjectFromMap(usersRespList.get(i),UsersRequest.class);
 						String name = null;
-
 						try {
 							logger.info(MSG_INTO_GETTING_FP_NAME + userObj);
 							UserResponse userResponseForName = userClient.getFPDetails(userObj);
@@ -548,34 +527,23 @@ public class FPAsyncComponent {
 									sysParameters, NotificationAlias.SYS_ALL_CHECKERS_AFTER_INPRINCIPLE_TO_FS,
 									userObj.getId().toString(), userObj.getId().toString());
 						}
-
 					}
-
 				} else {
 					logger.info("No Checker found=================>");
 				}
-
 			} catch (Exception e) {
 				logger.error("An exception getting while sending mail to all Checkers=============>{}",e);
 			}
-
 		} else {
 			logger.info("Mail to Checkers after In-principle to FS is disabled==========>");
 		}
 	}
 
-	// ==========================================================================================================
-
-	// ==================Sending Mail to HO after FS receives In-principle
-	// Approval==================
-
+	//====Sending Mail to HO after FS receives In-principle Approval=======changed for the multiple bank=
 	@Async
-	public void sendEmailToHOWhenFSRecievesInPrinciple(Map<String, Object> proposalresp, PaymentRequest paymentRequest,
-													   Long userId, Long orgId) {
+	public void sendEmailToHOWhenFSRecievesInPrinciple(Map<String, Object> proposalresp, PaymentRequest paymentRequest,Long userId, Long orgId) {
 		if (mailToMakerChecker) {
-
 			try {
-
 				logger.info("Into sending Mail to all Checkers after FS gets In-Principle Approval===>{}");
 				String subject = SUBJECT_INTIMATION_NEW_PROPOSAL;
 
@@ -606,7 +574,6 @@ public class FPAsyncComponent {
 				} catch (Exception e) {
 					logger.error(SOMETHING_WENT_WRONG_WHILE_CALLING_USERS_CLIENT,e);
 				}
-
 				if (!CommonUtils.isObjectNullOrEmpty(response)) {
 					UsersRequest signUpUser = MultipleJSONObjectHelper
 							.getObjectFromMap((Map<String, Object>) response.getData(), UsersRequest.class);
@@ -614,16 +581,16 @@ public class FPAsyncComponent {
 					String mobile = signUpUser.getMobile();
 					logger.info(MSG_MOBILE_NO + mobile);
 					mailParameters.put(PARAMETERS_MOBILE_NO, mobile != null ? mobile : "NA");
-
 				}
-
-				LoanApplicationRequest applicationRequest = loanApplicationService
-						.getFromClient(paymentRequest.getApplicationId());
+				Long proposalId=Long.valueOf(String.valueOf(proposalresp.get(PROPOSAL_ID)));
+				LoanApplicationRequest applicationRequest = loanApplicationService.getFromClient(proposalId);
 				String address = null;
 				if(!CommonUtils.isObjectNullOrEmpty(applicationRequest)
 						&& applicationRequest.getBusinessTypeId() == 1){
-					CorporateApplicantRequest applicantRequest = corporateapplicantService
-							.getCorporateApplicant(paymentRequest.getApplicationId());
+					/*
+					 * changes made for multiple bank flow
+					 * CorporateApplicantRequest applicantRequest = corporateapplicantService.getCorporateApplicant(paymentRequest.getApplicationId());*/
+					CorporateFinalInfoRequest applicantRequest = corporateFinalInfoService.getByProposalId(null, proposalId);
 					if (!CommonUtils.isObjectNullOrEmpty(applicantRequest)
 							&& !CommonUtils.isObjectNullOrEmpty(applicantRequest.getFirstAddress())) {
 						String premiseNumber = null;
@@ -640,9 +607,7 @@ public class FPAsyncComponent {
 					address = applicationRequest.getAddress();
 				}
 				else{
-
 					// For getting Address of Primary Director
-					// =========================================================================================================
 					List<DirectorBackgroundDetailRequest> NTBResponse = null;
 					if (applicationRequest.getBusinessTypeId() == 2) {
 						NTBResponse = directorBackgroundDetailsService
@@ -664,8 +629,6 @@ public class FPAsyncComponent {
 					} else {
 						address = "NA";
 					}
-					// =========================================================================================================
-
 				}
 				mailParameters.put(CommonUtils.PARAMETERS_ADDRESS, address != null ? address : "NA");
 
@@ -673,7 +636,6 @@ public class FPAsyncComponent {
 				if (!CommonUtils.isObjectNullOrEmpty(proposalresp.get(BRANCH_ID))) {
 					branchId = Long.valueOf(proposalresp.get(BRANCH_ID).toString());
 				}
-
 				UserResponse userResponse = userClient.getUserDetailByOrgRoleBranchId(orgId,
 						com.capitaworld.service.users.utils.CommonUtils.UserRoles.HEAD_OFFICER, branchId);
 				List<Map<String, Object>> usersRespList = (List<Map<String, Object>>) userResponse.getListData();
@@ -682,9 +644,7 @@ public class FPAsyncComponent {
 					for (int i = 0; i < usersRespList.size(); i++) {
 						UsersRequest userObj = MultipleJSONObjectHelper.getObjectFromMap(usersRespList.get(i),
 								UsersRequest.class);
-
 						String name = null;
-
 						try {
 							logger.info(MSG_INTO_GETTING_FP_NAME + userObj);
 							UserResponse userResponseForName = userClient.getFPDetails(userObj);
@@ -739,35 +699,24 @@ public class FPAsyncComponent {
 									sysParameters, NotificationAlias.SYS_HO_INPRINCIPLE_TO_FS,
 									userObj.getId().toString(), userObj.getId().toString());
 						}
-
 					}
-
 				} else {
 					logger.info(MSG_NO_HO_FOUND);
 				}
-
 			} catch (Exception e) {
 				logger.error("An exception getting while sending mail to HO=============>{}",e);
 			}
-
 		} else {
-
 			logger.info("Mail to HO after In-principle to FS is disabled==========>");
 		}
 	}
-
-	// ==========================================================================================================
-
-	// ==================Sending Mail to BO after FS receives In-principle
-	// Approval==================
-/*
- * This method need to be changed with proposalmapping
- * */
+	// ==================Sending Mail to BO after FS receives In-principle Approval==================
+	/*
+	 * This method need to be changed with proposalmapping
+	 * */
  	@Async
-	public void sendEmailToAllBOWhenFSRecievesInPrinciple(Map<String, Object> proposalresp,
-														  PaymentRequest paymentRequest, Long userId, Long orgId) {
+	public void sendEmailToAllBOWhenFSRecievesInPrinciple(Map<String, Object> proposalresp,PaymentRequest paymentRequest, Long userId, Long orgId) {
 		if (mailToMakerChecker) {
-
 			try {
 				logger.info("Into sending Mail to all BO after FS gets In-Principle Approval===>{}");
 				String subject = SUBJECT_INTIMATION_NEW_PROPOSAL;
@@ -807,16 +756,16 @@ public class FPAsyncComponent {
 					String mobile = signUpUser.getMobile();
 					logger.info(MSG_MOBILE_NO + mobile);
 					mailParameters.put(PARAMETERS_MOBILE_NO, mobile != null ? mobile : "NA");
-
 				}
-
-				LoanApplicationRequest applicationRequest = loanApplicationService
-						.getFromClient(paymentRequest.getApplicationId());
+				Long proposalId=Long.valueOf(String.valueOf(proposalresp.get(PROPOSAL_ID)));
+				LoanApplicationRequest applicationRequest = loanApplicationService.getFromClient(proposalId);
 				String address = null;
 				if(!CommonUtils.isObjectNullOrEmpty(applicationRequest)
 						&& applicationRequest.getBusinessTypeId() == 1){
-					CorporateApplicantRequest applicantRequest = corporateapplicantService
-							.getCorporateApplicant(paymentRequest.getApplicationId());
+					/*
+					 * changes made for multiple bank
+					CorporateApplicantRequest applicantRequest = corporateapplicantService.getCorporateApplicant(paymentRequest.getApplicationId());*/
+					CorporateFinalInfoRequest applicantRequest = corporateFinalInfoService.getByProposalId(null, proposalId);
 					if (!CommonUtils.isObjectNullOrEmpty(applicantRequest)
 							&& !CommonUtils.isObjectNullOrEmpty(applicantRequest.getFirstAddress())) {
 						String premiseNumber = null;
@@ -857,8 +806,6 @@ public class FPAsyncComponent {
 					} else {
 						address = "NA";
 					}
-					// =========================================================================================================
-
 				}
 				mailParameters.put(CommonUtils.PARAMETERS_ADDRESS, address != null ? address : "NA");
 
@@ -875,9 +822,7 @@ public class FPAsyncComponent {
 					for (int i = 0; i < usersRespList.size(); i++) {
 						UsersRequest userObj = MultipleJSONObjectHelper.getObjectFromMap(usersRespList.get(i),
 								UsersRequest.class);
-
 						String name = null;
-
 						try {
 							logger.info(MSG_INTO_GETTING_FP_NAME + userObj);
 							UserResponse userResponseForName = userClient.getFPDetails(userObj);
@@ -931,34 +876,48 @@ public class FPAsyncComponent {
 									sysParameters, NotificationAlias.SYS_ALL_BO_INPRINCIPLE_TO_FS,
 									userObj.getId().toString(), userObj.getId().toString());
 						}
-
 					}
-
 				} else {
 					logger.info(MSG_NO_BO_FOUND);
 				}
-
 			} catch (Exception e) {
 				logger.error("An exception getting while sending mail to BO=============>{}",e);
 			}
-
 		} else {
-
 			logger.info("Mail to BO after In-principle to FS is disabled==========>");
 		}
 	}
-
+/*===============================================================================================================================*/
+ 	
+ 	
+ 	
 	// ====================Sending Mail to Maker and all Makers and Checkers when maker accepts Proposal==========
 	@Async
 	public void sendMailToMakerandAllMakersWhenMakerAcceptProposal(NhbsApplicationRequest request) {
 		logger.info("Enter in sending mail to Maker and all Makers When Maker accepts Proposal");
 		try {
 			Long NotificationAliasId=null;
-//			convert loan applicationService to applicationProposalMappdingtable
-			LoanApplicationRequest applicationRequest = loanApplicationService
-					.getFromClient(request.getApplicationId());
+			
+			ProposalMappingResponse proposalResponse = null;
+			Map<String, Object> proposalresp = null;
+			try {
+				logger.info(CALLING_PROPOSAL_DETAILS_CLIENT_FOR_GETTING_BRANCH_ID + request.getApplicationId());
+				proposalResponse = proposalDetailsClient.getInPricipleById(request.getApplicationId());
+				logger.info(GOT_INPRINCIPLE_RESPONSE_FROM_PROPOSAL_DETAILS_CLIENT + proposalResponse);
+				proposalresp = MultipleJSONObjectHelper
+						.getObjectFromMap((Map<String, Object>) proposalResponse.getData(), Map.class);
+			} catch (Exception e) {
+				logger.error(ERROR_CALLING_PROPOSAL_DETAILS_CLIENT_FOR_GETTING_BRANCH_ID + request.getApplicationId());
+				logger.error(CommonUtils.EXCEPTION,e);
+			}
+			
+//			convert loan applicationService to applicationProposalMappdingtable for multiple bank changes
+			LoanApplicationRequest applicationRequest = null;
+			Long proposalId=Long.valueOf(String.valueOf(proposalresp.get(PROPOSAL_ID)));
+			if(proposalId != null) {
+				applicationRequest  = loanApplicationService.getFromClient(proposalId);
+			}
 			Map<String, Object> parameters = new HashMap<String, Object>();
-
 
 //			instead of loan application use this Application proposal mapping
 //			ApplicationProposalMapping applicationRequest = appPropMappService.getByApplicationId(request.getApplicationId());
@@ -1067,19 +1026,6 @@ public class FPAsyncComponent {
 			parameters.put(CommonUtils.PARAMETERS_ADDRESS, address != null ? address : "NA");
 			parameters.put("state", state != null ? state : "NA");
 			parameters.put("city", city !=null ? city : "NA");
-
-			ProposalMappingResponse proposalResponse = null;
-			Map<String, Object> proposalresp = null;
-			try {
-				logger.info(CALLING_PROPOSAL_DETAILS_CLIENT_FOR_GETTING_BRANCH_ID + request.getApplicationId());
-				proposalResponse = proposalDetailsClient.getInPricipleById(request.getApplicationId());
-				logger.info(GOT_INPRINCIPLE_RESPONSE_FROM_PROPOSAL_DETAILS_CLIENT + proposalResponse);
-				proposalresp = MultipleJSONObjectHelper
-						.getObjectFromMap((Map<String, Object>) proposalResponse.getData(), Map.class);
-			} catch (Exception e) {
-				logger.error(ERROR_CALLING_PROPOSAL_DETAILS_CLIENT_FOR_GETTING_BRANCH_ID + request.getApplicationId());
-				logger.error(CommonUtils.EXCEPTION,e);
-			}
 
 			// =========================================================================================================
 			/*
@@ -1240,7 +1186,7 @@ public class FPAsyncComponent {
 					smsParameters.put(CommonUtils.PARAMETERS_FS_NAME, fsName != null ? fsName : "NA");
 					if (!CommonUtils.isObjectNullOrEmpty(proposalresp.get(CommonUtils.PARAMETERS_LOAN_TYPE))) {
 						smsParameters.put(PARAMETERS_PRODUCT_TYPE,
-								proposalresp.get(CommonUtils.PARAMETERS_LOAN_TYPE).toString() != null
+					proposalresp.get(CommonUtils.PARAMETERS_LOAN_TYPE).toString() != null
 										? proposalresp.get(CommonUtils.PARAMETERS_LOAN_TYPE).toString()
 										: "NA");
 					} else {
@@ -1488,8 +1434,7 @@ public class FPAsyncComponent {
 							smsParameters.put(PARAMETERS_PRODUCT_TYPE, "NA");
 						}
 						smsParameters.put("url",PSB_URL);
-						sendSMSNotification(hoObj.getId().toString(), smsParameters,
-								NotificationAlias.SMS_HO_MAKER_ACCEPT_PROPOSAL_OF_FS, to);
+						sendSMSNotification(hoObj.getId().toString(), smsParameters,NotificationAlias.SMS_HO_MAKER_ACCEPT_PROPOSAL_OF_FS, to);
 					}
 
 					if (!CommonUtils.isObjectNullOrEmpty(hoObj.getId())) {
@@ -1608,7 +1553,7 @@ public class FPAsyncComponent {
 		}
 	}
 
-	// ============maaz=========================================================================================
+	// ============Send mail to FS when maker accept the proposal========================
 	@Async
 	public void sendMailToFsWhenMakerAcceptPorposal(String fsName, Map<String, Object> proposalresp,String assignedMakerName,LoanApplicationRequest applicationRequest, UsersRequest signUpUser, String address,Long NotificationAliasId){
 		logger.info("Sending email to fs when maker accept proposal");
@@ -2158,7 +2103,7 @@ public class FPAsyncComponent {
 			if(!CommonUtils.isObjectNullOrEmpty(applicationRequest)
 					&& applicationRequest.getBusinessTypeId() == 1){
 //				CorporateApplicantRequest applicantRequest = corporateapplicantService.getCorporateApplicant(request.getApplicationId());
-				Long proposalId=Long.valueOf(String.valueOf(proposalresp.get("proposalId")));
+				Long proposalId=Long.valueOf(String.valueOf(proposalresp.get(PROPOSAL_ID)));
 				if(proposalId!=null) {
 					CorporateApplicantRequest applicantRequest = corporateapplicantService.getCorporateApplicantByProposalId(applicationRequest.getUserId(), proposalId);
 					if (!CommonUtils.isObjectNullOrEmpty(applicantRequest)
