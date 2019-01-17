@@ -41,7 +41,7 @@ public class PrimaryLasLoanServiceImpl implements PrimaryLasLoanService {
 				throw new NullPointerException("PrimaryLasLoanDetail not exist in DB with Application Id=>"
 						+ lasLoanDetailRequest.getId() + " and user Id ==>" + userId);
 			}
-			BeanUtils.copyProperties(lasLoanDetailRequest, primaryLasLoanDetail, CommonUtils.IgnorableCopy.CORPORATE);
+			BeanUtils.copyProperties(lasLoanDetailRequest, primaryLasLoanDetail, CommonUtils.IgnorableCopy.getCORPORATE());
 			primaryLasLoanDetail.setTenure(CommonUtils.isObjectNullOrEmpty(lasLoanDetailRequest.getTenure()) ? null
 					: (lasLoanDetailRequest.getTenure() * 12));
 			primaryLasLoanDetail.setIsActive(true);

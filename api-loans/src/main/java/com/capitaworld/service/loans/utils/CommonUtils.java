@@ -299,8 +299,14 @@ public class CommonUtils {
 		private IgnorableCopy() {
 			// Do nothing because of X and Y.
 		}
-		public static final String[] CORPORATE = { "userId", "productId", "name", "categoryCode", "isActive",
+
+		private static final String[] CORPORATE = { "userId", "productId", "name", "categoryCode", "isActive",
 				"applicationId" };
+
+		public static String[] getCORPORATE() {
+			return CORPORATE;
+		}
+
 		public static final String ID = "id";
 		public static final String[] FP_PRODUCT = { "userId", "productId" };
 		public static final String[] FP_PRODUCT_TEMP = { "userId","isApproved","isDeleted","isCopied","isEdit","statusId","jobId","fpProductId","id","fpProductMappingId"};

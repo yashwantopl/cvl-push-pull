@@ -45,7 +45,7 @@ public class PrimaryUnsecureLoanServiceImpl implements PrimaryUnsecureLoanServic
 				throw new NullPointerException("PrimaryUnsecureLoanDetail not exist in DB with ID=>"
 						+ unsecureLoanRequest.getId() + " and UserId==>" + userId);
 			}
-			BeanUtils.copyProperties(unsecureLoanRequest, unsecureLoanDetail, CommonUtils.IgnorableCopy.CORPORATE);
+			BeanUtils.copyProperties(unsecureLoanRequest, unsecureLoanDetail, CommonUtils.IgnorableCopy.getCORPORATE());
 			unsecureLoanDetail.setTenure(CommonUtils.isObjectNullOrEmpty(unsecureLoanRequest.getTenure()) ? null
 					: (unsecureLoanRequest.getTenure() * 12));
 			unsecureLoanDetail.setModifiedBy(userId);

@@ -53,7 +53,7 @@ public class CorporateMcqServiceImpl implements CorporateMcqService {
                 corporateMcqDetail.setActive(true);
                 corporateMcqDetail.setApplicationId(new LoanApplicationMaster(corporateMcqRequest.getApplicationId()));
             }
-            BeanUtils.copyProperties(corporateMcqRequest, corporateMcqDetail, CommonUtils.IgnorableCopy.CORPORATE);
+            BeanUtils.copyProperties(corporateMcqRequest, corporateMcqDetail, CommonUtils.IgnorableCopy.getCORPORATE());
             corporateMcqDetail = corporateMcqDetailRepository.save(corporateMcqDetail);
 
             // saving Data
