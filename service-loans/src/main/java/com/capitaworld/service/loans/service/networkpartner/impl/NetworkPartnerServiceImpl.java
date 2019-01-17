@@ -1469,6 +1469,7 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 			applicationMaster.setNpUserId(request.getNpUserId());
 			applicationMaster.setModifiedBy(request.getUserId());
 			applicationMaster.setModifiedDate(new Date());
+			applicationMaster.setIsFinalLocked(false);
 			applicationMaster.setDdrStatusId(CommonUtils.DdrStatus.REVERTED);
 			loanApplicationRepository.save(applicationMaster);
 			logger.info("exit from revertApplication()");
