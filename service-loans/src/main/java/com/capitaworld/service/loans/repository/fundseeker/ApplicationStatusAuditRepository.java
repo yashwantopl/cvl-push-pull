@@ -13,12 +13,21 @@ public interface ApplicationStatusAuditRepository extends JpaRepository<Applicat
 
 	@Query("select lm from ApplicationStatusAudit lm where lm.applicationId=:appId and lm.applicationStatusMaster.id =:id and lm.npAssigneeId=:assigneeId and  lm.isActive = true ")
 	public List<ApplicationStatusAudit> getApplicationByAssigneeIdBasedOnStatus(@Param("appId")Long applicationId,@Param("id") Long applicationStatusId,@Param("assigneeId") Long assigneeId);
+
+	@Query("select lm from ApplicationStatusAudit lm where lm.applicationId=:appId and lm.applicationId=:proposalId and lm.applicationStatusMaster.id =:id and lm.npAssigneeId=:assigneeId and  lm.isActive = true ")
+	public List<ApplicationStatusAudit> getApplicationByAssigneeIdBasedOnStatus(@Param("appId")Long applicationId,@Param("proposalId")Long proposalId,@Param("id") Long applicationStatusId,@Param("assigneeId") Long assigneeId);
 	
 	@Query("select lm from ApplicationStatusAudit lm where lm.applicationId=:appId and lm.applicationStatusMaster.id =:id and lm.npUserId=:npUserId and  lm.isActive = true ")
 	public List<ApplicationStatusAudit> getApplicationByNpUserIdBasedOnStatus(@Param("appId")Long applicationId,@Param("id") Long applicationStatusId,@Param("npUserId") Long npUserId);
 
+	@Query("select lm from ApplicationStatusAudit lm where lm.applicationId=:appId and lm.proposalId=:proposalId and lm.applicationStatusMaster.id =:id and lm.npUserId=:npUserId and  lm.isActive = true ")
+	public List<ApplicationStatusAudit> getApplicationByAndProposalIdNpUserIdBasedOnStatus(@Param("appId")Long applicationId,@Param("proposalId")Long proposalId,@Param("id") Long applicationStatusId,@Param("npUserId") Long npUserId);
+
 	@Query("select lm from ApplicationStatusAudit lm where lm.applicationId=:appId and lm.applicationStatusMaster.id =:id and  lm.isActive = true order by lm.modifiedDate desc")
 	public List<ApplicationStatusAudit> getApplicationByUserIdBasedOnStatusForFPMaker(@Param("appId")Long applicationId,@Param("id") Long applicationStatusId);
+
+	@Query("select lm from ApplicationStatusAudit lm where lm.applicationId=:appId and lm.applicationStatusMaster.id =:id and lm.proposalId=:proposalId and lm.isActive = true order by lm.modifiedDate desc")
+	public List<ApplicationStatusAudit> getApplicationByUserIdBasedOnStatusForFPMaker(@Param("appId")Long applicationId,@Param("proposalId")Long proposalId,@Param("id") Long applicationStatusId);
 
 	@Query("select lm from ApplicationStatusAudit lm where lm.applicationId=:appId and lm.applicationStatusMaster.id =:id and  lm.isActive = true and lm.proposalId=:proposalId order by lm.modifiedDate desc")
 	public List<ApplicationStatusAudit> getApplicationByUserIdAndProposalIdBasedOnStatusForFPMaker(@Param("appId")Long applicationId,@Param("proposalId")Long proposalId,@Param("id") Long applicationStatusId);

@@ -131,7 +131,15 @@ public interface ApplicationProposalMappingRepository extends JpaRepository<Appl
 
     
    	public ApplicationProposalMapping  findByProposalIdAndIsActive(Long proposalId,Boolean isActive);
-   		
+
+
+    //nhbs-pagination proposal mapping
+    @Query("select apm from ApplicationProposalMapping apm where apm.applicationStatusMaster.id >=:id and apm.npAssigneeId=:assigneeId and  apm.isActive = true order by apm.modifiedDate desc")
+    public List<ApplicationProposalMapping> getAssignedProposalsByAssigneeIdForPagination(Pageable pageable, @Param("id") Long applicationStatusId, @Param("assigneeId") Long assigneeId);
+
+    @Query("select apm from ApplicationProposalMapping apm where apm.npUserId=:npUserId and  apm.isActive = true ")
+    public List<ApplicationProposalMapping> getAssignedProposalsByNpUserIdForPagination(Pageable pageable,@Param("npUserId") Long npUserId);
+
    	//ENDS HERE===== 
 
     

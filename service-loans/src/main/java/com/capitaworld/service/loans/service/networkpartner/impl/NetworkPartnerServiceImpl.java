@@ -342,12 +342,12 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 	@Override
 	public List<NhbsApplicationsResponse> getListOfAssignedProposals(NhbsApplicationRequest request) {
 		logger.info("entry in getListOfAssignedProposals()");
-		List<LoanApplicationMaster> applicationMastersList;
+		List<ApplicationProposalMapping> applicationMastersList;
 		if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.CHECKER == request.getUserRoleId()){
-			applicationMastersList = loanApplicationRepository.getAssignedProposalsByAssigneeIdForPagination(new PageRequest(request.getPageIndex(),request.getSize()),CommonUtils.ApplicationStatus.ASSIGNED, request.getUserId());
-			applicationMastersList.sort(Comparator.comparing(LoanApplicationMaster::getModifiedDate));
+			applicationMastersList = applicationProposalMappingRepository.getAssignedProposalsByAssigneeIdForPagination(new PageRequest(request.getPageIndex(),request.getSize()),CommonUtils.ApplicationStatus.ASSIGNED, request.getUserId());
+			applicationMastersList.sort(Comparator.comparing(ApplicationProposalMapping::getModifiedDate));
 		}else if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.MAKER == request.getUserRoleId()){
-			applicationMastersList = loanApplicationRepository.getAssignedProposalsByNpUserIdForPagination(new PageRequest(request.getPageIndex(),request.getSize()),request.getUserId());
+			applicationMastersList = applicationProposalMappingRepository.getAssignedProposalsByNpUserIdForPagination(new PageRequest(request.getPageIndex(),request.getSize()),request.getUserId());
 		}else{
 			applicationMastersList = null;
 		}
@@ -355,19 +355,20 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 		List<NhbsApplicationsResponse> nhbsApplicationsResponseList =null;
 		if(!CommonUtils.isListNullOrEmpty(applicationMastersList)){
 			nhbsApplicationsResponseList = new ArrayList<NhbsApplicationsResponse>();
-			for (LoanApplicationMaster loanApplicationMaster : applicationMastersList) {
+			for (ApplicationProposalMapping applicationProposalMapping : applicationMastersList) {
 				NhbsApplicationsResponse nhbsApplicationsResponse = new NhbsApplicationsResponse();
-				nhbsApplicationsResponse.setApplicationType(loanApplicationMaster.getProductId());
-				nhbsApplicationsResponse.setUserId(loanApplicationMaster.getUserId());
-				nhbsApplicationsResponse.setApplicationId(loanApplicationMaster.getId());
-				if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getDdrStatusId())){
-					nhbsApplicationsResponse.setDdrStatus(CommonUtils.getDdrStatusString(loanApplicationMaster.getDdrStatusId().intValue()));
-					nhbsApplicationsResponse.setDdrStatusId(loanApplicationMaster.getDdrStatusId().intValue());
+				nhbsApplicationsResponse.setApplicationType(applicationProposalMapping.getProductId());
+				nhbsApplicationsResponse.setUserId(applicationProposalMapping.getUserId());
+				nhbsApplicationsResponse.setApplicationId(applicationProposalMapping.getApplicationId());
+				nhbsApplicationsResponse.setProposalId(applicationProposalMapping.getProposalId());
+				if(!CommonUtils.isObjectNullOrEmpty(applicationProposalMapping.getDdrStatusId())){
+					nhbsApplicationsResponse.setDdrStatus(CommonUtils.getDdrStatusString(applicationProposalMapping.getDdrStatusId().intValue()));
+					nhbsApplicationsResponse.setDdrStatusId(applicationProposalMapping.getDdrStatusId().intValue());
 				}else{
 					nhbsApplicationsResponse.setDdrStatus("NA");
 				}
 				 
-				CorporateApplicantDetail applicantDetail = corpApplicantRepository.getByApplicationAndUserId(loanApplicationMaster.getUserId(), loanApplicationMaster.getId());
+				CorporateApplicantDetail applicantDetail = corpApplicantRepository.getByApplicationAndUserId(applicationProposalMapping.getUserId(), applicationProposalMapping.getApplicationId());
 				if(applicantDetail != null){
 					nhbsApplicationsResponse.setClientName(applicantDetail.getOrganisationName());
 					try {
@@ -394,9 +395,10 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 				}				
 				// get profile pic
 				DocumentRequest documentRequest = new DocumentRequest();
-				documentRequest.setApplicationId(loanApplicationMaster.getId());
+				documentRequest.setApplicationId(applicationProposalMapping.getApplicationId());
+				documentRequest.setProposalMappingId(applicationProposalMapping.getProposalId());
 				documentRequest.setUserType(DocumentAlias.UERT_TYPE_APPLICANT);
-				documentRequest.setProductDocumentMappingId(CommonDocumentUtils.getProductDocumentId(loanApplicationMaster.getProductId()));
+				documentRequest.setProductDocumentMappingId(CommonDocumentUtils.getProductDocumentId(applicationProposalMapping.getProductId()));
 				try {
 					DocumentResponse documentResponse = dmsClient.listProductDocument(documentRequest);
 					String imagePath = null;
@@ -419,28 +421,23 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 				} catch (DocumentException | IOException e) {
 					logger.error(ERROR_WHILE_GETTING_PROFILE_IMAGE,e);
 				}
-				if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getIsFinalLocked())){
-					nhbsApplicationsResponse.setOneFormFilled(loanApplicationMaster.getIsFinalLocked() ? LITERAL_LOCKED : LITERAL_UNLOCKED);
+				if(!CommonUtils.isObjectNullOrEmpty(applicationProposalMapping.getIsFinalLocked())){
+					nhbsApplicationsResponse.setOneFormFilled(applicationProposalMapping.getIsFinalLocked() ? LITERAL_LOCKED : LITERAL_UNLOCKED);
 				}else{
 					nhbsApplicationsResponse.setOneFormFilled(LITERAL_UNLOCKED);
 				}
 				
 				if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.MAKER == request.getUserRoleId()){
-					List<ApplicationStatusAudit> applicationStatusAuditList = appStatusRepository.getApplicationByNpUserIdBasedOnStatus(loanApplicationMaster.getId(), CommonUtils.ApplicationStatus.OPEN, request.getUserId());
+					List<ApplicationStatusAudit> applicationStatusAuditList = appStatusRepository.getApplicationByAndProposalIdNpUserIdBasedOnStatus(applicationProposalMapping.getApplicationId(), applicationProposalMapping.getProposalId(),CommonUtils.ApplicationStatus.OPEN, request.getUserId());
 					if(!CommonUtils.isListNullOrEmpty(applicationStatusAuditList)){
 						nhbsApplicationsResponse.setApplicationDate(applicationStatusAuditList.get(0).getModifiedDate());
 					}else{
-						nhbsApplicationsResponse.setApplicationDate(loanApplicationMaster.getCreatedDate());
+						nhbsApplicationsResponse.setApplicationDate(applicationProposalMapping.getCreatedDate());
 					}
-					if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getTypeOfPayment())){
-						nhbsApplicationsResponse.setPaymentMode(loanApplicationMaster.getTypeOfPayment());
-						nhbsApplicationsResponse.setIsPaymentDone("Received");
-					}else{
-						nhbsApplicationsResponse.setIsPaymentDone("Not Received");
-					}
-					if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getNpAssigneeId())){
+                    nhbsApplicationsResponse.setIsPaymentDone("Received");
+					if(!CommonUtils.isObjectNullOrEmpty(applicationProposalMapping.getNpAssigneeId())){
 						UsersRequest usersRequest = new UsersRequest();
-						usersRequest.setId(loanApplicationMaster.getNpAssigneeId());
+						usersRequest.setId(applicationProposalMapping.getNpAssigneeId());
 						try {
 							UserResponse userResponseForName = usersClient.getNPDetails(usersRequest);	
 							NetworkPartnerDetailsRequest networkPartnerDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<Object,Object>)userResponseForName.getData(),
@@ -453,15 +450,15 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 						
 					}
 				}else if(com.capitaworld.service.users.utils.CommonUtils.UserRoles.CHECKER == request.getUserRoleId()){
-					List<ApplicationStatusAudit> applicationStatusAuditList = appStatusRepository.getApplicationByAssigneeIdBasedOnStatus(loanApplicationMaster.getId(), CommonUtils.ApplicationStatus.OPEN, request.getUserId());
+					List<ApplicationStatusAudit> applicationStatusAuditList = appStatusRepository.getApplicationByAssigneeIdBasedOnStatus(applicationProposalMapping.getApplicationId(),applicationProposalMapping.getProposalId(), CommonUtils.ApplicationStatus.OPEN, request.getUserId());
 					if(!CommonUtils.isListNullOrEmpty(applicationStatusAuditList)){
 						nhbsApplicationsResponse.setApplicationDate(applicationStatusAuditList.get(0).getModifiedDate());
 					}else{
-						nhbsApplicationsResponse.setApplicationDate(loanApplicationMaster.getCreatedDate());
+						nhbsApplicationsResponse.setApplicationDate(applicationProposalMapping.getCreatedDate());
 					}
-					if(!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getNpUserId())){
+					if(!CommonUtils.isObjectNullOrEmpty(applicationProposalMapping.getNpUserId())){
 						UsersRequest usersRequest = new UsersRequest();
-						usersRequest.setId(loanApplicationMaster.getNpUserId());
+						usersRequest.setId(applicationProposalMapping.getNpUserId());
 						try {
 							UserResponse userResponseForName = usersClient.getNPDetails(usersRequest);	
 							NetworkPartnerDetailsRequest networkPartnerDetailsRequest = MultipleJSONObjectHelper.getObjectFromMap((Map<Object,Object>)userResponseForName.getData(),
@@ -913,11 +910,11 @@ public class NetworkPartnerServiceImpl implements NetworkPartnerService {
 					}else{
 						nhbsApplicationsResponse.setDdrStatus("NA");
 					}
-					List<ApplicationStatusAudit> applicationStatusAuditList = appStatusRepository.getApplicationByUserIdBasedOnStatusForFPMaker(applicationProposalMapping.getApplicationId(), CommonUtils.ApplicationStatus.OPEN);
+					List<ApplicationStatusAudit> applicationStatusAuditList = appStatusRepository.getApplicationByUserIdBasedOnStatusForFPMaker(applicationProposalMapping.getApplicationId(),applicationProposalMapping.getProposalId(), CommonUtils.ApplicationStatus.OPEN);
 					if(!CommonUtils.isListNullOrEmpty(applicationStatusAuditList)){
 						nhbsApplicationsResponse.setProposalTakenDate(applicationStatusAuditList.get(0).getModifiedDate());
 					}
-					List<ApplicationStatusAudit> applicationStatusAuditListForAssignedToCheckerDate = appStatusRepository.getApplicationByUserIdBasedOnStatusForFPMaker(applicationProposalMapping.getApplicationId(), CommonUtils.ApplicationStatus.ASSIGNED_TO_CHECKER);
+					List<ApplicationStatusAudit> applicationStatusAuditListForAssignedToCheckerDate = appStatusRepository.getApplicationByUserIdBasedOnStatusForFPMaker(applicationProposalMapping.getApplicationId(),applicationProposalMapping.getProposalId(), CommonUtils.ApplicationStatus.ASSIGNED_TO_CHECKER);
 					if(!CommonUtils.isListNullOrEmpty(applicationStatusAuditListForAssignedToCheckerDate)){
 						if(applicationStatusAuditListForAssignedToCheckerDate.size()>1){
 							nhbsApplicationsResponse.setAssignedToCheckerDate(applicationStatusAuditListForAssignedToCheckerDate.get(applicationStatusAuditListForAssignedToCheckerDate.size()-1).getModifiedDate());
