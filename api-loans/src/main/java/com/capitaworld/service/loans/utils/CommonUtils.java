@@ -66,7 +66,7 @@ public class CommonUtils {
    
 	public static final String SCORING_EXCEL ="score_result.xlsx";
 	
-	public static final  DateFormat formatter = new SimpleDateFormat("dd-mm-yyyy");
+	public static DateFormat formatter = new SimpleDateFormat("dd-mm-yyyy");
 	
 	public static final String IN_PROGRESS = "In Progress";
 	public static final String COMPLETED = "Completed";
@@ -121,7 +121,7 @@ public class CommonUtils {
 	public static final String MODIFIED_DATE = "modifiedDate";
 	public static final String IS_ACTIVE = "isActive";
 
-	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
+	public static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 
 	public static final class UsersRoles {
 		private UsersRoles(){

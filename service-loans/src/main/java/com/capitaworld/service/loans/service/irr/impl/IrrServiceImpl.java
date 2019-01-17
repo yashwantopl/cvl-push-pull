@@ -132,9 +132,10 @@ public class IrrServiceImpl implements IrrService{
 			}else{
 				denom = 1L;
 			}
-			
-			userId=applicationMaster.getUserId();
-			corporateApplicantDetail=corporateApplicantDetailRepository.getByApplicationAndUserId(userId,appId.longValue());
+
+			log.trace("User ID : "+userId);
+			Long user_id = applicationMaster.getUserId();
+			corporateApplicantDetail=corporateApplicantDetailRepository.getByApplicationAndUserId(user_id,appId.longValue());
 			
 			if(CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getKeyVericalFunding()) || CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getKeyVerticalSector()) || CommonUtils.isObjectNullOrEmpty(corporateApplicantDetail.getKeyVerticalSubsector()))
 			{
@@ -200,44 +201,46 @@ public class IrrServiceImpl implements IrrService{
 			irrRequest.setApplicationId(appId);
 			irrRequest.setCompanyName(corporateApplicantDetail.getOrganisationName());
 			irrRequest.setBusinessTypeId(businessTypeId);
-			irrRequest.setUserId(userId);
-			
-			/*Boolean isCmaUploaded=isCMAUploaded(appId,applicationMaster.getProductId());
-			Boolean isCoActUploaded=isCoActUploaded(appId,applicationMaster.getProductId());*/
-			
+			irrRequest.setUserId(user_id);
+
 			Boolean isCmaUploaded=true;
 			Boolean isCoActUploaded=false;
-			
+
+			/*
+			Boolean isCmaUploaded=isCMAUploaded(appId,applicationMaster.getProductId());
+			Boolean isCoActUploaded=isCoActUploaded(appId,applicationMaster.getProductId());
+
 			if((false == isCmaUploaded) && (false == isCoActUploaded))
 			{
-				log.info("cma and coAct are not uploaded.");	
+				log.info("cma and coAct are not uploaded.");
 				return new ResponseEntity<RatingResponse>(
 						new RatingResponse("Upload either of CMA Or Company's Act in final section.", HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
-			}
+			} */
+
 			if(com.capitaworld.service.rating.utils.CommonUtils.BusinessType.MANUFACTURING == businessTypeId)
 			{
 				//---- Manufacturing
-				irrRequest.setQualitativeInputSheetManuRequest(qualitativeInputServiceManu(appId, userId, applicationMaster.getProductId(), isCmaUploaded, isCoActUploaded,industryRiskScore,denom));
+				irrRequest.setQualitativeInputSheetManuRequest(qualitativeInputServiceManu(appId, user_id, applicationMaster.getProductId(), isCmaUploaded, isCoActUploaded,industryRiskScore,denom));
 			}
 			else if(com.capitaworld.service.rating.utils.CommonUtils.BusinessType.SERVICE == businessTypeId)
 			{
 				//---- Service
-				irrRequest.setQualitativeInputSheetServRequest(qualitativeInputServiceService(appId, userId, applicationMaster.getProductId(), isCmaUploaded, isCoActUploaded,denom));
+				irrRequest.setQualitativeInputSheetServRequest(qualitativeInputServiceService(appId, user_id, applicationMaster.getProductId(), isCmaUploaded, isCoActUploaded,denom));
 			}
 			else if(com.capitaworld.service.rating.utils.CommonUtils.BusinessType.TRADING == businessTypeId)
 			{
 				//---- Trading
-				irrRequest.setQualitativeInputSheetTradRequest(qualitativeInputServiceTrading(appId, userId, applicationMaster.getProductId(),isCmaUploaded, isCoActUploaded, denom));
+				irrRequest.setQualitativeInputSheetTradRequest(qualitativeInputServiceTrading(appId, user_id, applicationMaster.getProductId(),isCmaUploaded, isCoActUploaded, denom));
 			}
 
 			// if CMA filled
 			if(isCmaUploaded) {
-				irrRequest.setFinancialInputRequest(cmaIrrMappingService(userId, appId, industry, denom));
+				irrRequest.setFinancialInputRequest(cmaIrrMappingService(user_id, appId, industry, denom));
 			}
 			
 			/*// if coAct filled
 			if(isCoActUploaded)
-			irrRequest.setFinancialInputRequest(coActIrrMappingService(userId,appId,industry,denom));*/
+			irrRequest.setFinancialInputRequest(coActIrrMappingService(user_id,appId,industry,denom));*/
 			
 			
 			
