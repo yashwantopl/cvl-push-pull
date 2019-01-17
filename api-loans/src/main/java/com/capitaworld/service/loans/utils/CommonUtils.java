@@ -308,12 +308,28 @@ public class CommonUtils {
 		}
 
 		public static final String ID = "id";
-		public static final String[] FP_PRODUCT = { "userId", "productId" };
-		public static final String[] FP_PRODUCT_TEMP = { "userId","isApproved","isDeleted","isCopied","isEdit","statusId","jobId","fpProductId","id","fpProductMappingId"};
-		public static final String[] CORPORATE_PROFILE = {  "id","userId", "clientId", "applicationId","panNo","constitutionId","establishmentMonth",
+
+		private static final String[] FP_PRODUCT = { "userId", "productId" };
+
+		public static String[] getFpProduct() {
+			return FP_PRODUCT;
+		}
+
+		private static final String[] FP_PRODUCT_TEMP = { "userId","isApproved","isDeleted","isCopied","isEdit","statusId","jobId","fpProductId","id","fpProductMappingId"};
+
+		public static String[] getFpProductTemp() {
+			return FP_PRODUCT_TEMP;
+		}
+
+		private static final String[] CORPORATE_PROFILE = {  "id","userId", "clientId", "applicationId","panNo","constitutionId","establishmentMonth",
 			"establishmentYear","keyVericalFunding","latitude","longitude","organisationName","firstAddress",
 			"websiteAddress","landlineNo","keyVerticalSector","keyVerticalSubsector","gstIn","email"
 		};
+
+		public static String[] getCorporateProfile() {
+			return CORPORATE_PROFILE;
+		}
+
 		public static final String[] CORPORATE_FINAL = { "aadhar","secondAddress","sameAs","creditRatingId",
 				"contLiabilityFyAmt","contLiabilitySyAmt" ,"contLiabilityTyAmt" ," contLiabilityYear","notApplicable","aboutUs","id"
 		};

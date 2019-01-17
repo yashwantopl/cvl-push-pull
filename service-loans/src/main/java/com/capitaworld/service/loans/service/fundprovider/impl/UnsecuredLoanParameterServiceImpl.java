@@ -78,7 +78,7 @@ public class UnsecuredLoanParameterServiceImpl implements UnsecuredLoanParameter
 		if (!CommonUtils.isObjectListNull(unsecuredLoanParameterRequest.getMinTenure()))
 			unsecuredLoanParameterRequest.setMinTenure(unsecuredLoanParameterRequest.getMinTenure().multiply(new BigDecimal("12")));
 		
-		BeanUtils.copyProperties(unsecuredLoanParameterRequest, unsecureLoanParameter, CommonUtils.IgnorableCopy.FP_PRODUCT);
+		BeanUtils.copyProperties(unsecuredLoanParameterRequest, unsecureLoanParameter, CommonUtils.IgnorableCopy.getFpProduct());
 		unsecureLoanParameter.setModifiedBy(unsecuredLoanParameterRequest.getUserId());
 		unsecureLoanParameter.setModifiedDate(new Date());
 		unsecureLoanParameter.setIsActive(true);

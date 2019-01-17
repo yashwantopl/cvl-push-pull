@@ -64,7 +64,7 @@ public class LapLoanParameterServiceImpl implements LapLoanParameterService {
 		if (!CommonUtils.isObjectListNull(lapParameterRequest.getMinTenure()))
 			lapParameterRequest.setMinTenure(lapParameterRequest.getMinTenure() * 12);
 		
-		BeanUtils.copyProperties(lapParameterRequest, lapParameter, CommonUtils.IgnorableCopy.FP_PRODUCT);
+		BeanUtils.copyProperties(lapParameterRequest, lapParameter, CommonUtils.IgnorableCopy.getFpProduct());
 		lapParameter.setModifiedBy(lapParameterRequest.getUserId());
 		lapParameter.setModifiedDate(new Date());
 		lapParameter.setIsParameterFilled(true);
