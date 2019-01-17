@@ -1029,8 +1029,11 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 		// DETAILS=============================================//
 
 		try {
-			CorporateFinalInfoRequest corporateFinalInfoRequest = corporateFinalInfoService.get(userId,
-					toApplicationId);
+			/*CorporateFinalInfoRequest corporateFinalInfoRequest = corporateFinalInfoService.get(userId,
+					toApplicationId);*/  //  PREVIOUS 
+			CorporateFinalInfoRequest corporateFinalInfoRequest = corporateFinalInfoService.getByProposalId(userId,
+					proposalMapId); // BASED ON NEW PROPOSAL ID 
+			
 			corporateFinalViewResponse
 					.setAboutUs(!CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getAboutUs())
 							? corporateFinalInfoRequest.getAboutUs()
