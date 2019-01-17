@@ -28,7 +28,7 @@ public class OperatingStatementDetailsExcelReader {
     private static final List<String> OPERATING_STATEMENT_MAPPING_LIST = new ArrayList<String>();
     public static final DecimalFormat decimalFormat = new DecimalFormat("#.##");
 
-    public static void run(Long storageDetailsId,XSSFSheet sheet,LoanApplicationMaster loanApplicationMaster,OperatingStatementDetailsRepository operatingStatementDetailsRepository) throws Exception {
+    public static void run(Long storageDetailsId,XSSFSheet sheet,LoanApplicationMaster loanApplicationMaster,OperatingStatementDetailsRepository operatingStatementDetailsRepository) throws ExcelException {
            	OPERATING_STATEMENT_MAPPING_LIST.clear();
             OPERATING_STATEMENT_MAPPING_LIST.add("8");
             OPERATING_STATEMENT_MAPPING_LIST.add("9");
