@@ -2803,7 +2803,8 @@ public class IrrServiceImpl implements IrrService{
 		int currentYear = scoringService.getFinYear(aplicationId);
 		if(isCmaUploaded) {
 			AssetsDetails assetsDetails = new AssetsDetails();
-			assetsDetails = assetsDetailsRepository.getAssetsDetails(aplicationId, currentYear-1+"");
+			//assetsDetails = assetsDetailsRepository.getAssetsDetails(aplicationId, currentYear-1+""); PREVIOUS REPO.
+			assetsDetails = assetsDetailsRepository.getAssetsDetailByProposal(proposalId, currentYear-1+""); // NEW REPO.
 			if(CommonUtils.isObjectNullOrEmpty(corporateFinalInfoRequest.getContLiabilityFyAmt()))
 				qualitativeInputSheetTradRequest.setContingentLiabilities(0.0);//-----formula based
 			else if(CommonUtils.isObjectNullOrEmpty(assetsDetails.getTangibleNetWorth()))
