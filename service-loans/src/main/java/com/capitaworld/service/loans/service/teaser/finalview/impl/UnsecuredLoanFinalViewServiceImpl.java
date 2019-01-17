@@ -836,7 +836,10 @@ public class UnsecuredLoanFinalViewServiceImpl implements UnsecuredLoanFinalView
 		} catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
 		}
-       userType = CommonUtils.ApplicantType.APPLICANT;
+
+		logger.trace("User Type : "+userType);
+
+		Integer user_type = CommonUtils.ApplicantType.APPLICANT;
 		// get industry sectors
 		List<Long> industryList = industrySectorRepository.getIndustryByApplicationId(toApplicationId);
 		List<Long> sectorList = industrySectorRepository.getSectorByApplicationId(toApplicationId);
@@ -1195,7 +1198,7 @@ public class UnsecuredLoanFinalViewServiceImpl implements UnsecuredLoanFinalView
 	
         //setting bank account details
         try {
-			response.setBankAccountHeldDetailsRequest(bankAccountHeldDetailService.getExistingLoanDetailList(toApplicationId, userType));
+			response.setBankAccountHeldDetailsRequest(bankAccountHeldDetailService.getExistingLoanDetailList(toApplicationId, user_type));
 		} catch (Exception e) {
 			logger.error("Problem to get Data of Bank account {}", e);
 		}
@@ -1203,7 +1206,7 @@ public class UnsecuredLoanFinalViewServiceImpl implements UnsecuredLoanFinalView
         //credit card
 		List<CreditCardsDetailRequest> creditCardsDetailRequestList = null;
 		try {
-			creditCardsDetailRequestList = creditCardsDetailService.getCreditCardDetailList(toApplicationId, userType);
+			creditCardsDetailRequestList = creditCardsDetailService.getCreditCardDetailList(toApplicationId, user_type);
 		} catch (Exception e1) {
 			logger.error(CommonUtils.EXCEPTION,e1);
 		}
@@ -1224,7 +1227,7 @@ public class UnsecuredLoanFinalViewServiceImpl implements UnsecuredLoanFinalView
         //references
         List<ReferenceRetailDetailsRequest> referenceRetailDetailsRequestList = null;
 		try {
-			referenceRetailDetailsRequestList = referenceRetailDetailsService.getReferenceRetailDetailList(toApplicationId, userType);
+			referenceRetailDetailsRequestList = referenceRetailDetailsService.getReferenceRetailDetailList(toApplicationId, user_type);
 		} catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
 		}

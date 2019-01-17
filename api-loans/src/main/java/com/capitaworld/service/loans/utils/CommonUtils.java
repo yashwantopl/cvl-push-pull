@@ -66,7 +66,7 @@ public class CommonUtils {
    
 	public static final String SCORING_EXCEL ="score_result.xlsx";
 	
-	public static final  DateFormat formatter = new SimpleDateFormat("dd-mm-yyyy");
+	public static DateFormat formatter = new SimpleDateFormat("dd-mm-yyyy");
 	
 	public static final String IN_PROGRESS = "In Progress";
 	public static final String COMPLETED = "Completed";
@@ -121,7 +121,7 @@ public class CommonUtils {
 	public static final String MODIFIED_DATE = "modifiedDate";
 	public static final String IS_ACTIVE = "isActive";
 
-	public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
+	public static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 
 	public static final class UsersRoles {
 		private UsersRoles(){
@@ -299,19 +299,46 @@ public class CommonUtils {
 		private IgnorableCopy() {
 			// Do nothing because of X and Y.
 		}
-		public static final String[] CORPORATE = { "userId", "productId", "name", "categoryCode", "isActive",
+
+		private static final String[] CORPORATE = { "userId", "productId", "name", "categoryCode", "isActive",
 				"applicationId" };
+
+		public static String[] getCORPORATE() {
+			return CORPORATE;
+		}
+
 		public static final String ID = "id";
-		public static final String[] FP_PRODUCT = { "userId", "productId" };
-		public static final String[] FP_PRODUCT_TEMP = { "userId","isApproved","isDeleted","isCopied","isEdit","statusId","jobId","fpProductId","id","fpProductMappingId"};
-		public static final String[] CORPORATE_PROFILE = {  "id","userId", "clientId", "applicationId","panNo","constitutionId","establishmentMonth",
+
+		private static final String[] FP_PRODUCT = { "userId", "productId" };
+
+		public static String[] getFpProduct() {
+			return FP_PRODUCT;
+		}
+
+		private static final String[] FP_PRODUCT_TEMP = { "userId","isApproved","isDeleted","isCopied","isEdit","statusId","jobId","fpProductId","id","fpProductMappingId"};
+
+		public static String[] getFpProductTemp() {
+			return FP_PRODUCT_TEMP;
+		}
+
+		private static final String[] CORPORATE_PROFILE = {  "id","userId", "clientId", "applicationId","panNo","constitutionId","establishmentMonth",
 			"establishmentYear","keyVericalFunding","latitude","longitude","organisationName","firstAddress",
 			"websiteAddress","landlineNo","keyVerticalSector","keyVerticalSubsector","gstIn","email"
 		};
-		public static final String[] CORPORATE_FINAL = { "aadhar","secondAddress","sameAs","creditRatingId",
+
+		public static String[] getCorporateProfile() {
+			return CORPORATE_PROFILE;
+		}
+
+		private static final String[] CORPORATE_FINAL = { "aadhar","secondAddress","sameAs","creditRatingId",
 				"contLiabilityFyAmt","contLiabilitySyAmt" ,"contLiabilityTyAmt" ," contLiabilityYear","notApplicable","aboutUs","id"
 		};
-		public static final String[] RETAIL_PROFILE = { "titleId", "firstName", "middleName", "lastName", "pan",
+
+		public static String[] getCorporateFinal() {
+			return CORPORATE_FINAL;
+		}
+
+		private static final String[] RETAIL_PROFILE = { "titleId", "firstName", "middleName", "lastName", "pan",
 				"aadharNumber", "monthlyIncome", "firstAddress", "secondAddress", "addressSameAs", "contactNo",
 				"companyName", "employedWithId", "employedWithOther", "entityName", "industryTypeId",
 				"industryTypeOther", "selfEmployedOccupationId", "selfEmployedOccupationOther", "landSize",
@@ -322,44 +349,84 @@ public class CommonUtils {
 				"depreciationCurrentYear", "remunerationPreviousYear", "remunerationCurrentYear",
 				"highestQualification", "qualifyingYear", "institute", "residingYear", "residingMonth", "spouseName",
 				"isSpouseEmployed" };
-		public static final String[] NTB_FINAL_EXCLUSION = {"id","userId", "clientId", "applicationId","establishmentMonth","establishmentYear","groupName","keyVericalFunding"
+
+		public static String[] getRetailProfile() {
+			return RETAIL_PROFILE;
+		}
+
+		private static final String[] NTB_FINAL_EXCLUSION = {"id","userId", "clientId", "applicationId","establishmentMonth","establishmentYear","groupName","keyVericalFunding"
 				,"latitude","longitude","websiteAddress","gstIn","email","keyVerticalSector","keyVerticalSubsector","aadhar","creditRatingId"
 				,"contLiabilityFyAmt","contLiabilitySyAmt" ,"contLiabilityTyAmt","notApplicable","msmeRegistrationNumber"} ;
-		public static final String[] RETAIL_FINAL = { "castId", "castOther", "religion", "religionOther", "birthPlace",
+
+		public static String[] getNtbFinalExclusion() {
+			return NTB_FINAL_EXCLUSION;
+		}
+
+		private static final String[] RETAIL_FINAL = { "castId", "castOther", "religion", "religionOther", "birthPlace",
 				"fatherName", "motherName", "noChildren", "noDependent", "highestQualificationOther", "residenceType",
 				"annualRent", "noPartners", "birthDate", "currentDepartment", "currentDesignation", "currentIndustry",
 				"employmentStatus", "interestRate", "nameOfEntity", "officeType", "ownershipType", "partnersName",
 				"poaHolderName", "presentlyIrrigated", "rainFed", "repaymentCycle", "repaymentMode",
 				"seasonalIrrigated", "shareholding", "totalLandOwned", "tradeLicenseExpiryDate", "tradeLicenseNumber",
 				"unattended", "websiteAddress", "userId" };
-		public static final String[] RETAIL_FINAL_WITH_ID = { "castId", "castOther", "religion", "religionOther", "birthPlace",
+
+		public static String[] getRetailFinal() {
+			return RETAIL_FINAL;
+		}
+
+		private static final String[] RETAIL_FINAL_WITH_ID = { "castId", "castOther", "religion", "religionOther", "birthPlace",
 				"fatherName", "motherName", "noChildren", "noDependent", "highestQualificationOther", "residenceType",
 				"annualRent", "noPartners", "birthDate", "currentDepartment", "currentDesignation", "currentIndustry",
 				"employmentStatus", "interestRate", "nameOfEntity", "officeType", "ownershipType", "partnersName",
 				"poaHolderName", "presentlyIrrigated", "rainFed", "repaymentCycle", "repaymentMode",
 				"seasonalIrrigated", "shareholding", "totalLandOwned", "tradeLicenseExpiryDate", "tradeLicenseNumber",
 				"unattended", "websiteAddress", "userId" , "id"};
-		public static final String[] DIRECTOR_OBJ_EXCEPT_MAIN = {"isItrCompleted", "isCibilCompleted", "isBankStatementCompleted", "isOneFormCompleted",
+
+		public static String[] getRetailFinalWithId() {
+			return RETAIL_FINAL_WITH_ID;
+		}
+
+		private static final String[] DIRECTOR_OBJ_EXCEPT_MAIN = {"isItrCompleted", "isCibilCompleted", "isBankStatementCompleted", "isOneFormCompleted",
 				"applicationId","dob","din","panNo","directorsName","totalExperience", "isActive","pincode","stateCode","city","mobile","gender","relationshipType",
 				"firstName","lastName", "middleName","title", "shareholding","aadhar","maritalStatus","noOfDependent","residenceType","residenceSinceMonth","residenceSinceYear",
 				"isFamilyMemberInBusiness","employmentDetailRequest","countryId","premiseNumber","streetName","landmark"
 		};
-		public static final String[] PL_RETAIL_PROFILE = {"titleId", "firstName", "middleName", "lastName", "genderId", "pan", "aadharNumber",
+
+		public static String[] getDirectorObjExceptMain() {
+			return DIRECTOR_OBJ_EXCEPT_MAIN;
+		}
+
+		private static final String[] PL_RETAIL_PROFILE = {"titleId", "firstName", "middleName", "lastName", "genderId", "pan", "aadharNumber",
 				"mobile", "educationQualification", "statusId", "residenceType", "birthDate", "employmentType", "employmentWith", "centralGovId",
 				"stateGovId", "psuId", "corporateId", "eduInstId", "nameOfEmployer", "employmentStatus", "currentJobMonth", "currentJobYear",
 				"totalExperienceMonth", "totalExperienceYear", "keyVerticalFunding", "keyVerticalSector", "keyVerticalSubSector", "contactNo", "email" };
-		public static final String[] PL_RETAIL_PRIMARY = {"loanAmountRequired", "loanPurpose", "tenureRequired", "repayment", "monthlyIncome" };
+
+		public static String[] getPlRetailProfile() {
+			return PL_RETAIL_PROFILE;
+		}
+
+		private static final String[] PL_RETAIL_PRIMARY = {"loanAmountRequired", "loanPurpose", "tenureRequired", "repayment", "monthlyIncome" };
+
+		public static String[] getPlRetailPrimary() {
+			return PL_RETAIL_PRIMARY;
+		}
+
 		public static final String[] PL_RETAIL_FINAL = {"addressSameAs","religion","qualifyingYear","noChildren","fatherName","motherName","spouseName","noDependent",
 				"residingMonth","residingYear","nationality","residentialStatus","castId","birthPlace","disabilityType","tradeLicenseNumber","tradeLicenseExpiryDate",
 				"passport","passportValidity","voterId","residentialProofNo","addressSameAs","permanentAddress","officeAddress","officeNameOfOrg","officeEmail","previousJobYear",
 				"previousJobMonth","previousEmployersName","previousEmployersAddress","previousEmployersContact","ddoWebsite","ddoRemainingSerYrs","ddoRemainingSerMonths","ddoEmployeeNo",
 				"ddoDesignation","ddoDepartment","ddoOrganizationType","isApplicantFinalFilled"};
-		public static final String[] RETAIL_PL_PROFILE = {
+
+		private static final String[] RETAIL_PL_PROFILE = {
 				"titleId", "firstName", "middleName", "lastName", "genderId", "pan", "aadharNumber", "mobile", "educationQualification",
 				"statusId", "residenceType", "birthDate", "employmentType", "employmentWith", "centralGovId", "stateGovId", "psuId",
 				"corporateId", "eduInstId", "nameOfEmployer", "employmentStatus", "currentJobMonth", "currentJobYear", "totalExperienceMonth",
 				"totalExperienceYear", "keyVerticalFunding", "keyVerticalSector", "keyVerticalSubSector", "contactAddress", "contactNo", "email",
 				"loanAmountRequired", "loanPurpose", "tenureRequired", "repayment", "monthlyIncome","isApplicantDetailsFilled" };
+
+		public static String[] getRetailPlProfile() {
+			return RETAIL_PL_PROFILE;
+		}
 	}
 
 	public static final class ApplicantType {

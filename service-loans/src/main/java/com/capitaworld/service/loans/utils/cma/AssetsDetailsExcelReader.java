@@ -30,7 +30,7 @@ public class AssetsDetailsExcelReader
 	public static final Logger log = LoggerFactory.getLogger(AssetsDetailsExcelReader.class);
     private static final List<String> ASSETS_MAPPING_LIST = new ArrayList<String>();
     public static final DecimalFormat decimalFormat = new DecimalFormat("#.##");
-    public static void run(Long storageDetailsId,XSSFSheet sheet,LoanApplicationMaster loanApplicationMaster,AssetsDetailsRepository assetsDetailsRepository) throws Exception {
+    public static void run(Long storageDetailsId,XSSFSheet sheet,LoanApplicationMaster loanApplicationMaster,AssetsDetailsRepository assetsDetailsRepository) throws ExcelException {
         ASSETS_MAPPING_LIST.clear();
         
         ASSETS_MAPPING_LIST.add("9");

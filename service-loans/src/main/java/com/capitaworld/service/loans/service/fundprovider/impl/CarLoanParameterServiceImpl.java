@@ -62,7 +62,7 @@ public class CarLoanParameterServiceImpl implements CarLoanParameterService {
 			carLoanParameterRequest.setMaxTenure(carLoanParameterRequest.getMaxTenure() * 12);
 		if (!CommonUtils.isObjectListNull(carLoanParameterRequest.getMinTenure()))
 			carLoanParameterRequest.setMinTenure(carLoanParameterRequest.getMinTenure() * 12);
-		BeanUtils.copyProperties(carLoanParameterRequest, carLoanParameter, CommonUtils.IgnorableCopy.FP_PRODUCT);
+		BeanUtils.copyProperties(carLoanParameterRequest, carLoanParameter, CommonUtils.IgnorableCopy.getFpProduct());
 		carLoanParameter.setModifiedBy(carLoanParameterRequest.getUserId());
 		carLoanParameter.setModifiedDate(new Date());
 		carLoanParameter.setIsParameterFilled(true);

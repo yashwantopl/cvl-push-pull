@@ -50,7 +50,7 @@ public class PrimaryHomeLoanServiceImpl implements PrimaryHomeLoanService {
 			throw new NullPointerException(
 					"PrimaryHomeLoanDetail not exist in DB with Application Id=>" + homeLoanDetailRequest.getId() + " and user Id ==>" + userId); 
 		}
-		BeanUtils.copyProperties(homeLoanDetailRequest, primaryHomeLoanDetail, CommonUtils.IgnorableCopy.CORPORATE);
+		BeanUtils.copyProperties(homeLoanDetailRequest, primaryHomeLoanDetail, CommonUtils.IgnorableCopy.getCORPORATE());
 		primaryHomeLoanDetail.setTenure(CommonUtils.isObjectNullOrEmpty(homeLoanDetailRequest.getTenure()) ? null : (homeLoanDetailRequest.getTenure() * 12));
 		primaryHomeLoanDetail.setModifiedBy(userId);
 		primaryHomeLoanDetail.setModifiedDate(new Date());

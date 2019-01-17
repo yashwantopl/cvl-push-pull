@@ -525,7 +525,7 @@ public class AsyncComponent {
 								logger.error("Error while get total suggestion matches list when final details not filling mail sending : ",e);
 								parameters.put(PARAMETERS_TOTAL_MATCHES, 0);
 							}
-							String[] toIds = { request.getEmail() };
+//							String[] toIds = { request.getEmail() };
 //							if (request.getEmail() != null && fpName != null && fsName != null) {
 //								sendNotification(toIds, userId.toString(), parameters,
 //										NotificationTemplate.FP_VIEW_MORE_DETAILS, fpName, false, null);
@@ -857,8 +857,8 @@ public class AsyncComponent {
 			}
 			parameters.put(CommonUtils.PARAMETERS_FS_NAME, fsName);
 			parameters.put("lone_type", LoanType.getType(productId).getName());
-			String[] toIds = { checkerUserName.getEmail() };
-			String subject = makerUserName.getName() + " has lock final details for " + applicationCode;
+//			String[] toIds = { checkerUserName.getEmail() };
+//			String subject = makerUserName.getName() + " has lock final details for " + applicationCode;
 			// STOP THIS MAIL RAHUL WRONG MAIL
 			// sendNotification(toIds,checkerId.toString(),parameters,
 			// NotificationTemplate.EMAIL_CKR_MKR_FINAL_LOCK,subject,false,null);

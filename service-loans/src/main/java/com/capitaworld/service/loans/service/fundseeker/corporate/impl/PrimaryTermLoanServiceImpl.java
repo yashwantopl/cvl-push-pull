@@ -43,7 +43,7 @@ public class PrimaryTermLoanServiceImpl implements PrimaryTermLoanService {
 				throw new NullPointerException("PrimaryTermLoanDetail not exist in DB with ID=>"
 						+ termLoanRequest.getId() + " and UserId==>" + userId);
 			}
-			BeanUtils.copyProperties(termLoanRequest, termLoanDetail, CommonUtils.IgnorableCopy.CORPORATE);
+			BeanUtils.copyProperties(termLoanRequest, termLoanDetail, CommonUtils.IgnorableCopy.getCORPORATE());
 			/*termLoanDetail.setTenure(CommonUtils.isObjectNullOrEmpty(termLoanRequest.getTenure()) ? null
 					: (termLoanRequest.getTenure() * 12));*/
 			termLoanDetail.setModifiedBy(userId);

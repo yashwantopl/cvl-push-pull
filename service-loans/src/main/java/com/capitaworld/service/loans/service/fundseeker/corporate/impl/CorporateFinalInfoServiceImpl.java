@@ -49,7 +49,7 @@ public class CorporateFinalInfoServiceImpl implements CorporateFinalInfoService 
                 applicantDetail.setApplicationId(new LoanApplicationMaster(corporateFinalInfoRequest.getApplicationId()));
             }
 
-            BeanUtils.copyProperties(corporateFinalInfoRequest, applicantDetail, CommonUtils.IgnorableCopy.CORPORATE_PROFILE); //--------------------put check for Ignore properties
+            BeanUtils.copyProperties(corporateFinalInfoRequest, applicantDetail, CommonUtils.IgnorableCopy.getCorporateProfile()); //--------------------put check for Ignore properties
             applicantDetail.setModifiedBy(userId);
             applicantDetail.setModifiedDate(new Date());
             copyAddressFromRequestToDomain(corporateFinalInfoRequest, applicantDetail); //--------------------put check for Ignore properties
@@ -118,7 +118,7 @@ public class CorporateFinalInfoServiceImpl implements CorporateFinalInfoService 
                 return null;
             }
             CorporateFinalInfoRequest corporateFinalInfoRequest = new CorporateFinalInfoRequest();
-            BeanUtils.copyProperties(applicantDetail, corporateFinalInfoRequest, CommonUtils.IgnorableCopy.CORPORATE_PROFILE);
+            BeanUtils.copyProperties(applicantDetail, corporateFinalInfoRequest, CommonUtils.IgnorableCopy.getCorporateProfile());
             copyAddressFromDomainToRequest(applicantDetail, corporateFinalInfoRequest);
 
             //applicantRequest.setDetailsFilledCount(applicantDetail.getApplicationId().getDetailsFilledCount());
@@ -138,7 +138,7 @@ public class CorporateFinalInfoServiceImpl implements CorporateFinalInfoService 
                 return null;
             }
             CorporateFinalInfoRequest corporateFinalInfoRequest = new CorporateFinalInfoRequest();
-            BeanUtils.copyProperties(applicantDetail, corporateFinalInfoRequest, CommonUtils.IgnorableCopy.NTB_FINAL_EXCLUSION);
+            BeanUtils.copyProperties(applicantDetail, corporateFinalInfoRequest, CommonUtils.IgnorableCopy.getNtbFinalExclusion());
             copyAddressFromDomainToRequest(applicantDetail, corporateFinalInfoRequest);
 
             //applicantRequest.setDetailsFilledCount(applicantDetail.getApplicationId().getDetailsFilledCount());
@@ -170,7 +170,7 @@ public class CorporateFinalInfoServiceImpl implements CorporateFinalInfoService 
                 applicantDetail.setApplicationId(new LoanApplicationMaster(corporateFinalInfoRequest.getApplicationId()));
             }
 
-            BeanUtils.copyProperties(corporateFinalInfoRequest, applicantDetail, CommonUtils.IgnorableCopy.NTB_FINAL_EXCLUSION); //--------------------put check for Ignore properties
+            BeanUtils.copyProperties(corporateFinalInfoRequest, applicantDetail, CommonUtils.IgnorableCopy.getNtbFinalExclusion()); //--------------------put check for Ignore properties
             applicantDetail.setModifiedBy(userId);
             applicantDetail.setModifiedDate(new Date());
             copyAddressFromRequestToDomain(corporateFinalInfoRequest, applicantDetail); //--------------------put check for Ignore properties

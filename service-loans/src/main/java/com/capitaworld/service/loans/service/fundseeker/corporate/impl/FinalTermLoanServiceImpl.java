@@ -54,7 +54,7 @@ public class FinalTermLoanServiceImpl implements FinalTermLoanService {
 				termLoanDetail.setIsActive(true);
 				termLoanDetail.setApplicationId(new LoanApplicationMaster(termLoanRequest.getApplicationId()));
 			}
-			BeanUtils.copyProperties(termLoanRequest, termLoanDetail, CommonUtils.IgnorableCopy.CORPORATE);
+			BeanUtils.copyProperties(termLoanRequest, termLoanDetail, CommonUtils.IgnorableCopy.getCORPORATE());
 			termLoanDetail = termLoanDetailRepository.save(termLoanDetail);
 
 			// saving Data

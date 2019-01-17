@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
+import com.capitaworld.service.loans.exceptions.ExcelException;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,7 +28,7 @@ public class OperatingStatementDetailsServiceImpl implements OperatingStatementD
 
 	@Override
 	public void readOperatingStatementDetails(Long applicationId, Long storageDetailsId,
-			XSSFSheet sheet) throws Exception {
+			XSSFSheet sheet) throws ExcelException {
 
 		OperatingStatementDetailsExcelReader.run(storageDetailsId, sheet,
 				loanApplicationRepository.findOne(applicationId), operatingStatementDetailsRepository);

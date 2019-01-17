@@ -3217,7 +3217,6 @@ public class FPAsyncComponent {
 					com.capitaworld.service.users.utils.CommonUtils.UserRoles.BRANCH_OFFICER, branchId);
 			List<Map<String, Object>> boRespList = (List<Map<String, Object>>) userResponse.getListData();
 
-			to = null;
 			if (!CommonUtils.isObjectNullOrEmpty(boRespList)) {
 				for (int i = 0; i < boRespList.size(); i++) {
 					UsersRequest userObj = MultipleJSONObjectHelper.getObjectFromMap(boRespList.get(i),

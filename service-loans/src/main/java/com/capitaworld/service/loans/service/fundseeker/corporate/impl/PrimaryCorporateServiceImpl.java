@@ -46,7 +46,7 @@ public class PrimaryCorporateServiceImpl implements PrimaryCorporateService {
 						+ primaryCorporateRequest.getId() + " and UserId==>" + userId);
 			}
 			BeanUtils.copyProperties(primaryCorporateRequest, primaryCorporateDetail,
-					CommonUtils.IgnorableCopy.CORPORATE);
+					CommonUtils.IgnorableCopy.getCORPORATE());
 			primaryCorporateDetail.setModifiedBy(userId);
 			primaryCorporateDetail.setModifiedDate(new Date());
 			primaryCorporateRepository.save(primaryCorporateDetail);
