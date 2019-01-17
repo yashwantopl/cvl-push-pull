@@ -525,7 +525,7 @@ public class AsyncComponent {
 								logger.error("Error while get total suggestion matches list when final details not filling mail sending : ",e);
 								parameters.put(PARAMETERS_TOTAL_MATCHES, 0);
 							}
-							String[] toIds = { request.getEmail() };
+//							String[] toIds = { request.getEmail() };
 //							if (request.getEmail() != null && fpName != null && fsName != null) {
 //								sendNotification(toIds, userId.toString(), parameters,
 //										NotificationTemplate.FP_VIEW_MORE_DETAILS, fpName, false, null);
