@@ -24,6 +24,7 @@ import com.capitaworld.service.dms.model.DocumentResponse;
 import com.capitaworld.service.loans.model.LoansResponse;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CamReportPdfDetailsService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.InEligibleProposalCamReportService;
+import com.capitaworld.service.loans.service.fundseeker.corporate.UniformProductCamReportService;
 import com.capitaworld.service.loans.utils.CommonUtils;
 import com.capitaworld.service.loans.utils.DDRMultipart;
 
@@ -36,6 +37,9 @@ public class CamReportPdfDetailsController {
 	
 	@Autowired
 	private InEligibleProposalCamReportService inEligibleProposalCamReportService;
+	
+	@Autowired 
+	private UniformProductCamReportService uniformProductCamReport;
 	
 	@Autowired
 	private ReportsClient reportsClient;
@@ -51,6 +55,7 @@ public class CamReportPdfDetailsController {
 	private static final String ORIGINAL_FILE_NAME = "originalFileName";
 	private static final String ERROR_WHILE_GETTING_MAP_DETAILS = "Error while getting MAP Details==>";
 	private static final String INELIGIBLE_CAM_REPORT = "INELIGIBLECAMREPORT";
+	private static final String UNIFORM_CAM_REPORT = "UNIFORMCAMREPORT";
 	
 	@RequestMapping(value = "/getPrimaryDataMap/{applicationId}/{productMappingId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> getPrimaryDataMap(@PathVariable(value = "applicationId") Long applicationId,@PathVariable(value = "productMappingId") Long productId, HttpServletRequest request)  {
@@ -209,5 +214,48 @@ public class CamReportPdfDetailsController {
 		}
 
 	}
+	
+	
+	@RequestMapping(value = "/getUniformProductCam/{applicationId}/{fpProductId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<LoansResponse> getUniformProductDataMap(@PathVariable(value = "applicationId") Long applicationId,@PathVariable(value = "fpProductId") Long fpProductId)  {
+		logger.info("In Uniform Product Cam Report..ApplicationId====>>"+applicationId+"....and fpProductId is==>>"+fpProductId);
+		if (CommonUtils.isObjectNullOrEmpty(applicationId)) {
+				logger.warn(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, applicationId);
+				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.INVALID_DATA_OR_REQUESTED_DATA_NOT_FOUND, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
+		}
+		try {
+
+			Map<String,Object> response = uniformProductCamReport.getUniformProductCamReport(applicationId,fpProductId);
+			ReportRequest reportRequest = new ReportRequest();
+			reportRequest.setParams(response);
+			reportRequest.setTemplate(UNIFORM_CAM_REPORT);
+			reportRequest.setType(UNIFORM_CAM_REPORT);
+			byte[] byteArr = reportsClient.generatePDFFile(reportRequest);
+			MultipartFile multipartFile = new DDRMultipart(byteArr);			  
+			  JSONObject jsonObj = new JSONObject();
+			  
+
+				jsonObj.put(CommonUtils.APPLICATION_ID, applicationId);
+				jsonObj.put(PRODUCT_DOCUMENT_MAPPING_ID, 574L);
+				jsonObj.put(USER_TYPE, CommonUtils.UploadUserType.UERT_TYPE_APPLICANT);
+				jsonObj.put(ORIGINAL_FILE_NAME, UNIFORM_CAM_REPORT+applicationId+".pdf");
+				
+				DocumentResponse  documentResponse  =  dmsClient.uploadFile(jsonObj.toString(), multipartFile);
+				if(documentResponse.getStatus() == 200){
+				logger.info(""+documentResponse);
+				logger.info("Out From Uniform Product Cam Report......Cam Genereated......ApplicationId====>>"+applicationId);
+				return new ResponseEntity<LoansResponse>(new LoansResponse(HttpStatus.OK.value(), SUCCESS_LITERAL, documentResponse.getData(), response),HttpStatus.OK);
+				}else{
+					 return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
+				}
+		} catch (Exception e) {
+			logger.error(ERROR_WHILE_GETTING_MAP_DETAILS, e);
+			return new ResponseEntity<LoansResponse>(
+					new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+					HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+	}
+	
 	
 }
