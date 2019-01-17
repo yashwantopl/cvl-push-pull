@@ -93,7 +93,7 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 				applicantDetail.setApplicationId(new LoanApplicationMaster(applicantRequest.getApplicationId()));
 			}
 
-			BeanUtils.copyProperties(applicantRequest, applicantDetail, CommonUtils.IgnorableCopy.RETAIL_FINAL);
+			BeanUtils.copyProperties(applicantRequest, applicantDetail, CommonUtils.IgnorableCopy.getRetailFinal());
 			copyAddressFromRequestToDomain(applicantRequest, applicantDetail);
 			if (applicantRequest.getDate() != null && applicantRequest.getMonth() != null
 					&& applicantRequest.getYear() != null) {
@@ -147,7 +147,7 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 				applicantDetail.setIsActive(true);
 				applicantDetail.setApplicationId(new LoanApplicationMaster(applicantRequest.getApplicationId()));
 			}
-			BeanUtils.copyProperties(applicantRequest, applicantDetail,CommonUtils.IgnorableCopy.RETAIL_FINAL_WITH_ID);
+			BeanUtils.copyProperties(applicantRequest, applicantDetail,CommonUtils.IgnorableCopy.getRetailFinalWithId());
 			applicantDetail.setEmail(applicantRequest.getEmail());
 			applicantDetail.setMobile(applicantRequest.getLanLineNo());
 			Address address = applicantRequest.getFirstAddress();

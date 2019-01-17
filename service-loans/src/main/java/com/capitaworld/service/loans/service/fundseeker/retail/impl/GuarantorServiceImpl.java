@@ -203,7 +203,7 @@ public class GuarantorServiceImpl implements GuarantorService {
 			List<GuarantorRequest> requests = new ArrayList<>(details.size());
 			for (GuarantorDetails detail : details) {
 				GuarantorRequest request = new GuarantorRequest();
-				BeanUtils.copyProperties(detail, request, CommonUtils.IgnorableCopy.RETAIL_FINAL);
+				BeanUtils.copyProperties(detail, request, CommonUtils.IgnorableCopy.getRetailFinal());
 				requests.add(request);
 			}
 			return requests;
