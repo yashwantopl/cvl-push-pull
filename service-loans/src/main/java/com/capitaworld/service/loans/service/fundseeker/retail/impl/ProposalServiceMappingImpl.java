@@ -1998,5 +1998,10 @@ public class ProposalServiceMappingImpl implements ProposalService {
 		}
 		return null;
 	}
+
+	@Override
+	public Integer updateStatus(Long applicationId, Long fpProductId, Long status,String remarks) {
+		return proposalDetailRepository.updateStatus(status, applicationId, fpProductId,remarks);
+	}
 }
 

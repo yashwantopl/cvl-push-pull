@@ -5,6 +5,8 @@ import java.util.Date;
 public class OfflineProcessedApplicationRequest {
 
 	private Long applicationId;
+	private Long fpProductId;
+	private Long proposalId;
 	private Long userId;
 	private Double loanAmount;
 	private String organisationName;
@@ -31,6 +33,13 @@ public class OfflineProcessedApplicationRequest {
 	private String reason;
 	private Date modifiedDate;
 	private Integer status;
+	
+	//DISBURSED APPLICATION LIST
+	private Double disbursedAmount;
+	private Date disbursedDate;
+	private String accountNo;
+	private String transactionNo;
+	private Integer paymentMode;
 	
 	
 	public Long getApplicationId() {
@@ -189,6 +198,61 @@ public class OfflineProcessedApplicationRequest {
 	public void setStatus(Integer status) {
 		this.status = status;
 	}
-	
-	
+	public Long getFpProductId() {
+		return fpProductId;
+	}
+	public void setFpProductId(Long fpProductId) {
+		this.fpProductId = fpProductId;
+	}
+	public Long getProposalId() {
+		return proposalId;
+	}
+	public void setProposalId(Long proposalId) {
+		this.proposalId = proposalId;
+	}
+	public Double getDisbursedAmount() {
+		return disbursedAmount;
+	}
+	public void setDisbursedAmount(Double disbursedAmount) {
+		this.disbursedAmount = disbursedAmount;
+	}
+	public Date getDisbursedDate() {
+		return disbursedDate;
+	}
+	public void setDisbursedDate(Date disbursedDate) {
+		this.disbursedDate = disbursedDate;
+	}
+	public String getAccountNo() {
+		return accountNo;
+	}
+	public void setAccountNo(String accountNo) {
+		this.accountNo = accountNo;
+	}
+	public String getTransactionNo() {
+		return transactionNo;
+	}
+	public void setTransactionNo(String transactionNo) {
+		this.transactionNo = transactionNo;
+	}
+	public Integer getPaymentMode() {
+		return paymentMode;
+	}
+	public void setPaymentMode(Integer paymentMode) {
+		this.paymentMode = paymentMode;
+	}
+	@Override
+	public String toString() {
+		return "OfflineProcessedApplicationRequest [applicationId=" + applicationId + ", fpProductId=" + fpProductId
+				+ ", proposalId=" + proposalId + ", userId=" + userId + ", loanAmount=" + loanAmount
+				+ ", organisationName=" + organisationName + ", branchName=" + branchName + ", isCampaignUser="
+				+ isCampaignUser + ", campaignCode=" + campaignCode + ", isSanctioned=" + isSanctioned
+				+ ", isDisbursed=" + isDisbursed + ", branchId=" + branchId + ", pan=" + pan + ", gstin=" + gstin
+				+ ", branchCode=" + branchCode + ", branchAddress=" + branchAddress + ", locationData=" + locationData
+				+ ", sanctionedAmount=" + sanctionedAmount + ", sanctionDate=" + sanctionDate + ", tenure=" + tenure
+				+ ", remark=" + remark + ", roi=" + roi + ", processingFee=" + processingFee + ", isSanctionedFrom="
+				+ isSanctionedFrom + ", isPartiallyDisbursedOffline=" + isPartiallyDisbursedOffline + ", reason="
+				+ reason + ", modifiedDate=" + modifiedDate + ", status=" + status + ", disbursedAmount="
+				+ disbursedAmount + ", disbursedDate=" + disbursedDate + ", accountNo=" + accountNo + ", transactionNo="
+				+ transactionNo + ", paymentMode=" + paymentMode + "]";
+	}
 }
