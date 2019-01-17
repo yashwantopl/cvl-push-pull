@@ -236,7 +236,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 			}
 			coDetails.setModifiedBy(userId);
 			coDetails.setModifiedDate(new Date());
-			BeanUtils.copyProperties(applicantRequest, coDetails, CommonUtils.IgnorableCopy.RETAIL_PROFILE);
+			BeanUtils.copyProperties(applicantRequest, coDetails, CommonUtils.IgnorableCopy.getRetailProfile());
 			coApplicantDetailRepository.save(coDetails);
 
 			List<Long> coAppIds = coApplicantDetailRepository.getCoAppIds(applicantRequest.getApplicationId(),
@@ -272,7 +272,7 @@ public class CoApplicantServiceImpl implements CoApplicantService {
 						+ userId + " and Application Id ==>" + applicationId);
 			}
 			FinalCommonRetailRequestOld applicantRequest = new FinalCommonRetailRequestOld();
-			BeanUtils.copyProperties(applicantDetail, applicantRequest, CommonUtils.IgnorableCopy.RETAIL_PROFILE);
+			BeanUtils.copyProperties(applicantDetail, applicantRequest, CommonUtils.IgnorableCopy.getRetailProfile());
 			Integer currencyId = retailApplicantDetailRepository.getCurrency(userId, applicationId);
 			applicantRequest.setCurrencyValue(CommonDocumentUtils.getCurrency(currencyId));
 			applicantRequest.setFinalFilledCount(applicantDetail.getApplicationId().getFinalFilledCount());

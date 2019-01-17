@@ -236,7 +236,7 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 						+ id + "  ApplicationId==>" + applicationId);
 			}
 			FinalCommonRetailRequestOld applicantRequest = new FinalCommonRetailRequestOld();
-			BeanUtils.copyProperties(applicantDetail, applicantRequest, CommonUtils.IgnorableCopy.RETAIL_PROFILE);
+			BeanUtils.copyProperties(applicantDetail, applicantRequest, CommonUtils.IgnorableCopy.getRetailProfile());
 			applicantRequest.setCurrencyValue(CommonDocumentUtils.getCurrency(applicantDetail.getCurrencyId()));
 			applicantRequest.setFinalFilledCount(applicantDetail.getApplicationId().getFinalFilledCount());
 			return applicantRequest;
@@ -264,7 +264,7 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 			}
 			applicantDetail.setModifiedBy(userId);
 			applicantDetail.setModifiedDate(new Date());
-			BeanUtils.copyProperties(applicantRequest, applicantDetail, CommonUtils.IgnorableCopy.RETAIL_PROFILE);
+			BeanUtils.copyProperties(applicantRequest, applicantDetail, CommonUtils.IgnorableCopy.getRetailProfile());
 			applicantRepository.save(applicantDetail);
 			// Updating Final Flag
 			loanApplicationRepository.setIsApplicantFinalMandatoryFilled(applicantRequest.getApplicationId(),
