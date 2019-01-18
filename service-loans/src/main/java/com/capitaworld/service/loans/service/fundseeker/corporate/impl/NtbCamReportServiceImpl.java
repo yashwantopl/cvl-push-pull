@@ -1,6 +1,7 @@
 package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -148,6 +149,7 @@ public class NtbCamReportServiceImpl implements NtbCamReportService{
 	private SecurityCorporateDetailsService securityCorporateDetailsService;
 	
 	private static final Logger logger = LoggerFactory.getLogger(NtbCamReportServiceImpl.class);
+	private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
 	
 	@Override
 	public Map<String, Object> getNtbCamReport(Long applicationId, Long productId, Long userId, boolean isFinalView) {
@@ -156,7 +158,7 @@ public class NtbCamReportServiceImpl implements NtbCamReportService{
 		Map<String, Object> map = new HashMap<String, Object>();
 		PrimaryCorporateDetail primaryCorporateDetail = primaryCorporateRepository.findOneByApplicationIdId(applicationId);
 		if (!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getModifiedDate())) {
-			map.put("dateOfProposal",!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getModifiedDate()) ? CommonUtils.DATE_FORMAT.format(primaryCorporateDetail.getModifiedDate()) : null);
+			map.put("dateOfProposal",!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getModifiedDate()) ? simpleDateFormat.format(primaryCorporateDetail.getModifiedDate()) : null);
 		}
 		//MATCHES RESPONSE
 		try {
@@ -250,7 +252,7 @@ public class NtbCamReportServiceImpl implements NtbCamReportService{
 			}
 
 			map.put("otherDetails",fundSeekerInputRequestResponse);
-			map.put("proposedOperationDate",CommonUtils.DATE_FORMAT.format(fundSeekerInputRequestResponse.getProposedOperationDate()));
+			map.put("proposedOperationDate",simpleDateFormat.format(fundSeekerInputRequestResponse.getProposedOperationDate()));
 
 		} catch (Exception e) {
 			logger.error("Problem to get Other Details=========> {}", e);

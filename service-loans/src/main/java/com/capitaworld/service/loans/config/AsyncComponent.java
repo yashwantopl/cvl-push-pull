@@ -862,7 +862,7 @@ public class AsyncComponent {
 			// STOP THIS MAIL RAHUL WRONG MAIL
 			// sendNotification(toIds,checkerId.toString(),parameters,
 			// NotificationTemplate.EMAIL_CKR_MKR_FINAL_LOCK,subject,false,null);
-			logger.info("Successfully send mail ------------------>" + checkerUserName.getEmail());
+//			logger.info("Successfully send mail ------------------>" + checkerUserName.getEmail());
 			String[] toUserIds = { checkerId.toString() };
 			synNotification(toUserIds, makerId, NotificationAlias.SYS_CKR_MKR_FINAL_LOCK, parameters, applicationId,
 					null);
