@@ -324,28 +324,17 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		Map<String, Object> map = new HashMap<String, Object>();
 		DecimalFormat decim = new DecimalFormat("####");
 
-
-		//logger.info("==================>"+loanApplicationMaster.getapplica);
-		 //map.put("date",!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getApprovedDate())? CommonUtils.DATE_FORMAT.format(loanApplicationMaster.getApprovedDate()):"-");
-		
 		// CHANGES FOR NEW MULTIPLE BANKS----->
 		ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.getByApplicationIdAndProposalId(proposalId);
 		logger.info("======================>"+applicationProposalMapping.getApplicationId()+"======app"+applicationProposalMapping.getProposalId());
-		
+		map.put("date",!CommonUtils.isObjectNullOrEmpty(applicationProposalMapping.getApprovedDate())? DATE_FORMAT.format(applicationProposalMapping.getApprovedDate()):"-");
 		
 		Long userId = loanApplicationRepository.getUserIdByApplicationId(applicationProposalMapping.getApplicationId());
 		logger.info("======================>"+userId);
-
-		logger.info("GETTING DATA BASED ON APPLICATION ID AND PROPOSAL ID IN"
-				+ " APPROVE DATE ========>"+applicationProposalMapping.getApprovedDate()+"====CREATED DATE====> "+applicationProposalMapping.getCreatedBy()+" === tenure"+
-			applicationProposalMapping.getTenure()+" loan amount "+applicationProposalMapping.getLoanAmount()+"application code"+""+applicationProposalMapping.getProposalId());
-		    map.put("date",!CommonUtils.isObjectNullOrEmpty(applicationProposalMapping.getApprovedDate())? DATE_FORMAT.format(applicationProposalMapping.getApprovedDate()):"-");
-		
-				// ENDS HERE MULTIPLE BANK----->
+        // ENDS HERE MULTIPLE BANK----->
 		
 		//CHANGES====>
 		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.getByIdAndUserId(applicationProposalMapping.getApplicationId(), userId);
-		logger.info("==================>"+loanApplicationMaster);
 		
 		CorporateApplicantRequest corporateApplicantRequest =corporateApplicantService.getCorporateApplicant(applicationProposalMapping.getApplicationId());
 		UserResponse userResponse = usersClient.getEmailMobile(userId);
@@ -677,7 +666,8 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			calculateRatioAnalysis(financials, applicationProposalMapping.getApplicationId());
 			map.put("financials", financials);
 			Map<Integer, Object[]> projectedFin = new HashMap<Integer, Object[]>(applicationProposalMapping.getTenure().intValue());
-			if(primaryCorporateRequest.getProductId() == 1) {
+			//if(primaryCorporateRequest.getProductId() == 1) { previous 
+			 if(applicationProposalMapping.getProductId() == 1){  // new 
 				//		projectedFin.put(currentYear , calculateFinancials(userId, applicationId, null, denominationValue, currentYear)); // PREVIOUS
 				projectedFin.put(currentYear , calculateFinancials(userId, applicationProposalMapping.getApplicationId(), null, denominationValue,proposalId, currentYear));// NEW BASED ON PROPOSAL ID
 				map.put("tenure", 1);
@@ -1015,8 +1005,9 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 		
 		//ELIGIBILITY DATA (ASSESSMENT TO LIMITS)
 		try {
-			PrimaryCorporateRequest primaryCorporateRequest = primaryCorporateService.get(applicationId, userId);
-			int loanId = primaryCorporateRequest.getProductId();
+			//PrimaryCorporateRequest primaryCorporateRequest = primaryCorporateService.get(applicationProposalMapping.getApplicationId(), userId); // previous
+		 // 	primaryCorporateRequest.getProductId(); // previous  
+			int loanId = applicationProposalMapping.getProductId(); // new 
 			switch (loanId) {
 				case 1:
 				WorkingCapitalParameter workingCapitalPara = workingCapitalParameterRepository.getByID(productId);
@@ -1178,7 +1169,7 @@ public class CamReportPdfDetailsServiceImpl implements CamReportPdfDetailsServic
 			//RatingResponse ratingResponse = (RatingResponse) irrService.calculateIrrRating(applicationId, userId).getBody().getData();
 				
 			//RatingResponse ratingResponse = (RatingResponse) irrService.calculateIrrRating(proposalMappingRequestString.getId(), userId, proposalMappingRequestString.getId()).getBody().getData();// PREVIOUS 
-				RatingResponse ratingResponse = (RatingResponse) irrService.calculateIrrRating(applicationId, userId, applicationProposalMapping.getProposalId()).getBody().getData(); //NEW BASED ON PROPOSAL MAPPING ID 
+				RatingResponse ratingResponse = (RatingResponse) irrService.calculateIrrRating(applicationProposalMapping.getApplicationId(), userId, applicationProposalMapping.getProposalId()).getBody().getData(); //NEW BASED ON PROPOSAL MAPPING ID 
 			if(!CommonUtils.isObjectNullOrEmpty(ratingResponse.getBusinessTypeId())) {
 				if(BusinessType.MANUFACTURING == ratingResponse.getBusinessTypeId())
 				{
