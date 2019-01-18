@@ -65,7 +65,7 @@ public class HomeLoanParameterServiceImpl implements HomeLoanParameterService {
 		if (!CommonUtils.isObjectListNull(homeLoanParameterRequest.getMinTenure()))
 			homeLoanParameterRequest.setMinTenure(homeLoanParameterRequest.getMinTenure() * 12);
 
-		BeanUtils.copyProperties(homeLoanParameterRequest, homeLoanParameter, CommonUtils.IgnorableCopy.FP_PRODUCT);
+		BeanUtils.copyProperties(homeLoanParameterRequest, homeLoanParameter, CommonUtils.IgnorableCopy.getFpProduct());
 		homeLoanParameter.setModifiedBy(homeLoanParameterRequest.getUserId());
 		homeLoanParameter.setIsParameterFilled(true);
 		homeLoanParameter.setModifiedDate(new Date());

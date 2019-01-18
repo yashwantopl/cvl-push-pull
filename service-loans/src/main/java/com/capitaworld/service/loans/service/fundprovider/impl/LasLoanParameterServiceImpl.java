@@ -58,7 +58,7 @@ public class LasLoanParameterServiceImpl implements LasLoanParameterService {
 		if (lasParameter == null) {
 			return false;
 		}
-		BeanUtils.copyProperties(lasParameterRequest, lasParameter, CommonUtils.IgnorableCopy.FP_PRODUCT);
+		BeanUtils.copyProperties(lasParameterRequest, lasParameter, CommonUtils.IgnorableCopy.getFpProduct());
 		lasParameter.setModifiedBy(lasParameterRequest.getUserId());
 		lasParameter.setModifiedDate(new Date());
 		lasParameterRepository.save(lasParameter);

@@ -203,7 +203,7 @@ public class GuarantorServiceImpl implements GuarantorService {
 			List<GuarantorRequest> requests = new ArrayList<>(details.size());
 			for (GuarantorDetails detail : details) {
 				GuarantorRequest request = new GuarantorRequest();
-				BeanUtils.copyProperties(detail, request, CommonUtils.IgnorableCopy.RETAIL_FINAL);
+				BeanUtils.copyProperties(detail, request, CommonUtils.IgnorableCopy.getRetailFinal());
 				requests.add(request);
 			}
 			return requests;
@@ -226,7 +226,7 @@ public class GuarantorServiceImpl implements GuarantorService {
 			}
 			guaDetails.setModifiedBy(userId);
 			guaDetails.setModifiedDate(new Date());
-			BeanUtils.copyProperties(applicantRequest, guaDetails, CommonUtils.IgnorableCopy.RETAIL_PROFILE);
+			BeanUtils.copyProperties(applicantRequest, guaDetails, CommonUtils.IgnorableCopy.getRetailProfile());
 			guarantorDetailsRepository.save(guaDetails);
 
 			// setting Guarantor Details filled flag
@@ -264,7 +264,7 @@ public class GuarantorServiceImpl implements GuarantorService {
 						+ userId + " and Application Id ==>" + applicationId);
 			}
 			FinalCommonRetailRequestOld applicantRequest = new FinalCommonRetailRequestOld();
-			BeanUtils.copyProperties(guaDetail, applicantRequest, CommonUtils.IgnorableCopy.RETAIL_PROFILE);
+			BeanUtils.copyProperties(guaDetail, applicantRequest, CommonUtils.IgnorableCopy.getRetailProfile());
 			Integer currencyId = retailApplicantDetailRepository.getCurrency(userId, applicationId);
 			applicantRequest.setCurrencyValue(CommonDocumentUtils.getCurrency(currencyId));
 			applicantRequest.setFinalFilledCount(guaDetail.getApplicationId().getFinalFilledCount());
