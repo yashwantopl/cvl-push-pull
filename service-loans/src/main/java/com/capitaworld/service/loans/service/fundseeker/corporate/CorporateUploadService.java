@@ -15,7 +15,7 @@ public interface CorporateUploadService {
 
 	public DocumentResponse getProfilePic(Long applicantId, Long mappingId, String userType) throws LoansException;
 
-	public DocumentResponse uploadOtherDoc(String documentString, MultipartFile multipartFiles, Long userId) throws Exception;
+	public DocumentResponse uploadOtherDoc(String documentString, MultipartFile multipartFiles, Long userId) throws LoansException;
 
 	public DocumentResponse getOtherDoc(DocumentRequest documentRequest) throws LoansException;
 	
