@@ -103,6 +103,7 @@ import com.capitaworld.service.users.model.UsersRequest;
 public class DDRFormServiceImpl implements DDRFormService {
 
 	private static final Logger logger = LoggerFactory.getLogger(DDRFormServiceImpl.class);
+	private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
 
 	private static final String YEAR_2018 = "2018.0";
 	private static final String YEAR_2017 = "2017.0";
@@ -1943,7 +1944,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 				promotorBackgroundDetailResponse.setDin(!CommonUtils.isObjectNullOrEmpty(promotorBackgroundDetailRequest.getDin())?decim.format(promotorBackgroundDetailRequest.getDin()).toString() : "");
 				promotorBackgroundDetailResponse.setTotalExperience(CommonUtils.convertValueWithoutDecimal(promotorBackgroundDetailRequest.getTotalExperience()));
 				promotorBackgroundDetailResponse.setNetworth(CommonUtils.convertValue(promotorBackgroundDetailRequest.getNetworth()));
-				promotorBackgroundDetailResponse.setAppointmentDate(promotorBackgroundDetailRequest.getAppointmentDate() != null ? CommonUtils.DATE_FORMAT.format(promotorBackgroundDetailRequest.getAppointmentDate()) : null);
+				promotorBackgroundDetailResponse.setAppointmentDate(promotorBackgroundDetailRequest.getAppointmentDate() != null ? simpleDateFormat.format(promotorBackgroundDetailRequest.getAppointmentDate()) : null);
 				promotorBackgroundDetailResponse.setRelationshipType((promotorBackgroundDetailRequest.getRelationshipType() != null ? DirectorRelationshipType.getById(promotorBackgroundDetailRequest.getRelationshipType()).getValue() : " " ));
 				promotorBackgroundDetailResponse.setDesignation(StringEscapeUtils.escapeXml(promotorBackgroundDetailRequest.getDesignation()));
 				promotorBackgroundDetailResponse.setMobile(promotorBackgroundDetailRequest.getMobile());
@@ -2063,7 +2064,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 				dirBackDetailRes.setAppointmentDate(directorBackgroundDetailRequest.getAppointmentDate());
 				dirBackDetailRes.setDin(directorBackgroundDetailRequest.getDin());
 				dirBackDetailRes.setMobile(directorBackgroundDetailRequest.getMobile());
-				dirBackDetailRes.setDob(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDob()) ? CommonUtils.DATE_FORMAT.parse(CommonUtils.DATE_FORMAT.format(directorBackgroundDetailRequest.getDob())) : null);
+				dirBackDetailRes.setDob(!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDob()) ? simpleDateFormat.parse(simpleDateFormat.format(directorBackgroundDetailRequest.getDob())) : null);
 				dirBackDetailRes.setPincode(directorBackgroundDetailRequest.getPincode());
 				try {
 					if (!CommonUtils.isObjectNullOrEmpty(directorBackgroundDetailRequest.getDistrictMappingId())) {

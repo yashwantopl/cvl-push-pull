@@ -32,6 +32,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -160,6 +161,7 @@ public class TermLoanFinalViewServiceImpl implements TermLoanFinalViewService {
 	protected static final String MATCHES_URL = "matchesURL";
 
 	private static final Logger logger = LoggerFactory.getLogger(WorkingCapitalFinalServiceImpl.class);
+	private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
 
 	@Override
 	public TermLoanFinalViewResponse getTermLoanFinalViewDetails(Long toApplicationId) {
@@ -729,7 +731,7 @@ public class TermLoanFinalViewServiceImpl implements TermLoanFinalViewService {
 			response.setLoanType(LoanType.getById(primaryTermLoanDetail.getProductId()).getValue());
 		}
 		if (primaryTermLoanDetail.getModifiedDate() != null) {
-			response.setDateOfProposal(CommonUtils.DATE_FORMAT.format(primaryTermLoanDetail.getModifiedDate()));
+			response.setDateOfProposal(simpleDateFormat.format(primaryTermLoanDetail.getModifiedDate()));
 		}
 		if (primaryTermLoanDetail.getAmount() != null) {
 			response.setLoanAmount(String.valueOf(primaryTermLoanDetail.getAmount()));

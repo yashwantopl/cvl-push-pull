@@ -5,6 +5,7 @@ package com.capitaworld.service.loans.service.teaser.finalview.impl;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -198,6 +199,7 @@ public class NtbFinalViewServiceImpl implements NtbFinalViewService{
 	@Autowired
 	private ThirdPartyClient thirdPartyClient;
 
+	private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
 	DecimalFormat decim = new DecimalFormat("#,###.00");
 	
 	@Override
@@ -482,7 +484,7 @@ public class NtbFinalViewServiceImpl implements NtbFinalViewService{
 			// workingCapitalPrimaryViewResponse.setSharePriceMarket(primaryWorkingCapitalLoanDetail.getSharePriceMarket());
 			if (!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getModifiedDate()))
 				ntbFinalViewResponse.setDateOfProposal(primaryCorporateDetail.getModifiedDate() != null
-						? CommonUtils.DATE_FORMAT.format(primaryCorporateDetail.getModifiedDate())
+						? simpleDateFormat.format(primaryCorporateDetail.getModifiedDate())
 						: null);
 		}
 		// DIRECTORS BACKGROUND DETAILS

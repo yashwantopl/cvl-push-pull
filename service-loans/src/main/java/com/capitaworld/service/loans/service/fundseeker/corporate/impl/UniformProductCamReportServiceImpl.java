@@ -5,6 +5,7 @@ package com.capitaworld.service.loans.service.fundseeker.corporate.impl;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -201,7 +202,7 @@ public class UniformProductCamReportServiceImpl implements UniformProductCamRepo
 	private ProposalDetailsClient proposalDetailsClient;
 	
 	private static final Logger logger = LoggerFactory.getLogger(UniformProductCamReportServiceImpl.class);
-	
+	private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
 	
 	@Override
 	public Map<String, Object> getUniformProductCamReport(Long applicationId,Long fpProductId) {
@@ -212,8 +213,8 @@ public class UniformProductCamReportServiceImpl implements UniformProductCamRepo
 		Long userId = loanApplicationRepository.getUserIdByApplicationId(applicationId);
 		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.getByIdAndUserIdForInEligibleCam(applicationId, userId);
 		if(loanApplicationMaster!= null) {
-		
-			map.put("date",!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getApprovedDate())? CommonUtils.DATE_FORMAT.format(loanApplicationMaster.getApprovedDate()):"-");
+
+			map.put("date",!CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getApprovedDate())? simpleDateFormat.format(loanApplicationMaster.getApprovedDate()):"-");
 			map.put("businessTypeId",(loanApplicationMaster.getBusinessTypeId() != null ? loanApplicationMaster.getBusinessTypeId() :"-"));
 			map.put("applicationType", (loanApplicationMaster.getWcRenewalStatus() != null ? WcRenewalType.getById(loanApplicationMaster.getWcRenewalStatus()).getValue().toString() : "New" ));
 			map.put("applicationCode", loanApplicationMaster.getApplicationCode());
@@ -292,7 +293,7 @@ public class UniformProductCamReportServiceImpl implements UniformProductCamRepo
 		//TIMELINE DATES
 		if(loanApplicationMaster != null && loanApplicationMaster.getCreatedDate() != null)
 		{
-			map.put("dateOfProposal", !CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getCreatedDate())? CommonUtils.DATE_FORMAT.format(loanApplicationMaster.getCreatedDate()):"-");
+			map.put("dateOfProposal", !CommonUtils.isObjectNullOrEmpty(loanApplicationMaster.getCreatedDate())? simpleDateFormat.format(loanApplicationMaster.getCreatedDate()):"-");
 			
 		}
 		//date of InPrincipal
@@ -300,7 +301,7 @@ public class UniformProductCamReportServiceImpl implements UniformProductCamRepo
 			/*ConnectResponse connectResponse = connectClient.getByAppStageBusinessTypeId(applicationId, ConnectStage.COMPLETE.getId(), com.capitaworld.service.loans.utils.CommonUtils.BusinessType.EXISTING_BUSINESS.getId());*/
 			Date InPrincipleDate=loanApplicationRepository.getModifiedDate(applicationId, ConnectStage.ONEPAGER_COMPLETE.getId(), com.capitaworld.service.loans.utils.CommonUtils.BusinessType.ONE_PAGER_ELIGIBILITY_EXISTING_BUSINESS.getId());
 			if(!CommonUtils.isObjectNullOrEmpty(InPrincipleDate)) {
-				map.put("dateOfInPrincipalApproval",!CommonUtils.isObjectNullOrEmpty(InPrincipleDate)? CommonUtils.DATE_FORMAT.format(InPrincipleDate):"-");
+				map.put("dateOfInPrincipalApproval",!CommonUtils.isObjectNullOrEmpty(InPrincipleDate)? simpleDateFormat.format(InPrincipleDate):"-");
 			}
 		} catch (Exception e2) {
 			logger.error(CommonUtils.EXCEPTION,e2);
@@ -341,7 +342,7 @@ public class UniformProductCamReportServiceImpl implements UniformProductCamRepo
 				}
 				PrimaryCorporateDetail primaryCorporateDetail = primaryCorporateRepository.getByApplicationAndUserId(applicationId, userId);
 				if(!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail)) {
-					map.put("comercialOpDate",!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getCommercialOperationDate())? CommonUtils.DATE_FORMAT.format(primaryCorporateDetail.getCommercialOperationDate()):"-");
+					map.put("comercialOpDate",!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getCommercialOperationDate())? simpleDateFormat.format(primaryCorporateDetail.getCommercialOperationDate()):"-");
 					map.put("factoryPremise", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getFactoryPremise())? StringEscapeUtils.escapeXml(FactoryPremiseMst.getById(primaryCorporateDetail.getFactoryPremise()).getValue().toString()) : "-");
 					map.put("knowHow", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getKnowHow())? StringEscapeUtils.escapeXml(KnowHowMst.getById(primaryCorporateDetail.getKnowHow()).getValue().toString()) : "-");
 					map.put("competition", !CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getCompetition())? StringEscapeUtils.escapeXml(CompetitionMst_SBI.getById(primaryCorporateDetail.getCompetition()).getValue().toString()) : "-");

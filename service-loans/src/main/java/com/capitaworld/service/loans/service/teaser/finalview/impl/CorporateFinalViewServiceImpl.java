@@ -2,6 +2,7 @@ package com.capitaworld.service.loans.service.teaser.finalview.impl;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -184,6 +185,7 @@ import com.capitaworld.service.users.model.UsersRequest;
 public class CorporateFinalViewServiceImpl implements CorporateFinalViewService {
 
 	private static final Logger logger = LoggerFactory.getLogger(CorporatePrimaryViewServiceImpl.class);
+	private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
 
 	@Autowired
 	private CorporateApplicantDetailRepository corporateApplicantDetailRepository;
@@ -606,7 +608,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 			// workingCapitalPrimaryViewResponse.setSharePriceMarket(primaryWorkingCapitalLoanDetail.getSharePriceMarket());
 			if (!CommonUtils.isObjectNullOrEmpty(primaryCorporateDetail.getModifiedDate()))
 				corporateFinalViewResponse.setDateOfProposal(primaryCorporateDetail.getModifiedDate() != null
-						? CommonUtils.DATE_FORMAT.format(primaryCorporateDetail.getModifiedDate())
+						? simpleDateFormat.format(primaryCorporateDetail.getModifiedDate())
 						: null);
 			
 			// other Details
@@ -1164,7 +1166,7 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 						.setNetworth(convertValue(promotorBackgroundDetailRequest.getNetworth()));
 				promotorBackgroundDetailResponse
 						.setAppointmentDate(promotorBackgroundDetailRequest.getAppointmentDate() != null
-								? CommonUtils.DATE_FORMAT.format(promotorBackgroundDetailRequest.getAppointmentDate())
+								? simpleDateFormat.format(promotorBackgroundDetailRequest.getAppointmentDate())
 								: null);
 				promotorBackgroundDetailResponse
 						.setRelationshipType((promotorBackgroundDetailRequest.getRelationshipType() != null

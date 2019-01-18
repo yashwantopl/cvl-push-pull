@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.service.teaser.primaryview.impl;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -74,6 +75,7 @@ import com.capitaworld.service.users.model.UsersRequest;
 public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrimaryViewService {
 
 	private static final Logger logger = LoggerFactory.getLogger(WorkingCapitalPrimaryViewServiceImpl.class);
+	private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
 
 	@Autowired
 	private CorporateApplicantDetailRepository corporateApplicantDetailRepository;
@@ -401,7 +403,7 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
 			//workingCapitalPrimaryViewResponse.setSharePriceFace(primaryWorkingCapitalLoanDetail.getSharePriceFace());
 			//workingCapitalPrimaryViewResponse.setSharePriceMarket(primaryWorkingCapitalLoanDetail.getSharePriceMarket());
 			if (!CommonUtils.isObjectNullOrEmpty(primaryWorkingCapitalLoanDetail.getModifiedDate()))
-				workingCapitalPrimaryViewResponse.setDateOfProposal(primaryWorkingCapitalLoanDetail.getModifiedDate() != null ? CommonUtils.DATE_FORMAT.format(primaryWorkingCapitalLoanDetail.getModifiedDate()) : null);
+				workingCapitalPrimaryViewResponse.setDateOfProposal(primaryWorkingCapitalLoanDetail.getModifiedDate() != null ? simpleDateFormat.format(primaryWorkingCapitalLoanDetail.getModifiedDate()) : null);
 			workingCapitalPrimaryViewResponse.setIsCreditRatingAvailable(primaryWorkingCapitalLoanDetail.getCreditRatingId() != null ? CreditRatingAvailable.getById(primaryWorkingCapitalLoanDetail.getCreditRatingId()).getValue() : null);
 		}
 
