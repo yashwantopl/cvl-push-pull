@@ -1538,7 +1538,8 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 
 		// Eligibility Data
 
-		int loanId = primaryCorporateDetail.getProductId();
+		//int loanId = primaryCorporateDetail.getProductId(); //previous
+		int loanId = applicationProposalMapping.getProductId(); // NEW BASED ON PROPOAL MAPPING PRODUCT ID 
 
 		switch (loanId) {
 
