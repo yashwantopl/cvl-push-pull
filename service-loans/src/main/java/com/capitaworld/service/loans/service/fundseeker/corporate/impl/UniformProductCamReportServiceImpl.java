@@ -23,9 +23,9 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.capitaworld.api.eligibility.model.CLEligibilityRequest;
 import com.capitaworld.api.eligibility.model.EligibililityRequest;
 import com.capitaworld.api.eligibility.model.EligibilityResponse;
+import com.capitaworld.api.eligibility.model.OnePageEligibilityResponse;
 import com.capitaworld.api.workflow.model.WorkflowRequest;
 import com.capitaworld.api.workflow.model.WorkflowResponse;
 import com.capitaworld.api.workflow.utility.WorkflowUtils;
@@ -537,7 +537,7 @@ public class UniformProductCamReportServiceImpl implements UniformProductCamRepo
 						EligibilityResponse eligibilityResp= eligibilityClient.getOnePagerEligibilityData(eligibilityReq);
 						
 						if(!CommonUtils.isObjectListNull(eligibilityResp,eligibilityResp.getData())){
-							map.put("assLimits",CommonUtils.convertToDoubleForXml(MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)eligibilityResp.getData(), CLEligibilityRequest.class), new HashMap<>()));
+							map.put("assLimits",CommonUtils.convertToDoubleForXml(MultipleJSONObjectHelper.getObjectFromMap((LinkedHashMap<String, Object>)eligibilityResp.getData(), OnePageEligibilityResponse.class), new HashMap<>()));
 						}
 					}catch (Exception e) {
 						logger.error("Error while getting Eligibility data : ",e);
