@@ -358,8 +358,12 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 				}
 		}
 		// GET CORPORATE APPLICANT DETAILS
+/*		CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
+				.getByApplicationAndUserId(userId, toApplicationId);*/ //PREVIOUS 
+		
 		CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
-				.getByApplicationAndUserId(userId, toApplicationId);
+				.getByApplicationAndProposalIdAndUserId(userId, toApplicationId,proposalMapId); // NEW BASED ON PROPOSAL MAP ID 
+		
 		// SET VALUE TO RESPONSE
 		if (corporateApplicantDetail != null) {
 			BeanUtils.copyProperties(corporateApplicantDetail, corporateFinalViewResponse);
@@ -1065,8 +1069,10 @@ public class CorporateFinalViewServiceImpl implements CorporateFinalViewService 
 
 		// ACHIEVMENTS DETAILS
 		try {
+			/*corporateFinalViewResponse.setAchievementDetailList(
+					achievmentDetailsService.getAchievementDetailList(toApplicationId, userId));*/ // PREVIOUS API 
 			corporateFinalViewResponse.setAchievementDetailList(
-					achievmentDetailsService.getAchievementDetailList(toApplicationId, userId));
+					achievmentDetailsService.getAchievementDetailListForMultipleBank(proposalMapId)); // NEW BASED ON PROPOSAL  MAPPING ID 
 		} catch (Exception e) {
 			logger.error("Problem to get Data of Achievement Details {}", e);
 		}
