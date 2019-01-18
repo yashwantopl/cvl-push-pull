@@ -172,7 +172,11 @@ public class UniformProductParameterServiceImpl implements UniformProductParamet
 			request.setToStep(workflowData.getNextworkflowStep());
 			request.setJobId(paramterRequest.getJobId());
 			request.setUserId(paramterRequest.getUserId());
-			request.setRemarks(workflowData.getActionFor());
+			if(CommonUtils.isObjectNullOrEmpty(paramterRequest.getActionFor())){
+				request.setRemarks(workflowData.getActionFor());				
+			}else{
+				request.setRemarks(paramterRequest.getActionFor());
+			}
 			if (workflowData.getActionId() == WorkflowUtils.Action.SEND_FOR_APPROVAL) {
 				WorkflowResponse workflowResponse = workflowClient.updateJob(request);
 				if (workflowResponse.getStatus() == 200) {
@@ -183,32 +187,8 @@ public class UniformProductParameterServiceImpl implements UniformProductParamet
 					return;
 				}
 			} else if (workflowData.getActionId() == WorkflowUtils.Action.APPROVED) {
-//				UniformProductParamter oldObj = null;
-//				try{
-//					oldObj = uniformProductParameterRepository.findFirstByUserOrgIdOrderByIdDesc(paramterRequest.getUserOrgId());
-//				}catch(Exception e){
-//					logger.error("Exception :: ==> {}",e);
-//				}
 				UniformProductParamter newObj = saveOrUpdate(paramterRequest);
 				if(newObj != null){
-//					try{
-//						if(oldObj != null){
-//							UniformProductParamterAudit uniformProductParamterAudit = uniformProductParameterAuditRepository.findFirstByFpProductIdOrderByIdDesc(oldObj.getId());
-//							if(!CommonUtils.isObjectNullOrEmpty(uniformProductParamterAudit)){
-//								uniformProductParamterAudit.setFromDate(CommonUtils.isObjectNullOrEmpty(oldObj.getModifiedDate()) ? oldObj.getCreatedDate() : oldObj.getModifiedDate());
-//								uniformProductParamterAudit.setIsActive(oldObj.getIsActive());
-//								JSONObject jsonObject = new JSONObject();
-//								jsonObject.put("oldValue", oldObj.getIsActive());
-//								jsonObject.put("newValue", newObj.getIsActive());
-//								jsonObject.put("isChanged", (oldObj.getIsActive() != null  ? oldObj.getIsActive().equals(newObj.getIsActive()) : false));
-//								uniformProductParamterAudit.setIsActiveAudit(jsonObject.toString());
-//								uniformProductParameterAuditRepository.save(uniformProductParamterAudit);
-//							}
-//						}
-//					}catch(Exception e){
-//						logger.error("Exception :: ==> {}",e);	
-//					}
-					
 					WorkflowResponse workflowResponse = workflowClient.updateJob(request);
 					if (workflowResponse.getStatus() == 200) {
 						logger.info("Successfully Updated Status to Approved on Job Id ===> {}", workflowData.getJobId());
