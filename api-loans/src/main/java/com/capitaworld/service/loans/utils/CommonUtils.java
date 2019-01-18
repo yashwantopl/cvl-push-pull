@@ -65,9 +65,7 @@ public class CommonUtils {
 	public static final String CO_CMA_EXCEL = "co_cma.xlsx";
    
 	public static final String SCORING_EXCEL ="score_result.xlsx";
-	
-	public static DateFormat formatter = new SimpleDateFormat("dd-mm-yyyy");
-	
+
 	public static final String IN_PROGRESS = "In Progress";
 	public static final String COMPLETED = "Completed";
 	public static final String SUCCESS = "Success";
@@ -120,8 +118,6 @@ public class CommonUtils {
 	public static final String MODIFIED_BY = "modifiedBy";
 	public static final String MODIFIED_DATE = "modifiedDate";
 	public static final String IS_ACTIVE = "isActive";
-
-	public static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
 
 	public static final class UsersRoles {
 		private UsersRoles(){
@@ -411,11 +407,15 @@ public class CommonUtils {
 			return PL_RETAIL_PRIMARY;
 		}
 
-		public static final String[] PL_RETAIL_FINAL = {"addressSameAs","religion","qualifyingYear","noChildren","fatherName","motherName","spouseName","noDependent",
+		private static final String[] PL_RETAIL_FINAL = {"addressSameAs","religion","qualifyingYear","noChildren","fatherName","motherName","spouseName","noDependent",
 				"residingMonth","residingYear","nationality","residentialStatus","castId","birthPlace","disabilityType","tradeLicenseNumber","tradeLicenseExpiryDate",
 				"passport","passportValidity","voterId","residentialProofNo","addressSameAs","permanentAddress","officeAddress","officeNameOfOrg","officeEmail","previousJobYear",
 				"previousJobMonth","previousEmployersName","previousEmployersAddress","previousEmployersContact","ddoWebsite","ddoRemainingSerYrs","ddoRemainingSerMonths","ddoEmployeeNo",
 				"ddoDesignation","ddoDepartment","ddoOrganizationType","isApplicantFinalFilled"};
+
+		public static String[] getPlRetailFinal() {
+			return PL_RETAIL_FINAL;
+		}
 
 		private static final String[] RETAIL_PL_PROFILE = {
 				"titleId", "firstName", "middleName", "lastName", "genderId", "pan", "aadharNumber", "mobile", "educationQualification",

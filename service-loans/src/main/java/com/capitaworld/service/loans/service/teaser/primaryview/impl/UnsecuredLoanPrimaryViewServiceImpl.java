@@ -1,5 +1,6 @@
 package com.capitaworld.service.loans.service.teaser.primaryview.impl;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -76,6 +77,7 @@ import com.capitaworld.service.users.model.UsersRequest;
 public class UnsecuredLoanPrimaryViewServiceImpl implements UnsecuredLoanPrimaryViewService {
 
 	private static final Logger logger = LoggerFactory.getLogger(UnsecuredLoanPrimaryViewServiceImpl.class);
+	private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
 
 	@Autowired
 	private CorporateApplicantDetailRepository corporateApplicantDetailRepository;
@@ -400,7 +402,7 @@ public class UnsecuredLoanPrimaryViewServiceImpl implements UnsecuredLoanPrimary
 
 			if (primaryUnsecuredLoanDetail.getModifiedDate() != null)
 				unsecuredLoanPrimaryViewResponse
-						.setDateOfProposal(CommonUtils.DATE_FORMAT.format(primaryUnsecuredLoanDetail.getModifiedDate()));
+						.setDateOfProposal(simpleDateFormat.format(primaryUnsecuredLoanDetail.getModifiedDate()));
 			unsecuredLoanPrimaryViewResponse.setIsCreditRatingAvailable(primaryUnsecuredLoanDetail.getCreditRatingId() != null
 					? CreditRatingAvailable.getById(primaryUnsecuredLoanDetail.getCreditRatingId()).getValue() : null);
 		}

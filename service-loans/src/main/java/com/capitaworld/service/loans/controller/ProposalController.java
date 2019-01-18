@@ -394,7 +394,7 @@ public class ProposalController {
 			reportRequest.setNumber(10);
 		}
 		try {
-			return new ResponseEntity<LoansResponse>(new LoansResponse("Data Found.", HttpStatus.OK.value(),proposalService.searchProposalByAppCode(userId, userOrgId, reportRequest)), HttpStatus.OK);
+			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value(),proposalService.searchProposalByAppCode(userId, userOrgId, reportRequest)), HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
 			return new ResponseEntity<LoansResponse>(new LoansResponse(e.getMessage()) , HttpStatus.INTERNAL_SERVER_ERROR);
@@ -411,7 +411,7 @@ public class ProposalController {
 			return new ResponseEntity<LoansResponse>(new LoansResponse(REQUEST_PARAMETER_NULL_OR_EMPTY, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}
 		try {
-			return new ResponseEntity<LoansResponse>(new LoansResponse("Data Found.", HttpStatus.OK.value(),proposalService.getFpDashBoardCount(userId, userOrgId)), HttpStatus.OK);
+			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value(),proposalService.getFpDashBoardCount(userId, userOrgId)), HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
 			return new ResponseEntity<LoansResponse>(new LoansResponse(e.getMessage()) , HttpStatus.INTERNAL_SERVER_ERROR);
@@ -434,7 +434,7 @@ public class ProposalController {
 			return new ResponseEntity<LoansResponse>(new LoansResponse(REQUEST_PARAMETER_NULL_OR_EMPTY, HttpStatus.BAD_REQUEST.value()), HttpStatus.OK);
 		}
 		try {
-			return new ResponseEntity<LoansResponse>(new LoansResponse("Data Found.", HttpStatus.OK.value(),proposalService.updateStatus(mappingRequest.getApplicationId(), mappingRequest.getFpProductId(), mappingRequest.getProposalStatusId(),mappingRequest.getReason())), HttpStatus.OK);
+			return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.DATA_FOUND, HttpStatus.OK.value(),proposalService.updateStatus(mappingRequest.getApplicationId(), mappingRequest.getFpProductId(), mappingRequest.getProposalStatusId(),mappingRequest.getReason())), HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
 			return new ResponseEntity<LoansResponse>(new LoansResponse(e.getMessage()) , HttpStatus.INTERNAL_SERVER_ERROR);

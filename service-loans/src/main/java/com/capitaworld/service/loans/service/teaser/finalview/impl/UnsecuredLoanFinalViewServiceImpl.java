@@ -1,6 +1,7 @@
 package com.capitaworld.service.loans.service.teaser.finalview.impl;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -299,6 +300,7 @@ public class UnsecuredLoanFinalViewServiceImpl implements UnsecuredLoanFinalView
 	protected static final String MATCHES_URL = "matchesURL";
 
 	private static final Logger logger = LoggerFactory.getLogger(UnsecuredLoanFinalViewServiceImpl.class);
+	private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
 
 	@Override
 	public UnsecuredLoanFinalViewResponse getUnsecuredLoanFinalViewDetails(Long toApplicationId, Integer userType,
@@ -872,7 +874,7 @@ public class UnsecuredLoanFinalViewServiceImpl implements UnsecuredLoanFinalView
 			response.setLoanType(LoanType.getById(primaryUnsecuredLoanDetail.getProductId()).getValue());
 		}
 		if (primaryUnsecuredLoanDetail.getModifiedDate() != null) {
-			response.setDateOfProposal(CommonUtils.DATE_FORMAT.format(primaryUnsecuredLoanDetail.getModifiedDate()));
+			response.setDateOfProposal(simpleDateFormat.format(primaryUnsecuredLoanDetail.getModifiedDate()));
 		}
 		if (primaryUnsecuredLoanDetail.getAmount() != null) {
 			response.setLoanAmount(String.valueOf(primaryUnsecuredLoanDetail.getAmount()));
