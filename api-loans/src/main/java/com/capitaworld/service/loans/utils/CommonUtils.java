@@ -525,6 +525,7 @@ public class CommonUtils {
         public static final Integer SANCTIONED_BY_OTHER_BRANCH = 6;
         public static final Integer OTHER_BRANCH = 7;
         public static final Integer OTHER_BANK = 8;
+        public static final Integer ALREADY_ONLINE_IN_PRINCIPLE = 9;
 	}
 
 	public static String getDdrStatusString(Integer ddrStatusId) {
