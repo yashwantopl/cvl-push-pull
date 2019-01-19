@@ -164,6 +164,11 @@ public class LoanDisbursementServiceImpl implements LoanDisbursementService {
 						loanDisbursementRequest.setOrgId(orgId);
 						IneligibleProposalDetails ineligibleProposalDetails = (IneligibleProposalDetails) offlineProcessedAppRepository.findByAppliationId(loanDisbursementRequest.getApplicationId(),orgId);
 						ineligibleProposalDetails.setIsDisbursed(true);
+						ineligibleProposalDetails.setModifiedDate(new Date());
+						if(!CommonUtils.isObjectNullOrEmpty(loanDisbursementRequest.getActionBy())) {
+							ineligibleProposalDetails.setModifiedBy(Long.valueOf(loanDisbursementRequest.getActionBy()));
+						}
+						ineligibleProposalDetails.setStatus(CommonUtils.InEligibleProposalStatus.DISBURED);
 						LoanSanctionDomain loanSanctionDomainOld =loanSanctionRepository.findByAppliationId(loanDisbursementRequest.getApplicationId());
 						loanSanctionDomainOld.setIsPartiallyDisbursedOffline(true);
 					}
