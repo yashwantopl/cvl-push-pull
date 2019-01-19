@@ -1406,11 +1406,11 @@ public class ProposalServiceMappingImpl implements ProposalService {
 				if(!proposalDetails.getUserOrgId().toString().equals(request.getUserOrgId().toString()))
 				{
 					if(ProposalStatus.APPROVED ==  proposalDetails.getProposalStatusId().getId())
-						messageOfButton="Proposal is Sanctioned";
+						messageOfButton="This proposal has been Sanctioned by Other Bank.";
 					else if(ProposalStatus.DISBURSED ==  proposalDetails.getProposalStatusId().getId())
-						messageOfButton="Proposal is Disbursed";
+						messageOfButton="This proposal has been Disbursed by Other Bank.";
 					else if(ProposalStatus.PARTIALLY_DISBURSED ==  proposalDetails.getProposalStatusId().getId())
-						messageOfButton="Proposal is Partially Disbursed";
+						messageOfButton="This proposal has been Partially Disbursed by Other Bank.";
 					isButtonDisplay=false;
 
 					proposalMappingRequest.setMessageOfButton(messageOfButton);
