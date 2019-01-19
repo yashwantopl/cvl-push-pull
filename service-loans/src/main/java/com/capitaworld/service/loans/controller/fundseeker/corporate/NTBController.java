@@ -43,12 +43,6 @@ public class NTBController {
     @Autowired
     private ConnectClient connectClient;
 
-//    @RequestMapping(value = "/ping", method = RequestMethod.GET)
-//    public String getPing() {
-//        logger.info("Ping success");
-//        return "Ping Succeed";
-//    }
-
     @RequestMapping(value = "/oneform_director_detail/get/{directorId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LoansResponse> getOneformDetailByDirectorId(@PathVariable("directorId") Long directorId, HttpServletRequest request, @RequestParam(value = "clientId",required = false) Long clientId) {
         logger.info("Enter getOneformDetailByDirectorId()");

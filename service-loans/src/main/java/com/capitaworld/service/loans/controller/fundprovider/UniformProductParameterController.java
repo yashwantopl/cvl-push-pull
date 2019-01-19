@@ -35,13 +35,7 @@ public class UniformProductParameterController {
 	private UniformProductParameterService uniformProductParameterService; 
 	
 	@Autowired
-	private UniformProductParameterAuditService uniformProductParameterAuditService; 
-
-	/*@RequestMapping(value = "/ping", method = RequestMethod.GET)
-	public String getPing() {
-		logger.info("Ping success");
-		return "Ping Succeed";
-	}*/
+	private UniformProductParameterAuditService uniformProductParameterAuditService;
 
 	@RequestMapping(value = "/save", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> save(@RequestBody UniformProductParamterRequest paramterRequest,HttpServletRequest httpServletRequest) {
