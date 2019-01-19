@@ -208,3 +208,8 @@ ADD COLUMN is_active_audit BIT(1);
 
 ALTER TABLE `loan_application`.`fp_uniform_product_details_audit` 
 MODIFY COLUMN is_active_audit VARCHAR(200);
+
+
+ALTER TABLE `loan_application`.`fp_product_master` MODIFY COLUMN action_for VARCHAR(1000)
+
+ALTER TABLE `loan_application`.`fp_product_master_temp` MODIFY COLUMN action_for VARCHAR(1000)

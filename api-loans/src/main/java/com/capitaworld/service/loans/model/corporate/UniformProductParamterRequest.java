@@ -6,7 +6,9 @@ import java.util.List;
 
 import com.capitaworld.service.loans.model.ProductMasterRequest;
 import com.capitaworld.service.loans.model.WorkflowData;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class UniformProductParamterRequest extends ProductMasterRequest implements Serializable {
 	private static final long serialVersionUID = 1L;
 
@@ -73,6 +75,8 @@ public class UniformProductParamterRequest extends ProductMasterRequest implemen
 	private String versionAudit;
 	
 	private String isActiveAudit;
+	
+	private String dpdAudit;
 	
 	private Date createdDate;
 	
@@ -371,5 +375,13 @@ public class UniformProductParamterRequest extends ProductMasterRequest implemen
 
 	public void setModifiedDate(Date modifiedDate) {
 		this.modifiedDate = modifiedDate;
+	}
+
+	public String getDpdAudit() {
+		return dpdAudit;
+	}
+
+	public void setDpdAudit(String dpdAudit) {
+		this.dpdAudit = dpdAudit;
 	}
 }
