@@ -9,7 +9,7 @@ public interface OfflineProcessedAppRepository{
 
 	public List<Object []> getInEligibleRecordList(Long userId);
 	
-	public IneligibleProposalDetails findByAppliationId(Long applicationId);
+	public IneligibleProposalDetails findByAppliationId(Long applicationId,Long orgId);
 	
 	public boolean updateSanctionedFlag(Long appId,Long orgId,Long branchId,Long userId);
 	
