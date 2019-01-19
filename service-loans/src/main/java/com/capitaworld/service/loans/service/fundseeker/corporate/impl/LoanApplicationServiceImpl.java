@@ -5123,6 +5123,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 		logger.info("Exit on sendInPrincipleForPersonalLoan");
 	}
 
+	/**
+	 * This method no longer used
+	 * */
 	@Override
 	public LoanApplicationRequest updateLoanApplicationMasterPaymentStatus(PaymentRequest paymentRequest, Long userId)
 			throws Exception {
@@ -5478,7 +5481,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			BeanUtils.copyProperties(applicationMaster, applicationRequest);
 			applicationRequest.setProfilePrimaryLocked(applicationMaster.getIsPrimaryLocked());
 			applicationRequest.setFinalLocked(applicationMaster.getIsFinalLocked());
-			applicationRequest.setUserName(getFsApplicantName(id));
+			applicationRequest.setUserName(getFsApplicantName(applicationMaster.getApplicationId()));
 
 			UserResponse emailMobile = userClient.getEmailMobile(applicationRequest.getUserId());
 			if (CommonUtils.isObjectListNull(emailMobile, emailMobile.getData())) {
