@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpSession;
+
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +32,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.ModelMap;
 
 import com.capitaworld.api.eligibility.model.CLEligibilityRequest;
 import com.capitaworld.api.eligibility.model.EligibililityRequest;
@@ -3251,15 +3254,14 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 
 	@Override
 	public String getFsApplicantName(Long applicationId) throws Exception {
-		ApplicationProposalMapping applicationMaster = appPropMappService.getApplicationProposalMappingByProposalId(applicationId);
+		LoanApplicationMaster applicationMaster = loanApplicationRepository.findOne(applicationId);
 		if (CommonUtils.isObjectNullOrEmpty(applicationMaster))
 			return null;
 
 		if (applicationMaster.getProductId() != null && applicationMaster.getBusinessTypeId() != null) {
 			if (applicationMaster.getBusinessTypeId().intValue() == CommonUtils.BusinessType.NEW_TO_BUSINESS.getId()
 					.intValue()) {
-				List<DirectorBackgroundDetail> directorBackgroundDetails = directorBackgroundDetailsRepository
-						.listPromotorBackgroundFromAppId(applicationId);
+				List<DirectorBackgroundDetail> directorBackgroundDetails = directorBackgroundDetailsRepository.listPromotorBackgroundFromAppId(applicationId);
 				DirectorBackgroundDetail directorBackgroundDetail = directorBackgroundDetails.stream()
 						.filter(DirectorBackgroundDetail::getIsMainDirector).findAny().orElse(null);
 				if (directorBackgroundDetail != null) {
@@ -3277,8 +3279,9 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 							.findOneByApplicationIdId(applicationId);
 					return retailApplicantDetail.getFirstName() + " " + retailApplicantDetail.getLastName();
 				} else if (CommonUtils.getUserMainType(applicationMaster.getProductId()) == CommonUtils.UserMainType.CORPORATE) {
-					String organisationName = corporateApplicantDetailRepository.getOrganisationNameByProposalId(applicationMaster.getProposalId());
-					return organisationName;
+					  CorporateApplicantDetail crApp = corporateApplicantDetailRepository.getCorporateApplicantDetailByApplicationId(applicationId);
+
+					return crApp.getOrganisationName();
 				}
 			}
 		} else {
@@ -3292,8 +3295,8 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					return directorBackgroundDetail.getDirectorsName();
 				}
 			}
-			String organisationName = corporateApplicantDetailRepository.getOrganisationNameByProposalId(applicationMaster.getProposalId());
-			return organisationName;
+			  CorporateApplicantDetail crApp =corporateApplicantDetailRepository.getCorporateApplicantDetailByApplicationId(applicationId);
+			return crApp.getOrganisationName();
 		}
 		return null;
 	}
