@@ -492,6 +492,7 @@ public class DDRFormServiceImpl implements DDRFormService {
 								ownership.setCreatedBy(userId);
 								ownership.setCreatedDate(new Date());
 								ownership.setApplicationId(new LoanApplicationMaster(dDRRequest.getApplicationId()));
+								ownership.setProposalMapping(new ApplicationProposalMapping(dDRRequest.getProposalMappingId()));
 								ownership.setIsActive(true);
 							} else {
 								ownership.setIsActive(ownershipReq.getIsActive());
