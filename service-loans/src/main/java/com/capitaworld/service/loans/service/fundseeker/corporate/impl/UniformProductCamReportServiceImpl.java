@@ -370,7 +370,8 @@ public class UniformProductCamReportServiceImpl implements UniformProductCamRepo
 					}
 					map.put("establishmentYr",!CommonUtils.isObjectNullOrEmpty(establishMentYear) ? CommonUtils.printFields(establishMentYear,null) : " ");
 					//INDUSTRY DATA
-					Integer industry = corporateApplicantRequest.getKeyVericalFunding().intValue();
+					
+					Integer industry = CommonUtils.isObjectNullOrEmpty(corporateApplicantRequest.getKeyVericalFunding()) ? null : corporateApplicantRequest.getKeyVericalFunding().intValue();
 					map.put("keyVerticalFunding", !CommonUtils.isObjectNullOrEmpty(industry) ? CommonUtils.printFields(Industry.getById(industry).getValue(),null) : " ");
 				}catch (Exception e) {
 					logger.error(CommonUtils.EXCEPTION,e);
@@ -523,7 +524,7 @@ public class UniformProductCamReportServiceImpl implements UniformProductCamRepo
 						}
 						
 						
-						if(primaryCorporateRequest.getHaveCollateralSecurity()) {
+						if(!CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getHaveCollateralSecurity()) &&  primaryCorporateRequest.getHaveCollateralSecurity()) {
 							map.put("amtOfSecurity",!CommonUtils.isObjectNullOrEmpty(primaryCorporateRequest.getCollateralSecurityAmount()) ? CommonUtils.convertValue(primaryCorporateRequest.getCollateralSecurityAmount()) : " ");
 						}
 					}catch (Exception e) {
