@@ -8,7 +8,7 @@ import com.capitaworld.service.loans.model.corporate.CorporateCoApplicantRequest
 public interface CorporateCoApplicantService {
 	public boolean save(CorporateCoApplicantRequest applicantRequest, Long applicationId, Long userId) throws LoansException;
 
-	public CorporateCoApplicantRequest get(Long userId, Long applicationId, Long id) throws Exception;
+	public CorporateCoApplicantRequest get(Long userId, Long applicationId, Long id) throws LoansException;
 	
 	public List<CorporateCoApplicantRequest> getList(Long applicationId, Long userId) throws LoansException;
 	

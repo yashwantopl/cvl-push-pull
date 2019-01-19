@@ -122,7 +122,7 @@ public class CorporateUploadServiceImpl implements CorporateUploadService {
 
 	@Override
 	public DocumentResponse uploadOtherDoc(String documentRequestString, MultipartFile multipartFiles, Long userId)
-			throws Exception {
+			throws LoansException {
 		
 		
 		try {
@@ -145,7 +145,7 @@ public class CorporateUploadServiceImpl implements CorporateUploadService {
 				}	
 			}
 			return response;
-		} catch (DocumentException e) {
+		} catch (Exception e) {
 			logger.error("Error while uploading Corporate Other Documents : ",e);
 			throw new LoansException(CommonUtils.SOMETHING_WENT_WRONG);
 		}
