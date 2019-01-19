@@ -30,7 +30,9 @@ public class IneligibleProposalDetailsController {
 
 	@Autowired
 	private IneligibleProposalDetailsService ineligibleProposalDetailsService;
-
+/**
+ * need to change the method sendMailToFsAndBankBranch of applicationId to proposalId
+ * */
 	@RequestMapping(value = "/save/ineligible/proposal", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<LoansResponse> save(
 			@RequestBody InEligibleProposalDetailsRequest inEligibleProposalDetailsRequest,
