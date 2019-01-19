@@ -210,7 +210,8 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(toApplicationId);
 		//Long userId = loanApplicationMaster.getUserId(); // previous
 
-		corporatePrimaryViewResponse.setProductId(loanApplicationMaster.getProductId());
+		//corporatePrimaryViewResponse.setProductId(loanApplicationMaster.getProductId()); //  previous 
+		corporatePrimaryViewResponse.setProductId(applicationProposalMapping.getProductId()); // new 
 		corporatePrimaryViewResponse.setApplicationType(loanApplicationMaster.getWcRenewalStatus() != null ? WcRenewalType.getById(loanApplicationMaster.getWcRenewalStatus()).getValue().toString() : "New" );
 		/* ========= Matches Data ========== */
 		if (userType != null && !(CommonUtils.UserType.FUND_SEEKER == userType) ) {
@@ -482,12 +483,22 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 						.setCurrencyDenomination(Currency.getById(primaryCorporateDetail.getCurrencyId()).getValue()
 								+ " in " + Denomination.getById(primaryCorporateDetail.getDenominationId()).getValue());
 			}
-			corporatePrimaryViewResponse.setLoanType(primaryCorporateDetail.getProductId() != null
+			/*corporatePrimaryViewResponse.setLoanType(primaryCorporateDetail.getProductId() != null
 					? LoanType.getById(primaryCorporateDetail.getProductId()).getValue()
-					: null);
-			corporatePrimaryViewResponse.setLoanAmount(
+					: null);*/ // PREVIOUS
+			
+			corporatePrimaryViewResponse.setLoanType(applicationProposalMapping.getProductId() != null
+					? LoanType.getById(applicationProposalMapping.getProductId()).getValue()
+					: null); // NEW BASED ON PROPOSAL MAPPING DATABASE
+			
+			/*corporatePrimaryViewResponse.setLoanAmount(
 					primaryCorporateDetail.getAmount() != null ? String.valueOf(primaryCorporateDetail.getAmount())
-							: null);
+							: null);*/ //PREVIOUS
+			 
+			corporatePrimaryViewResponse.setLoanAmount(
+					applicationProposalMapping.getLoanAmount() != null ? String.valueOf(applicationProposalMapping.getLoanAmount())
+							: null); // NEW PROPOSAL MAPPING ID BASED
+			
 			corporatePrimaryViewResponse.setGstIn(
 					corporateApplicantDetail.getGstIn() != null ? String.valueOf(corporateApplicantDetail.getGstIn())
 							: null);
