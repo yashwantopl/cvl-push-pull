@@ -425,146 +425,146 @@ public class WorkingCapitalPrimaryViewServiceImpl implements WorkingCapitalPrima
 		}
 
 		// get value of achievement details and set in response
-//		try {
-//			workingCapitalPrimaryViewResponse.setAchievementDetailList(
-//					achievmentDetailsService.getAchievementDetailList(toApplicationId, userId));
-//		} catch (Exception e) {
-//			logger.error("Problem to get Data of Achievement Details {}", e);
-//		}
+/*		try {
+			workingCapitalPrimaryViewResponse.setAchievementDetailList(
+					achievmentDetailsService.getAchievementDetailList(toApplicationId, userId));
+		} catch (Exception e) {
+			logger.error("Problem to get Data of Achievement Details {}", e);
+		}
 
 		//references
-//        List<ReferenceRetailDetailsRequest> referenceRetailDetailsRequestList = null;
-//		try {
-//			referenceRetailDetailsRequestList = referenceRetailDetailsService.getReferenceRetailDetailList(toApplicationId,  CommonUtils.ApplicantType.APPLICANT);
-//		} catch (Exception e) {
-//		    logger.error(CommonUtils.EXCEPTION,e);
-//		}
-//		workingCapitalPrimaryViewResponse.setReferenceRetailDetailsRequests(referenceRetailDetailsRequestList);
+        List<ReferenceRetailDetailsRequest> referenceRetailDetailsRequestList = null;
+		try {
+			referenceRetailDetailsRequestList = referenceRetailDetailsService.getReferenceRetailDetailList(toApplicationId,  CommonUtils.ApplicantType.APPLICANT);
+		} catch (Exception e) {
+		    logger.error(CommonUtils.EXCEPTION,e);
+		}
+		workingCapitalPrimaryViewResponse.setReferenceRetailDetailsRequests(referenceRetailDetailsRequestList);
 
 		// get value of CredicorporateApplicantDetailt Rating and set in response
-//		try {
-//			List<CreditRatingOrganizationDetailRequest> creditRatingOrganizationDetailRequestList = creditRatingOrganizationDetailsService
-//					.getcreditRatingOrganizationDetailsList(toApplicationId, userId);
-//			List<CreditRatingOrganizationDetailResponse> creditRatingOrganizationDetailResponseList = new ArrayList<>();
-//			for (CreditRatingOrganizationDetailRequest creditRatingOrganizationDetailRequest : creditRatingOrganizationDetailRequestList) {
-//				CreditRatingOrganizationDetailResponse creditRatingOrganizationDetailResponse = new CreditRatingOrganizationDetailResponse();
-//				creditRatingOrganizationDetailResponse.setAmount(creditRatingOrganizationDetailRequest.getAmount());
-//				creditRatingOrganizationDetailResponse.setCreditRatingFund(creditRatingOrganizationDetailRequest.getCreditRatingFundId() != null ? CreditRatingFund.getById(creditRatingOrganizationDetailRequest.getCreditRatingFundId()).getValue() : null);
-//				OneFormResponse oneFormResponse = oneFormClient.getRatingById(
-//						CommonUtils.isObjectNullOrEmpty(creditRatingOrganizationDetailRequest.getCreditRatingOptionId())
-//								? null : creditRatingOrganizationDetailRequest.getCreditRatingOptionId().longValue());
-//				MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(
-//						(LinkedHashMap<String, Object>) oneFormResponse.getData(), MasterResponse.class);
-//				if (masterResponse != null) {
-//					creditRatingOrganizationDetailResponse.setCreditRatingOption(masterResponse.getValue());
-//				} else {
-//					workingCapitalPrimaryViewResponse.setKeyVericalFunding("NA");
-//				}
-//				creditRatingOrganizationDetailResponse.setCreditRatingTerm(CreditRatingTerm
-//						.getById(creditRatingOrganizationDetailRequest.getCreditRatingTermId()).getValue());
-//				creditRatingOrganizationDetailResponse.setRatingAgency(
-//						RatingAgency.getById(creditRatingOrganizationDetailRequest.getRatingAgencyId()).getValue());
-//				creditRatingOrganizationDetailResponse
-//						.setFacilityName(creditRatingOrganizationDetailRequest.getFacilityName());
-//				creditRatingOrganizationDetailResponseList.add(creditRatingOrganizationDetailResponse);
-//				creditRatingOrganizationDetailResponse.setEntityName(creditRatingOrganizationDetailRequest.getEntityName());
-//				if (creditRatingOrganizationDetailRequest.getRatingDate() != null){
-//					creditRatingOrganizationDetailResponse.setRatingDate(creditRatingOrganizationDetailRequest.getRatingDate());
-//				}
-//			}
-//			workingCapitalPrimaryViewResponse
-//					.setCreditRatingOrganizationDetailResponse(creditRatingOrganizationDetailResponseList);
-//		} catch (Exception e) {
-//			logger.error("Problem to get Data of Credit Rating {}", e);
-//		}
+		try {
+			List<CreditRatingOrganizationDetailRequest> creditRatingOrganizationDetailRequestList = creditRatingOrganizationDetailsService
+					.getcreditRatingOrganizationDetailsList(toApplicationId, userId);
+			List<CreditRatingOrganizationDetailResponse> creditRatingOrganizationDetailResponseList = new ArrayList<>();
+			for (CreditRatingOrganizationDetailRequest creditRatingOrganizationDetailRequest : creditRatingOrganizationDetailRequestList) {
+				CreditRatingOrganizationDetailResponse creditRatingOrganizationDetailResponse = new CreditRatingOrganizationDetailResponse();
+				creditRatingOrganizationDetailResponse.setAmount(creditRatingOrganizationDetailRequest.getAmount());
+				creditRatingOrganizationDetailResponse.setCreditRatingFund(creditRatingOrganizationDetailRequest.getCreditRatingFundId() != null ? CreditRatingFund.getById(creditRatingOrganizationDetailRequest.getCreditRatingFundId()).getValue() : null);
+				OneFormResponse oneFormResponse = oneFormClient.getRatingById(
+						CommonUtils.isObjectNullOrEmpty(creditRatingOrganizationDetailRequest.getCreditRatingOptionId())
+								? null : creditRatingOrganizationDetailRequest.getCreditRatingOptionId().longValue());
+				MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(
+						(LinkedHashMap<String, Object>) oneFormResponse.getData(), MasterResponse.class);
+				if (masterResponse != null) {
+					creditRatingOrganizationDetailResponse.setCreditRatingOption(masterResponse.getValue());
+				} else {
+					workingCapitalPrimaryViewResponse.setKeyVericalFunding("NA");
+				}
+				creditRatingOrganizationDetailResponse.setCreditRatingTerm(CreditRatingTerm
+						.getById(creditRatingOrganizationDetailRequest.getCreditRatingTermId()).getValue());
+				creditRatingOrganizationDetailResponse.setRatingAgency(
+						RatingAgency.getById(creditRatingOrganizationDetailRequest.getRatingAgencyId()).getValue());
+				creditRatingOrganizationDetailResponse
+						.setFacilityName(creditRatingOrganizationDetailRequest.getFacilityName());
+				creditRatingOrganizationDetailResponseList.add(creditRatingOrganizationDetailResponse);
+				creditRatingOrganizationDetailResponse.setEntityName(creditRatingOrganizationDetailRequest.getEntityName());
+				if (creditRatingOrganizationDetailRequest.getRatingDate() != null){
+					creditRatingOrganizationDetailResponse.setRatingDate(creditRatingOrganizationDetailRequest.getRatingDate());
+				}
+			}
+			workingCapitalPrimaryViewResponse
+					.setCreditRatingOrganizationDetailResponse(creditRatingOrganizationDetailResponseList);
+		} catch (Exception e) {
+			logger.error("Problem to get Data of Credit Rating {}", e);
+		}
 		// set short term rating option
-//		try {
-//			List<String> shortTermValueList = new ArrayList<String>();
-//			List<Integer> shortTermIdList = creditRatingOrganizationDetailsService
-//					.getShortTermCreditRatingForTeaser(toApplicationId, userId);
-//			for (Integer shortTermId : shortTermIdList) {
-//				OneFormResponse oneFormResponse = oneFormClient
-//						.getRatingById(CommonUtils.isObjectNullOrEmpty(shortTermId) ? null : shortTermId.longValue());
-//				MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(
-//						(LinkedHashMap<String, Object>) oneFormResponse.getData(), MasterResponse.class);
-//				if (masterResponse != null) {
-//					shortTermValueList.add(masterResponse.getValue());
-//				} else {
-//					shortTermValueList.add(CommonUtils.NOT_APPLICABLE);
-//				}
-//				workingCapitalPrimaryViewResponse.setShortTermRating(shortTermValueList);
-//			}
-//		} catch (Exception e) {
-//			logger.error(CommonUtils.EXCEPTION,e);
-//		}
+		try {
+			List<String> shortTermValueList = new ArrayList<String>();
+			List<Integer> shortTermIdList = creditRatingOrganizationDetailsService
+					.getShortTermCreditRatingForTeaser(toApplicationId, userId);
+			for (Integer shortTermId : shortTermIdList) {
+				OneFormResponse oneFormResponse = oneFormClient
+						.getRatingById(CommonUtils.isObjectNullOrEmpty(shortTermId) ? null : shortTermId.longValue());
+				MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(
+						(LinkedHashMap<String, Object>) oneFormResponse.getData(), MasterResponse.class);
+				if (masterResponse != null) {
+					shortTermValueList.add(masterResponse.getValue());
+				} else {
+					shortTermValueList.add(CommonUtils.NOT_APPLICABLE);
+				}
+				workingCapitalPrimaryViewResponse.setShortTermRating(shortTermValueList);
+			}
+		} catch (Exception e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+		}
 
 		// set long term rating option
-//		try {
-//			List<String> longTermValueList = new ArrayList<String>();
-//			List<Integer> longTermIdList = creditRatingOrganizationDetailsService
-//					.getLongTermCreditRatingForTeaser(toApplicationId, userId);
-//			for (Integer shortTermId : longTermIdList) {
-//				OneFormResponse oneFormResponse = oneFormClient
-//						.getRatingById(CommonUtils.isObjectNullOrEmpty(shortTermId) ? null : shortTermId.longValue());
-//				MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(
-//						(LinkedHashMap<String, Object>) oneFormResponse.getData(), MasterResponse.class);
-//				if (masterResponse != null) {
-//					longTermValueList.add(masterResponse.getValue());
-//				} else {
-//					longTermValueList.add(CommonUtils.NOT_APPLICABLE);
-//				}
-//			}
-//			workingCapitalPrimaryViewResponse.setLongTermRating(longTermValueList);
-//		} catch (Exception e) {
-//			logger.error(CommonUtils.EXCEPTION,e);
-//		}
+		try {
+			List<String> longTermValueList = new ArrayList<String>();
+			List<Integer> longTermIdList = creditRatingOrganizationDetailsService
+					.getLongTermCreditRatingForTeaser(toApplicationId, userId);
+			for (Integer shortTermId : longTermIdList) {
+				OneFormResponse oneFormResponse = oneFormClient
+						.getRatingById(CommonUtils.isObjectNullOrEmpty(shortTermId) ? null : shortTermId.longValue());
+				MasterResponse masterResponse = MultipleJSONObjectHelper.getObjectFromMap(
+						(LinkedHashMap<String, Object>) oneFormResponse.getData(), MasterResponse.class);
+				if (masterResponse != null) {
+					longTermValueList.add(masterResponse.getValue());
+				} else {
+					longTermValueList.add(CommonUtils.NOT_APPLICABLE);
+				}
+			}
+			workingCapitalPrimaryViewResponse.setLongTermRating(longTermValueList);
+		} catch (Exception e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+		}
 
 		// get value of Ownership Details and set in response
-//		try {
-//			List<OwnershipDetailRequest> ownershipDetailRequestsList = ownershipDetailsService
-//					.getOwnershipDetailList(toApplicationId, userId);
-//			List<OwnershipDetailResponse> ownershipDetailResponseList = new ArrayList<>();
-//			for (OwnershipDetailRequest ownershipDetailRequest : ownershipDetailRequestsList) {
-//				OwnershipDetailResponse ownershipDetailResponse = new OwnershipDetailResponse();
-//				ownershipDetailResponse.setRemarks(ownershipDetailRequest.getRemarks());
-//				ownershipDetailResponse.setStackPercentage(ownershipDetailRequest.getStackPercentage());
-//				ownershipDetailResponse.setShareHoldingCategory(
-//						ShareHoldingCategory.getById(ownershipDetailRequest.getShareHoldingCategoryId()).getValue());
-//				ownershipDetailResponseList.add(ownershipDetailResponse);
-//			}
-//			workingCapitalPrimaryViewResponse.setOwnershipDetailResponseList(ownershipDetailResponseList);
-//		} catch (Exception e) {
-//			logger.error("Problem to get Data of Ownership Details {}", e);
-//		}
+		try {
+			List<OwnershipDetailRequest> ownershipDetailRequestsList = ownershipDetailsService
+					.getOwnershipDetailList(toApplicationId, userId);
+			List<OwnershipDetailResponse> ownershipDetailResponseList = new ArrayList<>();
+			for (OwnershipDetailRequest ownershipDetailRequest : ownershipDetailRequestsList) {
+				OwnershipDetailResponse ownershipDetailResponse = new OwnershipDetailResponse();
+				ownershipDetailResponse.setRemarks(ownershipDetailRequest.getRemarks());
+				ownershipDetailResponse.setStackPercentage(ownershipDetailRequest.getStackPercentage());
+				ownershipDetailResponse.setShareHoldingCategory(
+						ShareHoldingCategory.getById(ownershipDetailRequest.getShareHoldingCategoryId()).getValue());
+				ownershipDetailResponseList.add(ownershipDetailResponse);
+			}
+			workingCapitalPrimaryViewResponse.setOwnershipDetailResponseList(ownershipDetailResponseList);
+		} catch (Exception e) {
+			logger.error("Problem to get Data of Ownership Details {}", e);
+		}
 
 		// get value of Promotor Background and set in response
-//		try {
-//			List<PromotorBackgroundDetailRequest> promotorBackgroundDetailRequestList = promotorBackgroundDetailsService.getPromotorBackgroundDetailList(toApplicationId, userId);
-//			List<PromotorBackgroundDetailResponse> promotorBackgroundDetailResponseList = new ArrayList<>();
-//			for (PromotorBackgroundDetailRequest promotorBackgroundDetailRequest : promotorBackgroundDetailRequestList) {
-//				PromotorBackgroundDetailResponse promotorBackgroundDetailResponse = new PromotorBackgroundDetailResponse();
-//				promotorBackgroundDetailResponse.setAchievements(promotorBackgroundDetailRequest.getAchivements());
-//				promotorBackgroundDetailResponse.setAddress(promotorBackgroundDetailRequest.getAddress());
-//				promotorBackgroundDetailResponse.setAge(promotorBackgroundDetailRequest.getAge());
-//				promotorBackgroundDetailResponse.setPanNo(promotorBackgroundDetailRequest.getPanNo());
-//				promotorBackgroundDetailResponse.setPromotorsName((promotorBackgroundDetailRequest.getSalutationId() != null ? Title.getById(promotorBackgroundDetailRequest.getSalutationId()).getValue() : null )+ " " + promotorBackgroundDetailRequest.getPromotorsName());
-//				promotorBackgroundDetailResponse.setPanNo(promotorBackgroundDetailRequest.getPanNo().toUpperCase());
-//				String promotorName = "";
-//				if (promotorBackgroundDetailRequest.getSalutationId() != null){
-//					promotorName = Title.getById(promotorBackgroundDetailRequest.getSalutationId()).getValue();
-//				}
-//				promotorName += " "+promotorBackgroundDetailRequest.getPromotorsName();
-//				promotorBackgroundDetailResponse.setPromotorsName(promotorName);
-//				promotorBackgroundDetailResponse.setQualification(promotorBackgroundDetailRequest.getQualification());
-//				promotorBackgroundDetailResponse.setTotalExperience(promotorBackgroundDetailRequest.getTotalExperience());
-//				promotorBackgroundDetailResponse.setNetworth(promotorBackgroundDetailRequest.getNetworth());
-//				promotorBackgroundDetailResponseList.add(promotorBackgroundDetailResponse);
-//			}
-//			workingCapitalPrimaryViewResponse
-//					.setPromotorBackgroundDetailResponseList(promotorBackgroundDetailResponseList);
-//		} catch (Exception e) {
-//			logger.error("Problem to get Data of Promotor Background {}", e);
-//		}
+		try {
+			List<PromotorBackgroundDetailRequest> promotorBackgroundDetailRequestList = promotorBackgroundDetailsService.getPromotorBackgroundDetailList(toApplicationId, userId);
+			List<PromotorBackgroundDetailResponse> promotorBackgroundDetailResponseList = new ArrayList<>();
+			for (PromotorBackgroundDetailRequest promotorBackgroundDetailRequest : promotorBackgroundDetailRequestList) {
+				PromotorBackgroundDetailResponse promotorBackgroundDetailResponse = new PromotorBackgroundDetailResponse();
+				promotorBackgroundDetailResponse.setAchievements(promotorBackgroundDetailRequest.getAchivements());
+				promotorBackgroundDetailResponse.setAddress(promotorBackgroundDetailRequest.getAddress());
+				promotorBackgroundDetailResponse.setAge(promotorBackgroundDetailRequest.getAge());
+				promotorBackgroundDetailResponse.setPanNo(promotorBackgroundDetailRequest.getPanNo());
+				promotorBackgroundDetailResponse.setPromotorsName((promotorBackgroundDetailRequest.getSalutationId() != null ? Title.getById(promotorBackgroundDetailRequest.getSalutationId()).getValue() : null )+ " " + promotorBackgroundDetailRequest.getPromotorsName());
+				promotorBackgroundDetailResponse.setPanNo(promotorBackgroundDetailRequest.getPanNo().toUpperCase());
+				String promotorName = "";
+				if (promotorBackgroundDetailRequest.getSalutationId() != null){
+					promotorName = Title.getById(promotorBackgroundDetailRequest.getSalutationId()).getValue();
+				}
+				promotorName += " "+promotorBackgroundDetailRequest.getPromotorsName();
+				promotorBackgroundDetailResponse.setPromotorsName(promotorName);
+				promotorBackgroundDetailResponse.setQualification(promotorBackgroundDetailRequest.getQualification());
+				promotorBackgroundDetailResponse.setTotalExperience(promotorBackgroundDetailRequest.getTotalExperience());
+				promotorBackgroundDetailResponse.setNetworth(promotorBackgroundDetailRequest.getNetworth());
+				promotorBackgroundDetailResponseList.add(promotorBackgroundDetailResponse);
+			}
+			workingCapitalPrimaryViewResponse
+					.setPromotorBackgroundDetailResponseList(promotorBackgroundDetailResponseList);
+		} catch (Exception e) {
+			logger.error("Problem to get Data of Promotor Background {}", e);
+		}  */
 
 		//get value of Director's Background and set in response
 

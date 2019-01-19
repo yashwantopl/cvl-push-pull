@@ -357,11 +357,11 @@ public class RetailApplicantServiceImpl implements RetailApplicantService {
 				cibilFullFillOfferRequest.setGender(Gender.getById(applicantDetail.getGenderId()).getValue());
 			}
 			// Email ID
-//			UserResponse userResponse = usersClient.getEmailMobile(userId);
-//			if (!CommonUtils.isObjectNullOrEmpty(userResponse.getData())) {
-//				@SuppressWarnings("unchecked")
-//				UsersRequest request = MultipleJSONObjectHelper
-//						.getObjectFromMap((LinkedHashMap<String, Object>) userResponse.getData(), UsersRequest.class);
+/*			UserResponse userResponse = usersClient.getEmailMobile(userId);
+			if (!CommonUtils.isObjectNullOrEmpty(userResponse.getData())) {
+				@SuppressWarnings("unchecked")
+				UsersRequest request = MultipleJSONObjectHelper
+						.getObjectFromMap((LinkedHashMap<String, Object>) userResponse.getData(), UsersRequest.class); */
 				cibilFullFillOfferRequest.setEmail(applicantDetail.getEmail());
 				cibilFullFillOfferRequest.setPhoneNumber(applicantDetail.getMobile());
 //			}

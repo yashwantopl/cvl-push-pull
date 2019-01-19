@@ -114,7 +114,7 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 		return loanSanctionRepository.save(loanSanctionDomainOld) != null;
 		}catch (Exception e) {
 			logger.error("Error/Exception in saveLoanSanctionDetail() -----------------------> Message : ",e);
-			throw e;
+			throw new LoansException(e);
 		}
 
 	}
@@ -132,7 +132,7 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 	        	}		 
 	        }catch (Exception e) {
 	        	logger.error("Error/Exception in requestValidation() ----------------------->  Message : ", e);
-	        	throw e;
+	        	throw new LoansException(e);
 			}
 	}
 

@@ -908,7 +908,6 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 					requests.add(request);
 				} catch (Exception e) {
 					logger.error("Error while Getting Loan Status from Proposal Client or Proposal Service is not available:-",e);
-					// throw new Exception(CommonUtils.SOMETHING_WENT_WRONG);
 				}
 				long proposalStatusId = 0l;
 				try {
@@ -5439,7 +5438,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
 			return response;
 		} catch (Exception e) {
 			logger.error(CommonUtils.EXCEPTION,e);
-			throw e;
+			throw new LoansException(e);
 		}
 	}
 

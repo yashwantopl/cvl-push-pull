@@ -670,7 +670,6 @@ public class ScoringServiceImpl implements ScoringService {
                 if (CommonUtils.isObjectNullOrEmpty(retailApplicantDetail)) {
                     logger.error(ERROR_WHILE_GETTING_RETAIL_APPLICANT_DETAIL_FOR_PERSONAL_LOAN_SCORING);
                     LoansResponse loansResponse = new LoansResponse(ERROR_WHILE_GETTING_RETAIL_APPLICANT_DETAIL_FOR_PERSONAL_LOAN_SCORING, HttpStatus.INTERNAL_SERVER_ERROR.value());
-                    //return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
                     break;
                 }
 
@@ -3946,7 +3945,7 @@ public class ScoringServiceImpl implements ScoringService {
 
         } catch (NullPointerException | IOException e) {
             logger.error("----------------Error/Exception while calculating scorring()------------------------------> " + e.getMessage());
-            throw e;
+            throw new LoansException(e);
         }
         return workbook;
     }

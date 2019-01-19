@@ -131,7 +131,6 @@ public class ExcelExtractionServiceImpl implements ExcelExtractionService{
 			operatingStatementDetailsRepository.inActiveAssetsDetails(storageDetailsId);
 			log.error("Error while reading CMA : ",e);
 			throw new ExcelException(e) ;
-			/*return false;*/
 		}
 		
 		return true;
