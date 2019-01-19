@@ -41,8 +41,6 @@ import com.capitaworld.service.loans.repository.fundseeker.retail.RetailApplican
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateApplicantService;
 import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateCoApplicantService;
 import com.capitaworld.service.loans.utils.CommonUtils;
-//import com.capitaworld.service.rating.model.CompanyDetails;
-//import com.capitaworld.service.rating.model.RatingResponse;
 import com.capitaworld.service.loans.utils.MultipleJSONObjectHelper;
 import com.capitaworld.service.users.client.UsersClient;
 import com.capitaworld.service.users.model.UserResponse;
@@ -448,7 +446,6 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 
 		List<Double> patsPercentage = new ArrayList<>(pats.size());
 		for (int i = 0; i <= pats.size() - 1; i++) {
-//			 logger.info(pats.get(i)+"-"+sales.get(i));
 			val = (pats.get(i) / sales.get(i));
 			val = val * 100;
 			if (Double.isNaN(val)) {
@@ -461,7 +458,6 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		salesPercentage.add(null);
 		// calculate revenue % (Previous sales/sales)%
 		for (int i = 0; i <= (sales.size() - 2); i++) {
-			// logger.info(sales.get(i+1)+"-"+sales.get(i));
 			val = (sales.get(i + 1) - sales.get(i));
 			val = val / sales.get(i);
 			val = val * 100;
@@ -473,7 +469,6 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		// calculate Ebidta Percentage (Ebidta/sales)%
 		List<Double> ebidtaPercentage = new ArrayList<>(sales.size());
 		for (int i = 0; i <= (sales.size() - 1); i++) {
-//			 logger.info(sales.get(i+1)+"-"+sales.get(i));
 			val = (ebidta.get(i) / sales.get(i));
 			val = val * 100;
 			if (Double.isNaN(val)) {
@@ -484,7 +479,6 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		// calculate ROE(%) (pat/netWorth)%
 		List<Double> roePercentage = new ArrayList<>(pats.size());
 		for (int i = 0; i <= (pats.size() - 1); i++) {
-//			logger.info(sales.get(i+1)+"-"+sales.get(i));
 			val = (pats.get(i) / netWorth.get(i));
 			val = val * 100;
 			if (Double.isNaN(val)) {
@@ -495,7 +489,6 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		// calculate ROCE(%) (EBIDTA/CurrentAssets+FixsedAssets)%
 		List<Double> rocePercentage = new ArrayList<>(ebidta.size());
 		for (int i = 0; i <= (ebidta.size() - 1); i++) {
-//			logger.info(sales.get(i+1)+"-"+sales.get(i));
 			val = (ebidta.get(i) / (currentAsset.get(i) + fixedAsset.get(i)));
 			val = val * 100;
 			if (Double.isNaN(val)) {
@@ -506,7 +499,6 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 
 		List<Double> debtEquityPercentage = new ArrayList<>(debt.size());
 		for (int i = 0; i <= (debt.size() - 1); i++) {
-//			logger.info(sales.get(i+1)+"-"+sales.get(i));
 			val = (debt.get(i) / netWorth.get(i));
 			if (Double.isNaN(val)) {
 				val = 0d;
@@ -517,7 +509,6 @@ public class CorporateApplicantServiceImpl implements CorporateApplicantService 
 		// calculate current Ration (Current Assets/Current Liabilities)
 		List<Double> currentRatio = new ArrayList<>(currentAsset.size());
 		for (int i = 0; i <= (currentAsset.size() - 1); i++) {
-//			logger.info(sales.get(i+1)+"-"+sales.get(i));
 			val = (currentAsset.get(i) / (currentLiabilities.get(i)));
 			if (Double.isNaN(val)) {
 				val = 0d;

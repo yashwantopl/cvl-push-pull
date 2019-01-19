@@ -125,7 +125,6 @@ public class ScoringController {
         try {
             Long userId =  (Long) request.getAttribute(CommonUtils.USER_ID);
             scoringModelReqRes.setUserId(userId);
-            /*scoringModelReqRes.setUserId(1l);*/
 
             logger.info("userId ============> "+userId);
             ScoringModelReqRes scoringModelReqResNew=scoringService.getScoringModelTempList(scoringModelReqRes);
@@ -146,7 +145,6 @@ public class ScoringController {
         try {
             Long userId =  (Long) request.getAttribute(CommonUtils.USER_ID);
             scoringModelReqRes.setUserId(userId);
-            /*scoringModelReqRes.setUserId(1l);*/
             ScoringModelReqRes scoringModelReqResNew=scoringService.saveScoringModelTemp(scoringModelReqRes);
             return new ResponseEntity<ScoringModelReqRes>(scoringModelReqResNew,HttpStatus.OK);
         }
@@ -164,7 +162,6 @@ public class ScoringController {
         try {
             Long userId =  (Long) request.getAttribute(CommonUtils.USER_ID);
             scoringModelReqRes.setUserId(userId);
-           /* scoringModelReqRes.setUserId(1l);*/
             ScoringModelReqRes scoringModelReqResNew=scoringService.getScoringModelTempDetail(scoringModelReqRes);
             return new ResponseEntity<ScoringModelReqRes>(scoringModelReqResNew,HttpStatus.OK);
         }
@@ -183,7 +180,6 @@ public class ScoringController {
         try {
             Long userId =  (Long) request.getAttribute(CommonUtils.USER_ID);
             scoringModelReqRes.setUserId(userId);
-            /*scoringModelReqRes.setUserId(1l);*/
             ScoringModelReqRes scoringModelReqResNew=scoringService.saveScoringModelTempDetail(scoringModelReqRes);
             return new ResponseEntity<ScoringModelReqRes>(scoringModelReqResNew,HttpStatus.OK);
         }
@@ -200,8 +196,7 @@ public class ScoringController {
     	 logger.info ("==================Enter in sendToChecker(){} ================ genericCheckerReqResList size ==> " + genericCheckerReqResList.size());
         try {
         	Long userId =  (Long) request.getAttribute(CommonUtils.USER_ID);
-           
-            /*scoringModelReqRes.setUserId(1l);*/
+
             List<GenericCheckerReqRes>  genericCheckerReqRes=scoringService.sendToChecker(genericCheckerReqResList , userId);
             logger.info ("==================Exit from sendToChecker(){} ================ genericCheckerReqRes List  Size ==> " , genericCheckerReqRes.size());
             return new ResponseEntity<List<GenericCheckerReqRes> >(genericCheckerReqRes ,HttpStatus.OK);
@@ -223,7 +218,6 @@ public class ScoringController {
         try {
             Long userId =  (Long) request.getAttribute(CommonUtils.USER_ID);
             scoringModelReqRes.setUserId(userId);
-            /*scoringModelReqRes.setUserId(1l);*/
 
             logger.info("userId ============> "+userId);
             ScoringModelReqRes scoringModelReqResNew=scoringService.getScoringModelMasterList(scoringModelReqRes);
@@ -243,7 +237,6 @@ public class ScoringController {
         try {
             Long userId =  (Long) request.getAttribute(CommonUtils.USER_ID);
             scoringModelReqRes.setUserId(userId);
-           /* scoringModelReqRes.setUserId(1l);*/
             ScoringModelReqRes scoringModelReqResNew=scoringService.getScoringModelMasterDetail(scoringModelReqRes);
             return new ResponseEntity<ScoringModelReqRes>(scoringModelReqResNew,HttpStatus.OK);
         }

@@ -56,7 +56,6 @@ public class TermLoanParameterController {
 		}
 		
 		Long userId = (Long) request.getAttribute(CommonUtils.USER_ID);
-		//Long userId=1755l;
 		if(userId==null)
 		{
 			logger.warn("userId  id can not be empty ==>", userId);

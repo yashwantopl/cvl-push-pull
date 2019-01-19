@@ -51,7 +51,6 @@ public class UniformProductParameterController {
 
 			Long userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
 			Long orgId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ORG_ID);
-			//Long userId=1755l;
 			if(userId == null || orgId == null)
 			{
 				logger.warn(USER_ID_AND_ORG_ID_CAN_NOT_BE_EMPTY_MSG, userId,orgId);
@@ -83,7 +82,6 @@ public class UniformProductParameterController {
 		try {
 			Long userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
 			Long orgId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ORG_ID);
-			//Long userId=1755l;
 			if(userId == null || orgId == null)
 			{
 				logger.warn(USER_ID_AND_ORG_ID_CAN_NOT_BE_EMPTY_MSG, userId,orgId);
@@ -140,7 +138,6 @@ public class UniformProductParameterController {
 		try {
 			Long userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
 			Long orgId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ORG_ID);
-			//Long userId=1755l;
 			if(userId == null || orgId == null)
 			{
 				logger.warn(USER_ID_AND_ORG_ID_CAN_NOT_BE_EMPTY_MSG, userId,orgId);
@@ -164,7 +161,6 @@ public class UniformProductParameterController {
 		try {
 			Long userId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ID);
 			Long orgId = (Long) httpServletRequest.getAttribute(CommonUtils.USER_ORG_ID);
-			//Long userId=1755l;
 			if(userId == null || orgId == null)
 			{
 				logger.warn(USER_ID_AND_ORG_ID_CAN_NOT_BE_EMPTY_MSG, userId,orgId);

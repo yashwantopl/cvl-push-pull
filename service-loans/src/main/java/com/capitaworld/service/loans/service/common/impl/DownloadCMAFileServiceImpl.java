@@ -455,7 +455,6 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 				temp=Double.parseDouble(assetsDetails.getYear());
 				// save in excel
 				sheet3.getRow(4).getCell(j).setCellValue(temp);
-				//logger.info(""+sheet3.getRow(4).getCell(j).getNumericCellValue());
 				 sheet3.getRow(8).getCell(j).setCellValue(assetsDetails.getCashAndBankBalance());
 				 
 				//sheet3.getRow(10).getCell(j).setCellValue(assetsDetails.getInvestments());
@@ -1001,11 +1000,7 @@ public class DownloadCMAFileServiceImpl implements DownLoadCMAFileService {
 		int i = 0 ;
 		for (i = j ; temp <= totalYear; ++temp , i++) {
 			if(flag) {
-				//logger.info(""+i+" cell "+sheet.getRow(4));
-				//logger.info(""+i+" " + temp);
 				sheet.getRow(4).getCell(i).setCellValue(temp);
-				//logger.info(""+i+" cell "+sheet.getRow(4));
-				//logger.info(""+i+" " + temp);
 			}
 			else {
 				sheet.getRow(3).getCell(i).setCellValue(temp);

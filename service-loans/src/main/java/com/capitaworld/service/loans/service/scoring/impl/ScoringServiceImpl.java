@@ -3802,19 +3802,16 @@ public class ScoringServiceImpl implements ScoringService {
                 logger.error(ERROR_WHILE_CALLING_SCORING,e);
                 LoansResponse loansResponse = new LoansResponse(ERROR_WHILE_CALLING_SCORING, HttpStatus.INTERNAL_SERVER_ERROR.value());
                 return false;
-                //return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
             }
 
             if (scoringResponseMain.getStatus() == HttpStatus.OK.value()) {
                 logger.info(SCORE_IS_SUCCESSFULLY_CALCULATED);
                 LoansResponse loansResponse = new LoansResponse(SCORE_IS_SUCCESSFULLY_CALCULATED, HttpStatus.OK.value());
                 return true;
-                //return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
             } else {
                 logger.error(ERROR_WHILE_CALLING_SCORING);
                 LoansResponse loansResponse = new LoansResponse(ERROR_WHILE_CALLING_SCORING, HttpStatus.INTERNAL_SERVER_ERROR.value());
                 return false;
-                //return new ResponseEntity<LoansResponse>(loansResponse, HttpStatus.OK);
             }
         }
 
@@ -3964,12 +3961,10 @@ public class ScoringServiceImpl implements ScoringService {
     @Override
     public ScoringModelReqRes getScoringModelTempList(ScoringModelReqRes scoringModelReqRes) {
         try {
-            /*scoringModelReqRes.setOrgId(1l);*/
             UserResponse userResponse = usersClient.getOrgIdFromUserId(scoringModelReqRes.getUserId());
 
             if (!CommonUtils.isObjectNullOrEmpty(userResponse) && !CommonUtils.isObjectNullOrEmpty(userResponse.getData())) {
                 scoringModelReqRes.setOrgId(Long.parseLong(userResponse.getData().toString()));
-                /*scoringModelReqRes.setOrgId(1l);*/
             } else {
                 logger.debug(ORG_ID_IS_NULL_OR_EMPTY + "In getScoringModelTempList");
                 return new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());
@@ -3993,7 +3988,6 @@ public class ScoringServiceImpl implements ScoringService {
     public ScoringModelReqRes saveScoringModelTemp(ScoringModelReqRes scoringModelReqRes) {
 
         try {
-            /*scoringModelReqRes.getScoringModelResponse().setOrgId(1l);*/
 
             UserResponse userResponse = usersClient.getOrgIdFromUserId(scoringModelReqRes.getUserId());
 
@@ -4052,12 +4046,10 @@ public class ScoringServiceImpl implements ScoringService {
     @Override
     public ScoringModelReqRes getScoringModelMasterList(ScoringModelReqRes scoringModelReqRes) {
         try {
-            /*scoringModelReqRes.setOrgId(1l);*/
             UserResponse userResponse = usersClient.getOrgIdFromUserId(scoringModelReqRes.getUserId());
 
             if (!CommonUtils.isObjectNullOrEmpty(userResponse) && !CommonUtils.isObjectNullOrEmpty(userResponse.getData())) {
                 scoringModelReqRes.setOrgId(Long.parseLong(userResponse.getData().toString()));
-                /*scoringModelReqRes.setOrgId(1l);*/
             } else {
                 logger.error(ORG_ID_IS_NULL_OR_EMPTY + " In getScoringModelMasterList ");
                 return new ScoringModelReqRes(com.capitaworld.service.scoring.utils.CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.BAD_REQUEST.value());

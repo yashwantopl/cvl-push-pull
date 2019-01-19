@@ -111,7 +111,6 @@ public class LoanSanctionServiceImpl implements LoanSanctionService {
 			logger.error("Exception : {}",e);
 		}
 		//=================================================================================
-		//logger.info("Exit saveLoanSanctionDetail() -----------------------> LoanSanctionDomain "+ loanSanctionDomainOld);
 		return loanSanctionRepository.save(loanSanctionDomainOld) != null;
 		}catch (Exception e) {
 			logger.error("Error/Exception in saveLoanSanctionDetail() -----------------------> Message : ",e);

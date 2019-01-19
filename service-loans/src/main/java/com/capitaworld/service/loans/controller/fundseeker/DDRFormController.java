@@ -330,7 +330,6 @@ public class DDRFormController {
 			if (documentResponse.getStatus() == 200) {
 				logger.info(""+documentResponse.getData());
 				return new ResponseEntity<LoansResponse>(new LoansResponse(HttpStatus.OK.value(), "success", documentResponse.getData(), obj),HttpStatus.OK);
-				//return new ResponseEntity<LoansResponse>(new LoansResponse("Successfull", HttpStatus.OK.value(), documentResponse.getData()),HttpStatus.OK);
 			} else {
 				return new ResponseEntity<LoansResponse>(new LoansResponse(CommonUtils.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR.value()),HttpStatus.OK);
 			}

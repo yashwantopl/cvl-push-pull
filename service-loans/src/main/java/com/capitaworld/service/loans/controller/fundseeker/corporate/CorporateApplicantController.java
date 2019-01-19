@@ -27,9 +27,6 @@ import com.capitaworld.service.loans.service.fundseeker.corporate.CorporateAppli
 import com.capitaworld.service.loans.service.fundseeker.corporate.LoanApplicationService;
 import com.capitaworld.service.loans.utils.CommonDocumentUtils;
 import com.capitaworld.service.loans.utils.CommonUtils;
-//import com.capitaworld.service.rating.RatingClient;
-//import com.capitaworld.service.rating.model.CompanyDetails;
-//import com.capitaworld.service.rating.model.RatingResponse;
 
 @RestController
 @RequestMapping("/fs_profile")
@@ -197,7 +194,6 @@ public class CorporateApplicantController {
 		try {
 			CommonDocumentUtils.startHook(logger, "getSectorListByIndustryList");
 			Long id = (Long) request.getAttribute(CommonUtils.USER_ID);
-			// Long id=1l;
 			if (id == null) {
 				logger.warn("userId  Require to get sectors Details ==>" + id);
 				return new ResponseEntity<LoansResponse>(
