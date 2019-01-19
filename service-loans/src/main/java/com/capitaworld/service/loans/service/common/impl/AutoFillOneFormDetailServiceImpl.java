@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import com.capitaworld.service.loans.domain.fundseeker.ApplicationProposalMapping;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -1020,6 +1021,7 @@ public class AutoFillOneFormDetailServiceImpl implements AutoFillOneFormDetailSe
 			OwnershipDetail ownershipDetailTo = new OwnershipDetail();
 			BeanUtils.copyProperties(ownershipDetailFrom, ownershipDetailTo, "id", CommonUtils.APPLICATION_ID);
 			ownershipDetailTo.setApplicationId(corporateApplicantDetailTo.getApplicationId());
+			ownershipDetailTo.setProposalMapping(corporateApplicantDetailTo.getApplicationProposalMapping());
 			ownershipDetailTo.setCreatedDate(new Date());
 			ownershipDetailsRepository.save(ownershipDetailTo);
 		}
