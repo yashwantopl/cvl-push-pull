@@ -204,10 +204,11 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 		
 		ApplicationProposalMapping applicationProposalMapping = applicationProposalMappingRepository.findOne(proposalId); // NEW BASED ON PROPOSAL MAPPING ID 
 		logger.info("===============>"+applicationProposalMapping.getApplicationId());
-		Long toApplicationId = applicationProposalMapping.getApplicationId();
+		Long toApplicationId = applicationProposalMapping.getApplicationId(); // new 
+		Long toUserId = applicationProposalMapping.getUserId(); // new 
 
 		LoanApplicationMaster loanApplicationMaster = loanApplicationRepository.findOne(toApplicationId);
-		Long userId = loanApplicationMaster.getUserId();
+		//Long userId = loanApplicationMaster.getUserId(); // previous
 
 		corporatePrimaryViewResponse.setProductId(loanApplicationMaster.getProductId());
 		corporatePrimaryViewResponse.setApplicationType(loanApplicationMaster.getWcRenewalStatus() != null ? WcRenewalType.getById(loanApplicationMaster.getWcRenewalStatus()).getValue().toString() : "New" );
@@ -247,7 +248,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 				.getByApplicationAndUserId(userId, toApplicationId);*/ // PREVIOUS
 		
 		CorporateApplicantDetail corporateApplicantDetail = corporateApplicantDetailRepository
-				.getByApplicationAndProposalIdAndUserId(userId,toApplicationId,proposalId); //NEW BASED ON PROPOSAL MAPPING ID=======> 
+				.getByApplicationAndProposalIdAndUserId(toUserId,toApplicationId,proposalId); //NEW BASED ON PROPOSAL MAPPING ID=======> 
 		
 		// set value to response
 		if (corporateApplicantDetail != null) {
@@ -470,7 +471,8 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 		}
 		// get value of working capital data
 		PrimaryCorporateDetail primaryCorporateDetail = primaryCorporateRepository
-				.getByApplicationAndUserId(toApplicationId, userId);
+				.getByApplicationAndUserId(toApplicationId, toUserId);
+		
 		if (primaryCorporateDetail != null) {
 			// set value to response
 			BeanUtils.copyProperties(primaryCorporateDetail, corporatePrimaryViewResponse);
@@ -543,7 +545,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 
 		try {
 			List<DirectorBackgroundDetailRequest> directorBackgroundDetailRequestList = directorBackgroundDetailsService
-					.getDirectorBackgroundDetailList(toApplicationId, userId);
+					.getDirectorBackgroundDetailList(toApplicationId, toUserId);
 			List<DirectorBackgroundDetailResponse> directorBackgroundDetailResponseList = new ArrayList<>();
 			for (DirectorBackgroundDetailRequest directorBackgroundDetailRequest : directorBackgroundDetailRequestList) {
 				DirectorBackgroundDetailResponse directorBackgroundDetailResponse = new DirectorBackgroundDetailResponse();
@@ -668,7 +670,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 		// get value of Financial Arrangements and set in response
 		try {
 			List<FinancialArrangementsDetailRequest> financialArrangementsDetailRequestList = financialArrangementDetailsService
-					.getFinancialArrangementDetailsList(toApplicationId, userId);
+					.getFinancialArrangementDetailsList(toApplicationId, toUserId);
 			List<FinancialArrangementsDetailResponse> financialArrangementsDetailResponseList = new ArrayList<>();
 			for (FinancialArrangementsDetailRequest financialArrangementsDetailRequest : financialArrangementsDetailRequestList) {
 				FinancialArrangementsDetailResponse financialArrangementsDetailResponse = new FinancialArrangementsDetailResponse();
@@ -699,7 +701,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 
 		try {
 		//	FinancialInputRequest financialInputRequest = irrService.cmaIrrMappingService(userId, toApplicationId, null,enomination); //=======>>>>PREVIOUS  
-			FinancialInputRequest financialInputRequest = irrService.cmaIrrMappingService(userId, toApplicationId, null,
+			FinancialInputRequest financialInputRequest = irrService.cmaIrrMappingService(toUserId, toApplicationId, null,
 					denomination,proposalId); // CHANGES PROPOSAL ID NEW 
 
 			logger.info("financialInputRequest.getYear()===>>>" + financialInputRequest.getYear());
@@ -945,7 +947,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 		// bank statement data
 		ReportRequest reportRequest = new ReportRequest();
 		reportRequest.setApplicationId(toApplicationId);
-		reportRequest.setUserId(userId);
+		reportRequest.setUserId(toUserId);
 		List<Data> datas = new ArrayList<>();
 		try {
 			AnalyzerResponse analyzerResponse = analyzerClient.getDetailsFromReportForCam(reportRequest);
@@ -1051,7 +1053,8 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 
 		try {
 
-			int loanId = primaryCorporateDetail.getProductId();
+			//int loanId = primaryCorporateDetail.getProductId(); // previous 
+			int loanId = applicationProposalMapping.getProductId(); // NEW BASED ON PROPOAL MAPPING PRODUCT ID 
 			switch (loanId) {
 			case 1:
 
@@ -1227,7 +1230,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 		CorporateFinalInfoRequest corporateFinalInfoRequest;
 		try {
 			//corporateFinalInfoRequest = corporateFinalInfoService.get(userId,toApplicationId); // PREVIOUS CHANGES
-			corporateFinalInfoRequest = corporateFinalInfoService.getByProposalId(userId,proposalId); //// NEW BASED ON PROPOSAL MAPPING ID 
+			corporateFinalInfoRequest = corporateFinalInfoService.getByProposalId(toUserId,proposalId); //// NEW BASED ON PROPOSAL MAPPING ID 
 			
 			//ADMIN OFFICE ADDRESS
 			try {
@@ -1257,7 +1260,7 @@ public class CorporatePrimaryViewServiceImpl implements CorporatePrimaryViewServ
 				
 				try {
 					//corporateFinalInfoRequest = corporateFinalInfoService.get(userId,toApplicationId); // PREVIOUS
-					corporateFinalInfoRequest = corporateFinalInfoService.getByProposalId(userId,proposalId); // NEW BASED ON PROPOSAL MAPPING ID 
+					corporateFinalInfoRequest = corporateFinalInfoService.getByProposalId(toUserId,proposalId); // NEW BASED ON PROPOSAL MAPPING ID 
 				//	logger.info("==================>"+corporateFinalInfoRequest.getFirstAddress());
 					logger.info("==================>"+corporateFinalInfoRequest.getSecondAddress().getDistrictMappingId());
 					//Reg OFFICE ADDRESS
