@@ -31,8 +31,11 @@ public class OfflineProcessAppRepositoryImpl implements OfflineProcessedAppRepos
 	}
 	
 	@Override
-	public IneligibleProposalDetails findByAppliationId(Long applicationId) {
-		List<IneligibleProposalDetails> data = entityManager.createQuery("SELECT ipd FROM IneligibleProposalDetails ipd where ipd.applicationId =:applicationId",IneligibleProposalDetails.class).setParameter("applicationId", applicationId).getResultList();
+	public IneligibleProposalDetails findByAppliationId(Long applicationId,Long orgId) {
+		List<IneligibleProposalDetails> data = entityManager.createQuery("SELECT ipd FROM IneligibleProposalDetails ipd where ipd.applicationId =:applicationId and ipd.userOrgId =:orgId and ipd.isActive = true",IneligibleProposalDetails.class)
+				.setParameter("applicationId", applicationId)
+				.setParameter("orgId", orgId)
+				.getResultList();
 		if(data != null && !data.isEmpty()) {
 			return data.get(0);
 		}
