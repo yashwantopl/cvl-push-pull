@@ -11,11 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.capitaworld.connect.api.ConnectRequest;
 import com.capitaworld.service.loans.config.AsyncComponent;
@@ -165,8 +161,21 @@ public class ProposalController {
 		}
 		request.setUserType(userType);
 		request.setUserId(userId);
-		ProposalMappingResponse response = proposalService.get(request);
+		ProposalMappingResponse response = proposalService.
+				get(request);
 		response.setUserType(userType.longValue());
+		return new ResponseEntity<ProposalMappingResponse>(response,HttpStatus.OK);
+	}
+
+	@RequestMapping(value = "/getSanctionProposalByApplicationId", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<ProposalMappingResponse> getSanctionProposalByApplicationId(@RequestBody ProposalMappingRequest request,HttpServletRequest httpServletRequest,@RequestParam(value = "clientId", required = false) Long clientId,@RequestParam(value = "clientUserType", required = false) Long clientUserType) {
+
+
+		if(!CommonUtils.isObjectNullOrEmpty(httpServletRequest.getAttribute(CommonUtils.USER_ORG_ID))) {
+			request.setUserOrgId(Long.valueOf(httpServletRequest.getAttribute(CommonUtils.USER_ORG_ID).toString()));
+		}
+		ProposalMappingResponse response = proposalService.
+				getSanctionProposalByApplicationId(request.getApplicationId(),request.getUserOrgId());
 		return new ResponseEntity<ProposalMappingResponse>(response,HttpStatus.OK);
 	}
 	

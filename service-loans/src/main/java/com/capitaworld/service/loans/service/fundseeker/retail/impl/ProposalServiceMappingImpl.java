@@ -1434,6 +1434,48 @@ public class ProposalServiceMappingImpl implements ProposalService {
 	}
 
 	@Override
+	public ProposalMappingResponse getSanctionProposalByApplicationId(Long applicationId,Long userOrgId) {
+		ProposalMappingResponse response = new ProposalMappingResponse();
+		ProposalMappingRequest proposalMappingRequest=new ProposalMappingRequest();
+		try {
+
+			ProposalDetails proposalDetails = proposalDetailRepository.getSanctionProposalByApplicationId(applicationId);
+
+			Boolean isButtonDisplay=true;
+			String messageOfButton=null;
+			if(!CommonUtils.isObjectNullOrEmpty(proposalDetails))
+			{
+				if(!proposalDetails.getUserOrgId().toString().equals(userOrgId))
+				{
+					if(ProposalStatus.APPROVED ==  proposalDetails.getProposalStatusId().getId())
+						messageOfButton="This proposal has been Sanctioned by Other Bank.";
+					else if(ProposalStatus.DISBURSED ==  proposalDetails.getProposalStatusId().getId())
+						messageOfButton="This proposal has been Disbursed by Other Bank.";
+					else if(ProposalStatus.PARTIALLY_DISBURSED ==  proposalDetails.getProposalStatusId().getId())
+						messageOfButton="This proposal has been Partially Disbursed by Other Bank.";
+					isButtonDisplay=false;
+
+					proposalMappingRequest.setMessageOfButton(messageOfButton);
+					proposalMappingRequest.setIsButtonDisplay(isButtonDisplay);
+				}
+				else
+				{
+					proposalMappingRequest.setIsButtonDisplay(isButtonDisplay);
+				}
+			}
+			else
+			{
+				proposalMappingRequest.setIsButtonDisplay(isButtonDisplay);
+			}
+			response.setData(proposalMappingRequest);
+		} catch (Exception e) {
+			logger.error(CommonUtils.EXCEPTION,e);
+		}
+
+		return response;
+	}
+
+	@Override
 	public ProposalMappingResponse changeStatus(ProposalMappingRequest request) {
 
 		ProposalMappingResponse response = new ProposalMappingResponse();

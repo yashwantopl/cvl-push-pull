@@ -33,7 +33,9 @@ public interface ProposalService {
 	public ProposalCountResponse fundSeekerProposalCount(ProposalMappingRequest request);
 	
 	public ProposalMappingResponse get(ProposalMappingRequest request);
-	
+
+	public ProposalMappingResponse getSanctionProposalByApplicationId(Long applicationId,Long userOrgId);
+
 	public ProposalMappingResponse changeStatus(ProposalMappingRequest request);
 	
 	public ProposalMappingResponse sendRequest(ProposalMappingRequest request);
